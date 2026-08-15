@@ -1,0 +1,11 @@
+{
+  "dotnet.defaultSolution": "Sandtable.slnx",
+  "editor.formatOnSave": true,
+  "files.exclude": {
+    "**/artifacts": true,
+    "**/bin": true,
+    "**/obj": true
+  },
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true
+}

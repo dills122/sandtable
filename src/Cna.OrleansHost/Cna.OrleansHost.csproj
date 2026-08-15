@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Description>Authoritative Orleans host for Sandtable campaigns.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Orleans.Server" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../Cna.Core/Cna.Core.csproj" />
+    <ProjectReference Include="../Cna.ServiceDefaults/Cna.ServiceDefaults.csproj" />
+  </ItemGroup>
+</Project>

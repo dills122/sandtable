@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Description>Dispatches pending decisions outside authoritative Orleans grain turns.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Grpc.Net.ClientFactory" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../Cna.Core/Cna.Core.csproj" />
+    <ProjectReference Include="../Cna.Intelligence.Contracts/Cna.Intelligence.Contracts.csproj" />
+    <ProjectReference Include="../Cna.ServiceDefaults/Cna.ServiceDefaults.csproj" />
+  </ItemGroup>
+</Project>
