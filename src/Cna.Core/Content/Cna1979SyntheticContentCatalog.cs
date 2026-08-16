@@ -25,11 +25,18 @@ public sealed class ContentCatalogResolution
 
     public ContentCatalogRejectionReason RejectionReason { get; }
 
-    internal static ContentCatalogResolution Resolved(ContentPackArtifact artifact) =>
+    public static ContentCatalogResolution Resolved(ContentPackArtifact artifact) =>
         new(artifact, ContentCatalogRejectionReason.None);
 
-    internal static ContentCatalogResolution Rejected(ContentCatalogRejectionReason reason) =>
-        new(null, reason);
+    public static ContentCatalogResolution Rejected(ContentCatalogRejectionReason reason)
+    {
+        if (reason == ContentCatalogRejectionReason.None)
+        {
+            throw new ArgumentOutOfRangeException(nameof(reason));
+        }
+
+        return new ContentCatalogResolution(null, reason);
+    }
 }
 
 public static class Cna1979SyntheticContentCatalog
@@ -75,7 +82,10 @@ public static class Cna1979SyntheticContentCatalog
             CreateEdges(),
             formations,
             elements,
-            [CreateScenario(elements)]);
+            [
+                CreateScenario(elements, "movement-contact-lab", 1),
+                CreateScenario(elements, "initiative-contested-lab", 43),
+            ]);
 
         return ContentPackArtifact.Create(definition);
     }
@@ -140,17 +150,19 @@ public static class Cna1979SyntheticContentCatalog
     ];
 
     private static ContentScenario CreateScenario(
-        IReadOnlyList<ContentCombatElement> elements) => new(
-            "movement-contact-lab",
-            new ContentScenarioBoundary(1, 1),
-            new ContentScenarioBoundary(1, 3),
+        IReadOnlyList<ContentCombatElement> elements,
+        string scenarioId,
+        int gameTurn) => new(
+            scenarioId,
+            new ContentScenarioBoundary(gameTurn, 1),
+            new ContentScenarioBoundary(gameTurn, 3),
             [
-                Placement(elements, "axis-element-a", "west"),
-                Placement(elements, "axis-element-b", "north-west"),
-                Placement(elements, "commonwealth-element-a", "east"),
-                Placement(elements, "commonwealth-element-b", "south-east"),
+                Placement(elements, scenarioId, "axis-element-a", "west"),
+                Placement(elements, scenarioId, "axis-element-b", "north-west"),
+                Placement(elements, scenarioId, "commonwealth-element-a", "east"),
+                Placement(elements, scenarioId, "commonwealth-element-b", "south-east"),
             ],
-            Origin("scenario.movement-contact-lab"));
+            Origin($"scenario.{scenarioId}"));
 
     private static ContentHex Location(string locationId, string terrainId) => new(
         locationId,
@@ -187,6 +199,7 @@ public static class Cna1979SyntheticContentCatalog
 
     private static ContentInitialPlacement Placement(
         IReadOnlyList<ContentCombatElement> elements,
+        string scenarioId,
         string elementId,
         string locationId)
     {
@@ -194,7 +207,7 @@ public static class Cna1979SyntheticContentCatalog
         return new ContentInitialPlacement(
             elementId,
             locationId,
-            Origin($"placement.{elementId}.{locationId}"));
+            Origin($"placement.{scenarioId}.{elementId}.{locationId}"));
     }
 
     private static ContentOrigin Origin(string locator) => new(
@@ -234,6 +247,7 @@ public static class Cna1979SyntheticContentCatalog
                 ["commonwealth-element-a"] = "Azure One",
                 ["commonwealth-element-b"] = "Azure Two",
                 ["movement-contact-lab"] = "Amber Wadi Movement and Contact Lab",
+                ["initiative-contested-lab"] = "Amber Wadi Initiative Contest Lab",
             });
         var knownIds = Artifact.Definition.Locations.Select(value => value.LocationId)
             .Concat(Artifact.Definition.Formations.Select(value => value.FormationId))

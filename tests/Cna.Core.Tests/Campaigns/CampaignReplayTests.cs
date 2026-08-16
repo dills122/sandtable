@@ -13,7 +13,7 @@ public sealed class CampaignReplayTests
     {
         var execution = ExecuteCreation(12345);
 
-        var replayed = CampaignProjector.Replay(execution.Events);
+        var replayed = CampaignTestHarness.Replay(execution.Events);
         var originalBytes = CampaignSnapshotSerializer.Serialize(execution.Snapshot);
         var replayedBytes = CampaignSnapshotSerializer.Serialize(replayed);
 
@@ -48,7 +48,21 @@ public sealed class CampaignReplayTests
         var created = valid with { RulesetHash = "ruleset-hash" };
 
         Assert.Throws<InvalidCampaignHistoryException>(() =>
-            CampaignProjector.Replay([created]));
+            CampaignTestHarness.Replay([created]));
+    }
+
+    [Fact]
+    public void StrictContractsRejectANonStableCampaignId()
+    {
+        var execution = ExecuteCreation(12345);
+        var created = Assert.IsType<CampaignCreated>(Assert.Single(execution.Events));
+        var invalidCreated = created with { CampaignId = "Invalid ID" };
+        var invalidSnapshot = execution.Snapshot with { CampaignId = "Invalid ID" };
+
+        Assert.Throws<JsonException>(() => CampaignEventSerializer.Serialize(invalidCreated));
+        Assert.Throws<InvalidCampaignHistoryException>(() =>
+            CampaignTestHarness.Replay([invalidCreated]));
+        Assert.Throws<JsonException>(() => CampaignSnapshotSerializer.Serialize(invalidSnapshot));
     }
 
     [Fact]
@@ -62,10 +76,66 @@ public sealed class CampaignReplayTests
             valid.Setup.IsSynthetic,
             valid.Setup.InitialGameTurn,
             valid.Setup.InitialInitiative,
+            valid.Setup.Content,
             valid.Setup.Sources);
 
         Assert.Throws<InvalidCampaignHistoryException>(() =>
-            CampaignProjector.Replay([valid with { Setup = setup }]));
+            CampaignTestHarness.Replay([valid with { Setup = setup }]));
+    }
+
+    [Fact]
+    public void ReplayRejectsAnEmbeddedSetupWhoseTurnDiffersFromTheExactScenario()
+    {
+        var valid = Assert.IsType<CampaignCreated>(Assert.Single(ExecuteCreation(12345).Events));
+        var mismatched = new CampaignSetupDefinition(
+            Cna1979SetupCatalog.SchemaVersion,
+            "retired.start-mismatch",
+            "Retired start-mismatch fixture",
+            true,
+            valid.Setup.InitialGameTurn + 1,
+            valid.Setup.InitialInitiative,
+            valid.Setup.Content,
+            valid.Setup.Sources);
+        var forged = valid with
+        {
+            Setup = CampaignSetupSnapshot.FromDefinition(mismatched),
+            SequencePosition = Cna1979LandSequence.CreateTurn(mismatched.InitialGameTurn)[0],
+        };
+
+        Assert.Throws<InvalidCampaignHistoryException>(() =>
+            CampaignTestHarness.Replay([forged]));
+    }
+
+    [Fact]
+    public void ReplayRejectsAFieldForgedInitialWorld()
+    {
+        var valid = Assert.IsType<CampaignCreated>(Assert.Single(ExecuteCreation(12345).Events));
+        var forgedWorld = new CampaignWorldSnapshot(
+            1,
+            valid.InitialWorld.Elements
+                .Where(element => element.ElementId != "axis-element-a")
+                .Append(new CampaignElementState("axis-element-a", "east"))
+                .ToArray());
+
+        Assert.Throws<InvalidCampaignHistoryException>(() =>
+            CampaignTestHarness.Replay([valid with { InitialWorld = forgedWorld }]));
+    }
+
+    [Fact]
+    public void StrictReadersRejectVersion2CreationAndSnapshotContracts()
+    {
+        var execution = ExecuteCreation(12345);
+        var created = Assert.IsType<CampaignCreated>(Assert.Single(execution.Events));
+        var eventJson = Encoding.UTF8.GetString(CampaignEventSerializer.Serialize(created))
+            .Replace("{\"contractVersion\":3,", "{\"contractVersion\":2,", StringComparison.Ordinal);
+        var snapshotJson = Encoding.UTF8.GetString(
+                CampaignSnapshotSerializer.Serialize(execution.Snapshot))
+            .Replace("{\"contractVersion\":3,", "{\"contractVersion\":2,", StringComparison.Ordinal);
+
+        Assert.Throws<JsonException>(() =>
+            CampaignEventSerializer.Deserialize(Encoding.UTF8.GetBytes(eventJson)));
+        Assert.Throws<JsonException>(() =>
+            CampaignSnapshotSerializer.Deserialize(Encoding.UTF8.GetBytes(snapshotJson)));
     }
 
     [Fact]
@@ -90,30 +160,61 @@ public sealed class CampaignReplayTests
         var canonicalJson = Encoding.UTF8.GetString(
             CampaignSnapshotSerializer.Serialize(execution.Snapshot));
         var extra = canonicalJson.Replace(
-            "{\"contractVersion\":2,",
-            "{\"extra\":true,\"contractVersion\":2,",
+            "{\"contractVersion\":3,",
+            "{\"extra\":true,\"contractVersion\":3,",
+            StringComparison.Ordinal);
+        var reordered = canonicalJson.Replace(
+            "{\"contractVersion\":3,\"campaignId\":\"campaign-1\",",
+            "{\"campaignId\":\"campaign-1\",\"contractVersion\":3,",
             StringComparison.Ordinal);
 
         Assert.Throws<JsonException>(() =>
             CampaignSnapshotSerializer.Deserialize(Encoding.UTF8.GetBytes(extra)));
+        Assert.Throws<JsonException>(() =>
+            CampaignSnapshotSerializer.Deserialize(Encoding.UTF8.GetBytes(reordered)));
     }
 
     [Fact]
-    public void CreationSnapshotUsesTheExactCanonicalVersion2Shape()
+    public void SnapshotDeserializerNormalizesNonIntegerMetadataToJsonException()
+    {
+        var execution = ExecuteCreation(12345);
+        var canonicalJson = Encoding.UTF8.GetString(
+            CampaignSnapshotSerializer.Serialize(execution.Snapshot));
+        var malformed = canonicalJson.Replace(
+            "\"stateVersion\":1,",
+            "\"stateVersion\":1.5,",
+            StringComparison.Ordinal);
+
+        Assert.Throws<JsonException>(() =>
+            CampaignSnapshotSerializer.Deserialize(Encoding.UTF8.GetBytes(malformed)));
+    }
+
+    [Fact]
+    public void CreationSnapshotUsesTheExactCanonicalVersion3Shape()
     {
         var execution = ExecuteCreation(12345);
         var actual = Encoding.UTF8.GetString(
             CampaignSnapshotSerializer.Serialize(execution.Snapshot));
-        var expected = "{\"contractVersion\":2,\"campaignId\":\"campaign-1\"," +
+        var expected = "{\"contractVersion\":3,\"campaignId\":\"campaign-1\"," +
             "\"stateVersion\":1,\"rulesetHash\":\"" +
             Cna1979Ruleset.Manifest.Hash +
-            "\",\"setup\":{\"schemaVersion\":1," +
+            "\",\"setup\":{\"schemaVersion\":2," +
             "\"setupId\":\"rules-lab.initiative.predetermined\"," +
-            "\"setupHash\":\"sha256:ef7dd9cf4cf78616f5b8e2c95408c7fbf03eae46c934238be541565390e2520f\"," +
+            "\"setupHash\":\"sha256:9dfa11b7e9fac73e61d289f9847435ad4c9335b8b1692b95ffbeaa3566c8d921\"," +
             "\"isSynthetic\":true,\"initialGameTurn\":1," +
             "\"initialInitiative\":{\"kind\":\"predetermined\",\"holder\":\"axis\"}," +
+            "\"content\":{\"schemaVersion\":1,\"formatId\":\"sandtable.content-json.v1\"," +
+            "\"packId\":\"rules-lab.content.movement-contact.v1\",\"rulesetId\":\"cna-1979.1\"," +
+            "\"hash\":\"sha256:c0cceda302bab11c98f1b46c427c967bf70b3c9ae4ad078513dbfc231f06b114\"," +
+            "\"scenarioId\":\"movement-contact-lab\"}," +
             "\"sources\":[{\"sourceId\":\"sandtable-rules-lab\"," +
             "\"locator\":\"initiative.predetermined-axis.v1\"}]}," +
+            "\"world\":{" +
+            "\"contractVersion\":1,\"elements\":[" +
+            "{\"elementId\":\"axis-element-a\",\"currentLocationId\":\"west\"}," +
+            "{\"elementId\":\"axis-element-b\",\"currentLocationId\":\"north-west\"}," +
+            "{\"elementId\":\"commonwealth-element-a\",\"currentLocationId\":\"east\"}," +
+            "{\"elementId\":\"commonwealth-element-b\",\"currentLocationId\":\"south-east\"}]}," +
             "\"initiativeHolder\":null,\"randomState\":{\"contractVersion\":1," +
             "\"algorithmId\":\"sandtable.sha256-counter.v1\",\"seed\":12345," +
             "\"nextByteCursor\":0},\"sequencePosition\":{\"contractVersion\":2," +
@@ -134,7 +235,7 @@ public sealed class CampaignReplayTests
         var setup = Cna1979SetupCatalog.Definitions[0];
         CampaignCommand[] commands =
         [
-            new CreateCampaign(
+            CampaignTestHarness.Create(
                 "campaign-1",
                 Cna1979Ruleset.Manifest.Hash,
                 12345,
@@ -143,7 +244,7 @@ public sealed class CampaignReplayTests
             new CompleteCurrentSequenceStep(1, "land.position.initiative-determination"),
         ];
 
-        var result = CampaignReplayHarness.Execute(commands);
+        var result = CampaignTestHarness.Execute(commands);
 
         Assert.False(result.IsAccepted);
         Assert.Equal(CampaignCommandRejectionReason.UnsupportedTransition, result.RejectionReason);
@@ -159,14 +260,14 @@ public sealed class CampaignReplayTests
         var setup = Cna1979SetupCatalog.Definitions[0];
         CampaignCommand[] commands =
         [
-            new CreateCampaign(
+            CampaignTestHarness.Create(
                 "campaign-1",
                 Cna1979Ruleset.Manifest.Hash,
                 seed,
                 setup.SetupId,
                 setup.Hash),
         ];
-        var result = CampaignReplayHarness.Execute(commands);
+        var result = CampaignTestHarness.Execute(commands);
         Assert.True(result.IsAccepted);
         return new CampaignExecution(result.Events, Assert.IsType<CampaignSnapshot>(result.Snapshot));
     }

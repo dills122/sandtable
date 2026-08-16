@@ -15,16 +15,26 @@ public sealed class CampaignEventSerializationTests
 
         var bytes = CampaignEventSerializer.Serialize(created);
         var actual = Encoding.UTF8.GetString(bytes);
-        var expected = "{\"contractVersion\":2,\"eventType\":\"campaign-created\"," +
+        var expected = "{\"contractVersion\":3,\"eventType\":\"campaign-created\"," +
             "\"campaignId\":\"campaign-1\",\"stateVersion\":1,\"rulesetHash\":\"" +
             Cna1979Ruleset.Manifest.Hash +
-            "\",\"setup\":{\"schemaVersion\":1," +
+            "\",\"setup\":{\"schemaVersion\":2," +
             "\"setupId\":\"rules-lab.initiative.predetermined\"," +
-            "\"setupHash\":\"sha256:ef7dd9cf4cf78616f5b8e2c95408c7fbf03eae46c934238be541565390e2520f\"," +
+            "\"setupHash\":\"sha256:9dfa11b7e9fac73e61d289f9847435ad4c9335b8b1692b95ffbeaa3566c8d921\"," +
             "\"isSynthetic\":true,\"initialGameTurn\":1," +
             "\"initialInitiative\":{\"kind\":\"predetermined\",\"holder\":\"axis\"}," +
+            "\"content\":{\"schemaVersion\":1,\"formatId\":\"sandtable.content-json.v1\"," +
+            "\"packId\":\"rules-lab.content.movement-contact.v1\",\"rulesetId\":\"cna-1979.1\"," +
+            "\"hash\":\"sha256:c0cceda302bab11c98f1b46c427c967bf70b3c9ae4ad078513dbfc231f06b114\"," +
+            "\"scenarioId\":\"movement-contact-lab\"}," +
             "\"sources\":[{\"sourceId\":\"sandtable-rules-lab\"," +
             "\"locator\":\"initiative.predetermined-axis.v1\"}]}," +
+            "\"initialWorld\":{" +
+            "\"contractVersion\":1,\"elements\":[" +
+            "{\"elementId\":\"axis-element-a\",\"currentLocationId\":\"west\"}," +
+            "{\"elementId\":\"axis-element-b\",\"currentLocationId\":\"north-west\"}," +
+            "{\"elementId\":\"commonwealth-element-a\",\"currentLocationId\":\"east\"}," +
+            "{\"elementId\":\"commonwealth-element-b\",\"currentLocationId\":\"south-east\"}]}," +
             "\"randomState\":{\"contractVersion\":1," +
             "\"algorithmId\":\"sandtable.sha256-counter.v1\",\"seed\":12345," +
             "\"nextByteCursor\":0},\"sequencePosition\":{\"contractVersion\":2," +
@@ -53,8 +63,8 @@ public sealed class CampaignEventSerializationTests
             .Select(bytes => CampaignEventSerializer.Deserialize(bytes))
             .ToArray();
 
-        var original = CampaignProjector.Replay(history);
-        var replayed = CampaignProjector.Replay(deserialized);
+        var original = CampaignTestHarness.Replay(history);
+        var replayed = CampaignTestHarness.Replay(deserialized);
 
         Assert.Equal(history, deserialized);
         Assert.Equal(
@@ -186,24 +196,24 @@ public sealed class CampaignEventSerializationTests
         var sourceEvent = Deserialize(forgedSource);
 
         Assert.Throws<InvalidCampaignHistoryException>(() =>
-            CampaignProjector.Replay([created, cursorEvent]));
+            CampaignTestHarness.Replay([created, cursorEvent]));
         Assert.Throws<InvalidCampaignHistoryException>(() =>
-            CampaignProjector.Replay([created, sourceEvent]));
+            CampaignTestHarness.Replay([created, sourceEvent]));
     }
 
     private static CampaignEvent[] CreateHistory(CampaignSetupDefinition setup, ulong seed)
     {
-        var createResult = CampaignEngine.Decide(
+        var createResult = CampaignTestHarness.Decide(
             null,
-            new CreateCampaign(
+            CampaignTestHarness.Create(
                 "campaign-1",
                 Cna1979Ruleset.Manifest.Hash,
                 seed,
                 setup.SetupId,
                 setup.Hash));
         var created = Assert.IsType<CampaignCreated>(Assert.Single(createResult.Events));
-        var initial = CampaignProjector.Apply(null, created);
-        var initiativeResult = CampaignEngine.Decide(
+        var initial = CampaignTestHarness.Apply(null, created);
+        var initiativeResult = CampaignTestHarness.Decide(
             initial,
             new ResolveInitiative(initial.StateVersion, initial.SequencePosition.PositionId));
         var determined = Assert.IsType<InitiativeDetermined>(

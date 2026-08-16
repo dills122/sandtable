@@ -217,12 +217,18 @@ first vertical slice. It must be visibly labeled nonhistorical and not presented
 Bind the exact content ID/hash and selected scenario to a versioned campaign world and project its
 initial entity positions through authoritative creation history.
 
+**Status:** Implemented; independent implementation review passed.
+
 **Acceptance criteria:**
 
 - Missing or mismatched historical content rejects before campaign creation and replay never
   resolves a mutable “latest” catalog entry.
 - Creation records exact ruleset/content identities and replay recreates byte-identical initial
   world state using the matching historical executable and content bytes.
+
+Requirements, contract migration, implementation checkpoints, and acceptance evidence are defined
+in the [Campaign World v1 specification](../specs/campaign-world-v1.md) and
+[technical design](../design/campaign-world-v1.md).
 
 ### Task 2.4 - Side-safe observation projection
 

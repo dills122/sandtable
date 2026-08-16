@@ -1,11 +1,12 @@
 using System.Diagnostics.CodeAnalysis;
+using Cna.Core.Content;
 using Cna.Core.Rules;
 
 namespace Cna.Core.Setups;
 
 public static class Cna1979SetupCatalog
 {
-    public const int SchemaVersion = 1;
+    public const int SchemaVersion = 2;
     public const string PredeterminedSetupId = "rules-lab.initiative.predetermined";
     public const string ContestedSetupId = "rules-lab.initiative.contested";
 
@@ -27,6 +28,9 @@ public static class Cna1979SetupCatalog
                 true,
                 1,
                 new PredeterminedInitiative(LandSide.Axis),
+                new CampaignContentSelection(
+                    Cna1979SyntheticContentCatalog.Artifact.Identity,
+                    "movement-contact-lab"),
                 [PredeterminedSourceReference]),
             new(
                 SchemaVersion,
@@ -37,6 +41,9 @@ public static class Cna1979SetupCatalog
                 new ContestedInitiative(new AxisInitiativeSourceFacts(
                     AxisInitiativeLocation.OffMapOrUnavailable,
                     [AxisInitiativeLocation.QualifyingGameMap])),
+                new CampaignContentSelection(
+                    Cna1979SyntheticContentCatalog.Artifact.Identity,
+                    "initiative-contested-lab"),
                 [ContestedSourceReference]),
         ]);
 

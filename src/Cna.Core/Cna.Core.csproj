@@ -3,4 +3,8 @@
     <TargetFramework>net10.0</TargetFramework>
     <Description>Deterministic, authoritative Sandtable simulation domain.</Description>
   </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Cna.Core.Tests" />
+  </ItemGroup>
 </Project>

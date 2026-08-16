@@ -1,29 +1,32 @@
 using System.Text;
 using Cna.Core.Campaigns;
+using Cna.Core.Content;
 using Cna.Core.Randomness;
 using Cna.Core.Rules;
 using Cna.Core.Setups;
 
 namespace Cna.Core.Tests.Campaigns;
 
-public sealed class Version2AuthorityTests
+public sealed class Version3AuthorityTests
 {
     [Fact]
     public void CreationBindsTheRecognizedSetupAndEmbedsReplayCompleteState()
     {
         var setup = Cna1979SetupCatalog.Definitions[1];
-        var command = new CreateCampaign(
+        var command = CampaignTestHarness.Create(
             "campaign-1",
             Cna1979Ruleset.Manifest.Hash,
             12345,
             setup.SetupId,
             setup.Hash);
 
-        var result = CampaignEngine.Decide(null, command);
+        var result = CampaignTestHarness.Decide(null, command);
 
         Assert.True(result.IsAccepted);
         var created = Assert.IsType<CampaignCreated>(Assert.Single(result.Events));
-        Assert.Equal(2, created.ContractVersion);
+        Assert.Equal(3, created.ContractVersion);
+        Assert.Equal(setup.Content, created.Setup.Content);
+        Assert.Equal(4, created.InitialWorld.Elements.Count);
         Assert.Equal(setup.SetupId, created.Setup.SetupId);
         Assert.Equal(setup.Hash, created.Setup.SetupHash);
         Assert.Equal(setup.InitialInitiative, created.Setup.InitialInitiative);
@@ -40,9 +43,9 @@ public sealed class Version2AuthorityTests
         string setupId,
         string setupHash)
     {
-        var result = CampaignEngine.Decide(
+        var result = CampaignTestHarness.Decide(
             null,
-            new CreateCampaign(
+            CampaignTestHarness.Create(
                 "campaign-1",
                 Cna1979Ruleset.Manifest.Hash,
                 12345,
@@ -111,32 +114,38 @@ public sealed class Version2AuthorityTests
                 nextPosition),
         ];
 
-        Assert.Throws<InvalidCampaignHistoryException>(() => CampaignProjector.Replay(history));
+        Assert.Throws<InvalidCampaignHistoryException>(() => CampaignTestHarness.Replay(history));
     }
 
     [Fact]
-    public void ReplayUsesTheEmbeddedSetupWithoutCurrentCatalogLookup()
+    public void ReplayAcceptsASelfConsistentEmbeddedSetupOutsideTheCurrentCatalog()
     {
         var definition = new CampaignSetupDefinition(
-            1,
+            Cna1979SetupCatalog.SchemaVersion,
             "retired.synthetic.setup",
             "Catalog-only display text",
             true,
             1,
             new PredeterminedInitiative(LandSide.Commonwealth),
+            Cna1979SetupCatalog.Definitions[0].Content,
             [new RuleReference("sandtable-rules-lab", "retired.synthetic.v1")]);
         var created = new CampaignCreated(
             "campaign-retired",
             1,
             Cna1979Ruleset.Manifest.Hash,
             CampaignSetupSnapshot.FromDefinition(definition),
+            CampaignWorldFactory.CreateInitial(
+                Cna1979SyntheticContentCatalog.Artifact,
+                Cna1979SyntheticContentCatalog.Artifact.Definition.Scenarios.Single(
+                    scenario => scenario.ScenarioId == "movement-contact-lab")),
             SandtableRandom.Create(7),
             Cna1979LandSequence.CreateTurn(1)[0]);
 
-        var snapshot = CampaignProjector.Replay([created]);
+        var replayed = CampaignTestHarness.Replay([created]);
 
-        Assert.Equal("retired.synthetic.setup", snapshot.Setup.SetupId);
-        Assert.False(Cna1979SetupCatalog.TryGet(snapshot.Setup.SetupId, out _));
+        Assert.Equal(definition.SetupId, replayed.Setup.SetupId);
+        Assert.Equal(definition.Hash, replayed.Setup.SetupHash);
+        Assert.Equal(created.InitialWorld, replayed.World);
     }
 
     [Fact]
@@ -151,6 +160,7 @@ public sealed class Version2AuthorityTests
             definition.IsSynthetic,
             definition.InitialGameTurn,
             definition.InitialInitiative,
+            definition.Content,
             sources);
         var equivalent = new CampaignSetupSnapshot(
             definition.SchemaVersion,
@@ -159,6 +169,7 @@ public sealed class Version2AuthorityTests
             definition.IsSynthetic,
             definition.InitialGameTurn,
             definition.InitialInitiative,
+            definition.Content,
             sources.ToArray());
 
         sources.Clear();
@@ -172,7 +183,7 @@ public sealed class Version2AuthorityTests
     public void SnapshotRoundTripPreservesEveryVersion2FieldAndExcludesDisplayText()
     {
         var created = CreateEvent();
-        var snapshot = CampaignProjector.Replay([created]);
+        var snapshot = CampaignTestHarness.Replay([created]);
 
         var bytes = CampaignSnapshotSerializer.Serialize(snapshot);
         var json = Encoding.UTF8.GetString(bytes);
@@ -189,9 +200,9 @@ public sealed class Version2AuthorityTests
     private static CampaignCreated CreateEvent()
     {
         var setup = Cna1979SetupCatalog.Definitions[0];
-        var result = CampaignEngine.Decide(
+        var result = CampaignTestHarness.Decide(
             null,
-            new CreateCampaign(
+            CampaignTestHarness.Create(
                 "campaign-1",
                 Cna1979Ruleset.Manifest.Hash,
                 12345,

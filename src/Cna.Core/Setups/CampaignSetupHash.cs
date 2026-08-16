@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using System.Text.Json;
+using Cna.Core.Content;
 using Cna.Core.Rules;
 
 namespace Cna.Core.Setups;
@@ -15,6 +16,7 @@ internal static class CampaignSetupHash
             definition.IsSynthetic,
             definition.InitialGameTurn,
             definition.InitialInitiative,
+            definition.Content,
             definition.Sources);
     }
 
@@ -24,6 +26,7 @@ internal static class CampaignSetupHash
         bool isSynthetic,
         int initialGameTurn,
         InitiativePolicy initialInitiative,
+        CampaignContentSelection content,
         IReadOnlyList<RuleReference> sources)
     {
         using var stream = new MemoryStream();
@@ -37,6 +40,14 @@ internal static class CampaignSetupHash
             writer.WriteNumber("initialGameTurn", initialGameTurn);
             writer.WriteStartObject("initialInitiative");
             WriteInitiative(writer, initialInitiative);
+            writer.WriteEndObject();
+            writer.WriteStartObject("content");
+            writer.WriteNumber("schemaVersion", content.Pack.SchemaVersion);
+            writer.WriteString("formatId", content.Pack.FormatId);
+            writer.WriteString("packId", content.Pack.PackId);
+            writer.WriteString("rulesetId", content.Pack.RulesetId);
+            writer.WriteString("hash", content.Pack.Hash);
+            writer.WriteString("scenarioId", content.ScenarioId);
             writer.WriteEndObject();
             writer.WriteStartArray("sources");
 

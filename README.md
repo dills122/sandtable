@@ -48,24 +48,22 @@ play a side; it will never decide the rules or secretly change the campaign stat
 > [!IMPORTANT]
 > Sandtable is pre-alpha infrastructure, not yet a playable adaptation of the published game.
 
-The current foundation can create a campaign from a recognized synthetic setup, resolve
-Initiative Determination with a seeded random stream, emit authoritative events, and replay those
-events to byte-identical state. It also includes Content Pack v1 and an original nine-hex,
-nonhistorical rules laboratory for developing the game systems without redistributing published
-assets.
+The current foundation can create a campaign from an exact ruleset, setup, Content Pack, and
+scenario; project the scenario's initial mutable element locations; resolve Initiative
+Determination with a seeded random stream; emit authoritative events; and replay those events to
+byte-identical state. Content Pack v1 and Campaign World v1 use an original nine-hex,
+nonhistorical rules laboratory to develop game systems without redistributing published assets.
 
 Movement, combat, published scenario content, persistence, and the Maproom player interface remain
-future work. Campaign-world binding is the next planned capability; side-safe observations and
-legal actions follow it.
+future work. Side-safe observations and legal actions are the next planned capabilities.
 
 The high-level path to a playable game is:
 
-1. Bind exact scenario content to an authoritative campaign world.
-2. Generate side-safe observations and legal actions.
-3. Implement the mandatory turn preamble and a complete movement/contact/combat loop.
-4. Add the remaining Land systems and data required by *Graziani's Offensive*.
-5. Deliver the Maproom interface, local hot-seat play, saves, and replay.
-6. Expand into detailed Air and Logistics play, later scenarios, and optional intelligence.
+1. Generate side-safe observations and legal actions.
+2. Implement the mandatory turn preamble and a complete movement/contact/combat loop.
+3. Add the remaining Land systems and data required by *Graziani's Offensive*.
+4. Deliver the Maproom interface, local hot-seat play, saves, and replay.
+5. Expand into detailed Air and Logistics play, later scenarios, and optional intelligence.
 
 See the [pre-alpha roadmap](docs/roadmap/pre-alpha-roadmap.md) for the capability-level plan and
 completion criteria.
@@ -156,9 +154,10 @@ The current Umpire foundation is intentionally pure and in-process:
 - `Cna.Core.Setups` owns recognized provenance-bearing synthetic setup fixtures; callers cannot
   supply free-form initiative inputs.
 - `Cna.Core.Content` owns validated immutable topology, force structure, scenario declarations,
-  per-datum origins, canonical bytes and hashes, and the original nonhistorical rules laboratory.
-- `Cna.Core.Campaigns` owns versioned commands and events, typed rejection, canonical snapshots,
-  deterministic Initiative adjudication, serialization, and replay.
+  per-datum origins, canonical bytes/hash, and the original nonhistorical rules laboratory.
+- `Cna.Core.Campaigns` owns exact content admission, mutable world snapshots, versioned
+  commands/events, typed rejection, deterministic Initiative adjudication, canonical serialization,
+  and dependency-prepared trusted-history replay.
 - The sequence catalog cites the original Land Rules without embedding copyrighted rules prose or
   component art. Inspecting that catalog is not authoritative adjudication.
 
@@ -184,6 +183,8 @@ The current Umpire foundation is intentionally pure and in-process:
 - [Content Pack v1 research](docs/research/content-pack-v1-spike.md)
 - [Content Pack v1 specification](docs/specs/content-pack-v1.md)
 - [Content Pack v1 technical design](docs/design/content-pack-v1.md)
+- [Campaign World v1 specification](docs/specs/campaign-world-v1.md)
+- [Campaign World v1 technical design](docs/design/campaign-world-v1.md)
 - [Microsoft Orleans documentation](https://learn.microsoft.com/en-us/dotnet/orleans/)
 - [ASP.NET Core gRPC services](https://learn.microsoft.com/en-us/aspnet/core/grpc/aspnetcore?view=aspnetcore-10.0)
 - [Aspire AppHost and ServiceDefaults](https://learn.microsoft.com/en-us/dotnet/aspire/fundamentals/aspire-sdk-templates)

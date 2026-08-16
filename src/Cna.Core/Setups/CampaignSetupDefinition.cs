@@ -12,6 +12,7 @@ public sealed record CampaignSetupDefinition
         bool isSynthetic,
         int initialGameTurn,
         InitiativePolicy initialInitiative,
+        CampaignContentSelection content,
         IReadOnlyList<RuleReference> sources)
     {
         ArgumentOutOfRangeException.ThrowIfLessThan(schemaVersion, 1);
@@ -24,6 +25,7 @@ public sealed record CampaignSetupDefinition
         }
 
         ArgumentNullException.ThrowIfNull(initialInitiative);
+        ArgumentNullException.ThrowIfNull(content);
 
         SchemaVersion = schemaVersion;
         SetupId = setupId;
@@ -31,6 +33,7 @@ public sealed record CampaignSetupDefinition
         IsSynthetic = isSynthetic;
         InitialGameTurn = initialGameTurn;
         InitialInitiative = initialInitiative;
+        Content = content;
         Sources = CopySources(sources);
         Hash = CampaignSetupHash.Calculate(this);
     }
@@ -47,6 +50,8 @@ public sealed record CampaignSetupDefinition
 
     public InitiativePolicy InitialInitiative { get; }
 
+    public CampaignContentSelection Content { get; }
+
     public IReadOnlyList<RuleReference> Sources { get; }
 
     public string Hash { get; }
@@ -60,6 +65,7 @@ public sealed record CampaignSetupDefinition
             && IsSynthetic == other.IsSynthetic
             && InitialGameTurn == other.InitialGameTurn
             && InitialInitiative == other.InitialInitiative
+            && Content == other.Content
             && Sources.SequenceEqual(other.Sources)
             && string.Equals(Hash, other.Hash, StringComparison.Ordinal));
 
@@ -72,6 +78,7 @@ public sealed record CampaignSetupDefinition
         hash.Add(IsSynthetic);
         hash.Add(InitialGameTurn);
         hash.Add(InitialInitiative);
+        hash.Add(Content);
 
         foreach (var source in Sources)
         {
