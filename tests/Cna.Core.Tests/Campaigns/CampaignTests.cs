@@ -1,5 +1,7 @@
 using Cna.Core.Campaigns;
+using Cna.Core.Randomness;
 using Cna.Core.Rules;
+using Cna.Core.Setups;
 
 namespace Cna.Core.Tests.Campaigns;
 
@@ -8,11 +10,13 @@ public sealed class CampaignTests
     [Fact]
     public void CreateCommandEmitsTheInitialAuthoritativeEvent()
     {
+        var setup = Cna1979SetupCatalog.Definitions[0];
         var command = new CreateCampaign(
             "campaign-1",
             Cna1979Ruleset.Manifest.Hash,
             12345,
-            LandSide.Axis);
+            setup.SetupId,
+            setup.Hash);
 
         var result = CampaignEngine.Decide(null, command);
 
@@ -23,7 +27,9 @@ public sealed class CampaignTests
         var snapshot = CampaignProjector.Replay(result.Events);
         Assert.Equal("campaign-1", snapshot.CampaignId);
         Assert.Equal(Cna1979Ruleset.Manifest.Hash, snapshot.RulesetHash);
-        Assert.Equal(12345UL, snapshot.Seed);
+        Assert.Equal(12345UL, snapshot.RandomState.Seed);
+        Assert.Equal(setup.SetupId, snapshot.Setup.SetupId);
+        Assert.Null(snapshot.InitiativeHolder);
         Assert.Equal(1, snapshot.GameTurn);
         Assert.Equal(0, snapshot.OperationStage);
         Assert.Null(snapshot.ActiveSide);
@@ -33,9 +39,15 @@ public sealed class CampaignTests
     [Fact]
     public void CreateCommandRejectsANonCanonicalRulesetHash()
     {
+        var setup = Cna1979SetupCatalog.Definitions[0];
         var result = CampaignEngine.Decide(
             null,
-            new CreateCampaign("campaign-1", "ruleset-hash", 12345, LandSide.Axis));
+            new CreateCampaign(
+                "campaign-1",
+                "ruleset-hash",
+                12345,
+                setup.SetupId,
+                setup.Hash));
 
         Assert.False(result.IsAccepted);
         Assert.Equal(CampaignCommandRejectionReason.InvalidCommand, result.RejectionReason);
@@ -74,9 +86,7 @@ public sealed class CampaignTests
                 snapshot.SequencePosition.PositionId));
 
         Assert.False(result.IsAccepted);
-        Assert.Equal(
-            CampaignCommandRejectionReason.UnsupportedTransition,
-            result.RejectionReason);
+        Assert.Equal(CampaignCommandRejectionReason.UnsupportedTransition, result.RejectionReason);
         Assert.Empty(result.Events);
         Assert.Equal(LandPhaseIds.InitiativeDetermination, snapshot.PhaseId);
         Assert.Equal(1, snapshot.StateVersion);
@@ -90,7 +100,8 @@ public sealed class CampaignTests
             snapshot,
             new CompleteCurrentSequenceStep(
                 snapshot.StateVersion,
-                snapshot.SequencePosition?.PositionId ?? "land.position.initiative-determination"));
+                snapshot.SequencePosition?.PositionId
+                    ?? "land.position.initiative-determination"));
 
         Assert.False(result.IsAccepted);
         Assert.Equal(CampaignCommandRejectionReason.InvalidState, result.RejectionReason);
@@ -100,44 +111,57 @@ public sealed class CampaignTests
     public static TheoryData<CampaignSnapshot> InvalidSnapshots()
     {
         var valid = CreateSnapshot();
-        var validPosition = valid.SequencePosition;
-        var positionForOtherFirstPlayer = Cna1979LandSequence.CreateTurn(1, LandSide.Commonwealth)
-            .First(position => position.ActiveSide == LandSide.Commonwealth);
+        var position = valid.SequencePosition;
         var wrongContractPosition = new LandSequencePosition(
             Cna1979LandSequence.ContractVersion + 1,
-            validPosition.PositionId,
-            validPosition.GameTurn,
-            validPosition.OperationStage,
-            validPosition.StageId,
-            validPosition.PhaseId,
-            validPosition.SegmentId,
-            validPosition.StepId,
-            validPosition.Source,
-            validPosition.ActiveSide);
+            position.PositionId,
+            position.GameTurn,
+            position.OperationStage,
+            position.StageId,
+            position.PhaseId,
+            position.SegmentId,
+            position.StepId,
+            position.ActorRole,
+            position.ActiveSide,
+            position.Sources);
+        var wrongSetup = new CampaignSetupSnapshot(
+            valid.Setup.SchemaVersion,
+            valid.Setup.SetupId,
+            "sha256:wrong",
+            valid.Setup.IsSynthetic,
+            valid.Setup.InitialGameTurn,
+            valid.Setup.InitialInitiative,
+            valid.Setup.Sources);
 
         return new TheoryData<CampaignSnapshot>
         {
-            valid with { ContractVersion = 2 },
+            valid with { ContractVersion = 1 },
             valid with { CampaignId = " " },
             valid with { StateVersion = 0 },
             valid with { RulesetHash = " " },
             valid with { RulesetHash = "ruleset-hash" },
-            valid with { FirstPlayer = (LandSide)999 },
+            valid with { Setup = wrongSetup },
+            valid with { InitiativeHolder = LandSide.Axis },
+            valid with { RandomState = new RandomStreamState(2, SandtableRandom.AlgorithmId, 12345, 0) },
+            valid with { RandomState = new RandomStreamState(1, "unknown", 12345, 0) },
+            valid with { RandomState = new RandomStreamState(1, SandtableRandom.AlgorithmId, 12345, 1) },
             valid with { SequencePosition = null! },
             valid with { SequencePosition = wrongContractPosition },
-            valid with { SequencePosition = positionForOtherFirstPlayer },
+            valid with { SequencePosition = Cna1979LandSequence.GetNext(position) },
         };
     }
 
     private static CampaignSnapshot CreateSnapshot()
     {
+        var setup = Cna1979SetupCatalog.Definitions[0];
         var result = CampaignEngine.Decide(
             null,
             new CreateCampaign(
                 "campaign-1",
                 Cna1979Ruleset.Manifest.Hash,
                 12345,
-                LandSide.Axis));
+                setup.SetupId,
+                setup.Hash));
 
         return CampaignProjector.Replay(result.Events);
     }

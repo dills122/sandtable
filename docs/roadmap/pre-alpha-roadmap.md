@@ -110,9 +110,9 @@ Six-turn playable MVP
 **Goal:** Establish an authentic phase hierarchy and an authoritative campaign history that can be
 reconstructed exactly without skipping unimplemented mechanics.
 
-**Status:** Foundation delivered. Campaign creation and replay are authoritative; advancement is
-blocked at the first mandatory unimplemented mechanic. RNG proof remains deferred to the first
-mechanic that legitimately consumes randomness.
+**Status:** Foundation and Initiative Determination vertical slice delivered. Campaign creation,
+the first seeded mechanic, canonical event serialization, and replay are authoritative;
+advancement is blocked at Naval Convoy, the next mandatory unimplemented mechanic.
 
 ### Task 1.1 - Ruleset provenance contracts
 
@@ -149,24 +149,29 @@ requires it.
 
 - [x] Replaying an event stream produces byte-equivalent canonical state.
 - [x] The same seed and commands produce the same event sequence.
-- [x] Campaign creation records the declared seed deterministically; no clock, generated identifier,
-  transition, or random draw exists in the accepted history for this slice.
-- [ ] The first mechanic that consumes randomness proves different seeds affect only its declared
-  random outcomes.
+- [x] Campaign creation records the declared seed deterministically; no clock or generated
+  identifier exists in accepted history.
+- [x] Initiative Determination consumes the first versioned random stream and proves different
+  seeds affect only its declared random outcomes.
 
 **Verification:** Focused Core tests, full solution build, and full test suite.
 
 ### Sprint 1 demonstration
 
-Create a campaign, display its creation event as Chronicle input, replay it to the same state, and
-prove that progression at Initiative Determination is rejected without emitting an event. Separately
-rehearse the source-cited sequence outline through the first player Movement segment.
+Create a campaign from either recognized synthetic setup, display canonical creation and
+Initiative events as Chronicle input, replay them to identical canonical state, and prove that the
+campaign stops at Naval Convoy. The contested fixture derives published Initiative Ratings, rolls
+Axis then Commonwealth through the versioned SHA-256 counter stream, records complete tie rerolls,
+and retains exact source provenance. The predetermined fixture consumes no draw.
 
-The executable Core tests distinguish authoritative adjudication from sequence inspection. The
-accepted creation event is replayed to canonical state; the mandatory Initiative Determination
-mechanic rejects generic advancement until its real decision and random outcome are modeled. The
-catalog rehearsal produces no Chronicle events. A human-facing Chronicle display belongs to the
-later Maproom slice.
+The executable Core tests distinguish authoritative adjudication from catalog inspection. Generic
+sequence advancement and legacy contract-v1 history cannot cross Initiative Determination;
+`ResolveInitiative` is the sole accepted command and its event is recomputed during projection. A
+human-facing Chronicle display belongs to the later Maproom slice.
+
+Implementation and acceptance evidence are tracked in the
+[Initiative Determination specification](../specs/initiative-determination.md) and
+[technical design](../design/initiative-determination.md).
 
 ## Sprint 2: Rules laboratory and legal-action boundary
 
@@ -300,7 +305,8 @@ restart from the seed/event log and obtain the same result. This is the working 
 
 ### Sprint 6 - Remaining required Land systems
 
-- Initiative and weather.
+- Initiative Declaration, weather, and any initiative cases not exercised by the earlier
+  determination slice.
 - Organization/reorganization, reserve, breakdown/repair, patrol, and construction cases exercised
   by the first scenario.
 - Published abstract Air/Logistics behavior required for Land-only play, with known uncertainty

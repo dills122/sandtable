@@ -1,3 +1,4 @@
+using Cna.Core.Randomness;
 using Cna.Core.Rules;
 
 namespace Cna.Core.Campaigns;
@@ -11,9 +12,9 @@ public sealed record CampaignCreated(
     string CampaignId,
     long StateVersion,
     string RulesetHash,
-    ulong Seed,
-    LandSide FirstPlayer,
-    LandSequencePosition SequencePosition) : CampaignEvent(1, CampaignId, StateVersion);
+    CampaignSetupSnapshot Setup,
+    RandomStreamState RandomState,
+    LandSequencePosition SequencePosition) : CampaignEvent(2, CampaignId, StateVersion);
 
 public sealed record CampaignSequenceAdvanced(
     string CampaignId,

@@ -7,10 +7,10 @@ The repository now has its first executable Umpire foundation in addition to the
 scaffolding. `Cna.Core` can derive the canonical `cna-1979.1` hash from source-cited normalized
 rules, inspect the versioned 1979 Land Game sequence, validate campaign commands and snapshots,
 emit authoritative events, and replay those events to a byte-equivalent canonical snapshot. The
-authoritative demonstration creates and replays a campaign, then rejects progression at Initiative
-Determination because that mandatory mechanic is not implemented yet. A separate non-authoritative
-sequence rehearsal reaches the first player's first Movement segment. Initiative, movement,
-combat, scenario content, persistence, and Maproom remain future work.
+authoritative demonstration creates a campaign from a recognized synthetic setup, resolves either
+predetermined or contested Initiative Determination through a versioned deterministic random
+stream, replays the canonical event bytes to identical state, and then stops honestly at Naval
+Convoy. Movement, combat, published scenario content, persistence, and Maproom remain future work.
 
 ## Architecture
 
@@ -37,9 +37,14 @@ state, resolves rules, sees hidden opposing state, or blocks an authoritative Or
 The current Umpire foundation is intentionally pure and in-process:
 
 - `Cna.Core.Rules` owns source references, complete ruling-ledger metadata, the canonical
-  catalog-derived ruleset hash, and the hierarchical Land sequence catalog.
+  catalog-derived ruleset hash, the Initiative Ratings artifact, and the hierarchical actor-role
+  Land sequence catalog.
+- `Cna.Core.Randomness` owns the versioned repository-defined random stream and published golden
+  vectors used by authoritative mechanics.
+- `Cna.Core.Setups` owns recognized provenance-bearing synthetic setup fixtures; callers cannot
+  supply free-form initiative inputs.
 - `Cna.Core.Campaigns` owns versioned commands/events, typed rejection, canonical snapshots, and
-  the replay harness.
+  deterministic Initiative adjudication, canonical event serialization, and the replay harness.
 - The sequence catalog cites the original Land Rules without embedding copyrighted rules prose or
   component art. Inspecting that catalog is not authoritative adjudication.
 
@@ -90,6 +95,9 @@ workflow and [SECURITY.md](SECURITY.md) for vulnerability reporting.
 - [Naming and domain vocabulary](naming-overview.md)
 - [Campaign for North Africa source-material spike](docs/research/cna-source-material-spike.md)
 - [Pre-alpha roadmap](docs/roadmap/pre-alpha-roadmap.md)
+- [Initiative Determination research](docs/research/initiative-determination-spike.md)
+- [Initiative Determination specification](docs/specs/initiative-determination.md)
+- [Initiative Determination technical design](docs/design/initiative-determination.md)
 - [Microsoft Orleans documentation](https://learn.microsoft.com/en-us/dotnet/orleans/)
 - [ASP.NET Core gRPC services](https://learn.microsoft.com/en-us/aspnet/core/grpc/aspnetcore?view=aspnetcore-10.0)
 - [Aspire AppHost and ServiceDefaults](https://learn.microsoft.com/en-us/dotnet/aspire/fundamentals/aspire-sdk-templates)

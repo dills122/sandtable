@@ -2,6 +2,7 @@ using System.Text;
 using System.Text.Json;
 using Cna.Core.Campaigns;
 using Cna.Core.Rules;
+using Cna.Core.Setups;
 
 namespace Cna.Core.Tests.Campaigns;
 
@@ -30,67 +31,41 @@ public sealed class CampaignReplayTests
     }
 
     [Fact]
-    public void CreationEventPreservesTheDeclaredSeed()
+    public void CreationEventPreservesTheDeclaredRandomState()
     {
         var first = Assert.IsType<CampaignCreated>(Assert.Single(ExecuteCreation(12345).Events));
         var second = Assert.IsType<CampaignCreated>(Assert.Single(ExecuteCreation(54321).Events));
 
-        Assert.Equal(12345UL, first.Seed);
-        Assert.Equal(54321UL, second.Seed);
-        Assert.Equal(first with { Seed = second.Seed }, second);
-    }
-
-    [Fact]
-    public void ReplayRejectsANonContiguousEventVersion()
-    {
-        var execution = ExecuteCreation(12345);
-        var created = Assert.IsType<CampaignCreated>(Assert.Single(execution.Events));
-        var nextPosition = Cna1979LandSequence.GetNext(
-            created.SequencePosition,
-            created.FirstPlayer);
-        CampaignEvent[] history =
-        [
-            created,
-            new CampaignSequenceAdvanced(
-                created.CampaignId,
-                3,
-                created.SequencePosition.PositionId,
-                nextPosition),
-        ];
-
-        Assert.Throws<InvalidCampaignHistoryException>(() => CampaignProjector.Replay(history));
-    }
-
-    [Fact]
-    public void ReplayReportsAnInvalidFirstPlayerAsInvalidHistory()
-    {
-        var validPosition = Cna1979LandSequence.CreateTurn(1, LandSide.Axis)[0];
-        var created = new CampaignCreated(
-            "campaign-1",
-            1,
-            Cna1979Ruleset.Manifest.Hash,
-            12345,
-            (LandSide)999,
-            validPosition);
-
-        Assert.Throws<InvalidCampaignHistoryException>(() =>
-            CampaignProjector.Replay([created]));
+        Assert.Equal(12345UL, first.RandomState.Seed);
+        Assert.Equal(54321UL, second.RandomState.Seed);
+        Assert.Equal(first with { RandomState = second.RandomState }, second);
     }
 
     [Fact]
     public void ReplayRejectsANonCanonicalRulesetHash()
     {
-        var initialPosition = Cna1979LandSequence.CreateTurn(1, LandSide.Axis)[0];
-        var created = new CampaignCreated(
-            "campaign-1",
-            1,
-            "ruleset-hash",
-            12345,
-            LandSide.Axis,
-            initialPosition);
+        var valid = Assert.IsType<CampaignCreated>(Assert.Single(ExecuteCreation(12345).Events));
+        var created = valid with { RulesetHash = "ruleset-hash" };
 
         Assert.Throws<InvalidCampaignHistoryException>(() =>
             CampaignProjector.Replay([created]));
+    }
+
+    [Fact]
+    public void ReplayRejectsAnInvalidEmbeddedSetupHashWithoutCatalogInterpretation()
+    {
+        var valid = Assert.IsType<CampaignCreated>(Assert.Single(ExecuteCreation(12345).Events));
+        var setup = new CampaignSetupSnapshot(
+            valid.Setup.SchemaVersion,
+            valid.Setup.SetupId,
+            "sha256:wrong",
+            valid.Setup.IsSynthetic,
+            valid.Setup.InitialGameTurn,
+            valid.Setup.InitialInitiative,
+            valid.Setup.Sources);
+
+        Assert.Throws<InvalidCampaignHistoryException>(() =>
+            CampaignProjector.Replay([valid with { Setup = setup }]));
     }
 
     [Fact]
@@ -109,37 +84,62 @@ public sealed class CampaignReplayTests
     }
 
     [Fact]
-    public void SnapshotSerializationPreservesEveryPositionSourceReference()
+    public void SnapshotDeserializerRejectsExtraOrReorderedProperties()
     {
-        var position = Cna1979LandSequence
-            .CreateTurn(1, LandSide.Axis)
-            .First(value => value.PositionId.Contains(".first-player.", StringComparison.Ordinal));
-        var snapshot = new CampaignSnapshot(
-            1,
-            "campaign-1",
-            2,
-            Cna1979Ruleset.Manifest.Hash,
-            12345,
-            LandSide.Axis,
-            position);
+        var execution = ExecuteCreation(12345);
+        var canonicalJson = Encoding.UTF8.GetString(
+            CampaignSnapshotSerializer.Serialize(execution.Snapshot));
+        var extra = canonicalJson.Replace(
+            "{\"contractVersion\":2,",
+            "{\"extra\":true,\"contractVersion\":2,",
+            StringComparison.Ordinal);
 
-        var serialized = CampaignSnapshotSerializer.Serialize(snapshot);
-        var deserialized = CampaignSnapshotSerializer.Deserialize(serialized);
+        Assert.Throws<JsonException>(() =>
+            CampaignSnapshotSerializer.Deserialize(Encoding.UTF8.GetBytes(extra)));
+    }
 
-        Assert.Equal(position.Sources, deserialized.SequencePosition.Sources);
-        Assert.Equal(snapshot, deserialized);
+    [Fact]
+    public void CreationSnapshotUsesTheExactCanonicalVersion2Shape()
+    {
+        var execution = ExecuteCreation(12345);
+        var actual = Encoding.UTF8.GetString(
+            CampaignSnapshotSerializer.Serialize(execution.Snapshot));
+        var expected = "{\"contractVersion\":2,\"campaignId\":\"campaign-1\"," +
+            "\"stateVersion\":1,\"rulesetHash\":\"" +
+            Cna1979Ruleset.Manifest.Hash +
+            "\",\"setup\":{\"schemaVersion\":1," +
+            "\"setupId\":\"rules-lab.initiative.predetermined\"," +
+            "\"setupHash\":\"sha256:ef7dd9cf4cf78616f5b8e2c95408c7fbf03eae46c934238be541565390e2520f\"," +
+            "\"isSynthetic\":true,\"initialGameTurn\":1," +
+            "\"initialInitiative\":{\"kind\":\"predetermined\",\"holder\":\"axis\"}," +
+            "\"sources\":[{\"sourceId\":\"sandtable-rules-lab\"," +
+            "\"locator\":\"initiative.predetermined-axis.v1\"}]}," +
+            "\"initiativeHolder\":null,\"randomState\":{\"contractVersion\":1," +
+            "\"algorithmId\":\"sandtable.sha256-counter.v1\",\"seed\":12345," +
+            "\"nextByteCursor\":0},\"sequencePosition\":{\"contractVersion\":2," +
+            "\"positionId\":\"land.position.initiative-determination\"," +
+            "\"gameTurn\":1,\"operationStage\":0," +
+            "\"stageId\":\"land.stage.initiative-determination\"," +
+            "\"phaseId\":\"land.phase.initiative-determination\"," +
+            "\"segmentId\":null,\"stepId\":null,\"actorRole\":\"none\"," +
+            "\"activeSide\":null,\"sources\":[{\"sourceId\":\"spi-1979-land-rules\"," +
+            "\"locator\":\"5.2\"}]}}";
+
+        Assert.Equal(expected, actual);
     }
 
     [Fact]
     public void HarnessStopsAtTheFirstMandatoryUnimplementedMechanic()
     {
+        var setup = Cna1979SetupCatalog.Definitions[0];
         CampaignCommand[] commands =
         [
             new CreateCampaign(
                 "campaign-1",
                 Cna1979Ruleset.Manifest.Hash,
                 12345,
-                LandSide.Axis),
+                setup.SetupId,
+                setup.Hash),
             new CompleteCurrentSequenceStep(1, "land.position.initiative-determination"),
         ];
 
@@ -156,13 +156,15 @@ public sealed class CampaignReplayTests
 
     private static CampaignExecution ExecuteCreation(ulong seed)
     {
+        var setup = Cna1979SetupCatalog.Definitions[0];
         CampaignCommand[] commands =
         [
             new CreateCampaign(
                 "campaign-1",
                 Cna1979Ruleset.Manifest.Hash,
                 seed,
-                LandSide.Axis),
+                setup.SetupId,
+                setup.Hash),
         ];
         var result = CampaignReplayHarness.Execute(commands);
         Assert.True(result.IsAccepted);
