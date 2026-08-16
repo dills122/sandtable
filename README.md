@@ -3,9 +3,14 @@
 Sandtable is a deterministic campaign simulation with an optional intelligence plane. The
 authoritative game remains reproducible and playable when model-backed services are unavailable.
 
-The repository is at its architecture-baseline stage: the service boundaries, contracts, build,
-tests, local orchestration, and CI are ready; campaign rules and player-facing Maproom features are
-not implemented yet.
+The repository now has its first executable Umpire foundation in addition to the service
+scaffolding. `Cna.Core` can derive the canonical `cna-1979.1` hash from source-cited normalized
+rules, inspect the versioned 1979 Land Game sequence, validate campaign commands and snapshots,
+emit authoritative events, and replay those events to a byte-equivalent canonical snapshot. The
+authoritative demonstration creates and replays a campaign, then rejects progression at Initiative
+Determination because that mandatory mechanic is not implemented yet. A separate non-authoritative
+sequence rehearsal reaches the first player's first Movement segment. Initiative, movement,
+combat, scenario content, persistence, and Maproom remain future work.
 
 ## Architecture
 
@@ -28,6 +33,15 @@ The governing rule is:
 
 The intelligence gateway receives redacted observations and returns proposals. It never owns game
 state, resolves rules, sees hidden opposing state, or blocks an authoritative Orleans grain turn.
+
+The current Umpire foundation is intentionally pure and in-process:
+
+- `Cna.Core.Rules` owns source references, complete ruling-ledger metadata, the canonical
+  catalog-derived ruleset hash, and the hierarchical Land sequence catalog.
+- `Cna.Core.Campaigns` owns versioned commands/events, typed rejection, canonical snapshots, and
+  the replay harness.
+- The sequence catalog cites the original Land Rules without embedding copyrighted rules prose or
+  component art. Inspecting that catalog is not authoritative adjudication.
 
 ## Prerequisites
 
@@ -74,6 +88,8 @@ workflow and [SECURITY.md](SECURITY.md) for vulnerability reporting.
 
 - [Technical design](tech-design.md)
 - [Naming and domain vocabulary](naming-overview.md)
+- [Campaign for North Africa source-material spike](docs/research/cna-source-material-spike.md)
+- [Pre-alpha roadmap](docs/roadmap/pre-alpha-roadmap.md)
 - [Microsoft Orleans documentation](https://learn.microsoft.com/en-us/dotnet/orleans/)
 - [ASP.NET Core gRPC services](https://learn.microsoft.com/en-us/aspnet/core/grpc/aspnetcore?view=aspnetcore-10.0)
 - [Aspire AppHost and ServiceDefaults](https://learn.microsoft.com/en-us/dotnet/aspire/fundamentals/aspire-sdk-templates)

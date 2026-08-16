@@ -502,6 +502,57 @@ So yes: **gRPC to a shared backend is exactly the right direction**, provided th
 
 > Orleans hosts authoritative campaigns. The deterministic core resolves the game. A gRPC intelligence gateway provides optional strategic judgment, persona, narration, memory, and model abstraction. Every response returns as a versioned proposal that the game validates before execution.
 
+## Rules fidelity and incremental delivery
+
+Sandtable targets a faithful digital implementation of the original 1979 SPI game rather than a
+generic campaign engine. The proposed initial authority is the original rules and component data
+as corrected by the September 1979 errata. Community rulebooks, trackers, and digital modules are
+comparison aids, not authority.
+
+The first delivery path follows the game's published modular structure:
+
+```text
+rules laboratory
+    -> replayable Land movement/contact/combat skeleton
+    -> Land-only Graziani's Offensive scenario
+    -> detailed Air Game
+    -> detailed Logistics Game
+    -> later scenarios and full campaign
+```
+
+Authoritative rules, tables, scenario data, and adopted rulings carry stable source references and
+participate in the ruleset hash. Commands produce events; events rebuild campaign state; snapshots
+are replay checkpoints. Unsupported mechanics fail explicitly rather than falling through to a
+plausible approximation.
+
+The physical game's hierarchical sequence must remain visible in the model. A weekly Game Turn
+contains Operation Stages, player phases, and repeatable movement/combat segments. The engine
+therefore uses versioned phase/segment identifiers instead of a monolithic `AdvanceTurn` operation.
+
+The initial `Cna.Core` implementation makes that boundary executable. `Cna.Core.Rules` defines
+source-cited normalized artifacts, complete adopted-ruling metadata, a canonical `cna-1979.1`
+manifest derived from the Land sequence catalog, and the Land-only sequence-outline hierarchy from
+the original rules. Operation Stage actor order follows the source rule, including the reversed
+initiative-holder order in Stage 2. `Cna.Core.Campaigns` uses pure command decisions and immutable
+events to create a campaign only against that canonical manifest. It validates caller-supplied
+snapshots before adjudication and rejects progression at Initiative Determination because the
+mandatory rule has not yet been implemented; inspecting later catalog positions is explicitly a
+non-authoritative rehearsal, not an event-producing shortcut. A projector rejects inconsistent
+trusted history, while canonical snapshot serialization and a replay harness prove reconstruction
+of accepted campaign history. These events have no ambient timestamps or generated IDs, and no
+random draw is modeled before a real rule consumes one; the recorded seed is reserved for that
+first seeded mechanic.
+
+The current projector is a trusted-history contract, not an untrusted ingestion boundary. Before
+Chronicle events can arrive from persistence, transport, or another process, that boundary must
+authenticate and validate event provenance and add a positive contiguous-advance replay contract
+for the first implemented mechanic.
+
+Copyrighted source scans and original component art remain outside the repository unless explicit
+permission is recorded. Sandtable uses normalized, provenance-bearing rule data and original
+visuals. See the [source-material spike](docs/research/cna-source-material-spike.md) and
+[pre-alpha roadmap](docs/roadmap/pre-alpha-roadmap.md) for evidence, scope, and decision gates.
+
 [1]: https://learn.microsoft.com/en-us/dotnet/orleans/grains/external-tasks-and-grains?utm_source=chatgpt.com "External tasks and grains - .NET | Microsoft Learn"
 [2]: https://learn.microsoft.com/en-us/aspnet/core/grpc/performance?view=aspnetcore-10.0&utm_source=chatgpt.com "Performance best practices with gRPC | Microsoft Learn"
 [3]: https://learn.microsoft.com/en-us/aspnet/core/grpc/deadlines-cancellation?view=aspnetcore-10.0&utm_source=chatgpt.com "Reliable gRPC services with deadlines and cancellation | Microsoft Learn"
