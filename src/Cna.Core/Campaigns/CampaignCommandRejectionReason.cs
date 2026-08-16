@@ -6,6 +6,7 @@ public enum CampaignCommandRejectionReason
     CampaignAlreadyCreated,
     CampaignNotCreated,
     InvalidCommand,
+    InvalidState,
     StaleState,
     UnexpectedSequenceStep,
     UnsupportedTransition,

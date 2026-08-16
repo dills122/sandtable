@@ -107,10 +107,12 @@ Six-turn playable MVP
 
 ## Sprint 1: Replayable Umpire spine
 
-**Goal:** A campaign can advance through an authentic phase hierarchy and be reconstructed exactly.
+**Goal:** Establish an authentic phase hierarchy and an authoritative campaign history that can be
+reconstructed exactly without skipping unimplemented mechanics.
 
-**Status:** Delivered for the non-random Umpire spine; RNG proof is deferred to the first mechanic
-that legitimately consumes randomness.
+**Status:** Foundation delivered. Campaign creation and replay are authoritative; advancement is
+blocked at the first mandatory unimplemented mechanic. RNG proof remains deferred to the first
+mechanic that legitimately consumes randomness.
 
 ### Task 1.1 - Ruleset provenance contracts
 
@@ -127,7 +129,8 @@ Define `RulesetManifest`, `RuleReference`, `Ruling`, and stable Land phase/segme
 ### Task 1.2 - Campaign commands, events, and snapshots
 
 Define the smallest campaign state with game turn, operation stage, active side, phase, state
-version, seed, and ruleset hash. Implement create/advance commands through emitted events.
+version, seed, and ruleset hash. Implement campaign creation and typed advancement rejection
+through the first unsupported mandatory mechanic.
 
 **Acceptance criteria:**
 
@@ -146,8 +149,8 @@ requires it.
 
 - [x] Replaying an event stream produces byte-equivalent canonical state.
 - [x] The same seed and commands produce the same event sequence.
-- [x] Non-random transitions are seed-independent; no clock, generated identifier, or random draw
-  exists in this slice.
+- [x] Campaign creation records the declared seed deterministically; no clock, generated identifier,
+  transition, or random draw exists in the accepted history for this slice.
 - [ ] The first mechanic that consumes randomness proves different seeds affect only its declared
   random outcomes.
 
@@ -155,13 +158,15 @@ requires it.
 
 ### Sprint 1 demonstration
 
-Create a campaign, advance through the beginning of a Land Game Turn to the first player movement
-segment, display its Chronicle, and replay it to the same state.
+Create a campaign, display its creation event as Chronicle input, replay it to the same state, and
+prove that progression at Initiative Determination is rejected without emitting an event. Separately
+rehearse the source-cited sequence outline through the first player Movement segment.
 
-The executable Core test constructs that command stream, exposes the resulting event list as the
-Chronicle input, reaches the first player's Movement segment, and verifies canonical replay. A
-human-facing Chronicle display belongs to the later Maproom slice. Any attempt to advance beyond
-that boundary is explicitly rejected until repeatable movement/combat mechanics are implemented.
+The executable Core tests distinguish authoritative adjudication from sequence inspection. The
+accepted creation event is replayed to canonical state; the mandatory Initiative Determination
+mechanic rejects generic advancement until its real decision and random outcome are modeled. The
+catalog rehearsal produces no Chronicle events. A human-facing Chronicle display belongs to the
+later Maproom slice.
 
 ## Sprint 2: Rules laboratory and legal-action boundary
 

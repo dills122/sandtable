@@ -8,6 +8,17 @@ public static class Cna1979LandSequence
         "spi-1979-land-rules",
         "5.2");
 
+    public static RuleReference OperationStageOrderSourceReference { get; } = new(
+        "spi-1979-land-rules",
+        "7.12");
+
+    private static IReadOnlyList<RuleReference> PlayerExecutionSources { get; } =
+        Array.AsReadOnly(
+        [
+            SourceReference,
+            OperationStageOrderSourceReference,
+        ]);
+
     public static IReadOnlyList<LandSequencePosition> CreateTurn(
         int gameTurn,
         LandSide firstPlayer)
@@ -48,9 +59,12 @@ public static class Cna1979LandSequence
 
         for (var operationStage = 1; operationStage <= 3; operationStage++)
         {
+            var firstActingSide = operationStage == 2 ? secondPlayer : firstPlayer;
+            var secondActingSide = operationStage == 2 ? firstPlayer : secondPlayer;
+
             AddOperationPrelude(positions, gameTurn, operationStage, firstPlayer);
-            AddPlayerPhase(positions, gameTurn, operationStage, "first-player", firstPlayer);
-            AddPlayerPhase(positions, gameTurn, operationStage, "second-player", secondPlayer);
+            AddPlayerPhase(positions, gameTurn, operationStage, "first-player", firstActingSide);
+            AddPlayerPhase(positions, gameTurn, operationStage, "second-player", secondActingSide);
         }
 
         AddPhase(
@@ -113,10 +127,10 @@ public static class Cna1979LandSequence
         string playerOrderId,
         LandSide activeSide)
     {
-        AddOperationPhase(positions, gameTurn, operationStage, $"{playerOrderId}.reserve-designation", LandPhaseIds.ReserveDesignation, activeSide);
+        AddOperationPhase(positions, gameTurn, operationStage, $"{playerOrderId}.reserve-designation", LandPhaseIds.ReserveDesignation, activeSide, PlayerExecutionSources);
 
-        AddOperationSegment(positions, gameTurn, operationStage, $"{playerOrderId}.movement-and-combat.movement", LandPhaseIds.MovementAndCombat, LandSegmentIds.Movement, activeSide);
-        AddOperationSegment(positions, gameTurn, operationStage, $"{playerOrderId}.movement-and-combat.breakdown-determination", LandPhaseIds.MovementAndCombat, LandSegmentIds.BreakdownDetermination, activeSide);
+        AddOperationSegment(positions, gameTurn, operationStage, $"{playerOrderId}.movement-and-combat.movement", LandPhaseIds.MovementAndCombat, LandSegmentIds.Movement, activeSide, PlayerExecutionSources);
+        AddOperationSegment(positions, gameTurn, operationStage, $"{playerOrderId}.movement-and-combat.breakdown-determination", LandPhaseIds.MovementAndCombat, LandSegmentIds.BreakdownDetermination, activeSide, PlayerExecutionSources);
 
         var combatSteps = new[]
         {
@@ -139,16 +153,17 @@ public static class Cna1979LandSequence
                 LandPhaseIds.MovementAndCombat,
                 LandSegmentIds.Combat,
                 stepId,
-                activeSide);
+                activeSide,
+                PlayerExecutionSources);
         }
 
-        AddOperationSegment(positions, gameTurn, operationStage, $"{playerOrderId}.movement-and-combat.reserve-release", LandPhaseIds.MovementAndCombat, LandSegmentIds.ReserveRelease, activeSide);
+        AddOperationSegment(positions, gameTurn, operationStage, $"{playerOrderId}.movement-and-combat.reserve-release", LandPhaseIds.MovementAndCombat, LandSegmentIds.ReserveRelease, activeSide, PlayerExecutionSources);
 
-        AddOperationPhase(positions, gameTurn, operationStage, $"{playerOrderId}.truck-convoy-movement", LandPhaseIds.TruckConvoyMovement, activeSide);
-        AddOperationPhase(positions, gameTurn, operationStage, $"{playerOrderId}.commonwealth-rail-movement", LandPhaseIds.CommonwealthRailMovement, activeSide);
-        AddOperationSegment(positions, gameTurn, operationStage, $"{playerOrderId}.repair.towing", LandPhaseIds.Repair, LandSegmentIds.Towing, activeSide);
-        AddOperationSegment(positions, gameTurn, operationStage, $"{playerOrderId}.repair.maintenance", LandPhaseIds.Repair, LandSegmentIds.Maintenance, activeSide);
-        AddOperationPhase(positions, gameTurn, operationStage, $"{playerOrderId}.patrol", LandPhaseIds.Patrol, activeSide);
+        AddOperationPhase(positions, gameTurn, operationStage, $"{playerOrderId}.truck-convoy-movement", LandPhaseIds.TruckConvoyMovement, activeSide, PlayerExecutionSources);
+        AddOperationPhase(positions, gameTurn, operationStage, $"{playerOrderId}.commonwealth-rail-movement", LandPhaseIds.CommonwealthRailMovement, activeSide, PlayerExecutionSources);
+        AddOperationSegment(positions, gameTurn, operationStage, $"{playerOrderId}.repair.towing", LandPhaseIds.Repair, LandSegmentIds.Towing, activeSide, PlayerExecutionSources);
+        AddOperationSegment(positions, gameTurn, operationStage, $"{playerOrderId}.repair.maintenance", LandPhaseIds.Repair, LandSegmentIds.Maintenance, activeSide, PlayerExecutionSources);
+        AddOperationPhase(positions, gameTurn, operationStage, $"{playerOrderId}.patrol", LandPhaseIds.Patrol, activeSide, PlayerExecutionSources);
     }
 
     private static void AddOperationPhase(
@@ -157,14 +172,16 @@ public static class Cna1979LandSequence
         int operationStage,
         string stepSuffix,
         string phaseId,
-        LandSide? activeSide = null) => AddPhase(
+        LandSide? activeSide = null,
+        IEnumerable<RuleReference>? sources = null) => AddPhase(
             positions,
             gameTurn,
             operationStage,
             $"operation-{operationStage}.{stepSuffix}",
             LandStageIds.Operation,
             phaseId,
-            activeSide: activeSide);
+            activeSide: activeSide,
+            sources: sources);
 
     private static void AddOperationSegment(
         ICollection<LandSequencePosition> positions,
@@ -173,7 +190,8 @@ public static class Cna1979LandSequence
         string stepSuffix,
         string phaseId,
         string segmentId,
-        LandSide? activeSide = null) => AddPhase(
+        LandSide? activeSide = null,
+        IEnumerable<RuleReference>? sources = null) => AddPhase(
             positions,
             gameTurn,
             operationStage,
@@ -181,7 +199,8 @@ public static class Cna1979LandSequence
             LandStageIds.Operation,
             phaseId,
             segmentId,
-            activeSide: activeSide);
+            activeSide: activeSide,
+            sources: sources);
 
     private static void AddOperationStep(
         ICollection<LandSequencePosition> positions,
@@ -191,7 +210,8 @@ public static class Cna1979LandSequence
         string phaseId,
         string segmentId,
         string stepId,
-        LandSide? activeSide = null) => AddPhase(
+        LandSide? activeSide = null,
+        IEnumerable<RuleReference>? sources = null) => AddPhase(
             positions,
             gameTurn,
             operationStage,
@@ -200,7 +220,8 @@ public static class Cna1979LandSequence
             phaseId,
             segmentId,
             stepId,
-            activeSide);
+            activeSide,
+            sources);
 
     private static void AddPhase(
         ICollection<LandSequencePosition> positions,
@@ -211,7 +232,8 @@ public static class Cna1979LandSequence
         string phaseId,
         string? segmentId = null,
         string? stepId = null,
-        LandSide? activeSide = null) => positions.Add(new LandSequencePosition(
+        LandSide? activeSide = null,
+        IEnumerable<RuleReference>? sources = null) => positions.Add(new LandSequencePosition(
             ContractVersion,
             $"land.position.{positionSuffix}",
             gameTurn,
@@ -220,6 +242,6 @@ public static class Cna1979LandSequence
             phaseId,
             segmentId,
             stepId,
-            SourceReference,
+            sources ?? [SourceReference],
             activeSide));
 }

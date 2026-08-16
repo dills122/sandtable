@@ -77,7 +77,10 @@ public sealed class RulesetManifest
             {
                 writer.WriteStartObject();
                 writer.WriteString("rulingId", ruling.RulingId);
-                writer.WriteString("decisionId", ruling.DecisionId);
+                writer.WriteString("conflictId", ruling.ConflictId);
+                WriteSortedValues(writer, "alternativeIds", ruling.AlternativeIds);
+                writer.WriteString("selectedBehaviorId", ruling.SelectedBehaviorId);
+                WriteSortedValues(writer, "protectingTestIds", ruling.ProtectingTestIds);
                 WriteSources(writer, ruling.Sources);
                 writer.WriteEndObject();
             }
@@ -87,6 +90,21 @@ public sealed class RulesetManifest
         }
 
         return Convert.ToHexString(SHA256.HashData(stream.ToArray())).ToLowerInvariant();
+    }
+
+    private static void WriteSortedValues(
+        Utf8JsonWriter writer,
+        string propertyName,
+        IEnumerable<string> values)
+    {
+        writer.WriteStartArray(propertyName);
+
+        foreach (var value in values.Order(StringComparer.Ordinal))
+        {
+            writer.WriteStringValue(value);
+        }
+
+        writer.WriteEndArray();
     }
 
     private static void WriteSources(

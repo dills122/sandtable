@@ -59,7 +59,7 @@ public static class CampaignProjector
             throw new InvalidCampaignHistoryException("The campaign creation event is invalid.");
         }
 
-        return new CampaignSnapshot(
+        var projected = new CampaignSnapshot(
             1,
             created.CampaignId,
             created.StateVersion,
@@ -67,6 +67,13 @@ public static class CampaignProjector
             created.Seed,
             created.FirstPlayer,
             created.SequencePosition);
+
+        if (!CampaignSnapshotValidator.IsValid(projected))
+        {
+            throw new InvalidCampaignHistoryException("The campaign creation event is invalid.");
+        }
+
+        return projected;
     }
 
     private static CampaignSnapshot ApplyAdvanced(
@@ -105,10 +112,18 @@ public static class CampaignProjector
                 "The sequence event is inconsistent with campaign history.");
         }
 
-        return snapshot with
+        var projected = snapshot with
         {
             StateVersion = advanced.StateVersion,
             SequencePosition = advanced.SequencePosition,
         };
+
+        if (!CampaignSnapshotValidator.IsValid(projected))
+        {
+            throw new InvalidCampaignHistoryException(
+                "The sequence event produces invalid campaign state.");
+        }
+
+        return projected;
     }
 }

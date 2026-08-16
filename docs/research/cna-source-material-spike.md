@@ -1,6 +1,6 @@
 # Campaign for North Africa Source-Material Spike
 
-**Status:** Recommendation ready for project-owner decision
+**Status:** Approved baseline; implementation active
 
 **Date:** 2026-08-15
 
@@ -162,12 +162,14 @@ Implementation consequences:
 - Add Air and detailed Logistics only after the Land scenario reaches its fidelity gate.
 - Do not train or validate intelligence behavior against hidden opposing state.
 
-## Next gate
+## Adopted project decision
 
-The project owner should approve or revise:
+The project owner approved:
 
 1. Baseline `cna-1979.1`: original 1979 material plus September 1979 errata.
 2. `Graziani's Offensive` Land-only as the first playable scenario target.
 3. Original placeholder visuals and external-only source scans pending a rights review.
 
 The proposed delivery sequence is in [Pre-alpha roadmap](../roadmap/pre-alpha-roadmap.md).
+Source gaps, ambiguity rulings, and distribution rights remain explicit gates as their affected
+content enters implementation; they do not reopen the adopted baseline by default.

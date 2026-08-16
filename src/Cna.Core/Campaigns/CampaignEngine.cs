@@ -10,6 +10,11 @@ public static class CampaignEngine
     {
         ArgumentNullException.ThrowIfNull(command);
 
+        if (snapshot is not null && !CampaignSnapshotValidator.IsValid(snapshot))
+        {
+            return CampaignCommandResult.Reject(CampaignCommandRejectionReason.InvalidState);
+        }
+
         return command switch
         {
             CreateCampaign create => DecideCreate(snapshot, create),
@@ -31,7 +36,7 @@ public static class CampaignEngine
         if (command.ContractVersion != 1
             || command.ExpectedStateVersion != 0
             || string.IsNullOrWhiteSpace(command.CampaignId)
-            || string.IsNullOrWhiteSpace(command.RulesetHash)
+            || !Cna1979Ruleset.IsCanonicalHash(command.RulesetHash)
             || !Enum.IsDefined(command.FirstPlayer))
         {
             return CampaignCommandResult.Reject(CampaignCommandRejectionReason.InvalidCommand);
@@ -76,33 +81,7 @@ public static class CampaignEngine
                 CampaignCommandRejectionReason.UnexpectedSequenceStep);
         }
 
-        if (snapshot.OperationStage == 1
-            && snapshot.ActiveSide == snapshot.FirstPlayer
-            && snapshot.PhaseId == LandPhaseIds.MovementAndCombat
-            && snapshot.SegmentId == LandSegmentIds.Movement)
-        {
-            return CampaignCommandResult.Reject(
-                CampaignCommandRejectionReason.UnsupportedTransition);
-        }
-
-        LandSequencePosition nextPosition;
-
-        try
-        {
-            nextPosition = Cna1979LandSequence.GetNext(
-                snapshot.SequencePosition,
-                snapshot.FirstPlayer);
-        }
-        catch (ArgumentException)
-        {
-            return CampaignCommandResult.Reject(
-                CampaignCommandRejectionReason.UnsupportedTransition);
-        }
-
-        return CampaignCommandResult.Accept(new CampaignSequenceAdvanced(
-            snapshot.CampaignId,
-            checked(snapshot.StateVersion + 1),
-            snapshot.SequencePosition.PositionId,
-            nextPosition));
+        return CampaignCommandResult.Reject(
+            CampaignCommandRejectionReason.UnsupportedTransition);
     }
 }

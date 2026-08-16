@@ -47,10 +47,17 @@ public static class CampaignSnapshotSerializer
                 writer.WriteString("stepId", snapshot.SequencePosition.StepId);
             }
 
-            writer.WriteStartObject("source");
-            writer.WriteString("sourceId", snapshot.SequencePosition.Source.SourceId);
-            writer.WriteString("locator", snapshot.SequencePosition.Source.Locator);
-            writer.WriteEndObject();
+            writer.WriteStartArray("sources");
+
+            foreach (var source in snapshot.SequencePosition.Sources)
+            {
+                writer.WriteStartObject();
+                writer.WriteString("sourceId", source.SourceId);
+                writer.WriteString("locator", source.Locator);
+                writer.WriteEndObject();
+            }
+
+            writer.WriteEndArray();
 
             if (snapshot.ActiveSide is null)
             {
@@ -76,7 +83,13 @@ public static class CampaignSnapshotSerializer
         var activeSideElement = position.GetProperty("activeSide");
         var segmentElement = position.GetProperty("segmentId");
         var stepElement = position.GetProperty("stepId");
-        var sourceElement = position.GetProperty("source");
+        var sources = position
+            .GetProperty("sources")
+            .EnumerateArray()
+            .Select(source => new RuleReference(
+                source.GetProperty("sourceId").GetString()!,
+                source.GetProperty("locator").GetString()!))
+            .ToArray();
         var sequencePosition = new LandSequencePosition(
             position.GetProperty("contractVersion").GetInt32(),
             position.GetProperty("positionId").GetString()!,
@@ -86,9 +99,7 @@ public static class CampaignSnapshotSerializer
             position.GetProperty("phaseId").GetString()!,
             segmentElement.ValueKind == JsonValueKind.Null ? null : segmentElement.GetString(),
             stepElement.ValueKind == JsonValueKind.Null ? null : stepElement.GetString(),
-            new RuleReference(
-                sourceElement.GetProperty("sourceId").GetString()!,
-                sourceElement.GetProperty("locator").GetString()!),
+            sources,
             activeSideElement.ValueKind == JsonValueKind.Null
                 ? null
                 : ParseSide(activeSideElement.GetString()));
@@ -122,24 +133,9 @@ public static class CampaignSnapshotSerializer
 
     private static void Validate(CampaignSnapshot snapshot)
     {
-        if (snapshot.ContractVersion != 1
-            || snapshot.StateVersion < 1
-            || string.IsNullOrWhiteSpace(snapshot.CampaignId)
-            || string.IsNullOrWhiteSpace(snapshot.RulesetHash)
-            || !Enum.IsDefined(snapshot.FirstPlayer)
-            || snapshot.SequencePosition.ContractVersion != Cna1979LandSequence.ContractVersion)
+        if (!CampaignSnapshotValidator.IsValid(snapshot))
         {
             throw new JsonException("The campaign snapshot contract is invalid.");
-        }
-
-        var validPositions = Cna1979LandSequence.CreateTurn(
-            snapshot.GameTurn,
-            snapshot.FirstPlayer);
-
-        if (!validPositions.Contains(snapshot.SequencePosition))
-        {
-            throw new JsonException(
-                "The campaign snapshot position is not part of the declared ruleset sequence.");
         }
     }
 }

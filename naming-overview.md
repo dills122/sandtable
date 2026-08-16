@@ -74,7 +74,9 @@ That's an excellent architectural principle _and_ flavorful terminology.
 The first implementation maps these names conservatively: `Cna.Core.Campaigns.CampaignEngine`
 decides commands, campaign event records are the Chronicle's authoritative input, and
 `CampaignProjector` plus `CampaignReplayHarness` reconstruct snapshots. Those plain technical names
-stay inside the Umpire boundary; they are not additional products or services.
+stay inside the Umpire boundary; they are not additional products or services. The Umpire validates
+public snapshot state and rejects any mandatory mechanic it cannot yet adjudicate. Walking the
+published sequence catalog for inspection does not create Chronicle history.
 
 ---
 
