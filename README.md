@@ -89,6 +89,7 @@ workflow and [SECURITY.md](SECURITY.md) for vulnerability reporting.
 - [Technical design](tech-design.md)
 - [Naming and domain vocabulary](naming-overview.md)
 - [Campaign for North Africa source-material spike](docs/research/cna-source-material-spike.md)
+- [Commander personas spike](docs/research/commander-personas-spike.md)
 - [Pre-alpha roadmap](docs/roadmap/pre-alpha-roadmap.md)
 - [Microsoft Orleans documentation](https://learn.microsoft.com/en-us/dotnet/orleans/)
 - [ASP.NET Core gRPC services](https://learn.microsoft.com/en-us/aspnet/core/grpc/aspnetcore?view=aspnetcore-10.0)
