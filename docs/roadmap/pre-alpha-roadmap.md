@@ -186,8 +186,9 @@ Implementation and acceptance evidence are tracked in the
 Content Pack v1 is governed by the
 [research packet](../research/content-pack-v1-spike.md),
 [specification](../specs/content-pack-v1.md), and
-[technical design](../design/content-pack-v1.md). A fresh independent readback returned `Ready`;
-the production implementation begins only after project-owner approval.
+[technical design](../design/content-pack-v1.md). The owner-approved Content Pack v1 and original
+rules laboratory are delivered; campaign admission, side-safe observations, and legal actions are
+the remaining Sprint 2 capabilities.
 
 ### Task 2.1 - Versioned content schemas
 
@@ -196,9 +197,9 @@ scenario metadata. Each record carries provenance or is marked as a synthetic te
 
 **Acceptance criteria:**
 
-- Invalid coordinates, references, duplicate IDs, and impossible placements fail at load time.
-- Canonical serialization produces a stable content hash.
-- Schema evolution is versioned independently from scenario content.
+- [x] Invalid coordinates, references, duplicate IDs, and impossible placements fail at load time.
+- [x] Canonical serialization produces a stable content hash.
+- [x] Schema evolution is versioned independently from scenario content.
 
 ### Task 2.2 - Rules-laboratory fixture
 
@@ -207,9 +208,9 @@ first vertical slice. It must be visibly labeled nonhistorical and not presented
 
 **Acceptance criteria:**
 
-- The fixture uses original placeholder names and visuals.
-- It loads through the same path intended for published-scenario data.
-- No test depends on original map or counter artwork.
+- [x] The fixture uses original placeholder names and visuals.
+- [x] It loads through the same path intended for published-scenario data.
+- [x] No test depends on original map or counter artwork.
 
 ### Task 2.3 - Content admission and initial campaign world
 
@@ -250,6 +251,10 @@ Generate currently legal commands from side-safe state and enforce optimistic co
 
 Load the rules laboratory, inspect one side's redacted state, and select an action from the legal
 set while the opposing hidden state remains absent from logs and responses.
+
+The current checkpoint loads, validates, hashes, resolves, and round-trips the complete synthetic
+rules laboratory. The redacted observation and legal-action portions remain Tasks 2.4 and 2.5;
+the complete Sprint 2 demonstration is not yet claimed.
 
 ## Sprint 3: Mandatory turn preamble
 

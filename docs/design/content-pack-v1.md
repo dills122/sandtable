@@ -1,6 +1,6 @@
 # Content Pack v1 Technical Design
 
-**Status:** Independently reviewed; awaiting project-owner approval
+**Status:** Implemented; independent implementation review pending
 
 **Date:** 2026-08-16
 
@@ -494,7 +494,6 @@ Canonical edges and features:
 | `north-west`—`west` | road |
 | `south`—`south-east` | track |
 | `south`—`south-west` | track |
-| `south-east`—`east` | track |
 | `south-west`—`west` | track |
 
 The direct and outer paths create terrain/edge alternatives without copying any published map.
@@ -629,6 +628,10 @@ campaign. Authoritative movement cannot.
 
 Each checkpoint uses red-green-refactor, owns at most a small file cluster, and ends with focused
 tests plus the full Core test project.
+
+**Implementation status:** `CNT-IMP-001` through `CNT-IMP-005` are delivered on the Content Pack v1
+feature branch. The complete synthetic artifact is 9,897 canonical UTF-8 bytes with frozen identity
+`sha256:0cf3b3ff21f7a8a8fbcd2667a6b4b3db83b4dab00495add723e5c2f355cf2800`.
 
 ### `CNT-IMP-001` — Rules vocabulary artifact
 
