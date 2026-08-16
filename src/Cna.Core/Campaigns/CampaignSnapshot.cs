@@ -9,6 +9,7 @@ public sealed record CampaignSnapshot(
     long StateVersion,
     string RulesetHash,
     CampaignSetupSnapshot Setup,
+    CampaignWorldSnapshot World,
     LandSide? InitiativeHolder,
     RandomStreamState RandomState,
     LandSequencePosition SequencePosition)

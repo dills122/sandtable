@@ -568,17 +568,22 @@ contracts, replay invariants, implementation checkpoints, and verification bound
 The implemented static-data boundary is Content Pack v1. `Cna.Core.Content` owns immutable
 versioned topology, formation/element structure, scenario deployment declarations, per-datum
 origins, validation, and an independent canonical content hash. Rules remain the authority for
-side, terrain, edge, organization, and derived table meanings; campaigns later own exact
-content binding and mutable world state; player observations remain a separate redacted contract.
+side, terrain, edge, organization, and derived table meanings; campaigns own exact content binding
+and mutable world state; player observations remain a separate redacted contract.
 Printed coordinates are audit metadata and explicit edges are adjacency authority. The first pack
 is an original nine-hex nonhistorical rules laboratory using the same path intended for future
 source-derived content. Exact catalog lookup requires both pack ID and hash and never substitutes a
 default; presentation labels remain outside authoritative equality and bytes.
 
-Campaign admission will eventually record exact ruleset and content identities and resolve
-immutable historical content before an authoritative grain turn; the Umpire will perform no
-network or persistence I/O. The current campaign schema is unchanged by the content-foundation
-work. Before movement becomes authoritative, a separate turn-preamble capability must implement
+The implemented Campaign World v1 cutover records exact ruleset, setup, content, and scenario
+identities; resolves immutable content before an authoritative grain turn; and projects only
+mutable initial element locations into campaign history. The Umpire performs no network or
+persistence I/O, and replay requires the same exact content plus the matching executable rules
+manifest. The [Campaign World specification](docs/specs/campaign-world-v1.md) and
+[technical design](docs/design/campaign-world-v1.md) define the version-3 campaign contract,
+schema-2 setup, resident artifact context, replay authority, and completed implementation
+checkpoints. Before movement becomes authoritative, a separate
+turn-preamble capability must implement
 the exercised Naval Convoy, Initiative Declaration, and Weather Determination rules without a
 generic sequence bypass. See the Content Pack v1
 [research](docs/research/content-pack-v1-spike.md),

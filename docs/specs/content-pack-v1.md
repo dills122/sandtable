@@ -228,7 +228,7 @@ Explicitly deferred:
 | `CNT-013`, `CNT-NFR-003` | Sprint 2 rules-laboratory goal | `CNT-AC-001`, `002`, `011` |
 | `CNT-015`, `CNT-NFR-006` | `DET-001`, repository quality rules | `CNT-AC-013`, full gate |
 | `CNT-016` | `FOW-001` | `CNT-AC-012`; side-safe behavior remains deferred |
-| `CNT-017` | `DET-001`, `EVT-001`, `REL-001` | `CNT-AC-014` deferred to campaign-content binding |
+| `CNT-017` | `DET-001`, `EVT-001`, `REL-001` | Complete in `WORLD-001`; see [Campaign World v1](campaign-world-v1.md) |
 | `CNT-018` | `FID-001`, `FID-002`, `EVT-001` | `CNT-AC-015` planning gate; mechanics deferred |
 
 ## Open questions and owner choices

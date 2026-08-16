@@ -13,6 +13,7 @@ public sealed record CampaignSetupSnapshot
         bool isSynthetic,
         int initialGameTurn,
         InitiativePolicy initialInitiative,
+        CampaignContentSelection content,
         IReadOnlyList<RuleReference> sources)
     {
         ArgumentOutOfRangeException.ThrowIfLessThan(schemaVersion, 1);
@@ -20,6 +21,7 @@ public sealed record CampaignSetupSnapshot
         ArgumentException.ThrowIfNullOrWhiteSpace(setupHash);
         ArgumentOutOfRangeException.ThrowIfLessThan(initialGameTurn, 1);
         ArgumentNullException.ThrowIfNull(initialInitiative);
+        ArgumentNullException.ThrowIfNull(content);
 
         SchemaVersion = schemaVersion;
         SetupId = setupId;
@@ -27,6 +29,7 @@ public sealed record CampaignSetupSnapshot
         IsSynthetic = isSynthetic;
         InitialGameTurn = initialGameTurn;
         InitialInitiative = initialInitiative;
+        Content = content;
         Sources = CopySources(sources);
     }
 
@@ -36,6 +39,7 @@ public sealed record CampaignSetupSnapshot
     public bool IsSynthetic { get; }
     public int InitialGameTurn { get; }
     public InitiativePolicy InitialInitiative { get; }
+    public CampaignContentSelection Content { get; }
     public IReadOnlyList<RuleReference> Sources { get; }
 
     public static CampaignSetupSnapshot FromDefinition(CampaignSetupDefinition definition)
@@ -48,6 +52,7 @@ public sealed record CampaignSetupSnapshot
             definition.IsSynthetic,
             definition.InitialGameTurn,
             definition.InitialInitiative,
+            definition.Content,
             definition.Sources);
     }
 
@@ -60,6 +65,7 @@ public sealed record CampaignSetupSnapshot
             && IsSynthetic == other.IsSynthetic
             && InitialGameTurn == other.InitialGameTurn
             && InitialInitiative == other.InitialInitiative
+            && Content == other.Content
             && Sources.SequenceEqual(other.Sources));
 
     public override int GetHashCode()
@@ -71,6 +77,7 @@ public sealed record CampaignSetupSnapshot
         hash.Add(IsSynthetic);
         hash.Add(InitialGameTurn);
         hash.Add(InitialInitiative);
+        hash.Add(Content);
 
         foreach (var source in Sources)
         {

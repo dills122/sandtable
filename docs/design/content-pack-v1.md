@@ -687,7 +687,7 @@ docs.
 ### Later named checkpoints
 
 - `WORLD-001`: versioned exact content admission, historical resolver, and initial world projection
-  (`CNT-017`).
+  (`CNT-017`), now specified in [Campaign World v1](campaign-world-v1.md).
 - `OBS-001`: side-safe observation projection and negative hidden-state tests (`CNT-016`).
 - `ACTION-001`: legal-action generation, accepted-command membership, and stale-action enforcement.
 - `TURN-001`: source spike/design and implementation for Naval Convoy, Initiative Declaration, and
@@ -707,7 +707,7 @@ These are explicit deferrals, not part of Content Pack v1 completion.
 | `CNT-007`, `CNT-010`, `CNT-NFR-005` | `CNT-IMP-001`, `CNT-IMP-003` | `CNT-AC-004`, `CNT-AC-009`, `CNT-AC-011` |
 | `CNT-004`, `CNT-013`, `CNT-014`, `CNT-015`, `CNT-016`, `CNT-NFR-003`, `CNT-NFR-006` | `CNT-IMP-005` | `CNT-AC-001`, `CNT-AC-002`, `CNT-AC-005`, `CNT-AC-011`, `CNT-AC-012`, `CNT-AC-013`, full gate |
 | `CNT-016` | `OBS-001` | side-safe behavioral tests deferred |
-| `CNT-017` | `WORLD-001` | `CNT-AC-014` deferred |
+| `CNT-017` | `WORLD-001` | Complete; Campaign World v1 binds exact content and projects initial world state |
 | `CNT-018` | `TURN-001`, then `MOVE-001` | `CNT-AC-015` planning gate |
 
 ## Failure behavior

@@ -56,6 +56,7 @@ public static class CampaignEventSerializer
         }
         catch (Exception exception) when (exception is ArgumentException
             or ArithmeticException
+            or FormatException
             or InvalidOperationException
             or KeyNotFoundException)
         {
@@ -71,6 +72,7 @@ public static class CampaignEventSerializer
         writer.WriteNumber("stateVersion", created.StateVersion);
         writer.WriteString("rulesetHash", created.RulesetHash);
         CampaignSnapshotSerializer.WriteSetup(writer, created.Setup);
+        CampaignSnapshotSerializer.WriteWorld(writer, "initialWorld", created.InitialWorld);
         CampaignSnapshotSerializer.WriteRandomState(writer, created.RandomState);
         CampaignSnapshotSerializer.WritePosition(writer, created.SequencePosition);
     }
@@ -85,6 +87,7 @@ public static class CampaignEventSerializer
             "stateVersion",
             "rulesetHash",
             "setup",
+            "initialWorld",
             "randomState",
             "sequencePosition");
         var created = new CampaignCreated(
@@ -92,6 +95,7 @@ public static class CampaignEventSerializer
             root.GetProperty("stateVersion").GetInt64(),
             root.GetProperty("rulesetHash").GetString()!,
             CampaignSnapshotSerializer.ParseSetup(root.GetProperty("setup")),
+            CampaignSnapshotSerializer.ParseWorld(root.GetProperty("initialWorld")),
             CampaignSnapshotSerializer.ParseRandomState(root.GetProperty("randomState")),
             CampaignSnapshotSerializer.ParsePosition(root.GetProperty("sequencePosition")));
 
@@ -309,13 +313,31 @@ public static class CampaignEventSerializer
 
     private static void ValidateCreated(CampaignCreated created)
     {
-        try
+        if (created.Setup is null
+            || created.InitialWorld is null
+            || created.RandomState is null
+            || created.SequencePosition is null)
         {
-            _ = CampaignProjector.Apply(null, created);
+            throw new JsonException("The campaign creation event is invalid.");
         }
-        catch (InvalidCampaignHistoryException exception)
+
+        var localSnapshot = new CampaignSnapshot(
+            3,
+            created.CampaignId,
+            created.StateVersion,
+            created.RulesetHash,
+            created.Setup,
+            created.InitialWorld,
+            null,
+            created.RandomState,
+            created.SequencePosition);
+
+        if (created.ContractVersion != 3
+            || created.StateVersion != 1
+            || created.RandomState.NextByteCursor != 0
+            || !CampaignSnapshotValidator.IsLocallyValid(localSnapshot))
         {
-            throw new JsonException("The campaign creation event is invalid.", exception);
+            throw new JsonException("The campaign creation event is invalid.");
         }
     }
 

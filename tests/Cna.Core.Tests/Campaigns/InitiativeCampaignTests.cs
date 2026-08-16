@@ -19,7 +19,7 @@ public sealed class InitiativeCampaignTests
             snapshot.StateVersion,
             snapshot.SequencePosition.PositionId);
 
-        var result = CampaignEngine.Decide(snapshot, command);
+        var result = CampaignTestHarness.Decide(snapshot, command);
 
         Assert.True(result.IsAccepted);
         var determined = Assert.IsType<InitiativeDetermined>(Assert.Single(result.Events));
@@ -27,7 +27,7 @@ public sealed class InitiativeCampaignTests
         Assert.Equal(expectedCursor, determined.RandomCursorAfter);
         Assert.Equal(expectedHolder, determined.Outcome.Holder);
 
-        var projected = CampaignProjector.Apply(snapshot, determined);
+        var projected = CampaignTestHarness.Apply(snapshot, determined);
         Assert.Equal(2, projected.StateVersion);
         Assert.Equal(expectedHolder, projected.InitiativeHolder);
         Assert.Equal(expectedCursor, projected.RandomState.NextByteCursor);
@@ -35,6 +35,7 @@ public sealed class InitiativeCampaignTests
         Assert.Equal(LandPhaseIds.NavalConvoySchedule, projected.PhaseId);
         Assert.Equal(LandActorRole.None, projected.SequencePosition.ActorRole);
         Assert.Null(projected.ActiveSide);
+        Assert.Same(snapshot.World, projected.World);
     }
 
     [Fact]
@@ -42,7 +43,7 @@ public sealed class InitiativeCampaignTests
     {
         var snapshot = CreateSnapshot(Cna1979SetupCatalog.Definitions[0], 12345);
 
-        var result = CampaignEngine.Decide(
+        var result = CampaignTestHarness.Decide(
             snapshot,
             new ResolveInitiative(snapshot.StateVersion, snapshot.SequencePosition.PositionId));
 
@@ -63,7 +64,7 @@ public sealed class InitiativeCampaignTests
     {
         var snapshot = CreateSnapshot(Cna1979SetupCatalog.Definitions[0], 12345);
 
-        var result = CampaignEngine.Decide(
+        var result = CampaignTestHarness.Decide(
             snapshot,
             new ResolveInitiative(expectedVersion, expectedPosition));
 
@@ -76,9 +77,9 @@ public sealed class InitiativeCampaignTests
     [Fact]
     public void ResolveValidationKeepsNullCampaignAndMalformedCommandPrecedence()
     {
-        var missing = CampaignEngine.Decide(null, new ResolveInitiative(99, " "));
+        var missing = CampaignTestHarness.Decide(null, new ResolveInitiative(99, " "));
         var snapshot = CreateSnapshot(Cna1979SetupCatalog.Definitions[0], 12345);
-        var malformed = CampaignEngine.Decide(
+        var malformed = CampaignTestHarness.Decide(
             snapshot,
             new ResolveInitiative(99, " "));
 
@@ -92,15 +93,15 @@ public sealed class InitiativeCampaignTests
     public void DuplicateAndGenericAdvanceAtNavalConvoyRemainUnsupported()
     {
         var initial = CreateSnapshot(Cna1979SetupCatalog.Definitions[0], 12345);
-        var accepted = CampaignEngine.Decide(
+        var accepted = CampaignTestHarness.Decide(
             initial,
             new ResolveInitiative(initial.StateVersion, initial.SequencePosition.PositionId));
-        var snapshot = CampaignProjector.Apply(initial, Assert.Single(accepted.Events));
+        var snapshot = CampaignTestHarness.Apply(initial, Assert.Single(accepted.Events));
 
-        var duplicate = CampaignEngine.Decide(
+        var duplicate = CampaignTestHarness.Decide(
             snapshot,
             new ResolveInitiative(snapshot.StateVersion, snapshot.SequencePosition.PositionId));
-        var generic = CampaignEngine.Decide(
+        var generic = CampaignTestHarness.Decide(
             snapshot,
             new CompleteCurrentSequenceStep(
                 snapshot.StateVersion,
@@ -116,7 +117,7 @@ public sealed class InitiativeCampaignTests
     public void ProjectorRejectsAFieldForgedInitiativeEvent()
     {
         var snapshot = CreateSnapshot(Cna1979SetupCatalog.Definitions[1], 0);
-        var accepted = CampaignEngine.Decide(
+        var accepted = CampaignTestHarness.Decide(
             snapshot,
             new ResolveInitiative(snapshot.StateVersion, snapshot.SequencePosition.PositionId));
         var valid = Assert.IsType<InitiativeDetermined>(Assert.Single(accepted.Events));
@@ -132,28 +133,28 @@ public sealed class InitiativeCampaignTests
             valid.Sources);
 
         Assert.Throws<InvalidCampaignHistoryException>(() =>
-            CampaignProjector.Apply(snapshot, forged));
+            CampaignTestHarness.Apply(snapshot, forged));
     }
 
     [Fact]
     public void ProjectorRejectsInvalidPriorCheckpointBeforeApplyingInitiative()
     {
         var snapshot = CreateSnapshot(Cna1979SetupCatalog.Definitions[0], 12345);
-        var accepted = CampaignEngine.Decide(
+        var accepted = CampaignTestHarness.Decide(
             snapshot,
             new ResolveInitiative(snapshot.StateVersion, snapshot.SequencePosition.PositionId));
         var determined = Assert.IsType<InitiativeDetermined>(Assert.Single(accepted.Events));
         var invalidCheckpoint = snapshot with { InitiativeHolder = LandSide.Axis };
 
         Assert.Throws<InvalidCampaignHistoryException>(() =>
-            CampaignProjector.Apply(invalidCheckpoint, determined));
+            CampaignTestHarness.Apply(invalidCheckpoint, determined));
     }
 
     [Fact]
     public void ProjectorRejectsEveryAuthoritativeEventFieldForgery()
     {
         var snapshot = CreateSnapshot(Cna1979SetupCatalog.Definitions[1], 0);
-        var accepted = CampaignEngine.Decide(
+        var accepted = CampaignTestHarness.Decide(
             snapshot,
             new ResolveInitiative(snapshot.StateVersion, snapshot.SequencePosition.PositionId));
         var valid = Assert.IsType<InitiativeDetermined>(Assert.Single(accepted.Events));
@@ -177,17 +178,17 @@ public sealed class InitiativeCampaignTests
 
         Assert.All(forgedEvents, forged =>
             Assert.Throws<InvalidCampaignHistoryException>(() =>
-                CampaignProjector.Apply(snapshot, forged)));
+                CampaignTestHarness.Apply(snapshot, forged)));
     }
 
     [Fact]
     public void ResolvedSnapshotRoundTripsCanonically()
     {
         var initial = CreateSnapshot(Cna1979SetupCatalog.Definitions[1], 7);
-        var accepted = CampaignEngine.Decide(
+        var accepted = CampaignTestHarness.Decide(
             initial,
             new ResolveInitiative(initial.StateVersion, initial.SequencePosition.PositionId));
-        var resolved = CampaignProjector.Apply(initial, Assert.Single(accepted.Events));
+        var resolved = CampaignTestHarness.Apply(initial, Assert.Single(accepted.Events));
 
         var bytes = CampaignSnapshotSerializer.Serialize(resolved);
         var roundTrip = CampaignSnapshotSerializer.Deserialize(bytes);
@@ -220,15 +221,15 @@ public sealed class InitiativeCampaignTests
 
     private static CampaignSnapshot CreateSnapshot(CampaignSetupDefinition setup, ulong seed)
     {
-        var result = CampaignEngine.Decide(
+        var result = CampaignTestHarness.Decide(
             null,
-            new CreateCampaign(
+            CampaignTestHarness.Create(
                 "campaign-1",
                 Cna1979Ruleset.Manifest.Hash,
                 seed,
                 setup.SetupId,
                 setup.Hash));
 
-        return CampaignProjector.Replay(result.Events);
+        return CampaignTestHarness.Replay(result.Events);
     }
 }

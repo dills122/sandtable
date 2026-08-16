@@ -13,8 +13,9 @@ public sealed record CampaignCreated(
     long StateVersion,
     string RulesetHash,
     CampaignSetupSnapshot Setup,
+    CampaignWorldSnapshot InitialWorld,
     RandomStreamState RandomState,
-    LandSequencePosition SequencePosition) : CampaignEvent(2, CampaignId, StateVersion);
+    LandSequencePosition SequencePosition) : CampaignEvent(3, CampaignId, StateVersion);
 
 public sealed record CampaignSequenceAdvanced(
     string CampaignId,

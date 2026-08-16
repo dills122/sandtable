@@ -11,20 +11,20 @@ public sealed class CampaignTests
     public void CreateCommandEmitsTheInitialAuthoritativeEvent()
     {
         var setup = Cna1979SetupCatalog.Definitions[0];
-        var command = new CreateCampaign(
+        var command = CampaignTestHarness.Create(
             "campaign-1",
             Cna1979Ruleset.Manifest.Hash,
             12345,
             setup.SetupId,
             setup.Hash);
 
-        var result = CampaignEngine.Decide(null, command);
+        var result = CampaignTestHarness.Decide(null, command);
 
         Assert.True(result.IsAccepted);
         var created = Assert.IsType<CampaignCreated>(Assert.Single(result.Events));
         Assert.Equal(1, created.StateVersion);
 
-        var snapshot = CampaignProjector.Replay(result.Events);
+        var snapshot = CampaignTestHarness.Replay(result.Events);
         Assert.Equal("campaign-1", snapshot.CampaignId);
         Assert.Equal(Cna1979Ruleset.Manifest.Hash, snapshot.RulesetHash);
         Assert.Equal(12345UL, snapshot.RandomState.Seed);
@@ -40,9 +40,9 @@ public sealed class CampaignTests
     public void CreateCommandRejectsANonCanonicalRulesetHash()
     {
         var setup = Cna1979SetupCatalog.Definitions[0];
-        var result = CampaignEngine.Decide(
+        var result = CampaignTestHarness.Decide(
             null,
-            new CreateCampaign(
+            CampaignTestHarness.Create(
                 "campaign-1",
                 "ruleset-hash",
                 12345,
@@ -65,7 +65,7 @@ public sealed class CampaignTests
         var snapshot = CreateSnapshot();
         var command = new CompleteCurrentSequenceStep(expectedStateVersion, expectedPositionId);
 
-        var result = CampaignEngine.Decide(snapshot, command);
+        var result = CampaignTestHarness.Decide(snapshot, command);
 
         Assert.False(result.IsAccepted);
         Assert.Equal(expectedReason, result.RejectionReason);
@@ -79,7 +79,7 @@ public sealed class CampaignTests
     {
         var snapshot = CreateSnapshot();
 
-        var result = CampaignEngine.Decide(
+        var result = CampaignTestHarness.Decide(
             snapshot,
             new CompleteCurrentSequenceStep(
                 snapshot.StateVersion,
@@ -96,7 +96,7 @@ public sealed class CampaignTests
     [MemberData(nameof(InvalidSnapshots))]
     public void InvalidAuthoritativeSnapshotCannotProduceAnEvent(CampaignSnapshot snapshot)
     {
-        var result = CampaignEngine.Decide(
+        var result = CampaignTestHarness.Decide(
             snapshot,
             new CompleteCurrentSequenceStep(
                 snapshot.StateVersion,
@@ -131,6 +131,7 @@ public sealed class CampaignTests
             valid.Setup.IsSynthetic,
             valid.Setup.InitialGameTurn,
             valid.Setup.InitialInitiative,
+            valid.Setup.Content,
             valid.Setup.Sources);
 
         return new TheoryData<CampaignSnapshot>
@@ -154,15 +155,15 @@ public sealed class CampaignTests
     private static CampaignSnapshot CreateSnapshot()
     {
         var setup = Cna1979SetupCatalog.Definitions[0];
-        var result = CampaignEngine.Decide(
+        var result = CampaignTestHarness.Decide(
             null,
-            new CreateCampaign(
+            CampaignTestHarness.Create(
                 "campaign-1",
                 Cna1979Ruleset.Manifest.Hash,
                 12345,
                 setup.SetupId,
                 setup.Hash));
 
-        return CampaignProjector.Replay(result.Events);
+        return CampaignTestHarness.Replay(result.Events);
     }
 }

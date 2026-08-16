@@ -1,3 +1,4 @@
+using Cna.Core.Content;
 using Cna.Core.Rules;
 using Cna.Core.Setups;
 
@@ -22,7 +23,11 @@ public sealed class CampaignSetupTests
                     [Cna1979SetupCatalog.PredeterminedSourceReference],
                     predetermined.Sources);
                 Assert.Equal(
-                    "sha256:ef7dd9cf4cf78616f5b8e2c95408c7fbf03eae46c934238be541565390e2520f",
+                    Cna1979SyntheticContentCatalog.Artifact.Identity,
+                    predetermined.Content.Pack);
+                Assert.Equal("movement-contact-lab", predetermined.Content.ScenarioId);
+                Assert.Equal(
+                    "sha256:9dfa11b7e9fac73e61d289f9847435ad4c9335b8b1692b95ffbeaa3566c8d921",
                     predetermined.Hash);
             },
             contested =>
@@ -41,7 +46,11 @@ public sealed class CampaignSetupTests
                     [Cna1979SetupCatalog.ContestedSourceReference],
                     contested.Sources);
                 Assert.Equal(
-                    "sha256:7f979c371c0c773aac87af3119011a9b37f0633dc75733ec95b3ac055015aa43",
+                    Cna1979SyntheticContentCatalog.Artifact.Identity,
+                    contested.Content.Pack);
+                Assert.Equal("initiative-contested-lab", contested.Content.ScenarioId);
+                Assert.Equal(
+                    "sha256:e50c4ae9936462b46f3ce8e88459a790911c93be3ad1c97e80b6db71223030c4",
                     contested.Hash);
             });
     }
@@ -71,6 +80,7 @@ public sealed class CampaignSetupTests
             baseline.IsSynthetic,
             baseline.InitialGameTurn,
             baseline.InitialInitiative,
+            baseline.Content,
             baseline.Sources);
         var policyChanged = new CampaignSetupDefinition(
             baseline.SchemaVersion,
@@ -81,6 +91,34 @@ public sealed class CampaignSetupTests
             new ContestedInitiative(new AxisInitiativeSourceFacts(
                 AxisInitiativeLocation.QualifyingGameMap,
                 [])),
+            baseline.Content,
+            baseline.Sources);
+        var contentChanged = new CampaignSetupDefinition(
+            baseline.SchemaVersion,
+            baseline.SetupId,
+            baseline.DisplayName,
+            baseline.IsSynthetic,
+            baseline.InitialGameTurn,
+            baseline.InitialInitiative,
+            new CampaignContentSelection(
+                new ContentPackIdentity(
+                    baseline.Content.Pack.SchemaVersion,
+                    baseline.Content.Pack.FormatId,
+                    baseline.Content.Pack.PackId,
+                    baseline.Content.Pack.RulesetId,
+                    $"sha256:{new string('0', 64)}"),
+                baseline.Content.ScenarioId),
+            baseline.Sources);
+        var scenarioChanged = new CampaignSetupDefinition(
+            baseline.SchemaVersion,
+            baseline.SetupId,
+            baseline.DisplayName,
+            baseline.IsSynthetic,
+            baseline.InitialGameTurn,
+            baseline.InitialInitiative,
+            new CampaignContentSelection(
+                baseline.Content.Pack,
+                "movement-contact-lab"),
             baseline.Sources);
         var sourceChanged = new CampaignSetupDefinition(
             baseline.SchemaVersion,
@@ -89,10 +127,13 @@ public sealed class CampaignSetupTests
             baseline.IsSynthetic,
             baseline.InitialGameTurn,
             baseline.InitialInitiative,
+            baseline.Content,
             [new RuleReference("sandtable-rules-lab", "different-source.v1")]);
 
         Assert.Equal(baseline.Hash, displayChanged.Hash);
         Assert.NotEqual(baseline.Hash, policyChanged.Hash);
+        Assert.NotEqual(baseline.Hash, contentChanged.Hash);
+        Assert.NotEqual(baseline.Hash, scenarioChanged.Hash);
         Assert.NotEqual(baseline.Hash, sourceChanged.Hash);
         Assert.Matches("^sha256:[0-9a-f]{64}$", baseline.Hash);
         Assert.Equal(rulesetHash, Cna1979Ruleset.Manifest.Hash);
@@ -116,6 +157,7 @@ public sealed class CampaignSetupTests
             true,
             1,
             new PredeterminedInitiative(LandSide.Axis),
+            Cna1979SetupCatalog.Definitions[0].Content,
             sources);
         var equivalent = new CampaignSetupDefinition(
             1,
@@ -124,6 +166,7 @@ public sealed class CampaignSetupTests
             true,
             1,
             new PredeterminedInitiative(LandSide.Axis),
+            Cna1979SetupCatalog.Definitions[0].Content,
             sources.AsEnumerable().Reverse().ToArray());
 
         sources.Clear();
@@ -151,6 +194,7 @@ public sealed class CampaignSetupTests
             true,
             112,
             new PredeterminedInitiative(LandSide.Axis),
+            Cna1979SetupCatalog.Definitions[0].Content,
             [new RuleReference("sandtable-rules-lab", "test.v1")]));
         Assert.Throws<ArgumentException>(() => new CampaignSetupDefinition(
             1,
@@ -159,6 +203,7 @@ public sealed class CampaignSetupTests
             true,
             1,
             new PredeterminedInitiative(LandSide.Axis),
+            Cna1979SetupCatalog.Definitions[0].Content,
             []));
     }
 }

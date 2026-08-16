@@ -7,7 +7,10 @@ public sealed record CreateCampaign(
     string RulesetHash,
     ulong Seed,
     string SetupId,
-    string SetupHash) : CampaignCommand(2, 0);
+    string SetupHash,
+    string ContentPackId,
+    string ContentHash,
+    string ScenarioId) : CampaignCommand(3, 0);
 
 public sealed record CompleteCurrentSequenceStep(
     long ExpectedStateVersion,

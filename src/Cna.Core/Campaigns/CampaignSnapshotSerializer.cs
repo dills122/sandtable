@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Cna.Core.Content;
 using Cna.Core.Randomness;
 using Cna.Core.Rules;
 using Cna.Core.Setups;
@@ -21,6 +22,7 @@ public static class CampaignSnapshotSerializer
             writer.WriteNumber("stateVersion", snapshot.StateVersion);
             writer.WriteString("rulesetHash", snapshot.RulesetHash);
             WriteSetup(writer, snapshot.Setup);
+            WriteWorld(writer, "world", snapshot.World);
 
             if (snapshot.InitiativeHolder is null)
             {
@@ -54,6 +56,7 @@ public static class CampaignSnapshotSerializer
                 "stateVersion",
                 "rulesetHash",
                 "setup",
+                "world",
                 "initiativeHolder",
                 "randomState",
                 "sequencePosition");
@@ -65,6 +68,7 @@ public static class CampaignSnapshotSerializer
                 root.GetProperty("stateVersion").GetInt64(),
                 root.GetProperty("rulesetHash").GetString()!,
                 ParseSetup(root.GetProperty("setup")),
+                ParseWorld(root.GetProperty("world")),
                 holderElement.ValueKind == JsonValueKind.Null
                     ? null
                     : ParseSide(holderElement.GetString()),
@@ -79,6 +83,7 @@ public static class CampaignSnapshotSerializer
             throw;
         }
         catch (Exception exception) when (exception is ArgumentException
+            or FormatException
             or InvalidOperationException
             or KeyNotFoundException
             or OverflowException)
@@ -98,6 +103,7 @@ public static class CampaignSnapshotSerializer
         writer.WriteStartObject("initialInitiative");
         WriteInitiative(writer, setup.InitialInitiative);
         writer.WriteEndObject();
+        WriteContent(writer, setup.Content);
         WriteSources(writer, setup.Sources);
         writer.WriteEndObject();
     }
@@ -112,6 +118,7 @@ public static class CampaignSnapshotSerializer
             "isSynthetic",
             "initialGameTurn",
             "initialInitiative",
+            "content",
             "sources");
 
         return new CampaignSetupSnapshot(
@@ -121,7 +128,78 @@ public static class CampaignSnapshotSerializer
             setup.GetProperty("isSynthetic").GetBoolean(),
             setup.GetProperty("initialGameTurn").GetInt32(),
             ParseInitiative(setup.GetProperty("initialInitiative")),
+            ParseContent(setup.GetProperty("content")),
             ParseSources(setup.GetProperty("sources")));
+    }
+
+    internal static void WriteWorld(
+        Utf8JsonWriter writer,
+        string propertyName,
+        CampaignWorldSnapshot world)
+    {
+        writer.WriteStartObject(propertyName);
+        writer.WriteNumber("contractVersion", world.ContractVersion);
+        writer.WriteStartArray("elements");
+
+        foreach (var element in world.Elements)
+        {
+            writer.WriteStartObject();
+            writer.WriteString("elementId", element.ElementId);
+            writer.WriteString("currentLocationId", element.CurrentLocationId);
+            writer.WriteEndObject();
+        }
+
+        writer.WriteEndArray();
+        writer.WriteEndObject();
+    }
+
+    internal static CampaignWorldSnapshot ParseWorld(JsonElement world)
+    {
+        RequireProperties(world, "contractVersion", "elements");
+        return new CampaignWorldSnapshot(
+            world.GetProperty("contractVersion").GetInt32(),
+            world.GetProperty("elements")
+                .EnumerateArray()
+                .Select(element =>
+                {
+                    RequireProperties(element, "elementId", "currentLocationId");
+                    return new CampaignElementState(
+                        element.GetProperty("elementId").GetString()!,
+                        element.GetProperty("currentLocationId").GetString()!);
+                })
+                .ToArray());
+    }
+
+    private static void WriteContent(Utf8JsonWriter writer, CampaignContentSelection content)
+    {
+        writer.WriteStartObject("content");
+        writer.WriteNumber("schemaVersion", content.Pack.SchemaVersion);
+        writer.WriteString("formatId", content.Pack.FormatId);
+        writer.WriteString("packId", content.Pack.PackId);
+        writer.WriteString("rulesetId", content.Pack.RulesetId);
+        writer.WriteString("hash", content.Pack.Hash);
+        writer.WriteString("scenarioId", content.ScenarioId);
+        writer.WriteEndObject();
+    }
+
+    private static CampaignContentSelection ParseContent(JsonElement content)
+    {
+        RequireProperties(
+            content,
+            "schemaVersion",
+            "formatId",
+            "packId",
+            "rulesetId",
+            "hash",
+            "scenarioId");
+        return new CampaignContentSelection(
+            new ContentPackIdentity(
+                content.GetProperty("schemaVersion").GetInt32(),
+                content.GetProperty("formatId").GetString()!,
+                content.GetProperty("packId").GetString()!,
+                content.GetProperty("rulesetId").GetString()!,
+                content.GetProperty("hash").GetString()!),
+            content.GetProperty("scenarioId").GetString()!);
     }
 
     private static void WriteInitiative(Utf8JsonWriter writer, InitiativePolicy policy)
@@ -387,7 +465,7 @@ public static class CampaignSnapshotSerializer
 
     private static void Validate(CampaignSnapshot snapshot)
     {
-        if (!CampaignSnapshotValidator.IsValid(snapshot))
+        if (!CampaignSnapshotValidator.IsLocallyValid(snapshot))
         {
             throw new JsonException("The campaign snapshot contract is invalid.");
         }

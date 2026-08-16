@@ -10,4 +10,12 @@ public enum CampaignCommandRejectionReason
     StaleState,
     UnexpectedSequenceStep,
     UnsupportedTransition,
+    UnknownSetup,
+    SetupHashMismatch,
+    UnknownContent,
+    ContentHashMismatch,
+    UnsupportedRuleset,
+    UnknownScenario,
+    SetupContentMismatch,
+    ScenarioStartMismatch,
 }

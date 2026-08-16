@@ -10,7 +10,10 @@ public sealed class SyntheticContentCatalogTests
     {
         var artifact = Cna1979SyntheticContentCatalog.Artifact;
         var pack = artifact.Definition;
-        var scenario = Assert.Single(pack.Scenarios);
+        var movementScenario = pack.Scenarios.Single(
+            scenario => scenario.ScenarioId == "movement-contact-lab");
+        var contestedScenario = pack.Scenarios.Single(
+            scenario => scenario.ScenarioId == "initiative-contested-lab");
 
         Assert.Equal("rules-lab.content.movement-contact.v1", pack.PackId);
         Assert.Equal("cna-1979.1", pack.RulesetId);
@@ -21,9 +24,17 @@ public sealed class SyntheticContentCatalogTests
         Assert.Equal(10, pack.Edges.Count);
         Assert.Equal(2, pack.Formations.Count);
         Assert.Equal(4, pack.Elements.Count);
-        Assert.Equal(4, scenario.InitialPlacements.Count);
-        Assert.Equal(new ContentScenarioBoundary(1, 1), scenario.Start);
-        Assert.Equal(new ContentScenarioBoundary(1, 3), scenario.End);
+        Assert.Equal(2, pack.Scenarios.Count);
+        Assert.Equal(4, movementScenario.InitialPlacements.Count);
+        Assert.Equal(new ContentScenarioBoundary(1, 1), movementScenario.Start);
+        Assert.Equal(new ContentScenarioBoundary(1, 3), movementScenario.End);
+        Assert.Equal(4, contestedScenario.InitialPlacements.Count);
+        Assert.Equal(new ContentScenarioBoundary(43, 1), contestedScenario.Start);
+        Assert.Equal(new ContentScenarioBoundary(43, 3), contestedScenario.End);
+        Assert.NotEqual(movementScenario.Origin, contestedScenario.Origin);
+        Assert.Empty(
+            movementScenario.InitialPlacements.Select(placement => placement.Origin)
+                .Intersect(contestedScenario.InitialPlacements.Select(placement => placement.Origin)));
         Assert.True(ContentPackValidator.Validate(pack).IsValid);
         Assert.True(Cna1979ContentCompatibilityValidator.Validate(pack).IsValid);
     }
@@ -68,9 +79,9 @@ public sealed class SyntheticContentCatalogTests
             artifact.GetCanonicalBytes(),
             ContentPackSerializer.SerializeCanonical(definition));
         Assert.Equal(
-            "sha256:0cf3b3ff21f7a8a8fbcd2667a6b4b3db83b4dab00495add723e5c2f355cf2800",
+            "sha256:c0cceda302bab11c98f1b46c427c967bf70b3c9ae4ad078513dbfc231f06b114",
             artifact.Identity.Hash);
-        Assert.Equal(9_897, artifact.CanonicalByteCount);
+        Assert.Equal(11_243, artifact.CanonicalByteCount);
         var goldenFile = File.ReadAllBytes(Path.Combine(
             AppContext.BaseDirectory,
             "Content",
