@@ -75,8 +75,16 @@ The first implementation maps these names conservatively: `Cna.Core.Campaigns.Ca
 decides commands, campaign event records are the Chronicle's authoritative input, and
 `CampaignProjector` plus `CampaignReplayHarness` reconstruct snapshots. Those plain technical names
 stay inside the Umpire boundary; they are not additional products or services. The Umpire validates
-public snapshot state and rejects any mandatory mechanic it cannot yet adjudicate. Walking the
-published sequence catalog for inspection does not create Chronicle history.
+public snapshot state, adjudicates Initiative Determination, and rejects further progression at
+Naval Convoy until that mandatory mechanic exists. `CampaignEventSerializer` defines the canonical
+Chronicle bytes for the currently accepted history. Walking the published sequence catalog for
+inspection does not create Chronicle history.
+
+For the CNA rules domain, use **initiative holder** only for the side that wins or is assigned
+Game Turn initiative. Use **first-acting side** and **second-acting side** for each Operation Stage.
+They are deliberately not aliases: the initiative holder chooses first or last separately for
+each stage. This plain vocabulary prevents a later rules decision from being hidden behind a
+generic `FirstPlayer` name.
 
 ---
 

@@ -8,16 +8,17 @@ public sealed class RulesetManifestTests
     public void CanonicalCna1979ManifestDerivesItsIdentityFromTheLandCatalog()
     {
         var manifest = Cna1979Ruleset.Manifest;
-        var artifact = Assert.Single(manifest.Artifacts);
+        var artifact = Assert.Single(
+            manifest.Artifacts,
+            value => value.ArtifactId == "cna-1979.1.land-sequence");
 
         Assert.Equal("cna-1979.1", manifest.RulesetId);
-        Assert.Equal(1, manifest.ContractVersion);
+        Assert.Equal(2, manifest.ContractVersion);
+        Assert.Equal(3, manifest.Artifacts.Count);
         Assert.Equal("cna-1979.1.land-sequence", artifact.ArtifactId);
         Assert.Equal(
             Cna1979Ruleset.CalculateLandSequenceContentHash(
-                Cna1979LandSequence
-                    .CreateTurn(1, LandSide.Axis)
-                    .Concat(Cna1979LandSequence.CreateTurn(1, LandSide.Commonwealth))),
+                Cna1979LandSequence.CreateTurn(1)),
             artifact.ContentHash);
         Assert.Matches("^sha256:[0-9a-f]{64}$", artifact.ContentHash);
         Assert.Contains(
@@ -25,7 +26,10 @@ public sealed class RulesetManifestTests
             source => source == new RuleReference("spi-1979-land-rules", "5.2"));
         Assert.Contains(
             artifact.Sources,
-            source => source == new RuleReference("spi-1979-land-rules", "7.12"));
+            source => source == new RuleReference("spi-1979-land-rules", "7.11"));
+        Assert.Contains(
+            artifact.Sources,
+            source => source == new RuleReference("spi-1979-land-rules", "7.14"));
         Assert.Empty(manifest.Rulings);
         Assert.Same(manifest, Cna1979Ruleset.Manifest);
         Assert.True(Cna1979Ruleset.IsCanonicalHash(manifest.Hash));
@@ -35,7 +39,7 @@ public sealed class RulesetManifestTests
     [Fact]
     public void LandCatalogHashChangesWhenNormalizedCatalogSemanticsChange()
     {
-        var baseline = Cna1979LandSequence.CreateTurn(1, LandSide.Axis);
+        var baseline = Cna1979LandSequence.CreateTurn(1);
         var changed = baseline.ToArray();
         var position = changed[0];
         changed[0] = new LandSequencePosition(
@@ -47,8 +51,9 @@ public sealed class RulesetManifestTests
             "land.phase.changed-for-test",
             position.SegmentId,
             position.StepId,
-            position.Sources,
-            position.ActiveSide);
+            position.ActorRole,
+            position.ActiveSide,
+            position.Sources);
 
         var baselineHash = Cna1979Ruleset.CalculateLandSequenceContentHash(baseline);
         var changedHash = Cna1979Ruleset.CalculateLandSequenceContentHash(changed);
@@ -60,7 +65,7 @@ public sealed class RulesetManifestTests
     public void LandCatalogHashIncludesCanonicalPerPositionSources()
     {
         var position = Cna1979LandSequence
-            .CreateTurn(1, LandSide.Axis)
+            .CreateTurn(1)
             .First(value => value.PositionId.Contains(".first-player.", StringComparison.Ordinal));
         var reorderedSources = new LandSequencePosition(
             position.ContractVersion,
@@ -71,8 +76,9 @@ public sealed class RulesetManifestTests
             position.PhaseId,
             position.SegmentId,
             position.StepId,
-            position.Sources.Reverse(),
-            position.ActiveSide);
+            position.ActorRole,
+            position.ActiveSide,
+            position.Sources.Reverse().ToArray());
         var missingOrderSource = new LandSequencePosition(
             position.ContractVersion,
             position.PositionId,
@@ -82,8 +88,9 @@ public sealed class RulesetManifestTests
             position.PhaseId,
             position.SegmentId,
             position.StepId,
-            [Cna1979LandSequence.SourceReference],
-            position.ActiveSide);
+            position.ActorRole,
+            position.ActiveSide,
+            [Cna1979LandSequence.SourceReference]);
 
         var baselineHash = Cna1979Ruleset.CalculateLandSequenceContentHash([position]);
         var reorderedHash = Cna1979Ruleset.CalculateLandSequenceContentHash([reorderedSources]);
@@ -91,6 +98,30 @@ public sealed class RulesetManifestTests
 
         Assert.Equal(baselineHash, reorderedHash);
         Assert.NotEqual(baselineHash, missingSourceHash);
+    }
+
+    [Fact]
+    public void LandCatalogHashIncludesActorRoleSemantics()
+    {
+        var position = Cna1979LandSequence
+            .CreateTurn(1)
+            .First(value => value.ActorRole == LandActorRole.FirstActingSide);
+        var changedRole = new LandSequencePosition(
+            position.ContractVersion,
+            position.PositionId,
+            position.GameTurn,
+            position.OperationStage,
+            position.StageId,
+            position.PhaseId,
+            position.SegmentId,
+            position.StepId,
+            LandActorRole.SecondActingSide,
+            position.ActiveSide,
+            position.Sources);
+
+        Assert.NotEqual(
+            Cna1979Ruleset.CalculateLandSequenceContentHash([position]),
+            Cna1979Ruleset.CalculateLandSequenceContentHash([changedRole]));
     }
 
     [Fact]

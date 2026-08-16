@@ -531,27 +531,35 @@ therefore uses versioned phase/segment identifiers instead of a monolithic `Adva
 
 The initial `Cna.Core` implementation makes that boundary executable. `Cna.Core.Rules` defines
 source-cited normalized artifacts, complete adopted-ruling metadata, a canonical `cna-1979.1`
-manifest derived from the Land sequence catalog, and the Land-only sequence-outline hierarchy from
-the original rules. Operation Stage actor order follows the source rule, including the reversed
-initiative-holder order in Stage 2. `Cna.Core.Campaigns` uses pure command decisions and immutable
-events to create a campaign only against that canonical manifest. It validates caller-supplied
-snapshots before adjudication and rejects progression at Initiative Determination because the
-mandatory rule has not yet been implemented; inspecting later catalog positions is explicitly a
-non-authoritative rehearsal, not an event-producing shortcut. A projector rejects inconsistent
-trusted history, while canonical snapshot serialization and a replay harness prove reconstruction
-of accepted campaign history. These events have no ambient timestamps or generated IDs, and no
-random draw is modeled before a real rule consumes one; the recorded seed is reserved for that
-first seeded mechanic.
+manifest derived from the Land sequence, Initiative Ratings, and deterministic-random artifacts,
+and the Land-only sequence hierarchy from the original rules. Sequence positions expose actor roles
+rather than a fixed first player: the initiative holder remains distinct from the side that later
+chooses to act first or last in each Operation Stage. `Cna.Core.Setups` binds campaign creation to
+recognized, provenance-bearing fixtures, while `Cna.Core.Randomness` owns the versioned SHA-256
+counter stream consumed by authoritative rules. `Cna.Core.Campaigns` uses pure command decisions
+and immutable events to create a campaign against the canonical manifest, resolve predetermined or
+contested Initiative Determination, and stop at Naval Convoy. It validates caller snapshots before
+adjudication and recomputes initiative events during projection rather than trusting caller-supplied
+dice, ratings, sources, or winners. Canonical snapshot and event serialization plus the replay
+harness prove reconstruction of accepted campaign history without ambient timestamps or generated
+identifiers.
 
 The current projector is a trusted-history contract, not an untrusted ingestion boundary. Before
 Chronicle events can arrive from persistence, transport, or another process, that boundary must
-authenticate and validate event provenance and add a positive contiguous-advance replay contract
-for the first implemented mechanic.
+authenticate event provenance. The projector already validates the complete contiguous creation
+and Initiative transition; persistence and transport remain outside this slice.
 
 Copyrighted source scans and original component art remain outside the repository unless explicit
 permission is recorded. Sandtable uses normalized, provenance-bearing rule data and original
 visuals. See the [source-material spike](docs/research/cna-source-material-spike.md) and
 [pre-alpha roadmap](docs/roadmap/pre-alpha-roadmap.md) for evidence, scope, and decision gates.
+
+The implemented Initiative Determination slice resolves the first random authoritative mechanic
+through a versioned repository-owned stream and stops at Naval Convoy. Its
+[specification](docs/specs/initiative-determination.md),
+[technical design](docs/design/initiative-determination.md), and
+[research packet](docs/research/initiative-determination-spike.md) define the source correction,
+contracts, replay invariants, implementation checkpoints, and verification boundary.
 
 [1]: https://learn.microsoft.com/en-us/dotnet/orleans/grains/external-tasks-and-grains?utm_source=chatgpt.com "External tasks and grains - .NET | Microsoft Learn"
 [2]: https://learn.microsoft.com/en-us/aspnet/core/grpc/performance?view=aspnetcore-10.0&utm_source=chatgpt.com "Performance best practices with gRPC | Microsoft Learn"

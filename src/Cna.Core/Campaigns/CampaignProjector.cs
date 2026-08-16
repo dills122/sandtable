@@ -1,3 +1,4 @@
+using Cna.Core.Randomness;
 using Cna.Core.Rules;
 
 namespace Cna.Core.Campaigns;
@@ -7,7 +8,6 @@ public static class CampaignProjector
     public static CampaignSnapshot Replay(IEnumerable<CampaignEvent> events)
     {
         ArgumentNullException.ThrowIfNull(events);
-
         CampaignSnapshot? snapshot = null;
 
         foreach (var campaignEvent in events)
@@ -25,10 +25,18 @@ public static class CampaignProjector
     {
         ArgumentNullException.ThrowIfNull(campaignEvent);
 
+        if (snapshot is not null && !CampaignSnapshotValidator.IsValid(snapshot))
+        {
+            throw new InvalidCampaignHistoryException(
+                "The prior campaign snapshot is invalid.");
+        }
+
         return campaignEvent switch
         {
             CampaignCreated created => ApplyCreated(snapshot, created),
-            CampaignSequenceAdvanced advanced => ApplyAdvanced(snapshot, advanced),
+            InitiativeDetermined determined => ApplyInitiativeDetermined(snapshot, determined),
+            CampaignSequenceAdvanced => throw new InvalidCampaignHistoryException(
+                "Legacy generic sequence events are not valid version-2 campaign history."),
             _ => throw new InvalidCampaignHistoryException("Unsupported campaign event type."),
         };
     }
@@ -43,16 +51,24 @@ public static class CampaignProjector
                 "A campaign can contain only one creation event.");
         }
 
-        if (created.ContractVersion != 1
+        if (created.ContractVersion != 2
             || created.StateVersion != 1
             || string.IsNullOrWhiteSpace(created.CampaignId)
-            || string.IsNullOrWhiteSpace(created.RulesetHash)
-            || !Enum.IsDefined(created.FirstPlayer))
+            || !Cna1979Ruleset.IsCanonicalHash(created.RulesetHash)
+            || !CampaignSnapshotValidator.IsValidSetup(created.Setup)
+            || created.RandomState is null
+            || created.RandomState.ContractVersion != SandtableRandom.ContractVersion
+            || !string.Equals(
+                created.RandomState.AlgorithmId,
+                SandtableRandom.AlgorithmId,
+                StringComparison.Ordinal)
+            || created.RandomState.NextByteCursor != 0)
         {
             throw new InvalidCampaignHistoryException("The campaign creation event is invalid.");
         }
 
-        var expectedPosition = Cna1979LandSequence.CreateTurn(1, created.FirstPlayer)[0];
+        var expectedPosition = Cna1979LandSequence.CreateTurn(
+            created.Setup.InitialGameTurn)[0];
 
         if (created.SequencePosition != expectedPosition)
         {
@@ -60,12 +76,13 @@ public static class CampaignProjector
         }
 
         var projected = new CampaignSnapshot(
-            1,
+            2,
             created.CampaignId,
             created.StateVersion,
             created.RulesetHash,
-            created.Seed,
-            created.FirstPlayer,
+            created.Setup,
+            null,
+            created.RandomState,
             created.SequencePosition);
 
         if (!CampaignSnapshotValidator.IsValid(projected))
@@ -76,52 +93,51 @@ public static class CampaignProjector
         return projected;
     }
 
-    private static CampaignSnapshot ApplyAdvanced(
+    private static CampaignSnapshot ApplyInitiativeDetermined(
         CampaignSnapshot? snapshot,
-        CampaignSequenceAdvanced advanced)
+        InitiativeDetermined determined)
     {
         if (snapshot is null)
         {
             throw new InvalidCampaignHistoryException(
-                "A sequence event cannot precede campaign creation.");
+                "An Initiative event cannot precede campaign creation.");
         }
 
-        LandSequencePosition expectedPosition;
+        InitiativeDetermined expected;
 
         try
         {
-            expectedPosition = Cna1979LandSequence.GetNext(
-                snapshot.SequencePosition,
-                snapshot.FirstPlayer);
+            expected = InitiativeEventFactory.Create(snapshot);
         }
-        catch (ArgumentException exception)
+        catch (Exception exception) when (exception is ArgumentException
+            or ArithmeticException
+            or InvalidOperationException)
         {
             throw new InvalidCampaignHistoryException(exception.Message);
         }
 
-        if (advanced.ContractVersion != 1
-            || !string.Equals(advanced.CampaignId, snapshot.CampaignId, StringComparison.Ordinal)
-            || advanced.StateVersion != checked(snapshot.StateVersion + 1)
-            || !string.Equals(
-                advanced.FromPositionId,
-                snapshot.SequencePosition.PositionId,
-                StringComparison.Ordinal)
-            || advanced.SequencePosition != expectedPosition)
+        if (determined != expected)
         {
             throw new InvalidCampaignHistoryException(
-                "The sequence event is inconsistent with campaign history.");
+                "The Initiative event is inconsistent with campaign history.");
         }
 
         var projected = snapshot with
         {
-            StateVersion = advanced.StateVersion,
-            SequencePosition = advanced.SequencePosition,
+            StateVersion = determined.StateVersion,
+            InitiativeHolder = determined.Outcome.Holder,
+            RandomState = new RandomStreamState(
+                snapshot.RandomState.ContractVersion,
+                snapshot.RandomState.AlgorithmId,
+                snapshot.RandomState.Seed,
+                determined.RandomCursorAfter),
+            SequencePosition = determined.SequencePosition,
         };
 
         if (!CampaignSnapshotValidator.IsValid(projected))
         {
             throw new InvalidCampaignHistoryException(
-                "The sequence event produces invalid campaign state.");
+                "The Initiative event produces invalid campaign state.");
         }
 
         return projected;
