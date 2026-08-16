@@ -450,6 +450,18 @@ Scenario
 
 That terminology scales beautifully if Sandtable ever supports other games.
 
+Use three related terms precisely in the implementation:
+
+| Term | Meaning |
+| --- | --- |
+| **Content Pack** | Immutable, versioned static topology, force structure, and scenario definitions with independent canonical identity. It is a Core domain artifact, not a service or player DTO. |
+| **Scenario** | One playable temporal/deployment definition inside a Content Pack. A scenario does not itself create or mutate a campaign. |
+| **Setup** | Campaign admission policy selecting recognized rules, content/scenario identity, seed, and any still-separate initialization policy. Setup is not a synonym for Content Pack. |
+
+Presentation labels and original visuals are separate from authoritative Content Pack identity.
+The **Theater** is the runtime geographic/world concept assembled from exact content plus campaign
+state; it is not the serialized source scan or the pack catalog.
+
 ---
 
 # 11. ORBAT — forces and formations

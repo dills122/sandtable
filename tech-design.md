@@ -513,6 +513,8 @@ The first delivery path follows the game's published modular structure:
 
 ```text
 rules laboratory
+    -> campaign world and side-safe legal actions
+    -> mandatory turn preamble
     -> replayable Land movement/contact/combat skeleton
     -> Land-only Graziani's Offensive scenario
     -> detailed Air Game
@@ -520,8 +522,10 @@ rules laboratory
     -> later scenarios and full campaign
 ```
 
-Authoritative rules, tables, scenario data, and adopted rulings carry stable source references and
-participate in the ruleset hash. Commands produce events; events rebuild campaign state; snapshots
+Authoritative rules, tables, rules-owned vocabulary, and adopted rulings carry stable source
+references and participate in the ruleset hash. Static topology, force assignments, and scenario
+declarations carry their own provenance and participate in an independent content hash. A campaign
+records both exact identities. Commands produce events; events rebuild campaign state; snapshots
 are replay checkpoints. Unsupported mechanics fail explicitly rather than falling through to a
 plausible approximation.
 
@@ -560,6 +564,25 @@ through a versioned repository-owned stream and stops at Naval Convoy. Its
 [technical design](docs/design/initiative-determination.md), and
 [research packet](docs/research/initiative-determination-spike.md) define the source correction,
 contracts, replay invariants, implementation checkpoints, and verification boundary.
+
+The proposed next static-data boundary is Content Pack v1. `Cna.Core.Content` will own immutable
+versioned topology, formation/element structure, scenario deployment declarations, per-datum
+origins, validation, and an independent canonical content hash. Rules remain the authority for
+side, terrain, edge, organization, and derived table meanings; campaigns later own exact
+content binding and mutable world state; player observations remain a separate redacted contract.
+Printed coordinates are audit metadata and explicit edges are adjacency authority. The first pack
+is an original nine-hex nonhistorical rules laboratory using the same path intended for future
+source-derived content.
+
+Campaign admission will eventually record exact ruleset and content identities and resolve
+immutable historical content before an authoritative grain turn; the Umpire will perform no
+network or persistence I/O. The current campaign schema is unchanged by the content-foundation
+work. Before movement becomes authoritative, a separate turn-preamble capability must implement
+the exercised Naval Convoy, Initiative Declaration, and Weather Determination rules without a
+generic sequence bypass. See the Content Pack v1
+[research](docs/research/content-pack-v1-spike.md),
+[specification](docs/specs/content-pack-v1.md), and
+[technical design](docs/design/content-pack-v1.md).
 
 [1]: https://learn.microsoft.com/en-us/dotnet/orleans/grains/external-tasks-and-grains?utm_source=chatgpt.com "External tasks and grains - .NET | Microsoft Learn"
 [2]: https://learn.microsoft.com/en-us/aspnet/core/grpc/performance?view=aspnetcore-10.0&utm_source=chatgpt.com "Performance best practices with gRPC | Microsoft Learn"
