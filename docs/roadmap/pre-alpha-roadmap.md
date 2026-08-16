@@ -395,6 +395,9 @@ commitment to force every subsystem into one oversized change.
 - Render an original schematic map, selectable formations, legal actions, phase status, and
   Chronicle explanations.
 - Support local hot-seat play, save/checkpoint, restart, and deterministic replay.
+- Instrument or record decision cadence, consecutive interaction bursts, pauses, and routine versus
+  meaningful player choices needed by `WEB-PACE-EVAL-001`; this evidence is product research, not
+  authority inside the game.
 - Keep model-backed Intelligence disabled; a deterministic scripted policy may be added only after
   the legal-action surface and fallback behavior are complete.
 
@@ -407,6 +410,25 @@ commitment to force every subsystem into one oversized change.
 - Save/resume and seed/event replay reproduce the same campaign.
 - Fog-of-war and hidden choices pass negative disclosure tests.
 - Rights-sensitive assets have documented permission or original replacements.
+
+### Post-MVP web-play pacing evidence gate (`WEB-PACE-EVAL-001`)
+
+This gate does not block calling the local six-turn scenario playable. It blocks generalizing the
+Campaign Cruise and Engagement Session hypothesis to longer scenarios or starting hosted timing,
+delegation, and notification implementation without evidence.
+
+- Record every human decision barrier in at least two complete six-turn playthroughs, including
+  elapsed response rhythm, consecutive high-interaction bursts, safe decision boundaries, and
+  decisions that players judge routine enough for optional deterministic Staff.
+- Determine whether the scenario actually exercises Cruise-like gaps, Engagement-like bursts,
+  human/Staff handoff, timeout/pause pressure, and fog-sensitive workflow metadata.
+- If it does not, retain the evidence gap and add a bounded rules-laboratory rehearsal or a longer
+  scenario study. Do not infer 111-turn campaign behavior from six turns merely because the MVP
+  completed.
+- Review proposed numeric Cruise deadlines, Engagement duration, invitation response window,
+  reminder/grace sequence, quiet hours, and digest behavior with players before selecting defaults.
+- Produce a decision record that accepts, revises, or rejects the pacing hypothesis and links its
+  evidence. Only an accepted result may unblock `WEB-PACE-001` implementation planning.
 
 ## Risks and mitigations
 
@@ -430,6 +452,8 @@ commitment to force every subsystem into one oversized change.
 4. **After Sprint 5:** review the working skeleton and re-estimate scenario ingestion.
 5. **Before Sprint 6:** approve the published content-pack and rights workflow.
 6. **At MVP:** perform rules-fidelity, security, and code-quality reviews before calling it playable.
+7. **After MVP, before hosted lifecycle work:** execute `WEB-PACE-EVAL-001`; insufficient coverage
+   remains a recorded gap and cannot silently approve Cruise/Engagement timing for long campaigns.
 
 ## Traceability
 
@@ -439,3 +463,8 @@ link its tests and adopted rulings back to the governing requirement IDs above. 
 requirements and deferrals are traced in its
 [specification](../specs/content-pack-v1.md) and
 [technical design](../design/content-pack-v1.md).
+The accepted web-play decisions, independent-review reconciliation, and `WEB-017` through
+`WEB-022` consequences are retained in the
+[persona/web-play synthesis](../research/persona-models-and-web-play-synthesis.md) and
+[web-play shape spike](../research/sandtable-web-play-shape-spike.md). `WEB-PACE-EVAL-001` is the
+roadmap evidence gate for `WEB-022`.

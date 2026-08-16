@@ -64,6 +64,11 @@ The current Umpire foundation is intentionally pure and in-process:
 `global.json` pins .NET 10 and selects Microsoft.Testing.Platform for `dotnet test`. .NET 10 is the
 active LTS release; Microsoft supports it through November 2028.
 
+Codex-managed worktrees use `.codex/environments/environment.toml` to seed the repository's
+Git-ignored AI Central skills and steering before a task starts. The setup expects AI Central at
+`$HOME/.ai-central` by default; set `AI_CENTRAL_HOME` when the shared checkout lives elsewhere.
+The seeder copies only its allowlisted AI context and does not overwrite worktree-owned files.
+
 ## Get Started
 
 ```sh
