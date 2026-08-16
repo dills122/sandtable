@@ -12,12 +12,11 @@ predetermined or contested Initiative Determination through a versioned determin
 stream, replays the canonical event bytes to identical state, and then stops honestly at Naval
 Convoy. Movement, combat, published scenario content, persistence, and Maproom remain future work.
 
-The proposed next foundation is a versioned Content Pack v1 and an original nine-hex
-rules-laboratory fixture. Its research, specification, and technical design keep static content
-identity separate from the ruleset hash, make explicit graph edges authoritative for topology,
-and preserve campaign/world/observation changes as later versioned capabilities. A fresh
-independent review returned `Ready`; production implementation remains gated by project-owner
-approval.
+The next foundation is now implemented as Content Pack v1 and an original nine-hex
+rules-laboratory fixture. `Cna.Core.Content` provides immutable content contracts, deterministic
+multi-issue validation, strict canonical JSON, an independent `sha256:` identity, exact
+hash-addressed catalog lookup, and separate non-authoritative presentation data. Campaign world
+binding, side-safe observations, and legal actions remain the next Sprint 2 capabilities.
 
 ## Architecture
 
@@ -50,6 +49,8 @@ The current Umpire foundation is intentionally pure and in-process:
   vectors used by authoritative mechanics.
 - `Cna.Core.Setups` owns recognized provenance-bearing synthetic setup fixtures; callers cannot
   supply free-form initiative inputs.
+- `Cna.Core.Content` owns validated immutable topology, force structure, scenario declarations,
+  per-datum origins, canonical bytes/hash, and the original nonhistorical rules laboratory.
 - `Cna.Core.Campaigns` owns versioned commands/events, typed rejection, canonical snapshots, and
   deterministic Initiative adjudication, canonical event serialization, and the replay harness.
 - The sequence catalog cites the original Land Rules without embedding copyrighted rules prose or

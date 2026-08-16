@@ -1,6 +1,6 @@
 # Content Pack v1 Spike
 
-**Status:** Independently reviewed; awaiting project-owner approval
+**Status:** Approved and implemented
 
 **Date:** 2026-08-16
 
@@ -76,8 +76,9 @@ The research:
 Source priority was original SPI rules/maps/charts, adopted repository rulings, official technical
 documentation, then repository evidence. Community material was not needed for this decision.
 
-The spike stops at a reviewed decision packet, normative specification, technical design,
-traceability plan, and corrected roadmap. Production code requires project-owner approval.
+The spike stopped at a reviewed decision packet, normative specification, technical design,
+traceability plan, and corrected roadmap. The owner subsequently approved that package and the
+Content Pack v1 implementation followed it.
 
 ## Decision criteria
 
@@ -272,11 +273,11 @@ ports, reinforcement schedules, facilities, air/naval entities, or detailed TOE 
 - Exact published-map transcription tooling and double-entry verification. That belongs to the
   later content/rights gate.
 
-## Owner decision requested
+## Owner decision
 
-Approve the recommended boundary and the linked specification/design for a test-first
-implementation of Content Pack v1 and the synthetic fixture. Approval does not authorize published
-scenario transcription or campaign/world schema changes.
+The project owner approved the recommended boundary and linked specification/design for the
+test-first Content Pack v1 implementation. That approval does not authorize published scenario
+transcription or campaign/world schema changes.
 
 ## Sources
 

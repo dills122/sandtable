@@ -102,6 +102,7 @@ public static class Cna1979Ruleset
             [
                 sequenceArtifact,
                 Cna1979InitiativeRatings.CreateArtifact(),
+                Cna1979ContentVocabulary.CreateArtifact(),
                 Cna1979RandomProcedure.CreateArtifact(),
             ],
             []);

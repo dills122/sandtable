@@ -1,6 +1,6 @@
 # Content Pack v1 Specification
 
-**Status:** Independently reviewed; awaiting project-owner approval
+**Status:** Implemented; independent implementation review pending
 
 **Date:** 2026-08-16
 
@@ -233,11 +233,8 @@ Explicitly deferred:
 
 ## Open questions and owner choices
 
-No choice blocks the proposed Content Pack v1 implementation. The owner should confirm:
-
-- that nine hexes/four elements is the desired small fixture boundary; and
-- that a separate presentation catalog is worth the clean identity boundary despite a future UI
-  join.
+The project owner approved the nine-hex/four-element fixture and the separate presentation catalog
+boundary. No Content Pack v1 owner choice remains open.
 
 Persistence technology for historical content and the exact Naval Convoy capability are deliberate
 later decisions.
@@ -250,4 +247,5 @@ repository gate passes, the roadmap/design documents remain synchronized, no cop
 present, and a fresh independent reviewer reports no blocking correctness or implementation-plan
 gap.
 
-Project-owner approval of this specification is required before production implementation.
+Project-owner approval was received before production implementation. Fresh implementation review
+and full-gate evidence remain required before merge.

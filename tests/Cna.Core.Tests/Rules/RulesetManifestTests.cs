@@ -14,7 +14,7 @@ public sealed class RulesetManifestTests
 
         Assert.Equal("cna-1979.1", manifest.RulesetId);
         Assert.Equal(2, manifest.ContractVersion);
-        Assert.Equal(3, manifest.Artifacts.Count);
+        Assert.Equal(4, manifest.Artifacts.Count);
         Assert.Equal("cna-1979.1.land-sequence", artifact.ArtifactId);
         Assert.Equal(
             Cna1979Ruleset.CalculateLandSequenceContentHash(
