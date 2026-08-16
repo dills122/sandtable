@@ -71,6 +71,11 @@ Command → Umpire → Events
 
 That's an excellent architectural principle _and_ flavorful terminology.
 
+The first implementation maps these names conservatively: `Cna.Core.Campaigns.CampaignEngine`
+decides commands, campaign event records are the Chronicle's authoritative input, and
+`CampaignProjector` plus `CampaignReplayHarness` reconstruct snapshots. Those plain technical names
+stay inside the Umpire boundary; they are not additional products or services.
+
 ---
 
 # 2. Maproom — the player-facing application

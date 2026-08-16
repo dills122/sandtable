@@ -3,9 +3,11 @@
 Sandtable is a deterministic campaign simulation with an optional intelligence plane. The
 authoritative game remains reproducible and playable when model-backed services are unavailable.
 
-The repository is at its architecture-baseline stage: the service boundaries, contracts, build,
-tests, local orchestration, and CI are ready; campaign rules and player-facing Maproom features are
-not implemented yet.
+The repository now has its first executable Umpire spine in addition to the service scaffolding.
+`Cna.Core` can hash a source-cited ruleset manifest, traverse the versioned 1979 Land Game sequence,
+accept or reject campaign commands, emit authoritative events, and replay those events to a
+byte-equivalent canonical snapshot. The implemented demonstration reaches the first player's first
+Movement segment; movement, combat, scenario content, persistence, and Maproom remain future work.
 
 ## Architecture
 
@@ -28,6 +30,15 @@ The governing rule is:
 
 The intelligence gateway receives redacted observations and returns proposals. It never owns game
 state, resolves rules, sees hidden opposing state, or blocks an authoritative Orleans grain turn.
+
+The current Umpire foundation is intentionally pure and in-process:
+
+- `Cna.Core.Rules` owns source references, rulings, canonical ruleset hashing, and the hierarchical
+  Land sequence catalog.
+- `Cna.Core.Campaigns` owns versioned commands/events, typed rejection, canonical snapshots, and
+  the replay harness.
+- The sequence catalog cites original Land Rules section 5.2 without embedding copyrighted rules
+  prose or component art.
 
 ## Prerequisites
 
@@ -74,6 +85,8 @@ workflow and [SECURITY.md](SECURITY.md) for vulnerability reporting.
 
 - [Technical design](tech-design.md)
 - [Naming and domain vocabulary](naming-overview.md)
+- [Campaign for North Africa source-material spike](docs/research/cna-source-material-spike.md)
+- [Pre-alpha roadmap](docs/roadmap/pre-alpha-roadmap.md)
 - [Microsoft Orleans documentation](https://learn.microsoft.com/en-us/dotnet/orleans/)
 - [ASP.NET Core gRPC services](https://learn.microsoft.com/en-us/aspnet/core/grpc/aspnetcore?view=aspnetcore-10.0)
 - [Aspire AppHost and ServiceDefaults](https://learn.microsoft.com/en-us/dotnet/aspire/fundamentals/aspire-sdk-templates)
