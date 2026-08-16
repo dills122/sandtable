@@ -12,6 +12,13 @@ predetermined or contested Initiative Determination through a versioned determin
 stream, replays the canonical event bytes to identical state, and then stops honestly at Naval
 Convoy. Movement, combat, published scenario content, persistence, and Maproom remain future work.
 
+The proposed next foundation is a versioned Content Pack v1 and an original nine-hex
+rules-laboratory fixture. Its research, specification, and technical design keep static content
+identity separate from the ruleset hash, make explicit graph edges authoritative for topology,
+and preserve campaign/world/observation changes as later versioned capabilities. A fresh
+independent review returned `Ready`; production implementation remains gated by project-owner
+approval.
+
 ## Architecture
 
 | Project | Responsibility |
@@ -99,6 +106,9 @@ workflow and [SECURITY.md](SECURITY.md) for vulnerability reporting.
 - [Initiative Determination research](docs/research/initiative-determination-spike.md)
 - [Initiative Determination specification](docs/specs/initiative-determination.md)
 - [Initiative Determination technical design](docs/design/initiative-determination.md)
+- [Content Pack v1 research](docs/research/content-pack-v1-spike.md)
+- [Content Pack v1 specification](docs/specs/content-pack-v1.md)
+- [Content Pack v1 technical design](docs/design/content-pack-v1.md)
 - [Microsoft Orleans documentation](https://learn.microsoft.com/en-us/dotnet/orleans/)
 - [ASP.NET Core gRPC services](https://learn.microsoft.com/en-us/aspnet/core/grpc/aspnetcore?view=aspnetcore-10.0)
 - [Aspire AppHost and ServiceDefaults](https://learn.microsoft.com/en-us/dotnet/aspire/fundamentals/aspire-sdk-templates)

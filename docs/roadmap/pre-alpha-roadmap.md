@@ -13,7 +13,7 @@ of the shortest published scenario. Future architecture is protected through typ
 versioned rule data, replay, source provenance, and explicit extension points. Unsupported rules
 remain unsupported; they are never replaced with invented approximations.
 
-Sprints below are capability increments rather than calendar promises. The first four are planned
+Sprints below are capability increments rather than calendar promises. The first five are planned
 in implementation-sized tasks. Later work remains milestone-level until the skeleton exposes the
 real transcription and integration cost.
 
@@ -69,8 +69,14 @@ Replayable Umpire spine
            v
 Rules-laboratory content -----> Content/rights gate
            |                           |
-           v                           v
-Movement/contact loop        Scenario data ingestion
+           v                           |
+World + side-safe actions               |
+           |                           |
+           v                           |
+Mandatory turn preamble                |
+           |                           v
+           v                  Scenario data ingestion
+Movement/contact loop                   |
            |                           |
            v                           |
 Combat loop <--------------------------+
@@ -177,6 +183,12 @@ Implementation and acceptance evidence are tracked in the
 
 **Goal:** Load an original, license-safe test theater and expose only legal, side-safe actions.
 
+Content Pack v1 is governed by the
+[research packet](../research/content-pack-v1-spike.md),
+[specification](../specs/content-pack-v1.md), and
+[technical design](../design/content-pack-v1.md). A fresh independent readback returned `Ready`;
+the production implementation begins only after project-owner approval.
+
 ### Task 2.1 - Versioned content schemas
 
 Define schemas for hexes/hexsides, terrain, sides, formations, combat elements, placements, and
@@ -199,15 +211,38 @@ first vertical slice. It must be visibly labeled nonhistorical and not presented
 - It loads through the same path intended for published-scenario data.
 - No test depends on original map or counter artwork.
 
-### Task 2.3 - Observation and legal-action queries
+### Task 2.3 - Content admission and initial campaign world
 
-Generate side-specific observations and currently legal commands without mutating state.
+Bind the exact content ID/hash and selected scenario to a versioned campaign world and project its
+initial entity positions through authoritative creation history.
 
 **Acceptance criteria:**
 
-- Hidden opposing details never appear in an observation or candidate action.
+- Missing or mismatched historical content rejects before campaign creation and replay never
+  resolves a mutable “latest” catalog entry.
+- Creation records exact ruleset/content identities and replay recreates byte-identical initial
+  world state using the matching historical executable and content bytes.
+
+### Task 2.4 - Side-safe observation projection
+
+Project the authoritative content/world for one acting side without mutating state.
+
+**Acceptance criteria:**
+
+- Hidden opposing details never appear in an observation.
+- Full Content Pack/world values never appear in a player or Intelligence DTO.
+- Equal state and side produce byte-equivalent observations.
+
+### Task 2.5 - Legal-action generation and enforcement
+
+Generate currently legal commands from side-safe state and enforce optimistic concurrency.
+
+**Acceptance criteria:**
+
+- Hidden opposing details never appear in a candidate action.
 - Every accepted command was present in the acting side's legal-action set.
 - Stale actions are rejected by state version.
+- Querying legal actions does not mutate state or consume randomness.
 
 **Verification:** Schema validation tests, fog-of-war negative tests, full repository gate.
 
@@ -216,11 +251,50 @@ Generate side-specific observations and currently legal commands without mutatin
 Load the rules laboratory, inspect one side's redacted state, and select an action from the legal
 set while the opposing hidden state remains absent from logs and responses.
 
-## Sprint 3: Continual movement and contact
+## Sprint 3: Mandatory turn preamble
+
+**Goal:** Advance from Naval Convoy to the first player-execution phase without skipping a
+mandatory rule or deleting the initiative holder's choices.
+
+### Task 3.1 - Turn-preamble source and contract spike
+
+Determine the smallest source-faithful Naval Convoy, Initiative Declaration, and Weather
+Determination capability exercised by the rules laboratory. Define commands, events, normalized
+tables, required content/world facts, and explicit unsupported cases before implementation.
+
+### Task 3.2 - Naval Convoy and Initiative Declaration
+
+Implement the required Naval Convoy decision/resolution and the initiative holder's separate
+first-or-last declaration for each Operation Stage. No generic sequence command may bypass either
+mechanic.
+
+### Task 3.3 - Weather Determination and stage entry
+
+Resolve the required source-cited weather procedure through the versioned random stream and enter
+the declared first-acting side's first player phase.
+
+**Acceptance criteria:**
+
+- Every accepted transition is produced by a mechanic-specific command/event and replays exactly.
+- Unsupported Naval Convoy or weather cases stop with typed rejection and zero events.
+- Initiative holder, first-acting side, and second-acting side remain separate authoritative facts.
+- A side-safe legal-action query exposes only the decisions available at the current preamble step.
+- The campaign reaches a movement-capable player phase only after all required preamble mechanics
+  are complete.
+
+**Verification:** Source/table boundary tests, forged-history negatives, deterministic replay, and
+the full repository gate.
+
+### Sprint 3 demonstration
+
+Continue the synthetic campaign from Naval Convoy, make the available preamble decisions, resolve
+weather, and stop at the correct first-acting player phase with a replay-identical Chronicle.
+
+## Sprint 4: Continual movement and contact
 
 **Goal:** Complete the movement half of one authentic movement/contact/combat loop.
 
-### Task 3.1 - Capability Points and cohesion ledger
+### Task 4.1 - Capability Points and cohesion ledger
 
 Implement source-cited Capability Point expenditure, over-extension, disorganization, and
 reorganization as events.
@@ -231,7 +305,7 @@ reorganization as events.
 - Rejected expenditure emits no authoritative event.
 - Replaying the ledger recreates the same remaining capability and cohesion.
 
-### Task 3.2 - Terrain, stacking, and zones of control
+### Task 4.2 - Terrain, stacking, and zones of control
 
 Implement only the terrain and unit categories present in the rules laboratory, using normalized
 tables rather than resolver constants.
@@ -242,7 +316,7 @@ tables rather than resolver constants.
 - Stacking and ZOC violations are rejected before movement.
 - Adding an unsupported terrain/unit category fails explicitly.
 
-### Task 3.3 - Continual movement, reaction, and contact
+### Task 4.3 - Continual movement, reaction, and contact
 
 Allow repeatable movement segments, contact state, reaction, and break-off decisions within the
 correct player phase.
@@ -255,26 +329,26 @@ correct player phase.
 
 **Verification:** Table-driven deterministic tests for legal, illegal, boundary, and replay cases.
 
-### Sprint 3 demonstration
+### Sprint 4 demonstration
 
 Move a formation across different terrain, enter contact, resolve a reaction, spend capability,
 and show the resulting cohesion and Chronicle explanation.
 
-## Sprint 4: One complete combat loop
+## Sprint 5: One complete combat loop
 
 **Goal:** Resolve a representative combat from declaration through final state.
 
-### Task 4.1 - Combat declaration and force assignment
+### Task 5.1 - Combat declaration and force assignment
 
 Model position determination, barrage declaration, retreat-before-assault, and secret force
 assignment without exposing the opponent's hidden choice.
 
-### Task 4.2 - Seeded combat resolution
+### Task 5.2 - Seeded combat resolution
 
 Implement the minimum source-cited barrage, anti-armor, and close-assault table rows needed by the
 fixture. Record dice, modifiers, table coordinates, and outcomes as events.
 
-### Task 4.3 - Losses, retreat, and reserve release
+### Task 5.3 - Losses, retreat, and reserve release
 
 Apply casualties, cohesion/morale effects, retreat/surrender conditions used by the fixture, and
 reserve release in sequence.
@@ -288,14 +362,14 @@ reserve release in sequence.
 
 **Verification:** Golden event-stream tests plus full repository gate.
 
-### Sprint 4 demonstration and pre-alpha checkpoint
+### Sprint 5 demonstration and pre-alpha checkpoint
 
 Complete movement, contact, combat, loss application, and reserve release in the rules laboratory;
 restart from the seed/event log and obtain the same result. This is the working pre-alpha skeleton.
 
 ## Post-skeleton milestones toward the first playable MVP
 
-### Sprint 5 - Scenario Group One content
+### Sprint 6 - Scenario Group One content
 
 - Establish the approved local/external content-pack workflow.
 - Normalize and independently verify the required map topology, terrain, order of battle, initial
@@ -303,10 +377,9 @@ restart from the seed/event log and obtain the same result. This is the working 
 - Load `Graziani's Offensive` with no dangling references and a reproducible content hash.
 - Cross-check setup against original sources, September errata, and the VASSAL/community aids.
 
-### Sprint 6 - Remaining required Land systems
+### Sprint 7 - Remaining required Land systems
 
-- Initiative Declaration, weather, and any initiative cases not exercised by the earlier
-  determination slice.
+- Any initiative, convoy, or weather cases not exercised by the pre-alpha rules laboratory.
 - Organization/reorganization, reserve, breakdown/repair, patrol, and construction cases exercised
   by the first scenario.
 - Published abstract Air/Logistics behavior required for Land-only play, with known uncertainty
@@ -316,7 +389,7 @@ restart from the seed/event log and obtain the same result. This is the working 
 This sprint should be split after the scenario's exercised-rule inventory is measured; it is not a
 commitment to force every subsystem into one oversized change.
 
-### Sprint 7 - Minimal Maproom and campaign lifecycle
+### Sprint 8 - Minimal Maproom and campaign lifecycle
 
 - Start or resume the first scenario through the authoritative host.
 - Render an original schematic map, selectable formations, legal actions, phase status, and
@@ -352,12 +425,17 @@ commitment to force every subsystem into one oversized change.
 
 1. **Before Sprint 1:** approve the source baseline, first scenario, and asset posture.
 2. **After Sprint 2:** review schemas and legal-action/fog boundary before mechanics expand.
-3. **After Sprint 4:** review the working skeleton and re-estimate scenario ingestion.
-4. **Before Sprint 5:** approve the content-pack and rights workflow.
-5. **At MVP:** perform rules-fidelity, security, and code-quality reviews before calling it playable.
+3. **Before Sprint 4:** verify the turn preamble reaches a legal player phase without a generic
+   sequence bypass.
+4. **After Sprint 5:** review the working skeleton and re-estimate scenario ingestion.
+5. **Before Sprint 6:** approve the published content-pack and rights workflow.
+6. **At MVP:** perform rules-fidelity, security, and code-quality reviews before calling it playable.
 
 ## Traceability
 
 The evidence and source classifications behind this roadmap are retained in the
 [source-material spike](../research/cna-source-material-spike.md). Each implementation sprint must
-link its tests and adopted rulings back to the governing requirement IDs above.
+link its tests and adopted rulings back to the governing requirement IDs above. Content Pack v1
+requirements and deferrals are traced in its
+[specification](../specs/content-pack-v1.md) and
+[technical design](../design/content-pack-v1.md).
