@@ -9,17 +9,20 @@ namespace Cna.Core.Tests.Observations;
 
 public sealed class CampaignObservationPrivacyTests
 {
-    [Fact]
-    public void OpponentOnlyChangesCannotAffectTheCompleteObservationOrCanonicalPayload()
+    [Theory]
+    [InlineData(LandSide.Axis)]
+    [InlineData(LandSide.Commonwealth)]
+    public void OpponentOnlyChangesCannotAffectTheCompleteObservationOrCanonicalPayload(
+        LandSide observer)
     {
-        var pair = CampaignObservationTestData.CreateOpponentOnlyPair();
+        var pair = CampaignObservationTestData.CreateOpponentOnlyPair(observer);
         Assert.NotEqual(
             pair.BaselineContext.Artifact.Identity.Hash,
             pair.ChangedContext.Artifact.Identity.Hash);
         Assert.NotEqual(pair.BaselineSnapshot.Setup.SetupHash, pair.ChangedSnapshot.Setup.SetupHash);
 
-        var baseline = Project(pair.BaselineSnapshot, pair.BaselineContext, LandSide.Axis);
-        var changed = Project(pair.ChangedSnapshot, pair.ChangedContext, LandSide.Axis);
+        var baseline = Project(pair.BaselineSnapshot, pair.BaselineContext, observer);
+        var changed = Project(pair.ChangedSnapshot, pair.ChangedContext, observer);
         var baselineBytes = CampaignObservationSerializer.SerializeCanonical(baseline);
         var changedBytes = CampaignObservationSerializer.SerializeCanonical(changed);
 
@@ -31,7 +34,7 @@ public sealed class CampaignObservationPrivacyTests
     [Fact]
     public void OpponentSentinelsAndAuthoritativeMetadataAreAbsentFromObjectAndBytes()
     {
-        var pair = CampaignObservationTestData.CreateOpponentOnlyPair();
+        var pair = CampaignObservationTestData.CreateOpponentOnlyPair(LandSide.Axis);
         var observation = Project(pair.ChangedSnapshot, pair.ChangedContext, LandSide.Axis);
         var payload = Encoding.UTF8.GetString(
             CampaignObservationSerializer.SerializeCanonical(observation));

@@ -10,10 +10,10 @@ internal static class CampaignObservationTestData
 {
     public static (CampaignSnapshot BaselineSnapshot, CampaignContentContext BaselineContext,
         CampaignSnapshot ChangedSnapshot, CampaignContentContext ChangedContext)
-        CreateOpponentOnlyPair()
+        CreateOpponentOnlyPair(LandSide observer)
     {
         var baselineArtifact = Cna1979SyntheticContentCatalog.Artifact;
-        var changedArtifact = CreateChangedOpponentArtifact(baselineArtifact.Definition);
+        var changedArtifact = CreateChangedOpponentArtifact(baselineArtifact.Definition, observer);
         var baselineContext = CampaignContentContext.Create(
             baselineArtifact,
             "movement-contact-lab");
@@ -29,24 +29,35 @@ internal static class CampaignObservationTestData
     }
 
     private static ContentPackArtifact CreateChangedOpponentArtifact(
-        ContentPackDefinition baseline)
+        ContentPackDefinition baseline,
+        LandSide observer)
     {
+        var observerSideId = observer switch
+        {
+            LandSide.Axis => "axis",
+            LandSide.Commonwealth => "commonwealth",
+            _ => throw new ArgumentOutOfRangeException(nameof(observer)),
+        };
+        var opponentSideId = observer == LandSide.Axis ? "commonwealth" : "axis";
         var source = baseline.SourceIndex[0].SourceId;
         var origin = new Func<string, ContentOrigin>(locator => new(
             ContentOriginKind.Synthetic,
             [new RuleReference(source, $"privacy.{locator}")]));
-        var axisFormations = baseline.Formations
-            .Where(formation => formation.SideId == "axis")
+        var observerFormations = baseline.Formations
+            .Where(formation => formation.SideId == observerSideId)
             .ToArray();
         var enemyFormation = new ContentFormation(
             "enemy-sentinel-formation",
-            "commonwealth",
+            opponentSideId,
             null,
             "land.organization.battalion",
             origin("formation.enemy-sentinel"));
-        var axisElements = baseline.Elements
-            .Where(element => element.SideId == "axis")
+        var observerElements = baseline.Elements
+            .Where(element => element.SideId == observerSideId)
             .ToArray();
+        var observerElementIds = observerElements
+            .Select(element => element.ElementId)
+            .ToHashSet(StringComparer.Ordinal);
         ContentCombatElement[] enemyElements =
         [
             Enemy("enemy-sentinel-a", 31, "land.organization.regiment"),
@@ -63,8 +74,8 @@ internal static class CampaignObservationTestData
             baseline.SourceIndex,
             baseline.Locations,
             baseline.Edges,
-            axisFormations.Append(enemyFormation),
-            axisElements.Concat(enemyElements),
+            observerFormations.Append(enemyFormation),
+            observerElements.Concat(enemyElements),
             changedScenarios);
 
         var contractValidation = ContentPackValidator.Validate(definition);
@@ -82,7 +93,7 @@ internal static class CampaignObservationTestData
 
         ContentCombatElement Enemy(string elementId, int capability, string organizationId) => new(
             elementId,
-            "commonwealth",
+            opponentSideId,
             enemyFormation.FormationId,
             organizationId,
             capability,
@@ -99,7 +110,7 @@ internal static class CampaignObservationTestData
             scenario.Start,
             scenario.End,
             scenario.InitialPlacements
-                .Where(placement => placement.ElementId.StartsWith("axis-", StringComparison.Ordinal))
+                .Where(placement => observerElementIds.Contains(placement.ElementId))
                 .Concat(
                 [
                     Placement("enemy-sentinel-a", "center"),
