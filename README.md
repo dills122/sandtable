@@ -53,13 +53,16 @@ scenario; project the scenario's initial mutable element locations; resolve Init
 Determination with a seeded random stream; emit authoritative events; and replay those events to
 byte-identical state. Content Pack v1 and Campaign World v1 use an original nine-hex,
 nonhistorical rules laboratory to develop game systems without redistributing published assets.
+Campaign Observation v1 can now derive deterministic side-safe public topology, turn state, and
+own-force facts without exposing the complete Content Pack or any opposing-force row or
+association.
 
 Movement, combat, published scenario content, persistence, and the Maproom player interface remain
-future work. Side-safe observations and legal actions are the next planned capabilities.
+future work. Legal-action generation is the next planned gameplay capability.
 
 The high-level path to a playable game is:
 
-1. Generate side-safe observations and legal actions.
+1. Generate legal actions from the implemented side-safe observation boundary.
 2. Implement the mandatory turn preamble and a complete movement/contact/combat loop.
 3. Add the remaining Land systems and data required by *Graziani's Offensive*.
 4. Deliver the Maproom interface, local hot-seat play, saves, and replay.
@@ -158,6 +161,8 @@ The current Umpire foundation is intentionally pure and in-process:
 - `Cna.Core.Campaigns` owns exact content admission, mutable world snapshots, versioned
   commands/events, typed rejection, deterministic Initiative adjudication, canonical serialization,
   and dependency-prepared trusted-history replay.
+- `Cna.Core.Observations` owns the output-only Campaign Observation v1 allowlist, typed projection
+  result, full-checkpoint admission, structural values, and canonical side-safe JSON.
 - The sequence catalog cites the original Land Rules without embedding copyrighted rules prose or
   component art. Inspecting that catalog is not authoritative adjudication.
 
@@ -185,6 +190,10 @@ The current Umpire foundation is intentionally pure and in-process:
 - [Content Pack v1 technical design](docs/design/content-pack-v1.md)
 - [Campaign World v1 specification](docs/specs/campaign-world-v1.md)
 - [Campaign World v1 technical design](docs/design/campaign-world-v1.md)
+- [Observation and fog boundary research](docs/research/observation-and-fog-boundary-spike.md)
+- [Reconnaissance and contact knowledge research](docs/research/recon-contact-knowledge-spike.md)
+- [Campaign Observation v1 specification](docs/specs/campaign-observation-v1.md)
+- [Campaign Observation v1 technical design](docs/design/campaign-observation-v1.md)
 - [Microsoft Orleans documentation](https://learn.microsoft.com/en-us/dotnet/orleans/)
 - [ASP.NET Core gRPC services](https://learn.microsoft.com/en-us/aspnet/core/grpc/aspnetcore?view=aspnetcore-10.0)
 - [Aspire AppHost and ServiceDefaults](https://learn.microsoft.com/en-us/dotnet/aspire/fundamentals/aspire-sdk-templates)
