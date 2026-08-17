@@ -236,6 +236,17 @@ public sealed class CampaignObservationContractTests
         Assert.All(valueTypes, valueType => Assert.Empty(valueType.GetConstructors()));
     }
 
+    [Fact]
+    public void RejectionResultRejectsNoneAndUndefinedReasons()
+    {
+        Assert.Throws<ArgumentOutOfRangeException>(() =>
+            CampaignObservationProjectionResult.Rejected(
+                CampaignObservationRejectionReason.None));
+        Assert.Throws<ArgumentOutOfRangeException>(() =>
+            CampaignObservationProjectionResult.Rejected(
+                (CampaignObservationRejectionReason)99));
+    }
+
     private static CampaignObservationPosition CreatePosition(
         int operationStage = 0,
         LandActorRole actorRole = LandActorRole.None,

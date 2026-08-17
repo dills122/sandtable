@@ -35,7 +35,8 @@ public sealed record CampaignObservationProjectionResult
     public static CampaignObservationProjectionResult Rejected(
         CampaignObservationRejectionReason reason)
     {
-        if (reason == CampaignObservationRejectionReason.None)
+        if (reason == CampaignObservationRejectionReason.None
+            || !Enum.IsDefined(reason))
         {
             throw new ArgumentOutOfRangeException(nameof(reason));
         }
