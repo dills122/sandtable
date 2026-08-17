@@ -590,6 +590,19 @@ generic sequence bypass. See the Content Pack v1
 [specification](docs/specs/content-pack-v1.md), and
 [technical design](docs/design/content-pack-v1.md).
 
+The implemented Campaign Observation v1 boundary lives in `Cna.Core.Observations`. It accepts only
+a fully admitted Campaign World snapshot, its already-resolved exact content context, and a defined
+viewer side. A pure projector then copies a closed allowlist of public campaign/turn/topology facts
+and the viewer's independently placed elements into dedicated source-free values. Complete Content
+Pack identity and all opposing-force rows, associations, counts, contacts, and placeholders remain
+absent. Canonical output is an explicit compact UTF-8 JSON contract; it is derived query data, not
+trusted history or command authority. The Umpire still adjudicates from complete authoritative
+truth. Future adapters must authorize the viewer and preserve the same allowlist rather than map
+authority into the current free-form Intelligence observation strings. See the Campaign Observation
+v1 [research](docs/research/observation-and-fog-boundary-spike.md),
+[specification](docs/specs/campaign-observation-v1.md), and
+[technical design](docs/design/campaign-observation-v1.md).
+
 [1]: https://learn.microsoft.com/en-us/dotnet/orleans/grains/external-tasks-and-grains?utm_source=chatgpt.com "External tasks and grains - .NET | Microsoft Learn"
 [2]: https://learn.microsoft.com/en-us/aspnet/core/grpc/performance?view=aspnetcore-10.0&utm_source=chatgpt.com "Performance best practices with gRPC | Microsoft Learn"
 [3]: https://learn.microsoft.com/en-us/aspnet/core/grpc/deadlines-cancellation?view=aspnetcore-10.0&utm_source=chatgpt.com "Reliable gRPC services with deadlines and cancellation | Microsoft Learn"

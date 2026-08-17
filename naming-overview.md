@@ -459,6 +459,7 @@ Use five related terms precisely in the implementation:
 | **Setup** | Campaign admission policy selecting recognized rules, content/scenario identity, and any still-separate initialization policy. The creation command supplies the per-campaign seed; Setup is not a synonym for Content Pack. |
 | **Campaign World** | Authoritative mutable runtime facts projected from an exact setup and scenario. Version 1 stores current element locations and joins static facts through stable Content Pack IDs. |
 | **Content Context** | Runtime-only, already-resolved exact Content Pack and selected scenario supplied to authoritative decision/replay. It is not campaign state or a transport DTO. |
+| **Campaign Observation** | Immutable side-safe derived view for one authorized side. It copies only approved public and own-force facts, carries no complete Content Pack identity, and is never authoritative state or trusted history. |
 
 Presentation labels and original visuals are separate from authoritative Content Pack identity.
 The **Theater** is the runtime geographic/world concept assembled from exact content plus campaign

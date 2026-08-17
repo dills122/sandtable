@@ -234,11 +234,18 @@ in the [Campaign World v1 specification](../specs/campaign-world-v1.md) and
 
 Project the authoritative content/world for one acting side without mutating state.
 
+**Status:** Implemented; independent implementation review passed.
+
 **Acceptance criteria:**
 
 - Hidden opposing details never appear in an observation.
 - Full Content Pack/world values never appear in a player or Intelligence DTO.
 - Equal state and side produce byte-equivalent observations.
+
+Requirements, privacy decisions, executable checkpoints, and deferrals are defined in the
+[Campaign Observation v1 specification](../specs/campaign-observation-v1.md) and
+[technical design](../design/campaign-observation-v1.md). Future opposing-contact work is separated
+in the [reconnaissance/contact research](../research/recon-contact-knowledge-spike.md).
 
 ### Task 2.5 - Legal-action generation and enforcement
 
@@ -259,8 +266,8 @@ Load the rules laboratory, inspect one side's redacted state, and select an acti
 set while the opposing hidden state remains absent from logs and responses.
 
 The current checkpoint loads, validates, hashes, resolves, and round-trips the complete synthetic
-rules laboratory. The redacted observation and legal-action portions remain Tasks 2.4 and 2.5;
-the complete Sprint 2 demonstration is not yet claimed.
+rules laboratory and projects the implemented side-safe observation. Legal-action generation
+remains Task 2.5, so the complete Sprint 2 demonstration is not yet claimed.
 
 ## Sprint 3: Mandatory turn preamble
 
