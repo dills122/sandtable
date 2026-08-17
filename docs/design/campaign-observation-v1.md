@@ -532,11 +532,11 @@ Checkpoint after `OBS-IMP-004`:
 
 | Requirement | Decision/task | Executable evidence | Status |
 | --- | --- | --- | --- |
-| `OBS-001` | typed total result; `OBS-IMP-002` | null, invalid-observer, success/failure exclusivity tests | Implemented |
+| `OBS-001` | typed total result; `OBS-IMP-002` | null, invalid-observer, defined-rejection, success/failure exclusivity tests | Implemented |
 | `OBS-002`, `OBS-003` | public identity/policy/position copies; `OBS-IMP-001`, `002`, `004` | baseline, complete-pack-identity absence, Initiative checkpoint, golden tests | Implemented |
 | `OBS-004` | topology-specific values; `OBS-IMP-001`, `002` | exact 9-location/10-edge and prohibited-metadata tests | Implemented |
 | `OBS-005` | own-element allowlist; `OBS-IMP-001`, `002` | Axis/Commonwealth exact-row tests | Implemented |
-| `OBS-006` | absence plus non-interference; `OBS-IMP-003` | paired opponent ID/static/count/location metamorphisms | Implemented |
+| `OBS-006` | absence plus non-interference; `OBS-IMP-003` | paired opponent ID/static/count/location metamorphisms for both observers | Implemented |
 | `OBS-007` | full checkpoint validator and two reasons; `OBS-IMP-002` | precedence, context mismatch, forged checkpoint matrix | Implemented |
 | `OBS-008` | copied canonical values; `OBS-IMP-001`, `002` | reverse-order, mutation, equality/hash tests | Implemented |
 | `OBS-009` | explicit writer; `OBS-IMP-004` | exact golden, repeated bytes, culture tests | Implemented |
@@ -614,6 +614,14 @@ byte comparison, and projection isolation added exact Content Pack byte checks. 
 independently reran 21 focused observation tests and the complete 205-test gate after remediation,
 confirmed zero warnings, errors, failures, or skips, and returned a final `Ready` verdict with no
 actionable findings.
+
+A separate post-merge audit of PR #14 found two P2 contract-evidence gaps: the public rejection
+factory accepted undefined enum values, and opponent-only non-interference was exercised only from
+the Axis observer's perspective. The follow-up rejects `None` and every undefined reason and runs
+the complete object, hash, and canonical-byte metamorphism for both Axis and Commonwealth
+observers. The same reviewer independently verified the exact four-code-file remediation, 9
+contract tests, 4 privacy tests, 23 focused observation tests, and the complete 207-test gate with
+zero warnings, errors, failures, or skips, then returned `Ready` with no new findings.
 
 ## Design exit criteria
 
