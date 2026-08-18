@@ -3,7 +3,7 @@ using Cna.Core.Rules;
 
 namespace Cna.Core.Campaigns;
 
-public sealed record InitiativeRollRound
+internal sealed record InitiativeRollRound
 {
     public InitiativeRollRound(
         int round,
@@ -56,12 +56,12 @@ public sealed record InitiativeRollRound
     }
 }
 
-public abstract record InitiativeOutcome
+internal abstract record InitiativeOutcome
 {
     public abstract LandSide Holder { get; }
 }
 
-public sealed record PredeterminedInitiativeOutcome : InitiativeOutcome
+internal sealed record PredeterminedInitiativeOutcome : InitiativeOutcome
 {
     public PredeterminedInitiativeOutcome(LandSide holder)
     {
@@ -76,7 +76,7 @@ public sealed record PredeterminedInitiativeOutcome : InitiativeOutcome
     public override LandSide Holder { get; }
 }
 
-public sealed record ContestedInitiativeOutcome : InitiativeOutcome
+internal sealed record ContestedInitiativeOutcome : InitiativeOutcome
 {
     public ContestedInitiativeOutcome(
         AxisInitiativeSourceFacts axisFacts,

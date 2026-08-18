@@ -5,7 +5,7 @@ using Cna.Core.Setups;
 
 namespace Cna.Core.Campaigns;
 
-public static class CampaignEngine
+internal static class CampaignEngine
 {
     public static CampaignCommandResult DecideCreation(
         CampaignSnapshot? snapshot,
@@ -122,6 +122,9 @@ public static class CampaignEngine
         {
             CreateCampaign create => DecideCreate(snapshot, create, context),
             ResolveInitiative resolve => DecideInitiative(snapshot, resolve),
+            ResolveNoObligationNavalConvoySchedule resolve => DecideSchedule(snapshot, resolve),
+            ResolveNoObligationTacticalShipping resolve => DecideTactical(snapshot, resolve),
+            DeclareInitiativeOrder declare => DecideDeclaration(snapshot, declare),
             CompleteCurrentSequenceStep advance => DecideAdvance(snapshot, advance),
             _ => CampaignCommandResult.Reject(CampaignCommandRejectionReason.InvalidCommand),
         };
@@ -165,7 +168,7 @@ public static class CampaignEngine
 
     private static bool IsLocallyValid(CreateCampaign command)
     {
-        if (command.ContractVersion != 3
+        if (command.ContractVersion != 4
             || command.ExpectedStateVersion != 0
             || !CampaignSnapshotValidator.IsRulesHash(command.RulesetHash))
         {
@@ -275,5 +278,72 @@ public static class CampaignEngine
         {
             return CampaignCommandResult.Reject(CampaignCommandRejectionReason.InvalidState);
         }
+    }
+
+    private static CampaignCommandResult DecideSchedule(
+        CampaignSnapshot? snapshot,
+        ResolveNoObligationNavalConvoySchedule command) => DecidePreamble(
+            snapshot,
+            command.ContractVersion,
+            command.ExpectedStateVersion,
+            command.ExpectedPositionId,
+            LandPhaseIds.NavalConvoySchedule,
+            OpeningPreambleEventFactory.CreateSchedule);
+
+    private static CampaignCommandResult DecideTactical(
+        CampaignSnapshot? snapshot,
+        ResolveNoObligationTacticalShipping command) => DecidePreamble(
+            snapshot,
+            command.ContractVersion,
+            command.ExpectedStateVersion,
+            command.ExpectedPositionId,
+            LandPhaseIds.TacticalShipping,
+            OpeningPreambleEventFactory.CreateTactical);
+
+    private static CampaignCommandResult DecidePreamble(
+        CampaignSnapshot? snapshot,
+        int contractVersion,
+        long expectedStateVersion,
+        string expectedPositionId,
+        string phaseId,
+        Func<CampaignSnapshot, CampaignEvent> create)
+    {
+        var rejection = ValidateCurrent(snapshot, contractVersion, expectedStateVersion, expectedPositionId);
+        if (rejection != CampaignCommandRejectionReason.None) return CampaignCommandResult.Reject(rejection);
+        if (snapshot!.SequencePosition.PhaseId != phaseId || snapshot.InitiativeHolder is null)
+        {
+            return CampaignCommandResult.Reject(CampaignCommandRejectionReason.UnsupportedTransition);
+        }
+        try { return CampaignCommandResult.Accept(create(snapshot)); }
+        catch (Exception exception) when (exception is ArgumentException or ArithmeticException or InvalidOperationException)
+        { return CampaignCommandResult.Reject(CampaignCommandRejectionReason.InvalidState); }
+    }
+
+    private static CampaignCommandResult DecideDeclaration(CampaignSnapshot? snapshot, DeclareInitiativeOrder command)
+    {
+        var rejection = ValidateCurrent(snapshot, command.ContractVersion, command.ExpectedStateVersion,
+            command.ExpectedPositionId);
+        if (rejection != CampaignCommandRejectionReason.None) return CampaignCommandResult.Reject(rejection);
+        if (command.OperationStage != 1 || !Enum.IsDefined(command.DeclaringSide)
+            || !Enum.IsDefined(command.Choice))
+        {
+            return CampaignCommandResult.Reject(CampaignCommandRejectionReason.InvalidCommand);
+        }
+        try { return CampaignCommandResult.Accept(OpeningPreambleEventFactory.CreateDeclaration(snapshot!, command)); }
+        catch (InvalidOperationException) { return CampaignCommandResult.Reject(CampaignCommandRejectionReason.UnsupportedTransition); }
+        catch (Exception exception) when (exception is ArgumentException or ArithmeticException)
+        { return CampaignCommandResult.Reject(CampaignCommandRejectionReason.InvalidState); }
+    }
+
+    private static CampaignCommandRejectionReason ValidateCurrent(CampaignSnapshot? snapshot,
+        int contractVersion, long expectedStateVersion, string expectedPositionId)
+    {
+        if (snapshot is null) return CampaignCommandRejectionReason.CampaignNotCreated;
+        if (contractVersion != 1 || string.IsNullOrWhiteSpace(expectedPositionId))
+            return CampaignCommandRejectionReason.InvalidCommand;
+        if (expectedStateVersion != snapshot.StateVersion) return CampaignCommandRejectionReason.StaleState;
+        return string.Equals(expectedPositionId, snapshot.SequencePosition.PositionId, StringComparison.Ordinal)
+            ? CampaignCommandRejectionReason.None
+            : CampaignCommandRejectionReason.UnexpectedSequenceStep;
     }
 }

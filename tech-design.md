@@ -542,16 +542,17 @@ chooses to act first or last in each Operation Stage. `Cna.Core.Setups` binds ca
 recognized, provenance-bearing fixtures, while `Cna.Core.Randomness` owns the versioned SHA-256
 counter stream consumed by authoritative rules. `Cna.Core.Campaigns` uses pure command decisions
 and immutable events to create a campaign against the canonical manifest, resolve predetermined or
-contested Initiative Determination, and stop at Naval Convoy. It validates caller snapshots before
-adjudication and recomputes initiative events during projection rather than trusting caller-supplied
-dice, ratings, sources, or winners. Canonical snapshot and event serialization plus the replay
-harness prove reconstruction of accepted campaign history without ambient timestamps or generated
-identifiers.
+contested Initiative Determination, explicitly resolve the two admitted no-obligation Naval Convoy
+checkpoints, record the Operation Stage 1 first/second actor order, and stop at Weather. It validates
+internal snapshots before adjudication and recomputes events during projection rather than trusting
+caller-supplied outcomes or provenance. Canonical snapshot and event serialization plus the
+internal replay harness prove reconstruction of accepted campaign history without ambient
+timestamps or generated identifiers.
 
 The current projector is a trusted-history contract, not an untrusted ingestion boundary. Before
 Chronicle events can arrive from persistence, transport, or another process, that boundary must
 authenticate event provenance. The projector already validates the complete contiguous creation
-and Initiative transition; persistence and transport remain outside this slice.
+and every implemented preamble transition; persistence and transport remain outside this slice.
 
 Copyrighted source scans and original component art remain outside the repository unless explicit
 permission is recorded. Sandtable uses normalized, provenance-bearing rule data and original
@@ -580,12 +581,11 @@ identities; resolves immutable content before an authoritative grain turn; and p
 mutable initial element locations into campaign history. The Umpire performs no network or
 persistence I/O, and replay requires the same exact content plus the matching executable rules
 manifest. The [Campaign World specification](docs/specs/campaign-world-v1.md) and
-[technical design](docs/design/campaign-world-v1.md) define the version-3 campaign contract,
-schema-2 setup, resident artifact context, replay authority, and completed implementation
-checkpoints. Before movement becomes authoritative, a separate
-turn-preamble capability must implement
-the exercised Naval Convoy, Initiative Declaration, and Weather Determination rules without a
-generic sequence bypass. See the Content Pack v1
+[technical design](docs/design/campaign-world-v1.md) document the superseded version-3 campaign
+contract and schema-2 setup. Legal Actions v1 cuts current authority over to campaign contract 4,
+setup schema 3, an explicit opening-preamble policy, and an opaque public handle while preserving
+resident exact-content context internally. Weather remains the next unsupported mandatory mechanic;
+no generic sequence bypass exists. See the Content Pack v1
 [research](docs/research/content-pack-v1-spike.md),
 [specification](docs/specs/content-pack-v1.md), and
 [technical design](docs/design/content-pack-v1.md).
@@ -602,6 +602,18 @@ authority into the current free-form Intelligence observation strings. See the C
 v1 [research](docs/research/observation-and-fog-boundary-spike.md),
 [specification](docs/specs/campaign-observation-v1.md), and
 [technical design](docs/design/campaign-observation-v1.md).
+
+Legal Actions v1 lives in `Cna.Core.Actions` and is the only public campaign-mutation path after
+creation. System actions resolve Initiative and each admitted empty convoy checkpoint separately.
+At Operation Stage 1 Initiative Declaration, an observation-only generator gives the holder exactly
+`act-first` and `act-last`; the opponent and system receive empty sets. Submission binds campaign,
+state version, position, audience, and deterministic action ID, then re-derives exact-audience
+membership before translating to an internal mechanic command. Success returns a scalar receipt and
+successor opaque `CampaignAuthorityHandle`, never authority state. `Cna.DecisionWorker` has no Core
+reference; `Cna.OrleansHost` is the sole production Core consumer and receives no raw replay or
+projection access. See the [research](docs/research/turn-preamble-action-boundary-spike.md),
+[specification](docs/specs/legal-actions-v1.md), and
+[technical design](docs/design/legal-actions-v1.md).
 
 [1]: https://learn.microsoft.com/en-us/dotnet/orleans/grains/external-tasks-and-grains?utm_source=chatgpt.com "External tasks and grains - .NET | Microsoft Learn"
 [2]: https://learn.microsoft.com/en-us/aspnet/core/grpc/performance?view=aspnetcore-10.0&utm_source=chatgpt.com "Performance best practices with gRPC | Microsoft Learn"

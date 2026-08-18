@@ -94,8 +94,9 @@ public sealed class CampaignTests
 
     [Theory]
     [MemberData(nameof(InvalidSnapshots))]
-    public void InvalidAuthoritativeSnapshotCannotProduceAnEvent(CampaignSnapshot snapshot)
+    public void InvalidAuthoritativeSnapshotCannotProduceAnEvent(object snapshotValue)
     {
+        var snapshot = Assert.IsType<CampaignSnapshot>(snapshotValue);
         var result = CampaignTestHarness.Decide(
             snapshot,
             new CompleteCurrentSequenceStep(
@@ -108,7 +109,7 @@ public sealed class CampaignTests
         Assert.Empty(result.Events);
     }
 
-    public static TheoryData<CampaignSnapshot> InvalidSnapshots()
+    public static TheoryData<object> InvalidSnapshots()
     {
         var valid = CreateSnapshot();
         var position = valid.SequencePosition;
@@ -131,10 +132,11 @@ public sealed class CampaignTests
             valid.Setup.IsSynthetic,
             valid.Setup.InitialGameTurn,
             valid.Setup.InitialInitiative,
+            valid.Setup.OpeningPreamble,
             valid.Setup.Content,
             valid.Setup.Sources);
 
-        return new TheoryData<CampaignSnapshot>
+        return new TheoryData<object>
         {
             valid with { ContractVersion = 1 },
             valid with { CampaignId = " " },

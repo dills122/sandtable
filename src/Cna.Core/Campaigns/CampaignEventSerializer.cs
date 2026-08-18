@@ -4,7 +4,7 @@ using Cna.Core.Rules;
 
 namespace Cna.Core.Campaigns;
 
-public static class CampaignEventSerializer
+internal static class CampaignEventSerializer
 {
     public static byte[] Serialize(CampaignEvent campaignEvent)
     {
@@ -24,6 +24,18 @@ public static class CampaignEventSerializer
                 case InitiativeDetermined determined:
                     ValidateDetermined(determined);
                     WriteDetermined(writer, determined);
+                    break;
+                case NoObligationNavalConvoyScheduleResolved resolved:
+                    ValidateAdvance(resolved, LandPhaseIds.TacticalShipping);
+                    WriteAdvance(writer, "no-obligation-naval-convoy-schedule-resolved", resolved);
+                    break;
+                case NoObligationTacticalShippingResolved resolved:
+                    ValidateAdvance(resolved, LandPhaseIds.InitiativeDeclaration);
+                    WriteAdvance(writer, "no-obligation-tactical-shipping-resolved", resolved);
+                    break;
+                case InitiativeOrderDeclared declared:
+                    ValidateDeclaration(declared);
+                    WriteDeclaration(writer, declared);
                     break;
                 default:
                     throw new JsonException("The campaign event type is not serializable.");
@@ -47,6 +59,9 @@ public static class CampaignEventSerializer
             {
                 "campaign-created" => ParseCreated(root),
                 "initiative-determined" => ParseDetermined(root),
+                "no-obligation-naval-convoy-schedule-resolved" => ParseSchedule(root),
+                "no-obligation-tactical-shipping-resolved" => ParseTactical(root),
+                "initiative-order-declared" => ParseDeclaration(root),
                 _ => throw new JsonException($"Unknown campaign event type '{eventType}'."),
             };
         }
@@ -123,6 +138,84 @@ public static class CampaignEventSerializer
         writer.WriteNumber("randomCursorAfter", determined.RandomCursorAfter);
         CampaignSnapshotSerializer.WritePosition(writer, determined.SequencePosition);
         CampaignSnapshotSerializer.WriteSources(writer, determined.Sources);
+    }
+
+    private static void WriteAdvance(Utf8JsonWriter writer, string eventType,
+        OpeningPreambleAdvanced resolved)
+    {
+        writer.WriteNumber("contractVersion", resolved.ContractVersion);
+        writer.WriteString("eventType", eventType);
+        writer.WriteString("campaignId", resolved.CampaignId);
+        writer.WriteNumber("stateVersion", resolved.StateVersion);
+        writer.WriteString("fromPositionId", resolved.FromPositionId);
+        CampaignSnapshotSerializer.WritePosition(writer, resolved.SequencePosition);
+        CampaignSnapshotSerializer.WriteSources(writer, resolved.Sources);
+    }
+
+    private static NoObligationNavalConvoyScheduleResolved ParseSchedule(JsonElement root)
+    {
+        RequireAdvanceProperties(root);
+        var value = new NoObligationNavalConvoyScheduleResolved(
+            root.GetProperty("campaignId").GetString()!, root.GetProperty("stateVersion").GetInt64(),
+            root.GetProperty("fromPositionId").GetString()!,
+            CampaignSnapshotSerializer.ParsePosition(root.GetProperty("sequencePosition")),
+            CampaignSnapshotSerializer.ParseSources(root.GetProperty("sources")));
+        if (root.GetProperty("contractVersion").GetInt32() != value.ContractVersion)
+            throw new JsonException("The schedule event contract version is invalid.");
+        ValidateAdvance(value, LandPhaseIds.TacticalShipping);
+        return value;
+    }
+
+    private static NoObligationTacticalShippingResolved ParseTactical(JsonElement root)
+    {
+        RequireAdvanceProperties(root);
+        var value = new NoObligationTacticalShippingResolved(
+            root.GetProperty("campaignId").GetString()!, root.GetProperty("stateVersion").GetInt64(),
+            root.GetProperty("fromPositionId").GetString()!,
+            CampaignSnapshotSerializer.ParsePosition(root.GetProperty("sequencePosition")),
+            CampaignSnapshotSerializer.ParseSources(root.GetProperty("sources")));
+        if (root.GetProperty("contractVersion").GetInt32() != value.ContractVersion)
+            throw new JsonException("The tactical event contract version is invalid.");
+        ValidateAdvance(value, LandPhaseIds.InitiativeDeclaration);
+        return value;
+    }
+
+    private static void RequireAdvanceProperties(JsonElement root) => CampaignSnapshotSerializer.RequireProperties(
+        root, "contractVersion", "eventType", "campaignId", "stateVersion", "fromPositionId",
+        "sequencePosition", "sources");
+
+    private static void WriteDeclaration(Utf8JsonWriter writer, InitiativeOrderDeclared declared)
+    {
+        writer.WriteNumber("contractVersion", declared.ContractVersion);
+        writer.WriteString("eventType", "initiative-order-declared");
+        writer.WriteString("campaignId", declared.CampaignId);
+        writer.WriteNumber("stateVersion", declared.StateVersion);
+        writer.WriteString("fromPositionId", declared.FromPositionId);
+        writer.WriteNumber("operationStage", declared.OperationStage);
+        writer.WriteString("declaringHolder", CampaignSnapshotSerializer.FormatSide(declared.DeclaringHolder));
+        writer.WriteString("firstSide", CampaignSnapshotSerializer.FormatSide(declared.FirstSide));
+        writer.WriteString("secondSide", CampaignSnapshotSerializer.FormatSide(declared.SecondSide));
+        CampaignSnapshotSerializer.WritePosition(writer, declared.SequencePosition);
+        CampaignSnapshotSerializer.WriteSources(writer, declared.Sources);
+    }
+
+    private static InitiativeOrderDeclared ParseDeclaration(JsonElement root)
+    {
+        CampaignSnapshotSerializer.RequireProperties(root, "contractVersion", "eventType", "campaignId",
+            "stateVersion", "fromPositionId", "operationStage", "declaringHolder", "firstSide",
+            "secondSide", "sequencePosition", "sources");
+        var value = new InitiativeOrderDeclared(root.GetProperty("campaignId").GetString()!,
+            root.GetProperty("stateVersion").GetInt64(), root.GetProperty("fromPositionId").GetString()!,
+            CampaignSnapshotSerializer.ParsePosition(root.GetProperty("sequencePosition")),
+            root.GetProperty("operationStage").GetInt32(),
+            CampaignSnapshotSerializer.ParseSide(root.GetProperty("declaringHolder").GetString()),
+            CampaignSnapshotSerializer.ParseSide(root.GetProperty("firstSide").GetString()),
+            CampaignSnapshotSerializer.ParseSide(root.GetProperty("secondSide").GetString()),
+            CampaignSnapshotSerializer.ParseSources(root.GetProperty("sources")));
+        if (root.GetProperty("contractVersion").GetInt32() != value.ContractVersion)
+            throw new JsonException("The declaration event contract version is invalid.");
+        ValidateDeclaration(value);
+        return value;
     }
 
     private static InitiativeDetermined ParseDetermined(JsonElement root)
@@ -322,17 +415,18 @@ public static class CampaignEventSerializer
         }
 
         var localSnapshot = new CampaignSnapshot(
-            3,
+            4,
             created.CampaignId,
             created.StateVersion,
             created.RulesetHash,
             created.Setup,
             created.InitialWorld,
             null,
+            [],
             created.RandomState,
             created.SequencePosition);
 
-        if (created.ContractVersion != 3
+        if (created.ContractVersion != 4
             || created.StateVersion != 1
             || created.RandomState.NextByteCursor != 0
             || !CampaignSnapshotValidator.IsLocallyValid(localSnapshot))
@@ -357,5 +451,22 @@ public static class CampaignEventSerializer
         {
             throw new JsonException("The Initiative event contract is invalid.");
         }
+    }
+
+    private static void ValidateAdvance(OpeningPreambleAdvanced resolved, string expectedPhase)
+    {
+        if (resolved.ContractVersion != 1 || resolved.StateVersion is < 3 or > 4
+            || resolved.SequencePosition.PhaseId != expectedPhase)
+            throw new JsonException("The preamble event contract is invalid.");
+    }
+
+    private static void ValidateDeclaration(InitiativeOrderDeclared declared)
+    {
+        if (declared.ContractVersion != 1 || declared.StateVersion != 5 || declared.OperationStage != 1
+            || declared.SequencePosition.PhaseId != LandPhaseIds.WeatherDetermination
+            || declared.FirstSide == declared.SecondSide
+            || (declared.FirstSide != declared.DeclaringHolder
+                && declared.SecondSide != declared.DeclaringHolder))
+            throw new JsonException("The declaration event contract is invalid.");
     }
 }

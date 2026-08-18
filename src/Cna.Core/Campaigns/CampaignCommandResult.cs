@@ -1,6 +1,6 @@
 namespace Cna.Core.Campaigns;
 
-public sealed record CampaignCommandResult
+internal sealed record CampaignCommandResult
 {
     private CampaignCommandResult(
         IReadOnlyList<CampaignEvent> events,

@@ -4,7 +4,7 @@ using Cna.Core.Rules;
 
 namespace Cna.Core.Observations;
 
-public static class CampaignObservationProjector
+internal static class CampaignObservationProjector
 {
     public static CampaignObservationProjectionResult Project(
         CampaignSnapshot snapshot,

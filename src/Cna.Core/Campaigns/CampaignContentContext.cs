@@ -21,7 +21,7 @@ public sealed class Cna1979SyntheticContentResolver : IContentPackResolver
         Cna1979SyntheticContentCatalog.Resolve(packId, expectedHash);
 }
 
-public sealed class CampaignContentContext
+internal sealed class CampaignContentContext
 {
     private CampaignContentContext(ContentPackArtifact artifact, ContentScenario scenario)
     {

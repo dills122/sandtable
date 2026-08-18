@@ -2,7 +2,7 @@ using Cna.Core.Content;
 
 namespace Cna.Core.Campaigns;
 
-public static class CampaignWorldFactory
+internal static class CampaignWorldFactory
 {
     public static CampaignWorldSnapshot CreateInitial(
         ContentPackArtifact artifact,
@@ -45,7 +45,7 @@ public static class CampaignWorldFactory
                 && candidate == scenario);
 }
 
-public static class CampaignWorldValidator
+internal static class CampaignWorldValidator
 {
     public static bool IsValidInitial(
         CampaignWorldSnapshot? world,

@@ -76,6 +76,7 @@ public sealed class CampaignReplayTests
             valid.Setup.IsSynthetic,
             valid.Setup.InitialGameTurn,
             valid.Setup.InitialInitiative,
+            valid.Setup.OpeningPreamble,
             valid.Setup.Content,
             valid.Setup.Sources);
 
@@ -94,6 +95,7 @@ public sealed class CampaignReplayTests
             true,
             valid.Setup.InitialGameTurn + 1,
             valid.Setup.InitialInitiative,
+            valid.Setup.OpeningPreamble,
             valid.Setup.Content,
             valid.Setup.Sources);
         var forged = valid with
@@ -122,15 +124,15 @@ public sealed class CampaignReplayTests
     }
 
     [Fact]
-    public void StrictReadersRejectVersion2CreationAndSnapshotContracts()
+    public void StrictReadersRejectVersion3CreationAndSnapshotContracts()
     {
         var execution = ExecuteCreation(12345);
         var created = Assert.IsType<CampaignCreated>(Assert.Single(execution.Events));
         var eventJson = Encoding.UTF8.GetString(CampaignEventSerializer.Serialize(created))
-            .Replace("{\"contractVersion\":3,", "{\"contractVersion\":2,", StringComparison.Ordinal);
+            .Replace("{\"contractVersion\":4,", "{\"contractVersion\":3,", StringComparison.Ordinal);
         var snapshotJson = Encoding.UTF8.GetString(
                 CampaignSnapshotSerializer.Serialize(execution.Snapshot))
-            .Replace("{\"contractVersion\":3,", "{\"contractVersion\":2,", StringComparison.Ordinal);
+            .Replace("{\"contractVersion\":4,", "{\"contractVersion\":3,", StringComparison.Ordinal);
 
         Assert.Throws<JsonException>(() =>
             CampaignEventSerializer.Deserialize(Encoding.UTF8.GetBytes(eventJson)));
@@ -160,12 +162,12 @@ public sealed class CampaignReplayTests
         var canonicalJson = Encoding.UTF8.GetString(
             CampaignSnapshotSerializer.Serialize(execution.Snapshot));
         var extra = canonicalJson.Replace(
-            "{\"contractVersion\":3,",
-            "{\"extra\":true,\"contractVersion\":3,",
+            "{\"contractVersion\":4,",
+            "{\"extra\":true,\"contractVersion\":4,",
             StringComparison.Ordinal);
         var reordered = canonicalJson.Replace(
-            "{\"contractVersion\":3,\"campaignId\":\"campaign-1\",",
-            "{\"campaignId\":\"campaign-1\",\"contractVersion\":3,",
+            "{\"contractVersion\":4,\"campaignId\":\"campaign-1\",",
+            "{\"campaignId\":\"campaign-1\",\"contractVersion\":4,",
             StringComparison.Ordinal);
 
         Assert.Throws<JsonException>(() =>
@@ -190,19 +192,23 @@ public sealed class CampaignReplayTests
     }
 
     [Fact]
-    public void CreationSnapshotUsesTheExactCanonicalVersion3Shape()
+    public void CreationSnapshotUsesTheExactCanonicalVersion4Shape()
     {
         var execution = ExecuteCreation(12345);
         var actual = Encoding.UTF8.GetString(
             CampaignSnapshotSerializer.Serialize(execution.Snapshot));
-        var expected = "{\"contractVersion\":3,\"campaignId\":\"campaign-1\"," +
+        var expected = "{\"contractVersion\":4,\"campaignId\":\"campaign-1\"," +
             "\"stateVersion\":1,\"rulesetHash\":\"" +
             Cna1979Ruleset.Manifest.Hash +
-            "\",\"setup\":{\"schemaVersion\":2," +
+            "\",\"setup\":{\"schemaVersion\":3," +
             "\"setupId\":\"rules-lab.initiative.predetermined\"," +
-            "\"setupHash\":\"sha256:9dfa11b7e9fac73e61d289f9847435ad4c9335b8b1692b95ffbeaa3566c8d921\"," +
+            "\"setupHash\":\"sha256:ed20292efd3812382e6c371ea45dd96a0778732be14e865af144db97d3d7dfde\"," +
             "\"isSynthetic\":true,\"initialGameTurn\":1," +
             "\"initialInitiative\":{\"kind\":\"predetermined\",\"holder\":\"axis\"}," +
+            "\"openingPreamble\":{\"contractVersion\":1," +
+            "\"kind\":\"no-opening-naval-convoy-obligations\"," +
+            "\"sources\":[{\"sourceId\":\"sandtable-rules-lab\"," +
+            "\"locator\":\"opening-preamble.no-naval-convoy-obligations.v1\"}]}," +
             "\"content\":{\"schemaVersion\":1,\"formatId\":\"sandtable.content-json.v1\"," +
             "\"packId\":\"rules-lab.content.movement-contact.v1\",\"rulesetId\":\"cna-1979.1\"," +
             "\"hash\":\"sha256:c0cceda302bab11c98f1b46c427c967bf70b3c9ae4ad078513dbfc231f06b114\"," +
@@ -215,7 +221,8 @@ public sealed class CampaignReplayTests
             "{\"elementId\":\"axis-element-b\",\"currentLocationId\":\"north-west\"}," +
             "{\"elementId\":\"commonwealth-element-a\",\"currentLocationId\":\"east\"}," +
             "{\"elementId\":\"commonwealth-element-b\",\"currentLocationId\":\"south-east\"}]}," +
-            "\"initiativeHolder\":null,\"randomState\":{\"contractVersion\":1," +
+            "\"initiativeHolder\":null,\"operationStageOrders\":[]," +
+            "\"randomState\":{\"contractVersion\":1," +
             "\"algorithmId\":\"sandtable.sha256-counter.v1\",\"seed\":12345," +
             "\"nextByteCursor\":0},\"sequencePosition\":{\"contractVersion\":2," +
             "\"positionId\":\"land.position.initiative-determination\"," +

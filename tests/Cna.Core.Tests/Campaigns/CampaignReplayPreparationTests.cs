@@ -69,11 +69,11 @@ public sealed class CampaignReplayPreparationTests
     }
 
     [Theory]
-    [InlineData(ContentCatalogRejectionReason.UnknownPackId, CampaignReplayPreparationRejectionReason.MissingContent)]
-    [InlineData(ContentCatalogRejectionReason.HashMismatch, CampaignReplayPreparationRejectionReason.ContentHashMismatch)]
+    [InlineData(ContentCatalogRejectionReason.UnknownPackId, (int)CampaignReplayPreparationRejectionReason.MissingContent)]
+    [InlineData(ContentCatalogRejectionReason.HashMismatch, (int)CampaignReplayPreparationRejectionReason.ContentHashMismatch)]
     public void ExactContentResolutionFailuresAreTyped(
         ContentCatalogRejectionReason catalogReason,
-        CampaignReplayPreparationRejectionReason expected)
+        int expected)
     {
         var bytes = CampaignEventSerializer.Serialize(CreateEvent());
 
@@ -83,7 +83,7 @@ public sealed class CampaignReplayPreparationTests
 
         Assert.False(result.IsPrepared);
         Assert.Null(result.Context);
-        Assert.Equal(expected, result.RejectionReason);
+        Assert.Equal((CampaignReplayPreparationRejectionReason)expected, result.RejectionReason);
     }
 
     [Fact]

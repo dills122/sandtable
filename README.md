@@ -50,20 +50,24 @@ play a side; it will never decide the rules or secretly change the campaign stat
 
 The current foundation can create a campaign from an exact ruleset, setup, Content Pack, and
 scenario; project the scenario's initial mutable element locations; resolve Initiative
-Determination with a seeded random stream; emit authoritative events; and replay those events to
-byte-identical state. Content Pack v1 and Campaign World v1 use an original nine-hex,
+Determination and both admitted no-obligation Naval Convoy checkpoints; let the initiative holder
+declare whether to act first or last in Operation Stage 1; emit authoritative events; and replay
+those events to byte-identical state. Content Pack v1 and Campaign World v1 use an original nine-hex,
 nonhistorical rules laboratory to develop game systems without redistributing published assets.
 Campaign Observation v1 can now derive deterministic side-safe public topology, turn state, and
 own-force facts without exposing the complete Content Pack or any opposing-force row or
-association.
+association. Legal Actions v1 exposes those mechanics through an opaque campaign-authority handle,
+deterministic system/side action sets, exact-audience membership enforcement, and side-safe
+acceptance receipts. Raw snapshots, commands, events, content context, projection, and replay are
+not public mutation seams.
 
-Movement, combat, published scenario content, persistence, and the Maproom player interface remain
-future work. Legal-action generation is the next planned gameplay capability.
+Weather resolution, movement, combat, published scenario content, persistence, and the Maproom
+player interface remain future work.
 
 The high-level path to a playable game is:
 
-1. Generate legal actions from the implemented side-safe observation boundary.
-2. Implement the mandatory turn preamble and a complete movement/contact/combat loop.
+1. Resolve Weather and enter the declared first-acting side's player phase.
+2. Implement a complete movement/contact/combat loop through the legal-action boundary.
 3. Add the remaining Land systems and data required by *Graziani's Offensive*.
 4. Deliver the Maproom interface, local hot-seat play, saves, and replay.
 5. Expand into detailed Air and Logistics play, later scenarios, and optional intelligence.
@@ -158,11 +162,13 @@ The current Umpire foundation is intentionally pure and in-process:
   supply free-form initiative inputs.
 - `Cna.Core.Content` owns validated immutable topology, force structure, scenario declarations,
   per-datum origins, canonical bytes/hash, and the original nonhistorical rules laboratory.
-- `Cna.Core.Campaigns` owns exact content admission, mutable world snapshots, versioned
-  commands/events, typed rejection, deterministic Initiative adjudication, canonical serialization,
-  and dependency-prepared trusted-history replay.
+- `Cna.Core.Campaigns` owns internal exact-content authority, mechanic commands/events, deterministic
+  Initiative and opening-preamble adjudication, canonical history, replay, and the public opaque
+  authority handle/creation facade.
 - `Cna.Core.Observations` owns the output-only Campaign Observation v1 allowlist, typed projection
-  result, full-checkpoint admission, structural values, and canonical side-safe JSON.
+  result, handle-based query facade, structural values, and canonical side-safe JSON.
+- `Cna.Core.Actions` owns typed system/side candidates, canonical action identity, observation-only
+  side generation, exact-audience query/submission enforcement, and side-safe receipts.
 - The sequence catalog cites the original Land Rules without embedding copyrighted rules prose or
   component art. Inspecting that catalog is not authoritative adjudication.
 
@@ -194,6 +200,9 @@ The current Umpire foundation is intentionally pure and in-process:
 - [Reconnaissance and contact knowledge research](docs/research/recon-contact-knowledge-spike.md)
 - [Campaign Observation v1 specification](docs/specs/campaign-observation-v1.md)
 - [Campaign Observation v1 technical design](docs/design/campaign-observation-v1.md)
+- [Turn-preamble action-boundary research](docs/research/turn-preamble-action-boundary-spike.md)
+- [Legal Actions v1 specification](docs/specs/legal-actions-v1.md)
+- [Legal Actions v1 technical design](docs/design/legal-actions-v1.md)
 - [Microsoft Orleans documentation](https://learn.microsoft.com/en-us/dotnet/orleans/)
 - [ASP.NET Core gRPC services](https://learn.microsoft.com/en-us/aspnet/core/grpc/aspnetcore?view=aspnetcore-10.0)
 - [Aspire AppHost and ServiceDefaults](https://learn.microsoft.com/en-us/dotnet/aspire/fundamentals/aspire-sdk-templates)

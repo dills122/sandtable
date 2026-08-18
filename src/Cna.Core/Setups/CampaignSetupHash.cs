@@ -16,6 +16,7 @@ internal static class CampaignSetupHash
             definition.IsSynthetic,
             definition.InitialGameTurn,
             definition.InitialInitiative,
+            definition.OpeningPreamble,
             definition.Content,
             definition.Sources);
     }
@@ -26,6 +27,7 @@ internal static class CampaignSetupHash
         bool isSynthetic,
         int initialGameTurn,
         InitiativePolicy initialInitiative,
+        CampaignOpeningPreamblePolicy openingPreamble,
         CampaignContentSelection content,
         IReadOnlyList<RuleReference> sources)
     {
@@ -40,6 +42,28 @@ internal static class CampaignSetupHash
             writer.WriteNumber("initialGameTurn", initialGameTurn);
             writer.WriteStartObject("initialInitiative");
             WriteInitiative(writer, initialInitiative);
+            writer.WriteEndObject();
+            writer.WriteStartObject("openingPreamble");
+            writer.WriteNumber("contractVersion", openingPreamble.ContractVersion);
+            writer.WriteString(
+                "kind",
+                openingPreamble.Kind switch
+                {
+                    CampaignOpeningPreambleKind.NoOpeningNavalConvoyObligations =>
+                        "no-opening-naval-convoy-obligations",
+                    _ => throw new ArgumentOutOfRangeException(nameof(openingPreamble)),
+                });
+            writer.WriteStartArray("sources");
+
+            foreach (var source in openingPreamble.Sources)
+            {
+                writer.WriteStartObject();
+                writer.WriteString("sourceId", source.SourceId);
+                writer.WriteString("locator", source.Locator);
+                writer.WriteEndObject();
+            }
+
+            writer.WriteEndArray();
             writer.WriteEndObject();
             writer.WriteStartObject("content");
             writer.WriteNumber("schemaVersion", content.Pack.SchemaVersion);

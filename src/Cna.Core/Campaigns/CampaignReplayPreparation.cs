@@ -4,7 +4,7 @@ using Cna.Core.Rules;
 
 namespace Cna.Core.Campaigns;
 
-public enum CampaignReplayPreparationRejectionReason
+internal enum CampaignReplayPreparationRejectionReason
 {
     None,
     InvalidHistory,
@@ -13,7 +13,7 @@ public enum CampaignReplayPreparationRejectionReason
     UnsupportedRuleset,
 }
 
-public sealed record CampaignReplayContext
+internal sealed record CampaignReplayContext
 {
     internal CampaignReplayContext(string rulesetHash, CampaignContentContext content)
     {
@@ -26,7 +26,7 @@ public sealed record CampaignReplayContext
     public CampaignContentContext Content { get; }
 }
 
-public sealed record CampaignReplayPreparationResult
+internal sealed record CampaignReplayPreparationResult
 {
     private CampaignReplayPreparationResult(
         CampaignReplayContext? context,
@@ -49,7 +49,7 @@ public sealed record CampaignReplayPreparationResult
         CampaignReplayPreparationRejectionReason reason) => new(null, reason);
 }
 
-public static class CampaignReplayPreparation
+internal static class CampaignReplayPreparation
 {
     public static CampaignReplayPreparationResult Prepare(
         ReadOnlyMemory<byte> canonicalCreationEvent,

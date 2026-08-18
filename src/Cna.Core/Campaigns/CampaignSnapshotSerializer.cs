@@ -6,7 +6,7 @@ using Cna.Core.Setups;
 
 namespace Cna.Core.Campaigns;
 
-public static class CampaignSnapshotSerializer
+internal static class CampaignSnapshotSerializer
 {
     public static byte[] Serialize(CampaignSnapshot snapshot)
     {
@@ -35,6 +35,7 @@ public static class CampaignSnapshotSerializer
                     FormatSide(snapshot.InitiativeHolder.Value));
             }
 
+            WriteOperationStageOrders(writer, snapshot.OperationStageOrders);
             WriteRandomState(writer, snapshot.RandomState);
             WritePosition(writer, snapshot.SequencePosition);
             writer.WriteEndObject();
@@ -58,6 +59,7 @@ public static class CampaignSnapshotSerializer
                 "setup",
                 "world",
                 "initiativeHolder",
+                "operationStageOrders",
                 "randomState",
                 "sequencePosition");
 
@@ -72,6 +74,7 @@ public static class CampaignSnapshotSerializer
                 holderElement.ValueKind == JsonValueKind.Null
                     ? null
                     : ParseSide(holderElement.GetString()),
+                ParseOperationStageOrders(root.GetProperty("operationStageOrders")),
                 ParseRandomState(root.GetProperty("randomState")),
                 ParsePosition(root.GetProperty("sequencePosition")));
 
@@ -103,6 +106,7 @@ public static class CampaignSnapshotSerializer
         writer.WriteStartObject("initialInitiative");
         WriteInitiative(writer, setup.InitialInitiative);
         writer.WriteEndObject();
+        WriteOpeningPreamble(writer, setup.OpeningPreamble);
         WriteContent(writer, setup.Content);
         WriteSources(writer, setup.Sources);
         writer.WriteEndObject();
@@ -118,6 +122,7 @@ public static class CampaignSnapshotSerializer
             "isSynthetic",
             "initialGameTurn",
             "initialInitiative",
+            "openingPreamble",
             "content",
             "sources");
 
@@ -128,6 +133,7 @@ public static class CampaignSnapshotSerializer
             setup.GetProperty("isSynthetic").GetBoolean(),
             setup.GetProperty("initialGameTurn").GetInt32(),
             ParseInitiative(setup.GetProperty("initialInitiative")),
+            ParseOpeningPreamble(setup.GetProperty("openingPreamble")),
             ParseContent(setup.GetProperty("content")),
             ParseSources(setup.GetProperty("sources")));
     }
@@ -180,6 +186,40 @@ public static class CampaignSnapshotSerializer
         writer.WriteString("hash", content.Pack.Hash);
         writer.WriteString("scenarioId", content.ScenarioId);
         writer.WriteEndObject();
+    }
+
+    private static void WriteOpeningPreamble(
+        Utf8JsonWriter writer,
+        CampaignOpeningPreamblePolicy policy)
+    {
+        writer.WriteStartObject("openingPreamble");
+        writer.WriteNumber("contractVersion", policy.ContractVersion);
+        writer.WriteString(
+            "kind",
+            policy.Kind switch
+            {
+                CampaignOpeningPreambleKind.NoOpeningNavalConvoyObligations =>
+                    "no-opening-naval-convoy-obligations",
+                _ => throw new JsonException("Unknown opening preamble policy."),
+            });
+        WriteSources(writer, policy.Sources);
+        writer.WriteEndObject();
+    }
+
+    private static CampaignOpeningPreamblePolicy ParseOpeningPreamble(JsonElement policy)
+    {
+        RequireProperties(policy, "contractVersion", "kind", "sources");
+        var kind = policy.GetProperty("kind").GetString() switch
+        {
+            "no-opening-naval-convoy-obligations" =>
+                CampaignOpeningPreambleKind.NoOpeningNavalConvoyObligations,
+            var value => throw new JsonException($"Unknown opening preamble policy '{value}'."),
+        };
+
+        return new CampaignOpeningPreamblePolicy(
+            policy.GetProperty("contractVersion").GetInt32(),
+            kind,
+            ParseSources(policy.GetProperty("sources")));
     }
 
     private static CampaignContentSelection ParseContent(JsonElement content)
@@ -268,6 +308,32 @@ public static class CampaignSnapshotSerializer
             ParseLocation(facts.GetProperty("rommelLocation").GetString()),
             locations));
     }
+
+    internal static void WriteOperationStageOrders(Utf8JsonWriter writer,
+        IEnumerable<CampaignOperationStageOrder> orders)
+    {
+        writer.WriteStartArray("operationStageOrders");
+        foreach (var order in orders)
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("contractVersion", order.ContractVersion);
+            writer.WriteNumber("operationStage", order.OperationStage);
+            writer.WriteString("firstSide", FormatSide(order.FirstSide));
+            writer.WriteString("secondSide", FormatSide(order.SecondSide));
+            writer.WriteEndObject();
+        }
+        writer.WriteEndArray();
+    }
+
+    internal static CampaignOperationStageOrder[] ParseOperationStageOrders(JsonElement orders) =>
+        orders.EnumerateArray().Select(order =>
+        {
+            RequireProperties(order, "contractVersion", "operationStage", "firstSide", "secondSide");
+            return new CampaignOperationStageOrder(order.GetProperty("contractVersion").GetInt32(),
+                order.GetProperty("operationStage").GetInt32(),
+                ParseSide(order.GetProperty("firstSide").GetString()),
+                ParseSide(order.GetProperty("secondSide").GetString()));
+        }).ToArray();
 
     internal static void WriteRandomState(Utf8JsonWriter writer, RandomStreamState state)
     {

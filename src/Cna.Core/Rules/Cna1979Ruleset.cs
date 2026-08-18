@@ -11,6 +11,9 @@ public static class Cna1979Ruleset
 
     private const string LandSequenceArtifactId = "cna-1979.1.land-sequence";
 
+    internal const string EmptyOpeningConvoyRulingId =
+        "cna-1979.1.ruling.explicit-empty-opening-convoy-resolution";
+
     private static readonly RuleReference[] LandSequenceSources =
     [
         Cna1979LandSequence.SourceReference,
@@ -105,8 +108,26 @@ public static class Cna1979Ruleset
                 Cna1979ContentVocabulary.CreateArtifact(),
                 Cna1979RandomProcedure.CreateArtifact(),
             ],
-            []);
+            [CreateEmptyOpeningConvoyRuling()]);
     }
+
+    private static Ruling CreateEmptyOpeningConvoyRuling() => new(
+        EmptyOpeningConvoyRulingId,
+        "cna-1979.1.conflict.empty-opening-convoy-phase",
+        [
+            "reject-empty-opening-convoy-as-unsupported",
+            "resolve-explicitly-admitted-empty-opening-convoy",
+        ],
+        "resolve-explicitly-admitted-empty-opening-convoy",
+        ["ACT-AC-002", "ACT-AC-003", "ACT-AC-016"],
+        [
+            Cna1979LandSequence.SourceReference,
+            new RuleReference("spi-1979-land-rules", "32.43"),
+            new RuleReference("spi-1979-land-rules", "32.61"),
+            new RuleReference(
+                "sandtable-rules-lab",
+                "opening-preamble.no-naval-convoy-obligations.v1"),
+        ]);
 
     private static string FormatSha256(ReadOnlySpan<byte> content) =>
         $"sha256:{Convert.ToHexString(SHA256.HashData(content)).ToLowerInvariant()}";

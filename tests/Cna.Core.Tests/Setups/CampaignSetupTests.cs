@@ -22,12 +22,19 @@ public sealed class CampaignSetupTests
                 Assert.Equal(
                     [Cna1979SetupCatalog.PredeterminedSourceReference],
                     predetermined.Sources);
+                Assert.Equal(3, predetermined.SchemaVersion);
+                Assert.Equal(
+                    CampaignOpeningPreambleKind.NoOpeningNavalConvoyObligations,
+                    predetermined.OpeningPreamble.Kind);
+                Assert.Equal(
+                    [Cna1979SetupCatalog.OpeningPreambleSourceReference],
+                    predetermined.OpeningPreamble.Sources);
                 Assert.Equal(
                     Cna1979SyntheticContentCatalog.Artifact.Identity,
                     predetermined.Content.Pack);
                 Assert.Equal("movement-contact-lab", predetermined.Content.ScenarioId);
                 Assert.Equal(
-                    "sha256:9dfa11b7e9fac73e61d289f9847435ad4c9335b8b1692b95ffbeaa3566c8d921",
+                    "sha256:ed20292efd3812382e6c371ea45dd96a0778732be14e865af144db97d3d7dfde",
                     predetermined.Hash);
             },
             contested =>
@@ -46,11 +53,14 @@ public sealed class CampaignSetupTests
                     [Cna1979SetupCatalog.ContestedSourceReference],
                     contested.Sources);
                 Assert.Equal(
+                    CampaignOpeningPreambleKind.NoOpeningNavalConvoyObligations,
+                    contested.OpeningPreamble.Kind);
+                Assert.Equal(
                     Cna1979SyntheticContentCatalog.Artifact.Identity,
                     contested.Content.Pack);
                 Assert.Equal("initiative-contested-lab", contested.Content.ScenarioId);
                 Assert.Equal(
-                    "sha256:e50c4ae9936462b46f3ce8e88459a790911c93be3ad1c97e80b6db71223030c4",
+                    "sha256:a28c5f631853e9868c353774284326ff9fe4a70bc9acf89d8c55382c75fb85e3",
                     contested.Hash);
             });
     }
@@ -80,6 +90,7 @@ public sealed class CampaignSetupTests
             baseline.IsSynthetic,
             baseline.InitialGameTurn,
             baseline.InitialInitiative,
+            baseline.OpeningPreamble,
             baseline.Content,
             baseline.Sources);
         var policyChanged = new CampaignSetupDefinition(
@@ -91,6 +102,7 @@ public sealed class CampaignSetupTests
             new ContestedInitiative(new AxisInitiativeSourceFacts(
                 AxisInitiativeLocation.QualifyingGameMap,
                 [])),
+            baseline.OpeningPreamble,
             baseline.Content,
             baseline.Sources);
         var contentChanged = new CampaignSetupDefinition(
@@ -100,6 +112,7 @@ public sealed class CampaignSetupTests
             baseline.IsSynthetic,
             baseline.InitialGameTurn,
             baseline.InitialInitiative,
+            baseline.OpeningPreamble,
             new CampaignContentSelection(
                 new ContentPackIdentity(
                     baseline.Content.Pack.SchemaVersion,
@@ -116,6 +129,7 @@ public sealed class CampaignSetupTests
             baseline.IsSynthetic,
             baseline.InitialGameTurn,
             baseline.InitialInitiative,
+            baseline.OpeningPreamble,
             new CampaignContentSelection(
                 baseline.Content.Pack,
                 "movement-contact-lab"),
@@ -127,14 +141,29 @@ public sealed class CampaignSetupTests
             baseline.IsSynthetic,
             baseline.InitialGameTurn,
             baseline.InitialInitiative,
+            baseline.OpeningPreamble,
             baseline.Content,
             [new RuleReference("sandtable-rules-lab", "different-source.v1")]);
+        var openingPreambleChanged = new CampaignSetupDefinition(
+            baseline.SchemaVersion,
+            baseline.SetupId,
+            baseline.DisplayName,
+            baseline.IsSynthetic,
+            baseline.InitialGameTurn,
+            baseline.InitialInitiative,
+            new CampaignOpeningPreamblePolicy(
+                CampaignOpeningPreamblePolicy.CurrentContractVersion,
+                CampaignOpeningPreambleKind.NoOpeningNavalConvoyObligations,
+                [new RuleReference("sandtable-rules-lab", "different-opening-policy.v1")]),
+            baseline.Content,
+            baseline.Sources);
 
         Assert.Equal(baseline.Hash, displayChanged.Hash);
         Assert.NotEqual(baseline.Hash, policyChanged.Hash);
         Assert.NotEqual(baseline.Hash, contentChanged.Hash);
         Assert.NotEqual(baseline.Hash, scenarioChanged.Hash);
         Assert.NotEqual(baseline.Hash, sourceChanged.Hash);
+        Assert.NotEqual(baseline.Hash, openingPreambleChanged.Hash);
         Assert.Matches("^sha256:[0-9a-f]{64}$", baseline.Hash);
         Assert.Equal(rulesetHash, Cna1979Ruleset.Manifest.Hash);
         Assert.DoesNotContain(
@@ -151,21 +180,23 @@ public sealed class CampaignSetupTests
             new("sandtable-rules-lab", "source-a"),
         };
         var first = new CampaignSetupDefinition(
-            1,
+            Cna1979SetupCatalog.SchemaVersion,
             "rules-lab.test",
             "Test setup",
             true,
             1,
             new PredeterminedInitiative(LandSide.Axis),
+            Cna1979SetupCatalog.OpeningPreamblePolicy,
             Cna1979SetupCatalog.Definitions[0].Content,
             sources);
         var equivalent = new CampaignSetupDefinition(
-            1,
+            Cna1979SetupCatalog.SchemaVersion,
             "rules-lab.test",
             "Test setup",
             true,
             1,
             new PredeterminedInitiative(LandSide.Axis),
+            Cna1979SetupCatalog.OpeningPreamblePolicy,
             Cna1979SetupCatalog.Definitions[0].Content,
             sources.AsEnumerable().Reverse().ToArray());
 
@@ -194,6 +225,7 @@ public sealed class CampaignSetupTests
             true,
             112,
             new PredeterminedInitiative(LandSide.Axis),
+            Cna1979SetupCatalog.OpeningPreamblePolicy,
             Cna1979SetupCatalog.Definitions[0].Content,
             [new RuleReference("sandtable-rules-lab", "test.v1")]));
         Assert.Throws<ArgumentException>(() => new CampaignSetupDefinition(
@@ -203,7 +235,16 @@ public sealed class CampaignSetupTests
             true,
             1,
             new PredeterminedInitiative(LandSide.Axis),
+            Cna1979SetupCatalog.OpeningPreamblePolicy,
             Cna1979SetupCatalog.Definitions[0].Content,
+            []));
+        Assert.Throws<ArgumentOutOfRangeException>(() => new CampaignOpeningPreamblePolicy(
+            2,
+            CampaignOpeningPreambleKind.NoOpeningNavalConvoyObligations,
+            [Cna1979SetupCatalog.OpeningPreambleSourceReference]));
+        Assert.Throws<ArgumentException>(() => new CampaignOpeningPreamblePolicy(
+            CampaignOpeningPreamblePolicy.CurrentContractVersion,
+            CampaignOpeningPreambleKind.NoOpeningNavalConvoyObligations,
             []));
     }
 }

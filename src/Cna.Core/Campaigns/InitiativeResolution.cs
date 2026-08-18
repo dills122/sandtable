@@ -4,7 +4,7 @@ using Cna.Core.Rules;
 
 namespace Cna.Core.Campaigns;
 
-public sealed record InitiativeResolution
+internal sealed record InitiativeResolution
 {
     public InitiativeResolution(
         InitiativeOutcome outcome,

@@ -2,7 +2,7 @@ using Cna.Core.Rules;
 
 namespace Cna.Core.Campaigns;
 
-public sealed record InitiativeDetermined : CampaignEvent
+internal sealed record InitiativeDetermined : CampaignEvent
 {
     public InitiativeDetermined(
         string campaignId,
