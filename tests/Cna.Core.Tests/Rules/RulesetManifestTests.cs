@@ -1,4 +1,5 @@
 using Cna.Core.Rules;
+using Cna.Core.Setups;
 
 namespace Cna.Core.Tests.Rules;
 
@@ -30,7 +31,35 @@ public sealed class RulesetManifestTests
         Assert.Contains(
             artifact.Sources,
             source => source == new RuleReference("spi-1979-land-rules", "7.14"));
-        Assert.Empty(manifest.Rulings);
+        var ruling = Assert.Single(manifest.Rulings);
+        Assert.Equal(
+            "8afc49a614265ade48fb3bb9db553de21203ec4447522dddbc7cdfe8790fc1d7",
+            manifest.Hash);
+        Assert.Equal(Cna1979Ruleset.EmptyOpeningConvoyRulingId, ruling.RulingId);
+        Assert.Equal(
+            "cna-1979.1.conflict.empty-opening-convoy-phase",
+            ruling.ConflictId);
+        Assert.Equal(
+            "resolve-explicitly-admitted-empty-opening-convoy",
+            ruling.SelectedBehaviorId);
+        Assert.Equal(
+            [
+                "reject-empty-opening-convoy-as-unsupported",
+                "resolve-explicitly-admitted-empty-opening-convoy",
+            ],
+            ruling.AlternativeIds);
+        Assert.Equal(["ACT-AC-002", "ACT-AC-003", "ACT-AC-016"], ruling.ProtectingTestIds);
+        Assert.Equal(
+            [
+                new RuleReference("spi-1979-land-rules", "5.2"),
+                new RuleReference("spi-1979-land-rules", "32.43"),
+                new RuleReference("spi-1979-land-rules", "32.61"),
+                Cna1979SetupCatalog.OpeningPreambleSourceReference,
+            ],
+            ruling.Sources);
+        Assert.Contains(
+            Cna1979SetupCatalog.OpeningPreambleSourceReference,
+            ruling.Sources);
         Assert.Same(manifest, Cna1979Ruleset.Manifest);
         Assert.True(Cna1979Ruleset.IsCanonicalHash(manifest.Hash));
         Assert.False(Cna1979Ruleset.IsCanonicalHash(new string('0', 64)));

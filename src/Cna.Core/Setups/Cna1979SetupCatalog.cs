@@ -4,9 +4,9 @@ using Cna.Core.Rules;
 
 namespace Cna.Core.Setups;
 
-public static class Cna1979SetupCatalog
+internal static class Cna1979SetupCatalog
 {
-    public const int SchemaVersion = 2;
+    public const int SchemaVersion = 3;
     public const string PredeterminedSetupId = "rules-lab.initiative.predetermined";
     public const string ContestedSetupId = "rules-lab.initiative.contested";
 
@@ -18,6 +18,15 @@ public static class Cna1979SetupCatalog
         "sandtable-rules-lab",
         "initiative.contested-turn-43.v1");
 
+    internal static RuleReference OpeningPreambleSourceReference { get; } = new(
+        "sandtable-rules-lab",
+        "opening-preamble.no-naval-convoy-obligations.v1");
+
+    internal static CampaignOpeningPreamblePolicy OpeningPreamblePolicy { get; } = new(
+        CampaignOpeningPreamblePolicy.CurrentContractVersion,
+        CampaignOpeningPreambleKind.NoOpeningNavalConvoyObligations,
+        [OpeningPreambleSourceReference]);
+
     public static IReadOnlyList<CampaignSetupDefinition> Definitions { get; } =
         Array.AsReadOnly<CampaignSetupDefinition>(
         [
@@ -28,6 +37,7 @@ public static class Cna1979SetupCatalog
                 true,
                 1,
                 new PredeterminedInitiative(LandSide.Axis),
+                OpeningPreamblePolicy,
                 new CampaignContentSelection(
                     Cna1979SyntheticContentCatalog.Artifact.Identity,
                     "movement-contact-lab"),
@@ -41,6 +51,7 @@ public static class Cna1979SetupCatalog
                 new ContestedInitiative(new AxisInitiativeSourceFacts(
                     AxisInitiativeLocation.OffMapOrUnavailable,
                     [AxisInitiativeLocation.QualifyingGameMap])),
+                OpeningPreamblePolicy,
                 new CampaignContentSelection(
                     Cna1979SyntheticContentCatalog.Artifact.Identity,
                     "initiative-contested-lab"),

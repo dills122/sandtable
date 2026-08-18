@@ -71,14 +71,14 @@ Command → Umpire → Events
 
 That's an excellent architectural principle _and_ flavorful terminology.
 
-The first implementation maps these names conservatively: `Cna.Core.Campaigns.CampaignEngine`
-decides commands, campaign event records are the Chronicle's authoritative input, and
-`CampaignProjector` plus `CampaignReplayHarness` reconstruct snapshots. Those plain technical names
-stay inside the Umpire boundary; they are not additional products or services. The Umpire validates
-public snapshot state, adjudicates Initiative Determination, and rejects further progression at
-Naval Convoy until that mandatory mechanic exists. `CampaignEventSerializer` defines the canonical
-Chronicle bytes for the currently accepted history. Walking the published sequence catalog for
-inspection does not create Chronicle history.
+The first implementation maps these names conservatively: the internal
+`Cna.Core.Campaigns.CampaignEngine` decides mechanic commands, campaign event records are the
+Chronicle's authoritative input, and internal projection/replay reconstruct snapshots. Those plain
+technical names stay inside the Umpire boundary; they are not additional products or services.
+Public callers hold only a `CampaignAuthorityHandle`, inspect one side through Campaign Observation,
+and submit a current typed Legal Action. The Umpire now reaches Operation Stage 1 Weather through
+explicit Initiative, Naval Convoy Schedule, Tactical Shipping, and Initiative Declaration events.
+Walking the published sequence catalog for inspection does not create Chronicle history.
 
 For the CNA rules domain, use **initiative holder** only for the side that wins or is assigned
 Game Turn initiative. Use **first-acting side** and **second-acting side** for each Operation Stage.
@@ -460,6 +460,8 @@ Use five related terms precisely in the implementation:
 | **Campaign World** | Authoritative mutable runtime facts projected from an exact setup and scenario. Version 1 stores current element locations and joins static facts through stable Content Pack IDs. |
 | **Content Context** | Runtime-only, already-resolved exact Content Pack and selected scenario supplied to authoritative decision/replay. It is not campaign state or a transport DTO. |
 | **Campaign Observation** | Immutable side-safe derived view for one authorized side. It copies only approved public and own-force facts, carries no complete Content Pack identity, and is never authoritative state or trusted history. |
+| **Campaign Authority Handle** | Opaque Core-issued reference to admitted authoritative state plus exact resident content context. It can be passed to safe facades but not inspected, serialized into authority, deconstructed, or mutated directly. |
+| **Legal Action** | Immutable typed candidate currently available to one exact system or side audience. Its deterministic ID is identity only; submission must re-derive membership against the current authority handle. |
 
 Presentation labels and original visuals are separate from authoritative Content Pack identity.
 The **Theater** is the runtime geographic/world concept assembled from exact content plus campaign

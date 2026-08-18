@@ -3,7 +3,7 @@ using Cna.Core.Rules;
 
 namespace Cna.Core.Campaigns;
 
-public static class CampaignProjector
+internal static class CampaignProjector
 {
     public static CampaignSnapshot Replay(
         IEnumerable<CampaignEvent> events,
@@ -39,6 +39,9 @@ public static class CampaignProjector
         {
             CampaignCreated created => ApplyCreated(snapshot, created, context),
             InitiativeDetermined determined => ApplyInitiativeDetermined(snapshot, determined, context),
+            NoObligationNavalConvoyScheduleResolved resolved => ApplySchedule(snapshot, resolved, context),
+            NoObligationTacticalShippingResolved resolved => ApplyTactical(snapshot, resolved, context),
+            InitiativeOrderDeclared declared => ApplyDeclaration(snapshot, declared, context),
             CampaignSequenceAdvanced => throw new InvalidCampaignHistoryException(
                 "Legacy generic sequence events are not valid version-3 campaign history."),
             _ => throw new InvalidCampaignHistoryException("Unsupported campaign event type."),
@@ -55,7 +58,7 @@ public static class CampaignProjector
             throw new InvalidCampaignHistoryException("A campaign can contain only one creation event.");
         }
 
-        if (created.ContractVersion != 3
+        if (created.ContractVersion != 4
             || created.StateVersion != 1
             || string.IsNullOrWhiteSpace(created.CampaignId)
             || !Cna1979Ruleset.IsCanonicalHash(created.RulesetHash)
@@ -82,13 +85,14 @@ public static class CampaignProjector
         }
 
         var projected = new CampaignSnapshot(
-            3,
+            4,
             created.CampaignId,
             created.StateVersion,
             created.RulesetHash,
             created.Setup,
             created.InitialWorld,
             null,
+            [],
             created.RandomState,
             created.SequencePosition);
 
@@ -146,6 +150,66 @@ public static class CampaignProjector
                 "The Initiative event produces invalid campaign state.");
         }
 
+        return projected;
+    }
+
+    private static CampaignSnapshot ApplySchedule(CampaignSnapshot? snapshot,
+        NoObligationNavalConvoyScheduleResolved resolved, CampaignContentContext context) =>
+        ApplyExpectedAdvance(snapshot, resolved, context, OpeningPreambleEventFactory.CreateSchedule);
+
+    private static CampaignSnapshot ApplyTactical(CampaignSnapshot? snapshot,
+        NoObligationTacticalShippingResolved resolved, CampaignContentContext context) =>
+        ApplyExpectedAdvance(snapshot, resolved, context, OpeningPreambleEventFactory.CreateTactical);
+
+    private static CampaignSnapshot ApplyExpectedAdvance<TEvent>(CampaignSnapshot? snapshot,
+        TEvent actual, CampaignContentContext context, Func<CampaignSnapshot, TEvent> create)
+        where TEvent : OpeningPreambleAdvanced
+    {
+        if (snapshot is null) throw new InvalidCampaignHistoryException("A preamble event cannot precede creation.");
+        TEvent expected;
+        try { expected = create(snapshot); }
+        catch (Exception exception) when (exception is ArgumentException or ArithmeticException or InvalidOperationException)
+        { throw new InvalidCampaignHistoryException(exception.Message); }
+        if (!CampaignEventSerializer.Serialize(actual).SequenceEqual(
+            CampaignEventSerializer.Serialize(expected)))
+            throw new InvalidCampaignHistoryException("The preamble event is inconsistent with campaign history.");
+        var projected = snapshot with
+        {
+            StateVersion = actual.StateVersion,
+            SequencePosition = actual.SequencePosition,
+        };
+        if (!CampaignSnapshotValidator.IsValid(projected, context))
+            throw new InvalidCampaignHistoryException("The preamble event produces invalid campaign state.");
+        return projected;
+    }
+
+    private static CampaignSnapshot ApplyDeclaration(CampaignSnapshot? snapshot,
+        InitiativeOrderDeclared declared, CampaignContentContext context)
+    {
+        if (snapshot is null) throw new InvalidCampaignHistoryException("A declaration cannot precede creation.");
+        var choice = declared.FirstSide == declared.DeclaringHolder
+            ? InitiativeOrderChoice.ActFirst
+            : InitiativeOrderChoice.ActLast;
+        var command = new DeclareInitiativeOrder(snapshot.StateVersion,
+            snapshot.SequencePosition.PositionId, declared.OperationStage, declared.DeclaringHolder, choice);
+        InitiativeOrderDeclared expected;
+        try { expected = OpeningPreambleEventFactory.CreateDeclaration(snapshot, command); }
+        catch (Exception exception) when (exception is ArgumentException or ArithmeticException or InvalidOperationException)
+        { throw new InvalidCampaignHistoryException(exception.Message); }
+        if (!CampaignEventSerializer.Serialize(declared).SequenceEqual(
+            CampaignEventSerializer.Serialize(expected)))
+            throw new InvalidCampaignHistoryException("The declaration is inconsistent with campaign history.");
+        var order = new CampaignOperationStageOrder(CampaignOperationStageOrder.CurrentContractVersion,
+            declared.OperationStage, declared.FirstSide, declared.SecondSide);
+        var projected = snapshot with
+        {
+            StateVersion = declared.StateVersion,
+            OperationStageOrders = Array.AsReadOnly(snapshot.OperationStageOrders.Append(order)
+                .OrderBy(value => value.OperationStage).ToArray()),
+            SequencePosition = declared.SequencePosition,
+        };
+        if (!CampaignSnapshotValidator.IsValid(projected, context))
+            throw new InvalidCampaignHistoryException("The declaration produces invalid campaign state.");
         return projected;
     }
 }

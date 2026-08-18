@@ -4,7 +4,7 @@ using Cna.Core.Setups;
 
 namespace Cna.Core.Campaigns;
 
-public sealed record CampaignSetupSnapshot
+internal sealed record CampaignSetupSnapshot
 {
     public CampaignSetupSnapshot(
         int schemaVersion,
@@ -13,6 +13,7 @@ public sealed record CampaignSetupSnapshot
         bool isSynthetic,
         int initialGameTurn,
         InitiativePolicy initialInitiative,
+        CampaignOpeningPreamblePolicy openingPreamble,
         CampaignContentSelection content,
         IReadOnlyList<RuleReference> sources)
     {
@@ -21,6 +22,7 @@ public sealed record CampaignSetupSnapshot
         ArgumentException.ThrowIfNullOrWhiteSpace(setupHash);
         ArgumentOutOfRangeException.ThrowIfLessThan(initialGameTurn, 1);
         ArgumentNullException.ThrowIfNull(initialInitiative);
+        ArgumentNullException.ThrowIfNull(openingPreamble);
         ArgumentNullException.ThrowIfNull(content);
 
         SchemaVersion = schemaVersion;
@@ -29,6 +31,7 @@ public sealed record CampaignSetupSnapshot
         IsSynthetic = isSynthetic;
         InitialGameTurn = initialGameTurn;
         InitialInitiative = initialInitiative;
+        OpeningPreamble = openingPreamble;
         Content = content;
         Sources = CopySources(sources);
     }
@@ -39,6 +42,7 @@ public sealed record CampaignSetupSnapshot
     public bool IsSynthetic { get; }
     public int InitialGameTurn { get; }
     public InitiativePolicy InitialInitiative { get; }
+    public CampaignOpeningPreamblePolicy OpeningPreamble { get; }
     public CampaignContentSelection Content { get; }
     public IReadOnlyList<RuleReference> Sources { get; }
 
@@ -52,6 +56,7 @@ public sealed record CampaignSetupSnapshot
             definition.IsSynthetic,
             definition.InitialGameTurn,
             definition.InitialInitiative,
+            definition.OpeningPreamble,
             definition.Content,
             definition.Sources);
     }
@@ -65,6 +70,7 @@ public sealed record CampaignSetupSnapshot
             && IsSynthetic == other.IsSynthetic
             && InitialGameTurn == other.InitialGameTurn
             && InitialInitiative == other.InitialInitiative
+            && OpeningPreamble == other.OpeningPreamble
             && Content == other.Content
             && Sources.SequenceEqual(other.Sources));
 
@@ -77,6 +83,7 @@ public sealed record CampaignSetupSnapshot
         hash.Add(IsSynthetic);
         hash.Add(InitialGameTurn);
         hash.Add(InitialInitiative);
+        hash.Add(OpeningPreamble);
         hash.Add(Content);
 
         foreach (var source in Sources)

@@ -1,6 +1,6 @@
 namespace Cna.Core.Campaigns;
 
-public static class CampaignReplayHarness
+internal static class CampaignReplayHarness
 {
     public static CampaignReplayResult Execute(
         IEnumerable<CampaignCommand> commands,

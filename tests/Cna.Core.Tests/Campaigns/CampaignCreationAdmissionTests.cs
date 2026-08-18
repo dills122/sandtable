@@ -21,7 +21,7 @@ public sealed class CampaignCreationAdmissionTests
         Assert.True(result.IsAccepted);
         Assert.Equal(1, resolver.CallCount);
         var created = Assert.IsType<CampaignCreated>(Assert.Single(result.Events));
-        Assert.Equal(3, created.ContractVersion);
+        Assert.Equal(4, created.ContractVersion);
         Assert.Equal(setup.Content, created.Setup.Content);
         Assert.Equal(4, created.InitialWorld.Elements.Count);
     }
@@ -193,6 +193,7 @@ public sealed class CampaignCreationAdmissionTests
             true,
             canonical.InitialGameTurn + 1,
             canonical.InitialInitiative,
+            canonical.OpeningPreamble,
             canonical.Content,
             canonical.Sources);
 

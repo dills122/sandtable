@@ -1,6 +1,6 @@
 namespace Cna.Core.Campaigns;
 
-public sealed record CampaignReplayResult
+internal sealed record CampaignReplayResult
 {
     internal CampaignReplayResult(
         IEnumerable<CampaignEvent> events,

@@ -24,7 +24,7 @@ public sealed class Version3AuthorityTests
 
         Assert.True(result.IsAccepted);
         var created = Assert.IsType<CampaignCreated>(Assert.Single(result.Events));
-        Assert.Equal(3, created.ContractVersion);
+        Assert.Equal(4, created.ContractVersion);
         Assert.Equal(setup.Content, created.Setup.Content);
         Assert.Equal(4, created.InitialWorld.Elements.Count);
         Assert.Equal(setup.SetupId, created.Setup.SetupId);
@@ -118,7 +118,7 @@ public sealed class Version3AuthorityTests
     }
 
     [Fact]
-    public void ReplayAcceptsASelfConsistentEmbeddedSetupOutsideTheCurrentCatalog()
+    public void ReplayRejectsAnEmbeddedSetupOutsideTheAdmittedCatalogScope()
     {
         var definition = new CampaignSetupDefinition(
             Cna1979SetupCatalog.SchemaVersion,
@@ -127,6 +127,7 @@ public sealed class Version3AuthorityTests
             true,
             1,
             new PredeterminedInitiative(LandSide.Commonwealth),
+            Cna1979SetupCatalog.OpeningPreamblePolicy,
             Cna1979SetupCatalog.Definitions[0].Content,
             [new RuleReference("sandtable-rules-lab", "retired.synthetic.v1")]);
         var created = new CampaignCreated(
@@ -141,11 +142,7 @@ public sealed class Version3AuthorityTests
             SandtableRandom.Create(7),
             Cna1979LandSequence.CreateTurn(1)[0]);
 
-        var replayed = CampaignTestHarness.Replay([created]);
-
-        Assert.Equal(definition.SetupId, replayed.Setup.SetupId);
-        Assert.Equal(definition.Hash, replayed.Setup.SetupHash);
-        Assert.Equal(created.InitialWorld, replayed.World);
+        Assert.Throws<InvalidCampaignHistoryException>(() => CampaignTestHarness.Replay([created]));
     }
 
     [Fact]
@@ -160,6 +157,7 @@ public sealed class Version3AuthorityTests
             definition.IsSynthetic,
             definition.InitialGameTurn,
             definition.InitialInitiative,
+            definition.OpeningPreamble,
             definition.Content,
             sources);
         var equivalent = new CampaignSetupSnapshot(
@@ -169,6 +167,7 @@ public sealed class Version3AuthorityTests
             definition.IsSynthetic,
             definition.InitialGameTurn,
             definition.InitialInitiative,
+            definition.OpeningPreamble,
             definition.Content,
             sources.ToArray());
 

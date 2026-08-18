@@ -116,9 +116,10 @@ Six-turn playable MVP
 **Goal:** Establish an authentic phase hierarchy and an authoritative campaign history that can be
 reconstructed exactly without skipping unimplemented mechanics.
 
-**Status:** Foundation and Initiative Determination vertical slice delivered. Campaign creation,
-the first seeded mechanic, canonical event serialization, and replay are authoritative;
-advancement is blocked at Naval Convoy, the next mandatory unimplemented mechanic.
+**Status:** Replayable foundation plus the Legal Actions v1 opening-preamble slice delivered.
+Campaign creation, Initiative, the admitted empty convoy checkpoints, Operation Stage 1 Initiative
+Declaration, canonical event serialization, and replay are authoritative; advancement stops at
+Weather, the next mandatory unimplemented mechanic.
 
 ### Task 1.1 - Ruleset provenance contracts
 
@@ -165,15 +166,16 @@ requires it.
 ### Sprint 1 demonstration
 
 Create a campaign from either recognized synthetic setup, display canonical creation and
-Initiative events as Chronicle input, replay them to identical canonical state, and prove that the
-campaign stops at Naval Convoy. The contested fixture derives published Initiative Ratings, rolls
+Initiative events as Chronicle input, replay them to identical canonical state, and prove the
+original Initiative slice stops at Naval Convoy. The contested fixture derives published Initiative Ratings, rolls
 Axis then Commonwealth through the versioned SHA-256 counter stream, records complete tie rerolls,
 and retains exact source provenance. The predetermined fixture consumes no draw.
 
 The executable Core tests distinguish authoritative adjudication from catalog inspection. Generic
 sequence advancement and legacy contract-v1 history cannot cross Initiative Determination;
-`ResolveInitiative` is the sole accepted command and its event is recomputed during projection. A
-human-facing Chronicle display belongs to the later Maproom slice.
+`ResolveInitiative` is the sole accepted command at that checkpoint and its event is recomputed
+during projection. Legal Actions v1 adds only mechanic-specific successors; a human-facing
+Chronicle display belongs to the later Maproom slice.
 
 Implementation and acceptance evidence are tracked in the
 [Initiative Determination specification](../specs/initiative-determination.md) and
@@ -186,9 +188,9 @@ Implementation and acceptance evidence are tracked in the
 Content Pack v1 is governed by the
 [research packet](../research/content-pack-v1-spike.md),
 [specification](../specs/content-pack-v1.md), and
-[technical design](../design/content-pack-v1.md). The owner-approved Content Pack v1 and original
-rules laboratory are delivered; campaign admission, side-safe observations, and legal actions are
-the remaining Sprint 2 capabilities.
+[technical design](../design/content-pack-v1.md). The owner-approved Content Pack v1, original rules
+laboratory, campaign admission, and side-safe observation boundary are delivered. Legal actions are
+the remaining Sprint 2 capability.
 
 ### Task 2.1 - Versioned content schemas
 
@@ -249,16 +251,28 @@ in the [reconnaissance/contact research](../research/recon-contact-knowledge-spi
 
 ### Task 2.5 - Legal-action generation and enforcement
 
-Generate currently legal commands from side-safe state and enforce optimistic concurrency.
+Generate typed current system and side actions, derive side candidates from the side-safe
+observation boundary, and enforce optimistic concurrency and exact-audience membership. The first
+non-empty side set reaches Operation Stage 1 Initiative Declaration through explicit
+no-obligation resolutions for both mandatory Naval Convoy checkpoints and stops at Weather.
+
+**Status:** Implemented; verification and independent implementation review passed.
 
 **Acceptance criteria:**
 
 - Hidden opposing details never appear in a candidate action.
-- Every accepted command was present in the acting side's legal-action set.
+- Every accepted outward player or Intelligence action submission was present in that exact
+  audience's current legal-action set; raw player-command decision is not a public adapter seam.
+- The initiative holder receives a non-empty first-or-last choice whose complete set is unchanged
+  by valid opponent-only authority mutations.
 - Stale actions are rejected by state version.
 - Querying legal actions does not mutate state or consume randomness.
 
 **Verification:** Schema validation tests, fog-of-war negative tests, full repository gate.
+
+The source boundary, synthetic no-obligation ruling, and explicit deferrals are defined in the
+[turn-preamble action research](../research/turn-preamble-action-boundary-spike.md). The corrected
+behavioral contract is in the [Legal Actions v1 specification](../specs/legal-actions-v1.md).
 
 ### Sprint 2 demonstration
 
@@ -266,8 +280,9 @@ Load the rules laboratory, inspect one side's redacted state, and select an acti
 set while the opposing hidden state remains absent from logs and responses.
 
 The current checkpoint loads, validates, hashes, resolves, and round-trips the complete synthetic
-rules laboratory and projects the implemented side-safe observation. Legal-action generation
-remains Task 2.5, so the complete Sprint 2 demonstration is not yet claimed.
+rules laboratory, projects the implemented side-safe observation, exposes the current exact-audience
+action set, and accepts the holder's first-or-last choice without exposing opposing authority. The
+Sprint 2 demonstration is executable in Core tests; a human-facing Maproom remains future work.
 
 ## Sprint 3: Mandatory turn preamble
 
@@ -280,11 +295,14 @@ Determine the smallest source-faithful Naval Convoy, Initiative Declaration, and
 Determination capability exercised by the rules laboratory. Define commands, events, normalized
 tables, required content/world facts, and explicit unsupported cases before implementation.
 
+The `ACTION-001` research resolves the opening sequence and first side-choice boundary. General
+convoy obligations and the executable Weather table/random contract remain Sprint 3 work.
+
 ### Task 3.2 - Naval Convoy and Initiative Declaration
 
-Implement the required Naval Convoy decision/resolution and the initiative holder's separate
-first-or-last declaration for each Operation Stage. No generic sequence command may bypass either
-mechanic.
+Complete the required Naval Convoy decision/resolution beyond `ACTION-001`'s admitted synthetic
+no-obligation case and support the initiative holder's separate first-or-last declaration for every
+reachable Operation Stage. No generic sequence command may bypass either mechanic.
 
 ### Task 3.3 - Weather Determination and stage entry
 

@@ -10,7 +10,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../Cna.Core/Cna.Core.csproj" />
     <ProjectReference Include="../Cna.Intelligence.Contracts/Cna.Intelligence.Contracts.csproj" />
     <ProjectReference Include="../Cna.ServiceDefaults/Cna.ServiceDefaults.csproj" />
   </ItemGroup>

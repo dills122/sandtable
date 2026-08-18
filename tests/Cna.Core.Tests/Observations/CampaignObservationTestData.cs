@@ -130,17 +130,19 @@ internal static class CampaignObservationTestData
             catalogSetup.IsSynthetic,
             catalogSetup.InitialGameTurn,
             catalogSetup.InitialInitiative,
+            catalogSetup.OpeningPreamble,
             context.Selection,
             catalogSetup.Sources);
 
         return new CampaignSnapshot(
-            3,
+            4,
             "campaign-privacy",
             1,
             Cna1979Ruleset.Manifest.Hash,
             CampaignSetupSnapshot.FromDefinition(setup),
             CampaignWorldFactory.CreateInitial(context.Artifact, context.Scenario),
             null,
+            [],
             SandtableRandom.Create(12345),
             Cna1979LandSequence.CreateTurn(setup.InitialGameTurn)[0]);
     }

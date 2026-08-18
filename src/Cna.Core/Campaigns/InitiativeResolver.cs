@@ -4,7 +4,7 @@ using Cna.Core.Setups;
 
 namespace Cna.Core.Campaigns;
 
-public static class InitiativeResolver
+internal static class InitiativeResolver
 {
     public static RuleReference TimingSourceReference { get; } = new(
         "spi-1979-land-rules",

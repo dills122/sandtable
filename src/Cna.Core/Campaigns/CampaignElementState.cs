@@ -2,7 +2,7 @@ using Cna.Core.Content;
 
 namespace Cna.Core.Campaigns;
 
-public sealed record CampaignElementState
+internal sealed record CampaignElementState
 {
     public CampaignElementState(string elementId, string currentLocationId)
     {

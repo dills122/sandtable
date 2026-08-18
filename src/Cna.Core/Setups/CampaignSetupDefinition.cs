@@ -3,7 +3,7 @@ using Cna.Core.Rules;
 
 namespace Cna.Core.Setups;
 
-public sealed record CampaignSetupDefinition
+internal sealed record CampaignSetupDefinition
 {
     public CampaignSetupDefinition(
         int schemaVersion,
@@ -12,6 +12,7 @@ public sealed record CampaignSetupDefinition
         bool isSynthetic,
         int initialGameTurn,
         InitiativePolicy initialInitiative,
+        CampaignOpeningPreamblePolicy openingPreamble,
         CampaignContentSelection content,
         IReadOnlyList<RuleReference> sources)
     {
@@ -25,6 +26,7 @@ public sealed record CampaignSetupDefinition
         }
 
         ArgumentNullException.ThrowIfNull(initialInitiative);
+        ArgumentNullException.ThrowIfNull(openingPreamble);
         ArgumentNullException.ThrowIfNull(content);
 
         SchemaVersion = schemaVersion;
@@ -33,6 +35,7 @@ public sealed record CampaignSetupDefinition
         IsSynthetic = isSynthetic;
         InitialGameTurn = initialGameTurn;
         InitialInitiative = initialInitiative;
+        OpeningPreamble = openingPreamble;
         Content = content;
         Sources = CopySources(sources);
         Hash = CampaignSetupHash.Calculate(this);
@@ -50,6 +53,8 @@ public sealed record CampaignSetupDefinition
 
     public InitiativePolicy InitialInitiative { get; }
 
+    internal CampaignOpeningPreamblePolicy OpeningPreamble { get; }
+
     public CampaignContentSelection Content { get; }
 
     public IReadOnlyList<RuleReference> Sources { get; }
@@ -65,6 +70,7 @@ public sealed record CampaignSetupDefinition
             && IsSynthetic == other.IsSynthetic
             && InitialGameTurn == other.InitialGameTurn
             && InitialInitiative == other.InitialInitiative
+            && OpeningPreamble == other.OpeningPreamble
             && Content == other.Content
             && Sources.SequenceEqual(other.Sources)
             && string.Equals(Hash, other.Hash, StringComparison.Ordinal));
@@ -78,6 +84,7 @@ public sealed record CampaignSetupDefinition
         hash.Add(IsSynthetic);
         hash.Add(InitialGameTurn);
         hash.Add(InitialInitiative);
+        hash.Add(OpeningPreamble);
         hash.Add(Content);
 
         foreach (var source in Sources)
