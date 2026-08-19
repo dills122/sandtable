@@ -26,8 +26,8 @@ internal static class CampaignSnapshotValidator
 
     public static bool IsLocallyValid(CampaignSnapshot snapshot)
     {
-        if (snapshot.ContractVersion != 4
-            || snapshot.StateVersion is < 1 or > 5
+        if (snapshot.ContractVersion != 5
+            || snapshot.StateVersion is < 1 or > 6
             || !IsStableId(snapshot.CampaignId)
             || !IsRulesHash(snapshot.RulesetHash)
             || !IsValidSetup(snapshot.Setup)
@@ -35,6 +35,8 @@ internal static class CampaignSnapshotValidator
             || snapshot.World.ContractVersion != CampaignWorldSnapshot.CurrentContractVersion
             || !CampaignOperationStageOrderCodec.IsStructurallyValid(
                 snapshot.OperationStageOrders)
+            || !CampaignOperationStageWeatherCodec.IsStructurallyValid(
+                snapshot.OperationStageWeather)
             || snapshot.RandomState is null
             || snapshot.RandomState.ContractVersion != SandtableRandom.ContractVersion
             || !string.Equals(snapshot.RandomState.AlgorithmId, SandtableRandom.AlgorithmId, StringComparison.Ordinal)
@@ -97,7 +99,7 @@ internal static class CampaignSnapshotValidator
     private static bool IsCheckpointValid(CampaignSnapshot snapshot)
     {
         var positions = Cna1979LandSequence.CreateTurn(snapshot.Setup.InitialGameTurn);
-        if (snapshot.StateVersion is < 1 or > 5
+        if (snapshot.StateVersion is < 1 or > 6
             || snapshot.SequencePosition != positions[checked((int)snapshot.StateVersion - 1)])
         {
             return false;
@@ -107,6 +109,7 @@ internal static class CampaignSnapshotValidator
         {
             return snapshot.InitiativeHolder is null
                 && snapshot.OperationStageOrders.Count == 0
+                && snapshot.OperationStageWeather.Count == 0
                 && snapshot.RandomState.NextByteCursor == 0;
         }
 
@@ -115,12 +118,16 @@ internal static class CampaignSnapshotValidator
             var resolution = InitiativeResolver.Resolve(snapshot.Setup.InitialGameTurn,
                 snapshot.Setup.InitialInitiative, SandtableRandom.Create(snapshot.RandomState.Seed),
                 snapshot.Setup.Sources);
-            if (snapshot.InitiativeHolder != resolution.Outcome.Holder
-                || snapshot.RandomState != resolution.RandomState)
+            if (snapshot.InitiativeHolder != resolution.Outcome.Holder)
             {
                 return false;
             }
-            if (snapshot.StateVersion <= 4) return snapshot.OperationStageOrders.Count == 0;
+            if (snapshot.StateVersion <= 4)
+            {
+                return snapshot.OperationStageOrders.Count == 0
+                    && snapshot.OperationStageWeather.Count == 0
+                    && snapshot.RandomState == resolution.RandomState;
+            }
             if (snapshot.OperationStageOrders.Count != 1) return false;
             var order = snapshot.OperationStageOrders[0];
             if (order.ContractVersion != CampaignOperationStageOrder.CurrentContractVersion
@@ -132,8 +139,30 @@ internal static class CampaignSnapshotValidator
             }
             var holder = snapshot.InitiativeHolder.Value;
             var opponent = holder == LandSide.Axis ? LandSide.Commonwealth : LandSide.Axis;
-            return (order.FirstSide == holder && order.SecondSide == opponent)
-                || (order.FirstSide == opponent && order.SecondSide == holder);
+            if (!((order.FirstSide == holder && order.SecondSide == opponent)
+                || (order.FirstSide == opponent && order.SecondSide == holder)))
+            {
+                return false;
+            }
+            if (snapshot.StateVersion == 5)
+            {
+                return snapshot.OperationStageWeather.Count == 0
+                    && snapshot.RandomState == resolution.RandomState;
+            }
+            if (snapshot.OperationStageWeather.Count != 1) return false;
+            var weather = snapshot.OperationStageWeather[0];
+            var expected = Cna1979Weather.Resolve(snapshot.GameTurn, resolution.RandomState);
+            return weather.GameTurn == snapshot.GameTurn
+                && weather.OperationStage == snapshot.OperationStage
+                && weather.DeterminingSide == holder
+                && weather.Season == expected.Season
+                && weather.FirstDie == expected.FirstDie
+                && weather.SecondDie == expected.SecondDie
+                && weather.Kind == expected.Kind
+                && weather.Scope == expected.Scope
+                && weather.LocationDie == expected.LocationDie
+                && weather.AffectedAreas.SequenceEqual(expected.AffectedAreas)
+                && snapshot.RandomState == expected.RandomState;
         }
         catch (Exception exception) when (exception is ArgumentException or ArithmeticException or InvalidOperationException)
         {

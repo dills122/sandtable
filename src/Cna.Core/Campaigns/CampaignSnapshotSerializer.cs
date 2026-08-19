@@ -36,6 +36,7 @@ internal static class CampaignSnapshotSerializer
             }
 
             CampaignOperationStageOrderCodec.Write(writer, snapshot.OperationStageOrders);
+            CampaignOperationStageWeatherCodec.Write(writer, snapshot.OperationStageWeather);
             WriteRandomState(writer, snapshot.RandomState);
             WritePosition(writer, snapshot.SequencePosition);
             writer.WriteEndObject();
@@ -60,6 +61,7 @@ internal static class CampaignSnapshotSerializer
                 "world",
                 "initiativeHolder",
                 "operationStageOrders",
+                "operationStageWeather",
                 "randomState",
                 "sequencePosition");
 
@@ -75,6 +77,7 @@ internal static class CampaignSnapshotSerializer
                     ? null
                     : ParseSide(holderElement.GetString()),
                 CampaignOperationStageOrderCodec.Parse(root.GetProperty("operationStageOrders")),
+                CampaignOperationStageWeatherCodec.Parse(root.GetProperty("operationStageWeather")),
                 ParseRandomState(root.GetProperty("randomState")),
                 ParsePosition(root.GetProperty("sequencePosition")));
 

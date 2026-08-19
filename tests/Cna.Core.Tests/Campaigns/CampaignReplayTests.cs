@@ -126,7 +126,7 @@ public sealed class CampaignReplayTests
     }
 
     [Fact]
-    public void StrictReadersRejectVersion3CreationAndSnapshotContracts()
+    public void StrictReadersRejectLegacyCreationAndSnapshotContracts()
     {
         var execution = ExecuteCreation(12345);
         var created = Assert.IsType<CampaignCreated>(Assert.Single(execution.Events));
@@ -134,7 +134,7 @@ public sealed class CampaignReplayTests
             .Replace("{\"contractVersion\":4,", "{\"contractVersion\":3,", StringComparison.Ordinal);
         var snapshotJson = Encoding.UTF8.GetString(
                 CampaignSnapshotSerializer.Serialize(execution.Snapshot))
-            .Replace("{\"contractVersion\":4,", "{\"contractVersion\":3,", StringComparison.Ordinal);
+            .Replace("{\"contractVersion\":5,", "{\"contractVersion\":4,", StringComparison.Ordinal);
 
         Assert.Throws<JsonException>(() =>
             CampaignEventSerializer.Deserialize(Encoding.UTF8.GetBytes(eventJson)));
@@ -164,12 +164,12 @@ public sealed class CampaignReplayTests
         var canonicalJson = Encoding.UTF8.GetString(
             CampaignSnapshotSerializer.Serialize(execution.Snapshot));
         var extra = canonicalJson.Replace(
-            "{\"contractVersion\":4,",
-            "{\"extra\":true,\"contractVersion\":4,",
+            "{\"contractVersion\":5,",
+            "{\"extra\":true,\"contractVersion\":5,",
             StringComparison.Ordinal);
         var reordered = canonicalJson.Replace(
-            "{\"contractVersion\":4,\"campaignId\":\"campaign-1\",",
-            "{\"campaignId\":\"campaign-1\",\"contractVersion\":4,",
+            "{\"contractVersion\":5,\"campaignId\":\"campaign-1\",",
+            "{\"campaignId\":\"campaign-1\",\"contractVersion\":5,",
             StringComparison.Ordinal);
 
         Assert.Throws<JsonException>(() =>
@@ -194,12 +194,12 @@ public sealed class CampaignReplayTests
     }
 
     [Fact]
-    public void CreationSnapshotUsesTheExactCanonicalVersion4Shape()
+    public void CreationSnapshotUsesTheExactCanonicalVersion5Shape()
     {
         var execution = ExecuteCreation(12345);
         var actual = Encoding.UTF8.GetString(
             CampaignSnapshotSerializer.Serialize(execution.Snapshot));
-        var expected = "{\"contractVersion\":4,\"campaignId\":\"campaign-1\"," +
+        var expected = "{\"contractVersion\":5,\"campaignId\":\"campaign-1\"," +
             "\"stateVersion\":1,\"rulesetHash\":\"" +
             Cna1979Ruleset.Manifest.Hash +
             "\",\"setup\":{\"schemaVersion\":4," +
@@ -228,6 +228,7 @@ public sealed class CampaignReplayTests
             "{\"elementId\":\"commonwealth-element-a\",\"currentLocationId\":\"east\"}," +
             "{\"elementId\":\"commonwealth-element-b\",\"currentLocationId\":\"south-east\"}]}," +
             "\"initiativeHolder\":null,\"operationStageOrders\":[]," +
+            "\"operationStageWeather\":[]," +
             "\"randomState\":{\"contractVersion\":1," +
             "\"algorithmId\":\"sandtable.sha256-counter.v1\",\"seed\":12345," +
             "\"nextByteCursor\":0},\"sequencePosition\":{\"contractVersion\":2," +

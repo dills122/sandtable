@@ -131,6 +131,7 @@ internal static class CampaignEngine
             ResolveNoObligationNavalConvoySchedule resolve => DecideSchedule(snapshot, resolve),
             ResolveNoObligationTacticalShipping resolve => DecideTactical(snapshot, resolve),
             DeclareInitiativeOrder declare => DecideDeclaration(snapshot, declare),
+            ResolveWeather resolve => DecideWeather(snapshot, resolve),
             CompleteCurrentSequenceStep advance => DecideAdvance(snapshot, advance),
             _ => CampaignCommandResult.Reject(CampaignCommandRejectionReason.InvalidCommand),
         };
@@ -352,5 +353,36 @@ internal static class CampaignEngine
         return string.Equals(expectedPositionId, snapshot.SequencePosition.PositionId, StringComparison.Ordinal)
             ? CampaignCommandRejectionReason.None
             : CampaignCommandRejectionReason.UnexpectedSequenceStep;
+    }
+
+    private static CampaignCommandResult DecideWeather(
+        CampaignSnapshot? snapshot,
+        ResolveWeather command)
+    {
+        var rejection = ValidateCurrent(snapshot, command.ContractVersion,
+            command.ExpectedStateVersion, command.ExpectedPositionId);
+        if (rejection != CampaignCommandRejectionReason.None)
+        {
+            return CampaignCommandResult.Reject(rejection);
+        }
+        if (snapshot!.PhaseId != LandPhaseIds.WeatherDetermination)
+        {
+            return CampaignCommandResult.Reject(
+                CampaignCommandRejectionReason.UnsupportedTransition);
+        }
+        try
+        {
+            return CampaignCommandResult.Accept(WeatherEventFactory.Create(snapshot));
+        }
+        catch (ArgumentOutOfRangeException)
+        {
+            return CampaignCommandResult.Reject(CampaignCommandRejectionReason.UnsupportedTransition);
+        }
+        catch (Exception exception) when (exception is ArgumentException
+            or ArithmeticException
+            or InvalidOperationException)
+        {
+            return CampaignCommandResult.Reject(CampaignCommandRejectionReason.InvalidState);
+        }
     }
 }

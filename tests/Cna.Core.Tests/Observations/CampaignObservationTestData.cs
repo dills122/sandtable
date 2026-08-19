@@ -137,7 +137,7 @@ internal static class CampaignObservationTestData
             catalogSetup.Sources);
 
         return new CampaignSnapshot(
-            4,
+            5,
             "campaign-privacy",
             1,
             Cna1979Ruleset.Manifest.Hash,

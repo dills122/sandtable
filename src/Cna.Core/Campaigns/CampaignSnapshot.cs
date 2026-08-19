@@ -16,6 +16,23 @@ internal sealed record CampaignSnapshot
         IReadOnlyList<CampaignOperationStageOrder> operationStageOrders,
         RandomStreamState randomState,
         LandSequencePosition sequencePosition)
+        : this(contractVersion, campaignId, stateVersion, rulesetHash, setup, world,
+            initiativeHolder, operationStageOrders, [], randomState, sequencePosition)
+    {
+    }
+
+    public CampaignSnapshot(
+        int contractVersion,
+        string campaignId,
+        long stateVersion,
+        string rulesetHash,
+        CampaignSetupSnapshot setup,
+        CampaignWorldSnapshot world,
+        LandSide? initiativeHolder,
+        IReadOnlyList<CampaignOperationStageOrder> operationStageOrders,
+        IReadOnlyList<CampaignOperationStageWeather> operationStageWeather,
+        RandomStreamState randomState,
+        LandSequencePosition sequencePosition)
     {
         ContractVersion = contractVersion;
         CampaignId = campaignId;
@@ -29,6 +46,11 @@ internal sealed record CampaignSnapshot
             .OrderBy(order => order.GameTurn)
             .ThenBy(order => order.OperationStage)
             .ToArray());
+        ArgumentNullException.ThrowIfNull(operationStageWeather);
+        OperationStageWeather = Array.AsReadOnly(operationStageWeather
+            .OrderBy(value => value.GameTurn)
+            .ThenBy(value => value.OperationStage)
+            .ToArray());
         RandomState = randomState;
         SequencePosition = sequencePosition;
     }
@@ -41,6 +63,7 @@ internal sealed record CampaignSnapshot
     public CampaignWorldSnapshot World { get; init; }
     public LandSide? InitiativeHolder { get; init; }
     public IReadOnlyList<CampaignOperationStageOrder> OperationStageOrders { get; init; }
+    public IReadOnlyList<CampaignOperationStageWeather> OperationStageWeather { get; init; }
     public RandomStreamState RandomState { get; init; }
     public LandSequencePosition SequencePosition { get; init; }
 
@@ -61,6 +84,7 @@ internal sealed record CampaignSnapshot
             && World == other.World
             && InitiativeHolder == other.InitiativeHolder
             && OperationStageOrders.SequenceEqual(other.OperationStageOrders)
+            && OperationStageWeather.SequenceEqual(other.OperationStageWeather)
             && RandomState == other.RandomState
             && SequencePosition == other.SequencePosition);
 
@@ -75,6 +99,7 @@ internal sealed record CampaignSnapshot
         hash.Add(World);
         hash.Add(InitiativeHolder);
         foreach (var order in OperationStageOrders) hash.Add(order);
+        foreach (var weather in OperationStageWeather) hash.Add(weather);
         hash.Add(RandomState);
         hash.Add(SequencePosition);
         return hash.ToHashCode();
