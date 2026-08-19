@@ -15,7 +15,7 @@ public sealed record RandomProcedureDefinition
         int d6AcceptBelow,
         int d6Modulo,
         int d6Offset,
-        IReadOnlyList<string> initiativeDrawOrder,
+        IReadOnlyList<RandomProcedureStep> procedures,
         IReadOnlyList<RuleReference> sources)
     {
         ArgumentOutOfRangeException.ThrowIfLessThan(schemaVersion, 1);
@@ -37,7 +37,7 @@ public sealed record RandomProcedureDefinition
         D6AcceptBelow = d6AcceptBelow;
         D6Modulo = d6Modulo;
         D6Offset = d6Offset;
-        InitiativeDrawOrder = CopyDrawOrder(initiativeDrawOrder);
+        Procedures = CopyProcedures(procedures);
         Sources = CopySources(sources);
     }
 
@@ -59,7 +59,7 @@ public sealed record RandomProcedureDefinition
 
     public int D6Offset { get; }
 
-    public IReadOnlyList<string> InitiativeDrawOrder { get; }
+    public IReadOnlyList<RandomProcedureStep> Procedures { get; }
 
     public IReadOnlyList<RuleReference> Sources { get; }
 
@@ -75,7 +75,7 @@ public sealed record RandomProcedureDefinition
             && D6AcceptBelow == other.D6AcceptBelow
             && D6Modulo == other.D6Modulo
             && D6Offset == other.D6Offset
-            && InitiativeDrawOrder.SequenceEqual(other.InitiativeDrawOrder)
+            && Procedures.SequenceEqual(other.Procedures)
             && Sources.SequenceEqual(other.Sources));
 
     public override int GetHashCode()
@@ -91,9 +91,9 @@ public sealed record RandomProcedureDefinition
         hash.Add(D6Modulo);
         hash.Add(D6Offset);
 
-        foreach (var side in InitiativeDrawOrder)
+        foreach (var procedure in Procedures)
         {
-            hash.Add(side, StringComparer.Ordinal);
+            hash.Add(procedure);
         }
 
         foreach (var source in Sources)
@@ -104,24 +104,24 @@ public sealed record RandomProcedureDefinition
         return hash.ToHashCode();
     }
 
-    private static ReadOnlyCollection<string> CopyDrawOrder(
-        IReadOnlyList<string> initiativeDrawOrder)
+    private static ReadOnlyCollection<RandomProcedureStep> CopyProcedures(
+        IReadOnlyList<RandomProcedureStep> procedures)
     {
-        ArgumentNullException.ThrowIfNull(initiativeDrawOrder);
-        var copy = initiativeDrawOrder.ToArray();
+        ArgumentNullException.ThrowIfNull(procedures);
+        var copy = procedures.ToArray();
 
-        if (copy.Length == 0 || copy.Any(string.IsNullOrWhiteSpace))
+        if (copy.Length == 0 || copy.Any(value => value is null))
         {
             throw new ArgumentException(
-                "At least one nonblank draw-order identifier is required.",
-                nameof(initiativeDrawOrder));
+                "At least one procedure is required.",
+                nameof(procedures));
         }
 
-        if (copy.Distinct(StringComparer.Ordinal).Count() != copy.Length)
+        if (copy.Select(value => value.ProcedureId).Distinct(StringComparer.Ordinal).Count() != copy.Length)
         {
             throw new ArgumentException(
-                "Duplicate draw-order identifiers are not allowed.",
-                nameof(initiativeDrawOrder));
+                "Duplicate procedure identifiers are not allowed.",
+                nameof(procedures));
         }
 
         return Array.AsReadOnly(copy);

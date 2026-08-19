@@ -1,6 +1,6 @@
 # Weather Determination v1 Specification
 
-**Status:** Proposed; owner approval required before implementation
+**Status:** Approved 2026-08-19; implementation in progress
 
 **Date:** 2026-08-18
 
@@ -262,8 +262,9 @@ Never:
 | `WTH-024` | fail-closed support boundary; `TURN-DEC-006` | `WTH-TASK-001`, `WTH-TASK-004`, `WTH-TASK-006` | `WTH-AC-006`, `009`, `014` |
 | `WTH-025` | Core purity boundary | `WTH-TASK-006` | architecture tests plus full gate |
 
-No implementation or executed test evidence exists yet. Status remains proposed until owner approval
-and incomplete until every acceptance scenario has executed evidence.
+The project owner approved `TURN-DEC-001` through `TURN-DEC-006` on 2026-08-19 and authorized
+Weather implementation within the documented boundary. Status remains incomplete until every
+acceptance scenario has executed evidence.
 
 ## Open questions
 

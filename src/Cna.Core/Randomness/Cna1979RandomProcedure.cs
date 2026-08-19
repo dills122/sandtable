@@ -6,7 +6,7 @@ namespace Cna.Core.Randomness;
 
 public static class Cna1979RandomProcedure
 {
-    public const int SchemaVersion = 1;
+    public const int SchemaVersion = 2;
     public const string ArtifactId = "cna-1979.1.random-procedure";
 
     public static RuleReference OpposedDiceSourceReference { get; } = new(
@@ -16,6 +16,10 @@ public static class Cna1979RandomProcedure
     public static RuleReference NormalizationSourceReference { get; } = new(
         "sandtable-random-procedure",
         "sha256-counter.v1");
+
+    public static RuleReference WeatherSourceReference { get; } = new(
+        "spi-1979-land-rules",
+        "29.1");
 
     public static RandomProcedureDefinition CanonicalDefinition { get; } = new(
         SchemaVersion,
@@ -27,8 +31,19 @@ public static class Cna1979RandomProcedure
         SandtableRandom.D6AcceptBelow,
         SandtableRandom.D6Modulo,
         SandtableRandom.D6Offset,
-        ["axis", "commonwealth"],
-        [NormalizationSourceReference, OpposedDiceSourceReference]);
+        [
+            new RandomProcedureStep(
+                "initiative-determination",
+                ["axis", "commonwealth"],
+                "whole-procedure-on-tie",
+                null),
+            new RandomProcedureStep(
+                "weather-determination",
+                ["tens", "ones"],
+                "never",
+                new RandomProcedureCondition("location", ["sandstorm", "rainstorm"])),
+        ],
+        [NormalizationSourceReference, WeatherSourceReference, OpposedDiceSourceReference]);
 
     public static RulesetArtifact CreateArtifact() => new(
         ArtifactId,
@@ -52,11 +67,36 @@ public static class Cna1979RandomProcedure
             writer.WriteNumber("d6AcceptBelow", definition.D6AcceptBelow);
             writer.WriteNumber("d6Modulo", definition.D6Modulo);
             writer.WriteNumber("d6Offset", definition.D6Offset);
-            writer.WriteStartArray("initiativeDrawOrder");
+            writer.WriteStartArray("procedures");
 
-            foreach (var side in definition.InitiativeDrawOrder)
+            foreach (var procedure in definition.Procedures)
             {
-                writer.WriteStringValue(side);
+                writer.WriteStartObject();
+                writer.WriteString("procedureId", procedure.ProcedureId);
+                writer.WriteStartArray("acceptedD6Order");
+                foreach (var label in procedure.AcceptedD6Order)
+                {
+                    writer.WriteStringValue(label);
+                }
+                writer.WriteEndArray();
+                writer.WriteString("repeat", procedure.Repeat);
+                if (procedure.ConditionalAcceptedD6 is null)
+                {
+                    writer.WriteNull("conditionalAcceptedD6");
+                }
+                else
+                {
+                    writer.WriteStartObject("conditionalAcceptedD6");
+                    writer.WriteString("label", procedure.ConditionalAcceptedD6.Label);
+                    writer.WriteStartArray("whenKindIn");
+                    foreach (var kind in procedure.ConditionalAcceptedD6.WhenKindIn)
+                    {
+                        writer.WriteStringValue(kind);
+                    }
+                    writer.WriteEndArray();
+                    writer.WriteEndObject();
+                }
+                writer.WriteEndObject();
             }
 
             writer.WriteEndArray();

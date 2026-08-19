@@ -1,6 +1,6 @@
 # Operation-Stage Preamble Source and Contract Spike
 
-**Status:** Decision-ready; owner approval required
+**Status:** Approved 2026-08-19
 
 **Date:** 2026-08-18
 
@@ -264,12 +264,12 @@ MOVE-001
 
 | ID | Decision | Status |
 | --- | --- | --- |
-| `TURN-DEC-001` | Adopt the proposed season-boundary ruling and corrected Game-Turn mapping. | Owner approval required |
-| `TURN-DEC-002` | Scope Weather as its own vertical slice and stop at Organization. | Owner approval required |
-| `TURN-DEC-003` | Require exact setup-hashed admission for empty immediate Weather-effect subjects. | Owner approval required |
-| `TURN-DEC-004` | Replace fixed ordered Organization subpositions with one decision barrier. | Owner approval required |
-| `TURN-DEC-005` | Expose Weather resolution as a trusted system action while retaining the initiative holder as the recorded determining side. | Owner approval required |
-| `TURN-DEC-006` | Keep Game Turn 111 explicitly unsupported in Weather v1 until a full-campaign ruling resolves the source chart's omission. | Owner approval required |
+| `TURN-DEC-001` | Adopt the proposed season-boundary ruling and corrected Game-Turn mapping. | Approved 2026-08-19 |
+| `TURN-DEC-002` | Scope Weather as its own vertical slice and stop at Organization. | Approved 2026-08-19 |
+| `TURN-DEC-003` | Require exact setup-hashed admission for empty immediate Weather-effect subjects. | Approved 2026-08-19 |
+| `TURN-DEC-004` | Replace fixed ordered Organization subpositions with one decision barrier. | Approved 2026-08-19 |
+| `TURN-DEC-005` | Expose Weather resolution as a trusted system action while retaining the initiative holder as the recorded determining side. | Approved 2026-08-19 |
+| `TURN-DEC-006` | Keep Game Turn 111 explicitly unsupported in Weather v1 until a full-campaign ruling resolves the source chart's omission. | Approved 2026-08-19 |
 
 ## Implementation consequences
 
@@ -291,7 +291,7 @@ MOVE-001
 - Retain the 29.41 Nile Delta exception as explicitly deferred rules metadata; do not synthesize a
   published subarea identity or execute the exception in Weather v1.
 - Stop at Organization. Do not add generic completion or auto-resolve later phases in Weather v1.
-- Revise roadmap Sprint 3 after owner approval so Weather, stage-entry obligations, and Reserve are
+- Retain the approved roadmap Sprint 3 split so Weather, stage-entry obligations, and Reserve are
   separate gates before Movement.
 
 ## Confidence, limitations, and unknowns

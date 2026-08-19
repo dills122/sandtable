@@ -93,6 +93,7 @@ public sealed class Version3AuthorityTests
                 "cna-1979.1.initiative-ratings",
                 "cna-1979.1.land-sequence",
                 "cna-1979.1.random-procedure",
+                "cna-1979.1.weather-tables",
             ],
             Cna1979Ruleset.Manifest.Artifacts
                 .Select(artifact => artifact.ArtifactId)

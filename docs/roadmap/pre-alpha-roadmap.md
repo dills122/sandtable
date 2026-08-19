@@ -298,7 +298,7 @@ tables, required content/world facts, and explicit unsupported cases before impl
 The `ACTION-001` research resolves the opening sequence and first side-choice boundary. General
 convoy obligations and the executable Weather table/random contract remain Sprint 3 work.
 
-**Status:** Decision package complete; owner review required before implementation.
+**Status:** Decision package approved 2026-08-19; Weather implementation in progress.
 
 The [Operation-Stage Preamble spike](../research/operation-stage-preamble-spike.md) found that the
 current stage-entry wording compresses mandatory source boundaries. Weather has immediate
@@ -306,8 +306,8 @@ fuel/water, well, and grounded-aircraft consequences; Organization permits playe
 order; Fleet Assignment and Reserve Designation are side decisions. The proposed
 [Weather Determination v1 specification](../specs/weather-determination-v1.md) and
 [technical design](../design/weather-determination-v1.md) therefore propose the Task 3.3-3.5 split
-below. The replacement tasks remain proposed until the owner approves `TURN-DEC-001` through
-`TURN-DEC-006`; approval activates them before implementation begins. The decision gate also covers
+below. The project owner approved `TURN-DEC-001` through `TURN-DEC-006` on 2026-08-19, activating
+the replacement tasks. The decision also covers
 pair-keyed `(GameTurn, OperationStage)` history and explicit rejection of the source chart's omitted
 Game Turn 111 rather than silent extrapolation.
 
@@ -323,19 +323,19 @@ retained Operation Stage 1 initiative order required by `WEATHER-001`. General c
 and every-stage declaration coverage resume before `STAGE-ENTRY-001` admits any checkpoint that
 depends on them; they are not prerequisites to implementing Weather v1 at the existing checkpoints.
 
-### Task 3.3 - Weather Determination v1 (proposed; owner-gated)
+### Task 3.3 - Weather Determination v1 (in progress)
 
 Implement `WEATHER-001`: resolve the source-cited Weather procedure through the versioned random
 stream, publish the exact public Weather value, and stop at the same Operation Stage's Organization
 barrier. Do not complete Organization, Fleet, Reserve, or Movement.
 
-### Task 3.4 - Organization and stage entry (proposed; owner-gated)
+### Task 3.4 - Organization and stage entry (planned; not started)
 
 Implement `STAGE-ENTRY-001`: resolve positive or explicitly admitted empty Organization, Naval
 Convoy Arrival, and Fleet obligations through mechanic-specific legal actions. Stop at the
 first-acting side's Reserve Designation decision.
 
-### Task 3.5 - Reserve Designation (proposed; owner-gated)
+### Task 3.5 - Reserve Designation (planned; not started)
 
 Implement `RESERVE-001`: let the first-acting side designate and complete its reserves through the
 legal-action boundary. Stop at Movement; do not begin Movement as part of Reserve completion.

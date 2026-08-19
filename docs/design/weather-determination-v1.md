@@ -1,6 +1,6 @@
 # Weather Determination v1 Technical Design
 
-**Status:** Proposed; owner approval required before implementation
+**Status:** Approved 2026-08-19; implementation in progress
 
 **Date:** 2026-08-18
 

@@ -64,8 +64,7 @@ not public mutation seams.
 Weather resolution, movement, combat, published scenario content, persistence, and the Maproom
 player interface remain future work.
 
-The proposed high-level path to a playable game, subject to the owner-gated Weather decision
-package, is:
+The approved high-level path to a playable game is:
 
 1. Resolve Weather and stop at the Organization decision barrier.
 2. Resolve Organization, Naval Convoy Arrival, and Fleet obligations, then stop at Reserve.
