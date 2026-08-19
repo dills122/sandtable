@@ -13,6 +13,7 @@ internal sealed record CampaignSetupDefinition
         int initialGameTurn,
         InitiativePolicy initialInitiative,
         CampaignOpeningPreamblePolicy openingPreamble,
+        CampaignWeatherPolicy weather,
         CampaignContentSelection content,
         IReadOnlyList<RuleReference> sources)
     {
@@ -27,6 +28,7 @@ internal sealed record CampaignSetupDefinition
 
         ArgumentNullException.ThrowIfNull(initialInitiative);
         ArgumentNullException.ThrowIfNull(openingPreamble);
+        ArgumentNullException.ThrowIfNull(weather);
         ArgumentNullException.ThrowIfNull(content);
 
         SchemaVersion = schemaVersion;
@@ -36,6 +38,7 @@ internal sealed record CampaignSetupDefinition
         InitialGameTurn = initialGameTurn;
         InitialInitiative = initialInitiative;
         OpeningPreamble = openingPreamble;
+        Weather = weather;
         Content = content;
         Sources = CopySources(sources);
         Hash = CampaignSetupHash.Calculate(this);
@@ -55,6 +58,8 @@ internal sealed record CampaignSetupDefinition
 
     internal CampaignOpeningPreamblePolicy OpeningPreamble { get; }
 
+    internal CampaignWeatherPolicy Weather { get; }
+
     public CampaignContentSelection Content { get; }
 
     public IReadOnlyList<RuleReference> Sources { get; }
@@ -71,6 +76,7 @@ internal sealed record CampaignSetupDefinition
             && InitialGameTurn == other.InitialGameTurn
             && InitialInitiative == other.InitialInitiative
             && OpeningPreamble == other.OpeningPreamble
+            && Weather == other.Weather
             && Content == other.Content
             && Sources.SequenceEqual(other.Sources)
             && string.Equals(Hash, other.Hash, StringComparison.Ordinal));
@@ -85,6 +91,7 @@ internal sealed record CampaignSetupDefinition
         hash.Add(InitialGameTurn);
         hash.Add(InitialInitiative);
         hash.Add(OpeningPreamble);
+        hash.Add(Weather);
         hash.Add(Content);
 
         foreach (var source in Sources)

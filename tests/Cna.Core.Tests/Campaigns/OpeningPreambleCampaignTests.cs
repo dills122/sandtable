@@ -82,7 +82,8 @@ public sealed class OpeningPreambleCampaignTests
         var definition = Cna1979SetupCatalog.Definitions[0];
         var changed = new CampaignSetupDefinition(definition.SchemaVersion, definition.SetupId,
             definition.DisplayName, definition.IsSynthetic, definition.InitialGameTurn,
-            definition.InitialInitiative, policy, definition.Content, definition.Sources);
+            definition.InitialInitiative, policy, definition.Weather, definition.Content,
+            definition.Sources);
         var invalid = snapshot with { Setup = CampaignSetupSnapshot.FromDefinition(changed) };
 
         var result = CampaignEngine.Decide(invalid,

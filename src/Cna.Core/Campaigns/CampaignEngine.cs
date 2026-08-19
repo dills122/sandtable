@@ -61,6 +61,12 @@ internal static class CampaignEngine
             return CampaignCommandResult.Reject(CampaignCommandRejectionReason.SetupHashMismatch);
         }
 
+        if (!Cna1979SetupCatalog.IsAdmittedWeatherPolicy(setup.Weather))
+        {
+            return CampaignCommandResult.Reject(
+                CampaignCommandRejectionReason.UnsupportedWeatherPolicy);
+        }
+
         var resolution = resolver.Resolve(command.ContentPackId, command.ContentHash);
 
         if (!resolution.IsResolved)
@@ -144,6 +150,7 @@ internal static class CampaignEngine
             || !Cna1979Ruleset.IsCanonicalHash(command.RulesetHash)
             || !Cna1979SetupCatalog.TryGet(command.SetupId, out var setup)
             || !string.Equals(command.SetupHash, setup.Hash, StringComparison.Ordinal)
+            || !Cna1979SetupCatalog.IsAdmittedWeatherPolicy(setup.Weather)
             || setup.Content != context.Selection
             || !string.Equals(command.ContentPackId, context.Artifact.Identity.PackId, StringComparison.Ordinal)
             || !string.Equals(command.ContentHash, context.Artifact.Identity.Hash, StringComparison.Ordinal)

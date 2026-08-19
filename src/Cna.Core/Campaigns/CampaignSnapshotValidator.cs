@@ -70,6 +70,7 @@ internal static class CampaignSnapshotValidator
             || setup.OpeningPreamble.Sources.Count != 1
             || setup.OpeningPreamble.Sources[0]
                 != Cna1979SetupCatalog.OpeningPreambleSourceReference
+            || !Cna1979SetupCatalog.IsAdmittedWeatherPolicy(setup.Weather)
             || setup.Content is null
             || setup.Sources is null
             || setup.Sources.Count == 0)
@@ -86,6 +87,7 @@ internal static class CampaignSnapshotValidator
                 setup.InitialGameTurn,
                 setup.InitialInitiative,
                 setup.OpeningPreamble,
+                setup.Weather,
                 setup.Content,
                 setup.Sources);
             return string.Equals(setup.SetupHash, expectedHash, StringComparison.Ordinal);

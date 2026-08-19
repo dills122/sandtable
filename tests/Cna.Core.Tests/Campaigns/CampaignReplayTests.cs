@@ -77,6 +77,7 @@ public sealed class CampaignReplayTests
             valid.Setup.InitialGameTurn,
             valid.Setup.InitialInitiative,
             valid.Setup.OpeningPreamble,
+            valid.Setup.Weather,
             valid.Setup.Content,
             valid.Setup.Sources);
 
@@ -96,6 +97,7 @@ public sealed class CampaignReplayTests
             valid.Setup.InitialGameTurn + 1,
             valid.Setup.InitialInitiative,
             valid.Setup.OpeningPreamble,
+            valid.Setup.Weather,
             valid.Setup.Content,
             valid.Setup.Sources);
         var forged = valid with
@@ -200,15 +202,19 @@ public sealed class CampaignReplayTests
         var expected = "{\"contractVersion\":4,\"campaignId\":\"campaign-1\"," +
             "\"stateVersion\":1,\"rulesetHash\":\"" +
             Cna1979Ruleset.Manifest.Hash +
-            "\",\"setup\":{\"schemaVersion\":3," +
+            "\",\"setup\":{\"schemaVersion\":4," +
             "\"setupId\":\"rules-lab.initiative.predetermined\"," +
-            "\"setupHash\":\"sha256:2bc74961f5bbd5748181ac7e930fb4e49620a9746496e0039debdc214cb5335f\"," +
+            "\"setupHash\":\"sha256:5ecf84d21a7ff95112b9b662915f6858926532d30be5a0eee3f1a45752fdc80a\"," +
             "\"isSynthetic\":true,\"initialGameTurn\":1," +
             "\"initialInitiative\":{\"kind\":\"predetermined\",\"holder\":\"axis\"}," +
             "\"openingPreamble\":{\"contractVersion\":1," +
             "\"kind\":\"no-opening-naval-convoy-obligations\"," +
             "\"sources\":[{\"sourceId\":\"sandtable-rules-lab\"," +
             "\"locator\":\"opening-preamble.no-naval-convoy-obligations.v1\"}]}," +
+            "\"weather\":{\"contractVersion\":1," +
+            "\"kind\":\"no-immediate-weather-effect-subjects\"," +
+            "\"sources\":[{\"sourceId\":\"sandtable-rules-lab\"," +
+            "\"locator\":\"weather.no-immediate-effect-subjects.v1\"}]}," +
             "\"content\":{\"schemaVersion\":2,\"formatId\":\"sandtable.content-json.v1\"," +
             "\"packId\":\"rules-lab.content.movement-contact.v1\",\"rulesetId\":\"cna-1979.1\"," +
             "\"hash\":\"sha256:53d5b64f647251e3ac366c65f4ad05cae766afd7b70ee331d463e801496e2a99\"," +

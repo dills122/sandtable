@@ -132,6 +132,7 @@ internal static class CampaignObservationTestData
             catalogSetup.InitialGameTurn,
             catalogSetup.InitialInitiative,
             catalogSetup.OpeningPreamble,
+            catalogSetup.Weather,
             context.Selection,
             catalogSetup.Sources);
 

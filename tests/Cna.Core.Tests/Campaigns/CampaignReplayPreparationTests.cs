@@ -107,6 +107,27 @@ public sealed class CampaignReplayPreparationTests
         Assert.Equal(0, resolver.CallCount);
     }
 
+    [Fact]
+    public void AlteredWeatherPolicyMapsToInvalidHistoryBeforeContentResolution()
+    {
+        var canonical = Encoding.UTF8.GetString(
+            CampaignEventSerializer.Serialize(CreateEvent()));
+        var altered = canonical.Replace(
+            "weather.no-immediate-effect-subjects.v1",
+            "weather.wrong.v1",
+            StringComparison.Ordinal);
+        var resolver = new CountingResolver();
+
+        var result = CampaignReplayPreparation.Prepare(
+            Encoding.UTF8.GetBytes(altered),
+            resolver);
+
+        Assert.Equal(
+            CampaignReplayPreparationRejectionReason.InvalidHistory,
+            result.RejectionReason);
+        Assert.Equal(0, resolver.CallCount);
+    }
+
     private static CampaignCreated CreateEvent()
     {
         var setup = Cna1979SetupCatalog.Definitions[0];

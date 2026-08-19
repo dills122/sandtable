@@ -22,7 +22,7 @@ public sealed class CampaignSetupTests
                 Assert.Equal(
                     [Cna1979SetupCatalog.PredeterminedSourceReference],
                     predetermined.Sources);
-                Assert.Equal(3, predetermined.SchemaVersion);
+                Assert.Equal(4, predetermined.SchemaVersion);
                 Assert.Equal(
                     CampaignOpeningPreambleKind.NoOpeningNavalConvoyObligations,
                     predetermined.OpeningPreamble.Kind);
@@ -30,11 +30,17 @@ public sealed class CampaignSetupTests
                     [Cna1979SetupCatalog.OpeningPreambleSourceReference],
                     predetermined.OpeningPreamble.Sources);
                 Assert.Equal(
+                    CampaignWeatherPolicyKind.NoImmediateWeatherEffectSubjects,
+                    predetermined.Weather.Kind);
+                Assert.Equal(
+                    [Cna1979SetupCatalog.WeatherPolicySourceReference],
+                    predetermined.Weather.Sources);
+                Assert.Equal(
                     Cna1979SyntheticContentCatalog.Artifact.Identity,
                     predetermined.Content.Pack);
                 Assert.Equal("movement-contact-lab", predetermined.Content.ScenarioId);
                 Assert.Equal(
-                    "sha256:2bc74961f5bbd5748181ac7e930fb4e49620a9746496e0039debdc214cb5335f",
+                    "sha256:5ecf84d21a7ff95112b9b662915f6858926532d30be5a0eee3f1a45752fdc80a",
                     predetermined.Hash);
             },
             contested =>
@@ -56,11 +62,17 @@ public sealed class CampaignSetupTests
                     CampaignOpeningPreambleKind.NoOpeningNavalConvoyObligations,
                     contested.OpeningPreamble.Kind);
                 Assert.Equal(
+                    CampaignWeatherPolicyKind.NoImmediateWeatherEffectSubjects,
+                    contested.Weather.Kind);
+                Assert.Equal(
+                    [Cna1979SetupCatalog.WeatherPolicySourceReference],
+                    contested.Weather.Sources);
+                Assert.Equal(
                     Cna1979SyntheticContentCatalog.Artifact.Identity,
                     contested.Content.Pack);
                 Assert.Equal("initiative-contested-lab", contested.Content.ScenarioId);
                 Assert.Equal(
-                    "sha256:c1e9588c03af3e2766546d0a97f828a31b423b91085d84535498dbb0416a9b66",
+                    "sha256:0178b07804098e04ed843265a31c19b1b411381a90046ec751567cd5ad947f2d",
                     contested.Hash);
             });
     }
@@ -91,6 +103,7 @@ public sealed class CampaignSetupTests
             baseline.InitialGameTurn,
             baseline.InitialInitiative,
             baseline.OpeningPreamble,
+            baseline.Weather,
             baseline.Content,
             baseline.Sources);
         var policyChanged = new CampaignSetupDefinition(
@@ -103,6 +116,7 @@ public sealed class CampaignSetupTests
                 AxisInitiativeLocation.QualifyingGameMap,
                 [])),
             baseline.OpeningPreamble,
+            baseline.Weather,
             baseline.Content,
             baseline.Sources);
         var contentChanged = new CampaignSetupDefinition(
@@ -113,6 +127,7 @@ public sealed class CampaignSetupTests
             baseline.InitialGameTurn,
             baseline.InitialInitiative,
             baseline.OpeningPreamble,
+            baseline.Weather,
             new CampaignContentSelection(
                 new ContentPackIdentity(
                     baseline.Content.Pack.SchemaVersion,
@@ -130,6 +145,7 @@ public sealed class CampaignSetupTests
             baseline.InitialGameTurn,
             baseline.InitialInitiative,
             baseline.OpeningPreamble,
+            baseline.Weather,
             new CampaignContentSelection(
                 baseline.Content.Pack,
                 "movement-contact-lab"),
@@ -142,6 +158,7 @@ public sealed class CampaignSetupTests
             baseline.InitialGameTurn,
             baseline.InitialInitiative,
             baseline.OpeningPreamble,
+            baseline.Weather,
             baseline.Content,
             [new RuleReference("sandtable-rules-lab", "different-source.v1")]);
         var openingPreambleChanged = new CampaignSetupDefinition(
@@ -155,6 +172,21 @@ public sealed class CampaignSetupTests
                 CampaignOpeningPreamblePolicy.CurrentContractVersion,
                 CampaignOpeningPreambleKind.NoOpeningNavalConvoyObligations,
                 [new RuleReference("sandtable-rules-lab", "different-opening-policy.v1")]),
+            baseline.Weather,
+            baseline.Content,
+            baseline.Sources);
+        var weatherChanged = new CampaignSetupDefinition(
+            baseline.SchemaVersion,
+            baseline.SetupId,
+            baseline.DisplayName,
+            baseline.IsSynthetic,
+            baseline.InitialGameTurn,
+            baseline.InitialInitiative,
+            baseline.OpeningPreamble,
+            new CampaignWeatherPolicy(
+                CampaignWeatherPolicy.CurrentContractVersion,
+                CampaignWeatherPolicyKind.NoImmediateWeatherEffectSubjects,
+                [new RuleReference("sandtable-rules-lab", "different-weather-policy.v1")]),
             baseline.Content,
             baseline.Sources);
 
@@ -164,6 +196,7 @@ public sealed class CampaignSetupTests
         Assert.NotEqual(baseline.Hash, scenarioChanged.Hash);
         Assert.NotEqual(baseline.Hash, sourceChanged.Hash);
         Assert.NotEqual(baseline.Hash, openingPreambleChanged.Hash);
+        Assert.NotEqual(baseline.Hash, weatherChanged.Hash);
         Assert.Matches("^sha256:[0-9a-f]{64}$", baseline.Hash);
         Assert.Equal(rulesetHash, Cna1979Ruleset.Manifest.Hash);
         Assert.DoesNotContain(
@@ -187,6 +220,7 @@ public sealed class CampaignSetupTests
             1,
             new PredeterminedInitiative(LandSide.Axis),
             Cna1979SetupCatalog.OpeningPreamblePolicy,
+            Cna1979SetupCatalog.WeatherPolicy,
             Cna1979SetupCatalog.Definitions[0].Content,
             sources);
         var equivalent = new CampaignSetupDefinition(
@@ -197,6 +231,7 @@ public sealed class CampaignSetupTests
             1,
             new PredeterminedInitiative(LandSide.Axis),
             Cna1979SetupCatalog.OpeningPreamblePolicy,
+            Cna1979SetupCatalog.WeatherPolicy,
             Cna1979SetupCatalog.Definitions[0].Content,
             sources.AsEnumerable().Reverse().ToArray());
 
@@ -226,6 +261,7 @@ public sealed class CampaignSetupTests
             112,
             new PredeterminedInitiative(LandSide.Axis),
             Cna1979SetupCatalog.OpeningPreamblePolicy,
+            Cna1979SetupCatalog.WeatherPolicy,
             Cna1979SetupCatalog.Definitions[0].Content,
             [new RuleReference("sandtable-rules-lab", "test.v1")]));
         Assert.Throws<ArgumentException>(() => new CampaignSetupDefinition(
@@ -236,6 +272,7 @@ public sealed class CampaignSetupTests
             1,
             new PredeterminedInitiative(LandSide.Axis),
             Cna1979SetupCatalog.OpeningPreamblePolicy,
+            Cna1979SetupCatalog.WeatherPolicy,
             Cna1979SetupCatalog.Definitions[0].Content,
             []));
         Assert.Throws<ArgumentOutOfRangeException>(() => new CampaignOpeningPreamblePolicy(
@@ -245,6 +282,14 @@ public sealed class CampaignSetupTests
         Assert.Throws<ArgumentException>(() => new CampaignOpeningPreamblePolicy(
             CampaignOpeningPreamblePolicy.CurrentContractVersion,
             CampaignOpeningPreambleKind.NoOpeningNavalConvoyObligations,
+            []));
+        Assert.Throws<ArgumentOutOfRangeException>(() => new CampaignWeatherPolicy(
+            2,
+            CampaignWeatherPolicyKind.NoImmediateWeatherEffectSubjects,
+            [Cna1979SetupCatalog.WeatherPolicySourceReference]));
+        Assert.Throws<ArgumentException>(() => new CampaignWeatherPolicy(
+            CampaignWeatherPolicy.CurrentContractVersion,
+            CampaignWeatherPolicyKind.NoImmediateWeatherEffectSubjects,
             []));
     }
 }
