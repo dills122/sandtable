@@ -298,21 +298,53 @@ tables, required content/world facts, and explicit unsupported cases before impl
 The `ACTION-001` research resolves the opening sequence and first side-choice boundary. General
 convoy obligations and the executable Weather table/random contract remain Sprint 3 work.
 
+**Status:** Decision package complete; owner review required before implementation.
+
+The [Operation-Stage Preamble spike](../research/operation-stage-preamble-spike.md) found that the
+current stage-entry wording compresses mandatory source boundaries. Weather has immediate
+fuel/water, well, and grounded-aircraft consequences; Organization permits player-selected segment
+order; Fleet Assignment and Reserve Designation are side decisions. The proposed
+[Weather Determination v1 specification](../specs/weather-determination-v1.md) and
+[technical design](../design/weather-determination-v1.md) therefore propose the Task 3.3-3.5 split
+below. The replacement tasks remain proposed until the owner approves `TURN-DEC-001` through
+`TURN-DEC-006`; approval activates them before implementation begins. The decision gate also covers
+pair-keyed `(GameTurn, OperationStage)` history and explicit rejection of the source chart's omitted
+Game Turn 111 rather than silent extrapolation.
+
 ### Task 3.2 - Naval Convoy and Initiative Declaration
 
 Complete the required Naval Convoy decision/resolution beyond `ACTION-001`'s admitted synthetic
 no-obligation case and support the initiative holder's separate first-or-last declaration for every
 reachable Operation Stage. No generic sequence command may bypass either mechanic.
 
-### Task 3.3 - Weather Determination and stage entry
+**Dependency status:** Deferred and non-blocking for Task 3.3. `ACTION-001` already supplies the two
+exact admitted synthetic Weather checkpoints, including the resolved opening convoy cases and
+retained Operation Stage 1 initiative order required by `WEATHER-001`. General convoy obligations
+and every-stage declaration coverage resume before `STAGE-ENTRY-001` admits any checkpoint that
+depends on them; they are not prerequisites to implementing Weather v1 at the existing checkpoints.
 
-Resolve the required source-cited weather procedure through the versioned random stream and enter
-the declared first-acting side's first player phase.
+### Task 3.3 - Weather Determination v1 (proposed; owner-gated)
+
+Implement `WEATHER-001`: resolve the source-cited Weather procedure through the versioned random
+stream, publish the exact public Weather value, and stop at the same Operation Stage's Organization
+barrier. Do not complete Organization, Fleet, Reserve, or Movement.
+
+### Task 3.4 - Organization and stage entry (proposed; owner-gated)
+
+Implement `STAGE-ENTRY-001`: resolve positive or explicitly admitted empty Organization, Naval
+Convoy Arrival, and Fleet obligations through mechanic-specific legal actions. Stop at the
+first-acting side's Reserve Designation decision.
+
+### Task 3.5 - Reserve Designation (proposed; owner-gated)
+
+Implement `RESERVE-001`: let the first-acting side designate and complete its reserves through the
+legal-action boundary. Stop at Movement; do not begin Movement as part of Reserve completion.
 
 **Acceptance criteria:**
 
 - Every accepted transition is produced by a mechanic-specific command/event and replays exactly.
-- Unsupported Naval Convoy or weather cases stop with typed rejection and zero events.
+- Unsupported Naval Convoy, Weather, Organization, Fleet, or Reserve cases stop with typed
+  rejection and zero events.
 - Initiative holder, first-acting side, and second-acting side remain separate authoritative facts.
 - A side-safe legal-action query exposes only the decisions available at the current preamble step.
 - The campaign reaches a movement-capable player phase only after all required preamble mechanics
@@ -324,7 +356,9 @@ the full repository gate.
 ### Sprint 3 demonstration
 
 Continue the synthetic campaign from Naval Convoy, make the available preamble decisions, resolve
-weather, and stop at the correct first-acting player phase with a replay-identical Chronicle.
+Weather, Organization/stage-entry obligations, and Reserve in their separately gated capabilities,
+then stop at Movement with a replay-identical Chronicle. The Task 3.3 checkpoint alone stops at
+Organization and is independently demonstrable before Tasks 3.4-3.5 exist.
 
 ## Sprint 4: Continual movement and contact
 

@@ -64,13 +64,15 @@ not public mutation seams.
 Weather resolution, movement, combat, published scenario content, persistence, and the Maproom
 player interface remain future work.
 
-The high-level path to a playable game is:
+The proposed high-level path to a playable game, subject to the owner-gated Weather decision
+package, is:
 
-1. Resolve Weather and enter the declared first-acting side's player phase.
-2. Implement a complete movement/contact/combat loop through the legal-action boundary.
-3. Add the remaining Land systems and data required by *Graziani's Offensive*.
-4. Deliver the Maproom interface, local hot-seat play, saves, and replay.
-5. Expand into detailed Air and Logistics play, later scenarios, and optional intelligence.
+1. Resolve Weather and stop at the Organization decision barrier.
+2. Resolve Organization, Naval Convoy Arrival, and Fleet obligations, then stop at Reserve.
+3. Implement Reserve and a complete movement/contact/combat loop through the legal-action boundary.
+4. Add the remaining Land systems and data required by *Graziani's Offensive*.
+5. Deliver the Maproom interface, local hot-seat play, saves, and replay.
+6. Expand into detailed Air and Logistics play, later scenarios, and optional intelligence.
 
 See the [pre-alpha roadmap](docs/roadmap/pre-alpha-roadmap.md) for the capability-level plan and
 completion criteria.
@@ -203,6 +205,9 @@ The current Umpire foundation is intentionally pure and in-process:
 - [Turn-preamble action-boundary research](docs/research/turn-preamble-action-boundary-spike.md)
 - [Legal Actions v1 specification](docs/specs/legal-actions-v1.md)
 - [Legal Actions v1 technical design](docs/design/legal-actions-v1.md)
+- [Operation-Stage Preamble research](docs/research/operation-stage-preamble-spike.md)
+- [Weather Determination v1 specification](docs/specs/weather-determination-v1.md)
+- [Weather Determination v1 technical design](docs/design/weather-determination-v1.md)
 - [Microsoft Orleans documentation](https://learn.microsoft.com/en-us/dotnet/orleans/)
 - [ASP.NET Core gRPC services](https://learn.microsoft.com/en-us/aspnet/core/grpc/aspnetcore?view=aspnetcore-10.0)
 - [Aspire AppHost and ServiceDefaults](https://learn.microsoft.com/en-us/dotnet/aspire/fundamentals/aspire-sdk-templates)
