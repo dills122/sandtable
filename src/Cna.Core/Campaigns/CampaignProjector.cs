@@ -200,12 +200,15 @@ internal static class CampaignProjector
             CampaignEventSerializer.Serialize(expected)))
             throw new InvalidCampaignHistoryException("The declaration is inconsistent with campaign history.");
         var order = new CampaignOperationStageOrder(CampaignOperationStageOrder.CurrentContractVersion,
-            declared.OperationStage, declared.FirstSide, declared.SecondSide);
+            declared.SequencePosition.GameTurn, declared.OperationStage, declared.FirstSide,
+            declared.SecondSide);
         var projected = snapshot with
         {
             StateVersion = declared.StateVersion,
             OperationStageOrders = Array.AsReadOnly(snapshot.OperationStageOrders.Append(order)
-                .OrderBy(value => value.OperationStage).ToArray()),
+                .OrderBy(value => value.GameTurn)
+                .ThenBy(value => value.OperationStage)
+                .ToArray()),
             SequencePosition = declared.SequencePosition,
         };
         if (!CampaignSnapshotValidator.IsValid(projected, context))

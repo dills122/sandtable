@@ -35,7 +35,7 @@ internal static class CampaignSnapshotSerializer
                     FormatSide(snapshot.InitiativeHolder.Value));
             }
 
-            WriteOperationStageOrders(writer, snapshot.OperationStageOrders);
+            CampaignOperationStageOrderCodec.Write(writer, snapshot.OperationStageOrders);
             WriteRandomState(writer, snapshot.RandomState);
             WritePosition(writer, snapshot.SequencePosition);
             writer.WriteEndObject();
@@ -74,7 +74,7 @@ internal static class CampaignSnapshotSerializer
                 holderElement.ValueKind == JsonValueKind.Null
                     ? null
                     : ParseSide(holderElement.GetString()),
-                ParseOperationStageOrders(root.GetProperty("operationStageOrders")),
+                CampaignOperationStageOrderCodec.Parse(root.GetProperty("operationStageOrders")),
                 ParseRandomState(root.GetProperty("randomState")),
                 ParsePosition(root.GetProperty("sequencePosition")));
 
@@ -345,32 +345,6 @@ internal static class CampaignSnapshotSerializer
             ParseLocation(facts.GetProperty("rommelLocation").GetString()),
             locations));
     }
-
-    internal static void WriteOperationStageOrders(Utf8JsonWriter writer,
-        IEnumerable<CampaignOperationStageOrder> orders)
-    {
-        writer.WriteStartArray("operationStageOrders");
-        foreach (var order in orders)
-        {
-            writer.WriteStartObject();
-            writer.WriteNumber("contractVersion", order.ContractVersion);
-            writer.WriteNumber("operationStage", order.OperationStage);
-            writer.WriteString("firstSide", FormatSide(order.FirstSide));
-            writer.WriteString("secondSide", FormatSide(order.SecondSide));
-            writer.WriteEndObject();
-        }
-        writer.WriteEndArray();
-    }
-
-    internal static CampaignOperationStageOrder[] ParseOperationStageOrders(JsonElement orders) =>
-        orders.EnumerateArray().Select(order =>
-        {
-            RequireProperties(order, "contractVersion", "operationStage", "firstSide", "secondSide");
-            return new CampaignOperationStageOrder(order.GetProperty("contractVersion").GetInt32(),
-                order.GetProperty("operationStage").GetInt32(),
-                ParseSide(order.GetProperty("firstSide").GetString()),
-                ParseSide(order.GetProperty("secondSide").GetString()));
-        }).ToArray();
 
     internal static void WriteRandomState(Utf8JsonWriter writer, RandomStreamState state)
     {

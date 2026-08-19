@@ -41,11 +41,20 @@ public sealed class OpeningPreambleCampaignTests
         Assert.Equal(LandPhaseIds.WeatherDetermination, snapshot.PhaseId);
         Assert.Equal(0UL, snapshot.RandomState.NextByteCursor);
         var order = Assert.Single(snapshot.OperationStageOrders);
+        Assert.Equal(1, order.GameTurn);
+        Assert.Equal(1, order.OperationStage);
         Assert.Equal(expectedFirst, order.FirstSide);
         Assert.Equal(expectedSecond, order.SecondSide);
         Assert.Equal(LandSide.Axis, snapshot.InitiativeHolder);
 
         var canonicalEvents = execution.Events.Select(CampaignEventSerializer.Serialize).ToArray();
+        var canonicalSnapshot = System.Text.Encoding.UTF8.GetString(
+            CampaignSnapshotSerializer.Serialize(snapshot));
+        Assert.Contains(
+            "\"operationStageOrders\":[{\"contractVersion\":2,\"gameTurn\":1," +
+            "\"operationStage\":1",
+            canonicalSnapshot,
+            StringComparison.Ordinal);
         var roundTripped = canonicalEvents
             .Select(bytes => CampaignEventSerializer.Deserialize(bytes))
             .ToArray();

@@ -33,12 +33,8 @@ internal static class CampaignSnapshotValidator
             || !IsValidSetup(snapshot.Setup)
             || snapshot.World is null
             || snapshot.World.ContractVersion != CampaignWorldSnapshot.CurrentContractVersion
-            || snapshot.OperationStageOrders is null
-            || snapshot.OperationStageOrders.Any(order => order is null)
-            || snapshot.OperationStageOrders.Select(order => order.OperationStage).Distinct().Count()
-                != snapshot.OperationStageOrders.Count
-            || !snapshot.OperationStageOrders.SequenceEqual(
-                snapshot.OperationStageOrders.OrderBy(order => order.OperationStage))
+            || !CampaignOperationStageOrderCodec.IsStructurallyValid(
+                snapshot.OperationStageOrders)
             || snapshot.RandomState is null
             || snapshot.RandomState.ContractVersion != SandtableRandom.ContractVersion
             || !string.Equals(snapshot.RandomState.AlgorithmId, SandtableRandom.AlgorithmId, StringComparison.Ordinal)
@@ -128,7 +124,9 @@ internal static class CampaignSnapshotValidator
             if (snapshot.OperationStageOrders.Count != 1) return false;
             var order = snapshot.OperationStageOrders[0];
             if (order.ContractVersion != CampaignOperationStageOrder.CurrentContractVersion
-                || order.OperationStage != 1 || order.FirstSide == order.SecondSide)
+                || order.GameTurn != snapshot.GameTurn
+                || order.OperationStage != 1
+                || order.FirstSide == order.SecondSide)
             {
                 return false;
             }

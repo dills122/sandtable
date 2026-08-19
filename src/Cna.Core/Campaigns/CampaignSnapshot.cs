@@ -26,7 +26,8 @@ internal sealed record CampaignSnapshot
         InitiativeHolder = initiativeHolder;
         ArgumentNullException.ThrowIfNull(operationStageOrders);
         OperationStageOrders = Array.AsReadOnly(operationStageOrders
-            .OrderBy(order => order.OperationStage)
+            .OrderBy(order => order.GameTurn)
+            .ThenBy(order => order.OperationStage)
             .ToArray());
         RandomState = randomState;
         SequencePosition = sequencePosition;
