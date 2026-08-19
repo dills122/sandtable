@@ -20,16 +20,16 @@ public sealed class CampaignEventSerializationTests
             Cna1979Ruleset.Manifest.Hash +
             "\",\"setup\":{\"schemaVersion\":3," +
             "\"setupId\":\"rules-lab.initiative.predetermined\"," +
-            "\"setupHash\":\"sha256:ed20292efd3812382e6c371ea45dd96a0778732be14e865af144db97d3d7dfde\"," +
+            "\"setupHash\":\"sha256:2bc74961f5bbd5748181ac7e930fb4e49620a9746496e0039debdc214cb5335f\"," +
             "\"isSynthetic\":true,\"initialGameTurn\":1," +
             "\"initialInitiative\":{\"kind\":\"predetermined\",\"holder\":\"axis\"}," +
             "\"openingPreamble\":{\"contractVersion\":1," +
             "\"kind\":\"no-opening-naval-convoy-obligations\"," +
             "\"sources\":[{\"sourceId\":\"sandtable-rules-lab\"," +
             "\"locator\":\"opening-preamble.no-naval-convoy-obligations.v1\"}]}," +
-            "\"content\":{\"schemaVersion\":1,\"formatId\":\"sandtable.content-json.v1\"," +
+            "\"content\":{\"schemaVersion\":2,\"formatId\":\"sandtable.content-json.v1\"," +
             "\"packId\":\"rules-lab.content.movement-contact.v1\",\"rulesetId\":\"cna-1979.1\"," +
-            "\"hash\":\"sha256:c0cceda302bab11c98f1b46c427c967bf70b3c9ae4ad078513dbfc231f06b114\"," +
+            "\"hash\":\"sha256:53d5b64f647251e3ac366c65f4ad05cae766afd7b70ee331d463e801496e2a99\"," +
             "\"scenarioId\":\"movement-contact-lab\"}," +
             "\"sources\":[{\"sourceId\":\"sandtable-rules-lab\"," +
             "\"locator\":\"initiative.predetermined-axis.v1\"}]}," +

@@ -37,6 +37,7 @@ public static class ContentPackSerializer
             writer.WriteEndArray();
             WriteSourceIndex(writer, definition.SourceIndex);
             WriteLocations(writer, definition.Locations);
+            WriteWeatherAreaAssignments(writer, definition.WeatherAreaAssignments);
             WriteEdges(writer, definition.Edges);
             WriteFormations(writer, definition.Formations);
             WriteElements(writer, definition.Elements);
@@ -162,6 +163,22 @@ public static class ContentPackSerializer
         writer.WriteEndArray();
     }
 
+    private static void WriteWeatherAreaAssignments(
+        Utf8JsonWriter writer,
+        IEnumerable<ContentWeatherAreaAssignment> assignments)
+    {
+        writer.WriteStartArray("weatherAreaAssignments");
+        foreach (var assignment in assignments)
+        {
+            writer.WriteStartObject();
+            writer.WriteString("locationId", assignment.LocationId);
+            writer.WriteString("weatherArea", FormatWeatherArea(assignment.WeatherArea));
+            WriteOrigin(writer, "origin", assignment.Origin);
+            writer.WriteEndObject();
+        }
+        writer.WriteEndArray();
+    }
+
     private static void WriteFormations(
         Utf8JsonWriter writer,
         IEnumerable<ContentFormation> formations)
@@ -280,6 +297,7 @@ public static class ContentPackSerializer
             "capabilities",
             "sourceIndex",
             "locations",
+            "weatherAreaAssignments",
             "edges",
             "formations",
             "elements",
@@ -312,6 +330,10 @@ public static class ContentPackSerializer
                 .Select((value, index) => ParseSourceIndex(value, $"/sourceIndex/{index}")),
             ReadArray(properties["locations"], "/locations")
                 .Select((value, index) => ParseLocation(value, $"/locations/{index}")),
+            ReadArray(properties["weatherAreaAssignments"], "/weatherAreaAssignments")
+                .Select((value, index) => ParseWeatherAreaAssignment(
+                    value,
+                    $"/weatherAreaAssignments/{index}")),
             ReadArray(properties["edges"], "/edges")
                 .Select((value, index) => ParseEdge(value, $"/edges/{index}")),
             ReadArray(properties["formations"], "/formations")
@@ -366,6 +388,17 @@ public static class ContentPackSerializer
         return new ContentSourceCoordinate(
             ReadString(properties["sectionId"], $"{path}/sectionId"),
             ReadString(properties["label"], $"{path}/label"));
+    }
+
+    private static ContentWeatherAreaAssignment ParseWeatherAreaAssignment(
+        JsonElement element,
+        string path)
+    {
+        var properties = ReadObject(element, "locationId", "weatherArea", "origin");
+        return new ContentWeatherAreaAssignment(
+            ReadString(properties["locationId"], $"{path}/locationId"),
+            ParseWeatherArea(ReadString(properties["weatherArea"], $"{path}/weatherArea"), path),
+            ParseOrigin(properties["origin"], $"{path}/origin"));
     }
 
     private static ContentHexEdge ParseEdge(JsonElement element, string path)
@@ -607,6 +640,28 @@ public static class ContentPackSerializer
         _ => throw new ContentPackParseException(
             "content.invalid-discriminant",
             $"Unknown placement mode '{value}' at {path}/placementMode."),
+    };
+
+    private static ContentWeatherArea ParseWeatherArea(string value, string path) => value switch
+    {
+        "a" => ContentWeatherArea.A,
+        "b" => ContentWeatherArea.B,
+        "c" => ContentWeatherArea.C,
+        "d" => ContentWeatherArea.D,
+        "e" => ContentWeatherArea.E,
+        _ => throw new ContentPackParseException(
+            "content.invalid-discriminant",
+            $"Unknown Weather area '{value}' at {path}/weatherArea."),
+    };
+
+    private static string FormatWeatherArea(ContentWeatherArea area) => area switch
+    {
+        ContentWeatherArea.A => "a",
+        ContentWeatherArea.B => "b",
+        ContentWeatherArea.C => "c",
+        ContentWeatherArea.D => "d",
+        ContentWeatherArea.E => "e",
+        _ => throw new ArgumentOutOfRangeException(nameof(area)),
     };
 
     private static string FormatOriginKind(ContentOriginKind kind) => kind switch

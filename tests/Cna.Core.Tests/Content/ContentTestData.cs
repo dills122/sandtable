@@ -57,7 +57,7 @@ internal static class ContentTestData
             Origin("content.scenario.minimal"));
 
         return new ContentPackDefinition(
-            1,
+            ContentPackDefinition.CurrentSchemaVersion,
             "sandtable.content-json.v1",
             "rules-lab.content.minimal.v1",
             "cna-1979.1",
@@ -78,6 +78,7 @@ internal static class ContentTestData
         IEnumerable<string>? capabilities = null,
         IEnumerable<ContentSourceIndexEntry>? sourceIndex = null,
         IEnumerable<ContentHex>? locations = null,
+        IEnumerable<ContentWeatherAreaAssignment>? weatherAreaAssignments = null,
         IEnumerable<ContentHexEdge>? edges = null,
         IEnumerable<ContentFormation>? formations = null,
         IEnumerable<ContentCombatElement>? elements = null,
@@ -88,8 +89,9 @@ internal static class ContentTestData
             rulesetId ?? source.RulesetId,
             capabilities ?? source.Capabilities,
             sourceIndex ?? source.SourceIndex,
-            locations ?? source.Locations,
-            edges ?? source.Edges,
+        locations ?? source.Locations,
+        weatherAreaAssignments ?? source.WeatherAreaAssignments,
+        edges ?? source.Edges,
             formations ?? source.Formations,
             elements ?? source.Elements,
             scenarios ?? source.Scenarios);

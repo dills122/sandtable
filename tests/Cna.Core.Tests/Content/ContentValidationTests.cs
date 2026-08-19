@@ -19,6 +19,67 @@ public sealed class ContentValidationTests
     }
 
     [Fact]
+    public void WeatherAreaCapabilityRequiresEveryLocationExactlyOnce()
+    {
+        var baseline = ContentTestData.CreateMinimalPack();
+        var west = WeatherArea("west", ContentWeatherArea.A);
+        var duplicateWest = WeatherArea("west", ContentWeatherArea.B);
+        var pack = ContentTestData.Copy(
+            baseline,
+            capabilities: [.. baseline.Capabilities, "land.weather-areas"],
+            weatherAreaAssignments: [west, duplicateWest]);
+
+        var result = ContentPackValidator.Validate(pack);
+
+        AssertIssue(
+            result,
+            "content.weather-area.duplicate-location",
+            "/weatherAreaAssignments/west");
+        AssertIssue(
+            result,
+            "content.weather-area.missing-location",
+            "/weatherAreaAssignments/east");
+    }
+
+    [Fact]
+    public void WeatherAreaCapabilityRejectsUnknownLocations()
+    {
+        var baseline = ContentTestData.CreateMinimalPack();
+        var pack = ContentTestData.Copy(
+            baseline,
+            capabilities: [.. baseline.Capabilities, "land.weather-areas"],
+            weatherAreaAssignments:
+            [
+                WeatherArea("west", ContentWeatherArea.A),
+                WeatherArea("east", ContentWeatherArea.B),
+                WeatherArea("missing", ContentWeatherArea.C),
+            ]);
+
+        var result = ContentPackValidator.Validate(pack);
+
+        AssertIssue(
+            result,
+            "content.weather-area.unknown-location",
+            "/weatherAreaAssignments/missing");
+    }
+
+    [Fact]
+    public void WeatherAreasRequireTheDeclaredCapability()
+    {
+        var baseline = ContentTestData.CreateMinimalPack();
+        var pack = ContentTestData.Copy(
+            baseline,
+            weatherAreaAssignments: [WeatherArea("west", ContentWeatherArea.A)]);
+
+        var result = ContentPackValidator.Validate(pack);
+
+        AssertIssue(
+            result,
+            "content.weather-area.unexpected-without-capability",
+            "/weatherAreaAssignments");
+    }
+
+    [Fact]
     public void ValidatorReturnsAllDiscoverableIssuesInCanonicalOrder()
     {
         var baseline = ContentTestData.CreateMinimalPack();
@@ -337,4 +398,11 @@ public sealed class ContentValidationTests
         string path) => Assert.Contains(
             result.Issues,
             issue => issue.Code == code && issue.Path == path);
+
+    private static ContentWeatherAreaAssignment WeatherArea(
+        string locationId,
+        ContentWeatherArea area) => new(
+            locationId,
+            area,
+            ContentTestData.Origin($"content.weather-area.{locationId}.{area}"));
 }

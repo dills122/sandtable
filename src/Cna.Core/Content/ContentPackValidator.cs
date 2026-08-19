@@ -7,6 +7,7 @@ public static class ContentPackValidator
             "land.hex-topology",
             "land.formations",
             "land.initial-deployment",
+            "land.weather-areas",
         ],
         StringComparer.Ordinal);
 
@@ -18,6 +19,7 @@ public static class ContentPackValidator
         ValidateDuplicateIds(pack, issues);
         ValidateOrigins(pack, issues);
         ValidateCapabilities(pack, issues);
+        ValidateWeatherAreas(pack, issues);
         ValidateTopology(pack, issues);
         ValidateForces(pack, issues);
         ValidateScenarios(pack, issues);
@@ -137,6 +139,13 @@ public static class ContentPackValidator
             }
         }
 
+        foreach (var assignment in pack.WeatherAreaAssignments)
+        {
+            yield return (
+                assignment.Origin,
+                $"/weatherAreaAssignments/{assignment.LocationId}");
+        }
+
         foreach (var formation in pack.Formations)
         {
             yield return (formation.Origin, $"/formations/{formation.FormationId}");
@@ -207,6 +216,41 @@ public static class ContentPackValidator
                 "content.missing-capability",
                 $"/capabilities/{capability}",
                 $"Content fields require capability '{capability}'.");
+        }
+    }
+
+    private static void ValidateWeatherAreas(
+        ContentPackDefinition pack,
+        ICollection<ContentValidationIssue> issues)
+    {
+        var hasCapability = pack.Capabilities.Contains("land.weather-areas", StringComparer.Ordinal);
+        if (!hasCapability && pack.WeatherAreaAssignments.Count > 0)
+        {
+            Add(issues, "content.weather-area.unexpected-without-capability", "/weatherAreaAssignments", "Weather areas require capability 'land.weather-areas'.");
+            return;
+        }
+
+        if (!hasCapability)
+        {
+            return;
+        }
+
+        var locations = pack.Locations.Select(value => value.LocationId).ToHashSet(StringComparer.Ordinal);
+        foreach (var group in pack.WeatherAreaAssignments.GroupBy(value => value.LocationId, StringComparer.Ordinal))
+        {
+            if (group.Count() > 1)
+            {
+                Add(issues, "content.weather-area.duplicate-location", $"/weatherAreaAssignments/{group.Key}", "A location may have only one Weather area.");
+            }
+            if (!locations.Contains(group.Key))
+            {
+                Add(issues, "content.weather-area.unknown-location", $"/weatherAreaAssignments/{group.Key}", "Weather area references an unknown location.");
+            }
+        }
+
+        foreach (var missing in locations.Except(pack.WeatherAreaAssignments.Select(value => value.LocationId), StringComparer.Ordinal))
+        {
+            Add(issues, "content.weather-area.missing-location", $"/weatherAreaAssignments/{missing}", "Every location requires one Weather area.");
         }
     }
 

@@ -73,6 +73,7 @@ internal static class CampaignObservationTestData
             baseline.Capabilities,
             baseline.SourceIndex,
             baseline.Locations,
+            baseline.WeatherAreaAssignments,
             baseline.Edges,
             observerFormations.Append(enemyFormation),
             observerElements.Concat(enemyElements),

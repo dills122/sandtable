@@ -18,9 +18,22 @@ public sealed class SyntheticContentCatalogTests
         Assert.Equal("rules-lab.content.movement-contact.v1", pack.PackId);
         Assert.Equal("cna-1979.1", pack.RulesetId);
         Assert.Equal(
-            ["land.formations", "land.hex-topology", "land.initial-deployment"],
+            ["land.formations", "land.hex-topology", "land.initial-deployment", "land.weather-areas"],
             pack.Capabilities);
         Assert.Equal(9, pack.Locations.Count);
+        Assert.Equal(
+            [
+                ("center", ContentWeatherArea.A),
+                ("east", ContentWeatherArea.B),
+                ("north", ContentWeatherArea.C),
+                ("north-east", ContentWeatherArea.D),
+                ("north-west", ContentWeatherArea.E),
+                ("south", ContentWeatherArea.A),
+                ("south-east", ContentWeatherArea.B),
+                ("south-west", ContentWeatherArea.C),
+                ("west", ContentWeatherArea.D),
+            ],
+            pack.WeatherAreaAssignments.Select(value => (value.LocationId, value.WeatherArea)));
         Assert.Equal(10, pack.Edges.Count);
         Assert.Equal(2, pack.Formations.Count);
         Assert.Equal(4, pack.Elements.Count);
@@ -79,9 +92,9 @@ public sealed class SyntheticContentCatalogTests
             artifact.GetCanonicalBytes(),
             ContentPackSerializer.SerializeCanonical(definition));
         Assert.Equal(
-            "sha256:c0cceda302bab11c98f1b46c427c967bf70b3c9ae4ad078513dbfc231f06b114",
+            "sha256:53d5b64f647251e3ac366c65f4ad05cae766afd7b70ee331d463e801496e2a99",
             artifact.Identity.Hash);
-        Assert.Equal(11_243, artifact.CanonicalByteCount);
+        Assert.Equal(12_733, artifact.CanonicalByteCount);
         var goldenFile = File.ReadAllBytes(Path.Combine(
             AppContext.BaseDirectory,
             "Content",

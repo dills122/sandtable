@@ -34,7 +34,7 @@ public sealed class CampaignSetupTests
                     predetermined.Content.Pack);
                 Assert.Equal("movement-contact-lab", predetermined.Content.ScenarioId);
                 Assert.Equal(
-                    "sha256:ed20292efd3812382e6c371ea45dd96a0778732be14e865af144db97d3d7dfde",
+                    "sha256:2bc74961f5bbd5748181ac7e930fb4e49620a9746496e0039debdc214cb5335f",
                     predetermined.Hash);
             },
             contested =>
@@ -60,7 +60,7 @@ public sealed class CampaignSetupTests
                     contested.Content.Pack);
                 Assert.Equal("initiative-contested-lab", contested.Content.ScenarioId);
                 Assert.Equal(
-                    "sha256:a28c5f631853e9868c353774284326ff9fe4a70bc9acf89d8c55382c75fb85e3",
+                    "sha256:c1e9588c03af3e2766546d0a97f828a31b423b91085d84535498dbb0416a9b66",
                     contested.Hash);
             });
     }
