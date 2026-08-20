@@ -512,6 +512,10 @@ Not part of the core gameplay.
 
 The names now have one concrete implementation boundary: `Cna.ExerciseRunner` runs exactly one
 local **Exercise** through an in-process opaque Umpire capability and retains trusted evidence.
+Its compact, forensic, and debug detail tiers describe instrumentation depth, not different game
+rules: increasing detail adds correlation and timing diagnostics while accepted actions and
+canonical simulation evidence remain unchanged. Failed decisions retain the attempted query,
+controller, action, and submission context available before the failure.
 **Maneuvers** and **War College** remain reserved future layers; the current runner is not a batch
 service, Orleans workload, tournament system, or balance-analysis environment.
 

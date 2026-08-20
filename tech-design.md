@@ -10,7 +10,12 @@ from the intelligence/services plane: one checked-in **Exercise** creates a fres
 stops at the Operation Stage 1 Organization boundary, and verifies both Core reconstruction and a
 second fresh-session re-adjudication. The runner records normalized inputs, Git/build identity,
 seed ledger, accepted actions, canonical events, snapshots, checks, proofs, summaries, and optional
-diagnostics in a manifest-last `trusted-authority` bundle.
+diagnostics in a manifest-last `trusted-authority` bundle. Compact, forensic, and debug detail tiers
+are operational: forensic adds correlated query/controller/submission/check/proof evidence,
+including progressively assembled failed-decision context, and payload sizing; debug retains every
+available noncanonical operation/phase timing on failure plus a structured artifact-finalization
+trace after mandatory reader validation. Separate checked exploratory and clean-baseline fixtures
+exercise the two build-identity policies.
 
 This increment is local developer instrumentation only. It is not registered in AppHost, performs
 no model or remote I/O, cannot attach to a production campaign, and does not yet implement serial
