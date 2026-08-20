@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Cna.Core.Actions;
 using Cna.Core.Campaigns;
 using Cna.Core.Exercises;
@@ -6,21 +7,132 @@ using Cna.ExerciseRunner.Controllers;
 
 namespace Cna.ExerciseRunner.Execution;
 
+internal sealed record ExerciseQueryDiagnostic(
+    CampaignActionAudience Audience,
+    int CandidateCount,
+    ExerciseCheckFailureCode FailureCode,
+    long ElapsedMicroseconds);
+
+internal enum ExerciseDecisionFailureStage
+{
+    AuthorityQuery,
+    ControllerSelection,
+    SelectedActionMembership,
+    ActionSubmission,
+    EventCardinality,
+    CheckpointContinuity,
+}
+
+internal sealed class ExerciseDecisionDiagnostic
+{
+    private readonly List<ExerciseQueryDiagnostic> queries = [];
+
+    internal ExerciseDecisionDiagnostic(
+        int ordinal,
+        ExerciseCheckpoint checkpoint)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegative(ordinal);
+        ArgumentNullException.ThrowIfNull(checkpoint);
+        Ordinal = ordinal;
+        CampaignId = checkpoint.CampaignId;
+        StateVersion = checkpoint.StateVersion;
+        PositionId = checkpoint.PositionId;
+    }
+
+    internal int Ordinal { get; }
+    internal string CampaignId { get; }
+    internal long StateVersion { get; }
+    internal string PositionId { get; }
+    internal IReadOnlyList<ExerciseQueryDiagnostic> Queries => queries.AsReadOnly();
+    internal int ActiveAudienceCount { get; private set; }
+    internal ExerciseControllerSelectionFailure? SelectionFailure { get; private set; }
+    internal CampaignActionAudience? SelectedAudience { get; private set; }
+    internal string? SelectedActionId { get; private set; }
+    internal long? ControllerElapsedMicroseconds { get; private set; }
+    internal bool SubmissionAttempted { get; private set; }
+    internal bool? SubmissionAccepted { get; private set; }
+    internal CampaignActionSubmissionRejectionReason? SubmissionRejectionReason { get; private set; }
+    internal int? SubmittedEventCount { get; private set; }
+    internal long? SubmissionElapsedMicroseconds { get; private set; }
+    internal ExerciseDecisionFailureStage FailureStage { get; private set; }
+    internal ExerciseCheckFailureCode FailureCode { get; private set; }
+
+    internal void RecordQuery(ExerciseQueryDiagnostic query)
+    {
+        ArgumentNullException.ThrowIfNull(query);
+        queries.Add(query);
+        ActiveAudienceCount = queries.Count(value => value.CandidateCount > 0);
+    }
+
+    internal void RecordSelection(
+        ExerciseControllerSelection selection,
+        long elapsedMicroseconds,
+        CampaignActionAudience? attemptedAudience = null)
+    {
+        ArgumentNullException.ThrowIfNull(selection);
+        ArgumentOutOfRangeException.ThrowIfNegative(elapsedMicroseconds);
+        SelectionFailure = selection.FailureReason == ExerciseControllerSelectionFailure.None
+            ? null
+            : selection.FailureReason;
+        SelectedAudience = selection.Audience ?? attemptedAudience;
+        SelectedActionId = selection.ActionId;
+        ControllerElapsedMicroseconds = elapsedMicroseconds;
+    }
+
+    internal void RecordSubmission(
+        ExerciseRuntimeStepResult result,
+        long elapsedMicroseconds)
+    {
+        ArgumentNullException.ThrowIfNull(result);
+        ArgumentOutOfRangeException.ThrowIfNegative(elapsedMicroseconds);
+        SubmissionAttempted = true;
+        SubmissionAccepted = result.IsAccepted;
+        SubmissionRejectionReason = result.IsAccepted ? null : result.RejectionReason;
+        SubmittedEventCount = result.IsAccepted ? result.EventRecords.Count : null;
+        SubmissionElapsedMicroseconds = elapsedMicroseconds;
+    }
+
+    internal void MarkFailed(
+        ExerciseDecisionFailureStage stage,
+        ExerciseCheckFailureCode failureCode)
+    {
+        if (!Enum.IsDefined(stage)) throw new ArgumentOutOfRangeException(nameof(stage));
+        if (failureCode == ExerciseCheckFailureCode.None || !Enum.IsDefined(failureCode))
+            throw new ArgumentOutOfRangeException(nameof(failureCode));
+        FailureStage = stage;
+        FailureCode = failureCode;
+    }
+}
+
 public sealed class ExerciseAcceptedStep
 {
     private readonly byte[][] eventRecords;
     private readonly byte[] snapshotCheckpoint;
+    private readonly ExerciseQueryDiagnostic[] queryDiagnostics;
 
     internal ExerciseAcceptedStep(
         int ordinal,
         CampaignActionAcceptanceReceipt receipt,
         IReadOnlyList<byte[]> eventRecords,
-        byte[] snapshotCheckpoint)
+        byte[] snapshotCheckpoint,
+        string? priorPositionId = null,
+        IEnumerable<ExerciseQueryDiagnostic>? queryDiagnostics = null,
+        int activeAudienceCount = 0,
+        long controllerElapsedMicroseconds = 0,
+        long submissionElapsedMicroseconds = 0)
     {
+        ArgumentOutOfRangeException.ThrowIfNegative(activeAudienceCount);
+        ArgumentOutOfRangeException.ThrowIfNegative(controllerElapsedMicroseconds);
+        ArgumentOutOfRangeException.ThrowIfNegative(submissionElapsedMicroseconds);
         Ordinal = ordinal;
         Receipt = receipt;
         this.eventRecords = eventRecords.Select(value => value.ToArray()).ToArray();
         this.snapshotCheckpoint = snapshotCheckpoint.ToArray();
+        PriorPositionId = priorPositionId ?? receipt.ResultingPositionId;
+        this.queryDiagnostics = queryDiagnostics?.ToArray() ?? [];
+        ActiveAudienceCount = activeAudienceCount;
+        ControllerElapsedMicroseconds = controllerElapsedMicroseconds;
+        SubmissionElapsedMicroseconds = submissionElapsedMicroseconds;
     }
 
     public int Ordinal { get; }
@@ -30,12 +142,19 @@ public sealed class ExerciseAcceptedStep
     public IReadOnlyList<byte[]> EventRecords => Array.AsReadOnly(
         eventRecords.Select(value => value.ToArray()).ToArray());
     public byte[] SnapshotCheckpoint => snapshotCheckpoint.ToArray();
+    internal string PriorPositionId { get; }
+    internal IReadOnlyList<ExerciseQueryDiagnostic> QueryDiagnostics =>
+        Array.AsReadOnly(queryDiagnostics);
+    internal int ActiveAudienceCount { get; }
+    internal long ControllerElapsedMicroseconds { get; }
+    internal long SubmissionElapsedMicroseconds { get; }
 }
 
 public sealed class ExerciseExecutionResult
 {
     private readonly byte[] initialSnapshot;
     private readonly byte[] finalSnapshot;
+    private readonly ExerciseDecisionDiagnostic[] failedDecisions;
 
     internal ExerciseExecutionResult(
         ExerciseRunResult runResult,
@@ -44,8 +163,15 @@ public sealed class ExerciseExecutionResult
         byte[] finalSnapshot,
         ReconstructionProof? reconstruction,
         ExerciseCheckResults checkResults,
-        ExerciseSeedLedger seedLedger)
+        ExerciseSeedLedger seedLedger,
+        long? beginElapsedMicroseconds = null,
+        long? reconstructionElapsedMicroseconds = null,
+        IEnumerable<ExerciseDecisionDiagnostic>? failedDecisions = null)
     {
+        if (beginElapsedMicroseconds is < 0)
+            throw new ArgumentOutOfRangeException(nameof(beginElapsedMicroseconds));
+        if (reconstructionElapsedMicroseconds is < 0)
+            throw new ArgumentOutOfRangeException(nameof(reconstructionElapsedMicroseconds));
         RunResult = runResult ?? throw new ArgumentNullException(nameof(runResult));
         Steps = Array.AsReadOnly(steps.ToArray());
         this.initialSnapshot = initialSnapshot.ToArray();
@@ -53,6 +179,9 @@ public sealed class ExerciseExecutionResult
         Reconstruction = reconstruction;
         CheckResults = checkResults ?? throw new ArgumentNullException(nameof(checkResults));
         SeedLedger = seedLedger ?? throw new ArgumentNullException(nameof(seedLedger));
+        BeginElapsedMicroseconds = beginElapsedMicroseconds;
+        ReconstructionElapsedMicroseconds = reconstructionElapsedMicroseconds;
+        this.failedDecisions = failedDecisions?.ToArray() ?? [];
     }
 
     public ExerciseRunResult RunResult { get; }
@@ -69,6 +198,10 @@ public sealed class ExerciseExecutionResult
     public ReconstructionProof? Reconstruction { get; }
     public ExerciseCheckResults CheckResults { get; }
     public ExerciseSeedLedger SeedLedger { get; }
+    internal long? BeginElapsedMicroseconds { get; }
+    internal long? ReconstructionElapsedMicroseconds { get; }
+    internal IReadOnlyList<ExerciseDecisionDiagnostic> FailedDecisions =>
+        Array.AsReadOnly(failedDecisions);
 }
 
 public static class ExerciseExecutor
@@ -85,9 +218,16 @@ public static class ExerciseExecutor
 
     public static ExerciseExecutionResult Execute(
         ExerciseManifest manifest,
+        CancellationToken cancellationToken) =>
+        Execute(manifest, CoreExerciseExecutionRuntime.Instance, cancellationToken);
+
+    internal static ExerciseExecutionResult Execute(
+        ExerciseManifest manifest,
+        IExerciseExecutionRuntime runtime,
         CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(manifest);
+        ArgumentNullException.ThrowIfNull(runtime);
         var identity = ExerciseRunIdentity.Standalone(manifest.ExerciseId, manifest.RootSeed);
         var seedLedger = ExerciseSeedLedger.Create(identity);
         var request = CreateRequest(manifest, identity);
@@ -101,7 +241,9 @@ public static class ExerciseExecutor
                 [],
                 checks,
                 seedLedger);
-        var start = CampaignExercises.Begin(request);
+        var beginStarted = Stopwatch.GetTimestamp();
+        var start = runtime.Begin(request);
+        var beginElapsedMicroseconds = ElapsedMicroseconds(beginStarted);
         if (!start.IsStarted)
             return Failed(
                 ExerciseFailureCategory.ManifestInvalid,
@@ -110,7 +252,8 @@ public static class ExerciseExecutor
                 start.InitialSnapshotBytes ?? [],
                 start.InitialSnapshotBytes ?? [],
                 checks,
-                seedLedger);
+                seedLedger,
+                beginElapsedMicroseconds: beginElapsedMicroseconds);
 
         var initial = start.InitialSnapshotBytes!;
         var current = initial;
@@ -129,9 +272,10 @@ public static class ExerciseExecutor
                     initial,
                     current,
                     checks,
-                    seedLedger);
+                    seedLedger,
+                    beginElapsedMicroseconds: beginElapsedMicroseconds);
             }
-            var checkpoint = CampaignExercises.QueryCheckpoint(session);
+            var checkpoint = runtime.QueryCheckpoint(session);
             if (string.Equals(
                     checkpoint.PositionId,
                     manifest.TerminalBoundary,
@@ -141,7 +285,9 @@ public static class ExerciseExecutor
                     ExerciseCheckId.TerminalBoundary,
                     null,
                     null));
-                var reconstruction = ReconstructionProof.From(CampaignExercises.Reconstruct(session));
+                var reconstructionStarted = Stopwatch.GetTimestamp();
+                var reconstruction = runtime.Reconstruct(session);
+                var reconstructionElapsedMicroseconds = ElapsedMicroseconds(reconstructionStarted);
                 checks.Add(reconstruction.IsVerified
                     ? ExerciseCheckResult.Passed(
                         ExerciseCheckId.HistoryReconstruction,
@@ -160,7 +306,9 @@ public static class ExerciseExecutor
                         current,
                         reconstruction,
                         new ExerciseCheckResults(checks),
-                        seedLedger)
+                        seedLedger,
+                        beginElapsedMicroseconds,
+                        reconstructionElapsedMicroseconds)
                     : Failed(
                         ExerciseFailureCategory.ReconstructionMismatch,
                         manifest,
@@ -169,7 +317,9 @@ public static class ExerciseExecutor
                         current,
                         checks,
                         seedLedger,
-                        reconstruction);
+                        reconstruction,
+                        beginElapsedMicroseconds: beginElapsedMicroseconds,
+                        reconstructionElapsedMicroseconds: reconstructionElapsedMicroseconds);
             }
             if (steps.Count >= manifest.MaximumSteps)
             {
@@ -181,15 +331,27 @@ public static class ExerciseExecutor
                     initial,
                     current,
                     checks,
-                    seedLedger);
+                    seedLedger,
+                    beginElapsedMicroseconds: beginElapsedMicroseconds);
             }
 
             var stepOrdinal = steps.Count;
-            var queries = new List<CampaignLegalActionQueryResult>();
+            var queries = new List<ExerciseRuntimeQueryResult>();
+            var queryDiagnostics = new List<ExerciseQueryDiagnostic>();
+            var decision = new ExerciseDecisionDiagnostic(stepOrdinal, checkpoint);
             foreach (var audience in AudienceOrder)
             {
-                var query = CampaignExercises.Query(session, audience);
+                var queryStarted = Stopwatch.GetTimestamp();
+                var query = runtime.Query(session, audience);
+                var queryElapsedMicroseconds = ElapsedMicroseconds(queryStarted);
                 var queryFailure = QueryFailure(checkpoint, audience, query);
+                var queryDiagnostic = new ExerciseQueryDiagnostic(
+                    audience,
+                    query.ActionSet?.Candidates.Count ?? 0,
+                    queryFailure,
+                    queryElapsedMicroseconds);
+                queryDiagnostics.Add(queryDiagnostic);
+                decision.RecordQuery(queryDiagnostic);
                 checks.Add(queryFailure == ExerciseCheckFailureCode.None
                     ? ExerciseCheckResult.Passed(
                         ExerciseCheckId.AuthorityQueryValid,
@@ -202,6 +364,7 @@ public static class ExerciseExecutor
                         queryFailure));
                 if (queryFailure != ExerciseCheckFailureCode.None)
                 {
+                    decision.MarkFailed(ExerciseDecisionFailureStage.AuthorityQuery, queryFailure);
                     AppendTerminalFailure(checks);
                     return Failed(
                         ExerciseFailureCategory.InvariantFailed,
@@ -210,16 +373,28 @@ public static class ExerciseExecutor
                         initial,
                         current,
                         checks,
-                        seedLedger);
+                        seedLedger,
+                        failedDecisions: [decision],
+                        beginElapsedMicroseconds: beginElapsedMicroseconds);
                 }
                 queries.Add(query);
             }
 
-            var selection = ExerciseController.Select(
+            var controllerStarted = Stopwatch.GetTimestamp();
+            var selection = runtime.Select(
                 manifest.Controllers,
                 queries.Select(result => new ExerciseControllerActionSet(
                     result.ActionSet!.Audience,
                     result.ActionSet.Candidates.Select(candidate => candidate.ActionId))).ToArray());
+            var controllerElapsedMicroseconds = ElapsedMicroseconds(controllerStarted);
+            var activeAudiences = queryDiagnostics
+                .Where(value => value.CandidateCount > 0)
+                .Select(value => value.Audience)
+                .ToArray();
+            decision.RecordSelection(
+                selection,
+                controllerElapsedMicroseconds,
+                activeAudiences.Length == 1 ? activeAudiences[0] : null);
             if (selection.FailureReason == ExerciseControllerSelectionFailure.NoActiveAudience)
             {
                 checks.Add(ExerciseCheckResult.Failed(
@@ -227,6 +402,9 @@ public static class ExerciseExecutor
                     stepOrdinal,
                     null,
                     ExerciseCheckFailureCode.NoActiveAudience));
+                decision.MarkFailed(
+                    ExerciseDecisionFailureStage.ControllerSelection,
+                    ExerciseCheckFailureCode.NoActiveAudience);
                 AppendTerminalFailure(checks);
                 return Failed(
                     ExerciseFailureCategory.NoUniqueLegalAction,
@@ -235,7 +413,9 @@ public static class ExerciseExecutor
                     initial,
                     current,
                     checks,
-                    seedLedger);
+                    seedLedger,
+                    failedDecisions: [decision],
+                    beginElapsedMicroseconds: beginElapsedMicroseconds);
             }
             if (selection.FailureReason
                 == ExerciseControllerSelectionFailure.MultipleActiveAudiences)
@@ -245,6 +425,9 @@ public static class ExerciseExecutor
                     stepOrdinal,
                     null,
                     ExerciseCheckFailureCode.MultipleActiveAudiences));
+                decision.MarkFailed(
+                    ExerciseDecisionFailureStage.ControllerSelection,
+                    ExerciseCheckFailureCode.MultipleActiveAudiences);
                 AppendTerminalFailure(checks);
                 return Failed(
                     ExerciseFailureCategory.InvariantFailed,
@@ -253,7 +436,9 @@ public static class ExerciseExecutor
                     initial,
                     current,
                     checks,
-                    seedLedger);
+                    seedLedger,
+                    failedDecisions: [decision],
+                    beginElapsedMicroseconds: beginElapsedMicroseconds);
             }
             if (!selection.IsSelected)
             {
@@ -264,8 +449,13 @@ public static class ExerciseExecutor
                 checks.Add(ExerciseCheckResult.Failed(
                     ExerciseCheckId.SelectedActionMembership,
                     stepOrdinal,
-                    selection.Audience,
+                    decision.SelectedAudience,
                     ExerciseCheckFailureCode.SelectedActionNotCurrent));
+                decision.MarkFailed(
+                    selection.FailureReason == ExerciseControllerSelectionFailure.PolicyFailed
+                        ? ExerciseDecisionFailureStage.ControllerSelection
+                        : ExerciseDecisionFailureStage.SelectedActionMembership,
+                    ExerciseCheckFailureCode.SelectedActionNotCurrent);
                 AppendTerminalFailure(checks);
                 return Failed(
                     ExerciseFailureCategory.ControllerFailed,
@@ -274,7 +464,9 @@ public static class ExerciseExecutor
                     initial,
                     current,
                     checks,
-                    seedLedger);
+                    seedLedger,
+                    failedDecisions: [decision],
+                    beginElapsedMicroseconds: beginElapsedMicroseconds);
             }
             checks.Add(ExerciseCheckResult.Passed(
                 ExerciseCheckId.ActiveAudienceCardinality,
@@ -298,6 +490,9 @@ public static class ExerciseExecutor
                     ExerciseCheckFailureCode.SelectedActionNotCurrent));
             if (candidate is null)
             {
+                decision.MarkFailed(
+                    ExerciseDecisionFailureStage.SelectedActionMembership,
+                    ExerciseCheckFailureCode.SelectedActionNotCurrent);
                 AppendTerminalFailure(checks);
                 return Failed(
                     ExerciseFailureCategory.ControllerFailed,
@@ -306,7 +501,9 @@ public static class ExerciseExecutor
                     initial,
                     current,
                     checks,
-                    seedLedger);
+                    seedLedger,
+                    failedDecisions: [decision],
+                    beginElapsedMicroseconds: beginElapsedMicroseconds);
             }
             var submission = new CampaignActionSubmission(
                 CampaignActionSubmission.CurrentContractVersion,
@@ -315,7 +512,10 @@ public static class ExerciseExecutor
                 set.PositionId,
                 set.Audience,
                 candidate.ActionId);
-            var submitted = CampaignExercises.Submit(session, submission);
+            var submissionStarted = Stopwatch.GetTimestamp();
+            var submitted = runtime.Submit(session, submission);
+            var submissionElapsedMicroseconds = ElapsedMicroseconds(submissionStarted);
+            decision.RecordSubmission(submitted, submissionElapsedMicroseconds);
             if (!submitted.IsAccepted)
             {
                 checks.Add(ExerciseCheckResult.Failed(
@@ -323,6 +523,9 @@ public static class ExerciseExecutor
                     stepOrdinal,
                     set.Audience,
                     ExerciseCheckFailureCode.ActionRejected));
+                decision.MarkFailed(
+                    ExerciseDecisionFailureStage.ActionSubmission,
+                    ExerciseCheckFailureCode.ActionRejected);
                 AppendTerminalFailure(checks);
                 return Failed(
                     ExerciseFailureCategory.IllegalAction,
@@ -331,16 +534,20 @@ public static class ExerciseExecutor
                     initial,
                     current,
                     checks,
-                    seedLedger);
+                    seedLedger,
+                    failedDecisions: [decision],
+                    beginElapsedMicroseconds: beginElapsedMicroseconds);
             }
-            var evidence = submitted.Evidence!;
-            if (evidence.EventRecords.Count != 1)
+            if (submitted.EventRecords.Count != 1)
             {
                 checks.Add(ExerciseCheckResult.Failed(
                     ExerciseCheckId.AcceptedEventCardinality,
                     stepOrdinal,
                     set.Audience,
                     ExerciseCheckFailureCode.EventCardinalityMismatch));
+                decision.MarkFailed(
+                    ExerciseDecisionFailureStage.EventCardinality,
+                    ExerciseCheckFailureCode.EventCardinalityMismatch);
                 AppendTerminalFailure(checks);
                 return Failed(
                     ExerciseFailureCategory.InvariantFailed,
@@ -349,18 +556,20 @@ public static class ExerciseExecutor
                     initial,
                     current,
                     checks,
-                    seedLedger);
+                    seedLedger,
+                    failedDecisions: [decision],
+                    beginElapsedMicroseconds: beginElapsedMicroseconds);
             }
             checks.Add(ExerciseCheckResult.Passed(
                 ExerciseCheckId.AcceptedEventCardinality,
                 stepOrdinal,
                 set.Audience));
             var successor = submitted.SuccessorSession!;
-            var resultingCheckpoint = CampaignExercises.QueryCheckpoint(successor);
+            var resultingCheckpoint = runtime.QueryCheckpoint(successor);
             var continuityFailure = ContinuityFailure(
                 checkpoint,
                 resultingCheckpoint,
-                evidence.Receipt);
+                submitted.Receipt!);
             checks.Add(continuityFailure == ExerciseCheckFailureCode.None
                 ? ExerciseCheckResult.Passed(
                     ExerciseCheckId.CheckpointContinuity,
@@ -373,6 +582,9 @@ public static class ExerciseExecutor
                     continuityFailure));
             if (continuityFailure != ExerciseCheckFailureCode.None)
             {
+                decision.MarkFailed(
+                    ExerciseDecisionFailureStage.CheckpointContinuity,
+                    continuityFailure);
                 AppendTerminalFailure(checks);
                 return Failed(
                     ExerciseFailureCategory.InvariantFailed,
@@ -381,14 +593,21 @@ public static class ExerciseExecutor
                     initial,
                     current,
                     checks,
-                    seedLedger);
+                    seedLedger,
+                    failedDecisions: [decision],
+                    beginElapsedMicroseconds: beginElapsedMicroseconds);
             }
-            current = evidence.SnapshotCheckpoint;
+            current = submitted.SnapshotCheckpoint;
             steps.Add(new ExerciseAcceptedStep(
                 steps.Count,
-                evidence.Receipt,
-                evidence.EventRecords,
-                current));
+                submitted.Receipt!,
+                submitted.EventRecords,
+                current,
+                checkpoint.PositionId,
+                queryDiagnostics,
+                queryDiagnostics.Count(value => value.CandidateCount > 0),
+                controllerElapsedMicroseconds,
+                submissionElapsedMicroseconds));
             session = successor;
         }
     }
@@ -427,7 +646,10 @@ public static class ExerciseExecutor
         byte[] final,
         IEnumerable<ExerciseCheckResult> checks,
         ExerciseSeedLedger seedLedger,
-        ReconstructionProof? reconstruction = null) =>
+        ReconstructionProof? reconstruction = null,
+        IEnumerable<ExerciseDecisionDiagnostic>? failedDecisions = null,
+        long? beginElapsedMicroseconds = null,
+        long? reconstructionElapsedMicroseconds = null) =>
         new(
             ExerciseRunResult.Failed(category, manifest.AssertFailureCategory),
             steps,
@@ -435,7 +657,10 @@ public static class ExerciseExecutor
             final,
             reconstruction,
             new ExerciseCheckResults(checks),
-            seedLedger);
+            seedLedger,
+            beginElapsedMicroseconds,
+            reconstructionElapsedMicroseconds,
+            failedDecisions: failedDecisions);
 
     private static void AppendTerminalFailure(List<ExerciseCheckResult> checks) =>
         checks.Add(ExerciseCheckResult.Failed(
@@ -447,7 +672,7 @@ public static class ExerciseExecutor
     private static ExerciseCheckFailureCode QueryFailure(
         ExerciseCheckpoint checkpoint,
         CampaignActionAudience audience,
-        CampaignLegalActionQueryResult query)
+        ExerciseRuntimeQueryResult query)
     {
         if (!query.IsSuccessful) return ExerciseCheckFailureCode.AuthorityQueryRejected;
         var set = query.ActionSet!;
@@ -481,4 +706,7 @@ public static class ExerciseExecutor
             ? ExerciseCheckFailureCode.None
             : ExerciseCheckFailureCode.PositionMismatch;
     }
+
+    private static long ElapsedMicroseconds(long started) =>
+        Math.Max(0, Stopwatch.GetElapsedTime(started).Ticks / 10);
 }

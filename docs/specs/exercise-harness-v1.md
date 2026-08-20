@@ -41,11 +41,14 @@ first currently implemented terminal boundary,
 4. See both replay proofs pass: canonical events reconstruct the final snapshot byte-for-byte, and a
    fresh Exercise session re-adjudicates accepted audience/action identities to the same transcript,
    events, and final snapshot.
-5. Run a small serial Maneuver and receive deterministic per-Exercise results plus aggregate counts.
-6. Run a paired Maneuver whose variants share declared initial conditions and role-specific initial
+5. Select compact, forensic, or debug detail without changing accepted actions or canonical
+   simulation evidence. Forensic records query/controller/check/proof evidence; debug additionally
+   records noncanonical monotonic timings and post-readback artifact trace data.
+6. Run a small serial Maneuver and receive deterministic per-Exercise results plus aggregate counts.
+7. Run a paired Maneuver whose variants share declared initial conditions and role-specific initial
    random streams, with reporting that makes no claim that streams remain synchronized after paths
    diverge.
-7. Introduce an invalid manifest, replay mismatch, invariant failure, interruption, step limit, or
+8. Introduce an invalid manifest, replay mismatch, invariant failure, interruption, step limit, or
    artifact fault and receive a nonzero process exit. A failed bundle is retained whenever staging
    and safe finalization remain possible; otherwise stderr explicitly reports that no completed
    bundle exists. No expected-failure field can convert such a failure into success.
@@ -78,6 +81,24 @@ dotnet run --project src/Cna.ExerciseRunner/Cna.ExerciseRunner.csproj -- \
   exercise run --manifest scenarios/exercises/rules-lab.organization.v1.json \
   --artifact-root artifacts/exercises
 ```
+
+That fixture is explicitly exploratory. A second checked fixture requests the same bounded run as
+a clean baseline and therefore fails closed unless the checkout has no tracked or untracked changes:
+
+```text
+dotnet run --project src/Cna.ExerciseRunner/Cna.ExerciseRunner.csproj -- \
+  exercise run --manifest scenarios/exercises/rules-lab.organization.baseline.v1.json \
+  --artifact-root artifacts/exercises
+```
+
+The manifest's `detail` value is `compact`, `forensic`, or `debug`. Compact retains accepted-step
+and completion records. Forensic adds deterministic query candidate counts, controller selection,
+ordered checks, proof results/hashes, payload sizing, and progressively assembled context for every
+failed in-execution decision. Debug is a strict superset with
+noncanonical monotonic operation/phase timings; after manifest-last write and mandatory reader
+validation it also prints a structured `trace=` record for artifact finalization/readback timing.
+Failed debug runs retain every timing measured before the failure.
+No detail tier changes the simulation-evidence subset named by `EXR-022`.
 
 The planned serial-Maneuver command is not implemented yet:
 

@@ -68,8 +68,11 @@ The local `Cna.ExerciseRunner` can now drive that synthetic rules-laboratory pat
 deterministic **Exercise**. It uses a fresh opaque Core capability, selects only current legal
 actions, stops at Organization, proves both event-history reconstruction and fresh-session
 re-adjudication, and writes a manifest-last `trusted-authority` evidence bundle. This is the first
-single-run simulation harness; serial **Maneuvers**, comparisons, model controllers, and side-safe
-exports are not implemented yet.
+single-run simulation harness. Compact, forensic, and debug detail tiers now expose progressively
+richer query/controller/submission/check/proof evidence—including failed-decision context—and
+noncanonical timings without changing simulation evidence. Serial **Maneuvers**, comparisons,
+model controllers, and side-safe exports are not
+implemented yet.
 
 Organization/stage-entry mechanics, movement, combat, published scenario content, persistence, and
 the Maproom player interface remain future work.
@@ -130,6 +133,20 @@ dotnet run --project src/Cna.ExerciseRunner/Cna.ExerciseRunner.csproj -- \
 
 The command prints the finalized bundle path. The checked-in manifest is explicitly exploratory,
 so a dirty development tree is recorded honestly as nonbaseline and nonreproducible.
+
+From a clean checkout, request a fail-closed baseline bundle with the checked baseline twin:
+
+```sh
+dotnet run --project src/Cna.ExerciseRunner/Cna.ExerciseRunner.csproj -- \
+  exercise run --manifest scenarios/exercises/rules-lab.organization.baseline.v1.json \
+  --artifact-root artifacts/exercises
+```
+
+Set the manifest's `detail` to `compact`, `forensic`, or `debug`. Forensic adds correlated audience
+queries, controller selection, checks, proofs, payload sizing, and the progressively assembled
+context of failed query/controller/submission decisions. Debug also retains every available
+monotonic phase timing on failure and prints a structured post-readback artifact trace. These
+diagnostics are trusted local instrumentation and never participate in replay equality.
 
 The intelligence gateway currently reports that no model provider is configured. This is expected:
 model-backed commanders are not part of the pre-alpha gameplay target, and authoritative play must
@@ -236,8 +253,8 @@ The current Umpire foundation is intentionally pure and in-process:
 - [Exercise Harness capability and replay research](docs/research/exercise-capability-and-replay-spike.md)
 - [Exercise Harness evidence artifact research](docs/research/exercise-evidence-artifact-spike.md)
 - [Exercise Harness reproducibility and pairing research](docs/research/exercise-reproducibility-and-pairing-spike.md)
-- [Exercise Harness v1 proposed specification](docs/specs/exercise-harness-v1.md)
-- [Exercise Harness v1 proposed technical design and delivery plan](docs/design/exercise-harness-v1.md)
+- [Exercise Harness v1 specification](docs/specs/exercise-harness-v1.md)
+- [Exercise Harness v1 technical design and delivery plan](docs/design/exercise-harness-v1.md)
 - [Microsoft Orleans documentation](https://learn.microsoft.com/en-us/dotnet/orleans/)
 - [ASP.NET Core gRPC services](https://learn.microsoft.com/en-us/aspnet/core/grpc/aspnetcore?view=aspnetcore-10.0)
 - [Aspire AppHost and ServiceDefaults](https://learn.microsoft.com/en-us/dotnet/aspire/fundamentals/aspire-sdk-templates)

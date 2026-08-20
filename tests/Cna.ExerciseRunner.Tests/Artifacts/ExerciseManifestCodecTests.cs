@@ -65,7 +65,9 @@ public sealed class ExerciseManifestCodecTests
     internal static ExerciseManifest Create(
         int maximumSteps = 8,
         ExerciseFailureCategory? assertFailureCategory = null,
-        string terminalBoundary = "land.position.operation-1.organization")
+        string terminalBoundary = "land.position.operation-1.organization",
+        ExerciseDetail detail = ExerciseDetail.Compact,
+        ExerciseBuildMode buildMode = ExerciseBuildMode.Exploratory)
     {
         return new ExerciseManifest(
             ExerciseManifest.CurrentContractVersion,
@@ -79,9 +81,9 @@ public sealed class ExerciseManifestCodecTests
             terminalBoundary,
             maximumSteps,
             0,
-            ExerciseBuildMode.Exploratory,
+            buildMode,
             ExerciseConfidentiality.TrustedAuthority,
-            ExerciseDetail.Compact,
+            detail,
             new ExerciseControllerManifest(
                 ExerciseControllerPolicy.FirstByActionId,
                 ExerciseControllerPolicy.FirstByActionId,

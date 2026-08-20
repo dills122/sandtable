@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text;
 using System.Text.Json;
 using Cna.ExerciseRunner.Execution;
@@ -83,4 +84,78 @@ public static class ExerciseSummaryWriter
             + "- Confidentiality: trusted-authority\n";
         return Encoding.UTF8.GetBytes(text);
     }
+
+    public static byte[] WriteMarkdown(
+        ExerciseManifest manifest,
+        BuildIdentity identity,
+        ExerciseExecutionResult execution,
+        ExerciseRunResult runResult,
+        ExerciseCheckResults checks,
+        ReadjudicationProof? readjudication)
+    {
+        ArgumentNullException.ThrowIfNull(manifest);
+        ArgumentNullException.ThrowIfNull(identity);
+        ArgumentNullException.ThrowIfNull(execution);
+        ArgumentNullException.ThrowIfNull(runResult);
+        ArgumentNullException.ThrowIfNull(checks);
+        if (identity.BuildMode != manifest.BuildMode)
+            throw new ArgumentException(
+                "The build identity does not match the manifest build mode.",
+                nameof(identity));
+        var status = runResult.Completion is ExerciseSucceeded ? "succeeded" : "failed";
+        var rootSeed = manifest.RootSeed.ToString(CultureInfo.InvariantCulture);
+        var acceptedSteps = execution.Steps.Count.ToString(CultureInfo.InvariantCulture);
+        var passedChecks = checks.Results.Count(value => value.IsPassed)
+            .ToString(CultureInfo.InvariantCulture);
+        var failedChecks = checks.Results.Count(value => !value.IsPassed)
+            .ToString(CultureInfo.InvariantCulture);
+        var outcome = runResult.Completion switch
+        {
+            ExerciseSucceeded { Outcome: BoundaryReached boundary } =>
+                $"boundary {boundary.PositionId}",
+            ExerciseFailed failed =>
+                $"failure {ExerciseContractText.FormatFailure(failed.Failure.Category)}",
+            _ => throw new InvalidOperationException("Unknown Exercise completion."),
+        };
+        var text = $"# Exercise {manifest.ExerciseId}\n\n"
+            + $"- Status: {status}\n"
+            + $"- Terminal outcome: {outcome}\n"
+            + $"- Detail: {FormatDetail(manifest.Detail)}\n"
+            + $"- Root seed: {rootSeed}\n"
+            + $"- Build mode: {FormatBuildMode(identity.BuildMode)}\n"
+            + $"- Baseline eligible: {FormatBoolean(identity.BaselineEligible)}\n"
+            + $"- Reproducible: {FormatBoolean(identity.Reproducible)}\n"
+            + $"- Dirty checkout: {FormatBoolean(identity.Dirty)}\n"
+            + $"- Accepted steps: {acceptedSteps}\n"
+            + $"- Passed checks: {passedChecks}\n"
+            + $"- Failed checks: {failedChecks}\n"
+            + $"- Reconstruction verified: {FormatNullableBoolean(execution.Reconstruction?.IsVerified)}\n"
+            + $"- Re-adjudication verified: {FormatNullableBoolean(readjudication?.IsVerified)}\n"
+            + "- Confidentiality: trusted-authority\n";
+        return Encoding.UTF8.GetBytes(text);
+    }
+
+    private static string FormatDetail(ExerciseDetail detail) => detail switch
+    {
+        ExerciseDetail.Compact => "compact",
+        ExerciseDetail.Forensic => "forensic",
+        ExerciseDetail.Debug => "debug",
+        _ => throw new ArgumentOutOfRangeException(nameof(detail)),
+    };
+
+    private static string FormatBuildMode(ExerciseBuildMode buildMode) => buildMode switch
+    {
+        ExerciseBuildMode.Baseline => "baseline",
+        ExerciseBuildMode.Exploratory => "exploratory",
+        _ => throw new ArgumentOutOfRangeException(nameof(buildMode)),
+    };
+
+    private static string FormatBoolean(bool value) => value ? "yes" : "no";
+
+    private static string FormatNullableBoolean(bool? value) => value switch
+    {
+        true => "yes",
+        false => "no",
+        null => "not-run",
+    };
 }

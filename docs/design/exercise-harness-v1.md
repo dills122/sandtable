@@ -1,6 +1,6 @@
 # Exercise Harness v1 Technical Design and Delivery Plan
 
-**Status:** In progress; Tasks 001-013 through the single-Exercise CLI checkpoint are implemented, Tasks 014-016 remain
+**Status:** In progress; Tasks 001-013 and single-Exercise observability hardening are implemented, Tasks 014-016 remain
 
 **Date:** 2026-08-20
 
@@ -338,6 +338,22 @@ Exercise ID, variant, step, campaign/state/position, audience, action ID, check,
 It may add wall-clock timestamps, elapsed monotonic duration, process/machine facts, and stack traces
 only at authorized detail levels. These fields never feed controller selection or canonical output.
 
+The implemented single-Exercise tiers are monotonic:
+
+- `compact` records accepted steps and terminal completion;
+- `forensic` adds fixed-order audience-query candidate counts, active-audience/controller selection,
+  every attempted invariant check, progressively assembled context for failed query/controller/
+  submission/cardinality/continuity decisions, reconstruction/re-adjudication results and hashes,
+  and prepared payload counts/bytes;
+- `debug` adds monotonic Core begin/query/controller/submit/reconstruction timings plus outer
+  manifest-admission, build-identity, execution, re-adjudication, and artifact-preparation timings.
+  Failed executions retain every timing measured before the failure.
+
+The trusted diagnostics file is assembled before manifest-last finalization. To avoid a circular
+rewrite, debug mode emits the actual artifact write/readback elapsed time and validated payload
+totals as a structured console `trace=` record only after the final bundle reader succeeds. This
+trace is noncanonical, contains no authority payload values, and cannot affect bundle status.
+
 Aggregate reports open and validate finalized per-Exercise bundles rather than trusting in-memory
 counters. Deterministic sections contain ordered terminal/failure counts and scenario/controller
 identities. Nondeterministic duration/throughput sections are visibly separate and excluded from
@@ -508,6 +524,21 @@ refactors. File names are expected targets; minor splits require the same owners
   bundle claim; two clean runs into separate roots have byte-identical canonical files.
 - **Verify:** `EXR-AC-001`, `EXR-AC-005`, `EXR-AC-011`, then both test projects.
 
+#### Single-Exercise observability hardening — implemented
+
+- **Depends on:** `EXR-TASK-012` and the post-merge single-run shakeout.
+- **Primary files:** `ExerciseDiagnosticsWriter.cs`, `ExerciseExecutor.cs`,
+  `ExerciseSummaryWriter.cs`, `ExerciseRunCommand.cs`, the checked baseline fixture, and focused
+  evidence/CLI tests.
+- **Work:** make the three accepted detail tiers operational, add deterministic correlation and
+  noncanonical timings, surface build/seed/outcome/proof state in Markdown, and make a clean
+  baseline run possible without first authoring an untracked manifest.
+- **Accept:** forensic/debug are meaningful monotonic supersets on successful and failed executions;
+  failed attempts retain available query/controller/action/submission context and timing; the nine-file simulation-evidence
+  subset remains byte-identical across detail; forensic bytes remain repeatable; debug timings never
+  feed adjudication; both checked fixtures admit under their declared build policy.
+- **Verify:** focused cross-detail, summary, fixture, CLI, and complete runner-project tests.
+
 ### Checkpoint E — serial Maneuvers and honest pairing
 
 #### `EXR-TASK-014` — Implement serial Maneuver and aggregate report
@@ -584,13 +615,13 @@ Status distinguishes the implemented single-Exercise boundary from deferred Mane
 | `EXR-010`; action-identity re-adjudication | 008, 012 | Re-adjudication proof and independent action/event/final mismatch tests | implemented |
 | `EXR-011`, `EXR-012`, `EXR-023`; canonical/versioned evidence | 006, 008-010, 012-014 | Golden/strict-reader/order tests and reader-validated CLI bundles; Maneuver evidence pending | implemented for one Exercise |
 | `EXR-013`, `EXR-014`; manifest-last transaction | 009, 010, 012 | Writer failpoint trees, rejected partials, reopened success/failure bundles | implemented |
-| `EXR-015`; confidentiality/detail separation | 006, 009, 010, 012 | Trusted-authority classification is enforced; cross-detail fixtures remain pending | partially implemented |
+| `EXR-015`; confidentiality/detail separation | 006, 009, 010, 012 + observability hardening | Cross-detail evidence-invariance and monotonic-tier tests; all files remain trusted-authority | implemented for one Exercise |
 | `EXR-016`; side-safe export deferred | 016 and future separately authorized task | Spec non-goal; absence/public-API tests; future whole-tree noninterference evidence | deferred |
 | `EXR-017`; seed domain separation | 013, 014 | Standalone seed goldens/ledger/culture/order implemented; Maneuver derivation pending | partially implemented |
 | `EXR-018`; honest pairing | 013-015 | `EXR-AC-010`; paired campaign/seed goldens, ledgers, and report golden | planned |
-| `EXR-019`, `EXR-020`; clean baseline and dirty exploration | 011, 012 | Fake/integration identity cases and emitted build identity file | implemented |
+| `EXR-019`, `EXR-020`; clean baseline and dirty exploration | 011, 012 + observability hardening | Fake/integration identity cases, emitted build identity, and separate checked baseline/exploratory fixtures | implemented |
 | `EXR-021`; serial validated aggregation | 014, 015 | `EXR-AC-009`, 010; bundle-reader aggregation tests and reports | planned |
-| `EXR-022`; separate correlated diagnostics | 007, 012, 014 | Deterministic diagnostics artifact implemented; Maneuver/detail matrix pending | partially implemented |
+| `EXR-022`; separate correlated diagnostics | 007, 012, 014 + observability hardening | Successful and failed query/controller/submission/check/proof correlation, debug failure timings, artifact readback trace, and command-boundary cross-detail evidence test; Maneuver correlation pending | implemented for one Exercise |
 | `EXR-024`, `EXR-025`; deterministic selection and single active audience | 006, 007, 012 | Executor controller/cardinality/step-bound tests and checked-in fixture | implemented |
 | `EXR-026`; ordered invariant catalog | 006-008, 012 | Strict check codec, ordering, scope, failure, and emitted-bundle tests | implemented |
 | `EXR-NFR-001`-`005`; reproducibility, reliability, boundaries, quality | 001-016 | All acceptance scenarios, two clean bundles, `just check`, final review | planned |
