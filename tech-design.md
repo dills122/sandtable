@@ -621,6 +621,23 @@ projection access. See the [research](docs/research/turn-preamble-action-boundar
 [specification](docs/specs/legal-actions-v1.md), and
 [technical design](docs/design/legal-actions-v1.md).
 
+The proposed Exercise Harness v1 is trusted local developer instrumentation for deterministic,
+freshly created campaign runs. It keeps the Umpire authoritative by introducing an opaque
+Exercise-only Core capability that shares the existing creation and legal-action execution
+primitives; the runner owns orchestration, transactional artifacts, diagnostics, and reports but no
+rules or state mutation. The first checked-in Exercise stops at the currently implemented
+Organization boundary, proves event-history reconstruction and fresh-session re-adjudication
+separately, and fails closed for replay, invariant, build-identity, or artifact faults. The
+Maneuvers layer is the serial batch layer, including paired variants with identical declared
+initial conditions and initial role streams but no post-divergence synchronization claim. V1 bundles are
+`trusted-authority`; side-safe exports, full victory runs, model controllers, and distributed
+execution remain explicitly deferred. See the retained
+[capability/replay research](docs/research/exercise-capability-and-replay-spike.md),
+[artifact research](docs/research/exercise-evidence-artifact-spike.md),
+[reproducibility research](docs/research/exercise-reproducibility-and-pairing-spike.md), proposed
+[specification](docs/specs/exercise-harness-v1.md), and proposed
+[technical design](docs/design/exercise-harness-v1.md).
+
 [1]: https://learn.microsoft.com/en-us/dotnet/orleans/grains/external-tasks-and-grains?utm_source=chatgpt.com "External tasks and grains - .NET | Microsoft Learn"
 [2]: https://learn.microsoft.com/en-us/aspnet/core/grpc/performance?view=aspnetcore-10.0&utm_source=chatgpt.com "Performance best practices with gRPC | Microsoft Learn"
 [3]: https://learn.microsoft.com/en-us/aspnet/core/grpc/deadlines-cancellation?view=aspnetcore-10.0&utm_source=chatgpt.com "Reliable gRPC services with deadlines and cancellation | Microsoft Learn"

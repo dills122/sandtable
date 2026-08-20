@@ -27,7 +27,7 @@ So `Umpire` can be the deterministic simulation component, but internally it sti
 | **Admiralty**                   | Naval subsystem                       | More flavorful than `NavalService`.                                       |
 | **Weather Bureau**              | Weather/environment                   | Period-flavored without being confusing.                                  |
 | **War Diary**                   | Human-readable game history           | Narrative companion to Chronicle's machine event stream.                  |
-| **Exercise**                    | Batch simulation                      | One automated simulation run.                                             |
+| **Exercise**                    | Single simulation run                 | One automated simulation run.                                             |
 | **Maneuvers**                   | Simulation/evaluation batches         | A collection of Exercises.                                                |
 | **War College**                 | AI evaluation/tournaments             | Run commanders against scenarios and measure performance.                 |
 
