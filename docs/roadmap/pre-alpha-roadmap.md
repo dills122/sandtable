@@ -181,6 +181,27 @@ Implementation and acceptance evidence are tracked in the
 [Initiative Determination specification](../specs/initiative-determination.md) and
 [technical design](../design/initiative-determination.md).
 
+## Cross-cutting developer instrumentation: Exercise Harness v1
+
+**Capability:** `EXERCISE-001`
+
+**Status:** Proposed; final independent plan review completed and findings reconciled; implementation pending
+
+**Goal:** Run a freshly created bounded rules-laboratory campaign through the authoritative legal
+action path, retain deterministic trusted evidence, and prove both event-history reconstruction and
+fresh-session re-adjudication before using batches for regression or controller comparison.
+
+**Acceptance boundary:** The first Exercise stops successfully only at the implemented Operation
+Stage 1 Organization boundary. The first runnable single-Exercise CLI includes fail-closed
+transactional artifacts, clean build identity, and explicit failure categories. A later v1
+checkpoint adds the first serial Maneuver before `EXERCISE-001` is complete. Trusted bundles are
+not side-safe output, and this capability does not imply full victory play, model controllers,
+distributed execution, balance claims, or production campaign activation.
+
+The proposed contract, research decisions, implementation tasks, and acceptance evidence are in
+the [Exercise Harness v1 specification](../specs/exercise-harness-v1.md) and
+[technical design](../design/exercise-harness-v1.md).
+
 ## Sprint 2: Rules laboratory and legal-action boundary
 
 **Goal:** Load an original, license-safe test theater and expose only legal, side-safe actions.
