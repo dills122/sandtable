@@ -73,6 +73,7 @@ internal static class CampaignObservationTestData
             baseline.Capabilities,
             baseline.SourceIndex,
             baseline.Locations,
+            baseline.WeatherAreaAssignments,
             baseline.Edges,
             observerFormations.Append(enemyFormation),
             observerElements.Concat(enemyElements),
@@ -131,11 +132,12 @@ internal static class CampaignObservationTestData
             catalogSetup.InitialGameTurn,
             catalogSetup.InitialInitiative,
             catalogSetup.OpeningPreamble,
+            catalogSetup.Weather,
             context.Selection,
             catalogSetup.Sources);
 
         return new CampaignSnapshot(
-            4,
+            5,
             "campaign-privacy",
             1,
             Cna1979Ruleset.Manifest.Hash,

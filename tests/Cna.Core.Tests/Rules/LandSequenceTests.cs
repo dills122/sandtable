@@ -165,6 +165,25 @@ public sealed class LandSequenceTests
     }
 
     [Fact]
+    public void WeatherAdvancesToOneOrganizationBarrierWithoutOrderedSubpositions()
+    {
+        var positions = Cna1979LandSequence.CreateTurn(1);
+        var weather = positions.Single(position =>
+            position.OperationStage == 1
+            && position.PhaseId == LandPhaseIds.WeatherDetermination);
+        var successor = Cna1979LandSequence.GetNext(weather);
+        var organization = positions.Where(position =>
+            position.OperationStage == 1
+            && position.PhaseId == LandPhaseIds.Organization).ToArray();
+
+        Assert.Single(organization);
+        Assert.Equal(organization[0], successor);
+        Assert.Null(successor.SegmentId);
+        Assert.Null(successor.StepId);
+        Assert.Equal(LandActorRole.None, successor.ActorRole);
+    }
+
+    [Fact]
     public void CommonwealthFleetHasAConcreteCommonwealthActor()
     {
         var fleetPositions = Cna1979LandSequence.CreateTurn(1).Where(position =>

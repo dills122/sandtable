@@ -37,6 +37,17 @@ public sealed class RulesetManifest
 
     public string Hash { get; }
 
+    internal static byte[] SerializeCanonicalRuling(Ruling ruling)
+    {
+        ArgumentNullException.ThrowIfNull(ruling);
+        using var stream = new MemoryStream();
+        using (var writer = new Utf8JsonWriter(stream))
+        {
+            WriteRuling(writer, ruling);
+        }
+        return stream.ToArray();
+    }
+
     private static void RequireUniqueIds(IEnumerable<string> ids, string parameterName)
     {
         var knownIds = new HashSet<string>(StringComparer.Ordinal);
@@ -75,14 +86,7 @@ public sealed class RulesetManifest
 
             foreach (var ruling in Rulings.OrderBy(value => value.RulingId, StringComparer.Ordinal))
             {
-                writer.WriteStartObject();
-                writer.WriteString("rulingId", ruling.RulingId);
-                writer.WriteString("conflictId", ruling.ConflictId);
-                WriteSortedValues(writer, "alternativeIds", ruling.AlternativeIds);
-                writer.WriteString("selectedBehaviorId", ruling.SelectedBehaviorId);
-                WriteSortedValues(writer, "protectingTestIds", ruling.ProtectingTestIds);
-                WriteSources(writer, ruling.Sources);
-                writer.WriteEndObject();
+                WriteRuling(writer, ruling);
             }
 
             writer.WriteEndArray();
@@ -90,6 +94,18 @@ public sealed class RulesetManifest
         }
 
         return Convert.ToHexString(SHA256.HashData(stream.ToArray())).ToLowerInvariant();
+    }
+
+    private static void WriteRuling(Utf8JsonWriter writer, Ruling ruling)
+    {
+        writer.WriteStartObject();
+        writer.WriteString("rulingId", ruling.RulingId);
+        writer.WriteString("conflictId", ruling.ConflictId);
+        WriteSortedValues(writer, "alternativeIds", ruling.AlternativeIds);
+        writer.WriteString("selectedBehaviorId", ruling.SelectedBehaviorId);
+        WriteSortedValues(writer, "protectingTestIds", ruling.ProtectingTestIds);
+        WriteSources(writer, ruling.Sources);
+        writer.WriteEndObject();
     }
 
     private static void WriteSortedValues(

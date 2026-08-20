@@ -76,9 +76,10 @@ public static class Cna1979SyntheticContentCatalog
             ContentPackDefinition.CanonicalFormatId,
             PackId,
             Cna1979Ruleset.RulesetId,
-            ["land.hex-topology", "land.formations", "land.initial-deployment"],
+            ["land.hex-topology", "land.formations", "land.initial-deployment", "land.weather-areas"],
             [new ContentSourceIndexEntry(SourceId, ContentSourceKind.RepositorySynthetic)],
             locations,
+            CreateWeatherAreas(),
             CreateEdges(),
             formations,
             elements,
@@ -116,6 +117,28 @@ public static class Cna1979SyntheticContentCatalog
         Edge("south", "south-west", "land.edge.track", null, "south-south-west"),
         Edge("south-west", "west", "land.edge.track", null, "south-west-west"),
     ];
+
+    private static IReadOnlyList<ContentWeatherAreaAssignment> CreateWeatherAreas() =>
+    [
+        WeatherArea("center", ContentWeatherArea.A),
+        WeatherArea("east", ContentWeatherArea.B),
+        WeatherArea("north", ContentWeatherArea.C),
+        WeatherArea("north-east", ContentWeatherArea.D),
+        WeatherArea("north-west", ContentWeatherArea.E),
+        WeatherArea("south", ContentWeatherArea.A),
+        WeatherArea("south-east", ContentWeatherArea.B),
+        WeatherArea("south-west", ContentWeatherArea.C),
+        WeatherArea("west", ContentWeatherArea.D),
+    ];
+
+    private static ContentWeatherAreaAssignment WeatherArea(
+        string locationId,
+        ContentWeatherArea area) => new(
+            locationId,
+            area,
+            new ContentOrigin(
+                ContentOriginKind.Synthetic,
+                [new RuleReference(SourceId, $"weather-areas.v1:{locationId}")]));
 
     private static IReadOnlyList<ContentFormation> CreateFormations() =>
     [

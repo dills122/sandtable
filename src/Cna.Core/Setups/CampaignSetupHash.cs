@@ -17,6 +17,7 @@ internal static class CampaignSetupHash
             definition.InitialGameTurn,
             definition.InitialInitiative,
             definition.OpeningPreamble,
+            definition.Weather,
             definition.Content,
             definition.Sources);
     }
@@ -28,6 +29,7 @@ internal static class CampaignSetupHash
         int initialGameTurn,
         InitiativePolicy initialInitiative,
         CampaignOpeningPreamblePolicy openingPreamble,
+        CampaignWeatherPolicy weather,
         CampaignContentSelection content,
         IReadOnlyList<RuleReference> sources)
     {
@@ -56,6 +58,28 @@ internal static class CampaignSetupHash
             writer.WriteStartArray("sources");
 
             foreach (var source in openingPreamble.Sources)
+            {
+                writer.WriteStartObject();
+                writer.WriteString("sourceId", source.SourceId);
+                writer.WriteString("locator", source.Locator);
+                writer.WriteEndObject();
+            }
+
+            writer.WriteEndArray();
+            writer.WriteEndObject();
+            writer.WriteStartObject("weather");
+            writer.WriteNumber("contractVersion", weather.ContractVersion);
+            writer.WriteString(
+                "kind",
+                weather.Kind switch
+                {
+                    CampaignWeatherPolicyKind.NoImmediateWeatherEffectSubjects =>
+                        "no-immediate-weather-effect-subjects",
+                    _ => throw new ArgumentOutOfRangeException(nameof(weather)),
+                });
+            writer.WriteStartArray("sources");
+
+            foreach (var source in weather.Sources)
             {
                 writer.WriteStartObject();
                 writer.WriteString("sourceId", source.SourceId);

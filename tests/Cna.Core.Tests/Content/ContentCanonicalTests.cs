@@ -56,6 +56,7 @@ public sealed class ContentCanonicalTests
             "\"elements\":", ReverseArray(root.GetProperty("elements")), ",",
             "\"formations\":", ReverseArray(root.GetProperty("formations")), ",",
             "\"edges\":", ReverseArray(root.GetProperty("edges")), ",",
+            "\"weatherAreaAssignments\":", ReverseArray(root.GetProperty("weatherAreaAssignments")), ",",
             "\"locations\":", ReverseArray(root.GetProperty("locations")), ",",
             "\"sourceIndex\":", ReverseArray(root.GetProperty("sourceIndex")), ",",
             "\"capabilities\":", ReverseArray(root.GetProperty("capabilities")), ",",
@@ -137,19 +138,19 @@ public sealed class ContentCanonicalTests
             "cna-1979.1",
             validHash));
         Assert.Throws<ArgumentException>(() => new ContentPackIdentity(
-            1,
+            ContentPackDefinition.CurrentSchemaVersion,
             "sandtable.content-json.v2",
             "rules-lab.content.minimal.v1",
             "cna-1979.1",
             validHash));
         Assert.Throws<ArgumentException>(() => new ContentPackIdentity(
-            1,
+            ContentPackDefinition.CurrentSchemaVersion,
             "sandtable.content-json.v1",
             "Rules Lab",
             "cna-1979.1",
             validHash));
         Assert.Throws<ArgumentException>(() => new ContentPackIdentity(
-            1,
+            ContentPackDefinition.CurrentSchemaVersion,
             "sandtable.content-json.v1",
             "rules-lab.content.minimal.v1",
             "cna-1979.1",
@@ -162,12 +163,12 @@ public sealed class ContentCanonicalTests
         var variants = new Dictionary<string, string>(StringComparer.Ordinal)
         {
             ["duplicate top-level property"] = ExpectedCanonicalJson.Replace(
-                "\"schemaVersion\":1,",
-                "\"schemaVersion\":1,\"schemaVersion\":1,",
+                "\"schemaVersion\":2,",
+                "\"schemaVersion\":2,\"schemaVersion\":2,",
                 StringComparison.Ordinal),
             ["unknown top-level property"] = ExpectedCanonicalJson.Replace(
-                "\"schemaVersion\":1,",
-                "\"schemaVersion\":1,\"unknown\":1,",
+                "\"schemaVersion\":2,",
+                "\"schemaVersion\":2,\"unknown\":1,",
                 StringComparison.Ordinal),
             ["missing top-level property"] = ExpectedCanonicalJson.Replace(
                 "\"packId\":\"rules-lab.content.minimal.v1\",",
@@ -175,8 +176,8 @@ public sealed class ContentCanonicalTests
                 StringComparison.Ordinal),
             ["trailing data"] = $"{ExpectedCanonicalJson}{{}}",
             ["unknown schema version"] = ExpectedCanonicalJson.Replace(
-                "\"schemaVersion\":1",
                 "\"schemaVersion\":2",
+                "\"schemaVersion\":3",
                 StringComparison.Ordinal),
             ["unknown format"] = ExpectedCanonicalJson.Replace(
                 "sandtable.content-json.v1",
@@ -221,7 +222,7 @@ public sealed class ContentCanonicalTests
         "]");
 
     private static readonly string ExpectedCanonicalJson = string.Concat(
-        "{\"schemaVersion\":1,",
+        "{\"schemaVersion\":2,",
         "\"formatId\":\"sandtable.content-json.v1\",",
         "\"packId\":\"rules-lab.content.minimal.v1\",",
         "\"rulesetId\":\"cna-1979.1\",",
@@ -232,6 +233,7 @@ public sealed class ContentCanonicalTests
         "\"origin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"content.hex.east\"}]}},",
         "{\"locationId\":\"west\",\"kind\":\"hex\",\"terrainId\":\"land.terrain.clear\",\"sourceCoordinate\":null,",
         "\"origin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"content.hex.west\"}]}}],",
+        "\"weatherAreaAssignments\":[],",
         "\"edges\":[{\"firstLocationId\":\"east\",\"secondLocationId\":\"west\",",
         "\"features\":[{\"featureId\":\"land.edge.road\",\"directionFromLocationId\":null,",
         "\"origin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"content.edge.road\"}]}}],",

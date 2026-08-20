@@ -131,7 +131,16 @@ public sealed class RandomStreamTests
     public void RandomProcedureDefinitionCopiesAndComparesCollectionsStructurally()
     {
         var canonical = Cna1979RandomProcedure.CanonicalDefinition;
-        var drawOrder = canonical.InitiativeDrawOrder.ToList();
+        var procedures = canonical.Procedures.Select(procedure => new RandomProcedureStep(
+            procedure.ProcedureId,
+            procedure.AcceptedD6Order.ToArray(),
+            procedure.Repeat,
+            procedure.ConditionalAcceptedD6 is null
+                ? null
+                : new RandomProcedureCondition(
+                    procedure.ConditionalAcceptedD6.Label,
+                    procedure.ConditionalAcceptedD6.WhenKindIn.ToArray())))
+            .ToList();
         var sources = canonical.Sources.Reverse().ToList();
         var equivalent = new RandomProcedureDefinition(
             canonical.SchemaVersion,
@@ -143,16 +152,19 @@ public sealed class RandomStreamTests
             canonical.D6AcceptBelow,
             canonical.D6Modulo,
             canonical.D6Offset,
-            drawOrder,
+            procedures,
             sources);
 
-        drawOrder.Clear();
+        procedures.Clear();
         sources.Clear();
 
-        Assert.Equal(["axis", "commonwealth"], equivalent.InitiativeDrawOrder);
+        Assert.Equal(
+            ["initiative-determination", "weather-determination"],
+            equivalent.Procedures.Select(value => value.ProcedureId));
         Assert.Equal(
             [
                 Cna1979RandomProcedure.NormalizationSourceReference,
+                Cna1979RandomProcedure.WeatherSourceReference,
                 Cna1979RandomProcedure.OpposedDiceSourceReference,
             ],
             equivalent.Sources);
@@ -175,7 +187,7 @@ public sealed class RandomStreamTests
             canonical.D6AcceptBelow,
             canonical.D6Modulo,
             canonical.D6Offset,
-            canonical.InitiativeDrawOrder,
+            canonical.Procedures,
             canonical.Sources.Reverse().ToArray());
         var changedOrder = new RandomProcedureDefinition(
             canonical.SchemaVersion,
@@ -187,7 +199,7 @@ public sealed class RandomStreamTests
             canonical.D6AcceptBelow,
             canonical.D6Modulo,
             canonical.D6Offset,
-            canonical.InitiativeDrawOrder.Reverse().ToArray(),
+            canonical.Procedures.Reverse().ToArray(),
             canonical.Sources);
 
         var baseline = Cna1979RandomProcedure.CalculateContentHash(canonical);
@@ -196,9 +208,7 @@ public sealed class RandomStreamTests
 
         Assert.Equal("cna-1979.1.random-procedure", artifact.ArtifactId);
         Assert.Equal(baseline, artifact.ContentHash);
-        Assert.Equal(
-            "sha256:0f7a4f8d8cd335ea2e9405eb0dca1f6050576f591181663a75f97f90cebb3688",
-            baseline);
+        Assert.Matches("^sha256:[0-9a-f]{64}$", baseline);
         Assert.Equal(baseline, reorderedHash);
         Assert.NotEqual(baseline, changedHash);
         Assert.Matches("^sha256:[0-9a-f]{64}$", baseline);

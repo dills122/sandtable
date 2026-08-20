@@ -227,6 +227,7 @@ public sealed class CampaignObservationContractTests
         [
             typeof(CampaignObservation),
             typeof(CampaignObservationPosition),
+            typeof(CampaignObservationWeather),
             typeof(CampaignObservationLocation),
             typeof(CampaignObservationEdgeFeature),
             typeof(CampaignObservationEdge),
@@ -276,6 +277,7 @@ public sealed class CampaignObservationContractTests
             "movement-contact-lab",
             LandSide.Axis,
             CreatePosition(),
+            null,
             locations,
             edges,
             ownElements);

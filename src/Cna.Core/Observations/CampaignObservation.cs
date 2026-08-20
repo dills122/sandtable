@@ -5,7 +5,7 @@ namespace Cna.Core.Observations;
 
 public sealed record CampaignObservation
 {
-    public const int CurrentContractVersion = 1;
+    public const int CurrentContractVersion = 2;
     public const string CurrentPolicyId = "sandtable.observation.own-elements-only.v1";
 
     internal CampaignObservation(
@@ -17,6 +17,7 @@ public sealed record CampaignObservation
         string scenarioId,
         LandSide observer,
         CampaignObservationPosition position,
+        CampaignObservationWeather? weather,
         IReadOnlyList<CampaignObservationLocation> locations,
         IReadOnlyList<CampaignObservationEdge> edges,
         IReadOnlyList<ObservedOwnElement> ownElements)
@@ -91,6 +92,7 @@ public sealed record CampaignObservation
         ScenarioId = ContentContractGuards.RequireStableId(scenarioId, nameof(scenarioId));
         Observer = observer;
         Position = position;
+        Weather = weather;
         Locations = Array.AsReadOnly(locationCopy
             .OrderBy(location => location.LocationId, StringComparer.Ordinal)
             .ToArray());
@@ -119,6 +121,8 @@ public sealed record CampaignObservation
 
     public CampaignObservationPosition Position { get; }
 
+    public CampaignObservationWeather? Weather { get; }
+
     public IReadOnlyList<CampaignObservationLocation> Locations { get; }
 
     public IReadOnlyList<CampaignObservationEdge> Edges { get; }
@@ -136,6 +140,7 @@ public sealed record CampaignObservation
             && string.Equals(ScenarioId, other.ScenarioId, StringComparison.Ordinal)
             && Observer == other.Observer
             && Position == other.Position
+            && Weather == other.Weather
             && Locations.SequenceEqual(other.Locations)
             && Edges.SequenceEqual(other.Edges)
             && OwnElements.SequenceEqual(other.OwnElements));
@@ -151,6 +156,7 @@ public sealed record CampaignObservation
         hash.Add(ScenarioId, StringComparer.Ordinal);
         hash.Add(Observer);
         hash.Add(Position);
+        hash.Add(Weather);
         AddValues(ref hash, Locations);
         AddValues(ref hash, Edges);
         AddValues(ref hash, OwnElements);

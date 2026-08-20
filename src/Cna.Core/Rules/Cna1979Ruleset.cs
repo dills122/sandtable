@@ -7,7 +7,7 @@ namespace Cna.Core.Rules;
 public static class Cna1979Ruleset
 {
     public const string RulesetId = "cna-1979.1";
-    public const int ContractVersion = 2;
+    public const int ContractVersion = 3;
 
     private const string LandSequenceArtifactId = "cna-1979.1.land-sequence";
 
@@ -47,7 +47,7 @@ public static class Cna1979Ruleset
         using (var writer = new Utf8JsonWriter(stream))
         {
             writer.WriteStartObject();
-            writer.WriteNumber("schemaVersion", 1);
+            writer.WriteNumber("schemaVersion", Cna1979LandSequence.CatalogSchemaVersion);
             writer.WriteStartArray("positions");
 
             foreach (var position in positionCopy)
@@ -107,8 +107,9 @@ public static class Cna1979Ruleset
                 Cna1979InitiativeRatings.CreateArtifact(),
                 Cna1979ContentVocabulary.CreateArtifact(),
                 Cna1979RandomProcedure.CreateArtifact(),
+                Cna1979Weather.CreateArtifact(),
             ],
-            [CreateEmptyOpeningConvoyRuling()]);
+            [CreateEmptyOpeningConvoyRuling(), Cna1979Weather.CreateSeasonBoundaryRuling()]);
     }
 
     private static Ruling CreateEmptyOpeningConvoyRuling() => new(

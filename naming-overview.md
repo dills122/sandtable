@@ -76,8 +76,9 @@ The first implementation maps these names conservatively: the internal
 Chronicle's authoritative input, and internal projection/replay reconstruct snapshots. Those plain
 technical names stay inside the Umpire boundary; they are not additional products or services.
 Public callers hold only a `CampaignAuthorityHandle`, inspect one side through Campaign Observation,
-and submit a current typed Legal Action. The Umpire now reaches Operation Stage 1 Weather through
-explicit Initiative, Naval Convoy Schedule, Tactical Shipping, and Initiative Declaration events.
+and submit a current typed Legal Action. The Umpire now resolves Operation Stage 1 Weather through
+explicit Initiative, Naval Convoy Schedule, Tactical Shipping, Initiative Declaration, and Weather
+events, then stops at the Organization decision barrier.
 Walking the published sequence catalog for inspection does not create Chronicle history.
 
 For the CNA rules domain, use **initiative holder** only for the side that wins or is assigned

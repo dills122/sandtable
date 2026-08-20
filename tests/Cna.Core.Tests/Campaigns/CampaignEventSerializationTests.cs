@@ -18,18 +18,22 @@ public sealed class CampaignEventSerializationTests
         var expected = "{\"contractVersion\":4,\"eventType\":\"campaign-created\"," +
             "\"campaignId\":\"campaign-1\",\"stateVersion\":1,\"rulesetHash\":\"" +
             Cna1979Ruleset.Manifest.Hash +
-            "\",\"setup\":{\"schemaVersion\":3," +
+            "\",\"setup\":{\"schemaVersion\":4," +
             "\"setupId\":\"rules-lab.initiative.predetermined\"," +
-            "\"setupHash\":\"sha256:ed20292efd3812382e6c371ea45dd96a0778732be14e865af144db97d3d7dfde\"," +
+            "\"setupHash\":\"sha256:5ecf84d21a7ff95112b9b662915f6858926532d30be5a0eee3f1a45752fdc80a\"," +
             "\"isSynthetic\":true,\"initialGameTurn\":1," +
             "\"initialInitiative\":{\"kind\":\"predetermined\",\"holder\":\"axis\"}," +
             "\"openingPreamble\":{\"contractVersion\":1," +
             "\"kind\":\"no-opening-naval-convoy-obligations\"," +
             "\"sources\":[{\"sourceId\":\"sandtable-rules-lab\"," +
             "\"locator\":\"opening-preamble.no-naval-convoy-obligations.v1\"}]}," +
-            "\"content\":{\"schemaVersion\":1,\"formatId\":\"sandtable.content-json.v1\"," +
+            "\"weather\":{\"contractVersion\":1," +
+            "\"kind\":\"no-immediate-weather-effect-subjects\"," +
+            "\"sources\":[{\"sourceId\":\"sandtable-rules-lab\"," +
+            "\"locator\":\"weather.no-immediate-effect-subjects.v1\"}]}," +
+            "\"content\":{\"schemaVersion\":2,\"formatId\":\"sandtable.content-json.v1\"," +
             "\"packId\":\"rules-lab.content.movement-contact.v1\",\"rulesetId\":\"cna-1979.1\"," +
-            "\"hash\":\"sha256:c0cceda302bab11c98f1b46c427c967bf70b3c9ae4ad078513dbfc231f06b114\"," +
+            "\"hash\":\"sha256:53d5b64f647251e3ac366c65f4ad05cae766afd7b70ee331d463e801496e2a99\"," +
             "\"scenarioId\":\"movement-contact-lab\"}," +
             "\"sources\":[{\"sourceId\":\"sandtable-rules-lab\"," +
             "\"locator\":\"initiative.predetermined-axis.v1\"}]}," +
@@ -165,6 +169,10 @@ public sealed class CampaignEventSerializationTests
             "\"campaign-created\"",
             "\"unknown-event\"",
             StringComparison.Ordinal);
+        var missingWeather = created.Replace(
+            "\"weather\":",
+            "\"missingWeather\":",
+            StringComparison.Ordinal);
         var unknownPresence = determined.Replace(
             "\"german-land-combat-unit-on-qualifying-game-map\"",
             "\"unknown-presence\"",
@@ -176,6 +184,7 @@ public sealed class CampaignEventSerializationTests
 
         Assert.Throws<JsonException>(() => Deserialize(extra));
         Assert.Throws<JsonException>(() => Deserialize(unknownType));
+        Assert.Throws<JsonException>(() => Deserialize(missingWeather));
         Assert.Throws<JsonException>(() => Deserialize(unknownPresence));
         Assert.Throws<JsonException>(() => Deserialize(forgedTotal));
     }

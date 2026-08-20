@@ -18,4 +18,5 @@ public enum CampaignCommandRejectionReason
     UnknownScenario,
     SetupContentMismatch,
     ScenarioStartMismatch,
+    UnsupportedWeatherPolicy,
 }

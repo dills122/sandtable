@@ -194,6 +194,7 @@ public sealed class CampaignCreationAdmissionTests
             canonical.InitialGameTurn + 1,
             canonical.InitialInitiative,
             canonical.OpeningPreamble,
+            canonical.Weather,
             canonical.Content,
             canonical.Sources);
 
@@ -205,6 +206,39 @@ public sealed class CampaignCreationAdmissionTests
 
         Assert.Equal(CampaignCommandRejectionReason.ScenarioStartMismatch, result.RejectionReason);
         Assert.Empty(result.Events);
+    }
+
+    [Fact]
+    public void ControlledAdmissionRejectsAnAlteredWeatherPolicyBeforeContentResolution()
+    {
+        var canonical = Cna1979SetupCatalog.Definitions[0];
+        var altered = new CampaignSetupDefinition(
+            canonical.SchemaVersion,
+            canonical.SetupId,
+            canonical.DisplayName,
+            canonical.IsSynthetic,
+            canonical.InitialGameTurn,
+            canonical.InitialInitiative,
+            canonical.OpeningPreamble,
+            new CampaignWeatherPolicy(
+                CampaignWeatherPolicy.CurrentContractVersion,
+                CampaignWeatherPolicyKind.NoImmediateWeatherEffectSubjects,
+                [new RuleReference("sandtable-rules-lab", "weather.wrong.v1")]),
+            canonical.Content,
+            canonical.Sources);
+        var resolver = new SyntheticResolver();
+
+        var result = CampaignEngine.DecideCreation(
+            null,
+            Create(altered),
+            resolver,
+            [altered]);
+
+        Assert.Equal(
+            CampaignCommandRejectionReason.UnsupportedWeatherPolicy,
+            result.RejectionReason);
+        Assert.Empty(result.Events);
+        Assert.Equal(0, resolver.CallCount);
     }
 
     private static CreateCampaign Create(CampaignSetupDefinition setup) => new(

@@ -51,23 +51,26 @@ play a side; it will never decide the rules or secretly change the campaign stat
 The current foundation can create a campaign from an exact ruleset, setup, Content Pack, and
 scenario; project the scenario's initial mutable element locations; resolve Initiative
 Determination and both admitted no-obligation Naval Convoy checkpoints; let the initiative holder
-declare whether to act first or last in Operation Stage 1; emit authoritative events; and replay
-those events to byte-identical state. Content Pack v1 and Campaign World v1 use an original nine-hex,
+declare whether to act first or last in Operation Stage 1; resolve Weather; emit authoritative
+events; and replay those events to byte-identical state. Ruleset manifest contract 3, Content Pack
+schema 2, and Campaign World v1 use an original nine-hex,
 nonhistorical rules laboratory to develop game systems without redistributing published assets.
-Campaign Observation v1 can now derive deterministic side-safe public topology, turn state, and
+Campaign Observation contract 2 derives deterministic side-safe public topology, turn state, and
 own-force facts without exposing the complete Content Pack or any opposing-force row or
 association. Legal Actions v1 exposes those mechanics through an opaque campaign-authority handle,
 deterministic system/side action sets, exact-audience membership enforcement, and side-safe
-acceptance receipts. Raw snapshots, commands, events, content context, projection, and replay are
-not public mutation seams.
+acceptance receipts. Weather Determination v1 resolves corrected source-cited Weather through that
+same boundary, records pair-keyed evidence, publishes only a source-free Weather summary, and stops
+at the same Operation Stage's Organization barrier. Raw snapshots, commands, events, content
+context, projection, and replay are not public mutation seams.
 
-Weather resolution, movement, combat, published scenario content, persistence, and the Maproom
-player interface remain future work.
+Organization/stage-entry mechanics, movement, combat, published scenario content, persistence, and
+the Maproom player interface remain future work.
 
-The high-level path to a playable game is:
+The approved high-level path to a playable game is:
 
-1. Resolve Weather and enter the declared first-acting side's player phase.
-2. Implement a complete movement/contact/combat loop through the legal-action boundary.
+1. Resolve Organization, Naval Convoy Arrival, and Fleet obligations, then stop at Reserve.
+2. Implement Reserve and a complete movement/contact/combat loop through the legal-action boundary.
 3. Add the remaining Land systems and data required by *Graziani's Offensive*.
 4. Deliver the Maproom interface, local hot-seat play, saves, and replay.
 5. Expand into detailed Air and Logistics play, later scenarios, and optional intelligence.
@@ -203,6 +206,9 @@ The current Umpire foundation is intentionally pure and in-process:
 - [Turn-preamble action-boundary research](docs/research/turn-preamble-action-boundary-spike.md)
 - [Legal Actions v1 specification](docs/specs/legal-actions-v1.md)
 - [Legal Actions v1 technical design](docs/design/legal-actions-v1.md)
+- [Operation-Stage Preamble research](docs/research/operation-stage-preamble-spike.md)
+- [Weather Determination v1 specification](docs/specs/weather-determination-v1.md)
+- [Weather Determination v1 technical design](docs/design/weather-determination-v1.md)
 - [Microsoft Orleans documentation](https://learn.microsoft.com/en-us/dotnet/orleans/)
 - [ASP.NET Core gRPC services](https://learn.microsoft.com/en-us/aspnet/core/grpc/aspnetcore?view=aspnetcore-10.0)
 - [Aspire AppHost and ServiceDefaults](https://learn.microsoft.com/en-us/dotnet/aspire/fundamentals/aspire-sdk-templates)

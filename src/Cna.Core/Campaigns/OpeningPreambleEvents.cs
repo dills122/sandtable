@@ -49,7 +49,7 @@ internal sealed record InitiativeOrderDeclared : OpeningPreambleAdvanced
         : base(campaignId, stateVersion, fromPositionId, sequencePosition, sources)
     {
         _ = new CampaignOperationStageOrder(CampaignOperationStageOrder.CurrentContractVersion,
-            operationStage, firstSide, secondSide);
+            sequencePosition.GameTurn, operationStage, firstSide, secondSide);
         if (!Enum.IsDefined(declaringHolder)) throw new ArgumentOutOfRangeException(nameof(declaringHolder));
         OperationStage = operationStage;
         DeclaringHolder = declaringHolder;

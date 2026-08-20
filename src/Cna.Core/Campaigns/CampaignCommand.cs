@@ -30,6 +30,10 @@ internal sealed record ResolveNoObligationTacticalShipping(
     long ExpectedStateVersion,
     string ExpectedPositionId) : CampaignCommand(1, ExpectedStateVersion);
 
+internal sealed record ResolveWeather(
+    long ExpectedStateVersion,
+    string ExpectedPositionId) : CampaignCommand(1, ExpectedStateVersion);
+
 internal enum InitiativeOrderChoice
 {
     ActFirst = 1,

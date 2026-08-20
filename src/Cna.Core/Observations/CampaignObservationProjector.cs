@@ -79,6 +79,10 @@ internal static class CampaignObservationProjector
             context.Scenario.ScenarioId,
             observer,
             position,
+            CampaignObservationWeatherSelector.Select(
+                snapshot.GameTurn,
+                snapshot.OperationStage,
+                snapshot.OperationStageWeather),
             locations,
             edges,
             ownElements);

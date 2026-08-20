@@ -35,7 +35,8 @@ internal static class CampaignSnapshotSerializer
                     FormatSide(snapshot.InitiativeHolder.Value));
             }
 
-            WriteOperationStageOrders(writer, snapshot.OperationStageOrders);
+            CampaignOperationStageOrderCodec.Write(writer, snapshot.OperationStageOrders);
+            CampaignOperationStageWeatherCodec.Write(writer, snapshot.OperationStageWeather);
             WriteRandomState(writer, snapshot.RandomState);
             WritePosition(writer, snapshot.SequencePosition);
             writer.WriteEndObject();
@@ -60,6 +61,7 @@ internal static class CampaignSnapshotSerializer
                 "world",
                 "initiativeHolder",
                 "operationStageOrders",
+                "operationStageWeather",
                 "randomState",
                 "sequencePosition");
 
@@ -74,7 +76,8 @@ internal static class CampaignSnapshotSerializer
                 holderElement.ValueKind == JsonValueKind.Null
                     ? null
                     : ParseSide(holderElement.GetString()),
-                ParseOperationStageOrders(root.GetProperty("operationStageOrders")),
+                CampaignOperationStageOrderCodec.Parse(root.GetProperty("operationStageOrders")),
+                CampaignOperationStageWeatherCodec.Parse(root.GetProperty("operationStageWeather")),
                 ParseRandomState(root.GetProperty("randomState")),
                 ParsePosition(root.GetProperty("sequencePosition")));
 
@@ -107,6 +110,7 @@ internal static class CampaignSnapshotSerializer
         WriteInitiative(writer, setup.InitialInitiative);
         writer.WriteEndObject();
         WriteOpeningPreamble(writer, setup.OpeningPreamble);
+        WriteWeatherPolicy(writer, setup.Weather);
         WriteContent(writer, setup.Content);
         WriteSources(writer, setup.Sources);
         writer.WriteEndObject();
@@ -123,6 +127,7 @@ internal static class CampaignSnapshotSerializer
             "initialGameTurn",
             "initialInitiative",
             "openingPreamble",
+            "weather",
             "content",
             "sources");
 
@@ -134,6 +139,7 @@ internal static class CampaignSnapshotSerializer
             setup.GetProperty("initialGameTurn").GetInt32(),
             ParseInitiative(setup.GetProperty("initialInitiative")),
             ParseOpeningPreamble(setup.GetProperty("openingPreamble")),
+            ParseWeatherPolicy(setup.GetProperty("weather")),
             ParseContent(setup.GetProperty("content")),
             ParseSources(setup.GetProperty("sources")));
     }
@@ -217,6 +223,40 @@ internal static class CampaignSnapshotSerializer
         };
 
         return new CampaignOpeningPreamblePolicy(
+            policy.GetProperty("contractVersion").GetInt32(),
+            kind,
+            ParseSources(policy.GetProperty("sources")));
+    }
+
+    private static void WriteWeatherPolicy(
+        Utf8JsonWriter writer,
+        CampaignWeatherPolicy policy)
+    {
+        writer.WriteStartObject("weather");
+        writer.WriteNumber("contractVersion", policy.ContractVersion);
+        writer.WriteString(
+            "kind",
+            policy.Kind switch
+            {
+                CampaignWeatherPolicyKind.NoImmediateWeatherEffectSubjects =>
+                    "no-immediate-weather-effect-subjects",
+                _ => throw new JsonException("Unknown Weather policy."),
+            });
+        WriteSources(writer, policy.Sources);
+        writer.WriteEndObject();
+    }
+
+    private static CampaignWeatherPolicy ParseWeatherPolicy(JsonElement policy)
+    {
+        RequireProperties(policy, "contractVersion", "kind", "sources");
+        var kind = policy.GetProperty("kind").GetString() switch
+        {
+            "no-immediate-weather-effect-subjects" =>
+                CampaignWeatherPolicyKind.NoImmediateWeatherEffectSubjects,
+            var value => throw new JsonException($"Unknown Weather policy '{value}'."),
+        };
+
+        return new CampaignWeatherPolicy(
             policy.GetProperty("contractVersion").GetInt32(),
             kind,
             ParseSources(policy.GetProperty("sources")));
@@ -308,32 +348,6 @@ internal static class CampaignSnapshotSerializer
             ParseLocation(facts.GetProperty("rommelLocation").GetString()),
             locations));
     }
-
-    internal static void WriteOperationStageOrders(Utf8JsonWriter writer,
-        IEnumerable<CampaignOperationStageOrder> orders)
-    {
-        writer.WriteStartArray("operationStageOrders");
-        foreach (var order in orders)
-        {
-            writer.WriteStartObject();
-            writer.WriteNumber("contractVersion", order.ContractVersion);
-            writer.WriteNumber("operationStage", order.OperationStage);
-            writer.WriteString("firstSide", FormatSide(order.FirstSide));
-            writer.WriteString("secondSide", FormatSide(order.SecondSide));
-            writer.WriteEndObject();
-        }
-        writer.WriteEndArray();
-    }
-
-    internal static CampaignOperationStageOrder[] ParseOperationStageOrders(JsonElement orders) =>
-        orders.EnumerateArray().Select(order =>
-        {
-            RequireProperties(order, "contractVersion", "operationStage", "firstSide", "secondSide");
-            return new CampaignOperationStageOrder(order.GetProperty("contractVersion").GetInt32(),
-                order.GetProperty("operationStage").GetInt32(),
-                ParseSide(order.GetProperty("firstSide").GetString()),
-                ParseSide(order.GetProperty("secondSide").GetString()));
-        }).ToArray();
 
     internal static void WriteRandomState(Utf8JsonWriter writer, RandomStreamState state)
     {

@@ -77,6 +77,7 @@ public sealed class CampaignReplayTests
             valid.Setup.InitialGameTurn,
             valid.Setup.InitialInitiative,
             valid.Setup.OpeningPreamble,
+            valid.Setup.Weather,
             valid.Setup.Content,
             valid.Setup.Sources);
 
@@ -96,6 +97,7 @@ public sealed class CampaignReplayTests
             valid.Setup.InitialGameTurn + 1,
             valid.Setup.InitialInitiative,
             valid.Setup.OpeningPreamble,
+            valid.Setup.Weather,
             valid.Setup.Content,
             valid.Setup.Sources);
         var forged = valid with
@@ -124,7 +126,7 @@ public sealed class CampaignReplayTests
     }
 
     [Fact]
-    public void StrictReadersRejectVersion3CreationAndSnapshotContracts()
+    public void StrictReadersRejectLegacyCreationAndSnapshotContracts()
     {
         var execution = ExecuteCreation(12345);
         var created = Assert.IsType<CampaignCreated>(Assert.Single(execution.Events));
@@ -132,7 +134,7 @@ public sealed class CampaignReplayTests
             .Replace("{\"contractVersion\":4,", "{\"contractVersion\":3,", StringComparison.Ordinal);
         var snapshotJson = Encoding.UTF8.GetString(
                 CampaignSnapshotSerializer.Serialize(execution.Snapshot))
-            .Replace("{\"contractVersion\":4,", "{\"contractVersion\":3,", StringComparison.Ordinal);
+            .Replace("{\"contractVersion\":5,", "{\"contractVersion\":4,", StringComparison.Ordinal);
 
         Assert.Throws<JsonException>(() =>
             CampaignEventSerializer.Deserialize(Encoding.UTF8.GetBytes(eventJson)));
@@ -162,12 +164,12 @@ public sealed class CampaignReplayTests
         var canonicalJson = Encoding.UTF8.GetString(
             CampaignSnapshotSerializer.Serialize(execution.Snapshot));
         var extra = canonicalJson.Replace(
-            "{\"contractVersion\":4,",
-            "{\"extra\":true,\"contractVersion\":4,",
+            "{\"contractVersion\":5,",
+            "{\"extra\":true,\"contractVersion\":5,",
             StringComparison.Ordinal);
         var reordered = canonicalJson.Replace(
-            "{\"contractVersion\":4,\"campaignId\":\"campaign-1\",",
-            "{\"campaignId\":\"campaign-1\",\"contractVersion\":4,",
+            "{\"contractVersion\":5,\"campaignId\":\"campaign-1\",",
+            "{\"campaignId\":\"campaign-1\",\"contractVersion\":5,",
             StringComparison.Ordinal);
 
         Assert.Throws<JsonException>(() =>
@@ -192,26 +194,30 @@ public sealed class CampaignReplayTests
     }
 
     [Fact]
-    public void CreationSnapshotUsesTheExactCanonicalVersion4Shape()
+    public void CreationSnapshotUsesTheExactCanonicalVersion5Shape()
     {
         var execution = ExecuteCreation(12345);
         var actual = Encoding.UTF8.GetString(
             CampaignSnapshotSerializer.Serialize(execution.Snapshot));
-        var expected = "{\"contractVersion\":4,\"campaignId\":\"campaign-1\"," +
+        var expected = "{\"contractVersion\":5,\"campaignId\":\"campaign-1\"," +
             "\"stateVersion\":1,\"rulesetHash\":\"" +
             Cna1979Ruleset.Manifest.Hash +
-            "\",\"setup\":{\"schemaVersion\":3," +
+            "\",\"setup\":{\"schemaVersion\":4," +
             "\"setupId\":\"rules-lab.initiative.predetermined\"," +
-            "\"setupHash\":\"sha256:ed20292efd3812382e6c371ea45dd96a0778732be14e865af144db97d3d7dfde\"," +
+            "\"setupHash\":\"sha256:5ecf84d21a7ff95112b9b662915f6858926532d30be5a0eee3f1a45752fdc80a\"," +
             "\"isSynthetic\":true,\"initialGameTurn\":1," +
             "\"initialInitiative\":{\"kind\":\"predetermined\",\"holder\":\"axis\"}," +
             "\"openingPreamble\":{\"contractVersion\":1," +
             "\"kind\":\"no-opening-naval-convoy-obligations\"," +
             "\"sources\":[{\"sourceId\":\"sandtable-rules-lab\"," +
             "\"locator\":\"opening-preamble.no-naval-convoy-obligations.v1\"}]}," +
-            "\"content\":{\"schemaVersion\":1,\"formatId\":\"sandtable.content-json.v1\"," +
+            "\"weather\":{\"contractVersion\":1," +
+            "\"kind\":\"no-immediate-weather-effect-subjects\"," +
+            "\"sources\":[{\"sourceId\":\"sandtable-rules-lab\"," +
+            "\"locator\":\"weather.no-immediate-effect-subjects.v1\"}]}," +
+            "\"content\":{\"schemaVersion\":2,\"formatId\":\"sandtable.content-json.v1\"," +
             "\"packId\":\"rules-lab.content.movement-contact.v1\",\"rulesetId\":\"cna-1979.1\"," +
-            "\"hash\":\"sha256:c0cceda302bab11c98f1b46c427c967bf70b3c9ae4ad078513dbfc231f06b114\"," +
+            "\"hash\":\"sha256:53d5b64f647251e3ac366c65f4ad05cae766afd7b70ee331d463e801496e2a99\"," +
             "\"scenarioId\":\"movement-contact-lab\"}," +
             "\"sources\":[{\"sourceId\":\"sandtable-rules-lab\"," +
             "\"locator\":\"initiative.predetermined-axis.v1\"}]}," +
@@ -222,6 +228,7 @@ public sealed class CampaignReplayTests
             "{\"elementId\":\"commonwealth-element-a\",\"currentLocationId\":\"east\"}," +
             "{\"elementId\":\"commonwealth-element-b\",\"currentLocationId\":\"south-east\"}]}," +
             "\"initiativeHolder\":null,\"operationStageOrders\":[]," +
+            "\"operationStageWeather\":[]," +
             "\"randomState\":{\"contractVersion\":1," +
             "\"algorithmId\":\"sandtable.sha256-counter.v1\",\"seed\":12345," +
             "\"nextByteCursor\":0},\"sequencePosition\":{\"contractVersion\":2," +

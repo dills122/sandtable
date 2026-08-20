@@ -543,7 +543,8 @@ recognized, provenance-bearing fixtures, while `Cna.Core.Randomness` owns the ve
 counter stream consumed by authoritative rules. `Cna.Core.Campaigns` uses pure command decisions
 and immutable events to create a campaign against the canonical manifest, resolve predetermined or
 contested Initiative Determination, explicitly resolve the two admitted no-obligation Naval Convoy
-checkpoints, record the Operation Stage 1 first/second actor order, and stop at Weather. It validates
+checkpoints, record the pair-keyed Operation Stage 1 first/second actor order, resolve deterministic
+Weather, and stop at Organization. It validates
 internal snapshots before adjudication and recomputes events during projection rather than trusting
 caller-supplied outcomes or provenance. Canonical snapshot and event serialization plus the
 internal replay harness prove reconstruction of accepted campaign history without ambient
@@ -582,18 +583,21 @@ mutable initial element locations into campaign history. The Umpire performs no 
 persistence I/O, and replay requires the same exact content plus the matching executable rules
 manifest. The [Campaign World specification](docs/specs/campaign-world-v1.md) and
 [technical design](docs/design/campaign-world-v1.md) document the superseded version-3 campaign
-contract and schema-2 setup. Legal Actions v1 cuts current authority over to campaign contract 4,
-setup schema 3, an explicit opening-preamble policy, and an opaque public handle while preserving
-resident exact-content context internally. Weather remains the next unsupported mandatory mechanic;
-no generic sequence bypass exists. See the Content Pack v1
+contract and schema-2 setup. Weather Determination v1 cuts current authority over to snapshot
+contract 5, ruleset manifest contract 3, setup schema 4, Content Pack schema 2, explicit
+opening-preamble and Weather policies, pair-keyed actor-order/Weather history, and an opaque public
+handle while preserving resident exact-content context internally. Organization remains the next
+unsupported mandatory mechanic; no
+generic sequence bypass exists. See the Content Pack v1
 [research](docs/research/content-pack-v1-spike.md),
 [specification](docs/specs/content-pack-v1.md), and
 [technical design](docs/design/content-pack-v1.md).
 
-The implemented Campaign Observation v1 boundary lives in `Cna.Core.Observations`. It accepts only
+The implemented Campaign Observation boundary lives in `Cna.Core.Observations`. Contract 2 accepts only
 a fully admitted Campaign World snapshot, its already-resolved exact content context, and a defined
 viewer side. A pure projector then copies a closed allowlist of public campaign/turn/topology facts
-and the viewer's independently placed elements into dedicated source-free values. Complete Content
+the current source-free Weather summary, and the viewer's independently placed elements into
+dedicated source-free values. Complete Content
 Pack identity and all opposing-force rows, associations, counts, contacts, and placeholders remain
 absent. Canonical output is an explicit compact UTF-8 JSON contract; it is derived query data, not
 trusted history or command authority. The Umpire still adjudicates from complete authoritative
@@ -604,12 +608,14 @@ v1 [research](docs/research/observation-and-fog-boundary-spike.md),
 [technical design](docs/design/campaign-observation-v1.md).
 
 Legal Actions v1 lives in `Cna.Core.Actions` and is the only public campaign-mutation path after
-creation. System actions resolve Initiative and each admitted empty convoy checkpoint separately.
+creation. System actions resolve Initiative, each admitted empty convoy checkpoint, and Weather
+separately.
 At Operation Stage 1 Initiative Declaration, an observation-only generator gives the holder exactly
 `act-first` and `act-last`; the opponent and system receive empty sets. Submission binds campaign,
 state version, position, audience, and deterministic action ID, then re-derives exact-audience
 membership before translating to an internal mechanic command. Success returns a scalar receipt and
-successor opaque `CampaignAuthorityHandle`, never authority state. `Cna.DecisionWorker` has no Core
+successor opaque `CampaignAuthorityHandle`, never authority state. Weather submission reaches only
+the same stage's Organization barrier. `Cna.DecisionWorker` has no Core
 reference; `Cna.OrleansHost` is the sole production Core consumer and receives no raw replay or
 projection access. See the [research](docs/research/turn-preamble-action-boundary-spike.md),
 [specification](docs/specs/legal-actions-v1.md), and

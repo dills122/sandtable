@@ -37,6 +37,38 @@ public sealed record ContentHex
     public ContentOrigin Origin { get; }
 }
 
+public enum ContentWeatherArea
+{
+    A = 1,
+    B = 2,
+    C = 3,
+    D = 4,
+    E = 5,
+}
+
+public sealed record ContentWeatherAreaAssignment
+{
+    public ContentWeatherAreaAssignment(
+        string locationId,
+        ContentWeatherArea weatherArea,
+        ContentOrigin origin)
+    {
+        ArgumentNullException.ThrowIfNull(origin);
+        if (!Enum.IsDefined(weatherArea))
+        {
+            throw new ArgumentOutOfRangeException(nameof(weatherArea));
+        }
+
+        LocationId = ContentContractGuards.RequireStableId(locationId, nameof(locationId));
+        WeatherArea = weatherArea;
+        Origin = origin;
+    }
+
+    public string LocationId { get; }
+    public ContentWeatherArea WeatherArea { get; }
+    public ContentOrigin Origin { get; }
+}
+
 public sealed record ContentEdgeFeature
 {
     public ContentEdgeFeature(

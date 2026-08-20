@@ -77,6 +77,7 @@ public sealed class CampaignObservationSerializationTests
                 "scenarioId",
                 "observer",
                 "position",
+                "weather",
                 "locations",
                 "edges",
                 "ownElements",

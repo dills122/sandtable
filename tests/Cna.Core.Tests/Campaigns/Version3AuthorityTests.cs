@@ -30,6 +30,7 @@ public sealed class Version3AuthorityTests
         Assert.Equal(setup.SetupId, created.Setup.SetupId);
         Assert.Equal(setup.Hash, created.Setup.SetupHash);
         Assert.Equal(setup.InitialInitiative, created.Setup.InitialInitiative);
+        Assert.Equal(setup.Weather, created.Setup.Weather);
         Assert.Equal(setup.Sources, created.Setup.Sources);
         Assert.Equal(new RandomStreamState(1, SandtableRandom.AlgorithmId, 12345, 0), created.RandomState);
         Assert.Equal(LandActorRole.None, created.SequencePosition.ActorRole);
@@ -86,13 +87,14 @@ public sealed class Version3AuthorityTests
     [Fact]
     public void CanonicalManifestCutsOverAllAuthoritativeArtifacts()
     {
-        Assert.Equal(2, Cna1979Ruleset.Manifest.ContractVersion);
+        Assert.Equal(3, Cna1979Ruleset.Manifest.ContractVersion);
         Assert.Equal(
             [
                 "cna-1979.1.content-vocabulary",
                 "cna-1979.1.initiative-ratings",
                 "cna-1979.1.land-sequence",
                 "cna-1979.1.random-procedure",
+                "cna-1979.1.weather-tables",
             ],
             Cna1979Ruleset.Manifest.Artifacts
                 .Select(artifact => artifact.ArtifactId)
@@ -128,6 +130,7 @@ public sealed class Version3AuthorityTests
             1,
             new PredeterminedInitiative(LandSide.Commonwealth),
             Cna1979SetupCatalog.OpeningPreamblePolicy,
+            Cna1979SetupCatalog.WeatherPolicy,
             Cna1979SetupCatalog.Definitions[0].Content,
             [new RuleReference("sandtable-rules-lab", "retired.synthetic.v1")]);
         var created = new CampaignCreated(
@@ -158,6 +161,7 @@ public sealed class Version3AuthorityTests
             definition.InitialGameTurn,
             definition.InitialInitiative,
             definition.OpeningPreamble,
+            definition.Weather,
             definition.Content,
             sources);
         var equivalent = new CampaignSetupSnapshot(
@@ -168,6 +172,7 @@ public sealed class Version3AuthorityTests
             definition.InitialGameTurn,
             definition.InitialInitiative,
             definition.OpeningPreamble,
+            definition.Weather,
             definition.Content,
             sources.ToArray());
 

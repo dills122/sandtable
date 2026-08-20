@@ -3,6 +3,7 @@ namespace Cna.Core.Rules;
 public static class Cna1979LandSequence
 {
     public const int ContractVersion = 2;
+    public const int CatalogSchemaVersion = 2;
 
     public static RuleReference SourceReference { get; } = new("spi-1979-land-rules", "5.2");
     public static RuleReference InitiativeSideSourceReference { get; } = new("spi-1979-land-rules", "7.11");
@@ -64,11 +65,7 @@ public static class Cna1979LandSequence
     {
         AddOperationPhase(positions, gameTurn, operationStage, "initiative-declaration", LandPhaseIds.InitiativeDeclaration, LandActorRole.InitiativeHolder, RelativeActorSources);
         AddOperationPhase(positions, gameTurn, operationStage, "weather-determination", LandPhaseIds.WeatherDetermination, LandActorRole.InitiativeHolder, RelativeActorSources);
-        AddOperationSegment(positions, gameTurn, operationStage, "organization.reorganization", LandPhaseIds.Organization, LandSegmentIds.Reorganization);
-        AddOperationStep(positions, gameTurn, operationStage, "organization.construction.completion", LandPhaseIds.Organization, LandSegmentIds.Construction, LandStepIds.ConstructionCompletion);
-        AddOperationStep(positions, gameTurn, operationStage, "organization.construction.initiation-continuation", LandPhaseIds.Organization, LandSegmentIds.Construction, LandStepIds.ConstructionInitiationContinuation);
-        AddOperationStep(positions, gameTurn, operationStage, "organization.training.completion", LandPhaseIds.Organization, LandSegmentIds.Training, LandStepIds.TrainingCompletion);
-        AddOperationStep(positions, gameTurn, operationStage, "organization.training.initiation-continuation", LandPhaseIds.Organization, LandSegmentIds.Training, LandStepIds.TrainingInitiationContinuation);
+        AddOperationPhase(positions, gameTurn, operationStage, "organization", LandPhaseIds.Organization);
         AddOperationPhase(positions, gameTurn, operationStage, "naval-convoy-arrival", LandPhaseIds.NavalConvoyArrival);
         AddOperationSegment(positions, gameTurn, operationStage, "commonwealth-fleet.assignment", LandPhaseIds.CommonwealthFleet, LandSegmentIds.FleetAssignment, LandActorRole.Commonwealth);
         AddOperationSegment(positions, gameTurn, operationStage, "commonwealth-fleet.repair", LandPhaseIds.CommonwealthFleet, LandSegmentIds.FleetRepair, LandActorRole.Commonwealth);

@@ -126,7 +126,7 @@ public sealed class ContentContractsTests
         var elements = CreateElements().ToList();
         var scenarios = CreateScenarios().ToList();
         var pack = new ContentPackDefinition(
-            1,
+            ContentPackDefinition.CurrentSchemaVersion,
             "sandtable.content-json.v1",
             "rules-lab.content.contracts.v1",
             "cna-1979.1",
@@ -138,7 +138,7 @@ public sealed class ContentContractsTests
             elements,
             scenarios);
         var equivalent = new ContentPackDefinition(
-            1,
+            ContentPackDefinition.CurrentSchemaVersion,
             "sandtable.content-json.v1",
             "rules-lab.content.contracts.v1",
             "cna-1979.1",
@@ -204,7 +204,7 @@ public sealed class ContentContractsTests
         Assert.Throws<ArgumentOutOfRangeException>(() => new ContentScenarioBoundary(1, 0));
         Assert.Throws<ArgumentOutOfRangeException>(() => new ContentScenarioBoundary(1, 4));
         Assert.Throws<ArgumentOutOfRangeException>(() => new ContentPackDefinition(
-            2,
+            ContentPackDefinition.CurrentSchemaVersion + 1,
             "sandtable.content-json.v1",
             "rules-lab.content.contracts.v1",
             "cna-1979.1",
@@ -216,7 +216,7 @@ public sealed class ContentContractsTests
             [],
             []));
         Assert.Throws<ArgumentException>(() => new ContentPackDefinition(
-            1,
+            ContentPackDefinition.CurrentSchemaVersion,
             "sandtable.content-json.v2",
             "rules-lab.content.contracts.v1",
             "cna-1979.1",
@@ -230,7 +230,7 @@ public sealed class ContentContractsTests
     }
 
     private static ContentPackDefinition CreatePack() => new(
-        1,
+        ContentPackDefinition.CurrentSchemaVersion,
         "sandtable.content-json.v1",
         "rules-lab.content.contracts.v1",
         "cna-1979.1",

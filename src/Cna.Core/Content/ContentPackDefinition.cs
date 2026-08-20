@@ -4,7 +4,7 @@ namespace Cna.Core.Content;
 
 public sealed record ContentPackDefinition
 {
-    public const int CurrentSchemaVersion = 1;
+    public const int CurrentSchemaVersion = 2;
     public const string CanonicalFormatId = "sandtable.content-json.v1";
 
     public ContentPackDefinition(
@@ -15,6 +15,35 @@ public sealed record ContentPackDefinition
         IEnumerable<string> capabilities,
         IEnumerable<ContentSourceIndexEntry> sourceIndex,
         IEnumerable<ContentHex> locations,
+        IEnumerable<ContentHexEdge> edges,
+        IEnumerable<ContentFormation> formations,
+        IEnumerable<ContentCombatElement> elements,
+        IEnumerable<ContentScenario> scenarios)
+        : this(
+            schemaVersion,
+            formatId,
+            packId,
+            rulesetId,
+            capabilities,
+            sourceIndex,
+            locations,
+            [],
+            edges,
+            formations,
+            elements,
+            scenarios)
+    {
+    }
+
+    public ContentPackDefinition(
+        int schemaVersion,
+        string formatId,
+        string packId,
+        string rulesetId,
+        IEnumerable<string> capabilities,
+        IEnumerable<ContentSourceIndexEntry> sourceIndex,
+        IEnumerable<ContentHex> locations,
+        IEnumerable<ContentWeatherAreaAssignment> weatherAreaAssignments,
         IEnumerable<ContentHexEdge> edges,
         IEnumerable<ContentFormation> formations,
         IEnumerable<ContentCombatElement> elements,
@@ -54,6 +83,10 @@ public sealed record ContentPackDefinition
         Capabilities = Array.AsReadOnly(capabilityCopy.Order(StringComparer.Ordinal).ToArray());
         SourceIndex = CopyAndOrder(sourceIndex, value => value.SourceId, nameof(sourceIndex));
         Locations = CopyAndOrder(locations, value => value.LocationId, nameof(locations));
+        WeatherAreaAssignments = CopyAndOrder(
+            weatherAreaAssignments,
+            value => value.LocationId,
+            nameof(weatherAreaAssignments));
         Edges = CopyAndOrder(
             edges,
             value => $"{value.FirstLocationId}\0{value.SecondLocationId}",
@@ -77,6 +110,8 @@ public sealed record ContentPackDefinition
 
     public IReadOnlyList<ContentHex> Locations { get; }
 
+    public IReadOnlyList<ContentWeatherAreaAssignment> WeatherAreaAssignments { get; }
+
     public IReadOnlyList<ContentHexEdge> Edges { get; }
 
     public IReadOnlyList<ContentFormation> Formations { get; }
@@ -95,6 +130,7 @@ public sealed record ContentPackDefinition
             && Capabilities.SequenceEqual(other.Capabilities, StringComparer.Ordinal)
             && SourceIndex.SequenceEqual(other.SourceIndex)
             && Locations.SequenceEqual(other.Locations)
+            && WeatherAreaAssignments.SequenceEqual(other.WeatherAreaAssignments)
             && Edges.SequenceEqual(other.Edges)
             && Formations.SequenceEqual(other.Formations)
             && Elements.SequenceEqual(other.Elements)
@@ -110,6 +146,7 @@ public sealed record ContentPackDefinition
         AddValues(ref hash, Capabilities);
         AddValues(ref hash, SourceIndex);
         AddValues(ref hash, Locations);
+        AddValues(ref hash, WeatherAreaAssignments);
         AddValues(ref hash, Edges);
         AddValues(ref hash, Formations);
         AddValues(ref hash, Elements);

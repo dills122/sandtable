@@ -61,6 +61,12 @@ internal static class CampaignEngine
             return CampaignCommandResult.Reject(CampaignCommandRejectionReason.SetupHashMismatch);
         }
 
+        if (!Cna1979SetupCatalog.IsAdmittedWeatherPolicy(setup.Weather))
+        {
+            return CampaignCommandResult.Reject(
+                CampaignCommandRejectionReason.UnsupportedWeatherPolicy);
+        }
+
         var resolution = resolver.Resolve(command.ContentPackId, command.ContentHash);
 
         if (!resolution.IsResolved)
@@ -125,6 +131,7 @@ internal static class CampaignEngine
             ResolveNoObligationNavalConvoySchedule resolve => DecideSchedule(snapshot, resolve),
             ResolveNoObligationTacticalShipping resolve => DecideTactical(snapshot, resolve),
             DeclareInitiativeOrder declare => DecideDeclaration(snapshot, declare),
+            ResolveWeather resolve => DecideWeather(snapshot, resolve),
             CompleteCurrentSequenceStep advance => DecideAdvance(snapshot, advance),
             _ => CampaignCommandResult.Reject(CampaignCommandRejectionReason.InvalidCommand),
         };
@@ -144,6 +151,7 @@ internal static class CampaignEngine
             || !Cna1979Ruleset.IsCanonicalHash(command.RulesetHash)
             || !Cna1979SetupCatalog.TryGet(command.SetupId, out var setup)
             || !string.Equals(command.SetupHash, setup.Hash, StringComparison.Ordinal)
+            || !Cna1979SetupCatalog.IsAdmittedWeatherPolicy(setup.Weather)
             || setup.Content != context.Selection
             || !string.Equals(command.ContentPackId, context.Artifact.Identity.PackId, StringComparison.Ordinal)
             || !string.Equals(command.ContentHash, context.Artifact.Identity.Hash, StringComparison.Ordinal)
@@ -345,5 +353,36 @@ internal static class CampaignEngine
         return string.Equals(expectedPositionId, snapshot.SequencePosition.PositionId, StringComparison.Ordinal)
             ? CampaignCommandRejectionReason.None
             : CampaignCommandRejectionReason.UnexpectedSequenceStep;
+    }
+
+    private static CampaignCommandResult DecideWeather(
+        CampaignSnapshot? snapshot,
+        ResolveWeather command)
+    {
+        var rejection = ValidateCurrent(snapshot, command.ContractVersion,
+            command.ExpectedStateVersion, command.ExpectedPositionId);
+        if (rejection != CampaignCommandRejectionReason.None)
+        {
+            return CampaignCommandResult.Reject(rejection);
+        }
+        if (snapshot!.PhaseId != LandPhaseIds.WeatherDetermination)
+        {
+            return CampaignCommandResult.Reject(
+                CampaignCommandRejectionReason.UnsupportedTransition);
+        }
+        try
+        {
+            return CampaignCommandResult.Accept(WeatherEventFactory.Create(snapshot));
+        }
+        catch (ArgumentOutOfRangeException)
+        {
+            return CampaignCommandResult.Reject(CampaignCommandRejectionReason.UnsupportedTransition);
+        }
+        catch (Exception exception) when (exception is ArgumentException
+            or ArithmeticException
+            or InvalidOperationException)
+        {
+            return CampaignCommandResult.Reject(CampaignCommandRejectionReason.InvalidState);
+        }
     }
 }

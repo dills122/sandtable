@@ -37,6 +37,10 @@ internal static class CampaignEventSerializer
                     ValidateDeclaration(declared);
                     WriteDeclaration(writer, declared);
                     break;
+                case WeatherDetermined determined:
+                    ValidateWeather(determined);
+                    WriteWeather(writer, determined);
+                    break;
                 default:
                     throw new JsonException("The campaign event type is not serializable.");
             }
@@ -62,6 +66,7 @@ internal static class CampaignEventSerializer
                 "no-obligation-naval-convoy-schedule-resolved" => ParseSchedule(root),
                 "no-obligation-tactical-shipping-resolved" => ParseTactical(root),
                 "initiative-order-declared" => ParseDeclaration(root),
+                "weather-determined" => ParseWeather(root),
                 _ => throw new JsonException($"Unknown campaign event type '{eventType}'."),
             };
         }
@@ -138,6 +143,66 @@ internal static class CampaignEventSerializer
         writer.WriteNumber("randomCursorAfter", determined.RandomCursorAfter);
         CampaignSnapshotSerializer.WritePosition(writer, determined.SequencePosition);
         CampaignSnapshotSerializer.WriteSources(writer, determined.Sources);
+    }
+
+    private static void WriteWeather(Utf8JsonWriter writer, WeatherDetermined determined)
+    {
+        writer.WriteNumber("contractVersion", determined.ContractVersion);
+        writer.WriteString("eventType", "weather-determined");
+        writer.WriteString("campaignId", determined.CampaignId);
+        writer.WriteNumber("stateVersion", determined.StateVersion);
+        writer.WriteString("fromPositionId", determined.FromPositionId);
+        writer.WriteNumber("gameTurn", determined.GameTurn);
+        writer.WriteNumber("operationStage", determined.OperationStage);
+        writer.WriteString("determiningSide", CampaignSnapshotSerializer.FormatSide(determined.DeterminingSide));
+        writer.WriteString("season", CampaignOperationStageWeatherCodec.FormatSeason(determined.Season));
+        writer.WriteNumber("firstDie", determined.FirstDie);
+        writer.WriteNumber("secondDie", determined.SecondDie);
+        writer.WriteString("kind", CampaignOperationStageWeatherCodec.FormatKind(determined.Kind));
+        writer.WriteString("scope", CampaignOperationStageWeatherCodec.FormatScope(determined.Scope));
+        if (determined.LocationDie.HasValue) writer.WriteNumber("locationDie", determined.LocationDie.Value);
+        else writer.WriteNull("locationDie");
+        writer.WriteStartArray("affectedAreas");
+        foreach (var area in determined.AffectedAreas)
+            writer.WriteStringValue(CampaignOperationStageWeatherCodec.FormatArea(area));
+        writer.WriteEndArray();
+        writer.WriteNumber("fuelWaterReductionSubjectCount", determined.FuelWaterReductionSubjectCount);
+        writer.WriteNumber("restoredWellCount", determined.RestoredWellCount);
+        writer.WriteNumber("damagedGroundedAircraftCount", determined.DamagedGroundedAircraftCount);
+        writer.WriteNumber("randomCursorAfter", determined.RandomCursorAfter);
+        CampaignSnapshotSerializer.WritePosition(writer, determined.SequencePosition);
+        CampaignSnapshotSerializer.WriteSources(writer, determined.Sources);
+    }
+
+    private static WeatherDetermined ParseWeather(JsonElement root)
+    {
+        CampaignSnapshotSerializer.RequireProperties(root, "contractVersion", "eventType",
+            "campaignId", "stateVersion", "fromPositionId", "gameTurn", "operationStage",
+            "determiningSide", "season", "firstDie", "secondDie", "kind", "scope",
+            "locationDie", "affectedAreas", "fuelWaterReductionSubjectCount", "restoredWellCount",
+            "damagedGroundedAircraftCount", "randomCursorAfter", "sequencePosition", "sources");
+        var location = root.GetProperty("locationDie");
+        var determined = new WeatherDetermined(root.GetProperty("campaignId").GetString()!,
+            root.GetProperty("stateVersion").GetInt64(), root.GetProperty("fromPositionId").GetString()!,
+            root.GetProperty("gameTurn").GetInt32(), root.GetProperty("operationStage").GetInt32(),
+            CampaignSnapshotSerializer.ParseSide(root.GetProperty("determiningSide").GetString()),
+            CampaignOperationStageWeatherCodec.ParseSeason(root.GetProperty("season").GetString()),
+            root.GetProperty("firstDie").GetInt32(), root.GetProperty("secondDie").GetInt32(),
+            CampaignOperationStageWeatherCodec.ParseKind(root.GetProperty("kind").GetString()),
+            CampaignOperationStageWeatherCodec.ParseScope(root.GetProperty("scope").GetString()),
+            location.ValueKind == JsonValueKind.Null ? null : location.GetInt32(),
+            root.GetProperty("affectedAreas").EnumerateArray()
+                .Select(value => CampaignOperationStageWeatherCodec.ParseArea(value.GetString())).ToArray(),
+            root.GetProperty("fuelWaterReductionSubjectCount").GetInt32(),
+            root.GetProperty("restoredWellCount").GetInt32(),
+            root.GetProperty("damagedGroundedAircraftCount").GetInt32(),
+            root.GetProperty("randomCursorAfter").GetUInt64(),
+            CampaignSnapshotSerializer.ParsePosition(root.GetProperty("sequencePosition")),
+            CampaignSnapshotSerializer.ParseSources(root.GetProperty("sources")));
+        if (root.GetProperty("contractVersion").GetInt32() != determined.ContractVersion)
+            throw new JsonException("The Weather event contract version is invalid.");
+        ValidateWeather(determined);
+        return determined;
     }
 
     private static void WriteAdvance(Utf8JsonWriter writer, string eventType,
@@ -415,7 +480,7 @@ internal static class CampaignEventSerializer
         }
 
         var localSnapshot = new CampaignSnapshot(
-            4,
+            5,
             created.CampaignId,
             created.StateVersion,
             created.RulesetHash,
@@ -450,6 +515,20 @@ internal static class CampaignEventSerializer
             || determined.SequencePosition.ActiveSide is not null)
         {
             throw new JsonException("The Initiative event contract is invalid.");
+        }
+    }
+
+    private static void ValidateWeather(WeatherDetermined determined)
+    {
+        _ = determined.ToState();
+        if (determined.ContractVersion != 1
+            || determined.StateVersion < 6
+            || determined.SequencePosition.GameTurn != determined.GameTurn
+            || determined.SequencePosition.OperationStage != determined.OperationStage
+            || determined.SequencePosition.PhaseId != LandPhaseIds.Organization
+            || !determined.Sources.SequenceEqual(WeatherEventFactory.GetSources(determined.Kind)))
+        {
+            throw new JsonException("The Weather event contract is invalid.");
         }
     }
 

@@ -6,7 +6,7 @@ namespace Cna.Core.Setups;
 
 internal static class Cna1979SetupCatalog
 {
-    public const int SchemaVersion = 3;
+    public const int SchemaVersion = 4;
     public const string PredeterminedSetupId = "rules-lab.initiative.predetermined";
     public const string ContestedSetupId = "rules-lab.initiative.contested";
 
@@ -27,6 +27,15 @@ internal static class Cna1979SetupCatalog
         CampaignOpeningPreambleKind.NoOpeningNavalConvoyObligations,
         [OpeningPreambleSourceReference]);
 
+    internal static RuleReference WeatherPolicySourceReference { get; } = new(
+        "sandtable-rules-lab",
+        "weather.no-immediate-effect-subjects.v1");
+
+    internal static CampaignWeatherPolicy WeatherPolicy { get; } = new(
+        CampaignWeatherPolicy.CurrentContractVersion,
+        CampaignWeatherPolicyKind.NoImmediateWeatherEffectSubjects,
+        [WeatherPolicySourceReference]);
+
     public static IReadOnlyList<CampaignSetupDefinition> Definitions { get; } =
         Array.AsReadOnly<CampaignSetupDefinition>(
         [
@@ -38,6 +47,7 @@ internal static class Cna1979SetupCatalog
                 1,
                 new PredeterminedInitiative(LandSide.Axis),
                 OpeningPreamblePolicy,
+                WeatherPolicy,
                 new CampaignContentSelection(
                     Cna1979SyntheticContentCatalog.Artifact.Identity,
                     "movement-contact-lab"),
@@ -52,6 +62,7 @@ internal static class Cna1979SetupCatalog
                     AxisInitiativeLocation.OffMapOrUnavailable,
                     [AxisInitiativeLocation.QualifyingGameMap])),
                 OpeningPreamblePolicy,
+                WeatherPolicy,
                 new CampaignContentSelection(
                     Cna1979SyntheticContentCatalog.Artifact.Identity,
                     "initiative-contested-lab"),
@@ -68,4 +79,10 @@ internal static class Cna1979SetupCatalog
             StringComparison.Ordinal));
         return definition is not null;
     }
+
+    internal static bool IsAdmittedWeatherPolicy(CampaignWeatherPolicy? policy) =>
+        policy is not null
+        && policy.ContractVersion == CampaignWeatherPolicy.CurrentContractVersion
+        && policy.Kind == CampaignWeatherPolicyKind.NoImmediateWeatherEffectSubjects
+        && policy.Sources.SequenceEqual([WeatherPolicySourceReference]);
 }

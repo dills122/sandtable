@@ -42,6 +42,7 @@ internal static class CampaignProjector
             NoObligationNavalConvoyScheduleResolved resolved => ApplySchedule(snapshot, resolved, context),
             NoObligationTacticalShippingResolved resolved => ApplyTactical(snapshot, resolved, context),
             InitiativeOrderDeclared declared => ApplyDeclaration(snapshot, declared, context),
+            WeatherDetermined determined => ApplyWeather(snapshot, determined, context),
             CampaignSequenceAdvanced => throw new InvalidCampaignHistoryException(
                 "Legacy generic sequence events are not valid version-3 campaign history."),
             _ => throw new InvalidCampaignHistoryException("Unsupported campaign event type."),
@@ -85,7 +86,7 @@ internal static class CampaignProjector
         }
 
         var projected = new CampaignSnapshot(
-            4,
+            5,
             created.CampaignId,
             created.StateVersion,
             created.RulesetHash,
@@ -200,16 +201,66 @@ internal static class CampaignProjector
             CampaignEventSerializer.Serialize(expected)))
             throw new InvalidCampaignHistoryException("The declaration is inconsistent with campaign history.");
         var order = new CampaignOperationStageOrder(CampaignOperationStageOrder.CurrentContractVersion,
-            declared.OperationStage, declared.FirstSide, declared.SecondSide);
+            declared.SequencePosition.GameTurn, declared.OperationStage, declared.FirstSide,
+            declared.SecondSide);
         var projected = snapshot with
         {
             StateVersion = declared.StateVersion,
             OperationStageOrders = Array.AsReadOnly(snapshot.OperationStageOrders.Append(order)
-                .OrderBy(value => value.OperationStage).ToArray()),
+                .OrderBy(value => value.GameTurn)
+                .ThenBy(value => value.OperationStage)
+                .ToArray()),
             SequencePosition = declared.SequencePosition,
         };
         if (!CampaignSnapshotValidator.IsValid(projected, context))
             throw new InvalidCampaignHistoryException("The declaration produces invalid campaign state.");
+        return projected;
+    }
+
+    private static CampaignSnapshot ApplyWeather(
+        CampaignSnapshot? snapshot,
+        WeatherDetermined determined,
+        CampaignContentContext context)
+    {
+        if (snapshot is null)
+        {
+            throw new InvalidCampaignHistoryException("Weather cannot precede creation.");
+        }
+        WeatherDetermined expected;
+        try
+        {
+            expected = WeatherEventFactory.Create(snapshot);
+        }
+        catch (Exception exception) when (exception is ArgumentException
+            or ArithmeticException
+            or InvalidOperationException)
+        {
+            throw new InvalidCampaignHistoryException(exception.Message);
+        }
+        if (!CampaignEventSerializer.Serialize(determined).SequenceEqual(
+            CampaignEventSerializer.Serialize(expected)))
+        {
+            throw new InvalidCampaignHistoryException(
+                "The Weather event is inconsistent with campaign history.");
+        }
+        var projected = snapshot with
+        {
+            StateVersion = determined.StateVersion,
+            OperationStageWeather = Array.AsReadOnly(snapshot.OperationStageWeather
+                .Append(determined.ToState())
+                .OrderBy(value => value.GameTurn)
+                .ThenBy(value => value.OperationStage)
+                .ToArray()),
+            RandomState = new RandomStreamState(snapshot.RandomState.ContractVersion,
+                snapshot.RandomState.AlgorithmId, snapshot.RandomState.Seed,
+                determined.RandomCursorAfter),
+            SequencePosition = determined.SequencePosition,
+        };
+        if (!CampaignSnapshotValidator.IsValid(projected, context))
+        {
+            throw new InvalidCampaignHistoryException(
+                "The Weather event produces invalid campaign state.");
+        }
         return projected;
     }
 }
