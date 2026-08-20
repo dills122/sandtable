@@ -7,7 +7,7 @@ namespace Cna.Core.Rules;
 public static class Cna1979Ruleset
 {
     public const string RulesetId = "cna-1979.1";
-    public const int ContractVersion = 2;
+    public const int ContractVersion = 3;
 
     private const string LandSequenceArtifactId = "cna-1979.1.land-sequence";
 

@@ -87,7 +87,7 @@ public sealed class Version3AuthorityTests
     [Fact]
     public void CanonicalManifestCutsOverAllAuthoritativeArtifacts()
     {
-        Assert.Equal(2, Cna1979Ruleset.Manifest.ContractVersion);
+        Assert.Equal(3, Cna1979Ruleset.Manifest.ContractVersion);
         Assert.Equal(
             [
                 "cna-1979.1.content-vocabulary",

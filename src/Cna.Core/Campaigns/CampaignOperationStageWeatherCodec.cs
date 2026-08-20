@@ -85,10 +85,22 @@ internal static class CampaignOperationStageWeatherCodec
         _ => throw new ArgumentOutOfRangeException(nameof(value)),
     };
     internal static string FormatArea(WeatherArea value) => value.ToString().ToLowerInvariant();
-    internal static WeatherSeason ParseSeason(string? value) => Enum.TryParse<WeatherSeason>(value, true, out var parsed)
-        && Enum.IsDefined(parsed) ? parsed : throw new JsonException($"Unknown Weather season '{value}'.");
-    internal static WeatherKind ParseKind(string? value) => Enum.TryParse<WeatherKind>(value, true, out var parsed)
-        && Enum.IsDefined(parsed) ? parsed : throw new JsonException($"Unknown Weather kind '{value}'.");
+    internal static WeatherSeason ParseSeason(string? value) => value switch
+    {
+        "fall" => WeatherSeason.Fall,
+        "winter" => WeatherSeason.Winter,
+        "spring" => WeatherSeason.Spring,
+        "summer" => WeatherSeason.Summer,
+        _ => throw new JsonException($"Unknown Weather season '{value}'."),
+    };
+    internal static WeatherKind ParseKind(string? value) => value switch
+    {
+        "normal" => WeatherKind.Normal,
+        "hot" => WeatherKind.Hot,
+        "sandstorm" => WeatherKind.Sandstorm,
+        "rainstorm" => WeatherKind.Rainstorm,
+        _ => throw new JsonException($"Unknown Weather kind '{value}'."),
+    };
     internal static WeatherScope ParseScope(string? value) => value switch
     {
         "none" => WeatherScope.None,
@@ -96,6 +108,13 @@ internal static class CampaignOperationStageWeatherCodec
         "listed-areas" => WeatherScope.ListedAreas,
         _ => throw new JsonException($"Unknown Weather scope '{value}'."),
     };
-    internal static WeatherArea ParseArea(string? value) => Enum.TryParse<WeatherArea>(value, true, out var parsed)
-        && Enum.IsDefined(parsed) ? parsed : throw new JsonException($"Unknown Weather area '{value}'.");
+    internal static WeatherArea ParseArea(string? value) => value switch
+    {
+        "a" => WeatherArea.A,
+        "b" => WeatherArea.B,
+        "c" => WeatherArea.C,
+        "d" => WeatherArea.D,
+        "e" => WeatherArea.E,
+        _ => throw new JsonException($"Unknown Weather area '{value}'."),
+    };
 }

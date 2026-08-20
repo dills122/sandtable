@@ -268,8 +268,13 @@ requirements above.
 
 ## Closure evidence
 
-`just check` passed on 2026-08-19: restore and format verification succeeded, the solution built
-with 0 warnings and 0 errors, and all 284 tests passed with 0 failures and 0 skips.
+`just check` passed on 2026-08-19 after independent-review fixes: restore and format verification
+succeeded, the solution built with 0 warnings and 0 errors, and all 293 tests passed with 0
+failures and 0 skips. The canonical ruleset manifest is contract 3 with hash
+`b59b2fc750052206e745fb85e04de8d54e365c55bbc7bf3a9e9539348c3f9ecb`. Direct ruling-segment
+goldens, exact-case parser negatives, structural random-procedure equality, all four authoritative
+Weather outcomes, the forged-event matrix, and normal/hot/foul observation goldens protect the
+reviewed closure gaps.
 
 ## Resolved owner decisions
 

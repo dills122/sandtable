@@ -584,9 +584,10 @@ persistence I/O, and replay requires the same exact content plus the matching ex
 manifest. The [Campaign World specification](docs/specs/campaign-world-v1.md) and
 [technical design](docs/design/campaign-world-v1.md) document the superseded version-3 campaign
 contract and schema-2 setup. Weather Determination v1 cuts current authority over to snapshot
-contract 5, setup schema 4, Content Pack schema 2, explicit opening-preamble and Weather policies,
-pair-keyed actor-order/Weather history, and an opaque public handle while preserving resident exact-
-content context internally. Organization remains the next unsupported mandatory mechanic; no
+contract 5, ruleset manifest contract 3, setup schema 4, Content Pack schema 2, explicit
+opening-preamble and Weather policies, pair-keyed actor-order/Weather history, and an opaque public
+handle while preserving resident exact-content context internally. Organization remains the next
+unsupported mandatory mechanic; no
 generic sequence bypass exists. See the Content Pack v1
 [research](docs/research/content-pack-v1-spike.md),
 [specification](docs/specs/content-pack-v1.md), and

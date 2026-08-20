@@ -6,6 +6,50 @@ namespace Cna.Core.Tests.Campaigns;
 
 public sealed class WeatherCampaignTests
 {
+    [Theory]
+    [InlineData(1UL, 2, 2, (int)WeatherKind.Normal, (int)WeatherScope.None,
+        null, "", 2UL)]
+    [InlineData(2UL, 5, 1, (int)WeatherKind.Hot, (int)WeatherScope.Global,
+        null, "", 2UL)]
+    [InlineData(3UL, 5, 6, (int)WeatherKind.Sandstorm,
+        (int)WeatherScope.ListedAreas, 5, "B,D", 3UL)]
+    [InlineData(0UL, 6, 6, (int)WeatherKind.Rainstorm,
+        (int)WeatherScope.ListedAreas, 2, "C,D", 3UL)]
+    public void AuthoritativeWeatherCoversEveryOutcomeDeterministically(
+        ulong seed,
+        int firstDie,
+        int secondDie,
+        int kind,
+        int scope,
+        int? locationDie,
+        string affectedAreas,
+        ulong randomCursorAfter)
+    {
+        var setup = Cna1979SetupCatalog.Definitions[0];
+        var weather = ReachWeather(setup, seed);
+        var command = new ResolveWeather(
+            weather.StateVersion, weather.SequencePosition.PositionId);
+
+        var first = Assert.IsType<WeatherDetermined>(Assert.Single(
+            CampaignTestHarness.Decide(weather, command).Events));
+        var repeated = Assert.IsType<WeatherDetermined>(Assert.Single(
+            CampaignTestHarness.Decide(weather, command).Events));
+        var projected = CampaignTestHarness.Apply(weather, first);
+
+        Assert.Equal(firstDie, first.FirstDie);
+        Assert.Equal(secondDie, first.SecondDie);
+        Assert.Equal((WeatherKind)kind, first.Kind);
+        Assert.Equal((WeatherScope)scope, first.Scope);
+        Assert.Equal(locationDie, first.LocationDie);
+        Assert.Equal(
+            string.IsNullOrEmpty(affectedAreas) ? [] : affectedAreas.Split(','),
+            first.AffectedAreas.Select(value => value.ToString()));
+        Assert.Equal(randomCursorAfter, first.RandomCursorAfter);
+        Assert.Equal(CampaignEventSerializer.Serialize(first),
+            CampaignEventSerializer.Serialize(repeated));
+        Assert.Equal(first.ToState(), Assert.Single(projected.OperationStageWeather));
+    }
+
     [Fact]
     public void WeatherEventUsesExactCanonicalBytes()
     {
@@ -108,38 +152,105 @@ public sealed class WeatherCampaignTests
                 new ResolveWeather(weather.StateVersion, weather.SequencePosition.PositionId)).Events));
         var canonical = System.Text.Encoding.UTF8.GetString(
             CampaignEventSerializer.Serialize(determined));
-        var forgedSeason = canonical.Replace(
-            "\"season\":\"fall\"",
-            "\"season\":\"winter\"",
-            StringComparison.Ordinal);
-        var forgedSource = canonical.Replace(
-            "\"locator\":\"29.53\"",
-            "\"locator\":\"29.54\"",
-            StringComparison.Ordinal);
-        var forgedCursor = canonical.Replace(
-            "\"randomCursorAfter\":3",
-            "\"randomCursorAfter\":4",
-            StringComparison.Ordinal);
-        var reorderedEnvelope = canonical.Replace(
-            "{\"contractVersion\":1,\"eventType\":\"weather-determined\",",
-            "{\"eventType\":\"weather-determined\",\"contractVersion\":1,",
-            StringComparison.Ordinal);
+        string[] malformed =
+        [
+            canonical.Replace("\"season\":\"fall\"", "\"season\":\"winter\"",
+                StringComparison.Ordinal),
+            canonical.Replace("\"season\":\"fall\"", "\"season\":\"Fall\"",
+                StringComparison.Ordinal),
+            canonical.Replace("\"firstDie\":6", "\"firstDie\":5",
+                StringComparison.Ordinal),
+            canonical.Replace("\"kind\":\"rainstorm\"", "\"kind\":\"sandstorm\"",
+                StringComparison.Ordinal),
+            canonical.Replace("\"kind\":\"rainstorm\"", "\"kind\":\"Rainstorm\"",
+                StringComparison.Ordinal),
+            canonical.Replace("\"scope\":\"listed-areas\"", "\"scope\":\"global\"",
+                StringComparison.Ordinal),
+            canonical.Replace("\"locationDie\":2", "\"locationDie\":1",
+                StringComparison.Ordinal),
+            canonical.Replace("\"affectedAreas\":[\"c\",\"d\"]",
+                "\"affectedAreas\":[\"C\",\"d\"]", StringComparison.Ordinal),
+            canonical.Replace("\"affectedAreas\":[\"c\",\"d\"]",
+                "\"affectedAreas\":[\"a\",\"b\"]", StringComparison.Ordinal),
+            canonical.Replace("\"locator\":\"29.53\"", "\"locator\":\"29.54\"",
+                StringComparison.Ordinal),
+            canonical.Replace("\"season\":\"fall\",", string.Empty,
+                StringComparison.Ordinal),
+            canonical.Replace("\"season\":\"fall\",",
+                "\"season\":\"fall\",\"season\":\"fall\",", StringComparison.Ordinal),
+            canonical.Replace("\"season\":\"fall\",",
+                "\"season\":\"fall\",\"unexpected\":true,", StringComparison.Ordinal),
+            canonical.Replace(
+                "{\"contractVersion\":1,\"eventType\":\"weather-determined\",",
+                "{\"eventType\":\"weather-determined\",\"contractVersion\":1,",
+                StringComparison.Ordinal),
+        ];
 
-        Assert.Throws<System.Text.Json.JsonException>(() =>
-            CampaignEventSerializer.Deserialize(System.Text.Encoding.UTF8.GetBytes(forgedSeason)));
-        Assert.Throws<System.Text.Json.JsonException>(() =>
-            CampaignEventSerializer.Deserialize(System.Text.Encoding.UTF8.GetBytes(forgedSource)));
-        Assert.Throws<System.Text.Json.JsonException>(() =>
-            CampaignEventSerializer.Deserialize(
-                System.Text.Encoding.UTF8.GetBytes(reorderedEnvelope)));
-        var cursorEvent = CampaignEventSerializer.Deserialize(
-            System.Text.Encoding.UTF8.GetBytes(forgedCursor));
-        Assert.Throws<InvalidCampaignHistoryException>(() =>
-            CampaignTestHarness.Apply(weather, cursorEvent));
+        foreach (var variant in malformed)
+        {
+            Assert.Throws<System.Text.Json.JsonException>(() =>
+                CampaignEventSerializer.Deserialize(System.Text.Encoding.UTF8.GetBytes(variant)));
+        }
+
+        var projectionForgeries = new[]
+        {
+            canonical.Replace("\"secondDie\":6", "\"secondDie\":5",
+                StringComparison.Ordinal),
+            canonical.Replace("\"determiningSide\":\"axis\"",
+                "\"determiningSide\":\"commonwealth\"", StringComparison.Ordinal),
+            canonical.Replace("\"randomCursorAfter\":3", "\"randomCursorAfter\":4",
+                StringComparison.Ordinal),
+            canonical.Replace("land.position.operation-1.organization",
+                "land.position.operation-1.organization-forged", StringComparison.Ordinal),
+        };
+        foreach (var variant in projectionForgeries)
+        {
+            AssertProjectionRejects(weather, CampaignEventSerializer.Deserialize(
+                System.Text.Encoding.UTF8.GetBytes(variant)));
+        }
+
+        var forgedOutcome = new WeatherDetermined(determined.CampaignId,
+            determined.StateVersion, determined.FromPositionId, determined.GameTurn,
+            determined.OperationStage, determined.DeterminingSide, determined.Season,
+            2, 2, WeatherKind.Normal, WeatherScope.None, null, [], 0, 0, 0, 2,
+            determined.SequencePosition, WeatherEventFactory.GetSources(WeatherKind.Normal));
+        var forgedLocation = new WeatherDetermined(determined.CampaignId,
+            determined.StateVersion, determined.FromPositionId, determined.GameTurn,
+            determined.OperationStage, determined.DeterminingSide, determined.Season,
+            determined.FirstDie, determined.SecondDie, determined.Kind, determined.Scope,
+            3, [WeatherArea.D, WeatherArea.E], 0, 0, 0, determined.RandomCursorAfter,
+            determined.SequencePosition, determined.Sources);
+        AssertProjectionRejects(weather, forgedOutcome);
+        AssertProjectionRejects(weather, forgedLocation);
+
+        var orderedWeather = ReachWeather(setup, 7);
+        var ordered = Assert.IsType<WeatherDetermined>(Assert.Single(
+            CampaignTestHarness.Decide(orderedWeather,
+                new ResolveWeather(orderedWeather.StateVersion,
+                    orderedWeather.SequencePosition.PositionId)).Events));
+        Assert.Equal((5, 4), (ordered.FirstDie, ordered.SecondDie));
+        var orderedJson = System.Text.Encoding.UTF8.GetString(
+            CampaignEventSerializer.Serialize(ordered));
+        var forgedOrder = orderedJson.Replace(
+            "\"firstDie\":5,\"secondDie\":4",
+            "\"firstDie\":4,\"secondDie\":5", StringComparison.Ordinal);
+        AssertProjectionRejects(orderedWeather, CampaignEventSerializer.Deserialize(
+            System.Text.Encoding.UTF8.GetBytes(forgedOrder)));
     }
 
     private static CampaignSnapshot ReachWeather(CampaignSetupDefinition setup, ulong seed) =>
         CampaignTestHarness.Replay(CreateHistoryToWeather(setup, seed));
+
+    private static void AssertProjectionRejects(
+        CampaignSnapshot snapshot,
+        CampaignEvent forgedEvent)
+    {
+        var before = CampaignSnapshotSerializer.Serialize(snapshot);
+
+        Assert.Throws<InvalidCampaignHistoryException>(() =>
+            CampaignTestHarness.Apply(snapshot, forgedEvent));
+        Assert.Equal(before, CampaignSnapshotSerializer.Serialize(snapshot));
+    }
 
     private static CampaignEvent[] CreateHistoryToWeather(
         CampaignSetupDefinition setup,

@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json;
 using Cna.Core.Campaigns;
 using Cna.Core.Observations;
 using Cna.Core.Rules;
@@ -52,36 +53,48 @@ public sealed class CampaignObservationWeatherTests
     }
 
     [Theory]
-    [InlineData(1, 1, (int)WeatherKind.Normal, (int)WeatherScope.None, "normal", "none")]
-    [InlineData(3, 6, (int)WeatherKind.Hot, (int)WeatherScope.Global, "hot", "global")]
-    public void NormalAndHotUseExactSourceFreeObservationShapes(
+    [InlineData(1, 1, (int)WeatherKind.Normal, (int)WeatherScope.None, null, "",
+        "campaign-observation-weather-normal.v1.golden.json")]
+    [InlineData(3, 6, (int)WeatherKind.Hot, (int)WeatherScope.Global, null, "",
+        "campaign-observation-weather-hot.v1.golden.json")]
+    [InlineData(6, 6, (int)WeatherKind.Rainstorm, (int)WeatherScope.ListedAreas, 2, "C,D",
+        "campaign-observation-weather-foul.v1.golden.json")]
+    public void NestedWeatherContractMatchesCompleteCanonicalGolden(
         int firstDie,
         int secondDie,
         int kindValue,
         int scopeValue,
-        string kindToken,
-        string scopeToken)
+        int? locationDie,
+        string affectedAreaTokens,
+        string fixtureName)
     {
         var snapshot = ReachWeather();
         var context = CampaignTestHarness.ContextFor(snapshot);
         var baseline = CampaignObservationProjector.Project(
             snapshot, context, LandSide.Axis).Observation!;
+        var affectedAreas = string.IsNullOrEmpty(affectedAreaTokens)
+            ? []
+            : affectedAreaTokens.Split(',')
+                .Select(value => Enum.Parse<WeatherArea>(value, ignoreCase: false))
+                .ToArray();
         var authority = new CampaignOperationStageWeather(1, 1, 1, LandSide.Axis,
             WeatherSeason.Fall, firstDie, secondDie, (WeatherKind)kindValue,
-            (WeatherScope)scopeValue, null, [], 0, 0, 0);
+            (WeatherScope)scopeValue, locationDie, affectedAreas, 0, 0, 0);
         var weather = CampaignObservationWeatherSelector.Select(1, 1, [authority]);
         var observation = new CampaignObservation(CampaignObservation.CurrentContractVersion,
             baseline.PolicyId, baseline.CampaignId, baseline.StateVersion, baseline.RulesetHash,
             baseline.ScenarioId, baseline.Observer, baseline.Position, weather,
             baseline.Locations, baseline.Edges, baseline.OwnElements);
 
-        var json = Encoding.UTF8.GetString(
+        using var document = JsonDocument.Parse(
             CampaignObservationSerializer.SerializeCanonical(observation));
+        var actual = Encoding.UTF8.GetBytes(
+            document.RootElement.GetProperty("weather").GetRawText());
+        var expected = File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory,
+            "Observations", "Fixtures", fixtureName));
 
-        Assert.Contains($"\"weather\":{{\"contractVersion\":1,\"gameTurn\":1," +
-            $"\"operationStage\":1,\"season\":\"fall\",\"kind\":\"{kindToken}\"," +
-            $"\"scope\":\"{scopeToken}\",\"affectedAreas\":[]}}",
-            json, StringComparison.Ordinal);
+        Assert.Equal((byte)'\n', expected[^1]);
+        Assert.Equal(expected.AsSpan(0, expected.Length - 1).ToArray(), actual);
     }
 
     private static CampaignSnapshot ReachWeather()

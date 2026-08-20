@@ -1,3 +1,4 @@
+using System.Text;
 using Cna.Core.Randomness;
 using Cna.Core.Rules;
 
@@ -116,5 +117,52 @@ public sealed class WeatherRulesTests
         Assert.Equal(
             ["WTH-AC-001", "WTH-AC-002", "WTH-AC-004"],
             ruling.ProtectingTestIds);
+    }
+
+    [Fact]
+    public void SeasonBoundaryRulingHasExactCanonicalBytesAndHashSensitiveFields()
+    {
+        var manifest = Cna1979Ruleset.Manifest;
+        var ruling = Assert.Single(manifest.Rulings,
+            value => value.RulingId == Cna1979Weather.SeasonBoundaryRulingId);
+        var canonical = Encoding.UTF8.GetString(
+            RulesetManifest.SerializeCanonicalRuling(ruling));
+        var expected = "{\"rulingId\":\"cna-1979.1.ruling.weather-season-boundary\"," +
+            "\"conflictId\":\"cna-1979.1.conflict.weather-season-boundary\"," +
+            "\"alternativeIds\":[\"use-errata-29.61-parenthetical-and-derive-shifted-ranges\"," +
+            "\"use-rule-29.1-boundaries-and-remap-chart-game-turns\"]," +
+            "\"selectedBehaviorId\":\"use-rule-29.1-boundaries-and-remap-chart-game-turns\"," +
+            "\"protectingTestIds\":[\"WTH-AC-001\",\"WTH-AC-002\",\"WTH-AC-004\"]," +
+            "\"sources\":[{\"sourceId\":\"spi-1979-common-charts\",\"locator\":\"29.61\"}," +
+            "{\"sourceId\":\"spi-1979-errata\",\"locator\":\"29.1\"}," +
+            "{\"sourceId\":\"spi-1979-errata\",\"locator\":\"29.61\"}," +
+            "{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"29.0-29.1\"}]}";
+
+        Assert.Equal(expected, canonical);
+
+        Ruling[] mutations =
+        [
+            new(ruling.RulingId, $"{ruling.ConflictId}.changed", ruling.AlternativeIds,
+                ruling.SelectedBehaviorId, ruling.ProtectingTestIds, ruling.Sources),
+            new(ruling.RulingId, ruling.ConflictId,
+                [.. ruling.AlternativeIds, "use-weather-year-cycle"],
+                ruling.SelectedBehaviorId, ruling.ProtectingTestIds, ruling.Sources),
+            new(ruling.RulingId, ruling.ConflictId, ruling.AlternativeIds,
+                ruling.AlternativeIds[0], ruling.ProtectingTestIds, ruling.Sources),
+            new(ruling.RulingId, ruling.ConflictId, ruling.AlternativeIds,
+                ruling.SelectedBehaviorId, [.. ruling.ProtectingTestIds, "WTH-AC-014"],
+                ruling.Sources),
+            new(ruling.RulingId, ruling.ConflictId, ruling.AlternativeIds,
+                ruling.SelectedBehaviorId, ruling.ProtectingTestIds,
+                [.. ruling.Sources, new RuleReference("spi-1979-land-rules", "29.2")]),
+        ];
+
+        foreach (var mutation in mutations)
+        {
+            var changed = new RulesetManifest(manifest.RulesetId, manifest.ContractVersion,
+                manifest.Artifacts, manifest.Rulings.Select(value =>
+                    value.RulingId == mutation.RulingId ? mutation : value));
+            Assert.NotEqual(manifest.Hash, changed.Hash);
+        }
     }
 }

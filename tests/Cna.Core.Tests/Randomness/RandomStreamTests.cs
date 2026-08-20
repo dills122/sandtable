@@ -131,7 +131,16 @@ public sealed class RandomStreamTests
     public void RandomProcedureDefinitionCopiesAndComparesCollectionsStructurally()
     {
         var canonical = Cna1979RandomProcedure.CanonicalDefinition;
-        var procedures = canonical.Procedures.ToList();
+        var procedures = canonical.Procedures.Select(procedure => new RandomProcedureStep(
+            procedure.ProcedureId,
+            procedure.AcceptedD6Order.ToArray(),
+            procedure.Repeat,
+            procedure.ConditionalAcceptedD6 is null
+                ? null
+                : new RandomProcedureCondition(
+                    procedure.ConditionalAcceptedD6.Label,
+                    procedure.ConditionalAcceptedD6.WhenKindIn.ToArray())))
+            .ToList();
         var sources = canonical.Sources.Reverse().ToList();
         var equivalent = new RandomProcedureDefinition(
             canonical.SchemaVersion,

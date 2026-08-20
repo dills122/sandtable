@@ -52,8 +52,8 @@ The current foundation can create a campaign from an exact ruleset, setup, Conte
 scenario; project the scenario's initial mutable element locations; resolve Initiative
 Determination and both admitted no-obligation Naval Convoy checkpoints; let the initiative holder
 declare whether to act first or last in Operation Stage 1; resolve Weather; emit authoritative
-events; and replay those events to byte-identical state. Content Pack schema 2 and Campaign World
-v1 use an original nine-hex,
+events; and replay those events to byte-identical state. Ruleset manifest contract 3, Content Pack
+schema 2, and Campaign World v1 use an original nine-hex,
 nonhistorical rules laboratory to develop game systems without redistributing published assets.
 Campaign Observation contract 2 derives deterministic side-safe public topology, turn state, and
 own-force facts without exposing the complete Content Pack or any opposing-force row or
