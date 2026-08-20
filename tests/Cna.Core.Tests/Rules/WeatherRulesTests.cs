@@ -1,4 +1,6 @@
+using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 using Cna.Core.Randomness;
 using Cna.Core.Rules;
 
@@ -165,4 +167,148 @@ public sealed class WeatherRulesTests
             Assert.NotEqual(manifest.Hash, changed.Hash);
         }
     }
+
+    [Fact]
+    public void CanonicalWeatherArtifactMatchesGoldenAndStrictlyRoundTrips()
+    {
+        var canonical = WeatherRulesArtifactCodec.SerializeCanonical(
+            Cna1979Weather.Definition);
+        var goldenFile = File.ReadAllBytes(Path.Combine(
+            AppContext.BaseDirectory,
+            "Rules",
+            "Fixtures",
+            "cna-1979.1.weather-tables.v1.golden.json"));
+        var golden = goldenFile.AsSpan(0, goldenFile.Length - 1).ToArray();
+
+        var parsed = WeatherRulesArtifactCodec.Deserialize(canonical);
+
+        Assert.Equal((byte)'\n', goldenFile[^1]);
+        Assert.Equal(golden, canonical);
+        Assert.Equal(Cna1979Weather.Definition, parsed);
+        Assert.Equal(Cna1979Weather.Definition.GetHashCode(), parsed.GetHashCode());
+        Assert.Equal(canonical, WeatherRulesArtifactCodec.SerializeCanonical(parsed));
+        Assert.Equal(
+            $"sha256:{Convert.ToHexString(SHA256.HashData(canonical)).ToLowerInvariant()}",
+            Cna1979Weather.CreateArtifact().ContentHash);
+        Assert.Equal(
+            "sha256:10c92c736d61c6f88359b203d0a735df0d8a676b60e170b79b46053cfd223037",
+            Cna1979Weather.CreateArtifact().ContentHash);
+        Assert.Equal(Cna1979Weather.Definition.Sources, Cna1979Weather.CreateArtifact().Sources);
+        Assert.Throws<JsonException>(() => WeatherRulesArtifactCodec.Deserialize(goldenFile));
+    }
+
+    [Fact]
+    public void EachProvenanceGroupChangesTheArtifactAndRulesetManifestHashes()
+    {
+        var baselineDefinition = Cna1979Weather.Definition;
+        var baselineArtifact = Cna1979Weather.CreateArtifact();
+        var baselineManifest = Cna1979Ruleset.Manifest;
+
+        WeatherArtifactProvenance[] provenanceMutations =
+        [
+            new(
+                ReplaceLastLocator(baselineDefinition.Provenance.GameTurnRanges),
+                baselineDefinition.Provenance.Outcomes,
+                baselineDefinition.Provenance.FoulWeatherLocations),
+            new(
+                baselineDefinition.Provenance.GameTurnRanges,
+                ReplaceLastLocator(baselineDefinition.Provenance.Outcomes),
+                baselineDefinition.Provenance.FoulWeatherLocations),
+            new(
+                baselineDefinition.Provenance.GameTurnRanges,
+                baselineDefinition.Provenance.Outcomes,
+                ReplaceLastLocator(baselineDefinition.Provenance.FoulWeatherLocations)),
+        ];
+
+        foreach (var provenance in provenanceMutations)
+        {
+            var mutation = CopyDefinition(
+                baselineDefinition,
+                provenance,
+                RecomputeSources(provenance, baselineDefinition.DeferredRules));
+            var artifact = Cna1979Weather.CreateArtifact(mutation);
+            var manifest = new RulesetManifest(
+                baselineManifest.RulesetId,
+                baselineManifest.ContractVersion,
+                baselineManifest.Artifacts.Select(value =>
+                    value.ArtifactId == artifact.ArtifactId ? artifact : value),
+                baselineManifest.Rulings);
+
+            Assert.NotEqual(baselineArtifact.ContentHash, artifact.ContentHash);
+            Assert.NotEqual(baselineManifest.Hash, manifest.Hash);
+        }
+    }
+
+    [Fact]
+    public void ArtifactValidatorRejectsNoncanonicalProvenanceAndSourceUnionMutations()
+    {
+        var baseline = Cna1979Weather.Definition;
+        WeatherRulesArtifactDefinition[] mutations =
+        [
+            CopyDefinition(baseline, new WeatherArtifactProvenance(
+                baseline.Provenance.GameTurnRanges.Reverse(),
+                baseline.Provenance.Outcomes,
+                baseline.Provenance.FoulWeatherLocations)),
+            CopyDefinition(baseline, new WeatherArtifactProvenance(
+                baseline.Provenance.GameTurnRanges,
+                [.. baseline.Provenance.Outcomes, baseline.Provenance.Outcomes[0]],
+                baseline.Provenance.FoulWeatherLocations)),
+            CopyDefinition(baseline, new WeatherArtifactProvenance(
+                baseline.Provenance.GameTurnRanges,
+                baseline.Provenance.Outcomes,
+                baseline.Provenance.FoulWeatherLocations.Reverse())),
+            CopyDefinition(baseline, sources: baseline.Sources.Skip(1)),
+            CopyDefinition(baseline, sources:
+                [.. baseline.Sources, new RuleReference("spi-1979-land-rules", "29.99")]),
+            CopyDefinition(baseline, sources: baseline.Sources.Reverse()),
+            CopyDefinition(baseline, sources: [.. baseline.Sources, baseline.Sources[0]]),
+        ];
+
+        Assert.All(mutations, mutation => Assert.Throws<JsonException>(
+            () => WeatherRulesArtifactCodec.SerializeCanonical(mutation)));
+    }
+
+    [Fact]
+    public void ArtifactParserIndependentlyRejectsAValidJsonSourceUnionMutation()
+    {
+        var canonical = Encoding.UTF8.GetString(
+            WeatherRulesArtifactCodec.SerializeCanonical(Cna1979Weather.Definition));
+        var sourcesProperty = canonical.LastIndexOf(",\"sources\":[", StringComparison.Ordinal);
+        var firstSource = canonical.IndexOf('{', sourcesProperty);
+        var firstSourceEnd = canonical.IndexOf("},", firstSource, StringComparison.Ordinal) + 2;
+        var mutated = canonical.Remove(firstSource, firstSourceEnd - firstSource);
+
+        Assert.Throws<JsonException>(() =>
+            WeatherRulesArtifactCodec.Deserialize(Encoding.UTF8.GetBytes(mutated)));
+    }
+
+    private static WeatherRulesArtifactDefinition CopyDefinition(
+        WeatherRulesArtifactDefinition definition,
+        WeatherArtifactProvenance? provenance = null,
+        IEnumerable<RuleReference>? sources = null) => new(
+            definition.SchemaVersion,
+            provenance ?? definition.Provenance,
+            definition.Seasons,
+            definition.FoulWeatherLocations,
+            definition.DeferredRules,
+            sources ?? definition.Sources);
+
+    private static RuleReference[] ReplaceLastLocator(
+        IReadOnlyList<RuleReference> sources) =>
+        [
+            .. sources.Take(sources.Count - 1),
+            new RuleReference(sources[^1].SourceId, $"{sources[^1].Locator}.changed"),
+        ];
+
+    private static RuleReference[] RecomputeSources(
+        WeatherArtifactProvenance provenance,
+        IReadOnlyList<DeferredWeatherRuleDefinition> deferredRules) =>
+        provenance.GameTurnRanges
+            .Concat(provenance.Outcomes)
+            .Concat(provenance.FoulWeatherLocations)
+            .Concat(deferredRules.SelectMany(value => value.Sources))
+            .Distinct()
+            .OrderBy(value => value.SourceId, StringComparer.Ordinal)
+            .ThenBy(value => value.Locator, StringComparer.Ordinal)
+            .ToArray();
 }

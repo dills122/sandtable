@@ -23,6 +23,9 @@
     <Content
       Include="Observations/Fixtures/campaign-observation-weather-foul.v1.golden.json"
       CopyToOutputDirectory="PreserveNewest" />
+    <Content
+      Include="Rules/Fixtures/cna-1979.1.weather-tables.v1.golden.json"
+      CopyToOutputDirectory="PreserveNewest" />
     <Using Include="Xunit" />
   </ItemGroup>
 

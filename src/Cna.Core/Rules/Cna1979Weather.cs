@@ -1,5 +1,3 @@
-using System.Security.Cryptography;
-using System.Text.Json;
 using Cna.Core.Randomness;
 
 namespace Cna.Core.Rules;
@@ -35,81 +33,17 @@ internal static class Cna1979Weather
     private static readonly RuleReference DeferredDeltaSource =
         new("spi-1979-land-rules", "29.41");
 
-    private static readonly RuleReference[] AllSources =
-        GameTurnRangeSources
-            .Concat(OutcomeSources)
-            .Concat(FoulLocationSources)
-            .Append(DeferredDeltaSource)
-            .Distinct()
-            .OrderBy(value => value.SourceId, StringComparer.Ordinal)
-            .ThenBy(value => value.Locator, StringComparer.Ordinal)
-            .ToArray();
-
-    private static readonly (WeatherSeason Season, int First, int Last)[] TurnRanges =
-    [
-        (WeatherSeason.Fall, 1, 12),
-        (WeatherSeason.Fall, 49, 60),
-        (WeatherSeason.Fall, 97, 108),
-        (WeatherSeason.Winter, 13, 24),
-        (WeatherSeason.Winter, 61, 72),
-        (WeatherSeason.Winter, 109, 110),
-        (WeatherSeason.Spring, 25, 36),
-        (WeatherSeason.Spring, 73, 84),
-        (WeatherSeason.Summer, 37, 48),
-        (WeatherSeason.Summer, 85, 96),
-    ];
-
-    private static readonly (WeatherSeason Season, WeatherKind Kind, int First, int Last)[] Outcomes =
-    [
-        (WeatherSeason.Fall, WeatherKind.Normal, 11, 35),
-        (WeatherSeason.Fall, WeatherKind.Hot, 36, 54),
-        (WeatherSeason.Fall, WeatherKind.Sandstorm, 55, 61),
-        (WeatherSeason.Fall, WeatherKind.Rainstorm, 62, 66),
-        (WeatherSeason.Winter, WeatherKind.Normal, 11, 52),
-        (WeatherSeason.Winter, WeatherKind.Rainstorm, 53, 66),
-        (WeatherSeason.Spring, WeatherKind.Normal, 11, 42),
-        (WeatherSeason.Spring, WeatherKind.Hot, 43, 55),
-        (WeatherSeason.Spring, WeatherKind.Sandstorm, 56, 64),
-        (WeatherSeason.Spring, WeatherKind.Rainstorm, 65, 66),
-        (WeatherSeason.Summer, WeatherKind.Normal, 11, 23),
-        (WeatherSeason.Summer, WeatherKind.Hot, 24, 55),
-        (WeatherSeason.Summer, WeatherKind.Sandstorm, 56, 66),
-    ];
-
-    private static readonly Dictionary<int, IReadOnlyList<WeatherArea>> FoulAreas =
-        new Dictionary<int, IReadOnlyList<WeatherArea>>
-        {
-            [1] = Array.AsReadOnly([WeatherArea.A, WeatherArea.B]),
-            [2] = Array.AsReadOnly([WeatherArea.C, WeatherArea.D]),
-            [3] = Array.AsReadOnly([WeatherArea.D, WeatherArea.E]),
-            [4] = Array.AsReadOnly([WeatherArea.B, WeatherArea.C]),
-            [5] = Array.AsReadOnly([WeatherArea.B, WeatherArea.D]),
-            [6] = Array.AsReadOnly([WeatherArea.B, WeatherArea.C, WeatherArea.D]),
-        };
+    public static WeatherRulesArtifactDefinition Definition { get; } = CreateDefinition();
 
     static Cna1979Weather()
     {
-        for (var turn = 1; turn <= 110; turn++)
-        {
-            _ = GetSeason(turn);
-        }
-
-        foreach (var season in Enum.GetValues<WeatherSeason>())
-        {
-            for (var tens = 1; tens <= 6; tens++)
-            {
-                for (var ones = 1; ones <= 6; ones++)
-                {
-                    _ = GetKind(season, (tens * 10) + ones);
-                }
-            }
-        }
+        WeatherRulesArtifactValidator.Validate(Definition);
     }
 
     public static WeatherSeason GetSeason(int gameTurn)
     {
-        var matches = TurnRanges.Where(value =>
-            gameTurn >= value.First && gameTurn <= value.Last).ToArray();
+        var matches = Definition.Seasons.Where(value =>
+            value.GameTurnRanges.Any(range => range.Contains(gameTurn))).ToArray();
 
         return matches.Length == 1
             ? matches[0].Season
@@ -128,8 +62,9 @@ internal static class Cna1979Weather
             throw new ArgumentOutOfRangeException(nameof(d66));
         }
 
-        var matches = Outcomes.Where(value =>
-            value.Season == season && d66 >= value.First && d66 <= value.Last).ToArray();
+        var table = Definition.Seasons.SingleOrDefault(value => value.Season == season);
+        var matches = table?.Outcomes.Where(value =>
+            d66 >= value.FirstD66 && d66 <= value.LastD66).ToArray() ?? [];
 
         return matches.Length == 1
             ? matches[0].Kind
@@ -137,10 +72,13 @@ internal static class Cna1979Weather
                 $"Weather table does not define exactly one outcome for {season} {d66}.");
     }
 
-    public static IReadOnlyList<WeatherArea> GetAffectedAreas(int locationDie) =>
-        FoulAreas.TryGetValue(locationDie, out var areas)
-            ? areas
-            : throw new ArgumentOutOfRangeException(nameof(locationDie));
+    public static IReadOnlyList<WeatherArea> GetAffectedAreas(int locationDie)
+    {
+        var definition = Definition.FoulWeatherLocations.SingleOrDefault(value =>
+            value.Die == locationDie);
+        return definition?.Areas
+            ?? throw new ArgumentOutOfRangeException(nameof(locationDie));
+    }
 
     public static WeatherResolution Resolve(int gameTurn, RandomStreamState initialState)
     {
@@ -175,10 +113,12 @@ internal static class Cna1979Weather
             second.State);
     }
 
-    public static RulesetArtifact CreateArtifact() => new(
+    public static RulesetArtifact CreateArtifact() => CreateArtifact(Definition);
+
+    public static RulesetArtifact CreateArtifact(WeatherRulesArtifactDefinition definition) => new(
         ArtifactId,
-        CalculateContentHash(),
-        AllSources);
+        CalculateContentHash(definition),
+        definition.Sources);
 
     public static Ruling CreateSeasonBoundaryRuling() => new(
         SeasonBoundaryRulingId,
@@ -196,91 +136,83 @@ internal static class Cna1979Weather
             new RuleReference("spi-1979-land-rules", "29.0-29.1"),
         ]);
 
-    private static string CalculateContentHash()
+    private static string CalculateContentHash(WeatherRulesArtifactDefinition definition)
     {
-        using var stream = new MemoryStream();
-        using (var writer = new Utf8JsonWriter(stream))
-        {
-            writer.WriteStartObject();
-            writer.WriteNumber("schemaVersion", SchemaVersion);
-            writer.WriteStartObject("provenance");
-            WriteSources(writer, "gameTurnRanges", GameTurnRangeSources);
-            WriteSources(writer, "outcomes", OutcomeSources);
-            WriteSources(writer, "foulWeatherLocations", FoulLocationSources);
-            writer.WriteEndObject();
-            writer.WriteStartArray("seasons");
-
-            foreach (var season in Enum.GetValues<WeatherSeason>())
-            {
-                writer.WriteStartObject();
-                writer.WriteString("season", FormatSeason(season));
-                writer.WriteStartArray("gameTurnRanges");
-                foreach (var range in TurnRanges.Where(value => value.Season == season).OrderBy(value => value.First))
-                {
-                    writer.WriteStartObject();
-                    writer.WriteNumber("first", range.First);
-                    writer.WriteNumber("last", range.Last);
-                    writer.WriteEndObject();
-                }
-                writer.WriteEndArray();
-                writer.WriteStartArray("outcomes");
-                foreach (var outcome in Outcomes.Where(value => value.Season == season).OrderBy(value => value.Kind))
-                {
-                    writer.WriteStartObject();
-                    writer.WriteString("kind", FormatKind(outcome.Kind));
-                    writer.WriteNumber("firstD66", outcome.First);
-                    writer.WriteNumber("lastD66", outcome.Last);
-                    writer.WriteEndObject();
-                }
-                writer.WriteEndArray();
-                writer.WriteEndObject();
-            }
-
-            writer.WriteEndArray();
-            writer.WriteStartArray("foulWeatherLocations");
-            foreach (var row in FoulAreas.OrderBy(value => value.Key))
-            {
-                writer.WriteStartObject();
-                writer.WriteNumber("die", row.Key);
-                writer.WriteStartArray("areas");
-                foreach (var area in row.Value)
-                {
-                    writer.WriteStringValue(FormatArea(area));
-                }
-                writer.WriteEndArray();
-                writer.WriteEndObject();
-            }
-            writer.WriteEndArray();
-            writer.WriteStartArray("deferredRules");
-            writer.WriteStartObject();
-            writer.WriteString("ruleId", "nile-delta-sandstorm-exclusion");
-            writer.WriteString("weatherKind", "sandstorm");
-            writer.WriteString("area", "e");
-            writer.WriteString("status", "deferred");
-            WriteSources(writer, "sources", [DeferredDeltaSource]);
-            writer.WriteEndObject();
-            writer.WriteEndArray();
-            WriteSources(writer, "sources", AllSources);
-            writer.WriteEndObject();
-        }
-
-        return $"sha256:{Convert.ToHexString(SHA256.HashData(stream.ToArray())).ToLowerInvariant()}";
+        var bytes = WeatherRulesArtifactCodec.SerializeCanonical(definition);
+        return $"sha256:{Convert.ToHexString(
+            System.Security.Cryptography.SHA256.HashData(bytes)).ToLowerInvariant()}";
     }
 
-    private static void WriteSources(Utf8JsonWriter writer, string propertyName, IEnumerable<RuleReference> sources)
+    private static WeatherRulesArtifactDefinition CreateDefinition()
     {
-        writer.WriteStartArray(propertyName);
-        foreach (var source in sources)
-        {
-            writer.WriteStartObject();
-            writer.WriteString("sourceId", source.SourceId);
-            writer.WriteString("locator", source.Locator);
-            writer.WriteEndObject();
-        }
-        writer.WriteEndArray();
-    }
+        var provenance = new WeatherArtifactProvenance(
+            GameTurnRangeSources,
+            OutcomeSources,
+            FoulLocationSources);
+        DeferredWeatherRuleDefinition[] deferredRules =
+        [
+            new(
+                "nile-delta-sandstorm-exclusion",
+                WeatherKind.Sandstorm,
+                WeatherArea.E,
+                "deferred",
+                [DeferredDeltaSource]),
+        ];
+        var sources = GameTurnRangeSources
+            .Concat(OutcomeSources)
+            .Concat(FoulLocationSources)
+            .Append(DeferredDeltaSource)
+            .Distinct()
+            .OrderBy(value => value.SourceId, StringComparer.Ordinal)
+            .ThenBy(value => value.Locator, StringComparer.Ordinal);
 
-    private static string FormatSeason(WeatherSeason season) => season.ToString().ToLowerInvariant();
-    private static string FormatKind(WeatherKind kind) => kind.ToString().ToLowerInvariant();
-    private static string FormatArea(WeatherArea area) => area.ToString().ToLowerInvariant();
+        return new WeatherRulesArtifactDefinition(
+            SchemaVersion,
+            provenance,
+            [
+                new WeatherTableDefinition(
+                    WeatherSeason.Fall,
+                    [new(1, 12), new(49, 60), new(97, 108)],
+                    [
+                        new(WeatherKind.Normal, 11, 35),
+                        new(WeatherKind.Hot, 36, 54),
+                        new(WeatherKind.Sandstorm, 55, 61),
+                        new(WeatherKind.Rainstorm, 62, 66),
+                    ]),
+                new WeatherTableDefinition(
+                    WeatherSeason.Winter,
+                    [new(13, 24), new(61, 72), new(109, 110)],
+                    [
+                        new(WeatherKind.Normal, 11, 52),
+                        new(WeatherKind.Rainstorm, 53, 66),
+                    ]),
+                new WeatherTableDefinition(
+                    WeatherSeason.Spring,
+                    [new(25, 36), new(73, 84)],
+                    [
+                        new(WeatherKind.Normal, 11, 42),
+                        new(WeatherKind.Hot, 43, 55),
+                        new(WeatherKind.Sandstorm, 56, 64),
+                        new(WeatherKind.Rainstorm, 65, 66),
+                    ]),
+                new WeatherTableDefinition(
+                    WeatherSeason.Summer,
+                    [new(37, 48), new(85, 96)],
+                    [
+                        new(WeatherKind.Normal, 11, 23),
+                        new(WeatherKind.Hot, 24, 55),
+                        new(WeatherKind.Sandstorm, 56, 66),
+                    ]),
+            ],
+            [
+                new(1, [WeatherArea.A, WeatherArea.B]),
+                new(2, [WeatherArea.C, WeatherArea.D]),
+                new(3, [WeatherArea.D, WeatherArea.E]),
+                new(4, [WeatherArea.B, WeatherArea.C]),
+                new(5, [WeatherArea.B, WeatherArea.D]),
+                new(6, [WeatherArea.B, WeatherArea.C, WeatherArea.D]),
+            ],
+            deferredRules,
+            sources);
+    }
 }
