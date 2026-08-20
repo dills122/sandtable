@@ -44,7 +44,14 @@ public sealed class CampaignLegalActionsTests
             accepted.Receipt.ResultingPositionId);
         Assert.Empty(Query(accepted.SuccessorHandle!, CampaignActionAudience.Axis).Candidates);
         Assert.Empty(Query(accepted.SuccessorHandle!, CampaignActionAudience.Commonwealth).Candidates);
+        var cursorBeforeWeatherQuery =
+            accepted.SuccessorHandle!.Snapshot.RandomState.NextByteCursor;
         var weatherSet = Query(accepted.SuccessorHandle!, CampaignActionAudience.System);
+        var repeatedWeatherSet = Query(accepted.SuccessorHandle!, CampaignActionAudience.System);
+        Assert.Equal(CampaignLegalActionSerializer.Serialize(weatherSet),
+            CampaignLegalActionSerializer.Serialize(repeatedWeatherSet));
+        Assert.Equal(cursorBeforeWeatherQuery,
+            accepted.SuccessorHandle.Snapshot.RandomState.NextByteCursor);
         var weatherAction = Assert.Single(weatherSet.Candidates);
         Assert.Equal("resolve-weather", weatherAction.Kind);
         Assert.Equal(

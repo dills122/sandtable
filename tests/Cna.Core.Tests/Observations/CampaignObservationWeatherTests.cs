@@ -51,6 +51,39 @@ public sealed class CampaignObservationWeatherTests
         Assert.Null(selected);
     }
 
+    [Theory]
+    [InlineData(1, 1, (int)WeatherKind.Normal, (int)WeatherScope.None, "normal", "none")]
+    [InlineData(3, 6, (int)WeatherKind.Hot, (int)WeatherScope.Global, "hot", "global")]
+    public void NormalAndHotUseExactSourceFreeObservationShapes(
+        int firstDie,
+        int secondDie,
+        int kindValue,
+        int scopeValue,
+        string kindToken,
+        string scopeToken)
+    {
+        var snapshot = ReachWeather();
+        var context = CampaignTestHarness.ContextFor(snapshot);
+        var baseline = CampaignObservationProjector.Project(
+            snapshot, context, LandSide.Axis).Observation!;
+        var authority = new CampaignOperationStageWeather(1, 1, 1, LandSide.Axis,
+            WeatherSeason.Fall, firstDie, secondDie, (WeatherKind)kindValue,
+            (WeatherScope)scopeValue, null, [], 0, 0, 0);
+        var weather = CampaignObservationWeatherSelector.Select(1, 1, [authority]);
+        var observation = new CampaignObservation(CampaignObservation.CurrentContractVersion,
+            baseline.PolicyId, baseline.CampaignId, baseline.StateVersion, baseline.RulesetHash,
+            baseline.ScenarioId, baseline.Observer, baseline.Position, weather,
+            baseline.Locations, baseline.Edges, baseline.OwnElements);
+
+        var json = Encoding.UTF8.GetString(
+            CampaignObservationSerializer.SerializeCanonical(observation));
+
+        Assert.Contains($"\"weather\":{{\"contractVersion\":1,\"gameTurn\":1," +
+            $"\"operationStage\":1,\"season\":\"fall\",\"kind\":\"{kindToken}\"," +
+            $"\"scope\":\"{scopeToken}\",\"affectedAreas\":[]}}",
+            json, StringComparison.Ordinal);
+    }
+
     private static CampaignSnapshot ReachWeather()
     {
         var setup = Cna1979SetupCatalog.Definitions[0];

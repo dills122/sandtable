@@ -77,6 +77,10 @@ public sealed class WeatherCampaignTests
             snapshotBytes,
             CampaignSnapshotSerializer.Serialize(CampaignTestHarness.Replay(
                 [.. CreateHistoryToWeather(setup, seed), determined])));
+        var reused = CampaignTestHarness.Decide(projected,
+            new ResolveWeather(projected.StateVersion, projected.SequencePosition.PositionId));
+        Assert.Equal(CampaignCommandRejectionReason.UnsupportedTransition, reused.RejectionReason);
+        Assert.Empty(reused.Events);
     }
 
     [Fact]
@@ -116,11 +120,18 @@ public sealed class WeatherCampaignTests
             "\"randomCursorAfter\":3",
             "\"randomCursorAfter\":4",
             StringComparison.Ordinal);
+        var reorderedEnvelope = canonical.Replace(
+            "{\"contractVersion\":1,\"eventType\":\"weather-determined\",",
+            "{\"eventType\":\"weather-determined\",\"contractVersion\":1,",
+            StringComparison.Ordinal);
 
         Assert.Throws<System.Text.Json.JsonException>(() =>
             CampaignEventSerializer.Deserialize(System.Text.Encoding.UTF8.GetBytes(forgedSeason)));
         Assert.Throws<System.Text.Json.JsonException>(() =>
             CampaignEventSerializer.Deserialize(System.Text.Encoding.UTF8.GetBytes(forgedSource)));
+        Assert.Throws<System.Text.Json.JsonException>(() =>
+            CampaignEventSerializer.Deserialize(
+                System.Text.Encoding.UTF8.GetBytes(reorderedEnvelope)));
         var cursorEvent = CampaignEventSerializer.Deserialize(
             System.Text.Encoding.UTF8.GetBytes(forgedCursor));
         Assert.Throws<InvalidCampaignHistoryException>(() =>

@@ -1,9 +1,36 @@
 namespace Cna.Core.Observations;
 
-public enum CampaignObservationWeatherSeason { Fall = 1, Winter = 2, Spring = 3, Summer = 4 }
-public enum CampaignObservationWeatherKind { Normal = 1, Hot = 2, Sandstorm = 3, Rainstorm = 4 }
-public enum CampaignObservationWeatherScope { None = 1, Global = 2, ListedAreas = 3 }
-public enum CampaignObservationWeatherArea { A = 1, B = 2, C = 3, D = 4, E = 5 }
+public enum CampaignObservationWeatherSeason
+{
+    Fall = 1,
+    Winter = 2,
+    Spring = 3,
+    Summer = 4,
+}
+
+public enum CampaignObservationWeatherKind
+{
+    Normal = 1,
+    Hot = 2,
+    Sandstorm = 3,
+    Rainstorm = 4,
+}
+
+public enum CampaignObservationWeatherScope
+{
+    None = 1,
+    Global = 2,
+    ListedAreas = 3,
+}
+
+public enum CampaignObservationWeatherArea
+{
+    A = 1,
+    B = 2,
+    C = 3,
+    D = 4,
+    E = 5,
+}
 
 public sealed record CampaignObservationWeather
 {
@@ -29,8 +56,13 @@ public sealed record CampaignObservationWeather
             || (kind is CampaignObservationWeatherKind.Sandstorm or CampaignObservationWeatherKind.Rainstorm
                 && (scope != CampaignObservationWeatherScope.ListedAreas || areas.Length == 0)))
             throw new ArgumentException("The observed Weather combination is invalid.");
-        ContractVersion = contractVersion; GameTurn = gameTurn; OperationStage = operationStage;
-        Season = season; Kind = kind; Scope = scope; AffectedAreas = Array.AsReadOnly(areas);
+        ContractVersion = contractVersion;
+        GameTurn = gameTurn;
+        OperationStage = operationStage;
+        Season = season;
+        Kind = kind;
+        Scope = scope;
+        AffectedAreas = Array.AsReadOnly(areas);
     }
 
     public int ContractVersion { get; }
@@ -49,8 +81,13 @@ public sealed record CampaignObservationWeather
     public override int GetHashCode()
     {
         var hash = new HashCode();
-        hash.Add(ContractVersion); hash.Add(GameTurn); hash.Add(OperationStage); hash.Add(Season);
-        hash.Add(Kind); hash.Add(Scope); foreach (var area in AffectedAreas) hash.Add(area);
+        hash.Add(ContractVersion);
+        hash.Add(GameTurn);
+        hash.Add(OperationStage);
+        hash.Add(Season);
+        hash.Add(Kind);
+        hash.Add(Scope);
+        foreach (var area in AffectedAreas) hash.Add(area);
         return hash.ToHashCode();
     }
 }

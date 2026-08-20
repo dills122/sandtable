@@ -116,10 +116,10 @@ Six-turn playable MVP
 **Goal:** Establish an authentic phase hierarchy and an authoritative campaign history that can be
 reconstructed exactly without skipping unimplemented mechanics.
 
-**Status:** Replayable foundation plus the Legal Actions v1 opening-preamble slice delivered.
+**Status:** Replayable foundation plus Weather Determination v1 delivered.
 Campaign creation, Initiative, the admitted empty convoy checkpoints, Operation Stage 1 Initiative
-Declaration, canonical event serialization, and replay are authoritative; advancement stops at
-Weather, the next mandatory unimplemented mechanic.
+Declaration, Weather Determination, canonical event serialization, and replay are authoritative;
+advancement stops at Organization, the next mandatory unimplemented mechanic.
 
 ### Task 1.1 - Ruleset provenance contracts
 
@@ -298,7 +298,7 @@ tables, required content/world facts, and explicit unsupported cases before impl
 The `ACTION-001` research resolves the opening sequence and first side-choice boundary. General
 convoy obligations and the executable Weather table/random contract remain Sprint 3 work.
 
-**Status:** Decision package approved 2026-08-19; Weather implementation in progress.
+**Status:** Decision package approved 2026-08-19; Weather implementation complete.
 
 The [Operation-Stage Preamble spike](../research/operation-stage-preamble-spike.md) found that the
 current stage-entry wording compresses mandatory source boundaries. Weather has immediate
@@ -323,11 +323,14 @@ retained Operation Stage 1 initiative order required by `WEATHER-001`. General c
 and every-stage declaration coverage resume before `STAGE-ENTRY-001` admits any checkpoint that
 depends on them; they are not prerequisites to implementing Weather v1 at the existing checkpoints.
 
-### Task 3.3 - Weather Determination v1 (in progress)
+### Task 3.3 - Weather Determination v1 (implemented)
 
 Implement `WEATHER-001`: resolve the source-cited Weather procedure through the versioned random
 stream, publish the exact public Weather value, and stop at the same Operation Stage's Organization
 barrier. Do not complete Organization, Fleet, Reserve, or Movement.
+
+**Status:** Implemented and verified 2026-08-19. Exact repository-gate evidence is recorded in the
+Weather specification.
 
 ### Task 3.4 - Organization and stage entry (planned; not started)
 

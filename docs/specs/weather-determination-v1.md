@@ -1,6 +1,6 @@
 # Weather Determination v1 Specification
 
-**Status:** Approved 2026-08-19; implementation in progress
+**Status:** Implemented and verified 2026-08-19
 
 **Date:** 2026-08-18
 
@@ -263,12 +263,15 @@ Never:
 | `WTH-025` | Core purity boundary | `WTH-TASK-006` | architecture tests plus full gate |
 
 The project owner approved `TURN-DEC-001` through `TURN-DEC-006` on 2026-08-19 and authorized
-Weather implementation within the documented boundary. Status remains incomplete until every
-acceptance scenario has executed evidence.
+Weather implementation within the documented boundary. Focused executable evidence covers the
+requirements above.
 
-## Open questions
+## Closure evidence
 
-- Does the project owner approve the proposed season-boundary ruling?
-- Does the project owner approve explicit Game Turn 111 rejection in Weather v1, with the source
-  gap deferred to a later full-campaign ruling rather than silently extrapolated?
-- Does the project owner approve the single Organization barrier and revised capability split?
+`just check` passed on 2026-08-19: restore and format verification succeeded, the solution built
+with 0 warnings and 0 errors, and all 284 tests passed with 0 failures and 0 skips.
+
+## Resolved owner decisions
+
+- `TURN-DEC-001` through `TURN-DEC-006` were approved on 2026-08-19, including the
+  season-boundary ruling, explicit Game Turn 111 rejection, and single Organization barrier.

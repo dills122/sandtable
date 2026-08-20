@@ -79,8 +79,10 @@ internal static class CampaignOperationStageWeatherCodec
     internal static string FormatKind(WeatherKind value) => value.ToString().ToLowerInvariant();
     internal static string FormatScope(WeatherScope value) => value switch
     {
-        WeatherScope.None => "none", WeatherScope.Global => "global",
-        WeatherScope.ListedAreas => "listed-areas", _ => throw new ArgumentOutOfRangeException(nameof(value)),
+        WeatherScope.None => "none",
+        WeatherScope.Global => "global",
+        WeatherScope.ListedAreas => "listed-areas",
+        _ => throw new ArgumentOutOfRangeException(nameof(value)),
     };
     internal static string FormatArea(WeatherArea value) => value.ToString().ToLowerInvariant();
     internal static WeatherSeason ParseSeason(string? value) => Enum.TryParse<WeatherSeason>(value, true, out var parsed)
@@ -88,8 +90,12 @@ internal static class CampaignOperationStageWeatherCodec
     internal static WeatherKind ParseKind(string? value) => Enum.TryParse<WeatherKind>(value, true, out var parsed)
         && Enum.IsDefined(parsed) ? parsed : throw new JsonException($"Unknown Weather kind '{value}'.");
     internal static WeatherScope ParseScope(string? value) => value switch
-    { "none" => WeatherScope.None, "global" => WeatherScope.Global, "listed-areas" => WeatherScope.ListedAreas,
-        _ => throw new JsonException($"Unknown Weather scope '{value}'.") };
+    {
+        "none" => WeatherScope.None,
+        "global" => WeatherScope.Global,
+        "listed-areas" => WeatherScope.ListedAreas,
+        _ => throw new JsonException($"Unknown Weather scope '{value}'."),
+    };
     internal static WeatherArea ParseArea(string? value) => Enum.TryParse<WeatherArea>(value, true, out var parsed)
         && Enum.IsDefined(parsed) ? parsed : throw new JsonException($"Unknown Weather area '{value}'.");
 }
