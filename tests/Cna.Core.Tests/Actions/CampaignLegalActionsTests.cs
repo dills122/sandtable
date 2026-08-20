@@ -253,6 +253,102 @@ public sealed class CampaignLegalActionsTests
     }
 
     [Fact]
+    public void SharedActionExecutionMatchesTheFacadeAndRetainsExactAcceptedEvidence()
+    {
+        var handle = CreateHandle();
+        var set = Query(handle, CampaignActionAudience.System);
+        var candidate = Assert.Single(set.Candidates);
+        var submission = Bind(set, candidate);
+
+        var execution = CampaignActionExecution.Execute(
+            handle.Snapshot,
+            handle.Context,
+            submission);
+        var facade = CampaignLegalActions.Submit(handle, submission);
+
+        Assert.True(execution.IsAccepted);
+        Assert.Equal(CampaignActionSubmissionRejectionReason.None, execution.RejectionReason);
+        Assert.NotNull(execution.AcceptedEvent);
+        Assert.NotNull(execution.SuccessorSnapshot);
+        Assert.Equal(facade.Receipt, execution.Receipt);
+        Assert.Equal(
+            CampaignSnapshotSerializer.Serialize(facade.SuccessorHandle!.Snapshot),
+            CampaignSnapshotSerializer.Serialize(execution.SuccessorSnapshot!));
+        Assert.Equal(
+            CampaignSnapshotSerializer.Serialize(execution.SuccessorSnapshot),
+            CampaignSnapshotSerializer.Serialize(CampaignProjector.Apply(
+                handle.Snapshot,
+                execution.AcceptedEvent!,
+                handle.Context)));
+
+        var repeated = CampaignActionExecution.Execute(
+            handle.Snapshot,
+            handle.Context,
+            submission);
+        Assert.Equal(
+            CampaignEventSerializer.Serialize(execution.AcceptedEvent),
+            CampaignEventSerializer.Serialize(repeated.AcceptedEvent!));
+    }
+
+    [Fact]
+    public void SharedActionExecutionRejectsWithoutPartialSuccessorOrEvidence()
+    {
+        var handle = CreateHandle();
+        var set = Query(handle, CampaignActionAudience.System);
+        var submission = Bind(set, Assert.Single(set.Candidates)) with
+        {
+            Audience = CampaignActionAudience.Axis,
+        };
+        var before = CampaignSnapshotSerializer.Serialize(handle.Snapshot);
+
+        var execution = CampaignActionExecution.Execute(
+            handle.Snapshot,
+            handle.Context,
+            submission);
+
+        Assert.False(execution.IsAccepted);
+        Assert.Equal(
+            CampaignActionSubmissionRejectionReason.ActionNotLegal,
+            execution.RejectionReason);
+        Assert.Null(execution.AcceptedEvent);
+        Assert.Null(execution.SuccessorSnapshot);
+        Assert.Null(execution.Receipt);
+        Assert.Equal(before, CampaignSnapshotSerializer.Serialize(handle.Snapshot));
+    }
+
+    [Fact]
+    public void SharedActionExecutionRejectsMultipleEventsBeforeIndexingOrProjection()
+    {
+        var handle = CreateHandle();
+        var set = Query(handle, CampaignActionAudience.System);
+        var candidate = Assert.Single(set.Candidates);
+        var decision = CampaignEngine.Decide(
+            handle.Snapshot,
+            new ResolveInitiative(
+                handle.Snapshot.StateVersion,
+                handle.Snapshot.SequencePosition.PositionId),
+            handle.Context);
+        var campaignEvent = Assert.Single(decision.Events);
+        var before = CampaignSnapshotSerializer.Serialize(handle.Snapshot);
+
+        var execution = CampaignActionExecution.Complete(
+            handle.Snapshot,
+            handle.Context,
+            CampaignActionAudience.System,
+            candidate,
+            [campaignEvent, campaignEvent]);
+
+        Assert.False(execution.IsAccepted);
+        Assert.Equal(
+            CampaignActionSubmissionRejectionReason.InvalidAuthority,
+            execution.RejectionReason);
+        Assert.Null(execution.AcceptedEvent);
+        Assert.Null(execution.SuccessorSnapshot);
+        Assert.Null(execution.Receipt);
+        Assert.Equal(before, CampaignSnapshotSerializer.Serialize(handle.Snapshot));
+    }
+
+    [Fact]
     public void AcceptedSubmissionMatchesTheInternalMechanicEventAndProjection()
     {
         var handle = CreateHandle();

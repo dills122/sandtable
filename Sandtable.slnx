@@ -3,6 +3,7 @@
     <Project Path="src/Cna.AppHost/Cna.AppHost.csproj" />
     <Project Path="src/Cna.Core/Cna.Core.csproj" />
     <Project Path="src/Cna.DecisionWorker/Cna.DecisionWorker.csproj" />
+    <Project Path="src/Cna.ExerciseRunner/Cna.ExerciseRunner.csproj" />
     <Project Path="src/Cna.Intelligence.Contracts/Cna.Intelligence.Contracts.csproj" />
     <Project Path="src/Cna.Intelligence.Gateway/Cna.Intelligence.Gateway.csproj" />
     <Project Path="src/Cna.OrleansHost/Cna.OrleansHost.csproj" />
@@ -10,6 +11,7 @@
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Cna.Core.Tests/Cna.Core.Tests.csproj" />
+    <Project Path="tests/Cna.ExerciseRunner.Tests/Cna.ExerciseRunner.Tests.csproj" />
     <Project Path="tests/Cna.Intelligence.Contracts.Tests/Cna.Intelligence.Contracts.Tests.csproj" />
   </Folder>
 </Solution>

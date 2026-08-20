@@ -1,8 +1,8 @@
 # Exercise Harness v1 Specification
 
-**Status:** Proposed; final independent plan review completed and findings reconciled; implementation pending
+**Status:** Partially implemented; the single-Exercise CLI and trusted bundle path are implemented, while Maneuvers and pairing remain pending
 
-**Date:** 2026-08-19
+**Date:** 2026-08-20
 
 **Roadmap capability:** `EXERCISE-001`
 
@@ -34,8 +34,8 @@ first currently implemented terminal boundary,
 ## User-visible demonstration
 
 1. Run the checked-in rules-laboratory Exercise manifest with a declared root seed and artifact root.
-2. Watch structured console progress identify the campaign checkpoint, acting audience, selected
-   legal action, state version, and elapsed diagnostic timing without treating timing as canonical.
+2. Receive the finalized bundle path on standard output; failures use stable nonzero exits and
+   standard error without exposing secret-bearing authority values.
 3. Receive a finalized trusted artifact bundle containing the complete accepted action transcript,
    canonical events, initial/final snapshots, seed ledger, build identity, checks, and summary.
 4. See both replay proofs pass: canonical events reconstruct the final snapshot byte-for-byte, and a
@@ -71,13 +71,17 @@ first currently implemented terminal boundary,
 
 ## Commands
 
-The implementation supplies these command shapes:
+The implemented single-Exercise command is:
 
 ```text
 dotnet run --project src/Cna.ExerciseRunner/Cna.ExerciseRunner.csproj -- \
   exercise run --manifest scenarios/exercises/rules-lab.organization.v1.json \
   --artifact-root artifacts/exercises
+```
 
+The planned serial-Maneuver command is not implemented yet:
+
+```text
 dotnet run --project src/Cna.ExerciseRunner/Cna.ExerciseRunner.csproj -- \
   maneuvers run --manifest scenarios/maneuvers/rules-lab.paired.v1.json \
   --artifact-root artifacts/exercises

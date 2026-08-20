@@ -8,6 +8,73 @@ namespace Cna.Core.Tests.Campaigns;
 public sealed class CampaignCreationAdmissionTests
 {
     [Fact]
+    public void SharedCreationExecutionMatchesTheAuthorityFacadeAndRetainsExactEvidence()
+    {
+        var setup = Cna1979SetupCatalog.Definitions[0];
+        var request = new CampaignCreationRequest(
+            CampaignCreationRequest.CurrentContractVersion,
+            "campaign-shared-creation",
+            Cna1979Ruleset.Manifest.Hash,
+            12345,
+            setup.SetupId,
+            setup.Hash,
+            setup.Content.Pack.PackId,
+            setup.Content.Pack.Hash,
+            setup.Content.ScenarioId);
+
+        var execution = CampaignCreationExecution.Execute(request);
+        var facade = CampaignAuthority.Create(request);
+
+        Assert.True(execution.IsCreated);
+        Assert.Equal(CampaignCreationRejectionReason.None, execution.RejectionReason);
+        Assert.NotNull(execution.CreatedEvent);
+        Assert.NotNull(execution.Snapshot);
+        Assert.NotNull(execution.Context);
+        Assert.True(facade.IsCreated);
+        Assert.Equal(
+            CampaignSnapshotSerializer.Serialize(facade.Handle!.Snapshot),
+            CampaignSnapshotSerializer.Serialize(execution.Snapshot!));
+        Assert.Equal(
+            CampaignSnapshotSerializer.Serialize(execution.Snapshot),
+            CampaignSnapshotSerializer.Serialize(CampaignProjector.Apply(
+                null,
+                execution.CreatedEvent!,
+                execution.Context!)));
+
+        var repeated = CampaignCreationExecution.Execute(request);
+        Assert.Equal(
+            CampaignEventSerializer.Serialize(execution.CreatedEvent),
+            CampaignEventSerializer.Serialize(repeated.CreatedEvent!));
+        Assert.Equal(
+            CampaignSnapshotSerializer.Serialize(execution.Snapshot),
+            CampaignSnapshotSerializer.Serialize(repeated.Snapshot!));
+    }
+
+    [Fact]
+    public void SharedCreationExecutionRejectsWithoutPartialAuthorityOrEvidence()
+    {
+        var setup = Cna1979SetupCatalog.Definitions[0];
+        var request = new CampaignCreationRequest(
+            99,
+            "campaign-shared-creation",
+            Cna1979Ruleset.Manifest.Hash,
+            12345,
+            setup.SetupId,
+            setup.Hash,
+            setup.Content.Pack.PackId,
+            setup.Content.Pack.Hash,
+            setup.Content.ScenarioId);
+
+        var execution = CampaignCreationExecution.Execute(request);
+
+        Assert.False(execution.IsCreated);
+        Assert.Equal(CampaignCreationRejectionReason.InvalidRequest, execution.RejectionReason);
+        Assert.Null(execution.CreatedEvent);
+        Assert.Null(execution.Snapshot);
+        Assert.Null(execution.Context);
+    }
+
+    [Fact]
     public void ExactSetupContentAndScenarioAdmissionCreatesACompleteWorld()
     {
         var setup = Cna1979SetupCatalog.Definitions[0];

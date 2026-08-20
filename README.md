@@ -64,6 +64,13 @@ same boundary, records pair-keyed evidence, publishes only a source-free Weather
 at the same Operation Stage's Organization barrier. Raw snapshots, commands, events, content
 context, projection, and replay are not public mutation seams.
 
+The local `Cna.ExerciseRunner` can now drive that synthetic rules-laboratory path as one bounded,
+deterministic **Exercise**. It uses a fresh opaque Core capability, selects only current legal
+actions, stops at Organization, proves both event-history reconstruction and fresh-session
+re-adjudication, and writes a manifest-last `trusted-authority` evidence bundle. This is the first
+single-run simulation harness; serial **Maneuvers**, comparisons, model controllers, and side-safe
+exports are not implemented yet.
+
 Organization/stage-entry mechanics, movement, combat, published scenario content, persistence, and
 the Maproom player interface remain future work.
 
@@ -113,6 +120,17 @@ dotnet test --solution Sandtable.slnx --no-build
 dotnet run --project src/Cna.AppHost/Cna.AppHost.csproj
 ```
 
+Run the checked-in deterministic Exercise and write its ignored evidence bundle with:
+
+```sh
+dotnet run --project src/Cna.ExerciseRunner/Cna.ExerciseRunner.csproj -- \
+  exercise run --manifest scenarios/exercises/rules-lab.organization.v1.json \
+  --artifact-root artifacts/exercises
+```
+
+The command prints the finalized bundle path. The checked-in manifest is explicitly exploratory,
+so a dirty development tree is recorded honestly as nonbaseline and nonreproducible.
+
 The intelligence gateway currently reports that no model provider is configured. This is expected:
 model-backed commanders are not part of the pre-alpha gameplay target, and authoritative play must
 always have a deterministic scripted fallback.
@@ -152,7 +170,9 @@ deterministic scripted decision rather than failing the turn.
 | `Cna.Intelligence.Gateway` | Non-authoritative model/provider gateway |
 | `Cna.ServiceDefaults` | Shared discovery, resilience, health, and telemetry defaults |
 | `Cna.AppHost` | Aspire development orchestration |
+| `Cna.ExerciseRunner` | Local deterministic single-Exercise orchestration and trusted artifacts |
 | `Cna.Core.Tests` | Deterministic Umpire unit tests on xUnit v3 and MTP |
+| `Cna.ExerciseRunner.Tests` | Exercise contracts, replay, artifact, and CLI tests on xUnit v3 and MTP |
 | `Cna.Intelligence.Contracts.Tests` | Protobuf compatibility tests on xUnit v3 and MTP |
 
 The current Umpire foundation is intentionally pure and in-process:
@@ -172,6 +192,10 @@ The current Umpire foundation is intentionally pure and in-process:
   result, handle-based query facade, structural values, and canonical side-safe JSON.
 - `Cna.Core.Actions` owns typed system/side candidates, canonical action identity, observation-only
   side generation, exact-audience query/submission enforcement, and side-safe receipts.
+- `Cna.Core.Exercises` owns the fresh-only opaque simulation capability, immutable trusted step
+  evidence, and reconstruction from its retained canonical event history.
+- `Cna.ExerciseRunner` owns deterministic controllers, bounded execution, re-adjudication,
+  versioned evidence contracts, build identity, transactional bundles, summaries, and CLI exits.
 - The sequence catalog cites the original Land Rules without embedding copyrighted rules prose or
   component art. Inspecting that catalog is not authoritative adjudication.
 
