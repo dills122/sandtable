@@ -21,6 +21,7 @@ public static class CampaignObservationSerializer
             writer.WriteString("scenarioId", observation.ScenarioId);
             writer.WriteString("observer", FormatSide(observation.Observer));
             WritePosition(writer, observation.Position);
+            WriteWeather(writer, observation.Weather);
             WriteLocations(writer, observation.Locations);
             WriteEdges(writer, observation.Edges);
             WriteOwnElements(writer, observation.OwnElements);
@@ -28,6 +29,29 @@ public static class CampaignObservationSerializer
         }
 
         return stream.ToArray();
+    }
+
+    private static void WriteWeather(Utf8JsonWriter writer, CampaignObservationWeather? weather)
+    {
+        if (weather is null) { writer.WriteNull("weather"); return; }
+        writer.WriteStartObject("weather");
+        writer.WriteNumber("contractVersion", weather.ContractVersion);
+        writer.WriteNumber("gameTurn", weather.GameTurn);
+        writer.WriteNumber("operationStage", weather.OperationStage);
+        writer.WriteString("season", weather.Season.ToString().ToLowerInvariant());
+        writer.WriteString("kind", weather.Kind.ToString().ToLowerInvariant());
+        writer.WriteString("scope", weather.Scope switch
+        {
+            CampaignObservationWeatherScope.None => "none",
+            CampaignObservationWeatherScope.Global => "global",
+            CampaignObservationWeatherScope.ListedAreas => "listed-areas",
+            _ => throw new ArgumentOutOfRangeException(nameof(weather)),
+        });
+        writer.WriteStartArray("affectedAreas");
+        foreach (var area in weather.AffectedAreas)
+            writer.WriteStringValue(area.ToString().ToLowerInvariant());
+        writer.WriteEndArray();
+        writer.WriteEndObject();
     }
 
     private static void WritePosition(

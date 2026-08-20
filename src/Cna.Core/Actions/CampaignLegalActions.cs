@@ -100,6 +100,8 @@ public static class CampaignLegalActions
             1 => [new ResolveInitiativeAction()],
             2 => [new ResolveNoObligationNavalConvoyScheduleAction()],
             3 => [new ResolveNoObligationTacticalShippingAction()],
+            5 when snapshot.PhaseId == LandPhaseIds.WeatherDetermination =>
+                [new ResolveWeatherAction()],
             _ => [],
         };
         return CreateSet(snapshot.CampaignId, snapshot.StateVersion, snapshot.RulesetHash,
@@ -120,6 +122,8 @@ public static class CampaignLegalActions
                 new ResolveNoObligationNavalConvoySchedule(snapshot.StateVersion, snapshot.SequencePosition.PositionId),
             ResolveNoObligationTacticalShippingAction when audience == CampaignActionAudience.System =>
                 new ResolveNoObligationTacticalShipping(snapshot.StateVersion, snapshot.SequencePosition.PositionId),
+            ResolveWeatherAction when audience == CampaignActionAudience.System =>
+                new ResolveWeather(snapshot.StateVersion, snapshot.SequencePosition.PositionId),
             ActFirstAction first => new DeclareInitiativeOrder(snapshot.StateVersion,
                 snapshot.SequencePosition.PositionId, first.OperationStage!.Value, ToSide(audience),
                 InitiativeOrderChoice.ActFirst),

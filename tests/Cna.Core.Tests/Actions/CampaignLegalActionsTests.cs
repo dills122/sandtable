@@ -44,7 +44,22 @@ public sealed class CampaignLegalActionsTests
             accepted.Receipt.ResultingPositionId);
         Assert.Empty(Query(accepted.SuccessorHandle!, CampaignActionAudience.Axis).Candidates);
         Assert.Empty(Query(accepted.SuccessorHandle!, CampaignActionAudience.Commonwealth).Candidates);
-        Assert.Empty(Query(accepted.SuccessorHandle!, CampaignActionAudience.System).Candidates);
+        var weatherSet = Query(accepted.SuccessorHandle!, CampaignActionAudience.System);
+        var weatherAction = Assert.Single(weatherSet.Candidates);
+        Assert.Equal("resolve-weather", weatherAction.Kind);
+        Assert.Equal(
+            "sha256:61bca28b7e06c2ec8b7919bce4c7c226198e7fecb0afcc2186b224311e7e1413",
+            weatherAction.ActionId);
+
+        var weatherAccepted = CampaignLegalActions.Submit(
+            accepted.SuccessorHandle!,
+            Bind(weatherSet, weatherAction));
+        Assert.True(weatherAccepted.IsAccepted);
+        Assert.Equal(6, weatherAccepted.Receipt!.CommittedStateVersion);
+        Assert.Equal(
+            "land.position.operation-1.organization",
+            weatherAccepted.Receipt.ResultingPositionId);
+        Assert.Empty(Query(weatherAccepted.SuccessorHandle!, CampaignActionAudience.System).Candidates);
 
         var internalOrder = Assert.Single(accepted.SuccessorHandle!.Snapshot.OperationStageOrders);
         Assert.Equal(LandSide.Commonwealth, internalOrder.FirstSide);
@@ -267,6 +282,7 @@ public sealed class CampaignLegalActionsTests
             typeof(ResolveInitiativeAction),
             typeof(ResolveNoObligationNavalConvoyScheduleAction),
             typeof(ResolveNoObligationTacticalShippingAction),
+            typeof(ResolveWeatherAction),
             typeof(ActFirstAction),
             typeof(ActLastAction),
             typeof(CampaignActionAcceptanceReceipt),

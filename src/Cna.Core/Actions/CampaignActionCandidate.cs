@@ -60,6 +60,11 @@ public sealed record ResolveNoObligationTacticalShippingAction : CampaignActionC
         : base("resolve-no-obligation-tactical-shipping") { }
 }
 
+public sealed record ResolveWeatherAction : CampaignActionCandidate
+{
+    internal ResolveWeatherAction() : base("resolve-weather") { }
+}
+
 public sealed record ActFirstAction : CampaignActionCandidate
 {
     internal ActFirstAction(int operationStage) : base("act-first", operationStage) { }

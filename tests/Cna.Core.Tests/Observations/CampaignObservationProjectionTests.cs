@@ -22,7 +22,7 @@ public sealed class CampaignObservationProjectionTests
         Assert.True(result.IsProjected);
         Assert.Equal(CampaignObservationRejectionReason.None, result.RejectionReason);
         var observation = Assert.IsType<CampaignObservation>(result.Observation);
-        Assert.Equal(1, observation.ContractVersion);
+        Assert.Equal(2, observation.ContractVersion);
         Assert.Equal("sandtable.observation.own-elements-only.v1", observation.PolicyId);
         Assert.Equal(snapshot.CampaignId, observation.CampaignId);
         Assert.Equal(snapshot.StateVersion, observation.StateVersion);
