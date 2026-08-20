@@ -2,6 +2,22 @@ Exactly. I would formalize it as an **authoritative simulation plane** plus a se
 
 The important caveat is that the shared backend should remain **optional and non-authoritative**. A game must still run entirely through scripted policies when that backend—or the model behind it—is unavailable.
 
+## Current local simulation harness
+
+The repository now includes the first in-process `Cna.ExerciseRunner` increment. It is separate
+from the intelligence/services plane: one checked-in **Exercise** creates a fresh opaque
+`Cna.Core.Exercises` session, queries and submits through the shared legal-action execution path,
+stops at the Operation Stage 1 Organization boundary, and verifies both Core reconstruction and a
+second fresh-session re-adjudication. The runner records normalized inputs, Git/build identity,
+seed ledger, accepted actions, canonical events, snapshots, checks, proofs, summaries, and optional
+diagnostics in a manifest-last `trusted-authority` bundle.
+
+This increment is local developer instrumentation only. It is not registered in AppHost, performs
+no model or remote I/O, cannot attach to a production campaign, and does not yet implement serial
+Maneuvers, paired reports, side-safe exports, or War College orchestration. The governing contracts
+and remaining delivery gates are in [Exercise Harness v1](docs/specs/exercise-harness-v1.md) and its
+[technical design](docs/design/exercise-harness-v1.md).
+
 ```text
 ┌─────────────────────────────────────────────────────────────┐
 │                    Authoritative Game Plane                 │

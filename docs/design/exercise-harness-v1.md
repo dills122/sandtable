@@ -1,8 +1,8 @@
 # Exercise Harness v1 Technical Design and Delivery Plan
 
-**Status:** Proposed; final independent plan review completed and findings reconciled; implementation pending
+**Status:** In progress; Tasks 001-013 through the single-Exercise CLI checkpoint are implemented, Tasks 014-016 remain
 
-**Date:** 2026-08-19
+**Date:** 2026-08-20
 
 **Specification:** [Exercise Harness v1](../specs/exercise-harness-v1.md)
 
@@ -226,6 +226,10 @@ Before a requested baseline simulation, capture and verify:
 - SHA-256 for every executed Sandtable assembly and relevant deps manifest;
 - .NET runtime/SDK and OS architecture identity;
 - canonical ruleset, configuration, normalized manifest, and seed-scheme identities.
+
+For the first runner, configuration identity is the versioned
+`sandtable.exercise-controller-configuration.v1` canonical material for the three fixed audience
+controller policies. It is distinct from the hash of the complete normalized Exercise manifest.
 
 Missing Git, an unresolved HEAD commit or tree, a dirty status, unreadable assembly, or a hash
 mismatch fails before Core creation. Detached HEAD is valid when `HEAD^{commit}` and `HEAD^{tree}`
@@ -570,25 +574,25 @@ runnable increment, not later polish.
 
 ## Traceability matrix
 
-Status is `planned` until implementation evidence exists.
+Status distinguishes the implemented single-Exercise boundary from deferred Maneuver work.
 
 | Requirements / decisions | Delivery tasks | Verification / retained evidence | Status |
 | --- | --- | --- | --- |
-| `EXR-001`, `EXR-006`, `EXR-007`, `EXR-008`; terminal/failure separation | 006, 007, 012 | `EXR-AC-001`, 005; manifest/result goldens; CLI exits; finalized bundles | planned |
-| `EXR-002`, `EXR-003`, `EXR-004`, `EXR-005`; isolated capability and shared primitives | 001-004 | `EXR-AC-002`, 003; Core parity, reflection/type-graph, rejection nonmutation tests | planned |
-| `EXR-009`; history reconstruction | 005, 008, 012 | `EXR-AC-004`; reconstruction proof file and corrupt-history tests | planned |
-| `EXR-010`; action-identity re-adjudication | 008, 012 | `EXR-AC-004`; re-adjudication proof and mismatch tests | planned |
-| `EXR-011`, `EXR-012`, `EXR-023`; canonical/versioned evidence | 006, 008-010, 012-014 | `EXR-AC-001`, 004, 012; golden/strict-reader/culture/order tests | planned |
-| `EXR-013`, `EXR-014`; manifest-last transaction | 009, 010, 012 | `EXR-AC-005`-007; failpoint trees and reopened bundles | planned |
-| `EXR-015`; confidentiality/detail separation | 006, 009, 010, 012 | `EXR-AC-011`; classification propagation/type tests | planned |
+| `EXR-001`, `EXR-006`, `EXR-007`, `EXR-008`; terminal/failure separation | 006, 007, 012 | Manifest/result goldens, CLI exits, success/cancellation/admission/artifact-failure bundles | implemented for one Exercise |
+| `EXR-002`, `EXR-003`, `EXR-004`, `EXR-005`; isolated capability and shared primitives | 001-004 | Core parity, reflection/type-graph, rejection nonmutation tests | implemented |
+| `EXR-009`; history reconstruction | 005, 008, 012 | Reconstruction proof file and corrupt-history tests | implemented |
+| `EXR-010`; action-identity re-adjudication | 008, 012 | Re-adjudication proof and independent action/event/final mismatch tests | implemented |
+| `EXR-011`, `EXR-012`, `EXR-023`; canonical/versioned evidence | 006, 008-010, 012-014 | Golden/strict-reader/order tests and reader-validated CLI bundles; Maneuver evidence pending | implemented for one Exercise |
+| `EXR-013`, `EXR-014`; manifest-last transaction | 009, 010, 012 | Writer failpoint trees, rejected partials, reopened success/failure bundles | implemented |
+| `EXR-015`; confidentiality/detail separation | 006, 009, 010, 012 | Trusted-authority classification is enforced; cross-detail fixtures remain pending | partially implemented |
 | `EXR-016`; side-safe export deferred | 016 and future separately authorized task | Spec non-goal; absence/public-API tests; future whole-tree noninterference evidence | deferred |
-| `EXR-017`; seed domain separation | 013, 014 | Seed golden vectors, ledger fixture, culture/order tests | planned |
+| `EXR-017`; seed domain separation | 013, 014 | Standalone seed goldens/ledger/culture/order implemented; Maneuver derivation pending | partially implemented |
 | `EXR-018`; honest pairing | 013-015 | `EXR-AC-010`; paired campaign/seed goldens, ledgers, and report golden | planned |
-| `EXR-019`, `EXR-020`; clean baseline and dirty exploration | 011, 012 | `EXR-AC-008`; fake/integration identity cases and build identity file | planned |
+| `EXR-019`, `EXR-020`; clean baseline and dirty exploration | 011, 012 | Fake/integration identity cases and emitted build identity file | implemented |
 | `EXR-021`; serial validated aggregation | 014, 015 | `EXR-AC-009`, 010; bundle-reader aggregation tests and reports | planned |
-| `EXR-022`; separate correlated diagnostics | 007, 012, 014 | `EXR-AC-011`; cross-detail canonical equality and log schema tests | planned |
-| `EXR-024`, `EXR-025`; deterministic selection and single active audience | 006, 007, 012 | Executor controller/cardinality/step-bound tests; `EXR-AC-001`, 005, 014 | planned |
-| `EXR-026`; ordered invariant catalog | 006-008, 012 | Check-contract ordering/absence goldens and each forced failure; `EXR-AC-004`, 005, 015 | planned |
+| `EXR-022`; separate correlated diagnostics | 007, 012, 014 | Deterministic diagnostics artifact implemented; Maneuver/detail matrix pending | partially implemented |
+| `EXR-024`, `EXR-025`; deterministic selection and single active audience | 006, 007, 012 | Executor controller/cardinality/step-bound tests and checked-in fixture | implemented |
+| `EXR-026`; ordered invariant catalog | 006-008, 012 | Strict check codec, ordering, scope, failure, and emitted-bundle tests | implemented |
 | `EXR-NFR-001`-`005`; reproducibility, reliability, boundaries, quality | 001-016 | All acceptance scenarios, two clean bundles, `just check`, final review | planned |
 | `DEC-001`-`DEC-016` research decisions | 001-016 as mapped above | Three retained research spikes, governing spec, tests/bundles after implementation | accepted/planned |
 

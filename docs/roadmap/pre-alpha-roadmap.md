@@ -185,7 +185,7 @@ Implementation and acceptance evidence are tracked in the
 
 **Capability:** `EXERCISE-001`
 
-**Status:** Proposed; final independent plan review completed and findings reconciled; implementation pending
+**Status:** In progress; the transactional single-Exercise CLI checkpoint is implemented, while serial Maneuvers and paired reporting remain pending
 
 **Goal:** Run a freshly created bounded rules-laboratory campaign through the authoritative legal
 action path, retain deterministic trusted evidence, and prove both event-history reconstruction and
@@ -198,7 +198,7 @@ checkpoint adds the first serial Maneuver before `EXERCISE-001` is complete. Tru
 not side-safe output, and this capability does not imply full victory play, model controllers,
 distributed execution, balance claims, or production campaign activation.
 
-The proposed contract, research decisions, implementation tasks, and acceptance evidence are in
+The contract, research decisions, implementation tasks, and acceptance evidence are in
 the [Exercise Harness v1 specification](../specs/exercise-harness-v1.md) and
 [technical design](../design/exercise-harness-v1.md).
 

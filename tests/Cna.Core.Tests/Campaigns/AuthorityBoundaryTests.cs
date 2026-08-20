@@ -22,6 +22,8 @@ public sealed class AuthorityBoundaryTests
             typeof(CampaignSnapshotSerializer),
             typeof(CampaignReplayPreparation),
             typeof(CampaignReplayHarness),
+            typeof(CampaignCreationExecution),
+            typeof(Cna.Core.Actions.CampaignActionExecution),
             typeof(InitiativeResolver),
         ];
 
@@ -43,7 +45,7 @@ public sealed class AuthorityBoundaryTests
     }
 
     [Fact]
-    public void OrleansHostIsTheOnlyProductionProjectThatReferencesCore()
+    public void OnlyApprovedProductionProjectsReferenceCore()
     {
         var root = FindRepositoryRoot();
         var references = Directory.GetFiles(Path.Combine(root, "src"), "*.csproj",
@@ -54,7 +56,7 @@ public sealed class AuthorityBoundaryTests
             .Order(StringComparer.Ordinal)
             .ToArray();
 
-        Assert.Equal(["Cna.OrleansHost"], references);
+        Assert.Equal(["Cna.ExerciseRunner", "Cna.OrleansHost"], references);
     }
 
     private static string FindRepositoryRoot()

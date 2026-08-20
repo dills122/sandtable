@@ -510,6 +510,11 @@ This one is too good not to reserve.
 
 Not part of the core gameplay.
 
+The names now have one concrete implementation boundary: `Cna.ExerciseRunner` runs exactly one
+local **Exercise** through an in-process opaque Umpire capability and retains trusted evidence.
+**Maneuvers** and **War College** remain reserved future layers; the current runner is not a batch
+service, Orleans workload, tournament system, or balance-analysis environment.
+
 **War College** is where we evaluate commanders.
 
 ```text

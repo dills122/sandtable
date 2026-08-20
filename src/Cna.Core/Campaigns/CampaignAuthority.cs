@@ -1,5 +1,3 @@
-using Cna.Core.Content;
-
 namespace Cna.Core.Campaigns;
 
 public sealed record CampaignCreationRequest
@@ -70,38 +68,10 @@ public static class CampaignAuthority
 {
     public static CampaignAuthorityCreationResult Create(CampaignCreationRequest request)
     {
-        ArgumentNullException.ThrowIfNull(request);
-        if (request.ContractVersion != CampaignCreationRequest.CurrentContractVersion)
-            return CampaignAuthorityCreationResult.Rejected(CampaignCreationRejectionReason.InvalidRequest);
-
-        var command = new CreateCampaign(request.CampaignId, request.RulesetHash, request.Seed,
-            request.SetupId, request.SetupHash, request.ContentPackId, request.ContentHash,
-            request.ScenarioId);
-        var result = CampaignEngine.DecideCreation(null, command, Cna1979SyntheticContentResolver.Instance);
-        if (!result.IsAccepted)
-            return CampaignAuthorityCreationResult.Rejected(Map(result.RejectionReason));
-
-        var created = (CampaignCreated)result.Events[0];
-        var resolution = Cna1979SyntheticContentResolver.Instance.Resolve(
-            created.Setup.Content.Pack.PackId, created.Setup.Content.Pack.Hash);
-        if (!resolution.IsResolved)
-            return CampaignAuthorityCreationResult.Rejected(CampaignCreationRejectionReason.InvalidState);
-        var context = CampaignContentContext.Create(resolution.Artifact!, created.Setup.Content.ScenarioId);
-        var snapshot = CampaignProjector.Apply(null, created, context);
-        return CampaignAuthorityCreationResult.Created(new CampaignAuthorityHandle(snapshot, context));
+        var execution = CampaignCreationExecution.Execute(request);
+        return execution.IsCreated
+            ? CampaignAuthorityCreationResult.Created(
+                new CampaignAuthorityHandle(execution.Snapshot!, execution.Context!))
+            : CampaignAuthorityCreationResult.Rejected(execution.RejectionReason);
     }
-
-    private static CampaignCreationRejectionReason Map(CampaignCommandRejectionReason reason) => reason switch
-    {
-        CampaignCommandRejectionReason.InvalidCommand => CampaignCreationRejectionReason.InvalidRequest,
-        CampaignCommandRejectionReason.UnsupportedRuleset => CampaignCreationRejectionReason.UnsupportedRuleset,
-        CampaignCommandRejectionReason.UnknownSetup => CampaignCreationRejectionReason.UnknownSetup,
-        CampaignCommandRejectionReason.SetupHashMismatch => CampaignCreationRejectionReason.SetupHashMismatch,
-        CampaignCommandRejectionReason.UnknownContent => CampaignCreationRejectionReason.UnknownContent,
-        CampaignCommandRejectionReason.ContentHashMismatch => CampaignCreationRejectionReason.ContentHashMismatch,
-        CampaignCommandRejectionReason.UnknownScenario => CampaignCreationRejectionReason.UnknownScenario,
-        CampaignCommandRejectionReason.SetupContentMismatch => CampaignCreationRejectionReason.SetupContentMismatch,
-        CampaignCommandRejectionReason.ScenarioStartMismatch => CampaignCreationRejectionReason.ScenarioStartMismatch,
-        _ => CampaignCreationRejectionReason.InvalidState,
-    };
 }
