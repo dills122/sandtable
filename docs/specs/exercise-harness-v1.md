@@ -13,6 +13,9 @@
 
 **Technical design:** [Exercise Harness v1](../design/exercise-harness-v1.md)
 
+**Next bounded checkpoint:** `EXR-TASK-014`, serial unpaired Maneuvers with validated aggregate
+reports; paired comparison remains `EXR-TASK-015` and does not block gameplay-engine work
+
 **Research decisions:**
 [capability and replay](../research/exercise-capability-and-replay-spike.md),
 [evidence artifacts](../research/exercise-evidence-artifact-spike.md), and
@@ -100,11 +103,12 @@ validation it also prints a structured `trace=` record for artifact finalization
 Failed debug runs retain every timing measured before the failure.
 No detail tier changes the simulation-evidence subset named by `EXR-022`.
 
-The planned serial-Maneuver command is not implemented yet:
+The planned serial-Maneuver command is not implemented yet. Its activated Task 014 contract uses a
+serial fixture; the paired fixture remains Task 015:
 
 ```text
 dotnet run --project src/Cna.ExerciseRunner/Cna.ExerciseRunner.csproj -- \
-  maneuvers run --manifest scenarios/maneuvers/rules-lab.paired.v1.json \
+  maneuvers run --manifest scenarios/maneuvers/rules-lab.serial.v1.json \
   --artifact-root artifacts/exercises
 ```
 

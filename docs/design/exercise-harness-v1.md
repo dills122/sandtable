@@ -1,6 +1,7 @@
 # Exercise Harness v1 Technical Design and Delivery Plan
 
-**Status:** In progress; Tasks 001-013 and single-Exercise observability hardening are implemented, Tasks 014-016 remain
+**Status:** In progress; Tasks 001-013 and single-Exercise observability hardening are implemented,
+Task 014 is the next activated checkpoint, and Tasks 014-016 remain unimplemented
 
 **Date:** 2026-08-20
 
@@ -543,6 +544,8 @@ refactors. File names are expected targets; minor splits require the same owners
 
 #### `EXR-TASK-014` — Implement serial Maneuver and aggregate report
 
+- **Status:** activated as the next bounded cross-cutting implementation track after documentation
+  reconciliation; implementation evidence is still pending.
 - **Depends on:** `EXR-TASK-012`, `EXR-TASK-013`.
 - **Primary files:** new `Execution/ManeuverExecutor.cs`, `Commands/ManeuverRunCommand.cs`,
   `Artifacts/ManeuverReportWriter.cs`, checked-in Maneuver manifest, and one integration test.
@@ -551,6 +554,36 @@ refactors. File names are expected targets; minor splits require the same owners
 - **Accept:** stable order/counts; failures remain visible; corrupt/missing bundle fails aggregation;
   deterministic report fingerprint excludes durations.
 - **Verify:** `EXR-AC-009` and new Maneuver tests.
+
+##### Task 014 activation decisions
+
+| Decision | Accepted boundary |
+| --- | --- |
+| `EXR-014-DEC-001` | Task 014 admits ordered unpaired entries only. The manifest carries an explicit serial mode so Task 015 can add paired behavior without silently changing unpaired semantics. |
+| `EXR-014-DEC-002` | The Maneuver owns the sole root seed. Nested Exercise specifications omit root seed and campaign ID and are materialized only after Maneuver admission. |
+| `EXR-014-DEC-003` | A valid failed Exercise bundle does not stop later entries. Cancellation or inability to finalize and reopen trusted evidence stops execution and fails aggregation. |
+| `EXR-014-DEC-004` | The report fingerprint covers only a canonical deterministic section. Durations, throughput, local paths, GUIDs, and machine data remain visibly separate diagnostics. |
+| `EXR-014-DEC-005` | Every aggregate fact comes from bytes retained by one successful `ExerciseBundleReader` validation. Aggregation neither trusts in-memory counters nor rereads files after validation. |
+| `EXR-014-DEC-006` | Any failed Exercise makes the Maneuver process nonzero while still retaining its report. Missing, corrupt, or unfinalizable evidence is an explicit aggregate failure, never a success or omission. |
+| `EXR-014-DEC-007` | Task 014 changes no `Cna.Core` rule, state, authority, event, or replay contract. |
+
+##### Task 014 implementation slices
+
+Each slice begins with focused failing tests and leaves the existing single-Exercise command green.
+
+| Slice | Observable output | Dependencies | Acceptance and verification |
+| --- | --- | --- | --- |
+| `EXR-014A` — strict contracts | Canonical serial manifest and aggregate-report codecs with goldens | Tasks 012-013 | Strict readers reject unknown/extra/duplicate/seed-override shapes; fingerprint independently reproduces from the deterministic section |
+| `EXR-014B` — reusable run seam | One internal admitted-Exercise-to-final-bundle coordinator plus explicit `ExerciseRunIdentity` | 014A | Existing standalone CLI bytes/exits remain exact; Maneuver seed/campaign identity goldens pass |
+| `EXR-014C` — trusted bundle view | Defensive typed manifest/build/seed/result/check/report inputs retained by bundle readback | 014A | Corrupt/partial/symlinked/contradictory bundles fail closed; caller mutation cannot alter retained values |
+| `EXR-014D` — serial executor | Manifest-order, one-at-a-time child execution and mandatory bundle reopen | 014B-014C | Mixed success/failure runs complete all trusted entries; cancellation stops before the next entry; missing/corrupt evidence fails aggregation |
+| `EXR-014E` — report writer | Atomic validated report with stable ordered counts and separate diagnostics | 014D | Timing/path variance leaves the deterministic fingerprint unchanged; partial output is never complete |
+| `EXR-014F` — CLI and fixture | `maneuvers run`, checked serial fixture, and `EXR-AC-009` integration evidence | 014E | Checked success run prints a validated report; mixed run retains the report and exits nonzero; `exercise run` is unchanged |
+| `EXR-014G` — reconciliation and gate | Current docs, exact command/evidence, and repository-wide verification | 014F | Focused tests, solution gate, `just check`, `git diff --check`, fixture smoke, and one normal pre-PR review pass |
+
+Checkpoints occur after 014A, after 014B-014C, after 014D-014E, and after 014F-014G. Task 015
+paired comparison remains a separate later track. It is not a dependency of Organization/stage-entry
+or Reserve engine work, so the authoritative gameplay track may resume after Task 014.
 
 #### `EXR-TASK-015` — Implement paired comparison contract/report
 
@@ -620,7 +653,7 @@ Status distinguishes the implemented single-Exercise boundary from deferred Mane
 | `EXR-017`; seed domain separation | 013, 014 | Standalone seed goldens/ledger/culture/order implemented; Maneuver derivation pending | partially implemented |
 | `EXR-018`; honest pairing | 013-015 | `EXR-AC-010`; paired campaign/seed goldens, ledgers, and report golden | planned |
 | `EXR-019`, `EXR-020`; clean baseline and dirty exploration | 011, 012 + observability hardening | Fake/integration identity cases, emitted build identity, and separate checked baseline/exploratory fixtures | implemented |
-| `EXR-021`; serial validated aggregation | 014, 015 | `EXR-AC-009`, 010; bundle-reader aggregation tests and reports | planned |
+| `EXR-021`; serial validated aggregation | 014, 015 | `EXR-AC-009`, 010; bundle-reader aggregation tests and reports | Task 014 activated; implementation pending |
 | `EXR-022`; separate correlated diagnostics | 007, 012, 014 + observability hardening | Successful and failed query/controller/submission/check/proof correlation, debug failure timings, artifact readback trace, and command-boundary cross-detail evidence test; Maneuver correlation pending | implemented for one Exercise |
 | `EXR-024`, `EXR-025`; deterministic selection and single active audience | 006, 007, 012 | Executor controller/cardinality/step-bound tests and checked-in fixture | implemented |
 | `EXR-026`; ordered invariant catalog | 006-008, 012 | Strict check codec, ordering, scope, failure, and emitted-bundle tests | implemented |

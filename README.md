@@ -77,6 +77,17 @@ implemented yet.
 Organization/stage-entry mechanics, movement, combat, published scenario content, persistence, and
 the Maproom player interface remain future work.
 
+The current delivery boundary is:
+
+| Area | Status |
+| --- | --- |
+| Ruleset/provenance, synthetic content, campaign authority, deterministic randomness, events, and replay | Implemented foundation |
+| Side-safe observations and exact-audience legal actions | Implemented for the current rules-laboratory path |
+| Mandatory turn preamble | Partially implemented; Weather is complete and authority stops at Organization |
+| Movement/contact and combat loops | Planned; not started |
+| Published first-scenario data, remaining Land rules, victory, persistence, and Maproom | Milestone-level; not started |
+| Exercise Harness | Single-Exercise path implemented; serial Maneuvers are next; pairing remains later |
+
 The approved high-level path to a playable game is:
 
 1. Resolve Organization, Naval Convoy Arrival, and Fleet obligations, then stop at Reserve.
@@ -84,6 +95,11 @@ The approved high-level path to a playable game is:
 3. Add the remaining Land systems and data required by *Graziani's Offensive*.
 4. Deliver the Maproom interface, local hot-seat play, saves, and replay.
 5. Expand into detailed Air and Logistics play, later scenarios, and optional intelligence.
+
+The next bounded cross-cutting track is the serial-Maneuver portion of Exercise Harness v1. It
+adds validated batch regression evidence but no game rules. After that track, authoritative engine
+work returns to Organization/stage entry and Reserve. Paired comparison is useful later for
+controller evaluation but does not block gameplay-engine progress.
 
 See the [pre-alpha roadmap](docs/roadmap/pre-alpha-roadmap.md) for the capability-level plan and
 completion criteria.
