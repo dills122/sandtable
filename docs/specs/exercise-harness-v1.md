@@ -116,6 +116,188 @@ Unknown commands/options, missing values, invalid paths, invalid manifests, and 
 versions fail before campaign creation with a nonzero exit. CLI spelling may change only before its
 golden contract test is accepted; afterward it is versioned user-visible behavior.
 
+### Task 014 serial-Maneuver contract
+
+Task 014 adds only `sandtable.maneuver-manifest.v1` in mode `serial-unpaired`. A manifest has this
+exact canonical property order and shape; the child objects deliberately match the existing
+Exercise manifest except that only the Maneuver owns `rootSeed`:
+
+```json
+{"contractVersion":1,"schemeId":"sandtable.maneuver-manifest.v1","maneuverId":"rules-lab.serial","mode":"serial-unpaired","rootSeed":0,"report":{"profile":"trusted-authority"},"exercises":[{"contractVersion":1,"exerciseId":"organization-boundary.first","setupId":"rules-lab.initiative.predetermined","setupHash":"sha256:5ecf84d21a7ff95112b9b662915f6858926532d30be5a0eee3f1a45752fdc80a","contentPackId":"rules-lab.content.movement-contact.v1","contentHash":"sha256:53d5b64f647251e3ac366c65f4ad05cae766afd7b70ee331d463e801496e2a99","scenarioId":"movement-contact-lab","rulesetHash":"b59b2fc750052206e745fb85e04de8d54e365c55bbc7bf3a9e9539348c3f9ecb","terminalBoundary":"land.position.operation-1.organization","maximumSteps":8,"buildMode":"exploratory","confidentiality":"trusted-authority","detail":"forensic","controllers":{"system":"first-by-action-id","axis":"first-by-action-id","commonwealth":"first-by-action-id"},"assertFailureCategory":null}]}
+```
+
+The example uses the current admitted repository identities; implementation updates it if those
+versioned identities change. The codec rejects unknown versions/schemes/modes/profiles,
+missing/extra/duplicate/out-of-order properties, an empty Exercise list, duplicate Exercise IDs,
+any Maneuver ID beginning with reserved synthetic namespace `standalone.`, child `rootSeed` or
+`campaignId`, and every shape rejected by the standalone Exercise contract. Array order is
+semantic. After full Maneuver admission, entry `N` is materialized as the existing normalized
+Exercise manifest with the
+Maneuver root seed and receives identity `(maneuverId, exerciseOrdinal=N, pairKey=null,
+variant=unpaired)`. Paired keys, variants, repetitions, and child seed overrides require the later
+Task 015 contract rather than permissive v1 fields.
+
+Admission is all-or-nothing and occurs before the first child starts. Execution then runs exactly
+one admitted child at a time in manifest order. A valid identity-matched failed Exercise bundle is
+counted as that Exercise's failure and does not stop later entries. Identity matching requires a
+seed ledger whose root seed, Maneuver ID, ordinal, and null pair key equal the admitted entry;
+`failed-pre-admission`, `failed-admitted`, and `failed-identified` profiles contain no ledger and
+therefore cannot be attributed to a Maneuver child even when their manifest/build fields match.
+They become `bundle-identity-mismatch`. Cancellation stops before the next entry. A missing,
+invalid, or identity-mismatched completed bundle stops execution because no trusted aggregate fact
+exists for that entry; remaining entries are retained as explicit `not-run` records rather than
+omitted.
+
+### Task 014 report and completion protocol
+
+One canonical `maneuver-report.json` is the completed Maneuver artifact. It is staged beneath
+`<artifact-root>/maneuvers/.partial/<unique-id>/`, durably flushed, moved to exactly one
+`succeeded/<unique-id>/` or `failed/<unique-id>/` directory, and strictly reopened before the CLI
+prints its path. A completed report directory contains that one regular file and no links,
+subdirectories, or unlisted files. Partial and corrupt reports are never claimed as completed and
+are not automatically deleted. Child Exercise bundles remain independently finalized evidence.
+
+The report's exact top-level order is `contractVersion`, `schemeId`, `deterministic`,
+`reportFingerprint`, `diagnostics`. `schemeId` is `sandtable.maneuver-report.v1` and
+`reportFingerprint` is `sha256:` plus lowercase SHA-256 of the exact canonical bytes produced by
+serializing the typed `deterministic` object alone. The strict reader reconstructs those bytes,
+verifies the fingerprint, rejects noncanonical input, and verifies that directory placement agrees
+with deterministic status. Diagnostics are visible and validated but never fingerprint input.
+
+The deterministic object's exact property order is `manifest`, `status`, `counts`,
+`terminalCounts`, `failureCounts`, `aggregationFailureCounts`, `entries`. It contains:
+
+- the complete normalized Maneuver manifest;
+- overall status: `succeeded`, `exercise-failed`, `aggregation-failed`, or `cancelled`;
+- a `counts` object with exact property order `requestedExerciseCount`, `attemptedExerciseCount`,
+  `validatedExerciseCount`, `succeededExerciseCount`, `failedExerciseCount`,
+  `aggregationFailedExerciseCount`, `notRunExerciseCount`;
+- terminal-count entries with exact order `kind`, `positionId`, `victor`, `count`, aggregated and
+  ordered by terminal kind then the populated ordinal value;
+- Exercise failure-count entries with exact order `category`, `count`, containing every closed
+  `ExerciseFailureCategory` in catalog order, including zeros;
+- all aggregation categories in fixed order: `completed-bundle-missing`, `bundle-invalid`, and
+  `bundle-identity-mismatch`, as `category`, `count` entries including zeros; and
+- one entry per manifest ordinal, never fewer, with exact property order `ordinal`, `exerciseId`,
+  `variant`, `status`, `terminalOutcome`, `failureCategory`, `aggregationFailureCategory`,
+  `notRunReason`, `acceptedStepCount`, `passedCheckCount`, `failedCheckCount`,
+  `normalizedManifestSha256`, `seedLedgerSha256`; `variant` is always `unpaired` and status is
+  `succeeded`/`failed`/`aggregation-failed`/`not-run`. Terminal outcomes use the existing exact
+  `kind`, `positionId`, `victor` shape.
+
+The entry state matrix is normative; `required` hashes use canonical lowercase `sha256:` values and
+`count` means a nonnegative JSON integer:
+
+| Entry status | `terminalOutcome` | `failureCategory` | `aggregationFailureCategory` | `notRunReason` | accepted/passed/failed counts | manifest/ledger hashes |
+| --- | --- | --- | --- | --- | --- | --- |
+| `succeeded` | required | null | null | null | required; failed checks must be zero | both required |
+| `failed` | null | required | null | null | all required | both required |
+| `aggregation-failed` | null | null | required | null | all null | both null |
+| `not-run` | null | null | null | `cancelled` or `aggregation-stopped` | all null | both null |
+
+Only seed-ledger-bearing, semantically validated executed-or-later profiles can produce
+`succeeded` or `failed` entries. Terminal-count kind catalog order is exactly `boundary-reached`,
+then reserved `victory-reached`; within one kind entries sort by `positionId` or `victor` using
+ordinal string order. A `boundary-reached` count requires `positionId` and null `victor`.
+Task 014 permits only `boundary-reached`: every successful child outcome and terminal-count entry
+must carry the exact admitted child `terminalBoundary`. `victory-reached` is rejected during
+semantic bundle readback and cannot appear in a Task 014 entry or terminal count; enabling it
+requires the existing reviewed victory-semantics contract gate.
+
+Count invariants are exact: requested equals entry count, attempted plus not-run, and succeeded plus
+failed plus aggregation-failed plus not-run; attempted equals validated plus aggregation-failed;
+validated equals succeeded plus failed. Terminal counts sum to succeeded, Exercise failure counts
+sum to failed, and aggregation-failure counts sum to aggregation-failed. For identity-matched
+executed profiles, `acceptedStepCount` is the validated `accepted-actions.jsonl` record count
+retained during bundle readback; aggregate-eligible failures before any accepted step use zero,
+while aggregation-failed and not-run entries use null.
+
+Every terminal, failure, check, manifest-hash, and seed-ledger fact comes from defensive typed values
+or semantically validated record counts retained by one successful `ExerciseBundleReader` call.
+The aggregator does not trust its in-memory execution result and does not reread child files after
+validation. It requires the retained normalized child manifest to equal the expected materialized
+bytes, an exact seed-ledger identity match, and the available build-identity manifest/ruleset/
+configuration hashes to match the expected entry before accepting it.
+Intended manifest identity may label a missing/corrupt entry, but no unverified bundle outcome is
+attributed to that Exercise.
+
+For every aggregate-eligible executed-or-later bundle, reader validation is semantic and
+cross-artifact, not merely hash/JSON-shape validation:
+
+- accepted-action and step-evidence records use strict canonical codecs with exact
+  version/scheme/property order/types, contiguous zero-based ordinals, stable audience/action/
+  campaign values, and one-version receipt continuity;
+- accepted-action, canonical-event, and step-evidence record counts are equal; corresponding
+  action/step records agree on ordinal, campaign, audience, action, committed state, and position;
+  each step event hash matches its canonical event record and the final step snapshot hash matches
+  `final-snapshot.json`;
+- reconstruction/readjudication expected event, transcript, and final-snapshot hashes recompute
+  from retained canonical evidence; `succeeded` requires both proofs verified and terminal,
+  reconstruction, and readjudication checks passed;
+- for `succeeded`, the run-result outcome must be `BoundaryReached` with `positionId` exactly equal
+  to the expected materialized manifest's `terminalBoundary`; canonical deserialization of
+  `final-snapshot.json` must yield that same position. With accepted steps, the final step receipt,
+  step evidence, and snapshot checkpoint must also yield that position. With zero accepted steps,
+  initial and final canonical snapshot bytes must be identical and decode to that position. A
+  `VictoryReached` outcome is non-aggregate-eligible in Task 014 even though the shared result codec
+  can parse the reserved type;
+- aggregate eligibility is closed to `succeeded`, `failed-executed`, `failed-reconstructed`, and
+  `failed-readjudicated`. Every completed accepted step has the full passed step-check catalog.
+  `failed-executed` has no replay proof, ends with failed check `terminal-boundary` /
+  `terminal-boundary-not-reached`, and permits only the following preceding category/check/failure
+  combinations: `controller-failed` with `selected-action-membership` /
+  `selected-action-not-current`; `no-unique-legal-action` with `active-audience-cardinality` /
+  `no-active-audience`; `illegal-action` with `accepted-event-cardinality` / `action-rejected`;
+  `invariant-failed` with `authority-query-valid` / (`authority-query-rejected` or
+  `authority-query-coordinate-mismatch`), `active-audience-cardinality` /
+  `multiple-active-audiences`, `accepted-event-cardinality` / `event-cardinality-mismatch`, or
+  `checkpoint-continuity` / (`campaign-mismatch`, `ruleset-mismatch`,
+  `state-version-discontinuity`, or `position-mismatch`); and `step-limit-exceeded` or `cancelled`
+  with no preceding failed step check. `failed-reconstructed` requires category
+  `reconstruction-mismatch`, terminal passed, `history-reconstruction` /
+  `reconstruction-mismatch` failed, and one unverified reconstruction proof.
+  `failed-readjudicated` requires category `readjudication-mismatch`, terminal and history passed,
+  a verified reconstruction proof, `readjudication` / `readjudication-mismatch` failed, and one
+  unverified readjudication proof. `succeeded` requires terminal, history, and readjudication passed
+  plus verified reconstruction and readjudication proofs. `manifest-invalid` from rejected Core
+  begin remains `failed-identified` because no initial snapshot exists, so it has no serialized seed
+  ledger and is non-attributable. Every other profile is non-attributable or
+  non-aggregate-eligible in Task 014; and
+- tests alter each trusted fact, regenerate sizes/hashes and `artifact-manifest.json`, and require
+  readback rejection, including changing a successful boundary outcome and fabricating a victory
+  outcome, so a rehashed internally contradictory tree cannot become aggregate input.
+
+These checks prove canonical internal consistency under the trusted-developer artifact model; v1
+does not claim cryptographic origin/authenticity against an actor who can coherently rewrite every
+payload and hash. Signing, remote attestation, and hostile artifact ingestion remain out of scope.
+
+The diagnostics object's exact property order is `elapsedMicroseconds`, `throughput`, `entries`.
+Throughput contains `validatedExerciseCount`, then `elapsedMicroseconds`, rather than a floating
+value. Each diagnostic entry contains `ordinal`, nullable `elapsedMicroseconds`, nullable
+`observedBundlePath`, and nullable `artifactManifestSha256` in that order. An observed path may be
+retained for corrupt or mismatched evidence but is never presented as trusted child outcome.
+`elapsedMicroseconds` measures admitted Maneuver scheduling through aggregate construction; report
+write/readback timing is emitted only in the post-readback command trace to avoid self-rewrite.
+Durations, throughput, local paths, staging/final GUIDs, machine/runtime identity, and
+artifact-manifest hashes are excluded from `reportFingerprint`.
+
+Overall status precedence is aggregation failure, cancellation, ordinary Exercise failure, then
+success. A valid cancelled child is a validated Exercise failure, selects overall `cancelled`, and
+marks later entries `not-run` with reason `cancelled`. Aggregation stop marks later entries
+`not-run` with reason `aggregation-stopped`. Invalid Maneuver admission creates no child and no
+completed Maneuver report. Report-finalization failure creates no completed-report claim; already
+finalized child bundles remain available. Cancellation observed after admission but before the next
+child starts also writes a cancelled report with that child and its tail marked not-run; it does not
+synthesize a cancelled Exercise bundle.
+
+The Maneuver command uses stable process exits: `0` success, `2` manifest/usage invalid, `13` one
+or more ordinary Exercise failures, `14` aggregate evidence failure, `11` report artifact failure,
+`12` unexpected command failure, and `130` cancellation. Attributable child failure categories stay
+lossless in the report rather than being collapsed into more process exit codes. On completion the
+CLI prints `exerciseBundle[N]=<path>` in ordinal order for each identity-matched finalized child,
+then `report=<path>` and `reportFingerprint=<sha256>`. Failure detail goes to stderr; it never
+prints a report or bundle path that did not pass readback.
+
 ## Functional requirements
 
 | ID | Requirement |
