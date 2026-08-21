@@ -91,6 +91,24 @@ Remaining Land systems + minimal Maproom
 Six-turn playable MVP
 ```
 
+## Current delivery status
+
+| Capability area | Status | Current boundary / next gate |
+| --- | --- | --- |
+| Source/ruleset provenance, synthetic content, world, authority, events, and replay foundations | Implemented | Preserve exact identities and deterministic history while mechanics expand |
+| Side-safe observations and legal-action enforcement | Implemented for the current synthetic path | Extend only with each new mechanic and its disclosure tests |
+| Mandatory turn preamble | Partially implemented | Weather reaches Organization; Organization/stage entry and Reserve are next |
+| Movement and contact | Planned; not started | Requires a legal movement-capable phase after the preamble |
+| Combat | Planned; not started | Depends on the movement/contact state and action vocabulary |
+| Working pre-alpha skeleton | Not reached | Requires one authentic movement/contact/combat loop with replay |
+| First-scenario content and remaining Land systems | Milestone-level; not started | Re-estimate after the skeleton exposes exercised-rule and transcription scope |
+| Campaign lifecycle and Maproom | Milestone-level; not started | Requires stable playable authority, Chronicle persistence, and save/resume contracts |
+| Exercise Harness | Single-Exercise path implemented; serial Maneuvers next | Pairing remains later and does not block engine mechanics |
+
+The roadmap deliberately distinguishes foundation maturity from playable breadth. The architecture
+is substantially established, but the campaign is not playable while authority stops at
+Organization and movement, combat, victory, persistence, and Maproom remain absent.
+
 ## Sprint 0: Source and fidelity baseline
 
 **Goal:** Decide what Sandtable is implementing and how conflicting sources are resolved.
@@ -185,7 +203,8 @@ Implementation and acceptance evidence are tracked in the
 
 **Capability:** `EXERCISE-001`
 
-**Status:** In progress; the transactional single-Exercise CLI checkpoint is implemented, while serial Maneuvers and paired reporting remain pending
+**Status:** In progress; the transactional single-Exercise CLI checkpoint is implemented, serial
+Maneuvers are the next bounded cross-cutting track, and paired reporting remains later work
 
 **Goal:** Run a freshly created bounded rules-laboratory campaign through the authoritative legal
 action path, retain deterministic trusted evidence, and prove both event-history reconstruction and
@@ -193,7 +212,7 @@ fresh-session re-adjudication before using batches for regression or controller 
 
 **Acceptance boundary:** The first Exercise stops successfully only at the implemented Operation
 Stage 1 Organization boundary. The first runnable single-Exercise CLI includes fail-closed
-transactional artifacts, clean build identity, and explicit failure categories. A later v1
+transactional artifacts, clean build identity, and explicit failure categories. The next v1
 checkpoint adds the first serial Maneuver before `EXERCISE-001` is complete. Trusted bundles are
 not side-safe output, and this capability does not imply full victory play, model controllers,
 distributed execution, balance claims, or production campaign activation.
@@ -201,6 +220,11 @@ distributed execution, balance claims, or production campaign activation.
 The contract, research decisions, implementation tasks, and acceptance evidence are in
 the [Exercise Harness v1 specification](../specs/exercise-harness-v1.md) and
 [technical design](../design/exercise-harness-v1.md).
+
+Task 014 is an enabling regression-instrumentation track, not additional gameplay. After it, engine
+work may return to Organization/stage entry and Reserve before Task 015 paired comparison; pairing
+does not block the authoritative gameplay dependency graph. Task 016 remains the final Harness-v1
+closeout after pairing is eventually delivered.
 
 ## Sprint 2: Rules laboratory and legal-action boundary
 
@@ -210,8 +234,9 @@ Content Pack v1 is governed by the
 [research packet](../research/content-pack-v1-spike.md),
 [specification](../specs/content-pack-v1.md), and
 [technical design](../design/content-pack-v1.md). The owner-approved Content Pack v1, original rules
-laboratory, campaign admission, and side-safe observation boundary are delivered. Legal actions are
-the remaining Sprint 2 capability.
+laboratory, campaign admission, side-safe observation boundary, and Legal Actions v1 are delivered.
+Sprint 2 is complete for the current synthetic path; later mechanics must extend the same boundaries
+rather than create alternate player or Intelligence mutation seams.
 
 ### Task 2.1 - Versioned content schemas
 
@@ -316,8 +341,9 @@ Determine the smallest source-faithful Naval Convoy, Initiative Declaration, and
 Determination capability exercised by the rules laboratory. Define commands, events, normalized
 tables, required content/world facts, and explicit unsupported cases before implementation.
 
-The `ACTION-001` research resolves the opening sequence and first side-choice boundary. General
-convoy obligations and the executable Weather table/random contract remain Sprint 3 work.
+The `ACTION-001` research resolved the opening sequence and first side-choice boundary. Weather's
+table/random contract is now implemented. General convoy obligations and every-stage Initiative
+Declaration coverage remain Sprint 3 work before a future checkpoint may depend on them.
 
 **Status:** Decision package approved 2026-08-19; Weather implementation complete.
 
@@ -359,6 +385,10 @@ Implement `STAGE-ENTRY-001`: resolve positive or explicitly admitted empty Organ
 Convoy Arrival, and Fleet obligations through mechanic-specific legal actions. Stop at the
 first-acting side's Reserve Designation decision.
 
+The roadmap records the capability and acceptance boundary, not an implementation-ready contract.
+Before coding, retain the source/ruling decisions, governing specification, technical design,
+dependency-sized tasks, and acceptance traceability for `STAGE-ENTRY-001`.
+
 ### Task 3.5 - Reserve Designation (planned; not started)
 
 Implement `RESERVE-001`: let the first-acting side designate and complete its reserves through the
@@ -387,6 +417,9 @@ Organization and is independently demonstrable before Tasks 3.4-3.5 exist.
 ## Sprint 4: Continual movement and contact
 
 **Goal:** Complete the movement half of one authentic movement/contact/combat loop.
+
+Sprint 4 is currently a capability plan. Its source inventory, exact command/event/state contracts,
+and task-sized implementation plan must be approved after Sprint 3 reaches Movement.
 
 ### Task 4.1 - Capability Points and cohesion ledger
 
@@ -431,6 +464,10 @@ and show the resulting cohesion and Chronicle explanation.
 ## Sprint 5: One complete combat loop
 
 **Goal:** Resolve a representative combat from declaration through final state.
+
+Sprint 5 is currently a capability plan. Its source/table inventory, hidden-choice contract, exact
+segment state, and task-sized implementation plan must be approved after the movement/contact state
+model is proven.
 
 ### Task 5.1 - Combat declaration and force assignment
 

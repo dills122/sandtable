@@ -642,8 +642,9 @@ projection access. See the [research](docs/research/turn-preamble-action-boundar
 [specification](docs/specs/legal-actions-v1.md), and
 [technical design](docs/design/legal-actions-v1.md).
 
-The proposed Exercise Harness v1 is trusted local developer instrumentation for deterministic,
-freshly created campaign runs. It keeps the Umpire authoritative by introducing an opaque
+The partially implemented Exercise Harness v1 is trusted local developer instrumentation for
+deterministic, freshly created campaign runs. Its delivered single-Exercise path keeps the Umpire
+authoritative through an opaque
 Exercise-only Core capability that shares the existing creation and legal-action execution
 primitives; the runner owns orchestration, transactional artifacts, diagnostics, and reports but no
 rules or state mutation. The first checked-in Exercise stops at the currently implemented
@@ -655,9 +656,11 @@ initial conditions and initial role streams but no post-divergence synchronizati
 execution remain explicitly deferred. See the retained
 [capability/replay research](docs/research/exercise-capability-and-replay-spike.md),
 [artifact research](docs/research/exercise-evidence-artifact-spike.md),
-[reproducibility research](docs/research/exercise-reproducibility-and-pairing-spike.md), proposed
-[specification](docs/specs/exercise-harness-v1.md), and proposed
-[technical design](docs/design/exercise-harness-v1.md).
+[reproducibility research](docs/research/exercise-reproducibility-and-pairing-spike.md), governing
+[specification](docs/specs/exercise-harness-v1.md), and
+[technical design](docs/design/exercise-harness-v1.md). Serial Maneuvers are the next bounded
+cross-cutting track; paired comparison remains later and does not block Organization/stage-entry
+engine work.
 
 [1]: https://learn.microsoft.com/en-us/dotnet/orleans/grains/external-tasks-and-grains?utm_source=chatgpt.com "External tasks and grains - .NET | Microsoft Learn"
 [2]: https://learn.microsoft.com/en-us/aspnet/core/grpc/performance?view=aspnetcore-10.0&utm_source=chatgpt.com "Performance best practices with gRPC | Microsoft Learn"

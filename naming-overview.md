@@ -516,8 +516,9 @@ Its compact, forensic, and debug detail tiers describe instrumentation depth, no
 rules: increasing detail adds correlation and timing diagnostics while accepted actions and
 canonical simulation evidence remain unchanged. Failed decisions retain the attempted query,
 controller, action, and submission context available before the failure.
-**Maneuvers** and **War College** remain reserved future layers; the current runner is not a batch
-service, Orleans workload, tournament system, or balance-analysis environment.
+**Maneuvers** is the next planned local serial-batch layer but is not implemented yet. **War
+College** remains a later evaluation layer. The current runner is not a batch service, Orleans
+workload, tournament system, or balance-analysis environment.
 
 **War College** is where we evaluate commanders.
 
