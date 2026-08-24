@@ -642,6 +642,20 @@ projection access. See the [research](docs/research/turn-preamble-action-boundar
 [specification](docs/specs/legal-actions-v1.md), and
 [technical design](docs/design/legal-actions-v1.md).
 
+The proposed, not-yet-implemented Player Intent Composer keeps future complex Maproom decisions
+prompt-forward without making them prompt-only. Contextual suggested approaches, short language,
+map/list interaction, and structured controls edit one private typed draft; deterministic validation
+may surface at most two automatic clarification questions before explicit intent confirmation.
+Deterministic Staff planning and a separate final legal-action confirmation preserve the existing
+Command → Staff → Umpire hierarchy. An optional local parser such as Needle can only populate draft
+fields and remains gated behind a no-model prototype and corpus evaluation. See the retained
+[research](docs/research/player-intent-input-and-needle-feasibility.md), proposed
+[specification](docs/specs/player-intent-composer-v1.md), and
+[technical design](docs/design/player-intent-composer-v1.md).
+Roadmap placement is explicit: select the representative decision after the Sprint 5 combat
+skeleton, run the no-model interaction prototype before Sprint 8, integrate the deterministic slice
+with Minimal Maproom, and evaluate any parser only after the deterministic MVP path works.
+
 The partially implemented Exercise Harness v1 is trusted local developer instrumentation for
 deterministic, freshly created campaign runs. Its delivered single-Exercise path keeps the Umpire
 authoritative through an opaque

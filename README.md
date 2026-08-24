@@ -77,6 +77,12 @@ implemented yet.
 Organization/stage-entry mechanics, movement, combat, published scenario content, persistence, and
 the Maproom player interface remain future work.
 
+The reviewed Player Intent Composer is also future work. After the movement/contact/combat skeleton
+proves one representative multi-field decision, a no-model prototype will validate contextual
+suggested approaches, a private typed draft, bounded clarification, deterministic Staff planning,
+and hot-seat isolation. Deterministic Maproom integration belongs in Sprint 8; Needle or any other
+parser remains behind a post-MVP evidence gate and cannot block the playable campaign.
+
 The current delivery boundary is:
 
 | Area | Status |
@@ -86,6 +92,7 @@ The current delivery boundary is:
 | Mandatory turn preamble | Partially implemented; Weather is complete and authority stops at Organization |
 | Movement/contact and combat loops | Planned; not started |
 | Published first-scenario data, remaining Land rules, victory, persistence, and Maproom | Milestone-level; not started |
+| Player Intent Composer | Direction reviewed; representative decision after the combat skeleton, no-model prototype before Maproom, optional parser evaluation after deterministic MVP |
 | Exercise Harness | Single-Exercise path implemented; serial Maneuvers are next; pairing remains later |
 
 The approved high-level path to a playable game is:
@@ -93,8 +100,10 @@ The approved high-level path to a playable game is:
 1. Resolve Organization, Naval Convoy Arrival, and Fleet obligations, then stop at Reserve.
 2. Implement Reserve and a complete movement/contact/combat loop through the legal-action boundary.
 3. Add the remaining Land systems and data required by *Graziani's Offensive*.
-4. Deliver the Maproom interface, local hot-seat play, saves, and replay.
-5. Expand into detailed Air and Logistics play, later scenarios, and optional intelligence.
+4. Validate the representative Player Intent Composer flow without a model.
+5. Deliver deterministic Maproom, local hot-seat play, saves, replay, and the reviewed intent flow.
+6. Evaluate optional parsing only after the deterministic MVP, then expand into detailed Air and
+   Logistics play, later scenarios, and optional intelligence.
 
 The next bounded cross-cutting track is the serial-Maneuver portion of Exercise Harness v1. It
 adds validated batch regression evidence but no game rules. After that track, authoritative engine
@@ -263,6 +272,9 @@ The current Umpire foundation is intentionally pure and in-process:
 - [Turn-preamble action-boundary research](docs/research/turn-preamble-action-boundary-spike.md)
 - [Legal Actions v1 specification](docs/specs/legal-actions-v1.md)
 - [Legal Actions v1 technical design](docs/design/legal-actions-v1.md)
+- [Player intent input and Needle feasibility research](docs/research/player-intent-input-and-needle-feasibility.md)
+- [Player Intent Composer v1 proposed specification](docs/specs/player-intent-composer-v1.md)
+- [Player Intent Composer v1 proposed technical design and delivery plan](docs/design/player-intent-composer-v1.md)
 - [Operation-Stage Preamble research](docs/research/operation-stage-preamble-spike.md)
 - [Weather Determination v1 specification](docs/specs/weather-determination-v1.md)
 - [Weather Determination v1 technical design](docs/design/weather-determination-v1.md)

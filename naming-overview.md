@@ -122,6 +122,12 @@ Then we can say:
 
 That's much nicer than "open the frontend."
 
+For future complex decisions, Maproom may be prompt-forward without becoming a chatbot or authority
+boundary. A few contextual suggested approaches, natural language, map/list interaction, and direct
+fields edit one visible private typed intent draft. The player corrects and confirms that draft
+before Staff planning, then separately confirms the exact current legal order before the Umpire
+adjudicates. See the proposed [Player Intent Composer v1](docs/specs/player-intent-composer-v1.md).
+
 ---
 
 # 3. Staff — deterministic/scripted planning

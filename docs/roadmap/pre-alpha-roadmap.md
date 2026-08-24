@@ -83,12 +83,20 @@ Combat loop <--------------------------+
            |
            v
 Working pre-alpha skeleton
-           |
-           v
-Remaining Land systems + minimal Maproom
+           |\
+           | +----> Select representative Command intent
+           |             |
+           |             v
+           |       No-model intent prototype
+           |             |
+           v             v
+Remaining Land systems + deterministic minimal Maproom
            |
            v
 Six-turn playable MVP
+           |
+           v
+Optional parser evidence gate
 ```
 
 ## Current delivery status
@@ -103,6 +111,7 @@ Six-turn playable MVP
 | Working pre-alpha skeleton | Not reached | Requires one authentic movement/contact/combat loop with replay |
 | First-scenario content and remaining Land systems | Milestone-level; not started | Re-estimate after the skeleton exposes exercised-rule and transcription scope |
 | Campaign lifecycle and Maproom | Milestone-level; not started | Requires stable playable authority, Chronicle persistence, and save/resume contracts |
+| Player Intent Composer | Reviewed direction; not started | After the Sprint 5 skeleton, select one representative multi-field decision; prototype without a model before Sprint 8; evaluate Needle only after the deterministic MVP path works |
 | Exercise Harness | Single-Exercise path implemented; serial Maneuvers next | Pairing remains later and does not block engine mechanics |
 
 The roadmap deliberately distinguishes foundation maturity from playable breadth. The architecture
@@ -225,6 +234,41 @@ Task 014 is an enabling regression-instrumentation track, not additional gamepla
 work may return to Organization/stage entry and Reserve before Task 015 paired comparison; pairing
 does not block the authoritative gameplay dependency graph. Task 016 remains the final Harness-v1
 closeout after pairing is eventually delivered.
+
+## Cross-cutting future player interaction: Player Intent Composer v1
+
+**Capability:** `INTENT-001`
+
+**Status:** Product direction and delivery plan independently reviewed; implementation not
+authorized and not part of the current sprint
+
+**Goal:** Let a player express bounded, combinatorial Command intent through contextual suggested
+approaches, short language, map/list interaction, or structured fields that all edit one visible
+private typed draft. Deterministic validation may surface at most two automatic clarification
+questions. The player confirms intent before deterministic Staff planning and separately confirms a
+current legal order before Umpire adjudication.
+
+This track attaches to demonstrated gameplay decisions rather than preceding them:
+
+1. **After the Sprint 5 skeleton:** select one representative multi-field decision and classify each
+   field as Command intent, Staff planning choice, or Umpire rule. Resolve starter source/precedence
+   and the future plan-to-Legal-Action binding before production contracts.
+2. **Between Sprint 5 and Sprint 8:** run an isolated no-model rules-lab prototype with synthetic
+   Staff-plan fixtures. Prove starters are understood as non-exhaustive, the typed interpretation is
+   correctable, every task works through deterministic controls, and local hot-seat transitions
+   isolate outgoing strategic data.
+3. **During Sprint 8:** integrate one deterministic vertical slice through authorized observation,
+   intent opportunity, private draft, validation, Staff plan, final review, and current legal-action
+   revalidation. The first playable MVP cannot depend on a model.
+4. **After the deterministic MVP path works:** build the retained corpus and deterministic baseline,
+   then evaluate Needle behind the replaceable parser adapter. Parser adoption or production rollout
+   requires the separate evidence gate below and must not block rules, campaign, or Maproom delivery.
+
+The reviewed [research](../research/player-intent-input-and-needle-feasibility.md),
+[specification](../specs/player-intent-composer-v1.md), and
+[technical delivery plan](../design/player-intent-composer-v1.md) govern this future track. Its
+private drafts and parser are not Core authority, autonomous commander `DecisionProposal` values, or
+an alternate Intelligence submission path.
 
 ## Sprint 2: Rules laboratory and legal-action boundary
 
@@ -498,6 +542,11 @@ reserve release in sequence.
 Complete movement, contact, combat, loss application, and reserve release in the rules laboratory;
 restart from the seed/event log and obtain the same result. This is the working pre-alpha skeleton.
 
+At this checkpoint, execute Player Intent Composer Phase 0: select the representative multi-field
+decision, classify its Command/Staff/Umpire ownership, and revalidate the intent plan against the
+proven action vocabulary. This is a planning gate, not permission to delay or couple Sprint 5 to UI
+or model work.
+
 ## Post-skeleton milestones toward the first playable MVP
 
 ### Sprint 6 - Scenario Group One content
@@ -525,12 +574,24 @@ commitment to force every subsystem into one oversized change.
 - Start or resume the first scenario through the authoritative host.
 - Render an original schematic map, selectable formations, legal actions, phase status, and
   Chronicle explanations.
+- For one representative strategic decision, provide contextual non-exhaustive suggested
+  approaches, a custom language path, direct map/list/form editing, and one synchronized private
+  typed intent draft.
+- Use deterministic validation and at most two automatically surfaced clarification questions;
+  keep every task complete through structured controls when no parser exists.
+- Keep intent confirmation, deterministic Staff-plan review, and final current legal-action
+  submission as distinct state-bound steps. Do not invent a plan/batch authority shape inside
+  Maproom; integrate only after the governing Legal Actions extension is approved.
 - Support local hot-seat play, save/checkpoint, restart, and deterministic replay.
+- Treat every local seat handoff as a privacy boundary: invalidate prior-seat work and isolate
+  drafts, utterances, parser/worker state, late responses, DOM/live-region content, and browser
+  storage before the incoming seat can interact.
 - Instrument or record decision cadence, consecutive interaction bursts, pauses, and routine versus
   meaningful player choices needed by `WEB-PACE-EVAL-001`; this evidence is product research, not
   authority inside the game.
 - Keep model-backed Intelligence disabled; a deterministic scripted policy may be added only after
-  the legal-action surface and fallback behavior are complete.
+  the legal-action surface and fallback behavior are complete. Needle is not required for Sprint 8
+  or the first playable MVP.
 
 ### MVP fidelity gate
 
@@ -538,9 +599,27 @@ commitment to force every subsystem into one oversized change.
 - Known ambiguities have adopted rulings; unsupported mechanics are zero.
 - Setup and victory outputs have been independently cross-checked.
 - Two local players can complete all six turns through Maproom.
+- Every decision, including the representative intent-composer slice, remains completable without a
+  model; the next hot-seat player cannot recover the prior player's private composition state.
 - Save/resume and seed/event replay reproduce the same campaign.
 - Fog-of-war and hidden choices pass negative disclosure tests.
 - Rights-sensitive assets have documented permission or original replacements.
+
+### Post-MVP optional parser evidence gate (`INTENT-PARSER-EVAL-001`)
+
+This gate does not block the six-turn deterministic MVP. It blocks adding Needle or another parser
+to production Maproom after the no-model composer is complete.
+
+- Retain a consent-safe, versioned corpus covering explicit, ambiguous, contradictory, unsupported,
+  typo/speech-like, and adversarial orders for the representative schemas.
+- Compare manual structured entry, contextual starters, deterministic aliases, base Needle, and a
+  larger constrained model only when needed to diagnose a size-versus-interaction failure.
+- Require the semantic, refusal, correction, privacy, accessibility, offline, latency, memory, and
+  upgrade thresholds in the Player Intent Composer v1 specification.
+- Pin provider/model/schema versions and prove unavailable or disabled parsing leaves the complete
+  deterministic composer and campaign path unchanged.
+- Produce a decision record that adopts, narrows, or rejects each deployment target. Failure keeps
+  the hybrid composer and removes the parser from the release plan without changing authority.
 
 ### Post-MVP web-play pacing evidence gate (`WEB-PACE-EVAL-001`)
 
@@ -573,6 +652,7 @@ delegation, and notification implementation without evidence.
 | Large mutable campaign state | Replay and concurrency defects | Events as authority, snapshots as checkpoints, state-version validation |
 | Hidden-state leakage | Invalid game and security failure | Side-specific observations, negative tests, no provider access to hidden state |
 | UI arrives before rules stabilize | Polished but incorrect demo | Developer harness first, Maproom after the complete combat skeleton |
+| Parser work starts before the interaction is proven | Provider-driven UI, rework, and MVP delay | No-model prototype after Sprint 5; deterministic MVP first; `INTENT-PARSER-EVAL-001` afterward |
 
 ## Decision checkpoints
 
@@ -581,9 +661,15 @@ delegation, and notification implementation without evidence.
 3. **Before Sprint 4:** verify the turn preamble reaches a legal player phase without a generic
    sequence bypass.
 4. **After Sprint 5:** review the working skeleton and re-estimate scenario ingestion.
-5. **Before Sprint 6:** approve the published content-pack and rights workflow.
-6. **At MVP:** perform rules-fidelity, security, and code-quality reviews before calling it playable.
-7. **After MVP, before hosted lifecycle work:** execute `WEB-PACE-EVAL-001`; insufficient coverage
+5. **After Sprint 5:** select the representative Player Intent Composer decision and approve its
+   Command/Staff/Umpire classification before experimental contracts.
+6. **Before Sprint 6:** approve the published content-pack and rights workflow.
+7. **Before Sprint 8:** pass the no-model intent-composer interaction and hot-seat isolation gate;
+   unresolved plan-to-Legal-Action binding blocks the real Staff slice, not deterministic Maproom.
+8. **At MVP:** perform rules-fidelity, security, and code-quality reviews before calling it playable.
+9. **After MVP, before parser integration:** execute `INTENT-PARSER-EVAL-001`; an insufficient result
+   leaves the deterministic composer intact and blocks model/runtime adoption.
+10. **After MVP, before hosted lifecycle work:** execute `WEB-PACE-EVAL-001`; insufficient coverage
    remains a recorded gap and cannot silently approve Cruise/Engagement timing for long campaigns.
 
 ## Traceability
@@ -599,3 +685,8 @@ The accepted web-play decisions, independent-review reconciliation, and `WEB-017
 [persona/web-play synthesis](../research/persona-models-and-web-play-synthesis.md) and
 [web-play shape spike](../research/sandtable-web-play-shape-spike.md). `WEB-PACE-EVAL-001` is the
 roadmap evidence gate for `WEB-022`.
+The reviewed Player Intent Composer direction, requirement/acceptance IDs, staged tasks, and parser
+gates are retained in its [research](../research/player-intent-input-and-needle-feasibility.md),
+[specification](../specs/player-intent-composer-v1.md), and
+[technical design](../design/player-intent-composer-v1.md). `INTENT-PARSER-EVAL-001` maps to the
+specification's parser-adoption thresholds and begins only after deterministic Maproom play.
