@@ -19,7 +19,9 @@ public static class ReadjudicationVerifier
                 StringComparison.Ordinal))
             return FailedWithoutReplay(expected);
 
-        var start = CampaignExercises.Begin(ExerciseExecutor.CreateRequest(manifest));
+        var start = CampaignExercises.Begin(ExerciseExecutor.CreateRequest(
+            manifest,
+            expected.SeedLedger.Identity));
         if (!start.IsStarted) return FailedWithoutReplay(expected);
         var session = start.Session!;
         var readjudicatedTranscript = new List<byte[]>();

@@ -4,8 +4,8 @@ The important caveat is that the shared backend should remain **optional and non
 
 ## Current local simulation harness
 
-The repository now includes the first in-process `Cna.ExerciseRunner` increment. It is separate
-from the intelligence/services plane: one checked-in **Exercise** creates a fresh opaque
+The repository now includes an in-process `Cna.ExerciseRunner` that is separate from the
+intelligence/services plane. One checked-in **Exercise** creates a fresh opaque
 `Cna.Core.Exercises` session, queries and submits through the shared legal-action execution path,
 stops at the Operation Stage 1 Organization boundary, and verifies both Core reconstruction and a
 second fresh-session re-adjudication. The runner records normalized inputs, Git/build identity,
@@ -17,10 +17,19 @@ available noncanonical operation/phase timing on failure plus a structured artif
 trace after mandatory reader validation. Separate checked exploratory and clean-baseline fixtures
 exercise the two build-identity policies.
 
-This increment is local developer instrumentation only. It is not registered in AppHost, performs
-no model or remote I/O, cannot attach to a production campaign, and does not yet implement serial
-Maneuvers, paired reports, side-safe exports, or War College orchestration. The governing contracts
-and remaining delivery gates are in [Exercise Harness v1](docs/specs/exercise-harness-v1.md) and its
+The checked two-child **Maneuver** fixture adds a strict canonical `serial-unpaired` parent
+manifest. Only the parent supplies the root seed; each ordered child receives an explicit Maneuver
+ID and ordinal identity and runs synchronously through the same no-console post-admission
+coordinator. The aggregate path opens each completed child bundle once, semantically validates its
+retained evidence and re-adjudication proof, and checks the seed-ledger identity before counting it.
+One canonical report reconciles every child state and hashes only deterministic material; elapsed
+time, throughput, local paths, and artifact-manifest hashes remain separate diagnostics. Report
+creation is transactional and a strict readback must succeed before the CLI claims completion.
+
+This harness is local developer instrumentation only. It is not registered in AppHost, performs no
+model or remote I/O, cannot attach to a production campaign, and does not implement paired reports,
+side-safe exports, or War College orchestration. The governing contracts and remaining delivery
+gates are in [Exercise Harness v1](docs/specs/exercise-harness-v1.md) and its
 [technical design](docs/design/exercise-harness-v1.md).
 
 ```text
@@ -656,25 +665,28 @@ Roadmap placement is explicit: select the representative decision after the Spri
 skeleton, run the no-model interaction prototype before Sprint 8, integrate the deterministic slice
 with Minimal Maproom, and evaluate any parser only after the deterministic MVP path works.
 
-The partially implemented Exercise Harness v1 is trusted local developer instrumentation for
-deterministic, freshly created campaign runs. Its delivered single-Exercise path keeps the Umpire
-authoritative through an opaque
-Exercise-only Core capability that shares the existing creation and legal-action execution
-primitives; the runner owns orchestration, transactional artifacts, diagnostics, and reports but no
-rules or state mutation. The first checked-in Exercise stops at the currently implemented
-Organization boundary, proves event-history reconstruction and fresh-session re-adjudication
-separately, and fails closed for replay, invariant, build-identity, or artifact faults. The
-Maneuvers layer is the serial batch layer, including paired variants with identical declared
-initial conditions and initial role streams but no post-divergence synchronization claim. V1 bundles are
-`trusted-authority`; side-safe exports, full victory runs, model controllers, and distributed
-execution remain explicitly deferred. See the retained
+The implemented serial-unpaired portion of Exercise Harness v1 is trusted local developer
+instrumentation for deterministic, freshly created campaign runs. Its Exercise path keeps the
+Umpire authoritative through an opaque Exercise-only Core capability that shares the existing
+creation and legal-action execution primitives; the runner owns orchestration, transactional
+artifacts, diagnostics, and reports but no rules or state mutation. The checked Exercises stop at
+the currently implemented Organization boundary, prove event-history reconstruction and
+fresh-session re-adjudication separately, and fail closed for replay, invariant, build-identity, or
+artifact faults. A Maneuver adds strict parent admission, explicit child identity, synchronous
+coordination, one-read semantic aggregation, and a deterministic fingerprinted report without
+changing that authority boundary. V1 bundles and reports are `trusted-authority`; paired
+comparison, side-safe exports, full victory runs, model controllers, and distributed execution
+remain explicitly deferred. See the retained
 [capability/replay research](docs/research/exercise-capability-and-replay-spike.md),
 [artifact research](docs/research/exercise-evidence-artifact-spike.md),
 [reproducibility research](docs/research/exercise-reproducibility-and-pairing-spike.md), governing
 [specification](docs/specs/exercise-harness-v1.md), and
-[technical design](docs/design/exercise-harness-v1.md). Serial Maneuvers are the next bounded
-cross-cutting track; paired comparison remains later and does not block Organization/stage-entry
-engine work.
+[technical design](docs/design/exercise-harness-v1.md). The next authoritative-engine planning
+package is the [Operation-Stage Entry research](docs/research/operation-stage-entry-spike.md),
+proposed [specification](docs/specs/operation-stage-entry-v1.md), and proposed
+[technical design](docs/design/operation-stage-entry-v1.md). Its final planning review is Ready,
+but owner approval and the Task 001 contract freeze still gate implementation. Paired comparison remains
+later and does not block that engine work.
 
 [1]: https://learn.microsoft.com/en-us/dotnet/orleans/grains/external-tasks-and-grains?utm_source=chatgpt.com "External tasks and grains - .NET | Microsoft Learn"
 [2]: https://learn.microsoft.com/en-us/aspnet/core/grpc/performance?view=aspnetcore-10.0&utm_source=chatgpt.com "Performance best practices with gRPC | Microsoft Learn"

@@ -218,8 +218,20 @@ public static class ExerciseExecutor
 
     public static ExerciseExecutionResult Execute(
         ExerciseManifest manifest,
+        CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(manifest);
+        return Execute(
+            manifest,
+            ExerciseRunIdentity.Standalone(manifest.ExerciseId, manifest.RootSeed),
+            cancellationToken);
+    }
+
+    internal static ExerciseExecutionResult Execute(
+        ExerciseManifest manifest,
+        ExerciseRunIdentity identity,
         CancellationToken cancellationToken) =>
-        Execute(manifest, CoreExerciseExecutionRuntime.Instance, cancellationToken);
+        Execute(manifest, identity, CoreExerciseExecutionRuntime.Instance, cancellationToken);
 
     internal static ExerciseExecutionResult Execute(
         ExerciseManifest manifest,
@@ -227,8 +239,26 @@ public static class ExerciseExecutor
         CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(manifest);
+        return Execute(
+            manifest,
+            ExerciseRunIdentity.Standalone(manifest.ExerciseId, manifest.RootSeed),
+            runtime,
+            cancellationToken);
+    }
+
+    internal static ExerciseExecutionResult Execute(
+        ExerciseManifest manifest,
+        ExerciseRunIdentity identity,
+        IExerciseExecutionRuntime runtime,
+        CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(manifest);
+        ArgumentNullException.ThrowIfNull(identity);
         ArgumentNullException.ThrowIfNull(runtime);
-        var identity = ExerciseRunIdentity.Standalone(manifest.ExerciseId, manifest.RootSeed);
+        if (identity.RootSeed != manifest.RootSeed)
+            throw new ArgumentException(
+                "The run identity root seed must match the admitted Exercise manifest.",
+                nameof(identity));
         var seedLedger = ExerciseSeedLedger.Create(identity);
         var request = CreateRequest(manifest, identity);
         var checks = new List<ExerciseCheckResult>();

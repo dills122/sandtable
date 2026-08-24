@@ -1,8 +1,7 @@
 # Exercise Harness v1 Technical Design and Delivery Plan
 
-**Status:** In progress; Tasks 001-013 and single-Exercise observability hardening are implemented,
-the user-authorized final Task 014 planning review is complete and its finding is reconciled, and
-Tasks 014-016 remain unimplemented
+**Status:** Implemented and repository-verified through Task 014 serial-unpaired Maneuvers; Tasks
+015-016 remain pending
 
 **Date:** 2026-08-20
 
@@ -322,7 +321,7 @@ proofs, summaries/diagnostics, fallback construction, and transactional bundle w
 The coordinator performs no console I/O and returns the child process classification plus the
 completed bundle path when one was safely finalized. It does not return trusted aggregate facts.
 Standalone `exercise run` retains its existing pre-admission errors, derives the standalone
-identity, invokes the coordinator, and preserves exact output/exit behavior. `maneuvers run`
+identity, invokes the coordinator, and preserves exact output/exit behavior. `maneuver run`
 materializes an explicit Maneuver identity and invokes the same coordinator directly—never a
 subprocess, temporary manifest, or duplicated execution pipeline.
 
@@ -343,13 +342,16 @@ cannot request a later file reread.
 
 Before aggregation, the Maneuver requires the retained normalized manifest to equal the expected
 materialized child bytes, an exact seed-ledger Maneuver ID/root seed/ordinal/null-pair match, and the
-available build-identity manifest/ruleset/controller-configuration hashes to match. Profiles before
-`failed-executed` omit the ledger, so Task 014 cannot attribute them to a child even if their
-manifest/build bytes match; they become `bundle-identity-mismatch`. This intentionally means an
-early `build-identity-unavailable`, pre-execution cancellation, unexpected execution exception, or
-artifact fallback stops aggregation instead of being reported as that child's ordinary failure.
-A missing path becomes `completed-bundle-missing`; a reader rejection becomes `bundle-invalid`.
-These categories are separate from the Exercise failure catalog.
+available build-identity build mode plus manifest/ruleset/controller-configuration hashes to match.
+Profiles before `failed-executed` normally omit the ledger, so Task 014 cannot attribute them to a
+child even if their manifest/build bytes match; they become `bundle-identity-mismatch`. The sole
+non-attribution exception is cancellation observed after scheduling but before Core begin: a
+strictly reopened `failed-identified` bundle with coordinator exit `cancelled`, exact admitted
+manifest/build identity, cancelled run result, no seed ledger, and an empty execution footprint is
+represented as `not-run/cancelled`, never as a child outcome. Early build-identity failure,
+unexpected execution failure, artifact fallback, or any contradictory cancellation evidence stops
+aggregation. A missing path becomes `completed-bundle-missing`; a reader rejection becomes
+`bundle-invalid`. These categories are separate from the Exercise failure catalog.
 
 Task 014 also closes the current gap between structurally valid and semantically trusted bundles.
 New strict codecs parse accepted-action and step-evidence JSONL into defensive typed records. A
@@ -655,9 +657,9 @@ refactors. File names are expected targets; minor splits require the same owners
 
 #### `EXR-TASK-014` — Implement serial Maneuver and aggregate report
 
-- **Status:** initial and user-authorized final independent planning reviews completed; all findings
-  are accepted and reconciled in the current plan. Production implementation and acceptance
-  evidence remain pending user direction.
+- **Status:** implementation and reconciliation complete through slices 014A-014I. Focused,
+  project, and solution evidence is green; the checked fixture fingerprint is repeatable;
+  `just check` passes; and the pre-PR implementation review verdict is Ready.
 - **Depends on:** `EXR-TASK-012`, `EXR-TASK-013`.
 - **Scope:** runner contracts/orchestration/artifacts only. No `Cna.Core` behavior, parallelism,
   pairing/statistics, new controller, service, database, dashboard, or side-safe export.
@@ -678,7 +680,7 @@ refactors. File names are expected targets; minor splits require the same owners
 | --- | --- |
 | `EXR-014-DEC-001` | Task 014 admits ordered unpaired entries only. The manifest carries an explicit serial mode so Task 015 can add paired behavior without silently changing unpaired semantics. |
 | `EXR-014-DEC-002` | The Maneuver owns the sole root seed. Nested Exercise specifications omit root seed and campaign ID and are materialized only after Maneuver admission. |
-| `EXR-014-DEC-003` | A semantically valid, seed-ledger-identity-matched failed Exercise bundle does not stop later entries. Cancellation or inability to finalize, semantically validate, and identity-match trusted evidence stops execution and fails aggregation. |
+| `EXR-014-DEC-003` | A semantically valid, seed-ledger-identity-matched failed Exercise bundle does not stop later entries. Cancellation stops scheduling; inability to finalize, semantically validate, and identity-match trusted evidence stops execution and fails aggregation. A corroborated cancellation after scheduling but before Core begin is represented as not-run rather than as an attributable child failure. |
 | `EXR-014-DEC-004` | The report fingerprint covers only a canonical deterministic section. Durations, throughput, local paths, GUIDs, and machine data remain visibly separate diagnostics. |
 | `EXR-014-DEC-005` | Every aggregate fact comes from bytes retained by one successful `ExerciseBundleReader` validation. Aggregation neither trusts in-memory counters nor rereads files after validation. |
 | `EXR-014-DEC-006` | Any failed Exercise makes the Maneuver process nonzero while still retaining its report. Missing, corrupt, or unfinalizable evidence is an explicit aggregate failure, never a success or omission. |
@@ -686,8 +688,8 @@ refactors. File names are expected targets; minor splits require the same owners
 | `EXR-014-DEC-008` | The existing normalized Exercise manifest remains the child evidence contract. Maneuver admission materializes it with the parent seed; no second child-manifest bundle schema is introduced. |
 | `EXR-014-DEC-009` | Post-admission single-Exercise work is extracted behind one internal no-console coordinator. Both commands use it directly; Maneuver execution does not spawn a process or write a temporary manifest. |
 | `EXR-014-DEC-010` | The completed Maneuver artifact is one canonical report file with its own partial/final placement and strict readback. Child bundles are independent transactions and are never rolled back. |
-| `EXR-014-DEC-011` | Aggregation failure categories are distinct from Exercise failures. Any profile without an exact seed-ledger run identity—including all pre-executed profiles and artifact fallback—cannot be attributed to that child and is reported as identity mismatch. |
-| `EXR-014-DEC-012` | Cancellation stops before the next entry, selects the dedicated cancellation exit/status, and retains later entries as explicit not-run records. Ordinary child failures continue. |
+| `EXR-014-DEC-011` | Aggregation failure categories are distinct from Exercise failures. Only `succeeded`, `failed-executed`, `failed-reconstructed`, and `failed-readjudicated` are aggregate-eligible. Profiles without exact seed-ledger identity and `failed-summarized` cannot be attributed and stop aggregation, except the closed pre-Core cancellation shape in Decision 012. |
+| `EXR-014-DEC-012` | Cancellation stops before the next entry, selects the dedicated cancellation exit/status, and retains later entries as explicit not-run records. When cancellation lands after the scheduler check but before Core begin, a successfully reopened `failed-identified` bundle with exact admitted manifest/build identity, cancelled coordinator/result, and no ledger marks the current entry and tail not-run/cancelled without attribution. Reader corruption retains aggregation precedence. Ordinary attributable child failures continue. |
 | `EXR-014-DEC-013` | Maneuver admission is all-or-nothing before Core creation; duplicate Exercise IDs and child seed/campaign/pair/variant fields are rejected. |
 | `EXR-014-DEC-014` | `standalone.` is a reserved synthetic Maneuver-ID prefix. User-authored Maneuver IDs cannot enter that namespace, preventing collision with `ExerciseRunIdentity.Standalone`. |
 | `EXR-014-DEC-015` | Aggregate eligibility requires semantic cross-artifact validation, not only profile/path/hash/JSON-shape validation. Hash-valid reassembled contradictory bundles must fail readback. |
@@ -697,17 +699,17 @@ refactors. File names are expected targets; minor splits require the same owners
 
 Each slice begins with focused failing tests and leaves the existing single-Exercise command green.
 
-| Slice | Observable output | Dependencies | Acceptance and verification |
-| --- | --- | --- | --- |
-| `EXR-014A` — strict Maneuver admission | New `Artifacts/ManeuverManifestContracts.cs`, `ManeuverManifestCodec.cs`, codec tests, and canonical fixture/golden | Tasks 012-013 | Start with strict/golden/culture/order failures; prove exact bytes, nonempty/unique ordered entries, reserved `standalone.` namespace, parent-only seed, and full pre-run admission |
-| `EXR-014B` — explicit identity propagation | `ExerciseExecutor.cs`, `ReadjudicationVerifier.cs`, `ExerciseDiagnosticsWriter.cs`, `ExerciseSummaryWriter.cs`, and identity-focused tests | Tasks 012-013 | Start with Maneuver-identity failures; prove executor, ledger, campaign, re-adjudication, zero-step summary, and diagnostics never synthesize standalone identity |
-| `EXR-014C` — reusable run coordinator | New `Execution/ExerciseRunCoordinator.cs`, `ExerciseRunCommand.cs`, coordinator tests, and existing command tests | 014B | Start with standalone parity tests; extract post-admission work with no console I/O; preserve every existing standalone bundle/profile/exit/stdout/stderr/trace case |
-| `EXR-014D` — trusted semantic bundle view | `ExerciseBundleReader.cs`, new `ExerciseEvidenceCodec.cs`, new `ExerciseBundleSemanticValidator.cs`, reader tests, and semantic-validator tests | Tasks 012-013 | Start with rehashed-tampering/defensive-value tests; strictly retain manifest/build/ledger/result/check/proof/action/event/step facts from one read; enforce the exact profile/result/check/proof and cross-evidence matrix; bind success to admitted boundary/final evidence and reject victory; mutation/corruption/symlink/internal contradiction fail closed |
-| `EXR-014E` — report contract and fingerprint | New `ManeuverReportContracts.cs`, `ManeuverReportCodec.cs`, codec tests, and report golden | 014A | Start with invariant/fingerprint failures; prove exact canonical bytes, terminal/failure catalog order, the complete per-entry state/null matrix, one record per ordinal, count reconciliation, culture/order stability, and diagnostics exclusion |
-| `EXR-014F` — serial execution | New `Execution/ManeuverExecutionContracts.cs`, `ManeuverExecutor.cs`, and executor tests | 014A, 014C-014E | Start with scheduling/evidence failures; prove one-at-a-time manifest order, immediate one-read reopen, mandatory seed-ledger identity, ordinary eligible-failure continuation, early-profile/cancellation/aggregation stop, and explicit not-run tail |
-| `EXR-014G` — report transaction | New `ManeuverReportWriter.cs`, `ManeuverReportReader.cs`, and lifecycle tests | 014E | Start with failpoint/readback failures; prove confinement, regular-file-only exact tree, flush/move/readback, status placement, retained partial evidence, and no completed claim after failure |
-| `EXR-014H` — command and checked fixture | New `ManeuverRunCommand.cs`, `Program.cs`, command tests, and `scenarios/maneuvers/rules-lab.serial.v1.json` | 014F-014G | Start with CLI golden/integration failures; checked fixture has at least two unique successful entries; prove exact exits/output, manifest order, success and mixed-failure reports, cancellation, aggregate corruption injection, fixture smoke, and unchanged `exercise run` |
-| `EXR-014I` — reconciliation and gate | `README.md`, roadmap, `tech-design.md`, `naming-overview.md`, this design/spec, and retained command evidence | 014H | Update implemented status only after evidence; run focused project tests, solution MTP suite, fixture twice with fingerprint comparison, `just check`, `git diff --check`, and one normal pre-PR review |
+| Slice | Observable output | Dependencies | Acceptance and verification | Current status |
+| --- | --- | --- | --- | --- |
+| `EXR-014A` — strict Maneuver admission | New `Artifacts/ManeuverManifestContracts.cs`, `ManeuverManifestCodec.cs`, codec tests, and canonical fixture/golden | Tasks 012-013 | Start with strict/golden/culture/order failures; prove exact bytes, nonempty/unique ordered entries, reserved `standalone.` namespace, parent-only seed, and full pre-run admission | Implemented; admission/golden coverage is green within 252/252 ExerciseRunner tests. |
+| `EXR-014B` — explicit identity propagation | `ExerciseExecutor.cs`, `ReadjudicationVerifier.cs`, `ExerciseDiagnosticsWriter.cs`, `ExerciseSummaryWriter.cs`, and identity-focused tests | Tasks 012-013 | Start with Maneuver-identity failures; prove executor, ledger, campaign, re-adjudication, zero-step summary, and diagnostics never synthesize standalone identity | Implemented; identity and diagnostics propagation coverage is green within 252/252. |
+| `EXR-014C` — reusable run coordinator | New `Execution/ExerciseRunCoordinator.cs`, `ExerciseRunCommand.cs`, coordinator tests, and existing command tests | 014B | Start with standalone parity tests; extract post-admission work with no console I/O; preserve every existing standalone bundle/profile/exit/stdout/stderr/trace case | Implemented; coordinator and standalone parity coverage is green within 252/252. |
+| `EXR-014D` — trusted semantic bundle view | `ExerciseBundleReader.cs`, new `ExerciseEvidenceCodec.cs`, new `ExerciseBundleSemanticValidator.cs`, reader tests, and semantic-validator tests | Tasks 012-013 | Start with rehashed-tampering/defensive-value tests; strictly retain manifest/build/ledger/result/check/proof/action/event/step facts from one read; enforce the exact profile/result/check/proof and cross-evidence matrix; bind success to admitted boundary/final evidence and reject victory; mutation/corruption/symlink/internal contradiction fail closed | Implemented; focused semantic suite 41/41 green. |
+| `EXR-014E` — report contract and fingerprint | New `ManeuverReportContracts.cs`, `ManeuverReportCodec.cs`, codec tests, and report golden | 014A | Start with invariant/fingerprint failures; prove exact canonical bytes, terminal/failure catalog order, the complete per-entry state/null matrix, one record per ordinal, count reconciliation, culture/order stability, and diagnostics exclusion | Implemented; included in focused report suite 17/17 green. |
+| `EXR-014F` — serial execution | New `Execution/ManeuverExecutionContracts.cs`, `ManeuverExecutor.cs`, and executor tests | 014A, 014C-014E | Start with scheduling/evidence failures; prove one-at-a-time manifest order, immediate one-read reopen, mandatory seed-ledger identity, ordinary eligible-failure continuation, early-profile/cancellation/aggregation stop, and explicit not-run tail | Implemented; focused executor suite 23/23 green, including review-fix profile and cancellation matrices. |
+| `EXR-014G` — report transaction | New `ManeuverReportWriter.cs`, `ManeuverReportReader.cs`, and lifecycle tests | 014E | Start with failpoint/readback failures; prove confinement, regular-file-only exact tree, flush/move/readback, status placement, retained partial evidence, and no completed claim after failure | Implemented; focused report contract/transaction suite 17/17 green. |
+| `EXR-014H` — command and checked fixture | New `ManeuverRunCommand.cs`, `Program.cs`, command tests, and `scenarios/maneuvers/rules-lab.serial.v1.json` | 014F-014G | Start with CLI golden/integration failures; checked fixture has at least two unique successful entries; prove exact exits/output, manifest order, success and mixed-failure reports, cancellation, aggregate corruption injection, fixture smoke, and unchanged `exercise run` | Implemented; focused command/fixture suite 10/10 green. |
+| `EXR-014I` — reconciliation and gate | `README.md`, roadmap, `tech-design.md`, `naming-overview.md`, this design/spec, and retained command evidence | 014H | Update implemented status only after evidence; run focused project tests, solution MTP suite, fixture twice with fingerprint comparison, `just check`, `git diff --check`, and one normal pre-PR review | Complete; 252/252 ExerciseRunner and 562/562 solution tests green, `just check` passes, two fixture runs share the same fingerprint, and pre-PR review is Ready. |
 
 The normal five-primary-file target applies to 014A-014H; fixtures/goldens are generated evidence,
 not refactor permission. Slice 014I is the explicit documentation-close exception. Checkpoints are:
@@ -719,13 +721,13 @@ not refactor permission. Slice 014I is the explicit documentation-close exceptio
 
 ##### Task 014 requirement-to-evidence map
 
-| Governing requirement / decision | Owning slices | Required evidence before the checkpoint closes |
-| --- | --- | --- |
-| `EXR-001`, `EXR-017`, `EXR-023`, `EXR-024`; `EXR-014-DEC-001`, 002, 008, 013-014 | 014A-014B | Manifest golden/strict-reader/reserved-namespace matrix; parent-seed materialization and Maneuver campaign/ledger identity goldens; no Core start on any invalid child |
-| `EXR-009`, `EXR-010`, `EXR-022`; `EXR-014-DEC-007`, 009 | 014B-014C | Re-adjudication/summary/diagnostic identity tests and complete standalone command parity suite; diff contains no `Cna.Core` behavior change |
-| `EXR-009`-`EXR-014`, `EXR-021`, `EXR-023`; `EXR-014-DEC-003`, 005, 008, 011, 015-016 | 014D, 014F | One-read semantic bundle view; exact manifest/mandatory ledger/build checks; proof/action/event/step/check/outcome coherence; altered-boundary/fabricated-victory and other rehashed tampering, mixed outcome, corrupt, missing, mismatch, early-profile, and not-run-tail tests |
-| `EXR-011`, `EXR-015`, `EXR-021`, `EXR-023`; `EXR-014-DEC-004`, 006, 010, 012 | 014E, 014G | Report golden/strict-reader/count/nullability/catalog tests; timing/path variance fingerprint test; writer failpoint tree and final placement/readback tests |
-| `EXR-NFR-002`, `EXR-NFR-004`, `EXR-NFR-005`, `EXR-AC-009` | 014H-014I | Exact CLI exit/output tests; checked fixture and mixed-failure integration; cancellation and aggregate-failure cases; project/solution/`just check` gates and retained smoke fingerprints |
+| Governing requirement / decision | Owning slices | Required evidence before the checkpoint closes | Current evidence/status |
+| --- | --- | --- | --- |
+| `EXR-001`, `EXR-017`, `EXR-023`, `EXR-024`; `EXR-014-DEC-001`, 002, 008, 013-014 | 014A-014B | Manifest golden/strict-reader/reserved-namespace matrix; parent-seed materialization and Maneuver campaign/ledger identity goldens; no Core start on any invalid child | Implemented and green within the complete 252/252 ExerciseRunner suite. |
+| `EXR-009`, `EXR-010`, `EXR-022`; `EXR-014-DEC-007`, 009 | 014B-014C | Re-adjudication/summary/diagnostic identity tests and complete standalone command parity suite; diff contains no `Cna.Core` behavior change | Implemented; explicit run identity, campaign/ledger, re-adjudication, zero-step summary, diagnostics, coordinator, and standalone parity coverage is green within 252/252; Task 014 made no Core behavior change. |
+| `EXR-009`-`EXR-014`, `EXR-021`, `EXR-023`; `EXR-014-DEC-003`, 005, 008, 011, 015-016 | 014D, 014F | One-read semantic bundle view; exact manifest/mandatory ledger/build checks; proof/action/event/step/check/outcome coherence; altered-boundary/fabricated-victory and other rehashed tampering, mixed outcome, corrupt, missing, mismatch, early-profile, and not-run-tail tests | Implemented; semantic suite 41/41 and executor suite 23/23 green, including authenticated genuine replay-failure profiles, early-profile and executed manifest/build controls, the closed profile matrix, and a semantically empty post-scheduling/pre-Core cancellation race. |
+| `EXR-011`, `EXR-015`, `EXR-021`, `EXR-023`; `EXR-014-DEC-004`, 006, 010, 012 | 014E, 014G | Report golden/strict-reader/count/nullability/catalog tests; timing/path variance fingerprint test; writer failpoint tree and final placement/readback tests | Implemented; report contract/transaction suite 17/17 green. |
+| `EXR-NFR-002`, `EXR-NFR-004`, `EXR-NFR-005`, `EXR-AC-009` | 014H-014I | Exact CLI exit/output tests; checked fixture and mixed-failure integration; cancellation and aggregate-failure cases; project/solution/`just check` gates and retained smoke fingerprints | Complete: command/fixture 10/10, ExerciseRunner 252/252, solution 562/562, warning-free build, `just check`, identical twice-run smoke fingerprint, and Ready pre-PR review. |
 
 ##### Task 014 risks and stop conditions
 
@@ -733,9 +735,11 @@ not refactor permission. Slice 014I is the explicit documentation-close exceptio
   Slice 014C is blocked until characterization tests cover every current success and failure path;
   any intentional byte/exit change requires a reviewed contract amendment.
 - **False attribution:** a valid artifact is not necessarily the intended child. Aggregation accepts
-  it only after exact expected-manifest, mandatory seed-ledger identity, and build comparisons.
-  Pre-executed profiles are aggregation identity failures. The `standalone.` namespace is reserved;
-  no in-memory outcome may fill a missing trusted field.
+  it only after an aggregate-eligible profile, exact expected-manifest, mandatory seed-ledger
+  identity, and build comparisons. Pre-executed and `failed-summarized` profiles are aggregation
+  identity failures. The closed pre-Core cancellation case is not attributed: after successful
+  readback it creates only a cancelled not-run tail. The `standalone.` namespace is reserved; no
+  in-memory outcome may fill a missing trusted field.
 - **Hash-valid semantic contradiction:** artifact hashes prove retained bytes, not that those bytes
   agree. Slice 014D adds strict evidence codecs, cross-artifact hashes/counts/coordinates, the closed
   profile/result/check/proof matrix, admitted-boundary/final-snapshot/outcome anchoring, explicit
@@ -752,8 +756,8 @@ not refactor permission. Slice 014I is the explicit documentation-close exceptio
   only. Any pair key/variant comparison, parallel scheduler, significance metric, threshold, or
   optimization based on these reports stops for Task 015 or a separately reviewed amendment.
 
-The three accepted research spikes already settle capability, artifact, and seed/pair boundaries;
-Task 014 needs no additional research spike before implementation. The original fresh-context
+The three accepted research spikes settle capability, artifact, and seed/pair boundaries. The
+original fresh-context
 review of this specification/design diff is complete and reconciled. Renewed user direction
 authorized exactly one fresh-context final review of the corrected diff. It was not a recursive
 review tree, and no further planning review starts without another explicit request.
@@ -771,7 +775,7 @@ second review task.
 | P1 | Hash-valid reader output did not semantically validate accepted actions, proof status, or cross-artifact relationships used by aggregation. | Accepted. Slice 014D now owns strict evidence codecs, a closed semantic validator, recomputed evidence/proof hashes, count/coordinate/check/profile coherence, and mutate-then-rehash rejection tests. |
 | P2 | Entry nullability/not-run values and terminal-kind ordering were incomplete for a canonical strict report. | Accepted. The spec now has a normative four-state matrix, exact not-run reasons, required/null count/hash behavior, and `boundary-reached` before `victory-reached` ordering. |
 
-Because those corrections tighten trust and canonical-contract behavior after a `Not Ready`
+Because those corrections tightened trust and canonical-contract behavior after a `Not Ready`
 verdict, production implementation remained blocked until the authorized final review below.
 
 ##### Task 014 final independent-review reconciliation
@@ -786,17 +790,37 @@ started.
 | --- | --- | --- |
 | P1 | Semantic validation did not bind a successful run-result terminal outcome to the admitted terminal boundary and final evidence, so a rehashed changed `BoundaryReached` or fabricated `VictoryReached` could corrupt terminal counts. | Accepted. Task 014 success now requires `BoundaryReached(manifest.terminalBoundary)`, the decoded final snapshot and final step when present must agree, zero-step success must begin/end at that boundary, `VictoryReached` is rejected, and both mutations receive rehashed-tampering tests. |
 
-The final reviewer independently confirmed that the early-profile identity/`standalone.` finding and
-the report state/nullability/order finding were closed. It found semantic aggregate validation only
-partially closed because of the terminal anchor above; the current plan incorporates that missing
-invariant. Production implementation and acceptance evidence remain pending user direction.
+The final planning reviewer independently confirmed that the early-profile identity/`standalone.`
+finding and the report state/nullability/order finding were closed. It found semantic aggregate
+validation only partially closed because of the terminal anchor above; implementation now enforces
+that invariant and its rehashed-tampering coverage is green. Preliminary implementation-review
+findings about the post-scheduling cancellation race and artifact-profile eligibility were also
+corrected and are covered by the 23/23 executor suite. The final implementation review additionally
+closed replay-proof authentication, failure-profile, maximum-step, and CLI-confinement gaps before
+returning a Ready verdict.
+
+The later user-requested final-product independent review is a separate loop bounded to three fresh
+instances. Instances 1 and 2 returned `Not ready` and exposed additional manifest-control,
+replay/cancellation-evidence, build-mode, documentation, and downstream Stage Entry migration-map
+gaps. All findings are accepted: the semantic suite now covers the complete execution-control and
+empty pre-Core profile matrix, the executor requires the same empty footprint, and the Stage Entry
+task map includes the audited snapshot/version consumers. Instance 3 returned `Ready with
+non-blocking follow-up`: its sole P2 was reader-level early-profile manifest/build consistency,
+which was then corrected with focused rehashed tests. The independent-review limit is exhausted;
+the bounded post-review patch received a separate Ready code-quality verdict.
 
 Task 015 paired comparison remains a separate later track. It is not a dependency of
 Organization/stage-entry or Reserve engine work, so the authoritative gameplay track may resume
-after Task 014.
+after Task 014. The proposed next engine track is documented in the
+[Operation-Stage Entry research](../research/operation-stage-entry-spike.md),
+[specification](../specs/operation-stage-entry-v1.md), and
+[technical design](operation-stage-entry-v1.md). Its final planning review is Ready, but owner
+decision and the Task 001 contract freeze still gate implementation.
 
 #### `EXR-TASK-015` — Implement paired comparison contract/report
 
+- **Status:** next bounded Harness task; not started. It is optional instrumentation and does not
+  block the gameplay-engine dependency graph.
 - **Depends on:** `EXR-TASK-014`.
 - **Primary files:** update `ManeuverExecutor.cs`, new `Artifacts/PairedReportWriter.cs`, paired manifest,
   and one paired integration test.
@@ -848,27 +872,28 @@ runnable increment, not later polish.
 
 ## Traceability matrix
 
-Status distinguishes the implemented single-Exercise boundary from deferred Maneuver work.
+Status distinguishes the implemented single-Exercise and serial-unpaired Maneuver boundary from
+deferred paired comparison and repository-close work.
 
 | Requirements / decisions | Delivery tasks | Verification / retained evidence | Status |
 | --- | --- | --- | --- |
-| `EXR-001`, `EXR-006`, `EXR-007`, `EXR-008`; terminal/failure separation | 006, 007, 012 | Manifest/result goldens, CLI exits, success/cancellation/admission/artifact-failure bundles | implemented for one Exercise |
+| `EXR-001`, `EXR-006`, `EXR-007`, `EXR-008`; terminal/failure separation | 006, 007, 012, 014 | Manifest/result goldens, CLI exits, success/cancellation/admission/artifact-failure bundles and serial reports | implemented through serial Maneuvers |
 | `EXR-002`, `EXR-003`, `EXR-004`, `EXR-005`; isolated capability and shared primitives | 001-004 | Core parity, reflection/type-graph, rejection nonmutation tests | implemented |
 | `EXR-009`; history reconstruction | 005, 008, 012 | Reconstruction proof file and corrupt-history tests | implemented |
 | `EXR-010`; action-identity re-adjudication | 008, 012 | Re-adjudication proof and independent action/event/final mismatch tests | implemented |
-| `EXR-011`, `EXR-012`, `EXR-023`; canonical/versioned evidence | 006, 008-010, 012-014 | Golden/strict-reader/order tests and reader-validated CLI bundles; Maneuver evidence pending | implemented for one Exercise |
+| `EXR-011`, `EXR-012`, `EXR-023`; canonical/versioned evidence | 006, 008-010, 012-014 | Golden/strict-reader/order tests, reader-validated CLI bundles, semantic child validation, and canonical Maneuver reports | implemented through serial Maneuvers; paired report deferred |
 | `EXR-013`, `EXR-014`; manifest-last transaction | 009, 010, 012 | Writer failpoint trees, rejected partials, reopened success/failure bundles | implemented |
-| `EXR-015`; confidentiality/detail separation | 006, 009, 010, 012 + observability hardening | Cross-detail evidence-invariance and monotonic-tier tests; all files remain trusted-authority | implemented for one Exercise |
+| `EXR-015`; confidentiality/detail separation | 006, 009, 010, 012, 014 + observability hardening | Cross-detail evidence-invariance and monotonic-tier tests; child bundles and Maneuver reports remain trusted-authority | implemented through serial Maneuvers |
 | `EXR-016`; side-safe export deferred | 016 and future separately authorized task | Spec non-goal; absence/public-API tests; future whole-tree noninterference evidence | deferred |
-| `EXR-017`; seed domain separation | 013, 014 | Standalone seed goldens/ledger/culture/order implemented; Maneuver derivation pending | partially implemented |
+| `EXR-017`; seed domain separation | 013, 014 | Standalone and serial-Maneuver identity/seed-ledger goldens, culture/order, campaign, re-adjudication, summary, and diagnostics tests | implemented for standalone and unpaired Maneuvers; paired key semantics deferred to Task 015 |
 | `EXR-018`; honest pairing | 013-015 | `EXR-AC-010`; paired campaign/seed goldens, ledgers, and report golden | planned |
 | `EXR-019`, `EXR-020`; clean baseline and dirty exploration | 011, 012 + observability hardening | Fake/integration identity cases, emitted build identity, and separate checked baseline/exploratory fixtures | implemented |
-| `EXR-021`; serial validated aggregation | 014, 015 | `EXR-AC-009`, 010; semantic bundle-reader aggregation tests and reports | Task 014 planning review reconciled; implementation pending user direction |
-| `EXR-022`; separate correlated diagnostics | 007, 012, 014 + observability hardening | Successful and failed query/controller/submission/check/proof correlation, debug failure timings, artifact readback trace, and command-boundary cross-detail evidence test; Maneuver correlation pending | implemented for one Exercise |
+| `EXR-021`; serial validated aggregation | 014, 015 | `EXR-AC-009`; semantic bundle-reader 41/41, executor 23/23, report 17/17, and command/fixture 10/10 suites; `EXR-AC-010` remains paired | serial aggregation implemented and focused-verified; pairing deferred |
+| `EXR-022`; separate correlated diagnostics | 007, 012, 014 + observability hardening | Successful and failed query/controller/submission/check/proof correlation, explicit Maneuver identity, aggregate noncanonical diagnostics, debug failure timings, artifact readback trace, and command-boundary cross-detail evidence | implemented through serial Maneuvers |
 | `EXR-024`, `EXR-025`; deterministic selection and single active audience | 006, 007, 012 | Executor controller/cardinality/step-bound tests and checked-in fixture | implemented |
 | `EXR-026`; ordered invariant catalog | 006-008, 012 | Strict check codec, ordering, scope, failure, and emitted-bundle tests | implemented |
-| `EXR-NFR-001`-`005`; reproducibility, reliability, boundaries, quality | 001-016 | All acceptance scenarios, two clean bundles, `just check`, final review | planned |
-| `DEC-001`-`DEC-016` research decisions | 001-016 as mapped above | Three retained research spikes, governing spec, tests/bundles after implementation | accepted/planned |
+| `EXR-NFR-001`-`005`; reproducibility, reliability, boundaries, quality | 001-016 | Warning-free build, ExerciseRunner 252/252, solution 562/562, repeatable smoke fingerprint, `just check`, and Ready review; Task 015 paired evidence and Task 016 closeout remain | verified through Task 014; later Harness tasks pending |
+| `DEC-001`-`DEC-016` research decisions | 001-016 as mapped above | Three retained research spikes, governing spec, and implemented Task 014 tests/bundles; paired evidence remains Task 015 | accepted; Task 014 decisions implemented, paired decisions planned |
 
 ## Final independent-review reconciliation
 

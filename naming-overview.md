@@ -516,15 +516,17 @@ This one is too good not to reserve.
 
 Not part of the core gameplay.
 
-The names now have one concrete implementation boundary: `Cna.ExerciseRunner` runs exactly one
-local **Exercise** through an in-process opaque Umpire capability and retains trusted evidence.
-Its compact, forensic, and debug detail tiers describe instrumentation depth, not different game
-rules: increasing detail adds correlation and timing diagnostics while accepted actions and
-canonical simulation evidence remain unchanged. Failed decisions retain the attempted query,
-controller, action, and submission context available before the failure.
-**Maneuvers** is the next planned local serial-batch layer but is not implemented yet. **War
-College** remains a later evaluation layer. The current runner is not a batch service, Orleans
-workload, tournament system, or balance-analysis environment.
+The names now have a concrete local implementation boundary: `Cna.ExerciseRunner` runs either one
+**Exercise** or one serial-unpaired **Maneuver** through an in-process opaque Umpire capability and
+retains trusted evidence. An Exercise is one authoritative simulation run. A Maneuver is an ordered
+collection of uniquely identified Exercises that share one parent seed contract, run serially
+through the same coordinator, and produce one deterministic aggregate report after strict child
+readback. Compact, forensic, and debug detail tiers describe Exercise instrumentation depth, not
+different game rules; Maneuver timing and path diagnostics likewise stay outside its deterministic
+fingerprint. Failed decisions retain the attempted query, controller, action, and submission
+context available before the failure. Paired Maneuvers remain a later contract. **War College**
+remains a later evaluation layer, and the current runner is not an Orleans workload, tournament
+system, or balance-analysis environment.
 
 **War College** is where we evaluate commanders.
 
