@@ -15,7 +15,7 @@ internal static class Program
         Console.CancelKeyPress += handler;
         try
         {
-            return (int)ExerciseRunCommand.Execute(
+            return Execute(
                 args,
                 Console.Out,
                 Console.Error,
@@ -25,5 +25,25 @@ internal static class Program
         {
             Console.CancelKeyPress -= handler;
         }
+    }
+
+    internal static int Execute(
+        string[] args,
+        TextWriter standardOutput,
+        TextWriter standardError,
+        CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(args);
+        if (args.Length > 0 && string.Equals(args[0], "maneuver", StringComparison.Ordinal))
+            return (int)ManeuverRunCommand.Execute(
+                args,
+                standardOutput,
+                standardError,
+                cancellationToken);
+        return (int)ExerciseRunCommand.Execute(
+            args,
+            standardOutput,
+            standardError,
+            cancellationToken);
     }
 }

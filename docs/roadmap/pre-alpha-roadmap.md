@@ -112,7 +112,7 @@ Optional parser evidence gate
 | First-scenario content and remaining Land systems | Milestone-level; not started | Re-estimate after the skeleton exposes exercised-rule and transcription scope |
 | Campaign lifecycle and Maproom | Milestone-level; not started | Requires stable playable authority, Chronicle persistence, and save/resume contracts |
 | Player Intent Composer | Reviewed direction; not started | After the Sprint 5 skeleton, select one representative multi-field decision; prototype without a model before Sprint 8; evaluate Needle only after the deterministic MVP path works |
-| Exercise Harness | Single-Exercise path implemented; serial Maneuvers next | Pairing remains later and does not block engine mechanics |
+| Exercise Harness | Single-Exercise and serial-unpaired Maneuver paths implemented | Pairing remains later and does not block engine mechanics |
 
 The roadmap deliberately distinguishes foundation maturity from playable breadth. The architecture
 is substantially established, but the campaign is not playable while authority stops at
@@ -212,28 +212,35 @@ Implementation and acceptance evidence are tracked in the
 
 **Capability:** `EXERCISE-001`
 
-**Status:** In progress; the transactional single-Exercise CLI checkpoint is implemented, serial
-Maneuvers are the next bounded cross-cutting track, and paired reporting remains later work
+**Status:** Implemented through serial-unpaired Task 014 with repository gates green; paired
+reporting remains later Harness work
 
 **Goal:** Run a freshly created bounded rules-laboratory campaign through the authoritative legal
 action path, retain deterministic trusted evidence, and prove both event-history reconstruction and
 fresh-session re-adjudication before using batches for regression or controller comparison.
 
 **Acceptance boundary:** The first Exercise stops successfully only at the implemented Operation
-Stage 1 Organization boundary. The first runnable single-Exercise CLI includes fail-closed
-transactional artifacts, clean build identity, and explicit failure categories. The next v1
-checkpoint adds the first serial Maneuver before `EXERCISE-001` is complete. Trusted bundles are
-not side-safe output, and this capability does not imply full victory play, model controllers,
-distributed execution, balance claims, or production campaign activation.
+Stage 1 Organization boundary. The runnable single-Exercise and serial-Maneuver CLIs include
+fail-closed transactional artifacts, explicit build/run identity, stable failure categories, and
+validated aggregate reports. Task 014 has a warning-free solution build, green focused and
+solution-wide suites, repeatable checked-fixture report fingerprints, a passing `just check`, and a
+Ready pre-PR implementation review. Trusted bundles are not side-safe output, and this capability
+does not imply full victory play, model controllers, distributed execution, balance claims, or
+production campaign activation.
 
 The contract, research decisions, implementation tasks, and acceptance evidence are in
 the [Exercise Harness v1 specification](../specs/exercise-harness-v1.md) and
 [technical design](../design/exercise-harness-v1.md).
 
-Task 014 is an enabling regression-instrumentation track, not additional gameplay. After it, engine
-work may return to Organization/stage entry and Reserve before Task 015 paired comparison; pairing
-does not block the authoritative gameplay dependency graph. Task 016 remains the final Harness-v1
-closeout after pairing is eventually delivered.
+Task 014 is enabling regression instrumentation, not additional gameplay. The next bounded Harness
+task is optional Task 015 paired comparison, but it does not block the authoritative gameplay
+dependency graph. Engine work may now proceed to the proposed
+[Operation-Stage Entry research](../research/operation-stage-entry-spike.md),
+[specification](../specs/operation-stage-entry-v1.md), and
+[technical design](../design/operation-stage-entry-v1.md). Its final planning review is Ready, but
+owner approval and the Task 001 contract freeze still gate implementation; Reserve remains later
+engine work. Task 016 remains the final Harness-v1 closeout
+after pairing is eventually delivered.
 
 ## Cross-cutting future player interaction: Player Intent Composer v1
 

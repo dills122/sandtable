@@ -64,15 +64,18 @@ same boundary, records pair-keyed evidence, publishes only a source-free Weather
 at the same Operation Stage's Organization barrier. Raw snapshots, commands, events, content
 context, projection, and replay are not public mutation seams.
 
-The local `Cna.ExerciseRunner` can now drive that synthetic rules-laboratory path as one bounded,
-deterministic **Exercise**. It uses a fresh opaque Core capability, selects only current legal
-actions, stops at Organization, proves both event-history reconstruction and fresh-session
-re-adjudication, and writes a manifest-last `trusted-authority` evidence bundle. This is the first
-single-run simulation harness. Compact, forensic, and debug detail tiers now expose progressively
-richer query/controller/submission/check/proof evidence—including failed-decision context—and
-noncanonical timings without changing simulation evidence. Serial **Maneuvers**, comparisons,
-model controllers, and side-safe exports are not
-implemented yet.
+The local `Cna.ExerciseRunner` can now drive that synthetic rules-laboratory path as either one
+bounded, deterministic **Exercise** or one serial **Maneuver**. An Exercise uses a fresh opaque Core
+capability, selects only current legal actions, stops at Organization, proves both event-history
+reconstruction and fresh-session re-adjudication, and writes a manifest-last `trusted-authority`
+evidence bundle. A Maneuver strictly admits one canonical ordered `serial-unpaired` manifest,
+derives explicit child identities from its sole parent root seed, and runs each child in process
+through the same coordinator. Each completed child bundle is read once for semantic validation and
+identity-matched aggregation. The resulting transactional report separates deterministic counts,
+outcomes, and fingerprint material from noncanonical timing/path diagnostics and is strictly read
+back before completion is claimed. Compact, forensic, and debug Exercise detail tiers expose
+progressively richer evidence without changing simulation truth. Paired comparison, model
+controllers, and side-safe exports are not implemented yet.
 
 Organization/stage-entry mechanics, movement, combat, published scenario content, persistence, and
 the Maproom player interface remain future work.
@@ -93,7 +96,7 @@ The current delivery boundary is:
 | Movement/contact and combat loops | Planned; not started |
 | Published first-scenario data, remaining Land rules, victory, persistence, and Maproom | Milestone-level; not started |
 | Player Intent Composer | Direction reviewed; representative decision after the combat skeleton, no-model prototype before Maproom, optional parser evaluation after deterministic MVP |
-| Exercise Harness | Single-Exercise path implemented; serial Maneuvers are next; pairing remains later |
+| Exercise Harness | Single-Exercise and serial-unpaired Maneuver paths implemented; pairing remains later |
 
 The approved high-level path to a playable game is:
 
@@ -105,10 +108,13 @@ The approved high-level path to a playable game is:
 6. Evaluate optional parsing only after the deterministic MVP, then expand into detailed Air and
    Logistics play, later scenarios, and optional intelligence.
 
-The next bounded cross-cutting track is the serial-Maneuver portion of Exercise Harness v1. It
-adds validated batch regression evidence but no game rules. After that track, authoritative engine
-work returns to Organization/stage entry and Reserve. Paired comparison is useful later for
-controller evaluation but does not block gameplay-engine progress.
+The serial-Maneuver portion of Exercise Harness v1 now provides validated local batch-regression
+evidence without adding game rules. The next authoritative-engine planning package is
+[Operation-Stage Entry research](docs/research/operation-stage-entry-spike.md), its proposed
+[specification](docs/specs/operation-stage-entry-v1.md), and proposed
+[technical design](docs/design/operation-stage-entry-v1.md). Its final planning review is Ready, but
+owner approval and the Task 001 contract freeze still gate implementation. Paired comparison
+remains a later evaluation capability and does not block gameplay-engine progress.
 
 See the [pre-alpha roadmap](docs/roadmap/pre-alpha-roadmap.md) for the capability-level plan and
 completion criteria.
@@ -173,6 +179,18 @@ context of failed query/controller/submission decisions. Debug also retains ever
 monotonic phase timing on failure and prints a structured post-readback artifact trace. These
 diagnostics are trusted local instrumentation and never participate in replay equality.
 
+Run the checked two-child serial Maneuver with:
+
+```sh
+dotnet run --project src/Cna.ExerciseRunner/Cna.ExerciseRunner.csproj -- \
+  maneuver run --manifest scenarios/maneuvers/rules-lab.serial.v1.json \
+  --artifact-root artifacts/exercises
+```
+
+The command prints each validated child bundle path in manifest order, followed by the strictly
+read-back aggregate report path and deterministic report fingerprint. The report's local paths and
+timings are diagnostics and do not participate in that fingerprint.
+
 The intelligence gateway currently reports that no model provider is configured. This is expected:
 model-backed commanders are not part of the pre-alpha gameplay target, and authoritative play must
 always have a deterministic scripted fallback.
@@ -212,7 +230,7 @@ deterministic scripted decision rather than failing the turn.
 | `Cna.Intelligence.Gateway` | Non-authoritative model/provider gateway |
 | `Cna.ServiceDefaults` | Shared discovery, resilience, health, and telemetry defaults |
 | `Cna.AppHost` | Aspire development orchestration |
-| `Cna.ExerciseRunner` | Local deterministic single-Exercise orchestration and trusted artifacts |
+| `Cna.ExerciseRunner` | Local deterministic Exercise and serial-Maneuver orchestration with trusted artifacts |
 | `Cna.Core.Tests` | Deterministic Umpire unit tests on xUnit v3 and MTP |
 | `Cna.ExerciseRunner.Tests` | Exercise contracts, replay, artifact, and CLI tests on xUnit v3 and MTP |
 | `Cna.Intelligence.Contracts.Tests` | Protobuf compatibility tests on xUnit v3 and MTP |
@@ -237,7 +255,8 @@ The current Umpire foundation is intentionally pure and in-process:
 - `Cna.Core.Exercises` owns the fresh-only opaque simulation capability, immutable trusted step
   evidence, and reconstruction from its retained canonical event history.
 - `Cna.ExerciseRunner` owns deterministic controllers, bounded execution, re-adjudication,
-  versioned evidence contracts, build identity, transactional bundles, summaries, and CLI exits.
+  versioned Exercise/Maneuver evidence contracts, build identity, transactional bundles and
+  reports, summaries, and CLI exits.
 - The sequence catalog cites the original Land Rules without embedding copyrighted rules prose or
   component art. Inspecting that catalog is not authoritative adjudication.
 
@@ -283,6 +302,9 @@ The current Umpire foundation is intentionally pure and in-process:
 - [Exercise Harness reproducibility and pairing research](docs/research/exercise-reproducibility-and-pairing-spike.md)
 - [Exercise Harness v1 specification](docs/specs/exercise-harness-v1.md)
 - [Exercise Harness v1 technical design and delivery plan](docs/design/exercise-harness-v1.md)
+- [Operation-Stage Entry source and contract research](docs/research/operation-stage-entry-spike.md)
+- [Operation-Stage Entry v1 proposed specification](docs/specs/operation-stage-entry-v1.md)
+- [Operation-Stage Entry v1 proposed technical design and delivery plan](docs/design/operation-stage-entry-v1.md)
 - [Microsoft Orleans documentation](https://learn.microsoft.com/en-us/dotnet/orleans/)
 - [ASP.NET Core gRPC services](https://learn.microsoft.com/en-us/aspnet/core/grpc/aspnetcore?view=aspnetcore-10.0)
 - [Aspire AppHost and ServiceDefaults](https://learn.microsoft.com/en-us/dotnet/aspire/fundamentals/aspire-sdk-templates)

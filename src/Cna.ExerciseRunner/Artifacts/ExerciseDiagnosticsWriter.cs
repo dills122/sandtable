@@ -33,12 +33,20 @@ public static class ExerciseDiagnosticsWriter
         ArgumentNullException.ThrowIfNull(execution);
         ArgumentNullException.ThrowIfNull(runResult);
         ArgumentNullException.ThrowIfNull(checks);
+        var runIdentity = execution.SeedLedger.Identity;
         using var stream = new MemoryStream();
 
         if (manifest.Detail == ExerciseDetail.Compact)
         {
-            foreach (var step in execution.Steps) WriteCompactStep(stream, manifest, step);
-            WriteCompletion(stream, manifest, execution, runResult, includeCorrelation: false);
+            foreach (var step in execution.Steps)
+                WriteCompactStep(stream, manifest, runIdentity, step);
+            WriteCompletion(
+                stream,
+                manifest,
+                runIdentity,
+                execution,
+                runResult,
+                includeCorrelation: !IsStandalone(manifest, runIdentity));
             return stream.ToArray();
         }
 
@@ -48,6 +56,7 @@ public static class ExerciseDiagnosticsWriter
                 WriteQuery(
                     stream,
                     manifest,
+                    runIdentity,
                     query,
                     writer => WriteStepCorrelation(writer, step, resulting: false));
 
@@ -55,40 +64,50 @@ public static class ExerciseDiagnosticsWriter
             {
                 writer.WriteStartObject();
                 writer.WriteString("event", "exercise.controller-selected");
-                WriteRunCorrelation(writer, manifest);
+                WriteRunCorrelation(writer, manifest, runIdentity);
                 WriteStepCorrelation(writer, step, resulting: false);
                 writer.WriteNumber("activeAudienceCount", step.ActiveAudienceCount);
                 writer.WriteString("audience", FormatAudience(step.Audience));
                 writer.WriteString("actionId", step.ActionId);
                 writer.WriteEndObject();
             });
-            WriteForensicStep(stream, manifest, step);
+            WriteForensicStep(stream, manifest, runIdentity, step);
         }
         foreach (var decision in execution.FailedDecisions)
-            WriteFailedDecision(stream, manifest, decision);
+            WriteFailedDecision(stream, manifest, runIdentity, decision);
 
-        foreach (var check in checks.Results) WriteCheck(stream, manifest, execution, check);
+        foreach (var check in checks.Results)
+            WriteCheck(stream, manifest, runIdentity, execution, check);
         if (execution.Reconstruction is not null)
-            WriteReconstruction(stream, manifest, execution.Reconstruction);
+            WriteReconstruction(stream, manifest, runIdentity, execution.Reconstruction);
         if (readjudication is not null)
-            WriteReadjudication(stream, manifest, readjudication);
+            WriteReadjudication(stream, manifest, runIdentity, readjudication);
         if (telemetry?.PayloadCountBeforeDiagnostics is not null)
-            WriteArtifactPrepared(stream, manifest, telemetry);
+            WriteArtifactPrepared(stream, manifest, runIdentity, telemetry);
         if (manifest.Detail == ExerciseDetail.Debug)
-            WriteTimings(stream, manifest, execution, telemetry);
-        WriteCompletion(stream, manifest, execution, runResult, includeCorrelation: true);
+            WriteTimings(stream, manifest, runIdentity, execution, telemetry);
+        WriteCompletion(
+            stream,
+            manifest,
+            runIdentity,
+            execution,
+            runResult,
+            includeCorrelation: true);
         return stream.ToArray();
     }
 
     private static void WriteCompactStep(
         MemoryStream stream,
         ExerciseManifest manifest,
+        ExerciseRunIdentity identity,
         ExerciseAcceptedStep step) =>
         WriteRecord(stream, writer =>
         {
             writer.WriteStartObject();
             writer.WriteString("event", "exercise.step-accepted");
-            writer.WriteString("exerciseId", manifest.ExerciseId);
+            if (IsStandalone(manifest, identity))
+                writer.WriteString("exerciseId", manifest.ExerciseId);
+            else WriteRunCorrelation(writer, manifest, identity);
             writer.WriteNumber("stepOrdinal", step.Ordinal);
             writer.WriteString("campaignId", step.Receipt.CampaignId);
             writer.WriteNumber("stateVersion", step.Receipt.CommittedStateVersion);
@@ -101,6 +120,7 @@ public static class ExerciseDiagnosticsWriter
     private static void WriteForensicStep(
         MemoryStream stream,
         ExerciseManifest manifest,
+        ExerciseRunIdentity identity,
         ExerciseAcceptedStep step)
     {
         var eventStreamHash = ReplayEvidenceHasher.HashRecords(step.EventRecords);
@@ -110,7 +130,7 @@ public static class ExerciseDiagnosticsWriter
         {
             writer.WriteStartObject();
             writer.WriteString("event", "exercise.step-accepted");
-            WriteRunCorrelation(writer, manifest);
+            WriteRunCorrelation(writer, manifest, identity);
             WriteStepCorrelation(writer, step, resulting: true);
             writer.WriteString("audience", FormatAudience(step.Audience));
             writer.WriteString("actionId", step.ActionId);
@@ -125,13 +145,14 @@ public static class ExerciseDiagnosticsWriter
     private static void WriteCheck(
         MemoryStream stream,
         ExerciseManifest manifest,
+        ExerciseRunIdentity identity,
         ExerciseExecutionResult execution,
         ExerciseCheckResult check) =>
         WriteRecord(stream, writer =>
         {
             writer.WriteStartObject();
             writer.WriteString("event", "exercise.check-evaluated");
-            WriteRunCorrelation(writer, manifest);
+            WriteRunCorrelation(writer, manifest, identity);
             if (check.StepOrdinal is { } ordinal && ordinal < execution.Steps.Count)
                 WriteStepCorrelation(writer, execution.Steps[ordinal], resulting: false);
             else if (check.StepOrdinal is { } failedOrdinal
@@ -158,12 +179,14 @@ public static class ExerciseDiagnosticsWriter
     private static void WriteFailedDecision(
         MemoryStream stream,
         ExerciseManifest manifest,
+        ExerciseRunIdentity identity,
         ExerciseDecisionDiagnostic decision)
     {
         foreach (var query in decision.Queries)
             WriteQuery(
                 stream,
                 manifest,
+                identity,
                 query,
                 writer => WriteDecisionCorrelation(writer, decision));
         if (decision.SelectionFailure.HasValue)
@@ -172,7 +195,7 @@ public static class ExerciseDiagnosticsWriter
             {
                 writer.WriteStartObject();
                 writer.WriteString("event", "exercise.controller-selection-failed");
-                WriteRunCorrelation(writer, manifest);
+                WriteRunCorrelation(writer, manifest, identity);
                 WriteDecisionCorrelation(writer, decision);
                 writer.WriteNumber("activeAudienceCount", decision.ActiveAudienceCount);
                 writer.WriteString(
@@ -187,7 +210,7 @@ public static class ExerciseDiagnosticsWriter
             {
                 writer.WriteStartObject();
                 writer.WriteString("event", "exercise.controller-selected");
-                WriteRunCorrelation(writer, manifest);
+                WriteRunCorrelation(writer, manifest, identity);
                 WriteDecisionCorrelation(writer, decision);
                 writer.WriteNumber("activeAudienceCount", decision.ActiveAudienceCount);
                 writer.WriteString("audience", FormatAudience(decision.SelectedAudience.Value));
@@ -201,7 +224,7 @@ public static class ExerciseDiagnosticsWriter
             {
                 writer.WriteStartObject();
                 writer.WriteString("event", "exercise.action-submission-evaluated");
-                WriteRunCorrelation(writer, manifest);
+                WriteRunCorrelation(writer, manifest, identity);
                 WriteDecisionCorrelation(writer, decision);
                 if (decision.SelectedAudience.HasValue)
                     writer.WriteString("audience", FormatAudience(decision.SelectedAudience.Value));
@@ -226,7 +249,7 @@ public static class ExerciseDiagnosticsWriter
         {
             writer.WriteStartObject();
             writer.WriteString("event", "exercise.decision-failed");
-            WriteRunCorrelation(writer, manifest);
+            WriteRunCorrelation(writer, manifest, identity);
             WriteDecisionCorrelation(writer, decision);
             writer.WriteString("failureStage", FormatFailureStage(decision.FailureStage));
             writer.WriteString("failureCode", FormatFailureCode(decision.FailureCode));
@@ -242,13 +265,14 @@ public static class ExerciseDiagnosticsWriter
     private static void WriteQuery(
         MemoryStream stream,
         ExerciseManifest manifest,
+        ExerciseRunIdentity identity,
         ExerciseQueryDiagnostic query,
         Action<Utf8JsonWriter> writeCorrelation) =>
         WriteRecord(stream, writer =>
         {
             writer.WriteStartObject();
             writer.WriteString("event", "exercise.query-evaluated");
-            WriteRunCorrelation(writer, manifest);
+            WriteRunCorrelation(writer, manifest, identity);
             writeCorrelation(writer);
             writer.WriteString("audience", FormatAudience(query.Audience));
             writer.WriteNumber("candidateCount", query.CandidateCount);
@@ -265,12 +289,13 @@ public static class ExerciseDiagnosticsWriter
     private static void WriteReconstruction(
         MemoryStream stream,
         ExerciseManifest manifest,
+        ExerciseRunIdentity identity,
         ReconstructionProof proof) =>
         WriteRecord(stream, writer =>
         {
             writer.WriteStartObject();
             writer.WriteString("event", "exercise.reconstruction-verified");
-            WriteRunCorrelation(writer, manifest);
+            WriteRunCorrelation(writer, manifest, identity);
             writer.WriteBoolean("verified", proof.IsVerified);
             writer.WriteBoolean("historyAccepted", proof.HistoryAccepted);
             writer.WriteBoolean("finalSnapshotMatches", proof.FinalSnapshotMatches);
@@ -287,12 +312,13 @@ public static class ExerciseDiagnosticsWriter
     private static void WriteReadjudication(
         MemoryStream stream,
         ExerciseManifest manifest,
+        ExerciseRunIdentity identity,
         ReadjudicationProof proof) =>
         WriteRecord(stream, writer =>
         {
             writer.WriteStartObject();
             writer.WriteString("event", "exercise.readjudication-verified");
-            WriteRunCorrelation(writer, manifest);
+            WriteRunCorrelation(writer, manifest, identity);
             writer.WriteBoolean("verified", proof.IsVerified);
             writer.WriteBoolean("transcriptMatches", proof.TranscriptMatches);
             writer.WriteBoolean("eventsMatch", proof.EventsMatch);
@@ -311,6 +337,7 @@ public static class ExerciseDiagnosticsWriter
     private static void WriteTimings(
         MemoryStream stream,
         ExerciseManifest manifest,
+        ExerciseRunIdentity identity,
         ExerciseExecutionResult execution,
         ExerciseDiagnosticTelemetry? telemetry)
     {
@@ -318,6 +345,7 @@ public static class ExerciseDiagnosticsWriter
             WriteTiming(
                 stream,
                 manifest,
+                identity,
                 "core-begin",
                 null,
                 null,
@@ -328,6 +356,7 @@ public static class ExerciseDiagnosticsWriter
                 WriteTiming(
                     stream,
                     manifest,
+                    identity,
                     "authority-query",
                     step.Ordinal,
                     query.Audience,
@@ -335,6 +364,7 @@ public static class ExerciseDiagnosticsWriter
             WriteTiming(
                 stream,
                 manifest,
+                identity,
                 "controller-selection",
                 step.Ordinal,
                 step.Audience,
@@ -342,6 +372,7 @@ public static class ExerciseDiagnosticsWriter
             WriteTiming(
                 stream,
                 manifest,
+                identity,
                 "action-submission",
                 step.Ordinal,
                 step.Audience,
@@ -353,6 +384,7 @@ public static class ExerciseDiagnosticsWriter
                 WriteTiming(
                     stream,
                     manifest,
+                    identity,
                     "authority-query",
                     decision.Ordinal,
                     query.Audience,
@@ -361,6 +393,7 @@ public static class ExerciseDiagnosticsWriter
                 WriteTiming(
                     stream,
                     manifest,
+                    identity,
                     "controller-selection",
                     decision.Ordinal,
                     decision.SelectedAudience,
@@ -369,6 +402,7 @@ public static class ExerciseDiagnosticsWriter
                 WriteTiming(
                     stream,
                     manifest,
+                    identity,
                     "action-submission",
                     decision.Ordinal,
                     decision.SelectedAudience,
@@ -378,6 +412,7 @@ public static class ExerciseDiagnosticsWriter
             WriteTiming(
                 stream,
                 manifest,
+                identity,
                 "history-reconstruction",
                 null,
                 null,
@@ -388,6 +423,7 @@ public static class ExerciseDiagnosticsWriter
                 WriteTiming(
                     stream,
                     manifest,
+                    identity,
                     phase.Operation,
                     null,
                     null,
@@ -398,12 +434,13 @@ public static class ExerciseDiagnosticsWriter
     private static void WriteArtifactPrepared(
         MemoryStream stream,
         ExerciseManifest manifest,
+        ExerciseRunIdentity identity,
         ExerciseDiagnosticTelemetry telemetry) =>
         WriteRecord(stream, writer =>
         {
             writer.WriteStartObject();
             writer.WriteString("event", "exercise.artifact-prepared");
-            WriteRunCorrelation(writer, manifest);
+            WriteRunCorrelation(writer, manifest, identity);
             writer.WriteNumber(
                 "payloadCountBeforeDiagnostics",
                 telemetry.PayloadCountBeforeDiagnostics!.Value);
@@ -416,6 +453,7 @@ public static class ExerciseDiagnosticsWriter
     private static void WriteTiming(
         MemoryStream stream,
         ExerciseManifest manifest,
+        ExerciseRunIdentity identity,
         string operation,
         int? stepOrdinal,
         CampaignActionAudience? audience,
@@ -424,7 +462,7 @@ public static class ExerciseDiagnosticsWriter
         {
             writer.WriteStartObject();
             writer.WriteString("event", "exercise.operation-timing");
-            WriteRunCorrelation(writer, manifest);
+            WriteRunCorrelation(writer, manifest, identity);
             writer.WriteString("operation", operation);
             if (stepOrdinal.HasValue) writer.WriteNumber("stepOrdinal", stepOrdinal.Value);
             else writer.WriteNull("stepOrdinal");
@@ -438,6 +476,7 @@ public static class ExerciseDiagnosticsWriter
     private static void WriteCompletion(
         MemoryStream stream,
         ExerciseManifest manifest,
+        ExerciseRunIdentity identity,
         ExerciseExecutionResult execution,
         ExerciseRunResult runResult,
         bool includeCorrelation) =>
@@ -445,8 +484,10 @@ public static class ExerciseDiagnosticsWriter
         {
             writer.WriteStartObject();
             writer.WriteString("event", "exercise.completed");
-            if (includeCorrelation) WriteRunCorrelation(writer, manifest);
+            if (includeCorrelation) WriteRunCorrelation(writer, manifest, identity);
             else writer.WriteString("exerciseId", manifest.ExerciseId);
+            if (!IsStandalone(manifest, identity))
+                writer.WriteString("campaignId", ExerciseCampaignId.Derive(identity));
             writer.WriteString(
                 "status",
                 runResult.Completion is ExerciseSucceeded ? "succeeded" : "failed");
@@ -465,11 +506,38 @@ public static class ExerciseDiagnosticsWriter
             writer.WriteEndObject();
         });
 
-    private static void WriteRunCorrelation(Utf8JsonWriter writer, ExerciseManifest manifest)
+    private static void WriteRunCorrelation(
+        Utf8JsonWriter writer,
+        ExerciseManifest manifest,
+        ExerciseRunIdentity identity)
     {
-        writer.WriteNull("maneuverId");
+        var isStandalone = IsStandalone(manifest, identity);
+        if (isStandalone) writer.WriteNull("maneuverId");
+        else writer.WriteString("maneuverId", identity.ManeuverId);
         writer.WriteString("exerciseId", manifest.ExerciseId);
-        writer.WriteString("variant", "standalone");
+        if (!isStandalone)
+        {
+            writer.WriteNumber("rootSeed", identity.RootSeed);
+            writer.WriteNumber("exerciseOrdinal", identity.ExerciseOrdinal);
+            if (identity.PairKey is null) writer.WriteNull("pairKey");
+            else writer.WriteString("pairKey", identity.PairKey);
+        }
+        writer.WriteString(
+            "variant",
+            isStandalone ? "standalone" : FormatVariant(identity));
+    }
+
+    private static bool IsStandalone(
+        ExerciseManifest manifest,
+        ExerciseRunIdentity identity) =>
+        identity == ExerciseRunIdentity.Standalone(manifest.ExerciseId, manifest.RootSeed);
+
+    private static string FormatVariant(ExerciseRunIdentity identity)
+    {
+        if (identity.PairKey is not null)
+            throw new InvalidOperationException(
+                "Paired Exercise diagnostics require the later paired-variant contract.");
+        return "unpaired";
     }
 
     private static void WriteStepCorrelation(

@@ -7,22 +7,70 @@ namespace Cna.ExerciseRunner.Artifacts;
 
 public sealed class ExerciseBundle
 {
+    private readonly byte[] artifactManifestBytes;
+    private readonly byte[]? normalizedManifestBytes;
+    private readonly byte[][] canonicalEvents;
+    private readonly byte[]? initialSnapshotBytes;
+    private readonly byte[]? finalSnapshotBytes;
+
     internal ExerciseBundle(
         string path,
         ArtifactManifest manifest,
+        byte[] artifactManifestBytes,
+        string artifactManifestSha256,
         ExerciseRunResult runResult,
-        ExerciseCheckResults checkResults)
+        ExerciseCheckResults checkResults,
+        ExerciseManifest? normalizedManifest,
+        byte[]? normalizedManifestBytes,
+        BuildIdentity? buildIdentity,
+        ExerciseSeedLedger? seedLedger,
+        ReconstructionProof? reconstructionProof,
+        ReadjudicationProof? readjudicationProof,
+        IReadOnlyList<ExerciseAcceptedActionRecord> acceptedActions,
+        IReadOnlyList<ExerciseCanonicalEventRecord> canonicalEvents,
+        IReadOnlyList<ExerciseStepEvidenceRecord> stepEvidence,
+        byte[]? initialSnapshotBytes,
+        byte[]? finalSnapshotBytes)
     {
         Path = path;
         Manifest = manifest;
+        this.artifactManifestBytes = artifactManifestBytes.ToArray();
+        ArtifactManifestSha256 = artifactManifestSha256;
         RunResult = runResult;
         CheckResults = checkResults;
+        NormalizedManifest = normalizedManifest;
+        this.normalizedManifestBytes = normalizedManifestBytes?.ToArray();
+        BuildIdentity = buildIdentity;
+        SeedLedger = seedLedger;
+        ReconstructionProof = reconstructionProof;
+        ReadjudicationProof = readjudicationProof;
+        AcceptedActions = Array.AsReadOnly(acceptedActions.ToArray());
+        this.canonicalEvents = canonicalEvents
+            .Select(value => value.CanonicalBytes)
+            .ToArray();
+        StepEvidence = Array.AsReadOnly(stepEvidence.ToArray());
+        this.initialSnapshotBytes = initialSnapshotBytes?.ToArray();
+        this.finalSnapshotBytes = finalSnapshotBytes?.ToArray();
     }
 
     public string Path { get; }
     public ArtifactManifest Manifest { get; }
+    public byte[] ArtifactManifestBytes => artifactManifestBytes.ToArray();
+    public string ArtifactManifestSha256 { get; }
     public ExerciseRunResult RunResult { get; }
     public ExerciseCheckResults CheckResults { get; }
+    public ExerciseManifest? NormalizedManifest { get; }
+    public byte[]? NormalizedManifestBytes => normalizedManifestBytes?.ToArray();
+    public BuildIdentity? BuildIdentity { get; }
+    public ExerciseSeedLedger? SeedLedger { get; }
+    public ReconstructionProof? ReconstructionProof { get; }
+    public ReadjudicationProof? ReadjudicationProof { get; }
+    public IReadOnlyList<ExerciseAcceptedActionRecord> AcceptedActions { get; }
+    public IReadOnlyList<byte[]> CanonicalEvents => Array.AsReadOnly(
+        canonicalEvents.Select(value => value.ToArray()).ToArray());
+    public IReadOnlyList<ExerciseStepEvidenceRecord> StepEvidence { get; }
+    public byte[]? InitialSnapshotBytes => initialSnapshotBytes?.ToArray();
+    public byte[]? FinalSnapshotBytes => finalSnapshotBytes?.ToArray();
 }
 
 public static class ExerciseBundleReader
@@ -49,7 +97,8 @@ public static class ExerciseBundleReader
 
             var manifestPath = Path.Combine(fullPath, ArtifactSchema.ArtifactManifestPath);
             RequireRegularFile(manifestPath);
-            var manifest = ArtifactManifestCodec.Deserialize(File.ReadAllBytes(manifestPath));
+            var artifactManifestBytes = File.ReadAllBytes(manifestPath);
+            var manifest = ArtifactManifestCodec.Deserialize(artifactManifestBytes);
             if (manifest.Status != expectedStatus)
                 throw new InvalidDataException("Artifact status does not match final placement.");
 
@@ -86,7 +135,82 @@ public static class ExerciseBundleReader
                 throw new InvalidDataException("Run result is the sole status authority and disagrees.");
             var checks = ExerciseCheckResultsCodec.Deserialize(
                 payloads[ArtifactSchema.CheckResultsPath]);
-            return new ExerciseBundle(fullPath, manifest, runResult, checks);
+            var normalizedManifestBytes = PayloadOrNull(
+                payloads,
+                ArtifactSchema.ExerciseManifestPath);
+            var normalizedManifest = normalizedManifestBytes is null
+                ? null
+                : ExerciseManifestCodec.Deserialize(normalizedManifestBytes);
+            var buildIdentityBytes = PayloadOrNull(payloads, ArtifactSchema.BuildIdentityPath);
+            var buildIdentity = buildIdentityBytes is null
+                ? null
+                : BuildIdentityCodec.Deserialize(buildIdentityBytes);
+            var seedLedgerBytes = PayloadOrNull(payloads, ArtifactSchema.SeedLedgerPath);
+            var seedLedger = seedLedgerBytes is null
+                ? null
+                : SeedLedgerCodec.Deserialize(seedLedgerBytes);
+            var acceptedActions = payloads.TryGetValue(
+                ArtifactSchema.AcceptedActionsPath,
+                out var acceptedActionBytes)
+                ? ExerciseEvidenceCodec.DeserializeAcceptedActions(acceptedActionBytes)
+                : [];
+            var canonicalEvents = payloads.TryGetValue(
+                ArtifactSchema.CanonicalEventsPath,
+                out var canonicalEventBytes)
+                ? ExerciseEvidenceCodec.DeserializeCanonicalEvents(canonicalEventBytes)
+                : [];
+            var stepEvidence = payloads.TryGetValue(
+                ArtifactSchema.StepEvidencePath,
+                out var stepEvidenceBytes)
+                ? ExerciseEvidenceCodec.DeserializeStepEvidence(stepEvidenceBytes)
+                : [];
+            var initialSnapshot = PayloadOrNull(payloads, ArtifactSchema.InitialSnapshotPath);
+            var finalSnapshot = PayloadOrNull(payloads, ArtifactSchema.FinalSnapshotPath);
+            var reconstructionBytes = PayloadOrNull(
+                payloads,
+                ArtifactSchema.ReconstructionProofPath);
+            var reconstruction = reconstructionBytes is null
+                ? null
+                : ReplayProofCodec.DeserializeReconstruction(reconstructionBytes);
+            var readjudicationBytes = PayloadOrNull(
+                payloads,
+                ArtifactSchema.ReadjudicationProofPath);
+            var readjudication = readjudicationBytes is null
+                ? null
+                : ReplayProofCodec.DeserializeReadjudication(readjudicationBytes);
+            ExerciseBundleSemanticValidator.Validate(
+                manifest.Profile,
+                normalizedManifestBytes,
+                normalizedManifest,
+                buildIdentity,
+                seedLedger,
+                runResult,
+                checks,
+                acceptedActions,
+                canonicalEvents,
+                stepEvidence,
+                initialSnapshot,
+                finalSnapshot,
+                reconstruction,
+                readjudication);
+            return new ExerciseBundle(
+                fullPath,
+                manifest,
+                artifactManifestBytes,
+                Hash(artifactManifestBytes),
+                runResult,
+                checks,
+                normalizedManifest,
+                normalizedManifestBytes,
+                buildIdentity,
+                seedLedger,
+                reconstruction,
+                readjudication,
+                acceptedActions,
+                canonicalEvents,
+                stepEvidence,
+                initialSnapshot,
+                finalSnapshot);
         }
         catch (InvalidDataException)
         {
@@ -96,11 +220,16 @@ public static class ExerciseBundleReader
             or UnauthorizedAccessException
             or JsonException
             or ArgumentException
+            or ArithmeticException
             or DecoderFallbackException)
         {
             throw new InvalidDataException("The Exercise bundle is not trusted.", exception);
         }
     }
+
+    private static byte[]? PayloadOrNull(
+        Dictionary<string, byte[]> payloads,
+        string path) => payloads.TryGetValue(path, out var payload) ? payload : null;
 
     private static void ValidatePayload(string path, byte[] payload)
     {

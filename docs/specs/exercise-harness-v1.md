@@ -1,6 +1,7 @@
 # Exercise Harness v1 Specification
 
-**Status:** Partially implemented; the single-Exercise CLI and trusted bundle path are implemented, while Maneuvers and pairing remain pending
+**Status:** Implemented and repository-verified through `EXR-TASK-014` serial-unpaired Maneuvers;
+Task 015 paired comparison remains pending
 
 **Date:** 2026-08-20
 
@@ -13,8 +14,13 @@
 
 **Technical design:** [Exercise Harness v1](../design/exercise-harness-v1.md)
 
-**Next bounded checkpoint:** `EXR-TASK-014`, serial unpaired Maneuvers with validated aggregate
-reports; paired comparison remains `EXR-TASK-015` and does not block gameplay-engine work
+**Next bounded Harness checkpoint:** `EXR-TASK-015`, paired comparison; it is optional
+instrumentation and does not block gameplay-engine work
+
+**Proposed next engine track:** [Operation-Stage Entry research](../research/operation-stage-entry-spike.md),
+[specification](operation-stage-entry-v1.md), and
+[technical design](../design/operation-stage-entry-v1.md); its final planning review is Ready, but
+implementation remains gated on owner decision and the Task 001 contract freeze
 
 **Research decisions:**
 [capability and replay](../research/exercise-capability-and-replay-spike.md),
@@ -103,12 +109,12 @@ validation it also prints a structured `trace=` record for artifact finalization
 Failed debug runs retain every timing measured before the failure.
 No detail tier changes the simulation-evidence subset named by `EXR-022`.
 
-The planned serial-Maneuver command is not implemented yet. Its activated Task 014 contract uses a
-serial fixture; the paired fixture remains Task 015:
+The implemented serial-Maneuver command uses the checked Task 014 serial fixture; the paired fixture
+remains Task 015:
 
 ```text
 dotnet run --project src/Cna.ExerciseRunner/Cna.ExerciseRunner.csproj -- \
-  maneuvers run --manifest scenarios/maneuvers/rules-lab.serial.v1.json \
+  maneuver run --manifest scenarios/maneuvers/rules-lab.serial.v1.json \
   --artifact-root artifacts/exercises
 ```
 
@@ -118,7 +124,7 @@ golden contract test is accepted; afterward it is versioned user-visible behavio
 
 ### Task 014 serial-Maneuver contract
 
-Task 014 adds only `sandtable.maneuver-manifest.v1` in mode `serial-unpaired`. A manifest has this
+Task 014 implements only `sandtable.maneuver-manifest.v1` in mode `serial-unpaired`. A manifest has this
 exact canonical property order and shape; the child objects deliberately match the existing
 Exercise manifest except that only the Maneuver owns `rootSeed`:
 
@@ -141,12 +147,18 @@ Admission is all-or-nothing and occurs before the first child starts. Execution 
 one admitted child at a time in manifest order. A valid identity-matched failed Exercise bundle is
 counted as that Exercise's failure and does not stop later entries. Identity matching requires a
 seed ledger whose root seed, Maneuver ID, ordinal, and null pair key equal the admitted entry;
-`failed-pre-admission`, `failed-admitted`, and `failed-identified` profiles contain no ledger and
-therefore cannot be attributed to a Maneuver child even when their manifest/build fields match.
-They become `bundle-identity-mismatch`. Cancellation stops before the next entry. A missing,
-invalid, or identity-mismatched completed bundle stops execution because no trusted aggregate fact
-exists for that entry; remaining entries are retained as explicit `not-run` records rather than
-omitted.
+only `succeeded`, `failed-executed`, `failed-reconstructed`, and `failed-readjudicated` profiles are
+aggregate-eligible. `failed-pre-admission`, `failed-admitted`, and `failed-identified` contain no
+ledger and cannot be attributed to a Maneuver child; `failed-summarized` is also ineligible even
+when it retains a ledger. These unsupported profiles stop aggregation as an identity failure. The
+one non-attribution exception is cancellation observed after the scheduler check but before Core
+begin: a successfully reopened `failed-identified` bundle with coordinator exit `cancelled`, exact
+admitted manifest/build identity, a cancelled run result, and no ledger makes the current entry and
+tail `not-run/cancelled`; it does not fabricate a child outcome. Reader corruption still takes
+precedence and stops as `bundle-invalid`. Cancellation stops before the next entry. Any other
+missing, invalid, or identity-mismatched completed bundle stops execution because no trusted
+aggregate fact exists for that entry; remaining entries are retained as explicit `not-run` records
+rather than omitted.
 
 ### Task 014 report and completion protocol
 
@@ -477,6 +489,19 @@ just check
 artifact failure modes fail closed, clean reproducibility is demonstrated, the checked-in Exercise
 and Maneuver are runnable with the documented commands, the full repository gate passes, and the
 repository-wide documents describe implemented—not planned—behavior accurately.
+
+## Current Task 014 evidence
+
+Task 014 feature implementation is complete and its focused evidence is green: warning-free
+solution build; 10/10 command/fixture tests; 41/41 semantic bundle-validation tests; 23/23
+serial-executor tests; 17/17 report contract/transaction tests; and 252/252 tests in the complete
+ExerciseRunner project.
+This verifies serial aggregation, explicit identity and diagnostics propagation, one-read semantic
+validation, report finalization/readback, the checked CLI fixture, cancellation, and failure
+precedence within the runner scope. The complete 562-test solution gate and `just check` pass; two
+checked-fixture runs retained the identical deterministic report fingerprint
+`sha256:8cc5d2fbfb907f83edc7bb51a7ec98eb57f7338c072a0325ff5ca4a685b19f06`; and the pre-PR
+implementation review verdict is Ready.
 
 ## Open questions
 

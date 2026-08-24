@@ -20,10 +20,11 @@ public static class ExerciseSummaryWriter
         ArgumentNullException.ThrowIfNull(execution);
         ArgumentNullException.ThrowIfNull(runResult);
         ArgumentNullException.ThrowIfNull(checks);
+        var runIdentity = execution.SeedLedger.Identity;
+        var isStandalone = IsStandalone(manifest, runIdentity);
         var campaignId = execution.Steps.Count > 0
             ? execution.Steps[0].Receipt.CampaignId
-            : ExerciseCampaignId.Derive(
-                ExerciseRunIdentity.Standalone(manifest.ExerciseId, manifest.RootSeed));
+            : ExerciseCampaignId.Derive(runIdentity);
         using var stream = new MemoryStream();
         using (var writer = new Utf8JsonWriter(stream))
         {
@@ -31,6 +32,15 @@ public static class ExerciseSummaryWriter
             writer.WriteNumber("contractVersion", CurrentContractVersion);
             writer.WriteString("schemeId", ArtifactSchema.SummaryJsonSchemaId);
             writer.WriteString("exerciseId", manifest.ExerciseId);
+            if (!isStandalone)
+            {
+                writer.WriteString("maneuverId", runIdentity.ManeuverId);
+                writer.WriteNumber("rootSeed", runIdentity.RootSeed);
+                writer.WriteNumber("exerciseOrdinal", runIdentity.ExerciseOrdinal);
+                if (runIdentity.PairKey is null) writer.WriteNull("pairKey");
+                else writer.WriteString("pairKey", runIdentity.PairKey);
+                writer.WriteString("variant", FormatVariant(runIdentity));
+            }
             writer.WriteString("campaignId", campaignId);
             writer.WriteString(
                 "status",
@@ -76,8 +86,13 @@ public static class ExerciseSummaryWriter
         ArgumentNullException.ThrowIfNull(runResult);
         ArgumentNullException.ThrowIfNull(checks);
         var status = runResult.Completion is ExerciseSucceeded ? "succeeded" : "failed";
+        var runIdentity = FormatRunIdentity(
+            manifest,
+            execution.SeedLedger.Identity,
+            includeRootSeed: true);
         var text = $"# Exercise {manifest.ExerciseId}\n\n"
             + $"- Status: {status}\n"
+            + runIdentity
             + $"- Accepted steps: {execution.Steps.Count}\n"
             + $"- Passed checks: {checks.Results.Count(value => value.IsPassed)}\n"
             + $"- Failed checks: {checks.Results.Count(value => !value.IsPassed)}\n"
@@ -103,7 +118,12 @@ public static class ExerciseSummaryWriter
                 "The build identity does not match the manifest build mode.",
                 nameof(identity));
         var status = runResult.Completion is ExerciseSucceeded ? "succeeded" : "failed";
-        var rootSeed = manifest.RootSeed.ToString(CultureInfo.InvariantCulture);
+        var runIdentity = execution.SeedLedger.Identity;
+        var runIdentityText = FormatRunIdentity(
+            manifest,
+            runIdentity,
+            includeRootSeed: false);
+        var rootSeed = runIdentity.RootSeed.ToString(CultureInfo.InvariantCulture);
         var acceptedSteps = execution.Steps.Count.ToString(CultureInfo.InvariantCulture);
         var passedChecks = checks.Results.Count(value => value.IsPassed)
             .ToString(CultureInfo.InvariantCulture);
@@ -119,6 +139,7 @@ public static class ExerciseSummaryWriter
         };
         var text = $"# Exercise {manifest.ExerciseId}\n\n"
             + $"- Status: {status}\n"
+            + runIdentityText
             + $"- Terminal outcome: {outcome}\n"
             + $"- Detail: {FormatDetail(manifest.Detail)}\n"
             + $"- Root seed: {rootSeed}\n"
@@ -158,4 +179,36 @@ public static class ExerciseSummaryWriter
         false => "no",
         null => "not-run",
     };
+
+    private static string FormatRunIdentity(
+        ExerciseManifest manifest,
+        ExerciseRunIdentity identity,
+        bool includeRootSeed)
+    {
+        if (IsStandalone(manifest, identity)) return string.Empty;
+        var pairKey = identity.PairKey ?? "none";
+        var campaignId = ExerciseCampaignId.Derive(identity);
+        var rootSeed = includeRootSeed
+            ? $"- Root seed: {identity.RootSeed.ToString(CultureInfo.InvariantCulture)}\n"
+            : string.Empty;
+        return $"- Maneuver: {identity.ManeuverId}\n"
+            + rootSeed
+            + $"- Exercise ordinal: {identity.ExerciseOrdinal.ToString(CultureInfo.InvariantCulture)}\n"
+            + $"- Pair key: {pairKey}\n"
+            + $"- Variant: {FormatVariant(identity)}\n"
+            + $"- Campaign ID: {campaignId}\n";
+    }
+
+    private static bool IsStandalone(
+        ExerciseManifest manifest,
+        ExerciseRunIdentity identity) =>
+        identity == ExerciseRunIdentity.Standalone(manifest.ExerciseId, manifest.RootSeed);
+
+    private static string FormatVariant(ExerciseRunIdentity identity)
+    {
+        if (identity.PairKey is not null)
+            throw new InvalidOperationException(
+                "Paired Exercise summaries require the later paired-variant contract.");
+        return "unpaired";
+    }
 }

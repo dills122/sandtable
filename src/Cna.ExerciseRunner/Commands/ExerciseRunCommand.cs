@@ -1,7 +1,6 @@
 using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
-using Cna.Core.Exercises;
 using Cna.ExerciseRunner.Artifacts;
 using Cna.ExerciseRunner.Execution;
 
@@ -60,192 +59,24 @@ public static class ExerciseRunCommand
                 $"Manifest admission failed: {exception.Message}");
         }
 
-        var identityStarted = Stopwatch.GetTimestamp();
-        var identityCapture = BuildIdentityCapture.Capture(new BuildIdentityCaptureRequest(
-            manifest.BuildMode,
-            repositoryRoot,
-            normalizedManifest,
-            manifest.RulesetHash,
-            ExerciseConfigurationIdentity.ComputeHash(manifest),
-            ExecutedArtifacts()));
-        telemetry.RecordPhase("build-identity", ElapsedMicroseconds(identityStarted));
-        if (!identityCapture.IsCaptured)
-        {
-            var failure = ExerciseRunResult.Failed(
-                ExerciseFailureCategory.BuildIdentityUnavailable,
-                manifest.AssertFailureCategory);
-            var payloads = BasePayloads(failure, emptyChecks);
-            payloads.Add(ArtifactSchema.ExerciseManifestPath, normalizedManifest);
-            return WriteOrReport(
-                options.ArtifactRoot,
-                new ExerciseBundleWriteRequest(ArtifactBundleProfile.FailedAdmitted, payloads),
-                FailedWriteFallback(),
-                failure,
-                standardOutput,
-                standardError,
-                $"Build identity unavailable: {identityCapture.FailureReason}.",
-                manifest);
-        }
-
-        var identity = identityCapture.Identity!;
-        ExerciseExecutionResult execution;
-        try
-        {
-            var executionStarted = Stopwatch.GetTimestamp();
-            execution = ExerciseExecutor.Execute(manifest, cancellationToken);
-            telemetry.RecordPhase(
-                "exercise-execution",
-                ElapsedMicroseconds(executionStarted));
-        }
-        catch (Exception exception) when (!IsFatal(exception))
-        {
-            var failure = ExerciseRunResult.Failed(
-                ExerciseFailureCategory.UnexpectedFailure,
-                manifest.AssertFailureCategory);
-            var payloads = BasePayloads(failure, emptyChecks);
-            payloads.Add(ArtifactSchema.ExerciseManifestPath, normalizedManifest);
-            payloads.Add(ArtifactSchema.BuildIdentityPath, BuildIdentityCodec.Serialize(identity));
-            return WriteOrReport(
-                options.ArtifactRoot,
-                new ExerciseBundleWriteRequest(ArtifactBundleProfile.FailedIdentified, payloads),
-                FailedWriteFallback(),
-                failure,
-                standardOutput,
-                standardError,
-                $"Exercise execution failed unexpectedly: {exception.GetType().Name}.",
-                manifest);
-        }
-
-        var runResult = execution.RunResult;
-        var checks = execution.CheckResults;
-        ReadjudicationProof? readjudication = null;
-        if (execution.IsSucceeded)
-        {
-            var readjudicationStarted = Stopwatch.GetTimestamp();
-            readjudication = ReadjudicationVerifier.Verify(manifest, execution);
-            telemetry.RecordPhase(
-                "readjudication",
-                ElapsedMicroseconds(readjudicationStarted));
-            checks = checks.WithReadjudication(readjudication);
-            if (!readjudication.IsVerified)
-                runResult = ExerciseRunResult.Failed(
-                    ExerciseFailureCategory.ReadjudicationMismatch,
-                    manifest.AssertFailureCategory);
-        }
-
-        var profile = ProfileFor(execution, readjudication);
-        var primary = CreateCompletedRequest(
-            profile,
+        var runIdentity = ExerciseRunIdentity.Standalone(
+            manifest.ExerciseId,
+            manifest.RootSeed);
+        var result = ExerciseRunCoordinator.Execute(new ExerciseRunCoordinatorRequest(
             manifest,
             normalizedManifest,
-            identity,
-            execution,
-            runResult,
-            checks,
-            readjudication,
-            telemetry);
-        return WriteOrReport(
+            runIdentity,
+            repositoryRoot,
             options.ArtifactRoot,
-            primary,
-            FailedWriteFallback(),
-            runResult,
-            standardOutput,
-            standardError,
-            runResult.Completion is ExerciseFailed
-                ? $"Exercise failed: {ExerciseExitCodeMapper.Map(runResult)}."
-                : null,
-            manifest);
-    }
-
-    private static ExerciseBundleWriteRequest CreateCompletedRequest(
-        ArtifactBundleProfile profile,
-        ExerciseManifest manifest,
-        byte[] normalizedManifest,
-        BuildIdentity identity,
-        ExerciseExecutionResult execution,
-        ExerciseRunResult runResult,
-        ExerciseCheckResults checks,
-        ReadjudicationProof? readjudication,
-        ExerciseDiagnosticTelemetry telemetry)
-    {
-        var preparationStarted = Stopwatch.GetTimestamp();
-        var payloads = BasePayloads(runResult, checks);
-        payloads.Add(ArtifactSchema.ExerciseManifestPath, normalizedManifest);
-        payloads.Add(ArtifactSchema.BuildIdentityPath, BuildIdentityCodec.Serialize(identity));
-
-        if (profile is ArtifactBundleProfile.FailedIdentified) return new(profile, payloads);
-
-        payloads.Add(ArtifactSchema.SeedLedgerPath, SeedLedgerCodec.Serialize(execution.SeedLedger));
-        payloads.Add(
-            ArtifactSchema.AcceptedActionsPath,
-            ExerciseEvidenceWriter.WriteAcceptedActions(execution));
-        payloads.Add(
-            ArtifactSchema.CanonicalEventsPath,
-            ExerciseEvidenceWriter.WriteCanonicalEvents(execution));
-        payloads.Add(
-            ArtifactSchema.StepEvidencePath,
-            ExerciseEvidenceWriter.WriteStepEvidence(execution));
-        payloads.Add(ArtifactSchema.InitialSnapshotPath, execution.InitialSnapshot);
-        payloads.Add(ArtifactSchema.FinalSnapshotPath, execution.FinalSnapshot);
-        if (execution.Reconstruction is not null)
-            payloads.Add(
-                ArtifactSchema.ReconstructionProofPath,
-                ReplayProofCodec.Serialize(execution.Reconstruction));
-        if (readjudication is not null)
-            payloads.Add(
-                ArtifactSchema.ReadjudicationProofPath,
-                ReplayProofCodec.Serialize(readjudication));
-        if (profile == ArtifactBundleProfile.Succeeded)
-        {
-            payloads.Add(
-                ArtifactSchema.SummaryJsonPath,
-                ExerciseSummaryWriter.WriteJson(
-                    manifest,
-                    execution,
-                    runResult,
-                    checks,
-                    readjudication));
-            payloads.Add(
-                ArtifactSchema.SummaryMarkdownPath,
-                ExerciseSummaryWriter.WriteMarkdown(
-                    manifest,
-                    identity,
-                    execution,
-                    runResult,
-                    checks,
-                    readjudication));
-        }
-        telemetry.RecordPhase(
-            "artifact-preparation",
-            ElapsedMicroseconds(preparationStarted));
-        telemetry.RecordPreparedPayloads(
-            payloads.Count,
-            payloads.Values.Sum(value => value.LongLength));
-        payloads.Add(
-            ArtifactSchema.DiagnosticsPath,
-            ExerciseDiagnosticsWriter.Write(
-                manifest,
-                execution,
-                runResult,
-                checks,
-                readjudication,
-                telemetry));
-        return new ExerciseBundleWriteRequest(profile, payloads);
-    }
-
-    private static ArtifactBundleProfile ProfileFor(
-        ExerciseExecutionResult execution,
-        ReadjudicationProof? readjudication)
-    {
-        if (execution.InitialSnapshot.Length == 0)
-            return ArtifactBundleProfile.FailedIdentified;
-        if (execution.Reconstruction is null)
-            return ArtifactBundleProfile.FailedExecuted;
-        if (!execution.Reconstruction.IsVerified)
-            return ArtifactBundleProfile.FailedReconstructed;
-        if (readjudication is null || !readjudication.IsVerified)
-            return ArtifactBundleProfile.FailedReadjudicated;
-        return ArtifactBundleProfile.Succeeded;
+            telemetry,
+            cancellationToken));
+        if (result.CompletedBundlePath is not null)
+            standardOutput.WriteLine($"bundle={result.CompletedBundlePath}");
+        if (result.ArtifactTrace is not null)
+            WriteArtifactTrace(standardOutput, manifest, result.ArtifactTrace);
+        if (result.FailureMessage is not null)
+            standardError.WriteLine(result.FailureMessage);
+        return result.ExitCode;
     }
 
     private static ExerciseProcessExitCode WriteOrReport(
@@ -255,11 +86,9 @@ public static class ExerciseRunCommand
         ExerciseRunResult runResult,
         TextWriter standardOutput,
         TextWriter standardError,
-        string? failureMessage,
-        ExerciseManifest? manifest = null)
+        string? failureMessage)
     {
         ExerciseBundleWriteOutcome outcome;
-        var artifactStarted = Stopwatch.GetTimestamp();
         try
         {
             outcome = ExerciseBundleWriter.TryWrite(artifactRoot, primary, fallback);
@@ -272,12 +101,6 @@ public static class ExerciseRunCommand
 
         if (outcome.CompletedBundle is not null)
             standardOutput.WriteLine($"bundle={outcome.CompletedBundle.Path}");
-        if (manifest?.Detail == ExerciseDetail.Debug && outcome.CompletedBundle is not null)
-            WriteArtifactTrace(
-                standardOutput,
-                manifest,
-                outcome,
-                ElapsedMicroseconds(artifactStarted));
         if (!outcome.IsPrimarySucceeded)
         {
             standardError.WriteLine(outcome.CompletedBundle is null
@@ -296,25 +119,6 @@ public static class ExerciseRunCommand
             [ArtifactSchema.RunResultPath] = ExerciseRunResultCodec.Serialize(result),
             [ArtifactSchema.CheckResultsPath] = ExerciseCheckResultsCodec.Serialize(checks),
         };
-
-    private static ExerciseBundleWriteRequest FailedWriteFallback()
-    {
-        var result = ExerciseRunResult.Failed(ExerciseFailureCategory.ArtifactFailed, null);
-        return new ExerciseBundleWriteRequest(
-            ArtifactBundleProfile.FailedPreAdmission,
-            BasePayloads(result, new ExerciseCheckResults([])));
-    }
-
-    private static IEnumerable<BuildArtifactInput> ExecutedArtifacts()
-    {
-        var runnerAssembly = typeof(ExerciseRunCommand).Assembly.Location;
-        var coreAssembly = typeof(CampaignExercises).Assembly.Location;
-        yield return new BuildArtifactInput("Cna.Core.dll", coreAssembly, null);
-        yield return new BuildArtifactInput("Cna.ExerciseRunner.dll", runnerAssembly, null);
-        var dependencies = Path.ChangeExtension(runnerAssembly, ".deps.json");
-        if (File.Exists(dependencies))
-            yield return new BuildArtifactInput("Cna.ExerciseRunner.deps.json", dependencies, null);
-    }
 
     private static bool TryParse(string[] args, out CommandOptions options)
     {
@@ -398,8 +202,7 @@ public static class ExerciseRunCommand
     private static void WriteArtifactTrace(
         TextWriter output,
         ExerciseManifest manifest,
-        ExerciseBundleWriteOutcome outcome,
-        long elapsedMicroseconds)
+        ExerciseArtifactFinalizationTrace trace)
     {
         using var stream = new MemoryStream();
         using (var writer = new Utf8JsonWriter(stream))
@@ -407,15 +210,11 @@ public static class ExerciseRunCommand
             writer.WriteStartObject();
             writer.WriteString("event", "exercise.artifact-finalized");
             writer.WriteString("exerciseId", manifest.ExerciseId);
-            writer.WriteBoolean("primarySucceeded", outcome.IsPrimarySucceeded);
+            writer.WriteBoolean("primarySucceeded", trace.PrimarySucceeded);
             writer.WriteBoolean("readbackValidated", true);
-            writer.WriteNumber(
-                "payloadCount",
-                outcome.CompletedBundle!.Manifest.Files.Count);
-            writer.WriteNumber(
-                "logicalBytes",
-                outcome.CompletedBundle.Manifest.Files.Sum(file => file.SizeBytes));
-            writer.WriteNumber("elapsedMicroseconds", elapsedMicroseconds);
+            writer.WriteNumber("payloadCount", trace.PayloadCount);
+            writer.WriteNumber("logicalBytes", trace.LogicalBytes);
+            writer.WriteNumber("elapsedMicroseconds", trace.ElapsedMicroseconds);
             writer.WriteEndObject();
         }
         output.WriteLine($"trace={Encoding.UTF8.GetString(stream.ToArray())}");
