@@ -44,6 +44,51 @@ public sealed class ExerciseExecutorTests
     }
 
     [Fact]
+    public void SemanticRuntimeViewDesignatesEveryReserveThenCompletesToMovement()
+    {
+        var reserveViews = new List<IReadOnlyList<ExerciseControllerCandidate>>();
+        var runtime = new FaultingRuntime
+        {
+            SelectionOverride = (policies, actionSets) =>
+            {
+                var active = actionSets.Single(set => set.Candidates.Count > 0);
+                if (active.Candidates.Any(candidate => candidate.Kind is
+                    "designate-reserve" or "complete-reserve-designation"))
+                {
+                    reserveViews.Add(active.Candidates);
+                    var semantic = new ExerciseControllerManifest(
+                        ExerciseControllerPolicy.DesignateAllReservesThenFirstByActionId,
+                        ExerciseControllerPolicy.DesignateAllReservesThenFirstByActionId,
+                        ExerciseControllerPolicy.DesignateAllReservesThenFirstByActionId);
+                    return ExerciseController.Select(semantic, actionSets);
+                }
+
+                return ExerciseController.Select(policies, actionSets);
+            },
+        };
+        var manifest = ExerciseManifestCodecTests.Create(
+            maximumSteps: 12,
+            terminalBoundary:
+                "land.position.operation-1.first-player.movement-and-combat.movement");
+
+        var result = ExerciseExecutor.Execute(
+            manifest,
+            runtime,
+            TestContext.Current.CancellationToken);
+
+        Assert.True(result.IsSucceeded);
+        Assert.Equal(12, result.Steps.Count);
+        Assert.Equal(3, reserveViews.Count);
+        Assert.Equal([2, 1, 0], reserveViews.Select(view => view.Count(candidate =>
+            candidate.Kind == "designate-reserve")));
+        Assert.All(reserveViews, view => Assert.Single(view,
+            candidate => candidate.Kind == "complete-reserve-designation"));
+        Assert.Equal(
+            "land.position.operation-1.first-player.movement-and-combat.movement",
+            result.BoundaryPositionId);
+    }
+
+    [Fact]
     public void MaximumStepBoundFailsWithoutRelabelingFailureAsSuccess()
     {
         var result = Execute(ExerciseManifestCodecTests.Create(maximumSteps: 4));
@@ -145,7 +190,7 @@ public sealed class ExerciseExecutorTests
         var runtime = new FaultingRuntime
         {
             SelectionOverride = (_, actionSets) => ExerciseControllerSelection.Selected(
-                actionSets.Single(set => set.ActionIds.Count > 0).Audience,
+                actionSets.Single(set => set.Candidates.Count > 0).Audience,
                 invalidActionId),
         };
         var manifest = ExerciseManifestCodecTests.Create(detail: ExerciseDetail.Forensic);

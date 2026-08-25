@@ -79,8 +79,17 @@ public sealed class StageEntryCampaignTests
                     && audience == (expectedInitiativeHolder == LandSide.Axis
                         ? CampaignActionAudience.Axis
                         : CampaignActionAudience.Commonwealth);
+                var isFirstAtReserve = snapshot.StateVersion == 10
+                    && audience == (FirstActingSideResolver.Resolve(snapshot) == LandSide.Axis
+                        ? CampaignActionAudience.Axis
+                        : CampaignActionAudience.Commonwealth);
                 Assert.Equal(
-                    isHolderAtDeclaration ? ["act-first", "act-last"] : [],
+                    isHolderAtDeclaration
+                        ? ["act-first", "act-last"]
+                        : isFirstAtReserve
+                            ? ["complete-reserve-designation", "designate-reserve",
+                                "designate-reserve"]
+                            : [],
                     sideSet.Candidates.Select(value => value.Kind));
             }
         }

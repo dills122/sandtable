@@ -136,6 +136,28 @@ public sealed class CampaignExercisesTests
     }
 
     [Fact]
+    public void CheckpointReaderStrictlyDecodesCanonicalSnapshotEvidence()
+    {
+        var started = CampaignExercises.Begin(CreateRequest());
+        Assert.True(started.IsStarted);
+        var canonical = started.InitialSnapshotBytes!;
+
+        var checkpoint = CampaignExercises.ReadCheckpoint(canonical);
+
+        Assert.Equal("campaign-exercise", checkpoint.CampaignId);
+        Assert.Equal(1, checkpoint.StateVersion);
+        var json = System.Text.Encoding.UTF8.GetString(canonical);
+        var worldStart = json.IndexOf("\"world\":", StringComparison.Ordinal);
+        var worldEnd = json.IndexOf(",\"initiativeHolder\":", worldStart,
+            StringComparison.Ordinal);
+        Assert.True(worldStart >= 0);
+        Assert.True(worldEnd > worldStart);
+        var incomplete = System.Text.Encoding.UTF8.GetBytes(
+            $"{json[..worldStart]}\"world\":{{\"contractVersion\":2}}{json[worldEnd..]}");
+        Assert.Throws<JsonException>(() => CampaignExercises.ReadCheckpoint(incomplete));
+    }
+
+    [Fact]
     public void ExerciseAndOrdinaryPathsMatchAtEverySupportedCheckpoint()
     {
         var request = CreateRequest();

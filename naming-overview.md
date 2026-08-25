@@ -79,9 +79,10 @@ Public callers hold only a `CampaignAuthorityHandle`, inspect one side through C
 and submit a current typed Legal Action. The Umpire now resolves Operation Stage 1 Weather through
 explicit Initiative, Naval Convoy Schedule, Tactical Shipping, Initiative Declaration, and Weather
 events; resolves the admitted empty Organization, Naval Convoy Arrival, Fleet Assignment, and Fleet
-Repair obligations through four distinct event types; and stops at the first-acting side's Reserve
-decision. The authoritative `ActiveSide` remains unset there; observation and legal-action audiences
-derive the acting side from the recorded Operation Stage order.
+Repair obligations through four distinct event types; then adjudicates the first-acting side's
+Reserve Designation and stops at Movement. The authoritative `ActiveSide` remains unset at both
+relative-actor positions; observation and legal-action audiences derive the acting side from the
+recorded Operation Stage order.
 Walking the published sequence catalog for inspection does not create Chronicle history.
 
 For the CNA rules domain, use **initiative holder** only for the side that wins or is assigned
@@ -89,6 +90,12 @@ Game Turn initiative. Use **first-acting side** and **second-acting side** for e
 They are deliberately not aliases: the initiative holder chooses first or last separately for
 each stage. This plain vocabulary prevents a later rules decision from being hidden behind a
 generic `FirstPlayer` name.
+
+Use **Reserve Designation** for the decision phase, **Reserve I** and **Reserve II** for the rules'
+closed status vocabulary, and **completion** for the explicit event that ends designation. Do not
+call completion a generic sequence advance: the Umpire emits `ReserveDesignationCompleted` and
+projects the exact first-acting-side Movement successor. Movement behavior and the later Reserve
+lifecycle remain separate capabilities.
 
 ---
 

@@ -53,13 +53,18 @@ scenario; project the scenario's initial mutable element locations; resolve Init
 Determination and both admitted no-obligation Naval Convoy checkpoints; let the initiative holder
 declare whether to act first or last in Operation Stage 1; resolve Weather; emit authoritative
 events; explicitly resolve empty Organization, Naval Convoy Arrival, Fleet Assignment, and Fleet
-Repair obligations; stop at the first-acting side's Reserve decision; and replay those events to
-byte-identical state. Ruleset manifest contract 4, setup schema 5, snapshot contract 6, Content
-Pack schema 2, and Campaign World v1 use an original nine-hex,
+Repair obligations; adjudicate the first-acting side's Reserve Designation; stop at Movement; and
+replay those events to byte-identical state. Reserve authority now carries per-element status,
+owner-only observation, exact acting-side candidates, closed command mapping, bounded checkpoints,
+and canonical designation/completion events. Ruleset manifest contract 5, setup schema 5, snapshot
+contract 7, Campaign World snapshot contract 2, Campaign Observation contract 4, legal-action-set
+contract 2, and Content Pack
+schema 2 use an original nine-hex,
 nonhistorical rules laboratory to develop game systems without redistributing published assets.
-Campaign Observation contract 2 derives deterministic side-safe public topology, turn state, and
-own-force facts without exposing the complete Content Pack or any opposing-force row or
-association. Legal Actions v1 exposes those mechanics through an opaque campaign-authority handle,
+Campaign Observation derives deterministic side-safe public topology, audience-visible turn
+revision, own-force facts, and own Reserve status without exposing the complete Content Pack, any
+opposing-force row or association, or a hidden Reserve count. Legal Actions v1 exposes those
+mechanics through an opaque campaign-authority handle,
 deterministic system/side action sets, exact-audience membership enforcement, and side-safe
 acceptance receipts. Weather Determination v1 resolves corrected source-cited Weather through that
 same boundary and records pair-keyed evidence. Operation-Stage Entry v1 then resolves only the four
@@ -68,20 +73,38 @@ queries derive the Reserve audience from the recorded first/second actor order w
 `ActiveSide` remains unset. Raw snapshots, commands, events, content context, projection, and replay
 are not public mutation seams.
 
-The local `Cna.ExerciseRunner` can now drive that synthetic rules-laboratory path as either one
+The local `Cna.ExerciseRunner` supports that synthetic rules-laboratory path as either one
 bounded, deterministic **Exercise** or one serial **Maneuver**. An Exercise uses a fresh opaque Core
-capability, selects only current legal actions, stops at Organization, proves both event-history
-reconstruction and fresh-session re-adjudication, and writes a manifest-last `trusted-authority`
-evidence bundle. A Maneuver strictly admits one canonical ordered `serial-unpaired` manifest,
+capability, selects only current legal actions, stops at its exact declared boundary, proves both
+event-history reconstruction and fresh-session re-adjudication, and writes a manifest-last
+`trusted-authority` evidence bundle. The original Organization fixture and nine-step Reserve
+fixture remain regression checkpoints; a checked 12-step Reserve Designation profile now
+designates both eligible elements and completes to first-side Movement. A Maneuver
+strictly admits one canonical ordered `serial-unpaired` manifest,
 derives explicit child identities from its sole parent root seed, and runs each child in process
 through the same coordinator. Each completed child bundle is read once for semantic validation and
-identity-matched aggregation. The resulting transactional report separates deterministic counts,
-outcomes, and fingerprint material from noncanonical timing/path diagnostics and is strictly read
-back before completion is claimed. Compact, forensic, and debug Exercise detail tiers expose
-progressively richer evidence without changing simulation truth. Paired comparison, model
+identity-matched aggregation; snapshot facts are accepted only after the complete Core-owned
+snapshot/world decoder validates their canonical structure. The resulting transactional report
+separates deterministic counts, outcomes, and fingerprint material from noncanonical timing/path
+diagnostics and is strictly read back before completion is claimed. Compact, forensic, and debug
+Exercise detail tiers expose progressively richer evidence without changing simulation truth. The
+current two-setup serial Maneuver proves the same Movement-terminal path for predetermined and
+contested initiative.
+Paired comparison, model
 controllers, and side-safe exports are not implemented yet.
 
-Positive Organization/stage-entry obligations, Reserve, movement, combat, published scenario
+The checked Exercise and Maneuver profiles use the current v2 manifest identities with ruleset v5,
+snapshot v7, world v2, strict trusted-evidence admission, and deterministic v2 controller
+configuration identity.
+
+The first two retained simulator studies now verify repeated Movement-terminal determinism,
+counterbalanced-order timing, and contested root seeds 0-31. Every sampled run passed strict
+readback; the results also show that future back-testing needs explicit act-last and Reserve
+none/one/all controller profiles rather than seed variation alone. See
+[Baseline 1](docs/research/simulator-baseline-1.md) and
+[Baseline 2](docs/research/simulator-baseline-2.md).
+
+Positive Organization/stage-entry obligations, movement behavior, combat, published scenario
 content, persistence, and the Maproom player interface remain future work.
 
 The reviewed Player Intent Composer is also future work. After the movement/contact/combat skeleton
@@ -96,15 +119,15 @@ The current delivery boundary is:
 | --- | --- |
 | Ruleset/provenance, synthetic content, campaign authority, deterministic randomness, events, and replay | Implemented foundation |
 | Side-safe observations and exact-audience legal actions | Implemented for the current rules-laboratory path |
-| Mandatory turn preamble | Partially implemented; Weather and the explicit-empty stage-entry path are complete, and authority stops at Reserve |
+| Mandatory turn preamble | Implemented through Reserve Designation completion; authority reaches first-side Movement |
 | Movement/contact and combat loops | Planned; not started |
 | Published first-scenario data, remaining Land rules, victory, persistence, and Maproom | Milestone-level; not started |
 | Player Intent Composer | Direction reviewed; representative decision after the combat skeleton, no-model prototype before Maproom, optional parser evaluation after deterministic MVP |
-| Exercise Harness | Single-Exercise and serial-unpaired Maneuver paths implemented; pairing remains later |
+| Exercise Harness | Organization, Reserve, and Movement-terminal Exercises plus serial-unpaired two-setup Movement Maneuver implemented; pairing remains later |
 
 The approved high-level path to a playable game is:
 
-1. Implement Reserve and a complete movement/contact/combat loop through the legal-action boundary.
+1. Implement a complete movement/contact/combat loop through the legal-action boundary.
 2. Add the remaining Land systems and data required by *Graziani's Offensive*.
 3. Validate the representative Player Intent Composer flow without a model.
 4. Deliver deterministic Maproom, local hot-seat play, saves, replay, and the reviewed intent flow.
@@ -115,9 +138,14 @@ The serial-Maneuver portion of Exercise Harness v1 now provides validated local 
 evidence without adding game rules. The implemented Operation-Stage Entry package retains its
 [research](docs/research/operation-stage-entry-spike.md),
 [specification](docs/specs/operation-stage-entry-v1.md), and
-[technical design](docs/design/operation-stage-entry-v1.md). Reserve is the next authoritative
-mechanic. Paired comparison remains a later evaluation capability and does not block
-gameplay-engine progress.
+[technical design](docs/design/operation-stage-entry-v1.md). Reserve Designation is now the next
+delivered authoritative mechanic. Its [research](docs/research/reserve-designation-spike.md),
+[specification](docs/specs/reserve-designation-v1.md), and
+[technical design](docs/design/reserve-designation-v1.md) define an incremental designation flow
+that stops at Movement. Rules, state, owner projection, legal candidates, command mapping,
+designation/completion events, finite checkpoint validation, replay, and checked harness evidence
+are implemented. Movement behavior remains unsupported. Paired
+comparison remains a later evaluation capability and does not block gameplay-engine progress.
 
 See the [pre-alpha roadmap](docs/roadmap/pre-alpha-roadmap.md) for the capability-level plan and
 completion criteria.
@@ -157,24 +185,46 @@ dotnet test --solution Sandtable.slnx --no-build
 dotnet run --project src/Cna.AppHost/Cna.AppHost.csproj
 ```
 
-Run the checked-in deterministic Exercise and write its ignored evidence bundle with:
+Run the Organization-boundary Exercise and
+write its ignored evidence bundle with:
 
 ```sh
 dotnet run --project src/Cna.ExerciseRunner/Cna.ExerciseRunner.csproj -- \
-  exercise run --manifest scenarios/exercises/rules-lab.organization.v1.json \
+  exercise run --manifest scenarios/exercises/rules-lab.organization.v2.json \
   --artifact-root artifacts/exercises
 ```
 
 The command prints the finalized bundle path. The checked-in manifest is explicitly exploratory,
 so a dirty development tree is recorded honestly as nonbaseline and nonreproducible.
 
+The corresponding Stage Entry profile runs all nine accepted actions to the Reserve boundary:
+
+```sh
+dotnet run --project src/Cna.ExerciseRunner/Cna.ExerciseRunner.csproj -- \
+  exercise run --manifest scenarios/exercises/rules-lab.reserve.v2.json \
+  --artifact-root artifacts/exercises
+```
+
 From a clean checkout, request a fail-closed baseline bundle with the checked baseline twin:
 
 ```sh
 dotnet run --project src/Cna.ExerciseRunner/Cna.ExerciseRunner.csproj -- \
-  exercise run --manifest scenarios/exercises/rules-lab.organization.baseline.v1.json \
+  exercise run --manifest scenarios/exercises/rules-lab.organization.baseline.v2.json \
   --artifact-root artifacts/exercises
 ```
+
+The Reserve profile has the corresponding clean-checkout twin
+`scenarios/exercises/rules-lab.reserve.baseline.v2.json`. Run the 12-step Reserve Designation path
+through first-side Movement with:
+
+```sh
+dotnet run --project src/Cna.ExerciseRunner/Cna.ExerciseRunner.csproj -- \
+  exercise run --manifest scenarios/exercises/rules-lab.reserve-designation.v2.json \
+  --artifact-root artifacts/exercises
+```
+
+Its clean-checkout twin is
+`scenarios/exercises/rules-lab.reserve-designation.baseline.v2.json`.
 
 Set the manifest's `detail` to `compact`, `forensic`, or `debug`. Forensic adds correlated audience
 queries, controller selection, checks, proofs, payload sizing, and the progressively assembled
@@ -186,7 +236,23 @@ Run the checked two-child serial Maneuver with:
 
 ```sh
 dotnet run --project src/Cna.ExerciseRunner/Cna.ExerciseRunner.csproj -- \
-  maneuver run --manifest scenarios/maneuvers/rules-lab.serial.v1.json \
+  maneuver run --manifest scenarios/maneuvers/rules-lab.serial.v2.json \
+  --artifact-root artifacts/exercises
+```
+
+Run the two-setup Stage Entry regression Maneuver to Reserve with:
+
+```sh
+dotnet run --project src/Cna.ExerciseRunner/Cna.ExerciseRunner.csproj -- \
+  maneuver run --manifest scenarios/maneuvers/rules-lab.stage-entry.serial.v2.json \
+  --artifact-root artifacts/exercises
+```
+
+Run the two-setup Reserve Designation Maneuver through Movement with:
+
+```sh
+dotnet run --project src/Cna.ExerciseRunner/Cna.ExerciseRunner.csproj -- \
+  maneuver run --manifest scenarios/maneuvers/rules-lab.reserve-designation.serial.v2.json \
   --artifact-root artifacts/exercises
 ```
 
@@ -256,7 +322,8 @@ The current Umpire foundation is intentionally pure and in-process:
 - `Cna.Core.Actions` owns typed system/side candidates, canonical action identity, observation-only
   side generation, exact-audience query/submission enforcement, and side-safe receipts.
 - `Cna.Core.Exercises` owns the fresh-only opaque simulation capability, immutable trusted step
-  evidence, and reconstruction from its retained canonical event history.
+  evidence, strict canonical snapshot-to-checkpoint decoding, and reconstruction from its retained
+  canonical event history.
 - `Cna.ExerciseRunner` owns deterministic controllers, bounded execution, re-adjudication,
   versioned Exercise/Maneuver evidence contracts, build identity, transactional bundles and
   reports, summaries, and CLI exits.
@@ -308,6 +375,9 @@ The current Umpire foundation is intentionally pure and in-process:
 - [Operation-Stage Entry source and contract research](docs/research/operation-stage-entry-spike.md)
 - [Operation-Stage Entry v1 specification](docs/specs/operation-stage-entry-v1.md)
 - [Operation-Stage Entry v1 technical design and delivery plan](docs/design/operation-stage-entry-v1.md)
+- [Reserve Designation v1 source and contract research](docs/research/reserve-designation-spike.md)
+- [Reserve Designation v1 specification](docs/specs/reserve-designation-v1.md)
+- [Reserve Designation v1 technical design and delivery plan](docs/design/reserve-designation-v1.md)
 - [Microsoft Orleans documentation](https://learn.microsoft.com/en-us/dotnet/orleans/)
 - [ASP.NET Core gRPC services](https://learn.microsoft.com/en-us/aspnet/core/grpc/aspnetcore?view=aspnetcore-10.0)
 - [Aspire AppHost and ServiceDefaults](https://learn.microsoft.com/en-us/dotnet/aspire/fundamentals/aspire-sdk-templates)

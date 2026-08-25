@@ -5,8 +5,8 @@ namespace Cna.Core.Actions;
 
 public sealed record CampaignLegalActionSet
 {
-    public const int CurrentContractVersion = 1;
-    public const string CurrentPolicyId = "sandtable.legal-actions.v1";
+    public const int CurrentContractVersion = 2;
+    public const string CurrentPolicyId = "sandtable.legal-actions.v2";
 
     internal CampaignLegalActionSet(string campaignId, long stateVersion, string rulesetHash,
         string positionId, CampaignActionAudience audience,
@@ -50,6 +50,10 @@ public sealed record CampaignLegalActionSet
     public int ContractVersion { get; }
     public string PolicyId { get; }
     public string CampaignId { get; }
+    /// <summary>
+    /// Gets the revision visible to this audience. A non-empty current set remains bound to the
+    /// exact authority revision used by submission.
+    /// </summary>
     public long StateVersion { get; }
     public string RulesetHash { get; }
     public string PositionId { get; }

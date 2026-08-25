@@ -14,6 +14,12 @@
 **Research decision:**
 [Turn-Preamble Action Boundary Spike](../research/turn-preamble-action-boundary-spike.md)
 
+**Current contract evolution:** Reserve Designation retains the Legal Actions v1 capability but
+clean-cuts the action-set envelope to contract 2 / `sandtable.legal-actions.v2`. Its `stateVersion`
+is audience-visible: active sets retain the current authority revision, while inactive opposing
+Reserve/Movement sets do not encode hidden designation count. Candidate, submission, and receipt
+contracts remain 1. See [Reserve Designation v1](reserve-designation-v1.md).
+
 ## Objective
 
 Create the smallest authoritative Core boundary that tells one exact audience which fully bound
@@ -93,7 +99,7 @@ progression remains a distinct trusted audience and never appears as a player ch
 | ID | Requirement |
 | --- | --- |
 | `ACT-001` | Query accepts one non-null Core-issued `CampaignAuthorityHandle` and one defined `CampaignActionAudience`. The handle contains an admitted Campaign World snapshot plus its exact already-resolved content context but exposes neither. Query returns either one complete action set or one typed rejection; a null handle is a programmer error. |
-| `ACT-002` | Every action set records set contract version 1, policy ID `sandtable.legal-actions.v1`, campaign ID, state version, canonical ruleset hash, current position ID, exact audience, and a canonically ordered immutable candidate collection. It contains no complete Content Pack identity. |
+| `ACT-002` | Every current action set records set contract version 2, policy ID `sandtable.legal-actions.v2`, campaign ID, audience-visible state version, canonical ruleset hash, current position ID, exact audience, and a canonically ordered immutable candidate collection. An active non-empty set retains the exact current authority revision; an inactive opposing Reserve/Movement set removes hidden designation increments. It contains no complete Content Pack identity. |
 | `ACT-003` | Audience is a closed enum with exact canonical values `system`, `axis`, and `commonwealth`. It does not encode a user, seat, Staff persona, authorization claim, or inferred active side. |
 | `ACT-004` | Each candidate is a dedicated immutable typed value with its own contract version, stable kind, and SHA-256 action ID computed from canonical candidate semantic bytes excluding the ID. Candidates contain only facts approved for their exact audience. Generic parameter dictionaries and raw `CampaignCommand` values are prohibited. |
 | `ACT-005` | At valid unresolved Initiative Determination, `system` contains exactly one `resolve-initiative` candidate with no caller-supplied rules or random inputs. Both side sets are empty. |

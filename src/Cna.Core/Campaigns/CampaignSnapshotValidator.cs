@@ -16,18 +16,18 @@ internal static class CampaignSnapshotValidator
             || !Cna1979Ruleset.IsCanonicalHash(snapshot.RulesetHash)
             || snapshot.Setup.Content != context.Selection
             || snapshot.Setup.InitialGameTurn != context.Scenario.Start.GameTurn
-            || !CampaignWorldValidator.IsValidInitial(snapshot.World, context.Artifact, context.Scenario))
+            || !IsContextAuthoritativelyValid(snapshot, context))
         {
             return false;
         }
 
-        return IsCheckpointValid(snapshot);
+        return true;
     }
 
     public static bool IsLocallyValid(CampaignSnapshot snapshot)
     {
-        if (snapshot.ContractVersion != 6
-            || snapshot.StateVersion is < 1 or > 10
+        if (snapshot.ContractVersion != CampaignSnapshot.CurrentContractVersion
+            || snapshot.StateVersion < 1
             || !IsStableId(snapshot.CampaignId)
             || !IsRulesHash(snapshot.RulesetHash)
             || !IsValidSetup(snapshot.Setup)
@@ -47,7 +47,7 @@ internal static class CampaignSnapshotValidator
             return false;
         }
 
-        return IsCheckpointValid(snapshot);
+        return IsLocallyCheckpointValid(snapshot);
     }
 
     public static bool IsValidSetup(CampaignSetupSnapshot? setup)
@@ -115,18 +115,72 @@ internal static class CampaignSnapshotValidator
         && setup.StageEntry == definition.StageEntry
         && setup.Sources.SequenceEqual(definition.Sources);
 
-    private static bool IsCheckpointValid(CampaignSnapshot snapshot)
+    private static bool IsContextAuthoritativelyValid(
+        CampaignSnapshot snapshot,
+        CampaignContentContext context)
     {
-        var positions = Cna1979LandSequence.CreateTurn(snapshot.Setup.InitialGameTurn);
-        if (snapshot.StateVersion is < 1 or > 10
-            || snapshot.SequencePosition != positions[checked((int)snapshot.StateVersion - 1)])
+        if (!IsLocallyCheckpointValid(snapshot))
         {
             return false;
         }
 
-        if (snapshot.StateVersion == 10
-            && (snapshot.SequencePosition.PhaseId != LandPhaseIds.ReserveDesignation
-                || snapshot.SequencePosition.ActorRole != LandActorRole.FirstActingSide
+        var isReserve = snapshot.SequencePosition.PhaseId
+            == LandPhaseIds.ReserveDesignation;
+        var isMovement = snapshot.SequencePosition.PhaseId
+                == LandPhaseIds.MovementAndCombat
+            && snapshot.SequencePosition.SegmentId == LandSegmentIds.Movement;
+
+        if (!isReserve && !isMovement)
+        {
+            return CampaignWorldValidator.IsValidInitial(
+                snapshot.World,
+                context.Artifact,
+                context.Scenario);
+        }
+
+        try
+        {
+            return CampaignWorldValidator.IsValidReserveDesignation(
+                snapshot.World,
+                context.Artifact,
+                context.Scenario,
+                FirstActingSideResolver.Resolve(snapshot));
+        }
+        catch (InvalidOperationException)
+        {
+            return false;
+        }
+    }
+
+    private static bool IsLocallyCheckpointValid(CampaignSnapshot snapshot)
+    {
+        var positions = Cna1979LandSequence.CreateTurn(snapshot.Setup.InitialGameTurn);
+        const int reserveEntryStateVersion = 10;
+        var reservePosition = positions[reserveEntryStateVersion - 1];
+        var movementPosition = Cna1979LandSequence.GetNext(reservePosition);
+        var reserveICount = snapshot.World.Elements.Count(element =>
+            element.ReserveStatus == CampaignElementReserveStatus.ReserveI);
+        var containsUnsupportedStatus = snapshot.World.Elements.Any(element =>
+            element.ReserveStatus == CampaignElementReserveStatus.ReserveII);
+
+        if (containsUnsupportedStatus
+            || (snapshot.StateVersion < reserveEntryStateVersion
+                && (snapshot.SequencePosition
+                        != positions[checked((int)snapshot.StateVersion - 1)]
+                    || reserveICount != 0))
+            || (snapshot.StateVersion >= reserveEntryStateVersion
+                && !((snapshot.SequencePosition == reservePosition
+                        && snapshot.StateVersion
+                            == reserveEntryStateVersion + reserveICount)
+                    || (snapshot.SequencePosition == movementPosition
+                        && snapshot.StateVersion
+                            == reserveEntryStateVersion + reserveICount + 1))))
+        {
+            return false;
+        }
+
+        if (snapshot.StateVersion >= reserveEntryStateVersion
+            && (snapshot.SequencePosition.ActorRole != LandActorRole.FirstActingSide
                 || snapshot.SequencePosition.ActiveSide is not null))
         {
             return false;

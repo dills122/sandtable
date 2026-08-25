@@ -161,6 +161,7 @@ internal static class CampaignSnapshotSerializer
             writer.WriteStartObject();
             writer.WriteString("elementId", element.ElementId);
             writer.WriteString("currentLocationId", element.CurrentLocationId);
+            writer.WriteString("reserveStatus", FormatReserveStatus(element.ReserveStatus));
             writer.WriteEndObject();
         }
 
@@ -177,13 +178,34 @@ internal static class CampaignSnapshotSerializer
                 .EnumerateArray()
                 .Select(element =>
                 {
-                    RequireProperties(element, "elementId", "currentLocationId");
+                    RequireProperties(
+                        element,
+                        "elementId",
+                        "currentLocationId",
+                        "reserveStatus");
                     return new CampaignElementState(
                         element.GetProperty("elementId").GetString()!,
-                        element.GetProperty("currentLocationId").GetString()!);
+                        element.GetProperty("currentLocationId").GetString()!,
+                        ParseReserveStatus(element.GetProperty("reserveStatus").GetString()));
                 })
                 .ToArray());
     }
+
+    private static string FormatReserveStatus(CampaignElementReserveStatus status) => status switch
+    {
+        CampaignElementReserveStatus.None => "none",
+        CampaignElementReserveStatus.ReserveI => "reserve-i",
+        CampaignElementReserveStatus.ReserveII => "reserve-ii",
+        _ => throw new ArgumentOutOfRangeException(nameof(status)),
+    };
+
+    private static CampaignElementReserveStatus ParseReserveStatus(string? status) => status switch
+    {
+        "none" => CampaignElementReserveStatus.None,
+        "reserve-i" => CampaignElementReserveStatus.ReserveI,
+        "reserve-ii" => CampaignElementReserveStatus.ReserveII,
+        _ => throw new JsonException("The campaign element Reserve status is invalid."),
+    };
 
     private static void WriteContent(Utf8JsonWriter writer, CampaignContentSelection content)
     {

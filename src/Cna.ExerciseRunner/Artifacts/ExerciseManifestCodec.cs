@@ -117,6 +117,8 @@ public static class ExerciseManifestCodec
     private static string Format(ExerciseControllerPolicy value) => value switch
     {
         ExerciseControllerPolicy.FirstByActionId => "first-by-action-id",
+        ExerciseControllerPolicy.DesignateAllReservesThenFirstByActionId =>
+            "designate-all-reserves-then-first-by-action-id",
         _ => throw new ArgumentOutOfRangeException(nameof(value)),
     };
 
@@ -147,6 +149,8 @@ public static class ExerciseManifestCodec
     private static ExerciseControllerPolicy ParseController(string? value) => value switch
     {
         "first-by-action-id" => ExerciseControllerPolicy.FirstByActionId,
+        "designate-all-reserves-then-first-by-action-id" =>
+            ExerciseControllerPolicy.DesignateAllReservesThenFirstByActionId,
         _ => throw new JsonException("Unknown controller policy."),
     };
 

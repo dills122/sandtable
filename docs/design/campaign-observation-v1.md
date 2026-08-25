@@ -13,6 +13,10 @@
 [Observation and Fog Boundary](../research/observation-and-fog-boundary-spike.md),
 [Reconnaissance, Contacts, and Dummy Knowledge](../research/recon-contact-knowledge-spike.md)
 
+**Current evolution:** The original value model below has clean-cut through contract 4 and policy
+`sandtable.observation.own-elements-only.v2`. Contract 3 added owner Reserve status; contract 4
+projects an audience-visible revision that excludes hidden opposing Reserve designation increments.
+
 ## Intent and completion boundary
 
 Add the first enforceable fog-of-war projection boundary to Core. Given one admitted campaign
@@ -110,9 +114,9 @@ own contract but must not turn an observation into authority.
 ```csharp
 public sealed record CampaignObservation
 {
-    public const int CurrentContractVersion = 1;
+    public const int CurrentContractVersion = 4;
     public const string CurrentPolicyId =
-        "sandtable.observation.own-elements-only.v1";
+        "sandtable.observation.own-elements-only.v2";
 
     internal CampaignObservation(
         int contractVersion,
@@ -294,7 +298,7 @@ An initial Axis observation has this complete shape; `<ruleset-hash>` is replace
 canonical 64-character manifest hash in executable golden evidence:
 
 ```json
-{"contractVersion":1,"policyId":"sandtable.observation.own-elements-only.v1","campaignId":"campaign-1","stateVersion":1,"rulesetHash":"<ruleset-hash>","scenarioId":"movement-contact-lab","observer":"axis","position":{"positionId":"land.position.initiative-determination","gameTurn":1,"operationStage":0,"stageId":"land.stage.initiative-determination","phaseId":"land.phase.initiative-determination","segmentId":null,"stepId":null,"actorRole":"none","activeSide":null,"initiativeHolder":null},"locations":[...],"edges":[...],"ownElements":[{"elementId":"axis-element-a","parentFormationId":"axis-lab-formation","organizationId":"land.organization.battalion","baseCapabilityPointAllowance":20,"currentLocationId":"west"},{"elementId":"axis-element-b","parentFormationId":"axis-lab-formation","organizationId":"land.organization.battalion","baseCapabilityPointAllowance":10,"currentLocationId":"north-west"}]}
+{"contractVersion":4,"policyId":"sandtable.observation.own-elements-only.v2","campaignId":"campaign-1","stateVersion":1,"rulesetHash":"<ruleset-hash>","scenarioId":"movement-contact-lab","observer":"axis","position":{"positionId":"land.position.initiative-determination","gameTurn":1,"operationStage":0,"stageId":"land.stage.initiative-determination","phaseId":"land.phase.initiative-determination","segmentId":null,"stepId":null,"actorRole":"none","activeSide":null,"initiativeHolder":null},"locations":[...],"edges":[...],"ownElements":[{"elementId":"axis-element-a","parentFormationId":"axis-lab-formation","organizationId":"land.organization.battalion","baseCapabilityPointAllowance":20,"currentLocationId":"west","reserveStatus":"none"},{"elementId":"axis-element-b","parentFormationId":"axis-lab-formation","organizationId":"land.organization.battalion","baseCapabilityPointAllowance":10,"currentLocationId":"north-west","reserveStatus":"none"}]}
 ```
 
 The executable golden must include all nine locations and ten edges; the ellipses above are design

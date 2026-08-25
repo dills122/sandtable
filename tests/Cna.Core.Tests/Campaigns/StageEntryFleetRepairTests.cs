@@ -78,9 +78,15 @@ public sealed class StageEntryFleetRepairTests
         Assert.Null(accepted.SuccessorHandle.Snapshot.ActiveSide);
         Assert.Equal(10, accepted.Receipt!.CommittedStateVersion);
         Assert.Empty(Query(accepted.SuccessorHandle, CampaignActionAudience.System).Candidates);
-        Assert.Empty(Query(accepted.SuccessorHandle, CampaignActionAudience.Axis).Candidates);
-        Assert.Empty(Query(accepted.SuccessorHandle,
-            CampaignActionAudience.Commonwealth).Candidates);
+        var firstAudience = FirstActingSideResolver.Resolve(
+            accepted.SuccessorHandle.Snapshot) == LandSide.Axis
+                ? CampaignActionAudience.Axis
+                : CampaignActionAudience.Commonwealth;
+        var secondAudience = firstAudience == CampaignActionAudience.Axis
+            ? CampaignActionAudience.Commonwealth
+            : CampaignActionAudience.Axis;
+        Assert.Equal(3, Query(accepted.SuccessorHandle, firstAudience).Candidates.Count);
+        Assert.Empty(Query(accepted.SuccessorHandle, secondAudience).Candidates);
 
         var duplicate = CampaignLegalActions.Submit(accepted.SuccessorHandle, submission);
         Assert.False(duplicate.IsAccepted);

@@ -126,7 +126,7 @@ public sealed class CampaignLegalActionsTests
 
         var json = Encoding.UTF8.GetString(CampaignLegalActionSerializer.Serialize(set));
         Assert.Equal(
-            $"{{\"contractVersion\":1,\"policyId\":\"sandtable.legal-actions.v1\",\"campaignId\":\"campaign-actions\",\"stateVersion\":1,\"rulesetHash\":\"{Cna1979Ruleset.Manifest.Hash}\",\"positionId\":\"land.position.initiative-determination\",\"audience\":\"system\",\"candidates\":[{{\"contractVersion\":1,\"actionId\":\"{candidate.ActionId}\",\"kind\":\"resolve-initiative\"}}]}}",
+            $"{{\"contractVersion\":2,\"policyId\":\"sandtable.legal-actions.v2\",\"campaignId\":\"campaign-actions\",\"stateVersion\":1,\"rulesetHash\":\"{Cna1979Ruleset.Manifest.Hash}\",\"positionId\":\"land.position.initiative-determination\",\"audience\":\"system\",\"candidates\":[{{\"contractVersion\":1,\"actionId\":\"{candidate.ActionId}\",\"kind\":\"resolve-initiative\"}}]}}",
             json);
     }
 
@@ -224,8 +224,12 @@ public sealed class CampaignLegalActionsTests
             baseline.Snapshots[3], pair.BaselineContext), audience);
         Assert.Equal(observer == LandSide.Axis ? 2 : 0,
             declarationSet.Candidates.Count);
-        Assert.Empty(Query(new CampaignAuthorityHandle(
-            baseline.Snapshot, pair.BaselineContext), audience).Candidates);
+        var reserve = new CampaignAuthorityHandle(
+            baseline.Snapshot,
+            pair.BaselineContext);
+        var expectedFirstSide = FirstActingSideResolver.Resolve(reserve.Snapshot);
+        Assert.Equal(observer == expectedFirstSide ? 3 : 0,
+            Query(reserve, audience).Candidates.Count);
     }
 
     [Fact]
@@ -510,7 +514,7 @@ public sealed class CampaignLegalActionsTests
         var json = Encoding.UTF8.GetString(CampaignLegalActionSerializer.Serialize(set));
 
         Assert.Equal(
-            $"{{\"contractVersion\":1,\"policyId\":\"sandtable.legal-actions.v1\",\"campaignId\":\"campaign-actions\",\"stateVersion\":{stateVersion},\"rulesetHash\":\"{Cna1979Ruleset.Manifest.Hash}\",\"positionId\":\"{positionId}\",\"audience\":\"system\",\"candidates\":[{{\"contractVersion\":1,\"actionId\":\"{actionId}\",\"kind\":\"{kind}\"}}]}}",
+            $"{{\"contractVersion\":2,\"policyId\":\"sandtable.legal-actions.v2\",\"campaignId\":\"campaign-actions\",\"stateVersion\":{stateVersion},\"rulesetHash\":\"{Cna1979Ruleset.Manifest.Hash}\",\"positionId\":\"{positionId}\",\"audience\":\"system\",\"candidates\":[{{\"contractVersion\":1,\"actionId\":\"{actionId}\",\"kind\":\"{kind}\"}}]}}",
             json);
     }
 

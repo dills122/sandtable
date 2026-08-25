@@ -39,6 +39,9 @@ public static class CampaignExercises
         return new ExerciseCheckpoint(session.Snapshot);
     }
 
+    public static ExerciseCheckpoint ReadCheckpoint(ReadOnlyMemory<byte> canonicalSnapshot) =>
+        new(CampaignSnapshotSerializer.Deserialize(canonicalSnapshot));
+
     public static ExerciseStepResult Submit(
         ExerciseSession session,
         CampaignActionSubmission submission)

@@ -21,18 +21,47 @@ public static class CampaignLegalActionSerializer
             writer.WriteStartArray("candidates");
             foreach (var candidate in actionSet.Candidates)
             {
-                writer.WriteStartObject();
-                writer.WriteNumber("contractVersion", candidate.ContractVersion);
-                writer.WriteString("actionId", candidate.ActionId);
-                writer.WriteString("kind", candidate.Kind);
-                if (candidate.OperationStage is not null)
-                    writer.WriteNumber("operationStage", candidate.OperationStage.Value);
-                writer.WriteEndObject();
+                WriteCandidate(writer, candidate);
             }
             writer.WriteEndArray();
             writer.WriteEndObject();
         }
         return stream.ToArray();
+    }
+
+    private static void WriteCandidate(
+        Utf8JsonWriter writer,
+        CampaignActionCandidate candidate)
+    {
+        writer.WriteStartObject();
+        writer.WriteNumber("contractVersion", candidate.ContractVersion);
+        writer.WriteString("actionId", candidate.ActionId);
+        writer.WriteString("kind", candidate.Kind);
+
+        switch (candidate)
+        {
+            case DesignateReserveAction designation:
+                writer.WriteString("elementId", designation.ElementId);
+                break;
+            case ActFirstAction:
+            case ActLastAction:
+                writer.WriteNumber("operationStage", candidate.OperationStage!.Value);
+                break;
+            case ResolveInitiativeAction:
+            case ResolveNoObligationNavalConvoyScheduleAction:
+            case ResolveNoObligationTacticalShippingAction:
+            case ResolveWeatherAction:
+            case ResolveNoObligationOrganizationAction:
+            case ResolveNoObligationNavalConvoyArrivalAction:
+            case ResolveNoObligationFleetAssignmentAction:
+            case ResolveNoObligationFleetRepairAction:
+            case CompleteReserveDesignationAction:
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(candidate));
+        }
+
+        writer.WriteEndObject();
     }
 
     internal static string FormatAudience(CampaignActionAudience audience) => audience switch

@@ -1,4 +1,5 @@
 using Cna.Core.Content;
+using Cna.Core.Rules;
 
 namespace Cna.Core.Campaigns;
 
@@ -23,7 +24,8 @@ internal static class CampaignWorldFactory
             scenario.InitialPlacements
                 .Select(placement => new CampaignElementState(
                     placement.ElementId,
-                    placement.LocationId))
+                    placement.LocationId,
+                    CampaignElementReserveStatus.None))
                 .ToArray());
 
         if (!CampaignWorldValidator.IsValidInitial(world, artifact, scenario))
@@ -50,10 +52,46 @@ internal static class CampaignWorldValidator
     public static bool IsValidInitial(
         CampaignWorldSnapshot? world,
         ContentPackArtifact artifact,
-        ContentScenario scenario)
+        ContentScenario scenario) => IsValid(
+            world,
+            artifact,
+            scenario,
+            static (_, status) => status == CampaignElementReserveStatus.None);
+
+    public static bool IsValidReserveDesignation(
+        CampaignWorldSnapshot? world,
+        ContentPackArtifact artifact,
+        ContentScenario scenario,
+        LandSide firstSide)
+    {
+        var firstSideId = firstSide switch
+        {
+            LandSide.Axis => "axis",
+            LandSide.Commonwealth => "commonwealth",
+            _ => null,
+        };
+
+        return firstSideId is not null && IsValid(
+            world,
+            artifact,
+            scenario,
+            (element, status) => status == CampaignElementReserveStatus.None
+                || (status == CampaignElementReserveStatus.ReserveI
+                    && string.Equals(
+                        element.SideId,
+                        firstSideId,
+                        StringComparison.Ordinal)));
+    }
+
+    private static bool IsValid(
+        CampaignWorldSnapshot? world,
+        ContentPackArtifact artifact,
+        ContentScenario scenario,
+        Func<ContentCombatElement, CampaignElementReserveStatus, bool> isValidStatus)
     {
         ArgumentNullException.ThrowIfNull(artifact);
         ArgumentNullException.ThrowIfNull(scenario);
+        ArgumentNullException.ThrowIfNull(isValidStatus);
 
         if (world is null
             || world.ContractVersion != CampaignWorldSnapshot.CurrentContractVersion
@@ -83,6 +121,7 @@ internal static class CampaignWorldValidator
             if (!elements.TryGetValue(elementState.ElementId, out var element)
                 || element.PlacementMode != ContentPlacementMode.Independent
                 || !locations.Contains(elementState.CurrentLocationId)
+                || !isValidStatus(element, elementState.ReserveStatus)
                 || !expected.TryGetValue(elementState.ElementId, out var expectedLocation)
                 || !string.Equals(
                     elementState.CurrentLocationId,

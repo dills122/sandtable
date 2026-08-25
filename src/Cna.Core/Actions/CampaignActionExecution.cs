@@ -168,6 +168,17 @@ internal static class CampaignActionExecution
                 last.OperationStage!.Value,
                 ToSide(audience),
                 InitiativeOrderChoice.ActLast),
+            DesignateReserveAction designation when audience != CampaignActionAudience.System =>
+                new DesignateReserveElement(
+                    snapshot.StateVersion,
+                    snapshot.SequencePosition.PositionId,
+                    ToSide(audience),
+                    designation.ElementId),
+            CompleteReserveDesignationAction when audience != CampaignActionAudience.System =>
+                new CompleteReserveDesignation(
+                    snapshot.StateVersion,
+                    snapshot.SequencePosition.PositionId,
+                    ToSide(audience)),
             _ => throw new InvalidOperationException(
                 "The legal candidate has no command mapping."),
         };

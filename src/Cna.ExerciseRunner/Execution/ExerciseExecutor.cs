@@ -415,7 +415,14 @@ public static class ExerciseExecutor
                 manifest.Controllers,
                 queries.Select(result => new ExerciseControllerActionSet(
                     result.ActionSet!.Audience,
-                    result.ActionSet.Candidates.Select(candidate => candidate.ActionId))).ToArray());
+                    result.ActionSet.Candidates.Select(candidate =>
+                        new ExerciseControllerCandidate(
+                            ExerciseControllerCandidate.CurrentContractVersion,
+                            candidate.ActionId,
+                            candidate.Kind,
+                            candidate is DesignateReserveAction designation
+                                ? designation.ElementId
+                                : null)))).ToArray());
             var controllerElapsedMicroseconds = ElapsedMicroseconds(controllerStarted);
             var activeAudiences = queryDiagnostics
                 .Where(value => value.CandidateCount > 0)
@@ -708,7 +715,9 @@ public static class ExerciseExecutor
         var set = query.ActionSet!;
         return set.Audience != audience
             || !string.Equals(set.CampaignId, checkpoint.CampaignId, StringComparison.Ordinal)
-            || set.StateVersion != checkpoint.StateVersion
+            || set.StateVersion > checkpoint.StateVersion
+            || (set.Candidates.Count > 0
+                && set.StateVersion != checkpoint.StateVersion)
             || !string.Equals(set.RulesetHash, checkpoint.RulesetHash, StringComparison.Ordinal)
             || !string.Equals(set.PositionId, checkpoint.PositionId, StringComparison.Ordinal)
             ? ExerciseCheckFailureCode.AuthorityQueryCoordinateMismatch

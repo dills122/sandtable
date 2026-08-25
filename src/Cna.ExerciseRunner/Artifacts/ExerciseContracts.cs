@@ -23,6 +23,7 @@ public enum ExerciseDetail
 public enum ExerciseControllerPolicy
 {
     FirstByActionId,
+    DesignateAllReservesThenFirstByActionId,
 }
 
 public enum ExerciseFailureCategory
@@ -48,7 +49,7 @@ public sealed record ExerciseControllerManifest(
 
 public sealed record ExerciseManifest
 {
-    public const int CurrentContractVersion = 1;
+    public const int CurrentContractVersion = 2;
 
     public ExerciseManifest(
         int contractVersion,

@@ -20,6 +20,13 @@ public abstract record CampaignActionCandidate
         ActionId = CalculateId(kind, operationStage);
     }
 
+    internal CampaignActionCandidate(string kind, string elementId)
+    {
+        Kind = ContentContractGuards.RequireStableId(kind, nameof(kind));
+        ContractVersion = CurrentContractVersion;
+        ActionId = CalculateId(WriteSubjectSemantics(kind, elementId));
+    }
+
     public int ContractVersion { get; }
     public string ActionId { get; }
     public string Kind { get; }
@@ -39,8 +46,29 @@ public abstract record CampaignActionCandidate
         return stream.ToArray();
     }
 
+    internal static byte[] WriteSubjectSemantics(string kind, string elementId)
+    {
+        _ = ContentContractGuards.RequireStableId(kind, nameof(kind));
+        var stableElementId = ContentContractGuards.RequireStableId(
+            elementId,
+            nameof(elementId));
+        using var stream = new MemoryStream();
+        using (var writer = new Utf8JsonWriter(stream))
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("contractVersion", CurrentContractVersion);
+            writer.WriteString("kind", kind);
+            writer.WriteString("elementId", stableElementId);
+            writer.WriteEndObject();
+        }
+        return stream.ToArray();
+    }
+
     private static string CalculateId(string kind, int? operationStage) =>
-        $"sha256:{Convert.ToHexStringLower(SHA256.HashData(WriteSemantics(kind, operationStage)))}";
+        CalculateId(WriteSemantics(kind, operationStage));
+
+    private static string CalculateId(byte[] semantics) =>
+        $"sha256:{Convert.ToHexStringLower(SHA256.HashData(semantics))}";
 }
 
 public sealed record ResolveInitiativeAction : CampaignActionCandidate
@@ -97,4 +125,21 @@ public sealed record ActFirstAction : CampaignActionCandidate
 public sealed record ActLastAction : CampaignActionCandidate
 {
     internal ActLastAction(int operationStage) : base("act-last", operationStage) { }
+}
+
+public sealed record DesignateReserveAction : CampaignActionCandidate
+{
+    internal DesignateReserveAction(string elementId)
+        : base("designate-reserve", elementId)
+    {
+        ElementId = ContentContractGuards.RequireStableId(elementId, nameof(elementId));
+    }
+
+    public string ElementId { get; }
+}
+
+public sealed record CompleteReserveDesignationAction : CampaignActionCandidate
+{
+    internal CompleteReserveDesignationAction()
+        : base("complete-reserve-designation") { }
 }

@@ -14,8 +14,8 @@ public sealed class RulesetManifestTests
             value => value.ArtifactId == "cna-1979.1.land-sequence");
 
         Assert.Equal("cna-1979.1", manifest.RulesetId);
-        Assert.Equal(4, manifest.ContractVersion);
-        Assert.Equal(5, manifest.Artifacts.Count);
+        Assert.Equal(5, manifest.ContractVersion);
+        Assert.Equal(6, manifest.Artifacts.Count);
         Assert.Equal("cna-1979.1.land-sequence", artifact.ArtifactId);
         Assert.Equal(
             Cna1979Ruleset.CalculateLandSequenceContentHash(
@@ -34,9 +34,9 @@ public sealed class RulesetManifestTests
         var ruling = Assert.Single(
             manifest.Rulings,
             value => value.RulingId == Cna1979Ruleset.EmptyOpeningConvoyRulingId);
-        Assert.Equal(3, manifest.Rulings.Count);
+        Assert.Equal(4, manifest.Rulings.Count);
         Assert.Equal(
-            "ae8e38d3d4b4a3f3f5ef0ce98be4e7088f90c6701e0d2969afad0522bb84a782",
+            "beb66b242222f1ccc8bde4a34daacfcd561495b47e3d48391ede34e16830d6e6",
             manifest.Hash);
         Assert.Equal(Cna1979Ruleset.EmptyOpeningConvoyRulingId, ruling.RulingId);
         Assert.Equal(

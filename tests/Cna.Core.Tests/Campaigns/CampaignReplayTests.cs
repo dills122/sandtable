@@ -117,7 +117,7 @@ public sealed class CampaignReplayTests
     {
         var valid = Assert.IsType<CampaignCreated>(Assert.Single(ExecuteCreation(12345).Events));
         var forgedWorld = new CampaignWorldSnapshot(
-            1,
+            2,
             valid.InitialWorld.Elements
                 .Where(element => element.ElementId != "axis-element-a")
                 .Append(new CampaignElementState("axis-element-a", "east"))
@@ -133,10 +133,10 @@ public sealed class CampaignReplayTests
         var execution = ExecuteCreation(12345);
         var created = Assert.IsType<CampaignCreated>(Assert.Single(execution.Events));
         var eventJson = Encoding.UTF8.GetString(CampaignEventSerializer.Serialize(created))
-            .Replace("{\"contractVersion\":5,", "{\"contractVersion\":4,", StringComparison.Ordinal);
+            .Replace("{\"contractVersion\":6,", "{\"contractVersion\":5,", StringComparison.Ordinal);
         var snapshotJson = Encoding.UTF8.GetString(
                 CampaignSnapshotSerializer.Serialize(execution.Snapshot))
-            .Replace("{\"contractVersion\":6,", "{\"contractVersion\":5,", StringComparison.Ordinal);
+            .Replace("{\"contractVersion\":7,", "{\"contractVersion\":6,", StringComparison.Ordinal);
 
         Assert.Throws<JsonException>(() =>
             CampaignEventSerializer.Deserialize(Encoding.UTF8.GetBytes(eventJson)));
@@ -166,12 +166,12 @@ public sealed class CampaignReplayTests
         var canonicalJson = Encoding.UTF8.GetString(
             CampaignSnapshotSerializer.Serialize(execution.Snapshot));
         var extra = canonicalJson.Replace(
-            "{\"contractVersion\":6,",
-            "{\"extra\":true,\"contractVersion\":6,",
+            "{\"contractVersion\":7,",
+            "{\"extra\":true,\"contractVersion\":7,",
             StringComparison.Ordinal);
         var reordered = canonicalJson.Replace(
-            "{\"contractVersion\":6,\"campaignId\":\"campaign-1\",",
-            "{\"campaignId\":\"campaign-1\",\"contractVersion\":6,",
+            "{\"contractVersion\":7,\"campaignId\":\"campaign-1\",",
+            "{\"campaignId\":\"campaign-1\",\"contractVersion\":7,",
             StringComparison.Ordinal);
 
         Assert.Throws<JsonException>(() =>
@@ -196,12 +196,12 @@ public sealed class CampaignReplayTests
     }
 
     [Fact]
-    public void CreationSnapshotUsesTheExactCanonicalVersion6Shape()
+    public void CreationSnapshotUsesTheExactCanonicalVersion7Shape()
     {
         var execution = ExecuteCreation(12345);
         var actual = Encoding.UTF8.GetString(
             CampaignSnapshotSerializer.Serialize(execution.Snapshot));
-        var expected = "{\"contractVersion\":6,\"campaignId\":\"campaign-1\"," +
+        var expected = "{\"contractVersion\":7,\"campaignId\":\"campaign-1\"," +
             "\"stateVersion\":1,\"rulesetHash\":\"" +
             Cna1979Ruleset.Manifest.Hash +
             "\",\"setup\":{\"schemaVersion\":5," +
@@ -231,11 +231,15 @@ public sealed class CampaignReplayTests
             "\"sources\":[{\"sourceId\":\"sandtable-rules-lab\"," +
             "\"locator\":\"initiative.predetermined-axis.v1\"}]}," +
             "\"world\":{" +
-            "\"contractVersion\":1,\"elements\":[" +
-            "{\"elementId\":\"axis-element-a\",\"currentLocationId\":\"west\"}," +
-            "{\"elementId\":\"axis-element-b\",\"currentLocationId\":\"north-west\"}," +
-            "{\"elementId\":\"commonwealth-element-a\",\"currentLocationId\":\"east\"}," +
-            "{\"elementId\":\"commonwealth-element-b\",\"currentLocationId\":\"south-east\"}]}," +
+            "\"contractVersion\":2,\"elements\":[" +
+            "{\"elementId\":\"axis-element-a\",\"currentLocationId\":\"west\"," +
+            "\"reserveStatus\":\"none\"}," +
+            "{\"elementId\":\"axis-element-b\",\"currentLocationId\":\"north-west\"," +
+            "\"reserveStatus\":\"none\"}," +
+            "{\"elementId\":\"commonwealth-element-a\",\"currentLocationId\":\"east\"," +
+            "\"reserveStatus\":\"none\"}," +
+            "{\"elementId\":\"commonwealth-element-b\",\"currentLocationId\":\"south-east\"," +
+            "\"reserveStatus\":\"none\"}]}," +
             "\"initiativeHolder\":null,\"operationStageOrders\":[]," +
             "\"operationStageWeather\":[]," +
             "\"randomState\":{\"contractVersion\":1," +
