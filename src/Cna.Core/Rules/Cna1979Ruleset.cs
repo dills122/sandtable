@@ -7,7 +7,7 @@ namespace Cna.Core.Rules;
 public static class Cna1979Ruleset
 {
     public const string RulesetId = "cna-1979.1";
-    public const int ContractVersion = 4;
+    public const int ContractVersion = 5;
 
     private const string LandSequenceArtifactId = "cna-1979.1.land-sequence";
 
@@ -111,11 +111,13 @@ public static class Cna1979Ruleset
                 Cna1979ContentVocabulary.CreateArtifact(),
                 Cna1979RandomProcedure.CreateArtifact(),
                 Cna1979Weather.CreateArtifact(),
+                Cna1979Reserve.CreateArtifact(),
             ],
             [
                 CreateEmptyOpeningConvoyRuling(),
                 CreateExplicitEmptyStageEntryRuling(),
                 Cna1979Weather.CreateSeasonBoundaryRuling(),
+                Cna1979Reserve.CreateEmptySelectionRuling(),
             ]);
     }
 

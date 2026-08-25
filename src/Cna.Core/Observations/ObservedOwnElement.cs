@@ -2,6 +2,13 @@ using Cna.Core.Content;
 
 namespace Cna.Core.Observations;
 
+public enum CampaignObservationReserveStatus
+{
+    None = 0,
+    ReserveI = 1,
+    ReserveII = 2,
+}
+
 public sealed record ObservedOwnElement
 {
     internal ObservedOwnElement(
@@ -9,9 +16,15 @@ public sealed record ObservedOwnElement
         string parentFormationId,
         string organizationId,
         int baseCapabilityPointAllowance,
-        string currentLocationId)
+        string currentLocationId,
+        CampaignObservationReserveStatus reserveStatus)
     {
         ArgumentOutOfRangeException.ThrowIfLessThan(baseCapabilityPointAllowance, 1);
+
+        if (!Enum.IsDefined(reserveStatus))
+        {
+            throw new ArgumentOutOfRangeException(nameof(reserveStatus));
+        }
 
         ElementId = ContentContractGuards.RequireStableId(elementId, nameof(elementId));
         ParentFormationId = ContentContractGuards.RequireStableId(
@@ -24,6 +37,7 @@ public sealed record ObservedOwnElement
         CurrentLocationId = ContentContractGuards.RequireStableId(
             currentLocationId,
             nameof(currentLocationId));
+        ReserveStatus = reserveStatus;
     }
 
     public string ElementId { get; }
@@ -35,4 +49,6 @@ public sealed record ObservedOwnElement
     public int BaseCapabilityPointAllowance { get; }
 
     public string CurrentLocationId { get; }
+
+    public CampaignObservationReserveStatus ReserveStatus { get; }
 }

@@ -7,7 +7,7 @@ namespace Cna.ExerciseRunner.Tests.Artifacts;
 public sealed class ExerciseManifestCodecTests
 {
     [Fact]
-    public void ManifestHasAnExactStrictCanonicalVersionOneShape()
+    public void ManifestHasAnExactStrictCanonicalVersionTwoShape()
     {
         var manifest = Create();
 
@@ -15,8 +15,23 @@ public sealed class ExerciseManifestCodecTests
         var json = Encoding.UTF8.GetString(bytes);
 
         Assert.Equal(
-            $"{{\"contractVersion\":1,\"exerciseId\":\"organization-boundary\",\"setupId\":\"{manifest.SetupId}\",\"setupHash\":\"{manifest.SetupHash}\",\"contentPackId\":\"{manifest.ContentPackId}\",\"contentHash\":\"{manifest.ContentHash}\",\"scenarioId\":\"{manifest.ScenarioId}\",\"rulesetHash\":\"{manifest.RulesetHash}\",\"terminalBoundary\":\"land.position.operation-1.organization\",\"maximumSteps\":8,\"rootSeed\":0,\"buildMode\":\"exploratory\",\"confidentiality\":\"trusted-authority\",\"detail\":\"compact\",\"controllers\":{{\"system\":\"first-by-action-id\",\"axis\":\"first-by-action-id\",\"commonwealth\":\"first-by-action-id\"}},\"assertFailureCategory\":null}}",
+            $"{{\"contractVersion\":2,\"exerciseId\":\"organization-boundary\",\"setupId\":\"{manifest.SetupId}\",\"setupHash\":\"{manifest.SetupHash}\",\"contentPackId\":\"{manifest.ContentPackId}\",\"contentHash\":\"{manifest.ContentHash}\",\"scenarioId\":\"{manifest.ScenarioId}\",\"rulesetHash\":\"{manifest.RulesetHash}\",\"terminalBoundary\":\"land.position.operation-1.organization\",\"maximumSteps\":8,\"rootSeed\":0,\"buildMode\":\"exploratory\",\"confidentiality\":\"trusted-authority\",\"detail\":\"compact\",\"controllers\":{{\"system\":\"first-by-action-id\",\"axis\":\"first-by-action-id\",\"commonwealth\":\"first-by-action-id\"}},\"assertFailureCategory\":null}}",
             json);
+        Assert.Equal(manifest, ExerciseManifestCodec.Deserialize(bytes));
+    }
+
+    [Fact]
+    public void SemanticReservePolicyHasTheExactCanonicalTokenAndRoundTrips()
+    {
+        var manifest = Create(controllerPolicy:
+            ExerciseControllerPolicy.DesignateAllReservesThenFirstByActionId);
+
+        var bytes = ExerciseManifestCodec.Serialize(manifest);
+        var json = Encoding.UTF8.GetString(bytes);
+
+        Assert.Equal(3, json.Split(
+            "designate-all-reserves-then-first-by-action-id",
+            StringSplitOptions.None).Length - 1);
         Assert.Equal(manifest, ExerciseManifestCodec.Deserialize(bytes));
     }
 
@@ -26,11 +41,14 @@ public sealed class ExerciseManifestCodecTests
         var json = Encoding.UTF8.GetString(ExerciseManifestCodec.Serialize(Create()));
         string[] invalid =
         [
-            json.Replace("{\"contractVersion\":1,", "{\"extra\":true,\"contractVersion\":1,", StringComparison.Ordinal),
+            json.Replace("{\"contractVersion\":2,", "{\"extra\":true,\"contractVersion\":2,", StringComparison.Ordinal),
+            json.Replace("\"contractVersion\":2", "\"contractVersion\":1", StringComparison.Ordinal),
             json.Replace("\"maximumSteps\":8,", "", StringComparison.Ordinal),
-            json.Replace("{\"contractVersion\":1,\"exerciseId\":", "{\"exerciseId\":\"wrong\",\"contractVersion\":1,\"exerciseId\":", StringComparison.Ordinal),
-            json.Replace("\"contractVersion\":1,\"exerciseId\":", "\"exerciseId\":\"wrong\",\"contractVersion\":1,", StringComparison.Ordinal),
+            json.Replace("{\"contractVersion\":2,\"exerciseId\":", "{\"exerciseId\":\"wrong\",\"contractVersion\":2,\"exerciseId\":", StringComparison.Ordinal),
+            json.Replace("\"contractVersion\":2,\"exerciseId\":", "\"exerciseId\":\"wrong\",\"contractVersion\":2,", StringComparison.Ordinal),
             json.Replace("\"detail\":\"compact\"", "\"detail\":\"verbose\"", StringComparison.Ordinal),
+            json.Replace("\"system\":\"first-by-action-id\"",
+                "\"system\":\"unknown-controller\"", StringComparison.Ordinal),
         ];
 
         Assert.All(invalid, value => Assert.ThrowsAny<Exception>(() =>
@@ -67,7 +85,9 @@ public sealed class ExerciseManifestCodecTests
         ExerciseFailureCategory? assertFailureCategory = null,
         string terminalBoundary = "land.position.operation-1.organization",
         ExerciseDetail detail = ExerciseDetail.Compact,
-        ExerciseBuildMode buildMode = ExerciseBuildMode.Exploratory)
+        ExerciseBuildMode buildMode = ExerciseBuildMode.Exploratory,
+        ExerciseControllerPolicy controllerPolicy =
+            ExerciseControllerPolicy.FirstByActionId)
     {
         return new ExerciseManifest(
             ExerciseManifest.CurrentContractVersion,
@@ -85,9 +105,9 @@ public sealed class ExerciseManifestCodecTests
             ExerciseConfidentiality.TrustedAuthority,
             detail,
             new ExerciseControllerManifest(
-                ExerciseControllerPolicy.FirstByActionId,
-                ExerciseControllerPolicy.FirstByActionId,
-                ExerciseControllerPolicy.FirstByActionId),
+                controllerPolicy,
+                controllerPolicy,
+                controllerPolicy),
             assertFailureCategory);
     }
 }

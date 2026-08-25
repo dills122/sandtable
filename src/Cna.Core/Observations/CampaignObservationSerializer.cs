@@ -136,6 +136,7 @@ public static class CampaignObservationSerializer
                 "baseCapabilityPointAllowance",
                 element.BaseCapabilityPointAllowance);
             writer.WriteString("currentLocationId", element.CurrentLocationId);
+            writer.WriteString("reserveStatus", FormatReserveStatus(element.ReserveStatus));
             writer.WriteEndObject();
         }
 
@@ -158,6 +159,15 @@ public static class CampaignObservationSerializer
         LandSide.Commonwealth => "commonwealth",
         _ => throw new ArgumentOutOfRangeException(nameof(side)),
     };
+
+    private static string FormatReserveStatus(
+        CampaignObservationReserveStatus status) => status switch
+        {
+            CampaignObservationReserveStatus.None => "none",
+            CampaignObservationReserveStatus.ReserveI => "reserve-i",
+            CampaignObservationReserveStatus.ReserveII => "reserve-ii",
+            _ => throw new ArgumentOutOfRangeException(nameof(status)),
+        };
 
     private static void WriteNullableSide(
         Utf8JsonWriter writer,

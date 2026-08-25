@@ -7,8 +7,16 @@ namespace Cna.ExerciseRunner.Tests.Commands;
 
 public sealed class ManeuverRunCommandTests : IDisposable
 {
-    private const string FixturePath = "scenarios/maneuvers/rules-lab.serial.v1.json";
+    private const string FixturePath = "scenarios/maneuvers/rules-lab.serial.v2.json";
+    private const string StageEntryFixturePath =
+        "scenarios/maneuvers/rules-lab.stage-entry.serial.v2.json";
+    private const string ReserveDesignationFixturePath =
+        "scenarios/maneuvers/rules-lab.reserve-designation.serial.v2.json";
     private const string Boundary = "land.position.operation-1.organization";
+    private const string ReserveBoundary =
+        "land.position.operation-1.first-player.reserve-designation";
+    private const string MovementBoundary =
+        "land.position.operation-1.first-player.movement-and-combat.movement";
     private readonly string temp = Path.Combine(
         Path.GetTempPath(),
         $"sandtable-maneuver-cli-{Guid.NewGuid():N}");
@@ -40,6 +48,105 @@ public sealed class ManeuverRunCommandTests : IDisposable
         Assert.Equal(output.ReportFingerprint, artifact.Report.ReportFingerprint);
         Assert.Equal(ManeuverReportStatus.Succeeded, artifact.Report.Deterministic.Status);
         Assert.Equal(2, artifact.Report.Deterministic.Counts.SucceededExerciseCount);
+    }
+
+    [Fact]
+    public void CheckedStageEntryFixtureRunsBothSetupsToReserveAndAggregatesValidatedReport()
+    {
+        var standardOutput = new StringWriter();
+        var standardError = new StringWriter();
+
+        var exitCode = ManeuverRunCommand.Execute(
+            Arguments(StageEntryFixturePath, Path.Combine(temp, "stage-entry")),
+            standardOutput,
+            standardError,
+            TestContext.Current.CancellationToken);
+
+        Assert.Equal(ManeuverProcessExitCode.Succeeded, exitCode);
+        Assert.Equal(string.Empty, standardError.ToString());
+        var output = ParseOutput(standardOutput.ToString(), expectedExerciseBundles: 2);
+        var bundles = output.ExerciseBundlePaths.Select(ExerciseBundleReader.Read).ToArray();
+        Assert.Equal(
+            ["reserve-boundary.predetermined", "reserve-boundary.contested"],
+            bundles.Select(value => value.NormalizedManifest!.ExerciseId));
+        Assert.Equal(
+            ["rules-lab.initiative.predetermined", "rules-lab.initiative.contested"],
+            bundles.Select(value => value.NormalizedManifest!.SetupId));
+        Assert.All(bundles, bundle =>
+        {
+            Assert.Equal(9, bundle.AcceptedActions.Count);
+            var completion = Assert.IsType<ExerciseSucceeded>(bundle.RunResult.Completion);
+            Assert.Equal(
+                ReserveBoundary,
+                Assert.IsType<BoundaryReached>(completion.Outcome).PositionId);
+        });
+
+        var artifact = ManeuverReportReader.Read(output.ReportPath);
+        Assert.Equal(output.ReportFingerprint, artifact.Report.ReportFingerprint);
+        Assert.Equal(ManeuverReportStatus.Succeeded, artifact.Report.Deterministic.Status);
+        Assert.Equal(2, artifact.Report.Deterministic.Counts.SucceededExerciseCount);
+        var terminal = Assert.Single(artifact.Report.Deterministic.TerminalCounts);
+        Assert.Equal(2, terminal.Count);
+        Assert.Equal(
+            ReserveBoundary,
+            Assert.IsType<BoundaryReached>(terminal.Outcome).PositionId);
+    }
+
+    [Fact]
+    public void CheckedReserveDesignationFixtureRunsBothSetupsToMovement()
+    {
+        var standardOutput = new StringWriter();
+        var standardError = new StringWriter();
+
+        var exitCode = ManeuverRunCommand.Execute(
+            Arguments(
+                ReserveDesignationFixturePath,
+                Path.Combine(temp, "reserve-designation")),
+            standardOutput,
+            standardError,
+            TestContext.Current.CancellationToken);
+
+        Assert.Equal(ManeuverProcessExitCode.Succeeded, exitCode);
+        Assert.Equal(string.Empty, standardError.ToString());
+        var output = ParseOutput(standardOutput.ToString(), expectedExerciseBundles: 2);
+        var bundles = output.ExerciseBundlePaths.Select(ExerciseBundleReader.Read).ToArray();
+        Assert.Equal(
+            ["reserve-designation-movement.predetermined",
+                "reserve-designation-movement.contested"],
+            bundles.Select(value => value.NormalizedManifest!.ExerciseId));
+        Assert.Equal(
+            ["rules-lab.initiative.predetermined", "rules-lab.initiative.contested"],
+            bundles.Select(value => value.NormalizedManifest!.SetupId));
+        Assert.All(bundles, bundle =>
+        {
+            Assert.Equal(12, bundle.AcceptedActions.Count);
+            Assert.Equal(2, bundle.CanonicalEvents.Count(value =>
+                System.Text.Encoding.UTF8.GetString(value).Contains(
+                    "\"eventType\":\"reserve-element-designated\"",
+                    StringComparison.Ordinal)));
+            Assert.Single(bundle.CanonicalEvents, value =>
+                System.Text.Encoding.UTF8.GetString(value).Contains(
+                    "\"eventType\":\"reserve-designation-completed\"",
+                    StringComparison.Ordinal));
+            var completion = Assert.IsType<ExerciseSucceeded>(bundle.RunResult.Completion);
+            Assert.Equal(
+                MovementBoundary,
+                Assert.IsType<BoundaryReached>(completion.Outcome).PositionId);
+            Assert.True(bundle.ReconstructionProof!.IsVerified);
+            Assert.True(bundle.ReadjudicationProof!.IsVerified);
+        });
+
+        var artifact = ManeuverReportReader.Read(output.ReportPath);
+        Assert.Equal(output.ReportFingerprint, artifact.Report.ReportFingerprint);
+        Assert.Equal(ManeuverReportStatus.Succeeded, artifact.Report.Deterministic.Status);
+        Assert.Equal(2, artifact.Report.Deterministic.Counts.SucceededExerciseCount);
+        var terminal = Assert.Single(artifact.Report.Deterministic.TerminalCounts);
+        Assert.Equal(2, terminal.Count);
+        Assert.Equal(MovementBoundary,
+            Assert.IsType<BoundaryReached>(terminal.Outcome).PositionId);
+        Assert.Equal(
+            "sha256:7bf6a94e4beaa5b02f45b8c96588e65d54238076fd33fa46e1083d439b48f79b",
+            artifact.Report.ReportFingerprint);
     }
 
     [Fact]
@@ -290,7 +397,7 @@ public sealed class ManeuverRunCommandTests : IDisposable
                 "exercise",
                 "run",
                 "--manifest",
-                "scenarios/exercises/rules-lab.organization.v1.json",
+                "scenarios/exercises/rules-lab.organization.v2.json",
                 "--artifact-root",
                 Path.Combine(temp, "exercise-route"),
             ],

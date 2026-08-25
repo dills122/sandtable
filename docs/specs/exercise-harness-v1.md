@@ -1,7 +1,8 @@
 # Exercise Harness v1 Specification
 
 **Status:** Implemented and repository-verified through `EXR-TASK-014` serial-unpaired Maneuvers;
-Task 015 paired comparison remains pending
+checked Reserve Designation adoption reaches first-side Movement; Task 015 paired comparison
+remains pending
 
 **Date:** 2026-08-20
 
@@ -17,10 +18,11 @@ Task 015 paired comparison remains pending
 **Next bounded Harness checkpoint:** `EXR-TASK-015`, paired comparison; it is optional
 instrumentation and does not block gameplay-engine work
 
-**Proposed next engine track:** [Operation-Stage Entry research](../research/operation-stage-entry-spike.md),
+**Delivered engine track:** [Operation-Stage Entry research](../research/operation-stage-entry-spike.md),
 [specification](operation-stage-entry-v1.md), and
-[technical design](../design/operation-stage-entry-v1.md); its final planning review is Ready, but
-implementation remains gated on owner decision and the Task 001 contract freeze
+[technical design](../design/operation-stage-entry-v1.md), followed by the
+[Reserve Designation specification](reserve-designation-v1.md) and
+[technical design](../design/reserve-designation-v1.md); Movement behavior remains unsupported
 
 **Research decisions:**
 [capability and replay](../research/exercise-capability-and-replay-spike.md),
@@ -36,9 +38,11 @@ as paired variant comparisons.
 
 Version 1 is trusted developer instrumentation. It runs only freshly created synthetic campaigns,
 uses the same public legal-action identities and the same internal authoritative execution primitive
-as ordinary campaign play, and retains canonical evidence plus separate diagnostics. It stops at the
-first currently implemented terminal boundary,
-`land.position.operation-1.organization`; it does not imply a full victory-capable game.
+as ordinary campaign play, and retains canonical evidence plus separate diagnostics. The original
+fixture stops at Organization, the retained Stage Entry fixture stops at Reserve, and the current
+Reserve Designation fixture accepts 12 actions through two element designations plus completion to
+`land.position.operation-1.first-player.movement-and-combat.movement`. Movement itself remains
+unsupported; none of these profiles implies a full victory-capable game.
 
 ## User-visible demonstration
 
@@ -87,7 +91,7 @@ The implemented single-Exercise command is:
 
 ```text
 dotnet run --project src/Cna.ExerciseRunner/Cna.ExerciseRunner.csproj -- \
-  exercise run --manifest scenarios/exercises/rules-lab.organization.v1.json \
+  exercise run --manifest scenarios/exercises/rules-lab.organization.v2.json \
   --artifact-root artifacts/exercises
 ```
 
@@ -96,9 +100,21 @@ a clean baseline and therefore fails closed unless the checkout has no tracked o
 
 ```text
 dotnet run --project src/Cna.ExerciseRunner/Cna.ExerciseRunner.csproj -- \
-  exercise run --manifest scenarios/exercises/rules-lab.organization.baseline.v1.json \
+  exercise run --manifest scenarios/exercises/rules-lab.organization.baseline.v2.json \
   --artifact-root artifacts/exercises
 ```
+
+The checked Stage Entry Exercise and its clean-checkout baseline twin use
+`scenarios/exercises/rules-lab.reserve.v2.json` and
+`scenarios/exercises/rules-lab.reserve.baseline.v2.json`. They retain the same artifact contract
+while accepting nine actions through the explicit-empty Stage Entry path to Reserve.
+
+The checked Reserve Designation Exercise and baseline twin use
+`scenarios/exercises/rules-lab.reserve-designation.v2.json` and
+`scenarios/exercises/rules-lab.reserve-designation.baseline.v2.json`. The stateless semantic
+controller designates both currently eligible elements in ordinal element-ID order, completes
+Reserve, and reaches first-side Movement in exactly 12 accepted actions. Both reconstruction and
+fresh-session re-adjudication are required to verify.
 
 The manifest's `detail` value is `compact`, `forensic`, or `debug`. Compact retains accepted-step
 and completion records. Forensic adds deterministic query candidate counts, controller selection,
@@ -114,22 +130,26 @@ remains Task 015:
 
 ```text
 dotnet run --project src/Cna.ExerciseRunner/Cna.ExerciseRunner.csproj -- \
-  maneuver run --manifest scenarios/maneuvers/rules-lab.serial.v1.json \
+  maneuver run --manifest scenarios/maneuvers/rules-lab.serial.v2.json \
   --artifact-root artifacts/exercises
 ```
+
+The checked `scenarios/maneuvers/rules-lab.stage-entry.serial.v2.json` fixture runs both admitted
+synthetic setups through Stage Entry to Reserve and aggregates their reader-validated bundles under
+the unchanged `serial-unpaired` report contract.
 
 Unknown commands/options, missing values, invalid paths, invalid manifests, and unsupported contract
 versions fail before campaign creation with a nonzero exit. CLI spelling may change only before its
 golden contract test is accepted; afterward it is versioned user-visible behavior.
 
-### Task 014 serial-Maneuver contract
+### Current serial-Maneuver contract
 
-Task 014 implements only `sandtable.maneuver-manifest.v1` in mode `serial-unpaired`. A manifest has this
+The current clean-cut identity is `sandtable.maneuver-manifest.v2` in mode `serial-unpaired`. A manifest has this
 exact canonical property order and shape; the child objects deliberately match the existing
 Exercise manifest except that only the Maneuver owns `rootSeed`:
 
 ```json
-{"contractVersion":1,"schemeId":"sandtable.maneuver-manifest.v1","maneuverId":"rules-lab.serial","mode":"serial-unpaired","rootSeed":0,"report":{"profile":"trusted-authority"},"exercises":[{"contractVersion":1,"exerciseId":"organization-boundary.first","setupId":"rules-lab.initiative.predetermined","setupHash":"sha256:c1688f8869ca66182b87f487ec34edbef617ff1158f7d8b0d3101fe3993978ef","contentPackId":"rules-lab.content.movement-contact.v1","contentHash":"sha256:53d5b64f647251e3ac366c65f4ad05cae766afd7b70ee331d463e801496e2a99","scenarioId":"movement-contact-lab","rulesetHash":"ae8e38d3d4b4a3f3f5ef0ce98be4e7088f90c6701e0d2969afad0522bb84a782","terminalBoundary":"land.position.operation-1.organization","maximumSteps":8,"buildMode":"exploratory","confidentiality":"trusted-authority","detail":"forensic","controllers":{"system":"first-by-action-id","axis":"first-by-action-id","commonwealth":"first-by-action-id"},"assertFailureCategory":null}]}
+{"contractVersion":2,"schemeId":"sandtable.maneuver-manifest.v2","maneuverId":"rules-lab.serial","mode":"serial-unpaired","rootSeed":0,"report":{"profile":"trusted-authority"},"exercises":[{"contractVersion":2,"exerciseId":"organization-boundary.first","setupId":"rules-lab.initiative.predetermined","setupHash":"sha256:c1688f8869ca66182b87f487ec34edbef617ff1158f7d8b0d3101fe3993978ef","contentPackId":"rules-lab.content.movement-contact.v1","contentHash":"sha256:53d5b64f647251e3ac366c65f4ad05cae766afd7b70ee331d463e801496e2a99","scenarioId":"movement-contact-lab","rulesetHash":"beb66b242222f1ccc8bde4a34daacfcd561495b47e3d48391ede34e16830d6e6","terminalBoundary":"land.position.operation-1.organization","maximumSteps":8,"buildMode":"exploratory","confidentiality":"trusted-authority","detail":"forensic","controllers":{"system":"first-by-action-id","axis":"first-by-action-id","commonwealth":"first-by-action-id"},"assertFailureCategory":null}]}
 ```
 
 The example uses the current admitted repository identities; implementation updates it if those
@@ -141,7 +161,7 @@ semantic. After full Maneuver admission, entry `N` is materialized as the existi
 Exercise manifest with the
 Maneuver root seed and receives identity `(maneuverId, exerciseOrdinal=N, pairKey=null,
 variant=unpaired)`. Paired keys, variants, repetitions, and child seed overrides require the later
-Task 015 contract rather than permissive v1 fields.
+Task 015 contract rather than permissive v2 fields.
 
 Admission is all-or-nothing and occurs before the first child starts. Execution then runs exactly
 one admitted child at a time in manifest order. A valid identity-matched failed Exercise bundle is
@@ -502,6 +522,12 @@ precedence within the runner scope. The complete 562-test solution gate and `jus
 checked-fixture runs retained the identical deterministic report fingerprint
 `sha256:8cc5d2fbfb907f83edc7bb51a7ec98eb57f7338c072a0325ff5ca4a685b19f06`; and the pre-PR
 implementation review verdict is Ready.
+
+Post-adoption trusted-evidence hardening also proves that initial and final snapshots are decoded by
+Core's complete current snapshot/world contract before any executed-or-later success or failure
+profile is trusted. Rehashed `world:{}` and `world:{"contractVersion":2}` cases reject through the
+public reader, including a failed-reconstruction bundle with internally consistent dependent hashes
+and proof fields.
 
 ## Open questions
 

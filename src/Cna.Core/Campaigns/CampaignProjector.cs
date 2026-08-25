@@ -51,6 +51,10 @@ internal static class CampaignProjector
                 ApplyAssignment(snapshot, resolved, context),
             NoObligationFleetRepairResolved resolved =>
                 ApplyRepair(snapshot, resolved, context),
+            ReserveElementDesignated designated =>
+                ApplyReserveDesignation(snapshot, designated, context),
+            ReserveDesignationCompleted completed =>
+                ApplyReserveCompletion(snapshot, completed, context),
             CampaignSequenceAdvanced => throw new InvalidCampaignHistoryException(
                 "Legacy generic sequence events are not valid version-3 campaign history."),
             _ => throw new InvalidCampaignHistoryException("Unsupported campaign event type."),
@@ -67,7 +71,7 @@ internal static class CampaignProjector
             throw new InvalidCampaignHistoryException("A campaign can contain only one creation event.");
         }
 
-        if (created.ContractVersion != 5
+        if (created.ContractVersion != 6
             || created.StateVersion != 1
             || string.IsNullOrWhiteSpace(created.CampaignId)
             || !Cna1979Ruleset.IsCanonicalHash(created.RulesetHash)
@@ -94,7 +98,7 @@ internal static class CampaignProjector
         }
 
         var projected = new CampaignSnapshot(
-            6,
+            CampaignSnapshot.CurrentContractVersion,
             created.CampaignId,
             created.StateVersion,
             created.RulesetHash,
@@ -333,6 +337,130 @@ internal static class CampaignProjector
         if (!CampaignSnapshotValidator.IsValid(projected, context))
             throw new InvalidCampaignHistoryException(
                 $"The {mechanic} event produces invalid campaign state.");
+        return projected;
+    }
+
+    private static CampaignSnapshot ApplyReserveDesignation(
+        CampaignSnapshot? snapshot,
+        ReserveElementDesignated designated,
+        CampaignContentContext context)
+    {
+        if (snapshot is null)
+        {
+            throw new InvalidCampaignHistoryException(
+                "A Reserve designation event cannot precede campaign creation.");
+        }
+
+        ReserveElementDesignated expected;
+        try
+        {
+            expected = CampaignReserveEventFactory.CreateDesignation(
+                snapshot,
+                context,
+                new DesignateReserveElement(
+                    snapshot.StateVersion,
+                    snapshot.SequencePosition.PositionId,
+                    designated.ActingSide,
+                    designated.ElementId));
+
+            if (!CampaignEventSerializer.Serialize(designated).SequenceEqual(
+                    CampaignEventSerializer.Serialize(expected)))
+            {
+                throw new InvalidCampaignHistoryException(
+                    "The Reserve designation event is inconsistent with campaign history.");
+            }
+        }
+        catch (InvalidCampaignHistoryException)
+        {
+            throw;
+        }
+        catch (Exception exception) when (exception is ArgumentException
+            or ArithmeticException
+            or InvalidOperationException
+            or System.Text.Json.JsonException)
+        {
+            throw new InvalidCampaignHistoryException(exception.Message);
+        }
+
+        var projected = snapshot with
+        {
+            StateVersion = designated.StateVersion,
+            World = new CampaignWorldSnapshot(
+                CampaignWorldSnapshot.CurrentContractVersion,
+                snapshot.World.Elements.Select(element => string.Equals(
+                        element.ElementId,
+                        designated.ElementId,
+                        StringComparison.Ordinal)
+                    ? new CampaignElementState(
+                        element.ElementId,
+                        element.CurrentLocationId,
+                        CampaignElementReserveStatus.ReserveI)
+                    : element).ToArray()),
+            SequencePosition = designated.SequencePosition,
+        };
+
+        if (!CampaignSnapshotValidator.IsValid(projected, context))
+        {
+            throw new InvalidCampaignHistoryException(
+                "The Reserve designation event produces invalid campaign state.");
+        }
+
+        return projected;
+    }
+
+    private static CampaignSnapshot ApplyReserveCompletion(
+        CampaignSnapshot? snapshot,
+        ReserveDesignationCompleted completed,
+        CampaignContentContext context)
+    {
+        if (snapshot is null)
+        {
+            throw new InvalidCampaignHistoryException(
+                "A Reserve completion event cannot precede campaign creation.");
+        }
+
+        ReserveDesignationCompleted expected;
+        try
+        {
+            expected = CampaignReserveEventFactory.CreateCompletion(
+                snapshot,
+                context,
+                new CompleteReserveDesignation(
+                    snapshot.StateVersion,
+                    snapshot.SequencePosition.PositionId,
+                    completed.ActingSide));
+
+            if (!CampaignEventSerializer.Serialize(completed).SequenceEqual(
+                    CampaignEventSerializer.Serialize(expected)))
+            {
+                throw new InvalidCampaignHistoryException(
+                    "The Reserve completion event is inconsistent with campaign history.");
+            }
+        }
+        catch (InvalidCampaignHistoryException)
+        {
+            throw;
+        }
+        catch (Exception exception) when (exception is ArgumentException
+            or ArithmeticException
+            or InvalidOperationException
+            or System.Text.Json.JsonException)
+        {
+            throw new InvalidCampaignHistoryException(exception.Message);
+        }
+
+        var projected = snapshot with
+        {
+            StateVersion = completed.StateVersion,
+            SequencePosition = completed.SequencePosition,
+        };
+
+        if (!CampaignSnapshotValidator.IsValid(projected, context))
+        {
+            throw new InvalidCampaignHistoryException(
+                "The Reserve completion event produces invalid campaign state.");
+        }
+
         return projected;
     }
 }

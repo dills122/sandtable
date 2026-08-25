@@ -24,7 +24,7 @@ public sealed class Version3AuthorityTests
 
         Assert.True(result.IsAccepted);
         var created = Assert.IsType<CampaignCreated>(Assert.Single(result.Events));
-        Assert.Equal(5, created.ContractVersion);
+        Assert.Equal(6, created.ContractVersion);
         Assert.Equal(setup.Content, created.Setup.Content);
         Assert.Equal(4, created.InitialWorld.Elements.Count);
         Assert.Equal(setup.SetupId, created.Setup.SetupId);
@@ -88,13 +88,14 @@ public sealed class Version3AuthorityTests
     [Fact]
     public void CanonicalManifestCutsOverAllAuthoritativeArtifacts()
     {
-        Assert.Equal(4, Cna1979Ruleset.Manifest.ContractVersion);
+        Assert.Equal(5, Cna1979Ruleset.Manifest.ContractVersion);
         Assert.Equal(
             [
                 "cna-1979.1.content-vocabulary",
                 "cna-1979.1.initiative-ratings",
                 "cna-1979.1.land-sequence",
                 "cna-1979.1.random-procedure",
+                "cna-1979.1.reserve-designation",
                 "cna-1979.1.weather-tables",
             ],
             Cna1979Ruleset.Manifest.Artifacts

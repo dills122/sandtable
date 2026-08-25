@@ -6,8 +6,8 @@ namespace Cna.ExerciseRunner.Execution;
 
 internal static class ExerciseConfigurationIdentity
 {
-    internal const int CurrentContractVersion = 1;
-    internal const string SchemeId = "sandtable.exercise-controller-configuration.v1";
+    internal const int CurrentContractVersion = 2;
+    internal const string SchemeId = "sandtable.exercise-controller-configuration.v2";
 
     internal static string ComputeHash(ExerciseManifest manifest)
     {
@@ -29,6 +29,8 @@ internal static class ExerciseConfigurationIdentity
     private static string Format(ExerciseControllerPolicy policy) => policy switch
     {
         ExerciseControllerPolicy.FirstByActionId => "first-by-action-id",
+        ExerciseControllerPolicy.DesignateAllReservesThenFirstByActionId =>
+            "designate-all-reserves-then-first-by-action-id",
         _ => throw new ArgumentOutOfRangeException(nameof(policy)),
     };
 }

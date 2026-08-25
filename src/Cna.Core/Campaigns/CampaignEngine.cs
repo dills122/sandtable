@@ -143,6 +143,14 @@ internal static class CampaignEngine
             ResolveNoObligationNavalConvoyArrival resolve => DecideArrival(snapshot, resolve),
             ResolveNoObligationFleetAssignment resolve => DecideAssignment(snapshot, resolve),
             ResolveNoObligationFleetRepair resolve => DecideRepair(snapshot, resolve),
+            DesignateReserveElement designate => DecideReserveDesignation(
+                snapshot,
+                designate,
+                context),
+            CompleteReserveDesignation complete => DecideReserveCompletion(
+                snapshot,
+                complete,
+                context),
             CompleteCurrentSequenceStep advance => DecideAdvance(snapshot, advance),
             _ => CampaignCommandResult.Reject(CampaignCommandRejectionReason.InvalidCommand),
         };
@@ -190,7 +198,7 @@ internal static class CampaignEngine
 
     private static bool IsLocallyValid(CreateCampaign command)
     {
-        if (command.ContractVersion != 5
+        if (command.ContractVersion != 6
             || command.ExpectedStateVersion != 0
             || !CampaignSnapshotValidator.IsRulesHash(command.RulesetHash))
         {
@@ -367,6 +375,118 @@ internal static class CampaignEngine
         return string.Equals(expectedPositionId, snapshot.SequencePosition.PositionId, StringComparison.Ordinal)
             ? CampaignCommandRejectionReason.None
             : CampaignCommandRejectionReason.UnexpectedSequenceStep;
+    }
+
+    private static CampaignCommandResult DecideReserveDesignation(
+        CampaignSnapshot? snapshot,
+        DesignateReserveElement command,
+        CampaignContentContext context)
+    {
+        var rejection = ValidateCurrent(
+            snapshot,
+            command.ContractVersion,
+            command.ExpectedStateVersion,
+            command.ExpectedPositionId);
+        if (rejection != CampaignCommandRejectionReason.None)
+        {
+            return CampaignCommandResult.Reject(rejection);
+        }
+
+        try
+        {
+            _ = ContentContractGuards.RequireStableId(
+                command.ElementId,
+                nameof(command.ElementId));
+        }
+        catch (ArgumentException)
+        {
+            return CampaignCommandResult.Reject(
+                CampaignCommandRejectionReason.InvalidCommand);
+        }
+
+        if (!Enum.IsDefined(command.ActingSide))
+        {
+            return CampaignCommandResult.Reject(
+                CampaignCommandRejectionReason.InvalidCommand);
+        }
+
+        if (snapshot!.PhaseId != LandPhaseIds.ReserveDesignation
+            || snapshot.SegmentId is not null
+            || snapshot.SequencePosition.ActorRole != LandActorRole.FirstActingSide)
+        {
+            return CampaignCommandResult.Reject(
+                CampaignCommandRejectionReason.UnsupportedTransition);
+        }
+
+        try
+        {
+            return CampaignCommandResult.Accept(
+                CampaignReserveEventFactory.CreateDesignation(
+                    snapshot,
+                    context,
+                    command));
+        }
+        catch (InvalidOperationException)
+        {
+            return CampaignCommandResult.Reject(
+                CampaignCommandRejectionReason.UnsupportedTransition);
+        }
+        catch (Exception exception) when (exception is ArgumentException
+            or ArithmeticException)
+        {
+            return CampaignCommandResult.Reject(
+                CampaignCommandRejectionReason.InvalidState);
+        }
+    }
+
+    private static CampaignCommandResult DecideReserveCompletion(
+        CampaignSnapshot? snapshot,
+        CompleteReserveDesignation command,
+        CampaignContentContext context)
+    {
+        var rejection = ValidateCurrent(
+            snapshot,
+            command.ContractVersion,
+            command.ExpectedStateVersion,
+            command.ExpectedPositionId);
+        if (rejection != CampaignCommandRejectionReason.None)
+        {
+            return CampaignCommandResult.Reject(rejection);
+        }
+
+        if (!Enum.IsDefined(command.ActingSide))
+        {
+            return CampaignCommandResult.Reject(
+                CampaignCommandRejectionReason.InvalidCommand);
+        }
+
+        if (snapshot!.PhaseId != LandPhaseIds.ReserveDesignation
+            || snapshot.SegmentId is not null
+            || snapshot.SequencePosition.ActorRole != LandActorRole.FirstActingSide)
+        {
+            return CampaignCommandResult.Reject(
+                CampaignCommandRejectionReason.UnsupportedTransition);
+        }
+
+        try
+        {
+            return CampaignCommandResult.Accept(
+                CampaignReserveEventFactory.CreateCompletion(
+                    snapshot,
+                    context,
+                    command));
+        }
+        catch (InvalidOperationException)
+        {
+            return CampaignCommandResult.Reject(
+                CampaignCommandRejectionReason.UnsupportedTransition);
+        }
+        catch (Exception exception) when (exception is ArgumentException
+            or ArithmeticException)
+        {
+            return CampaignCommandResult.Reject(
+                CampaignCommandRejectionReason.InvalidState);
+        }
     }
 
     private static CampaignCommandResult DecideWeather(

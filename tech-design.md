@@ -5,10 +5,13 @@ The important caveat is that the shared backend should remain **optional and non
 ## Current local simulation harness
 
 The repository now includes an in-process `Cna.ExerciseRunner` that is separate from the
-intelligence/services plane. One checked-in **Exercise** creates a fresh opaque
+intelligence/services plane. Each checked-in **Exercise** creates a fresh opaque
 `Cna.Core.Exercises` session, queries and submits through the shared legal-action execution path,
-stops at the Operation Stage 1 Organization boundary, and verifies both Core reconstruction and a
-second fresh-session re-adjudication. The runner records normalized inputs, Git/build identity,
+stops at its exact declared boundary, and verifies both Core reconstruction and a second
+fresh-session re-adjudication. The original profile remains fixed at Operation Stage 1 Organization;
+the Stage Entry profile accepts nine actions and reaches Reserve, and the Reserve Designation
+profile accepts 12 actions and reaches first-side Movement. The runner records normalized
+inputs, Git/build identity,
 seed ledger, accepted actions, canonical events, snapshots, checks, proofs, summaries, and optional
 diagnostics in a manifest-last `trusted-authority` bundle. Compact, forensic, and debug detail tiers
 are operational: forensic adds correlated query/controller/submission/check/proof evidence,
@@ -17,8 +20,14 @@ available noncanonical operation/phase timing on failure plus a structured artif
 trace after mandatory reader validation. Separate checked exploratory and clean-baseline fixtures
 exercise the two build-identity policies.
 
-The checked two-child **Maneuver** fixture adds a strict canonical `serial-unpaired` parent
-manifest. Only the parent supplies the root seed; each ordered child receives an explicit Maneuver
+The checked profiles use Exercise/Maneuver manifest v2, controller-configuration v2, ruleset v5,
+snapshot v7, world v2, and strict trusted-evidence admission. Retained Organization/Reserve
+profiles and their baseline twins remain regression checkpoints.
+
+The checked two-child **Maneuver** fixtures define strict canonical `serial-unpaired` parent manifests.
+The Stage Entry fixture runs both admitted setups to Reserve; the Reserve Designation fixture runs
+both through Movement. Only the parent supplies the root
+seed; each ordered child receives an explicit Maneuver
 ID and ordinal identity and runs synchronously through the same no-console post-admission
 coordinator. The aggregate path opens each completed child bundle once, semantically validates its
 retained evidence and re-adjudication proof, and checks the seed-ledger identity before counting it.
@@ -575,7 +584,8 @@ and immutable events to create a campaign against the canonical manifest, resolv
 contested Initiative Determination, explicitly resolve the two admitted no-obligation Naval Convoy
 checkpoints, record the pair-keyed Operation Stage 1 first/second actor order, resolve deterministic
 Weather, resolve the four admitted empty Organization/Naval Convoy Arrival/Fleet obligations through
-distinct commands and events, and stop at Reserve. It validates
+distinct commands and events, designate zero or more first-side Reserve I elements, complete the
+Reserve decision, and stop at Movement. It validates
 internal snapshots before adjudication and recomputes events during projection rather than trusting
 caller-supplied outcomes or provenance. Canonical snapshot and event serialization plus the
 internal replay harness prove reconstruction of accepted campaign history without ambient
@@ -608,26 +618,30 @@ is an original nine-hex nonhistorical rules laboratory using the same path inten
 source-derived content. Exact catalog lookup requires both pack ID and hash and never substitutes a
 default; presentation labels remain outside authoritative equality and bytes.
 
-The implemented Campaign World v1 cutover records exact ruleset, setup, content, and scenario
-identities; resolves immutable content before an authoritative grain turn; and projects only
-mutable initial element locations into campaign history. The Umpire performs no network or
+The implemented Campaign World v1 capability now uses world snapshot contract 2 and records exact
+ruleset, setup, content, and scenario identities; resolves immutable content before an authoritative
+grain turn; and projects mutable element locations plus per-element Reserve status into campaign
+history. The Umpire performs no network or
 persistence I/O, and replay requires the same exact content plus the matching executable rules
 manifest. The [Campaign World specification](docs/specs/campaign-world-v1.md) and
 [technical design](docs/design/campaign-world-v1.md) document the superseded version-3 campaign
 contract and schema-2 setup. Weather Determination v1 established explicit opening-preamble and
-Weather policies plus pair-keyed actor-order/Weather history. Operation-Stage Entry v1 cuts current
-authority over to snapshot contract 6, ruleset manifest contract 4, setup schema 5, and Content Pack
-schema 2; it adds an explicit stage-entry policy while preserving resident exact-content context
-internally. Only the four exact empty obligations are admitted, and authority stops at Reserve. No
-generic sequence bypass exists. See the Content Pack v1
+Weather policies plus pair-keyed actor-order/Weather history. Reserve Designation's coordinated
+identity lane advances current authority to snapshot contract 7, creation contract 6, ruleset
+manifest contract 5, world snapshot contract 2, setup schema 5, and Content Pack schema 2 while
+preserving resident exact-content context internally. Operation-Stage Entry still admits only the
+four exact empty obligations; Reserve Designation accepts only current owner candidates and advances
+through one exact completion event to Movement. No generic
+sequence bypass exists. See the Content Pack v1
 [research](docs/research/content-pack-v1-spike.md),
 [specification](docs/specs/content-pack-v1.md), and
 [technical design](docs/design/content-pack-v1.md).
 
-The implemented Campaign Observation boundary lives in `Cna.Core.Observations`. Contract 2 accepts only
+The implemented Campaign Observation boundary lives in `Cna.Core.Observations`. Contract 4 accepts only
 a fully admitted Campaign World snapshot, its already-resolved exact content context, and a defined
-viewer side. A pure projector then copies a closed allowlist of public campaign/turn/topology facts
-the current source-free Weather summary, and the viewer's independently placed elements into
+viewer side. A pure projector then copies a closed allowlist of public campaign/turn/topology facts,
+the current source-free Weather summary, and the viewer's independently placed elements and Reserve
+statuses into
 dedicated source-free values. Complete Content
 Pack identity and all opposing-force rows, associations, counts, contacts, and placeholders remain
 absent. Canonical output is an explicit compact UTF-8 JSON contract; it is derived query data, not
@@ -647,7 +661,10 @@ state version, position, audience, and deterministic action ID, then re-derives 
 membership before translating to an internal mechanic command. Success returns a scalar receipt and
 successor opaque `CampaignAuthorityHandle`, never authority state. Fleet Repair completion reaches
 Reserve with authoritative `ActiveSide` unset; observation and legal-action projection derive the
-audience from the recorded actor order. `Cna.DecisionWorker` has no Core reference.
+audience from the recorded actor order. The resolved first side now receives one subject-bound
+candidate for each own `None` element plus explicit completion; opaque submissions map to closed
+Reserve commands, and accepted mutations emit exact replayable designation/completion events.
+`Cna.DecisionWorker` has no Core reference.
 `Cna.OrleansHost` owns campaign hosting, while `Cna.ExerciseRunner` is the separate trusted local
 instrumentation consumer; neither receives a public raw replay or projection mutation seam. See the
 [research](docs/research/turn-preamble-action-boundary-spike.md),
@@ -672,10 +689,13 @@ The implemented serial-unpaired portion of Exercise Harness v1 is trusted local 
 instrumentation for deterministic, freshly created campaign runs. Its Exercise path keeps the
 Umpire authoritative through an opaque Exercise-only Core capability that shares the existing
 creation and legal-action execution primitives; the runner owns orchestration, transactional
-artifacts, diagnostics, and reports but no rules or state mutation. The checked Exercises stop at
-the currently implemented Organization boundary, prove event-history reconstruction and
+artifacts, diagnostics, and reports but no rules or state mutation. The checked Exercises retain
+the original Organization and Reserve checkpoints and now exercise Reserve Designation through
+first-side Movement, prove event-history reconstruction and
 fresh-session re-adjudication separately, and fail closed for replay, invariant, build-identity, or
-artifact faults. A Maneuver adds strict parent admission, explicit child identity, synchronous
+artifact faults. Trusted bundle readback extracts snapshot coordinates only after the Core-owned
+complete snapshot/world decoder accepts the canonical bytes, including for expected replay-failure
+profiles. A Maneuver adds strict parent admission, explicit child identity, synchronous
 coordination, one-read semantic aggregation, and a deterministic fingerprinted report without
 changing that authority boundary. V1 bundles and reports are `trusted-authority`; paired
 comparison, side-safe exports, full victory runs, model controllers, and distributed execution
@@ -687,8 +707,16 @@ remain explicitly deferred. See the retained
 [technical design](docs/design/exercise-harness-v1.md). The implemented Operation-Stage Entry
 package retains its [research](docs/research/operation-stage-entry-spike.md),
 [specification](docs/specs/operation-stage-entry-v1.md), and
-[technical design](docs/design/operation-stage-entry-v1.md). Reserve is the next authoritative-engine
-package. Paired comparison remains later and does not block that engine work.
+[technical design](docs/design/operation-stage-entry-v1.md). Reserve Designation is now an
+implemented authoritative-engine package. Its [research](docs/research/reserve-designation-spike.md),
+[specification](docs/specs/reserve-designation-v1.md), and
+[technical design](docs/design/reserve-designation-v1.md) define an incremental, subject-bearing
+legal-action flow, per-element Reserve I authority, owner-only projection, replay events, bounded
+multi-event checkpoint validation, and checked harness proof through Movement. Implementation
+includes the rules artifact, world/snapshot and owner-observation contracts, subject-bearing
+candidates, command mapping, exact designation/completion events, strict finite Reserve/Movement
+validation, and standalone plus two-setup replay evidence. Movement behavior remains pending.
+Paired comparison remains later and does not block that engine work.
 
 [1]: https://learn.microsoft.com/en-us/dotnet/orleans/grains/external-tasks-and-grains?utm_source=chatgpt.com "External tasks and grains - .NET | Microsoft Learn"
 [2]: https://learn.microsoft.com/en-us/aspnet/core/grpc/performance?view=aspnetcore-10.0&utm_source=chatgpt.com "Performance best practices with gRPC | Microsoft Learn"

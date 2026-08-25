@@ -1,7 +1,7 @@
 # Exercise Harness v1 Technical Design and Delivery Plan
 
-**Status:** Implemented and repository-verified through Task 014 serial-unpaired Maneuvers; Tasks
-015-016 remain pending
+**Status:** Implemented and repository-verified through Task 014 serial-unpaired Maneuvers plus
+checked Reserve Designation adoption to first-side Movement; Tasks 015-016 remain pending
 
 **Date:** 2026-08-20
 
@@ -76,6 +76,7 @@ public static class CampaignExercises
 {
     public static ExerciseStartResult Begin(CampaignCreationRequest request);
     public static ExerciseActionQueryResult Query(ExerciseSession session, CampaignActionAudience audience);
+    public static ExerciseCheckpoint ReadCheckpoint(ReadOnlyMemory<byte> canonicalSnapshot);
     public static ExerciseStepResult Submit(ExerciseSession session, ExerciseActionSubmission submission);
     public static ExerciseReconstructionResult Reconstruct(ExerciseSession completedSession);
 }
@@ -90,7 +91,9 @@ public sealed class ExerciseSession
 `ExerciseSession` is a sealed non-record without public state properties, equality, deconstruction,
 serialization constructor, conversion operators, or authority-handle conversion. Begin accepts the
 same immutable creation request as ordinary creation and retains exact Core-owned history internally.
-No method accepts caller-provided event/snapshot bytes for execution.
+No method accepts caller-provided event/snapshot bytes for execution. `ReadCheckpoint` is a
+validation-only decoder: it returns the existing scalar checkpoint view and cannot create, resume,
+or mutate an Exercise session.
 
 An accepted step returns:
 
@@ -229,7 +232,7 @@ Before a requested baseline simulation, capture and verify:
 - canonical ruleset, configuration, normalized manifest, and seed-scheme identities.
 
 For the first runner, configuration identity is the versioned
-`sandtable.exercise-controller-configuration.v1` canonical material for the three fixed audience
+`sandtable.exercise-controller-configuration.v2` canonical material for the three fixed audience
 controller policies. It is distinct from the hash of the complete normalized Exercise manifest.
 
 Missing Git, an unresolved HEAD commit or tree, a dirty status, unreadable assembly, or a hash
@@ -288,8 +291,8 @@ setup/content/scenario/ruleset identities, controller policy per audience, termi
 maximum steps, root seed, build mode, artifact confidentiality/detail, and optional exact
 negative-test assertion. Campaign ID is derived, not supplied.
 
-Task 014 introduces only `sandtable.maneuver-manifest.v1` with exact top-level order
-`contractVersion`, `schemeId`, `maneuverId`, `mode`, `rootSeed`, `report`, `exercises`. The only v1
+The current clean-cut identity is `sandtable.maneuver-manifest.v2` with exact top-level order
+`contractVersion`, `schemeId`, `maneuverId`, `mode`, `rootSeed`, `report`, `exercises`. The only v2
 mode is `serial-unpaired` and the only report profile is `trusted-authority`. Each ordered child is
 the standalone Exercise shape without `rootSeed`; it can never contain `campaignId`, `pairKey`, or
 variant fields. Exercise IDs are unique within the Maneuver, the list is nonempty, and Maneuver IDs
@@ -367,6 +370,12 @@ matrix in the specification. `succeeded` requires both proofs verified; the two 
 profiles require their matching failed proof/check/category. Tests mutate each fact—including the
 boundary outcome and a fabricated victory—and regenerate the artifact manifest so hash-valid but
 contradictory bundles fail.
+
+Before extracting campaign, state, ruleset, or position facts from either snapshot, the reader
+retains exact byte-canonicality checks and calls the Core-owned `CampaignExercises.ReadCheckpoint`
+capability. That capability runs the complete current snapshot/world strict decoder and returns only
+opaque checkpoint coordinates. Consequently an expected reconstruction mismatch cannot convert a
+structurally incomplete snapshot into trusted failed-reconstruction evidence.
 
 ## Acting audience and invariant catalog
 
@@ -574,7 +583,8 @@ refactors. File names are expected targets; minor splits require the same owners
 - **Work:** terminal-check, fixed-order all-audience query, require one active audience, select,
   submit, and check until exact boundary, failure, cancellation, or maximum step; collect canonical
   transcript and versioned ordered check results in memory.
-- **Accept:** checked-in synthetic inputs reach only the declared Organization boundary; zero/multiple
+- **Accept:** the original checked synthetic input reaches its declared Organization boundary;
+  later checked profiles may reach only an exact implemented downstream boundary. Zero/multiple
   selections and step limit fail closed; diagnostics do not influence selection.
 - **Verify:** executor tests for every terminal/failure branch.
 
@@ -708,7 +718,7 @@ Each slice begins with focused failing tests and leaves the existing single-Exer
 | `EXR-014E` — report contract and fingerprint | New `ManeuverReportContracts.cs`, `ManeuverReportCodec.cs`, codec tests, and report golden | 014A | Start with invariant/fingerprint failures; prove exact canonical bytes, terminal/failure catalog order, the complete per-entry state/null matrix, one record per ordinal, count reconciliation, culture/order stability, and diagnostics exclusion | Implemented; included in focused report suite 17/17 green. |
 | `EXR-014F` — serial execution | New `Execution/ManeuverExecutionContracts.cs`, `ManeuverExecutor.cs`, and executor tests | 014A, 014C-014E | Start with scheduling/evidence failures; prove one-at-a-time manifest order, immediate one-read reopen, mandatory seed-ledger identity, ordinary eligible-failure continuation, early-profile/cancellation/aggregation stop, and explicit not-run tail | Implemented; focused executor suite 23/23 green, including review-fix profile and cancellation matrices. |
 | `EXR-014G` — report transaction | New `ManeuverReportWriter.cs`, `ManeuverReportReader.cs`, and lifecycle tests | 014E | Start with failpoint/readback failures; prove confinement, regular-file-only exact tree, flush/move/readback, status placement, retained partial evidence, and no completed claim after failure | Implemented; focused report contract/transaction suite 17/17 green. |
-| `EXR-014H` — command and checked fixture | New `ManeuverRunCommand.cs`, `Program.cs`, command tests, and `scenarios/maneuvers/rules-lab.serial.v1.json` | 014F-014G | Start with CLI golden/integration failures; checked fixture has at least two unique successful entries; prove exact exits/output, manifest order, success and mixed-failure reports, cancellation, aggregate corruption injection, fixture smoke, and unchanged `exercise run` | Implemented; focused command/fixture suite 10/10 green. |
+| `EXR-014H` — command and checked fixture | New `ManeuverRunCommand.cs`, `Program.cs`, command tests, and `scenarios/maneuvers/rules-lab.serial.v2.json` | 014F-014G | Start with CLI golden/integration failures; checked fixture has at least two unique successful entries; prove exact exits/output, manifest order, success and mixed-failure reports, cancellation, aggregate corruption injection, fixture smoke, and unchanged `exercise run` | Implemented; focused command/fixture suite 10/10 green. |
 | `EXR-014I` — reconciliation and gate | `README.md`, roadmap, `tech-design.md`, `naming-overview.md`, this design/spec, and retained command evidence | 014H | Update implemented status only after evidence; run focused project tests, solution MTP suite, fixture twice with fingerprint comparison, `just check`, `git diff --check`, and one normal pre-PR review | Complete; 252/252 ExerciseRunner and 562/562 solution tests green, `just check` passes, two fixture runs share the same fingerprint, and pre-PR review is Ready. |
 
 The normal five-primary-file target applies to 014A-014H; fixtures/goldens are generated evidence,
@@ -809,13 +819,15 @@ non-blocking follow-up`: its sole P2 was reader-level early-profile manifest/bui
 which was then corrected with focused rehashed tests. The independent-review limit is exhausted;
 the bounded post-review patch received a separate Ready code-quality verdict.
 
-Task 015 paired comparison remains a separate later track. It is not a dependency of
-Organization/stage-entry or Reserve engine work, so the authoritative gameplay track may resume
-after Task 014. The proposed next engine track is documented in the
+Task 015 paired comparison remains a separate later track. It is not a dependency of Reserve
+engine work. The delivered Stage Entry engine track is documented in the
 [Operation-Stage Entry research](../research/operation-stage-entry-spike.md),
 [specification](../specs/operation-stage-entry-v1.md), and
-[technical design](operation-stage-entry-v1.md). Its final planning review is Ready, but owner
-decision and the Task 001 contract freeze still gate implementation.
+[technical design](operation-stage-entry-v1.md), followed by the
+[Reserve Designation specification](../specs/reserve-designation-v1.md) and
+[technical design](reserve-designation-v1.md). The checked Reserve-terminal regression profile and
+the 12-step Reserve Designation profile prove the path through canonical first-side Movement using
+the unchanged harness authority boundary. Movement behavior remains the next engine package.
 
 #### `EXR-TASK-015` — Implement paired comparison contract/report
 

@@ -49,15 +49,39 @@ public static class CampaignLegalActions
             CampaignActionAudience.Commonwealth => LandSide.Commonwealth,
             _ => throw new ArgumentOutOfRangeException(nameof(audience)),
         };
-        IReadOnlyList<CampaignActionCandidate> candidates =
-            observation.Observer == expectedObserver
-            && observation.Position.PhaseId == LandPhaseIds.InitiativeDeclaration
-            && observation.Position.OperationStage == 1
-            && observation.Position.InitiativeHolder == expectedObserver
-                ? [new ActFirstAction(1), new ActLastAction(1)]
-                : [];
+        IReadOnlyList<CampaignActionCandidate> candidates = observation.Observer == expectedObserver
+            ? GenerateSideCandidates(observation, expectedObserver)
+            : [];
         return CreateSet(observation.CampaignId, observation.StateVersion, observation.RulesetHash,
             observation.Position.PositionId, audience, candidates);
+    }
+
+    private static CampaignActionCandidate[] GenerateSideCandidates(
+        CampaignObservation observation,
+        LandSide observer)
+    {
+        if (observation.Position.PhaseId == LandPhaseIds.InitiativeDeclaration
+            && observation.Position.OperationStage == 1
+            && observation.Position.InitiativeHolder == observer)
+        {
+            return [new ActFirstAction(1), new ActLastAction(1)];
+        }
+
+        if (observation.Position.StageId == LandStageIds.Operation
+            && observation.Position.PhaseId == LandPhaseIds.ReserveDesignation
+            && observation.Position.OperationStage == 1
+            && observation.Position.ActorRole == LandActorRole.FirstActingSide
+            && observation.Position.ActiveSide == observer)
+        {
+            return observation.OwnElements
+                .Where(element => element.ReserveStatus == CampaignObservationReserveStatus.None)
+                .Select(element => (CampaignActionCandidate)new DesignateReserveAction(
+                    element.ElementId))
+                .Append(new CompleteReserveDesignationAction())
+                .ToArray();
+        }
+
+        return [];
     }
 
     private static CampaignObservation Project(CampaignAuthorityHandle handle,

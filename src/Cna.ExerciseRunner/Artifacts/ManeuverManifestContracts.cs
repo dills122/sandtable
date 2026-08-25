@@ -112,8 +112,8 @@ public sealed record ManeuverExerciseManifest
 
 public sealed class ManeuverManifest
 {
-    public const int CurrentContractVersion = 1;
-    public const string SchemeId = "sandtable.maneuver-manifest.v1";
+    public const int CurrentContractVersion = 2;
+    public const string SchemeId = "sandtable.maneuver-manifest.v2";
     public const string ReservedStandalonePrefix = "standalone.";
 
     public ManeuverManifest(

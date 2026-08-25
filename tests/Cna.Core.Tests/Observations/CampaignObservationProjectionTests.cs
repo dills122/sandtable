@@ -22,8 +22,8 @@ public sealed class CampaignObservationProjectionTests
         Assert.True(result.IsProjected);
         Assert.Equal(CampaignObservationRejectionReason.None, result.RejectionReason);
         var observation = Assert.IsType<CampaignObservation>(result.Observation);
-        Assert.Equal(2, observation.ContractVersion);
-        Assert.Equal("sandtable.observation.own-elements-only.v1", observation.PolicyId);
+        Assert.Equal(4, observation.ContractVersion);
+        Assert.Equal("sandtable.observation.own-elements-only.v2", observation.PolicyId);
         Assert.Equal(snapshot.CampaignId, observation.CampaignId);
         Assert.Equal(snapshot.StateVersion, observation.StateVersion);
         Assert.Equal(Cna1979Ruleset.Manifest.Hash, observation.RulesetHash);
@@ -36,6 +36,8 @@ public sealed class CampaignObservationProjectionTests
             observation.OwnElements.Select(element => element.ElementId));
         Assert.Equal(["west", "north-west"], observation.OwnElements.Select(
             element => element.CurrentLocationId));
+        Assert.All(observation.OwnElements, element =>
+            Assert.Equal(CampaignObservationReserveStatus.None, element.ReserveStatus));
         Assert.DoesNotContain(
             observation.OwnElements,
             element => element.ElementId.StartsWith("commonwealth", StringComparison.Ordinal));

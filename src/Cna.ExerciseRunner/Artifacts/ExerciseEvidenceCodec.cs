@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Cna.Core.Actions;
+using Cna.Core.Exercises;
 
 namespace Cna.ExerciseRunner.Artifacts;
 
@@ -108,9 +109,6 @@ public sealed class ExerciseCanonicalEventRecord
 
 public static class ExerciseEvidenceCodec
 {
-    // The trusted v1 evidence profile is a clean-cut contract over Core's current v6 snapshot.
-    private const int CampaignSnapshotContractVersion = 6;
-
     private static readonly string[] AcceptedActionProperties =
     [
         "contractVersion", "schemeId", "stepOrdinal", "campaignId", "priorStateVersion",
@@ -136,6 +134,12 @@ public static class ExerciseEvidenceCodec
         "sequencePosition", "sources",
     ];
 
+    private static readonly string[] StageEntryEventProperties =
+    [
+        "contractVersion", "eventType", "campaignId", "stateVersion", "fromPositionId",
+        "gameTurn", "operationStage", "sequencePosition", "sources",
+    ];
+
     private static readonly string[] InitiativeOrderEventProperties =
     [
         "contractVersion", "eventType", "campaignId", "stateVersion", "fromPositionId",
@@ -150,6 +154,19 @@ public static class ExerciseEvidenceCodec
         "kind", "scope", "locationDie", "affectedAreas", "fuelWaterReductionSubjectCount",
         "restoredWellCount", "damagedGroundedAircraftCount", "randomCursorAfter",
         "sequencePosition", "sources",
+    ];
+
+    private static readonly string[] ReserveDesignationEventProperties =
+    [
+        "contractVersion", "eventType", "campaignId", "stateVersion", "fromPositionId",
+        "gameTurn", "operationStage", "actingSide", "elementId", "priorStatus",
+        "resultingStatus", "sequencePosition", "sources",
+    ];
+
+    private static readonly string[] ReserveCompletionEventProperties =
+    [
+        "contractVersion", "eventType", "campaignId", "stateVersion", "fromPositionId",
+        "gameTurn", "operationStage", "actingSide", "sequencePosition", "sources",
     ];
 
     public static IReadOnlyList<ExerciseAcceptedActionRecord> DeserializeAcceptedActions(
@@ -203,22 +220,12 @@ public static class ExerciseEvidenceCodec
                     "randomState", "sequencePosition",
                 ]);
             RequireCanonical(root, canonicalJson.Span);
-            if (root.GetProperty("contractVersion").GetInt32()
-                != CampaignSnapshotContractVersion)
-                throw new JsonException("Unknown campaign snapshot contract version.");
-            var campaignId = RequireString(root, "campaignId");
-            var stateVersion = root.GetProperty("stateVersion").GetInt64();
-            if (stateVersion < 1) throw new JsonException("Snapshot state version is invalid.");
-            var rulesetHash = RequireString(root, "rulesetHash");
-            var position = root.GetProperty("sequencePosition");
-            if (position.ValueKind != JsonValueKind.Object)
-                throw new JsonException("Snapshot sequence position must be an object.");
-            var positionId = RequireString(position, "positionId");
+            var checkpoint = CampaignExercises.ReadCheckpoint(canonicalJson);
             return new ExerciseSnapshotFacts(
-                campaignId,
-                stateVersion,
-                rulesetHash,
-                positionId);
+                checkpoint.CampaignId,
+                checkpoint.StateVersion,
+                checkpoint.RulesetHash,
+                checkpoint.PositionId);
         }
         catch (JsonException)
         {
@@ -286,8 +293,14 @@ public static class ExerciseEvidenceCodec
             "initiative-determined" => (2, InitiativeEventProperties),
             "no-obligation-naval-convoy-schedule-resolved"
                 or "no-obligation-tactical-shipping-resolved" => (1, AdvanceEventProperties),
+            "no-obligation-organization-resolved"
+                or "no-obligation-naval-convoy-arrival-resolved"
+                or "no-obligation-fleet-assignment-resolved"
+                or "no-obligation-fleet-repair-resolved" => (1, StageEntryEventProperties),
             "initiative-order-declared" => (1, InitiativeOrderEventProperties),
             "weather-determined" => (1, WeatherEventProperties),
+            "reserve-element-designated" => (1, ReserveDesignationEventProperties),
+            "reserve-designation-completed" => (1, ReserveCompletionEventProperties),
             _ => throw new JsonException("Unknown canonical campaign event type."),
         };
         StrictJson.RequireExactProperties(root, expectedProperties);

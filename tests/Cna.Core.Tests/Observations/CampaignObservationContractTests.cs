@@ -112,7 +112,8 @@ public sealed class CampaignObservationContractTests
             "axis-formation",
             "land.organization.battalion",
             0,
-            "west"));
+            "west",
+            CampaignObservationReserveStatus.None));
     }
 
     [Fact]
@@ -145,13 +146,15 @@ public sealed class CampaignObservationContractTests
                 "axis-formation",
                 "land.organization.battalion",
                 20,
-                "west"),
+                "west",
+                CampaignObservationReserveStatus.None),
             new(
                 "axis-element-b",
                 "axis-formation",
                 "land.organization.battalion",
                 10,
-                "north"),
+                "north",
+                CampaignObservationReserveStatus.None),
         };
         var first = CreateObservation(locations, edges, ownElements);
         var equivalent = CreateObservation(
@@ -217,7 +220,8 @@ public sealed class CampaignObservationContractTests
                 "axis-formation",
                 "land.organization.battalion",
                 20,
-                "north")]));
+                "north",
+                CampaignObservationReserveStatus.None)]));
     }
 
     [Fact]

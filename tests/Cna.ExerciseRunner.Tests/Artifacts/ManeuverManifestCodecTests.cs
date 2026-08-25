@@ -9,10 +9,10 @@ namespace Cna.ExerciseRunner.Tests.Artifacts;
 public sealed class ManeuverManifestCodecTests
 {
     private const string CanonicalManifest =
-        "{\"contractVersion\":1,\"schemeId\":\"sandtable.maneuver-manifest.v1\",\"maneuverId\":\"rules-lab.serial\",\"mode\":\"serial-unpaired\",\"rootSeed\":0,\"report\":{\"profile\":\"trusted-authority\"},\"exercises\":[{\"contractVersion\":1,\"exerciseId\":\"organization-boundary.first\",\"setupId\":\"rules-lab.initiative.predetermined\",\"setupHash\":\"sha256:c1688f8869ca66182b87f487ec34edbef617ff1158f7d8b0d3101fe3993978ef\",\"contentPackId\":\"rules-lab.content.movement-contact.v1\",\"contentHash\":\"sha256:53d5b64f647251e3ac366c65f4ad05cae766afd7b70ee331d463e801496e2a99\",\"scenarioId\":\"movement-contact-lab\",\"rulesetHash\":\"ae8e38d3d4b4a3f3f5ef0ce98be4e7088f90c6701e0d2969afad0522bb84a782\",\"terminalBoundary\":\"land.position.operation-1.organization\",\"maximumSteps\":8,\"buildMode\":\"exploratory\",\"confidentiality\":\"trusted-authority\",\"detail\":\"forensic\",\"controllers\":{\"system\":\"first-by-action-id\",\"axis\":\"first-by-action-id\",\"commonwealth\":\"first-by-action-id\"},\"assertFailureCategory\":null}]}";
+        "{\"contractVersion\":2,\"schemeId\":\"sandtable.maneuver-manifest.v2\",\"maneuverId\":\"rules-lab.serial\",\"mode\":\"serial-unpaired\",\"rootSeed\":0,\"report\":{\"profile\":\"trusted-authority\"},\"exercises\":[{\"contractVersion\":2,\"exerciseId\":\"organization-boundary.first\",\"setupId\":\"rules-lab.initiative.predetermined\",\"setupHash\":\"sha256:c1688f8869ca66182b87f487ec34edbef617ff1158f7d8b0d3101fe3993978ef\",\"contentPackId\":\"rules-lab.content.movement-contact.v1\",\"contentHash\":\"sha256:53d5b64f647251e3ac366c65f4ad05cae766afd7b70ee331d463e801496e2a99\",\"scenarioId\":\"movement-contact-lab\",\"rulesetHash\":\"beb66b242222f1ccc8bde4a34daacfcd561495b47e3d48391ede34e16830d6e6\",\"terminalBoundary\":\"land.position.operation-1.organization\",\"maximumSteps\":8,\"buildMode\":\"exploratory\",\"confidentiality\":\"trusted-authority\",\"detail\":\"forensic\",\"controllers\":{\"system\":\"first-by-action-id\",\"axis\":\"first-by-action-id\",\"commonwealth\":\"first-by-action-id\"},\"assertFailureCategory\":null}]}";
 
     [Fact]
-    public void ManifestHasTheFrozenCanonicalVersionOneBytes()
+    public void ManifestHasTheFrozenCanonicalVersionTwoBytes()
     {
         var bytes = ManeuverManifestCodec.Serialize(Create());
 
@@ -24,6 +24,27 @@ public sealed class ManeuverManifestCodecTests
         Assert.Equal(ManeuverMode.SerialUnpaired, admitted.Mode);
         Assert.Equal(ManeuverReportProfile.TrustedAuthority, admitted.Report.Profile);
         Assert.Single(admitted.Exercises);
+    }
+
+    [Fact]
+    public void SemanticReservePolicyRoundTripsAndMaterializesExactExerciseV2()
+    {
+        var manifest = Create(ExerciseControllerPolicy
+            .DesignateAllReservesThenFirstByActionId);
+
+        var admitted = ManeuverManifestCodec.Deserialize(
+            ManeuverManifestCodec.Serialize(manifest));
+        var materialized = admitted.MaterializeExercise(0);
+
+        Assert.Equal(ExerciseManifest.CurrentContractVersion,
+            materialized.ContractVersion);
+        Assert.Equal(
+            ExerciseControllerPolicy.DesignateAllReservesThenFirstByActionId,
+            materialized.Controllers.Axis);
+        Assert.Contains(
+            "designate-all-reserves-then-first-by-action-id",
+            Encoding.UTF8.GetString(ManeuverManifestCodec.Serialize(admitted)),
+            StringComparison.Ordinal);
     }
 
     [Fact]
@@ -55,12 +76,12 @@ public sealed class ManeuverManifestCodecTests
     {
         string[] invalid =
         [
-            CanonicalManifest.Replace("{\"contractVersion\":1,", "{\"extra\":true,\"contractVersion\":1,", StringComparison.Ordinal),
+            CanonicalManifest.Replace("{\"contractVersion\":2,", "{\"extra\":true,\"contractVersion\":2,", StringComparison.Ordinal),
             CanonicalManifest.Replace("\"rootSeed\":0,", "", StringComparison.Ordinal),
-            CanonicalManifest.Replace("{\"contractVersion\":1,\"schemeId\":", "{\"schemeId\":\"wrong\",\"contractVersion\":1,\"schemeId\":", StringComparison.Ordinal),
-            CanonicalManifest.Replace("\"contractVersion\":1,\"schemeId\":", "\"schemeId\":\"wrong\",\"contractVersion\":1,", StringComparison.Ordinal),
-            CanonicalManifest.Replace("\"contractVersion\":1,\"schemeId\":", "\"contractVersion\":2,\"schemeId\":", StringComparison.Ordinal),
-            CanonicalManifest.Replace("sandtable.maneuver-manifest.v1", "sandtable.maneuver-manifest.v2", StringComparison.Ordinal),
+            CanonicalManifest.Replace("{\"contractVersion\":2,\"schemeId\":", "{\"schemeId\":\"wrong\",\"contractVersion\":2,\"schemeId\":", StringComparison.Ordinal),
+            CanonicalManifest.Replace("\"contractVersion\":2,\"schemeId\":", "\"schemeId\":\"wrong\",\"contractVersion\":2,", StringComparison.Ordinal),
+            CanonicalManifest.Replace("\"contractVersion\":2,\"schemeId\":", "\"contractVersion\":1,\"schemeId\":", StringComparison.Ordinal),
+            CanonicalManifest.Replace("sandtable.maneuver-manifest.v2", "sandtable.maneuver-manifest.v1", StringComparison.Ordinal),
             CanonicalManifest.Replace("serial-unpaired", "paired", StringComparison.Ordinal),
             CanonicalManifest.Replace("trusted-authority", "public", StringComparison.Ordinal),
             CanonicalManifest.Replace("rules-lab.serial", "standalone.rules-lab", StringComparison.Ordinal),
@@ -78,21 +99,21 @@ public sealed class ManeuverManifestCodecTests
         string[] invalid =
         [
             CanonicalManifest.Replace(
-                "\"exercises\":[{\"contractVersion\":1,",
-                "\"exercises\":[{\"extra\":true,\"contractVersion\":1,",
+                "\"exercises\":[{\"contractVersion\":2,",
+                "\"exercises\":[{\"extra\":true,\"contractVersion\":2,",
                 StringComparison.Ordinal),
             CanonicalManifest.Replace("\"maximumSteps\":8,", "", StringComparison.Ordinal),
             CanonicalManifest.Replace(
-                "{\"contractVersion\":1,\"exerciseId\":\"organization-boundary.first\",",
-                "{\"exerciseId\":\"organization-boundary.first\",\"contractVersion\":1,",
+                "{\"contractVersion\":2,\"exerciseId\":\"organization-boundary.first\",",
+                "{\"exerciseId\":\"organization-boundary.first\",\"contractVersion\":2,",
                 StringComparison.Ordinal),
             CanonicalManifest.Replace(
-                "{\"contractVersion\":1,\"exerciseId\":",
-                "{\"exerciseId\":\"wrong\",\"contractVersion\":1,\"exerciseId\":",
+                "{\"contractVersion\":2,\"exerciseId\":",
+                "{\"exerciseId\":\"wrong\",\"contractVersion\":2,\"exerciseId\":",
                 StringComparison.Ordinal),
             CanonicalManifest.Replace(
-                "\"exercises\":[{\"contractVersion\":1,",
                 "\"exercises\":[{\"contractVersion\":2,",
+                "\"exercises\":[{\"contractVersion\":1,",
                 StringComparison.Ordinal),
             CanonicalManifest.Replace(
                 CanonicalManifest[(CanonicalManifest.IndexOf("[{", StringComparison.Ordinal) + 1)..^2],
@@ -226,16 +247,21 @@ public sealed class ManeuverManifestCodecTests
             ManeuverManifestCodec.Deserialize(Encoding.UTF8.GetBytes(invalid)));
     }
 
-    private static ManeuverManifest Create() => new(
+    private static ManeuverManifest Create(
+        ExerciseControllerPolicy controllerPolicy =
+            ExerciseControllerPolicy.FirstByActionId) => new(
         ManeuverManifest.CurrentContractVersion,
         ManeuverManifest.SchemeId,
         "rules-lab.serial",
         ManeuverMode.SerialUnpaired,
         0,
         new ManeuverReportOptions(ManeuverReportProfile.TrustedAuthority),
-        [CreateExercise("organization-boundary.first")]);
+        [CreateExercise("organization-boundary.first", controllerPolicy)]);
 
-    private static ManeuverExerciseManifest CreateExercise(string exerciseId) => new(
+    private static ManeuverExerciseManifest CreateExercise(
+        string exerciseId,
+        ExerciseControllerPolicy controllerPolicy =
+            ExerciseControllerPolicy.FirstByActionId) => new(
         ExerciseManifest.CurrentContractVersion,
         exerciseId,
         "rules-lab.initiative.predetermined",
@@ -250,8 +276,8 @@ public sealed class ManeuverManifestCodecTests
         ExerciseConfidentiality.TrustedAuthority,
         ExerciseDetail.Forensic,
         new ExerciseControllerManifest(
-            ExerciseControllerPolicy.FirstByActionId,
-            ExerciseControllerPolicy.FirstByActionId,
-            ExerciseControllerPolicy.FirstByActionId),
+            controllerPolicy,
+            controllerPolicy,
+            controllerPolicy),
         null);
 }

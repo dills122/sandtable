@@ -57,6 +57,14 @@ internal static class CampaignEventSerializer
                     ValidateStageEntry(resolved, 10);
                     WriteStageEntry(writer, "no-obligation-fleet-repair-resolved", resolved);
                     break;
+                case ReserveElementDesignated designated:
+                    ValidateReserve(designated);
+                    WriteReserveDesignation(writer, designated);
+                    break;
+                case ReserveDesignationCompleted completed:
+                    ValidateReserve(completed);
+                    WriteReserveCompletion(writer, completed);
+                    break;
                 default:
                     throw new JsonException("The campaign event type is not serializable.");
             }
@@ -87,13 +95,15 @@ internal static class CampaignEventSerializer
                 "no-obligation-naval-convoy-arrival-resolved" => ParseArrival(root),
                 "no-obligation-fleet-assignment-resolved" => ParseFleetAssignment(root),
                 "no-obligation-fleet-repair-resolved" => ParseFleetRepair(root),
+                "reserve-element-designated" => ParseReserveDesignation(root),
+                "reserve-designation-completed" => ParseReserveCompletion(root),
                 _ => throw new JsonException($"Unknown campaign event type '{eventType}'."),
             };
 
-            if (campaignEvent is StageEntryResolved
+            if (campaignEvent is StageEntryResolved or ReserveDesignationEvent
                 && !canonicalJson.Span.SequenceEqual(Serialize(campaignEvent)))
             {
-                throw new JsonException("The Stage Entry event is not canonical JSON.");
+                throw new JsonException("The campaign event is not canonical JSON.");
             }
 
             return campaignEvent;
@@ -217,6 +227,143 @@ internal static class CampaignEventSerializer
         CampaignSnapshotSerializer.WritePosition(writer, resolved.SequencePosition);
         CampaignSnapshotSerializer.WriteSources(writer, resolved.Sources);
     }
+
+    private static void WriteReserveDesignation(
+        Utf8JsonWriter writer,
+        ReserveElementDesignated designated)
+    {
+        WriteReserveEnvelope(
+            writer,
+            "reserve-element-designated",
+            designated);
+        writer.WriteString("elementId", designated.ElementId);
+        writer.WriteString("priorStatus", FormatReserveStatus(designated.PriorStatus));
+        writer.WriteString(
+            "resultingStatus",
+            FormatReserveStatus(designated.ResultingStatus));
+        CampaignSnapshotSerializer.WritePosition(
+            writer,
+            designated.SequencePosition);
+        CampaignSnapshotSerializer.WriteSources(writer, designated.Sources);
+    }
+
+    private static void WriteReserveCompletion(
+        Utf8JsonWriter writer,
+        ReserveDesignationCompleted completed)
+    {
+        WriteReserveEnvelope(
+            writer,
+            "reserve-designation-completed",
+            completed);
+        CampaignSnapshotSerializer.WritePosition(writer, completed.SequencePosition);
+        CampaignSnapshotSerializer.WriteSources(writer, completed.Sources);
+    }
+
+    private static void WriteReserveEnvelope(
+        Utf8JsonWriter writer,
+        string eventType,
+        ReserveDesignationEvent campaignEvent)
+    {
+        writer.WriteNumber("contractVersion", campaignEvent.ContractVersion);
+        writer.WriteString("eventType", eventType);
+        writer.WriteString("campaignId", campaignEvent.CampaignId);
+        writer.WriteNumber("stateVersion", campaignEvent.StateVersion);
+        writer.WriteString("fromPositionId", campaignEvent.FromPositionId);
+        writer.WriteNumber("gameTurn", campaignEvent.GameTurn);
+        writer.WriteNumber("operationStage", campaignEvent.OperationStage);
+        writer.WriteString(
+            "actingSide",
+            CampaignSnapshotSerializer.FormatSide(campaignEvent.ActingSide));
+    }
+
+    private static ReserveElementDesignated ParseReserveDesignation(JsonElement root)
+    {
+        CampaignSnapshotSerializer.RequireProperties(
+            root,
+            "contractVersion",
+            "eventType",
+            "campaignId",
+            "stateVersion",
+            "fromPositionId",
+            "gameTurn",
+            "operationStage",
+            "actingSide",
+            "elementId",
+            "priorStatus",
+            "resultingStatus",
+            "sequencePosition",
+            "sources");
+        RequireReserveContract(root);
+        return new ReserveElementDesignated(
+            root.GetProperty("campaignId").GetString()!,
+            root.GetProperty("stateVersion").GetInt64(),
+            root.GetProperty("fromPositionId").GetString()!,
+            root.GetProperty("gameTurn").GetInt32(),
+            root.GetProperty("operationStage").GetInt32(),
+            CampaignSnapshotSerializer.ParseSide(
+                root.GetProperty("actingSide").GetString()),
+            root.GetProperty("elementId").GetString()!,
+            ParseReserveStatus(root.GetProperty("priorStatus").GetString()),
+            ParseReserveStatus(root.GetProperty("resultingStatus").GetString()),
+            CampaignSnapshotSerializer.ParsePosition(
+                root.GetProperty("sequencePosition")),
+            CampaignSnapshotSerializer.ParseSources(root.GetProperty("sources")));
+    }
+
+    private static ReserveDesignationCompleted ParseReserveCompletion(JsonElement root)
+    {
+        CampaignSnapshotSerializer.RequireProperties(
+            root,
+            "contractVersion",
+            "eventType",
+            "campaignId",
+            "stateVersion",
+            "fromPositionId",
+            "gameTurn",
+            "operationStage",
+            "actingSide",
+            "sequencePosition",
+            "sources");
+        RequireReserveContract(root);
+        return new ReserveDesignationCompleted(
+            root.GetProperty("campaignId").GetString()!,
+            root.GetProperty("stateVersion").GetInt64(),
+            root.GetProperty("fromPositionId").GetString()!,
+            root.GetProperty("gameTurn").GetInt32(),
+            root.GetProperty("operationStage").GetInt32(),
+            CampaignSnapshotSerializer.ParseSide(
+                root.GetProperty("actingSide").GetString()),
+            CampaignSnapshotSerializer.ParsePosition(
+                root.GetProperty("sequencePosition")),
+            CampaignSnapshotSerializer.ParseSources(root.GetProperty("sources")));
+    }
+
+    private static void RequireReserveContract(JsonElement root)
+    {
+        if (root.GetProperty("contractVersion").GetInt32() != 1)
+        {
+            throw new JsonException(
+                "The Reserve designation event contract version is invalid.");
+        }
+    }
+
+    private static string FormatReserveStatus(
+        CampaignElementReserveStatus status) => status switch
+        {
+            CampaignElementReserveStatus.None => "none",
+            CampaignElementReserveStatus.ReserveI => "reserve-i",
+            CampaignElementReserveStatus.ReserveII => "reserve-ii",
+            _ => throw new JsonException("The Reserve status is invalid."),
+        };
+
+    private static CampaignElementReserveStatus ParseReserveStatus(string? status) =>
+        status switch
+        {
+            "none" => CampaignElementReserveStatus.None,
+            "reserve-i" => CampaignElementReserveStatus.ReserveI,
+            "reserve-ii" => CampaignElementReserveStatus.ReserveII,
+            _ => throw new JsonException($"Unknown Reserve status '{status}'."),
+        };
 
     private static NoObligationOrganizationResolved ParseOrganization(JsonElement root)
     {
@@ -595,7 +742,7 @@ internal static class CampaignEventSerializer
         }
 
         var localSnapshot = new CampaignSnapshot(
-            6,
+            CampaignSnapshot.CurrentContractVersion,
             created.CampaignId,
             created.StateVersion,
             created.RulesetHash,
@@ -606,7 +753,7 @@ internal static class CampaignEventSerializer
             created.RandomState,
             created.SequencePosition);
 
-        if (created.ContractVersion != 5
+        if (created.ContractVersion != 6
             || created.StateVersion != 1
             || created.RandomState.NextByteCursor != 0
             || !CampaignSnapshotValidator.IsLocallyValid(localSnapshot))
@@ -671,6 +818,22 @@ internal static class CampaignEventSerializer
             || resolved.StateVersion != expectedStateVersion)
         {
             throw new JsonException("The Stage Entry event contract is invalid.");
+        }
+    }
+
+    private static void ValidateReserve(ReserveDesignationEvent campaignEvent)
+    {
+        try
+        {
+            campaignEvent.ValidateContract();
+        }
+        catch (Exception exception) when (exception is ArgumentException
+            or ArithmeticException
+            or InvalidOperationException)
+        {
+            throw new JsonException(
+                "The Reserve designation event contract is invalid.",
+                exception);
         }
     }
 }

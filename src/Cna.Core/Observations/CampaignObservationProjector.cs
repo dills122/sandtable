@@ -26,15 +26,6 @@ internal static class CampaignObservationProjector
                 CampaignObservationRejectionReason.InvalidState);
         }
 
-        var sideId = observer switch
-        {
-            LandSide.Axis => "axis",
-            LandSide.Commonwealth => "commonwealth",
-            _ => throw new ArgumentOutOfRangeException(nameof(observer)),
-        };
-        var worldByElement = snapshot.World.Elements.ToDictionary(
-            element => element.ElementId,
-            StringComparer.Ordinal);
         var definition = context.Artifact.Definition;
         var locations = definition.Locations.Select(location =>
             new CampaignObservationLocation(location.LocationId, location.TerrainId)).ToArray();
@@ -44,20 +35,7 @@ internal static class CampaignObservationProjector
             edge.Features.Select(feature => new CampaignObservationEdgeFeature(
                 feature.FeatureId,
                 feature.DirectionFromLocationId)).ToArray())).ToArray();
-        var ownElements = definition.Elements
-            .Where(element => string.Equals(element.SideId, sideId, StringComparison.Ordinal)
-                && element.PlacementMode == ContentPlacementMode.Independent)
-            .Select(element =>
-            {
-                var state = worldByElement[element.ElementId];
-                return new ObservedOwnElement(
-                    element.ElementId,
-                    element.ParentFormationId,
-                    element.OrganizationId,
-                    element.BaseCapabilityPointAllowance,
-                    state.CurrentLocationId);
-            })
-            .ToArray();
+        var ownElements = ProjectOwnElements(definition, snapshot.World, observer);
         var sequence = snapshot.SequencePosition;
         var activeSide = sequence.ActorRole == LandActorRole.FirstActingSide
             ? FirstActingSideResolver.Resolve(snapshot)
@@ -77,7 +55,7 @@ internal static class CampaignObservationProjector
             CampaignObservation.CurrentContractVersion,
             CampaignObservation.CurrentPolicyId,
             snapshot.CampaignId,
-            snapshot.StateVersion,
+            ProjectAudienceStateVersion(snapshot, observer),
             snapshot.RulesetHash,
             context.Scenario.ScenarioId,
             observer,
@@ -92,4 +70,70 @@ internal static class CampaignObservationProjector
 
         return CampaignObservationProjectionResult.Projected(observation);
     }
+
+    private static long ProjectAudienceStateVersion(
+        CampaignSnapshot snapshot,
+        LandSide observer)
+    {
+        var reserve = ReserveDesignationEvent.ReservePosition(snapshot.GameTurn);
+        var movement = Cna1979LandSequence.GetNext(reserve);
+        if (snapshot.SequencePosition != reserve
+            && snapshot.SequencePosition != movement)
+        {
+            return snapshot.StateVersion;
+        }
+
+        var firstSide = FirstActingSideResolver.Resolve(snapshot);
+        if (observer == firstSide)
+        {
+            return snapshot.StateVersion;
+        }
+
+        var hiddenDesignationCount = snapshot.World.Elements.Count(element =>
+            element.ReserveStatus == CampaignElementReserveStatus.ReserveI);
+        return checked(snapshot.StateVersion - hiddenDesignationCount);
+    }
+
+    internal static IReadOnlyList<ObservedOwnElement> ProjectOwnElements(
+        ContentPackDefinition definition,
+        CampaignWorldSnapshot world,
+        LandSide observer)
+    {
+        ArgumentNullException.ThrowIfNull(definition);
+        ArgumentNullException.ThrowIfNull(world);
+
+        var sideId = observer switch
+        {
+            LandSide.Axis => "axis",
+            LandSide.Commonwealth => "commonwealth",
+            _ => throw new ArgumentOutOfRangeException(nameof(observer)),
+        };
+        var worldByElement = world.Elements.ToDictionary(
+            element => element.ElementId,
+            StringComparer.Ordinal);
+
+        return definition.Elements
+            .Where(element => string.Equals(element.SideId, sideId, StringComparison.Ordinal)
+                && element.PlacementMode == ContentPlacementMode.Independent)
+            .Select(element =>
+            {
+                var state = worldByElement[element.ElementId];
+                return new ObservedOwnElement(
+                    element.ElementId,
+                    element.ParentFormationId,
+                    element.OrganizationId,
+                    element.BaseCapabilityPointAllowance,
+                    state.CurrentLocationId,
+                    ProjectReserveStatus(state.ReserveStatus));
+            })
+            .ToArray();
+    }
+
+    private static CampaignObservationReserveStatus ProjectReserveStatus(
+        CampaignElementReserveStatus status) => status switch
+        {
+            CampaignElementReserveStatus.None => CampaignObservationReserveStatus.None,
+            CampaignElementReserveStatus.ReserveI => CampaignObservationReserveStatus.ReserveI,
+            _ => throw new ArgumentOutOfRangeException(nameof(status)),
+        };
 }

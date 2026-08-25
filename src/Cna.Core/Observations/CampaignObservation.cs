@@ -5,8 +5,8 @@ namespace Cna.Core.Observations;
 
 public sealed record CampaignObservation
 {
-    public const int CurrentContractVersion = 2;
-    public const string CurrentPolicyId = "sandtable.observation.own-elements-only.v1";
+    public const int CurrentContractVersion = 4;
+    public const string CurrentPolicyId = "sandtable.observation.own-elements-only.v2";
 
     internal CampaignObservation(
         int contractVersion,
@@ -111,6 +111,10 @@ public sealed record CampaignObservation
 
     public string CampaignId { get; }
 
+    /// <summary>
+    /// Gets the revision visible to this observer. It can differ from the internal authority
+    /// revision when hidden opposing events occur.
+    /// </summary>
     public long StateVersion { get; }
 
     public string RulesetHash { get; }

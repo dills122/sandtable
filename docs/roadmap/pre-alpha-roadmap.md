@@ -105,7 +105,7 @@ Optional parser evidence gate
 | --- | --- | --- |
 | Source/ruleset provenance, synthetic content, world, authority, events, and replay foundations | Implemented | Preserve exact identities and deterministic history while mechanics expand |
 | Side-safe observations and legal-action enforcement | Implemented for the current synthetic path | Extend only with each new mechanic and its disclosure tests |
-| Mandatory turn preamble | Partially implemented | Weather and the explicit-empty stage-entry path reach Reserve; Reserve is next |
+| Mandatory turn preamble | Implemented through Reserve Designation completion | Preserve the exact Movement terminal while later mechanics expand |
 | Movement and contact | Planned; not started | Requires a legal movement-capable phase after the preamble |
 | Combat | Planned; not started | Depends on the movement/contact state and action vocabulary |
 | Working pre-alpha skeleton | Not reached | Requires one authentic movement/contact/combat loop with replay |
@@ -115,7 +115,7 @@ Optional parser evidence gate
 | Exercise Harness | Single-Exercise and serial-unpaired Maneuver paths implemented | Pairing remains later and does not block engine mechanics |
 
 The roadmap deliberately distinguishes foundation maturity from playable breadth. The architecture
-is substantially established, but the campaign is not playable while authority stops at Reserve
+is substantially established, but the campaign is not playable while authority stops at Movement
 and movement, combat, victory, persistence, and Maproom remain absent.
 
 ## Sprint 0: Source and fidelity baseline
@@ -147,8 +147,8 @@ reconstructed exactly without skipping unimplemented mechanics.
 delivered.
 Campaign creation, Initiative, the admitted empty convoy checkpoints, Operation Stage 1 Initiative
 Declaration, Weather Determination, the four admitted empty stage-entry obligations, canonical event
-serialization, and replay are authoritative; advancement stops at Reserve, the next mandatory
-unimplemented mechanic.
+serialization, replay, and Reserve Designation completion are authoritative; advancement stops at
+Movement, the next mandatory unimplemented mechanic.
 
 ### Task 1.1 - Ruleset provenance contracts
 
@@ -214,15 +214,18 @@ Implementation and acceptance evidence are tracked in the
 
 **Capability:** `EXERCISE-001`
 
-**Status:** Implemented through serial-unpaired Task 014 with repository gates green; paired
-reporting remains later Harness work
+**Status:** Implemented through serial-unpaired Task 014 with checked Reserve Designation adoption
+to first-side Movement; paired reporting remains later Harness work
 
 **Goal:** Run a freshly created bounded rules-laboratory campaign through the authoritative legal
 action path, retain deterministic trusted evidence, and prove both event-history reconstruction and
 fresh-session re-adjudication before using batches for regression or controller comparison.
 
-**Acceptance boundary:** The first Exercise stops successfully only at the implemented Operation
-Stage 1 Organization boundary. The runnable single-Exercise and serial-Maneuver CLIs include
+**Acceptance boundary:** The first Exercise still stops successfully at the Operation Stage 1
+Organization checkpoint. Separate checked Exercises preserve the Reserve boundary and traverse
+Reserve Designation to Movement; a two-setup serial Maneuver proves the 12-step Movement-terminal
+path for both admitted setups. The runnable single-Exercise and serial-Maneuver
+CLIs include
 fail-closed transactional artifacts, explicit build/run identity, stable failure categories, and
 validated aggregate reports. Task 014 has a warning-free solution build, green focused and
 solution-wide suites, repeatable checked-fixture report fingerprints, a passing `just check`, and a
@@ -239,8 +242,9 @@ task is optional Task 015 paired comparison, but it does not block the authorita
 dependency graph. The implemented engine work retains the
 [Operation-Stage Entry research](../research/operation-stage-entry-spike.md),
 [specification](../specs/operation-stage-entry-v1.md), and
-[technical design](../design/operation-stage-entry-v1.md); Reserve is the next authoritative-engine
-package. Task 016 remains the final Harness-v1 closeout
+[technical design](../design/operation-stage-entry-v1.md), followed by the implemented
+[Reserve Designation package](../design/reserve-designation-v1.md). Movement behavior is the next
+authoritative-engine package. Task 016 remains the final Harness-v1 closeout
 after pairing is eventually delivered.
 
 ## Cross-cutting future player interaction: Player Intent Composer v1
@@ -443,10 +447,20 @@ recorded Operation Stage order. Positive obligations remain unsupported and cann
 specification, technical design, task ledger, review reconciliation, and acceptance evidence define
 the exact delivered boundary.
 
-### Task 3.5 - Reserve Designation (planned; not started)
+### Task 3.5 - Reserve Designation (implemented)
 
 Implement `RESERVE-001`: let the first-acting side designate and complete its reserves through the
 legal-action boundary. Stop at Movement; do not begin Movement as part of Reserve completion.
+
+The implemented interaction generates one current legal candidate per eligible own element, accepts
+zero or more incremental Reserve I designations, and requires an explicit completion action. Each
+designation remains at the Reserve position; completion advances once to Movement. Reserve Release,
+Reserve II production, movement restrictions, and Movement behavior remain separate capabilities.
+
+**Delivery status:** Ruleset/world/snapshot/observation/action contracts, finite Reserve and
+Movement validation, designation/completion events, replay, v2 Exercise/Maneuver identities, and
+checked standalone/two-setup 12-step evidence are implemented. The final repository gate and
+independent implementation review close `RES-TASK-016`.
 
 **Acceptance criteria:**
 
@@ -459,7 +473,12 @@ legal-action boundary. Stop at Movement; do not begin Movement as part of Reserv
   are complete.
 
 **Verification:** Source/table boundary tests, forged-history negatives, deterministic replay, and
-the full repository gate.
+checked Exercise/Maneuver runs through the ordinary legal-action path, and the full repository gate.
+
+The proposed boundary is documented in the
+[research packet](../research/reserve-designation-spike.md),
+[specification](../specs/reserve-designation-v1.md), and
+[technical design](../design/reserve-designation-v1.md).
 
 ### Sprint 3 demonstration
 
@@ -467,7 +486,7 @@ Continue the synthetic campaign from Naval Convoy, make the available preamble d
 Weather, Organization/stage-entry obligations, and Reserve in their separately gated capabilities,
 then stop at Movement with a replay-identical Chronicle. Task 3.3 independently stops at
 Organization; the implemented Task 3.4 explicit-empty checkpoint independently stops at Reserve;
-Task 3.5 remains the next gate.
+Task 3.5 reaches Movement; Movement behavior is the next active gate.
 
 ## Sprint 4: Continual movement and contact
 

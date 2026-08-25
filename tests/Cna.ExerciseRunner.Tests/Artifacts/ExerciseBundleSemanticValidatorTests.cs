@@ -47,19 +47,54 @@ public sealed class ExerciseBundleSemanticValidatorTests : IDisposable
     }
 
     [Fact]
-    public void SnapshotReaderAcceptsVersionSixAndRejectsVersionFive()
+    public void SnapshotReaderAcceptsVersionSevenWorldTwoAndRejectsPriorVersions()
     {
         var bundlePath = CreateSuccessfulBundle();
         var canonical = File.ReadAllBytes(Path.Combine(
             bundlePath,
             ArtifactSchema.InitialSnapshotPath));
-        var legacy = Encoding.UTF8.GetBytes(Encoding.UTF8.GetString(canonical).Replace(
+        var legacySnapshot = Encoding.UTF8.GetBytes(Encoding.UTF8.GetString(canonical).Replace(
+            "{\"contractVersion\":7,",
             "{\"contractVersion\":6,",
-            "{\"contractVersion\":5,",
+            StringComparison.Ordinal));
+        var legacyWorld = Encoding.UTF8.GetBytes(Encoding.UTF8.GetString(canonical).Replace(
+            "\"world\":{\"contractVersion\":2,",
+            "\"world\":{\"contractVersion\":1,",
             StringComparison.Ordinal));
 
         Assert.NotNull(ExerciseEvidenceCodec.DeserializeSnapshot(canonical));
-        Assert.Throws<JsonException>(() => ExerciseEvidenceCodec.DeserializeSnapshot(legacy));
+        Assert.Throws<JsonException>(() =>
+            ExerciseEvidenceCodec.DeserializeSnapshot(legacySnapshot));
+        Assert.Throws<JsonException>(() =>
+            ExerciseEvidenceCodec.DeserializeSnapshot(legacyWorld));
+    }
+
+    [Fact]
+    public void CanonicalEventReaderAdmitsBothReserveEventStructures()
+    {
+        var manifest = ExerciseManifestCodecTests.Create(
+            maximumSteps: 12,
+            terminalBoundary:
+                "land.position.operation-1.first-player.movement-and-combat.movement",
+            controllerPolicy:
+                ExerciseControllerPolicy.DesignateAllReservesThenFirstByActionId);
+        var execution = ExerciseExecutor.Execute(
+            manifest,
+            TestContext.Current.CancellationToken);
+
+        var events = ExerciseEvidenceCodec.DeserializeCanonicalEvents(
+            ExerciseEvidenceWriter.WriteCanonicalEvents(execution));
+        var canonical = events.Select(record => Encoding.UTF8.GetString(
+            record.CanonicalBytes)).ToArray();
+
+        Assert.True(execution.IsSucceeded);
+        Assert.Equal(12, events.Count);
+        Assert.Equal(2, canonical.Count(value => value.Contains(
+            "\"eventType\":\"reserve-element-designated\"",
+            StringComparison.Ordinal)));
+        Assert.Single(canonical, value => value.Contains(
+            "\"eventType\":\"reserve-designation-completed\"",
+            StringComparison.Ordinal));
     }
 
     [Fact]
@@ -590,6 +625,46 @@ public sealed class ExerciseBundleSemanticValidatorTests : IDisposable
     }
 
     [Theory]
+    [InlineData(ArtifactSchema.InitialSnapshotPath)]
+    [InlineData(ArtifactSchema.FinalSnapshotPath)]
+    public void ReaderNormalizesARehashedSnapshotWithAnEmptyWorldObject(string path)
+    {
+        var bundlePath = CreateSuccessfulBundle();
+        RewritePayload(bundlePath, path, bytes =>
+            ReplaceWorld(bytes, "{}"));
+        RehashManifest(bundlePath);
+
+        Assert.Throws<InvalidDataException>(() => ExerciseBundleReader.Read(bundlePath));
+    }
+
+    [Fact]
+    public void ReaderRejectsARehashedFailedReconstructionWithAnIncompleteWorldObject()
+    {
+        var bundlePath = CreateReconstructionFailureBundle(fabricated: false);
+        var finalPath = Path.Combine(bundlePath, ArtifactSchema.FinalSnapshotPath);
+        var originalFinal = File.ReadAllBytes(finalPath);
+        var changedFinal = ReplaceWorld(originalFinal, "{\"contractVersion\":2}");
+        File.WriteAllBytes(finalPath, changedFinal);
+        RewritePayload(bundlePath, ArtifactSchema.StepEvidencePath, bytes =>
+            Encoding.UTF8.GetBytes(Encoding.UTF8.GetString(bytes).Replace(
+                ReplayEvidenceHasher.HashBytes(originalFinal),
+                ReplayEvidenceHasher.HashBytes(changedFinal),
+                StringComparison.Ordinal)));
+        RewritePayload(bundlePath, ArtifactSchema.ReconstructionProofPath, bytes =>
+        {
+            var proof = ReplayProofCodec.DeserializeReconstruction(bytes);
+            return ReplayProofCodec.Serialize(new ReconstructionProof(
+                proof.FailureReason,
+                proof.EventStreamHash,
+                ReplayEvidenceHasher.HashBytes(changedFinal),
+                proof.ReconstructedSnapshotHash));
+        });
+        RehashManifest(bundlePath);
+
+        Assert.Throws<InvalidDataException>(() => ExerciseBundleReader.Read(bundlePath));
+    }
+
+    [Theory]
     [InlineData("reordered")]
     [InlineData("extra")]
     [InlineData("unknown")]
@@ -681,6 +756,18 @@ public sealed class ExerciseBundleSemanticValidatorTests : IDisposable
         return ExerciseBundleWriter.Write(
             root,
             new ExerciseBundleWriteRequest(ArtifactBundleProfile.Succeeded, payloads)).Path;
+    }
+
+    private static byte[] ReplaceWorld(byte[] snapshot, string replacement)
+    {
+        var json = Encoding.UTF8.GetString(snapshot);
+        var start = json.IndexOf("\"world\":", StringComparison.Ordinal);
+        var end = json.IndexOf(",\"initiativeHolder\":", start,
+            StringComparison.Ordinal);
+        Assert.True(start >= 0);
+        Assert.True(end > start);
+        return Encoding.UTF8.GetBytes(
+            $"{json[..start]}\"world\":{replacement}{json[end..]}");
     }
 
     private string CreateReconstructionFailureBundle(bool fabricated)

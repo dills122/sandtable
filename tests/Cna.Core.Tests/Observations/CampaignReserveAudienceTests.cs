@@ -48,7 +48,8 @@ public sealed class CampaignReserveAudienceTests
                 new CampaignAuthorityHandle(reserve, context), audience);
             Assert.True(legalActions.IsSuccessful);
             Assert.Equal(audience, legalActions.ActionSet!.Audience);
-            Assert.Empty(legalActions.ActionSet.Candidates);
+            Assert.Equal(observer == expectedFirstSide ? 3 : 0,
+                legalActions.ActionSet.Candidates.Count);
         }
 
         Assert.Equal(authorityBytes, CampaignSnapshotSerializer.Serialize(reserve));

@@ -15,7 +15,7 @@ public sealed class CampaignEventSerializationTests
 
         var bytes = CampaignEventSerializer.Serialize(created);
         var actual = Encoding.UTF8.GetString(bytes);
-        var expected = "{\"contractVersion\":5,\"eventType\":\"campaign-created\"," +
+        var expected = "{\"contractVersion\":6,\"eventType\":\"campaign-created\"," +
             "\"campaignId\":\"campaign-1\",\"stateVersion\":1,\"rulesetHash\":\"" +
             Cna1979Ruleset.Manifest.Hash +
             "\",\"setup\":{\"schemaVersion\":5," +
@@ -45,11 +45,15 @@ public sealed class CampaignEventSerializationTests
             "\"sources\":[{\"sourceId\":\"sandtable-rules-lab\"," +
             "\"locator\":\"initiative.predetermined-axis.v1\"}]}," +
             "\"initialWorld\":{" +
-            "\"contractVersion\":1,\"elements\":[" +
-            "{\"elementId\":\"axis-element-a\",\"currentLocationId\":\"west\"}," +
-            "{\"elementId\":\"axis-element-b\",\"currentLocationId\":\"north-west\"}," +
-            "{\"elementId\":\"commonwealth-element-a\",\"currentLocationId\":\"east\"}," +
-            "{\"elementId\":\"commonwealth-element-b\",\"currentLocationId\":\"south-east\"}]}," +
+            "\"contractVersion\":2,\"elements\":[" +
+            "{\"elementId\":\"axis-element-a\",\"currentLocationId\":\"west\"," +
+            "\"reserveStatus\":\"none\"}," +
+            "{\"elementId\":\"axis-element-b\",\"currentLocationId\":\"north-west\"," +
+            "\"reserveStatus\":\"none\"}," +
+            "{\"elementId\":\"commonwealth-element-a\",\"currentLocationId\":\"east\"," +
+            "\"reserveStatus\":\"none\"}," +
+            "{\"elementId\":\"commonwealth-element-b\",\"currentLocationId\":\"south-east\"," +
+            "\"reserveStatus\":\"none\"}]}," +
             "\"randomState\":{\"contractVersion\":1," +
             "\"algorithmId\":\"sandtable.sha256-counter.v1\",\"seed\":12345," +
             "\"nextByteCursor\":0},\"sequencePosition\":{\"contractVersion\":2," +

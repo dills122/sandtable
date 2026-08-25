@@ -8,6 +8,10 @@
 
 **Research:** [Turn-Preamble Action Boundary](../research/turn-preamble-action-boundary-spike.md)
 
+**Current evolution:** The original v1 delivery below is historical design context. Reserve
+Designation clean-cuts only the action-set envelope to contract 2 / `sandtable.legal-actions.v2`
+for audience-visible revision semantics; candidate, submission, and receipt contracts stay at 1.
+
 ## Delivery shape
 
 Implement `ACTION-001` as one atomic Core contract cutover with four internal layers and one narrow
@@ -153,8 +157,9 @@ Candidate semantic preimages are explicit UTF-8 JSON containing `contractVersion
 `operationStage` only when applicable. `actionId` is `sha256:` plus lowercase SHA-256 of that
 preimage. Candidate ordering is kind then action ID using ordinal comparison.
 
-`CampaignLegalActionSet` contract 1 contains policy ID, campaign/state/ruleset/position/audience,
-and the immutable candidates. Its explicit serializer writes those fields in that order and each
+`CampaignLegalActionSet` contract 2 contains policy ID,
+campaign/audience-visible-state/ruleset/position/audience, and the immutable candidates. Its
+explicit serializer writes those fields in that order and each
 candidate as `contractVersion`, `actionId`, `kind`, then optional `operationStage`.
 
 ## Query and fog boundary
