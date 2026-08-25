@@ -1,4 +1,6 @@
 using System.Text;
+using System.Text.Json;
+using Cna.Core.Actions;
 using Cna.Core.Campaigns;
 using Cna.Core.Content;
 using Cna.Core.Rules;
@@ -8,6 +10,60 @@ namespace Cna.Core.Tests.Campaigns;
 
 public sealed class CampaignReplayPreparationTests
 {
+    [Theory]
+    [InlineData(0, 12345)]
+    [InlineData(1, 7)]
+    public void CanonicalCompleteHistoryFreshReplaysWithIdenticalActions(
+        int setupIndex,
+        int seed)
+    {
+        var evidence = StageEntryCampaignTestData.Execute(
+            Cna1979SetupCatalog.Definitions[setupIndex],
+            (ulong)seed,
+            InitiativeOrderChoice.ActLast);
+        var eventBytes = evidence.Events
+            .Select(CampaignEventSerializer.Serialize)
+            .ToArray();
+        var preparation = CampaignReplayPreparation.Prepare(
+            eventBytes[0],
+            Cna1979SyntheticContentResolver.Instance);
+        Assert.True(preparation.IsPrepared);
+        var freshEvents = eventBytes
+            .Select(bytes => CampaignEventSerializer.Deserialize(bytes))
+            .ToArray();
+
+        Assert.Equal(eventBytes, freshEvents.Select(CampaignEventSerializer.Serialize));
+
+        for (var count = 1; count <= evidence.Events.Count; count++)
+        {
+            var original = CampaignProjector.Replay(
+                evidence.Events.Take(count),
+                evidence.Context);
+            var fresh = CampaignProjector.Replay(
+                freshEvents.Take(count),
+                preparation.Context!.Content);
+
+            Assert.Equal(
+                CampaignSnapshotSerializer.Serialize(original),
+                CampaignSnapshotSerializer.Serialize(fresh));
+
+            foreach (var audience in Enum.GetValues<CampaignActionAudience>())
+            {
+                var originalActions = CampaignLegalActions.Query(
+                    new CampaignAuthorityHandle(original, evidence.Context),
+                    audience);
+                var freshActions = CampaignLegalActions.Query(
+                    new CampaignAuthorityHandle(fresh, preparation.Context.Content),
+                    audience);
+                Assert.True(originalActions.IsSuccessful);
+                Assert.True(freshActions.IsSuccessful);
+                Assert.Equal(
+                    CampaignLegalActionSerializer.Serialize(originalActions.ActionSet!),
+                    CampaignLegalActionSerializer.Serialize(freshActions.ActionSet!));
+            }
+        }
+    }
+
     [Fact]
     public void ExactCreationBytesPrepareReplayContextAndProjectCanonically()
     {
@@ -23,9 +79,156 @@ public sealed class CampaignReplayPreparationTests
         Assert.NotNull(result.Context);
         Assert.Equal(created.RulesetHash, result.Context.RulesetHash);
         Assert.Equal(created.Setup.Content, result.Context.Content.Selection);
+        var expected = CampaignTestHarness.Replay([created]);
+        var projected = CampaignProjector.Replay([created], result.Context.Content);
+        Assert.Equal(created.Setup.StageEntry, projected.Setup.StageEntry);
+        Assert.Equal(expected, projected);
+        Assert.Equal(6, projected.ContractVersion);
+    }
+
+    [Fact]
+    public void CreationAndSnapshotBytesRequireExactEmbeddedStageEntryPolicy()
+    {
+        var created = CreateEvent();
+        var projected = CampaignTestHarness.Replay([created]);
+        var creationJson = Encoding.UTF8.GetString(
+            CampaignEventSerializer.Serialize(created));
+        var snapshotJson = Encoding.UTF8.GetString(
+            CampaignSnapshotSerializer.Serialize(projected));
+        var policyJson = Encoding.UTF8.GetString(
+            CampaignStageEntryPolicyCodec.SerializeCanonical(created.Setup.StageEntry));
+        var embeddedPolicy = $"\"stageEntry\":{policyJson},";
+
+        Assert.Contains(
+            $"\"weather\":{{{GetWeatherBody(created)}}},{embeddedPolicy}\"content\":",
+            creationJson,
+            StringComparison.Ordinal);
         Assert.Equal(
-            CampaignTestHarness.Replay([created]),
-            CampaignProjector.Replay([created], result.Context.Content));
+            created.Setup.StageEntry,
+            CampaignSnapshotSerializer.Deserialize(
+                Encoding.UTF8.GetBytes(snapshotJson)).Setup.StageEntry);
+
+        string[] invalidCreation =
+        [
+            creationJson.Replace(embeddedPolicy, string.Empty, StringComparison.Ordinal),
+            creationJson.Replace(
+                "\"organization\":\"explicit-none\"",
+                "\"organization\":\"has-obligations\"",
+                StringComparison.Ordinal),
+            creationJson.Replace(
+                $"\"gameTurn\":{created.Setup.StageEntry.GameTurn},\"operationStage\":1",
+                $"\"gameTurn\":{created.Setup.StageEntry.GameTurn + 1},\"operationStage\":1",
+                StringComparison.Ordinal),
+            creationJson.Replace(
+                $"\"gameTurn\":{created.Setup.StageEntry.GameTurn},\"operationStage\":1",
+                $"\"operationStage\":1,\"gameTurn\":{created.Setup.StageEntry.GameTurn}",
+                StringComparison.Ordinal),
+            creationJson.Replace(
+                "stage-entry.no-obligations.v1",
+                "stage-entry.wrong.v1",
+                StringComparison.Ordinal),
+        ];
+
+        Assert.All(invalidCreation, json =>
+        {
+            var resolver = new CountingResolver();
+            var result = CampaignReplayPreparation.Prepare(
+                Encoding.UTF8.GetBytes(json),
+                resolver);
+            Assert.Equal(
+                CampaignReplayPreparationRejectionReason.InvalidHistory,
+                result.RejectionReason);
+            Assert.Equal(0, resolver.CallCount);
+        });
+
+        string[] invalidSnapshots =
+        [
+            snapshotJson.Replace(embeddedPolicy, string.Empty, StringComparison.Ordinal),
+            snapshotJson.Replace(
+                "\"organization\":\"explicit-none\"",
+                "\"organization\":\"has-obligations\"",
+                StringComparison.Ordinal),
+            snapshotJson.Replace(
+                "{\"contractVersion\":6,",
+                "{\"contractVersion\":5,",
+                StringComparison.Ordinal),
+        ];
+
+        Assert.All(invalidSnapshots, json => Assert.Throws<JsonException>(() =>
+            CampaignSnapshotSerializer.Deserialize(Encoding.UTF8.GetBytes(json))));
+    }
+
+    [Fact]
+    public void ExactCatalogCheckpointStatesOneThroughTenAreLocallyValid()
+    {
+        var snapshots = ReachOrganizationSnapshots();
+        var organization = snapshots[^1];
+        var positions = Cna1979LandSequence.CreateTurn(organization.GameTurn);
+
+        snapshots.AddRange(Enumerable.Range(7, 4).Select(stateVersion =>
+            organization with
+            {
+                StateVersion = stateVersion,
+                SequencePosition = positions[stateVersion - 1],
+            }));
+
+        Assert.Equal(Enumerable.Range(1, 10).Select(value => (long)value),
+            snapshots.Select(snapshot => snapshot.StateVersion));
+        Assert.All(snapshots, snapshot => Assert.True(
+            CampaignSnapshotValidator.IsValid(
+                snapshot,
+                CampaignTestHarness.ContextFor(snapshot))));
+
+        var forged = snapshots[^1] with { SequencePosition = positions[8] };
+        Assert.False(CampaignSnapshotValidator.IsLocallyValid(forged));
+    }
+
+    [Fact]
+    public void SelfConsistentRehashedHybridSetupRejectsBeforeContentResolution()
+    {
+        var created = CreateEvent();
+        var setup = created.Setup;
+        var hybridHash = CampaignSetupHash.Calculate(
+            setup.SchemaVersion,
+            setup.SetupId,
+            false,
+            setup.InitialGameTurn,
+            setup.InitialInitiative,
+            setup.OpeningPreamble,
+            setup.Weather,
+            setup.StageEntry,
+            setup.Content,
+            setup.Sources);
+        var hybrid = new CampaignSetupSnapshot(
+            setup.SchemaVersion,
+            setup.SetupId,
+            hybridHash,
+            false,
+            setup.InitialGameTurn,
+            setup.InitialInitiative,
+            setup.OpeningPreamble,
+            setup.Weather,
+            setup.StageEntry,
+            setup.Content,
+            setup.Sources);
+        var canonicalCreation = Encoding.UTF8.GetString(
+            CampaignEventSerializer.Serialize(created));
+        var forgedCreation = canonicalCreation
+            .Replace(setup.SetupHash, hybridHash, StringComparison.Ordinal)
+            .Replace("\"isSynthetic\":true", "\"isSynthetic\":false",
+                StringComparison.Ordinal);
+        var resolver = new CountingResolver();
+
+        var preparation = CampaignReplayPreparation.Prepare(
+            Encoding.UTF8.GetBytes(forgedCreation),
+            resolver);
+        var forgedSnapshot = CampaignTestHarness.Replay([created]) with { Setup = hybrid };
+
+        Assert.Equal(
+            CampaignReplayPreparationRejectionReason.InvalidHistory,
+            preparation.RejectionReason);
+        Assert.Equal(0, resolver.CallCount);
+        Assert.False(CampaignSnapshotValidator.IsLocallyValid(forgedSnapshot));
     }
 
     [Fact]
@@ -144,6 +347,64 @@ public sealed class CampaignReplayPreparationTests
                 setup.Content.ScenarioId),
             Cna1979SyntheticContentResolver.Instance);
         return Assert.IsType<CampaignCreated>(Assert.Single(result.Events));
+    }
+
+    private static List<CampaignSnapshot> ReachOrganizationSnapshots()
+    {
+        var created = CreateEvent();
+        var snapshots = new List<CampaignSnapshot>();
+        var history = new List<CampaignEvent> { created };
+        var snapshot = CampaignTestHarness.Replay(history);
+        snapshots.Add(snapshot);
+
+        CampaignCommand[] openingCommands =
+        [
+            new ResolveInitiative(1, snapshot.SequencePosition.PositionId),
+            new ResolveNoObligationNavalConvoySchedule(
+                2,
+                "land.position.naval-convoy.schedule"),
+            new ResolveNoObligationTacticalShipping(
+                3,
+                "land.position.naval-convoy.tactical-shipping"),
+        ];
+
+        foreach (var command in openingCommands)
+        {
+            var campaignEvent = Assert.Single(
+                CampaignTestHarness.Decide(snapshot, command).Events);
+            history.Add(campaignEvent);
+            snapshot = CampaignTestHarness.Replay(history);
+            snapshots.Add(snapshot);
+        }
+
+        var declaration = Assert.Single(CampaignTestHarness.Decide(
+            snapshot,
+            new DeclareInitiativeOrder(
+                4,
+                snapshot.SequencePosition.PositionId,
+                1,
+                snapshot.InitiativeHolder!.Value,
+                InitiativeOrderChoice.ActFirst)).Events);
+        history.Add(declaration);
+        snapshot = CampaignTestHarness.Replay(history);
+        snapshots.Add(snapshot);
+
+        var weather = Assert.Single(CampaignTestHarness.Decide(
+            snapshot,
+            new ResolveWeather(5, snapshot.SequencePosition.PositionId)).Events);
+        history.Add(weather);
+        snapshots.Add(CampaignTestHarness.Replay(history));
+        return snapshots;
+    }
+
+    private static string GetWeatherBody(CampaignCreated created)
+    {
+        var creationJson = Encoding.UTF8.GetString(
+            CampaignEventSerializer.Serialize(created));
+        var start = creationJson.IndexOf("\"weather\":{", StringComparison.Ordinal)
+            + "\"weather\":{".Length;
+        var end = creationJson.IndexOf("},\"stageEntry\":", start, StringComparison.Ordinal);
+        return creationJson[start..end];
     }
 
     private sealed class RejectingResolver(ContentCatalogRejectionReason reason)

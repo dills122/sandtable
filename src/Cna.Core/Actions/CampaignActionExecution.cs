@@ -120,7 +120,7 @@ internal static class CampaignActionExecution
         return CampaignActionExecutionResult.Accepted(acceptedEvent, successor, receipt);
     }
 
-    private static CampaignCommand ToCommand(
+    internal static CampaignCommand ToCommand(
         CampaignSnapshot snapshot,
         CampaignActionAudience audience,
         CampaignActionCandidate candidate) => candidate switch
@@ -137,6 +137,25 @@ internal static class CampaignActionExecution
                     snapshot.SequencePosition.PositionId),
             ResolveWeatherAction when audience == CampaignActionAudience.System =>
                 new ResolveWeather(snapshot.StateVersion, snapshot.SequencePosition.PositionId),
+            ResolveNoObligationOrganizationAction when audience == CampaignActionAudience.System =>
+                new ResolveNoObligationOrganization(
+                    snapshot.StateVersion,
+                    snapshot.SequencePosition.PositionId),
+            ResolveNoObligationNavalConvoyArrivalAction when audience
+                == CampaignActionAudience.System =>
+                new ResolveNoObligationNavalConvoyArrival(
+                    snapshot.StateVersion,
+                    snapshot.SequencePosition.PositionId),
+            ResolveNoObligationFleetAssignmentAction when audience
+                == CampaignActionAudience.System =>
+                new ResolveNoObligationFleetAssignment(
+                    snapshot.StateVersion,
+                    snapshot.SequencePosition.PositionId),
+            ResolveNoObligationFleetRepairAction when audience
+                == CampaignActionAudience.System =>
+                new ResolveNoObligationFleetRepair(
+                    snapshot.StateVersion,
+                    snapshot.SequencePosition.PositionId),
             ActFirstAction first => new DeclareInitiativeOrder(
                 snapshot.StateVersion,
                 snapshot.SequencePosition.PositionId,

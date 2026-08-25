@@ -78,6 +78,7 @@ public sealed class CampaignReplayTests
             valid.Setup.InitialInitiative,
             valid.Setup.OpeningPreamble,
             valid.Setup.Weather,
+            valid.Setup.StageEntry,
             valid.Setup.Content,
             valid.Setup.Sources);
 
@@ -98,6 +99,7 @@ public sealed class CampaignReplayTests
             valid.Setup.InitialInitiative,
             valid.Setup.OpeningPreamble,
             valid.Setup.Weather,
+            valid.Setup.StageEntry,
             valid.Setup.Content,
             valid.Setup.Sources);
         var forged = valid with
@@ -131,10 +133,10 @@ public sealed class CampaignReplayTests
         var execution = ExecuteCreation(12345);
         var created = Assert.IsType<CampaignCreated>(Assert.Single(execution.Events));
         var eventJson = Encoding.UTF8.GetString(CampaignEventSerializer.Serialize(created))
-            .Replace("{\"contractVersion\":4,", "{\"contractVersion\":3,", StringComparison.Ordinal);
+            .Replace("{\"contractVersion\":5,", "{\"contractVersion\":4,", StringComparison.Ordinal);
         var snapshotJson = Encoding.UTF8.GetString(
                 CampaignSnapshotSerializer.Serialize(execution.Snapshot))
-            .Replace("{\"contractVersion\":5,", "{\"contractVersion\":4,", StringComparison.Ordinal);
+            .Replace("{\"contractVersion\":6,", "{\"contractVersion\":5,", StringComparison.Ordinal);
 
         Assert.Throws<JsonException>(() =>
             CampaignEventSerializer.Deserialize(Encoding.UTF8.GetBytes(eventJson)));
@@ -164,12 +166,12 @@ public sealed class CampaignReplayTests
         var canonicalJson = Encoding.UTF8.GetString(
             CampaignSnapshotSerializer.Serialize(execution.Snapshot));
         var extra = canonicalJson.Replace(
-            "{\"contractVersion\":5,",
-            "{\"extra\":true,\"contractVersion\":5,",
+            "{\"contractVersion\":6,",
+            "{\"extra\":true,\"contractVersion\":6,",
             StringComparison.Ordinal);
         var reordered = canonicalJson.Replace(
-            "{\"contractVersion\":5,\"campaignId\":\"campaign-1\",",
-            "{\"campaignId\":\"campaign-1\",\"contractVersion\":5,",
+            "{\"contractVersion\":6,\"campaignId\":\"campaign-1\",",
+            "{\"campaignId\":\"campaign-1\",\"contractVersion\":6,",
             StringComparison.Ordinal);
 
         Assert.Throws<JsonException>(() =>
@@ -194,17 +196,17 @@ public sealed class CampaignReplayTests
     }
 
     [Fact]
-    public void CreationSnapshotUsesTheExactCanonicalVersion5Shape()
+    public void CreationSnapshotUsesTheExactCanonicalVersion6Shape()
     {
         var execution = ExecuteCreation(12345);
         var actual = Encoding.UTF8.GetString(
             CampaignSnapshotSerializer.Serialize(execution.Snapshot));
-        var expected = "{\"contractVersion\":5,\"campaignId\":\"campaign-1\"," +
+        var expected = "{\"contractVersion\":6,\"campaignId\":\"campaign-1\"," +
             "\"stateVersion\":1,\"rulesetHash\":\"" +
             Cna1979Ruleset.Manifest.Hash +
-            "\",\"setup\":{\"schemaVersion\":4," +
+            "\",\"setup\":{\"schemaVersion\":5," +
             "\"setupId\":\"rules-lab.initiative.predetermined\"," +
-            "\"setupHash\":\"sha256:5ecf84d21a7ff95112b9b662915f6858926532d30be5a0eee3f1a45752fdc80a\"," +
+            "\"setupHash\":\"sha256:c1688f8869ca66182b87f487ec34edbef617ff1158f7d8b0d3101fe3993978ef\"," +
             "\"isSynthetic\":true,\"initialGameTurn\":1," +
             "\"initialInitiative\":{\"kind\":\"predetermined\",\"holder\":\"axis\"}," +
             "\"openingPreamble\":{\"contractVersion\":1," +
@@ -215,6 +217,13 @@ public sealed class CampaignReplayTests
             "\"kind\":\"no-immediate-weather-effect-subjects\"," +
             "\"sources\":[{\"sourceId\":\"sandtable-rules-lab\"," +
             "\"locator\":\"weather.no-immediate-effect-subjects.v1\"}]}," +
+            "\"stageEntry\":{\"contractVersion\":1,\"gameTurn\":1," +
+            "\"operationStage\":1,\"organization\":\"explicit-none\"," +
+            "\"navalConvoyArrival\":\"explicit-none\"," +
+            "\"fleetAssignment\":\"explicit-none\"," +
+            "\"fleetRepair\":\"explicit-none\",\"sources\":[{" +
+            "\"sourceId\":\"sandtable-rules-lab\"," +
+            "\"locator\":\"stage-entry.no-obligations.v1\"}]}," +
             "\"content\":{\"schemaVersion\":2,\"formatId\":\"sandtable.content-json.v1\"," +
             "\"packId\":\"rules-lab.content.movement-contact.v1\",\"rulesetId\":\"cna-1979.1\"," +
             "\"hash\":\"sha256:53d5b64f647251e3ac366c65f4ad05cae766afd7b70ee331d463e801496e2a99\"," +

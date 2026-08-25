@@ -7,12 +7,15 @@ namespace Cna.Core.Rules;
 public static class Cna1979Ruleset
 {
     public const string RulesetId = "cna-1979.1";
-    public const int ContractVersion = 3;
+    public const int ContractVersion = 4;
 
     private const string LandSequenceArtifactId = "cna-1979.1.land-sequence";
 
     internal const string EmptyOpeningConvoyRulingId =
         "cna-1979.1.ruling.explicit-empty-opening-convoy-resolution";
+
+    internal const string ExplicitEmptyStageEntryRulingId =
+        "cna-1979.1.ruling.explicit-empty-stage-entry-resolution";
 
     private static readonly RuleReference[] LandSequenceSources =
     [
@@ -109,7 +112,11 @@ public static class Cna1979Ruleset
                 Cna1979RandomProcedure.CreateArtifact(),
                 Cna1979Weather.CreateArtifact(),
             ],
-            [CreateEmptyOpeningConvoyRuling(), Cna1979Weather.CreateSeasonBoundaryRuling()]);
+            [
+                CreateEmptyOpeningConvoyRuling(),
+                CreateExplicitEmptyStageEntryRuling(),
+                Cna1979Weather.CreateSeasonBoundaryRuling(),
+            ]);
     }
 
     private static Ruling CreateEmptyOpeningConvoyRuling() => new(
@@ -128,6 +135,30 @@ public static class Cna1979Ruleset
             new RuleReference(
                 "sandtable-rules-lab",
                 "opening-preamble.no-naval-convoy-obligations.v1"),
+        ]);
+
+    private static Ruling CreateExplicitEmptyStageEntryRuling() => new(
+        ExplicitEmptyStageEntryRulingId,
+        "cna-1979.1.conflict.empty-stage-entry-phase",
+        [
+            "reject-empty-stage-entry-as-unsupported",
+            "resolve-explicitly-admitted-empty-stage-entry",
+        ],
+        "resolve-explicitly-admitted-empty-stage-entry",
+        [
+            "STG-AC-001",
+            "STG-AC-002",
+            "STG-AC-004",
+            "STG-AC-005",
+            "STG-AC-006",
+            "STG-AC-009",
+            "STG-AC-010",
+        ],
+        [
+            new RuleReference("spi-1979-land-rules", "5.2"),
+            new RuleReference(
+                "sandtable-rules-lab",
+                "stage-entry.no-obligations.v1"),
         ]);
 
     private static string FormatSha256(ReadOnlySpan<byte> content) =>

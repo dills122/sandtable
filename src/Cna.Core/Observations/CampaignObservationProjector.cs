@@ -59,6 +59,9 @@ internal static class CampaignObservationProjector
             })
             .ToArray();
         var sequence = snapshot.SequencePosition;
+        var activeSide = sequence.ActorRole == LandActorRole.FirstActingSide
+            ? FirstActingSideResolver.Resolve(snapshot)
+            : sequence.ActiveSide;
         var position = new CampaignObservationPosition(
             sequence.PositionId,
             sequence.GameTurn,
@@ -68,7 +71,7 @@ internal static class CampaignObservationProjector
             sequence.SegmentId,
             sequence.StepId,
             sequence.ActorRole,
-            sequence.ActiveSide,
+            activeSide,
             snapshot.InitiativeHolder);
         var observation = new CampaignObservation(
             CampaignObservation.CurrentContractVersion,

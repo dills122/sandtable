@@ -1,8 +1,13 @@
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using Cna.Core.Actions;
+using Cna.Core.Campaigns;
+using Cna.Core.Exercises;
 using Cna.Core.Rules;
 using Cna.ExerciseRunner.Artifacts;
+using Cna.ExerciseRunner.Controllers;
 using Cna.ExerciseRunner.Execution;
 
 namespace Cna.ExerciseRunner.Tests.Artifacts;
@@ -53,7 +58,7 @@ public sealed class ExerciseEvidenceWriterTests
             "0684d3c8a1db50e2afd6521163d0fc45013155653ee270014d6274d1478793c1",
             Hash(canonicalEvents));
         Assert.Equal(
-            "4379bc5b7a900d1ed28f3b01110d3586765f81a2345121d1b6bd2a3137e0180a",
+            "168cb6d41230cfe15cef5f9db3040ecacc6822344fc05b387615efae24c095e3",
             Hash(stepEvidence));
         Assert.Equal(
             "afb8450019eb504713f6d5584f2e9f7b483804a26632eccf3afff5fa4c4de38f",
@@ -162,7 +167,10 @@ public sealed class ExerciseEvidenceWriterTests
         var manifest = ExerciseManifestCodecTests.Create(
             terminalBoundary: "land.position.never",
             detail: ExerciseDetail.Forensic);
-        var execution = ExerciseExecutor.Execute(manifest, CancellationToken.None);
+        var execution = ExerciseExecutor.Execute(
+            manifest,
+            NoActiveAudienceRuntime.Instance,
+            CancellationToken.None);
 
         var diagnostics = ExerciseDiagnosticsWriter.Write(
             manifest,
@@ -176,7 +184,7 @@ public sealed class ExerciseEvidenceWriterTests
         Assert.Equal(3, lines.Count(line => line.Contains(
             "\"event\":\"exercise.query-evaluated\"",
             StringComparison.Ordinal)
-            && line.Contains("\"stepOrdinal\":5", StringComparison.Ordinal)));
+            && line.Contains("\"stepOrdinal\":0", StringComparison.Ordinal)));
         Assert.Contains(lines, line => line.Contains(
             "\"event\":\"exercise.controller-selection-failed\"",
             StringComparison.Ordinal)
@@ -184,9 +192,9 @@ public sealed class ExerciseEvidenceWriterTests
         Assert.Contains(lines, line => line.Contains(
             "\"check\":\"active-audience-cardinality\",\"status\":\"failed\"",
             StringComparison.Ordinal)
-            && line.Contains("\"stepOrdinal\":5", StringComparison.Ordinal)
+            && line.Contains("\"stepOrdinal\":0", StringComparison.Ordinal)
             && line.Contains(
-                "\"positionId\":\"land.position.operation-1.organization\"",
+                "\"positionId\":\"land.position.initiative-determination\"",
                 StringComparison.Ordinal));
     }
 
@@ -296,6 +304,56 @@ public sealed class ExerciseEvidenceWriterTests
         [new BuildArtifactIdentity("runner.dll", 12, Sha('d'))]);
 
     private static string Sha(char value) => $"sha256:{new string(value, 64)}";
+
+    private static CampaignLegalActionSet CreateEmptyActionSet(CampaignLegalActionSet set)
+    {
+        var constructor = Assert.Single(typeof(CampaignLegalActionSet).GetConstructors(
+            BindingFlags.Instance | BindingFlags.NonPublic),
+            value => value.GetParameters().Length == 6);
+        return Assert.IsType<CampaignLegalActionSet>(constructor.Invoke(
+        [
+            set.CampaignId,
+            set.StateVersion,
+            set.RulesetHash,
+            set.PositionId,
+            set.Audience,
+            Array.Empty<CampaignActionCandidate>(),
+        ]));
+    }
+
+    private sealed class NoActiveAudienceRuntime : IExerciseExecutionRuntime
+    {
+        internal static NoActiveAudienceRuntime Instance { get; } = new();
+
+        private readonly CoreExerciseExecutionRuntime inner = CoreExerciseExecutionRuntime.Instance;
+
+        public ExerciseStartResult Begin(CampaignCreationRequest request) => inner.Begin(request);
+
+        public ExerciseCheckpoint QueryCheckpoint(ExerciseSession session) =>
+            inner.QueryCheckpoint(session);
+
+        public ExerciseRuntimeQueryResult Query(
+            ExerciseSession session,
+            CampaignActionAudience audience)
+        {
+            var set = inner.Query(session, audience).ActionSet!;
+            return new ExerciseRuntimeQueryResult(
+                true,
+                CreateEmptyActionSet(set));
+        }
+
+        public ExerciseControllerSelection Select(
+            ExerciseControllerManifest policies,
+            IReadOnlyList<ExerciseControllerActionSet> actionSets) =>
+            inner.Select(policies, actionSets);
+
+        public ExerciseRuntimeStepResult Submit(
+            ExerciseSession session,
+            CampaignActionSubmission submission) => inner.Submit(session, submission);
+
+        public ReconstructionProof Reconstruct(ExerciseSession session) =>
+            inner.Reconstruct(session);
+    }
 
     private sealed record DetailRun(string[] Evidence, byte[] Diagnostics);
 }

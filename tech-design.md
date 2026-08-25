@@ -574,7 +574,8 @@ counter stream consumed by authoritative rules. `Cna.Core.Campaigns` uses pure c
 and immutable events to create a campaign against the canonical manifest, resolve predetermined or
 contested Initiative Determination, explicitly resolve the two admitted no-obligation Naval Convoy
 checkpoints, record the pair-keyed Operation Stage 1 first/second actor order, resolve deterministic
-Weather, and stop at Organization. It validates
+Weather, resolve the four admitted empty Organization/Naval Convoy Arrival/Fleet obligations through
+distinct commands and events, and stop at Reserve. It validates
 internal snapshots before adjudication and recomputes events during projection rather than trusting
 caller-supplied outcomes or provenance. Canonical snapshot and event serialization plus the
 internal replay harness prove reconstruction of accepted campaign history without ambient
@@ -613,11 +614,11 @@ mutable initial element locations into campaign history. The Umpire performs no 
 persistence I/O, and replay requires the same exact content plus the matching executable rules
 manifest. The [Campaign World specification](docs/specs/campaign-world-v1.md) and
 [technical design](docs/design/campaign-world-v1.md) document the superseded version-3 campaign
-contract and schema-2 setup. Weather Determination v1 cuts current authority over to snapshot
-contract 5, ruleset manifest contract 3, setup schema 4, Content Pack schema 2, explicit
-opening-preamble and Weather policies, pair-keyed actor-order/Weather history, and an opaque public
-handle while preserving resident exact-content context internally. Organization remains the next
-unsupported mandatory mechanic; no
+contract and schema-2 setup. Weather Determination v1 established explicit opening-preamble and
+Weather policies plus pair-keyed actor-order/Weather history. Operation-Stage Entry v1 cuts current
+authority over to snapshot contract 6, ruleset manifest contract 4, setup schema 5, and Content Pack
+schema 2; it adds an explicit stage-entry policy while preserving resident exact-content context
+internally. Only the four exact empty obligations are admitted, and authority stops at Reserve. No
 generic sequence bypass exists. See the Content Pack v1
 [research](docs/research/content-pack-v1-spike.md),
 [specification](docs/specs/content-pack-v1.md), and
@@ -638,16 +639,18 @@ v1 [research](docs/research/observation-and-fog-boundary-spike.md),
 [technical design](docs/design/campaign-observation-v1.md).
 
 Legal Actions v1 lives in `Cna.Core.Actions` and is the only public campaign-mutation path after
-creation. System actions resolve Initiative, each admitted empty convoy checkpoint, and Weather
-separately.
+creation. System actions resolve Initiative, each admitted empty convoy checkpoint, Weather, and
+each of the four admitted empty stage-entry obligations separately.
 At Operation Stage 1 Initiative Declaration, an observation-only generator gives the holder exactly
 `act-first` and `act-last`; the opponent and system receive empty sets. Submission binds campaign,
 state version, position, audience, and deterministic action ID, then re-derives exact-audience
 membership before translating to an internal mechanic command. Success returns a scalar receipt and
-successor opaque `CampaignAuthorityHandle`, never authority state. Weather submission reaches only
-the same stage's Organization barrier. `Cna.DecisionWorker` has no Core
-reference; `Cna.OrleansHost` is the sole production Core consumer and receives no raw replay or
-projection access. See the [research](docs/research/turn-preamble-action-boundary-spike.md),
+successor opaque `CampaignAuthorityHandle`, never authority state. Fleet Repair completion reaches
+Reserve with authoritative `ActiveSide` unset; observation and legal-action projection derive the
+audience from the recorded actor order. `Cna.DecisionWorker` has no Core reference.
+`Cna.OrleansHost` owns campaign hosting, while `Cna.ExerciseRunner` is the separate trusted local
+instrumentation consumer; neither receives a public raw replay or projection mutation seam. See the
+[research](docs/research/turn-preamble-action-boundary-spike.md),
 [specification](docs/specs/legal-actions-v1.md), and
 [technical design](docs/design/legal-actions-v1.md).
 
@@ -681,12 +684,11 @@ remain explicitly deferred. See the retained
 [artifact research](docs/research/exercise-evidence-artifact-spike.md),
 [reproducibility research](docs/research/exercise-reproducibility-and-pairing-spike.md), governing
 [specification](docs/specs/exercise-harness-v1.md), and
-[technical design](docs/design/exercise-harness-v1.md). The next authoritative-engine planning
-package is the [Operation-Stage Entry research](docs/research/operation-stage-entry-spike.md),
-proposed [specification](docs/specs/operation-stage-entry-v1.md), and proposed
-[technical design](docs/design/operation-stage-entry-v1.md). Its final planning review is Ready,
-but owner approval and the Task 001 contract freeze still gate implementation. Paired comparison remains
-later and does not block that engine work.
+[technical design](docs/design/exercise-harness-v1.md). The implemented Operation-Stage Entry
+package retains its [research](docs/research/operation-stage-entry-spike.md),
+[specification](docs/specs/operation-stage-entry-v1.md), and
+[technical design](docs/design/operation-stage-entry-v1.md). Reserve is the next authoritative-engine
+package. Paired comparison remains later and does not block that engine work.
 
 [1]: https://learn.microsoft.com/en-us/dotnet/orleans/grains/external-tasks-and-grains?utm_source=chatgpt.com "External tasks and grains - .NET | Microsoft Learn"
 [2]: https://learn.microsoft.com/en-us/aspnet/core/grpc/performance?view=aspnetcore-10.0&utm_source=chatgpt.com "Performance best practices with gRPC | Microsoft Learn"

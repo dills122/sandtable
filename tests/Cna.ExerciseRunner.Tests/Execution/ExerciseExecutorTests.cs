@@ -1,3 +1,4 @@
+using System.Reflection;
 using Cna.Core.Actions;
 using Cna.Core.Campaigns;
 using Cna.Core.Exercises;
@@ -71,8 +72,14 @@ public sealed class ExerciseExecutorTests
     [Fact]
     public void ZeroActiveAudiencesFailClosedWithOrderedCheckEvidence()
     {
-        var result = Execute(ExerciseManifestCodecTests.Create(
-            terminalBoundary: "land.position.unreachable"));
+        var runtime = new FaultingRuntime
+        {
+            QueryOverride = (_, result) => WithoutCandidates(result),
+        };
+        var result = ExerciseExecutor.Execute(
+            ExerciseManifestCodecTests.Create(terminalBoundary: "land.position.unreachable"),
+            runtime,
+            TestContext.Current.CancellationToken);
 
         Assert.False(result.IsSucceeded);
         Assert.Equal(ExerciseFailureCategory.NoUniqueLegalAction, result.FailureCategory);
@@ -399,6 +406,31 @@ public sealed class ExerciseExecutorTests
 
     private static ExerciseExecutionResult Execute(ExerciseManifest manifest) =>
         ExerciseExecutor.Execute(manifest, TestContext.Current.CancellationToken);
+
+    private static ExerciseRuntimeQueryResult WithoutCandidates(
+        ExerciseRuntimeQueryResult result)
+    {
+        var set = result.ActionSet!;
+        return new ExerciseRuntimeQueryResult(
+            true,
+            CreateEmptyActionSet(set));
+    }
+
+    private static CampaignLegalActionSet CreateEmptyActionSet(CampaignLegalActionSet set)
+    {
+        var constructor = Assert.Single(typeof(CampaignLegalActionSet).GetConstructors(
+            BindingFlags.Instance | BindingFlags.NonPublic),
+            value => value.GetParameters().Length == 6);
+        return Assert.IsType<CampaignLegalActionSet>(constructor.Invoke(
+        [
+            set.CampaignId,
+            set.StateVersion,
+            set.RulesetHash,
+            set.PositionId,
+            set.Audience,
+            Array.Empty<CampaignActionCandidate>(),
+        ]));
+    }
 
     private static void AssertCorrelatedFailedDecisionDiagnostics(
         ExerciseManifest manifest,

@@ -134,6 +134,7 @@ public sealed class CampaignTests
             valid.Setup.InitialInitiative,
             valid.Setup.OpeningPreamble,
             valid.Setup.Weather,
+            valid.Setup.StageEntry,
             valid.Setup.Content,
             valid.Setup.Sources);
 

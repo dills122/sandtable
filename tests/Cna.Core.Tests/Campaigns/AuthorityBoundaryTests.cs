@@ -1,5 +1,6 @@
 using System.Reflection;
 using Cna.Core.Campaigns;
+using Cna.Core.Setups;
 
 namespace Cna.Core.Tests.Campaigns;
 
@@ -25,6 +26,19 @@ public sealed class AuthorityBoundaryTests
             typeof(CampaignCreationExecution),
             typeof(Cna.Core.Actions.CampaignActionExecution),
             typeof(InitiativeResolver),
+            typeof(CampaignStageEntryPolicy),
+            typeof(CampaignStageEntryPolicyCodec),
+            typeof(FirstActingSideResolver),
+            typeof(StageEntryEventFactory),
+            typeof(StageEntryResolved),
+            typeof(ResolveNoObligationOrganization),
+            typeof(ResolveNoObligationNavalConvoyArrival),
+            typeof(ResolveNoObligationFleetAssignment),
+            typeof(ResolveNoObligationFleetRepair),
+            typeof(NoObligationOrganizationResolved),
+            typeof(NoObligationNavalConvoyArrivalResolved),
+            typeof(NoObligationFleetAssignmentResolved),
+            typeof(NoObligationFleetRepairResolved),
         ];
 
         Assert.All(forbidden, type =>
@@ -57,6 +71,43 @@ public sealed class AuthorityBoundaryTests
             .ToArray();
 
         Assert.Equal(["Cna.ExerciseRunner", "Cna.OrleansHost"], references);
+    }
+
+    [Fact]
+    public void DecisionAndIntelligenceSourceDoNotNameStageEntryAuthority()
+    {
+        var root = FindRepositoryRoot();
+        string[] projectDirectories =
+        [
+            "Cna.DecisionWorker",
+            "Cna.Intelligence.Contracts",
+            "Cna.Intelligence.Gateway",
+        ];
+        string[] forbiddenNames =
+        [
+            nameof(CampaignStageEntryPolicy),
+            nameof(FirstActingSideResolver),
+            nameof(StageEntryResolved),
+            nameof(ResolveNoObligationOrganization),
+            nameof(ResolveNoObligationNavalConvoyArrival),
+            nameof(ResolveNoObligationFleetAssignment),
+            nameof(ResolveNoObligationFleetRepair),
+            nameof(NoObligationOrganizationResolved),
+            nameof(NoObligationNavalConvoyArrivalResolved),
+            nameof(NoObligationFleetAssignmentResolved),
+            nameof(NoObligationFleetRepairResolved),
+        ];
+
+        var offenders = projectDirectories
+            .SelectMany(project => Directory.GetFiles(
+                Path.Combine(root, "src", project),
+                "*.cs",
+                SearchOption.AllDirectories))
+            .Where(path => forbiddenNames.Any(name =>
+                File.ReadAllText(path).Contains(name, StringComparison.Ordinal)))
+            .ToArray();
+
+        Assert.Empty(offenders);
     }
 
     private static string FindRepositoryRoot()

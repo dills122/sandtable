@@ -12,7 +12,7 @@ internal sealed record CreateCampaign(
     string SetupHash,
     string ContentPackId,
     string ContentHash,
-    string ScenarioId) : CampaignCommand(4, 0);
+    string ScenarioId) : CampaignCommand(5, 0);
 
 internal sealed record CompleteCurrentSequenceStep(
     long ExpectedStateVersion,

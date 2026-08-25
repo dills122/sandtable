@@ -14,6 +14,7 @@ internal sealed record CampaignSetupDefinition
         InitiativePolicy initialInitiative,
         CampaignOpeningPreamblePolicy openingPreamble,
         CampaignWeatherPolicy weather,
+        CampaignStageEntryPolicy stageEntry,
         CampaignContentSelection content,
         IReadOnlyList<RuleReference> sources)
     {
@@ -29,6 +30,7 @@ internal sealed record CampaignSetupDefinition
         ArgumentNullException.ThrowIfNull(initialInitiative);
         ArgumentNullException.ThrowIfNull(openingPreamble);
         ArgumentNullException.ThrowIfNull(weather);
+        ArgumentNullException.ThrowIfNull(stageEntry);
         ArgumentNullException.ThrowIfNull(content);
 
         SchemaVersion = schemaVersion;
@@ -39,6 +41,7 @@ internal sealed record CampaignSetupDefinition
         InitialInitiative = initialInitiative;
         OpeningPreamble = openingPreamble;
         Weather = weather;
+        StageEntry = stageEntry;
         Content = content;
         Sources = CopySources(sources);
         Hash = CampaignSetupHash.Calculate(this);
@@ -60,6 +63,8 @@ internal sealed record CampaignSetupDefinition
 
     internal CampaignWeatherPolicy Weather { get; }
 
+    internal CampaignStageEntryPolicy StageEntry { get; }
+
     public CampaignContentSelection Content { get; }
 
     public IReadOnlyList<RuleReference> Sources { get; }
@@ -77,6 +82,7 @@ internal sealed record CampaignSetupDefinition
             && InitialInitiative == other.InitialInitiative
             && OpeningPreamble == other.OpeningPreamble
             && Weather == other.Weather
+            && StageEntry == other.StageEntry
             && Content == other.Content
             && Sources.SequenceEqual(other.Sources)
             && string.Equals(Hash, other.Hash, StringComparison.Ordinal));
@@ -92,6 +98,7 @@ internal sealed record CampaignSetupDefinition
         hash.Add(InitialInitiative);
         hash.Add(OpeningPreamble);
         hash.Add(Weather);
+        hash.Add(StageEntry);
         hash.Add(Content);
 
         foreach (var source in Sources)

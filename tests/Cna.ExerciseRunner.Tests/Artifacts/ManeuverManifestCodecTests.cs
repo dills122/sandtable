@@ -9,7 +9,7 @@ namespace Cna.ExerciseRunner.Tests.Artifacts;
 public sealed class ManeuverManifestCodecTests
 {
     private const string CanonicalManifest =
-        "{\"contractVersion\":1,\"schemeId\":\"sandtable.maneuver-manifest.v1\",\"maneuverId\":\"rules-lab.serial\",\"mode\":\"serial-unpaired\",\"rootSeed\":0,\"report\":{\"profile\":\"trusted-authority\"},\"exercises\":[{\"contractVersion\":1,\"exerciseId\":\"organization-boundary.first\",\"setupId\":\"rules-lab.initiative.predetermined\",\"setupHash\":\"sha256:5ecf84d21a7ff95112b9b662915f6858926532d30be5a0eee3f1a45752fdc80a\",\"contentPackId\":\"rules-lab.content.movement-contact.v1\",\"contentHash\":\"sha256:53d5b64f647251e3ac366c65f4ad05cae766afd7b70ee331d463e801496e2a99\",\"scenarioId\":\"movement-contact-lab\",\"rulesetHash\":\"b59b2fc750052206e745fb85e04de8d54e365c55bbc7bf3a9e9539348c3f9ecb\",\"terminalBoundary\":\"land.position.operation-1.organization\",\"maximumSteps\":8,\"buildMode\":\"exploratory\",\"confidentiality\":\"trusted-authority\",\"detail\":\"forensic\",\"controllers\":{\"system\":\"first-by-action-id\",\"axis\":\"first-by-action-id\",\"commonwealth\":\"first-by-action-id\"},\"assertFailureCategory\":null}]}";
+        "{\"contractVersion\":1,\"schemeId\":\"sandtable.maneuver-manifest.v1\",\"maneuverId\":\"rules-lab.serial\",\"mode\":\"serial-unpaired\",\"rootSeed\":0,\"report\":{\"profile\":\"trusted-authority\"},\"exercises\":[{\"contractVersion\":1,\"exerciseId\":\"organization-boundary.first\",\"setupId\":\"rules-lab.initiative.predetermined\",\"setupHash\":\"sha256:c1688f8869ca66182b87f487ec34edbef617ff1158f7d8b0d3101fe3993978ef\",\"contentPackId\":\"rules-lab.content.movement-contact.v1\",\"contentHash\":\"sha256:53d5b64f647251e3ac366c65f4ad05cae766afd7b70ee331d463e801496e2a99\",\"scenarioId\":\"movement-contact-lab\",\"rulesetHash\":\"ae8e38d3d4b4a3f3f5ef0ce98be4e7088f90c6701e0d2969afad0522bb84a782\",\"terminalBoundary\":\"land.position.operation-1.organization\",\"maximumSteps\":8,\"buildMode\":\"exploratory\",\"confidentiality\":\"trusted-authority\",\"detail\":\"forensic\",\"controllers\":{\"system\":\"first-by-action-id\",\"axis\":\"first-by-action-id\",\"commonwealth\":\"first-by-action-id\"},\"assertFailureCategory\":null}]}";
 
     [Fact]
     public void ManifestHasTheFrozenCanonicalVersionOneBytes()
@@ -239,7 +239,7 @@ public sealed class ManeuverManifestCodecTests
         ExerciseManifest.CurrentContractVersion,
         exerciseId,
         "rules-lab.initiative.predetermined",
-        "sha256:5ecf84d21a7ff95112b9b662915f6858926532d30be5a0eee3f1a45752fdc80a",
+        "sha256:c1688f8869ca66182b87f487ec34edbef617ff1158f7d8b0d3101fe3993978ef",
         "rules-lab.content.movement-contact.v1",
         "sha256:53d5b64f647251e3ac366c65f4ad05cae766afd7b70ee331d463e801496e2a99",
         "movement-contact-lab",

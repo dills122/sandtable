@@ -270,8 +270,9 @@ requirements above.
 
 `just check` passed on 2026-08-19 after independent-review fixes: restore and format verification
 succeeded, the solution built with 0 warnings and 0 errors, and all 293 tests passed with 0
-failures and 0 skips. The canonical ruleset manifest is contract 3 with hash
-`b59b2fc750052206e745fb85e04de8d54e365c55bbc7bf3a9e9539348c3f9ecb`. Direct ruling-segment
+failures and 0 skips. The later Operation Stage Entry clean cut advances the canonical ruleset
+manifest to contract 4 with hash
+`ae8e38d3d4b4a3f3f5ef0ce98be4e7088f90c6701e0d2969afad0522bb84a782`. Direct ruling-segment
 goldens, exact-case parser negatives, structural random-procedure equality, all four authoritative
 Weather outcomes, the forged-event matrix, and normal/hot/foul observation goldens protect the
 reviewed closure gaps.

@@ -52,17 +52,21 @@ The current foundation can create a campaign from an exact ruleset, setup, Conte
 scenario; project the scenario's initial mutable element locations; resolve Initiative
 Determination and both admitted no-obligation Naval Convoy checkpoints; let the initiative holder
 declare whether to act first or last in Operation Stage 1; resolve Weather; emit authoritative
-events; and replay those events to byte-identical state. Ruleset manifest contract 3, Content Pack
-schema 2, and Campaign World v1 use an original nine-hex,
+events; explicitly resolve empty Organization, Naval Convoy Arrival, Fleet Assignment, and Fleet
+Repair obligations; stop at the first-acting side's Reserve decision; and replay those events to
+byte-identical state. Ruleset manifest contract 4, setup schema 5, snapshot contract 6, Content
+Pack schema 2, and Campaign World v1 use an original nine-hex,
 nonhistorical rules laboratory to develop game systems without redistributing published assets.
 Campaign Observation contract 2 derives deterministic side-safe public topology, turn state, and
 own-force facts without exposing the complete Content Pack or any opposing-force row or
 association. Legal Actions v1 exposes those mechanics through an opaque campaign-authority handle,
 deterministic system/side action sets, exact-audience membership enforcement, and side-safe
 acceptance receipts. Weather Determination v1 resolves corrected source-cited Weather through that
-same boundary, records pair-keyed evidence, publishes only a source-free Weather summary, and stops
-at the same Operation Stage's Organization barrier. Raw snapshots, commands, events, content
-context, projection, and replay are not public mutation seams.
+same boundary and records pair-keyed evidence. Operation-Stage Entry v1 then resolves only the four
+explicitly admitted empty obligations through mechanic-specific actions and events. Side-safe
+queries derive the Reserve audience from the recorded first/second actor order while authoritative
+`ActiveSide` remains unset. Raw snapshots, commands, events, content context, projection, and replay
+are not public mutation seams.
 
 The local `Cna.ExerciseRunner` can now drive that synthetic rules-laboratory path as either one
 bounded, deterministic **Exercise** or one serial **Maneuver**. An Exercise uses a fresh opaque Core
@@ -77,8 +81,8 @@ back before completion is claimed. Compact, forensic, and debug Exercise detail 
 progressively richer evidence without changing simulation truth. Paired comparison, model
 controllers, and side-safe exports are not implemented yet.
 
-Organization/stage-entry mechanics, movement, combat, published scenario content, persistence, and
-the Maproom player interface remain future work.
+Positive Organization/stage-entry obligations, Reserve, movement, combat, published scenario
+content, persistence, and the Maproom player interface remain future work.
 
 The reviewed Player Intent Composer is also future work. After the movement/contact/combat skeleton
 proves one representative multi-field decision, a no-model prototype will validate contextual
@@ -92,7 +96,7 @@ The current delivery boundary is:
 | --- | --- |
 | Ruleset/provenance, synthetic content, campaign authority, deterministic randomness, events, and replay | Implemented foundation |
 | Side-safe observations and exact-audience legal actions | Implemented for the current rules-laboratory path |
-| Mandatory turn preamble | Partially implemented; Weather is complete and authority stops at Organization |
+| Mandatory turn preamble | Partially implemented; Weather and the explicit-empty stage-entry path are complete, and authority stops at Reserve |
 | Movement/contact and combat loops | Planned; not started |
 | Published first-scenario data, remaining Land rules, victory, persistence, and Maproom | Milestone-level; not started |
 | Player Intent Composer | Direction reviewed; representative decision after the combat skeleton, no-model prototype before Maproom, optional parser evaluation after deterministic MVP |
@@ -100,21 +104,20 @@ The current delivery boundary is:
 
 The approved high-level path to a playable game is:
 
-1. Resolve Organization, Naval Convoy Arrival, and Fleet obligations, then stop at Reserve.
-2. Implement Reserve and a complete movement/contact/combat loop through the legal-action boundary.
-3. Add the remaining Land systems and data required by *Graziani's Offensive*.
-4. Validate the representative Player Intent Composer flow without a model.
-5. Deliver deterministic Maproom, local hot-seat play, saves, replay, and the reviewed intent flow.
-6. Evaluate optional parsing only after the deterministic MVP, then expand into detailed Air and
+1. Implement Reserve and a complete movement/contact/combat loop through the legal-action boundary.
+2. Add the remaining Land systems and data required by *Graziani's Offensive*.
+3. Validate the representative Player Intent Composer flow without a model.
+4. Deliver deterministic Maproom, local hot-seat play, saves, replay, and the reviewed intent flow.
+5. Evaluate optional parsing only after the deterministic MVP, then expand into detailed Air and
    Logistics play, later scenarios, and optional intelligence.
 
 The serial-Maneuver portion of Exercise Harness v1 now provides validated local batch-regression
-evidence without adding game rules. The next authoritative-engine planning package is
-[Operation-Stage Entry research](docs/research/operation-stage-entry-spike.md), its proposed
-[specification](docs/specs/operation-stage-entry-v1.md), and proposed
-[technical design](docs/design/operation-stage-entry-v1.md). Its final planning review is Ready, but
-owner approval and the Task 001 contract freeze still gate implementation. Paired comparison
-remains a later evaluation capability and does not block gameplay-engine progress.
+evidence without adding game rules. The implemented Operation-Stage Entry package retains its
+[research](docs/research/operation-stage-entry-spike.md),
+[specification](docs/specs/operation-stage-entry-v1.md), and
+[technical design](docs/design/operation-stage-entry-v1.md). Reserve is the next authoritative
+mechanic. Paired comparison remains a later evaluation capability and does not block
+gameplay-engine progress.
 
 See the [pre-alpha roadmap](docs/roadmap/pre-alpha-roadmap.md) for the capability-level plan and
 completion criteria.
@@ -303,8 +306,8 @@ The current Umpire foundation is intentionally pure and in-process:
 - [Exercise Harness v1 specification](docs/specs/exercise-harness-v1.md)
 - [Exercise Harness v1 technical design and delivery plan](docs/design/exercise-harness-v1.md)
 - [Operation-Stage Entry source and contract research](docs/research/operation-stage-entry-spike.md)
-- [Operation-Stage Entry v1 proposed specification](docs/specs/operation-stage-entry-v1.md)
-- [Operation-Stage Entry v1 proposed technical design and delivery plan](docs/design/operation-stage-entry-v1.md)
+- [Operation-Stage Entry v1 specification](docs/specs/operation-stage-entry-v1.md)
+- [Operation-Stage Entry v1 technical design and delivery plan](docs/design/operation-stage-entry-v1.md)
 - [Microsoft Orleans documentation](https://learn.microsoft.com/en-us/dotnet/orleans/)
 - [ASP.NET Core gRPC services](https://learn.microsoft.com/en-us/aspnet/core/grpc/aspnetcore?view=aspnetcore-10.0)
 - [Aspire AppHost and ServiceDefaults](https://learn.microsoft.com/en-us/dotnet/aspire/fundamentals/aspire-sdk-templates)

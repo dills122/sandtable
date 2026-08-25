@@ -78,7 +78,10 @@ technical names stay inside the Umpire boundary; they are not additional product
 Public callers hold only a `CampaignAuthorityHandle`, inspect one side through Campaign Observation,
 and submit a current typed Legal Action. The Umpire now resolves Operation Stage 1 Weather through
 explicit Initiative, Naval Convoy Schedule, Tactical Shipping, Initiative Declaration, and Weather
-events, then stops at the Organization decision barrier.
+events; resolves the admitted empty Organization, Naval Convoy Arrival, Fleet Assignment, and Fleet
+Repair obligations through four distinct event types; and stops at the first-acting side's Reserve
+decision. The authoritative `ActiveSide` remains unset there; observation and legal-action audiences
+derive the acting side from the recorded Operation Stage order.
 Walking the published sequence catalog for inspection does not create Chronicle history.
 
 For the CNA rules domain, use **initiative holder** only for the side that wins or is assigned
