@@ -97,6 +97,13 @@ The checked Exercise and Maneuver profiles use the current v2 manifest identitie
 snapshot v7, world v2, strict trusted-evidence admission, and deterministic v2 controller
 configuration identity.
 
+The first two retained simulator studies now verify repeated Movement-terminal determinism,
+counterbalanced-order timing, and contested root seeds 0-31. Every sampled run passed strict
+readback; the results also show that future back-testing needs explicit act-last and Reserve
+none/one/all controller profiles rather than seed variation alone. See
+[Baseline 1](docs/research/simulator-baseline-1.md) and
+[Baseline 2](docs/research/simulator-baseline-2.md).
+
 Positive Organization/stage-entry obligations, movement behavior, combat, published scenario
 content, persistence, and the Maproom player interface remain future work.
 
