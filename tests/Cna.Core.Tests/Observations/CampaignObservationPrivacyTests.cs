@@ -4,6 +4,7 @@ using Cna.Core.Content;
 using Cna.Core.Observations;
 using Cna.Core.Randomness;
 using Cna.Core.Rules;
+using Cna.Core.Tests.Campaigns;
 
 namespace Cna.Core.Tests.Observations;
 
@@ -12,7 +13,7 @@ public sealed class CampaignObservationPrivacyTests
     [Theory]
     [InlineData(LandSide.Axis)]
     [InlineData(LandSide.Commonwealth)]
-    public void OpponentOnlyChangesCannotAffectTheCompleteObservationOrCanonicalPayload(
+    public void OpponentOnlyChangesRemainInvisibleAtEveryCheckpointThroughReserve(
         LandSide observer)
     {
         var pair = CampaignObservationTestData.CreateOpponentOnlyPair(observer);
@@ -21,14 +22,36 @@ public sealed class CampaignObservationPrivacyTests
             pair.ChangedContext.Artifact.Identity.Hash);
         Assert.NotEqual(pair.BaselineSnapshot.Setup.SetupHash, pair.ChangedSnapshot.Setup.SetupHash);
 
-        var baseline = Project(pair.BaselineSnapshot, pair.BaselineContext, observer);
-        var changed = Project(pair.ChangedSnapshot, pair.ChangedContext, observer);
-        var baselineBytes = CampaignObservationSerializer.SerializeCanonical(baseline);
-        var changedBytes = CampaignObservationSerializer.SerializeCanonical(changed);
+        var baseline = StageEntryCampaignTestData.Advance(
+            pair.BaselineSnapshot,
+            pair.BaselineContext,
+            InitiativeOrderChoice.ActLast);
+        var changed = StageEntryCampaignTestData.Advance(
+            pair.ChangedSnapshot,
+            pair.ChangedContext,
+            InitiativeOrderChoice.ActLast);
 
-        Assert.Equal(baseline, changed);
-        Assert.Equal(baseline.GetHashCode(), changed.GetHashCode());
-        Assert.Equal(baselineBytes, changedBytes);
+        Assert.Equal(10, baseline.Snapshots.Count);
+        Assert.Equal(baseline.Snapshots.Count, changed.Snapshots.Count);
+
+        for (var index = 0; index < baseline.Snapshots.Count; index++)
+        {
+            var baselineObservation = Project(
+                baseline.Snapshots[index],
+                pair.BaselineContext,
+                observer);
+            var changedObservation = Project(
+                changed.Snapshots[index],
+                pair.ChangedContext,
+                observer);
+
+            Assert.Equal(baselineObservation, changedObservation);
+            Assert.Equal(baselineObservation.GetHashCode(),
+                changedObservation.GetHashCode());
+            Assert.Equal(
+                CampaignObservationSerializer.SerializeCanonical(baselineObservation),
+                CampaignObservationSerializer.SerializeCanonical(changedObservation));
+        }
     }
 
     [Fact]

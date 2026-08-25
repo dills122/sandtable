@@ -6,7 +6,7 @@ namespace Cna.Core.Setups;
 
 internal static class Cna1979SetupCatalog
 {
-    public const int SchemaVersion = 4;
+    public const int SchemaVersion = 5;
     public const string PredeterminedSetupId = "rules-lab.initiative.predetermined";
     public const string ContestedSetupId = "rules-lab.initiative.contested";
 
@@ -48,6 +48,7 @@ internal static class Cna1979SetupCatalog
                 new PredeterminedInitiative(LandSide.Axis),
                 OpeningPreamblePolicy,
                 WeatherPolicy,
+                CreateStageEntryPolicy(1),
                 new CampaignContentSelection(
                     Cna1979SyntheticContentCatalog.Artifact.Identity,
                     "movement-contact-lab"),
@@ -63,6 +64,7 @@ internal static class Cna1979SetupCatalog
                     [AxisInitiativeLocation.QualifyingGameMap])),
                 OpeningPreamblePolicy,
                 WeatherPolicy,
+                CreateStageEntryPolicy(43),
                 new CampaignContentSelection(
                     Cna1979SyntheticContentCatalog.Artifact.Identity,
                     "initiative-contested-lab"),
@@ -85,4 +87,27 @@ internal static class Cna1979SetupCatalog
         && policy.ContractVersion == CampaignWeatherPolicy.CurrentContractVersion
         && policy.Kind == CampaignWeatherPolicyKind.NoImmediateWeatherEffectSubjects
         && policy.Sources.SequenceEqual([WeatherPolicySourceReference]);
+
+    internal static bool IsAdmittedStageEntryPolicy(
+        CampaignStageEntryPolicy? policy,
+        int initialGameTurn) =>
+        policy is not null
+        && policy.ContractVersion == CampaignStageEntryPolicy.CurrentContractVersion
+        && policy.GameTurn == initialGameTurn
+        && policy.OperationStage == 1
+        && policy.Organization == StageEntryObligationKind.ExplicitNone
+        && policy.NavalConvoyArrival == StageEntryObligationKind.ExplicitNone
+        && policy.FleetAssignment == StageEntryObligationKind.ExplicitNone
+        && policy.FleetRepair == StageEntryObligationKind.ExplicitNone
+        && policy.Sources.SequenceEqual([CampaignStageEntryPolicy.SourceReference]);
+
+    private static CampaignStageEntryPolicy CreateStageEntryPolicy(int gameTurn) => new(
+        CampaignStageEntryPolicy.CurrentContractVersion,
+        gameTurn,
+        1,
+        StageEntryObligationKind.ExplicitNone,
+        StageEntryObligationKind.ExplicitNone,
+        StageEntryObligationKind.ExplicitNone,
+        StageEntryObligationKind.ExplicitNone,
+        [CampaignStageEntryPolicy.SourceReference]);
 }

@@ -133,11 +133,12 @@ internal static class CampaignObservationTestData
             catalogSetup.InitialInitiative,
             catalogSetup.OpeningPreamble,
             catalogSetup.Weather,
+            catalogSetup.StageEntry,
             context.Selection,
             catalogSetup.Sources);
 
         return new CampaignSnapshot(
-            5,
+            6,
             "campaign-privacy",
             1,
             Cna1979Ruleset.Manifest.Hash,

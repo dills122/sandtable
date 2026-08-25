@@ -111,6 +111,7 @@ internal static class CampaignSnapshotSerializer
         writer.WriteEndObject();
         WriteOpeningPreamble(writer, setup.OpeningPreamble);
         WriteWeatherPolicy(writer, setup.Weather);
+        CampaignStageEntryPolicyCodec.Write(writer, "stageEntry", setup.StageEntry);
         WriteContent(writer, setup.Content);
         WriteSources(writer, setup.Sources);
         writer.WriteEndObject();
@@ -128,6 +129,7 @@ internal static class CampaignSnapshotSerializer
             "initialInitiative",
             "openingPreamble",
             "weather",
+            "stageEntry",
             "content",
             "sources");
 
@@ -140,6 +142,7 @@ internal static class CampaignSnapshotSerializer
             ParseInitiative(setup.GetProperty("initialInitiative")),
             ParseOpeningPreamble(setup.GetProperty("openingPreamble")),
             ParseWeatherPolicy(setup.GetProperty("weather")),
+            CampaignStageEntryPolicyCodec.Parse(setup.GetProperty("stageEntry")),
             ParseContent(setup.GetProperty("content")),
             ParseSources(setup.GetProperty("sources")));
     }

@@ -1,6 +1,7 @@
 using Cna.Core.Campaigns;
 using Cna.Core.Observations;
 using Cna.Core.Rules;
+using Cna.Core.Setups;
 
 namespace Cna.Core.Actions;
 
@@ -63,24 +64,110 @@ public static class CampaignLegalActions
         CampaignActionAudience audience)
     {
         var side = audience == CampaignActionAudience.Axis ? LandSide.Axis : LandSide.Commonwealth;
+        var sequence = handle.Snapshot.SequencePosition;
+        var expectedActiveSide = sequence.ActorRole == LandActorRole.FirstActingSide
+            ? FirstActingSideResolver.Resolve(handle.Snapshot)
+            : sequence.ActiveSide;
         var result = CampaignObservationProjector.Project(handle.Snapshot, handle.Context, side);
-        return result.Observation ?? throw new InvalidOperationException("Admitted authority must project.");
+        var observation = result.Observation
+            ?? throw new InvalidOperationException("Admitted authority must project.");
+        if (observation.Position.ActiveSide != expectedActiveSide)
+        {
+            throw new InvalidOperationException(
+                "Legal-action projection must preserve the resolved active audience.");
+        }
+
+        return observation;
     }
 
     private static CampaignLegalActionSet GenerateForSystem(CampaignSnapshot snapshot)
     {
-        IReadOnlyList<CampaignActionCandidate> candidates = snapshot.StateVersion switch
-        {
-            1 => [new ResolveInitiativeAction()],
-            2 => [new ResolveNoObligationNavalConvoyScheduleAction()],
-            3 => [new ResolveNoObligationTacticalShippingAction()],
-            5 when snapshot.PhaseId == LandPhaseIds.WeatherDetermination =>
-                [new ResolveWeatherAction()],
-            _ => [],
-        };
+        var candidates = GenerateSystemCandidates(snapshot);
         return CreateSet(snapshot.CampaignId, snapshot.StateVersion, snapshot.RulesetHash,
             snapshot.SequencePosition.PositionId, CampaignActionAudience.System, candidates);
     }
+
+    private static IReadOnlyList<CampaignActionCandidate> GenerateSystemCandidates(
+        CampaignSnapshot snapshot) => snapshot.SequencePosition switch
+        {
+            {
+                OperationStage: 0,
+                StageId: LandStageIds.InitiativeDetermination,
+                PhaseId: LandPhaseIds.InitiativeDetermination,
+            } when HasAdmittedInitiativePolicy(snapshot) => [new ResolveInitiativeAction()],
+            {
+                OperationStage: 0,
+                StageId: LandStageIds.NavalConvoy,
+                PhaseId: LandPhaseIds.NavalConvoySchedule,
+            } when HasAdmittedOpeningPreamblePolicy(snapshot) =>
+                [new ResolveNoObligationNavalConvoyScheduleAction()],
+            {
+                OperationStage: 0,
+                StageId: LandStageIds.NavalConvoy,
+                PhaseId: LandPhaseIds.TacticalShipping,
+            } when HasAdmittedOpeningPreamblePolicy(snapshot) =>
+                [new ResolveNoObligationTacticalShippingAction()],
+            {
+                OperationStage: 1,
+                StageId: LandStageIds.Operation,
+                PhaseId: LandPhaseIds.WeatherDetermination,
+            } when Cna1979SetupCatalog.IsAdmittedWeatherPolicy(snapshot.Setup.Weather) =>
+                [new ResolveWeatherAction()],
+            {
+                OperationStage: 1,
+                StageId: LandStageIds.Operation,
+                PhaseId: LandPhaseIds.Organization,
+                SegmentId: null,
+            } when HasAdmittedStageEntryPolicy(
+                snapshot,
+                snapshot.Setup.StageEntry.Organization) =>
+                [new ResolveNoObligationOrganizationAction()],
+            {
+                OperationStage: 1,
+                StageId: LandStageIds.Operation,
+                PhaseId: LandPhaseIds.NavalConvoyArrival,
+                SegmentId: null,
+            } when HasAdmittedStageEntryPolicy(
+                snapshot,
+                snapshot.Setup.StageEntry.NavalConvoyArrival) =>
+                [new ResolveNoObligationNavalConvoyArrivalAction()],
+            {
+                OperationStage: 1,
+                StageId: LandStageIds.Operation,
+                PhaseId: LandPhaseIds.CommonwealthFleet,
+                SegmentId: LandSegmentIds.FleetAssignment,
+            } when HasAdmittedStageEntryPolicy(
+                snapshot,
+                snapshot.Setup.StageEntry.FleetAssignment) =>
+                [new ResolveNoObligationFleetAssignmentAction()],
+            {
+                OperationStage: 1,
+                StageId: LandStageIds.Operation,
+                PhaseId: LandPhaseIds.CommonwealthFleet,
+                SegmentId: LandSegmentIds.FleetRepair,
+            } when HasAdmittedStageEntryPolicy(
+                snapshot,
+                snapshot.Setup.StageEntry.FleetRepair) =>
+                [new ResolveNoObligationFleetRepairAction()],
+            _ => [],
+        };
+
+    private static bool HasAdmittedInitiativePolicy(CampaignSnapshot snapshot) =>
+        Cna1979SetupCatalog.TryGet(snapshot.Setup.SetupId, out var definition)
+        && snapshot.Setup.InitialInitiative == definition.InitialInitiative;
+
+    private static bool HasAdmittedOpeningPreamblePolicy(CampaignSnapshot snapshot) =>
+        snapshot.Setup.OpeningPreamble == Cna1979SetupCatalog.OpeningPreamblePolicy;
+
+    private static bool HasAdmittedStageEntryPolicy(
+        CampaignSnapshot snapshot,
+        StageEntryObligationKind obligation) =>
+        Cna1979SetupCatalog.IsAdmittedStageEntryPolicy(
+            snapshot.Setup.StageEntry,
+            snapshot.Setup.InitialGameTurn)
+        && snapshot.Setup.StageEntry.GameTurn == snapshot.GameTurn
+        && snapshot.Setup.StageEntry.OperationStage == snapshot.OperationStage
+        && obligation == StageEntryObligationKind.ExplicitNone;
 
     private static CampaignLegalActionSet CreateSet(string campaignId, long stateVersion,
         string rulesetHash, string positionId, CampaignActionAudience audience,

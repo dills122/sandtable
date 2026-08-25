@@ -61,6 +61,13 @@ internal static class CampaignEngine
             return CampaignCommandResult.Reject(CampaignCommandRejectionReason.SetupHashMismatch);
         }
 
+        if (!Cna1979SetupCatalog.IsAdmittedStageEntryPolicy(
+            setup.StageEntry,
+            setup.InitialGameTurn))
+        {
+            return CampaignCommandResult.Reject(CampaignCommandRejectionReason.InvalidState);
+        }
+
         if (!Cna1979SetupCatalog.IsAdmittedWeatherPolicy(setup.Weather))
         {
             return CampaignCommandResult.Reject(
@@ -132,6 +139,10 @@ internal static class CampaignEngine
             ResolveNoObligationTacticalShipping resolve => DecideTactical(snapshot, resolve),
             DeclareInitiativeOrder declare => DecideDeclaration(snapshot, declare),
             ResolveWeather resolve => DecideWeather(snapshot, resolve),
+            ResolveNoObligationOrganization resolve => DecideOrganization(snapshot, resolve),
+            ResolveNoObligationNavalConvoyArrival resolve => DecideArrival(snapshot, resolve),
+            ResolveNoObligationFleetAssignment resolve => DecideAssignment(snapshot, resolve),
+            ResolveNoObligationFleetRepair resolve => DecideRepair(snapshot, resolve),
             CompleteCurrentSequenceStep advance => DecideAdvance(snapshot, advance),
             _ => CampaignCommandResult.Reject(CampaignCommandRejectionReason.InvalidCommand),
         };
@@ -151,6 +162,9 @@ internal static class CampaignEngine
             || !Cna1979Ruleset.IsCanonicalHash(command.RulesetHash)
             || !Cna1979SetupCatalog.TryGet(command.SetupId, out var setup)
             || !string.Equals(command.SetupHash, setup.Hash, StringComparison.Ordinal)
+            || !Cna1979SetupCatalog.IsAdmittedStageEntryPolicy(
+                setup.StageEntry,
+                setup.InitialGameTurn)
             || !Cna1979SetupCatalog.IsAdmittedWeatherPolicy(setup.Weather)
             || setup.Content != context.Selection
             || !string.Equals(command.ContentPackId, context.Artifact.Identity.PackId, StringComparison.Ordinal)
@@ -176,7 +190,7 @@ internal static class CampaignEngine
 
     private static bool IsLocallyValid(CreateCampaign command)
     {
-        if (command.ContractVersion != 4
+        if (command.ContractVersion != 5
             || command.ExpectedStateVersion != 0
             || !CampaignSnapshotValidator.IsRulesHash(command.RulesetHash))
         {
@@ -384,5 +398,235 @@ internal static class CampaignEngine
         {
             return CampaignCommandResult.Reject(CampaignCommandRejectionReason.InvalidState);
         }
+    }
+
+    private static CampaignCommandResult DecideOrganization(
+        CampaignSnapshot? snapshot,
+        ResolveNoObligationOrganization command) => DecideStageEntry(
+            snapshot,
+            command.ContractVersion,
+            command.ExpectedStateVersion,
+            command.ExpectedPositionId,
+            LandPhaseIds.Organization,
+            null,
+            StageEntryEventFactory.CreateOrganization);
+
+    private static CampaignCommandResult DecideArrival(
+        CampaignSnapshot? snapshot,
+        ResolveNoObligationNavalConvoyArrival command) => DecideStageEntry(
+            snapshot,
+            command.ContractVersion,
+            command.ExpectedStateVersion,
+            command.ExpectedPositionId,
+            LandPhaseIds.NavalConvoyArrival,
+            null,
+            StageEntryEventFactory.CreateArrival);
+
+    private static CampaignCommandResult DecideAssignment(
+        CampaignSnapshot? snapshot,
+        ResolveNoObligationFleetAssignment command) => DecideStageEntry(
+            snapshot,
+            command.ContractVersion,
+            command.ExpectedStateVersion,
+            command.ExpectedPositionId,
+            LandPhaseIds.CommonwealthFleet,
+            LandSegmentIds.FleetAssignment,
+            StageEntryEventFactory.CreateAssignment);
+
+    private static CampaignCommandResult DecideRepair(
+        CampaignSnapshot? snapshot,
+        ResolveNoObligationFleetRepair command) => DecideStageEntry(
+            snapshot,
+            command.ContractVersion,
+            command.ExpectedStateVersion,
+            command.ExpectedPositionId,
+            LandPhaseIds.CommonwealthFleet,
+            LandSegmentIds.FleetRepair,
+            StageEntryEventFactory.CreateRepair);
+
+    private static CampaignCommandResult DecideStageEntry(
+        CampaignSnapshot? snapshot,
+        int contractVersion,
+        long expectedStateVersion,
+        string expectedPositionId,
+        string expectedPhaseId,
+        string? expectedSegmentId,
+        Func<CampaignSnapshot, CampaignEvent> create)
+    {
+        var rejection = ValidateCurrent(snapshot, contractVersion,
+            expectedStateVersion, expectedPositionId);
+        if (rejection != CampaignCommandRejectionReason.None)
+            return CampaignCommandResult.Reject(rejection);
+        if (!string.Equals(snapshot!.PhaseId, expectedPhaseId, StringComparison.Ordinal)
+            || !string.Equals(snapshot.SegmentId, expectedSegmentId, StringComparison.Ordinal))
+            return CampaignCommandResult.Reject(
+                CampaignCommandRejectionReason.UnsupportedTransition);
+        try
+        {
+            return CampaignCommandResult.Accept(create(snapshot));
+        }
+        catch (InvalidOperationException)
+        {
+            return CampaignCommandResult.Reject(
+                CampaignCommandRejectionReason.UnsupportedTransition);
+        }
+        catch (Exception exception) when (exception is ArgumentException or ArithmeticException)
+        {
+            return CampaignCommandResult.Reject(CampaignCommandRejectionReason.InvalidState);
+        }
+    }
+}
+
+internal static class StageEntryEventFactory
+{
+    public static NoObligationOrganizationResolved CreateOrganization(
+        CampaignSnapshot snapshot)
+    {
+        ArgumentNullException.ThrowIfNull(snapshot);
+        var policy = snapshot.Setup.StageEntry;
+        var expectedPosition = Cna1979LandSequence.CreateTurn(snapshot.GameTurn).Single(value =>
+            value.OperationStage == 1
+            && value.PhaseId == LandPhaseIds.Organization
+            && value.SegmentId is null);
+
+        if (!Cna1979SetupCatalog.IsAdmittedStageEntryPolicy(
+                policy,
+                snapshot.Setup.InitialGameTurn)
+            || policy.GameTurn != snapshot.GameTurn
+            || policy.OperationStage != snapshot.OperationStage
+            || policy.Organization != StageEntryObligationKind.ExplicitNone
+            || snapshot.SequencePosition != expectedPosition)
+        {
+            throw new InvalidOperationException("Organization authority is not admitted.");
+        }
+
+        var successor = Cna1979LandSequence.GetNext(snapshot.SequencePosition);
+        if (successor.GameTurn != snapshot.GameTurn
+            || successor.OperationStage != snapshot.OperationStage
+            || successor.PhaseId != LandPhaseIds.NavalConvoyArrival
+            || successor.SegmentId is not null)
+        {
+            throw new InvalidOperationException(
+                "Organization must advance to Naval Convoy Arrival in the same pair.");
+        }
+
+        return new NoObligationOrganizationResolved(
+            snapshot.CampaignId,
+            checked(snapshot.StateVersion + 1),
+            snapshot.SequencePosition.PositionId,
+            snapshot.GameTurn,
+            snapshot.OperationStage,
+            successor,
+            NoObligationOrganizationResolved.RequiredSources);
+    }
+
+    public static NoObligationNavalConvoyArrivalResolved CreateArrival(
+        CampaignSnapshot snapshot)
+    {
+        ArgumentNullException.ThrowIfNull(snapshot);
+        var policy = snapshot.Setup.StageEntry;
+        var expectedPosition = Cna1979LandSequence.CreateTurn(snapshot.GameTurn).Single(value =>
+            value.OperationStage == 1
+            && value.PhaseId == LandPhaseIds.NavalConvoyArrival
+            && value.SegmentId is null);
+
+        if (!Cna1979SetupCatalog.IsAdmittedStageEntryPolicy(
+                policy,
+                snapshot.Setup.InitialGameTurn)
+            || policy.GameTurn != snapshot.GameTurn
+            || policy.OperationStage != snapshot.OperationStage
+            || policy.NavalConvoyArrival != StageEntryObligationKind.ExplicitNone
+            || snapshot.SequencePosition != expectedPosition)
+        {
+            throw new InvalidOperationException(
+                "Naval Convoy Arrival authority is not admitted.");
+        }
+
+        var successor = Cna1979LandSequence.GetNext(snapshot.SequencePosition);
+        if (successor.GameTurn != snapshot.GameTurn
+            || successor.OperationStage != snapshot.OperationStage
+            || successor.PhaseId != LandPhaseIds.CommonwealthFleet
+            || successor.SegmentId != LandSegmentIds.FleetAssignment)
+        {
+            throw new InvalidOperationException(
+                "Naval Convoy Arrival must advance to Fleet Assignment in the same pair.");
+        }
+
+        return new NoObligationNavalConvoyArrivalResolved(
+            snapshot.CampaignId,
+            checked(snapshot.StateVersion + 1),
+            snapshot.SequencePosition.PositionId,
+            snapshot.GameTurn,
+            snapshot.OperationStage,
+            successor,
+            NoObligationNavalConvoyArrivalResolved.RequiredSources);
+    }
+
+    public static NoObligationFleetAssignmentResolved CreateAssignment(
+        CampaignSnapshot snapshot)
+    {
+        ArgumentNullException.ThrowIfNull(snapshot);
+        var policy = snapshot.Setup.StageEntry;
+        var expectedPosition = Cna1979LandSequence.CreateTurn(snapshot.GameTurn).Single(value =>
+            value.OperationStage == 1
+            && value.PhaseId == LandPhaseIds.CommonwealthFleet
+            && value.SegmentId == LandSegmentIds.FleetAssignment);
+        if (!Cna1979SetupCatalog.IsAdmittedStageEntryPolicy(
+                policy, snapshot.Setup.InitialGameTurn)
+            || policy.GameTurn != snapshot.GameTurn
+            || policy.OperationStage != snapshot.OperationStage
+            || policy.FleetAssignment != StageEntryObligationKind.ExplicitNone
+            || snapshot.SequencePosition != expectedPosition)
+            throw new InvalidOperationException("Fleet Assignment authority is not admitted.");
+
+        var successor = Cna1979LandSequence.GetNext(snapshot.SequencePosition);
+        if (successor.GameTurn != snapshot.GameTurn
+            || successor.OperationStage != snapshot.OperationStage
+            || successor.PhaseId != LandPhaseIds.CommonwealthFleet
+            || successor.SegmentId != LandSegmentIds.FleetRepair)
+            throw new InvalidOperationException(
+                "Fleet Assignment must advance to Fleet Repair in the same pair.");
+
+        return new NoObligationFleetAssignmentResolved(snapshot.CampaignId,
+            checked(snapshot.StateVersion + 1), snapshot.SequencePosition.PositionId,
+            snapshot.GameTurn, snapshot.OperationStage, successor,
+            NoObligationFleetAssignmentResolved.RequiredSources);
+    }
+
+    public static NoObligationFleetRepairResolved CreateRepair(CampaignSnapshot snapshot)
+    {
+        ArgumentNullException.ThrowIfNull(snapshot);
+        var policy = snapshot.Setup.StageEntry;
+        var expectedPosition = Cna1979LandSequence.CreateTurn(snapshot.GameTurn).Single(value =>
+            value.OperationStage == 1
+            && value.PhaseId == LandPhaseIds.CommonwealthFleet
+            && value.SegmentId == LandSegmentIds.FleetRepair);
+        var pairOrders = snapshot.OperationStageOrders.Where(value =>
+            value.GameTurn == snapshot.GameTurn
+            && value.OperationStage == snapshot.OperationStage).ToArray();
+        if (!Cna1979SetupCatalog.IsAdmittedStageEntryPolicy(
+                policy, snapshot.Setup.InitialGameTurn)
+            || policy.GameTurn != snapshot.GameTurn
+            || policy.OperationStage != snapshot.OperationStage
+            || policy.FleetRepair != StageEntryObligationKind.ExplicitNone
+            || snapshot.SequencePosition != expectedPosition
+            || pairOrders.Length != 1
+            || !Enum.IsDefined(pairOrders[0].FirstSide))
+            throw new InvalidOperationException("Fleet Repair authority is not admitted.");
+
+        var successor = Cna1979LandSequence.GetNext(snapshot.SequencePosition);
+        if (successor.GameTurn != snapshot.GameTurn
+            || successor.OperationStage != snapshot.OperationStage
+            || successor.PhaseId != LandPhaseIds.ReserveDesignation
+            || successor.SegmentId is not null
+            || successor.ActorRole != LandActorRole.FirstActingSide
+            || successor.ActiveSide is not null)
+            throw new InvalidOperationException(
+                "Fleet Repair must advance to unmaterialized first-side Reserve authority.");
+
+        return new NoObligationFleetRepairResolved(snapshot.CampaignId,
+            checked(snapshot.StateVersion + 1), snapshot.SequencePosition.PositionId,
+            snapshot.GameTurn, snapshot.OperationStage, successor,
+            NoObligationFleetRepairResolved.RequiredSources);
     }
 }

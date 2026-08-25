@@ -1,3 +1,4 @@
+using System.Text;
 using Cna.Core.Content;
 using Cna.Core.Rules;
 using Cna.Core.Setups;
@@ -22,7 +23,7 @@ public sealed class CampaignSetupTests
                 Assert.Equal(
                     [Cna1979SetupCatalog.PredeterminedSourceReference],
                     predetermined.Sources);
-                Assert.Equal(4, predetermined.SchemaVersion);
+                Assert.Equal(5, predetermined.SchemaVersion);
                 Assert.Equal(
                     CampaignOpeningPreambleKind.NoOpeningNavalConvoyObligations,
                     predetermined.OpeningPreamble.Kind);
@@ -35,12 +36,26 @@ public sealed class CampaignSetupTests
                 Assert.Equal(
                     [Cna1979SetupCatalog.WeatherPolicySourceReference],
                     predetermined.Weather.Sources);
+                Assert.Equal(1, predetermined.StageEntry.GameTurn);
+                Assert.Equal(1, predetermined.StageEntry.OperationStage);
+                Assert.All(
+                    new[]
+                    {
+                        predetermined.StageEntry.Organization,
+                        predetermined.StageEntry.NavalConvoyArrival,
+                        predetermined.StageEntry.FleetAssignment,
+                        predetermined.StageEntry.FleetRepair,
+                    },
+                    value => Assert.Equal(StageEntryObligationKind.ExplicitNone, value));
+                Assert.Equal(
+                    [CampaignStageEntryPolicy.SourceReference],
+                    predetermined.StageEntry.Sources);
                 Assert.Equal(
                     Cna1979SyntheticContentCatalog.Artifact.Identity,
                     predetermined.Content.Pack);
                 Assert.Equal("movement-contact-lab", predetermined.Content.ScenarioId);
                 Assert.Equal(
-                    "sha256:5ecf84d21a7ff95112b9b662915f6858926532d30be5a0eee3f1a45752fdc80a",
+                    "sha256:c1688f8869ca66182b87f487ec34edbef617ff1158f7d8b0d3101fe3993978ef",
                     predetermined.Hash);
             },
             contested =>
@@ -67,12 +82,26 @@ public sealed class CampaignSetupTests
                 Assert.Equal(
                     [Cna1979SetupCatalog.WeatherPolicySourceReference],
                     contested.Weather.Sources);
+                Assert.Equal(43, contested.StageEntry.GameTurn);
+                Assert.Equal(1, contested.StageEntry.OperationStage);
+                Assert.All(
+                    new[]
+                    {
+                        contested.StageEntry.Organization,
+                        contested.StageEntry.NavalConvoyArrival,
+                        contested.StageEntry.FleetAssignment,
+                        contested.StageEntry.FleetRepair,
+                    },
+                    value => Assert.Equal(StageEntryObligationKind.ExplicitNone, value));
+                Assert.Equal(
+                    [CampaignStageEntryPolicy.SourceReference],
+                    contested.StageEntry.Sources);
                 Assert.Equal(
                     Cna1979SyntheticContentCatalog.Artifact.Identity,
                     contested.Content.Pack);
                 Assert.Equal("initiative-contested-lab", contested.Content.ScenarioId);
                 Assert.Equal(
-                    "sha256:0178b07804098e04ed843265a31c19b1b411381a90046ec751567cd5ad947f2d",
+                    "sha256:aa52e457c32a22dbc5c2703d7f24c66c8e01782f2fc4205e480d85b43d633b24",
                     contested.Hash);
             });
     }
@@ -104,6 +133,7 @@ public sealed class CampaignSetupTests
             baseline.InitialInitiative,
             baseline.OpeningPreamble,
             baseline.Weather,
+            baseline.StageEntry,
             baseline.Content,
             baseline.Sources);
         var policyChanged = new CampaignSetupDefinition(
@@ -117,6 +147,7 @@ public sealed class CampaignSetupTests
                 [])),
             baseline.OpeningPreamble,
             baseline.Weather,
+            baseline.StageEntry,
             baseline.Content,
             baseline.Sources);
         var contentChanged = new CampaignSetupDefinition(
@@ -128,6 +159,7 @@ public sealed class CampaignSetupTests
             baseline.InitialInitiative,
             baseline.OpeningPreamble,
             baseline.Weather,
+            baseline.StageEntry,
             new CampaignContentSelection(
                 new ContentPackIdentity(
                     baseline.Content.Pack.SchemaVersion,
@@ -146,6 +178,7 @@ public sealed class CampaignSetupTests
             baseline.InitialInitiative,
             baseline.OpeningPreamble,
             baseline.Weather,
+            baseline.StageEntry,
             new CampaignContentSelection(
                 baseline.Content.Pack,
                 "movement-contact-lab"),
@@ -159,6 +192,7 @@ public sealed class CampaignSetupTests
             baseline.InitialInitiative,
             baseline.OpeningPreamble,
             baseline.Weather,
+            baseline.StageEntry,
             baseline.Content,
             [new RuleReference("sandtable-rules-lab", "different-source.v1")]);
         var openingPreambleChanged = new CampaignSetupDefinition(
@@ -173,6 +207,7 @@ public sealed class CampaignSetupTests
                 CampaignOpeningPreambleKind.NoOpeningNavalConvoyObligations,
                 [new RuleReference("sandtable-rules-lab", "different-opening-policy.v1")]),
             baseline.Weather,
+            baseline.StageEntry,
             baseline.Content,
             baseline.Sources);
         var weatherChanged = new CampaignSetupDefinition(
@@ -187,6 +222,21 @@ public sealed class CampaignSetupTests
                 CampaignWeatherPolicy.CurrentContractVersion,
                 CampaignWeatherPolicyKind.NoImmediateWeatherEffectSubjects,
                 [new RuleReference("sandtable-rules-lab", "different-weather-policy.v1")]),
+            baseline.StageEntry,
+            baseline.Content,
+            baseline.Sources);
+        var stageEntryChanged = new CampaignSetupDefinition(
+            baseline.SchemaVersion,
+            baseline.SetupId,
+            baseline.DisplayName,
+            baseline.IsSynthetic,
+            baseline.InitialGameTurn,
+            baseline.InitialInitiative,
+            baseline.OpeningPreamble,
+            baseline.Weather,
+            CreateStageEntryPolicy(
+                baseline.InitialGameTurn,
+                organization: StageEntryObligationKind.HasObligations),
             baseline.Content,
             baseline.Sources);
 
@@ -197,6 +247,7 @@ public sealed class CampaignSetupTests
         Assert.NotEqual(baseline.Hash, sourceChanged.Hash);
         Assert.NotEqual(baseline.Hash, openingPreambleChanged.Hash);
         Assert.NotEqual(baseline.Hash, weatherChanged.Hash);
+        Assert.NotEqual(baseline.Hash, stageEntryChanged.Hash);
         Assert.Matches("^sha256:[0-9a-f]{64}$", baseline.Hash);
         Assert.Equal(rulesetHash, Cna1979Ruleset.Manifest.Hash);
         Assert.DoesNotContain(
@@ -221,6 +272,7 @@ public sealed class CampaignSetupTests
             new PredeterminedInitiative(LandSide.Axis),
             Cna1979SetupCatalog.OpeningPreamblePolicy,
             Cna1979SetupCatalog.WeatherPolicy,
+            CreateStageEntryPolicy(1),
             Cna1979SetupCatalog.Definitions[0].Content,
             sources);
         var equivalent = new CampaignSetupDefinition(
@@ -232,6 +284,7 @@ public sealed class CampaignSetupTests
             new PredeterminedInitiative(LandSide.Axis),
             Cna1979SetupCatalog.OpeningPreamblePolicy,
             Cna1979SetupCatalog.WeatherPolicy,
+            CreateStageEntryPolicy(1),
             Cna1979SetupCatalog.Definitions[0].Content,
             sources.AsEnumerable().Reverse().ToArray());
 
@@ -262,6 +315,7 @@ public sealed class CampaignSetupTests
             new PredeterminedInitiative(LandSide.Axis),
             Cna1979SetupCatalog.OpeningPreamblePolicy,
             Cna1979SetupCatalog.WeatherPolicy,
+            CreateStageEntryPolicy(1),
             Cna1979SetupCatalog.Definitions[0].Content,
             [new RuleReference("sandtable-rules-lab", "test.v1")]));
         Assert.Throws<ArgumentException>(() => new CampaignSetupDefinition(
@@ -273,8 +327,21 @@ public sealed class CampaignSetupTests
             new PredeterminedInitiative(LandSide.Axis),
             Cna1979SetupCatalog.OpeningPreamblePolicy,
             Cna1979SetupCatalog.WeatherPolicy,
+            CreateStageEntryPolicy(1),
             Cna1979SetupCatalog.Definitions[0].Content,
             []));
+        Assert.Throws<ArgumentNullException>(() => new CampaignSetupDefinition(
+            1,
+            "rules-lab.test",
+            "Test setup",
+            true,
+            1,
+            new PredeterminedInitiative(LandSide.Axis),
+            Cna1979SetupCatalog.OpeningPreamblePolicy,
+            Cna1979SetupCatalog.WeatherPolicy,
+            null!,
+            Cna1979SetupCatalog.Definitions[0].Content,
+            [new RuleReference("sandtable-rules-lab", "test.v1")]));
         Assert.Throws<ArgumentOutOfRangeException>(() => new CampaignOpeningPreamblePolicy(
             2,
             CampaignOpeningPreambleKind.NoOpeningNavalConvoyObligations,
@@ -292,4 +359,90 @@ public sealed class CampaignSetupTests
             CampaignWeatherPolicyKind.NoImmediateWeatherEffectSubjects,
             []));
     }
+
+    [Fact]
+    public void CatalogAdmitsOnlyExactExplicitNonePolicyForTheSetupPair()
+    {
+        Assert.All(Cna1979SetupCatalog.Definitions, definition =>
+            Assert.True(Cna1979SetupCatalog.IsAdmittedStageEntryPolicy(
+                definition.StageEntry,
+                definition.InitialGameTurn)));
+        Assert.False(Cna1979SetupCatalog.IsAdmittedStageEntryPolicy(null, 1));
+        Assert.False(Cna1979SetupCatalog.IsAdmittedStageEntryPolicy(
+            CreateStageEntryPolicy(2),
+            1));
+
+        StageEntryObligationKind[][] unsupportedSubjects =
+        [
+            [StageEntryObligationKind.HasObligations, StageEntryObligationKind.ExplicitNone,
+                StageEntryObligationKind.ExplicitNone, StageEntryObligationKind.ExplicitNone],
+            [StageEntryObligationKind.ExplicitNone, StageEntryObligationKind.HasObligations,
+                StageEntryObligationKind.ExplicitNone, StageEntryObligationKind.ExplicitNone],
+            [StageEntryObligationKind.ExplicitNone, StageEntryObligationKind.ExplicitNone,
+                StageEntryObligationKind.HasObligations, StageEntryObligationKind.ExplicitNone],
+            [StageEntryObligationKind.ExplicitNone, StageEntryObligationKind.ExplicitNone,
+                StageEntryObligationKind.ExplicitNone, StageEntryObligationKind.HasObligations],
+        ];
+
+        Assert.All(unsupportedSubjects, subjects =>
+            Assert.False(Cna1979SetupCatalog.IsAdmittedStageEntryPolicy(
+                CreateStageEntryPolicy(
+                    1,
+                    subjects[0],
+                    subjects[1],
+                    subjects[2],
+                    subjects[3]),
+                1)));
+    }
+
+    [Fact]
+    public void SetupHashEmbedsStageEntryPolicyInFrozenCanonicalOrder()
+    {
+        var canonical = Encoding.UTF8.GetString(CampaignSetupHash.SerializeCanonical(
+            Cna1979SetupCatalog.Definitions[0]));
+
+        Assert.Equal(
+            "{\"schemaVersion\":5,\"setupId\":\"rules-lab.initiative.predetermined\"," +
+            "\"isSynthetic\":true,\"initialGameTurn\":1," +
+            "\"initialInitiative\":{\"kind\":\"predetermined\",\"holder\":\"axis\"}," +
+            "\"openingPreamble\":{\"contractVersion\":1," +
+            "\"kind\":\"no-opening-naval-convoy-obligations\",\"sources\":[{" +
+            "\"sourceId\":\"sandtable-rules-lab\"," +
+            "\"locator\":\"opening-preamble.no-naval-convoy-obligations.v1\"}]}," +
+            "\"weather\":{\"contractVersion\":1," +
+            "\"kind\":\"no-immediate-weather-effect-subjects\",\"sources\":[{" +
+            "\"sourceId\":\"sandtable-rules-lab\"," +
+            "\"locator\":\"weather.no-immediate-effect-subjects.v1\"}]}," +
+            "\"stageEntry\":{\"contractVersion\":1,\"gameTurn\":1," +
+            "\"operationStage\":1,\"organization\":\"explicit-none\"," +
+            "\"navalConvoyArrival\":\"explicit-none\"," +
+            "\"fleetAssignment\":\"explicit-none\"," +
+            "\"fleetRepair\":\"explicit-none\",\"sources\":[{" +
+            "\"sourceId\":\"sandtable-rules-lab\"," +
+            "\"locator\":\"stage-entry.no-obligations.v1\"}]}," +
+            "\"content\":{\"schemaVersion\":2," +
+            "\"formatId\":\"sandtable.content-json.v1\"," +
+            "\"packId\":\"rules-lab.content.movement-contact.v1\"," +
+            "\"rulesetId\":\"cna-1979.1\"," +
+            "\"hash\":\"sha256:53d5b64f647251e3ac366c65f4ad05cae766afd7b70ee331d463e801496e2a99\"," +
+            "\"scenarioId\":\"movement-contact-lab\"},\"sources\":[{" +
+            "\"sourceId\":\"sandtable-rules-lab\"," +
+            "\"locator\":\"initiative.predetermined-axis.v1\"}]}",
+            canonical);
+    }
+
+    private static CampaignStageEntryPolicy CreateStageEntryPolicy(
+        int gameTurn,
+        StageEntryObligationKind organization = StageEntryObligationKind.ExplicitNone,
+        StageEntryObligationKind navalConvoyArrival = StageEntryObligationKind.ExplicitNone,
+        StageEntryObligationKind fleetAssignment = StageEntryObligationKind.ExplicitNone,
+        StageEntryObligationKind fleetRepair = StageEntryObligationKind.ExplicitNone) => new(
+            CampaignStageEntryPolicy.CurrentContractVersion,
+            gameTurn,
+            1,
+            organization,
+            navalConvoyArrival,
+            fleetAssignment,
+            fleetRepair,
+            [CampaignStageEntryPolicy.SourceReference]);
 }

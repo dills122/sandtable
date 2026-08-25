@@ -368,7 +368,7 @@ public sealed class ManeuverReportLifecycleTests : IDisposable
             ExerciseManifest.CurrentContractVersion,
             "organization-boundary.first",
             "rules-lab.initiative.predetermined",
-            "sha256:5ecf84d21a7ff95112b9b662915f6858926532d30be5a0eee3f1a45752fdc80a",
+            "sha256:c1688f8869ca66182b87f487ec34edbef617ff1158f7d8b0d3101fe3993978ef",
             "rules-lab.content.movement-contact.v1",
             "sha256:53d5b64f647251e3ac366c65f4ad05cae766afd7b70ee331d463e801496e2a99",
             "movement-contact-lab",

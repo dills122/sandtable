@@ -43,6 +43,14 @@ internal static class CampaignProjector
             NoObligationTacticalShippingResolved resolved => ApplyTactical(snapshot, resolved, context),
             InitiativeOrderDeclared declared => ApplyDeclaration(snapshot, declared, context),
             WeatherDetermined determined => ApplyWeather(snapshot, determined, context),
+            NoObligationOrganizationResolved resolved =>
+                ApplyOrganization(snapshot, resolved, context),
+            NoObligationNavalConvoyArrivalResolved resolved =>
+                ApplyArrival(snapshot, resolved, context),
+            NoObligationFleetAssignmentResolved resolved =>
+                ApplyAssignment(snapshot, resolved, context),
+            NoObligationFleetRepairResolved resolved =>
+                ApplyRepair(snapshot, resolved, context),
             CampaignSequenceAdvanced => throw new InvalidCampaignHistoryException(
                 "Legacy generic sequence events are not valid version-3 campaign history."),
             _ => throw new InvalidCampaignHistoryException("Unsupported campaign event type."),
@@ -59,7 +67,7 @@ internal static class CampaignProjector
             throw new InvalidCampaignHistoryException("A campaign can contain only one creation event.");
         }
 
-        if (created.ContractVersion != 4
+        if (created.ContractVersion != 5
             || created.StateVersion != 1
             || string.IsNullOrWhiteSpace(created.CampaignId)
             || !Cna1979Ruleset.IsCanonicalHash(created.RulesetHash)
@@ -86,7 +94,7 @@ internal static class CampaignProjector
         }
 
         var projected = new CampaignSnapshot(
-            5,
+            6,
             created.CampaignId,
             created.StateVersion,
             created.RulesetHash,
@@ -261,6 +269,70 @@ internal static class CampaignProjector
             throw new InvalidCampaignHistoryException(
                 "The Weather event produces invalid campaign state.");
         }
+        return projected;
+    }
+
+    private static CampaignSnapshot ApplyOrganization(
+        CampaignSnapshot? snapshot,
+        NoObligationOrganizationResolved resolved,
+        CampaignContentContext context) => ApplyStageEntry(
+            snapshot, resolved, context, "Organization",
+            StageEntryEventFactory.CreateOrganization);
+
+    private static CampaignSnapshot ApplyArrival(
+        CampaignSnapshot? snapshot,
+        NoObligationNavalConvoyArrivalResolved resolved,
+        CampaignContentContext context) => ApplyStageEntry(
+            snapshot, resolved, context, "Naval Convoy Arrival",
+            StageEntryEventFactory.CreateArrival);
+
+    private static CampaignSnapshot ApplyAssignment(
+        CampaignSnapshot? snapshot,
+        NoObligationFleetAssignmentResolved resolved,
+        CampaignContentContext context) => ApplyStageEntry(
+            snapshot, resolved, context, "Fleet Assignment",
+            StageEntryEventFactory.CreateAssignment);
+
+    private static CampaignSnapshot ApplyRepair(
+        CampaignSnapshot? snapshot,
+        NoObligationFleetRepairResolved resolved,
+        CampaignContentContext context) => ApplyStageEntry(
+            snapshot, resolved, context, "Fleet Repair",
+            StageEntryEventFactory.CreateRepair);
+
+    private static CampaignSnapshot ApplyStageEntry<TEvent>(
+        CampaignSnapshot? snapshot,
+        TEvent resolved,
+        CampaignContentContext context,
+        string mechanic,
+        Func<CampaignSnapshot, TEvent> create)
+        where TEvent : StageEntryResolved
+    {
+        if (snapshot is null)
+            throw new InvalidCampaignHistoryException(
+                $"A {mechanic} event cannot precede campaign creation.");
+        TEvent expected;
+        try
+        {
+            expected = create(snapshot);
+        }
+        catch (Exception exception) when (exception is ArgumentException
+            or ArithmeticException or InvalidOperationException)
+        {
+            throw new InvalidCampaignHistoryException(exception.Message);
+        }
+        if (resolved != expected)
+            throw new InvalidCampaignHistoryException(
+                $"The {mechanic} event is inconsistent with campaign history.");
+
+        var projected = snapshot with
+        {
+            StateVersion = resolved.StateVersion,
+            SequencePosition = resolved.SequencePosition,
+        };
+        if (!CampaignSnapshotValidator.IsValid(projected, context))
+            throw new InvalidCampaignHistoryException(
+                $"The {mechanic} event produces invalid campaign state.");
         return projected;
     }
 }

@@ -108,8 +108,8 @@ public sealed class ExerciseCanonicalEventRecord
 
 public static class ExerciseEvidenceCodec
 {
-    // The trusted v1 evidence profile is a clean-cut contract over Core's current v5 snapshot.
-    private const int CampaignSnapshotContractVersion = 5;
+    // The trusted v1 evidence profile is a clean-cut contract over Core's current v6 snapshot.
+    private const int CampaignSnapshotContractVersion = 6;
 
     private static readonly string[] AcceptedActionProperties =
     [

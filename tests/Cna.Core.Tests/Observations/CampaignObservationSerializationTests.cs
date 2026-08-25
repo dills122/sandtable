@@ -84,6 +84,7 @@ public sealed class CampaignObservationSerializationTests
             ],
             document.RootElement.EnumerateObject().Select(property => property.Name));
         Assert.DoesNotContain("contentPack", Encoding.UTF8.GetString(second), StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("stageEntry", Encoding.UTF8.GetString(second), StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("source", Encoding.UTF8.GetString(second), StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("random", Encoding.UTF8.GetString(second), StringComparison.OrdinalIgnoreCase);
     }

@@ -1,6 +1,6 @@
 # Operation-Stage Entry v1 Technical Design
 
-**Status:** Planning review Ready; owner decision and Task 001 contract freeze required; implementation not authorized
+**Status:** Implemented; STG-TASK-001 through STG-TASK-022 and STG-TASK-014A complete
 
 **Date:** 2026-08-24
 
@@ -61,8 +61,8 @@ There is no side-client-to-system-action edge and no stage-entry-to-Reserve exec
 
 ## Proposed decisions
 
-Implementation is gated on the owner disposition of `STG-DEC-001` through `STG-DEC-011`. The design
-applies them as follows:
+The owner accepted `STG-DEC-001` through `STG-DEC-011` on 2026-08-24. The design applies them as
+follows:
 
 - a new separate policy contract avoids silently changing the meaning of opening-preamble or Weather
   policy values;
@@ -75,6 +75,162 @@ applies them as follows:
 - the Stage 1 fixture policy cannot be reused for another pair; and
 - the ruleset manifest retains the approved explicit-empty procedure ruling rather than leaving the
   setup policy to invent mandatory-phase semantics by itself.
+
+## STG-TASK-001 technical freeze candidate
+
+This section is the post-merge technical overview and exact contract proposal. It was audited at
+`a022b784cda90be90ff6af9802c0c0352b9f89a6`. It freezes what later tasks are allowed to build, but
+does not itself authorize production implementation.
+
+### Authority and trust boundary
+
+The setup catalog is the sole author of Stage Entry admission. Its policy is retained in setup hash,
+creation history, snapshot, projection, and replay. Legal Actions may advertise one current trusted
+system candidate, but candidate membership does not grant transition authority: the matching
+Campaign command/event factory revalidates the exact pair, phase, policy, ruleset/setup identities,
+and catalog successor. The Umpire remains authoritative; no player text, model output, remote I/O,
+or Intelligence contract enters this path.
+
+The feature is deliberately asymmetric:
+
+```text
+synthetic setup policy (authority-only)
+  -> system candidate (current membership)
+  -> mechanic command/event (one phase only)
+  -> replay/projector recomputation
+  -> Reserve position (public audience derived; Reserve behavior absent)
+```
+
+### Frozen version matrix
+
+| Contract or identity | Merged value | Stage Entry v1 value | Reason |
+| --- | ---: | ---: | --- |
+| `Cna1979Ruleset.ContractVersion` | 3 | **4** | New adopted ruling changes ruleset hash identity. |
+| `Cna1979SetupCatalog.SchemaVersion` | 4 | **5** | Required Stage Entry policy changes setup canonical identity. |
+| `CreateCampaign` / `CampaignCreated` | 4 | **5** | Creation history now retains setup schema 5 and rejects v4. |
+| `CampaignSnapshot` | 5 | **6** | Snapshot setup bytes now require the Stage Entry policy and reject v5. |
+| `CampaignStageEntryPolicy` | absent | **1** | New closed pair-bound policy contract. |
+| Four Stage Entry commands | absent | **1 each** | New internal, mechanic-specific commands. |
+| Four Stage Entry events | absent | **1 each** | New replay evidence; no shared generic event version. |
+| `CampaignActionCandidate` | 1 | **1 (unchanged)** | Existing payload-free candidate envelope already fits. |
+| Legal Action set / submission | 1 / 1 | **unchanged** | Existing concurrency and membership binding remains authoritative. |
+| Land sequence / catalog | 2 / 2 | **unchanged** | Required positions and order already exist. |
+| `CampaignOperationStageOrder` | 2 | **unchanged** | Existing pair-keyed order derives the Reserve audience. |
+| Campaign Observation | 2 | **unchanged** | No new public field; audience is derived in projection. |
+| Opening-preamble / Weather policy | 1 / 1 | **unchanged** | Separate Stage Entry policy avoids redefining them. |
+
+The cut is intentionally strict. The new executable accepts only the right-hand versions; it does
+not synthesize a policy for old creation or snapshot bytes. Exact resulting ruleset and setup hashes
+are golden outputs of Tasks 002 and 004 respectively; Task 001 freezes their inputs and canonical
+order rather than fabricating preimplementation digest values.
+
+### Frozen policy contract
+
+The exact type identity is `CampaignStageEntryPolicy`, contract 1. The exact discriminator is
+`StageEntryObligationKind` with numeric ordinals `ExplicitNone = 1` and `HasObligations = 2`.
+Zero and every other numeric value reject. Canonical strings are `explicit-none` and
+`has-obligations`; `HasObligations` is recognized for strict decoding but unsupported for v1
+admission.
+
+The C# constructor/property order and canonical JSON property order are identical:
+
+```text
+contractVersion, gameTurn, operationStage, organization,
+navalConvoyArrival, fleetAssignment, fleetRepair, sources
+```
+
+`gameTurn` is the setup's initial Game Turn and `operationStage` is exactly `1`. All four assertions
+must be `ExplicitNone`. `sources` contains exactly one entry with canonical source object order
+`sourceId`, `locator` and value
+`sandtable-rules-lab:stage-entry.no-obligations.v1`. Sources are sorted ordinally by source ID then
+locator before retention; missing, duplicate, extra, reordered, or altered values reject.
+
+`CampaignSetupDefinition`, setup-hash input, and `CampaignSetupSnapshot` insert the required
+`stageEntry` value after `weather` and before `content`. The embedded canonical setup order becomes:
+
+```text
+schemaVersion, setupId, setupHash (snapshot only), isSynthetic, initialGameTurn,
+initialInitiative, openingPreamble, weather, stageEntry, content, sources
+```
+
+The setup-hash form omits `setupHash`, as it does today. No overload or default may create a setup
+without the required policy.
+
+### Frozen actions, commands, and events
+
+All four candidates remain contract 1, payload-free, and omit `operationStage`; the exact semantic
+bytes are `contractVersion`, `kind`. Their stable kinds and derived IDs are:
+
+| Kind | Action ID |
+| --- | --- |
+| `resolve-no-obligation-organization` | `sha256:2200e6c4cef001d344d85de78fc7a10c13b32c12975d905c633ca430c3c4bd4c` |
+| `resolve-no-obligation-naval-convoy-arrival` | `sha256:a49ff99f7e52193fdee44b50751e64025121cb9a2a75a054fdf2ad045e013632` |
+| `resolve-no-obligation-fleet-assignment` | `sha256:c2d7dae34d20f826d2e7e682b8d3b437224e42b522857f63b3869d1a1bf3bcc5` |
+| `resolve-no-obligation-fleet-repair` | `sha256:ea4fe4f27344a8659c81b05fd84df2e260bb22da1edf1115cd4d75dfd89d7d3e` |
+
+Each internal command is contract 1 and carries derived-record constructor order
+`ExpectedStateVersion`, `ExpectedPositionId`; commands have no external serializer. Event type
+strings are exact and follow the existing mechanic-event convention:
+
+```text
+no-obligation-organization-resolved
+no-obligation-naval-convoy-arrival-resolved
+no-obligation-fleet-assignment-resolved
+no-obligation-fleet-repair-resolved
+```
+
+Each derived event record hard-codes contract 1 through `CampaignEvent` and uses this constructor
+order (the inherited `ContractVersion` is not a parameter and `eventType` is serializer-only):
+
+```text
+campaignId, stateVersion, fromPositionId, gameTurn, operationStage,
+sequencePosition, sources
+```
+
+The distinct record names are `NoObligationOrganizationResolved`,
+`NoObligationNavalConvoyArrivalResolved`, `NoObligationFleetAssignmentResolved`, and
+`NoObligationFleetRepairResolved`. Their canonical JSON property order is:
+
+```text
+contractVersion, eventType, campaignId, stateVersion, fromPositionId,
+gameTurn, operationStage, sequencePosition, sources
+```
+
+Starting from the merged Weather-at-Organization snapshot at state version 6, the four accepted
+events commit versions 7, 8, 9, and 10 respectively. No other event may occupy those checkpoints in
+v1, and a rejected action leaves the current version unchanged.
+
+The mechanic source set is exactly the repository-synthetic source plus one primary locator. Its
+canonical retained order is source ID then locator:
+
+| Event | Primary locator |
+| --- | --- |
+| Organization | `spi-1979-land-rules:5.2.organization` |
+| Naval Convoy Arrival | `spi-1979-land-rules:5.2.naval-convoy-arrival` |
+| Fleet Assignment | `spi-1979-land-rules:5.2.commonwealth-fleet` |
+| Fleet Repair | `spi-1979-land-rules:5.2.commonwealth-fleet` |
+
+The ruleset ruling identity, alternatives, selected behavior, protecting IDs, and two-source set in
+the next section are also exact. Canonical ruleset serialization sorts ruling IDs, string sets, and
+sources ordinally; no insertion-order meaning is introduced.
+
+### Inventory method and result
+
+The Task 001 audit searched every C# constructor of `CampaignSetupDefinition`,
+`CampaignSetupSnapshot`, `CampaignCreated`, and `CampaignSnapshot`; every setup/snapshot/event
+serializer and strict version check; every `CampaignSetupHash.Calculate` call; every current
+ruleset/setup hash literal; and the Exercise semantic snapshot decoder. The frozen file map below
+covers all direct constructor, serializer, validator, version, checked-literal, and hash consumers
+found at the audited commit.
+
+Consumers that only pass catalog-derived `SetupId`/`SetupHash` at runtime need no contract edit and
+remain regression evidence. Build identity codecs also retain values supplied by a completed run and
+need no schema change. The identity lane in Tasks 002-010 is one non-mergeable clean-cut workstream.
+Tasks 002-003 produce focused RED/GREEN contract evidence. Tasks 004-009 record their exact owned
+changes, expected unresolved test-project compiler/golden failures, and any available source/Core
+build evidence; they must not claim executable GREEN while later-owned required-constructor and
+identity consumers remain unmigrated. Task 010 resolves the recorded failure inventory and is the
+first required green test-project build/full checkpoint. No partial identity-lane commit may merge.
 
 ### Ruleset ruling identity
 
@@ -98,10 +254,12 @@ Event source sets are also exact: Organization uses
 synthetic source above, in canonical order. The resulting ruleset version/hash is retained by
 creation, legal-action, event, snapshot, and replay evidence.
 
-## Contract sketches
+## Frozen contract shapes
 
-These are design shapes, not frozen C# signatures. Phase 0 freezes exact names, numeric versions,
-field order, action identifiers, and enum ordinals against the then-current main branch.
+These shapes are subordinate to, and must be read with, the Task 001 freeze above. Type/record names,
+numeric versions, enum ordinals, constructor field order, canonical JSON order, action identifiers,
+and nullability called out by the freeze are exact. Implementation may refine private helper
+structure and file-local organization only; it may not change those contract semantics.
 
 ### Setup policy
 
@@ -140,11 +298,13 @@ resolve-no-obligation-fleet-repair
 ```
 
 Each candidate uses the existing closed action-set envelope and has no payload. The envelope carries
-campaign/state/ruleset/position/audience; the candidate carries only contract version, action ID,
-kind, and the existing optional operation-stage field. Submission preserves Legal Actions v1:
-contract version, campaign ID, expected state/position, audience, and opaque action ID. It does not
-duplicate ruleset hash or kind. The current position and admitted setup policy contain all required
-semantics. Unknown or payload-bearing variants reject.
+campaign/state/ruleset/position/audience; the candidate carries contract version, action ID, and
+kind. Although the shared base type retains a nullable `OperationStage` property, all four Stage
+Entry candidates leave it null, omit it from canonical JSON, and derive their exact IDs from only
+`contractVersion` and `kind`. Submission preserves Legal Actions v1: contract version, campaign ID,
+expected state/position, audience, and opaque action ID. It does not duplicate ruleset hash or kind.
+The current position and admitted setup policy contain all required semantics. Unknown or
+payload-bearing variants reject.
 
 ### Commands and events
 
@@ -283,16 +443,18 @@ authority digest, Chronicle bytes, and current Reserve audience as the original 
 ## Delivery plan
 
 No implementation task begins until the specification completion gate passes. Each task is refined
-to at most five material files with focused RED/GREEN evidence. Generated goldens/fixtures do not
-authorize unrelated refactoring.
+to at most five material files. Tasks 002-003 and 011 onward require focused RED/GREEN evidence.
+Tasks 004-009 use the explicitly deferred identity-lane evidence contract above; Task 010 must turn
+the complete recorded failure inventory green before the lane can merge. Generated goldens/fixtures
+do not authorize unrelated refactoring.
 
-The file lists below are the frozen anticipated material boundaries. Task 001 must revise this plan
-before implementation if rebase drift makes any boundary inaccurate; there are no conditional
-“split later” tasks.
+The file lists below are the review-candidate material boundaries. Owner acceptance freezes them.
+After acceptance, any rebase drift must return to Task 001 before implementation; there are no
+conditional “split later” tasks.
 
 | Task | Outcome and evidence | Material files (maximum five) | Depends on |
 | --- | --- | --- | --- |
-| `STG-TASK-001` | Freeze owner decisions, versions, enum ordinals, field order, sources, file map, and complete traceability; rerun an exhaustive constructor/serializer/version/hash consumer inventory before freezing the map. | `docs/research/operation-stage-entry-spike.md`; `docs/specs/operation-stage-entry-v1.md`; `docs/design/operation-stage-entry-v1.md` | accepted `EXR-TASK-014`; owner approval |
+| `STG-TASK-001` | Freeze owner decisions, versions, enum ordinals, field order, sources, file map, and complete traceability; rerun an exhaustive constructor/serializer/version/hash consumer inventory before freezing the map. Completion requires owner approval and a current independent review with no unresolved P0/P1. | `docs/research/operation-stage-entry-spike.md`; `docs/specs/operation-stage-entry-v1.md`; `docs/design/operation-stage-entry-v1.md` | accepted `EXR-TASK-014` |
 | `STG-TASK-002` | Add the exact ruling, migrate ruleset version/hash, and update strict manifest goldens. | `src/Cna.Core/Rules/Cna1979Ruleset.cs`; `src/Cna.Core/Rules/RulesetManifest.cs`; `tests/Cna.Core.Tests/Rules/RulesetManifestTests.cs`; `tests/Cna.Core.Tests/Rules/StageEntryRulingTests.cs` | 001 |
 | `STG-TASK-003` | Define and strictly encode the closed pair-bound policy; verify malformed, source-order, culture, and unsupported-kind matrices. | `src/Cna.Core/Setups/CampaignStageEntryPolicy.cs`; `src/Cna.Core/Setups/CampaignStageEntryPolicyCodec.cs`; `tests/Cna.Core.Tests/Setups/CampaignStageEntryPolicyTests.cs` | 002 |
 | `STG-TASK-004` | Bind policy into setup definition/catalog/hash and both synthetic setup goldens; migrate the opening-preamble definition constructor with no compatibility default. | `src/Cna.Core/Setups/CampaignSetupDefinition.cs`; `src/Cna.Core/Setups/Cna1979SetupCatalog.cs`; `src/Cna.Core/Setups/CampaignSetupHash.cs`; `tests/Cna.Core.Tests/Setups/CampaignSetupTests.cs`; `tests/Cna.Core.Tests/Campaigns/OpeningPreambleCampaignTests.cs` | 003 |
@@ -302,19 +464,20 @@ before implementation if rebase drift makes any boundary inaccurate; there are n
 | `STG-TASK-007A` | Migrate observation identity goldens and the shared observation setup/snapshot constructor helper to the accepted contracts and identities. | `tests/Cna.Core.Tests/Observations/CampaignObservationSerializationTests.cs`; `tests/Cna.Core.Tests/Observations/Fixtures/campaign-observation-axis.v1.golden.json`; `tests/Cna.Core.Tests/Observations/CampaignObservationTestData.cs` | 006 |
 | `STG-TASK-008` | Migrate all checked Exercise/Maneuver manifests and their governing identity examples to the accepted identities and exact canonical bytes. | `scenarios/exercises/rules-lab.organization.v1.json`; `scenarios/exercises/rules-lab.organization.baseline.v1.json`; `scenarios/maneuvers/rules-lab.serial.v1.json`; `docs/specs/exercise-harness-v1.md`; `docs/specs/weather-determination-v1.md` | 006 |
 | `STG-TASK-009` | Migrate ExerciseRunner contract/report test literals to the accepted identities. | `tests/Cna.ExerciseRunner.Tests/Artifacts/ExerciseManifestCodecTests.cs`; `tests/Cna.ExerciseRunner.Tests/Artifacts/ManeuverManifestCodecTests.cs`; `tests/Cna.ExerciseRunner.Tests/Artifacts/ManeuverReportCodecTests.cs`; `tests/Cna.ExerciseRunner.Tests/Artifacts/ManeuverReportLifecycleTests.cs`; `tests/Cna.ExerciseRunner.Tests/Execution/ManeuverExecutorTests.cs` | 006 |
-| `STG-TASK-010` | Migrate ExerciseRunner's strict snapshot decoder contract and remaining Exercise CLI fixture identity, with focused semantic-reader version rejection/acceptance evidence; then close the non-mergeable identity lane with full Weather/Exercise gates. | `src/Cna.ExerciseRunner/Artifacts/ExerciseEvidenceCodec.cs`; `tests/Cna.ExerciseRunner.Tests/Artifacts/ExerciseBundleSemanticValidatorTests.cs`; `tests/Cna.ExerciseRunner.Tests/Commands/ManeuverRunCommandTests.cs` | 007, 007A, 008-009 |
+| `STG-TASK-010` | Migrate ExerciseRunner's strict snapshot decoder contract, remaining Exercise CLI fixture identity, and the derived step-evidence hash golden, with focused semantic-reader version rejection/acceptance evidence; then close the non-mergeable identity lane with full Weather/Exercise gates. | `src/Cna.ExerciseRunner/Artifacts/ExerciseEvidenceCodec.cs`; `tests/Cna.ExerciseRunner.Tests/Artifacts/ExerciseBundleSemanticValidatorTests.cs`; `tests/Cna.ExerciseRunner.Tests/Artifacts/ExerciseEvidenceWriterTests.cs`; `tests/Cna.ExerciseRunner.Tests/Commands/ManeuverRunCommandTests.cs` | 007, 007A, 008-009 |
 | `STG-TASK-011` | Characterize then make system dispatch semantic while preserving existing Initiative/convoy/Weather bytes. | `src/Cna.Core/Actions/CampaignLegalActions.cs`; `tests/Cna.Core.Tests/Actions/CampaignLegalActionsTests.cs` | 010 |
 | `STG-TASK-012` | Add four closed payload-free candidates and strict canonical candidate codec evidence. | `src/Cna.Core/Actions/CampaignActionCandidate.cs`; `src/Cna.Core/Actions/CampaignLegalActionSerializer.cs`; `tests/Cna.Core.Tests/Actions/CampaignStageEntryActionContractTests.cs` | 010 |
 | `STG-TASK-013` | Add four distinct event contracts and strict canonical event codec evidence with exact per-mechanic sources. | `src/Cna.Core/Campaigns/StageEntryEvents.cs`; `src/Cna.Core/Campaigns/CampaignEventSerializer.cs`; `tests/Cna.Core.Tests/Campaigns/StageEntryEventContractTests.cs` | 005, 010 |
-| `STG-TASK-014` | Wire exact system membership, commands, and candidate-to-command mapping; unsupported policy/pair/audience yields zero executable events. | `src/Cna.Core/Actions/CampaignLegalActions.cs`; `src/Cna.Core/Actions/CampaignActionExecution.cs`; `src/Cna.Core/Campaigns/StageEntryCommands.cs`; `tests/Cna.Core.Tests/Actions/CampaignStageEntryMembershipTests.cs` | 011-013 |
-| `STG-TASK-015` | Organization vertical transition: exact policy/factory/projection, one event, authority preservation, and forged-history negatives. | `src/Cna.Core/Campaigns/CampaignEngine.cs`; `src/Cna.Core/Campaigns/CampaignProjector.cs`; `tests/Cna.Core.Tests/Campaigns/StageEntryOrganizationTests.cs` | 014 |
-| `STG-TASK-016` | Arrival vertical transition with exact successor/source and no invented arrivals or logistics facts. | `src/Cna.Core/Campaigns/CampaignEngine.cs`; `src/Cna.Core/Campaigns/CampaignProjector.cs`; `tests/Cna.Core.Tests/Campaigns/StageEntryArrivalTests.cs` | 015 |
-| `STG-TASK-017` | Fleet Assignment vertical transition, separate from Repair and with no invented ships/choice. | `src/Cna.Core/Campaigns/CampaignEngine.cs`; `src/Cna.Core/Campaigns/CampaignProjector.cs`; `tests/Cna.Core.Tests/Campaigns/StageEntryFleetAssignmentTests.cs` | 016 |
-| `STG-TASK-018` | Fleet Repair reaches the exact catalog Reserve position with null stored active side and no Reserve action. | `src/Cna.Core/Campaigns/CampaignEngine.cs`; `src/Cna.Core/Campaigns/CampaignProjector.cs`; `src/Cna.Core/Campaigns/CampaignSnapshotValidator.cs`; `tests/Cna.Core.Tests/Campaigns/StageEntryFleetRepairTests.cs` | 017 |
+| `STG-TASK-014` | Wire exact system membership, commands, and candidate-to-command mapping; unsupported policy/pair/audience yields zero executable events. Update the existing post-Weather system-set assertion to the new Organization membership boundary without accepting the transition before Task 015. | `src/Cna.Core/Actions/CampaignLegalActions.cs`; `src/Cna.Core/Actions/CampaignActionExecution.cs`; `src/Cna.Core/Campaigns/StageEntryCommands.cs`; `tests/Cna.Core.Tests/Actions/CampaignStageEntryMembershipTests.cs`; `tests/Cna.Core.Tests/Actions/CampaignLegalActionsTests.cs` | 011-013 |
+| `STG-TASK-014A` | Decouple ExerciseRunner's zero-active-audience failure fixtures from the evolving Core terminal boundary so Tasks 014-018 retain stable failure-path evidence and full gates. | `tests/Cna.ExerciseRunner.Tests/Execution/ExerciseExecutorTests.cs`; `tests/Cna.ExerciseRunner.Tests/Artifacts/ExerciseEvidenceWriterTests.cs` | 014 |
+| `STG-TASK-015` | Organization vertical transition: exact policy/factory/projection, one event, authority preservation, and forged-history negatives. Update the existing membership frontier so Organization is accepted while Arrival, Assignment, and Repair remain unsupported. | `src/Cna.Core/Campaigns/CampaignEngine.cs`; `src/Cna.Core/Campaigns/CampaignProjector.cs`; `tests/Cna.Core.Tests/Campaigns/StageEntryOrganizationTests.cs`; `tests/Cna.Core.Tests/Actions/CampaignStageEntryMembershipTests.cs` | 014A |
+| `STG-TASK-016` | Arrival vertical transition with exact successor/source and no invented arrivals or logistics facts. Update the existing membership frontier so Arrival joins Organization as accepted while Assignment and Repair remain unsupported. | `src/Cna.Core/Campaigns/CampaignEngine.cs`; `src/Cna.Core/Campaigns/CampaignProjector.cs`; `tests/Cna.Core.Tests/Campaigns/StageEntryArrivalTests.cs`; `tests/Cna.Core.Tests/Actions/CampaignStageEntryMembershipTests.cs` | 015 |
+| `STG-TASK-017` | Fleet Assignment vertical transition, separate from Repair and with no invented ships/choice. Update the existing membership frontier so Assignment joins Organization and Arrival as accepted while Repair remains unsupported. | `src/Cna.Core/Campaigns/CampaignEngine.cs`; `src/Cna.Core/Campaigns/CampaignProjector.cs`; `tests/Cna.Core.Tests/Campaigns/StageEntryFleetAssignmentTests.cs`; `tests/Cna.Core.Tests/Actions/CampaignStageEntryMembershipTests.cs` | 016 |
+| `STG-TASK-018` | Fleet Repair reaches the exact catalog Reserve position with null stored active side and no Reserve action. Update the existing membership frontier so all four Stage Entry transitions are accepted. | `src/Cna.Core/Campaigns/CampaignEngine.cs`; `src/Cna.Core/Campaigns/CampaignProjector.cs`; `src/Cna.Core/Campaigns/CampaignSnapshotValidator.cs`; `tests/Cna.Core.Tests/Campaigns/StageEntryFleetRepairTests.cs`; `tests/Cna.Core.Tests/Actions/CampaignStageEntryMembershipTests.cs` | 017 |
 | `STG-TASK-019` | One pure campaign-authority resolver serves legal actions and observations; act-first/last and `GetNext` continuity pass. | `src/Cna.Core/Campaigns/FirstActingSideResolver.cs`; `src/Cna.Core/Actions/CampaignLegalActions.cs`; `src/Cna.Core/Observations/CampaignObservationProjector.cs`; `tests/Cna.Core.Tests/Observations/CampaignReserveAudienceTests.cs` | 018 |
 | `STG-TASK-020` | Close two-setup end-to-end, fresh replay, hidden-opponent byte invariance, and public-surface evidence. | `tests/Cna.Core.Tests/Campaigns/StageEntryCampaignTests.cs`; `tests/Cna.Core.Tests/Campaigns/CampaignReplayPreparationTests.cs`; `tests/Cna.Core.Tests/Observations/CampaignObservationPrivacyTests.cs`; `tests/Cna.Core.Tests/Actions/CampaignLegalActionsTests.cs`; `tests/Cna.Core.Tests/Campaigns/AuthorityBoundaryTests.cs` | 019 |
 | `STG-TASK-021` | Reconcile the governing repository map, roadmap, naming, and architectural rationale with delivered behavior. | `README.md`; `docs/roadmap/pre-alpha-roadmap.md`; `naming-overview.md`; `tech-design.md` | 020 |
-| `STG-TASK-022` | Reconcile planning statuses/evidence, run Core/solution/`just check`, and obtain independent implementation review. | `docs/research/operation-stage-entry-spike.md`; `docs/specs/operation-stage-entry-v1.md`; `docs/design/operation-stage-entry-v1.md` | 021 |
+| `STG-TASK-022` | Reconcile planning statuses/evidence, run Core/solution/`just check`, and close the already-obtained final independent implementation review; the 3-of-3 review limit permits no new instance. | `docs/research/operation-stage-entry-spike.md`; `docs/specs/operation-stage-entry-v1.md`; `docs/design/operation-stage-entry-v1.md` | 021 |
 
 ## Dependency graph and checkpoints
 
@@ -344,13 +507,54 @@ before implementation if rebase drift makes any boundary inaccurate; there are n
 | Requirement group | Owning tasks/checkpoint | Required evidence |
 | --- | --- | --- |
 | `STG-001`-`004` | 003-010 / identity migration | policy/setup/creation/snapshot strict goldens, source/pair/hash/order/old-version matrices, all identity consumers migrated |
-| `STG-005`-`016`, `STG-020`-`024` | 011-019 / foundation and authority | exact system candidates, action/event codecs, membership/stale/order/policy/successor tests, one-event transitions |
+| `STG-005`-`016` | 011-019 / foundation and authority | exact system candidates, action/event codecs, membership/stale/order/policy/successor tests, one-event transitions |
+| `STG-020`-`024` | 014-020 / authority and completion | exact four-event ordering, unsupported-pair checks, convoy distinction, derived Reserve audience, deterministic/public-surface end-to-end evidence |
 | `STG-017`-`019` | 015-020 / authority and completion | authority-preservation digest, forged-history replay, fog byte pairs, public-surface/reference tests |
 | `STG-025` | 001-010, 013 / identity and foundation | exact ruling/protecting IDs/source sets, ruleset-hash golden, retained creation/snapshot/event/replay/Exercise identities |
-| `STG-NFR-001`-`002` | 002-013 / identity and foundation | strict/canonical contract matrices and cross-process/culture equality |
+| `STG-NFR-001` | 002-013 / identity and foundation | strict/canonical contract matrices, version/unknown/reordered rejection, and culture/collection-order equality |
+| `STG-NFR-002` | 002-020 / identity through completion | canonical identity/action/event evidence plus accepted-transition, projection, fresh-replay, culture, collection-order, and byte-equality checks |
 | `STG-NFR-003`-`005` | 014-020 / authority and completion | public-surface, fog invariance, deterministic unit/end-to-end/replay evidence |
-| `STG-NFR-006` | 001-010 including 007A, and every later task; 022 / all checkpoints | frozen maximum-five-file map; focused per-slice RED/GREEN; full Weather/Exercise gates at identity checkpoint 010 and every later checkpoint |
-| `STG-AC-001`-`012` | 014-022 / completion | two-setup end-to-end cases, act-first/last Reserve audience, `GetNext`, fresh-session replay, full repository gate |
+| `STG-NFR-006` | 001-010 including 007A, and every later task; 022 / all checkpoints | frozen maximum-five-file map; focused GREEN at 002-003; recorded non-green inventory/source evidence at 004-009; full GREEN at 010; focused RED/GREEN and checkpoint gates thereafter |
+| `STG-AC-001` | 003-004, 011-015, 020 / checkpoint 022 | admitted policy plus exact system/empty-side action sets at Organization in both setups |
+| `STG-AC-002` | 012-020 / checkpoint 022 | four candidate/event contracts and exact accepted transition sequence |
+| `STG-AC-003` | 015-020 / checkpoint 022 | per-transition authority-preservation digest |
+| `STG-AC-004` | 003-006, 014-020 / checkpoint 022 | policy/source mutation at creation, projection, query, and submission |
+| `STG-AC-005` | 011-020 / checkpoint 022 | stale, duplicate, audience, position, and ordering rejection with zero events |
+| `STG-AC-006` | 005-007, 013, 015-020 / checkpoint 022 | strict event/history identity plus skipped, reordered, pair, and successor forgery rejection |
+| `STG-AC-007` | 019-020 / checkpoint 022 | semantic and byte-equal side views under hidden-opponent mutation |
+| `STG-AC-008` | 018-020 / checkpoint 022 | act-last first-side audience, null authoritative active side, unchanged initiative, and `GetNext` |
+| `STG-AC-009` | 003, 006, 014, 020 / checkpoint 022 | strict unsupported-kind decoding and unsupported pair/stage/turn rejection |
+| `STG-AC-010` | 005-010, 013-020 / checkpoint 022 | migrated creation/snapshot identities, four event bytes, and fresh-session replay equality |
+| `STG-AC-011` | 020 / checkpoint 022 | public-surface and production-reference boundary evidence |
+| `STG-AC-012` | 018-020 / checkpoint 022 | exact Reserve authority position, derived audience, empty system set, and no Reserve behavior |
+
+### Decision-to-requirement traceability
+
+| Decision | Requirements / acceptance protected | Implementation tasks | Review evidence at Task 001 |
+| --- | --- | --- | --- |
+| `STG-DEC-001` | `STG-001`-`002`, `STG-021`; `STG-AC-001`, `009` | 003-004, 014-020 | Exact two-setup, Stage 1 policy and fail-closed pair boundary frozen. |
+| `STG-DEC-002` | `STG-001`-`004`; `STG-AC-004`, `009` | 003-010, 014-018 | Four independent assertions, exact source, ordinals, and field order frozen. |
+| `STG-DEC-003` | `STG-005`-`016`, `STG-020`; `STG-AC-002`, `005` | 011-020 | Four action/command/event identities, replay closure, and no generic bypass frozen. |
+| `STG-DEC-004` | `STG-005`-`006`; `STG-AC-001`-`003` | 014-015, 020 | Organization remains one empty barrier; positive ordering is absent. |
+| `STG-DEC-005` | `STG-009`-`012`, `STG-016`; `STG-AC-002`, `006` | 013-018, 020 | Assignment and Repair retain distinct positions and events. |
+| `STG-DEC-006` | `STG-012`, `019`, `023`; `STG-AC-008`, `012` | 018-020 | Exact null-active-side Reserve successor and derived audience frozen. |
+| `STG-DEC-007` | `STG-021`-`022`; `STG-AC-009` | 014, 020 | Later-stage/general-convoy reuse explicitly rejects. |
+| `STG-DEC-008` | `STG-002`-`003`, `021`; `STG-AC-004`, `009` | 003-004, 014, 020 | Synthetic evidence and recognized unsupported kind are explicit. |
+| `STG-DEC-009` | `STG-025`; `STG-AC-001`, `002`, `004`-`006`, `009`-`010` | 002, 007-010, 013, 020 | Exact ruling, alternatives, protecting IDs, and sources frozen. |
+| `STG-DEC-010` | `STG-013`-`015`; `STG-AC-001`, `005` | 011-014, 020 | Existing Legal Actions versions/field ownership stay unchanged. |
+| `STG-DEC-011` | `STG-021`; `STG-AC-009` | 003, 014, 020-022 | Test claims stop at modeled policy-kind negatives. |
+
+### Task 001 acceptance and verification
+
+- **Acceptance:** the merged predecessor commit is recorded; all eleven decisions have an explicit
+  recommended disposition; every changed or intentionally unchanged contract has an exact version;
+  the new enum, strings, action IDs, field order, and source identities are fixed; the file map has
+  no task above five material files; and each requirement/decision reaches a task and evidence gate.
+- **Verification:** rerun repository `rg` inventories for constructors, serializers, strict version
+  checks, hash literals, and Exercise snapshot decoding; check all three planning documents for
+  conflict; run Markdown whitespace/diff checks; and complete the bounded independent review cycle.
+- **Status:** complete. `EXR-TASK-014` is merged, the owner accepted all eleven decisions, and final
+  independent review instance 3 of 3 returned `Ready` with no actionable P0-P3 findings.
 
 ## Risks and stop conditions
 
@@ -381,7 +585,7 @@ and retains the current Weather-at-Organization boundary. No campaign should be 
 - Are clean-cut contract migrations separated enough to remain reviewable?
 - Does the Stage 1-only policy make every deferred Task 3.2 dependency explicit and fail closed?
 
-## Independent planning review
+## Prior independent planning review
 
 Three bounded fresh-context passes concluded with a **Ready** verdict and no unresolved P0/P1
 finding. Reconciliation fixed the Reserve catalog/audience model, preserved Legal Actions v1
@@ -400,4 +604,57 @@ and 007A, assigns direct setup/snapshot constructors and current-version asserti
 must rerun this exhaustive inventory before freezing versions and files. Final-product review
 instance 3 of 3 confirmed the corrected plan is implementation-ready as a gated plan. Its only
 remaining P2 concerned Exercise early-profile readback, not this task graph, and that implementation
-follow-up was corrected afterward. Owner approval and Task 001 still gate implementation.
+follow-up was corrected afterward. Those historical reviews did not inspect this post-merge Task
+ 001 freeze. Owner approval still gates implementation.
+
+### STG-TASK-001 review cycle
+
+The post-merge freeze used the maximum three bounded fresh-context instances. Instances 1 and 2
+returned `Not ready` without P0/P1 findings; all findings were accepted and corrected. Reconciliation
+completed completion-lane and acceptance-scenario traceability, separated event record parameters
+from canonical JSON, made the hash inventory reproducible, removed stale unfrozen-shape language,
+fixed Stage Entry candidates to null/omitted `OperationStage`, and made the atomic identity-lane
+evidence contract executable. Final instance 3 of 3 returned **Ready** with no actionable P0-P3
+findings. The project owner accepted `STG-DEC-001` through `STG-DEC-011` and this freeze as written
+on 2026-08-24. `STG-TASK-001` through `STG-TASK-019` plus `STG-TASK-014A` are complete: the
+clean-cut identity lane is green, all four Stage Entry candidate/event/command contracts have strict
+evidence, semantic system membership and mapping are wired, and ExerciseRunner failure fixtures no
+longer depend on the moving Core terminal boundary. Organization now advances through one exact
+event to Naval Convoy Arrival with projection/replay recomputation and authority preservation;
+Naval Convoy Arrival now also advances through one exact event to Fleet Assignment without
+inventing arrival or logistics facts. Fleet Assignment advances through its own payload-free event
+to Fleet Repair without inventing ships or a player choice. Fleet Repair now reaches the exact
+catalog first-acting-side Reserve position while retaining a null stored active side and exposing no
+Reserve action. One pure pair-keyed campaign resolver now supplies both observation and legal-action
+projection; act-first and act-last histories expose the correct source-free Reserve audience while
+authority remains catalog-exact and `GetNext` remains valid. Completion of `STG-TASK-019` made
+`STG-TASK-020` dependency-eligible. Authority-checkpoint review instance 3 of 3 found no production
+or test defect and one P2 planning-state inconsistency because the pre-review record called Task 020
+authorized rather than eligible. That finding is accepted and reconciled; this post-review record
+now authorizes `STG-TASK-020` under the dependency graph and evidence checkpoints above. The
+implementation foundation review found one
+P2 Stage Entry codec strictness defect; the accepted two-file correction passed review instance 2
+of 3 with no actionable findings before Task 015 began.
+The owner-requested implementation checkpoint was the one-off fourth and final review instance; it
+returned **Ready with non-blocking follow-ups** for Tasks 002-003, with no P0-P2 findings.
+
+`STG-TASK-020` is complete. Both admitted setups reach Reserve through the exact ten-event history
+and current action succession; canonical event round-trips reproduce byte-identical authority and
+legal-action sets at every prefix. Opponent-only changes leave both side observations and side
+legal-action bytes identical through Reserve, raw Stage Entry authority remains internal and absent
+from DecisionWorker/Intelligence source, and the legacy generic command remains rejected at every
+Stage Entry checkpoint. `STG-TASK-021` is authorized.
+
+`STG-TASK-021` is complete. `README.md`, the pre-alpha roadmap, naming overview, and architectural
+rationale now distinguish the engine's delivered explicit-empty path to Reserve from the checked
+Exercise fixture's intentionally earlier Organization stop. They identify snapshot contract 6,
+ruleset manifest contract 4, setup schema 5, the four mechanic-specific Stage Entry events, null
+authoritative `ActiveSide` with derived Reserve audience, and Reserve as the next engine package.
+The contradiction scan and repository diff check are clean. `STG-TASK-022` is authorized.
+
+`STG-TASK-022` closes the package. The already-obtained final authority review (instance 3 of 3)
+found no production or test defect; its sole P2 planning-state finding was accepted and corrected
+before Task 020 began. No additional review instance was created. Final `just check` restored the
+solution, passed format verification, built with 0 warnings and 0 errors, and passed 619/619 tests
+with no failures or skips. All Stage Entry v1 tasks and evidence checkpoints are complete; Reserve
+remains explicitly out of scope and is the next authoritative-engine planning package.

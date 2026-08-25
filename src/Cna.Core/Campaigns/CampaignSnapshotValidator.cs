@@ -26,8 +26,8 @@ internal static class CampaignSnapshotValidator
 
     public static bool IsLocallyValid(CampaignSnapshot snapshot)
     {
-        if (snapshot.ContractVersion != 5
-            || snapshot.StateVersion is < 1 or > 6
+        if (snapshot.ContractVersion != 6
+            || snapshot.StateVersion is < 1 or > 10
             || !IsStableId(snapshot.CampaignId)
             || !IsRulesHash(snapshot.RulesetHash)
             || !IsValidSetup(snapshot.Setup)
@@ -56,6 +56,7 @@ internal static class CampaignSnapshotValidator
             || setup.SchemaVersion != Cna1979SetupCatalog.SchemaVersion
             || setup.SetupId is not ("rules-lab.initiative.predetermined"
                 or "rules-lab.initiative.contested")
+            || !Cna1979SetupCatalog.TryGet(setup.SetupId, out var catalogDefinition)
             || string.IsNullOrWhiteSpace(setup.SetupId)
             || string.IsNullOrWhiteSpace(setup.SetupHash)
             || setup.InitialGameTurn is < 1 or > 111
@@ -69,6 +70,9 @@ internal static class CampaignSnapshotValidator
             || setup.OpeningPreamble.Sources[0]
                 != Cna1979SetupCatalog.OpeningPreambleSourceReference
             || !Cna1979SetupCatalog.IsAdmittedWeatherPolicy(setup.Weather)
+            || !Cna1979SetupCatalog.IsAdmittedStageEntryPolicy(
+                setup.StageEntry,
+                setup.InitialGameTurn)
             || setup.Content is null
             || setup.Sources is null
             || setup.Sources.Count == 0)
@@ -86,9 +90,11 @@ internal static class CampaignSnapshotValidator
                 setup.InitialInitiative,
                 setup.OpeningPreamble,
                 setup.Weather,
+                setup.StageEntry,
                 setup.Content,
                 setup.Sources);
-            return string.Equals(setup.SetupHash, expectedHash, StringComparison.Ordinal);
+            return string.Equals(setup.SetupHash, expectedHash, StringComparison.Ordinal)
+                && HasExactCatalogAuthority(setup, catalogDefinition);
         }
         catch (ArgumentException)
         {
@@ -96,11 +102,32 @@ internal static class CampaignSnapshotValidator
         }
     }
 
+    private static bool HasExactCatalogAuthority(
+        CampaignSetupSnapshot setup,
+        CampaignSetupDefinition definition) =>
+        setup.SchemaVersion == definition.SchemaVersion
+        && string.Equals(setup.SetupId, definition.SetupId, StringComparison.Ordinal)
+        && setup.IsSynthetic == definition.IsSynthetic
+        && setup.InitialGameTurn == definition.InitialGameTurn
+        && setup.InitialInitiative == definition.InitialInitiative
+        && setup.OpeningPreamble == definition.OpeningPreamble
+        && setup.Weather == definition.Weather
+        && setup.StageEntry == definition.StageEntry
+        && setup.Sources.SequenceEqual(definition.Sources);
+
     private static bool IsCheckpointValid(CampaignSnapshot snapshot)
     {
         var positions = Cna1979LandSequence.CreateTurn(snapshot.Setup.InitialGameTurn);
-        if (snapshot.StateVersion is < 1 or > 6
+        if (snapshot.StateVersion is < 1 or > 10
             || snapshot.SequencePosition != positions[checked((int)snapshot.StateVersion - 1)])
+        {
+            return false;
+        }
+
+        if (snapshot.StateVersion == 10
+            && (snapshot.SequencePosition.PhaseId != LandPhaseIds.ReserveDesignation
+                || snapshot.SequencePosition.ActorRole != LandActorRole.FirstActingSide
+                || snapshot.SequencePosition.ActiveSide is not null))
         {
             return false;
         }

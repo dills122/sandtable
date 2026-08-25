@@ -47,6 +47,22 @@ public sealed class ExerciseBundleSemanticValidatorTests : IDisposable
     }
 
     [Fact]
+    public void SnapshotReaderAcceptsVersionSixAndRejectsVersionFive()
+    {
+        var bundlePath = CreateSuccessfulBundle();
+        var canonical = File.ReadAllBytes(Path.Combine(
+            bundlePath,
+            ArtifactSchema.InitialSnapshotPath));
+        var legacy = Encoding.UTF8.GetBytes(Encoding.UTF8.GetString(canonical).Replace(
+            "{\"contractVersion\":6,",
+            "{\"contractVersion\":5,",
+            StringComparison.Ordinal));
+
+        Assert.NotNull(ExerciseEvidenceCodec.DeserializeSnapshot(canonical));
+        Assert.Throws<JsonException>(() => ExerciseEvidenceCodec.DeserializeSnapshot(legacy));
+    }
+
+    [Fact]
     public void ReaderRejectsARehashedEventWithAContradictoryFromPosition()
     {
         var bundlePath = CreateSuccessfulBundle();

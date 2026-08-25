@@ -8,6 +8,7 @@ using Cna.Core.Campaigns;
 using Cna.Core.Observations;
 using Cna.Core.Rules;
 using Cna.Core.Setups;
+using Cna.Core.Tests.Campaigns;
 using Cna.Core.Tests.Observations;
 
 namespace Cna.Core.Tests.Actions;
@@ -15,7 +16,7 @@ namespace Cna.Core.Tests.Actions;
 public sealed class CampaignLegalActionsTests
 {
     [Fact]
-    public void PublicFlowAdvancesEveryMandatoryCheckpointAndStopsAtWeather()
+    public void PublicFlowAdvancesExistingMandatoryCheckpointsAndReachesStageEntry()
     {
         var handle = CreateHandle();
 
@@ -66,7 +67,10 @@ public sealed class CampaignLegalActionsTests
         Assert.Equal(
             "land.position.operation-1.organization",
             weatherAccepted.Receipt.ResultingPositionId);
-        Assert.Empty(Query(weatherAccepted.SuccessorHandle!, CampaignActionAudience.System).Candidates);
+        var stageEntryAction = Assert.Single(Query(
+            weatherAccepted.SuccessorHandle!,
+            CampaignActionAudience.System).Candidates);
+        Assert.Equal("resolve-no-obligation-organization", stageEntryAction.Kind);
 
         var internalOrder = Assert.Single(accepted.SuccessorHandle!.Snapshot.OperationStageOrders);
         Assert.Equal(LandSide.Commonwealth, internalOrder.FirstSide);
@@ -127,6 +131,37 @@ public sealed class CampaignLegalActionsTests
     }
 
     [Fact]
+    public void ExistingSystemActionSetBytesRemainCanonicalAtEveryImplementedCheckpoint()
+    {
+        var handle = CreateHandle();
+        AssertSystemActionSetBytes(handle, 1,
+            "land.position.initiative-determination",
+            "resolve-initiative",
+            "sha256:550cc400544d848b77230f49747ee287eb9fe01b730dc9d5fd200e3e7591d12f");
+
+        handle = SubmitOnly(handle, CampaignActionAudience.System, "resolve-initiative");
+        AssertSystemActionSetBytes(handle, 2,
+            "land.position.naval-convoy.schedule",
+            "resolve-no-obligation-naval-convoy-schedule",
+            "sha256:345996f7b8351499e74c62f5e1a62d07170431519e9f12483874302e3c86a78f");
+
+        handle = SubmitOnly(handle, CampaignActionAudience.System,
+            "resolve-no-obligation-naval-convoy-schedule");
+        AssertSystemActionSetBytes(handle, 3,
+            "land.position.naval-convoy.tactical-shipping",
+            "resolve-no-obligation-tactical-shipping",
+            "sha256:2e6e64614ddacd1da51af69c8da0bca0e7b7b859f47ac8e0057107131112d2d6");
+
+        handle = SubmitOnly(handle, CampaignActionAudience.System,
+            "resolve-no-obligation-tactical-shipping");
+        handle = SubmitOnly(handle, CampaignActionAudience.Axis, "act-last");
+        AssertSystemActionSetBytes(handle, 5,
+            "land.position.operation-1.weather-determination",
+            "resolve-weather",
+            "sha256:61bca28b7e06c2ec8b7919bce4c7c226198e7fecb0afcc2186b224311e7e1413");
+    }
+
+    [Fact]
     public void EquivalentCallerOrderCanonicalizesAndDuplicateCandidatesReject()
     {
         var first = new ActFirstAction(1);
@@ -152,23 +187,45 @@ public sealed class CampaignLegalActionsTests
         Assert.Throws<ArgumentOutOfRangeException>(() => new ActFirstAction(2));
     }
 
-    [Fact]
-    public void HolderActionSetIsNonEmptyAndIndependentOfOpponentOnlyAuthority()
+    [Theory]
+    [InlineData(LandSide.Axis)]
+    [InlineData(LandSide.Commonwealth)]
+    public void SideActionSetsIgnoreOpponentOnlyAuthorityThroughReserve(LandSide observer)
     {
-        var pair = CampaignObservationTestData.CreateOpponentOnlyPair(LandSide.Axis);
-        var baseline = AdvanceToDeclaration(pair.BaselineSnapshot, pair.BaselineContext);
-        var changed = AdvanceToDeclaration(pair.ChangedSnapshot, pair.ChangedContext);
-        var baselineSet = Query(new CampaignAuthorityHandle(baseline, pair.BaselineContext),
-            CampaignActionAudience.Axis);
-        var changedSet = Query(new CampaignAuthorityHandle(changed, pair.ChangedContext),
-            CampaignActionAudience.Axis);
+        var pair = CampaignObservationTestData.CreateOpponentOnlyPair(observer);
+        var baseline = StageEntryCampaignTestData.Advance(
+            pair.BaselineSnapshot,
+            pair.BaselineContext,
+            InitiativeOrderChoice.ActLast);
+        var changed = StageEntryCampaignTestData.Advance(
+            pair.ChangedSnapshot,
+            pair.ChangedContext,
+            InitiativeOrderChoice.ActLast);
+        var audience = observer == LandSide.Axis
+            ? CampaignActionAudience.Axis
+            : CampaignActionAudience.Commonwealth;
 
-        Assert.NotEmpty(baselineSet.Candidates);
-        Assert.Equal(baselineSet, changedSet);
-        Assert.Equal(CampaignLegalActionSerializer.Serialize(baselineSet),
-            CampaignLegalActionSerializer.Serialize(changedSet));
-        var json = Encoding.UTF8.GetString(CampaignLegalActionSerializer.Serialize(changedSet));
-        Assert.DoesNotContain("enemy-sentinel", json, StringComparison.Ordinal);
+        for (var index = 0; index < baseline.Snapshots.Count; index++)
+        {
+            var baselineSet = Query(new CampaignAuthorityHandle(
+                baseline.Snapshots[index], pair.BaselineContext), audience);
+            var changedSet = Query(new CampaignAuthorityHandle(
+                changed.Snapshots[index], pair.ChangedContext), audience);
+
+            Assert.Equal(baselineSet, changedSet);
+            Assert.Equal(CampaignLegalActionSerializer.Serialize(baselineSet),
+                CampaignLegalActionSerializer.Serialize(changedSet));
+            var json = Encoding.UTF8.GetString(
+                CampaignLegalActionSerializer.Serialize(changedSet));
+            Assert.DoesNotContain("enemy-sentinel", json, StringComparison.Ordinal);
+        }
+
+        var declarationSet = Query(new CampaignAuthorityHandle(
+            baseline.Snapshots[3], pair.BaselineContext), audience);
+        Assert.Equal(observer == LandSide.Axis ? 2 : 0,
+            declarationSet.Candidates.Count);
+        Assert.Empty(Query(new CampaignAuthorityHandle(
+            baseline.Snapshot, pair.BaselineContext), audience).Candidates);
     }
 
     [Fact]
@@ -442,21 +499,19 @@ public sealed class CampaignLegalActionsTests
         CampaignActionCandidate candidate) => new(1, set.CampaignId, set.StateVersion,
         set.PositionId, set.Audience, candidate.ActionId);
 
-    private static CampaignSnapshot AdvanceToDeclaration(CampaignSnapshot snapshot,
-        CampaignContentContext context)
+    private static void AssertSystemActionSetBytes(
+        CampaignAuthorityHandle handle,
+        long stateVersion,
+        string positionId,
+        string kind,
+        string actionId)
     {
-        CampaignCommand[] commands =
-        [
-            new ResolveInitiative(1, snapshot.SequencePosition.PositionId),
-            new ResolveNoObligationNavalConvoySchedule(2, "land.position.naval-convoy.schedule"),
-            new ResolveNoObligationTacticalShipping(3, "land.position.naval-convoy.tactical-shipping"),
-        ];
-        foreach (var command in commands)
-        {
-            var result = CampaignEngine.Decide(snapshot, command, context);
-            snapshot = CampaignProjector.Apply(snapshot, Assert.Single(result.Events), context);
-        }
-        return snapshot;
+        var set = Query(handle, CampaignActionAudience.System);
+        var json = Encoding.UTF8.GetString(CampaignLegalActionSerializer.Serialize(set));
+
+        Assert.Equal(
+            $"{{\"contractVersion\":1,\"policyId\":\"sandtable.legal-actions.v1\",\"campaignId\":\"campaign-actions\",\"stateVersion\":{stateVersion},\"rulesetHash\":\"{Cna1979Ruleset.Manifest.Hash}\",\"positionId\":\"{positionId}\",\"audience\":\"system\",\"candidates\":[{{\"contractVersion\":1,\"actionId\":\"{actionId}\",\"kind\":\"{kind}\"}}]}}",
+            json);
     }
 
     private static bool ContainsType(Type candidate, Type forbidden)

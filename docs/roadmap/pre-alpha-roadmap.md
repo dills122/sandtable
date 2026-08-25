@@ -105,7 +105,7 @@ Optional parser evidence gate
 | --- | --- | --- |
 | Source/ruleset provenance, synthetic content, world, authority, events, and replay foundations | Implemented | Preserve exact identities and deterministic history while mechanics expand |
 | Side-safe observations and legal-action enforcement | Implemented for the current synthetic path | Extend only with each new mechanic and its disclosure tests |
-| Mandatory turn preamble | Partially implemented | Weather reaches Organization; Organization/stage entry and Reserve are next |
+| Mandatory turn preamble | Partially implemented | Weather and the explicit-empty stage-entry path reach Reserve; Reserve is next |
 | Movement and contact | Planned; not started | Requires a legal movement-capable phase after the preamble |
 | Combat | Planned; not started | Depends on the movement/contact state and action vocabulary |
 | Working pre-alpha skeleton | Not reached | Requires one authentic movement/contact/combat loop with replay |
@@ -115,8 +115,8 @@ Optional parser evidence gate
 | Exercise Harness | Single-Exercise and serial-unpaired Maneuver paths implemented | Pairing remains later and does not block engine mechanics |
 
 The roadmap deliberately distinguishes foundation maturity from playable breadth. The architecture
-is substantially established, but the campaign is not playable while authority stops at
-Organization and movement, combat, victory, persistence, and Maproom remain absent.
+is substantially established, but the campaign is not playable while authority stops at Reserve
+and movement, combat, victory, persistence, and Maproom remain absent.
 
 ## Sprint 0: Source and fidelity baseline
 
@@ -143,10 +143,12 @@ Organization and movement, combat, victory, persistence, and Maproom remain abse
 **Goal:** Establish an authentic phase hierarchy and an authoritative campaign history that can be
 reconstructed exactly without skipping unimplemented mechanics.
 
-**Status:** Replayable foundation plus Weather Determination v1 delivered.
+**Status:** Replayable foundation plus Weather Determination v1 and Operation-Stage Entry v1
+delivered.
 Campaign creation, Initiative, the admitted empty convoy checkpoints, Operation Stage 1 Initiative
-Declaration, Weather Determination, canonical event serialization, and replay are authoritative;
-advancement stops at Organization, the next mandatory unimplemented mechanic.
+Declaration, Weather Determination, the four admitted empty stage-entry obligations, canonical event
+serialization, and replay are authoritative; advancement stops at Reserve, the next mandatory
+unimplemented mechanic.
 
 ### Task 1.1 - Ruleset provenance contracts
 
@@ -234,12 +236,11 @@ the [Exercise Harness v1 specification](../specs/exercise-harness-v1.md) and
 
 Task 014 is enabling regression instrumentation, not additional gameplay. The next bounded Harness
 task is optional Task 015 paired comparison, but it does not block the authoritative gameplay
-dependency graph. Engine work may now proceed to the proposed
+dependency graph. The implemented engine work retains the
 [Operation-Stage Entry research](../research/operation-stage-entry-spike.md),
 [specification](../specs/operation-stage-entry-v1.md), and
-[technical design](../design/operation-stage-entry-v1.md). Its final planning review is Ready, but
-owner approval and the Task 001 contract freeze still gate implementation; Reserve remains later
-engine work. Task 016 remains the final Harness-v1 closeout
+[technical design](../design/operation-stage-entry-v1.md); Reserve is the next authoritative-engine
+package. Task 016 remains the final Harness-v1 closeout
 after pairing is eventually delivered.
 
 ## Cross-cutting future player interaction: Player Intent Composer v1
@@ -399,11 +400,11 @@ Declaration coverage remain Sprint 3 work before a future checkpoint may depend 
 **Status:** Decision package approved 2026-08-19; Weather implementation complete.
 
 The [Operation-Stage Preamble spike](../research/operation-stage-preamble-spike.md) found that the
-current stage-entry wording compresses mandatory source boundaries. Weather has immediate
+earlier stage-entry wording compressed mandatory source boundaries. Weather has immediate
 fuel/water, well, and grounded-aircraft consequences; Organization permits player-selected segment
-order; Fleet Assignment and Reserve Designation are side decisions. The proposed
+order; Fleet Assignment and Reserve Designation are side decisions. The implemented
 [Weather Determination v1 specification](../specs/weather-determination-v1.md) and
-[technical design](../design/weather-determination-v1.md) therefore propose the Task 3.3-3.5 split
+[technical design](../design/weather-determination-v1.md) established the Task 3.3-3.5 split
 below. The project owner approved `TURN-DEC-001` through `TURN-DEC-006` on 2026-08-19, activating
 the replacement tasks. The decision also covers
 pair-keyed `(GameTurn, OperationStage)` history and explicit rejection of the source chart's omitted
@@ -418,8 +419,8 @@ reachable Operation Stage. No generic sequence command may bypass either mechani
 **Dependency status:** Deferred and non-blocking for Task 3.3. `ACTION-001` already supplies the two
 exact admitted synthetic Weather checkpoints, including the resolved opening convoy cases and
 retained Operation Stage 1 initiative order required by `WEATHER-001`. General convoy obligations
-and every-stage declaration coverage resume before `STAGE-ENTRY-001` admits any checkpoint that
-depends on them; they are not prerequisites to implementing Weather v1 at the existing checkpoints.
+and every-stage declaration coverage resume before any later-stage checkpoint depends on them;
+they were not prerequisites to Weather v1 or the exact admitted empty Operation Stage 1 path.
 
 ### Task 3.3 - Weather Determination v1 (implemented)
 
@@ -430,15 +431,17 @@ barrier. Do not complete Organization, Fleet, Reserve, or Movement.
 **Status:** Implemented and verified 2026-08-19. Exact repository-gate evidence is recorded in the
 Weather specification.
 
-### Task 3.4 - Organization and stage entry (planned; not started)
+### Task 3.4 - Organization and stage entry (implemented explicit-empty slice)
 
-Implement `STAGE-ENTRY-001`: resolve positive or explicitly admitted empty Organization, Naval
-Convoy Arrival, and Fleet obligations through mechanic-specific legal actions. Stop at the
-first-acting side's Reserve Designation decision.
+`STAGE-ENTRY-001` resolves the exactly admitted empty Organization, Naval Convoy Arrival, Fleet
+Assignment, and Fleet Repair obligations through four mechanic-specific legal actions and four
+distinct authoritative event types. It stops at the first-acting side's Reserve Designation
+decision; the authoritative `ActiveSide` remains unset and the side audience is derived from the
+recorded Operation Stage order. Positive obligations remain unsupported and cannot use this path.
 
-The roadmap records the capability and acceptance boundary, not an implementation-ready contract.
-Before coding, retain the source/ruling decisions, governing specification, technical design,
-dependency-sized tasks, and acceptance traceability for `STAGE-ENTRY-001`.
+**Status:** Implemented and verified 2026-08-24. The retained source/ruling decisions, governing
+specification, technical design, task ledger, review reconciliation, and acceptance evidence define
+the exact delivered boundary.
 
 ### Task 3.5 - Reserve Designation (planned; not started)
 
@@ -462,8 +465,9 @@ the full repository gate.
 
 Continue the synthetic campaign from Naval Convoy, make the available preamble decisions, resolve
 Weather, Organization/stage-entry obligations, and Reserve in their separately gated capabilities,
-then stop at Movement with a replay-identical Chronicle. The Task 3.3 checkpoint alone stops at
-Organization and is independently demonstrable before Tasks 3.4-3.5 exist.
+then stop at Movement with a replay-identical Chronicle. Task 3.3 independently stops at
+Organization; the implemented Task 3.4 explicit-empty checkpoint independently stops at Reserve;
+Task 3.5 remains the next gate.
 
 ## Sprint 4: Continual movement and contact
 

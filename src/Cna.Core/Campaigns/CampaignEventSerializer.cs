@@ -41,6 +41,22 @@ internal static class CampaignEventSerializer
                     ValidateWeather(determined);
                     WriteWeather(writer, determined);
                     break;
+                case NoObligationOrganizationResolved resolved:
+                    ValidateStageEntry(resolved, 7);
+                    WriteStageEntry(writer, "no-obligation-organization-resolved", resolved);
+                    break;
+                case NoObligationNavalConvoyArrivalResolved resolved:
+                    ValidateStageEntry(resolved, 8);
+                    WriteStageEntry(writer, "no-obligation-naval-convoy-arrival-resolved", resolved);
+                    break;
+                case NoObligationFleetAssignmentResolved resolved:
+                    ValidateStageEntry(resolved, 9);
+                    WriteStageEntry(writer, "no-obligation-fleet-assignment-resolved", resolved);
+                    break;
+                case NoObligationFleetRepairResolved resolved:
+                    ValidateStageEntry(resolved, 10);
+                    WriteStageEntry(writer, "no-obligation-fleet-repair-resolved", resolved);
+                    break;
                 default:
                     throw new JsonException("The campaign event type is not serializable.");
             }
@@ -59,7 +75,7 @@ internal static class CampaignEventSerializer
             var root = document.RootElement;
             var eventType = root.GetProperty("eventType").GetString();
 
-            return eventType switch
+            CampaignEvent campaignEvent = eventType switch
             {
                 "campaign-created" => ParseCreated(root),
                 "initiative-determined" => ParseDetermined(root),
@@ -67,8 +83,20 @@ internal static class CampaignEventSerializer
                 "no-obligation-tactical-shipping-resolved" => ParseTactical(root),
                 "initiative-order-declared" => ParseDeclaration(root),
                 "weather-determined" => ParseWeather(root),
+                "no-obligation-organization-resolved" => ParseOrganization(root),
+                "no-obligation-naval-convoy-arrival-resolved" => ParseArrival(root),
+                "no-obligation-fleet-assignment-resolved" => ParseFleetAssignment(root),
+                "no-obligation-fleet-repair-resolved" => ParseFleetRepair(root),
                 _ => throw new JsonException($"Unknown campaign event type '{eventType}'."),
             };
+
+            if (campaignEvent is StageEntryResolved
+                && !canonicalJson.Span.SequenceEqual(Serialize(campaignEvent)))
+            {
+                throw new JsonException("The Stage Entry event is not canonical JSON.");
+            }
+
+            return campaignEvent;
         }
         catch (JsonException)
         {
@@ -172,6 +200,93 @@ internal static class CampaignEventSerializer
         writer.WriteNumber("randomCursorAfter", determined.RandomCursorAfter);
         CampaignSnapshotSerializer.WritePosition(writer, determined.SequencePosition);
         CampaignSnapshotSerializer.WriteSources(writer, determined.Sources);
+    }
+
+    private static void WriteStageEntry(
+        Utf8JsonWriter writer,
+        string eventType,
+        StageEntryResolved resolved)
+    {
+        writer.WriteNumber("contractVersion", resolved.ContractVersion);
+        writer.WriteString("eventType", eventType);
+        writer.WriteString("campaignId", resolved.CampaignId);
+        writer.WriteNumber("stateVersion", resolved.StateVersion);
+        writer.WriteString("fromPositionId", resolved.FromPositionId);
+        writer.WriteNumber("gameTurn", resolved.GameTurn);
+        writer.WriteNumber("operationStage", resolved.OperationStage);
+        CampaignSnapshotSerializer.WritePosition(writer, resolved.SequencePosition);
+        CampaignSnapshotSerializer.WriteSources(writer, resolved.Sources);
+    }
+
+    private static NoObligationOrganizationResolved ParseOrganization(JsonElement root)
+    {
+        RequireStageEntryProperties(root);
+        return new NoObligationOrganizationResolved(
+            root.GetProperty("campaignId").GetString()!,
+            root.GetProperty("stateVersion").GetInt64(),
+            root.GetProperty("fromPositionId").GetString()!,
+            root.GetProperty("gameTurn").GetInt32(),
+            root.GetProperty("operationStage").GetInt32(),
+            CampaignSnapshotSerializer.ParsePosition(root.GetProperty("sequencePosition")),
+            CampaignSnapshotSerializer.ParseSources(root.GetProperty("sources")));
+    }
+
+    private static NoObligationNavalConvoyArrivalResolved ParseArrival(JsonElement root)
+    {
+        RequireStageEntryProperties(root);
+        return new NoObligationNavalConvoyArrivalResolved(
+            root.GetProperty("campaignId").GetString()!,
+            root.GetProperty("stateVersion").GetInt64(),
+            root.GetProperty("fromPositionId").GetString()!,
+            root.GetProperty("gameTurn").GetInt32(),
+            root.GetProperty("operationStage").GetInt32(),
+            CampaignSnapshotSerializer.ParsePosition(root.GetProperty("sequencePosition")),
+            CampaignSnapshotSerializer.ParseSources(root.GetProperty("sources")));
+    }
+
+    private static NoObligationFleetAssignmentResolved ParseFleetAssignment(JsonElement root)
+    {
+        RequireStageEntryProperties(root);
+        return new NoObligationFleetAssignmentResolved(
+            root.GetProperty("campaignId").GetString()!,
+            root.GetProperty("stateVersion").GetInt64(),
+            root.GetProperty("fromPositionId").GetString()!,
+            root.GetProperty("gameTurn").GetInt32(),
+            root.GetProperty("operationStage").GetInt32(),
+            CampaignSnapshotSerializer.ParsePosition(root.GetProperty("sequencePosition")),
+            CampaignSnapshotSerializer.ParseSources(root.GetProperty("sources")));
+    }
+
+    private static NoObligationFleetRepairResolved ParseFleetRepair(JsonElement root)
+    {
+        RequireStageEntryProperties(root);
+        return new NoObligationFleetRepairResolved(
+            root.GetProperty("campaignId").GetString()!,
+            root.GetProperty("stateVersion").GetInt64(),
+            root.GetProperty("fromPositionId").GetString()!,
+            root.GetProperty("gameTurn").GetInt32(),
+            root.GetProperty("operationStage").GetInt32(),
+            CampaignSnapshotSerializer.ParsePosition(root.GetProperty("sequencePosition")),
+            CampaignSnapshotSerializer.ParseSources(root.GetProperty("sources")));
+    }
+
+    private static void RequireStageEntryProperties(JsonElement root)
+    {
+        CampaignSnapshotSerializer.RequireProperties(
+            root,
+            "contractVersion",
+            "eventType",
+            "campaignId",
+            "stateVersion",
+            "fromPositionId",
+            "gameTurn",
+            "operationStage",
+            "sequencePosition",
+            "sources");
+        if (root.GetProperty("contractVersion").GetInt32() != 1)
+        {
+            throw new JsonException("The Stage Entry event contract version is invalid.");
+        }
     }
 
     private static WeatherDetermined ParseWeather(JsonElement root)
@@ -480,7 +595,7 @@ internal static class CampaignEventSerializer
         }
 
         var localSnapshot = new CampaignSnapshot(
-            5,
+            6,
             created.CampaignId,
             created.StateVersion,
             created.RulesetHash,
@@ -491,7 +606,7 @@ internal static class CampaignEventSerializer
             created.RandomState,
             created.SequencePosition);
 
-        if (created.ContractVersion != 4
+        if (created.ContractVersion != 5
             || created.StateVersion != 1
             || created.RandomState.NextByteCursor != 0
             || !CampaignSnapshotValidator.IsLocallyValid(localSnapshot))
@@ -547,5 +662,15 @@ internal static class CampaignEventSerializer
             || (declared.FirstSide != declared.DeclaringHolder
                 && declared.SecondSide != declared.DeclaringHolder))
             throw new JsonException("The declaration event contract is invalid.");
+    }
+
+    private static void ValidateStageEntry(StageEntryResolved resolved, long expectedStateVersion)
+    {
+        if (resolved.ContractVersion != 1
+            || string.IsNullOrWhiteSpace(resolved.CampaignId)
+            || resolved.StateVersion != expectedStateVersion)
+        {
+            throw new JsonException("The Stage Entry event contract is invalid.");
+        }
     }
 }

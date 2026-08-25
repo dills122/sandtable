@@ -15,6 +15,7 @@ internal sealed record CampaignSetupSnapshot
         InitiativePolicy initialInitiative,
         CampaignOpeningPreamblePolicy openingPreamble,
         CampaignWeatherPolicy weather,
+        CampaignStageEntryPolicy stageEntry,
         CampaignContentSelection content,
         IReadOnlyList<RuleReference> sources)
     {
@@ -25,6 +26,7 @@ internal sealed record CampaignSetupSnapshot
         ArgumentNullException.ThrowIfNull(initialInitiative);
         ArgumentNullException.ThrowIfNull(openingPreamble);
         ArgumentNullException.ThrowIfNull(weather);
+        ArgumentNullException.ThrowIfNull(stageEntry);
         ArgumentNullException.ThrowIfNull(content);
 
         SchemaVersion = schemaVersion;
@@ -35,6 +37,7 @@ internal sealed record CampaignSetupSnapshot
         InitialInitiative = initialInitiative;
         OpeningPreamble = openingPreamble;
         Weather = weather;
+        StageEntry = stageEntry;
         Content = content;
         Sources = CopySources(sources);
     }
@@ -47,6 +50,7 @@ internal sealed record CampaignSetupSnapshot
     public InitiativePolicy InitialInitiative { get; }
     public CampaignOpeningPreamblePolicy OpeningPreamble { get; }
     public CampaignWeatherPolicy Weather { get; }
+    public CampaignStageEntryPolicy StageEntry { get; }
     public CampaignContentSelection Content { get; }
     public IReadOnlyList<RuleReference> Sources { get; }
 
@@ -62,6 +66,7 @@ internal sealed record CampaignSetupSnapshot
             definition.InitialInitiative,
             definition.OpeningPreamble,
             definition.Weather,
+            definition.StageEntry,
             definition.Content,
             definition.Sources);
     }
@@ -77,6 +82,7 @@ internal sealed record CampaignSetupSnapshot
             && InitialInitiative == other.InitialInitiative
             && OpeningPreamble == other.OpeningPreamble
             && Weather == other.Weather
+            && StageEntry == other.StageEntry
             && Content == other.Content
             && Sources.SequenceEqual(other.Sources));
 
@@ -91,6 +97,7 @@ internal sealed record CampaignSetupSnapshot
         hash.Add(InitialInitiative);
         hash.Add(OpeningPreamble);
         hash.Add(Weather);
+        hash.Add(StageEntry);
         hash.Add(Content);
 
         foreach (var source in Sources)

@@ -1,6 +1,6 @@
 # Operation-Stage Entry v1 Source and Contract Spike
 
-**Status:** Decision-ready; final independent planning review Ready; owner decision required; implementation not authorized
+**Status:** Accepted and implemented; STG-TASK-001 through STG-TASK-022 and STG-TASK-014A complete
 
 **Date:** 2026-08-24
 
@@ -52,9 +52,9 @@ It does not normalize or implement positive Organization, arrival, ship, repair,
 later-stage Initiative Declaration, general convoy, logistics, construction, training, or naval
 rules. It does not change Core behavior.
 
-The stop condition is a decision-ready research packet plus a proposed specification/design with
-dependency-sized tasks and requirement-to-evidence traceability. Implementation remains gated on
-owner approval and the completed serial-Maneuver checkpoint.
+The stop condition was a decision-ready research packet plus a proposed specification/design with
+dependency-sized tasks and requirement-to-evidence traceability. Owner approval and the merged
+serial-Maneuver checkpoint now satisfy that research gate.
 
 ## Source hierarchy and method
 
@@ -145,17 +145,25 @@ and automatic Reserve completion.
 
 | ID | Proposed decision | Status |
 | --- | --- | --- |
-| `STG-DEC-001` | Stage-entry v1 supports only the two current synthetic setups at their admitted Operation Stage 1 checkpoint and only through an exact setup-hashed policy. | Proposed |
-| `STG-DEC-002` | The policy separately asserts no Organization, Naval Convoy Arrival, Fleet Assignment, and Fleet Repair obligations; missing schema data never implies any assertion. | Proposed |
-| `STG-DEC-003` | Resolve each mandatory position through its own trusted system action, command, event, and replay validation; add no generic sequence-completion primitive and preserve the existing action-set/candidate/submission binding contract. | Proposed |
-| `STG-DEC-004` | Empty Organization resolution consumes the single barrier without defining a positive segment order; positive Organization remains a future player-choice capability. | Proposed |
-| `STG-DEC-005` | Fleet Assignment and Fleet Repair remain distinct ordered positions/events even when both are explicitly empty. | Proposed |
-| `STG-DEC-006` | Accepted Fleet Repair advances to the unchanged catalog Reserve Designation position (`ActorRole=FirstActingSide`, `ActiveSide=null`) and stops. Legal-action and observation projection derive the active side from the retained pair-keyed stage order without mutating the position; `RESERVE-001` remains separate. | Proposed |
-| `STG-DEC-007` | Current Stage 1 admission does not broaden general opening convoy or later-stage Initiative Declaration support; any checkpoint that depends on them rejects until Task 3.2 is completed. | Proposed |
-| `STG-DEC-008` | The empty policy is repository-synthetic evidence, not a canonical claim that published scenarios have no obligations; the recognized `has-obligations` policy value is unsupported and fails closed, while unmodelled positive subjects are outside v1 detection claims. | Proposed |
-| `STG-DEC-009` | Adopt a ruleset ruling that an exact setup assertion may resolve an otherwise mandatory but empty stage-entry position through a mechanic-specific event; without that assertion the position is unsupported. The ruling protects `STG-AC-001`, `STG-AC-002`, `STG-AC-004`, `STG-AC-005`, `STG-AC-006`, `STG-AC-009`, and `STG-AC-010`. | Proposed |
-| `STG-DEC-010` | Preserve Legal Actions v1 binding: the action-set envelope carries campaign/state/ruleset/position/audience, candidates carry contract version/action ID/kind, and submissions carry contract version/campaign/expected state/expected position/audience/action ID. Stage Entry adds no duplicate ruleset or kind fields to submissions. | Proposed |
-| `STG-DEC-011` | Because v1 has no positive-subject domain contract, its negative acceptance evidence covers missing policy and recognized-but-unsupported obligation policy kinds, not detection of unmodelled arrivals, ships, projects, or units. | Proposed |
+| `STG-DEC-001` | Stage-entry v1 supports only the two current synthetic setups at their admitted Operation Stage 1 checkpoint and only through an exact setup-hashed policy. | Accepted |
+| `STG-DEC-002` | The policy separately asserts no Organization, Naval Convoy Arrival, Fleet Assignment, and Fleet Repair obligations; missing schema data never implies any assertion. | Accepted |
+| `STG-DEC-003` | Resolve each mandatory position through its own trusted system action, command, event, and replay validation; add no generic sequence-completion primitive and preserve the existing action-set/candidate/submission binding contract. | Accepted |
+| `STG-DEC-004` | Empty Organization resolution consumes the single barrier without defining a positive segment order; positive Organization remains a future player-choice capability. | Accepted |
+| `STG-DEC-005` | Fleet Assignment and Fleet Repair remain distinct ordered positions/events even when both are explicitly empty. | Accepted |
+| `STG-DEC-006` | Accepted Fleet Repair advances to the unchanged catalog Reserve Designation position (`ActorRole=FirstActingSide`, `ActiveSide=null`) and stops. Legal-action and observation projection derive the active side from the retained pair-keyed stage order without mutating the position; `RESERVE-001` remains separate. | Accepted |
+| `STG-DEC-007` | Current Stage 1 admission does not broaden general opening convoy or later-stage Initiative Declaration support; any checkpoint that depends on them rejects until Task 3.2 is completed. | Accepted |
+| `STG-DEC-008` | The empty policy is repository-synthetic evidence, not a canonical claim that published scenarios have no obligations; the recognized `has-obligations` policy value is unsupported and fails closed, while unmodelled positive subjects are outside v1 detection claims. | Accepted |
+| `STG-DEC-009` | Adopt a ruleset ruling that an exact setup assertion may resolve an otherwise mandatory but empty stage-entry position through a mechanic-specific event; without that assertion the position is unsupported. The ruling protects `STG-AC-001`, `STG-AC-002`, `STG-AC-004`, `STG-AC-005`, `STG-AC-006`, `STG-AC-009`, and `STG-AC-010`. | Accepted |
+| `STG-DEC-010` | Preserve Legal Actions v1 binding: the action-set envelope carries campaign/state/ruleset/position/audience, candidates carry contract version/action ID/kind, and submissions carry contract version/campaign/expected state/expected position/audience/action ID. Stage Entry adds no duplicate ruleset or kind fields to submissions. | Accepted |
+| `STG-DEC-011` | Because v1 has no positive-subject domain contract, its negative acceptance evidence covers missing policy and recognized-but-unsupported obligation policy kinds, not detection of unmodelled arrivals, ships, projects, or units. | Accepted |
+
+### STG-TASK-001 disposition request
+
+The post-`EXR-TASK-014` audit found no evidence requiring a change to `STG-DEC-001` through
+`STG-DEC-011`. The Task 001 recommendation is therefore **Accept all eleven decisions as written**.
+The project owner accepted all eleven decisions as written on 2026-08-24. Any later revision returns
+the affected requirement, task, and contract rows to planning before dependent production work
+continues.
 
 The proposed ruling identities are:
 
@@ -188,10 +196,11 @@ fleet-assignment = explicit-none
 fleet-repair = explicit-none
 ```
 
-Each assertion carries the repository-synthetic reference
-`sandtable-rules-lab:stage-entry.no-obligations.v1`. The setup's canonical bytes/hash, creation
-history, snapshot, projection validation, and replay preparation all retain and revalidate the exact
-policy. A policy for a different pair or any non-`explicit-none` subject is unsupported in v1.
+The policy's one shared canonical source list backs every assertion and contains the
+repository-synthetic reference `sandtable-rules-lab:stage-entry.no-obligations.v1`. The setup's
+canonical bytes/hash, creation history, snapshot, projection validation, and replay preparation all
+retain and revalidate the exact policy. A policy for a different pair or any non-`explicit-none`
+subject is unsupported in v1.
 
 The authoritative path is:
 
@@ -240,13 +249,13 @@ The recommendation would change if a future modeled setup contract admits obliga
 synthetic setup, if a primary source makes an apparently empty step mandatory in a way that changes
 state, or if the first Reserve boundary cannot be derived unambiguously from retained stage order.
 
-## Required owner decision and next gate
+## Decision and delivered gate
 
-Approve, revise, or reject `STG-DEC-001` through `STG-DEC-011`. Approval activates the paired
+The project owner approved `STG-DEC-001` through `STG-DEC-011` on 2026-08-24, activating the paired
 [specification](../specs/operation-stage-entry-v1.md) and
-[technical design](../design/operation-stage-entry-v1.md) for implementation planning after
-`EXR-TASK-014`. It does not authorize positive Organization/Fleet mechanics, Reserve, Movement, or a
-generic preamble advance.
+[technical design](../design/operation-stage-entry-v1.md). The exact explicit-empty capability is
+implemented and its final 619-test repository gate is green. The decision still does not authorize
+positive Organization/Fleet mechanics, Reserve, Movement, or a generic preamble advance.
 
 ## Sources
 

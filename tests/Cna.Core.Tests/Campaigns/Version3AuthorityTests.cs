@@ -24,13 +24,14 @@ public sealed class Version3AuthorityTests
 
         Assert.True(result.IsAccepted);
         var created = Assert.IsType<CampaignCreated>(Assert.Single(result.Events));
-        Assert.Equal(4, created.ContractVersion);
+        Assert.Equal(5, created.ContractVersion);
         Assert.Equal(setup.Content, created.Setup.Content);
         Assert.Equal(4, created.InitialWorld.Elements.Count);
         Assert.Equal(setup.SetupId, created.Setup.SetupId);
         Assert.Equal(setup.Hash, created.Setup.SetupHash);
         Assert.Equal(setup.InitialInitiative, created.Setup.InitialInitiative);
         Assert.Equal(setup.Weather, created.Setup.Weather);
+        Assert.Equal(setup.StageEntry, created.Setup.StageEntry);
         Assert.Equal(setup.Sources, created.Setup.Sources);
         Assert.Equal(new RandomStreamState(1, SandtableRandom.AlgorithmId, 12345, 0), created.RandomState);
         Assert.Equal(LandActorRole.None, created.SequencePosition.ActorRole);
@@ -87,7 +88,7 @@ public sealed class Version3AuthorityTests
     [Fact]
     public void CanonicalManifestCutsOverAllAuthoritativeArtifacts()
     {
-        Assert.Equal(3, Cna1979Ruleset.Manifest.ContractVersion);
+        Assert.Equal(4, Cna1979Ruleset.Manifest.ContractVersion);
         Assert.Equal(
             [
                 "cna-1979.1.content-vocabulary",
@@ -131,6 +132,7 @@ public sealed class Version3AuthorityTests
             new PredeterminedInitiative(LandSide.Commonwealth),
             Cna1979SetupCatalog.OpeningPreamblePolicy,
             Cna1979SetupCatalog.WeatherPolicy,
+            Cna1979SetupCatalog.Definitions[0].StageEntry,
             Cna1979SetupCatalog.Definitions[0].Content,
             [new RuleReference("sandtable-rules-lab", "retired.synthetic.v1")]);
         var created = new CampaignCreated(
@@ -162,6 +164,7 @@ public sealed class Version3AuthorityTests
             definition.InitialInitiative,
             definition.OpeningPreamble,
             definition.Weather,
+            definition.StageEntry,
             definition.Content,
             sources);
         var equivalent = new CampaignSetupSnapshot(
@@ -173,6 +176,7 @@ public sealed class Version3AuthorityTests
             definition.InitialInitiative,
             definition.OpeningPreamble,
             definition.Weather,
+            definition.StageEntry,
             definition.Content,
             sources.ToArray());
 

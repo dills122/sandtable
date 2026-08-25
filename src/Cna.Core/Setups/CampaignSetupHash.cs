@@ -10,7 +10,13 @@ internal static class CampaignSetupHash
     public static string Calculate(CampaignSetupDefinition definition)
     {
         ArgumentNullException.ThrowIfNull(definition);
-        return Calculate(
+        return FormatSha256(SerializeCanonical(definition));
+    }
+
+    internal static byte[] SerializeCanonical(CampaignSetupDefinition definition)
+    {
+        ArgumentNullException.ThrowIfNull(definition);
+        return SerializeCanonical(
             definition.SchemaVersion,
             definition.SetupId,
             definition.IsSynthetic,
@@ -18,6 +24,7 @@ internal static class CampaignSetupHash
             definition.InitialInitiative,
             definition.OpeningPreamble,
             definition.Weather,
+            definition.StageEntry,
             definition.Content,
             definition.Sources);
     }
@@ -30,6 +37,29 @@ internal static class CampaignSetupHash
         InitiativePolicy initialInitiative,
         CampaignOpeningPreamblePolicy openingPreamble,
         CampaignWeatherPolicy weather,
+        CampaignStageEntryPolicy stageEntry,
+        CampaignContentSelection content,
+        IReadOnlyList<RuleReference> sources) => FormatSha256(SerializeCanonical(
+            schemaVersion,
+            setupId,
+            isSynthetic,
+            initialGameTurn,
+            initialInitiative,
+            openingPreamble,
+            weather,
+            stageEntry,
+            content,
+            sources));
+
+    private static byte[] SerializeCanonical(
+        int schemaVersion,
+        string setupId,
+        bool isSynthetic,
+        int initialGameTurn,
+        InitiativePolicy initialInitiative,
+        CampaignOpeningPreamblePolicy openingPreamble,
+        CampaignWeatherPolicy weather,
+        CampaignStageEntryPolicy stageEntry,
         CampaignContentSelection content,
         IReadOnlyList<RuleReference> sources)
     {
@@ -89,6 +119,7 @@ internal static class CampaignSetupHash
 
             writer.WriteEndArray();
             writer.WriteEndObject();
+            CampaignStageEntryPolicyCodec.Write(writer, "stageEntry", stageEntry);
             writer.WriteStartObject("content");
             writer.WriteNumber("schemaVersion", content.Pack.SchemaVersion);
             writer.WriteString("formatId", content.Pack.FormatId);
@@ -111,8 +142,11 @@ internal static class CampaignSetupHash
             writer.WriteEndObject();
         }
 
-        return $"sha256:{Convert.ToHexString(SHA256.HashData(stream.ToArray())).ToLowerInvariant()}";
+        return stream.ToArray();
     }
+
+    private static string FormatSha256(ReadOnlySpan<byte> canonical) =>
+        $"sha256:{Convert.ToHexString(SHA256.HashData(canonical)).ToLowerInvariant()}";
 
     private static void WriteInitiative(Utf8JsonWriter writer, InitiativePolicy policy)
     {

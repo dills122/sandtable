@@ -1,6 +1,6 @@
 # Operation-Stage Entry v1 Specification
 
-**Status:** Planning review Ready; owner decision and Task 001 contract freeze required; implementation not authorized
+**Status:** Implemented; STG-TASK-001 through STG-TASK-022 and STG-TASK-014A complete
 
 **Date:** 2026-08-24
 
@@ -24,10 +24,9 @@ Success is a deterministic, replayable, source-ordered path in which every manda
 own current legal system action and authoritative event, no missing domain data is treated as zero,
 and any unsupported or stale checkpoint rejects with zero events.
 
-## Approved assumptions required before implementation
+## Accepted implementation decisions
 
-This proposed specification assumes the owner approves `STG-DEC-001` through `STG-DEC-011` in the
-research packet:
+The owner accepted `STG-DEC-001` through `STG-DEC-011` in the research packet:
 
 - v1 is exact-fixture and Operation Stage 1 only;
 - all four obligation classes are separately and explicitly empty;
@@ -128,7 +127,7 @@ persistence, Maproom, package, or model change belongs to v1.
 | `STG-NFR-003` | No public authority-bearing snapshot, event, setup policy, command, or projector becomes accessible outside existing safe Core facades and test-only friend boundaries. |
 | `STG-NFR-004` | Side legal-action and observation bytes are invariant under valid opponent-only hidden-force mutations at every system-only stage-entry position and at the Reserve successor. |
 | `STG-NFR-005` | New behavior is covered primarily by deterministic unit/contract tests plus focused end-to-end campaign/replay tests; no timing-sensitive assertion is permitted. |
-| `STG-NFR-006` | Implementation tasks target at most five material files each. The clean-cut identity lane may temporarily invalidate old full-suite goldens between Tasks 002 and 010, including Task 007A; the named identity-migration checkpoint after Task 010, and every later checkpoint, must leave the existing Weather and Exercise suites green. No intermediate task is mergeable while that lane is incomplete. |
+| `STG-NFR-006` | Implementation tasks target at most five material files each. Tasks 002-003 and 011 onward require focused RED/GREEN evidence. The clean-cut identity lane may leave the shared test project uncompilable or its old goldens invalid during Tasks 004-009, including Task 007A; those tasks retain an exact unresolved-failure inventory plus available source/Core-build evidence and must not claim executable GREEN. Task 010 must resolve that inventory and leave the existing Weather and Exercise suites green; every later checkpoint must remain green. No intermediate identity-lane task is mergeable. |
 
 ## Acceptance scenarios
 
@@ -189,22 +188,43 @@ persistence, Maproom, package, or model change belongs to v1.
 
 ## Completion gate
 
-Implementation may begin only after:
+Implementation began only after:
 
-1. the owner approves or revises `STG-DEC-001` through `STG-DEC-011`;
-2. `EXR-TASK-014` is complete and the branch is rebased on its accepted checkpoint;
-3. contract migration versions and exact policy source identity are frozen;
-4. every task in the technical design is refined to at most five material files;
-5. requirement → task/checkpoint → evidence traceability is complete; and
-6. one independent planning review finds no unresolved P0/P1 issue.
+1. the owner approves or revises `STG-DEC-001` through `STG-DEC-011`; **satisfied by owner
+   acceptance on 2026-08-24**;
+2. `EXR-TASK-014` is complete and the planning branch is based on merged commit
+   `a022b784cda90be90ff6af9802c0c0352b9f89a6`; **satisfied by STG-TASK-001**;
+3. contract migration versions and exact policy source identity are frozen; **satisfied by
+   STG-TASK-001**;
+4. every task in the technical design is refined to at most five material files; **satisfied by
+   STG-TASK-001 and retained through delivery**;
+5. requirement → task/checkpoint → evidence traceability is complete; **satisfied and closed by
+   STG-TASK-020 through STG-TASK-022**; and
+6. one independent planning review finds no unresolved P0/P1 issue; **satisfied by Task 001 review
+   instance 3 of 3 (`Ready`, no P0-P3 findings)**.
 
-## Open questions
+## Owner approval gate
 
-- Should the Stage Entry setup policy be a separate contract or a new closed section within a more
-  general per-checkpoint obligation-policy envelope? The design recommends a separate v1 contract
-  to avoid changing existing opening/Weather meanings; the owner must freeze this in `STG-TASK-001`.
-- Which exact clean-cut setup/create/event/snapshot version numbers apply after Task 014 merges? They
-  must be frozen from the then-current repository, not guessed in this planning branch.
+`STG-TASK-001` resolved both former open questions as follows:
+
+- use a separate `CampaignStageEntryPolicy` contract v1 rather than changing the meanings of the
+  opening-preamble or Weather policy contracts; and
+- clean-cut ruleset contract `3→4`, setup schema `4→5`, create-command and campaign-created event
+  `4→5`, and campaign snapshot `5→6`. New Stage Entry policy, commands, events, and candidates begin
+  at contract 1; Land sequence, operation-stage order, Legal Action set/submission, observation,
+  opening-preamble policy, and Weather policy versions do not change.
+
+The exact fields, ordinals, identifiers, sources, inventory boundary, and task ownership are frozen
+in the independently reviewed technical design. The project owner accepted `STG-DEC-001` through
+`STG-DEC-011` as written on 2026-08-24.
 
 System action dispatch is no longer open: `STG-TASK-011` characterizes existing behavior and makes
 semantic position/policy dispatch a prerequisite to the Stage Entry transition slices.
+
+## Implementation closure
+
+The delivered capability satisfies the frozen explicit-empty boundary for both admitted setups and
+stops at Reserve without implementing Reserve behavior. The final authority review found no
+production or test defect; its sole planning-state finding was accepted and corrected, and the
+3-of-3 review limit is closed. Final `just check` passed format verification, built the solution
+with 0 warnings and 0 errors, and passed 619/619 tests with no failures or skips.

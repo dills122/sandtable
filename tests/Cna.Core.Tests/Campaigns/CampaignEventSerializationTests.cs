@@ -15,12 +15,12 @@ public sealed class CampaignEventSerializationTests
 
         var bytes = CampaignEventSerializer.Serialize(created);
         var actual = Encoding.UTF8.GetString(bytes);
-        var expected = "{\"contractVersion\":4,\"eventType\":\"campaign-created\"," +
+        var expected = "{\"contractVersion\":5,\"eventType\":\"campaign-created\"," +
             "\"campaignId\":\"campaign-1\",\"stateVersion\":1,\"rulesetHash\":\"" +
             Cna1979Ruleset.Manifest.Hash +
-            "\",\"setup\":{\"schemaVersion\":4," +
+            "\",\"setup\":{\"schemaVersion\":5," +
             "\"setupId\":\"rules-lab.initiative.predetermined\"," +
-            "\"setupHash\":\"sha256:5ecf84d21a7ff95112b9b662915f6858926532d30be5a0eee3f1a45752fdc80a\"," +
+            "\"setupHash\":\"sha256:c1688f8869ca66182b87f487ec34edbef617ff1158f7d8b0d3101fe3993978ef\"," +
             "\"isSynthetic\":true,\"initialGameTurn\":1," +
             "\"initialInitiative\":{\"kind\":\"predetermined\",\"holder\":\"axis\"}," +
             "\"openingPreamble\":{\"contractVersion\":1," +
@@ -31,6 +31,13 @@ public sealed class CampaignEventSerializationTests
             "\"kind\":\"no-immediate-weather-effect-subjects\"," +
             "\"sources\":[{\"sourceId\":\"sandtable-rules-lab\"," +
             "\"locator\":\"weather.no-immediate-effect-subjects.v1\"}]}," +
+            "\"stageEntry\":{\"contractVersion\":1,\"gameTurn\":1," +
+            "\"operationStage\":1,\"organization\":\"explicit-none\"," +
+            "\"navalConvoyArrival\":\"explicit-none\"," +
+            "\"fleetAssignment\":\"explicit-none\"," +
+            "\"fleetRepair\":\"explicit-none\",\"sources\":[{" +
+            "\"sourceId\":\"sandtable-rules-lab\"," +
+            "\"locator\":\"stage-entry.no-obligations.v1\"}]}," +
             "\"content\":{\"schemaVersion\":2,\"formatId\":\"sandtable.content-json.v1\"," +
             "\"packId\":\"rules-lab.content.movement-contact.v1\",\"rulesetId\":\"cna-1979.1\"," +
             "\"hash\":\"sha256:53d5b64f647251e3ac366c65f4ad05cae766afd7b70ee331d463e801496e2a99\"," +

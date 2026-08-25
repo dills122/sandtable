@@ -65,6 +65,30 @@ public sealed record ResolveWeatherAction : CampaignActionCandidate
     internal ResolveWeatherAction() : base("resolve-weather") { }
 }
 
+public sealed record ResolveNoObligationOrganizationAction : CampaignActionCandidate
+{
+    internal ResolveNoObligationOrganizationAction()
+        : base("resolve-no-obligation-organization") { }
+}
+
+public sealed record ResolveNoObligationNavalConvoyArrivalAction : CampaignActionCandidate
+{
+    internal ResolveNoObligationNavalConvoyArrivalAction()
+        : base("resolve-no-obligation-naval-convoy-arrival") { }
+}
+
+public sealed record ResolveNoObligationFleetAssignmentAction : CampaignActionCandidate
+{
+    internal ResolveNoObligationFleetAssignmentAction()
+        : base("resolve-no-obligation-fleet-assignment") { }
+}
+
+public sealed record ResolveNoObligationFleetRepairAction : CampaignActionCandidate
+{
+    internal ResolveNoObligationFleetRepairAction()
+        : base("resolve-no-obligation-fleet-repair") { }
+}
+
 public sealed record ActFirstAction : CampaignActionCandidate
 {
     internal ActFirstAction(int operationStage) : base("act-first", operationStage) { }

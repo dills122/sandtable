@@ -1,3 +1,5 @@
+using System.Text;
+using System.Text.Json;
 using Cna.Core.Campaigns;
 using Cna.Core.Content;
 using Cna.Core.Rules;
@@ -88,9 +90,39 @@ public sealed class CampaignCreationAdmissionTests
         Assert.True(result.IsAccepted);
         Assert.Equal(1, resolver.CallCount);
         var created = Assert.IsType<CampaignCreated>(Assert.Single(result.Events));
-        Assert.Equal(4, created.ContractVersion);
+        Assert.Equal(5, created.ContractVersion);
         Assert.Equal(setup.Content, created.Setup.Content);
         Assert.Equal(4, created.InitialWorld.Elements.Count);
+    }
+
+    [Fact]
+    public void CreationContractsUseVersionFiveAndRejectVersionFour()
+    {
+        var setup = Cna1979SetupCatalog.Definitions[0];
+        var current = Create(setup);
+        var oldCommand = current with { ContractVersion = 4 };
+
+        var rejected = CampaignEngine.DecideCreation(
+            null,
+            oldCommand,
+            new SyntheticResolver());
+        var accepted = CampaignEngine.DecideCreation(
+            null,
+            current,
+            new SyntheticResolver());
+        var created = Assert.IsType<CampaignCreated>(Assert.Single(accepted.Events));
+        var canonical = Encoding.UTF8.GetString(CampaignEventSerializer.Serialize(created));
+        var oldEvent = canonical.Replace(
+            "\"contractVersion\":5",
+            "\"contractVersion\":4",
+            StringComparison.Ordinal);
+
+        Assert.Equal(5, current.ContractVersion);
+        Assert.Equal(CampaignCommandRejectionReason.InvalidCommand, rejected.RejectionReason);
+        Assert.Empty(rejected.Events);
+        Assert.Equal(5, created.ContractVersion);
+        Assert.Throws<JsonException>(() => CampaignEventSerializer.Deserialize(
+            Encoding.UTF8.GetBytes(oldEvent)));
     }
 
     [Theory]
@@ -262,6 +294,7 @@ public sealed class CampaignCreationAdmissionTests
             canonical.InitialInitiative,
             canonical.OpeningPreamble,
             canonical.Weather,
+            CreateStageEntryPolicy(canonical.InitialGameTurn + 1),
             canonical.Content,
             canonical.Sources);
 
@@ -291,6 +324,7 @@ public sealed class CampaignCreationAdmissionTests
                 CampaignWeatherPolicy.CurrentContractVersion,
                 CampaignWeatherPolicyKind.NoImmediateWeatherEffectSubjects,
                 [new RuleReference("sandtable-rules-lab", "weather.wrong.v1")]),
+            canonical.StageEntry,
             canonical.Content,
             canonical.Sources);
         var resolver = new SyntheticResolver();
@@ -308,6 +342,46 @@ public sealed class CampaignCreationAdmissionTests
         Assert.Equal(0, resolver.CallCount);
     }
 
+    [Fact]
+    public void ControlledAdmissionRejectsWrongPairAndUnsupportedStageEntryBeforeContentResolution()
+    {
+        var canonical = Cna1979SetupCatalog.Definitions[0];
+        CampaignStageEntryPolicy[] unsupportedPolicies =
+        [
+            CreateStageEntryPolicy(canonical.InitialGameTurn + 1),
+            CreateStageEntryPolicy(
+                canonical.InitialGameTurn,
+                organization: StageEntryObligationKind.HasObligations),
+        ];
+
+        Assert.All(unsupportedPolicies, policy =>
+        {
+            var altered = new CampaignSetupDefinition(
+                canonical.SchemaVersion,
+                canonical.SetupId,
+                canonical.DisplayName,
+                canonical.IsSynthetic,
+                canonical.InitialGameTurn,
+                canonical.InitialInitiative,
+                canonical.OpeningPreamble,
+                canonical.Weather,
+                policy,
+                canonical.Content,
+                canonical.Sources);
+            var resolver = new SyntheticResolver();
+
+            var result = CampaignEngine.DecideCreation(
+                null,
+                Create(altered),
+                resolver,
+                [altered]);
+
+            Assert.Equal(CampaignCommandRejectionReason.InvalidState, result.RejectionReason);
+            Assert.Empty(result.Events);
+            Assert.Equal(0, resolver.CallCount);
+        });
+    }
+
     private static CreateCampaign Create(CampaignSetupDefinition setup) => new(
         "campaign-1",
         Cna1979Ruleset.Manifest.Hash,
@@ -317,6 +391,18 @@ public sealed class CampaignCreationAdmissionTests
         setup.Content.Pack.PackId,
         setup.Content.Pack.Hash,
         setup.Content.ScenarioId);
+
+    private static CampaignStageEntryPolicy CreateStageEntryPolicy(
+        int gameTurn,
+        StageEntryObligationKind organization = StageEntryObligationKind.ExplicitNone) => new(
+            CampaignStageEntryPolicy.CurrentContractVersion,
+            gameTurn,
+            1,
+            organization,
+            StageEntryObligationKind.ExplicitNone,
+            StageEntryObligationKind.ExplicitNone,
+            StageEntryObligationKind.ExplicitNone,
+            [CampaignStageEntryPolicy.SourceReference]);
 
     private sealed class SyntheticResolver : IContentPackResolver
     {
