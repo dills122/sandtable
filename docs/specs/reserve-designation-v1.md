@@ -1,7 +1,7 @@
 # Reserve Designation v1 Specification
 
-**Status:** Implemented through `RES-TASK-015`; final repository gate and independent review in
-progress
+**Status:** Implemented, repository-verified, independently reviewed, and merged through
+`RES-TASK-016`
 
 **Date:** 2026-08-24
 
@@ -29,10 +29,9 @@ opponent observation bytes. Movement and the later Reserve lifecycle remain unsu
 
 The project owner accepted `RES-DEC-001` through `RES-DEC-012` as written on 2026-08-24. The final
 independent planning review passed after all findings were reconciled; no unresolved P0/P1/P2
-planning finding remains. `RES-TASK-001` through `RES-TASK-015` are complete, including both
-authoritative transitions and the coordinated Harness v2 evidence lane. The complete dirty branch
-remains non-mergeable until `RES-TASK-016` closes the full repository gate and final independent
-implementation review.
+planning finding remains. `RES-TASK-001` through `RES-TASK-016` are complete, including both
+authoritative transitions, the coordinated Harness v2 evidence lane, repository verification, and
+the final independent implementation review.
 
 ## Functional requirements
 

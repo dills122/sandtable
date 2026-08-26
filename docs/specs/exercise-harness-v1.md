@@ -22,7 +22,9 @@ gameplay-engine work
 [specification](operation-stage-entry-v1.md), and
 [technical design](../design/operation-stage-entry-v1.md), followed by the
 [Reserve Designation specification](reserve-designation-v1.md) and
-[technical design](../design/reserve-designation-v1.md); Movement behavior remains unsupported
+[technical design](../design/reserve-designation-v1.md). Movement Foundation Tasks 001-004 now
+provide rules/content/world prerequisites, but Movement actions remain unsupported; Task 009 will
+adopt Movement into checked Exercise/Maneuver evidence only after the executable vertical lands
 
 **Research decisions:**
 [capability and replay](../research/exercise-capability-and-replay-spike.md),

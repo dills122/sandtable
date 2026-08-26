@@ -16,6 +16,12 @@
 **Current evolution:** The original value model below has clean-cut through contract 4 and policy
 `sandtable.observation.own-elements-only.v2`. Contract 3 added owner Reserve status; contract 4
 projects an audience-visible revision that excludes hidden opposing Reserve designation increments.
+After the `BREAKDOWN-001` owner decision fixes the continuity boundary, Movement Foundation
+`MOV-TASK-005` is the next clean cut and owns own mobility/operational facts, minimum apparent
+opposing presence, the observation policy/version, canonical read/write fixtures, and renewed
+privacy tests. If continuity-now is approved, the same clean cut includes only the acting side's
+minimum Breakdown Point/cohort-risk facts. No such outward presence exists in the merged
+contract-4 implementation.
 
 ## Intent and completion boundary
 

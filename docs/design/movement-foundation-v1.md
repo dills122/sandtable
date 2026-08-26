@@ -1,7 +1,7 @@
 # Movement Foundation v1 Technical Design
 
 **Status:** Active implementation plan; `MOV-TASK-001` through `MOV-TASK-004` complete,
-`MOV-TASK-005` ready
+`BREAKDOWN-001` owner decision next; `MOV-TASK-005` conditionally blocked
 
 **Date:** 2026-08-25
 
@@ -195,6 +195,17 @@ Completion uses `Cna1979LandSequence.GetNext` and additionally asserts the exact
 Breakdown Determination successor. It does not use a generic “next phase” event and it exposes no
 Breakdown candidate.
 
+### Breakdown continuity research gate
+
+The merged Task 004 world records exact stage-associated CP expenditure and Cohesion but no vehicle
+composition, Breakdown Point accumulation, or prior check-column state. The first Movement vertical
+can therefore replay exactly through arrival at Breakdown, but it cannot imply that Breakdown is
+already adjudicable. The
+[Breakdown continuity packet](../research/breakdown-continuity-spike.md) recommends minimum BP
+rules/content/world continuity before Task 005 and proposes a sequential-dice ruling. The owner may
+instead choose terminal histories plus an explicit later migration. Task 005 is blocked until that
+choice fixes its own-observation shape; this still does not authorize Breakdown adjudication.
+
 ## Task graph
 
 ```text
@@ -209,6 +220,14 @@ MOV-TASK-003 content mobility [complete]
                   v
 MOV-TASK-004 world + representation contracts [complete]
                   |
+                  v
+BREAKDOWN-001 owner decision
+           /                  \
+ continuity now          terminal histories
+         |                       |
+MOV-TASK-004B              explicit later-migration
+BP continuity [conditional]      contract
+           \                  /
                   v
 MOV-TASK-005 observation/apparent presence
                   |
@@ -233,6 +252,14 @@ freezes a versioned contract consumed by the next layer. In particular, Content 
 consumes the closed mobility vocabulary and ruleset identity completed by Task 002. Tasks 006 and
 007 keep all public Movement membership dormant; Task 008 atomically exposes executable move and
 completion actions so no intermediate checkpoint can strand a campaign at Movement.
+`BREAKDOWN-001` is the current owner-decision gate. If continuity-now is approved, the conditional
+Task 004B becomes a required predecessor of Task 005; otherwise the package records terminal
+histories and the required future migration before Task 005 proceeds.
+
+The Task 001-004 foundation merged in PR #29 after `just check` passed with a warning-clean build,
+format verification, and 746/746 solution tests. The roadmap groups the remaining work into a
+Task 005 fog-contract checkpoint, a Task 006-008 atomic action vertical, and a Task 009-010 evidence
+and review closeout; those checkpoints do not relax the serial contract dependencies below.
 
 ## Implementation tasks
 
@@ -313,23 +340,28 @@ location, version, stage, and content mismatches reject
 
 ### `MOV-TASK-005` - Add apparent presence to observation
 
+**Status:** Blocked by the `BREAKDOWN-001` owner decision and any selected continuity lane
+
 **Advances:** `MOV-REQ-005`, `MOV-REQ-011`; `MOV-AC-005`, `MOV-AC-006`
 
-**Dependencies:** `MOV-TASK-004`
+**Dependencies:** `MOV-TASK-004`; approved `BREAKDOWN-001` outcome; conditional Task 004B if selected
 
 **Owned modules:** Observation contracts, projector, policy/version, serializer/reader, privacy and
 dependency tests, and every affected observation fixture
 
 **Observable output:** own mobility and operational ledger plus approved apparent opposing
-representation location/ZOC facts, with internal bindings absent
+representation location/ZOC facts, with internal bindings absent. If continuity-now is selected,
+the own allowlist also carries the approved cohort/BP risk facts.
 
 **Acceptance:** own mobility is present and canonical; real element binding, opposing
-CPA/Cohesion/Reserve/mobility/content, and raw event truth are absent by API shape, dependency
-graph, and canonical bytes
+CPA/Cohesion/Reserve/mobility/content—and opposing cohort/BAR/BP/check history under the continuity
+option—plus raw event truth are absent by API shape, dependency graph, and canonical bytes
 
 **Verification:** projection/golden/privacy/differential-observation tests
 
 ### `MOV-TASK-006` - Freeze Movement action and submission contracts
+
+**Status:** Blocked by `MOV-TASK-005`
 
 **Advances:** `MOV-REQ-006`, `MOV-REQ-007`, `MOV-REQ-010`; `MOV-AC-006`, `MOV-AC-008`
 
@@ -351,10 +383,12 @@ public-empty-set tests
 
 ### `MOV-TASK-007` - Implement non-contact Movement adjudication
 
+**Status:** Blocked by `MOV-TASK-006`
+
 **Advances:** `MOV-REQ-007`, `MOV-REQ-008`, `MOV-REQ-010`, `MOV-REQ-011`; `MOV-AC-007`,
 `MOV-AC-008`, `MOV-AC-010`, `MOV-AC-011`
 
-**Dependencies:** `MOV-TASK-006`
+**Dependencies:** `MOV-TASK-006` and the already selected/implemented `BREAKDOWN-001` boundary
 
 **Owned modules:** internal Movement command, event, event codec, resolver/adjudicator, internal
 command execution dispatch, projector transition, snapshot/event validation, replay, and Campaign
@@ -372,6 +406,8 @@ enemy-ZOC behavior remain typed unsupported; public Movement membership remains 
 tests
 
 ### `MOV-TASK-008` - Publish the complete Movement action vertical
+
+**Status:** Blocked by `MOV-TASK-007`
 
 **Advances:** `MOV-REQ-006`, `MOV-REQ-007`, `MOV-REQ-009`, `MOV-REQ-010`, `MOV-REQ-011`;
 `MOV-AC-006` through `MOV-AC-011`
@@ -395,6 +431,8 @@ Breakdown action appears
 
 ### `MOV-TASK-009` - Adopt Movement in Exercise and Maneuver evidence
 
+**Status:** Blocked by `MOV-TASK-008`
+
 **Advances:** `MOV-REQ-012`; `MOV-AC-012`, `MOV-AC-013`
 
 **Dependencies:** `MOV-TASK-008`
@@ -413,6 +451,8 @@ strict readback, and aggregate fingerprint are frozen from two matching runs
 retained evidence artifact
 
 ### `MOV-TASK-010` - Synchronize and review the completed package
+
+**Status:** Blocked by `MOV-TASK-009`
 
 **Advances:** all requirements and acceptance criteria
 

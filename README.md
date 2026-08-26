@@ -56,10 +56,11 @@ events; explicitly resolve empty Organization, Naval Convoy Arrival, Fleet Assig
 Repair obligations; adjudicate the first-acting side's Reserve Designation; stop at Movement; and
 replay those events to byte-identical state. Reserve authority now carries per-element status,
 owner-only observation, exact acting-side candidates, closed command mapping, bounded checkpoints,
-and canonical designation/completion events. Ruleset manifest contract 5, setup schema 5, snapshot
-contract 7, Campaign World snapshot contract 2, Campaign Observation contract 4, legal-action-set
-contract 2, and Content Pack
-schema 2 use an original nine-hex,
+and canonical designation/completion events. The Movement foundation additionally records exact
+per-Operation-Stage expenditure/Cohesion state and opaque one-to-one map representations without
+yet exposing a Movement action. Ruleset manifest contract 6, setup schema 5, snapshot contract 8,
+Campaign World snapshot contract 3, Campaign Observation contract 4, legal-action-set contract 2,
+and Content Pack schema 3 / canonical format v2 use an original nine-hex,
 nonhistorical rules laboratory to develop game systems without redistributing published assets.
 Campaign Observation derives deterministic side-safe public topology, audience-visible turn
 revision, own-force facts, and own Reserve status without exposing the complete Content Pack, any
@@ -107,8 +108,8 @@ none/one/all controller profiles rather than seed variation alone. See
 [controller-policy matrix](docs/research/simulator-controller-matrix.md) closes that explicit
 coverage gap with 6/6 strictly read-back trajectories and a repeatable aggregate fingerprint.
 
-Positive Organization/stage-entry obligations, movement behavior, combat, published scenario
-content, persistence, and the Maproom player interface remain future work.
+Positive Organization/stage-entry obligations, Movement campaign behavior, contact, combat,
+published scenario content, persistence, and the Maproom player interface remain future work.
 
 The reviewed Player Intent Composer is also future work. After the movement/contact/combat skeleton
 proves one representative multi-field decision, a no-model prototype will validate contextual
@@ -123,7 +124,7 @@ The current delivery boundary is:
 | Ruleset/provenance, synthetic content, campaign authority, deterministic randomness, events, and replay | Implemented foundation |
 | Side-safe observations and exact-audience legal actions | Implemented for the current rules-laboratory path |
 | Mandatory turn preamble | Implemented through Reserve Designation completion; authority reaches first-side Movement |
-| Movement/contact and combat loops | Movement Foundation rules, Content mobility, and replay-complete world/representation state complete; side-safe apparent-presence observation task next; campaign actions not started |
+| Movement/contact and combat loops | Movement Foundation rules, Content mobility, and replay-complete world/representation state complete; `BREAKDOWN-001` owner decision next, then side-safe observation; campaign actions not started |
 | Published first-scenario data, remaining Land rules, victory, persistence, and Maproom | Milestone-level; not started |
 | Player Intent Composer | Direction reviewed; representative decision after the combat skeleton, no-model prototype before Maproom, optional parser evaluation after deterministic MVP |
 | Exercise Harness | Organization, Reserve, and Movement-terminal Exercises plus two-setup and six-policy serial Maneuvers implemented; pairing remains later |
@@ -131,9 +132,12 @@ The current delivery boundary is:
 The approved high-level path to a playable game is:
 
 1. Implement a complete movement/contact/combat loop through the legal-action boundary.
-2. Add the remaining Land systems and data required by *Graziani's Offensive*.
-3. Validate the representative Player Intent Composer flow without a model.
-4. Deliver deterministic Maproom, local hot-seat play, saves, replay, and the reviewed intent flow.
+2. At the combat-skeleton checkpoint, select the representative Player Intent Composer decision;
+   run its no-model prototype alongside first-scenario data work.
+3. Add the remaining Land systems, source-verified content, and victory rules required by
+   *Graziani's Offensive*.
+4. Deliver deterministic Maproom, local hot-seat play, saves, replay, and the validated no-model
+   intent flow.
 5. Evaluate optional parsing only after the deterministic MVP, then expand into detailed Air and
    Logistics play, later scenarios, and optional intelligence.
 
@@ -141,22 +145,25 @@ The serial-Maneuver portion of Exercise Harness v1 now provides validated local 
 evidence without adding game rules. The implemented Operation-Stage Entry package retains its
 [research](docs/research/operation-stage-entry-spike.md),
 [specification](docs/specs/operation-stage-entry-v1.md), and
-[technical design](docs/design/operation-stage-entry-v1.md). Reserve Designation is now the next
-delivered authoritative mechanic. Its [research](docs/research/reserve-designation-spike.md),
+[technical design](docs/design/operation-stage-entry-v1.md). Reserve Designation is the latest
+completed player-action vertical before Movement. Its
+[research](docs/research/reserve-designation-spike.md),
 [specification](docs/specs/reserve-designation-v1.md), and
 [technical design](docs/design/reserve-designation-v1.md) define an incremental designation flow
 that stops at Movement. Rules, state, owner projection, legal candidates, command mapping,
 designation/completion events, finite checkpoint validation, replay, and checked harness evidence
-are implemented. The next package is the approved Movement Foundation
+are implemented. The active engine package is the approved Movement Foundation
 [research](docs/research/movement-foundation-spike.md),
 [specification](docs/specs/movement-foundation-v1.md), and
-[technical design](docs/design/movement-foundation-v1.md). It proposes a fog-safe apparent-presence
+[technical design](docs/design/movement-foundation-v1.md). It defines a fog-safe apparent-presence
 gate followed by exact CP/Cohesion state, normalized lab terrain and stacking, repeatable
 non-contact moves, and explicit completion to Breakdown Determination. The plan is owner-approved;
-its source/ruling lock, exact Rules foundation, and `MOV-TASK-003` Content mobility contract are
-complete. `MOV-TASK-004` now records exact Cohesion/expenditure and opaque internal representation
-bindings in snapshot v8/world v3 creation history. `MOV-TASK-005` side-safe own state and apparent
-opposing presence is next; Movement campaign actions are still unsupported. Paired
+its source/ruling lock, exact Rules foundation, `MOV-TASK-003` Content mobility contract, and
+`MOV-TASK-004` replay-complete world/representation contracts are complete. Task 004 records exact
+Cohesion/expenditure and opaque internal representation
+bindings in snapshot v8/world v3 creation history. The `BREAKDOWN-001` continuity/ruling decision
+is now the next gate because its outcome can change Task 005's own-observation shape;
+`MOV-TASK-005` follows that decision. Movement campaign actions are still unsupported. Paired
 comparison remains a later evaluation capability and does not block gameplay-engine progress.
 
 See the [pre-alpha roadmap](docs/roadmap/pre-alpha-roadmap.md) for the capability-level plan and
@@ -400,6 +407,10 @@ The current Umpire foundation is intentionally pure and in-process:
 - [Reserve Designation v1 specification](docs/specs/reserve-designation-v1.md)
 - [Reserve Designation v1 technical design and delivery plan](docs/design/reserve-designation-v1.md)
 - [Movement Foundation v1 source and contract research](docs/research/movement-foundation-spike.md)
+- [Sprint 4-5 research-gate audit](docs/research/sprint-4-5-research-gates.md)
+- [Breakdown continuity decision packet](docs/research/breakdown-continuity-spike.md)
+- [ZOC and Reaction interruption research](docs/research/contact-reaction-zoc-spike.md)
+- [Combat and continual-cycle source inventory](docs/research/combat-cycle-source-inventory.md)
 - [Movement Foundation v1 specification](docs/specs/movement-foundation-v1.md)
 - [Movement Foundation v1 technical design and delivery plan](docs/design/movement-foundation-v1.md)
 - [Microsoft Orleans documentation](https://learn.microsoft.com/en-us/dotnet/orleans/)
