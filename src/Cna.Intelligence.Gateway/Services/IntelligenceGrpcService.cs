@@ -3,7 +3,8 @@ using Grpc.Core;
 
 namespace Cna.Intelligence.Gateway.Services;
 
-internal sealed class IntelligenceGrpcService : IntelligenceService.IntelligenceServiceBase
+internal sealed class IntelligenceGrpcService(IIntelligenceProviderStatus providerStatus)
+    : IntelligenceService.IntelligenceServiceBase
 {
     private static readonly Status ProviderUnavailable = new(
         StatusCode.Unavailable,
@@ -25,7 +26,7 @@ internal sealed class IntelligenceGrpcService : IntelligenceService.Intelligence
         ServerCallContext context) =>
         Task.FromResult(new CapabilitiesResponse
         {
-            DecisionProviderAvailable = false,
-            NarrativeProviderAvailable = false,
+            DecisionProviderAvailable = providerStatus.DecisionProviderAvailable,
+            NarrativeProviderAvailable = providerStatus.NarrativeProviderAvailable,
         });
 }
