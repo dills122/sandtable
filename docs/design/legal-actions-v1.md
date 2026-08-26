@@ -11,6 +11,9 @@
 **Current evolution:** The original v1 delivery below is historical design context. Reserve
 Designation clean-cuts only the action-set envelope to contract 2 / `sandtable.legal-actions.v2`
 for audience-visible revision semantics; candidate, submission, and receipt contracts stay at 1.
+Movement Foundation `MOV-TASK-006` owns dormant Movement output/submission contracts, and
+`MOV-TASK-008` owns their atomic public membership after internal adjudication and completion are
+both executable. The merged action set intentionally has no Movement member.
 
 ## Delivery shape
 

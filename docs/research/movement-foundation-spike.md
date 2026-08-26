@@ -1,6 +1,7 @@
 # Movement Foundation Spike
 
-**Status:** Approved implementation baseline; `MOV-TASK-001` and `MOV-TASK-002` complete
+**Status:** Approved active implementation baseline; `MOV-TASK-001` through `MOV-TASK-004`
+complete, `BREAKDOWN-001` owner decision next; `MOV-TASK-005` conditionally blocked
 
 **Date:** 2026-08-25
 
@@ -9,6 +10,13 @@
 **Research work item:** `RSH-MOVE-001`
 
 **Proposed capability:** `MOVE-001`
+
+**Current delivery note:** Tasks 001-004 are merged. The later
+[Breakdown continuity packet](breakdown-continuity-spike.md) recommends inserting minimum BP
+rules/content/world continuity before Task 005 and proposes a sequential-dice ruling. The owner may
+instead choose terminal histories plus a later clean-cut migration; Task 005 is blocked until that
+choice fixes its own-observation shape. This does not broaden the Movement package into Breakdown,
+ZOC/Reaction, Contact/Engaged, or Combat adjudication authority.
 
 ## Executive conclusion
 

@@ -18,7 +18,11 @@
 clean-cuts the action-set envelope to contract 2 / `sandtable.legal-actions.v2`. Its `stateVersion`
 is audience-visible: active sets retain the current authority revision, while inactive opposing
 Reserve/Movement sets do not encode hidden designation count. Candidate, submission, and receipt
-contracts remain 1. See [Reserve Designation v1](reserve-designation-v1.md).
+contracts remain 1. Movement Foundation `MOV-TASK-006` will freeze output-only Movement contracts
+while public membership remains empty; `MOV-TASK-008` will expose move and completion membership
+atomically only after both paths are executable. No Movement candidate is currently public. See
+[Reserve Designation v1](reserve-designation-v1.md) and
+[Movement Foundation v1](movement-foundation-v1.md).
 
 ## Objective
 

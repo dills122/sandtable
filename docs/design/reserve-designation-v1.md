@@ -1,7 +1,7 @@
 # Reserve Designation v1 Technical Design
 
-**Status:** Implemented through `RES-TASK-015`; final repository gate and independent review in
-progress
+**Status:** Implemented, repository-verified, independently reviewed, and merged through
+`RES-TASK-016`
 
 **Date:** 2026-08-24
 

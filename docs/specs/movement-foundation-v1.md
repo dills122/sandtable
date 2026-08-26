@@ -1,7 +1,7 @@
 # Movement Foundation v1 Specification
 
 **Status:** Active implementation baseline; `MOV-TASK-001` through `MOV-TASK-004` complete,
-`MOV-TASK-005` ready
+`BREAKDOWN-001` owner decision next; `MOV-TASK-005` conditionally blocked
 
 **Date:** 2026-08-25
 
@@ -45,6 +45,18 @@ It excludes:
 - combat, Reserve Release, segment repetition, second-side Movement, and later stages;
 - attachments, dummy formations, Patrol, reconnaissance knowledge, or published content; and
 - any model-backed or free-text interpretation inside authoritative execution.
+
+### Breakdown continuity gate
+
+Movement Foundation v1 is replay-complete through arrival at the Breakdown Determination boundary;
+it does not yet claim that the resulting checkpoint contains every vehicle/Breakdown Point fact
+needed to adjudicate that next mechanic. The current Task 004 operational state records CP
+expenditure and Cohesion only. The
+[Breakdown continuity packet](../research/breakdown-continuity-spike.md) opens `BREAKDOWN-001` to
+choose whether Movement rules/content/world state gain minimum continuity fields now or terminal
+histories require a later clean-cut migration. Because continuity-now also changes approved own
+observation and action explanations, the owner decision precedes `MOV-TASK-005`. It does not
+authorize Breakdown adjudication.
 
 ## Normative decisions
 
@@ -268,4 +280,5 @@ source-backed Movement tables, strict canonical artifact readback, and ruleset v
 `MOV-TASK-003` is complete with required per-element mobility, Content schema 3 / canonical format
 v2, strict legacy and unknown-ID rejection, and migrated deterministic identities. `MOV-TASK-004`
 is complete with world v3, snapshot v8, creation event v7, exact initial Cohesion/expenditure, and
-opaque internal one-to-one representation bindings. `MOV-TASK-005` is the next delivery gate.
+opaque internal one-to-one representation bindings. The owner decision in `BREAKDOWN-001` is the
+next gate; `MOV-TASK-005` follows the selected continuity boundary.

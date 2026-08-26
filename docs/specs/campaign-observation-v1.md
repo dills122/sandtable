@@ -17,7 +17,13 @@
 **Current contract evolution:** The Campaign Observation v1 capability now emits contract 4 with
 policy `sandtable.observation.own-elements-only.v2`. Contract 3 added owner Reserve status; contract
 4 makes `stateVersion` audience-visible so valid hidden opposing Reserve histories have identical
-complete bytes. See [Reserve Designation v1](reserve-designation-v1.md).
+complete bytes. After the `BREAKDOWN-001` owner decision fixes the continuity boundary, Movement
+Foundation `MOV-TASK-005` is the next clean cut: it will add own mobility and operational-ledger
+facts plus the approved minimum apparent opposing presence while keeping real bindings and other
+opposing facts absent. If continuity-now is approved, it also projects only the acting side's
+minimum Breakdown Point/cohort-risk facts. Until Task 005 lands, contract 4 exposes no opposing
+presence. See [Reserve Designation v1](reserve-designation-v1.md) and
+[Movement Foundation v1](movement-foundation-v1.md).
 
 ## Objective
 

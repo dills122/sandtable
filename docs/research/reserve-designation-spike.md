@@ -1,7 +1,7 @@
 # Reserve Designation v1 Source and Contract Spike
 
-**Status:** Implemented through `RES-TASK-015`; final repository gate and independent review in
-progress
+**Status:** Approved decisions implemented, repository-verified, independently reviewed, and
+merged through `RES-TASK-016`
 
 **Date:** 2026-08-24
 

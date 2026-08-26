@@ -620,21 +620,25 @@ is an original nine-hex nonhistorical rules laboratory using the same path inten
 source-derived content. Exact catalog lookup requires both pack ID and hash and never substitutes a
 default; presentation labels remain outside authoritative equality and bytes.
 
-The implemented Campaign World v1 capability now uses world snapshot contract 2 and records exact
+The implemented Campaign World v1 capability now uses world snapshot contract 3 and records exact
 ruleset, setup, content, and scenario identities; resolves immutable content before an authoritative
-grain turn; and projects mutable element locations plus per-element Reserve status into campaign
-history. The Umpire performs no network or
+grain turn; and projects mutable element locations, per-element Reserve status, exact
+Operation-Stage expenditure/Cohesion state, and opaque one-to-one map-representation bindings into
+campaign history. The Umpire performs no network or
 persistence I/O, and replay requires the same exact content plus the matching executable rules
 manifest. The [Campaign World specification](docs/specs/campaign-world-v1.md) and
-[technical design](docs/design/campaign-world-v1.md) document the superseded version-3 campaign
-contract and schema-2 setup. Weather Determination v1 established explicit opening-preamble and
+[technical design](docs/design/campaign-world-v1.md) retain the original version-3 campaign /
+world-v1 and schema-2 setup delivery as historical context; their current-evolution notes point to
+the later Reserve and Movement clean cuts. Weather Determination v1 established explicit opening-preamble and
 Weather policies plus pair-keyed actor-order/Weather history. Reserve Designation's coordinated
-identity lane advances current authority to snapshot contract 7, creation contract 6, ruleset
+identity lane first advanced authority to snapshot contract 7, creation contract 6, ruleset
 manifest contract 5, world snapshot contract 2, setup schema 5, and Content Pack schema 2 while
 preserving resident exact-content context internally. Operation-Stage Entry still admits only the
 four exact empty obligations; Reserve Designation accepts only current owner candidates and advances
-through one exact completion event to Movement. No generic
-sequence bypass exists. See the Content Pack v1
+through one exact completion event to Movement. The current Movement foundation then advances the
+ruleset to contract 6, snapshot to contract 8, Campaign World to contract 3, creation event to
+contract 7, and Content Pack to schema 3 / canonical format v2. No generic sequence bypass exists.
+See the Content Pack v1
 [research](docs/research/content-pack-v1-spike.md),
 [specification](docs/specs/content-pack-v1.md), and
 [technical design](docs/design/content-pack-v1.md).
@@ -719,7 +723,7 @@ multi-event checkpoint validation, and checked harness proof through Movement. I
 includes the rules artifact, world/snapshot and owner-observation contracts, subject-bearing
 candidates, command mapping, exact designation/completion events, strict finite Reserve/Movement
 validation, and standalone plus two-setup replay evidence. Movement behavior remains pending.
-The next owner-approved engine package is the Movement Foundation
+The active owner-approved engine package is the Movement Foundation
 [research](docs/research/movement-foundation-spike.md),
 [specification](docs/specs/movement-foundation-v1.md), and
 [technical design](docs/design/movement-foundation-v1.md). It keeps representation truth inside
@@ -729,9 +733,21 @@ existing Breakdown Determination boundary. Its source/ruling lock and `MOV-TASK-
 Capability Point, mobility-vocabulary, normalized-table, canonical-artifact, and ruleset-identity
 work are complete. Content schema 3 / canonical format v2 now assigns and validates one
 rules-owned mobility ID per element. Snapshot v8/world v3 and creation event v7 now record exact
-Operation-Stage Cohesion/expenditure plus opaque one-to-one internal representation bindings.
-`MOV-TASK-005` side-safe observation projection is next; no Movement campaign action is implemented
-yet.
+Operation-Stage Cohesion/expenditure plus opaque one-to-one internal representation bindings. No
+Movement campaign action is implemented yet. The
+[Sprint 4-5 research-gate audit](docs/research/sprint-4-5-research-gates.md) makes
+`BREAKDOWN-001` the next owner gate: choose minimum Breakdown Point continuity now or explicitly
+make the first Movement histories terminal until a later clean-cut migration. `MOV-TASK-005`
+side-safe observation projection follows that decision and includes only own BP/cohort-risk facts
+if continuity-now is approved.
+
+The [ZOC/Reaction spike](docs/research/contact-reaction-zoc-spike.md) separates enemy-ZOC entry and
+the interrupting Reaction window from Contact and Engaged, which are created by Close Assault and
+combat results and therefore belong to Sprint 5. The
+[Combat-cycle inventory](docs/research/combat-cycle-source-inventory.md) permits source/table
+normalization now but defers contract freeze until Breakdown and ZOC/Reaction are approved. Its
+current proposal uses trusted-Umpire sealed choices, the same pre-state for simultaneous combat,
+and structural sequence positions plus cycle identity; none is implemented or approved yet.
 Paired comparison remains later and does not block that engine work.
 
 [1]: https://learn.microsoft.com/en-us/dotnet/orleans/grains/external-tasks-and-grains?utm_source=chatgpt.com "External tasks and grains - .NET | Microsoft Learn"

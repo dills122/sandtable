@@ -474,7 +474,7 @@ Use five related terms precisely in the implementation:
 | **Content Pack** | Immutable, versioned static topology, force structure, and scenario definitions with independent canonical identity. It is a Core domain artifact, not a service or player DTO. |
 | **Scenario** | One playable temporal/deployment definition inside a Content Pack. A scenario does not itself create or mutate a campaign. |
 | **Setup** | Campaign admission policy selecting recognized rules, content/scenario identity, and any still-separate initialization policy. The creation command supplies the per-campaign seed; Setup is not a synonym for Content Pack. |
-| **Campaign World** | Authoritative mutable runtime facts projected from an exact setup and scenario. Version 1 stores current element locations and joins static facts through stable Content Pack IDs. |
+| **Campaign World** | Authoritative mutable runtime facts projected from an exact setup and scenario. The delivered capability began with element locations and now also carries Reserve status, exact Operation-Stage expenditure/Cohesion, and opaque internal map-representation bindings while joining static facts through stable Content Pack IDs. |
 | **Content Context** | Runtime-only, already-resolved exact Content Pack and selected scenario supplied to authoritative decision/replay. It is not campaign state or a transport DTO. |
 | **Campaign Observation** | Immutable side-safe derived view for one authorized side. It copies only approved public and own-force facts, carries no complete Content Pack identity, and is never authoritative state or trusted history. |
 | **Campaign Authority Handle** | Opaque Core-issued reference to admitted authoritative state plus exact resident content context. It can be passed to safe facades but not inspected, serialized into authority, deconstructed, or mutated directly. |
@@ -555,8 +555,15 @@ foundation are complete, including stable `land.mobility.non-motorized` and
 `land.mobility.motorized` identifiers. Content schema 3 now assigns one of those IDs explicitly to
 each element. Opaque `map-representation.0001`-style identities now name the Umpire's physical-map
 representations without embedding real element IDs; their bindings never appear outward. The next
-implementation gate is `MOV-TASK-005`; none of these Movement names denotes an implemented
-Movement action yet.
+owner gate is `BREAKDOWN-001`; `MOV-TASK-005` follows the selected continuity boundary. None of
+these Movement names denotes an implemented Movement action yet. **Breakdown continuity** is a
+named research gate, not an implemented ledger or adjudication claim: the owner must decide whether
+the first Movement event records minimum Breakdown Point continuity or requires a later clean-cut
+migration. **Enemy ZOC** is the triggering board condition and **Reaction** is the persisted
+non-phasing interruption it opens. Neither is **Contact**: Contact is created by Close Assault, and
+**Engaged** is a combat-result state. The repeatable **Movement/Combat cycle** remains a Sprint 5
+research-gated domain concept. None of these later terms should be inferred inside the non-contact
+Movement resolver.
 
 **War College** is where we evaluate commanders.
 

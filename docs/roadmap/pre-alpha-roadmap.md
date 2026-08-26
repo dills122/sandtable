@@ -76,10 +76,10 @@ World + side-safe actions               |
 Mandatory turn preamble                |
            |                           v
            v                  Scenario data ingestion
-Movement/contact loop                   |
+Movement/Breakdown/Reaction boundary   |
            |                           |
            v                           |
-Combat loop <--------------------------+
+Combat/Contact continual-cycle loop <--+
            |
            v
 Working pre-alpha skeleton
@@ -106,7 +106,7 @@ Optional parser evidence gate
 | Source/ruleset provenance, synthetic content, world, authority, events, and replay foundations | Implemented | Preserve exact identities and deterministic history while mechanics expand |
 | Side-safe observations and legal-action enforcement | Implemented for the current synthetic path | Extend only with each new mechanic and its disclosure tests |
 | Mandatory turn preamble | Implemented through Reserve Designation completion | Preserve the exact Movement terminal while later mechanics expand |
-| Movement and contact | Rules foundation implemented; campaign behavior pending | Content mobility is the next prerequisite for a legal movement-capable phase |
+| Movement and contact | Rules, Content mobility, and replay-complete internal world/representation contracts implemented; campaign behavior pending | Owner decision on `BREAKDOWN-001`; `MOV-TASK-005` follows the selected continuity boundary |
 | Combat | Planned; not started | Depends on the movement/contact state and action vocabulary |
 | Working pre-alpha skeleton | Not reached | Requires one authentic movement/contact/combat loop with replay |
 | First-scenario content and remaining Land systems | Milestone-level; not started | Re-estimate after the skeleton exposes exercised-rule and transcription scope |
@@ -117,6 +117,22 @@ Optional parser evidence gate
 The roadmap deliberately distinguishes foundation maturity from playable breadth. The architecture
 is substantially established, but the campaign is not playable while authority stops at Movement
 and movement, combat, victory, persistence, and Maproom remain absent.
+
+### Sprint status summary
+
+| Sprint | Delivery status | Exit boundary / next gate |
+| --- | --- | --- |
+| 0 — Source and fidelity baseline | Complete | Preserve the approved source hierarchy, rights posture, and recorded rulings |
+| 1 — Replayable Umpire spine | Complete for the admitted synthetic path | Extend versioned authority, event, replay, and deterministic-random contracts with each mechanic |
+| 2 — Rules laboratory and legal-action boundary | Complete for the admitted synthetic path | Keep outward actions observation-derived and revalidate exact membership at submission |
+| 3 — Mandatory turn preamble | Complete for the admitted synthetic no-obligation path | Positive Organization/convoy/fleet cases remain explicit later-scenario work; authority currently stops at Movement |
+| 4 — Movement, Breakdown, and Reaction boundary | Active | Movement Tasks 001-004 are complete; `BREAKDOWN-001` owner decision is next and conditionally blocks Task 005 |
+| 5 — Combat and continual-cycle loop | Source inventory complete; not implementation-ready | Freeze contracts only after approved Breakdown and ZOC/Reaction boundaries define Contact/Engaged identity |
+| 6 — Scenario Group One content | Milestone-level; not started | Begin after the working pre-alpha skeleton measures the exact exercised-rule/data surface |
+| 7 — Remaining required Land systems | Milestone-level; not started | Split from the measured first-scenario rule inventory rather than treating it as one task |
+| 8 — Minimal Maproom and campaign lifecycle | Milestone-level; not started | Requires stable playable authority, Chronicle persistence/save-resume, and the no-model intent prototype |
+
+Sprint numbers describe dependency order, not equal effort or a project-completion percentage.
 
 ## Sprint 0: Source and fidelity baseline
 
@@ -143,12 +159,13 @@ and movement, combat, victory, persistence, and Maproom remain absent.
 **Goal:** Establish an authentic phase hierarchy and an authoritative campaign history that can be
 reconstructed exactly without skipping unimplemented mechanics.
 
-**Status:** Replayable foundation plus Weather Determination v1 and Operation-Stage Entry v1
-delivered.
+**Status:** Replayable foundation and the admitted mandatory preamble through Reserve Designation
+are delivered; Movement rules/content/world prerequisites are also merged.
 Campaign creation, Initiative, the admitted empty convoy checkpoints, Operation Stage 1 Initiative
 Declaration, Weather Determination, the four admitted empty stage-entry obligations, canonical event
 serialization, replay, and Reserve Designation completion are authoritative; advancement stops at
-Movement, the next mandatory unimplemented mechanic.
+Movement, whose outward actions and campaign adjudication remain the next mandatory unimplemented
+mechanic.
 
 ### Task 1.1 - Ruleset provenance contracts
 
@@ -393,6 +410,10 @@ Sprint 2 demonstration is executable in Core tests; a human-facing Maproom remai
 **Goal:** Advance from Naval Convoy to the first player-execution phase without skipping a
 mandatory rule or deleting the initiative holder's choices.
 
+**Status:** Complete for the admitted synthetic Operation Stage 1 no-obligation path through
+Reserve Designation. Positive convoy/Organization/fleet cases and later-stage declarations remain
+explicit Sprint 7/scenario-driven work before any content that exercises them is admitted.
+
 ### Task 3.1 - Turn-preamble source and contract spike
 
 Determine the smallest source-faithful Naval Convoy, Initiative Declaration, and Weather
@@ -401,7 +422,8 @@ tables, required content/world facts, and explicit unsupported cases before impl
 
 The `ACTION-001` research resolved the opening sequence and first side-choice boundary. Weather's
 table/random contract is now implemented. General convoy obligations and every-stage Initiative
-Declaration coverage remain Sprint 3 work before a future checkpoint may depend on them.
+Declaration coverage remain deferred requirements before a future checkpoint or scenario may
+depend on them; they do not reopen the completed admitted synthetic path.
 
 **Status:** Decision package approved 2026-08-19; Weather implementation complete.
 
@@ -459,10 +481,10 @@ zero or more incremental Reserve I designations, and requires an explicit comple
 designation remains at the Reserve position; completion advances once to Movement. Reserve Release,
 Reserve II production, movement restrictions, and Movement behavior remain separate capabilities.
 
-**Delivery status:** Ruleset/world/snapshot/observation/action contracts, finite Reserve and
-Movement validation, designation/completion events, replay, v2 Exercise/Maneuver identities, and
-checked standalone/two-setup 12-step evidence are implemented. The final repository gate and
-independent implementation review close `RES-TASK-016`.
+**Delivery status:** Complete. Ruleset/world/snapshot/observation/action contracts, finite Reserve
+and Movement validation, designation/completion events, replay, v2 Exercise/Maneuver identities,
+checked standalone/two-setup 12-step evidence, the final repository gate, and independent
+implementation review are implemented through `RES-TASK-016`.
 
 **Acceptance criteria:**
 
@@ -488,37 +510,71 @@ Continue the synthetic campaign from Naval Convoy, make the available preamble d
 Weather, Organization/stage-entry obligations, and Reserve in their separately gated capabilities,
 then stop at Movement with a replay-identical Chronicle. Task 3.3 independently stops at
 Organization; the implemented Task 3.4 explicit-empty checkpoint independently stops at Reserve;
-Task 3.5 reaches Movement; Movement behavior is the next active gate.
+Task 3.5 reaches Movement. Sprint 4 is active, with the `BREAKDOWN-001` owner decision immediately
+ahead of the remaining Movement behavior slices.
 
-## Sprint 4: Continual movement and contact
+## Sprint 4: Movement, Breakdown, and Reaction boundary
 
-**Goal:** Complete the movement half of one authentic movement/contact/combat loop.
+**Goal:** Complete replayable Movement plus its immediate Breakdown and enemy-ZOC/Reaction
+boundaries without inventing combat-created Contact/Engaged state.
 
-Sprint 4 is currently a capability plan. Its source inventory, exact command/event/state contracts,
-and task-sized implementation plan are now approved in the Movement Foundation
+Sprint 4 is the active delivery sprint. Its first bounded package has an approved source inventory,
+exact command/event/state contracts, and task-sized implementation plan in the Movement Foundation
 [research](../research/movement-foundation-spike.md),
 [specification](../specs/movement-foundation-v1.md), and
 [technical design](../design/movement-foundation-v1.md). The project owner approved the
 apparent-presence visibility ruling, exact CP representation, non-contact boundary, Breakdown
 terminal, and task graph on 2026-08-25. The source/ruling lock, exact amount/table foundation, and
 Content Pack mobility and replay-complete internal world/representation work in `MOV-TASK-001`
-through `MOV-TASK-004` are complete; `MOV-TASK-005` side-safe own operational state and apparent
-opposing presence are the next implementation gate.
+through `MOV-TASK-004` are complete. `BREAKDOWN-001` is the next owner gate; `MOV-TASK-005`
+side-safe own operational state and apparent opposing presence follow the selected continuity
+boundary.
 
 The approved delivery sequence adds a necessary fog-safety gate before the original task list:
 
 1. lock the digital apparent-presence/ZOC visibility ruling and initial map representation
    (**complete**);
 2. normalize exact CP, mobility, terrain, edge, and stacking contracts (**complete**);
-3. implement replay-complete world/observation/action contracts (**world/snapshot complete;
-   observation next**);
+3. decide minimum Breakdown continuity, then implement replay-complete observation/action
+   contracts (**world/snapshot complete; owner decision next**);
 4. accept repeatable non-contact Movement and explicit completion to Breakdown Determination; and
 5. use the existing Reserve `none`/`one`/`all` matrix for checked Movement evidence.
 
 Enemy-ZOC entry, Reaction, Contact, Engaged, break-off, Breakdown adjudication, and Combat remain
 later Sprint 4/5 slices rather than hidden additions to the first Movement resolver.
 
+### Sprint 4 delivery checkpoints
+
+| Checkpoint | Tasks | Repository boundary | Review/merge gate |
+| --- | --- | --- | --- |
+| 4A — Movement authority foundation | `MOV-TASK-001`-`004` | Exact rules/content/world contracts exist; no public Movement action | Complete and merged in PR #29 |
+| 4A.5 — Breakdown continuity decision | `BREAKDOWN-001` | Owner chooses continuity-now plus dice ruling, or explicit terminal histories/later migration | Decision required before Task 005 freezes own observation |
+| 4B — Side-safe outward contract | `MOV-TASK-005` | Own mobility/ledger and apparent opposing presence—and own BP/cohort risk if continuity is selected—project without hidden leakage | Focused privacy/contract review before action work |
+| 4C — Atomic non-contact Movement vertical | `MOV-TASK-006`-`008` | Dormant contracts and internal adjudication become public only when both move and completion are executable | Independent implementation review before Harness adoption |
+| 4D — Checked evidence and closeout | `MOV-TASK-009`-`010` | Reserve policy matrix executes supported Movement to Breakdown with strict readback and synchronized evidence | Full repository gate, final independent review, then PR |
+| 4E — ZOC/Reaction interruption | `CONTACT-001`, then proposed `ZOR-TASK-001`-`007` | Enemy-ZOC entry can interrupt phasing Movement for an opponent decision and deterministic decline/resumption | Begins only after Movement Foundation and approved BP continuity; Contact/Engaged remain Sprint 5 |
+
+Tasks 005-010 remain serial at their contract boundaries, but their observation/event shapes now
+pause at `BREAKDOWN-001`. If continuity-now is approved, a bounded BP rules/content/world lane is
+inserted before Task 005; otherwise the Movement package must declare terminal-at-Breakdown
+histories and an explicit later migration. ZOC/Reaction implementation still waits for the
+completed Movement vertical and an approved governing package.
+
+The [Sprint 4-5 research-gate audit](../research/sprint-4-5-research-gates.md) opens three bounded
+packets without authorizing their implementations:
+
+| Research gate | Status | Decision/implementation dependency |
+| --- | --- | --- |
+| `BREAKDOWN-001` | Decision-ready; owner decision next | Choose proposed sequential-dice ruling and continuity-now versus explicit terminal histories before `MOV-TASK-005` |
+| `CONTACT-001` | Decision-ready post-Movement packet | Approve ZOC/Reaction interruption rulings/task graph before Checkpoint 4E; Contact/Engaged move to Sprint 5 |
+| `COMBAT-CYCLE-001` | Source inventory complete; contract freeze waits for Breakdown and ZOC/Reaction | Replace provisional Sprint 5 headings with reviewed private-choice, simultaneous-resolution, Reserve Release, and repeat-cycle contracts |
+
 ### Task 4.1 - Capability Points and the initial cohesion ledger
+
+**Status:** Foundation partially implemented. Exact amounts/tables and initial replayable
+expenditure/Cohesion state are complete in `MOV-TASK-002` and `MOV-TASK-004`; accepted Movement
+ledger mutation and over-CPA rejection remain `MOV-TASK-007`/`008`. `BREAKDOWN-001` must decide
+the continuity fields or explicit later migration before Task 005 freezes outward contracts.
 
 Implement source-cited exact Capability Point expenditure and the replay-complete Operation-Stage
 cohesion ledger for the approved at-or-below-CPA Movement Foundation boundary. Every move whose
@@ -536,6 +592,10 @@ capabilities after their source contract and Breakdown adjudication are designed
 
 ### Task 4.2 - Terrain, stacking, and zones of control
 
+**Status:** Normalized supported terrain/edge/stacking tables are implemented in `MOV-TASK-002`.
+Non-contact candidate/adjudication enforcement remains `MOV-TASK-006`-`008`; enemy-ZOC behavior is
+outside Movement Foundation v1 and requires the later Sprint 4 contact package.
+
 Implement only the terrain and unit categories present in the rules laboratory, using normalized
 tables rather than resolver constants.
 
@@ -545,55 +605,66 @@ tables rather than resolver constants.
 - Stacking and ZOC violations are rejected before movement.
 - Adding an unsupported terrain/unit category fails explicitly.
 
-### Task 4.3 - Continual movement, reaction, and contact
+### Task 4.3 - ZOC and Reaction interruption
 
-Allow repeatable movement segments, contact state, reaction, and break-off decisions within the
-correct player phase.
+**Status:** Decision-ready research exists; implementation is not authorized. Repeatable
+non-contact Movement and approved Breakdown continuity are prerequisites. Owner rulings remain for
+multiple reactors, repeat eligibility, decline scope, waiting visibility, and positive ZOC content.
+
+Allow enemy-ZOC entry to end the mover, open a persisted non-phasing Reaction window, accept
+side-safe Reaction or deterministic decline, and resume the phasing Movement position. Use the
+proposed seven-task graph in the
+[ZOC/Reaction spike](../research/contact-reaction-zoc-spike.md) only after approval.
 
 **Acceptance criteria:**
 
-- A unit can move, contact, resolve the permitted response, and continue only when rules allow.
-- Legal actions change after each accepted event and state-version increment.
-- Opposing reactions receive only side-safe observations.
+- A triggering move commits before any opponent choice; no authoritative turn waits on external I/O.
+- Every Reaction/decline increments state and regenerates exact-side candidates without leaking
+  hidden eligibility.
+- Reaction reuses approved CP/BP accounting and resumes phasing Movement deterministically.
 
 **Verification:** Table-driven deterministic tests for legal, illegal, boundary, and replay cases.
 
+### Task 4.4 - Contact/Engaged and continual-cycle handoff
+
+**Status:** Moved to the Sprint 5 Combat-cycle package. Contact is created by Close Assault and
+Engaged is a combat result; neither is a synonym for enemy-ZOC entry or a field in the non-contact
+Movement resolver.
+
 ### Sprint 4 demonstration
 
-Move a formation across different terrain, enter contact, resolve a reaction, spend capability,
-and show the resulting cohesion and Chronicle explanation.
+The Movement Foundation demonstration moves supported non-contact elements, spends exact
+capability, replays the resulting world/ledger, and stops honestly at unsupported Breakdown. The
+complete Sprint 4 demonstration additionally enters enemy ZOC, resolves the resulting Reaction
+window and Breakdown through approved packages, resumes the phasing side, and stops before
+combat-created Contact/Engaged while showing the resulting state and Chronicle explanation.
 
-## Sprint 5: One complete combat loop
+## Sprint 5: Combat and continual-cycle loop
 
-**Goal:** Resolve a representative combat from declaration through final state.
+**Goal:** Resolve a representative combat through Reserve Release, then explicitly repeat or finish
+the Movement/Breakdown/Combat/Reserve Release cycle.
 
 Sprint 5 is currently a capability plan. Its source/table inventory, hidden-choice contract, exact
 segment state, and task-sized implementation plan must be approved after the movement/contact state
 model is proven.
 
-### Task 5.1 - Combat declaration and force assignment
+**Status:** Source inventory complete; contract/task freeze is blocked by approved
+`BREAKDOWN-001` and ZOC/Reaction boundaries. The
+[Combat-cycle inventory](../research/combat-cycle-source-inventory.md) replaces the former three
+oversized executable-looking tasks with explicit research and design gates.
 
-Model position determination, barrage declaration, retreat-before-assault, and secret force
-assignment without exposing the opponent's hidden choice.
+Research that may proceed now: `CMB-RSH-001` through `004`, `CYCLE-RSH-001`, and
+`RESREL-RSH-001` normalize the selected source/table surface, content and mutable-state choices,
+RNG evidence, cycle identity, and Reserve Release rules.
 
-### Task 5.2 - Seeded combat resolution
+After Breakdown and ZOC/Reaction approval, `CMB-DES-001` through `005` and `CYCLE-DES-001` freeze
+Contact-derived opportunity identity, trusted-Umpire sealed choices, simultaneous/sequential
+resolution boundaries, losses/retreat/disclosure, and Reserve Release repeat/finish authority.
+Only then may a reviewed specification/design cut implementation-sized Sprint 5 tasks.
 
-Implement the minimum source-cited barrage, anti-armor, and close-assault table rows needed by the
-fixture. Record dice, modifiers, table coordinates, and outcomes as events.
-
-### Task 5.3 - Losses, retreat, and reserve release
-
-Apply casualties, cohesion/morale effects, retreat/surrender conditions used by the fixture, and
-reserve release in sequence.
-
-**Acceptance criteria:**
-
-- Resolution follows the published segment order.
-- Simultaneous outcomes are computed from the same pre-resolution state.
-- Every random result and table lookup is inspectable and replayable.
-- Unsupported table rows or special cases stop adjudication explicitly.
-
-**Verification:** Golden event-stream tests plus full repository gate.
+**Planning acceptance gate:** every reachable random result for an admitted table coordinate is
+implemented or the campaign rejects before mutation under an approved bounded rule; legality never
+depends on a favorable future seed.
 
 ### Sprint 5 demonstration and pre-alpha checkpoint
 
