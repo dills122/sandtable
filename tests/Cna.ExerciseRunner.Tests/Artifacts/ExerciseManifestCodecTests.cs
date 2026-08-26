@@ -35,6 +35,25 @@ public sealed class ExerciseManifestCodecTests
         Assert.Equal(manifest, ExerciseManifestCodec.Deserialize(bytes));
     }
 
+    [Theory]
+    [InlineData("act-first-reserve-none-then-first-by-action-id")]
+    [InlineData("act-first-reserve-one-then-first-by-action-id")]
+    [InlineData("act-first-reserve-all-then-first-by-action-id")]
+    [InlineData("act-last-reserve-none-then-first-by-action-id")]
+    [InlineData("act-last-reserve-one-then-first-by-action-id")]
+    [InlineData("act-last-reserve-all-then-first-by-action-id")]
+    public void ControllerMatrixTokensRoundTripWithoutChangingTheVersionTwoShape(string token)
+    {
+        var json = Encoding.UTF8.GetString(ExerciseManifestCodec.Serialize(Create()))
+            .Replace("first-by-action-id", token, StringComparison.Ordinal);
+
+        var manifest = ExerciseManifestCodec.Deserialize(Encoding.UTF8.GetBytes(json));
+        var roundTrip = Encoding.UTF8.GetString(ExerciseManifestCodec.Serialize(manifest));
+
+        Assert.Equal(2, manifest.ContractVersion);
+        Assert.Equal(3, roundTrip.Split(token, StringSplitOptions.None).Length - 1);
+    }
+
     [Fact]
     public void ReaderRejectsExtraMissingReorderedDuplicateAndUnknownValues()
     {

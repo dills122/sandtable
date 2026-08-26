@@ -214,8 +214,9 @@ Implementation and acceptance evidence are tracked in the
 
 **Capability:** `EXERCISE-001`
 
-**Status:** Implemented through serial-unpaired Task 014 with checked Reserve Designation adoption
-to first-side Movement; paired reporting remains later Harness work
+**Status:** Implemented through serial-unpaired Task 014 and controller-matrix Task 014J with
+checked Reserve Designation adoption to first-side Movement; paired reporting remains later
+Harness work
 
 **Goal:** Run a freshly created bounded rules-laboratory campaign through the authoritative legal
 action path, retain deterministic trusted evidence, and prove both event-history reconstruction and
@@ -224,7 +225,8 @@ fresh-session re-adjudication before using batches for regression or controller 
 **Acceptance boundary:** The first Exercise still stops successfully at the Operation Stage 1
 Organization checkpoint. Separate checked Exercises preserve the Reserve boundary and traverse
 Reserve Designation to Movement; a two-setup serial Maneuver proves the 12-step Movement-terminal
-path for both admitted setups. The runnable single-Exercise and serial-Maneuver
+path for both admitted setups, and a six-child controller matrix proves `act-first`/`act-last`
+crossed with Reserve `none`/`one`/`all`. The runnable single-Exercise and serial-Maneuver
 CLIs include
 fail-closed transactional artifacts, explicit build/run identity, stable failure categories, and
 validated aggregate reports. Task 014 has a warning-free solution build, green focused and
@@ -237,9 +239,9 @@ The contract, research decisions, implementation tasks, and acceptance evidence 
 the [Exercise Harness v1 specification](../specs/exercise-harness-v1.md) and
 [technical design](../design/exercise-harness-v1.md).
 
-Task 014 is enabling regression instrumentation, not additional gameplay. The next bounded Harness
-task is optional Task 015 paired comparison, but it does not block the authoritative gameplay
-dependency graph. The implemented engine work retains the
+Tasks 014 and 014J are enabling regression instrumentation, not additional gameplay. The next
+bounded Harness task is optional Task 015 paired comparison, but it does not block the authoritative
+gameplay dependency graph. The implemented engine work retains the
 [Operation-Stage Entry research](../research/operation-stage-entry-spike.md),
 [specification](../specs/operation-stage-entry-v1.md), and
 [technical design](../design/operation-stage-entry-v1.md), followed by the implemented
@@ -493,18 +495,41 @@ Task 3.5 reaches Movement; Movement behavior is the next active gate.
 **Goal:** Complete the movement half of one authentic movement/contact/combat loop.
 
 Sprint 4 is currently a capability plan. Its source inventory, exact command/event/state contracts,
-and task-sized implementation plan must be approved after Sprint 3 reaches Movement.
+and task-sized implementation plan are now approved in the Movement Foundation
+[research](../research/movement-foundation-spike.md),
+[specification](../specs/movement-foundation-v1.md), and
+[technical design](../design/movement-foundation-v1.md). The project owner approved the
+apparent-presence visibility ruling, exact CP representation, non-contact boundary, Breakdown
+terminal, and task graph on 2026-08-25. The source/ruling lock in `MOV-TASK-001` is complete;
+`MOV-TASK-002` is the next implementation gate.
 
-### Task 4.1 - Capability Points and cohesion ledger
+The approved delivery sequence adds a necessary fog-safety gate before the original task list:
 
-Implement source-cited Capability Point expenditure, over-extension, disorganization, and
-reorganization as events.
+1. lock the digital apparent-presence/ZOC visibility ruling and initial map representation
+   (**complete**);
+2. normalize exact CP, mobility, terrain, edge, and stacking contracts;
+3. implement replay-complete world/observation/action contracts;
+4. accept repeatable non-contact Movement and explicit completion to Breakdown Determination; and
+5. use the existing Reserve `none`/`one`/`all` matrix for checked Movement evidence.
+
+Enemy-ZOC entry, Reaction, Contact, Engaged, break-off, Breakdown adjudication, and Combat remain
+later Sprint 4/5 slices rather than hidden additions to the first Movement resolver.
+
+### Task 4.1 - Capability Points and the initial cohesion ledger
+
+Implement source-cited exact Capability Point expenditure and the replay-complete Operation-Stage
+cohesion ledger for the approved at-or-below-CPA Movement Foundation boundary. Every move whose
+resulting cumulative expenditure would exceed base CPA remains unavailable and rejects with zero
+events; over-CPA Disorganization conversion and end-stage reorganization remain later Sprint 4
+capabilities after their source contract and Breakdown adjudication are designed.
 
 **Acceptance criteria:**
 
-- CP cost and cohesion changes can be explained from emitted ledger entries.
+- CP cost and the unchanged initial Cohesion value can be explained from emitted ledger entries.
 - Rejected expenditure emits no authoritative event.
 - Replaying the ledger recreates the same remaining capability and cohesion.
+- Integral or fractional over-CPA expenditure, Disorganization conversion, and reorganization
+  reject or remain unavailable rather than entering the first Movement resolver implicitly.
 
 ### Task 4.2 - Terrain, stacking, and zones of control
 

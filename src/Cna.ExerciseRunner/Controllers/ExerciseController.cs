@@ -77,10 +77,12 @@ public sealed class ExerciseControllerActionSet
 {
     public ExerciseControllerActionSet(
         CampaignActionAudience audience,
-        IEnumerable<ExerciseControllerCandidate> candidates)
+        IEnumerable<ExerciseControllerCandidate> candidates,
+        int priorReserveDesignationCount = 0)
     {
         if (!Enum.IsDefined(audience)) throw new ArgumentOutOfRangeException(nameof(audience));
         ArgumentNullException.ThrowIfNull(candidates);
+        ArgumentOutOfRangeException.ThrowIfNegative(priorReserveDesignationCount);
         var copy = candidates.ToArray();
         if (copy.Any(value => value is null)
             || copy.Select(value => value.ActionId)
@@ -91,12 +93,14 @@ public sealed class ExerciseControllerActionSet
                 nameof(candidates));
         }
         Audience = audience;
+        PriorReserveDesignationCount = priorReserveDesignationCount;
         Candidates = Array.AsReadOnly(copy
             .OrderBy(value => value.ActionId, StringComparer.Ordinal)
             .ToArray());
     }
 
     public CampaignActionAudience Audience { get; }
+    public int PriorReserveDesignationCount { get; }
     public IReadOnlyList<ExerciseControllerCandidate> Candidates { get; }
 }
 
@@ -182,8 +186,12 @@ public static class ExerciseController
                 selected.Candidates[0].ActionId);
         }
 
-        return policy == ExerciseControllerPolicy.DesignateAllReservesThenFirstByActionId
-            ? SelectDesignateAllReservesThenFirstByActionId(selected)
+        if (policy == ExerciseControllerPolicy.DesignateAllReservesThenFirstByActionId)
+            return SelectDesignateAllReservesThenFirstByActionId(selected);
+
+        var matrixPolicy = MatrixPolicy(policy);
+        return matrixPolicy.HasValue
+            ? SelectMatrixPolicy(selected, matrixPolicy.Value)
             : ExerciseControllerSelection.Failed(
                 ExerciseControllerSelectionFailure.PolicyFailed);
     }
@@ -224,4 +232,110 @@ public static class ExerciseController
             selected.Audience,
             designation?.ActionId ?? completions[0].ActionId);
     }
+
+    private static ExerciseControllerSelection SelectMatrixPolicy(
+        ExerciseControllerActionSet selected,
+        MatrixControllerPolicy policy)
+    {
+        var initiativeCandidates = selected.Candidates.Where(candidate => candidate.Kind is
+            "act-first" or "act-last").ToArray();
+        if (initiativeCandidates.Length > 0)
+        {
+            var actFirst = initiativeCandidates.Where(candidate => string.Equals(
+                candidate.Kind,
+                "act-first",
+                StringComparison.Ordinal)).ToArray();
+            var actLast = initiativeCandidates.Where(candidate => string.Equals(
+                candidate.Kind,
+                "act-last",
+                StringComparison.Ordinal)).ToArray();
+            if (initiativeCandidates.Length != selected.Candidates.Count
+                || actFirst.Length != 1
+                || actLast.Length != 1)
+            {
+                return ExerciseControllerSelection.Failed(
+                    ExerciseControllerSelectionFailure.PolicyFailed);
+            }
+
+            return ExerciseControllerSelection.Selected(
+                selected.Audience,
+                policy.ActFirst ? actFirst[0].ActionId : actLast[0].ActionId);
+        }
+
+        var reserveCandidates = selected.Candidates.Where(candidate => candidate.Kind is
+            "designate-reserve" or "complete-reserve-designation").ToArray();
+        if (reserveCandidates.Length == 0)
+        {
+            return ExerciseControllerSelection.Selected(
+                selected.Audience,
+                selected.Candidates[0].ActionId);
+        }
+
+        var completions = reserveCandidates.Where(candidate => string.Equals(
+            candidate.Kind,
+            "complete-reserve-designation",
+            StringComparison.Ordinal)).ToArray();
+        if (reserveCandidates.Length != selected.Candidates.Count
+            || completions.Length != 1)
+        {
+            return ExerciseControllerSelection.Failed(
+                ExerciseControllerSelectionFailure.PolicyFailed);
+        }
+
+        var designation = reserveCandidates
+            .Where(candidate => string.Equals(
+                candidate.Kind,
+                "designate-reserve",
+                StringComparison.Ordinal))
+            .OrderBy(candidate => candidate.ElementId, StringComparer.Ordinal)
+            .ThenBy(candidate => candidate.ActionId, StringComparer.Ordinal)
+            .FirstOrDefault();
+        return policy.ReserveSelection switch
+        {
+            MatrixReserveSelection.None => ExerciseControllerSelection.Selected(
+                selected.Audience,
+                completions[0].ActionId),
+            MatrixReserveSelection.One when selected.PriorReserveDesignationCount > 1 =>
+                ExerciseControllerSelection.Failed(
+                    ExerciseControllerSelectionFailure.PolicyFailed),
+            MatrixReserveSelection.One => ExerciseControllerSelection.Selected(
+                selected.Audience,
+                selected.PriorReserveDesignationCount == 0 && designation is not null
+                    ? designation.ActionId
+                    : completions[0].ActionId),
+            MatrixReserveSelection.All => ExerciseControllerSelection.Selected(
+                selected.Audience,
+                designation?.ActionId ?? completions[0].ActionId),
+            _ => throw new ArgumentOutOfRangeException(nameof(policy)),
+        };
+    }
+
+    private static MatrixControllerPolicy? MatrixPolicy(ExerciseControllerPolicy policy) =>
+        policy switch
+        {
+            ExerciseControllerPolicy.ActFirstReserveNoneThenFirstByActionId =>
+                new(true, MatrixReserveSelection.None),
+            ExerciseControllerPolicy.ActFirstReserveOneThenFirstByActionId =>
+                new(true, MatrixReserveSelection.One),
+            ExerciseControllerPolicy.ActFirstReserveAllThenFirstByActionId =>
+                new(true, MatrixReserveSelection.All),
+            ExerciseControllerPolicy.ActLastReserveNoneThenFirstByActionId =>
+                new(false, MatrixReserveSelection.None),
+            ExerciseControllerPolicy.ActLastReserveOneThenFirstByActionId =>
+                new(false, MatrixReserveSelection.One),
+            ExerciseControllerPolicy.ActLastReserveAllThenFirstByActionId =>
+                new(false, MatrixReserveSelection.All),
+            _ => null,
+        };
+
+    private enum MatrixReserveSelection
+    {
+        None,
+        One,
+        All,
+    }
+
+    private readonly record struct MatrixControllerPolicy(
+        bool ActFirst,
+        MatrixReserveSelection ReserveSelection);
 }

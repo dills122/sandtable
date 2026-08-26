@@ -1,7 +1,8 @@
 # Exercise Harness v1 Technical Design and Delivery Plan
 
-**Status:** Implemented and repository-verified through Task 014 serial-unpaired Maneuvers plus
-checked Reserve Designation adoption to first-side Movement; Tasks 015-016 remain pending
+**Status:** Implemented and repository-verified through Task 014J serial-unpaired Maneuvers plus
+checked Reserve Designation and controller-matrix adoption to first-side Movement; Tasks 015-016
+remain pending
 
 **Date:** 2026-08-20
 
@@ -828,6 +829,26 @@ engine work. The delivered Stage Entry engine track is documented in the
 [technical design](reserve-designation-v1.md). The checked Reserve-terminal regression profile and
 the 12-step Reserve Designation profile prove the path through canonical first-side Movement using
 the unchanged harness authority boundary. Movement behavior remains the next engine package.
+
+#### `EXR-TASK-014J` — Implement the controller-policy coverage matrix
+
+- **Status:** implemented and repository-verified; 293/293 ExerciseRunner and 705/705 solution tests
+  pass, the build is warning-free, and two checked runs share the same report fingerprint.
+- **Depends on:** `EXR-TASK-014` and the implemented Reserve Designation vertical.
+- **Primary files:** `ExerciseController.cs`, the controller manifest codecs/configuration identity,
+  one checked six-child Maneuver, and focused controller/command tests.
+- **Scope:** ExerciseRunner policy and evidence coverage only. No `Cna.Core` rule, authority,
+  command, event, observation, snapshot, or replay behavior changes.
+- **Work:** add six closed controller tokens crossing `act-first`/`act-last` with Reserve
+  `none`/`one`/`all`; provide the pure selector with the per-audience count of previously accepted
+  designation actions; fail closed on malformed initiative/Reserve candidate sets; retain one
+  strictly read-back aggregate over all six trajectories.
+- **Accept:** `EXR-AC-016`; existing controller tokens remain byte- and behavior-compatible; the
+  `one` policy is history-count based rather than tied to the current two-element fixture; no
+  controller choice can bypass exact legal-action membership and ordinary submission.
+- **Verify:** focused controller, manifest, configuration-identity, executor, and checked-fixture
+  tests; complete ExerciseRunner and solution suites; one six-child Maneuver run; `just check` and
+  `git diff --check`.
 
 #### `EXR-TASK-015` — Implement paired comparison contract/report
 
