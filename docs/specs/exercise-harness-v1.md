@@ -1,8 +1,8 @@
 # Exercise Harness v1 Specification
 
-**Status:** Implemented and repository-verified through `EXR-TASK-014` serial-unpaired Maneuvers;
-checked Reserve Designation adoption reaches first-side Movement; Task 015 paired comparison
-remains pending
+**Status:** Implemented and repository-verified through `EXR-TASK-014J`; checked Reserve
+Designation adoption and the six-policy controller matrix reach first-side Movement; Task 015
+paired comparison remains pending
 
 **Date:** 2026-08-20
 
@@ -15,8 +15,8 @@ remains pending
 
 **Technical design:** [Exercise Harness v1](../design/exercise-harness-v1.md)
 
-**Next bounded Harness checkpoint:** `EXR-TASK-015`, paired comparison; it is optional
-instrumentation and does not block gameplay-engine work
+**Next bounded Harness checkpoint:** optional `EXR-TASK-015` paired comparison; it does not block
+gameplay-engine work
 
 **Delivered engine track:** [Operation-Stage Entry research](../research/operation-stage-entry-spike.md),
 [specification](operation-stage-entry-v1.md), and
@@ -115,6 +115,22 @@ The checked Reserve Designation Exercise and baseline twin use
 controller designates both currently eligible elements in ordinal element-ID order, completes
 Reserve, and reaches first-side Movement in exactly 12 accepted actions. Both reconstruction and
 fresh-session re-adjudication are required to verify.
+
+The controller-policy matrix extends the same closed v2 controller-token field without adding
+authority or changing the manifest shape. Its six deterministic policies cross initiative
+declaration `act-first`/`act-last` with Reserve selection `none`/`one`/`all`, then fall back to the
+stable first-by-action-ID rule at other checkpoints. Initiative selection requires the exact two
+declaration candidates. Reserve selection requires one completion candidate and zero or more
+designation candidates; designation order is element ID then action ID. `none` completes
+immediately, `one` designates exactly once when its accepted-designation count is zero and then
+completes, and `all` designates until no candidate remains and then completes.
+
+The runner supplies each pure controller call with only the count of that audience's previously
+accepted Reserve-designation actions in the current Exercise. That count is deterministic
+controller history, not authoritative campaign state, is incremented only after an accepted
+designation, is never serialized into campaign evidence, and cannot bypass legal-action
+membership or submission. A checked six-child serial Maneuver must prove every policy reaches the
+exact first-side Movement boundary with strict bundle/report readback.
 
 The manifest's `detail` value is `compact`, `forensic`, or `debug`. Compact retains accepted-step
 and completion records. Forensic adds deterministic query candidate counts, controller selection,
@@ -464,6 +480,7 @@ just check
 | `EXR-AC-013` | Inspect checked-in docs, roadmap, project map, and terminology after implementation | `README.md`, roadmap, `tech-design.md`, `naming-overview.md`, solution/project map, commands, contracts, and implemented milestone agree. |
 | `EXR-AC-014` | Query all three audiences at each current nonterminal checkpoint, plus test-only zero-active and multi-active fixtures | Query order is fixed; exactly one active audience selects; zero fails `NoUniqueLegalAction`; multiple fails the named invariant; no priority silently resolves simultaneous actions. |
 | `EXR-AC-015` | Exercise every check in `sandtable.exercise-checks.v1` and vary caller/culture/order inputs | Check order, IDs, scope, bytes, and failure mapping match goldens; every required failed check fails the Exercise and cannot be waived. |
+| `EXR-AC-016` | Run the checked controller-policy matrix across `act-first`/`act-last` and Reserve `none`/`one`/`all` | All six children select only current legal actions, reach first-side Movement in exactly 10/11/12 accepted actions by Reserve policy, retain zero/one/two Reserve-I designations, reconstruct and re-adjudicate exactly, and aggregate through strict readback. |
 
 ## Delivery boundaries
 

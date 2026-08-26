@@ -130,6 +130,96 @@ public sealed class ExerciseControllerTests
             mixed.FailureReason);
     }
 
+    [Theory]
+    [InlineData("ActFirstReserveNoneThenFirstByActionId", "act-first", 0, false)]
+    [InlineData("ActFirstReserveOneThenFirstByActionId", "act-first", 0, true)]
+    [InlineData("ActFirstReserveAllThenFirstByActionId", "act-first", 0, true)]
+    [InlineData("ActLastReserveNoneThenFirstByActionId", "act-last", 0, false)]
+    [InlineData("ActLastReserveOneThenFirstByActionId", "act-last", 1, false)]
+    [InlineData("ActLastReserveAllThenFirstByActionId", "act-last", 1, true)]
+    public void MatrixPolicySelectsDeclaredInitiativeAndReserveCardinality(
+        string policyName,
+        string expectedInitiativeKind,
+        int priorReserveDesignationCount,
+        bool expectsDesignation)
+    {
+        var policy = Enum.Parse<ExerciseControllerPolicy>(policyName);
+        var controllers = new ExerciseControllerManifest(policy, policy, policy);
+        var initiativeCandidates = new[]
+        {
+            Candidate(ActionA, "act-last"),
+            Candidate(ActionB, "act-first"),
+        };
+        var reserveCandidates = new[]
+        {
+            Candidate(ActionA, "complete-reserve-designation"),
+            Candidate(ActionB, "designate-reserve", "unit.zulu"),
+            Candidate(ActionC, "designate-reserve", "unit.alpha"),
+        };
+
+        var initiative = ExerciseController.Select(
+            controllers,
+            ActionSets(CampaignActionAudience.Axis, initiativeCandidates));
+        var reserve = ExerciseController.Select(
+            controllers,
+            ActionSets(
+                CampaignActionAudience.Commonwealth,
+                reserveCandidates,
+                priorReserveDesignationCount));
+
+        Assert.Equal(
+            initiativeCandidates.Single(candidate => candidate.Kind == expectedInitiativeKind)
+                .ActionId,
+            initiative.ActionId);
+        Assert.Equal(expectsDesignation ? ActionC : ActionA, reserve.ActionId);
+    }
+
+    [Fact]
+    public void ReserveOnePolicyDesignatesOnceThenCompletesAndRejectsImpossibleHistory()
+    {
+        var policy = Enum.Parse<ExerciseControllerPolicy>(
+            "ActFirstReserveOneThenFirstByActionId");
+        var controllers = new ExerciseControllerManifest(policy, policy, policy);
+        var candidates = new[]
+        {
+            Candidate(ActionA, "complete-reserve-designation"),
+            Candidate(ActionB, "designate-reserve", "unit.zulu"),
+            Candidate(ActionC, "designate-reserve", "unit.alpha"),
+        };
+
+        var first = ExerciseController.Select(
+            controllers,
+            ActionSets(CampaignActionAudience.Axis, candidates, 0));
+        var completed = ExerciseController.Select(
+            controllers,
+            ActionSets(CampaignActionAudience.Axis, candidates[0..2], 1));
+        var impossible = ExerciseController.Select(
+            controllers,
+            ActionSets(CampaignActionAudience.Axis, candidates, 2));
+
+        Assert.Equal(ActionC, first.ActionId);
+        Assert.Equal(ActionA, completed.ActionId);
+        Assert.Equal(ExerciseControllerSelectionFailure.PolicyFailed,
+            impossible.FailureReason);
+    }
+
+    [Fact]
+    public void MatrixPolicyFailsClosedOnMalformedInitiativeCandidates()
+    {
+        var policy = Enum.Parse<ExerciseControllerPolicy>(
+            "ActLastReserveAllThenFirstByActionId");
+        var controllers = new ExerciseControllerManifest(policy, policy, policy);
+
+        var result = ExerciseController.Select(
+            controllers,
+            ActionSets(
+                CampaignActionAudience.Axis,
+                [Candidate(ActionA, "act-first")]));
+
+        Assert.Equal(ExerciseControllerSelectionFailure.PolicyFailed,
+            result.FailureReason);
+    }
+
     [Fact]
     public void SemanticCandidateRequiresAnElementExactlyForDesignation()
     {
@@ -167,4 +257,36 @@ public sealed class ExerciseControllerTests
             actionId,
             kind,
             elementId);
+
+    private static IReadOnlyList<ExerciseControllerActionSet> ActionSets(
+        CampaignActionAudience activeAudience,
+        IEnumerable<ExerciseControllerCandidate> candidates,
+        int priorReserveDesignationCount = 0)
+    {
+        return
+        [
+            CreateActionSet(
+                CampaignActionAudience.System,
+                activeAudience == CampaignActionAudience.System ? candidates : [],
+                priorReserveDesignationCount),
+            CreateActionSet(
+                CampaignActionAudience.Axis,
+                activeAudience == CampaignActionAudience.Axis ? candidates : [],
+                priorReserveDesignationCount),
+            CreateActionSet(
+                CampaignActionAudience.Commonwealth,
+                activeAudience == CampaignActionAudience.Commonwealth ? candidates : [],
+                priorReserveDesignationCount),
+        ];
+    }
+
+    private static ExerciseControllerActionSet CreateActionSet(
+        CampaignActionAudience audience,
+        IEnumerable<ExerciseControllerCandidate> candidates,
+        int priorReserveDesignationCount) =>
+        (ExerciseControllerActionSet)Activator.CreateInstance(
+            typeof(ExerciseControllerActionSet),
+            audience,
+            candidates,
+            priorReserveDesignationCount)!;
 }

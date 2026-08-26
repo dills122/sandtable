@@ -26,7 +26,9 @@ profiles and their baseline twins remain regression checkpoints.
 
 The checked two-child **Maneuver** fixtures define strict canonical `serial-unpaired` parent manifests.
 The Stage Entry fixture runs both admitted setups to Reserve; the Reserve Designation fixture runs
-both through Movement. Only the parent supplies the root
+both through Movement. A checked six-child controller matrix crosses `act-first`/`act-last` with
+Reserve `none`/`one`/`all` and reaches Movement in exact 10/11/12-action trajectories. Only the
+parent supplies the root
 seed; each ordered child receives an explicit Maneuver
 ID and ordinal identity and runs synchronously through the same no-console post-admission
 coordinator. The aggregate path opens each completed child bundle once, semantically validates its
@@ -700,6 +702,7 @@ coordination, one-read semantic aggregation, and a deterministic fingerprinted r
 changing that authority boundary. V1 bundles and reports are `trusted-authority`; paired
 comparison, side-safe exports, full victory runs, model controllers, and distributed execution
 remain explicitly deferred. See the retained
+[controller-matrix evidence](docs/research/simulator-controller-matrix.md),
 [capability/replay research](docs/research/exercise-capability-and-replay-spike.md),
 [artifact research](docs/research/exercise-evidence-artifact-spike.md),
 [reproducibility research](docs/research/exercise-reproducibility-and-pairing-spike.md), governing
@@ -716,6 +719,14 @@ multi-event checkpoint validation, and checked harness proof through Movement. I
 includes the rules artifact, world/snapshot and owner-observation contracts, subject-bearing
 candidates, command mapping, exact designation/completion events, strict finite Reserve/Movement
 validation, and standalone plus two-setup replay evidence. Movement behavior remains pending.
+The next owner-approved engine package is the Movement Foundation
+[research](docs/research/movement-foundation-spike.md),
+[specification](docs/specs/movement-foundation-v1.md), and
+[technical design](docs/design/movement-foundation-v1.md). It keeps representation truth inside
+the Umpire, adds a minimum side-safe apparent-presence contract before outward Movement legality,
+normalizes exact CP/terrain/stacking rules, accepts repeatable non-contact moves, and stops at the
+existing Breakdown Determination boundary. Its source/ruling lock is complete; `MOV-TASK-002`
+exact Rules work is next, and no Movement production contract is implemented yet.
 Paired comparison remains later and does not block that engine work.
 
 [1]: https://learn.microsoft.com/en-us/dotnet/orleans/grains/external-tasks-and-grains?utm_source=chatgpt.com "External tasks and grains - .NET | Microsoft Learn"

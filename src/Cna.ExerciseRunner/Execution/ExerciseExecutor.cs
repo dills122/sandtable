@@ -289,6 +289,9 @@ public static class ExerciseExecutor
         var current = initial;
         var session = start.Session!;
         var steps = new List<ExerciseAcceptedStep>();
+        var reserveDesignationCounts = AudienceOrder.ToDictionary(
+            audience => audience,
+            _ => 0);
 
         while (true)
         {
@@ -422,7 +425,8 @@ public static class ExerciseExecutor
                             candidate.Kind,
                             candidate is DesignateReserveAction designation
                                 ? designation.ElementId
-                                : null)))).ToArray());
+                                : null)),
+                    reserveDesignationCounts[result.ActionSet.Audience])).ToArray());
             var controllerElapsedMicroseconds = ElapsedMicroseconds(controllerStarted);
             var activeAudiences = queryDiagnostics
                 .Where(value => value.CandidateCount > 0)
@@ -635,6 +639,8 @@ public static class ExerciseExecutor
                     beginElapsedMicroseconds: beginElapsedMicroseconds);
             }
             current = submitted.SnapshotCheckpoint;
+            if (candidate is DesignateReserveAction)
+                reserveDesignationCounts[set.Audience]++;
             steps.Add(new ExerciseAcceptedStep(
                 steps.Count,
                 submitted.Receipt!,

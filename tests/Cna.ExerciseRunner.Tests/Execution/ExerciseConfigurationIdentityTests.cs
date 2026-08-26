@@ -29,4 +29,25 @@ public sealed class ExerciseConfigurationIdentityTests
             "sha256:ce7818b1b6461861f859058cfe006a493605c06bd90f7ecab5eebb0554811e40",
             ExerciseConfigurationIdentity.ComputeHash(manifest));
     }
+
+    [Fact]
+    public void ControllerMatrixPoliciesHaveDistinctConfigurationIdentities()
+    {
+        string[] policyNames =
+        [
+            "ActFirstReserveNoneThenFirstByActionId",
+            "ActFirstReserveOneThenFirstByActionId",
+            "ActFirstReserveAllThenFirstByActionId",
+            "ActLastReserveNoneThenFirstByActionId",
+            "ActLastReserveOneThenFirstByActionId",
+            "ActLastReserveAllThenFirstByActionId",
+        ];
+
+        var hashes = policyNames.Select(name => ExerciseConfigurationIdentity.ComputeHash(
+            ExerciseManifestCodecTests.Create(
+                controllerPolicy: Enum.Parse<ExerciseControllerPolicy>(name)))).ToArray();
+
+        Assert.Equal(policyNames.Length, hashes.Distinct(StringComparer.Ordinal).Count());
+        Assert.All(hashes, value => Assert.StartsWith("sha256:", value, StringComparison.Ordinal));
+    }
 }

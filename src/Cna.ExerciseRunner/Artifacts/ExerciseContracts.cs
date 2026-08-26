@@ -24,6 +24,12 @@ public enum ExerciseControllerPolicy
 {
     FirstByActionId,
     DesignateAllReservesThenFirstByActionId,
+    ActFirstReserveNoneThenFirstByActionId,
+    ActFirstReserveOneThenFirstByActionId,
+    ActFirstReserveAllThenFirstByActionId,
+    ActLastReserveNoneThenFirstByActionId,
+    ActLastReserveOneThenFirstByActionId,
+    ActLastReserveAllThenFirstByActionId,
 }
 
 public enum ExerciseFailureCategory

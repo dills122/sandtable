@@ -538,6 +538,22 @@ context available before the failure. Paired Maneuvers remain a later contract. 
 remains a later evaluation layer, and the current runner is not an Orleans workload, tournament
 system, or balance-analysis environment.
 
+Closed controller-policy names describe deterministic test behavior, not commanders or authority.
+The checked policy matrix says exactly `act-first`/`act-last` and Reserve `none`/`one`/`all`; its
+runner-only accepted-designation count is controller history, never campaign state. These policies
+produce six Movement-entry Exercises inside one Maneuver and do not make the runner the Umpire.
+
+The proposed Movement Foundation keeps **representation** as Umpire truth and exposes only an
+**apparent presence** to the opposing side. A representation is the authoritative map piece and
+its hidden binding; an apparent presence is the side-safe fact that a player may use when choosing
+a move. Neither is a **contact** yet: Contact and Engaged are later rules states created by enemy
+ZOC/combat procedures. **Capability Point expenditure** is the exact amount already spent during
+the current Operation Stage; it is not a replenishing UI movement allowance. **Complete Movement**
+is a real player decision that advances to Breakdown Determination, not a runner stop condition.
+These names are approved for Movement Foundation v1. The source/ruling lock is complete and the
+next implementation gate is `MOV-TASK-002`; none of these Movement names denotes implemented
+production behavior yet.
+
 **War College** is where we evaluate commanders.
 
 ```text

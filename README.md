@@ -89,7 +89,8 @@ separates deterministic counts, outcomes, and fingerprint material from noncanon
 diagnostics and is strictly read back before completion is claimed. Compact, forensic, and debug
 Exercise detail tiers expose progressively richer evidence without changing simulation truth. The
 current two-setup serial Maneuver proves the same Movement-terminal path for predetermined and
-contested initiative.
+contested initiative. A separate checked six-child controller matrix crosses `act-first`/`act-last`
+with Reserve `none`/`one`/`all`, producing exact 10/11/12-action Movement trajectories.
 Paired comparison, model
 controllers, and side-safe exports are not implemented yet.
 
@@ -102,7 +103,9 @@ counterbalanced-order timing, and contested root seeds 0-31. Every sampled run p
 readback; the results also show that future back-testing needs explicit act-last and Reserve
 none/one/all controller profiles rather than seed variation alone. See
 [Baseline 1](docs/research/simulator-baseline-1.md) and
-[Baseline 2](docs/research/simulator-baseline-2.md).
+[Baseline 2](docs/research/simulator-baseline-2.md). The follow-on
+[controller-policy matrix](docs/research/simulator-controller-matrix.md) closes that explicit
+coverage gap with 6/6 strictly read-back trajectories and a repeatable aggregate fingerprint.
 
 Positive Organization/stage-entry obligations, movement behavior, combat, published scenario
 content, persistence, and the Maproom player interface remain future work.
@@ -120,10 +123,10 @@ The current delivery boundary is:
 | Ruleset/provenance, synthetic content, campaign authority, deterministic randomness, events, and replay | Implemented foundation |
 | Side-safe observations and exact-audience legal actions | Implemented for the current rules-laboratory path |
 | Mandatory turn preamble | Implemented through Reserve Designation completion; authority reaches first-side Movement |
-| Movement/contact and combat loops | Planned; not started |
+| Movement/contact and combat loops | Movement Foundation source/ruling lock complete; exact Rules task next; production behavior not started |
 | Published first-scenario data, remaining Land rules, victory, persistence, and Maproom | Milestone-level; not started |
 | Player Intent Composer | Direction reviewed; representative decision after the combat skeleton, no-model prototype before Maproom, optional parser evaluation after deterministic MVP |
-| Exercise Harness | Organization, Reserve, and Movement-terminal Exercises plus serial-unpaired two-setup Movement Maneuver implemented; pairing remains later |
+| Exercise Harness | Organization, Reserve, and Movement-terminal Exercises plus two-setup and six-policy serial Maneuvers implemented; pairing remains later |
 
 The approved high-level path to a playable game is:
 
@@ -144,7 +147,14 @@ delivered authoritative mechanic. Its [research](docs/research/reserve-designati
 [technical design](docs/design/reserve-designation-v1.md) define an incremental designation flow
 that stops at Movement. Rules, state, owner projection, legal candidates, command mapping,
 designation/completion events, finite checkpoint validation, replay, and checked harness evidence
-are implemented. Movement behavior remains unsupported. Paired
+are implemented. The next package is the approved Movement Foundation
+[research](docs/research/movement-foundation-spike.md),
+[specification](docs/specs/movement-foundation-v1.md), and
+[technical design](docs/design/movement-foundation-v1.md). It proposes a fog-safe apparent-presence
+gate followed by exact CP/Cohesion state, normalized lab terrain and stacking, repeatable
+non-contact moves, and explicit completion to Breakdown Determination. The plan is owner-approved;
+its source/ruling lock is complete and `MOV-TASK-002` exact Rules work is next. Movement behavior is
+still unsupported. Paired
 comparison remains a later evaluation capability and does not block gameplay-engine progress.
 
 See the [pre-alpha roadmap](docs/roadmap/pre-alpha-roadmap.md) for the capability-level plan and
@@ -253,6 +263,14 @@ Run the two-setup Reserve Designation Maneuver through Movement with:
 ```sh
 dotnet run --project src/Cna.ExerciseRunner/Cna.ExerciseRunner.csproj -- \
   maneuver run --manifest scenarios/maneuvers/rules-lab.reserve-designation.serial.v2.json \
+  --artifact-root artifacts/exercises
+```
+
+Run the six-policy Movement-entry matrix with:
+
+```sh
+dotnet run --project src/Cna.ExerciseRunner/Cna.ExerciseRunner.csproj -- \
+  maneuver run --manifest scenarios/maneuvers/rules-lab.controller-matrix.serial.v2.json \
   --artifact-root artifacts/exercises
 ```
 
@@ -372,12 +390,16 @@ The current Umpire foundation is intentionally pure and in-process:
 - [Exercise Harness reproducibility and pairing research](docs/research/exercise-reproducibility-and-pairing-spike.md)
 - [Exercise Harness v1 specification](docs/specs/exercise-harness-v1.md)
 - [Exercise Harness v1 technical design and delivery plan](docs/design/exercise-harness-v1.md)
+- [Simulator controller policy matrix evidence](docs/research/simulator-controller-matrix.md)
 - [Operation-Stage Entry source and contract research](docs/research/operation-stage-entry-spike.md)
 - [Operation-Stage Entry v1 specification](docs/specs/operation-stage-entry-v1.md)
 - [Operation-Stage Entry v1 technical design and delivery plan](docs/design/operation-stage-entry-v1.md)
 - [Reserve Designation v1 source and contract research](docs/research/reserve-designation-spike.md)
 - [Reserve Designation v1 specification](docs/specs/reserve-designation-v1.md)
 - [Reserve Designation v1 technical design and delivery plan](docs/design/reserve-designation-v1.md)
+- [Movement Foundation v1 source and contract research](docs/research/movement-foundation-spike.md)
+- [Movement Foundation v1 specification](docs/specs/movement-foundation-v1.md)
+- [Movement Foundation v1 technical design and delivery plan](docs/design/movement-foundation-v1.md)
 - [Microsoft Orleans documentation](https://learn.microsoft.com/en-us/dotnet/orleans/)
 - [ASP.NET Core gRPC services](https://learn.microsoft.com/en-us/aspnet/core/grpc/aspnetcore?view=aspnetcore-10.0)
 - [Aspire AppHost and ServiceDefaults](https://learn.microsoft.com/en-us/dotnet/aspire/fundamentals/aspire-sdk-templates)

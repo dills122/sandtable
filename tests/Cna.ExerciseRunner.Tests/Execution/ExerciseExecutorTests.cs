@@ -88,6 +88,51 @@ public sealed class ExerciseExecutorTests
             result.BoundaryPositionId);
     }
 
+    [Theory]
+    [InlineData("ActFirstReserveNoneThenFirstByActionId", true, 0, 10)]
+    [InlineData("ActFirstReserveOneThenFirstByActionId", true, 1, 11)]
+    [InlineData("ActFirstReserveAllThenFirstByActionId", true, 2, 12)]
+    [InlineData("ActLastReserveNoneThenFirstByActionId", false, 0, 10)]
+    [InlineData("ActLastReserveOneThenFirstByActionId", false, 1, 11)]
+    [InlineData("ActLastReserveAllThenFirstByActionId", false, 2, 12)]
+    public void ControllerMatrixReachesMovementWithExactActorAndReserveOutcomes(
+        string policyName,
+        bool actsFirst,
+        int expectedDesignations,
+        int expectedSteps)
+    {
+        var policy = Enum.Parse<ExerciseControllerPolicy>(policyName);
+        var manifest = ExerciseManifestCodecTests.Create(
+            maximumSteps: 12,
+            terminalBoundary:
+                "land.position.operation-1.first-player.movement-and-combat.movement",
+            controllerPolicy: policy);
+
+        var result = Execute(manifest);
+
+        Assert.True(result.IsSucceeded);
+        Assert.Equal(expectedSteps, result.Steps.Count);
+        Assert.Equal(expectedDesignations, result.Steps.SelectMany(step => step.EventRecords)
+            .Count(record => System.Text.Encoding.UTF8.GetString(record).Contains(
+                "\"eventType\":\"reserve-element-designated\"",
+                StringComparison.Ordinal)));
+        using var final = System.Text.Json.JsonDocument.Parse(result.FinalSnapshot);
+        var initiativeHolder = final.RootElement.GetProperty("initiativeHolder").GetString();
+        var firstSide = final.RootElement.GetProperty("operationStageOrders")[0]
+            .GetProperty("firstSide").GetString();
+        Assert.Equal(actsFirst, string.Equals(
+            initiativeHolder,
+            firstSide,
+            StringComparison.Ordinal));
+        Assert.Equal(expectedDesignations, final.RootElement.GetProperty("world")
+            .GetProperty("elements")
+            .EnumerateArray()
+            .Count(element => element.GetProperty("reserveStatus").GetString() == "reserve-i"));
+        Assert.True(result.Reconstruction!.IsVerified);
+        var readjudication = ReadjudicationVerifier.Verify(manifest, result);
+        Assert.True(readjudication.IsVerified);
+    }
+
     [Fact]
     public void MaximumStepBoundFailsWithoutRelabelingFailureAsSuccess()
     {
