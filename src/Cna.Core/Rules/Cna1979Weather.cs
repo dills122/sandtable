@@ -9,6 +9,8 @@ internal static class Cna1979Weather
     public const string SeasonBoundaryRulingId =
         "cna-1979.1.ruling.weather-season-boundary";
 
+    internal const int MaxGameTurn = 110;
+
     private static readonly RuleReference[] GameTurnRangeSources =
     [
         new(SeasonBoundaryRulingId, "selected-behavior"),
@@ -50,7 +52,7 @@ internal static class Cna1979Weather
             : throw new ArgumentOutOfRangeException(
                 nameof(gameTurn),
                 gameTurn,
-                "Weather supports Game Turns 1 through 110 only.");
+                $"Weather supports Game Turns 1 through {MaxGameTurn} only.");
     }
 
     public static WeatherKind GetKind(WeatherSeason season, int d66)

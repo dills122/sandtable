@@ -117,7 +117,12 @@ internal static class CampaignObservationProjector
                 && element.PlacementMode == ContentPlacementMode.Independent)
             .Select(element =>
             {
-                var state = worldByElement[element.ElementId];
+                if (!worldByElement.TryGetValue(element.ElementId, out var state))
+                {
+                    throw new InvalidOperationException(
+                        $"World snapshot is missing element '{element.ElementId}' defined by the content pack.");
+                }
+
                 return new ObservedOwnElement(
                     element.ElementId,
                     element.ParentFormationId,

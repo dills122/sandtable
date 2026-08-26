@@ -16,7 +16,7 @@ public sealed class ExerciseReconstructionResult
     internal ExerciseReconstructionResult(
         ExerciseReconstructionFailureReason failureReason,
         byte[]? reconstructedSnapshotBytes,
-        string eventStreamHash,
+        string? eventStreamHash,
         string expectedSnapshotHash,
         string? reconstructedSnapshotHash)
     {
@@ -32,7 +32,7 @@ public sealed class ExerciseReconstructionResult
     public bool IsVerified => FailureReason == ExerciseReconstructionFailureReason.None;
     public ExerciseReconstructionFailureReason FailureReason { get; }
     public byte[]? ReconstructedSnapshotBytes => reconstructedSnapshotBytes?.ToArray();
-    public string EventStreamHash { get; }
+    public string? EventStreamHash { get; }
     public string ExpectedSnapshotHash { get; }
     public string? ReconstructedSnapshotHash { get; }
 }

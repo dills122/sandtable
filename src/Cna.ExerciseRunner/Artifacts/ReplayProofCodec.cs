@@ -28,7 +28,9 @@ public static class ReplayProofCodec
             writer.WriteStartObject();
             writer.WriteNumber("contractVersion", proof.ContractVersion);
             writer.WriteString("schemeId", proof.ContractSchemeId);
-            writer.WriteString("eventStreamHash", proof.EventStreamHash);
+            if (proof.EventStreamHash is null)
+                writer.WriteNull("eventStreamHash");
+            else writer.WriteString("eventStreamHash", proof.EventStreamHash);
             writer.WriteString("expectedSnapshotHash", proof.ExpectedSnapshotHash);
             if (proof.ReconstructedSnapshotHash is null)
                 writer.WriteNull("reconstructedSnapshotHash");
@@ -90,7 +92,7 @@ public static class ReplayProofCodec
             };
             var proof = new ReconstructionProof(
                 reason,
-                RequireString(root, "eventStreamHash"),
+                ReadNullableString(root.GetProperty("eventStreamHash")),
                 RequireString(root, "expectedSnapshotHash"),
                 reconstructed);
             RequireStatus(root, proof.IsVerified);

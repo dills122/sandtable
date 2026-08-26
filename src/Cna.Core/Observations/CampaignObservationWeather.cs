@@ -1,3 +1,5 @@
+using Cna.Core.Rules;
+
 namespace Cna.Core.Observations;
 
 public enum CampaignObservationWeatherSeason
@@ -41,7 +43,8 @@ public sealed record CampaignObservationWeather
         CampaignObservationWeatherScope scope, IReadOnlyList<CampaignObservationWeatherArea> affectedAreas)
     {
         ArgumentOutOfRangeException.ThrowIfNotEqual(contractVersion, CurrentContractVersion);
-        if (gameTurn is < 1 or > 110) throw new ArgumentOutOfRangeException(nameof(gameTurn));
+        if (gameTurn is < 1 or > Cna1979Weather.MaxGameTurn)
+            throw new ArgumentOutOfRangeException(nameof(gameTurn));
         if (operationStage is < 1 or > 3) throw new ArgumentOutOfRangeException(nameof(operationStage));
         if (!Enum.IsDefined(season)) throw new ArgumentOutOfRangeException(nameof(season));
         if (!Enum.IsDefined(kind)) throw new ArgumentOutOfRangeException(nameof(kind));

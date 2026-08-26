@@ -299,7 +299,9 @@ public static class ExerciseDiagnosticsWriter
             writer.WriteBoolean("verified", proof.IsVerified);
             writer.WriteBoolean("historyAccepted", proof.HistoryAccepted);
             writer.WriteBoolean("finalSnapshotMatches", proof.FinalSnapshotMatches);
-            writer.WriteString("eventStreamHash", proof.EventStreamHash);
+            if (proof.EventStreamHash is null)
+                writer.WriteNull("eventStreamHash");
+            else writer.WriteString("eventStreamHash", proof.EventStreamHash);
             writer.WriteString("expectedSnapshotHash", proof.ExpectedSnapshotHash);
             if (proof.ReconstructedSnapshotHash is null)
                 writer.WriteNull("reconstructedSnapshotHash");
