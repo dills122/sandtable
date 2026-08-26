@@ -1,4 +1,3 @@
-using System.Collections.ObjectModel;
 using Cna.Core.Rules;
 
 namespace Cna.Core.Setups;
@@ -43,7 +42,7 @@ internal sealed record CampaignSetupDefinition
         Weather = weather;
         StageEntry = stageEntry;
         Content = content;
-        Sources = CopySources(sources);
+        Sources = RuleReferenceValidation.CopySources(sources, nameof(sources));
         Hash = CampaignSetupHash.Calculate(this);
     }
 
@@ -108,31 +107,5 @@ internal sealed record CampaignSetupDefinition
 
         hash.Add(Hash, StringComparer.Ordinal);
         return hash.ToHashCode();
-    }
-
-    private static ReadOnlyCollection<RuleReference> CopySources(
-        IReadOnlyList<RuleReference> sources)
-    {
-        ArgumentNullException.ThrowIfNull(sources);
-        var copy = sources.ToArray();
-
-        if (copy.Length == 0 || copy.Any(source => source is null))
-        {
-            throw new ArgumentException(
-                "At least one non-null source reference is required.",
-                nameof(sources));
-        }
-
-        if (copy.Distinct().Count() != copy.Length)
-        {
-            throw new ArgumentException(
-                "Duplicate source references are not allowed.",
-                nameof(sources));
-        }
-
-        return Array.AsReadOnly(copy
-            .OrderBy(source => source.SourceId, StringComparer.Ordinal)
-            .ThenBy(source => source.Locator, StringComparer.Ordinal)
-            .ToArray());
     }
 }

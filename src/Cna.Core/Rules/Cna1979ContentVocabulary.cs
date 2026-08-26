@@ -189,9 +189,18 @@ public static class Cna1979ContentVocabulary
         Entries.Any(entry => entry.Kind == kind
             && string.Equals(entry.Id, id, StringComparison.Ordinal));
 
-    public static ContentVocabularyEntry Get(ContentVocabularyKind kind, string id) =>
-        Entries.Single(entry => entry.Kind == kind
+    public static ContentVocabularyEntry Get(ContentVocabularyKind kind, string id)
+    {
+        if (!Contains(kind, id))
+        {
+            throw new ArgumentException(
+                $"No content vocabulary entry '{id}' is defined for kind '{kind}'.",
+                nameof(id));
+        }
+
+        return Entries.Single(entry => entry.Kind == kind
             && string.Equals(entry.Id, id, StringComparison.Ordinal));
+    }
 
     public static RulesetArtifact CreateArtifact() => new(
         ArtifactId,

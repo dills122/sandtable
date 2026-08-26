@@ -41,12 +41,9 @@ public static class Cna1979LandSequence
     {
         ArgumentNullException.ThrowIfNull(current);
         var positions = CreateTurn(current.GameTurn);
-        var currentIndex = positions
-            .Select((position, index) => (position, index))
-            .SingleOrDefault(candidate => candidate.position == current)
-            .index;
+        var currentIndex = positions.ToList().FindIndex(position => position == current);
 
-        if (currentIndex == 0 && positions[0] != current)
+        if (currentIndex < 0)
         {
             throw new ArgumentException(
                 "The current position does not belong to the declared Land turn.",

@@ -15,7 +15,6 @@ public sealed record Ruling
         ArgumentNullException.ThrowIfNull(alternativeIds);
         ArgumentException.ThrowIfNullOrWhiteSpace(selectedBehaviorId);
         ArgumentNullException.ThrowIfNull(protectingTestIds);
-        ArgumentNullException.ThrowIfNull(sources);
 
         RulingId = rulingId;
         ConflictId = conflictId;
@@ -24,18 +23,16 @@ public sealed record Ruling
         ProtectingTestIds = CopyRequiredUniqueValues(
             protectingTestIds,
             nameof(protectingTestIds));
-        Sources = Array.AsReadOnly(sources.ToArray());
+        Sources = RuleReferenceValidation.CopySources(
+            sources,
+            nameof(sources),
+            sortAndDeduplicate: false);
 
         if (!AlternativeIds.Contains(SelectedBehaviorId, StringComparer.Ordinal))
         {
             throw new ArgumentException(
                 "The selected behavior must be one of the considered alternatives.",
                 nameof(selectedBehaviorId));
-        }
-
-        if (Sources.Count == 0)
-        {
-            throw new ArgumentException("At least one source reference is required.", nameof(sources));
         }
     }
 

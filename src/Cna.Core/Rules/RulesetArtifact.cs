@@ -9,16 +9,13 @@ public sealed record RulesetArtifact
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(artifactId);
         ArgumentException.ThrowIfNullOrWhiteSpace(contentHash);
-        ArgumentNullException.ThrowIfNull(sources);
 
         ArtifactId = artifactId;
         ContentHash = contentHash;
-        Sources = Array.AsReadOnly(sources.ToArray());
-
-        if (Sources.Count == 0)
-        {
-            throw new ArgumentException("At least one source reference is required.", nameof(sources));
-        }
+        Sources = RuleReferenceValidation.CopySources(
+            sources,
+            nameof(sources),
+            sortAndDeduplicate: false);
     }
 
     public string ArtifactId { get; }
