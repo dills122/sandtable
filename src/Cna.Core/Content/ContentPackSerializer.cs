@@ -212,6 +212,7 @@ public static class ContentPackSerializer
             writer.WriteString("sideId", element.SideId);
             writer.WriteString("parentFormationId", element.ParentFormationId);
             writer.WriteString("organizationId", element.OrganizationId);
+            writer.WriteString("mobilityId", element.MobilityId);
             writer.WriteNumber(
                 "baseCapabilityPointAllowance",
                 element.BaseCapabilityPointAllowance);
@@ -457,6 +458,7 @@ public static class ContentPackSerializer
             "sideId",
             "parentFormationId",
             "organizationId",
+            "mobilityId",
             "baseCapabilityPointAllowance",
             "placementMode",
             "origin");
@@ -465,6 +467,7 @@ public static class ContentPackSerializer
             ReadString(properties["sideId"], $"{path}/sideId"),
             ReadString(properties["parentFormationId"], $"{path}/parentFormationId"),
             ReadString(properties["organizationId"], $"{path}/organizationId"),
+            ReadString(properties["mobilityId"], $"{path}/mobilityId"),
             ReadInteger(
                 properties["baseCapabilityPointAllowance"],
                 $"{path}/baseCapabilityPointAllowance"),

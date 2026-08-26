@@ -1,3 +1,4 @@
+using System.Globalization;
 using Cna.Core.Content;
 using Cna.Core.Rules;
 
@@ -19,13 +20,26 @@ internal static class CampaignWorldFactory
                 nameof(scenario));
         }
 
+        var placements = scenario.InitialPlacements.ToArray();
         var world = new CampaignWorldSnapshot(
             CampaignWorldSnapshot.CurrentContractVersion,
-            scenario.InitialPlacements
+            placements
                 .Select(placement => new CampaignElementState(
                     placement.ElementId,
                     placement.LocationId,
-                    CampaignElementReserveStatus.None))
+                    CampaignElementReserveStatus.None,
+                    new CampaignElementOperationalState(
+                        scenario.Start.GameTurn,
+                        scenario.Start.OperationStage,
+                        CapabilityPointAmount.Zero,
+                        0)))
+                .ToArray(),
+            placements
+                .Select((placement, index) => new CampaignMapRepresentationState(
+                    CreateInitialRepresentationId(index + 1),
+                    placement.LocationId,
+                    CampaignMapRepresentationBindingKind.IndependentElement,
+                    [placement.ElementId]))
                 .ToArray());
 
         if (!CampaignWorldValidator.IsValidInitial(world, artifact, scenario))
@@ -45,6 +59,12 @@ internal static class CampaignWorldFactory
                     scenario.ScenarioId,
                     StringComparison.Ordinal)
                 && candidate == scenario);
+
+    internal static string CreateInitialRepresentationId(int ordinal)
+    {
+        ArgumentOutOfRangeException.ThrowIfLessThan(ordinal, 1);
+        return $"map-representation.{ordinal.ToString("D4", CultureInfo.InvariantCulture)}";
+    }
 }
 
 internal static class CampaignWorldValidator
@@ -94,7 +114,7 @@ internal static class CampaignWorldValidator
         ArgumentNullException.ThrowIfNull(isValidStatus);
 
         if (world is null
-            || world.ContractVersion != CampaignWorldSnapshot.CurrentContractVersion
+            || !IsLocallyValid(world, scenario.Start.GameTurn, scenario.Start.OperationStage)
             || !CampaignWorldFactory.ContainsScenario(artifact, scenario))
         {
             return false;
@@ -122,10 +142,97 @@ internal static class CampaignWorldValidator
                 || element.PlacementMode != ContentPlacementMode.Independent
                 || !locations.Contains(elementState.CurrentLocationId)
                 || !isValidStatus(element, elementState.ReserveStatus)
+                || elementState.OperationalState.LedgerGameTurn != scenario.Start.GameTurn
+                || elementState.OperationalState.LedgerOperationStage
+                    != scenario.Start.OperationStage
+                || elementState.OperationalState.CapabilityPointsExpended
+                    != CapabilityPointAmount.Zero
+                || elementState.OperationalState.CohesionLevel != 0
                 || !expected.TryGetValue(elementState.ElementId, out var expectedLocation)
                 || !string.Equals(
                     elementState.CurrentLocationId,
                     expectedLocation,
+                    StringComparison.Ordinal))
+            {
+                return false;
+            }
+        }
+
+        var expectedRepresentations = scenario.InitialPlacements
+            .Select((placement, index) => new
+            {
+                RepresentationId = CampaignWorldFactory.CreateInitialRepresentationId(index + 1),
+                placement.ElementId,
+                placement.LocationId,
+            })
+            .ToDictionary(value => value.RepresentationId, StringComparer.Ordinal);
+        if (world.Representations.Count != expectedRepresentations.Count)
+        {
+            return false;
+        }
+
+        foreach (var representation in world.Representations)
+        {
+            if (!expectedRepresentations.TryGetValue(
+                    representation.RepresentationId,
+                    out var expectedRepresentation)
+                || representation.BindingKind
+                    != CampaignMapRepresentationBindingKind.IndependentElement
+                || representation.BoundElementIds.Count != 1
+                || !string.Equals(
+                    representation.BoundElementIds[0],
+                    expectedRepresentation.ElementId,
+                    StringComparison.Ordinal)
+                || !string.Equals(
+                    representation.CurrentLocationId,
+                    expectedRepresentation.LocationId,
+                    StringComparison.Ordinal))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    internal static bool IsLocallyValid(
+        CampaignWorldSnapshot? world,
+        int ledgerGameTurn,
+        int ledgerOperationStage)
+    {
+        if (world is null
+            || world.ContractVersion != CampaignWorldSnapshot.CurrentContractVersion
+            || ledgerGameTurn < 1
+            || ledgerOperationStage is < 1 or > 3
+            || world.Elements.Count != world.Representations.Count)
+        {
+            return false;
+        }
+
+        for (var index = 0; index < world.Elements.Count; index++)
+        {
+            var element = world.Elements[index];
+            var operational = element.OperationalState;
+            var representation = world.Representations[index];
+            if (operational is null
+                || operational.LedgerGameTurn != ledgerGameTurn
+                || operational.LedgerOperationStage != ledgerOperationStage
+                || operational.CapabilityPointsExpended != CapabilityPointAmount.Zero
+                || operational.CohesionLevel != 0
+                || representation.BindingKind
+                    != CampaignMapRepresentationBindingKind.IndependentElement
+                || !string.Equals(
+                    representation.RepresentationId,
+                    CampaignWorldFactory.CreateInitialRepresentationId(index + 1),
+                    StringComparison.Ordinal)
+                || representation.BoundElementIds.Count != 1
+                || !string.Equals(
+                    representation.BoundElementIds[0],
+                    element.ElementId,
+                    StringComparison.Ordinal)
+                || !string.Equals(
+                    representation.CurrentLocationId,
+                    element.CurrentLocationId,
                     StringComparison.Ordinal))
             {
                 return false;

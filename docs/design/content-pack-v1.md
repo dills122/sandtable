@@ -1,6 +1,6 @@
 # Content Pack v1 Technical Design
 
-**Status:** Implemented; independent implementation review pending
+**Status:** Implemented foundation; schema 3 Movement mobility extension implemented
 
 **Date:** 2026-08-16
 
@@ -42,8 +42,8 @@ only accepts `ReadOnlySpan<byte>` or immutable values and returns values/issues/
 
 | Owner | Static or mutable authority |
 | --- | --- |
-| `Cna.Core.Rules` | Meanings and provenance of supported side, terrain, edge-feature, and organization IDs; derived mobility, stacking, and other rule procedures/tables |
-| `Cna.Core.Content` | Versioned static topology, category assignments, force structure, scenario temporal bounds, initial deployment declarations, provenance, validation, canonical bytes/hash |
+| `Cna.Core.Rules` | Meanings and provenance of supported side, terrain, edge-feature, organization, and mobility IDs; stacking and other rule procedures/tables |
+| `Cna.Core.Content` | Versioned static topology, category and per-element mobility assignments, force structure, scenario temporal bounds, initial deployment declarations, provenance, validation, canonical bytes/hash |
 | `Cna.Core.Setups` | Campaign admission policy and selected setup identity; unchanged by Content Pack v1 |
 | `Cna.Core.Campaigns` | Future exact content binding, mutable world positions/status, command legality, accepted events, snapshots, replay |
 | Maproom presentation | Separate labels/visuals keyed by content IDs; never authoritative bytes |
@@ -54,11 +54,13 @@ turn static content and a command into state-changing events.
 
 ## Contract versions and identities
 
-Initial constants:
+The initial contract used schema 1 and `sandtable.content-json.v1`. Weather-area assignments
+advanced the schema to 2 without changing the canonical format. Movement mobility is an
+authoritative element fact, so the current contract advances both schema and canonical format:
 
 ```text
-Content schema version: 1
-Canonical format ID:    sandtable.content-json.v1
+Content schema version: 3
+Canonical format ID:    sandtable.content-json.v2
 Fixture pack ID:        rules-lab.content.movement-contact.v1
 Compatible ruleset ID:  cna-1979.1
 ```
@@ -191,15 +193,17 @@ public sealed record ContentCombatElement(
     string SideId,
     string ParentFormationId,
     string OrganizationId,
+    string MobilityId,
     int BaseCapabilityPointAllowance,
     ContentPlacementMode PlacementMode,
     ContentOrigin Origin);
 ```
 
-No combat strength, current steps, stacking value, remaining capability, cohesion, supply, ZOC,
-contact, visibility, or current location appears here. Organization and base Capability Point
-Allowance are source facts. Rules 8.17 derives motorized/non-motorized classification from that
-allowance; content does not store a potentially contradictory mobility result.
+No combat strength, current steps, stacking value, remaining capability, cohesion, expenditure,
+supply, ZOC, contact, visibility, or current location appears here. Organization, base Capability
+Point Allowance, and mobility assignment are static content facts. Mobility uses the closed
+rules-owned IDs but is not inferred from CPA; the compatibility validator rejects an unsupported
+assignment before a Content artifact can be admitted.
 `ParentFormationId` is required for v1 combat elements.
 
 ### Scenario and placements
@@ -278,13 +282,16 @@ The content schema, rather than the ruleset vocabulary, owns these frozen v1 cap
 ```text
 land.hex-topology
 land.formations
+land.element-mobility
 land.initial-deployment
+land.weather-areas
 ```
 
 Base Capability Point Allowance is a positive integer source fact defined at
 `spi-1979-land-rules:3.5.capability-point-allowance` and shown on counters at
-`spi-1979-land-rules:4.21.sample-units`. Rules 8.17 derives the
-motorized/non-motorized distinction, so there are no independent mobility IDs in content.
+`spi-1979-land-rules:4.21.sample-units`. The current Movement source/ruling lock establishes that
+CPA alone does not determine motorization, so every element carries one explicit supported
+mobility ID.
 
 The canonical ruleset manifest gains a `cna-1979.1.content-vocabulary` artifact. Its normalized
 hash covers schema version, category kind, stable ID, direction policy, and sorted sources. Any
@@ -437,7 +444,7 @@ The validator never mutates/repairs input and attempts all passes whose prerequi
 4. validate hex/edge endpoints, canonical pair uniqueness, feature duplicates/direction,
    neighbor count, and graph connectivity for declared hex topology;
 5. validate formation parents, cycles, and side consistency;
-6. validate element parent/side, positive base CPA, and placement mode;
+6. validate element parent/side, mobility capability, positive base CPA, and placement mode;
 7. validate scenario bounds, placement references, uniqueness, and hex eligibility; and
 8. sort/deduplicate issue values.
 
@@ -446,10 +453,11 @@ Canonical hashing is unavailable when any issue exists.
 ### Ruleset compatibility validator
 
 `Cna1979ContentCompatibilityValidator` first requires exact ruleset ID `cna-1979.1`, then checks
-every semantic vocabulary reference against `Cna1979ContentVocabulary`; the pack validator checks
-capabilities against the closed content-schema tokens. Compatibility does not look up movement
-costs, derive mobility, or calculate stacking. The same validator is called by the synthetic
-catalog and future campaign admission.
+every semantic vocabulary reference against `Cna1979ContentVocabulary` and every element mobility
+against the closed `Cna1979Movement` vocabulary; the pack validator checks capabilities against the
+closed content-schema tokens. Compatibility does not look up movement costs, infer mobility from
+CPA, or calculate stacking. The same validator is called by the synthetic catalog and campaign
+admission.
 
 Unknown data fails explicitly. There is no “custom,” “other,” integer enum fallback, ignored
 extension dictionary, or nearest category.
@@ -501,17 +509,17 @@ The graph is deliberately not represented as a geographic North Africa layout.
 
 Force structure:
 
-| ID | Side | Parent | Organization | Base CPA | Initial location |
-| --- | --- | --- | --- | --- | --- |
-| `axis-lab-formation` | Axis | none | regiment | n/a | n/a |
-| `axis-element-a` | Axis | `axis-lab-formation` | battalion | 20 | `west` |
-| `axis-element-b` | Axis | `axis-lab-formation` | battalion | 10 | `north-west` |
-| `commonwealth-lab-formation` | Commonwealth | none | regiment | n/a | n/a |
-| `commonwealth-element-a` | Commonwealth | `commonwealth-lab-formation` | battalion | 20 | `east` |
-| `commonwealth-element-b` | Commonwealth | `commonwealth-lab-formation` | battalion | 10 | `south-east` |
+| ID | Side | Parent | Organization | Mobility | Base CPA | Initial location |
+| --- | --- | --- | --- | --- | --- | --- |
+| `axis-lab-formation` | Axis | none | regiment | n/a | n/a | n/a |
+| `axis-element-a` | Axis | `axis-lab-formation` | battalion | motorized | 20 | `west` |
+| `axis-element-b` | Axis | `axis-lab-formation` | battalion | non-motorized | 10 | `north-west` |
+| `commonwealth-lab-formation` | Commonwealth | none | regiment | n/a | n/a | n/a |
+| `commonwealth-element-a` | Commonwealth | `commonwealth-lab-formation` | battalion | motorized | 20 | `east` |
+| `commonwealth-element-b` | Commonwealth | `commonwealth-lab-formation` | battalion | non-motorized | 10 | `south-east` |
 
-Rules 8.17 later derives the 20-CPA elements as motorized and the 10-CPA elements as
-non-motorized. Those terms are rule outputs, not stored fixture fields.
+These are explicit synthetic fixture assignments. Their alignment with the fixture CPA values is
+not a production derivation rule.
 
 Scenario ID is `movement-contact-lab`, with synthetic temporal bounds Game Turn 1 Operation Stage
 1 through Game Turn 1 Operation Stage 3. Those bounds exercise the contract only and do not claim

@@ -4,8 +4,8 @@ namespace Cna.Core.Content;
 
 public sealed record ContentPackDefinition
 {
-    public const int CurrentSchemaVersion = 2;
-    public const string CanonicalFormatId = "sandtable.content-json.v1";
+    public const int CurrentSchemaVersion = 3;
+    public const string CanonicalFormatId = "sandtable.content-json.v2";
 
     public ContentPackDefinition(
         int schemaVersion,

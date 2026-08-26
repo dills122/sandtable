@@ -43,6 +43,7 @@ internal static class ContentTestData
             "axis",
             formation.FormationId,
             "land.organization.battalion",
+            Cna1979Movement.MotorizedMobilityId,
             20,
             ContentPlacementMode.Independent,
             Origin("content.element.axis"));
@@ -58,10 +59,15 @@ internal static class ContentTestData
 
         return new ContentPackDefinition(
             ContentPackDefinition.CurrentSchemaVersion,
-            "sandtable.content-json.v1",
+            ContentPackDefinition.CanonicalFormatId,
             "rules-lab.content.minimal.v1",
             "cna-1979.1",
-            ["land.hex-topology", "land.formations", "land.initial-deployment"],
+            [
+                "land.hex-topology",
+                "land.formations",
+                "land.element-mobility",
+                "land.initial-deployment",
+            ],
             [new ContentSourceIndexEntry(
                 "sandtable-rules-lab",
                 ContentSourceKind.RepositorySynthetic)],

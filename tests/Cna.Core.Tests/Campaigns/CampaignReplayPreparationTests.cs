@@ -83,7 +83,7 @@ public sealed class CampaignReplayPreparationTests
         var projected = CampaignProjector.Replay([created], result.Context.Content);
         Assert.Equal(created.Setup.StageEntry, projected.Setup.StageEntry);
         Assert.Equal(expected, projected);
-        Assert.Equal(7, projected.ContractVersion);
+        Assert.Equal(8, projected.ContractVersion);
     }
 
     [Fact]
@@ -149,8 +149,8 @@ public sealed class CampaignReplayPreparationTests
                 "\"organization\":\"has-obligations\"",
                 StringComparison.Ordinal),
             snapshotJson.Replace(
+                "{\"contractVersion\":8,",
                 "{\"contractVersion\":7,",
-                "{\"contractVersion\":6,",
                 StringComparison.Ordinal),
         ];
 

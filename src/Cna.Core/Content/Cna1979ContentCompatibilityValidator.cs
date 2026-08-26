@@ -100,6 +100,13 @@ public static class Cna1979ContentCompatibilityValidator
                 ContentVocabularyKind.Organization,
                 element.OrganizationId,
                 $"/elements/{element.ElementId}/organizationId");
+            if (!Cna1979Movement.IsSupportedMobilityId(element.MobilityId))
+            {
+                AddUnknown(
+                    issues,
+                    $"/elements/{element.ElementId}/mobilityId",
+                    $"Unknown Movement mobility ID '{element.MobilityId}'.");
+            }
         }
 
         return new ContentValidationResult(issues);

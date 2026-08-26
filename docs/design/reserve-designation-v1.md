@@ -180,7 +180,7 @@ sources: spi-1979-land-rules:18.11, spi-1979-land-rules:5.2.reserve-designation
 ```
 
 The artifact/ruling changes the canonical ruleset hash but not setup or content hashes.
-The implementation-derived ruleset v5 hash after Task 002 is
+The historical implementation-derived ruleset v5 hash after Reserve Task 002 was
 `beb66b242222f1ccc8bde4a34daacfcd561495b47e3d48391ede34e16830d6e6`.
 
 ## Candidate contract and IDs
@@ -384,7 +384,7 @@ configuration hashes, ruleset hashes, events, and snapshot checkpoints migrate. 
 unchanged because the policy uses no randomness.
 
 Trusted evidence recognition must add the two Reserve event shapes. Step-evidence decoding must
-accept snapshot v7/world v2 and still reject prior or malformed variants. Campaign Observation v4
+accept snapshot v8/world v3 and still reject prior or malformed variants. Campaign Observation v4
 is not persisted in Exercise evidence and remains a Core observation-contract/test concern. Exact
 fixture hashes and report fingerprints are recorded only after implementation.
 
@@ -395,7 +395,7 @@ accepted actions: nine retained preamble actions, two element designations, and 
 The checked standalone baseline/exploratory twins and the predetermined/contested serial Maneuver
 verify event-history reconstruction and fresh-session re-adjudication. The Maneuver report
 fingerprint is
-`sha256:7bf6a94e4beaa5b02f45b8c96588e65d54238076fd33fa46e1083d439b48f79b`.
+`sha256:423db9b41bea444bffc918c2ec11717579257cf7f71c93bde2bd9546188763e1`.
 
 The 2026-08-25 Task 016 pre-review gate produced this evidence:
 

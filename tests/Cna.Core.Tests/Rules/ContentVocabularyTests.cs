@@ -147,7 +147,7 @@ public sealed class ContentVocabularyTests
             manifest.Artifacts,
             value => value.ArtifactId == Cna1979ContentVocabulary.ArtifactId);
 
-        Assert.Equal(6, manifest.Artifacts.Count);
+        Assert.Equal(7, manifest.Artifacts.Count);
         Assert.Equal(
             Cna1979ContentVocabulary.CalculateContentHash(
                 Cna1979ContentVocabulary.Entries),

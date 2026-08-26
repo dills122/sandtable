@@ -159,7 +159,9 @@ public sealed class CampaignReserveCheckpointValidationTests
                     element.CurrentLocationId,
                     selected.Contains(element.ElementId)
                         ? status
-                        : CampaignElementReserveStatus.None)).ToArray()),
+                        : CampaignElementReserveStatus.None,
+                    element.OperationalState)).ToArray(),
+                snapshot.World.Representations),
         };
     }
 }

@@ -79,7 +79,7 @@ public sealed class ExerciseManifestCodecTests
     [InlineData("setupId", "invalid..setup")]
     [InlineData("setupHash", "sha256:not-a-hash")]
     [InlineData("contentPackId", "invalid_content")]
-    [InlineData("contentHash", "SHA256:53d5b64f647251e3ac366c65f4ad05cae766afd7b70ee331d463e801496e2a99")]
+    [InlineData("contentHash", "SHA256:38687a168bf96018f61826b42ae0df7e34466c7055a111861be46d0c924dcd0d")]
     [InlineData("scenarioId", "invalid scenario")]
     [InlineData("rulesetHash", "0000000000000000000000000000000000000000000000000000000000000000")]
     [InlineData("terminalBoundary", "land.position.invalid..boundary")]
@@ -112,9 +112,9 @@ public sealed class ExerciseManifestCodecTests
             ExerciseManifest.CurrentContractVersion,
             "organization-boundary",
             "rules-lab.initiative.predetermined",
-            "sha256:c1688f8869ca66182b87f487ec34edbef617ff1158f7d8b0d3101fe3993978ef",
+            "sha256:0e03d12e8b4a5aeb7b19b7eed3f4ed2dcb9d3db2d253bdeaf8867d6b57a099a2",
             "rules-lab.content.movement-contact.v1",
-            "sha256:53d5b64f647251e3ac366c65f4ad05cae766afd7b70ee331d463e801496e2a99",
+            "sha256:38687a168bf96018f61826b42ae0df7e34466c7055a111861be46d0c924dcd0d",
             "movement-contact-lab",
             Cna1979Ruleset.Manifest.Hash,
             terminalBoundary,

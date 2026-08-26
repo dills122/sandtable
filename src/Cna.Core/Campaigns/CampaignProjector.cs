@@ -71,7 +71,7 @@ internal static class CampaignProjector
             throw new InvalidCampaignHistoryException("A campaign can contain only one creation event.");
         }
 
-        if (created.ContractVersion != 6
+        if (created.ContractVersion != 7
             || created.StateVersion != 1
             || string.IsNullOrWhiteSpace(created.CampaignId)
             || !Cna1979Ruleset.IsCanonicalHash(created.RulesetHash)
@@ -394,8 +394,10 @@ internal static class CampaignProjector
                     ? new CampaignElementState(
                         element.ElementId,
                         element.CurrentLocationId,
-                        CampaignElementReserveStatus.ReserveI)
-                    : element).ToArray()),
+                        CampaignElementReserveStatus.ReserveI,
+                        element.OperationalState)
+                    : element).ToArray(),
+                snapshot.World.Representations),
             SequencePosition = designated.SequencePosition,
         };
 

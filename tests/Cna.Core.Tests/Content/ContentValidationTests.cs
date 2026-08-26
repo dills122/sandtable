@@ -128,6 +128,7 @@ public sealed class ContentValidationTests
                 "commonwealth",
                 "formation-a",
                 "land.organization.battalion",
+                Cna.Core.Rules.Cna1979Movement.MotorizedMobilityId,
                 0,
                 ContentPlacementMode.Independent,
                 ContentTestData.Origin("content.element.invalid")),
@@ -136,6 +137,7 @@ public sealed class ContentValidationTests
                 "axis",
                 "formation-a",
                 "land.organization.battalion",
+                Cna.Core.Rules.Cna1979Movement.MotorizedMobilityId,
                 10,
                 ContentPlacementMode.AttachmentOnly,
                 ContentTestData.Origin("content.element.attachment")),
@@ -144,6 +146,7 @@ public sealed class ContentValidationTests
                 "axis",
                 "formation-a",
                 "land.organization.battalion",
+                Cna.Core.Rules.Cna1979Movement.MotorizedMobilityId,
                 10,
                 ContentPlacementMode.Independent,
                 ContentTestData.Origin("content.element.unplaced")),
@@ -308,6 +311,7 @@ public sealed class ContentValidationTests
                 "unknown-side",
                 "unknown-formation",
                 "land.organization.unknown",
+                "land.mobility.unknown",
                 10,
                 ContentPlacementMode.Independent,
                 ContentTestData.Origin("content.element.unknown")),
@@ -339,6 +343,7 @@ public sealed class ContentValidationTests
         AssertIssue(result, "vocabulary.unknown-id", "/formations/unknown-formation/organizationId");
         AssertIssue(result, "vocabulary.unknown-id", "/elements/unknown-element/sideId");
         AssertIssue(result, "vocabulary.unknown-id", "/elements/unknown-element/organizationId");
+        AssertIssue(result, "vocabulary.unknown-id", "/elements/unknown-element/mobilityId");
     }
 
     [Fact]
@@ -373,6 +378,7 @@ public sealed class ContentValidationTests
             independentElement.SideId,
             independentElement.ParentFormationId,
             independentElement.OrganizationId,
+            independentElement.MobilityId,
             independentElement.BaseCapabilityPointAllowance,
             ContentPlacementMode.AttachmentOnly,
             independentElement.Origin);

@@ -1,6 +1,6 @@
 # Content Pack v1 Specification
 
-**Status:** Implemented; independent implementation review pending
+**Status:** Implemented foundation; schema 3 Movement mobility extension implemented
 
 **Date:** 2026-08-16
 
@@ -24,7 +24,7 @@ capabilities.
 
 1. Resolve `rules-lab.content.movement-contact.v1` from the in-process synthetic catalog.
 2. Validate it successfully against the `cna-1979.1` content vocabulary.
-3. Serialize it as `sandtable.content-json.v1`, display its `sha256:` identity, and round-trip it
+3. Serialize it as `sandtable.content-json.v2` schema 3, display its `sha256:` identity, and round-trip it
    through the strict reader to an equal immutable value.
 4. Query its nine locations, explicit adjacency edges, two formations, four combat elements, and
    four initial placements.
@@ -37,16 +37,16 @@ capabilities.
 
 | ID | Requirement |
 | --- | --- |
-| `CNT-001` | Content has an independent versioned identity consisting of format ID `sandtable.content-json.v1`, schema version 1, pack ID, compatible ruleset ID, and `sha256:` hash of validated canonical semantic bytes. |
+| `CNT-001` | Content has an independent versioned identity consisting of current format ID `sandtable.content-json.v2`, schema version 3, pack ID, compatible ruleset ID, and `sha256:` hash of validated canonical semantic bytes. |
 | `CNT-002` | Canonical bytes use explicit fixed object/property order, UTF-8, no insignificant whitespace, exact safe-ASCII hashed-string grammars, frozen lower-kebab tokens, integer-only numeric values, and ordinally normalized keyed collections. The hash field and presentation metadata are excluded. |
 | `CNT-003` | Every semantic location, edge, formation, element, scenario, and placement datum declares typed origin metadata: `source-derived` with stable references or `synthetic` with a stable repository locator. |
 | `CNT-004` | The source index retains stable source IDs and classifications only. Content contracts, tests, and fixtures contain no scans, component artwork, copied source prose, or raster geometry. |
 | `CNT-005` | Version 1 board locations are opaque stable hex IDs. Adjacency is authoritative only through one canonical unordered edge per pair; printed/source coordinates are optional audit metadata and never derive adjacency. |
 | `CNT-006` | Edges reference existing distinct hexes and may carry closed rules-owned feature IDs plus an optional direction from one endpoint to the other. Unknown, duplicate, contradictory, malformed, or disconnected fixture topology is rejected. |
-| `CNT-007` | Content references closed rules-owned IDs for side, terrain, edge feature, and organization semantics. Unknown IDs fail validation; rule tables and derived values such as movement cost, stacking points, or motorized classification are not content fields. |
-| `CNT-008` | Formations and combat elements have stable pack-local IDs, side ownership, organization and base Capability Point Allowance source facts, and validated parent relationships. Runtime remaining capability, cohesion, contact, ZOC, visibility, and current location are not content fields. |
+| `CNT-007` | Content references closed rules-owned IDs for side, terrain, edge feature, organization, and element mobility semantics. Unknown IDs fail validation; rule tables and derived values such as movement cost or stacking points are not content fields. |
+| `CNT-008` | Formations and combat elements have stable pack-local IDs, side ownership, organization and base Capability Point Allowance source facts, one explicit supported mobility assignment per element, and validated parent relationships. Runtime remaining capability, expenditure, cohesion, contact, ZOC, visibility, and current location are not content fields. |
 | `CNT-009` | A scenario definition declares stable temporal bounds and initial placements. Placements reference existing elements and hexes, are unique per independently placed element, and cannot place an attachment-only element independently. |
-| `CNT-010` | Pack capabilities are a closed, sorted set. Version 1 supports only hex topology, land formations/elements, and initial deployment; unsupported published subsystems fail explicitly rather than appearing as optional catch-all data. |
+| `CNT-010` | Pack capabilities are a closed, sorted set. The current schema supports hex topology, land formations/elements, element mobility, initial deployment, and weather areas; unsupported published subsystems fail explicitly rather than appearing as optional catch-all data. |
 | `CNT-011` | Constructors defensively copy collection inputs and enforce local shape invariants. Pack validation returns every discoverable graph/cross-reference issue as a stable code plus canonical data path, sorted by path then code. |
 | `CNT-012` | Canonical serialization and hashing require a valid pack. The strict reader rejects unknown contract versions, missing/unknown properties, duplicate JSON properties, invalid enum/ID/string representations, trailing data, and noncanonical semantic values; accepted input property/collection order is normalized on output. |
 | `CNT-013` | The synthetic fixture uses the production contracts, validator, reader/writer, and hashing path. It contains nine connected original hexes, two routes around a restrictive center, two sides, one formation and two elements per side, and four initial placements. |
@@ -139,12 +139,12 @@ classes into one generic exception.
 | `CNT-AC-001` | Load the canonical rules-laboratory pack | Validation succeeds; exact expected counts, capabilities, identities, origins, and topology are present. |
 | `CNT-AC-002` | Serialize, hash, read, validate, and serialize the fixture again | Complete golden UTF-8 bytes and independent SHA-256 vector match; semantic value and second bytes are identical. Safe-ASCII boundary vectors are accepted and non-ASCII/control/quote/backslash vectors are rejected. |
 | `CNT-AC-003` | Construct equal packs with every input collection reversed/shuffled | Canonical bytes/hash and semantic equality/hash code are identical. |
-| `CNT-AC-004` | Mutate one semantic terrain, edge, organization, base CPA, parent, temporal, placement, origin, capability, or ruleset-ID fact | Content hash changes in every selected mutation. |
+| `CNT-AC-004` | Mutate one semantic terrain, edge, organization, mobility, base CPA, parent, temporal, placement, origin, capability, or ruleset-ID fact | Content hash changes in every selected mutation. |
 | `CNT-AC-005` | Change fixture presentation label/notice only | Authoritative equality, bytes, and hash remain unchanged. |
 | `CNT-AC-006` | Mutate caller-owned lists or any byte array returned by an artifact after construction | Constructed values, equality, private canonical bytes, future byte copies, and hash do not change. |
 | `CNT-AC-007` | Duplicate an ID/edge/element placement or introduce a missing reference | All applicable stable issue code/path pairs are returned in canonical order. |
 | `CNT-AC-008` | Add a self-edge, seventh neighbor, disconnected hex, wrong directional feature, formation cycle, side mismatch, nonpositive base CPA, or attachment-only placement | The precise topology/formation/element/placement issue is returned; hash is unavailable. |
-| `CNT-AC-009` | Use an unknown terrain, edge, side, organization, capability, or ruleset ID | Compatibility validation rejects with `vocabulary.unknown-id` or `content.unsupported-capability`; no fallback is selected. |
+| `CNT-AC-009` | Use an unknown terrain, edge, side, organization, mobility, capability, or ruleset ID | Compatibility validation rejects with `vocabulary.unknown-id` or `content.unsupported-capability`; no fallback is selected. |
 | `CNT-AC-010` | Feed malformed, duplicate-property, unknown-property, trailing-data, unknown-version, or invalid-value JSON to the strict reader; separately reorder valid properties/collections | Invalid input is rejected, while valid reordered input emits the one canonical output. |
 | `CNT-AC-011` | Inspect the repository and fixture origin/presentation data | No source scan/artwork/prose is committed; every datum is synthetic; all names/geometry are original and nonhistorical. |
 | `CNT-AC-012` | Search project references and serialize future-facing DTO fixtures | Content pack types are absent from Intelligence/contracts/transport and player-observation surfaces. |

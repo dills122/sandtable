@@ -100,7 +100,7 @@ internal static class CampaignEventSerializer
                 _ => throw new JsonException($"Unknown campaign event type '{eventType}'."),
             };
 
-            if (campaignEvent is StageEntryResolved or ReserveDesignationEvent
+            if (campaignEvent is CampaignCreated or StageEntryResolved or ReserveDesignationEvent
                 && !canonicalJson.Span.SequenceEqual(Serialize(campaignEvent)))
             {
                 throw new JsonException("The campaign event is not canonical JSON.");
@@ -753,7 +753,7 @@ internal static class CampaignEventSerializer
             created.RandomState,
             created.SequencePosition);
 
-        if (created.ContractVersion != 6
+        if (created.ContractVersion != 7
             || created.StateVersion != 1
             || created.RandomState.NextByteCursor != 0
             || !CampaignSnapshotValidator.IsLocallyValid(localSnapshot))

@@ -11,26 +11,24 @@ internal enum CampaignElementReserveStatus
 
 internal sealed record CampaignElementState
 {
-    public CampaignElementState(string elementId, string currentLocationId)
-        : this(elementId, currentLocationId, CampaignElementReserveStatus.None)
-    {
-    }
-
     public CampaignElementState(
         string elementId,
         string currentLocationId,
-        CampaignElementReserveStatus reserveStatus)
+        CampaignElementReserveStatus reserveStatus,
+        CampaignElementOperationalState operationalState)
     {
         if (!Enum.IsDefined(reserveStatus))
         {
             throw new ArgumentOutOfRangeException(nameof(reserveStatus));
         }
 
+        ArgumentNullException.ThrowIfNull(operationalState);
         ElementId = ContentContractGuards.RequireStableId(elementId, nameof(elementId));
         CurrentLocationId = ContentContractGuards.RequireStableId(
             currentLocationId,
             nameof(currentLocationId));
         ReserveStatus = reserveStatus;
+        OperationalState = operationalState;
     }
 
     public string ElementId { get; }
@@ -38,4 +36,6 @@ internal sealed record CampaignElementState
     public string CurrentLocationId { get; }
 
     public CampaignElementReserveStatus ReserveStatus { get; }
+
+    public CampaignElementOperationalState OperationalState { get; }
 }
