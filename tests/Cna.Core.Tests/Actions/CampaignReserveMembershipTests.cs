@@ -3,7 +3,6 @@ using Cna.Core.Actions;
 using Cna.Core.Campaigns;
 using Cna.Core.Content;
 using Cna.Core.Rules;
-using Cna.Core.Setups;
 using Cna.Core.Tests.Campaigns;
 
 namespace Cna.Core.Tests.Actions;
@@ -128,45 +127,4 @@ public sealed class CampaignReserveMembershipTests
             BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly)
             .Select(property => property.Name));
     }
-}
-
-internal static class CampaignReserveActionTestData
-{
-    public static CampaignAuthorityHandle ReachReserve(
-        int setupIndex,
-        InitiativeOrderChoice choice)
-    {
-        var setup = Cna1979SetupCatalog.Definitions[setupIndex];
-        var evidence = StageEntryCampaignTestData.Execute(
-            setup,
-            setupIndex == 0 ? 12345UL : 7UL,
-            choice);
-        return new CampaignAuthorityHandle(evidence.Snapshot, evidence.Context);
-    }
-
-    public static CampaignLegalActionSet Query(
-        CampaignAuthorityHandle handle,
-        CampaignActionAudience audience)
-    {
-        var result = CampaignLegalActions.Query(handle, audience);
-        Assert.True(result.IsSuccessful);
-        return result.ActionSet!;
-    }
-
-    public static CampaignActionAudience ToAudience(LandSide side) => side switch
-    {
-        LandSide.Axis => CampaignActionAudience.Axis,
-        LandSide.Commonwealth => CampaignActionAudience.Commonwealth,
-        _ => throw new ArgumentOutOfRangeException(nameof(side)),
-    };
-
-    public static CampaignActionSubmission Bind(
-        CampaignLegalActionSet set,
-        CampaignActionCandidate candidate) => new(
-            CampaignActionSubmission.CurrentContractVersion,
-            set.CampaignId,
-            set.StateVersion,
-            set.PositionId,
-            set.Audience,
-            candidate.ActionId);
 }

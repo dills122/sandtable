@@ -284,9 +284,5 @@ public sealed class ExerciseControllerTests
         CampaignActionAudience audience,
         IEnumerable<ExerciseControllerCandidate> candidates,
         int priorReserveDesignationCount) =>
-        (ExerciseControllerActionSet)Activator.CreateInstance(
-            typeof(ExerciseControllerActionSet),
-            audience,
-            candidates,
-            priorReserveDesignationCount)!;
+        new(audience, candidates, priorReserveDesignationCount);
 }

@@ -1,6 +1,7 @@
 using Cna.Core.Actions;
 using Cna.Core.Campaigns;
 using Cna.Core.Rules;
+using Cna.Core.Tests.Campaigns;
 
 namespace Cna.Core.Tests.Actions;
 

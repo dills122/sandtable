@@ -2,26 +2,22 @@ using Cna.Core.Actions;
 using Cna.Core.Campaigns;
 using Cna.Core.Content;
 using Cna.Core.Rules;
-using Cna.Core.Setups;
-using Cna.Core.Tests.Actions;
 
 namespace Cna.Core.Tests.Campaigns;
 
 public sealed class CampaignReserveEndToEndTests
 {
     [Theory]
-    [InlineData(0, 12345, true)]
-    [InlineData(0, 12345, false)]
-    [InlineData(1, 7, true)]
-    [InlineData(1, 7, false)]
+    [InlineData(0, true)]
+    [InlineData(0, false)]
+    [InlineData(1, true)]
+    [InlineData(1, false)]
     public void BothSetupsDesignateAllAndReachReplayIdenticalMovement(
         int setupIndex,
-        int seed,
         bool actFirst)
     {
-        var evidence = StageEntryCampaignTestData.Execute(
-            Cna1979SetupCatalog.Definitions[setupIndex],
-            (ulong)seed,
+        var evidence = CampaignReserveActionTestData.ExecuteToReserve(
+            setupIndex,
             actFirst
                 ? InitiativeOrderChoice.ActFirst
                 : InitiativeOrderChoice.ActLast);

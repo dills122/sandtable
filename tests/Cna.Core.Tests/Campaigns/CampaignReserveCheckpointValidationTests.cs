@@ -3,7 +3,6 @@ using System.Text.Json;
 using Cna.Core.Campaigns;
 using Cna.Core.Content;
 using Cna.Core.Rules;
-using Cna.Core.Setups;
 
 namespace Cna.Core.Tests.Campaigns;
 
@@ -12,7 +11,9 @@ public sealed class CampaignReserveCheckpointValidationTests
     [Fact]
     public void CanonicalDecoderRejectsReserveStatusesAtEveryPreDesignationCheckpoint()
     {
-        var evidence = ExecuteToReserve();
+        var evidence = CampaignReserveActionTestData.ExecuteToReserve(
+            0,
+            InitiativeOrderChoice.ActFirst);
 
         for (var stateVersion = 1; stateVersion <= 10; stateVersion++)
         {
@@ -38,7 +39,9 @@ public sealed class CampaignReserveCheckpointValidationTests
     [Fact]
     public void ReserveDesignationCheckpointsUseFiniteStatusCountArithmetic()
     {
-        var evidence = ExecuteToReserve();
+        var evidence = CampaignReserveActionTestData.ExecuteToReserve(
+            0,
+            InitiativeOrderChoice.ActFirst);
         var reserve = evidence.Snapshot;
         var firstSide = FirstActingSideResolver.Resolve(reserve);
         var ownElementIds = GetElementIds(evidence.Context, firstSide);
@@ -86,7 +89,9 @@ public sealed class CampaignReserveCheckpointValidationTests
     [Fact]
     public void ContextValidationRejectsReserveStatusOwnedByTheOtherSide()
     {
-        var evidence = ExecuteToReserve();
+        var evidence = CampaignReserveActionTestData.ExecuteToReserve(
+            0,
+            InitiativeOrderChoice.ActFirst);
         var reserve = evidence.Snapshot;
         var firstSide = FirstActingSideResolver.Resolve(reserve);
         var otherSide = firstSide == LandSide.Axis
@@ -108,12 +113,6 @@ public sealed class CampaignReserveCheckpointValidationTests
             CampaignSnapshotSerializer.Deserialize(
                 CampaignSnapshotSerializer.Serialize(forged)));
     }
-
-    private static StageEntryCampaignEvidence ExecuteToReserve() =>
-        StageEntryCampaignTestData.Execute(
-            Cna1979SetupCatalog.Definitions[0],
-            12345,
-            InitiativeOrderChoice.ActFirst);
 
     private static string[] GetElementIds(
         CampaignContentContext context,
