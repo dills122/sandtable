@@ -26,11 +26,11 @@ internal static class CampaignEventSerializer
                     WriteDetermined(writer, determined);
                     break;
                 case NoObligationNavalConvoyScheduleResolved resolved:
-                    ValidateAdvance(resolved, LandPhaseIds.TacticalShipping);
+                    ValidateAdvance(resolved, LandPhaseIds.TacticalShipping, 3);
                     WriteAdvance(writer, "no-obligation-naval-convoy-schedule-resolved", resolved);
                     break;
                 case NoObligationTacticalShippingResolved resolved:
-                    ValidateAdvance(resolved, LandPhaseIds.InitiativeDeclaration);
+                    ValidateAdvance(resolved, LandPhaseIds.InitiativeDeclaration, 4);
                     WriteAdvance(writer, "no-obligation-tactical-shipping-resolved", resolved);
                     break;
                 case InitiativeOrderDeclared declared:
@@ -488,7 +488,7 @@ internal static class CampaignEventSerializer
             CampaignSnapshotSerializer.ParseSources(root.GetProperty("sources")));
         if (root.GetProperty("contractVersion").GetInt32() != value.ContractVersion)
             throw new JsonException("The schedule event contract version is invalid.");
-        ValidateAdvance(value, LandPhaseIds.TacticalShipping);
+        ValidateAdvance(value, LandPhaseIds.TacticalShipping, 3);
         return value;
     }
 
@@ -502,7 +502,7 @@ internal static class CampaignEventSerializer
             CampaignSnapshotSerializer.ParseSources(root.GetProperty("sources")));
         if (root.GetProperty("contractVersion").GetInt32() != value.ContractVersion)
             throw new JsonException("The tactical event contract version is invalid.");
-        ValidateAdvance(value, LandPhaseIds.InitiativeDeclaration);
+        ValidateAdvance(value, LandPhaseIds.InitiativeDeclaration, 4);
         return value;
     }
 
@@ -793,9 +793,12 @@ internal static class CampaignEventSerializer
         }
     }
 
-    private static void ValidateAdvance(OpeningPreambleAdvanced resolved, string expectedPhase)
+    private static void ValidateAdvance(
+        OpeningPreambleAdvanced resolved,
+        string expectedPhase,
+        long expectedStateVersion)
     {
-        if (resolved.ContractVersion != 1 || resolved.StateVersion is < 3 or > 4
+        if (resolved.ContractVersion != 1 || resolved.StateVersion != expectedStateVersion
             || resolved.SequencePosition.PhaseId != expectedPhase)
             throw new JsonException("The preamble event contract is invalid.");
     }

@@ -56,8 +56,6 @@ internal static class CampaignSnapshotValidator
     {
         if (setup is null
             || setup.SchemaVersion != Cna1979SetupCatalog.SchemaVersion
-            || setup.SetupId is not ("rules-lab.initiative.predetermined"
-                or "rules-lab.initiative.contested")
             || !Cna1979SetupCatalog.TryGet(setup.SetupId, out var catalogDefinition)
             || string.IsNullOrWhiteSpace(setup.SetupId)
             || string.IsNullOrWhiteSpace(setup.SetupHash)

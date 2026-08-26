@@ -156,18 +156,20 @@ internal static class CampaignActionExecution
                 new ResolveNoObligationFleetRepair(
                     snapshot.StateVersion,
                     snapshot.SequencePosition.PositionId),
-            ActFirstAction first => new DeclareInitiativeOrder(
-                snapshot.StateVersion,
-                snapshot.SequencePosition.PositionId,
-                first.OperationStage!.Value,
-                ToSide(audience),
-                InitiativeOrderChoice.ActFirst),
-            ActLastAction last => new DeclareInitiativeOrder(
-                snapshot.StateVersion,
-                snapshot.SequencePosition.PositionId,
-                last.OperationStage!.Value,
-                ToSide(audience),
-                InitiativeOrderChoice.ActLast),
+            ActFirstAction first when audience != CampaignActionAudience.System =>
+                new DeclareInitiativeOrder(
+                    snapshot.StateVersion,
+                    snapshot.SequencePosition.PositionId,
+                    first.OperationStage!.Value,
+                    ToSide(audience),
+                    InitiativeOrderChoice.ActFirst),
+            ActLastAction last when audience != CampaignActionAudience.System =>
+                new DeclareInitiativeOrder(
+                    snapshot.StateVersion,
+                    snapshot.SequencePosition.PositionId,
+                    last.OperationStage!.Value,
+                    ToSide(audience),
+                    InitiativeOrderChoice.ActLast),
             DesignateReserveAction designation when audience != CampaignActionAudience.System =>
                 new DesignateReserveElement(
                     snapshot.StateVersion,
@@ -196,16 +198,26 @@ internal static class CampaignActionExecution
         && submission.ExpectedStateVersion >= 1
         && IsStableId(submission.ExpectedPositionId)
         && Enum.IsDefined(submission.Audience)
-        && submission.ActionId is { Length: 71 }
-        && submission.ActionId.StartsWith("sha256:", StringComparison.Ordinal)
-        && submission.ActionId[7..].All(character =>
-            character is >= '0' and <= '9' or >= 'a' and <= 'f');
+        && IsSha256(submission.ActionId);
 
     private static bool IsStableId(string? value)
     {
         try
         {
             _ = ContentContractGuards.RequireStableId(value!, nameof(value));
+            return true;
+        }
+        catch (ArgumentException)
+        {
+            return false;
+        }
+    }
+
+    private static bool IsSha256(string? value)
+    {
+        try
+        {
+            _ = ContentContractGuards.RequireSha256(value!, nameof(value));
             return true;
         }
         catch (ArgumentException)

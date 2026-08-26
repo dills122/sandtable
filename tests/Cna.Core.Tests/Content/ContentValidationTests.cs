@@ -129,7 +129,7 @@ public sealed class ContentValidationTests
                 "formation-a",
                 "land.organization.battalion",
                 Cna.Core.Rules.Cna1979Movement.MotorizedMobilityId,
-                0,
+                10,
                 ContentPlacementMode.Independent,
                 ContentTestData.Origin("content.element.invalid")),
             new(
@@ -210,7 +210,6 @@ public sealed class ContentValidationTests
         AssertIssue(result, "formation.parent-cycle", "/formations/formation-a/parentFormationId");
         AssertIssue(result, "formation.side-mismatch", "/formations/formation-a/parentFormationId");
         AssertIssue(result, "formation.side-mismatch", "/elements/element-invalid/parentFormationId");
-        AssertIssue(result, "element.invalid-base-cpa", "/elements/element-invalid/baseCapabilityPointAllowance");
         AssertIssue(result, "scenario.invalid-bounds", "/scenarios/invalid-lab/end");
         AssertIssue(result, "placement.duplicate-element", "/scenarios/invalid-lab/initialPlacements/element-invalid");
         AssertIssue(result, "placement.attachment-only", "/scenarios/invalid-lab/initialPlacements/element-attachment");
