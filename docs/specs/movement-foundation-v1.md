@@ -1,6 +1,7 @@
 # Movement Foundation v1 Specification
 
-**Status:** Approved implementation baseline; `MOV-TASK-001` complete and `MOV-TASK-002` ready
+**Status:** Active implementation baseline; `MOV-TASK-001` through `MOV-TASK-004` complete,
+`MOV-TASK-005` ready
 
 **Date:** 2026-08-25
 
@@ -261,5 +262,10 @@ and review; this draft does not invent them.
 
 On 2026-08-25, the project owner approved the apparent-presence/ZOC visibility ruling, exact
 rational Capability Point amounts, the non-contact v1 boundary, the Breakdown terminal, the
-over-CPA/Disorganization deferral, and the linked task graph. The completed source/ruling lock makes
-`MOV-TASK-002` the next delivery gate.
+over-CPA/Disorganization deferral, and the linked task graph. The completed source/ruling lock and
+Rules foundation make `MOV-TASK-002` complete with exact rational amounts, a closed mobility vocabulary, normalized
+source-backed Movement tables, strict canonical artifact readback, and ruleset v6 identity.
+`MOV-TASK-003` is complete with required per-element mobility, Content schema 3 / canonical format
+v2, strict legacy and unknown-ID rejection, and migrated deterministic identities. `MOV-TASK-004`
+is complete with world v3, snapshot v8, creation event v7, exact initial Cohesion/expenditure, and
+opaque internal one-to-one representation bindings. `MOV-TASK-005` is the next delivery gate.

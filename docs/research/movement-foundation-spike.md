@@ -1,6 +1,6 @@
 # Movement Foundation Spike
 
-**Status:** Approved implementation baseline; `MOV-TASK-001` complete
+**Status:** Approved implementation baseline; `MOV-TASK-001` and `MOV-TASK-002` complete
 
 **Date:** 2026-08-25
 
@@ -78,7 +78,8 @@ Out of scope:
 
 The stop condition is an owner-reviewed research/specification/design package. Production Movement
 code must not begin until the visibility ruling and the governing contracts are approved. That
-research gate is now satisfied; implementation begins with `MOV-TASK-002`.
+research gate is satisfied; the exact Rules foundation is implemented and Content mobility begins
+with `MOV-TASK-003`.
 
 ## Method and source index
 

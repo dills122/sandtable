@@ -97,6 +97,7 @@ internal static class CampaignObservationTestData
             opponentSideId,
             enemyFormation.FormationId,
             organizationId,
+            Cna1979Movement.MotorizedMobilityId,
             capability,
             ContentPlacementMode.Independent,
             origin($"element.{elementId}"));

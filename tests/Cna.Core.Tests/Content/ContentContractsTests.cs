@@ -114,6 +114,7 @@ public sealed class ContentContractsTests
         {
             "land.initial-deployment",
             "land.formations",
+            "land.element-mobility",
             "land.hex-topology",
         };
         var sources = new List<ContentSourceIndexEntry>
@@ -127,7 +128,7 @@ public sealed class ContentContractsTests
         var scenarios = CreateScenarios().ToList();
         var pack = new ContentPackDefinition(
             ContentPackDefinition.CurrentSchemaVersion,
-            "sandtable.content-json.v1",
+            ContentPackDefinition.CanonicalFormatId,
             "rules-lab.content.contracts.v1",
             "cna-1979.1",
             capabilities,
@@ -139,7 +140,7 @@ public sealed class ContentContractsTests
             scenarios);
         var equivalent = new ContentPackDefinition(
             ContentPackDefinition.CurrentSchemaVersion,
-            "sandtable.content-json.v1",
+            ContentPackDefinition.CanonicalFormatId,
             "rules-lab.content.contracts.v1",
             "cna-1979.1",
             capabilities.AsEnumerable().Reverse().ToArray(),
@@ -159,7 +160,12 @@ public sealed class ContentContractsTests
         scenarios.Clear();
 
         Assert.Equal(
-            ["land.formations", "land.hex-topology", "land.initial-deployment"],
+            [
+                "land.element-mobility",
+                "land.formations",
+                "land.hex-topology",
+                "land.initial-deployment",
+            ],
             pack.Capabilities);
         Assert.Equal(["east", "west"], pack.Locations.Select(value => value.LocationId));
         Assert.Equal(pack, equivalent);
@@ -205,7 +211,7 @@ public sealed class ContentContractsTests
         Assert.Throws<ArgumentOutOfRangeException>(() => new ContentScenarioBoundary(1, 4));
         Assert.Throws<ArgumentOutOfRangeException>(() => new ContentPackDefinition(
             ContentPackDefinition.CurrentSchemaVersion + 1,
-            "sandtable.content-json.v1",
+            ContentPackDefinition.CanonicalFormatId,
             "rules-lab.content.contracts.v1",
             "cna-1979.1",
             [],
@@ -217,7 +223,7 @@ public sealed class ContentContractsTests
             []));
         Assert.Throws<ArgumentException>(() => new ContentPackDefinition(
             ContentPackDefinition.CurrentSchemaVersion,
-            "sandtable.content-json.v2",
+            "sandtable.content-json.v1",
             "rules-lab.content.contracts.v1",
             "cna-1979.1",
             [],
@@ -231,10 +237,15 @@ public sealed class ContentContractsTests
 
     private static ContentPackDefinition CreatePack() => new(
         ContentPackDefinition.CurrentSchemaVersion,
-        "sandtable.content-json.v1",
+        ContentPackDefinition.CanonicalFormatId,
         "rules-lab.content.contracts.v1",
         "cna-1979.1",
-        ["land.hex-topology", "land.formations", "land.initial-deployment"],
+        [
+            "land.hex-topology",
+            "land.formations",
+            "land.element-mobility",
+            "land.initial-deployment",
+        ],
         [new ContentSourceIndexEntry("sandtable-rules-lab", ContentSourceKind.RepositorySynthetic)],
         CreateLocations(),
         CreateEdges(),
@@ -278,6 +289,7 @@ public sealed class ContentContractsTests
             "axis",
             "axis-formation",
             "land.organization.battalion",
+            Cna1979Movement.MotorizedMobilityId,
             20,
             ContentPlacementMode.Independent,
             CreateOrigin("content.element.axis")),

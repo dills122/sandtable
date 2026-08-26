@@ -76,7 +76,13 @@ public static class Cna1979SyntheticContentCatalog
             ContentPackDefinition.CanonicalFormatId,
             PackId,
             Cna1979Ruleset.RulesetId,
-            ["land.hex-topology", "land.formations", "land.initial-deployment", "land.weather-areas"],
+            [
+                "land.hex-topology",
+                "land.formations",
+                "land.element-mobility",
+                "land.initial-deployment",
+                "land.weather-areas",
+            ],
             [new ContentSourceIndexEntry(SourceId, ContentSourceKind.RepositorySynthetic)],
             locations,
             CreateWeatherAreas(),
@@ -158,17 +164,29 @@ public static class Cna1979SyntheticContentCatalog
 
     private static IReadOnlyList<ContentCombatElement> CreateElements() =>
     [
-        Element("axis-element-a", "axis", "axis-lab-formation", 20),
-        Element("axis-element-b", "axis", "axis-lab-formation", 10),
+        Element(
+            "axis-element-a",
+            "axis",
+            "axis-lab-formation",
+            Cna1979Movement.MotorizedMobilityId,
+            20),
+        Element(
+            "axis-element-b",
+            "axis",
+            "axis-lab-formation",
+            Cna1979Movement.NonMotorizedMobilityId,
+            10),
         Element(
             "commonwealth-element-a",
             "commonwealth",
             "commonwealth-lab-formation",
+            Cna1979Movement.MotorizedMobilityId,
             20),
         Element(
             "commonwealth-element-b",
             "commonwealth",
             "commonwealth-lab-formation",
+            Cna1979Movement.NonMotorizedMobilityId,
             10),
     ];
 
@@ -211,11 +229,13 @@ public static class Cna1979SyntheticContentCatalog
         string elementId,
         string sideId,
         string parentFormationId,
+        string mobilityId,
         int baseCapabilityPointAllowance) => new(
             elementId,
             sideId,
             parentFormationId,
             "land.organization.battalion",
+            mobilityId,
             baseCapabilityPointAllowance,
             ContentPlacementMode.Independent,
             Origin($"element.{elementId}"));

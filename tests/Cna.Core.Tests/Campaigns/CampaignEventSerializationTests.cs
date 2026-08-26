@@ -15,12 +15,12 @@ public sealed class CampaignEventSerializationTests
 
         var bytes = CampaignEventSerializer.Serialize(created);
         var actual = Encoding.UTF8.GetString(bytes);
-        var expected = "{\"contractVersion\":6,\"eventType\":\"campaign-created\"," +
+        var expected = "{\"contractVersion\":7,\"eventType\":\"campaign-created\"," +
             "\"campaignId\":\"campaign-1\",\"stateVersion\":1,\"rulesetHash\":\"" +
             Cna1979Ruleset.Manifest.Hash +
             "\",\"setup\":{\"schemaVersion\":5," +
             "\"setupId\":\"rules-lab.initiative.predetermined\"," +
-            "\"setupHash\":\"sha256:c1688f8869ca66182b87f487ec34edbef617ff1158f7d8b0d3101fe3993978ef\"," +
+            "\"setupHash\":\"sha256:0e03d12e8b4a5aeb7b19b7eed3f4ed2dcb9d3db2d253bdeaf8867d6b57a099a2\"," +
             "\"isSynthetic\":true,\"initialGameTurn\":1," +
             "\"initialInitiative\":{\"kind\":\"predetermined\",\"holder\":\"axis\"}," +
             "\"openingPreamble\":{\"contractVersion\":1," +
@@ -38,22 +38,41 @@ public sealed class CampaignEventSerializationTests
             "\"fleetRepair\":\"explicit-none\",\"sources\":[{" +
             "\"sourceId\":\"sandtable-rules-lab\"," +
             "\"locator\":\"stage-entry.no-obligations.v1\"}]}," +
-            "\"content\":{\"schemaVersion\":2,\"formatId\":\"sandtable.content-json.v1\"," +
+            "\"content\":{\"schemaVersion\":3,\"formatId\":\"sandtable.content-json.v2\"," +
             "\"packId\":\"rules-lab.content.movement-contact.v1\",\"rulesetId\":\"cna-1979.1\"," +
-            "\"hash\":\"sha256:53d5b64f647251e3ac366c65f4ad05cae766afd7b70ee331d463e801496e2a99\"," +
+            "\"hash\":\"sha256:38687a168bf96018f61826b42ae0df7e34466c7055a111861be46d0c924dcd0d\"," +
             "\"scenarioId\":\"movement-contact-lab\"}," +
             "\"sources\":[{\"sourceId\":\"sandtable-rules-lab\"," +
             "\"locator\":\"initiative.predetermined-axis.v1\"}]}," +
             "\"initialWorld\":{" +
-            "\"contractVersion\":2,\"elements\":[" +
+            "\"contractVersion\":3,\"elements\":[" +
             "{\"elementId\":\"axis-element-a\",\"currentLocationId\":\"west\"," +
-            "\"reserveStatus\":\"none\"}," +
+            "\"reserveStatus\":\"none\",\"operationalState\":{\"ledgerGameTurn\":1," +
+            "\"ledgerOperationStage\":1,\"capabilityPointsExpended\":{\"numerator\":0," +
+            "\"denominator\":1},\"cohesionLevel\":0}}," +
             "{\"elementId\":\"axis-element-b\",\"currentLocationId\":\"north-west\"," +
-            "\"reserveStatus\":\"none\"}," +
+            "\"reserveStatus\":\"none\",\"operationalState\":{\"ledgerGameTurn\":1," +
+            "\"ledgerOperationStage\":1,\"capabilityPointsExpended\":{\"numerator\":0," +
+            "\"denominator\":1},\"cohesionLevel\":0}}," +
             "{\"elementId\":\"commonwealth-element-a\",\"currentLocationId\":\"east\"," +
-            "\"reserveStatus\":\"none\"}," +
+            "\"reserveStatus\":\"none\",\"operationalState\":{\"ledgerGameTurn\":1," +
+            "\"ledgerOperationStage\":1,\"capabilityPointsExpended\":{\"numerator\":0," +
+            "\"denominator\":1},\"cohesionLevel\":0}}," +
             "{\"elementId\":\"commonwealth-element-b\",\"currentLocationId\":\"south-east\"," +
-            "\"reserveStatus\":\"none\"}]}," +
+            "\"reserveStatus\":\"none\",\"operationalState\":{\"ledgerGameTurn\":1," +
+            "\"ledgerOperationStage\":1,\"capabilityPointsExpended\":{\"numerator\":0," +
+            "\"denominator\":1},\"cohesionLevel\":0}}],\"representations\":[" +
+            "{\"representationId\":\"map-representation.0001\",\"currentLocationId\":\"west\"," +
+            "\"bindingKind\":\"independent-element\",\"boundElementIds\":[\"axis-element-a\"]}," +
+            "{\"representationId\":\"map-representation.0002\"," +
+            "\"currentLocationId\":\"north-west\",\"bindingKind\":\"independent-element\"," +
+            "\"boundElementIds\":[\"axis-element-b\"]}," +
+            "{\"representationId\":\"map-representation.0003\",\"currentLocationId\":\"east\"," +
+            "\"bindingKind\":\"independent-element\"," +
+            "\"boundElementIds\":[\"commonwealth-element-a\"]}," +
+            "{\"representationId\":\"map-representation.0004\"," +
+            "\"currentLocationId\":\"south-east\",\"bindingKind\":\"independent-element\"," +
+            "\"boundElementIds\":[\"commonwealth-element-b\"]}]}," +
             "\"randomState\":{\"contractVersion\":1," +
             "\"algorithmId\":\"sandtable.sha256-counter.v1\",\"seed\":12345," +
             "\"nextByteCursor\":0},\"sequencePosition\":{\"contractVersion\":2," +

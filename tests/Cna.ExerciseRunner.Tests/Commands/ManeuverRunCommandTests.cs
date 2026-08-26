@@ -147,7 +147,7 @@ public sealed class ManeuverRunCommandTests : IDisposable
         Assert.Equal(MovementBoundary,
             Assert.IsType<BoundaryReached>(terminal.Outcome).PositionId);
         Assert.Equal(
-            "sha256:7bf6a94e4beaa5b02f45b8c96588e65d54238076fd33fa46e1083d439b48f79b",
+            "sha256:423db9b41bea444bffc918c2ec11717579257cf7f71c93bde2bd9546188763e1",
             artifact.Report.ReportFingerprint);
     }
 
@@ -211,7 +211,7 @@ public sealed class ManeuverRunCommandTests : IDisposable
         Assert.Equal(MovementBoundary,
             Assert.IsType<BoundaryReached>(terminal.Outcome).PositionId);
         Assert.Equal(
-            "sha256:c30aecf9380ff7346f7983d39e0851a35cb0b76768518a00067890c350247f50",
+            "sha256:82bb3df7885b76d0693f15535aeecc0febe39edde63845dc40246532ec4c2157",
             artifact.Report.ReportFingerprint);
     }
 
@@ -526,9 +526,9 @@ public sealed class ManeuverRunCommandTests : IDisposable
         ExerciseManifest.CurrentContractVersion,
         exerciseId,
         "rules-lab.initiative.predetermined",
-        "sha256:c1688f8869ca66182b87f487ec34edbef617ff1158f7d8b0d3101fe3993978ef",
+        "sha256:0e03d12e8b4a5aeb7b19b7eed3f4ed2dcb9d3db2d253bdeaf8867d6b57a099a2",
         "rules-lab.content.movement-contact.v1",
-        "sha256:53d5b64f647251e3ac366c65f4ad05cae766afd7b70ee331d463e801496e2a99",
+        "sha256:38687a168bf96018f61826b42ae0df7e34466c7055a111861be46d0c924dcd0d",
         "movement-contact-lab",
         Cna1979Ruleset.Manifest.Hash,
         Boundary,

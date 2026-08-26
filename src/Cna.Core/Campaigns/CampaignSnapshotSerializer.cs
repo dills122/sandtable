@@ -82,6 +82,11 @@ internal static class CampaignSnapshotSerializer
                 ParsePosition(root.GetProperty("sequencePosition")));
 
             Validate(snapshot);
+            if (!canonicalJson.Span.SequenceEqual(Serialize(snapshot)))
+            {
+                throw new JsonException("The campaign snapshot is not canonical JSON.");
+            }
+
             return snapshot;
         }
         catch (JsonException)
@@ -162,6 +167,40 @@ internal static class CampaignSnapshotSerializer
             writer.WriteString("elementId", element.ElementId);
             writer.WriteString("currentLocationId", element.CurrentLocationId);
             writer.WriteString("reserveStatus", FormatReserveStatus(element.ReserveStatus));
+            writer.WriteStartObject("operationalState");
+            writer.WriteNumber(
+                "ledgerGameTurn",
+                element.OperationalState.LedgerGameTurn);
+            writer.WriteNumber(
+                "ledgerOperationStage",
+                element.OperationalState.LedgerOperationStage);
+            writer.WritePropertyName("capabilityPointsExpended");
+            CapabilityPointAmountCodec.WriteCanonical(
+                writer,
+                element.OperationalState.CapabilityPointsExpended);
+            writer.WriteNumber("cohesionLevel", element.OperationalState.CohesionLevel);
+            writer.WriteEndObject();
+            writer.WriteEndObject();
+        }
+
+        writer.WriteEndArray();
+        writer.WriteStartArray("representations");
+
+        foreach (var representation in world.Representations)
+        {
+            writer.WriteStartObject();
+            writer.WriteString("representationId", representation.RepresentationId);
+            writer.WriteString("currentLocationId", representation.CurrentLocationId);
+            writer.WriteString(
+                "bindingKind",
+                FormatRepresentationBindingKind(representation.BindingKind));
+            writer.WriteStartArray("boundElementIds");
+            foreach (var elementId in representation.BoundElementIds)
+            {
+                writer.WriteStringValue(elementId);
+            }
+
+            writer.WriteEndArray();
             writer.WriteEndObject();
         }
 
@@ -171,7 +210,7 @@ internal static class CampaignSnapshotSerializer
 
     internal static CampaignWorldSnapshot ParseWorld(JsonElement world)
     {
-        RequireProperties(world, "contractVersion", "elements");
+        RequireProperties(world, "contractVersion", "elements", "representations");
         return new CampaignWorldSnapshot(
             world.GetProperty("contractVersion").GetInt32(),
             world.GetProperty("elements")
@@ -182,14 +221,67 @@ internal static class CampaignSnapshotSerializer
                         element,
                         "elementId",
                         "currentLocationId",
-                        "reserveStatus");
+                        "reserveStatus",
+                        "operationalState");
+                    var operational = element.GetProperty("operationalState");
+                    RequireProperties(
+                        operational,
+                        "ledgerGameTurn",
+                        "ledgerOperationStage",
+                        "capabilityPointsExpended",
+                        "cohesionLevel");
                     return new CampaignElementState(
                         element.GetProperty("elementId").GetString()!,
                         element.GetProperty("currentLocationId").GetString()!,
-                        ParseReserveStatus(element.GetProperty("reserveStatus").GetString()));
+                        ParseReserveStatus(element.GetProperty("reserveStatus").GetString()),
+                        new CampaignElementOperationalState(
+                            operational.GetProperty("ledgerGameTurn").GetInt32(),
+                            operational.GetProperty("ledgerOperationStage").GetInt32(),
+                            CapabilityPointAmountCodec.Deserialize(
+                                System.Text.Encoding.UTF8.GetBytes(
+                                    operational
+                                        .GetProperty("capabilityPointsExpended")
+                                        .GetRawText())),
+                            operational.GetProperty("cohesionLevel").GetInt32()));
+                })
+                .ToArray(),
+            world.GetProperty("representations")
+                .EnumerateArray()
+                .Select(representation =>
+                {
+                    RequireProperties(
+                        representation,
+                        "representationId",
+                        "currentLocationId",
+                        "bindingKind",
+                        "boundElementIds");
+                    return new CampaignMapRepresentationState(
+                        representation.GetProperty("representationId").GetString()!,
+                        representation.GetProperty("currentLocationId").GetString()!,
+                        ParseRepresentationBindingKind(
+                            representation.GetProperty("bindingKind").GetString()),
+                        representation.GetProperty("boundElementIds")
+                            .EnumerateArray()
+                            .Select(elementId => elementId.GetString()!)
+                            .ToArray());
                 })
                 .ToArray());
     }
+
+    private static string FormatRepresentationBindingKind(
+        CampaignMapRepresentationBindingKind bindingKind) => bindingKind switch
+        {
+            CampaignMapRepresentationBindingKind.IndependentElement => "independent-element",
+            _ => throw new ArgumentOutOfRangeException(nameof(bindingKind)),
+        };
+
+    private static CampaignMapRepresentationBindingKind ParseRepresentationBindingKind(
+        string? bindingKind) => bindingKind switch
+        {
+            "independent-element" => CampaignMapRepresentationBindingKind.IndependentElement,
+            _ => throw new JsonException(
+                $"Unknown map representation binding kind '{bindingKind}'."),
+        };
 
     private static string FormatReserveStatus(CampaignElementReserveStatus status) => status switch
     {

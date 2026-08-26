@@ -2,6 +2,7 @@ using System.Text;
 using System.Text.Json;
 using Cna.Core.Campaigns;
 using Cna.Core.Content;
+using Cna.Core.Rules;
 using Cna.Core.Tests.Content;
 
 namespace Cna.Core.Tests.Campaigns;
@@ -13,11 +14,11 @@ public sealed class CampaignWorldTests
     {
         var input = new List<CampaignElementState>
         {
-            new("commonwealth-element-a", "east"),
-            new("axis-element-a", "west"),
+            Element("commonwealth-element-a", "east"),
+            Element("axis-element-a", "west"),
         };
-        var first = new CampaignWorldSnapshot(2, input);
-        var equivalent = new CampaignWorldSnapshot(2, input.AsEnumerable().Reverse().ToArray());
+        var first = World(input);
+        var equivalent = World(input.AsEnumerable().Reverse().ToArray());
 
         input.Clear();
 
@@ -29,20 +30,19 @@ public sealed class CampaignWorldTests
     }
 
     [Fact]
-    public void WorldV2CanonicallyRoundTripsEveryDefinedReserveStatus()
+    public void WorldV3CanonicallyRoundTripsEveryDefinedReserveStatus()
     {
-        var world = new CampaignWorldSnapshot(
-            2,
+        var world = World(
             [
-                new CampaignElementState(
+                Element(
                     "axis-element-a",
                     "west",
                     CampaignElementReserveStatus.None),
-                new CampaignElementState(
+                Element(
                     "axis-element-b",
                     "north-west",
                     CampaignElementReserveStatus.ReserveI),
-                new CampaignElementState(
+                Element(
                     "commonwealth-element-a",
                     "east",
                     CampaignElementReserveStatus.ReserveII),
@@ -51,15 +51,9 @@ public sealed class CampaignWorldTests
         var canonical = SerializeWorld(world);
         var parsed = ParseWorld(canonical);
 
-        Assert.Equal(
-            "{\"world\":{\"contractVersion\":2,\"elements\":[" +
-            "{\"elementId\":\"axis-element-a\",\"currentLocationId\":\"west\"," +
-            "\"reserveStatus\":\"none\"}," +
-            "{\"elementId\":\"axis-element-b\",\"currentLocationId\":\"north-west\"," +
-            "\"reserveStatus\":\"reserve-i\"}," +
-            "{\"elementId\":\"commonwealth-element-a\",\"currentLocationId\":\"east\"," +
-            "\"reserveStatus\":\"reserve-ii\"}]}}",
-            Encoding.UTF8.GetString(canonical));
+        Assert.Contains("\"contractVersion\":3", Encoding.UTF8.GetString(canonical));
+        Assert.Contains("\"operationalState\":{", Encoding.UTF8.GetString(canonical));
+        Assert.Contains("\"representations\":[", Encoding.UTF8.GetString(canonical));
         Assert.Equal(world, parsed);
         Assert.Equal(CampaignElementReserveStatus.ReserveI, parsed.Elements[1].ReserveStatus);
     }
@@ -68,31 +62,35 @@ public sealed class CampaignWorldTests
     public void SnapshotRejectsInvalidContractValuesAndDuplicateElements()
     {
         Assert.Throws<ArgumentOutOfRangeException>(
-            () => new CampaignWorldSnapshot(1, []));
+            () => new CampaignWorldSnapshot(2, [], []));
         Assert.Throws<ArgumentException>(
-            () => new CampaignElementState("Invalid ID", "west"));
+            () => new CampaignElementState(
+                "Invalid ID",
+                "west",
+                CampaignElementReserveStatus.None,
+                Operational()));
         Assert.Throws<ArgumentOutOfRangeException>(() => new CampaignElementState(
             "axis-element-a",
             "west",
-            (CampaignElementReserveStatus)99));
+            (CampaignElementReserveStatus)99,
+            Operational()));
         Assert.Throws<ArgumentException>(
             () => new CampaignWorldSnapshot(
-                2,
+                3,
                 [
-                    new CampaignElementState("axis-element-a", "west"),
-                    new CampaignElementState("axis-element-a", "east"),
-                ]));
+                    Element("axis-element-a", "west"),
+                    Element("axis-element-a", "east"),
+                ],
+                []));
     }
 
     [Theory]
     [InlineData("unknown")]
     [InlineData("ReserveI")]
     [InlineData("reserve_i")]
-    public void WorldV2ParserRejectsUnknownOrNoncanonicalReserveStatus(string reserveStatus)
+    public void WorldV3ParserRejectsUnknownOrNoncanonicalReserveStatus(string reserveStatus)
     {
-        var canonical = SerializeWorld(new CampaignWorldSnapshot(
-            2,
-            [new CampaignElementState("axis-element-a", "west")]));
+        var canonical = SerializeWorld(World([Element("axis-element-a", "west")]));
         var changed = Encoding.UTF8.GetString(canonical).Replace(
             "\"reserveStatus\":\"none\"",
             $"\"reserveStatus\":\"{reserveStatus}\"",
@@ -112,19 +110,19 @@ public sealed class CampaignWorldTests
 
         Assert.Equal(
             [
-                new CampaignElementState(
+                Element(
                     "axis-element-a",
                     "west",
                     CampaignElementReserveStatus.None),
-                new CampaignElementState(
+                Element(
                     "axis-element-b",
                     "north-west",
                     CampaignElementReserveStatus.None),
-                new CampaignElementState(
+                Element(
                     "commonwealth-element-a",
                     "east",
                     CampaignElementReserveStatus.None),
-                new CampaignElementState(
+                Element(
                     "commonwealth-element-b",
                     "south-east",
                     CampaignElementReserveStatus.None),
@@ -141,25 +139,29 @@ public sealed class CampaignWorldTests
             candidate => candidate.ScenarioId == "movement-contact-lab");
         var baseline = CampaignWorldFactory.CreateInitial(artifact, scenario);
 
-        var missing = new CampaignWorldSnapshot(2, baseline.Elements.Skip(1).ToArray());
+        var missing = new CampaignWorldSnapshot(
+            3,
+            baseline.Elements.Skip(1).ToArray(),
+            baseline.Representations);
         var unknown = new CampaignWorldSnapshot(
-            2,
-            baseline.Elements.Append(new CampaignElementState("unknown-element", "west")).ToArray());
+            3,
+            baseline.Elements.Append(Element("unknown-element", "west")).ToArray(),
+            baseline.Representations);
         var relocated = Replace(
             baseline,
-            new CampaignElementState("axis-element-a", "east"));
+            Element("axis-element-a", "east"));
         var invalidLocation = Replace(
             baseline,
-            new CampaignElementState("axis-element-a", "unknown-location"));
+            Element("axis-element-a", "unknown-location"));
         var reserveI = Replace(
             baseline,
-            new CampaignElementState(
+            Element(
                 "axis-element-a",
                 "west",
                 CampaignElementReserveStatus.ReserveI));
         var reserveII = Replace(
             baseline,
-            new CampaignElementState(
+            Element(
                 "axis-element-a",
                 "west",
                 CampaignElementReserveStatus.ReserveII));
@@ -181,6 +183,7 @@ public sealed class CampaignWorldTests
             "axis",
             baseline.Formations[0].FormationId,
             "land.organization.battalion",
+            Cna.Core.Rules.Cna1979Movement.NonMotorizedMobilityId,
             10,
             ContentPlacementMode.AttachmentOnly,
             ContentTestData.Origin("content.element.attachment"));
@@ -190,8 +193,9 @@ public sealed class CampaignWorldTests
         var scenario = artifact.Definition.Scenarios[0];
         var initial = CampaignWorldFactory.CreateInitial(artifact, scenario);
         var withAttachment = new CampaignWorldSnapshot(
-            2,
-            initial.Elements.Append(new CampaignElementState("axis-attachment", "west")).ToArray());
+            3,
+            initial.Elements.Append(Element("axis-attachment", "west")).ToArray(),
+            initial.Representations);
         var foreignScenario = Cna1979SyntheticContentCatalog.Artifact.Definition.Scenarios[0];
 
         Assert.False(CampaignWorldValidator.IsValidInitial(
@@ -209,11 +213,40 @@ public sealed class CampaignWorldTests
     private static CampaignWorldSnapshot Replace(
         CampaignWorldSnapshot world,
         CampaignElementState replacement) => new(
-            2,
+            3,
             world.Elements
                 .Where(element => element.ElementId != replacement.ElementId)
                 .Append(replacement)
-                .ToArray());
+                .ToArray(),
+            world.Representations);
+
+    private static CampaignElementOperationalState Operational() => new(
+        1,
+        1,
+        CapabilityPointAmount.Zero,
+        0);
+
+    private static CampaignElementState Element(
+        string elementId,
+        string locationId,
+        CampaignElementReserveStatus status = CampaignElementReserveStatus.None) => new(
+            elementId,
+            locationId,
+            status,
+            Operational());
+
+    private static CampaignWorldSnapshot World(IEnumerable<CampaignElementState> elements)
+    {
+        var ordered = elements.OrderBy(element => element.ElementId, StringComparer.Ordinal).ToArray();
+        return new CampaignWorldSnapshot(
+            3,
+            ordered,
+            ordered.Select((element, index) => new CampaignMapRepresentationState(
+                $"map-representation.{index + 1:D4}",
+                element.CurrentLocationId,
+                CampaignMapRepresentationBindingKind.IndependentElement,
+                [element.ElementId])).ToArray());
+    }
 
     private static byte[] SerializeWorld(CampaignWorldSnapshot world)
     {

@@ -6,6 +6,7 @@ public static class ContentPackValidator
         [
             "land.hex-topology",
             "land.formations",
+            "land.element-mobility",
             "land.initial-deployment",
             "land.weather-areas",
         ],
@@ -182,7 +183,7 @@ public static class ContentPackValidator
                     issues,
                     "content.unsupported-capability",
                     $"/capabilities/{capability}",
-                    $"Capability '{capability}' is not supported by content schema v1.");
+                    $"Capability '{capability}' is not supported by the current content schema.");
             }
         }
 
@@ -195,6 +196,11 @@ public static class ContentPackValidator
             pack,
             "land.formations",
             pack.Formations.Count > 0 || pack.Elements.Count > 0,
+            issues);
+        RequireCapability(
+            pack,
+            "land.element-mobility",
+            pack.Elements.Count > 0,
             issues);
         RequireCapability(
             pack,

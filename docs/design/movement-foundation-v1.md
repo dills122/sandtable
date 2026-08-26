@@ -1,6 +1,7 @@
 # Movement Foundation v1 Technical Design
 
-**Status:** Approved implementation plan; `MOV-TASK-001` complete and `MOV-TASK-002` ready
+**Status:** Active implementation plan; `MOV-TASK-001` through `MOV-TASK-004` complete,
+`MOV-TASK-005` ready
 
 **Date:** 2026-08-25
 
@@ -200,13 +201,13 @@ Breakdown candidate.
 MOV-TASK-001 source/ruling lock [complete]
                   |
                   v
-MOV-TASK-002 amount/table
+MOV-TASK-002 amount/table [complete]
                   |
                   v
-MOV-TASK-003 content mobility
+MOV-TASK-003 content mobility [complete]
                   |
                   v
-MOV-TASK-004 world + representation contracts
+MOV-TASK-004 world + representation contracts [complete]
                   |
                   v
 MOV-TASK-005 observation/apparent presence
@@ -227,8 +228,8 @@ MOV-TASK-009 end-to-end + Exercise/Maneuver evidence
 MOV-TASK-010 synchronization + independent review
 ```
 
-Task 001 is complete. Tasks 002 through 010 are intentionally serial because each freezes a
-versioned contract consumed by the next layer. In particular, Content admission in Task 003
+Tasks 001 through 004 are complete. Tasks 005 through 010 are intentionally serial because each
+freezes a versioned contract consumed by the next layer. In particular, Content admission in Task 003
 consumes the closed mobility vocabulary and ruleset identity completed by Task 002. Tasks 006 and
 007 keep all public Movement membership dormant; Task 008 atomically exposes executable move and
 completion actions so no intermediate checkpoint can strand a campaign at Movement.
@@ -254,6 +255,8 @@ errata precedence are independently checkable
 
 ### `MOV-TASK-002` - Implement exact amounts and normalized rules tables
 
+**Status:** Complete (2026-08-25)
+
 **Advances:** `MOV-REQ-001`, `MOV-REQ-002`; `MOV-AC-001`, `MOV-AC-002`
 
 **Dependencies:** `MOV-TASK-001`
@@ -271,6 +274,8 @@ and per-row provenance pass before any campaign mutation code exists
 
 ### `MOV-TASK-003` - Version Content Pack mobility facts
 
+**Status:** Complete (2026-08-25)
+
 **Advances:** `MOV-REQ-003`; `MOV-AC-003`
 
 **Dependencies:** `MOV-TASK-002`
@@ -287,6 +292,8 @@ derived stacking/cost/runtime fields enter content
 **Verification:** Content contract/validation/canonical/hash tests and fixture readback
 
 ### `MOV-TASK-004` - Version world, snapshot, creation, and representation contracts
+
+**Status:** Complete (2026-08-25)
 
 **Advances:** `MOV-REQ-004`, `MOV-REQ-005`, `MOV-REQ-010`; `MOV-AC-004`
 
@@ -424,16 +431,16 @@ executed evidence; every deferral remains explicit
 
 | Requirement | Decisions | Tasks | Verification | Current status |
 | --- | --- | --- | --- | --- |
-| `MOV-REQ-001` exact CP | `MOV-DEC-004` | 001-002 | rational/golden tests | Task 001 complete; implementation pending |
-| `MOV-REQ-002` rules data | 003, 007 | 001-002 | source vectors | Task 001 complete; implementation pending |
-| `MOV-REQ-003` content mobility | 003 | 003 | content identity/validation | Approved; implementation pending |
-| `MOV-REQ-004` operational state | 004-005 | 004, 007 | snapshot/replay | Approved; implementation pending |
-| `MOV-REQ-005` representation/contact | 001-002, 006 | 001, 004-005 | privacy/differential tests | Task 001 complete; implementation pending |
+| `MOV-REQ-001` exact CP | `MOV-DEC-004` | 001-002 | rational/golden tests | Implemented in Task 002 |
+| `MOV-REQ-002` rules data | 003, 007 | 001-002 | source vectors | Implemented in Task 002 |
+| `MOV-REQ-003` content mobility | 003 | 003 | content identity/validation | Implemented in Task 003 |
+| `MOV-REQ-004` operational state | 004-005 | 004, 007 | snapshot/replay | Authoritative state implemented in Task 004; outward projection pending Task 005 |
+| `MOV-REQ-005` representation/contact | 001-002, 006 | 001, 004-005 | privacy/differential tests | Internal representation implemented in Task 004; apparent projection pending Task 005 |
 | `MOV-REQ-006` candidates | 005, 007 | 006, 008 | action/fog tests | Approved; implementation pending |
 | `MOV-REQ-007` submission/command | 005-007 | 006-008 | forged/stale tests | Approved; implementation pending |
 | `MOV-REQ-008` move event | 004-007 | 007 | event/projector/replay | Approved; implementation pending |
 | `MOV-REQ-009` completion | 005 | 008 | exact successor tests | Approved; implementation pending |
-| `MOV-REQ-010` canonical contracts | 004, 006 | 002-008 | golden/strict reader tests | Approved; implementation pending |
+| `MOV-REQ-010` canonical contracts | 004, 006 | 002-008 | golden/strict reader tests | Rules and world/history contracts implemented through Task 004 |
 | `MOV-REQ-011` replay/fog | 001, 006 | 004-008 | replay/privacy tests | Approved; implementation pending |
 | `MOV-REQ-012` Exercise evidence | 008 | 009 | project/full tests + CLI runs | Approved; implementation pending |
 

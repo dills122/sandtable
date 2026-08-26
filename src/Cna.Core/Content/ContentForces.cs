@@ -45,6 +45,7 @@ public sealed record ContentCombatElement
         string sideId,
         string parentFormationId,
         string organizationId,
+        string mobilityId,
         int baseCapabilityPointAllowance,
         ContentPlacementMode placementMode,
         ContentOrigin origin)
@@ -63,6 +64,7 @@ public sealed record ContentCombatElement
         OrganizationId = ContentContractGuards.RequireStableId(
             organizationId,
             nameof(organizationId));
+        MobilityId = ContentContractGuards.RequireStableId(mobilityId, nameof(mobilityId));
         BaseCapabilityPointAllowance = baseCapabilityPointAllowance;
         PlacementMode = placementMode;
         Origin = origin;
@@ -75,6 +77,8 @@ public sealed record ContentCombatElement
     public string ParentFormationId { get; }
 
     public string OrganizationId { get; }
+
+    public string MobilityId { get; }
 
     public int BaseCapabilityPointAllowance { get; }
 

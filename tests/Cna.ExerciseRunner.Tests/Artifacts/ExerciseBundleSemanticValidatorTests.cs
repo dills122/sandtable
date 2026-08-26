@@ -47,19 +47,19 @@ public sealed class ExerciseBundleSemanticValidatorTests : IDisposable
     }
 
     [Fact]
-    public void SnapshotReaderAcceptsVersionSevenWorldTwoAndRejectsPriorVersions()
+    public void SnapshotReaderAcceptsVersionEightWorldThreeAndRejectsPriorVersions()
     {
         var bundlePath = CreateSuccessfulBundle();
         var canonical = File.ReadAllBytes(Path.Combine(
             bundlePath,
             ArtifactSchema.InitialSnapshotPath));
         var legacySnapshot = Encoding.UTF8.GetBytes(Encoding.UTF8.GetString(canonical).Replace(
+            "{\"contractVersion\":8,",
             "{\"contractVersion\":7,",
-            "{\"contractVersion\":6,",
             StringComparison.Ordinal));
         var legacyWorld = Encoding.UTF8.GetBytes(Encoding.UTF8.GetString(canonical).Replace(
+            "\"world\":{\"contractVersion\":3,",
             "\"world\":{\"contractVersion\":2,",
-            "\"world\":{\"contractVersion\":1,",
             StringComparison.Ordinal));
 
         Assert.NotNull(ExerciseEvidenceCodec.DeserializeSnapshot(canonical));
@@ -643,7 +643,7 @@ public sealed class ExerciseBundleSemanticValidatorTests : IDisposable
         var bundlePath = CreateReconstructionFailureBundle(fabricated: false);
         var finalPath = Path.Combine(bundlePath, ArtifactSchema.FinalSnapshotPath);
         var originalFinal = File.ReadAllBytes(finalPath);
-        var changedFinal = ReplaceWorld(originalFinal, "{\"contractVersion\":2}");
+        var changedFinal = ReplaceWorld(originalFinal, "{\"contractVersion\":3}");
         File.WriteAllBytes(finalPath, changedFinal);
         RewritePayload(bundlePath, ArtifactSchema.StepEvidencePath, bytes =>
             Encoding.UTF8.GetBytes(Encoding.UTF8.GetString(bytes).Replace(
@@ -813,7 +813,10 @@ public sealed class ExerciseBundleSemanticValidatorTests : IDisposable
         var changedFinal = Encoding.UTF8.GetBytes(Encoding.UTF8.GetString(originalFinal).Replace(
             "\"elementId\":\"axis-element-a\",\"currentLocationId\":\"west\"",
             "\"elementId\":\"axis-element-a\",\"currentLocationId\":\"east\"",
-            StringComparison.Ordinal));
+            StringComparison.Ordinal).Replace(
+                "\"representationId\":\"map-representation.0001\",\"currentLocationId\":\"west\"",
+                "\"representationId\":\"map-representation.0001\",\"currentLocationId\":\"east\"",
+                StringComparison.Ordinal));
         Assert.NotEqual(originalFinal, changedFinal);
         payloads[ArtifactSchema.FinalSnapshotPath] = changedFinal;
         payloads[ArtifactSchema.StepEvidencePath] = Encoding.UTF8.GetBytes(

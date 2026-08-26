@@ -20,8 +20,8 @@ available noncanonical operation/phase timing on failure plus a structured artif
 trace after mandatory reader validation. Separate checked exploratory and clean-baseline fixtures
 exercise the two build-identity policies.
 
-The checked profiles use Exercise/Maneuver manifest v2, controller-configuration v2, ruleset v5,
-snapshot v7, world v2, and strict trusted-evidence admission. Retained Organization/Reserve
+The checked profiles use Exercise/Maneuver manifest v2, controller-configuration v2, ruleset v6,
+snapshot v8, world v3, and strict trusted-evidence admission. Retained Organization/Reserve
 profiles and their baseline twins remain regression checkpoints.
 
 The checked two-child **Maneuver** fixtures define strict canonical `serial-unpaired` parent manifests.
@@ -725,8 +725,13 @@ The next owner-approved engine package is the Movement Foundation
 [technical design](docs/design/movement-foundation-v1.md). It keeps representation truth inside
 the Umpire, adds a minimum side-safe apparent-presence contract before outward Movement legality,
 normalizes exact CP/terrain/stacking rules, accepts repeatable non-contact moves, and stops at the
-existing Breakdown Determination boundary. Its source/ruling lock is complete; `MOV-TASK-002`
-exact Rules work is next, and no Movement production contract is implemented yet.
+existing Breakdown Determination boundary. Its source/ruling lock and `MOV-TASK-002` exact
+Capability Point, mobility-vocabulary, normalized-table, canonical-artifact, and ruleset-identity
+work are complete. Content schema 3 / canonical format v2 now assigns and validates one
+rules-owned mobility ID per element. Snapshot v8/world v3 and creation event v7 now record exact
+Operation-Stage Cohesion/expenditure plus opaque one-to-one internal representation bindings.
+`MOV-TASK-005` side-safe observation projection is next; no Movement campaign action is implemented
+yet.
 Paired comparison remains later and does not block that engine work.
 
 [1]: https://learn.microsoft.com/en-us/dotnet/orleans/grains/external-tasks-and-grains?utm_source=chatgpt.com "External tasks and grains - .NET | Microsoft Learn"

@@ -74,6 +74,11 @@ public sealed class CampaignObservationPrivacyTests
             "nextByteCursor",
             "sourceCoordinate",
             "origin",
+            "map-representation",
+            "boundElementIds",
+            "operationalState",
+            "capabilityPointsExpended",
+            "cohesionLevel",
         ];
 
         Assert.All(prohibitedCanaries, canary =>
@@ -93,6 +98,8 @@ public sealed class CampaignObservationPrivacyTests
             typeof(CampaignSetupSnapshot),
             typeof(CampaignWorldSnapshot),
             typeof(CampaignElementState),
+            typeof(CampaignElementOperationalState),
+            typeof(CampaignMapRepresentationState),
             typeof(ContentPackArtifact),
             typeof(ContentPackDefinition),
             typeof(ContentScenario),

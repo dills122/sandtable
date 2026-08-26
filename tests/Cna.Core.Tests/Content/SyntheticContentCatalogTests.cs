@@ -18,7 +18,13 @@ public sealed class SyntheticContentCatalogTests
         Assert.Equal("rules-lab.content.movement-contact.v1", pack.PackId);
         Assert.Equal("cna-1979.1", pack.RulesetId);
         Assert.Equal(
-            ["land.formations", "land.hex-topology", "land.initial-deployment", "land.weather-areas"],
+            [
+                "land.element-mobility",
+                "land.formations",
+                "land.hex-topology",
+                "land.initial-deployment",
+                "land.weather-areas",
+            ],
             pack.Capabilities);
         Assert.Equal(9, pack.Locations.Count);
         Assert.Equal(
@@ -92,9 +98,9 @@ public sealed class SyntheticContentCatalogTests
             artifact.GetCanonicalBytes(),
             ContentPackSerializer.SerializeCanonical(definition));
         Assert.Equal(
-            "sha256:53d5b64f647251e3ac366c65f4ad05cae766afd7b70ee331d463e801496e2a99",
+            "sha256:38687a168bf96018f61826b42ae0df7e34466c7055a111861be46d0c924dcd0d",
             artifact.Identity.Hash);
-        Assert.Equal(12_733, artifact.CanonicalByteCount);
+        Assert.Equal(12_921, artifact.CanonicalByteCount);
         var goldenFile = File.ReadAllBytes(Path.Combine(
             AppContext.BaseDirectory,
             "Content",

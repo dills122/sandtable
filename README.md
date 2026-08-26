@@ -94,8 +94,8 @@ with Reserve `none`/`one`/`all`, producing exact 10/11/12-action Movement trajec
 Paired comparison, model
 controllers, and side-safe exports are not implemented yet.
 
-The checked Exercise and Maneuver profiles use the current v2 manifest identities with ruleset v5,
-snapshot v7, world v2, strict trusted-evidence admission, and deterministic v2 controller
+The checked Exercise and Maneuver profiles use the current v2 manifest identities with ruleset v6,
+snapshot v8, world v3, strict trusted-evidence admission, and deterministic v2 controller
 configuration identity.
 
 The first two retained simulator studies now verify repeated Movement-terminal determinism,
@@ -123,7 +123,7 @@ The current delivery boundary is:
 | Ruleset/provenance, synthetic content, campaign authority, deterministic randomness, events, and replay | Implemented foundation |
 | Side-safe observations and exact-audience legal actions | Implemented for the current rules-laboratory path |
 | Mandatory turn preamble | Implemented through Reserve Designation completion; authority reaches first-side Movement |
-| Movement/contact and combat loops | Movement Foundation source/ruling lock complete; exact Rules task next; production behavior not started |
+| Movement/contact and combat loops | Movement Foundation rules, Content mobility, and replay-complete world/representation state complete; side-safe apparent-presence observation task next; campaign actions not started |
 | Published first-scenario data, remaining Land rules, victory, persistence, and Maproom | Milestone-level; not started |
 | Player Intent Composer | Direction reviewed; representative decision after the combat skeleton, no-model prototype before Maproom, optional parser evaluation after deterministic MVP |
 | Exercise Harness | Organization, Reserve, and Movement-terminal Exercises plus two-setup and six-policy serial Maneuvers implemented; pairing remains later |
@@ -153,8 +153,10 @@ are implemented. The next package is the approved Movement Foundation
 [technical design](docs/design/movement-foundation-v1.md). It proposes a fog-safe apparent-presence
 gate followed by exact CP/Cohesion state, normalized lab terrain and stacking, repeatable
 non-contact moves, and explicit completion to Breakdown Determination. The plan is owner-approved;
-its source/ruling lock is complete and `MOV-TASK-002` exact Rules work is next. Movement behavior is
-still unsupported. Paired
+its source/ruling lock, exact Rules foundation, and `MOV-TASK-003` Content mobility contract are
+complete. `MOV-TASK-004` now records exact Cohesion/expenditure and opaque internal representation
+bindings in snapshot v8/world v3 creation history. `MOV-TASK-005` side-safe own state and apparent
+opposing presence is next; Movement campaign actions are still unsupported. Paired
 comparison remains a later evaluation capability and does not block gameplay-engine progress.
 
 See the [pre-alpha roadmap](docs/roadmap/pre-alpha-roadmap.md) for the capability-level plan and

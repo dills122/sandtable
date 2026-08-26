@@ -117,11 +117,16 @@ public sealed class CampaignReplayTests
     {
         var valid = Assert.IsType<CampaignCreated>(Assert.Single(ExecuteCreation(12345).Events));
         var forgedWorld = new CampaignWorldSnapshot(
-            2,
+            CampaignWorldSnapshot.CurrentContractVersion,
             valid.InitialWorld.Elements
                 .Where(element => element.ElementId != "axis-element-a")
-                .Append(new CampaignElementState("axis-element-a", "east"))
-                .ToArray());
+                .Append(new CampaignElementState(
+                    "axis-element-a",
+                    "east",
+                    CampaignElementReserveStatus.None,
+                    valid.InitialWorld.Elements[0].OperationalState))
+                .ToArray(),
+            valid.InitialWorld.Representations);
 
         Assert.Throws<InvalidCampaignHistoryException>(() =>
             CampaignTestHarness.Replay([valid with { InitialWorld = forgedWorld }]));
@@ -133,10 +138,10 @@ public sealed class CampaignReplayTests
         var execution = ExecuteCreation(12345);
         var created = Assert.IsType<CampaignCreated>(Assert.Single(execution.Events));
         var eventJson = Encoding.UTF8.GetString(CampaignEventSerializer.Serialize(created))
-            .Replace("{\"contractVersion\":6,", "{\"contractVersion\":5,", StringComparison.Ordinal);
+            .Replace("{\"contractVersion\":7,", "{\"contractVersion\":6,", StringComparison.Ordinal);
         var snapshotJson = Encoding.UTF8.GetString(
                 CampaignSnapshotSerializer.Serialize(execution.Snapshot))
-            .Replace("{\"contractVersion\":7,", "{\"contractVersion\":6,", StringComparison.Ordinal);
+            .Replace("{\"contractVersion\":8,", "{\"contractVersion\":7,", StringComparison.Ordinal);
 
         Assert.Throws<JsonException>(() =>
             CampaignEventSerializer.Deserialize(Encoding.UTF8.GetBytes(eventJson)));
@@ -166,12 +171,12 @@ public sealed class CampaignReplayTests
         var canonicalJson = Encoding.UTF8.GetString(
             CampaignSnapshotSerializer.Serialize(execution.Snapshot));
         var extra = canonicalJson.Replace(
-            "{\"contractVersion\":7,",
-            "{\"extra\":true,\"contractVersion\":7,",
+            "{\"contractVersion\":8,",
+            "{\"extra\":true,\"contractVersion\":8,",
             StringComparison.Ordinal);
         var reordered = canonicalJson.Replace(
-            "{\"contractVersion\":7,\"campaignId\":\"campaign-1\",",
-            "{\"campaignId\":\"campaign-1\",\"contractVersion\":7,",
+            "{\"contractVersion\":8,\"campaignId\":\"campaign-1\",",
+            "{\"campaignId\":\"campaign-1\",\"contractVersion\":8,",
             StringComparison.Ordinal);
 
         Assert.Throws<JsonException>(() =>
@@ -196,17 +201,17 @@ public sealed class CampaignReplayTests
     }
 
     [Fact]
-    public void CreationSnapshotUsesTheExactCanonicalVersion7Shape()
+    public void CreationSnapshotUsesTheExactCanonicalVersion8Shape()
     {
         var execution = ExecuteCreation(12345);
         var actual = Encoding.UTF8.GetString(
             CampaignSnapshotSerializer.Serialize(execution.Snapshot));
-        var expected = "{\"contractVersion\":7,\"campaignId\":\"campaign-1\"," +
+        var expected = "{\"contractVersion\":8,\"campaignId\":\"campaign-1\"," +
             "\"stateVersion\":1,\"rulesetHash\":\"" +
             Cna1979Ruleset.Manifest.Hash +
             "\",\"setup\":{\"schemaVersion\":5," +
             "\"setupId\":\"rules-lab.initiative.predetermined\"," +
-            "\"setupHash\":\"sha256:c1688f8869ca66182b87f487ec34edbef617ff1158f7d8b0d3101fe3993978ef\"," +
+            "\"setupHash\":\"sha256:0e03d12e8b4a5aeb7b19b7eed3f4ed2dcb9d3db2d253bdeaf8867d6b57a099a2\"," +
             "\"isSynthetic\":true,\"initialGameTurn\":1," +
             "\"initialInitiative\":{\"kind\":\"predetermined\",\"holder\":\"axis\"}," +
             "\"openingPreamble\":{\"contractVersion\":1," +
@@ -224,22 +229,41 @@ public sealed class CampaignReplayTests
             "\"fleetRepair\":\"explicit-none\",\"sources\":[{" +
             "\"sourceId\":\"sandtable-rules-lab\"," +
             "\"locator\":\"stage-entry.no-obligations.v1\"}]}," +
-            "\"content\":{\"schemaVersion\":2,\"formatId\":\"sandtable.content-json.v1\"," +
+            "\"content\":{\"schemaVersion\":3,\"formatId\":\"sandtable.content-json.v2\"," +
             "\"packId\":\"rules-lab.content.movement-contact.v1\",\"rulesetId\":\"cna-1979.1\"," +
-            "\"hash\":\"sha256:53d5b64f647251e3ac366c65f4ad05cae766afd7b70ee331d463e801496e2a99\"," +
+            "\"hash\":\"sha256:38687a168bf96018f61826b42ae0df7e34466c7055a111861be46d0c924dcd0d\"," +
             "\"scenarioId\":\"movement-contact-lab\"}," +
             "\"sources\":[{\"sourceId\":\"sandtable-rules-lab\"," +
             "\"locator\":\"initiative.predetermined-axis.v1\"}]}," +
             "\"world\":{" +
-            "\"contractVersion\":2,\"elements\":[" +
+            "\"contractVersion\":3,\"elements\":[" +
             "{\"elementId\":\"axis-element-a\",\"currentLocationId\":\"west\"," +
-            "\"reserveStatus\":\"none\"}," +
+            "\"reserveStatus\":\"none\",\"operationalState\":{\"ledgerGameTurn\":1," +
+            "\"ledgerOperationStage\":1,\"capabilityPointsExpended\":{\"numerator\":0," +
+            "\"denominator\":1},\"cohesionLevel\":0}}," +
             "{\"elementId\":\"axis-element-b\",\"currentLocationId\":\"north-west\"," +
-            "\"reserveStatus\":\"none\"}," +
+            "\"reserveStatus\":\"none\",\"operationalState\":{\"ledgerGameTurn\":1," +
+            "\"ledgerOperationStage\":1,\"capabilityPointsExpended\":{\"numerator\":0," +
+            "\"denominator\":1},\"cohesionLevel\":0}}," +
             "{\"elementId\":\"commonwealth-element-a\",\"currentLocationId\":\"east\"," +
-            "\"reserveStatus\":\"none\"}," +
+            "\"reserveStatus\":\"none\",\"operationalState\":{\"ledgerGameTurn\":1," +
+            "\"ledgerOperationStage\":1,\"capabilityPointsExpended\":{\"numerator\":0," +
+            "\"denominator\":1},\"cohesionLevel\":0}}," +
             "{\"elementId\":\"commonwealth-element-b\",\"currentLocationId\":\"south-east\"," +
-            "\"reserveStatus\":\"none\"}]}," +
+            "\"reserveStatus\":\"none\",\"operationalState\":{\"ledgerGameTurn\":1," +
+            "\"ledgerOperationStage\":1,\"capabilityPointsExpended\":{\"numerator\":0," +
+            "\"denominator\":1},\"cohesionLevel\":0}}],\"representations\":[" +
+            "{\"representationId\":\"map-representation.0001\",\"currentLocationId\":\"west\"," +
+            "\"bindingKind\":\"independent-element\",\"boundElementIds\":[\"axis-element-a\"]}," +
+            "{\"representationId\":\"map-representation.0002\"," +
+            "\"currentLocationId\":\"north-west\",\"bindingKind\":\"independent-element\"," +
+            "\"boundElementIds\":[\"axis-element-b\"]}," +
+            "{\"representationId\":\"map-representation.0003\",\"currentLocationId\":\"east\"," +
+            "\"bindingKind\":\"independent-element\"," +
+            "\"boundElementIds\":[\"commonwealth-element-a\"]}," +
+            "{\"representationId\":\"map-representation.0004\"," +
+            "\"currentLocationId\":\"south-east\",\"bindingKind\":\"independent-element\"," +
+            "\"boundElementIds\":[\"commonwealth-element-b\"]}]}," +
             "\"initiativeHolder\":null,\"operationStageOrders\":[]," +
             "\"operationStageWeather\":[]," +
             "\"randomState\":{\"contractVersion\":1," +

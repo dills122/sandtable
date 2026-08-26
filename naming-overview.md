@@ -550,9 +550,13 @@ a move. Neither is a **contact** yet: Contact and Engaged are later rules states
 ZOC/combat procedures. **Capability Point expenditure** is the exact amount already spent during
 the current Operation Stage; it is not a replenishing UI movement allowance. **Complete Movement**
 is a real player decision that advances to Breakdown Determination, not a runner stop condition.
-These names are approved for Movement Foundation v1. The source/ruling lock is complete and the
-next implementation gate is `MOV-TASK-002`; none of these Movement names denotes implemented
-production behavior yet.
+These names are approved for Movement Foundation v1. The source/ruling lock and exact Rules
+foundation are complete, including stable `land.mobility.non-motorized` and
+`land.mobility.motorized` identifiers. Content schema 3 now assigns one of those IDs explicitly to
+each element. Opaque `map-representation.0001`-style identities now name the Umpire's physical-map
+representations without embedding real element IDs; their bindings never appear outward. The next
+implementation gate is `MOV-TASK-005`; none of these Movement names denotes an implemented
+Movement action yet.
 
 **War College** is where we evaluate commanders.
 

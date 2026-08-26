@@ -31,8 +31,10 @@ internal static class CampaignSnapshotValidator
             || !IsStableId(snapshot.CampaignId)
             || !IsRulesHash(snapshot.RulesetHash)
             || !IsValidSetup(snapshot.Setup)
-            || snapshot.World is null
-            || snapshot.World.ContractVersion != CampaignWorldSnapshot.CurrentContractVersion
+            || !CampaignWorldValidator.IsLocallyValid(
+                snapshot.World,
+                snapshot.Setup.InitialGameTurn,
+                snapshot.Setup.StageEntry.OperationStage)
             || !CampaignOperationStageOrderCodec.IsStructurallyValid(
                 snapshot.OperationStageOrders)
             || !CampaignOperationStageWeatherCodec.IsStructurallyValid(

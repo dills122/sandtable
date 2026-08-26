@@ -58,7 +58,7 @@ public sealed class ExerciseEvidenceWriterTests
             "0684d3c8a1db50e2afd6521163d0fc45013155653ee270014d6274d1478793c1",
             Hash(canonicalEvents));
         Assert.Equal(
-            "feb7f0d6b5629659142e422dfcde6f36b0e498ff21bb968ca03c8e4e04c23601",
+            "62eb031af104bd5d185a8d26595edb233fc1f19a152f0c51e31bb92fdc7da1f8",
             Hash(stepEvidence));
         Assert.Equal(
             "afb8450019eb504713f6d5584f2e9f7b483804a26632eccf3afff5fa4c4de38f",

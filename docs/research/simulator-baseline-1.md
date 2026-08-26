@@ -56,7 +56,7 @@ model behavior, or player-input quality.
 | Checks | Exactly 87 passed and 0 failed per child |
 | Terminal | All 40 reached `land.position.operation-1.first-player.movement-and-combat.movement` |
 | Unique deterministic report fingerprints | 1 |
-| Fingerprint | `sha256:7bf6a94e4beaa5b02f45b8c96588e65d54238076fd33fa46e1083d439b48f79b` |
+| Historical ruleset-v5 fingerprint | `sha256:7bf6a94e4beaa5b02f45b8c96588e65d54238076fd33fa46e1083d439b48f79b` |
 | Failed artifact files | 0 |
 
 The report fingerprint exactly matches the value frozen by the implementation tests and design.

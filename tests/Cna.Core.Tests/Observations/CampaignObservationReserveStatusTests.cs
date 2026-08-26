@@ -149,6 +149,8 @@ public sealed class CampaignObservationReserveStatusTests
                 ? new CampaignElementState(
                     element.ElementId,
                     element.CurrentLocationId,
-                    status)
-                : element).ToArray());
+                    status,
+                    element.OperationalState)
+                : element).ToArray(),
+            world.Representations);
 }

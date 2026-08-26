@@ -90,8 +90,8 @@ public sealed class CampaignCreationAdmissionTests
         Assert.True(result.IsAccepted);
         Assert.Equal(1, resolver.CallCount);
         var created = Assert.IsType<CampaignCreated>(Assert.Single(result.Events));
-        Assert.Equal(6, created.ContractVersion);
-        Assert.Equal(7, CampaignProjector.Apply(null, created,
+        Assert.Equal(7, created.ContractVersion);
+        Assert.Equal(8, CampaignProjector.Apply(null, created,
             CampaignContentContext.Create(
                 Cna1979SyntheticContentCatalog.Artifact,
                 setup.Content.ScenarioId)).ContractVersion);
@@ -100,7 +100,7 @@ public sealed class CampaignCreationAdmissionTests
     }
 
     [Fact]
-    public void CreationContractsUseVersionSixAndRejectVersionFive()
+    public void CreationCommandRemainsVersionSixAndEventUsesSevenRejectingSix()
     {
         var setup = Cna1979SetupCatalog.Definitions[0];
         var current = Create(setup);
@@ -117,14 +117,14 @@ public sealed class CampaignCreationAdmissionTests
         var created = Assert.IsType<CampaignCreated>(Assert.Single(accepted.Events));
         var canonical = Encoding.UTF8.GetString(CampaignEventSerializer.Serialize(created));
         var oldEvent = canonical.Replace(
+            "\"contractVersion\":7",
             "\"contractVersion\":6",
-            "\"contractVersion\":5",
             StringComparison.Ordinal);
 
         Assert.Equal(6, current.ContractVersion);
         Assert.Equal(CampaignCommandRejectionReason.InvalidCommand, rejected.RejectionReason);
         Assert.Empty(rejected.Events);
-        Assert.Equal(6, created.ContractVersion);
+        Assert.Equal(7, created.ContractVersion);
         Assert.Throws<JsonException>(() => CampaignEventSerializer.Deserialize(
             Encoding.UTF8.GetBytes(oldEvent)));
     }
@@ -246,14 +246,19 @@ public sealed class CampaignCreationAdmissionTests
         var forged = snapshot with
         {
             World = new CampaignWorldSnapshot(
-                2,
+                CampaignWorldSnapshot.CurrentContractVersion,
                 snapshot.World.Elements
                     .Where(element => element.ElementId != "axis-element-a")
-                    .Append(new CampaignElementState("axis-element-a", "east"))
-                    .ToArray()),
+                    .Append(new CampaignElementState(
+                        "axis-element-a",
+                        "east",
+                        CampaignElementReserveStatus.None,
+                        snapshot.World.Elements[0].OperationalState))
+                    .ToArray(),
+                snapshot.World.Representations),
         };
 
-        Assert.True(CampaignSnapshotValidator.IsLocallyValid(forged));
+        Assert.False(CampaignSnapshotValidator.IsLocallyValid(forged));
         Assert.False(CampaignSnapshotValidator.IsValid(forged, context));
 
         var result = CampaignEngine.DecideCreation(

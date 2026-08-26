@@ -106,7 +106,7 @@ Optional parser evidence gate
 | Source/ruleset provenance, synthetic content, world, authority, events, and replay foundations | Implemented | Preserve exact identities and deterministic history while mechanics expand |
 | Side-safe observations and legal-action enforcement | Implemented for the current synthetic path | Extend only with each new mechanic and its disclosure tests |
 | Mandatory turn preamble | Implemented through Reserve Designation completion | Preserve the exact Movement terminal while later mechanics expand |
-| Movement and contact | Planned; not started | Requires a legal movement-capable phase after the preamble |
+| Movement and contact | Rules foundation implemented; campaign behavior pending | Content mobility is the next prerequisite for a legal movement-capable phase |
 | Combat | Planned; not started | Depends on the movement/contact state and action vocabulary |
 | Working pre-alpha skeleton | Not reached | Requires one authentic movement/contact/combat loop with replay |
 | First-scenario content and remaining Land systems | Milestone-level; not started | Re-estimate after the skeleton exposes exercised-rule and transcription scope |
@@ -500,15 +500,18 @@ and task-sized implementation plan are now approved in the Movement Foundation
 [specification](../specs/movement-foundation-v1.md), and
 [technical design](../design/movement-foundation-v1.md). The project owner approved the
 apparent-presence visibility ruling, exact CP representation, non-contact boundary, Breakdown
-terminal, and task graph on 2026-08-25. The source/ruling lock in `MOV-TASK-001` is complete;
-`MOV-TASK-002` is the next implementation gate.
+terminal, and task graph on 2026-08-25. The source/ruling lock, exact amount/table foundation, and
+Content Pack mobility and replay-complete internal world/representation work in `MOV-TASK-001`
+through `MOV-TASK-004` are complete; `MOV-TASK-005` side-safe own operational state and apparent
+opposing presence are the next implementation gate.
 
 The approved delivery sequence adds a necessary fog-safety gate before the original task list:
 
 1. lock the digital apparent-presence/ZOC visibility ruling and initial map representation
    (**complete**);
-2. normalize exact CP, mobility, terrain, edge, and stacking contracts;
-3. implement replay-complete world/observation/action contracts;
+2. normalize exact CP, mobility, terrain, edge, and stacking contracts (**complete**);
+3. implement replay-complete world/observation/action contracts (**world/snapshot complete;
+   observation next**);
 4. accept repeatable non-contact Movement and explicit completion to Breakdown Determination; and
 5. use the existing Reserve `none`/`one`/`all` matrix for checked Movement evidence.
 

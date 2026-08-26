@@ -109,6 +109,7 @@ public sealed class ContentCanonicalTests
                     element.SideId,
                     element.ParentFormationId,
                     element.OrganizationId,
+                    element.MobilityId,
                     0,
                     element.PlacementMode,
                     element.Origin),
@@ -133,25 +134,25 @@ public sealed class ContentCanonicalTests
 
         Assert.Throws<ArgumentOutOfRangeException>(() => new ContentPackIdentity(
             0,
-            "sandtable.content-json.v1",
-            "rules-lab.content.minimal.v1",
-            "cna-1979.1",
-            validHash));
-        Assert.Throws<ArgumentException>(() => new ContentPackIdentity(
-            ContentPackDefinition.CurrentSchemaVersion,
-            "sandtable.content-json.v2",
+            ContentPackDefinition.CanonicalFormatId,
             "rules-lab.content.minimal.v1",
             "cna-1979.1",
             validHash));
         Assert.Throws<ArgumentException>(() => new ContentPackIdentity(
             ContentPackDefinition.CurrentSchemaVersion,
             "sandtable.content-json.v1",
+            "rules-lab.content.minimal.v1",
+            "cna-1979.1",
+            validHash));
+        Assert.Throws<ArgumentException>(() => new ContentPackIdentity(
+            ContentPackDefinition.CurrentSchemaVersion,
+            ContentPackDefinition.CanonicalFormatId,
             "Rules Lab",
             "cna-1979.1",
             validHash));
         Assert.Throws<ArgumentException>(() => new ContentPackIdentity(
             ContentPackDefinition.CurrentSchemaVersion,
-            "sandtable.content-json.v1",
+            ContentPackDefinition.CanonicalFormatId,
             "rules-lab.content.minimal.v1",
             "cna-1979.1",
             validHash.ToUpperInvariant()));
@@ -163,12 +164,12 @@ public sealed class ContentCanonicalTests
         var variants = new Dictionary<string, string>(StringComparer.Ordinal)
         {
             ["duplicate top-level property"] = ExpectedCanonicalJson.Replace(
-                "\"schemaVersion\":2,",
-                "\"schemaVersion\":2,\"schemaVersion\":2,",
+                "\"schemaVersion\":3,",
+                "\"schemaVersion\":3,\"schemaVersion\":3,",
                 StringComparison.Ordinal),
             ["unknown top-level property"] = ExpectedCanonicalJson.Replace(
-                "\"schemaVersion\":2,",
-                "\"schemaVersion\":2,\"unknown\":1,",
+                "\"schemaVersion\":3,",
+                "\"schemaVersion\":3,\"unknown\":1,",
                 StringComparison.Ordinal),
             ["missing top-level property"] = ExpectedCanonicalJson.Replace(
                 "\"packId\":\"rules-lab.content.minimal.v1\",",
@@ -176,12 +177,12 @@ public sealed class ContentCanonicalTests
                 StringComparison.Ordinal),
             ["trailing data"] = $"{ExpectedCanonicalJson}{{}}",
             ["unknown schema version"] = ExpectedCanonicalJson.Replace(
-                "\"schemaVersion\":2",
                 "\"schemaVersion\":3",
+                "\"schemaVersion\":4",
                 StringComparison.Ordinal),
             ["unknown format"] = ExpectedCanonicalJson.Replace(
-                "sandtable.content-json.v1",
                 "sandtable.content-json.v2",
+                "sandtable.content-json.v1",
                 StringComparison.Ordinal),
             ["invalid discriminant"] = ExpectedCanonicalJson.Replace(
                 "repository-synthetic",
@@ -222,11 +223,11 @@ public sealed class ContentCanonicalTests
         "]");
 
     private static readonly string ExpectedCanonicalJson = string.Concat(
-        "{\"schemaVersion\":2,",
-        "\"formatId\":\"sandtable.content-json.v1\",",
+        "{\"schemaVersion\":3,",
+        "\"formatId\":\"sandtable.content-json.v2\",",
         "\"packId\":\"rules-lab.content.minimal.v1\",",
         "\"rulesetId\":\"cna-1979.1\",",
-        "\"capabilities\":[\"land.formations\",\"land.hex-topology\",\"land.initial-deployment\"],",
+        "\"capabilities\":[\"land.element-mobility\",\"land.formations\",\"land.hex-topology\",\"land.initial-deployment\"],",
         "\"sourceIndex\":[{\"sourceId\":\"sandtable-rules-lab\",\"kind\":\"repository-synthetic\"}],",
         "\"locations\":[",
         "{\"locationId\":\"east\",\"kind\":\"hex\",\"terrainId\":\"land.terrain.clear\",\"sourceCoordinate\":null,",
@@ -242,7 +243,8 @@ public sealed class ContentCanonicalTests
         "\"organizationId\":\"land.organization.regiment\",",
         "\"origin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"content.formation.axis\"}]}}],",
         "\"elements\":[{\"elementId\":\"axis-element\",\"sideId\":\"axis\",\"parentFormationId\":\"axis-formation\",",
-        "\"organizationId\":\"land.organization.battalion\",\"baseCapabilityPointAllowance\":20,\"placementMode\":\"independent\",",
+        "\"organizationId\":\"land.organization.battalion\",\"mobilityId\":\"land.mobility.motorized\",",
+        "\"baseCapabilityPointAllowance\":20,\"placementMode\":\"independent\",",
         "\"origin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"content.element.axis\"}]}}],",
         "\"scenarios\":[{\"scenarioId\":\"minimal-lab\",",
         "\"start\":{\"gameTurn\":1,\"operationStage\":1},\"end\":{\"gameTurn\":1,\"operationStage\":3},",
