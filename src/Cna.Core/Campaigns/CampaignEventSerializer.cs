@@ -100,8 +100,7 @@ internal static class CampaignEventSerializer
                 _ => throw new JsonException($"Unknown campaign event type '{eventType}'."),
             };
 
-            if (campaignEvent is CampaignCreated or StageEntryResolved or ReserveDesignationEvent
-                && !canonicalJson.Span.SequenceEqual(Serialize(campaignEvent)))
+            if (!canonicalJson.Span.SequenceEqual(Serialize(campaignEvent)))
             {
                 throw new JsonException("The campaign event is not canonical JSON.");
             }

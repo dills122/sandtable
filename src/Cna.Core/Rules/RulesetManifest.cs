@@ -21,6 +21,16 @@ public sealed class RulesetManifest
         Artifacts = Array.AsReadOnly(artifacts.ToArray());
         Rulings = Array.AsReadOnly(rulings.ToArray());
 
+        if (Artifacts.Any(artifact => artifact is null))
+        {
+            throw new ArgumentException("Null artifacts are not allowed.", nameof(artifacts));
+        }
+
+        if (Rulings.Any(ruling => ruling is null))
+        {
+            throw new ArgumentException("Null rulings are not allowed.", nameof(rulings));
+        }
+
         RequireUniqueIds(Artifacts.Select(artifact => artifact.ArtifactId), nameof(artifacts));
         RequireUniqueIds(Rulings.Select(ruling => ruling.RulingId), nameof(rulings));
 

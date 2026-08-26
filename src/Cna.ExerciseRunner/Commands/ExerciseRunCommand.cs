@@ -191,6 +191,7 @@ public static class ExerciseRunCommand
     }
 
     private static bool IsAdmissionFailure(Exception exception) => exception is IOException
+        or InvalidDataException
         or UnauthorizedAccessException
         or JsonException
         or ArgumentException;
