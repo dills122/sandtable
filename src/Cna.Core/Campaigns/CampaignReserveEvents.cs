@@ -221,7 +221,9 @@ internal static class CampaignReserveEventFactory
 
         if (content.Length != 1
             || content[0].PlacementMode != ContentPlacementMode.Independent
-            || !string.Equals(content[0].SideId, SideId(command.ActingSide),
+            || !string.Equals(
+                content[0].SideId,
+                CampaignSnapshotSerializer.FormatSide(command.ActingSide),
                 StringComparison.Ordinal)
             || world.Length != 1
             || placements.Length != 1
@@ -291,11 +293,4 @@ internal static class CampaignReserveEventFactory
                 "Reserve designation authority is not admitted.");
         }
     }
-
-    private static string SideId(LandSide side) => side switch
-    {
-        LandSide.Axis => "axis",
-        LandSide.Commonwealth => "commonwealth",
-        _ => throw new ArgumentOutOfRangeException(nameof(side)),
-    };
 }

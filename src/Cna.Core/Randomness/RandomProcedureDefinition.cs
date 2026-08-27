@@ -38,7 +38,7 @@ public sealed record RandomProcedureDefinition
         D6Modulo = d6Modulo;
         D6Offset = d6Offset;
         Procedures = CopyProcedures(procedures);
-        Sources = CopySources(sources);
+        Sources = RuleReferenceValidation.CopySources(sources, nameof(sources));
     }
 
     public int SchemaVersion { get; }
@@ -125,31 +125,5 @@ public sealed record RandomProcedureDefinition
         }
 
         return Array.AsReadOnly(copy);
-    }
-
-    private static ReadOnlyCollection<RuleReference> CopySources(
-        IReadOnlyList<RuleReference> sources)
-    {
-        ArgumentNullException.ThrowIfNull(sources);
-        var copy = sources.ToArray();
-
-        if (copy.Length == 0 || copy.Any(source => source is null))
-        {
-            throw new ArgumentException(
-                "At least one non-null source reference is required.",
-                nameof(sources));
-        }
-
-        if (copy.Distinct().Count() != copy.Length)
-        {
-            throw new ArgumentException(
-                "Duplicate source references are not allowed.",
-                nameof(sources));
-        }
-
-        return Array.AsReadOnly(copy
-            .OrderBy(source => source.SourceId, StringComparer.Ordinal)
-            .ThenBy(source => source.Locator, StringComparer.Ordinal)
-            .ToArray());
     }
 }

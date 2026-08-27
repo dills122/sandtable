@@ -55,6 +55,7 @@ public sealed record ContentCombatElement
             throw new ArgumentOutOfRangeException(nameof(placementMode));
         }
 
+        ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(baseCapabilityPointAllowance, 0);
         ArgumentNullException.ThrowIfNull(origin);
         ElementId = ContentContractGuards.RequireStableId(elementId, nameof(elementId));
         SideId = ContentContractGuards.RequireStableId(sideId, nameof(sideId));

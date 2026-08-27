@@ -106,11 +106,11 @@ public sealed class ContentCanonicalTests
             [
                 new ContentCombatElement(
                     element.ElementId,
-                    element.SideId,
+                    "commonwealth",
                     element.ParentFormationId,
                     element.OrganizationId,
                     element.MobilityId,
-                    0,
+                    element.BaseCapabilityPointAllowance,
                     element.PlacementMode,
                     element.Origin),
             ]);
@@ -122,7 +122,7 @@ public sealed class ContentCanonicalTests
 
         Assert.Contains(
             artifactException.Issues,
-            issue => issue.Code == "element.invalid-base-cpa");
+            issue => issue.Code == "formation.side-mismatch");
         Assert.Equal(artifactException.Issues, serializerException.Issues);
     }
 

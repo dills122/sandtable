@@ -55,14 +55,14 @@ public static class CampaignExercises
         if (!execution.IsAccepted)
             return ExerciseStepResult.Rejected(execution.RejectionReason);
 
-        var history = session.History.Append(execution.AcceptedEvent!);
+        var history = session.History.Add(execution.AcceptedEvent!);
         var successor = new ExerciseSession(
             execution.SuccessorSnapshot!,
             session.Context,
             history);
         var evidence = new ExerciseStepEvidence(
             execution.Receipt!,
-            [CampaignEventSerializer.Serialize(execution.AcceptedEvent!)],
+            CampaignEventSerializer.Serialize(execution.AcceptedEvent!),
             CampaignSnapshotSerializer.Serialize(execution.SuccessorSnapshot!));
         return ExerciseStepResult.Accepted(successor, evidence);
     }
@@ -72,7 +72,7 @@ public static class CampaignExercises
         ArgumentNullException.ThrowIfNull(completedSession);
         var expectedBytes = CampaignSnapshotSerializer.Serialize(completedSession.Snapshot);
         var expectedHash = Hash(expectedBytes);
-        var eventStreamHash = "sha256:" + new string('0', 64);
+        string? eventStreamHash = null;
 
         try
         {

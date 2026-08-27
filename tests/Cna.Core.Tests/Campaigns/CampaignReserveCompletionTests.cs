@@ -2,8 +2,6 @@ using System.Text;
 using Cna.Core.Actions;
 using Cna.Core.Campaigns;
 using Cna.Core.Rules;
-using Cna.Core.Setups;
-using Cna.Core.Tests.Actions;
 
 namespace Cna.Core.Tests.Campaigns;
 
@@ -16,7 +14,9 @@ public sealed class CampaignReserveCompletionTests
     public void CompletionPreservesWorldAndAdvancesExactlyOnceToMovement(
         int selectedCount)
     {
-        var evidence = ReachReserve();
+        var evidence = CampaignReserveActionTestData.ExecuteToReserve(
+            0,
+            InitiativeOrderChoice.ActFirst);
         var snapshot = evidence.Snapshot;
         var actingSide = FirstActingSideResolver.Resolve(snapshot);
         var audience = CampaignReserveActionTestData.ToAudience(actingSide);
@@ -102,7 +102,9 @@ public sealed class CampaignReserveCompletionTests
     [Fact]
     public void InvalidCompletionCommandsAndForgedHistoryFailClosed()
     {
-        var evidence = ReachReserve();
+        var evidence = CampaignReserveActionTestData.ExecuteToReserve(
+            0,
+            InitiativeOrderChoice.ActFirst);
         var reserve = evidence.Snapshot;
         var actingSide = FirstActingSideResolver.Resolve(reserve);
         var otherSide = actingSide == LandSide.Axis
@@ -190,12 +192,6 @@ public sealed class CampaignReserveCompletionTests
             _ = CampaignProjector.Apply(movement, valid, evidence.Context);
         });
     }
-
-    private static StageEntryCampaignEvidence ReachReserve() =>
-        StageEntryCampaignTestData.Execute(
-            Cna1979SetupCatalog.Definitions[0],
-            12345,
-            InitiativeOrderChoice.ActFirst);
 
     private static CampaignActionExecutionResult Execute(
         CampaignSnapshot snapshot,

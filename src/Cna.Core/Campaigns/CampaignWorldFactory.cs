@@ -84,14 +84,9 @@ internal static class CampaignWorldValidator
         ContentScenario scenario,
         LandSide firstSide)
     {
-        var firstSideId = firstSide switch
-        {
-            LandSide.Axis => "axis",
-            LandSide.Commonwealth => "commonwealth",
-            _ => null,
-        };
+        var firstSideId = CampaignSnapshotSerializer.FormatSide(firstSide);
 
-        return firstSideId is not null && IsValid(
+        return IsValid(
             world,
             artifact,
             scenario,

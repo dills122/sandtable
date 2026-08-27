@@ -1,4 +1,3 @@
-using System.Collections.ObjectModel;
 using Cna.Core.Rules;
 
 namespace Cna.Core.Setups;
@@ -26,7 +25,7 @@ internal sealed record CampaignOpeningPreamblePolicy
 
         ContractVersion = contractVersion;
         Kind = kind;
-        Sources = CopySources(sources);
+        Sources = RuleReferenceValidation.CopySources(sources, nameof(sources));
     }
 
     public int ContractVersion { get; }
@@ -49,29 +48,5 @@ internal sealed record CampaignOpeningPreamblePolicy
         hash.Add(Kind);
         foreach (var source in Sources) hash.Add(source);
         return hash.ToHashCode();
-    }
-
-    private static ReadOnlyCollection<RuleReference> CopySources(
-        IReadOnlyList<RuleReference> sources)
-    {
-        ArgumentNullException.ThrowIfNull(sources);
-        var copy = sources.ToArray();
-
-        if (copy.Length == 0 || copy.Any(source => source is null))
-        {
-            throw new ArgumentException(
-                "At least one non-null source reference is required.",
-                nameof(sources));
-        }
-
-        if (copy.Distinct().Count() != copy.Length)
-        {
-            throw new ArgumentException("Duplicate sources are not allowed.", nameof(sources));
-        }
-
-        return Array.AsReadOnly(copy
-            .OrderBy(source => source.SourceId, StringComparer.Ordinal)
-            .ThenBy(source => source.Locator, StringComparer.Ordinal)
-            .ToArray());
     }
 }

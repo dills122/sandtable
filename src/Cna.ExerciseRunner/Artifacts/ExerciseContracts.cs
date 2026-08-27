@@ -78,15 +78,15 @@ public sealed record ExerciseManifest
         ArgumentOutOfRangeException.ThrowIfNotEqual(
             contractVersion,
             CurrentContractVersion);
-        RequireStableId(exerciseId, nameof(exerciseId));
-        RequireStableId(setupId, nameof(setupId));
-        RequireSha256(setupHash, nameof(setupHash));
-        RequireStableId(contentPackId, nameof(contentPackId));
-        RequireSha256(contentHash, nameof(contentHash));
-        RequireStableId(scenarioId, nameof(scenarioId));
+        StableIdValidation.Require(exerciseId, nameof(exerciseId));
+        StableIdValidation.Require(setupId, nameof(setupId));
+        ReplayProofValidation.RequireSha256(setupHash, nameof(setupHash));
+        StableIdValidation.Require(contentPackId, nameof(contentPackId));
+        ReplayProofValidation.RequireSha256(contentHash, nameof(contentHash));
+        StableIdValidation.Require(scenarioId, nameof(scenarioId));
         if (!Cna1979Ruleset.IsCanonicalHash(rulesetHash))
             throw new ArgumentException("The ruleset hash is unsupported.", nameof(rulesetHash));
-        RequireStableId(terminalBoundary, nameof(terminalBoundary));
+        StableIdValidation.Require(terminalBoundary, nameof(terminalBoundary));
         ArgumentOutOfRangeException.ThrowIfLessThan(maximumSteps, 1);
         if (!Enum.IsDefined(buildMode)) throw new ArgumentOutOfRangeException(nameof(buildMode));
         if (!Enum.IsDefined(confidentiality))
@@ -134,50 +134,4 @@ public sealed record ExerciseManifest
     public ExerciseDetail Detail { get; }
     public ExerciseControllerManifest Controllers { get; }
     public ExerciseFailureCategory? AssertFailureCategory { get; }
-
-    private static void RequireStableId(string value, string parameterName)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(value, parameterName);
-        if (!IsAsciiLowerOrDigit(value[0]) || !IsAsciiLowerOrDigit(value[^1]))
-            throw new ArgumentException(
-                "A stable ID must begin and end with a lowercase ASCII letter or digit.",
-                parameterName);
-
-        var previousWasSeparator = false;
-        foreach (var character in value)
-        {
-            if (IsAsciiLowerOrDigit(character))
-            {
-                previousWasSeparator = false;
-                continue;
-            }
-            if (character is '-' or '.' && !previousWasSeparator)
-            {
-                previousWasSeparator = true;
-                continue;
-            }
-            throw new ArgumentException(
-                "A stable ID must use lowercase ASCII letters, digits, and nonadjacent separators.",
-                parameterName);
-        }
-    }
-
-    private static void RequireSha256(string value, string parameterName)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(value, parameterName);
-        if (value.Length != 71 || !value.StartsWith("sha256:", StringComparison.Ordinal))
-            throw new ArgumentException(
-                "A SHA-256 value must contain 64 lowercase hexadecimal digits.",
-                parameterName);
-        foreach (var character in value.AsSpan(7))
-        {
-            if (character is not (>= '0' and <= '9') and not (>= 'a' and <= 'f'))
-                throw new ArgumentException(
-                    "A SHA-256 value must contain 64 lowercase hexadecimal digits.",
-                    parameterName);
-        }
-    }
-
-    private static bool IsAsciiLowerOrDigit(char value) =>
-        value is >= 'a' and <= 'z' or >= '0' and <= '9';
 }

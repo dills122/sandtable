@@ -34,15 +34,15 @@ public static class ExerciseRunCommand
         var admissionStarted = Stopwatch.GetTimestamp();
         try
         {
-            repositoryRoot = FindRepositoryRoot(Directory.GetCurrentDirectory());
-            var manifestPath = ResolveManifestPath(repositoryRoot, options.ManifestPath);
+            repositoryRoot = CommandPathResolution.FindRepositoryRoot(Directory.GetCurrentDirectory());
+            var manifestPath = CommandPathResolution.ResolveManifestPath(repositoryRoot, options.ManifestPath);
             manifest = ExerciseManifestCodec.Deserialize(File.ReadAllBytes(manifestPath));
             normalizedManifest = ExerciseManifestCodec.Serialize(manifest);
             telemetry.RecordPhase(
                 "manifest-admission",
                 ElapsedMicroseconds(admissionStarted));
         }
-        catch (Exception exception) when (IsAdmissionFailure(exception))
+        catch (Exception exception) when (CommandPathResolution.IsAdmissionFailure(exception))
         {
             var failure = ExerciseRunResult.Failed(
                 ExerciseFailureCategory.ManifestInvalid,
@@ -123,77 +123,12 @@ public static class ExerciseRunCommand
     private static bool TryParse(string[] args, out CommandOptions options)
     {
         options = default;
-        if (args.Length != 6
-            || !string.Equals(args[0], "exercise", StringComparison.Ordinal)
-            || !string.Equals(args[1], "run", StringComparison.Ordinal))
+        if (!CommandPathResolution.TryParseManifestAndArtifactRootOptions(
+                args, "exercise", out var manifest, out var artifactRoot))
             return false;
-
-        string? manifest = null;
-        string? artifactRoot = null;
-        for (var index = 2; index < args.Length; index += 2)
-        {
-            if (string.IsNullOrWhiteSpace(args[index + 1])) return false;
-            switch (args[index])
-            {
-                case "--manifest" when manifest is null:
-                    manifest = args[index + 1];
-                    break;
-                case "--artifact-root" when artifactRoot is null:
-                    artifactRoot = args[index + 1];
-                    break;
-                default:
-                    return false;
-            }
-        }
-        if (manifest is null || artifactRoot is null) return false;
         options = new CommandOptions(manifest, artifactRoot);
         return true;
     }
-
-    private static string FindRepositoryRoot(string start)
-    {
-        for (var current = new DirectoryInfo(Path.GetFullPath(start)); current is not null;
-             current = current.Parent)
-        {
-            if (File.Exists(Path.Combine(current.FullName, "Sandtable.slnx")))
-                return current.FullName;
-        }
-        throw new InvalidDataException("The Sandtable repository root could not be found.");
-    }
-
-    private static string ResolveManifestPath(string repositoryRoot, string relativePath)
-    {
-        if (Path.IsPathRooted(relativePath))
-            throw new InvalidDataException("The manifest path must be repository-relative.");
-        var fullPath = Path.GetFullPath(relativePath, repositoryRoot);
-        var relative = Path.GetRelativePath(repositoryRoot, fullPath);
-        if (relative == ".."
-            || relative.StartsWith($"..{Path.DirectorySeparatorChar}", StringComparison.Ordinal))
-            throw new InvalidDataException("The manifest path escapes the repository.");
-        RequireRegularPath(repositoryRoot, relative);
-        if (!File.Exists(fullPath)) throw new FileNotFoundException("The manifest does not exist.");
-        if ((File.GetAttributes(fullPath) & FileAttributes.ReparsePoint) != 0)
-            throw new InvalidDataException("The manifest cannot be a symlink or reparse point.");
-        return fullPath;
-    }
-
-    private static void RequireRegularPath(string repositoryRoot, string relativePath)
-    {
-        var current = repositoryRoot;
-        foreach (var segment in relativePath.Split(Path.DirectorySeparatorChar))
-        {
-            current = Path.Combine(current, segment);
-            if ((File.Exists(current) || Directory.Exists(current))
-                && (File.GetAttributes(current) & FileAttributes.ReparsePoint) != 0)
-                throw new InvalidDataException(
-                    "The manifest path cannot traverse a symlink or reparse point.");
-        }
-    }
-
-    private static bool IsAdmissionFailure(Exception exception) => exception is IOException
-        or UnauthorizedAccessException
-        or JsonException
-        or ArgumentException;
 
     private static bool IsFatal(Exception exception) => exception is OutOfMemoryException
         or StackOverflowException

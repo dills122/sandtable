@@ -24,7 +24,8 @@ internal sealed record CampaignOperationStageWeather
         int damagedGroundedAircraftCount)
     {
         ArgumentOutOfRangeException.ThrowIfNotEqual(contractVersion, CurrentContractVersion);
-        if (gameTurn is < 1 or > 110) throw new ArgumentOutOfRangeException(nameof(gameTurn));
+        if (gameTurn is < 1 or > Cna1979Weather.MaxGameTurn)
+            throw new ArgumentOutOfRangeException(nameof(gameTurn));
         if (operationStage is < 1 or > 3) throw new ArgumentOutOfRangeException(nameof(operationStage));
         if (!Enum.IsDefined(determiningSide)) throw new ArgumentOutOfRangeException(nameof(determiningSide));
         if (!Enum.IsDefined(season)) throw new ArgumentOutOfRangeException(nameof(season));

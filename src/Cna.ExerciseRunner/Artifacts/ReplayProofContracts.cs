@@ -11,13 +11,14 @@ public sealed record ReconstructionProof
 
     internal ReconstructionProof(
         ExerciseReconstructionFailureReason failureReason,
-        string eventStreamHash,
+        string? eventStreamHash,
         string expectedSnapshotHash,
         string? reconstructedSnapshotHash)
     {
         if (!Enum.IsDefined(failureReason))
             throw new ArgumentOutOfRangeException(nameof(failureReason));
-        ReplayProofValidation.RequireSha256(eventStreamHash, nameof(eventStreamHash));
+        if (eventStreamHash is not null)
+            ReplayProofValidation.RequireSha256(eventStreamHash, nameof(eventStreamHash));
         ReplayProofValidation.RequireSha256(expectedSnapshotHash, nameof(expectedSnapshotHash));
         if (reconstructedSnapshotHash is not null)
             ReplayProofValidation.RequireSha256(
@@ -53,7 +54,7 @@ public sealed record ReconstructionProof
     public int ContractVersion { get; }
     public string ContractSchemeId { get; }
     public ExerciseReconstructionFailureReason FailureReason { get; }
-    public string EventStreamHash { get; }
+    public string? EventStreamHash { get; }
     public string ExpectedSnapshotHash { get; }
     public string? ReconstructedSnapshotHash { get; }
     public bool HistoryAccepted { get; }

@@ -130,7 +130,7 @@ public sealed class ManeuverManifest
             CurrentContractVersion);
         if (!string.Equals(schemeId, SchemeId, StringComparison.Ordinal))
             throw new ArgumentException("The Maneuver scheme is unsupported.", nameof(schemeId));
-        RequireStableId(maneuverId, nameof(maneuverId));
+        StableIdValidation.Require(maneuverId, nameof(maneuverId));
         if (maneuverId.StartsWith(ReservedStandalonePrefix, StringComparison.Ordinal))
             throw new ArgumentException(
                 "The standalone Maneuver-ID namespace is reserved.",
@@ -177,34 +177,4 @@ public sealed class ManeuverManifest
         Array.AsReadOnly(Enumerable.Range(0, Exercises.Count)
             .Select(MaterializeExercise)
             .ToArray());
-
-    private static void RequireStableId(string value, string parameterName)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(value, parameterName);
-        if (!IsAsciiLowerOrDigit(value[0]) || !IsAsciiLowerOrDigit(value[^1]))
-            throw new ArgumentException(
-                "A stable ID must begin and end with a lowercase ASCII letter or digit.",
-                parameterName);
-
-        var previousWasSeparator = false;
-        foreach (var character in value)
-        {
-            if (IsAsciiLowerOrDigit(character))
-            {
-                previousWasSeparator = false;
-                continue;
-            }
-            if (character is '-' or '.' && !previousWasSeparator)
-            {
-                previousWasSeparator = true;
-                continue;
-            }
-            throw new ArgumentException(
-                "A stable ID must use lowercase ASCII letters, digits, and nonadjacent separators.",
-                parameterName);
-        }
-    }
-
-    private static bool IsAsciiLowerOrDigit(char value) =>
-        value is >= 'a' and <= 'z' or >= '0' and <= '9';
 }

@@ -1,5 +1,3 @@
-using System.Collections.ObjectModel;
-
 namespace Cna.Core.Rules;
 
 public sealed record GameTurnRange
@@ -36,7 +34,7 @@ public sealed record CommonwealthInitiativeRating
         SchemaVersion = schemaVersion;
         Turns = turns;
         Rating = rating;
-        Sources = CopySources(sources);
+        Sources = RuleReferenceValidation.CopySources(sources, nameof(sources));
     }
 
     public int SchemaVersion { get; }
@@ -69,32 +67,6 @@ public sealed record CommonwealthInitiativeRating
 
         return hash.ToHashCode();
     }
-
-    private static ReadOnlyCollection<RuleReference> CopySources(
-        IReadOnlyList<RuleReference> sources)
-    {
-        ArgumentNullException.ThrowIfNull(sources);
-        var copy = sources.ToArray();
-
-        if (copy.Length == 0 || copy.Any(source => source is null))
-        {
-            throw new ArgumentException(
-                "At least one non-null source reference is required.",
-                nameof(sources));
-        }
-
-        if (copy.Distinct().Count() != copy.Length)
-        {
-            throw new ArgumentException(
-                "Duplicate source references are not allowed.",
-                nameof(sources));
-        }
-
-        return Array.AsReadOnly(copy
-            .OrderBy(source => source.SourceId, StringComparer.Ordinal)
-            .ThenBy(source => source.Locator, StringComparer.Ordinal)
-            .ToArray());
-    }
 }
 
 public enum AxisInitiativePresence
@@ -124,7 +96,7 @@ public sealed record AxisInitiativeRating
         SchemaVersion = schemaVersion;
         Presence = presence;
         Rating = rating;
-        Sources = CopySources(sources);
+        Sources = RuleReferenceValidation.CopySources(sources, nameof(sources));
     }
 
     public int SchemaVersion { get; }
@@ -156,32 +128,6 @@ public sealed record AxisInitiativeRating
         }
 
         return hash.ToHashCode();
-    }
-
-    private static ReadOnlyCollection<RuleReference> CopySources(
-        IReadOnlyList<RuleReference> sources)
-    {
-        ArgumentNullException.ThrowIfNull(sources);
-        var copy = sources.ToArray();
-
-        if (copy.Length == 0 || copy.Any(source => source is null))
-        {
-            throw new ArgumentException(
-                "At least one non-null source reference is required.",
-                nameof(sources));
-        }
-
-        if (copy.Distinct().Count() != copy.Length)
-        {
-            throw new ArgumentException(
-                "Duplicate source references are not allowed.",
-                nameof(sources));
-        }
-
-        return Array.AsReadOnly(copy
-            .OrderBy(source => source.SourceId, StringComparer.Ordinal)
-            .ThenBy(source => source.Locator, StringComparer.Ordinal)
-            .ToArray());
     }
 }
 

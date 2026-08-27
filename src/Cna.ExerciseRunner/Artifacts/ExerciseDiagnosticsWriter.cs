@@ -299,7 +299,9 @@ public static class ExerciseDiagnosticsWriter
             writer.WriteBoolean("verified", proof.IsVerified);
             writer.WriteBoolean("historyAccepted", proof.HistoryAccepted);
             writer.WriteBoolean("finalSnapshotMatches", proof.FinalSnapshotMatches);
-            writer.WriteString("eventStreamHash", proof.EventStreamHash);
+            if (proof.EventStreamHash is null)
+                writer.WriteNull("eventStreamHash");
+            else writer.WriteString("eventStreamHash", proof.EventStreamHash);
             writer.WriteString("expectedSnapshotHash", proof.ExpectedSnapshotHash);
             if (proof.ReconstructedSnapshotHash is null)
                 writer.WriteNull("reconstructedSnapshotHash");
@@ -492,17 +494,14 @@ public static class ExerciseDiagnosticsWriter
                 "status",
                 runResult.Completion is ExerciseSucceeded ? "succeeded" : "failed");
             writer.WriteNumber("stepsAccepted", execution.Steps.Count);
-            if (includeCorrelation)
-            {
-                if ((runResult.Completion as ExerciseSucceeded)?.Outcome is BoundaryReached boundary)
-                    writer.WriteString("boundaryPositionId", boundary.PositionId);
-                else writer.WriteNull("boundaryPositionId");
-                if ((runResult.Completion as ExerciseFailed)?.Failure is { } failure)
-                    writer.WriteString(
-                        "failureCategory",
-                        ExerciseContractText.FormatFailure(failure.Category));
-                else writer.WriteNull("failureCategory");
-            }
+            if ((runResult.Completion as ExerciseSucceeded)?.Outcome is BoundaryReached boundary)
+                writer.WriteString("boundaryPositionId", boundary.PositionId);
+            else writer.WriteNull("boundaryPositionId");
+            if ((runResult.Completion as ExerciseFailed)?.Failure is { } failure)
+                writer.WriteString(
+                    "failureCategory",
+                    ExerciseContractText.FormatFailure(failure.Category));
+            else writer.WriteNull("failureCategory");
             writer.WriteEndObject();
         });
 

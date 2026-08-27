@@ -232,7 +232,7 @@ public sealed class CampaignEventSerializationTests
             StringComparison.Ordinal);
         var forgedSource = determined.Replace(
             "\"locator\":\"7.13\"",
-            "\"locator\":\"7.99\"",
+            "\"locator\":\"7.130\"",
             StringComparison.Ordinal);
 
         var cursorEvent = Deserialize(forgedCursor);

@@ -3,7 +3,7 @@ using Cna.Core.Campaigns;
 using Cna.Core.Observations;
 using Cna.Core.Rules;
 using Cna.Core.Setups;
-using Cna.Core.Tests.Actions;
+using Cna.Core.Tests.Campaigns;
 
 namespace Cna.Core.Tests.Observations;
 

@@ -46,7 +46,8 @@ internal static class WeatherRulesArtifactValidator
                         definition.GameTurnRanges.OrderBy(value => value.First)),
                 $"Game-Turn ranges for {definition.Season} are noncanonical.");
             Require(
-                definition.GameTurnRanges.All(value => value.First >= 1 && value.Last <= 110),
+                definition.GameTurnRanges.All(value =>
+                    value.First >= 1 && value.Last <= Cna1979Weather.MaxGameTurn),
                 $"Game-Turn ranges for {definition.Season} are out of bounds.");
 
             Require(
@@ -77,7 +78,7 @@ internal static class WeatherRulesArtifactValidator
             }
         }
 
-        foreach (var gameTurn in Enumerable.Range(1, 110))
+        foreach (var gameTurn in Enumerable.Range(1, Cna1979Weather.MaxGameTurn))
         {
             Require(
                 definitions.Sum(value => value.GameTurnRanges.Count(range =>

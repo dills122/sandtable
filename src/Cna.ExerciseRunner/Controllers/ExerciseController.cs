@@ -17,10 +17,10 @@ public sealed class ExerciseControllerCandidate
             contractVersion,
             CurrentContractVersion);
         ArgumentException.ThrowIfNullOrWhiteSpace(actionId);
-        RequireStableId(kind, nameof(kind));
+        StableIdValidation.Require(kind, nameof(kind));
         if (string.Equals(kind, "designate-reserve", StringComparison.Ordinal))
         {
-            RequireStableId(elementId, nameof(elementId));
+            StableIdValidation.Require(elementId, nameof(elementId));
         }
         else if (elementId is not null)
         {
@@ -39,38 +39,6 @@ public sealed class ExerciseControllerCandidate
     public string ActionId { get; }
     public string Kind { get; }
     public string? ElementId { get; }
-
-    private static void RequireStableId(string? value, string parameterName)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(value, parameterName);
-        if (!IsAsciiLowerOrDigit(value[0]) || !IsAsciiLowerOrDigit(value[^1]))
-        {
-            throw new ArgumentException(
-                "A stable ID must begin and end with a lowercase ASCII letter or digit.",
-                parameterName);
-        }
-
-        var previousWasSeparator = false;
-        foreach (var character in value)
-        {
-            if (IsAsciiLowerOrDigit(character))
-            {
-                previousWasSeparator = false;
-                continue;
-            }
-            if (character is '-' or '.' && !previousWasSeparator)
-            {
-                previousWasSeparator = true;
-                continue;
-            }
-            throw new ArgumentException(
-                "A stable ID must use lowercase ASCII letters, digits, and nonadjacent separators.",
-                parameterName);
-        }
-    }
-
-    private static bool IsAsciiLowerOrDigit(char value) =>
-        value is >= 'a' and <= 'z' or >= '0' and <= '9';
 }
 
 public sealed class ExerciseControllerActionSet
