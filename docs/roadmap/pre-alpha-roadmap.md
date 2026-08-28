@@ -653,9 +653,11 @@ model is proven.
 [Combat-cycle inventory](../research/combat-cycle-source-inventory.md) replaces the former three
 oversized executable-looking tasks with explicit research and design gates.
 
-Research that may proceed now: `CMB-RSH-001` through `004`, `CYCLE-RSH-001`, and
-`RESREL-RSH-001` normalize the selected source/table surface, content and mutable-state choices,
-RNG evidence, cycle identity, and Reserve Release rules.
+`CMB-RSH-001` is complete in the
+[Combat rules and result surface spike](../research/combat-rules-result-surface-spike.md). Research
+that may proceed now: `CMB-RSH-002` through `004`, `CYCLE-RSH-001`, and `RESREL-RSH-001` normalize
+the remaining content and mutable-state choices, RNG evidence, cycle identity, and Reserve Release
+rules.
 
 After Breakdown and ZOC/Reaction approval, `CMB-DES-001` through `005` and `CYCLE-DES-001` freeze
 Contact-derived opportunity identity, trusted-Umpire sealed choices, simultaneous/sequential

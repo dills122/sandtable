@@ -1,6 +1,7 @@
 # Combat and Continual-Cycle Source Inventory
 
-**Status:** Source inventory complete; contract freeze gated by `CONTACT-001` and `BREAKDOWN-001`
+**Status:** Source inventory and `CMB-RSH-001` result-surface research complete; contract freeze
+gated by `CONTACT-001` and `BREAKDOWN-001`
 
 **Date:** 2026-08-25
 
@@ -96,7 +97,11 @@ opposing exact TOE, ratings, morale/Cohesion, withheld force, ammunition, bindin
 
 Research that can proceed now:
 
-1. `CMB-RSH-001` — normalize the minimal rules/charts/errata and full reachable result surface.
+1. `CMB-RSH-001` — **complete:** the
+   [Combat rules and result surface spike](combat-rules-result-surface-spike.md) normalizes the
+   selected infantry Close Assault calculation, Morale closure, five reachable differential
+   columns, semantic outcomes including the reachable two-hex Retreat, and errata boundary without
+   freezing contracts or reproducing the source chart.
 2. `CMB-RSH-002` — choose combat Content/static schema and synthetic values.
 3. `CMB-RSH-003` — choose mutable loss/prisoner/ammunition/Disorganization boundary.
 4. `CMB-RSH-004` — freeze RNG draw order and golden vectors.
