@@ -44,6 +44,25 @@ public sealed class ExerciseRunResultCodecTests
             ExerciseExitCodeMapper.Map(roundTrip));
     }
 
+    [Theory]
+    [InlineData("land position.operation-1.organization")]
+    [InlineData("land/position.operation-1.organization")]
+    [InlineData("Land.position.operation-1.organization")]
+    [InlineData("land..position.operation-1.organization")]
+    public void ReaderRejectsNoncanonicalBoundaryPositionIds(string positionId)
+    {
+        var canonical = Encoding.UTF8.GetString(ExerciseRunResultCodec.Serialize(
+            ExerciseRunResult.Succeeded(
+                new BoundaryReached("land.position.operation-1.organization"))));
+        var invalid = canonical.Replace(
+            "land.position.operation-1.organization",
+            positionId,
+            StringComparison.Ordinal);
+
+        Assert.Throws<JsonException>(() => ExerciseRunResultCodec.Deserialize(
+            Encoding.UTF8.GetBytes(invalid)));
+    }
+
     [Fact]
     public void ReaderRejectsUnknownReorderedAndContradictoryResultShapes()
     {

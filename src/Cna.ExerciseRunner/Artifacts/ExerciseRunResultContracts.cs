@@ -9,7 +9,7 @@ public sealed record BoundaryReached : ExerciseTerminalOutcome
 {
     public BoundaryReached(string positionId)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(positionId);
+        StableIdValidation.Require(positionId, nameof(positionId));
         PositionId = positionId;
     }
 
