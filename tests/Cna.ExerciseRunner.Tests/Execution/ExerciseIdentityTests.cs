@@ -59,6 +59,34 @@ public sealed class ExerciseIdentityTests
             campaignId);
     }
 
+    [Theory]
+    [InlineData("maneuver alpha")]
+    [InlineData("maneuver/alpha")]
+    [InlineData("Maneuver-alpha")]
+    [InlineData("maneuver--alpha")]
+    public void RunIdentityRejectsNoncanonicalManeuverIds(string maneuverId)
+    {
+        Assert.Throws<ArgumentException>(() => new ExerciseRunIdentity(
+            0,
+            maneuverId,
+            0,
+            null));
+    }
+
+    [Theory]
+    [InlineData("pair alpha")]
+    [InlineData("pair/alpha")]
+    [InlineData("Pair-alpha")]
+    [InlineData("pair..alpha")]
+    public void RunIdentityRejectsNoncanonicalPairKeys(string pairKey)
+    {
+        Assert.Throws<ArgumentException>(() => new ExerciseRunIdentity(
+            0,
+            "maneuver-alpha",
+            0,
+            pairKey));
+    }
+
     [Fact]
     public void DomainAndRoleContractsRejectInvalidCombinations()
     {
