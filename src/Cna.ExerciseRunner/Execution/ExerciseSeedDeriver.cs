@@ -1,6 +1,7 @@
 using System.Buffers.Binary;
 using System.Security.Cryptography;
 using System.Text.Json;
+using Cna.ExerciseRunner.Artifacts;
 
 namespace Cna.ExerciseRunner.Execution;
 
@@ -27,9 +28,13 @@ public sealed record ExerciseRunIdentity
         int exerciseOrdinal,
         string? pairKey)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(maneuverId);
+        StableIdValidation.Require(maneuverId, nameof(maneuverId));
         ArgumentOutOfRangeException.ThrowIfNegative(exerciseOrdinal);
-        if (pairKey is { Length: 0 }) throw new ArgumentException("Pair key cannot be empty.", nameof(pairKey));
+        if (pairKey is not null)
+        {
+            StableIdValidation.Require(pairKey, nameof(pairKey));
+        }
+
         RootSeed = rootSeed;
         ManeuverId = maneuverId;
         ExerciseOrdinal = exerciseOrdinal;
