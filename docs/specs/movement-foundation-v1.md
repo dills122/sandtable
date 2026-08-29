@@ -1,7 +1,7 @@
 # Movement Foundation v1 Specification
 
-**Status:** Active implementation baseline; `MOV-TASK-006` implementation and gates are complete,
-with independent review and PR delivery pending; `MOV-TASK-007` follows merge
+**Status:** Active implementation baseline; `MOV-TASK-006` implementation, gates, and independent
+review are complete in PR #69 and await merge; `MOV-TASK-007` follows merge
 
 **Date:** 2026-08-25
 

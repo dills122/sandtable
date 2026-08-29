@@ -1,7 +1,7 @@
 # Movement Foundation v1 Technical Design
 
-**Status:** Active implementation plan; `MOV-TASK-006` implementation and gates are complete,
-with independent review and PR delivery pending; `MOV-TASK-007` follows merge
+**Status:** Active implementation plan; `MOV-TASK-006` implementation, gates, and independent review
+are complete in PR #69 and await merge; `MOV-TASK-007` follows merge
 
 **Date:** 2026-08-25
 
@@ -284,7 +284,7 @@ MOV-TASK-004B BP continuity [complete]
 MOV-TASK-005 observation/apparent presence [complete]
                   |
                   v
-MOV-TASK-006 dormant action/submission contracts [implementation + gates complete; review pending]
+MOV-TASK-006 dormant action/submission contracts [reviewed in PR #69; awaiting merge]
                   |
                   v
 MOV-TASK-007 move command/event/adjudication [next]
@@ -299,8 +299,8 @@ MOV-TASK-009 end-to-end + Exercise/Maneuver evidence
 MOV-TASK-010 synchronization + independent review
 ```
 
-Tasks 001 through 005 are complete. Task 006 implementation and gates are complete, with independent
-review remediation and PR delivery pending. Tasks 007 through 010 are intentionally serial because
+Tasks 001 through 005 are complete. Task 006 implementation, gates, and independent review are
+complete in PR #69 and await merge. Tasks 007 through 010 are intentionally serial because
 each freezes a versioned contract consumed by the next layer. In particular, Content admission in Task 003
 consumes the closed mobility vocabulary and ruleset identity completed by Task 002. Tasks 006 and
 007 keep all public Movement membership dormant; Task 008 atomically exposes executable move and
@@ -441,7 +441,7 @@ delta, false-only ZOC is enforced, and strict readback rejects legacy/noncanonic
 
 ### `MOV-TASK-006` - Freeze Movement action and submission contracts
 
-**Status:** Implementation and gates complete (2026-08-29); independent review and PR delivery pending
+**Status:** Implementation, gates, and independent review complete in PR #69 (2026-08-29); awaiting merge
 
 **Advances:** `MOV-REQ-006`, `MOV-REQ-007`, `MOV-REQ-010`; `MOV-AC-006`, `MOV-AC-008`
 
