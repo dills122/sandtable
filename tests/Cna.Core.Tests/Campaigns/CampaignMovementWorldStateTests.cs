@@ -18,7 +18,7 @@ public sealed class CampaignMovementWorldStateTests
 
         var world = CampaignWorldFactory.CreateInitial(artifact, scenario);
 
-        Assert.Equal(3, world.ContractVersion);
+        Assert.Equal(4, world.ContractVersion);
         Assert.All(world.Elements, element =>
         {
             Assert.Equal(scenario.Start.GameTurn, element.OperationalState.LedgerGameTurn);
@@ -52,7 +52,7 @@ public sealed class CampaignMovementWorldStateTests
     }
 
     [Fact]
-    public void WorldV3CanonicallyRoundTripsLedgerAndInternalBinding()
+    public void WorldV4CanonicallyRoundTripsLedgerAndInternalBinding()
     {
         var operational = new CampaignElementOperationalState(
             1,
@@ -60,7 +60,7 @@ public sealed class CampaignMovementWorldStateTests
             new CapabilityPointAmount(1, 2),
             -1);
         var world = new CampaignWorldSnapshot(
-            3,
+            4,
             [new CampaignElementState(
                 "axis-element-a",
                 "west",
@@ -76,12 +76,13 @@ public sealed class CampaignMovementWorldStateTests
         var parsed = ParseWorld(canonical);
 
         Assert.Equal(
-            "{\"world\":{\"contractVersion\":3,\"elements\":[{" +
+            "{\"world\":{\"contractVersion\":4,\"elements\":[{" +
             "\"elementId\":\"axis-element-a\",\"currentLocationId\":\"west\"," +
             "\"reserveStatus\":\"reserve-i\",\"operationalState\":{" +
             "\"ledgerGameTurn\":1,\"ledgerOperationStage\":1," +
             "\"capabilityPointsExpended\":{\"numerator\":1,\"denominator\":2}," +
-            "\"cohesionLevel\":-1}}],\"representations\":[{" +
+            "\"cohesionLevel\":-1,\"vehicleBreakdownState\":null}}]," +
+            "\"representations\":[{" +
             "\"representationId\":\"map-representation.0001\"," +
             "\"currentLocationId\":\"west\",\"bindingKind\":\"independent-element\"," +
             "\"boundElementIds\":[\"axis-element-a\"]}]}}",
@@ -130,7 +131,7 @@ public sealed class CampaignMovementWorldStateTests
                 representation.BindingKind,
                 representation.BoundElementIds));
         var duplicatedBinding = new CampaignWorldSnapshot(
-            3,
+            4,
             baseline.Elements,
             [
                 .. baseline.Representations,
@@ -141,7 +142,7 @@ public sealed class CampaignMovementWorldStateTests
                     [element.ElementId]),
             ]);
         var missingRepresentation = new CampaignWorldSnapshot(
-            3,
+            4,
             baseline.Elements,
             baseline.Representations.Skip(1).ToArray());
 
@@ -178,8 +179,8 @@ public sealed class CampaignMovementWorldStateTests
         var eventBytes = CampaignEventSerializer.Serialize(created);
         var snapshotBytes = CampaignSnapshotSerializer.Serialize(snapshot);
 
-        Assert.Equal(7, created.ContractVersion);
-        Assert.Equal(8, snapshot.ContractVersion);
+        Assert.Equal(8, created.ContractVersion);
+        Assert.Equal(9, snapshot.ContractVersion);
         Assert.Equal(created, CampaignEventSerializer.Deserialize(eventBytes));
         Assert.Equal(snapshot, CampaignSnapshotSerializer.Deserialize(snapshotBytes));
         Assert.Contains("\"representations\":[", Encoding.UTF8.GetString(eventBytes));
@@ -214,8 +215,19 @@ public sealed class CampaignMovementWorldStateTests
                 "CohesionLevel",
                 "LedgerGameTurn",
                 "LedgerOperationStage",
+                "VehicleBreakdownState",
             ],
             PropertyNames<CampaignElementOperationalState>());
+        Assert.Equal(
+            [
+                "BrokenPointCount",
+                "CohortId",
+                "CumulativeBreakdownPoints",
+                "HighestEffectiveCheckedBandId",
+                "SandstormAttributedBreakdownPoints",
+                "WorkingPointCount",
+            ],
+            PropertyNames<CampaignVehicleBreakdownState>());
         Assert.Equal(
             [
                 "BindingKind",
@@ -235,7 +247,7 @@ public sealed class CampaignMovementWorldStateTests
     private static CampaignWorldSnapshot ReplaceElement(
         CampaignWorldSnapshot world,
         CampaignElementState replacement) => new(
-            3,
+            4,
             world.Elements
                 .Where(element => element.ElementId != replacement.ElementId)
                 .Append(replacement)
@@ -245,7 +257,7 @@ public sealed class CampaignMovementWorldStateTests
     private static CampaignWorldSnapshot ReplaceRepresentation(
         CampaignWorldSnapshot world,
         CampaignMapRepresentationState replacement) => new(
-            3,
+            4,
             world.Elements,
             world.Representations
                 .Where(value => value.RepresentationId != replacement.RepresentationId)

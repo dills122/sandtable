@@ -1,7 +1,7 @@
 # Movement Foundation v1 Technical Design
 
-**Status:** Active implementation plan; `MOV-TASK-001` through `MOV-TASK-004` complete,
-`BREAKDOWN-001` owner decision next; `MOV-TASK-005` conditionally blocked
+**Status:** Active implementation plan; `MOV-TASK-001` through `MOV-TASK-004B` complete;
+`MOV-TASK-005` is next
 
 **Date:** 2026-08-25
 
@@ -195,16 +195,18 @@ Completion uses `Cna1979LandSequence.GetNext` and additionally asserts the exact
 Breakdown Determination successor. It does not use a generic “next phase” event and it exposes no
 Breakdown candidate.
 
-### Breakdown continuity research gate
+### Approved Breakdown continuity boundary
 
 The merged Task 004 world records exact stage-associated CP expenditure and Cohesion but no vehicle
-composition, Breakdown Point accumulation, or prior check-column state. The first Movement vertical
-can therefore replay exactly through arrival at Breakdown, but it cannot imply that Breakdown is
-already adjudicable. The
-[Breakdown continuity packet](../research/breakdown-continuity-spike.md) recommends minimum BP
-rules/content/world continuity before Task 005 and proposes a sequential-dice ruling. The owner may
-instead choose terminal histories plus an explicit later migration. Task 005 is blocked until that
-choice fixes its own-observation shape; this still does not authorize Breakdown adjudication.
+composition, Breakdown Point accumulation, Sandstorm attribution, or prior checked-band state. On
+2026-08-29 the owner approved minimum BP continuity, sequential d6 coordinates, and Table 21.38's
+Sandstorm-attributed-BP threshold. Task 004B therefore versions Rules, Content, and World before
+Task 005 fixes its own-observation shape. This still does not authorize Breakdown adjudication.
+
+The source-locked Truck profile shifts two columns left. Authority retains exact total and
+Sandstorm-attributed BP, where the subtotal is between zero and total inclusive. Future adjudication
+may apply the Sandstorm shift when twice the subtotal is at least the total. The full percentage
+outcome matrix, roll, losses, and RNG remain deferred.
 
 ## Task graph
 
@@ -221,13 +223,11 @@ MOV-TASK-003 content mobility [complete]
 MOV-TASK-004 world + representation contracts [complete]
                   |
                   v
-BREAKDOWN-001 owner decision
-           /                  \
- continuity now          terminal histories
-         |                       |
-MOV-TASK-004B              explicit later-migration
-BP continuity [conditional]      contract
-           \                  /
+BREAKDOWN-001 decisions [approved]
+                  |
+                  v
+MOV-TASK-004B BP continuity [complete]
+                  |
                   v
 MOV-TASK-005 observation/apparent presence
                   |
@@ -252,9 +252,9 @@ freezes a versioned contract consumed by the next layer. In particular, Content 
 consumes the closed mobility vocabulary and ruleset identity completed by Task 002. Tasks 006 and
 007 keep all public Movement membership dormant; Task 008 atomically exposes executable move and
 completion actions so no intermediate checkpoint can strand a campaign at Movement.
-`BREAKDOWN-001` is the current owner-decision gate. If continuity-now is approved, the conditional
-Task 004B becomes a required predecessor of Task 005; otherwise the package records terminal
-histories and the required future migration before Task 005 proceeds.
+`BREAKDOWN-001` is approved. Task 004B implements the required predecessor of Task 005 while
+preserving the no-adjudication boundary. Its repository gate and two fresh-context review
+instances are complete.
 
 The Task 001-004 foundation merged in PR #29 after `just check` passed with a warning-clean build,
 format verification, and 746/746 solution tests. The roadmap groups the remaining work into a
@@ -338,24 +338,46 @@ location, version, stage, and content mismatches reject
 
 **Verification:** creation/world/snapshot/event/replay tests plus complete golden migration vectors
 
+### `MOV-TASK-004B` - Version Breakdown continuity
+
+**Status:** Complete (approved and verified 2026-08-29)
+
+**Advances:** `MOV-REQ-013`, `MOV-REQ-014`, `MOV-REQ-015`; `MOV-AC-014` through `MOV-AC-017`
+
+**Dependencies:** `MOV-TASK-004`; approved `BRK-DEC-001` through `BRK-DEC-003` (satisfied)
+
+**Owned modules:** exact BP value and normalized continuity artifact; Content vehicle cohort and
+synthetic catalog; Campaign operational state, creation, snapshot, validation, and replay; all
+coordinated identity fixtures
+
+**Observable output:** one source-backed synthetic Truck Point cohort per admitted motorized
+element and initial stage-keyed exact total/Sandstorm BP, checked-band, and working/broken state
+
+**Acceptance:** canonical Rules/Content/World identities change exactly once; strict readers reject
+legacy, malformed, unknown, and cross-context mismatches; creation replay is byte-identical; no
+Breakdown action, outcome matrix, roll, result, loss, BP mutation, or RNG path exists
+
+**Verification:** focused Rules/Content/Campaign TDD suites, canonical mutation/golden tests,
+coordinated identity search, full repository gate, and fresh independent review
+
 ### `MOV-TASK-005` - Add apparent presence to observation
 
-**Status:** Blocked by the `BREAKDOWN-001` owner decision and any selected continuity lane
+**Status:** Next; unblocked by completed `MOV-TASK-004B`
 
 **Advances:** `MOV-REQ-005`, `MOV-REQ-011`; `MOV-AC-005`, `MOV-AC-006`
 
-**Dependencies:** `MOV-TASK-004`; approved `BREAKDOWN-001` outcome; conditional Task 004B if selected
+**Dependencies:** `MOV-TASK-004B`
 
 **Owned modules:** Observation contracts, projector, policy/version, serializer/reader, privacy and
 dependency tests, and every affected observation fixture
 
 **Observable output:** own mobility and operational ledger plus approved apparent opposing
-representation location/ZOC facts, with internal bindings absent. If continuity-now is selected,
-the own allowlist also carries the approved cohort/BP risk facts.
+representation location/ZOC facts, with internal bindings absent. The own allowlist also carries
+the approved cohort/BP risk facts.
 
 **Acceptance:** own mobility is present and canonical; real element binding, opposing
 CPA/Cohesion/Reserve/mobility/content—and opposing cohort/BAR/BP/check history under the continuity
-option—plus raw event truth are absent by API shape, dependency graph, and canonical bytes
+decision—plus raw event truth are absent by API shape, dependency graph, and canonical bytes
 
 **Verification:** projection/golden/privacy/differential-observation tests
 

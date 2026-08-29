@@ -47,19 +47,19 @@ public sealed class ExerciseBundleSemanticValidatorTests : IDisposable
     }
 
     [Fact]
-    public void SnapshotReaderAcceptsVersionEightWorldThreeAndRejectsPriorVersions()
+    public void SnapshotReaderAcceptsVersionNineWorldFourAndRejectsPriorVersions()
     {
         var bundlePath = CreateSuccessfulBundle();
         var canonical = File.ReadAllBytes(Path.Combine(
             bundlePath,
             ArtifactSchema.InitialSnapshotPath));
         var legacySnapshot = Encoding.UTF8.GetBytes(Encoding.UTF8.GetString(canonical).Replace(
+            "{\"contractVersion\":9,",
             "{\"contractVersion\":8,",
-            "{\"contractVersion\":7,",
             StringComparison.Ordinal));
         var legacyWorld = Encoding.UTF8.GetBytes(Encoding.UTF8.GetString(canonical).Replace(
+            "\"world\":{\"contractVersion\":4,",
             "\"world\":{\"contractVersion\":3,",
-            "\"world\":{\"contractVersion\":2,",
             StringComparison.Ordinal));
 
         Assert.NotNull(ExerciseEvidenceCodec.DeserializeSnapshot(canonical));

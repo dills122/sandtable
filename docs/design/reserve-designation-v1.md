@@ -384,7 +384,7 @@ configuration hashes, ruleset hashes, events, and snapshot checkpoints migrate. 
 unchanged because the policy uses no randomness.
 
 Trusted evidence recognition must add the two Reserve event shapes. Step-evidence decoding must
-accept snapshot v8/world v3 and still reject prior or malformed variants. Campaign Observation v4
+accept snapshot v9/world v4 and still reject prior or malformed variants. Campaign Observation v4
 is not persisted in Exercise evidence and remains a Core observation-contract/test concern. Exact
 fixture hashes and report fingerprints are recorded only after implementation.
 
@@ -395,7 +395,7 @@ accepted actions: nine retained preamble actions, two element designations, and 
 The checked standalone baseline/exploratory twins and the predetermined/contested serial Maneuver
 verify event-history reconstruction and fresh-session re-adjudication. The Maneuver report
 fingerprint is
-`sha256:423db9b41bea444bffc918c2ec11717579257cf7f71c93bde2bd9546188763e1`.
+`sha256:9621ee95f7b944f3cea226a9f00f63d782cc417f094543e34f8c36c683f68e1e`.
 
 The 2026-08-25 Task 016 pre-review gate produced this evidence:
 

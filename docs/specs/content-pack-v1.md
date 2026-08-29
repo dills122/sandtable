@@ -1,6 +1,6 @@
 # Content Pack v1 Specification
 
-**Status:** Implemented foundation; schema 3 Movement mobility extension implemented
+**Status:** Implemented foundation; schema 4 Breakdown-cohort extension implemented
 
 **Date:** 2026-08-16
 
@@ -9,7 +9,8 @@
 **Research:** [Content Pack v1 spike](../research/content-pack-v1-spike.md)
 
 > **Current evolution:** This specification froze the original Content Pack foundation. Subsequent
-> `WORLD-001`, `OBS-001`, `ACTION-001`, turn-preamble, Reserve, and Movement-foundation packages
+> `WORLD-001`, `OBS-001`, `ACTION-001`, turn-preamble, Reserve, Movement-foundation, and
+> `MOV-TASK-004B` Breakdown-continuity packages
 > delivered exact campaign admission, mutable world state, side-safe observations, legal actions,
 > and the current Movement terminal. Statements about those capabilities being future work describe
 > this specification's historical scope; Movement campaign actions, contact, and combat remain
@@ -32,7 +33,7 @@ since shipped.
 
 1. Resolve `rules-lab.content.movement-contact.v1` from the in-process synthetic catalog.
 2. Validate it successfully against the `cna-1979.1` content vocabulary.
-3. Serialize it as `sandtable.content-json.v2` schema 3, display its `sha256:` identity, and round-trip it
+3. Serialize it as `sandtable.content-json.v3` schema 4, display its `sha256:` identity, and round-trip it
    through the strict reader to an equal immutable value.
 4. Query its nine locations, explicit adjacency edges, two formations, four combat elements, and
    four initial placements.
@@ -45,16 +46,16 @@ since shipped.
 
 | ID | Requirement |
 | --- | --- |
-| `CNT-001` | Content has an independent versioned identity consisting of current format ID `sandtable.content-json.v2`, schema version 3, pack ID, compatible ruleset ID, and `sha256:` hash of validated canonical semantic bytes. |
+| `CNT-001` | Content has an independent versioned identity consisting of current format ID `sandtable.content-json.v3`, schema version 4, pack ID, compatible ruleset ID, and `sha256:` hash of validated canonical semantic bytes. |
 | `CNT-002` | Canonical bytes use explicit fixed object/property order, UTF-8, no insignificant whitespace, exact safe-ASCII hashed-string grammars, frozen lower-kebab tokens, integer-only numeric values, and ordinally normalized keyed collections. The hash field and presentation metadata are excluded. |
 | `CNT-003` | Every semantic location, edge, formation, element, scenario, and placement datum declares typed origin metadata: `source-derived` with stable references or `synthetic` with a stable repository locator. |
 | `CNT-004` | The source index retains stable source IDs and classifications only. Content contracts, tests, and fixtures contain no scans, component artwork, copied source prose, or raster geometry. |
 | `CNT-005` | Version 1 board locations are opaque stable hex IDs. Adjacency is authoritative only through one canonical unordered edge per pair; printed/source coordinates are optional audit metadata and never derive adjacency. |
 | `CNT-006` | Edges reference existing distinct hexes and may carry closed rules-owned feature IDs plus an optional direction from one endpoint to the other. Unknown, duplicate, contradictory, malformed, or disconnected fixture topology is rejected. |
 | `CNT-007` | Content references closed rules-owned IDs for side, terrain, edge feature, organization, and element mobility semantics. Unknown IDs fail validation; rule tables and derived values such as movement cost or stacking points are not content fields. |
-| `CNT-008` | Formations and combat elements have stable pack-local IDs, side ownership, organization and base Capability Point Allowance source facts, one explicit supported mobility assignment per element, and validated parent relationships. Runtime remaining capability, expenditure, cohesion, contact, ZOC, visibility, and current location are not content fields. |
+| `CNT-008` | Formations and combat elements have stable pack-local IDs, side ownership, organization and base Capability Point Allowance source facts, one explicit supported mobility assignment per element, an optional source/synthetic Breakdown vehicle cohort, and validated parent relationships. Runtime remaining capability, expenditure, cohesion, Breakdown Points, broken counts, contact, ZOC, visibility, and current location are not content fields. |
 | `CNT-009` | A scenario definition declares stable temporal bounds and initial placements. Placements reference existing elements and hexes, are unique per independently placed element, and cannot place an attachment-only element independently. |
-| `CNT-010` | Pack capabilities are a closed, sorted set. The current schema supports hex topology, land formations/elements, element mobility, initial deployment, and weather areas; unsupported published subsystems fail explicitly rather than appearing as optional catch-all data. |
+| `CNT-010` | Pack capabilities are a closed, sorted set. The current schema supports hex topology, land formations/elements, element mobility, Breakdown cohorts, initial deployment, and weather areas; unsupported published subsystems fail explicitly rather than appearing as optional catch-all data. |
 | `CNT-011` | Constructors defensively copy collection inputs and enforce local shape invariants. Pack validation returns every discoverable graph/cross-reference issue as a stable code plus canonical data path, sorted by path then code. |
 | `CNT-012` | Canonical serialization and hashing require a valid pack. The strict reader rejects unknown contract versions, missing/unknown properties, duplicate JSON properties, invalid enum/ID/string representations, trailing data, and noncanonical semantic values; accepted input property/collection order is normalized on output. |
 | `CNT-013` | The synthetic fixture uses the production contracts, validator, reader/writer, and hashing path. It contains nine connected original hexes, two routes around a restrictive center, two sides, one formation and two elements per side, and four initial placements. |
@@ -86,6 +87,9 @@ since shipped.
 - Formation parent relationships are acyclic and cannot cross side ownership.
 - Element parent formation and side agree. Attachment-only elements have no initial independent
   placement; independently placed elements have exactly one initial placement.
+- Under the current synthetic `land.breakdown-cohorts` capability, every motorized element has one
+  pack-unique supported type/profile cohort with a positive working-point count; nonmotorized
+  elements carry canonical `null`.
 - Scenario start is not later than its end under canonical Game Turn/Operation Stage ordering.
 - Presentation records may be absent and may change independently. Their keys must reference known
   pack IDs when a presentation catalog is validated, but they are never serialized by the

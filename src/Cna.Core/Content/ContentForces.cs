@@ -38,6 +38,37 @@ public enum ContentPlacementMode
     AttachmentOnly,
 }
 
+public sealed record ContentBreakdownVehicleCohort
+{
+    public ContentBreakdownVehicleCohort(
+        string cohortId,
+        string vehicleTypeId,
+        int workingPointCount,
+        string profileId,
+        ContentOrigin origin)
+    {
+        ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(workingPointCount, 0);
+        ArgumentNullException.ThrowIfNull(origin);
+        CohortId = ContentContractGuards.RequireStableId(cohortId, nameof(cohortId));
+        VehicleTypeId = ContentContractGuards.RequireStableId(
+            vehicleTypeId,
+            nameof(vehicleTypeId));
+        WorkingPointCount = workingPointCount;
+        ProfileId = ContentContractGuards.RequireStableId(profileId, nameof(profileId));
+        Origin = origin;
+    }
+
+    public string CohortId { get; }
+
+    public string VehicleTypeId { get; }
+
+    public int WorkingPointCount { get; }
+
+    public string ProfileId { get; }
+
+    public ContentOrigin Origin { get; }
+}
+
 public sealed record ContentCombatElement
 {
     public ContentCombatElement(
@@ -48,7 +79,8 @@ public sealed record ContentCombatElement
         string mobilityId,
         int baseCapabilityPointAllowance,
         ContentPlacementMode placementMode,
-        ContentOrigin origin)
+        ContentOrigin origin,
+        ContentBreakdownVehicleCohort? breakdownVehicleCohort = null)
     {
         if (!Enum.IsDefined(placementMode))
         {
@@ -69,6 +101,7 @@ public sealed record ContentCombatElement
         BaseCapabilityPointAllowance = baseCapabilityPointAllowance;
         PlacementMode = placementMode;
         Origin = origin;
+        BreakdownVehicleCohort = breakdownVehicleCohort;
     }
 
     public string ElementId { get; }
@@ -86,4 +119,6 @@ public sealed record ContentCombatElement
     public ContentPlacementMode PlacementMode { get; }
 
     public ContentOrigin Origin { get; }
+
+    public ContentBreakdownVehicleCohort? BreakdownVehicleCohort { get; }
 }

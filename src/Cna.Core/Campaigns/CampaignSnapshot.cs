@@ -5,7 +5,7 @@ namespace Cna.Core.Campaigns;
 
 internal sealed record CampaignSnapshot
 {
-    public const int CurrentContractVersion = 8;
+    public const int CurrentContractVersion = 9;
 
     public CampaignSnapshot(
         int contractVersion,

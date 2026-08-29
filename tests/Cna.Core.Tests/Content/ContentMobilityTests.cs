@@ -11,8 +11,8 @@ public sealed class ContentMobilityTests
     {
         var pack = ContentTestData.CreateMinimalPack();
 
-        Assert.Equal(3, ContentPackDefinition.CurrentSchemaVersion);
-        Assert.Equal("sandtable.content-json.v2", ContentPackDefinition.CanonicalFormatId);
+        Assert.Equal(4, ContentPackDefinition.CurrentSchemaVersion);
+        Assert.Equal("sandtable.content-json.v3", ContentPackDefinition.CanonicalFormatId);
         Assert.Contains("land.element-mobility", pack.Capabilities);
     }
 
@@ -60,6 +60,7 @@ public sealed class ContentMobilityTests
         Assert.Equal(
             [
                 "BaseCapabilityPointAllowance",
+                "BreakdownVehicleCohort",
                 "ElementId",
                 "MobilityId",
                 "OrganizationId",

@@ -15,12 +15,12 @@ public sealed class CampaignEventSerializationTests
 
         var bytes = CampaignEventSerializer.Serialize(created);
         var actual = Encoding.UTF8.GetString(bytes);
-        var expected = "{\"contractVersion\":7,\"eventType\":\"campaign-created\"," +
+        var expected = "{\"contractVersion\":8,\"eventType\":\"campaign-created\"," +
             "\"campaignId\":\"campaign-1\",\"stateVersion\":1,\"rulesetHash\":\"" +
             Cna1979Ruleset.Manifest.Hash +
             "\",\"setup\":{\"schemaVersion\":5," +
             "\"setupId\":\"rules-lab.initiative.predetermined\"," +
-            "\"setupHash\":\"sha256:0e03d12e8b4a5aeb7b19b7eed3f4ed2dcb9d3db2d253bdeaf8867d6b57a099a2\"," +
+            "\"setupHash\":\"sha256:9e55e3de11338ba6432768ccb6740a6fed83b37503f69cc7ff8ecd58e205634f\"," +
             "\"isSynthetic\":true,\"initialGameTurn\":1," +
             "\"initialInitiative\":{\"kind\":\"predetermined\",\"holder\":\"axis\"}," +
             "\"openingPreamble\":{\"contractVersion\":1," +
@@ -38,30 +38,40 @@ public sealed class CampaignEventSerializationTests
             "\"fleetRepair\":\"explicit-none\",\"sources\":[{" +
             "\"sourceId\":\"sandtable-rules-lab\"," +
             "\"locator\":\"stage-entry.no-obligations.v1\"}]}," +
-            "\"content\":{\"schemaVersion\":3,\"formatId\":\"sandtable.content-json.v2\"," +
+            "\"content\":{\"schemaVersion\":4,\"formatId\":\"sandtable.content-json.v3\"," +
             "\"packId\":\"rules-lab.content.movement-contact.v1\",\"rulesetId\":\"cna-1979.1\"," +
-            "\"hash\":\"sha256:38687a168bf96018f61826b42ae0df7e34466c7055a111861be46d0c924dcd0d\"," +
+            "\"hash\":\"sha256:40f0e7a0a8876e4fefc4f06c1d752253cf338da614e587b9ff017e04541e7d79\"," +
             "\"scenarioId\":\"movement-contact-lab\"}," +
             "\"sources\":[{\"sourceId\":\"sandtable-rules-lab\"," +
             "\"locator\":\"initiative.predetermined-axis.v1\"}]}," +
             "\"initialWorld\":{" +
-            "\"contractVersion\":3,\"elements\":[" +
+            "\"contractVersion\":4,\"elements\":[" +
             "{\"elementId\":\"axis-element-a\",\"currentLocationId\":\"west\"," +
             "\"reserveStatus\":\"none\",\"operationalState\":{\"ledgerGameTurn\":1," +
             "\"ledgerOperationStage\":1,\"capabilityPointsExpended\":{\"numerator\":0," +
-            "\"denominator\":1},\"cohesionLevel\":0}}," +
+            "\"denominator\":1},\"cohesionLevel\":0,\"vehicleBreakdownState\":{" +
+            "\"cohortId\":\"axis-element-a.vehicle-cohort.trucks\"," +
+            "\"cumulativeBreakdownPoints\":{\"numerator\":0,\"denominator\":1}," +
+            "\"sandstormAttributedBreakdownPoints\":{\"numerator\":0,\"denominator\":1}," +
+            "\"highestEffectiveCheckedBandId\":null,\"workingPointCount\":1," +
+            "\"brokenPointCount\":0}}}," +
             "{\"elementId\":\"axis-element-b\",\"currentLocationId\":\"north-west\"," +
             "\"reserveStatus\":\"none\",\"operationalState\":{\"ledgerGameTurn\":1," +
             "\"ledgerOperationStage\":1,\"capabilityPointsExpended\":{\"numerator\":0," +
-            "\"denominator\":1},\"cohesionLevel\":0}}," +
+            "\"denominator\":1},\"cohesionLevel\":0,\"vehicleBreakdownState\":null}}," +
             "{\"elementId\":\"commonwealth-element-a\",\"currentLocationId\":\"east\"," +
             "\"reserveStatus\":\"none\",\"operationalState\":{\"ledgerGameTurn\":1," +
             "\"ledgerOperationStage\":1,\"capabilityPointsExpended\":{\"numerator\":0," +
-            "\"denominator\":1},\"cohesionLevel\":0}}," +
+            "\"denominator\":1},\"cohesionLevel\":0,\"vehicleBreakdownState\":{" +
+            "\"cohortId\":\"commonwealth-element-a.vehicle-cohort.trucks\"," +
+            "\"cumulativeBreakdownPoints\":{\"numerator\":0,\"denominator\":1}," +
+            "\"sandstormAttributedBreakdownPoints\":{\"numerator\":0,\"denominator\":1}," +
+            "\"highestEffectiveCheckedBandId\":null,\"workingPointCount\":1," +
+            "\"brokenPointCount\":0}}}," +
             "{\"elementId\":\"commonwealth-element-b\",\"currentLocationId\":\"south-east\"," +
             "\"reserveStatus\":\"none\",\"operationalState\":{\"ledgerGameTurn\":1," +
             "\"ledgerOperationStage\":1,\"capabilityPointsExpended\":{\"numerator\":0," +
-            "\"denominator\":1},\"cohesionLevel\":0}}],\"representations\":[" +
+            "\"denominator\":1},\"cohesionLevel\":0,\"vehicleBreakdownState\":null}}],\"representations\":[" +
             "{\"representationId\":\"map-representation.0001\",\"currentLocationId\":\"west\"," +
             "\"bindingKind\":\"independent-element\",\"boundElementIds\":[\"axis-element-a\"]}," +
             "{\"representationId\":\"map-representation.0002\"," +

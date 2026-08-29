@@ -175,7 +175,7 @@ public sealed class MovementRulesTests
             value => value.ArtifactId == artifact.ArtifactId);
         Assert.Equal(artifact.ContentHash, manifestArtifact.ContentHash);
         Assert.Equal(artifact.Sources, manifestArtifact.Sources);
-        Assert.Equal(6, Cna1979Ruleset.ContractVersion);
+        Assert.Equal(7, Cna1979Ruleset.ContractVersion);
     }
 
     [Fact]
