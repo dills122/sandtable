@@ -59,12 +59,13 @@ owner-only observation, exact acting-side candidates, closed command mapping, bo
 and canonical designation/completion events. The Movement foundation additionally records exact
 per-Operation-Stage expenditure/Cohesion state and opaque one-to-one map representations without
 yet exposing a Movement action. Ruleset manifest contract 7, setup schema 5, snapshot contract 9,
-Campaign World snapshot contract 4, Campaign Observation contract 4, legal-action-set contract 2,
+Campaign World snapshot contract 4, Campaign Observation contract 5, legal-action-set contract 2,
 and Content Pack schema 4 / canonical format v3 use an original nine-hex,
 nonhistorical rules laboratory to develop game systems without redistributing published assets.
 Campaign Observation derives deterministic side-safe public topology, audience-visible turn
-revision, own-force facts, and own Reserve status without exposing the complete Content Pack, any
-opposing-force row or association, or a hidden Reserve count. Legal Actions v1 exposes those
+revision, exact own mobility/ledger/Reserve and approved vehicle-risk facts, plus only opaque
+opposing representation/location/current-ZOC rows. It exposes neither complete Content identity,
+real opposing bindings/force facts, nor hidden Reserve counts. Legal Actions v1 exposes those
 mechanics through an opaque campaign-authority handle,
 deterministic system/side action sets, exact-audience membership enforcement, and side-safe
 acceptance receipts. Weather Determination v1 resolves corrected source-cited Weather through that
@@ -124,7 +125,7 @@ The current delivery boundary is:
 | Ruleset/provenance, synthetic content, campaign authority, deterministic randomness, events, and replay | Implemented foundation |
 | Side-safe observations and exact-audience legal actions | Implemented for the current rules-laboratory path |
 | Mandatory turn preamble | Implemented through Reserve Designation completion; authority reaches first-side Movement |
-| Movement/contact and combat loops | Movement Foundation rules, Content mobility, replay-complete world/representation state, and approved Breakdown continuity are complete through `MOV-TASK-004B`; side-safe observation is next; campaign actions not started |
+| Movement/contact and combat loops | Movement Foundation rules, Content mobility, replay-complete world/representation state, approved Breakdown continuity, and the v5 side-safe observation boundary are complete through `MOV-TASK-005`; `MOV-TASK-006` action contracts are next |
 | Published first-scenario data, remaining Land rules, victory, persistence, and Maproom | Milestone-level; not started |
 | Player Intent Composer | Direction reviewed; representative decision after the combat skeleton, no-model prototype before Maproom, optional parser evaluation after deterministic MVP |
 | Exercise Harness | Organization, Reserve, and Movement-terminal Exercises plus two-setup and six-policy serial Maneuvers implemented; pairing remains later |
@@ -164,7 +165,8 @@ Cohesion/expenditure and opaque internal representation
 bindings in the Task 004 snapshot v8/world v3 creation history. On 2026-08-29 the owner approved sequential-d6
 Breakdown coordinates, continuity-now, and the Table 21.38 Sandstorm-attributed-BP basis.
 `MOV-TASK-004B` implements the exact Rules/Content/World seam and passed the repository gate plus
-two fresh-context review instances. `MOV-TASK-005` is next.
+two fresh-context review instances. `MOV-TASK-005` now implements the contract-5 owner/apparent
+projection and strict canonical readback; `MOV-TASK-006` is next after its gate closes.
 Movement campaign actions are still unsupported. Paired
 comparison remains a later evaluation capability and does not block gameplay-engine progress.
 Combat research has progressed beyond the initial source inventory: `CMB-RSH-001` now retains the
@@ -354,8 +356,8 @@ The current Umpire foundation is intentionally pure and in-process:
 - `Cna.Core.Campaigns` owns internal exact-content authority, mechanic commands/events, deterministic
   Initiative and opening-preamble adjudication, canonical history, replay, and the public opaque
   authority handle/creation facade.
-- `Cna.Core.Observations` owns the output-only Campaign Observation v1 allowlist, typed projection
-  result, handle-based query facade, structural values, and canonical side-safe JSON.
+- `Cna.Core.Observations` owns the Campaign Observation v1 allowlist, typed projection result,
+  handle-based query facade, structural values, and canonical side-safe JSON writer/strict reader.
 - `Cna.Core.Actions` owns typed system/side candidates, canonical action identity, observation-only
   side generation, exact-audience query/submission enforcement, and side-safe receipts.
 - `Cna.Core.Exercises` owns the fresh-only opaque simulation capability, immutable trusted step

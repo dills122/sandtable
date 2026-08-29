@@ -7,6 +7,11 @@
 
 **Capability:** `RESERVE-001`
 
+**Current evolution:** This package records the observation contract-4/policy-v2 identity delivered
+with Reserve. `MOV-TASK-005` subsequently advances the live Campaign Observation boundary to
+contract 5 and `sandtable.observation.movement-side-safe.v1` while preserving the audience-visible
+revision behavior specified here.
+
 **Research:** [Reserve Designation v1 source and contract spike](../research/reserve-designation-spike.md)
 
 **Technical design:** [Reserve Designation v1](../design/reserve-designation-v1.md)

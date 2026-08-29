@@ -190,46 +190,55 @@ public sealed class CampaignLegalActionsTests
     [Theory]
     [InlineData(LandSide.Axis)]
     [InlineData(LandSide.Commonwealth)]
-    public void SideActionSetsIgnoreOpponentOnlyAuthorityThroughReserve(LandSide observer)
+    public void ApparentEquivalentAuthoritiesProduceIdenticalSideActionSetsThroughMovement(
+        LandSide observer)
     {
-        var pair = CampaignObservationTestData.CreateOpponentOnlyPair(observer);
-        var baseline = StageEntryCampaignTestData.Advance(
+        var pair = CampaignObservationTestData.CreateApparentEquivalentPair(observer);
+        var baseline = CampaignObservationTestData.AdvanceThroughMovement(
             pair.BaselineSnapshot,
-            pair.BaselineContext,
-            InitiativeOrderChoice.ActLast);
-        var changed = StageEntryCampaignTestData.Advance(
+            pair.BaselineContext);
+        var changed = CampaignObservationTestData.AdvanceThroughMovement(
             pair.ChangedSnapshot,
-            pair.ChangedContext,
-            InitiativeOrderChoice.ActLast);
+            pair.ChangedContext);
         var audience = observer == LandSide.Axis
             ? CampaignActionAudience.Axis
             : CampaignActionAudience.Commonwealth;
 
-        for (var index = 0; index < baseline.Snapshots.Count; index++)
+        Assert.Equal(11, baseline.Count);
+        Assert.Equal(baseline.Count, changed.Count);
+
+        for (var index = 0; index < baseline.Count; index++)
         {
             var baselineSet = Query(new CampaignAuthorityHandle(
-                baseline.Snapshots[index], pair.BaselineContext), audience);
+                baseline[index], pair.BaselineContext), audience);
             var changedSet = Query(new CampaignAuthorityHandle(
-                changed.Snapshots[index], pair.ChangedContext), audience);
+                changed[index], pair.ChangedContext), audience);
 
             Assert.Equal(baselineSet, changedSet);
             Assert.Equal(CampaignLegalActionSerializer.Serialize(baselineSet),
                 CampaignLegalActionSerializer.Serialize(changedSet));
             var json = Encoding.UTF8.GetString(
                 CampaignLegalActionSerializer.Serialize(changedSet));
-            Assert.DoesNotContain("enemy-sentinel", json, StringComparison.Ordinal);
+            Assert.DoesNotContain("-hidden", json, StringComparison.Ordinal);
         }
 
         var declarationSet = Query(new CampaignAuthorityHandle(
-            baseline.Snapshots[3], pair.BaselineContext), audience);
+            baseline[3], pair.BaselineContext), audience);
         Assert.Equal(observer == LandSide.Axis ? 2 : 0,
             declarationSet.Candidates.Count);
         var reserve = new CampaignAuthorityHandle(
-            baseline.Snapshot,
+            baseline[^2],
             pair.BaselineContext);
         var expectedFirstSide = FirstActingSideResolver.Resolve(reserve.Snapshot);
         Assert.Equal(observer == expectedFirstSide ? 3 : 0,
             Query(reserve, audience).Candidates.Count);
+        Assert.Equal(LandSegmentIds.Movement, baseline[^1].SegmentId);
+        Assert.Empty(Query(
+            new CampaignAuthorityHandle(baseline[^1], pair.BaselineContext),
+            audience).Candidates);
+        Assert.Empty(Query(
+            new CampaignAuthorityHandle(changed[^1], pair.ChangedContext),
+            audience).Candidates);
     }
 
     [Fact]

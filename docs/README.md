@@ -31,10 +31,10 @@ the pre-alpha roadmap carry repository-wide rationale and delivery state.
 
 - Movement Foundation: [specification](specs/movement-foundation-v1.md),
   [technical design](design/movement-foundation-v1.md), and
-  [source/contract research](research/movement-foundation-spike.md). Tasks 001-004 are implemented;
-  Movement campaign actions are not.
-- Breakdown continuity: [decision packet](research/breakdown-continuity-spike.md). This is the next
-  owner gate before the outward Movement contract is frozen.
+  [source/contract research](research/movement-foundation-spike.md). Tasks 001-005 are implemented;
+  Task 006 action contracts are next, and Movement campaign actions remain unavailable.
+- Breakdown continuity: [decision packet](research/breakdown-continuity-spike.md). The approved
+  continuity seam is implemented through Task 004B and projected side-safely by Task 005.
 - ZOC and Reaction: [research packet](research/contact-reaction-zoc-spike.md). Implementation waits
   for the Movement vertical and approved Breakdown continuity.
 - Combat: [source inventory](research/combat-cycle-source-inventory.md) and completed

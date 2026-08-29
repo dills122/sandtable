@@ -5,6 +5,11 @@
 
 **Date:** 2026-08-24
 
+**Current evolution:** Observation contract 4 and `own-elements-only.v2` below are the historical
+Reserve delivery identity. `MOV-TASK-005` advances the live boundary to contract 5 and
+`sandtable.observation.movement-side-safe.v1` without changing Reserve's audience-visible revision
+semantics.
+
 **Specification:** [Reserve Designation v1](../specs/reserve-designation-v1.md)
 
 **Research:** [Reserve Designation v1 source and contract spike](../research/reserve-designation-spike.md)

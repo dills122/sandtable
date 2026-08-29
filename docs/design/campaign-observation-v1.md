@@ -1,6 +1,6 @@
 # Campaign Observation v1 Technical Design
 
-**Status:** Implemented; independent implementation review passed
+**Status:** Contract 5 implemented, repository-verified, and independently reviewed
 
 **Date:** 2026-08-16
 
@@ -13,14 +13,14 @@
 [Observation and Fog Boundary](../research/observation-and-fog-boundary-spike.md),
 [Reconnaissance, Contacts, and Dummy Knowledge](../research/recon-contact-knowledge-spike.md)
 
-**Current evolution:** The original value model below has clean-cut through contract 4 and policy
-`sandtable.observation.own-elements-only.v2`. Contract 3 added owner Reserve status; contract 4
-projects an audience-visible revision that excludes hidden opposing Reserve designation increments.
-The approved `BREAKDOWN-001` continuity boundary is now implemented by Movement Foundation
-`MOV-TASK-004B`. `MOV-TASK-005` is the next clean cut and owns own mobility/operational facts,
-minimum apparent opposing presence, the acting side's minimum Breakdown Point/cohort-risk facts,
-the observation policy/version, canonical read/write fixtures, and renewed privacy tests. No such
-outward presence exists in the merged contract-4 implementation.
+**Current evolution:** `MOV-TASK-005` clean-cuts the original value model to contract 5 and policy
+`sandtable.observation.movement-side-safe.v1`. Contract 3 added owner Reserve status; contract 4
+projected an audience-visible revision that excludes hidden opposing Reserve designation increments.
+Contract 5 adds exact own mobility, operational-ledger, Cohesion, and nullable Breakdown-risk facts;
+canonical three-field apparent opposing presence; and strict, non-authoritative canonical readback.
+Current admitted apparent rows always carry `exertsZoc = false`; positive qualification remains
+gated on `ZOR-TASK-002`. The contract, implementation, repository verification, and independent
+review are complete.
 
 ## Intent and completion boundary
 
@@ -31,16 +31,18 @@ canonical JSON representation for deterministic comparison and future adapter in
 
 This slice is complete when:
 
-- both currently admitted campaign checkpoints project for both sides;
-- public topology and own independently placed elements are complete;
-- opponent force changes have no observable effect on the complete observation;
+- every currently admitted campaign checkpoint projects for both sides;
+- public topology and exact own independently placed Movement/risk facts are complete;
+- approved apparent opposing rows contain only opaque representation ID, current apparent
+  location, and current-supported ZOC;
+- hidden opponent changes have no observable effect when the approved apparent rows remain equal;
 - prohibited authoritative types and metadata are absent from the value graph and bytes;
 - invalid observers and invalid checkpoints produce typed, empty results;
-- repeated projection is pure and byte-deterministic; and
+- repeated projection and strict canonical readback are pure and byte-deterministic; and
 - the complete repository gate and a fresh independent implementation review pass.
 
-It does not create transport, persistence, legal actions, opponent contacts, counter
-representation, reconnaissance, or movement authority.
+It does not create transport, persistence, Movement legal actions, source-complete contacts,
+reconnaissance/knowledge history, positive ZOC qualification, or Movement authority.
 
 ## Architecture decision
 
@@ -61,7 +63,7 @@ observing LandSide ----------------+                 v
                                         observation-only immutable values
                                                      |
                                                      v
-                                        canonical output-only serializer
+                                        canonical serializer / strict reader
 ```
 
 Dependency direction is one-way. No campaign command, event, projector, snapshot, or content type
@@ -94,23 +96,31 @@ public sealed record CampaignObservationProjectionResult
         CampaignObservationRejectionReason reason);
 }
 
-public static class CampaignObservationProjector
+public static class CampaignObservations
 {
-    public static CampaignObservationProjectionResult Project(
-        CampaignSnapshot snapshot,
-        CampaignContentContext context,
+    public static CampaignObservationProjectionResult Query(
+        CampaignAuthorityHandle handle,
         LandSide observer);
 }
 
 public static class CampaignObservationSerializer
 {
     public static byte[] SerializeCanonical(CampaignObservation observation);
+
+    public static CampaignObservation DeserializeCanonical(
+        ReadOnlySpan<byte> canonicalBytes);
 }
 ```
 
-The serializer is output-only. Observations are derived query results, not trusted history or
-persistence input, so version 1 has no deserializer. A future transport adapter may deserialize its
-own contract but must not turn an observation into authority.
+`CampaignObservations.Query` is the public, handle-based façade. The internal
+`CampaignObservationProjector.Project(snapshot, context, observer)` performs the validated
+authority-to-observation mapping for Core and its tests; snapshots and exact content context are
+not public query inputs.
+
+The contract-5 serializer adds a strict canonical reader. It accepts only exact contract-5 bytes,
+constructs the same derived observation value, and requires reserialization to match the supplied
+bytes exactly. This is compatibility/readback validation, not trusted history or persistence
+admission: neither the reader nor a future transport adapter may turn an observation into authority.
 
 ## Observation value model
 
@@ -119,9 +129,9 @@ own contract but must not turn an observation into authority.
 ```csharp
 public sealed record CampaignObservation
 {
-    public const int CurrentContractVersion = 4;
+    public const int CurrentContractVersion = 5;
     public const string CurrentPolicyId =
-        "sandtable.observation.own-elements-only.v2";
+        "sandtable.observation.movement-side-safe.v1";
 
     internal CampaignObservation(
         int contractVersion,
@@ -132,9 +142,11 @@ public sealed record CampaignObservation
         string scenarioId,
         LandSide observer,
         CampaignObservationPosition position,
+        CampaignObservationWeather? weather,
         IReadOnlyList<CampaignObservationLocation> locations,
         IReadOnlyList<CampaignObservationEdge> edges,
-        IReadOnlyList<ObservedOwnElement> ownElements)
+        IReadOnlyList<ObservedOwnElement> ownElements,
+        IReadOnlyList<ObservedApparentPresence> apparentOpposingPresences)
     {
         // Validate, defensively copy, and canonicalize as specified below.
     }
@@ -143,14 +155,16 @@ public sealed record CampaignObservation
 
 The internal constructor requires the current contract version and policy ID, a stable campaign
 and scenario ID, positive state version, the exact `Cna1979Ruleset.Manifest.Hash`, defined observer,
-non-null nested values, unique collection keys, and own-element locations present in the public
-location set. It defensively copies and ordinally orders every collection. Exact Content Pack
+non-null nested values, unique collection keys, and own/apparent locations present in the public
+location set. It defensively copies and ordinally orders every collection, including apparent rows
+by representation ID. Exact Content Pack
 schema, format, ID, ruleset ID, and hash are intentionally absent: the complete pack hash changes
 with opponent-only facts and would be a player-visible fingerprint.
 
-All observation value constructors are internal. External callers can inspect and canonically
-serialize a projected observation but cannot manufacture one and label it canonical. Tests use the
-existing `InternalsVisibleTo` relationship to exercise constructor invariants directly.
+All observation value constructors are internal. External callers can inspect, canonically
+serialize, or strictly read a projected observation but cannot manufacture one or treat one as
+authority. Tests use the existing `InternalsVisibleTo` relationship to exercise constructor
+invariants directly.
 
 ### Public turn position
 
@@ -227,7 +241,7 @@ and endpoints absent from `Locations`.
 These values intentionally omit `ContentSourceCoordinate`, `ContentOrigin`, source indexes, and
 presentation labels.
 
-### Own elements
+### Own elements and exact Movement risk
 
 ```csharp
 public sealed record ObservedOwnElement
@@ -237,22 +251,67 @@ public sealed record ObservedOwnElement
         string parentFormationId,
         string organizationId,
         int baseCapabilityPointAllowance,
-        string currentLocationId)
+        string currentLocationId,
+        CampaignObservationReserveStatus reserveStatus,
+        string mobilityId,
+        int ledgerGameTurn,
+        int ledgerOperationStage,
+        CapabilityPointAmount capabilityPointsExpended,
+        int cohesionLevel,
+        ObservedOwnVehicleBreakdownRisk? vehicleBreakdownRisk)
     {
         // Validate and assign own-force facts.
     }
 }
+
+public sealed record ObservedOwnVehicleBreakdownRisk
+{
+    internal ObservedOwnVehicleBreakdownRisk(
+        string cohortId,
+        string vehicleTypeId,
+        string profileId,
+        BreakdownPointAmount cumulativeBreakdownPoints,
+        BreakdownPointAmount sandstormAttributedBreakdownPoints,
+        string? highestEffectiveCheckedBandId,
+        int workingPointCount,
+        int brokenPointCount)
+    {
+        // Validate and copy exact owner-visible risk facts without provenance.
+    }
+}
 ```
 
-Version 1 exposes every currently modeled static fact on an independently placed own combat
-element except fields that are redundant or authoritative metadata: the top-level observer already
-states side, all rows are independently placed by contract, and provenance is excluded. Base CPA
-must be positive. The aggregate rejects duplicate element IDs and locations absent from topology.
+Contract 5 exposes the approved static and mutable Movement facts on an independently placed own
+combat element. Exact CP/BP values are normalized and the risk value preserves cohort/type/profile,
+cumulative and Sandstorm-attributed BP, checked band, and working/broken counts. Current
+non-motorized rows carry `null`. The aggregate rejects duplicate element IDs and locations absent
+from topology.
 
 This is deliberately more useful than exposing only element ID and location. A player must be able
-to understand their own modeled force, and these facts will seed Maproom inspection and later
-action presentation. Adding them does not widen opponent visibility because selection occurs only
-after full checkpoint admission and each row is copied into a dedicated own-side type.
+to understand their own modeled force and risk. Adding them does not widen opponent visibility
+because selection occurs only after full checkpoint admission and each row is copied into a
+dedicated own-side type. No Content origin, rules provenance, or authoritative Campaign object is
+retained.
+
+### Apparent opposing presence
+
+```csharp
+public sealed record ObservedApparentPresence
+{
+    internal ObservedApparentPresence(
+        string representationId,
+        string currentLocationId,
+        bool exertsZoc)
+    {
+        // Validate only the three-field apparent allowlist.
+    }
+}
+```
+
+The projector copies only opaque representation identity and current location from admitted
+opposing representations; it never copies the real binding. All currently admitted synthetic rows
+use `exertsZoc = false`. Organization and CPA are not substitutes for source-faithful ZOC
+qualification; positive derivation requires `ZOR-TASK-002`.
 
 ## Canonical JSON contract
 
@@ -267,9 +326,11 @@ rulesetHash
 scenarioId
 observer
 position
+weather
 locations
 edges
 ownElements
+apparentOpposingPresences
 ```
 
 Nested order is fixed as follows:
@@ -278,6 +339,8 @@ Nested order is fixed as follows:
 position: positionId, gameTurn, operationStage, stageId, phaseId,
           segmentId, stepId, actorRole, activeSide, initiativeHolder
 
+weather: contractVersion, gameTurn, operationStage, season, kind, scope, affectedAreas
+
 location: locationId, terrainId
 
 edge: firstLocationId, secondLocationId, features
@@ -285,7 +348,22 @@ edge: firstLocationId, secondLocationId, features
 feature: featureId, directionFromLocationId
 
 ownElement: elementId, parentFormationId, organizationId,
-            baseCapabilityPointAllowance, currentLocationId
+            baseCapabilityPointAllowance, currentLocationId, reserveStatus,
+            mobilityId, ledgerGameTurn, ledgerOperationStage, capabilityPointsExpended,
+            cohesionLevel, vehicleBreakdownRisk
+
+capabilityPointsExpended: numerator, denominator
+
+vehicleBreakdownRisk: cohortId, vehicleTypeId, profileId,
+                      cumulativeBreakdownPoints,
+                      sandstormAttributedBreakdownPoints,
+                      highestEffectiveCheckedBandId,
+                      workingPointCount, brokenPointCount
+
+cumulativeBreakdownPoints: numerator, denominator
+sandstormAttributedBreakdownPoints: numerator, denominator
+
+apparentOpposingPresence: representationId, currentLocationId, exertsZoc
 ```
 
 Enums use these exact lower-kebab values:
@@ -296,18 +374,16 @@ LandActorRole: none | commonwealth | initiative-holder |
                first-acting-side | second-acting-side
 ```
 
-Nullable fields are written explicitly as JSON `null`. Integers are written with
-`Utf8JsonWriter.WriteNumber`. Output is compact UTF-8 with no BOM or trailing newline.
+Nullable fields are written explicitly as JSON `null`. Integers and booleans use canonical JSON
+tokens; both exact amount types use normalized `numerator` then `denominator`. Output is compact
+UTF-8 with no BOM or trailing newline. The executable contract-5 golden is the complete byte
+authority and includes all nine locations, ten edges, exact owner rows, and the canonical apparent
+rows; this design intentionally does not duplicate a partial JSON payload.
 
-An initial Axis observation has this complete shape; `<ruleset-hash>` is replaced by the current
-canonical 64-character manifest hash in executable golden evidence:
-
-```json
-{"contractVersion":4,"policyId":"sandtable.observation.own-elements-only.v2","campaignId":"campaign-1","stateVersion":1,"rulesetHash":"<ruleset-hash>","scenarioId":"movement-contact-lab","observer":"axis","position":{"positionId":"land.position.initiative-determination","gameTurn":1,"operationStage":0,"stageId":"land.stage.initiative-determination","phaseId":"land.phase.initiative-determination","segmentId":null,"stepId":null,"actorRole":"none","activeSide":null,"initiativeHolder":null},"locations":[...],"edges":[...],"ownElements":[{"elementId":"axis-element-a","parentFormationId":"axis-lab-formation","organizationId":"land.organization.battalion","baseCapabilityPointAllowance":20,"currentLocationId":"west","reserveStatus":"none"},{"elementId":"axis-element-b","parentFormationId":"axis-lab-formation","organizationId":"land.organization.battalion","baseCapabilityPointAllowance":10,"currentLocationId":"north-west","reserveStatus":"none"}]}
-```
-
-The executable golden must include all nine locations and ten edges; the ellipses above are design
-notation only and are not valid canonical output.
+`DeserializeCanonical` requires one root object with exactly the fields above in that order. It
+rejects legacy contract 4/policy bytes, duplicate/missing/extra/reordered fields, malformed enums,
+IDs, topology references or values, hidden-field injection, and reducible/noncanonical exact
+amounts. After construction it reserializes and requires exact input-byte equality.
 
 ## Projection flow and validation precedence
 
@@ -320,13 +396,17 @@ notation only and are not valid canonical output.
    scenario, world, random, Initiative, sequence, or state-version inconsistency returns
    `InvalidState` with null observation.
 4. Map observer to the closed content side ID `axis` or `commonwealth`.
-5. Build an internal ordinal lookup from admitted world element ID to current location.
+5. Build internal ordinal lookups from admitted world element/representation IDs to their current
+   state and location.
 6. Copy public topology from the exact artifact into observation-only values.
 7. Select exact content elements whose side matches the observer and whose placement mode is
-   independent; join each to its required admitted world row and copy the allowlisted own facts.
-8. Copy campaign/state identity, canonical public ruleset hash, public scenario ID, policy ID, and
+   independent; join each to its required admitted world row and copy mobility, Reserve, exact
+   ledger, Cohesion, and nullable vehicle-risk facts into outward values.
+8. Select admitted opposing representations through their internal bindings, then discard the
+   binding and copy only representation ID, current location, and current false ZOC.
+9. Copy campaign/state identity, canonical public ruleset hash, public scenario ID, policy ID, and
    public turn state into the aggregate. Do not copy Content Pack identity.
-9. Return `Projected(observation)`.
+10. Return `Projected(observation)`.
 
 The projector does not accept a resolver. It does not catch unexpected invariant exceptions and
 turn them into successful or partially redacted output. Given an admitted context, a missing own
@@ -346,10 +426,13 @@ Simple negative substring tests are insufficient:
 - exact Content Pack hash necessarily changes when hidden content changes and is therefore not an
   observation field.
 
-The merge-blocking privacy proof therefore uses paired valid artifacts and snapshots with identical
-public topology and viewer-owned facts but different opponent IDs, formations, organization, CPA,
-count, and placement. Tests require the entire semantic observation and canonical JSON to be equal
-without excluding or normalizing a field. Any difference is a leak.
+The merge-blocking privacy proof therefore uses paired valid authorities with identical public
+topology, viewer-owned facts, and apparent representation ID/location/ZOC rows while hidden
+opponent bindings, IDs, static/operational/cohort/BP facts, origins, and complete Content/setup
+identity differ. Tests require the entire semantic observation and canonical JSON to be equal
+without excluding or normalizing a field. A separate fixture changes an approved apparent fact and
+requires a visible delta confined to `apparentOpposingPresences`; this makes the guarantee
+conditional and avoids falsely treating approved presence as a leak.
 
 Targeted canary assertions remain useful for unique enemy element/formation IDs, numeric CPA,
 source locators, seed/cursor, presentation labels, and prohibited property names. The suite tests
@@ -362,6 +445,8 @@ both the in-memory type graph and serialized bytes.
   construction order.
 - Structural equality and hash implementations enumerate the same canonical collection order.
 - `SerializeCanonical` allocates and returns a new byte array for every call.
+- `DeserializeCanonical` accepts only bytes whose strict parse and canonical reserialization are
+  identical; it produces no authoritative Campaign value.
 - Mutation tests change caller lists and returned bytes and then verify prior values and later
   serialization remain unchanged.
 - Projection reads but never advances `RandomState`; before/after canonical snapshot bytes prove
@@ -379,8 +464,9 @@ both the in-memory type graph and serialized bytes.
   A future transport contract must use an independently reviewed typed allowlist.
 - Core tests cannot prove future adapters never log authority. Logging/transport negative tests are
   required when those adapters exist.
-- Player-visible opponent contacts remain absent. They must later derive from map representation
-  and a side-specific knowledge ledger, never directly from live enemy combat elements. The Umpire
+- Player-visible source-complete contacts remain absent. Contract 5 exposes only opaque current
+  representation/location/false-ZOC rows; knowledge history and positive ZOC must later derive from
+  source-faithful rules and side-specific knowledge, never from leaked live bindings. The Umpire
   still adjudicates against authoritative world/representation truth.
 
 ## Decisions and rejected alternatives
@@ -390,14 +476,32 @@ both the in-memory type graph and serialized bytes.
 | New `Cna.Core.Observations` namespace | Makes the fog boundary visible and keeps domain contracts separate | Add DTOs under `Campaigns`, which blurs authority and derived views |
 | Dedicated copied values with internal construction | Enforces an allowlist by type and makes the projector the sole canonical factory | Reuse authority values or expose public constructors that can create incoherent canonical-looking observations |
 | Own static facts included | Gives the player a useful own-force inspection surface | Only ID/location, which is safe but unnecessarily weak and immediately needs expansion |
-| No opponent/contact collection | Honest representation of currently modeled knowledge | Empty or opaque contacts, whose shape invents semantics or leaks counts |
+| Contract-5 three-field apparent collection | Makes the approved current representation/location fact visible without exposing real bindings | Reuse authority representations or infer contact/positive-ZOC semantics |
 | Public ruleset/scenario plus policy ID; no Content Pack identity | Identifies public campaign mode and redaction semantics without fingerprinting opponent-bearing content | Expose complete pack ID/hash or normalize it away in privacy tests |
-| Output-only canonical writer | Satisfies deterministic output without implying trusted ingestion | Add a strict reader before any consumer needs one |
+| Strict canonical readback remains non-authoritative | Proves v5 compatibility and canonical equality without admitting history | Permissive DTO deserialization or treating observations as authority |
 | `InvalidObserver` and `InvalidState` only | Stable small failure surface; context mismatch does not become an oracle | Separate context/hash/setup reasons at a derived privacy boundary |
 | Metamorphic non-interference tests | Proves hidden changes do not affect approved visible data | Raw substring scans alone, which misclassify public/shared values and miss aggregates |
 | No protobuf/host integration | Keeps the first contract pure and reviewable | Stringify observation into generic Intelligence facts, which defeats structural allowlisting |
 
-## Implementation tasks
+## Current `MOV-TASK-005` clean cut
+
+The current implementation versions the aggregate, owner row, serializer, golden identity, and
+privacy fixtures together. It adds no Movement action or authority mutation.
+
+| Work | Output | Verification | Status |
+| --- | --- | --- | --- |
+| Contract values | Contract 5/policy, exact own Movement/risk facts, three-field apparent rows | constructor, equality/order, cross-reference, prohibited-dependency tests | Complete |
+| Projector/privacy | both-side owner facts, binding-free apparent rows, false-only ZOC | same-apparent hidden variation plus approved-visible-delta fixtures | Complete |
+| Canonical codec | explicit v5 writer, strict non-authoritative reader, golden identity | round-trip and legacy/missing/extra/reordered/injected/noncanonical mutation matrix | Complete |
+| Integration | unchanged authority/action identities and synchronized governing docs | focused tests, full gates, independent review | Complete |
+
+`MOV-TASK-005` is complete and makes `MOV-TASK-006` the next Movement task.
+
+## Historical `OBS-001` implementation tasks
+
+The tasks below record the original contract-1 delivery and later contract-4 remediation. Their
+no-opponent/output-only statements are historical and are superseded for current contract 5 by the
+clean cut above.
 
 ### `OBS-IMP-001` — Observation scalar and collection values
 
@@ -500,7 +604,7 @@ and run the full gate plus independent implementation review.
 
 **Dependencies:** `OBS-IMP-001` through `OBS-IMP-004`.
 
-## Checkpoints and execution order
+## Historical `OBS-001` checkpoints and execution order
 
 ```text
 OBS-IMP-001 values
@@ -537,7 +641,7 @@ Checkpoint after `OBS-IMP-004`:
 - existing Campaign/Content/Initiative tests remain green; and
 - no transport or host reference was added.
 
-## Traceability
+## Historical `OBS-001` traceability
 
 | Requirement | Decision/task | Executable evidence | Status |
 | --- | --- | --- | --- |
@@ -570,17 +674,18 @@ Checkpoint after `OBS-IMP-004`:
 
 ## Deliberate deferrals
 
-- `ACTION-001` legal-action generation and staleness enforcement;
+- Movement candidate/submission contracts (`MOV-TASK-006`);
 - user-to-side authorization and any HTTP/protobuf/Maproom adapter;
-- observation deserialization, persistence, caching, signing, or hashing;
+- observation persistence, caching, signing, or hashing;
 - events/recent history, narrative, labels, notifications, and War Diary output;
-- counter/stack representation, attachments, dummies, and apparent contacts;
+- source-complete counter/stack/contact knowledge, attachments, and dummies;
+- positive ZOC qualification (`ZOR-TASK-002`);
 - Patrol/Reconnaissance and remembered knowledge;
 - movement/contact world validation beyond the currently admitted initial world;
 - spectator, administrator, and completed-replay visibility policies.
 
-The future research recommendation uses the sequence visibility ruling -> `REP-001` -> apparent
-contacts -> movement -> `PATROL-001` knowledge. It does not alter this implementation plan.
+The current apparent rows satisfy only Task 005's Movement visibility prerequisite. They do not
+replace later `PATROL-001` knowledge or `ZOR-TASK-002` qualification.
 
 ## Review challenge points
 
@@ -589,10 +694,12 @@ The independent reviewer should apply particular skepticism to:
 1. whether every own-field inclusion is justified and no source/provenance object is retained;
 2. whether `CampaignSnapshotValidator.IsValid` is sufficient admission for both current states;
 3. whether aggregate constructors close duplicate/missing-location edge cases;
-4. whether metamorphic fixtures are independently valid and vary only intended hidden facts;
+4. whether same-apparent metamorphic fixtures vary only intended hidden facts and a deliberately
+   changed apparent fact produces only the approved visible delta;
 5. whether complete Content Pack identity is absent everywhere and paired privacy tests compare
    every observation field without normalization;
-6. whether canonical JSON property/collection order is complete and executable as designed;
+6. whether canonical JSON property/collection order and strict readback reject every legacy or
+   noncanonical form without implying authority;
 7. whether validation precedence can inspect or expose authority before observer rejection;
 8. whether any reference to the generic Intelligence protobuf undermines the allowlist boundary;
 9. whether task sizes and dependencies genuinely allow red-green checkpoints; and
@@ -614,7 +721,10 @@ The fresh-context re-review returned `Ready with non-blocking follow-ups`. Its i
 follow-up was accepted and future apparent-contact and historical-knowledge capabilities were
 renamed `CONTACT-001` and `KNOW-001` before production implementation began.
 
-## Independent implementation review
+## Historical independent implementation review
+
+The evidence below covers the earlier Observation contracts. It does not claim that contract 5 or
+`MOV-TASK-005` has passed its required current review.
 
 The fresh-context implementation review returned `Ready with non-blocking follow-ups` after an
 independent 205-test full gate. Both evidence findings were accepted: the aggregate permutation

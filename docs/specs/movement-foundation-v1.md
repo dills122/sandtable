@@ -1,7 +1,7 @@
 # Movement Foundation v1 Specification
 
-**Status:** Active implementation baseline; `MOV-TASK-001` through `MOV-TASK-004B` complete;
-`MOV-TASK-005` is next
+**Status:** Active implementation baseline; `MOV-TASK-001` through `MOV-TASK-005` complete;
+`MOV-TASK-006` is next
 
 **Date:** 2026-08-25
 
@@ -128,18 +128,30 @@ Each independently placed synthetic element must have one stable authoritative m
 whose real-element binding remains internal. Initial representation and location must reconstruct
 from the creation history and exact content identity.
 
-The acting-side observation exposes the acting side's own supported mobility ID together with its
-own exact Cohesion and expenditure. It may expose only these approved apparent opposing facts:
+The acting-side contract-5 observation uses policy
+`sandtable.observation.movement-side-safe.v1`. It exposes the acting side's own supported mobility
+ID, ledger Game Turn/Operation Stage, exact capability points expended, Cohesion, and nullable exact
+vehicle Breakdown risk. That risk contains cohort/type/profile identity, cumulative and
+Sandstorm-attributed BP, nullable highest effective checked band, and working/broken counts without
+provenance. It may expose only these approved apparent opposing facts:
 
 - stable apparent representation identity;
 - current apparent location; and
 - whether that apparent presence exerts a ZOC under the supported rules subset.
 
+Current admitted synthetic rows always use `exertsZoc = false`; positive qualification remains
+gated on `ZOR-TASK-002` source-faithful content and rules.
+
 For an opposing apparent presence it must not expose a real element ID, binding, hidden content
 record, Reserve state, CPA, expenditure, Cohesion, mobility classification, or unsupported
 stack/face fact. Own mobility, organization, CPA, location, Reserve status, Cohesion, and
-expenditure are side-safe inputs needed to make Movement choices; this does not expose the complete
-Content Pack.
+expenditure plus the approved own vehicle-risk facts are side-safe inputs needed to make Movement
+choices; this does not expose the complete Content Pack.
+
+The canonical reader accepts only exact contract-5 bytes and requires byte-identical canonical
+reserialization. Legacy, missing, extra, duplicate, reordered, injected, malformed, and
+noncanonical exact-amount forms reject. Readback yields derived observation data only and never
+admits Campaign authority.
 
 ### `MOV-REQ-006` - Movement candidate
 
@@ -307,8 +319,8 @@ that future mutation-time coherence validator.
 | `MOV-AC-002` | Golden rules vectors prove Clear/Desert/Road/corrected-Track/Ridge/Slope costs and battalion/terrain stacking inputs with source references. |
 | `MOV-AC-003` | Content mobility changes identity; unknown or missing mobility fails admission before campaign creation/Movement. |
 | `MOV-AC-004` | Creation and every Movement checkpoint contain valid stage-associated expenditure and Cohesion state. |
-| `MOV-AC-005` | Own observation includes the supported mobility ID and exact ledger inputs; apparent opposing presence exposes only approved location/ZOC facts, with real bindings and hidden force state absent by bytes and dependencies. |
-| `MOV-AC-006` | Byte-identical acting-side observations generate byte-identical action sets even when hidden authority differs. |
+| `MOV-AC-005` | Contract 5 / policy `sandtable.observation.movement-side-safe.v1` includes exact own mobility, ledger, Cohesion, and nullable cohort/BP risk; apparent opposing presence exposes only opaque representation ID, location, and current false ZOC, with real bindings and hidden force state absent by shape, bytes, and dependencies. Strict readback round-trips canonical bytes and rejects legacy/noncanonical mutations without creating authority. |
+| `MOV-AC-006` | Authorities with byte-identical viewer facts and apparent ID/location/ZOC rows generate byte-identical observations and action sets even when hidden authority differs. Deliberately changed approved apparent facts produce an observation delta confined to `apparentOpposingPresences`. |
 | `MOV-AC-007` | Supported adjacent non-contact moves charge exact CP, update location atomically, emit one event, and remain at Movement. |
 | `MOV-AC-008` | Reserve, depleted Cohesion, over-CPA expenditure, nonadjacency, stacking, contact/ZOC, unsupported table, stale, forged, and wrong-side cases reject with zero events. |
 | `MOV-AC-009` | Completion with zero or more accepted moves advances exactly once to Breakdown Determination and preserves the world. |
@@ -335,5 +347,6 @@ world v3, snapshot v8, creation event v7, exact initial Cohesion/expenditure, an
 opaque internal one-to-one representation bindings. On 2026-08-29 the owner approved sequential-die
 coordinates, continuity-now, and the Table 21.38 Sandstorm BP basis in `BREAKDOWN-001`; the
 source-locked `MOV-TASK-004B` migration is implemented with ruleset v7, Content schema 4 / canonical
-format v3, world v4, snapshot v9, and creation event v8. Its verification/review closeout is the
-active predecessor of `MOV-TASK-005`.
+format v3, world v4, snapshot v9, and creation event v8. `MOV-TASK-005` now freezes observation
+contract 5 and the Movement-side-safe policy; its implementation, verification, and independent
+review are complete. `MOV-TASK-006` is next.

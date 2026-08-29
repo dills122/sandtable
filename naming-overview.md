@@ -561,9 +561,11 @@ foundation are complete, including stable `land.mobility.non-motorized` and
 `land.mobility.motorized` identifiers. Content schema 4 now assigns one of those IDs explicitly to
 each element and adds the approved synthetic Truck Point cohorts. Opaque
 `map-representation.0001`-style identities now name the Umpire's physical-map
-representations without embedding real element IDs; their bindings never appear outward. The next
-delivery gate is `MOV-TASK-005`; the owner approved `BREAKDOWN-001`, and `MOV-TASK-004B` implements
-the minimum Breakdown Point Rules/Content/World continuity seam. None of these Movement names
+representations without embedding real element IDs; their bindings never appear outward. Contract-5
+Campaign Observation now exposes only the approved apparent representation/location/current-ZOC
+shape alongside exact own Movement/Breakdown facts. The next delivery gate is `MOV-TASK-006`;
+`MOV-TASK-004B` implements the minimum Breakdown Point Rules/Content/World continuity seam and
+`MOV-TASK-005` implements its side-safe outward projection. None of these Movement names
 denotes an implemented Movement action yet. **Breakdown continuity** names replay state and rules
 identity, not Breakdown adjudication: no roll, result, loss, or Movement BP mutation is implemented.
 **Enemy ZOC** is the triggering board condition and **Reaction** is the persisted

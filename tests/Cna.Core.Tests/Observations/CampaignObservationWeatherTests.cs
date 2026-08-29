@@ -39,6 +39,10 @@ public sealed class CampaignObservationWeatherTests
         Assert.DoesNotContain("locationDie", json, StringComparison.Ordinal);
         Assert.DoesNotContain("randomCursor", json, StringComparison.Ordinal);
         Assert.DoesNotContain("sourceId", json, StringComparison.Ordinal);
+        Assert.Equal(
+            axis,
+            CampaignObservationSerializer.DeserializeCanonical(
+                CampaignObservationSerializer.SerializeCanonical(axis)));
     }
 
     [Fact]
@@ -84,7 +88,8 @@ public sealed class CampaignObservationWeatherTests
         var observation = new CampaignObservation(CampaignObservation.CurrentContractVersion,
             baseline.PolicyId, baseline.CampaignId, baseline.StateVersion, baseline.RulesetHash,
             baseline.ScenarioId, baseline.Observer, baseline.Position, weather,
-            baseline.Locations, baseline.Edges, baseline.OwnElements);
+            baseline.Locations, baseline.Edges, baseline.OwnElements,
+            baseline.ApparentOpposingPresences);
 
         using var document = JsonDocument.Parse(
             CampaignObservationSerializer.SerializeCanonical(observation));

@@ -36,6 +36,10 @@ internal static class CampaignObservationProjector
                 feature.FeatureId,
                 feature.DirectionFromLocationId)).ToArray())).ToArray();
         var ownElements = ProjectOwnElements(definition, snapshot.World, observer);
+        var apparentOpposingPresences = ProjectApparentOpposingPresences(
+            definition,
+            snapshot.World,
+            observer);
         var sequence = snapshot.SequencePosition;
         var activeSide = sequence.ActorRole == LandActorRole.FirstActingSide
             ? FirstActingSideResolver.Resolve(snapshot)
@@ -66,7 +70,8 @@ internal static class CampaignObservationProjector
                 snapshot.OperationStageWeather),
             locations,
             edges,
-            ownElements);
+            ownElements,
+            apparentOpposingPresences);
 
         return CampaignObservationProjectionResult.Projected(observation);
     }
@@ -129,9 +134,63 @@ internal static class CampaignObservationProjector
                     element.OrganizationId,
                     element.BaseCapabilityPointAllowance,
                     state.CurrentLocationId,
-                    ProjectReserveStatus(state.ReserveStatus));
+                    ProjectReserveStatus(state.ReserveStatus),
+                    element.MobilityId,
+                    state.OperationalState.LedgerGameTurn,
+                    state.OperationalState.LedgerOperationStage,
+                    state.OperationalState.CapabilityPointsExpended,
+                    state.OperationalState.CohesionLevel,
+                    ProjectVehicleBreakdownRisk(element, state));
             })
             .ToArray();
+    }
+
+    private static ObservedApparentPresence[] ProjectApparentOpposingPresences(
+        ContentPackDefinition definition,
+        CampaignWorldSnapshot world,
+        LandSide observer)
+    {
+        var observerSideId = observer switch
+        {
+            LandSide.Axis => "axis",
+            LandSide.Commonwealth => "commonwealth",
+            _ => throw new ArgumentOutOfRangeException(nameof(observer)),
+        };
+        var contentByElementId = definition.Elements.ToDictionary(
+            element => element.ElementId,
+            StringComparer.Ordinal);
+
+        return world.Representations
+            .Where(representation => representation.BoundElementIds.Any(elementId =>
+                contentByElementId.TryGetValue(elementId, out var element)
+                && !string.Equals(element.SideId, observerSideId, StringComparison.Ordinal)))
+            .Select(representation => new ObservedApparentPresence(
+                representation.RepresentationId,
+                representation.CurrentLocationId,
+                exertsZoc: false))
+            .ToArray();
+    }
+
+    private static ObservedOwnVehicleBreakdownRisk? ProjectVehicleBreakdownRisk(
+        ContentCombatElement element,
+        CampaignElementState state)
+    {
+        var cohort = element.BreakdownVehicleCohort;
+        var breakdown = state.OperationalState.VehicleBreakdownState;
+        if (cohort is null || breakdown is null)
+        {
+            return null;
+        }
+
+        return new ObservedOwnVehicleBreakdownRisk(
+            breakdown.CohortId,
+            cohort.VehicleTypeId,
+            cohort.ProfileId,
+            breakdown.CumulativeBreakdownPoints,
+            breakdown.SandstormAttributedBreakdownPoints,
+            breakdown.HighestEffectiveCheckedBandId,
+            breakdown.WorkingPointCount,
+            breakdown.BrokenPointCount);
     }
 
     private static CampaignObservationReserveStatus ProjectReserveStatus(

@@ -113,7 +113,13 @@ public sealed class CampaignObservationReserveStatusTests
             "land.organization.battalion",
             20,
             "west",
-            status);
+            status,
+            Cna1979Movement.MotorizedMobilityId,
+            1,
+            1,
+            CapabilityPointAmount.Zero,
+            0,
+            null);
 
     private static CampaignObservation CreateObservation(
         CampaignObservationReserveStatus status) => new(
@@ -138,7 +144,8 @@ public sealed class CampaignObservationReserveStatusTests
             null,
             [new CampaignObservationLocation("west", "land.terrain.clear")],
             [],
-            [CreateElement(status)]);
+            [CreateElement(status)],
+            []);
 
     private static CampaignWorldSnapshot ReplaceStatus(
         CampaignWorldSnapshot world,

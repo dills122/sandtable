@@ -663,17 +663,17 @@ See the Content Pack v1
 [specification](docs/specs/content-pack-v1.md), and
 [technical design](docs/design/content-pack-v1.md).
 
-The implemented Campaign Observation boundary lives in `Cna.Core.Observations`. Contract 4 accepts only
+The implemented Campaign Observation boundary lives in `Cna.Core.Observations`. Contract 5 accepts only
 a fully admitted Campaign World snapshot, its already-resolved exact content context, and a defined
 viewer side. A pure projector then copies a closed allowlist of public campaign/turn/topology facts,
-the current source-free Weather summary, and the viewer's independently placed elements and Reserve
-statuses into
-dedicated source-free values. Complete Content
-Pack identity and all opposing-force rows, associations, counts, contacts, and placeholders remain
-absent. Canonical output is an explicit compact UTF-8 JSON contract; it is derived query data, not
-trusted history or command authority. The Umpire still adjudicates from complete authoritative
-truth. Future adapters must authorize the viewer and preserve the same allowlist rather than map
-authority into the current free-form Intelligence observation strings. See the Campaign Observation
+the current source-free Weather summary, exact own mobility/operational ledger/Reserve status and
+approved vehicle-risk continuity into dedicated source-free values. Opponents appear only as
+opaque representation ID, apparent location, and the currently false-only `exertsZoc` field;
+real bindings and force facts remain absent. Canonical output has an exact compact UTF-8 writer and
+strict non-authoritative reader. It remains derived query data, never trusted history or command
+authority. The Umpire still adjudicates from complete authoritative truth. Future adapters must
+authorize the viewer and preserve the same allowlist rather than map authority into the current
+free-form Intelligence observation strings. See the Campaign Observation
 v1 [research](docs/research/observation-and-fog-boundary-spike.md),
 [specification](docs/specs/campaign-observation-v1.md), and
 [technical design](docs/design/campaign-observation-v1.md).
@@ -760,8 +760,9 @@ Movement campaign action is implemented yet. The
 `BREAKDOWN-001` is approved: minimum Breakdown Point continuity is recorded now, sequential d6 form
 the `11`-`66` coordinate, and Sandstorm eligibility uses Table 21.38's share of accumulated BP.
 `MOV-TASK-004B` implements the exact Rules/Content/World seam and passed the repository gate plus
-two fresh-context review instances. `MOV-TASK-005` next projects only the approved own
-BP/cohort-risk facts.
+two fresh-context review instances. `MOV-TASK-005` now projects the approved own mobility,
+ledger, Cohesion, and BP/cohort-risk facts plus the minimum opaque apparent-opponent shape;
+`MOV-TASK-006` owns the next action-contract cut.
 
 The [ZOC/Reaction spike](docs/research/contact-reaction-zoc-spike.md) separates enemy-ZOC entry and
 the interrupting Reaction window from Contact and Engaged, which are created by Close Assault and

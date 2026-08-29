@@ -5,8 +5,8 @@ namespace Cna.Core.Observations;
 
 public sealed record CampaignObservation
 {
-    public const int CurrentContractVersion = 4;
-    public const string CurrentPolicyId = "sandtable.observation.own-elements-only.v2";
+    public const int CurrentContractVersion = 5;
+    public const string CurrentPolicyId = "sandtable.observation.movement-side-safe.v1";
 
     internal CampaignObservation(
         int contractVersion,
@@ -20,7 +20,8 @@ public sealed record CampaignObservation
         CampaignObservationWeather? weather,
         IReadOnlyList<CampaignObservationLocation> locations,
         IReadOnlyList<CampaignObservationEdge> edges,
-        IReadOnlyList<ObservedOwnElement> ownElements)
+        IReadOnlyList<ObservedOwnElement> ownElements,
+        IReadOnlyList<ObservedApparentPresence> apparentOpposingPresences)
     {
         ArgumentOutOfRangeException.ThrowIfNotEqual(contractVersion, CurrentContractVersion);
 
@@ -49,6 +50,9 @@ public sealed record CampaignObservation
         var locationCopy = ContentContractGuards.CopyValues(locations, nameof(locations));
         var edgeCopy = ContentContractGuards.CopyValues(edges, nameof(edges));
         var ownElementCopy = ContentContractGuards.CopyValues(ownElements, nameof(ownElements));
+        var apparentPresenceCopy = ContentContractGuards.CopyValues(
+            apparentOpposingPresences,
+            nameof(apparentOpposingPresences));
 
         EnsureUnique(
             locationCopy.Select(location => location.LocationId),
@@ -62,6 +66,10 @@ public sealed record CampaignObservation
             ownElementCopy.Select(element => element.ElementId),
             "Observed own-element IDs must be unique.",
             nameof(ownElements));
+        EnsureUnique(
+            apparentPresenceCopy.Select(presence => presence.RepresentationId),
+            "Apparent opposing representation IDs must be unique.",
+            nameof(apparentOpposingPresences));
 
         var knownLocations = locationCopy
             .Select(location => location.LocationId)
@@ -84,6 +92,14 @@ public sealed record CampaignObservation
                 nameof(ownElements));
         }
 
+        if (apparentPresenceCopy.Any(presence =>
+            !knownLocations.Contains(presence.CurrentLocationId)))
+        {
+            throw new ArgumentException(
+                "Every apparent opposing presence must occupy a known location.",
+                nameof(apparentOpposingPresences));
+        }
+
         ContractVersion = contractVersion;
         PolicyId = policyId;
         CampaignId = ContentContractGuards.RequireStableId(campaignId, nameof(campaignId));
@@ -102,6 +118,9 @@ public sealed record CampaignObservation
             .ToArray());
         OwnElements = Array.AsReadOnly(ownElementCopy
             .OrderBy(element => element.ElementId, StringComparer.Ordinal)
+            .ToArray());
+        ApparentOpposingPresences = Array.AsReadOnly(apparentPresenceCopy
+            .OrderBy(presence => presence.RepresentationId, StringComparer.Ordinal)
             .ToArray());
     }
 
@@ -133,6 +152,8 @@ public sealed record CampaignObservation
 
     public IReadOnlyList<ObservedOwnElement> OwnElements { get; }
 
+    public IReadOnlyList<ObservedApparentPresence> ApparentOpposingPresences { get; }
+
     public bool Equals(CampaignObservation? other) =>
         ReferenceEquals(this, other)
         || (other is not null
@@ -147,7 +168,8 @@ public sealed record CampaignObservation
             && Weather == other.Weather
             && Locations.SequenceEqual(other.Locations)
             && Edges.SequenceEqual(other.Edges)
-            && OwnElements.SequenceEqual(other.OwnElements));
+            && OwnElements.SequenceEqual(other.OwnElements)
+            && ApparentOpposingPresences.SequenceEqual(other.ApparentOpposingPresences));
 
     public override int GetHashCode()
     {
@@ -164,6 +186,7 @@ public sealed record CampaignObservation
         AddValues(ref hash, Locations);
         AddValues(ref hash, Edges);
         AddValues(ref hash, OwnElements);
+        AddValues(ref hash, ApparentOpposingPresences);
         return hash.ToHashCode();
     }
 

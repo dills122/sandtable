@@ -22,8 +22,8 @@ public sealed class CampaignObservationProjectionTests
         Assert.True(result.IsProjected);
         Assert.Equal(CampaignObservationRejectionReason.None, result.RejectionReason);
         var observation = Assert.IsType<CampaignObservation>(result.Observation);
-        Assert.Equal(4, observation.ContractVersion);
-        Assert.Equal("sandtable.observation.own-elements-only.v2", observation.PolicyId);
+        Assert.Equal(5, observation.ContractVersion);
+        Assert.Equal("sandtable.observation.movement-side-safe.v1", observation.PolicyId);
         Assert.Equal(snapshot.CampaignId, observation.CampaignId);
         Assert.Equal(snapshot.StateVersion, observation.StateVersion);
         Assert.Equal(Cna1979Ruleset.Manifest.Hash, observation.RulesetHash);
@@ -41,6 +41,14 @@ public sealed class CampaignObservationProjectionTests
         Assert.DoesNotContain(
             observation.OwnElements,
             element => element.ElementId.StartsWith("commonwealth", StringComparison.Ordinal));
+        Assert.Equal(
+            ["map-representation.0003", "map-representation.0004"],
+            observation.ApparentOpposingPresences.Select(presence => presence.RepresentationId));
+        Assert.Equal(
+            ["east", "south-east"],
+            observation.ApparentOpposingPresences.Select(presence => presence.CurrentLocationId));
+        Assert.All(observation.ApparentOpposingPresences, presence =>
+            Assert.False(presence.ExertsZoc));
     }
 
     [Fact]
@@ -59,6 +67,9 @@ public sealed class CampaignObservationProjectionTests
             observation.OwnElements.Select(element => element.ElementId));
         Assert.Equal(["east", "south-east"], observation.OwnElements.Select(
             element => element.CurrentLocationId));
+        Assert.Equal(
+            ["map-representation.0001", "map-representation.0002"],
+            observation.ApparentOpposingPresences.Select(presence => presence.RepresentationId));
     }
 
     [Fact]
