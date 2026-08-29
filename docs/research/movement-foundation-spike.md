@@ -1,7 +1,7 @@
 # Movement Foundation Spike
 
-**Status:** Historical source lock; `MOV-TASK-001` through `MOV-TASK-004B` are complete;
-`MOV-TASK-005` is next
+**Status:** Historical source lock; implementation is complete through `MOV-TASK-006`;
+`MOV-TASK-007` is next
 
 **Date:** 2026-08-25
 
@@ -15,8 +15,10 @@
 [Breakdown continuity packet](breakdown-continuity-spike.md) records the owner's approval of minimum
 BP rules/content/world continuity before Task 005, sequential-d6 coordinates, and the Table 21.38
 Sandstorm BP-share basis. Task 004B implements that clean cut and has passed its repository and
-independent-review gates. This does not broaden the Movement package into Breakdown, ZOC/Reaction,
-Contact/Engaged, or Combat adjudication authority.
+independent-review gates. Task 005 has since delivered the side-safe observation prerequisite, and
+Task 006 has frozen dormant Movement action/submission/receipt contracts without making Movement
+public or executable. Task 007 is the next internal adjudication slice. This does not broaden the
+Movement package into Breakdown, ZOC/Reaction, Contact/Engaged, or Combat adjudication authority.
 
 ## Executive conclusion
 

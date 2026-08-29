@@ -22,6 +22,10 @@ Current admitted apparent rows always carry `exertsZoc = false`; positive qualif
 gated on `ZOR-TASK-002`. The contract, implementation, repository verification, and independent
 review are complete.
 
+`MOV-TASK-006` now consumes contract-5 observations through a separate pure dormant Movement
+candidate deriver. That downstream use changes no observation field, policy, identity, or bytes and
+does not make a Movement action public or executable.
+
 ## Intent and completion boundary
 
 Add the first enforceable fog-of-war projection boundary to Core. Given one admitted campaign
@@ -485,8 +489,8 @@ both the in-memory type graph and serialized bytes.
 
 ## Current `MOV-TASK-005` clean cut
 
-The current implementation versions the aggregate, owner row, serializer, golden identity, and
-privacy fixtures together. It adds no Movement action or authority mutation.
+The Task 005 implementation versions the aggregate, owner row, serializer, golden identity, and
+privacy fixtures together. That observation slice adds no Movement action or authority mutation.
 
 | Work | Output | Verification | Status |
 | --- | --- | --- | --- |
@@ -495,7 +499,8 @@ privacy fixtures together. It adds no Movement action or authority mutation.
 | Canonical codec | explicit v5 writer, strict non-authoritative reader, golden identity | round-trip and legacy/missing/extra/reordered/injected/noncanonical mutation matrix | Complete |
 | Integration | unchanged authority/action identities and synchronized governing docs | focused tests, full gates, independent review | Complete |
 
-`MOV-TASK-005` is complete and makes `MOV-TASK-006` the next Movement task.
+`MOV-TASK-005` is complete. Task 006 now consumes its output through a dormant pure candidate
+deriver; Task 007 is the next Movement task.
 
 ## Historical `OBS-001` implementation tasks
 
@@ -674,7 +679,8 @@ Checkpoint after `OBS-IMP-004`:
 
 ## Deliberate deferrals
 
-- Movement candidate/submission contracts (`MOV-TASK-006`);
+- public Movement candidate membership and command/event/adjudication (`MOV-TASK-007`/`008`);
+  dormant Task 006 candidate/submission/receipt contracts are complete;
 - user-to-side authorization and any HTTP/protobuf/Maproom adapter;
 - observation persistence, caching, signing, or hashing;
 - events/recent history, narrative, labels, notifications, and War Diary output;

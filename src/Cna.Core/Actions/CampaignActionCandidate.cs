@@ -27,6 +27,19 @@ public abstract record CampaignActionCandidate
         ActionId = CalculateId(WriteSubjectSemantics(kind, elementId));
     }
 
+    internal CampaignActionCandidate(string kind, byte[] semantics)
+    {
+        Kind = ContentContractGuards.RequireStableId(kind, nameof(kind));
+        ArgumentNullException.ThrowIfNull(semantics);
+        if (semantics.Length == 0)
+        {
+            throw new ArgumentException("Candidate semantics cannot be empty.", nameof(semantics));
+        }
+
+        ContractVersion = CurrentContractVersion;
+        ActionId = CalculateId(semantics);
+    }
+
     public int ContractVersion { get; }
     public string ActionId { get; }
     public string Kind { get; }

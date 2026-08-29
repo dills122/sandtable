@@ -53,7 +53,7 @@ internal static class CampaignActionExecution
         ArgumentNullException.ThrowIfNull(snapshot);
         ArgumentNullException.ThrowIfNull(context);
         ArgumentNullException.ThrowIfNull(submission);
-        if (!IsValidSubmission(submission))
+        if (!CampaignActionContractValidator.IsValidSubmission(submission))
             return CampaignActionExecutionResult.Rejected(
                 CampaignActionSubmissionRejectionReason.InvalidSubmission);
         if (!CampaignSnapshotValidator.IsValid(snapshot, context))
@@ -192,37 +192,4 @@ internal static class CampaignActionExecution
         _ => throw new ArgumentOutOfRangeException(nameof(audience)),
     };
 
-    private static bool IsValidSubmission(CampaignActionSubmission submission) =>
-        submission.ContractVersion == CampaignActionSubmission.CurrentContractVersion
-        && IsStableId(submission.CampaignId)
-        && submission.ExpectedStateVersion >= 1
-        && IsStableId(submission.ExpectedPositionId)
-        && Enum.IsDefined(submission.Audience)
-        && IsSha256(submission.ActionId);
-
-    private static bool IsStableId(string? value)
-    {
-        try
-        {
-            _ = ContentContractGuards.RequireStableId(value!, nameof(value));
-            return true;
-        }
-        catch (ArgumentException)
-        {
-            return false;
-        }
-    }
-
-    private static bool IsSha256(string? value)
-    {
-        try
-        {
-            _ = ContentContractGuards.RequireSha256(value!, nameof(value));
-            return true;
-        }
-        catch (ArgumentException)
-        {
-            return false;
-        }
-    }
 }

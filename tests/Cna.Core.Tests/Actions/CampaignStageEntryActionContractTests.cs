@@ -120,9 +120,10 @@ public sealed class CampaignStageEntryActionContractTests
             Assert.Empty(type.GetProperties(BindingFlags.Public | BindingFlags.Instance
                 | BindingFlags.DeclaredOnly));
         });
-        Assert.DoesNotContain(
-            typeof(CampaignLegalActionSerializer).GetMethods(
-                BindingFlags.Public | BindingFlags.Static),
-            method => method.Name.StartsWith("Deserialize", StringComparison.Ordinal));
+        var canonicalReader = typeof(CampaignLegalActionSerializer).GetMethod(
+            nameof(CampaignLegalActionSerializer.DeserializeCanonical),
+            BindingFlags.Public | BindingFlags.Static);
+        Assert.NotNull(canonicalReader);
+        Assert.Equal(typeof(CampaignLegalActionSet), canonicalReader.ReturnType);
     }
 }

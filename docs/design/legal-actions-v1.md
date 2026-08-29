@@ -1,6 +1,6 @@
 # Legal Actions v1 Technical Design
 
-**Status:** Implemented; independent implementation review passed
+**Status:** Implemented baseline; Task 006 dormant evolution implemented
 
 **Date:** 2026-08-17
 
@@ -11,9 +11,35 @@
 **Current evolution:** The original v1 delivery below is historical design context. Reserve
 Designation clean-cuts only the action-set envelope to contract 2 / `sandtable.legal-actions.v2`
 for audience-visible revision semantics; candidate, submission, and receipt contracts stay at 1.
-Movement Foundation `MOV-TASK-006` owns dormant Movement output/submission contracts, and
-`MOV-TASK-008` owns their atomic public membership after internal adjudication and completion are
-both executable. The merged action set intentionally has no Movement member.
+Movement Foundation `MOV-TASK-006` now owns the implemented dormant Movement output contracts,
+pure observation-derived vectors, and strict canonical set/submission/receipt readback.
+`MOV-TASK-008` owns atomic public membership after internal adjudication and completion are both
+executable. The current action set intentionally has no Movement member.
+
+## Current Task 006 evolution
+
+Candidate contract version 1 gains output-only `MoveElementAction` and
+`CompleteMovementSegmentAction` values. A move carries own element ID, origin, destination, and a
+closed explanatory exact-cost value containing:
+
+- destination terrain ID and exact destination-terrain cost;
+- a nullable route adjustment with route ID, `override` or `scale-underlying` behavior, and exact
+  amount;
+- canonically ordered crossed-hexside additions with feature ID, `either`, `up`, or `down`
+  direction, and exact added cost; and
+- one exact total coherent with the component semantics.
+
+Completion has no target. Each action ID remains lowercase SHA-256 over the complete typed
+side-safe canonical semantic preimage excluding the ID. An internal pure deriver consumes only
+Campaign Observation contract 5 and produces deterministic dormant vectors, but the public side
+generator does not publish them.
+
+The action-set, payload-free submission, and mechanic-neutral receipt shapes retain versions 2, 1,
+and 1. Their strict readers accept only exact field order/shape, closed discriminants, canonical
+exact amounts and hashes, locally coherent cross-fields, and byte-identical canonical
+reserialization. These readers are compatibility tools, not authority: execution still re-derives
+exact current-audience membership. Task 006 adds no Movement command, event, command mapping,
+adjudication, state mutation, or accepted receipt; Task 007 is next and keeps membership dormant.
 
 ## Delivery shape
 
@@ -165,6 +191,10 @@ campaign/audience-visible-state/ruleset/position/audience, and the immutable can
 explicit serializer writes those fields in that order and each
 candidate as `contractVersion`, `actionId`, `kind`, then optional `operationStage`.
 
+Task 006 extends that exhaustive writer/reader with the two dormant Movement values described in
+the current-evolution section. This is a compatible concrete-type addition under candidate version
+1, not a public-membership or envelope-version change.
+
 ## Query and fog boundary
 
 `CampaignLegalActions.Query(handle, audience)` validates audience first, then unwraps and validates
@@ -177,6 +207,9 @@ Side generation first projects Campaign Observation v1 for the exact side, then 
 observation to an internal observation-only generator. At state 4 the observed initiative holder
 gets act-first and act-last; the opponent gets empty. All side sets are empty elsewhere.
 
+The Task 006 dormant Movement deriver is a separate observation-only seam. It is tested as a pure
+vector but is deliberately absent from the public Movement switch until Task 008.
+
 Privacy tests build valid paired handles whose content/world differ only in opponent IDs, counts,
 static facts, and locations. The holder's complete non-empty set and canonical bytes must be equal.
 
@@ -184,6 +217,9 @@ static facts, and locations. The holder's complete non-empty set and canonical b
 
 `CampaignActionSubmission` contract 1 contains campaign ID, expected state version, expected
 position ID, audience, and action ID.
+
+Its strict reader added by Task 006 preserves that payload-free shape. Movement element/path/cost
+semantics are bound by candidate ID and are not duplicated as caller-editable submission fields.
 
 `CampaignLegalActions.Submit(handle, submission)` validates:
 
@@ -204,6 +240,8 @@ one event, projects it, and creates a successor handle with the same exact conte
 `CampaignActionAcceptanceReceipt` contract 1 contains, in canonical order: contract version,
 campaign ID, prior state version, committed state version, resulting position ID, audience, and
 action ID. It contains no kind or event summary. The result returns receipt plus successor handle.
+Strict receipt readback validates canonical bytes but cannot establish that a commit occurred;
+only the authoritative submission path may construct an accepted result.
 
 ## Serializer and identity changes
 

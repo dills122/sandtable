@@ -1,6 +1,6 @@
 # Legal Actions v1 Specification
 
-**Status:** Implemented; independent design and implementation reviews passed
+**Status:** Implemented baseline; Task 006 dormant evolution implemented
 
 **Date:** 2026-08-17
 
@@ -18,9 +18,11 @@
 clean-cuts the action-set envelope to contract 2 / `sandtable.legal-actions.v2`. Its `stateVersion`
 is audience-visible: active sets retain the current authority revision, while inactive opposing
 Reserve/Movement sets do not encode hidden designation count. Candidate, submission, and receipt
-contracts remain 1. Movement Foundation `MOV-TASK-006` will freeze output-only Movement contracts
-while public membership remains empty; `MOV-TASK-008` will expose move and completion membership
-atomically only after both paths are executable. No Movement candidate is currently public. See
+contracts remain 1. Movement Foundation `MOV-TASK-006` freezes output-only typed move/completion
+candidates, pure observation-derived vectors, and strict canonical action-set/submission/receipt
+readback while public membership remains empty. `MOV-TASK-008` will expose move and completion
+membership atomically only after both paths are executable. No Movement candidate is currently
+public or mapped to a command. Strict readback is compatibility validation, not authorization. See
 [Reserve Designation v1](reserve-designation-v1.md) and
 [Movement Foundation v1](movement-foundation-v1.md).
 
@@ -105,7 +107,7 @@ progression remains a distinct trusted audience and never appears as a player ch
 | `ACT-001` | Query accepts one non-null Core-issued `CampaignAuthorityHandle` and one defined `CampaignActionAudience`. The handle contains an admitted Campaign World snapshot plus its exact already-resolved content context but exposes neither. Query returns either one complete action set or one typed rejection; a null handle is a programmer error. |
 | `ACT-002` | Every current action set records set contract version 2, policy ID `sandtable.legal-actions.v2`, campaign ID, audience-visible state version, canonical ruleset hash, current position ID, exact audience, and a canonically ordered immutable candidate collection. An active non-empty set retains the exact current authority revision; an inactive opposing Reserve/Movement set removes hidden designation increments. It contains no complete Content Pack identity. |
 | `ACT-003` | Audience is a closed enum with exact canonical values `system`, `axis`, and `commonwealth`. It does not encode a user, seat, Staff persona, authorization claim, or inferred active side. |
-| `ACT-004` | Each candidate is a dedicated immutable typed value with its own contract version, stable kind, and SHA-256 action ID computed from canonical candidate semantic bytes excluding the ID. Candidates contain only facts approved for their exact audience. Generic parameter dictionaries and raw `CampaignCommand` values are prohibited. |
+| `ACT-004` | Each candidate is a dedicated immutable typed value with its own contract version, stable kind, and SHA-256 action ID computed from complete canonical candidate semantic bytes excluding the ID. Candidates contain only facts approved for their exact audience. Generic parameter dictionaries and raw `CampaignCommand` values are prohibited. Dormant Movement values remain output-only until current membership explicitly includes them. |
 | `ACT-005` | At valid unresolved Initiative Determination, `system` contains exactly one `resolve-initiative` candidate with no caller-supplied rules or random inputs. Both side sets are empty. |
 | `ACT-006` | Setup schema 3 and its embedded setup snapshot carry opening-preamble policy contract 1. Version 1 admits `no-opening-naval-convoy-obligations` only for `rules-lab.initiative.predetermined` and `rules-lab.initiative.contested`; the policy carries source `sandtable-rules-lab:opening-preamble.no-naval-convoy-obligations.v1`. Absence, source mismatch, or use outside that scope is invalid authority. The complete policy participates in setup hash, creation event 4, snapshot 4, and replay validation. |
 | `ACT-007` | At admitted Naval Convoy Schedule, `system` contains exactly one `resolve-no-obligation-naval-convoy-schedule` candidate. Its accepted mechanic-specific event verifies the setup policy and advances exactly once to Tactical Shipping. Side sets are empty. |
@@ -117,7 +119,7 @@ progression remains a distinct trusted audience and never appears as a player ch
 | `ACT-013` | Equal admitted state, exact context, and audience produce structurally equal action sets, equal hashes, and byte-identical canonical JSON across runs, supported cultures, and equivalent input order. Query copies retained values, mutates nothing, and consumes no randomness. |
 | `ACT-014` | Submission carries submission contract version 1, campaign ID, expected state version, expected position ID, audience, and action ID. It carries no caller-selected action kind, command, rules value, random outcome, stage actor, or arbitrary parameter. |
 | `ACT-015` | Submission accepts a Core-issued handle and validates submission shape, admitted authority inside the handle, campaign binding, expected state version, expected position, and exact-audience current membership in deterministic precedence. Stale, forged, cross-campaign, wrong-position, wrong-audience, and no-longer-legal submissions return one stable typed rejection and zero internal events. |
-| `ACT-016` | An exact current member maps through a closed Core mapping to one mechanic-specific command and is decided against the same admitted snapshot. Version 1 maps only the five candidate kinds named by `ACT-005`, `ACT-007`, `ACT-008`, and `ACT-009`; no generic completion mapping exists. |
+| `ACT-016` | An exact current member maps through a closed Core mapping to one mechanic-specific command and is decided against the same admitted snapshot. The current closed executable mapper supports the existing non-Movement candidates for Initiative, opening-preamble stages, Weather, stage entry, and Reserve; dormant `move-element` and `complete-movement-segment` values are not mapped until `MOV-TASK-008`, and no generic completion mapping exists. |
 | `ACT-017` | Submission never searches another audience after membership fails. An ID legal for another audience is indistinguishable from any other nonmember and returns `ActionNotLegal`. Core audience selection does not replace future user-to-side authorization. |
 | `ACT-018` | Public creation, observation, action-query, and action-submission facades are the only cross-assembly campaign APIs. `CampaignAuthorityHandle` is a sealed non-record reference type with internal construction, no public authority-bearing members/deconstruction/serializer, and a constant nonrevealing `ToString`; it is not a DTO. Submission decides and projects internally and returns only a successor handle plus side-safe receipt. Snapshot, setup snapshot, world, exact context, command, event, event/snapshot serializer, projector, replay preparation, and replay harness types are internal; only `Cna.Core.Tests` has friend access. OrleansHost is the sole production project referencing Core and may store/pass the handle only to safe facades; it exposes no outward player/Intelligence adapter in this capability. DecisionWorker removes its unused Core project reference and cannot reference or receive the handle or complete authority types. Real assembly and public-surface tests enforce these constraints. `HOST-001` must separately review any provenance-bearing activation or write-only Chronicle seam. |
 | `ACT-019` | Action-set and acceptance-receipt values/serializers contain no `CampaignAuthorityHandle`, snapshot, setup/world/element state, exact context, Content Pack artifact/definition/origin, `RuleReference`, random state, event, or command member. Side generator inputs additionally contain no authority types beyond Campaign Observation v1. Values are output-only and cannot be projected into state. |
@@ -129,7 +131,7 @@ progression remains a distinct trusted audience and never appears as a player ch
 | ID | Requirement |
 | --- | --- |
 | `ACT-NFR-001` | No new runtime package, service, database, generated artifact, host dependency, reflection serializer, or transport contract is introduced. |
-| `ACT-NFR-002` | Canonical JSON uses explicit `Utf8JsonWriter`, fixed property order, lower-kebab discriminants, canonical integers, lowercase SHA-256 values, ordinal candidate ordering, and no ambient serializer settings. |
+| `ACT-NFR-002` | Canonical JSON uses explicit `Utf8JsonWriter`, fixed property order, lower-kebab discriminants, canonical integers, lowercase SHA-256 values, ordinal candidate ordering, and no ambient serializer settings. Strict readers admit only the exact current shape and byte-identical canonical reserialization; parsed values remain non-authoritative. |
 | `ACT-NFR-003` | Canonical values defensively copy inputs, expose no mutable collection, validate versions/enums/stable IDs/hashes/duplicates, and implement structural equality and hash semantics. |
 | `ACT-NFR-004` | Focused tests are small, deterministic, single-process, and use resident synthetic artifacts without file, network, clock, or model access. |
 | `ACT-NFR-005` | The clean contract cutover, setup/snapshot/event canonical golden bytes, and internal replay evidence follow the exact version matrix below; the adopted empty-phase ruling participates in canonical ruleset identity. |
@@ -218,15 +220,23 @@ The action-set envelope has fixed semantic groups:
 4. canonically ordered typed candidate values.
 
 The first three system candidate records contain only action contract version, action ID, and kind.
-`ActFirstAction` and `ActLastAction` additionally contain `operationStage`. Each action ID is SHA-256
-over that candidate's exact canonical semantic bytes excluding `actionId`. Later mechanics add new
-concrete records and writer branches; they do not add generic dictionaries or require consumers to
-parse action IDs.
+`ActFirstAction` and `ActLastAction` additionally contain `operationStage`. Task 006 adds dormant
+`MoveElementAction` and `CompleteMovementSegmentAction` records without changing candidate version
+1. A move carries own element, origin, destination, and an exact side-safe cost breakdown:
+destination terrain ID/cost; a nullable route adjustment with route ID, closed `override` or
+`scale-underlying` behavior, and exact amount; canonically ordered crossed-hexside additions with
+feature ID, closed `either`, `up`, or `down` direction, and exact added cost; and a coherent exact
+total. Completion has no optional target. Each action ID is SHA-256 over that candidate's complete
+exact canonical semantic bytes excluding `actionId`. New concrete records and writer branches do
+not add generic dictionaries or require consumers to parse action IDs.
 
 The accepted submission receipt has its own contract-1 canonical writer and only the six scalars in
-`ACT-021`. It confirms an authoritative commit without reproducing or summarizing the internal event.
-The successor `CampaignAuthorityHandle` is never serialized and is not part of receipt equality or
-canonical bytes.
+`ACT-021`. Task 006 adds strict canonical readers for the set, payload-free submission, and receipt
+while retaining versions 2/1/1. Readback validates structure and canonical bytes only: it does not
+confirm current membership, admit authority, or manufacture an accepted receipt. A receipt produced
+by authoritative submission confirms a commit without reproducing or summarizing the internal
+event. The successor `CampaignAuthorityHandle` is never serialized and is not part of receipt
+equality or canonical bytes.
 
 Exact JSON property order, hash preimage bytes, validation precedence, and golden vectors belong in
 the technical design after this corrected specification passes independent review.
@@ -334,7 +344,8 @@ Ask first:
   parameter, opponent contact, remembered knowledge, uncertainty, or hidden choice.
 - Add transport, authorization, persistence, caching, signing, idempotency storage, host scheduling,
   Maproom, or Intelligence integration.
-- Implement general Naval Convoy, Weather, Operation Stage 2/3 declaration, movement, or combat.
+- Implement general Naval Convoy, Weather, Operation Stage 2/3 declaration, Movement adjudication/
+  public membership, or combat.
 - Expose cross-assembly replay or introduce Chronicle provenance/activation APIs before `HOST-001`.
 
 Never:
@@ -371,7 +382,8 @@ Never:
   bombing, and optional historical rerouting;
 - Weather resolution and its random/table contract;
 - Initiative Declaration for Operation Stages 2 and 3;
-- movement, contact, combat, apparent contacts, dummy identity, reconnaissance, and memory;
+- Movement command/event/adjudication and public membership, contact, combat, apparent contacts,
+  dummy identity, reconnaissance, and memory;
 - HTTP/protobuf/Orleans/Maproom/Intelligence adapters and user-to-side authorization;
 - persistence, request idempotency, retries, host scheduling, and presentation;
 - action-set caching, signing, encryption, secrecy, multi-action plans, drafts, undo, and batching.

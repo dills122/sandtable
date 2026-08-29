@@ -1,7 +1,7 @@
 # Movement Foundation v1 Technical Design
 
-**Status:** Active implementation plan; `MOV-TASK-001` through `MOV-TASK-005` complete;
-`MOV-TASK-006` is next
+**Status:** Active implementation plan; `MOV-TASK-006` implementation and gates are complete,
+with independent review and PR delivery pending; `MOV-TASK-007` follows merge
 
 **Date:** 2026-08-25
 
@@ -158,12 +158,47 @@ reject.
 One `MoveElementAction` identifies own element, origin, destination, and a side-safe cost breakdown.
 One `CompleteMovementSegmentAction` carries no optional target.
 
-The internal `MoveElement` command repeats expected state version, expected position, acting side,
-element, origin, and destination. The Umpire recalculates cost; it never trusts a submitted cost.
+The dormant Task 006 cost value is deliberately explanatory and closed:
 
-The accepted `ElementMoved` event contains the validated real binding and exact ledger delta. Cost
-components use closed semantic kinds such as destination terrain, route override, and crossed
-hexside. The event stores `RuleReference` values required to explain the adjudication; it does not
+- destination terrain ID and exact destination-terrain cost;
+- one nullable route adjustment containing route ID, closed `override` or `scale-underlying`
+  behavior, and its exact amount;
+- crossed-hexside additions in canonical order, each containing feature ID, closed `either`, `up`,
+  or `down` direction, and exact added cost; and
+- one exact total that must be coherent with the terrain, route behavior, and additions.
+
+Crossed-hexside feature IDs are unique independent of direction. A repeated feature ID, including
+contradictory `up` and `down` rows, is unsupported and rejects instead of being charged twice.
+
+Cost coherence is exact and unambiguous: without a route, adjusted terrain equals destination
+terrain cost; `override` replaces destination-terrain cost with the route amount;
+`scale-underlying` multiplies destination-terrain cost by the route amount. The total then equals
+adjusted terrain plus every crossed-hexside addition. Checked overflow rejects the candidate.
+
+Candidate contract version 1 is unchanged. The action ID remains SHA-256 over the complete typed
+side-safe canonical semantic preimage excluding the ID, so any element, path, cost-component, order,
+or total mutation changes or invalidates the identity. The pure Task 006 deriver consumes only
+Campaign Observation contract 5 and emits deterministic dormant vectors; it is not called by the
+public legal-action membership switch yet.
+
+Task 006 has no topology-aware ZOC entry/exit adjudicator. It therefore uses a documented
+conservative boundary: apparent opposing occupancy at either edge endpoint suppresses that move,
+and any positive apparent-ZOC row anywhere suppresses all move candidates. `ZOR-TASK-002` must
+replace that global fail-closed behavior with the source-faithful local rule before publication.
+
+Legal-action-set contract 2 and generic submission/acceptance-receipt contracts 1 retain their
+existing shapes and versions. Their strict canonical readers require the exact closed property
+order and byte-identical canonical reserialization. Read values remain non-authoritative: an action
+ID is not authorization, a parsed submission is not current membership, and receipt readback does
+not prove or fabricate an accepted move.
+
+Task 007 will add an internal `MoveElement` command repeating expected state version, expected
+position, acting side, element, origin, and destination. The Umpire will recalculate cost; it will
+never trust a submitted cost.
+
+The future accepted `ElementMoved` event contains the validated real binding and exact ledger
+delta. Cost components use closed semantic kinds such as destination terrain, route override, and
+crossed hexside. The event stores `RuleReference` values required to explain the adjudication; it does not
 store copied prose. V1 accepts only a resulting cumulative expenditure at or below base CPA, so its
 before/after Cohesion values are equal and it carries no Disorganization conversion.
 
@@ -172,7 +207,9 @@ positions.
 
 ## Validation order
 
-Movement submission validates in this order and emits nothing until all checks pass:
+The executable Movement submission vertical will validate in this order and emit nothing until all
+checks pass. Task 006 implements only context-free contract/identity validation and dormant
+observation derivation; it maps no command.
 
 1. contract/version and canonical action identity;
 2. expected campaign state version and exact position ID;
@@ -244,13 +281,13 @@ BREAKDOWN-001 decisions [approved]
 MOV-TASK-004B BP continuity [complete]
                   |
                   v
-MOV-TASK-005 observation/apparent presence [active]
+MOV-TASK-005 observation/apparent presence [complete]
                   |
                   v
-MOV-TASK-006 action/submission contracts
+MOV-TASK-006 dormant action/submission contracts [implementation + gates complete; review pending]
                   |
                   v
-MOV-TASK-007 move command/event/adjudication
+MOV-TASK-007 move command/event/adjudication [next]
                   |
                   v
 MOV-TASK-008 completion to Breakdown
@@ -262,15 +299,17 @@ MOV-TASK-009 end-to-end + Exercise/Maneuver evidence
 MOV-TASK-010 synchronization + independent review
 ```
 
-Tasks 001 through 004B are complete. Tasks 005 through 010 are intentionally serial because each
-freezes a versioned contract consumed by the next layer. In particular, Content admission in Task 003
+Tasks 001 through 005 are complete. Task 006 implementation and gates are complete, with independent
+review remediation and PR delivery pending. Tasks 007 through 010 are intentionally serial because
+each freezes a versioned contract consumed by the next layer. In particular, Content admission in Task 003
 consumes the closed mobility vocabulary and ruleset identity completed by Task 002. Tasks 006 and
 007 keep all public Movement membership dormant; Task 008 atomically exposes executable move and
 completion actions so no intermediate checkpoint can strand a campaign at Movement.
 `BREAKDOWN-001` is approved. Task 004B implements the required predecessor of Task 005 while
 preserving the no-adjudication boundary. Its repository gate and two fresh-context review
-instances are complete. Task 005's contract is frozen; implementation, verification, and review
-are active. Task 006 remains blocked until that gate closes.
+instances are complete. Tasks 005 and 006 are implemented and verified. Task 006 remains a dormant
+contract slice: Task 007 now owns internal adjudication, and Task 008 still owns atomic public
+membership.
 
 The Task 001-004 foundation merged in PR #29 after `just check` passed with a warning-clean build,
 format verification, and 746/746 solution tests. The roadmap groups the remaining work into a
@@ -402,7 +441,7 @@ delta, false-only ZOC is enforced, and strict readback rejects legacy/noncanonic
 
 ### `MOV-TASK-006` - Freeze Movement action and submission contracts
 
-**Status:** Next; ready to begin
+**Status:** Implementation and gates complete (2026-08-29); independent review and PR delivery pending
 
 **Advances:** `MOV-REQ-006`, `MOV-REQ-007`, `MOV-REQ-010`; `MOV-AC-006`, `MOV-AC-008`
 
@@ -424,7 +463,7 @@ public-empty-set tests
 
 ### `MOV-TASK-007` - Implement non-contact Movement adjudication
 
-**Status:** Blocked by `MOV-TASK-006`
+**Status:** Next; ready to begin
 
 **Advances:** `MOV-REQ-007`, `MOV-REQ-008`, `MOV-REQ-010`, `MOV-REQ-011`; `MOV-AC-007`,
 `MOV-AC-008`, `MOV-AC-010`, `MOV-AC-011`
@@ -517,11 +556,11 @@ executed evidence; every deferral remains explicit
 | `MOV-REQ-003` content mobility | 003 | 003 | content identity/validation | Implemented in Task 003 |
 | `MOV-REQ-004` operational state | 004-005 | 004, 007 | snapshot/replay | Authoritative state implemented in Task 004; contract-5 outward projection active in Task 005 |
 | `MOV-REQ-005` representation/contact | 001-002, 006 | 001, 004-005 | privacy/differential/readback tests | Internal representation implemented in Task 004; three-field apparent projection and exact own risk active in Task 005 |
-| `MOV-REQ-006` candidates | 005, 007 | 006, 008 | action/fog tests | Approved; implementation pending |
-| `MOV-REQ-007` submission/command | 005-007 | 006-008 | forged/stale tests | Approved; implementation pending |
+| `MOV-REQ-006` candidates | 005, 007 | 006, 008 | action/fog tests | Dormant typed candidates, exact costs, identities, and pure vectors implemented in Task 006; public membership remains Task 008 |
+| `MOV-REQ-007` submission/command | 005-007 | 006-008 | forged/stale tests | Generic submission strict readback implemented in Task 006; internal command/adjudication and public mapping remain Tasks 007-008 |
 | `MOV-REQ-008` move event | 004-007 | 007 | event/projector/replay | Approved; implementation pending |
 | `MOV-REQ-009` completion | 005 | 008 | exact successor tests | Approved; implementation pending |
-| `MOV-REQ-010` canonical contracts | 004, 006 | 002-008 | golden/strict reader tests | Rules/world/history implemented through 004B; observation-v5 reader active in Task 005 |
+| `MOV-REQ-010` canonical contracts | 004, 006 | 002-008 | golden/strict reader tests | Rules/world/history implemented through 004B; observation-v5 and action-set/submission/receipt strict readers active through Task 006 |
 | `MOV-REQ-011` replay/fog | 001, 006 | 004-008 | replay/privacy tests | Conditional same-apparent privacy complete in Task 005; Movement replay pending |
 | `MOV-REQ-012` Exercise evidence | 008 | 009 | project/full tests + CLI runs | Approved; implementation pending |
 

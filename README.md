@@ -57,8 +57,10 @@ Repair obligations; adjudicate the first-acting side's Reserve Designation; stop
 replay those events to byte-identical state. Reserve authority now carries per-element status,
 owner-only observation, exact acting-side candidates, closed command mapping, bounded checkpoints,
 and canonical designation/completion events. The Movement foundation additionally records exact
-per-Operation-Stage expenditure/Cohesion state and opaque one-to-one map representations without
-yet exposing a Movement action. Ruleset manifest contract 7, setup schema 5, snapshot contract 9,
+per-Operation-Stage expenditure/Cohesion state and opaque one-to-one map representations. It now
+also carries dormant typed move/completion candidates, deterministic action identities, an exact
+side-safe cost breakdown, and strict non-authoritative readback without yet exposing a public or
+executable Movement action. Ruleset manifest contract 7, setup schema 5, snapshot contract 9,
 Campaign World snapshot contract 4, Campaign Observation contract 5, legal-action-set contract 2,
 and Content Pack schema 4 / canonical format v3 use an original nine-hex,
 nonhistorical rules laboratory to develop game systems without redistributing published assets.
@@ -125,7 +127,7 @@ The current delivery boundary is:
 | Ruleset/provenance, synthetic content, campaign authority, deterministic randomness, events, and replay | Implemented foundation |
 | Side-safe observations and exact-audience legal actions | Implemented for the current rules-laboratory path |
 | Mandatory turn preamble | Implemented through Reserve Designation completion; authority reaches first-side Movement |
-| Movement/contact and combat loops | Movement Foundation rules, Content mobility, replay-complete world/representation state, approved Breakdown continuity, and the v5 side-safe observation boundary are complete through `MOV-TASK-005`; `MOV-TASK-006` action contracts are next |
+| Movement/contact and combat loops | Movement Foundation rules, Content mobility, replay-complete world/representation state, approved Breakdown continuity, the v5 side-safe observation boundary, and dormant Movement action contracts are complete through `MOV-TASK-006`; `MOV-TASK-007` internal non-contact adjudication is next |
 | Published first-scenario data, remaining Land rules, victory, persistence, and Maproom | Milestone-level; not started |
 | Player Intent Composer | Direction reviewed; representative decision after the combat skeleton, no-model prototype before Maproom, optional parser evaluation after deterministic MVP |
 | Exercise Harness | Organization, Reserve, and Movement-terminal Exercises plus two-setup and six-policy serial Maneuvers implemented; pairing remains later |
@@ -165,9 +167,13 @@ Cohesion/expenditure and opaque internal representation
 bindings in the Task 004 snapshot v8/world v3 creation history. On 2026-08-29 the owner approved sequential-d6
 Breakdown coordinates, continuity-now, and the Table 21.38 Sandstorm-attributed-BP basis.
 `MOV-TASK-004B` implements the exact Rules/Content/World seam and passed the repository gate plus
-two fresh-context review instances. `MOV-TASK-005` now implements the contract-5 owner/apparent
-projection and strict canonical readback; `MOV-TASK-006` is next after its gate closes.
-Movement campaign actions are still unsupported. Paired
+two fresh-context review instances. `MOV-TASK-005` implements the contract-5 owner/apparent
+projection and strict canonical readback. `MOV-TASK-006` now freezes dormant move/completion
+candidates, exact cost semantics, deterministic IDs, pure observation-derived vectors, and strict
+non-authoritative action/submission/receipt readback while preserving the existing contract
+versions. `MOV-TASK-007` is next. Movement campaign actions remain absent from public legal-action
+sets and unsupported for submission; no Movement command, event, adjudication, or acceptance
+receipt exists yet. Paired
 comparison remains a later evaluation capability and does not block gameplay-engine progress.
 Combat research has progressed beyond the initial source inventory: `CMB-RSH-001` now retains the
 first bounded rules/result-surface normalization. Combat contracts and implementation remain gated
