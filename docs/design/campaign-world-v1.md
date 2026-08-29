@@ -9,11 +9,12 @@
 **Specification:** [Campaign World v1](../specs/campaign-world-v1.md)
 
 **Current evolution:** The version-3 creation / world-v1 design below is retained as the historical
-WORLD-001 delivery. The merged executable now uses ruleset manifest 6, setup schema 5,
-`CampaignCreated` 7, `CampaignSnapshot` 8, and `CampaignWorldSnapshot` 3. Reserve Designation adds
+WORLD-001 delivery. The merged executable now uses ruleset manifest 7, setup schema 5,
+`CampaignCreated` 8, `CampaignSnapshot` 9, and `CampaignWorldSnapshot` 4. Reserve Designation adds
 per-element Reserve status; Movement Foundation `MOV-TASK-004` adds exact Operation-Stage
-expenditure/Cohesion and opaque one-to-one map-representation bindings. Their governing designs,
-not a silent rewrite of WORLD-001, own those clean cuts.
+expenditure/Cohesion and opaque one-to-one map-representation bindings; `MOV-TASK-004B` adds
+creation-seeded Breakdown continuity. Their governing designs, not a silent rewrite of WORLD-001,
+own those clean cuts.
 
 ## Decision summary
 

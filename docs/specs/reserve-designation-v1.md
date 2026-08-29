@@ -214,7 +214,7 @@ The checked standalone profile is
 build mode. The checked two-setup profile is
 `scenarios/maneuvers/rules-lab.reserve-designation.serial.v2.json`, whose deterministic report
 fingerprint is
-`sha256:423db9b41bea444bffc918c2ec11717579257cf7f71c93bde2bd9546188763e1`.
+`sha256:9621ee95f7b944f3cea226a9f00f63d782cc417f094543e34f8c36c683f68e1e`.
 
 ## Traceability
 

@@ -21,18 +21,34 @@ internal static class CampaignWorldFactory
         }
 
         var placements = scenario.InitialPlacements.ToArray();
+        var elements = artifact.Definition.Elements.ToDictionary(
+            element => element.ElementId,
+            StringComparer.Ordinal);
         var world = new CampaignWorldSnapshot(
             CampaignWorldSnapshot.CurrentContractVersion,
             placements
-                .Select(placement => new CampaignElementState(
-                    placement.ElementId,
-                    placement.LocationId,
-                    CampaignElementReserveStatus.None,
-                    new CampaignElementOperationalState(
-                        scenario.Start.GameTurn,
-                        scenario.Start.OperationStage,
-                        CapabilityPointAmount.Zero,
-                        0)))
+                .Select(placement =>
+                {
+                    var cohort = elements[placement.ElementId].BreakdownVehicleCohort;
+                    return new CampaignElementState(
+                        placement.ElementId,
+                        placement.LocationId,
+                        CampaignElementReserveStatus.None,
+                        new CampaignElementOperationalState(
+                            scenario.Start.GameTurn,
+                            scenario.Start.OperationStage,
+                            CapabilityPointAmount.Zero,
+                            0,
+                            cohort is null
+                                ? null
+                                : new CampaignVehicleBreakdownState(
+                                    cohort.CohortId,
+                                    BreakdownPointAmount.Zero,
+                                    BreakdownPointAmount.Zero,
+                                    null,
+                                    cohort.WorkingPointCount,
+                                    0)));
+                })
                 .ToArray(),
             placements
                 .Select((placement, index) => new CampaignMapRepresentationState(
@@ -76,6 +92,7 @@ internal static class CampaignWorldValidator
             world,
             artifact,
             scenario,
+            requireInitialBreakdownState: true,
             static (_, status) => status == CampaignElementReserveStatus.None);
 
     public static bool IsValidReserveDesignation(
@@ -90,6 +107,7 @@ internal static class CampaignWorldValidator
             world,
             artifact,
             scenario,
+            requireInitialBreakdownState: true,
             (element, status) => status == CampaignElementReserveStatus.None
                 || (status == CampaignElementReserveStatus.ReserveI
                     && string.Equals(
@@ -102,6 +120,7 @@ internal static class CampaignWorldValidator
         CampaignWorldSnapshot? world,
         ContentPackArtifact artifact,
         ContentScenario scenario,
+        bool requireInitialBreakdownState,
         Func<ContentCombatElement, CampaignElementReserveStatus, bool> isValidStatus)
     {
         ArgumentNullException.ThrowIfNull(artifact);
@@ -143,6 +162,10 @@ internal static class CampaignWorldValidator
                 || elementState.OperationalState.CapabilityPointsExpended
                     != CapabilityPointAmount.Zero
                 || elementState.OperationalState.CohesionLevel != 0
+                || !HasValidBreakdownState(
+                    elementState.OperationalState.VehicleBreakdownState,
+                    element.BreakdownVehicleCohort,
+                    requireInitialBreakdownState)
                 || !expected.TryGetValue(elementState.ElementId, out var expectedLocation)
                 || !string.Equals(
                     elementState.CurrentLocationId,
@@ -188,6 +211,31 @@ internal static class CampaignWorldValidator
         }
 
         return true;
+    }
+
+    private static bool HasValidBreakdownState(
+        CampaignVehicleBreakdownState? state,
+        ContentBreakdownVehicleCohort? cohort,
+        bool requireInitial)
+    {
+        if (cohort is null)
+        {
+            return state is null;
+        }
+
+        return state is not null
+            && string.Equals(state.CohortId, cohort.CohortId, StringComparison.Ordinal)
+            && (long)state.WorkingPointCount + state.BrokenPointCount
+                == cohort.WorkingPointCount
+            && Cna1979Breakdown.IsSupportedVehicleProfile(
+                cohort.VehicleTypeId,
+                cohort.ProfileId)
+            && (!requireInitial
+                || (state.CumulativeBreakdownPoints == BreakdownPointAmount.Zero
+                    && state.SandstormAttributedBreakdownPoints == BreakdownPointAmount.Zero
+                    && state.HighestEffectiveCheckedBandId is null
+                    && state.WorkingPointCount == cohort.WorkingPointCount
+                    && state.BrokenPointCount == 0));
     }
 
     internal static bool IsLocallyValid(

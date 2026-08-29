@@ -1,8 +1,8 @@
 # Breakdown Continuity Spike
 
-**Status:** Decision-ready; owner rulings required before `MOV-TASK-005`
+**Status:** Owner-approved, source-locked, implemented, and independently reviewed in `MOV-TASK-004B`
 
-**Date:** 2026-08-25
+**Date:** 2026-08-29
 
 **Decision owner:** Project owner
 
@@ -23,13 +23,15 @@ current CP/Cohesion-only world cannot independently continue from a snapshot int
 Breakdown check. Adding the accounting seam before observation/action/event contracts minimizes
 version churn while preserving the explicit non-adjudicating Movement boundary.
 
-This recommendation does not authorize Breakdown rolls or broken-vehicle mutation. Two owner
-rulings must close first:
+This decision does not authorize Breakdown rolls or broken-vehicle mutation. The owner closed the
+original two rulings on 2026-08-29. Independent source verification then exposed one additional
+conflict that must close before versioned implementation:
 
 | Decision | Recommendation | Status |
 | --- | --- | --- |
-| `BRK-DEC-001` | Use two independent d6 read sequentially as the 11-66 table coordinate; treat the general “add” wording as an error because the specific procedure and table otherwise cannot agree | Proposed; owner approval required |
-| `BRK-DEC-002` | Add minimum BP continuity before `MOV-TASK-005`; do not create terminal-at-Breakdown Movement histories | Proposed; owner approval required |
+| `BRK-DEC-001` | Use two independent d6 read sequentially as the 11-66 table coordinate; treat the general “add” wording as an error because the specific procedure and table otherwise cannot agree | Approved |
+| `BRK-DEC-002` | Add minimum BP continuity before `MOV-TASK-005`; do not create terminal-at-Breakdown Movement histories | Approved |
+| `BRK-DEC-003` | Use Table 21.38's share of accumulated BP for the Sandstorm threshold; retain exact Sandstorm-attributed BP and apply the shift when it is at least half the total | Approved |
 
 ## Source index
 
@@ -37,12 +39,54 @@ rulings must close first:
 | --- | --- | --- |
 | [1979 Land Game rules](https://www.spigames.net/PDFv10/CNA_LandGameRules.pdf) | 5.2; 21.11-21.45 | Breakdown timing, subjects, cumulative BP, checks, losses, and persistence |
 | Map A Terrain Effects Chart | 8.37 | Supported terrain/route/hexside BP inputs |
-| Common charts | Table 21.38 | BP bands and sequential-dice percentage results |
-| [September 1979 errata](https://www.spigames.net/db_pages/ERR_CampaignforNorthAfrica.pdf) | 8.37; 21.12 | Corrected Track derivation and BAR example; no dice-language correction |
+| [Common charts](https://spigames.net/PDFv10/CNA_ChartsBothPlayers.pdf) | Table 21.38 | BP bands and sequential-dice percentage results |
+| [September 1979 errata](https://www.spigames.net/db_pages/ERR_CampaignforNorthAfrica.pdf) | 8.37; 21.12 | Corrected Track derivation and the Italian M13/40 BAR; no Truck or dice-language correction |
 
 The bounded source vectors are Clear `4 BP`, Desert `24 BP`, Road `1/2 BP`, Track halving the
 applicable underlying value, and `+2 BP` for Ridge/up-slope/down-slope. These are normalized data,
 not permission to reproduce the source charts.
+
+The implemented canonical Breakdown artifact explicitly carries all 36 legal sequential-d6
+coordinates. The Truck `2L` BAR is supported by Land Rules 21.14 and Table 21.38; errata 21.12 is
+not attached to that row because it corrects only the Italian M13/40. Exact artifact and ruleset-v7
+identities are frozen by the checked golden and manifest tests.
+
+## Approved source and contract freeze
+
+`BRK-RSH-001` fixes the following minimum continuity vocabulary. Task 004B still exposes no action,
+resolver, or RNG path.
+
+| Contract fact | Frozen value | Primary locator |
+| --- | --- | --- |
+| Artifact | `cna-1979.1.breakdown-tables`, schema 1 | Repository normalization of 21.11-21.38 |
+| BP amount | Exact non-negative reduced rational; canonical zero `0/1`; accumulated BP is rounded upward only for raw-band selection | 21.31 |
+| Accumulated bands | `0-3`, `4-10`, `11-20`, `21-30`, `31-40`, `41-50`, `51-60`, `61-70`, `71+` | Common charts, 21.38 |
+| Supported profile | `land.breakdown.profile.truck`, vehicle type `land.breakdown.vehicle-type.truck`, adjustment `2` columns left | 21.11-21.14 |
+| Weather shifts | Normal `0`; Hot `+1` column right; Sandstorm `+1` right after its selected half-or-more threshold is met | 21.37a, 21.37b, 21.37d and Table 21.38 note |
+| Rainstorm route rule | Road BP is treated as Track BP; it is not a column shift | 21.37c |
+| Recheck memory | Retain the highest effective checked band during the Operation Stage; another check is possible only after reaching a higher band | 21.25-21.26 |
+| Roll identity | Two independent d6 form a sequential `11`-`66` coordinate; for example `3,3 => 33`, never arithmetic `6` | 21.34 and common charts 21.38; owner ruling `BRK-DEC-001` |
+| Synthetic cohorts | `axis-element-a.vehicle-cohort.trucks` and `commonwealth-element-a.vehicle-cohort.trucks`; each has one working Truck Point, zero broken points, and the truck profile/type above | Synthetic fixture rationale constrained by 21.11-21.14 |
+
+The normalized continuity artifact retains the nine bands, signed shifts, edge clamping, exact
+ceiling-to-band behavior, Rainstorm input transformation, and the 36-value sequential-dice domain.
+The percentage result matrix (`0`, `10`, `25`, `33`, `50`, `75`) is verified research evidence but
+is deferred to Breakdown adjudication: retaining dormant outcomes now would expand Task 004B beyond
+its no-roll/no-result boundary. Task 004B records a nullable highest effective checked band but does
+not calculate a result.
+
+The sources conflict on Sandstorms. Table 21.38 shifts when at least half of accumulated BP was
+acquired in Sandstorm sections; Rule 21.37(d) shifts when at least half of movement measured in CP
+was spent there. Errata is silent. `BRK-DEC-003` adopts the table-specific instruction because it is
+attached to the exact Breakdown table and composes with the stage-persistent BP ledger. Authority
+therefore retains exact `sandstormAttributedBreakdownPoints` alongside total BP and rejects a
+negative subtotal or one greater than the total.
+
+The clean-cut identity migration retains Content Pack ID
+`rules-lab.content.movement-contact.v1` while advancing ruleset `6 -> 7`, Content schema `3 -> 4`
+and canonical format `v2 -> v3`, world `3 -> 4`, snapshot `8 -> 9`, and `CampaignCreated`
+`7 -> 8`. Setup schema remains `5`, with derived hashes migrated. Older versions reject under the
+repository's existing strict compatibility policy.
 
 ## Evidence
 
@@ -84,7 +128,7 @@ first move, or future Breakdown must reject all earlier Movement histories expli
 
 ## Conditional task graph
 
-If `BRK-DEC-002` is approved:
+The approved delivery graph is:
 
 ```text
 MOV-TASK-004 complete
@@ -100,16 +144,13 @@ MOV-TASK-006 dormant action contracts
 MOV-TASK-007 CP + BP ElementMoved; no Breakdown RNG
 ```
 
-If continuity is rejected, the original Task 005-007 order may resume only after the Movement spec
-states that Breakdown snapshots are terminal and a future coordinated rules/content/world/event
-migration is mandatory.
-
 ## Smallest acceptance vectors
 
 1. Golden supported BP rows and corrected Track derivation retain exact locators.
 2. A non-motorized/no-cohort mover changes no BP state.
 3. Two Road entries accumulate exact BP `1` without enabling a check.
-4. One Clear entry accumulates BP `4` and reaches the first eligible band.
+4. One Clear entry accumulates BP `4` and reaches the first raw eligible band; the Truck `2L` BAR
+   still shifts its effective band below the check surface.
 5. Re-stopping in the same checked band does not enable a second roll; entering a higher band does.
 6. Dice `3` and `3` produce coordinate `33`, never arithmetic total `6`, if `BRK-DEC-001` is approved.
 7. BAR/weather shifts, upward rounding, replay equality, privacy absence, and forged-component
@@ -117,7 +158,6 @@ migration is mandatory.
 
 ## Limitations and next gate
 
-This packet does not normalize every vehicle class, weather case, loss-placement exception, or
-Breakdown result. After the owner rulings, planning must either insert and independently review the
-bounded continuity lane or explicitly document terminal histories. Breakdown adjudication remains a
-separate later package.
+This packet does not normalize every vehicle class, loss-placement exception, or Breakdown result.
+Task 004B implements only the approved continuity lane and passed two fresh-context review
+instances. Breakdown adjudication remains a separate later package.

@@ -28,8 +28,8 @@ available noncanonical operation/phase timing on failure plus a structured artif
 trace after mandatory reader validation. Separate checked exploratory and clean-baseline fixtures
 exercise the two build-identity policies.
 
-The checked profiles use Exercise/Maneuver manifest v2, controller-configuration v2, ruleset v6,
-snapshot v8, world v3, and strict trusted-evidence admission. Retained Organization/Reserve
+The checked profiles use Exercise/Maneuver manifest v2, controller-configuration v2, ruleset v7,
+snapshot v9, world v4, and strict trusted-evidence admission. Retained Organization/Reserve
 profiles and their baseline twins remain regression checkpoints.
 
 The checked two-child **Maneuver** fixtures define strict canonical `serial-unpaired` parent manifests.
@@ -638,7 +638,7 @@ is an original nine-hex nonhistorical rules laboratory using the same path inten
 source-derived content. Exact catalog lookup requires both pack ID and hash and never substitutes a
 default; presentation labels remain outside authoritative equality and bytes.
 
-The implemented Campaign World v1 capability now uses world snapshot contract 3 and records exact
+The implemented Campaign World v1 capability now uses world snapshot contract 4 and records exact
 ruleset, setup, content, and scenario identities; resolves immutable content before an authoritative
 grain turn; and projects mutable element locations, per-element Reserve status, exact
 Operation-Stage expenditure/Cohesion state, and opaque one-to-one map-representation bindings into
@@ -653,9 +653,11 @@ identity lane first advanced authority to snapshot contract 7, creation contract
 manifest contract 5, world snapshot contract 2, setup schema 5, and Content Pack schema 2 while
 preserving resident exact-content context internally. Operation-Stage Entry still admits only the
 four exact empty obligations; Reserve Designation accepts only current owner candidates and advances
-through one exact completion event to Movement. The current Movement foundation then advances the
-ruleset to contract 6, snapshot to contract 8, Campaign World to contract 3, creation event to
-contract 7, and Content Pack to schema 3 / canonical format v2. No generic sequence bypass exists.
+through one exact completion event to Movement. The current Movement foundation plus approved
+Breakdown-continuity clean cut advances the ruleset to contract 7, snapshot to contract 9, Campaign
+World to contract 4, creation event to contract 8, and Content Pack to schema 4 / canonical format
+v3. Task 004B adds exact source-backed BP identity, synthetic Truck cohorts, and creation-seeded
+replay state without a Breakdown action, result, or RNG path. No generic sequence bypass exists.
 See the Content Pack v1
 [research](docs/research/content-pack-v1-spike.md),
 [specification](docs/specs/content-pack-v1.md), and
@@ -749,15 +751,17 @@ the Umpire, adds a minimum side-safe apparent-presence contract before outward M
 normalizes exact CP/terrain/stacking rules, accepts repeatable non-contact moves, and stops at the
 existing Breakdown Determination boundary. Its source/ruling lock and `MOV-TASK-002` exact
 Capability Point, mobility-vocabulary, normalized-table, canonical-artifact, and ruleset-identity
-work are complete. Content schema 3 / canonical format v2 now assigns and validates one
-rules-owned mobility ID per element. Snapshot v8/world v3 and creation event v7 now record exact
+work are complete. Content schema 4 / canonical format v3 now assigns and validates one
+rules-owned mobility ID plus the supported optional vehicle cohort per element. Snapshot v9/world
+v4 and creation event v8 now record exact
 Operation-Stage Cohesion/expenditure plus opaque one-to-one internal representation bindings. No
 Movement campaign action is implemented yet. The
 [Sprint 4-5 research-gate audit](docs/research/sprint-4-5-research-gates.md) makes
-`BREAKDOWN-001` the next owner gate: choose minimum Breakdown Point continuity now or explicitly
-make the first Movement histories terminal until a later clean-cut migration. `MOV-TASK-005`
-side-safe observation projection follows that decision and includes only own BP/cohort-risk facts
-if continuity-now is approved.
+`BREAKDOWN-001` is approved: minimum Breakdown Point continuity is recorded now, sequential d6 form
+the `11`-`66` coordinate, and Sandstorm eligibility uses Table 21.38's share of accumulated BP.
+`MOV-TASK-004B` implements the exact Rules/Content/World seam and passed the repository gate plus
+two fresh-context review instances. `MOV-TASK-005` next projects only the approved own
+BP/cohort-risk facts.
 
 The [ZOC/Reaction spike](docs/research/contact-reaction-zoc-spike.md) separates enemy-ZOC entry and
 the interrupting Reaction window from Contact and Engaged, which are created by Close Assault and

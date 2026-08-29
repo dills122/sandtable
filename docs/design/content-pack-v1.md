@@ -1,6 +1,6 @@
 # Content Pack v1 Technical Design
 
-**Status:** Implemented foundation; schema 3 Movement mobility extension implemented
+**Status:** Implemented foundation; schema 4 Breakdown-cohort extension implemented
 
 **Date:** 2026-08-16
 
@@ -8,8 +8,9 @@
 
 > **Current evolution:** This design retains the original Content Pack delivery plan and requirement
 > IDs. `WORLD-001`, `OBS-001`, `ACTION-001`, the admitted turn preamble, Reserve Designation, and
-> Movement Tasks 001-004 were delivered afterward. Content schema 3 / canonical format v2 is
-> current; Movement campaign actions, contact, and combat remain unimplemented.
+> Movement Tasks 001-004 and `MOV-TASK-004B` were delivered afterward. Content schema 4 /
+> canonical format v3 is current; Movement campaign actions, contact, and combat remain
+> unimplemented.
 
 ## Design summary
 
@@ -60,12 +61,12 @@ turn static content and a command into state-changing events.
 ## Contract versions and identities
 
 The initial contract used schema 1 and `sandtable.content-json.v1`. Weather-area assignments
-advanced the schema to 2 without changing the canonical format. Movement mobility is an
-authoritative element fact, so the current contract advances both schema and canonical format:
+advanced the schema to 2 without changing the canonical format. Movement mobility advanced schema
+3 / format v2; the later Breakdown cohort advances the current contract again:
 
 ```text
-Content schema version: 3
-Canonical format ID:    sandtable.content-json.v2
+Content schema version: 4
+Canonical format ID:    sandtable.content-json.v3
 Fixture pack ID:        rules-lab.content.movement-contact.v1
 Compatible ruleset ID:  cna-1979.1
 ```
@@ -644,9 +645,9 @@ remaining gates.
 Each checkpoint uses red-green-refactor, owns at most a small file cluster, and ends with focused
 tests plus the full Core test project.
 
-**Implementation status:** `CNT-IMP-001` through `CNT-IMP-005` are delivered. The current schema-3
-synthetic artifact is 12,921 canonical UTF-8 bytes with frozen identity
-`sha256:38687a168bf96018f61826b42ae0df7e34466c7055a111861be46d0c924dcd0d`.
+**Implementation status:** `CNT-IMP-001` through `CNT-IMP-005` plus the Task 004B cohort extension
+are delivered. The current schema-4 synthetic artifact is 13,744 canonical UTF-8 bytes with frozen
+identity `sha256:40f0e7a0a8876e4fefc4f06c1d752253cf338da614e587b9ff017e04541e7d79`.
 
 ### `CNT-IMP-001` — Rules vocabulary artifact
 

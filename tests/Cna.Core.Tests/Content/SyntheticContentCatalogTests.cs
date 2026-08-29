@@ -19,6 +19,7 @@ public sealed class SyntheticContentCatalogTests
         Assert.Equal("cna-1979.1", pack.RulesetId);
         Assert.Equal(
             [
+                "land.breakdown-cohorts",
                 "land.element-mobility",
                 "land.formations",
                 "land.hex-topology",
@@ -98,9 +99,9 @@ public sealed class SyntheticContentCatalogTests
             artifact.GetCanonicalBytes(),
             ContentPackSerializer.SerializeCanonical(definition));
         Assert.Equal(
-            "sha256:38687a168bf96018f61826b42ae0df7e34466c7055a111861be46d0c924dcd0d",
+            "sha256:40f0e7a0a8876e4fefc4f06c1d752253cf338da614e587b9ff017e04541e7d79",
             artifact.Identity.Hash);
-        Assert.Equal(12_921, artifact.CanonicalByteCount);
+        Assert.Equal(13_744, artifact.CanonicalByteCount);
         var goldenFile = File.ReadAllBytes(Path.Combine(
             AppContext.BaseDirectory,
             "Content",
@@ -197,6 +198,11 @@ public sealed class SyntheticContentCatalogTests
         foreach (var element in pack.Elements)
         {
             yield return element.Origin;
+
+            if (element.BreakdownVehicleCohort is not null)
+            {
+                yield return element.BreakdownVehicleCohort.Origin;
+            }
         }
 
         foreach (var scenario in pack.Scenarios)

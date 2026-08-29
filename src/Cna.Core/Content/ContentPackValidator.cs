@@ -1,3 +1,5 @@
+using Cna.Core.Rules;
+
 namespace Cna.Core.Content;
 
 public static class ContentPackValidator
@@ -7,6 +9,7 @@ public static class ContentPackValidator
             "land.hex-topology",
             "land.formations",
             "land.element-mobility",
+            "land.breakdown-cohorts",
             "land.initial-deployment",
             "land.weather-areas",
         ],
@@ -47,6 +50,13 @@ public static class ContentPackValidator
         AddDuplicateIssues(
             pack.Elements.Select(value => value.ElementId),
             "/elements",
+            issues);
+        AddDuplicateIssues(
+            pack.Elements
+                .Select(value => value.BreakdownVehicleCohort)
+                .Where(value => value is not null)
+                .Select(value => value!.CohortId),
+            "/elements/breakdownVehicleCohort",
             issues);
         AddDuplicateIssues(
             pack.Scenarios.Select(value => value.ScenarioId),
@@ -155,6 +165,13 @@ public static class ContentPackValidator
         foreach (var element in pack.Elements)
         {
             yield return (element.Origin, $"/elements/{element.ElementId}");
+
+            if (element.BreakdownVehicleCohort is not null)
+            {
+                yield return (
+                    element.BreakdownVehicleCohort.Origin,
+                    $"/elements/{element.ElementId}/breakdownVehicleCohort");
+            }
         }
 
         foreach (var scenario in pack.Scenarios)
@@ -202,6 +219,23 @@ public static class ContentPackValidator
             "land.element-mobility",
             pack.Elements.Count > 0,
             issues);
+        var hasBreakdownCohorts = pack.Elements.Any(
+            element => element.BreakdownVehicleCohort is not null);
+        RequireCapability(
+            pack,
+            "land.breakdown-cohorts",
+            hasBreakdownCohorts,
+            issues);
+
+        if (!hasBreakdownCohorts
+            && pack.Capabilities.Contains("land.breakdown-cohorts", StringComparer.Ordinal))
+        {
+            Add(
+                issues,
+                "content.breakdown-cohort.unexpected-capability",
+                "/capabilities/land.breakdown-cohorts",
+                "Capability 'land.breakdown-cohorts' requires at least one vehicle cohort.");
+        }
         RequireCapability(
             pack,
             "land.initial-deployment",
@@ -413,6 +447,9 @@ public static class ContentPackValidator
         ContentPackDefinition pack,
         ICollection<ContentValidationIssue> issues)
     {
+        var hasBreakdownCapability = pack.Capabilities.Contains(
+            "land.breakdown-cohorts",
+            StringComparer.Ordinal);
         var formations = pack.Formations
             .GroupBy(formation => formation.FormationId, StringComparer.Ordinal)
             .ToDictionary(
@@ -481,6 +518,33 @@ public static class ContentPackValidator
                     "element.invalid-base-cpa",
                     $"/elements/{element.ElementId}/baseCapabilityPointAllowance",
                     "Base Capability Point Allowance must be positive.");
+            }
+
+            if (element.BreakdownVehicleCohort is not null
+                && !string.Equals(
+                    element.MobilityId,
+                    Cna1979Movement.MotorizedMobilityId,
+                    StringComparison.Ordinal))
+            {
+                Add(
+                    issues,
+                    "content.breakdown-cohort.nonmotorized-element",
+                    $"/elements/{element.ElementId}/breakdownVehicleCohort",
+                    "Only motorized elements may declare a vehicle breakdown cohort.");
+            }
+
+            if (hasBreakdownCapability
+                && element.BreakdownVehicleCohort is null
+                && string.Equals(
+                    element.MobilityId,
+                    Cna1979Movement.MotorizedMobilityId,
+                    StringComparison.Ordinal))
+            {
+                Add(
+                    issues,
+                    "content.breakdown-cohort.missing-motorized-element",
+                    $"/elements/{element.ElementId}/breakdownVehicleCohort",
+                    "Every motorized element requires a vehicle breakdown cohort when the capability is declared.");
             }
         }
     }

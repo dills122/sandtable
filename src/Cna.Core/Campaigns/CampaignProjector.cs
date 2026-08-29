@@ -56,7 +56,7 @@ internal static class CampaignProjector
             ReserveDesignationCompleted completed =>
                 ApplyReserveCompletion(snapshot, completed, context),
             CampaignSequenceAdvanced => throw new InvalidCampaignHistoryException(
-                "Legacy generic sequence events are not valid version-3 campaign history."),
+                "Legacy generic sequence events are not valid current campaign history."),
             _ => throw new InvalidCampaignHistoryException("Unsupported campaign event type."),
         };
     }
@@ -71,7 +71,7 @@ internal static class CampaignProjector
             throw new InvalidCampaignHistoryException("A campaign can contain only one creation event.");
         }
 
-        if (created.ContractVersion != 7
+        if (created.ContractVersion != 8
             || created.StateVersion != 1
             || string.IsNullOrWhiteSpace(created.CampaignId)
             || !Cna1979Ruleset.IsCanonicalHash(created.RulesetHash)

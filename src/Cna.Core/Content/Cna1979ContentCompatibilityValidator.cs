@@ -107,6 +107,36 @@ public static class Cna1979ContentCompatibilityValidator
                     $"/elements/{element.ElementId}/mobilityId",
                     $"Unknown Movement mobility ID '{element.MobilityId}'.");
             }
+
+            if (element.BreakdownVehicleCohort is { } cohort)
+            {
+                if (!Cna1979Breakdown.IsSupportedVehicleTypeId(cohort.VehicleTypeId))
+                {
+                    AddUnknown(
+                        issues,
+                        $"/elements/{element.ElementId}/breakdownVehicleCohort/vehicleTypeId",
+                        $"Unknown Breakdown vehicle type ID '{cohort.VehicleTypeId}'.");
+                }
+
+                if (!Cna1979Breakdown.IsSupportedProfileId(cohort.ProfileId))
+                {
+                    AddUnknown(
+                        issues,
+                        $"/elements/{element.ElementId}/breakdownVehicleCohort/profileId",
+                        $"Unknown Breakdown profile ID '{cohort.ProfileId}'.");
+                }
+
+
+                if (!Cna1979Breakdown.IsSupportedVehicleProfile(
+                    cohort.VehicleTypeId,
+                    cohort.ProfileId))
+                {
+                    issues.Add(new ContentValidationIssue(
+                        "content.breakdown-cohort.profile-mismatch",
+                        $"/elements/{element.ElementId}/breakdownVehicleCohort/profileId",
+                        $"Breakdown vehicle type '{cohort.VehicleTypeId}' does not use profile '{cohort.ProfileId}'."));
+                }
+            }
         }
 
         return new ContentValidationResult(issues);

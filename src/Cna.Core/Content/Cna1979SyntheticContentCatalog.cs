@@ -80,6 +80,7 @@ public static class Cna1979SyntheticContentCatalog
                 "land.hex-topology",
                 "land.formations",
                 "land.element-mobility",
+                "land.breakdown-cohorts",
                 "land.initial-deployment",
                 "land.weather-areas",
             ],
@@ -169,7 +170,8 @@ public static class Cna1979SyntheticContentCatalog
             "axis",
             "axis-lab-formation",
             Cna1979Movement.MotorizedMobilityId,
-            20),
+            20,
+            hasTruckCohort: true),
         Element(
             "axis-element-b",
             "axis",
@@ -181,7 +183,8 @@ public static class Cna1979SyntheticContentCatalog
             "commonwealth",
             "commonwealth-lab-formation",
             Cna1979Movement.MotorizedMobilityId,
-            20),
+            20,
+            hasTruckCohort: true),
         Element(
             "commonwealth-element-b",
             "commonwealth",
@@ -230,7 +233,8 @@ public static class Cna1979SyntheticContentCatalog
         string sideId,
         string parentFormationId,
         string mobilityId,
-        int baseCapabilityPointAllowance) => new(
+        int baseCapabilityPointAllowance,
+        bool hasTruckCohort = false) => new(
             elementId,
             sideId,
             parentFormationId,
@@ -238,7 +242,15 @@ public static class Cna1979SyntheticContentCatalog
             mobilityId,
             baseCapabilityPointAllowance,
             ContentPlacementMode.Independent,
-            Origin($"element.{elementId}"));
+            Origin($"element.{elementId}"),
+            hasTruckCohort
+                ? new ContentBreakdownVehicleCohort(
+                    $"{elementId}.vehicle-cohort.trucks",
+                    Cna1979Breakdown.VehicleTypeTruckId,
+                    1,
+                    Cna1979Breakdown.ProfileTruckId,
+                    Origin($"element.{elementId}.breakdown-cohort.trucks"))
+                : null);
 
     private static ContentInitialPlacement Placement(
         IReadOnlyList<ContentCombatElement> elements,

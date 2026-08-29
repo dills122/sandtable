@@ -1,7 +1,7 @@
 # Movement Foundation v1 Specification
 
-**Status:** Active implementation baseline; `MOV-TASK-001` through `MOV-TASK-004` complete,
-`BREAKDOWN-001` owner decision next; `MOV-TASK-005` conditionally blocked
+**Status:** Active implementation baseline; `MOV-TASK-001` through `MOV-TASK-004B` complete;
+`MOV-TASK-005` is next
 
 **Date:** 2026-08-25
 
@@ -41,22 +41,20 @@ It excludes:
 
 - enemy occupancy entry, enemy ZOC entry/exit, Contact, Engaged, Reaction, and break-off;
 - moving a stack as one action or ending in an unsupported transient overstack;
-- Breakdown adjudication, vehicle classes, Fuel, trucks, or motorization changes;
+- Breakdown adjudication, Fuel, motorization changes, and vehicle classes beyond the one supported
+  synthetic Truck Point cohort;
 - combat, Reserve Release, segment repetition, second-side Movement, and later stages;
 - attachments, dummy formations, Patrol, reconnaissance knowledge, or published content; and
 - any model-backed or free-text interpretation inside authoritative execution.
 
 ### Breakdown continuity gate
 
-Movement Foundation v1 is replay-complete through arrival at the Breakdown Determination boundary;
-it does not yet claim that the resulting checkpoint contains every vehicle/Breakdown Point fact
-needed to adjudicate that next mechanic. The current Task 004 operational state records CP
-expenditure and Cohesion only. The
-[Breakdown continuity packet](../research/breakdown-continuity-spike.md) opens `BREAKDOWN-001` to
-choose whether Movement rules/content/world state gain minimum continuity fields now or terminal
-histories require a later clean-cut migration. Because continuity-now also changes approved own
-observation and action explanations, the owner decision precedes `MOV-TASK-005`. It does not
-authorize Breakdown adjudication.
+Movement Foundation v1 remains replay-complete through arrival at the Breakdown Determination
+boundary and does not adjudicate that mechanic. On 2026-08-29, the owner approved
+`BREAKDOWN-001`: Task 004B adds exact BP rules identity, one supported synthetic Truck Point cohort
+for each admitted motorized element, and stage-keyed replay state before Task 005 freezes outward
+contracts. No Breakdown action, roll, loss, broken-location consequence, or RNG mutation is
+authorized.
 
 ## Normative decisions
 
@@ -72,6 +70,8 @@ The specification adopts the owner-approved research recommendations:
 | `MOV-DEC-006` | Authoritative representation bindings and event truth never become outward DTOs. |
 | `MOV-DEC-007` | Unsupported categories reject before mutation and emit zero events. |
 | `MOV-DEC-008` | The existing Reserve matrix supplies the checked Movement evidence paths. |
+| `BRK-DEC-001` | Two independent d6 are read sequentially as the `11`-`66` Breakdown table coordinate; they are not arithmetically summed. |
+| `BRK-DEC-002` | Minimum Breakdown continuity is versioned before outward Movement contracts; early Movement histories are not deliberately terminal. |
 
 ## Contract requirements
 
@@ -252,6 +252,53 @@ For each child it must retain:
 The expected Movement action counts and aggregate fingerprint are frozen only after implementation
 and review; this draft does not invent them.
 
+### `MOV-REQ-013` - Exact Breakdown Point rules identity
+
+Authority must use a distinct immutable, non-negative, reduced rational Breakdown Point amount.
+The ruleset owns artifact `cna-1979.1.breakdown-tables` with the exact nine accumulated-BP bands
+`0-3`, `4-10`, `11-20`, `21-30`, `31-40`, `41-50`, `51-60`, `61-70`, and `71+`; the complete
+36-value sequential-dice domain; explicit upward band selection; and the supported
+`land.breakdown.profile.truck`/`land.breakdown.vehicle-type.truck` identity.
+
+The Truck profile shifts two columns left. Normal weather has no column shift, Hot shifts one right,
+and an applicable Sandstorm shifts one right when Sandstorm-attributed BP is at least half the exact
+total BP. Rainstorm treats Road BP as Track BP rather than shifting a column. Effective
+columns clamp at the table edges. The approved dice identity maps two sequential d6 to `11`-`66`
+(`3,3 => 33`); Task 004B exposes no roll or RNG path. Every normalized row retains primary-source
+provenance. The percentage outcome matrix remains deferred to Breakdown adjudication.
+
+### `MOV-REQ-014` - Supported vehicle-cohort content
+
+Each admitted motorized synthetic element must carry exactly one immutable Breakdown cohort with a
+stable cohort ID, supported vehicle-type ID, positive working point count, supported rules profile
+ID, and explicit synthetic origin. `axis-element-a` and `commonwealth-element-a` each carry one
+working Truck Point; admitted non-motorized elements carry canonical `null` and may not carry a
+cohort. Cohort IDs are unique across the pack. Content persists source/synthetic facts only, never
+accumulated BP, a checked band, or broken runtime state.
+
+This clean cut retains pack ID `rules-lab.content.movement-contact.v1`, advances Content schema
+`3 -> 4` and canonical format `v2 -> v3`, and fails closed on legacy shape, unknown profile/type,
+capability mismatch, non-positive count, duplicate cohort, or mobility/cohort contradiction.
+
+### `MOV-REQ-015` - Replay-complete Breakdown operational state
+
+The existing Operation-Stage ledger is the single stage key. A cohort-bearing element's operational
+state must contain the same cohort ID, exact cumulative BP, exact Sandstorm-attributed BP, nullable
+highest effective checked band, and non-negative working/broken point counts whose total equals the
+admitted Content count. Sandstorm-attributed BP must be non-negative and no greater than total BP. Creation
+seeds exact BP zero, no checked band, the Content working count, and zero broken points. An element
+without a Content cohort has canonical `null` Breakdown state.
+
+World `4`, snapshot `9`, and `CampaignCreated` event `8` carry this state canonically. Creation
+replay must reproduce byte-identical state; pre-Movement events preserve it. Legacy versions and
+content/world/profile/count/stage mismatches reject. Task 004B introduces no pre-Movement event,
+Movement BP mutation, Breakdown result, loss placement, action, or RNG consumption.
+
+Before any later task may write a non-null checked band, its context-authoritative validator must
+derive the effective band from exact total BP, the admitted vehicle profile, applicable weather,
+and prior check history. Task 004B rejects non-check-eligible remembered bands but does not claim
+that future mutation-time coherence validator.
+
 ## Acceptance criteria
 
 | ID | Acceptance behavior |
@@ -269,16 +316,24 @@ and review; this draft does not invent them.
 | `MOV-AC-011` | Replay and re-adjudication produce exact canonical equality for no-move and multi-move histories. |
 | `MOV-AC-012` | The checked six-policy Maneuver reaches Breakdown in every child with expected moved/reserved/ledger facts and strict readback. |
 | `MOV-AC-013` | Full Core, Exercise Runner, solution, format, and diff gates pass warning-clean. |
+| `MOV-AC-014` | Exact BP amounts, nine bands, Truck BAR, weather rules, attribution basis, rounding, sequential-dice domain, provenance, canonical artifact, and mutation-sensitive hash pass positive/negative golden tests without an outcome matrix or RNG/resolver path. |
+| `MOV-AC-015` | Content schema 4 / format v3 admits exactly the two supported synthetic Truck Point cohorts, keeps non-motorized cohorts null, and rejects legacy, unknown, duplicate, non-positive, or contradictory shapes. |
+| `MOV-AC-016` | Campaign creation seeds context-matching BP state; world 4 / snapshot 9 / creation 8 canonical round-trip and creation replay are byte-identical while pre-Movement events preserve the state. |
+| `MOV-AC-017` | Task 004B exposes no Breakdown action, consumes no RNG, mutates no BP after creation, and rejects legacy or forged cohort/profile/count/stage state. |
 
 ## Owner approval
 
 On 2026-08-25, the project owner approved the apparent-presence/ZOC visibility ruling, exact
 rational Capability Point amounts, the non-contact v1 boundary, the Breakdown terminal, the
 over-CPA/Disorganization deferral, and the linked task graph. The completed source/ruling lock and
-Rules foundation make `MOV-TASK-002` complete with exact rational amounts, a closed mobility vocabulary, normalized
-source-backed Movement tables, strict canonical artifact readback, and ruleset v6 identity.
-`MOV-TASK-003` is complete with required per-element mobility, Content schema 3 / canonical format
-v2, strict legacy and unknown-ID rejection, and migrated deterministic identities. `MOV-TASK-004`
-is complete with world v3, snapshot v8, creation event v7, exact initial Cohesion/expenditure, and
-opaque internal one-to-one representation bindings. The owner decision in `BREAKDOWN-001` is the
-next gate; `MOV-TASK-005` follows the selected continuity boundary.
+Rules foundation make the historical `MOV-TASK-002` clean cut complete with exact rational amounts,
+a closed mobility vocabulary, normalized source-backed Movement tables, strict canonical artifact
+readback, and ruleset v6 identity. The historical `MOV-TASK-003` clean cut is complete with required
+per-element mobility, Content schema 3 / canonical format v2, strict legacy and unknown-ID rejection,
+and migrated deterministic identities. The historical `MOV-TASK-004` clean cut is complete with
+world v3, snapshot v8, creation event v7, exact initial Cohesion/expenditure, and
+opaque internal one-to-one representation bindings. On 2026-08-29 the owner approved sequential-die
+coordinates, continuity-now, and the Table 21.38 Sandstorm BP basis in `BREAKDOWN-001`; the
+source-locked `MOV-TASK-004B` migration is implemented with ruleset v7, Content schema 4 / canonical
+format v3, world v4, snapshot v9, and creation event v8. Its verification/review closeout is the
+active predecessor of `MOV-TASK-005`.

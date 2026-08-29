@@ -55,7 +55,7 @@ public sealed class CampaignSetupTests
                     predetermined.Content.Pack);
                 Assert.Equal("movement-contact-lab", predetermined.Content.ScenarioId);
                 Assert.Equal(
-                    "sha256:0e03d12e8b4a5aeb7b19b7eed3f4ed2dcb9d3db2d253bdeaf8867d6b57a099a2",
+                    "sha256:9e55e3de11338ba6432768ccb6740a6fed83b37503f69cc7ff8ecd58e205634f",
                     predetermined.Hash);
             },
             contested =>
@@ -101,7 +101,7 @@ public sealed class CampaignSetupTests
                     contested.Content.Pack);
                 Assert.Equal("initiative-contested-lab", contested.Content.ScenarioId);
                 Assert.Equal(
-                    "sha256:0a62ffb8041ffc40a7f9a7a9ee458b7432db05e803b94775270bfb35d707b796",
+                    "sha256:8ae5d9d7c922c45376690bd8fd1de93f9937ff757dca0084ca9372dd954c014a",
                     contested.Hash);
             });
     }
@@ -420,11 +420,11 @@ public sealed class CampaignSetupTests
             "\"fleetRepair\":\"explicit-none\",\"sources\":[{" +
             "\"sourceId\":\"sandtable-rules-lab\"," +
             "\"locator\":\"stage-entry.no-obligations.v1\"}]}," +
-            "\"content\":{\"schemaVersion\":3," +
-            "\"formatId\":\"sandtable.content-json.v2\"," +
+            "\"content\":{\"schemaVersion\":4," +
+            "\"formatId\":\"sandtable.content-json.v3\"," +
             "\"packId\":\"rules-lab.content.movement-contact.v1\"," +
             "\"rulesetId\":\"cna-1979.1\"," +
-            "\"hash\":\"sha256:38687a168bf96018f61826b42ae0df7e34466c7055a111861be46d0c924dcd0d\"," +
+            "\"hash\":\"sha256:40f0e7a0a8876e4fefc4f06c1d752253cf338da614e587b9ff017e04541e7d79\"," +
             "\"scenarioId\":\"movement-contact-lab\"},\"sources\":[{" +
             "\"sourceId\":\"sandtable-rules-lab\"," +
             "\"locator\":\"initiative.predetermined-axis.v1\"}]}",

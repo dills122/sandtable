@@ -56,8 +56,8 @@ dotnet run --project src/Cna.ExerciseRunner/Cna.ExerciseRunner.csproj --no-build
 - The aggregate retained 6 successful children, one Movement terminal count of 6, and zero failed
   or aggregate-invalid artifacts.
 - Two independent runs produced the same deterministic report fingerprint:
-  `sha256:82bb3df7885b76d0693f15535aeecc0febe39edde63845dc40246532ec4c2157`
-  under ruleset v6.
+  `sha256:cab825d30b128ab1f1e2032879ca0ac3f793abc054a2c710dbdf22e93f49e71c`
+  under ruleset v7.
 - The complete ExerciseRunner suite passed 293/293; the solution suite passed 705/705 with zero
   skipped tests, and the solution build completed with zero warnings and zero errors.
 

@@ -752,7 +752,7 @@ internal static class CampaignEventSerializer
             created.RandomState,
             created.SequencePosition);
 
-        if (created.ContractVersion != 7
+        if (created.ContractVersion != 8
             || created.StateVersion != 1
             || created.RandomState.NextByteCursor != 0
             || !CampaignSnapshotValidator.IsLocallyValid(localSnapshot))

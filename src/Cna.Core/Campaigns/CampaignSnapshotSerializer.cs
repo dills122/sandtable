@@ -179,6 +179,9 @@ internal static class CampaignSnapshotSerializer
                 writer,
                 element.OperationalState.CapabilityPointsExpended);
             writer.WriteNumber("cohesionLevel", element.OperationalState.CohesionLevel);
+            WriteVehicleBreakdownState(
+                writer,
+                element.OperationalState.VehicleBreakdownState);
             writer.WriteEndObject();
             writer.WriteEndObject();
         }
@@ -229,7 +232,8 @@ internal static class CampaignSnapshotSerializer
                         "ledgerGameTurn",
                         "ledgerOperationStage",
                         "capabilityPointsExpended",
-                        "cohesionLevel");
+                        "cohesionLevel",
+                        "vehicleBreakdownState");
                     return new CampaignElementState(
                         element.GetProperty("elementId").GetString()!,
                         element.GetProperty("currentLocationId").GetString()!,
@@ -242,7 +246,9 @@ internal static class CampaignSnapshotSerializer
                                     operational
                                         .GetProperty("capabilityPointsExpended")
                                         .GetRawText())),
-                            operational.GetProperty("cohesionLevel").GetInt32()));
+                            operational.GetProperty("cohesionLevel").GetInt32(),
+                            ParseVehicleBreakdownState(
+                                operational.GetProperty("vehicleBreakdownState"))));
                 })
                 .ToArray(),
             world.GetProperty("representations")
@@ -266,6 +272,78 @@ internal static class CampaignSnapshotSerializer
                             .ToArray());
                 })
                 .ToArray());
+    }
+
+    private static void WriteVehicleBreakdownState(
+        Utf8JsonWriter writer,
+        CampaignVehicleBreakdownState? state)
+    {
+        if (state is null)
+        {
+            writer.WriteNull("vehicleBreakdownState");
+            return;
+        }
+
+        writer.WriteStartObject("vehicleBreakdownState");
+        writer.WriteString("cohortId", state.CohortId);
+        writer.WritePropertyName("cumulativeBreakdownPoints");
+        BreakdownPointAmountCodec.WriteCanonical(writer, state.CumulativeBreakdownPoints);
+        writer.WritePropertyName("sandstormAttributedBreakdownPoints");
+        BreakdownPointAmountCodec.WriteCanonical(
+            writer,
+            state.SandstormAttributedBreakdownPoints);
+        WriteNullableString(
+            writer,
+            "highestEffectiveCheckedBandId",
+            state.HighestEffectiveCheckedBandId);
+        writer.WriteNumber("workingPointCount", state.WorkingPointCount);
+        writer.WriteNumber("brokenPointCount", state.BrokenPointCount);
+        writer.WriteEndObject();
+    }
+
+    private static CampaignVehicleBreakdownState? ParseVehicleBreakdownState(JsonElement element)
+    {
+        if (element.ValueKind == JsonValueKind.Null)
+        {
+            return null;
+        }
+
+        try
+        {
+            RequireProperties(
+                element,
+                "cohortId",
+                "cumulativeBreakdownPoints",
+                "sandstormAttributedBreakdownPoints",
+                "highestEffectiveCheckedBandId",
+                "workingPointCount",
+                "brokenPointCount");
+            return new CampaignVehicleBreakdownState(
+                element.GetProperty("cohortId").GetString()!,
+                BreakdownPointAmountCodec.Deserialize(
+                    System.Text.Encoding.UTF8.GetBytes(
+                        element.GetProperty("cumulativeBreakdownPoints").GetRawText())),
+                BreakdownPointAmountCodec.Deserialize(
+                    System.Text.Encoding.UTF8.GetBytes(
+                        element
+                            .GetProperty("sandstormAttributedBreakdownPoints")
+                            .GetRawText())),
+                ParseNullableString(element.GetProperty("highestEffectiveCheckedBandId")),
+                element.GetProperty("workingPointCount").GetInt32(),
+                element.GetProperty("brokenPointCount").GetInt32());
+        }
+        catch (JsonException)
+        {
+            throw;
+        }
+        catch (Exception exception) when (exception is ArgumentException
+            or ArithmeticException
+            or FormatException
+            or InvalidOperationException
+            or KeyNotFoundException)
+        {
+            throw new JsonException("The campaign vehicle Breakdown state is invalid.", exception);
+        }
     }
 
     private static string FormatRepresentationBindingKind(

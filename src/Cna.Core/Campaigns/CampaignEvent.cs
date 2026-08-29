@@ -15,7 +15,7 @@ internal sealed record CampaignCreated(
     CampaignSetupSnapshot Setup,
     CampaignWorldSnapshot InitialWorld,
     RandomStreamState RandomState,
-    LandSequencePosition SequencePosition) : CampaignEvent(7, CampaignId, StateVersion);
+    LandSequencePosition SequencePosition) : CampaignEvent(8, CampaignId, StateVersion);
 
 internal sealed record CampaignSequenceAdvanced(
     string CampaignId,

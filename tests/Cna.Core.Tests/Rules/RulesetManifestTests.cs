@@ -12,16 +12,23 @@ public sealed class RulesetManifestTests
         var artifact = Assert.Single(
             manifest.Artifacts,
             value => value.ArtifactId == "cna-1979.1.land-sequence");
+        var breakdownArtifact = Assert.Single(
+            manifest.Artifacts,
+            value => value.ArtifactId == Cna1979Breakdown.ArtifactId);
 
         Assert.Equal("cna-1979.1", manifest.RulesetId);
-        Assert.Equal(6, manifest.ContractVersion);
-        Assert.Equal(7, manifest.Artifacts.Count);
+        Assert.Equal(7, manifest.ContractVersion);
+        Assert.Equal(8, manifest.Artifacts.Count);
         Assert.Equal("cna-1979.1.land-sequence", artifact.ArtifactId);
         Assert.Equal(
             Cna1979Ruleset.CalculateLandSequenceContentHash(
                 Cna1979LandSequence.CreateTurn(1)),
             artifact.ContentHash);
         Assert.Matches("^sha256:[0-9a-f]{64}$", artifact.ContentHash);
+        var expectedBreakdownArtifact = Cna1979Breakdown.CreateArtifact();
+        Assert.Equal(expectedBreakdownArtifact.ArtifactId, breakdownArtifact.ArtifactId);
+        Assert.Equal(expectedBreakdownArtifact.ContentHash, breakdownArtifact.ContentHash);
+        Assert.Equal(expectedBreakdownArtifact.Sources, breakdownArtifact.Sources);
         Assert.Contains(
             artifact.Sources,
             source => source == new RuleReference("spi-1979-land-rules", "5.2"));
@@ -34,9 +41,15 @@ public sealed class RulesetManifestTests
         var ruling = Assert.Single(
             manifest.Rulings,
             value => value.RulingId == Cna1979Ruleset.EmptyOpeningConvoyRulingId);
-        Assert.Equal(4, manifest.Rulings.Count);
+        Assert.Contains(
+            manifest.Rulings,
+            value => value.RulingId == Cna1979Breakdown.SequentialDiceRulingId);
+        Assert.Contains(
+            manifest.Rulings,
+            value => value.RulingId == Cna1979Breakdown.SandstormBasisRulingId);
+        Assert.Equal(6, manifest.Rulings.Count);
         Assert.Equal(
-            "6a220a0aaf6ff20e453474384d5c96b1ec78344d53cc05fafdcffb0fae3aecac",
+            "f135fb9582a9aabd8fdd628df3d9fef732cea2fc81967632f7ddb85c1650d387",
             manifest.Hash);
         Assert.Equal(Cna1979Ruleset.EmptyOpeningConvoyRulingId, ruling.RulingId);
         Assert.Equal(

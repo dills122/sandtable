@@ -12,10 +12,11 @@
 
 **Current contract evolution:** The WORLD-001 requirements below retain the original creation-v3,
 snapshot-v3, and world-v1 delivery as historical capability context. Subsequent clean cuts now use
-ruleset manifest 6, setup schema 5, `CampaignCreated` 7, `CampaignSnapshot` 8, and
-`CampaignWorldSnapshot` 3. Reserve Designation added per-element Reserve status; Movement
+ruleset manifest 7, setup schema 5, `CampaignCreated` 8, `CampaignSnapshot` 9, and
+`CampaignWorldSnapshot` 4. Reserve Designation added per-element Reserve status; Movement
 Foundation `MOV-TASK-004` added exact Operation-Stage expenditure/Cohesion and opaque one-to-one
-map-representation bindings. See [Reserve Designation v1](reserve-designation-v1.md) and
+map-representation bindings; `MOV-TASK-004B` added creation-seeded Breakdown continuity. See
+[Reserve Designation v1](reserve-designation-v1.md) and
 [Movement Foundation v1](movement-foundation-v1.md). The original stable `WLD-*` identifiers are
 not renumbered or rewritten to claim those later capabilities.
 

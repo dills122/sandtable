@@ -217,11 +217,31 @@ public static class ContentPackSerializer
                 "baseCapabilityPointAllowance",
                 element.BaseCapabilityPointAllowance);
             writer.WriteString("placementMode", FormatPlacementMode(element.PlacementMode));
+            WriteBreakdownVehicleCohort(writer, element.BreakdownVehicleCohort);
             WriteOrigin(writer, "origin", element.Origin);
             writer.WriteEndObject();
         }
 
         writer.WriteEndArray();
+    }
+
+    private static void WriteBreakdownVehicleCohort(
+        Utf8JsonWriter writer,
+        ContentBreakdownVehicleCohort? cohort)
+    {
+        if (cohort is null)
+        {
+            writer.WriteNull("breakdownVehicleCohort");
+            return;
+        }
+
+        writer.WriteStartObject("breakdownVehicleCohort");
+        writer.WriteString("cohortId", cohort.CohortId);
+        writer.WriteString("vehicleTypeId", cohort.VehicleTypeId);
+        writer.WriteNumber("workingPointCount", cohort.WorkingPointCount);
+        writer.WriteString("profileId", cohort.ProfileId);
+        WriteOrigin(writer, "origin", cohort.Origin);
+        writer.WriteEndObject();
     }
 
     private static void WriteScenarios(
@@ -461,6 +481,7 @@ public static class ContentPackSerializer
             "mobilityId",
             "baseCapabilityPointAllowance",
             "placementMode",
+            "breakdownVehicleCohort",
             "origin");
         return new ContentCombatElement(
             ReadString(properties["elementId"], $"{path}/elementId"),
@@ -474,6 +495,33 @@ public static class ContentPackSerializer
             ParsePlacementMode(
                 ReadString(properties["placementMode"], $"{path}/placementMode"),
                 path),
+            ParseOrigin(properties["origin"], $"{path}/origin"),
+            ParseBreakdownVehicleCohort(
+                properties["breakdownVehicleCohort"],
+                $"{path}/breakdownVehicleCohort"));
+    }
+
+    private static ContentBreakdownVehicleCohort? ParseBreakdownVehicleCohort(
+        JsonElement element,
+        string path)
+    {
+        if (element.ValueKind == JsonValueKind.Null)
+        {
+            return null;
+        }
+
+        var properties = ReadObject(
+            element,
+            "cohortId",
+            "vehicleTypeId",
+            "workingPointCount",
+            "profileId",
+            "origin");
+        return new ContentBreakdownVehicleCohort(
+            ReadString(properties["cohortId"], $"{path}/cohortId"),
+            ReadString(properties["vehicleTypeId"], $"{path}/vehicleTypeId"),
+            ReadInteger(properties["workingPointCount"], $"{path}/workingPointCount"),
+            ReadString(properties["profileId"], $"{path}/profileId"),
             ParseOrigin(properties["origin"], $"{path}/origin"));
     }
 

@@ -8,6 +8,12 @@
 
 **Research work item:** `RSH-SPRINT-4-5-001`
 
+**Current evolution:** The owner subsequently approved `BREAKDOWN-001`: continuity is recorded
+before outward Movement contracts, the table coordinate uses sequential d6, and Sandstorm
+eligibility uses Table 21.38's accumulated-BP share. `MOV-TASK-004B` implements that bounded seam
+and has passed its repository and independent-review gates. The recommendations below remain the
+historical decision record.
+
 ## Decision question
 
 Does the merged Movement authority foundation leave any source, state, fog, or sequence uncertainty
@@ -113,7 +119,8 @@ now; six design items wait for Contact and Breakdown.
 ## Decision and planning consequences
 
 1. Make the owner choice in `BREAKDOWN-001` the next gate; conditionally insert the recommended
-   BP continuity lane before `MOV-TASK-005`.
+   BP continuity lane before `MOV-TASK-005`. **Current outcome:** approved, implemented, gated,
+   and independently reviewed in `MOV-TASK-004B`.
 2. Keep Tasks 005-010 otherwise dependency-ordered and keep public Movement membership dormant
    until Task 008.
 3. Describe Movement Foundation replay as complete through arrival at the unsupported Breakdown

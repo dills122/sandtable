@@ -58,9 +58,9 @@ replay those events to byte-identical state. Reserve authority now carries per-e
 owner-only observation, exact acting-side candidates, closed command mapping, bounded checkpoints,
 and canonical designation/completion events. The Movement foundation additionally records exact
 per-Operation-Stage expenditure/Cohesion state and opaque one-to-one map representations without
-yet exposing a Movement action. Ruleset manifest contract 6, setup schema 5, snapshot contract 8,
-Campaign World snapshot contract 3, Campaign Observation contract 4, legal-action-set contract 2,
-and Content Pack schema 3 / canonical format v2 use an original nine-hex,
+yet exposing a Movement action. Ruleset manifest contract 7, setup schema 5, snapshot contract 9,
+Campaign World snapshot contract 4, Campaign Observation contract 4, legal-action-set contract 2,
+and Content Pack schema 4 / canonical format v3 use an original nine-hex,
 nonhistorical rules laboratory to develop game systems without redistributing published assets.
 Campaign Observation derives deterministic side-safe public topology, audience-visible turn
 revision, own-force facts, and own Reserve status without exposing the complete Content Pack, any
@@ -95,8 +95,8 @@ with Reserve `none`/`one`/`all`, producing exact 10/11/12-action Movement trajec
 Paired comparison, model
 controllers, and side-safe exports are not implemented yet.
 
-The checked Exercise and Maneuver profiles use the current v2 manifest identities with ruleset v6,
-snapshot v8, world v3, strict trusted-evidence admission, and deterministic v2 controller
+The checked Exercise and Maneuver profiles use the current v2 manifest identities with ruleset v7,
+snapshot v9, world v4, strict trusted-evidence admission, and deterministic v2 controller
 configuration identity.
 
 The first two retained simulator studies now verify repeated Movement-terminal determinism,
@@ -124,7 +124,7 @@ The current delivery boundary is:
 | Ruleset/provenance, synthetic content, campaign authority, deterministic randomness, events, and replay | Implemented foundation |
 | Side-safe observations and exact-audience legal actions | Implemented for the current rules-laboratory path |
 | Mandatory turn preamble | Implemented through Reserve Designation completion; authority reaches first-side Movement |
-| Movement/contact and combat loops | Movement Foundation rules, Content mobility, and replay-complete world/representation state complete; `BREAKDOWN-001` owner decision next, then side-safe observation; campaign actions not started |
+| Movement/contact and combat loops | Movement Foundation rules, Content mobility, replay-complete world/representation state, and approved Breakdown continuity are complete through `MOV-TASK-004B`; side-safe observation is next; campaign actions not started |
 | Published first-scenario data, remaining Land rules, victory, persistence, and Maproom | Milestone-level; not started |
 | Player Intent Composer | Direction reviewed; representative decision after the combat skeleton, no-model prototype before Maproom, optional parser evaluation after deterministic MVP |
 | Exercise Harness | Organization, Reserve, and Movement-terminal Exercises plus two-setup and six-policy serial Maneuvers implemented; pairing remains later |
@@ -161,9 +161,11 @@ non-contact moves, and explicit completion to Breakdown Determination. The plan 
 its source/ruling lock, exact Rules foundation, `MOV-TASK-003` Content mobility contract, and
 `MOV-TASK-004` replay-complete world/representation contracts are complete. Task 004 records exact
 Cohesion/expenditure and opaque internal representation
-bindings in snapshot v8/world v3 creation history. The `BREAKDOWN-001` continuity/ruling decision
-is now the next gate because its outcome can change Task 005's own-observation shape;
-`MOV-TASK-005` follows that decision. Movement campaign actions are still unsupported. Paired
+bindings in the Task 004 snapshot v8/world v3 creation history. On 2026-08-29 the owner approved sequential-d6
+Breakdown coordinates, continuity-now, and the Table 21.38 Sandstorm-attributed-BP basis.
+`MOV-TASK-004B` implements the exact Rules/Content/World seam and passed the repository gate plus
+two fresh-context review instances. `MOV-TASK-005` is next.
+Movement campaign actions are still unsupported. Paired
 comparison remains a later evaluation capability and does not block gameplay-engine progress.
 Combat research has progressed beyond the initial source inventory: `CMB-RSH-001` now retains the
 first bounded rules/result-surface normalization. Combat contracts and implementation remain gated

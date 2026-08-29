@@ -100,7 +100,13 @@ internal static class CampaignObservationTestData
             Cna1979Movement.MotorizedMobilityId,
             capability,
             ContentPlacementMode.Independent,
-            origin($"element.{elementId}"));
+            origin($"element.{elementId}"),
+            new ContentBreakdownVehicleCohort(
+                $"{elementId}.vehicle-cohort.trucks",
+                Cna1979Breakdown.VehicleTypeTruckId,
+                1,
+                Cna1979Breakdown.ProfileTruckId,
+                origin($"element.{elementId}.breakdown-cohort.trucks")));
 
         ContentInitialPlacement Placement(string elementId, string locationId) => new(
             elementId,

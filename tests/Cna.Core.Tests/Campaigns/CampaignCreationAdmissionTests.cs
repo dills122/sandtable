@@ -90,8 +90,8 @@ public sealed class CampaignCreationAdmissionTests
         Assert.True(result.IsAccepted);
         Assert.Equal(1, resolver.CallCount);
         var created = Assert.IsType<CampaignCreated>(Assert.Single(result.Events));
-        Assert.Equal(7, created.ContractVersion);
-        Assert.Equal(8, CampaignProjector.Apply(null, created,
+        Assert.Equal(8, created.ContractVersion);
+        Assert.Equal(9, CampaignProjector.Apply(null, created,
             CampaignContentContext.Create(
                 Cna1979SyntheticContentCatalog.Artifact,
                 setup.Content.ScenarioId)).ContractVersion);
@@ -100,7 +100,7 @@ public sealed class CampaignCreationAdmissionTests
     }
 
     [Fact]
-    public void CreationCommandRemainsVersionSixAndEventUsesSevenRejectingSix()
+    public void CreationCommandRemainsVersionSixAndEventUsesEightRejectingSeven()
     {
         var setup = Cna1979SetupCatalog.Definitions[0];
         var current = Create(setup);
@@ -117,14 +117,14 @@ public sealed class CampaignCreationAdmissionTests
         var created = Assert.IsType<CampaignCreated>(Assert.Single(accepted.Events));
         var canonical = Encoding.UTF8.GetString(CampaignEventSerializer.Serialize(created));
         var oldEvent = canonical.Replace(
+            "\"contractVersion\":8",
             "\"contractVersion\":7",
-            "\"contractVersion\":6",
             StringComparison.Ordinal);
 
         Assert.Equal(6, current.ContractVersion);
         Assert.Equal(CampaignCommandRejectionReason.InvalidCommand, rejected.RejectionReason);
         Assert.Empty(rejected.Events);
-        Assert.Equal(7, created.ContractVersion);
+        Assert.Equal(8, created.ContractVersion);
         Assert.Throws<JsonException>(() => CampaignEventSerializer.Deserialize(
             Encoding.UTF8.GetBytes(oldEvent)));
     }

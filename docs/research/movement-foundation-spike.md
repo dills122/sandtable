@@ -1,7 +1,7 @@
 # Movement Foundation Spike
 
-**Status:** Approved active implementation baseline; `MOV-TASK-001` through `MOV-TASK-004`
-complete, `BREAKDOWN-001` owner decision next; `MOV-TASK-005` conditionally blocked
+**Status:** Historical source lock; `MOV-TASK-001` through `MOV-TASK-004B` are complete;
+`MOV-TASK-005` is next
 
 **Date:** 2026-08-25
 
@@ -12,11 +12,11 @@ complete, `BREAKDOWN-001` owner decision next; `MOV-TASK-005` conditionally bloc
 **Proposed capability:** `MOVE-001`
 
 **Current delivery note:** Tasks 001-004 are merged. The later
-[Breakdown continuity packet](breakdown-continuity-spike.md) recommends inserting minimum BP
-rules/content/world continuity before Task 005 and proposes a sequential-dice ruling. The owner may
-instead choose terminal histories plus a later clean-cut migration; Task 005 is blocked until that
-choice fixes its own-observation shape. This does not broaden the Movement package into Breakdown,
-ZOC/Reaction, Contact/Engaged, or Combat adjudication authority.
+[Breakdown continuity packet](breakdown-continuity-spike.md) records the owner's approval of minimum
+BP rules/content/world continuity before Task 005, sequential-d6 coordinates, and the Table 21.38
+Sandstorm BP-share basis. Task 004B implements that clean cut and has passed its repository and
+independent-review gates. This does not broaden the Movement package into Breakdown, ZOC/Reaction,
+Contact/Engaged, or Combat adjudication authority.
 
 ## Executive conclusion
 

@@ -9,6 +9,21 @@ internal sealed record CampaignElementOperationalState
         int ledgerOperationStage,
         CapabilityPointAmount capabilityPointsExpended,
         int cohesionLevel)
+        : this(
+            ledgerGameTurn,
+            ledgerOperationStage,
+            capabilityPointsExpended,
+            cohesionLevel,
+            null)
+    {
+    }
+
+    public CampaignElementOperationalState(
+        int ledgerGameTurn,
+        int ledgerOperationStage,
+        CapabilityPointAmount capabilityPointsExpended,
+        int cohesionLevel,
+        CampaignVehicleBreakdownState? vehicleBreakdownState)
     {
         ArgumentOutOfRangeException.ThrowIfLessThan(ledgerGameTurn, 1);
         if (ledgerOperationStage is < 1 or > 3)
@@ -23,6 +38,7 @@ internal sealed record CampaignElementOperationalState
         LedgerOperationStage = ledgerOperationStage;
         CapabilityPointsExpended = capabilityPointsExpended;
         CohesionLevel = cohesionLevel;
+        VehicleBreakdownState = vehicleBreakdownState;
     }
 
     public int LedgerGameTurn { get; }
@@ -32,4 +48,6 @@ internal sealed record CampaignElementOperationalState
     public CapabilityPointAmount CapabilityPointsExpended { get; }
 
     public int CohesionLevel { get; }
+
+    public CampaignVehicleBreakdownState? VehicleBreakdownState { get; }
 }

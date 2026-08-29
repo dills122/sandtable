@@ -558,14 +558,15 @@ the current Operation Stage; it is not a replenishing UI movement allowance. **C
 is a real player decision that advances to Breakdown Determination, not a runner stop condition.
 These names are approved for Movement Foundation v1. The source/ruling lock and exact Rules
 foundation are complete, including stable `land.mobility.non-motorized` and
-`land.mobility.motorized` identifiers. Content schema 3 now assigns one of those IDs explicitly to
-each element. Opaque `map-representation.0001`-style identities now name the Umpire's physical-map
+`land.mobility.motorized` identifiers. Content schema 4 now assigns one of those IDs explicitly to
+each element and adds the approved synthetic Truck Point cohorts. Opaque
+`map-representation.0001`-style identities now name the Umpire's physical-map
 representations without embedding real element IDs; their bindings never appear outward. The next
-owner gate is `BREAKDOWN-001`; `MOV-TASK-005` follows the selected continuity boundary. None of
-these Movement names denotes an implemented Movement action yet. **Breakdown continuity** is a
-named research gate, not an implemented ledger or adjudication claim: the owner must decide whether
-the first Movement event records minimum Breakdown Point continuity or requires a later clean-cut
-migration. **Enemy ZOC** is the triggering board condition and **Reaction** is the persisted
+delivery gate is `MOV-TASK-005`; the owner approved `BREAKDOWN-001`, and `MOV-TASK-004B` implements
+the minimum Breakdown Point Rules/Content/World continuity seam. None of these Movement names
+denotes an implemented Movement action yet. **Breakdown continuity** names replay state and rules
+identity, not Breakdown adjudication: no roll, result, loss, or Movement BP mutation is implemented.
+**Enemy ZOC** is the triggering board condition and **Reaction** is the persisted
 non-phasing interruption it opens. Neither is **Contact**: Contact is created by Close Assault, and
 **Engaged** is a combat-result state. The repeatable **Movement/Combat cycle** remains a Sprint 5
 research-gated domain concept. None of these later terms should be inferred inside the non-contact
