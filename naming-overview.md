@@ -563,10 +563,15 @@ each element and adds the approved synthetic Truck Point cohorts. Opaque
 `map-representation.0001`-style identities now name the Umpire's physical-map
 representations without embedding real element IDs; their bindings never appear outward. Contract-5
 Campaign Observation now exposes only the approved apparent representation/location/current-ZOC
-shape alongside exact own Movement/Breakdown facts. The next delivery gate is `MOV-TASK-006`;
-`MOV-TASK-004B` implements the minimum Breakdown Point Rules/Content/World continuity seam and
-`MOV-TASK-005` implements its side-safe outward projection. None of these Movement names
-denotes an implemented Movement action yet. **Breakdown continuity** names replay state and rules
+shape alongside exact own Movement/Breakdown facts. `MOV-TASK-004B` implements the minimum
+Breakdown Point Rules/Content/World continuity seam, `MOV-TASK-005` implements its side-safe outward
+projection, and `MOV-TASK-006` freezes dormant typed **Move Element** and **Complete Movement
+Segment** outputs with deterministic identities and explanatory exact costs. **Route adjustment**
+means either an exact Road override of destination-terrain cost or an exact Track scale of that
+terrain cost; crossed-hexside additions are then applied separately;
+**hexside addition** names an ordered Ridge or directional Slope increment. These are output
+contract names, not public legal actions or accepted moves. `MOV-TASK-007` is the next delivery
+gate for internal adjudication. **Breakdown continuity** names replay state and rules
 identity, not Breakdown adjudication: no roll, result, loss, or Movement BP mutation is implemented.
 **Enemy ZOC** is the triggering board condition and **Reaction** is the persisted
 non-phasing interruption it opens. Neither is **Contact**: Contact is created by Close Assault, and

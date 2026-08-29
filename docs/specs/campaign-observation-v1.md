@@ -21,7 +21,8 @@ did not change complete owner bytes. Contract 5 adds exact own mobility, Operati
 Cohesion, and nullable vehicle Breakdown-risk facts plus the approved three-field apparent opposing
 presence. It adds strict, non-authoritative canonical readback and preserves the real-binding and
 hidden-force boundary. The contract, implementation, verification, and independent review are
-complete. See
+complete. `MOV-TASK-006` now consumes this value through a pure dormant candidate deriver without
+changing Observation version, policy, fields, or canonical bytes. See
 [Reserve Designation v1](reserve-designation-v1.md) and
 [Movement Foundation v1](movement-foundation-v1.md).
 
@@ -293,7 +294,8 @@ Still deferred after current contract 5:
 - Patrol and Reconnaissance commands, costs, events, disclosures, and losses;
 - Dummy Tank Formation identity and lifecycle;
 - positive `exertsZoc` derivation until `ZOR-TASK-002` supplies qualifying rules/content;
-- Movement candidate/submission contracts (`MOV-TASK-006`) and Movement adjudication (`MOVE-001`);
+- public Movement candidate membership, command/event/adjudication, and accepted submissions
+  (`MOV-TASK-007`/`008`); dormant Task 006 candidate/submission/receipt contracts are complete;
 - HTTP/protobuf/Maproom/Intelligence DTOs, authorization, caching, notifications, and persistence;
 - spectator, administrator, completed-game replay, and War Diary redaction policy.
 

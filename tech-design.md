@@ -754,15 +754,23 @@ Capability Point, mobility-vocabulary, normalized-table, canonical-artifact, and
 work are complete. Content schema 4 / canonical format v3 now assigns and validates one
 rules-owned mobility ID plus the supported optional vehicle cohort per element. Snapshot v9/world
 v4 and creation event v8 now record exact
-Operation-Stage Cohesion/expenditure plus opaque one-to-one internal representation bindings. No
-Movement campaign action is implemented yet. The
+Operation-Stage Cohesion/expenditure plus opaque one-to-one internal representation bindings.
+Task 006 adds dormant typed `MoveElementAction` and `CompleteMovementSegmentAction` output values,
+deterministic SHA-256 identities, pure observation-only derivation, and strict non-authoritative
+readback for canonical legal-action sets, submissions, and receipts. Its move cost is an exact
+explanatory value: destination terrain ID/cost; a nullable route adjustment with route ID,
+`override` or `scale-underlying` behavior, and exact amount; ordered hexside additions with
+feature ID, `either`, `up`, or `down` direction, and exact added cost; and one coherent exact total.
+Candidate, submission, and receipt contracts remain version 1 and the action-set envelope remains
+version 2. No Movement campaign action is public or executable yet. The
 [Sprint 4-5 research-gate audit](docs/research/sprint-4-5-research-gates.md) makes
-`BREAKDOWN-001` is approved: minimum Breakdown Point continuity is recorded now, sequential d6 form
+`BREAKDOWN-001` explicit: minimum Breakdown Point continuity is recorded now, sequential d6 form
 the `11`-`66` coordinate, and Sandstorm eligibility uses Table 21.38's share of accumulated BP.
 `MOV-TASK-004B` implements the exact Rules/Content/World seam and passed the repository gate plus
-two fresh-context review instances. `MOV-TASK-005` now projects the approved own mobility,
-ledger, Cohesion, and BP/cohort-risk facts plus the minimum opaque apparent-opponent shape;
-`MOV-TASK-006` owns the next action-contract cut.
+two fresh-context review instances. `MOV-TASK-005` projects the approved own mobility, ledger,
+Cohesion, and BP/cohort-risk facts plus the minimum opaque apparent-opponent shape.
+`MOV-TASK-006` freezes the dormant action-contract cut; `MOV-TASK-007` next implements internal
+non-contact command/event/adjudication while keeping public membership dormant.
 
 The [ZOC/Reaction spike](docs/research/contact-reaction-zoc-spike.md) separates enemy-ZOC entry and
 the interrupting Reaction window from Contact and Engaged, which are created by Close Assault and

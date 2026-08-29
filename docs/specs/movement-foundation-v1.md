@@ -1,7 +1,7 @@
 # Movement Foundation v1 Specification
 
-**Status:** Active implementation baseline; `MOV-TASK-001` through `MOV-TASK-005` complete;
-`MOV-TASK-006` is next
+**Status:** Active implementation baseline; `MOV-TASK-006` implementation, gates, and independent
+review are complete in PR #69 and await merge; `MOV-TASK-007` follows merge
 
 **Date:** 2026-08-25
 
@@ -46,6 +46,16 @@ It excludes:
 - combat, Reserve Release, segment repetition, second-side Movement, and later stages;
 - attachments, dummy formations, Patrol, reconnaissance knowledge, or published content; and
 - any model-backed or free-text interpretation inside authoritative execution.
+
+### Current Task 006 delivery boundary
+
+Task 006 freezes dormant contract infrastructure only. Candidate contract 1 now has typed move and
+completion outputs, deterministic IDs over complete canonical side-safe semantics, and a pure
+observation-to-candidate derivation seam. Legal-action-set contract 2 and generic submission and
+receipt contracts 1 gain strict canonical readback without changing their versions. Readback is
+non-authoritative: it neither establishes current membership nor creates a command, event, accepted
+move, or acceptance receipt. Public Movement action sets remain empty/unsupported until Task 008;
+Task 007 is the next internal command/event/adjudication slice.
 
 ### Breakdown continuity gate
 
@@ -140,7 +150,10 @@ provenance. It may expose only these approved apparent opposing facts:
 - whether that apparent presence exerts a ZOC under the supported rules subset.
 
 Current admitted synthetic rows always use `exertsZoc = false`; positive qualification remains
-gated on `ZOR-TASK-002` source-faithful content and rules.
+gated on `ZOR-TASK-002` source-faithful content and rules. Until that topology-aware rule is
+implemented, the dormant Task 006 generator fails closed globally: any positive apparent-ZOC row
+suppresses every move candidate, even when the row is remote from the tested edge. This conservative
+interim policy is deterministic from the observation and is not the final ZOC entry/exit rule.
 
 For an opposing apparent presence it must not expose a real element ID, binding, hidden content
 record, Reserve state, CPA, expenditure, Cohesion, mobility classification, or unsupported
@@ -165,13 +178,22 @@ A move candidate identifies only:
 - an exact, side-safe CP cost breakdown; and
 - the candidate's normal action identity/version fields.
 
+The cost breakdown contains exactly the destination terrain ID and exact terrain cost; one nullable
+route adjustment with route ID, closed `override` or `scale-underlying` behavior, and its exact
+amount; an ordered collection of crossed-hexside additions containing feature ID, closed `either`,
+`up`, or `down` direction, and exact added cost; and one exact total coherent with those components.
+Crossed-hexside feature IDs are unique regardless of direction; contradictory repeated direction
+rows for one feature reject rather than charging twice.
+It contains no `RuleReference`, source locator, authority object, or hidden opposing fact.
+
 The candidate generator must exclude an element or path when any of the following is true:
 
 - wrong side, wrong phase, wrong actor, or stale/invalid authority;
 - Reserve status is not `None`;
 - Cohesion is `-26` or worse;
 - origin/destination is missing or nonadjacent;
-- enemy occupancy, enemy ZOC entry/exit, or another deferred contact rule applies;
+- apparent enemy occupancy exists at the origin or destination, the interim global positive-ZOC
+  fail-closed rule applies, or another deferred contact rule applies;
 - destination/traversal stacking would exceed the supported conservative limit;
 - the move's resulting cumulative Operation-Stage expenditure would exceed base CPA; or
 - terrain, edge, mobility, organization, or cost behavior is unsupported.
@@ -180,11 +202,21 @@ Candidate presence or absence must be explainable from the acting-side observati
 states with byte-identical acting-side observations must produce byte-identical acting-side action
 sets.
 
+Task 006 exposes that rule as a dormant pure vector and deliberately does not add its results to the
+current public action set. Task 008 owns that publication after internal move and completion paths
+are executable.
+
 ### `MOV-REQ-007` - Movement submission and command
 
 A Movement submission maps only to a typed internal command carrying contract version, expected
 state version, expected position ID, acting side, own element ID, origin, destination, and the
 candidate identity needed by the existing action boundary.
+
+The outward submission remains the payload-free generic contract-1 envelope: candidate identity
+binds element, origin, destination, and cost rather than duplicating caller-editable fields.
+Task 006 strictly reads that envelope but does not map a Movement candidate to a command. The
+internal typed command and its authority revalidation begin in Task 007; public exact-membership
+mapping remains Task 008.
 
 Submission must revalidate every invariant against current authority. A stale, forged,
 out-of-audience, altered-origin, altered-destination, hidden-binding, unsupported, or no-longer-legal
@@ -347,6 +379,8 @@ world v3, snapshot v8, creation event v7, exact initial Cohesion/expenditure, an
 opaque internal one-to-one representation bindings. On 2026-08-29 the owner approved sequential-die
 coordinates, continuity-now, and the Table 21.38 Sandstorm BP basis in `BREAKDOWN-001`; the
 source-locked `MOV-TASK-004B` migration is implemented with ruleset v7, Content schema 4 / canonical
-format v3, world v4, snapshot v9, and creation event v8. `MOV-TASK-005` now freezes observation
-contract 5 and the Movement-side-safe policy; its implementation, verification, and independent
-review are complete. `MOV-TASK-006` is next.
+format v3, world v4, snapshot v9, and creation event v8. `MOV-TASK-005` freezes observation
+contract 5 and the Movement-side-safe policy. `MOV-TASK-006` freezes dormant typed Movement
+candidates, exact side-safe cost structure, deterministic identity, pure derivation, and strict
+non-authoritative legal-action/submission/receipt readback while keeping public Movement membership
+empty. Both tasks are implemented and verified; `MOV-TASK-007` is next.
