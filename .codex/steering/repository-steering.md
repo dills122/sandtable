@@ -6,10 +6,10 @@ game without owning or mutating authoritative state.
 ## Primary Deliverables
 
 - A pure deterministic Umpire core for rules, plans, legal commands, RNG, fog of war, and events.
-- An Orleans campaign host plus decision worker that keeps slow external inference outside grain
-  turns.
-- Versioned gRPC Signals contracts and an ASP.NET Core intelligence gateway with a first-class
-  scripted fallback.
+- An Orleans campaign host plus decision worker that will keep slow external inference outside grain
+  turns; both are currently service scaffolds around the implemented in-process Core.
+- Versioned gRPC Signals contracts and an ASP.NET Core intelligence gateway; live provider routing,
+  dispatch, and first-class scripted fallback are planned but not implemented.
 - Maproom, Chronicle, Archives, and War College capabilities built on the same authoritative event
   model.
 
@@ -38,13 +38,20 @@ game without owning or mutating authoritative state.
 ## Project Map
 
 - `src/Cna.Core`: authoritative Umpire domain and pure validation logic.
-- `src/Cna.OrleansHost`: Orleans silo and authoritative campaign host.
-- `src/Cna.DecisionWorker`: out-of-turn intelligence dispatch.
+- `src/Cna.OrleansHost`: local Orleans silo scaffold for future authoritative campaign activation;
+  no campaign grain is implemented yet.
+- `src/Cna.DecisionWorker`: service-discovery/client scaffold for future out-of-turn intelligence
+  dispatch and scripted fallback.
+- `src/Cna.ExerciseRunner`: trusted local deterministic Exercise/Maneuver orchestration and evidence;
+  not production campaign authority.
 - `src/Cna.Intelligence.Contracts`: protobuf source and generated transport contracts.
-- `src/Cna.Intelligence.Gateway`: non-authoritative ASP.NET Core gRPC endpoint.
+- `src/Cna.Intelligence.Gateway`: non-authoritative ASP.NET Core gRPC scaffold that currently reports
+  provider unavailability.
 - `src/Cna.ServiceDefaults`: shared discovery, resilience, health, and telemetry defaults.
 - `src/Cna.AppHost`: Aspire local orchestration only.
 - `tests/Cna.Core.Tests`: deterministic domain tests using xUnit v3 and MTP.
+- `tests/Cna.ExerciseRunner.Tests`: Exercise/Maneuver contract, artifact, replay, and CLI tests using
+  xUnit v3 and MTP.
 - `tests/Cna.Intelligence.Contracts.Tests`: protobuf boundary compatibility tests using xUnit v3
   and MTP.
 

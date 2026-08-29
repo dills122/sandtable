@@ -165,6 +165,9 @@ bindings in snapshot v8/world v3 creation history. The `BREAKDOWN-001` continuit
 is now the next gate because its outcome can change Task 005's own-observation shape;
 `MOV-TASK-005` follows that decision. Movement campaign actions are still unsupported. Paired
 comparison remains a later evaluation capability and does not block gameplay-engine progress.
+Combat research has progressed beyond the initial source inventory: `CMB-RSH-001` now retains the
+first bounded rules/result-surface normalization. Combat contracts and implementation remain gated
+on approved Breakdown and ZOC/Reaction boundaries.
 
 See the [pre-alpha roadmap](docs/roadmap/pre-alpha-roadmap.md) for the capability-level plan and
 completion criteria.
@@ -180,7 +183,8 @@ does not yet launch a playable Maproom client.
 - [Just](https://just.systems/) for the shortest command workflow (optional)
 - Docker (optional; required only when future Aspire resources need containers)
 
-`global.json` pins .NET 10 and selects Microsoft.Testing.Platform for `dotnet test`.
+`global.json` requires .NET 10.0.302 or later and rolls forward to the highest installed .NET 10
+feature band. It also selects Microsoft.Testing.Platform for `dotnet test`.
 
 ### Quick start with Just
 
@@ -287,9 +291,12 @@ The command prints each validated child bundle path in manifest order, followed 
 read-back aggregate report path and deterministic report fingerprint. The report's local paths and
 timings are diagnostics and do not participate in that fingerprint.
 
-The intelligence gateway currently reports that no model provider is configured. This is expected:
-model-backed commanders are not part of the pre-alpha gameplay target, and authoritative play must
-always have a deterministic scripted fallback.
+The intelligence gateway currently reports that no model provider is configured and its decision
+and narrative RPCs return gRPC `Unavailable`. The Decision Worker is a service-discovery/client
+scaffold; it does not yet dispatch live campaign decisions or execute fallback policy. This is
+expected because model-backed commanders are outside the pre-alpha gameplay target. Future gameplay
+integration must keep inference outside authoritative turns and use a deterministic scripted
+decision whenever a model-backed service is unavailable.
 
 Run `just --list` to see all available command recipes. See
 [CONTRIBUTING.md](CONTRIBUTING.md) for the development workflow and
@@ -310,10 +317,11 @@ presents the campaign to players.
 > Command decides. Staff plans. Dispatch carries. Umpire adjudicates. Chronicle remembers.
 > Maproom shows.
 
-The intelligence gateway receives redacted observations and returns untrusted proposals. It never
-owns game state, resolves rules, sees hidden opposing state, or holds an authoritative Orleans grain
-turn open while a model responds. If a model-backed service is unavailable, play falls back to a
-deterministic scripted decision rather than failing the turn.
+The planned intelligence path sends only redacted observations and accepts only untrusted proposals.
+It must never own game state, resolve rules, see hidden opposing state, or hold an authoritative
+Orleans grain turn open while a model responds. The current gateway and Decision Worker are
+scaffolds; when live decision dispatch is implemented, an unavailable model-backed service must
+select a deterministic scripted decision rather than fail the turn.
 
 ### Architecture
 
@@ -368,6 +376,7 @@ The current Umpire foundation is intentionally pure and in-process:
 
 ## Design and research
 
+- [Documentation index](docs/README.md)
 - [Technical design](tech-design.md)
 - [Naming and domain vocabulary](naming-overview.md)
 - [Campaign for North Africa source-material spike](docs/research/cna-source-material-spike.md)
@@ -411,11 +420,12 @@ The current Umpire foundation is intentionally pure and in-process:
 - [Breakdown continuity decision packet](docs/research/breakdown-continuity-spike.md)
 - [ZOC and Reaction interruption research](docs/research/contact-reaction-zoc-spike.md)
 - [Combat and continual-cycle source inventory](docs/research/combat-cycle-source-inventory.md)
+- [Combat rules and result-surface spike](docs/research/combat-rules-result-surface-spike.md)
 - [Movement Foundation v1 specification](docs/specs/movement-foundation-v1.md)
 - [Movement Foundation v1 technical design and delivery plan](docs/design/movement-foundation-v1.md)
 - [Microsoft Orleans documentation](https://learn.microsoft.com/en-us/dotnet/orleans/)
 - [ASP.NET Core gRPC services](https://learn.microsoft.com/en-us/aspnet/core/grpc/aspnetcore?view=aspnetcore-10.0)
-- [Aspire AppHost and ServiceDefaults](https://learn.microsoft.com/en-us/dotnet/aspire/fundamentals/aspire-sdk-templates)
+- [Aspire AppHost and ServiceDefaults](https://aspire.dev/get-started/aspire-sdk-templates/)
 - [Microsoft.Testing.Platform overview](https://learn.microsoft.com/en-us/dotnet/core/testing/test-platforms-overview)
 
 ## License

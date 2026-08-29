@@ -287,6 +287,79 @@ public sealed class ExerciseBundleSemanticValidatorTests : IDisposable
         Assert.Throws<InvalidDataException>(() => ExerciseBundleReader.Read(bundlePath));
     }
 
+    [Theory]
+    [InlineData("Cna.Core.dll")]
+    [InlineData("Cna.ExerciseRunner.dll")]
+    public void ReaderRejectsARehashedBuildMissingARequiredExecutedArtifact(string missingName)
+    {
+        var bundlePath = CreateFailedIdentifiedBundle();
+        RewritePayload(bundlePath, ArtifactSchema.BuildIdentityPath, bytes =>
+        {
+            var identity = BuildIdentityCodec.Deserialize(bytes);
+            return BuildIdentityCodec.Serialize(CopyBuildIdentity(
+                identity,
+                artifacts: identity.Artifacts.Where(value => !string.Equals(
+                    value.Name,
+                    missingName,
+                    StringComparison.Ordinal))));
+        });
+        RehashManifest(bundlePath);
+
+        Assert.Throws<InvalidDataException>(() => ExerciseBundleReader.Read(bundlePath));
+    }
+
+    [Theory]
+    [InlineData("Cna.Core.dll", 0, '4')]
+    [InlineData("Cna.ExerciseRunner.dll", 0, '5')]
+    [InlineData("Cna.Core.dll", 12, null)]
+    [InlineData("Cna.ExerciseRunner.dll", 13, null)]
+    public void ReaderRejectsARehashedBuildWithImpossibleRequiredArtifactEvidence(
+        string artifactName,
+        long sizeBytes,
+        char? hashCharacter)
+    {
+        var bundlePath = CreateFailedIdentifiedBundle();
+        RewritePayload(bundlePath, ArtifactSchema.BuildIdentityPath, bytes =>
+        {
+            var identity = BuildIdentityCodec.Deserialize(bytes);
+            var artifacts = identity.Artifacts.Select(value => string.Equals(
+                    value.Name,
+                    artifactName,
+                    StringComparison.Ordinal)
+                ? new BuildArtifactIdentity(
+                    value.Name,
+                    sizeBytes,
+                    hashCharacter is null ? Hash([]) : Sha(hashCharacter.Value))
+                : value);
+            return BuildIdentityCodec.Serialize(CopyBuildIdentity(identity, artifacts: artifacts));
+        });
+        RehashManifest(bundlePath);
+
+        Assert.Throws<InvalidDataException>(() => ExerciseBundleReader.Read(bundlePath));
+    }
+
+    [Theory]
+    [InlineData(true, true)]
+    [InlineData(false, false)]
+    public void ReaderRejectsARehashedBuildWhoseDirtyFlagContradictsItsPorcelainDigest(
+        bool dirty,
+        bool useEmptyPorcelainDigest)
+    {
+        var bundlePath = CreateFailedIdentifiedBundle();
+        RewritePayload(bundlePath, ArtifactSchema.BuildIdentityPath, bytes =>
+        {
+            var identity = BuildIdentityCodec.Deserialize(bytes);
+            return BuildIdentityCodec.Serialize(CopyBuildIdentity(
+                identity,
+                dirty: dirty,
+                porcelainSha256: useEmptyPorcelainDigest ? Hash([]) : Sha('3'),
+                reproducible: !dirty));
+        });
+        RehashManifest(bundlePath);
+
+        Assert.Throws<InvalidDataException>(() => ExerciseBundleReader.Read(bundlePath));
+    }
+
     [Fact]
     public void ReaderAcceptsProfileSpecificEarlyFailureEvidenceWithoutASeedLedger()
     {
@@ -719,22 +792,9 @@ public sealed class ExerciseBundleSemanticValidatorTests : IDisposable
         {
             [ArtifactSchema.AcceptedActionsPath] =
                 ExerciseEvidenceWriter.WriteAcceptedActions(execution),
-            [ArtifactSchema.BuildIdentityPath] = BuildIdentityCodec.Serialize(new BuildIdentity(
-                ExerciseBuildMode.Exploratory,
-                new string('1', 40),
-                new string('2', 40),
-                true,
-                Sha('3'),
-                ".NET 10.0.11",
-                "arm64",
-                "arm64",
-                Cna1979Ruleset.Manifest.Hash,
-                ExerciseConfigurationIdentity.ComputeHash(manifest),
-                Hash(normalizedManifest),
-                ExerciseSeedLedger.SchemeId,
-                false,
-                false,
-                [new BuildArtifactIdentity("runner.dll", 12, Sha('4'))])),
+            [ArtifactSchema.BuildIdentityPath] = BuildIdentityCodec.Serialize(BuildIdentityFor(
+                manifest,
+                normalizedManifest)),
             [ArtifactSchema.CanonicalEventsPath] =
                 ExerciseEvidenceWriter.WriteCanonicalEvents(execution),
             [ArtifactSchema.CheckResultsPath] = ExerciseCheckResultsCodec.Serialize(checks),
@@ -1052,7 +1112,32 @@ public sealed class ExerciseBundleSemanticValidatorTests : IDisposable
         ExerciseSeedLedger.SchemeId,
         false,
         false,
-        [new BuildArtifactIdentity("runner.dll", 12, Sha('4'))]);
+        [
+            new BuildArtifactIdentity("Cna.Core.dll", 12, Sha('4')),
+            new BuildArtifactIdentity("Cna.ExerciseRunner.dll", 13, Sha('5')),
+        ]);
+
+    private static BuildIdentity CopyBuildIdentity(
+        BuildIdentity value,
+        bool? dirty = null,
+        string? porcelainSha256 = null,
+        bool? reproducible = null,
+        IEnumerable<BuildArtifactIdentity>? artifacts = null) => new(
+        value.BuildMode,
+        value.HeadCommit,
+        value.HeadTree,
+        dirty ?? value.Dirty,
+        porcelainSha256 ?? value.PorcelainSha256,
+        value.FrameworkDescription,
+        value.OsArchitecture,
+        value.ProcessArchitecture,
+        value.RulesetHash,
+        value.ConfigurationHash,
+        value.ManifestHash,
+        value.SeedSchemeId,
+        value.BaselineEligible,
+        reproducible ?? value.Reproducible,
+        artifacts ?? value.Artifacts);
 
     private static BuildIdentity CopyBuildIdentity(
         BuildIdentity value,

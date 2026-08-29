@@ -14,7 +14,7 @@ public sealed class BuildIdentityCaptureTests
     [
         "status --porcelain=v1 -z --untracked-files=all",
         "rev-parse --verify HEAD^{commit}",
-        "rev-parse --verify HEAD^{tree}",
+        "rev-parse --verify 1111111111111111111111111111111111111111^{tree}",
     ];
 
     [Theory]
@@ -31,6 +31,7 @@ public sealed class BuildIdentityCaptureTests
         Assert.True(result.Identity!.BaselineEligible);
         Assert.True(result.Identity.Reproducible);
         Assert.False(result.Identity.Dirty);
+        Assert.Equal(Hash([]), result.Identity.PorcelainSha256);
         Assert.Equal(ExpectedGitInvocations, environment.GitInvocations);
     }
 
@@ -166,7 +167,7 @@ public sealed class BuildIdentityCaptureTests
                 "rev-parse --verify HEAD^{commit}" =>
                     new BuildIdentityProcessResult(true, 0, Encoding.ASCII.GetBytes(
                         "1111111111111111111111111111111111111111\n"), []),
-                "rev-parse --verify HEAD^{tree}" =>
+                "rev-parse --verify 1111111111111111111111111111111111111111^{tree}" =>
                     new BuildIdentityProcessResult(true, 0, Encoding.ASCII.GetBytes(
                         "2222222222222222222222222222222222222222\n"), []),
                 _ => throw new InvalidOperationException($"Unexpected Git command: {command}"),
