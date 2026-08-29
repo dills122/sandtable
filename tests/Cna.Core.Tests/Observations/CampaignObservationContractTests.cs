@@ -113,7 +113,13 @@ public sealed class CampaignObservationContractTests
             "land.organization.battalion",
             0,
             "west",
-            CampaignObservationReserveStatus.None));
+            CampaignObservationReserveStatus.None,
+            Cna1979Movement.MotorizedMobilityId,
+            1,
+            1,
+            CapabilityPointAmount.Zero,
+            0,
+            null));
     }
 
     [Fact]
@@ -147,14 +153,26 @@ public sealed class CampaignObservationContractTests
                 "land.organization.battalion",
                 20,
                 "west",
-                CampaignObservationReserveStatus.None),
+                CampaignObservationReserveStatus.None,
+                Cna1979Movement.MotorizedMobilityId,
+                1,
+                1,
+                CapabilityPointAmount.Zero,
+                0,
+                null),
             new(
                 "axis-element-b",
                 "axis-formation",
                 "land.organization.battalion",
                 10,
                 "north",
-                CampaignObservationReserveStatus.None),
+                CampaignObservationReserveStatus.None,
+                Cna1979Movement.NonMotorizedMobilityId,
+                1,
+                1,
+                CapabilityPointAmount.Zero,
+                0,
+                null),
         };
         var first = CreateObservation(locations, edges, ownElements);
         var equivalent = CreateObservation(
@@ -221,7 +239,13 @@ public sealed class CampaignObservationContractTests
                 "land.organization.battalion",
                 20,
                 "north",
-                CampaignObservationReserveStatus.None)]));
+                CampaignObservationReserveStatus.None,
+                Cna1979Movement.MotorizedMobilityId,
+                1,
+                1,
+                CapabilityPointAmount.Zero,
+                0,
+                null)]));
     }
 
     [Fact]
@@ -284,5 +308,6 @@ public sealed class CampaignObservationContractTests
             null,
             locations,
             edges,
-            ownElements);
+            ownElements,
+            []);
 }

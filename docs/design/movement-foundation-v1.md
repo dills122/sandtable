@@ -1,7 +1,7 @@
 # Movement Foundation v1 Technical Design
 
-**Status:** Active implementation plan; `MOV-TASK-001` through `MOV-TASK-004B` complete;
-`MOV-TASK-005` is next
+**Status:** Active implementation plan; `MOV-TASK-001` through `MOV-TASK-005` complete;
+`MOV-TASK-006` is next
 
 **Date:** 2026-08-25
 
@@ -72,8 +72,10 @@ All mutation occurs through accepted events. Hidden bindings remain internal.
 
 ### Observation and legal actions
 
-`src/Cna.Core/Observations` projects own operational facts, including the acting side's mobility
-classification, plus the approved minimum apparent opposing presence. `src/Cna.Core/Actions`
+`src/Cna.Core/Observations` contract 5/policy
+`sandtable.observation.movement-side-safe.v1` projects exact own mobility, stage ledger, Cohesion,
+and nullable vehicle Breakdown risk plus the approved minimum apparent opposing presence.
+`src/Cna.Core/Actions`
 generates candidates only from one side's observation and maps validated submissions to internal
 commands. An authority-state query may validate that the observation itself is admitted, but
 candidate membership must not consult additional hidden truth.
@@ -135,8 +137,21 @@ The v1 binding kind is closed. Attachment and dummy kinds require a later contra
 Initial IDs are deterministic from admitted content/scenario data and are recorded in creation
 truth so replay does not rely on a later naming implementation.
 
-The outward apparent type is separate and contains only representation ID, location, and supported
-ZOC-exertion fact. It has no binding collection.
+The outward `ObservedApparentPresence` type is separate and contains only opaque representation ID,
+current apparent location, and `exertsZoc`. It has no binding collection. Current admitted
+synthetic rows always use `false`; positive qualification remains `ZOR-TASK-002`.
+
+`ObservedOwnElement` additionally copies `mobilityId`, ledger Game Turn/Operation Stage, exact
+`capabilityPointsExpended`, `cohesionLevel`, and nullable `vehicleBreakdownRisk`. A non-null
+`ObservedOwnVehicleBreakdownRisk` carries cohort ID, vehicle type ID, profile ID, exact cumulative
+and Sandstorm-attributed BP, nullable highest effective checked-band ID, and working/broken counts.
+It contains no Content origin, rules provenance, or authoritative Campaign object.
+
+Contract-5 canonical JSON ends with `apparentOpposingPresences`, ordered by representation ID.
+`CampaignObservationSerializer.DeserializeCanonical` is a strict, non-authoritative reader: it
+accepts only exact v5 field order/shape and canonical exact amounts, then proves byte equality by
+reserialization. Legacy v4, missing/extra/duplicate/reordered/injected fields and malformed values
+reject.
 
 ### Movement action and event
 
@@ -229,7 +244,7 @@ BREAKDOWN-001 decisions [approved]
 MOV-TASK-004B BP continuity [complete]
                   |
                   v
-MOV-TASK-005 observation/apparent presence
+MOV-TASK-005 observation/apparent presence [active]
                   |
                   v
 MOV-TASK-006 action/submission contracts
@@ -247,14 +262,15 @@ MOV-TASK-009 end-to-end + Exercise/Maneuver evidence
 MOV-TASK-010 synchronization + independent review
 ```
 
-Tasks 001 through 004 are complete. Tasks 005 through 010 are intentionally serial because each
+Tasks 001 through 004B are complete. Tasks 005 through 010 are intentionally serial because each
 freezes a versioned contract consumed by the next layer. In particular, Content admission in Task 003
 consumes the closed mobility vocabulary and ruleset identity completed by Task 002. Tasks 006 and
 007 keep all public Movement membership dormant; Task 008 atomically exposes executable move and
 completion actions so no intermediate checkpoint can strand a campaign at Movement.
 `BREAKDOWN-001` is approved. Task 004B implements the required predecessor of Task 005 while
 preserving the no-adjudication boundary. Its repository gate and two fresh-context review
-instances are complete.
+instances are complete. Task 005's contract is frozen; implementation, verification, and review
+are active. Task 006 remains blocked until that gate closes.
 
 The Task 001-004 foundation merged in PR #29 after `just check` passed with a warning-clean build,
 format verification, and 746/746 solution tests. The roadmap groups the remaining work into a
@@ -362,7 +378,7 @@ coordinated identity search, full repository gate, and fresh independent review
 
 ### `MOV-TASK-005` - Add apparent presence to observation
 
-**Status:** Next; unblocked by completed `MOV-TASK-004B`
+**Status:** Complete; repository-verified and independently reviewed
 
 **Advances:** `MOV-REQ-005`, `MOV-REQ-011`; `MOV-AC-005`, `MOV-AC-006`
 
@@ -371,19 +387,22 @@ coordinated identity search, full repository gate, and fresh independent review
 **Owned modules:** Observation contracts, projector, policy/version, serializer/reader, privacy and
 dependency tests, and every affected observation fixture
 
-**Observable output:** own mobility and operational ledger plus approved apparent opposing
-representation location/ZOC facts, with internal bindings absent. The own allowlist also carries
-the approved cohort/BP risk facts.
+**Observable output:** observation contract 5 with policy
+`sandtable.observation.movement-side-safe.v1`; exact own mobility, ledger, Cohesion, and nullable
+vehicle-risk facts; canonical `apparentOpposingPresences` containing only opaque representation ID,
+current location, and current false ZOC; and strict non-authoritative canonical readback
 
-**Acceptance:** own mobility is present and canonical; real element binding, opposing
-CPA/Cohesion/Reserve/mobility/content—and opposing cohort/BAR/BP/check history under the continuity
-decision—plus raw event truth are absent by API shape, dependency graph, and canonical bytes
+**Acceptance:** own mobility/ledger/Cohesion and cohort/type/profile/BP/check/count risk are exact
+and canonical; real element binding, opposing CPA/Cohesion/Reserve/mobility/content/cohort/BAR/BP/
+check history, provenance, and raw event truth are absent by API shape, dependency graph, and bytes;
+same-apparent hidden authority is byte-identical, approved apparent changes yield only an apparent
+delta, false-only ZOC is enforced, and strict readback rejects legacy/noncanonical bytes
 
 **Verification:** projection/golden/privacy/differential-observation tests
 
 ### `MOV-TASK-006` - Freeze Movement action and submission contracts
 
-**Status:** Blocked by `MOV-TASK-005`
+**Status:** Next; ready to begin
 
 **Advances:** `MOV-REQ-006`, `MOV-REQ-007`, `MOV-REQ-010`; `MOV-AC-006`, `MOV-AC-008`
 
@@ -496,14 +515,14 @@ executed evidence; every deferral remains explicit
 | `MOV-REQ-001` exact CP | `MOV-DEC-004` | 001-002 | rational/golden tests | Implemented in Task 002 |
 | `MOV-REQ-002` rules data | 003, 007 | 001-002 | source vectors | Implemented in Task 002 |
 | `MOV-REQ-003` content mobility | 003 | 003 | content identity/validation | Implemented in Task 003 |
-| `MOV-REQ-004` operational state | 004-005 | 004, 007 | snapshot/replay | Authoritative state implemented in Task 004; outward projection pending Task 005 |
-| `MOV-REQ-005` representation/contact | 001-002, 006 | 001, 004-005 | privacy/differential tests | Internal representation implemented in Task 004; apparent projection pending Task 005 |
+| `MOV-REQ-004` operational state | 004-005 | 004, 007 | snapshot/replay | Authoritative state implemented in Task 004; contract-5 outward projection active in Task 005 |
+| `MOV-REQ-005` representation/contact | 001-002, 006 | 001, 004-005 | privacy/differential/readback tests | Internal representation implemented in Task 004; three-field apparent projection and exact own risk active in Task 005 |
 | `MOV-REQ-006` candidates | 005, 007 | 006, 008 | action/fog tests | Approved; implementation pending |
 | `MOV-REQ-007` submission/command | 005-007 | 006-008 | forged/stale tests | Approved; implementation pending |
 | `MOV-REQ-008` move event | 004-007 | 007 | event/projector/replay | Approved; implementation pending |
 | `MOV-REQ-009` completion | 005 | 008 | exact successor tests | Approved; implementation pending |
-| `MOV-REQ-010` canonical contracts | 004, 006 | 002-008 | golden/strict reader tests | Rules and world/history contracts implemented through Task 004 |
-| `MOV-REQ-011` replay/fog | 001, 006 | 004-008 | replay/privacy tests | Approved; implementation pending |
+| `MOV-REQ-010` canonical contracts | 004, 006 | 002-008 | golden/strict reader tests | Rules/world/history implemented through 004B; observation-v5 reader active in Task 005 |
+| `MOV-REQ-011` replay/fog | 001, 006 | 004-008 | replay/privacy tests | Conditional same-apparent privacy complete in Task 005; Movement replay pending |
 | `MOV-REQ-012` Exercise evidence | 008 | 009 | project/full tests + CLI runs | Approved; implementation pending |
 
 ## Review focus

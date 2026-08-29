@@ -45,8 +45,8 @@ public sealed class CampaignReserveFogOfWarTests
             Assert.Equal(10, observation.StateVersion);
             Assert.Equal(2, opposing.ContractVersion);
             Assert.Equal("sandtable.legal-actions.v2", opposing.PolicyId);
-            Assert.Equal(4, observation.ContractVersion);
-            Assert.Equal("sandtable.observation.own-elements-only.v2", observation.PolicyId);
+            Assert.Equal(5, observation.ContractVersion);
+            Assert.Equal("sandtable.observation.movement-side-safe.v1", observation.PolicyId);
         });
         AssertByteInvariant(reserveHandles.Select(handle =>
             CampaignObservationSerializer.SerializeCanonical(Project(handle, opponent))));

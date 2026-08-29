@@ -106,7 +106,7 @@ Optional parser evidence gate
 | Source/ruleset provenance, synthetic content, world, authority, events, and replay foundations | Implemented | Preserve exact identities and deterministic history while mechanics expand |
 | Side-safe observations and legal-action enforcement | Implemented for the current synthetic path | Extend only with each new mechanic and its disclosure tests |
 | Mandatory turn preamble | Implemented through Reserve Designation completion | Preserve the exact Movement terminal while later mechanics expand |
-| Movement and contact | Rules, Content mobility, replay-complete internal world/representation contracts, and Breakdown continuity complete; campaign behavior pending | Implement `MOV-TASK-005` side-safe observation |
+| Movement and contact | Rules, Content mobility, replay-complete internal world/representation contracts, Breakdown continuity, and side-safe observation complete; campaign behavior pending | Implement `MOV-TASK-006` Movement action contracts |
 | Combat | Research active; source inventory and `CMB-RSH-001` result-surface spike complete; implementation not started | Contract freeze depends on approved Breakdown and ZOC/Reaction boundaries |
 | Working pre-alpha skeleton | Not reached | Requires one authentic movement/contact/combat loop with replay |
 | First-scenario content and remaining Land systems | Milestone-level; not started | Re-estimate after the skeleton exposes exercised-rule and transcription scope |
@@ -126,7 +126,7 @@ and movement, combat, victory, persistence, and Maproom remain absent.
 | 1 — Replayable Umpire spine | Complete for the admitted synthetic path | Extend versioned authority, event, replay, and deterministic-random contracts with each mechanic |
 | 2 — Rules laboratory and legal-action boundary | Complete for the admitted synthetic path | Keep outward actions observation-derived and revalidate exact membership at submission |
 | 3 — Mandatory turn preamble | Complete for the admitted synthetic no-obligation path | Positive Organization/convoy/fleet cases remain explicit later-scenario work; authority currently stops at Movement |
-| 4 — Movement, Breakdown, and Reaction boundary | Active | Movement Tasks 001-004B are complete; Task 005 side-safe observation is next |
+| 4 — Movement, Breakdown, and Reaction boundary | Active | Movement Tasks 001-005 are implemented; Task 006 action contracts are next after the Task 005 gate |
 | 5 — Combat and continual-cycle loop | Source inventory and `CMB-RSH-001` complete; not implementation-ready | Freeze contracts only after approved Breakdown and ZOC/Reaction boundaries define Contact/Engaged identity |
 | 6 — Scenario Group One content | Milestone-level; not started | Begin after the working pre-alpha skeleton measures the exact exercised-rule/data surface |
 | 7 — Remaining required Land systems | Milestone-level; not started | Split from the measured first-scenario rule inventory rather than treating it as one task |
@@ -528,16 +528,17 @@ terminal, and task graph on 2026-08-25. The source/ruling lock, exact amount/tab
 Content Pack mobility and replay-complete internal world/representation work in `MOV-TASK-001`
 through `MOV-TASK-004` are complete. The owner approved sequential-d6 coordinates,
 continuity-now, and the Table 21.38 Sandstorm BP basis on 2026-08-29. `MOV-TASK-004B` implements
-the exact BP/cohort/world seam and has passed its repository and independent-review gates;
-`MOV-TASK-005` side-safe own operational state and apparent opposing presence follow it.
+the exact BP/cohort/world seam and has passed its repository and independent-review gates.
+`MOV-TASK-005` implements side-safe own operational state, apparent opposing presence, and strict
+canonical readback; `MOV-TASK-006` follows after the Task 005 gate closes.
 
 The approved delivery sequence adds a necessary fog-safety gate before the original task list:
 
 1. lock the digital apparent-presence/ZOC visibility ruling and initial map representation
    (**complete**);
 2. normalize exact CP, mobility, terrain, edge, and stacking contracts (**complete**);
-3. implement approved minimum Breakdown continuity, then replay-complete observation/action
-   contracts (**Task 004B complete**);
+3. implement approved minimum Breakdown continuity and replay-complete observation contracts
+   (**Tasks 004B and 005 complete**);
 4. accept repeatable non-contact Movement and explicit completion to Breakdown Determination; and
 5. use the existing Reserve `none`/`one`/`all` matrix for checked Movement evidence.
 
@@ -550,7 +551,7 @@ later Sprint 4/5 slices rather than hidden additions to the first Movement resol
 | --- | --- | --- | --- |
 | 4A — Movement authority foundation | `MOV-TASK-001`-`004` | Exact rules/content/world contracts exist; no public Movement action | Complete and merged in PR #29 |
 | 4A.5 — Breakdown continuity | `BREAKDOWN-001`, `MOV-TASK-004B` | Approved sequential d6, continuity-now, and Table 21.38 Sandstorm BP basis; Rules/Content/World migration implemented | Complete; repository gate and two fresh-context review instances passed |
-| 4B — Side-safe outward contract | `MOV-TASK-005` | Own mobility/ledger and apparent opposing presence—and own BP/cohort risk if continuity is selected—project without hidden leakage | Focused privacy/contract review before action work |
+| 4B — Side-safe outward contract | `MOV-TASK-005` | Own mobility/ledger and apparent opposing presence plus own BP/cohort risk project without hidden leakage | Complete; repository and independent-review gates passed |
 | 4C — Atomic non-contact Movement vertical | `MOV-TASK-006`-`008` | Dormant contracts and internal adjudication become public only when both move and completion are executable | Independent implementation review before Harness adoption |
 | 4D — Checked evidence and closeout | `MOV-TASK-009`-`010` | Reserve policy matrix executes supported Movement to Breakdown with strict readback and synchronized evidence | Full repository gate, final independent review, then PR |
 | 4E — ZOC/Reaction interruption | `CONTACT-001`, then proposed `ZOR-TASK-001`-`007` | Enemy-ZOC entry can interrupt phasing Movement for an opponent decision and deterministic decline/resumption | Begins only after Movement Foundation and approved BP continuity; Contact/Engaged remain Sprint 5 |
@@ -564,7 +565,7 @@ packets without authorizing their implementations:
 
 | Research gate | Status | Decision/implementation dependency |
 | --- | --- | --- |
-| `BREAKDOWN-001` | Approved and completed in `MOV-TASK-004B` | Exact BP, synthetic Truck cohort, Sandstorm-attributed world continuity, identity migration, and review are closed; proceed to `MOV-TASK-005` |
+| `BREAKDOWN-001` | Approved and completed in `MOV-TASK-004B` | Exact BP, synthetic Truck cohort, Sandstorm-attributed world continuity, identity migration, and review are closed; Task 005 projects the approved owner subset |
 | `CONTACT-001` | Decision-ready post-Movement packet | Approve ZOC/Reaction interruption rulings/task graph before Checkpoint 4E; Contact/Engaged move to Sprint 5 |
 | `COMBAT-CYCLE-001` | Source inventory complete; contract freeze waits for Breakdown and ZOC/Reaction | Replace provisional Sprint 5 headings with reviewed private-choice, simultaneous-resolution, Reserve Release, and repeat-cycle contracts |
 

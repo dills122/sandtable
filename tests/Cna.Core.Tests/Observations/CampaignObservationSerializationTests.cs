@@ -81,6 +81,7 @@ public sealed class CampaignObservationSerializationTests
                 "locations",
                 "edges",
                 "ownElements",
+                "apparentOpposingPresences",
             ],
             document.RootElement.EnumerateObject().Select(property => property.Name));
         Assert.DoesNotContain("contentPack", Encoding.UTF8.GetString(second), StringComparison.OrdinalIgnoreCase);
