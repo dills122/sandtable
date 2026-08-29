@@ -1,6 +1,12 @@
-**Sandtable** gives us a really good naming theme because we can pull from historical staff work, Kriegsspiel, military administration, and campaign terminology **without making the codebase incomprehensible**.
+# Sandtable Naming and Domain Vocabulary
 
-I'd establish one rule:
+**Status:** Active vocabulary rationale. Current implementation notes and future reserved names are
+labeled in their sections.
+
+**Sandtable** draws its naming theme from historical staff work, Kriegsspiel, military
+administration, and campaign terminology without making the codebase incomprehensible.
+
+The governing rule is:
 
 > Flavor names for major products/services; boring technical names underneath them.
 

@@ -1,6 +1,14 @@
-Exactly. I would formalize it as an **authoritative simulation plane** plus a separate **intelligence/services plane** connected through gRPC.
+# Sandtable Technical Design
 
-The important caveat is that the shared backend should remain **optional and non-authoritative**. A game must still run entirely through scripted policies when that backend—or the model behind it—is unavailable.
+**Status:** Active architectural rationale; implemented and proposed sections are labeled below.
+
+Sandtable uses an **authoritative simulation plane** plus a separate
+**intelligence/services plane** connected through gRPC.
+
+The shared backend remains **optional and non-authoritative**. The current gateway and Decision
+Worker are scaffolds and do not yet execute live campaign decisions. When that integration is
+implemented, a game must still run entirely through scripted policies when the backend—or the model
+behind it—is unavailable.
 
 ## Current local simulation harness
 
@@ -42,6 +50,12 @@ model or remote I/O, cannot attach to a production campaign, and does not implem
 side-safe exports, or War College orchestration. The governing contracts and remaining delivery
 gates are in [Exercise Harness v1](docs/specs/exercise-harness-v1.md) and its
 [technical design](docs/design/exercise-harness-v1.md).
+
+## Proposed intelligence/services architecture
+
+The following diagram is the target integrated architecture. The current repository contains the
+local ExerciseRunner described above and service scaffolds, but not the depicted GameGrain,
+decision dispatcher, or live model-provider path.
 
 ```text
 ┌─────────────────────────────────────────────────────────────┐
@@ -122,7 +136,10 @@ That makes the model runtime replaceable without touching Orleans or the game en
 
 ## Do not send the complete game state
 
-The game engine should construct a compact, side-specific observation and a bounded set of valid candidate plans.
+The game engine should construct a compact, side-specific observation and a bounded set of valid
+candidate plans. The canonical wire contract is
+`src/Cna.Intelligence.Contracts/Protos/intelligence.proto`; the excerpt below matches its current
+decision surface but does not replace that source file.
 
 ```protobuf
 service IntelligenceService {
@@ -161,9 +178,10 @@ message DecisionResponse {
   int64 based_on_state_version = 2;
   string selected_plan_id = 3;
 
-  PlanParameters parameters = 4;
+  map<string, string> parameters = 4;
   string commander_commentary = 5;
   ModelTrace trace = 6;
+  string ruleset_hash = 7;
 }
 ```
 
@@ -745,12 +763,15 @@ The [ZOC/Reaction spike](docs/research/contact-reaction-zoc-spike.md) separates 
 the interrupting Reaction window from Contact and Engaged, which are created by Close Assault and
 combat results and therefore belong to Sprint 5. The
 [Combat-cycle inventory](docs/research/combat-cycle-source-inventory.md) permits source/table
-normalization now but defers contract freeze until Breakdown and ZOC/Reaction are approved. Its
-current proposal uses trusted-Umpire sealed choices, the same pre-state for simultaneous combat,
-and structural sequence positions plus cycle identity; none is implemented or approved yet.
+normalization now but defers contract freeze until Breakdown and ZOC/Reaction are approved. The
+first bounded follow-up, [Combat rules and result surface](docs/research/combat-rules-result-surface-spike.md),
+completed `CMB-RSH-001` by normalizing the admitted combat-table/result surface; it is research
+evidence, not an implemented combat contract. Current proposals use trusted-Umpire sealed choices,
+the same pre-state for simultaneous combat, and structural sequence positions plus cycle identity;
+none is implemented or approved yet.
 Paired comparison remains later and does not block that engine work.
 
-[1]: https://learn.microsoft.com/en-us/dotnet/orleans/grains/external-tasks-and-grains?utm_source=chatgpt.com "External tasks and grains - .NET | Microsoft Learn"
-[2]: https://learn.microsoft.com/en-us/aspnet/core/grpc/performance?view=aspnetcore-10.0&utm_source=chatgpt.com "Performance best practices with gRPC | Microsoft Learn"
-[3]: https://learn.microsoft.com/en-us/aspnet/core/grpc/deadlines-cancellation?view=aspnetcore-10.0&utm_source=chatgpt.com "Reliable gRPC services with deadlines and cancellation | Microsoft Learn"
-[4]: https://learn.microsoft.com/pt-br/aspnet/core/grpc/json-transcoding?view=aspnetcore-10.0&utm_source=chatgpt.com "Transcodificação de gRPC JSON em aplicativos gRPC do ASP.NET Core | Microsoft Learn"
+[1]: https://learn.microsoft.com/en-us/dotnet/orleans/grains/external-tasks-and-grains "External tasks and grains - .NET | Microsoft Learn"
+[2]: https://learn.microsoft.com/en-us/aspnet/core/grpc/performance?view=aspnetcore-10.0 "Performance best practices with gRPC | Microsoft Learn"
+[3]: https://learn.microsoft.com/en-us/aspnet/core/grpc/deadlines-cancellation?view=aspnetcore-10.0 "Reliable gRPC services with deadlines and cancellation | Microsoft Learn"
+[4]: https://learn.microsoft.com/en-us/aspnet/core/grpc/json-transcoding?view=aspnetcore-10.0 "gRPC JSON transcoding in ASP.NET Core gRPC apps | Microsoft Learn"

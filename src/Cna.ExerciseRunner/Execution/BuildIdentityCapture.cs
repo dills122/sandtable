@@ -139,11 +139,13 @@ public static class BuildIdentityCapture
             environment,
             request.RepositoryRoot,
             "HEAD^{commit}");
+        if (commit is null)
+            return BuildIdentityCaptureResult.Failed(BuildIdentityFailureReason.HeadUnavailable);
         var tree = ResolveGitObject(
             environment,
             request.RepositoryRoot,
-            "HEAD^{tree}");
-        if (commit is null || tree is null)
+            $"{commit}^{{tree}}");
+        if (tree is null)
             return BuildIdentityCaptureResult.Failed(BuildIdentityFailureReason.HeadUnavailable);
 
         var artifacts = new List<BuildArtifactIdentity>();

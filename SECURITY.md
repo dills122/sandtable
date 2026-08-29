@@ -7,8 +7,9 @@ Sandtable has not published a release. Security fixes currently target the lates
 
 ## Reporting a Vulnerability
 
-Use the repository host's private vulnerability-reporting feature when available. Do not open a
-public issue containing exploit details, secrets, private campaign data, or hidden game state.
+Use [GitHub private vulnerability reporting](https://github.com/dills122/sandtable/security/advisories/new),
+which is enabled for this repository. Do not open a public issue containing exploit details,
+secrets, private campaign data, or hidden game state.
 
 Include:
 

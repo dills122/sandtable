@@ -16,8 +16,8 @@ public interface IIntelligenceProviderStatus
 }
 
 /// <summary>
-/// No model-backed provider is wired up yet; the gateway is scaffolding that always
-/// falls back to the deterministic scripted behavior in <see cref="IntelligenceGrpcService"/>.
+/// No model-backed provider is wired up yet. The gateway reports provider unavailability;
+/// deterministic scripted fallback belongs to the future decision-dispatch integration.
 /// </summary>
 internal sealed class NoIntelligenceProviderStatus : IIntelligenceProviderStatus
 {

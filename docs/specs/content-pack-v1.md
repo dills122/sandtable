@@ -8,6 +8,13 @@
 
 **Research:** [Content Pack v1 spike](../research/content-pack-v1-spike.md)
 
+> **Current evolution:** This specification froze the original Content Pack foundation. Subsequent
+> `WORLD-001`, `OBS-001`, `ACTION-001`, turn-preamble, Reserve, and Movement-foundation packages
+> delivered exact campaign admission, mutable world state, side-safe observations, legal actions,
+> and the current Movement terminal. Statements about those capabilities being future work describe
+> this specification's historical scope; Movement campaign actions, contact, and combat remain
+> unimplemented.
+
 ## Objective
 
 Add the smallest authoritative static-content foundation needed by the next Sandtable vertical
@@ -16,9 +23,10 @@ for future source-derived content, receive complete deterministic validation dia
 stable canonical bytes and identity, and query typed topology/entity/setup facts without loading a
 scan, service, clock, random source, campaign, or model.
 
-This change ends at validated content and a synthetic fixture. Campaign world binding,
-observations, legal actions, turn-preamble rules, movement, contact, and combat remain separate
-capabilities.
+This specification's original change ended at validated content and a synthetic fixture. Campaign
+world binding, observations, legal actions, turn-preamble rules, movement, contact, and combat were
+separate capabilities; the current-evolution note above records which of those later packages have
+since shipped.
 
 ## Developer-visible demonstration
 
@@ -227,9 +235,9 @@ Explicitly deferred:
 | `CNT-011`, `CNT-NFR-002` | repository quality rules | `CNT-AC-003`, `006`-`009` |
 | `CNT-013`, `CNT-NFR-003` | Sprint 2 rules-laboratory goal | `CNT-AC-001`, `002`, `011` |
 | `CNT-015`, `CNT-NFR-006` | `DET-001`, repository quality rules | `CNT-AC-013`, full gate |
-| `CNT-016` | `FOW-001` | `CNT-AC-012`; side-safe behavior remains deferred |
+| `CNT-016` | `FOW-001` | `CNT-AC-012` covered the original static boundary; complete side-safe behavior was delivered by `OBS-001` |
 | `CNT-017` | `DET-001`, `EVT-001`, `REL-001` | Complete in `WORLD-001`; see [Campaign World v1](campaign-world-v1.md) |
-| `CNT-018` | `FID-001`, `FID-002`, `EVT-001` | `CNT-AC-015` planning gate; mechanics deferred |
+| `CNT-018` | `FID-001`, `FID-002`, `EVT-001` | Preamble gate complete for the admitted synthetic path; Movement campaign actions remain pending |
 
 ## Open questions and owner choices
 

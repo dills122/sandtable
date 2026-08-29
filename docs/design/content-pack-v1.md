@@ -6,6 +6,11 @@
 
 **Specification:** [Content Pack v1](../specs/content-pack-v1.md)
 
+> **Current evolution:** This design retains the original Content Pack delivery plan and requirement
+> IDs. `WORLD-001`, `OBS-001`, `ACTION-001`, the admitted turn preamble, Reserve Designation, and
+> Movement Tasks 001-004 were delivered afterward. Content schema 3 / canonical format v2 is
+> current; Movement campaign actions, contact, and combat remain unimplemented.
+
 ## Design summary
 
 Add one dependency-free Core content path:
@@ -44,10 +49,10 @@ only accepts `ReadOnlySpan<byte>` or immutable values and returns values/issues/
 | --- | --- |
 | `Cna.Core.Rules` | Meanings and provenance of supported side, terrain, edge-feature, organization, and mobility IDs; stacking and other rule procedures/tables |
 | `Cna.Core.Content` | Versioned static topology, category and per-element mobility assignments, force structure, scenario temporal bounds, initial deployment declarations, provenance, validation, canonical bytes/hash |
-| `Cna.Core.Setups` | Campaign admission policy and selected setup identity; unchanged by Content Pack v1 |
-| `Cna.Core.Campaigns` | Future exact content binding, mutable world positions/status, command legality, accepted events, snapshots, replay |
+| `Cna.Core.Setups` | Campaign admission policy and selected setup identity; later clean cuts bind exact content/scenario identity |
+| `Cna.Core.Campaigns` | Delivered exact content binding, mutable world positions/status, command legality, accepted events, snapshots, and replay |
 | Maproom presentation | Separate labels/visuals keyed by content IDs; never authoritative bytes |
-| Intelligence/transport | No access to full content pack; receives only later side-safe observation contracts |
+| Intelligence/transport | No access to full content pack; receives only side-safe observation contracts (the current live dispatch path remains scaffold-only) |
 
 `Cna.Core.Content` is a domain module, not a service. The Umpire remains the only authority that can
 turn static content and a command into state-changing events.
@@ -544,10 +549,10 @@ The catalog is an integration fixture and current admission source, not the hist
 design. Tests must also create packs directly through the same factory, proving there is no
 fixture-only bypass.
 
-## Future campaign and replay seam
+## Delivered campaign and replay seam
 
-Content Pack v1 does not change commands/events/snapshots. The future campaign-content binding must
-add versioned contracts deliberately:
+Content Pack v1 itself did not change commands/events/snapshots. `WORLD-001` subsequently delivered
+the campaign-content binding through deliberate versioned contracts:
 
 ```text
 CreateCampaign(setupId, setupHash, contentPackId, contentHash, scenarioId)
@@ -565,10 +570,11 @@ CampaignCreated records ruleset hash + content identity + scenario ID
 project initial mutable world state through validated creation event(s)
 ```
 
-A future pure `IContentPackResolver` (or concrete equivalent) resolves exact ID/hash to immutable
-canonical bytes/artifact. Archives may implement storage around it, but remote I/O completes before
-the Umpire decision. Replay receives the resolver as explicit context and fails with typed invalid
-history if content is missing or mismatched. It never asks the current catalog for “latest.”
+The current admitted path resolves exact ID/hash to an immutable artifact through the in-process
+catalog before the Umpire decision. A future Archives-backed resolver may add storage around that
+contract, but remote I/O must still complete before adjudication. Replay receives exact resolved
+content as explicit context, fails with typed invalid history if it is missing or mismatched, and
+never asks a mutable catalog for “latest.”
 
 Pre-alpha replay also requires the executable/rules implementation whose canonical manifest hash
 matches the history's recorded ruleset hash. The currently compiled `Cna1979Ruleset` does not
@@ -576,18 +582,18 @@ interpret an older hash. A mismatch fails before projection. A generic historica
 interpreter/resolver is not part of this design; release/archive metadata must retain which
 historical executable is required.
 
-The existing setup schema will require a new version. Its future entry references content pack ID,
-hash, and scenario ID while retaining setup-owned initiative/admission policy until source-derived
-scenario contracts model that policy explicitly. This avoids mixing Content Pack v1 into the
-current campaign snapshot as a hidden additive field.
+Setup schema 5 now references content pack ID, hash, and scenario ID while retaining setup-owned
+initiative/admission policy until source-derived scenario contracts model that policy explicitly.
+The coordinated contract cuts avoided mixing Content Pack v1 into an old campaign snapshot as a
+hidden additive field.
 
 Do not embed the entire pack in `CampaignCreated`. Do record enough creation facts/events to build
 mutable initial world state deterministically. Static terrain/topology remains a required exact
 replay dependency addressed by content hash.
 
-## Observation and fog seam
+## Delivered observation and fog seam
 
-Content is complete authoritative input. A later projection combines:
+Content is complete authoritative input. `OBS-001` delivered a projection that combines:
 
 ```text
 validated content + authoritative world state + acting side
@@ -600,12 +606,12 @@ The output contains only observed/remembered public facts and legal action ident
 contains `ContentPackDefinition`, opponent formation definitions merely because they exist in the
 pack, source scans, random state, or hidden placements. Intelligence receives only that output.
 
-Content Pack v1 tests enforce the dependency direction statically; the observation slice later
-adds behavioral negative tests for both sides.
+Content Pack v1 tests enforce the dependency direction statically; the delivered Campaign
+Observation slice adds behavioral negative tests for both sides.
 
-## Delivery ordering correction
+## Historical delivery ordering
 
-The next authoritative capabilities are:
+The approved ordering was:
 
 ```text
 Content Pack v1 + synthetic fixture
@@ -629,17 +635,18 @@ movement/contact
 combat
 ```
 
-Content work can be implemented before the turn-preamble mechanics because it does not advance a
-campaign. Authoritative movement cannot.
+Content work was implemented before the turn-preamble mechanics because it did not advance a
+campaign. The admitted preamble is now delivered; authoritative Movement action still waits on its
+remaining gates.
 
 ## Implementation checkpoints
 
 Each checkpoint uses red-green-refactor, owns at most a small file cluster, and ends with focused
 tests plus the full Core test project.
 
-**Implementation status:** `CNT-IMP-001` through `CNT-IMP-005` are delivered on the Content Pack v1
-feature branch. The complete synthetic artifact is 9,897 canonical UTF-8 bytes with frozen identity
-`sha256:0cf3b3ff21f7a8a8fbcd2667a6b4b3db83b4dab00495add723e5c2f355cf2800`.
+**Implementation status:** `CNT-IMP-001` through `CNT-IMP-005` are delivered. The current schema-3
+synthetic artifact is 12,921 canonical UTF-8 bytes with frozen identity
+`sha256:38687a168bf96018f61826b42ae0df7e34466c7055a111861be46d0c924dcd0d`.
 
 ### `CNT-IMP-001` — Rules vocabulary artifact
 
@@ -692,18 +699,19 @@ docs.
 
 **Requirements:** `CNT-004`, `CNT-013`-`016`, `CNT-NFR-003`, `CNT-NFR-006`.
 
-### Later named checkpoints
+### Subsequent named checkpoints
 
 - `WORLD-001`: versioned exact content admission, historical resolver, and initial world projection
-  (`CNT-017`), now specified in [Campaign World v1](campaign-world-v1.md).
-- `OBS-001`: side-safe observation projection and negative hidden-state tests (`CNT-016`).
-- `ACTION-001`: legal-action generation, accepted-command membership, and stale-action enforcement.
-- `TURN-001`: source spike/design and implementation for Naval Convoy, Initiative Declaration, and
-  Weather Determination (`CNT-018`).
-- `MOVE-001`: first movement/contact capability only after `WORLD-001`, `OBS-001`, `ACTION-001`,
-  and `TURN-001` pass.
+  (`CNT-017`), delivered in [Campaign World v1](campaign-world-v1.md).
+- `OBS-001`: delivered side-safe observation projection and negative hidden-state tests (`CNT-016`).
+- `ACTION-001`: delivered legal-action generation, accepted-command membership, and stale-action
+  enforcement.
+- `TURN-001`: delivered the admitted synthetic Naval Convoy, Initiative Declaration, Weather, and
+  later explicit-empty/Reserve preamble path (`CNT-018`).
+- `MOVE-001`: Movement Tasks 001-004 delivered rules, Content mobility, and replay-complete internal
+  world/representation contracts. Outward Movement action remains pending.
 
-These are explicit deferrals, not part of Content Pack v1 completion.
+These were explicit deferrals from Content Pack v1 and remain separate capability packages.
 
 ## Requirement-to-task-to-test traceability
 
@@ -714,7 +722,7 @@ These are explicit deferrals, not part of Content Pack v1 completion.
 | `CNT-006`, `CNT-010`, `CNT-011`, `CNT-012` | `CNT-IMP-003` | `CNT-AC-007`, `CNT-AC-008`, `CNT-AC-009`, `CNT-AC-010` |
 | `CNT-007`, `CNT-010`, `CNT-NFR-005` | `CNT-IMP-001`, `CNT-IMP-003` | `CNT-AC-004`, `CNT-AC-009`, `CNT-AC-011` |
 | `CNT-004`, `CNT-013`, `CNT-014`, `CNT-015`, `CNT-016`, `CNT-NFR-003`, `CNT-NFR-006` | `CNT-IMP-005` | `CNT-AC-001`, `CNT-AC-002`, `CNT-AC-005`, `CNT-AC-011`, `CNT-AC-012`, `CNT-AC-013`, full gate |
-| `CNT-016` | `OBS-001` | side-safe behavioral tests deferred |
+| `CNT-016` | `OBS-001` | Complete; side-safe behavioral and negative disclosure tests delivered |
 | `CNT-017` | `WORLD-001` | Complete; Campaign World v1 binds exact content and projects initial world state |
 | `CNT-018` | `TURN-001`, then `MOVE-001` | `CNT-AC-015` planning gate |
 
@@ -723,12 +731,11 @@ These are explicit deferrals, not part of Content Pack v1 completion.
 - Parse failures never return a partial pack.
 - User-authored semantic errors return all discoverable typed issues; they do not throw generic
   exceptions or auto-repair data.
-- Invalid/incompatible packs cannot produce canonical bytes, a content hash, a catalog entry, or a
-  future campaign event.
+- Invalid/incompatible packs cannot produce canonical bytes, a content hash, a catalog entry, or an
+  admitted campaign event.
 - Catalog ID/hash mismatch never falls back to another pack.
 - Unknown capability/vocabulary/category is unsupported, not ignored.
-- Missing historical content will make future replay fail explicitly rather than project a partial
-  state.
+- Missing historical content makes replay fail explicitly rather than project a partial state.
 - No content path reads files, performs network I/O, resolves services, or calls Intelligence.
 
 ## Verification
@@ -743,6 +750,6 @@ dotnet test --solution Sandtable.slnx --no-build
 git diff --check
 ```
 
-Implementation is not ready to merge until every in-scope requirement maps to a passing test,
-deferred rows remain named in roadmap/docs, the repository contains no source asset, and a fresh
-independent review has no blocking finding.
+The delivered implementation met this gate: every in-scope requirement mapped to passing evidence,
+deferred rows remained named in roadmap/docs, the repository contained no source asset, and the
+change received independent review. Future schema evolution must meet the same standard.

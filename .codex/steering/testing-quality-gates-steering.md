@@ -8,12 +8,14 @@ Testing must protect determinism, authority, wire contracts, and failure isolati
 - Illegal commands, stale state versions, unknown plans, invalid parameters, and ruleset-hash
   mismatches are rejected by Umpire.
 - Intelligence observations contain no opposing hidden state.
-- Gateway timeouts, cancellation, malformed output, unavailable providers, and duplicate decision
-  IDs resolve through bounded failure handling and deterministic fallback.
-- Orleans tests prove external inference does not block an authoritative grain turn and stale
-  proposals cannot mutate state.
+- When live provider dispatch is introduced, gateway timeouts, cancellation, malformed output,
+  unavailable providers, and duplicate decision IDs resolve through bounded failure handling and
+  deterministic fallback.
+- When authoritative grains and dispatch are introduced, Orleans tests prove external inference
+  does not block an authoritative grain turn and stale proposals cannot mutate state.
 - Protobuf changes preserve wire compatibility and generated client/server interoperability.
-- Persistence tests round-trip events and snapshots without changing semantics.
+- When Archives persistence is introduced, persistence tests round-trip events and snapshots without
+  changing semantics.
 - Telemetry tests avoid secrets, full prompts, hidden game state, and unbounded-cardinality labels.
 
 ## Test Shape

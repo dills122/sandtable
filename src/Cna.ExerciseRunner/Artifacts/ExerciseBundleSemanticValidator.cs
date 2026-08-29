@@ -7,6 +7,12 @@ namespace Cna.ExerciseRunner.Artifacts;
 
 internal static class ExerciseBundleSemanticValidator
 {
+    private static readonly string[] RequiredExecutedArtifacts =
+    [
+        "Cna.Core.dll",
+        "Cna.ExerciseRunner.dll",
+    ];
+
     internal static void Validate(
         ArtifactBundleProfile profile,
         byte[]? normalizedManifestBytes,
@@ -375,6 +381,11 @@ internal static class ExerciseBundleSemanticValidator
         ExerciseManifest manifest,
         BuildIdentity build)
     {
+        var emptyContentHash = ReplayEvidenceHasher.HashBytes([]);
+        var hasEmptyPorcelainHash = string.Equals(
+            build.PorcelainSha256,
+            emptyContentHash,
+            StringComparison.Ordinal);
         if (manifest.BuildMode != build.BuildMode
             || !string.Equals(manifest.RulesetHash, build.RulesetHash, StringComparison.Ordinal)
             || !string.Equals(
@@ -388,7 +399,15 @@ internal static class ExerciseBundleSemanticValidator
             || !string.Equals(
                 build.SeedSchemeId,
                 ExerciseSeedLedger.SchemeId,
-                StringComparison.Ordinal))
+                StringComparison.Ordinal)
+            || build.Dirty == hasEmptyPorcelainHash
+            || RequiredExecutedArtifacts.Any(required => !build.Artifacts.Any(artifact =>
+                string.Equals(artifact.Name, required, StringComparison.Ordinal)
+                && artifact.SizeBytes > 0
+                && !string.Equals(
+                    artifact.Sha256,
+                    emptyContentHash,
+                    StringComparison.Ordinal))))
             throw new InvalidDataException(
                 "The manifest and build identity are semantically inconsistent.");
     }

@@ -11,6 +11,7 @@
 - [ ] Signals / protobuf contracts
 - [ ] Intelligence gateway
 - [ ] Chronicle / persistence
+- [ ] Exercise / Maneuver tooling and trusted evidence
 - [ ] Tooling or documentation only
 
 ## Verification
