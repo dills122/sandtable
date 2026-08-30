@@ -554,14 +554,16 @@ The checked policy matrix says exactly `act-first`/`act-last` and Reserve `none`
 runner-only accepted-designation count is controller history, never campaign state. These policies
 produce six Movement-entry Exercises inside one Maneuver and do not make the runner the Umpire.
 
-The proposed Movement Foundation keeps **representation** as Umpire truth and exposes only an
+The implemented Movement Foundation keeps **representation** as Umpire truth and exposes only an
 **apparent presence** to the opposing side. A representation is the authoritative map piece and
 its hidden binding; an apparent presence is the side-safe fact that a player may use when choosing
-a move. Neither is a **contact** yet: Contact and Engaged are later rules states created by enemy
-ZOC/combat procedures. **Capability Point expenditure** is the exact amount already spent during
-the current Operation Stage; it is not a replenishing UI movement allowance. **Complete Movement**
-is a real player decision that advances to Breakdown Determination, not a runner stop condition.
-These names are approved for Movement Foundation v1. The source/ruling lock and exact Rules
+a move. Neither is a **Contact** yet: the accepted `CONTACT-001` lock derives Contact from
+enemy-ZOC presence at the beginning of a Movement Segment and makes Engaged a Close Assault result;
+their production contracts remain gated behind `MOV-TASK-008`-`010` and approved spec/design.
+**Capability Point expenditure** is the exact amount already spent during the current Operation
+Stage; it is not a replenishing UI movement allowance. **Complete Movement** is a real player
+decision that advances to Breakdown Determination, not a runner stop condition. These names are
+approved for Movement Foundation v1. The source/ruling lock and exact Rules
 foundation are complete, including stable `land.mobility.non-motorized` and
 `land.mobility.motorized` identifiers. Content schema 4 now assigns one of those IDs explicitly to
 each element and adds the approved synthetic Truck Point cohorts. Opaque

@@ -504,7 +504,7 @@ implementation review are implemented through `RES-TASK-016`.
 **Verification:** Source/table boundary tests, forged-history negatives, deterministic replay, and
 checked Exercise/Maneuver runs through the ordinary legal-action path, and the full repository gate.
 
-The proposed boundary is documented in the
+The implemented boundary is documented in the
 [research packet](../research/reserve-designation-spike.md),
 [specification](../specs/reserve-designation-v1.md), and
 [technical design](../design/reserve-designation-v1.md).
@@ -628,8 +628,10 @@ capabilities after their source contract and Breakdown adjudication are designed
 ### Task 4.2 - Terrain, stacking, and zones of control
 
 **Status:** Normalized supported terrain/edge/stacking tables are implemented in `MOV-TASK-002`.
-Non-contact candidate/adjudication enforcement remains `MOV-TASK-006`-`008`; enemy-ZOC behavior is
-outside Movement Foundation v1 and requires the later Sprint 4 contact package.
+Dormant candidate contracts (`MOV-TASK-006`) and internal command/event/adjudication/replay
+(`MOV-TASK-007`) are complete; `MOV-TASK-008` remains next for public legal-action membership and
+Movement completion. Enemy-ZOC behavior is outside Movement Foundation v1 and requires the later
+Sprint 4 ZOC/Reaction package.
 
 Implement only the terrain and unit categories present in the rules laboratory, using normalized
 tables rather than resolver constants.

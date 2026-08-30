@@ -648,9 +648,9 @@ profile is trusted. Rehashed `world:{}` and `world:{"contractVersion":2}` cases 
 public reader, including a failed-reconstruction bundle with internally consistent dependent hashes
 and proof fields.
 
-## Open questions
+## Change control
 
-There are no architecture-blocking open questions. Exact public type and file names within the
-provisional `Cna.Core.Exercises` namespace may be refined during test-first implementation without
-changing capability boundaries, contracts, or acceptance criteria. Any material change requires a
-spec amendment and review before implementation.
+There are no architecture-blocking open questions for Harness v1. Future public type or file-name
+changes within `Cna.Core.Exercises` must preserve the delivered capability boundaries, contracts,
+and acceptance criteria. Any material change requires a spec amendment and review before
+implementation.
