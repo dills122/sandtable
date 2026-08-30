@@ -81,10 +81,10 @@ normalized semantics and locators are retained.
 | Source | Exact locator | Use in this decision |
 | --- | --- | --- |
 | [Original 1979 Land Game rules](https://www.spigames.net/PDFv10/CNA_LandGameRules.pdf) | PDF pages 7-10; 3.5, 4.22, 4.25, 4.41-4.46 | TOE-component abilities, unit type, maximum TOE, source parent assignment, unit-characteristic identity, and provenance boundary |
-| [Original 1979 Land Game rules](https://www.spigames.net/PDFv10/CNA_LandGameRules.pdf) | PDF pages 18-19; 10.11-10.16, 11.0-11.38 | Combat-unit/ZOC qualification, seven combat characteristics, two Close Assault ratings, and Raw-to-Actual calculation |
+| [Original 1979 Land Game rules](https://www.spigames.net/PDFv10/CNA_LandGameRules.pdf) | PDF pages 17-19; 10.11-10.16, 11.0-11.38 | Combat-unit/ZOC qualification, seven combat characteristics, two Close Assault ratings, and Raw-to-Actual calculation |
 | [Original 1979 Land Game rules](https://www.spigames.net/PDFv10/CNA_LandGameRules.pdf) | PDF pages 22-25; 15.0-15.89 | Participation, ammunition exclusion, TOE assignment, offensive/defensive use, modifiers, results, and loss application |
 | [Original 1979 Land Game rules](https://www.spigames.net/PDFv10/CNA_LandGameRules.pdf) | PDF page 27; 17.0-17.28 | Basic Morale source value, parent-formation application, Cohesion adjustment, and adjusted range |
-| [Charts common to both players](https://spigames.net/PDFv10/CNA_ChartsBothPlayers.pdf) | PDF pages 1 and 4; 11.4 and 17.4 | Cross-check of combat-strength calculation and Morale row semantics; no chart matrix retained here |
+| [Charts common to both players](https://spigames.net/PDFv10/CNA_ChartsBothPlayers.pdf) | PDF pages 2 and 5; 11.4 and 17.4 | Cross-check of combat-strength calculation and Morale row semantics; no chart matrix retained here |
 | [September 1979 errata](https://www.spigames.net/db_pages/ERR_CampaignforNorthAfrica.pdf) | 3.4, 4.46, 10.3, 11.32, 15.25-15.27, 15.53, 15.56, 15.79, 15.88 | Parenthesized capability, corrected calculation notation, force assignment, dice reuse, size, pinned, result, and surrender boundaries |
 | [Content Pack v1](../specs/content-pack-v1.md) | `CNT-001`-`CNT-016`; invariants and validation | Independent Content identity, per-datum origin, closed Rules vocabulary, canonical hashing, and separation from runtime/observations |
 | [CONTACT-001 source/ruling lock](contact-reaction-zoc-source-ruling-lock.md) | `ZOR-DEC-005`; “Positive-ZOC vocabulary and first fixture” | Content primitive classification/Close Assault facts, Rules predicate, mutable capability, and rejection of a Content `exertsZoc` flag |
@@ -179,10 +179,12 @@ not this research packet.
 
 ### Positive fixture `close-assault-positive-v1`
 
-The logical fixture can later be carried by a dedicated pack or a new scenario in the existing
-rules laboratory. This packet fixes its semantic values and evidence identities but not that
-packaging choice. The IDs below are exact logical test-vector keys. They do not select production
-property names, stable-ID syntax, serializer paths, pack IDs, or a schema version.
+The fixture is one dedicated, closed-world logical evidence envelope named
+`close-assault-content-fixture-v1`. Later production work may package the same facts differently,
+but every test and golden vector named here must materialize this exact closed baseline rather than
+inherit additional objects from the current rules laboratory. The IDs below are exact logical
+test-vector keys. They do not select production property names, stable-ID syntax, serializer paths,
+pack IDs, or a schema version.
 
 The vector uses three exact test-only logical vocabulary keys:
 
@@ -194,8 +196,28 @@ The vector uses three exact test-only logical vocabulary keys:
 These keys make the research vectors unambiguous. They are not proposed production vocabulary
 tokens and do not alter the `CMB-CNT-DEC-012` deferral of production names and representation.
 
+The envelope has these exact inherited Content facts:
+
+| Envelope fact | Exact logical value |
+| --- | --- |
+| Rules compatibility | Existing Rules identity `cna-1979.1` |
+| Capability-admission universe | Exactly `land.hex-topology`, `land.formations`, `land.element-mobility`, `land.initial-deployment`, and test-only `fixture.capability.close-assault-infantry-v1`; no Breakdown or Weather capability |
+| Source index | Exactly one entry: `sandtable-rules-lab` with `ContentSourceKind.RepositorySynthetic`; every object/fact-group origin below is `ContentOriginKind.Synthetic` with one unique listed locator |
+| Object universe | Exactly two locations, one featureless edge, two root formations, two independent elements, two TOE components, and one scenario; no additional object can be admitted implicitly |
+| Scenario | `close-assault-positive-v1`, start Game Turn 1/Operation Stage 1, end Game Turn 1/Operation Stage 3 |
+| Placements | `axis-assault-battalion` at `assault-west`; `commonwealth-assault-battalion` at `assault-east`; no other placement |
+| Axis formation | `axis-assault-formation`: side `axis`, parent `null`, organization `land.organization.regiment` |
+| Commonwealth formation | `commonwealth-assault-formation`: side `commonwealth`, parent `null`, organization `land.organization.regiment` |
+| Axis element | `axis-assault-battalion`: side `axis`, parent `axis-assault-formation`, organization `land.organization.battalion`, mobility `land.mobility.non-motorized`, base CPA `10`, placement `Independent`, no Breakdown cohort |
+| Commonwealth element | `commonwealth-assault-battalion`: side `commonwealth`, parent `commonwealth-assault-formation`, organization `land.organization.battalion`, mobility `land.mobility.non-motorized`, base CPA `10`, placement `Independent`, no Breakdown cohort |
+| Location facts | `assault-west` and `assault-east`: terrain `land.terrain.clear`, source coordinate `null`, and no Weather assignment |
+| Edge facts | Canonical pair `assault-east|assault-west`, empty feature collection; the edge supplies adjacency only |
+
 | Evidence object | Exact logical ID | Exact `sandtable-rules-lab` locator |
 | --- | --- | --- |
+| Scenario | `close-assault-positive-v1` | `combat.close-assault-positive.v1:scenario.close-assault-positive-v1` |
+| Axis placement | `close-assault-positive-v1/axis-assault-battalion` | `combat.close-assault-positive.v1:placement.axis-assault-battalion.assault-west` |
+| Commonwealth placement | `close-assault-positive-v1/commonwealth-assault-battalion` | `combat.close-assault-positive.v1:placement.commonwealth-assault-battalion.assault-east` |
 | Axis source parent | `axis-assault-formation` | `combat.close-assault-positive.v1:formation.axis-assault-formation` |
 | Commonwealth source parent | `commonwealth-assault-formation` | `combat.close-assault-positive.v1:formation.commonwealth-assault-formation` |
 | Axis element | `axis-assault-battalion` | `combat.close-assault-positive.v1:element.axis-assault-battalion` |
@@ -204,13 +226,13 @@ tokens and do not alter the `CMB-CNT-DEC-012` deferral of production names and r
 | Commonwealth infantry component | `commonwealth-assault-battalion.toe.infantry` | `combat.close-assault-positive.v1:component.commonwealth-assault-battalion.toe.infantry` |
 | West location | `assault-west` | `combat.close-assault-positive.v1:location.assault-west` |
 | East location | `assault-east` | `combat.close-assault-positive.v1:location.assault-east` |
-| Adjacency edge | `assault-west|assault-east` | `combat.close-assault-positive.v1:edge.assault-west-assault-east` |
+| Adjacency edge | `assault-east|assault-west` | `combat.close-assault-positive.v1:edge.assault-east-assault-west` |
 | Axis morale fact | `axis-assault-formation.basic-morale` | `combat.close-assault-positive.v1:morale.axis-assault-formation` |
 | Commonwealth morale fact | `commonwealth-assault-formation.basic-morale` | `combat.close-assault-positive.v1:morale.commonwealth-assault-formation` |
 
 | Layer | Exact synthetic input | Provenance or status |
 | --- | --- | --- |
-| Topology | `assault-west` and `assault-east` joined by `assault-west|assault-east`; both are `land.terrain.clear`; no fortification, minefield, or combat-modifying hexside | Existing Content semantics; exact synthetic locators above |
+| Topology | `assault-west` and `assault-east` joined by canonical edge `assault-east|assault-west`; both are `land.terrain.clear`; no edge feature, source coordinate, Weather assignment, fortification, minefield, or combat-modifying hexside | Existing Content semantics; exact synthetic locators above |
 | Forces | `axis-assault-battalion` at `assault-west` and `commonwealth-assault-battalion` at `assault-east`; each is independent, non-Reserve, and classified as `fixture.combat-classification.ordinary-infantry`; no other participant, attachment, gun, armor, truck, air, or special unit | Synthetic; side, source-parent, placement, mobility, organization, and classification are explicit facts |
 | Organization | Both element organization IDs are `land.organization.battalion`; each retains one source parent formation | Existing Rules vocabulary and synthetic element facts |
 | Capability | Base CPA `10` each; current expenditure `0`; attacker later spends `5`, defender `3` | Static base values accepted; expenditure is provisional Campaign input |
@@ -307,9 +329,10 @@ These points remain deliberately open:
    accepted here, but the vocabulary token/property, current parent/attachment identity, Morale
    selection, and ZOC consumer must reconcile with the approved ZOC/Reaction specification and
    `CMB-DES-001`.
-5. **Fixture packaging.** The semantic fixture is fixed, but a dedicated synthetic pack versus a
-   new scenario in the current rules laboratory is a later implementation-plan choice. It must not
-   alter the values or provenance above.
+5. **Production fixture packaging.** Golden vectors use the dedicated closed logical evidence
+   envelope fixed above. Whether later production tests encode those facts in a dedicated synthetic
+   pack or transpose them into another harness remains an implementation-plan choice; no additional
+   inherited object may change the vector.
 6. **Broader static profiles.** Barrage, Vulnerability, Anti-Armor, Armor Protection, AA,
    parenthesized/zero-rated cases, equipment detail, published unit values, and general logistics
    profiles remain outside the first Content capability.
