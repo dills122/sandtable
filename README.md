@@ -127,7 +127,7 @@ The current delivery boundary is:
 | Ruleset/provenance, synthetic content, campaign authority, deterministic randomness, events, and replay | Implemented foundation |
 | Side-safe observations and exact-audience legal actions | Implemented for the current rules-laboratory path |
 | Mandatory turn preamble | Implemented through Reserve Designation completion; authority reaches first-side Movement |
-| Movement/contact and combat loops | Movement Foundation rules, Content mobility, replay-complete world/representation state, approved Breakdown continuity, the v5 side-safe observation boundary, and dormant Movement action contracts are complete through `MOV-TASK-006`; `MOV-TASK-007` internal non-contact adjudication is next |
+| Movement/contact and combat loops | Movement Foundation rules, Content mobility, replay-complete world/representation state, approved Breakdown continuity, the v5 side-safe observation boundary, dormant Movement action contracts, and internal non-contact adjudication/replay are complete through `MOV-TASK-007`; `MOV-TASK-008` public Movement membership and completion remain next |
 | Published first-scenario data, remaining Land rules, victory, persistence, and Maproom | Milestone-level; not started |
 | Player Intent Composer | Direction reviewed; representative decision after the combat skeleton, no-model prototype before Maproom, optional parser evaluation after deterministic MVP |
 | Exercise Harness | Organization, Reserve, and Movement-terminal Exercises plus two-setup and six-policy serial Maneuvers implemented; pairing remains later |
@@ -168,12 +168,13 @@ bindings in the Task 004 snapshot v8/world v3 creation history. On 2026-08-29 th
 Breakdown coordinates, continuity-now, and the Table 21.38 Sandstorm-attributed-BP basis.
 `MOV-TASK-004B` implements the exact Rules/Content/World seam and passed the repository gate plus
 two fresh-context review instances. `MOV-TASK-005` implements the contract-5 owner/apparent
-projection and strict canonical readback. `MOV-TASK-006` now freezes dormant move/completion
+projection and strict canonical readback. `MOV-TASK-006` freezes dormant move/completion
 candidates, exact cost semantics, deterministic IDs, pure observation-derived vectors, and strict
 non-authoritative action/submission/receipt readback while preserving the existing contract
-versions. `MOV-TASK-007` is next. Movement campaign actions remain absent from public legal-action
-sets and unsupported for submission; no Movement command, event, adjudication, or acceptance
-receipt exists yet. Paired
+versions. `MOV-TASK-007` adds the internal move command and canonical event, authoritative
+cost/provenance recalculation, engine dispatch, atomic projection, and deterministic replay.
+Movement campaign actions deliberately remain absent from public legal-action sets and unsupported
+for submission; public membership, completion, and acceptance receipts belong to `MOV-TASK-008`. Paired
 comparison remains a later evaluation capability and does not block gameplay-engine progress.
 Combat research has progressed beyond the initial source inventory: `CMB-RSH-001` now retains the
 first bounded rules/result-surface normalization. Combat contracts and implementation remain gated

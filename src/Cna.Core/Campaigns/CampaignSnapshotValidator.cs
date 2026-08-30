@@ -187,9 +187,12 @@ internal static class CampaignSnapshotValidator
                     || (snapshot.SequencePosition == movementPosition
                         && snapshot.StateVersion
                             >= reserveEntryStateVersion + reserveICount + 1
-                        && (snapshot.StateVersion
-                                == reserveEntryStateVersion + reserveICount + 1
-                            || containsExpenditure)))))
+                        && ((snapshot.StateVersion
+                                    == reserveEntryStateVersion + reserveICount + 1
+                                && !containsExpenditure)
+                            || (snapshot.StateVersion
+                                    > reserveEntryStateVersion + reserveICount + 1
+                                && containsExpenditure))))))
         {
             return false;
         }

@@ -50,6 +50,27 @@ public sealed class CampaignMovementCheckpointValidationTests
     }
 
     [Fact]
+    public void MovementEntryCheckpointRejectsRelocationAndExpenditureWithoutAnEventVersion()
+    {
+        var evidence = CampaignMovementTestData.ReachMovement();
+        var mover = FindFirstSideElement(evidence, reserveStatus: CampaignElementReserveStatus.None);
+        var destination = evidence.Context.Artifact.Definition.Locations
+            .Select(location => location.LocationId)
+            .First(locationId => !string.Equals(
+                locationId,
+                mover.CurrentLocationId,
+                StringComparison.Ordinal));
+        var forgedEntry = ReplaceElementAndRepresentation(
+            evidence.Snapshot,
+            mover.ElementId,
+            destination,
+            new CapabilityPointAmount(1, 2));
+
+        Assert.False(CampaignSnapshotValidator.IsLocallyValid(forgedEntry));
+        Assert.False(CampaignSnapshotValidator.IsValid(forgedEntry, evidence.Context));
+    }
+
+    [Fact]
     public void MovementCheckpointRejectsUnknownLocationOverAllowanceAndAtomicityFailures()
     {
         var evidence = CampaignMovementTestData.ReachMovement();

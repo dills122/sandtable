@@ -1,6 +1,9 @@
 using Cna.Core.Actions;
 using Cna.Core.Campaigns;
+using Cna.Core.Content;
+using Cna.Core.Randomness;
 using Cna.Core.Rules;
+using Cna.Core.Setups;
 
 namespace Cna.Core.Tests.Campaigns;
 
@@ -197,6 +200,148 @@ public sealed class CampaignMovementAdjudicationTests
     }
 
     [Fact]
+    public void DepletedCohesionRejectsAtAuthorityAdmissionWithoutAnEvent()
+    {
+        var evidence = CampaignMovementTestData.ReachMovement();
+        var candidate = CampaignMovementTestData.FindMove(
+            evidence.Snapshot,
+            evidence.Context,
+            evidence.ActingSide,
+            "commonwealth-element-a",
+            "north-east");
+        var command = CampaignMovementTestData.CommandFor(
+            evidence.Snapshot,
+            evidence.ActingSide,
+            candidate);
+        var depleted = ReplaceCohesion(
+            evidence.Snapshot,
+            command.ElementId,
+            -26);
+        var worldBefore = depleted.World;
+        var elementsBefore = depleted.World.Elements.ToArray();
+
+        var rejected = CampaignEngine.Decide(depleted, command, evidence.Context);
+
+        Assert.False(rejected.IsAccepted);
+        Assert.Equal(CampaignCommandRejectionReason.InvalidState, rejected.RejectionReason);
+        Assert.Empty(rejected.Events);
+        Assert.Same(worldBefore, depleted.World);
+        Assert.Equal(elementsBefore, depleted.World.Elements);
+    }
+
+    [Fact]
+    public void MoveIntoApparentEnemyOccupancyRejectsWithoutAnEvent()
+    {
+        var evidence = CampaignMovementTestData.ReachMovement();
+        var approach = CampaignMovementTestData.FindMove(
+            evidence.Snapshot,
+            evidence.Context,
+            evidence.ActingSide,
+            "commonwealth-element-a",
+            "center");
+        var approachDecision = CampaignEngine.Decide(
+            evidence.Snapshot,
+            CampaignMovementTestData.CommandFor(
+                evidence.Snapshot,
+                evidence.ActingSide,
+                approach),
+            evidence.Context);
+        var atContactBoundary = CampaignProjector.Apply(
+            evidence.Snapshot,
+            Assert.Single(approachDecision.Events),
+            evidence.Context);
+        var command = new MoveElement(
+            atContactBoundary.StateVersion,
+            atContactBoundary.SequencePosition.PositionId,
+            evidence.ActingSide,
+            approach.ActionId,
+            approach.ElementId,
+            "center",
+            "west");
+        var before = CampaignSnapshotSerializer.Serialize(atContactBoundary);
+
+        var rejected = CampaignEngine.Decide(
+            atContactBoundary,
+            command,
+            evidence.Context);
+
+        Assert.False(rejected.IsAccepted);
+        Assert.Equal(
+            CampaignCommandRejectionReason.UnsupportedTransition,
+            rejected.RejectionReason);
+        Assert.Empty(rejected.Events);
+        Assert.Equal(before, CampaignSnapshotSerializer.Serialize(atContactBoundary));
+    }
+
+    [Fact]
+    public void MoveBeyondAuthoritativeStackingLimitRejectsWithoutAnEvent()
+    {
+        var evidence = ReachMovementWithFiveFriendlyDestinationOccupants();
+        var baseline = CampaignMovementTestData.ReachMovement();
+        var candidate = CampaignMovementTestData.FindMove(
+            baseline.Snapshot,
+            baseline.Context,
+            baseline.ActingSide,
+            "commonwealth-element-a",
+            "north-east");
+        var command = new MoveElement(
+            evidence.Snapshot.StateVersion,
+            evidence.Snapshot.SequencePosition.PositionId,
+            evidence.ActingSide,
+            candidate.ActionId,
+            "commonwealth-element-a",
+            "east",
+            "north-east");
+        var before = CampaignSnapshotSerializer.Serialize(evidence.Snapshot);
+
+        var rejected = CampaignEngine.Decide(
+            evidence.Snapshot,
+            command,
+            evidence.Context);
+
+        Assert.False(rejected.IsAccepted);
+        Assert.Equal(
+            CampaignCommandRejectionReason.UnsupportedTransition,
+            rejected.RejectionReason);
+        Assert.Empty(rejected.Events);
+        Assert.Equal(before, CampaignSnapshotSerializer.Serialize(evidence.Snapshot));
+    }
+
+    [Fact]
+    public void UnsupportedAuthoritativeStackingTableRejectsWithoutAnEvent()
+    {
+        var evidence = ReachMovementWithUnsupportedElementOrganization();
+        var baseline = CampaignMovementTestData.ReachMovement();
+        var candidate = CampaignMovementTestData.FindMove(
+            baseline.Snapshot,
+            baseline.Context,
+            baseline.ActingSide,
+            "commonwealth-element-a",
+            "north-east");
+        var command = new MoveElement(
+            evidence.Snapshot.StateVersion,
+            evidence.Snapshot.SequencePosition.PositionId,
+            evidence.ActingSide,
+            candidate.ActionId,
+            candidate.ElementId,
+            candidate.OriginLocationId,
+            candidate.DestinationLocationId);
+        var before = CampaignSnapshotSerializer.Serialize(evidence.Snapshot);
+
+        var rejected = CampaignEngine.Decide(
+            evidence.Snapshot,
+            command,
+            evidence.Context);
+
+        Assert.False(rejected.IsAccepted);
+        Assert.Equal(
+            CampaignCommandRejectionReason.UnsupportedTransition,
+            rejected.RejectionReason);
+        Assert.Empty(rejected.Events);
+        Assert.Equal(before, CampaignSnapshotSerializer.Serialize(evidence.Snapshot));
+    }
+
+    [Fact]
     public void InvalidStaleForgedUnsupportedAndOutOfBoundsMovesEmitNothing()
     {
         var evidence = CampaignMovementTestData.ReachMovement();
@@ -356,4 +501,156 @@ public sealed class CampaignMovementAdjudicationTests
             source.CohesionBefore,
             source.CohesionAfter,
             source.SequencePosition);
+
+    private static CampaignSnapshot ReplaceCohesion(
+        CampaignSnapshot snapshot,
+        string elementId,
+        int cohesionLevel)
+    {
+        var world = new CampaignWorldSnapshot(
+            CampaignWorldSnapshot.CurrentContractVersion,
+            snapshot.World.Elements.Select(element => element.ElementId == elementId
+                ? new CampaignElementState(
+                    element.ElementId,
+                    element.CurrentLocationId,
+                    element.ReserveStatus,
+                    new CampaignElementOperationalState(
+                        element.OperationalState.LedgerGameTurn,
+                        element.OperationalState.LedgerOperationStage,
+                        element.OperationalState.CapabilityPointsExpended,
+                        cohesionLevel,
+                        element.OperationalState.VehicleBreakdownState))
+                : element).ToArray(),
+            snapshot.World.Representations);
+        return snapshot with { World = world };
+    }
+
+    private static CampaignMovementEvidence ReachMovementWithFiveFriendlyDestinationOccupants()
+    {
+        var baseline = Cna1979SyntheticContentCatalog.Artifact.Definition;
+        var elementTemplate = baseline.Elements.Single(element =>
+            element.ElementId == "commonwealth-element-b");
+        var placementTemplate = baseline.Scenarios
+            .Single(scenario => scenario.ScenarioId == "movement-contact-lab")
+            .InitialPlacements.Single(placement =>
+                placement.ElementId == elementTemplate.ElementId);
+        var addedElements = Enumerable.Range(1, 5).Select(index => new ContentCombatElement(
+            $"commonwealth-stack-{index}",
+            elementTemplate.SideId,
+            elementTemplate.ParentFormationId,
+            elementTemplate.OrganizationId,
+            elementTemplate.MobilityId,
+            elementTemplate.BaseCapabilityPointAllowance,
+            elementTemplate.PlacementMode,
+            elementTemplate.Origin)).ToArray();
+        var scenarios = baseline.Scenarios.Select(scenario => new ContentScenario(
+            scenario.ScenarioId,
+            scenario.Start,
+            scenario.End,
+            scenario.InitialPlacements.Concat(addedElements.Select(element =>
+                new ContentInitialPlacement(
+                    element.ElementId,
+                    "north-east",
+                    placementTemplate.Origin))),
+            scenario.Origin)).ToArray();
+        var definition = new ContentPackDefinition(
+            baseline.SchemaVersion,
+            baseline.FormatId,
+            "movement-stacking-adjudication-test",
+            baseline.RulesetId,
+            baseline.Capabilities,
+            baseline.SourceIndex,
+            baseline.Locations,
+            baseline.WeatherAreaAssignments,
+            baseline.Edges,
+            baseline.Formations,
+            baseline.Elements.Concat(addedElements),
+            scenarios);
+
+        return ReachMovementWithContent(definition, "campaign-movement-stacking");
+    }
+
+    private static CampaignMovementEvidence ReachMovementWithUnsupportedElementOrganization()
+    {
+        var baseline = Cna1979SyntheticContentCatalog.Artifact.Definition;
+        var definition = new ContentPackDefinition(
+            baseline.SchemaVersion,
+            baseline.FormatId,
+            "movement-unsupported-stacking-adjudication-test",
+            baseline.RulesetId,
+            baseline.Capabilities,
+            baseline.SourceIndex,
+            baseline.Locations,
+            baseline.WeatherAreaAssignments,
+            baseline.Edges,
+            baseline.Formations,
+            baseline.Elements.Select(element => element.ElementId == "commonwealth-element-a"
+                ? new ContentCombatElement(
+                    element.ElementId,
+                    element.SideId,
+                    element.ParentFormationId,
+                    "land.organization.regiment",
+                    element.MobilityId,
+                    element.BaseCapabilityPointAllowance,
+                    element.PlacementMode,
+                    element.Origin,
+                    element.BreakdownVehicleCohort)
+                : element),
+            baseline.Scenarios);
+
+        return ReachMovementWithContent(
+            definition,
+            "campaign-movement-unsupported-stacking");
+    }
+
+    private static CampaignMovementEvidence ReachMovementWithContent(
+        ContentPackDefinition definition,
+        string campaignId)
+    {
+        var artifact = ContentPackArtifact.Create(definition);
+        var context = CampaignContentContext.Create(artifact, "movement-contact-lab");
+        var catalogSetup = Cna1979SetupCatalog.Definitions[0];
+        var setup = new CampaignSetupDefinition(
+            catalogSetup.SchemaVersion,
+            catalogSetup.SetupId,
+            catalogSetup.DisplayName,
+            catalogSetup.IsSynthetic,
+            catalogSetup.InitialGameTurn,
+            catalogSetup.InitialInitiative,
+            catalogSetup.OpeningPreamble,
+            catalogSetup.Weather,
+            catalogSetup.StageEntry,
+            context.Selection,
+            catalogSetup.Sources);
+        var created = new CampaignCreated(
+            campaignId,
+            1,
+            Cna1979Ruleset.Manifest.Hash,
+            CampaignSetupSnapshot.FromDefinition(setup),
+            CampaignWorldFactory.CreateInitial(artifact, context.Scenario),
+            SandtableRandom.Create(12345UL),
+            Cna1979LandSequence.CreateTurn(setup.InitialGameTurn)[0]);
+        var createdSnapshot = CampaignProjector.Apply(null, created, context);
+        var stageEntry = StageEntryCampaignTestData.Advance(
+            createdSnapshot,
+            context,
+            InitiativeOrderChoice.ActLast);
+        var snapshot = stageEntry.Snapshot;
+        var actingSide = FirstActingSideResolver.Resolve(snapshot);
+        var completed = CampaignEngine.Decide(
+            snapshot,
+            new CompleteReserveDesignation(
+                snapshot.StateVersion,
+                snapshot.SequencePosition.PositionId,
+                actingSide),
+            context);
+        var completion = Assert.Single(completed.Events);
+        var movement = CampaignProjector.Apply(snapshot, completion, context);
+
+        return new CampaignMovementEvidence(
+            [created, .. stageEntry.Events, completion],
+            movement,
+            context,
+            actingSide);
+    }
 }
