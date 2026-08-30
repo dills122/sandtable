@@ -1,8 +1,9 @@
 # Exercise Harness v1 Specification
 
-**Status:** Implemented and repository-verified through `EXR-TASK-015`; checked Reserve
-Designation adoption, the six-policy controller matrix, and the optional paired policy comparison
-reach first-side Movement
+**Status:** `EXR-TASK-016` implementation and repository gates are complete; checked Reserve
+Designation adoption, the six-policy controller matrix, and the optional serial-paired policy
+comparison reach first-side Movement. Final delivery status is established by the required
+fresh-context review recorded in PR evidence
 
 **Date:** 2026-08-20
 
@@ -15,16 +16,20 @@ reach first-side Movement
 
 **Technical design:** [Exercise Harness v1](../design/exercise-harness-v1.md)
 
-**Next bounded Harness checkpoint:** `EXR-TASK-016` repository reconciliation; paired comparison
-remains optional instrumentation and does not block gameplay-engine work
+**Harness v1 boundary:** implementation is complete through `EXR-TASK-016`; final delivery requires
+the independent-review gate recorded in PR evidence. Future side-safe export, model controller,
+persistence/index, or parallel/distributed work requires separate authorization and does not block
+gameplay-engine work
 
 **Delivered engine track:** [Operation-Stage Entry research](../research/operation-stage-entry-spike.md),
 [specification](operation-stage-entry-v1.md), and
 [technical design](../design/operation-stage-entry-v1.md), followed by the
 [Reserve Designation specification](reserve-designation-v1.md) and
-[technical design](../design/reserve-designation-v1.md). Movement Foundation Tasks 001-004 now
-provide rules/content/world prerequisites, but Movement actions remain unsupported; Task 009 will
-adopt Movement into checked Exercise/Maneuver evidence only after the executable vertical lands
+[technical design](../design/reserve-designation-v1.md). Movement Foundation Tasks 001-007 now
+provide the merged rules/content/world, dormant outward-contract, and internal non-contact
+adjudication/replay foundation. Public Movement membership and completion remain `MOV-TASK-008`;
+`MOV-TASK-009` adopts Movement into checked Exercise/Maneuver evidence only after that public
+vertical lands
 
 **Research decisions:**
 [capability and replay](../research/exercise-capability-and-replay-spike.md),
@@ -507,7 +512,7 @@ tests/Cna.Core.Tests/
 tests/Cna.ExerciseRunner.Tests/
   Commands/ Execution/ Artifacts/
 scenarios/exercises/          # checked-in single-run manifests
-scenarios/maneuvers/          # checked-in batch/paired manifests
+scenarios/maneuvers/          # checked-in serial-unpaired and serial-paired manifests
 artifacts/exercises/          # ignored generated output
 ```
 
@@ -620,18 +625,22 @@ artifact failure modes fail closed, clean reproducibility is demonstrated, the c
 and Maneuver are runnable with the documented commands, the full repository gate passes, and the
 repository-wide documents describe implemented—not planned—behavior accurately.
 
-## Current Task 014 evidence
+## Current implementation and Task 016 closeout evidence
 
-Task 014 feature implementation is complete and its focused evidence is green: warning-free
-solution build; 10/10 command/fixture tests; 41/41 semantic bundle-validation tests; 23/23
-serial-executor tests; 17/17 report contract/transaction tests; and 252/252 tests in the complete
-ExerciseRunner project.
-This verifies serial aggregation, explicit identity and diagnostics propagation, one-read semantic
-validation, report finalization/readback, the checked CLI fixture, cancellation, and failure
-precedence within the runner scope. The complete 562-test solution gate and `just check` pass; two
-checked-fixture runs retained the identical deterministic report fingerprint
-`sha256:8cc5d2fbfb907f83edc7bb51a7ec98eb57f7338c072a0325ff5ca4a685b19f06`; and the pre-PR
-implementation review verdict is Ready.
+Tasks 014, 014J, and 015 are merged in the repository baseline through PR #73. Their retained
+implementation evidence includes warning-free builds, complete focused and solution suites,
+strict serial and paired readers, repeated deterministic fingerprints, `just check`, and
+independent review. Task 016 re-runs the checked single-Exercise, serial-unpaired two-setup,
+six-policy controller-matrix, and serial-paired commands from the clean PR-73 checkout. Every child
+bundle and parent report is printed only after strict readback; the paired run retains the required
+equal-initial-evidence checks and descriptive limitation.
+
+The Task 016 repository gate is `git diff --check`, local Markdown link/ID trace validation,
+`dotnet test --project tests/Cna.ExerciseRunner.Tests/Cna.ExerciseRunner.Tests.csproj --no-build`
+(347/347 passed), and `just check` (format clean, build 0 warnings/0 errors, 946/946 solution tests
+passed with 0 skipped), followed by a fresh-context independent review of the six-document diff.
+No remote provider, performance threshold, gameplay-balance conclusion, or unimplemented Movement
+behavior participates in this evidence.
 
 Post-adoption trusted-evidence hardening also proves that initial and final snapshots are decoded by
 Core's complete current snapshot/world contract before any executed-or-later success or failure
@@ -639,9 +648,9 @@ profile is trusted. Rehashed `world:{}` and `world:{"contractVersion":2}` cases 
 public reader, including a failed-reconstruction bundle with internally consistent dependent hashes
 and proof fields.
 
-## Open questions
+## Change control
 
-There are no architecture-blocking open questions. Exact public type and file names within the
-provisional `Cna.Core.Exercises` namespace may be refined during test-first implementation without
-changing capability boundaries, contracts, or acceptance criteria. Any material change requires a
-spec amendment and review before implementation.
+There are no architecture-blocking open questions for Harness v1. Future public type or file-name
+changes within `Cna.Core.Exercises` must preserve the delivered capability boundaries, contracts,
+and acceptance criteria. Any material change requires a spec amendment and review before
+implementation.
