@@ -1,7 +1,8 @@
 # Combat and Continual-Cycle Source Inventory
 
-**Status:** Source inventory and `CMB-RSH-001` result-surface research complete; contract freeze
-gated by `CONTACT-001` and `BREAKDOWN-001`
+**Status:** Source inventory, `CMB-RSH-001` result-surface research, and `CYCLE-RSH-001` cycle
+identity/history decision complete; production remains gated by later combat and Reserve Release
+design
 
 **Date:** 2026-08-25
 
@@ -44,8 +45,9 @@ and RNG contracts have no combat vocabulary.
 
 **Inference:** Keep structural Land positions stable and add authoritative cycle ordinal/history
 rather than duplicating an arbitrary number of positions. Reserve Release should expose deliberate
-`repeat-cycle` or `finish-movement-combat` actions once mandatory obligations clear. Contact-created
-opportunities and per-stage target history determine whether those actions are legal.
+`repeat-cycle` or `finish-movement-combat` actions once mandatory obligations clear. Current
+Movement/Combat continuation determines whether repeat is legal; per-stage attacked-target history
+retains committed evidence but does not prohibit a source-legal repeated pair.
 
 ## Private and simultaneous choice boundary
 
@@ -105,7 +107,11 @@ Research that can proceed now:
 2. `CMB-RSH-002` — choose combat Content/static schema and synthetic values.
 3. `CMB-RSH-003` — choose mutable loss/prisoner/ammunition/Disorganization boundary.
 4. `CMB-RSH-004` — freeze RNG draw order and golden vectors.
-5. `CYCLE-RSH-001` — freeze cycle ordinal, repeat/finish, and attacked-target history.
+5. `CYCLE-RSH-001` — **complete:** the
+   [Continual-cycle identity and attacked-target history decision](continual-cycle-identity-and-history-decision.md)
+   freezes the phase-local ordinal, repeat/finish closure, ordered repeat-permitting attacked-target
+   history, replay/snapshot boundary, and fog-safe identity/projection requirements without
+   authorizing contracts.
 6. `RESREL-RSH-001` — freeze Reserve I/II release eligibility/history and movement handoff.
 
 Design that waits for approved Contact and Breakdown boundaries:
