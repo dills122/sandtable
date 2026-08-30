@@ -1,6 +1,6 @@
 # ZOC and Reaction v1 Technical Design
 
-**Status:** Approved — `ZOR-TASK-002A` is the active first production slice
+**Status:** Approved — dormant checkpoints `ZOR-TASK-002A`-`002B` implemented; `002C` next
 
 **Date:** 2026-08-30
 
@@ -133,6 +133,15 @@ element and rejects missing, duplicate, unknown, negative, or over-maximum value
 never a default. Campaign creation copies the canonical ordered seed collection and provenance into
 creation truth, then World owns the mutable values. Replay recreates the same handoff from the
 retained compatible Content identity and event bytes.
+
+`ZOR-TASK-002B` freezes this as the direct-only `ContentPackV5Definition` envelope with schema 5,
+format `sandtable.content-json.v4`, and mandatory capability `land.combat-components`. Each element
+extension carries `combatClassificationId`, `combatOrigin`, and canonical `components` with
+`componentId`, `componentClassId`, `maximumToe`, `defensiveCloseAssaultRating`, and `origin`. Each
+initial placement carries canonical `initialComponentToes` rows with `componentId`, `currentToe`,
+and `origin`. The v5 serializer/artifact emits and hashes one complete successor document derived
+from a fully validated schema-4 definition; the active schema-4 reader continues to reject those
+bytes. Strict v5 readback and complete golden vectors remain `ZOR-TASK-002C`.
 
 Admission proves component identity uniqueness, `0 <= currentToe <= maximumToe`, compatible
 Content/rules identity, and checked arithmetic. Current raw defensive capability is derived as the
@@ -366,10 +375,10 @@ ZOR-TASK-001 accepted ruling lock [complete]
 
 ### `ZOR-TASK-002` — Freeze Rules, Content, and fixtures
 
-- **002A (implemented by this checkpoint):** prepare the dormant ruleset successor; add closed combat/ZOC vocabulary, predicates,
+- **002A (implemented):** prepare the dormant ruleset successor; add closed combat/ZOC vocabulary, predicates,
   topology exclusions, provenance, checked arithmetic, and table-driven unit tests without changing
   the active ruleset identity.
-- **002B:** prepare the dormant Content successor; add strict component definitions/ratings and
+- **002B (implemented):** prepare the dormant Content successor; add strict component definitions/ratings and
   provenance-bearing scenario current-TOE seeds, admission, canonical identity, legacy/mixed
   rejection, and no derived ZOC or post-creation current state without admitting the successor on
   the active path.

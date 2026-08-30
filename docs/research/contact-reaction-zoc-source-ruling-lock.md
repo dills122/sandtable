@@ -412,5 +412,5 @@ Contact/Engaged into Sprint 4.
   readback was unavailable because the configured Keychain credential was invalid.
 
 No unresolved source-ruling choice blocks implementation. The non-contact Movement vertical is
-complete, the governing ZOC/Reaction package is approved, and `ZOR-TASK-002A` is its first bounded
-production slice.
+complete, the governing ZOC/Reaction package is approved, dormant implementation is complete
+through `ZOR-TASK-002B`, and `002C` is the next bounded production slice.

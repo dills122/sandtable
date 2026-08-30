@@ -768,8 +768,8 @@ Movement membership, exact submission mapping, adjudication, completion to Break
 Determination, replay, and checked Harness adoption are complete through merged `MOV-TASK-010` / PR
 #79. The next authority package is the approved ZOC/Reaction
 [specification](docs/specs/zoc-reaction-v1.md) and
-[technical design](docs/design/zoc-reaction-v1.md). `ZOR-TASK-002A` adds a dormant Rules successor;
-ruleset 7 remains active until the coordinated identity migration.
+[technical design](docs/design/zoc-reaction-v1.md). `ZOR-TASK-002A`-`002B` add dormant Rules and
+Content successors; ruleset 7 and Content schema 4 remain active until the coordinated migration.
 The completed owner-approved engine package is the Movement Foundation
 [research](docs/research/movement-foundation-spike.md),
 [specification](docs/specs/movement-foundation-v1.md), and
@@ -824,7 +824,8 @@ evidence, not an implemented combat contract. Current proposals use trusted-Umpi
 the same pre-state for simultaneous combat, and structural sequence positions plus cycle identity;
 none is implemented or approved yet.
 All five `CONTACT-001` rulings and the governing specification/design package are approved.
-`ZOR-TASK-002A` implements only the dormant Rules successor; later slices remain dependency-gated.
+`ZOR-TASK-002A`-`002B` implement only dormant Rules and Content successors; later slices remain
+dependency-gated.
 The implemented paired comparison does not block that engine work.
 
 [1]: https://learn.microsoft.com/en-us/dotnet/orleans/grains/external-tasks-and-grains "External tasks and grains - .NET | Microsoft Learn"

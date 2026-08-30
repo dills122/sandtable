@@ -603,9 +603,10 @@ least one apparent enemy ZOC source; it exposes neither which presence controls 
 entry creates neither **Contact** nor **Engaged**: Contact
 is derived from enemy-ZOC presence at the beginning of a Movement Segment, while Engaged is a Close
 Assault result. The repeatable **Movement/Combat cycle** remains a Sprint 5 research-gated domain
-concept. Movement is complete through `MOV-TASK-010`; `ZOR-TASK-002A` adds dormant Rules vocabulary
-and predicates without activating ZOC/Reaction or changing ruleset 7, and none of these later terms
-should be inferred inside the current non-contact Movement resolver.
+concept. Movement is complete through `MOV-TASK-010`; `ZOR-TASK-002A`-`002B` add dormant Rules
+vocabulary/predicates and Content component/seed contracts without activating ZOC/Reaction or
+changing ruleset 7 / Content schema 4, and none of these later terms should be inferred inside the
+current non-contact Movement resolver.
 
 **War College** is where we evaluate commanders.
 
