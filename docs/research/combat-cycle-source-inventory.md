@@ -80,10 +80,10 @@ separately approved bounded rule. Legality cannot depend on a future favorable s
 
 ## Required fact inventory
 
-Static rules/content includes current/max TOE/component strength; relevant Barrage, Vulnerability,
-Anti-Armor, Armor Protection, offensive/defensive Close Assault, AA, Basic Morale, unit/component
-class, ammunition/fuel requirements, organization/attachment participation, normalized table rows,
-and per-row provenance/errata.
+Static Content includes maximum TOE/component strength, immutable unit/component classification,
+combat ratings, Basic Morale, source-parent/organization facts, and per-datum provenance. Static
+Rules includes eligibility semantics, calculations, normalized table rows, and per-row
+provenance/errata. Current TOE/component strength is not static.
 
 Mutable authority includes current TOE/component strength; CP/Cohesion/Disorganization; pin;
 Contact/Engaged; ammunition/fuel; gun position; combat opportunity/target; sealed choices and
