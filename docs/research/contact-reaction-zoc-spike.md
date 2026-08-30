@@ -1,6 +1,7 @@
 # ZOC and Reaction Interruption Spike
 
-**Status:** Decision-ready post-Movement package; owner rulings required before task authorization
+**Status:** Decision-ready post-Movement package; source/ruling follow-up complete; no production
+task authorized
 
 **Date:** 2026-08-25
 
@@ -8,12 +9,17 @@
 
 **Research work item:** `CONTACT-001`
 
+**Decision follow-up:** The five owner rulings are closed in the
+[CONTACT-001 source/ruling lock](contact-reaction-zoc-source-ruling-lock.md). That decision-only
+record does not authorize production work or relax the completed-Movement predecessor.
+
 ## Executive conclusion
 
 The next post-Foundation capability should be a ZOC/Reaction interruption package, not a monolithic
 Contact/Reaction feature. Enemy-ZOC entry ends ordinary movement and may open an optional
-non-phasing Reaction decision. Contact is created by Close Assault adjacency, while Engaged is a
-combat result; their participant-scoped lifecycle belongs with the Combat-cycle package.
+non-phasing Reaction decision. Rule 8.62 derives Contact at the beginning of a Movement Segment
+from enemy-ZOC presence, while Rule 8.63 makes Engaged a Close Assault result; their
+participant-scoped lifecycle belongs with the Combat-cycle package.
 
 Nothing in this packet blocks the deliberately non-contact Movement Foundation. Reaction mutation
 does depend on the completed Movement vertical, positive ZOC inputs, and the Breakdown continuity
@@ -31,7 +37,8 @@ decision because Reaction spends movement resources and accumulates BP.
 
 **Documented fact:** Entering enemy ZOC stops the mover. Reaction is optional movement by the
 non-phasing side after qualifying adjacency, spends CP, can repeat subject to restrictions, cannot
-enter enemy ZOC, and contributes to BP. Contact/Engaged are later combat-produced states.
+enter enemy ZOC, and contributes to BP. Contact is established from enemy-ZOC presence at the
+beginning of a Movement Segment; Engaged is a Close Assault result.
 
 **Repository observation:** Current authority has no suspended phasing action, pending opponent
 window, movement-ended eligibility, Contact/Engaged relationship, positive ZOC fixture, or BP
@@ -82,7 +89,7 @@ positive ZOC behavior belongs to this later package.
 ## Proposed task graph
 
 1. `ZOR-TASK-001` — source/ruling lock: multiple reactors, repeat eligibility, decline scope,
-   waiting visibility, and fallback.
+   waiting visibility, fallback, and positive-ZOC authority (**decision record complete**).
 2. `ZOR-TASK-002` — ZOC rules/content/positive fixture and canonical identity migration.
 3. `ZOR-TASK-003` — movement-ended and pending-window world/snapshot/replay contracts.
 4. `ZOR-TASK-004` — dormant observation/action contracts and fog-equivalence tests.
@@ -90,18 +97,18 @@ positive ZOC behavior belongs to this later package.
 6. `ZOR-TASK-006` — Reaction CP/BP resolution, decline/close, resumption, and atomic publication.
 7. `ZOR-TASK-007` — Exercise/Maneuver evidence, synchronization, and independent review.
 
-These tasks are proposed, not authorized. They begin only after Movement Foundation and an approved
-`BREAKDOWN-001` continuity boundary.
+These tasks are proposed, not authorized. Task 002 and every later production task begin only after
+Movement Foundation, the approved `BREAKDOWN-001` continuity boundary, and an owner-approved
+ZOC/Reaction specification and technical design.
 
-## Owner decisions and deferrals
+## Owner rulings and deferrals
 
-Still required before contracts freeze:
-
-- ordering when multiple units can react;
-- whether one unit may react more than once to one trigger;
-- per-unit decline versus closing the entire window;
-- exact public waiting-state wording/shape; and
-- the minimum positive-ZOC content vocabulary.
+The [CONTACT-001 source/ruling lock](contact-reaction-zoc-source-ruling-lock.md) accepts reacting-
+player selection order, one episode per participant per trigger with later-trigger repeat
+eligibility, whole-window decline, a generic phasing-side waiting projection, and rules/Umpire-
+derived positive ZOC over primitive Content and current Campaign facts. No owner ruling remains
+escalated. Exact production type names and serialized shapes remain a later specification task,
+after the complete non-contact Movement vertical.
 
 Contact/Engaged participant identity, Break Contact/Break Off, and cycle persistence are deferred to
 `COMBAT-CYCLE-001`. They must not be inferred inside the ZOC/Reaction package.

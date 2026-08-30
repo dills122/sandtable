@@ -28,8 +28,9 @@ now adds own BP/cohort facts to that observation clean cut, while choosing termi
 the original Task 005 shape but requires an explicit later migration.
 
 The retained [Breakdown packet](breakdown-continuity-spike.md) recommends continuity now and a
-sequential-dice ruling. The [ZOC/Reaction packet](contact-reaction-zoc-spike.md) separates enemy-ZOC
-interruption from combat-created Contact/Engaged. The
+sequential-dice ruling. The [ZOC/Reaction packet](contact-reaction-zoc-spike.md) separates immediate
+enemy-ZOC interruption from Contact established at Movement-Segment entry and Engaged created by
+Close Assault. The
 [Combat-cycle inventory](combat-cycle-source-inventory.md) completes the research-now source
 inventory but keeps contract/task freeze behind approved Breakdown and Contact boundaries. Sprint 5
 therefore remains a planning gate, not an implementation-ready task graph.
@@ -51,6 +52,7 @@ copyrighted rules prose.
 | [Reconnaissance/contact research](recon-contact-knowledge-spike.md) | Existing knowledge and representation boundary |
 | [Breakdown continuity packet](breakdown-continuity-spike.md) | Decision-ready BP/ruling/options and conditional Movement task graph |
 | [ZOC/Reaction interruption packet](contact-reaction-zoc-spike.md) | Post-Movement interruption boundary and proposed task graph |
+| [CONTACT-001 source/ruling lock](contact-reaction-zoc-source-ruling-lock.md) | Accepted reactor ordering, repeat, decline, fog, and positive-ZOC authority rulings |
 | [Combat-cycle source inventory](combat-cycle-source-inventory.md) | Minimal vector, private-choice/cycle architecture, and gated research/design graph |
 
 ## Findings
@@ -88,13 +90,16 @@ relationship, Reaction opportunity, opponent-action handoff, or resumed phasing-
 existing synthetic isolated battalion-equivalent pieces also do not supply a positive ZOC fixture.
 
 **Inference:** ZOC/Reaction needs an explicit state machine and audience transition, not one more
-validation branch inside `MoveElement`. Contact/Engaged are combat-produced participant
-relationships and move to the Combat-cycle package rather than this interruption slice.
+validation branch inside `MoveElement`. Contact and Engaged are participant relationships with
+different creation truths—Movement-Segment-entry enemy-ZOC state and a Close Assault result,
+respectively—and move to the Combat-cycle package rather than this interruption slice.
 
 **Follow-up result:** The packet proposes seven post-Movement ZOC/Reaction tasks, a positive ZOC
 fixture, opponent-owned pending window, deterministic decline, stale regeneration, and redacted
-Chronicle/observation policy. Owner rulings remain for multiple reactors, repeat eligibility,
-decline scope, waiting visibility, and minimum ZOC content vocabulary.
+Chronicle/observation policy. The later source/ruling lock accepts reacting-player selection order,
+one participant episode per trigger with later-trigger repeat eligibility, whole-window decline,
+generic phasing-side waiting visibility, and rules/Umpire-derived positive-ZOC authority. Production
+remains gated by the complete non-contact Movement vertical and an approved specification/design.
 
 ### `COMBAT-CYCLE-001` — repeatable cycle and hidden-choice contract
 
@@ -125,8 +130,8 @@ now; six design items wait for Contact and Breakdown.
    until Task 008.
 3. Describe Movement Foundation replay as complete through arrival at the unsupported Breakdown
    boundary, not as proof that the next checkpoint can already adjudicate.
-4. Implement ZOC/Reaction only after Movement Foundation; keep combat-created Contact/Engaged with
-   `COMBAT-CYCLE-001`.
+4. Implement ZOC/Reaction only after Movement Foundation; keep Contact/Engaged relationship
+   authority with `COMBAT-CYCLE-001`, preserving their distinct Rule 8.62 and 8.63 creation truths.
 5. Treat the completed Combat-cycle source inventory as research input only; replace Sprint 5's
    broad headings with gated research/design work until contracts can be frozen.
 6. Keep published scenario transcription, over-CPA Disorganization/reorganization, paired
