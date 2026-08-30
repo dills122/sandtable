@@ -110,9 +110,8 @@ expenditure 20. Reconstruction and fresh-session re-adjudication reproduce each 
 
 Strict bundle/report readback validates those action, event, move, Reserve, ledger, terminal, and
 proof facts and rejects malformed, inconsistent, noncanonical, or rehashed-tampered evidence. A
-local probe produced aggregate fingerprint
-`sha256:c1c20270dcd3402886931c28851bea7f23cd1e0778b45f94c43d85ed01d41c4b`; the required two clean
-CLI executions must reconfirm it before Task 009 delivery is final. The aggregate fingerprint does
+two clean CLI executions produced matching aggregate fingerprint
+`sha256:c1c20270dcd3402886931c28851bea7f23cd1e0778b45f94c43d85ed01d41c4b`. The aggregate fingerprint does
 not bind the detailed child event or ledger bytes, so child semantic validation remains mandatory.
 
 ### Breakdown continuity gate
@@ -356,8 +355,8 @@ exact first-side Breakdown Determination checkpoint. Reserve `none`/`one`/`all` 
 designations and 2/1/0 moves in each initiative branch. Aggregate evidence contains 78 actions and
 events, six Reserve designations, six Reserve completions, six moves, six Movement completions, and
 exact final CP expenditure 20. The frozen aggregate fingerprint is
-`sha256:c1c20270dcd3402886931c28851bea7f23cd1e0778b45f94c43d85ed01d41c4b`, subject to the required
-two clean-run reconfirmation before final Task 009 delivery.
+`sha256:c1c20270dcd3402886931c28851bea7f23cd1e0778b45f94c43d85ed01d41c4b`, reconfirmed by two clean
+CLI executions into separate artifact roots.
 
 ### `MOV-REQ-013` - Exact Breakdown Point rules identity
 

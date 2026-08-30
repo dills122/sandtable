@@ -671,9 +671,9 @@ behavior participates in this evidence.
 
 `MOV-TASK-009` adds the checked Movement fixture and the retained
 [Movement Simulator Trajectories](../research/simulator-movement-trajectories.md) study. Its current
-local probe fingerprint is
-`sha256:c1c20270dcd3402886931c28851bea7f23cd1e0778b45f94c43d85ed01d41c4b`; two clean CLI runs must
-reconfirm that value before Task 009 delivery is final. The Task 009 PR and integration checks remain
+aggregate fingerprint is
+`sha256:c1c20270dcd3402886931c28851bea7f23cd1e0778b45f94c43d85ed01d41c4b`, reconfirmed by two clean
+CLI executions into separate artifact roots. The Task 009 PR and integration checks remain
 provisional, and `MOV-TASK-010` remains blocked until merge.
 
 Post-adoption trusted-evidence hardening also proves that initial and final snapshots are decoded by

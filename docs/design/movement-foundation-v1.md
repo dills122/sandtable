@@ -546,8 +546,8 @@ serial integration gate even where its codec and projector work can be prepared 
 
 ### `MOV-TASK-009` - Adopt Movement in Exercise and Maneuver evidence
 
-**Status:** Implemented and verified locally; PR merge, clean-run reconfirmation, and integration
-evidence remain provisional
+**Status:** Implemented and verified locally, including two matching clean CLI executions; PR merge
+and integration evidence remain provisional
 
 **Advances:** `MOV-REQ-012`; `MOV-AC-012`, `MOV-AC-013`
 
@@ -589,9 +589,9 @@ noncanonical, or tampered Movement evidence.
 `scenarios/maneuvers/rules-lab.movement.serial.v2.json`; strict Movement event and ledger semantic
 validation; child reconstruction and re-adjudication; 48 in-process trajectories across seeds 0, 1,
 `ulong.MaxValue / 2`, and `ulong.MaxValue`, six controllers, and two repeats; and local aggregate
-fingerprint `sha256:c1c20270dcd3402886931c28851bea7f23cd1e0778b45f94c43d85ed01d41c4b`.
-The fingerprint does not bind detailed child event/ledger bytes, so strict child validation is not
-optional. Two clean CLI executions must reconfirm it before final delivery.
+fingerprint `sha256:c1c20270dcd3402886931c28851bea7f23cd1e0778b45f94c43d85ed01d41c4b`,
+reconfirmed by two clean CLI executions into separate artifact roots. The fingerprint does not bind
+detailed child event/ledger bytes, so strict child validation is not optional.
 
 **Verification:** Exercise Runner project tests, full solution tests, two CLI Maneuver runs, and
 retained evidence artifact
@@ -639,7 +639,7 @@ three before the full gate and brand-new independent review.
 | `MOV-REQ-009` completion | 005 | 008 | exact successor tests | Completion command/event/codec/execution/projection implemented in Task 008 with exact Breakdown successor and no public Breakdown action |
 | `MOV-REQ-010` canonical contracts | 004, 006 | 002-008 | golden/strict reader tests | Rules/world/history implemented through 004B; outward strict readers active through Task 006; `ElementMoved` and `MovementSegmentCompleted` strict codecs plus moved/completed snapshots active through Task 008 |
 | `MOV-REQ-011` replay/fog | 001, 006 | 004-008 | replay/privacy tests | Same-apparent public-action equivalence, zero/one/many Movement-plus-completion replay, and exact current-membership submission revalidation complete through Task 008 |
-| `MOV-REQ-012` Exercise evidence | 008 | 009 | checked six-child fixture, strict semantic bundle/report readback, reconstruction/re-adjudication, 48-trajectory retained study, project/full tests, and two clean CLI runs | Implemented and locally verified; clean-run fingerprint reconfirmation, PR merge, and integration remain provisional |
+| `MOV-REQ-012` Exercise evidence | 008 | 009 | checked six-child fixture, strict semantic bundle/report readback, reconstruction/re-adjudication, 48-trajectory retained study, project/full tests, and two clean CLI runs | Implemented and locally verified, including matching clean-run fingerprints; PR merge and integration remain provisional |
 
 ## Review focus
 

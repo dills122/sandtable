@@ -44,9 +44,8 @@ accepted `element-moved` event.
 - The checked six-child CLI fixture separately retains 13 actions/events and 94 passed checks per
   child. Its current local aggregate is 78 actions/events, six Reserve designations, six Reserve
   completions, six moves, six Movement completions, and exact final CP expenditure 20.
-- The current local aggregate fingerprint is
-  `sha256:c1c20270dcd3402886931c28851bea7f23cd1e0778b45f94c43d85ed01d41c4b`; two clean CLI runs must
-  reconfirm it before final Task 009 delivery.
+- Two clean CLI executions into separate artifact roots reconfirmed aggregate fingerprint
+  `sha256:c1c20270dcd3402886931c28851bea7f23cd1e0778b45f94c43d85ed01d41c4b`.
 
 ## Interpretation
 

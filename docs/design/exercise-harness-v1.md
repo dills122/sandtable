@@ -886,8 +886,8 @@ contract identities.
 
 #### `MOV-TASK-009` — Adopt executable Movement evidence
 
-- **Status:** implemented and verified locally; two clean-run fingerprint reconfirmations, PR merge,
-  and integration checks remain provisional. `MOV-TASK-010` remains blocked until merge.
+- **Status:** implemented and verified locally, including two matching clean CLI executions; PR
+  merge and integration checks remain provisional. `MOV-TASK-010` remains blocked until merge.
 - **Depends on:** the merged public Movement vertical from `MOV-TASK-008`; existing serial-unpaired
   and optional serial-paired contracts remain compatible.
 - **Primary files:** `ExerciseController.cs`, `ExerciseExecutor.cs`, manifest/configuration codecs,
@@ -916,7 +916,7 @@ contract identities.
   center for CP cost 8 and B on its supported route for cost 1; one moves B for cost 1; all moves
   neither. Aggregate evidence is 78 actions/events, six Reserve designations, six Reserve
   completions, six moves, six Movement completions, and exact final CP expenditure 20.
-- **Fingerprint/study:** the local probe fingerprint is
+- **Fingerprint/study:** two clean CLI executions into separate artifact roots reconfirmed
   `sha256:c1c20270dcd3402886931c28851bea7f23cd1e0778b45f94c43d85ed01d41c4b`; it does not bind detailed
   child event/ledger bytes. `MovementSimulatorStudyTests` executes four boundary/interior seeds by
   six controllers by two repeats (48 trajectories), proves exact within-seed evidence equality, and
@@ -991,7 +991,7 @@ verdict.
 | `EXR-022`; separate correlated diagnostics | 007, 012, 014 + observability hardening | Successful and failed query/controller/submission/check/proof correlation, explicit Maneuver identity, aggregate noncanonical diagnostics, debug failure timings, artifact readback trace, and command-boundary cross-detail evidence | implemented through serial Maneuvers |
 | `EXR-024`, `EXR-025`; deterministic selection and single active audience | 006, 007, 012 | Executor controller/cardinality/step-bound tests and checked-in fixture | implemented |
 | `EXR-026`; ordered invariant catalog | 006-008, 012 | Strict check codec, ordering, scope, failure, and emitted-bundle tests | implemented |
-| `EXR-027`; bounded Movement selection and semantic evidence | `MOV-TASK-009` | Six-child checked Movement fixture, accepted-move history tests, strict event/ledger tamper tests, reconstruction/re-adjudication, 48-trajectory study, and two clean CLI fingerprints | implemented and locally verified; clean-run/merge/integration evidence provisional |
+| `EXR-027`; bounded Movement selection and semantic evidence | `MOV-TASK-009` | Six-child checked Movement fixture, accepted-move history tests, strict event/ledger tamper tests, reconstruction/re-adjudication, 48-trajectory study, and two clean CLI fingerprints | implemented and locally verified, including matching clean runs; merge/integration evidence provisional |
 | `EXR-NFR-001`-`005`; reproducibility, reliability, boundaries, quality | 001-016 | Warning-free build, complete focused/solution suites, repeatable serial and paired fingerprints, `just check`, runnable-example readback, and independent review | implementation/repository gates verified; final review verdict retained in PR evidence |
 | `DEC-001`-`DEC-016` research decisions | 001-016 as mapped above | Three retained research spikes, governing spec, serial bundles/reports, paired equality/divergence evidence, and synchronized repository maps | accepted and implemented through Task 016 |
 
