@@ -1,8 +1,9 @@
 # Exercise Harness v1 Specification
 
-**Status:** Implemented, repository-reconciled, and verified through `EXR-TASK-016`; checked Reserve
+**Status:** `EXR-TASK-016` implementation and repository gates are complete; checked Reserve
 Designation adoption, the six-policy controller matrix, and the optional serial-paired policy
-comparison reach first-side Movement
+comparison reach first-side Movement. Final delivery status is established by the required
+fresh-context review recorded in PR evidence
 
 **Date:** 2026-08-20
 
@@ -15,7 +16,8 @@ comparison reach first-side Movement
 
 **Technical design:** [Exercise Harness v1](../design/exercise-harness-v1.md)
 
-**Harness v1 boundary:** closed through `EXR-TASK-016`; future side-safe export, model controller,
+**Harness v1 boundary:** implementation is complete through `EXR-TASK-016`; final delivery requires
+the independent-review gate recorded in PR evidence. Future side-safe export, model controller,
 persistence/index, or parallel/distributed work requires separate authorization and does not block
 gameplay-engine work
 

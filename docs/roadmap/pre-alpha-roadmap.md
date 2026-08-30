@@ -231,9 +231,10 @@ Implementation and acceptance evidence are tracked in the
 
 **Capability:** `EXERCISE-001`
 
-**Status:** Implemented and repository-reconciled through Task 016, including the single-Exercise,
-serial-unpaired Task 014, controller-matrix Task 014J, and optional serial-paired Task 015 paths to
-first-side Movement
+**Status:** Task 016 implementation and repository gates are complete, including the
+single-Exercise, serial-unpaired Task 014, controller-matrix Task 014J, and optional serial-paired
+Task 015 paths to first-side Movement. Final delivery status is established by the required
+fresh-context review recorded in PR evidence
 
 **Goal:** Run a freshly created bounded rules-laboratory campaign through the authoritative legal
 action path, retain deterministic trusted evidence, and prove both event-history reconstruction and
@@ -259,10 +260,11 @@ The contract, research decisions, implementation tasks, and acceptance evidence 
 the [Exercise Harness v1 specification](../specs/exercise-harness-v1.md) and
 [technical design](../design/exercise-harness-v1.md).
 
-Tasks 014, 014J, 015, and the Task 016 repository closeout are instrumentation work, not additional
-gameplay. Exercise Harness v1 is closed; any side-safe export, model controller, persistence index,
-or parallel/distributed scheduler requires separate authorization and does not block the
-authoritative gameplay dependency graph. The implemented engine work retains the
+Tasks 014, 014J, 015, and the Task 016 repository-close implementation are instrumentation work, not
+additional gameplay. The Harness v1 implementation boundary is complete; final delivery requires
+the independent-review gate recorded in PR evidence. Any side-safe export, model controller,
+persistence index, or parallel/distributed scheduler requires separate authorization and does not
+block the authoritative gameplay dependency graph. The implemented engine work retains the
 [Operation-Stage Entry research](../research/operation-stage-entry-spike.md),
 [specification](../specs/operation-stage-entry-v1.md), and
 [technical design](../design/operation-stage-entry-v1.md), followed by the implemented
@@ -519,7 +521,8 @@ and `MOV-TASK-008` is the next Movement behavior slice.
 ## Sprint 4: Movement, Breakdown, and Reaction boundary
 
 **Goal:** Complete replayable Movement plus its immediate Breakdown and enemy-ZOC/Reaction
-boundaries without inventing combat-created Contact/Engaged state.
+boundaries without inventing the later Movement-Segment-start Contact or Close-Assault-result
+Engaged state.
 
 Sprint 4 is the active delivery sprint. Its first bounded package has an approved source inventory,
 exact command/event/state contracts, and task-sized implementation plan in the Movement Foundation
@@ -639,14 +642,15 @@ tables rather than resolver constants.
 
 ### Task 4.3 - ZOC and Reaction interruption
 
-**Status:** Decision-ready research exists; implementation is not authorized. Repeatable
-non-contact Movement and approved Breakdown continuity are prerequisites. Owner rulings remain for
-multiple reactors, repeat eligibility, decline scope, waiting visibility, and positive ZOC content.
+**Status:** Decision-complete research exists and all five owner rulings are accepted in PR #71;
+implementation is not authorized. No `ZOR-TASK-*` production work begins before
+`MOV-TASK-008`-`010` and an approved ZOC/Reaction specification/design package.
 
 Allow enemy-ZOC entry to end the mover, open a persisted non-phasing Reaction window, accept
 side-safe Reaction or deterministic decline, and resume the phasing Movement position. Use the
-proposed seven-task graph in the
-[ZOC/Reaction spike](../research/contact-reaction-zoc-spike.md) only after approval.
+accepted research task graph in the
+[ZOC/Reaction ruling lock](../research/contact-reaction-zoc-source-ruling-lock.md) as input to that
+future specification/design approval; the research graph alone does not authorize production.
 
 **Acceptance criteria:**
 
@@ -659,17 +663,19 @@ proposed seven-task graph in the
 
 ### Task 4.4 - Contact/Engaged and continual-cycle handoff
 
-**Status:** Moved to the Sprint 5 Combat-cycle package. Contact is created by Close Assault and
-Engaged is a combat result; neither is a synonym for enemy-ZOC entry or a field in the non-contact
-Movement resolver.
+**Status:** Moved to the Sprint 5 Combat-cycle package. Immediate enemy-ZOC entry creates neither
+relationship: Contact is derived from enemy-ZOC presence at the beginning of a Movement Segment,
+while Engaged is a Close Assault result. Neither is a field in the current non-contact Movement
+resolver.
 
 ### Sprint 4 demonstration
 
 The Movement Foundation demonstration moves supported non-contact elements, spends exact
 capability, replays the resulting world/ledger, and stops honestly at unsupported Breakdown. The
 complete Sprint 4 demonstration additionally enters enemy ZOC, resolves the resulting Reaction
-window and Breakdown through approved packages, resumes the phasing side, and stops before
-combat-created Contact/Engaged while showing the resulting state and Chronicle explanation.
+window and Breakdown through approved packages, resumes the phasing side, and stops before the
+later Movement-Segment-start Contact and Close-Assault-result Engaged handling while showing the
+resulting state and Chronicle explanation.
 
 ## Sprint 5: Combat and continual-cycle loop
 

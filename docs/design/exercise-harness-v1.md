@@ -1,7 +1,8 @@
 # Exercise Harness v1 Technical Design and Delivery Plan
 
-**Status:** Implemented, repository-reconciled, and verified through Task 016 single-Exercise,
-serial-unpaired, controller-matrix, and optional serial-paired Maneuvers to first-side Movement
+**Status:** Task 016 implementation and repository gates are complete for the single-Exercise,
+serial-unpaired, controller-matrix, and optional serial-paired Maneuvers to first-side Movement.
+Final delivery status is established by the required fresh-context review recorded in PR evidence
 
 **Date:** 2026-08-20
 
@@ -923,8 +924,9 @@ runnable increment, not later polish.
 
 ## Traceability matrix
 
-Status records the closed single-Exercise, serial-unpaired Maneuver, optional paired-comparison,
-and repository-reconciliation boundary.
+Status records the implemented single-Exercise, serial-unpaired Maneuver, optional
+paired-comparison, and repository-reconciliation boundary; PR evidence records the final review
+verdict.
 
 | Requirements / decisions | Delivery tasks | Verification / retained evidence | Status |
 | --- | --- | --- | --- |
@@ -943,7 +945,7 @@ and repository-reconciliation boundary.
 | `EXR-022`; separate correlated diagnostics | 007, 012, 014 + observability hardening | Successful and failed query/controller/submission/check/proof correlation, explicit Maneuver identity, aggregate noncanonical diagnostics, debug failure timings, artifact readback trace, and command-boundary cross-detail evidence | implemented through serial Maneuvers |
 | `EXR-024`, `EXR-025`; deterministic selection and single active audience | 006, 007, 012 | Executor controller/cardinality/step-bound tests and checked-in fixture | implemented |
 | `EXR-026`; ordered invariant catalog | 006-008, 012 | Strict check codec, ordering, scope, failure, and emitted-bundle tests | implemented |
-| `EXR-NFR-001`-`005`; reproducibility, reliability, boundaries, quality | 001-016 | Warning-free build, complete focused/solution suites, repeatable serial and paired fingerprints, `just check`, runnable-example readback, and independent review | verified through Task 016 |
+| `EXR-NFR-001`-`005`; reproducibility, reliability, boundaries, quality | 001-016 | Warning-free build, complete focused/solution suites, repeatable serial and paired fingerprints, `just check`, runnable-example readback, and independent review | implementation/repository gates verified; final review verdict retained in PR evidence |
 | `DEC-001`-`DEC-016` research decisions | 001-016 as mapped above | Three retained research spikes, governing spec, serial bundles/reports, paired equality/divergence evidence, and synchronized repository maps | accepted and implemented through Task 016 |
 
 ## Final independent-review reconciliation
