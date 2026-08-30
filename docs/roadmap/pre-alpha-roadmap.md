@@ -510,8 +510,8 @@ Continue the synthetic campaign from Naval Convoy, make the available preamble d
 Weather, Organization/stage-entry obligations, and Reserve in their separately gated capabilities,
 then stop at Movement with a replay-identical Chronicle. Task 3.3 independently stops at
 Organization; the implemented Task 3.4 explicit-empty checkpoint independently stops at Reserve;
-Task 3.5 reaches Movement. Sprint 4 is active, with completed `MOV-TASK-004B` Breakdown continuity
-immediately ahead of the remaining Movement behavior slices.
+Task 3.5 reaches Movement. Sprint 4 is active: `MOV-TASK-004B` through `MOV-TASK-006` are complete,
+and `MOV-TASK-007` is the next Movement behavior slice.
 
 ## Sprint 4: Movement, Breakdown, and Reaction boundary
 
@@ -560,6 +560,26 @@ later Sprint 4/5 slices rather than hidden additions to the first Movement resol
 | 4C — Atomic non-contact Movement vertical | `MOV-TASK-006`-`008` | Task 006 dormant contracts complete; internal adjudication and atomic public publication remain Tasks 007-008 | Independent implementation review before Harness adoption |
 | 4D — Checked evidence and closeout | `MOV-TASK-009`-`010` | Reserve policy matrix executes supported Movement to Breakdown with strict readback and synchronized evidence | Full repository gate, final independent review, then PR |
 | 4E — ZOC/Reaction interruption | `CONTACT-001`, then proposed `ZOR-TASK-001`-`007` | Enemy-ZOC entry can interrupt phasing Movement for an opponent decision and deterministic decline/resumption | Begins only after Movement Foundation and approved BP continuity; Contact/Engaged remain Sprint 5 |
+
+### Current parallel execution window
+
+The authoritative Movement chain remains serial at its versioned contract boundaries:
+`MOV-TASK-007` -> `MOV-TASK-008` -> `MOV-TASK-009` -> `MOV-TASK-010`. In particular, Task 008 must
+not publish Movement candidates until Task 007's internal move is executable, and Task 009 must not
+freeze Harness evidence until Task 008 exposes the complete move-and-completion vertical.
+
+The following independent lanes may proceed beside Task 007 in separate worktrees and PRs:
+
+| Lane | Scope now | Collision / merge gate |
+| --- | --- | --- |
+| `EXR-TASK-015` paired Maneuver comparison | ExerciseRunner-only paired manifest/execution/report contracts and focused evidence; no causal, significance, balance, or synchronized-post-divergence claim | Merge before `MOV-TASK-009`, which also changes Runner controllers, fixtures, and semantic validation |
+| `CONTACT-001` / `ZOR-TASK-001` decision lock | Close the five owner rulings for reactor ordering, repeat eligibility, decline scope, waiting visibility, and positive-ZOC vocabulary | Research/decision artifacts only; no Core contract or implementation before the complete non-contact Movement vertical |
+| `CMB-RSH-002`-`004`, `CYCLE-RSH-001`, `RESREL-RSH-001` | Normalize static content, mutable state, RNG evidence, cycle identity, and Reserve Release inputs | Research only; reconcile after Contact/ZOC and Breakdown gates before any combat design freeze |
+| `CIH-IMP-004` offline Markdown links | Add a repository-local offline link gate with reviewed exclusions and a broken-link negative | Begin after the central documentation sync; keep shared architecture/status docs under one owner |
+
+Maproom, campaign hosting/dispatch, provider-backed Intelligence, and their behavior-level
+observability remain held until their roadmap triggers exist. Current service projects are
+scaffolds, not unfinished work that should compete with the authoritative Movement path.
 
 Tasks 005-010 remain serial at their contract boundaries; Tasks 005 and 006 are now complete. The
 owner approved the bounded

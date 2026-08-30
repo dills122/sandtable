@@ -1,7 +1,7 @@
 # Movement Foundation v1 Technical Design
 
-**Status:** Active implementation plan; `MOV-TASK-006` implementation, gates, and independent review
-are complete in PR #69 and await merge; `MOV-TASK-007` follows merge
+**Status:** Active implementation plan; `MOV-TASK-006` is complete and merged in PR #69;
+`MOV-TASK-007` is next
 
 **Date:** 2026-08-25
 
@@ -284,7 +284,7 @@ MOV-TASK-004B BP continuity [complete]
 MOV-TASK-005 observation/apparent presence [complete]
                   |
                   v
-MOV-TASK-006 dormant action/submission contracts [reviewed in PR #69; awaiting merge]
+MOV-TASK-006 dormant action/submission contracts [complete; merged in PR #69]
                   |
                   v
 MOV-TASK-007 move command/event/adjudication [next]
@@ -299,9 +299,9 @@ MOV-TASK-009 end-to-end + Exercise/Maneuver evidence
 MOV-TASK-010 synchronization + independent review
 ```
 
-Tasks 001 through 005 are complete. Task 006 implementation, gates, and independent review are
-complete in PR #69 and await merge. Tasks 007 through 010 are intentionally serial because
-each freezes a versioned contract consumed by the next layer. In particular, Content admission in Task 003
+Tasks 001 through 006 are complete, with Task 006 merged in PR #69. Tasks 007 through 010 are
+intentionally serial because each freezes a versioned contract consumed by the next layer. In
+particular, Content admission in Task 003
 consumes the closed mobility vocabulary and ruleset identity completed by Task 002. Tasks 006 and
 007 keep all public Movement membership dormant; Task 008 atomically exposes executable move and
 completion actions so no intermediate checkpoint can strand a campaign at Movement.
@@ -441,7 +441,7 @@ delta, false-only ZOC is enforced, and strict readback rejects legacy/noncanonic
 
 ### `MOV-TASK-006` - Freeze Movement action and submission contracts
 
-**Status:** Implementation, gates, and independent review complete in PR #69 (2026-08-29); awaiting merge
+**Status:** Complete and merged in PR #69 (2026-08-29)
 
 **Advances:** `MOV-REQ-006`, `MOV-REQ-007`, `MOV-REQ-010`; `MOV-AC-006`, `MOV-AC-008`
 
@@ -485,6 +485,21 @@ enemy-ZOC behavior remain typed unsupported; public Movement membership remains 
 **Verification:** TDD red/green unit, command, event, projection, replay, stale/forged, table, and fog
 tests
 
+**Delivery slices:**
+
+1. `MOV-007A` freezes the internal command/event contracts and their immutable exact-value tests.
+2. After 007A, `MOV-007B` authoritative calculation/event creation and `MOV-007C` phase-specific
+   world/snapshot admission may proceed in parallel. The validator slice must admit coherent moved
+   first-side non-Reserve state without weakening strict pre-Movement checkpoints.
+3. After 007B/007C converge, `MOV-007D` strict event codec work and `MOV-007E` atomic
+   projection/replay may proceed in parallel under the frozen event contract.
+4. `MOV-007F` integrates Campaign engine dispatch and runs the dormancy checkpoint: accepted
+   internal moves emit exactly one event while public Movement action sets remain empty.
+
+`CampaignEngine`, `CampaignEventSerializer`, `CampaignProjector`, `CampaignSnapshotValidator`, and
+`CampaignWorldValidator` are single-owner convergence files. Parallel slices must not edit the same
+one concurrently.
+
 ### `MOV-TASK-008` - Publish the complete Movement action vertical
 
 **Status:** Blocked by `MOV-TASK-007`
@@ -509,6 +524,11 @@ Breakdown action appears
 
 **Verification:** focused Campaign and Actions completion/replay tests
 
+**Delivery slices:** freeze completion command/event/factory first; then complete codec and
+projection/engine work under separate ownership; only after both converge publish move and
+completion membership together; finish with the public fog/replay vertical. Task 008 remains one
+serial integration gate even where its codec and projector work can be prepared concurrently.
+
 ### `MOV-TASK-009` - Adopt Movement in Exercise and Maneuver evidence
 
 **Status:** Blocked by `MOV-TASK-008`
@@ -530,6 +550,13 @@ strict readback, and aggregate fingerprint are frozen from two matching runs
 **Verification:** Exercise Runner project tests, full solution tests, two CLI Maneuver runs, and
 retained evidence artifact
 
+**Delivery slices:** first freeze the Runner manifest/controller version decision. Controller
+selection and executor-local accepted-move history then proceed under that contract while strict
+Movement evidence-reader support may proceed independently. Converge on the six-child checked
+fixture, strict semantic evidence, and two matching fingerprints. Merge optional Harness
+`EXR-TASK-015` paired comparison before this task because both touch Runner execution, fixtures, and
+validation.
+
 ### `MOV-TASK-010` - Synchronize and review the completed package
 
 **Status:** Blocked by `MOV-TASK-009`
@@ -546,6 +573,10 @@ executed evidence; every deferral remains explicit
 
 **Verification:** Core/Runner/full-solution tests, warning-clean build, format check, `git diff
 --check`, independent review, and post-fix rerun if required
+
+**Delivery slices:** after Task 009, the Movement capability/traceability docs, cross-domain
+developer/user-facing docs, and a read-only five-axis review may proceed in parallel. Reconcile all
+three before the full gate and brand-new independent review.
 
 ## Traceability
 
