@@ -854,7 +854,7 @@ Harness adoption only after the executable Movement vertical is public.
 
 #### `EXR-TASK-015` — Implement paired comparison contract/report
 
-- **Status:** implemented and repository-verified; 343/343 ExerciseRunner and 918/918 solution
+- **Status:** implemented and repository-verified; 347/347 ExerciseRunner and 922/922 solution
   tests pass, the build is warning-free, and `just check` is green. It remains optional
   instrumentation and does not block the gameplay-engine dependency graph.
 - **Depends on:** `EXR-TASK-014`.
@@ -865,7 +865,9 @@ Harness adoption only after the executable Movement vertical is public.
   and complete role/domain seed ledgers; run isolated arms sequentially; record controller
   configuration identities separately; retain the compact accepted-action identities needed to
   recompute exact first divergence on standalone report readback; and emit constrained descriptive
-  divergence.
+  divergence. Child summary/diagnostic `variant` stays the `paired` execution-mode token; the
+  parent report alone assigns `baseline`/`candidate`, keeping that controlled dimension out of run
+  identity and initial evidence.
 - **Accept:** initial ledgers match by role/domain; implementation IDs do not perturb seeds; strict
   readback rejects malformed, ambiguous, contradictory, or noncanonical paired artifacts; report
   recomputes manifest-derived creation identity, requires equal per-arm initial-snapshot

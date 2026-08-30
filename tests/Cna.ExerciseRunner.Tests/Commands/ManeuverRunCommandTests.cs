@@ -247,8 +247,20 @@ public sealed class ManeuverRunCommandTests : IDisposable
         Assert.Equal(
             bundles[0].SeedLedger!.Entries.Select(value => value.DerivedSeed),
             bundles[1].SeedLedger!.Entries.Select(value => value.DerivedSeed));
+        Assert.All(firstOutput.ExerciseBundlePaths, path =>
+        {
+            var summary = File.ReadAllText(Path.Combine(path, ArtifactSchema.SummaryJsonPath));
+            var diagnostics = File.ReadAllText(Path.Combine(path, ArtifactSchema.DiagnosticsPath));
+            Assert.Contains("\"variant\":\"paired\"", summary, StringComparison.Ordinal);
+            Assert.Contains("\"variant\":\"paired\"", diagnostics, StringComparison.Ordinal);
+            Assert.DoesNotContain("\"variant\":\"baseline\"", summary, StringComparison.Ordinal);
+            Assert.DoesNotContain("\"variant\":\"candidate\"", summary, StringComparison.Ordinal);
+        });
 
         var report = PairedReportReader.Read(firstOutput.ReportPath).Report;
+        Assert.Equal(
+            [ManeuverVariant.Baseline, ManeuverVariant.Candidate],
+            report.Deterministic.Entries.Select(value => value.Variant));
         var comparison = Assert.Single(report.Deterministic.Comparisons);
         Assert.Equal(PairedComparisonStatus.Compared, comparison.Status);
         Assert.Equal(PairedDivergenceKind.AcceptedAction, comparison.FirstDivergence!.Kind);

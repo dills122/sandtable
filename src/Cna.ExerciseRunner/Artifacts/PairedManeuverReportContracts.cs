@@ -402,30 +402,65 @@ public sealed class PairedManeuverReportDeterministic
         ManeuverReportStatus status,
         ManeuverReportEntry[] entries)
     {
+        var aggregationStops = entries
+            .Where(value => value.Status == ManeuverEntryStatus.AggregationFailed)
+            .Select(value => value.Ordinal)
+            .ToArray();
+        var cancellationStops = entries
+            .Where(value => value is
+            {
+                Status: ManeuverEntryStatus.Failed,
+                FailureCategory: ExerciseFailureCategory.Cancelled,
+            })
+            .Select(value => value.Ordinal)
+            .ToArray();
+        if (aggregationStops.Length > 1 || cancellationStops.Length > 1)
+            throw new ArgumentException("A paired Maneuver report can contain only one causal stop.");
+
         var firstNotRun = Array.FindIndex(
             entries,
             value => value.Status == ManeuverEntryStatus.NotRun);
-        if (firstNotRun >= 0
-            && entries.Skip(firstNotRun).Any(value => value.Status != ManeuverEntryStatus.NotRun))
-            throw new ArgumentException("No attempted entry may follow a not-run entry.");
-        var aggregateStops = entries.Count(
-            value => value.Status == ManeuverEntryStatus.AggregationFailed);
-        if (aggregateStops > 1)
-            throw new ArgumentException("Only one aggregate stop is permitted.");
-        if (aggregateStops == 1)
+        if (firstNotRun >= 0)
         {
-            var stop = Array.FindIndex(
-                entries,
-                value => value.Status == ManeuverEntryStatus.AggregationFailed);
-            if (stop != (firstNotRun >= 0 ? firstNotRun - 1 : entries.Length - 1)
-                || entries.Skip(stop + 1).Any(
-                    value => value.NotRunReason != ManeuverNotRunReason.AggregationStopped))
-                throw new ArgumentException("Execution continued after an aggregate stop.");
+            if (entries.Skip(firstNotRun).Any(
+                    value => value.Status != ManeuverEntryStatus.NotRun))
+                throw new ArgumentException("No attempted entry may follow a not-run entry.");
+            var reason = entries[firstNotRun].NotRunReason!.Value;
+            if (entries.Skip(firstNotRun).Any(value => value.NotRunReason != reason))
+                throw new ArgumentException("A not-run tail must have one homogeneous reason.");
+
+            switch (reason)
+            {
+                case ManeuverNotRunReason.AggregationStopped:
+                    if (status != ManeuverReportStatus.AggregationFailed
+                        || firstNotRun == 0
+                        || entries[firstNotRun - 1].Status
+                            != ManeuverEntryStatus.AggregationFailed)
+                        throw new ArgumentException(
+                            "An aggregation-stopped tail must immediately follow its stop.");
+                    break;
+                case ManeuverNotRunReason.Cancelled:
+                    if (status != ManeuverReportStatus.Cancelled)
+                        throw new ArgumentException(
+                            "A cancelled tail requires cancelled report status.");
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(entries));
+            }
         }
-        if (firstNotRun >= 0
-            && entries[firstNotRun].NotRunReason == ManeuverNotRunReason.Cancelled
-            && status != ManeuverReportStatus.Cancelled)
-            throw new ArgumentException("A cancelled tail requires cancelled status.");
+
+        if (aggregationStops.Length == 1)
+        {
+            var expectedStop = firstNotRun >= 0 ? firstNotRun - 1 : entries.Length - 1;
+            if (aggregationStops[0] != expectedStop)
+                throw new ArgumentException("Execution continued after an aggregation stop.");
+        }
+        if (cancellationStops.Length == 1)
+        {
+            var expectedStop = firstNotRun >= 0 ? firstNotRun - 1 : entries.Length - 1;
+            if (cancellationStops[0] != expectedStop)
+                throw new ArgumentException("Execution continued after cancellation.");
+        }
     }
 
     private static void RequireComparisons(

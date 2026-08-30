@@ -406,6 +406,12 @@ excluded from the fingerprint. Deterministic order is `manifest`, `status`, `cou
 `interpretation`. Entries flatten each pair as baseline then candidate and retain the Task 014
 status/nullability matrix with explicit `baseline`/`candidate` variant.
 
+The child Exercise summary and diagnostics `variant` field remains an execution-mode token:
+`unpaired` for serial-unpaired children and `paired` for either paired arm. It does not enter
+`ExerciseRunIdentity` and does not name the controlled arm. Globally unique child `exerciseId`
+values distinguish the bundles; only the parent paired report entry is authoritative for
+`baseline` versus `candidate` arm designation.
+
 Each comparison has exact property order `pairKey`, `repetition`, `baselineEntryOrdinal`,
 `candidateEntryOrdinal`, `status`, `creationInputsSha256`,
 `baselineInitialSnapshotSha256`, `candidateInitialSnapshotSha256`, `seedLedgerSha256`,
