@@ -51,6 +51,7 @@ copyrighted rules prose.
 | [Reconnaissance/contact research](recon-contact-knowledge-spike.md) | Existing knowledge and representation boundary |
 | [Breakdown continuity packet](breakdown-continuity-spike.md) | Decision-ready BP/ruling/options and conditional Movement task graph |
 | [ZOC/Reaction interruption packet](contact-reaction-zoc-spike.md) | Post-Movement interruption boundary and proposed task graph |
+| [CONTACT-001 source/ruling lock](contact-reaction-zoc-source-ruling-lock.md) | Accepted reactor ordering, repeat, decline, fog, and positive-ZOC authority rulings |
 | [Combat-cycle source inventory](combat-cycle-source-inventory.md) | Minimal vector, private-choice/cycle architecture, and gated research/design graph |
 
 ## Findings
@@ -93,8 +94,10 @@ relationships and move to the Combat-cycle package rather than this interruption
 
 **Follow-up result:** The packet proposes seven post-Movement ZOC/Reaction tasks, a positive ZOC
 fixture, opponent-owned pending window, deterministic decline, stale regeneration, and redacted
-Chronicle/observation policy. Owner rulings remain for multiple reactors, repeat eligibility,
-decline scope, waiting visibility, and minimum ZOC content vocabulary.
+Chronicle/observation policy. The later source/ruling lock accepts reacting-player selection order,
+one participant episode per trigger with later-trigger repeat eligibility, whole-window decline,
+generic phasing-side waiting visibility, and rules/Umpire-derived positive-ZOC authority. Production
+remains gated by the complete non-contact Movement vertical and an approved specification/design.
 
 ### `COMBAT-CYCLE-001` — repeatable cycle and hidden-choice contract
 

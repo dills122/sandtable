@@ -1,12 +1,17 @@
 # ZOC and Reaction Interruption Spike
 
-**Status:** Decision-ready post-Movement package; owner rulings required before task authorization
+**Status:** Decision-ready post-Movement package; source/ruling follow-up complete; no production
+task authorized
 
 **Date:** 2026-08-25
 
 **Decision owner:** Project owner
 
 **Research work item:** `CONTACT-001`
+
+**Decision follow-up:** The five owner rulings are closed in the
+[CONTACT-001 source/ruling lock](contact-reaction-zoc-source-ruling-lock.md). That decision-only
+record does not authorize production work or relax the completed-Movement predecessor.
 
 ## Executive conclusion
 
@@ -82,7 +87,7 @@ positive ZOC behavior belongs to this later package.
 ## Proposed task graph
 
 1. `ZOR-TASK-001` — source/ruling lock: multiple reactors, repeat eligibility, decline scope,
-   waiting visibility, and fallback.
+   waiting visibility, fallback, and positive-ZOC authority (**decision record complete**).
 2. `ZOR-TASK-002` — ZOC rules/content/positive fixture and canonical identity migration.
 3. `ZOR-TASK-003` — movement-ended and pending-window world/snapshot/replay contracts.
 4. `ZOR-TASK-004` — dormant observation/action contracts and fog-equivalence tests.
@@ -93,15 +98,14 @@ positive ZOC behavior belongs to this later package.
 These tasks are proposed, not authorized. They begin only after Movement Foundation and an approved
 `BREAKDOWN-001` continuity boundary.
 
-## Owner decisions and deferrals
+## Owner rulings and deferrals
 
-Still required before contracts freeze:
-
-- ordering when multiple units can react;
-- whether one unit may react more than once to one trigger;
-- per-unit decline versus closing the entire window;
-- exact public waiting-state wording/shape; and
-- the minimum positive-ZOC content vocabulary.
+The [CONTACT-001 source/ruling lock](contact-reaction-zoc-source-ruling-lock.md) accepts reacting-
+player selection order, one episode per participant per trigger with later-trigger repeat
+eligibility, whole-window decline, a generic phasing-side waiting projection, and rules/Umpire-
+derived positive ZOC over primitive Content and current Campaign facts. No owner ruling remains
+escalated. Exact production type names and serialized shapes remain a later specification task,
+after the complete non-contact Movement vertical.
 
 Contact/Engaged participant identity, Break Contact/Break Off, and cycle persistence are deferred to
 `COMBAT-CYCLE-001`. They must not be inferred inside the ZOC/Reaction package.
