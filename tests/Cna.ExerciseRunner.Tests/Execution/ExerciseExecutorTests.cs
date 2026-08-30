@@ -133,6 +133,85 @@ public sealed class ExerciseExecutorTests
         Assert.True(readjudication.IsVerified);
     }
 
+    [Theory]
+    [InlineData("ActFirstReserveNoneMoveEachOnceThenComplete", 0, 2, 13)]
+    [InlineData("ActFirstReserveOneMoveEachOnceThenComplete", 1, 1, 13)]
+    [InlineData("ActFirstReserveAllMoveEachOnceThenComplete", 2, 0, 13)]
+    [InlineData("ActLastReserveNoneMoveEachOnceThenComplete", 0, 2, 13)]
+    [InlineData("ActLastReserveOneMoveEachOnceThenComplete", 1, 1, 13)]
+    [InlineData("ActLastReserveAllMoveEachOnceThenComplete", 2, 0, 13)]
+    public void BoundedMovementMatrixReachesBreakdownWithExactMoveHistory(
+        string policyName,
+        int expectedDesignations,
+        int expectedMoves,
+        int expectedSteps)
+    {
+        var policy = Enum.Parse<ExerciseControllerPolicy>(policyName);
+        var manifest = ExerciseManifestCodecTests.Create(
+            maximumSteps: 15,
+            terminalBoundary:
+                "land.position.operation-1.first-player.movement-and-combat.breakdown-determination",
+            controllerPolicy: policy);
+
+        var result = Execute(manifest);
+        var events = result.Steps.SelectMany(step => step.EventRecords)
+            .Select(System.Text.Encoding.UTF8.GetString).ToArray();
+        var moved = events.Where(value => value.Contains(
+            "\"eventType\":\"element-moved\"",
+            StringComparison.Ordinal)).ToArray();
+
+        Assert.True(result.IsSucceeded);
+        Assert.Equal(expectedSteps, result.Steps.Count);
+        Assert.Equal(expectedMoves, moved.Length);
+        Assert.Equal(expectedDesignations, events.Count(value => value.Contains(
+            "\"eventType\":\"reserve-element-designated\"",
+            StringComparison.Ordinal)));
+        Assert.Single(events, value => value.Contains(
+            "\"eventType\":\"movement-segment-completed\"",
+            StringComparison.Ordinal));
+        Assert.Equal(expectedMoves, moved.Select(value =>
+        {
+            using var document = System.Text.Json.JsonDocument.Parse(value);
+            return document.RootElement.GetProperty("elementId").GetString();
+        }).Distinct(StringComparer.Ordinal).Count());
+        Assert.True(result.Reconstruction!.IsVerified);
+        Assert.True(ReadjudicationVerifier.Verify(manifest, result).IsVerified);
+    }
+
+    [Fact]
+    public void ExecutorPassesExactAcceptedMoveHistoryOnlyAfterEachCommittedMove()
+    {
+        var movementHistories = new List<string[]>();
+        var runtime = new FaultingRuntime
+        {
+            SelectionOverride = (policies, actionSets) =>
+            {
+                var active = actionSets.Single(set => set.Candidates.Count > 0);
+                if (active.Candidates.Any(candidate => candidate.Kind == "move-element"))
+                    movementHistories.Add(active.PriorMovedElementIds.ToArray());
+                return ExerciseController.Select(policies, actionSets);
+            },
+        };
+        var manifest = ExerciseManifestCodecTests.Create(
+            maximumSteps: 13,
+            terminalBoundary:
+                "land.position.operation-1.first-player.movement-and-combat.breakdown-determination",
+            controllerPolicy:
+                ExerciseControllerPolicy.ActFirstReserveNoneMoveEachOnceThenComplete);
+
+        var result = ExerciseExecutor.Execute(
+            manifest,
+            runtime,
+            TestContext.Current.CancellationToken);
+
+        Assert.True(result.IsSucceeded);
+        Assert.Collection(
+            movementHistories,
+            first => Assert.Empty(first),
+            second => Assert.Equal(["axis-element-a"], second),
+            third => Assert.Equal(["axis-element-a", "axis-element-b"], third));
+    }
+
     [Fact]
     public void MaximumStepBoundFailsWithoutRelabelingFailureAsSuccess()
     {

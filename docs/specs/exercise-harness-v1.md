@@ -1,9 +1,8 @@
 # Exercise Harness v1 Specification
 
-**Status:** `EXR-TASK-016` implementation and repository gates are complete; checked Reserve
-Designation adoption, the six-policy controller matrix, and the optional serial-paired policy
-comparison reach first-side Movement. Final delivery status is established by the required
-fresh-context review recorded in PR evidence
+**Status:** `EXR-TASK-016` remains complete; `MOV-TASK-009` extends the compatible Harness v1
+contracts through checked non-contact Movement to exact first-side Breakdown Determination. Its
+implementation and local evidence are verified, with PR merge and integration evidence provisional
 
 **Date:** 2026-08-20
 
@@ -25,11 +24,10 @@ gameplay-engine work
 [specification](operation-stage-entry-v1.md), and
 [technical design](../design/operation-stage-entry-v1.md), followed by the
 [Reserve Designation specification](reserve-designation-v1.md) and
-[technical design](../design/reserve-designation-v1.md). Movement Foundation Tasks 001-007 now
-provide the merged rules/content/world, dormant outward-contract, and internal non-contact
-adjudication/replay foundation. Public Movement membership and completion remain `MOV-TASK-008`;
-`MOV-TASK-009` adopts Movement into checked Exercise/Maneuver evidence only after that public
-vertical lands
+[technical design](../design/reserve-designation-v1.md). Movement Foundation Tasks 001-008 provide
+the merged authoritative non-contact Movement vertical. `MOV-TASK-009` adopts that public vertical
+into checked Exercise/Maneuver evidence without changing Core semantics or existing Harness
+contract identities
 
 **Research decisions:**
 [capability and replay](../research/exercise-capability-and-replay-spike.md),
@@ -46,10 +44,11 @@ as paired variant comparisons.
 Version 1 is trusted developer instrumentation. It runs only freshly created synthetic campaigns,
 uses the same public legal-action identities and the same internal authoritative execution primitive
 as ordinary campaign play, and retains canonical evidence plus separate diagnostics. The original
-fixture stops at Organization, the retained Stage Entry fixture stops at Reserve, and the current
-Reserve Designation fixture accepts 12 actions through two element designations plus completion to
-`land.position.operation-1.first-player.movement-and-combat.movement`. Movement itself remains
-unsupported; none of these profiles implies a full victory-capable game.
+fixture stops at Organization, the retained Stage Entry fixture stops at Reserve, and the Reserve
+Designation fixture accepts 12 actions through two element designations plus completion to
+Movement. The checked Movement fixture accepts 13 actions per child and reaches exact first-side
+Breakdown Determination after zero, one, or two non-contact moves. Breakdown adjudication and full
+victory remain unsupported.
 
 ## User-visible demonstration
 
@@ -138,6 +137,32 @@ controller history, not authoritative campaign state, is incremented only after 
 designation, is never serialized into campaign evidence, and cannot bypass legal-action
 membership or submission. A checked six-child serial Maneuver must prove every policy reaches the
 exact first-side Movement boundary with strict bundle/report readback.
+
+Movement adoption keeps Exercise manifest, `sandtable.maneuver-manifest.v2`, and
+`sandtable.exercise-controller-configuration.v2` identities. It adds six tokens:
+`act-{first,last}-reserve-{none,one,all}-move-each-once-then-complete`. The Runner-local controller
+candidate advances to v2: Reserve designation retains its existing own `elementId`, and move
+candidates require own `elementId`, `originLocationId`, and `destinationLocationId`. Existing v1
+candidates reject. Runner-local history records an element only after its move is accepted; the
+controller then excludes that element, chooses the stable supported current move, and eventually
+selects the exact advertised completion. Existing controller tokens remain byte- and
+behavior-compatible, and Core retains its repeat-move semantics.
+
+The checked command is:
+
+```text
+dotnet run --project src/Cna.ExerciseRunner/Cna.ExerciseRunner.csproj --no-build -- \
+  maneuver run --manifest scenarios/maneuvers/rules-lab.movement.serial.v2.json \
+  --artifact-root artifacts/exercises
+```
+
+All six children use public observation-derived actions and ordinary submission. Each retains 13
+accepted actions/events and 94 passed checks at exact first-side Breakdown Determination. Per
+initiative branch, Reserve `none`/`one`/`all` produces 0/1/2 designations and 2/1/0 moves. Aggregate
+evidence retains 78 actions/events, six Reserve designations, six Reserve completions, six moves,
+six Movement completions, and final CP expenditure 20. Reconstruction and fresh-session
+re-adjudication reproduce each child exactly. Strict semantic readback validates the detailed
+Movement event and ledger facts rather than relying only on the aggregate fingerprint.
 
 The manifest's `detail` value is `compact`, `forensic`, or `debug`. Compact retains accepted-step
 and completion records. Forensic adds deterministic query candidate counts, controller selection,
@@ -474,6 +499,7 @@ recommendation claim.
 | `EXR-024` | The checked-in fixture and all examples are repository-synthetic, deterministic, bounded by an explicit maximum step count, and contain no remote dependency. No unspecified legal-action selection is permitted: a controller policy must select a unique current action or fail. |
 | `EXR-025` | At each nonterminal step the runner queries `system`, `axis`, and `commonwealth` in that fixed order, requires all queries to succeed and exactly one audience to have a nonempty set, then invokes only that audience's controller. Zero active audiences is `NoUniqueLegalAction`; multiple active audiences is `InvariantFailed`. Simultaneous-action scheduling is unsupported in v1. |
 | `EXR-026` | Check contract `sandtable.exercise-checks.v1` is an ordered closed catalog: authority-query validity, active-audience cardinality, selected-action membership, accepted-event cardinality, checkpoint continuity, exact terminal boundary, history reconstruction, and re-adjudication. Each result records contract version, check ID, scope/step, and pass/fail; required failures cannot be waived. |
+| `EXR-027` | Movement policies may retain only Runner-local accepted own-element IDs needed for bounded selection. Every selected move and completion must be a current observation-derived public candidate submitted through the ordinary membership-checked path. Successful Movement evidence must bind exact event, Reserve, move, CP/ledger, terminal, reconstruction, and re-adjudication semantics; aggregate counts or fingerprints alone are insufficient. |
 
 ## Non-functional requirements
 
@@ -579,6 +605,7 @@ just check
 | `EXR-AC-014` | Query all three audiences at each current nonterminal checkpoint, plus test-only zero-active and multi-active fixtures | Query order is fixed; exactly one active audience selects; zero fails `NoUniqueLegalAction`; multiple fails the named invariant; no priority silently resolves simultaneous actions. |
 | `EXR-AC-015` | Exercise every check in `sandtable.exercise-checks.v1` and vary caller/culture/order inputs | Check order, IDs, scope, bytes, and failure mapping match goldens; every required failed check fails the Exercise and cannot be waived. |
 | `EXR-AC-016` | Run the checked controller-policy matrix across `act-first`/`act-last` and Reserve `none`/`one`/`all` | All six children select only current legal actions, reach first-side Movement in exactly 10/11/12 accepted actions by Reserve policy, retain zero/one/two Reserve-I designations, reconstruct and re-adjudicate exactly, and aggregate through strict readback. |
+| `EXR-AC-017` | Run the checked Movement Maneuver across `act-first`/`act-last` and Reserve `none`/`one`/`all` | All six children select current observation-derived actions through ordinary submission and reach exact first-side Breakdown Determination in 13 actions/events with 94 passed checks. Per initiative branch they retain 0/1/2 Reserve designations and 2/1/0 unique-element moves; aggregate evidence contains 78 actions/events, six Reserve designations and completions, six moves and Movement completions, and final CP expenditure 20. Reconstruction, fresh-session re-adjudication, and strict tamper-resistant bundle/report readback pass. |
 
 ## Delivery boundaries
 
@@ -641,6 +668,13 @@ The Task 016 repository gate is `git diff --check`, local Markdown link/ID trace
 passed with 0 skipped), followed by a fresh-context independent review of the six-document diff.
 No remote provider, performance threshold, gameplay-balance conclusion, or unimplemented Movement
 behavior participates in this evidence.
+
+`MOV-TASK-009` adds the checked Movement fixture and the retained
+[Movement Simulator Trajectories](../research/simulator-movement-trajectories.md) study. Its current
+aggregate fingerprint is
+`sha256:c1c20270dcd3402886931c28851bea7f23cd1e0778b45f94c43d85ed01d41c4b`, reconfirmed by two clean
+CLI executions into separate artifact roots. The Task 009 PR and integration checks remain
+provisional, and `MOV-TASK-010` remains blocked until merge.
 
 Post-adoption trusted-evidence hardening also proves that initial and final snapshots are decoded by
 Core's complete current snapshot/world contract before any executed-or-later success or failure

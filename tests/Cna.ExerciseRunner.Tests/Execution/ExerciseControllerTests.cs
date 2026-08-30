@@ -221,7 +221,82 @@ public sealed class ExerciseControllerTests
     }
 
     [Fact]
-    public void SemanticCandidateRequiresAnElementExactlyForDesignation()
+    public void BoundedMovementPolicyMovesEachElementOnceBySemanticRouteThenCompletes()
+    {
+        var policy = Enum.Parse<ExerciseControllerPolicy>(
+            "ActFirstReserveNoneMoveEachOnceThenComplete");
+        var controllers = new ExerciseControllerManifest(policy, policy, policy);
+        var candidates = new[]
+        {
+            MovementCandidate(ActionA, "unit.zulu", "west", "north"),
+            MovementCandidate(ActionB, "unit.alpha", "west", "south"),
+            MovementCandidate(ActionC, "unit.alpha", "west", "east"),
+            Candidate(Sha('d'), "complete-movement-segment"),
+        };
+
+        var first = ExerciseController.Select(
+            controllers,
+            MovementActionSets(candidates, []));
+        var second = ExerciseController.Select(
+            controllers,
+            MovementActionSets(candidates, ["unit.alpha"]));
+        var completion = ExerciseController.Select(
+            controllers,
+            MovementActionSets(candidates, ["unit.alpha", "unit.zulu"]));
+
+        Assert.Equal(ActionC, first.ActionId);
+        Assert.Equal(ActionA, second.ActionId);
+        Assert.Equal(Sha('d'), completion.ActionId);
+    }
+
+    [Theory]
+    [InlineData("missing-completion")]
+    [InlineData("multiple-completions")]
+    [InlineData("mixed-kind")]
+    public void BoundedMovementPolicyFailsClosedOnMalformedMovementSets(string mutation)
+    {
+        var policy = Enum.Parse<ExerciseControllerPolicy>(
+            "ActLastReserveAllMoveEachOnceThenComplete");
+        var controllers = new ExerciseControllerManifest(policy, policy, policy);
+        var moves = new List<ExerciseControllerCandidate>
+        {
+            MovementCandidate(ActionA, "unit.alpha", "west", "east"),
+        };
+        if (mutation != "missing-completion")
+            moves.Add(Candidate(ActionB, "complete-movement-segment"));
+        if (mutation == "multiple-completions")
+            moves.Add(Candidate(ActionC, "complete-movement-segment"));
+        if (mutation == "mixed-kind")
+            moves.Add(Candidate(ActionC, "resolve-weather"));
+
+        var result = ExerciseController.Select(
+            controllers,
+            MovementActionSets(moves, []));
+
+        Assert.Equal(ExerciseControllerSelectionFailure.PolicyFailed,
+            result.FailureReason);
+    }
+
+    [Fact]
+    public void ExistingMatrixPolicyKeepsFirstByActionIdMovementBehavior()
+    {
+        var policy = ExerciseControllerPolicy.ActFirstReserveNoneThenFirstByActionId;
+        var controllers = new ExerciseControllerManifest(policy, policy, policy);
+        var candidates = new[]
+        {
+            MovementCandidate(ActionB, "unit.alpha", "west", "east"),
+            Candidate(ActionA, "complete-movement-segment"),
+        };
+
+        var result = ExerciseController.Select(
+            controllers,
+            MovementActionSets(candidates, []));
+
+        Assert.Equal(ActionA, result.ActionId);
+    }
+
+    [Fact]
+    public void SemanticCandidateRequiresExactIdsForDesignationAndMovement()
     {
         var designation = Candidate(ActionA, "designate-reserve", "unit.alpha");
 
@@ -232,11 +307,27 @@ public sealed class ExerciseControllerTests
             Candidate(ActionA, "designate-reserve"));
         Assert.Throws<ArgumentException>(() =>
             Candidate(ActionA, "resolve-weather", "unit.alpha"));
-        Assert.Throws<ArgumentOutOfRangeException>(() => new ExerciseControllerCandidate(
-            2,
+        Assert.ThrowsAny<ArgumentException>(() => new ExerciseControllerCandidate(
+            ExerciseControllerCandidate.CurrentContractVersion,
             ActionA,
-            "resolve-weather",
-            null));
+            "move-element",
+            "unit.alpha"));
+        Assert.ThrowsAny<ArgumentException>(() => new ExerciseControllerCandidate(
+            ExerciseControllerCandidate.CurrentContractVersion,
+            ActionA,
+            "move-element",
+            "unit.alpha",
+            "west",
+            "west"));
+        foreach (var version in new[] { 1, 3 })
+        {
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+                new ExerciseControllerCandidate(
+                    version,
+                    ActionA,
+                    "resolve-weather",
+                    null));
+        }
     }
 
     private static ExerciseControllerManifest Controllers() => new(
@@ -257,6 +348,32 @@ public sealed class ExerciseControllerTests
             actionId,
             kind,
             elementId);
+
+    private static ExerciseControllerCandidate MovementCandidate(
+        string actionId,
+        string elementId,
+        string originLocationId,
+        string destinationLocationId) => new(
+            ExerciseControllerCandidate.CurrentContractVersion,
+            actionId,
+            "move-element",
+            elementId,
+            originLocationId,
+            destinationLocationId);
+
+    private static IReadOnlyList<ExerciseControllerActionSet> MovementActionSets(
+        IEnumerable<ExerciseControllerCandidate> candidates,
+        IEnumerable<string> priorMovedElementIds) =>
+        [
+            new ExerciseControllerActionSet(CampaignActionAudience.System, []),
+            new ExerciseControllerActionSet(
+                CampaignActionAudience.Axis,
+                candidates,
+                priorMovedElementIds: priorMovedElementIds),
+            new ExerciseControllerActionSet(CampaignActionAudience.Commonwealth, []),
+        ];
+
+    private static string Sha(char value) => $"sha256:{new string(value, 64)}";
 
     private static IReadOnlyList<ExerciseControllerActionSet> ActionSets(
         CampaignActionAudience activeAudience,

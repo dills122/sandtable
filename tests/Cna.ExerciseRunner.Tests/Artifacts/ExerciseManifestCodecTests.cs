@@ -42,6 +42,12 @@ public sealed class ExerciseManifestCodecTests
     [InlineData("act-last-reserve-none-then-first-by-action-id")]
     [InlineData("act-last-reserve-one-then-first-by-action-id")]
     [InlineData("act-last-reserve-all-then-first-by-action-id")]
+    [InlineData("act-first-reserve-none-move-each-once-then-complete")]
+    [InlineData("act-first-reserve-one-move-each-once-then-complete")]
+    [InlineData("act-first-reserve-all-move-each-once-then-complete")]
+    [InlineData("act-last-reserve-none-move-each-once-then-complete")]
+    [InlineData("act-last-reserve-one-move-each-once-then-complete")]
+    [InlineData("act-last-reserve-all-move-each-once-then-complete")]
     public void ControllerMatrixTokensRoundTripWithoutChangingTheVersionTwoShape(string token)
     {
         var json = Encoding.UTF8.GetString(ExerciseManifestCodec.Serialize(Create()))

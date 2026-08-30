@@ -1,7 +1,8 @@
 # Movement Foundation v1 Technical Design
 
-**Status:** Active implementation plan; `MOV-TASK-008` public non-contact Movement and completion
-are implemented and verified; `MOV-TASK-009` is next
+**Status:** Active implementation plan; `MOV-TASK-009` executable Movement evidence is implemented
+and verified locally, with PR merge and integration evidence provisional; `MOV-TASK-010` remains
+blocked until that merge
 
 **Date:** 2026-08-25
 
@@ -9,7 +10,8 @@ are implemented and verified; `MOV-TASK-009` is next
 
 **Specification:** [Movement Foundation v1](../specs/movement-foundation-v1.md)
 
-**Research:** [Movement Foundation Spike](../research/movement-foundation-spike.md)
+**Research:** [Movement Foundation Spike](../research/movement-foundation-spike.md) and
+[Movement Simulator Trajectories](../research/simulator-movement-trajectories.md)
 
 ## Design summary
 
@@ -296,13 +298,13 @@ MOV-TASK-007 move command/event/adjudication [complete]
 MOV-TASK-008 completion to Breakdown [complete]
                   |
                   v
-MOV-TASK-009 end-to-end + Exercise/Maneuver evidence [next]
+MOV-TASK-009 end-to-end + Exercise/Maneuver evidence [implemented; merge provisional]
                   |
                   v
 MOV-TASK-010 synchronization + independent review
 ```
 
-Tasks 001 through 008 are complete. Tasks 009 through 010 are intentionally serial because each
+Tasks 001 through 009 are implemented. Tasks 009 through 010 remain serial because each
 freezes a versioned contract consumed by the next layer. In particular, Content admission in Task 003
 consumes the closed mobility vocabulary and ruleset identity completed by Task 002. Tasks 006 and
 007 keep all public Movement membership dormant; Task 008 now atomically exposes executable move
@@ -311,7 +313,10 @@ and completion actions so no intermediate checkpoint can strand a campaign at Mo
 preserving the no-adjudication boundary. Its repository gate and two fresh-context review
 instances are complete. Tasks 005 through 008 are implemented and verified. Task 007 completes
 internal adjudication while preserving Task 006's dormant public boundary; Task 008 atomically
-publishes move and completion membership and admits the exact Breakdown successor.
+publishes move and completion membership and admits the exact Breakdown successor. Task 009 adopts
+that public vertical through Runner-local bounded selection, strict evidence, and retained simulator
+trajectories. Its local verification is complete, but Task 010 remains blocked until the Task 009 PR
+merges and integration evidence is retained.
 
 The Task 001-004 foundation merged in PR #29 after `just check` passed with a warning-clean build,
 format verification, and 746/746 solution tests. The roadmap groups the remaining work into a
@@ -541,7 +546,8 @@ serial integration gate even where its codec and projector work can be prepared 
 
 ### `MOV-TASK-009` - Adopt Movement in Exercise and Maneuver evidence
 
-**Status:** Next; unblocked by completed `MOV-TASK-008`
+**Status:** Implemented and verified locally, including two matching clean CLI executions; PR merge
+and integration evidence remain provisional
 
 **Advances:** `MOV-REQ-012`; `MOV-AC-012`, `MOV-AC-013`
 
@@ -554,8 +560,38 @@ tests, and retained simulator study
 **Observable output:** six children cross act-first/act-last and Reserve none/one/all, move each
 eligible element at most once on deterministic supported routes, and reach Breakdown
 
-**Acceptance:** expected action/event/move/Reserve/ledger counts, reconstruction, re-adjudication,
-strict readback, and aggregate fingerprint are frozen from two matching runs
+**Frozen compatibility:** Exercise manifest, `sandtable.maneuver-manifest.v2`, and
+`sandtable.exercise-controller-configuration.v2` remain unchanged. Six additive controller tokens
+append `-move-each-once-then-complete` to the existing act-first/act-last and Reserve
+none/one/all dimensions. The Runner-local controller candidate advances to v2: Reserve designation
+retains its existing own `elementId`, while a move candidate requires own `elementId`,
+`originLocationId`, and `destinationLocationId`. Existing v1 candidates reject; existing controller
+tokens retain their bytes and behavior.
+
+**Implemented policy:** the executor records an element ID only after an accepted `move-element`
+action. At Movement the controller filters the current observation-derived public candidate set by
+that history, orders supported moves deterministically, submits one current action through the
+ordinary path, and completes with the exact advertised completion after every eligible supported
+element has moved once. Core continues to permit repeat movement and receives no controller state.
+The frozen ordinal order is `elementId`, `destinationLocationId`, `originLocationId`, then
+`actionId`; changing that order requires a new controller token/configuration identity.
+
+**Acceptance:** every child accepts exactly 13 actions/events, records 94 passed checks, and reaches
+exact first-side Breakdown Determination. For each initiative policy, Reserve `none`/`one`/`all`
+retains 0/1/2 designations and 2/1/0 moves. The `none` path moves A to the center at CP cost 8 and B
+on its supported route at cost 1; `one` moves B at cost 1; `all` moves neither. Aggregate evidence
+therefore contains 78 actions/events, six Reserve designations, six Reserve completions, six moves,
+six Movement completions, and exact final CP expenditure 20. Reconstruction and fresh-session
+re-adjudication must reproduce every child, and strict readers must reject malformed, inconsistent,
+noncanonical, or tampered Movement evidence.
+
+**Implemented evidence:** checked fixture
+`scenarios/maneuvers/rules-lab.movement.serial.v2.json`; strict Movement event and ledger semantic
+validation; child reconstruction and re-adjudication; 48 in-process trajectories across seeds 0, 1,
+`ulong.MaxValue / 2`, and `ulong.MaxValue`, six controllers, and two repeats; and local aggregate
+fingerprint `sha256:c1c20270dcd3402886931c28851bea7f23cd1e0778b45f94c43d85ed01d41c4b`,
+reconfirmed by two clean CLI executions into separate artifact roots. The fingerprint does not bind
+detailed child event/ledger bytes, so strict child validation is not optional.
 
 **Verification:** Exercise Runner project tests, full solution tests, two CLI Maneuver runs, and
 retained evidence artifact
@@ -569,7 +605,7 @@ validation.
 
 ### `MOV-TASK-010` - Synchronize and review the completed package
 
-**Status:** Blocked by `MOV-TASK-009`
+**Status:** Blocked until the `MOV-TASK-009` PR merges and integration checks complete
 
 **Advances:** all requirements and acceptance criteria
 
@@ -603,7 +639,7 @@ three before the full gate and brand-new independent review.
 | `MOV-REQ-009` completion | 005 | 008 | exact successor tests | Completion command/event/codec/execution/projection implemented in Task 008 with exact Breakdown successor and no public Breakdown action |
 | `MOV-REQ-010` canonical contracts | 004, 006 | 002-008 | golden/strict reader tests | Rules/world/history implemented through 004B; outward strict readers active through Task 006; `ElementMoved` and `MovementSegmentCompleted` strict codecs plus moved/completed snapshots active through Task 008 |
 | `MOV-REQ-011` replay/fog | 001, 006 | 004-008 | replay/privacy tests | Same-apparent public-action equivalence, zero/one/many Movement-plus-completion replay, and exact current-membership submission revalidation complete through Task 008 |
-| `MOV-REQ-012` Exercise evidence | 008 | 009 | project/full tests + CLI runs | Approved; implementation pending |
+| `MOV-REQ-012` Exercise evidence | 008 | 009 | checked six-child fixture, strict semantic bundle/report readback, reconstruction/re-adjudication, 48-trajectory retained study, project/full tests, and two clean CLI runs | Implemented and locally verified, including matching clean-run fingerprints; PR merge and integration remain provisional |
 
 ## Review focus
 
