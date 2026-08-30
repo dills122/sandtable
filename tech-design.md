@@ -765,9 +765,12 @@ includes the rules artifact, world/snapshot and owner-observation contracts, sub
 candidates, command mapping, exact designation/completion events, strict finite Reserve/Movement
 validation, and standalone plus two-setup replay evidence. Public observation-derived non-contact
 Movement membership, exact submission mapping, adjudication, completion to Breakdown
-Determination, replay, and merged checked Harness adoption through `MOV-TASK-009` are now
-implemented. `MOV-TASK-010` synchronization/review is in progress.
-The active owner-approved engine package is the Movement Foundation
+Determination, replay, and checked Harness adoption are complete through merged `MOV-TASK-010` / PR
+#79. The next proposed authority package is the owner-gated ZOC/Reaction
+[specification](docs/specs/zoc-reaction-v1.md) and
+[technical design](docs/design/zoc-reaction-v1.md); no `ZOR-TASK-*` production work is yet
+authorized.
+The completed owner-approved engine package is the Movement Foundation
 [research](docs/research/movement-foundation-spike.md),
 [specification](docs/specs/movement-foundation-v1.md), and
 [technical design](docs/design/movement-foundation-v1.md). It keeps representation truth inside

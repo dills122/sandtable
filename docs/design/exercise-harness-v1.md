@@ -834,11 +834,10 @@ engine work. The delivered Stage Entry engine track is documented in the
 [Reserve Designation specification](../specs/reserve-designation-v1.md) and
 [technical design](reserve-designation-v1.md). The checked Reserve-terminal regression profile and
 the 12-step Reserve Designation profile prove the path through canonical first-side Movement using
-the unchanged harness authority boundary. Movement Foundation Tasks 001-007 now provide the merged
-rules/content/world, dormant outward-contract, and internal non-contact adjudication/replay
-foundation. Movement Foundation Task 008 publishes observation-derived move and completion actions;
-Task 009 adopts them into Harness evidence without changing Core authority or existing Harness
-contract identities.
+the unchanged harness authority boundary. Movement Foundation Tasks 001-010 now provide the merged
+rules/content/world, public observation-derived move/completion actions, internal non-contact
+adjudication/replay, checked Harness evidence, simulator study, and synchronized review without
+changing the Harness authority boundary.
 
 #### `EXR-TASK-014J` — Implement the controller-policy coverage matrix
 

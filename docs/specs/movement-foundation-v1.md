@@ -1,7 +1,7 @@
 # Movement Foundation v1 Specification
 
-**Status:** Active implementation baseline; `MOV-TASK-009` executable Movement evidence is merged
-in PR #78 and `MOV-TASK-010` synchronization/review is in progress
+**Status:** Complete; implementation, checked evidence, synchronization, and independent review are
+merged through `MOV-TASK-010` / PR #79
 
 **Date:** 2026-08-25
 
@@ -452,6 +452,6 @@ projection, strict moved-state admission, and deterministic replay. `MOV-TASK-00
 complete observation-derived move-and-completion vertical and reaches replay-valid Breakdown
 Determination. `MOV-TASK-009` implements the checked Exercise/Maneuver evidence, strict Movement
 semantic readback, reconstruction and fresh-session re-adjudication, and the bounded retained
-simulator study. PR #78 merged that evidence on 2026-08-30. `MOV-TASK-010` now owns the active
-repository synchronization and independent-review closeout. The separate paired cost-sensitivity
+simulator study. PR #78 merged that evidence on 2026-08-30. `MOV-TASK-010` completed repository
+synchronization and independent-review closeout and merged in PR #79. The separate paired cost-sensitivity
 instrument is Runner-only evidence and does not expand the authoritative Movement capability.

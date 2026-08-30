@@ -31,14 +31,15 @@ the pre-alpha roadmap carry repository-wide rationale and delivery state.
 
 - Movement Foundation: [specification](specs/movement-foundation-v1.md),
   [technical design](design/movement-foundation-v1.md), and
-  [source/contract research](research/movement-foundation-spike.md). Tasks 001-007 are implemented;
-  Task 006 freezes dormant move/completion candidates and Task 007 adds internal authoritative
-  adjudication, event projection, and replay. Task 008 public membership/completion is next, and
-  Movement campaign actions deliberately remain unavailable until then.
+  [source/contract research](research/movement-foundation-spike.md). Tasks 001-010 are implemented;
+  PR #79 completed the checked Maneuver exercise evidence and the complete authoritative Movement
+  vertical is available.
 - Breakdown continuity: [decision packet](research/breakdown-continuity-spike.md). The approved
   continuity seam is implemented through Task 004B and projected side-safely by Task 005.
-- ZOC and Reaction: [research packet](research/contact-reaction-zoc-spike.md). Implementation waits
-  for the Movement vertical and approved Breakdown continuity.
+- ZOC and Reaction: proposed [specification](specs/zoc-reaction-v1.md),
+  [technical design](design/zoc-reaction-v1.md), and
+  [research packet](research/contact-reaction-zoc-spike.md). Movement and Breakdown continuity
+  prerequisites are complete; production remains blocked on explicit owner approval of this package.
 - Combat: [source inventory](research/combat-cycle-source-inventory.md) and completed
   [rules/result-surface spike](research/combat-rules-result-surface-spike.md). Research is active;
   implementation contracts are not frozen.

@@ -3,6 +3,9 @@
 **Status:** Decision-ready post-Movement package; source/ruling follow-up complete; no production
 task authorized
 
+**Governing proposal:** [ZOC and Reaction v1 specification](../specs/zoc-reaction-v1.md) and
+[technical design](../design/zoc-reaction-v1.md); owner approval remains required
+
 **Date:** 2026-08-25
 
 **Decision owner:** Project owner

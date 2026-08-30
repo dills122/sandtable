@@ -1,7 +1,7 @@
 # Movement Foundation v1 Technical Design
 
-**Status:** Active implementation plan; `MOV-TASK-009` executable Movement evidence is merged in
-PR #78 and `MOV-TASK-010` synchronization/review is in progress
+**Status:** Complete; implementation, checked evidence, synchronization, and independent review are
+merged through `MOV-TASK-010` / PR #79
 
 **Date:** 2026-08-25
 
@@ -304,9 +304,9 @@ MOV-TASK-009 end-to-end + Exercise/Maneuver evidence [complete; merged PR #78]
 MOV-TASK-010 synchronization + independent review
 ```
 
-Tasks 001 through 009 are implemented and merged. Tasks 009 through 010 remain serial because each
-freezes a versioned contract consumed by the next layer. In particular, Content admission in Task 003
-consumes the closed mobility vocabulary and ruleset identity completed by Task 002. Tasks 006 and
+Tasks 001 through 010 are implemented and merged. Tasks 009 through 010 were delivered serially
+because each froze evidence or documentation consumed by closeout. In particular, Content admission
+in Task 003 consumes the closed mobility vocabulary and ruleset identity completed by Task 002. Tasks 006 and
 007 keep all public Movement membership dormant; Task 008 now atomically exposes executable move
 and completion actions so no intermediate checkpoint can strand a campaign at Movement.
 `BREAKDOWN-001` is approved. Task 004B implements the required predecessor of Task 005 while
@@ -315,8 +315,8 @@ instances are complete. Tasks 005 through 008 are implemented and verified. Task
 internal adjudication while preserving Task 006's dormant public boundary; Task 008 atomically
 publishes move and completion membership and admits the exact Breakdown successor. Task 009 adopts
 that public vertical through Runner-local bounded selection, strict evidence, and retained simulator
-trajectories. It is complete and merged in PR #78; Task 010 synchronization/review is now in
-progress.
+trajectories. Task 009 is complete and merged in PR #78; Task 010 synchronization/review is complete
+and merged in PR #79.
 
 The Task 001-004 foundation merged in PR #29 after `just check` passed with a warning-clean build,
 format verification, and 746/746 solution tests. The roadmap groups the remaining work into a
@@ -604,8 +604,7 @@ validation.
 
 ### `MOV-TASK-010` - Synchronize and review the completed package
 
-**Status:** In progress after the `MOV-TASK-009` merge; synchronization and review evidence are
-local until this closeout is merged
+**Status:** Complete and merged in PR #79 (2026-08-30)
 
 **Advances:** all requirements and acceptance criteria
 

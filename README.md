@@ -142,7 +142,7 @@ The current delivery boundary is:
 | Ruleset/provenance, synthetic content, campaign authority, deterministic randomness, events, and replay | Implemented foundation |
 | Side-safe observations and exact-audience legal actions | Implemented for the current rules-laboratory path |
 | Mandatory turn preamble | Implemented through Reserve Designation completion; authority reaches first-side Movement |
-| Movement/contact and combat loops | Movement Foundation rules, Content mobility, replay-complete world/representation state, approved Breakdown continuity, the v5 side-safe observation boundary, public non-contact move/completion execution, and checked Exercise/Maneuver evidence to Breakdown Determination are complete through merged `MOV-TASK-009`; `MOV-TASK-010` synchronization/review is in progress |
+| Movement/contact and combat loops | Movement Foundation is complete through merged `MOV-TASK-010` / PR #79, including rules, Content mobility, replay-complete world/representation state, Breakdown continuity, side-safe non-contact movement, completion to Breakdown Determination, and checked Exercise evidence; the proposed ZOC/Reaction package awaits owner approval before production |
 | Published first-scenario data, remaining Land rules, victory, persistence, and Maproom | Milestone-level; not started |
 | Player Intent Composer | Direction reviewed; representative decision after the combat skeleton, no-model prototype before Maproom, optional parser evaluation after deterministic MVP |
 | Exercise Harness | Single-Exercise, serial-unpaired two-setup/controller/Movement Maneuvers, and optional serial-paired Reserve-policy and Movement-cost descriptive comparisons implemented with strict readback |
@@ -170,7 +170,7 @@ completed player-action vertical before Movement. Its
 [technical design](docs/design/reserve-designation-v1.md) define an incremental designation flow
 that stops at Movement. Rules, state, owner projection, legal candidates, command mapping,
 designation/completion events, finite checkpoint validation, replay, and checked harness evidence
-are implemented. The active engine package is the approved Movement Foundation
+are implemented. The completed engine package is the approved Movement Foundation
 [research](docs/research/movement-foundation-spike.md),
 [specification](docs/specs/movement-foundation-v1.md), and
 [technical design](docs/design/movement-foundation-v1.md). It defines a fog-safe apparent-presence
@@ -192,8 +192,12 @@ cost/provenance recalculation, engine dispatch, atomic projection, and determini
 exact current submissions, adds canonical Movement completion through the Breakdown Determination
 checkpoint, and preserves deterministic fog-equivalent actions and zero/one/many-move replay.
 `MOV-TASK-009` is merged in PR #78 and adopts that supported Movement path in checked
-Exercise/Maneuver evidence. Breakdown public actions and adjudication remain absent;
-`MOV-TASK-010` synchronization/review is the active Movement closeout.
+Exercise/Maneuver evidence. `MOV-TASK-010` completed synchronization and independent review and is
+merged in PR #79. Breakdown public actions and adjudication remain absent. The proposed next engine
+package is the ZOC/Reaction
+[specification](docs/specs/zoc-reaction-v1.md) and
+[technical design](docs/design/zoc-reaction-v1.md); it requires owner approval before
+`ZOR-TASK-002A` production begins.
 The optional paired comparison is implemented Runner instrumentation and does not block
 gameplay-engine progress.
 Combat research has progressed beyond the initial source inventory: `CMB-RSH-001` now retains the
