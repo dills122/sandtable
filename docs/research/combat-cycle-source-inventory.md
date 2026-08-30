@@ -1,8 +1,8 @@
 # Combat and Continual-Cycle Source Inventory
 
-**Status:** Source inventory, `CMB-RSH-001` result-surface research, and `CYCLE-RSH-001` cycle
-identity/history decision complete; production remains gated by later combat and Reserve Release
-design
+**Status:** Source inventory, `CMB-RSH-001` result-surface research, `CMB-RSH-002` static-content
+research, and the `CYCLE-RSH-001` cycle identity/history decision are complete and decision-ready;
+production remains gated by Contact/ZOC reconciliation, later combat, and Reserve Release design
 
 **Date:** 2026-08-25
 
@@ -81,10 +81,10 @@ separately approved bounded rule. Legality cannot depend on a future favorable s
 
 ## Required fact inventory
 
-Static rules/content includes current/max TOE/component strength; relevant Barrage, Vulnerability,
-Anti-Armor, Armor Protection, offensive/defensive Close Assault, AA, Basic Morale, unit/component
-class, ammunition/fuel requirements, organization/attachment participation, normalized table rows,
-and per-row provenance/errata.
+Static Content includes maximum TOE/component strength, immutable unit/component classification,
+combat ratings, Basic Morale, source-parent/organization facts, and per-datum provenance. Static
+Rules includes eligibility semantics, calculations, normalized table rows, and per-row
+provenance/errata. Current TOE/component strength is not static.
 
 Mutable authority includes current TOE/component strength; CP/Cohesion/Disorganization; pin;
 Contact/Engaged; ammunition/fuel; gun position; combat opportunity/target; sealed choices and
@@ -104,7 +104,10 @@ Research that can proceed now:
    selected infantry Close Assault calculation, Morale closure, five reachable differential
    columns, semantic outcomes including the reachable two-hex Retreat, and errata boundary without
    freezing contracts or reproducing the source chart.
-2. `CMB-RSH-002` — choose combat Content/static schema and synthetic values.
+2. `CMB-RSH-002` — **decision-ready:** the
+   [Combat Content and static schema spike](combat-content-static-schema-spike.md) selects
+   component-granular immutable facts, bounded synthetic values, validation boundaries, and
+   explicit mutable/ZOC deferrals without freezing a production schema.
 3. `CMB-RSH-003` — choose mutable loss/prisoner/ammunition/Disorganization boundary.
 4. `CMB-RSH-004` — freeze RNG draw order and golden vectors.
 5. `CYCLE-RSH-001` — **complete:** the
