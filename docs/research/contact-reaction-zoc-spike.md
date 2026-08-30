@@ -17,8 +17,9 @@ record does not authorize production work or relax the completed-Movement predec
 
 The next post-Foundation capability should be a ZOC/Reaction interruption package, not a monolithic
 Contact/Reaction feature. Enemy-ZOC entry ends ordinary movement and may open an optional
-non-phasing Reaction decision. Contact is created by Close Assault adjacency, while Engaged is a
-combat result; their participant-scoped lifecycle belongs with the Combat-cycle package.
+non-phasing Reaction decision. Rule 8.62 derives Contact at the beginning of a Movement Segment
+from enemy-ZOC presence, while Rule 8.63 makes Engaged a Close Assault result; their
+participant-scoped lifecycle belongs with the Combat-cycle package.
 
 Nothing in this packet blocks the deliberately non-contact Movement Foundation. Reaction mutation
 does depend on the completed Movement vertical, positive ZOC inputs, and the Breakdown continuity
@@ -36,7 +37,8 @@ decision because Reaction spends movement resources and accumulates BP.
 
 **Documented fact:** Entering enemy ZOC stops the mover. Reaction is optional movement by the
 non-phasing side after qualifying adjacency, spends CP, can repeat subject to restrictions, cannot
-enter enemy ZOC, and contributes to BP. Contact/Engaged are later combat-produced states.
+enter enemy ZOC, and contributes to BP. Contact is established from enemy-ZOC presence at the
+beginning of a Movement Segment; Engaged is a Close Assault result.
 
 **Repository observation:** Current authority has no suspended phasing action, pending opponent
 window, movement-ended eligibility, Contact/Engaged relationship, positive ZOC fixture, or BP

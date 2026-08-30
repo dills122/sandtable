@@ -19,8 +19,10 @@ It defines source facts, adopted digital semantics, contract consequences, accep
 the dependency graph. It does not freeze a production contract or authorize implementation.
 
 The complete non-contact Movement vertical remains the predecessor of every production task in
-this package. Contact and Engaged remain Sprint 5 combat-created participant relationships. They
-are not introduced by enemy-ZOC entry and are not fields on an element in this package.
+this package. Contact and Engaged remain Sprint 5 participant relationships, but their creation
+truths differ: Rule 8.62 derives Contact from enemy-ZOC presence at the beginning of a Movement
+Segment, while Rule 8.63 makes Engaged a Close Assault result. Immediate enemy-ZOC entry creates
+neither relationship, and neither is a field on an element in this package.
 
 ## Executive decision
 
@@ -368,7 +370,7 @@ must not bypass their dependency order or move Contact/Engaged into Sprint 4.
 | Derive old eligibility from the current world during replay | Later movement or state changes can rewrite the historical decision surface |
 | Persist `exertsZoc` in Content | Stores a topology- and state-dependent result as immutable source data |
 | Use organization or CPA as a combat proxy | Fails Rules 10.11-10.15 and the repository's explicit source-fact boundary |
-| Add Contact/Engaged as generic element status | Conflates ZOC interruption with later combat-created participant relationships |
+| Add Contact/Engaged as generic element status | Conflates immediate ZOC interruption with participant relationships whose source lifecycle differs: Contact at Movement-Segment entry and Engaged from Close Assault |
 
 ## Uncertainties and limitations
 
