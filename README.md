@@ -59,8 +59,9 @@ owner-only observation, exact acting-side candidates, closed command mapping, bo
 and canonical designation/completion events. The Movement foundation additionally records exact
 per-Operation-Stage expenditure/Cohesion state and opaque one-to-one map representations. It now
 also carries dormant typed move/completion candidates, deterministic action identities, an exact
-side-safe cost breakdown, and strict non-authoritative readback without yet exposing a public or
-executable Movement action. Ruleset manifest contract 7, setup schema 5, snapshot contract 9,
+side-safe cost breakdown, strict non-authoritative readback, and internal authoritative
+non-contact move adjudication/replay without yet exposing Movement through the public legal-action
+boundary. Ruleset manifest contract 7, setup schema 5, snapshot contract 9,
 Campaign World snapshot contract 4, Campaign Observation contract 5, legal-action-set contract 2,
 and Content Pack schema 4 / canonical format v3 use an original nine-hex,
 nonhistorical rules laboratory to develop game systems without redistributing published assets.
@@ -92,15 +93,21 @@ snapshot/world decoder validates their canonical structure. The resulting transa
 separates deterministic counts, outcomes, and fingerprint material from noncanonical timing/path
 diagnostics and is strictly read back before completion is claimed. Compact, forensic, and debug
 Exercise detail tiers expose progressively richer evidence without changing simulation truth. The
-current two-setup serial Maneuver proves the same Movement-terminal path for predetermined and
-contested initiative. A separate checked six-child controller matrix crosses `act-first`/`act-last`
-with Reserve `none`/`one`/`all`, producing exact 10/11/12-action Movement trajectories.
-Paired comparison, model
-controllers, and side-safe exports are not implemented yet.
+current two-setup serial-unpaired Maneuver proves the same Movement-terminal path for predetermined
+and contested initiative. A separate checked six-child controller matrix crosses
+`act-first`/`act-last` with Reserve `none`/`one`/`all`, producing exact 10/11/12-action Movement
+trajectories. An optional `serial-paired` Maneuver runs isolated baseline and candidate arms
+sequentially from identical declared initial conditions, initial role-specific random streams,
+campaign creation inputs, build cohort, and initial snapshot. Its strictly read-back comparison is
+descriptive only: trajectories and random consumption may diverge after the first differing choice,
+and it makes no causal, statistical-significance, gameplay-balance, recommendation, or
+synchronized-post-divergence claim. Model controllers and side-safe exports are not implemented.
 
-The checked Exercise and Maneuver profiles use the current v2 manifest identities with ruleset v7,
-snapshot v9, world v4, strict trusted-evidence admission, and deterministic v2 controller
-configuration identity.
+The checked Exercise and serial-unpaired Maneuver profiles use manifest v2, with unpaired report
+scheme `sandtable.maneuver-report.v1`; the separate paired Maneuver uses
+`sandtable.paired-maneuver-manifest.v1` and
+`sandtable.paired-maneuver-report.v1`. All use ruleset v7, snapshot v9, world v4, strict
+`trusted-authority` evidence admission, and deterministic v2 controller configuration identity.
 
 The first two retained simulator studies now verify repeated Movement-terminal determinism,
 counterbalanced-order timing, and contested root seeds 0-31. Every sampled run passed strict
@@ -111,8 +118,9 @@ none/one/all controller profiles rather than seed variation alone. See
 [controller-policy matrix](docs/research/simulator-controller-matrix.md) closes that explicit
 coverage gap with 6/6 strictly read-back trajectories and a repeatable aggregate fingerprint.
 
-Positive Organization/stage-entry obligations, Movement campaign behavior, contact, combat,
-published scenario content, persistence, and the Maproom player interface remain future work.
+Positive Organization/stage-entry obligations, public Movement membership/completion, contact,
+combat, published scenario content, persistence, and the Maproom player interface remain future
+work.
 
 The reviewed Player Intent Composer is also future work. After the movement/contact/combat skeleton
 proves one representative multi-field decision, a no-model prototype will validate contextual
@@ -130,7 +138,7 @@ The current delivery boundary is:
 | Movement/contact and combat loops | Movement Foundation rules, Content mobility, replay-complete world/representation state, approved Breakdown continuity, the v5 side-safe observation boundary, dormant Movement action contracts, and internal non-contact adjudication/replay are complete through `MOV-TASK-007`; `MOV-TASK-008` public Movement membership and completion remain next |
 | Published first-scenario data, remaining Land rules, victory, persistence, and Maproom | Milestone-level; not started |
 | Player Intent Composer | Direction reviewed; representative decision after the combat skeleton, no-model prototype before Maproom, optional parser evaluation after deterministic MVP |
-| Exercise Harness | Organization, Reserve, and Movement-terminal Exercises plus two-setup and six-policy serial Maneuvers implemented; pairing remains later |
+| Exercise Harness | Single-Exercise, serial-unpaired two-setup and six-policy Maneuvers, and optional serial-paired descriptive comparison implemented with strict readback |
 
 The approved high-level path to a playable game is:
 
@@ -144,7 +152,7 @@ The approved high-level path to a playable game is:
 5. Evaluate optional parsing only after the deterministic MVP, then expand into detailed Air and
    Logistics play, later scenarios, and optional intelligence.
 
-The serial-Maneuver portion of Exercise Harness v1 now provides validated local batch-regression
+The serial-Maneuver portion of Exercise Harness v1 now provides validated local multi-run regression
 evidence without adding game rules. The implemented Operation-Stage Entry package retains its
 [research](docs/research/operation-stage-entry-spike.md),
 [specification](docs/specs/operation-stage-entry-v1.md), and
@@ -174,8 +182,9 @@ non-authoritative action/submission/receipt readback while preserving the existi
 versions. `MOV-TASK-007` adds the internal move command and canonical event, authoritative
 cost/provenance recalculation, engine dispatch, atomic projection, and deterministic replay.
 Movement campaign actions deliberately remain absent from public legal-action sets and unsupported
-for submission; public membership, completion, and acceptance receipts belong to `MOV-TASK-008`. Paired
-comparison remains a later evaluation capability and does not block gameplay-engine progress.
+for submission; public membership, completion, and acceptance receipts belong to `MOV-TASK-008`.
+The optional paired comparison is implemented Runner instrumentation and does not block
+gameplay-engine progress.
 Combat research has progressed beyond the initial source inventory: `CMB-RSH-001` now retains the
 first bounded rules/result-surface normalization. Combat contracts and implementation remain gated
 on approved Breakdown and ZOC/Reaction boundaries.
@@ -298,6 +307,18 @@ dotnet run --project src/Cna.ExerciseRunner/Cna.ExerciseRunner.csproj -- \
   --artifact-root artifacts/exercises
 ```
 
+Run the optional serial-paired Reserve-policy comparison with:
+
+```sh
+dotnet run --project src/Cna.ExerciseRunner/Cna.ExerciseRunner.csproj -- \
+  maneuver run --manifest scenarios/maneuvers/rules-lab.reserve-policy.paired.v1.json \
+  --artifact-root artifacts/exercises
+```
+
+The pair runs baseline then candidate sequentially in isolated Exercise sessions. Its report may
+describe first divergence and outcome/count deltas only; it cannot support causal, statistical,
+balance, recommendation, or synchronized-post-divergence conclusions.
+
 The command prints each validated child bundle path in manifest order, followed by the strictly
 read-back aggregate report path and deterministic report fingerprint. The report's local paths and
 timings are diagnostics and do not participate in that fingerprint.
@@ -345,7 +366,7 @@ select a deterministic scripted decision rather than fail the turn.
 | `Cna.Intelligence.Gateway` | Non-authoritative model/provider gateway |
 | `Cna.ServiceDefaults` | Shared discovery, resilience, health, and telemetry defaults |
 | `Cna.AppHost` | Aspire development orchestration |
-| `Cna.ExerciseRunner` | Local deterministic Exercise and serial-Maneuver orchestration with trusted artifacts |
+| `Cna.ExerciseRunner` | Local deterministic single-Exercise, serial-unpaired, and optional serial-paired Maneuver orchestration with trusted artifacts |
 | `Cna.Core.Tests` | Deterministic Umpire unit tests on xUnit v3 and MTP |
 | `Cna.ExerciseRunner.Tests` | Exercise contracts, replay, artifact, and CLI tests on xUnit v3 and MTP |
 | `Cna.Intelligence.Contracts.Tests` | Protobuf compatibility tests on xUnit v3 and MTP |
@@ -430,6 +451,7 @@ The current Umpire foundation is intentionally pure and in-process:
 - [Sprint 4-5 research-gate audit](docs/research/sprint-4-5-research-gates.md)
 - [Breakdown continuity decision packet](docs/research/breakdown-continuity-spike.md)
 - [ZOC and Reaction interruption research](docs/research/contact-reaction-zoc-spike.md)
+- [CONTACT-001 accepted ZOC and Reaction rulings](docs/research/contact-reaction-zoc-source-ruling-lock.md)
 - [Combat and continual-cycle source inventory](docs/research/combat-cycle-source-inventory.md)
 - [Combat rules and result-surface spike](docs/research/combat-rules-result-surface-spike.md)
 - [Movement Foundation v1 specification](docs/specs/movement-foundation-v1.md)

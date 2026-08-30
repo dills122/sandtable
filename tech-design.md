@@ -28,8 +28,11 @@ available noncanonical operation/phase timing on failure plus a structured artif
 trace after mandatory reader validation. Separate checked exploratory and clean-baseline fixtures
 exercise the two build-identity policies.
 
-The checked profiles use Exercise/Maneuver manifest v2, controller-configuration v2, ruleset v7,
-snapshot v9, world v4, and strict trusted-evidence admission. Retained Organization/Reserve
+The checked Exercise and serial-unpaired Maneuver profiles use manifest v2, with unpaired report
+scheme `sandtable.maneuver-report.v1`; the optional paired path uses
+`sandtable.paired-maneuver-manifest.v1` and
+`sandtable.paired-maneuver-report.v1`. All use controller-configuration v2, ruleset v7, snapshot
+v9, world v4, and strict `trusted-authority` evidence admission. Retained Organization/Reserve
 profiles and their baseline twins remain regression checkpoints.
 
 The checked two-child **Maneuver** fixtures define strict canonical `serial-unpaired` parent manifests.
@@ -45,10 +48,20 @@ One canonical report reconciles every child state and hashes only deterministic 
 time, throughput, local paths, and artifact-manifest hashes remain separate diagnostics. Report
 creation is transactional and a strict readback must succeed before the CLI claims completion.
 
+The optional `serial-paired` fixture runs baseline then candidate in separate fresh Exercise
+sessions. Pair admission and aggregation require identical declared initial conditions, campaign
+creation inputs, complete initial role/domain seed ledgers, build cohort, and canonical initial
+snapshot while keeping controller configuration identities separate. The parent report recomputes
+the first accepted-action divergence and descriptive count/outcome deltas during strict readback.
+It makes no causal, statistical-significance, gameplay-balance, recommendation, or
+synchronized-post-divergence claim; trajectories and random consumption may diverge after the
+first differing choice.
+
 This harness is local developer instrumentation only. It is not registered in AppHost, performs no
-model or remote I/O, cannot attach to a production campaign, and does not implement paired reports,
-side-safe exports, or War College orchestration. The governing contracts and remaining delivery
-gates are in [Exercise Harness v1](docs/specs/exercise-harness-v1.md) and its
+model or remote I/O, cannot attach to a production campaign, and does not implement side-safe
+exports, model controllers, parallel/distributed scheduling, or War College orchestration. The
+governing contracts and closed v1 delivery plan are in
+[Exercise Harness v1](docs/specs/exercise-harness-v1.md) and its
 [technical design](docs/design/exercise-harness-v1.md).
 
 ## Proposed intelligence/services architecture
@@ -403,7 +416,7 @@ Streaming makes sense for:
 
 - Visible narrative text
 - Long after-action reports
-- Progress from batch evaluations
+- Progress from long-running Maneuver evaluations
 - Administrative model download/warmup status
 
 The player does not benefit from seeing a strategic decision token by token. The game needs only the completed structured object.
@@ -711,7 +724,7 @@ Roadmap placement is explicit: select the representative decision after the Spri
 skeleton, run the no-model interaction prototype before Sprint 8, integrate the deterministic slice
 with Minimal Maproom, and evaluate any parser only after the deterministic MVP path works.
 
-The implemented serial-unpaired portion of Exercise Harness v1 is trusted local developer
+The implemented Exercise Harness v1 is trusted local developer
 instrumentation for deterministic, freshly created campaign runs. Its Exercise path keeps the
 Umpire authoritative through an opaque Exercise-only Core capability that shares the existing
 creation and legal-action execution primitives; the runner owns orchestration, transactional
@@ -723,9 +736,11 @@ artifact faults. Trusted bundle readback extracts snapshot coordinates only afte
 complete snapshot/world decoder accepts the canonical bytes, including for expected replay-failure
 profiles. A Maneuver adds strict parent admission, explicit child identity, synchronous
 coordination, one-read semantic aggregation, and a deterministic fingerprinted report without
-changing that authority boundary. V1 bundles and reports are `trusted-authority`; paired
-comparison, side-safe exports, full victory runs, model controllers, and distributed execution
-remain explicitly deferred. See the retained
+changing that authority boundary. The separate optional serial-paired contract adds isolated,
+sequential baseline/candidate arms with strict equal-initial-evidence validation and a descriptive
+first-divergence report. V1 bundles and reports are `trusted-authority`; side-safe exports, full
+victory runs, model controllers, and parallel/distributed execution remain explicitly deferred.
+See the retained
 [controller-matrix evidence](docs/research/simulator-controller-matrix.md),
 [capability/replay research](docs/research/exercise-capability-and-replay-spike.md),
 [artifact research](docs/research/exercise-evidence-artifact-spike.md),
@@ -779,9 +794,11 @@ Cohesion, and BP/cohort-risk facts plus the minimum opaque apparent-opponent sha
 non-contact command/event/adjudication vertical while keeping public membership dormant;
 `MOV-TASK-008` next exposes Movement membership and completion through the public boundary.
 
-The [ZOC/Reaction spike](docs/research/contact-reaction-zoc-spike.md) separates enemy-ZOC entry and
-the interrupting Reaction window from Contact and Engaged, which are created by Close Assault and
-combat results and therefore belong to Sprint 5. The
+The [ZOC/Reaction spike](docs/research/contact-reaction-zoc-spike.md) and accepted
+[CONTACT-001 ruling lock](docs/research/contact-reaction-zoc-source-ruling-lock.md) separate
+immediate enemy-ZOC entry and the interrupting Reaction window from Contact and Engaged. Immediate
+entry creates neither relationship: Contact is derived from enemy-ZOC presence at the beginning of
+a Movement Segment, while Engaged is a Close Assault result; both remain Sprint 5 contract work. The
 [Combat-cycle inventory](docs/research/combat-cycle-source-inventory.md) permits source/table
 normalization now but defers contract freeze until Breakdown and ZOC/Reaction are approved. The
 first bounded follow-up, [Combat rules and result surface](docs/research/combat-rules-result-surface-spike.md),
@@ -789,7 +806,9 @@ completed `CMB-RSH-001` by normalizing the admitted combat-table/result surface;
 evidence, not an implemented combat contract. Current proposals use trusted-Umpire sealed choices,
 the same pre-state for simultaneous combat, and structural sequence positions plus cycle identity;
 none is implemented or approved yet.
-Paired comparison remains later and does not block that engine work.
+All five `CONTACT-001` rulings are accepted, but they remain research inputs only. No ZOC/Reaction
+production task is authorized before `MOV-TASK-008`-`010` and an approved specification/design
+package. The implemented paired comparison does not block that engine work.
 
 [1]: https://learn.microsoft.com/en-us/dotnet/orleans/grains/external-tasks-and-grains "External tasks and grains - .NET | Microsoft Learn"
 [2]: https://learn.microsoft.com/en-us/aspnet/core/grpc/performance?view=aspnetcore-10.0 "Performance best practices with gRPC | Microsoft Learn"

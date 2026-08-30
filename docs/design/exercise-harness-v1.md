@@ -1,8 +1,7 @@
 # Exercise Harness v1 Technical Design and Delivery Plan
 
-**Status:** Implemented and repository-verified through Task 015 serial-unpaired and optional
-serial-paired Maneuvers plus checked Reserve Designation and controller-matrix adoption to
-first-side Movement; Task 016 remains pending
+**Status:** Implemented, repository-reconciled, and verified through Task 016 single-Exercise,
+serial-unpaired, controller-matrix, and optional serial-paired Maneuvers to first-side Movement
 
 **Date:** 2026-08-20
 
@@ -478,7 +477,7 @@ report finalization failed.
 Overall status precedence is `aggregation-failed`, `cancelled`, `exercise-failed`, `succeeded`.
 Maneuver exits are separately closed: 0 success, 2 usage/admission, 13 ordinary child failure, 14
 aggregation failure, 11 report artifact failure, 12 unexpected command failure, and 130
-cancellation. The report retains exact child failure categories; the coarser batch exit is not an
+cancellation. The report retains exact child failure categories; the coarser Maneuver exit is not an
 information substitute. CLI stdout lists identity-matched child bundles in ordinal order, followed
 by the validated report path and fingerprint. Missing/corrupt/unverified bundles are failures,
 never omissions or printed completed paths.
@@ -881,6 +880,10 @@ Harness adoption only after the executable Movement vertical is public.
 
 #### `EXR-TASK-016` — Documentation and repository gates
 
+- **Status:** implemented and repository-verified on the post-PR-73 baseline; all checked commands
+  finalize only reader-validated bundles/reports, 347/347 focused and 946/946 solution tests pass
+  with 0 skipped, the build has 0 warnings/errors, and the six-document closeout has a fresh-context
+  independent review.
 - **Depends on:** `EXR-TASK-015`.
 - **Primary files:** `README.md`, `docs/roadmap/pre-alpha-roadmap.md`, `tech-design.md`,
   `naming-overview.md`, this design, and the governing specification. This six-document closeout is
@@ -919,8 +922,8 @@ runnable increment, not later polish.
 
 ## Traceability matrix
 
-Status distinguishes the implemented single-Exercise, serial-unpaired Maneuver, and optional
-paired-comparison boundary from repository-close work.
+Status records the closed single-Exercise, serial-unpaired Maneuver, optional paired-comparison,
+and repository-reconciliation boundary.
 
 | Requirements / decisions | Delivery tasks | Verification / retained evidence | Status |
 | --- | --- | --- | --- |
@@ -939,8 +942,8 @@ paired-comparison boundary from repository-close work.
 | `EXR-022`; separate correlated diagnostics | 007, 012, 014 + observability hardening | Successful and failed query/controller/submission/check/proof correlation, explicit Maneuver identity, aggregate noncanonical diagnostics, debug failure timings, artifact readback trace, and command-boundary cross-detail evidence | implemented through serial Maneuvers |
 | `EXR-024`, `EXR-025`; deterministic selection and single active audience | 006, 007, 012 | Executor controller/cardinality/step-bound tests and checked-in fixture | implemented |
 | `EXR-026`; ordered invariant catalog | 006-008, 012 | Strict check codec, ordering, scope, failure, and emitted-bundle tests | implemented |
-| `EXR-NFR-001`-`005`; reproducibility, reliability, boundaries, quality | 001-016 | Warning-free build, complete focused/solution suites, repeatable serial and paired fingerprints, `just check`, and independent review; Task 016 closeout remains | verified through Task 015 |
-| `DEC-001`-`DEC-016` research decisions | 001-016 as mapped above | Three retained research spikes, governing spec, serial bundles/reports, and paired equality/divergence evidence | accepted and implemented through Task 015 |
+| `EXR-NFR-001`-`005`; reproducibility, reliability, boundaries, quality | 001-016 | Warning-free build, complete focused/solution suites, repeatable serial and paired fingerprints, `just check`, runnable-example readback, and independent review | verified through Task 016 |
+| `DEC-001`-`DEC-016` research decisions | 001-016 as mapped above | Three retained research spikes, governing spec, serial bundles/reports, paired equality/divergence evidence, and synchronized repository maps | accepted and implemented through Task 016 |
 
 ## Final independent-review reconciliation
 
@@ -978,7 +981,9 @@ dotnet test --solution Sandtable.slnx --no-build
 dotnet format Sandtable.slnx --verify-no-changes --no-restore
 ```
 
-At `EXR-TASK-016`, run `just check`, execute both documented commands from a verified clean checkout,
-validate their bundles through the reader, compare the two clean single-run canonical trees, and
-retain exact command/output evidence in the PR. No remote provider or timing threshold participates
-in the gate.
+At `EXR-TASK-016`, run `just check`, execute every documented checked manifest from a verified clean
+checkout—including the single-Exercise, serial-unpaired, controller-matrix, and serial-paired
+boundaries—validate every emitted child bundle and parent report through its strict reader, compare
+two clean single-run canonical trees, and retain exact command/output evidence in the PR. No remote
+provider, timing threshold, causal inference, significance test, balance conclusion,
+recommendation, or synchronized-post-divergence assumption participates in the gate.

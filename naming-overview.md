@@ -34,7 +34,7 @@ So `Umpire` can be the deterministic simulation component, but internally it sti
 | **Weather Bureau**              | Weather/environment                   | Period-flavored without being confusing.                                  |
 | **War Diary**                   | Human-readable game history           | Narrative companion to Chronicle's machine event stream.                  |
 | **Exercise**                    | Single simulation run                 | One automated simulation run.                                             |
-| **Maneuvers**                   | Simulation/evaluation batches         | A collection of Exercises.                                                |
+| **Maneuvers**                   | Serial simulation/evaluation sets     | An ordered collection of Exercises.                                       |
 | **War College**                 | AI evaluation/tournaments             | Run commanders against scenarios and measure performance.                 |
 
 There are some particularly nice relationships hiding in there.
@@ -533,16 +533,21 @@ This one is too good not to reserve.
 Not part of the core gameplay.
 
 The names now have a concrete local implementation boundary: `Cna.ExerciseRunner` runs either one
-**Exercise** or one serial-unpaired **Maneuver** through an in-process opaque Umpire capability and
-retains trusted evidence. An Exercise is one authoritative simulation run. A Maneuver is an ordered
-collection of uniquely identified Exercises that share one parent seed contract, run serially
-through the same coordinator, and produce one deterministic aggregate report after strict child
-readback. Compact, forensic, and debug detail tiers describe Exercise instrumentation depth, not
-different game rules; Maneuver timing and path diagnostics likewise stay outside its deterministic
-fingerprint. Failed decisions retain the attempted query, controller, action, and submission
-context available before the failure. Paired Maneuvers remain a later contract. **War College**
-remains a later evaluation layer, and the current runner is not an Orleans workload, tournament
-system, or balance-analysis environment.
+**Exercise** or one serial **Maneuver** through an in-process opaque Umpire capability and retains
+trusted evidence. An Exercise is one authoritative simulation run. A Maneuver is an ordered
+collection of uniquely identified Exercises that share one parent seed contract, run one child at
+a time, and produce one deterministic aggregate report after strict child readback. The frozen
+`serial-unpaired` contract uses manifest v2 and report v1. The separate optional `serial-paired`
+contract uses paired manifest/report v1 and runs isolated baseline then candidate arms from identical
+declared inputs, initial role-specific random streams, campaign creation inputs, build cohort, and
+initial snapshot. Its comparison remains descriptive: it records first divergence and bounded
+count/outcome deltas but makes no causal, statistical-significance, gameplay-balance,
+recommendation, or synchronized-post-divergence claim. Compact, forensic, and debug detail tiers
+describe Exercise instrumentation depth, not different game rules; Maneuver timing and path
+diagnostics likewise stay outside its deterministic fingerprint. Failed decisions retain the
+attempted query, controller, action, and submission context available before the failure. **War
+College** remains a later evaluation layer, and the current runner is not an Orleans workload,
+tournament system, parallel scheduler, or balance-analysis environment.
 
 Closed controller-policy names describe deterministic test behavior, not commanders or authority.
 The checked policy matrix says exactly `act-first`/`act-last` and Reserve `none`/`one`/`all`; its
@@ -574,11 +579,15 @@ contract names and now have internal authoritative move/event semantics, but the
 public legal actions. `MOV-TASK-008` is the next delivery gate for public Movement membership and
 completion. **Breakdown continuity** names replay state and rules
 identity, not Breakdown adjudication: no roll, result, loss, or Movement BP mutation is implemented.
-**Enemy ZOC** is the triggering board condition and **Reaction** is the persisted
-non-phasing interruption it opens. Neither is **Contact**: Contact is created by Close Assault, and
-**Engaged** is a combat-result state. The repeatable **Movement/Combat cycle** remains a Sprint 5
-research-gated domain concept. None of these later terms should be inferred inside the non-contact
-Movement resolver.
+**Enemy ZOC** is the triggering board condition and **Reaction** is the persisted non-phasing
+interruption it opens. The five `CONTACT-001` rulings for Reaction ordering, repeat eligibility,
+decline scope, waiting visibility, and positive-ZOC authority are accepted research inputs, not a
+production contract. Immediate enemy-ZOC entry creates neither **Contact** nor **Engaged**: Contact
+is derived from enemy-ZOC presence at the beginning of a Movement Segment, while Engaged is a Close
+Assault result. The repeatable **Movement/Combat cycle** remains a Sprint 5 research-gated domain
+concept. No ZOC/Reaction implementation is authorized before `MOV-TASK-008`-`010` and an approved
+specification/design package, and none of these later terms should be inferred inside the current
+non-contact Movement resolver.
 
 **War College** is where we evaluate commanders.
 
