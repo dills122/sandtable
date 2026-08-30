@@ -118,7 +118,7 @@ semantics.
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Side ownership | Existing closed side ID; no numeric unit | Existing `elementId` plus side slot | Content stores the reference; Rules/Umpire interpret audience and opposition | Exact synthetic element locator; current Content semantics | Known side; owning formation exists on the same side; selected fixture uses one element per opposing side | Participant opposition, audience/redaction, friendly-fire rejection | **Accept unchanged** |
 | Source-parent assignment | Existing stable formation ID reference; no numeric unit | Existing `elementId` plus source-parent slot | Content | Exact synthetic element locator; semantics: Land 4.25 and 17.1 | Referenced formation exists on the same side; parent graph is acyclic; selected element has exactly one source parent | Source Basic-Morale lookup and later current-parent comparison | **Accept unchanged** |
-| Placement mode | Existing closed placement-mode ID; no numeric unit | Existing `elementId` plus placement-mode slot | Content | Exact synthetic element locator; semantics: Land 4.25 | Known mode; selected elements are `Independent` and therefore may be placed directly | Scenario admission and initial placement only; not combat opportunity | **Accept unchanged** |
+| Placement mode | Existing `ContentPlacementMode` enum; selected token `Independent`; no numeric unit | Existing `elementId` plus enum-valued placement-mode slot | Content | Exact synthetic element locator; semantics: Land 4.25 | Defined enum token; selected elements are `Independent` and therefore may be placed directly | Scenario admission and initial placement only; not combat opportunity | **Accept unchanged** |
 | Mobility class | Existing closed mobility ID; no numeric unit | Existing `elementId` plus mobility slot | Content stores the reference; Rules owns movement/logistics meaning | Exact synthetic element locator; current synthetic semantics and Land 6.17, 8.0-8.19 | Known Rules vocabulary; selected fixture uses the existing non-motorized value | Selected-subset admission and exclusion of fuel/breakdown behavior | **Accept unchanged** |
 | Element combat classification | Closed Rules-owned stable ID; no numeric unit | Existing `elementId` plus the classification slot | Content stores the reference; Rules owns its meaning | Synthetic datum locator per element; semantics: Land 3.5, 4.22, 10.11-10.15 | Stable ID; known Rules vocabulary; selected capability admits only ordinary combat infantry, not HQ/marker/gun/armor categories | ZOC qualification, Close Assault eligibility, unsupported-category rejection | **Accept** |
 | TOE component identity | Pack-stable ID | `componentId`, unique within its owning element and unambiguous pack-wide | Content | Synthetic datum locator per component; component granularity: Land 3.5, 4.46, 11.1-11.3 | Stable ID, nonempty canonical collection, no duplicate, one owning element; selected path requires exactly one component | Campaign current-strength key, assignment, loss allocation, replay joins | **Accept** |
@@ -184,6 +184,16 @@ rules laboratory. This packet fixes its semantic values and evidence identities 
 packaging choice. The IDs below are exact logical test-vector keys. They do not select production
 property names, stable-ID syntax, serializer paths, pack IDs, or a schema version.
 
+The vector uses three exact test-only logical vocabulary keys:
+
+- `fixture.combat-classification.ordinary-infantry` — admitted element classification;
+- `fixture.component-class.infantry` — admitted component class; and
+- `fixture.component-class.unsupported-non-infantry` — known but deliberately unsupported component
+  class for one negative vector.
+
+These keys make the research vectors unambiguous. They are not proposed production vocabulary
+tokens and do not alter the `CMB-CNT-DEC-012` deferral of production names and representation.
+
 | Evidence object | Exact logical ID | Exact `sandtable-rules-lab` locator |
 | --- | --- | --- |
 | Axis source parent | `axis-assault-formation` | `combat.close-assault-positive.v1:formation.axis-assault-formation` |
@@ -201,10 +211,10 @@ property names, stable-ID syntax, serializer paths, pack IDs, or a schema versio
 | Layer | Exact synthetic input | Provenance or status |
 | --- | --- | --- |
 | Topology | `assault-west` and `assault-east` joined by `assault-west|assault-east`; both are `land.terrain.clear`; no fortification, minefield, or combat-modifying hexside | Existing Content semantics; exact synthetic locators above |
-| Forces | `axis-assault-battalion` at `assault-west` and `commonwealth-assault-battalion` at `assault-east`; each is an independent, non-Reserve ordinary combat infantry battalion; no other participant, attachment, gun, armor, truck, air, or special unit | Synthetic; side, source-parent, placement, mobility, organization, and classification are explicit facts |
+| Forces | `axis-assault-battalion` at `assault-west` and `commonwealth-assault-battalion` at `assault-east`; each is independent, non-Reserve, and classified as `fixture.combat-classification.ordinary-infantry`; no other participant, attachment, gun, armor, truck, air, or special unit | Synthetic; side, source-parent, placement, mobility, organization, and classification are explicit facts |
 | Organization | Both element organization IDs are `land.organization.battalion`; each retains one source parent formation | Existing Rules vocabulary and synthetic element facts |
 | Capability | Base CPA `10` each; current expenditure `0`; attacker later spends `5`, defender `3` | Static base values accepted; expenditure is provisional Campaign input |
-| Component | Exactly `axis-assault-battalion.toe.infantry` and `commonwealth-assault-battalion.toe.infantry`, one under each owning element; component class ordinary infantry | New logical Content facts; exact synthetic locators above |
+| Component | Exactly `axis-assault-battalion.toe.infantry` and `commonwealth-assault-battalion.toe.infantry`, one under each owning element; both use component class `fixture.component-class.infantry` | New logical Content facts; exact synthetic locators above |
 | Static strength | Maximum TOE `10`; offensive rating `1`; defensive rating `1` for each component | New logical Content facts; repository-synthetic, not historical |
 | Morale | `axis-assault-formation.basic-morale` and `commonwealth-assault-formation.basic-morale` are both `0` | New logical Content facts; repository-synthetic |
 | Provisional current state | Current component TOE `10`, Cohesion `0`, unpinned, ammunition sufficient, no special state, current parent equals source parent | Required evidence input; exact contracts deferred to `CMB-RSH-003`/design |
@@ -227,12 +237,12 @@ one invalid fixture masking another issue.
 | `close-assault-negative-unknown-component-class` | Change only `axis-assault-battalion.toe.infantry`'s component class to test sentinel `unknown.component-class` | Rules compatibility validation at component class: unknown vocabulary; no hash/admission |
 | `close-assault-negative-zero-maximum` | Change only `axis-assault-battalion.toe.infantry` maximum TOE from `10` to `0` | Local Content construction/parse rejection at maximum TOE; no semantic fallback |
 | `close-assault-negative-morale-range` | Change only `axis-assault-formation.basic-morale` from `0` to `+4` | Local Content rejection at Basic Morale because it is outside `-3..+3` |
-| `close-assault-negative-origin-kind` | Change only the Axis component origin kind from repository-synthetic to source-derived while retaining its `sandtable-rules-lab` source | Content origin validation at source-kind match; no canonical artifact |
+| `close-assault-negative-origin-kind` | Change only the Axis component `ContentOriginKind` from `Synthetic` to `SourceDerived` while retaining the `sandtable-rules-lab` source-index entry of `ContentSourceKind.RepositorySynthetic` | Content origin validation at source-kind match; no canonical artifact |
 | `close-assault-negative-missing-origin` | Remove only the Axis component fact-group origin | Content capability validation at mandatory origin; no implicit inherited provenance |
 | `close-assault-negative-partial-capability` | Remove only the defensive rating from `axis-assault-battalion.toe.infantry` while retaining the capability | Content capability validation at defensive rating; no implicit zero/default |
 | `close-assault-negative-zero-rating` | Change only the Axis component offensive rating from `1` to `0` | Structurally representable source fact, but first-path Rules admission rejects before combat mutation |
 | `close-assault-negative-second-component` | Add only a second valid ordinary-infantry component `axis-assault-battalion.toe.infantry-support` with maximum `1`, ratings `1/1`, and origin locator `combat.close-assault-negative-second-component:component.axis-assault-battalion.toe.infantry-support` | First-path Rules admission rejects the second component; it does not ignore it |
-| `close-assault-negative-non-infantry-component` | Change only the Axis component class from ordinary infantry to a known non-infantry class | First-path Rules admission rejects the unsupported class before combat mutation |
+| `close-assault-negative-non-infantry-component` | Change only the Axis component class from `fixture.component-class.infantry` to known test-vector key `fixture.component-class.unsupported-non-infantry` | First-path Rules admission rejects the unsupported class before combat mutation |
 | `close-assault-negative-current-over-maximum` | Change only provisional Axis current TOE from `10` to `11` against maximum `10` | Campaign admission/snapshot validation rejects before opportunity creation |
 | `close-assault-negative-ammunition` | Change only the Axis ammunition condition from sufficient to out of ammunition | Campaign/Rules eligibility rejects before choices or combat mutation; missing state is not “sufficient” |
 
