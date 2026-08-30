@@ -95,8 +95,9 @@ positive ZOC behavior belongs to this later package.
 6. `ZOR-TASK-006` — Reaction CP/BP resolution, decline/close, resumption, and atomic publication.
 7. `ZOR-TASK-007` — Exercise/Maneuver evidence, synchronization, and independent review.
 
-These tasks are proposed, not authorized. They begin only after Movement Foundation and an approved
-`BREAKDOWN-001` continuity boundary.
+These tasks are proposed, not authorized. Task 002 and every later production task begin only after
+Movement Foundation, the approved `BREAKDOWN-001` continuity boundary, and an owner-approved
+ZOC/Reaction specification and technical design.
 
 ## Owner rulings and deferrals
 

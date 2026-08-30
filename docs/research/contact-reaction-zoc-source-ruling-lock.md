@@ -24,19 +24,20 @@ are not introduced by enemy-ZOC entry and are not fields on an element in this p
 
 ## Executive decision
 
-Reaction is one persisted opponent-owned window created by a committed qualifying Movement event.
+Reaction is one persisted opponent-owned window created by a committed adjacency-triggering
+Movement event.
 The reacting player chooses the order in which eligible own representations react. Canonical
 candidate order is deterministic but does not decide play order. One representation may open at
 most one Reaction episode for one trigger; an episode contains one or more ordinary movement steps.
-The same representation may react again to a later qualifying trigger in the same Operation Stage
+The same representation may react again to a later adjacency trigger in the same Operation Stage
 if it remains eligible. Closing the window declines every remaining opportunity for that trigger
 and does not affect later triggers.
 
 The phasing side observes only that an opponent Reaction decision is pending. The reacting side
-observes exact own candidates and the already-approved apparent identity, location, and route facts
-of the trigger, never its real binding. ZOC is a Umpire-derived result over rules-owned predicates,
-content source facts, current Campaign state, and topology. Content must not store an `exertsZoc`
-boolean.
+observes exact own candidates plus the trigger's apparent representation ID and its origin and
+destination locations, never its real binding, costs, route adjustments, or intermediate path.
+ZOC is a Umpire-derived result over rules-owned predicates, content source facts, current Campaign
+state, and topology. Content must not store an `exertsZoc` boolean.
 
 ## Ruling table
 
@@ -49,7 +50,7 @@ owner choice open and block contract freeze. No ruling remains escalated.
 | `ZOR-DEC-001` | Multiple-reactor ordering | **Accept** | The reacting player selects the next eligible own Reaction opportunity. Candidate serialization is canonical by stable opportunity/action identity; it is not an automatic resolution priority. Once selected, that participant completes its episode before another begins. | Umpire-selected order, hidden strength/CPA priority, map enumeration order, or simultaneous mutation |
 | `ZOR-DEC-002` | Repeat Reaction eligibility | **Accept** | One representation may open at most one episode per trigger window. An episode contains one or more legal movement steps and ends explicitly. A later committed enemy move creates a new trigger, and the representation may react again during the same Operation Stage if all current restrictions still pass. | One Reaction per Operation Stage; treating every adjacent step as an independent repeat opportunity; reopening a completed participant in the same window |
 | `ZOR-DEC-003` | Decline scope and persistence | **Accept** | One explicit close/decline action closes the entire current window and declines all unresolved opportunities. The closure is permanent for that trigger only. A deterministic timeout/unavailable fallback uses the same authoritative closure with a distinct internal closure reason, no CP/BP/RNG change, and no revealed eligibility list. | Mandatory per-unit pass actions; a decline that survives into later triggers; silent timeout advancement; automatic Reaction routes |
-| `ZOR-DEC-004` | Waiting and hidden-information visibility | **Accept** | The phasing side receives only a generic `awaiting-opponent-reaction` state tied to the public window identity. The reacting side receives exact own opportunities plus the trigger's approved apparent representation/location/route facts. Neither side receives a hidden real binding, hidden eligible-opponent list, eligibility count, excluded-unit reasons, or fallback reason. | Publishing the authoritative window, real binding, candidate count, decline rationale, or eligibility failures to the phasing side |
+| `ZOR-DEC-004` | Waiting and hidden-information visibility | **Accept** | The phasing side receives only a generic `awaiting-opponent-reaction` state tied to the public window identity. The reacting side receives exact own opportunities plus the trigger's apparent representation ID, origin, and destination. Neither side receives the real binding, Movement costs, route adjustments, intermediate path, hidden eligible-opponent list, eligibility count, excluded-unit reasons, or internal closure/fallback reason. | Publishing the authoritative window, real binding, candidate count, decline rationale, path/cost internals, or eligibility failures |
 | `ZOR-DEC-005` | Positive-ZOC vocabulary and authority | **Accept** | Rules own the source-cited ZOC predicate and exclusions; Content owns immutable primitive source facts; Campaign owns current location, representation/attachment binding, Cohesion, and current combat capability; the Umpire derives controlled edges/hexes. The outward `exertsZoc` value remains a derived apparent fact. The first positive fixture uses two combat battalion-equivalents in one hex with a combined stacking value greater than one and at least ten current raw defensive Close Assault Points. | CPA, organization alone, a content boolean, an observation field, or an Intelligence proposal as ZOC authority |
 
 ## Source index and precedence
@@ -150,6 +151,12 @@ a canonical preimage containing at least:
 - origin and destination; and
 - reacting side.
 
+A Reaction trigger is every committed phasing combat-element move whose destination is adjacent to
+at least one authoritative non-phasing represented unit. Trigger qualification is adjacency under
+Rule 8.51, not whether that unit exerts a ZOC and not whether any reactor survives Rule 8.53's
+eligibility filters. A committed move with no adjacent non-phasing represented unit creates no
+window.
+
 An eligible participant receives a stable `reactionOpportunityId` derived from the window identity
 and its authoritative reacting representation identity. An outward action ID additionally binds the
 current action semantics. Real element bindings remain internal. Candidate arrays use ordinal
@@ -160,9 +167,14 @@ canonical ordering; event order records the reacting player's actual choices.
 ```text
 phasing Movement at version N
         |
-        | accepted qualifying ElementMoved
+        | accepted adjacency-triggering ElementMoved
         v
 open Reaction window at N+1, reacting side owns actions
+        |
+        +--> empty opportunity universe: deterministic system close
+        |                                     |
+        |                                     v
+        |                              resume phasing Movement
         |
         +--> start/continue one participant episode --+
         |                                              |
@@ -181,6 +193,13 @@ projection, frozen opportunity universe and trigger-time evidence, resolved part
 optional active participant. Each current action is still regenerated and revalidated against the
 latest state. A live query against later mutable world state must not add a participant that was not
 eligible for the original trigger or rewrite the historical opportunity universe.
+
+If the frozen opportunity universe is empty, the persisted window still exists at version `N+1`.
+The next transition is one deterministic system-authored `ReactionWindowClosed` event at `N+2`
+with internal reason `no-eligible-reactor`; it changes no CP, BP, or RNG and resumes the suspended
+phasing Movement position. No human, worker, or model decision is requested. If the intermediate
+state is observed, the phasing side receives the same generic waiting shape used for every other
+window; outward history contains neither the empty count nor the internal reason.
 
 Every accepted Reaction step, participant completion, or window closure emits exactly one semantic
 event and increments state version once. Projection must atomically update location, CP, BP,
@@ -212,8 +231,8 @@ closed reason such as `player-declined` or `scripted-unavailable`. Both outcomes
 - resume the exact suspended phasing Movement position.
 
 If the player reacts with a subset and then closes, only the unresolved remainder is declined. A
-later qualifying Movement event creates a new window and recalculates eligibility from its new
-committed pre-state.
+later adjacency-triggering Movement event creates a new window and recalculates eligibility from
+its new committed pre-state.
 
 ### Truth and fog-safe projections
 
@@ -222,8 +241,8 @@ committed pre-state.
 | Real trigger binding | Exact representation/element binding in Umpire event/state | Never | Never |
 | Window identity/state | Exact trigger, sides, eligibility basis, active/resolved set | Stable public window ID and current own decision state | Stable public window ID and generic waiting/closed state |
 | Eligible reactors | Exact frozen authoritative basis | Exact own legal opportunities | Absent, including count |
-| Triggering force | Exact real binding/path/cost | Only approved apparent representation, location, and route facts | Own mover/path facts already known to that side |
-| Decline/fallback reason | Exact internal closure kind | The side knows its own explicit choice; scripted reason may be shown only if product policy later approves it | Absent |
+| Triggering force | Exact real binding/path/cost | Apparent representation ID plus origin and destination only | Own mover, origin, and destination already known to that side |
+| Decline/fallback reason | Exact internal closure kind | Absent from observation and projected history; an explicit player action remains known through its own submission/receipt | Absent from observation and projected history |
 | Chronicle | Complete event truth | Separate redacted projection | Separate redacted projection |
 
 Two authorities that produce byte-identical facts for an audience must produce byte-identical
@@ -268,6 +287,9 @@ CONTACT-001 / ZOR-TASK-001 decision lock [this record: complete]
 complete MOV-TASK-007 -> 008 -> 009 -> 010 Movement vertical
         |
         v
+owner-approved ZOC/Reaction specification + technical design
+        |
+        v
 ZOR-TASK-002 rules/content vocabulary + positive/negative fixture
         |
         v
@@ -280,11 +302,11 @@ ZOR-TASK-004 dormant observation/action/decline contracts + fog equivalence
 ZOR-TASK-005 internal move-to-window trigger; public membership still dormant
         |
         v
-ZOR-TASK-006 Reaction movement, CP/BP, episode completion, close, and resumption
+ZOR-TASK-006 Reaction movement, CP/BP, episode completion, close, resumption,
+             and atomic publication
         |
         v
-ZOR-TASK-007 atomic publication, Exercise/Maneuver evidence, synchronization,
-             and independent review
+ZOR-TASK-007 Exercise/Maneuver evidence, synchronization, and independent review
         |
         v
 Sprint 5 Contact/Engaged combat-cycle design gate
@@ -306,15 +328,20 @@ must not bypass their dependency order or move Contact/Engaged into Sprint 4.
    trigger, preserves CP/BP/RNG, and resumes the suspended phasing position.
 5. Scripted unavailable/timeout closure is deterministic and replay-identical to its retained
    event; it never synthesizes a route.
-6. Phasing-side observations are byte-identical for hidden eligible-reactor permutations and
+6. A committed move adjacent to a non-ZOC-exerting represented unit still creates a Reaction
+   trigger. A trigger with zero eligible reactors creates the same generic window at `N+1`, closes
+   through one deterministic no-cost/no-RNG event at `N+2`, and exposes neither count nor reason.
+7. Phasing-side observations are byte-identical for hidden eligible-reactor permutations and
    counts. Reacting-side action sets change only with approved own/trigger-apparent facts.
-7. Stale, duplicate, wrong-window, wrong-side, forged-identity, completed-participant, and closed-
+8. The reacting-side trigger projection contains only apparent representation ID, origin, and
+   destination. Costs, route adjustments, intermediate path, binding, and closure reason are absent.
+9. Stale, duplicate, wrong-window, wrong-side, forged-identity, completed-participant, and closed-
    window submissions emit zero events.
-8. A positive fixture controls exactly the permitted adjacent locations; every named qualification
+10. A positive fixture controls exactly the permitted adjacent locations; every named qualification
    and topology negative fails independently.
-9. Reaction CP and BP deltas reuse the approved exact amounts, rules provenance, stage ledger, and
+11. Reaction CP and BP deltas reuse the approved exact amounts, rules provenance, stage ledger, and
    atomic event/projector/replay path. No separate Reaction accounting shortcut exists.
-10. Authoritative events retain real bindings and rule evidence; both player histories use separate
+12. Authoritative events retain real bindings and rule evidence; both player histories use separate
     redacted projections and contain no hidden eligibility or fallback reason.
 
 ## Rejected approaches
@@ -340,8 +367,9 @@ must not bypass their dependency order or move Contact/Engaged into Sprint 4.
   current loss-dependent Close Assault calculation.
 - Rule 8.53's CPA comparison, attached-unit Reaction, detachment, pinning, combat/Engaged exclusion,
   and Truck special cases need separate source vectors before those categories are admitted.
-- The precise public copy and UI treatment for a scripted fallback remain product policy. Authority
-  and player-visible data limits are fixed here; prose is not.
+- Exact human-facing prose may vary, but observation/history contracts must never expose the
+  internal closure reason. The reacting player's own explicit decline remains knowable only through
+  its submitted action and receipt.
 - The central roadmap still describes the five rulings as open. This lane intentionally does not
   edit shared roadmap text; the planning owner must synchronize that status when this decision is
   accepted into the central plan.
