@@ -1,7 +1,7 @@
 # Movement Foundation v1 Technical Design
 
-**Status:** Active implementation plan; `MOV-TASK-007` internal non-contact adjudication is
-implemented and verified; `MOV-TASK-008` is next
+**Status:** Active implementation plan; `MOV-TASK-008` public non-contact Movement and completion
+are implemented and verified; `MOV-TASK-009` is next
 
 **Date:** 2026-08-25
 
@@ -293,25 +293,25 @@ MOV-TASK-006 dormant action/submission contracts [complete; merged in PR #69]
 MOV-TASK-007 move command/event/adjudication [complete]
                   |
                   v
-MOV-TASK-008 completion to Breakdown [next]
+MOV-TASK-008 completion to Breakdown [complete]
                   |
                   v
-MOV-TASK-009 end-to-end + Exercise/Maneuver evidence
+MOV-TASK-009 end-to-end + Exercise/Maneuver evidence [next]
                   |
                   v
 MOV-TASK-010 synchronization + independent review
 ```
 
-Tasks 001 through 007 are complete. Tasks 008 through 010 are intentionally serial because each
+Tasks 001 through 008 are complete. Tasks 009 through 010 are intentionally serial because each
 freezes a versioned contract consumed by the next layer. In particular, Content admission in Task 003
 consumes the closed mobility vocabulary and ruleset identity completed by Task 002. Tasks 006 and
-007 keep all public Movement membership dormant; Task 008 atomically exposes executable move and
-completion actions so no intermediate checkpoint can strand a campaign at Movement.
+007 keep all public Movement membership dormant; Task 008 now atomically exposes executable move
+and completion actions so no intermediate checkpoint can strand a campaign at Movement.
 `BREAKDOWN-001` is approved. Task 004B implements the required predecessor of Task 005 while
 preserving the no-adjudication boundary. Its repository gate and two fresh-context review
-instances are complete. Tasks 005 and 006 are implemented and verified. Task 007 completes internal
-adjudication while preserving Task 006's dormant public boundary; Task 008 still owns atomic public
-move and completion membership.
+instances are complete. Tasks 005 through 008 are implemented and verified. Task 007 completes
+internal adjudication while preserving Task 006's dormant public boundary; Task 008 atomically
+publishes move and completion membership and admits the exact Breakdown successor.
 
 The Task 001-004 foundation merged in PR #29 after `just check` passed with a warning-clean build,
 format verification, and 746/746 solution tests. The roadmap groups the remaining work into a
@@ -505,7 +505,7 @@ one concurrently.
 
 ### `MOV-TASK-008` - Publish the complete Movement action vertical
 
-**Status:** Next; unblocked by completed `MOV-TASK-007`
+**Status:** Complete (2026-08-29)
 
 **Advances:** `MOV-REQ-006`, `MOV-REQ-007`, `MOV-REQ-009`, `MOV-REQ-010`, `MOV-REQ-011`;
 `MOV-AC-006` through `MOV-AC-011`
@@ -527,6 +527,13 @@ Breakdown action appears
 
 **Verification:** focused Campaign and Actions completion/replay tests
 
+**Implemented evidence:** immutable completion command/event/factory and exact canonical-codec
+tests; zero/one/four-move completion and strict replay; observation-derived public membership for
+zero/one/two Reserve selections; exact command mapping; ordinary move-then-completion submission;
+stale, repeated, wrong-audience, forged, malformed, and no-longer-current rejection; byte-identical
+public action sets for apparent-equivalent authorities; no early or successor Breakdown action;
+and the complete Core suite.
+
 **Delivery slices:** freeze completion command/event/factory first; then complete codec and
 projection/engine work under separate ownership; only after both converge publish move and
 completion membership together; finish with the public fog/replay vertical. Task 008 remains one
@@ -534,7 +541,7 @@ serial integration gate even where its codec and projector work can be prepared 
 
 ### `MOV-TASK-009` - Adopt Movement in Exercise and Maneuver evidence
 
-**Status:** Blocked by `MOV-TASK-008`
+**Status:** Next; unblocked by completed `MOV-TASK-008`
 
 **Advances:** `MOV-REQ-012`; `MOV-AC-012`, `MOV-AC-013`
 
@@ -590,12 +597,12 @@ three before the full gate and brand-new independent review.
 | `MOV-REQ-003` content mobility | 003 | 003 | content identity/validation | Implemented in Task 003 |
 | `MOV-REQ-004` operational state | 004-005 | 004, 007 | snapshot/replay | Initial state and outward projection implemented through Task 005; phase-specific moved-state admission and replay implemented in Task 007 |
 | `MOV-REQ-005` representation/contact | 001-002, 006 | 001, 004-005 | privacy/differential/readback tests | Internal representation implemented in Task 004; three-field apparent projection and exact own risk active in Task 005 |
-| `MOV-REQ-006` candidates | 005, 007 | 006, 008 | action/fog tests | Dormant typed candidates, exact costs, identities, and pure vectors implemented in Task 006; public membership remains Task 008 |
-| `MOV-REQ-007` submission/command | 005-007 | 006-008 | forged/stale tests | Generic submission readback and internal command/adjudication implemented through Task 007; public mapping remains Task 008 |
+| `MOV-REQ-006` candidates | 005, 007 | 006, 008 | action/fog tests | Typed candidates, exact costs, identities, pure observation derivation, and atomic public membership implemented through Task 008 |
+| `MOV-REQ-007` submission/command | 005-007 | 006-008 | forged/stale tests | Generic submission readback, exact public membership mapping, and internal command/adjudication implemented through Task 008 |
 | `MOV-REQ-008` move event | 004-007 | 007 | event/projector/replay | Canonical event, authoritative creation, atomic projection, and repeatable replay implemented in Task 007 |
-| `MOV-REQ-009` completion | 005 | 008 | exact successor tests | Approved; implementation pending |
-| `MOV-REQ-010` canonical contracts | 004, 006 | 002-008 | golden/strict reader tests | Rules/world/history implemented through 004B; outward strict readers active through Task 006; ElementMoved strict codec and moved snapshots active in Task 007 |
-| `MOV-REQ-011` replay/fog | 001, 006 | 004-008 | replay/privacy tests | Conditional same-apparent privacy complete in Task 005; zero/one/many internal Movement replay complete in Task 007; public submission re-adjudication remains Task 008 |
+| `MOV-REQ-009` completion | 005 | 008 | exact successor tests | Completion command/event/codec/execution/projection implemented in Task 008 with exact Breakdown successor and no public Breakdown action |
+| `MOV-REQ-010` canonical contracts | 004, 006 | 002-008 | golden/strict reader tests | Rules/world/history implemented through 004B; outward strict readers active through Task 006; `ElementMoved` and `MovementSegmentCompleted` strict codecs plus moved/completed snapshots active through Task 008 |
+| `MOV-REQ-011` replay/fog | 001, 006 | 004-008 | replay/privacy tests | Same-apparent public-action equivalence, zero/one/many Movement-plus-completion replay, and exact current-membership submission revalidation complete through Task 008 |
 | `MOV-REQ-012` Exercise evidence | 008 | 009 | project/full tests + CLI runs | Approved; implementation pending |
 
 ## Review focus

@@ -57,6 +57,8 @@ internal static class CampaignProjector
             ReserveDesignationCompleted completed =>
                 ApplyReserveCompletion(snapshot, completed, context),
             ElementMoved moved => ApplyMovement(snapshot, moved, context),
+            MovementSegmentCompleted completed =>
+                ApplyMovementCompletion(snapshot, completed, context),
             CampaignSequenceAdvanced => throw new InvalidCampaignHistoryException(
                 "Legacy generic sequence events are not valid current campaign history."),
             _ => throw new InvalidCampaignHistoryException("Unsupported campaign event type."),
@@ -571,6 +573,62 @@ internal static class CampaignProjector
         {
             throw new InvalidCampaignHistoryException(
                 "The ElementMoved event produces invalid campaign state.");
+        }
+
+        return projected;
+    }
+
+    private static CampaignSnapshot ApplyMovementCompletion(
+        CampaignSnapshot? snapshot,
+        MovementSegmentCompleted completed,
+        CampaignContentContext context)
+    {
+        if (snapshot is null)
+        {
+            throw new InvalidCampaignHistoryException(
+                "A Movement completion event cannot precede campaign creation.");
+        }
+
+        MovementSegmentCompleted expected;
+        try
+        {
+            expected = CampaignMovementEventFactory.CreateCompletion(
+                snapshot,
+                context,
+                new CompleteMovementSegment(
+                    snapshot.StateVersion,
+                    snapshot.SequencePosition.PositionId,
+                    completed.ActingSide));
+
+            if (!CampaignEventSerializer.Serialize(completed).SequenceEqual(
+                    CampaignEventSerializer.Serialize(expected)))
+            {
+                throw new InvalidCampaignHistoryException(
+                    "The Movement completion event is inconsistent with campaign history.");
+            }
+        }
+        catch (InvalidCampaignHistoryException)
+        {
+            throw;
+        }
+        catch (Exception exception) when (exception is ArgumentException
+            or ArithmeticException
+            or InvalidOperationException
+            or System.Text.Json.JsonException)
+        {
+            throw new InvalidCampaignHistoryException(exception.Message);
+        }
+
+        var projected = snapshot with
+        {
+            StateVersion = completed.StateVersion,
+            SequencePosition = completed.SequencePosition,
+        };
+
+        if (!CampaignSnapshotValidator.IsValid(projected, context))
+        {
+            throw new InvalidCampaignHistoryException(
+                "The Movement completion event produces invalid campaign state.");
         }
 
         return projected;

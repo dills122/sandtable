@@ -1,7 +1,7 @@
 # Movement Foundation v1 Specification
 
-**Status:** Active implementation baseline; `MOV-TASK-007` internal non-contact adjudication is
-implemented and verified; `MOV-TASK-008` is next
+**Status:** Active implementation baseline; `MOV-TASK-008` public non-contact Movement and
+completion are implemented and verified; `MOV-TASK-009` is next
 
 **Date:** 2026-08-25
 
@@ -47,7 +47,7 @@ It excludes:
 - attachments, dummy formations, Patrol, reconnaissance knowledge, or published content; and
 - any model-backed or free-text interpretation inside authoritative execution.
 
-### Current Task 007 delivery boundary
+### Task 007 internal-authority boundary
 
 Task 007 implements the internal `MoveElement` command, canonical `ElementMoved` event,
 authoritative Content/Rules recalculation, engine dispatch, atomic world projection, phase-specific
@@ -57,6 +57,23 @@ move remains at the same first-side Movement position, increments state version 
 the element, its internal map representation, and its exact Operation-Stage expenditure together.
 Public Movement action membership and submission mapping remain empty/unsupported until Task 008;
 completion to Breakdown Determination also remains Task 008.
+
+### Current Task 008 delivery boundary
+
+Task 008 adds the contract-1 `CompleteMovementSegment` command and canonical
+`MovementSegmentCompleted` event, strict event readback, engine dispatch, exact successor
+validation, and projection to the first-side Breakdown Determination checkpoint. Completion
+increments state once while preserving the world and random state by identity and value. The
+Breakdown checkpoint is replay-admitted but publishes no Breakdown action.
+
+The public side action set now calls the existing observation-only Movement derivation and
+publishes its supported moves and exactly one completion together. The generic contract-1
+submission envelope maps exact current membership to either `MoveElement` or
+`CompleteMovementSegment`; both paths revalidate current state, position, audience, and action ID.
+Zero, one, or many moves may precede completion. Stale, repeated, wrong-side, forged, malformed,
+or no-longer-current submissions produce no event, receipt, successor, world mutation, or random
+mutation. Byte-identical acting-side observations continue to produce byte-identical public action
+sets even when hidden authority differs.
 
 ### Breakdown continuity gate
 
@@ -384,6 +401,7 @@ format v3, world v4, snapshot v9, and creation event v8. `MOV-TASK-005` freezes 
 contract 5 and the Movement-side-safe policy. `MOV-TASK-006` freezes dormant typed Movement
 candidates, exact side-safe cost structure, deterministic identity, pure derivation, and strict
 non-authoritative legal-action/submission/receipt readback while keeping public Movement membership
-empty. `MOV-TASK-007` now implements the internal command/event/adjudication, canonical codec,
-atomic projection, strict moved-state admission, and deterministic replay. `MOV-TASK-008` remains
-the next public move-and-completion vertical.
+empty. `MOV-TASK-007` implements the internal command/event/adjudication, canonical codec, atomic
+projection, strict moved-state admission, and deterministic replay. `MOV-TASK-008` publishes the
+complete observation-derived move-and-completion vertical and reaches replay-valid Breakdown
+Determination. `MOV-TASK-009` remains the next checked Exercise/Maneuver evidence task.

@@ -152,6 +152,10 @@ internal static class CampaignEngine
                 complete,
                 context),
             MoveElement move => DecideMovement(snapshot, move, context),
+            CompleteMovementSegment complete => DecideMovementCompletion(
+                snapshot,
+                complete,
+                context),
             CompleteCurrentSequenceStep advance => DecideAdvance(snapshot, advance),
             _ => CampaignCommandResult.Reject(CampaignCommandRejectionReason.InvalidCommand),
         };
@@ -550,6 +554,57 @@ internal static class CampaignEngine
         {
             return CampaignCommandResult.Accept(
                 CampaignMovementEventFactory.Create(snapshot, context, command));
+        }
+        catch (InvalidOperationException)
+        {
+            return CampaignCommandResult.Reject(
+                CampaignCommandRejectionReason.UnsupportedTransition);
+        }
+        catch (Exception exception) when (exception is ArgumentException
+            or ArithmeticException)
+        {
+            return CampaignCommandResult.Reject(
+                CampaignCommandRejectionReason.InvalidState);
+        }
+    }
+
+    private static CampaignCommandResult DecideMovementCompletion(
+        CampaignSnapshot? snapshot,
+        CompleteMovementSegment command,
+        CampaignContentContext context)
+    {
+        var rejection = ValidateCurrent(
+            snapshot,
+            command.ContractVersion,
+            command.ExpectedStateVersion,
+            command.ExpectedPositionId);
+        if (rejection != CampaignCommandRejectionReason.None)
+        {
+            return CampaignCommandResult.Reject(rejection);
+        }
+
+        if (!Enum.IsDefined(command.ActingSide))
+        {
+            return CampaignCommandResult.Reject(
+                CampaignCommandRejectionReason.InvalidCommand);
+        }
+
+        if (snapshot!.OperationStage != 1
+            || snapshot.PhaseId != LandPhaseIds.MovementAndCombat
+            || snapshot.SegmentId != LandSegmentIds.Movement
+            || snapshot.SequencePosition.ActorRole != LandActorRole.FirstActingSide)
+        {
+            return CampaignCommandResult.Reject(
+                CampaignCommandRejectionReason.UnsupportedTransition);
+        }
+
+        try
+        {
+            return CampaignCommandResult.Accept(
+                CampaignMovementEventFactory.CreateCompletion(
+                    snapshot,
+                    context,
+                    command));
         }
         catch (InvalidOperationException)
         {

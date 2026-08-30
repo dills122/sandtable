@@ -233,12 +233,18 @@ public sealed class CampaignLegalActionsTests
         Assert.Equal(observer == expectedFirstSide ? 3 : 0,
             Query(reserve, audience).Candidates.Count);
         Assert.Equal(LandSegmentIds.Movement, baseline[^1].SegmentId);
-        Assert.Empty(Query(
+        var movementBaseline = Query(
             new CampaignAuthorityHandle(baseline[^1], pair.BaselineContext),
-            audience).Candidates);
-        Assert.Empty(Query(
+            audience);
+        var movementChanged = Query(
             new CampaignAuthorityHandle(changed[^1], pair.ChangedContext),
-            audience).Candidates);
+            audience);
+        Assert.Equal(
+            observer == FirstActingSideResolver.Resolve(baseline[^1]),
+            movementBaseline.Candidates.Count > 0);
+        Assert.Equal(
+            CampaignLegalActionSerializer.Serialize(movementBaseline),
+            CampaignLegalActionSerializer.Serialize(movementChanged));
     }
 
     [Fact]

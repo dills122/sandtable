@@ -129,8 +129,12 @@ internal static class CampaignSnapshotValidator
         var isMovement = snapshot.SequencePosition.PhaseId
                 == LandPhaseIds.MovementAndCombat
             && snapshot.SequencePosition.SegmentId == LandSegmentIds.Movement;
+        var isBreakdown = snapshot.SequencePosition.PhaseId
+                == LandPhaseIds.MovementAndCombat
+            && snapshot.SequencePosition.SegmentId
+                == LandSegmentIds.BreakdownDetermination;
 
-        if (!isReserve && !isMovement)
+        if (!isReserve && !isMovement && !isBreakdown)
         {
             return CampaignWorldValidator.IsValidInitial(
                 snapshot.World,
@@ -141,7 +145,7 @@ internal static class CampaignSnapshotValidator
         try
         {
             var firstSide = FirstActingSideResolver.Resolve(snapshot);
-            return isMovement
+            return isMovement || isBreakdown
                 ? CampaignWorldValidator.IsValidMovement(
                     snapshot.World,
                     context.Artifact,
@@ -165,6 +169,7 @@ internal static class CampaignSnapshotValidator
         const int reserveEntryStateVersion = 10;
         var reservePosition = positions[reserveEntryStateVersion - 1];
         var movementPosition = Cna1979LandSequence.GetNext(reservePosition);
+        var breakdownPosition = Cna1979LandSequence.GetNext(movementPosition);
         var reserveICount = snapshot.World.Elements.Count(element =>
             element.ReserveStatus == CampaignElementReserveStatus.ReserveI);
         var containsUnsupportedStatus = snapshot.World.Elements.Any(element =>
@@ -172,6 +177,7 @@ internal static class CampaignSnapshotValidator
         var containsExpenditure = snapshot.World.Elements.Any(element =>
             element.OperationalState.CapabilityPointsExpended
                 != CapabilityPointAmount.Zero);
+        var movementEntryStateVersion = reserveEntryStateVersion + reserveICount + 1;
 
         if (containsUnsupportedStatus
             || (snapshot.StateVersion < reserveEntryStateVersion
@@ -186,12 +192,18 @@ internal static class CampaignSnapshotValidator
                         && !containsExpenditure)
                     || (snapshot.SequencePosition == movementPosition
                         && snapshot.StateVersion
-                            >= reserveEntryStateVersion + reserveICount + 1
+                            >= movementEntryStateVersion
                         && ((snapshot.StateVersion
-                                    == reserveEntryStateVersion + reserveICount + 1
+                                    == movementEntryStateVersion
                                 && !containsExpenditure)
                             || (snapshot.StateVersion
-                                    > reserveEntryStateVersion + reserveICount + 1
+                                    > movementEntryStateVersion
+                                && containsExpenditure)))
+                    || (snapshot.SequencePosition == breakdownPosition
+                        && snapshot.StateVersion >= movementEntryStateVersion + 1
+                        && ((snapshot.StateVersion == movementEntryStateVersion + 1
+                                && !containsExpenditure)
+                            || (snapshot.StateVersion > movementEntryStateVersion + 1
                                 && containsExpenditure))))))
         {
             return false;

@@ -69,6 +69,10 @@ internal static class CampaignEventSerializer
                     ValidateMovement(moved);
                     WriteMovement(writer, moved);
                     break;
+                case MovementSegmentCompleted completed:
+                    ValidateMovementCompletion(completed);
+                    WriteMovementCompletion(writer, completed);
+                    break;
                 default:
                     throw new JsonException("The campaign event type is not serializable.");
             }
@@ -102,6 +106,7 @@ internal static class CampaignEventSerializer
                 "reserve-element-designated" => ParseReserveDesignation(root),
                 "reserve-designation-completed" => ParseReserveCompletion(root),
                 "element-moved" => ParseMovement(root),
+                "movement-segment-completed" => ParseMovementCompletion(root),
                 _ => throw new JsonException($"Unknown campaign event type '{eventType}'."),
             };
 
@@ -296,6 +301,24 @@ internal static class CampaignEventSerializer
         CampaignSnapshotSerializer.WritePosition(writer, moved.SequencePosition);
     }
 
+    private static void WriteMovementCompletion(
+        Utf8JsonWriter writer,
+        MovementSegmentCompleted completed)
+    {
+        writer.WriteNumber("contractVersion", completed.ContractVersion);
+        writer.WriteString("eventType", "movement-segment-completed");
+        writer.WriteString("campaignId", completed.CampaignId);
+        writer.WriteNumber("stateVersion", completed.StateVersion);
+        writer.WriteNumber("priorStateVersion", completed.PriorStateVersion);
+        writer.WriteString("fromPositionId", completed.FromPositionId);
+        writer.WriteNumber("gameTurn", completed.GameTurn);
+        writer.WriteNumber("operationStage", completed.OperationStage);
+        writer.WriteString(
+            "actingSide",
+            CampaignSnapshotSerializer.FormatSide(completed.ActingSide));
+        CampaignSnapshotSerializer.WritePosition(writer, completed.SequencePosition);
+    }
+
     private static void WriteMovementCost(
         Utf8JsonWriter writer,
         CampaignMovementCost cost)
@@ -404,6 +427,41 @@ internal static class CampaignEventSerializer
 
         ValidateMovement(moved);
         return moved;
+    }
+
+    private static MovementSegmentCompleted ParseMovementCompletion(JsonElement root)
+    {
+        CampaignSnapshotSerializer.RequireProperties(
+            root,
+            "contractVersion",
+            "eventType",
+            "campaignId",
+            "stateVersion",
+            "priorStateVersion",
+            "fromPositionId",
+            "gameTurn",
+            "operationStage",
+            "actingSide",
+            "sequencePosition");
+        if (root.GetProperty("contractVersion").GetInt32() != 1)
+        {
+            throw new JsonException(
+                "The MovementSegmentCompleted event contract version is invalid.");
+        }
+
+        var completed = new MovementSegmentCompleted(
+            root.GetProperty("campaignId").GetString()!,
+            root.GetProperty("stateVersion").GetInt64(),
+            root.GetProperty("priorStateVersion").GetInt64(),
+            root.GetProperty("fromPositionId").GetString()!,
+            root.GetProperty("gameTurn").GetInt32(),
+            root.GetProperty("operationStage").GetInt32(),
+            CampaignSnapshotSerializer.ParseSide(
+                root.GetProperty("actingSide").GetString()),
+            CampaignSnapshotSerializer.ParsePosition(
+                root.GetProperty("sequencePosition")));
+        ValidateMovementCompletion(completed);
+        return completed;
     }
 
     private static CampaignMovementCost ParseMovementCost(JsonElement cost)
@@ -527,6 +585,22 @@ internal static class CampaignEventSerializer
             or InvalidOperationException)
         {
             throw new JsonException("The ElementMoved event contract is invalid.", exception);
+        }
+    }
+
+    private static void ValidateMovementCompletion(MovementSegmentCompleted completed)
+    {
+        try
+        {
+            completed.ValidateContract();
+        }
+        catch (Exception exception) when (exception is ArgumentException
+            or ArithmeticException
+            or InvalidOperationException)
+        {
+            throw new JsonException(
+                "The MovementSegmentCompleted event contract is invalid.",
+                exception);
         }
     }
 

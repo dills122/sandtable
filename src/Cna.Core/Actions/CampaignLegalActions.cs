@@ -81,6 +81,16 @@ public static class CampaignLegalActions
                 .ToArray();
         }
 
+        if (observation.Position.StageId == LandStageIds.Operation
+            && observation.Position.PhaseId == LandPhaseIds.MovementAndCombat
+            && observation.Position.SegmentId == LandSegmentIds.Movement
+            && observation.Position.OperationStage == 1
+            && observation.Position.ActorRole == LandActorRole.FirstActingSide
+            && observation.Position.ActiveSide == observer)
+        {
+            return CampaignMovementActionDerivation.Derive(observation).ToArray();
+        }
+
         return [];
     }
 

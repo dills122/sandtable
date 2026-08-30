@@ -93,10 +93,24 @@ public sealed class CampaignReserveCompletionTests
             CampaignSnapshotSerializer.Serialize(successor),
             CampaignSnapshotSerializer.Serialize(replayed));
 
-        foreach (var queryAudience in Enum.GetValues<CampaignActionAudience>())
-        {
-            Assert.Empty(Query(successor, evidence.Context, queryAudience).Candidates);
-        }
+        var actingActions = Query(successor, evidence.Context, audience);
+        Assert.Single(actingActions.Candidates
+            .OfType<CompleteMovementSegmentAction>());
+        Assert.Equal(2 - selectedCount,
+            actingActions.Candidates.OfType<MoveElementAction>()
+                .Select(candidate => candidate.ElementId)
+                .Distinct(StringComparer.Ordinal)
+                .Count());
+        Assert.Empty(Query(
+            successor,
+            evidence.Context,
+            audience == CampaignActionAudience.Axis
+                ? CampaignActionAudience.Commonwealth
+                : CampaignActionAudience.Axis).Candidates);
+        Assert.Empty(Query(
+            successor,
+            evidence.Context,
+            CampaignActionAudience.System).Candidates);
     }
 
     [Fact]

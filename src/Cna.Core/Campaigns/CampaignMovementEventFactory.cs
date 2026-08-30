@@ -7,6 +7,37 @@ namespace Cna.Core.Campaigns;
 
 internal static class CampaignMovementEventFactory
 {
+    public static MovementSegmentCompleted CreateCompletion(
+        CampaignSnapshot snapshot,
+        CampaignContentContext context,
+        CompleteMovementSegment command)
+    {
+        ArgumentNullException.ThrowIfNull(snapshot);
+        ArgumentNullException.ThrowIfNull(context);
+        ArgumentNullException.ThrowIfNull(command);
+
+        if (command.ContractVersion != 1 || !Enum.IsDefined(command.ActingSide))
+        {
+            throw Unsupported("The Movement completion command contract is unsupported.");
+        }
+
+        _ = ContentContractGuards.RequireStableId(
+            command.ExpectedPositionId,
+            nameof(command.ExpectedPositionId));
+        ValidateCompletionAuthority(snapshot, context, command);
+        var successor = Cna1979LandSequence.GetNext(snapshot.SequencePosition);
+
+        return new MovementSegmentCompleted(
+            snapshot.CampaignId,
+            checked(snapshot.StateVersion + 1),
+            snapshot.StateVersion,
+            snapshot.SequencePosition.PositionId,
+            snapshot.GameTurn,
+            snapshot.OperationStage,
+            command.ActingSide,
+            successor);
+    }
+
     public static ElementMoved Create(
         CampaignSnapshot snapshot,
         CampaignContentContext context,
@@ -289,6 +320,28 @@ internal static class CampaignMovementEventFactory
             || FirstActingSideResolver.Resolve(snapshot) != command.ActingSide)
         {
             throw Unsupported("Movement authority is not admitted.");
+        }
+    }
+
+    private static void ValidateCompletionAuthority(
+        CampaignSnapshot snapshot,
+        CampaignContentContext context,
+        CompleteMovementSegment command)
+    {
+        if (command.ExpectedStateVersion != snapshot.StateVersion
+            || !CampaignSnapshotValidator.IsValid(snapshot, context)
+            || !string.Equals(
+                command.ExpectedPositionId,
+                snapshot.SequencePosition.PositionId,
+                StringComparison.Ordinal)
+            || snapshot.OperationStage != 1
+            || snapshot.PhaseId != LandPhaseIds.MovementAndCombat
+            || snapshot.SegmentId != LandSegmentIds.Movement
+            || snapshot.SequencePosition.ActorRole != LandActorRole.FirstActingSide
+            || snapshot.SequencePosition.ActiveSide is not null
+            || FirstActingSideResolver.Resolve(snapshot) != command.ActingSide)
+        {
+            throw Unsupported("Movement completion authority is not admitted.");
         }
     }
 
