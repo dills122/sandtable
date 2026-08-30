@@ -50,7 +50,7 @@ owner choice open and block contract freeze. No ruling remains escalated.
 | `ZOR-DEC-001` | Multiple-reactor ordering | **Accept** | The reacting player selects the next eligible own Reaction opportunity. Candidate serialization is canonical by stable opportunity/action identity; it is not an automatic resolution priority. Once selected, that participant completes its episode before another begins. | Umpire-selected order, hidden strength/CPA priority, map enumeration order, or simultaneous mutation |
 | `ZOR-DEC-002` | Repeat Reaction eligibility | **Accept** | One representation may open at most one episode per trigger window. An episode contains one or more legal movement steps and ends explicitly. A later committed enemy move creates a new trigger, and the representation may react again during the same Operation Stage if all current restrictions still pass. | One Reaction per Operation Stage; treating every adjacent step as an independent repeat opportunity; reopening a completed participant in the same window |
 | `ZOR-DEC-003` | Decline scope and persistence | **Accept** | One explicit close/decline action closes the entire current window and declines all unresolved opportunities. The closure is permanent for that trigger only. A deterministic timeout/unavailable fallback uses the same authoritative closure with a distinct internal closure reason, no CP/BP/RNG change, and no revealed eligibility list. | Mandatory per-unit pass actions; a decline that survives into later triggers; silent timeout advancement; automatic Reaction routes |
-| `ZOR-DEC-004` | Waiting and hidden-information visibility | **Accept** | The phasing side receives only a generic `awaiting-opponent-reaction` state tied to the public window identity. The reacting side receives exact own opportunities plus the trigger's apparent representation ID, origin, and destination. Neither side receives the real binding, Movement costs, route adjustments, intermediate path, hidden eligible-opponent list, eligibility count, excluded-unit reasons, or internal closure/fallback reason. | Publishing the authoritative window, real binding, candidate count, decline rationale, path/cost internals, or eligibility failures |
+| `ZOR-DEC-004` | Waiting and hidden-information visibility | **Accept** | The phasing side receives only a generic `awaiting-opponent-reaction` state and retains its already-authorized own Movement candidate/ledger facts. The reacting side receives exact own opportunity membership plus the trigger's apparent representation ID, origin, and destination, but not the trigger's real binding, costs, route adjustments, intermediate path, hidden excluded-unit reasons, or internal closure/fallback reason. The phasing side receives no eligible-reactor list or count. | Publishing the authoritative window, real binding, eligibility rationale, or opponent path/cost internals; stripping already-known own Movement facts from the phasing side |
 | `ZOR-DEC-005` | Positive-ZOC vocabulary and authority | **Accept** | Rules own the source-cited ZOC predicate and exclusions; Content owns immutable primitive source facts; Campaign owns current location, representation/attachment binding, Cohesion, and current combat capability; the Umpire derives controlled edges/hexes. The outward `exertsZoc` value remains a derived apparent fact. The first positive fixture uses two combat battalion-equivalents in one hex with a combined stacking value greater than one and at least ten current raw defensive Close Assault Points. | CPA, organization alone, a content boolean, an observation field, or an Intelligence proposal as ZOC authority |
 
 ## Source index and precedence
@@ -162,6 +162,12 @@ and its authoritative reacting representation identity. An outward action ID add
 current action semantics. Real element bindings remain internal. Candidate arrays use ordinal
 canonical ordering; event order records the reacting player's actual choices.
 
+Exact own Reaction-opportunity membership is an approved derived fact in the reacting-side window
+observation. It may depend on frozen authoritative eligibility inputs that are not themselves
+outward, including Rule 8.53's comparison with the triggering enemy mover's CPA. The observation and
+candidate may disclose that the reacting representation has an opportunity; they must not disclose
+the enemy CPA, threshold calculation, failed alternative, real binding, or exclusion reason.
+
 ### Persisted state machine
 
 ```text
@@ -241,14 +247,17 @@ its new committed pre-state.
 | Real trigger binding | Exact representation/element binding in Umpire event/state | Never | Never |
 | Window identity/state | Exact trigger, sides, eligibility basis, active/resolved set | Stable public window ID and current own decision state | Stable public window ID and generic waiting/closed state |
 | Eligible reactors | Exact frozen authoritative basis | Exact own legal opportunities | Absent, including count |
-| Triggering force | Exact real binding/path/cost | Apparent representation ID plus origin and destination only | Own mover, origin, and destination already known to that side |
+| Triggering force | Exact real binding/path/cost | Apparent representation ID plus origin and destination only | Retains already-authorized own Movement candidate semantics and post-move ledger facts; the waiting shape adds no opponent fact |
 | Decline/fallback reason | Exact internal closure kind | Absent from observation and projected history; an explicit player action remains known through its own submission/receipt | Absent from observation and projected history |
 | Chronicle | Complete event truth | Separate redacted projection | Separate redacted projection |
 
 Two authorities that produce byte-identical facts for an audience must produce byte-identical
-observations and action sets for that audience. A hidden eligibility or binding difference may
-change authoritative truth and the reacting side's own candidates, but it must not alter the
-phasing side's generic waiting shape.
+observations and action sets for that audience. For the reacting side, exact own opportunity
+membership is itself an approved derived observation fact: a hidden enemy-CPA change may add or
+remove that membership, but the observable delta is confined to the own opportunity identity and
+matching candidate membership. Candidate payloads, rejection reasons, and projected history still
+contain no enemy CPA, threshold, binding, or exclusion reason. The same hidden eligibility change
+must not alter the phasing side's observation or generic waiting shape.
 
 ## Positive-ZOC vocabulary and first fixture
 
@@ -332,9 +341,13 @@ must not bypass their dependency order or move Contact/Engaged into Sprint 4.
    trigger. A trigger with zero eligible reactors creates the same generic window at `N+1`, closes
    through one deterministic no-cost/no-RNG event at `N+2`, and exposes neither count nor reason.
 7. Phasing-side observations are byte-identical for hidden eligible-reactor permutations and
-   counts. Reacting-side action sets change only with approved own/trigger-apparent facts.
+   counts. A hidden enemy-CPA change that crosses Rule 8.53's threshold changes the reacting-side
+   observation only by exact own opportunity membership and changes the matching candidate set;
+   neither artifact exposes CPA, threshold, binding, failed alternatives, or exclusion reason.
 8. The reacting-side trigger projection contains only apparent representation ID, origin, and
-   destination. Costs, route adjustments, intermediate path, binding, and closure reason are absent.
+   destination. Trigger costs, route adjustments, intermediate path, binding, and closure reason
+   are absent. The phasing side retains its already-received own Movement candidate/cost semantics
+   and post-move own ledger facts; the waiting projection removes none of them.
 9. Stale, duplicate, wrong-window, wrong-side, forged-identity, completed-participant, and closed-
    window submissions emit zero events.
 10. A positive fixture controls exactly the permitted adjacent locations; every named qualification
@@ -370,6 +383,9 @@ must not bypass their dependency order or move Contact/Engaged into Sprint 4.
 - Exact human-facing prose may vary, but observation/history contracts must never expose the
   internal closure reason. The reacting player's own explicit decline remains knowable only through
   its submitted action and receipt.
+- The contract does not claim that wall-clock duration is indistinguishable between an automatic
+  empty-window close and a human-owned window. It fixes canonical state/event/projection content and
+  forbids count/reason fields; later hosting must assess timing metadata separately.
 - The central roadmap still describes the five rulings as open. This lane intentionally does not
   edit shared roadmap text; the planning owner must synchronize that status when this decision is
   accepted into the central plan.
