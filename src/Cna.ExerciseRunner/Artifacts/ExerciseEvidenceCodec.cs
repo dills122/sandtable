@@ -169,6 +169,22 @@ public static class ExerciseEvidenceCodec
         "gameTurn", "operationStage", "actingSide", "sequencePosition", "sources",
     ];
 
+    private static readonly string[] MovementEventProperties =
+    [
+        "contractVersion", "eventType", "campaignId", "stateVersion", "priorStateVersion",
+        "fromPositionId", "gameTurn", "operationStage", "actingSide", "elementId",
+        "representationId", "originLocationId", "destinationLocationId", "mobilityId",
+        "mobilitySources", "cost", "capabilityPointsExpendedBefore",
+        "capabilityPointsExpendedAfter", "cohesionBefore", "cohesionAfter",
+        "sequencePosition",
+    ];
+
+    private static readonly string[] MovementCompletionEventProperties =
+    [
+        "contractVersion", "eventType", "campaignId", "stateVersion", "priorStateVersion",
+        "fromPositionId", "gameTurn", "operationStage", "actingSide", "sequencePosition",
+    ];
+
     public static IReadOnlyList<ExerciseAcceptedActionRecord> DeserializeAcceptedActions(
         ReadOnlyMemory<byte> canonicalJsonLines) =>
         Array.AsReadOnly(ReadRecords(canonicalJsonLines)
@@ -301,6 +317,8 @@ public static class ExerciseEvidenceCodec
             "weather-determined" => (1, WeatherEventProperties),
             "reserve-element-designated" => (1, ReserveDesignationEventProperties),
             "reserve-designation-completed" => (1, ReserveCompletionEventProperties),
+            "element-moved" => (1, MovementEventProperties),
+            "movement-segment-completed" => (1, MovementCompletionEventProperties),
             _ => throw new JsonException("Unknown canonical campaign event type."),
         };
         StrictJson.RequireExactProperties(root, expectedProperties);

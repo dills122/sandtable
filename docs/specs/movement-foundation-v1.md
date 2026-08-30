@@ -1,7 +1,8 @@
 # Movement Foundation v1 Specification
 
-**Status:** Active implementation baseline; `MOV-TASK-008` public non-contact Movement and
-completion are implemented and verified; `MOV-TASK-009` is next
+**Status:** Active implementation baseline; `MOV-TASK-009` executable Movement evidence is
+implemented and verified locally, with PR merge and integration evidence provisional;
+`MOV-TASK-010` remains blocked until that merge
 
 **Date:** 2026-08-25
 
@@ -13,7 +14,8 @@ completion are implemented and verified; `MOV-TASK-009` is next
 [Campaign Observation v1](campaign-observation-v1.md), and
 [Exercise Harness v1](exercise-harness-v1.md)
 
-**Research:** [Movement Foundation Spike](../research/movement-foundation-spike.md)
+**Research:** [Movement Foundation Spike](../research/movement-foundation-spike.md) and
+[Movement Simulator Trajectories](../research/simulator-movement-trajectories.md)
 
 **Technical design:** [Movement Foundation v1](../design/movement-foundation-v1.md)
 
@@ -74,6 +76,44 @@ Zero, one, or many moves may precede completion. Stale, repeated, wrong-side, fo
 or no-longer-current submissions produce no event, receipt, successor, world mutation, or random
 mutation. Byte-identical acting-side observations continue to produce byte-identical public action
 sets even when hidden authority differs.
+
+### Current Task 009 evidence boundary
+
+Task 009 keeps Exercise manifest, serial-unpaired Maneuver, and controller-configuration identities
+at v2. It adds six closed controller tokens without changing existing token bytes or behavior:
+
+- `act-first-reserve-none-move-each-once-then-complete`;
+- `act-first-reserve-one-move-each-once-then-complete`;
+- `act-first-reserve-all-move-each-once-then-complete`;
+- `act-last-reserve-none-move-each-once-then-complete`;
+- `act-last-reserve-one-move-each-once-then-complete`; and
+- `act-last-reserve-all-move-each-once-then-complete`.
+
+The Runner-local controller candidate advances to v2. Reserve designation retains its existing own
+`elementId`; a move candidate requires own `elementId`, `originLocationId`, and
+`destinationLocationId`. Existing v1 candidates reject rather than being inferred. The runner
+records an element only after its move is accepted, selects the stable supported route for each
+not-yet-moved eligible element, and then submits the exact current completion action. It still
+selects only from the current observation-derived public action set and uses the ordinary submission
+path. No one-move restriction is added to Core.
+The stable route order is ordinal `elementId`, `destinationLocationId`, `originLocationId`, then
+`actionId`; a semantic-order change requires a new controller token/configuration identity.
+
+The checked `scenarios/maneuvers/rules-lab.movement.serial.v2.json` Maneuver has six children. Every
+child accepts 13 actions and 13 events, records 94 passed checks, and reaches the exact first-side
+Breakdown Determination checkpoint without inventing a Breakdown action. Per initiative branch,
+Reserve `none`/`one`/`all` retains 0/1/2 designations and 2/1/0 moves. The `none` path moves element A
+to the center for exact CP cost 8 and element B on its supported route for cost 1; `one` moves B for
+cost 1; `all` moves neither. Across both initiative branches this is 78 actions/events, six Reserve
+designations, six Reserve completions, six moves, six Movement completions, and exact final CP
+expenditure 20. Reconstruction and fresh-session re-adjudication reproduce each retained child.
+
+Strict bundle/report readback validates those action, event, move, Reserve, ledger, terminal, and
+proof facts and rejects malformed, inconsistent, noncanonical, or rehashed-tampered evidence. A
+local probe produced aggregate fingerprint
+`sha256:c1c20270dcd3402886931c28851bea7f23cd1e0778b45f94c43d85ed01d41c4b`; the required two clean
+CLI executions must reconfirm it before Task 009 delivery is final. The aggregate fingerprint does
+not bind the detailed child event or ledger bytes, so child semantic validation remains mandatory.
 
 ### Breakdown continuity gate
 
@@ -311,8 +351,13 @@ For each child it must retain:
 - reconstruction and re-adjudication equality; and
 - strict artifact/report readback.
 
-The expected Movement action counts and aggregate fingerprint are frozen only after implementation
-and review; this draft does not invent them.
+Every child accepts exactly 13 actions and events, records 94 passed checks, and terminates at the
+exact first-side Breakdown Determination checkpoint. Reserve `none`/`one`/`all` retains 0/1/2
+designations and 2/1/0 moves in each initiative branch. Aggregate evidence contains 78 actions and
+events, six Reserve designations, six Reserve completions, six moves, six Movement completions, and
+exact final CP expenditure 20. The frozen aggregate fingerprint is
+`sha256:c1c20270dcd3402886931c28851bea7f23cd1e0778b45f94c43d85ed01d41c4b`, subject to the required
+two clean-run reconfirmation before final Task 009 delivery.
 
 ### `MOV-REQ-013` - Exact Breakdown Point rules identity
 
@@ -376,7 +421,7 @@ that future mutation-time coherence validator.
 | `MOV-AC-009` | Completion with zero or more accepted moves advances exactly once to Breakdown Determination and preserves the world. |
 | `MOV-AC-010` | Snapshot/event/observation/action canonical bytes and strict readers cover every new versioned field and invariant. |
 | `MOV-AC-011` | Replay and re-adjudication produce exact canonical equality for no-move and multi-move histories. |
-| `MOV-AC-012` | The checked six-policy Maneuver reaches Breakdown in every child with expected moved/reserved/ledger facts and strict readback. |
+| `MOV-AC-012` | The checked six-policy Movement Maneuver reaches exact first-side Breakdown Determination in 13 actions/events and 94 passed checks per child. Per initiative branch Reserve `none`/`one`/`all` retains 0/1/2 designations and 2/1/0 moves; aggregate evidence contains 78 actions/events, six Reserve designations and completions, six moves and Movement completions, and exact final CP expenditure 20. Reconstruction, fresh-session re-adjudication, and strict semantic bundle/report readback reproduce and validate the retained evidence. |
 | `MOV-AC-013` | Full Core, Exercise Runner, solution, format, and diff gates pass warning-clean. |
 | `MOV-AC-014` | Exact BP amounts, nine bands, Truck BAR, weather rules, attribution basis, rounding, sequential-dice domain, provenance, canonical artifact, and mutation-sensitive hash pass positive/negative golden tests without an outcome matrix or RNG/resolver path. |
 | `MOV-AC-015` | Content schema 4 / format v3 admits exactly the two supported synthetic Truck Point cohorts, keeps non-motorized cohorts null, and rejects legacy, unknown, duplicate, non-positive, or contradictory shapes. |
@@ -404,4 +449,7 @@ non-authoritative legal-action/submission/receipt readback while keeping public 
 empty. `MOV-TASK-007` implements the internal command/event/adjudication, canonical codec, atomic
 projection, strict moved-state admission, and deterministic replay. `MOV-TASK-008` publishes the
 complete observation-derived move-and-completion vertical and reaches replay-valid Breakdown
-Determination. `MOV-TASK-009` remains the next checked Exercise/Maneuver evidence task.
+Determination. `MOV-TASK-009` implements the checked Exercise/Maneuver evidence, strict Movement
+semantic readback, reconstruction and fresh-session re-adjudication, and the bounded retained
+simulator study. That evidence is locally verified but remains provisional until its PR merges and
+clean integration evidence is retained; `MOV-TASK-010` remains blocked on that merge.

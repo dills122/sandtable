@@ -30,6 +30,12 @@ public enum ExerciseControllerPolicy
     ActLastReserveNoneThenFirstByActionId,
     ActLastReserveOneThenFirstByActionId,
     ActLastReserveAllThenFirstByActionId,
+    ActFirstReserveNoneMoveEachOnceThenComplete,
+    ActFirstReserveOneMoveEachOnceThenComplete,
+    ActFirstReserveAllMoveEachOnceThenComplete,
+    ActLastReserveNoneMoveEachOnceThenComplete,
+    ActLastReserveOneMoveEachOnceThenComplete,
+    ActLastReserveAllMoveEachOnceThenComplete,
 }
 
 public enum ExerciseFailureCategory

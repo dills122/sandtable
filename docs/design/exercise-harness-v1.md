@@ -1,8 +1,8 @@
 # Exercise Harness v1 Technical Design and Delivery Plan
 
-**Status:** Task 016 implementation and repository gates are complete for the single-Exercise,
-serial-unpaired, controller-matrix, and optional serial-paired Maneuvers to first-side Movement.
-Final delivery status is established by the required fresh-context review recorded in PR evidence
+**Status:** Task 016 remains complete; `MOV-TASK-009` compatibly extends the checked Harness through
+non-contact Movement to exact first-side Breakdown Determination. Its implementation and local
+evidence are verified, with PR merge and integration evidence provisional
 
 **Date:** 2026-08-20
 
@@ -235,6 +235,11 @@ Before a requested baseline simulation, capture and verify:
 For the first runner, configuration identity is the versioned
 `sandtable.exercise-controller-configuration.v2` canonical material for the three fixed audience
 controller policies. It is distinct from the hash of the complete normalized Exercise manifest.
+Task 009 retains that identity and the existing Exercise and serial-unpaired Maneuver v2 contracts.
+Its six Movement policies are additive closed values. The Runner-local controller candidate
+advances to v2: Reserve designation retains its existing own `elementId`, while move candidates
+require own `elementId`, `originLocationId`, and `destinationLocationId`; v1 candidates reject.
+Existing policy bytes and behavior do not change.
 
 Missing Git, an unresolved HEAD commit or tree, a dirty status, unreadable assembly, or a hash
 mismatch fails before Core creation. Detached HEAD is valid when `HEAD^{commit}` and `HEAD^{tree}`
@@ -830,8 +835,9 @@ engine work. The delivered Stage Entry engine track is documented in the
 the 12-step Reserve Designation profile prove the path through canonical first-side Movement using
 the unchanged harness authority boundary. Movement Foundation Tasks 001-007 now provide the merged
 rules/content/world, dormant outward-contract, and internal non-contact adjudication/replay
-foundation. Public Movement membership and completion remain `MOV-TASK-008`; `MOV-TASK-009` owns
-Harness adoption only after that public Movement vertical lands.
+foundation. Movement Foundation Task 008 publishes observation-derived move and completion actions;
+Task 009 adopts them into Harness evidence without changing Core authority or existing Harness
+contract identities.
 
 #### `EXR-TASK-014J` — Implement the controller-policy coverage matrix
 
@@ -877,6 +883,46 @@ Harness adoption only after that public Movement vertical lands.
 - **Verify:** `EXR-AC-010`, manifest/report canonical and strict-reader tests, lifecycle tests,
   executor mismatch/isolation/repeatability tests, twice-run checked integration, complete
   ExerciseRunner and solution suites, `just check`, and independent review.
+
+#### `MOV-TASK-009` — Adopt executable Movement evidence
+
+- **Status:** implemented and verified locally; two clean-run fingerprint reconfirmations, PR merge,
+  and integration checks remain provisional. `MOV-TASK-010` remains blocked until merge.
+- **Depends on:** the merged public Movement vertical from `MOV-TASK-008`; existing serial-unpaired
+  and optional serial-paired contracts remain compatible.
+- **Primary files:** `ExerciseController.cs`, `ExerciseExecutor.cs`, manifest/configuration codecs,
+  strict bundle/report semantic readers, `scenarios/maneuvers/rules-lab.movement.serial.v2.json`,
+  focused tests, and the retained Movement simulator study.
+- **Frozen contract:** retain Exercise manifest v2, `sandtable.maneuver-manifest.v2`, and
+  `sandtable.exercise-controller-configuration.v2`; add only the six
+  `act-{first,last}-reserve-{none,one,all}-move-each-once-then-complete` tokens. Advance the
+  Runner-local controller candidate to v2: Reserve designation keeps its existing own `elementId`;
+  move candidates require own `elementId`, `originLocationId`, and `destinationLocationId`; reject
+  existing v1 candidates.
+- **Controller/history:** the executor owns a per-audience set of element IDs whose move submission
+  was accepted. The controller selects a deterministic supported current move for an eligible
+  element absent from that set, then selects the exact current Movement completion. History never
+  becomes campaign authority, evidence input, or permission to bypass membership/submission.
+  Selection uses ordinal `elementId`, `destinationLocationId`, `originLocationId`, then `actionId`;
+  changing that order requires a new controller token/configuration identity.
+- **Strict evidence:** validate every Movement event's identity, origin/destination, exact cost,
+  before/after CP and Cohesion, unique moved-element policy, Reserve state, exact Breakdown terminal,
+  and aggregate reconciliation. Reopen bundles and reports canonically and reject malformed,
+  inconsistent, noncanonical, or rehashed tampering. Reconstruction and fresh-session
+  re-adjudication must reproduce each child's retained transcript, events, and final snapshot.
+- **Checked fixture:** six children cross act-first/act-last with Reserve none/one/all. Each accepts
+  13 actions/events, records 94 passed checks, and reaches exact first-side Breakdown Determination.
+  Per initiative branch Reserve counts are 0/1/2 and move counts 2/1/0. The none path moves A to the
+  center for CP cost 8 and B on its supported route for cost 1; one moves B for cost 1; all moves
+  neither. Aggregate evidence is 78 actions/events, six Reserve designations, six Reserve
+  completions, six moves, six Movement completions, and exact final CP expenditure 20.
+- **Fingerprint/study:** the local probe fingerprint is
+  `sha256:c1c20270dcd3402886931c28851bea7f23cd1e0778b45f94c43d85ed01d41c4b`; it does not bind detailed
+  child event/ledger bytes. `MovementSimulatorStudyTests` executes four boundary/interior seeds by
+  six controllers by two repeats (48 trajectories), proves exact within-seed evidence equality, and
+  observes route invariance. This is a determinism/sensitivity probe, not a statistical sample.
+- **Verify:** focused Runner tests, complete solution tests, strict artifact readback, two clean CLI
+  Maneuver runs, `git diff --check`, `just check`, and fresh-context independent review.
 
 ### Checkpoint F — repository reconciliation and close
 
@@ -945,6 +991,7 @@ verdict.
 | `EXR-022`; separate correlated diagnostics | 007, 012, 014 + observability hardening | Successful and failed query/controller/submission/check/proof correlation, explicit Maneuver identity, aggregate noncanonical diagnostics, debug failure timings, artifact readback trace, and command-boundary cross-detail evidence | implemented through serial Maneuvers |
 | `EXR-024`, `EXR-025`; deterministic selection and single active audience | 006, 007, 012 | Executor controller/cardinality/step-bound tests and checked-in fixture | implemented |
 | `EXR-026`; ordered invariant catalog | 006-008, 012 | Strict check codec, ordering, scope, failure, and emitted-bundle tests | implemented |
+| `EXR-027`; bounded Movement selection and semantic evidence | `MOV-TASK-009` | Six-child checked Movement fixture, accepted-move history tests, strict event/ledger tamper tests, reconstruction/re-adjudication, 48-trajectory study, and two clean CLI fingerprints | implemented and locally verified; clean-run/merge/integration evidence provisional |
 | `EXR-NFR-001`-`005`; reproducibility, reliability, boundaries, quality | 001-016 | Warning-free build, complete focused/solution suites, repeatable serial and paired fingerprints, `just check`, runnable-example readback, and independent review | implementation/repository gates verified; final review verdict retained in PR evidence |
 | `DEC-001`-`DEC-016` research decisions | 001-016 as mapped above | Three retained research spikes, governing spec, serial bundles/reports, paired equality/divergence evidence, and synchronized repository maps | accepted and implemented through Task 016 |
 

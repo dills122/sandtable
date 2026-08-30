@@ -222,6 +222,18 @@ public static class ManeuverManifestCodec
             "act-last-reserve-one-then-first-by-action-id",
         ExerciseControllerPolicy.ActLastReserveAllThenFirstByActionId =>
             "act-last-reserve-all-then-first-by-action-id",
+        ExerciseControllerPolicy.ActFirstReserveNoneMoveEachOnceThenComplete =>
+            "act-first-reserve-none-move-each-once-then-complete",
+        ExerciseControllerPolicy.ActFirstReserveOneMoveEachOnceThenComplete =>
+            "act-first-reserve-one-move-each-once-then-complete",
+        ExerciseControllerPolicy.ActFirstReserveAllMoveEachOnceThenComplete =>
+            "act-first-reserve-all-move-each-once-then-complete",
+        ExerciseControllerPolicy.ActLastReserveNoneMoveEachOnceThenComplete =>
+            "act-last-reserve-none-move-each-once-then-complete",
+        ExerciseControllerPolicy.ActLastReserveOneMoveEachOnceThenComplete =>
+            "act-last-reserve-one-move-each-once-then-complete",
+        ExerciseControllerPolicy.ActLastReserveAllMoveEachOnceThenComplete =>
+            "act-last-reserve-all-move-each-once-then-complete",
         _ => throw new ArgumentOutOfRangeException(nameof(value)),
     };
 
@@ -242,6 +254,18 @@ public static class ManeuverManifestCodec
             ExerciseControllerPolicy.ActLastReserveOneThenFirstByActionId,
         "act-last-reserve-all-then-first-by-action-id" =>
             ExerciseControllerPolicy.ActLastReserveAllThenFirstByActionId,
+        "act-first-reserve-none-move-each-once-then-complete" =>
+            ExerciseControllerPolicy.ActFirstReserveNoneMoveEachOnceThenComplete,
+        "act-first-reserve-one-move-each-once-then-complete" =>
+            ExerciseControllerPolicy.ActFirstReserveOneMoveEachOnceThenComplete,
+        "act-first-reserve-all-move-each-once-then-complete" =>
+            ExerciseControllerPolicy.ActFirstReserveAllMoveEachOnceThenComplete,
+        "act-last-reserve-none-move-each-once-then-complete" =>
+            ExerciseControllerPolicy.ActLastReserveNoneMoveEachOnceThenComplete,
+        "act-last-reserve-one-move-each-once-then-complete" =>
+            ExerciseControllerPolicy.ActLastReserveOneMoveEachOnceThenComplete,
+        "act-last-reserve-all-move-each-once-then-complete" =>
+            ExerciseControllerPolicy.ActLastReserveAllMoveEachOnceThenComplete,
         _ => throw new JsonException("Unknown controller policy."),
     };
 }

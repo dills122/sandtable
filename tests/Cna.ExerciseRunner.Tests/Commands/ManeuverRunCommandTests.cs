@@ -14,6 +14,8 @@ public sealed class ManeuverRunCommandTests : IDisposable
         "scenarios/maneuvers/rules-lab.reserve-designation.serial.v2.json";
     private const string ControllerMatrixFixturePath =
         "scenarios/maneuvers/rules-lab.controller-matrix.serial.v2.json";
+    private const string MovementFixturePath =
+        "scenarios/maneuvers/rules-lab.movement.serial.v2.json";
     private const string PairedFixturePath =
         "scenarios/maneuvers/rules-lab.reserve-policy.paired.v1.json";
     private const string Boundary = "land.position.operation-1.organization";
@@ -21,6 +23,8 @@ public sealed class ManeuverRunCommandTests : IDisposable
         "land.position.operation-1.first-player.reserve-designation";
     private const string MovementBoundary =
         "land.position.operation-1.first-player.movement-and-combat.movement";
+    private const string BreakdownBoundary =
+        "land.position.operation-1.first-player.movement-and-combat.breakdown-determination";
     private readonly string temp = Path.Combine(
         Path.GetTempPath(),
         $"sandtable-maneuver-cli-{Guid.NewGuid():N}");
@@ -214,6 +218,85 @@ public sealed class ManeuverRunCommandTests : IDisposable
             Assert.IsType<BoundaryReached>(terminal.Outcome).PositionId);
         Assert.Equal(
             "sha256:cab825d30b128ab1f1e2032879ca0ac3f793abc054a2c710dbdf22e93f49e71c",
+            artifact.Report.ReportFingerprint);
+    }
+
+    [Fact]
+    public void CheckedMovementFixtureRunsAllSixPoliciesToBreakdownWithExactEvidence()
+    {
+        var standardOutput = new StringWriter();
+        var standardError = new StringWriter();
+
+        var exitCode = ManeuverRunCommand.Execute(
+            Arguments(MovementFixturePath, Path.Combine(temp, "movement")),
+            standardOutput,
+            standardError,
+            TestContext.Current.CancellationToken);
+
+        Assert.Equal(ManeuverProcessExitCode.Succeeded, exitCode);
+        Assert.Equal(string.Empty, standardError.ToString());
+        var output = ParseOutput(standardOutput.ToString(), expectedExerciseBundles: 6);
+        var bundles = output.ExerciseBundlePaths.Select(ExerciseBundleReader.Read).ToArray();
+        Assert.Equal(
+            [
+                "movement-execution.act-first.reserve-none",
+                "movement-execution.act-first.reserve-one",
+                "movement-execution.act-first.reserve-all",
+                "movement-execution.act-last.reserve-none",
+                "movement-execution.act-last.reserve-one",
+                "movement-execution.act-last.reserve-all",
+            ],
+            bundles.Select(value => value.NormalizedManifest!.ExerciseId));
+        Assert.All(bundles, bundle =>
+        {
+            Assert.Equal(13, bundle.AcceptedActions.Count);
+            Assert.Equal(13, bundle.CanonicalEvents.Count);
+            Assert.Equal(13, bundle.StepEvidence.Count);
+            Assert.Equal(94, bundle.CheckResults.Results.Count);
+            Assert.All(bundle.CheckResults.Results, result => Assert.True(result.IsPassed));
+            Assert.True(bundle.ReconstructionProof!.IsVerified);
+            Assert.True(bundle.ReadjudicationProof!.IsVerified);
+            Assert.Single(bundle.CanonicalEvents, value => EventType(value) ==
+                "movement-segment-completed");
+            var completion = Assert.IsType<ExerciseSucceeded>(bundle.RunResult.Completion);
+            Assert.Equal(
+                BreakdownBoundary,
+                Assert.IsType<BoundaryReached>(completion.Outcome).PositionId);
+        });
+        Assert.Equal([0, 1, 2, 0, 1, 2], bundles.Select(bundle =>
+            bundle.CanonicalEvents.Count(value => EventType(value) ==
+                "reserve-element-designated")));
+        Assert.Equal([2, 1, 0, 2, 1, 0], bundles.Select(bundle =>
+            bundle.CanonicalEvents.Count(value => EventType(value) == "element-moved")));
+
+        AssertMovement(
+            bundles[0],
+            ("axis-element-a", "west", "center", 0, 8),
+            ("axis-element-b", "north-west", "north", 0, 1));
+        AssertMovement(
+            bundles[1],
+            ("axis-element-b", "north-west", "north", 0, 1));
+        AssertMovement(bundles[2]);
+        AssertMovement(
+            bundles[3],
+            ("commonwealth-element-a", "east", "center", 0, 8),
+            ("commonwealth-element-b", "south-east", "east", 0, 1));
+        AssertMovement(
+            bundles[4],
+            ("commonwealth-element-b", "south-east", "east", 0, 1));
+        AssertMovement(bundles[5]);
+
+        var artifact = ManeuverReportReader.Read(output.ReportPath);
+        Assert.Equal(output.ReportFingerprint, artifact.Report.ReportFingerprint);
+        Assert.Equal(ManeuverReportStatus.Succeeded, artifact.Report.Deterministic.Status);
+        Assert.Equal(6, artifact.Report.Deterministic.Counts.SucceededExerciseCount);
+        var terminal = Assert.Single(artifact.Report.Deterministic.TerminalCounts);
+        Assert.Equal(6, terminal.Count);
+        Assert.Equal(
+            BreakdownBoundary,
+            Assert.IsType<BoundaryReached>(terminal.Outcome).PositionId);
+        Assert.Equal(
+            "sha256:c1c20270dcd3402886931c28851bea7f23cd1e0778b45f94c43d85ed01d41c4b",
             artifact.Report.ReportFingerprint);
     }
 
@@ -574,6 +657,75 @@ public sealed class ManeuverRunCommandTests : IDisposable
         if (Directory.Exists(repositoryDirectory))
             Directory.Delete(repositoryDirectory, recursive: true);
         GC.SuppressFinalize(this);
+    }
+
+    private static string EventType(byte[] canonicalEvent)
+    {
+        using var document = System.Text.Json.JsonDocument.Parse(canonicalEvent);
+        return document.RootElement.GetProperty("eventType").GetString()!;
+    }
+
+    private static void AssertMovement(
+        ExerciseBundle bundle,
+        params (string ElementId, string Origin, string Destination, int Before, int After)[]
+            expected)
+    {
+        var movement = bundle.CanonicalEvents
+            .Where(value => EventType(value) == "element-moved")
+            .Select(value => System.Text.Json.JsonDocument.Parse(value))
+            .ToArray();
+        try
+        {
+            Assert.Equal(expected.Length, movement.Length);
+            Assert.Equal(expected.Length, expected.Select(value => value.ElementId)
+                .Distinct(StringComparer.Ordinal).Count());
+            using var final = System.Text.Json.JsonDocument.Parse(bundle.FinalSnapshotBytes!);
+            for (var index = 0; index < expected.Length; index++)
+            {
+                var root = movement[index].RootElement;
+                var facts = expected[index];
+                Assert.Equal(facts.ElementId, root.GetProperty("elementId").GetString());
+                Assert.Equal(facts.Origin, root.GetProperty("originLocationId").GetString());
+                Assert.Equal(
+                    facts.Destination,
+                    root.GetProperty("destinationLocationId").GetString());
+                AssertExactAmount(
+                    root.GetProperty("capabilityPointsExpendedBefore"),
+                    facts.Before);
+                AssertExactAmount(
+                    root.GetProperty("capabilityPointsExpendedAfter"),
+                    facts.After);
+                AssertExactAmount(root.GetProperty("cost").GetProperty("totalCost"),
+                    facts.After - facts.Before);
+                Assert.Equal(0, root.GetProperty("cohesionBefore").GetInt32());
+                Assert.Equal(0, root.GetProperty("cohesionAfter").GetInt32());
+
+                var element = final.RootElement.GetProperty("world").GetProperty("elements")
+                    .EnumerateArray().Single(value => string.Equals(
+                        value.GetProperty("elementId").GetString(),
+                        facts.ElementId,
+                        StringComparison.Ordinal));
+                Assert.Equal(
+                    facts.Destination,
+                    element.GetProperty("currentLocationId").GetString());
+                Assert.Equal("none", element.GetProperty("reserveStatus").GetString());
+                var operational = element.GetProperty("operationalState");
+                AssertExactAmount(
+                    operational.GetProperty("capabilityPointsExpended"),
+                    facts.After);
+                Assert.Equal(0, operational.GetProperty("cohesionLevel").GetInt32());
+            }
+        }
+        finally
+        {
+            foreach (var document in movement) document.Dispose();
+        }
+    }
+
+    private static void AssertExactAmount(System.Text.Json.JsonElement amount, int numerator)
+    {
+        Assert.Equal(numerator, amount.GetProperty("numerator").GetInt32());
+        Assert.Equal(1, amount.GetProperty("denominator").GetInt32());
     }
 
     private static string[] Arguments(string manifestPath, string artifactRoot) =>

@@ -292,6 +292,9 @@ public static class ExerciseExecutor
         var reserveDesignationCounts = AudienceOrder.ToDictionary(
             audience => audience,
             _ => 0);
+        var movedElementIds = AudienceOrder.ToDictionary(
+            audience => audience,
+            _ => new HashSet<string>(StringComparer.Ordinal));
 
         while (true)
         {
@@ -423,10 +426,20 @@ public static class ExerciseExecutor
                             ExerciseControllerCandidate.CurrentContractVersion,
                             candidate.ActionId,
                             candidate.Kind,
-                            candidate is DesignateReserveAction designation
-                                ? designation.ElementId
+                            candidate switch
+                            {
+                                DesignateReserveAction designation => designation.ElementId,
+                                MoveElementAction move => move.ElementId,
+                                _ => null,
+                            },
+                            candidate is MoveElementAction moved
+                                ? moved.OriginLocationId
+                                : null,
+                            candidate is MoveElementAction destination
+                                ? destination.DestinationLocationId
                                 : null)),
-                    reserveDesignationCounts[result.ActionSet.Audience])).ToArray());
+                    reserveDesignationCounts[result.ActionSet.Audience],
+                    movedElementIds[result.ActionSet.Audience])).ToArray());
             var controllerElapsedMicroseconds = ElapsedMicroseconds(controllerStarted);
             var activeAudiences = queryDiagnostics
                 .Where(value => value.CandidateCount > 0)
@@ -641,6 +654,8 @@ public static class ExerciseExecutor
             current = submitted.SnapshotCheckpoint;
             if (candidate is DesignateReserveAction)
                 reserveDesignationCounts[set.Audience]++;
+            if (candidate is MoveElementAction moved)
+                movedElementIds[set.Audience].Add(moved.ElementId);
             steps.Add(new ExerciseAcceptedStep(
                 steps.Count,
                 submitted.Receipt!,

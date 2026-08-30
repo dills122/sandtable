@@ -98,6 +98,64 @@ public sealed class ExerciseBundleSemanticValidatorTests : IDisposable
     }
 
     [Fact]
+    public void CanonicalEventReaderAdmitsMovementAndCompletionStructures()
+    {
+        var bundle = ExerciseBundleReader.Read(CreateSuccessfulMovementBundle());
+
+        Assert.Equal(2, bundle.CanonicalEvents.Count(value =>
+            EventType(value) == "element-moved"));
+        Assert.Single(bundle.CanonicalEvents, value =>
+            EventType(value) == "movement-segment-completed");
+        Assert.True(bundle.ReconstructionProof!.IsVerified);
+        Assert.True(bundle.ReadjudicationProof!.IsVerified);
+    }
+
+    [Theory]
+    [InlineData("destination")]
+    [InlineData("ledger")]
+    [InlineData("completion-position")]
+    public void ReaderRejectsRehashedSemanticallyTamperedMovementEvidence(string mutation)
+    {
+        var bundlePath = CreateSuccessfulMovementBundle();
+        RewritePayload(bundlePath, ArtifactSchema.CanonicalEventsPath, bytes =>
+        {
+            var json = Encoding.UTF8.GetString(bytes);
+            return Encoding.UTF8.GetBytes(mutation switch
+            {
+                "destination" => json.Replace(
+                    "\"destinationLocationId\":\"center\"",
+                    "\"destinationLocationId\":\"south-west\"",
+                    StringComparison.Ordinal),
+                "ledger" => json.Replace(
+                    "\"capabilityPointsExpendedAfter\":{\"numerator\":8",
+                    "\"capabilityPointsExpendedAfter\":{\"numerator\":7",
+                    StringComparison.Ordinal),
+                "completion-position" => json.Replace(
+                    "movement-and-combat.breakdown-determination",
+                    "movement-and-combat.movement",
+                    StringComparison.Ordinal),
+                _ => throw new ArgumentOutOfRangeException(nameof(mutation)),
+            });
+        });
+        RefreshDependentHashes(bundlePath);
+        RehashManifest(bundlePath);
+
+        Assert.Throws<InvalidDataException>(() => ExerciseBundleReader.Read(bundlePath));
+    }
+
+    [Fact]
+    public void CanonicalEventReaderRejectsAnExtraMovementField()
+    {
+        var bundle = ExerciseBundleReader.Read(CreateSuccessfulMovementBundle());
+        var movement = Encoding.UTF8.GetString(bundle.CanonicalEvents.First(value =>
+            EventType(value) == "element-moved"));
+        var changed = $"{{\"extra\":null,{movement[1..]}\n";
+
+        Assert.Throws<JsonException>(() => ExerciseEvidenceCodec.DeserializeCanonicalEvents(
+            Encoding.UTF8.GetBytes(changed)));
+    }
+
+    [Fact]
     public void ReaderRejectsARehashedEventWithAContradictoryFromPosition()
     {
         var bundlePath = CreateSuccessfulBundle();
@@ -780,10 +838,11 @@ public sealed class ExerciseBundleSemanticValidatorTests : IDisposable
         GC.SuppressFinalize(this);
     }
 
-    private string CreateSuccessfulBundle()
+    private string CreateSuccessfulBundle(ExerciseManifest? admittedManifest = null)
     {
         Directory.CreateDirectory(root);
-        var manifest = ExerciseManifestCodecTests.Create(buildMode: ExerciseBuildMode.Exploratory);
+        var manifest = admittedManifest ?? ExerciseManifestCodecTests.Create(
+            buildMode: ExerciseBuildMode.Exploratory);
         var normalizedManifest = ExerciseManifestCodec.Serialize(manifest);
         var execution = ExerciseExecutor.Execute(manifest, TestContext.Current.CancellationToken);
         var readjudication = ReadjudicationVerifier.Verify(manifest, execution);
@@ -816,6 +875,21 @@ public sealed class ExerciseBundleSemanticValidatorTests : IDisposable
         return ExerciseBundleWriter.Write(
             root,
             new ExerciseBundleWriteRequest(ArtifactBundleProfile.Succeeded, payloads)).Path;
+    }
+
+    private string CreateSuccessfulMovementBundle() => CreateSuccessfulBundle(
+        ExerciseManifestCodecTests.Create(
+            maximumSteps: 13,
+            terminalBoundary:
+                "land.position.operation-1.first-player.movement-and-combat.breakdown-determination",
+            buildMode: ExerciseBuildMode.Exploratory,
+            controllerPolicy:
+                ExerciseControllerPolicy.ActFirstReserveNoneMoveEachOnceThenComplete));
+
+    private static string EventType(byte[] canonicalEvent)
+    {
+        using var document = JsonDocument.Parse(canonicalEvent);
+        return document.RootElement.GetProperty("eventType").GetString()!;
     }
 
     private static byte[] ReplaceWorld(byte[] snapshot, string replacement)
