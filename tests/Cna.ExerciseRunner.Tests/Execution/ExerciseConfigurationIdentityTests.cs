@@ -62,6 +62,7 @@ public sealed class ExerciseConfigurationIdentityTests
             "ActLastReserveNoneMoveEachOnceThenComplete",
             "ActLastReserveOneMoveEachOnceThenComplete",
             "ActLastReserveAllMoveEachOnceThenComplete",
+            "ActFirstReserveNoneMoveEachOnceByLowestCostThenComplete",
         ];
 
         var hashes = policyNames.Select(name => ExerciseConfigurationIdentity.ComputeHash(
@@ -80,6 +81,7 @@ public sealed class ExerciseConfigurationIdentityTests
                 "sha256:b4f855497b740d8091f506734587063cf45825f5bf6054fb7c29c4ee16efbae0",
                 "sha256:73f644a20a1625fab920043c53e7271c2b4dbd2242c20560fc385c8bc8dae241",
                 "sha256:0c83960b9c2a68b05f2122e97ac4a037430b0ea507b06dba123ce59d811cd9f9",
+                "sha256:b7bc95b9754073f9814d93ebaa56f6223d394afb189083170ddc88d1f08733bb",
             ],
             hashes);
     }

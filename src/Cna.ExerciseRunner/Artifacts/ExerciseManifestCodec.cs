@@ -143,6 +143,8 @@ public static class ExerciseManifestCodec
             "act-last-reserve-one-move-each-once-then-complete",
         ExerciseControllerPolicy.ActLastReserveAllMoveEachOnceThenComplete =>
             "act-last-reserve-all-move-each-once-then-complete",
+        ExerciseControllerPolicy.ActFirstReserveNoneMoveEachOnceByLowestCostThenComplete =>
+            "act-first-reserve-none-move-each-once-by-lowest-cost-then-complete",
         _ => throw new ArgumentOutOfRangeException(nameof(value)),
     };
 
@@ -199,6 +201,8 @@ public static class ExerciseManifestCodec
             ExerciseControllerPolicy.ActLastReserveOneMoveEachOnceThenComplete,
         "act-last-reserve-all-move-each-once-then-complete" =>
             ExerciseControllerPolicy.ActLastReserveAllMoveEachOnceThenComplete,
+        "act-first-reserve-none-move-each-once-by-lowest-cost-then-complete" =>
+            ExerciseControllerPolicy.ActFirstReserveNoneMoveEachOnceByLowestCostThenComplete,
         _ => throw new JsonException("Unknown controller policy."),
     };
 

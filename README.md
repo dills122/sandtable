@@ -97,7 +97,9 @@ Exercise detail tiers expose progressively richer evidence without changing simu
 current two-setup serial-unpaired Maneuver proves the same Movement-terminal path for predetermined
 and contested initiative. A separate checked six-child controller matrix crosses
 `act-first`/`act-last` with Reserve `none`/`one`/`all`, producing exact 10/11/12-action Movement
-trajectories. An optional `serial-paired` Maneuver runs isolated baseline and candidate arms
+trajectories. A checked six-child Movement Maneuver extends those policies through exact first-side
+Breakdown Determination with deterministic 2/1/0 move counts. Optional `serial-paired` Maneuvers run
+isolated baseline and candidate arms
 sequentially from identical declared initial conditions, initial role-specific random streams,
 campaign creation inputs, build cohort, and initial snapshot. Its strictly read-back comparison is
 descriptive only: trajectories and random consumption may diverge after the first differing choice,
@@ -118,8 +120,12 @@ none/one/all controller profiles rather than seed variation alone. See
 [Baseline 2](docs/research/simulator-baseline-2.md). The follow-on
 [controller-policy matrix](docs/research/simulator-controller-matrix.md) closes that explicit
 coverage gap with 6/6 strictly read-back trajectories and a repeatable aggregate fingerprint.
+The merged [Movement trajectory study](docs/research/simulator-movement-trajectories.md) adds 48
+repeat trajectories across six controllers and four deliberate seed probes. The follow-on
+[Movement cost-sensitivity study](docs/research/simulator-movement-cost-sensitivity.md) adds a
+checked paired stable-route/lowest-public-cost comparison; both arms reach Breakdown in 13 actions,
+while the first route changes from exact cost 8 to 1/2 under equal initial evidence.
 
-Positive Organization/stage-entry obligations, checked Exercise/Maneuver Movement adoption,
 Breakdown adjudication, contact, combat, published scenario content, persistence, and the Maproom
 player interface remain future work.
 
@@ -136,10 +142,10 @@ The current delivery boundary is:
 | Ruleset/provenance, synthetic content, campaign authority, deterministic randomness, events, and replay | Implemented foundation |
 | Side-safe observations and exact-audience legal actions | Implemented for the current rules-laboratory path |
 | Mandatory turn preamble | Implemented through Reserve Designation completion; authority reaches first-side Movement |
-| Movement/contact and combat loops | Movement Foundation rules, Content mobility, replay-complete world/representation state, approved Breakdown continuity, the v5 side-safe observation boundary, and public non-contact move/completion execution to Breakdown Determination are complete through `MOV-TASK-008`; `MOV-TASK-009` checked Exercise/Maneuver adoption is next |
+| Movement/contact and combat loops | Movement Foundation rules, Content mobility, replay-complete world/representation state, approved Breakdown continuity, the v5 side-safe observation boundary, public non-contact move/completion execution, and checked Exercise/Maneuver evidence to Breakdown Determination are complete through merged `MOV-TASK-009`; `MOV-TASK-010` synchronization/review is in progress |
 | Published first-scenario data, remaining Land rules, victory, persistence, and Maproom | Milestone-level; not started |
 | Player Intent Composer | Direction reviewed; representative decision after the combat skeleton, no-model prototype before Maproom, optional parser evaluation after deterministic MVP |
-| Exercise Harness | Single-Exercise, serial-unpaired two-setup and six-policy Maneuvers, and optional serial-paired descriptive comparison implemented with strict readback |
+| Exercise Harness | Single-Exercise, serial-unpaired two-setup/controller/Movement Maneuvers, and optional serial-paired Reserve-policy and Movement-cost descriptive comparisons implemented with strict readback |
 
 The approved high-level path to a playable game is:
 
@@ -185,8 +191,9 @@ cost/provenance recalculation, engine dispatch, atomic projection, and determini
 `MOV-TASK-008` atomically publishes observation-derived move and completion membership, maps only
 exact current submissions, adds canonical Movement completion through the Breakdown Determination
 checkpoint, and preserves deterministic fog-equivalent actions and zero/one/many-move replay.
-Breakdown public actions and adjudication remain absent; `MOV-TASK-009` next adopts the supported
-Movement path in checked Exercise/Maneuver evidence.
+`MOV-TASK-009` is merged in PR #78 and adopts that supported Movement path in checked
+Exercise/Maneuver evidence. Breakdown public actions and adjudication remain absent;
+`MOV-TASK-010` synchronization/review is the active Movement closeout.
 The optional paired comparison is implemented Runner instrumentation and does not block
 gameplay-engine progress.
 Combat research has progressed beyond the initial source inventory: `CMB-RSH-001` now retains the
@@ -322,6 +329,18 @@ dotnet run --project src/Cna.ExerciseRunner/Cna.ExerciseRunner.csproj -- \
 The pair runs baseline then candidate sequentially in isolated Exercise sessions. Its report may
 describe first divergence and outcome/count deltas only; it cannot support causal, statistical,
 balance, recommendation, or synchronized-post-divergence conclusions.
+
+Run the paired Movement route-cost sensitivity comparison with:
+
+```sh
+dotnet run --project src/Cna.ExerciseRunner/Cna.ExerciseRunner.csproj -- \
+  maneuver run --manifest scenarios/maneuvers/rules-lab.movement-cost.paired.v1.json \
+  --artifact-root artifacts/exercises
+```
+
+This pair keeps declared inputs and initial evidence equal while comparing the existing stable-route
+controller with an additive lowest-public-cost controller. It is simulator instrumentation, not an
+Umpire rule or gameplay recommendation.
 
 The command prints each validated child bundle path in manifest order, followed by the strictly
 read-back aggregate report path and deterministic report fingerprint. The report's local paths and

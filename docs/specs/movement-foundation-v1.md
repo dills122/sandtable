@@ -1,8 +1,7 @@
 # Movement Foundation v1 Specification
 
-**Status:** Active implementation baseline; `MOV-TASK-009` executable Movement evidence is
-implemented and verified locally, with PR merge and integration evidence provisional;
-`MOV-TASK-010` remains blocked until that merge
+**Status:** Active implementation baseline; `MOV-TASK-009` executable Movement evidence is merged
+in PR #78 and `MOV-TASK-010` synchronization/review is in progress
 
 **Date:** 2026-08-25
 
@@ -14,8 +13,9 @@ implemented and verified locally, with PR merge and integration evidence provisi
 [Campaign Observation v1](campaign-observation-v1.md), and
 [Exercise Harness v1](exercise-harness-v1.md)
 
-**Research:** [Movement Foundation Spike](../research/movement-foundation-spike.md) and
-[Movement Simulator Trajectories](../research/simulator-movement-trajectories.md)
+**Research:** [Movement Foundation Spike](../research/movement-foundation-spike.md),
+[Movement Simulator Trajectories](../research/simulator-movement-trajectories.md), and
+[Movement Cost Sensitivity](../research/simulator-movement-cost-sensitivity.md)
 
 **Technical design:** [Movement Foundation v1](../design/movement-foundation-v1.md)
 
@@ -89,13 +89,15 @@ at v2. It adds six closed controller tokens without changing existing token byte
 - `act-last-reserve-one-move-each-once-then-complete`; and
 - `act-last-reserve-all-move-each-once-then-complete`.
 
-The Runner-local controller candidate advances to v2. Reserve designation retains its existing own
-`elementId`; a move candidate requires own `elementId`, `originLocationId`, and
-`destinationLocationId`. Existing v1 candidates reject rather than being inferred. The runner
-records an element only after its move is accepted, selects the stable supported route for each
-not-yet-moved eligible element, and then submits the exact current completion action. It still
-selects only from the current observation-derived public action set and uses the ordinary submission
-path. No one-move restriction is added to Core.
+Task 009 advanced the Runner-local controller candidate to v2. Reserve designation retained its own
+`elementId`; a move candidate required own `elementId`, `originLocationId`, and
+`destinationLocationId`. The post-adoption sensitivity instrument advances the current trusted
+candidate to v3 by also requiring the exact positive public `CostBreakdown.TotalCost` on every move;
+non-Movement candidates cannot carry it and existing v1/v2 candidates reject rather than being
+inferred. The runner records an element only after its move is accepted, selects the declared stable
+or lowest-cost supported route for each not-yet-moved eligible element, and then submits the exact
+current completion action. It still selects only from the current observation-derived public action
+set and uses the ordinary submission path. No one-move restriction is added to Core.
 The stable route order is ordinal `elementId`, `destinationLocationId`, `originLocationId`, then
 `actionId`; a semantic-order change requires a new controller token/configuration identity.
 
@@ -450,5 +452,6 @@ projection, strict moved-state admission, and deterministic replay. `MOV-TASK-00
 complete observation-derived move-and-completion vertical and reaches replay-valid Breakdown
 Determination. `MOV-TASK-009` implements the checked Exercise/Maneuver evidence, strict Movement
 semantic readback, reconstruction and fresh-session re-adjudication, and the bounded retained
-simulator study. That evidence is locally verified but remains provisional until its PR merges and
-clean integration evidence is retained; `MOV-TASK-010` remains blocked on that merge.
+simulator study. PR #78 merged that evidence on 2026-08-30. `MOV-TASK-010` now owns the active
+repository synchronization and independent-review closeout. The separate paired cost-sensitivity
+instrument is Runner-only evidence and does not expand the authoritative Movement capability.

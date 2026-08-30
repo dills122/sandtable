@@ -1,4 +1,5 @@
 using Cna.Core.Actions;
+using Cna.Core.Rules;
 using Cna.ExerciseRunner.Artifacts;
 using Cna.ExerciseRunner.Controllers;
 
@@ -319,7 +320,7 @@ public sealed class ExerciseControllerTests
             "unit.alpha",
             "west",
             "west"));
-        foreach (var version in new[] { 1, 3 })
+        foreach (var version in new[] { 1, 2, 4 })
         {
             Assert.Throws<ArgumentOutOfRangeException>(() =>
                 new ExerciseControllerCandidate(
@@ -359,7 +360,8 @@ public sealed class ExerciseControllerTests
             "move-element",
             elementId,
             originLocationId,
-            destinationLocationId);
+            destinationLocationId,
+            new CapabilityPointAmount(1, 1));
 
     private static IReadOnlyList<ExerciseControllerActionSet> MovementActionSets(
         IEnumerable<ExerciseControllerCandidate> candidates,
