@@ -102,6 +102,28 @@ public sealed record ZocProjectionFacts
     public bool CanSourceForceEnterDestination { get; }
 }
 
+public sealed record ZocControlCandidate
+{
+    public ZocControlCandidate(
+        string destinationLocationId,
+        ZocSourceFacts source,
+        ZocProjectionFacts projection)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(destinationLocationId);
+        ArgumentNullException.ThrowIfNull(source);
+        ArgumentNullException.ThrowIfNull(projection);
+        DestinationLocationId = destinationLocationId;
+        Source = source;
+        Projection = projection;
+    }
+
+    public string DestinationLocationId { get; }
+
+    public ZocSourceFacts Source { get; }
+
+    public ZocProjectionFacts Projection { get; }
+}
+
 public sealed record ZocTopologyFeatureDefinition
 {
     public ZocTopologyFeatureDefinition(

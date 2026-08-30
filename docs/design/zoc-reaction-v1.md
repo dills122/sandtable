@@ -1,6 +1,6 @@
 # ZOC and Reaction v1 Technical Design
 
-**Status:** Approved — dormant checkpoints `ZOR-TASK-002A`-`002B` implemented; `002C` next
+**Status:** Approved — dormant checkpoints `ZOR-TASK-002A`-`002C` implemented; `003A` next
 
 **Date:** 2026-08-30
 
@@ -141,7 +141,11 @@ extension carries `combatClassificationId`, `combatOrigin`, and canonical `compo
 initial placement carries canonical `initialComponentToes` rows with `componentId`, `currentToe`,
 and `origin`. The v5 serializer/artifact emits and hashes one complete successor document derived
 from a fully validated schema-4 definition; the active schema-4 reader continues to reject those
-bytes. Strict v5 readback and complete golden vectors remain `ZOR-TASK-002C`.
+bytes. `ZOR-TASK-002C` adds strict direct-only v5 readback by separating successor fields from one
+complete document, delegating inherited schema validation to the strict schema-4 reader, then
+revalidating the reconstructed v5 definition. Its checked positive golden round-trips canonical
+bytes and identity, derives stacking `2` and current raw defense `10`, and retains every named
+independent negative plus non-additive controlled-location evidence.
 
 Admission proves component identity uniqueness, `0 <= currentToe <= maximumToe`, compatible
 Content/rules identity, and checked arithmetic. Current raw defensive capability is derived as the
@@ -382,7 +386,7 @@ ZOR-TASK-001 accepted ruling lock [complete]
   provenance-bearing scenario current-TOE seeds, admission, canonical identity, legacy/mixed
   rejection, and no derived ZOC or post-creation current state without admitting the successor on
   the active path.
-- **002C:** add the positive stack, every named independent negative, non-additive overlap, and
+- **002C (implemented):** add the positive stack, every named independent negative, non-additive overlap, and
   identity/readback goldens without changing Campaign runtime yet.
 
 **Gate:** Rules/Content portions of `ZOR-REQ-001`-`002`, `012`-`013` are proven before state work:

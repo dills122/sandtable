@@ -178,6 +178,31 @@ public static class Cna1979Zoc
             CanonicalSources(sources));
     }
 
+    public static IReadOnlyList<string> DeriveControlledLocationIds(
+        IEnumerable<ZocControlCandidate> candidates)
+    {
+        ArgumentNullException.ThrowIfNull(candidates);
+        var controlled = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var candidate in candidates)
+        {
+            ArgumentNullException.ThrowIfNull(candidate);
+            var source = EvaluateSource(candidate.Source);
+            var projection = EvaluateProjection(candidate.Projection);
+            if (!source.IsSupported || !projection.IsSupported)
+            {
+                throw new InvalidOperationException(
+                    "A controlled-location candidate contains unsupported Rules facts.");
+            }
+
+            if (source.IsQualified && projection.IsQualified)
+            {
+                controlled.Add(candidate.DestinationLocationId);
+            }
+        }
+
+        return Array.AsReadOnly(controlled.Order(StringComparer.Ordinal).ToArray());
+    }
+
     private static ZocTopologyFeatureDefinition Topology(
         string featureId,
         ZocTopologyFeatureKind kind,

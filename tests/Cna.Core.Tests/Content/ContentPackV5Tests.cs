@@ -455,6 +455,152 @@ public sealed class ContentPackV5Tests
     }
 
     [Fact]
+    public void PositiveFixtureMatchesGoldenAndStrictlyRoundTripsIdentity()
+    {
+        var definition = ZocReactionContentTestData.CreatePositiveFixture();
+        var artifact = ContentPackV5Artifact.Create(definition);
+        var golden = Encoding.UTF8.GetBytes(File.ReadAllText(Path.Combine(
+            AppContext.BaseDirectory,
+            "Content",
+            "Fixtures",
+            "rules-lab.content.zoc-reaction.v1.golden.json")).TrimEnd('\r', '\n'));
+
+        var parsed = ContentPackV5Serializer.Deserialize(golden);
+
+        Assert.Equal(golden, artifact.GetCanonicalBytes());
+        Assert.True(parsed.IsSuccess, parsed.Message);
+        Assert.NotNull(parsed.Definition);
+        Assert.Equal(golden, ContentPackV5Serializer.SerializeCanonical(parsed.Definition));
+        Assert.Equal(
+            artifact.Identity,
+            ContentPackV5Artifact.Create(parsed.Definition).Identity);
+        Assert.Equal(2, parsed.Definition.ElementCombatFacts.Count);
+        Assert.All(
+            parsed.Definition.InitialPlacementCombatFacts,
+            facts => Assert.Equal(5, Assert.Single(facts.InitialComponentToes).CurrentToe));
+        var scenario = Assert.Single(parsed.Definition.LegacyDefinition.Scenarios);
+        Assert.Equal(2, scenario.InitialPlacements.Count);
+        Assert.All(
+            scenario.InitialPlacements,
+            placement => Assert.Equal("west", placement.LocationId));
+        Assert.All(
+            parsed.Definition.LegacyDefinition.Elements,
+            element => Assert.Equal(ContentPlacementMode.Independent, element.PlacementMode));
+
+        var stackingRules = parsed.Definition.LegacyDefinition.Elements
+            .Select(element => Cna1979Movement.LookupStackingValue(element.OrganizationId))
+            .ToArray();
+        Assert.All(stackingRules, rule => Assert.True(rule.IsSupported));
+        var stacking = stackingRules.Sum(rule => rule.Value!.StackingValue);
+        var rawDefense = parsed.Definition.ElementCombatFacts.Sum(facts =>
+        {
+            var placement = parsed.Definition.InitialPlacementCombatFacts.Single(value =>
+                value.ElementId == facts.ElementId);
+            return Cna1979Combat.CalculateRawDefensiveCloseAssaultPoints(
+                facts.Components.Select(component =>
+                {
+                    var seed = placement.InitialComponentToes.Single(value =>
+                        value.ComponentId == component.ComponentId);
+                    return new ZocDefensiveCloseAssaultComponentFact(
+                        component.ComponentClassId,
+                        seed.CurrentToe,
+                        component.DefensiveCloseAssaultRating);
+                })).RawDefensiveCloseAssaultPoints;
+        });
+
+        Assert.Equal(2, stacking);
+        Assert.Equal(10, rawDefense);
+    }
+
+    public static TheoryData<string, Func<string, string>, string> InvalidReadbackDocuments =>
+        new()
+        {
+            {
+                "legacy version",
+                json => json.Replace("\"schemaVersion\":5", "\"schemaVersion\":4", StringComparison.Ordinal),
+                "content.unknown-version"
+            },
+            {
+                "legacy format",
+                json => json.Replace("sandtable.content-json.v4", "sandtable.content-json.v3", StringComparison.Ordinal),
+                "content.unknown-format"
+            },
+            {
+                "unknown inherited property",
+                json => json.Replace("\"terrainId\":\"land.terrain.clear\"", "\"terrainId\":\"land.terrain.clear\",\"future\":true", StringComparison.Ordinal),
+                "content.unknown-property"
+            },
+            {
+                "missing classification",
+                json => json.Replace($"\"combatClassificationId\":\"{Cna1979Combat.CombatUnitClassificationId}\",", string.Empty, StringComparison.Ordinal),
+                "content.missing-property"
+            },
+            {
+                "unknown component property",
+                json => json.Replace("\"maximumToe\":5", "\"maximumToe\":5,\"future\":true", StringComparison.Ordinal),
+                "content.unknown-property"
+            },
+            {
+                "duplicate component property",
+                json => json.Replace("\"maximumToe\":5", "\"maximumToe\":5,\"maximumToe\":5", StringComparison.Ordinal),
+                "content.duplicate-property"
+            },
+            {
+                "noncanonical rating",
+                json => json.Replace("\"defensiveCloseAssaultRating\":1", "\"defensiveCloseAssaultRating\":1.0", StringComparison.Ordinal),
+                "content.invalid-number"
+            },
+            {
+                "negative current TOE",
+                json => json.Replace("\"currentToe\":5", "\"currentToe\":-1", StringComparison.Ordinal),
+                "content.invalid-value"
+            },
+            {
+                "unknown successor origin",
+                json => json.Replace("\"kind\":\"synthetic\"", "\"kind\":\"future\"", StringComparison.Ordinal),
+                "content.invalid-discriminant"
+            },
+            {
+                "missing combat capability",
+                json => json.Replace("\"land.combat-components\",", string.Empty, StringComparison.Ordinal),
+                "content.v5.missing-capability"
+            },
+            {
+                "duplicate combat capability",
+                json => json.Replace("\"land.combat-components\"", "\"land.combat-components\",\"land.combat-components\"", StringComparison.Ordinal),
+                "content.v5.duplicate-capability"
+            },
+            {
+                "unsupported classification",
+                json => json.Replace(Cna1979Combat.CombatUnitClassificationId, "land.combat-classification.future", StringComparison.Ordinal),
+                "vocabulary.unknown-combat-classification"
+            },
+            {
+                "unsupported component class",
+                json => json.Replace(Cna1979Combat.InfantryComponentClassId, "land.combat-component.future", StringComparison.Ordinal),
+                "vocabulary.unknown-combat-component"
+            },
+        };
+
+    [Theory]
+    [MemberData(nameof(InvalidReadbackDocuments))]
+    public void StrictReadbackRejectsEverySuccessorAndInheritedShapeFailure(
+        string name,
+        Func<string, string> mutate,
+        string expectedCode)
+    {
+        var canonical = Encoding.UTF8.GetString(ContentPackV5Serializer.SerializeCanonical(
+            ZocReactionContentTestData.CreatePositiveFixture()));
+
+        var result = ContentPackV5Serializer.Deserialize(
+            Encoding.UTF8.GetBytes(mutate(canonical)));
+
+        Assert.False(result.IsSuccess, name);
+        Assert.Equal(expectedCode, result.ErrorCode);
+        Assert.Null(result.Definition);
+    }
+
+    [Fact]
     public void ArtifactAndIdentityDefendCanonicalBytesAndClosedVersionValues()
     {
         const string validHash =

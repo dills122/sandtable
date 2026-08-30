@@ -1,6 +1,6 @@
 # ZOC and Reaction v1 Specification
 
-**Status:** Approved — dormant checkpoints `ZOR-TASK-002A`-`002B` implemented; `002C` next
+**Status:** Approved — dormant checkpoints `ZOR-TASK-002A`-`002C` implemented; `003A` next
 
 **Date:** 2026-08-30
 
@@ -347,5 +347,5 @@ The owner approved the complete package after PR #80 merged, including these con
    minimum disclosure that keeps topology-local Movement actions side-safe and deterministic.
 
 That approval opened only the dependency-ordered first slice, `ZOR-TASK-002A`; the owner then
-directed `002B` after the verified `002A` checkpoint. Later slices remain dependency-gated and must
-not be treated as one authorized or implemented change.
+directed `002B` and `002C` after their preceding verified checkpoints. `ZOR-TASK-003A` and later
+slices remain dependency-gated and must not be treated as one authorized or implemented change.

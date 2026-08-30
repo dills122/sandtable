@@ -142,7 +142,7 @@ The current delivery boundary is:
 | Ruleset/provenance, synthetic content, campaign authority, deterministic randomness, events, and replay | Implemented foundation |
 | Side-safe observations and exact-audience legal actions | Implemented for the current rules-laboratory path |
 | Mandatory turn preamble | Implemented through Reserve Designation completion; authority reaches first-side Movement |
-| Movement/contact and combat loops | Movement Foundation is complete through merged `MOV-TASK-010` / PR #79; approved ZOC/Reaction checkpoints `ZOR-TASK-002A`-`002B` add dormant Rules and Content successors while ruleset 7 and Content schema 4 remain authoritative |
+| Movement/contact and combat loops | Movement Foundation is complete through merged `MOV-TASK-010` / PR #79; approved ZOC/Reaction checkpoints `ZOR-TASK-002A`-`002C` complete the dormant Rules/Content/fixture gate while ruleset 7 and Content schema 4 remain authoritative; `003A` is next |
 | Published first-scenario data, remaining Land rules, victory, persistence, and Maproom | Milestone-level; not started |
 | Player Intent Composer | Direction reviewed; representative decision after the combat skeleton, no-model prototype before Maproom, optional parser evaluation after deterministic MVP |
 | Exercise Harness | Single-Exercise, serial-unpaired two-setup/controller/Movement Maneuvers, and optional serial-paired Reserve-policy and Movement-cost descriptive comparisons implemented with strict readback |
@@ -196,8 +196,9 @@ Exercise/Maneuver evidence. `MOV-TASK-010` completed synchronization and indepen
 merged in PR #79. Breakdown public actions and adjudication remain absent. The approved next engine
 package is the ZOC/Reaction
 [specification](docs/specs/zoc-reaction-v1.md) and
-[technical design](docs/design/zoc-reaction-v1.md). `ZOR-TASK-002A`-`002B` implement the dormant
-Rules and Content checkpoints without changing active identities; `ZOR-TASK-002C` is the next slice.
+[technical design](docs/design/zoc-reaction-v1.md). `ZOR-TASK-002A`-`002C` implement the dormant
+Rules/Content/fixture gate, including strict Content v5 readback and checked static ZOC evidence,
+without changing active identities; `ZOR-TASK-003A` is the next slice.
 The optional paired comparison is implemented Runner instrumentation and does not block
 gameplay-engine progress.
 Combat research has progressed beyond the initial source inventory: `CMB-RSH-001` now retains the

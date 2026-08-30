@@ -39,8 +39,8 @@ the pre-alpha roadmap carry repository-wide rationale and delivery state.
 - ZOC and Reaction: approved [specification](specs/zoc-reaction-v1.md),
   [technical design](design/zoc-reaction-v1.md), and
   [research packet](research/contact-reaction-zoc-spike.md). Movement and Breakdown continuity
-  prerequisites are complete; `ZOR-TASK-002A`-`002B` implement the dormant Rules and Content
-  successors, and `ZOR-TASK-002C` is the next dependency-ordered slice.
+  prerequisites are complete; `ZOR-TASK-002A`-`002C` implement the dormant Rules/Content/fixture
+  gate, and `ZOR-TASK-003A` is the next dependency-ordered slice.
 - Combat: [source inventory](research/combat-cycle-source-inventory.md) and completed
   [rules/result-surface spike](research/combat-rules-result-surface-spike.md). Research is active;
   implementation contracts are not frozen.
