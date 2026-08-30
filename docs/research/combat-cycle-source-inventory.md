@@ -1,7 +1,8 @@
 # Combat and Continual-Cycle Source Inventory
 
-**Status:** Source inventory and `CMB-RSH-001` result-surface research complete; contract freeze
-gated by `CONTACT-001` and `BREAKDOWN-001`
+**Status:** Source inventory and `CMB-RSH-001` result-surface research complete; `CMB-RSH-002`
+static-content research decision-ready; contract freeze gated by Contact/ZOC reconciliation and
+later combat design
 
 **Date:** 2026-08-25
 
@@ -102,7 +103,10 @@ Research that can proceed now:
    selected infantry Close Assault calculation, Morale closure, five reachable differential
    columns, semantic outcomes including the reachable two-hex Retreat, and errata boundary without
    freezing contracts or reproducing the source chart.
-2. `CMB-RSH-002` — choose combat Content/static schema and synthetic values.
+2. `CMB-RSH-002` — **decision-ready:** the
+   [Combat Content and static schema spike](combat-content-static-schema-spike.md) selects
+   component-granular immutable facts, bounded synthetic values, validation boundaries, and
+   explicit mutable/ZOC deferrals without freezing a production schema.
 3. `CMB-RSH-003` — choose mutable loss/prisoner/ammunition/Disorganization boundary.
 4. `CMB-RSH-004` — freeze RNG draw order and golden vectors.
 5. `CYCLE-RSH-001` — freeze cycle ordinal, repeat/finish, and attacked-target history.
