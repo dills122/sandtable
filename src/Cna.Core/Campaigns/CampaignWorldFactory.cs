@@ -93,7 +93,14 @@ internal static class CampaignWorldValidator
             artifact,
             scenario,
             requireInitialBreakdownState: true,
-            static (_, status) => status == CampaignElementReserveStatus.None);
+            static (_, state, initialLocation) =>
+                state.ReserveStatus == CampaignElementReserveStatus.None
+                && state.OperationalState.CapabilityPointsExpended
+                    == CapabilityPointAmount.Zero
+                && string.Equals(
+                    state.CurrentLocationId,
+                    initialLocation,
+                    StringComparison.Ordinal));
 
     public static bool IsValidReserveDesignation(
         CampaignWorldSnapshot? world,
@@ -108,12 +115,70 @@ internal static class CampaignWorldValidator
             artifact,
             scenario,
             requireInitialBreakdownState: true,
-            (element, status) => status == CampaignElementReserveStatus.None
-                || (status == CampaignElementReserveStatus.ReserveI
+            (element, state, initialLocation) =>
+                (state.ReserveStatus == CampaignElementReserveStatus.None
+                    || (state.ReserveStatus == CampaignElementReserveStatus.ReserveI
+                        && string.Equals(
+                            element.SideId,
+                            firstSideId,
+                            StringComparison.Ordinal)))
+                && state.OperationalState.CapabilityPointsExpended
+                    == CapabilityPointAmount.Zero
+                && string.Equals(
+                    state.CurrentLocationId,
+                    initialLocation,
+                    StringComparison.Ordinal));
+    }
+
+    public static bool IsValidMovement(
+        CampaignWorldSnapshot? world,
+        ContentPackArtifact artifact,
+        ContentScenario scenario,
+        LandSide firstSide)
+    {
+        var firstSideId = CampaignSnapshotSerializer.FormatSide(firstSide);
+
+        return IsValid(
+            world,
+            artifact,
+            scenario,
+            requireInitialBreakdownState: true,
+            (element, state, initialLocation) =>
+            {
+                var belongsToFirstSide = string.Equals(
+                    element.SideId,
+                    firstSideId,
+                    StringComparison.Ordinal);
+                var isMovableFirstSideElement = belongsToFirstSide
+                    && state.ReserveStatus == CampaignElementReserveStatus.None;
+
+                if (state.ReserveStatus != CampaignElementReserveStatus.None
+                    && !(belongsToFirstSide
+                        && state.ReserveStatus == CampaignElementReserveStatus.ReserveI))
+                {
+                    return false;
+                }
+
+                if (isMovableFirstSideElement)
+                {
+                    var expenditure = state.OperationalState.CapabilityPointsExpended;
+                    return expenditure <= new CapabilityPointAmount(
+                            element.BaseCapabilityPointAllowance,
+                            1)
+                        && (string.Equals(
+                                state.CurrentLocationId,
+                                initialLocation,
+                                StringComparison.Ordinal)
+                            || expenditure > CapabilityPointAmount.Zero);
+                }
+
+                return state.OperationalState.CapabilityPointsExpended
+                        == CapabilityPointAmount.Zero
                     && string.Equals(
-                        element.SideId,
-                        firstSideId,
-                        StringComparison.Ordinal)));
+                        state.CurrentLocationId,
+                        initialLocation,
+                        StringComparison.Ordinal);
+            });
     }
 
     private static bool IsValid(
@@ -121,11 +186,11 @@ internal static class CampaignWorldValidator
         ContentPackArtifact artifact,
         ContentScenario scenario,
         bool requireInitialBreakdownState,
-        Func<ContentCombatElement, CampaignElementReserveStatus, bool> isValidStatus)
+        Func<ContentCombatElement, CampaignElementState, string, bool> isValidState)
     {
         ArgumentNullException.ThrowIfNull(artifact);
         ArgumentNullException.ThrowIfNull(scenario);
-        ArgumentNullException.ThrowIfNull(isValidStatus);
+        ArgumentNullException.ThrowIfNull(isValidState);
 
         if (world is null
             || !IsLocallyValid(world, scenario.Start.GameTurn, scenario.Start.OperationStage)
@@ -155,22 +220,16 @@ internal static class CampaignWorldValidator
             if (!elements.TryGetValue(elementState.ElementId, out var element)
                 || element.PlacementMode != ContentPlacementMode.Independent
                 || !locations.Contains(elementState.CurrentLocationId)
-                || !isValidStatus(element, elementState.ReserveStatus)
                 || elementState.OperationalState.LedgerGameTurn != scenario.Start.GameTurn
                 || elementState.OperationalState.LedgerOperationStage
                     != scenario.Start.OperationStage
-                || elementState.OperationalState.CapabilityPointsExpended
-                    != CapabilityPointAmount.Zero
                 || elementState.OperationalState.CohesionLevel != 0
                 || !HasValidBreakdownState(
                     elementState.OperationalState.VehicleBreakdownState,
                     element.BreakdownVehicleCohort,
                     requireInitialBreakdownState)
                 || !expected.TryGetValue(elementState.ElementId, out var expectedLocation)
-                || !string.Equals(
-                    elementState.CurrentLocationId,
-                    expectedLocation,
-                    StringComparison.Ordinal))
+                || !isValidState(element, elementState, expectedLocation))
             {
                 return false;
             }
@@ -189,6 +248,9 @@ internal static class CampaignWorldValidator
             return false;
         }
 
+        var elementStates = world.Elements.ToDictionary(
+            element => element.ElementId,
+            StringComparer.Ordinal);
         foreach (var representation in world.Representations)
         {
             if (!expectedRepresentations.TryGetValue(
@@ -201,9 +263,12 @@ internal static class CampaignWorldValidator
                     representation.BoundElementIds[0],
                     expectedRepresentation.ElementId,
                     StringComparison.Ordinal)
+                || !elementStates.TryGetValue(
+                    expectedRepresentation.ElementId,
+                    out var elementState)
                 || !string.Equals(
                     representation.CurrentLocationId,
-                    expectedRepresentation.LocationId,
+                    elementState.CurrentLocationId,
                     StringComparison.Ordinal))
             {
                 return false;
@@ -260,7 +325,6 @@ internal static class CampaignWorldValidator
             if (operational is null
                 || operational.LedgerGameTurn != ledgerGameTurn
                 || operational.LedgerOperationStage != ledgerOperationStage
-                || operational.CapabilityPointsExpended != CapabilityPointAmount.Zero
                 || operational.CohesionLevel != 0
                 || representation.BindingKind
                     != CampaignMapRepresentationBindingKind.IndependentElement

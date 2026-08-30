@@ -1,7 +1,7 @@
 # Movement Foundation Spike
 
-**Status:** Historical source lock; implementation is complete through `MOV-TASK-006`;
-`MOV-TASK-007` is next
+**Status:** Historical source lock; implementation is complete through `MOV-TASK-007`;
+`MOV-TASK-008` is next
 
 **Date:** 2026-08-25
 
@@ -17,7 +17,8 @@ BP rules/content/world continuity before Task 005, sequential-d6 coordinates, an
 Sandstorm BP-share basis. Task 004B implements that clean cut and has passed its repository and
 independent-review gates. Task 005 has since delivered the side-safe observation prerequisite, and
 Task 006 has frozen dormant Movement action/submission/receipt contracts without making Movement
-public or executable. Task 007 is the next internal adjudication slice. This does not broaden the
+public or executable. Task 007 has since delivered internal adjudication, canonical events, atomic
+projection, and replay; Task 008 owns public membership and completion. This does not broaden the
 Movement package into Breakdown, ZOC/Reaction, Contact/Engaged, or Combat adjudication authority.
 
 ## Executive conclusion

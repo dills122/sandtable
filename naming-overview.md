@@ -570,8 +570,9 @@ Segment** outputs with deterministic identities and explanatory exact costs. **R
 means either an exact Road override of destination-terrain cost or an exact Track scale of that
 terrain cost; crossed-hexside additions are then applied separately;
 **hexside addition** names an ordered Ridge or directional Slope increment. These are output
-contract names, not public legal actions or accepted moves. `MOV-TASK-007` is the next delivery
-gate for internal adjudication. **Breakdown continuity** names replay state and rules
+contract names and now have internal authoritative move/event semantics, but they are not yet
+public legal actions. `MOV-TASK-008` is the next delivery gate for public Movement membership and
+completion. **Breakdown continuity** names replay state and rules
 identity, not Breakdown adjudication: no roll, result, loss, or Movement BP mutation is implemented.
 **Enemy ZOC** is the triggering board condition and **Reaction** is the persisted
 non-phasing interruption it opens. Neither is **Contact**: Contact is created by Close Assault, and

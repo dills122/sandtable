@@ -65,6 +65,10 @@ internal static class CampaignEventSerializer
                     ValidateReserve(completed);
                     WriteReserveCompletion(writer, completed);
                     break;
+                case ElementMoved moved:
+                    ValidateMovement(moved);
+                    WriteMovement(writer, moved);
+                    break;
                 default:
                     throw new JsonException("The campaign event type is not serializable.");
             }
@@ -97,6 +101,7 @@ internal static class CampaignEventSerializer
                 "no-obligation-fleet-repair-resolved" => ParseFleetRepair(root),
                 "reserve-element-designated" => ParseReserveDesignation(root),
                 "reserve-designation-completed" => ParseReserveCompletion(root),
+                "element-moved" => ParseMovement(root),
                 _ => throw new JsonException($"Unknown campaign event type '{eventType}'."),
             };
 
@@ -256,6 +261,273 @@ internal static class CampaignEventSerializer
             completed);
         CampaignSnapshotSerializer.WritePosition(writer, completed.SequencePosition);
         CampaignSnapshotSerializer.WriteSources(writer, completed.Sources);
+    }
+
+    private static void WriteMovement(Utf8JsonWriter writer, ElementMoved moved)
+    {
+        writer.WriteNumber("contractVersion", moved.ContractVersion);
+        writer.WriteString("eventType", "element-moved");
+        writer.WriteString("campaignId", moved.CampaignId);
+        writer.WriteNumber("stateVersion", moved.StateVersion);
+        writer.WriteNumber("priorStateVersion", moved.PriorStateVersion);
+        writer.WriteString("fromPositionId", moved.FromPositionId);
+        writer.WriteNumber("gameTurn", moved.GameTurn);
+        writer.WriteNumber("operationStage", moved.OperationStage);
+        writer.WriteString(
+            "actingSide",
+            CampaignSnapshotSerializer.FormatSide(moved.ActingSide));
+        writer.WriteString("elementId", moved.ElementId);
+        writer.WriteString("representationId", moved.RepresentationId);
+        writer.WriteString("originLocationId", moved.OriginLocationId);
+        writer.WriteString("destinationLocationId", moved.DestinationLocationId);
+        writer.WriteString("mobilityId", moved.MobilityId);
+        WriteSources(writer, "mobilitySources", moved.MobilitySources);
+        WriteMovementCost(writer, moved.Cost);
+        writer.WritePropertyName("capabilityPointsExpendedBefore");
+        CapabilityPointAmountCodec.WriteCanonical(
+            writer,
+            moved.CapabilityPointsExpendedBefore);
+        writer.WritePropertyName("capabilityPointsExpendedAfter");
+        CapabilityPointAmountCodec.WriteCanonical(
+            writer,
+            moved.CapabilityPointsExpendedAfter);
+        writer.WriteNumber("cohesionBefore", moved.CohesionBefore);
+        writer.WriteNumber("cohesionAfter", moved.CohesionAfter);
+        CampaignSnapshotSerializer.WritePosition(writer, moved.SequencePosition);
+    }
+
+    private static void WriteMovementCost(
+        Utf8JsonWriter writer,
+        CampaignMovementCost cost)
+    {
+        writer.WriteStartObject("cost");
+        writer.WriteString("destinationTerrainId", cost.DestinationTerrainId);
+        writer.WritePropertyName("destinationTerrainCost");
+        CapabilityPointAmountCodec.WriteCanonical(writer, cost.DestinationTerrainCost);
+        WriteSources(
+            writer,
+            "destinationTerrainSources",
+            cost.DestinationTerrainSources);
+        if (cost.RouteAdjustment is null)
+        {
+            writer.WriteNull("routeAdjustment");
+        }
+        else
+        {
+            writer.WriteStartObject("routeAdjustment");
+            writer.WriteString("routeId", cost.RouteAdjustment.RouteId);
+            writer.WriteString(
+                "costKind",
+                FormatRouteCostKind(cost.RouteAdjustment.CostKind));
+            writer.WritePropertyName("amount");
+            CapabilityPointAmountCodec.WriteCanonical(
+                writer,
+                cost.RouteAdjustment.Amount);
+            CampaignSnapshotSerializer.WriteSources(
+                writer,
+                cost.RouteAdjustment.Sources);
+            writer.WriteEndObject();
+        }
+
+        writer.WriteStartArray("crossedHexsideCosts");
+        foreach (var crossed in cost.CrossedHexsideCosts)
+        {
+            writer.WriteStartObject();
+            writer.WriteString("hexsideId", crossed.HexsideId);
+            writer.WriteString("direction", FormatHexsideDirection(crossed.Direction));
+            writer.WritePropertyName("addedCost");
+            CapabilityPointAmountCodec.WriteCanonical(writer, crossed.AddedCost);
+            CampaignSnapshotSerializer.WriteSources(writer, crossed.Sources);
+            writer.WriteEndObject();
+        }
+
+        writer.WriteEndArray();
+        writer.WritePropertyName("totalCost");
+        CapabilityPointAmountCodec.WriteCanonical(writer, cost.TotalCost);
+        writer.WriteEndObject();
+    }
+
+    private static ElementMoved ParseMovement(JsonElement root)
+    {
+        CampaignSnapshotSerializer.RequireProperties(
+            root,
+            "contractVersion",
+            "eventType",
+            "campaignId",
+            "stateVersion",
+            "priorStateVersion",
+            "fromPositionId",
+            "gameTurn",
+            "operationStage",
+            "actingSide",
+            "elementId",
+            "representationId",
+            "originLocationId",
+            "destinationLocationId",
+            "mobilityId",
+            "mobilitySources",
+            "cost",
+            "capabilityPointsExpendedBefore",
+            "capabilityPointsExpendedAfter",
+            "cohesionBefore",
+            "cohesionAfter",
+            "sequencePosition");
+        var moved = new ElementMoved(
+            root.GetProperty("campaignId").GetString()!,
+            root.GetProperty("stateVersion").GetInt64(),
+            root.GetProperty("priorStateVersion").GetInt64(),
+            root.GetProperty("fromPositionId").GetString()!,
+            root.GetProperty("gameTurn").GetInt32(),
+            root.GetProperty("operationStage").GetInt32(),
+            CampaignSnapshotSerializer.ParseSide(
+                root.GetProperty("actingSide").GetString()),
+            root.GetProperty("elementId").GetString()!,
+            root.GetProperty("representationId").GetString()!,
+            root.GetProperty("originLocationId").GetString()!,
+            root.GetProperty("destinationLocationId").GetString()!,
+            root.GetProperty("mobilityId").GetString()!,
+            CampaignSnapshotSerializer.ParseSources(
+                root.GetProperty("mobilitySources")),
+            ParseMovementCost(root.GetProperty("cost")),
+            ParseCapabilityPointAmount(
+                root.GetProperty("capabilityPointsExpendedBefore")),
+            ParseCapabilityPointAmount(
+                root.GetProperty("capabilityPointsExpendedAfter")),
+            root.GetProperty("cohesionBefore").GetInt32(),
+            root.GetProperty("cohesionAfter").GetInt32(),
+            CampaignSnapshotSerializer.ParsePosition(
+                root.GetProperty("sequencePosition")));
+        if (root.GetProperty("contractVersion").GetInt32() != moved.ContractVersion)
+        {
+            throw new JsonException("The ElementMoved event contract version is invalid.");
+        }
+
+        ValidateMovement(moved);
+        return moved;
+    }
+
+    private static CampaignMovementCost ParseMovementCost(JsonElement cost)
+    {
+        CampaignSnapshotSerializer.RequireProperties(
+            cost,
+            "destinationTerrainId",
+            "destinationTerrainCost",
+            "destinationTerrainSources",
+            "routeAdjustment",
+            "crossedHexsideCosts",
+            "totalCost");
+        var route = cost.GetProperty("routeAdjustment");
+        CampaignMovementRouteAdjustment? routeAdjustment = null;
+        if (route.ValueKind != JsonValueKind.Null)
+        {
+            CampaignSnapshotSerializer.RequireProperties(
+                route,
+                "routeId",
+                "costKind",
+                "amount",
+                "sources");
+            routeAdjustment = new CampaignMovementRouteAdjustment(
+                route.GetProperty("routeId").GetString()!,
+                ParseRouteCostKind(route.GetProperty("costKind").GetString()),
+                ParseCapabilityPointAmount(route.GetProperty("amount")),
+                CampaignSnapshotSerializer.ParseSources(
+                    route.GetProperty("sources")));
+        }
+
+        var crossed = cost.GetProperty("crossedHexsideCosts")
+            .EnumerateArray()
+            .Select(value =>
+            {
+                CampaignSnapshotSerializer.RequireProperties(
+                    value,
+                    "hexsideId",
+                    "direction",
+                    "addedCost",
+                    "sources");
+                return new CampaignMovementHexsideCost(
+                    value.GetProperty("hexsideId").GetString()!,
+                    ParseHexsideDirection(value.GetProperty("direction").GetString()),
+                    ParseCapabilityPointAmount(value.GetProperty("addedCost")),
+                    CampaignSnapshotSerializer.ParseSources(
+                        value.GetProperty("sources")));
+            })
+            .ToArray();
+        return new CampaignMovementCost(
+            cost.GetProperty("destinationTerrainId").GetString()!,
+            ParseCapabilityPointAmount(cost.GetProperty("destinationTerrainCost")),
+            CampaignSnapshotSerializer.ParseSources(
+                cost.GetProperty("destinationTerrainSources")),
+            routeAdjustment,
+            crossed,
+            ParseCapabilityPointAmount(cost.GetProperty("totalCost")));
+    }
+
+    private static CapabilityPointAmount ParseCapabilityPointAmount(JsonElement value) =>
+        CapabilityPointAmountCodec.Deserialize(
+            System.Text.Encoding.UTF8.GetBytes(value.GetRawText()));
+
+    private static void WriteSources(
+        Utf8JsonWriter writer,
+        string propertyName,
+        IEnumerable<RuleReference> sources)
+    {
+        writer.WriteStartArray(propertyName);
+        foreach (var source in sources)
+        {
+            writer.WriteStartObject();
+            writer.WriteString("sourceId", source.SourceId);
+            writer.WriteString("locator", source.Locator);
+            writer.WriteEndObject();
+        }
+
+        writer.WriteEndArray();
+    }
+
+    private static string FormatRouteCostKind(MovementRouteCostKind kind) => kind switch
+    {
+        MovementRouteCostKind.Override => "override",
+        MovementRouteCostKind.ScaleUnderlying => "scale-underlying",
+        _ => throw new JsonException("The Movement route cost kind is invalid."),
+    };
+
+    private static MovementRouteCostKind ParseRouteCostKind(string? kind) => kind switch
+    {
+        "override" => MovementRouteCostKind.Override,
+        "scale-underlying" => MovementRouteCostKind.ScaleUnderlying,
+        _ => throw new JsonException($"Unknown Movement route cost kind '{kind}'."),
+    };
+
+    private static string FormatHexsideDirection(MovementHexsideDirection direction) =>
+        direction switch
+        {
+            MovementHexsideDirection.Either => "either",
+            MovementHexsideDirection.Up => "up",
+            MovementHexsideDirection.Down => "down",
+            _ => throw new JsonException("The Movement hexside direction is invalid."),
+        };
+
+    private static MovementHexsideDirection ParseHexsideDirection(string? direction) =>
+        direction switch
+        {
+            "either" => MovementHexsideDirection.Either,
+            "up" => MovementHexsideDirection.Up,
+            "down" => MovementHexsideDirection.Down,
+            _ => throw new JsonException(
+                $"Unknown Movement hexside direction '{direction}'."),
+        };
+
+    private static void ValidateMovement(ElementMoved moved)
+    {
+        try
+        {
+            moved.ValidateContract();
+        }
+        catch (Exception exception) when (exception is ArgumentException
+            or ArithmeticException
+            or InvalidOperationException)
+        {
+            throw new JsonException("The ElementMoved event contract is invalid.", exception);
+        }
     }
 
     private static void WriteReserveEnvelope(

@@ -140,11 +140,18 @@ internal static class CampaignSnapshotValidator
 
         try
         {
-            return CampaignWorldValidator.IsValidReserveDesignation(
-                snapshot.World,
-                context.Artifact,
-                context.Scenario,
-                FirstActingSideResolver.Resolve(snapshot));
+            var firstSide = FirstActingSideResolver.Resolve(snapshot);
+            return isMovement
+                ? CampaignWorldValidator.IsValidMovement(
+                    snapshot.World,
+                    context.Artifact,
+                    context.Scenario,
+                    firstSide)
+                : CampaignWorldValidator.IsValidReserveDesignation(
+                    snapshot.World,
+                    context.Artifact,
+                    context.Scenario,
+                    firstSide);
         }
         catch (InvalidOperationException)
         {
@@ -162,19 +169,30 @@ internal static class CampaignSnapshotValidator
             element.ReserveStatus == CampaignElementReserveStatus.ReserveI);
         var containsUnsupportedStatus = snapshot.World.Elements.Any(element =>
             element.ReserveStatus == CampaignElementReserveStatus.ReserveII);
+        var containsExpenditure = snapshot.World.Elements.Any(element =>
+            element.OperationalState.CapabilityPointsExpended
+                != CapabilityPointAmount.Zero);
 
         if (containsUnsupportedStatus
             || (snapshot.StateVersion < reserveEntryStateVersion
                 && (snapshot.SequencePosition
                         != positions[checked((int)snapshot.StateVersion - 1)]
-                    || reserveICount != 0))
+                    || reserveICount != 0
+                    || containsExpenditure))
             || (snapshot.StateVersion >= reserveEntryStateVersion
                 && !((snapshot.SequencePosition == reservePosition
                         && snapshot.StateVersion
-                            == reserveEntryStateVersion + reserveICount)
+                            == reserveEntryStateVersion + reserveICount
+                        && !containsExpenditure)
                     || (snapshot.SequencePosition == movementPosition
                         && snapshot.StateVersion
-                            == reserveEntryStateVersion + reserveICount + 1))))
+                            >= reserveEntryStateVersion + reserveICount + 1
+                        && ((snapshot.StateVersion
+                                    == reserveEntryStateVersion + reserveICount + 1
+                                && !containsExpenditure)
+                            || (snapshot.StateVersion
+                                    > reserveEntryStateVersion + reserveICount + 1
+                                && containsExpenditure))))))
         {
             return false;
         }
