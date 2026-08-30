@@ -19,6 +19,8 @@ public enum ManeuverEntryStatus
 public enum ManeuverVariant
 {
     Unpaired,
+    Baseline,
+    Candidate,
 }
 
 public enum ManeuverAggregationFailureCategory
