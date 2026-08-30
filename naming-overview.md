@@ -586,17 +586,25 @@ terrain cost; crossed-hexside additions are then applied separately;
 names now have internal authoritative move/event semantics and observation-derived public legal
 actions. `MOV-TASK-008` publishes exact move/completion membership and submission through the
 Breakdown Determination checkpoint; merged `MOV-TASK-009` supplies checked Exercise/Maneuver
-evidence and `MOV-TASK-010` synchronization/review is in progress. **Breakdown continuity** names
+evidence and merged `MOV-TASK-010` / PR #79 completes synchronization and review. **Breakdown continuity** names
 replay state and rules
 identity, not Breakdown adjudication: no roll, result, loss, or Movement BP mutation is implemented.
-**Enemy ZOC** is the triggering board condition and **Reaction** is the persisted non-phasing
-interruption it opens. The five `CONTACT-001` rulings for Reaction ordering, repeat eligibility,
-decline scope, waiting visibility, and positive-ZOC authority are accepted research inputs, not a
-production contract. Immediate enemy-ZOC entry creates neither **Contact** nor **Engaged**: Contact
+**Enemy ZOC** is a Umpire-derived board fact; authoritative adjacency to a non-phasing represented
+combat element after a committed phasing combat-element move is the **Reaction trigger**, even when
+that adjacent combat representation does not exert a
+positive ZOC. A **Reaction window** is the proposed persisted non-phasing interrupt, and a
+**Reaction participant episode** is one selected participant's one-or-more steps followed by
+completion. The five `CONTACT-001` rulings for ordering, repeat eligibility, decline scope, waiting
+visibility, and positive-ZOC authority are accepted inputs. Their proposed production contract is
+the [ZOC/Reaction specification](docs/specs/zoc-reaction-v1.md) and
+[technical design](docs/design/zoc-reaction-v1.md), pending owner approval. An **apparent enemy-
+controlled location** is the proposed side-safe aggregate fact that a location is controlled by at
+least one apparent enemy ZOC source; it exposes neither which presence controls it nor why. Immediate enemy-ZOC
+entry creates neither **Contact** nor **Engaged**: Contact
 is derived from enemy-ZOC presence at the beginning of a Movement Segment, while Engaged is a Close
 Assault result. The repeatable **Movement/Combat cycle** remains a Sprint 5 research-gated domain
-concept. No ZOC/Reaction implementation is authorized before `MOV-TASK-009`-`010` complete and an
-approved specification/design package, and none of these later terms should be inferred inside the
+concept. Movement is now complete through `MOV-TASK-010`; ZOC/Reaction production still requires
+approval of its governing package, and none of these later terms should be inferred inside the
 current non-contact Movement resolver.
 
 **War College** is where we evaluate commanders.

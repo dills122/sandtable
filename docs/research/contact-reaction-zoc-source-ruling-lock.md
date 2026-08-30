@@ -10,6 +10,16 @@
 
 **Proposed implementation predecessor:** `ZOR-TASK-001`
 
+**Governing proposal:** [ZOC and Reaction v1 specification](../specs/zoc-reaction-v1.md) and
+[technical design](../design/zoc-reaction-v1.md); owner approval remains required
+
+**Proposed v1 clarification:** the trigger is adjacency to a represented non-phasing combat
+element. V1 has no Close Assault declaration, so Rule 8.53(b)'s conditional CPA comparison is
+deferred; the accepted visibility policy below remains binding if a later declaration activates it.
+Observation 6 additionally proposes one aggregate apparent enemy-controlled-location set, with no
+source mapping or rationale, because local Movement legality cannot otherwise remain observation-
+derived under Rule 10.21(c).
+
 **Parent research:** [ZOC and Reaction Interruption Spike](contact-reaction-zoc-spike.md)
 
 ## Decision boundary
@@ -154,10 +164,10 @@ a canonical preimage containing at least:
 - reacting side.
 
 A Reaction trigger is every committed phasing combat-element move whose destination is adjacent to
-at least one authoritative non-phasing represented unit. Trigger qualification is adjacency under
-Rule 8.51, not whether that unit exerts a ZOC and not whether any reactor survives Rule 8.53's
-eligibility filters. A committed move with no adjacent non-phasing represented unit creates no
-window.
+at least one authoritative non-phasing represented combat element. Trigger qualification is
+adjacency under Rule 8.51, not whether that combat element exerts a ZOC and not whether any reactor
+survives Rule 8.53's eligibility filters. A committed move with no adjacent non-phasing represented
+combat element creates no window.
 
 An eligible participant receives a stable `reactionOpportunityId` derived from the window identity
 and its authoritative reacting representation identity. An outward action ID additionally binds the
@@ -165,10 +175,12 @@ current action semantics. Real element bindings remain internal. Candidate array
 canonical ordering; event order records the reacting player's actual choices.
 
 Exact own Reaction-opportunity membership is an approved derived fact in the reacting-side window
-observation. It may depend on frozen authoritative eligibility inputs that are not themselves
-outward, including Rule 8.53's comparison with the triggering enemy mover's CPA. The observation and
-candidate may disclose that the reacting representation has an opportunity; they must not disclose
-the enemy CPA, threshold calculation, failed alternative, real binding, or exclusion reason.
+observation. When an approved phasing Close Assault declaration exists, it may depend on frozen
+authoritative eligibility inputs that are not themselves outward, including Rule 8.53(b)'s
+conditional comparison with the triggering enemy mover's CPA. The observation and candidate may
+disclose that the reacting representation has an opportunity; they must not disclose the enemy CPA,
+threshold calculation, failed alternative, real binding, or exclusion reason. The proposed v1 has
+no declaration and therefore does not apply this conditional comparison.
 
 ### Persisted state machine
 
@@ -249,17 +261,19 @@ its new committed pre-state.
 | Real trigger binding | Exact representation/element binding in Umpire event/state | Never | Never |
 | Window identity/state | Exact trigger, sides, eligibility basis, active/resolved set | Stable public window ID and current own decision state | Stable public window ID and generic waiting/closed state |
 | Eligible reactors | Exact frozen authoritative basis | Exact own legal opportunities | Absent, including count |
+| Apparent enemy-controlled locations | Exact non-additive derived set and source evidence | Aggregate controlled location IDs only; no source mapping or rationale | Aggregate controlled location IDs only; no source mapping or rationale |
 | Triggering force | Exact real binding/path/cost | Apparent representation ID plus origin and destination only | Retains already-authorized own Movement candidate semantics and post-move ledger facts; the waiting shape adds no opponent fact |
 | Decline/fallback reason | Exact internal closure kind | Absent from observation and projected history; an explicit player action remains known through its own submission/receipt | Absent from observation and projected history |
 | Chronicle | Complete event truth | Separate redacted projection | Separate redacted projection |
 
 Two authorities that produce byte-identical facts for an audience must produce byte-identical
 observations and action sets for that audience. For the reacting side, exact own opportunity
-membership is itself an approved derived observation fact: a hidden enemy-CPA change may add or
-remove that membership, but the observable delta is confined to the own opportunity identity and
-matching candidate membership. Candidate payloads, rejection reasons, and projected history still
-contain no enemy CPA, threshold, binding, or exclusion reason. The same hidden eligibility change
-must not alter the phasing side's observation or generic waiting shape.
+membership is itself an approved derived observation fact. If a future declaration-aware contract
+activates Rule 8.53(b), a hidden enemy-CPA change may add or remove that membership, but the
+observable delta is confined to the own opportunity identity and matching candidate membership.
+Candidate payloads, rejection reasons, and projected history still contain no enemy CPA, threshold,
+binding, or exclusion reason. The same hidden eligibility change must not alter the phasing side's
+observation or generic waiting shape.
 
 ## Positive-ZOC vocabulary and first fixture
 
@@ -323,8 +337,9 @@ ZOR-TASK-007 Exercise/Maneuver evidence, synchronization, and independent review
 Sprint 5 Contact/Engaged combat-cycle design gate
 ```
 
-The production tasks remain proposed. A later approved specification may split them further but
-must not bypass their dependency order or move Contact/Engaged into Sprint 4.
+The production tasks remain proposed. The governing technical design refines them into lettered,
+bounded slices without changing these stable parent IDs. Owner approval is still required, and the
+refinement must not bypass dependency order or move Contact/Engaged into Sprint 4.
 
 ### Acceptance consequences for the later specification
 
@@ -339,13 +354,15 @@ must not bypass their dependency order or move Contact/Engaged into Sprint 4.
    trigger, preserves CP/BP/RNG, and resumes the suspended phasing position.
 5. Scripted unavailable/timeout closure is deterministic and replay-identical to its retained
    event; it never synthesizes a route.
-6. A committed move adjacent to a non-ZOC-exerting represented unit still creates a Reaction
+6. A committed move adjacent to a non-ZOC-exerting represented combat element still creates a Reaction
    trigger. A trigger with zero eligible reactors creates the same generic window at `N+1`, closes
    through one deterministic no-cost/no-RNG event at `N+2`, and exposes neither count nor reason.
 7. Phasing-side observations are byte-identical for hidden eligible-reactor permutations and
-   counts. A hidden enemy-CPA change that crosses Rule 8.53's threshold changes the reacting-side
-   observation only by exact own opportunity membership and changes the matching candidate set;
-   neither artifact exposes CPA, threshold, binding, failed alternatives, or exclusion reason.
+   counts. When a later declaration-aware contract activates Rule 8.53(b), a hidden enemy-CPA
+   threshold change affects the reacting-side observation only through exact own opportunity
+   membership and the matching candidate set; neither artifact exposes CPA, threshold, binding,
+   failed alternatives, or exclusion reason. The proposed v1 explicitly defers that conditional
+   behavior rather than applying it without a Close Assault declaration.
 8. The reacting-side trigger projection contains only apparent representation ID, origin, and
    destination. Trigger costs, route adjustments, intermediate path, binding, and closure reason
    are absent. The phasing side retains its already-received own Movement candidate/cost semantics
@@ -388,11 +405,12 @@ must not bypass their dependency order or move Contact/Engaged into Sprint 4.
 - The contract does not claim that wall-clock duration is indistinguishable between an automatic
   empty-window close and a human-owned window. It fixes canonical state/event/projection content and
   forbids count/reason fields; later hosting must assess timing metadata separately.
-- The central roadmap still describes the five rulings as open. This lane intentionally does not
-  edit shared roadmap text; the planning owner must synchronize that status when this decision is
-  accepted into the central plan.
+- The five rulings are accepted and synchronized into the central roadmap and proposed governing
+  ZOC/Reaction package. This retained ruling lock remains source evidence rather than implementation
+  authorization.
 - Planning PR #70 was verified from the local remote-tracking commit `be1ed98`. Authenticated GitHub
   readback was unavailable because the configured Keychain credential was invalid.
 
-No unresolved owner choice blocks a later specification task. Production remains blocked by the
-complete non-contact Movement vertical and an approved ZOC/Reaction specification/design package.
+No unresolved source-ruling choice blocks implementation planning. The non-contact Movement vertical
+is complete; production remains blocked by explicit owner approval of the proposed ZOC/Reaction
+specification/design package.
