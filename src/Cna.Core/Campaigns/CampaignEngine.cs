@@ -151,6 +151,7 @@ internal static class CampaignEngine
                 snapshot,
                 complete,
                 context),
+            MoveElement move => DecideMovement(snapshot, move, context),
             CompleteCurrentSequenceStep advance => DecideAdvance(snapshot, advance),
             _ => CampaignCommandResult.Reject(CampaignCommandRejectionReason.InvalidCommand),
         };
@@ -475,6 +476,80 @@ internal static class CampaignEngine
                     snapshot,
                     context,
                     command));
+        }
+        catch (InvalidOperationException)
+        {
+            return CampaignCommandResult.Reject(
+                CampaignCommandRejectionReason.UnsupportedTransition);
+        }
+        catch (Exception exception) when (exception is ArgumentException
+            or ArithmeticException)
+        {
+            return CampaignCommandResult.Reject(
+                CampaignCommandRejectionReason.InvalidState);
+        }
+    }
+
+    private static CampaignCommandResult DecideMovement(
+        CampaignSnapshot? snapshot,
+        MoveElement command,
+        CampaignContentContext context)
+    {
+        var rejection = ValidateCurrent(
+            snapshot,
+            command.ContractVersion,
+            command.ExpectedStateVersion,
+            command.ExpectedPositionId);
+        if (rejection != CampaignCommandRejectionReason.None)
+        {
+            return CampaignCommandResult.Reject(rejection);
+        }
+
+        try
+        {
+            if (!Enum.IsDefined(command.ActingSide))
+            {
+                return CampaignCommandResult.Reject(
+                    CampaignCommandRejectionReason.InvalidCommand);
+            }
+
+            _ = ContentContractGuards.RequireSha256(
+                command.CandidateId,
+                nameof(command.CandidateId));
+            _ = ContentContractGuards.RequireStableId(
+                command.ElementId,
+                nameof(command.ElementId));
+            var origin = ContentContractGuards.RequireStableId(
+                command.OriginLocationId,
+                nameof(command.OriginLocationId));
+            var destination = ContentContractGuards.RequireStableId(
+                command.DestinationLocationId,
+                nameof(command.DestinationLocationId));
+            if (string.Equals(origin, destination, StringComparison.Ordinal))
+            {
+                return CampaignCommandResult.Reject(
+                    CampaignCommandRejectionReason.InvalidCommand);
+            }
+        }
+        catch (ArgumentException)
+        {
+            return CampaignCommandResult.Reject(
+                CampaignCommandRejectionReason.InvalidCommand);
+        }
+
+        if (snapshot!.OperationStage != 1
+            || snapshot.PhaseId != LandPhaseIds.MovementAndCombat
+            || snapshot.SegmentId != LandSegmentIds.Movement
+            || snapshot.SequencePosition.ActorRole != LandActorRole.FirstActingSide)
+        {
+            return CampaignCommandResult.Reject(
+                CampaignCommandRejectionReason.UnsupportedTransition);
+        }
+
+        try
+        {
+            return CampaignCommandResult.Accept(
+                CampaignMovementEventFactory.Create(snapshot, context, command));
         }
         catch (InvalidOperationException)
         {

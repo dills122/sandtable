@@ -1,3 +1,4 @@
+using Cna.Core.Actions;
 using Cna.Core.Randomness;
 using Cna.Core.Rules;
 
@@ -55,6 +56,7 @@ internal static class CampaignProjector
                 ApplyReserveDesignation(snapshot, designated, context),
             ReserveDesignationCompleted completed =>
                 ApplyReserveCompletion(snapshot, completed, context),
+            ElementMoved moved => ApplyMovement(snapshot, moved, context),
             CampaignSequenceAdvanced => throw new InvalidCampaignHistoryException(
                 "Legacy generic sequence events are not valid current campaign history."),
             _ => throw new InvalidCampaignHistoryException("Unsupported campaign event type."),
@@ -461,6 +463,114 @@ internal static class CampaignProjector
         {
             throw new InvalidCampaignHistoryException(
                 "The Reserve completion event produces invalid campaign state.");
+        }
+
+        return projected;
+    }
+
+    private static CampaignSnapshot ApplyMovement(
+        CampaignSnapshot? snapshot,
+        ElementMoved moved,
+        CampaignContentContext context)
+    {
+        if (snapshot is null)
+        {
+            throw new InvalidCampaignHistoryException(
+                "An ElementMoved event cannot precede campaign creation.");
+        }
+
+        ElementMoved expected;
+        try
+        {
+            var actionCost = new MovementActionCostBreakdown(
+                moved.Cost.DestinationTerrainId,
+                moved.Cost.DestinationTerrainCost,
+                moved.Cost.RouteAdjustment is null
+                    ? null
+                    : new MovementActionRouteAdjustment(
+                        moved.Cost.RouteAdjustment.RouteId,
+                        moved.Cost.RouteAdjustment.CostKind,
+                        moved.Cost.RouteAdjustment.Amount),
+                moved.Cost.CrossedHexsideCosts.Select(value =>
+                    new MovementActionHexsideCost(
+                        value.HexsideId,
+                        value.Direction,
+                        value.AddedCost)).ToArray(),
+                moved.Cost.TotalCost);
+            var candidate = new MoveElementAction(
+                moved.ElementId,
+                moved.OriginLocationId,
+                moved.DestinationLocationId,
+                actionCost);
+            expected = CampaignMovementEventFactory.Create(
+                snapshot,
+                context,
+                new MoveElement(
+                    snapshot.StateVersion,
+                    snapshot.SequencePosition.PositionId,
+                    moved.ActingSide,
+                    candidate.ActionId,
+                    moved.ElementId,
+                    moved.OriginLocationId,
+                    moved.DestinationLocationId));
+
+            if (!CampaignEventSerializer.Serialize(moved).SequenceEqual(
+                    CampaignEventSerializer.Serialize(expected)))
+            {
+                throw new InvalidCampaignHistoryException(
+                    "The ElementMoved event is inconsistent with campaign history.");
+            }
+        }
+        catch (InvalidCampaignHistoryException)
+        {
+            throw;
+        }
+        catch (Exception exception) when (exception is ArgumentException
+            or ArithmeticException
+            or InvalidOperationException
+            or System.Text.Json.JsonException)
+        {
+            throw new InvalidCampaignHistoryException(exception.Message);
+        }
+
+        var world = new CampaignWorldSnapshot(
+            CampaignWorldSnapshot.CurrentContractVersion,
+            snapshot.World.Elements.Select(element => string.Equals(
+                    element.ElementId,
+                    moved.ElementId,
+                    StringComparison.Ordinal)
+                ? new CampaignElementState(
+                    element.ElementId,
+                    moved.DestinationLocationId,
+                    element.ReserveStatus,
+                    new CampaignElementOperationalState(
+                        element.OperationalState.LedgerGameTurn,
+                        element.OperationalState.LedgerOperationStage,
+                        moved.CapabilityPointsExpendedAfter,
+                        moved.CohesionAfter,
+                        element.OperationalState.VehicleBreakdownState))
+                : element).ToArray(),
+            snapshot.World.Representations.Select(representation => string.Equals(
+                    representation.RepresentationId,
+                    moved.RepresentationId,
+                    StringComparison.Ordinal)
+                ? new CampaignMapRepresentationState(
+                    representation.RepresentationId,
+                    moved.DestinationLocationId,
+                    representation.BindingKind,
+                    representation.BoundElementIds)
+                : representation).ToArray());
+        var projected = snapshot with
+        {
+            StateVersion = moved.StateVersion,
+            World = world,
+            SequencePosition = moved.SequencePosition,
+        };
+
+        if (!CampaignSnapshotValidator.IsValid(projected, context))
+        {
+            throw new InvalidCampaignHistoryException(
+                "The ElementMoved event produces invalid campaign state.");
         }
 
         return projected;

@@ -1,7 +1,7 @@
 # Movement Foundation v1 Specification
 
-**Status:** Active implementation baseline; `MOV-TASK-006` is complete and merged in PR #69;
-`MOV-TASK-007` is next
+**Status:** Active implementation baseline; `MOV-TASK-007` internal non-contact adjudication is
+implemented and verified; `MOV-TASK-008` is next
 
 **Date:** 2026-08-25
 
@@ -47,15 +47,16 @@ It excludes:
 - attachments, dummy formations, Patrol, reconnaissance knowledge, or published content; and
 - any model-backed or free-text interpretation inside authoritative execution.
 
-### Current Task 006 delivery boundary
+### Current Task 007 delivery boundary
 
-Task 006 freezes dormant contract infrastructure only. Candidate contract 1 now has typed move and
-completion outputs, deterministic IDs over complete canonical side-safe semantics, and a pure
-observation-to-candidate derivation seam. Legal-action-set contract 2 and generic submission and
-receipt contracts 1 gain strict canonical readback without changing their versions. Readback is
-non-authoritative: it neither establishes current membership nor creates a command, event, accepted
-move, or acceptance receipt. Public Movement action sets remain empty/unsupported until Task 008;
-Task 007 is the next internal command/event/adjudication slice.
+Task 007 implements the internal `MoveElement` command, canonical `ElementMoved` event,
+authoritative Content/Rules recalculation, engine dispatch, atomic world projection, phase-specific
+Movement admission, and strict replay for zero, one, or many accepted moves. The command repeats
+the dormant candidate identity but carries no caller-supplied cost or provenance. Every accepted
+move remains at the same first-side Movement position, increments state version once, and updates
+the element, its internal map representation, and its exact Operation-Stage expenditure together.
+Public Movement action membership and submission mapping remain empty/unsupported until Task 008;
+completion to Breakdown Determination also remains Task 008.
 
 ### Breakdown continuity gate
 
@@ -214,9 +215,9 @@ candidate identity needed by the existing action boundary.
 
 The outward submission remains the payload-free generic contract-1 envelope: candidate identity
 binds element, origin, destination, and cost rather than duplicating caller-editable fields.
-Task 006 strictly reads that envelope but does not map a Movement candidate to a command. The
-internal typed command and its authority revalidation begin in Task 007; public exact-membership
-mapping remains Task 008.
+Task 006 strictly reads that envelope but does not map a Movement candidate to a command. Task 007
+implements the internal typed command and authority revalidation; public exact-membership mapping
+remains Task 008.
 
 Submission must revalidate every invariant against current authority. A stale, forged,
 out-of-audience, altered-origin, altered-destination, hidden-binding, unsupported, or no-longer-legal
@@ -383,4 +384,6 @@ format v3, world v4, snapshot v9, and creation event v8. `MOV-TASK-005` freezes 
 contract 5 and the Movement-side-safe policy. `MOV-TASK-006` freezes dormant typed Movement
 candidates, exact side-safe cost structure, deterministic identity, pure derivation, and strict
 non-authoritative legal-action/submission/receipt readback while keeping public Movement membership
-empty. Both tasks are implemented and verified; `MOV-TASK-007` is next.
+empty. `MOV-TASK-007` now implements the internal command/event/adjudication, canonical codec,
+atomic projection, strict moved-state admission, and deterministic replay. `MOV-TASK-008` remains
+the next public move-and-completion vertical.
