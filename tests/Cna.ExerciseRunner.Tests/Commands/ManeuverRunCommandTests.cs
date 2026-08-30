@@ -14,6 +14,8 @@ public sealed class ManeuverRunCommandTests : IDisposable
         "scenarios/maneuvers/rules-lab.reserve-designation.serial.v2.json";
     private const string ControllerMatrixFixturePath =
         "scenarios/maneuvers/rules-lab.controller-matrix.serial.v2.json";
+    private const string PairedFixturePath =
+        "scenarios/maneuvers/rules-lab.reserve-policy.paired.v1.json";
     private const string Boundary = "land.position.operation-1.organization";
     private const string ReserveBoundary =
         "land.position.operation-1.first-player.reserve-designation";
@@ -213,6 +215,53 @@ public sealed class ManeuverRunCommandTests : IDisposable
         Assert.Equal(
             "sha256:cab825d30b128ab1f1e2032879ca0ac3f793abc054a2c710dbdf22e93f49e71c",
             artifact.Report.ReportFingerprint);
+    }
+
+    [Fact]
+    public void CheckedPairedFixtureProvesEqualInitialEvidenceAndRepeatableHonestDivergence()
+    {
+        CommandOutput Run(string directory)
+        {
+            var standardOutput = new StringWriter();
+            var standardError = new StringWriter();
+            var exitCode = ManeuverRunCommand.Execute(
+                Arguments(PairedFixturePath, Path.Combine(temp, directory)),
+                standardOutput,
+                standardError,
+                TestContext.Current.CancellationToken);
+            Assert.Equal(ManeuverProcessExitCode.Succeeded, exitCode);
+            Assert.Equal(string.Empty, standardError.ToString());
+            return ParseOutput(standardOutput.ToString(), expectedExerciseBundles: 2);
+        }
+
+        var firstOutput = Run("paired-first");
+        var secondOutput = Run("paired-second");
+        var bundles = firstOutput.ExerciseBundlePaths.Select(ExerciseBundleReader.Read).ToArray();
+        Assert.Equal(["reserve-policy.baseline", "reserve-policy.candidate"],
+            bundles.Select(value => value.NormalizedManifest!.ExerciseId));
+        Assert.Equal([10, 12], bundles.Select(value => value.AcceptedActions.Count));
+        Assert.Equal(bundles[0].InitialSnapshotBytes, bundles[1].InitialSnapshotBytes);
+        Assert.Equal(
+            SeedLedgerCodec.Serialize(bundles[0].SeedLedger!),
+            SeedLedgerCodec.Serialize(bundles[1].SeedLedger!));
+        Assert.Equal(
+            bundles[0].SeedLedger!.Entries.Select(value => value.DerivedSeed),
+            bundles[1].SeedLedger!.Entries.Select(value => value.DerivedSeed));
+
+        var report = PairedReportReader.Read(firstOutput.ReportPath).Report;
+        var comparison = Assert.Single(report.Deterministic.Comparisons);
+        Assert.Equal(PairedComparisonStatus.Compared, comparison.Status);
+        Assert.Equal(PairedDivergenceKind.AcceptedAction, comparison.FirstDivergence!.Kind);
+        Assert.Equal(2, comparison.AcceptedStepCountDelta);
+        Assert.Contains(
+            "may diverge after the first differing choice",
+            PairedManeuverReport.Interpretation,
+            StringComparison.Ordinal);
+        Assert.Contains(
+            "makes no causal, statistical-significance, gameplay-balance, or synchronized-post-divergence claim",
+            PairedManeuverReport.Interpretation,
+            StringComparison.Ordinal);
+        Assert.Equal(firstOutput.ReportFingerprint, secondOutput.ReportFingerprint);
     }
 
     [Fact]

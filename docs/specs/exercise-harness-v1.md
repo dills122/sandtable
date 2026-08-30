@@ -1,8 +1,8 @@
 # Exercise Harness v1 Specification
 
-**Status:** Implemented and repository-verified through `EXR-TASK-014J`; checked Reserve
-Designation adoption and the six-policy controller matrix reach first-side Movement; Task 015
-paired comparison remains pending
+**Status:** Implemented and repository-verified through `EXR-TASK-015`; checked Reserve
+Designation adoption, the six-policy controller matrix, and the optional paired policy comparison
+reach first-side Movement
 
 **Date:** 2026-08-20
 
@@ -15,8 +15,8 @@ paired comparison remains pending
 
 **Technical design:** [Exercise Harness v1](../design/exercise-harness-v1.md)
 
-**Next bounded Harness checkpoint:** optional `EXR-TASK-015` paired comparison; it does not block
-gameplay-engine work
+**Next bounded Harness checkpoint:** `EXR-TASK-016` repository reconciliation; paired comparison
+remains optional instrumentation and does not block gameplay-engine work
 
 **Delivered engine track:** [Operation-Stage Entry research](../research/operation-stage-entry-spike.md),
 [specification](operation-stage-entry-v1.md), and
@@ -143,8 +143,7 @@ validation it also prints a structured `trace=` record for artifact finalization
 Failed debug runs retain every timing measured before the failure.
 No detail tier changes the simulation-evidence subset named by `EXR-022`.
 
-The implemented serial-Maneuver command uses the checked Task 014 serial fixture; the paired fixture
-remains Task 015:
+The implemented serial-Maneuver command uses the checked Task 014 serial fixture:
 
 ```text
 dotnet run --project src/Cna.ExerciseRunner/Cna.ExerciseRunner.csproj -- \
@@ -155,6 +154,18 @@ dotnet run --project src/Cna.ExerciseRunner/Cna.ExerciseRunner.csproj -- \
 The checked `scenarios/maneuvers/rules-lab.stage-entry.serial.v2.json` fixture runs both admitted
 synthetic setups through Stage Entry to Reserve and aggregates their reader-validated bundles under
 the unchanged `serial-unpaired` report contract.
+
+The optional paired command uses the same CLI grammar with its separate manifest contract:
+
+```text
+dotnet run --project src/Cna.ExerciseRunner/Cna.ExerciseRunner.csproj -- \
+  maneuver run --manifest scenarios/maneuvers/rules-lab.reserve-policy.paired.v1.json \
+  --artifact-root artifacts/exercises
+```
+
+That checked pair compares `act-first` Reserve `none` and `all` policies from equal declared inputs,
+pair identity, initial seed ledger, campaign creation request, build cohort, and canonical initial
+snapshot. The arms remain isolated and run baseline then candidate, synchronously and sequentially.
 
 Unknown commands/options, missing values, invalid paths, invalid manifests, and unsupported contract
 versions fail before campaign creation with a nonzero exit. CLI spelling may change only before its
@@ -178,8 +189,8 @@ any Maneuver ID beginning with reserved synthetic namespace `standalone.`, child
 semantic. After full Maneuver admission, entry `N` is materialized as the existing normalized
 Exercise manifest with the
 Maneuver root seed and receives identity `(maneuverId, exerciseOrdinal=N, pairKey=null,
-variant=unpaired)`. Paired keys, variants, repetitions, and child seed overrides require the later
-Task 015 contract rather than permissive v2 fields.
+variant=unpaired)`. Paired keys, variants, and repetitions use the separate Task 015 contract below
+rather than permissive v2 fields; neither contract permits child seed overrides.
 
 Admission is all-or-nothing and occurs before the first child starts. Execution then runs exactly
 one admitted child at a time in manifest order. A valid identity-matched failed Exercise bundle is
@@ -347,6 +358,75 @@ lossless in the report rather than being collapsed into more process exit codes.
 CLI prints `exerciseBundle[N]=<path>` in ordinal order for each identity-matched finalized child,
 then `report=<path>` and `reportFingerprint=<sha256>`. Failure detail goes to stderr; it never
 prints a report or bundle path that did not pass readback.
+
+### Task 015 paired-Maneuver contract and report
+
+Task 015 adds, rather than relaxes, a separate manifest identity:
+`sandtable.paired-maneuver-manifest.v1` with mode `serial-paired`. The frozen serial-unpaired v2
+codec still rejects every pair, repetition, and variant field. The paired manifest has exact
+top-level property order `contractVersion`, `schemeId`, `maneuverId`, `mode`, `rootSeed`, `report`,
+`pairs`. Each pair has exact property order `contractVersion`, `pairKey`, `repetition`, `baseline`,
+`candidate`; both arm objects use the existing Maneuver child Exercise shape without `rootSeed`,
+`campaignId`, `pairKey`, or `variant`.
+
+Pair keys are stable IDs. Repetitions for one key are zero-based, contiguous, and appear in
+manifest order. Pair-key/repetition identity and all Exercise IDs are unambiguous; Exercise IDs are
+globally unique. The two arms must be identical in contract version, setup/content/scenario/ruleset
+identity, terminal boundary, maximum steps, build mode, confidentiality, detail, and failure
+assertion. Only Exercise identity and the three closed controller policies may differ. The parent
+owns the sole explicit root seed.
+
+For pair repetition `N`, both arms receive exactly
+`ExerciseRunIdentity(rootSeed, maneuverId, N, pairKey)`. Baseline runs first and finalizes its own
+bundle; only after strict one-read validation does candidate start with a new coordinator request,
+new telemetry boundary, and fresh Core Exercise session. No session, controller history, mutable
+collection, or telemetry object crosses arms. After candidate readback, aggregation requires:
+
+- byte-identical canonical seed ledgers, including Umpire, every controller role, artifact sampling,
+  and diagnostic sampling;
+- byte-identical canonical initial snapshots;
+- byte-identical canonical `sandtable.exercise-pairing-inputs.v1` creation material containing
+  campaign ID, ruleset hash, Umpire seed, setup/content hashes and IDs, and scenario ID; and
+- one build cohort: build mode, Git commit/tree/dirty identity, runtime/architecture, ruleset and
+  seed scheme, eligibility flags, and ordered executed-artifact identities. Per-arm normalized
+  manifest and controller-configuration hashes are intentionally different pair dimensions and
+  remain separately validated.
+
+Any mismatch is an aggregate identity failure, never a partial comparison. Cancellation and
+ordinary eligible Exercise failures retain the serial scheduler semantics. A comparison is emitted
+only when both arm bundles are aggregate-eligible; otherwise the pair record is `incomplete` with
+all comparison evidence null.
+
+The paired completed artifact is `paired-maneuver-report.json`, finalized beneath the existing
+`maneuvers/.partial|succeeded|failed` transaction tree and strictly reopened before its path is
+printed. Its scheme is `sandtable.paired-maneuver-report.v1`. Top-level order remains
+`contractVersion`, `schemeId`, `deterministic`, `reportFingerprint`, `diagnostics`; diagnostics are
+excluded from the fingerprint. Deterministic order is `manifest`, `status`, `counts`,
+`terminalCounts`, `failureCounts`, `aggregationFailureCounts`, `entries`, `comparisons`,
+`interpretation`. Entries flatten each pair as baseline then candidate and retain the Task 014
+status/nullability matrix with explicit `baseline`/`candidate` variant.
+
+Each comparison has exact property order `pairKey`, `repetition`, `baselineEntryOrdinal`,
+`candidateEntryOrdinal`, `status`, `creationInputsSha256`, `initialSnapshotSha256`,
+`seedLedgerSha256`, `baselineControllerConfigurationSha256`,
+`candidateControllerConfigurationSha256`, `firstDivergence`, `acceptedStepCountDelta`,
+`terminalOutcomeEqual`, `failureCategoryEqual`. A `compared` record requires every field after
+`status`; an `incomplete` record requires them all null. First divergence is the lowest transcript
+ordinal whose audience/action ID differs, including one arm ending before the other; it is `none`
+only when the complete accepted-action transcripts match. The delta is candidate accepted steps
+minus baseline accepted steps.
+
+Every paired report carries this fixed interpretation:
+
+> Paired by identical declared initial conditions and initial RNG streams. Action trajectories and
+> subsequent random consumption may diverge after the first differing choice. This report is
+> descriptive only and makes no causal, statistical-significance, gameplay-balance, or
+> synchronized-post-divergence claim.
+
+The paired reader rejects missing, extra, duplicate, reordered, contradictory,
+fingerprint-mismatched, noncanonical, misplaced, linked, or extra-file artifacts. It does not make
+a causal, statistical, balance, confidence, common-random-number-after-divergence, or gameplay
+recommendation claim.
 
 ## Functional requirements
 

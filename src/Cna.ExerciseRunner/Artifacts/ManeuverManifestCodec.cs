@@ -78,7 +78,7 @@ public static class ManeuverManifestCodec
         }
     }
 
-    private static void WriteExercise(Utf8JsonWriter writer, ManeuverExerciseManifest exercise)
+    internal static void WriteExercise(Utf8JsonWriter writer, ManeuverExerciseManifest exercise)
     {
         writer.WriteStartObject();
         writer.WriteNumber("contractVersion", exercise.ContractVersion);
@@ -106,7 +106,7 @@ public static class ManeuverManifestCodec
         writer.WriteEndObject();
     }
 
-    private static ManeuverExerciseManifest ReadExercise(JsonElement element)
+    internal static ManeuverExerciseManifest ReadExercise(JsonElement element)
     {
         StrictJson.RequireExactProperties(element, ExercisePropertyNames);
         var controllers = element.GetProperty("controllers");

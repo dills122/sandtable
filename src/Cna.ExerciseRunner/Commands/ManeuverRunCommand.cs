@@ -19,10 +19,15 @@ internal sealed class ManeuverRunCommandDependencies
 {
     internal ManeuverRunCommandDependencies(
         Func<ManeuverManifest, string, string, CancellationToken, ManeuverReport> execute,
-        Func<string, ManeuverReport, ManeuverReportArtifact> writeReport)
+        Func<string, ManeuverReport, ManeuverReportArtifact> writeReport,
+        Func<PairedManeuverManifest, string, string, CancellationToken,
+            PairedManeuverReport>? executePaired = null,
+        Func<string, PairedManeuverReport, PairedReportArtifact>? writePairedReport = null)
     {
         Execute = execute ?? throw new ArgumentNullException(nameof(execute));
         WriteReport = writeReport ?? throw new ArgumentNullException(nameof(writeReport));
+        ExecutePaired = executePaired ?? PairedManeuverExecutor.Execute;
+        WritePairedReport = writePairedReport ?? PairedReportWriter.Write;
     }
 
     internal Func<ManeuverManifest, string, string, CancellationToken, ManeuverReport> Execute
@@ -31,6 +36,10 @@ internal sealed class ManeuverRunCommandDependencies
     }
 
     internal Func<string, ManeuverReport, ManeuverReportArtifact> WriteReport { get; }
+    internal Func<PairedManeuverManifest, string, string, CancellationToken,
+        PairedManeuverReport> ExecutePaired
+    { get; }
+    internal Func<string, PairedManeuverReport, PairedReportArtifact> WritePairedReport { get; }
 
     internal static ManeuverRunCommandDependencies Default { get; } = new(
         ManeuverExecutor.Execute,
@@ -78,7 +87,20 @@ public static class ManeuverRunCommand
         {
             repositoryRoot = CommandPathResolution.FindRepositoryRoot(Directory.GetCurrentDirectory());
             var manifestPath = CommandPathResolution.ResolveManifestPath(repositoryRoot, options.ManifestPath);
-            manifest = ManeuverManifestCodec.Deserialize(File.ReadAllBytes(manifestPath));
+            var manifestBytes = File.ReadAllBytes(manifestPath);
+            if (PairedManeuverManifestCodec.HasPairedScheme(manifestBytes))
+            {
+                var pairedManifest = PairedManeuverManifestCodec.Deserialize(manifestBytes);
+                return ExecutePaired(
+                    pairedManifest,
+                    repositoryRoot,
+                    options.ArtifactRoot,
+                    standardOutput,
+                    standardError,
+                    dependencies,
+                    cancellationToken);
+            }
+            manifest = ManeuverManifestCodec.Deserialize(manifestBytes);
         }
         catch (Exception exception) when (CommandPathResolution.IsAdmissionFailure(exception))
         {
@@ -123,6 +145,54 @@ public static class ManeuverRunCommand
         return WriteStatusAndMapExit(standardError, artifact.Report.Deterministic.Status);
     }
 
+    private static ManeuverProcessExitCode ExecutePaired(
+        PairedManeuverManifest manifest,
+        string repositoryRoot,
+        string artifactRoot,
+        TextWriter standardOutput,
+        TextWriter standardError,
+        ManeuverRunCommandDependencies dependencies,
+        CancellationToken cancellationToken)
+    {
+        PairedManeuverReport report;
+        try
+        {
+            report = dependencies.ExecutePaired(
+                manifest,
+                repositoryRoot,
+                artifactRoot,
+                cancellationToken);
+            if (report is null)
+                throw new InvalidOperationException(
+                    "The paired Maneuver executor returned no report.");
+        }
+        catch (Exception exception) when (!IsFatal(exception))
+        {
+            standardError.WriteLine(
+                $"Maneuver execution failed unexpectedly: {exception.Message}");
+            return ManeuverProcessExitCode.UnexpectedFailure;
+        }
+
+        PairedReportArtifact artifact;
+        try
+        {
+            artifact = dependencies.WritePairedReport(artifactRoot, report);
+            if (artifact is null)
+                throw new InvalidDataException(
+                    "The paired Maneuver report writer returned no artifact.");
+        }
+        catch (Exception exception) when (!IsFatal(exception))
+        {
+            standardError.WriteLine(
+                "Maneuver report finalization failed; no completed report was returned: "
+                + exception.Message);
+            return ManeuverProcessExitCode.ReportArtifactFailed;
+        }
+
+        WriteCompletedOutput(standardOutput, artifact);
+        return WriteStatusAndMapExit(standardError, artifact.Report.Deterministic.Status);
+    }
+
     private static void WriteCompletedOutput(
         TextWriter standardOutput,
         ManeuverReportArtifact artifact)
@@ -137,6 +207,26 @@ public static class ManeuverRunCommand
             if (string.IsNullOrWhiteSpace(path))
                 throw new InvalidDataException(
                     "A validated Maneuver entry has no completed Exercise bundle path.");
+            standardOutput.WriteLine($"exerciseBundle[{ordinal}]={path}");
+        }
+        standardOutput.WriteLine($"report={artifact.Path}");
+        standardOutput.WriteLine($"reportFingerprint={artifact.Report.ReportFingerprint}");
+    }
+
+    private static void WriteCompletedOutput(
+        TextWriter standardOutput,
+        PairedReportArtifact artifact)
+    {
+        var deterministic = artifact.Report.Deterministic;
+        for (var ordinal = 0; ordinal < deterministic.Entries.Count; ordinal++)
+        {
+            if (deterministic.Entries[ordinal].Status is not (
+                    ManeuverEntryStatus.Succeeded or ManeuverEntryStatus.Failed))
+                continue;
+            var path = artifact.Report.Diagnostics.Entries[ordinal].ObservedBundlePath;
+            if (string.IsNullOrWhiteSpace(path))
+                throw new InvalidDataException(
+                    "A validated paired Maneuver entry has no completed Exercise bundle path.");
             standardOutput.WriteLine($"exerciseBundle[{ordinal}]={path}");
         }
         standardOutput.WriteLine($"report={artifact.Path}");

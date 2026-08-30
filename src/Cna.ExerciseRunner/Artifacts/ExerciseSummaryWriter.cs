@@ -205,10 +205,5 @@ public static class ExerciseSummaryWriter
         identity == ExerciseRunIdentity.Standalone(manifest.ExerciseId, manifest.RootSeed);
 
     private static string FormatVariant(ExerciseRunIdentity identity)
-    {
-        if (identity.PairKey is not null)
-            throw new InvalidOperationException(
-                "Paired Exercise summaries require the later paired-variant contract.");
-        return "unpaired";
-    }
+        => identity.PairKey is null ? "unpaired" : "paired";
 }

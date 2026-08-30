@@ -1,8 +1,8 @@
 # Exercise Harness v1 Technical Design and Delivery Plan
 
-**Status:** Implemented and repository-verified through Task 014J serial-unpaired Maneuvers plus
-checked Reserve Designation and controller-matrix adoption to first-side Movement; Tasks 015-016
-remain pending
+**Status:** Implemented and repository-verified through Task 015 serial-unpaired and optional
+serial-paired Maneuvers plus checked Reserve Designation and controller-matrix adoption to
+first-side Movement; Task 016 remains pending
 
 **Date:** 2026-08-20
 
@@ -298,8 +298,8 @@ mode is `serial-unpaired` and the only report profile is `trusted-authority`. Ea
 the standalone Exercise shape without `rootSeed`; it can never contain `campaignId`, `pairKey`, or
 variant fields. Exercise IDs are unique within the Maneuver, the list is nonempty, and Maneuver IDs
 cannot begin with the reserved synthetic standalone namespace `standalone.`. The governing
-specification contains the exact JSON shape and rejection rules. Task 015 owns a separate versioned
-extension for paired variants rather than weakening this reader.
+specification contains the exact JSON shape and rejection rules. Task 015 implements its separate
+versioned paired extension without weakening this reader.
 
 Paths in manifests are repository-relative inputs resolved before artifact staging. Manifests may
 not select arbitrary Core types, commands, events, snapshot bytes, reflection targets, controller
@@ -820,7 +820,7 @@ non-blocking follow-up`: its sole P2 was reader-level early-profile manifest/bui
 which was then corrected with focused rehashed tests. The independent-review limit is exhausted;
 the bounded post-review patch received a separate Ready code-quality verdict.
 
-Task 015 paired comparison remains a separate later track. It is not a dependency of Reserve
+Task 015 paired comparison is a separate implemented track and is not a dependency of Reserve
 engine work. The delivered Stage Entry engine track is documented in the
 [Operation-Stage Entry research](../research/operation-stage-entry-spike.md),
 [specification](../specs/operation-stage-entry-v1.md), and
@@ -854,16 +854,22 @@ Harness adoption only after the executable Movement vertical is public.
 
 #### `EXR-TASK-015` — Implement paired comparison contract/report
 
-- **Status:** next bounded Harness task; not started. It is optional instrumentation and does not
-  block the gameplay-engine dependency graph.
+- **Status:** implemented and repository-verified; 327/327 ExerciseRunner and 902/902 solution
+  tests pass, the build is warning-free, and `just check` is green. It remains optional
+  instrumentation and does not block the gameplay-engine dependency graph.
 - **Depends on:** `EXR-TASK-014`.
-- **Primary files:** update `ManeuverExecutor.cs`, new `Artifacts/PairedReportWriter.cs`, paired manifest,
-  and one paired integration test.
-- **Work:** validate pair creation-input equality, assign matching initial role/domain seeds, record
-  controller identities separately, and emit constrained descriptive comparisons.
-- **Accept:** initial ledgers match by role/domain; implementation IDs do not perturb seeds; report
-  includes exact divergence limitation and contains no prohibited causal/significance/balance claim.
-- **Verify:** `EXR-AC-010` plus report golden tests.
+- **Primary files:** paired manifest/report codecs and contracts, `PairedManeuverExecutor.cs`,
+  `Artifacts/PairedReportWriter.cs`, the checked paired fixture, and focused paired tests.
+- **Work:** preserve the strict serial-unpaired v2 contract; admit a separate serial-paired v1
+  contract; validate equal declared and observed creation inputs, build cohort, initial snapshots,
+  and complete role/domain seed ledgers; run isolated arms sequentially; record controller
+  configuration identities separately; and emit constrained descriptive divergence.
+- **Accept:** initial ledgers match by role/domain; implementation IDs do not perturb seeds; strict
+  readback rejects malformed, ambiguous, contradictory, or noncanonical paired artifacts; report
+  includes the exact divergence limitation and no prohibited causal/significance/balance claim.
+- **Verify:** `EXR-AC-010`, manifest/report canonical and strict-reader tests, lifecycle tests,
+  executor mismatch/isolation/repeatability tests, twice-run checked integration, complete
+  ExerciseRunner and solution suites, `just check`, and independent review.
 
 ### Checkpoint F — repository reconciliation and close
 
@@ -907,8 +913,8 @@ runnable increment, not later polish.
 
 ## Traceability matrix
 
-Status distinguishes the implemented single-Exercise and serial-unpaired Maneuver boundary from
-deferred paired comparison and repository-close work.
+Status distinguishes the implemented single-Exercise, serial-unpaired Maneuver, and optional
+paired-comparison boundary from repository-close work.
 
 | Requirements / decisions | Delivery tasks | Verification / retained evidence | Status |
 | --- | --- | --- | --- |
@@ -916,19 +922,19 @@ deferred paired comparison and repository-close work.
 | `EXR-002`, `EXR-003`, `EXR-004`, `EXR-005`; isolated capability and shared primitives | 001-004 | Core parity, reflection/type-graph, rejection nonmutation tests | implemented |
 | `EXR-009`; history reconstruction | 005, 008, 012 | Reconstruction proof file and corrupt-history tests | implemented |
 | `EXR-010`; action-identity re-adjudication | 008, 012 | Re-adjudication proof and independent action/event/final mismatch tests | implemented |
-| `EXR-011`, `EXR-012`, `EXR-023`; canonical/versioned evidence | 006, 008-010, 012-014 | Golden/strict-reader/order tests, reader-validated CLI bundles, semantic child validation, and canonical Maneuver reports | implemented through serial Maneuvers; paired report deferred |
+| `EXR-011`, `EXR-012`, `EXR-023`; canonical/versioned evidence | 006, 008-010, 012-015 | Golden/strict-reader/order tests, reader-validated CLI bundles, semantic child validation, canonical serial reports, and separate paired report readback | implemented through paired Maneuvers |
 | `EXR-013`, `EXR-014`; manifest-last transaction | 009, 010, 012 | Writer failpoint trees, rejected partials, reopened success/failure bundles | implemented |
 | `EXR-015`; confidentiality/detail separation | 006, 009, 010, 012, 014 + observability hardening | Cross-detail evidence-invariance and monotonic-tier tests; child bundles and Maneuver reports remain trusted-authority | implemented through serial Maneuvers |
 | `EXR-016`; side-safe export deferred | 016 and future separately authorized task | Spec non-goal; absence/public-API tests; future whole-tree noninterference evidence | deferred |
-| `EXR-017`; seed domain separation | 013, 014 | Standalone and serial-Maneuver identity/seed-ledger goldens, culture/order, campaign, re-adjudication, summary, and diagnostics tests | implemented for standalone and unpaired Maneuvers; paired key semantics deferred to Task 015 |
-| `EXR-018`; honest pairing | 013-015 | `EXR-AC-010`; paired campaign/seed goldens, ledgers, and report golden | planned |
+| `EXR-017`; seed domain separation | 013-015 | Standalone, serial, and paired identity/seed-ledger goldens; culture/order, campaign, re-adjudication, summary, diagnostics, and equal-ledger integration tests | implemented |
+| `EXR-018`; honest pairing | 013-015 | `EXR-AC-010`; paired manifest/report canonical tests, equal campaign/seed/initial-snapshot integration, first-divergence evidence, fixed limitation | implemented |
 | `EXR-019`, `EXR-020`; clean baseline and dirty exploration | 011, 012 + observability hardening | Fake/integration identity cases, emitted build identity, and separate checked baseline/exploratory fixtures | implemented |
-| `EXR-021`; serial validated aggregation | 014, 015 | `EXR-AC-009`; semantic bundle-reader 41/41, executor 23/23, report 17/17, and command/fixture 10/10 suites; `EXR-AC-010` remains paired | serial aggregation implemented and focused-verified; pairing deferred |
+| `EXR-021`; serial validated aggregation | 014, 015 | `EXR-AC-009`, `EXR-AC-010`; existing serial suites plus paired admission/report/lifecycle/executor/checked-fixture tests | implemented for serial-unpaired and serial-paired modes |
 | `EXR-022`; separate correlated diagnostics | 007, 012, 014 + observability hardening | Successful and failed query/controller/submission/check/proof correlation, explicit Maneuver identity, aggregate noncanonical diagnostics, debug failure timings, artifact readback trace, and command-boundary cross-detail evidence | implemented through serial Maneuvers |
 | `EXR-024`, `EXR-025`; deterministic selection and single active audience | 006, 007, 012 | Executor controller/cardinality/step-bound tests and checked-in fixture | implemented |
 | `EXR-026`; ordered invariant catalog | 006-008, 012 | Strict check codec, ordering, scope, failure, and emitted-bundle tests | implemented |
-| `EXR-NFR-001`-`005`; reproducibility, reliability, boundaries, quality | 001-016 | Warning-free build, ExerciseRunner 252/252, solution 562/562, repeatable smoke fingerprint, `just check`, and Ready review; Task 015 paired evidence and Task 016 closeout remain | verified through Task 014; later Harness tasks pending |
-| `DEC-001`-`DEC-016` research decisions | 001-016 as mapped above | Three retained research spikes, governing spec, and implemented Task 014 tests/bundles; paired evidence remains Task 015 | accepted; Task 014 decisions implemented, paired decisions planned |
+| `EXR-NFR-001`-`005`; reproducibility, reliability, boundaries, quality | 001-016 | Warning-free build, complete focused/solution suites, repeatable serial and paired fingerprints, `just check`, and independent review; Task 016 closeout remains | verified through Task 015 |
+| `DEC-001`-`DEC-016` research decisions | 001-016 as mapped above | Three retained research spikes, governing spec, serial bundles/reports, and paired equality/divergence evidence | accepted and implemented through Task 015 |
 
 ## Final independent-review reconciliation
 

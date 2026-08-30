@@ -24,6 +24,7 @@ internal sealed class ManeuverExecutionDependencies
 internal sealed class ManeuverChildBundleView
 {
     private readonly byte[]? normalizedManifestBytes;
+    private readonly byte[]? initialSnapshotBytes;
 
     internal ManeuverChildBundleView(
         string path,
@@ -34,7 +35,9 @@ internal sealed class ManeuverChildBundleView
         ExerciseSeedLedger? seedLedger,
         ExerciseRunResult runResult,
         ExerciseCheckResults checkResults,
-        int acceptedStepCount)
+        int acceptedStepCount,
+        IEnumerable<ExerciseAcceptedActionRecord>? acceptedActions = null,
+        byte[]? initialSnapshotBytes = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(path);
         if (!Enum.IsDefined(profile)) throw new ArgumentOutOfRangeException(nameof(profile));
@@ -54,6 +57,12 @@ internal sealed class ManeuverChildBundleView
         RunResult = runResult;
         CheckResults = checkResults;
         AcceptedStepCount = acceptedStepCount;
+        AcceptedActions = Array.AsReadOnly((acceptedActions ?? []).ToArray());
+        if (acceptedActions is not null && AcceptedActions.Count != acceptedStepCount)
+            throw new ArgumentException(
+                "Accepted-action evidence must match the retained count.",
+                nameof(acceptedActions));
+        this.initialSnapshotBytes = initialSnapshotBytes?.ToArray();
     }
 
     internal string Path { get; }
@@ -65,6 +74,8 @@ internal sealed class ManeuverChildBundleView
     internal ExerciseRunResult RunResult { get; }
     internal ExerciseCheckResults CheckResults { get; }
     internal int AcceptedStepCount { get; }
+    internal IReadOnlyList<ExerciseAcceptedActionRecord> AcceptedActions { get; }
+    internal byte[]? InitialSnapshotBytes => initialSnapshotBytes?.ToArray();
 
     internal static ManeuverChildBundleView From(ExerciseBundle bundle)
     {
@@ -78,6 +89,8 @@ internal sealed class ManeuverChildBundleView
             bundle.SeedLedger,
             bundle.RunResult,
             bundle.CheckResults,
-            bundle.AcceptedActions.Count);
+            bundle.AcceptedActions.Count,
+            bundle.AcceptedActions,
+            bundle.InitialSnapshotBytes);
     }
 }
