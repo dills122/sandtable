@@ -86,7 +86,8 @@ and submit a current typed Legal Action. The Umpire now resolves Operation Stage
 explicit Initiative, Naval Convoy Schedule, Tactical Shipping, Initiative Declaration, and Weather
 events; resolves the admitted empty Organization, Naval Convoy Arrival, Fleet Assignment, and Fleet
 Repair obligations through four distinct event types; then adjudicates the first-acting side's
-Reserve Designation and stops at Movement. The authoritative `ActiveSide` remains unset at both
+Reserve Designation, executes supported observation-derived non-contact Movement, and completes to
+the Breakdown Determination checkpoint. The authoritative `ActiveSide` remains unset at both
 relative-actor positions; observation and legal-action audiences derive the acting side from the
 recorded Operation Stage order.
 Walking the published sequence catalog for inspection does not create Chronicle history.
@@ -559,7 +560,8 @@ The implemented Movement Foundation keeps **representation** as Umpire truth and
 its hidden binding; an apparent presence is the side-safe fact that a player may use when choosing
 a move. Neither is a **Contact** yet: the accepted `CONTACT-001` lock derives Contact from
 enemy-ZOC presence at the beginning of a Movement Segment and makes Engaged a Close Assault result;
-their production contracts remain gated behind `MOV-TASK-008`-`010` and approved spec/design.
+their production contracts remain gated behind completion of `MOV-TASK-009`-`010` and approved
+spec/design.
 **Capability Point expenditure** is the exact amount already spent during the current Operation
 Stage; it is not a replenishing UI movement allowance. **Complete Movement** is a real player
 decision that advances to Breakdown Determination, not a runner stop condition. These names are
@@ -576,10 +578,11 @@ projection, and `MOV-TASK-006` freezes dormant typed **Move Element** and **Comp
 Segment** outputs with deterministic identities and explanatory exact costs. **Route adjustment**
 means either an exact Road override of destination-terrain cost or an exact Track scale of that
 terrain cost; crossed-hexside additions are then applied separately;
-**hexside addition** names an ordered Ridge or directional Slope increment. These are output
-contract names and now have internal authoritative move/event semantics, but they are not yet
-public legal actions. `MOV-TASK-008` is the next delivery gate for public Movement membership and
-completion. **Breakdown continuity** names replay state and rules
+**hexside addition** names an ordered Ridge or directional Slope increment. These output contract
+names now have internal authoritative move/event semantics and observation-derived public legal
+actions. `MOV-TASK-008` publishes exact move/completion membership and submission through the
+Breakdown Determination checkpoint; `MOV-TASK-009` is the next checked Exercise/Maneuver evidence
+gate. **Breakdown continuity** names replay state and rules
 identity, not Breakdown adjudication: no roll, result, loss, or Movement BP mutation is implemented.
 **Enemy ZOC** is the triggering board condition and **Reaction** is the persisted non-phasing
 interruption it opens. The five `CONTACT-001` rulings for Reaction ordering, repeat eligibility,
@@ -587,9 +590,9 @@ decline scope, waiting visibility, and positive-ZOC authority are accepted resea
 production contract. Immediate enemy-ZOC entry creates neither **Contact** nor **Engaged**: Contact
 is derived from enemy-ZOC presence at the beginning of a Movement Segment, while Engaged is a Close
 Assault result. The repeatable **Movement/Combat cycle** remains a Sprint 5 research-gated domain
-concept. No ZOC/Reaction implementation is authorized before `MOV-TASK-008`-`010` and an approved
-specification/design package, and none of these later terms should be inferred inside the current
-non-contact Movement resolver.
+concept. No ZOC/Reaction implementation is authorized before `MOV-TASK-009`-`010` complete and an
+approved specification/design package, and none of these later terms should be inferred inside the
+current non-contact Movement resolver.
 
 **War College** is where we evaluate commanders.
 

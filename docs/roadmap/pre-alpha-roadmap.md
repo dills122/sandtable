@@ -106,7 +106,7 @@ Optional parser evidence gate
 | Source/ruleset provenance, synthetic content, world, authority, events, and replay foundations | Implemented | Preserve exact identities and deterministic history while mechanics expand |
 | Side-safe observations and legal-action enforcement | Implemented for the current synthetic path | Extend only with each new mechanic and its disclosure tests |
 | Mandatory turn preamble | Implemented through Reserve Designation completion | Preserve the exact Movement terminal while later mechanics expand |
-| Movement and contact | Rules, Content mobility, replay-complete internal world/representation contracts, Breakdown continuity, side-safe observation, dormant action contracts, and internal non-contact adjudication complete | Implement `MOV-TASK-008` public Movement membership and completion |
+| Movement and contact | Rules, Content mobility, replay-complete world/representation contracts, Breakdown continuity, side-safe observation, and the public non-contact move/completion vertical are complete through `MOV-TASK-008` | Implement `MOV-TASK-009` checked Exercise/Maneuver Movement evidence |
 | Combat | Research active; source inventory and `CMB-RSH-001` result-surface spike complete; implementation not started | Contract freeze depends on approved Breakdown and ZOC/Reaction boundaries |
 | Working pre-alpha skeleton | Not reached | Requires one authentic movement/contact/combat loop with replay |
 | First-scenario content and remaining Land systems | Milestone-level; not started | Re-estimate after the skeleton exposes exercised-rule and transcription scope |
@@ -115,8 +115,9 @@ Optional parser evidence gate
 | Exercise Harness | Single-Exercise, serial-unpaired Maneuver, controller matrix, and optional serial-paired comparison implemented | Preserve strict trusted evidence; side-safe export, model controllers, and parallel/distributed execution remain deferred |
 
 The roadmap deliberately distinguishes foundation maturity from playable breadth. The architecture
-is substantially established, but the campaign is not playable while authority stops at Movement
-and movement, combat, victory, persistence, and Maproom remain absent.
+is substantially established, but the campaign is not playable while authority stops at the
+Breakdown Determination checkpoint and Breakdown adjudication, contact, combat, victory,
+persistence, and Maproom remain absent.
 
 ### Sprint status summary
 
@@ -126,7 +127,7 @@ and movement, combat, victory, persistence, and Maproom remain absent.
 | 1 — Replayable Umpire spine | Complete for the admitted synthetic path | Extend versioned authority, event, replay, and deterministic-random contracts with each mechanic |
 | 2 — Rules laboratory and legal-action boundary | Complete for the admitted synthetic path | Keep outward actions observation-derived and revalidate exact membership at submission |
 | 3 — Mandatory turn preamble | Complete for the admitted synthetic no-obligation path | Positive Organization/convoy/fleet cases remain explicit later-scenario work; authority currently stops at Movement |
-| 4 — Movement, Breakdown, and Reaction boundary | Active | Movement Tasks 001-007 are implemented; Task 008 public Movement membership and completion is next |
+| 4 — Movement, Breakdown, and Reaction boundary | Active | Movement Tasks 001-008 are implemented; Task 009 checked Exercise/Maneuver adoption is next |
 | 5 — Combat and continual-cycle loop | Source inventory and `CMB-RSH-001` complete; not implementation-ready | Freeze contracts only after approved Breakdown and ZOC/Reaction boundaries define Contact/Engaged identity |
 | 6 — Scenario Group One content | Milestone-level; not started | Begin after the working pre-alpha skeleton measures the exact exercised-rule/data surface |
 | 7 — Remaining required Land systems | Milestone-level; not started | Split from the measured first-scenario rule inventory rather than treating it as one task |
@@ -268,8 +269,9 @@ block the authoritative gameplay dependency graph. The implemented engine work r
 [Operation-Stage Entry research](../research/operation-stage-entry-spike.md),
 [specification](../specs/operation-stage-entry-v1.md), and
 [technical design](../design/operation-stage-entry-v1.md), followed by the implemented
-[Reserve Designation package](../design/reserve-designation-v1.md). Internal non-contact Movement
-behavior is implemented; its public action/completion boundary remains `MOV-TASK-008`.
+[Reserve Designation package](../design/reserve-designation-v1.md). Public observation-derived
+non-contact Movement and completion to Breakdown Determination are implemented in `MOV-TASK-008`;
+checked Harness adoption remains `MOV-TASK-009`.
 
 ## Cross-cutting future player interaction: Player Intent Composer v1
 
@@ -515,8 +517,8 @@ Continue the synthetic campaign from Naval Convoy, make the available preamble d
 Weather, Organization/stage-entry obligations, and Reserve in their separately gated capabilities,
 then stop at Movement with a replay-identical Chronicle. Task 3.3 independently stops at
 Organization; the implemented Task 3.4 explicit-empty checkpoint independently stops at Reserve;
-Task 3.5 reaches Movement. Sprint 4 is active: `MOV-TASK-004B` through `MOV-TASK-007` are complete,
-and `MOV-TASK-008` is the next Movement behavior slice.
+Task 3.5 reaches Movement. Sprint 4 is active: `MOV-TASK-004B` through `MOV-TASK-008` are complete,
+and `MOV-TASK-009` is the next checked Exercise/Maneuver evidence slice.
 
 ## Sprint 4: Movement, Breakdown, and Reaction boundary
 
@@ -539,7 +541,9 @@ the exact BP/cohort/world seam and has passed its repository and independent-rev
 canonical readback. `MOV-TASK-006` freezes the dormant move/completion, action-ID, cost, derivation,
 and strict action/submission/receipt readback contracts without making Movement public or
 executable. `MOV-TASK-007` implements internal adjudication, canonical events, atomic projection,
-and deterministic replay; `MOV-TASK-008` is next.
+and deterministic replay. `MOV-TASK-008` atomically publishes observation-derived move and
+completion membership, exact submission mapping, canonical completion to Breakdown Determination,
+fog equivalence, and zero/one/many-move replay; `MOV-TASK-009` is next.
 
 The approved delivery sequence adds a necessary fog-safety gate before the original task list:
 
@@ -564,23 +568,23 @@ later Sprint 4/5 slices rather than hidden additions to the first Movement resol
 | 4A — Movement authority foundation | `MOV-TASK-001`-`004` | Exact rules/content/world contracts exist; no public Movement action | Complete and merged in PR #29 |
 | 4A.5 — Breakdown continuity | `BREAKDOWN-001`, `MOV-TASK-004B` | Approved sequential d6, continuity-now, and Table 21.38 Sandstorm BP basis; Rules/Content/World migration implemented | Complete; repository gate and two fresh-context review instances passed |
 | 4B — Side-safe outward contract | `MOV-TASK-005` | Own mobility/ledger and apparent opposing presence plus own BP/cohort risk project without hidden leakage | Complete; repository and independent-review gates passed |
-| 4C — Atomic non-contact Movement vertical | `MOV-TASK-006`-`008` | Tasks 006-007 dormant contracts and internal adjudication complete; atomic public publication remains Task 008 | Independent implementation review before Harness adoption |
+| 4C — Atomic non-contact Movement vertical | `MOV-TASK-006`-`008` | Dormant contracts, internal adjudication, and atomic public move/completion publication through Breakdown Determination are complete | Complete; focused/full gates and independent implementation review passed |
 | 4D — Checked evidence and closeout | `MOV-TASK-009`-`010` | Reserve policy matrix executes supported Movement to Breakdown with strict readback and synchronized evidence | Full repository gate, final independent review, then PR |
-| 4E — ZOC/Reaction interruption | accepted `CONTACT-001`, then separately approved `ZOR-TASK-001`-`007` | Enemy-ZOC entry can interrupt phasing Movement for an opponent decision and deterministic decline/resumption | No production task before `MOV-TASK-008`-`010` complete and a ZOC/Reaction specification/design package is approved; Contact/Engaged remain Sprint 5 |
+| 4E — ZOC/Reaction interruption | accepted `CONTACT-001`, then separately approved `ZOR-TASK-001`-`007` | Enemy-ZOC entry can interrupt phasing Movement for an opponent decision and deterministic decline/resumption | No production task before `MOV-TASK-009`-`010` complete and a ZOC/Reaction specification/design package is approved; Contact/Engaged remain Sprint 5 |
 
 ### Current parallel execution window
 
 The remaining authoritative Movement chain remains serial at its versioned contract boundaries:
-`MOV-TASK-008` -> `MOV-TASK-009` -> `MOV-TASK-010`. Task 007's internal move is now executable, so
-Task 008 may publish the complete move-and-completion vertical; Task 009 must not freeze Harness
-evidence until that public boundary exists.
+`MOV-TASK-009` -> `MOV-TASK-010`. Task 008's public move-and-completion vertical now exists, so Task
+009 may adopt it in checked Harness evidence before Task 010 synchronizes and reviews the completed
+package.
 
-The following independent lanes may proceed beside Task 008 in separate worktrees and PRs:
+The following independent lanes may proceed beside Task 009 in separate worktrees and PRs:
 
 | Lane | Scope now | Collision / merge gate |
 | --- | --- | --- |
-| `EXR-TASK-016` Harness reconciliation | Six shared developer/user-facing documents, exact runnable examples, traceability, repository gate, and independent review | This closeout owns the shared repository-map files; land before `MOV-TASK-009` changes Runner evidence |
-| Accepted `CONTACT-001` decision lock | All five owner rulings are accepted: reactor ordering, repeat eligibility, decline scope, waiting visibility, and positive-ZOC vocabulary | Decision evidence only; no `ZOR-TASK-*` production work before `MOV-TASK-008`-`010` and an approved specification/design package |
+| `EXR-TASK-016` Harness reconciliation | Six shared developer/user-facing documents, exact runnable examples, traceability, repository gate, and independent review | Complete and merged in PR #75; preserve its serial-unpaired/serial-paired and trusted-artifact boundaries during Movement adoption |
+| Accepted `CONTACT-001` decision lock | All five owner rulings are accepted: reactor ordering, repeat eligibility, decline scope, waiting visibility, and positive-ZOC vocabulary | Decision evidence only; no `ZOR-TASK-*` production work before `MOV-TASK-009`-`010` complete and an approved specification/design package |
 | `CMB-RSH-002`-`004`, `CYCLE-RSH-001`, `RESREL-RSH-001` | Normalize static content, mutable state, RNG evidence, cycle identity, and Reserve Release inputs | Research only; reconcile after Contact/ZOC and Breakdown gates before any combat design freeze |
 | `CIH-IMP-004` offline Markdown links | Add a repository-local offline link gate with reviewed exclusions and a broken-link negative | Begin after the central documentation sync; keep shared architecture/status docs under one owner |
 
@@ -588,10 +592,11 @@ Maproom, campaign hosting/dispatch, provider-backed Intelligence, and their beha
 observability remain held until their roadmap triggers exist. Current service projects are
 scaffolds, not unfinished work that should compete with the authoritative Movement path.
 
-Tasks 005-010 remain serial at their contract boundaries; Tasks 005-007 are now complete. The
+Tasks 005-010 remain serial at their contract boundaries; Tasks 005-008 are now complete. The
 owner approved the bounded
 Rules/Content/World BP continuity lane as Task 004B before Task 005. ZOC/Reaction implementation
-still waits for `MOV-TASK-008`-`010` and an approved governing specification/design package.
+still waits for `MOV-TASK-009`-`010` complete and an approved governing specification/design
+package.
 
 The [Sprint 4-5 research-gate audit](../research/sprint-4-5-research-gates.md) opens three bounded
 packets without authorizing their implementations:
@@ -599,7 +604,7 @@ packets without authorizing their implementations:
 | Research gate | Status | Decision/implementation dependency |
 | --- | --- | --- |
 | `BREAKDOWN-001` | Approved and completed in `MOV-TASK-004B` | Exact BP, synthetic Truck cohort, Sandstorm-attributed world continuity, identity migration, and review are closed; Task 005 projects the approved owner subset |
-| `CONTACT-001` | Decision-complete; all five rulings accepted in PR #71; no production task authorized | Preserve the accepted research packet; begin no `ZOR-TASK-*` implementation before `MOV-TASK-008`-`010` and an approved ZOC/Reaction specification/design package; Contact/Engaged remain Sprint 5 |
+| `CONTACT-001` | Decision-complete; all five rulings accepted in PR #71; no production task authorized | Preserve the accepted research packet; begin no `ZOR-TASK-*` implementation before `MOV-TASK-009`-`010` complete and an approved ZOC/Reaction specification/design package; Contact/Engaged remain Sprint 5 |
 | `COMBAT-CYCLE-001` | Source inventory complete; contract freeze waits for Breakdown and ZOC/Reaction | Replace provisional Sprint 5 headings with reviewed private-choice, simultaneous-resolution, Reserve Release, and repeat-cycle contracts |
 
 ### Task 4.1 - Capability Points and the initial cohesion ledger
@@ -607,7 +612,8 @@ packets without authorizing their implementations:
 **Status:** Foundation partially implemented. Exact amounts/tables and initial replayable
 expenditure/Cohesion state are complete in `MOV-TASK-002` and `MOV-TASK-004`; accepted Movement
 ledger mutation and authority-side over-CPA rejection are complete in `MOV-TASK-007`; public
-Movement membership and completion remain `MOV-TASK-008`. Approved BP
+Movement membership and completion to Breakdown Determination are complete in `MOV-TASK-008`.
+Approved BP
 continuity is implemented and independently reviewed in `MOV-TASK-004B`; Task 005 freezes outward
 observation and Task 006 freezes dormant action contracts.
 
@@ -628,10 +634,10 @@ capabilities after their source contract and Breakdown adjudication are designed
 ### Task 4.2 - Terrain, stacking, and zones of control
 
 **Status:** Normalized supported terrain/edge/stacking tables are implemented in `MOV-TASK-002`.
-Dormant candidate contracts (`MOV-TASK-006`) and internal command/event/adjudication/replay
-(`MOV-TASK-007`) are complete; `MOV-TASK-008` remains next for public legal-action membership and
-Movement completion. Enemy-ZOC behavior is outside Movement Foundation v1 and requires the later
-Sprint 4 ZOC/Reaction package.
+Dormant candidate contracts (`MOV-TASK-006`), internal command/event/adjudication/replay
+(`MOV-TASK-007`), and public legal-action membership/completion (`MOV-TASK-008`) are complete;
+`MOV-TASK-009` remains next for checked Harness adoption. Enemy-ZOC behavior is outside Movement
+Foundation v1 and requires the later Sprint 4 ZOC/Reaction package.
 
 Implement only the terrain and unit categories present in the rules laboratory, using normalized
 tables rather than resolver constants.
@@ -646,7 +652,7 @@ tables rather than resolver constants.
 
 **Status:** Decision-complete research exists and all five owner rulings are accepted in PR #71;
 implementation is not authorized. No `ZOR-TASK-*` production work begins before
-`MOV-TASK-008`-`010` and an approved ZOC/Reaction specification/design package.
+`MOV-TASK-009`-`010` complete and an approved ZOC/Reaction specification/design package.
 
 Allow enemy-ZOC entry to end the mover, open a persisted non-phasing Reaction window, accept
 side-safe Reaction or deterministic decline, and resume the phasing Movement position. Use the
