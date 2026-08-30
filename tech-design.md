@@ -618,7 +618,8 @@ contested Initiative Determination, explicitly resolve the two admitted no-oblig
 checkpoints, record the pair-keyed Operation Stage 1 first/second actor order, resolve deterministic
 Weather, resolve the four admitted empty Organization/Naval Convoy Arrival/Fleet obligations through
 distinct commands and events, designate zero or more first-side Reserve I elements, complete the
-Reserve decision, and stop at Movement. It validates
+Reserve decision, execute zero or more supported first-side non-contact moves, and complete
+Movement to the Breakdown Determination checkpoint. It validates
 internal snapshots before adjudication and recomputes events during projection rather than trusting
 caller-supplied outcomes or provenance. Canonical snapshot and event serialization plus the
 internal replay harness prove reconstruction of accepted campaign history without ambient
@@ -757,9 +758,9 @@ legal-action flow, per-element Reserve I authority, owner-only projection, repla
 multi-event checkpoint validation, and checked harness proof through Movement. Implementation
 includes the rules artifact, world/snapshot and owner-observation contracts, subject-bearing
 candidates, command mapping, exact designation/completion events, strict finite Reserve/Movement
-validation, and standalone plus two-setup replay evidence. Internal non-contact Movement
-adjudication and replay are now implemented; public Movement membership and completion remain
-pending.
+validation, and standalone plus two-setup replay evidence. Public observation-derived non-contact
+Movement membership, exact submission mapping, adjudication, completion to Breakdown
+Determination, and replay are now implemented; checked Harness adoption remains `MOV-TASK-009`.
 The active owner-approved engine package is the Movement Foundation
 [research](docs/research/movement-foundation-spike.md),
 [specification](docs/specs/movement-foundation-v1.md), and
@@ -782,8 +783,11 @@ Candidate, submission, and receipt contracts remain version 1 and the action-set
 version 2. Task 007 adds the internal `MoveElement` command and canonical `ElementMoved` event,
 authoritative cost/provenance recalculation, single-event engine dispatch, atomic element,
 representation, and ledger projection, strict event readback, and deterministic multi-event
-replay. No Movement campaign action is public or executable through the player submission boundary
-yet. The
+replay. Task 008 adds the `CompleteMovementSegment` command and canonical
+`MovementSegmentCompleted` event, strict codec/projection/replay support, exact completion to the
+first-side Breakdown Determination checkpoint, and atomic public move-plus-completion membership.
+Submission revalidates exact current observation-derived membership before either command executes;
+no Breakdown campaign action is public yet. The
 [Sprint 4-5 research-gate audit](docs/research/sprint-4-5-research-gates.md) makes
 `BREAKDOWN-001` explicit: minimum Breakdown Point continuity is recorded now, sequential d6 form
 the `11`-`66` coordinate, and Sandstorm eligibility uses Table 21.38's share of accumulated BP.
@@ -792,7 +796,8 @@ two fresh-context review instances. `MOV-TASK-005` projects the approved own mob
 Cohesion, and BP/cohort-risk facts plus the minimum opaque apparent-opponent shape.
 `MOV-TASK-006` freezes the dormant action-contract cut. `MOV-TASK-007` implements the internal
 non-contact command/event/adjudication vertical while keeping public membership dormant;
-`MOV-TASK-008` next exposes Movement membership and completion through the public boundary.
+`MOV-TASK-008` exposes the complete observation-derived move-and-completion vertical through the
+public boundary. `MOV-TASK-009` next adopts that path in checked Exercise/Maneuver evidence.
 
 The [ZOC/Reaction spike](docs/research/contact-reaction-zoc-spike.md) and accepted
 [CONTACT-001 ruling lock](docs/research/contact-reaction-zoc-source-ruling-lock.md) separate
@@ -807,8 +812,8 @@ evidence, not an implemented combat contract. Current proposals use trusted-Umpi
 the same pre-state for simultaneous combat, and structural sequence positions plus cycle identity;
 none is implemented or approved yet.
 All five `CONTACT-001` rulings are accepted, but they remain research inputs only. No ZOC/Reaction
-production task is authorized before `MOV-TASK-008`-`010` and an approved specification/design
-package. The implemented paired comparison does not block that engine work.
+production task is authorized before `MOV-TASK-009`-`010` complete and an approved
+specification/design package. The implemented paired comparison does not block that engine work.
 
 [1]: https://learn.microsoft.com/en-us/dotnet/orleans/grains/external-tasks-and-grains "External tasks and grains - .NET | Microsoft Learn"
 [2]: https://learn.microsoft.com/en-us/aspnet/core/grpc/performance?view=aspnetcore-10.0 "Performance best practices with gRPC | Microsoft Learn"

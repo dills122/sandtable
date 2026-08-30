@@ -82,10 +82,19 @@ public sealed class CampaignReserveEndToEndTests
         Assert.Equal(initialBytes,
             CampaignSnapshotSerializer.Serialize(initialReserve));
 
-        foreach (var queryAudience in Enum.GetValues<CampaignActionAudience>())
-        {
-            Assert.Empty(Query(snapshot, evidence.Context, queryAudience).Candidates);
-        }
+        var movement = Query(snapshot, evidence.Context, audience);
+        Assert.Single(movement.Candidates.OfType<CompleteMovementSegmentAction>());
+        Assert.Empty(movement.Candidates.OfType<MoveElementAction>());
+        Assert.Empty(Query(
+            snapshot,
+            evidence.Context,
+            audience == CampaignActionAudience.Axis
+                ? CampaignActionAudience.Commonwealth
+                : CampaignActionAudience.Axis).Candidates);
+        Assert.Empty(Query(
+            snapshot,
+            evidence.Context,
+            CampaignActionAudience.System).Candidates);
 
         var generic = CampaignEngine.Decide(
             snapshot,

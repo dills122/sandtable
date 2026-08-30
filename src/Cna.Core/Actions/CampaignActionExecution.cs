@@ -181,6 +181,20 @@ internal static class CampaignActionExecution
                     snapshot.StateVersion,
                     snapshot.SequencePosition.PositionId,
                     ToSide(audience)),
+            MoveElementAction move when audience != CampaignActionAudience.System =>
+                new MoveElement(
+                    snapshot.StateVersion,
+                    snapshot.SequencePosition.PositionId,
+                    ToSide(audience),
+                    move.ActionId,
+                    move.ElementId,
+                    move.OriginLocationId,
+                    move.DestinationLocationId),
+            CompleteMovementSegmentAction when audience != CampaignActionAudience.System =>
+                new CompleteMovementSegment(
+                    snapshot.StateVersion,
+                    snapshot.SequencePosition.PositionId,
+                    ToSide(audience)),
             _ => throw new InvalidOperationException(
                 "The legal candidate has no command mapping."),
         };

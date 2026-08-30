@@ -6,41 +6,46 @@ using Cna.Core.Tests.Campaigns;
 
 namespace Cna.Core.Tests.Actions;
 
-public sealed class CampaignMovementDormancyTests
+public sealed class CampaignMovementAtomicPublicationTests
 {
     [Fact]
-    public void PublicMovementQueryRemainsEmptyForEveryAudience()
-    {
-        var handle = ReachMovement();
-
-        foreach (var audience in Enum.GetValues<CampaignActionAudience>())
-        {
-            var result = CampaignLegalActions.Query(handle, audience);
-
-            Assert.True(result.IsSuccessful);
-            Assert.Empty(result.ActionSet!.Candidates);
-        }
-    }
-
-    [Fact]
-    public void WellFormedDormantMovementIdsRejectWithoutEventReceiptOrMutation()
+    public void PublicMovementQueryPublishesTheCompleteVerticalOnlyToTheActingSide()
     {
         var handle = ReachMovement();
         var side = FirstActingSideResolver.Resolve(handle.Snapshot);
         var audience = CampaignReserveActionTestData.ToAudience(side);
-        var projection = CampaignObservationProjector.Project(
-            handle.Snapshot,
-            handle.Context,
-            side);
-        var observation = Assert.IsType<CampaignObservation>(projection.Observation);
-        var dormantCandidates = CampaignMovementActionDerivation.Derive(observation);
+        var opponent = audience == CampaignActionAudience.Axis
+            ? CampaignActionAudience.Commonwealth
+            : CampaignActionAudience.Axis;
+
+        var acting = CampaignLegalActions.Query(handle, audience);
+
+        Assert.True(acting.IsSuccessful);
+        Assert.NotEmpty(acting.ActionSet!.Candidates.OfType<MoveElementAction>());
+        Assert.Single(acting.ActionSet.Candidates
+            .OfType<CompleteMovementSegmentAction>());
+        Assert.Empty(CampaignLegalActions.Query(handle, opponent)
+            .ActionSet!.Candidates);
+        Assert.Empty(CampaignLegalActions.Query(handle, CampaignActionAudience.System)
+            .ActionSet!.Candidates);
+    }
+
+    [Fact]
+    public void EveryPublishedMoveAndCompletionIsExecutableFromThePublishedAuthority()
+    {
+        var handle = ReachMovement();
+        var side = FirstActingSideResolver.Resolve(handle.Snapshot);
+        var audience = CampaignReserveActionTestData.ToAudience(side);
+        var query = CampaignLegalActions.Query(handle, audience);
+        Assert.True(query.IsSuccessful);
+        var publishedCandidates = query.ActionSet!.Candidates;
         var before = CampaignSnapshotSerializer.Serialize(handle.Snapshot);
 
-        Assert.Contains(dormantCandidates, candidate => candidate is MoveElementAction);
-        Assert.Contains(dormantCandidates,
+        Assert.Contains(publishedCandidates, candidate => candidate is MoveElementAction);
+        Assert.Contains(publishedCandidates,
             candidate => candidate is CompleteMovementSegmentAction);
 
-        foreach (var candidate in dormantCandidates)
+        foreach (var candidate in publishedCandidates)
         {
             var submission = new CampaignActionSubmission(
                 CampaignActionSubmission.CurrentContractVersion,
@@ -56,16 +61,13 @@ public sealed class CampaignMovementDormancyTests
                 submission);
             var publicResult = CampaignLegalActions.Submit(handle, submission);
 
-            Assert.Equal(CampaignActionSubmissionRejectionReason.ActionNotLegal,
-                execution.RejectionReason);
-            Assert.Null(execution.AcceptedEvent);
-            Assert.Null(execution.SuccessorSnapshot);
-            Assert.Null(execution.Receipt);
-            Assert.False(publicResult.IsAccepted);
-            Assert.Equal(CampaignActionSubmissionRejectionReason.ActionNotLegal,
-                publicResult.RejectionReason);
-            Assert.Null(publicResult.SuccessorHandle);
-            Assert.Null(publicResult.Receipt);
+            Assert.True(execution.IsAccepted);
+            Assert.NotNull(execution.AcceptedEvent);
+            Assert.NotNull(execution.SuccessorSnapshot);
+            Assert.NotNull(execution.Receipt);
+            Assert.True(publicResult.IsAccepted);
+            Assert.NotNull(publicResult.SuccessorHandle);
+            Assert.NotNull(publicResult.Receipt);
             Assert.Equal(before, CampaignSnapshotSerializer.Serialize(handle.Snapshot));
         }
     }

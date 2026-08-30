@@ -10,3 +10,8 @@ internal sealed record MoveElement(
     string ElementId,
     string OriginLocationId,
     string DestinationLocationId) : CampaignCommand(1, ExpectedStateVersion);
+
+internal sealed record CompleteMovementSegment(
+    long ExpectedStateVersion,
+    string ExpectedPositionId,
+    LandSide ActingSide) : CampaignCommand(1, ExpectedStateVersion);

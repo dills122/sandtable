@@ -394,3 +394,70 @@ internal sealed record ElementMoved : CampaignEvent
         return hash.ToHashCode();
     }
 }
+
+internal sealed record MovementSegmentCompleted : CampaignEvent
+{
+    public MovementSegmentCompleted(
+        string campaignId,
+        long stateVersion,
+        long priorStateVersion,
+        string fromPositionId,
+        int gameTurn,
+        int operationStage,
+        LandSide actingSide,
+        LandSequencePosition sequencePosition)
+        : base(1, campaignId, stateVersion)
+    {
+        ArgumentNullException.ThrowIfNull(sequencePosition);
+        PriorStateVersion = priorStateVersion;
+        FromPositionId = ContentContractGuards.RequireStableId(
+            fromPositionId,
+            nameof(fromPositionId));
+        GameTurn = gameTurn;
+        OperationStage = operationStage;
+        ActingSide = actingSide;
+        SequencePosition = sequencePosition;
+        ValidateContract();
+    }
+
+    public long PriorStateVersion { get; }
+
+    public string FromPositionId { get; }
+
+    public int GameTurn { get; }
+
+    public int OperationStage { get; }
+
+    public LandSide ActingSide { get; }
+
+    public LandSequencePosition SequencePosition { get; }
+
+    internal void ValidateContract()
+    {
+        _ = ContentContractGuards.RequireStableId(CampaignId, nameof(CampaignId));
+        var movement = Cna1979LandSequence.CreateTurn(GameTurn).Single(value =>
+            value.OperationStage == 1
+            && value.PhaseId == LandPhaseIds.MovementAndCombat
+            && value.SegmentId == LandSegmentIds.Movement
+            && value.ActorRole == LandActorRole.FirstActingSide);
+        var breakdown = Cna1979LandSequence.GetNext(movement);
+        if (ContractVersion != 1
+            || StateVersion < 12
+            || PriorStateVersion < 11
+            || checked(PriorStateVersion + 1) != StateVersion
+            || OperationStage != 1
+            || !Enum.IsDefined(ActingSide)
+            || !string.Equals(FromPositionId, movement.PositionId, StringComparison.Ordinal)
+            || SequencePosition != breakdown
+            || breakdown.GameTurn != GameTurn
+            || breakdown.OperationStage != OperationStage
+            || breakdown.PhaseId != LandPhaseIds.MovementAndCombat
+            || breakdown.SegmentId != LandSegmentIds.BreakdownDetermination
+            || breakdown.ActorRole != LandActorRole.FirstActingSide
+            || breakdown.ActiveSide is not null)
+        {
+            throw new ArgumentException(
+                "The MovementSegmentCompleted event contract is invalid.");
+        }
+    }
+}

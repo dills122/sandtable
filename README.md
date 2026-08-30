@@ -53,15 +53,16 @@ scenario; project the scenario's initial mutable element locations; resolve Init
 Determination and both admitted no-obligation Naval Convoy checkpoints; let the initiative holder
 declare whether to act first or last in Operation Stage 1; resolve Weather; emit authoritative
 events; explicitly resolve empty Organization, Naval Convoy Arrival, Fleet Assignment, and Fleet
-Repair obligations; adjudicate the first-acting side's Reserve Designation; stop at Movement; and
+Repair obligations; adjudicate the first-acting side's Reserve Designation; execute supported
+first-side non-contact Movement; complete Movement to Breakdown Determination; and
 replay those events to byte-identical state. Reserve authority now carries per-element status,
 owner-only observation, exact acting-side candidates, closed command mapping, bounded checkpoints,
 and canonical designation/completion events. The Movement foundation additionally records exact
 per-Operation-Stage expenditure/Cohesion state and opaque one-to-one map representations. It now
-also carries dormant typed move/completion candidates, deterministic action identities, an exact
-side-safe cost breakdown, strict non-authoritative readback, and internal authoritative
-non-contact move adjudication/replay without yet exposing Movement through the public legal-action
-boundary. Ruleset manifest contract 7, setup schema 5, snapshot contract 9,
+also carries typed move/completion candidates, deterministic action identities, an exact side-safe
+cost breakdown, strict non-authoritative readback, internal authoritative non-contact move
+adjudication/replay, and observation-derived public action membership with exact submission
+revalidation. Ruleset manifest contract 7, setup schema 5, snapshot contract 9,
 Campaign World snapshot contract 4, Campaign Observation contract 5, legal-action-set contract 2,
 and Content Pack schema 4 / canonical format v3 use an original nine-hex,
 nonhistorical rules laboratory to develop game systems without redistributing published assets.
@@ -118,9 +119,9 @@ none/one/all controller profiles rather than seed variation alone. See
 [controller-policy matrix](docs/research/simulator-controller-matrix.md) closes that explicit
 coverage gap with 6/6 strictly read-back trajectories and a repeatable aggregate fingerprint.
 
-Positive Organization/stage-entry obligations, public Movement membership/completion, contact,
-combat, published scenario content, persistence, and the Maproom player interface remain future
-work.
+Positive Organization/stage-entry obligations, checked Exercise/Maneuver Movement adoption,
+Breakdown adjudication, contact, combat, published scenario content, persistence, and the Maproom
+player interface remain future work.
 
 The reviewed Player Intent Composer is also future work. After the movement/contact/combat skeleton
 proves one representative multi-field decision, a no-model prototype will validate contextual
@@ -135,7 +136,7 @@ The current delivery boundary is:
 | Ruleset/provenance, synthetic content, campaign authority, deterministic randomness, events, and replay | Implemented foundation |
 | Side-safe observations and exact-audience legal actions | Implemented for the current rules-laboratory path |
 | Mandatory turn preamble | Implemented through Reserve Designation completion; authority reaches first-side Movement |
-| Movement/contact and combat loops | Movement Foundation rules, Content mobility, replay-complete world/representation state, approved Breakdown continuity, the v5 side-safe observation boundary, dormant Movement action contracts, and internal non-contact adjudication/replay are complete through `MOV-TASK-007`; `MOV-TASK-008` public Movement membership and completion remain next |
+| Movement/contact and combat loops | Movement Foundation rules, Content mobility, replay-complete world/representation state, approved Breakdown continuity, the v5 side-safe observation boundary, and public non-contact move/completion execution to Breakdown Determination are complete through `MOV-TASK-008`; `MOV-TASK-009` checked Exercise/Maneuver adoption is next |
 | Published first-scenario data, remaining Land rules, victory, persistence, and Maproom | Milestone-level; not started |
 | Player Intent Composer | Direction reviewed; representative decision after the combat skeleton, no-model prototype before Maproom, optional parser evaluation after deterministic MVP |
 | Exercise Harness | Single-Exercise, serial-unpaired two-setup and six-policy Maneuvers, and optional serial-paired descriptive comparison implemented with strict readback |
@@ -181,8 +182,11 @@ candidates, exact cost semantics, deterministic IDs, pure observation-derived ve
 non-authoritative action/submission/receipt readback while preserving the existing contract
 versions. `MOV-TASK-007` adds the internal move command and canonical event, authoritative
 cost/provenance recalculation, engine dispatch, atomic projection, and deterministic replay.
-Movement campaign actions deliberately remain absent from public legal-action sets and unsupported
-for submission; public membership, completion, and acceptance receipts belong to `MOV-TASK-008`.
+`MOV-TASK-008` atomically publishes observation-derived move and completion membership, maps only
+exact current submissions, adds canonical Movement completion through the Breakdown Determination
+checkpoint, and preserves deterministic fog-equivalent actions and zero/one/many-move replay.
+Breakdown public actions and adjudication remain absent; `MOV-TASK-009` next adopts the supported
+Movement path in checked Exercise/Maneuver evidence.
 The optional paired comparison is implemented Runner instrumentation and does not block
 gameplay-engine progress.
 Combat research has progressed beyond the initial source inventory: `CMB-RSH-001` now retains the

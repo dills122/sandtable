@@ -446,7 +446,7 @@ public sealed class CampaignMovementAdjudicationTests
     }
 
     [Fact]
-    public void PublicMovementActionsRemainDormantAfterInternalMoves()
+    public void PublicMovementActionsRefreshFromTheMovedObservation()
     {
         var evidence = CampaignMovementTestData.ReachMovement();
         var candidate = CampaignMovementTestData.FindMove(
@@ -467,15 +467,29 @@ public sealed class CampaignMovementAdjudicationTests
             Assert.Single(decision.Events),
             evidence.Context);
 
-        foreach (var audience in Enum.GetValues<CampaignActionAudience>())
-        {
-            var result = CampaignLegalActions.Query(
-                new CampaignAuthorityHandle(moved, evidence.Context),
-                audience);
+        var actingAudience = CampaignReserveActionTestData.ToAudience(evidence.ActingSide);
+        var opponentAudience = actingAudience == CampaignActionAudience.Axis
+            ? CampaignActionAudience.Commonwealth
+            : CampaignActionAudience.Axis;
+        var acting = CampaignLegalActions.Query(
+            new CampaignAuthorityHandle(moved, evidence.Context),
+            actingAudience);
 
-            Assert.True(result.IsSuccessful);
-            Assert.Empty(result.ActionSet!.Candidates);
-        }
+        Assert.True(acting.IsSuccessful);
+        Assert.Single(acting.ActionSet!.Candidates
+            .OfType<CompleteMovementSegmentAction>());
+        Assert.NotEmpty(acting.ActionSet.Candidates.OfType<MoveElementAction>());
+        Assert.All(
+            acting.ActionSet.Candidates.OfType<MoveElementAction>()
+                .Where(move => move.ElementId == candidate.ElementId),
+            move => Assert.Equal(candidate.DestinationLocationId,
+                move.OriginLocationId));
+        Assert.Empty(CampaignLegalActions.Query(
+            new CampaignAuthorityHandle(moved, evidence.Context),
+            opponentAudience).ActionSet!.Candidates);
+        Assert.Empty(CampaignLegalActions.Query(
+            new CampaignAuthorityHandle(moved, evidence.Context),
+            CampaignActionAudience.System).ActionSet!.Candidates);
     }
 
     private static ElementMoved Copy(
