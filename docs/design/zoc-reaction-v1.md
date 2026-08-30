@@ -1,6 +1,6 @@
 # ZOC and Reaction v1 Technical Design
 
-**Status:** Proposed — owner approval required; no production task authorized
+**Status:** Approved — `ZOR-TASK-002A` is the active first production slice
 
 **Date:** 2026-08-30
 
@@ -366,7 +366,7 @@ ZOR-TASK-001 accepted ruling lock [complete]
 
 ### `ZOR-TASK-002` — Freeze Rules, Content, and fixtures
 
-- **002A:** prepare the dormant ruleset successor; add closed combat/ZOC vocabulary, predicates,
+- **002A (implemented by this checkpoint):** prepare the dormant ruleset successor; add closed combat/ZOC vocabulary, predicates,
   topology exclusions, provenance, checked arithmetic, and table-driven unit tests without changing
   the active ruleset identity.
 - **002B:** prepare the dormant Content successor; add strict component definitions/ratings and

@@ -564,8 +564,8 @@ The implemented Movement Foundation keeps **representation** as Umpire truth and
 its hidden binding; an apparent presence is the side-safe fact that a player may use when choosing
 a move. Neither is a **Contact** yet: the accepted `CONTACT-001` lock derives Contact from
 enemy-ZOC presence at the beginning of a Movement Segment and makes Engaged a Close Assault result;
-their production contracts remain gated behind completion of `MOV-TASK-009`-`010` and approved
-spec/design.
+their production contracts remain gated behind the approved dependency-ordered ZOC/Reaction
+spec/design slices.
 **Capability Point expenditure** is the exact amount already spent during the current Operation
 Stage; it is not a replenishing UI movement allowance. **Complete Movement** is a real player
 decision that advances to Breakdown Determination, not a runner stop condition. These names are
@@ -592,20 +592,20 @@ identity, not Breakdown adjudication: no roll, result, loss, or Movement BP muta
 **Enemy ZOC** is a Umpire-derived board fact; authoritative adjacency to a non-phasing represented
 combat element after a committed phasing combat-element move is the **Reaction trigger**, even when
 that adjacent combat representation does not exert a
-positive ZOC. A **Reaction window** is the proposed persisted non-phasing interrupt, and a
+positive ZOC. A **Reaction window** is the approved persisted non-phasing interrupt, and a
 **Reaction participant episode** is one selected participant's one-or-more steps followed by
 completion. The five `CONTACT-001` rulings for ordering, repeat eligibility, decline scope, waiting
-visibility, and positive-ZOC authority are accepted inputs. Their proposed production contract is
+visibility, and positive-ZOC authority are accepted inputs. Their approved production contract is
 the [ZOC/Reaction specification](docs/specs/zoc-reaction-v1.md) and
-[technical design](docs/design/zoc-reaction-v1.md), pending owner approval. An **apparent enemy-
-controlled location** is the proposed side-safe aggregate fact that a location is controlled by at
+[technical design](docs/design/zoc-reaction-v1.md). An **apparent enemy-
+controlled location** is the approved side-safe aggregate fact that a location is controlled by at
 least one apparent enemy ZOC source; it exposes neither which presence controls it nor why. Immediate enemy-ZOC
 entry creates neither **Contact** nor **Engaged**: Contact
 is derived from enemy-ZOC presence at the beginning of a Movement Segment, while Engaged is a Close
 Assault result. The repeatable **Movement/Combat cycle** remains a Sprint 5 research-gated domain
-concept. Movement is now complete through `MOV-TASK-010`; ZOC/Reaction production still requires
-approval of its governing package, and none of these later terms should be inferred inside the
-current non-contact Movement resolver.
+concept. Movement is complete through `MOV-TASK-010`; `ZOR-TASK-002A` adds dormant Rules vocabulary
+and predicates without activating ZOC/Reaction or changing ruleset 7, and none of these later terms
+should be inferred inside the current non-contact Movement resolver.
 
 **War College** is where we evaluate commanders.
 

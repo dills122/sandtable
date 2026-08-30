@@ -142,7 +142,7 @@ The current delivery boundary is:
 | Ruleset/provenance, synthetic content, campaign authority, deterministic randomness, events, and replay | Implemented foundation |
 | Side-safe observations and exact-audience legal actions | Implemented for the current rules-laboratory path |
 | Mandatory turn preamble | Implemented through Reserve Designation completion; authority reaches first-side Movement |
-| Movement/contact and combat loops | Movement Foundation is complete through merged `MOV-TASK-010` / PR #79, including rules, Content mobility, replay-complete world/representation state, Breakdown continuity, side-safe non-contact movement, completion to Breakdown Determination, and checked Exercise evidence; the proposed ZOC/Reaction package awaits owner approval before production |
+| Movement/contact and combat loops | Movement Foundation is complete through merged `MOV-TASK-010` / PR #79; the approved ZOC/Reaction package is active, with `ZOR-TASK-002A` adding its dormant Rules successor vocabulary and predicates while ruleset 7 remains authoritative |
 | Published first-scenario data, remaining Land rules, victory, persistence, and Maproom | Milestone-level; not started |
 | Player Intent Composer | Direction reviewed; representative decision after the combat skeleton, no-model prototype before Maproom, optional parser evaluation after deterministic MVP |
 | Exercise Harness | Single-Exercise, serial-unpaired two-setup/controller/Movement Maneuvers, and optional serial-paired Reserve-policy and Movement-cost descriptive comparisons implemented with strict readback |
@@ -193,11 +193,11 @@ exact current submissions, adds canonical Movement completion through the Breakd
 checkpoint, and preserves deterministic fog-equivalent actions and zero/one/many-move replay.
 `MOV-TASK-009` is merged in PR #78 and adopts that supported Movement path in checked
 Exercise/Maneuver evidence. `MOV-TASK-010` completed synchronization and independent review and is
-merged in PR #79. Breakdown public actions and adjudication remain absent. The proposed next engine
+merged in PR #79. Breakdown public actions and adjudication remain absent. The approved next engine
 package is the ZOC/Reaction
 [specification](docs/specs/zoc-reaction-v1.md) and
-[technical design](docs/design/zoc-reaction-v1.md); it requires owner approval before
-`ZOR-TASK-002A` production begins.
+[technical design](docs/design/zoc-reaction-v1.md). `ZOR-TASK-002A` implements the first dormant
+Rules checkpoint without changing the active ruleset identity; `ZOR-TASK-002B` is the next slice.
 The optional paired comparison is implemented Runner instrumentation and does not block
 gameplay-engine progress.
 Combat research has progressed beyond the initial source inventory: `CMB-RSH-001` now retains the

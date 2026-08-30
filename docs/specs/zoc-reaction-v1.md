@@ -1,6 +1,6 @@
 # ZOC and Reaction v1 Specification
 
-**Status:** Proposed — owner approval required; no `ZOR-TASK-002` production work authorized
+**Status:** Approved — `ZOR-TASK-002A` is the active first production slice
 
 **Date:** 2026-08-30
 
@@ -18,10 +18,9 @@
 
 ## Approval boundary
 
-This document converts the five accepted CONTACT-001 rulings into an approval-ready production
-contract. The rulings themselves are fixed. The additional architecture, version migrations, task
-slices, and acceptance mappings below are proposed until the owner approves this specification and
-its technical design together.
+This document converts the five accepted CONTACT-001 rulings into the approved production
+contract. The rulings themselves are fixed. The owner approved this specification and its technical
+design together after PR #80 merged, authorizing `ZOR-TASK-002A` as the first bounded slice.
 
 Approval authorizes `ZOR-TASK-002A` as the first production slice. It does not authorize all tasks
 as one change, and it does not authorize Breakdown adjudication, Contact, Engaged, Combat, losses,
@@ -68,8 +67,8 @@ The accepted fog rule still governs that fact if the later declaration capabilit
 
 ## Normative decisions
 
-The first five decisions are accepted in the ruling lock. Decisions 006-012 are the proposed
-implementation consequences that require approval with this package.
+The first five decisions are accepted in the ruling lock. Decisions 006-012 are the approved
+implementation consequences accepted with this package.
 
 | Decision | Status | Normative requirement |
 | --- | --- | --- |
@@ -78,13 +77,13 @@ implementation consequences that require approval with this package.
 | `ZOR-DEC-003` | Accepted | One action closes all unresolved opportunities. Player decline and scripted unavailable/timeout use distinct internal reasons but the same no-cost, no-BP, no-RNG, no-route closure behavior. |
 | `ZOR-DEC-004` | Accepted | The phasing side sees generic waiting and retains its own Movement facts. The reacting side sees exact own opportunities and only apparent trigger identity, origin, and destination. |
 | `ZOR-DEC-005` | Accepted | Rules own predicates and exclusions, Content owns primitives, Campaign owns current state, and the Umpire derives ZOC. Content never stores `exertsZoc`. |
-| `ZOR-DEC-006` | Proposed | A triggering accepted move is one atomic semantic event whose successor includes the opened window; a separate move then open-event batch is forbidden. |
-| `ZOR-DEC-007` | Proposed | One nullable snapshot-level Reaction window owns the interrupt, freezes trigger-time eligibility, stores the exact suspended Movement position, and restores it on close. |
-| `ZOR-DEC-008` | Proposed | Current raw defensive Close Assault capability is derived with checked arithmetic from Campaign component current TOE and Content immutable defensive ratings; it is not persisted as a duplicate total. |
-| `ZOR-DEC-009` | Proposed | Implementation performs one clean-cut Rules/Content/World/Snapshot/Creation/Observation/sequence identity migration and rejects mixed legacy/current authority. |
-| `ZOR-DEC-010` | Proposed | Reaction uses an explicit reacting-side interrupt position outside normal sequence traversal; closing restores the stored position rather than calling generic `GetNext`. |
-| `ZOR-DEC-011` | Proposed | V1 has no Close Assault declaration, so Rule 8.53(b)'s conditional CPA restriction is deferred rather than applied unconditionally; its accepted non-disclosure policy is preserved for the later capability. |
-| `ZOR-DEC-012` | Proposed | Observation 6 exposes one canonical aggregate set of apparent enemy-controlled location IDs, without source mapping or rationale, so local Movement legality remains derivable from side-safe facts. |
+| `ZOR-DEC-006` | Accepted | A triggering accepted move is one atomic semantic event whose successor includes the opened window; a separate move then open-event batch is forbidden. |
+| `ZOR-DEC-007` | Accepted | One nullable snapshot-level Reaction window owns the interrupt, freezes trigger-time eligibility, stores the exact suspended Movement position, and restores it on close. |
+| `ZOR-DEC-008` | Accepted | Current raw defensive Close Assault capability is derived with checked arithmetic from Campaign component current TOE and Content immutable defensive ratings; it is not persisted as a duplicate total. |
+| `ZOR-DEC-009` | Accepted | Implementation performs one clean-cut Rules/Content/World/Snapshot/Creation/Observation/sequence identity migration and rejects mixed legacy/current authority. |
+| `ZOR-DEC-010` | Accepted | Reaction uses an explicit reacting-side interrupt position outside normal sequence traversal; closing restores the stored position rather than calling generic `GetNext`. |
+| `ZOR-DEC-011` | Accepted | V1 has no Close Assault declaration, so Rule 8.53(b)'s conditional CPA restriction is deferred rather than applied unconditionally; its accepted non-disclosure policy is preserved for the later capability. |
+| `ZOR-DEC-012` | Accepted | Observation 6 exposes one canonical aggregate set of apparent enemy-controlled location IDs, without source mapping or rationale, so local Movement legality remains derivable from side-safe facts. |
 
 ## Contract requirements
 
@@ -330,9 +329,9 @@ Rule 8.53(b) threshold portion of the original consequence 7 is explicitly defer
 The technical design defines each lettered task's dependency and proof obligation without changing
 the stable parent IDs retained by the ruling lock and roadmap.
 
-## Owner approval
+## Owner approval record
 
-Approval is requested for the complete package, especially these proposed consequences:
+The owner approved the complete package after PR #80 merged, including these consequences:
 
 1. derive current raw defensive Close Assault capability from component current TOE and immutable
    Content ratings rather than persisting a duplicate total, with provenance-bearing current TOE
@@ -347,5 +346,5 @@ Approval is requested for the complete package, especially these proposed conseq
 7. add an aggregate source-unmapped apparent enemy-controlled-location set to Observation 6 as the
    minimum disclosure that keeps topology-local Movement actions side-safe and deterministic.
 
-Until that approval, this document is a proposed plan only and all `ZOR-TASK-002`-`007` production
-statuses remain not started.
+That approval opens only the dependency-ordered first slice, `ZOR-TASK-002A`. Later slices remain
+dependency-gated and must not be treated as one authorized or implemented change.
