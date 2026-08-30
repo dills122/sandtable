@@ -15,6 +15,26 @@ public enum PairedDivergenceKind
     AcceptedAction,
 }
 
+public sealed record PairedAcceptedActionIdentity
+{
+    public PairedAcceptedActionIdentity(
+        int stepOrdinal,
+        CampaignActionAudience audience,
+        string actionId)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegative(stepOrdinal);
+        if (!Enum.IsDefined(audience)) throw new ArgumentOutOfRangeException(nameof(audience));
+        ReplayProofValidation.RequireSha256(actionId, nameof(actionId));
+        StepOrdinal = stepOrdinal;
+        Audience = audience;
+        ActionId = actionId;
+    }
+
+    public int StepOrdinal { get; }
+    public CampaignActionAudience Audience { get; }
+    public string ActionId { get; }
+}
+
 public sealed record PairedAcceptedActionDivergence
 {
     public PairedAcceptedActionDivergence(
@@ -82,10 +102,13 @@ public sealed record PairedManeuverComparison
         int candidateEntryOrdinal,
         PairedComparisonStatus status,
         string? creationInputsSha256,
-        string? initialSnapshotSha256,
+        string? baselineInitialSnapshotSha256,
+        string? candidateInitialSnapshotSha256,
         string? seedLedgerSha256,
         string? baselineControllerConfigurationSha256,
         string? candidateControllerConfigurationSha256,
+        IEnumerable<PairedAcceptedActionIdentity>? baselineAcceptedActions,
+        IEnumerable<PairedAcceptedActionIdentity>? candidateAcceptedActions,
         PairedAcceptedActionDivergence? firstDivergence,
         int? acceptedStepCountDelta,
         bool? terminalOutcomeEqual,
@@ -100,7 +123,8 @@ public sealed record PairedManeuverComparison
             checked(baselineEntryOrdinal + 1));
         if (!Enum.IsDefined(status)) throw new ArgumentOutOfRangeException(nameof(status));
         RequireHash(creationInputsSha256, nameof(creationInputsSha256));
-        RequireHash(initialSnapshotSha256, nameof(initialSnapshotSha256));
+        RequireHash(baselineInitialSnapshotSha256, nameof(baselineInitialSnapshotSha256));
+        RequireHash(candidateInitialSnapshotSha256, nameof(candidateInitialSnapshotSha256));
         RequireHash(seedLedgerSha256, nameof(seedLedgerSha256));
         RequireHash(
             baselineControllerConfigurationSha256,
@@ -109,20 +133,28 @@ public sealed record PairedManeuverComparison
             candidateControllerConfigurationSha256,
             nameof(candidateControllerConfigurationSha256));
 
+        var baselineActions = CopyActions(baselineAcceptedActions, nameof(baselineAcceptedActions));
+        var candidateActions = CopyActions(candidateAcceptedActions, nameof(candidateAcceptedActions));
         var complete = creationInputsSha256 is not null
-            && initialSnapshotSha256 is not null
+            && baselineInitialSnapshotSha256 is not null
+            && candidateInitialSnapshotSha256 is not null
             && seedLedgerSha256 is not null
             && baselineControllerConfigurationSha256 is not null
             && candidateControllerConfigurationSha256 is not null
+            && baselineActions is not null
+            && candidateActions is not null
             && firstDivergence is not null
             && acceptedStepCountDelta.HasValue
             && terminalOutcomeEqual.HasValue
             && failureCategoryEqual.HasValue;
         var empty = creationInputsSha256 is null
-            && initialSnapshotSha256 is null
+            && baselineInitialSnapshotSha256 is null
+            && candidateInitialSnapshotSha256 is null
             && seedLedgerSha256 is null
             && baselineControllerConfigurationSha256 is null
             && candidateControllerConfigurationSha256 is null
+            && baselineActions is null
+            && candidateActions is null
             && firstDivergence is null
             && acceptedStepCountDelta is null
             && terminalOutcomeEqual is null
@@ -137,10 +169,13 @@ public sealed record PairedManeuverComparison
         CandidateEntryOrdinal = candidateEntryOrdinal;
         Status = status;
         CreationInputsSha256 = creationInputsSha256;
-        InitialSnapshotSha256 = initialSnapshotSha256;
+        BaselineInitialSnapshotSha256 = baselineInitialSnapshotSha256;
+        CandidateInitialSnapshotSha256 = candidateInitialSnapshotSha256;
         SeedLedgerSha256 = seedLedgerSha256;
         BaselineControllerConfigurationSha256 = baselineControllerConfigurationSha256;
         CandidateControllerConfigurationSha256 = candidateControllerConfigurationSha256;
+        BaselineAcceptedActions = baselineActions is null ? null : Array.AsReadOnly(baselineActions);
+        CandidateAcceptedActions = candidateActions is null ? null : Array.AsReadOnly(candidateActions);
         FirstDivergence = firstDivergence;
         AcceptedStepCountDelta = acceptedStepCountDelta;
         TerminalOutcomeEqual = terminalOutcomeEqual;
@@ -153,10 +188,13 @@ public sealed record PairedManeuverComparison
     public int CandidateEntryOrdinal { get; }
     public PairedComparisonStatus Status { get; }
     public string? CreationInputsSha256 { get; }
-    public string? InitialSnapshotSha256 { get; }
+    public string? BaselineInitialSnapshotSha256 { get; }
+    public string? CandidateInitialSnapshotSha256 { get; }
     public string? SeedLedgerSha256 { get; }
     public string? BaselineControllerConfigurationSha256 { get; }
     public string? CandidateControllerConfigurationSha256 { get; }
+    public IReadOnlyList<PairedAcceptedActionIdentity>? BaselineAcceptedActions { get; }
+    public IReadOnlyList<PairedAcceptedActionIdentity>? CandidateAcceptedActions { get; }
     public PairedAcceptedActionDivergence? FirstDivergence { get; }
     public int? AcceptedStepCountDelta { get; }
     public bool? TerminalOutcomeEqual { get; }
@@ -165,6 +203,24 @@ public sealed record PairedManeuverComparison
     private static void RequireHash(string? value, string parameterName)
     {
         if (value is not null) ReplayProofValidation.RequireSha256(value, parameterName);
+    }
+
+    private static PairedAcceptedActionIdentity[]? CopyActions(
+        IEnumerable<PairedAcceptedActionIdentity>? actions,
+        string parameterName)
+    {
+        if (actions is null) return null;
+        var copy = actions.ToArray();
+        if (copy.Any(value => value is null))
+            throw new ArgumentException("Accepted-action identities cannot contain null.", parameterName);
+        for (var index = 0; index < copy.Length; index++)
+        {
+            if (copy[index].StepOrdinal != index)
+                throw new ArgumentException(
+                    "Accepted-action identities must be contiguous and zero-based.",
+                    parameterName);
+        }
+        return copy;
     }
 }
 
@@ -397,7 +453,24 @@ public sealed class PairedManeuverReportDeterministic
             if (comparable != (comparison.Status == PairedComparisonStatus.Compared))
                 throw new ArgumentException("Pair comparison availability contradicts its entries.");
             if (!comparable) continue;
+            var baselineActions = comparison.BaselineAcceptedActions!;
+            var candidateActions = comparison.CandidateAcceptedActions!;
             if (!string.Equals(
+                    comparison.CreationInputsSha256,
+                    PairedManeuverPairingEvidence.HashCreationInputs(manifest, pair),
+                    StringComparison.Ordinal)
+                || !string.Equals(
+                    comparison.BaselineInitialSnapshotSha256,
+                    comparison.CandidateInitialSnapshotSha256,
+                    StringComparison.Ordinal)
+                || baselineActions.Count != baseline.AcceptedStepCount
+                || candidateActions.Count != candidate.AcceptedStepCount
+                || !Equals(
+                    comparison.FirstDivergence,
+                    PairedManeuverPairingEvidence.FindDivergence(
+                        baselineActions,
+                        candidateActions))
+                || !string.Equals(
                     comparison.SeedLedgerSha256,
                     baseline.SeedLedgerSha256,
                     StringComparison.Ordinal)

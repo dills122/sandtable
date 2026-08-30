@@ -407,14 +407,19 @@ excluded from the fingerprint. Deterministic order is `manifest`, `status`, `cou
 status/nullability matrix with explicit `baseline`/`candidate` variant.
 
 Each comparison has exact property order `pairKey`, `repetition`, `baselineEntryOrdinal`,
-`candidateEntryOrdinal`, `status`, `creationInputsSha256`, `initialSnapshotSha256`,
-`seedLedgerSha256`, `baselineControllerConfigurationSha256`,
-`candidateControllerConfigurationSha256`, `firstDivergence`, `acceptedStepCountDelta`,
-`terminalOutcomeEqual`, `failureCategoryEqual`. A `compared` record requires every field after
-`status`; an `incomplete` record requires them all null. First divergence is the lowest transcript
-ordinal whose audience/action ID differs, including one arm ending before the other; it is `none`
-only when the complete accepted-action transcripts match. The delta is candidate accepted steps
-minus baseline accepted steps.
+`candidateEntryOrdinal`, `status`, `creationInputsSha256`,
+`baselineInitialSnapshotSha256`, `candidateInitialSnapshotSha256`, `seedLedgerSha256`,
+`baselineControllerConfigurationSha256`, `candidateControllerConfigurationSha256`,
+`baselineAcceptedActions`, `candidateAcceptedActions`, `firstDivergence`,
+`acceptedStepCountDelta`, `terminalOutcomeEqual`, `failureCategoryEqual`. A `compared` record
+requires every field after `status`; an `incomplete` record requires them all null. Each retained
+accepted-action identity has exact property order `stepOrdinal`, `audience`, `actionId`, is
+zero-based and contiguous, and reconciles with its arm entry count. First divergence is recomputed
+on strict readback as the lowest retained transcript ordinal whose audience/action ID differs,
+including one arm ending before the other; it is `none` only when both complete retained
+accepted-action transcripts match. The creation-input hash is recomputed from the embedded paired
+manifest, the two initial-snapshot commitments must be equal, and the delta is candidate accepted
+steps minus baseline accepted steps.
 
 Every paired report carries this fixed interpretation:
 

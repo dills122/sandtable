@@ -99,6 +99,7 @@ public static class PairedManeuverManifestCodec
             using var document = JsonDocument.Parse(json);
             return document.RootElement.ValueKind == JsonValueKind.Object
                 && document.RootElement.TryGetProperty("schemeId", out var scheme)
+                && scheme.ValueKind == JsonValueKind.String
                 && string.Equals(scheme.GetString(), PairedManeuverManifest.SchemeId,
                     StringComparison.Ordinal);
         }

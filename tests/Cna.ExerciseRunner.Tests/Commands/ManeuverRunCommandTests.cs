@@ -434,6 +434,31 @@ public sealed class ManeuverRunCommandTests : IDisposable
     }
 
     [Fact]
+    public void NonStringSchemeDiscriminatorReturnsManifestInvalidWithoutWritingArtifacts()
+    {
+        var repositoryRoot = FindRepositoryRoot(AppContext.BaseDirectory);
+        var relativePath = Path.Combine(repositoryManifestDirectory, "numeric-scheme.json");
+        var path = Path.Combine(repositoryRoot, relativePath);
+        Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+        File.WriteAllText(path, "{\"schemeId\":123}");
+        var artifactRoot = Path.Combine(temp, "numeric-scheme");
+        var standardError = new StringWriter();
+
+        var exitCode = ManeuverRunCommand.Execute(
+            Arguments(relativePath, artifactRoot),
+            new StringWriter(),
+            standardError,
+            TestContext.Current.CancellationToken);
+
+        Assert.Equal(ManeuverProcessExitCode.ManifestInvalid, exitCode);
+        Assert.StartsWith(
+            "Maneuver admission failed: ",
+            NormalizeNewlines(standardError.ToString()),
+            StringComparison.Ordinal);
+        Assert.False(Directory.Exists(artifactRoot));
+    }
+
+    [Fact]
     public void AbsoluteAndTraversingManifestPathsFailBeforeExecution()
     {
         var repositoryRoot = FindRepositoryRoot(AppContext.BaseDirectory);

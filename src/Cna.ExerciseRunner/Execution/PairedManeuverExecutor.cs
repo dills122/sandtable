@@ -1,8 +1,6 @@
 using System.Diagnostics;
 using System.Security.Cryptography;
-using System.Text.Json;
 using Cna.Core.Actions;
-using Cna.Core.Campaigns;
 using Cna.ExerciseRunner.Artifacts;
 
 namespace Cna.ExerciseRunner.Execution;
@@ -231,8 +229,9 @@ internal static class PairedManeuverExecutor
         var candidateRequest = ExerciseExecutor.CreateRequest(
             pair.MaterializeCandidate(manifest.RootSeed),
             identity);
-        return SerializeCreationInputs(baselineRequest).AsSpan()
-                .SequenceEqual(SerializeCreationInputs(candidateRequest))
+        return PairedManeuverPairingEvidence.SerializeCreationInputs(baselineRequest).AsSpan()
+                .SequenceEqual(
+                    PairedManeuverPairingEvidence.SerializeCreationInputs(candidateRequest))
             && HasEqualBuildCohort(baseline.BuildIdentity!, candidate.BuildIdentity!);
     }
 
@@ -551,94 +550,46 @@ internal static class PairedManeuverExecutor
                 null,
                 null,
                 null,
+                null,
+                null,
+                null,
                 null);
 
-        var identity = new ExerciseRunIdentity(
-            manifest.RootSeed,
-            manifest.ManeuverId,
-            pair.Repetition,
-            pair.PairKey);
-        var creationInputs = SerializeCreationInputs(ExerciseExecutor.CreateRequest(
-            pair.MaterializeBaseline(manifest.RootSeed),
-            identity));
+        var baselineActions = ProjectAcceptedActions(baseline!.AcceptedActions);
+        var candidateActions = ProjectAcceptedActions(candidate!.AcceptedActions);
+        var baselineSnapshotHash = ReplayEvidenceHasher.HashBytes(
+            baseline.InitialSnapshotBytes!);
         return new PairedManeuverComparison(
             pair.PairKey,
             pair.Repetition,
             baselineOrdinal,
             candidateOrdinal,
             PairedComparisonStatus.Compared,
-            ReplayEvidenceHasher.HashBytes(creationInputs),
-            ReplayEvidenceHasher.HashBytes(baseline!.InitialSnapshotBytes!),
+            PairedManeuverPairingEvidence.HashCreationInputs(manifest, pair),
+            baselineSnapshotHash,
+            ReplayEvidenceHasher.HashBytes(candidate.InitialSnapshotBytes!),
             ReplayEvidenceHasher.HashBytes(SeedLedgerCodec.Serialize(baseline.SeedLedger!)),
             ExerciseConfigurationIdentity.ComputeHash(
                 pair.MaterializeBaseline(manifest.RootSeed)),
             ExerciseConfigurationIdentity.ComputeHash(
                 pair.MaterializeCandidate(manifest.RootSeed)),
-            FindDivergence(baseline.AcceptedActions, candidate!.AcceptedActions),
+            baselineActions,
+            candidateActions,
+            PairedManeuverPairingEvidence.FindDivergence(
+                baselineActions,
+                candidateActions),
             candidate.AcceptedStepCount - baseline.AcceptedStepCount,
             Equals(entries[baselineOrdinal].TerminalOutcome, entries[candidateOrdinal].TerminalOutcome),
             entries[baselineOrdinal].FailureCategory == entries[candidateOrdinal].FailureCategory);
     }
 
-    private static PairedAcceptedActionDivergence FindDivergence(
-        IReadOnlyList<ExerciseAcceptedActionRecord> baseline,
-        IReadOnlyList<ExerciseAcceptedActionRecord> candidate)
-    {
-        var common = Math.Min(baseline.Count, candidate.Count);
-        for (var ordinal = 0; ordinal < common; ordinal++)
-        {
-            if (baseline[ordinal].Audience != candidate[ordinal].Audience
-                || !string.Equals(
-                    baseline[ordinal].ActionId,
-                    candidate[ordinal].ActionId,
-                    StringComparison.Ordinal))
-                return Divergence(ordinal, baseline[ordinal], candidate[ordinal]);
-        }
-        if (baseline.Count != candidate.Count)
-            return Divergence(
-                common,
-                common < baseline.Count ? baseline[common] : null,
-                common < candidate.Count ? candidate[common] : null);
-        return new PairedAcceptedActionDivergence(
-            PairedDivergenceKind.None,
-            null,
-            null,
-            null,
-            null,
-            null);
-    }
-
-    private static PairedAcceptedActionDivergence Divergence(
-        int ordinal,
-        ExerciseAcceptedActionRecord? baseline,
-        ExerciseAcceptedActionRecord? candidate) => new(
-        PairedDivergenceKind.AcceptedAction,
-        ordinal,
-        baseline?.Audience,
-        baseline?.ActionId,
-        candidate?.Audience,
-        candidate?.ActionId);
-
-    private static byte[] SerializeCreationInputs(CampaignCreationRequest request)
-    {
-        using var stream = new MemoryStream();
-        using (var writer = new Utf8JsonWriter(stream))
-        {
-            writer.WriteStartObject();
-            writer.WriteNumber("contractVersion", 1);
-            writer.WriteString("schemeId", "sandtable.exercise-pairing-inputs.v1");
-            writer.WriteString("campaignId", request.CampaignId);
-            writer.WriteString("rulesetHash", request.RulesetHash);
-            writer.WriteNumber("seed", request.Seed);
-            writer.WriteString("setupId", request.SetupId);
-            writer.WriteString("setupHash", request.SetupHash);
-            writer.WriteString("contentPackId", request.ContentPackId);
-            writer.WriteString("contentHash", request.ContentHash);
-            writer.WriteString("scenarioId", request.ScenarioId);
-            writer.WriteEndObject();
-        }
-        return stream.ToArray();
-    }
+    private static PairedAcceptedActionIdentity[] ProjectAcceptedActions(
+        IReadOnlyList<ExerciseAcceptedActionRecord> actions) => actions
+        .Select(action => new PairedAcceptedActionIdentity(
+            action.StepOrdinal,
+            action.Audience,
+            action.ActionId))
+        .ToArray();
 
     private static PairedArm[] Flatten(PairedManeuverManifest manifest) => manifest.Pairs
         .SelectMany(pair => new[]

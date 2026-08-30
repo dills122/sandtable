@@ -29,7 +29,7 @@ public sealed class PairedManeuverReportCodecTests
 
         Assert.Equal(bytes, PairedManeuverReportCodec.Serialize(admitted));
         Assert.Contains(
-            "\"pairKey\":\"reserve-policy\",\"repetition\":0,\"baselineEntryOrdinal\":0,\"candidateEntryOrdinal\":1,\"status\":\"compared\",\"creationInputsSha256\":\"sha256:aaaaaaaa",
+            "\"pairKey\":\"reserve-policy\",\"repetition\":0,\"baselineEntryOrdinal\":0,\"candidateEntryOrdinal\":1,\"status\":\"compared\",\"creationInputsSha256\":\"sha256:",
             json,
             StringComparison.Ordinal);
         Assert.Contains(
@@ -38,7 +38,7 @@ public sealed class PairedManeuverReportCodecTests
             StringComparison.Ordinal);
         Assert.Contains(PairedManeuverReport.Interpretation, json, StringComparison.Ordinal);
         Assert.Equal(
-            "sha256:a8ea2417ed0057761dbd6463d3715fcd28d3cbbb0b5cf5edd0698f270cb6ab48",
+            "sha256:7307c5d620bf001440b54af198c51877c34b7cf6a93ef24b7d37574a83ad2012",
             report.ReportFingerprint);
         Assert.Equal(report.ReportFingerprint, admitted.ReportFingerprint);
     }
@@ -59,6 +59,16 @@ public sealed class PairedManeuverReportCodecTests
     public void ComparisonRejectsUnequalPairProofsAndContradictoryDivergence()
     {
         Assert.Throws<ArgumentException>(() => CreateReport(comparisonSeedHash: HashB));
+        Assert.Throws<ArgumentException>(() => CreateReport(comparisonCreationHash: HashC));
+        Assert.Throws<ArgumentException>(() => CreateReport(candidateSnapshotHash: HashC));
+        Assert.Throws<ArgumentException>(() => CreateReport(
+            firstDivergence: new PairedAcceptedActionDivergence(
+                PairedDivergenceKind.None,
+                null,
+                null,
+                null,
+                null,
+                null)));
         Assert.Throws<ArgumentException>(() => new PairedAcceptedActionDivergence(
             PairedDivergenceKind.None,
             0,
@@ -97,7 +107,10 @@ public sealed class PairedManeuverReportCodecTests
     private static PairedManeuverReport CreateReport(
         long elapsedMicroseconds = 1000,
         string baselinePath = "/tmp/baseline",
-        string comparisonSeedHash = HashC)
+        string comparisonSeedHash = HashC,
+        string? comparisonCreationHash = null,
+        string candidateSnapshotHash = HashB,
+        PairedAcceptedActionDivergence? firstDivergence = null)
     {
         var manifest = CreateManifest();
         ManeuverReportEntry[] entries =
@@ -119,7 +132,12 @@ public sealed class PairedManeuverReportCodecTests
             Enum.GetValues<ManeuverAggregationFailureCategory>()
                 .Select(value => new ManeuverAggregationFailureCount(value, 0)),
             entries,
-            [Compared(manifest, comparisonSeedHash)]);
+            [Compared(
+                manifest,
+                comparisonSeedHash,
+                comparisonCreationHash,
+                candidateSnapshotHash,
+                firstDivergence)]);
         return new PairedManeuverReport(
             deterministic,
             new ManeuverReportDiagnostics(
@@ -133,29 +151,47 @@ public sealed class PairedManeuverReportCodecTests
 
     private static PairedManeuverComparison Compared(
         PairedManeuverManifest manifest,
-        string seedLedgerSha256) => new(
+        string seedLedgerSha256,
+        string? creationInputsSha256,
+        string candidateSnapshotSha256,
+        PairedAcceptedActionDivergence? firstDivergence) => new(
         "reserve-policy",
         0,
         0,
         1,
         PairedComparisonStatus.Compared,
-        HashA,
+        creationInputsSha256
+            ?? PairedManeuverPairingEvidence.HashCreationInputs(manifest, manifest.Pairs[0]),
         HashB,
+        candidateSnapshotSha256,
         seedLedgerSha256,
         ExerciseConfigurationIdentity.ComputeHash(
             manifest.Pairs[0].MaterializeBaseline(manifest.RootSeed)),
         ExerciseConfigurationIdentity.ComputeHash(
             manifest.Pairs[0].MaterializeCandidate(manifest.RootSeed)),
-        new PairedAcceptedActionDivergence(
-            PairedDivergenceKind.AcceptedAction,
-            2,
-            CampaignActionAudience.Axis,
-            HashA,
-            CampaignActionAudience.Axis,
-            HashB),
+        Actions(10, HashA),
+        Actions(12, HashA, divergentOrdinal: 2, divergentActionId: HashB),
+        firstDivergence ?? new PairedAcceptedActionDivergence(
+                PairedDivergenceKind.AcceptedAction,
+                2,
+                CampaignActionAudience.Axis,
+                HashA,
+                CampaignActionAudience.Axis,
+                HashB),
         2,
         true,
         true);
+
+    private static PairedAcceptedActionIdentity[] Actions(
+        int count,
+        string actionId,
+        int? divergentOrdinal = null,
+        string? divergentActionId = null) => Enumerable.Range(0, count)
+        .Select(ordinal => new PairedAcceptedActionIdentity(
+            ordinal,
+            CampaignActionAudience.Axis,
+            ordinal == divergentOrdinal ? divergentActionId! : actionId))
+        .ToArray();
 
     private static PairedManeuverManifest CreateManifest() => new(
         PairedManeuverManifest.CurrentContractVersion,

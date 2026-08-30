@@ -37,7 +37,7 @@ public sealed class PairedReportLifecycleTests
     }
 
     [Fact]
-    public void ReaderRejectsExtraFilesLinksAndWrongPlacement()
+    public void ReaderRejectsExtraFiles()
     {
         using var temp = new TemporaryDirectory();
         var artifact = PairedReportWriter.Write(
@@ -48,6 +48,111 @@ public sealed class PairedReportLifecycleTests
         File.WriteAllText(Path.Combine(artifact.Path, "extra.txt"), "extra");
 
         Assert.Throws<InvalidDataException>(() => PairedReportReader.Read(artifact.Path));
+    }
+
+    [Theory]
+    [InlineData(ManeuverReportWriterFailpoint.StagingCreated)]
+    [InlineData(ManeuverReportWriterFailpoint.BeforeReportCreate)]
+    [InlineData(ManeuverReportWriterFailpoint.AfterReportCreate)]
+    [InlineData(ManeuverReportWriterFailpoint.BeforeReportWrite)]
+    [InlineData(ManeuverReportWriterFailpoint.AfterReportWrite)]
+    [InlineData(ManeuverReportWriterFailpoint.BeforeReportFlush)]
+    [InlineData(ManeuverReportWriterFailpoint.AfterReportFlush)]
+    [InlineData(ManeuverReportWriterFailpoint.BeforeMove)]
+    public void PreMoveInterruptionsRetainOnlyUntrustedPartialEvidence(
+        ManeuverReportWriterFailpoint failpoint)
+    {
+        using var temp = new TemporaryDirectory();
+        var runId = $"partial-{failpoint}";
+
+        Assert.Throws<InjectedFailure>(() => PairedReportWriter.Write(
+            temp.Path,
+            CreateReport(),
+            (point, _, _) =>
+            {
+                if (point == failpoint) throw new InjectedFailure();
+            },
+            runId));
+
+        var partial = Path.Combine(temp.Path, "maneuvers", ".partial", runId);
+        Assert.True(Directory.Exists(partial));
+        Assert.False(Directory.Exists(Path.Combine(
+            temp.Path,
+            "maneuvers",
+            "succeeded",
+            runId)));
+        Assert.Throws<InvalidDataException>(() => PairedReportReader.Read(partial));
+    }
+
+    [Theory]
+    [InlineData(ManeuverReportWriterFailpoint.AfterMove)]
+    [InlineData(ManeuverReportWriterFailpoint.BeforeReadback)]
+    [InlineData(ManeuverReportWriterFailpoint.AfterReadback)]
+    public void PostMoveInterruptionsRetainValidFinalEvidenceWithoutReturningIt(
+        ManeuverReportWriterFailpoint failpoint)
+    {
+        using var temp = new TemporaryDirectory();
+        var runId = $"moved-{failpoint}";
+
+        Assert.Throws<InjectedFailure>(() => PairedReportWriter.Write(
+            temp.Path,
+            CreateReport(),
+            (point, _, _) =>
+            {
+                if (point == failpoint) throw new InjectedFailure();
+            },
+            runId));
+
+        var finalPath = Path.Combine(temp.Path, "maneuvers", "succeeded", runId);
+        Assert.Equal(
+            ManeuverReportStatus.Succeeded,
+            PairedReportReader.Read(finalPath).Report.Deterministic.Status);
+    }
+
+    [Fact]
+    public void ReaderRejectsLinkedReportFileAndRunDirectory()
+    {
+        using var temp = new TemporaryDirectory();
+        var fileArtifact = PairedReportWriter.Write(
+            temp.Path,
+            CreateReport(),
+            static (_, _, _) => { },
+            "file-link");
+        var reportPath = Path.Combine(fileArtifact.Path, PairedReportReader.FileName);
+        var outside = Path.Combine(temp.Path, "outside.json");
+        File.Move(reportPath, outside);
+        File.CreateSymbolicLink(reportPath, outside);
+
+        var actualArtifact = PairedReportWriter.Write(
+            temp.Path,
+            CreateReport(),
+            static (_, _, _) => { },
+            "actual-run");
+        var linkedDirectory = Path.Combine(
+            temp.Path,
+            "maneuvers",
+            "succeeded",
+            "linked-run");
+        Directory.CreateSymbolicLink(linkedDirectory, actualArtifact.Path);
+
+        Assert.Throws<InvalidDataException>(() => PairedReportReader.Read(fileArtifact.Path));
+        Assert.Throws<InvalidDataException>(() => PairedReportReader.Read(linkedDirectory));
+    }
+
+    [Theory]
+    [InlineData("failed")]
+    [InlineData(".partial")]
+    [InlineData("other")]
+    public void ReaderRejectsWrongOrNonfinalPlacement(string parent)
+    {
+        using var temp = new TemporaryDirectory();
+        var path = Path.Combine(temp.Path, "maneuvers", parent, "misplaced");
+        Directory.CreateDirectory(path);
+        File.WriteAllBytes(
+            Path.Combine(path, PairedReportReader.FileName),
+            PairedManeuverReportCodec.Serialize(CreateReport()));
+
+        Assert.Throws<InvalidDataException>(() => PairedReportReader.Read(path));
     }
 
     private static PairedManeuverReport CreateReport()
@@ -72,11 +177,14 @@ public sealed class PairedReportLifecycleTests
             entries,
             [new PairedManeuverComparison(
                 "pair", 0, 0, 1, PairedComparisonStatus.Compared,
+                PairedManeuverPairingEvidence.HashCreationInputs(manifest, manifest.Pairs[0]),
                 HashA, HashA, HashA,
                 ExerciseConfigurationIdentity.ComputeHash(
                     manifest.Pairs[0].MaterializeBaseline(manifest.RootSeed)),
                 ExerciseConfigurationIdentity.ComputeHash(
                     manifest.Pairs[0].MaterializeCandidate(manifest.RootSeed)),
+                [new PairedAcceptedActionIdentity(0, CampaignActionAudience.Axis, HashA)],
+                [new PairedAcceptedActionIdentity(0, CampaignActionAudience.Axis, HashA)],
                 new PairedAcceptedActionDivergence(
                     PairedDivergenceKind.None, null, null, null, null, null),
                 0, true, true)]);
@@ -135,4 +243,6 @@ public sealed class PairedReportLifecycleTests
 
         public void Dispose() => Directory.Delete(Path, recursive: true);
     }
+
+    private sealed class InjectedFailure : Exception;
 }

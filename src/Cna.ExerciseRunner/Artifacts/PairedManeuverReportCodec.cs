@@ -258,7 +258,14 @@ public static class PairedManeuverReportCodec
         writer.WriteNumber("candidateEntryOrdinal", comparison.CandidateEntryOrdinal);
         writer.WriteString("status", Format(comparison.Status));
         WriteNullable(writer, "creationInputsSha256", comparison.CreationInputsSha256);
-        WriteNullable(writer, "initialSnapshotSha256", comparison.InitialSnapshotSha256);
+        WriteNullable(
+            writer,
+            "baselineInitialSnapshotSha256",
+            comparison.BaselineInitialSnapshotSha256);
+        WriteNullable(
+            writer,
+            "candidateInitialSnapshotSha256",
+            comparison.CandidateInitialSnapshotSha256);
         WriteNullable(writer, "seedLedgerSha256", comparison.SeedLedgerSha256);
         WriteNullable(
             writer,
@@ -268,6 +275,8 @@ public static class PairedManeuverReportCodec
             writer,
             "candidateControllerConfigurationSha256",
             comparison.CandidateControllerConfigurationSha256);
+        WriteAcceptedActions(writer, "baselineAcceptedActions", comparison.BaselineAcceptedActions);
+        WriteAcceptedActions(writer, "candidateAcceptedActions", comparison.CandidateAcceptedActions);
         if (comparison.FirstDivergence is null) writer.WriteNull("firstDivergence");
         else WriteDivergence(writer, comparison.FirstDivergence);
         WriteNullable(writer, "acceptedStepCountDelta", comparison.AcceptedStepCountDelta);
@@ -282,9 +291,11 @@ public static class PairedManeuverReportCodec
             element,
             [
                 "pairKey", "repetition", "baselineEntryOrdinal", "candidateEntryOrdinal",
-                "status", "creationInputsSha256", "initialSnapshotSha256",
+                "status", "creationInputsSha256", "baselineInitialSnapshotSha256",
+                "candidateInitialSnapshotSha256",
                 "seedLedgerSha256", "baselineControllerConfigurationSha256",
-                "candidateControllerConfigurationSha256", "firstDivergence",
+                "candidateControllerConfigurationSha256", "baselineAcceptedActions",
+                "candidateAcceptedActions", "firstDivergence",
                 "acceptedStepCountDelta", "terminalOutcomeEqual", "failureCategoryEqual",
             ]);
         var divergence = element.GetProperty("firstDivergence");
@@ -295,14 +306,57 @@ public static class PairedManeuverReportCodec
             element.GetProperty("candidateEntryOrdinal").GetInt32(),
             ParseComparisonStatus(element.GetProperty("status").GetString()),
             ReadNullableString(element, "creationInputsSha256"),
-            ReadNullableString(element, "initialSnapshotSha256"),
+            ReadNullableString(element, "baselineInitialSnapshotSha256"),
+            ReadNullableString(element, "candidateInitialSnapshotSha256"),
             ReadNullableString(element, "seedLedgerSha256"),
             ReadNullableString(element, "baselineControllerConfigurationSha256"),
             ReadNullableString(element, "candidateControllerConfigurationSha256"),
+            ReadAcceptedActions(element, "baselineAcceptedActions"),
+            ReadAcceptedActions(element, "candidateAcceptedActions"),
             divergence.ValueKind == JsonValueKind.Null ? null : ReadDivergence(divergence),
             ReadNullableInt32(element, "acceptedStepCountDelta"),
             ReadNullableBoolean(element, "terminalOutcomeEqual"),
             ReadNullableBoolean(element, "failureCategoryEqual"));
+    }
+
+    private static void WriteAcceptedActions(
+        Utf8JsonWriter writer,
+        string propertyName,
+        IReadOnlyList<PairedAcceptedActionIdentity>? actions)
+    {
+        if (actions is null)
+        {
+            writer.WriteNull(propertyName);
+            return;
+        }
+        writer.WriteStartArray(propertyName);
+        foreach (var action in actions)
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("stepOrdinal", action.StepOrdinal);
+            writer.WriteString("audience", Format(action.Audience));
+            writer.WriteString("actionId", action.ActionId);
+            writer.WriteEndObject();
+        }
+        writer.WriteEndArray();
+    }
+
+    private static PairedAcceptedActionIdentity[]? ReadAcceptedActions(
+        JsonElement element,
+        string propertyName)
+    {
+        var actions = element.GetProperty(propertyName);
+        if (actions.ValueKind == JsonValueKind.Null) return null;
+        if (actions.ValueKind != JsonValueKind.Array)
+            throw new JsonException($"{propertyName} must be an array or null.");
+        return actions.EnumerateArray().Select(action =>
+        {
+            StrictJson.RequireExactProperties(action, ["stepOrdinal", "audience", "actionId"]);
+            return new PairedAcceptedActionIdentity(
+                action.GetProperty("stepOrdinal").GetInt32(),
+                ParseAudience(action.GetProperty("audience").GetString()),
+                RequiredString(action, "actionId"));
+        }).ToArray();
     }
 
     private static void WriteDivergence(
