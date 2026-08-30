@@ -84,7 +84,7 @@ capability, selects only current legal actions, stops at its exact declared boun
 event-history reconstruction and fresh-session re-adjudication, and writes a manifest-last
 `trusted-authority` evidence bundle. The original Organization fixture and nine-step Reserve
 fixture remain regression checkpoints; a checked 12-step Reserve Designation profile now
-designates both eligible elements and completes to first-side Movement. A Maneuver
+designates both eligible elements and completes to first-side Movement. A serial-unpaired Maneuver
 strictly admits one canonical ordered `serial-unpaired` manifest,
 derives explicit child identities from its sole parent root seed, and runs each child in process
 through the same coordinator. Each completed child bundle is read once for semantic validation and

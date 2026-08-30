@@ -827,9 +827,10 @@ engine work. The delivered Stage Entry engine track is documented in the
 [Reserve Designation specification](../specs/reserve-designation-v1.md) and
 [technical design](reserve-designation-v1.md). The checked Reserve-terminal regression profile and
 the 12-step Reserve Designation profile prove the path through canonical first-side Movement using
-the unchanged harness authority boundary. Movement Foundation Tasks 001-004 now provide the merged
-rules/content/world prerequisites; Movement actions remain unsupported, and `MOV-TASK-009` owns
-Harness adoption only after the executable Movement vertical is public.
+the unchanged harness authority boundary. Movement Foundation Tasks 001-007 now provide the merged
+rules/content/world, dormant outward-contract, and internal non-contact adjudication/replay
+foundation. Public Movement membership and completion remain `MOV-TASK-008`; `MOV-TASK-009` owns
+Harness adoption only after that public Movement vertical lands.
 
 #### `EXR-TASK-014J` — Implement the controller-policy coverage matrix
 
@@ -880,10 +881,10 @@ Harness adoption only after the executable Movement vertical is public.
 
 #### `EXR-TASK-016` — Documentation and repository gates
 
-- **Status:** implemented and repository-verified on the post-PR-73 baseline; all checked commands
-  finalize only reader-validated bundles/reports, 347/347 focused and 946/946 solution tests pass
-  with 0 skipped, the build has 0 warnings/errors, and the six-document closeout has a fresh-context
-  independent review.
+- **Status:** implementation and repository gates are complete on the post-PR-73 baseline; all
+  checked commands finalize only reader-validated bundles/reports, 347/347 focused and 946/946
+  solution tests pass with 0 skipped, and the build has 0 warnings/errors. Fresh-context independent
+  review is a separate required delivery gate; its verdict and any fixes belong in the PR evidence.
 - **Depends on:** `EXR-TASK-015`.
 - **Primary files:** `README.md`, `docs/roadmap/pre-alpha-roadmap.md`, `tech-design.md`,
   `naming-overview.md`, this design, and the governing specification. This six-document closeout is
