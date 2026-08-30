@@ -1,8 +1,8 @@
 # Exercise Harness v1 Technical Design and Delivery Plan
 
-**Status:** Task 016 remains complete; `MOV-TASK-009` compatibly extends the checked Harness through
-non-contact Movement to exact first-side Breakdown Determination. Its implementation and local
-evidence are verified, with PR merge and integration evidence provisional
+**Status:** Task 016 remains complete; merged `MOV-TASK-009` compatibly extends the checked Harness
+through non-contact Movement to exact first-side Breakdown Determination. A post-adoption paired
+lowest-cost controller instrument is implemented and verified locally
 
 **Date:** 2026-08-20
 
@@ -236,10 +236,11 @@ For the first runner, configuration identity is the versioned
 `sandtable.exercise-controller-configuration.v2` canonical material for the three fixed audience
 controller policies. It is distinct from the hash of the complete normalized Exercise manifest.
 Task 009 retains that identity and the existing Exercise and serial-unpaired Maneuver v2 contracts.
-Its six Movement policies are additive closed values. The Runner-local controller candidate
-advances to v2: Reserve designation retains its existing own `elementId`, while move candidates
-require own `elementId`, `originLocationId`, and `destinationLocationId`; v1 candidates reject.
-Existing policy bytes and behavior do not change.
+Its six Movement policies are additive closed values. Task 009 advanced the Runner-local controller
+candidate to v2 for Movement semantic IDs. The post-adoption cost-sensitivity instrument advances
+the current trusted candidate to v3 by requiring the exact positive public total cost on every move
+and adds one lowest-cost policy token. Existing policy bytes and selection behavior do not change;
+v1/v2 candidates reject at the current boundary.
 
 Missing Git, an unresolved HEAD commit or tree, a dirty status, unreadable assembly, or a hash
 mismatch fails before Core creation. Detached HEAD is valid when `HEAD^{commit}` and `HEAD^{tree}`
@@ -886,8 +887,7 @@ contract identities.
 
 #### `MOV-TASK-009` — Adopt executable Movement evidence
 
-- **Status:** implemented and verified locally, including two matching clean CLI executions; PR
-  merge and integration checks remain provisional. `MOV-TASK-010` remains blocked until merge.
+- **Status:** complete and merged in PR #78, including two matching clean CLI executions.
 - **Depends on:** the merged public Movement vertical from `MOV-TASK-008`; existing serial-unpaired
   and optional serial-paired contracts remain compatible.
 - **Primary files:** `ExerciseController.cs`, `ExerciseExecutor.cs`, manifest/configuration codecs,
@@ -991,7 +991,7 @@ verdict.
 | `EXR-022`; separate correlated diagnostics | 007, 012, 014 + observability hardening | Successful and failed query/controller/submission/check/proof correlation, explicit Maneuver identity, aggregate noncanonical diagnostics, debug failure timings, artifact readback trace, and command-boundary cross-detail evidence | implemented through serial Maneuvers |
 | `EXR-024`, `EXR-025`; deterministic selection and single active audience | 006, 007, 012 | Executor controller/cardinality/step-bound tests and checked-in fixture | implemented |
 | `EXR-026`; ordered invariant catalog | 006-008, 012 | Strict check codec, ordering, scope, failure, and emitted-bundle tests | implemented |
-| `EXR-027`; bounded Movement selection and semantic evidence | `MOV-TASK-009` | Six-child checked Movement fixture, accepted-move history tests, strict event/ledger tamper tests, reconstruction/re-adjudication, 48-trajectory study, and two clean CLI fingerprints | implemented and locally verified, including matching clean runs; merge/integration evidence provisional |
+| `EXR-027`; bounded Movement selection and semantic evidence | `MOV-TASK-009` plus post-adoption sensitivity instrument | Six-child checked Movement fixture, accepted-move history tests, strict event/ledger tamper tests, reconstruction/re-adjudication, 48-trajectory study, two clean CLI fingerprints, and a paired stable-route/lowest-cost comparison | Task 009 merged; paired sensitivity instrument locally verified with repeatable fingerprint |
 | `EXR-NFR-001`-`005`; reproducibility, reliability, boundaries, quality | 001-016 | Warning-free build, complete focused/solution suites, repeatable serial and paired fingerprints, `just check`, runnable-example readback, and independent review | implementation/repository gates verified; final review verdict retained in PR evidence |
 | `DEC-001`-`DEC-016` research decisions | 001-016 as mapped above | Three retained research spikes, governing spec, serial bundles/reports, paired equality/divergence evidence, and synchronized repository maps | accepted and implemented through Task 016 |
 

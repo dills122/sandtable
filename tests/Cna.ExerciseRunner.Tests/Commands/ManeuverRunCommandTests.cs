@@ -18,6 +18,8 @@ public sealed class ManeuverRunCommandTests : IDisposable
         "scenarios/maneuvers/rules-lab.movement.serial.v2.json";
     private const string PairedFixturePath =
         "scenarios/maneuvers/rules-lab.reserve-policy.paired.v1.json";
+    private const string MovementCostPairedFixturePath =
+        "scenarios/maneuvers/rules-lab.movement-cost.paired.v1.json";
     private const string Boundary = "land.position.operation-1.organization";
     private const string ReserveBoundary =
         "land.position.operation-1.first-player.reserve-designation";
@@ -360,6 +362,55 @@ public sealed class ManeuverRunCommandTests : IDisposable
     }
 
     [Fact]
+    public void CheckedMovementCostPairRetainsEqualInputsAndExactRouteCostDivergence()
+    {
+        CommandOutput Run(string directory)
+        {
+            var standardOutput = new StringWriter();
+            var standardError = new StringWriter();
+            var exitCode = ManeuverRunCommand.Execute(
+                Arguments(MovementCostPairedFixturePath, Path.Combine(temp, directory)),
+                standardOutput,
+                standardError,
+                TestContext.Current.CancellationToken);
+            Assert.Equal(ManeuverProcessExitCode.Succeeded, exitCode);
+            Assert.Equal(string.Empty, standardError.ToString());
+            return ParseOutput(standardOutput.ToString(), expectedExerciseBundles: 2);
+        }
+
+        var firstOutput = Run("movement-cost-first");
+        var secondOutput = Run("movement-cost-second");
+        var bundles = firstOutput.ExerciseBundlePaths.Select(ExerciseBundleReader.Read).ToArray();
+        Assert.Equal(["movement-cost.baseline", "movement-cost.lowest-cost"],
+            bundles.Select(value => value.NormalizedManifest!.ExerciseId));
+        Assert.All(bundles, value => Assert.Equal(13, value.AcceptedActions.Count));
+        Assert.Equal(bundles[0].InitialSnapshotBytes, bundles[1].InitialSnapshotBytes);
+        Assert.Equal(
+            SeedLedgerCodec.Serialize(bundles[0].SeedLedger!),
+            SeedLedgerCodec.Serialize(bundles[1].SeedLedger!));
+
+        var baselineMoves = MovementFacts(bundles[0]);
+        var candidateMoves = MovementFacts(bundles[1]);
+        Assert.Equal(["center", "north"], baselineMoves.Select(value => value.Destination));
+        Assert.Equal(["north-west", "north"],
+            candidateMoves.Select(value => value.Destination));
+        Assert.Equal(
+            [new CapabilityPointAmount(8, 1), new CapabilityPointAmount(1, 1)],
+            baselineMoves.Select(value => value.Cost));
+        Assert.Equal(
+            [new CapabilityPointAmount(1, 2), new CapabilityPointAmount(1, 1)],
+            candidateMoves.Select(value => value.Cost));
+
+        var report = PairedReportReader.Read(firstOutput.ReportPath).Report;
+        var comparison = Assert.Single(report.Deterministic.Comparisons);
+        Assert.Equal(PairedComparisonStatus.Compared, comparison.Status);
+        Assert.Equal(PairedDivergenceKind.AcceptedAction, comparison.FirstDivergence!.Kind);
+        Assert.Equal(10, comparison.FirstDivergence.StepOrdinal);
+        Assert.Equal(0, comparison.AcceptedStepCountDelta);
+        Assert.Equal(firstOutput.ReportFingerprint, secondOutput.ReportFingerprint);
+    }
+
+    [Fact]
     public void MixedSuccessAndExerciseFailureRetainsBothBundlesAndReturnsThirteen()
     {
         var relativePath = WriteManifest(Manifest(
@@ -665,6 +716,20 @@ public sealed class ManeuverRunCommandTests : IDisposable
         return document.RootElement.GetProperty("eventType").GetString()!;
     }
 
+    private static MovementFact[] MovementFacts(ExerciseBundle bundle) =>
+        bundle.CanonicalEvents.Where(value => EventType(value) == "element-moved")
+            .Select(value =>
+            {
+                using var document = System.Text.Json.JsonDocument.Parse(value);
+                var root = document.RootElement;
+                var cost = root.GetProperty("cost").GetProperty("totalCost");
+                return new MovementFact(
+                    root.GetProperty("destinationLocationId").GetString()!,
+                    new CapabilityPointAmount(
+                        cost.GetProperty("numerator").GetInt64(),
+                        cost.GetProperty("denominator").GetInt32()));
+            }).ToArray();
+
     private static void AssertMovement(
         ExerciseBundle bundle,
         params (string ElementId, string Origin, string Destination, int Before, int After)[]
@@ -819,4 +884,8 @@ public sealed class ManeuverRunCommandTests : IDisposable
         string[] ExerciseBundlePaths,
         string ReportPath,
         string ReportFingerprint);
+
+    private sealed record MovementFact(
+        string Destination,
+        CapabilityPointAmount Cost);
 }

@@ -1,11 +1,12 @@
 using Cna.Core.Actions;
+using Cna.Core.Rules;
 using Cna.ExerciseRunner.Artifacts;
 
 namespace Cna.ExerciseRunner.Controllers;
 
 public sealed class ExerciseControllerCandidate
 {
-    public const int CurrentContractVersion = 2;
+    public const int CurrentContractVersion = 3;
 
     public ExerciseControllerCandidate(
         int contractVersion,
@@ -13,7 +14,8 @@ public sealed class ExerciseControllerCandidate
         string kind,
         string? elementId,
         string? originLocationId = null,
-        string? destinationLocationId = null)
+        string? destinationLocationId = null,
+        CapabilityPointAmount? movementTotalCost = null)
     {
         ArgumentOutOfRangeException.ThrowIfNotEqual(
             contractVersion,
@@ -23,9 +25,11 @@ public sealed class ExerciseControllerCandidate
         if (string.Equals(kind, "designate-reserve", StringComparison.Ordinal))
         {
             StableIdValidation.Require(elementId, nameof(elementId));
-            if (originLocationId is not null || destinationLocationId is not null)
+            if (originLocationId is not null
+                || destinationLocationId is not null
+                || movementTotalCost is not null)
                 throw new ArgumentException(
-                    "Reserve designation candidates cannot carry Movement locations.",
+                    "Reserve designation candidates cannot carry Movement data.",
                     nameof(originLocationId));
         }
         else if (string.Equals(kind, "move-element", StringComparison.Ordinal))
@@ -37,13 +41,18 @@ public sealed class ExerciseControllerCandidate
                 throw new ArgumentException(
                     "Movement candidates must change location.",
                     nameof(destinationLocationId));
+            ArgumentNullException.ThrowIfNull(movementTotalCost);
+            ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(
+                movementTotalCost,
+                CapabilityPointAmount.Zero);
         }
         else if (elementId is not null
             || originLocationId is not null
-            || destinationLocationId is not null)
+            || destinationLocationId is not null
+            || movementTotalCost is not null)
         {
             throw new ArgumentException(
-                "Only Reserve designation and Movement candidates may carry semantic IDs.",
+                "Only Reserve designation and Movement candidates may carry semantic data.",
                 nameof(elementId));
         }
 
@@ -53,6 +62,7 @@ public sealed class ExerciseControllerCandidate
         ElementId = elementId;
         OriginLocationId = originLocationId;
         DestinationLocationId = destinationLocationId;
+        MovementTotalCost = movementTotalCost;
     }
 
     public int ContractVersion { get; }
@@ -61,6 +71,7 @@ public sealed class ExerciseControllerCandidate
     public string? ElementId { get; }
     public string? OriginLocationId { get; }
     public string? DestinationLocationId { get; }
+    public CapabilityPointAmount? MovementTotalCost { get; }
 }
 
 public sealed class ExerciseControllerActionSet
@@ -265,7 +276,7 @@ public static class ExerciseController
 
         if (policy.BoundedMovement)
         {
-            var movement = SelectBoundedMovement(selected);
+            var movement = SelectBoundedMovement(selected, policy.MovementSelection);
             if (movement is not null) return movement;
         }
 
@@ -318,7 +329,8 @@ public static class ExerciseController
     }
 
     private static ExerciseControllerSelection? SelectBoundedMovement(
-        ExerciseControllerActionSet selected)
+        ExerciseControllerActionSet selected,
+        MatrixMovementSelection selection)
     {
         var movementCandidates = selected.Candidates.Where(candidate => candidate.Kind is
             "move-element" or "complete-movement-segment").ToArray();
@@ -336,18 +348,30 @@ public static class ExerciseController
             || completions.Length != 1
             || moves.Any(candidate => candidate.ElementId is null
                 || candidate.OriginLocationId is null
-                || candidate.DestinationLocationId is null))
+                || candidate.DestinationLocationId is null
+                || candidate.MovementTotalCost is null))
             return ExerciseControllerSelection.Failed(
                 ExerciseControllerSelectionFailure.PolicyFailed);
 
         var prior = selected.PriorMovedElementIds.ToHashSet(StringComparer.Ordinal);
-        var next = moves
-            .Where(candidate => !prior.Contains(candidate.ElementId!))
-            .OrderBy(candidate => candidate.ElementId, StringComparer.Ordinal)
-            .ThenBy(candidate => candidate.DestinationLocationId, StringComparer.Ordinal)
-            .ThenBy(candidate => candidate.OriginLocationId, StringComparer.Ordinal)
-            .ThenBy(candidate => candidate.ActionId, StringComparer.Ordinal)
-            .FirstOrDefault();
+        var eligible = moves.Where(candidate => !prior.Contains(candidate.ElementId!));
+        var next = selection switch
+        {
+            MatrixMovementSelection.StableRoute => eligible
+                .OrderBy(candidate => candidate.ElementId, StringComparer.Ordinal)
+                .ThenBy(candidate => candidate.DestinationLocationId, StringComparer.Ordinal)
+                .ThenBy(candidate => candidate.OriginLocationId, StringComparer.Ordinal)
+                .ThenBy(candidate => candidate.ActionId, StringComparer.Ordinal)
+                .FirstOrDefault(),
+            MatrixMovementSelection.LowestCost => eligible
+                .OrderBy(candidate => candidate.ElementId, StringComparer.Ordinal)
+                .ThenBy(candidate => candidate.MovementTotalCost)
+                .ThenBy(candidate => candidate.DestinationLocationId, StringComparer.Ordinal)
+                .ThenBy(candidate => candidate.OriginLocationId, StringComparer.Ordinal)
+                .ThenBy(candidate => candidate.ActionId, StringComparer.Ordinal)
+                .FirstOrDefault(),
+            _ => throw new ArgumentOutOfRangeException(nameof(selection)),
+        };
         return ExerciseControllerSelection.Selected(
             selected.Audience,
             next?.ActionId ?? completions[0].ActionId);
@@ -357,29 +381,32 @@ public static class ExerciseController
         policy switch
         {
             ExerciseControllerPolicy.ActFirstReserveNoneThenFirstByActionId =>
-                new(true, MatrixReserveSelection.None, false),
+                new(true, MatrixReserveSelection.None, MatrixMovementSelection.None),
             ExerciseControllerPolicy.ActFirstReserveOneThenFirstByActionId =>
-                new(true, MatrixReserveSelection.One, false),
+                new(true, MatrixReserveSelection.One, MatrixMovementSelection.None),
             ExerciseControllerPolicy.ActFirstReserveAllThenFirstByActionId =>
-                new(true, MatrixReserveSelection.All, false),
+                new(true, MatrixReserveSelection.All, MatrixMovementSelection.None),
             ExerciseControllerPolicy.ActLastReserveNoneThenFirstByActionId =>
-                new(false, MatrixReserveSelection.None, false),
+                new(false, MatrixReserveSelection.None, MatrixMovementSelection.None),
             ExerciseControllerPolicy.ActLastReserveOneThenFirstByActionId =>
-                new(false, MatrixReserveSelection.One, false),
+                new(false, MatrixReserveSelection.One, MatrixMovementSelection.None),
             ExerciseControllerPolicy.ActLastReserveAllThenFirstByActionId =>
-                new(false, MatrixReserveSelection.All, false),
+                new(false, MatrixReserveSelection.All, MatrixMovementSelection.None),
             ExerciseControllerPolicy.ActFirstReserveNoneMoveEachOnceThenComplete =>
-                new(true, MatrixReserveSelection.None, true),
+                new(true, MatrixReserveSelection.None, MatrixMovementSelection.StableRoute),
             ExerciseControllerPolicy.ActFirstReserveOneMoveEachOnceThenComplete =>
-                new(true, MatrixReserveSelection.One, true),
+                new(true, MatrixReserveSelection.One, MatrixMovementSelection.StableRoute),
             ExerciseControllerPolicy.ActFirstReserveAllMoveEachOnceThenComplete =>
-                new(true, MatrixReserveSelection.All, true),
+                new(true, MatrixReserveSelection.All, MatrixMovementSelection.StableRoute),
             ExerciseControllerPolicy.ActLastReserveNoneMoveEachOnceThenComplete =>
-                new(false, MatrixReserveSelection.None, true),
+                new(false, MatrixReserveSelection.None, MatrixMovementSelection.StableRoute),
             ExerciseControllerPolicy.ActLastReserveOneMoveEachOnceThenComplete =>
-                new(false, MatrixReserveSelection.One, true),
+                new(false, MatrixReserveSelection.One, MatrixMovementSelection.StableRoute),
             ExerciseControllerPolicy.ActLastReserveAllMoveEachOnceThenComplete =>
-                new(false, MatrixReserveSelection.All, true),
+                new(false, MatrixReserveSelection.All, MatrixMovementSelection.StableRoute),
+            ExerciseControllerPolicy
+                .ActFirstReserveNoneMoveEachOnceByLowestCostThenComplete =>
+                new(true, MatrixReserveSelection.None, MatrixMovementSelection.LowestCost),
             _ => null,
         };
 
@@ -390,8 +417,18 @@ public static class ExerciseController
         All,
     }
 
+    private enum MatrixMovementSelection
+    {
+        None,
+        StableRoute,
+        LowestCost,
+    }
+
     private readonly record struct MatrixControllerPolicy(
         bool ActFirst,
         MatrixReserveSelection ReserveSelection,
-        bool BoundedMovement);
+        MatrixMovementSelection MovementSelection)
+    {
+        public bool BoundedMovement => MovementSelection != MatrixMovementSelection.None;
+    }
 }

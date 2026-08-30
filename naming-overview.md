@@ -554,6 +554,10 @@ Closed controller-policy names describe deterministic test behavior, not command
 The checked policy matrix says exactly `act-first`/`act-last` and Reserve `none`/`one`/`all`; its
 runner-only accepted-designation count is controller history, never campaign state. These policies
 produce six Movement-entry Exercises inside one Maneuver and do not make the runner the Umpire.
+The checked Movement policies append `move-each-once-then-complete`. The additive
+`move-each-once-by-lowest-cost-then-complete` name is explicitly a trusted simulator-selection
+instrument: it orders an element's current public legal moves by exact cost and is neither a Core
+rule nor a recommended player strategy.
 
 The implemented Movement Foundation keeps **representation** as Umpire truth and exposes only an
 **apparent presence** to the opposing side. A representation is the authoritative map piece and
@@ -581,8 +585,9 @@ terrain cost; crossed-hexside additions are then applied separately;
 **hexside addition** names an ordered Ridge or directional Slope increment. These output contract
 names now have internal authoritative move/event semantics and observation-derived public legal
 actions. `MOV-TASK-008` publishes exact move/completion membership and submission through the
-Breakdown Determination checkpoint; `MOV-TASK-009` is the next checked Exercise/Maneuver evidence
-gate. **Breakdown continuity** names replay state and rules
+Breakdown Determination checkpoint; merged `MOV-TASK-009` supplies checked Exercise/Maneuver
+evidence and `MOV-TASK-010` synchronization/review is in progress. **Breakdown continuity** names
+replay state and rules
 identity, not Breakdown adjudication: no roll, result, loss, or Movement BP mutation is implemented.
 **Enemy ZOC** is the triggering board condition and **Reaction** is the persisted non-phasing
 interruption it opens. The five `CONTACT-001` rulings for Reaction ordering, repeat eligibility,

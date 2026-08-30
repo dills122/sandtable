@@ -55,6 +55,8 @@ internal static class ExerciseConfigurationIdentity
             "act-last-reserve-one-move-each-once-then-complete",
         ExerciseControllerPolicy.ActLastReserveAllMoveEachOnceThenComplete =>
             "act-last-reserve-all-move-each-once-then-complete",
+        ExerciseControllerPolicy.ActFirstReserveNoneMoveEachOnceByLowestCostThenComplete =>
+            "act-first-reserve-none-move-each-once-by-lowest-cost-then-complete",
         _ => throw new ArgumentOutOfRangeException(nameof(policy)),
     };
 }

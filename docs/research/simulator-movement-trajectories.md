@@ -1,6 +1,6 @@
 # Simulator Movement Trajectories
 
-**Status:** Completed locally; Task 009 PR merge and integration evidence remain provisional
+**Status:** Completed and merged in PR #78
 
 **Date:** 2026-08-29
 
@@ -66,5 +66,6 @@ The study does not establish what other scenarios, policies, or later mechanics 
 - The result does not cover model controllers, side-safe export, distributed or parallel execution,
   full victory, enemy occupancy or ZOC/Reaction, Contact/Engaged behavior, Breakdown adjudication,
   combat, Reserve Release, repeated Movement cycles, or second-side Movement.
-- Evidence remains provisional until the Task 009 PR merges and clean integration checks complete;
-  `MOV-TASK-010` remains blocked until then.
+- PR #78 merged the checked fixture and study on 2026-08-30. The follow-on
+  [Movement Cost Sensitivity](simulator-movement-cost-sensitivity.md) study now varies an explicit
+  controller decision instead of multiplying seed probes that do not affect route selection.

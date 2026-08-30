@@ -36,6 +36,7 @@ public enum ExerciseControllerPolicy
     ActLastReserveNoneMoveEachOnceThenComplete,
     ActLastReserveOneMoveEachOnceThenComplete,
     ActLastReserveAllMoveEachOnceThenComplete,
+    ActFirstReserveNoneMoveEachOnceByLowestCostThenComplete,
 }
 
 public enum ExerciseFailureCategory

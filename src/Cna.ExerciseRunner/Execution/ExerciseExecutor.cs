@@ -437,6 +437,9 @@ public static class ExerciseExecutor
                                 : null,
                             candidate is MoveElementAction destination
                                 ? destination.DestinationLocationId
+                                : null,
+                            candidate is MoveElementAction costed
+                                ? costed.CostBreakdown.TotalCost
                                 : null)),
                     reserveDesignationCounts[result.ActionSet.Audience],
                     movedElementIds[result.ActionSet.Audience])).ToArray());

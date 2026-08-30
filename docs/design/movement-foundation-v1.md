@@ -1,8 +1,7 @@
 # Movement Foundation v1 Technical Design
 
-**Status:** Active implementation plan; `MOV-TASK-009` executable Movement evidence is implemented
-and verified locally, with PR merge and integration evidence provisional; `MOV-TASK-010` remains
-blocked until that merge
+**Status:** Active implementation plan; `MOV-TASK-009` executable Movement evidence is merged in
+PR #78 and `MOV-TASK-010` synchronization/review is in progress
 
 **Date:** 2026-08-25
 
@@ -10,8 +9,9 @@ blocked until that merge
 
 **Specification:** [Movement Foundation v1](../specs/movement-foundation-v1.md)
 
-**Research:** [Movement Foundation Spike](../research/movement-foundation-spike.md) and
-[Movement Simulator Trajectories](../research/simulator-movement-trajectories.md)
+**Research:** [Movement Foundation Spike](../research/movement-foundation-spike.md),
+[Movement Simulator Trajectories](../research/simulator-movement-trajectories.md), and
+[Movement Cost Sensitivity](../research/simulator-movement-cost-sensitivity.md)
 
 ## Design summary
 
@@ -298,13 +298,13 @@ MOV-TASK-007 move command/event/adjudication [complete]
 MOV-TASK-008 completion to Breakdown [complete]
                   |
                   v
-MOV-TASK-009 end-to-end + Exercise/Maneuver evidence [implemented; merge provisional]
+MOV-TASK-009 end-to-end + Exercise/Maneuver evidence [complete; merged PR #78]
                   |
                   v
 MOV-TASK-010 synchronization + independent review
 ```
 
-Tasks 001 through 009 are implemented. Tasks 009 through 010 remain serial because each
+Tasks 001 through 009 are implemented and merged. Tasks 009 through 010 remain serial because each
 freezes a versioned contract consumed by the next layer. In particular, Content admission in Task 003
 consumes the closed mobility vocabulary and ruleset identity completed by Task 002. Tasks 006 and
 007 keep all public Movement membership dormant; Task 008 now atomically exposes executable move
@@ -315,8 +315,8 @@ instances are complete. Tasks 005 through 008 are implemented and verified. Task
 internal adjudication while preserving Task 006's dormant public boundary; Task 008 atomically
 publishes move and completion membership and admits the exact Breakdown successor. Task 009 adopts
 that public vertical through Runner-local bounded selection, strict evidence, and retained simulator
-trajectories. Its local verification is complete, but Task 010 remains blocked until the Task 009 PR
-merges and integration evidence is retained.
+trajectories. It is complete and merged in PR #78; Task 010 synchronization/review is now in
+progress.
 
 The Task 001-004 foundation merged in PR #29 after `just check` passed with a warning-clean build,
 format verification, and 746/746 solution tests. The roadmap groups the remaining work into a
@@ -546,8 +546,7 @@ serial integration gate even where its codec and projector work can be prepared 
 
 ### `MOV-TASK-009` - Adopt Movement in Exercise and Maneuver evidence
 
-**Status:** Implemented and verified locally, including two matching clean CLI executions; PR merge
-and integration evidence remain provisional
+**Status:** Complete and merged in PR #78, including two matching clean CLI executions
 
 **Advances:** `MOV-REQ-012`; `MOV-AC-012`, `MOV-AC-013`
 
@@ -605,7 +604,8 @@ validation.
 
 ### `MOV-TASK-010` - Synchronize and review the completed package
 
-**Status:** Blocked until the `MOV-TASK-009` PR merges and integration checks complete
+**Status:** In progress after the `MOV-TASK-009` merge; synchronization and review evidence are
+local until this closeout is merged
 
 **Advances:** all requirements and acceptance criteria
 
@@ -639,7 +639,7 @@ three before the full gate and brand-new independent review.
 | `MOV-REQ-009` completion | 005 | 008 | exact successor tests | Completion command/event/codec/execution/projection implemented in Task 008 with exact Breakdown successor and no public Breakdown action |
 | `MOV-REQ-010` canonical contracts | 004, 006 | 002-008 | golden/strict reader tests | Rules/world/history implemented through 004B; outward strict readers active through Task 006; `ElementMoved` and `MovementSegmentCompleted` strict codecs plus moved/completed snapshots active through Task 008 |
 | `MOV-REQ-011` replay/fog | 001, 006 | 004-008 | replay/privacy tests | Same-apparent public-action equivalence, zero/one/many Movement-plus-completion replay, and exact current-membership submission revalidation complete through Task 008 |
-| `MOV-REQ-012` Exercise evidence | 008 | 009 | checked six-child fixture, strict semantic bundle/report readback, reconstruction/re-adjudication, 48-trajectory retained study, project/full tests, and two clean CLI runs | Implemented and locally verified, including matching clean-run fingerprints; PR merge and integration remain provisional |
+| `MOV-REQ-012` Exercise evidence | 008 | 009 | checked six-child fixture, strict semantic bundle/report readback, reconstruction/re-adjudication, 48-trajectory retained study, project/full tests, and two clean CLI runs | Complete and merged in PR #78, including matching clean-run fingerprints |
 
 ## Review focus
 

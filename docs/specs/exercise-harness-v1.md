@@ -1,8 +1,8 @@
 # Exercise Harness v1 Specification
 
-**Status:** `EXR-TASK-016` remains complete; `MOV-TASK-009` extends the compatible Harness v1
-contracts through checked non-contact Movement to exact first-side Breakdown Determination. Its
-implementation and local evidence are verified, with PR merge and integration evidence provisional
+**Status:** `EXR-TASK-016` remains complete; merged `MOV-TASK-009` extends the compatible Harness v1
+contracts through checked non-contact Movement to exact first-side Breakdown Determination. A
+post-adoption paired lowest-cost controller instrument is implemented and verified locally
 
 **Date:** 2026-08-20
 
@@ -25,9 +25,9 @@ gameplay-engine work
 [technical design](../design/operation-stage-entry-v1.md), followed by the
 [Reserve Designation specification](reserve-designation-v1.md) and
 [technical design](../design/reserve-designation-v1.md). Movement Foundation Tasks 001-008 provide
-the merged authoritative non-contact Movement vertical. `MOV-TASK-009` adopts that public vertical
-into checked Exercise/Maneuver evidence without changing Core semantics or existing Harness
-contract identities
+the merged authoritative non-contact Movement vertical. Merged `MOV-TASK-009` adopts that public
+vertical into checked Exercise/Maneuver evidence without changing Core semantics or existing
+Harness contract identities
 
 **Research decisions:**
 [capability and replay](../research/exercise-capability-and-replay-spike.md),
@@ -141,12 +141,18 @@ exact first-side Movement boundary with strict bundle/report readback.
 Movement adoption keeps Exercise manifest, `sandtable.maneuver-manifest.v2`, and
 `sandtable.exercise-controller-configuration.v2` identities. It adds six tokens:
 `act-{first,last}-reserve-{none,one,all}-move-each-once-then-complete`. The Runner-local controller
-candidate advances to v2: Reserve designation retains its existing own `elementId`, and move
-candidates require own `elementId`, `originLocationId`, and `destinationLocationId`. Existing v1
-candidates reject. Runner-local history records an element only after its move is accepted; the
-controller then excludes that element, chooses the stable supported current move, and eventually
-selects the exact advertised completion. Existing controller tokens remain byte- and
-behavior-compatible, and Core retains its repeat-move semantics.
+candidate advanced to v2 for that merge: Reserve designation retained its existing own `elementId`,
+and move candidates required own `elementId`, `originLocationId`, and `destinationLocationId`.
+The post-adoption cost-sensitivity instrument advances the current trusted candidate to v3: every
+move also requires the exact positive public `CostBreakdown.TotalCost`, and non-Movement candidates
+cannot carry a cost. Existing v1/v2 candidates reject. Runner-local history records an element only
+after its move is accepted; the controller then excludes that element, chooses the declared stable
+route or lowest-cost route, and eventually selects the exact advertised completion. The additive
+lowest-cost token is
+`act-first-reserve-none-move-each-once-by-lowest-cost-then-complete`; it preserves element order,
+compares exact rational cost next, and uses destination, origin, then action ID as stable
+tie-breakers. Existing controller tokens remain byte- and behavior-compatible, and Core retains its
+repeat-move semantics and all authority.
 
 The checked command is:
 
@@ -673,8 +679,15 @@ behavior participates in this evidence.
 [Movement Simulator Trajectories](../research/simulator-movement-trajectories.md) study. Its current
 aggregate fingerprint is
 `sha256:c1c20270dcd3402886931c28851bea7f23cd1e0778b45f94c43d85ed01d41c4b`, reconfirmed by two clean
-CLI executions into separate artifact roots. The Task 009 PR and integration checks remain
-provisional, and `MOV-TASK-010` remains blocked until merge.
+CLI executions into separate artifact roots. PR #78 merged Task 009 on 2026-08-30.
+
+The follow-on [Movement Cost Sensitivity](../research/simulator-movement-cost-sensitivity.md) study
+uses the separate paired v1 contract to compare the unchanged stable-route controller with the
+additive lowest-public-cost controller from equal initial conditions. Both arms reach Breakdown in
+13 actions with 94 passed checks; the first route changes from exact cost 8 to 1/2 while the second
+cost-1 route remains stable. Two fresh CLI runs retain parent fingerprint
+`sha256:5f997e4d74d0f9b83e43d6d4c2c33ebedae03b188a7e30d64f57092a51edd1bc`.
+This is deterministic controller-sensitivity evidence only, not a balance or recommendation claim.
 
 Post-adoption trusted-evidence hardening also proves that initial and final snapshots are decoded by
 Core's complete current snapshot/world contract before any executed-or-later success or failure

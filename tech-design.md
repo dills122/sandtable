@@ -38,8 +38,9 @@ profiles and their baseline twins remain regression checkpoints.
 The checked two-child **Maneuver** fixtures define strict canonical `serial-unpaired` parent manifests.
 The Stage Entry fixture runs both admitted setups to Reserve; the Reserve Designation fixture runs
 both through Movement. A checked six-child controller matrix crosses `act-first`/`act-last` with
-Reserve `none`/`one`/`all` and reaches Movement in exact 10/11/12-action trajectories. Only the
-parent supplies the root
+Reserve `none`/`one`/`all` and reaches Movement in exact 10/11/12-action trajectories. The checked
+Movement fixture extends the same six policies through Breakdown Determination in 13
+actions with deterministic 2/1/0 move counts. Only the parent supplies the root
 seed; each ordered child receives an explicit Maneuver
 ID and ordinal identity and runs synchronously through the same no-console post-admission
 coordinator. The aggregate path opens each completed child bundle once, semantically validates its
@@ -48,8 +49,10 @@ One canonical report reconciles every child state and hashes only deterministic 
 time, throughput, local paths, and artifact-manifest hashes remain separate diagnostics. Report
 creation is transactional and a strict readback must succeed before the CLI claims completion.
 
-The optional `serial-paired` fixture runs baseline then candidate in separate fresh Exercise
-sessions. Pair admission and aggregation require identical declared initial conditions, campaign
+Optional `serial-paired` fixtures run baseline then candidate in separate fresh Exercise sessions.
+The Reserve-policy pair exercises descriptive divergence at Reserve; the Movement-cost pair
+compares the unchanged stable-route controller with an additive lowest-public-cost controller.
+Pair admission and aggregation require identical declared initial conditions, campaign
 creation inputs, complete initial role/domain seed ledgers, build cohort, and canonical initial
 snapshot while keeping controller configuration identities separate. The parent report recomputes
 the first accepted-action divergence and descriptive count/outcome deltas during strict readback.
@@ -743,6 +746,8 @@ first-divergence report. V1 bundles and reports are `trusted-authority`; side-sa
 victory runs, model controllers, and parallel/distributed execution remain explicitly deferred.
 See the retained
 [controller-matrix evidence](docs/research/simulator-controller-matrix.md),
+[Movement trajectory evidence](docs/research/simulator-movement-trajectories.md),
+[Movement cost-sensitivity evidence](docs/research/simulator-movement-cost-sensitivity.md),
 [capability/replay research](docs/research/exercise-capability-and-replay-spike.md),
 [artifact research](docs/research/exercise-evidence-artifact-spike.md),
 [reproducibility research](docs/research/exercise-reproducibility-and-pairing-spike.md), governing
@@ -760,7 +765,8 @@ includes the rules artifact, world/snapshot and owner-observation contracts, sub
 candidates, command mapping, exact designation/completion events, strict finite Reserve/Movement
 validation, and standalone plus two-setup replay evidence. Public observation-derived non-contact
 Movement membership, exact submission mapping, adjudication, completion to Breakdown
-Determination, and replay are now implemented; checked Harness adoption remains `MOV-TASK-009`.
+Determination, replay, and merged checked Harness adoption through `MOV-TASK-009` are now
+implemented. `MOV-TASK-010` synchronization/review is in progress.
 The active owner-approved engine package is the Movement Foundation
 [research](docs/research/movement-foundation-spike.md),
 [specification](docs/specs/movement-foundation-v1.md), and
@@ -797,7 +803,9 @@ Cohesion, and BP/cohort-risk facts plus the minimum opaque apparent-opponent sha
 `MOV-TASK-006` freezes the dormant action-contract cut. `MOV-TASK-007` implements the internal
 non-contact command/event/adjudication vertical while keeping public membership dormant;
 `MOV-TASK-008` exposes the complete observation-derived move-and-completion vertical through the
-public boundary. `MOV-TASK-009` next adopts that path in checked Exercise/Maneuver evidence.
+public boundary. `MOV-TASK-009` is merged in PR #78 and adopts that path in checked
+Exercise/Maneuver evidence. A post-adoption paired instrument demonstrates deterministic route-cost
+sensitivity without adding Umpire rules or making a gameplay recommendation.
 
 The [ZOC/Reaction spike](docs/research/contact-reaction-zoc-spike.md) and accepted
 [CONTACT-001 ruling lock](docs/research/contact-reaction-zoc-source-ruling-lock.md) separate
