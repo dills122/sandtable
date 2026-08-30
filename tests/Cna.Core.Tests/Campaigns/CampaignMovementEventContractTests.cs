@@ -117,6 +117,69 @@ public sealed class CampaignMovementEventContractTests
                 StringComparison.Ordinal))));
     }
 
+    [Theory]
+    [InlineData("commonwealth-element-a", "center")]
+    [InlineData("commonwealth-element-b", "south")]
+    public void HexsideAndScaledRouteCostsHaveStrictCanonicalRoundTrips(
+        string elementId,
+        string destinationLocationId)
+    {
+        var evidence = CampaignMovementTestData.ReachMovement();
+        var candidate = CampaignMovementTestData.FindMove(
+            evidence.Snapshot,
+            evidence.Context,
+            evidence.ActingSide,
+            elementId,
+            destinationLocationId);
+        var moved = CampaignMovementEventFactory.Create(
+            evidence.Snapshot,
+            evidence.Context,
+            CampaignMovementTestData.CommandFor(
+                evidence.Snapshot,
+                evidence.ActingSide,
+                candidate));
+
+        var canonical = CampaignEventSerializer.Serialize(moved);
+        var parsed = Assert.IsType<ElementMoved>(
+            CampaignEventSerializer.Deserialize(canonical));
+
+        Assert.Equal(moved, parsed);
+        Assert.Equal(canonical, CampaignEventSerializer.Serialize(parsed));
+
+        if (destinationLocationId == "center")
+        {
+            Assert.Null(parsed.Cost.RouteAdjustment);
+            var crossed = Assert.Single(parsed.Cost.CrossedHexsideCosts);
+            Assert.Equal("land.edge.ridge", crossed.HexsideId);
+            Assert.Equal(MovementHexsideDirection.Either, crossed.Direction);
+            Assert.NotEmpty(crossed.Sources);
+
+            var json = Encoding.UTF8.GetString(canonical);
+            const string nested =
+                "\"hexsideId\":\"land.edge.ridge\",\"direction\":\"either\"";
+            Assert.Contains(nested, json, StringComparison.Ordinal);
+            Assert.Throws<JsonException>(() => CampaignEventSerializer.Deserialize(
+                Encoding.UTF8.GetBytes(json.Replace(
+                    nested,
+                    "\"direction\":\"either\",\"hexsideId\":\"land.edge.ridge\"",
+                    StringComparison.Ordinal))));
+            Assert.Throws<JsonException>(() => CampaignEventSerializer.Deserialize(
+                Encoding.UTF8.GetBytes(json.Replace(
+                    "\"hexsideId\":\"land.edge.ridge\"",
+                    "\"hexsideId\":\"land.edge.ridge\",\"injected\":true",
+                    StringComparison.Ordinal))));
+        }
+        else
+        {
+            var route = Assert.IsType<CampaignMovementRouteAdjustment>(
+                parsed.Cost.RouteAdjustment);
+            Assert.Equal("land.edge.track", route.RouteId);
+            Assert.Equal(MovementRouteCostKind.ScaleUnderlying, route.CostKind);
+            Assert.NotEmpty(route.Sources);
+            Assert.Empty(parsed.Cost.CrossedHexsideCosts);
+        }
+    }
+
     private static string[] DeclaredPropertyNames<T>() => typeof(T)
         .GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly)
         .Select(property => property.Name)
