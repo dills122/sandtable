@@ -25,7 +25,7 @@ internal static class CampaignSetupHash
             definition.OpeningPreamble,
             definition.Weather,
             definition.StageEntry,
-            definition.Content,
+            writer => WriteContent(writer, definition.Content),
             definition.Sources);
     }
 
@@ -48,7 +48,30 @@ internal static class CampaignSetupHash
             openingPreamble,
             weather,
             stageEntry,
-            content,
+            writer => WriteContent(writer, content),
+            sources));
+
+    internal static string CalculateV5(
+        int schemaVersion,
+        string setupId,
+        bool isSynthetic,
+        int initialGameTurn,
+        InitiativePolicy initialInitiative,
+        CampaignOpeningPreamblePolicy openingPreamble,
+        CampaignWeatherPolicy weather,
+        CampaignStageEntryPolicy stageEntry,
+        ContentPackV5Identity pack,
+        string scenarioId,
+        IReadOnlyList<RuleReference> sources) => FormatSha256(SerializeCanonical(
+            schemaVersion,
+            setupId,
+            isSynthetic,
+            initialGameTurn,
+            initialInitiative,
+            openingPreamble,
+            weather,
+            stageEntry,
+            writer => WriteContent(writer, pack, scenarioId),
             sources));
 
     private static byte[] SerializeCanonical(
@@ -60,7 +83,7 @@ internal static class CampaignSetupHash
         CampaignOpeningPreamblePolicy openingPreamble,
         CampaignWeatherPolicy weather,
         CampaignStageEntryPolicy stageEntry,
-        CampaignContentSelection content,
+        Action<Utf8JsonWriter> writeContent,
         IReadOnlyList<RuleReference> sources)
     {
         using var stream = new MemoryStream();
@@ -120,14 +143,7 @@ internal static class CampaignSetupHash
             writer.WriteEndArray();
             writer.WriteEndObject();
             CampaignStageEntryPolicyCodec.Write(writer, "stageEntry", stageEntry);
-            writer.WriteStartObject("content");
-            writer.WriteNumber("schemaVersion", content.Pack.SchemaVersion);
-            writer.WriteString("formatId", content.Pack.FormatId);
-            writer.WriteString("packId", content.Pack.PackId);
-            writer.WriteString("rulesetId", content.Pack.RulesetId);
-            writer.WriteString("hash", content.Pack.Hash);
-            writer.WriteString("scenarioId", content.ScenarioId);
-            writer.WriteEndObject();
+            writeContent(writer);
             writer.WriteStartArray("sources");
 
             foreach (var source in sources)
@@ -147,6 +163,48 @@ internal static class CampaignSetupHash
 
     private static string FormatSha256(ReadOnlySpan<byte> canonical) =>
         $"sha256:{Convert.ToHexString(SHA256.HashData(canonical)).ToLowerInvariant()}";
+
+    private static void WriteContent(
+        Utf8JsonWriter writer,
+        CampaignContentSelection content) => WriteContent(
+            writer,
+            content.Pack.SchemaVersion,
+            content.Pack.FormatId,
+            content.Pack.PackId,
+            content.Pack.RulesetId,
+            content.Pack.Hash,
+            content.ScenarioId);
+
+    private static void WriteContent(
+        Utf8JsonWriter writer,
+        ContentPackV5Identity pack,
+        string scenarioId) => WriteContent(
+            writer,
+            pack.SchemaVersion,
+            pack.FormatId,
+            pack.PackId,
+            pack.RulesetId,
+            pack.Hash,
+            scenarioId);
+
+    private static void WriteContent(
+        Utf8JsonWriter writer,
+        int schemaVersion,
+        string formatId,
+        string packId,
+        string rulesetId,
+        string hash,
+        string scenarioId)
+    {
+        writer.WriteStartObject("content");
+        writer.WriteNumber("schemaVersion", schemaVersion);
+        writer.WriteString("formatId", formatId);
+        writer.WriteString("packId", packId);
+        writer.WriteString("rulesetId", rulesetId);
+        writer.WriteString("hash", hash);
+        writer.WriteString("scenarioId", scenarioId);
+        writer.WriteEndObject();
+    }
 
     private static void WriteInitiative(Utf8JsonWriter writer, InitiativePolicy policy)
     {

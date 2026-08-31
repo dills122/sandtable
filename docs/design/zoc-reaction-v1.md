@@ -1,6 +1,6 @@
 # ZOC and Reaction v1 Technical Design
 
-**Status:** Approved — dormant checkpoints `ZOR-TASK-002A`-`002C` implemented; `003A` next
+**Status:** Approved — dormant checkpoints `ZOR-TASK-002A`-`003A` implemented; `003B` next
 
 **Date:** 2026-08-30
 
@@ -395,10 +395,12 @@ seed rejection. This gate does not claim creation, World, snapshot, or replay pr
 
 ### `ZOR-TASK-003` — Freeze Campaign state, event, and replay contracts
 
-- **003A:** prepare dormant World and creation successors; copy exact scenario component-TOE seeds
+- **003A (implemented):** prepare dormant World and creation successors; copy exact scenario component-TOE seeds
   and provenance into creation truth and mutable World; add checked current-raw derivation,
   stage/segment-scoped Movement-ended state, reacting-side position identity, window/opportunity
-  IDs, and validation.
+  IDs, and validation. The direct-only World 5 / CampaignCreated 9 seam derives the positive
+  two-representation raw total as `10`, retains only mutable current TOE plus seed provenance in
+  Campaign state, and leaves all active identities and serializers unchanged.
 - **003B:** prepare dormant Snapshot and `ElementMoved` successors; add nullable window, suspended
   position, frozen evidence, empty-window state, canonical serializers/readers, projection, and
   replay tests.
