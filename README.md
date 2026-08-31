@@ -212,6 +212,22 @@ completion criteria.
 Running the repository today launches the development service scaffold and Aspire dashboard. It
 does not yet launch a playable Maproom client.
 
+The repository also includes a dependency-free project website under `site/`. From the repository
+root, preview it with:
+
+```sh
+python3 -m http.server 4173
+```
+
+Then open `http://localhost:4173/site/`. The website explains the intended player loop, authority
+model, current implementation frontier, and developer quick start. It is project documentation and
+outreach—not the future authoritative Maproom client.
+
+The website deploys to `https://dills122.github.io/sandtable/` through the dedicated GitHub Pages
+workflow whenever website files land on `main`. The workflow can also be run manually from the
+repository's Actions page. It uploads only `site/`; the simulation source and build artifacts are
+not part of the published site.
+
 ### Prerequisites
 
 - [.NET SDK 10.0.302 or a later .NET 10 feature band](https://dotnet.microsoft.com/en-us/download/dotnet/10.0)
@@ -394,6 +410,7 @@ select a deterministic scripted decision rather than fail the turn.
 | `Cna.ServiceDefaults` | Shared discovery, resilience, health, and telemetry defaults |
 | `Cna.AppHost` | Aspire development orchestration |
 | `Cna.ExerciseRunner` | Local deterministic single-Exercise, serial-unpaired, and optional serial-paired Maneuver orchestration with trusted artifacts |
+| `site` | Static project website for developers and prospective players; non-authoritative and separate from Maproom |
 | `Cna.Core.Tests` | Deterministic Umpire unit tests on xUnit v3 and MTP |
 | `Cna.ExerciseRunner.Tests` | Exercise contracts, replay, artifact, and CLI tests on xUnit v3 and MTP |
 | `Cna.Intelligence.Contracts.Tests` | Protobuf compatibility tests on xUnit v3 and MTP |

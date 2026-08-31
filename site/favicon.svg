@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Sandtable">
+  <rect x="7" y="7" width="50" height="50" rx="7" fill="none" stroke="currentColor" stroke-width="4" />
+  <path d="M19 24h12m-12 0v8h12v8H19m20-16h12m-6 0v16" fill="none" stroke="currentColor" stroke-linecap="square" stroke-width="4" />
+</svg>

@@ -1,0 +1,15 @@
+{
+  "date": "2026-08-30",
+  "framework": "none detected; dependency-free static HTML selected",
+  "font_stack": "none detected before build",
+  "palette": "none detected before build",
+  "motion": "no motion library detected",
+  "spacing": "no existing web spacing scale detected",
+  "preserved": [],
+  "introduced": [
+    "Cobalt design tokens",
+    "Workbench macrostructure",
+    "responsive and interaction discipline",
+    "Hallmark slop-test gates"
+  ]
+}

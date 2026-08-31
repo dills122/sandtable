@@ -139,6 +139,12 @@ Then we can say:
 
 That's much nicer than "open the frontend."
 
+The static project website under `site/` is deliberately **not** Maproom. It introduces Sandtable
+to developers and prospective players, explains how the eventual game is intended to work, and
+links into the repository. It cannot open a campaign, inspect authoritative state, or issue an
+order. Reserve **Maproom** for the future side-safe player application so the flavor name continues
+to communicate an actual authority boundary rather than any web page with a tactical motif.
+
 For future complex decisions, Maproom may be prompt-forward without becoming a chatbot or authority
 boundary. A few contextual suggested approaches, natural language, map/list interaction, and direct
 fields edit one visible private typed intent draft. The player corrects and confirms that draft
