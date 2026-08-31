@@ -79,6 +79,15 @@ queries derive the Reserve audience from the recorded first/second actor order w
 `ActiveSide` remains unset. Raw snapshots, commands, events, content context, projection, and replay
 are not public mutation seams.
 
+A separate direct-only dormant Campaign Observation 6 successor now freezes the
+`sandtable.observation.zoc-reaction-side-safe.v1` policy, one canonical source-unmapped aggregate
+of apparent enemy-controlled locations, and a closed normal/phasing/reacting decision-state union.
+Its reacting view contains only the apparent trigger, the observer's current opportunities, and
+the optional active own participant; phasing receives only a stable window ID and generic waiting.
+A distinct strict projected-history contract retains the same redacted decision state without
+authority bindings, source mappings, evidence, or internal reasons. These successors are not
+registered on the active Observation 5 query or action path.
+
 The local `Cna.ExerciseRunner` supports that synthetic rules-laboratory path as either one
 bounded, deterministic **Exercise** or one serial **Maneuver**. An Exercise uses a fresh opaque Core
 capability, selects only current legal actions, stops at its exact declared boundary, proves both
@@ -142,7 +151,7 @@ The current delivery boundary is:
 | Ruleset/provenance, synthetic content, campaign authority, deterministic randomness, events, and replay | Implemented foundation |
 | Side-safe observations and exact-audience legal actions | Implemented for the current rules-laboratory path |
 | Mandatory turn preamble | Implemented through Reserve Designation completion; authority reaches first-side Movement |
-| Movement/contact and combat loops | Movement Foundation is complete through merged `MOV-TASK-010` / PR #79; approved ZOC/Reaction checkpoints `ZOR-TASK-002A`-`003B` now include dormant Rules/Content, World 5/creation 9, Snapshot 10, and `ElementMoved` v2 replay seams while the complete legacy runtime identity set remains authoritative; `004A` is next |
+| Movement/contact and combat loops | Movement Foundation is complete through merged `MOV-TASK-010` / PR #79; approved ZOC/Reaction checkpoints `ZOR-TASK-002A`-`004A` now include dormant Rules/Content, World 5/creation 9, Snapshot 10, `ElementMoved` v2 replay, and Observation 6/policy/history seams while the complete legacy runtime identity set remains authoritative; `004B` is next |
 | Published first-scenario data, remaining Land rules, victory, persistence, and Maproom | Milestone-level; not started |
 | Player Intent Composer | Direction reviewed; representative decision after the combat skeleton, no-model prototype before Maproom, optional parser evaluation after deterministic MVP |
 | Exercise Harness | Single-Exercise, serial-unpaired two-setup/controller/Movement Maneuvers, and optional serial-paired Reserve-policy and Movement-cost descriptive comparisons implemented with strict readback |
@@ -196,11 +205,12 @@ Exercise/Maneuver evidence. `MOV-TASK-010` completed synchronization and indepen
 merged in PR #79. Breakdown public actions and adjudication remain absent. The approved next engine
 package is the ZOC/Reaction
 [specification](docs/specs/zoc-reaction-v1.md) and
-[technical design](docs/design/zoc-reaction-v1.md). `ZOR-TASK-002A`-`003B` implement dormant
+[technical design](docs/design/zoc-reaction-v1.md). `ZOR-TASK-002A`-`004A` implement dormant
 Rules/Content/fixture, Campaign World 5/creation 9, Snapshot 10, and `ElementMoved` v2 successors,
 including exact current-TOE provenance, nullable/empty Reaction-window truth, strict canonical
-readback, atomic projection, and checkpoint replay. Active runtime identities remain unchanged;
-`ZOR-TASK-004A` is next.
+readback, atomic projection, checkpoint replay, and the side-safe Observation 6/policy and redacted
+decision-history contracts described above. Active runtime identities remain unchanged;
+`ZOR-TASK-004B` is next.
 The optional paired comparison is implemented Runner instrumentation and does not block
 gameplay-engine progress.
 Combat research has progressed beyond the initial source inventory: `CMB-RSH-001` now retains the

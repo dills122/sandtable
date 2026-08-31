@@ -16,7 +16,7 @@
 **Accepted v1 clarification:** the trigger is adjacency to a represented non-phasing combat
 element. V1 has no Close Assault declaration, so Rule 8.53(b)'s conditional CPA comparison is
 deferred; the accepted visibility policy below remains binding if a later declaration activates it.
-Observation 6 additionally proposes one aggregate apparent enemy-controlled-location set, with no
+Observation 6 additionally defines one aggregate apparent enemy-controlled-location set, with no
 source mapping or rationale, because local Movement legality cannot otherwise remain observation-
 derived under Rule 10.21(c).
 
@@ -413,4 +413,4 @@ Contact/Engaged into Sprint 4.
 
 No unresolved source-ruling choice blocks implementation. The non-contact Movement vertical is
 complete, the governing ZOC/Reaction package is approved, dormant implementation is complete
-through `ZOR-TASK-003B`, and `004A` is the next bounded production slice.
+through `ZOR-TASK-004A`, and `004B` is the next bounded production slice.

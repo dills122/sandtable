@@ -1,6 +1,6 @@
 # ZOC and Reaction v1 Technical Design
 
-**Status:** Approved — dormant checkpoints `ZOR-TASK-002A`-`003B` implemented; `004A` next
+**Status:** Approved — dormant checkpoints `ZOR-TASK-002A`-`004A` implemented; `004B` next
 
 **Date:** 2026-08-30
 
@@ -95,7 +95,7 @@ The expected clean-cut migration is:
 | Campaign Observation | 5 | 6 | bounded Reaction projection and new policy |
 | `ElementMoved` | 1 | 2 | atomic optional opened-window result |
 
-The proposed observation policy is `sandtable.observation.zoc-reaction-side-safe.v1`. Exact hashes
+The dormant observation policy is `sandtable.observation.zoc-reaction-side-safe.v1`. Exact hashes
 and final tokens are implementation goldens. A parent task may revise a number before its first
 merge only by updating the spec, design, compatibility tests, and all dependent branches together.
 No implementation accepts a partial legacy/current mixture.
@@ -295,9 +295,9 @@ The phasing projection contains public window ID plus generic waiting and retain
 Movement/post-move facts.
 
 Complete authority events retain real bindings, eligibility evidence, provenance, and internal
-closure reason. Projected history has separate schemas for each audience and omits those facts. An
-explicit player knows its submitted close through the normal action/receipt path, not through a
-published internal reason.
+closure reason. Projected history uses a separate strict audience-keyed schema that omits those
+facts. An explicit player knows its submitted close through the normal action/receipt path, not
+through a published internal reason.
 
 V1 delivers a deterministic Core system-close command whose identity binds the stable window ID and
 whose closed action kind distinguishes unavailable/timeout. Core owns no clock or timeout scheduler.
@@ -413,9 +413,10 @@ not in Task 002.
 
 ### `ZOR-TASK-004` — Freeze dormant side-safe contracts
 
-- **004A:** prepare dormant Observation 6/policy successors; add the aggregate source-unmapped
-  apparent enemy-controlled location set, dormant reacting/phasing decision projections, strict
-  readback, and projected-history shapes. The active public path remains on Observation 5.
+- **004A (implemented):** prepare dormant Observation 6/policy successors; add the aggregate
+  source-unmapped apparent enemy-controlled location set, dormant reacting/phasing decision
+  projections, strict readback, and projected-history shapes. The active public path remains on
+  Observation 5.
 - **004B:** add dormant topology-local ordinary-Movement ZOC entry/exit derivation plus dormant
   first/later Reaction step, complete, and close candidates, system close membership, canonical
   IDs, unpublished submission mappings, controlled-set local derivation, remote-ZOC noninterference,
@@ -484,13 +485,14 @@ migration design rather than weakening `ZOR-REQ-012`.
 
 ## Parallel work boundary
 
-After this package is approved, ZOR production is serial through 004B on one integration branch and
-remains a single merge train through 006C because identities and shared authority shapes are
-coupled. The safe parallel lane is Breakdown adjudication research/design:
+ZOR production remains serial through 004B on one integration branch and remains a single merge
+train through 006C because identities and shared authority shapes are coupled. The safe parallel
+lane is Breakdown adjudication research/design:
 source-lock the percentage outcome table, action/result/loss vocabulary, RNG evidence, and decision
 packet against the already implemented BP state. It may not modify shared Core contract files or
-claim implementation approval while ZOR contract versions are moving. Reconcile that design only
-after 003B freezes the shared Campaign seam.
+claim implementation approval while ZOR contract versions are moving. The Campaign seam was frozen
+by 003B, so that design may now reconcile against it while remaining outside this implementation
+train.
 
 Gameplay simulation and tuning should resume after 006C exposes complete authoritative Reaction
 outcomes; 007A then turns those outcomes into checked simulator evidence. Earlier runs may validate

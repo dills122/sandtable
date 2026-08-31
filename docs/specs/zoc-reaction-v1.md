@@ -1,6 +1,6 @@
 # ZOC and Reaction v1 Specification
 
-**Status:** Approved — dormant checkpoints `ZOR-TASK-002A`-`003B` implemented; `004A` next
+**Status:** Approved — dormant checkpoints `ZOR-TASK-002A`-`004A` implemented; `004B` next
 
 **Date:** 2026-08-30
 
@@ -346,7 +346,7 @@ The owner approved the complete package after PR #80 merged, including these con
 7. add an aggregate source-unmapped apparent enemy-controlled-location set to Observation 6 as the
    minimum disclosure that keeps topology-local Movement actions side-safe and deterministic.
 
-That approval opened only the dependency-ordered first slice, `ZOR-TASK-002A`; the owner then
-directed `002B`, `002C`, `003A`, and `003B` after their preceding verified checkpoints.
-`ZOR-TASK-004A` and later slices remain dependency-gated and must not be treated as one authorized
-or implemented change.
+That approval initially opened only the dependency-ordered first slice, `ZOR-TASK-002A`; the owner
+subsequently directed `002B`, `002C`, `003A`, `003B`, and `004A` after their preceding verified
+checkpoints. `ZOR-TASK-004B` and later slices remain dependency-gated and must not be treated as one
+authorized or implemented change.
