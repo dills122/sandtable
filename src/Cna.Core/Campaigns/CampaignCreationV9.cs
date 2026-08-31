@@ -22,21 +22,35 @@ internal sealed record CampaignContentV5Selection
 internal sealed record CampaignSetupSnapshotV5
 {
     private CampaignSetupSnapshotV5(
-        CampaignSetupSnapshot predecessor,
-        CampaignContentV5Selection content)
+        int schemaVersion,
+        string setupId,
+        bool isSynthetic,
+        int initialGameTurn,
+        InitiativePolicy initialInitiative,
+        CampaignOpeningPreamblePolicy openingPreamble,
+        CampaignWeatherPolicy weather,
+        CampaignStageEntryPolicy stageEntry,
+        CampaignContentV5Selection content,
+        IEnumerable<RuleReference> sources,
+        string? expectedSetupHash)
     {
-        ArgumentNullException.ThrowIfNull(predecessor);
+        ArgumentOutOfRangeException.ThrowIfLessThan(schemaVersion, 1);
+        ArgumentOutOfRangeException.ThrowIfLessThan(initialGameTurn, 1);
+        ArgumentNullException.ThrowIfNull(initialInitiative);
+        ArgumentNullException.ThrowIfNull(openingPreamble);
+        ArgumentNullException.ThrowIfNull(weather);
+        ArgumentNullException.ThrowIfNull(stageEntry);
         ArgumentNullException.ThrowIfNull(content);
-        SchemaVersion = predecessor.SchemaVersion;
-        SetupId = predecessor.SetupId;
-        IsSynthetic = predecessor.IsSynthetic;
-        InitialGameTurn = predecessor.InitialGameTurn;
-        InitialInitiative = predecessor.InitialInitiative;
-        OpeningPreamble = predecessor.OpeningPreamble;
-        Weather = predecessor.Weather;
-        StageEntry = predecessor.StageEntry;
+        SchemaVersion = schemaVersion;
+        SetupId = ContentContractGuards.RequireStableId(setupId, nameof(setupId));
+        IsSynthetic = isSynthetic;
+        InitialGameTurn = initialGameTurn;
+        InitialInitiative = initialInitiative;
+        OpeningPreamble = openingPreamble;
+        Weather = weather;
+        StageEntry = stageEntry;
         Content = content;
-        Sources = Array.AsReadOnly(predecessor.Sources.ToArray());
+        Sources = RuleReferenceValidation.CopySources(sources, nameof(sources));
         SetupHash = CampaignSetupHash.CalculateV5(
             SchemaVersion,
             SetupId,
@@ -49,6 +63,13 @@ internal sealed record CampaignSetupSnapshotV5
             Content.Pack,
             Content.ScenarioId,
             Sources);
+        if (expectedSetupHash is not null
+            && !string.Equals(SetupHash, expectedSetupHash, StringComparison.Ordinal))
+        {
+            throw new ArgumentException(
+                "The Campaign setup v5 hash does not match its canonical fields.",
+                nameof(expectedSetupHash));
+        }
     }
 
     public int SchemaVersion { get; }
@@ -75,7 +96,46 @@ internal sealed record CampaignSetupSnapshotV5
 
     public static CampaignSetupSnapshotV5 FromPredecessor(
         CampaignSetupSnapshot predecessor,
-        CampaignContentV5Selection content) => new(predecessor, content);
+        CampaignContentV5Selection content)
+    {
+        ArgumentNullException.ThrowIfNull(predecessor);
+        return new CampaignSetupSnapshotV5(
+            predecessor.SchemaVersion,
+            predecessor.SetupId,
+            predecessor.IsSynthetic,
+            predecessor.InitialGameTurn,
+            predecessor.InitialInitiative,
+            predecessor.OpeningPreamble,
+            predecessor.Weather,
+            predecessor.StageEntry,
+            content,
+            predecessor.Sources,
+            null);
+    }
+
+    internal static CampaignSetupSnapshotV5 FromCanonical(
+        int schemaVersion,
+        string setupId,
+        string setupHash,
+        bool isSynthetic,
+        int initialGameTurn,
+        InitiativePolicy initialInitiative,
+        CampaignOpeningPreamblePolicy openingPreamble,
+        CampaignWeatherPolicy weather,
+        CampaignStageEntryPolicy stageEntry,
+        CampaignContentV5Selection content,
+        IEnumerable<RuleReference> sources) => new(
+            schemaVersion,
+            setupId,
+            isSynthetic,
+            initialGameTurn,
+            initialInitiative,
+            openingPreamble,
+            weather,
+            stageEntry,
+            content,
+            sources,
+            setupHash);
 
     public bool Equals(CampaignSetupSnapshotV5? other) =>
         ReferenceEquals(this, other)
@@ -114,7 +174,7 @@ internal sealed record CampaignSetupSnapshotV5
     }
 }
 
-internal sealed record CampaignCreatedV9
+internal sealed record CampaignCreatedV9 : CampaignSuccessorEvent
 {
     public const int CurrentContractVersion = 9;
 
@@ -126,8 +186,8 @@ internal sealed record CampaignCreatedV9
         CampaignWorldSnapshotV5 initialWorld,
         RandomStreamState randomState,
         LandSequencePosition sequencePosition)
+        : base(CurrentContractVersion, campaignId, stateVersion)
     {
-        CampaignId = ContentContractGuards.RequireStableId(campaignId, nameof(campaignId));
         ArgumentOutOfRangeException.ThrowIfNotEqual(stateVersion, 1);
         if (!CampaignSnapshotValidator.IsRulesHash(rulesetHash))
         {
@@ -141,19 +201,11 @@ internal sealed record CampaignCreatedV9
         ArgumentNullException.ThrowIfNull(initialWorld);
         ArgumentNullException.ThrowIfNull(randomState);
         ArgumentNullException.ThrowIfNull(sequencePosition);
-        ContractVersion = CurrentContractVersion;
-        StateVersion = stateVersion;
         Setup = setup;
         InitialWorld = initialWorld;
         RandomState = randomState;
         SequencePosition = sequencePosition;
     }
-
-    public int ContractVersion { get; }
-
-    public string CampaignId { get; }
-
-    public long StateVersion { get; }
 
     public string RulesetHash { get; }
 

@@ -768,10 +768,12 @@ Movement membership, exact submission mapping, adjudication, completion to Break
 Determination, replay, and checked Harness adoption are complete through merged `MOV-TASK-010` / PR
 #79. The next authority package is the approved ZOC/Reaction
 [specification](docs/specs/zoc-reaction-v1.md) and
-[technical design](docs/design/zoc-reaction-v1.md). `ZOR-TASK-002A`-`003A` complete the dormant
-Rules/Content/fixture gate and add direct-only World 5/creation 9 state plus current-raw,
-Movement-ended/reacting-position, and Reaction-identity seams; ruleset 7, Content schema 4, World 4,
-and CampaignCreated 8 remain active until the coordinated migration. `ZOR-TASK-003B` is next.
+[technical design](docs/design/zoc-reaction-v1.md). `ZOR-TASK-002A`-`003B` complete the dormant
+Rules/Content/fixture and Campaign state/replay gates: direct-only World 5/creation 9, Snapshot 10,
+and `ElementMoved` v2 now retain current-TOE provenance, scoped Movement-ended truth, the nullable
+Reaction window, strict canonical readback, and reconstruction-before-projection replay. Ruleset 7,
+Content schema 4, World 4, Snapshot 9, CampaignCreated 8, and `ElementMoved` 1 remain active until the
+coordinated migration. `ZOR-TASK-004A` is next.
 The completed owner-approved engine package is the Movement Foundation
 [research](docs/research/movement-foundation-spike.md),
 [specification](docs/specs/movement-foundation-v1.md), and
@@ -826,8 +828,8 @@ evidence, not an implemented combat contract. Current proposals use trusted-Umpi
 the same pre-state for simultaneous combat, and structural sequence positions plus cycle identity;
 none is implemented or approved yet.
 All five `CONTACT-001` rulings and the governing specification/design package are approved.
-`ZOR-TASK-002A`-`003A` implement dormant Rules/Content/fixture and Campaign World/creation seams;
-`003B` and later slices remain dependency-gated.
+`ZOR-TASK-002A`-`003B` implement dormant Rules/Content/fixture and Campaign World/creation/snapshot/
+event-replay seams; `004A` and later slices remain dependency-gated.
 The implemented paired comparison does not block that engine work.
 
 [1]: https://learn.microsoft.com/en-us/dotnet/orleans/grains/external-tasks-and-grains "External tasks and grains - .NET | Microsoft Learn"

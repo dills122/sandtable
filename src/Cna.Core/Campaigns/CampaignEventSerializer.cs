@@ -319,7 +319,7 @@ internal static class CampaignEventSerializer
         CampaignSnapshotSerializer.WritePosition(writer, completed.SequencePosition);
     }
 
-    private static void WriteMovementCost(
+    internal static void WriteMovementCost(
         Utf8JsonWriter writer,
         CampaignMovementCost cost)
     {
@@ -464,7 +464,7 @@ internal static class CampaignEventSerializer
         return completed;
     }
 
-    private static CampaignMovementCost ParseMovementCost(JsonElement cost)
+    internal static CampaignMovementCost ParseMovementCost(JsonElement cost)
     {
         CampaignSnapshotSerializer.RequireProperties(
             cost,

@@ -274,7 +274,7 @@ internal static class CampaignSnapshotSerializer
                 .ToArray());
     }
 
-    private static void WriteVehicleBreakdownState(
+    internal static void WriteVehicleBreakdownState(
         Utf8JsonWriter writer,
         CampaignVehicleBreakdownState? state)
     {
@@ -301,7 +301,7 @@ internal static class CampaignSnapshotSerializer
         writer.WriteEndObject();
     }
 
-    private static CampaignVehicleBreakdownState? ParseVehicleBreakdownState(JsonElement element)
+    internal static CampaignVehicleBreakdownState? ParseVehicleBreakdownState(JsonElement element)
     {
         if (element.ValueKind == JsonValueKind.Null)
         {
@@ -346,14 +346,14 @@ internal static class CampaignSnapshotSerializer
         }
     }
 
-    private static string FormatRepresentationBindingKind(
+    internal static string FormatRepresentationBindingKind(
         CampaignMapRepresentationBindingKind bindingKind) => bindingKind switch
         {
             CampaignMapRepresentationBindingKind.IndependentElement => "independent-element",
             _ => throw new ArgumentOutOfRangeException(nameof(bindingKind)),
         };
 
-    private static CampaignMapRepresentationBindingKind ParseRepresentationBindingKind(
+    internal static CampaignMapRepresentationBindingKind ParseRepresentationBindingKind(
         string? bindingKind) => bindingKind switch
         {
             "independent-element" => CampaignMapRepresentationBindingKind.IndependentElement,
@@ -361,7 +361,7 @@ internal static class CampaignSnapshotSerializer
                 $"Unknown map representation binding kind '{bindingKind}'."),
         };
 
-    private static string FormatReserveStatus(CampaignElementReserveStatus status) => status switch
+    internal static string FormatReserveStatus(CampaignElementReserveStatus status) => status switch
     {
         CampaignElementReserveStatus.None => "none",
         CampaignElementReserveStatus.ReserveI => "reserve-i",
@@ -369,7 +369,7 @@ internal static class CampaignSnapshotSerializer
         _ => throw new ArgumentOutOfRangeException(nameof(status)),
     };
 
-    private static CampaignElementReserveStatus ParseReserveStatus(string? status) => status switch
+    internal static CampaignElementReserveStatus ParseReserveStatus(string? status) => status switch
     {
         "none" => CampaignElementReserveStatus.None,
         "reserve-i" => CampaignElementReserveStatus.ReserveI,
@@ -389,7 +389,7 @@ internal static class CampaignSnapshotSerializer
         writer.WriteEndObject();
     }
 
-    private static void WriteOpeningPreamble(
+    internal static void WriteOpeningPreamble(
         Utf8JsonWriter writer,
         CampaignOpeningPreamblePolicy policy)
     {
@@ -407,7 +407,7 @@ internal static class CampaignSnapshotSerializer
         writer.WriteEndObject();
     }
 
-    private static CampaignOpeningPreamblePolicy ParseOpeningPreamble(JsonElement policy)
+    internal static CampaignOpeningPreamblePolicy ParseOpeningPreamble(JsonElement policy)
     {
         RequireProperties(policy, "contractVersion", "kind", "sources");
         var kind = policy.GetProperty("kind").GetString() switch
@@ -423,7 +423,7 @@ internal static class CampaignSnapshotSerializer
             ParseSources(policy.GetProperty("sources")));
     }
 
-    private static void WriteWeatherPolicy(
+    internal static void WriteWeatherPolicy(
         Utf8JsonWriter writer,
         CampaignWeatherPolicy policy)
     {
@@ -441,7 +441,7 @@ internal static class CampaignSnapshotSerializer
         writer.WriteEndObject();
     }
 
-    private static CampaignWeatherPolicy ParseWeatherPolicy(JsonElement policy)
+    internal static CampaignWeatherPolicy ParseWeatherPolicy(JsonElement policy)
     {
         RequireProperties(policy, "contractVersion", "kind", "sources");
         var kind = policy.GetProperty("kind").GetString() switch
@@ -477,7 +477,7 @@ internal static class CampaignSnapshotSerializer
             content.GetProperty("scenarioId").GetString()!);
     }
 
-    private static void WriteInitiative(Utf8JsonWriter writer, InitiativePolicy policy)
+    internal static void WriteInitiative(Utf8JsonWriter writer, InitiativePolicy policy)
     {
         switch (policy)
         {
@@ -506,7 +506,7 @@ internal static class CampaignSnapshotSerializer
         }
     }
 
-    private static InitiativePolicy ParseInitiative(JsonElement initiative)
+    internal static InitiativePolicy ParseInitiative(JsonElement initiative)
     {
         var kind = initiative.GetProperty("kind").GetString();
 
