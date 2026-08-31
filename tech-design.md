@@ -10,6 +10,24 @@ Worker are scaffolds and do not yet execute live campaign decisions. When that i
 implemented, a game must still run entirely through scripted policies when the backend—or the model
 behind it—is unavailable.
 
+## Project website
+
+The repository root contains a dependency-free static project website under `site/`, with design
+tokens in `site/tokens.css`. It explains the planned play loop, the authority boundary, current
+implementation status, and the local developer workflow. The site is documentation and outreach:
+it does not host a campaign, read authoritative state, call Intelligence, or stand in for the
+future Maproom player interface.
+
+`.github/workflows/pages.yml` packages only `site/` and deploys that artifact to the protected
+`github-pages` environment after website changes land on `main` or a maintainer runs the workflow
+manually. The workflow uses short-lived OIDC identity and the minimum Pages permissions; it does not
+use a deploy branch, long-lived secret, or application build output.
+
+Keeping this distinction explicit prevents a polished concept surface from becoming an accidental
+contract. Any tactical map, Chronicle feed, or legal-action surface shown by the project website is
+clearly labeled as a concept or current rules-laboratory example. Maproom must later consume typed,
+side-safe application contracts and remain subordinate to the Umpire.
+
 ## Current local simulation harness
 
 The repository now includes an in-process `Cna.ExerciseRunner` that is separate from the

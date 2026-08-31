@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta
+      name="description"
+      content="Sandtable is a deterministic digital campaign simulation inspired by SPI's 1979 Campaign for North Africa board wargame."
+    />
+    <meta name="theme-color" content="oklch(98.5% 0.004 250)" />
+    <title>Sandtable — command the campaign</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500;600&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to project overview</a>
+
+    <header class="site-nav" aria-label="Primary navigation">
+      <div class="site-nav__inner">
+        <a class="wordmark" href="#top" aria-label="Sandtable home">
+          <span class="wordmark__mark" aria-hidden="true">ST</span>
+          <span>Sandtable</span>
+        </a>
+
+        <nav class="site-nav__links" aria-label="Project sections">
+          <a href="#play">How it plays</a>
+          <a href="#architecture">Architecture</a>
+          <a href="#frontier">Current frontier</a>
+        </nav>
+
+        <div class="site-nav__actions">
+          <button
+            class="search-pill"
+            id="open-command"
+            type="button"
+            aria-label="Explore project (Command K)"
+            aria-haspopup="dialog"
+            aria-controls="command-palette"
+          >
+            <span aria-hidden="true">⌕</span>
+            <span class="search-pill__label">Explore project</span>
+            <kbd>⌘ K</kbd>
+          </button>
+          <a
+            class="action action--compact"
+            href="https://github.com/dills122/sandtable"
+            data-command-label="Open source repository"
+          >Source <span aria-hidden="true">↗</span></a>
+        </div>
+      </div>
+    </header>
+
+    <main id="main">
+      <section class="hero" id="top" aria-labelledby="hero-title">
+        <div class="hero__copy">
+          <div class="status-line">
+            <span class="status-line__signal" aria-hidden="true"></span>
+            Pre-alpha · deterministic foundation
+          </div>
+          <h1 id="hero-title">Command the campaign.</h1>
+          <p class="hero__lede">
+            Sandtable is a digital adaptation of <cite>The Campaign for North Africa</cite>. You
+            choose intent and issue orders. The computer checks the rules, handles uncertainty,
+            protects hidden information, and keeps the complete record.
+          </p>
+          <div class="hero__actions">
+            <a class="action" href="#play">See the player loop</a>
+            <a class="text-link" href="https://github.com/dills122/sandtable#up-and-running">
+              Run the foundation <span aria-hidden="true">→</span>
+            </a>
+          </div>
+          <dl class="campaign-facts" aria-label="Planned campaign cadence">
+            <div>
+              <dt>First scenario</dt>
+              <dd>6 turns</dd>
+            </div>
+            <div>
+              <dt>Each game turn</dt>
+              <dd>3 stages</dd>
+            </div>
+            <div>
+              <dt>Long campaign</dt>
+              <dd>111 turns</dd>
+            </div>
+          </dl>
+        </div>
+
+        <figure class="campaign-console" aria-labelledby="console-caption">
+          <figcaption id="console-caption">
+            <span>Maproom concept</span>
+            <span>planned player experience</span>
+          </figcaption>
+          <div class="campaign-console__body">
+            <section class="sector-panel" aria-label="Schematic campaign sector">
+              <div class="sector-panel__meta">
+                <span>North Africa</span>
+                <span>Operation stage I</span>
+              </div>
+              <div class="sector-grid" aria-hidden="true">
+                <span class="sector-cell">A1</span>
+                <span class="sector-cell sector-cell--coast">A2</span>
+                <span class="sector-cell">A3</span>
+                <span class="sector-cell">B1</span>
+                <span class="sector-cell sector-cell--route">B2</span>
+                <span class="sector-cell">B3</span>
+                <span class="sector-cell">C1</span>
+                <span class="sector-cell">C2</span>
+                <span class="sector-cell sector-cell--coast">C3</span>
+                <span class="formation formation--own">7A</span>
+                <span class="formation formation--reserve">R</span>
+                <span class="formation formation--unknown">?</span>
+              </div>
+              <p class="sector-panel__note">
+                Legal actions come from the player’s side-safe observation—not from hidden state.
+              </p>
+            </section>
+
+            <section class="dispatch-panel" aria-label="Authoritative dispatch feed">
+              <div class="dispatch-panel__heading">
+                <span>Chronicle feed</span>
+                <span class="readout">state v9</span>
+              </div>
+              <ol class="dispatch-list">
+                <li><span>Weather</span><strong>Normal</strong></li>
+                <li><span>Reserve I</span><strong>2 candidates</strong></li>
+                <li><span>Movement</span><strong>route accepted</strong></li>
+                <li class="dispatch-list__live"><span>Replay</span><strong data-type-line>verified</strong></li>
+              </ol>
+              <div class="authority-check">
+                <span class="authority-check__mark" aria-hidden="true">✓</span>
+                <span><strong>Umpire accepted</strong> · event history is replayable</span>
+              </div>
+            </section>
+          </div>
+        </figure>
+      </section>
+
+      <section class="play-section" id="play" aria-labelledby="play-title">
+        <header class="section-head section-head--light">
+          <p>The eventual game</p>
+          <h2 id="play-title">A commander’s week, without the paperwork.</h2>
+          <p>
+            One game turn represents one campaign week. Initiative determines who chooses the
+            acting order; three Operation Stages then repeat movement and combat obligations.
+          </p>
+        </header>
+
+        <ol class="play-steps">
+          <li>
+            <span class="play-steps__number">1.0</span>
+            <div>
+              <h3>Read the theater.</h3>
+              <p>
+                Inspect known formations, supply routes, reports, weather, and the limits of what
+                your side is allowed to know.
+              </p>
+            </div>
+          </li>
+          <li>
+            <span class="play-steps__number">2.0</span>
+            <div>
+              <h3>Set commander intent.</h3>
+              <p>
+                Decide what matters: hold a port, preserve armour, threaten a route, or trade time
+                for supply.
+              </p>
+            </div>
+          </li>
+          <li>
+            <span class="play-steps__number">3.0</span>
+            <div>
+              <h3>Confirm exact orders.</h3>
+              <p>
+                Staff turns intent into a concrete plan. Maproom exposes current legal actions;
+                you review the order before it reaches the Umpire.
+              </p>
+            </div>
+          </li>
+          <li>
+            <span class="play-steps__number">4.0</span>
+            <div>
+              <h3>Let the campaign answer.</h3>
+              <p>
+                The Umpire resolves rules, seeded uncertainty, expenditure, breakdowns, contact,
+                combat, and enemy reactions as those systems arrive.
+              </p>
+            </div>
+          </li>
+          <li>
+            <span class="play-steps__number">5.0</span>
+            <div>
+              <h3>Study the dispatches.</h3>
+              <p>
+                Chronicle records machine truth. Maproom reveals only the reports your side should
+                receive; War Diary can later turn those events into human history.
+              </p>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      <section class="architecture-section" id="architecture" aria-labelledby="architecture-title">
+        <header class="section-head">
+          <p>Authority before intelligence</p>
+          <h2 id="architecture-title">The model may advise. It never moves the pieces.</h2>
+          <p>
+            Sandtable keeps adjudication deterministic and treats every model response as an
+            untrusted, versioned proposal. Hidden opposing state never leaves the authoritative
+            plane.
+          </p>
+        </header>
+
+        <div class="authority-flow" aria-label="Sandtable authority flow">
+          <div>
+            <span class="authority-flow__role">Command</span>
+            <strong>decides intent</strong>
+          </div>
+          <span aria-hidden="true">→</span>
+          <div>
+            <span class="authority-flow__role">Staff</span>
+            <strong>builds a plan</strong>
+          </div>
+          <span aria-hidden="true">→</span>
+          <div>
+            <span class="authority-flow__role">Umpire</span>
+            <strong>adjudicates truth</strong>
+          </div>
+          <span aria-hidden="true">→</span>
+          <div>
+            <span class="authority-flow__role">Chronicle</span>
+            <strong>records events</strong>
+          </div>
+          <span aria-hidden="true">→</span>
+          <div>
+            <span class="authority-flow__role">Maproom</span>
+            <strong>shows your side</strong>
+          </div>
+        </div>
+
+        <div class="spec-sheet" role="region" aria-label="Project architecture" tabindex="0">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Boundary</th>
+                <th scope="col">Owns</th>
+                <th scope="col">Must never</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">Cna.Core / Umpire</th>
+                <td>Rules, legal actions, seeded RNG, fog, events, replay</td>
+                <td>Depend on remote inference</td>
+              </tr>
+              <tr>
+                <th scope="row">Orleans + Decision Worker</th>
+                <td>Campaign activation and pending decisions</td>
+                <td>Hold a grain turn open on a model</td>
+              </tr>
+              <tr>
+                <th scope="row">Intelligence Gateway</th>
+                <td>Routing, personas, validation, narrative, evaluation</td>
+                <td>See hidden state or adjudicate rules</td>
+              </tr>
+              <tr>
+                <th scope="row">Signals contracts</th>
+                <td>Versioned protobuf transport</td>
+                <td>Drop decision, state, or ruleset identity</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="frontier-section" id="frontier" aria-labelledby="frontier-title">
+        <header class="section-head section-head--compact">
+          <p>Repository status</p>
+          <h2 id="frontier-title">A real simulation foundation. Not a playable adaptation yet.</h2>
+        </header>
+
+        <div class="frontier-grid">
+          <article class="frontier-grid__implemented">
+            <h3>Working now</h3>
+            <ul class="check-list">
+              <li>Versioned rules, content, snapshots, observations, and legal actions</li>
+              <li>Initiative, weather, stage-entry obligations, and Reserve Designation</li>
+              <li>Supported first-side non-contact movement to Breakdown Determination</li>
+              <li>Byte-identical replay and strict Exercise/Maneuver evidence readback</li>
+            </ul>
+          </article>
+
+          <article class="frontier-grid__next">
+            <h3>On the road to Maproom</h3>
+            <ol>
+              <li>Complete movement, contact, reaction, breakdown, and combat</li>
+              <li>Add source-verified first-scenario content and victory rules</li>
+              <li>Build local hot-seat Maproom, saves, fog, and replay</li>
+              <li>Evaluate optional commander intelligence after deterministic play works</li>
+            </ol>
+          </article>
+        </div>
+
+        <aside class="scenario-note">
+          <div>
+            <span class="scenario-note__label">First playable target</span>
+            <h3>Graziani’s Offensive</h3>
+          </div>
+          <p>
+            A six-turn, Land-only local hot-seat scenario with a schematic original map, strict fog
+            of war, legal-action guidance, save/resume, and deterministic replay.
+          </p>
+        </aside>
+      </section>
+
+      <section class="developer-section" id="develop" aria-labelledby="develop-title">
+        <div class="developer-section__copy">
+          <header class="section-head section-head--compact">
+            <p>Developer workbench</p>
+            <h2 id="develop-title">Run the evidence, not a remote dependency.</h2>
+          </header>
+          <p>
+            The repository is a .NET 10 solution. Today, local development launches the service
+            scaffold and Aspire dashboard; deterministic Exercises exercise the actual legal-action
+            and replay path.
+          </p>
+          <a class="text-link" href="https://github.com/dills122/sandtable/blob/main/CONTRIBUTING.md">
+            Read the contribution workflow <span aria-hidden="true">↗</span>
+          </a>
+        </div>
+
+        <figure class="command-transcript">
+          <figcaption>Local foundation check</figcaption>
+          <pre><code><span aria-hidden="true">$ </span>git clone https://github.com/dills122/sandtable.git
+<span aria-hidden="true">$ </span>cd sandtable
+<span aria-hidden="true">$ </span>just setup
+<span aria-hidden="true">$ </span>just check
+<span aria-hidden="true">$ </span>just run</code></pre>
+          <div class="command-transcript__result">
+            <span aria-hidden="true">✓</span>
+            <span>Build, format, and deterministic tests form the local gate.</span>
+          </div>
+        </figure>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>Command decides. Staff plans. Umpire adjudicates. Chronicle remembers.</p>
+      <div class="site-footer__meta">
+        <a class="wordmark" href="#top">
+          <span class="wordmark__mark" aria-hidden="true">ST</span>
+          <span>Sandtable</span>
+        </a>
+        <nav aria-label="Footer navigation">
+          <a href="https://github.com/dills122/sandtable">Source</a>
+          <a href="https://github.com/dills122/sandtable/tree/main/docs">Research</a>
+          <a href="https://github.com/dills122/sandtable/blob/main/SECURITY.md">Security</a>
+        </nav>
+        <span>Pre-alpha · original presentation assets</span>
+      </div>
+    </footer>
+
+    <dialog class="command-palette" id="command-palette" aria-labelledby="command-title">
+      <div class="command-palette__field">
+        <label id="command-title" for="command-input">Explore Sandtable</label>
+        <input
+          id="command-input"
+          type="search"
+          placeholder="Search sections and project links"
+          autocomplete="off"
+        />
+        <form method="dialog">
+          <button class="icon-button" type="submit" aria-label="Close project explorer">Esc</button>
+        </form>
+      </div>
+      <p class="command-palette__count" id="command-count" aria-live="polite">6 destinations</p>
+      <nav class="command-palette__results" aria-label="Project destinations">
+        <a href="#play" data-search="game play player loop operation stages commander">
+          <span>How the game will play</span><kbd>1</kbd>
+        </a>
+        <a href="#architecture" data-search="architecture umpire intelligence fog contracts">
+          <span>Authority architecture</span><kbd>2</kbd>
+        </a>
+        <a href="#frontier" data-search="status roadmap current pre-alpha next">
+          <span>Current frontier</span><kbd>3</kbd>
+        </a>
+        <a href="#develop" data-search="developer quick start dotnet just build test">
+          <span>Developer workbench</span><kbd>4</kbd>
+        </a>
+        <a href="https://github.com/dills122/sandtable" data-search="github source repository code">
+          <span>Source repository</span><kbd>↗</kbd>
+        </a>
+        <a
+          href="https://github.com/dills122/sandtable/tree/main/docs"
+          data-search="documentation research specifications designs roadmap"
+        >
+          <span>Research and design docs</span><kbd>↗</kbd>
+        </a>
+      </nav>
+      <div class="command-palette__footer" aria-hidden="true">
+        <span><kbd>↑</kbd><kbd>↓</kbd> navigate</span>
+        <span><kbd>↵</kbd> open</span>
+        <span><kbd>esc</kbd> close</span>
+      </div>
+    </dialog>
+  </body>
+</html>
