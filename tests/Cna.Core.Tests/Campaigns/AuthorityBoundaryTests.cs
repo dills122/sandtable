@@ -4,6 +4,7 @@ using Cna.Core.Setups;
 
 namespace Cna.Core.Tests.Campaigns;
 
+[Trait("Boundary", "UserSpace")]
 public sealed class AuthorityBoundaryTests
 {
     [Fact]

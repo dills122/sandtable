@@ -1,6 +1,6 @@
 # ZOC and Reaction v1 Technical Design
 
-**Status:** Proposed — owner approval required; no production task authorized
+**Status:** Approved — dormant checkpoints `ZOR-TASK-002A`-`004C` implemented; `005` next
 
 **Date:** 2026-08-30
 
@@ -95,7 +95,7 @@ The expected clean-cut migration is:
 | Campaign Observation | 5 | 6 | bounded Reaction projection and new policy |
 | `ElementMoved` | 1 | 2 | atomic optional opened-window result |
 
-The proposed observation policy is `sandtable.observation.zoc-reaction-side-safe.v1`. Exact hashes
+The dormant observation policy is `sandtable.observation.zoc-reaction-side-safe.v1`. Exact hashes
 and final tokens are implementation goldens. A parent task may revise a number before its first
 merge only by updating the spec, design, compatibility tests, and all dependent branches together.
 No implementation accepts a partial legacy/current mixture.
@@ -134,6 +134,22 @@ never a default. Campaign creation copies the canonical ordered seed collection 
 creation truth, then World owns the mutable values. Replay recreates the same handoff from the
 retained compatible Content identity and event bytes.
 
+`ZOR-TASK-002B` freezes this as the direct-only `ContentPackV5Definition` envelope with schema 5,
+format `sandtable.content-json.v4`, and mandatory capability `land.combat-components`. Each element
+extension carries `combatClassificationId`, `combatOrigin`, and canonical `components` with
+`componentId`, `componentClassId`, `maximumToe`, `defensiveCloseAssaultRating`, and `origin`. Each
+initial placement carries canonical `initialComponentToes` rows with `componentId`, `currentToe`,
+and `origin`. The v5 serializer/artifact emits and hashes one complete successor document derived
+from a fully validated schema-4 definition; the active schema-4 reader continues to reject those
+bytes. `ZOR-TASK-002C` adds strict direct-only v5 readback by separating successor fields from one
+complete document, delegating inherited schema validation to the existing schema-4 reader, then
+revalidating the reconstructed v5 definition and byte-comparing the original v5 input with canonical
+v5 reserialization. Equivalent whitespace, escaping, property order, or collection order therefore
+rejects as `content.noncanonical-json` without tightening the intentionally normalizing legacy
+reader. Its checked positive golden round-trips canonical
+bytes and identity, derives stacking `2` and current raw defense `10`, and retains every named
+independent negative plus non-additive controlled-location evidence.
+
 Admission proves component identity uniqueness, `0 <= currentToe <= maximumToe`, compatible
 Content/rules identity, and checked arithmetic. Current raw defensive capability is derived as the
 checked sum of each `currentToe * defensiveCloseAssaultRating`. No standalone current total is
@@ -158,12 +174,12 @@ reactingSide
 suspendedMovementPosition
 triggerAuthority              // internal binding, origin, destination, move identity
 apparentTrigger               // apparent ID, origin, destination
-frozenOpportunities[]         // stable identity + replay evidence; internal
+frozenOpportunities[]         // stable authority identity + replay evidence; internal
 resolvedOpportunityIds[]
 activeOpportunityId?
 ```
 
-Arrays use ordinal identity order. The active participant is null before selection and after its
+Arrays use authority-identity order. The active participant is null before selection and after its
 completion. Closure removes the window and restores `suspendedMovementPosition`; it never advances
 the sequence.
 
@@ -276,15 +292,31 @@ a stale candidate without adding outward detail.
 Observation 6 adds a closed decision-state union rather than optional Reaction fields scattered
 across elements and one root-level, ordinal, duplicate-free
 `apparentEnemyControlledLocationIds` collection. The collection reveals neither controlling source
-nor predicate rationale. The reacting projection contains only public window ID, exact own
-unresolved/current opportunities, active own participant state, and the apparent trigger triple.
-The phasing projection contains public window ID plus generic waiting and retains its ordinary own
+nor predicate rationale. The reacting projection contains only an audience-safe window handle,
+exact own unresolved/current state-scoped capability handles, their closed current move-option/cost
+capabilities, active own participant state, and the apparent trigger triple. Core derives those
+options from exact movement, ledger, Cohesion, Reserve, mobility, organization, and stacking truth,
+then discards those raw ingredients at the user-space boundary. It omits identity-bearing root
+owner-element rows and never publishes the authoritative window/opportunity identities or
+representation-to-element binding; later command validation resolves that binding inside the
+Umpire. The stable window handle derives only from facts visible to both sides. Opportunity handles
+derive from the current audience-visible state version and canonical published move-option/cost
+bytes. Canonical capability ordering makes the outward set independent of authority identity/order.
+Construction and canonical readback recompute that handle rather than trusting supplied hashes.
+They also require each cost breakdown to be an exact route/hexside traversal of its selected
+published edge for one supported mobility, including feature classification, direction, and rule
+amounts, and correlate the decision discriminator with `Observer` and `Position.ActiveSide`.
+Two authority opportunities with indistinguishable published capabilities are rejected at this
+boundary until a separately approved grouped-selection contract exists; hidden authority order is
+never used to choose between them. Opportunity handles intentionally change with state or
+capability so they cannot become cross-state representation joins.
+The phasing projection contains the same audience-safe window handle plus generic waiting and retains its ordinary own
 Movement/post-move facts.
 
 Complete authority events retain real bindings, eligibility evidence, provenance, and internal
-closure reason. Projected history has separate schemas for each audience and omits those facts. An
-explicit player knows its submitted close through the normal action/receipt path, not through a
-published internal reason.
+closure reason. Projected history uses a separate strict audience-keyed schema that omits those
+facts. An explicit player knows its submitted close through the normal action/receipt path, not
+through a published internal reason.
 
 V1 delivers a deterministic Core system-close command whose identity binds the stable window ID and
 whose closed action kind distinguishes unavailable/timeout. Core owns no clock or timeout scheduler.
@@ -346,6 +378,9 @@ ZOR-TASK-001 accepted ruling lock [complete]
 004B dormant actions/readback/fog equivalence
         |
         v
+004C declassification manifest/capabilities/transcript gate
+        |
+        v
 005 internal move-to-window trigger (public trigger path still dormant)
         |
         v
@@ -366,14 +401,14 @@ ZOR-TASK-001 accepted ruling lock [complete]
 
 ### `ZOR-TASK-002` — Freeze Rules, Content, and fixtures
 
-- **002A:** prepare the dormant ruleset successor; add closed combat/ZOC vocabulary, predicates,
+- **002A (implemented):** prepare the dormant ruleset successor; add closed combat/ZOC vocabulary, predicates,
   topology exclusions, provenance, checked arithmetic, and table-driven unit tests without changing
   the active ruleset identity.
-- **002B:** prepare the dormant Content successor; add strict component definitions/ratings and
+- **002B (implemented):** prepare the dormant Content successor; add strict component definitions/ratings and
   provenance-bearing scenario current-TOE seeds, admission, canonical identity, legacy/mixed
   rejection, and no derived ZOC or post-creation current state without admitting the successor on
   the active path.
-- **002C:** add the positive stack, every named independent negative, non-additive overlap, and
+- **002C (implemented):** add the positive stack, every named independent negative, non-additive overlap, and
   identity/readback goldens without changing Campaign runtime yet.
 
 **Gate:** Rules/Content portions of `ZOR-REQ-001`-`002`, `012`-`013` are proven before state work:
@@ -382,13 +417,17 @@ seed rejection. This gate does not claim creation, World, snapshot, or replay pr
 
 ### `ZOR-TASK-003` — Freeze Campaign state, event, and replay contracts
 
-- **003A:** prepare dormant World and creation successors; copy exact scenario component-TOE seeds
+- **003A (implemented):** prepare dormant World and creation successors; copy exact scenario component-TOE seeds
   and provenance into creation truth and mutable World; add checked current-raw derivation,
   stage/segment-scoped Movement-ended state, reacting-side position identity, window/opportunity
-  IDs, and validation.
-- **003B:** prepare dormant Snapshot and `ElementMoved` successors; add nullable window, suspended
-  position, frozen evidence, empty-window state, canonical serializers/readers, projection, and
-  replay tests.
+  IDs, and validation. The direct-only World 5 / CampaignCreated 9 seam derives the positive
+  two-representation raw total as `10`, retains only mutable current TOE plus seed provenance in
+  Campaign state, and leaves all active identities and serializers unchanged.
+- **003B (implemented):** prepare dormant Snapshot and `ElementMoved` successors; add nullable
+  window, suspended/current-position union, frozen adjacency evidence, distinct empty-window state,
+  scoped Movement-ended result, canonical serializers/readers, reconstruction-before-projection,
+  and checkpoint replay tests. The direct-only Snapshot 10 / `ElementMoved` v2 seam retains exact
+  v5 current-TOE provenance and leaves every active identity unchanged.
 
 **Gate:** every authoritative transition shape is replay-complete before any outward action exists.
 Full `ZOR-AC-014` and the creation/World/replay portions of `ZOR-REQ-002` and `012` complete here,
@@ -396,16 +435,26 @@ not in Task 002.
 
 ### `ZOR-TASK-004` — Freeze dormant side-safe contracts
 
-- **004A:** prepare dormant Observation 6/policy successors; add the aggregate source-unmapped
-  apparent enemy-controlled location set, dormant reacting/phasing decision projections, strict
-  readback, and projected-history shapes. The active public path remains on Observation 5.
-- **004B:** add dormant topology-local ordinary-Movement ZOC entry/exit derivation plus dormant
+- **004A (implemented):** prepare dormant Observation 6/policy successors; add the aggregate
+  source-unmapped apparent enemy-controlled location set, dormant reacting/phasing decision
+  projections, strict readback, and projected-history shapes. The active public path remains on
+  Observation 5.
+- **004B (implemented):** add dormant topology-local ordinary-Movement ZOC entry/exit derivation plus dormant
   first/later Reaction step, complete, and close candidates, system close membership, canonical
   IDs, unpublished submission mappings, controlled-set local derivation, remote-ZOC noninterference,
-  same-control/different-hidden-source equivalence, and audience fog-equivalence tests.
+  same-control/different-hidden-source equivalence, and audience fog-equivalence tests. Observation
+  6 carries canonical owner-visible Movement-ended element IDs outside reacting decisions and
+  state-scoped own capability handles during reacting decisions. Active Observation
+  5/action/execution paths remain closed.
+- **004C (implemented):** preserve real binding secrecy by replacing copied reacting Movement and
+  anonymous stacking inputs with closed current move-option/cost capabilities. Reject
+  identity-bearing owner rows semantically in reacting construction/readback, register the exact
+  dormant output type/member surface in the versioned disclosure manifest, add retained-transcript
+  regression evidence, and make the boundary suite a named mandatory `just check` gate.
 
-**Gate:** byte-identical audience facts imply byte-identical observation/action bytes; public
-triggering Movement does not yet enter the window.
+**Gate:** byte-identical audience facts imply byte-identical observation/action bytes; retained
+transcripts cannot reconstruct the real owner binding from copied raw inputs; all dormant outward
+members are manifest-registered; public triggering Movement does not yet enter the window.
 
 ### `ZOR-TASK-005` — Implement the internal trigger
 
@@ -467,13 +516,14 @@ migration design rather than weakening `ZOR-REQ-012`.
 
 ## Parallel work boundary
 
-After this package is approved, ZOR production is serial through 004B on one integration branch and
-remains a single merge train through 006C because identities and shared authority shapes are
-coupled. The safe parallel lane is Breakdown adjudication research/design:
+ZOR production remains serial through 004C on one integration branch and remains a single merge
+train through 006C because identities and shared authority shapes are coupled. The safe parallel
+lane is Breakdown adjudication research/design:
 source-lock the percentage outcome table, action/result/loss vocabulary, RNG evidence, and decision
 packet against the already implemented BP state. It may not modify shared Core contract files or
-claim implementation approval while ZOR contract versions are moving. Reconcile that design only
-after 003B freezes the shared Campaign seam.
+claim implementation approval while ZOR contract versions are moving. The Campaign seam was frozen
+by 003B, so that design may now reconcile against it while remaining outside this implementation
+train.
 
 Gameplay simulation and tuning should resume after 006C exposes complete authoritative Reaction
 outcomes; 007A then turns those outcomes into checked simulator evidence. Earlier runs may validate

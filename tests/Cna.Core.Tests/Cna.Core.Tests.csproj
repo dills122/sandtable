@@ -12,6 +12,9 @@
       Include="Content/Fixtures/rules-lab.content.movement-contact.v1.golden.json"
       CopyToOutputDirectory="PreserveNewest" />
     <Content
+      Include="Content/Fixtures/rules-lab.content.zoc-reaction.v1.golden.json"
+      CopyToOutputDirectory="PreserveNewest" />
+    <Content
       Include="Observations/Fixtures/campaign-observation-axis.v1.golden.json"
       CopyToOutputDirectory="PreserveNewest" />
     <Content

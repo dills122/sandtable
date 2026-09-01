@@ -73,156 +73,18 @@ internal static class CampaignMovementActionDerivation
             return null;
         }
 
-        var destination = observation.Locations.SingleOrDefault(location =>
-            location.LocationId == destinationId);
-        if (destination is null)
-        {
-            return null;
-        }
-
-        var terrain = Cna1979Movement.LookupTerrain(destination.TerrainId, element.MobilityId);
-        var movingStacking = Cna1979Movement.LookupStackingValue(element.OrganizationId);
-        if (!terrain.IsSupported || !movingStacking.IsSupported)
-        {
-            return null;
-        }
-
-        MovementActionRouteAdjustment? routeAdjustment = null;
-        var routeTraversalLimit = int.MaxValue;
-        var hexsideCosts = new List<MovementActionHexsideCost>();
-        foreach (var feature in edge.Features)
-        {
-            var route = Cna1979Movement.LookupRoute(feature.FeatureId, element.MobilityId);
-            if (route.IsSupported)
-            {
-                if (feature.DirectionFromLocationId is not null || routeAdjustment is not null)
-                {
-                    return null;
-                }
-
-                routeAdjustment = new MovementActionRouteAdjustment(
-                    feature.FeatureId,
-                    route.Value.CostKind,
-                    route.Value.Amount);
-                routeTraversalLimit = route.Value.TraversalStackingLimit;
-                continue;
-            }
-
-            var direction = feature.DirectionFromLocationId switch
-            {
-                null => MovementHexsideDirection.Either,
-                var from when from == element.CurrentLocationId => MovementHexsideDirection.Up,
-                var from when from == destinationId => MovementHexsideDirection.Down,
-                _ => (MovementHexsideDirection?)null,
-            };
-            if (direction is null)
-            {
-                return null;
-            }
-
-            var hexside = Cna1979Movement.LookupHexside(
-                feature.FeatureId,
-                direction.Value,
-                element.MobilityId);
-            if (!hexside.IsSupported)
-            {
-                return null;
-            }
-
-            hexsideCosts.Add(new MovementActionHexsideCost(
-                feature.FeatureId,
-                direction.Value,
-                hexside.Value.AddedCost));
-        }
-
-        if (!HasSupportedStacking(
-                observation,
-                destinationId,
-                movingStacking.Value.StackingValue,
-                terrain.Value.StoppingStackingLimit,
-                routeTraversalLimit))
-        {
-            return null;
-        }
-
-        try
-        {
-            var adjustedTerrain = routeAdjustment switch
-            {
-                null => terrain.Value.Cost,
-                { CostKind: MovementRouteCostKind.Override } => routeAdjustment.Amount,
-                { CostKind: MovementRouteCostKind.ScaleUnderlying } => Scale(
-                    terrain.Value.Cost,
-                    routeAdjustment.Amount),
-                _ => throw new InvalidOperationException(),
-            };
-            var total = hexsideCosts.Aggregate(
-                adjustedTerrain,
-                (current, value) => current + value.AddedCost);
-            var allowance = new CapabilityPointAmount(
-                element.BaseCapabilityPointAllowance,
-                1);
-            if (element.CapabilityPointsExpended + total > allowance)
-            {
-                return null;
-            }
-
-            return new MoveElementAction(
+        var cost = CampaignMovementActionCostDerivation.TryCalculate(
+            observation.Locations,
+            observation.OwnElements,
+            element,
+            edge,
+            destinationId);
+        return cost is null
+            ? null
+            : new MoveElementAction(
                 element.ElementId,
                 element.CurrentLocationId,
                 destinationId,
-                new MovementActionCostBreakdown(
-                    destination.TerrainId,
-                    terrain.Value.Cost,
-                    routeAdjustment,
-                    hexsideCosts,
-                    total));
-        }
-        catch (Exception exception) when (exception is ArgumentException
-            or InvalidOperationException
-            or OverflowException)
-        {
-            return null;
-        }
-    }
-
-    private static bool HasSupportedStacking(
-        CampaignObservation observation,
-        string destinationId,
-        int movingValue,
-        int stoppingLimit,
-        int traversalLimit)
-    {
-        try
-        {
-            var destinationValue = 0;
-            foreach (var occupant in observation.OwnElements.Where(element =>
-                element.CurrentLocationId == destinationId))
-            {
-                var lookup = Cna1979Movement.LookupStackingValue(occupant.OrganizationId);
-                if (!lookup.IsSupported)
-                {
-                    return false;
-                }
-
-                destinationValue = checked(destinationValue + lookup.Value.StackingValue);
-            }
-
-            var resultingValue = checked(destinationValue + movingValue);
-            return resultingValue <= stoppingLimit && resultingValue <= traversalLimit;
-        }
-        catch (OverflowException)
-        {
-            return false;
-        }
-    }
-
-    private static CapabilityPointAmount Scale(
-        CapabilityPointAmount amount,
-        CapabilityPointAmount factor)
-    {
-        var numerator = checked(amount.Numerator * factor.Numerator);
-        var denominator = checked(amount.Denominator * factor.Denominator);
-        return new CapabilityPointAmount(numerator, denominator);
+                cost);
     }
 }

@@ -10,7 +10,20 @@ public enum CampaignObservationReserveStatus
     ReserveII = 2,
 }
 
-public sealed record ObservedOwnElement
+internal interface ICampaignObservedMovementSubject
+{
+    string OrganizationId { get; }
+    int BaseCapabilityPointAllowance { get; }
+    string CurrentLocationId { get; }
+    CampaignObservationReserveStatus ReserveStatus { get; }
+    string MobilityId { get; }
+    int LedgerGameTurn { get; }
+    int LedgerOperationStage { get; }
+    CapabilityPointAmount CapabilityPointsExpended { get; }
+    int CohesionLevel { get; }
+}
+
+public sealed record ObservedOwnElement : ICampaignObservedMovementSubject
 {
     internal ObservedOwnElement(
         string elementId,

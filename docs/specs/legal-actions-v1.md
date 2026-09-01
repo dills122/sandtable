@@ -26,6 +26,14 @@ public or mapped to a command. Strict readback is compatibility validation, not 
 [Reserve Designation v1](reserve-designation-v1.md) and
 [Movement Foundation v1](movement-foundation-v1.md).
 
+`ZOR-TASK-004C` preserves the payload-free submission and exact-current-membership boundary for
+dormant Reaction actions while changing their source projection: candidates map from registered
+current move-option/cost capabilities rather than player-visible raw element derivation facts.
+Core still resolves the opportunity's authoritative representation binding and recomputes exact
+legality during the later execution slice. The dormant action surface is registered in the
+[user-space disclosure manifest](user-space-disclosure-manifest.v1.json) and enforced by
+`just boundary-check`.
+
 ## Objective
 
 Create the smallest authoritative Core boundary that tells one exact audience which fully bound

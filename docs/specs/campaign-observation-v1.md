@@ -26,6 +26,14 @@ changing Observation version, policy, fields, or canonical bytes. See
 [Reserve Designation v1](reserve-designation-v1.md) and
 [Movement Foundation v1](movement-foundation-v1.md).
 
+`ZOR-TASK-004C` applies the accepted persistent-transcript declassification rule to dormant
+Observation 6 without changing active contract 5. Reacting output publishes registered current
+move-option/cost capabilities instead of copying raw owner Movement/ledger/stacking fingerprints;
+reacting construction/readback rejects identity-bearing owner rows. The exact dormant type/member
+surface is registered in the
+[user-space disclosure manifest](user-space-disclosure-manifest.v1.json) and checked by the
+mandatory repository boundary gate.
+
 ## Objective
 
 Project one immutable, deterministic, side-safe observation from an admitted Campaign World v1

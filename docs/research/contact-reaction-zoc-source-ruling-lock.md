@@ -1,6 +1,6 @@
 # CONTACT-001 ZOC and Reaction Source/Ruling Lock
 
-**Status:** Decision-complete research; all five rulings accepted; no production task authorized
+**Status:** Decision-complete research; all five rulings accepted; governing package approved
 
 **Date:** 2026-08-29
 
@@ -8,15 +8,15 @@
 
 **Research work item:** `CONTACT-001`
 
-**Proposed implementation predecessor:** `ZOR-TASK-001`
+**Implementation predecessor:** `ZOR-TASK-001`
 
-**Governing proposal:** [ZOC and Reaction v1 specification](../specs/zoc-reaction-v1.md) and
-[technical design](../design/zoc-reaction-v1.md); owner approval remains required
+**Governing package:** [ZOC and Reaction v1 specification](../specs/zoc-reaction-v1.md) and
+[technical design](../design/zoc-reaction-v1.md); approved after PR #80 merged
 
-**Proposed v1 clarification:** the trigger is adjacency to a represented non-phasing combat
+**Accepted v1 clarification:** the trigger is adjacency to a represented non-phasing combat
 element. V1 has no Close Assault declaration, so Rule 8.53(b)'s conditional CPA comparison is
 deferred; the accepted visibility policy below remains binding if a later declaration activates it.
-Observation 6 additionally proposes one aggregate apparent enemy-controlled-location set, with no
+Observation 6 additionally defines one aggregate apparent enemy-controlled-location set, with no
 source mapping or rationale, because local Movement legality cannot otherwise remain observation-
 derived under Rule 10.21(c).
 
@@ -24,9 +24,9 @@ derived under Rule 10.21(c).
 
 ## Decision boundary
 
-This record closes the five rulings required before a later ZOC/Reaction specification may freeze.
+This record closed the five rulings required before the later ZOC/Reaction specification froze.
 It defines source facts, adopted digital semantics, contract consequences, acceptance vectors, and
-the dependency graph. It does not freeze a production contract or authorize implementation.
+the dependency graph. Production authorization is recorded in the governing package, not here.
 
 The complete non-contact Movement vertical remains the predecessor of every production task in
 this package. Contact and Engaged remain Sprint 5 participant relationships, but their creation
@@ -179,7 +179,7 @@ observation. When an approved phasing Close Assault declaration exists, it may d
 authoritative eligibility inputs that are not themselves outward, including Rule 8.53(b)'s
 conditional comparison with the triggering enemy mover's CPA. The observation and candidate may
 disclose that the reacting representation has an opportunity; they must not disclose the enemy CPA,
-threshold calculation, failed alternative, real binding, or exclusion reason. The proposed v1 has
+threshold calculation, failed alternative, real binding, or exclusion reason. The approved v1 has
 no declaration and therefore does not apply this conditional comparison.
 
 ### Persisted state machine
@@ -302,12 +302,12 @@ enter. Multiple qualifying sources into one location still produce one non-addit
 The exact field/type names and content/world version migration belong to the later specification.
 Do not add a convenient `exertsZoc` field to Content or treat base CPA as combat capability.
 
-## Proposed dependency and acceptance graph
+## Approved dependency and acceptance graph
 
 ```text
 CONTACT-001 / ZOR-TASK-001 decision lock [this record: complete]
         |
-        | decision artifact may merge now; production remains gated
+        | decision artifact merged; production was gated here
         v
 complete MOV-TASK-007 -> 008 -> 009 -> 010 Movement vertical
         |
@@ -337,9 +337,9 @@ ZOR-TASK-007 Exercise/Maneuver evidence, synchronization, and independent review
 Sprint 5 Contact/Engaged combat-cycle design gate
 ```
 
-The production tasks remain proposed. The governing technical design refines them into lettered,
-bounded slices without changing these stable parent IDs. Owner approval is still required, and the
-refinement must not bypass dependency order or move Contact/Engaged into Sprint 4.
+The governing technical design refines the approved production plan into lettered, bounded slices
+without changing these stable parent IDs. Implementation must not bypass dependency order or move
+Contact/Engaged into Sprint 4.
 
 ### Acceptance consequences for the later specification
 
@@ -361,7 +361,7 @@ refinement must not bypass dependency order or move Contact/Engaged into Sprint 
    counts. When a later declaration-aware contract activates Rule 8.53(b), a hidden enemy-CPA
    threshold change affects the reacting-side observation only through exact own opportunity
    membership and the matching candidate set; neither artifact exposes CPA, threshold, binding,
-   failed alternatives, or exclusion reason. The proposed v1 explicitly defers that conditional
+   failed alternatives, or exclusion reason. The approved v1 explicitly defers that conditional
    behavior rather than applying it without a Close Assault declaration.
 8. The reacting-side trigger projection contains only apparent representation ID, origin, and
    destination. Trigger costs, route adjustments, intermediate path, binding, and closure reason
@@ -405,12 +405,13 @@ refinement must not bypass dependency order or move Contact/Engaged into Sprint 
 - The contract does not claim that wall-clock duration is indistinguishable between an automatic
   empty-window close and a human-owned window. It fixes canonical state/event/projection content and
   forbids count/reason fields; later hosting must assess timing metadata separately.
-- The five rulings are accepted and synchronized into the central roadmap and proposed governing
+- The five rulings are accepted and synchronized into the central roadmap and approved governing
   ZOC/Reaction package. This retained ruling lock remains source evidence rather than implementation
   authorization.
 - Planning PR #70 was verified from the local remote-tracking commit `be1ed98`. Authenticated GitHub
   readback was unavailable because the configured Keychain credential was invalid.
 
-No unresolved source-ruling choice blocks implementation planning. The non-contact Movement vertical
-is complete; production remains blocked by explicit owner approval of the proposed ZOC/Reaction
-specification/design package.
+No unresolved source-ruling choice blocks implementation. The non-contact Movement vertical is
+complete, the governing ZOC/Reaction package is approved, dormant implementation is complete
+through the user-space declassification checkpoint `ZOR-TASK-004C`, and `005` is the next bounded
+production slice.

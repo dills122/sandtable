@@ -99,7 +99,7 @@ public static class CampaignObservationSerializer
         }
     }
 
-    private static void WriteWeather(Utf8JsonWriter writer, CampaignObservationWeather? weather)
+    internal static void WriteWeather(Utf8JsonWriter writer, CampaignObservationWeather? weather)
     {
         if (weather is null) { writer.WriteNull("weather"); return; }
         writer.WriteStartObject("weather");
@@ -122,7 +122,7 @@ public static class CampaignObservationSerializer
         writer.WriteEndObject();
     }
 
-    private static void WritePosition(
+    internal static void WritePosition(
         Utf8JsonWriter writer,
         CampaignObservationPosition position)
     {
@@ -140,7 +140,7 @@ public static class CampaignObservationSerializer
         writer.WriteEndObject();
     }
 
-    private static void WriteLocations(
+    internal static void WriteLocations(
         Utf8JsonWriter writer,
         IEnumerable<CampaignObservationLocation> locations)
     {
@@ -157,7 +157,7 @@ public static class CampaignObservationSerializer
         writer.WriteEndArray();
     }
 
-    private static void WriteEdges(
+    internal static void WriteEdges(
         Utf8JsonWriter writer,
         IEnumerable<CampaignObservationEdge> edges)
     {
@@ -188,7 +188,7 @@ public static class CampaignObservationSerializer
         writer.WriteEndArray();
     }
 
-    private static void WriteOwnElements(
+    internal static void WriteOwnElements(
         Utf8JsonWriter writer,
         IEnumerable<ObservedOwnElement> ownElements)
     {
@@ -204,7 +204,9 @@ public static class CampaignObservationSerializer
                 "baseCapabilityPointAllowance",
                 element.BaseCapabilityPointAllowance);
             writer.WriteString("currentLocationId", element.CurrentLocationId);
-            writer.WriteString("reserveStatus", FormatReserveStatus(element.ReserveStatus));
+            writer.WriteString(
+                "reserveStatus",
+                FormatReserveStatusValue(element.ReserveStatus));
             writer.WriteString("mobilityId", element.MobilityId);
             writer.WriteNumber("ledgerGameTurn", element.LedgerGameTurn);
             writer.WriteNumber("ledgerOperationStage", element.LedgerOperationStage);
@@ -249,7 +251,7 @@ public static class CampaignObservationSerializer
         writer.WriteEndObject();
     }
 
-    private static void WriteApparentOpposingPresences(
+    internal static void WriteApparentOpposingPresences(
         Utf8JsonWriter writer,
         IEnumerable<ObservedApparentPresence> apparentOpposingPresences)
     {
@@ -266,7 +268,7 @@ public static class CampaignObservationSerializer
         writer.WriteEndArray();
     }
 
-    private static CampaignObservationPosition ParsePosition(JsonElement position)
+    internal static CampaignObservationPosition ParsePosition(JsonElement position)
     {
         RequireProperties(
             position,
@@ -293,7 +295,7 @@ public static class CampaignObservationSerializer
             ParseNullableSide(position.GetProperty("initiativeHolder")));
     }
 
-    private static CampaignObservationWeather? ParseWeather(JsonElement weather)
+    internal static CampaignObservationWeather? ParseWeather(JsonElement weather)
     {
         if (weather.ValueKind == JsonValueKind.Null)
         {
@@ -322,7 +324,7 @@ public static class CampaignObservationSerializer
                 .ToArray());
     }
 
-    private static CampaignObservationLocation[] ParseLocations(JsonElement locations) =>
+    internal static CampaignObservationLocation[] ParseLocations(JsonElement locations) =>
         locations.EnumerateArray().Select(location =>
         {
             RequireProperties(location, "locationId", "terrainId");
@@ -331,7 +333,7 @@ public static class CampaignObservationSerializer
                 location.GetProperty("terrainId").GetString()!);
         }).ToArray();
 
-    private static CampaignObservationEdge[] ParseEdges(JsonElement edges) =>
+    internal static CampaignObservationEdge[] ParseEdges(JsonElement edges) =>
         edges.EnumerateArray().Select(edge =>
         {
             RequireProperties(edge, "firstLocationId", "secondLocationId", "features");
@@ -347,7 +349,7 @@ public static class CampaignObservationSerializer
                 }).ToArray());
         }).ToArray();
 
-    private static ObservedOwnElement[] ParseOwnElements(JsonElement ownElements) =>
+    internal static ObservedOwnElement[] ParseOwnElements(JsonElement ownElements) =>
         ownElements.EnumerateArray().Select(element =>
         {
             RequireProperties(
@@ -370,7 +372,7 @@ public static class CampaignObservationSerializer
                 element.GetProperty("organizationId").GetString()!,
                 element.GetProperty("baseCapabilityPointAllowance").GetInt32(),
                 element.GetProperty("currentLocationId").GetString()!,
-                ParseReserveStatus(element.GetProperty("reserveStatus").GetString()),
+                ParseReserveStatusValue(element.GetProperty("reserveStatus").GetString()),
                 element.GetProperty("mobilityId").GetString()!,
                 element.GetProperty("ledgerGameTurn").GetInt32(),
                 element.GetProperty("ledgerOperationStage").GetInt32(),
@@ -410,7 +412,7 @@ public static class CampaignObservationSerializer
             risk.GetProperty("brokenPointCount").GetInt32());
     }
 
-    private static ObservedApparentPresence[] ParseApparentOpposingPresences(
+    internal static ObservedApparentPresence[] ParseApparentOpposingPresences(
         JsonElement apparentOpposingPresences) => apparentOpposingPresences
             .EnumerateArray()
             .Select(presence =>
@@ -427,7 +429,7 @@ public static class CampaignObservationSerializer
             })
             .ToArray();
 
-    private static void RequireProperties(JsonElement element, params string[] expected)
+    internal static void RequireProperties(JsonElement element, params string[] expected)
     {
         if (element.ValueKind != JsonValueKind.Object
             || !element.EnumerateObject().Select(property => property.Name)
@@ -464,21 +466,21 @@ public static class CampaignObservationSerializer
         _ => throw new JsonException($"Unknown Land actor role '{role}'."),
     };
 
-    private static string FormatSide(LandSide side) => side switch
+    internal static string FormatSide(LandSide side) => side switch
     {
         LandSide.Axis => "axis",
         LandSide.Commonwealth => "commonwealth",
         _ => throw new ArgumentOutOfRangeException(nameof(side)),
     };
 
-    private static LandSide ParseSide(string? side) => side switch
+    internal static LandSide ParseSide(string? side) => side switch
     {
         "axis" => LandSide.Axis,
         "commonwealth" => LandSide.Commonwealth,
         _ => throw new JsonException($"Unknown Land side '{side}'."),
     };
 
-    private static string FormatReserveStatus(
+    internal static string FormatReserveStatusValue(
         CampaignObservationReserveStatus status) => status switch
         {
             CampaignObservationReserveStatus.None => "none",
@@ -487,7 +489,7 @@ public static class CampaignObservationSerializer
             _ => throw new ArgumentOutOfRangeException(nameof(status)),
         };
 
-    private static CampaignObservationReserveStatus ParseReserveStatus(string? status) =>
+    internal static CampaignObservationReserveStatus ParseReserveStatusValue(string? status) =>
         status switch
         {
             "none" => CampaignObservationReserveStatus.None,
