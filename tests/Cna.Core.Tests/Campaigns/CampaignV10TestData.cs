@@ -16,9 +16,10 @@ internal sealed record CampaignV10Fixture(
 
 internal static class CampaignV10TestData
 {
-    public static CampaignV10Fixture Create()
+    public static CampaignV10Fixture Create(
+        string reactorElementId = ZocReactionContentTestData.SecondElementId)
     {
-        var artifact = CreateMixedSideArtifact();
+        var artifact = CreateMixedSideArtifact(reactorElementId);
         var scenario = artifact.Definition.LegacyDefinition.Scenarios.Single();
         var setup = CreateSetup(artifact, scenario);
         var created = CampaignCreationV9Factory.Create(
@@ -48,7 +49,9 @@ internal static class CampaignV10TestData
             created.RandomState,
             CampaignPositionV10.FromSequence(movement),
             null);
-        var triggeringMove = CreateTriggeringMove(snapshot);
+        var triggeringMove = CreateTriggeringMove(
+            snapshot,
+            reactorElementId: reactorElementId);
         return new CampaignV10Fixture(
             artifact,
             scenario,
@@ -60,13 +63,14 @@ internal static class CampaignV10TestData
     public static ElementMovedV2 CreateTriggeringMove(
         CampaignSnapshotV10 snapshot,
         IReadOnlyList<CampaignFrozenReactionOpportunity>? opportunities = null,
-        string apparentRepresentationId = "apparent-axis-alpha")
+        string apparentRepresentationId = "apparent-axis-alpha",
+        string reactorElementId = ZocReactionContentTestData.SecondElementId)
     {
         var movement = snapshot.CurrentPosition.SequencePosition!;
         var triggerBefore = snapshot.World.Representations.Single(value =>
             value.BoundElementIds.Contains(ZocReactionContentTestData.FirstElementId));
         var reactor = snapshot.World.Representations.Single(value =>
-            value.BoundElementIds.Contains(ZocReactionContentTestData.SecondElementId));
+            value.BoundElementIds.Contains(reactorElementId));
         var triggerAfter = new CampaignMapRepresentationState(
             triggerBefore.RepresentationId,
             "east",
@@ -236,9 +240,17 @@ internal static class CampaignV10TestData
             template.Sources));
     }
 
-    private static ContentPackV5Artifact CreateMixedSideArtifact()
+    private static ContentPackV5Artifact CreateMixedSideArtifact(string reactorElementId)
     {
         var definition = ZocReactionContentTestData.CreatePositiveFixture();
+        if (!string.Equals(
+            reactorElementId,
+            ZocReactionContentTestData.SecondElementId,
+            StringComparison.Ordinal))
+        {
+            definition = RenameReactor(definition, reactorElementId);
+        }
+
         var legacy = definition.LegacyDefinition;
         var commonwealthFormation = new ContentFormation(
             "commonwealth-formation",
@@ -247,7 +259,7 @@ internal static class CampaignV10TestData
             legacy.Formations.Single().OrganizationId,
             ContentTestData.Origin("content.formation.commonwealth"));
         var elements = legacy.Elements.Select(element =>
-            element.ElementId == ZocReactionContentTestData.SecondElementId
+            element.ElementId == reactorElementId
                 ? new ContentCombatElement(
                     element.ElementId,
                     "commonwealth",
@@ -276,6 +288,85 @@ internal static class CampaignV10TestData
             changedLegacy,
             definition.ElementCombatFacts,
             definition.InitialPlacementCombatFacts));
+    }
+
+    private static ContentPackV5Definition RenameReactor(
+        ContentPackV5Definition definition,
+        string reactorElementId)
+    {
+        const string originalElementId = ZocReactionContentTestData.SecondElementId;
+        var legacy = definition.LegacyDefinition;
+        var originalFacts = definition.ElementCombatFacts.Single(value =>
+            value.ElementId == originalElementId);
+        var componentIds = originalFacts.Components.ToDictionary(
+            value => value.ComponentId,
+            value => value.ComponentId.Replace(
+                originalElementId,
+                reactorElementId,
+                StringComparison.Ordinal),
+            StringComparer.Ordinal);
+        var elements = legacy.Elements.Select(element =>
+            element.ElementId == originalElementId
+                ? new ContentCombatElement(
+                    reactorElementId,
+                    element.SideId,
+                    element.ParentFormationId,
+                    element.OrganizationId,
+                    element.MobilityId,
+                    element.BaseCapabilityPointAllowance,
+                    element.PlacementMode,
+                    element.Origin,
+                    element.BreakdownVehicleCohort)
+                : element).ToArray();
+        var scenarios = legacy.Scenarios.Select(scenario => new ContentScenario(
+            scenario.ScenarioId,
+            scenario.Start,
+            scenario.End,
+            scenario.InitialPlacements.Select(placement =>
+                placement.ElementId == originalElementId
+                    ? new ContentInitialPlacement(
+                        reactorElementId,
+                        placement.LocationId,
+                        placement.Origin)
+                    : placement),
+            scenario.Origin)).ToArray();
+        var changedLegacy = new ContentPackDefinition(
+            legacy.SchemaVersion,
+            legacy.FormatId,
+            legacy.PackId,
+            legacy.RulesetId,
+            legacy.Capabilities,
+            legacy.SourceIndex,
+            legacy.Locations,
+            legacy.WeatherAreaAssignments,
+            legacy.Edges,
+            legacy.Formations,
+            elements,
+            scenarios);
+        var combatFacts = definition.ElementCombatFacts.Select(facts =>
+            facts.ElementId == originalElementId
+                ? new ContentElementCombatFacts(
+                    reactorElementId,
+                    facts.CombatClassificationId,
+                    facts.Components.Select(component => new ContentCombatComponent(
+                        componentIds[component.ComponentId],
+                        component.ComponentClassId,
+                        component.MaximumToe,
+                        component.DefensiveCloseAssaultRating,
+                        component.Origin)),
+                    facts.Origin)
+                : facts).ToArray();
+        var placementFacts = definition.InitialPlacementCombatFacts.Select(facts =>
+            facts.ElementId == originalElementId
+                ? new ContentInitialPlacementCombatFacts(
+                    facts.ScenarioId,
+                    reactorElementId,
+                    facts.InitialComponentToes.Select(toe => new ContentInitialComponentToe(
+                        componentIds[toe.ComponentId],
+                        toe.CurrentToe,
+                        toe.Origin)))
+                : facts).ToArray();
+        return new ContentPackV5Definition(changedLegacy, combatFacts, placementFacts);
     }
 
     private static RuleReference Source(string locator) =>

@@ -1,6 +1,6 @@
 # ZOC and Reaction v1 Technical Design
 
-**Status:** Approved — dormant checkpoints `ZOR-TASK-002A`-`004A` implemented; `004B` next
+**Status:** Approved — dormant checkpoints `ZOR-TASK-002A`-`004C` implemented; `005` next
 
 **Date:** 2026-08-30
 
@@ -142,8 +142,11 @@ initial placement carries canonical `initialComponentToes` rows with `componentI
 and `origin`. The v5 serializer/artifact emits and hashes one complete successor document derived
 from a fully validated schema-4 definition; the active schema-4 reader continues to reject those
 bytes. `ZOR-TASK-002C` adds strict direct-only v5 readback by separating successor fields from one
-complete document, delegating inherited schema validation to the strict schema-4 reader, then
-revalidating the reconstructed v5 definition. Its checked positive golden round-trips canonical
+complete document, delegating inherited schema validation to the existing schema-4 reader, then
+revalidating the reconstructed v5 definition and byte-comparing the original v5 input with canonical
+v5 reserialization. Equivalent whitespace, escaping, property order, or collection order therefore
+rejects as `content.noncanonical-json` without tightening the intentionally normalizing legacy
+reader. Its checked positive golden round-trips canonical
 bytes and identity, derives stacking `2` and current raw defense `10`, and retains every named
 independent negative plus non-additive controlled-location evidence.
 
@@ -171,12 +174,12 @@ reactingSide
 suspendedMovementPosition
 triggerAuthority              // internal binding, origin, destination, move identity
 apparentTrigger               // apparent ID, origin, destination
-frozenOpportunities[]         // stable identity + replay evidence; internal
+frozenOpportunities[]         // stable authority identity + replay evidence; internal
 resolvedOpportunityIds[]
 activeOpportunityId?
 ```
 
-Arrays use ordinal identity order. The active participant is null before selection and after its
+Arrays use authority-identity order. The active participant is null before selection and after its
 completion. Closure removes the window and restores `suspendedMovementPosition`; it never advances
 the sequence.
 
@@ -289,9 +292,25 @@ a stale candidate without adding outward detail.
 Observation 6 adds a closed decision-state union rather than optional Reaction fields scattered
 across elements and one root-level, ordinal, duplicate-free
 `apparentEnemyControlledLocationIds` collection. The collection reveals neither controlling source
-nor predicate rationale. The reacting projection contains only public window ID, exact own
-unresolved/current opportunities, active own participant state, and the apparent trigger triple.
-The phasing projection contains public window ID plus generic waiting and retains its ordinary own
+nor predicate rationale. The reacting projection contains only an audience-safe window handle,
+exact own unresolved/current state-scoped capability handles, their closed current move-option/cost
+capabilities, active own participant state, and the apparent trigger triple. Core derives those
+options from exact movement, ledger, Cohesion, Reserve, mobility, organization, and stacking truth,
+then discards those raw ingredients at the user-space boundary. It omits identity-bearing root
+owner-element rows and never publishes the authoritative window/opportunity identities or
+representation-to-element binding; later command validation resolves that binding inside the
+Umpire. The stable window handle derives only from facts visible to both sides. Opportunity handles
+derive from the current audience-visible state version and canonical published move-option/cost
+bytes. Canonical capability ordering makes the outward set independent of authority identity/order.
+Construction and canonical readback recompute that handle rather than trusting supplied hashes.
+They also require each cost breakdown to be an exact route/hexside traversal of its selected
+published edge for one supported mobility, including feature classification, direction, and rule
+amounts, and correlate the decision discriminator with `Observer` and `Position.ActiveSide`.
+Two authority opportunities with indistinguishable published capabilities are rejected at this
+boundary until a separately approved grouped-selection contract exists; hidden authority order is
+never used to choose between them. Opportunity handles intentionally change with state or
+capability so they cannot become cross-state representation joins.
+The phasing projection contains the same audience-safe window handle plus generic waiting and retains its ordinary own
 Movement/post-move facts.
 
 Complete authority events retain real bindings, eligibility evidence, provenance, and internal
@@ -359,6 +378,9 @@ ZOR-TASK-001 accepted ruling lock [complete]
 004B dormant actions/readback/fog equivalence
         |
         v
+004C declassification manifest/capabilities/transcript gate
+        |
+        v
 005 internal move-to-window trigger (public trigger path still dormant)
         |
         v
@@ -417,13 +439,22 @@ not in Task 002.
   source-unmapped apparent enemy-controlled location set, dormant reacting/phasing decision
   projections, strict readback, and projected-history shapes. The active public path remains on
   Observation 5.
-- **004B:** add dormant topology-local ordinary-Movement ZOC entry/exit derivation plus dormant
+- **004B (implemented):** add dormant topology-local ordinary-Movement ZOC entry/exit derivation plus dormant
   first/later Reaction step, complete, and close candidates, system close membership, canonical
   IDs, unpublished submission mappings, controlled-set local derivation, remote-ZOC noninterference,
-  same-control/different-hidden-source equivalence, and audience fog-equivalence tests.
+  same-control/different-hidden-source equivalence, and audience fog-equivalence tests. Observation
+  6 carries canonical owner-visible Movement-ended element IDs outside reacting decisions and
+  state-scoped own capability handles during reacting decisions. Active Observation
+  5/action/execution paths remain closed.
+- **004C (implemented):** preserve real binding secrecy by replacing copied reacting Movement and
+  anonymous stacking inputs with closed current move-option/cost capabilities. Reject
+  identity-bearing owner rows semantically in reacting construction/readback, register the exact
+  dormant output type/member surface in the versioned disclosure manifest, add retained-transcript
+  regression evidence, and make the boundary suite a named mandatory `just check` gate.
 
-**Gate:** byte-identical audience facts imply byte-identical observation/action bytes; public
-triggering Movement does not yet enter the window.
+**Gate:** byte-identical audience facts imply byte-identical observation/action bytes; retained
+transcripts cannot reconstruct the real owner binding from copied raw inputs; all dormant outward
+members are manifest-registered; public triggering Movement does not yet enter the window.
 
 ### `ZOR-TASK-005` — Implement the internal trigger
 
@@ -485,7 +516,7 @@ migration design rather than weakening `ZOR-REQ-012`.
 
 ## Parallel work boundary
 
-ZOR production remains serial through 004B on one integration branch and remains a single merge
+ZOR production remains serial through 004C on one integration branch and remains a single merge
 train through 006C because identities and shared authority shapes are coupled. The safe parallel
 lane is Breakdown adjudication research/design:
 source-lock the percentage outcome table, action/result/loss vocabulary, RNG evidence, and decision

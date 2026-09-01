@@ -606,8 +606,17 @@ Assault result. The repeatable **Movement/Combat cycle** remains a Sprint 5 rese
 concept. Movement is complete through `MOV-TASK-010`; `ZOR-TASK-002A`-`003A` complete dormant Rules
 vocabulary/predicates, Content component/seed/readback, checked static fixtures, and direct-only
 World 5/creation 9 current-TOE and Reaction identity seams without activating ZOC/Reaction or
-changing ruleset 7 / Content schema 4 / World 4 / CampaignCreated 8. `ZOR-TASK-003B` is next, and
-none of these later terms should be inferred inside the current non-contact Movement resolver.
+changing ruleset 7 / Content schema 4 / World 4 / CampaignCreated 8. `ZOR-TASK-003B`-`004C` add
+dormant Snapshot/event replay, the side-safe Observation 6 policy/history surface, exact own
+Movement-ended and Reaction-opportunity membership, and closed topology-local ordinary Movement,
+Reaction-step, completion, decline, and System-close action identities/readback/mappings, plus the
+manifest-registered user-space declassification boundary that publishes audience-safe
+window/state-scoped capability handles and move options rather than authoritative identities or raw reacting
+element fingerprints. Admission recomputes those capability handles, verifies cost claims against
+the published edge traversal, and rejects decision labels inconsistent with the observer and active
+side.
+`ZOR-TASK-005` is next; none of these successor terms are active in the current non-contact
+Movement resolver.
 
 **War College** is where we evaluate commanders.
 

@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Cna.Core.Actions;
 
 namespace Cna.Core.Observations;
 
@@ -32,6 +33,13 @@ internal static class CampaignObservationV6Serializer
             foreach (var locationId in observation.ApparentEnemyControlledLocationIds)
             {
                 writer.WriteStringValue(locationId);
+            }
+
+            writer.WriteEndArray();
+            writer.WriteStartArray("movementEndedElementIds");
+            foreach (var elementId in observation.MovementEndedElementIds)
+            {
+                writer.WriteStringValue(elementId);
             }
 
             writer.WriteEndArray();
@@ -71,6 +79,7 @@ internal static class CampaignObservationV6Serializer
                 "ownElements",
                 "apparentOpposingPresences",
                 "apparentEnemyControlledLocationIds",
+                "movementEndedElementIds",
                 "decisionState");
             var result = new CampaignObservationV6(
                 root.GetProperty("contractVersion").GetInt32(),
@@ -89,6 +98,8 @@ internal static class CampaignObservationV6Serializer
                 CampaignObservationSerializer.ParseApparentOpposingPresences(
                     root.GetProperty("apparentOpposingPresences")),
                 root.GetProperty("apparentEnemyControlledLocationIds")
+                    .EnumerateArray().Select(value => value.GetString()!).ToArray(),
+                root.GetProperty("movementEndedElementIds")
                     .EnumerateArray().Select(value => value.GetString()!).ToArray(),
                 ParseDecisionState(root.GetProperty("decisionState")));
             if (!canonicalJson.SequenceEqual(SerializeCanonical(result)))
@@ -143,7 +154,7 @@ internal static class CampaignObservationV6Serializer
                 writer.WriteStartArray("ownOpportunities");
                 foreach (var opportunity in reacting.OwnOpportunities)
                 {
-                    WriteOpportunity(writer, opportunity.OpportunityId, opportunity.RepresentationId);
+                    WriteOpportunity(writer, opportunity);
                 }
 
                 writer.WriteEndArray();
@@ -154,10 +165,7 @@ internal static class CampaignObservationV6Serializer
                 else
                 {
                     writer.WritePropertyName("activeParticipant");
-                    WriteOpportunity(
-                        writer,
-                        reacting.ActiveParticipant.OpportunityId,
-                        reacting.ActiveParticipant.RepresentationId);
+                    WriteParticipant(writer, reacting.ActiveParticipant);
                 }
 
                 break;
@@ -228,31 +236,58 @@ internal static class CampaignObservationV6Serializer
         CampaignObservationSerializer.RequireProperties(
             value,
             "opportunityId",
-            "representationId");
+            "moveOptions");
         return new ObservedReactionOpportunity(
             value.GetProperty("opportunityId").GetString()!,
-            value.GetProperty("representationId").GetString()!);
+            value.GetProperty("moveOptions").EnumerateArray()
+                .Select(ParseMoveOption).ToArray());
     }
 
     private static ObservedReactionParticipant ParseParticipant(JsonElement value)
     {
         CampaignObservationSerializer.RequireProperties(
             value,
-            "opportunityId",
-            "representationId");
+            "opportunityId");
         return new ObservedReactionParticipant(
-            value.GetProperty("opportunityId").GetString()!,
-            value.GetProperty("representationId").GetString()!);
+            value.GetProperty("opportunityId").GetString()!);
     }
 
-    private static void WriteOpportunity(
-        Utf8JsonWriter writer,
-        string opportunityId,
-        string representationId)
+    private static void WriteOpportunity(Utf8JsonWriter writer, ObservedReactionOpportunity value)
     {
         writer.WriteStartObject();
-        writer.WriteString("opportunityId", opportunityId);
-        writer.WriteString("representationId", representationId);
+        writer.WriteString("opportunityId", value.OpportunityId);
+        writer.WriteStartArray("moveOptions");
+        foreach (var option in value.MoveOptions)
+        {
+            writer.WriteStartObject();
+            writer.WriteString("originLocationId", option.OriginLocationId);
+            writer.WriteString("destinationLocationId", option.DestinationLocationId);
+            MovementActionJson.WriteCostBreakdown(writer, option.CostBreakdown);
+            writer.WriteEndObject();
+        }
+
+        writer.WriteEndArray();
         writer.WriteEndObject();
+    }
+
+    private static void WriteParticipant(Utf8JsonWriter writer, ObservedReactionParticipant value)
+    {
+        writer.WriteStartObject();
+        writer.WriteString("opportunityId", value.OpportunityId);
+        writer.WriteEndObject();
+    }
+
+    private static ObservedReactionMoveOption ParseMoveOption(JsonElement option)
+    {
+        CampaignObservationSerializer.RequireProperties(
+            option,
+            "originLocationId",
+            "destinationLocationId",
+            "costBreakdown");
+        return new ObservedReactionMoveOption(
+            option.GetProperty("originLocationId").GetString()!,
+            option.GetProperty("destinationLocationId").GetString()!,
+            CampaignObservationV6LegalActionSerializer.ParseCostBreakdown(
+                option.GetProperty("costBreakdown")));
     }
 }

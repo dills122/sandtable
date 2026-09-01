@@ -22,6 +22,13 @@ Current admitted apparent rows always carry `exertsZoc = false`; positive qualif
 gated on `ZOR-TASK-002`. The contract, implementation, repository verification, and independent
 review are complete.
 
+The dormant Observation 6 evolution now includes `ZOR-TASK-004C`: Core derives closed current
+Reaction move options before crossing the user-space boundary and discards raw owner
+Movement/ledger/stacking inputs. Audience-specific semantic admission forbids identity-bearing
+owner rows in reacting values. A versioned disclosure manifest, exact member checks, and
+retained-transcript regression suite run under `just boundary-check`; active contract 5 is
+unchanged.
+
 `MOV-TASK-006` now consumes contract-5 observations through a separate pure dormant Movement
 candidate deriver. That downstream use changes no observation field, policy, identity, or bytes and
 does not make a Movement action public or executable.

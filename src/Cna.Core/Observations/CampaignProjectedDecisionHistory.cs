@@ -24,6 +24,9 @@ internal sealed record CampaignProjectedDecisionHistoryEntry
         }
 
         ArgumentNullException.ThrowIfNull(decisionState);
+        CampaignObservationV6DisclosureIdentity.EnsureOpportunityIdentities(
+            stateVersion,
+            decisionState);
         CampaignId = ContentContractGuards.RequireStableId(campaignId, nameof(campaignId));
         ContractVersion = contractVersion;
         StateVersion = stateVersion;

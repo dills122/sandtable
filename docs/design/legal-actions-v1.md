@@ -16,6 +16,13 @@ pure observation-derived vectors, and strict canonical set/submission/receipt re
 `MOV-TASK-008` owns atomic public membership after internal adjudication and completion are both
 executable. The current action set intentionally has no Movement member.
 
+For dormant ZOC/Reaction, `ZOR-TASK-004C` makes candidate capabilities the declassification seam.
+Observation 6 carries closed current move options and canonical costs, never the raw owner
+Movement/ledger/stacking tuple used to derive them. Action derivation maps only those registered
+options; payload-free submission carries the action ID, and later authoritative execution resolves
+the internal binding and revalidates exact current membership. The manifest/member/transcript suite
+is a mandatory `just boundary-check` gate.
+
 ## Current Task 006 evolution
 
 Candidate contract version 1 gains output-only `MoveElementAction` and

@@ -7,6 +7,7 @@ using Cna.Core.Rules;
 
 namespace Cna.Core.Tests.Observations;
 
+[Trait("Boundary", "UserSpace")]
 public sealed class CampaignObservationPrivacyTests
 {
     [Theory]

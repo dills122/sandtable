@@ -512,6 +512,31 @@ public sealed class ContentPackV5Tests
         Assert.Equal(10, rawDefense);
     }
 
+    [Fact]
+    public void StrictReadbackRejectsEquivalentNoncanonicalJsonBytes()
+    {
+        var canonical = Encoding.UTF8.GetString(ContentPackV5Serializer.SerializeCanonical(
+            ZocReactionContentTestData.CreatePositiveFixture()));
+        string[] equivalentButNoncanonical =
+        [
+            $" \n{canonical}\n ",
+            canonical.Replace(
+                "rules-lab.content.zoc-reaction.v1",
+                "rules-lab.content.zoc-reaction.v\\u0031",
+                StringComparison.Ordinal),
+        ];
+
+        foreach (var json in equivalentButNoncanonical)
+        {
+            Assert.NotEqual(canonical, json);
+            var result = ContentPackV5Serializer.Deserialize(Encoding.UTF8.GetBytes(json));
+
+            Assert.False(result.IsSuccess);
+            Assert.Equal("content.noncanonical-json", result.ErrorCode);
+            Assert.Null(result.Definition);
+        }
+    }
+
     public static TheoryData<string, Func<string, string>, string> InvalidReadbackDocuments =>
         new()
         {

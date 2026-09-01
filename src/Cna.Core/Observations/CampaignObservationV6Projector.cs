@@ -1,3 +1,4 @@
+using Cna.Core.Actions;
 using Cna.Core.Campaigns;
 using Cna.Core.Content;
 using Cna.Core.Rules;
@@ -97,7 +98,24 @@ internal static class CampaignObservationV6Projector
             sequence.ActorRole,
             sequence.ActiveSide,
             snapshot.InitiativeHolder);
-        var decision = ProjectDecisionState(snapshot, observer, ownElements);
+        var decision = ProjectDecisionState(
+            snapshot,
+            observer,
+            position,
+            locations,
+            edges,
+            apparent,
+            authorityFacts.ApparentEnemyControlledLocationIds,
+            ownElements);
+        var publishedOwnElements = decision is CampaignObservationReactingDecisionState
+            ? []
+            : ownElements;
+        var movementEndedElementIds = publishedOwnElements
+            .Where(element => IsMovementEndedFor(
+                worldByElement[element.ElementId].OperationalState.MovementEnded,
+                sequence))
+            .Select(element => element.ElementId)
+            .ToArray();
 
         return new CampaignObservationV6(
             CampaignObservationV6.CurrentContractVersion,
@@ -114,15 +132,21 @@ internal static class CampaignObservationV6Projector
                 snapshot.OperationStageWeather),
             locations,
             edges,
-            ownElements,
+            publishedOwnElements,
             apparent,
             authorityFacts.ApparentEnemyControlledLocationIds,
+            movementEndedElementIds,
             decision);
     }
 
     private static CampaignObservationDecisionState ProjectDecisionState(
         CampaignSnapshotV10 snapshot,
         LandSide observer,
+        CampaignObservationPosition position,
+        IReadOnlyList<CampaignObservationLocation> locations,
+        IReadOnlyList<CampaignObservationEdge> edges,
+        IReadOnlyList<ObservedApparentPresence> apparentOpposingPresences,
+        IReadOnlyList<string> apparentEnemyControlledLocationIds,
         IReadOnlyList<ObservedOwnElement> ownElements)
     {
         var window = snapshot.ReactionWindow;
@@ -131,9 +155,15 @@ internal static class CampaignObservationV6Projector
             return new CampaignObservationNormalDecisionState();
         }
 
+        var publicWindowId = CampaignObservationV6DisclosureIdentity.CreateWindow(
+            snapshot.CampaignId,
+            snapshot.RulesetHash,
+            window.TriggerCommittedStateVersion,
+            window.ReactingSide);
+
         if (observer == window.PhasingSide)
         {
-            return new CampaignObservationPhasingWaitingDecisionState(window.WindowId.Value);
+            return new CampaignObservationPhasingWaitingDecisionState(publicWindowId);
         }
 
         if (observer != window.ReactingSide)
@@ -147,7 +177,15 @@ internal static class CampaignObservationV6Projector
             .ToHashSet(StringComparer.Ordinal);
         var resolvedIds = window.ResolvedOpportunityIds.Select(value => value.Value)
             .ToHashSet(StringComparer.Ordinal);
-        var opportunities = window.FrozenOpportunities
+        var ownStacking = ownElements
+            .GroupBy(value => value.CurrentLocationId, StringComparer.Ordinal)
+            .ToDictionary(
+                group => group.Key,
+                group => group.Aggregate(
+                    0,
+                    (current, element) => checked(current + RequireStackingValue(element))),
+                StringComparer.Ordinal);
+        var projectedCapabilities = window.FrozenOpportunities
             .Where(value => !resolvedIds.Contains(value.OpportunityId.Value))
             .Select(value =>
             {
@@ -158,25 +196,57 @@ internal static class CampaignObservationV6Projector
                         nameof(snapshot));
                 }
 
-                return new ObservedReactionOpportunity(
+                if (value.ReactingRepresentation.BoundElementIds.Count != 1)
+                {
+                    throw new ArgumentException(
+                        "A reacting opportunity must bind one audience-owned element.",
+                        nameof(snapshot));
+                }
+
+                var elementId = value.ReactingRepresentation.BoundElementIds[0];
+                if (!ownElementIds.Contains(elementId))
+                {
+                    throw new ArgumentException(
+                        "A reacting opportunity must bind one audience-owned element.",
+                        nameof(snapshot));
+                }
+
+                var moveOptions = CampaignObservationV6ActionDerivation.DeriveReactionMoveOptions(
+                        position,
+                        locations,
+                        edges,
+                        apparentOpposingPresences,
+                        apparentEnemyControlledLocationIds,
+                        ownElements.Single(element => string.Equals(
+                            element.ElementId,
+                            elementId,
+                            StringComparison.Ordinal)),
+                        ownStacking);
+                return new CampaignObservationV6DisclosureCapability(
                     value.OpportunityId.Value,
-                    value.ReactingRepresentation.RepresentationId);
+                    moveOptions,
+                    window.ActiveOpportunityId == value.OpportunityId);
             })
             .ToArray();
+        var aliases = CampaignObservationV6DisclosureIdentity.CreateAliases(
+            publicWindowId,
+            snapshot.StateVersion,
+            projectedCapabilities);
+        var opportunities = aliases.Select(value => new ObservedReactionOpportunity(
+            value.PublicId,
+            value.MoveOptions)).ToArray();
         ObservedReactionParticipant? active = null;
         if (window.ActiveOpportunityId is not null)
         {
-            var matching = opportunities.Single(value => string.Equals(
-                value.OpportunityId,
-                window.ActiveOpportunityId.Value,
-                StringComparison.Ordinal));
             active = new ObservedReactionParticipant(
-                matching.OpportunityId,
-                matching.RepresentationId);
+                aliases.Single(value => string.Equals(
+                    value.AuthorityId,
+                    window.ActiveOpportunityId.Value,
+                    StringComparison.Ordinal)).PublicId);
         }
 
         return new CampaignObservationReactingDecisionState(
-            window.WindowId.Value,
+            publicWindowId,
             new ObservedApparentReactionTrigger(
                 window.ApparentTrigger.ApparentRepresentationId,
                 window.ApparentTrigger.OriginLocationId,
@@ -200,6 +270,31 @@ internal static class CampaignObservationV6Projector
             state.OperationalState.CapabilityPointsExpended,
             state.OperationalState.CohesionLevel,
             ProjectVehicleBreakdownRisk(content, state));
+
+    private static int RequireStackingValue(ObservedOwnElement element)
+    {
+        var lookup = Cna1979Movement.LookupStackingValue(element.OrganizationId);
+        if (!lookup.IsSupported)
+        {
+            throw new ArgumentException(
+                "A reacting owner element must have supported stacking facts.",
+                nameof(element));
+        }
+
+        return lookup.Value.StackingValue;
+    }
+
+    private static bool IsMovementEndedFor(
+        CampaignMovementEndedState? ended,
+        LandSequencePosition position) => ended is not null
+        && ended.SequenceContractVersion == position.ContractVersion
+        && string.Equals(ended.PositionId, position.PositionId, StringComparison.Ordinal)
+        && ended.GameTurn == position.GameTurn
+        && ended.OperationStage == position.OperationStage
+        && string.Equals(ended.StageId, position.StageId, StringComparison.Ordinal)
+        && string.Equals(ended.PhaseId, position.PhaseId, StringComparison.Ordinal)
+        && string.Equals(ended.SegmentId, position.SegmentId, StringComparison.Ordinal)
+        && ended.PhasingSide == position.ActiveSide;
 
     private static ObservedOwnVehicleBreakdownRisk? ProjectVehicleBreakdownRisk(
         ContentCombatElement content,

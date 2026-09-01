@@ -1,6 +1,6 @@
 # ZOC and Reaction v1 Specification
 
-**Status:** Approved — dormant checkpoints `ZOR-TASK-002A`-`004A` implemented; `004B` next
+**Status:** Approved — dormant checkpoints `ZOR-TASK-002A`-`004C` implemented; `005` next
 
 **Date:** 2026-08-30
 
@@ -241,8 +241,18 @@ its prior version/window transition no longer matches.
 
 ### `ZOR-REQ-011` — Side-safe observation and history
 
-The reacting side sees a stable public window identity, current own opportunities, its current
-episode state, and the trigger's apparent representation ID, origin, and destination only. The
+The reacting side sees an audience-safe window handle, current own state-scoped capability
+handles, their closed current move-option/cost capabilities, its current episode state, and the
+trigger's apparent representation ID, origin, and destination. The phasing and reacting sides
+receive the same public window handle, but neither receives the authoritative window or opportunity
+identities. Opportunity handles are derived only from current state version and canonical published
+move-option/cost bytes; they intentionally change after a state/capability change and therefore
+cannot serve as cross-state representation joins. Canonical capability ordering is independent of
+authority identity/order. Indistinguishable duplicate capabilities reject before projection until
+an explicit grouped-selection policy is approved; hidden authority order is never a public
+tie-breaker. It
+does not receive the raw element movement, ledger,
+Cohesion, Reserve, mobility, organization, or stacking inputs used to derive those options. The
 phasing side sees generic waiting and retains its already-authorized own Movement candidate/cost and
 post-move ledger facts.
 
@@ -285,6 +295,28 @@ River/Lake, Escarpment, and a neighbor the source force cannot enter. Checked ev
 cover non-additive overlap, every state-machine path, strict readback, replay, fog equivalence, and
 fresh-session re-adjudication.
 
+### `ZOR-REQ-014` — Explicit user-space declassification boundary
+
+Every Observation 6, legal-action, and projected-history value crossing from authority into a
+player audience must be registered in the versioned user-space disclosure manifest. The reacting
+semantic admission boundary makes identity-bearing root owner rows inadmissible. Its strict reader
+rejects non-empty `ownElements` or `movementEndedElementIds`, even when the injected
+rows are otherwise canonical and audience-owned.
+
+The same admission boundary recomputes every opportunity handle from the published window handle,
+current state version, and exact canonical move-option/cost capability. It rejects missing,
+substituted, or misdirected route/hexside cost claims that do not match the selected published edge,
+and requires `phasing-waiting`/`reacting` decision labels to agree with the observer and active
+phasing side. Projected-history readback performs the same opportunity-handle recomputation.
+
+The boundary assumes a player retains and joins all prior output bytes. Therefore a stable
+representation must not be published beside the copied owner-element fingerprint from earlier
+observations. Core may publish exact current move options and canonical costs as explicitly
+approved capabilities; it retains the element binding and raw derivation facts and revalidates
+current action membership on submission. `just boundary-check` is a mandatory build gate for the
+manifest, registered type/member surface, semantic admission, retained-transcript regression,
+authority API graph, and fog-equivalence suites.
+
 ## Acceptance criteria
 
 | ID | Acceptance behavior |
@@ -306,6 +338,7 @@ fresh-session re-adjudication.
 | `ZOR-AC-015` | Observation 6 canonically projects only the aggregate apparent enemy-controlled location set; same set/topology yields identical Movement actions despite hidden source differences, while a changed controlled location changes only its membership and dependent local candidates. |
 | `ZOR-AC-016` | Every frozen opportunity is individually adjacent at trigger time; two adjacent eligible participants are admitted, while an otherwise-equivalent remote eligible participant and noncombat-only neighbor are absent. |
 | `ZOR-AC-017` | Player close is absent during an active episode; reason-specific System unavailable/timeout close can resolve an active window without undoing prior CP/BP, and forged/unknown/wrong-audience reasons emit zero events. |
+| `ZOR-AC-018` | A retained normal-plus-reacting transcript cannot join a stable reacting representation to the earlier owner element through copied movement/ledger/stacking fields; reacting readback rejects identity-bearing root rows; every dormant outward type/member and emitted property is admitted by the versioned disclosure manifest and `just boundary-check`. |
 
 In addition to the ruling-lock consequences admitted by v1, `ZOR-REQ-004` requires a focused source rule
 test: positive enemy-ZOC entry ends the mover for the current Movement Segment, while adjacency to a
@@ -325,6 +358,7 @@ Rule 8.53(b) threshold portion of the original consequence 7 is explicitly defer
 | `ZOR-REQ-010`-`011` | `ZOR-DEC-004`, `006`-`007`, `012` | `ZOR-TASK-004A`-`006C` | `ZOR-AC-005`-`009`, `012`, `015`, `017` |
 | `ZOR-REQ-012` | `ZOR-DEC-006`, `009`-`010`, `012` | `ZOR-TASK-002A`-`006C`, `007A`-`007B` | dormant/current/activation compatibility and replay matrices across every new or activated command, event, action-kind, authority, and observation contract |
 | `ZOR-REQ-013` | `ZOR-DEC-005`, `008` | `ZOR-TASK-002C`, `007A`-`007B` | `ZOR-AC-010` plus checked bundle/readback evidence |
+| `ZOR-REQ-014` | owner-approved declassification boundary | `ZOR-TASK-004C`, `007B` | `ZOR-AC-018`, disclosure-manifest and `boundary-check` evidence |
 
 The technical design defines each lettered task's dependency and proof obligation without changing
 the stable parent IDs retained by the ruling lock and roadmap.
@@ -344,9 +378,11 @@ The owner approved the complete package after PR #80 merged, including these con
 6. defer Rule 8.53(b)'s CPA comparison until a later approved Close Assault declaration exists,
    rather than importing Combat declaration state or applying the restriction unconditionally; and
 7. add an aggregate source-unmapped apparent enemy-controlled-location set to Observation 6 as the
-   minimum disclosure that keeps topology-local Movement actions side-safe and deterministic.
+   minimum disclosure that keeps topology-local Movement actions side-safe and deterministic; and
+8. preserve representation-to-element binding secrecy by publishing closed current move options
+   instead of raw reacting element fingerprints, with manifest and transcript enforcement.
 
 That approval initially opened only the dependency-ordered first slice, `ZOR-TASK-002A`; the owner
-subsequently directed `002B`, `002C`, `003A`, `003B`, and `004A` after their preceding verified
-checkpoints. `ZOR-TASK-004B` and later slices remain dependency-gated and must not be treated as one
-authorized or implemented change.
+subsequently directed `002B`, `002C`, `003A`, `003B`, `004A`, `004B`, and the boundary-remediation
+checkpoint `004C` after their preceding verified checkpoints. `ZOR-TASK-005` and later slices remain
+dependency-gated and must not be treated as one authorized or implemented change.

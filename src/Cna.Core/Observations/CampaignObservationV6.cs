@@ -1,3 +1,4 @@
+using Cna.Core.Actions;
 using Cna.Core.Content;
 using Cna.Core.Rules;
 
@@ -88,36 +89,88 @@ internal sealed record ObservedApparentReactionTrigger
 
 internal sealed record ObservedReactionOpportunity
 {
-    public ObservedReactionOpportunity(string opportunityId, string representationId)
+    public ObservedReactionOpportunity(
+        string opportunityId,
+        IEnumerable<ObservedReactionMoveOption> moveOptions)
     {
         OpportunityId = ContentContractGuards.RequireSha256(
             opportunityId,
             nameof(opportunityId));
-        RepresentationId = ContentContractGuards.RequireStableId(
-            representationId,
-            nameof(representationId));
+        var options = ContentContractGuards.CopyValues(moveOptions, nameof(moveOptions));
+        if (options.Select(value => $"{value.OriginLocationId}\0{value.DestinationLocationId}")
+            .Distinct(StringComparer.Ordinal).Count() != options.Length)
+        {
+            throw new ArgumentException(
+                "Observed Reaction move options must be unique by route.",
+                nameof(moveOptions));
+        }
+
+        MoveOptions = Array.AsReadOnly(options
+            .OrderBy(value => value.OriginLocationId, StringComparer.Ordinal)
+            .ThenBy(value => value.DestinationLocationId, StringComparer.Ordinal)
+            .ToArray());
     }
 
     public string OpportunityId { get; }
 
-    public string RepresentationId { get; }
+    public IReadOnlyList<ObservedReactionMoveOption> MoveOptions { get; }
+
+    public bool Equals(ObservedReactionOpportunity? other) => ReferenceEquals(this, other)
+        || (other is not null
+            && string.Equals(OpportunityId, other.OpportunityId, StringComparison.Ordinal)
+            && MoveOptions.SequenceEqual(other.MoveOptions));
+
+    public override int GetHashCode()
+    {
+        var hash = new HashCode();
+        hash.Add(OpportunityId, StringComparer.Ordinal);
+        foreach (var option in MoveOptions)
+        {
+            hash.Add(option);
+        }
+
+        return hash.ToHashCode();
+    }
 }
 
 internal sealed record ObservedReactionParticipant
 {
-    public ObservedReactionParticipant(string opportunityId, string representationId)
+    public ObservedReactionParticipant(string opportunityId)
     {
         OpportunityId = ContentContractGuards.RequireSha256(
             opportunityId,
             nameof(opportunityId));
-        RepresentationId = ContentContractGuards.RequireStableId(
-            representationId,
-            nameof(representationId));
     }
 
     public string OpportunityId { get; }
+}
 
-    public string RepresentationId { get; }
+internal sealed record ObservedReactionMoveOption
+{
+    public ObservedReactionMoveOption(
+        string originLocationId,
+        string destinationLocationId,
+        MovementActionCostBreakdown costBreakdown)
+    {
+        OriginLocationId = ContentContractGuards.RequireStableId(
+            originLocationId,
+            nameof(originLocationId));
+        DestinationLocationId = ContentContractGuards.RequireStableId(
+            destinationLocationId,
+            nameof(destinationLocationId));
+        if (string.Equals(OriginLocationId, DestinationLocationId, StringComparison.Ordinal))
+        {
+            throw new ArgumentException(
+                "An observed Reaction move option must change location.",
+                nameof(destinationLocationId));
+        }
+
+        CostBreakdown = costBreakdown ?? throw new ArgumentNullException(nameof(costBreakdown));
+    }
+
+    public string OriginLocationId { get; }
+    public string DestinationLocationId { get; }
+    public MovementActionCostBreakdown CostBreakdown { get; }
 }
 
 internal sealed record CampaignObservationReactingDecisionState :
@@ -135,12 +188,10 @@ internal sealed record CampaignObservationReactingDecisionState :
             ownOpportunities,
             nameof(ownOpportunities));
         if (opportunities.Select(value => value.OpportunityId)
-                .Distinct(StringComparer.Ordinal).Count() != opportunities.Length
-            || opportunities.Select(value => value.RepresentationId)
                 .Distinct(StringComparer.Ordinal).Count() != opportunities.Length)
         {
             throw new ArgumentException(
-                "Observed own Reaction opportunities must have unique identities and representations.",
+                "Observed own Reaction opportunities must have unique identities.",
                 nameof(ownOpportunities));
         }
 
@@ -150,9 +201,7 @@ internal sealed record CampaignObservationReactingDecisionState :
         if (activeParticipant is not null
             && !ordered.Any(value =>
                 string.Equals(value.OpportunityId,
-                    activeParticipant.OpportunityId, StringComparison.Ordinal)
-                && string.Equals(value.RepresentationId,
-                    activeParticipant.RepresentationId, StringComparison.Ordinal)))
+                    activeParticipant.OpportunityId, StringComparison.Ordinal)))
         {
             throw new ArgumentException(
                 "The active observed participant must be a current own opportunity.",
@@ -216,6 +265,7 @@ internal sealed record CampaignObservationV6
         IEnumerable<ObservedOwnElement> ownElements,
         IEnumerable<ObservedApparentPresence> apparentOpposingPresences,
         IEnumerable<string> apparentEnemyControlledLocationIds,
+        IEnumerable<string> movementEndedElementIds,
         CampaignObservationDecisionState decisionState)
     {
         ArgumentOutOfRangeException.ThrowIfNotEqual(
@@ -243,6 +293,10 @@ internal sealed record CampaignObservationV6
 
         ArgumentNullException.ThrowIfNull(position);
         ArgumentNullException.ThrowIfNull(decisionState);
+        EnsureDecisionAudienceMatchesPosition(observer, position, decisionState);
+        CampaignObservationV6DisclosureIdentity.EnsureOpportunityIdentities(
+            stateVersion,
+            decisionState);
         var locationCopy = ContentContractGuards.CopyValues(locations, nameof(locations));
         var edgeCopy = ContentContractGuards.CopyValues(edges, nameof(edges));
         var ownElementCopy = ContentContractGuards.CopyValues(ownElements, nameof(ownElements));
@@ -254,6 +308,11 @@ internal sealed record CampaignObservationV6
             ContentContractGuards.RequireStableId(
                 value,
                 nameof(apparentEnemyControlledLocationIds))).ToArray();
+        ArgumentNullException.ThrowIfNull(movementEndedElementIds);
+        var movementEndedCopy = movementEndedElementIds.Select(value =>
+            ContentContractGuards.RequireStableId(
+                value,
+                nameof(movementEndedElementIds))).ToArray();
 
         EnsureUnique(locationCopy.Select(value => value.LocationId), nameof(locations));
         EnsureUnique(
@@ -264,6 +323,23 @@ internal sealed record CampaignObservationV6
             apparentPresenceCopy.Select(value => value.RepresentationId),
             nameof(apparentOpposingPresences));
         EnsureUnique(controlledCopy, nameof(apparentEnemyControlledLocationIds));
+        EnsureUnique(movementEndedCopy, nameof(movementEndedElementIds));
+        var ownElementIds = ownElementCopy.Select(value => value.ElementId)
+            .ToHashSet(StringComparer.Ordinal);
+        if (movementEndedCopy.Any(value => !ownElementIds.Contains(value)))
+        {
+            throw new ArgumentException(
+                "Movement-ended elements must belong to the observation audience.",
+                nameof(movementEndedElementIds));
+        }
+
+        if (decisionState is CampaignObservationReactingDecisionState
+            && (ownElementCopy.Length != 0 || movementEndedCopy.Length != 0))
+        {
+            throw new ArgumentException(
+                "A reacting observation cannot contain identity-bearing owner rows.",
+                nameof(decisionState));
+        }
 
         var knownLocations = locationCopy.Select(value => value.LocationId)
             .ToHashSet(StringComparer.Ordinal);
@@ -280,10 +356,27 @@ internal sealed record CampaignObservationV6
             || (decisionState is CampaignObservationReactingDecisionState reacting
                 && (!knownLocations.Contains(reacting.ApparentTrigger.OriginLocationId)
                     || !knownLocations.Contains(
-                        reacting.ApparentTrigger.DestinationLocationId))))
+                        reacting.ApparentTrigger.DestinationLocationId)
+                    || reacting.OwnOpportunities.Any(value =>
+                        value.MoveOptions.Any(option =>
+                            !knownLocations.Contains(option.OriginLocationId)
+                            || !knownLocations.Contains(option.DestinationLocationId))))))
         {
             throw new ArgumentException(
                 "Every successor observation topology reference must name a published location.");
+        }
+
+        if (decisionState is CampaignObservationReactingDecisionState reactingDecision
+            && HasIncoherentReactionMoveOption(
+                reactingDecision,
+                locationCopy,
+                edgeCopy,
+                apparentPresenceCopy,
+                controlledCopy))
+        {
+            throw new ArgumentException(
+                "A reacting move option must agree with the published topology and visible blocking facts.",
+                nameof(decisionState));
         }
 
         ContractVersion = contractVersion;
@@ -305,6 +398,8 @@ internal sealed record CampaignObservationV6
         ApparentOpposingPresences = Array.AsReadOnly(apparentPresenceCopy
             .OrderBy(value => value.RepresentationId, StringComparer.Ordinal).ToArray());
         ApparentEnemyControlledLocationIds = Array.AsReadOnly(controlledCopy
+            .Order(StringComparer.Ordinal).ToArray());
+        MovementEndedElementIds = Array.AsReadOnly(movementEndedCopy
             .Order(StringComparer.Ordinal).ToArray());
         DecisionState = decisionState;
     }
@@ -337,6 +432,8 @@ internal sealed record CampaignObservationV6
 
     public IReadOnlyList<string> ApparentEnemyControlledLocationIds { get; }
 
+    public IReadOnlyList<string> MovementEndedElementIds { get; }
+
     public CampaignObservationDecisionState DecisionState { get; }
 
     public bool Equals(CampaignObservationV6? other) => ReferenceEquals(this, other)
@@ -356,6 +453,7 @@ internal sealed record CampaignObservationV6
             && ApparentOpposingPresences.SequenceEqual(other.ApparentOpposingPresences)
             && ApparentEnemyControlledLocationIds.SequenceEqual(
                 other.ApparentEnemyControlledLocationIds)
+            && MovementEndedElementIds.SequenceEqual(other.MovementEndedElementIds)
             && DecisionState == other.DecisionState);
 
     public override int GetHashCode()
@@ -375,6 +473,7 @@ internal sealed record CampaignObservationV6
         AddValues(ref hash, OwnElements);
         AddValues(ref hash, ApparentOpposingPresences);
         AddValues(ref hash, ApparentEnemyControlledLocationIds);
+        AddValues(ref hash, MovementEndedElementIds);
         hash.Add(DecisionState);
         return hash.ToHashCode();
     }
@@ -388,6 +487,155 @@ internal sealed record CampaignObservationV6
                 "Successor observation collection identities must be unique.",
                 parameterName);
         }
+    }
+
+    private static void EnsureDecisionAudienceMatchesPosition(
+        LandSide observer,
+        CampaignObservationPosition position,
+        CampaignObservationDecisionState decisionState)
+    {
+        var coherent = decisionState switch
+        {
+            CampaignObservationPhasingWaitingDecisionState =>
+                position.ActiveSide == observer,
+            CampaignObservationReactingDecisionState =>
+                position.ActiveSide is not null && position.ActiveSide != observer,
+            _ => true,
+        };
+        if (!coherent)
+        {
+            throw new ArgumentException(
+                "The successor decision state must agree with the observation audience and active phasing side.",
+                nameof(decisionState));
+        }
+    }
+
+    private static bool HasIncoherentReactionMoveOption(
+        CampaignObservationReactingDecisionState reacting,
+        IReadOnlyList<CampaignObservationLocation> locations,
+        IReadOnlyList<CampaignObservationEdge> edges,
+        IReadOnlyList<ObservedApparentPresence> apparentOpposingPresences,
+        IReadOnlyList<string> controlledLocationIds)
+    {
+        var terrainByLocation = locations.ToDictionary(
+            value => value.LocationId,
+            value => value.TerrainId,
+            StringComparer.Ordinal);
+        var blocked = apparentOpposingPresences.Select(value => value.CurrentLocationId)
+            .Concat(controlledLocationIds)
+            .ToHashSet(StringComparer.Ordinal);
+        foreach (var opportunity in reacting.OwnOpportunities)
+        {
+            if (opportunity.MoveOptions.Select(value => value.OriginLocationId)
+                .Distinct(StringComparer.Ordinal).Skip(1).Any())
+            {
+                return true;
+            }
+
+            foreach (var option in opportunity.MoveOptions)
+            {
+                var edge = edges.SingleOrDefault(value =>
+                    (string.Equals(value.FirstLocationId,
+                        option.OriginLocationId, StringComparison.Ordinal)
+                        && string.Equals(value.SecondLocationId,
+                            option.DestinationLocationId, StringComparison.Ordinal))
+                    || (string.Equals(value.SecondLocationId,
+                        option.OriginLocationId, StringComparison.Ordinal)
+                        && string.Equals(value.FirstLocationId,
+                            option.DestinationLocationId, StringComparison.Ordinal)));
+                if (blocked.Contains(option.OriginLocationId)
+                    || blocked.Contains(option.DestinationLocationId)
+                    || !string.Equals(
+                        terrainByLocation[option.DestinationLocationId],
+                        option.CostBreakdown.DestinationTerrainId,
+                        StringComparison.Ordinal)
+                    || edge is null
+                    || !CostMatchesPublishedTraversal(option, edge))
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private static bool CostMatchesPublishedTraversal(
+        ObservedReactionMoveOption option,
+        CampaignObservationEdge edge) => Cna1979Movement.Mobility.Any(mobility =>
+            CostMatchesPublishedTraversal(option, edge, mobility.MobilityId));
+
+    private static bool CostMatchesPublishedTraversal(
+        ObservedReactionMoveOption option,
+        CampaignObservationEdge edge,
+        string mobilityId)
+    {
+        var cost = option.CostBreakdown;
+        var terrain = Cna1979Movement.LookupTerrain(
+            cost.DestinationTerrainId,
+            mobilityId);
+        if (!terrain.IsSupported || terrain.Value.Cost != cost.DestinationTerrainCost)
+        {
+            return false;
+        }
+
+        MovementActionRouteAdjustment? expectedRoute = null;
+        var expectedHexsides = new List<MovementActionHexsideCost>();
+        foreach (var feature in edge.Features)
+        {
+            var route = Cna1979Movement.LookupRoute(feature.FeatureId, mobilityId);
+            if (route.IsSupported)
+            {
+                if (feature.DirectionFromLocationId is not null || expectedRoute is not null)
+                {
+                    return false;
+                }
+
+                expectedRoute = new MovementActionRouteAdjustment(
+                    feature.FeatureId,
+                    route.Value.CostKind,
+                    route.Value.Amount);
+                continue;
+            }
+
+            var direction = feature.DirectionFromLocationId switch
+            {
+                null => MovementHexsideDirection.Either,
+                var from when string.Equals(
+                    from,
+                    option.OriginLocationId,
+                    StringComparison.Ordinal) => MovementHexsideDirection.Up,
+                var from when string.Equals(
+                    from,
+                    option.DestinationLocationId,
+                    StringComparison.Ordinal) => MovementHexsideDirection.Down,
+                _ => (MovementHexsideDirection?)null,
+            };
+            if (direction is null)
+            {
+                return false;
+            }
+
+            var hexside = Cna1979Movement.LookupHexside(
+                feature.FeatureId,
+                direction.Value,
+                mobilityId);
+            if (!hexside.IsSupported)
+            {
+                return false;
+            }
+
+            expectedHexsides.Add(new MovementActionHexsideCost(
+                feature.FeatureId,
+                direction.Value,
+                hexside.Value.AddedCost));
+        }
+
+        return expectedRoute == cost.RouteAdjustment
+            && expectedHexsides
+                .OrderBy(value => value.HexsideId, StringComparer.Ordinal)
+                .ThenBy(value => value.Direction)
+                .SequenceEqual(cost.CrossedHexsideCosts);
     }
 
     private static void AddValues<T>(ref HashCode hash, IEnumerable<T> values)

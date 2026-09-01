@@ -204,7 +204,9 @@ public static class CampaignObservationSerializer
                 "baseCapabilityPointAllowance",
                 element.BaseCapabilityPointAllowance);
             writer.WriteString("currentLocationId", element.CurrentLocationId);
-            writer.WriteString("reserveStatus", FormatReserveStatus(element.ReserveStatus));
+            writer.WriteString(
+                "reserveStatus",
+                FormatReserveStatusValue(element.ReserveStatus));
             writer.WriteString("mobilityId", element.MobilityId);
             writer.WriteNumber("ledgerGameTurn", element.LedgerGameTurn);
             writer.WriteNumber("ledgerOperationStage", element.LedgerOperationStage);
@@ -370,7 +372,7 @@ public static class CampaignObservationSerializer
                 element.GetProperty("organizationId").GetString()!,
                 element.GetProperty("baseCapabilityPointAllowance").GetInt32(),
                 element.GetProperty("currentLocationId").GetString()!,
-                ParseReserveStatus(element.GetProperty("reserveStatus").GetString()),
+                ParseReserveStatusValue(element.GetProperty("reserveStatus").GetString()),
                 element.GetProperty("mobilityId").GetString()!,
                 element.GetProperty("ledgerGameTurn").GetInt32(),
                 element.GetProperty("ledgerOperationStage").GetInt32(),
@@ -478,7 +480,7 @@ public static class CampaignObservationSerializer
         _ => throw new JsonException($"Unknown Land side '{side}'."),
     };
 
-    private static string FormatReserveStatus(
+    internal static string FormatReserveStatusValue(
         CampaignObservationReserveStatus status) => status switch
         {
             CampaignObservationReserveStatus.None => "none",
@@ -487,7 +489,7 @@ public static class CampaignObservationSerializer
             _ => throw new ArgumentOutOfRangeException(nameof(status)),
         };
 
-    private static CampaignObservationReserveStatus ParseReserveStatus(string? status) =>
+    internal static CampaignObservationReserveStatus ParseReserveStatusValue(string? status) =>
         status switch
         {
             "none" => CampaignObservationReserveStatus.None,

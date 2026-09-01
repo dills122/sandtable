@@ -768,15 +768,23 @@ Movement membership, exact submission mapping, adjudication, completion to Break
 Determination, replay, and checked Harness adoption are complete through merged `MOV-TASK-010` / PR
 #79. The next authority package is the approved ZOC/Reaction
 [specification](docs/specs/zoc-reaction-v1.md) and
-[technical design](docs/design/zoc-reaction-v1.md). `ZOR-TASK-002A`-`004A` complete the dormant
+[technical design](docs/design/zoc-reaction-v1.md). `ZOR-TASK-002A`-`004C` complete the dormant
 Rules/Content/fixture and Campaign state/replay gates: direct-only World 5/creation 9, Snapshot 10,
 and `ElementMoved` v2 now retain current-TOE provenance, scoped Movement-ended truth, the nullable
 Reaction window, strict canonical readback, and reconstruction-before-projection replay. The
 direct-only Observation 6 successor additionally freezes the new side-safe policy, a canonical
 source-unmapped apparent enemy-controlled-location aggregate, a closed normal/phasing/reacting
-decision state, and a separate redacted projected-history shape. It is proposed architecture until
+decision state, exact owner-visible Movement-ended membership, and a separate redacted projected-
+history shape. Reacting output now publishes closed move-option/cost capabilities instead of raw
+element Movement/ledger/stacking fingerprints; semantic admission rejects identity-bearing owner
+rows, forged capability/state opportunity handles, edge-incoherent route/hexside costs, and
+observer/active-side decision relabeling. The versioned disclosure manifest plus mandatory boundary
+gate registers the exact outward
+surface. The dormant action seam adds topology-local ordinary Movement and Reaction candidate
+membership, strict current readback, canonical identities, and unpublished typed mappings. It is
+proposed architecture until
 activation: Ruleset 7, Content schema 4, World 4, Snapshot 9, CampaignCreated 8, `ElementMoved` 1,
-and Observation 5 remain active. `ZOR-TASK-004B` is next.
+and Observation 5 remain active. `ZOR-TASK-005` is next.
 The completed owner-approved engine package is the Movement Foundation
 [research](docs/research/movement-foundation-spike.md),
 [specification](docs/specs/movement-foundation-v1.md), and
@@ -831,9 +839,10 @@ evidence, not an implemented combat contract. Current proposals use trusted-Umpi
 the same pre-state for simultaneous combat, and structural sequence positions plus cycle identity;
 none is implemented or approved yet.
 All five `CONTACT-001` rulings and the governing specification/design package are approved.
-`ZOR-TASK-002A`-`004A` implement dormant Rules/Content/fixture, Campaign World/creation/snapshot/
-event-replay, and Observation 6/policy/history seams; `004B` and later slices remain
-dependency-gated.
+`ZOR-TASK-002A`-`004C` implement dormant Rules/Content/fixture, Campaign World/creation/snapshot/
+event-replay, Observation 6/policy/history, topology-local action/readback/mapping seams, and the
+user-space declassification manifest/transcript gate; `005`
+and later slices remain dependency-gated.
 The implemented paired comparison does not block that engine work.
 
 [1]: https://learn.microsoft.com/en-us/dotnet/orleans/grains/external-tasks-and-grains "External tasks and grains - .NET | Microsoft Learn"

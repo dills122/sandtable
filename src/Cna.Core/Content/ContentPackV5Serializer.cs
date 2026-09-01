@@ -61,7 +61,15 @@ public static class ContentPackV5Serializer
                     CommentHandling = JsonCommentHandling.Disallow,
                     MaxDepth = 64,
                 });
-            return ContentPackV5ParseResult.Success(ParseDefinition(document.RootElement));
+            var definition = ParseDefinition(document.RootElement);
+            if (!utf8Json.SequenceEqual(SerializeCanonical(definition)))
+            {
+                return ContentPackV5ParseResult.Failure(
+                    "content.noncanonical-json",
+                    "Content v5 input must be byte-identical canonical JSON.");
+            }
+
+            return ContentPackV5ParseResult.Success(definition);
         }
         catch (ContentPackV5ParseException exception)
         {

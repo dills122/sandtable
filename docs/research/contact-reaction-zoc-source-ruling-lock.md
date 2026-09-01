@@ -413,4 +413,5 @@ Contact/Engaged into Sprint 4.
 
 No unresolved source-ruling choice blocks implementation. The non-contact Movement vertical is
 complete, the governing ZOC/Reaction package is approved, dormant implementation is complete
-through `ZOR-TASK-004A`, and `004B` is the next bounded production slice.
+through the user-space declassification checkpoint `ZOR-TASK-004C`, and `005` is the next bounded
+production slice.

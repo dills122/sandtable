@@ -38,10 +38,13 @@ the pre-alpha roadmap carry repository-wide rationale and delivery state.
   continuity seam is implemented through Task 004B and projected side-safely by Task 005.
 - ZOC and Reaction: approved [specification](specs/zoc-reaction-v1.md),
   [technical design](design/zoc-reaction-v1.md), and
-  [research packet](research/contact-reaction-zoc-spike.md). Movement and Breakdown continuity
-  prerequisites are complete; `ZOR-TASK-002A`-`004A` implement dormant Rules/Content/fixture,
+  [research packet](research/contact-reaction-zoc-spike.md), with the accepted
+  [user-space boundary decision](research/user-space-declassification-boundary-enforcement.md) and
+  [disclosure manifest](specs/user-space-disclosure-manifest.v1.json). Movement and Breakdown continuity
+  prerequisites are complete; `ZOR-TASK-002A`-`004C` implement dormant Rules/Content/fixture,
   Campaign World/creation/Snapshot/event-replay, and side-safe Observation 6/policy/history seams,
-  and `ZOR-TASK-004B` is the next
+  plus topology-local action/readback/mapping and declassification-boundary contracts;
+  `ZOR-TASK-005` is the next
   dependency-ordered slice.
 - Combat: [source inventory](research/combat-cycle-source-inventory.md) and completed
   [rules/result-surface spike](research/combat-rules-result-surface-spike.md). Research is active;
