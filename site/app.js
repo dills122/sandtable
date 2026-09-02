@@ -14,15 +14,20 @@ function visibleCommands() {
 
 function setActive(index) {
   const commands = visibleCommands();
+  commandLinks.forEach((link) => link.classList.remove("is-active"));
+  commandLinks.forEach((link) => link.setAttribute("aria-selected", "false"));
 
   if (commands.length === 0) {
     activeIndex = 0;
+    commandInput.removeAttribute("aria-activedescendant");
     return;
   }
 
   activeIndex = (index + commands.length) % commands.length;
-  commandLinks.forEach((link) => link.classList.remove("is-active"));
-  commands[activeIndex].classList.add("is-active");
+  const activeCommand = commands[activeIndex];
+  activeCommand.classList.add("is-active");
+  activeCommand.setAttribute("aria-selected", "true");
+  commandInput.setAttribute("aria-activedescendant", activeCommand.id);
 }
 
 function filterCommands() {
@@ -44,6 +49,8 @@ function openCommands() {
     commandDialog.showModal();
   }
 
+  commandButton.setAttribute("aria-expanded", "true");
+  commandInput.setAttribute("aria-expanded", "true");
   commandInput.value = "";
   filterCommands();
   commandInput.focus({ preventScroll: true });
@@ -104,6 +111,8 @@ commandDialog.addEventListener("click", (event) => {
 });
 
 commandDialog.addEventListener("close", () => {
+  commandButton.setAttribute("aria-expanded", "false");
+  commandInput.setAttribute("aria-expanded", "false");
   commandButton.focus({ preventScroll: true });
 });
 

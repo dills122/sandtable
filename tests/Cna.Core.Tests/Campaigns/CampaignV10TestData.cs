@@ -17,9 +17,10 @@ internal sealed record CampaignV10Fixture(
 internal static class CampaignV10TestData
 {
     public static CampaignV10Fixture Create(
-        string reactorElementId = ZocReactionContentTestData.SecondElementId)
+        string reactorElementId = ZocReactionContentTestData.SecondElementId,
+        bool includeReactionExit = false)
     {
-        var artifact = CreateMixedSideArtifact(reactorElementId);
+        var artifact = CreateMixedSideArtifact(reactorElementId, includeReactionExit);
         var scenario = artifact.Definition.LegacyDefinition.Scenarios.Single();
         var setup = CreateSetup(artifact, scenario);
         var created = CampaignCreationV9Factory.Create(
@@ -240,7 +241,9 @@ internal static class CampaignV10TestData
             template.Sources));
     }
 
-    private static ContentPackV5Artifact CreateMixedSideArtifact(string reactorElementId)
+    private static ContentPackV5Artifact CreateMixedSideArtifact(
+        string reactorElementId,
+        bool includeReactionExit)
     {
         var definition = ZocReactionContentTestData.CreatePositiveFixture();
         if (!string.Equals(
@@ -271,6 +274,23 @@ internal static class CampaignV10TestData
                     element.Origin,
                     element.BreakdownVehicleCohort)
                 : element).ToArray();
+        ContentHex[] locations = includeReactionExit
+            ? [.. legacy.Locations, new ContentHex(
+                "center",
+                "land.terrain.clear",
+                null,
+                ContentTestData.Origin("content.hex.center"))]
+            : [.. legacy.Locations];
+        ContentHexEdge[] edges = includeReactionExit
+            ? [.. legacy.Edges, new ContentHexEdge(
+                "west",
+                "center",
+                [new ContentEdgeFeature(
+                    "land.edge.road",
+                    null,
+                    ContentTestData.Origin("content.edge.reaction-exit-road"))],
+                ContentTestData.Origin("content.edge.reaction-exit"))]
+            : [.. legacy.Edges];
         var changedLegacy = new ContentPackDefinition(
             legacy.SchemaVersion,
             legacy.FormatId,
@@ -278,9 +298,9 @@ internal static class CampaignV10TestData
             legacy.RulesetId,
             legacy.Capabilities,
             legacy.SourceIndex,
-            legacy.Locations,
+            locations,
             legacy.WeatherAreaAssignments,
-            legacy.Edges,
+            edges,
             [.. legacy.Formations, commonwealthFormation],
             elements,
             legacy.Scenarios);

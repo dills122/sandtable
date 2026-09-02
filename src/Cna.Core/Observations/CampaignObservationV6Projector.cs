@@ -227,6 +227,7 @@ internal static class CampaignObservationV6Projector
                     moveOptions,
                     window.ActiveOpportunityId == value.OpportunityId);
             })
+            .Where(value => value.IsActive || value.MoveOptions.Count > 0)
             .ToArray();
         var aliases = CampaignObservationV6DisclosureIdentity.CreateAliases(
             publicWindowId,

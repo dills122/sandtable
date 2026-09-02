@@ -91,12 +91,47 @@ public sealed class CampaignObservationV6ActionDerivationTests
     {
         var baseline = DerivePlayer(ProjectReacting([]));
         var remote = DerivePlayer(WithRemoteControl(ProjectReacting([])));
-        var controlled = DerivePlayer(ProjectReacting(["east"]));
+        var controlled = DerivePlayer(ProjectReacting(["center"]));
 
         Assert.Equal(SerializeCandidateVector(baseline), SerializeCandidateVector(remote));
         Assert.DoesNotContain(
             controlled.Candidates.OfType<MoveReactingElementAction>(),
-            move => move.DestinationLocationId == "east");
+            move => move.DestinationLocationId == "center");
+    }
+
+    [Fact]
+    public void ReactionMoveOptionsRejectEveryCurrentlyIneligibleElementState()
+    {
+        var observation = ProjectNormal([]);
+        var element = Assert.Single(observation.OwnElements);
+        var stacking = Cna1979Movement.LookupStackingValue(element.OrganizationId);
+        Assert.True(stacking.IsSupported);
+        var ownStacking = new Dictionary<string, int>(StringComparer.Ordinal)
+        {
+            [element.CurrentLocationId] = stacking.Value.StackingValue,
+        };
+
+        Assert.NotEmpty(Options(element));
+        Assert.Empty(Options(CopyElement(
+            element,
+            reserveStatus: CampaignObservationReserveStatus.ReserveI)));
+        Assert.Empty(Options(CopyElement(element, cohesionLevel: -26)));
+        Assert.Empty(Options(CopyElement(
+            element,
+            ledgerGameTurn: checked(element.LedgerGameTurn + 1))));
+        Assert.Empty(Options(CopyElement(
+            element,
+            ledgerOperationStage: checked(element.LedgerOperationStage + 1))));
+
+        IReadOnlyList<ObservedReactionMoveOption> Options(ObservedOwnElement candidate) =>
+            CampaignObservationV6ActionDerivation.DeriveReactionMoveOptions(
+                observation.Position,
+                observation.Locations,
+                observation.Edges,
+                [],
+                [],
+                candidate,
+                ownStacking);
     }
 
     [Fact]
@@ -107,26 +142,27 @@ public sealed class CampaignObservationV6ActionDerivationTests
             baseline.DecisionState);
         Assert.Contains(
             DerivePlayer(baseline).Candidates.OfType<MoveReactingElementAction>(),
-            move => move.DestinationLocationId == "east");
+            move => move.DestinationLocationId == "center");
 
         Assert.Single(baselineState.OwnOpportunities);
+        var emptyOpportunity = new ObservedReactionOpportunity(
+            CampaignObservationV6DisclosureIdentity.CreateOpportunity(
+                baselineState.WindowId,
+                baseline.StateVersion,
+                CampaignObservationV6DisclosureIdentity.CreateCapabilityKey([])),
+            []);
         var withoutOptions = Copy(
             baseline,
             decisionState: new CampaignObservationReactingDecisionState(
                 baselineState.WindowId,
                 baselineState.ApparentTrigger,
-                [new ObservedReactionOpportunity(
-                    CampaignObservationV6DisclosureIdentity.CreateOpportunity(
-                        baselineState.WindowId,
-                        baseline.StateVersion,
-                        CampaignObservationV6DisclosureIdentity.CreateCapabilityKey([])),
-                    [])],
-                baselineState.ActiveParticipant));
+                [emptyOpportunity],
+                new ObservedReactionParticipant(emptyOpportunity.OpportunityId)));
 
         Assert.Empty(withoutOptions.OwnElements);
-        Assert.DoesNotContain(
-            DerivePlayer(withoutOptions).Candidates.OfType<MoveReactingElementAction>(),
-            move => move.DestinationLocationId == "east");
+        Assert.Empty(DerivePlayer(withoutOptions).Candidates.OfType<MoveReactingElementAction>());
+        Assert.Single(
+            DerivePlayer(withoutOptions).Candidates.OfType<CompleteReactionParticipantAction>());
     }
 
     [Fact]
@@ -151,8 +187,8 @@ public sealed class CampaignObservationV6ActionDerivationTests
                 StringComparison.Ordinal))));
         Assert.Throws<JsonException>(() => CampaignObservationV6LegalActionSerializer
             .DeserializeCanonical(Encoding.UTF8.GetBytes(json.Replace(
-                "\"destinationLocationId\":\"east\"",
                 "\"destinationLocationId\":\"center\"",
+                "\"destinationLocationId\":\"east\"",
                 StringComparison.Ordinal))));
 
         var move = Assert.Single(set.Candidates.OfType<MoveReactingElementAction>());
@@ -313,13 +349,7 @@ public sealed class CampaignObservationV6ActionDerivationTests
 
     private static CampaignObservationV6 ProjectReacting(IReadOnlyList<string> controlled)
     {
-        var fixture = CampaignV10TestData.Create();
-        var before = CampaignObservationV6Projector.Project(
-            fixture.MovementSnapshot,
-            fixture.Artifact,
-            fixture.Scenario,
-            LandSide.Commonwealth,
-            new CampaignObservationV6AuthorityFacts([], []));
+        var fixture = CampaignV10TestData.Create(includeReactionExit: true);
         var snapshot = CampaignV10Projector.ApplyMovement(
             fixture.MovementSnapshot,
             fixture.TriggeringMove,
@@ -334,35 +364,16 @@ public sealed class CampaignObservationV6ActionDerivationTests
             new CampaignObservationV6AuthorityFacts(controlled, []));
         var state = Assert.IsType<CampaignObservationReactingDecisionState>(
             projected.DecisionState);
-        Assert.Single(state.OwnOpportunities);
-        var element = Assert.Single(before.OwnElements);
-        var stacking = Cna1979Movement.LookupStackingValue(element.OrganizationId);
-        Assert.True(stacking.IsSupported);
-        var options = CampaignObservationV6ActionDerivation.DeriveReactionMoveOptions(
-            projected.Position,
-            projected.Locations,
-            projected.Edges,
-            [],
-            controlled,
-            element,
-            new Dictionary<string, int>(StringComparer.Ordinal)
-            {
-                [element.CurrentLocationId] = stacking.Value.StackingValue,
-            });
-        var decision = new CampaignObservationReactingDecisionState(
-            state.WindowId,
-            state.ApparentTrigger,
-            [new ObservedReactionOpportunity(
-                CampaignObservationV6DisclosureIdentity.CreateOpportunity(
-                    state.WindowId,
-                    projected.StateVersion,
-                    CampaignObservationV6DisclosureIdentity.CreateCapabilityKey(options)),
-                options)],
-            state.ActiveParticipant);
-        return Copy(
-            projected,
-            decisionState: decision,
-            apparentOpposingPresences: []);
+        if (controlled.Contains("center", StringComparer.Ordinal))
+        {
+            Assert.Empty(state.OwnOpportunities);
+        }
+        else
+        {
+            Assert.Single(state.OwnOpportunities);
+        }
+
+        return projected;
     }
 
     private static CampaignActionSubmission Submission(
@@ -408,4 +419,23 @@ public sealed class CampaignObservationV6ActionDerivationTests
             "remote",
             "land.terrain.clear")],
         controlledLocationIds: ["remote"]);
+
+    private static ObservedOwnElement CopyElement(
+        ObservedOwnElement source,
+        CampaignObservationReserveStatus? reserveStatus = null,
+        int? cohesionLevel = null,
+        int? ledgerGameTurn = null,
+        int? ledgerOperationStage = null) => new(
+            source.ElementId,
+            source.ParentFormationId,
+            source.OrganizationId,
+            source.BaseCapabilityPointAllowance,
+            source.CurrentLocationId,
+            reserveStatus ?? source.ReserveStatus,
+        source.MobilityId,
+        ledgerGameTurn ?? source.LedgerGameTurn,
+        ledgerOperationStage ?? source.LedgerOperationStage,
+            source.CapabilityPointsExpended,
+            cohesionLevel ?? source.CohesionLevel,
+            source.VehicleBreakdownRisk);
 }

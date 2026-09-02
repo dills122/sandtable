@@ -520,7 +520,7 @@ then stop at Movement with a replay-identical Chronicle. Task 3.3 independently 
 Organization; the implemented Task 3.4 explicit-empty checkpoint independently stops at Reserve;
 Task 3.5 reaches Movement. Sprint 4 is active: Movement Foundation is complete through merged
 `MOV-TASK-010` / PR #79, and approved dormant ZOC/Reaction implementation is complete through
-`ZOR-TASK-004A`.
+`ZOR-TASK-004C`.
 
 ## Sprint 4: Movement, Breakdown, and Reaction boundary
 

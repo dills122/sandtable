@@ -103,47 +103,94 @@ public sealed class CampaignObservationV6ContractTests
             phasing.DecisionState);
         var reactingState = Assert.IsType<CampaignObservationReactingDecisionState>(
             reacting.DecisionState);
-        var opportunity = Assert.Single(reactingState.OwnOpportunities);
-        var authorityOpportunity = Assert.Single(snapshot.ReactionWindow!.FrozenOpportunities);
+        var authorityWindow = snapshot.ReactionWindow!;
+        Assert.NotNull(authorityWindow);
         var phasingJson = Encoding.UTF8.GetString(
             CampaignObservationV6Serializer.SerializeCanonical(phasing));
         var reactingJson = Encoding.UTF8.GetString(
             CampaignObservationV6Serializer.SerializeCanonical(reacting));
 
         Assert.Equal(phasingState.WindowId, reactingState.WindowId);
-        Assert.NotEqual(snapshot.ReactionWindow.WindowId.Value, reactingState.WindowId);
+        Assert.NotEqual(authorityWindow.WindowId.Value, reactingState.WindowId);
         Assert.Equal(
-            snapshot.ReactionWindow.ApparentTrigger.ApparentRepresentationId,
+            authorityWindow.ApparentTrigger.ApparentRepresentationId,
             reactingState.ApparentTrigger.ApparentRepresentationId);
         Assert.Equal(
-            snapshot.ReactionWindow.ApparentTrigger.OriginLocationId,
+            authorityWindow.ApparentTrigger.OriginLocationId,
             reactingState.ApparentTrigger.OriginLocationId);
         Assert.Equal(
-            snapshot.ReactionWindow.ApparentTrigger.DestinationLocationId,
+            authorityWindow.ApparentTrigger.DestinationLocationId,
             reactingState.ApparentTrigger.DestinationLocationId);
-        Assert.NotEqual(authorityOpportunity.OpportunityId.Value, opportunity.OpportunityId);
         Assert.Empty(reacting.OwnElements);
         Assert.NotEmpty(phasing.OwnElements);
-        Assert.Empty(opportunity.MoveOptions);
+        Assert.Empty(reactingState.OwnOpportunities);
         using var reactingDocument = JsonDocument.Parse(reactingJson);
-        var opportunityJson = reactingDocument.RootElement
+        var opportunitiesJson = reactingDocument.RootElement
             .GetProperty("decisionState")
-            .GetProperty("ownOpportunities")[0];
-        Assert.False(opportunityJson.TryGetProperty("elementId", out _));
-        Assert.False(opportunityJson.TryGetProperty("representationId", out _));
-        Assert.True(opportunityJson.TryGetProperty("moveOptions", out _));
-        Assert.False(opportunityJson.TryGetProperty("movement", out _));
+            .GetProperty("ownOpportunities");
+        Assert.Equal(0, opportunitiesJson.GetArrayLength());
         Assert.Null(reactingState.ActiveParticipant);
         Assert.DoesNotContain("frozenOpportunities", phasingJson, StringComparison.Ordinal);
         Assert.DoesNotContain("opportunityId", phasingJson, StringComparison.Ordinal);
         Assert.DoesNotContain(
-            snapshot.ReactionWindow.ApparentTrigger.ApparentRepresentationId,
+            authorityWindow.ApparentTrigger.ApparentRepresentationId,
             phasingJson,
             StringComparison.Ordinal);
         Assert.DoesNotContain("boundElementIds", reactingJson, StringComparison.Ordinal);
         Assert.DoesNotContain("adjacencyEvidence", reactingJson, StringComparison.Ordinal);
         Assert.DoesNotContain("sources", reactingJson, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("reason", reactingJson, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void InactiveZeroCapabilityOpportunityProjectsAsNoEligibleMembership()
+    {
+        var fixture = CampaignV10TestData.Create();
+        var observation = CampaignObservationV6Projector.Project(
+            ApplyTrigger(fixture, fixture.TriggeringMove),
+            fixture.Artifact,
+            fixture.Scenario,
+            LandSide.Commonwealth,
+            Facts(["west"]));
+        var state = Assert.IsType<CampaignObservationReactingDecisionState>(
+            observation.DecisionState);
+
+        Assert.Empty(state.OwnOpportunities);
+        Assert.Null(state.ActiveParticipant);
+        Assert.Empty(CampaignObservationV6ActionDerivation.DerivePlayer(observation).Candidates);
+        var system = CampaignObservationV6ActionDerivation.DeriveSystem(observation);
+        Assert.Single(system.Candidates.OfType<CloseReactionWindowNoEligibleAction>());
+        Assert.Empty(system.Candidates.OfType<CloseReactionWindowUnavailableAction>());
+        Assert.Empty(system.Candidates.OfType<CloseReactionWindowTimeoutAction>());
+    }
+
+    [Fact]
+    public void InactiveOpportunityWithCurrentMoveOptionsRemainsProjectedAndActionable()
+    {
+        var fixture = CampaignV10TestData.Create(includeReactionExit: true);
+        var observation = CampaignObservationV6Projector.Project(
+            ApplyTrigger(fixture, fixture.TriggeringMove),
+            fixture.Artifact,
+            fixture.Scenario,
+            LandSide.Commonwealth,
+            Facts([]));
+        var state = Assert.IsType<CampaignObservationReactingDecisionState>(
+            observation.DecisionState);
+
+        Assert.Null(state.ActiveParticipant);
+        var opportunity = Assert.Single(state.OwnOpportunities);
+        Assert.Contains(
+            opportunity.MoveOptions,
+            option => option.OriginLocationId == "west"
+                && option.DestinationLocationId == "center");
+        var player = CampaignObservationV6ActionDerivation.DerivePlayer(observation);
+        Assert.Contains(
+            player.Candidates.OfType<MoveReactingElementAction>(),
+            move => move.OpportunityId == opportunity.OpportunityId
+                && move.OriginLocationId == "west"
+                && move.DestinationLocationId == "center");
+        Assert.Single(player.Candidates.OfType<DeclineReactionWindowAction>());
+        Assert.Empty(player.Candidates.OfType<CompleteReactionParticipantAction>());
     }
 
     [Fact]
@@ -352,12 +399,7 @@ public sealed class CampaignObservationV6ContractTests
             fixture.Scenario,
             LandSide.Commonwealth,
             Facts(["west"]));
-        var after = CampaignObservationV6Projector.Project(
-            ApplyTrigger(fixture, fixture.TriggeringMove),
-            fixture.Artifact,
-            fixture.Scenario,
-            LandSide.Commonwealth,
-            Facts(["west"]));
+        var after = ProjectReactingWithMoveOptions(fixture);
         var beforeJson = Encoding.UTF8.GetString(
             CampaignObservationV6Serializer.SerializeCanonical(before));
         var afterJson = Encoding.UTF8.GetString(
@@ -448,7 +490,7 @@ public sealed class CampaignObservationV6ContractTests
             Facts([]));
         var state = Assert.IsType<CampaignObservationReactingDecisionState>(
             observation.DecisionState);
-        var opportunity = Assert.Single(state.OwnOpportunities);
+        Assert.Empty(state.OwnOpportunities);
         var destination = observation.Locations.Single(value => value.LocationId == "east");
         var exactOne = new CapabilityPointAmount(1, 1);
         var coherentCost = new MovementActionCostBreakdown(
@@ -461,9 +503,7 @@ public sealed class CampaignObservationV6ContractTests
         var occupiedDecision = new CampaignObservationReactingDecisionState(
             state.WindowId,
             state.ApparentTrigger,
-            [new ObservedReactionOpportunity(
-                opportunity.OpportunityId,
-                [occupiedOption])],
+            [BoundOpportunity(state.WindowId, observation.StateVersion, [occupiedOption])],
             null);
 
         Assert.Throws<ArgumentException>(() => CopyWithDecision(
@@ -479,8 +519,9 @@ public sealed class CampaignObservationV6ContractTests
         var mismatchedDecision = new CampaignObservationReactingDecisionState(
             state.WindowId,
             state.ApparentTrigger,
-            [new ObservedReactionOpportunity(
-                opportunity.OpportunityId,
+            [BoundOpportunity(
+                state.WindowId,
+                observation.StateVersion,
                 [new ObservedReactionMoveOption("west", "east", mismatchedCost)])],
             null);
         Assert.Throws<ArgumentException>(() => CopyWithDecision(
@@ -739,7 +780,7 @@ public sealed class CampaignObservationV6ContractTests
     }
 
     [Fact]
-    public void HiddenOpportunityChangesLeavePhasingBytesIdenticalAndConfineReactingDelta()
+    public void InactiveHiddenOpportunityChangesLeaveBothAudienceBytesIdentical()
     {
         var fixture = CampaignV10TestData.Create();
         var withOpportunity = ApplyTrigger(fixture, fixture.TriggeringMove);
@@ -758,7 +799,7 @@ public sealed class CampaignObservationV6ContractTests
         Assert.Equal(
             CampaignObservationV6Serializer.SerializeCanonical(phasingWith),
             CampaignObservationV6Serializer.SerializeCanonical(phasingWithout));
-        Assert.NotEqual(
+        Assert.Equal(
             CampaignObservationV6Serializer.SerializeCanonical(reactingWith),
             CampaignObservationV6Serializer.SerializeCanonical(reactingWithout));
         Assert.Equal(reactingWith.Locations, reactingWithout.Locations);
@@ -770,7 +811,7 @@ public sealed class CampaignObservationV6ContractTests
         Assert.Equal(
             reactingWith.ApparentEnemyControlledLocationIds,
             reactingWithout.ApparentEnemyControlledLocationIds);
-        Assert.Single(Assert.IsType<CampaignObservationReactingDecisionState>(
+        Assert.Empty(Assert.IsType<CampaignObservationReactingDecisionState>(
             reactingWith.DecisionState).OwnOpportunities);
         Assert.Empty(Assert.IsType<CampaignObservationReactingDecisionState>(
             reactingWithout.DecisionState).OwnOpportunities);
@@ -827,14 +868,22 @@ public sealed class CampaignObservationV6ContractTests
         var state = Assert.IsType<CampaignObservationReactingDecisionState>(
             observation.DecisionState);
 
+        Assert.Empty(idleState.OwnOpportunities);
         Assert.Equal(idleState.WindowId, state.WindowId);
-        Assert.Equal(
-            Assert.Single(idleState.OwnOpportunities).OpportunityId,
-            Assert.Single(state.OwnOpportunities).OpportunityId);
+        var activeOpportunity = Assert.Single(state.OwnOpportunities);
+        Assert.Empty(activeOpportunity.MoveOptions);
         Assert.Equal(
             new ObservedReactionParticipant(
-                state.OwnOpportunities.Single().OpportunityId),
+                activeOpportunity.OpportunityId),
             state.ActiveParticipant);
+        var player = CampaignObservationV6ActionDerivation.DerivePlayer(observation);
+        Assert.Single(player.Candidates.OfType<CompleteReactionParticipantAction>());
+        Assert.Empty(player.Candidates.OfType<MoveReactingElementAction>());
+        Assert.Empty(player.Candidates.OfType<DeclineReactionWindowAction>());
+        var system = CampaignObservationV6ActionDerivation.DeriveSystem(observation);
+        Assert.Single(system.Candidates.OfType<CloseReactionWindowUnavailableAction>());
+        Assert.Single(system.Candidates.OfType<CloseReactionWindowTimeoutAction>());
+        Assert.Empty(system.Candidates.OfType<CloseReactionWindowNoEligibleAction>());
     }
 
     [Fact]
@@ -947,7 +996,7 @@ public sealed class CampaignObservationV6ContractTests
             baselineState.WindowId,
             baselineState.ApparentTrigger,
             [second, first],
-            null);
+            new ObservedReactionParticipant(second.OpportunityId));
         var changed = CopyWithDecision(baseline, ordered);
         var canonical = Encoding.UTF8.GetString(
             CampaignObservationV6Serializer.SerializeCanonical(changed));
@@ -969,9 +1018,25 @@ public sealed class CampaignObservationV6ContractTests
         Assert.Throws<ArgumentException>(() => new CampaignObservationReactingDecisionState(
             baselineState.WindowId,
             baselineState.ApparentTrigger,
+            [second],
+            null));
+        Assert.Throws<ArgumentException>(() => new CampaignObservationReactingDecisionState(
+            baselineState.WindowId,
+            baselineState.ApparentTrigger,
             [first],
             new ObservedReactionParticipant(
                 second.OpportunityId)));
+        Assert.Equal(
+            changed,
+            CampaignObservationV6Serializer.DeserializeCanonical(
+                CampaignObservationV6Serializer.SerializeCanonical(changed)));
+        var activeParticipantJson =
+            $"\"activeParticipant\":{{\"opportunityId\":\"{second.OpportunityId}\"}}";
+        Assert.Contains(activeParticipantJson, canonical, StringComparison.Ordinal);
+        AssertRejects(canonical.Replace(
+            activeParticipantJson,
+            "\"activeParticipant\":null",
+            StringComparison.Ordinal));
         AssertRejects(canonical.Replace(
             canonicalOpportunities,
             $"\"ownOpportunities\":[{orderedJson[1]},{orderedJson[0]}]",

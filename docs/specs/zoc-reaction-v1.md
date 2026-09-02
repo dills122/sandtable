@@ -272,12 +272,13 @@ and matching candidate membership; it must not change the phasing waiting shape.
 
 Implementation must version all authority shapes whose semantics change, use strict canonical
 readers, reserve or reject legacy fields as appropriate, and reject partial legacy/current
-mixtures. Preparatory task slices may add dormant successor artifacts while the complete legacy set
-remains the only active identity set; one coordinated activation commit must switch the entire
-coupled successor set, and Tasks 002A-006C must land through one PR/merge. The expected successors
-are ruleset 8, Land sequence contract/catalog 3, Content schema 5 and canonical format 4, World 5,
-Snapshot 10, Creation event 9, Observation 6, and a new side-safe policy identity. Exact versions
-may change only through explicit approval before the first successor-contract checkpoint.
+mixtures. Preparatory Tasks 002A-006B may merge independently in dependency order while their
+successor artifacts remain dormant and the complete legacy set remains the only active identity
+set. One coordinated 006C activation commit must switch the entire coupled successor set; no
+earlier checkpoint may make a partial successor current. The expected successors are ruleset 8,
+Land sequence contract/catalog 3, Content schema 5 and canonical format 4, World 5, Snapshot 10,
+Creation event 9, Observation 6, and a new side-safe policy identity. Exact versions may change
+only through explicit approval before the first successor-contract checkpoint.
 
 Candidate/action-set envelopes may retain their versions only if their serialized shapes do not
 change and strict closed-kind readers explicitly admit the new kinds. New commands/events begin at
