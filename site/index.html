@@ -43,6 +43,7 @@
             aria-label="Explore project (Command K)"
             aria-haspopup="dialog"
             aria-controls="command-palette"
+            aria-expanded="false"
           >
             <span aria-hidden="true">⌕</span>
             <span class="search-pill__label">Explore project</span>
@@ -374,35 +375,78 @@
           type="search"
           placeholder="Search sections and project links"
           autocomplete="off"
+          role="combobox"
+          aria-autocomplete="list"
+          aria-haspopup="listbox"
+          aria-controls="command-results"
+          aria-expanded="false"
         />
         <form method="dialog">
           <button class="icon-button" type="submit" aria-label="Close project explorer">Esc</button>
         </form>
       </div>
       <p class="command-palette__count" id="command-count" aria-live="polite">6 destinations</p>
-      <nav class="command-palette__results" aria-label="Project destinations">
-        <a href="#play" data-search="game play player loop operation stages commander">
+      <div
+        class="command-palette__results"
+        id="command-results"
+        role="listbox"
+        aria-label="Project destinations"
+      >
+        <a
+          id="command-option-1"
+          role="option"
+          aria-selected="false"
+          href="#play"
+          data-search="game play player loop operation stages commander"
+        >
           <span>How the game will play</span><kbd>1</kbd>
         </a>
-        <a href="#architecture" data-search="architecture umpire intelligence fog contracts">
+        <a
+          id="command-option-2"
+          role="option"
+          aria-selected="false"
+          href="#architecture"
+          data-search="architecture umpire intelligence fog contracts"
+        >
           <span>Authority architecture</span><kbd>2</kbd>
         </a>
-        <a href="#frontier" data-search="status roadmap current pre-alpha next">
+        <a
+          id="command-option-3"
+          role="option"
+          aria-selected="false"
+          href="#frontier"
+          data-search="status roadmap current pre-alpha next"
+        >
           <span>Current frontier</span><kbd>3</kbd>
         </a>
-        <a href="#develop" data-search="developer quick start dotnet just build test">
+        <a
+          id="command-option-4"
+          role="option"
+          aria-selected="false"
+          href="#develop"
+          data-search="developer quick start dotnet just build test"
+        >
           <span>Developer workbench</span><kbd>4</kbd>
         </a>
-        <a href="https://github.com/dills122/sandtable" data-search="github source repository code">
+        <a
+          id="command-option-5"
+          role="option"
+          aria-selected="false"
+          href="https://github.com/dills122/sandtable"
+          data-search="github source repository code"
+        >
           <span>Source repository</span><kbd>↗</kbd>
         </a>
         <a
+          id="command-option-6"
+          role="option"
+          aria-selected="false"
           href="https://github.com/dills122/sandtable/tree/main/docs"
           data-search="documentation research specifications designs roadmap"
         >
           <span>Research and design docs</span><kbd>↗</kbd>
         </a>
-      </nav>
+      </div>
       <div class="command-palette__footer" aria-hidden="true">
         <span><kbd>↑</kbd><kbd>↓</kbd> navigate</span>
         <span><kbd>↵</kbd> open</span>

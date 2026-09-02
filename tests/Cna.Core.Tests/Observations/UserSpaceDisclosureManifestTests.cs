@@ -404,7 +404,7 @@ public sealed class UserSpaceDisclosureManifestTests
             new CampaignObservationV6AuthorityFacts([], []));
         var state = Assert.IsType<CampaignObservationReactingDecisionState>(
             projected.DecisionState);
-        Assert.Single(state.OwnOpportunities);
+        Assert.Empty(state.OwnOpportunities);
         var element = Assert.Single(before.OwnElements);
         var stacking = Cna1979Movement.LookupStackingValue(element.OrganizationId);
         Assert.True(stacking.IsSupported);

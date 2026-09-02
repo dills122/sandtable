@@ -208,6 +208,19 @@ internal sealed record CampaignObservationReactingDecisionState :
                 nameof(activeParticipant));
         }
 
+        if (ordered.Any(value =>
+                value.MoveOptions.Count == 0
+                && (activeParticipant is null
+                    || !string.Equals(
+                        value.OpportunityId,
+                        activeParticipant.OpportunityId,
+                        StringComparison.Ordinal))))
+        {
+            throw new ArgumentException(
+                "Only the active observed Reaction participant may have no current move options.",
+                nameof(ownOpportunities));
+        }
+
         ApparentTrigger = apparentTrigger;
         OwnOpportunities = Array.AsReadOnly(ordered);
         ActiveParticipant = activeParticipant;

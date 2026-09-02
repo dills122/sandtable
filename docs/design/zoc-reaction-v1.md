@@ -344,14 +344,14 @@ Compatibility tests must prove:
 
 ## Implementation graph
 
-The stable parent IDs remain those in the accepted ruling lock. Lettered slices are bounded
-implementation and review checkpoints on one ZOR integration branch, not independently mergeable
-changes to `main`. Tasks 002A-006B may prepare dormant successor artifacts while every active
-admission/readback path remains on the complete legacy identity set. Task 006C performs one
-coordinated activation commit that switches every coupled version and identity together; the whole
-002A-006C train then lands through one PR/merge. No partial Rules, Content, World, Snapshot,
-Creation, sequence, Observation, policy, command, event, or action-kind successor may become active
-on `main`.
+The stable parent IDs remain those in the accepted ruling lock. Lettered slices are bounded,
+dependency-ordered implementation and review checkpoints. A verified checkpoint may merge
+independently to `main` only while its successor artifacts remain dormant and every active
+admission/readback path stays on the complete legacy identity set. That staged delivery rule
+applies to checkpoints 002A-004C; later checkpoints remain separately dependency-gated.
+Task 006C performs one coordinated activation commit that switches every coupled version and
+identity together. No partial Rules, Content, World, Snapshot, Creation, sequence, Observation,
+policy, command, event, or action-kind successor may become active on `main`.
 
 ```text
 ZOR-TASK-001 accepted ruling lock [complete]
@@ -504,21 +504,22 @@ round-trip evidence remains owned by `ZOR-AC-014`.
 | Repository state | Active identity set | Successor visibility | Admission/readback rule |
 | --- | --- | --- | --- |
 | `main` before the ZOR delivery | Complete legacy set only | None | Legacy current identities accepted; successor and mixed identities reject. |
-| Integration checkpoints 002A-006B | Complete legacy set only | Dormant successor types, codecs, fixtures, and direct tests only | Public campaign creation, bundle admission, replay, observations, and submissions remain legacy-only; dormant successor tests cannot flow through an active session. |
+| `main` during dormant checkpoints 002A-006B | Complete legacy set only | Dormant successor types, codecs, fixtures, and direct tests only | Verified checkpoints may merge independently, but public campaign creation, bundle admission, replay, observations, and submissions remain legacy-only; dormant successor tests cannot flow through an active session. |
 | 006C activation commit | Complete successor set only | Public and authoritative | Every coupled identity changes together; legacy-only and every partial legacy/successor matrix reject at creation, admission, readback, replay, and submission. |
-| `main` after the single ZOR PR merges | Complete successor set only | Public and authoritative | Only the canonical successor set is current; no dual-current or downgrade mode exists. |
+| `main` after 006C activation merges | Complete successor set only | Public and authoritative | Only the canonical successor set is current; no dual-current or downgrade mode exists. |
 
-Each checkpoint must build and pass its direct tests, but it is not a separately deployable or
-mergeable compatibility state. The activation commit and final PR gate must exercise the complete
-legacy-only, successor-only, and partial-mixture matrix. If repository or review policy requires
-each lettered slice to merge separately to `main`, implementation must stop for a new owner-approved
-migration design rather than weakening `ZOR-REQ-012`.
+Each dormant checkpoint must build and pass its direct tests before it merges, and it remains a
+non-deployable compatibility state even when retained on `main`. The activation commit and final PR
+gate must exercise the complete legacy-only, successor-only, and partial-mixture matrix. If any
+checkpoint requires a partial successor identity to become active before 006C, implementation must
+stop for a new owner-approved migration design rather than weakening `ZOR-REQ-012`.
 
 ## Parallel work boundary
 
-ZOR production remains serial through 004C on one integration branch and remains a single merge
-train through 006C because identities and shared authority shapes are coupled. The safe parallel
-lane is Breakdown adjudication research/design:
+ZOR production remains serial in dependency order through 006C because identities and shared
+authority shapes are coupled. Verified dormant checkpoints may merge independently under the
+compatibility matrix above, but their shared Core contract work cannot proceed concurrently. The
+safe parallel lane is Breakdown adjudication research/design:
 source-lock the percentage outcome table, action/result/loss vocabulary, RNG evidence, and decision
 packet against the already implemented BP state. It may not modify shared Core contract files or
 claim implementation approval while ZOR contract versions are moving. The Campaign seam was frozen

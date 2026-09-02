@@ -14,11 +14,17 @@
 task. The three-instance limit is exhausted, so no further automatic independent review is permitted;
 the revised package returns to the owner approval gate with final repository evidence.
 
+**Compatibility-policy update (2026-09-01):** The resolution recorded below required all dormant
+checkpoints to land together. Current repository policy instead permits independently merged,
+dependency-ordered dormant checkpoints while the complete legacy identity set remains active. The
+coordinated 006C activation and prohibition on partial-current successor identities are unchanged.
+The current policy is canonical in the specification and design compatibility matrix.
+
 ## Findings and reconciliation
 
 | Finding | Severity | Disposition | Resolution |
 | --- | --- | --- | --- |
-| Clean-cut compatibility conflicted with independently merged version-bump slices | P1 | **Accept** | Lettered tasks are now implementation/review checkpoints on one integration branch, not independent `main` merges. Tasks 002A-006B keep the complete legacy identity set active and prepare dormant successor artifacts; 006C switches the complete coupled set in one activation commit; 002A-006C land through one PR. An explicit compatibility matrix forbids partial-current states. |
+| Clean-cut compatibility conflicted with independently merged version-bump slices | P1 | **Accept** | At this review, lettered tasks were constrained to land together while Tasks 002A-006B kept the complete legacy identity set active and prepared dormant successor artifacts; 006C switched the complete coupled set in one activation commit. The compatibility matrix forbade partial-current states. This delivery constraint was later superseded by the compatibility-policy update above. |
 | Task 006 public gate and `ZOR-REQ-012` trace omitted material activation evidence | P2 | **Accept** | Task 006 now gates `ZOR-AC-001`-`009`, `011`-`013`, and `015`-`017`, with the static and creation/World exceptions called out. `ZOR-REQ-012` now spans Tasks 002A-006C and 007A-007B across every new or activated contract. |
 | Documentation index and retained ruling-lock status were stale | P2 | **Accept** | `docs/README.md` now records Movement Tasks 001-010/PR #79 complete and links the proposed ZOC/Reaction package; the ruling lock now records accepted/synchronized rulings and the owner approval gate. |
 | Ignored planning recovery records lagged the package | P3 | **Accept** | Findings, decisions, review reconciliation, phase state, and final evidence were refreshed in the ignored planning workspace. |
