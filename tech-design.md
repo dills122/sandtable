@@ -886,7 +886,8 @@ continuations, deterministic checks and persistent lots. Owner accepted `BRK-DEC
 are implemented with a passing full gate; independent review is Ready.
 [Task 003 campaign contracts and the certified Truck fixture](docs/research/breakdown-campaign-contracts.md)
 are implemented: dormant Content 6, Setup 6, World 6, Snapshot 11, Created 10 and sequence/catalog 4
-compose a dormant Ruleset 9 manifest. Task 004 shared BP accounting and successor move events follow. The initial certified Truck/
+compose a dormant Ruleset 9 manifest. [Task 004](docs/research/breakdown-move-accounting.md) adds shared
+BP accounting and rederived ordinary/Reaction move events. Task 005 stop/check authority and exact RNG replay follow. The initial certified Truck/
 battalion profile defers public positive ZOC and motorized-infantry losses; original evidence stays
 historical and bounded fixture successors remain implementation obligations. Runtime remains unchanged.
 The implemented paired comparison does not block that engine work.

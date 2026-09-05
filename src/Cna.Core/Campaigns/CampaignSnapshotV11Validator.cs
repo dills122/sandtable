@@ -177,7 +177,8 @@ internal static class CampaignSnapshotV11Validator
             {
                 var facts = artifact.Definition.ElementCombatFacts.ToDictionary(value => value.ElementId, StringComparer.Ordinal);
                 if (!HasSide(window.TriggerAuthority.TriggeringRepresentation, window.PhasingSide, true)
-                    || facts[window.TriggerAuthority.ElementId].CombatClassificationId != Cna1979Combat.CombatUnitClassificationId
+                    || Cna1979Combat.FindClassification(facts[window.TriggerAuthority.ElementId].CombatClassificationId)?.Kind
+                        is not (ZocCombatClassificationKind.CombatUnit or ZocCombatClassificationKind.Headquarters)
                     || window.FrozenOpportunities.Any(value => !HasSide(value.ReactingRepresentation, window.ReactingSide, false)
                         || CampaignElementMovedV2Factory.FindEdge(artifact.Definition.LegacyDefinition,
                             value.AdjacencyEvidence.TriggerLocationId, value.AdjacencyEvidence.CommittedDestinationLocationId) is null

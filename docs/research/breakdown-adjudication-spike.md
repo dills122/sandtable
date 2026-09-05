@@ -1,6 +1,6 @@
 # Breakdown adjudication decision packet
 
-**Status:** Research/design complete; owner accepted BRK-DEC-004–007 on 2026-09-05. [BRK-TASK-001 contract freeze](../specs/breakdown-adjudication-v1.md) complete; production remains unimplemented.
+**Status:** Research/design complete; owner accepted BRK-DEC-004–007 on 2026-09-05. [BRK-TASK-001 contract freeze](../specs/breakdown-adjudication-v1.md) complete; dormant Rules/contracts/move accounting through Task 004 implemented. Public stop/check adjudication remains unimplemented.
 
 **Work item:** `BRK-RSH-002` — next Sprint 4 gate after ZOR-007.
 
@@ -120,7 +120,7 @@ in this packet. No exhaustive repair, towing, capture, transport-capacity or veh
 is claimed.
 
 Decisions `004`–`007` are accepted and [Task 001](../specs/breakdown-adjudication-v1.md) freezes
-successor identities, requirements and acceptance criteria. [Task 002 dormant outcome rules](breakdown-outcome-rules.md) are implemented with a passing full gate; independent review is Ready. [Task 003 campaign contracts and certified Truck fixture](breakdown-campaign-contracts.md) are implemented; Task 004 shared BP accounting follows. A future claim of general Breakdown support additionally needs grouped loss
+successor identities, requirements and acceptance criteria. [Task 002 dormant outcome rules](breakdown-outcome-rules.md) are implemented with a passing full gate; independent review is Ready. [Task 003 campaign contracts and certified Truck fixture](breakdown-campaign-contracts.md) are implemented; [Task 004 shared BP accounting/replay](breakdown-move-accounting.md) is implemented. Task 005 stop/check authority follows. A future claim of general Breakdown support additionally needs grouped loss
 allocation, origin-placement, passenger/cargo consequences and later-domain gates.
 
 

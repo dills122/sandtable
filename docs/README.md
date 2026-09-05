@@ -42,7 +42,8 @@ the pre-alpha roadmap carry repository-wide rationale and delivery state.
   [wire freeze](specs/breakdown-wire-contract-v1.md) and [fixture migration](specs/breakdown-fixture-migration.v1.json).
   Decisions `004`–`007` accepted; Task 001 complete; [Task 002 outcomes](research/breakdown-outcome-rules.md)
   implemented with full gate passing and independent review Ready. [Task 003 campaign contracts](research/breakdown-campaign-contracts.md)
-  and certified Truck fixture implemented. Task 004 next; campaign adjudication unimplemented.
+  and certified Truck fixture implemented. [Task 004 move accounting](research/breakdown-move-accounting.md)
+  implemented; Task 005 stop/check authority next. Public adjudication remains unimplemented.
 - ZOC and Reaction: approved [specification](specs/zoc-reaction-v1.md),
   [technical design](design/zoc-reaction-v1.md), and
   [research packet](research/contact-reaction-zoc-spike.md), with the accepted

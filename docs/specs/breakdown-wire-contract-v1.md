@@ -1,6 +1,6 @@
 # Breakdown v1 wire contract freeze
 
-**Status:** Normative BRK-TASK-001 freeze; dormant Rules schema 2 implemented in Task 002; Task 003 campaign codecs and sequence/catalog 4 implemented. Event/public activation codecs remain pending.
+**Status:** Normative BRK-TASK-001 freeze; dormant Rules schema 2 implemented in Task 002; Task 003 campaign codecs and sequence/catalog 4 implemented. Task 004 move codecs/accounting/replay implemented. Stop/completion/public activation codecs remain pending.
 **Governing behavior:** [Breakdown specification](breakdown-adjudication-v1.md).
 **Baseline:** Every predecessor reference below means repository commit `a047547`, never an evolving
 file of the same name. This is a precise delta specification: inherit predecessor field names,
