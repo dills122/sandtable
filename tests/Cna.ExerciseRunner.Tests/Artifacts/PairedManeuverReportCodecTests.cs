@@ -38,7 +38,7 @@ public sealed class PairedManeuverReportCodecTests
             StringComparison.Ordinal);
         Assert.Contains(PairedManeuverReport.Interpretation, json, StringComparison.Ordinal);
         Assert.Equal(
-            "sha256:577a153450835a1c0273aaae7cea8a4f26ae5c72942c398c1854d51a23a19b6a",
+            "sha256:2dda912120f7f14d5891ff61f6ba9f4bf83f42ffedb836481aa477bb7e301990",
             report.ReportFingerprint);
         Assert.Equal(report.ReportFingerprint, admitted.ReportFingerprint);
     }
@@ -214,11 +214,11 @@ public sealed class PairedManeuverReportCodecTests
         ExerciseControllerPolicy controller) => new(
         ExerciseManifest.CurrentContractVersion,
         exerciseId,
-        "rules-lab.initiative.predetermined",
-        "sha256:48ad98fd232f7c7c50d4f925dd83e3de97f2eb48cc6929a17aa1fb172cdbd394",
-        "rules-lab.content.movement-contact.v1",
-        "sha256:20cf54f25d752253105877c6139d8db86549759f9dbb80fad873686498f26f5f",
-        "movement-contact-lab",
+        "rules-lab.breakdown.truck.v1",
+        "sha256:e6631e81ad8f97e39fd9d7eec93bad7fe2b39db4d2d3059ed94a02dd4093e7a3",
+        "rules-lab.content.breakdown-truck.v1",
+        "sha256:646e76e69ecceb82216b37d84e950928099acd8a3cb04b51526d0fe631e512ee",
+        "breakdown-truck-lab",
         Cna1979Ruleset.Manifest.Hash,
         Boundary,
         16,

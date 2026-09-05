@@ -283,7 +283,7 @@ internal static class CampaignObservationTestData
             CampaignSnapshot.CurrentContractVersion,
             "campaign-privacy",
             1,
-            Cna1979Ruleset.Manifest.Hash,
+            Cna1979Ruleset.HistoricalManifestV8.Hash,
             CampaignSetupSnapshot.FromDefinition(setup),
             CampaignWorldFactory.CreateInitial(context.Artifact, context.Scenario),
             null,

@@ -77,9 +77,9 @@ public sealed class ExerciseExecutorTests
             TestContext.Current.CancellationToken);
 
         Assert.True(result.IsSucceeded);
-        Assert.Equal(12, result.Steps.Count);
-        Assert.Equal(3, reserveViews.Count);
-        Assert.Equal([2, 1, 0], reserveViews.Select(view => view.Count(candidate =>
+        Assert.Equal(11, result.Steps.Count);
+        Assert.Equal(2, reserveViews.Count);
+        Assert.Equal([1, 0], reserveViews.Select(view => view.Count(candidate =>
             candidate.Kind == "designate-reserve")));
         Assert.All(reserveViews, view => Assert.Single(view,
             candidate => candidate.Kind == "complete-reserve-designation"));
@@ -91,10 +91,10 @@ public sealed class ExerciseExecutorTests
     [Theory]
     [InlineData("ActFirstReserveNoneThenFirstByActionId", true, 0, 10)]
     [InlineData("ActFirstReserveOneThenFirstByActionId", true, 1, 11)]
-    [InlineData("ActFirstReserveAllThenFirstByActionId", true, 2, 12)]
+    [InlineData("ActFirstReserveAllThenFirstByActionId", true, 1, 11)]
     [InlineData("ActLastReserveNoneThenFirstByActionId", false, 0, 10)]
     [InlineData("ActLastReserveOneThenFirstByActionId", false, 1, 11)]
-    [InlineData("ActLastReserveAllThenFirstByActionId", false, 2, 12)]
+    [InlineData("ActLastReserveAllThenFirstByActionId", false, 1, 11)]
     public void ControllerMatrixReachesMovementWithExactActorAndReserveOutcomes(
         string policyName,
         bool actsFirst,
@@ -134,13 +134,13 @@ public sealed class ExerciseExecutorTests
     }
 
     [Theory]
-    [InlineData("ActFirstReserveNoneMoveEachOnceThenComplete", 0, 1, 11)]
-    [InlineData("ActFirstReserveOneMoveEachOnceThenComplete", 1, 1, 13)]
-    [InlineData("ActFirstReserveAllMoveEachOnceThenComplete", 2, 0, 13)]
-    [InlineData("ActLastReserveNoneMoveEachOnceThenComplete", 0, 1, 11)]
-    [InlineData("ActLastReserveOneMoveEachOnceThenComplete", 1, 1, 13)]
-    [InlineData("ActLastReserveAllMoveEachOnceThenComplete", 2, 0, 13)]
-    public void BoundedMovementMatrixStopsAtReactionOrReachesBreakdown(
+    [InlineData("ActFirstReserveNoneMoveEachOnceThenComplete", 0, 2, 17)]
+    [InlineData("ActFirstReserveOneMoveEachOnceThenComplete", 1, 1, 15)]
+    [InlineData("ActFirstReserveAllMoveEachOnceThenComplete", 1, 1, 15)]
+    [InlineData("ActLastReserveNoneMoveEachOnceThenComplete", 0, 2, 17)]
+    [InlineData("ActLastReserveOneMoveEachOnceThenComplete", 1, 1, 15)]
+    [InlineData("ActLastReserveAllMoveEachOnceThenComplete", 1, 1, 15)]
+    public void BoundedMovementMatrixStopsEachRouteAndReachesBreakdown(
         string policyName,
         int expectedDesignations,
         int expectedMoves,
@@ -148,7 +148,7 @@ public sealed class ExerciseExecutorTests
     {
         var policy = Enum.Parse<ExerciseControllerPolicy>(policyName);
         var manifest = ExerciseManifestCodecTests.Create(
-            maximumSteps: 15,
+            maximumSteps: 30,
             terminalBoundary:
                 "land.position.operation-1.first-player.movement-and-combat.breakdown-determination",
             controllerPolicy: policy);
@@ -171,19 +171,10 @@ public sealed class ExerciseExecutorTests
             return document.RootElement.GetProperty("elementId").GetString();
         }).Distinct(StringComparer.Ordinal).Count());
 
-        if (expectedDesignations == 0)
-        {
-            Assert.False(result.IsSucceeded);
-            Assert.Equal(ExerciseFailureCategory.InvariantFailed, result.FailureCategory);
-            Assert.Null(result.BoundaryPositionId);
-            Assert.Null(result.Reconstruction);
-            Assert.DoesNotContain(events, value => value.Contains(
-                "\"eventType\":\"movement-segment-completed\"",
-                StringComparison.Ordinal));
-            return;
-        }
-
         Assert.True(result.IsSucceeded);
+        foreach (var eventType in new[] { "element-movement-stopped", "breakdown-stop-resolved" })
+            Assert.Equal(expectedMoves, events.Count(value => value.Contains(
+                $"\"eventType\":\"{eventType}\"", StringComparison.Ordinal)));
         Assert.Single(events, value => value.Contains(
             "\"eventType\":\"movement-segment-completed\"",
             StringComparison.Ordinal));
@@ -192,7 +183,7 @@ public sealed class ExerciseExecutorTests
     }
 
     [Fact]
-    public void ExecutorPreservesExactAcceptedMoveHistoryWhenReactionStopsSelection()
+    public void ExecutorPreservesExactAcceptedMoveHistoryAcrossStops()
     {
         var movementHistories = new List<string[]>();
         var runtime = new FaultingRuntime
@@ -207,7 +198,7 @@ public sealed class ExerciseExecutorTests
             },
         };
         var manifest = ExerciseManifestCodecTests.Create(
-            maximumSteps: 13,
+            maximumSteps: 30,
             terminalBoundary:
                 "land.position.operation-1.first-player.movement-and-combat.breakdown-determination",
             controllerPolicy:
@@ -218,9 +209,18 @@ public sealed class ExerciseExecutorTests
             runtime,
             TestContext.Current.CancellationToken);
 
-        Assert.False(result.IsSucceeded);
-        Assert.Equal(ExerciseFailureCategory.InvariantFailed, result.FailureCategory);
-        Assert.Empty(Assert.Single(movementHistories));
+        Assert.True(result.IsSucceeded);
+        var movedIds = result.Steps.SelectMany(step => step.EventRecords)
+            .Select(record =>
+            {
+                using var document = System.Text.Json.JsonDocument.Parse(record);
+                return document.RootElement.GetProperty("eventType").GetString() == "element-moved"
+                    ? document.RootElement.GetProperty("elementId").GetString() : null;
+            }).OfType<string>().ToArray();
+        Assert.Equal(2, movedIds.Length);
+        Assert.Empty(movementHistories[0]);
+        Assert.Contains(movementHistories, history => history.SequenceEqual(movedIds.Take(1)));
+        Assert.All(movementHistories, history => Assert.Equal(movedIds.Take(history.Length), history));
     }
 
     [Fact]
@@ -600,7 +600,7 @@ public sealed class ExerciseExecutorTests
     {
         var constructor = Assert.Single(typeof(CampaignLegalActionSet).GetConstructors(
             BindingFlags.Instance | BindingFlags.NonPublic),
-            value => value.GetParameters().Length == 6);
+            value => value.GetParameters().Length == 7);
         return Assert.IsType<CampaignLegalActionSet>(constructor.Invoke(
         [
             set.CampaignId,
@@ -609,6 +609,7 @@ public sealed class ExerciseExecutorTests
             set.PositionId,
             set.Audience,
             Array.Empty<CampaignActionCandidate>(),
+            set.PolicyId,
         ]));
     }
 

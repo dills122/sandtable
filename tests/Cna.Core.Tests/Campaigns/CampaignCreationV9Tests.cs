@@ -19,7 +19,7 @@ public sealed class CampaignCreationV9Tests
 
         var created = CampaignCreationV9Factory.Create(
             "campaign-1",
-            Cna1979Ruleset.Manifest.Hash,
+            Cna1979Ruleset.HistoricalManifestV8.Hash,
             setup,
             artifact,
             scenario,
@@ -82,7 +82,7 @@ public sealed class CampaignCreationV9Tests
 
         Assert.Throws<ArgumentException>(() => CampaignCreationV9Factory.Create(
             "campaign-1",
-            Cna1979Ruleset.Manifest.Hash,
+            Cna1979Ruleset.HistoricalManifestV8.Hash,
             setup,
             artifact,
             foreignScenario,
@@ -90,7 +90,7 @@ public sealed class CampaignCreationV9Tests
             Cna1979LandSequence.CreateTurn(1)[0]));
         Assert.Throws<ArgumentException>(() => CampaignCreationV9Factory.Create(
             "campaign-1",
-            Cna1979Ruleset.Manifest.Hash,
+            Cna1979Ruleset.HistoricalManifestV8.Hash,
             wrongStart,
             artifact,
             scenario,
@@ -98,7 +98,7 @@ public sealed class CampaignCreationV9Tests
             Cna1979LandSequence.CreateTurn(1)[0]));
         Assert.Throws<ArgumentException>(() => CampaignCreationV9Factory.Create(
             "campaign-1",
-            Cna1979Ruleset.Manifest.Hash,
+            Cna1979Ruleset.HistoricalManifestV8.Hash,
             rehashedMismatch,
             artifact,
             scenario,
@@ -106,7 +106,7 @@ public sealed class CampaignCreationV9Tests
             Cna1979LandSequence.CreateTurn(1)[0]));
         Assert.Throws<ArgumentException>(() => CampaignCreationV9Factory.Create(
             "campaign-1",
-            Cna1979Ruleset.Manifest.Hash,
+            Cna1979Ruleset.HistoricalManifestV8.Hash,
             mismatchedSetup,
             artifact,
             scenario,
@@ -147,7 +147,7 @@ public sealed class CampaignCreationV9Tests
             null,
             CampaignTestHarness.Create(
                 "campaign-active",
-                Cna1979Ruleset.Manifest.Hash,
+                Cna1979Ruleset.HistoricalManifestV8.Hash,
                 12345,
                 setup.SetupId,
                 setup.Hash));

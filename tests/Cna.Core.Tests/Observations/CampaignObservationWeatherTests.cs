@@ -108,7 +108,7 @@ public sealed class CampaignObservationWeatherTests
         CampaignCommand[] commands =
         [
             CampaignTestHarness.Create("campaign-observation-weather",
-                Cna1979Ruleset.Manifest.Hash, 0, setup.SetupId, setup.Hash),
+                Cna1979Ruleset.HistoricalManifestV8.Hash, 0, setup.SetupId, setup.Hash),
             new ResolveInitiative(1, "land.position.initiative-determination"),
             new ResolveNoObligationNavalConvoySchedule(2,
                 "land.position.naval-convoy.schedule"),

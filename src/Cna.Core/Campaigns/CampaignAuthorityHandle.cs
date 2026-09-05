@@ -12,7 +12,7 @@ public sealed class CampaignAuthorityHandle
 
     internal CampaignAuthorityHandle(CampaignSnapshotV10 snapshot, CampaignContentContext context)
     {
-        CurrentSnapshot = snapshot ?? throw new ArgumentNullException(nameof(snapshot));
+        HistoricalSnapshotV10 = snapshot ?? throw new ArgumentNullException(nameof(snapshot));
         Context = context ?? throw new ArgumentNullException(nameof(context));
         try
         {
@@ -28,7 +28,14 @@ public sealed class CampaignAuthorityHandle
 
     internal CampaignSnapshot Snapshot => legacySnapshot ?? throw new InvalidOperationException(
         "This current Campaign authority has no predecessor compatibility view.");
-    internal CampaignSnapshotV10? CurrentSnapshot { get; }
+    internal CampaignAuthorityHandle(CampaignSnapshotV11 snapshot, CampaignContentContext context)
+    {
+        CurrentSnapshot = snapshot ?? throw new ArgumentNullException(nameof(snapshot));
+        Context = context ?? throw new ArgumentNullException(nameof(context));
+    }
+
+    internal CampaignSnapshotV10? HistoricalSnapshotV10 { get; }
+    internal CampaignSnapshotV11? CurrentSnapshot { get; }
     internal CampaignContentContext Context { get; }
 
     public override string ToString() => nameof(CampaignAuthorityHandle);

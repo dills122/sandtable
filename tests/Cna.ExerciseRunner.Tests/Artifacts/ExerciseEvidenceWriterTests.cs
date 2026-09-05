@@ -55,10 +55,10 @@ public sealed class ExerciseEvidenceWriterTests
             "3b5654d069728ff18a17e2e1d03a0479d67544eb2aff3da2f5c7b19f87505acc",
             Hash(acceptedActions));
         Assert.Equal(
-            "4b99f936e9a26da2dc014b2828d66eaa700da58a43df46f44958a99598d6b647",
+            "156a1f421465df333e5af67676be69c635f7404b84e31521ee5e157b4957dc34",
             Hash(canonicalEvents));
         Assert.Equal(
-            "490bfd359889b02fc7a8acff0d72f14cd233786f4793a032fc43ef92b6fa2154",
+            "20b452ff3ff0f10e3c9ba10b7b499a507442afd5bfce0f9a0340df2fe56c4688",
             Hash(stepEvidence));
         Assert.Equal(
             "afb8450019eb504713f6d5584f2e9f7b483804a26632eccf3afff5fa4c4de38f",
@@ -309,7 +309,7 @@ public sealed class ExerciseEvidenceWriterTests
     {
         var constructor = Assert.Single(typeof(CampaignLegalActionSet).GetConstructors(
             BindingFlags.Instance | BindingFlags.NonPublic),
-            value => value.GetParameters().Length == 6);
+            value => value.GetParameters().Length == 7);
         return Assert.IsType<CampaignLegalActionSet>(constructor.Invoke(
         [
             set.CampaignId,
@@ -318,6 +318,7 @@ public sealed class ExerciseEvidenceWriterTests
             set.PositionId,
             set.Audience,
             Array.Empty<CampaignActionCandidate>(),
+            set.PolicyId,
         ]));
     }
 

@@ -10,6 +10,7 @@ the pre-alpha roadmap carry repository-wide rationale and delivery state.
 - [Contributor workflow](../CONTRIBUTING.md)
 - [Security policy](../SECURITY.md)
 - [Technical design](../tech-design.md)
+- [Checked ZOC/Reaction Maneuver evidence](research/simulator-reaction-trajectories.md)
 - [Naming and domain vocabulary](../naming-overview.md)
 - [Pre-alpha roadmap](roadmap/pre-alpha-roadmap.md)
 
@@ -36,16 +37,26 @@ the pre-alpha roadmap carry repository-wide rationale and delivery state.
   vertical is available.
 - Breakdown continuity: [decision packet](research/breakdown-continuity-spike.md). The approved
   continuity seam is implemented through Task 004B and projected side-safely by Task 005.
+- Breakdown adjudication: [source/decision packet](research/breakdown-adjudication-spike.md) and
+  [design/task plan](design/breakdown-adjudication-v1.md), [governing specification](specs/breakdown-adjudication-v1.md),
+  [wire freeze](specs/breakdown-wire-contract-v1.md) and [fixture migration](specs/breakdown-fixture-migration.v1.json).
+  Decisions `004`–`007` accepted; Task 001 complete; [Task 002 outcomes](research/breakdown-outcome-rules.md)
+  implemented with full gate passing and independent review Ready. [Task 003 campaign contracts](research/breakdown-campaign-contracts.md)
+  and certified Truck fixture implemented. [Task 004 move accounting](research/breakdown-move-accounting.md)
+  implemented. [Task 005 stop/check authority](research/breakdown-stop-adjudication.md) implemented;
+  [Task 006 public activation and privacy](research/breakdown-public-activation.md) activates current
+  authority through first-side Combat entry. [Task 007 Runner closeout](research/breakdown-runner-closeout.md)
+  records checked successors and verification; [review 5](reviews/brk-followup-review-5.md) accepts the AC-009 transcript follow-up and completes bounded Tasks 006–007.
 - ZOC and Reaction: approved [specification](specs/zoc-reaction-v1.md),
   [technical design](design/zoc-reaction-v1.md), and
   [research packet](research/contact-reaction-zoc-spike.md), with the accepted
   [user-space boundary decision](research/user-space-declassification-boundary-enforcement.md) and
   [disclosure manifest](specs/user-space-disclosure-manifest.v1.json). Movement and Breakdown continuity
-  prerequisites are complete; `ZOR-TASK-002A`-`004C` implement dormant Rules/Content/fixture,
-  Campaign World/creation/Snapshot/event-replay, and side-safe Observation 6/policy/history seams,
-  plus topology-local action/readback/mapping and declassification-boundary contracts;
-  `ZOR-TASK-005` is the next
-  dependency-ordered slice.
+  prerequisites are complete; `ZOR-TASK-002A`-`006C` implement and activate Rules/Content/fixture,
+  Campaign World/creation/Snapshot/event-replay, side-safe Observation 6/policy/history,
+  topology-local Movement/Reaction, participant episodes, and exact closure/resumption.
+  `007A`-`007B` complete bounded Runner adoption, strict checked evidence, matching clean runs,
+  and [Ready independent review](reviews/zor-task-007-review-1.md).
 - Combat: [source inventory](research/combat-cycle-source-inventory.md) and completed
   [rules/result-surface spike](research/combat-rules-result-surface-spike.md). Research is active;
   implementation contracts are not frozen.

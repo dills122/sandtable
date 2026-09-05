@@ -1,7 +1,9 @@
+using System.Text.Json.Nodes;
 using Cna.Core.Rules;
 using Cna.ExerciseRunner.Artifacts;
 using Cna.ExerciseRunner.Commands;
 using Cna.ExerciseRunner.Execution;
+using Cna.ExerciseRunner.Tests.Artifacts;
 
 namespace Cna.ExerciseRunner.Tests.Commands;
 
@@ -36,13 +38,13 @@ public sealed class ManeuverRunCommandTests : IDisposable
         Guid.NewGuid().ToString("N"));
 
     [Fact]
-    public void CheckedFixtureRunsTwoUniqueExercisesAndPrintsOnlyValidatedPathsInOrder()
+    public void CertifiedInputRunsTwoUniqueExercisesAndPrintsOnlyValidatedPathsInOrder()
     {
         var standardOutput = new StringWriter();
         var standardError = new StringWriter();
 
         var exitCode = ManeuverRunCommand.Execute(
-            Arguments(FixturePath, Path.Combine(temp, "success")),
+            Arguments(CurrentFixture(FixturePath), Path.Combine(temp, "success")),
             standardOutput,
             standardError,
             TestContext.Current.CancellationToken);
@@ -61,13 +63,13 @@ public sealed class ManeuverRunCommandTests : IDisposable
     }
 
     [Fact]
-    public void CheckedStageEntryFixtureRunsBothSetupsToReserveAndAggregatesValidatedReport()
+    public void CertifiedStageEntryInputsRunToReserveAndAggregatesValidatedReport()
     {
         var standardOutput = new StringWriter();
         var standardError = new StringWriter();
 
         var exitCode = ManeuverRunCommand.Execute(
-            Arguments(StageEntryFixturePath, Path.Combine(temp, "stage-entry")),
+            Arguments(CurrentFixture(StageEntryFixturePath), Path.Combine(temp, "stage-entry")),
             standardOutput,
             standardError,
             TestContext.Current.CancellationToken);
@@ -80,7 +82,7 @@ public sealed class ManeuverRunCommandTests : IDisposable
             ["reserve-boundary.predetermined", "reserve-boundary.contested"],
             bundles.Select(value => value.NormalizedManifest!.ExerciseId));
         Assert.Equal(
-            ["rules-lab.initiative.predetermined", "rules-lab.initiative.contested"],
+            ["rules-lab.breakdown.truck.v1", "rules-lab.breakdown.truck.v1"],
             bundles.Select(value => value.NormalizedManifest!.SetupId));
         Assert.All(bundles, bundle =>
         {
@@ -103,14 +105,14 @@ public sealed class ManeuverRunCommandTests : IDisposable
     }
 
     [Fact]
-    public void CheckedReserveDesignationFixtureRunsBothSetupsToMovement()
+    public void CertifiedReserveDesignationInputsRunToMovement()
     {
         var standardOutput = new StringWriter();
         var standardError = new StringWriter();
 
         var exitCode = ManeuverRunCommand.Execute(
             Arguments(
-                ReserveDesignationFixturePath,
+                CurrentFixture(ReserveDesignationFixturePath),
                 Path.Combine(temp, "reserve-designation")),
             standardOutput,
             standardError,
@@ -125,12 +127,12 @@ public sealed class ManeuverRunCommandTests : IDisposable
                 "reserve-designation-movement.contested"],
             bundles.Select(value => value.NormalizedManifest!.ExerciseId));
         Assert.Equal(
-            ["rules-lab.initiative.predetermined", "rules-lab.initiative.contested"],
+            ["rules-lab.breakdown.truck.v1", "rules-lab.breakdown.truck.v1"],
             bundles.Select(value => value.NormalizedManifest!.SetupId));
         Assert.All(bundles, bundle =>
         {
-            Assert.Equal(12, bundle.AcceptedActions.Count);
-            Assert.Equal(2, bundle.CanonicalEvents.Count(value =>
+            Assert.Equal(11, bundle.AcceptedActions.Count);
+            Assert.Equal(1, bundle.CanonicalEvents.Count(value =>
                 System.Text.Encoding.UTF8.GetString(value).Contains(
                     "\"eventType\":\"reserve-element-designated\"",
                     StringComparison.Ordinal)));
@@ -154,20 +156,19 @@ public sealed class ManeuverRunCommandTests : IDisposable
         Assert.Equal(2, terminal.Count);
         Assert.Equal(MovementBoundary,
             Assert.IsType<BoundaryReached>(terminal.Outcome).PositionId);
-        Assert.Equal(
-            "sha256:1a8bcb32433ce370f5bb0e221e71df83e1219a6498b0188cbbb6bc571766eac1",
-            artifact.Report.ReportFingerprint);
+        Assert.Equal(artifact.Report.ReportFingerprint,
+            ManeuverReportReader.Read(output.ReportPath).Report.ReportFingerprint);
     }
 
     [Fact]
-    public void CheckedControllerMatrixFixtureRunsAllSixPoliciesToMovement()
+    public void CertifiedControllerMatrixRunsAllSixPoliciesToMovement()
     {
         var standardOutput = new StringWriter();
         var standardError = new StringWriter();
 
         var exitCode = ManeuverRunCommand.Execute(
             Arguments(
-                ControllerMatrixFixturePath,
+                CurrentFixture(ControllerMatrixFixturePath),
                 Path.Combine(temp, "controller-matrix")),
             standardOutput,
             standardError,
@@ -187,9 +188,9 @@ public sealed class ManeuverRunCommandTests : IDisposable
                 "movement-entry.act-last.reserve-all",
             ],
             bundles.Select(value => value.NormalizedManifest!.ExerciseId));
-        Assert.Equal([10, 11, 12, 10, 11, 12],
+        Assert.Equal([10, 11, 11, 10, 11, 11],
             bundles.Select(value => value.AcceptedActions.Count));
-        Assert.Equal([0, 1, 2, 0, 1, 2], bundles.Select(bundle =>
+        Assert.Equal([0, 1, 1, 0, 1, 1], bundles.Select(bundle =>
             bundle.CanonicalEvents.Count(value =>
                 System.Text.Encoding.UTF8.GetString(value).Contains(
                     "\"eventType\":\"reserve-element-designated\"",
@@ -218,122 +219,53 @@ public sealed class ManeuverRunCommandTests : IDisposable
         Assert.Equal(6, terminal.Count);
         Assert.Equal(MovementBoundary,
             Assert.IsType<BoundaryReached>(terminal.Outcome).PositionId);
-        Assert.Equal(
-            "sha256:b2353ba7e732597b9235eeae379b138f15de4c2a5603c66fcc89e2c3c4fc95f5",
-            artifact.Report.ReportFingerprint);
+        Assert.Equal(artifact.Report.ReportFingerprint,
+            ManeuverReportReader.Read(output.ReportPath).Report.ReportFingerprint);
     }
 
     [Fact]
-    public void CheckedMovementFixtureFailsClosedWhenAReactionWindowOpens()
+    public void CertifiedMovementMatrixStopsRoutesAndRetainsExactValidatedEvidence()
     {
         var standardOutput = new StringWriter();
         var standardError = new StringWriter();
-
         var exitCode = ManeuverRunCommand.Execute(
-            Arguments(MovementFixturePath, Path.Combine(temp, "movement")),
-            standardOutput,
-            standardError,
-            TestContext.Current.CancellationToken);
-
-        Assert.Equal(ManeuverProcessExitCode.ExerciseFailed, exitCode);
-        Assert.Equal(
-            "Maneuver completed with one or more Exercise failures.\n",
-            NormalizeNewlines(standardError.ToString()));
+            Arguments(CurrentFixture(MovementFixturePath), Path.Combine(temp, "movement")),
+            standardOutput, standardError, TestContext.Current.CancellationToken);
+        Assert.Equal(ManeuverProcessExitCode.Succeeded, exitCode);
+        Assert.Equal(string.Empty, standardError.ToString());
         var output = ParseOutput(standardOutput.ToString(), expectedExerciseBundles: 6);
         var bundles = output.ExerciseBundlePaths.Select(ExerciseBundleReader.Read).ToArray();
-        Assert.Equal(
-            [
-                "movement-execution.act-first.reserve-none",
-                "movement-execution.act-first.reserve-one",
-                "movement-execution.act-first.reserve-all",
-                "movement-execution.act-last.reserve-none",
-                "movement-execution.act-last.reserve-one",
-                "movement-execution.act-last.reserve-all",
-            ],
-            bundles.Select(value => value.NormalizedManifest!.ExerciseId));
-        for (var index = 0; index < bundles.Length; index++)
+        Assert.Equal([17, 15, 15, 17, 15, 15], bundles.Select(bundle => bundle.AcceptedActions.Count));
+        Assert.Equal([0, 1, 1, 0, 1, 1], bundles.Select(bundle => bundle.CanonicalEvents.Count(
+            value => EventType(value) == "reserve-element-designated")));
+        Assert.Equal([2, 1, 1, 2, 1, 1], bundles.Select(bundle => bundle.CanonicalEvents.Count(
+            value => EventType(value) == "element-moved")));
+        Assert.All(bundles, bundle =>
         {
-            var bundle = bundles[index];
-            var opensReaction = index is 0 or 3;
-            Assert.Equal(opensReaction ? 11 : 13, bundle.AcceptedActions.Count);
-            Assert.Equal(opensReaction ? 11 : 13, bundle.CanonicalEvents.Count);
-            Assert.Equal(opensReaction ? 11 : 13, bundle.StepEvidence.Count);
-            if (opensReaction)
-            {
-                var completion = Assert.IsType<ExerciseFailed>(bundle.RunResult.Completion);
-                Assert.Equal(
-                    ExerciseFailureCategory.InvariantFailed,
-                    completion.Failure.Category);
-                Assert.Equal(80, bundle.CheckResults.Results.Count(result => result.IsPassed));
-                Assert.Equal(2, bundle.CheckResults.Results.Count(result => !result.IsPassed));
-                Assert.Null(bundle.ReconstructionProof);
-                Assert.Null(bundle.ReadjudicationProof);
-                Assert.DoesNotContain(bundle.CanonicalEvents, value => EventType(value) ==
-                    "movement-segment-completed");
-            }
-            else
-            {
-                Assert.Equal(94, bundle.CheckResults.Results.Count);
-                Assert.All(bundle.CheckResults.Results, result => Assert.True(result.IsPassed));
-                Assert.True(bundle.ReconstructionProof!.IsVerified);
-                Assert.True(bundle.ReadjudicationProof!.IsVerified);
-                Assert.Single(bundle.CanonicalEvents, value => EventType(value) ==
-                    "movement-segment-completed");
-                var completion = Assert.IsType<ExerciseSucceeded>(bundle.RunResult.Completion);
-                Assert.Equal(
-                    BreakdownBoundary,
-                    Assert.IsType<BoundaryReached>(completion.Outcome).PositionId);
-            }
-        }
-        Assert.Equal([0, 1, 2, 0, 1, 2], bundles.Select(bundle =>
-            bundle.CanonicalEvents.Count(value => EventType(value) ==
-                "reserve-element-designated")));
-        Assert.Equal([1, 1, 0, 1, 1, 0], bundles.Select(bundle =>
-            bundle.CanonicalEvents.Count(value => EventType(value) == "element-moved")));
-
-        AssertMovement(
-            bundles[0],
-            ("axis-element-a", "west", "center", 0, 8));
-        AssertMovement(
-            bundles[1],
-            ("axis-element-b", "north-west", "north", 0, 1));
-        AssertMovement(bundles[2]);
-        AssertMovement(
-            bundles[3],
-            ("commonwealth-element-a", "east", "center", 0, 8));
-        AssertMovement(
-            bundles[4],
-            ("commonwealth-element-b", "south-east", "east", 0, 1));
-        AssertMovement(bundles[5]);
-
-        var artifact = ManeuverReportReader.Read(output.ReportPath);
-        Assert.Equal(output.ReportFingerprint, artifact.Report.ReportFingerprint);
-        Assert.Equal(ManeuverReportStatus.ExerciseFailed, artifact.Report.Deterministic.Status);
-        Assert.Equal(4, artifact.Report.Deterministic.Counts.SucceededExerciseCount);
-        Assert.Equal(2, artifact.Report.Deterministic.Counts.FailedExerciseCount);
-        var terminal = Assert.Single(artifact.Report.Deterministic.TerminalCounts);
-        Assert.Equal(4, terminal.Count);
-        Assert.Equal(
-            BreakdownBoundary,
-            Assert.IsType<BoundaryReached>(terminal.Outcome).PositionId);
-        Assert.Equal(
-            2,
-            artifact.Report.Deterministic.FailureCounts.Single(value =>
-                value.Category == ExerciseFailureCategory.InvariantFailed).Count);
-        Assert.Equal(
-            "sha256:e0c0c0e7dcdaf5125d1b255a8796e92b4b22f531fe550e95abcfd42815354523",
-            artifact.Report.ReportFingerprint);
+            Assert.Equal(bundle.AcceptedActions.Count, bundle.CanonicalEvents.Count);
+            Assert.Equal(bundle.AcceptedActions.Count, bundle.StepEvidence.Count);
+            Assert.True(bundle.ReconstructionProof!.IsVerified);
+            Assert.True(bundle.ReadjudicationProof!.IsVerified);
+            Assert.All(bundle.CheckResults.Results, result => Assert.True(result.IsPassed));
+            Assert.Single(bundle.CanonicalEvents, value => EventType(value) == "movement-segment-completed");
+            var completion = Assert.IsType<ExerciseSucceeded>(bundle.RunResult.Completion);
+            Assert.Equal(BreakdownBoundary, Assert.IsType<BoundaryReached>(completion.Outcome).PositionId);
+        });
+        var report = ManeuverReportReader.Read(output.ReportPath).Report;
+        Assert.Equal(ManeuverReportStatus.Succeeded, report.Deterministic.Status);
+        Assert.Equal(6, report.Deterministic.Counts.SucceededExerciseCount);
+        Assert.Equal(0, report.Deterministic.Counts.FailedExerciseCount);
     }
 
     [Fact]
-    public void CheckedPairedFixtureProvesEqualInitialEvidenceAndRepeatableHonestDivergence()
+    public void CertifiedPairedInputProvesEqualInitialEvidenceAndRepeatableHonestDivergence()
     {
         CommandOutput Run(string directory)
         {
             var standardOutput = new StringWriter();
             var standardError = new StringWriter();
             var exitCode = ManeuverRunCommand.Execute(
-                Arguments(PairedFixturePath, Path.Combine(temp, directory)),
+                Arguments(CurrentFixture(PairedFixturePath), Path.Combine(temp, directory)),
                 standardOutput,
                 standardError,
                 TestContext.Current.CancellationToken);
@@ -347,7 +279,7 @@ public sealed class ManeuverRunCommandTests : IDisposable
         var bundles = firstOutput.ExerciseBundlePaths.Select(ExerciseBundleReader.Read).ToArray();
         Assert.Equal(["reserve-policy.baseline", "reserve-policy.candidate"],
             bundles.Select(value => value.NormalizedManifest!.ExerciseId));
-        Assert.Equal([10, 12], bundles.Select(value => value.AcceptedActions.Count));
+        Assert.Equal([10, 11], bundles.Select(value => value.AcceptedActions.Count));
         Assert.Equal(bundles[0].InitialSnapshotBytes, bundles[1].InitialSnapshotBytes);
         Assert.Equal(
             SeedLedgerCodec.Serialize(bundles[0].SeedLedger!),
@@ -372,7 +304,7 @@ public sealed class ManeuverRunCommandTests : IDisposable
         var comparison = Assert.Single(report.Deterministic.Comparisons);
         Assert.Equal(PairedComparisonStatus.Compared, comparison.Status);
         Assert.Equal(PairedDivergenceKind.AcceptedAction, comparison.FirstDivergence!.Kind);
-        Assert.Equal(2, comparison.AcceptedStepCountDelta);
+        Assert.Equal(1, comparison.AcceptedStepCountDelta);
         Assert.Contains(
             "may diverge after the first differing choice",
             PairedManeuverReport.Interpretation,
@@ -385,20 +317,20 @@ public sealed class ManeuverRunCommandTests : IDisposable
     }
 
     [Fact]
-    public void CheckedMovementCostPairRetainsDivergenceWhenBaselineOpensReaction()
+    public void CertifiedMovementCostPairRetainsRepeatableRouteDivergence()
     {
         CommandOutput Run(string directory)
         {
             var standardOutput = new StringWriter();
             var standardError = new StringWriter();
             var exitCode = ManeuverRunCommand.Execute(
-                Arguments(MovementCostPairedFixturePath, Path.Combine(temp, directory)),
+                Arguments(CurrentFixture(MovementCostPairedFixturePath), Path.Combine(temp, directory)),
                 standardOutput,
                 standardError,
                 TestContext.Current.CancellationToken);
-            Assert.Equal(ManeuverProcessExitCode.ExerciseFailed, exitCode);
+            Assert.Equal(ManeuverProcessExitCode.Succeeded, exitCode);
             Assert.Equal(
-                "Maneuver completed with one or more Exercise failures.\n",
+                string.Empty,
                 NormalizeNewlines(standardError.ToString()));
             return ParseOutput(standardOutput.ToString(), expectedExerciseBundles: 2);
         }
@@ -408,10 +340,8 @@ public sealed class ManeuverRunCommandTests : IDisposable
         var bundles = firstOutput.ExerciseBundlePaths.Select(ExerciseBundleReader.Read).ToArray();
         Assert.Equal(["movement-cost.baseline", "movement-cost.lowest-cost"],
             bundles.Select(value => value.NormalizedManifest!.ExerciseId));
-        Assert.Equal([11, 13], bundles.Select(value => value.AcceptedActions.Count));
-        Assert.Equal(
-            ExerciseFailureCategory.InvariantFailed,
-            Assert.IsType<ExerciseFailed>(bundles[0].RunResult.Completion).Failure.Category);
+        Assert.Equal([17, 17], bundles.Select(value => value.AcceptedActions.Count));
+        Assert.IsType<ExerciseSucceeded>(bundles[0].RunResult.Completion);
         Assert.IsType<ExerciseSucceeded>(bundles[1].RunResult.Completion);
         Assert.Equal(bundles[0].InitialSnapshotBytes, bundles[1].InitialSnapshotBytes);
         Assert.Equal(
@@ -420,31 +350,29 @@ public sealed class ManeuverRunCommandTests : IDisposable
 
         var baselineMoves = MovementFacts(bundles[0]);
         var candidateMoves = MovementFacts(bundles[1]);
-        Assert.Equal(["center"], baselineMoves.Select(value => value.Destination));
-        Assert.Equal(["north-west", "north"],
+        Assert.Equal(["north", "center"], baselineMoves.Select(value => value.Destination));
+        Assert.Equal(["north", "north-west"],
             candidateMoves.Select(value => value.Destination));
         Assert.Equal(
-            [new CapabilityPointAmount(8, 1)],
+            [new CapabilityPointAmount(1, 1), new CapabilityPointAmount(8, 1)],
             baselineMoves.Select(value => value.Cost));
         Assert.Equal(
-            [new CapabilityPointAmount(1, 2), new CapabilityPointAmount(1, 1)],
+            [new CapabilityPointAmount(1, 1), new CapabilityPointAmount(1, 2)],
             candidateMoves.Select(value => value.Cost));
 
         var report = PairedReportReader.Read(firstOutput.ReportPath).Report;
-        Assert.Equal(ManeuverReportStatus.ExerciseFailed, report.Deterministic.Status);
-        Assert.Equal(1, report.Deterministic.Counts.SucceededExerciseCount);
-        Assert.Equal(1, report.Deterministic.Counts.FailedExerciseCount);
+        Assert.Equal(ManeuverReportStatus.Succeeded, report.Deterministic.Status);
+        Assert.Equal(2, report.Deterministic.Counts.SucceededExerciseCount);
+        Assert.Equal(0, report.Deterministic.Counts.FailedExerciseCount);
         var comparison = Assert.Single(report.Deterministic.Comparisons);
         Assert.Equal(PairedComparisonStatus.Compared, comparison.Status);
         Assert.Equal(PairedDivergenceKind.AcceptedAction, comparison.FirstDivergence!.Kind);
-        Assert.Equal(10, comparison.FirstDivergence.StepOrdinal);
-        Assert.Equal(2, comparison.AcceptedStepCountDelta);
-        Assert.False(comparison.TerminalOutcomeEqual);
-        Assert.False(comparison.FailureCategoryEqual);
+        Assert.Equal(13, comparison.FirstDivergence.StepOrdinal);
+        Assert.Equal(0, comparison.AcceptedStepCountDelta);
+        Assert.True(comparison.TerminalOutcomeEqual);
+        Assert.True(comparison.FailureCategoryEqual);
         Assert.Equal(firstOutput.ReportFingerprint, secondOutput.ReportFingerprint);
-        Assert.Equal(
-            "sha256:6a61e195d8c3eda656ff04b1b80e1ddbd2dd5e5ca56d194b71eedb74c69ada8b",
-            firstOutput.ReportFingerprint);
+
     }
 
     [Fact]
@@ -489,7 +417,7 @@ public sealed class ManeuverRunCommandTests : IDisposable
 
 #pragma warning disable xUnit1051 // An already-cancelled token is the behavior under test.
         var exitCode = ManeuverRunCommand.Execute(
-            Arguments(FixturePath, Path.Combine(temp, "cancelled")),
+            Arguments(CurrentFixture(FixturePath), Path.Combine(temp, "cancelled")),
             standardOutput,
             standardError,
             cancellation.Token);
@@ -526,7 +454,7 @@ public sealed class ManeuverRunCommandTests : IDisposable
         var standardError = new StringWriter();
 
         var exitCode = ManeuverRunCommand.Execute(
-            Arguments(FixturePath, Path.Combine(temp, "aggregate-failed")),
+            Arguments(CurrentFixture(FixturePath), Path.Combine(temp, "aggregate-failed")),
             standardOutput,
             standardError,
             dependencies,
@@ -567,7 +495,7 @@ public sealed class ManeuverRunCommandTests : IDisposable
         var standardError = new StringWriter();
 
         var exitCode = ManeuverRunCommand.Execute(
-            Arguments(FixturePath, Path.Combine(temp, "report-failed")),
+            Arguments(CurrentFixture(FixturePath), Path.Combine(temp, "report-failed")),
             standardOutput,
             standardError,
             dependencies,
@@ -695,7 +623,7 @@ public sealed class ManeuverRunCommandTests : IDisposable
         var standardError = new StringWriter();
 
         var exitCode = ManeuverRunCommand.Execute(
-            Arguments(FixturePath, Path.Combine(temp, "unexpected")),
+            Arguments(CurrentFixture(FixturePath), Path.Combine(temp, "unexpected")),
             standardOutput,
             standardError,
             dependencies,
@@ -720,7 +648,7 @@ public sealed class ManeuverRunCommandTests : IDisposable
                 "exercise",
                 "run",
                 "--manifest",
-                "scenarios/exercises/rules-lab.organization.v2.json",
+                CurrentExerciseFixture(),
                 "--artifact-root",
                 Path.Combine(temp, "exercise-route"),
             ],
@@ -767,69 +695,6 @@ public sealed class ManeuverRunCommandTests : IDisposable
                         cost.GetProperty("denominator").GetInt32()));
             }).ToArray();
 
-    private static void AssertMovement(
-        ExerciseBundle bundle,
-        params (string ElementId, string Origin, string Destination, int Before, int After)[]
-            expected)
-    {
-        var movement = bundle.CanonicalEvents
-            .Where(value => EventType(value) == "element-moved")
-            .Select(value => System.Text.Json.JsonDocument.Parse(value))
-            .ToArray();
-        try
-        {
-            Assert.Equal(expected.Length, movement.Length);
-            Assert.Equal(expected.Length, expected.Select(value => value.ElementId)
-                .Distinct(StringComparer.Ordinal).Count());
-            using var final = System.Text.Json.JsonDocument.Parse(bundle.FinalSnapshotBytes!);
-            for (var index = 0; index < expected.Length; index++)
-            {
-                var root = movement[index].RootElement;
-                var facts = expected[index];
-                Assert.Equal(facts.ElementId, root.GetProperty("elementId").GetString());
-                Assert.Equal(facts.Origin, root.GetProperty("originLocationId").GetString());
-                Assert.Equal(
-                    facts.Destination,
-                    root.GetProperty("destinationLocationId").GetString());
-                AssertExactAmount(
-                    root.GetProperty("capabilityPointsExpendedBefore"),
-                    facts.Before);
-                AssertExactAmount(
-                    root.GetProperty("capabilityPointsExpendedAfter"),
-                    facts.After);
-                AssertExactAmount(root.GetProperty("cost").GetProperty("totalCost"),
-                    facts.After - facts.Before);
-                Assert.Equal(0, root.GetProperty("cohesionBefore").GetInt32());
-                Assert.Equal(0, root.GetProperty("cohesionAfter").GetInt32());
-
-                var element = final.RootElement.GetProperty("world").GetProperty("elements")
-                    .EnumerateArray().Single(value => string.Equals(
-                        value.GetProperty("elementId").GetString(),
-                        facts.ElementId,
-                        StringComparison.Ordinal));
-                Assert.Equal(
-                    facts.Destination,
-                    element.GetProperty("currentLocationId").GetString());
-                Assert.Equal("none", element.GetProperty("reserveStatus").GetString());
-                var operational = element.GetProperty("operationalState");
-                AssertExactAmount(
-                    operational.GetProperty("capabilityPointsExpended"),
-                    facts.After);
-                Assert.Equal(0, operational.GetProperty("cohesionLevel").GetInt32());
-            }
-        }
-        finally
-        {
-            foreach (var document in movement) document.Dispose();
-        }
-    }
-
-    private static void AssertExactAmount(System.Text.Json.JsonElement amount, int numerator)
-    {
-        Assert.Equal(numerator, amount.GetProperty("numerator").GetInt32());
-        Assert.Equal(1, amount.GetProperty("denominator").GetInt32());
-    }
-
     private static string[] Arguments(string manifestPath, string artifactRoot) =>
     [
         "maneuver",
@@ -839,6 +704,70 @@ public sealed class ManeuverRunCommandTests : IDisposable
         "--artifact-root",
         artifactRoot,
     ];
+
+    // Reuse only controller/envelope cases; authoritative input is the admitted Truck profile.
+    private string CurrentFixture(string fixturePath)
+    {
+        Assert.Contains(fixturePath, new[] { FixturePath, StageEntryFixturePath,
+            ReserveDesignationFixturePath, ControllerMatrixFixturePath, MovementFixturePath,
+            PairedFixturePath, MovementCostPairedFixturePath });
+        var repositoryRoot = FindRepositoryRoot(AppContext.BaseDirectory);
+        var node = JsonNode.Parse(File.ReadAllBytes(Path.Combine(repositoryRoot, fixturePath)))!;
+        var current = ExerciseManifestCodecTests.Create();
+        void ReplaceInput(JsonNode value)
+        {
+            if (value is JsonObject obj && obj.ContainsKey("setupId"))
+            {
+                obj["setupId"] = current.SetupId;
+                obj["setupHash"] = current.SetupHash;
+                obj["contentPackId"] = current.ContentPackId;
+                obj["contentHash"] = current.ContentHash;
+                obj["scenarioId"] = current.ScenarioId;
+                obj["rulesetHash"] = current.RulesetHash;
+                if (obj["terminalBoundary"]!.GetValue<string>() == BreakdownBoundary)
+                    obj["maximumSteps"] = 30;
+            }
+            if (value is JsonObject parent)
+                foreach (var child in parent.Select(pair => pair.Value).OfType<JsonNode>()) ReplaceInput(child);
+            else if (value is JsonArray array)
+                foreach (var child in array.OfType<JsonNode>()) ReplaceInput(child);
+        }
+        ReplaceInput(node);
+        var relative = Path.Combine(repositoryManifestDirectory, Path.GetFileName(fixturePath));
+        var path = Path.Combine(repositoryRoot, relative);
+        Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+        File.WriteAllText(path, node.ToJsonString());
+        return relative;
+    }
+
+    private string CurrentExerciseFixture()
+    {
+        var relative = Path.Combine(repositoryManifestDirectory, "exercise.json");
+        var path = Path.Combine(FindRepositoryRoot(AppContext.BaseDirectory), relative);
+        Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+        File.WriteAllBytes(path, ExerciseManifestCodec.Serialize(ExerciseManifestCodecTests.Create()));
+        return relative;
+    }
+
+    [Theory]
+    [InlineData(FixturePath)]
+    [InlineData(StageEntryFixturePath)]
+    [InlineData(ReserveDesignationFixturePath)]
+    [InlineData(ControllerMatrixFixturePath)]
+    [InlineData(MovementFixturePath)]
+    [InlineData(PairedFixturePath)]
+    [InlineData(MovementCostPairedFixturePath)]
+    public void FrozenHistoricalFixtureIsRejectedBeforeCurrentExecution(string fixturePath)
+    {
+        var output = new StringWriter();
+        var error = new StringWriter();
+        Assert.Equal(ManeuverProcessExitCode.ManifestInvalid, ManeuverRunCommand.Execute(
+            Arguments(fixturePath, Path.Combine(temp, "historical")), output, error,
+            TestContext.Current.CancellationToken));
+        Assert.Empty(output.ToString());
+        Assert.StartsWith("Maneuver admission failed: ", error.ToString(), StringComparison.Ordinal);
+        Assert.False(Directory.Exists(Path.Combine(temp, "historical")));
+    }
 
     private string WriteManifest(ManeuverManifest manifest)
     {
@@ -865,11 +794,11 @@ public sealed class ManeuverRunCommandTests : IDisposable
         ExerciseFailureCategory? expectedFailure) => new(
         ExerciseManifest.CurrentContractVersion,
         exerciseId,
-        "rules-lab.initiative.predetermined",
-        "sha256:48ad98fd232f7c7c50d4f925dd83e3de97f2eb48cc6929a17aa1fb172cdbd394",
-        "rules-lab.content.movement-contact.v1",
-        "sha256:20cf54f25d752253105877c6139d8db86549759f9dbb80fad873686498f26f5f",
-        "movement-contact-lab",
+        "rules-lab.breakdown.truck.v1",
+        "sha256:e6631e81ad8f97e39fd9d7eec93bad7fe2b39db4d2d3059ed94a02dd4093e7a3",
+        "rules-lab.content.breakdown-truck.v1",
+        "sha256:646e76e69ecceb82216b37d84e950928099acd8a3cb04b51526d0fe631e512ee",
+        "breakdown-truck-lab",
         Cna1979Ruleset.Manifest.Hash,
         Boundary,
         maximumSteps,

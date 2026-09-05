@@ -92,26 +92,26 @@ public sealed class CampaignMovementPublicationTests
         var staleMove = Bind(initial, move);
         var staleCompletion = Bind(initial, retainedCompletion);
 
-        var moved = CampaignLegalActions.Submit(handle, staleMove);
+        var moved = HistoricalCampaignActions.Submit(handle, staleMove);
 
         Assert.True(moved.IsAccepted);
         Assert.Equal(LandSegmentIds.Movement, moved.SuccessorHandle!.Snapshot.SegmentId);
         Assert.Equal(CampaignActionSubmissionRejectionReason.StaleState,
-            CampaignLegalActions.Submit(moved.SuccessorHandle, staleMove).RejectionReason);
+            HistoricalCampaignActions.Submit(moved.SuccessorHandle, staleMove).RejectionReason);
         Assert.Equal(CampaignActionSubmissionRejectionReason.StaleState,
-            CampaignLegalActions.Submit(moved.SuccessorHandle, staleCompletion).RejectionReason);
+            HistoricalCampaignActions.Submit(moved.SuccessorHandle, staleCompletion).RejectionReason);
         var reboundMove = staleMove with
         {
             ExpectedStateVersion = moved.SuccessorHandle.Snapshot.StateVersion,
             ExpectedPositionId = moved.SuccessorHandle.Snapshot.SequencePosition.PositionId,
         };
         Assert.Equal(CampaignActionSubmissionRejectionReason.ActionNotLegal,
-            CampaignLegalActions.Submit(moved.SuccessorHandle, reboundMove).RejectionReason);
+            HistoricalCampaignActions.Submit(moved.SuccessorHandle, reboundMove).RejectionReason);
 
         var current = Query(moved.SuccessorHandle, audience);
         var completion = Assert.Single(
             current.Candidates.OfType<CompleteMovementSegmentAction>());
-        var completed = CampaignLegalActions.Submit(
+        var completed = HistoricalCampaignActions.Submit(
             moved.SuccessorHandle,
             Bind(current, completion));
 
@@ -126,7 +126,7 @@ public sealed class CampaignMovementPublicationTests
             ExpectedPositionId = completed.SuccessorHandle.Snapshot.SequencePosition.PositionId,
         };
         Assert.Equal(CampaignActionSubmissionRejectionReason.ActionNotLegal,
-            CampaignLegalActions.Submit(
+            HistoricalCampaignActions.Submit(
                 completed.SuccessorHandle,
                 repeatedCompletion).RejectionReason);
     }
@@ -152,13 +152,13 @@ public sealed class CampaignMovementPublicationTests
         ];
 
         Assert.Equal(CampaignActionSubmissionRejectionReason.InvalidSubmission,
-            CampaignLegalActions.Submit(handle, invalid[0]).RejectionReason);
+            HistoricalCampaignActions.Submit(handle, invalid[0]).RejectionReason);
         Assert.Equal(CampaignActionSubmissionRejectionReason.ActionNotLegal,
-            CampaignLegalActions.Submit(handle, invalid[1]).RejectionReason);
+            HistoricalCampaignActions.Submit(handle, invalid[1]).RejectionReason);
         Assert.Equal(CampaignActionSubmissionRejectionReason.ActionNotLegal,
-            CampaignLegalActions.Submit(handle, invalid[2]).RejectionReason);
+            HistoricalCampaignActions.Submit(handle, invalid[2]).RejectionReason);
         Assert.All(invalid, value => Assert.False(
-            CampaignLegalActions.Submit(handle, value).IsAccepted));
+            HistoricalCampaignActions.Submit(handle, value).IsAccepted));
         Assert.Equal(before, CampaignSnapshotSerializer.Serialize(evidence.Snapshot));
     }
 
@@ -225,15 +225,15 @@ public sealed class CampaignMovementPublicationTests
             audience);
 
         Assert.Equal(
-            CampaignLegalActionSerializer.Serialize(baselineSet),
-            CampaignLegalActionSerializer.Serialize(changedSet));
+            CampaignLegalActionSerializer.SerializeHistoricalV2(baselineSet),
+            CampaignLegalActionSerializer.SerializeHistoricalV2(changedSet));
     }
 
     private static CampaignLegalActionSet Query(
         CampaignAuthorityHandle handle,
         CampaignActionAudience audience)
     {
-        var query = CampaignLegalActions.Query(handle, audience);
+        var query = HistoricalCampaignActions.Query(handle, audience);
         Assert.True(query.IsSuccessful);
         return query.ActionSet!;
     }

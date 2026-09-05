@@ -17,14 +17,14 @@ public sealed class MovementSimulatorStudyTests
         ExerciseControllerPolicy Policy,
         int Reserves,
         int Moves,
-        bool OpensReaction)[] Policies =
+        int Steps)[] Policies =
     [
-        (ExerciseControllerPolicy.ActFirstReserveNoneMoveEachOnceThenComplete, 0, 1, true),
-        (ExerciseControllerPolicy.ActFirstReserveOneMoveEachOnceThenComplete, 1, 1, false),
-        (ExerciseControllerPolicy.ActFirstReserveAllMoveEachOnceThenComplete, 2, 0, false),
-        (ExerciseControllerPolicy.ActLastReserveNoneMoveEachOnceThenComplete, 0, 1, true),
-        (ExerciseControllerPolicy.ActLastReserveOneMoveEachOnceThenComplete, 1, 1, false),
-        (ExerciseControllerPolicy.ActLastReserveAllMoveEachOnceThenComplete, 2, 0, false),
+        (ExerciseControllerPolicy.ActFirstReserveNoneMoveEachOnceThenComplete, 0, 2, 17),
+        (ExerciseControllerPolicy.ActFirstReserveOneMoveEachOnceThenComplete, 1, 1, 15),
+        (ExerciseControllerPolicy.ActFirstReserveAllMoveEachOnceThenComplete, 1, 1, 15),
+        (ExerciseControllerPolicy.ActLastReserveNoneMoveEachOnceThenComplete, 0, 2, 17),
+        (ExerciseControllerPolicy.ActLastReserveOneMoveEachOnceThenComplete, 1, 1, 15),
+        (ExerciseControllerPolicy.ActLastReserveAllMoveEachOnceThenComplete, 1, 1, 15),
     ];
 
     [Fact]
@@ -36,7 +36,7 @@ public sealed class MovementSimulatorStudyTests
 
         foreach (var seed in StudySeeds)
         {
-            foreach (var (policy, expectedReserves, expectedMoves, opensReaction) in Policies)
+            foreach (var (policy, expectedReserves, expectedMoves, expectedSteps) in Policies)
             {
                 var manifest = Manifest(seed, policy);
                 var first = ExerciseExecutor.Execute(
@@ -46,8 +46,8 @@ public sealed class MovementSimulatorStudyTests
                     manifest,
                     TestContext.Current.CancellationToken);
 
-                AssertRun(first, manifest, expectedReserves, expectedMoves, opensReaction);
-                AssertRun(second, manifest, expectedReserves, expectedMoves, opensReaction);
+                AssertRun(first, manifest, expectedReserves, expectedMoves, expectedSteps);
+                AssertRun(second, manifest, expectedReserves, expectedMoves, expectedSteps);
                 Assert.Equal(
                     ExerciseEvidenceWriter.WriteAcceptedActions(first),
                     ExerciseEvidenceWriter.WriteAcceptedActions(second));
@@ -59,19 +59,14 @@ public sealed class MovementSimulatorStudyTests
                     ExerciseEvidenceWriter.WriteStepEvidence(second));
                 Assert.Equal(first.InitialSnapshot, second.InitialSnapshot);
                 Assert.Equal(first.FinalSnapshot, second.FinalSnapshot);
-                if (!opensReaction)
-                {
-                    Assert.Equal(
-                        ReplayProofCodec.Serialize(first.Reconstruction!),
-                        ReplayProofCodec.Serialize(second.Reconstruction!));
-
-                    var firstReadjudication = ReadjudicationVerifier.Verify(manifest, first);
-                    var secondReadjudication = ReadjudicationVerifier.Verify(manifest, second);
-                    Assert.True(firstReadjudication.IsVerified);
-                    Assert.Equal(
-                        ReplayProofCodec.Serialize(firstReadjudication),
-                        ReplayProofCodec.Serialize(secondReadjudication));
-                }
+                Assert.Equal(
+                    ReplayProofCodec.Serialize(first.Reconstruction!),
+                    ReplayProofCodec.Serialize(second.Reconstruction!));
+                var firstReadjudication = ReadjudicationVerifier.Verify(manifest, first);
+                var secondReadjudication = ReadjudicationVerifier.Verify(manifest, second);
+                Assert.True(firstReadjudication.IsVerified);
+                Assert.Equal(ReplayProofCodec.Serialize(firstReadjudication),
+                    ReplayProofCodec.Serialize(secondReadjudication));
                 signatures[policy].Add(MovementSignature(first));
             }
         }
@@ -84,23 +79,12 @@ public sealed class MovementSimulatorStudyTests
         ExerciseManifest manifest,
         int expectedReserves,
         int expectedMoves,
-        bool opensReaction)
+        int expectedSteps)
     {
-        if (opensReaction)
-        {
-            Assert.False(result.IsSucceeded);
-            Assert.Equal(ExerciseFailureCategory.InvariantFailed, result.FailureCategory);
-            Assert.Equal(11, result.Steps.Count);
-            Assert.Null(result.BoundaryPositionId);
-            Assert.Null(result.Reconstruction);
-        }
-        else
-        {
-            Assert.True(result.IsSucceeded);
-            Assert.Equal(13, result.Steps.Count);
-            Assert.Equal(BreakdownBoundary, result.BoundaryPositionId);
-            Assert.True(result.Reconstruction!.IsVerified);
-        }
+        Assert.True(result.IsSucceeded);
+        Assert.Equal(expectedSteps, result.Steps.Count);
+        Assert.Equal(BreakdownBoundary, result.BoundaryPositionId);
+        Assert.True(result.Reconstruction!.IsVerified);
         var events = result.Steps.SelectMany(value => value.EventRecords)
             .Select(value => JsonDocument.Parse(value)).ToArray();
         try
@@ -112,7 +96,7 @@ public sealed class MovementSimulatorStudyTests
             Assert.Equal(expectedMoves, moved.Select(value => value.RootElement
                 .GetProperty("elementId").GetString()).Distinct(StringComparer.Ordinal).Count());
             Assert.Equal(
-                opensReaction ? 0 : 1,
+                1,
                 events.Count(value => EventType(value) == "movement-segment-completed"));
         }
         finally
@@ -150,14 +134,14 @@ public sealed class MovementSimulatorStudyTests
         ExerciseControllerPolicy policy) => new(
         ExerciseManifest.CurrentContractVersion,
         "movement-study",
-        "rules-lab.initiative.predetermined",
-        "sha256:48ad98fd232f7c7c50d4f925dd83e3de97f2eb48cc6929a17aa1fb172cdbd394",
-        "rules-lab.content.movement-contact.v1",
-        "sha256:20cf54f25d752253105877c6139d8db86549759f9dbb80fad873686498f26f5f",
-        "movement-contact-lab",
+        "rules-lab.breakdown.truck.v1",
+        "sha256:e6631e81ad8f97e39fd9d7eec93bad7fe2b39db4d2d3059ed94a02dd4093e7a3",
+        "rules-lab.content.breakdown-truck.v1",
+        "sha256:646e76e69ecceb82216b37d84e950928099acd8a3cb04b51526d0fe631e512ee",
+        "breakdown-truck-lab",
         Cna1979Ruleset.Manifest.Hash,
         BreakdownBoundary,
-        13,
+        30,
         rootSeed,
         ExerciseBuildMode.Exploratory,
         ExerciseConfidentiality.TrustedAuthority,

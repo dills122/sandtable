@@ -14,7 +14,12 @@ public interface IContentPackV5Resolver
     ContentPackV5CatalogResolution ResolveV5(string packId, string expectedHash);
 }
 
-public sealed class Cna1979SyntheticContentResolver : IContentPackResolver, IContentPackV5Resolver
+public interface IContentPackV6Resolver
+{
+    ContentPackV6CatalogResolution ResolveV6(string packId, string expectedHash);
+}
+
+public sealed class Cna1979SyntheticContentResolver : IContentPackResolver, IContentPackV5Resolver, IContentPackV6Resolver
 {
     public static Cna1979SyntheticContentResolver Instance { get; } = new();
 
@@ -25,6 +30,9 @@ public sealed class Cna1979SyntheticContentResolver : IContentPackResolver, ICon
     public ContentCatalogResolution Resolve(string packId, string expectedHash) =>
         Cna1979SyntheticContentCatalog.Resolve(packId, expectedHash);
 
+    public ContentPackV6CatalogResolution ResolveV6(string packId, string expectedHash) =>
+        Cna1979SyntheticContentCatalog.ResolveV6(packId, expectedHash);
+
     public ContentPackV5CatalogResolution ResolveV5(string packId, string expectedHash) =>
         Cna1979SyntheticContentCatalog.ResolveV5(packId, expectedHash);
 }
@@ -34,8 +42,10 @@ internal sealed class CampaignContentContext
     private CampaignContentContext(
         ContentPackArtifact artifact,
         ContentPackV5Artifact? artifactV5,
-        ContentScenario scenario)
+        ContentScenario scenario,
+        ContentPackV6Artifact? artifactV6 = null)
     {
+        ArtifactV6 = artifactV6;
         Artifact = artifact;
         ArtifactV5 = artifactV5;
         Scenario = scenario;
@@ -44,6 +54,8 @@ internal sealed class CampaignContentContext
     public ContentPackArtifact Artifact { get; }
 
     public ContentPackV5Artifact? ArtifactV5 { get; }
+
+    public ContentPackV6Artifact? ArtifactV6 { get; }
 
     public ContentScenario Scenario { get; }
 
@@ -105,4 +117,16 @@ internal sealed class CampaignContentContext
             artifact,
             scenario);
     }
+    public static CampaignContentContext Create(ContentPackV6Artifact artifact, string scenarioId)
+    {
+        ArgumentNullException.ThrowIfNull(artifact);
+        ArgumentException.ThrowIfNullOrWhiteSpace(scenarioId);
+        CampaignWorldV6Validator.RequireValidContent(artifact);
+        var scenario = artifact.Definition.LegacyDefinition.Scenarios.SingleOrDefault(
+            value => string.Equals(value.ScenarioId, scenarioId, StringComparison.Ordinal))
+            ?? throw new ArgumentException("Unknown Content 6 scenario.", nameof(scenarioId));
+        return new CampaignContentContext(ContentPackArtifact.Create(artifact.Definition.LegacyDefinition),
+            null, scenario, artifact);
+    }
+
 }

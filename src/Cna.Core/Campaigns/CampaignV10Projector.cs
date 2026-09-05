@@ -66,7 +66,7 @@ internal static class CampaignV10Projector
         var expectedPosition = Cna1979LandSequence.CreateTurn(scenario.Start.GameTurn)[0];
         if (created.ContractVersion != CampaignCreatedV9.CurrentContractVersion
             || created.StateVersion != 1
-            || !Cna1979Ruleset.IsCanonicalHash(created.RulesetHash)
+            || !Cna1979Ruleset.IsHistoricalHashV8(created.RulesetHash)
             || created.Setup.Content.Pack != artifact.Identity
             || !string.Equals(created.Setup.Content.ScenarioId, scenario.ScenarioId,
                 StringComparison.Ordinal)

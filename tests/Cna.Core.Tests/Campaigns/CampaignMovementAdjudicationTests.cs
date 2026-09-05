@@ -446,7 +446,7 @@ public sealed class CampaignMovementAdjudicationTests
     }
 
     [Fact]
-    public void PublicMovementActionsRefreshFromTheMovedObservation()
+    public void HistoricalMovementActionsRefreshFromTheMovedObservation()
     {
         var evidence = CampaignMovementTestData.ReachMovement();
         var candidate = CampaignMovementTestData.FindMove(
@@ -471,7 +471,7 @@ public sealed class CampaignMovementAdjudicationTests
         var opponentAudience = actingAudience == CampaignActionAudience.Axis
             ? CampaignActionAudience.Commonwealth
             : CampaignActionAudience.Axis;
-        var acting = CampaignLegalActions.Query(
+        var acting = HistoricalCampaignActions.Query(
             new CampaignAuthorityHandle(moved, evidence.Context),
             actingAudience);
 
@@ -484,10 +484,10 @@ public sealed class CampaignMovementAdjudicationTests
                 .Where(move => move.ElementId == candidate.ElementId),
             move => Assert.Equal(candidate.DestinationLocationId,
                 move.OriginLocationId));
-        Assert.Empty(CampaignLegalActions.Query(
+        Assert.Empty(HistoricalCampaignActions.Query(
             new CampaignAuthorityHandle(moved, evidence.Context),
             opponentAudience).ActionSet!.Candidates);
-        Assert.Empty(CampaignLegalActions.Query(
+        Assert.Empty(HistoricalCampaignActions.Query(
             new CampaignAuthorityHandle(moved, evidence.Context),
             CampaignActionAudience.System).ActionSet!.Candidates);
     }
@@ -639,7 +639,7 @@ public sealed class CampaignMovementAdjudicationTests
         var created = new CampaignCreated(
             campaignId,
             1,
-            Cna1979Ruleset.Manifest.Hash,
+            Cna1979Ruleset.HistoricalManifestV8.Hash,
             CampaignSetupSnapshot.FromDefinition(setup),
             CampaignWorldFactory.CreateInitial(artifact, context.Scenario),
             SandtableRandom.Create(12345UL),

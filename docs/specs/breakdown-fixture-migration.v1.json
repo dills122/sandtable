@@ -1,0 +1,384 @@
+{
+  "schemeId": "sandtable.spec.breakdown-fixture-migration.v1",
+  "status": "frozen-obligations-not-implementation-evidence",
+  "baselineCommit": "a0475472513bf97aeac5f81b9691b58bc65324ee",
+  "capabilityProfileId": "sandtable.capability.breakdown-truck-battalion.v1",
+  "inheritedSchemaSources": [
+    {
+      "path": "src/Cna.Core/Rules/BreakdownRulesArtifactCodec.cs",
+      "sha256": "85c557c03a21d1142646f732911c6f65e83d5f8996efa432c3d40b2a2c6bbab4"
+    },
+    {
+      "path": "src/Cna.Core/Rules/RulesetManifest.cs",
+      "sha256": "f1862024d2bee3d13e3fb6a17cc563e6a216a5c9fe956d61b46c4edba0e8cd93"
+    },
+    {
+      "path": "src/Cna.Core/Rules/Cna1979LandSequence.cs",
+      "sha256": "c5426245a156367eac85fc5e61792ece1ae124651a0416793fde00213641b938"
+    },
+    {
+      "path": "src/Cna.Core/Content/ContentPackV5Serializer.cs",
+      "sha256": "c2b3ce69f70e13bbe3c67e35db685e7f85cadbba65362eccc4ab02fbfcf758d0"
+    },
+    {
+      "path": "src/Cna.Core/Campaigns/CampaignV10CanonicalCodec.cs",
+      "sha256": "2902c3f3ec3b467b74a99fcf85bce8baef324e6a69ba817683bc990b75e9bbb7"
+    },
+    {
+      "path": "src/Cna.Core/Campaigns/CampaignSnapshotV10Serializer.cs",
+      "sha256": "8734eb745715f656135e67997dc183bc08d755c68e6c09190dddd53522133a52"
+    },
+    {
+      "path": "src/Cna.Core/Campaigns/CampaignSuccessorEventSerializer.cs",
+      "sha256": "80a42497308c012ee66971f65feb6c5fc461fb9f320e15338bb4c3dc206ccddc"
+    },
+    {
+      "path": "src/Cna.Core/Campaigns/CampaignEventSerializer.cs",
+      "sha256": "d97923522ef8812ec5a59aebeb3d62bbae5648dfd3f4959e3d2ea0de6c3b133d"
+    },
+    {
+      "path": "src/Cna.Core/Observations/CampaignObservationV6Serializer.cs",
+      "sha256": "728ec8cf7cb6c069bf5fca2fb92c730151e2de5d4cee9f4bb086b1d15dea262f"
+    },
+    {
+      "path": "src/Cna.Core/Observations/CampaignProjectedDecisionHistorySerializer.cs",
+      "sha256": "0b6a10de22361fd0a5b4e6c1079ed368e32405c2f231839b65ecf4e4c9de5139"
+    },
+    {
+      "path": "src/Cna.Core/Actions/CampaignObservationV6LegalActionSerializer.cs",
+      "sha256": "50e863a1caccce73243005f548b2d8096bf5388703022d68cf142a32abb0f1b7"
+    },
+    {
+      "path": "src/Cna.Core/Actions/CampaignActionCandidate.cs",
+      "sha256": "c0e1c240a51dfeb140e370cac71cd204d92954eacc6d47a08c44006850cbc590"
+    },
+    {
+      "path": "docs/specs/user-space-disclosure-manifest.v1.json",
+      "sha256": "69d1d028ba6b6125dadf634589f4d8dea9f07ccec4955c296da56c848b8bb7ab"
+    },
+    {
+      "path": "src/Cna.Core/Setups/CampaignSetupHash.cs",
+      "sha256": "b47d796a4ee9ef8a6dc6b6a0d51a28bb9f17247b724b2e7d34463ff8d3327e78"
+    },
+    {
+      "path": "src/Cna.Core/Campaigns/CampaignAuthority.cs",
+      "sha256": "a73903b6037d587b73f4cca6efb36caa106f37511d9507ebcd6854e5d77e3559"
+    }
+  ],
+  "scenarioFiles": [
+    {
+      "path": "scenarios/exercises/rules-lab.organization.baseline.v2.json",
+      "sha256": "94c57176a1b2c221814c39010bea41d6214d88da6bce8d5e4a8bc5d38bc7dac0",
+      "originalDisposition": "historical-at-activation",
+      "capabilityDisposition": "successor",
+      "successorPath": "scenarios/exercises/rules-lab.organization.baseline.breakdown.v1.json",
+      "requiredEvidence": "Preserve supported no-obligation Organization checkpoint; replace regiment/motorized pack with certified independent battalions.",
+      "ownerTasks": [
+        "BRK-TASK-003",
+        "BRK-TASK-006",
+        "BRK-TASK-007"
+      ]
+    },
+    {
+      "path": "scenarios/exercises/rules-lab.organization.v2.json",
+      "sha256": "4065ed1a2a262125eac3d6a2a72092d241fd7e3b894cb735c2c56b59a0f9a002",
+      "originalDisposition": "historical-at-activation",
+      "capabilityDisposition": "successor",
+      "successorPath": "scenarios/exercises/rules-lab.organization.breakdown.v1.json",
+      "requiredEvidence": "Preserve supported no-obligation Organization checkpoint; replace regiment/motorized pack with certified independent battalions.",
+      "ownerTasks": [
+        "BRK-TASK-003",
+        "BRK-TASK-006",
+        "BRK-TASK-007"
+      ]
+    },
+    {
+      "path": "scenarios/exercises/rules-lab.reserve-designation.baseline.v2.json",
+      "sha256": "98f48bcf9c17583ba6a02fbb079ff6749c6593bcc120b662d3a12522e3fc97eb",
+      "originalDisposition": "historical-at-activation",
+      "capabilityDisposition": "successor",
+      "successorPath": "scenarios/exercises/rules-lab.reserve-designation.baseline.breakdown.v1.json",
+      "requiredEvidence": "Preserve Reserve selection, initiative/order and checkpoint coverage with independent non-cohort battalions; no Reserve action for Truck convoys. Recompute all setup/content/rules hashes.",
+      "ownerTasks": [
+        "BRK-TASK-003",
+        "BRK-TASK-006",
+        "BRK-TASK-007"
+      ]
+    },
+    {
+      "path": "scenarios/exercises/rules-lab.reserve-designation.v2.json",
+      "sha256": "ee0985362c2b9e9c0365eaf02c1825ad4f007cf7a83fd2668e5b016e658e935e",
+      "originalDisposition": "historical-at-activation",
+      "capabilityDisposition": "successor",
+      "successorPath": "scenarios/exercises/rules-lab.reserve-designation.breakdown.v1.json",
+      "requiredEvidence": "Preserve Reserve selection, initiative/order and checkpoint coverage with independent non-cohort battalions; no Reserve action for Truck convoys. Recompute all setup/content/rules hashes.",
+      "ownerTasks": [
+        "BRK-TASK-003",
+        "BRK-TASK-006",
+        "BRK-TASK-007"
+      ]
+    },
+    {
+      "path": "scenarios/exercises/rules-lab.reserve.baseline.v2.json",
+      "sha256": "6c148e95cd4c40390b733b9d831bd4422e36f1a0d3adcd87af0145f4bfaf07b3",
+      "originalDisposition": "historical-at-activation",
+      "capabilityDisposition": "successor",
+      "successorPath": "scenarios/exercises/rules-lab.reserve.baseline.breakdown.v1.json",
+      "requiredEvidence": "Preserve Reserve selection, initiative/order and checkpoint coverage with independent non-cohort battalions; no Reserve action for Truck convoys. Recompute all setup/content/rules hashes.",
+      "ownerTasks": [
+        "BRK-TASK-003",
+        "BRK-TASK-006",
+        "BRK-TASK-007"
+      ]
+    },
+    {
+      "path": "scenarios/exercises/rules-lab.reserve.v2.json",
+      "sha256": "fb6618c9c2e2fbda1fff3c8ee5ea8ec850088c4be3e665db00ce3d97a7275882",
+      "originalDisposition": "historical-at-activation",
+      "capabilityDisposition": "successor",
+      "successorPath": "scenarios/exercises/rules-lab.reserve.breakdown.v1.json",
+      "requiredEvidence": "Preserve Reserve selection, initiative/order and checkpoint coverage with independent non-cohort battalions; no Reserve action for Truck convoys. Recompute all setup/content/rules hashes.",
+      "ownerTasks": [
+        "BRK-TASK-003",
+        "BRK-TASK-006",
+        "BRK-TASK-007"
+      ]
+    },
+    {
+      "path": "scenarios/maneuvers/rules-lab.controller-matrix.serial.v2.json",
+      "sha256": "0b53ff1165b817895398e20bea7826fc1e2e35c5ccf1be83927fce1237533471",
+      "originalDisposition": "historical-at-activation",
+      "capabilityDisposition": "successor",
+      "successorPath": "scenarios/maneuvers/rules-lab.controller-matrix.serial.breakdown.v1.json",
+      "requiredEvidence": "Preserve Reserve selection, initiative/order and checkpoint coverage with independent non-cohort battalions; no Reserve action for Truck convoys. Recompute all setup/content/rules hashes.",
+      "ownerTasks": [
+        "BRK-TASK-003",
+        "BRK-TASK-006",
+        "BRK-TASK-007"
+      ]
+    },
+    {
+      "path": "scenarios/maneuvers/rules-lab.movement-cost.paired.v1.json",
+      "sha256": "5c3c30e20919ba658bdb5ba17aed1f6ad276788979ebf94e12b31feafd81c055",
+      "originalDisposition": "historical-at-activation",
+      "capabilityDisposition": "successor",
+      "successorPath": "scenarios/maneuvers/rules-lab.movement-cost.paired.breakdown.v1.json",
+      "requiredEvidence": "New paired unladen-Truck cost fixture retains exact CP cost comparison; derive new BP/stop evidence and hashes, with unchanged paired-baseline rules.",
+      "ownerTasks": [
+        "BRK-TASK-003",
+        "BRK-TASK-006",
+        "BRK-TASK-007"
+      ]
+    },
+    {
+      "path": "scenarios/maneuvers/rules-lab.movement.serial.v2.json",
+      "sha256": "ad56e4f84ed49e6820e2aa13b62879f266c88c75ec97f538ae7e7ba929dcfa9b",
+      "originalDisposition": "historical-at-activation",
+      "capabilityDisposition": "partial-successor",
+      "successorPath": "scenarios/maneuvers/rules-lab.movement.serial.breakdown.v1.json",
+      "requiredEvidence": "Preserve controller policy matrix and CP/Reserve behavior with non-cohort battalions; add explicit stop/resolve steps. Prior positive-ZOC/motorized behavior is historical/direct only; no old exact fingerprint claim.",
+      "ownerTasks": [
+        "BRK-TASK-003",
+        "BRK-TASK-006",
+        "BRK-TASK-007"
+      ]
+    },
+    {
+      "path": "scenarios/maneuvers/rules-lab.reaction.serial.v2.json",
+      "sha256": "14054dc3ee785131985ba4558036e01b8457a0eaaf4bb5bd66c654de8c57eb74",
+      "originalDisposition": "historical-at-activation",
+      "capabilityDisposition": "partial-successor",
+      "successorPath": "scenarios/maneuvers/rules-lab.reaction.serial.breakdown.v1.json",
+      "requiredEvidence": "Thirteen non-positive-ZOC children receive bounded equivalents as separately listed; two positive/local or remote ZOC children remain deferred public authority.",
+      "ownerTasks": [
+        "BRK-TASK-003",
+        "BRK-TASK-006",
+        "BRK-TASK-007"
+      ]
+    },
+    {
+      "path": "scenarios/maneuvers/rules-lab.reserve-designation.serial.v2.json",
+      "sha256": "e690a7ec63f47201d22d1e72857c947c5fc67a5f5763ef2cfc92cf25212d8a48",
+      "originalDisposition": "historical-at-activation",
+      "capabilityDisposition": "successor",
+      "successorPath": "scenarios/maneuvers/rules-lab.reserve-designation.serial.breakdown.v1.json",
+      "requiredEvidence": "Preserve Reserve selection, initiative/order and checkpoint coverage with independent non-cohort battalions; no Reserve action for Truck convoys. Recompute all setup/content/rules hashes.",
+      "ownerTasks": [
+        "BRK-TASK-003",
+        "BRK-TASK-006",
+        "BRK-TASK-007"
+      ]
+    },
+    {
+      "path": "scenarios/maneuvers/rules-lab.reserve-policy.paired.v1.json",
+      "sha256": "7898b703b9cd2e411b5cbb4ec9ec415a73f51839d495686ad153fdfee6ac7890",
+      "originalDisposition": "historical-at-activation",
+      "capabilityDisposition": "successor",
+      "successorPath": "scenarios/maneuvers/rules-lab.reserve-policy.paired.breakdown.v1.json",
+      "requiredEvidence": "Preserve Reserve selection, initiative/order and checkpoint coverage with independent non-cohort battalions; no Reserve action for Truck convoys. Recompute all setup/content/rules hashes.",
+      "ownerTasks": [
+        "BRK-TASK-003",
+        "BRK-TASK-006",
+        "BRK-TASK-007"
+      ]
+    },
+    {
+      "path": "scenarios/maneuvers/rules-lab.serial.v2.json",
+      "sha256": "d6638be7ffb2a289a8030fb0a30136b08fa5950d1f577b4d7e673675d546ec8f",
+      "originalDisposition": "historical-at-activation",
+      "capabilityDisposition": "successor",
+      "successorPath": "scenarios/maneuvers/rules-lab.serial.breakdown.v1.json",
+      "requiredEvidence": "Preserve supported no-obligation Organization checkpoint; replace regiment/motorized pack with certified independent battalions.",
+      "ownerTasks": [
+        "BRK-TASK-003",
+        "BRK-TASK-006",
+        "BRK-TASK-007"
+      ]
+    },
+    {
+      "path": "scenarios/maneuvers/rules-lab.stage-entry.serial.v2.json",
+      "sha256": "ea1365edba9978b9fcb003dc10faac8632356451e1c64f72b2817ad6be1d6a24",
+      "originalDisposition": "historical-at-activation",
+      "capabilityDisposition": "successor",
+      "successorPath": "scenarios/maneuvers/rules-lab.stage-entry.serial.breakdown.v1.json",
+      "requiredEvidence": "Preserve Reserve selection, initiative/order and checkpoint coverage with independent non-cohort battalions; no Reserve action for Truck convoys. Recompute all setup/content/rules hashes.",
+      "ownerTasks": [
+        "BRK-TASK-003",
+        "BRK-TASK-006",
+        "BRK-TASK-007"
+      ]
+    }
+  ],
+  "reactionChildren": [
+    {
+      "exerciseId": "reaction.adjacent.all-by-action-id",
+      "originalDisposition": "historical-at-activation",
+      "capabilityDisposition": "successor",
+      "successorExerciseId": "reaction.adjacent.all-by-action-id.breakdown-v1",
+      "requiredEvidence": "Retain exact named controller episode/order/close behavior with non-cohort battalion reactors in separate hexes; add exactly one zero-roll System resolution for each moved route stop."
+    },
+    {
+      "exerciseId": "reaction.adjacent.all-by-descending-action-id",
+      "originalDisposition": "historical-at-activation",
+      "capabilityDisposition": "successor",
+      "successorExerciseId": "reaction.adjacent.all-by-descending-action-id.breakdown-v1",
+      "requiredEvidence": "Retain exact named controller episode/order/close behavior with non-cohort battalion reactors in separate hexes; add exactly one zero-roll System resolution for each moved route stop."
+    },
+    {
+      "exerciseId": "reaction.adjacent.two-steps",
+      "originalDisposition": "historical-at-activation",
+      "capabilityDisposition": "successor",
+      "successorExerciseId": "reaction.adjacent.two-steps.breakdown-v1",
+      "requiredEvidence": "Retain exact named controller episode/order/close behavior with non-cohort battalion reactors in separate hexes; add exactly one zero-roll System resolution for each moved route stop."
+    },
+    {
+      "exerciseId": "reaction.adjacent.decline",
+      "originalDisposition": "historical-at-activation",
+      "capabilityDisposition": "successor",
+      "successorExerciseId": "reaction.adjacent.decline.breakdown-v1",
+      "requiredEvidence": "Retain exact named controller episode/order/close behavior with non-cohort battalion reactors in separate hexes; add exactly one zero-roll System resolution for each moved route stop."
+    },
+    {
+      "exerciseId": "reaction.adjacent.one-then-decline",
+      "originalDisposition": "historical-at-activation",
+      "capabilityDisposition": "successor",
+      "successorExerciseId": "reaction.adjacent.one-then-decline.breakdown-v1",
+      "requiredEvidence": "Retain exact named controller episode/order/close behavior with non-cohort battalion reactors in separate hexes; add exactly one zero-roll System resolution for each moved route stop."
+    },
+    {
+      "exerciseId": "reaction.adjacent.unavailable",
+      "originalDisposition": "historical-at-activation",
+      "capabilityDisposition": "successor",
+      "successorExerciseId": "reaction.adjacent.unavailable.breakdown-v1",
+      "requiredEvidence": "Retain exact named controller episode/order/close behavior with non-cohort battalion reactors in separate hexes; add exactly one zero-roll System resolution for each moved route stop."
+    },
+    {
+      "exerciseId": "reaction.adjacent.timeout",
+      "originalDisposition": "historical-at-activation",
+      "capabilityDisposition": "successor",
+      "successorExerciseId": "reaction.adjacent.timeout.breakdown-v1",
+      "requiredEvidence": "Retain exact named controller episode/order/close behavior with non-cohort battalion reactors in separate hexes; add exactly one zero-roll System resolution for each moved route stop."
+    },
+    {
+      "exerciseId": "reaction.adjacent.active-unavailable",
+      "originalDisposition": "historical-at-activation",
+      "capabilityDisposition": "successor",
+      "successorExerciseId": "reaction.adjacent.active-unavailable.breakdown-v1",
+      "requiredEvidence": "Retain exact named controller episode/order/close behavior with non-cohort battalion reactors in separate hexes; add exactly one zero-roll System resolution for each moved route stop."
+    },
+    {
+      "exerciseId": "reaction.adjacent.active-timeout",
+      "originalDisposition": "historical-at-activation",
+      "capabilityDisposition": "successor",
+      "successorExerciseId": "reaction.adjacent.active-timeout.breakdown-v1",
+      "requiredEvidence": "Retain exact named controller episode/order/close behavior with non-cohort battalion reactors in separate hexes; add exactly one zero-roll System resolution for each moved route stop."
+    },
+    {
+      "exerciseId": "reaction.positive-zoc.all-by-action-id",
+      "originalDisposition": "historical-at-activation",
+      "capabilityDisposition": "deferred-public",
+      "successorExerciseId": null,
+      "requiredEvidence": "Positive ZOC requires stacking >1, excluded by profile. Retain original historical trajectory plus direct rule/authority coverage; public successor requires general placement expansion."
+    },
+    {
+      "exerciseId": "reaction.low-defense.all-by-action-id",
+      "originalDisposition": "historical-at-activation",
+      "capabilityDisposition": "successor",
+      "successorExerciseId": "reaction.low-defense.all-by-action-id.breakdown-v1",
+      "requiredEvidence": "Retain adjacency-triggered lifecycle and negative ZOC; battalion size also prevents ZOC, so isolated low-defense threshold proof stays direct/historical."
+    },
+    {
+      "exerciseId": "reaction.remote-zoc.all-by-action-id",
+      "originalDisposition": "historical-at-activation",
+      "capabilityDisposition": "deferred-public",
+      "successorExerciseId": null,
+      "requiredEvidence": "Positive ZOC requires stacking >1, excluded by profile. Retain original historical trajectory plus direct rule/authority coverage; public successor requires general placement expansion."
+    },
+    {
+      "exerciseId": "reaction.headquarters.all-by-action-id",
+      "originalDisposition": "historical-at-activation",
+      "capabilityDisposition": "successor",
+      "successorExerciseId": "reaction.headquarters.all-by-action-id.breakdown-v1",
+      "requiredEvidence": "Retain adjacency trigger and generic no-eligible closure for non-cohort battalion HQ; no positive HQ ZOC claim."
+    },
+    {
+      "exerciseId": "reaction.noncombat.all-by-action-id",
+      "originalDisposition": "historical-at-activation",
+      "capabilityDisposition": "successor",
+      "successorExerciseId": "reaction.noncombat.all-by-action-id.breakdown-v1",
+      "requiredEvidence": "Preserve no trigger from noncombat-only adjacency using at most one admitted unladen Truck neighbor per side. Do not invent a second unsupported noncombat class."
+    },
+    {
+      "exerciseId": "reaction.recurrence.all-by-action-id",
+      "originalDisposition": "historical-at-activation",
+      "capabilityDisposition": "successor",
+      "successorExerciseId": "reaction.recurrence.all-by-action-id.breakdown-v1",
+      "requiredEvidence": "Retain later-trigger opportunity recurrence and cumulative CP with non-cohort battalions, separated own stacks and explicit zero-roll stops."
+    }
+  ],
+  "newPublicEvidence": [
+    "ordinary-truck-positive-loss",
+    "eligible-zero-loss",
+    "no-roll-stop",
+    "higher-band-repeat-check",
+    "survivors-leave-lots-fixed",
+    "zero-working-cannot-move",
+    "reactor-stop-before-next-participant",
+    "active-unavailable-preserves-route",
+    "active-timeout-preserves-route",
+    "last-cp-trigger-defers-phasing-stop",
+    "truck-mover-does-not-trigger",
+    "truck-neighbor-does-not-trigger",
+    "first-side-breakdown-to-combat"
+  ],
+  "deferredPublicCapabilities": [
+    "positive-local-zoc",
+    "positive-remote-zoc",
+    "positive-cohort-reaction-loss",
+    "motorized-infantry-transport-consequences",
+    "grouped-mixed-loss-allocation",
+    "general-origin-placement",
+    "capture-towing-repair",
+    "later-stage-bp-reset"
+  ]
+}

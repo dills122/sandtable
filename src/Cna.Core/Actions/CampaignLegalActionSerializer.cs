@@ -6,90 +6,19 @@ namespace Cna.Core.Actions;
 
 public static class CampaignLegalActionSerializer
 {
-    public static byte[] Serialize(CampaignLegalActionSet actionSet)
-    {
-        ArgumentNullException.ThrowIfNull(actionSet);
-        using var stream = new MemoryStream();
-        using (var writer = new Utf8JsonWriter(stream))
-        {
-            writer.WriteStartObject();
-            writer.WriteNumber("contractVersion", actionSet.ContractVersion);
-            writer.WriteString("policyId", actionSet.PolicyId);
-            writer.WriteString("campaignId", actionSet.CampaignId);
-            writer.WriteNumber("stateVersion", actionSet.StateVersion);
-            writer.WriteString("rulesetHash", actionSet.RulesetHash);
-            writer.WriteString("positionId", actionSet.PositionId);
-            writer.WriteString("audience", FormatAudience(actionSet.Audience));
-            writer.WriteStartArray("candidates");
-            foreach (var candidate in actionSet.Candidates)
-            {
-                WriteCandidate(writer, candidate);
-            }
-            writer.WriteEndArray();
-            writer.WriteEndObject();
-        }
-        return stream.ToArray();
-    }
+    public static byte[] Serialize(CampaignLegalActionSet actionSet) =>
+        CampaignObservationV7LegalActionSerializer.Serialize(actionSet);
 
-    /// <summary>
-    /// Reads canonical action-set data without authorizing or executing any candidate.
-    /// </summary>
-    public static CampaignLegalActionSet DeserializeCanonical(ReadOnlySpan<byte> utf8Json)
-    {
-        try
-        {
-            using var document = JsonDocument.Parse(
-                utf8Json.ToArray(),
-                new JsonDocumentOptions
-                {
-                    AllowTrailingCommas = false,
-                    CommentHandling = JsonCommentHandling.Disallow,
-                    MaxDepth = 32,
-                });
-            var root = document.RootElement;
-            RequireProperties(
-                root,
-                "contractVersion",
-                "policyId",
-                "campaignId",
-                "stateVersion",
-                "rulesetHash",
-                "positionId",
-                "audience",
-                "candidates");
-            var set = new CampaignLegalActionSet(
-                root.GetProperty("campaignId").GetString()!,
-                root.GetProperty("stateVersion").GetInt64(),
-                root.GetProperty("rulesetHash").GetString()!,
-                root.GetProperty("positionId").GetString()!,
-                ParseAudience(root.GetProperty("audience").GetString()),
-                root.GetProperty("candidates").EnumerateArray().Select(ParseCandidate).ToArray());
-            if (root.GetProperty("contractVersion").GetInt32()
-                    != CampaignLegalActionSet.CurrentContractVersion
-                || root.GetProperty("policyId").GetString()
-                    != CampaignLegalActionSet.CurrentPolicyId
-                || !utf8Json.SequenceEqual(Serialize(set)))
-            {
-                throw new JsonException("The legal-action set is not canonical JSON.");
-            }
+    public static CampaignLegalActionSet DeserializeCanonical(ReadOnlySpan<byte> utf8Json) =>
+        CampaignObservationV7LegalActionSerializer.DeserializeCanonical(utf8Json);
 
-            return set;
-        }
-        catch (JsonException)
-        {
-            throw;
-        }
-        catch (Exception exception) when (exception is ArgumentException
-            or InvalidOperationException
-            or FormatException
-            or KeyNotFoundException
-            or OverflowException)
-        {
-            throw new JsonException("The legal-action set JSON is invalid.", exception);
-        }
-    }
+    public static byte[] SerializeHistoricalV2(CampaignLegalActionSet actionSet) =>
+        CampaignObservationV6LegalActionSerializer.Serialize(actionSet);
 
-    private static void WriteCandidate(Utf8JsonWriter writer, CampaignActionCandidate candidate)
+    public static CampaignLegalActionSet DeserializeHistoricalV2(ReadOnlySpan<byte> utf8Json) =>
+        CampaignObservationV6LegalActionSerializer.DeserializeCanonical(utf8Json);
+
+    internal static void WriteCandidate(Utf8JsonWriter writer, CampaignActionCandidate candidate)
     {
         writer.WriteStartObject();
         writer.WriteNumber("contractVersion", candidate.ContractVersion);
@@ -129,7 +58,7 @@ public static class CampaignLegalActionSerializer
         writer.WriteEndObject();
     }
 
-    private static CampaignActionCandidate ParseCandidate(JsonElement candidate)
+    internal static CampaignActionCandidate ParseCandidate(JsonElement candidate)
     {
         if (candidate.ValueKind != JsonValueKind.Object)
         {

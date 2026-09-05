@@ -24,7 +24,7 @@ public sealed class CampaignExercisesTests
         Assert.Equal(CampaignCreationRejectionReason.None, started.RejectionReason);
         Assert.NotNull(started.Session);
         Assert.Equal(
-            CampaignSnapshotV10Serializer.Serialize(ordinary.Handle!.CurrentSnapshot!),
+            CampaignCurrentSnapshotSerializer.Serialize(ordinary.Handle!.CurrentSnapshot!),
             started.InitialSnapshotBytes);
         Assert.Equal(
             CampaignCurrentEventSerializer.Serialize(started.Session!.CurrentHistory[0]),
@@ -35,7 +35,7 @@ public sealed class CampaignExercisesTests
         snapshotCopy[0] ^= 0xff;
         eventCopy[0] ^= 0xff;
         Assert.Equal(
-            CampaignSnapshotV10Serializer.Serialize(started.Session.CurrentSnapshot),
+            CampaignCurrentSnapshotSerializer.Serialize(started.Session.CurrentSnapshot),
             started.InitialSnapshotBytes);
         Assert.Equal(
             CampaignCurrentEventSerializer.Serialize(started.Session.CurrentHistory[0]),
@@ -165,7 +165,7 @@ public sealed class CampaignExercisesTests
         var session = Start(request);
         var authority = CampaignAuthority.Create(request).Handle!;
 
-        while (session.Snapshot.SequencePosition.PositionId
+        while (session.CurrentSnapshot.CurrentPosition.SequenceContext.PositionId
             != "land.position.operation-1.organization")
         {
             var active = Enum.GetValues<CampaignActionAudience>()
@@ -191,13 +191,13 @@ public sealed class CampaignExercisesTests
                     exercise.SuccessorSession!.CurrentHistory[^1]),
                 Assert.Single(exercise.Evidence.EventRecords));
             Assert.Equal(
-                CampaignSnapshotV10Serializer.Serialize(
+                CampaignCurrentSnapshotSerializer.Serialize(
                     ordinary.SuccessorHandle!.CurrentSnapshot!),
                 exercise.Evidence.SnapshotCheckpoint);
             Assert.Equal(
-                CampaignSnapshotV10Serializer.Serialize(
+                CampaignCurrentSnapshotSerializer.Serialize(
                     ordinary.SuccessorHandle.CurrentSnapshot!),
-                CampaignSnapshotV10Serializer.Serialize(
+                CampaignCurrentSnapshotSerializer.Serialize(
                     exercise.SuccessorSession!.CurrentSnapshot));
 
             var eventCopy = Assert.Single(exercise.Evidence.EventRecords);
@@ -209,7 +209,7 @@ public sealed class CampaignExercisesTests
                     exercise.SuccessorSession.CurrentHistory[^1]),
                 Assert.Single(exercise.Evidence.EventRecords));
             Assert.Equal(
-                CampaignSnapshotV10Serializer.Serialize(
+                CampaignCurrentSnapshotSerializer.Serialize(
                     ordinary.SuccessorHandle.CurrentSnapshot!),
                 exercise.Evidence.SnapshotCheckpoint);
 
@@ -241,7 +241,7 @@ public sealed class CampaignExercisesTests
         Assert.Null(result.Evidence);
         Assert.Equal(beforeBytes, CampaignLegalActionSerializer.Serialize(
             CampaignExercises.Query(session, CampaignActionAudience.System).ActionSet!));
-        Assert.Single(session.History);
+        Assert.Single(session.CurrentHistory);
     }
 
     [Fact]
@@ -254,7 +254,7 @@ public sealed class CampaignExercisesTests
         Assert.True(result.IsVerified);
         Assert.Equal(ExerciseReconstructionFailureReason.None, result.FailureReason);
         Assert.Equal(
-            CampaignSnapshotV10Serializer.Serialize(completed.CurrentSnapshot),
+            CampaignCurrentSnapshotSerializer.Serialize(completed.CurrentSnapshot),
             result.ReconstructedSnapshotBytes);
         Assert.Equal(result.ExpectedSnapshotHash, result.ReconstructedSnapshotHash);
         Assert.StartsWith("sha256:", result.EventStreamHash, StringComparison.Ordinal);
@@ -264,24 +264,21 @@ public sealed class CampaignExercisesTests
     public void ReconstructionFailsForRemovedReorderedOrChangedInternalHistory()
     {
         var completed = CompleteExercise();
-        var history = completed.History.ToArray();
-        var removed = new ExerciseSession(completed.Snapshot, completed.Context, history[1..]);
+        var history = completed.CurrentHistory.ToArray();
+        var removed = new ExerciseSession(completed.CurrentSnapshot, completed.Context, history[1..]);
         var reordered = new ExerciseSession(
-            completed.Snapshot,
+            completed.CurrentSnapshot,
             completed.Context,
             history.Reverse());
         var changedHistory = history.ToArray();
-        var created = Assert.IsType<CampaignCreated>(changedHistory[0]);
-        changedHistory[0] = created with
-        {
-            RandomState = new RandomStreamState(
-                created.RandomState.ContractVersion,
-                created.RandomState.AlgorithmId,
-                created.RandomState.Seed + 1,
-                created.RandomState.NextByteCursor),
-        };
+        var created = Assert.IsType<CampaignCreatedV10>(changedHistory[0]);
+        changedHistory[0] = new CampaignCreatedV10(created.CampaignId, created.StateVersion,
+            created.RulesetHash, created.Setup, created.InitialWorld,
+            new RandomStreamState(created.RandomState.ContractVersion,
+                created.RandomState.AlgorithmId, created.RandomState.Seed + 1,
+                created.RandomState.NextByteCursor), created.SequencePosition, created.BreakdownFlow);
         var changed = new ExerciseSession(
-            completed.Snapshot,
+            completed.CurrentSnapshot,
             completed.Context,
             changedHistory);
 
@@ -290,10 +287,52 @@ public sealed class CampaignExercisesTests
         Assert.False(CampaignExercises.Reconstruct(changed).IsVerified);
     }
 
+    [Fact]
+    public void TruckStopAndBreakdownCompletionRetainReplayableCurrentEvidence()
+    {
+        var session = Start(CreateRequest());
+        var moved = false;
+        for (var step = 0; step < 25; step++)
+        {
+            var sets = Enum.GetValues<CampaignActionAudience>()
+                .Select(audience => CampaignExercises.Query(session, audience).ActionSet!).ToArray();
+            var active = sets.Where(set => set.Candidates.Count > 0).ToArray();
+            if (active.Length == 0) break;
+            var set = Assert.Single(active);
+            CampaignActionCandidate? candidate = null;
+            if (!moved)
+                candidate = set.Candidates.OfType<MoveElementAction>()
+                    .FirstOrDefault(value => value.ElementId == "axis-truck");
+            moved |= candidate is MoveElementAction;
+            candidate ??= set.Candidates.FirstOrDefault(value => value is StopElementMovementAction)
+                ?? set.Candidates.FirstOrDefault(value => value is CompleteReserveDesignationAction)
+                ?? set.Candidates.FirstOrDefault(value => value is CompleteMovementSegmentAction)
+                ?? set.Candidates.FirstOrDefault(value => value is ActFirstAction)
+                ?? set.Candidates[0];
+            var result = CampaignExercises.Submit(session, new CampaignActionSubmission(1,
+                set.CampaignId, set.StateVersion, set.PositionId, set.Audience, candidate.ActionId));
+            Assert.True(result.IsAccepted, $"{candidate.Kind}: {result.RejectionReason}");
+            CampaignExercises.ValidateCanonicalEvent(Assert.Single(result.Evidence!.EventRecords));
+            Assert.Equal(result.Evidence.Receipt.ResultingPositionId,
+                CampaignExercises.ReadCheckpoint(result.Evidence.SnapshotCheckpoint).PositionId);
+            session = result.SuccessorSession!;
+        }
+        Assert.True(moved);
+        Assert.Equal(LandSegmentIds.Combat, session.CurrentSnapshot.CurrentPosition.SequenceContext.SegmentId);
+        Assert.Contains(session.CurrentHistory, value => value is ElementMovementStopped);
+        Assert.Contains(session.CurrentHistory, value => value is BreakdownStopResolved);
+        Assert.True(CampaignExercises.Reconstruct(session).IsVerified);
+        var history = session.CurrentHistory.ToArray();
+        var stop = Array.FindIndex(history, value => value is BreakdownStopResolved);
+        var truncated = new ExerciseSession(session.CurrentSnapshot, session.Context,
+            history.Where((_, index) => index != stop));
+        Assert.False(CampaignExercises.Reconstruct(truncated).IsVerified);
+    }
+
     private static ExerciseSession CompleteExercise()
     {
         var session = Start(CreateRequest());
-        while (session.Snapshot.SequencePosition.PositionId
+        while (session.CurrentSnapshot.CurrentPosition.SequenceContext.PositionId
             != "land.position.operation-1.organization")
         {
             var active = Enum.GetValues<CampaignActionAudience>()
@@ -323,11 +362,10 @@ public sealed class CampaignExercisesTests
 
     private static CampaignCreationRequest CreateRequest()
     {
-        var setup = Cna1979SetupCatalog.Definitions[0];
-        return CampaignCurrentRequestTestData.Create(
-            setup,
-            "campaign-exercise",
-            12345);
+        var setup = CampaignSetupSnapshotV6.FromDefinition(Cna1979BreakdownSetupCatalog.Definitions.Single(value => value.SetupId == Cna1979BreakdownSetupCatalog.TruckSetupId));
+        return new CampaignCreationRequest(1, "campaign-exercise", Cna1979Ruleset.Manifest.Hash,
+            12345, setup.SetupId, setup.SetupHash, setup.Content.Pack.PackId,
+            setup.Content.Pack.Hash, setup.Content.ScenarioId);
     }
 
     private static bool ContainsType(Type candidate, Type forbidden)

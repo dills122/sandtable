@@ -12,38 +12,30 @@ public sealed class CampaignCreationAdmissionTests
     [Fact]
     public void SharedCreationExecutionMatchesTheAuthorityFacadeAndRetainsExactEvidence()
     {
-        var setup = Cna1979SetupCatalog.Definitions[0];
-        var request = CampaignCurrentRequestTestData.Create(
-            setup,
-            "campaign-shared-creation",
-            12345);
-
+        var setup = Cna1979BreakdownSetupCatalog.Definitions.Single(value => value.SetupId == Cna1979BreakdownSetupCatalog.TruckSetupId);
+        var request = new CampaignCreationRequest(1, "campaign-shared-creation", Cna1979Ruleset.Manifest.Hash,
+            12345, setup.SetupId, setup.Hash, setup.Content.Pack.PackId, setup.Content.Pack.Hash,
+            setup.Content.ScenarioId);
         var execution = CampaignCreationExecution.Execute(request);
         var facade = CampaignAuthority.Create(request);
-
         Assert.True(execution.IsCreated);
         Assert.Equal(CampaignCreationRejectionReason.None, execution.RejectionReason);
-        Assert.NotNull(execution.CreatedEvent);
-        Assert.NotNull(execution.Snapshot);
+        Assert.NotNull(execution.CurrentCreatedEvent);
+        Assert.NotNull(execution.CurrentSnapshot);
+        Assert.Null(execution.CreatedEvent);
+        Assert.Null(execution.Snapshot);
         Assert.NotNull(execution.Context);
         Assert.True(facade.IsCreated);
-        Assert.Equal(
-            CampaignSnapshotSerializer.Serialize(facade.Handle!.Snapshot),
-            CampaignSnapshotSerializer.Serialize(execution.Snapshot!));
-        Assert.Equal(
-            CampaignSnapshotSerializer.Serialize(execution.Snapshot),
-            CampaignSnapshotSerializer.Serialize(CampaignProjector.Apply(
-                null,
-                execution.CreatedEvent!,
-                execution.Context!)));
-
+        Assert.Equal(CampaignCurrentSnapshotSerializer.Serialize(facade.Handle!.CurrentSnapshot!),
+            CampaignCurrentSnapshotSerializer.Serialize(execution.CurrentSnapshot));
+        Assert.Equal(CampaignCurrentSnapshotSerializer.Serialize(execution.CurrentSnapshot),
+            CampaignCurrentSnapshotSerializer.Serialize(CampaignCreationV10Factory.CreateSnapshot(
+                execution.CurrentCreatedEvent, execution.Context.ArtifactV6!, execution.Context.Scenario)));
         var repeated = CampaignCreationExecution.Execute(request);
-        Assert.Equal(
-            CampaignEventSerializer.Serialize(execution.CreatedEvent),
-            CampaignEventSerializer.Serialize(repeated.CreatedEvent!));
-        Assert.Equal(
-            CampaignSnapshotSerializer.Serialize(execution.Snapshot),
-            CampaignSnapshotSerializer.Serialize(repeated.Snapshot!));
+        Assert.Equal(CampaignCurrentEventSerializer.Serialize(execution.CurrentCreatedEvent),
+            CampaignCurrentEventSerializer.Serialize(repeated.CurrentCreatedEvent!));
+        Assert.Equal(CampaignCurrentSnapshotSerializer.Serialize(execution.CurrentSnapshot),
+            CampaignCurrentSnapshotSerializer.Serialize(repeated.CurrentSnapshot!));
     }
 
     [Fact]
@@ -53,7 +45,7 @@ public sealed class CampaignCreationAdmissionTests
         var request = new CampaignCreationRequest(
             99,
             "campaign-shared-creation",
-            Cna1979Ruleset.Manifest.Hash,
+            Cna1979Ruleset.HistoricalManifestV8.Hash,
             12345,
             setup.SetupId,
             setup.Hash,
@@ -390,7 +382,7 @@ public sealed class CampaignCreationAdmissionTests
 
     private static CreateCampaign Create(CampaignSetupDefinition setup) => new(
         "campaign-1",
-        Cna1979Ruleset.Manifest.Hash,
+        Cna1979Ruleset.HistoricalManifestV8.Hash,
         12345,
         setup.SetupId,
         setup.Hash,

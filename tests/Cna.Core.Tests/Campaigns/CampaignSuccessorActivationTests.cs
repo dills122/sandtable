@@ -3,6 +3,7 @@ using Cna.Core.Campaigns;
 using Cna.Core.Content;
 using Cna.Core.Exercises;
 using Cna.Core.Observations;
+using Cna.Core.Randomness;
 using Cna.Core.Rules;
 using Cna.Core.Setups;
 
@@ -11,13 +12,13 @@ namespace Cna.Core.Tests.Campaigns;
 public sealed class CampaignSuccessorActivationTests
 {
     [Fact]
-    public void CurrentIdentitySetAndPublicCreationAreSuccessorOnly()
+    public void HistoricalIdentitySetRemainsReadableAndCurrentCreationRejectsIt()
     {
-        Assert.Equal(8, Cna1979Ruleset.ContractVersion);
+        Assert.Equal(8, Cna1979Ruleset.HistoricalManifestV8.ContractVersion);
         Assert.Equal(3, Cna1979LandSequence.ContractVersion);
         Assert.Equal(3, Cna1979LandSequence.CatalogSchemaVersion);
         Assert.Contains(
-            Cna1979Ruleset.Manifest.Artifacts,
+            Cna1979Ruleset.HistoricalManifestV8.Artifacts,
             artifact => artifact.ArtifactId == Cna1979Zoc.AuthorityId);
 
         var artifact = Cna1979SyntheticContentCatalog.ArtifactV5;
@@ -30,7 +31,7 @@ public sealed class CampaignSuccessorActivationTests
         var request = new CampaignCreationRequest(
             CampaignCreationRequest.CurrentContractVersion,
             "campaign-successor-activation",
-            Cna1979Ruleset.Manifest.Hash,
+            Cna1979Ruleset.HistoricalManifestV8.Hash,
             12345,
             setup.SetupId,
             setup.SetupHash,
@@ -38,26 +39,22 @@ public sealed class CampaignSuccessorActivationTests
             artifact.Identity.Hash,
             setup.Content.ScenarioId);
 
-        var start = CampaignExercises.Begin(request);
-
-        Assert.True(start.IsStarted);
-        var created = Assert.IsType<CampaignCreatedV9>(
-            CampaignSuccessorEventSerializer.Deserialize(start.CreationEventBytes!));
-        var snapshot = CampaignSnapshotV10Serializer.Deserialize(start.InitialSnapshotBytes!);
+        var handle = CreateHistoricalHandle(request.CampaignId);
+        var snapshot = handle.HistoricalSnapshotV10!;
+        var created = CampaignCreationV9Factory.Create(request.CampaignId, request.RulesetHash,
+            CampaignSetupSnapshot.FromDefinition(definition), artifact, handle.Context.Scenario,
+            SandtableRandom.Create(request.Seed), Cna1979LandSequence.CreateTurn(1)[0]);
         Assert.Equal(9, created.ContractVersion);
         Assert.Equal(10, snapshot.ContractVersion);
         Assert.Equal(5, snapshot.Setup.Content.Pack.SchemaVersion);
         Assert.Equal(5, snapshot.World.ContractVersion);
-
-        var authority = CampaignAuthority.Create(request);
-        Assert.True(authority.IsCreated);
-        var observation = CampaignObservations.Query(
-            authority.Handle!,
-            LandSide.Axis);
-        Assert.True(observation.IsProjected);
-        Assert.Equal(
-            CampaignObservationV6.CurrentPolicyId,
-            Assert.IsType<CampaignObservationV6>(observation.Observation).PolicyId);
+        Assert.Equal(created, CampaignSuccessorEventSerializer.Deserialize(CampaignSuccessorEventSerializer.Serialize(created)));
+        Assert.Equal(snapshot, CampaignSnapshotV10Serializer.Deserialize(CampaignSnapshotV10Serializer.Serialize(snapshot)));
+        Assert.False(CampaignAuthority.Create(request).IsCreated);
+        Assert.False(CampaignExercises.Begin(request).IsStarted);
+        Assert.False(CampaignObservations.Query(handle, LandSide.Axis).IsProjected);
+        Assert.False(CampaignLegalActions.Query(handle, CampaignActionAudience.Axis).IsSuccessful);
+        Assert.Equal(CampaignObservationV6.CurrentPolicyId, ProjectHistorical(handle, LandSide.Axis).PolicyId);
 
         var legacyRequest = new CampaignCreationRequest(
             CampaignCreationRequest.CurrentContractVersion,
@@ -80,7 +77,7 @@ public sealed class CampaignSuccessorActivationTests
     [InlineData(true, false, true)]
     [InlineData(false, true, true)]
     [InlineData(true, true, true)]
-    public void PublicCreationRejectsEveryLegacyCurrentIdentityMixture(
+    public void HistoricalCreationRejectsEveryLegacyCurrentIdentityMixture(
         bool legacyRuleset,
         bool legacySetup,
         bool legacyContent)
@@ -98,7 +95,7 @@ public sealed class CampaignSuccessorActivationTests
         var request = new CampaignCreationRequest(
             CampaignCreationRequest.CurrentContractVersion,
             $"campaign-mixed-{legacyRuleset}-{legacySetup}-{legacyContent}",
-            legacyRuleset ? legacyRulesetHash : Cna1979Ruleset.Manifest.Hash,
+            legacyRuleset ? legacyRulesetHash : Cna1979Ruleset.HistoricalManifestV8.Hash,
             12345,
             definition.SetupId,
             legacySetup ? definition.Hash : currentSetup.SetupHash,
@@ -111,7 +108,7 @@ public sealed class CampaignSuccessorActivationTests
     }
 
     [Fact]
-    public void PublicObservationPublishesTruthfulSourceFlagsWithoutControlMappings()
+    public void HistoricalObservationPublishesTruthfulSourceFlagsWithoutControlMappings()
     {
         var positive = CampaignV10TestData.CreateWithReactors(
             ["commonwealth-reactor-alpha", "commonwealth-reactor-bravo"],
@@ -119,9 +116,7 @@ public sealed class CampaignSuccessorActivationTests
         var positiveHandle = new CampaignAuthorityHandle(
             positive.MovementSnapshot,
             CampaignContentContext.Create(positive.Artifact, positive.Scenario.ScenarioId));
-        var positiveResult = CampaignObservations.Query(positiveHandle, LandSide.Axis);
-        var positiveObservation = Assert.IsType<CampaignObservationV6>(
-            positiveResult.Observation);
+        var positiveObservation = ProjectHistorical(positiveHandle, LandSide.Axis);
 
         Assert.Equal(["east"], positiveObservation.ApparentEnemyControlledLocationIds);
         Assert.Equal(2, positiveObservation.ApparentOpposingPresences.Count);
@@ -134,9 +129,7 @@ public sealed class CampaignSuccessorActivationTests
         var negativeHandle = new CampaignAuthorityHandle(
             negative.MovementSnapshot,
             CampaignContentContext.Create(negative.Artifact, negative.Scenario.ScenarioId));
-        var negativeResult = CampaignObservations.Query(negativeHandle, LandSide.Axis);
-        var negativeObservation = Assert.IsType<CampaignObservationV6>(
-            negativeResult.Observation);
+        var negativeObservation = ProjectHistorical(negativeHandle, LandSide.Axis);
 
         Assert.Empty(negativeObservation.ApparentEnemyControlledLocationIds);
         Assert.All(negativeObservation.ApparentOpposingPresences, presence =>
@@ -150,13 +143,13 @@ public sealed class CampaignSuccessorActivationTests
     [Theory]
     [InlineData(false, CampaignActionAudience.Axis)]
     [InlineData(true, CampaignActionAudience.Commonwealth)]
-    public void PublicNormalProgressionResolvesFirstActingSide(
+    public void HistoricalNormalProgressionResolvesFirstActingSide(
         bool actLast,
         CampaignActionAudience expectedAudience)
     {
-        var handle = CreatePublicHandle(
+        var handle = CreateHistoricalHandle(
             actLast ? "campaign-current-reserve-last" : "campaign-current-reserve-first");
-        while (handle.CurrentSnapshot!.CurrentPosition.SequencePosition!.PhaseId
+        while (handle.HistoricalSnapshotV10!.CurrentPosition.SequencePosition!.PhaseId
             != LandPhaseIds.ReserveDesignation)
         {
             var sets = Enum.GetValues<CampaignActionAudience>()
@@ -188,19 +181,19 @@ public sealed class CampaignSuccessorActivationTests
             expectedAudience == CampaignActionAudience.Axis
                 ? LandSide.Axis
                 : LandSide.Commonwealth,
-            movement.CurrentSnapshot!.CurrentPosition.SequencePosition!.ActiveSide);
+            movement.HistoricalSnapshotV10!.CurrentPosition.SequencePosition!.ActiveSide);
         var movementActions = Query(movement, expectedAudience);
         var moved = Submit(
             movement,
             movementActions,
             movementActions.Candidates.OfType<MoveElementAction>().First());
         Assert.Equal(
-            movement.CurrentSnapshot.StateVersion + 1,
-            moved.CurrentSnapshot!.StateVersion);
+            movement.HistoricalSnapshotV10.StateVersion + 1,
+            moved.HistoricalSnapshotV10!.StateVersion);
     }
 
     [Fact]
-    public void PublicSubmissionRunsReactionEpisodeAndResumesExactMovement()
+    public void HistoricalSubmissionRunsReactionEpisodeAndResumesExactMovement()
     {
         const string firstReactor = "commonwealth-reactor-alpha";
         const string secondReactor = "commonwealth-reactor-bravo";
@@ -227,8 +220,8 @@ public sealed class CampaignSuccessorActivationTests
 
         var opened = Submit(handle, phasing, trigger);
 
-        Assert.Equal(CampaignPositionV10Kind.Reaction, opened.CurrentSnapshot!.CurrentPosition.Kind);
-        Assert.Equal(2, opened.CurrentSnapshot.ReactionWindow!.FrozenOpportunities.Count);
+        Assert.Equal(CampaignPositionV10Kind.Reaction, opened.HistoricalSnapshotV10!.CurrentPosition.Kind);
+        Assert.Equal(2, opened.HistoricalSnapshotV10.ReactionWindow!.FrozenOpportunities.Count);
         Assert.Empty(Query(opened, CampaignActionAudience.Axis).Candidates);
         var reacting = Query(opened, CampaignActionAudience.Commonwealth);
         Assert.Contains(reacting.Candidates, candidate => candidate is DeclineReactionWindowAction);
@@ -246,13 +239,13 @@ public sealed class CampaignSuccessorActivationTests
         var decline = Assert.Single(remaining.Candidates.OfType<DeclineReactionWindowAction>());
         var closed = Submit(completed, remaining, decline);
 
-        Assert.Null(closed.CurrentSnapshot!.ReactionWindow);
+        Assert.Null(closed.HistoricalSnapshotV10!.ReactionWindow);
         Assert.Equal(
             suspended,
-            closed.CurrentSnapshot.CurrentPosition.SequencePosition);
+            closed.HistoricalSnapshotV10.CurrentPosition.SequencePosition);
         Assert.Equal(
-            completed.CurrentSnapshot!.StateVersion + 1,
-            closed.CurrentSnapshot.StateVersion);
+            completed.HistoricalSnapshotV10!.StateVersion + 1,
+            closed.HistoricalSnapshotV10.StateVersion);
 
         var stale = new CampaignActionSubmission(
             CampaignActionSubmission.CurrentContractVersion,
@@ -261,7 +254,7 @@ public sealed class CampaignSuccessorActivationTests
             remaining.PositionId,
             remaining.Audience,
             decline.ActionId);
-        var rejected = CampaignLegalActions.Submit(closed, stale);
+        var rejected = SubmitHistorical(closed, stale);
         Assert.False(rejected.IsAccepted);
         Assert.Equal(CampaignActionSubmissionRejectionReason.StaleState, rejected.RejectionReason);
     }
@@ -269,7 +262,7 @@ public sealed class CampaignSuccessorActivationTests
     [Theory]
     [InlineData("north", "north-two")]
     [InlineData("north-two", "north")]
-    public void PublicSubmissionPreservesEitherParticipantOrderAndReplaysExactly(
+    public void HistoricalSubmissionPreservesEitherParticipantOrderAndReplaysExactly(
         string firstOrigin,
         string secondOrigin)
     {
@@ -316,18 +309,16 @@ public sealed class CampaignSuccessorActivationTests
             events.OfType<ReactingElementMoved>().Select(value => value.OriginLocationId));
         var replayed = events.Aggregate(
             initial,
-            (snapshot, campaignEvent) => CampaignCurrentProjector.Apply(
-                snapshot,
-                CampaignCurrentEventSerializer.Deserialize(
-                    CampaignCurrentEventSerializer.Serialize(campaignEvent)),
-                context));
+            (snapshot, campaignEvent) => ApplyHistorical(snapshot,
+                CampaignSuccessorEventSerializer.Deserialize(CampaignSuccessorEventSerializer.Serialize(
+                    Assert.IsAssignableFrom<CampaignSuccessorEvent>(campaignEvent))), context));
         Assert.Equal(
-            CampaignSnapshotV10Serializer.Serialize(handle.CurrentSnapshot!),
+            CampaignSnapshotV10Serializer.Serialize(handle.HistoricalSnapshotV10!),
             CampaignSnapshotV10Serializer.Serialize(replayed));
     }
 
     [Fact]
-    public void PublicSubmissionRecalculatesPriorParticipantForLaterTrigger()
+    public void HistoricalSubmissionRecalculatesPriorParticipantForLaterTrigger()
     {
         const string reactor = "commonwealth-repeat-reactor";
         var fixture = CampaignV10TestData.CreateWithReactors(
@@ -377,13 +368,11 @@ public sealed class CampaignSuccessorActivationTests
                 && candidate.DestinationLocationId == "south");
         var replayed = events.Aggregate(
             fixture.MovementSnapshot,
-            (snapshot, campaignEvent) => CampaignCurrentProjector.Apply(
-                snapshot,
-                CampaignCurrentEventSerializer.Deserialize(
-                    CampaignCurrentEventSerializer.Serialize(campaignEvent)),
-                context));
+            (snapshot, campaignEvent) => ApplyHistorical(snapshot,
+                CampaignSuccessorEventSerializer.Deserialize(CampaignSuccessorEventSerializer.Serialize(
+                    Assert.IsAssignableFrom<CampaignSuccessorEvent>(campaignEvent))), context));
         Assert.Equal(
-            CampaignSnapshotV10Serializer.Serialize(handle.CurrentSnapshot!),
+            CampaignSnapshotV10Serializer.Serialize(handle.HistoricalSnapshotV10!),
             CampaignSnapshotV10Serializer.Serialize(replayed));
     }
 
@@ -396,7 +385,7 @@ public sealed class CampaignSuccessorActivationTests
     [InlineData("movement-ended")]
     [InlineData("position")]
     [InlineData("zoc")]
-    public void PublicLaterTriggerExcludesPriorParticipantWhenCurrentRestrictionFails(
+    public void HistoricalLaterTriggerExcludesPriorParticipantWhenCurrentRestrictionFails(
         string restriction)
     {
         const string reactor = "commonwealth-prior-reactor";
@@ -442,7 +431,7 @@ public sealed class CampaignSuccessorActivationTests
             Assert.Single(remaining.Candidates.OfType<DeclineReactionWindowAction>()));
         handle = ApplyLaterTriggerRestriction(handle, fixture, reactor, anchor, restriction);
 
-        var replayPrior = handle.CurrentSnapshot!;
+        var replayPrior = handle.HistoricalSnapshotV10!;
         var laterEvents = new List<object>();
         var resumed = Query(handle, CampaignActionAudience.Axis);
         handle = SubmitAndCapture(
@@ -456,7 +445,7 @@ public sealed class CampaignSuccessorActivationTests
         var repeated = Query(handle, CampaignActionAudience.Commonwealth);
         var excludedOrigin = restriction == "position" ? "remote-source" : "center";
 
-        Assert.NotNull(handle.CurrentSnapshot!.ReactionWindow);
+        Assert.NotNull(handle.HistoricalSnapshotV10!.ReactionWindow);
         Assert.DoesNotContain(
             repeated.Candidates.OfType<MoveReactingElementAction>(),
             candidate => candidate.OriginLocationId == excludedOrigin);
@@ -469,72 +458,49 @@ public sealed class CampaignSuccessorActivationTests
 
         var replayed = laterEvents.Aggregate(
             replayPrior,
-            (snapshot, campaignEvent) => CampaignCurrentProjector.Apply(
-                snapshot,
-                CampaignCurrentEventSerializer.Deserialize(
-                    CampaignCurrentEventSerializer.Serialize(campaignEvent)),
-                context));
+            (snapshot, campaignEvent) => ApplyHistorical(snapshot,
+                CampaignSuccessorEventSerializer.Deserialize(CampaignSuccessorEventSerializer.Serialize(
+                    Assert.IsAssignableFrom<CampaignSuccessorEvent>(campaignEvent))), context));
         Assert.Equal(
-            CampaignSnapshotV10Serializer.Serialize(handle.CurrentSnapshot),
+            CampaignSnapshotV10Serializer.Serialize(handle.HistoricalSnapshotV10),
             CampaignSnapshotV10Serializer.Serialize(replayed));
     }
 
     [Fact]
-    public void PublicExerciseSessionKeepsReactionAuthorityCurrent()
+    public void HistoricalPreambleBridgeCannotSubstituteForOpenReactionAuthority()
     {
-        var start = CampaignExercises.Begin(CreatePublicRequest("campaign-session-reaction"));
-        Assert.True(start.IsStarted);
-        var session = start.Session!;
-        while (session.CurrentSnapshot.CurrentPosition.SequencePosition!.SegmentId
-            != LandSegmentIds.Movement)
+        var handle = CreateHistoricalHandle("campaign-session-reaction");
+        while (handle.HistoricalSnapshotV10!.CurrentPosition.SequencePosition!.SegmentId != LandSegmentIds.Movement)
         {
-            var sets = Enum.GetValues<CampaignActionAudience>()
-                .Select(audience => CampaignExercises.Query(session, audience).ActionSet!)
-                .Where(set => set.Candidates.Count > 0)
-                .ToArray();
-            var set = Assert.Single(sets);
+            var set = Assert.Single(Enum.GetValues<CampaignActionAudience>()
+                .Select(audience => Query(handle, audience)), value => value.Candidates.Count > 0);
             var candidate = set.Candidates.FirstOrDefault(value => value is ActFirstAction)
-                ?? set.Candidates.FirstOrDefault(value =>
-                    value is CompleteReserveDesignationAction)
+                ?? set.Candidates.FirstOrDefault(value => value is CompleteReserveDesignationAction)
                 ?? Assert.Single(set.Candidates);
-            var step = CampaignExercises.Submit(session, Submission(set, candidate));
-            Assert.True(step.IsAccepted);
-            session = step.SuccessorSession!;
+            handle = Submit(handle, set, candidate);
         }
-
-        var phasing = CampaignExercises.Query(session, CampaignActionAudience.Axis).ActionSet!;
-        var trigger = Assert.Single(phasing.Candidates.OfType<MoveElementAction>(), candidate =>
-            candidate.DestinationLocationId == "center");
-
-        var opened = CampaignExercises.Submit(session, Submission(phasing, trigger));
-
-        Assert.True(opened.IsAccepted);
-        var reactingSession = opened.SuccessorSession!;
-        Assert.NotNull(reactingSession.CurrentSnapshot.ReactionWindow);
-        Assert.Equal(
-            session.CurrentSnapshot.StateVersion,
-            reactingSession.Snapshot.StateVersion);
-        var system = CampaignExercises.Query(
-            reactingSession,
-            CampaignActionAudience.System).ActionSet!;
-        var close = Assert.Single(system.Candidates, candidate =>
-            candidate is CloseReactionWindowUnavailableAction);
-
-        var closed = CampaignExercises.Submit(
-            reactingSession,
-            Submission(system, close));
-
-        Assert.True(closed.IsAccepted);
-        Assert.Null(closed.SuccessorSession!.CurrentSnapshot.ReactionWindow);
-        Assert.Equal(
-            closed.SuccessorSession.CurrentSnapshot.StateVersion,
-            closed.SuccessorSession.Snapshot.StateVersion);
+        var prior = handle.HistoricalSnapshotV10!;
+        var predecessor = CampaignV10LegacyBridge.ToLegacy(prior, handle.Context);
+        var phasing = Query(handle, CampaignActionAudience.Axis);
+        var trigger = Assert.Single(phasing.Candidates.OfType<MoveElementAction>(),
+            candidate => candidate.DestinationLocationId == "center");
+        var opened = Submit(handle, phasing, trigger);
+        Assert.NotNull(opened.HistoricalSnapshotV10!.ReactionWindow);
+        Assert.Equal(prior.StateVersion, predecessor.StateVersion);
+        Assert.Throws<InvalidOperationException>(() => CampaignV10LegacyBridge.ToLegacy(
+            opened.HistoricalSnapshotV10, opened.Context));
+        var system = Query(opened, CampaignActionAudience.System);
+        var close = Assert.Single(system.Candidates.OfType<CloseReactionWindowUnavailableAction>());
+        var closed = Submit(opened, system, close);
+        Assert.Null(closed.HistoricalSnapshotV10!.ReactionWindow);
+        Assert.Equal(closed.HistoricalSnapshotV10.StateVersion,
+            CampaignV10LegacyBridge.ToLegacy(closed.HistoricalSnapshotV10, closed.Context).StateVersion);
     }
 
     [Theory]
     [InlineData("close-reaction-window-scripted-unavailable")]
     [InlineData("close-reaction-window-timeout")]
-    public void PublicSystemFallbackClosesReactionAndResumesExactMovement(string kind)
+    public void HistoricalSystemFallbackClosesReactionAndResumesExactMovement(string kind)
     {
         var fixture = CampaignV10TestData.CreateWithReactors(
             ["commonwealth-reactor"],
@@ -556,12 +522,12 @@ public sealed class CampaignSuccessorActivationTests
 
         var closed = Submit(opened, system, close);
 
-        Assert.Null(closed.CurrentSnapshot!.ReactionWindow);
-        Assert.Equal(suspended, closed.CurrentSnapshot.CurrentPosition.SequencePosition);
+        Assert.Null(closed.HistoricalSnapshotV10!.ReactionWindow);
+        Assert.Equal(suspended, closed.HistoricalSnapshotV10.CurrentPosition.SequencePosition);
     }
 
     [Fact]
-    public void PublicSystemClosesEmptyReactionWindowDeterministically()
+    public void HistoricalSystemClosesEmptyReactionWindowDeterministically()
     {
         const string reactor = "commonwealth-no-eligible";
         var fixture = CampaignV10TestData.CreateWithReactors(
@@ -580,16 +546,16 @@ public sealed class CampaignSuccessorActivationTests
             && candidate.DestinationLocationId == fixture.TriggeringMove.DestinationLocationId);
         var opened = Submit(handle, phasing, trigger);
 
-        Assert.Empty(opened.CurrentSnapshot!.ReactionWindow!.FrozenOpportunities);
+        Assert.Empty(opened.HistoricalSnapshotV10!.ReactionWindow!.FrozenOpportunities);
         var system = Query(opened, CampaignActionAudience.System);
         var close = Assert.Single(system.Candidates);
         Assert.Equal("close-reaction-window-no-eligible-reactor", close.Kind);
         var closed = Submit(opened, system, close);
 
-        Assert.Null(closed.CurrentSnapshot!.ReactionWindow);
+        Assert.Null(closed.HistoricalSnapshotV10!.ReactionWindow);
         Assert.Equal(
             snapshot.CurrentPosition.SequencePosition,
-            closed.CurrentSnapshot.CurrentPosition.SequencePosition);
+            closed.HistoricalSnapshotV10.CurrentPosition.SequencePosition);
     }
 
     [Fact]
@@ -600,7 +566,7 @@ public sealed class CampaignSuccessorActivationTests
             null,
             CampaignTestHarness.Create(
                 "campaign-legacy-router",
-                Cna1979Ruleset.Manifest.Hash,
+                Cna1979Ruleset.HistoricalManifestV8.Hash,
                 12345,
                 setup.SetupId,
                 setup.Hash));
@@ -674,14 +640,19 @@ public sealed class CampaignSuccessorActivationTests
             snapshot.ReactionWindow);
     }
 
-    private static CampaignAuthorityHandle CreatePublicHandle(string campaignId)
+    private static CampaignAuthorityHandle CreateHistoricalHandle(string campaignId)
     {
-        var result = CampaignAuthority.Create(CreatePublicRequest(campaignId));
-        Assert.True(result.IsCreated);
-        return result.Handle!;
+        var request = CreateHistoricalRequest(campaignId);
+        var artifact = Cna1979SyntheticContentCatalog.ArtifactV5;
+        var definition = Cna1979SetupCatalog.Definitions[0];
+        var context = CampaignContentContext.Create(artifact, request.ScenarioId);
+        var created = CampaignCreationV9Factory.Create(campaignId, request.RulesetHash,
+            CampaignSetupSnapshot.FromDefinition(definition), artifact, context.Scenario,
+            SandtableRandom.Create(request.Seed), Cna1979LandSequence.CreateTurn(1)[0]);
+        return new CampaignAuthorityHandle(CampaignV10Projector.ApplyCreation(created, artifact, context.Scenario), context);
     }
 
-    private static CampaignCreationRequest CreatePublicRequest(string campaignId)
+    private static CampaignCreationRequest CreateHistoricalRequest(string campaignId)
     {
         var artifact = Cna1979SyntheticContentCatalog.ArtifactV5;
         var definition = Cna1979SetupCatalog.Definitions[0];
@@ -693,7 +664,7 @@ public sealed class CampaignSuccessorActivationTests
         return new CampaignCreationRequest(
             CampaignCreationRequest.CurrentContractVersion,
             campaignId,
-            Cna1979Ruleset.Manifest.Hash,
+            Cna1979Ruleset.HistoricalManifestV8.Hash,
             12345,
             setup.SetupId,
             setup.SetupHash,
@@ -706,48 +677,103 @@ public sealed class CampaignSuccessorActivationTests
         CampaignAuthorityHandle handle,
         CampaignActionAudience audience)
     {
-        var query = CampaignLegalActions.Query(handle, audience);
-        Assert.True(query.IsSuccessful);
-        return query.ActionSet!;
+        var snapshot = handle.HistoricalSnapshotV10!;
+        if (snapshot.ReactionWindow is null
+            && snapshot.CurrentPosition.SequencePosition!.SegmentId != LandSegmentIds.Movement)
+            return CampaignLegalActions.QueryLegacy(CampaignV10LegacyBridge.ToLegacy(snapshot, handle.Context),
+                handle.Context, audience).ActionSet!;
+        if (audience == CampaignActionAudience.System)
+            return snapshot.ReactionWindow is { } window
+                ? CampaignObservationV6ActionDerivation.DeriveSystem(ProjectHistorical(handle, window.ReactingSide))
+                : new CampaignLegalActionSet(snapshot.CampaignId, snapshot.StateVersion, snapshot.RulesetHash,
+                    snapshot.CurrentPosition.SequencePosition!.PositionId, audience, [], CampaignLegalActionSet.HistoricalPolicyIdV2);
+        return CampaignObservationV6ActionDerivation.DerivePlayer(ProjectHistorical(handle,
+            audience == CampaignActionAudience.Axis ? LandSide.Axis : LandSide.Commonwealth));
     }
 
-    private static CampaignAuthorityHandle Submit(
-        CampaignAuthorityHandle handle,
-        CampaignLegalActionSet set,
+    private static CampaignAuthorityHandle Submit(CampaignAuthorityHandle handle, CampaignLegalActionSet set,
         CampaignActionCandidate candidate)
     {
-        var result = CampaignLegalActions.Submit(handle, new CampaignActionSubmission(
-            CampaignActionSubmission.CurrentContractVersion,
-            set.CampaignId,
-            set.StateVersion,
-            set.PositionId,
-            set.Audience,
-            candidate.ActionId));
-        Assert.True(result.IsAccepted);
+        var result = SubmitHistorical(handle, Submission(set, candidate));
+        Assert.True(result.IsAccepted, result.RejectionReason.ToString());
         return result.SuccessorHandle!;
     }
 
-    private static CampaignAuthorityHandle SubmitAndCapture(
-        CampaignAuthorityHandle handle,
-        CampaignLegalActionSet set,
-        CampaignActionCandidate candidate,
-        List<object> events)
+    private static CampaignAuthorityHandle SubmitAndCapture(CampaignAuthorityHandle handle,
+        CampaignLegalActionSet set, CampaignActionCandidate candidate, List<object> events)
     {
-        var submission = Submission(set, candidate);
-        var execution = CampaignCurrentActionExecution.Execute(
-            handle.CurrentSnapshot!,
-            handle.Context,
-            submission);
-        Assert.True(execution.IsAccepted);
-        events.Add(execution.AcceptedEvent!);
-
-        var result = CampaignLegalActions.Submit(handle, submission);
+        var value = CreateHistoricalEvent(handle, Submission(set, candidate));
+        var successor = ApplyHistorical(handle.HistoricalSnapshotV10!, value, handle.Context);
+        events.Add(value);
+        var result = SubmitHistorical(handle, Submission(set, candidate));
         Assert.True(result.IsAccepted);
-        Assert.Equal(
-            CampaignSnapshotV10Serializer.Serialize(execution.SuccessorSnapshot!),
-            CampaignSnapshotV10Serializer.Serialize(result.SuccessorHandle!.CurrentSnapshot!));
+        Assert.Equal(CampaignSnapshotV10Serializer.Serialize(successor),
+            CampaignSnapshotV10Serializer.Serialize(result.SuccessorHandle!.HistoricalSnapshotV10!));
         return result.SuccessorHandle;
     }
+
+    // Test-only historical driver: public current entrypoints deliberately reject these roots.
+    private static CampaignActionSubmissionResult SubmitHistorical(CampaignAuthorityHandle handle,
+        CampaignActionSubmission submission)
+    {
+        var prior = handle.HistoricalSnapshotV10!;
+        if (submission.ExpectedStateVersion != prior.StateVersion)
+            return CampaignActionSubmissionResult.Rejected(CampaignActionSubmissionRejectionReason.StaleState);
+        var successor = ApplyHistorical(prior, CreateHistoricalEvent(handle, submission), handle.Context);
+        return CampaignActionSubmissionResult.Accepted(new CampaignAuthorityHandle(successor, handle.Context),
+            new CampaignActionAcceptanceReceipt(prior.CampaignId, prior.StateVersion, successor.StateVersion,
+                successor.CurrentPosition.SequencePosition?.PositionId
+                    ?? successor.CurrentPosition.ReactingPosition!.SuspendedMovementPosition.PositionId,
+                submission.Audience, submission.ActionId));
+    }
+
+    private static CampaignObservationV6 ProjectHistorical(CampaignAuthorityHandle handle, LandSide observer)
+    {
+        var snapshot = handle.HistoricalSnapshotV10!;
+        var authority = CampaignElementMovedV2Factory.DeriveZocAuthority(snapshot.World,
+            handle.Context.ArtifactV5!, handle.Context.Scenario,
+            observer == LandSide.Axis ? LandSide.Commonwealth : LandSide.Axis);
+        return CampaignObservationV6Projector.Project(snapshot, handle.Context.ArtifactV5!, handle.Context.Scenario,
+            observer, new CampaignObservationV6AuthorityFacts(authority.ControlledLocationIds, authority.SourceRepresentationIds));
+    }
+
+    private static object CreateHistoricalEvent(CampaignAuthorityHandle handle, CampaignActionSubmission submission)
+    {
+        var prior = handle.HistoricalSnapshotV10!;
+        var context = handle.Context;
+        var candidate = Assert.Single(Query(handle, submission.Audience).Candidates,
+            value => value.ActionId == submission.ActionId);
+        var observer = submission.Audience == CampaignActionAudience.System
+            ? prior.ReactionWindow?.ReactingSide
+            : submission.Audience == CampaignActionAudience.Axis ? LandSide.Axis : LandSide.Commonwealth;
+        var intent = observer is null ? null : CampaignObservationV6ActionDerivation.MapSubmission(
+            ProjectHistorical(handle, observer.Value), submission);
+        return intent switch
+        {
+            MoveElementV6Intent move => CampaignElementMovedV2Factory.Create(prior, context.ArtifactV5!, context.Scenario,
+                new ElementMovedV2ReplayInput(prior.CampaignId, prior.StateVersion, move.ExpectedPositionId,
+                    move.Side, move.ElementId, move.OriginLocationId, move.DestinationLocationId)),
+            MoveReactingElementIntent move => CampaignReactionParticipantEventFactory.CreateMove(prior, context.ArtifactV5!, context.Scenario, move),
+            CompleteReactionParticipantIntent complete => CampaignReactionParticipantEventFactory.CreateCompletion(prior, context.ArtifactV5!, context.Scenario, complete),
+            CloseReactionWindowIntent close => CampaignReactionWindowClosedFactory.Create(prior, context.ArtifactV5!, context.Scenario, close),
+            CompleteMovementSegmentV6Intent => CampaignCurrentMovementCompletion.Create(prior, context),
+            _ => CampaignActionExecution.Execute(CampaignV10LegacyBridge.ToLegacy(prior, context), context, submission).AcceptedEvent
+                ?? throw new InvalidOperationException($"Historical preamble action rejected: {candidate.Kind}"),
+        };
+    }
+
+    private static CampaignSnapshotV10 ApplyHistorical(CampaignSnapshotV10 prior, object value,
+        CampaignContentContext context) => value switch
+        {
+            ElementMovedV2 moved => CampaignV10Projector.ApplyMovement(prior, moved, context.ArtifactV5!, context.Scenario),
+            ReactingElementMoved moved => CampaignV10Projector.ApplyReactionMove(prior, moved, context.ArtifactV5!, context.Scenario),
+            ReactionParticipantCompleted completed => CampaignV10Projector.ApplyReactionCompletion(prior, completed, context.ArtifactV5!, context.Scenario),
+            ReactionWindowClosed closed => CampaignV10Projector.ApplyReactionClose(prior, closed, context.ArtifactV5!, context.Scenario),
+            MovementSegmentCompleted completed => CampaignCurrentMovementCompletion.Apply(prior, completed, context),
+            CampaignEvent preamble => CampaignV10LegacyBridge.FromLegacy(prior,
+                CampaignProjector.Apply(CampaignV10LegacyBridge.ToLegacy(prior, context), preamble, context), context),
+            _ => throw new InvalidOperationException("Unknown historical event."),
+        };
 
     private static CampaignAuthorityHandle ApplyLaterTriggerRestriction(
         CampaignAuthorityHandle handle,
@@ -756,7 +782,7 @@ public sealed class CampaignSuccessorActivationTests
         string anchor,
         string restriction)
     {
-        var snapshot = handle.CurrentSnapshot!;
+        var snapshot = handle.HistoricalSnapshotV10!;
         var movement = snapshot.CurrentPosition.SequencePosition!;
         var allowance = fixture.Artifact.Definition.LegacyDefinition.Elements
             .Single(value => value.ElementId == reactor)

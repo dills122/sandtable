@@ -1,6 +1,7 @@
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using Cna.Core.Actions;
 using Cna.Core.Campaigns;
 using Cna.Core.Exercises;
@@ -38,8 +39,8 @@ public sealed class ExerciseBundleSemanticValidatorTests : IDisposable
         var bundlePath = CreateSuccessfulBundle();
         RewritePayload(bundlePath, ArtifactSchema.InitialSnapshotPath, bytes =>
             Encoding.UTF8.GetBytes(Encoding.UTF8.GetString(bytes).Replace(
-                "\"elementId\":\"axis-element-a\",\"currentLocationId\":\"west\"",
-                "\"elementId\":\"axis-element-a\",\"currentLocationId\":\"east\"",
+                "\"elementId\":\"axis-truck\",\"currentLocationId\":\"west\"",
+                "\"elementId\":\"axis-truck\",\"currentLocationId\":\"east\"",
                 StringComparison.Ordinal)));
         RehashManifest(bundlePath);
 
@@ -47,19 +48,19 @@ public sealed class ExerciseBundleSemanticValidatorTests : IDisposable
     }
 
     [Fact]
-    public void SnapshotReaderAcceptsVersionTenWorldFiveAndRejectsPriorVersions()
+    public void SnapshotReaderAcceptsVersionElevenWorldSixAndRejectsPriorVersions()
     {
         var bundlePath = CreateSuccessfulBundle();
         var canonical = File.ReadAllBytes(Path.Combine(
             bundlePath,
             ArtifactSchema.InitialSnapshotPath));
         var legacySnapshot = Encoding.UTF8.GetBytes(Encoding.UTF8.GetString(canonical).Replace(
+            "{\"contractVersion\":11,",
             "{\"contractVersion\":10,",
-            "{\"contractVersion\":9,",
             StringComparison.Ordinal));
         var legacyWorld = Encoding.UTF8.GetBytes(Encoding.UTF8.GetString(canonical).Replace(
+            "\"world\":{\"contractVersion\":6,",
             "\"world\":{\"contractVersion\":5,",
-            "\"world\":{\"contractVersion\":4,",
             StringComparison.Ordinal));
 
         Assert.NotNull(ExerciseEvidenceCodec.DeserializeSnapshot(canonical));
@@ -88,8 +89,8 @@ public sealed class ExerciseBundleSemanticValidatorTests : IDisposable
             record.CanonicalBytes)).ToArray();
 
         Assert.True(execution.IsSucceeded);
-        Assert.Equal(12, events.Count);
-        Assert.Equal(2, canonical.Count(value => value.Contains(
+        Assert.Equal(11, events.Count);
+        Assert.Equal(1, canonical.Count(value => value.Contains(
             "\"eventType\":\"reserve-element-designated\"",
             StringComparison.Ordinal)));
         Assert.Single(canonical, value => value.Contains(
@@ -119,23 +120,26 @@ public sealed class ExerciseBundleSemanticValidatorTests : IDisposable
         var bundlePath = CreateSuccessfulMovementBundle();
         RewritePayload(bundlePath, ArtifactSchema.CanonicalEventsPath, bytes =>
         {
-            var json = Encoding.UTF8.GetString(bytes);
-            return Encoding.UTF8.GetBytes(mutation switch
+            var lines = Encoding.UTF8.GetString(bytes).Split('\n');
+            for (var index = 0; index < lines.Length; index++)
             {
-                "destination" => json.Replace(
-                    "\"destinationLocationId\":\"north\"",
-                    "\"destinationLocationId\":\"south-west\"",
-                    StringComparison.Ordinal),
-                "ledger" => json.Replace(
-                    "\"capabilityPointsExpendedAfter\":{\"numerator\":1",
-                    "\"capabilityPointsExpendedAfter\":{\"numerator\":2",
-                    StringComparison.Ordinal),
-                "completion-position" => json.Replace(
-                    "movement-and-combat.breakdown-determination",
-                    "movement-and-combat.movement",
-                    StringComparison.Ordinal),
-                _ => throw new ArgumentOutOfRangeException(nameof(mutation)),
-            });
+                if (lines[index].Length == 0) continue;
+                var node = System.Text.Json.Nodes.JsonNode.Parse(lines[index])!;
+                var eventType = node["eventType"]!.GetValue<string>();
+                if (eventType != (mutation == "completion-position" ? "movement-segment-completed" : "element-moved")) continue;
+                if (mutation == "destination")
+                    node["destinationLocationId"] = node["originLocationId"]!.GetValue<string>();
+                else if (mutation == "ledger")
+                    node["capabilityPointsExpendedAfter"]!["numerator"] =
+                        node["capabilityPointsExpendedAfter"]!["numerator"]!.GetValue<int>() + 1;
+                else
+                    node["sequencePosition"]!["positionId"] =
+                        "land.position.operation-1.first-player.movement-and-combat.movement";
+                Assert.NotEqual(lines[index], node.ToJsonString());
+                lines[index] = node.ToJsonString();
+                break;
+            }
+            return Encoding.UTF8.GetBytes(string.Join('\n', lines));
         });
         RefreshDependentHashes(bundlePath);
         RehashManifest(bundlePath);
@@ -206,8 +210,8 @@ public sealed class ExerciseBundleSemanticValidatorTests : IDisposable
         var bundlePath = CreateCancelledZeroStepBundle();
         RewritePayload(bundlePath, ArtifactSchema.FinalSnapshotPath, bytes =>
             Encoding.UTF8.GetBytes(Encoding.UTF8.GetString(bytes).Replace(
-                "\"elementId\":\"axis-element-a\",\"currentLocationId\":\"west\"",
-                "\"elementId\":\"axis-element-a\",\"currentLocationId\":\"east\"",
+                "\"elementId\":\"axis-truck\",\"currentLocationId\":\"west\"",
+                "\"elementId\":\"axis-truck\",\"currentLocationId\":\"east\"",
                 StringComparison.Ordinal)));
         RehashManifest(bundlePath);
 
@@ -845,6 +849,8 @@ public sealed class ExerciseBundleSemanticValidatorTests : IDisposable
             buildMode: ExerciseBuildMode.Exploratory);
         var normalizedManifest = ExerciseManifestCodec.Serialize(manifest);
         var execution = ExerciseExecutor.Execute(manifest, TestContext.Current.CancellationToken);
+        Assert.True(execution.Reconstruction?.IsVerified == true,
+            $"Expected successful fixture execution: {Encoding.UTF8.GetString(ExerciseRunResultCodec.Serialize(execution.RunResult))}");
         var readjudication = ReadjudicationVerifier.Verify(manifest, execution);
         var checks = execution.CheckResults.WithReadjudication(readjudication);
         var payloads = new Dictionary<string, byte[]>(StringComparer.Ordinal)
@@ -879,12 +885,88 @@ public sealed class ExerciseBundleSemanticValidatorTests : IDisposable
 
     private string CreateSuccessfulMovementBundle() => CreateSuccessfulBundle(
         ExerciseManifestCodecTests.Create(
-            maximumSteps: 13,
+            maximumSteps: 20,
             terminalBoundary:
                 "land.position.operation-1.first-player.movement-and-combat.breakdown-determination",
             buildMode: ExerciseBuildMode.Exploratory,
             controllerPolicy:
                 ExerciseControllerPolicy.ActFirstReserveOneMoveEachOnceThenComplete));
+
+    [Theory]
+    [InlineData("reacting-element-moved", "submittedOpportunityId")]
+    [InlineData("reacting-element-moved", "windowId")]
+    [InlineData("reaction-participant-completed", "submittedOpportunityId")]
+    [InlineData("reaction-window-closed", "submittedWindowId")]
+    public void ReaderRejectsReactionBindingTamperingEvenAfterAllEvidenceHashesAreRefreshed(
+        string eventKind, string property)
+    {
+        var bundlePath = CreateSuccessfulBundle(
+            Cna.ExerciseRunner.Tests.Execution.ReactionRunnerTestData.Manifest(
+                ExerciseControllerPolicy.ReactionAllByActionId));
+        var changed = false;
+        RewritePayload(bundlePath, ArtifactSchema.CanonicalEventsPath, bytes =>
+        {
+            var lines = Encoding.UTF8.GetString(bytes).Split('\n');
+            for (var index = 0; index < lines.Length; index++)
+            {
+                if (lines[index].Length == 0) continue;
+                using var document = JsonDocument.Parse(lines[index]);
+                if (document.RootElement.GetProperty("eventType").GetString() != eventKind) continue;
+                var old = document.RootElement.GetProperty(property).GetString();
+                var replacement = $"sha256:{new string('0', 64)}";
+                Assert.NotEqual(old, replacement);
+                lines[index] = lines[index].Replace($"\"{property}\":\"{old}\"",
+                    $"\"{property}\":\"{replacement}\"", StringComparison.Ordinal);
+                changed = true;
+                break;
+            }
+            return Encoding.UTF8.GetBytes(string.Join('\n', lines));
+        });
+        Assert.True(changed);
+        RefreshDependentHashes(bundlePath);
+        RehashManifest(bundlePath);
+        Assert.Throws<InvalidDataException>(() => ExerciseBundleReader.Read(bundlePath));
+    }
+
+    [Theory]
+    [InlineData("reacting-element-moved")]
+    [InlineData("reaction-participant-completed")]
+    [InlineData("reaction-window-closed")]
+    public void ReactionEvidenceReaderRejectsExtraDuplicateReorderedAndLegacyFields(string eventKind)
+    {
+        var bundle = ExerciseBundleReader.Read(CreateSuccessfulBundle(
+            Cna.ExerciseRunner.Tests.Execution.ReactionRunnerTestData.Manifest(
+                ExerciseControllerPolicy.ReactionAllByActionId)));
+        var canonical = Encoding.UTF8.GetString(bundle.CanonicalEvents.First(value => EventType(value) == eventKind));
+        var mutations = new[]
+        {
+            "{\"extra\":null," + canonical[1..],
+            "{\"contractVersion\":2," + canonical[1..],
+            canonical.Replace($"\"contractVersion\":2,\"eventType\":\"{eventKind}\"",
+                $"\"eventType\":\"{eventKind}\",\"contractVersion\":2", StringComparison.Ordinal),
+            canonical.Replace("\"contractVersion\":2", "\"contractVersion\":1", StringComparison.Ordinal),
+        };
+        foreach (var mutation in mutations)
+            Assert.Throws<JsonException>(() => ExerciseEvidenceCodec.DeserializeCanonicalEvents(
+                Encoding.UTF8.GetBytes(mutation + "\n")));
+    }
+
+    [Fact]
+    public void ReaderRejectsRehashedSystemCloseReasonThatDoesNotMatchTheSubmittedAction()
+    {
+        var path = CreateSuccessfulBundle(Cna.ExerciseRunner.Tests.Execution.ReactionRunnerTestData.Manifest(
+            ExerciseControllerPolicy.ReactionUnavailable));
+        RewritePayload(path, ArtifactSchema.CanonicalEventsPath, bytes =>
+        {
+            var json = Encoding.UTF8.GetString(bytes);
+            Assert.Contains("\"reason\":\"scripted-unavailable\"", json, StringComparison.Ordinal);
+            return Encoding.UTF8.GetBytes(json.Replace("\"reason\":\"scripted-unavailable\"",
+                "\"reason\":\"timeout\"", StringComparison.Ordinal));
+        });
+        RefreshDependentHashes(path);
+        RehashManifest(path);
+        Assert.Throws<InvalidDataException>(() => ExerciseBundleReader.Read(path));
+    }
 
     private static string EventType(byte[] canonicalEvent)
     {
@@ -909,7 +991,7 @@ public sealed class ExerciseBundleSemanticValidatorTests : IDisposable
         if (fabricated)
         {
             var bundlePath = CreateReconstructionFailureBundle(fabricated: false);
-            var successful = ReadPayloads(CreateSuccessfulBundle());
+            var successful = ReadPayloads(CreateSuccessfulMovementBundle());
             RewritePayload(
                 bundlePath,
                 ArtifactSchema.FinalSnapshotPath,
@@ -932,7 +1014,7 @@ public sealed class ExerciseBundleSemanticValidatorTests : IDisposable
             return bundlePath;
         }
 
-        var payloads = ReadPayloads(CreateSuccessfulBundle());
+        var payloads = ReadPayloads(CreateSuccessfulMovementBundle());
         payloads.Remove(ArtifactSchema.SummaryJsonPath);
         payloads.Remove(ArtifactSchema.SummaryMarkdownPath);
         payloads.Remove(ArtifactSchema.ReadjudicationProofPath);
@@ -944,13 +1026,10 @@ public sealed class ExerciseBundleSemanticValidatorTests : IDisposable
         var originalProof = ReplayProofCodec.DeserializeReconstruction(
             payloads[ArtifactSchema.ReconstructionProofPath]);
         var originalFinal = payloads[ArtifactSchema.FinalSnapshotPath];
-        var changedFinal = Encoding.UTF8.GetBytes(Encoding.UTF8.GetString(originalFinal).Replace(
-            "\"elementId\":\"axis-element-a\",\"currentLocationId\":\"west\"",
-            "\"elementId\":\"axis-element-a\",\"currentLocationId\":\"east\"",
-            StringComparison.Ordinal).Replace(
-                "\"representationId\":\"map-representation.0001\",\"currentLocationId\":\"west\"",
-                "\"representationId\":\"map-representation.0001\",\"currentLocationId\":\"east\"",
-                StringComparison.Ordinal));
+        var changedSnapshot = JsonNode.Parse(originalFinal)!;
+        var randomState = changedSnapshot["randomState"]!;
+        randomState["nextByteCursor"] = randomState["nextByteCursor"]!.GetValue<ulong>() + 1;
+        var changedFinal = Encoding.UTF8.GetBytes(changedSnapshot.ToJsonString());
         Assert.NotEqual(originalFinal, changedFinal);
         payloads[ArtifactSchema.FinalSnapshotPath] = changedFinal;
         payloads[ArtifactSchema.StepEvidencePath] = Encoding.UTF8.GetBytes(
@@ -1282,8 +1361,10 @@ public sealed class ExerciseBundleSemanticValidatorTests : IDisposable
 
     private static void RefreshDependentHashes(string bundlePath)
     {
-        var events = ExerciseEvidenceCodec.DeserializeCanonicalEvents(File.ReadAllBytes(
-            Path.Combine(bundlePath, ArtifactSchema.CanonicalEventsPath)));
+        var events = Encoding.UTF8.GetString(File.ReadAllBytes(
+            Path.Combine(bundlePath, ArtifactSchema.CanonicalEventsPath)))
+            .Split('\n', StringSplitOptions.RemoveEmptyEntries)
+            .Select(Encoding.UTF8.GetBytes).ToArray();
         var stepPath = Path.Combine(bundlePath, ArtifactSchema.StepEvidencePath);
         var originalSteps = ExerciseEvidenceCodec.DeserializeStepEvidence(
             File.ReadAllBytes(stepPath));
@@ -1292,7 +1373,7 @@ public sealed class ExerciseBundleSemanticValidatorTests : IDisposable
         {
             stepJson = stepJson.Replace(
                 originalSteps[index].EventsHash,
-                ReplayEvidenceHasher.HashRecords([events[index].CanonicalBytes]),
+                ReplayEvidenceHasher.HashRecords([events[index]]),
                 StringComparison.Ordinal);
         }
         var finalSnapshot = File.ReadAllBytes(Path.Combine(
@@ -1312,7 +1393,7 @@ public sealed class ExerciseBundleSemanticValidatorTests : IDisposable
         var transcriptHash = ReplayEvidenceHasher.HashRecords(
             actions.Select(ExerciseEvidenceCodec.SerializeReceipt));
         var eventsHash = ReplayEvidenceHasher.HashRecords(
-            events.Select(value => value.CanonicalBytes));
+            events);
         var finalHash = ReplayEvidenceHasher.HashBytes(finalSnapshot);
         RewritePayload(
             bundlePath,

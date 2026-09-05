@@ -2,6 +2,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using Cna.ExerciseRunner.Artifacts;
 using Cna.ExerciseRunner.Commands;
+using Cna.ExerciseRunner.Execution;
 using Cna.ExerciseRunner.Tests.Artifacts;
 
 namespace Cna.ExerciseRunner.Tests.Commands;
@@ -30,7 +31,7 @@ public sealed class ExerciseRunCommandTests : IDisposable
         Guid.NewGuid().ToString("N"));
 
     [Fact]
-    public void DocumentedCommandCreatesAReaderValidatedSuccessBundle()
+    public void CertifiedManifestCommandCreatesAReaderValidatedSuccessBundle()
     {
         var standardOutput = new StringWriter();
         var standardError = new StringWriter();
@@ -52,7 +53,7 @@ public sealed class ExerciseRunCommandTests : IDisposable
         var buildIdentity = BuildIdentityCodec.Deserialize(File.ReadAllBytes(
             Path.Combine(bundle.Path, ArtifactSchema.BuildIdentityPath)));
         Assert.Equal(
-            "sha256:38ed28be6562e5d5967d838b0d264c3b52bcae77a5e61d122a282b7b91c16f0b",
+            ExerciseConfigurationIdentity.ComputeHash(bundle.NormalizedManifest!),
             buildIdentity.ConfigurationHash);
         Assert.NotEqual(buildIdentity.ManifestHash, buildIdentity.ConfigurationHash);
         Assert.All(SimulationEvidencePaths, path => Assert.True(File.Exists(
@@ -95,22 +96,20 @@ public sealed class ExerciseRunCommandTests : IDisposable
             "scenarios/exercises",
             exploratoryFileName));
 
-        var manifest = ExerciseManifestCodec.Deserialize(baselineBytes);
+        Assert.ThrowsAny<Exception>(() => ExerciseManifestCodec.Deserialize(baselineBytes));
         var baseline = JsonNode.Parse(baselineBytes)!.AsObject();
         var exploratory = JsonNode.Parse(exploratoryBytes)!.AsObject();
         baseline["buildMode"] = "exploratory";
 
-        Assert.Equal(exerciseId, manifest.ExerciseId);
-        Assert.Equal(terminalBoundary, manifest.TerminalBoundary);
-        Assert.Equal(maximumSteps, manifest.MaximumSteps);
-        Assert.Equal(ExerciseBuildMode.Baseline, manifest.BuildMode);
-        Assert.Equal(ExerciseDetail.Compact, manifest.Detail);
-        Assert.NotEmpty(ExerciseManifestCodec.Serialize(manifest));
+        Assert.Equal(exerciseId, baseline["exerciseId"]!.GetValue<string>());
+        Assert.Equal(terminalBoundary, baseline["terminalBoundary"]!.GetValue<string>());
+        Assert.Equal(maximumSteps, baseline["maximumSteps"]!.GetValue<int>());
+        Assert.Equal("compact", baseline["detail"]!.GetValue<string>());
         Assert.True(JsonNode.DeepEquals(exploratory, baseline));
     }
 
     [Fact]
-    public void CheckedReserveFixtureRunsThroughStageEntryWithBothProofs()
+    public void CertifiedReserveInputRunsThroughStageEntryWithBothProofs()
     {
         var standardOutput = new StringWriter();
         var standardError = new StringWriter();
@@ -120,7 +119,7 @@ public sealed class ExerciseRunCommandTests : IDisposable
                 "exercise",
                 "run",
                 "--manifest",
-                "scenarios/exercises/rules-lab.reserve.v2.json",
+                WriteCurrentManifest("reserve", ExerciseManifestCodecTests.Create(9, terminalBoundary: "land.position.operation-1.first-player.reserve-designation")),
                 "--artifact-root",
                 Path.Combine(temp, "reserve"),
             ],
@@ -131,7 +130,7 @@ public sealed class ExerciseRunCommandTests : IDisposable
         Assert.Equal(ExerciseProcessExitCode.Succeeded, exitCode);
         Assert.Equal(string.Empty, standardError.ToString());
         var bundle = ExerciseBundleReader.Read(ParseBundlePath(standardOutput.ToString()));
-        Assert.Equal("reserve-boundary", bundle.NormalizedManifest!.ExerciseId);
+        Assert.Equal("organization-boundary", bundle.NormalizedManifest!.ExerciseId);
         Assert.Equal(
             "land.position.operation-1.first-player.reserve-designation",
             bundle.NormalizedManifest.TerminalBoundary);
@@ -147,7 +146,7 @@ public sealed class ExerciseRunCommandTests : IDisposable
     }
 
     [Fact]
-    public void CheckedReserveDesignationFixtureReachesMovementWithExactEvidence()
+    public void CertifiedReserveDesignationInputReachesMovementWithExactEvidence()
     {
         var standardOutput = new StringWriter();
         var standardError = new StringWriter();
@@ -157,7 +156,7 @@ public sealed class ExerciseRunCommandTests : IDisposable
                 "exercise",
                 "run",
                 "--manifest",
-                "scenarios/exercises/rules-lab.reserve-designation.v2.json",
+                WriteCurrentManifest("reserve-designation", ExerciseManifestCodecTests.Create(12, terminalBoundary: "land.position.operation-1.first-player.movement-and-combat.movement", controllerPolicy: ExerciseControllerPolicy.DesignateAllReservesThenFirstByActionId)),
                 "--artifact-root",
                 Path.Combine(temp, "reserve-designation"),
             ],
@@ -168,14 +167,14 @@ public sealed class ExerciseRunCommandTests : IDisposable
         Assert.Equal(ExerciseProcessExitCode.Succeeded, exitCode);
         Assert.Equal(string.Empty, standardError.ToString());
         var bundle = ExerciseBundleReader.Read(ParseBundlePath(standardOutput.ToString()));
-        Assert.Equal("reserve-designation-movement",
+        Assert.Equal("organization-boundary",
             bundle.NormalizedManifest!.ExerciseId);
-        Assert.Equal(12, bundle.AcceptedActions.Count);
-        Assert.Equal(12, bundle.CanonicalEvents.Count);
-        Assert.Equal(12, bundle.StepEvidence.Count);
+        Assert.Equal(11, bundle.AcceptedActions.Count);
+        Assert.Equal(11, bundle.CanonicalEvents.Count);
+        Assert.Equal(11, bundle.StepEvidence.Count);
         var canonicalEvents = bundle.CanonicalEvents.Select(value =>
             System.Text.Encoding.UTF8.GetString(value)).ToArray();
-        Assert.Equal(2, canonicalEvents.Count(value => value.Contains(
+        Assert.Equal(1, canonicalEvents.Count(value => value.Contains(
             "\"eventType\":\"reserve-element-designated\"",
             StringComparison.Ordinal)));
         Assert.Single(canonicalEvents, value => value.Contains(
@@ -188,8 +187,8 @@ public sealed class ExerciseRunCommandTests : IDisposable
             .EnumerateArray()
             .Select(element => element.GetProperty("reserveStatus").GetString())
             .ToArray();
-        Assert.Equal(2, statuses.Count(value => value == "reserve-i"));
-        Assert.Equal(2, statuses.Count(value => value == "none"));
+        Assert.Equal(1, statuses.Count(value => value == "reserve-i"));
+        Assert.Equal(3, statuses.Count(value => value == "none"));
         Assert.True(bundle.ReconstructionProof!.IsVerified);
         Assert.True(bundle.ReadjudicationProof!.IsVerified);
     }
@@ -347,15 +346,24 @@ public sealed class ExerciseRunCommandTests : IDisposable
         GC.SuppressFinalize(this);
     }
 
-    private static string[] Arguments(string artifactRoot) =>
+    private string[] Arguments(string artifactRoot) =>
     [
         "exercise",
         "run",
         "--manifest",
-        "scenarios/exercises/rules-lab.organization.v2.json",
+        WriteCurrentManifest("organization", ExerciseManifestCodecTests.Create()),
         "--artifact-root",
         artifactRoot,
     ];
+
+    private string WriteCurrentManifest(string name, ExerciseManifest manifest)
+    {
+        var relativePath = Path.Combine(repositoryManifestDirectory, $"{name}.json");
+        var path = Path.Combine(FindRepositoryRoot(AppContext.BaseDirectory), relativePath);
+        Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+        File.WriteAllBytes(path, ExerciseManifestCodec.Serialize(manifest));
+        return relativePath;
+    }
 
     private DetailCommandRun RunDetail(ExerciseDetail detail)
     {

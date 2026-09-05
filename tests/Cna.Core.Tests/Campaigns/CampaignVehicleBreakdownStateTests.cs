@@ -241,7 +241,7 @@ public sealed class CampaignVehicleBreakdownStateTests
             null,
             CampaignTestHarness.Create(
                 "campaign-breakdown-forgery",
-                Cna1979Ruleset.Manifest.Hash,
+                Cna1979Ruleset.HistoricalManifestV8.Hash,
                 12345,
                 setup.SetupId,
                 setup.Hash));
@@ -265,7 +265,7 @@ public sealed class CampaignVehicleBreakdownStateTests
             null,
             CampaignTestHarness.Create(
                 "campaign-breakdown-continuity",
-                Cna1979Ruleset.Manifest.Hash,
+                Cna1979Ruleset.HistoricalManifestV8.Hash,
                 12345,
                 setup.SetupId,
                 setup.Hash));

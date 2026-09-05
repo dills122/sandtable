@@ -73,7 +73,7 @@ public sealed class MovementCostSensitivityTests
             MovementCandidate(ActionB, "unit.alpha", "west", "north",
                 new CapabilityPointAmount(1, 2)),
             MovementCandidate(ActionC, "unit.alpha", "west", "east",
-                new CapabilityPointAmount(8, 1)),
+                new CapabilityPointAmount(17, 2)),
             MovementCandidate(Sha('d'), "unit.zulu", "west", "north",
                 new CapabilityPointAmount(1, 4)),
             Candidate(Sha('e'), "complete-movement-segment"),
@@ -93,7 +93,7 @@ public sealed class MovementCostSensitivityTests
     }
 
     [Fact]
-    public void LowestCostPolicyAvoidsReactionWhileBaselineFailsClosedRepeatably()
+    public void LowestCostPolicyReducesRouteCostRepeatably()
     {
         var baselineManifest = Manifest(
             ExerciseControllerPolicy.ActFirstReserveNoneMoveEachOnceThenComplete);
@@ -111,13 +111,13 @@ public sealed class MovementCostSensitivityTests
             candidateManifest,
             TestContext.Current.CancellationToken);
 
-        AssertReactionBoundary(baseline);
+        AssertRun(baseline, baselineManifest);
         AssertRun(first, candidateManifest);
         AssertRun(second, candidateManifest);
-        Assert.Equal(new CapabilityPointAmount(8, 1), TotalMovementCost(baseline));
+        Assert.Equal(new CapabilityPointAmount(9, 1), TotalMovementCost(baseline));
         Assert.Equal(new CapabilityPointAmount(3, 2), TotalMovementCost(first));
-        Assert.Equal(["center"], MovementDestinations(baseline));
-        Assert.Equal(["north-west", "north"], MovementDestinations(first));
+        Assert.Equal(["north", "center"], MovementDestinations(baseline));
+        Assert.Equal(["north", "north-west"], MovementDestinations(first));
         Assert.Equal(
             ExerciseEvidenceWriter.WriteAcceptedActions(first),
             ExerciseEvidenceWriter.WriteAcceptedActions(second));
@@ -127,23 +127,13 @@ public sealed class MovementCostSensitivityTests
         Assert.Equal(first.FinalSnapshot, second.FinalSnapshot);
     }
 
-    private static void AssertReactionBoundary(ExerciseExecutionResult result)
-    {
-        Assert.False(result.IsSucceeded);
-        Assert.Equal(ExerciseFailureCategory.InvariantFailed, result.FailureCategory);
-        Assert.Null(result.BoundaryPositionId);
-        Assert.Equal(11, result.Steps.Count);
-        Assert.Null(result.Reconstruction);
-        Assert.Equal(["center"], MovementDestinations(result));
-    }
-
     private static void AssertRun(
         ExerciseExecutionResult result,
         ExerciseManifest manifest)
     {
         Assert.True(result.IsSucceeded);
         Assert.Equal(BreakdownBoundary, result.BoundaryPositionId);
-        Assert.Equal(13, result.Steps.Count);
+        Assert.Equal(17, result.Steps.Count);
         Assert.True(result.Reconstruction!.IsVerified);
         Assert.True(ReadjudicationVerifier.Verify(manifest, result).IsVerified);
         Assert.Equal(2, MovementDestinations(result).Length);
@@ -179,7 +169,7 @@ public sealed class MovementCostSensitivityTests
 
     private static ExerciseManifest Manifest(ExerciseControllerPolicy policy) =>
         ExerciseManifestCodecTests.Create(
-            maximumSteps: 13,
+            maximumSteps: 30,
             terminalBoundary: BreakdownBoundary,
             controllerPolicy: policy);
 

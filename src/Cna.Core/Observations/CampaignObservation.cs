@@ -34,7 +34,7 @@ public sealed record CampaignObservation
 
         ArgumentOutOfRangeException.ThrowIfLessThan(stateVersion, 1);
 
-        if (!Cna1979Ruleset.IsCanonicalHash(rulesetHash))
+        if (!Cna1979Ruleset.IsHistoricalHashV8(rulesetHash))
         {
             throw new ArgumentException(
                 "The observation ruleset hash must identify the canonical ruleset.",

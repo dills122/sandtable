@@ -177,12 +177,59 @@ public static class ExerciseEvidenceCodec
         "mobilitySources", "cost", "capabilityPointsExpendedBefore",
         "capabilityPointsExpendedAfter", "cohesionBefore", "cohesionAfter",
         "movementEndedAfter", "sequencePosition", "openedReactionWindow",
+        "rulesetHash", "breakdownAccounting", "breakdownFlowAfter",
     ];
 
     private static readonly string[] MovementCompletionEventProperties =
     [
         "contractVersion", "eventType", "campaignId", "stateVersion", "priorStateVersion",
         "fromPositionId", "gameTurn", "operationStage", "actingSide", "sequencePosition",
+        "rulesetHash", "breakdownFlowAfter",
+    ];
+
+    private static readonly string[] ReactionMoveEventProperties =
+    [
+        "contractVersion", "eventType", "campaignId", "stateVersion", "priorStateVersion",
+        "fromPositionId", "gameTurn", "operationStage", "actingSide", "actionId",
+        "submittedWindowId", "submittedOpportunityId", "windowId", "opportunityId",
+        "elementId", "representationId", "originLocationId", "destinationLocationId",
+        "mobilityId", "mobilitySources", "cost", "capabilityPointsExpendedBefore",
+        "capabilityPointsExpendedAfter", "cohesionBefore", "cohesionAfter", "reactionWindowAfter",
+        "rulesetHash", "breakdownAccounting", "breakdownFlowAfter",
+    ];
+
+    private static readonly string[] ReactionCompletionEventProperties =
+    [
+        "contractVersion", "eventType", "campaignId", "stateVersion", "priorStateVersion",
+        "fromPositionId", "actingSide", "actionId", "submittedWindowId", "submittedOpportunityId",
+        "windowId", "opportunityId", "reactionWindowAfter",
+        "rulesetHash", "breakdownFlowAfter",
+    ];
+
+    private static readonly string[] ReactionCloseEventProperties =
+    [
+        "contractVersion", "eventType", "campaignId", "stateVersion", "priorStateVersion",
+        "fromPositionId", "actingSide", "actionId", "submittedWindowId", "windowId", "reason",
+        "closedOpportunityIds", "suspendedSequencePosition", "rulesetHash", "breakdownFlowAfter",
+    ];
+
+    private static readonly string[] MovementStopEventProperties =
+    [
+        "contractVersion", "eventType", "campaignId", "stateVersion", "priorStateVersion",
+        "rulesetHash", "fromPositionId", "actionId", "actingSide", "submittedRouteId", "breakdownFlowAfter",
+    ];
+
+    private static readonly string[] BreakdownResolutionEventProperties =
+    [
+        "contractVersion", "eventType", "campaignId", "stateVersion", "priorStateVersion",
+        "rulesetHash", "fromPositionId", "actionId", "stop", "randomStateBefore", "checks",
+        "createdLots", "randomStateAfter", "breakdownFlowAfter", "sources",
+    ];
+
+    private static readonly string[] BreakdownCompletionEventProperties =
+    [
+        "contractVersion", "eventType", "campaignId", "stateVersion", "priorStateVersion",
+        "rulesetHash", "fromPositionId", "actionId", "sequencePosition", "breakdownFlowAfter", "sources",
     ];
 
     public static IReadOnlyList<ExerciseAcceptedActionRecord> DeserializeAcceptedActions(
@@ -233,7 +280,7 @@ public static class ExerciseEvidenceCodec
                 [
                     "contractVersion", "campaignId", "stateVersion", "rulesetHash", "setup",
                     "world", "initiativeHolder", "operationStageOrders", "operationStageWeather",
-                    "randomState", "currentPosition", "reactionWindow",
+                    "randomState", "currentPosition", "reactionWindow", "breakdownFlow",
                 ]);
             RequireCanonical(root, canonicalJson.Span);
             var checkpoint = CampaignExercises.ReadCheckpoint(canonicalJson);
@@ -317,26 +364,55 @@ public static class ExerciseEvidenceCodec
             "weather-determined" => (1, WeatherEventProperties),
             "reserve-element-designated" => (1, ReserveDesignationEventProperties),
             "reserve-designation-completed" => (1, ReserveCompletionEventProperties),
-            "element-moved" => (2, MovementEventProperties),
-            "movement-segment-completed" => (1, MovementCompletionEventProperties),
+            "element-moved" => (3, MovementEventProperties),
+            "movement-segment-completed" => (2, MovementCompletionEventProperties),
+            "reacting-element-moved" => (2, ReactionMoveEventProperties),
+            "reaction-participant-completed" => (2, ReactionCompletionEventProperties),
+            "reaction-window-closed" => (2, ReactionCloseEventProperties),
+            "element-movement-stopped" => (1, MovementStopEventProperties),
+            "breakdown-stop-resolved" => (1, BreakdownResolutionEventProperties),
+            "breakdown-segment-completed" => (1, BreakdownCompletionEventProperties),
             _ => throw new JsonException("Unknown canonical campaign event type."),
         };
         StrictJson.RequireExactProperties(root, expectedProperties);
         RequireCanonical(root, canonicalRecord);
         if (root.GetProperty("contractVersion").GetInt32() != expectedVersion)
             throw new JsonException("Unknown campaign event contract version.");
+        CampaignExercises.ValidateCanonicalEvent(canonicalRecord);
         var campaignId = RequireString(root, "campaignId");
         var stateVersion = root.GetProperty("stateVersion").GetInt64();
         if (stateVersion < 1) throw new JsonException("Event state version is invalid.");
-        var position = root.GetProperty("sequencePosition");
-        if (position.ValueKind != JsonValueKind.Object)
-            throw new JsonException("Event sequence position must be an object.");
         return new ExerciseCanonicalEventRecord(
             canonicalRecord,
             campaignId,
             stateVersion,
             RequireString(root, "fromPositionId"),
-            RequireString(position, "positionId"));
+            ResultingPositionId(root, eventType));
+    }
+
+    private static string ResultingPositionId(JsonElement root, string eventType)
+    {
+        if (root.TryGetProperty("breakdownFlowAfter", out var flow)
+            && RequireString(flow, "kind") is "phasing-stop" or "reactor-stop-open" or "reactor-stop-closed")
+            return "land.position.breakdown-stop";
+
+        // The admitted profile resolves stops only within first-side stage-1 Movement.
+        // Its event omits the private suspended sequence; strict Core admission above verifies
+        // the closed flow and event contract before deriving this public checkpoint identifier.
+        if (eventType == "breakdown-stop-resolved")
+            return "land.position.operation-1.first-player.movement-and-combat.movement";
+
+        var position = eventType switch
+        {
+            "reacting-element-moved" or "reaction-participant-completed" => root
+                .GetProperty("reactionWindowAfter").GetProperty("reactingPosition")
+                .GetProperty("suspendedMovementPosition"),
+            "reaction-window-closed" => root.GetProperty("suspendedSequencePosition"),
+            _ => root.GetProperty("sequencePosition"),
+        };
+        if (position.ValueKind != JsonValueKind.Object)
+            throw new JsonException("Event sequence position must be an object.");
+        return RequireString(position, "positionId");
     }
 
     private static byte[] SerializeAcceptedAction(ExerciseAcceptedActionRecord record)

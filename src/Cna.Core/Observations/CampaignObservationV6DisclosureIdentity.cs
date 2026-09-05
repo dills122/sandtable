@@ -28,7 +28,7 @@ internal static class CampaignObservationV6DisclosureIdentity
         LandSide reactingSide)
     {
         campaignId = ContentContractGuards.RequireStableId(campaignId, nameof(campaignId));
-        if (!Cna1979Ruleset.IsCanonicalHash(rulesetHash))
+        if (!Cna1979Ruleset.IsHistoricalHashV8(rulesetHash))
         {
             throw new ArgumentException(
                 "A ruleset hash must be canonical.",

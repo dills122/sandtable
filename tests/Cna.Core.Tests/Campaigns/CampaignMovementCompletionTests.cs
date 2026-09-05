@@ -78,7 +78,7 @@ public sealed class CampaignMovementCompletionTests
 
         foreach (var audience in Enum.GetValues<CampaignActionAudience>())
         {
-            var query = CampaignLegalActions.Query(
+            var query = HistoricalCampaignActions.Query(
                 new CampaignAuthorityHandle(snapshot, evidence.Context),
                 audience);
             Assert.True(query.IsSuccessful);

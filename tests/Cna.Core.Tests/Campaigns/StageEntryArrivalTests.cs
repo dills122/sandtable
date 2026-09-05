@@ -49,13 +49,13 @@ public sealed class StageEntryArrivalTests
     }
 
     [Fact]
-    public void CurrentSystemArrivalSubmissionIsAcceptedOnce()
+    public void HistoricalSystemArrivalSubmissionIsAcceptedOnce()
     {
         var arrival = ReachArrival().Snapshot!;
         var handle = new CampaignAuthorityHandle(
             arrival,
             CampaignTestHarness.ContextFor(arrival));
-        var query = CampaignLegalActions.Query(handle, CampaignActionAudience.System);
+        var query = HistoricalCampaignActions.Query(handle, CampaignActionAudience.System);
         Assert.True(query.IsSuccessful);
         var candidate = Assert.Single(query.ActionSet!.Candidates);
         var submission = new CampaignActionSubmission(
@@ -66,7 +66,7 @@ public sealed class StageEntryArrivalTests
             query.ActionSet.Audience,
             candidate.ActionId);
 
-        var accepted = CampaignLegalActions.Submit(handle, submission);
+        var accepted = HistoricalCampaignActions.Submit(handle, submission);
 
         Assert.True(accepted.IsAccepted);
         Assert.Equal(8, accepted.SuccessorHandle!.Snapshot.StateVersion);
@@ -78,7 +78,7 @@ public sealed class StageEntryArrivalTests
             accepted.SuccessorHandle.Snapshot.SequencePosition.PositionId,
             accepted.Receipt.ResultingPositionId);
 
-        var duplicate = CampaignLegalActions.Submit(accepted.SuccessorHandle, submission);
+        var duplicate = HistoricalCampaignActions.Submit(accepted.SuccessorHandle, submission);
         Assert.False(duplicate.IsAccepted);
         Assert.Equal(
             CampaignActionSubmissionRejectionReason.StaleState,
@@ -184,7 +184,7 @@ public sealed class StageEntryArrivalTests
         [
             CampaignTestHarness.Create(
                 "campaign-stage-entry-arrival",
-                Cna1979Ruleset.Manifest.Hash,
+                Cna1979Ruleset.HistoricalManifestV8.Hash,
                 12345,
                 setup.SetupId,
                 setup.Hash),

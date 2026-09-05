@@ -5,8 +5,8 @@ namespace Cna.Core.Campaigns;
 internal sealed record CampaignCreationExecutionResult
 {
     private CampaignCreationExecutionResult(
-        CampaignCreatedV9? currentCreatedEvent,
-        CampaignSnapshotV10? currentSnapshot,
+        CampaignCreatedV10? currentCreatedEvent,
+        CampaignSnapshotV11? currentSnapshot,
         CampaignCreated? createdEvent,
         CampaignSnapshot? snapshot,
         CampaignContentContext? context,
@@ -21,24 +21,22 @@ internal sealed record CampaignCreationExecutionResult
     }
 
     public bool IsCreated => CurrentSnapshot is not null;
-    public CampaignCreatedV9? CurrentCreatedEvent { get; }
-    public CampaignSnapshotV10? CurrentSnapshot { get; }
+    public CampaignCreatedV10? CurrentCreatedEvent { get; }
+    public CampaignSnapshotV11? CurrentSnapshot { get; }
     public CampaignCreated? CreatedEvent { get; }
     public CampaignSnapshot? Snapshot { get; }
     public CampaignContentContext? Context { get; }
     public CampaignCreationRejectionReason RejectionReason { get; }
 
     public static CampaignCreationExecutionResult Created(
-        CampaignCreatedV9 currentCreatedEvent,
-        CampaignSnapshotV10 currentSnapshot,
-        CampaignCreated createdEvent,
-        CampaignSnapshot snapshot,
+        CampaignCreatedV10 currentCreatedEvent,
+        CampaignSnapshotV11 currentSnapshot,
         CampaignContentContext context) =>
         new(
             currentCreatedEvent ?? throw new ArgumentNullException(nameof(currentCreatedEvent)),
             currentSnapshot ?? throw new ArgumentNullException(nameof(currentSnapshot)),
-            createdEvent ?? throw new ArgumentNullException(nameof(createdEvent)),
-            snapshot ?? throw new ArgumentNullException(nameof(snapshot)),
+            null,
+            null,
             context ?? throw new ArgumentNullException(nameof(context)),
             CampaignCreationRejectionReason.None);
 
@@ -77,7 +75,7 @@ internal static class CampaignCreationExecution
                 CampaignCreationRejectionReason.UnsupportedRuleset);
         }
 
-        if (!Cna.Core.Setups.Cna1979SetupCatalog.TryGet(
+        if (!Cna.Core.Setups.Cna1979BreakdownSetupCatalog.TryGet(
                 request.SetupId,
                 out var definition))
         {
@@ -85,7 +83,7 @@ internal static class CampaignCreationExecution
                 CampaignCreationRejectionReason.UnknownSetup);
         }
 
-        var resolution = Cna1979SyntheticContentResolver.Instance.ResolveV5(
+        var resolution = Cna1979SyntheticContentResolver.Instance.ResolveV6(
             request.ContentPackId,
             request.ContentHash);
         if (!resolution.IsResolved)
@@ -114,10 +112,7 @@ internal static class CampaignCreationExecution
                 CampaignCreationRejectionReason.SetupContentMismatch);
         }
 
-        var predecessor = CampaignSetupSnapshot.FromDefinition(definition);
-        var successorSetup = CampaignSetupSnapshotV5.FromPredecessor(
-            predecessor,
-            new CampaignContentV5Selection(artifact.Identity, scenario.ScenarioId));
+        var successorSetup = CampaignSetupSnapshotV6.FromDefinition(definition);
         if (!string.Equals(request.SetupHash, successorSetup.SetupHash, StringComparison.Ordinal))
         {
             return CampaignCreationExecutionResult.Rejected(
@@ -133,31 +128,17 @@ internal static class CampaignCreationExecution
 
         try
         {
-            var created = CampaignCreationV9Factory.Create(
-                request.CampaignId,
-                request.RulesetHash,
-                predecessor,
-                artifact,
-                scenario,
+            if (successorSetup.CapabilityProfileId != artifact.Definition.CapabilityProfileId
+                || !ContentPackV6Validator.Validate(artifact.Definition).IsValid)
+                return CampaignCreationExecutionResult.Rejected(
+                    CampaignCreationRejectionReason.UnsupportedCapabilityProfile);
+            var created = CampaignCreationV10Factory.Create(
+                request.CampaignId, request.RulesetHash, successorSetup, artifact, scenario,
                 Cna.Core.Randomness.SandtableRandom.Create(request.Seed),
-                Cna.Core.Rules.Cna1979LandSequence.CreateTurn(scenario.Start.GameTurn)[0]);
+                Cna.Core.Rules.Cna1979LandSequenceV4.CreateTurn(scenario.Start.GameTurn)[0]);
             var context = CampaignContentContext.Create(artifact, scenario.ScenarioId);
-            var snapshot = CampaignV10Projector.ApplyCreation(created, artifact, scenario);
-            var legacySnapshot = CampaignV10LegacyBridge.ToLegacy(snapshot, context);
-            var legacyCreated = new CampaignCreated(
-                legacySnapshot.CampaignId,
-                legacySnapshot.StateVersion,
-                legacySnapshot.RulesetHash,
-                legacySnapshot.Setup,
-                legacySnapshot.World,
-                legacySnapshot.RandomState,
-                legacySnapshot.SequencePosition);
-            return CampaignCreationExecutionResult.Created(
-                created,
-                snapshot,
-                legacyCreated,
-                legacySnapshot,
-                context);
+            var snapshot = CampaignCreationV10Factory.CreateSnapshot(created, artifact, scenario);
+            return CampaignCreationExecutionResult.Created(created, snapshot, context);
         }
         catch (Exception exception) when (exception is ArgumentException
             or InvalidCampaignHistoryException

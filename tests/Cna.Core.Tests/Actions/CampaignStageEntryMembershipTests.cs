@@ -145,7 +145,7 @@ public sealed class CampaignStageEntryMembershipTests
             {
                 Setup = WithStageEntryPolicy(handle.Snapshot.Setup, policy),
             };
-            var query = CampaignLegalActions.Query(
+            var query = HistoricalCampaignActions.Query(
                 new CampaignAuthorityHandle(forged, handle.Context),
                 CampaignActionAudience.System);
             var decision = CampaignEngine.Decide(
@@ -168,13 +168,7 @@ public sealed class CampaignStageEntryMembershipTests
     private static CampaignAuthorityHandle AdvanceToOrganization()
     {
         var setup = Cna1979SetupCatalog.Definitions[0];
-        var request = CampaignCurrentRequestTestData.Create(
-            setup,
-            "campaign-stage-entry-membership",
-            12345);
-        var creation = CampaignAuthority.Create(request);
-        Assert.True(creation.IsCreated);
-        var handle = creation.Handle!;
+        var handle = HistoricalCampaignActions.Create(setup, "campaign-stage-entry-membership", 12345);
 
         handle = SubmitOnly(handle, CampaignActionAudience.System, "resolve-initiative");
         handle = SubmitOnly(handle, CampaignActionAudience.System,
@@ -245,7 +239,7 @@ public sealed class CampaignStageEntryMembershipTests
         CampaignAuthorityHandle handle,
         CampaignActionAudience audience)
     {
-        var result = CampaignLegalActions.Query(handle, audience);
+        var result = HistoricalCampaignActions.Query(handle, audience);
         Assert.True(result.IsSuccessful);
         return result.ActionSet!;
     }
@@ -257,7 +251,7 @@ public sealed class CampaignStageEntryMembershipTests
     {
         var set = Query(handle, audience);
         var candidate = Assert.Single(set.Candidates, value => value.Kind == kind);
-        var result = CampaignLegalActions.Submit(handle, Bind(set, candidate));
+        var result = HistoricalCampaignActions.Submit(handle, Bind(set, candidate));
         Assert.True(result.IsAccepted);
         return result.SuccessorHandle!;
     }

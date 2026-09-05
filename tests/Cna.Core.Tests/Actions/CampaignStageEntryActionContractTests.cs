@@ -56,18 +56,18 @@ public sealed class CampaignStageEntryActionContractTests
             new ResolveNoObligationFleetRepairAction(),
             new ResolveNoObligationFleetAssignmentAction(),
         };
-        var actionSet = new CampaignLegalActionSet(
+        var actionSet = HistoricalLegalActionSetTestData.Create(
             "campaign-stage-entry",
             6,
-            Cna1979Ruleset.Manifest.Hash,
+            Cna1979Ruleset.HistoricalManifestV8.Hash,
             "land.position.operation-1.organization",
             CampaignActionAudience.System,
             callerOrder);
         callerOrder.Clear();
 
         var expected =
-            $"{{\"contractVersion\":2,\"policyId\":\"sandtable.legal-actions.v2\",\"campaignId\":\"campaign-stage-entry\",\"stateVersion\":6,\"rulesetHash\":\"{Cna1979Ruleset.Manifest.Hash}\",\"positionId\":\"land.position.operation-1.organization\",\"audience\":\"system\",\"candidates\":[{{\"contractVersion\":1,\"actionId\":\"sha256:c2d7dae34d20f826d2e7e682b8d3b437224e42b522857f63b3869d1a1bf3bcc5\",\"kind\":\"resolve-no-obligation-fleet-assignment\"}},{{\"contractVersion\":1,\"actionId\":\"sha256:ea4fe4f27344a8659c81b05fd84df2e260bb22da1edf1115cd4d75dfd89d7d3e\",\"kind\":\"resolve-no-obligation-fleet-repair\"}},{{\"contractVersion\":1,\"actionId\":\"sha256:a49ff99f7e52193fdee44b50751e64025121cb9a2a75a054fdf2ad045e013632\",\"kind\":\"resolve-no-obligation-naval-convoy-arrival\"}},{{\"contractVersion\":1,\"actionId\":\"sha256:2200e6c4cef001d344d85de78fc7a10c13b32c12975d905c633ca430c3c4bd4c\",\"kind\":\"resolve-no-obligation-organization\"}}]}}";
-        var baseline = CampaignLegalActionSerializer.Serialize(actionSet);
+            $"{{\"contractVersion\":2,\"policyId\":\"sandtable.legal-actions.v2\",\"campaignId\":\"campaign-stage-entry\",\"stateVersion\":6,\"rulesetHash\":\"{Cna1979Ruleset.HistoricalManifestV8.Hash}\",\"positionId\":\"land.position.operation-1.organization\",\"audience\":\"system\",\"candidates\":[{{\"contractVersion\":1,\"actionId\":\"sha256:c2d7dae34d20f826d2e7e682b8d3b437224e42b522857f63b3869d1a1bf3bcc5\",\"kind\":\"resolve-no-obligation-fleet-assignment\"}},{{\"contractVersion\":1,\"actionId\":\"sha256:ea4fe4f27344a8659c81b05fd84df2e260bb22da1edf1115cd4d75dfd89d7d3e\",\"kind\":\"resolve-no-obligation-fleet-repair\"}},{{\"contractVersion\":1,\"actionId\":\"sha256:a49ff99f7e52193fdee44b50751e64025121cb9a2a75a054fdf2ad045e013632\",\"kind\":\"resolve-no-obligation-naval-convoy-arrival\"}},{{\"contractVersion\":1,\"actionId\":\"sha256:2200e6c4cef001d344d85de78fc7a10c13b32c12975d905c633ca430c3c4bd4c\",\"kind\":\"resolve-no-obligation-organization\"}}]}}";
+        var baseline = CampaignLegalActionSerializer.SerializeHistoricalV2(actionSet);
 
         Assert.Equal(expected, Encoding.UTF8.GetString(baseline));
         Assert.Equal(
@@ -85,7 +85,7 @@ public sealed class CampaignStageEntryActionContractTests
         {
             CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("ar-SA");
             CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo("ar-SA");
-            Assert.Equal(baseline, CampaignLegalActionSerializer.Serialize(actionSet));
+            Assert.Equal(baseline, CampaignLegalActionSerializer.SerializeHistoricalV2(actionSet));
         }
         finally
         {

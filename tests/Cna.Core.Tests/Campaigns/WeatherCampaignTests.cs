@@ -98,7 +98,8 @@ public sealed class WeatherCampaignTests
         int expectedSeason)
     {
         var setup = Cna1979SetupCatalog.Definitions.Single(value =>
-            value.InitialGameTurn == expectedGameTurn);
+            value.InitialGameTurn == expectedGameTurn
+            && value.SetupId.StartsWith("rules-lab.initiative.", StringComparison.Ordinal));
         var weather = ReachWeather(setup, seed);
         var result = CampaignTestHarness.Decide(
             weather,
@@ -260,7 +261,7 @@ public sealed class WeatherCampaignTests
         [
             CampaignTestHarness.Create(
                 "campaign-weather",
-                Cna1979Ruleset.Manifest.Hash,
+                Cna1979Ruleset.HistoricalManifestV8.Hash,
                 seed,
                 setup.SetupId,
                 setup.Hash),

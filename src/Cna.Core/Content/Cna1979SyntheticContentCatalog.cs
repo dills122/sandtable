@@ -82,12 +82,46 @@ public static class Cna1979SyntheticContentCatalog
 
     public static ContentPackV5Artifact ArtifactV5 { get; } = CreateArtifactV5();
 
+    public static ContentPackV6Artifact ArtifactV6 => Cna1979BreakdownContentCatalog.Artifact;
+
+    public static ContentPackV6Artifact ArtifactBreakdownReactionV6 =>
+        Cna1979BreakdownContentCatalog.ReactionArtifact;
+
+    public static IReadOnlyList<ContentPackV6Artifact> BreakdownRunnerArtifactsV6 =>
+        Cna1979BreakdownContentCatalog.RunnerArtifacts;
+
+    public static ContentPackV6CatalogResolution ResolveV6(string packId, string expectedHash)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(packId);
+        ArgumentException.ThrowIfNullOrWhiteSpace(expectedHash);
+        var artifact = string.Equals(packId, ArtifactV6.Identity.PackId, StringComparison.Ordinal)
+            ? ArtifactV6
+            : string.Equals(packId, ArtifactBreakdownReactionV6.Identity.PackId, StringComparison.Ordinal)
+                ? ArtifactBreakdownReactionV6 : BreakdownRunnerArtifactsV6.SingleOrDefault(value =>
+                    string.Equals(value.Identity.PackId, packId, StringComparison.Ordinal));
+        if (artifact is null)
+            return ContentPackV6CatalogResolution.Rejected(ContentCatalogRejectionReason.UnknownPackId);
+        return string.Equals(expectedHash, artifact.Identity.Hash, StringComparison.Ordinal)
+            ? ContentPackV6CatalogResolution.Resolved(artifact)
+            : ContentPackV6CatalogResolution.Rejected(ContentCatalogRejectionReason.HashMismatch);
+    }
+
     public static ContentPresentationCatalog Presentation { get; } = CreatePresentation();
 
     public static ContentCatalogResolution Resolve(string packId, string expectedHash)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(packId);
         ArgumentException.ThrowIfNullOrWhiteSpace(expectedHash);
+
+        var reaction = Cna1979ReactionContentCatalog.Artifacts.SingleOrDefault(value =>
+            string.Equals(value.Identity.PackId, packId, StringComparison.Ordinal));
+        if (reaction is not null)
+        {
+            var predecessor = ContentPackArtifact.Create(reaction.Definition.LegacyDefinition);
+            return string.Equals(expectedHash, predecessor.Identity.Hash, StringComparison.Ordinal)
+                ? ContentCatalogResolution.Resolved(predecessor)
+                : ContentCatalogResolution.Rejected(ContentCatalogRejectionReason.HashMismatch);
+        }
 
         if (!string.Equals(packId, Artifact.Identity.PackId, StringComparison.Ordinal))
         {
@@ -106,6 +140,12 @@ public static class Cna1979SyntheticContentCatalog
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(packId);
         ArgumentException.ThrowIfNullOrWhiteSpace(expectedHash);
+        var reaction = Cna1979ReactionContentCatalog.Artifacts.SingleOrDefault(value =>
+            string.Equals(value.Identity.PackId, packId, StringComparison.Ordinal));
+        if (reaction is not null)
+            return string.Equals(expectedHash, reaction.Identity.Hash, StringComparison.Ordinal)
+                ? ContentPackV5CatalogResolution.Resolved(reaction)
+                : ContentPackV5CatalogResolution.Rejected(ContentCatalogRejectionReason.HashMismatch);
         if (!string.Equals(packId, ArtifactV5.Identity.PackId, StringComparison.Ordinal))
         {
             return ContentPackV5CatalogResolution.Rejected(

@@ -207,7 +207,7 @@ internal static class CampaignSnapshotV10Validator
         ArgumentNullException.ThrowIfNull(scenario);
         if (snapshot is null
             || snapshot.ContractVersion != CampaignSnapshotV10.CurrentContractVersion
-            || !Cna1979Ruleset.IsCanonicalHash(snapshot.RulesetHash)
+            || !Cna1979Ruleset.IsHistoricalHashV8(snapshot.RulesetHash)
             || snapshot.Setup.Content.Pack != artifact.Identity
             || !string.Equals(snapshot.Setup.Content.ScenarioId, scenario.ScenarioId,
                 StringComparison.Ordinal)

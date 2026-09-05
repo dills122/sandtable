@@ -8,10 +8,11 @@ namespace Cna.Core.Tests.Setups;
 public sealed class CampaignSetupTests
 {
     [Fact]
-    public void CatalogContainsOnlyTheTwoSyntheticInitiativeLabSetups()
+    public void CatalogRetainsTheTwoSyntheticInitiativeLabSetups()
     {
         Assert.Collection(
-            Cna1979SetupCatalog.Definitions,
+            Cna1979SetupCatalog.Definitions.Where(value => value.SetupId.StartsWith(
+                "rules-lab.initiative.", StringComparison.Ordinal)),
             predetermined =>
             {
                 Assert.Equal("rules-lab.initiative.predetermined", predetermined.SetupId);

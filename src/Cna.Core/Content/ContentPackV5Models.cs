@@ -40,12 +40,31 @@ public sealed record ContentElementCombatFacts
         string combatClassificationId,
         IEnumerable<ContentCombatComponent> components,
         ContentOrigin origin)
+        : this(elementId, combatClassificationId, components, origin, allowEmptyNoncombat: false)
+    {
+    }
+
+    internal static ContentElementCombatFacts CreateV6(
+        string elementId,
+        string combatClassificationId,
+        IEnumerable<ContentCombatComponent> components,
+        ContentOrigin origin) =>
+        new(elementId, combatClassificationId, components, origin, allowEmptyNoncombat: true);
+
+    private ContentElementCombatFacts(
+        string elementId,
+        string combatClassificationId,
+        IEnumerable<ContentCombatComponent> components,
+        ContentOrigin origin,
+        bool allowEmptyNoncombat)
     {
         ArgumentNullException.ThrowIfNull(origin);
         var componentCopy = ContentContractGuards.CopyValues(
             components,
             nameof(components));
-        if (componentCopy.Length == 0)
+        if (componentCopy.Length == 0
+            && !(allowEmptyNoncombat
+                && combatClassificationId == Rules.Cna1979Combat.TruckConvoyClassificationId))
         {
             throw new ArgumentException(
                 "At least one combat component is required.",

@@ -230,7 +230,7 @@ public sealed class CampaignReserveCompletionTests
         CampaignContentContext context,
         CampaignActionAudience audience)
     {
-        var result = CampaignLegalActions.Query(
+        var result = HistoricalCampaignActions.Query(
             new CampaignAuthorityHandle(snapshot, context),
             audience);
         Assert.True(result.IsSuccessful);

@@ -161,3 +161,8 @@ MOV-TASK-007 CP + BP ElementMoved; no Breakdown RNG
 This packet does not normalize every vehicle class, loss-placement exception, or Breakdown result.
 Task 004B implements only the approved continuity lane and passed two fresh-context review
 instances. Breakdown adjudication remains a separate later package.
+
+Current follow-up: [BRK-RSH-002](breakdown-adjudication-spike.md) retains the outcome surface and
+proposed adjudication design after ZOR completion. It explicitly identifies that accepted current
+Movement/Reaction paths preserve BP rather than accumulate it; production accounting integration
+requires a successor contract and does not retroactively change this continuity checkpoint.

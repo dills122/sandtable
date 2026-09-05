@@ -12,7 +12,7 @@ namespace Cna.Core.Tests.Observations;
 public sealed class UserSpaceDisclosureManifestTests
 {
     [Fact]
-    public void ManifestRegistersEveryReachableCoreTypeFromDeclaredRoots()
+    public void HistoricalManifestRegistersEveryReachablePredecessorTypeFromDeclaredRoots()
     {
         using var manifest = ReadManifest();
         var assembly = typeof(CampaignObservationV6).Assembly;
@@ -110,7 +110,7 @@ public sealed class UserSpaceDisclosureManifestTests
     }
 
     [Fact]
-    public void ManifestIsAClosedAllowlistForEveryCurrentDecisionOutputVariant()
+    public void HistoricalManifestIsAClosedAllowlistForEveryPredecessorDecisionOutputVariant()
     {
         using var manifest = ReadManifest();
         Assert.Equal(1, manifest.RootElement.GetProperty("manifestVersion").GetInt32());
@@ -333,7 +333,11 @@ public sealed class UserSpaceDisclosureManifestTests
                 if (type.IsAbstract || type.IsInterface)
                 {
                     foreach (var variant in assembly.GetTypes().Where(value =>
-                        !value.IsAbstract && value.IsAssignableTo(type)))
+                        !value.IsAbstract && value.IsAssignableTo(type)
+                        // Manifest v1 freezes its historical candidate closure; v2 audits all current variants.
+                        && value.FullName != "Cna.Core.Actions.StopElementMovementAction"
+                        && value.FullName != "Cna.Core.Actions.ResolveBreakdownStopAction"
+                        && value.FullName != "Cna.Core.Actions.CompleteBreakdownSegmentAction"))
                     {
                         pending.Enqueue(variant);
                     }

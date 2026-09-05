@@ -56,9 +56,9 @@ public sealed class ZocRulesTests
         Assert.False(Cna1979Zoc.IsSupportedTopologyFeatureId("land.edge.unknown"));
         Assert.False(Cna1979Zoc.IsSupportedTopologyFeatureId(null));
 
-        Assert.Equal(8, Cna1979Ruleset.ContractVersion);
+        Assert.Equal(8, Cna1979Ruleset.HistoricalManifestV8.ContractVersion);
         Assert.Contains(
-            Cna1979Ruleset.Manifest.Artifacts,
+            Cna1979Ruleset.HistoricalManifestV8.Artifacts,
             artifact => artifact.ArtifactId == Cna1979Zoc.AuthorityId);
     }
 

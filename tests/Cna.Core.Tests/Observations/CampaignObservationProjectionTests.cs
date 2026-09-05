@@ -26,7 +26,7 @@ public sealed class CampaignObservationProjectionTests
         Assert.Equal("sandtable.observation.movement-side-safe.v1", observation.PolicyId);
         Assert.Equal(snapshot.CampaignId, observation.CampaignId);
         Assert.Equal(snapshot.StateVersion, observation.StateVersion);
-        Assert.Equal(Cna1979Ruleset.Manifest.Hash, observation.RulesetHash);
+        Assert.Equal(Cna1979Ruleset.HistoricalManifestV8.Hash, observation.RulesetHash);
         Assert.Equal(snapshot.Setup.Content.ScenarioId, observation.ScenarioId);
         Assert.Equal(LandSide.Axis, observation.Observer);
         Assert.Equal(9, observation.Locations.Count);
@@ -169,7 +169,7 @@ public sealed class CampaignObservationProjectionTests
             null,
             CampaignTestHarness.Create(
                 "campaign-1",
-                Cna1979Ruleset.Manifest.Hash,
+                Cna1979Ruleset.HistoricalManifestV8.Hash,
                 seed,
                 setup.SetupId,
                 setup.Hash));

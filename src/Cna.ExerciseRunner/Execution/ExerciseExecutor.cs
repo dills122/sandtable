@@ -295,6 +295,8 @@ public static class ExerciseExecutor
         var movedElementIds = AudienceOrder.ToDictionary(
             audience => audience,
             _ => new HashSet<string>(StringComparer.Ordinal));
+        var reactionEpisodeMoves = 0;
+        var reactionWindowCompletions = 0;
 
         while (true)
         {
@@ -442,7 +444,9 @@ public static class ExerciseExecutor
                                 ? costed.CostBreakdown.TotalCost
                                 : null)),
                     reserveDesignationCounts[result.ActionSet.Audience],
-                    movedElementIds[result.ActionSet.Audience])).ToArray());
+                    movedElementIds[result.ActionSet.Audience],
+                    reactionEpisodeMoves,
+                    reactionWindowCompletions)).ToArray());
             var controllerElapsedMicroseconds = ElapsedMicroseconds(controllerStarted);
             var activeAudiences = queryDiagnostics
                 .Where(value => value.CandidateCount > 0)
@@ -659,6 +663,21 @@ public static class ExerciseExecutor
                 reserveDesignationCounts[set.Audience]++;
             if (candidate is MoveElementAction moved)
                 movedElementIds[set.Audience].Add(moved.ElementId);
+            if (candidate.Kind == "move-reacting-element")
+                reactionEpisodeMoves++;
+            if (candidate.Kind == "complete-reaction-participant")
+            {
+                reactionEpisodeMoves = 0;
+                reactionWindowCompletions++;
+            }
+            if (candidate.Kind is "decline-reaction-window"
+                or "close-reaction-window-scripted-unavailable"
+                or "close-reaction-window-timeout"
+                or "close-reaction-window-no-eligible-reactor")
+            {
+                reactionEpisodeMoves = 0;
+                reactionWindowCompletions = 0;
+            }
             steps.Add(new ExerciseAcceptedStep(
                 steps.Count,
                 submitted.Receipt!,

@@ -106,7 +106,7 @@ Optional parser evidence gate
 | Source/ruleset provenance, synthetic content, world, authority, events, and replay foundations | Implemented | Preserve exact identities and deterministic history while mechanics expand |
 | Side-safe observations and legal-action enforcement | Implemented for the current synthetic path | Extend only with each new mechanic and its disclosure tests |
 | Mandatory turn preamble | Implemented through Reserve Designation completion | Preserve the exact Movement terminal while later mechanics expand |
-| Movement and contact | Movement Foundation is complete through merged `MOV-TASK-010` / PR #79; ZOC/Reaction Core authority is activated through `ZOR-TASK-006C` | Add bounded Runner adoption in `007A`; Breakdown adjudication remains a separate gate |
+| Movement and contact | Movement Foundation is complete through merged `MOV-TASK-010` / PR #79; ZOC/Reaction Core authority is activated through `ZOR-TASK-006C` | `007A` Runner adoption implemented; `007B` verification and independent review complete; Breakdown adjudication remains separate |
 | Combat | Research active; source inventory and `CMB-RSH-001` result-surface spike complete; implementation not started | Contract freeze depends on approved Breakdown and ZOC/Reaction boundaries |
 | Working pre-alpha skeleton | Not reached | Requires one authentic movement/contact/combat loop with replay |
 | First-scenario content and remaining Land systems | Milestone-level; not started | Re-estimate after the skeleton exposes exercised-rule and transcription scope |
@@ -127,7 +127,7 @@ persistence, and Maproom remain absent.
 | 1 — Replayable Umpire spine | Complete for the admitted synthetic path | Extend versioned authority, event, replay, and deterministic-random contracts with each mechanic |
 | 2 — Rules laboratory and legal-action boundary | Complete for the admitted synthetic path | Keep outward actions observation-derived and revalidate exact membership at submission |
 | 3 — Mandatory turn preamble | Complete for the admitted synthetic no-obligation path | Positive Organization/convoy/fleet cases remain explicit later-scenario work; authority now reaches the Breakdown Determination checkpoint |
-| 4 — Movement, Breakdown, and Reaction boundary | Active | Movement Tasks 001-010 are complete and merged; ZOC/Reaction Core authority is activated through `ZOR-TASK-006C`, with `007A` Runner adoption next and Breakdown adjudication separate |
+| 4 — Movement, Breakdown, and Reaction boundary | Active | Movement Tasks 001-010 are complete and merged; ZOC/Reaction Core authority is activated through `ZOR-TASK-006C`, with `007A` Runner adoption implemented, `007B` verification and independent review complete, and Breakdown adjudication separate |
 | 5 — Combat and continual-cycle loop | Source inventory and `CMB-RSH-001` complete; not implementation-ready | Freeze contracts only after approved Breakdown and ZOC/Reaction boundaries define Contact/Engaged identity |
 | 6 — Scenario Group One content | Milestone-level; not started | Begin after the working pre-alpha skeleton measures the exact exercised-rule/data surface |
 | 7 — Remaining required Land systems | Milestone-level; not started | Split from the measured first-scenario rule inventory rather than treating it as one task |
@@ -549,7 +549,7 @@ fog equivalence, and zero/one/many-move replay; `MOV-TASK-009` checked evidence 
 and `MOV-TASK-010` synchronization/review is merged in PR #79. The next authority package is the
 approved ZOC/Reaction [specification](../specs/zoc-reaction-v1.md) and
 [technical design](../design/zoc-reaction-v1.md); checkpoints `ZOR-TASK-002A`-`006C` are
-implemented and bounded Runner adoption in `007A` is next.
+implemented; `007A` adds bounded Runner adoption and `007B` completes strict evidence/review.
 
 The approved delivery sequence adds a necessary fog-safety gate before the original task list:
 
@@ -576,20 +576,29 @@ later Sprint 4/5 slices rather than hidden additions to the first Movement resol
 | 4B — Side-safe outward contract | `MOV-TASK-005` | Own mobility/ledger and apparent opposing presence plus own BP/cohort risk project without hidden leakage | Complete; repository and independent-review gates passed |
 | 4C — Atomic non-contact Movement vertical | `MOV-TASK-006`-`008` | Dormant contracts, internal adjudication, and atomic public move/completion publication through Breakdown Determination are complete | Complete; focused/full gates and independent implementation review passed |
 | 4D — Checked evidence and closeout | `MOV-TASK-009`-`010` | Reserve policy matrix executes supported Movement to Breakdown with strict readback and synchronized evidence | Complete; Task 009 merged in PR #78 and Task 010 in PR #79 |
-| 4E — ZOC/Reaction interruption | accepted `CONTACT-001` and approved `ZOR-TASK-002A`-`007B` plan | Adjacency-triggered phasing Movement opens an opponent decision, exact Reaction/decline resolves, and Movement resumes deterministically | `ZOR-TASK-002A`-`006C` implement and activate the Core Rules/Content/Campaign/Observation/action/replay vertical; `007A` checked Runner adoption is next; Contact/Engaged remain Sprint 5 |
+| 4E — ZOC/Reaction interruption | accepted `CONTACT-001` and approved `ZOR-TASK-002A`-`007B` plan | Adjacency-triggered phasing Movement opens an opponent decision, exact Reaction/decline resolves, and Movement resumes deterministically | `ZOR-TASK-002A`-`006C` implement and activate the Core Rules/Content/Campaign/Observation/action/replay vertical; `007A` checked Runner adoption is implemented; `007B` verification and independent review are complete; Contact/Engaged remain Sprint 5 |
+
+Owner accepted `BRK-DEC-004`–`007` after [BRK-RSH-002](../research/breakdown-adjudication-spike.md).
+[BRK-TASK-001](../specs/breakdown-adjudication-v1.md) freezes exact contracts, finite continuations
+and fixture migration. [Task 002 dormant outcomes](../research/breakdown-outcome-rules.md) are implemented
+with a passing full gate and independent review Ready. [Task 003 campaign contracts and certified Truck fixture](../research/breakdown-campaign-contracts.md)
+are implemented. [Task 004 move accounting/replay](../research/breakdown-move-accounting.md) is implemented. [Task 005 stop/check authority](../research/breakdown-stop-adjudication.md) is implemented. Task 006 activates certified public authority; [Task 007](../research/breakdown-runner-closeout.md) implements checked successors and strict evidence, with [review 5](../reviews/brk-followup-review-5.md) accepting the AC-009 transcript follow-up and completing bounded Tasks 006–007.
+Certified unladen Trucks and battalion combat limits defer public positive ZOC and motorized-infantry
+losses. Historical artifacts stay intact; 13 Reaction children have bounded successors and two
+positive-ZOC children remain deferred. No runtime identity changed in this freeze.
 
 ### Current parallel execution window
 
 Movement closeout is complete through merged `MOV-TASK-010` / PR #79. ZOC/Reaction Core authority
-is implemented and publicly activated through `ZOR-TASK-006C`; bounded Runner adoption in `007A`
-is the next serial package checkpoint.
+is implemented and publicly activated through `ZOR-TASK-006C`; bounded Runner adoption in `007A` is implemented
+and `007B` verification and independent review are complete.
 
 The following bounded lanes can proceed without colliding with that serial authority path:
 
 | Lane | Scope now | Collision / merge gate |
 | --- | --- | --- |
-| ZOC/Reaction authority lane | Stable approved requirements, technical design, task slices, and traceability from accepted `CONTACT-001` rulings | Core checkpoints `ZOR-TASK-002A`-`006C` are implemented; `007A` Runner adoption is next; approval did not collapse the dependency graph |
-| Breakdown adjudication research/design | Normalize the percentage outcome table, action/result/loss vocabulary, RNG evidence, and decision packet against implemented BP state | Campaign seam is frozen by `ZOR-TASK-003B`; reconciliation may proceed as research/design only and must not edit shared Core contracts concurrently |
+| ZOC/Reaction authority lane | Stable approved requirements, technical design, task slices, and traceability from accepted `CONTACT-001` rulings | Core checkpoints `ZOR-TASK-002A`-`006C` are implemented; `007A` Runner adoption is implemented; `007B` verification and independent review are complete; approval did not collapse the dependency graph |
+| Breakdown adjudication | `BRK-RSH-002` complete; DEC-004–007 accepted; `BRK-TASK-001` contract/fixture freeze complete | `BRK-TASK-002` dormant outcome rules implemented, full gate passing and independent review Ready; 003 campaign contracts/Truck fixture, 004 shared move accounting/replay and 005 dormant stop/check authority implemented; 006 coherent public activation/privacy and 007 checked Runner migration implemented; review 5 accepts AC-009 transcript follow-up; bounded Tasks 006–007 complete |
 | `CMB-RSH-003`-`004`, `CYCLE-RSH-001`, `RESREL-RSH-001` | Continue bounded mutable-state, RNG, cycle-identity, and Reserve Release research | Research only; the ZOC package adopts only the minimum approved static component/current-TOE foundation and no Combat resolution |
 | `CIH-IMP-004` offline Markdown links | Add a repository-local offline link gate with reviewed exclusions and a broken-link negative | Begin after the central documentation sync; keep shared architecture/status docs under one owner |
 
@@ -607,7 +616,7 @@ packets without authorizing their implementations:
 | Research gate | Status | Decision/implementation dependency |
 | --- | --- | --- |
 | `BREAKDOWN-001` | Approved and completed in `MOV-TASK-004B` | Exact BP, synthetic Truck cohort, Sandstorm-attributed world continuity, identity migration, and review are closed; Task 005 projects the approved owner subset |
-| `CONTACT-001` | Decision-complete; all five rulings accepted in PR #71; ZOC/Reaction spec/design approved after PR #80 merged | Core implementation is activated through `ZOR-TASK-006C`; `007A` Runner adoption is next; Contact/Engaged remain Sprint 5 |
+| `CONTACT-001` | Decision-complete; all five rulings accepted in PR #71; ZOC/Reaction spec/design approved after PR #80 merged | Core implementation is activated through `ZOR-TASK-006C`; `007A` Runner adoption is implemented; `007B` verification and independent review are complete; Contact/Engaged remain Sprint 5 |
 | `COMBAT-CYCLE-001` | Source inventory complete; contract freeze waits for Breakdown and ZOC/Reaction | Replace provisional Sprint 5 headings with reviewed private-choice, simultaneous-resolution, Reserve Release, and repeat-cycle contracts |
 
 ### Task 4.1 - Capability Points and the initial cohesion ledger
@@ -659,7 +668,7 @@ The [ZOC/Reaction specification](../specs/zoc-reaction-v1.md) and
 activate Ruleset 8, Land sequence 3, Content 5, World 5, CampaignCreated 9, Snapshot 10,
 `ElementMoved` 2, Observation 6/policy/history, topology-local action/readback/mapping, exact
 Reaction participant/closure authority, current replay, and the user-space manifest/transcript
-boundary. `007A` Runner adoption is next.
+boundary. `007A` Runner adoption is implemented; `007B` verification and independent review are complete.
 
 Allow enemy-ZOC entry to end the mover, open a persisted non-phasing Reaction window, accept
 side-safe Reaction or deterministic decline, and resume the phasing Movement position. Use the
@@ -884,5 +893,10 @@ The accepted `CONTACT-001` rulings are retained in the
 [ZOC/Reaction ruling lock](../research/contact-reaction-zoc-source-ruling-lock.md). Their stable
 `ZOR-REQ-*`, `ZOR-AC-*`, and dependency-ordered `ZOR-TASK-002A`-`007B` production plan is in the
 [ZOC/Reaction specification](../specs/zoc-reaction-v1.md) and
-[technical design](../design/zoc-reaction-v1.md); the package is approved, dormant implementation
-is complete through `004C`, and `005` is the next bounded checkpoint.
+[technical design](../design/zoc-reaction-v1.md); the package is implemented and verified through
+`007B`. Next is the [Breakdown decision packet](../research/breakdown-adjudication-spike.md) and
+[governing specification](../specs/breakdown-adjudication-v1.md): decisions accepted and Task 001
+contract freeze complete; Task 002 dormant outcome rules implemented with a passing full gate, independent review
+Ready. Tasks 003–005 dormant campaign contracts, certified Truck fixture, shared move accounting/replay,
+stop/check authority and exact RNG replay are implemented. [Task 006 public activation](../research/breakdown-public-activation.md)
+activates certified authority, privacy and strict readback through first-side Combat entry. [Task 007 closeout](../research/breakdown-runner-closeout.md) records checked Runner migration and verification; [review 5](../reviews/brk-followup-review-5.md) accepts AC-009 transcript evidence and completes bounded Tasks 006–007.

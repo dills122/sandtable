@@ -16,13 +16,13 @@ namespace Cna.Core.Tests.Actions;
 public sealed class CampaignLegalActionsTests
 {
     [Fact]
-    public void PublicFlowAdvancesExistingMandatoryCheckpointsAndReachesStageEntry()
+    public void HistoricalFlowAdvancesExistingMandatoryCheckpointsAndReachesStageEntry()
     {
         var handle = CreateHandle();
 
         Assert.Empty(Query(handle, CampaignActionAudience.Axis).Candidates);
         Assert.Empty(Query(handle, CampaignActionAudience.Commonwealth).Candidates);
-        Assert.True(CampaignObservations.Query(handle, LandSide.Axis).IsProjected);
+        Assert.True(CampaignObservationProjector.Project(handle.Snapshot, handle.Context, LandSide.Axis).IsProjected);
         handle = SubmitOnly(handle, CampaignActionAudience.System, "resolve-initiative");
         handle = SubmitOnly(handle, CampaignActionAudience.System,
             "resolve-no-obligation-naval-convoy-schedule");
@@ -36,7 +36,7 @@ public sealed class CampaignLegalActionsTests
         Assert.Empty(Query(handle, CampaignActionAudience.System).Candidates);
 
         var actLast = axis.Candidates.Single(value => value.Kind == "act-last");
-        var accepted = CampaignLegalActions.Submit(handle, Bind(axis, actLast));
+        var accepted = HistoricalCampaignActions.Submit(handle, Bind(axis, actLast));
 
         Assert.True(accepted.IsAccepted);
         Assert.Equal(4, accepted.Receipt!.PriorStateVersion);
@@ -49,8 +49,8 @@ public sealed class CampaignLegalActionsTests
             accepted.SuccessorHandle!.Snapshot.RandomState.NextByteCursor;
         var weatherSet = Query(accepted.SuccessorHandle!, CampaignActionAudience.System);
         var repeatedWeatherSet = Query(accepted.SuccessorHandle!, CampaignActionAudience.System);
-        Assert.Equal(CampaignLegalActionSerializer.Serialize(weatherSet),
-            CampaignLegalActionSerializer.Serialize(repeatedWeatherSet));
+        Assert.Equal(CampaignLegalActionSerializer.SerializeHistoricalV2(weatherSet),
+            CampaignLegalActionSerializer.SerializeHistoricalV2(repeatedWeatherSet));
         Assert.Equal(cursorBeforeWeatherQuery,
             accepted.SuccessorHandle.Snapshot.RandomState.NextByteCursor);
         var weatherAction = Assert.Single(weatherSet.Candidates);
@@ -59,7 +59,7 @@ public sealed class CampaignLegalActionsTests
             "sha256:61bca28b7e06c2ec8b7919bce4c7c226198e7fecb0afcc2186b224311e7e1413",
             weatherAction.ActionId);
 
-        var weatherAccepted = CampaignLegalActions.Submit(
+        var weatherAccepted = HistoricalCampaignActions.Submit(
             accepted.SuccessorHandle!,
             Bind(weatherSet, weatherAction));
         Assert.True(weatherAccepted.IsAccepted);
@@ -86,27 +86,27 @@ public sealed class CampaignLegalActionsTests
         var action = Assert.Single(set.Candidates);
 
         Assert.Equal(CampaignActionSubmissionRejectionReason.InvalidSubmission,
-            CampaignLegalActions.Submit(handle, Bind(set, action) with { ContractVersion = 99 }).RejectionReason);
+            HistoricalCampaignActions.Submit(handle, Bind(set, action) with { ContractVersion = 99 }).RejectionReason);
         Assert.Equal(CampaignActionSubmissionRejectionReason.InvalidSubmission,
-            CampaignLegalActions.Submit(handle, Bind(set, action) with { CampaignId = "bad id" }).RejectionReason);
+            HistoricalCampaignActions.Submit(handle, Bind(set, action) with { CampaignId = "bad id" }).RejectionReason);
         Assert.Equal(CampaignActionSubmissionRejectionReason.InvalidSubmission,
-            CampaignLegalActions.Submit(handle, Bind(set, action) with { ExpectedPositionId = "bad id" }).RejectionReason);
+            HistoricalCampaignActions.Submit(handle, Bind(set, action) with { ExpectedPositionId = "bad id" }).RejectionReason);
         Assert.Equal(CampaignActionSubmissionRejectionReason.CampaignMismatch,
-            CampaignLegalActions.Submit(handle, Bind(set, action) with { CampaignId = "campaign-other" }).RejectionReason);
+            HistoricalCampaignActions.Submit(handle, Bind(set, action) with { CampaignId = "campaign-other" }).RejectionReason);
         Assert.Equal(CampaignActionSubmissionRejectionReason.StaleState,
-            CampaignLegalActions.Submit(handle, Bind(set, action) with { ExpectedStateVersion = 99 }).RejectionReason);
+            HistoricalCampaignActions.Submit(handle, Bind(set, action) with { ExpectedStateVersion = 99 }).RejectionReason);
         Assert.Equal(CampaignActionSubmissionRejectionReason.UnexpectedPosition,
-            CampaignLegalActions.Submit(handle, Bind(set, action) with { ExpectedPositionId = "land.position.wrong" }).RejectionReason);
+            HistoricalCampaignActions.Submit(handle, Bind(set, action) with { ExpectedPositionId = "land.position.wrong" }).RejectionReason);
         Assert.Equal(CampaignActionSubmissionRejectionReason.ActionNotLegal,
-            CampaignLegalActions.Submit(handle, Bind(set, action) with { Audience = CampaignActionAudience.Axis }).RejectionReason);
+            HistoricalCampaignActions.Submit(handle, Bind(set, action) with { Audience = CampaignActionAudience.Axis }).RejectionReason);
         Assert.Equal(CampaignActionSubmissionRejectionReason.ActionNotLegal,
-            CampaignLegalActions.Submit(handle, Bind(set, action) with { ActionId = $"sha256:{new string('0', 64)}" }).RejectionReason);
+            HistoricalCampaignActions.Submit(handle, Bind(set, action) with { ActionId = $"sha256:{new string('0', 64)}" }).RejectionReason);
 
         var advanced = SubmitOnly(handle, CampaignActionAudience.System, "resolve-initiative");
         Assert.Equal(CampaignActionSubmissionRejectionReason.StaleState,
-            CampaignLegalActions.Submit(advanced, Bind(set, action)).RejectionReason);
+            HistoricalCampaignActions.Submit(advanced, Bind(set, action)).RejectionReason);
         Assert.Equal(CampaignActionSubmissionRejectionReason.ActionNotLegal,
-            CampaignLegalActions.Submit(advanced, Bind(set, action) with
+            HistoricalCampaignActions.Submit(advanced, Bind(set, action) with
             {
                 ExpectedStateVersion = advanced.Snapshot.StateVersion,
                 ExpectedPositionId = advanced.Snapshot.SequencePosition.PositionId,
@@ -124,9 +124,9 @@ public sealed class CampaignLegalActionsTests
             candidate.ActionId);
         Assert.Equal(semanticBytes, CampaignActionCandidate.WriteSemantics(candidate.Kind, null));
 
-        var json = Encoding.UTF8.GetString(CampaignLegalActionSerializer.Serialize(set));
+        var json = Encoding.UTF8.GetString(CampaignLegalActionSerializer.SerializeHistoricalV2(set));
         Assert.Equal(
-            $"{{\"contractVersion\":2,\"policyId\":\"sandtable.legal-actions.v2\",\"campaignId\":\"campaign-actions\",\"stateVersion\":1,\"rulesetHash\":\"{Cna1979Ruleset.Manifest.Hash}\",\"positionId\":\"land.position.initiative-determination\",\"audience\":\"system\",\"candidates\":[{{\"contractVersion\":1,\"actionId\":\"{candidate.ActionId}\",\"kind\":\"resolve-initiative\"}}]}}",
+            $"{{\"contractVersion\":2,\"policyId\":\"sandtable.legal-actions.v2\",\"campaignId\":\"campaign-actions\",\"stateVersion\":1,\"rulesetHash\":\"{Cna1979Ruleset.HistoricalManifestV8.Hash}\",\"positionId\":\"land.position.initiative-determination\",\"audience\":\"system\",\"candidates\":[{{\"contractVersion\":1,\"actionId\":\"{candidate.ActionId}\",\"kind\":\"resolve-initiative\"}}]}}",
             json);
     }
 
@@ -167,11 +167,11 @@ public sealed class CampaignLegalActionsTests
         var first = new ActFirstAction(1);
         var last = new ActLastAction(1);
         var callerValues = new List<CampaignActionCandidate> { last, first };
-        var reversed = new CampaignLegalActionSet("campaign-actions", 4,
-            Cna1979Ruleset.Manifest.Hash, "land.position.operation-1.initiative-declaration",
+        var reversed = HistoricalLegalActionSetTestData.Create("campaign-actions", 4,
+            Cna1979Ruleset.HistoricalManifestV8.Hash, "land.position.operation-1.initiative-declaration",
             CampaignActionAudience.Axis, callerValues);
-        var canonical = new CampaignLegalActionSet("campaign-actions", 4,
-            Cna1979Ruleset.Manifest.Hash, "land.position.operation-1.initiative-declaration",
+        var canonical = HistoricalLegalActionSetTestData.Create("campaign-actions", 4,
+            Cna1979Ruleset.HistoricalManifestV8.Hash, "land.position.operation-1.initiative-declaration",
             CampaignActionAudience.Axis, [first, last]);
 
         callerValues.Clear();
@@ -179,10 +179,10 @@ public sealed class CampaignLegalActionsTests
         Assert.Equal(canonical, reversed);
         Assert.Equal(canonical.GetHashCode(), reversed.GetHashCode());
         Assert.Equal(["act-first", "act-last"], reversed.Candidates.Select(value => value.Kind));
-        Assert.Equal(CampaignLegalActionSerializer.Serialize(canonical),
-            CampaignLegalActionSerializer.Serialize(reversed));
-        Assert.Throws<ArgumentException>(() => new CampaignLegalActionSet("campaign-actions", 4,
-            Cna1979Ruleset.Manifest.Hash, "land.position.operation-1.initiative-declaration",
+        Assert.Equal(CampaignLegalActionSerializer.SerializeHistoricalV2(canonical),
+            CampaignLegalActionSerializer.SerializeHistoricalV2(reversed));
+        Assert.Throws<ArgumentException>(() => HistoricalLegalActionSetTestData.Create("campaign-actions", 4,
+            Cna1979Ruleset.HistoricalManifestV8.Hash, "land.position.operation-1.initiative-declaration",
             CampaignActionAudience.Axis, [first, first]));
         Assert.Throws<ArgumentOutOfRangeException>(() => new ActFirstAction(2));
     }
@@ -215,10 +215,10 @@ public sealed class CampaignLegalActionsTests
                 changed[index], pair.ChangedContext), audience);
 
             Assert.Equal(baselineSet, changedSet);
-            Assert.Equal(CampaignLegalActionSerializer.Serialize(baselineSet),
-                CampaignLegalActionSerializer.Serialize(changedSet));
+            Assert.Equal(CampaignLegalActionSerializer.SerializeHistoricalV2(baselineSet),
+                CampaignLegalActionSerializer.SerializeHistoricalV2(changedSet));
             var json = Encoding.UTF8.GetString(
-                CampaignLegalActionSerializer.Serialize(changedSet));
+                CampaignLegalActionSerializer.SerializeHistoricalV2(changedSet));
             Assert.DoesNotContain("-hidden", json, StringComparison.Ordinal);
         }
 
@@ -243,8 +243,8 @@ public sealed class CampaignLegalActionsTests
             observer == FirstActingSideResolver.Resolve(baseline[^1]),
             movementBaseline.Candidates.Count > 0);
         Assert.Equal(
-            CampaignLegalActionSerializer.Serialize(movementBaseline),
-            CampaignLegalActionSerializer.Serialize(movementChanged));
+            CampaignLegalActionSerializer.SerializeHistoricalV2(movementBaseline),
+            CampaignLegalActionSerializer.SerializeHistoricalV2(movementChanged));
     }
 
     [Fact]
@@ -265,15 +265,15 @@ public sealed class CampaignLegalActionsTests
         var invalid = new CampaignAuthorityHandle(valid.Snapshot with { ContractVersion = 99 }, valid.Context);
 
         Assert.Equal(CampaignLegalActionQueryRejectionReason.InvalidAudience,
-            CampaignLegalActions.Query(invalid, (CampaignActionAudience)99).RejectionReason);
+            HistoricalCampaignActions.Query(invalid, (CampaignActionAudience)99).RejectionReason);
         Assert.Equal(CampaignLegalActionQueryRejectionReason.InvalidState,
-            CampaignLegalActions.Query(invalid, CampaignActionAudience.System).RejectionReason);
+            HistoricalCampaignActions.Query(invalid, CampaignActionAudience.System).RejectionReason);
 
         var before = CampaignSnapshotSerializer.Serialize(valid.Snapshot);
         var first = Query(valid, CampaignActionAudience.System);
         var second = Query(valid, CampaignActionAudience.System);
-        Assert.Equal(CampaignLegalActionSerializer.Serialize(first),
-            CampaignLegalActionSerializer.Serialize(second));
+        Assert.Equal(CampaignLegalActionSerializer.SerializeHistoricalV2(first),
+            CampaignLegalActionSerializer.SerializeHistoricalV2(second));
         Assert.Equal(before, CampaignSnapshotSerializer.Serialize(valid.Snapshot));
     }
 
@@ -282,14 +282,14 @@ public sealed class CampaignLegalActionsTests
     {
         var handle = CreateHandle();
         var set = Query(handle, CampaignActionAudience.System);
-        var actionBytes = CampaignLegalActionSerializer.Serialize(set);
+        var actionBytes = CampaignLegalActionSerializer.SerializeHistoricalV2(set);
         var originalCulture = CultureInfo.CurrentCulture;
         var originalUiCulture = CultureInfo.CurrentUICulture;
         try
         {
             CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("ar-SA");
             CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo("ar-SA");
-            Assert.Equal(actionBytes, CampaignLegalActionSerializer.Serialize(
+            Assert.Equal(actionBytes, CampaignLegalActionSerializer.SerializeHistoricalV2(
                 Query(handle, CampaignActionAudience.System)));
         }
         finally
@@ -298,7 +298,7 @@ public sealed class CampaignLegalActionsTests
             CultureInfo.CurrentUICulture = originalUiCulture;
         }
 
-        var result = CampaignLegalActions.Submit(handle, Bind(set, Assert.Single(set.Candidates)));
+        var result = HistoricalCampaignActions.Submit(handle, Bind(set, Assert.Single(set.Candidates)));
         var receiptJson = Encoding.UTF8.GetString(
             CampaignActionAcceptanceReceiptSerializer.Serialize(result.Receipt!));
         Assert.DoesNotContain("event", receiptJson, StringComparison.OrdinalIgnoreCase);
@@ -316,7 +316,7 @@ public sealed class CampaignLegalActionsTests
         var before = CampaignSnapshotSerializer.Serialize(handle.Snapshot);
         var cursor = handle.Snapshot.RandomState.NextByteCursor;
 
-        var rejected = CampaignLegalActions.Submit(handle,
+        var rejected = HistoricalCampaignActions.Submit(handle,
             Bind(set, Assert.Single(set.Candidates)) with { Audience = CampaignActionAudience.Axis });
 
         Assert.False(rejected.IsAccepted);
@@ -340,7 +340,7 @@ public sealed class CampaignLegalActionsTests
             handle.Snapshot,
             handle.Context,
             submission);
-        var facade = CampaignLegalActions.Submit(handle, submission);
+        var facade = HistoricalCampaignActions.Submit(handle, submission);
 
         Assert.True(execution.IsAccepted);
         Assert.Equal(CampaignActionSubmissionRejectionReason.None, execution.RejectionReason);
@@ -443,7 +443,7 @@ public sealed class CampaignLegalActionsTests
             Assert.Single(internalDecision.Events));
         var expected = CampaignProjector.Apply(handle.Snapshot, expectedEvent, handle.Context);
 
-        var accepted = CampaignLegalActions.Submit(handle, Bind(set, candidate));
+        var accepted = HistoricalCampaignActions.Submit(handle, Bind(set, candidate));
 
         Assert.True(accepted.IsAccepted);
         Assert.Equal(CampaignSnapshotSerializer.Serialize(expected),
@@ -488,19 +488,13 @@ public sealed class CampaignLegalActionsTests
     private static CampaignAuthorityHandle CreateHandle()
     {
         var setup = Cna1979SetupCatalog.Definitions[0];
-        var request = CampaignCurrentRequestTestData.Create(
-            setup,
-            "campaign-actions",
-            12345);
-        var result = CampaignAuthority.Create(request);
-        Assert.True(result.IsCreated);
-        return result.Handle!;
+        return HistoricalCampaignActions.Create(setup, "campaign-actions", 12345);
     }
 
     private static CampaignLegalActionSet Query(CampaignAuthorityHandle handle,
         CampaignActionAudience audience)
     {
-        var result = CampaignLegalActions.Query(handle, audience);
+        var result = HistoricalCampaignActions.Query(handle, audience);
         Assert.True(result.IsSuccessful);
         return result.ActionSet!;
     }
@@ -510,7 +504,7 @@ public sealed class CampaignLegalActionsTests
     {
         var set = Query(handle, audience);
         var candidate = Assert.Single(set.Candidates, value => value.Kind == kind);
-        var result = CampaignLegalActions.Submit(handle, Bind(set, candidate));
+        var result = HistoricalCampaignActions.Submit(handle, Bind(set, candidate));
         Assert.True(result.IsAccepted);
         return result.SuccessorHandle!;
     }
@@ -527,10 +521,10 @@ public sealed class CampaignLegalActionsTests
         string actionId)
     {
         var set = Query(handle, CampaignActionAudience.System);
-        var json = Encoding.UTF8.GetString(CampaignLegalActionSerializer.Serialize(set));
+        var json = Encoding.UTF8.GetString(CampaignLegalActionSerializer.SerializeHistoricalV2(set));
 
         Assert.Equal(
-            $"{{\"contractVersion\":2,\"policyId\":\"sandtable.legal-actions.v2\",\"campaignId\":\"campaign-actions\",\"stateVersion\":{stateVersion},\"rulesetHash\":\"{Cna1979Ruleset.Manifest.Hash}\",\"positionId\":\"{positionId}\",\"audience\":\"system\",\"candidates\":[{{\"contractVersion\":1,\"actionId\":\"{actionId}\",\"kind\":\"{kind}\"}}]}}",
+            $"{{\"contractVersion\":2,\"policyId\":\"sandtable.legal-actions.v2\",\"campaignId\":\"campaign-actions\",\"stateVersion\":{stateVersion},\"rulesetHash\":\"{Cna1979Ruleset.HistoricalManifestV8.Hash}\",\"positionId\":\"{positionId}\",\"audience\":\"system\",\"candidates\":[{{\"contractVersion\":1,\"actionId\":\"{actionId}\",\"kind\":\"{kind}\"}}]}}",
             json);
     }
 

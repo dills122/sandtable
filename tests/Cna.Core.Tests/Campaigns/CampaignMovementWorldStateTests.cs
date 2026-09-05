@@ -169,7 +169,7 @@ public sealed class CampaignMovementWorldStateTests
         [
             CampaignTestHarness.Create(
                 "campaign-movement-state",
-                Cna1979Ruleset.Manifest.Hash,
+                Cna1979Ruleset.HistoricalManifestV8.Hash,
                 12345,
                 setup.SetupId,
                 setup.Hash),

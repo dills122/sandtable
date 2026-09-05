@@ -53,7 +53,7 @@ internal static class CampaignV10TestData
         var setup = CreateSetup(artifact, scenario);
         var created = CampaignCreationV9Factory.Create(
             "campaign-v10",
-            Cna1979Ruleset.Manifest.Hash,
+            Cna1979Ruleset.HistoricalManifestV8.Hash,
             setup,
             artifact,
             scenario,

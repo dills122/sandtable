@@ -41,7 +41,7 @@ internal static class CampaignEngine
             return CampaignCommandResult.Reject(CampaignCommandRejectionReason.InvalidCommand);
         }
 
-        if (!Cna1979Ruleset.IsCanonicalHash(command.RulesetHash))
+        if (!Cna1979Ruleset.IsHistoricalHashV8(command.RulesetHash))
         {
             return CampaignCommandResult.Reject(CampaignCommandRejectionReason.UnsupportedRuleset);
         }
@@ -172,7 +172,7 @@ internal static class CampaignEngine
         }
 
         if (!IsLocallyValid(command)
-            || !Cna1979Ruleset.IsCanonicalHash(command.RulesetHash)
+            || !Cna1979Ruleset.IsHistoricalHashV8(command.RulesetHash)
             || !Cna1979SetupCatalog.TryGet(command.SetupId, out var setup)
             || !string.Equals(command.SetupHash, setup.Hash, StringComparison.Ordinal)
             || !Cna1979SetupCatalog.IsAdmittedStageEntryPolicy(

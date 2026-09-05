@@ -8,7 +8,7 @@ internal sealed record CampaignCurrentActionExecutionResult
 {
     private CampaignCurrentActionExecutionResult(
         object? acceptedEvent,
-        CampaignSnapshotV10? successorSnapshot,
+        CampaignSnapshotV11? successorSnapshot,
         CampaignActionAcceptanceReceipt? receipt,
         CampaignActionSubmissionRejectionReason rejectionReason)
     {
@@ -20,13 +20,13 @@ internal sealed record CampaignCurrentActionExecutionResult
 
     public bool IsAccepted => SuccessorSnapshot is not null;
     public object? AcceptedEvent { get; }
-    public CampaignSnapshotV10? SuccessorSnapshot { get; }
+    public CampaignSnapshotV11? SuccessorSnapshot { get; }
     public CampaignActionAcceptanceReceipt? Receipt { get; }
     public CampaignActionSubmissionRejectionReason RejectionReason { get; }
 
     public static CampaignCurrentActionExecutionResult Accepted(
         object acceptedEvent,
-        CampaignSnapshotV10 successorSnapshot,
+        CampaignSnapshotV11 successorSnapshot,
         CampaignActionAcceptanceReceipt receipt) => new(
         acceptedEvent ?? throw new ArgumentNullException(nameof(acceptedEvent)),
         successorSnapshot ?? throw new ArgumentNullException(nameof(successorSnapshot)),
@@ -40,7 +40,7 @@ internal sealed record CampaignCurrentActionExecutionResult
 internal static class CampaignCurrentActionExecution
 {
     public static CampaignCurrentActionExecutionResult Execute(
-        CampaignSnapshotV10 snapshot,
+        CampaignSnapshotV11 snapshot,
         CampaignContentContext context,
         CampaignActionSubmission submission)
     {
@@ -52,9 +52,9 @@ internal static class CampaignCurrentActionExecution
             return Reject(CampaignActionSubmissionRejectionReason.InvalidSubmission);
         }
 
-        var artifact = context.ArtifactV5;
+        var artifact = context.ArtifactV6;
         if (artifact is null
-            || !CampaignSnapshotV10Validator.IsValid(snapshot, artifact, context.Scenario))
+            || !CampaignSnapshotV11Admission.IsValid(snapshot, artifact, context.Scenario))
         {
             return Reject(CampaignActionSubmissionRejectionReason.InvalidAuthority);
         }
@@ -90,34 +90,17 @@ internal static class CampaignCurrentActionExecution
 
         try
         {
-            var intent = MapSuccessorIntent(handle, submission);
-            if (intent is not null)
+            var campaignEvent = CreateEvent(snapshot, context, candidate, submission.Audience);
+            var successor = campaignEvent switch
             {
-                return ExecuteSuccessor(
-                    snapshot,
-                    context,
-                    submission.Audience,
-                    candidate,
-                    intent);
-            }
-
-            var legacy = CampaignV10LegacyBridge.ToLegacy(snapshot, context);
-            var execution = CampaignActionExecution.Execute(legacy, context, submission);
-            if (!execution.IsAccepted)
-            {
-                return Reject(execution.RejectionReason);
-            }
-
-            var successor = CampaignV10LegacyBridge.FromLegacy(
-                snapshot,
-                execution.SuccessorSnapshot!,
-                context);
-            return Complete(
-                snapshot,
-                successor,
-                execution.AcceptedEvent!,
-                submission.Audience,
-                candidate.ActionId);
+                CampaignSuccessorEvent value => CampaignV11BreakdownProjector.Apply(
+                    snapshot, value, artifact, context.Scenario),
+                CampaignEvent value => CampaignV11Preamble.Apply(snapshot, value, artifact, context.Scenario),
+                _ => throw new InvalidOperationException("Unsupported current event."),
+            };
+            if (!CampaignSnapshotV11Admission.IsValid(successor, artifact, context.Scenario))
+                return Reject(CampaignActionSubmissionRejectionReason.InvalidAuthority);
+            return Complete(snapshot, successor, campaignEvent, submission.Audience, candidate.ActionId);
         }
         catch (Exception exception) when (exception is ArgumentException
             or ArithmeticException
@@ -128,136 +111,71 @@ internal static class CampaignCurrentActionExecution
         }
     }
 
-    private static CampaignObservationV6ActionIntent? MapSuccessorIntent(
-        CampaignAuthorityHandle handle,
-        CampaignActionSubmission submission)
+    private static object CreateEvent(CampaignSnapshotV11 snapshot, CampaignContentContext context,
+        CampaignActionCandidate candidate, CampaignActionAudience audience)
     {
-        var snapshot = handle.CurrentSnapshot
-            ?? throw new InvalidOperationException("Current action mapping requires Snapshot 10.");
-        if (snapshot.ReactionWindow is null
-            && snapshot.CurrentPosition.SequencePosition?.SegmentId
-                != LandSegmentIds.Movement)
-        {
-            return null;
-        }
-
-        var observer = submission.Audience switch
+        var artifact = context.ArtifactV6!;
+        var scenario = context.Scenario;
+        var side = audience switch
         {
             CampaignActionAudience.Axis => LandSide.Axis,
             CampaignActionAudience.Commonwealth => LandSide.Commonwealth,
-            CampaignActionAudience.System when snapshot.ReactionWindow is not null =>
-                snapshot.ReactionWindow.ReactingSide,
             _ => (LandSide?)null,
         };
-        return observer is null
-            ? null
-            : CampaignObservationV6ActionDerivation.MapSubmission(
-                CampaignLegalActions.ProjectV6(handle, observer.Value),
-                submission);
-    }
-
-    private static CampaignCurrentActionExecutionResult ExecuteSuccessor(
-        CampaignSnapshotV10 snapshot,
-        CampaignContentContext context,
-        CampaignActionAudience audience,
-        CampaignActionCandidate candidate,
-        CampaignObservationV6ActionIntent intent)
-    {
-        var artifact = context.ArtifactV5!;
-        object campaignEvent;
-        CampaignSnapshotV10 successor;
-        switch (intent)
+        switch (candidate)
         {
-            case MoveElementV6Intent move:
-                var moved = CampaignElementMovedV2Factory.Create(
-                    snapshot,
-                    artifact,
-                    context.Scenario,
-                    new ElementMovedV2ReplayInput(
-                        snapshot.CampaignId,
-                        move.ExpectedStateVersion,
-                        move.ExpectedPositionId,
-                        move.Side,
-                        move.ElementId,
-                        move.OriginLocationId,
-                        move.DestinationLocationId));
-                campaignEvent = moved;
-                successor = CampaignV10Projector.ApplyMovement(
-                    snapshot,
-                    moved,
-                    artifact,
-                    context.Scenario);
-                break;
-            case MoveReactingElementIntent reactionMove:
-                var reactingMoved = CampaignReactionParticipantEventFactory.CreateMove(
-                    snapshot,
-                    artifact,
-                    context.Scenario,
-                    reactionMove);
-                campaignEvent = reactingMoved;
-                successor = CampaignV10Projector.ApplyReactionMove(
-                    snapshot,
-                    reactingMoved,
-                    artifact,
-                    context.Scenario);
-                break;
-            case CompleteReactionParticipantIntent completion:
-                var completed = CampaignReactionParticipantEventFactory.CreateCompletion(
-                    snapshot,
-                    artifact,
-                    context.Scenario,
-                    completion);
-                campaignEvent = completed;
-                successor = CampaignV10Projector.ApplyReactionCompletion(
-                    snapshot,
-                    completed,
-                    artifact,
-                    context.Scenario);
-                break;
-            case CloseReactionWindowIntent close:
-                var closed = CampaignReactionWindowClosedFactory.Create(
-                    snapshot,
-                    artifact,
-                    context.Scenario,
-                    close);
-                campaignEvent = closed;
-                successor = CampaignV10Projector.ApplyReactionClose(
-                    snapshot,
-                    closed,
-                    artifact,
-                    context.Scenario);
-                break;
-            case CompleteMovementSegmentV6Intent:
-                var legacy = CampaignV10LegacyBridge.ToLegacy(snapshot, context);
-                var submission = new CampaignActionSubmission(
-                    CampaignActionSubmission.CurrentContractVersion,
-                    snapshot.CampaignId,
-                    snapshot.StateVersion,
-                    CurrentPositionId(snapshot),
-                    audience,
-                    candidate.ActionId);
-                var execution = CampaignActionExecution.Execute(legacy, context, submission);
-                if (!execution.IsAccepted)
+            case MoveElementAction move:
+                return CampaignElementMovedV3Factory.Create(snapshot, artifact, scenario,
+                    new ElementMovedV3ReplayInput(snapshot.CampaignId, snapshot.StateVersion,
+                        CurrentPositionId(snapshot), side!.Value, move.ElementId,
+                        move.OriginLocationId, move.DestinationLocationId));
+            case StopElementMovementAction stop:
+                return CampaignBreakdownLifecycleFactory.CreateStop(snapshot, artifact, scenario,
+                    side!.Value, stop.RouteId, stop.ActionId);
+            case ResolveBreakdownStopAction resolve:
+                return CampaignBreakdownStopResolvedFactory.Create(snapshot, artifact, scenario, resolve.ActionId);
+            case CompleteMovementSegmentAction:
+                return CampaignBreakdownLifecycleFactory.CreateMovementCompletion(snapshot, artifact, scenario);
+            case CompleteBreakdownSegmentAction complete:
+                return CampaignBreakdownLifecycleFactory.CreateBreakdownCompletion(snapshot, artifact, scenario, complete.ActionId);
+            case MoveReactingElementAction move:
+                var projection = Cna.Core.Observations.CampaignObservationV7Projector.ProjectWithAuthority(
+                    snapshot, artifact, scenario, side!.Value,
+                    new Cna.Core.Observations.CampaignObservationV6AuthorityFacts([], []));
+                var alias = projection.ReactionAliases.Single(value => value.PublicId == move.OpportunityId);
+                var opportunity = snapshot.ReactionWindow!.FrozenOpportunities.Single(
+                    value => value.OpportunityId.Value == alias.AuthorityId).OpportunityId;
+                var input = CampaignReactingElementMovedV2Factory.CreateReplayInput(snapshot, artifact,
+                    scenario, opportunity, move.DestinationLocationId);
+                if (input.ActionId != move.ActionId)
+                    throw new InvalidOperationException("Reaction capability differs from authority.");
+                return CampaignReactingElementMovedV2Factory.Create(snapshot, artifact, scenario, input);
+            case CompleteReactionParticipantAction complete:
+                var completionInput = CampaignBreakdownLifecycleFactory.CreateReactionCompletionInput(snapshot, artifact, scenario);
+                if (completionInput.ActionId != complete.ActionId)
+                    throw new InvalidOperationException("Reaction completion differs from authority.");
+                return CampaignBreakdownLifecycleFactory.CreateReactionCompletion(snapshot, artifact, scenario, completionInput);
+            case ReactionWindowAction close:
+                var reason = close switch
                 {
-                    return Reject(execution.RejectionReason);
-                }
-
-                campaignEvent = execution.AcceptedEvent!;
-                successor = CampaignV10LegacyBridge.FromLegacy(
-                    snapshot,
-                    execution.SuccessorSnapshot!,
-                    context);
-                break;
+                    DeclineReactionWindowAction => CampaignReactionWindowCloseReason.PlayerDecline,
+                    CloseReactionWindowUnavailableAction => CampaignReactionWindowCloseReason.ScriptedUnavailable,
+                    CloseReactionWindowTimeoutAction => CampaignReactionWindowCloseReason.Timeout,
+                    CloseReactionWindowNoEligibleAction => CampaignReactionWindowCloseReason.NoEligibleReactor,
+                    _ => throw new InvalidOperationException("Unknown Reaction close capability."),
+                };
+                var closeInput = CampaignBreakdownLifecycleFactory.CreateReactionCloseInput(snapshot, artifact, scenario, reason);
+                if (closeInput.ActionId != close.ActionId)
+                    throw new InvalidOperationException("Reaction close differs from authority.");
+                return CampaignBreakdownLifecycleFactory.CreateReactionClose(snapshot, artifact, scenario, closeInput);
             default:
-                return Reject(CampaignActionSubmissionRejectionReason.ActionNotLegal);
+                return CampaignV11Preamble.Create(snapshot, artifact, scenario, candidate);
         }
-
-        return Complete(snapshot, successor, campaignEvent, audience, candidate.ActionId);
     }
 
     private static CampaignCurrentActionExecutionResult Complete(
-        CampaignSnapshotV10 prior,
-        CampaignSnapshotV10 successor,
+        CampaignSnapshotV11 prior,
+        CampaignSnapshotV11 successor,
         object campaignEvent,
         CampaignActionAudience audience,
         string actionId) => CampaignCurrentActionExecutionResult.Accepted(
@@ -271,9 +189,10 @@ internal static class CampaignCurrentActionExecution
             audience,
             actionId));
 
-    internal static string CurrentPositionId(CampaignSnapshotV10 snapshot) =>
-        snapshot.CurrentPosition.SequencePosition?.PositionId
-        ?? snapshot.CurrentPosition.ReactingPosition!.SuspendedMovementPosition.PositionId;
+    internal static string CurrentPositionId(CampaignSnapshotV11 snapshot) =>
+        snapshot.CurrentPosition.Kind == CampaignPositionV11Kind.BreakdownStop
+            ? "land.position.breakdown-stop"
+            : snapshot.CurrentPosition.SequenceContext.PositionId;
 
     private static CampaignCurrentActionExecutionResult Reject(
         CampaignActionSubmissionRejectionReason reason) =>

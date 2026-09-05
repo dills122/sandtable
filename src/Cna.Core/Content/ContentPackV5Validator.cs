@@ -3,6 +3,11 @@ namespace Cna.Core.Content;
 public static class ContentPackV5Validator
 {
     public static ContentValidationResult Validate(ContentPackV5Definition definition)
+        => Validate(definition, allowEmptyNoncombat: false);
+
+    internal static ContentValidationResult Validate(
+        ContentPackV5Definition definition,
+        bool allowEmptyNoncombat)
     {
         ArgumentNullException.ThrowIfNull(definition);
         var issues = new List<ContentValidationIssue>();
@@ -12,6 +17,15 @@ public static class ContentPackV5Validator
         ValidateCombatFacts(definition, issues);
         ValidatePlacementSeeds(definition, issues);
         ValidateOrigins(definition, issues);
+
+        foreach (var facts in definition.ElementCombatFacts.Where(facts =>
+            facts.Components.Count == 0
+            && !(allowEmptyNoncombat
+                && facts.CombatClassificationId == Rules.Cna1979Combat.TruckConvoyClassificationId)))
+        {
+            Add(issues, "content.combat.missing-components", $"/elements/{facts.ElementId}/components",
+                "At least one combat component is required by this contract.");
+        }
 
         return new ContentValidationResult(issues);
     }

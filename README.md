@@ -55,18 +55,18 @@ declare whether to act first or last in Operation Stage 1; resolve Weather; emit
 events; explicitly resolve empty Organization, Naval Convoy Arrival, Fleet Assignment, and Fleet
 Repair obligations; adjudicate the first-acting side's Reserve Designation; execute supported
 first-side Movement; open, adjudicate, close, and resume bounded ZOC Reaction interrupts; complete
-Movement to Breakdown Determination; and
-replay those events to byte-identical state. Reserve authority now carries per-element status,
+Movement through Breakdown Determination to unsupported first-side Combat; resolve explicit
+route stops with exact BP checks and persistent broken-vehicle lots; and replay those events to byte-identical state. Reserve authority now carries per-element status,
 owner-only observation, exact acting-side candidates, closed command mapping, bounded checkpoints,
 and canonical designation/completion events. The Movement foundation additionally records exact
 per-Operation-Stage expenditure/Cohesion state and opaque one-to-one map representations. It now
 also carries typed move/completion candidates, deterministic action identities, an exact side-safe
 cost breakdown, strict non-authoritative readback, internal authoritative non-contact move
 adjudication/replay, and observation-derived public action membership with exact submission
-revalidation. Ruleset manifest contract 8, setup schema 5, snapshot contract 10,
-Campaign World snapshot contract 5, Campaign Observation contract 6, legal-action-set contract 2,
-and Content Pack schema 5 / canonical format v4 use an original nine-hex,
-nonhistorical rules laboratory to develop game systems without redistributing published assets.
+revalidation. Ruleset manifest contract 9, setup schema 6, snapshot contract 11,
+Campaign World snapshot contract 6, Campaign Observation contract 7, legal-action-set contract 2
+with policy v3, and Content Pack schema 6 / canonical format v5 use original synthetic
+rules laboratories to develop game systems without redistributing published assets.
 Campaign Observation derives deterministic side-safe public topology, audience-visible turn
 revision, exact own mobility/ledger/Reserve and approved vehicle-risk facts, plus only opaque
 opposing representation/location rows and the source-unmapped current-ZOC aggregate. It exposes neither complete Content identity,
@@ -81,10 +81,12 @@ sequence position keeps `ActiveSide` unset; current Movement materializes that r
 successor Movement and Reaction identities bind it. Raw snapshots, commands, events, content
 context, projection, and replay are not public mutation seams.
 
-Current Campaign Observation 6 freezes the
-`sandtable.observation.zoc-reaction-side-safe.v1` policy, one canonical source-unmapped aggregate
+Campaign Observation 7 uses the
+`sandtable.observation.breakdown-side-safe.v1` policy, one canonical source-unmapped aggregate
 of apparent enemy-controlled locations, exact owner-visible Movement-ended membership, and a closed
-normal/phasing/reacting decision-state union. Its reacting view contains only the apparent trigger,
+normal/phasing/reacting/Breakdown-waiting decision-state union. Pending stops expose one
+System capability and generic player waiting; own lot summaries contain cohort/location counts
+without lot IDs or evidence, and reactor waiting omits owner rows that could reveal bindings. Its reacting view contains only the apparent trigger,
 the observer's current state-scoped capability handles with closed current move-option/cost
 capabilities, and the optional active own participant. Raw element Movement, ledger, Cohesion,
 Reserve, mobility, organization, and stacking inputs remain inside Core. Reacting construction and
@@ -102,15 +104,31 @@ topology-local ordinary Movement and first/later Reaction movement, participant
 completion, player decline, and reason-specific System close membership with canonical identities,
 strict current readback, and unpublished typed submission intents. Public Core query, submission,
 checkpoint, serialization, and replay paths now use this complete successor set; bounded Exercise
-Runner Reaction controllers remain `ZOR-TASK-007A`.
+Runner Reaction controllers implement `ZOR-TASK-007A`: explicit bounded policies support
+participant ordering, one/two-step episodes, decline/subset close, and System fallback.
+Current Movement completion preserves accepted Reaction costs through the Breakdown boundary;
+explicit Breakdown completion advances to unsupported Combat without another draw.
+The historical `ZOR-TASK-007B` package closed with strict evidence, matching clean-run fingerprints,
+and a Ready independent review; see [historical Reaction trajectories](docs/research/simulator-reaction-trajectories.md).
+Owner accepted Breakdown decisions `BRK-DEC-004`–`007`. Tasks 001–005 supplied the frozen contracts,
+certified world, BP accounting and deterministic stop lifecycle. [Task 006 public activation](docs/research/breakdown-public-activation.md)
+activates that complete identity set, Observation 7, projected history 2 and disclosure manifest 2.
+Current creation, checkpoints and event admission reject legacy or mixed contracts; retained
+Initiative, Weather and preamble evidence is recomputed, while full history is verified separately
+by replay. Public queries stop at first-side Combat entry. Positive ZOC, motorized-infantry losses
+and later-stage reset remain outside the certified profile. Task 007 implements fourteen checked
+successor manifests and a Truck study, using certified battalion, Reaction and Truck-only inputs.
+The [original fixtures](docs/specs/breakdown-fixture-migration.v1.json) remain historical with
+unchanged bytes. The profile permits zero cohorts: `land.breakdown-cohorts` is required exactly
+when a pack contains a cohort; all other capability, organization and stacking checks remain strict.
+[Task 007 closeout](docs/research/breakdown-runner-closeout.md) records 1,655 passing tests and two matching clean runs of 47 campaigns each. [AC-009 follow-up](docs/research/breakdown-transcript-privacy.md) adds fifteen transcript/privacy cases, bringing verification to 1,670 tests and 81 boundary cases. [Review 5](docs/reviews/brk-followup-review-5.md) accepts the bounded coverage; its status-only follow-up is corrected. Tasks 006–007 are complete within the certified profile.
 
 The local `Cna.ExerciseRunner` supports that synthetic rules-laboratory path as either one
 bounded, deterministic **Exercise** or one serial **Maneuver**. An Exercise uses a fresh opaque Core
 capability, selects only current legal actions, stops at its exact declared boundary, proves both
 event-history reconstruction and fresh-session re-adjudication, and writes a manifest-last
-`trusted-authority` evidence bundle. The original Organization fixture and nine-step Reserve
-fixture remain regression checkpoints; a checked 12-step Reserve Designation profile now
-designates both eligible elements and completes to first-side Movement. A serial-unpaired Maneuver
+`trusted-authority` evidence bundle. The original Organization, Reserve and Reaction checked fixtures are historical. Current regression
+tests and checked `.breakdown.v1` successors use certified battalion, Truck and contact inputs. A serial-unpaired Maneuver
 strictly admits one canonical ordered `serial-unpaired` manifest,
 derives explicit child identities from its sole parent root seed, and runs each child in process
 through the same coordinator. Each completed child bundle is read once for semantic validation and
@@ -119,13 +137,14 @@ snapshot/world decoder validates their canonical structure. The resulting transa
 separates deterministic counts, outcomes, and fingerprint material from noncanonical timing/path
 diagnostics and is strictly read back before completion is claimed. Compact, forensic, and debug
 Exercise detail tiers expose progressively richer evidence without changing simulation truth. The
-current two-setup serial-unpaired Maneuver proves the same Movement-terminal path for predetermined
-and contested initiative. A separate checked six-child controller matrix crosses
-`act-first`/`act-last` with Reserve `none`/`one`/`all`, producing exact 10/11/12-action Movement
-trajectories. The checked six-child Movement Maneuver now reaches Breakdown for the four
-non-triggering Reserve-one/all profiles and deterministically fails closed after 11 actions for the
-two Reserve-none profiles when their first move opens a Reaction window. Runner-owned Reaction
-selection remains `ZOR-TASK-007A`. Optional `serial-paired` Maneuvers run
+current two-setup serial-unpaired Maneuver retains predetermined and contested initiative paths.
+A checked six-child controller matrix crosses `act-first`/`act-last` with Reserve
+`none`/`one`/`all`, using two non-cohort battalions per side so all three choices remain distinct.
+The corresponding Movement matrix includes explicit route stops and System resolution before
+Breakdown entry. The [thirteen-child Reaction successor](scenarios/maneuvers/rules-lab.reaction.serial.breakdown.v1.json)
+retains ordering, one/two-step episodes, decline, active System closure and later-trigger recurrence
+with separated battalion reactors. The two historical positive-ZOC children remain deferred from
+public authority. Optional `serial-paired` Maneuvers run
 isolated baseline and candidate arms
 sequentially from identical declared initial conditions, initial role-specific random streams,
 campaign creation inputs, build cohort, and initial snapshot. Its strictly read-back comparison is
@@ -137,10 +156,10 @@ implemented.
 The checked Exercise and serial-unpaired Maneuver profiles use manifest v2, with unpaired report
 scheme `sandtable.maneuver-report.v1`; the separate paired Maneuver uses
 `sandtable.paired-maneuver-manifest.v1` and
-`sandtable.paired-maneuver-report.v1`. All use Ruleset 8, Snapshot 10, World 5, strict
+`sandtable.paired-maneuver-report.v1`. Current successors use Ruleset 9, Snapshot 11, World 6, strict
 `trusted-authority` evidence admission, and deterministic v2 controller configuration identity.
 
-The first two retained simulator studies now verify repeated Movement-terminal determinism,
+The first two historical simulator studies recorded repeated Movement-terminal determinism,
 counterbalanced-order timing, and contested root seeds 0-31. Every sampled run passed strict
 readback; the results also show that future back-testing needs explicit act-last and Reserve
 none/one/all controller profiles rather than seed variation alone. See
@@ -150,14 +169,18 @@ none/one/all controller profiles rather than seed variation alone. See
 coverage gap with 6/6 strictly read-back trajectories and a repeatable aggregate fingerprint.
 The merged [Movement trajectory study](docs/research/simulator-movement-trajectories.md) retains its
 pre-Reaction 48-trajectory baseline across six controllers and four deliberate seed probes. Under
-current successor authority, Reserve-none repeats stop deterministically at the opened Reaction
-window while the other profiles retain exact Breakdown evidence. The follow-on
-[Movement cost-sensitivity study](docs/research/simulator-movement-cost-sensitivity.md) adds a
-checked paired stable-route/lowest-public-cost comparison: the stable-route arm opens Reaction and
-fails closed after its cost-8 move, while the lowest-cost arm avoids the trigger and reaches
-Breakdown after routes costing 1/2 and 1 under equal initial evidence.
+the historical Rules 8 authority, Reserve-none repeats stopped at the opened Reaction window while
+the other profiles retained exact Breakdown evidence. The historical follow-on
+[Movement cost-sensitivity study](docs/research/simulator-movement-cost-sensitivity.md) compared
+stable-route and lowest-public-cost policies: its stable arm failed at Reaction after a cost-8 move,
+while its lowest-cost arm completed a 1/2-plus-1 route. Current paired cost successors use
+unladen Trucks and retain exact CP, BP and stop evidence. The added
+`act-first-reserve-all-move-each-once-by-lowest-cost-then-complete` policy selects one lowest-cost
+public move per eligible element. `act-first-reserve-all-repeat-highest-cost-stops-then-complete`
+repeats highest-cost public moves, stops after each edge, and drains each pending System resolution.
+These are bounded simulator policies; Core still determines legality and every result.
 
-Breakdown adjudication, contact, combat, published scenario content, persistence, and the Maproom
+Contact, combat, published scenario content, persistence, and the Maproom
 player interface remain future work.
 
 The reviewed Player Intent Composer is also future work. After the movement/contact/combat skeleton
@@ -173,7 +196,7 @@ The current delivery boundary is:
 | Ruleset/provenance, synthetic content, campaign authority, deterministic randomness, events, and replay | Implemented foundation |
 | Side-safe observations and exact-audience legal actions | Implemented for the current rules-laboratory path |
 | Mandatory turn preamble | Implemented through Reserve Designation completion; authority reaches first-side Movement |
-| Movement/contact and combat loops | Movement Foundation is complete through merged `MOV-TASK-010` / PR #79; `ZOR-TASK-002A`-`006C` now activate Ruleset 8, Land sequence 3, Content 5, World 5, CampaignCreated 9, Snapshot 10, `ElementMoved` v2, Observation 6, topology-local ZOC/Reaction actions, exact closure/resumption, and replay-complete participant episodes on the public Core path; bounded Runner adoption in `007A` is next |
+| Movement/contact and combat loops | Current Ruleset 9, Content/Setup/World 6, Created 10, Snapshot 11 and Observation 7 support bounded Movement, adjacency-triggered Reaction and Breakdown through first-side Combat entry; Contact and Combat adjudication remain deferred. Task 007 adds checked successors; two matching clean runs are verified; review 5 accepts AC-009 transcript/progress evidence; bounded Tasks 006–007 complete |
 | Published first-scenario data, remaining Land rules, victory, persistence, and Maproom | Milestone-level; not started |
 | Player Intent Composer | Direction reviewed; representative decision after the combat skeleton, no-model prototype before Maproom, optional parser evaluation after deterministic MVP |
 | Exercise Harness | Single-Exercise, serial-unpaired two-setup/controller/Movement Maneuvers, and optional serial-paired Reserve-policy and Movement-cost descriptive comparisons implemented with strict readback |
@@ -224,8 +247,8 @@ exact current submissions, adds canonical Movement completion through the Breakd
 checkpoint, and preserves deterministic fog-equivalent actions and zero/one/many-move replay.
 `MOV-TASK-009` is merged in PR #78 and adopts that supported Movement path in checked
 Exercise/Maneuver evidence. `MOV-TASK-010` completed synchronization and independent review and is
-merged in PR #79. Breakdown public actions and adjudication remain absent. The approved next engine
-package is the ZOC/Reaction
+merged in PR #79. At that historical milestone, Breakdown public actions and adjudication were absent.
+The subsequent ZOC/Reaction package follows the
 [specification](docs/specs/zoc-reaction-v1.md) and
 [technical design](docs/design/zoc-reaction-v1.md). `ZOR-TASK-002A`-`006B` implement dormant
 Rules/Content/fixture, Campaign World 5/creation 9, Snapshot 10, and `ElementMoved` v2 successors,
@@ -241,7 +264,7 @@ cost/RNG mutation. It also selects the first participant atomically with its mov
 steps bound to that active participant, accumulates exact shared Movement CP/provenance, and resolves
 participants without World or RNG mutation. `ZOR-TASK-006C` now activates the complete successor
 identity set on public Core creation, observation, action, checkpoint, and replay paths; legacy
-creation and Movement roots reject. Bounded Runner adoption in `ZOR-TASK-007A` is next.
+creation and Movement roots reject. Bounded Runner adoption in `ZOR-TASK-007A` is implemented; `007B` verification and independent review are complete.
 The optional paired comparison is implemented Runner instrumentation and does not block
 gameplay-engine progress.
 Combat research has progressed beyond the initial source inventory: `CMB-RSH-001` now retains the
@@ -303,12 +326,14 @@ dotnet test --solution Sandtable.slnx --no-build
 dotnet run --project src/Cna.AppHost/Cna.AppHost.csproj
 ```
 
-Run the Organization-boundary Exercise and
-write its ignored evidence bundle with:
+The checked Runner commands below use certified Task 007 successors. Original Rules 8 manifests
+remain frozen historical inputs and are rejected by current admission. The [closeout evidence](docs/research/breakdown-runner-closeout.md) records two clean runs of these current commands.
+
+Run the Organization-boundary Exercise:
 
 ```sh
 dotnet run --project src/Cna.ExerciseRunner/Cna.ExerciseRunner.csproj -- \
-  exercise run --manifest scenarios/exercises/rules-lab.organization.v2.json \
+  exercise run --manifest scenarios/exercises/rules-lab.organization.breakdown.v1.json \
   --artifact-root artifacts/exercises
 ```
 
@@ -319,7 +344,7 @@ The corresponding Stage Entry profile runs all nine accepted actions to the Rese
 
 ```sh
 dotnet run --project src/Cna.ExerciseRunner/Cna.ExerciseRunner.csproj -- \
-  exercise run --manifest scenarios/exercises/rules-lab.reserve.v2.json \
+  exercise run --manifest scenarios/exercises/rules-lab.reserve.breakdown.v1.json \
   --artifact-root artifacts/exercises
 ```
 
@@ -327,22 +352,22 @@ From a clean checkout, request a fail-closed baseline bundle with the checked ba
 
 ```sh
 dotnet run --project src/Cna.ExerciseRunner/Cna.ExerciseRunner.csproj -- \
-  exercise run --manifest scenarios/exercises/rules-lab.organization.baseline.v2.json \
+  exercise run --manifest scenarios/exercises/rules-lab.organization.baseline.breakdown.v1.json \
   --artifact-root artifacts/exercises
 ```
 
 The Reserve profile has the corresponding clean-checkout twin
-`scenarios/exercises/rules-lab.reserve.baseline.v2.json`. Run the 12-step Reserve Designation path
+`scenarios/exercises/rules-lab.reserve.baseline.breakdown.v1.json`. Run the 12-step Reserve Designation path
 through first-side Movement with:
 
 ```sh
 dotnet run --project src/Cna.ExerciseRunner/Cna.ExerciseRunner.csproj -- \
-  exercise run --manifest scenarios/exercises/rules-lab.reserve-designation.v2.json \
+  exercise run --manifest scenarios/exercises/rules-lab.reserve-designation.breakdown.v1.json \
   --artifact-root artifacts/exercises
 ```
 
 Its clean-checkout twin is
-`scenarios/exercises/rules-lab.reserve-designation.baseline.v2.json`.
+`scenarios/exercises/rules-lab.reserve-designation.baseline.breakdown.v1.json`.
 
 Set the manifest's `detail` to `compact`, `forensic`, or `debug`. Forensic adds correlated audience
 queries, controller selection, checks, proofs, payload sizing, and the progressively assembled
@@ -354,7 +379,7 @@ Run the checked two-child serial Maneuver with:
 
 ```sh
 dotnet run --project src/Cna.ExerciseRunner/Cna.ExerciseRunner.csproj -- \
-  maneuver run --manifest scenarios/maneuvers/rules-lab.serial.v2.json \
+  maneuver run --manifest scenarios/maneuvers/rules-lab.serial.breakdown.v1.json \
   --artifact-root artifacts/exercises
 ```
 
@@ -362,7 +387,7 @@ Run the two-setup Stage Entry regression Maneuver to Reserve with:
 
 ```sh
 dotnet run --project src/Cna.ExerciseRunner/Cna.ExerciseRunner.csproj -- \
-  maneuver run --manifest scenarios/maneuvers/rules-lab.stage-entry.serial.v2.json \
+  maneuver run --manifest scenarios/maneuvers/rules-lab.stage-entry.serial.breakdown.v1.json \
   --artifact-root artifacts/exercises
 ```
 
@@ -370,7 +395,7 @@ Run the two-setup Reserve Designation Maneuver through Movement with:
 
 ```sh
 dotnet run --project src/Cna.ExerciseRunner/Cna.ExerciseRunner.csproj -- \
-  maneuver run --manifest scenarios/maneuvers/rules-lab.reserve-designation.serial.v2.json \
+  maneuver run --manifest scenarios/maneuvers/rules-lab.reserve-designation.serial.breakdown.v1.json \
   --artifact-root artifacts/exercises
 ```
 
@@ -378,7 +403,7 @@ Run the six-policy Movement-entry matrix with:
 
 ```sh
 dotnet run --project src/Cna.ExerciseRunner/Cna.ExerciseRunner.csproj -- \
-  maneuver run --manifest scenarios/maneuvers/rules-lab.controller-matrix.serial.v2.json \
+  maneuver run --manifest scenarios/maneuvers/rules-lab.controller-matrix.serial.breakdown.v1.json \
   --artifact-root artifacts/exercises
 ```
 
@@ -386,7 +411,7 @@ Run the optional serial-paired Reserve-policy comparison with:
 
 ```sh
 dotnet run --project src/Cna.ExerciseRunner/Cna.ExerciseRunner.csproj -- \
-  maneuver run --manifest scenarios/maneuvers/rules-lab.reserve-policy.paired.v1.json \
+  maneuver run --manifest scenarios/maneuvers/rules-lab.reserve-policy.paired.breakdown.v1.json \
   --artifact-root artifacts/exercises
 ```
 
@@ -398,17 +423,29 @@ Run the paired Movement route-cost sensitivity comparison with:
 
 ```sh
 dotnet run --project src/Cna.ExerciseRunner/Cna.ExerciseRunner.csproj -- \
-  maneuver run --manifest scenarios/maneuvers/rules-lab.movement-cost.paired.v1.json \
+  maneuver run --manifest scenarios/maneuvers/rules-lab.movement-cost.paired.breakdown.v1.json \
   --artifact-root artifacts/exercises
 ```
 
-This pair keeps declared inputs and initial evidence equal while comparing the existing stable-route
-controller with an additive lowest-public-cost controller. It is simulator instrumentation, not an
-Umpire rule or gameplay recommendation.
+This unladen-Truck pair keeps declared inputs and initial evidence equal while comparing stable-route
+and lowest-public-cost controllers, including each move's BP accounting and explicit stop
+resolution. It is simulator instrumentation, not an Umpire rule or gameplay recommendation.
 
 The command prints each validated child bundle path in manifest order, followed by the strictly
 read-back aggregate report path and deterministic report fingerprint. The report's local paths and
 timings are diagnostics and do not participate in that fingerprint.
+
+Run the bounded Reaction successor or repeated Truck-stop study with:
+
+```sh
+dotnet run --project src/Cna.ExerciseRunner/Cna.ExerciseRunner.csproj -- \
+  maneuver run --manifest scenarios/maneuvers/rules-lab.reaction.serial.breakdown.v1.json \
+  --artifact-root artifacts/exercises
+
+dotnet run --project src/Cna.ExerciseRunner/Cna.ExerciseRunner.csproj -- \
+  maneuver run --manifest scenarios/maneuvers/rules-lab.breakdown-truck.serial.v1.json \
+  --artifact-root artifacts/exercises
+```
 
 The intelligence gateway currently reports that no model provider is configured and its decision
 and narrative RPCs return gRPC `Unavailable`. The Decision Worker is a service-discovery/client

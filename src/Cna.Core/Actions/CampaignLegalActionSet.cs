@@ -6,14 +6,20 @@ namespace Cna.Core.Actions;
 public sealed record CampaignLegalActionSet
 {
     public const int CurrentContractVersion = 2;
-    public const string CurrentPolicyId = "sandtable.legal-actions.v2";
+    public const string CurrentPolicyId = "sandtable.legal-actions.v3";
+    internal const string HistoricalPolicyIdV2 = "sandtable.legal-actions.v2";
 
     internal CampaignLegalActionSet(string campaignId, long stateVersion, string rulesetHash,
         string positionId, CampaignActionAudience audience,
-        IReadOnlyList<CampaignActionCandidate> candidates)
+        IReadOnlyList<CampaignActionCandidate> candidates,
+        string policyId = CurrentPolicyId)
     {
         ArgumentOutOfRangeException.ThrowIfLessThan(stateVersion, 1);
-        if (!Cna1979Ruleset.IsCanonicalHash(rulesetHash))
+        if (policyId != CurrentPolicyId && policyId != HistoricalPolicyIdV2)
+            throw new ArgumentException("Unsupported legal-action policy.", nameof(policyId));
+        if (!(policyId == HistoricalPolicyIdV2
+                ? Cna1979Ruleset.IsHistoricalHashV8(rulesetHash)
+                : Cna1979Ruleset.IsCanonicalHash(rulesetHash)))
         {
             throw new ArgumentException("The action set must use the canonical ruleset hash.",
                 nameof(rulesetHash));
@@ -35,7 +41,7 @@ public sealed record CampaignLegalActionSet
         }
 
         ContractVersion = CurrentContractVersion;
-        PolicyId = CurrentPolicyId;
+        PolicyId = policyId;
         CampaignId = ContentContractGuards.RequireStableId(campaignId, nameof(campaignId));
         StateVersion = stateVersion;
         RulesetHash = rulesetHash;

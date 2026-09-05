@@ -34,7 +34,7 @@ The repository now includes an in-process `Cna.ExerciseRunner` that is separate 
 intelligence/services plane. Each checked-in **Exercise** creates a fresh opaque
 `Cna.Core.Exercises` session, queries and submits through the shared legal-action execution path,
 stops at its exact declared boundary, and verifies both Core reconstruction and a second
-fresh-session re-adjudication. The original profile remains fixed at Operation Stage 1 Organization;
+fresh-session re-adjudication. The certified Organization successor stops at Operation Stage 1 Organization;
 the Stage Entry profile accepts nine actions and reaches Reserve, and the Reserve Designation
 profile accepts 12 actions and reaches first-side Movement. The runner records normalized
 inputs, Git/build identity,
@@ -49,17 +49,19 @@ exercise the two build-identity policies.
 The checked Exercise and serial-unpaired Maneuver profiles use manifest v2, with unpaired report
 scheme `sandtable.maneuver-report.v1`; the optional paired path uses
 `sandtable.paired-maneuver-manifest.v1` and
-`sandtable.paired-maneuver-report.v1`. All use controller-configuration v2, Ruleset 8, Snapshot
-10, World 5, and strict `trusted-authority` evidence admission. Retained Organization/Reserve
-profiles and their baseline twins remain regression checkpoints.
+`sandtable.paired-maneuver-report.v1`. Current successors use controller-configuration v2,
+Ruleset 9, Snapshot 11, World 6 and strict `trusted-authority` evidence admission. Fourteen checked
+`.breakdown.v1` successors preserve the admitted Organization/Reserve, controller matrix and paired
+comparison roles. Their original fixture bytes remain historical and fail current admission.
 
 The checked two-child **Maneuver** fixtures define strict canonical `serial-unpaired` parent manifests.
 The Stage Entry fixture runs both admitted setups to Reserve; the Reserve Designation fixture runs
 both through Movement. A checked six-child controller matrix crosses `act-first`/`act-last` with
-Reserve `none`/`one`/`all` and reaches Movement in exact 10/11/12-action trajectories. In the
-checked Movement fixture, four non-triggering Reserve-one/all profiles reach Breakdown
-Determination in 13 actions. Two Reserve-none profiles open Reaction on their first move and fail
-closed after 11 actions because Runner Reaction selection belongs to `ZOR-TASK-007A`. Only the
+Reserve `none`/`one`/`all` with two independent non-cohort battalions per side. The Movement
+successor preserves these distinct Reserve choices and includes route stops and zero-roll System
+resolutions. A separate thirteen-child Reaction successor uses separated battalion reactors for
+ordered episodes, two-step movement, subset closure, active System closure and recurrence. The two
+historical positive-ZOC children remain outside the public profile. Only the
 parent supplies the root seed; each ordered child receives an explicit Maneuver
 ID and ordinal identity and runs synchronously through the same no-console post-admission
 coordinator. The aggregate path opens each completed child bundle once, semantically validates its
@@ -70,7 +72,8 @@ creation is transactional and a strict readback must succeed before the CLI clai
 
 Optional `serial-paired` fixtures run baseline then candidate in separate fresh Exercise sessions.
 The Reserve-policy pair exercises descriptive divergence at Reserve; the Movement-cost pair
-compares the unchanged stable-route controller with an additive lowest-public-cost controller.
+compares stable-route and lowest-public-cost selection on admitted unladen Trucks, retaining exact
+CP costs, BP accounting and stop-resolution evidence.
 Pair admission and aggregation require identical declared initial conditions, campaign
 creation inputs, complete initial role/domain seed ledgers, build cohort, and canonical initial
 snapshot while keeping controller configuration identities separate. The parent report recomputes
@@ -674,7 +677,7 @@ is an original nine-hex nonhistorical rules laboratory using the same path inten
 source-derived content. Exact catalog lookup requires both pack ID and hash and never substitutes a
 default; presentation labels remain outside authoritative equality and bytes.
 
-The current Campaign World capability uses world snapshot contract 5 and records exact
+The current Campaign World capability uses world snapshot contract 6 and records exact
 ruleset, setup, content, and scenario identities; resolves immutable content before an authoritative
 grain turn; and projects mutable element locations, per-element Reserve status, exact
 Operation-Stage expenditure/Cohesion/Movement-ended state, exact component TOE provenance, and
@@ -692,15 +695,17 @@ four exact empty obligations; Reserve Designation accepts only current owner can
 through one exact completion event to Movement. The Movement foundation plus approved
 Breakdown-continuity clean cut first advanced the ruleset to contract 7, snapshot to contract 9,
 Campaign World to contract 4, creation event to contract 8, and Content Pack to schema 4 / canonical
-format v3. ZOC/Reaction activation now advances the complete current set together to Ruleset 8,
-Snapshot 10, Campaign World 5, creation event 9, and Content Pack schema 5 / canonical format v4.
+format v3. ZOC/Reaction activation established Ruleset 8, Snapshot 10, Campaign World 5,
+creation event 9 and Content Pack schema 5 / canonical format v4. Breakdown activation advances
+the complete current set to Ruleset 9, Snapshot 11, World 6, creation event 10, Setup/Content 6
+and sequence/catalog 4; old readers remain explicit historical contracts.
 No generic sequence bypass exists.
 See the Content Pack v1
 [research](docs/research/content-pack-v1-spike.md),
 [specification](docs/specs/content-pack-v1.md), and
 [technical design](docs/design/content-pack-v1.md).
 
-The implemented Campaign Observation boundary lives in `Cna.Core.Observations`. Contract 6 accepts only
+The implemented Campaign Observation boundary lives in `Cna.Core.Observations`. Contract 7 accepts only
 a fully admitted Campaign World snapshot, its already-resolved exact content context, and a defined
 viewer side. A pure projector then copies a closed allowlist of public campaign/turn/topology facts,
 the current source-free Weather summary, exact own mobility/operational ledger/Reserve status and
@@ -809,8 +814,15 @@ move/window truth, frozen local opportunities, topology-local Movement-ended sta
 reason-specific window closure/resumption with unchanged committed World/random truth.
 `ZOR-TASK-006B` adds replay-complete participant selection, one-or-more-step active movement using
 shared CP/provenance authority, and explicit completion. Public creation, observation, submission,
-checkpoint, serialization, and replay now use successor authority; bounded Runner adoption in
-`ZOR-TASK-007A` is next.
+checkpoint, serialization, and replay now use successor authority. `ZOR-TASK-007A` adds explicit
+bounded Runner policies using only public action IDs/kinds and accepted episode/window counts.
+Movement completion reconstructs directly from Snapshot 10, preserving both sides' accepted
+Reaction costs instead of invoking predecessor validation that forbids non-phasing movement.
+The historical Rules 8 fifteen-child Reaction Maneuver covered ordering, bounded episodes, closure, repeat triggers,
+adjacent/remote selection, ZOC variants, and exact final costs. Runner strict event readers admit
+all Reaction events; bundle readback independently re-adjudicates the retained submissions.
+Package closeout verification and independent review are tracked in
+[Reaction evidence](docs/research/simulator-reaction-trajectories.md).
 The completed owner-approved engine package is the Movement Foundation
 [research](docs/research/movement-foundation-spike.md),
 [specification](docs/specs/movement-foundation-v1.md), and
@@ -837,7 +849,7 @@ replay. Task 008 adds the `CompleteMovementSegment` command and canonical
 `MovementSegmentCompleted` event, strict codec/projection/replay support, exact completion to the
 first-side Breakdown Determination checkpoint, and atomic public move-plus-completion membership.
 Submission revalidates exact current observation-derived membership before either command executes;
-no Breakdown campaign action is public yet. The
+no Breakdown campaign action was public at that historical milestone. The
 [Sprint 4-5 research-gate audit](docs/research/sprint-4-5-research-gates.md) makes
 `BREAKDOWN-001` explicit: minimum Breakdown Point continuity is recorded now, sequential d6 form
 the `11`-`66` coordinate, and Sandstorm eligibility uses Table 21.38's share of accumulated BP.
@@ -868,8 +880,42 @@ All five `CONTACT-001` rulings and the governing specification/design package ar
 `ZOR-TASK-002A`-`006C` implement and activate Rules/Content/fixture, Campaign
 World/creation/snapshot/event-replay, Observation 6/policy/history, topology-local
 action/readback/mapping seams, the user-space declassification manifest/transcript gate, internal
-trigger/ZOC adjudication, window closure/resumption, and participant episodes. `007A` Runner
-adoption and `007B` package closeout remain dependency-gated.
+trigger/ZOC adjudication, window closure/resumption, and participant episodes. `007A` adds bounded
+Runner adoption and checked fixtures; `007B` completes strict Reaction evidence, matching clean-run
+fingerprints, full repository verification, and independent review.
+The accepted [Breakdown specification](docs/specs/breakdown-adjudication-v1.md) and
+[wire freeze](docs/specs/breakdown-wire-contract-v1.md) define shared BP accounting, finite stop
+continuations, deterministic checks and persistent lots. Owner accepted `BRK-DEC-004`–`007`;
+`BRK-TASK-001` is complete and [Task 002 dormant outcome Rules](docs/research/breakdown-outcome-rules.md)
+are implemented with a passing full gate; independent review is Ready.
+[Task 003 campaign contracts and the certified Truck fixture](docs/research/breakdown-campaign-contracts.md)
+established Content 6, Setup 6, World 6, Snapshot 11, Created 10 and sequence/catalog 4
+under Ruleset 9. [Task 004](docs/research/breakdown-move-accounting.md) adds shared
+BP accounting and rederived ordinary/Reaction move events. [Task 005](docs/research/breakdown-stop-adjudication.md) adds
+stop/check authority, explicit Reaction continuation and exact RNG replay through first-side Combat entry.
+[Task 006](docs/research/breakdown-public-activation.md) activates these contracts together with
+Observation 7, projected history 2, legal-action policy 3 and disclosure manifest 2. Public pending
+stops admit one System action; both players receive generic waiting. Current checkpoint admission
+recomputes retained Initiative/Weather/preamble evidence; full replay separately verifies historical
+transitions. Runner event admission shares Core's strict decoder, and bounded move controllers stop
+an open route before selecting another element. Current queries end at unsupported first-side Combat.
+The certified Truck/battalion profile defers public positive ZOC and motorized-infantry losses;
+original checked Runner fixture bytes stay historical. Task 007 implements ten additional certified
+Content packs and eleven setups: non-cohort battalion matrices with predetermined/contested initiative,
+separated Reaction paths, a last-CP trigger, Truck-only costs, a single-working-point Truck and
+Truck-mover adjacency to an opposing combat battalion.
+The exact capability set includes `land.breakdown-cohorts` if and only if a static cohort exists;
+zero-cohort packs retain the same profile, formation and stacking restrictions.
+
+The additional `act-first-reserve-all-move-each-once-by-lowest-cost-then-complete` policy supports
+the Truck cost pair. `act-first-reserve-all-repeat-highest-cost-stops-then-complete` repeatedly
+selects a highest-cost legal move and explicitly stops each route, allowing the single current
+System resolution before selecting another move. Each remains bounded by the admitted step limit
+and Core's CP/survivor membership. Neither policy computes losses or bypasses authority.
+[Task 007 closeout](docs/research/breakdown-runner-closeout.md) tracks checked successor and strict
+bundle evidence, a passing full gate and two matching clean runs. [Review 5](docs/reviews/brk-followup-review-5.md) accepts BRK-AC-009
+current-version audience transcript/progress evidence, completing bounded Tasks 006–007.
+Follow-up verification passes 1,670 tests and 81 boundary cases; status-only review follow-up is corrected.
 The implemented paired comparison does not block that engine work.
 
 [1]: https://learn.microsoft.com/en-us/dotnet/orleans/grains/external-tasks-and-grains "External tasks and grains - .NET | Microsoft Learn"

@@ -115,7 +115,7 @@ internal static class CampaignSnapshotV10Serializer
             || !string.Equals(snapshot.Setup.Content.Pack.FormatId,
                 "sandtable.content-json.v4", StringComparison.Ordinal)
             || snapshot.World.ContractVersion != CampaignWorldSnapshotV5.CurrentContractVersion
-            || !Cna1979Ruleset.IsCanonicalHash(snapshot.RulesetHash)
+            || !Cna1979Ruleset.IsHistoricalHashV8(snapshot.RulesetHash)
             || snapshot.RandomState.ContractVersion != SandtableRandom.ContractVersion
             || !string.Equals(snapshot.RandomState.AlgorithmId,
                 SandtableRandom.AlgorithmId, StringComparison.Ordinal))

@@ -11,7 +11,7 @@ public sealed class StageEntryRulingTests
     [Fact]
     public void CanonicalManifestContainsTheAcceptedExplicitEmptyStageEntryRuling()
     {
-        var manifest = Cna1979Ruleset.Manifest;
+        var manifest = Cna1979Ruleset.HistoricalManifestV8;
         var ruling = Assert.Single(
             manifest.Rulings,
             candidate => candidate.RulingId == RulingId);
@@ -53,7 +53,7 @@ public sealed class StageEntryRulingTests
     public void AcceptedStageEntryRulingHasExactCanonicalBytes()
     {
         var ruling = Assert.Single(
-            Cna1979Ruleset.Manifest.Rulings,
+            Cna1979Ruleset.HistoricalManifestV8.Rulings,
             candidate => candidate.RulingId == RulingId);
 
         Assert.Equal(

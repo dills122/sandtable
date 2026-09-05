@@ -18,7 +18,7 @@ public sealed class OpeningPreambleCampaignTests
         var setup = Cna1979SetupCatalog.Definitions[0];
         CampaignCommand[] commands =
         [
-            CampaignTestHarness.Create("campaign-preamble", Cna1979Ruleset.Manifest.Hash, 12345,
+            CampaignTestHarness.Create("campaign-preamble", Cna1979Ruleset.HistoricalManifestV8.Hash, 12345,
                 setup.SetupId, setup.Hash),
             new ResolveInitiative(1, "land.position.initiative-determination"),
             new ResolveNoObligationNavalConvoySchedule(2, "land.position.naval-convoy.schedule"),
@@ -108,7 +108,7 @@ public sealed class OpeningPreambleCampaignTests
         var setup = Cna1979SetupCatalog.Definitions[0];
         CampaignCommand[] commands =
         [
-            CampaignTestHarness.Create("campaign-preamble", Cna1979Ruleset.Manifest.Hash, 12345,
+            CampaignTestHarness.Create("campaign-preamble", Cna1979Ruleset.HistoricalManifestV8.Hash, 12345,
                 setup.SetupId, setup.Hash),
             new ResolveInitiative(1, "land.position.initiative-determination"),
             new ResolveNoObligationNavalConvoySchedule(2, "land.position.naval-convoy.schedule"),
@@ -133,7 +133,7 @@ public sealed class OpeningPreambleCampaignTests
     {
         var setup = Cna1979SetupCatalog.Definitions[0];
         var creation = CampaignTestHarness.Decide(null,
-            CampaignTestHarness.Create("campaign-preamble", Cna1979Ruleset.Manifest.Hash, 12345,
+            CampaignTestHarness.Create("campaign-preamble", Cna1979Ruleset.HistoricalManifestV8.Hash, 12345,
                 setup.SetupId, setup.Hash));
         return CampaignTestHarness.Replay(creation.Events);
     }

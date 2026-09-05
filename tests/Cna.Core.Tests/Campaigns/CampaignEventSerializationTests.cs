@@ -17,7 +17,7 @@ public sealed class CampaignEventSerializationTests
         var actual = Encoding.UTF8.GetString(bytes);
         var expected = "{\"contractVersion\":8,\"eventType\":\"campaign-created\"," +
             "\"campaignId\":\"campaign-1\",\"stateVersion\":1,\"rulesetHash\":\"" +
-            Cna1979Ruleset.Manifest.Hash +
+            Cna1979Ruleset.HistoricalManifestV8.Hash +
             "\",\"setup\":{\"schemaVersion\":5," +
             "\"setupId\":\"rules-lab.initiative.predetermined\"," +
             "\"setupHash\":\"sha256:9e55e3de11338ba6432768ccb6740a6fed83b37503f69cc7ff8ecd58e205634f\"," +
@@ -260,7 +260,7 @@ public sealed class CampaignEventSerializationTests
             null,
             CampaignTestHarness.Create(
                 "campaign-1",
-                Cna1979Ruleset.Manifest.Hash,
+                Cna1979Ruleset.HistoricalManifestV8.Hash,
                 seed,
                 setup.SetupId,
                 setup.Hash));

@@ -6,9 +6,9 @@ namespace Cna.Core.Tests.Rules;
 public sealed class RulesetManifestTests
 {
     [Fact]
-    public void CanonicalCna1979ManifestDerivesItsIdentityFromTheLandCatalog()
+    public void HistoricalCna1979ManifestDerivesItsIdentityFromTheLandCatalog()
     {
-        var manifest = Cna1979Ruleset.Manifest;
+        var manifest = Cna1979Ruleset.HistoricalManifestV8;
         var artifact = Assert.Single(
             manifest.Artifacts,
             value => value.ArtifactId == "cna-1979.1.land-sequence");
@@ -76,9 +76,9 @@ public sealed class RulesetManifestTests
         Assert.Contains(
             Cna1979SetupCatalog.OpeningPreambleSourceReference,
             ruling.Sources);
-        Assert.Same(manifest, Cna1979Ruleset.Manifest);
-        Assert.True(Cna1979Ruleset.IsCanonicalHash(manifest.Hash));
-        Assert.False(Cna1979Ruleset.IsCanonicalHash(new string('0', 64)));
+        Assert.Same(manifest, Cna1979Ruleset.HistoricalManifestV8);
+        Assert.True(Cna1979Ruleset.IsHistoricalHashV8(manifest.Hash));
+        Assert.False(Cna1979Ruleset.IsHistoricalHashV8(new string('0', 64)));
     }
 
     [Fact]

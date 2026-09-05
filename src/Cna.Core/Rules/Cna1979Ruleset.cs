@@ -7,7 +7,7 @@ namespace Cna.Core.Rules;
 public static class Cna1979Ruleset
 {
     public const string RulesetId = "cna-1979.1";
-    public const int ContractVersion = 8;
+    public const int ContractVersion = 9;
 
     private const string LandSequenceArtifactId = "cna-1979.1.land-sequence";
 
@@ -24,7 +24,12 @@ public static class Cna1979Ruleset
         Cna1979LandSequence.StageChoiceSourceReference,
     ];
 
-    public static RulesetManifest Manifest { get; } = CreateManifest();
+    public static RulesetManifest HistoricalManifestV8 { get; } = CreateHistoricalManifestV8();
+
+    public static RulesetManifest Manifest => Cna1979BreakdownRuleset.Manifest;
+
+    public static bool IsHistoricalHashV8(string? hash) => string.Equals(
+        hash, HistoricalManifestV8.Hash, StringComparison.Ordinal);
 
     public static bool IsCanonicalHash(string? hash) => string.Equals(
         hash,
@@ -93,7 +98,7 @@ public static class Cna1979Ruleset
         return FormatSha256(stream.ToArray());
     }
 
-    private static RulesetManifest CreateManifest()
+    private static RulesetManifest CreateHistoricalManifestV8()
     {
         var completeCatalog = Cna1979LandSequence.CreateTurn(1);
         var catalogHash = CalculateLandSequenceContentHash(completeCatalog);
@@ -104,7 +109,7 @@ public static class Cna1979Ruleset
 
         return new RulesetManifest(
             RulesetId,
-            ContractVersion,
+            8,
             [
                 sequenceArtifact,
                 Cna1979InitiativeRatings.CreateArtifact(),

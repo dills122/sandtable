@@ -3,7 +3,8 @@
 **Status:** Task 016 remains complete; merged `MOV-TASK-009` compatibly extends the checked Harness
 through non-contact Movement to exact first-side Breakdown Determination. A post-adoption paired
 lowest-cost controller instrument is implemented and verified locally. `ZOR-TASK-006C` activates
-Reaction in Core; Runner Reaction selection remains `ZOR-TASK-007A`
+Reaction in Core; `ZOR-TASK-007A` adds explicit bounded Reaction policies and a 15-child checked Maneuver.
+`007B` closes strict Reaction evidence, clean-run equality, and independent review.
 
 **Date:** 2026-08-20
 
@@ -919,7 +920,8 @@ changing the Harness authority boundary.
 - **Successor compatibility:** those checked-fixture counts describe merged `MOV-TASK-009` before
   Reaction activation. With `ZOR-TASK-006C`, Reserve-none opens Reaction after its first move and
   the Runner deterministically fails closed after 11 accepted steps; Reserve-one/all retain their
-  exact 13-step Breakdown evidence. `ZOR-TASK-007A` owns participant/System controller selection.
+  exact 13-step Breakdown evidence. Explicit `reaction-*` policies implement `ZOR-TASK-007A` participant/System selection; retained
+  Movement policy identities keep their original behavior. See [Reaction evidence](../research/simulator-reaction-trajectories.md).
 - **Fingerprint/study:** two clean CLI executions into separate artifact roots reconfirmed
   `sha256:c1c20270dcd3402886931c28851bea7f23cd1e0778b45f94c43d85ed01d41c4b`; it does not bind detailed
   child event/ledger bytes. `MovementSimulatorStudyTests` executes four boundary/interior seeds by
@@ -993,7 +995,7 @@ verdict.
 | `EXR-019`, `EXR-020`; clean baseline and dirty exploration | 011, 012 + observability hardening | Fake/integration identity cases, emitted build identity, and separate checked baseline/exploratory fixtures | implemented |
 | `EXR-021`; serial validated aggregation | 014, 015 | `EXR-AC-009`, `EXR-AC-010`; existing serial suites plus paired admission/report/lifecycle/executor/checked-fixture tests | implemented for serial-unpaired and serial-paired modes |
 | `EXR-022`; separate correlated diagnostics | 007, 012, 014 + observability hardening | Successful and failed query/controller/submission/check/proof correlation, explicit Maneuver identity, aggregate noncanonical diagnostics, debug failure timings, artifact readback trace, and command-boundary cross-detail evidence | implemented through serial Maneuvers |
-| `EXR-024`, `EXR-025`; deterministic selection and single active audience | 006, 007, 012 | Executor controller/cardinality/step-bound tests and checked-in fixture | implemented |
+| `EXR-024`, `EXR-025`; deterministic selection, ordinary single-audience rule, and explicit bounded Reaction arbitration | 006, 007, 012; `ZOR-TASK-007A` | Executor controller/cardinality/step-bound tests, `ReactionControllerTests`, and checked Maneuvers | implemented; exact Reaction player/System shape is opt-in under named policies |
 | `EXR-026`; ordered invariant catalog | 006-008, 012 | Strict check codec, ordering, scope, failure, and emitted-bundle tests | implemented |
 | `EXR-027`; bounded Movement selection and semantic evidence | `MOV-TASK-009` plus post-adoption sensitivity instrument | Six-child checked Movement fixture, accepted-move history tests, strict event/ledger tamper tests, reconstruction/re-adjudication, 48-trajectory study, two clean CLI fingerprints, and a paired stable-route/lowest-cost comparison | Task 009 merged; paired sensitivity instrument locally verified with repeatable fingerprint |
 | `EXR-NFR-001`-`005`; reproducibility, reliability, boundaries, quality | 001-016 | Warning-free build, complete focused/solution suites, repeatable serial and paired fingerprints, `just check`, runnable-example readback, and independent review | implementation/repository gates verified; final review verdict retained in PR evidence |

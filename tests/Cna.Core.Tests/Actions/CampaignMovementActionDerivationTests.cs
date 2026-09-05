@@ -286,14 +286,14 @@ public sealed class CampaignMovementActionDerivationTests
             LandSide.Commonwealth => CampaignActionAudience.Commonwealth,
             _ => throw new ArgumentOutOfRangeException(nameof(observation)),
         };
-        var set = new CampaignLegalActionSet(
+        var set = HistoricalLegalActionSetTestData.Create(
             observation.CampaignId,
             observation.StateVersion,
             observation.RulesetHash,
             observation.Position.PositionId,
             audience,
             CampaignMovementActionDerivation.Derive(observation));
-        return CampaignLegalActionSerializer.Serialize(set);
+        return CampaignLegalActionSerializer.SerializeHistoricalV2(set);
     }
 
     private static bool IsTarget(
