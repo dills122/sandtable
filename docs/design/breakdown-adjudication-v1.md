@@ -1,6 +1,6 @@
 # Breakdown adjudication v1 — design and task plan
 
-**Status:** Owner accepted BRK-DEC-004–007 on 2026-09-05; BRK-TASK-001 contract freeze complete. Task 002 dormant Rules implemented; verification passed and independent review Ready. Task 003 dormant campaign contracts and certified Truck fixture implemented. Tasks 004–005 move/stop adjudication and Task 006 coherent public activation are implemented. Task 007 checked Runner migration, full gate and two clean runs are verified; [final review 4](../reviews/brk-final-review-4.md) leaves acceptance open for BRK-AC-009 current-history privacy evidence.
+**Status:** Owner accepted BRK-DEC-004–007 on 2026-09-05; BRK-TASK-001 contract freeze complete. Task 002 dormant Rules implemented; verification passed and independent review Ready. Task 003 dormant campaign contracts and certified Truck fixture implemented. Tasks 004–005 move/stop adjudication and Task 006 coherent public activation are implemented. Task 007 checked Runner migration, full gate and two clean runs are verified; [review 5](../reviews/brk-followup-review-5.md) accepts BRK-AC-009 transcript evidence; bounded Tasks 006–007 are complete, with status-only follow-up corrected.
 
 **Governing contract:** [specification](../specs/breakdown-adjudication-v1.md),
 [wire schemas](../specs/breakdown-wire-contract-v1.md), and
@@ -174,10 +174,10 @@ older current readers; no dual-current downgrade mode.
 | `BRK-TASK-003` | **Complete:** dormant Content/Setup/World/Snapshot/creation/lot/stop contracts, sequence/catalog 4 and bounded Truck fixture; `Content`, `Campaigns`, `Rules` | [Evidence](../research/breakdown-campaign-contracts.md): strict codecs, conservation, certified creation and state negatives, mixed-version rejection; event transition proofs remain Tasks 004–005 and public activation remains Task 006 |
 | `BRK-TASK-004` | **Complete:** shared BP deltas and dormant successor ordinary/Reaction events/projectors | [Evidence](../research/breakdown-move-accounting.md): terrain/route/weather vectors, atomic forged-delta rejection, preserved CP/Reaction behavior, routes/forced-stop precedence and immutable lots |
 | `BRK-TASK-005` | **Complete:** dormant stop/check authority, exact RNG replay and continuation | [Evidence](../research/breakdown-stop-adjudication.md): nested phasing/reactor/forced-close transitions, zero-roll vs zero-loss, immutable lots, no duplicate costs/draws |
-| `BRK-TASK-006` | **Implemented; AC-009 evidence open:** Observation, action membership, disclosure manifest, projected history and atomic public activation | [Evidence](../research/breakdown-public-activation.md): certified creation, privacy/forgery/identity matrix, strict Core/Runner admission and boundary gate; stop at unsupported Combat |
-| `BRK-TASK-007` | **Implemented; acceptance blocked on AC-009:** checked Runner fixtures, strict bundles and research reconciliation | [Closeout evidence](../research/breakdown-runner-closeout.md): exact accounting/lots/continuation, full gate and two clean runs; [review 4](../reviews/brk-final-review-4.md) requires full current-version transcript/progress privacy evidence under Task 006 |
+| `BRK-TASK-006` | **Complete:** Observation, action membership, disclosure manifest, projected history and atomic public activation | [Evidence](../research/breakdown-public-activation.md): certified creation, privacy/forgery/identity matrix, strict Core/Runner admission and boundary gate; stop at unsupported Combat |
+| `BRK-TASK-007` | **Complete:** checked Runner fixtures, strict bundles and research reconciliation | [Closeout evidence](../research/breakdown-runner-closeout.md): exact accounting/lots/continuation, full gate and two clean runs; [review 5](../reviews/brk-followup-review-5.md) accepts current-version transcript/progress evidence under Task 006 |
 
-Tasks 001–005 are complete; Tasks 006–007 are implemented, with verification recorded in closeout evidence. [AC-009 transcript follow-up](../research/breakdown-transcript-privacy.md) adds current-history privacy coverage for review 4 P2; user-requested independent review 5 remains the acceptance gate. Safe independent research lanes
+Tasks 001–007 are complete within the certified profile. [AC-009 transcript follow-up](../research/breakdown-transcript-privacy.md) addresses review 4 P2; [review 5](../reviews/brk-followup-review-5.md) accepts that evidence. Its status-only follow-up is corrected; broader capability deferrals remain unchanged. Safe independent research lanes
 are grouped allocation,
 transport consequences and origin-placement/capture/repair; they do not modify these shared contracts.
 
@@ -208,7 +208,7 @@ Accepted battalion-size limits exclude public positive ZOC because current ZOC n
 The migration inventory preserves all original fixture bytes as historical at activation, requires
 bounded successors for 13 of 15 Reaction children, and explicitly defers positive local/remote ZOC.
 Truck ordinary moves are admitted separately; combat-only Reaction triggers remain unchanged.
-Tasks 006–007 are implemented. Final acceptance remains open for AC-009 current-history privacy coverage identified by review 4; the implementation review limit is exhausted at 4 of 4.
+Bounded Tasks 006–007 are complete after review 5 accepted the AC-009 transcript follow-up. The implementation review limit is exhausted at 5 of 5; no further review is authorized.
 
 [Task 001 verification evidence](../research/breakdown-contract-freeze-checks.md) records exact
 specification checks and their limits.

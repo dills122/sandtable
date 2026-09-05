@@ -46,7 +46,7 @@ the pre-alpha roadmap carry repository-wide rationale and delivery state.
   implemented. [Task 005 stop/check authority](research/breakdown-stop-adjudication.md) implemented;
   [Task 006 public activation and privacy](research/breakdown-public-activation.md) activates current
   authority through first-side Combat entry. [Task 007 Runner closeout](research/breakdown-runner-closeout.md)
-  records checked successors and verification; [review 4](reviews/brk-final-review-4.md) leaves acceptance open for AC-009 current-history privacy evidence.
+  records checked successors and verification; [review 5](reviews/brk-followup-review-5.md) accepts the AC-009 transcript follow-up and completes bounded Tasks 006–007.
 - ZOC and Reaction: approved [specification](specs/zoc-reaction-v1.md),
   [technical design](design/zoc-reaction-v1.md), and
   [research packet](research/contact-reaction-zoc-spike.md), with the accepted

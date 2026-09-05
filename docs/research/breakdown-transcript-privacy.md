@@ -1,6 +1,6 @@
 # BRK-AC-009 — Current transcript and progress privacy
 
-**Status:** Review 4 P2 follow-up implemented; independent review 5 requested by user and pending. P3 activation status was corrected in `77a3203`. This change adds tests only; no runtime contracts, fixtures or authority behavior change.
+**Status:** Review 4 P2 addressed in `26c1b39`; [independent review 5](../reviews/brk-followup-review-5.md) accepts BRK-AC-009 evidence with non-blocking status follow-up, corrected during retention. Review 4 P3 activation wording was corrected in `77a3203`. Test-only follow-up changes no runtime contracts, fixtures or authority behavior.
 
 The [governing disclosure requirement](../specs/breakdown-adjudication-v1.md#brk-req-008--disclosure-and-action-membership) conditions equality on identical approved audience facts. [Review 4](../reviews/brk-final-review-4.md) found isolated Observation 7 tests insufficient to establish current transcript/progress equivalence.
 

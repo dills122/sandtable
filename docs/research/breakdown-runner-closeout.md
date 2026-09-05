@@ -1,6 +1,6 @@
 # Breakdown Runner migration and closeout
 
-**Status:** Task 007 implementation, full gate and two matching clean runs verified. [Final review 4](../reviews/brk-final-review-4.md) is **Not ready** for acceptance closeout: Task 006 still needs BRK-AC-009 full current-version audience transcript/progress privacy evidence. Review limit is exhausted at 4 of 4 after explicit user authorization.
+**Status:** Bounded Tasks 006–007 complete. Implementation, full gate and two matching clean runs verified; [review 5](../reviews/brk-followup-review-5.md) accepts the [AC-009 transcript follow-up](breakdown-transcript-privacy.md). Its status-only follow-up is corrected. Review limit is exhausted at 5 of 5 after explicit user authorization.
 
 The frozen [migration inventory](../specs/breakdown-fixture-migration.v1.json) remains unchanged. Fourteen named successor files preserve the earlier checkpoint/controller purposes within the certified Truck/battalion profile. The original fourteen files remain byte-identical historical artifacts. Thirteen Reaction children retain bounded episode, close and continuation behavior; positive local and remote ZOC remain deferred.
 
@@ -48,8 +48,8 @@ python3 docs/research/verify-breakdown-runner-runs.py run "$PWD" /tmp/brk-repeat
 python3 docs/research/verify-breakdown-runner-runs.py compare "$PWD" /tmp/brk-repeat-a /tmp/brk-repeat-b 59679493866d7f23ea0a69964e93bbfb67bd2841 /tmp/brk-repeat-comparison.json
 ```
 
-## Scope and remaining gate
+## Scope and acceptance
 
 The [historical Reaction study](simulator-reaction-trajectories.md) remains evidence for Rules 8 at its recorded commit, not a current Rules 9 fingerprint claim. Broader positive ZOC, positive cohort Reaction loss, motorized infantry, grouped losses, general placement, capture/towing/repair and later-stage BP reset remain outside this public capability.
 
-[Implementation review 3](../reviews/brk-progress-review-3.md) reviewed through Task 005. [Final review 4](../reviews/brk-final-review-4.md) reviewed Tasks 006–007, independently reran build, tests, format and audits, and checked retained clean-run artifacts. Its **Not ready** verdict leaves AC-009 full current-version transcript/progress privacy coverage open; no runtime disclosure defect was demonstrated. Normative status wording was corrected during review retention. Next work belongs to Core observation/privacy tests under Task 006 and gates Task 007 acceptance. No further review instance starts without renewed explicit authorization.
+[Implementation review 3](../reviews/brk-progress-review-3.md) reviewed through Task 005. [Review 4](../reviews/brk-final-review-4.md) reviewed Tasks 006–007 and identified missing AC-009 transcript coverage. The [follow-up](breakdown-transcript-privacy.md) adds fifteen cases, with 1,670 full-suite tests and 81 boundary tests passing. [Review 5](../reviews/brk-followup-review-5.md) accepts that evidence with a status-only follow-up corrected during retention. Bounded Tasks 006–007 are complete; no runtime disclosure defect was demonstrated or fixed. Historical run artifacts remain tied to `5967949`. No further review instance starts without renewed explicit authorization.

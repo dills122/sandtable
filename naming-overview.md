@@ -652,9 +652,9 @@ historical/deferred. **Certified battalion input** may contain zero vehicle coho
 profile's independent formation and stacking bounds remain mandatory. Truck convoy movement is
 distinct from combat/Reaction eligibility; the profile still defers public positive ZOC and
 motorized-infantry losses. [Task 007 closeout](docs/research/breakdown-runner-closeout.md) tracks
-verification, a passing full gate and two matching clean runs. [Final review 4](docs/reviews/brk-final-review-4.md) leaves acceptance open for BRK-AC-009
-current-version audience transcript/progress privacy tests. These implementation names do not claim
-completed acceptance.
+verification, a passing full gate and two matching clean runs. [Review 5](docs/reviews/brk-followup-review-5.md) accepts the BRK-AC-009
+current-version transcript/progress follow-up, completing bounded Tasks 006–007. Its status-only
+follow-up is corrected; broader capabilities remain deferred.
 
 **War College** is where we evaluate commanders.
 

@@ -913,9 +913,9 @@ selects a highest-cost legal move and explicitly stops each route, allowing the 
 System resolution before selecting another move. Each remains bounded by the admitted step limit
 and Core's CP/survivor membership. Neither policy computes losses or bypasses authority.
 [Task 007 closeout](docs/research/breakdown-runner-closeout.md) tracks checked successor and strict
-bundle evidence, a passing full gate and two matching clean runs. [Final review 4](docs/reviews/brk-final-review-4.md) is **Not ready** for acceptance closeout:
-BRK-AC-009 current-version audience transcript/progress privacy evidence remains open.
-Tasks 006–007 are implemented, with acceptance blocked on that focused follow-up.
+bundle evidence, a passing full gate and two matching clean runs. [Review 5](docs/reviews/brk-followup-review-5.md) accepts BRK-AC-009
+current-version audience transcript/progress evidence, completing bounded Tasks 006–007.
+Follow-up verification passes 1,670 tests and 81 boundary cases; status-only review follow-up is corrected.
 The implemented paired comparison does not block that engine work.
 
 [1]: https://learn.microsoft.com/en-us/dotnet/orleans/grains/external-tasks-and-grains "External tasks and grains - .NET | Microsoft Learn"

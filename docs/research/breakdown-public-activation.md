@@ -2,9 +2,9 @@
 
 Task 006 activates the certified Breakdown implementation through first-side Combat entry.
 Task 007 retains checked Runner scenario migration and clean-run artifacts.
-[Final review 4](../reviews/brk-final-review-4.md) leaves BRK-AC-009 acceptance open: isolated
-Observation 7 and boundary tests need full current-version audience transcript/progress comparisons.
-No runtime disclosure defect was demonstrated; public activation is implemented.
+[Transcript follow-up](breakdown-transcript-privacy.md) adds full current-version audience
+transcript/progress comparisons for BRK-AC-009. [Review 5](../reviews/brk-followup-review-5.md)
+accepts that bounded evidence, completing Task 006. No runtime disclosure defect was demonstrated.
 
 ## Current contract set
 

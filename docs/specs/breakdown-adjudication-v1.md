@@ -1,6 +1,6 @@
 # Breakdown adjudication v1 specification
 
-**Status:** BRK-TASK-001 contract freeze complete, 2026-09-05. Task 002 dormant Rules implemented, verification passed and independent review Ready. Task 003 dormant campaign contracts and certified Truck fixture implemented. Task 004 shared move accounting/replay, Task 005 stop/check authority, Task 006 public activation and Task 007 Runner migration implemented. [Final review 4](../reviews/brk-final-review-4.md) leaves acceptance open for BRK-AC-009 current-version transcript/progress privacy evidence.
+**Status:** BRK-TASK-001 contract freeze complete, 2026-09-05. Task 002 dormant Rules implemented, verification passed and independent review Ready. Task 003 dormant campaign contracts and certified Truck fixture implemented. Task 004 shared move accounting/replay, Task 005 stop/check authority, Task 006 public activation and Task 007 Runner migration implemented. [Review 5](../reviews/brk-followup-review-5.md) accepts BRK-AC-009 current-version transcript/progress evidence; bounded Tasks 006–007 are complete. Status-only follow-up is corrected.
 **Authority:** Owner accepted BRK-DEC-004–007 and scope after design review 3; DEC-001–003 already accepted.
 **Rules:** `cna-1979.1`. **Predecessor:** ZOR-007 at `0512ec2`; exact source baseline `a047547`.
 
@@ -9,7 +9,8 @@ bounded public Breakdown capability. [Design/task plan](../design/breakdown-adju
 order; [source/decision packet](../research/breakdown-adjudication-spike.md) retains primary evidence
 and alternatives. The [migration inventory](breakdown-fixture-migration.v1.json) is normative coverage
 accounting. Task 006 activates Rules 9, Content/Setup/World 6, Snapshot 11, Observation 7 and action
-policy v3. Historical baseline references remain frozen; current acceptance still requires AC-009 evidence.
+policy v3. Historical baseline references remain frozen; accepted AC-009 evidence is scoped to admitted
+checkpoint continuations with approved audience facts held equal.
 
 ## Objective and bounded success
 
@@ -288,9 +289,9 @@ The inherited twelve acceptance IDs are frozen here. [Task 002 evidence](../rese
 records passing Rules-level portions; [Task 003 evidence](../research/breakdown-campaign-contracts.md)
 records contract-level portions of AC-006/007/008/011. [Task 004 evidence](../research/breakdown-move-accounting.md)
 records BP accounting, move replay and route/forced-stop portions of AC-002/006/007/008/011.
-Tasks 005–007 add stop/check, public activation and Runner evidence. Complete campaign/Runner
-acceptance remains pending BRK-AC-009 full current-version audience transcript/progress privacy tests
-identified by [final review 4](../reviews/brk-final-review-4.md).
+Tasks 005–007 add stop/check, public activation and Runner evidence. [Transcript follow-up](../research/breakdown-transcript-privacy.md)
+addresses BRK-AC-009; [review 5](../reviews/brk-followup-review-5.md) accepts bounded campaign/Runner
+closeout with status-only follow-up corrected during retention.
 
 | Acceptance ID | Governing requirements / decisions | Implementing tasks | Required executable evidence |
 | --- | --- | --- | --- |
@@ -317,6 +318,6 @@ No remote services or timing-sensitive assertions are required.
 Independent research/design reviews 1–3 apply to their recorded historical targets; they do not claim
 to review these new freeze bytes. That delivery's three-instance budget remains exhausted. Subsequent
 production review belongs to its concrete implementation scope and cannot be used to rerun this
-research decision loop. Tasks 006–007 are implemented; [closeout evidence](../research/breakdown-runner-closeout.md) records verification. [Implementation review 4](../reviews/brk-final-review-4.md), explicitly authorized by the user, is **Not ready** for acceptance closeout until AC-009 current-history privacy evidence is added. Implementation review budget is now exhausted at 4 of 4.
+research decision loop. Bounded Tasks 006–007 are complete; [closeout evidence](../research/breakdown-runner-closeout.md) records verification. [Implementation review 5](../reviews/brk-followup-review-5.md), explicitly authorized by the user, accepts AC-009 follow-up evidence. Its status-only finding is corrected; implementation review budget is exhausted at 5 of 5.
 [Stop/check evidence](../research/breakdown-stop-adjudication.md) records dormant authority and replay verification;
 [public activation evidence](../research/breakdown-public-activation.md) records current boundaries and gates.
