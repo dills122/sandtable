@@ -1,7 +1,7 @@
 {
   "schemeId": "sandtable.research.breakdown-runner-migration-results.v1",
   "sourceInventory": "docs/specs/breakdown-fixture-migration.v1.json",
-  "status": "implementation-verification-in-progress-review-authorization-pending",
+  "status": "implementation-verified-independent-review-authorization-pending",
   "supplementalScenarioFiles": [
     {
       "path": "scenarios/maneuvers/rules-lab.breakdown-truck.serial.v1.json",
@@ -15,7 +15,303 @@
         "last-cp-trigger-defers-phasing-stop",
         "truck-mover-does-not-trigger",
         "first-side-breakdown-to-combat"
+      ],
+      "sha256": "eaadc1856253881ac40c2f13aa3517237cdef699ef3e1a9f196840336afb0bc9",
+      "campaignCount": 6
+    }
+  ],
+  "successorFiles": [
+    {
+      "path": "scenarios/exercises/rules-lab.organization.baseline.breakdown.v1.json",
+      "sha256": "9996a1df0d77af1cfda953ec07ad5f3aa933b79c11084f45c6ae4d6d2fd72f26",
+      "campaignCount": 1,
+      "historicalPath": "scenarios/exercises/rules-lab.organization.baseline.v2.json",
+      "historicalSha256": "94c57176a1b2c221814c39010bea41d6214d88da6bce8d5e4a8bc5d38bc7dac0"
+    },
+    {
+      "path": "scenarios/exercises/rules-lab.organization.breakdown.v1.json",
+      "sha256": "0717b1846bd99b48def4b052544371123291c1e3caf90d855b7d4da1bdaeea9e",
+      "campaignCount": 1,
+      "historicalPath": "scenarios/exercises/rules-lab.organization.v2.json",
+      "historicalSha256": "4065ed1a2a262125eac3d6a2a72092d241fd7e3b894cb735c2c56b59a0f9a002"
+    },
+    {
+      "path": "scenarios/exercises/rules-lab.reserve-designation.baseline.breakdown.v1.json",
+      "sha256": "c6506ae0e9aaa180b88ca6a750d542eb59eb9074f49df1b286afa9f48f37bd6e",
+      "campaignCount": 1,
+      "historicalPath": "scenarios/exercises/rules-lab.reserve-designation.baseline.v2.json",
+      "historicalSha256": "98f48bcf9c17583ba6a02fbb079ff6749c6593bcc120b662d3a12522e3fc97eb"
+    },
+    {
+      "path": "scenarios/exercises/rules-lab.reserve-designation.breakdown.v1.json",
+      "sha256": "86336af5fe9e7cad6c1374027c5df138d4312a730f89c83c1e44a88d96dd0ea6",
+      "campaignCount": 1,
+      "historicalPath": "scenarios/exercises/rules-lab.reserve-designation.v2.json",
+      "historicalSha256": "ee0985362c2b9e9c0365eaf02c1825ad4f007cf7a83fd2668e5b016e658e935e"
+    },
+    {
+      "path": "scenarios/exercises/rules-lab.reserve.baseline.breakdown.v1.json",
+      "sha256": "fa01b60a29ee870b3dfc458d5437e8020f966167abfdf70e49f1ef0d2b6f3f99",
+      "campaignCount": 1,
+      "historicalPath": "scenarios/exercises/rules-lab.reserve.baseline.v2.json",
+      "historicalSha256": "6c148e95cd4c40390b733b9d831bd4422e36f1a0d3adcd87af0145f4bfaf07b3"
+    },
+    {
+      "path": "scenarios/exercises/rules-lab.reserve.breakdown.v1.json",
+      "sha256": "f8efe17034fd58f085687afc61ad9775fafe6c35dacabe34b1c5894eabc3f9a5",
+      "campaignCount": 1,
+      "historicalPath": "scenarios/exercises/rules-lab.reserve.v2.json",
+      "historicalSha256": "fb6618c9c2e2fbda1fff3c8ee5ea8ec850088c4be3e665db00ce3d97a7275882"
+    },
+    {
+      "path": "scenarios/maneuvers/rules-lab.controller-matrix.serial.breakdown.v1.json",
+      "sha256": "d4ed20929c3815845ef656f225b8274b3ec7be60c205fee186bfd6882ccf4700",
+      "campaignCount": 6,
+      "historicalPath": "scenarios/maneuvers/rules-lab.controller-matrix.serial.v2.json",
+      "historicalSha256": "0b53ff1165b817895398e20bea7826fc1e2e35c5ccf1be83927fce1237533471"
+    },
+    {
+      "path": "scenarios/maneuvers/rules-lab.movement-cost.paired.breakdown.v1.json",
+      "sha256": "7587068e436b582c02b503f7894812b3fc6bcd65f76e2b198c08fff727dc6f24",
+      "campaignCount": 2,
+      "historicalPath": "scenarios/maneuvers/rules-lab.movement-cost.paired.v1.json",
+      "historicalSha256": "5c3c30e20919ba658bdb5ba17aed1f6ad276788979ebf94e12b31feafd81c055"
+    },
+    {
+      "path": "scenarios/maneuvers/rules-lab.movement.serial.breakdown.v1.json",
+      "sha256": "682bb249bfdb0d9a8b8f68fed198edc5ca239f7e14686c921f60c7677f12783d",
+      "campaignCount": 6,
+      "historicalPath": "scenarios/maneuvers/rules-lab.movement.serial.v2.json",
+      "historicalSha256": "ad56e4f84ed49e6820e2aa13b62879f266c88c75ec97f538ae7e7ba929dcfa9b"
+    },
+    {
+      "path": "scenarios/maneuvers/rules-lab.reaction.serial.breakdown.v1.json",
+      "sha256": "c3145d387f705f0bd53c5a02d91a208820fdfb6889da8efd53314237e3cc457c",
+      "campaignCount": 13,
+      "historicalPath": "scenarios/maneuvers/rules-lab.reaction.serial.v2.json",
+      "historicalSha256": "14054dc3ee785131985ba4558036e01b8457a0eaaf4bb5bd66c654de8c57eb74"
+    },
+    {
+      "path": "scenarios/maneuvers/rules-lab.reserve-designation.serial.breakdown.v1.json",
+      "sha256": "d5cf786177c73368a3e5c0ba8be013c12ca5920032c8c6b659014f0908f88961",
+      "campaignCount": 2,
+      "historicalPath": "scenarios/maneuvers/rules-lab.reserve-designation.serial.v2.json",
+      "historicalSha256": "e690a7ec63f47201d22d1e72857c947c5fc67a5f5763ef2cfc92cf25212d8a48"
+    },
+    {
+      "path": "scenarios/maneuvers/rules-lab.reserve-policy.paired.breakdown.v1.json",
+      "sha256": "fcdc278b637d289dff33109d294bb8c21c1c89555cc2f71b8e609a958ab51f77",
+      "campaignCount": 2,
+      "historicalPath": "scenarios/maneuvers/rules-lab.reserve-policy.paired.v1.json",
+      "historicalSha256": "7898b703b9cd2e411b5cbb4ec9ec415a73f51839d495686ad153fdfee6ac7890"
+    },
+    {
+      "path": "scenarios/maneuvers/rules-lab.serial.breakdown.v1.json",
+      "sha256": "8cf2e27fe9fe6c18d5dccf228cb2d7025a9695ffc2ec49d29f6d75806fd7842f",
+      "campaignCount": 2,
+      "historicalPath": "scenarios/maneuvers/rules-lab.serial.v2.json",
+      "historicalSha256": "d6638be7ffb2a289a8030fb0a30136b08fa5950d1f577b4d7e673675d546ec8f"
+    },
+    {
+      "path": "scenarios/maneuvers/rules-lab.stage-entry.serial.breakdown.v1.json",
+      "sha256": "e9556d441d082e69df2743347cf12a7bb1adbb139f0dc38126710af2342b7f5f",
+      "campaignCount": 2,
+      "historicalPath": "scenarios/maneuvers/rules-lab.stage-entry.serial.v2.json",
+      "historicalSha256": "ea1365edba9978b9fcb003dc10faac8632356451e1c64f72b2817ad6be1d6a24"
+    }
+  ],
+  "publicEvidenceTests": {
+    "ordinary-truck-positive-loss": "BreakdownTruckStudyTests.RepeatedStopsUseHigherBandsAndKeepBrokenLotsAtTheirCreationHex",
+    "eligible-zero-loss": "BreakdownTruckStudyTests.RepeatedStopsUseHigherBandsAndKeepBrokenLotsAtTheirCreationHex",
+    "no-roll-stop": "BreakdownTruckStudyTests.CheapTruckStopConsumesNoRandomnessAndReachesCombat",
+    "higher-band-repeat-check": "BreakdownTruckStudyTests.RepeatedStopsUseHigherBandsAndKeepBrokenLotsAtTheirCreationHex",
+    "survivors-leave-lots-fixed": "BreakdownTruckStudyTests.RepeatedStopsUseHigherBandsAndKeepBrokenLotsAtTheirCreationHex",
+    "zero-working-cannot-move": "BreakdownTruckStudyTests.ZeroWorkingTruckHasNoMoveEvenWithTwelveCpRemaining",
+    "reactor-stop-before-next-participant": "BreakdownFixtureMigrationTests.HistoricalBytesRemainFrozenAndNamedSuccessorAdmitsCurrentIdentity",
+    "active-unavailable-preserves-route": "BreakdownFixtureMigrationTests.HistoricalBytesRemainFrozenAndNamedSuccessorAdmitsCurrentIdentity",
+    "active-timeout-preserves-route": "BreakdownFixtureMigrationTests.HistoricalBytesRemainFrozenAndNamedSuccessorAdmitsCurrentIdentity",
+    "last-cp-trigger-defers-phasing-stop": "BreakdownFixtureMigrationTests.LastCpTriggerKeepsPhasingStopDeferredUntilReactionCloses",
+    "truck-mover-does-not-trigger": "BreakdownTruckStudyTests.TruckMoveBesideEnemyCombatDoesNotOpenReaction",
+    "truck-neighbor-does-not-trigger": "BreakdownRunnerCatalogTests.TruckOnlyNeighborDoesNotOpenAReactionWindow",
+    "first-side-breakdown-to-combat": "BreakdownTruckStudyTests"
+  },
+  "deferredPublicCapabilities": [
+    "positive-local-zoc",
+    "positive-remote-zoc",
+    "positive-cohort-reaction-loss",
+    "motorized-infantry-transport-consequences",
+    "grouped-mixed-loss-allocation",
+    "general-origin-placement",
+    "capture-towing-repair",
+    "later-stage-bp-reset"
+  ],
+  "testSources": [
+    "tests/Cna.Core.Tests/Content/BreakdownRunnerCatalogTests.cs",
+    "tests/Cna.ExerciseRunner.Tests/Execution/BreakdownFixtureMigrationTests.cs",
+    "tests/Cna.ExerciseRunner.Tests/Execution/BreakdownTruckStudyTests.cs",
+    "tests/Cna.ExerciseRunner.Tests/Artifacts/BreakdownBundleTamperingTests.cs"
+  ],
+  "cleanRunVerification": {
+    "candidateCommit": "59679493866d7f23ea0a69964e93bbfb67bd2841",
+    "manifestCount": 15,
+    "campaignsPerRun": 47,
+    "runs": 2,
+    "verifiedProofs": 188,
+    "canonicalFileComparisons": 423,
+    "canonicalMatrixHash": "sha256:938616c9aa4b9d92e295a4d0b5dfcb1c8e7f8bdf1c9b59f8966bd356c71c50da",
+    "reportFingerprints": {
+      "rules-lab.breakdown-truck.serial.v1": "sha256:42c41dbdb50891c480522e35692ae088c237953c2beeb0cc923d03b6b7543588",
+      "rules-lab.controller-matrix.serial.breakdown.v1": "sha256:37137db2219a31709e3a6ad0f659f6d60cc124ad1aa599426c84d8b45cab49b9",
+      "rules-lab.movement-cost.paired.breakdown.v1": "sha256:9c0bb30bbfb64c1048660519ec1e1383be4d7acad7672fe851da69c0d5672039",
+      "rules-lab.movement.serial.breakdown.v1": "sha256:190080ce770c701a94425553797ad953053726e27a80167763ac67944118d67d",
+      "rules-lab.reaction.serial.breakdown.v1": "sha256:8b6b61fc7f097341a421003d7bba4048d14a5017341f744a6bce4947e9c5d928",
+      "rules-lab.reserve-designation.serial.breakdown.v1": "sha256:e69380dbef8e6116daf01739dd2808b516ffc927d334c01c2daf57c812c6f07d",
+      "rules-lab.reserve-policy.paired.breakdown.v1": "sha256:ccbed4d42ec14325800ae27c617ecdf5be5290991f405e422d8363bdd20079b9",
+      "rules-lab.serial.breakdown.v1": "sha256:d81cb9ea88a3619fe19162e9f64262d801de38be201ede1676566adc625787e3",
+      "rules-lab.stage-entry.serial.breakdown.v1": "sha256:085a2b599eee046a56a61be62f872065cc3b6c058b99e55428c6c8301befb8ff"
+    },
+    "canonicalFiles": [
+      "exercise-manifest.json",
+      "seed-ledger.json",
+      "accepted-actions.jsonl",
+      "canonical-events.jsonl",
+      "initial-snapshot.json",
+      "final-snapshot.json",
+      "step-evidence.jsonl",
+      "reconstruction-proof.json",
+      "readjudication-proof.json"
+    ]
+  },
+  "reactionResults": [
+    {
+      "exerciseId": "reaction.adjacent.active-timeout.breakdown-v1",
+      "acceptedSteps": 17,
+      "reactionMoves": 1,
+      "stopResolutions": 2,
+      "closures": [
+        "timeout"
+      ]
+    },
+    {
+      "exerciseId": "reaction.adjacent.active-unavailable.breakdown-v1",
+      "acceptedSteps": 17,
+      "reactionMoves": 1,
+      "stopResolutions": 2,
+      "closures": [
+        "scripted-unavailable"
+      ]
+    },
+    {
+      "exerciseId": "reaction.adjacent.all-by-action-id.breakdown-v1",
+      "acceptedSteps": 21,
+      "reactionMoves": 2,
+      "stopResolutions": 3,
+      "closures": [
+        "no-eligible-reactor"
+      ]
+    },
+    {
+      "exerciseId": "reaction.adjacent.all-by-descending-action-id.breakdown-v1",
+      "acceptedSteps": 21,
+      "reactionMoves": 2,
+      "stopResolutions": 3,
+      "closures": [
+        "no-eligible-reactor"
+      ]
+    },
+    {
+      "exerciseId": "reaction.adjacent.decline.breakdown-v1",
+      "acceptedSteps": 15,
+      "reactionMoves": 0,
+      "stopResolutions": 1,
+      "closures": [
+        "player-decline"
+      ]
+    },
+    {
+      "exerciseId": "reaction.adjacent.one-then-decline.breakdown-v1",
+      "acceptedSteps": 18,
+      "reactionMoves": 1,
+      "stopResolutions": 2,
+      "closures": [
+        "player-decline"
+      ]
+    },
+    {
+      "exerciseId": "reaction.adjacent.timeout.breakdown-v1",
+      "acceptedSteps": 15,
+      "reactionMoves": 0,
+      "stopResolutions": 1,
+      "closures": [
+        "timeout"
+      ]
+    },
+    {
+      "exerciseId": "reaction.adjacent.two-steps.breakdown-v1",
+      "acceptedSteps": 23,
+      "reactionMoves": 4,
+      "stopResolutions": 3,
+      "closures": [
+        "no-eligible-reactor"
+      ]
+    },
+    {
+      "exerciseId": "reaction.adjacent.unavailable.breakdown-v1",
+      "acceptedSteps": 15,
+      "reactionMoves": 0,
+      "stopResolutions": 1,
+      "closures": [
+        "scripted-unavailable"
+      ]
+    },
+    {
+      "exerciseId": "reaction.headquarters.all-by-action-id.breakdown-v1",
+      "acceptedSteps": 15,
+      "reactionMoves": 0,
+      "stopResolutions": 1,
+      "closures": [
+        "no-eligible-reactor"
+      ]
+    },
+    {
+      "exerciseId": "reaction.low-defense.all-by-action-id.breakdown-v1",
+      "acceptedSteps": 21,
+      "reactionMoves": 2,
+      "stopResolutions": 3,
+      "closures": [
+        "no-eligible-reactor"
+      ]
+    },
+    {
+      "exerciseId": "reaction.noncombat.all-by-action-id.breakdown-v1",
+      "acceptedSteps": 14,
+      "reactionMoves": 0,
+      "stopResolutions": 1,
+      "closures": []
+    },
+    {
+      "exerciseId": "reaction.recurrence.all-by-action-id.breakdown-v1",
+      "acceptedSteps": 31,
+      "reactionMoves": 4,
+      "stopResolutions": 6,
+      "closures": [
+        "no-eligible-reactor",
+        "no-eligible-reactor"
       ]
     }
-  ]
+  ],
+  "verification": {
+    "solutionTests": 1655,
+    "boundaryTests": 66,
+    "failures": 0,
+    "skips": 0,
+    "buildWarnings": 0,
+    "buildErrors": 0,
+    "format": "passed",
+    "numericAudit": "passed",
+    "freezeAudit": "passed",
+    "independentReview": "pending-additional-authorization",
+    "completedImplementationReviewInstances": 3,
+    "configuredImplementationReviewLimit": 3
+  }
 }

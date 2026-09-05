@@ -652,7 +652,7 @@ historical/deferred. **Certified battalion input** may contain zero vehicle coho
 profile's independent formation and stacking bounds remain mandatory. Truck convoy movement is
 distinct from combat/Reaction eligibility; the profile still defers public positive ZOC and
 motorized-infantry losses. [Task 007 closeout](docs/research/breakdown-runner-closeout.md) tracks
-verification. Two clean runs remain unperformed, and final independent review awaits human
+verification, a passing full gate and two matching clean runs. Final independent review awaits human
 authorization after the three-review implementation budget was exhausted. These implementation
 names do not claim reviewed closeout.
 

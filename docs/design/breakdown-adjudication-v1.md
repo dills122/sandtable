@@ -1,6 +1,6 @@
 # Breakdown adjudication v1 — design and task plan
 
-**Status:** Owner accepted BRK-DEC-004–007 on 2026-09-05; BRK-TASK-001 contract freeze complete. Task 002 dormant Rules implemented; verification passed and independent review Ready. Task 003 dormant campaign contracts and certified Truck fixture implemented. Tasks 004–005 move/stop adjudication and Task 006 coherent public activation are implemented. Task 007 checked Runner migration is implemented; final verification and independent closeout are tracked separately.
+**Status:** Owner accepted BRK-DEC-004–007 on 2026-09-05; BRK-TASK-001 contract freeze complete. Task 002 dormant Rules implemented; verification passed and independent review Ready. Task 003 dormant campaign contracts and certified Truck fixture implemented. Tasks 004–005 move/stop adjudication and Task 006 coherent public activation are implemented. Task 007 checked Runner migration, full gate and two clean runs are verified; final independent review awaits additional authorization.
 
 **Governing contract:** [specification](../specs/breakdown-adjudication-v1.md),
 [wire schemas](../specs/breakdown-wire-contract-v1.md), and

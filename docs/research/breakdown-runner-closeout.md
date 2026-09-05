@@ -1,6 +1,6 @@
 # Breakdown Runner migration and closeout
 
-**Status:** Task 007 implementation and focused evidence in place. Full gate passed before the final adjacent-enemy fixture addition; focused checks and two clean runs in progress. Final independent review awaits authorization: implementation review budget is exhausted at 3 of 3.
+**Status:** Task 007 implementation, full gate and two matching clean runs verified. Final independent review awaits authorization: implementation review budget is exhausted at 3 of 3.
 
 The frozen [migration inventory](../specs/breakdown-fixture-migration.v1.json) remains unchanged. Fourteen named successor files preserve the earlier checkpoint/controller purposes within the certified Truck/battalion profile. The original fourteen files remain byte-identical historical artifacts. Thirteen Reaction children retain bounded episode, close and continuation behavior; positive local and remote ZOC remain deferred.
 
@@ -21,7 +21,32 @@ The [Truck study](../../scenarios/maneuvers/rules-lab.breakdown-truck.serial.v1.
 
 ## Verification
 
-Pending final gate and clean-run evidence; see subsequent update. Earlier RED tests failed for missing catalogs, missing successor manifests and missing controller policies. Integration checks caught and fixed test-root lookup, conditional cohort capability, a separate Maneuver decoder, a zero-loss baseline seed and an inexact Combat checkpoint name. These failures were not treated as passing evidence.
+Candidate source commit: `59679493866d7f23ea0a69964e93bbfb67bd2841`, following implementation `df75b0f`. Final evidence/docs are a later documentation-only commit.
+
+- Clean checkout restore and build passed with zero warnings/errors.
+- `dotnet test --solution Sandtable.slnx --no-build`: **1,655 passed**, zero failures/skips.
+- `dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --no-build --filter-trait 'Boundary=UserSpace'`: **66 passed**.
+- `dotnet format Sandtable.slnx --verify-no-changes --no-restore`, numeric audit, freeze audit and diff check passed. These execute every constituent of `just check`; builds retained unique binlogs.
+- Both public CLI runs completed all **15 manifests / 47 child campaigns**. Every bundle records `dirty=false` and the candidate commit. Three child manifests use baseline build mode; the remaining 44 use exploratory mode, without relabeling.
+- All **188** reconstruction/re-adjudication proofs across both runs are verified. Nine canonical files per child match byte-for-byte (**423 comparisons**); all nine deterministic aggregate reports and fingerprints match. Build paths, run IDs and timings are excluded from this deterministic comparison.
+
+The [machine-readable results](breakdown-runner-migration-results.json) retain successor file hashes, all thirteen public-evidence mappings, exact Reaction counts, report fingerprints and comparison summary. Canonical file-hash matrix digest:
+
+```text
+sha256:938616c9aa4b9d92e295a4d0b5dfcb1c8e7f8bdf1c9b59f8966bd356c71c50da
+```
+
+Retained local roots: `/tmp/brk007-final-run-a`, `/tmp/brk007-final-run-b`; full per-child file-hash matrix: `/tmp/brk007-final-comparison.json`. The detached candidate checkout is `/tmp/sandtable-brk007-clean`.
+
+Earlier RED tests failed for missing catalogs, missing successors and missing policy cases. Integration checks caught test-root lookup, conditional cohort capability, a separate Maneuver decoder, a zero-loss baseline seed and an inexact Combat checkpoint name. The first clean attempt at `df75b0f` completed fourteen migrated manifests but failed the new study because configuration hashing lacked the new policy names. That attempt is excluded from final evidence; regression-tested correction `5967949` precedes both successful repeated runs.
+
+To reproduce from a clean checkout of the candidate, restore/build first, then use fresh artifact roots:
+
+```sh
+python3 docs/research/verify-breakdown-runner-runs.py run "$PWD" /tmp/brk-repeat-a
+python3 docs/research/verify-breakdown-runner-runs.py run "$PWD" /tmp/brk-repeat-b
+python3 docs/research/verify-breakdown-runner-runs.py compare "$PWD" /tmp/brk-repeat-a /tmp/brk-repeat-b 59679493866d7f23ea0a69964e93bbfb67bd2841 /tmp/brk-repeat-comparison.json
+```
 
 ## Scope and remaining gate
 

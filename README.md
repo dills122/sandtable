@@ -121,9 +121,7 @@ successor manifests and a Truck study, using certified battalion, Reaction and T
 The [original fixtures](docs/specs/breakdown-fixture-migration.v1.json) remain historical with
 unchanged bytes. The profile permits zero cohorts: `land.breakdown-cohorts` is required exactly
 when a pack contains a cohort; all other capability, organization and stacking checks remain strict.
-[Task 007 closeout](docs/research/breakdown-runner-closeout.md) tracks verification. Two clean runs
-have not yet been performed, and final independent review awaits human authorization after the
-three-review budget was exhausted; implementation does not imply reviewed closeout.
+[Task 007 closeout](docs/research/breakdown-runner-closeout.md) records 1,655 passing tests and two matching clean runs of 47 campaigns each. Final independent review awaits human authorization after the three-review budget was exhausted; implementation does not imply reviewed closeout.
 
 The local `Cna.ExerciseRunner` supports that synthetic rules-laboratory path as either one
 bounded, deterministic **Exercise** or one serial **Maneuver**. An Exercise uses a fresh opaque Core
@@ -198,7 +196,7 @@ The current delivery boundary is:
 | Ruleset/provenance, synthetic content, campaign authority, deterministic randomness, events, and replay | Implemented foundation |
 | Side-safe observations and exact-audience legal actions | Implemented for the current rules-laboratory path |
 | Mandatory turn preamble | Implemented through Reserve Designation completion; authority reaches first-side Movement |
-| Movement/contact and combat loops | Current Ruleset 9, Content/Setup/World 6, Created 10, Snapshot 11 and Observation 7 support bounded Movement, adjacency-triggered Reaction and Breakdown through first-side Combat entry; Contact and Combat adjudication remain deferred. Task 007 adds checked successors; clean-run evidence and final review remain pending |
+| Movement/contact and combat loops | Current Ruleset 9, Content/Setup/World 6, Created 10, Snapshot 11 and Observation 7 support bounded Movement, adjacency-triggered Reaction and Breakdown through first-side Combat entry; Contact and Combat adjudication remain deferred. Task 007 adds checked successors; two matching clean runs are verified; final independent review remains pending |
 | Published first-scenario data, remaining Land rules, victory, persistence, and Maproom | Milestone-level; not started |
 | Player Intent Composer | Direction reviewed; representative decision after the combat skeleton, no-model prototype before Maproom, optional parser evaluation after deterministic MVP |
 | Exercise Harness | Single-Exercise, serial-unpaired two-setup/controller/Movement Maneuvers, and optional serial-paired Reserve-policy and Movement-cost descriptive comparisons implemented with strict readback |
@@ -329,8 +327,7 @@ dotnet run --project src/Cna.AppHost/Cna.AppHost.csproj
 ```
 
 The checked Runner commands below use certified Task 007 successors. Original Rules 8 manifests
-remain frozen historical inputs and are rejected by current admission. These commands describe
-current usage; they do not claim completed clean-run evidence.
+remain frozen historical inputs and are rejected by current admission. The [closeout evidence](docs/research/breakdown-runner-closeout.md) records two clean runs of these current commands.
 
 Run the Organization-boundary Exercise:
 
