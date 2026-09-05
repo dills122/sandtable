@@ -488,9 +488,10 @@ public sealed class CampaignLegalActionsTests
     private static CampaignAuthorityHandle CreateHandle()
     {
         var setup = Cna1979SetupCatalog.Definitions[0];
-        var request = new CampaignCreationRequest(1, "campaign-actions", Cna1979Ruleset.Manifest.Hash,
-            12345, setup.SetupId, setup.Hash, setup.Content.Pack.PackId, setup.Content.Pack.Hash,
-            setup.Content.ScenarioId);
+        var request = CampaignCurrentRequestTestData.Create(
+            setup,
+            "campaign-actions",
+            12345);
         var result = CampaignAuthority.Create(request);
         Assert.True(result.IsCreated);
         return result.Handle!;

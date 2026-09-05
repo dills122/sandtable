@@ -18,9 +18,37 @@ internal static class CampaignV10TestData
 {
     public static CampaignV10Fixture Create(
         string reactorElementId = ZocReactionContentTestData.SecondElementId,
-        bool includeReactionExit = false)
+        bool includeReactionExit = false) => CreateWithReactors(
+            [reactorElementId],
+            includeReactionExit);
+
+    public static CampaignV10Fixture CreateWithReactors(
+        IReadOnlyList<string> reactorElementIds,
+        bool includeReactionExit = false,
+        string? reactorClassificationId = null,
+        string reactorLocationId = "west",
+        IReadOnlyDictionary<string, string>? reactorClassificationIds = null,
+        bool includeRemoteArea = false,
+        bool includeReactionContinuation = false,
+        IReadOnlyDictionary<string, string>? reactorLocationIds = null,
+        bool includePhasingZocSupport = false)
     {
-        var artifact = CreateMixedSideArtifact(reactorElementId, includeReactionExit);
+        ArgumentNullException.ThrowIfNull(reactorElementIds);
+        if (reactorElementIds.Count == 0)
+        {
+            throw new ArgumentException("At least one reactor is required.", nameof(reactorElementIds));
+        }
+
+        var artifact = CreateMixedSideArtifact(
+            reactorElementIds,
+            includeReactionExit,
+            reactorClassificationId ?? Cna1979Combat.CombatUnitClassificationId,
+            reactorLocationId,
+            reactorClassificationIds,
+            includeRemoteArea,
+            includeReactionContinuation,
+            reactorLocationIds,
+            includePhasingZocSupport);
         var scenario = artifact.Definition.LegacyDefinition.Scenarios.Single();
         var setup = CreateSetup(artifact, scenario);
         var created = CampaignCreationV9Factory.Create(
@@ -52,7 +80,7 @@ internal static class CampaignV10TestData
             null);
         var triggeringMove = CreateTriggeringMove(
             snapshot,
-            reactorElementId: reactorElementId);
+            reactorElementId: reactorElementIds[0]);
         return new CampaignV10Fixture(
             artifact,
             scenario,
@@ -242,9 +270,17 @@ internal static class CampaignV10TestData
     }
 
     private static ContentPackV5Artifact CreateMixedSideArtifact(
-        string reactorElementId,
-        bool includeReactionExit)
+        IReadOnlyList<string> reactorElementIds,
+        bool includeReactionExit,
+        string reactorClassificationId,
+        string reactorLocationId,
+        IReadOnlyDictionary<string, string>? reactorClassificationIds,
+        bool includeRemoteArea,
+        bool includeReactionContinuation,
+        IReadOnlyDictionary<string, string>? reactorLocationIds,
+        bool includePhasingZocSupport)
     {
+        var reactorElementId = reactorElementIds[0];
         var definition = ZocReactionContentTestData.CreatePositiveFixture();
         if (!string.Equals(
             reactorElementId,
@@ -261,36 +297,176 @@ internal static class CampaignV10TestData
             null,
             legacy.Formations.Single().OrganizationId,
             ContentTestData.Origin("content.formation.commonwealth"));
-        var elements = legacy.Elements.Select(element =>
-            element.ElementId == reactorElementId
-                ? new ContentCombatElement(
-                    element.ElementId,
-                    "commonwealth",
-                    commonwealthFormation.FormationId,
-                    element.OrganizationId,
-                    element.MobilityId,
-                    element.BaseCapabilityPointAllowance,
-                    element.PlacementMode,
-                    element.Origin,
-                    element.BreakdownVehicleCohort)
-                : element).ToArray();
-        ContentHex[] locations = includeReactionExit
-            ? [.. legacy.Locations, new ContentHex(
+        var reactorTemplate = legacy.Elements.Single(element =>
+            element.ElementId == reactorElementId);
+        var reactors = reactorElementIds.Select(elementId => new ContentCombatElement(
+            elementId,
+            "commonwealth",
+            commonwealthFormation.FormationId,
+            reactorTemplate.OrganizationId,
+            reactorTemplate.MobilityId,
+            reactorTemplate.BaseCapabilityPointAllowance,
+            reactorTemplate.PlacementMode,
+            reactorTemplate.Origin,
+            reactorTemplate.BreakdownVehicleCohort)).ToArray();
+        const string phasingSupportId = "axis-zoc-support";
+        var phasingTemplate = legacy.Elements.Single(element =>
+            element.ElementId == ZocReactionContentTestData.FirstElementId);
+        ContentCombatElement[] phasingSupport = includePhasingZocSupport
+            ? [new ContentCombatElement(
+                phasingSupportId,
+                phasingTemplate.SideId,
+                phasingTemplate.ParentFormationId,
+                phasingTemplate.OrganizationId,
+                phasingTemplate.MobilityId,
+                phasingTemplate.BaseCapabilityPointAllowance,
+                phasingTemplate.PlacementMode,
+                phasingTemplate.Origin,
+                phasingTemplate.BreakdownVehicleCohort)]
+            : [];
+        var elements = legacy.Elements
+            .Where(element => element.ElementId != reactorElementId)
+            .Concat(reactors)
+            .Concat(phasingSupport)
+            .ToArray();
+        var reactorLocations = reactorElementIds.ToDictionary(
+            elementId => elementId,
+            elementId => reactorLocationIds?.GetValueOrDefault(elementId) ?? reactorLocationId,
+            StringComparer.Ordinal);
+        var locations = legacy.Locations.ToList();
+        foreach (var locationId in reactorLocations.Values.Distinct(StringComparer.Ordinal))
+        {
+            if (locations.All(value => value.LocationId != locationId))
+            {
+                locations.Add(new ContentHex(
+                    locationId,
+                    "land.terrain.clear",
+                    null,
+                    ContentTestData.Origin($"content.hex.reactor.{locationId}")));
+            }
+        }
+
+        if ((includeReactionExit || includeReactionContinuation)
+            && locations.All(value => value.LocationId != "center"))
+        {
+            locations.Add(new ContentHex(
                 "center",
                 "land.terrain.clear",
                 null,
-                ContentTestData.Origin("content.hex.center"))]
-            : [.. legacy.Locations];
-        ContentHexEdge[] edges = includeReactionExit
-            ? [.. legacy.Edges, new ContentHexEdge(
+                ContentTestData.Origin("content.hex.center")));
+        }
+
+        if (includeReactionContinuation && locations.All(value => value.LocationId != "south"))
+        {
+            locations.Add(new ContentHex(
+                "south",
+                "land.terrain.clear",
+                null,
+                ContentTestData.Origin("content.hex.south")));
+        }
+
+        if (includeRemoteArea)
+        {
+            locations.Add(new ContentHex(
+                "remote-source",
+                "land.terrain.clear",
+                null,
+                ContentTestData.Origin("content.hex.remote-source")));
+            locations.Add(new ContentHex(
+                "remote-neighbor",
+                "land.terrain.clear",
+                null,
+                ContentTestData.Origin("content.hex.remote-neighbor")));
+        }
+
+        var edges = legacy.Edges.ToList();
+        foreach (var locationId in reactorLocations.Values
+                     .Distinct(StringComparer.Ordinal)
+                     .Where(value => value != "west"))
+        {
+            edges.Add(new ContentHexEdge(
+                "east",
+                locationId,
+                [new ContentEdgeFeature(
+                    "land.edge.road",
+                    null,
+                    ContentTestData.Origin($"content.edge.trigger-road.{locationId}"))],
+                ContentTestData.Origin($"content.edge.trigger.{locationId}")));
+        }
+
+        if (includeReactionExit)
+        {
+            edges.Add(new ContentHexEdge(
                 "west",
                 "center",
                 [new ContentEdgeFeature(
                     "land.edge.road",
                     null,
                     ContentTestData.Origin("content.edge.reaction-exit-road"))],
-                ContentTestData.Origin("content.edge.reaction-exit"))]
-            : [.. legacy.Edges];
+                ContentTestData.Origin("content.edge.reaction-exit")));
+            foreach (var locationId in reactorLocations.Values
+                         .Distinct(StringComparer.Ordinal)
+                         .Where(value => value != "west"))
+            {
+                edges.Add(new ContentHexEdge(
+                    locationId,
+                    "center",
+                    [new ContentEdgeFeature(
+                        "land.edge.road",
+                        null,
+                        ContentTestData.Origin($"content.edge.reactor-exit-road.{locationId}"))],
+                    ContentTestData.Origin($"content.edge.reactor-exit.{locationId}")));
+            }
+        }
+
+        if (includeReactionContinuation)
+        {
+            edges.Add(new ContentHexEdge(
+                "center",
+                "south",
+                [new ContentEdgeFeature(
+                    "land.edge.road",
+                    null,
+                    ContentTestData.Origin("content.edge.reaction-continuation-road"))],
+                ContentTestData.Origin("content.edge.reaction-continuation")));
+        }
+
+        if (includeRemoteArea)
+        {
+            edges.Add(new ContentHexEdge(
+                "remote-source",
+                "remote-neighbor",
+                [new ContentEdgeFeature(
+                    "land.edge.road",
+                    null,
+                    ContentTestData.Origin("content.edge.remote-road"))],
+                ContentTestData.Origin("content.edge.remote")));
+            edges.Add(new ContentHexEdge(
+                "remote-neighbor",
+                reactorLocationId,
+                [new ContentEdgeFeature(
+                    "land.edge.road",
+                    null,
+                    ContentTestData.Origin("content.edge.remote-connector-road"))],
+                ContentTestData.Origin("content.edge.remote-connector")));
+        }
+        var changedScenarios = legacy.Scenarios.Select(value => new ContentScenario(
+            value.ScenarioId,
+            value.Start,
+            value.End,
+            value.InitialPlacements
+                .Where(placement => placement.ElementId != reactorElementId)
+                .Concat(reactorElementIds.Select(elementId => new ContentInitialPlacement(
+                    elementId,
+                    reactorLocations[elementId],
+                    value.InitialPlacements.Single(placement =>
+                        placement.ElementId == reactorElementId).Origin)))
+                .Concat(phasingSupport.Select(element => new ContentInitialPlacement(
+                    element.ElementId,
+                    "west",
+                    value.InitialPlacements.Single(placement =>
+                        placement.ElementId == ZocReactionContentTestData.FirstElementId).Origin))),
+            value.Origin)).ToArray();
         var changedLegacy = new ContentPackDefinition(
             legacy.SchemaVersion,
             legacy.FormatId,
@@ -303,11 +479,82 @@ internal static class CampaignV10TestData
             edges,
             [.. legacy.Formations, commonwealthFormation],
             elements,
-            legacy.Scenarios);
+            changedScenarios);
+        var reactorFactsTemplate = definition.ElementCombatFacts.Single(value =>
+            value.ElementId == reactorElementId);
+        var combatFacts = definition.ElementCombatFacts
+            .Where(value => value.ElementId != reactorElementId)
+            .Concat(reactorElementIds.Select(elementId => new ContentElementCombatFacts(
+                elementId,
+                reactorClassificationIds is not null
+                    && reactorClassificationIds.TryGetValue(elementId, out var classificationId)
+                        ? classificationId
+                        : reactorClassificationId,
+                reactorFactsTemplate.Components.Select(component => new ContentCombatComponent(
+                    component.ComponentId.Replace(
+                        reactorElementId,
+                        elementId,
+                        StringComparison.Ordinal),
+                    component.ComponentClassId,
+                    component.MaximumToe,
+                    component.DefensiveCloseAssaultRating,
+                    component.Origin)),
+                reactorFactsTemplate.Origin)))
+            .Concat(phasingSupport.Select(element =>
+            {
+                var template = definition.ElementCombatFacts.Single(value =>
+                    value.ElementId == ZocReactionContentTestData.FirstElementId);
+                return new ContentElementCombatFacts(
+                    element.ElementId,
+                    template.CombatClassificationId,
+                    template.Components.Select(component => new ContentCombatComponent(
+                        component.ComponentId.Replace(
+                            ZocReactionContentTestData.FirstElementId,
+                            element.ElementId,
+                            StringComparison.Ordinal),
+                        component.ComponentClassId,
+                        component.MaximumToe,
+                        component.DefensiveCloseAssaultRating,
+                        component.Origin)),
+                    template.Origin);
+            }))
+            .ToArray();
+        var placementTemplate = definition.InitialPlacementCombatFacts.Single(value =>
+            value.ElementId == reactorElementId);
+        var placementFacts = definition.InitialPlacementCombatFacts
+            .Where(value => value.ElementId != reactorElementId)
+            .Concat(reactorElementIds.Select(elementId =>
+                new ContentInitialPlacementCombatFacts(
+                    placementTemplate.ScenarioId,
+                    elementId,
+                    placementTemplate.InitialComponentToes.Select(toe =>
+                        new ContentInitialComponentToe(
+                            toe.ComponentId.Replace(
+                                reactorElementId,
+                                elementId,
+                                StringComparison.Ordinal),
+                            toe.CurrentToe,
+                            toe.Origin)))))
+            .Concat(phasingSupport.Select(element =>
+            {
+                var template = definition.InitialPlacementCombatFacts.Single(value =>
+                    value.ElementId == ZocReactionContentTestData.FirstElementId);
+                return new ContentInitialPlacementCombatFacts(
+                    template.ScenarioId,
+                    element.ElementId,
+                    template.InitialComponentToes.Select(toe => new ContentInitialComponentToe(
+                        toe.ComponentId.Replace(
+                            ZocReactionContentTestData.FirstElementId,
+                            element.ElementId,
+                            StringComparison.Ordinal),
+                        toe.CurrentToe,
+                        toe.Origin)));
+            }))
+            .ToArray();
         return ContentPackV5Artifact.Create(new ContentPackV5Definition(
             changedLegacy,
-            definition.ElementCombatFacts,
-            definition.InitialPlacementCombatFacts));
+            combatFacts,
+            placementFacts));
     }
 
     private static ContentPackV5Definition RenameReactor(

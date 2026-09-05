@@ -40,12 +40,12 @@ internal sealed record CampaignObservationV6AuthorityFacts
     }
 }
 
-internal abstract record CampaignObservationDecisionState;
+public abstract record CampaignObservationDecisionState;
 
-internal sealed record CampaignObservationNormalDecisionState :
+public sealed record CampaignObservationNormalDecisionState :
     CampaignObservationDecisionState;
 
-internal sealed record CampaignObservationPhasingWaitingDecisionState :
+public sealed record CampaignObservationPhasingWaitingDecisionState :
     CampaignObservationDecisionState
 {
     public CampaignObservationPhasingWaitingDecisionState(string windowId)
@@ -56,7 +56,7 @@ internal sealed record CampaignObservationPhasingWaitingDecisionState :
     public string WindowId { get; }
 }
 
-internal sealed record ObservedApparentReactionTrigger
+public sealed record ObservedApparentReactionTrigger
 {
     public ObservedApparentReactionTrigger(
         string apparentRepresentationId,
@@ -87,7 +87,7 @@ internal sealed record ObservedApparentReactionTrigger
     public string DestinationLocationId { get; }
 }
 
-internal sealed record ObservedReactionOpportunity
+public sealed record ObservedReactionOpportunity
 {
     public ObservedReactionOpportunity(
         string opportunityId,
@@ -133,7 +133,7 @@ internal sealed record ObservedReactionOpportunity
     }
 }
 
-internal sealed record ObservedReactionParticipant
+public sealed record ObservedReactionParticipant
 {
     public ObservedReactionParticipant(string opportunityId)
     {
@@ -145,7 +145,7 @@ internal sealed record ObservedReactionParticipant
     public string OpportunityId { get; }
 }
 
-internal sealed record ObservedReactionMoveOption
+public sealed record ObservedReactionMoveOption
 {
     public ObservedReactionMoveOption(
         string originLocationId,
@@ -173,7 +173,7 @@ internal sealed record ObservedReactionMoveOption
     public MovementActionCostBreakdown CostBreakdown { get; }
 }
 
-internal sealed record CampaignObservationReactingDecisionState :
+public sealed record CampaignObservationReactingDecisionState :
     CampaignObservationDecisionState
 {
     public CampaignObservationReactingDecisionState(
@@ -257,7 +257,7 @@ internal sealed record CampaignObservationReactingDecisionState :
     }
 }
 
-internal sealed record CampaignObservationV6
+public sealed record CampaignObservationV6
 {
     public const int CurrentContractVersion = 6;
     public const string CurrentPolicyId =

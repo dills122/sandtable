@@ -134,13 +134,13 @@ public sealed class ExerciseExecutorTests
     }
 
     [Theory]
-    [InlineData("ActFirstReserveNoneMoveEachOnceThenComplete", 0, 2, 13)]
+    [InlineData("ActFirstReserveNoneMoveEachOnceThenComplete", 0, 1, 11)]
     [InlineData("ActFirstReserveOneMoveEachOnceThenComplete", 1, 1, 13)]
     [InlineData("ActFirstReserveAllMoveEachOnceThenComplete", 2, 0, 13)]
-    [InlineData("ActLastReserveNoneMoveEachOnceThenComplete", 0, 2, 13)]
+    [InlineData("ActLastReserveNoneMoveEachOnceThenComplete", 0, 1, 11)]
     [InlineData("ActLastReserveOneMoveEachOnceThenComplete", 1, 1, 13)]
     [InlineData("ActLastReserveAllMoveEachOnceThenComplete", 2, 0, 13)]
-    public void BoundedMovementMatrixReachesBreakdownWithExactMoveHistory(
+    public void BoundedMovementMatrixStopsAtReactionOrReachesBreakdown(
         string policyName,
         int expectedDesignations,
         int expectedMoves,
@@ -160,35 +160,49 @@ public sealed class ExerciseExecutorTests
             "\"eventType\":\"element-moved\"",
             StringComparison.Ordinal)).ToArray();
 
-        Assert.True(result.IsSucceeded);
         Assert.Equal(expectedSteps, result.Steps.Count);
         Assert.Equal(expectedMoves, moved.Length);
         Assert.Equal(expectedDesignations, events.Count(value => value.Contains(
             "\"eventType\":\"reserve-element-designated\"",
             StringComparison.Ordinal)));
-        Assert.Single(events, value => value.Contains(
-            "\"eventType\":\"movement-segment-completed\"",
-            StringComparison.Ordinal));
         Assert.Equal(expectedMoves, moved.Select(value =>
         {
             using var document = System.Text.Json.JsonDocument.Parse(value);
             return document.RootElement.GetProperty("elementId").GetString();
         }).Distinct(StringComparer.Ordinal).Count());
+
+        if (expectedDesignations == 0)
+        {
+            Assert.False(result.IsSucceeded);
+            Assert.Equal(ExerciseFailureCategory.InvariantFailed, result.FailureCategory);
+            Assert.Null(result.BoundaryPositionId);
+            Assert.Null(result.Reconstruction);
+            Assert.DoesNotContain(events, value => value.Contains(
+                "\"eventType\":\"movement-segment-completed\"",
+                StringComparison.Ordinal));
+            return;
+        }
+
+        Assert.True(result.IsSucceeded);
+        Assert.Single(events, value => value.Contains(
+            "\"eventType\":\"movement-segment-completed\"",
+            StringComparison.Ordinal));
         Assert.True(result.Reconstruction!.IsVerified);
         Assert.True(ReadjudicationVerifier.Verify(manifest, result).IsVerified);
     }
 
     [Fact]
-    public void ExecutorPassesExactAcceptedMoveHistoryOnlyAfterEachCommittedMove()
+    public void ExecutorPreservesExactAcceptedMoveHistoryWhenReactionStopsSelection()
     {
         var movementHistories = new List<string[]>();
         var runtime = new FaultingRuntime
         {
             SelectionOverride = (policies, actionSets) =>
             {
-                var active = actionSets.Single(set => set.Candidates.Count > 0);
-                if (active.Candidates.Any(candidate => candidate.Kind == "move-element"))
-                    movementHistories.Add(active.PriorMovedElementIds.ToArray());
+                var movement = actionSets.SingleOrDefault(set =>
+                    set.Candidates.Any(candidate => candidate.Kind == "move-element"));
+                if (movement is not null)
+                    movementHistories.Add(movement.PriorMovedElementIds.ToArray());
                 return ExerciseController.Select(policies, actionSets);
             },
         };
@@ -204,12 +218,9 @@ public sealed class ExerciseExecutorTests
             runtime,
             TestContext.Current.CancellationToken);
 
-        Assert.True(result.IsSucceeded);
-        Assert.Collection(
-            movementHistories,
-            first => Assert.Empty(first),
-            second => Assert.Equal(["axis-element-a"], second),
-            third => Assert.Equal(["axis-element-a", "axis-element-b"], third));
+        Assert.False(result.IsSucceeded);
+        Assert.Equal(ExerciseFailureCategory.InvariantFailed, result.FailureCategory);
+        Assert.Empty(Assert.Single(movementHistories));
     }
 
     [Fact]

@@ -39,6 +39,38 @@ public sealed class ContentCatalogResolution
     }
 }
 
+public sealed class ContentPackV5CatalogResolution
+{
+    private ContentPackV5CatalogResolution(
+        ContentPackV5Artifact? artifact,
+        ContentCatalogRejectionReason rejectionReason)
+    {
+        Artifact = artifact;
+        RejectionReason = rejectionReason;
+    }
+
+    public bool IsResolved => Artifact is not null;
+
+    public ContentPackV5Artifact? Artifact { get; }
+
+    public ContentCatalogRejectionReason RejectionReason { get; }
+
+    public static ContentPackV5CatalogResolution Resolved(ContentPackV5Artifact artifact) =>
+        new(
+            artifact ?? throw new ArgumentNullException(nameof(artifact)),
+            ContentCatalogRejectionReason.None);
+
+    public static ContentPackV5CatalogResolution Rejected(ContentCatalogRejectionReason reason)
+    {
+        if (reason == ContentCatalogRejectionReason.None)
+        {
+            throw new ArgumentOutOfRangeException(nameof(reason));
+        }
+
+        return new ContentPackV5CatalogResolution(null, reason);
+    }
+}
+
 public static class Cna1979SyntheticContentCatalog
 {
     public const string PackId = "rules-lab.content.movement-contact.v1";
@@ -47,6 +79,8 @@ public static class Cna1979SyntheticContentCatalog
     private const string LocatorRoot = "content.movement-contact.v1";
 
     public static ContentPackArtifact Artifact { get; } = CreateArtifact();
+
+    public static ContentPackV5Artifact ArtifactV5 { get; } = CreateArtifactV5();
 
     public static ContentPresentationCatalog Presentation { get; } = CreatePresentation();
 
@@ -64,6 +98,52 @@ public static class Cna1979SyntheticContentCatalog
         return string.Equals(expectedHash, Artifact.Identity.Hash, StringComparison.Ordinal)
             ? ContentCatalogResolution.Resolved(Artifact)
             : ContentCatalogResolution.Rejected(ContentCatalogRejectionReason.HashMismatch);
+    }
+
+    public static ContentPackV5CatalogResolution ResolveV5(
+        string packId,
+        string expectedHash)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(packId);
+        ArgumentException.ThrowIfNullOrWhiteSpace(expectedHash);
+        if (!string.Equals(packId, ArtifactV5.Identity.PackId, StringComparison.Ordinal))
+        {
+            return ContentPackV5CatalogResolution.Rejected(
+                ContentCatalogRejectionReason.UnknownPackId);
+        }
+
+        return string.Equals(expectedHash, ArtifactV5.Identity.Hash, StringComparison.Ordinal)
+            ? ContentPackV5CatalogResolution.Resolved(ArtifactV5)
+            : ContentPackV5CatalogResolution.Rejected(ContentCatalogRejectionReason.HashMismatch);
+    }
+
+    private static ContentPackV5Artifact CreateArtifactV5()
+    {
+        var elements = Artifact.Definition.Elements;
+        var elementFacts = elements.Select(element => new ContentElementCombatFacts(
+            element.ElementId,
+            Cna1979Combat.CombatUnitClassificationId,
+            [new ContentCombatComponent(
+                $"{element.ElementId}.toe.infantry",
+                Cna1979Combat.InfantryComponentClassId,
+                5,
+                1,
+                Origin($"combat-component.{element.ElementId}.infantry"))],
+            Origin($"combat.{element.ElementId}"))).ToArray();
+        var placementFacts = Artifact.Definition.Scenarios
+            .SelectMany(scenario => scenario.InitialPlacements.Select(placement =>
+                new ContentInitialPlacementCombatFacts(
+                    scenario.ScenarioId,
+                    placement.ElementId,
+                    [new ContentInitialComponentToe(
+                        $"{placement.ElementId}.toe.infantry",
+                        5,
+                        Origin($"initial-toe.{scenario.ScenarioId}.{placement.ElementId}"))])))
+            .ToArray();
+        return ContentPackV5Artifact.Create(new ContentPackV5Definition(
+            Artifact.Definition,
+            elementFacts,
+            placementFacts));
     }
 
     private static ContentPackArtifact CreateArtifact()

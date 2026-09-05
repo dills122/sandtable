@@ -13,16 +13,10 @@ public sealed class CampaignCreationAdmissionTests
     public void SharedCreationExecutionMatchesTheAuthorityFacadeAndRetainsExactEvidence()
     {
         var setup = Cna1979SetupCatalog.Definitions[0];
-        var request = new CampaignCreationRequest(
-            CampaignCreationRequest.CurrentContractVersion,
+        var request = CampaignCurrentRequestTestData.Create(
+            setup,
             "campaign-shared-creation",
-            Cna1979Ruleset.Manifest.Hash,
-            12345,
-            setup.SetupId,
-            setup.Hash,
-            setup.Content.Pack.PackId,
-            setup.Content.Pack.Hash,
-            setup.Content.ScenarioId);
+            12345);
 
         var execution = CampaignCreationExecution.Execute(request);
         var facade = CampaignAuthority.Create(request);

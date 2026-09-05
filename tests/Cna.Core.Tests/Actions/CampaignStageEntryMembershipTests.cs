@@ -3,6 +3,7 @@ using Cna.Core.Actions;
 using Cna.Core.Campaigns;
 using Cna.Core.Rules;
 using Cna.Core.Setups;
+using Cna.Core.Tests.Campaigns;
 
 namespace Cna.Core.Tests.Actions;
 
@@ -167,9 +168,10 @@ public sealed class CampaignStageEntryMembershipTests
     private static CampaignAuthorityHandle AdvanceToOrganization()
     {
         var setup = Cna1979SetupCatalog.Definitions[0];
-        var request = new CampaignCreationRequest(1, "campaign-stage-entry-membership",
-            Cna1979Ruleset.Manifest.Hash, 12345, setup.SetupId, setup.Hash,
-            setup.Content.Pack.PackId, setup.Content.Pack.Hash, setup.Content.ScenarioId);
+        var request = CampaignCurrentRequestTestData.Create(
+            setup,
+            "campaign-stage-entry-membership",
+            12345);
         var creation = CampaignAuthority.Create(request);
         Assert.True(creation.IsCreated);
         var handle = creation.Handle!;

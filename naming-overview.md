@@ -620,9 +620,13 @@ manifest-registered user-space declassification boundary that publishes audience
 window/state-scoped capability handles and move options rather than authoritative identities or raw reacting
 element fingerprints. Admission recomputes those capability handles, verifies cost claims against
 the published edge traversal, and rejects decision labels inconsistent with the observer and active
-side.
-`ZOR-TASK-005` is next; none of these successor terms are active in the current non-contact
-Movement resolver.
+side. `ZOR-TASK-005` adds direct-only authoritative adjacency triggering, frozen local
+opportunities, and topology-local ZOC entry/exit reconstruction. `ZOR-TASK-006A` adds direct-only
+reason-specific `ReactionWindowClosed` authority with exact Movement resumption. `ZOR-TASK-006B`
+adds direct-only `ReactingElementMoved` and `ReactionParticipantCompleted` authority for atomic
+first selection, later active steps, and explicit participant resolution. `ZOR-TASK-006C` activates
+these successor terms together on the public Core creation, observation, action, checkpoint, and
+replay paths; `ZOR-TASK-007A` Runner adoption is next.
 
 **War College** is where we evaluate commanders.
 

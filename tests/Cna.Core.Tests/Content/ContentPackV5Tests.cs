@@ -9,7 +9,7 @@ namespace Cna.Core.Tests.Content;
 public sealed class ContentPackV5Tests
 {
     [Fact]
-    public void SuccessorIdentityIsExplicitAndDormant()
+    public void SuccessorIdentityIsExplicitAndActive()
     {
         var legacy = ContentTestData.CreateMinimalPack();
         var definition = CreateSuccessor(legacyDefinition: legacy);
@@ -23,7 +23,7 @@ public sealed class ContentPackV5Tests
 
         Assert.Equal(4, ContentPackDefinition.CurrentSchemaVersion);
         Assert.Equal("sandtable.content-json.v3", ContentPackDefinition.CanonicalFormatId);
-        Assert.Equal(7, Cna1979Ruleset.ContractVersion);
+        Assert.Equal(8, Cna1979Ruleset.ContractVersion);
         Assert.Same(legacy, definition.LegacyDefinition);
     }
 

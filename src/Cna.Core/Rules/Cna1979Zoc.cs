@@ -1,3 +1,6 @@
+using System.Security.Cryptography;
+using System.Text.Json;
+
 namespace Cna.Core.Rules;
 
 public static class Cna1979Zoc
@@ -62,6 +65,59 @@ public static class Cna1979Zoc
 
     public static IReadOnlyList<ZocTopologyFeatureDefinition> TopologyFeatures =>
         TopologyAuthority;
+
+    public static RulesetArtifact CreateArtifact()
+    {
+        using var stream = new MemoryStream();
+        using (var writer = new Utf8JsonWriter(stream))
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("schemaVersion", 1);
+            writer.WriteString("authorityId", AuthorityId);
+            writer.WriteStartArray("eligibleCombatClassificationIds");
+            writer.WriteStringValue(Cna1979Combat.CombatUnitClassificationId);
+            writer.WriteStringValue(Cna1979Combat.HeadquartersClassificationId);
+            writer.WriteEndArray();
+            writer.WriteBoolean("headquartersRequiresAttachedCombatUnits", true);
+            writer.WriteNumber("minimumExclusiveStackingPoints", 1);
+            writer.WriteNumber("minimumExclusiveCohesion", -26);
+            writer.WriteNumber("minimumRawDefensiveCloseAssaultPoints", 10);
+            writer.WriteStartArray("topologyFeatures");
+            foreach (var feature in TopologyAuthority.OrderBy(
+                         value => value.FeatureId,
+                         StringComparer.Ordinal))
+            {
+                writer.WriteStartObject();
+                writer.WriteString("featureId", feature.FeatureId);
+                writer.WriteString("kind", feature.Kind.ToString());
+                writer.WriteStartArray("sources");
+                foreach (var source in feature.Sources)
+                {
+                    writer.WriteStartObject();
+                    writer.WriteString("sourceId", source.SourceId);
+                    writer.WriteString("locator", source.Locator);
+                    writer.WriteEndObject();
+                }
+
+                writer.WriteEndArray();
+                writer.WriteEndObject();
+            }
+
+            writer.WriteEndArray();
+            writer.WriteEndObject();
+        }
+
+        var sources = CompleteQualificationSources
+            .Concat(TopologyAuthority.SelectMany(value => value.Sources))
+            .Distinct()
+            .OrderBy(value => value.SourceId, StringComparer.Ordinal)
+            .ThenBy(value => value.Locator, StringComparer.Ordinal)
+            .ToArray();
+        return new RulesetArtifact(
+            AuthorityId,
+            $"sha256:{Convert.ToHexStringLower(SHA256.HashData(stream.ToArray()))}",
+            sources);
+    }
 
     public static bool IsSupportedTopologyFeatureId(string? featureId) =>
         TopologyAuthority.Any(value => string.Equals(

@@ -93,10 +93,10 @@ public sealed class CampaignReactionIdentityTests
 
         Assert.Equal(baseline, equivalent);
         Assert.Equal(
-            "sha256:0cd6caf6a254c93f90fba9706538d4836ba3519ad46d665fdfb1c3e76cf291c6",
+            "sha256:a16e4c2448e0253bfcb8fe2540362300c1ac9b1a90993d5f5ac883105586d534",
             baseline.Value);
         Assert.Equal(
-            "sha256:da266cf5341162077eb3e0cafea6e872c899d81a5845eba4fab2557370b6daad",
+            "sha256:96cc532a66bbd01ba9b5277361753a65e28e020d8b59aff98a46217accb4a6c2",
             opportunity.Value);
         Assert.NotEqual(baseline.Value, opportunity.Value);
         Assert.NotEqual(baseline, CampaignReactionIdentity.CreateWindow(

@@ -71,7 +71,7 @@ public static class CampaignAuthority
         var execution = CampaignCreationExecution.Execute(request);
         return execution.IsCreated
             ? CampaignAuthorityCreationResult.Created(
-                new CampaignAuthorityHandle(execution.Snapshot!, execution.Context!))
+                new CampaignAuthorityHandle(execution.CurrentSnapshot!, execution.Context!))
             : CampaignAuthorityCreationResult.Rejected(execution.RejectionReason);
     }
 }

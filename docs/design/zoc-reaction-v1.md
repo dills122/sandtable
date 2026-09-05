@@ -1,6 +1,6 @@
 # ZOC and Reaction v1 Technical Design
 
-**Status:** Approved — dormant checkpoints `ZOR-TASK-002A`-`004C` implemented; `005` next
+**Status:** Approved — `ZOR-TASK-002A`-`006C` implemented; `007A` next
 
 **Date:** 2026-08-30
 
@@ -255,6 +255,11 @@ After validating an ordinary phasing combat-element move, the factory:
 8. freezes canonical opportunity identities and replay evidence, including an empty collection; and
 9. returns one canonical `ElementMoved` successor containing the entire resulting window truth.
 
+The factory resolves the first-acting side from the unique retained order for the current turn and
+Operation Stage, then requires both materialized sequence position and replay input to match it.
+Because World/Content v5 has no exact HQ attachment relation, HQs remain adjacency triggers but are
+excluded from ZOC-source and frozen-participant authority; co-location supplies no attachment fact.
+
 Current membership later intersects unresolved frozen opportunities with current legal state.
 This can remove but never add. The public action set is regenerated after every accepted event.
 Because v1 contains no Close Assault declaration, Rule 8.53(b)'s conditional CPA comparison is not
@@ -348,7 +353,7 @@ The stable parent IDs remain those in the accepted ruling lock. Lettered slices 
 dependency-ordered implementation and review checkpoints. A verified checkpoint may merge
 independently to `main` only while its successor artifacts remain dormant and every active
 admission/readback path stays on the complete legacy identity set. That staged delivery rule
-applies to checkpoints 002A-004C; later checkpoints remain separately dependency-gated.
+applies to checkpoints 002A-005; later checkpoints remain separately dependency-gated.
 Task 006C performs one coordinated activation commit that switches every coupled version and
 identity together. No partial Rules, Content, World, Snapshot, Creation, sequence, Observation,
 policy, command, event, or action-kind successor may become active on `main`.
@@ -463,6 +468,11 @@ projection/replay, and exact authority-side topology-local Movement ZOC entry/ex
 Exercise the internal path and dormant Observation 6/action derivation directly while leaving the
 active public Observation 5/Movement path unchanged.
 
+**Status:** Implemented direct-only. Production successor reconstruction now derives the atomic
+move, local control, scoped Movement-ended result, adjacency window, and frozen local opportunity
+universe from admitted Content v5 / Snapshot 10 authority; default successor replay recomputes the
+  same canonical event before projection. Public activation is completed by `ZOR-TASK-006C`.
+
 **Gate:** triggering/non-triggering combat adjacency, multiple individually adjacent participants,
 remote otherwise-eligible exclusion, noncombat-only adjacency, positive/nonpositive ZOC, local
 entry/exit, remote-positive noninterference, and empty/nonempty cases produce
@@ -474,8 +484,16 @@ reconstruction with no observable intermediate state.
 - **006A:** implement player, unavailable/timeout, and empty system closure with exact resumption and
   zero-cost/no-RNG proofs; player close is absent while active, reason-specific exact System actions
   can close active windows, unknown/wrong-audience reasons reject, and no scheduler is included.
+  **Implemented direct-only:** canonical `ReactionWindowClosed` reconstruction validates exact
+  current action membership and audience, resolves active plus remaining frozen authority, restores
+  the suspended Movement position, and preserves committed World/random state. Public activation
+  is completed by `006C`.
 - **006B:** implement first-step participant selection, one-or-more-step active movement, participant
   completion, existing CP/BP/provenance, and all current-membership rejection classes.
+  **Implemented direct-only:** canonical participant move/completion events resolve the exact
+  state-scoped capability to frozen authority, reuse ordinary Movement cost/provenance and World
+  projection, enforce active-participant sequencing, preserve Breakdown/RNG truth, and reconstruct
+  the identical event before replay projection. Public activation is completed by `006C`.
 - **006C:** atomically switch to Observation 6 and the topology-local ordinary-Movement/Reaction
   action surface; bump and switch the complete Rules, sequence, Content, World, Creation, Snapshot,
   event, Observation, policy, command, and closed action-kind identity set in one activation commit;
@@ -483,6 +501,10 @@ reconstruction with no observable intermediate state.
   Movement; and prove later-trigger repeat eligibility. Hosting/worker timeout orchestration remains
   a later separately approved task. No earlier task activates a successor identity or publishes
   positive ZOC into the active Movement action path.
+  **Implemented:** public Core creation, authority/session state, observations, legal actions,
+  submissions, checkpoint serialization, and replay use the complete successor identity set.
+  Unchanged pre-Movement semantic events advance Snapshot 10 through checked predecessor
+  reconstruction and lifting; current readers reject legacy creation and `ElementMoved` roots.
 
 **Gate:** `ZOR-AC-001`-`009`, `011`-`013`, and `015`-`017` pass through the ordinary public
 submission path. Static fixture evidence remains owned by `ZOR-AC-010`; creation/World seed
@@ -526,9 +548,8 @@ claim implementation approval while ZOR contract versions are moving. The Campai
 by 003B, so that design may now reconcile against it while remaining outside this implementation
 train.
 
-Gameplay simulation and tuning should resume after 006C exposes complete authoritative Reaction
-outcomes; 007A then turns those outcomes into checked simulator evidence. Earlier runs may validate
-infrastructure but cannot tune behavior that the Umpire does not yet adjudicate.
+006C now exposes complete authoritative Reaction outcomes. `007A` turns those outcomes into checked
+simulator evidence before behavior tuning claims rely on them.
 
 ## Review focus
 

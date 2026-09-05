@@ -69,7 +69,7 @@ public sealed class WeatherCampaignTests
             "\"kind\":\"rainstorm\",\"scope\":\"listed-areas\",\"locationDie\":2," +
             "\"affectedAreas\":[\"c\",\"d\"],\"fuelWaterReductionSubjectCount\":0," +
             "\"restoredWellCount\":0,\"damagedGroundedAircraftCount\":0," +
-            "\"randomCursorAfter\":3,\"sequencePosition\":{\"contractVersion\":2," +
+            "\"randomCursorAfter\":3,\"sequencePosition\":{\"contractVersion\":3," +
             "\"positionId\":\"land.position.operation-1.organization\",\"gameTurn\":1," +
             "\"operationStage\":1,\"stageId\":\"land.stage.operation\"," +
             "\"phaseId\":\"land.phase.organization\",\"segmentId\":null,\"stepId\":null," +

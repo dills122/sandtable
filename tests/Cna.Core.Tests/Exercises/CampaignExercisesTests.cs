@@ -6,6 +6,7 @@ using Cna.Core.Exercises;
 using Cna.Core.Randomness;
 using Cna.Core.Rules;
 using Cna.Core.Setups;
+using Cna.Core.Tests.Campaigns;
 
 namespace Cna.Core.Tests.Exercises;
 
@@ -23,10 +24,10 @@ public sealed class CampaignExercisesTests
         Assert.Equal(CampaignCreationRejectionReason.None, started.RejectionReason);
         Assert.NotNull(started.Session);
         Assert.Equal(
-            CampaignSnapshotSerializer.Serialize(ordinary.Handle!.Snapshot),
+            CampaignSnapshotV10Serializer.Serialize(ordinary.Handle!.CurrentSnapshot!),
             started.InitialSnapshotBytes);
         Assert.Equal(
-            CampaignEventSerializer.Serialize(started.Session!.History[0]),
+            CampaignCurrentEventSerializer.Serialize(started.Session!.CurrentHistory[0]),
             started.CreationEventBytes);
 
         var snapshotCopy = started.InitialSnapshotBytes!;
@@ -34,10 +35,10 @@ public sealed class CampaignExercisesTests
         snapshotCopy[0] ^= 0xff;
         eventCopy[0] ^= 0xff;
         Assert.Equal(
-            CampaignSnapshotSerializer.Serialize(started.Session.Snapshot),
+            CampaignSnapshotV10Serializer.Serialize(started.Session.CurrentSnapshot),
             started.InitialSnapshotBytes);
         Assert.Equal(
-            CampaignEventSerializer.Serialize(started.Session.History[0]),
+            CampaignCurrentEventSerializer.Serialize(started.Session.CurrentHistory[0]),
             started.CreationEventBytes);
 
         var sessionType = typeof(ExerciseSession);
@@ -179,11 +180,6 @@ public sealed class CampaignExercisesTests
                 active.PositionId,
                 active.Audience,
                 candidate.ActionId);
-            var ordinaryExecution = CampaignActionExecution.Execute(
-                authority.Snapshot,
-                authority.Context,
-                submission);
-
             var exercise = CampaignExercises.Submit(session, submission);
             var ordinary = CampaignLegalActions.Submit(authority, submission);
 
@@ -191,24 +187,30 @@ public sealed class CampaignExercisesTests
             Assert.True(ordinary.IsAccepted);
             Assert.Equal(ordinary.Receipt, exercise.Evidence!.Receipt);
             Assert.Equal(
-                CampaignEventSerializer.Serialize(ordinaryExecution.AcceptedEvent!),
+                CampaignCurrentEventSerializer.Serialize(
+                    exercise.SuccessorSession!.CurrentHistory[^1]),
                 Assert.Single(exercise.Evidence.EventRecords));
             Assert.Equal(
-                CampaignSnapshotSerializer.Serialize(ordinary.SuccessorHandle!.Snapshot),
+                CampaignSnapshotV10Serializer.Serialize(
+                    ordinary.SuccessorHandle!.CurrentSnapshot!),
                 exercise.Evidence.SnapshotCheckpoint);
             Assert.Equal(
-                CampaignSnapshotSerializer.Serialize(ordinary.SuccessorHandle.Snapshot),
-                CampaignSnapshotSerializer.Serialize(exercise.SuccessorSession!.Snapshot));
+                CampaignSnapshotV10Serializer.Serialize(
+                    ordinary.SuccessorHandle.CurrentSnapshot!),
+                CampaignSnapshotV10Serializer.Serialize(
+                    exercise.SuccessorSession!.CurrentSnapshot));
 
             var eventCopy = Assert.Single(exercise.Evidence.EventRecords);
             var checkpointCopy = exercise.Evidence.SnapshotCheckpoint;
             eventCopy[0] ^= 0xff;
             checkpointCopy[0] ^= 0xff;
             Assert.Equal(
-                CampaignEventSerializer.Serialize(ordinaryExecution.AcceptedEvent!),
+                CampaignCurrentEventSerializer.Serialize(
+                    exercise.SuccessorSession.CurrentHistory[^1]),
                 Assert.Single(exercise.Evidence.EventRecords));
             Assert.Equal(
-                CampaignSnapshotSerializer.Serialize(ordinary.SuccessorHandle.Snapshot),
+                CampaignSnapshotV10Serializer.Serialize(
+                    ordinary.SuccessorHandle.CurrentSnapshot!),
                 exercise.Evidence.SnapshotCheckpoint);
 
             session = exercise.SuccessorSession;
@@ -252,7 +254,7 @@ public sealed class CampaignExercisesTests
         Assert.True(result.IsVerified);
         Assert.Equal(ExerciseReconstructionFailureReason.None, result.FailureReason);
         Assert.Equal(
-            CampaignSnapshotSerializer.Serialize(completed.Snapshot),
+            CampaignSnapshotV10Serializer.Serialize(completed.CurrentSnapshot),
             result.ReconstructedSnapshotBytes);
         Assert.Equal(result.ExpectedSnapshotHash, result.ReconstructedSnapshotHash);
         Assert.StartsWith("sha256:", result.EventStreamHash, StringComparison.Ordinal);
@@ -322,16 +324,10 @@ public sealed class CampaignExercisesTests
     private static CampaignCreationRequest CreateRequest()
     {
         var setup = Cna1979SetupCatalog.Definitions[0];
-        return new CampaignCreationRequest(
-            CampaignCreationRequest.CurrentContractVersion,
+        return CampaignCurrentRequestTestData.Create(
+            setup,
             "campaign-exercise",
-            Cna1979Ruleset.Manifest.Hash,
-            12345,
-            setup.SetupId,
-            setup.Hash,
-            setup.Content.Pack.PackId,
-            setup.Content.Pack.Hash,
-            setup.Content.ScenarioId);
+            12345);
     }
 
     private static bool ContainsType(Type candidate, Type forbidden)

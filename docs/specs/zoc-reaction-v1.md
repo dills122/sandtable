@@ -1,6 +1,6 @@
 # ZOC and Reaction v1 Specification
 
-**Status:** Approved — dormant checkpoints `ZOR-TASK-002A`-`004C` implemented; `005` next
+**Status:** Approved — `ZOR-TASK-002A`-`006C` implemented; `007A` next
 
 **Date:** 2026-08-30
 
@@ -161,6 +161,10 @@ Eligibility uses hidden exact authority for the admitted v1 restrictions. Outwar
 discloses only the approved own opportunity, never hidden strength, failed alternatives, bindings,
 or exclusion reasons. The conditional Rule 8.53(b) CPA comparison is absent until a later approved
 Close Assault declaration makes it applicable.
+
+The current authority contract carries no exact HQ attachment relation. Headquarters therefore
+remain combat-element adjacency triggers but fail closed for ZOC-source qualification and frozen
+Reaction participation; co-location with a combat unit never implies attachment.
 
 ### `ZOR-REQ-006` — Persisted interrupt state machine
 
@@ -354,7 +358,7 @@ Rule 8.53(b) threshold portion of the original consequence 7 is explicitly defer
 | --- | --- | --- | --- |
 | `ZOR-REQ-001`-`002` | `ZOR-DEC-005`, `008` | `ZOR-TASK-002A`-`003A` | `ZOR-AC-010`-`011`, `014` |
 | `ZOR-REQ-003`-`005` | `ZOR-DEC-001`, `005`-`007`, `011` | `ZOR-TASK-003A`-`005` | `ZOR-AC-001`, `006`-`010`, `016` |
-| `ZOR-REQ-006`-`008` | `ZOR-DEC-001`-`003`, `006`-`007`, `010` | `ZOR-TASK-003B`, `004B`, `006A`, `006C` | `ZOR-AC-001`-`006`, `009`, `017` |
+| `ZOR-REQ-006`-`008` | `ZOR-DEC-001`-`003`, `006`-`007`, `010` | `ZOR-TASK-003B`, `004B`, `006A`-`006C` | `ZOR-AC-001`-`006`, `009`, `017` |
 | `ZOR-REQ-009` | `ZOR-DEC-002`, `005`, `012` | `ZOR-TASK-004A`-`006C` | `ZOR-AC-002`-`003`, `011`, `013`, `015` |
 | `ZOR-REQ-010`-`011` | `ZOR-DEC-004`, `006`-`007`, `012` | `ZOR-TASK-004A`-`006C` | `ZOR-AC-005`-`009`, `012`, `015`, `017` |
 | `ZOR-REQ-012` | `ZOR-DEC-006`, `009`-`010`, `012` | `ZOR-TASK-002A`-`006C`, `007A`-`007B` | dormant/current/activation compatibility and replay matrices across every new or activated command, event, action-kind, authority, and observation contract |
@@ -384,6 +388,8 @@ The owner approved the complete package after PR #80 merged, including these con
    instead of raw reacting element fingerprints, with manifest and transcript enforcement.
 
 That approval initially opened only the dependency-ordered first slice, `ZOR-TASK-002A`; the owner
-subsequently directed `002B`, `002C`, `003A`, `003B`, `004A`, `004B`, and the boundary-remediation
-checkpoint `004C` after their preceding verified checkpoints. `ZOR-TASK-005` and later slices remain
-dependency-gated and must not be treated as one authorized or implemented change.
+subsequently directed `002B`, `002C`, `003A`, `003B`, `004A`, `004B`, the boundary-remediation
+checkpoint `004C`, direct-only internal trigger checkpoint `005`, direct-only closure checkpoint
+`006A`, direct-only participant-episode checkpoint `006B`, and coordinated public activation
+checkpoint `006C` after their preceding verified checkpoints. `ZOR-TASK-007A` and later slices
+remain dependency-gated and must not be treated as part of that activation.

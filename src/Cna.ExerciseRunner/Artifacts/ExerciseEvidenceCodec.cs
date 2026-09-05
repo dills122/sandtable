@@ -176,7 +176,7 @@ public static class ExerciseEvidenceCodec
         "representationId", "originLocationId", "destinationLocationId", "mobilityId",
         "mobilitySources", "cost", "capabilityPointsExpendedBefore",
         "capabilityPointsExpendedAfter", "cohesionBefore", "cohesionAfter",
-        "sequencePosition",
+        "movementEndedAfter", "sequencePosition", "openedReactionWindow",
     ];
 
     private static readonly string[] MovementCompletionEventProperties =
@@ -233,7 +233,7 @@ public static class ExerciseEvidenceCodec
                 [
                     "contractVersion", "campaignId", "stateVersion", "rulesetHash", "setup",
                     "world", "initiativeHolder", "operationStageOrders", "operationStageWeather",
-                    "randomState", "sequencePosition",
+                    "randomState", "currentPosition", "reactionWindow",
                 ]);
             RequireCanonical(root, canonicalJson.Span);
             var checkpoint = CampaignExercises.ReadCheckpoint(canonicalJson);
@@ -317,7 +317,7 @@ public static class ExerciseEvidenceCodec
             "weather-determined" => (1, WeatherEventProperties),
             "reserve-element-designated" => (1, ReserveDesignationEventProperties),
             "reserve-designation-completed" => (1, ReserveCompletionEventProperties),
-            "element-moved" => (1, MovementEventProperties),
+            "element-moved" => (2, MovementEventProperties),
             "movement-segment-completed" => (1, MovementCompletionEventProperties),
             _ => throw new JsonException("Unknown canonical campaign event type."),
         };

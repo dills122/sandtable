@@ -7,16 +7,33 @@ internal static class FirstActingSideResolver
     public static LandSide Resolve(CampaignSnapshot snapshot)
     {
         ArgumentNullException.ThrowIfNull(snapshot);
+        return Resolve(
+            snapshot.SequencePosition,
+            snapshot.OperationStageOrders);
+    }
 
-        if (snapshot.SequencePosition.ActorRole != LandActorRole.FirstActingSide)
+    public static LandSide Resolve(CampaignSnapshotV10 snapshot)
+    {
+        ArgumentNullException.ThrowIfNull(snapshot);
+        var sequence = snapshot.CurrentPosition.Kind == CampaignPositionV10Kind.Sequence
+            ? snapshot.CurrentPosition.SequencePosition!
+            : snapshot.CurrentPosition.ReactingPosition!.SuspendedMovementPosition;
+        return Resolve(sequence, snapshot.OperationStageOrders);
+    }
+
+    private static LandSide Resolve(
+        LandSequencePosition position,
+        IReadOnlyList<CampaignOperationStageOrder> operationStageOrders)
+    {
+        if (position.ActorRole != LandActorRole.FirstActingSide)
         {
             throw new InvalidOperationException(
                 "The current position is not assigned to the first-acting side.");
         }
 
-        var currentOrders = snapshot.OperationStageOrders
-            .Where(order => order.GameTurn == snapshot.GameTurn
-                && order.OperationStage == snapshot.OperationStage)
+        var currentOrders = operationStageOrders
+            .Where(order => order.GameTurn == position.GameTurn
+                && order.OperationStage == position.OperationStage)
             .ToArray();
 
         if (currentOrders.Length != 1)

@@ -88,7 +88,7 @@ public sealed class Version3AuthorityTests
     [Fact]
     public void CanonicalManifestCutsOverAllAuthoritativeArtifacts()
     {
-        Assert.Equal(7, Cna1979Ruleset.Manifest.ContractVersion);
+        Assert.Equal(8, Cna1979Ruleset.Manifest.ContractVersion);
         Assert.Equal(
             [
                 "cna-1979.1.breakdown-tables",
@@ -99,6 +99,7 @@ public sealed class Version3AuthorityTests
                 "cna-1979.1.random-procedure",
                 "cna-1979.1.reserve-designation",
                 "cna-1979.1.weather-tables",
+                "cna-1979.1.zoc-rules",
             ],
             Cna1979Ruleset.Manifest.Artifacts
                 .Select(artifact => artifact.ArtifactId)

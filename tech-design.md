@@ -49,17 +49,18 @@ exercise the two build-identity policies.
 The checked Exercise and serial-unpaired Maneuver profiles use manifest v2, with unpaired report
 scheme `sandtable.maneuver-report.v1`; the optional paired path uses
 `sandtable.paired-maneuver-manifest.v1` and
-`sandtable.paired-maneuver-report.v1`. All use controller-configuration v2, ruleset v7, snapshot
-v9, world v4, and strict `trusted-authority` evidence admission. Retained Organization/Reserve
+`sandtable.paired-maneuver-report.v1`. All use controller-configuration v2, Ruleset 8, Snapshot
+10, World 5, and strict `trusted-authority` evidence admission. Retained Organization/Reserve
 profiles and their baseline twins remain regression checkpoints.
 
 The checked two-child **Maneuver** fixtures define strict canonical `serial-unpaired` parent manifests.
 The Stage Entry fixture runs both admitted setups to Reserve; the Reserve Designation fixture runs
 both through Movement. A checked six-child controller matrix crosses `act-first`/`act-last` with
-Reserve `none`/`one`/`all` and reaches Movement in exact 10/11/12-action trajectories. The checked
-Movement fixture extends the same six policies through Breakdown Determination in 13
-actions with deterministic 2/1/0 move counts. Only the parent supplies the root
-seed; each ordered child receives an explicit Maneuver
+Reserve `none`/`one`/`all` and reaches Movement in exact 10/11/12-action trajectories. In the
+checked Movement fixture, four non-triggering Reserve-one/all profiles reach Breakdown
+Determination in 13 actions. Two Reserve-none profiles open Reaction on their first move and fail
+closed after 11 actions because Runner Reaction selection belongs to `ZOR-TASK-007A`. Only the
+parent supplies the root seed; each ordered child receives an explicit Maneuver
 ID and ordinal identity and runs synchronously through the same no-console post-admission
 coordinator. The aggregate path opens each completed child bundle once, semantically validates its
 retained evidence and re-adjudication proof, and checks the seed-ledger identity before counting it.
@@ -673,11 +674,11 @@ is an original nine-hex nonhistorical rules laboratory using the same path inten
 source-derived content. Exact catalog lookup requires both pack ID and hash and never substitutes a
 default; presentation labels remain outside authoritative equality and bytes.
 
-The implemented Campaign World v1 capability now uses world snapshot contract 4 and records exact
+The current Campaign World capability uses world snapshot contract 5 and records exact
 ruleset, setup, content, and scenario identities; resolves immutable content before an authoritative
 grain turn; and projects mutable element locations, per-element Reserve status, exact
-Operation-Stage expenditure/Cohesion state, and opaque one-to-one map-representation bindings into
-campaign history. The Umpire performs no network or
+Operation-Stage expenditure/Cohesion/Movement-ended state, exact component TOE provenance, and
+opaque map-representation bindings into campaign history. The Umpire performs no network or
 persistence I/O, and replay requires the same exact content plus the matching executable rules
 manifest. The [Campaign World specification](docs/specs/campaign-world-v1.md) and
 [technical design](docs/design/campaign-world-v1.md) retain the original version-3 campaign /
@@ -688,22 +689,23 @@ identity lane first advanced authority to snapshot contract 7, creation contract
 manifest contract 5, world snapshot contract 2, setup schema 5, and Content Pack schema 2 while
 preserving resident exact-content context internally. Operation-Stage Entry still admits only the
 four exact empty obligations; Reserve Designation accepts only current owner candidates and advances
-through one exact completion event to Movement. The current Movement foundation plus approved
-Breakdown-continuity clean cut advances the ruleset to contract 7, snapshot to contract 9, Campaign
-World to contract 4, creation event to contract 8, and Content Pack to schema 4 / canonical format
-v3. Task 004B adds exact source-backed BP identity, synthetic Truck cohorts, and creation-seeded
-replay state without a Breakdown action, result, or RNG path. No generic sequence bypass exists.
+through one exact completion event to Movement. The Movement foundation plus approved
+Breakdown-continuity clean cut first advanced the ruleset to contract 7, snapshot to contract 9,
+Campaign World to contract 4, creation event to contract 8, and Content Pack to schema 4 / canonical
+format v3. ZOC/Reaction activation now advances the complete current set together to Ruleset 8,
+Snapshot 10, Campaign World 5, creation event 9, and Content Pack schema 5 / canonical format v4.
+No generic sequence bypass exists.
 See the Content Pack v1
 [research](docs/research/content-pack-v1-spike.md),
 [specification](docs/specs/content-pack-v1.md), and
 [technical design](docs/design/content-pack-v1.md).
 
-The implemented Campaign Observation boundary lives in `Cna.Core.Observations`. Contract 5 accepts only
+The implemented Campaign Observation boundary lives in `Cna.Core.Observations`. Contract 6 accepts only
 a fully admitted Campaign World snapshot, its already-resolved exact content context, and a defined
 viewer side. A pure projector then copies a closed allowlist of public campaign/turn/topology facts,
 the current source-free Weather summary, exact own mobility/operational ledger/Reserve status and
 approved vehicle-risk continuity into dedicated source-free values. Opponents appear only as
-opaque representation ID, apparent location, and the currently false-only `exertsZoc` field;
+opaque representation ID, apparent location, and side-safe apparent ZOC state;
 real bindings and force facts remain absent. Canonical output has an exact compact UTF-8 writer and
 strict non-authoritative reader. It remains derived query data, never trusted history or command
 authority. The Umpire still adjudicates from complete authoritative truth. Future adapters must
@@ -786,7 +788,7 @@ Movement membership, exact submission mapping, adjudication, completion to Break
 Determination, replay, and checked Harness adoption are complete through merged `MOV-TASK-010` / PR
 #79. The next authority package is the approved ZOC/Reaction
 [specification](docs/specs/zoc-reaction-v1.md) and
-[technical design](docs/design/zoc-reaction-v1.md). `ZOR-TASK-002A`-`004C` complete the dormant
+[technical design](docs/design/zoc-reaction-v1.md). `ZOR-TASK-002A`-`005` complete the dormant
 Rules/Content/fixture and Campaign state/replay gates: direct-only World 5/creation 9, Snapshot 10,
 and `ElementMoved` v2 now retain current-TOE provenance, scoped Movement-ended truth, the nullable
 Reaction window, strict canonical readback, and reconstruction-before-projection replay. The
@@ -798,11 +800,17 @@ element Movement/ledger/stacking fingerprints; semantic admission rejects identi
 rows, forged capability/state opportunity handles, edge-incoherent route/hexside costs, and
 observer/active-side decision relabeling. The versioned disclosure manifest plus mandatory boundary
 gate registers the exact outward
-surface. The dormant action seam adds topology-local ordinary Movement and Reaction candidate
-membership, strict current readback, canonical identities, and unpublished typed mappings. It is
-proposed architecture until
-activation: Ruleset 7, Content schema 4, World 4, Snapshot 9, CampaignCreated 8, `ElementMoved` 1,
-and Observation 5 remain active. `ZOR-TASK-005` is next.
+surface. The action seam adds topology-local ordinary Movement and Reaction candidate membership,
+strict current readback, canonical identities, and typed mappings. `ZOR-TASK-006C` activates
+Ruleset 8, Land sequence contract/catalog 3, Content schema 5, World 5, Snapshot 10,
+CampaignCreated 9, `ElementMoved` 2, Observation 6, and its side-safe policy together. Successor
+authority reconstructs atomic
+move/window truth, frozen local opportunities, topology-local Movement-ended state, and exact
+reason-specific window closure/resumption with unchanged committed World/random truth.
+`ZOR-TASK-006B` adds replay-complete participant selection, one-or-more-step active movement using
+shared CP/provenance authority, and explicit completion. Public creation, observation, submission,
+checkpoint, serialization, and replay now use successor authority; bounded Runner adoption in
+`ZOR-TASK-007A` is next.
 The completed owner-approved engine package is the Movement Foundation
 [research](docs/research/movement-foundation-spike.md),
 [specification](docs/specs/movement-foundation-v1.md), and
@@ -857,10 +865,11 @@ evidence, not an implemented combat contract. Current proposals use trusted-Umpi
 the same pre-state for simultaneous combat, and structural sequence positions plus cycle identity;
 none is implemented or approved yet.
 All five `CONTACT-001` rulings and the governing specification/design package are approved.
-`ZOR-TASK-002A`-`004C` implement dormant Rules/Content/fixture, Campaign World/creation/snapshot/
-event-replay, Observation 6/policy/history, topology-local action/readback/mapping seams, and the
-user-space declassification manifest/transcript gate; `005`
-and later slices remain dependency-gated.
+`ZOR-TASK-002A`-`006C` implement and activate Rules/Content/fixture, Campaign
+World/creation/snapshot/event-replay, Observation 6/policy/history, topology-local
+action/readback/mapping seams, the user-space declassification manifest/transcript gate, internal
+trigger/ZOC adjudication, window closure/resumption, and participant episodes. `007A` Runner
+adoption and `007B` package closeout remain dependency-gated.
 The implemented paired comparison does not block that engine work.
 
 [1]: https://learn.microsoft.com/en-us/dotnet/orleans/grains/external-tasks-and-grains "External tasks and grains - .NET | Microsoft Learn"

@@ -2,7 +2,8 @@
 
 **Status:** `EXR-TASK-016` remains complete; merged `MOV-TASK-009` extends the compatible Harness v1
 contracts through checked non-contact Movement to exact first-side Breakdown Determination. A
-post-adoption paired lowest-cost controller instrument is implemented and verified locally
+post-adoption paired lowest-cost controller instrument is implemented and verified locally.
+`ZOR-TASK-006C` activates Reaction in Core; Runner Reaction selection remains `ZOR-TASK-007A`
 
 **Date:** 2026-08-20
 
@@ -46,9 +47,11 @@ uses the same public legal-action identities and the same internal authoritative
 as ordinary campaign play, and retains canonical evidence plus separate diagnostics. The original
 fixture stops at Organization, the retained Stage Entry fixture stops at Reserve, and the Reserve
 Designation fixture accepts 12 actions through two element designations plus completion to
-Movement. The checked Movement fixture accepts 13 actions per child and reaches exact first-side
-Breakdown Determination after zero, one, or two non-contact moves. Breakdown adjudication and full
-victory remain unsupported.
+Movement. Under current successor authority, four checked Movement children accept 13 actions and
+reach exact first-side Breakdown Determination after zero or one non-triggering moves. Two
+Reserve-none children accept one triggering move, open Reaction, and fail closed after 11 actions
+until Runner Reaction selection is implemented. Breakdown adjudication and full victory remain
+unsupported.
 
 ## User-visible demonstration
 
@@ -162,13 +165,13 @@ dotnet run --project src/Cna.ExerciseRunner/Cna.ExerciseRunner.csproj --no-build
   --artifact-root artifacts/exercises
 ```
 
-All six children use public observation-derived actions and ordinary submission. Each retains 13
-accepted actions/events and 94 passed checks at exact first-side Breakdown Determination. Per
-initiative branch, Reserve `none`/`one`/`all` produces 0/1/2 designations and 2/1/0 moves. Aggregate
-evidence retains 78 actions/events, six Reserve designations, six Reserve completions, six moves,
-six Movement completions, and final CP expenditure 20. Reconstruction and fresh-session
-re-adjudication reproduce each child exactly. Strict semantic readback validates the detailed
-Movement event and ledger facts rather than relying only on the aggregate fingerprint.
+All six children use public observation-derived actions and ordinary submission. Reserve-one/all
+children retain 13 accepted actions/events and 94 passed checks at exact first-side Breakdown
+Determination. Reserve-none children retain 11 accepted actions/events, including the first
+triggering move, then fail closed when Reaction exposes simultaneous reacting-player and System
+audiences. Their failed bundles retain exact partial evidence without claiming replay proofs or a
+terminal boundary. Strict semantic readback validates both complete and fail-closed Movement facts
+rather than relying only on the aggregate fingerprint.
 
 The manifest's `detail` value is `compact`, `forensic`, or `debug`. Compact retains accepted-step
 and completion records. Forensic adds deterministic query candidate counts, controller selection,
@@ -214,7 +217,7 @@ exact canonical property order and shape; the child objects deliberately match t
 Exercise manifest except that only the Maneuver owns `rootSeed`:
 
 ```json
-{"contractVersion":2,"schemeId":"sandtable.maneuver-manifest.v2","maneuverId":"rules-lab.serial","mode":"serial-unpaired","rootSeed":0,"report":{"profile":"trusted-authority"},"exercises":[{"contractVersion":2,"exerciseId":"organization-boundary.first","setupId":"rules-lab.initiative.predetermined","setupHash":"sha256:9e55e3de11338ba6432768ccb6740a6fed83b37503f69cc7ff8ecd58e205634f","contentPackId":"rules-lab.content.movement-contact.v1","contentHash":"sha256:40f0e7a0a8876e4fefc4f06c1d752253cf338da614e587b9ff017e04541e7d79","scenarioId":"movement-contact-lab","rulesetHash":"f135fb9582a9aabd8fdd628df3d9fef732cea2fc81967632f7ddb85c1650d387","terminalBoundary":"land.position.operation-1.organization","maximumSteps":8,"buildMode":"exploratory","confidentiality":"trusted-authority","detail":"forensic","controllers":{"system":"first-by-action-id","axis":"first-by-action-id","commonwealth":"first-by-action-id"},"assertFailureCategory":null}]}
+{"contractVersion":2,"schemeId":"sandtable.maneuver-manifest.v2","maneuverId":"rules-lab.serial","mode":"serial-unpaired","rootSeed":0,"report":{"profile":"trusted-authority"},"exercises":[{"contractVersion":2,"exerciseId":"organization-boundary.first","setupId":"rules-lab.initiative.predetermined","setupHash":"sha256:48ad98fd232f7c7c50d4f925dd83e3de97f2eb48cc6929a17aa1fb172cdbd394","contentPackId":"rules-lab.content.movement-contact.v1","contentHash":"sha256:20cf54f25d752253105877c6139d8db86549759f9dbb80fad873686498f26f5f","scenarioId":"movement-contact-lab","rulesetHash":"0e80a8ba917113b401ea709f9f2a6cd7fb7cfec03b8adbdae978f1b219e141e0","terminalBoundary":"land.position.operation-1.organization","maximumSteps":8,"buildMode":"exploratory","confidentiality":"trusted-authority","detail":"forensic","controllers":{"system":"first-by-action-id","axis":"first-by-action-id","commonwealth":"first-by-action-id"},"assertFailureCategory":null}]}
 ```
 
 The example uses the current admitted repository identities; implementation updates it if those
@@ -611,7 +614,7 @@ just check
 | `EXR-AC-014` | Query all three audiences at each current nonterminal checkpoint, plus test-only zero-active and multi-active fixtures | Query order is fixed; exactly one active audience selects; zero fails `NoUniqueLegalAction`; multiple fails the named invariant; no priority silently resolves simultaneous actions. |
 | `EXR-AC-015` | Exercise every check in `sandtable.exercise-checks.v1` and vary caller/culture/order inputs | Check order, IDs, scope, bytes, and failure mapping match goldens; every required failed check fails the Exercise and cannot be waived. |
 | `EXR-AC-016` | Run the checked controller-policy matrix across `act-first`/`act-last` and Reserve `none`/`one`/`all` | All six children select only current legal actions, reach first-side Movement in exactly 10/11/12 accepted actions by Reserve policy, retain zero/one/two Reserve-I designations, reconstruct and re-adjudicate exactly, and aggregate through strict readback. |
-| `EXR-AC-017` | Run the checked Movement Maneuver across `act-first`/`act-last` and Reserve `none`/`one`/`all` | All six children select current observation-derived actions through ordinary submission and reach exact first-side Breakdown Determination in 13 actions/events with 94 passed checks. Per initiative branch they retain 0/1/2 Reserve designations and 2/1/0 unique-element moves; aggregate evidence contains 78 actions/events, six Reserve designations and completions, six moves and Movement completions, and final CP expenditure 20. Reconstruction, fresh-session re-adjudication, and strict tamper-resistant bundle/report readback pass. |
+| `EXR-AC-017` | Run the checked Movement Maneuver across `act-first`/`act-last` and Reserve `none`/`one`/`all` | All six children select current observation-derived actions through ordinary submission. Under successor Reaction authority, Reserve-one/all reach Breakdown in 13 actions with exact reconstruction/re-adjudication; Reserve-none retain 11 accepted actions including one triggering move, then fail closed with `InvariantFailed`, no terminal claim, and no replay proof. Strict tamper-resistant bundle/report readback accepts both complete and partial evidence, and aggregate status/counts identify exactly four successes and two failures. |
 
 ## Delivery boundaries
 
@@ -677,16 +680,20 @@ behavior participates in this evidence.
 
 `MOV-TASK-009` adds the checked Movement fixture and the retained
 [Movement Simulator Trajectories](../research/simulator-movement-trajectories.md) study. Its current
-aggregate fingerprint is
+pre-Reaction aggregate fingerprint was
 `sha256:c1c20270dcd3402886931c28851bea7f23cd1e0778b45f94c43d85ed01d41c4b`, reconfirmed by two clean
-CLI executions into separate artifact roots. PR #78 merged Task 009 on 2026-08-30.
+CLI executions into separate artifact roots before successor activation. Current fail-closed
+aggregate fingerprint is
+`sha256:e0c0c0e7dcdaf5125d1b255a8796e92b4b22f531fe550e95abcfd42815354523`.
+PR #78 merged Task 009 on 2026-08-30.
 
 The follow-on [Movement Cost Sensitivity](../research/simulator-movement-cost-sensitivity.md) study
 uses the separate paired v1 contract to compare the unchanged stable-route controller with the
-additive lowest-public-cost controller from equal initial conditions. Both arms reach Breakdown in
-13 actions with 94 passed checks; the first route changes from exact cost 8 to 1/2 while the second
-cost-1 route remains stable. Two fresh CLI runs retain parent fingerprint
-`sha256:5f997e4d74d0f9b83e43d6d4c2c33ebedae03b188a7e30d64f57092a51edd1bc`.
+additive lowest-public-cost controller from equal initial conditions. Under successor authority,
+the stable-route arm opens Reaction after its cost-8 move and fails closed after 11 actions; the
+lowest-cost arm avoids that trigger and reaches Breakdown in 13 actions after cost-1/2 and cost-1
+moves. Two fresh CLI runs retain parent fingerprint
+`sha256:6a61e195d8c3eda656ff04b1b80e1ddbd2dd5e5ca56d194b71eedb74c69ada8b`.
 This is deterministic controller-sensitivity evidence only, not a balance or recommendation claim.
 
 Post-adoption trusted-evidence hardening also proves that initial and final snapshots are decoded by

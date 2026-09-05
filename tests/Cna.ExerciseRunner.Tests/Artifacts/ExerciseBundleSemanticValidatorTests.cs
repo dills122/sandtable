@@ -47,19 +47,19 @@ public sealed class ExerciseBundleSemanticValidatorTests : IDisposable
     }
 
     [Fact]
-    public void SnapshotReaderAcceptsVersionNineWorldFourAndRejectsPriorVersions()
+    public void SnapshotReaderAcceptsVersionTenWorldFiveAndRejectsPriorVersions()
     {
         var bundlePath = CreateSuccessfulBundle();
         var canonical = File.ReadAllBytes(Path.Combine(
             bundlePath,
             ArtifactSchema.InitialSnapshotPath));
         var legacySnapshot = Encoding.UTF8.GetBytes(Encoding.UTF8.GetString(canonical).Replace(
+            "{\"contractVersion\":10,",
             "{\"contractVersion\":9,",
-            "{\"contractVersion\":8,",
             StringComparison.Ordinal));
         var legacyWorld = Encoding.UTF8.GetBytes(Encoding.UTF8.GetString(canonical).Replace(
+            "\"world\":{\"contractVersion\":5,",
             "\"world\":{\"contractVersion\":4,",
-            "\"world\":{\"contractVersion\":3,",
             StringComparison.Ordinal));
 
         Assert.NotNull(ExerciseEvidenceCodec.DeserializeSnapshot(canonical));
@@ -102,8 +102,8 @@ public sealed class ExerciseBundleSemanticValidatorTests : IDisposable
     {
         var bundle = ExerciseBundleReader.Read(CreateSuccessfulMovementBundle());
 
-        Assert.Equal(2, bundle.CanonicalEvents.Count(value =>
-            EventType(value) == "element-moved"));
+        Assert.Single(bundle.CanonicalEvents, value =>
+            EventType(value) == "element-moved");
         Assert.Single(bundle.CanonicalEvents, value =>
             EventType(value) == "movement-segment-completed");
         Assert.True(bundle.ReconstructionProof!.IsVerified);
@@ -123,12 +123,12 @@ public sealed class ExerciseBundleSemanticValidatorTests : IDisposable
             return Encoding.UTF8.GetBytes(mutation switch
             {
                 "destination" => json.Replace(
-                    "\"destinationLocationId\":\"center\"",
+                    "\"destinationLocationId\":\"north\"",
                     "\"destinationLocationId\":\"south-west\"",
                     StringComparison.Ordinal),
                 "ledger" => json.Replace(
-                    "\"capabilityPointsExpendedAfter\":{\"numerator\":8",
-                    "\"capabilityPointsExpendedAfter\":{\"numerator\":7",
+                    "\"capabilityPointsExpendedAfter\":{\"numerator\":1",
+                    "\"capabilityPointsExpendedAfter\":{\"numerator\":2",
                     StringComparison.Ordinal),
                 "completion-position" => json.Replace(
                     "movement-and-combat.breakdown-determination",
@@ -884,7 +884,7 @@ public sealed class ExerciseBundleSemanticValidatorTests : IDisposable
                 "land.position.operation-1.first-player.movement-and-combat.breakdown-determination",
             buildMode: ExerciseBuildMode.Exploratory,
             controllerPolicy:
-                ExerciseControllerPolicy.ActFirstReserveNoneMoveEachOnceThenComplete));
+                ExerciseControllerPolicy.ActFirstReserveOneMoveEachOnceThenComplete));
 
     private static string EventType(byte[] canonicalEvent)
     {

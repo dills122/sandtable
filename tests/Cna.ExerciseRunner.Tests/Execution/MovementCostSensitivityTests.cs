@@ -93,7 +93,7 @@ public sealed class MovementCostSensitivityTests
     }
 
     [Fact]
-    public void LowestCostPolicyChangesOnlyTheMovementTrajectoryAndRepeatsExactly()
+    public void LowestCostPolicyAvoidsReactionWhileBaselineFailsClosedRepeatably()
     {
         var baselineManifest = Manifest(
             ExerciseControllerPolicy.ActFirstReserveNoneMoveEachOnceThenComplete);
@@ -111,13 +111,13 @@ public sealed class MovementCostSensitivityTests
             candidateManifest,
             TestContext.Current.CancellationToken);
 
-        AssertRun(baseline, baselineManifest);
+        AssertReactionBoundary(baseline);
         AssertRun(first, candidateManifest);
         AssertRun(second, candidateManifest);
-        Assert.Equal(new CapabilityPointAmount(9, 1), TotalMovementCost(baseline));
+        Assert.Equal(new CapabilityPointAmount(8, 1), TotalMovementCost(baseline));
         Assert.Equal(new CapabilityPointAmount(3, 2), TotalMovementCost(first));
-        Assert.Equal("center", MovementDestinations(baseline)[0]);
-        Assert.Equal("north-west", MovementDestinations(first)[0]);
+        Assert.Equal(["center"], MovementDestinations(baseline));
+        Assert.Equal(["north-west", "north"], MovementDestinations(first));
         Assert.Equal(
             ExerciseEvidenceWriter.WriteAcceptedActions(first),
             ExerciseEvidenceWriter.WriteAcceptedActions(second));
@@ -125,6 +125,16 @@ public sealed class MovementCostSensitivityTests
             ExerciseEvidenceWriter.WriteCanonicalEvents(first),
             ExerciseEvidenceWriter.WriteCanonicalEvents(second));
         Assert.Equal(first.FinalSnapshot, second.FinalSnapshot);
+    }
+
+    private static void AssertReactionBoundary(ExerciseExecutionResult result)
+    {
+        Assert.False(result.IsSucceeded);
+        Assert.Equal(ExerciseFailureCategory.InvariantFailed, result.FailureCategory);
+        Assert.Null(result.BoundaryPositionId);
+        Assert.Equal(11, result.Steps.Count);
+        Assert.Null(result.Reconstruction);
+        Assert.Equal(["center"], MovementDestinations(result));
     }
 
     private static void AssertRun(

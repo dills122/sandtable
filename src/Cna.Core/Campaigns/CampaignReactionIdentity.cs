@@ -201,6 +201,43 @@ internal static class CampaignReactionIdentity
 
 internal static class CampaignSequenceV5Guards
 {
+    public static void RequireCurrentPosition(
+        LandSequencePosition position,
+        IReadOnlyList<CampaignOperationStageOrder> operationStageOrders)
+    {
+        ArgumentNullException.ThrowIfNull(position);
+        ArgumentNullException.ThrowIfNull(operationStageOrders);
+        var catalogPosition = Cna1979LandSequence.CreateTurn(position.GameTurn)
+            .SingleOrDefault(candidate => string.Equals(
+                candidate.PositionId,
+                position.PositionId,
+                StringComparison.Ordinal));
+        if (catalogPosition == position)
+        {
+            return;
+        }
+
+        RequireMaterializedMovement(position);
+        var matchingOrders = operationStageOrders.Where(order =>
+                order.GameTurn == position.GameTurn
+                && order.OperationStage == position.OperationStage)
+            .ToArray();
+        LandSide? expectedSide = matchingOrders.Length == 1
+            ? position.ActorRole switch
+            {
+                LandActorRole.FirstActingSide => matchingOrders[0].FirstSide,
+                LandActorRole.SecondActingSide => matchingOrders[0].SecondSide,
+                _ => null,
+            }
+            : null;
+        if (matchingOrders.Length != 1 || position.ActiveSide != expectedSide)
+        {
+            throw new ArgumentException(
+                "The materialized Movement side must match the retained Operation-Stage order.",
+                nameof(position));
+        }
+    }
+
     public static void RequireMaterializedMovement(LandSequencePosition position)
     {
         ArgumentNullException.ThrowIfNull(position);
@@ -229,7 +266,7 @@ internal static class CampaignSequenceV5Guards
             || !catalogPosition.Sources.SequenceEqual(position.Sources))
         {
             throw new ArgumentException(
-                "The position must be an exact materialized contract-2 Movement segment.",
+                "The position must be an exact materialized current-contract Movement segment.",
                 nameof(position));
         }
     }
