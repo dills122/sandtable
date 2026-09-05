@@ -38,6 +38,10 @@ internal static class ExerciseConfigurationIdentity
         ExerciseControllerPolicy.ReactionActiveUnavailable => "reaction-active-unavailable",
         ExerciseControllerPolicy.ReactionActiveTimeout => "reaction-active-timeout",
         ExerciseControllerPolicy.FirstByActionId => "first-by-action-id",
+        ExerciseControllerPolicy.ActFirstReserveAllMoveEachOnceByLowestCostThenComplete =>
+            "act-first-reserve-all-move-each-once-by-lowest-cost-then-complete",
+        ExerciseControllerPolicy.ActFirstReserveAllRepeatHighestCostStopsThenComplete =>
+            "act-first-reserve-all-repeat-highest-cost-stops-then-complete",
         ExerciseControllerPolicy.DesignateAllReservesThenFirstByActionId =>
             "designate-all-reserves-then-first-by-action-id",
         ExerciseControllerPolicy.ActFirstReserveNoneThenFirstByActionId =>

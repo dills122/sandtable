@@ -2,6 +2,7 @@ using Cna.Core.Actions;
 using Cna.Core.Rules;
 using Cna.ExerciseRunner.Artifacts;
 using Cna.ExerciseRunner.Controllers;
+using Cna.ExerciseRunner.Execution;
 using Cna.ExerciseRunner.Tests.Artifacts;
 
 namespace Cna.ExerciseRunner.Tests.Execution;
@@ -9,12 +10,15 @@ namespace Cna.ExerciseRunner.Tests.Execution;
 public sealed class BreakdownStudyControllerTests
 {
     [Theory]
-    [InlineData(ExerciseControllerPolicy.ActFirstReserveAllMoveEachOnceByLowestCostThenComplete)]
-    [InlineData(ExerciseControllerPolicy.ActFirstReserveAllRepeatHighestCostStopsThenComplete)]
-    public void StudyPolicyRoundTripsAsAClosedNamedPolicy(ExerciseControllerPolicy policy)
+    [InlineData(ExerciseControllerPolicy.ActFirstReserveAllMoveEachOnceByLowestCostThenComplete,
+        "sha256:d9c25ee30963d4726e7ee23fdb46cac4d4b3f84698fb58585fe95fe0cc5fb926")]
+    [InlineData(ExerciseControllerPolicy.ActFirstReserveAllRepeatHighestCostStopsThenComplete,
+        "sha256:6d16851f8bbecd29e494afc405ccb446dcbc58d404a92b31fe5849b7630dceb0")]
+    public void StudyPolicyRoundTripsAsAClosedNamedPolicy(ExerciseControllerPolicy policy, string expectedHash)
     {
         var manifest = ExerciseManifestCodecTests.Create(controllerPolicy: policy);
         Assert.Equal(manifest, ExerciseManifestCodec.Deserialize(ExerciseManifestCodec.Serialize(manifest)));
+        Assert.Equal(expectedHash, ExerciseConfigurationIdentity.ComputeHash(manifest));
     }
 
     [Theory]
