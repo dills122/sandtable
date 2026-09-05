@@ -1,6 +1,6 @@
 # ZOC and Reaction v1 Technical Design
 
-**Status:** Approved — `ZOR-TASK-002A`-`006C` implemented; `007A` next
+**Status:** Approved — `ZOR-TASK-002A`-`007A` implemented; `007B` verification and review in progress
 
 **Date:** 2026-08-30
 
@@ -512,12 +512,18 @@ round-trip evidence remains owned by `ZOR-AC-014`.
 
 ### `ZOR-TASK-007` — Adopt and close the package
 
-- **007A:** add bounded Runner controllers and checked Maneuver children for ordering, subset close,
+- **007A (implemented):** add bounded Runner controllers and checked Maneuver children for ordering, subset close,
   active/system close, empty/unavailable, repeat trigger, adjacent/remote participant selection,
   positive/negative/local/remote ZOC, CP/BP, and final resumed Movement.
-- **007B:** add strict bundle/report readback, reconstruction, fresh-session re-adjudication,
+- **007B (implemented; final verification/review in progress):** add strict bundle/report readback, reconstruction, fresh-session re-adjudication,
   matching clean-run fingerprints, documentation synchronization, full `just check`, and independent
   review reconciliation.
+
+**Evidence:** [Reaction Maneuver study](../research/simulator-reaction-trajectories.md) maps the
+15 children and Core acceptance suites. Explicit controller identities retain prior study semantics.
+Runner selects only public action IDs/kinds and accepted episode/window counts; all authority stays
+in Core. Current Movement completion reconstructs unchanged event v1 directly from Snapshot 10,
+because predecessor world validation disallows accepted non-phasing Reaction movement.
 
 **Gate:** all `ZOR-REQ-*` and `ZOR-AC-*` map to checked evidence and no unresolved P0/P1 finding.
 

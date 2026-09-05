@@ -69,6 +69,15 @@ internal static class Cna1979SetupCatalog
                     Cna1979SyntheticContentCatalog.Artifact.Identity,
                     "initiative-contested-lab"),
                 [ContestedSourceReference]),
+            .. Cna1979ReactionContentCatalog.Artifacts.Select(artifact => new CampaignSetupDefinition(
+                SchemaVersion,
+                $"rules-lab.reaction.{artifact.Definition.LegacyDefinition.Scenarios.Single().ScenarioId["reaction-".Length..]}",
+                $"Rules Lab: {artifact.Definition.LegacyDefinition.Scenarios.Single().ScenarioId}",
+                true, 1, new PredeterminedInitiative(LandSide.Axis), OpeningPreamblePolicy,
+                WeatherPolicy, CreateStageEntryPolicy(1),
+                new CampaignContentSelection(ContentPackArtifact.Create(artifact.Definition.LegacyDefinition).Identity,
+                    artifact.Definition.LegacyDefinition.Scenarios.Single().ScenarioId),
+                [PredeterminedSourceReference])),
         ]);
 
     public static bool TryGet(

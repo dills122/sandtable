@@ -185,6 +185,30 @@ public static class ExerciseEvidenceCodec
         "fromPositionId", "gameTurn", "operationStage", "actingSide", "sequencePosition",
     ];
 
+    private static readonly string[] ReactionMoveEventProperties =
+    [
+        "contractVersion", "eventType", "campaignId", "stateVersion", "priorStateVersion",
+        "fromPositionId", "gameTurn", "operationStage", "actingSide", "actionId",
+        "submittedWindowId", "submittedOpportunityId", "windowId", "opportunityId",
+        "elementId", "representationId", "originLocationId", "destinationLocationId",
+        "mobilityId", "mobilitySources", "cost", "capabilityPointsExpendedBefore",
+        "capabilityPointsExpendedAfter", "cohesionBefore", "cohesionAfter", "reactionWindowAfter",
+    ];
+
+    private static readonly string[] ReactionCompletionEventProperties =
+    [
+        "contractVersion", "eventType", "campaignId", "stateVersion", "priorStateVersion",
+        "fromPositionId", "actingSide", "actionId", "submittedWindowId", "submittedOpportunityId",
+        "windowId", "opportunityId", "reactionWindowAfter",
+    ];
+
+    private static readonly string[] ReactionCloseEventProperties =
+    [
+        "contractVersion", "eventType", "campaignId", "stateVersion", "priorStateVersion",
+        "fromPositionId", "actingSide", "actionId", "submittedWindowId", "windowId", "reason",
+        "closedOpportunityIds", "resumedSequencePosition",
+    ];
+
     public static IReadOnlyList<ExerciseAcceptedActionRecord> DeserializeAcceptedActions(
         ReadOnlyMemory<byte> canonicalJsonLines) =>
         Array.AsReadOnly(ReadRecords(canonicalJsonLines)
@@ -319,6 +343,9 @@ public static class ExerciseEvidenceCodec
             "reserve-designation-completed" => (1, ReserveCompletionEventProperties),
             "element-moved" => (2, MovementEventProperties),
             "movement-segment-completed" => (1, MovementCompletionEventProperties),
+            "reacting-element-moved" => (1, ReactionMoveEventProperties),
+            "reaction-participant-completed" => (1, ReactionCompletionEventProperties),
+            "reaction-window-closed" => (1, ReactionCloseEventProperties),
             _ => throw new JsonException("Unknown canonical campaign event type."),
         };
         StrictJson.RequireExactProperties(root, expectedProperties);
@@ -328,7 +355,14 @@ public static class ExerciseEvidenceCodec
         var campaignId = RequireString(root, "campaignId");
         var stateVersion = root.GetProperty("stateVersion").GetInt64();
         if (stateVersion < 1) throw new JsonException("Event state version is invalid.");
-        var position = root.GetProperty("sequencePosition");
+        var position = eventType switch
+        {
+            "reacting-element-moved" or "reaction-participant-completed" => root
+                .GetProperty("reactionWindowAfter").GetProperty("reactingPosition")
+                .GetProperty("suspendedMovementPosition"),
+            "reaction-window-closed" => root.GetProperty("resumedSequencePosition"),
+            _ => root.GetProperty("sequencePosition"),
+        };
         if (position.ValueKind != JsonValueKind.Object)
             throw new JsonException("Event sequence position must be an object.");
         return new ExerciseCanonicalEventRecord(

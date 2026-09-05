@@ -886,6 +886,82 @@ public sealed class ExerciseBundleSemanticValidatorTests : IDisposable
             controllerPolicy:
                 ExerciseControllerPolicy.ActFirstReserveOneMoveEachOnceThenComplete));
 
+    [Theory]
+    [InlineData("reacting-element-moved", "submittedOpportunityId")]
+    [InlineData("reacting-element-moved", "windowId")]
+    [InlineData("reaction-participant-completed", "submittedOpportunityId")]
+    [InlineData("reaction-window-closed", "submittedWindowId")]
+    public void ReaderRejectsReactionBindingTamperingEvenAfterAllEvidenceHashesAreRefreshed(
+        string eventKind, string property)
+    {
+        var bundlePath = CreateSuccessfulBundle(
+            Cna.ExerciseRunner.Tests.Execution.ReactionRunnerTestData.Manifest(
+                ExerciseControllerPolicy.ReactionAllByActionId));
+        var changed = false;
+        RewritePayload(bundlePath, ArtifactSchema.CanonicalEventsPath, bytes =>
+        {
+            var lines = Encoding.UTF8.GetString(bytes).Split('\n');
+            for (var index = 0; index < lines.Length; index++)
+            {
+                if (lines[index].Length == 0) continue;
+                using var document = JsonDocument.Parse(lines[index]);
+                if (document.RootElement.GetProperty("eventType").GetString() != eventKind) continue;
+                var old = document.RootElement.GetProperty(property).GetString();
+                var replacement = $"sha256:{new string('0', 64)}";
+                Assert.NotEqual(old, replacement);
+                lines[index] = lines[index].Replace($"\"{property}\":\"{old}\"",
+                    $"\"{property}\":\"{replacement}\"", StringComparison.Ordinal);
+                changed = true;
+                break;
+            }
+            return Encoding.UTF8.GetBytes(string.Join('\n', lines));
+        });
+        Assert.True(changed);
+        RefreshDependentHashes(bundlePath);
+        RehashManifest(bundlePath);
+        Assert.Throws<InvalidDataException>(() => ExerciseBundleReader.Read(bundlePath));
+    }
+
+    [Theory]
+    [InlineData("reacting-element-moved")]
+    [InlineData("reaction-participant-completed")]
+    [InlineData("reaction-window-closed")]
+    public void ReactionEvidenceReaderRejectsExtraDuplicateReorderedAndLegacyFields(string eventKind)
+    {
+        var bundle = ExerciseBundleReader.Read(CreateSuccessfulBundle(
+            Cna.ExerciseRunner.Tests.Execution.ReactionRunnerTestData.Manifest(
+                ExerciseControllerPolicy.ReactionAllByActionId)));
+        var canonical = Encoding.UTF8.GetString(bundle.CanonicalEvents.First(value => EventType(value) == eventKind));
+        var mutations = new[]
+        {
+            "{\"extra\":null," + canonical[1..],
+            "{\"contractVersion\":1," + canonical[1..],
+            canonical.Replace($"\"contractVersion\":1,\"eventType\":\"{eventKind}\"",
+                $"\"eventType\":\"{eventKind}\",\"contractVersion\":1", StringComparison.Ordinal),
+            canonical.Replace("\"contractVersion\":1", "\"contractVersion\":0", StringComparison.Ordinal),
+        };
+        foreach (var mutation in mutations)
+            Assert.Throws<JsonException>(() => ExerciseEvidenceCodec.DeserializeCanonicalEvents(
+                Encoding.UTF8.GetBytes(mutation + "\n")));
+    }
+
+    [Fact]
+    public void ReaderRejectsRehashedSystemCloseReasonThatDoesNotMatchTheSubmittedAction()
+    {
+        var path = CreateSuccessfulBundle(Cna.ExerciseRunner.Tests.Execution.ReactionRunnerTestData.Manifest(
+            ExerciseControllerPolicy.ReactionUnavailable));
+        RewritePayload(path, ArtifactSchema.CanonicalEventsPath, bytes =>
+        {
+            var json = Encoding.UTF8.GetString(bytes);
+            Assert.Contains("\"reason\":\"scripted-unavailable\"", json, StringComparison.Ordinal);
+            return Encoding.UTF8.GetBytes(json.Replace("\"reason\":\"scripted-unavailable\"",
+                "\"reason\":\"timeout\"", StringComparison.Ordinal));
+        });
+        RefreshDependentHashes(path);
+        RehashManifest(path);
+        Assert.Throws<InvalidDataException>(() => ExerciseBundleReader.Read(path));
+    }
+
     private static string EventType(byte[] canonicalEvent)
     {
         using var document = JsonDocument.Parse(canonicalEvent);

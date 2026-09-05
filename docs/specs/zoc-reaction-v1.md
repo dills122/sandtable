@@ -1,6 +1,6 @@
 # ZOC and Reaction v1 Specification
 
-**Status:** Approved — `ZOR-TASK-002A`-`006C` implemented; `007A` next
+**Status:** Approved — `ZOR-TASK-002A`-`007A` implemented; `007B` verification and review in progress
 
 **Date:** 2026-08-30
 
@@ -391,5 +391,7 @@ That approval initially opened only the dependency-ordered first slice, `ZOR-TAS
 subsequently directed `002B`, `002C`, `003A`, `003B`, `004A`, `004B`, the boundary-remediation
 checkpoint `004C`, direct-only internal trigger checkpoint `005`, direct-only closure checkpoint
 `006A`, direct-only participant-episode checkpoint `006B`, and coordinated public activation
-checkpoint `006C` after their preceding verified checkpoints. `ZOR-TASK-007A` and later slices
-remain dependency-gated and must not be treated as part of that activation.
+checkpoint `006C` after their preceding verified checkpoints. The owner subsequently directed the remaining group, `007A` and `007B`, after `006C` merged
+in PR #84. Their Runner/evidence implementation follows that activation without adding hosting
+or Breakdown authority. [Checked evidence](../research/simulator-reaction-trajectories.md) maps
+the completed paths and retained Core acceptance suites.

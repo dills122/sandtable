@@ -23,6 +23,10 @@ public static partial class ExerciseController
         var system = actionSets[0];
         var players = actionSets.Skip(1).Where(set => set.Candidates.Count > 0).ToArray();
         if (!IsReactionPolicy(policies.System)) return null;
+        if (!actionSets.SelectMany(set => set.Candidates).Any(candidate => candidate.Kind is
+            "move-reacting-element" or "complete-reaction-participant" or "decline-reaction-window"
+            or "close-reaction-window-scripted-unavailable" or "close-reaction-window-timeout"
+            or "close-reaction-window-no-eligible-reactor")) return null;
 
         if (system.Candidates.Count == 1
             && system.Candidates[0].Kind == "close-reaction-window-no-eligible-reactor"
@@ -32,17 +36,18 @@ public static partial class ExerciseController
         if (players.Length != 1 || system.Candidates.Count != 2
             || system.Candidates.Count(value => value.Kind == "close-reaction-window-scripted-unavailable") != 1
             || system.Candidates.Count(value => value.Kind == "close-reaction-window-timeout") != 1)
-            return null;
+            return ExerciseControllerSelection.Failed(ExerciseControllerSelectionFailure.PolicyFailed);
 
         var player = players[0];
         var policy = player.Audience == CampaignActionAudience.Axis ? policies.Axis : policies.Commonwealth;
-        if (!IsReactionPolicy(policy)) return null;
+        if (!IsReactionPolicy(policy))
+            return ExerciseControllerSelection.Failed(ExerciseControllerSelectionFailure.PolicyFailed);
         var completions = player.Candidates.Where(value => value.Kind == "complete-reaction-participant").ToArray();
         var declines = player.Candidates.Where(value => value.Kind == "decline-reaction-window").ToArray();
         var moves = player.Candidates.Where(value => value.Kind == "move-reacting-element").ToArray();
         if (completions.Length + declines.Length != 1
             || moves.Length + completions.Length + declines.Length != player.Candidates.Count)
-            return null;
+            return ExerciseControllerSelection.Failed(ExerciseControllerSelectionFailure.PolicyFailed);
         var active = completions.Length == 1;
 
         var systemCloseKind = policies.System switch

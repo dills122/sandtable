@@ -56,6 +56,26 @@ public sealed class ReactionControllerTests
     }
 
     [Fact]
+    public void ReactionPolicyRejectsIncompleteSingleAudienceReactionShapes()
+    {
+        var policy = ExerciseControllerPolicy.ReactionAllByActionId;
+        var playerOnly = ExerciseController.Select(new(policy, policy, policy),
+        [
+            new(CampaignActionAudience.System, []),
+            new(CampaignActionAudience.Axis, [Candidate("a", "decline-reaction-window")]),
+            new(CampaignActionAudience.Commonwealth, []),
+        ]);
+        var systemOnly = ExerciseController.Select(new(policy, policy, policy),
+        [
+            new(CampaignActionAudience.System, [Candidate("t", "close-reaction-window-timeout")]),
+            new(CampaignActionAudience.Axis, []),
+            new(CampaignActionAudience.Commonwealth, []),
+        ]);
+        Assert.False(playerOnly.IsSelected);
+        Assert.False(systemOnly.IsSelected);
+    }
+
+    [Fact]
     public void EveryNewPolicyRoundTripsAndCompletesPublicReactionTrajectory()
     {
         foreach (var policy in Enum.GetValues<ExerciseControllerPolicy>()

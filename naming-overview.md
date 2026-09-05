@@ -626,9 +626,10 @@ reason-specific `ReactionWindowClosed` authority with exact Movement resumption.
 adds direct-only `ReactingElementMoved` and `ReactionParticipantCompleted` authority for atomic
 first selection, later active steps, and explicit participant resolution. `ZOR-TASK-006C` activates
 these successor terms together on the public Core creation, observation, action, checkpoint, and
-replay paths. `ZOR-TASK-007A` Runner adoption is in progress: bounded Reaction controllers select
+replay paths. `ZOR-TASK-007A` Runner adoption adds bounded Reaction controllers that select
 public capabilities by action ID, close participant episodes or windows explicitly, and preserve
-Umpire-owned costs on final Movement completion.
+Umpire-owned costs on final Movement completion. A checked 15-child Maneuver retains trusted
+authority evidence; `007B` strict readback reconstructs and re-adjudicates its Reaction events.
 
 **War College** is where we evaluate commanders.
 

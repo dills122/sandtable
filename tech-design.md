@@ -59,7 +59,8 @@ both through Movement. A checked six-child controller matrix crosses `act-first`
 Reserve `none`/`one`/`all` and reaches Movement in exact 10/11/12-action trajectories. In the
 checked Movement fixture, four non-triggering Reserve-one/all profiles reach Breakdown
 Determination in 13 actions. Two Reserve-none profiles open Reaction on their first move and fail
-closed after 11 actions because Runner Reaction selection belongs to `ZOR-TASK-007A`. Only the
+closed after 11 actions under their retained policy identities. Explicit `reaction-*` policies and the separate Reaction
+Maneuver implement `ZOR-TASK-007A`. Only the
 parent supplies the root seed; each ordered child receives an explicit Maneuver
 ID and ordinal identity and runs synchronously through the same no-console post-admission
 coordinator. The aggregate path opens each completed child bundle once, semantically validates its
@@ -813,7 +814,11 @@ checkpoint, serialization, and replay now use successor authority. `ZOR-TASK-007
 bounded Runner policies using only public action IDs/kinds and accepted episode/window counts.
 Movement completion reconstructs directly from Snapshot 10, preserving both sides' accepted
 Reaction costs instead of invoking predecessor validation that forbids non-phasing movement.
-Checked Maneuver adoption and package evidence remain in progress.
+The 15-child checked Reaction Maneuver covers ordering, bounded episodes, closure, repeat triggers,
+adjacent/remote selection, ZOC variants, and exact final costs. Runner strict event readers admit
+all Reaction events; bundle readback independently re-adjudicates the retained submissions.
+Package closeout verification and independent review are tracked in
+[Reaction evidence](docs/research/simulator-reaction-trajectories.md).
 The completed owner-approved engine package is the Movement Foundation
 [research](docs/research/movement-foundation-spike.md),
 [specification](docs/specs/movement-foundation-v1.md), and
@@ -871,8 +876,8 @@ All five `CONTACT-001` rulings and the governing specification/design package ar
 `ZOR-TASK-002A`-`006C` implement and activate Rules/Content/fixture, Campaign
 World/creation/snapshot/event-replay, Observation 6/policy/history, topology-local
 action/readback/mapping seams, the user-space declassification manifest/transcript gate, internal
-trigger/ZOC adjudication, window closure/resumption, and participant episodes. `007A` Runner
-adoption and `007B` package closeout remain dependency-gated.
+trigger/ZOC adjudication, window closure/resumption, and participant episodes. `007A` adds bounded
+Runner adoption and checked fixtures; `007B` adds strict Reaction evidence and package closeout.
 The implemented paired comparison does not block that engine work.
 
 [1]: https://learn.microsoft.com/en-us/dotnet/orleans/grains/external-tasks-and-grains "External tasks and grains - .NET | Microsoft Learn"

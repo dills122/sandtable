@@ -3,7 +3,7 @@
 **Status:** `EXR-TASK-016` remains complete; merged `MOV-TASK-009` extends the compatible Harness v1
 contracts through checked non-contact Movement to exact first-side Breakdown Determination. A
 post-adoption paired lowest-cost controller instrument is implemented and verified locally.
-`ZOR-TASK-006C` activates Reaction in Core; Runner Reaction selection remains `ZOR-TASK-007A`
+`ZOR-TASK-006C` activates Reaction in Core; `ZOR-TASK-007A` adds explicit bounded Reaction policies and a 15-child checked Maneuver
 
 **Date:** 2026-08-20
 

@@ -3,7 +3,7 @@
 **Status:** Task 016 remains complete; merged `MOV-TASK-009` compatibly extends the checked Harness
 through non-contact Movement to exact first-side Breakdown Determination. A post-adoption paired
 lowest-cost controller instrument is implemented and verified locally. `ZOR-TASK-006C` activates
-Reaction in Core; Runner Reaction selection remains `ZOR-TASK-007A`
+Reaction in Core; `ZOR-TASK-007A` adds explicit bounded Reaction policies and a 15-child checked Maneuver
 
 **Date:** 2026-08-20
 
@@ -919,7 +919,8 @@ changing the Harness authority boundary.
 - **Successor compatibility:** those checked-fixture counts describe merged `MOV-TASK-009` before
   Reaction activation. With `ZOR-TASK-006C`, Reserve-none opens Reaction after its first move and
   the Runner deterministically fails closed after 11 accepted steps; Reserve-one/all retain their
-  exact 13-step Breakdown evidence. `ZOR-TASK-007A` owns participant/System controller selection.
+  exact 13-step Breakdown evidence. Explicit `reaction-*` policies implement `ZOR-TASK-007A` participant/System selection; retained
+  Movement policy identities keep their original behavior. See [Reaction evidence](../research/simulator-reaction-trajectories.md).
 - **Fingerprint/study:** two clean CLI executions into separate artifact roots reconfirmed
   `sha256:c1c20270dcd3402886931c28851bea7f23cd1e0778b45f94c43d85ed01d41c4b`; it does not bind detailed
   child event/ledger bytes. `MovementSimulatorStudyTests` executes four boundary/interior seeds by

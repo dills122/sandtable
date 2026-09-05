@@ -28,6 +28,15 @@ internal static class ExerciseConfigurationIdentity
 
     private static string Format(ExerciseControllerPolicy policy) => policy switch
     {
+        ExerciseControllerPolicy.ReactionAllByActionId => "reaction-all-by-action-id",
+        ExerciseControllerPolicy.ReactionAllByDescendingActionId => "reaction-all-by-descending-action-id",
+        ExerciseControllerPolicy.ReactionTwoSteps => "reaction-two-steps",
+        ExerciseControllerPolicy.ReactionDecline => "reaction-decline",
+        ExerciseControllerPolicy.ReactionOneThenDecline => "reaction-one-then-decline",
+        ExerciseControllerPolicy.ReactionUnavailable => "reaction-unavailable",
+        ExerciseControllerPolicy.ReactionTimeout => "reaction-timeout",
+        ExerciseControllerPolicy.ReactionActiveUnavailable => "reaction-active-unavailable",
+        ExerciseControllerPolicy.ReactionActiveTimeout => "reaction-active-timeout",
         ExerciseControllerPolicy.FirstByActionId => "first-by-action-id",
         ExerciseControllerPolicy.DesignateAllReservesThenFirstByActionId =>
             "designate-all-reserves-then-first-by-action-id",
