@@ -809,8 +809,11 @@ move/window truth, frozen local opportunities, topology-local Movement-ended sta
 reason-specific window closure/resumption with unchanged committed World/random truth.
 `ZOR-TASK-006B` adds replay-complete participant selection, one-or-more-step active movement using
 shared CP/provenance authority, and explicit completion. Public creation, observation, submission,
-checkpoint, serialization, and replay now use successor authority; bounded Runner adoption in
-`ZOR-TASK-007A` is next.
+checkpoint, serialization, and replay now use successor authority. `ZOR-TASK-007A` adds explicit
+bounded Runner policies using only public action IDs/kinds and accepted episode/window counts.
+Movement completion reconstructs directly from Snapshot 10, preserving both sides' accepted
+Reaction costs instead of invoking predecessor validation that forbids non-phasing movement.
+Checked Maneuver adoption and package evidence remain in progress.
 The completed owner-approved engine package is the Movement Foundation
 [research](docs/research/movement-foundation-spike.md),
 [specification](docs/specs/movement-foundation-v1.md), and

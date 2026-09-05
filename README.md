@@ -102,7 +102,9 @@ topology-local ordinary Movement and first/later Reaction movement, participant
 completion, player decline, and reason-specific System close membership with canonical identities,
 strict current readback, and unpublished typed submission intents. Public Core query, submission,
 checkpoint, serialization, and replay paths now use this complete successor set; bounded Exercise
-Runner Reaction controllers remain `ZOR-TASK-007A`.
+Runner Reaction controllers are in progress under `ZOR-TASK-007A`: explicit bounded policies now
+support participant ordering, one/two-step episodes, decline/subset close, and System fallback.
+Current Movement completion preserves accepted Reaction costs through the Breakdown boundary.
 
 The local `Cna.ExerciseRunner` supports that synthetic rules-laboratory path as either one
 bounded, deterministic **Exercise** or one serial **Maneuver**. An Exercise uses a fresh opaque Core

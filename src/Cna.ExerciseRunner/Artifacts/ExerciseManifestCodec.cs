@@ -116,6 +116,15 @@ public static class ExerciseManifestCodec
 
     private static string Format(ExerciseControllerPolicy value) => value switch
     {
+        ExerciseControllerPolicy.ReactionAllByActionId => "reaction-all-by-action-id",
+        ExerciseControllerPolicy.ReactionAllByDescendingActionId => "reaction-all-by-descending-action-id",
+        ExerciseControllerPolicy.ReactionTwoSteps => "reaction-two-steps",
+        ExerciseControllerPolicy.ReactionDecline => "reaction-decline",
+        ExerciseControllerPolicy.ReactionOneThenDecline => "reaction-one-then-decline",
+        ExerciseControllerPolicy.ReactionUnavailable => "reaction-unavailable",
+        ExerciseControllerPolicy.ReactionTimeout => "reaction-timeout",
+        ExerciseControllerPolicy.ReactionActiveUnavailable => "reaction-active-unavailable",
+        ExerciseControllerPolicy.ReactionActiveTimeout => "reaction-active-timeout",
         ExerciseControllerPolicy.FirstByActionId => "first-by-action-id",
         ExerciseControllerPolicy.DesignateAllReservesThenFirstByActionId =>
             "designate-all-reserves-then-first-by-action-id",
@@ -174,6 +183,15 @@ public static class ExerciseManifestCodec
 
     private static ExerciseControllerPolicy ParseController(string? value) => value switch
     {
+        "reaction-all-by-action-id" => ExerciseControllerPolicy.ReactionAllByActionId,
+        "reaction-all-by-descending-action-id" => ExerciseControllerPolicy.ReactionAllByDescendingActionId,
+        "reaction-two-steps" => ExerciseControllerPolicy.ReactionTwoSteps,
+        "reaction-decline" => ExerciseControllerPolicy.ReactionDecline,
+        "reaction-one-then-decline" => ExerciseControllerPolicy.ReactionOneThenDecline,
+        "reaction-unavailable" => ExerciseControllerPolicy.ReactionUnavailable,
+        "reaction-timeout" => ExerciseControllerPolicy.ReactionTimeout,
+        "reaction-active-unavailable" => ExerciseControllerPolicy.ReactionActiveUnavailable,
+        "reaction-active-timeout" => ExerciseControllerPolicy.ReactionActiveTimeout,
         "first-by-action-id" => ExerciseControllerPolicy.FirstByActionId,
         "designate-all-reserves-then-first-by-action-id" =>
             ExerciseControllerPolicy.DesignateAllReservesThenFirstByActionId,

@@ -80,11 +80,15 @@ public sealed class ExerciseControllerActionSet
         CampaignActionAudience audience,
         IEnumerable<ExerciseControllerCandidate> candidates,
         int priorReserveDesignationCount = 0,
-        IEnumerable<string>? priorMovedElementIds = null)
+        IEnumerable<string>? priorMovedElementIds = null,
+        int priorReactionEpisodeMoveCount = 0,
+        int priorReactionWindowCompletionCount = 0)
     {
         if (!Enum.IsDefined(audience)) throw new ArgumentOutOfRangeException(nameof(audience));
         ArgumentNullException.ThrowIfNull(candidates);
         ArgumentOutOfRangeException.ThrowIfNegative(priorReserveDesignationCount);
+        ArgumentOutOfRangeException.ThrowIfNegative(priorReactionEpisodeMoveCount);
+        ArgumentOutOfRangeException.ThrowIfNegative(priorReactionWindowCompletionCount);
         var copy = candidates.ToArray();
         var moved = priorMovedElementIds?.ToArray() ?? [];
         if (copy.Any(value => value is null)
@@ -102,6 +106,8 @@ public sealed class ExerciseControllerActionSet
                 "Accepted Movement history must contain unique stable element IDs.",
                 nameof(priorMovedElementIds));
         Audience = audience;
+        PriorReactionEpisodeMoveCount = priorReactionEpisodeMoveCount;
+        PriorReactionWindowCompletionCount = priorReactionWindowCompletionCount;
         PriorReserveDesignationCount = priorReserveDesignationCount;
         PriorMovedElementIds = Array.AsReadOnly(
             moved.OrderBy(value => value, StringComparer.Ordinal).ToArray());
@@ -111,6 +117,8 @@ public sealed class ExerciseControllerActionSet
     }
 
     public CampaignActionAudience Audience { get; }
+    public int PriorReactionEpisodeMoveCount { get; }
+    public int PriorReactionWindowCompletionCount { get; }
     public int PriorReserveDesignationCount { get; }
     public IReadOnlyList<string> PriorMovedElementIds { get; }
     public IReadOnlyList<ExerciseControllerCandidate> Candidates { get; }
@@ -155,7 +163,7 @@ public sealed class ExerciseControllerSelection
     }
 }
 
-public static class ExerciseController
+public static partial class ExerciseController
 {
     private static readonly CampaignActionAudience[] AudienceOrder =
     [
@@ -175,6 +183,8 @@ public static class ExerciseController
             throw new ArgumentException(
                 "Controller action sets must use fixed audience order.",
                 nameof(actionSets));
+        var reaction = SelectReaction(policies, actionSets);
+        if (reaction is not null) return reaction;
         var active = actionSets.Where(value => value.Candidates.Count > 0).ToArray();
         if (active.Length == 0)
             return ExerciseControllerSelection.Failed(
@@ -201,7 +211,9 @@ public static class ExerciseController
         if (policy == ExerciseControllerPolicy.DesignateAllReservesThenFirstByActionId)
             return SelectDesignateAllReservesThenFirstByActionId(selected);
 
-        var matrixPolicy = MatrixPolicy(policy);
+        var matrixPolicy = IsReactionPolicy(policy)
+            ? new MatrixControllerPolicy(true, MatrixReserveSelection.None, MatrixMovementSelection.StableRoute)
+            : MatrixPolicy(policy);
         return matrixPolicy.HasValue
             ? SelectMatrixPolicy(selected, matrixPolicy.Value)
             : ExerciseControllerSelection.Failed(

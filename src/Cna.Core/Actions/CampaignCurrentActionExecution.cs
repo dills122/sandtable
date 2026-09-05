@@ -228,25 +228,9 @@ internal static class CampaignCurrentActionExecution
                     context.Scenario);
                 break;
             case CompleteMovementSegmentV6Intent:
-                var legacy = CampaignV10LegacyBridge.ToLegacy(snapshot, context);
-                var submission = new CampaignActionSubmission(
-                    CampaignActionSubmission.CurrentContractVersion,
-                    snapshot.CampaignId,
-                    snapshot.StateVersion,
-                    CurrentPositionId(snapshot),
-                    audience,
-                    candidate.ActionId);
-                var execution = CampaignActionExecution.Execute(legacy, context, submission);
-                if (!execution.IsAccepted)
-                {
-                    return Reject(execution.RejectionReason);
-                }
-
-                campaignEvent = execution.AcceptedEvent!;
-                successor = CampaignV10LegacyBridge.FromLegacy(
-                    snapshot,
-                    execution.SuccessorSnapshot!,
-                    context);
+                var movementCompleted = CampaignCurrentMovementCompletion.Create(snapshot, context);
+                campaignEvent = movementCompleted;
+                successor = CampaignCurrentMovementCompletion.Apply(snapshot, movementCompleted, context);
                 break;
             default:
                 return Reject(CampaignActionSubmissionRejectionReason.ActionNotLegal);

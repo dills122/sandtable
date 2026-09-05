@@ -37,6 +37,15 @@ public enum ExerciseControllerPolicy
     ActLastReserveOneMoveEachOnceThenComplete,
     ActLastReserveAllMoveEachOnceThenComplete,
     ActFirstReserveNoneMoveEachOnceByLowestCostThenComplete,
+    ReactionAllByActionId,
+    ReactionAllByDescendingActionId,
+    ReactionTwoSteps,
+    ReactionDecline,
+    ReactionOneThenDecline,
+    ReactionUnavailable,
+    ReactionTimeout,
+    ReactionActiveUnavailable,
+    ReactionActiveTimeout,
 }
 
 public enum ExerciseFailureCategory

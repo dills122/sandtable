@@ -74,6 +74,8 @@ internal static class CampaignCurrentProjector
                     context.Scenario),
             CampaignCreated or ElementMoved => throw new InvalidCampaignHistoryException(
                 "Legacy creation and Movement events are not current authority."),
+            MovementSegmentCompleted completed when snapshot is not null =>
+                CampaignCurrentMovementCompletion.Apply(snapshot, completed, context),
             CampaignEvent unchanged when snapshot is not null => ApplyUnchanged(
                 snapshot,
                 unchanged,
