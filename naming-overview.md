@@ -631,6 +631,9 @@ public capabilities by action ID, close participant episodes or windows explicit
 Umpire-owned costs on final Movement completion. A checked 15-child Maneuver retains trusted
 authority evidence; `007B` strict readback reconstructs and re-adjudicates its Reaction events.
 The package is verified through matching clean runs and a Ready independent review.
+The next proposed Umpire package is [Breakdown adjudication](docs/design/breakdown-adjudication-v1.md).
+Its technical vocabulary uses a pending movement stop, check evidence, and persistent broken-vehicle
+lots; these remain design terms until owner decisions and contract freeze are approved.
 
 **War College** is where we evaluate commanders.
 

@@ -578,6 +578,11 @@ later Sprint 4/5 slices rather than hidden additions to the first Movement resol
 | 4D — Checked evidence and closeout | `MOV-TASK-009`-`010` | Reserve policy matrix executes supported Movement to Breakdown with strict readback and synchronized evidence | Complete; Task 009 merged in PR #78 and Task 010 in PR #79 |
 | 4E — ZOC/Reaction interruption | accepted `CONTACT-001` and approved `ZOR-TASK-002A`-`007B` plan | Adjacency-triggered phasing Movement opens an opponent decision, exact Reaction/decline resolves, and Movement resumes deterministically | `ZOR-TASK-002A`-`006C` implement and activate the Core Rules/Content/Campaign/Observation/action/replay vertical; `007A` checked Runner adoption is implemented; `007B` verification and independent review are complete; Contact/Engaged remain Sprint 5 |
 
+The next Sprint 4 decision is [BRK-RSH-002](../research/breakdown-adjudication-spike.md). Its
+[proposed design](../design/breakdown-adjudication-v1.md) separates BP integration, stop/Reaction
+continuations, RNG and persistent losses into `BRK-TASK-001`–`007`. The numerical research surface is
+verified; initial Truck/content/placement scope and stop precedence still require owner resolution.
+
 ### Current parallel execution window
 
 Movement closeout is complete through merged `MOV-TASK-010` / PR #79. ZOC/Reaction Core authority
@@ -589,7 +594,7 @@ The following bounded lanes can proceed without colliding with that serial autho
 | Lane | Scope now | Collision / merge gate |
 | --- | --- | --- |
 | ZOC/Reaction authority lane | Stable approved requirements, technical design, task slices, and traceability from accepted `CONTACT-001` rulings | Core checkpoints `ZOR-TASK-002A`-`006C` are implemented; `007A` Runner adoption is implemented; `007B` verification and independent review are complete; approval did not collapse the dependency graph |
-| Breakdown adjudication research/design | Normalize the percentage outcome table, action/result/loss vocabulary, RNG evidence, and decision packet against implemented BP state | Campaign seam is frozen by `ZOR-TASK-003B`; reconciliation may proceed as research/design only and must not edit shared Core contracts concurrently |
+| Breakdown adjudication research/design | `BRK-RSH-002` source/decision packet and proposed seven-task design complete | Resolve `BRK-DEC-004`–`007`, then `BRK-TASK-001` freezes exact successor contracts; no production authority approved |
 | `CMB-RSH-003`-`004`, `CYCLE-RSH-001`, `RESREL-RSH-001` | Continue bounded mutable-state, RNG, cycle-identity, and Reserve Release research | Research only; the ZOC package adopts only the minimum approved static component/current-TOE foundation and no Combat resolution |
 | `CIH-IMP-004` offline Markdown links | Add a repository-local offline link gate with reviewed exclusions and a broken-link negative | Begin after the central documentation sync; keep shared architecture/status docs under one owner |
 
@@ -884,5 +889,7 @@ The accepted `CONTACT-001` rulings are retained in the
 [ZOC/Reaction ruling lock](../research/contact-reaction-zoc-source-ruling-lock.md). Their stable
 `ZOR-REQ-*`, `ZOR-AC-*`, and dependency-ordered `ZOR-TASK-002A`-`007B` production plan is in the
 [ZOC/Reaction specification](../specs/zoc-reaction-v1.md) and
-[technical design](../design/zoc-reaction-v1.md); the package is approved, dormant implementation
-is complete through `004C`, and `005` is the next bounded checkpoint.
+[technical design](../design/zoc-reaction-v1.md); the package is implemented and verified through
+`007B`. Next is the [Breakdown decision packet](../research/breakdown-adjudication-spike.md) and
+[proposed design](../design/breakdown-adjudication-v1.md): research is complete, with owner decisions
+and production contract freeze still pending.

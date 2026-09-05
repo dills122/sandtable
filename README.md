@@ -107,6 +107,9 @@ participant ordering, one/two-step episodes, decline/subset close, and System fa
 Current Movement completion preserves accepted Reaction costs through the Breakdown boundary.
 `ZOR-TASK-007B` closes the package with strict evidence, matching clean-run fingerprints, and
 a Ready independent review; see [checked Reaction trajectories](docs/research/simulator-reaction-trajectories.md).
+The next gate is [Breakdown adjudication research/design](docs/research/breakdown-adjudication-spike.md):
+source-locked outcomes and a proposed seven-task plan are ready for owner decisions. Current runtime
+still stops at Breakdown; no Breakdown adjudication is implemented.
 
 The local `Cna.ExerciseRunner` supports that synthetic rules-laboratory path as either one
 bounded, deterministic **Exercise** or one serial **Maneuver**. An Exercise uses a fresh opaque Core

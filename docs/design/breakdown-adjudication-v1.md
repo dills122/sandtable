@@ -1,0 +1,197 @@
+# Breakdown adjudication v1 — proposed design and task plan
+
+**Status:** Proposed, research-complete; owner decisions and contract freeze pending. No implementation approval.
+
+**Research:** [BRK-RSH-002 decision packet](../research/breakdown-adjudication-spike.md).
+
+**Baseline:** ZOR-007 complete at `0512ec2`. **Initial supported profile:** Truck; bounded content
+and placement scope proposed in BRK-DEC-006/007. Other profiles and full transport/repair rules are
+explicit later gates. This is not a specification for all Section 21 behavior.
+
+## Outcome and authority
+
+The first supported vertical accepts exact BP-bearing moves, records a deliberate or forced stop,
+adjudicates supported Truck cohorts once at the appropriate effective band, retains broken equipment
+at an explicit location, and continues to the exact suspended authority position. At first-side
+Breakdown Determination it drains remaining supported stops, completes that segment and stops at
+the existing Combat checkpoint. It neither fabricates Combat nor enables the continual cycle.
+
+Core owns calculation, RNG, stop lifecycle, legal membership, loss projection and replay. Runner
+selects only current public actions and records trusted evidence. No inference, remote service,
+hosting scheduler, wall-clock deadline or new protobuf contract is required.
+
+## Decisions before production
+
+BRK-DEC-001–003 are already approved. This design depends on proposed BRK-DEC-004–007 in the research
+packet. Pending decisions cover exact `33` arithmetic, stop/Reaction precedence, the first supported
+check-unit/content boundary, and persistent placement. Alternatives remain explicit; implementation
+must not choose silently. Task 001 must convert accepted choices into governing requirements,
+acceptance IDs, wire schemas, and one exhaustive activation matrix.
+
+## Shared accounting before adjudication
+
+Extract one authority-side BP delta calculation from admitted content edge/terrain and weather
+inputs. Ordinary and Reaction movement invoke the same calculation; they must not infer BP from CP.
+Use reduced rationals and checked arithmetic. Preserve route transformation, directional hexside
+provenance, exact cumulative BP, and exact Sandstorm subtotal. Non-cohort movement has no BP delta.
+Rainstorm transforms route inputs, then contributes neutral column shift; it must not call the
+current method that intentionally rejects Rainstorm as a shift.
+
+Successor move events retain before/delta/after BP and source/rules identities alongside existing CP
+and Reaction evidence. Projectors rederive the entire canonical event before atomic application.
+A forged BP component rejects the whole move, leaving World, window and RNG unchanged. Move actions
+and cost queries consume no RNG. Existing accepted v2/v1 move bytes retain their historical semantics.
+
+## Stop and continuation model
+
+Proposed authority state has one nullable `PendingBreakdownStop`, which may suspend a normal
+sequence position or a specific Reaction continuation. It is distinct from the existing Reaction
+window, which continues to own frozen opportunities. Never replace one pending state with the other.
+
+- A public owner `stop-element-movement` action records the current route's origin, last location,
+  moved cohort membership, state/version/rules identity, and exact continuation. Completing the
+  Movement Segment records any still-open routes before advancing.
+- Reaction participant completion records a stop after its accepted steps. The participant cannot
+  be selected again in that window; another participant cannot begin until the pending stop drains.
+- System unavailable/timeout closure records an active participant's stop when needed, resolves the
+  window, and retains the suspended phasing continuation. An active stop is drained before that
+  continuation becomes executable. Empty/no-active closure creates no fictitious route.
+- Under proposed DEC-005, a phasing stop coincident with a trigger defers its Breakdown resolution
+  until the triggered window closes. A reactor stop can therefore precede that deferred phasing stop.
+  The contract must retain both continuations explicitly, not overwrite the deferred stop.
+- Forced Movement end records a stop once. Merely exhausting current legal moves must not silently
+  skip completion. Repeating the same action or resubmitting an old handle cannot make another stop.
+
+Task 001 must give each transition an explicit diagram and closed discriminator. One record with
+arbitrary recursive continuations is not acceptable; allow only the bounded normal/phasing-deferred/
+reactor-stop combinations above and reject impossible mixtures. Route-origin lifetime begins with
+first movement after the previous resolved stop, so later stops cannot reuse a stale origin.
+
+## Check transaction and RNG evidence
+
+Use a single System `resolve-breakdown-stop` action for a committed stop. It freezes all supported
+check inputs and processes eligible groups in canonical authority order in one accepted event.
+The same resolution transition occurs for an admitted stop with no eligible roll, keeping outward
+transition count independent of hidden group cardinality. Do not publish one action per hidden cohort.
+
+Eligibility requires positive working points, raw BP greater than three, a non-null effective band,
+and a band above retained highest effective checked band. The existing band comparison and clamping
+must be explicit. A zero-loss roll still advances checked-band memory; a no-roll case consumes no
+randomness. A raw 71+ cohort cannot gain repeated rolls merely by accumulating more within that
+capped effective band. Checks never discharge cumulative stage BP.
+
+For each eligible check, use two calls to `SandtableRandom.RollD6` on the authoritative stream.
+Retain ordered faces, sequential coordinate, actual cursor before/after, lookup label, accepted
+fraction identity, count basis, losses, checked-band before/after, and complete rules provenance.
+Reconstruction reruns rejection sampling; accepting a caller-supplied die or assuming cursor+2
+violates this design. RNG and every group delta commit together or not at all.
+
+Admit only roots certified under the public capability profile below, and validate its invariant
+after every accepted transition. No legal stop in an admitted history can become unsupported merely
+because hidden placement/grouping facts differ. Invalid roots reject before player-visible campaign
+creation; malformed/stale/forged later submissions emit no event and change no RNG or World.
+A violated invariant indicates invalid authority, not an ordinary zero-loss or hidden-dependent
+unsupported result. Task 001 freezes those exact admission/rejection result contracts.
+
+## Working points and broken lots
+
+Introduce authority `BrokenVehicleLot` records with stable identity derived from check/event identity,
+cohort/type, owner, count, stop location and provenance. Cohort working counts and lot totals conserve
+initial admitted points while no capture/repair authority exists. A later working-cohort move never
+moves old lots. Lots are not combat elements, cannot acquire legal Movement/Reaction actions, and
+do not invent ZOC or stacking strength.
+
+Under proposed DEC-006, the initial public capability profile admits at most one unladen standalone
+Truck cohort per side in the entire campaign, with no passengers/cargo or commands capable of
+creating, splitting or merging such cohorts. This stronger structural bound prevents grouped/mixed
+checks regardless of hidden BP, eligibility or co-location. Zero-working cohorts cannot move; survivors use
+only their remaining admitted capacity. Do not apply a blanket mobility change to current infantry
+without implementing its transport model. Existing motorized-infantry fixtures are not admitted under this new public profile; their BP
+movement accounting remains testable through dormant successor contracts. Positive public
+Reaction-stop/forced-close vectors use non-cohort combat reactors and verify zero-roll continuation;
+a positive motorized-infantry Reaction loss awaits transport support.
+
+Under proposed DEC-007, the same public profile excludes any combat unit, represented formation,
+or combined combat grouping larger than a single battalion. Use a conservative structural bound,
+including aggregates: absence of a larger individual leaf is insufficient. Certification checks
+all authoritative components at creation, and every admitted transition must preserve this bound.
+Future formation/capacity-changing actions cannot enter this profile without new approval. Its
+identifier and restrictions are public setup metadata; they are not inferred from secret current
+positions. Thus every route-start placement exception is impossible, irrespective of hidden enemy
+movement, friendly blockers or later Reaction. A legal stop always resolves through the same
+supported transition; detailed invalid-root reasons remain trusted diagnostics.
+
+General origin placement stays deferred. That later package must capture immutable qualifying
+threat/blocker facts or a provenance-bearing predicate immediately before the route's first move,
+retain it through Reaction/snapshot/replay, and reset it only at the next route start. It must test
+an enemy entering/leaving range and blocker changes after that start. Current origin location alone
+cannot support broader historical replay, and current-state geometry is not a substitute. The
+narrow profile needs no hidden start-time predicate because its invariant makes that predicate
+uniformly false. Capture, relocation choices, towing and repair stay closed. Later stages reset BP/check memory only
+through a separately defined stage-entry transition; broken lots and point conservation persist.
+No such later-stage advance is claimed by the first vertical.
+
+## Observation and artifact boundary
+
+Normal owner projection may extend existing own risk facts only through an approved Observation
+successor. Reaction projection must retain current nonlinkability: no stable cohort IDs, raw BP
+ledgers, broken-lot IDs, count basis or private placement inputs appear in reacting move options.
+Both player histories receive only approved stop/wait/continuation facts. Trusted Chronicle retains
+all calculations. Tests compare transcript shapes for hidden group counts and compare player bytes
+under hidden bindings, BP, eligibility and placement-input permutations.
+
+Expand the versioned disclosure manifest before outward types. System action is a state-scoped opaque
+capability, never an authority cohort selector exposed to a player. Extend strict Runner event
+schemas, reconstruction and fresh-session re-adjudication together. Rehashed forged faces, cursor,
+percentage, BP, lot locations, check memory or continuation must all fail semantic admission.
+
+## Versioned contract freeze
+
+Affected identities include the Breakdown rules artifact/ruleset; World and Snapshot; campaign
+creation; normal/Reaction move events; stop/check/completion events; relevant action/policy and
+Observation/projected-history schemes; and Runner strict event admission. Content needs a successor
+only where new schemas or admission invariants require it; adding a fixture alone is not a reason
+to change every content schema. Task 001 must enumerate exact existing and successor versions and
+hash dependencies, including disclosure-manifest changes, before generating consumers.
+
+Keep successor contracts dormant until replay, projection, actions and observation agree. Activation
+rejects legacy-only and every mixed identity set on all current creation/readback/submission paths.
+Historical code/bytes remain historical; old BP-zero histories cannot be treated as correctly
+accounted successor histories. No inference from CP or silent history backfill. The supported rollback
+is reverting the activation as a whole, with successor artifacts clearly identified and rejected by
+older current readers; no dual-current downgrade mode.
+
+## Ordered task graph
+
+| Task | Deliverable and owner modules | Prerequisite / exit evidence |
+| --- | --- | --- |
+| `BRK-TASK-001` | Accepted decisions, governing spec, closed stop diagrams, exact schemas/identity matrix, public capability certification and rejection vocabulary | Owner resolves DEC-004–007; independent design review; no open authority ambiguity |
+| `BRK-TASK-002` | Dormant outcome rules, exact loss arithmetic, source/ruling provenance; `Cna.Core/Rules` | 001; all 324 table cells/coordinate boundaries, rounding/one-point, column and no-roll tests |
+| `BRK-TASK-003` | Dormant World/Snapshot/creation/lot/stop contracts and bounded Truck fixture; `Content`, `Campaigns` | 002; strict codec, conservation, public profile creation/transition negatives, mixed-version rejection |
+| `BRK-TASK-004` | Shared BP deltas and successor ordinary/Reaction events/projectors | 003; terrain/route/weather vectors, atomic forged-delta rejection, preserved CP/Reaction behavior |
+| `BRK-TASK-005` | Stop/check authority, exact RNG replay and continuation; no public activation | 004; nested phasing/reactor/forced-close transitions, zero-roll vs zero-loss, no duplicate costs/draws |
+| `BRK-TASK-006` | Observation, action membership, disclosure manifest, projected history and atomic public activation | 005; privacy/forgery/identity matrix and mandatory boundary gate; stop at unsupported Combat |
+| `BRK-TASK-007` | Checked Runner fixtures, strict bundles, research reconciliation and closeout | 006; exact accounting/lots/continuation, two clean runs, full gate and independent review |
+
+No production task is marked complete. Safe independent research lanes are grouped allocation,
+transport consequences and origin-placement/capture/repair; they do not modify these shared contracts.
+
+## Acceptance matrix for contract freeze
+
+| Proposed ID | Required evidence |
+| --- | --- |
+| `BRK-AC-001` | All legal dice coordinates and nine outcome columns; illegal coordinates, gaps and duplicate outcomes reject |
+| `BRK-AC-002` | Exact BP terrain/route/hexside costs, Rainstorm transformation, Sandstorm half threshold, ordinary/Reaction equality |
+| `BRK-AC-003` | Raw <=3, BAR-shifted below surface, unchanged checked band and no working points produce no roll; cap and higher-band behavior exact |
+| `BRK-AC-004` | Zero-loss eligible roll retains exact RNG/check memory; fractional loss/one-point exception follow accepted DEC-004 |
+| `BRK-AC-005` | Same-seed events/snapshots/RNG match; rejection-sampling cursor exceeds two when appropriate; invalid submission emits nothing |
+| `BRK-AC-006` | Deliberate/forced stops, active Reaction fallback and deferred phasing stop each resume exact continuation once |
+| `BRK-AC-007` | Working points plus persistent lots conserve counts; later survivor movement leaves lots fixed; zero-working cohorts cannot move |
+| `BRK-AC-008` | Public profile rejects multiple same-side Truck cohorts, passenger/cargo capability, and any larger combat unit/aggregate at creation; every transition preserves certification. No valid stop has hidden-dependent support. Broader start-time placement evidence explicitly deferred |
+| `BRK-AC-009` | Within the admitted profile, hidden binding/BP/eligibility/position/blocker permutations preserve approved player transcript, including progress and action availability. Creation negatives cover excluded larger/grouped worlds; disclosure manifest and boundary-check pass |
+| `BRK-AC-010` | Every rehashed authoritative component mutation rejects through strict readback and fresh-session re-adjudication |
+| `BRK-AC-011` | All-legacy, all-successor and each partial-mixture identity vector checked across current boundaries |
+| `BRK-AC-012` | Checked public Truck trajectory reaches exact Combat boundary; repeated clean artifacts match; later-stage reset remains explicitly unsupported |
+
+These are proposed acceptance criteria for Task 001. Research experiment validates the numeric
+transcription and conditional arithmetic only; it does not satisfy future Core acceptance tests.

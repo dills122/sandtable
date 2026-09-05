@@ -1,0 +1,145 @@
+{
+  "schemeId": "sandtable.research.breakdown-outcome-bounds.v1",
+  "status": "research-only",
+  "sourceId": "spi-1979-common-charts",
+  "locator": "21.38; PDF page 7",
+  "sourceSha256": "51aa5a5bfdaca3d23794da71a45a830d98b798d060097cde6418126d6bd63bb0",
+  "coordinateDomain": [
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    51,
+    52,
+    53,
+    54,
+    55,
+    56,
+    61,
+    62,
+    63,
+    64,
+    65,
+    66
+  ],
+  "printedPercentageLabels": [
+    0,
+    10,
+    25,
+    33,
+    50,
+    75
+  ],
+  "encoding": "Each non-null bound ends the range after the previous non-null bound, over coordinateDomain only; null means no coordinates. Missing trailing entries mean no coordinates. Printed 33 is a label; its arithmetic interpretation is a proposed decision.",
+  "bands": [
+    {
+      "bandId": "0-3",
+      "inclusiveUpperBounds": [
+        66
+      ]
+    },
+    {
+      "bandId": "4-10",
+      "inclusiveUpperBounds": [
+        42,
+        64,
+        65,
+        66
+      ]
+    },
+    {
+      "bandId": "11-20",
+      "inclusiveUpperBounds": [
+        32,
+        62,
+        64,
+        65,
+        66
+      ]
+    },
+    {
+      "bandId": "21-30",
+      "inclusiveUpperBounds": [
+        26,
+        55,
+        62,
+        65,
+        66
+      ]
+    },
+    {
+      "bandId": "31-40",
+      "inclusiveUpperBounds": [
+        23,
+        53,
+        61,
+        64,
+        66
+      ]
+    },
+    {
+      "bandId": "41-50",
+      "inclusiveUpperBounds": [
+        16,
+        46,
+        56,
+        63,
+        65,
+        66
+      ]
+    },
+    {
+      "bandId": "51-60",
+      "inclusiveUpperBounds": [
+        14,
+        42,
+        54,
+        63,
+        65,
+        66
+      ]
+    },
+    {
+      "bandId": "61-70",
+      "inclusiveUpperBounds": [
+        null,
+        33,
+        52,
+        62,
+        64,
+        66
+      ]
+    },
+    {
+      "bandId": "71-plus",
+      "inclusiveUpperBounds": [
+        null,
+        25,
+        43,
+        55,
+        63,
+        66
+      ]
+    }
+  ]
+}
