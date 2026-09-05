@@ -1,6 +1,8 @@
 # Checked Reaction trajectories
 
-**Status:** ZOR-TASK-007A and ZOR-TASK-007B complete; full gate passed; independent review Ready.
+**Status:** Historical Rules 8 evidence at the recorded ZOR-TASK-007B commit; full gate passed and independent review Ready at that target.
+
+Current Rules 9 rejects these original manifests. [Breakdown Runner closeout](breakdown-runner-closeout.md) supplies 13 certified successor children with explicit stops and zero-roll resolutions. Positive local/remote ZOC remain deferred; no old fingerprint or exact trajectory count is claimed for those successors. Reproduction commands below require the recorded historical checkout.
 
 The [checked Maneuver](../../scenarios/maneuvers/rules-lab.reaction.serial.v2.json) runs fifteen
 fresh campaigns through public Core creation, legal-action query, submission, strict evidence

@@ -46,6 +46,8 @@ public enum ExerciseControllerPolicy
     ReactionTimeout,
     ReactionActiveUnavailable,
     ReactionActiveTimeout,
+    ActFirstReserveAllMoveEachOnceByLowestCostThenComplete,
+    ActFirstReserveAllRepeatHighestCostStopsThenComplete,
 }
 
 public enum ExerciseFailureCategory

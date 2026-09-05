@@ -563,7 +563,12 @@ produce six Movement-entry Exercises inside one Maneuver and do not make the run
 The checked Movement policies append `move-each-once-then-complete`. The additive
 `move-each-once-by-lowest-cost-then-complete` name is explicitly a trusted simulator-selection
 instrument: it orders an element's current public legal moves by exact cost and is neither a Core
-rule nor a recommended player strategy.
+rule nor a recommended player strategy. The Truck study adds
+`act-first-reserve-all-move-each-once-by-lowest-cost-then-complete` and
+`act-first-reserve-all-repeat-highest-cost-stops-then-complete`. The latter repeats legal moves,
+stops after every edge, and lets the current System action resolve each pending stop. These names
+describe bounded runner choices; **Stop Element Movement** and **Resolve Breakdown Stop** remain
+Umpire actions with authoritative results.
 
 The implemented Movement Foundation keeps **representation** as Umpire truth and exposes only an
 **apparent presence** to the opposing side. A representation is the authoritative map piece and
@@ -594,7 +599,8 @@ actions. `MOV-TASK-008` publishes exact move/completion membership and submissio
 Breakdown Determination checkpoint; merged `MOV-TASK-009` supplies checked Exercise/Maneuver
 evidence and merged `MOV-TASK-010` / PR #79 completes synchronization and review. **Breakdown continuity** names
 replay state and rules
-identity, not Breakdown adjudication: no roll, result, loss, or Movement BP mutation is implemented.
+identity. At that historical Movement milestone, no roll, result, loss or Movement BP mutation
+was implemented; the current Breakdown package supplies those mechanics.
 **Enemy ZOC** is a Umpire-derived board fact; authoritative adjacency to a non-phasing represented
 combat element after a committed phasing combat-element move is the **Reaction trigger**, even when
 that adjacent combat representation does not exert a
@@ -628,10 +634,10 @@ first selection, later active steps, and explicit participant resolution. `ZOR-T
 these successor terms together on the public Core creation, observation, action, checkpoint, and
 replay paths. `ZOR-TASK-007A` Runner adoption adds bounded Reaction controllers that select
 public capabilities by action ID, close participant episodes or windows explicitly, and preserve
-Umpire-owned costs on final Movement completion. A checked 15-child Maneuver retains trusted
-authority evidence; `007B` strict readback reconstructs and re-adjudicates its Reaction events.
-The package is verified through matching clean runs and a Ready independent review.
-The next Umpire package is [Breakdown adjudication](docs/specs/breakdown-adjudication-v1.md).
+Umpire-owned costs on final Movement completion. A historical fifteen-child Rules 8 Maneuver
+retains trusted authority evidence; `007B` strict readback reconstructs and re-adjudicates its
+Reaction events. That historical package was verified through matching clean runs and a Ready
+independent review. The subsequent Umpire package is [Breakdown adjudication](docs/specs/breakdown-adjudication-v1.md).
 Owner accepted its decisions; Task 001 freezes movement routes, bounded pending stops, check evidence
 and persistent broken-vehicle lots. Task 002 supplies dormant outcome Rules and exact loss arithmetic;
 [Task 003](docs/research/breakdown-campaign-contracts.md) adds dormant campaign contracts and a certified Truck fixture.
@@ -639,8 +645,16 @@ and persistent broken-vehicle lots. Task 002 supplies dormant outcome Rules and 
 [Task 005](docs/research/breakdown-stop-adjudication.md) adds stop resolution, persistent loss lots, explicit Reaction continuation and dormant replay to Combat entry.
 [Task 006](docs/research/breakdown-public-activation.md) activates those contracts, side-safe Breakdown waiting,
 owner lot summaries and current history/readback. Public authority stops at first-side Combat;
-Task 007 checked Runner migration and clean-run closeout remain pending. Truck convoy movement is distinct from combat/Reaction eligibility; the initial profile
-defers public positive ZOC and motorized-infantry losses.
+Task 007 implements fourteen checked successors and a Truck study. Its thirteen-child Reaction
+successor retains bounded battalion episodes and recurrence; the two positive-ZOC children remain
+historical/deferred. **Certified battalion input** may contain zero vehicle cohorts. The
+`land.breakdown-cohorts` capability is declared exactly when static cohort data exists, while the
+profile's independent formation and stacking bounds remain mandatory. Truck convoy movement is
+distinct from combat/Reaction eligibility; the profile still defers public positive ZOC and
+motorized-infantry losses. [Task 007 closeout](docs/research/breakdown-runner-closeout.md) tracks
+verification. Two clean runs remain unperformed, and final independent review awaits human
+authorization after the three-review implementation budget was exhausted. These implementation
+names do not claim reviewed closeout.
 
 **War College** is where we evaluate commanders.
 

@@ -45,7 +45,8 @@ the pre-alpha roadmap carry repository-wide rationale and delivery state.
   and certified Truck fixture implemented. [Task 004 move accounting](research/breakdown-move-accounting.md)
   implemented. [Task 005 stop/check authority](research/breakdown-stop-adjudication.md) implemented;
   [Task 006 public activation and privacy](research/breakdown-public-activation.md) activates current
-  authority through first-side Combat entry. Task 007 checked Runner migration and clean-run closeout next.
+  authority through first-side Combat entry. [Task 007 Runner closeout](research/breakdown-runner-closeout.md)
+  records checked successors and verification; final independent checkpoint awaits additional-review authorization.
 - ZOC and Reaction: approved [specification](specs/zoc-reaction-v1.md),
   [technical design](design/zoc-reaction-v1.md), and
   [research packet](research/contact-reaction-zoc-spike.md), with the accepted

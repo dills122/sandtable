@@ -82,7 +82,8 @@ public sealed class BreakdownCurrentCatalogTests
         Assert.Equal(ContentCatalogRejectionReason.HashMismatch,
             Cna1979SyntheticContentCatalog.ResolveV6(reaction.Identity.PackId, truck.Identity.Hash).RejectionReason);
         Assert.True(Cna1979BreakdownSetupCatalog.TryGet("rules-lab.breakdown.reaction.v1", out var setup));
-        Assert.Equal(2, Cna1979BreakdownSetupCatalog.Definitions.Count);
+        Assert.Contains(Cna1979BreakdownSetupCatalog.Definitions, value => value.SetupId == "rules-lab.breakdown.truck.v1");
+        Assert.Contains(Cna1979BreakdownSetupCatalog.Definitions, value => value.SetupId == "rules-lab.breakdown.reaction.v1");
         Assert.Equal("sha256:ed4e33358ede11f3c25661798add9088f11d8853053dbf7c8992ba5f92d9a36e", setup.Hash);
         Assert.Equal(reaction.Identity, setup.Content.Pack);
         Assert.Equal(scenario.ScenarioId, setup.Content.ScenarioId);

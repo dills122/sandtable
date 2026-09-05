@@ -47,6 +47,20 @@ def audit():
             'BRK-TASK-003', 'BRK-TASK-006', 'BRK-TASK-007'], 'unowned migration')
     unique([r['successorPath'] for r in rows], 'successor path')
     allowed_paths = paths | {r['successorPath'] for r in rows}
+    # Task 007 records new public-evidence scenarios separately; the frozen baseline
+    # inventory and every original byte remain unchanged.
+    results_path = ROOT / 'docs/research/breakdown-runner-migration-results.json'
+    if results_path.exists():
+        results = json.loads(results_path.read_text())
+        require(results['sourceInventory'] == str(CATALOG.relative_to(ROOT)), 'closeout inventory source')
+        supplemental = results['supplementalScenarioFiles']
+        unique([row['path'] for row in supplemental], 'supplemental fixture')
+        for row in supplemental:
+            require(row['path'] not in allowed_paths, 'supplemental fixture relabels baseline/successor')
+            require(row['requiredEvidence'] and set(row['requiredEvidence']) <= set(data['newPublicEvidence']),
+                    'supplemental fixture has unknown public evidence')
+            require((ROOT / row['path']).is_file(), 'missing supplemental fixture')
+            allowed_paths.add(row['path'])
     current_paths = {str(p.relative_to(ROOT)) for p in (ROOT / 'scenarios').rglob('*.json')}
     require(current_paths <= allowed_paths, 'current fixture omitted from migration inventory')
 

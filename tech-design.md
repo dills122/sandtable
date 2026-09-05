@@ -34,7 +34,7 @@ The repository now includes an in-process `Cna.ExerciseRunner` that is separate 
 intelligence/services plane. Each checked-in **Exercise** creates a fresh opaque
 `Cna.Core.Exercises` session, queries and submits through the shared legal-action execution path,
 stops at its exact declared boundary, and verifies both Core reconstruction and a second
-fresh-session re-adjudication. The original profile remains fixed at Operation Stage 1 Organization;
+fresh-session re-adjudication. The certified Organization successor stops at Operation Stage 1 Organization;
 the Stage Entry profile accepts nine actions and reaches Reserve, and the Reserve Designation
 profile accepts 12 actions and reaches first-side Movement. The runner records normalized
 inputs, Git/build identity,
@@ -49,18 +49,19 @@ exercise the two build-identity policies.
 The checked Exercise and serial-unpaired Maneuver profiles use manifest v2, with unpaired report
 scheme `sandtable.maneuver-report.v1`; the optional paired path uses
 `sandtable.paired-maneuver-manifest.v1` and
-`sandtable.paired-maneuver-report.v1`. All use controller-configuration v2, Ruleset 8, Snapshot
-10, World 5, and strict `trusted-authority` evidence admission. Retained Organization/Reserve
-profiles and their baseline twins remain regression checkpoints.
+`sandtable.paired-maneuver-report.v1`. Current successors use controller-configuration v2,
+Ruleset 9, Snapshot 11, World 6 and strict `trusted-authority` evidence admission. Fourteen checked
+`.breakdown.v1` successors preserve the admitted Organization/Reserve, controller matrix and paired
+comparison roles. Their original fixture bytes remain historical and fail current admission.
 
 The checked two-child **Maneuver** fixtures define strict canonical `serial-unpaired` parent manifests.
 The Stage Entry fixture runs both admitted setups to Reserve; the Reserve Designation fixture runs
 both through Movement. A checked six-child controller matrix crosses `act-first`/`act-last` with
-Reserve `none`/`one`/`all` and reaches Movement in exact 10/11/12-action trajectories. In the
-checked Movement fixture, four non-triggering Reserve-one/all profiles reach Breakdown
-Determination in 13 actions. Two Reserve-none profiles open Reaction on their first move and fail
-closed after 11 actions under their retained policy identities. Explicit `reaction-*` policies and the separate Reaction
-Maneuver implement `ZOR-TASK-007A`. Only the
+Reserve `none`/`one`/`all` with two independent non-cohort battalions per side. The Movement
+successor preserves these distinct Reserve choices and includes route stops and zero-roll System
+resolutions. A separate thirteen-child Reaction successor uses separated battalion reactors for
+ordered episodes, two-step movement, subset closure, active System closure and recurrence. The two
+historical positive-ZOC children remain outside the public profile. Only the
 parent supplies the root seed; each ordered child receives an explicit Maneuver
 ID and ordinal identity and runs synchronously through the same no-console post-admission
 coordinator. The aggregate path opens each completed child bundle once, semantically validates its
@@ -71,7 +72,8 @@ creation is transactional and a strict readback must succeed before the CLI clai
 
 Optional `serial-paired` fixtures run baseline then candidate in separate fresh Exercise sessions.
 The Reserve-policy pair exercises descriptive divergence at Reserve; the Movement-cost pair
-compares the unchanged stable-route controller with an additive lowest-public-cost controller.
+compares stable-route and lowest-public-cost selection on admitted unladen Trucks, retaining exact
+CP costs, BP accounting and stop-resolution evidence.
 Pair admission and aggregation require identical declared initial conditions, campaign
 creation inputs, complete initial role/domain seed ledgers, build cohort, and canonical initial
 snapshot while keeping controller configuration identities separate. The parent report recomputes
@@ -816,7 +818,7 @@ checkpoint, serialization, and replay now use successor authority. `ZOR-TASK-007
 bounded Runner policies using only public action IDs/kinds and accepted episode/window counts.
 Movement completion reconstructs directly from Snapshot 10, preserving both sides' accepted
 Reaction costs instead of invoking predecessor validation that forbids non-phasing movement.
-The 15-child checked Reaction Maneuver covers ordering, bounded episodes, closure, repeat triggers,
+The historical Rules 8 fifteen-child Reaction Maneuver covered ordering, bounded episodes, closure, repeat triggers,
 adjacent/remote selection, ZOC variants, and exact final costs. Runner strict event readers admit
 all Reaction events; bundle readback independently re-adjudicates the retained submissions.
 Package closeout verification and independent review are tracked in
@@ -847,7 +849,7 @@ replay. Task 008 adds the `CompleteMovementSegment` command and canonical
 `MovementSegmentCompleted` event, strict codec/projection/replay support, exact completion to the
 first-side Breakdown Determination checkpoint, and atomic public move-plus-completion membership.
 Submission revalidates exact current observation-derived membership before either command executes;
-no Breakdown campaign action is public yet. The
+no Breakdown campaign action was public at that historical milestone. The
 [Sprint 4-5 research-gate audit](docs/research/sprint-4-5-research-gates.md) makes
 `BREAKDOWN-001` explicit: minimum Breakdown Point continuity is recorded now, sequential d6 form
 the `11`-`66` coordinate, and Sandstorm eligibility uses Table 21.38's share of accumulated BP.
@@ -898,8 +900,22 @@ recomputes retained Initiative/Weather/preamble evidence; full replay separately
 transitions. Runner event admission shares Core's strict decoder, and bounded move controllers stop
 an open route before selecting another element. Current queries end at unsupported first-side Combat.
 The certified Truck/battalion profile defers public positive ZOC and motorized-infantry losses;
-original checked Runner fixture bytes stay historical. Task 007 owns checked successor scenarios,
-strict-bundle closeout and clean-run evidence.
+original checked Runner fixture bytes stay historical. Task 007 implements ten additional certified
+Content packs and eleven setups: non-cohort battalion matrices with predetermined/contested initiative,
+separated Reaction paths, a last-CP trigger, Truck-only costs, a single-working-point Truck and
+Truck-mover adjacency to an opposing combat battalion.
+The exact capability set includes `land.breakdown-cohorts` if and only if a static cohort exists;
+zero-cohort packs retain the same profile, formation and stacking restrictions.
+
+The additional `act-first-reserve-all-move-each-once-by-lowest-cost-then-complete` policy supports
+the Truck cost pair. `act-first-reserve-all-repeat-highest-cost-stops-then-complete` repeatedly
+selects a highest-cost legal move and explicitly stops each route, allowing the single current
+System resolution before selecting another move. Each remains bounded by the admitted step limit
+and Core's CP/survivor membership. Neither policy computes losses or bypasses authority.
+[Task 007 closeout](docs/research/breakdown-runner-closeout.md) tracks checked successor and strict
+bundle evidence. Two clean runs remain unperformed; final independent review awaits human
+authorization because the implementation review budget of three is exhausted. Task 007 is not
+reviewed or fully closed.
 The implemented paired comparison does not block that engine work.
 
 [1]: https://learn.microsoft.com/en-us/dotnet/orleans/grains/external-tasks-and-grains "External tasks and grains - .NET | Microsoft Learn"

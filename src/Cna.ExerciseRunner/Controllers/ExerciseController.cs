@@ -370,7 +370,8 @@ public static partial class ExerciseController
             return ExerciseControllerSelection.Selected(selected.Audience, stops[0].ActionId);
 
         var prior = selected.PriorMovedElementIds.ToHashSet(StringComparer.Ordinal);
-        var eligible = moves.Where(candidate => !prior.Contains(candidate.ElementId!));
+        var eligible = moves.Where(candidate => selection == MatrixMovementSelection.HighestCostRepeated
+            || !prior.Contains(candidate.ElementId!));
         var next = selection switch
         {
             MatrixMovementSelection.StableRoute => eligible
@@ -382,6 +383,13 @@ public static partial class ExerciseController
             MatrixMovementSelection.LowestCost => eligible
                 .OrderBy(candidate => candidate.ElementId, StringComparer.Ordinal)
                 .ThenBy(candidate => candidate.MovementTotalCost)
+                .ThenBy(candidate => candidate.DestinationLocationId, StringComparer.Ordinal)
+                .ThenBy(candidate => candidate.OriginLocationId, StringComparer.Ordinal)
+                .ThenBy(candidate => candidate.ActionId, StringComparer.Ordinal)
+                .FirstOrDefault(),
+            MatrixMovementSelection.HighestCostRepeated => eligible
+                .OrderByDescending(candidate => candidate.MovementTotalCost)
+                .ThenBy(candidate => candidate.ElementId, StringComparer.Ordinal)
                 .ThenBy(candidate => candidate.DestinationLocationId, StringComparer.Ordinal)
                 .ThenBy(candidate => candidate.OriginLocationId, StringComparer.Ordinal)
                 .ThenBy(candidate => candidate.ActionId, StringComparer.Ordinal)
@@ -423,6 +431,10 @@ public static partial class ExerciseController
             ExerciseControllerPolicy
                 .ActFirstReserveNoneMoveEachOnceByLowestCostThenComplete =>
                 new(true, MatrixReserveSelection.None, MatrixMovementSelection.LowestCost),
+            ExerciseControllerPolicy.ActFirstReserveAllMoveEachOnceByLowestCostThenComplete =>
+                new(true, MatrixReserveSelection.All, MatrixMovementSelection.LowestCost),
+            ExerciseControllerPolicy.ActFirstReserveAllRepeatHighestCostStopsThenComplete =>
+                new(true, MatrixReserveSelection.All, MatrixMovementSelection.HighestCostRepeated),
             _ => null,
         };
 
@@ -438,6 +450,7 @@ public static partial class ExerciseController
         None,
         StableRoute,
         LowestCost,
+        HighestCostRepeated,
     }
 
     private readonly record struct MatrixControllerPolicy(

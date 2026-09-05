@@ -29,9 +29,12 @@ internal static class ContentPackV6Validator
         ArgumentNullException.ThrowIfNull(definition);
         var issues = new List<ContentValidationIssue>();
         var legacy = definition.LegacyDefinition;
+        var hasCohorts = legacy.Elements.Any(element => element.BreakdownVehicleCohort is not null);
+        var requiredCapabilities = RequiredCapabilities.Where(capability =>
+            capability != "land.breakdown-cohorts" || hasCohorts);
         if (definition.CapabilityProfileId != ContentPackV6Definition.SupportedCapabilityProfileId
             || legacy.RulesetId != Cna1979Ruleset.RulesetId
-            || !legacy.Capabilities.SequenceEqual(RequiredCapabilities, StringComparer.Ordinal))
+            || !legacy.Capabilities.SequenceEqual(requiredCapabilities, StringComparer.Ordinal))
         {
             Add(issues, BreakdownCapabilityDiagnostics.Identity, "/capabilityProfileId",
                 "Content requires the supported profile, ruleset and exact predecessor capability set.");

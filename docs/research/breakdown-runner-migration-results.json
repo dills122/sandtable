@@ -1,0 +1,21 @@
+{
+  "schemeId": "sandtable.research.breakdown-runner-migration-results.v1",
+  "sourceInventory": "docs/specs/breakdown-fixture-migration.v1.json",
+  "status": "implementation-verification-in-progress-review-authorization-pending",
+  "supplementalScenarioFiles": [
+    {
+      "path": "scenarios/maneuvers/rules-lab.breakdown-truck.serial.v1.json",
+      "requiredEvidence": [
+        "ordinary-truck-positive-loss",
+        "eligible-zero-loss",
+        "no-roll-stop",
+        "higher-band-repeat-check",
+        "survivors-leave-lots-fixed",
+        "zero-working-cannot-move",
+        "last-cp-trigger-defers-phasing-stop",
+        "truck-mover-does-not-trigger",
+        "first-side-breakdown-to-combat"
+      ]
+    }
+  ]
+}

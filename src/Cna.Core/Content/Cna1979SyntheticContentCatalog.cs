@@ -87,6 +87,9 @@ public static class Cna1979SyntheticContentCatalog
     public static ContentPackV6Artifact ArtifactBreakdownReactionV6 =>
         Cna1979BreakdownContentCatalog.ReactionArtifact;
 
+    public static IReadOnlyList<ContentPackV6Artifact> BreakdownRunnerArtifactsV6 =>
+        Cna1979BreakdownContentCatalog.RunnerArtifacts;
+
     public static ContentPackV6CatalogResolution ResolveV6(string packId, string expectedHash)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(packId);
@@ -94,7 +97,8 @@ public static class Cna1979SyntheticContentCatalog
         var artifact = string.Equals(packId, ArtifactV6.Identity.PackId, StringComparison.Ordinal)
             ? ArtifactV6
             : string.Equals(packId, ArtifactBreakdownReactionV6.Identity.PackId, StringComparison.Ordinal)
-                ? ArtifactBreakdownReactionV6 : null;
+                ? ArtifactBreakdownReactionV6 : BreakdownRunnerArtifactsV6.SingleOrDefault(value =>
+                    string.Equals(value.Identity.PackId, packId, StringComparison.Ordinal));
         if (artifact is null)
             return ContentPackV6CatalogResolution.Rejected(ContentCatalogRejectionReason.UnknownPackId);
         return string.Equals(expectedHash, artifact.Identity.Hash, StringComparison.Ordinal)

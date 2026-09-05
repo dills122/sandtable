@@ -126,6 +126,10 @@ public static class ExerciseManifestCodec
         ExerciseControllerPolicy.ReactionActiveUnavailable => "reaction-active-unavailable",
         ExerciseControllerPolicy.ReactionActiveTimeout => "reaction-active-timeout",
         ExerciseControllerPolicy.FirstByActionId => "first-by-action-id",
+        ExerciseControllerPolicy.ActFirstReserveAllMoveEachOnceByLowestCostThenComplete =>
+            "act-first-reserve-all-move-each-once-by-lowest-cost-then-complete",
+        ExerciseControllerPolicy.ActFirstReserveAllRepeatHighestCostStopsThenComplete =>
+            "act-first-reserve-all-repeat-highest-cost-stops-then-complete",
         ExerciseControllerPolicy.DesignateAllReservesThenFirstByActionId =>
             "designate-all-reserves-then-first-by-action-id",
         ExerciseControllerPolicy.ActFirstReserveNoneThenFirstByActionId =>
@@ -193,6 +197,10 @@ public static class ExerciseManifestCodec
         "reaction-active-unavailable" => ExerciseControllerPolicy.ReactionActiveUnavailable,
         "reaction-active-timeout" => ExerciseControllerPolicy.ReactionActiveTimeout,
         "first-by-action-id" => ExerciseControllerPolicy.FirstByActionId,
+        "act-first-reserve-all-move-each-once-by-lowest-cost-then-complete" =>
+            ExerciseControllerPolicy.ActFirstReserveAllMoveEachOnceByLowestCostThenComplete,
+        "act-first-reserve-all-repeat-highest-cost-stops-then-complete" =>
+            ExerciseControllerPolicy.ActFirstReserveAllRepeatHighestCostStopsThenComplete,
         "designate-all-reserves-then-first-by-action-id" =>
             ExerciseControllerPolicy.DesignateAllReservesThenFirstByActionId,
         "act-first-reserve-none-then-first-by-action-id" =>

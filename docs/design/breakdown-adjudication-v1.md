@@ -1,6 +1,6 @@
 # Breakdown adjudication v1 — design and task plan
 
-**Status:** Owner accepted BRK-DEC-004–007 on 2026-09-05; BRK-TASK-001 contract freeze complete. Task 002 dormant Rules implemented; verification passed and independent review Ready. Task 003 dormant campaign contracts and certified Truck fixture implemented. Task 004 shared move accounting/replay and Task 005 dormant stop/check adjudication implemented; public activation remains pending.
+**Status:** Owner accepted BRK-DEC-004–007 on 2026-09-05; BRK-TASK-001 contract freeze complete. Task 002 dormant Rules implemented; verification passed and independent review Ready. Task 003 dormant campaign contracts and certified Truck fixture implemented. Tasks 004–005 move/stop adjudication and Task 006 coherent public activation are implemented. Task 007 checked Runner migration is implemented; final verification and independent closeout are tracked separately.
 
 **Governing contract:** [specification](../specs/breakdown-adjudication-v1.md),
 [wire schemas](../specs/breakdown-wire-contract-v1.md), and
@@ -175,13 +175,13 @@ older current readers; no dual-current downgrade mode.
 | `BRK-TASK-004` | **Complete:** shared BP deltas and dormant successor ordinary/Reaction events/projectors | [Evidence](../research/breakdown-move-accounting.md): terrain/route/weather vectors, atomic forged-delta rejection, preserved CP/Reaction behavior, routes/forced-stop precedence and immutable lots |
 | `BRK-TASK-005` | **Complete:** dormant stop/check authority, exact RNG replay and continuation | [Evidence](../research/breakdown-stop-adjudication.md): nested phasing/reactor/forced-close transitions, zero-roll vs zero-loss, immutable lots, no duplicate costs/draws |
 | `BRK-TASK-006` | **Complete:** Observation, action membership, disclosure manifest, projected history and atomic public activation | [Evidence](../research/breakdown-public-activation.md): certified creation, privacy/forgery/identity matrix, strict Core/Runner admission and boundary gate; stop at unsupported Combat |
-| `BRK-TASK-007` | Checked Runner fixtures, strict bundles, research reconciliation and closeout | 006; exact accounting/lots/continuation, two clean runs, full gate and independent review |
+| `BRK-TASK-007` | **Implemented; final review pending:** checked Runner fixtures, strict bundles and research reconciliation | [Closeout evidence](../research/breakdown-runner-closeout.md): exact accounting/lots/continuation, full gate and two clean runs; independent review requires additional authorization after implementation review 3 of 3 |
 
-Tasks 001–006 are complete; Task 007 remains pending. Safe independent research lanes
+Tasks 001–006 are complete; Task 007 implementation is in place, with verification recorded in its closeout evidence and independent review pending. Safe independent research lanes
 are grouped allocation,
 transport consequences and origin-placement/capture/repair; they do not modify these shared contracts.
 
-## Acceptance matrix (implementation pending)
+## Acceptance matrix
 
 | ID | Required evidence |
 | --- | --- |
@@ -208,7 +208,7 @@ Accepted battalion-size limits exclude public positive ZOC because current ZOC n
 The migration inventory preserves all original fixture bytes as historical at activation, requires
 bounded successors for 13 of 15 Reaction children, and explicitly defers positive local/remote ZOC.
 Truck ordinary moves are admitted separately; combat-only Reaction triggers remain unchanged.
-Task 006 is complete; next is BRK-TASK-007: checked Runner fixtures and closeout.
+Task 006 is complete. Task 007 checked successors are implemented; final independent closeout remains pending.
 
 [Task 001 verification evidence](../research/breakdown-contract-freeze-checks.md) records exact
 specification checks and their limits.
