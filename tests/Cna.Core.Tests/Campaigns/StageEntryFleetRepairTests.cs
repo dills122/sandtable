@@ -53,12 +53,12 @@ public sealed class StageEntryFleetRepairTests
     }
 
     [Fact]
-    public void CurrentSystemRepairSubmissionIsAcceptedOnceAndExposesNoReserveAction()
+    public void HistoricalSystemRepairSubmissionIsAcceptedOnceAndExposesNoReserveAction()
     {
         var repair = ReachRepair().Snapshot!;
         var handle = new CampaignAuthorityHandle(repair,
             CampaignTestHarness.ContextFor(repair));
-        var query = CampaignLegalActions.Query(handle, CampaignActionAudience.System);
+        var query = HistoricalCampaignActions.Query(handle, CampaignActionAudience.System);
         Assert.True(query.IsSuccessful);
         var candidate = Assert.Single(query.ActionSet!.Candidates);
         var submission = new CampaignActionSubmission(
@@ -69,7 +69,7 @@ public sealed class StageEntryFleetRepairTests
             query.ActionSet.Audience,
             candidate.ActionId);
 
-        var accepted = CampaignLegalActions.Submit(handle, submission);
+        var accepted = HistoricalCampaignActions.Submit(handle, submission);
 
         Assert.True(accepted.IsAccepted);
         Assert.Equal(10, accepted.SuccessorHandle!.Snapshot.StateVersion);
@@ -88,7 +88,7 @@ public sealed class StageEntryFleetRepairTests
         Assert.Equal(3, Query(accepted.SuccessorHandle, firstAudience).Candidates.Count);
         Assert.Empty(Query(accepted.SuccessorHandle, secondAudience).Candidates);
 
-        var duplicate = CampaignLegalActions.Submit(accepted.SuccessorHandle, submission);
+        var duplicate = HistoricalCampaignActions.Submit(accepted.SuccessorHandle, submission);
         Assert.False(duplicate.IsAccepted);
         Assert.Equal(CampaignActionSubmissionRejectionReason.StaleState,
             duplicate.RejectionReason);
@@ -186,7 +186,7 @@ public sealed class StageEntryFleetRepairTests
         CampaignAuthorityHandle handle,
         CampaignActionAudience audience)
     {
-        var result = CampaignLegalActions.Query(handle, audience);
+        var result = HistoricalCampaignActions.Query(handle, audience);
         Assert.True(result.IsSuccessful);
         return result.ActionSet!;
     }
@@ -197,7 +197,7 @@ public sealed class StageEntryFleetRepairTests
         CampaignCommand[] commands =
         [
             CampaignTestHarness.Create("campaign-stage-entry-repair",
-                Cna1979Ruleset.Manifest.Hash, 12345, setup.SetupId, setup.Hash),
+                Cna1979Ruleset.HistoricalManifestV8.Hash, 12345, setup.SetupId, setup.Hash),
             new ResolveInitiative(1, "land.position.initiative-determination"),
             new ResolveNoObligationNavalConvoySchedule(2,
                 "land.position.naval-convoy.schedule"),

@@ -16,15 +16,13 @@ public static class CampaignLegalActions
             return CampaignLegalActionQueryResult.Rejected(
                 CampaignLegalActionQueryRejectionReason.InvalidAudience);
         if (handle.CurrentSnapshot is null)
-        {
-            return QueryLegacy(handle.Snapshot, handle.Context, audience);
-        }
+            return CampaignLegalActionQueryResult.Rejected(CampaignLegalActionQueryRejectionReason.InvalidState);
 
         var snapshot = handle.CurrentSnapshot;
-        if (handle.Context.ArtifactV5 is null
-            || !CampaignSnapshotV10Validator.IsValid(
+        if (handle.Context.ArtifactV6 is null
+            || !CampaignSnapshotV11Admission.IsValid(
                 snapshot,
-                handle.Context.ArtifactV5,
+                handle.Context.ArtifactV6,
                 handle.Context.Scenario))
             return CampaignLegalActionQueryResult.Rejected(
                 CampaignLegalActionQueryRejectionReason.InvalidState);
@@ -32,18 +30,18 @@ public static class CampaignLegalActions
         if (audience == CampaignActionAudience.System)
         {
             return CampaignLegalActionQueryResult.Success(
-                snapshot.ReactionWindow is null
+                snapshot.CurrentPosition.Kind != CampaignPositionV11Kind.Reaction
                     ? GenerateForSystem(snapshot)
-                    : CampaignObservationV6ActionDerivation.DeriveSystem(
-                        ProjectV6(handle, snapshot.ReactionWindow.ReactingSide)));
+                    : CampaignObservationV7ActionDerivation.DeriveSystem(
+                        ProjectV7(handle, snapshot.ReactionWindow!.ReactingSide)));
         }
 
         var observer = ToSide(audience);
-        var observation = ProjectV6(handle, observer);
+        var observation = ProjectV7(handle, observer);
         return CampaignLegalActionQueryResult.Success(
             snapshot.ReactionWindow is not null
                 || IsMovementPosition(observation)
-                ? CampaignObservationV6ActionDerivation.DerivePlayer(observation)
+                ? CampaignObservationV7ActionDerivation.DerivePlayer(observation)
                 : GenerateForSide(observation, audience));
     }
 
@@ -54,17 +52,7 @@ public static class CampaignLegalActions
         ArgumentNullException.ThrowIfNull(handle);
         ArgumentNullException.ThrowIfNull(submission);
         if (handle.CurrentSnapshot is null)
-        {
-            var legacy = CampaignActionExecution.Execute(
-                handle.Snapshot,
-                handle.Context,
-                submission);
-            return legacy.IsAccepted
-                ? CampaignActionSubmissionResult.Accepted(
-                    new CampaignAuthorityHandle(legacy.SuccessorSnapshot!, handle.Context),
-                    legacy.Receipt!)
-                : CampaignActionSubmissionResult.Rejected(legacy.RejectionReason);
-        }
+            return CampaignActionSubmissionResult.Rejected(CampaignActionSubmissionRejectionReason.InvalidAuthority);
 
         var current = CampaignCurrentActionExecution.Execute(
             handle.CurrentSnapshot,
@@ -91,7 +79,7 @@ public static class CampaignLegalActions
         IReadOnlyList<CampaignActionCandidate> candidates = observation.Observer == expectedObserver
             ? GenerateSideCandidates(observation, expectedObserver)
             : [];
-        return CreateSet(observation.CampaignId, observation.StateVersion, observation.RulesetHash,
+        return CreateHistoricalSet(observation.CampaignId, observation.StateVersion, observation.RulesetHash,
             observation.Position.PositionId, audience, candidates);
     }
 
@@ -111,8 +99,8 @@ public static class CampaignLegalActions
             : GenerateForSide(ProjectLegacy(snapshot, context, audience), audience));
     }
 
-    private static CampaignLegalActionSet GenerateForSide(
-        CampaignObservationV6 observation,
+    internal static CampaignLegalActionSet GenerateForSide(
+        CampaignObservationV7 observation,
         CampaignActionAudience audience)
     {
         var observer = ToSide(audience);
@@ -133,7 +121,8 @@ public static class CampaignLegalActions
                     ActiveSide: var active,
                 } when active == observer => observation.OwnElements
                     .Where(element =>
-                        element.ReserveStatus == CampaignObservationReserveStatus.None)
+                        element.ReserveStatus == CampaignObservationReserveStatus.None
+                        && element.VehicleBreakdownRisk is null)
                     .Select(element => (CampaignActionCandidate)new DesignateReserveAction(
                         element.ElementId))
                     .Append(new CompleteReserveDesignationAction())
@@ -209,7 +198,7 @@ public static class CampaignLegalActions
         return observation;
     }
 
-    internal static CampaignObservationV6 ProjectV6(
+    internal static CampaignObservationV7 ProjectV7(
         CampaignAuthorityHandle handle,
         LandSide observer)
     {
@@ -221,12 +210,16 @@ public static class CampaignLegalActions
     private static CampaignLegalActionSet GenerateForSystem(CampaignSnapshot snapshot)
     {
         var candidates = GenerateSystemCandidates(snapshot);
-        return CreateSet(snapshot.CampaignId, snapshot.StateVersion, snapshot.RulesetHash,
+        return CreateHistoricalSet(snapshot.CampaignId, snapshot.StateVersion, snapshot.RulesetHash,
             snapshot.SequencePosition.PositionId, CampaignActionAudience.System, candidates);
     }
 
-    private static CampaignLegalActionSet GenerateForSystem(CampaignSnapshotV10 snapshot)
+    private static CampaignLegalActionSet GenerateForSystem(CampaignSnapshotV11 snapshot)
     {
+        if (snapshot.CurrentPosition.Kind == CampaignPositionV11Kind.BreakdownStop)
+            return CreateSet(snapshot.CampaignId, snapshot.StateVersion, snapshot.RulesetHash,
+                "land.position.breakdown-stop", CampaignActionAudience.System,
+                [new ResolveBreakdownStopAction(CampaignBreakdownLifecycleFactory.CreateSystemStopCapability(snapshot))]);
         var sequence = snapshot.CurrentPosition.SequencePosition
             ?? throw new InvalidOperationException(
                 "Normal System generation requires a sequence position.");
@@ -289,6 +282,11 @@ public static class CampaignLegalActions
                 snapshot,
                 snapshot.Setup.StageEntry.FleetRepair) =>
                 [new ResolveNoObligationFleetRepairAction()],
+            {
+                OperationStage: 1, SegmentId: LandSegmentIds.BreakdownDetermination,
+                ActorRole: LandActorRole.FirstActingSide
+            }
+                when snapshot.BreakdownFlow is CampaignBreakdownFlow.Idle => [new CompleteBreakdownSegmentAction()],
             _ => [],
         };
         return CreateSet(
@@ -382,15 +380,15 @@ public static class CampaignLegalActions
         && snapshot.Setup.StageEntry.OperationStage == snapshot.OperationStage
         && obligation == StageEntryObligationKind.ExplicitNone;
 
-    private static bool HasAdmittedInitiativePolicy(CampaignSnapshotV10 snapshot) =>
-        Cna1979SetupCatalog.TryGet(snapshot.Setup.SetupId, out var definition)
+    private static bool HasAdmittedInitiativePolicy(CampaignSnapshotV11 snapshot) =>
+        Cna1979BreakdownSetupCatalog.TryGet(snapshot.Setup.SetupId, out var definition)
         && snapshot.Setup.InitialInitiative == definition.InitialInitiative;
 
-    private static bool HasAdmittedOpeningPreamblePolicy(CampaignSnapshotV10 snapshot) =>
+    private static bool HasAdmittedOpeningPreamblePolicy(CampaignSnapshotV11 snapshot) =>
         snapshot.Setup.OpeningPreamble == Cna1979SetupCatalog.OpeningPreamblePolicy;
 
     private static bool HasAdmittedStageEntryPolicy(
-        CampaignSnapshotV10 snapshot,
+        CampaignSnapshotV11 snapshot,
         StageEntryObligationKind obligation) =>
         Cna1979SetupCatalog.IsAdmittedStageEntryPolicy(
             snapshot.Setup.StageEntry,
@@ -401,7 +399,7 @@ public static class CampaignLegalActions
             == snapshot.CurrentPosition.SequencePosition.OperationStage
         && obligation == StageEntryObligationKind.ExplicitNone;
 
-    private static bool IsMovementPosition(CampaignObservationV6 observation) =>
+    private static bool IsMovementPosition(CampaignObservationV7 observation) =>
         observation.Position.StageId == LandStageIds.Operation
         && observation.Position.PhaseId == LandPhaseIds.MovementAndCombat
         && observation.Position.SegmentId == LandSegmentIds.Movement;
@@ -417,5 +415,10 @@ public static class CampaignLegalActions
         string rulesetHash, string positionId, CampaignActionAudience audience,
         IReadOnlyList<CampaignActionCandidate> candidates) =>
         new(campaignId, stateVersion, rulesetHash, positionId, audience, candidates);
+
+    private static CampaignLegalActionSet CreateHistoricalSet(string campaignId, long stateVersion,
+        string rulesetHash, string positionId, CampaignActionAudience audience,
+        IReadOnlyList<CampaignActionCandidate> candidates) => new(campaignId, stateVersion, rulesetHash,
+            positionId, audience, candidates, CampaignLegalActionSet.HistoricalPolicyIdV2);
 
 }

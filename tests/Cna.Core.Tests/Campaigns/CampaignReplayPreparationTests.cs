@@ -49,17 +49,17 @@ public sealed class CampaignReplayPreparationTests
 
             foreach (var audience in Enum.GetValues<CampaignActionAudience>())
             {
-                var originalActions = CampaignLegalActions.Query(
+                var originalActions = HistoricalCampaignActions.Query(
                     new CampaignAuthorityHandle(original, evidence.Context),
                     audience);
-                var freshActions = CampaignLegalActions.Query(
+                var freshActions = HistoricalCampaignActions.Query(
                     new CampaignAuthorityHandle(fresh, preparation.Context.Content),
                     audience);
                 Assert.True(originalActions.IsSuccessful);
                 Assert.True(freshActions.IsSuccessful);
                 Assert.Equal(
-                    CampaignLegalActionSerializer.Serialize(originalActions.ActionSet!),
-                    CampaignLegalActionSerializer.Serialize(freshActions.ActionSet!));
+                    CampaignLegalActionSerializer.SerializeHistoricalV2(originalActions.ActionSet!),
+                    CampaignLegalActionSerializer.SerializeHistoricalV2(freshActions.ActionSet!));
             }
         }
     }
@@ -338,7 +338,7 @@ public sealed class CampaignReplayPreparationTests
             null,
             new CreateCampaign(
                 "campaign-1",
-                Cna1979Ruleset.Manifest.Hash,
+                Cna1979Ruleset.HistoricalManifestV8.Hash,
                 12345,
                 setup.SetupId,
                 setup.Hash,

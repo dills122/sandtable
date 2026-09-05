@@ -18,15 +18,15 @@ public sealed class CampaignMovementAtomicPublicationTests
             ? CampaignActionAudience.Commonwealth
             : CampaignActionAudience.Axis;
 
-        var acting = CampaignLegalActions.Query(handle, audience);
+        var acting = HistoricalCampaignActions.Query(handle, audience);
 
         Assert.True(acting.IsSuccessful);
         Assert.NotEmpty(acting.ActionSet!.Candidates.OfType<MoveElementAction>());
         Assert.Single(acting.ActionSet.Candidates
             .OfType<CompleteMovementSegmentAction>());
-        Assert.Empty(CampaignLegalActions.Query(handle, opponent)
+        Assert.Empty(HistoricalCampaignActions.Query(handle, opponent)
             .ActionSet!.Candidates);
-        Assert.Empty(CampaignLegalActions.Query(handle, CampaignActionAudience.System)
+        Assert.Empty(HistoricalCampaignActions.Query(handle, CampaignActionAudience.System)
             .ActionSet!.Candidates);
     }
 
@@ -36,7 +36,7 @@ public sealed class CampaignMovementAtomicPublicationTests
         var handle = ReachMovement();
         var side = FirstActingSideResolver.Resolve(handle.Snapshot);
         var audience = CampaignReserveActionTestData.ToAudience(side);
-        var query = CampaignLegalActions.Query(handle, audience);
+        var query = HistoricalCampaignActions.Query(handle, audience);
         Assert.True(query.IsSuccessful);
         var publishedCandidates = query.ActionSet!.Candidates;
         var before = CampaignSnapshotSerializer.Serialize(handle.Snapshot);
@@ -59,7 +59,7 @@ public sealed class CampaignMovementAtomicPublicationTests
                 handle.Snapshot,
                 handle.Context,
                 submission);
-            var publicResult = CampaignLegalActions.Submit(handle, submission);
+            var publicResult = HistoricalCampaignActions.Submit(handle, submission);
 
             Assert.True(execution.IsAccepted);
             Assert.NotNull(execution.AcceptedEvent);
@@ -82,7 +82,7 @@ public sealed class CampaignMovementAtomicPublicationTests
         var set = CampaignReserveActionTestData.Query(reserve, audience);
         var completion = Assert.Single(
             set.Candidates.OfType<CompleteReserveDesignationAction>());
-        var result = CampaignLegalActions.Submit(
+        var result = HistoricalCampaignActions.Submit(
             reserve,
             CampaignReserveActionTestData.Bind(set, completion));
 

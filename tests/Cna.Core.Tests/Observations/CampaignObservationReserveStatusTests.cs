@@ -127,7 +127,7 @@ public sealed class CampaignObservationReserveStatusTests
             CampaignObservation.CurrentPolicyId,
             "campaign-1",
             1,
-            Cna1979Ruleset.Manifest.Hash,
+            Cna1979Ruleset.HistoricalManifestV8.Hash,
             "movement-contact-lab",
             LandSide.Axis,
             new CampaignObservationPosition(

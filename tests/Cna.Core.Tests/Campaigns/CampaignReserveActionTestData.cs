@@ -27,7 +27,7 @@ internal static class CampaignReserveActionTestData
         CampaignAuthorityHandle handle,
         CampaignActionAudience audience)
     {
-        var result = CampaignLegalActions.Query(handle, audience);
+        var result = HistoricalCampaignActions.Query(handle, audience);
         Assert.True(result.IsSuccessful);
         return result.ActionSet!;
     }

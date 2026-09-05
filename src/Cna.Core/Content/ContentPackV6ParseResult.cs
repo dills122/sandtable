@@ -1,6 +1,6 @@
 namespace Cna.Core.Content;
 
-internal sealed class ContentPackV6ParseResult
+public sealed class ContentPackV6ParseResult
 {
     private ContentPackV6ParseResult(
         ContentPackV6Definition? definition,

@@ -14,6 +14,9 @@ internal static class CampaignObservationV6LegalActionSerializer
     public static byte[] Serialize(CampaignLegalActionSet actionSet)
     {
         ArgumentNullException.ThrowIfNull(actionSet);
+        if (actionSet.PolicyId != CampaignLegalActionSet.HistoricalPolicyIdV2
+            || !Cna1979Ruleset.IsHistoricalHashV8(actionSet.RulesetHash))
+            throw new ArgumentException("Expected historical action policy v2 and Ruleset 8.", nameof(actionSet));
         using var stream = new MemoryStream();
         using (var writer = new Utf8JsonWriter(stream))
         {
@@ -72,12 +75,13 @@ internal static class CampaignObservationV6LegalActionSerializer
                     root.GetProperty("audience").GetString()),
                 root.GetProperty("candidates").EnumerateArray()
                     .Select(ParseCandidate)
-                    .ToArray());
+                    .ToArray(),
+                CampaignLegalActionSet.HistoricalPolicyIdV2);
             if (root.GetProperty("contractVersion").GetInt32()
                     != CampaignLegalActionSet.CurrentContractVersion
                 || !string.Equals(
                     root.GetProperty("policyId").GetString(),
-                    CampaignLegalActionSet.CurrentPolicyId,
+                    CampaignLegalActionSet.HistoricalPolicyIdV2,
                     StringComparison.Ordinal)
                 || !canonicalJson.SequenceEqual(Serialize(result)))
             {
@@ -123,6 +127,12 @@ internal static class CampaignObservationV6LegalActionSerializer
 
     private static void WriteCandidate(Utf8JsonWriter writer, CampaignActionCandidate candidate)
     {
+        if (candidate is not (MoveElementAction or CompleteMovementSegmentAction
+            or MoveReactingElementAction or CompleteReactionParticipantAction or ReactionWindowAction))
+        {
+            CampaignLegalActionSerializer.WriteCandidate(writer, candidate);
+            return;
+        }
         writer.WriteStartObject();
         writer.WriteNumber("contractVersion", candidate.ContractVersion);
         writer.WriteString("actionId", candidate.ActionId);
@@ -183,7 +193,7 @@ internal static class CampaignObservationV6LegalActionSerializer
             "close-reaction-window-no-eligible-reactor" => ParseWindow(
                 candidate,
                 value => new CloseReactionWindowNoEligibleAction(value)),
-            _ => throw new JsonException($"Unknown Observation 6 action kind '{kind}'."),
+            _ => CampaignLegalActionSerializer.ParseCandidate(candidate),
         };
         if (candidate.GetProperty("contractVersion").GetInt32()
                 != CampaignActionCandidate.CurrentContractVersion

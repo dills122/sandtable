@@ -123,13 +123,13 @@ public sealed class PairedManeuverManifestCodecTests
     private static ManeuverExerciseManifest Exercise(
         string exerciseId,
         ExerciseControllerPolicy controller,
-        string scenarioId = "movement-contact-lab") => new(
+        string scenarioId = "breakdown-truck-lab") => new(
         ExerciseManifest.CurrentContractVersion,
         exerciseId,
-        "rules-lab.initiative.predetermined",
-        "sha256:48ad98fd232f7c7c50d4f925dd83e3de97f2eb48cc6929a17aa1fb172cdbd394",
-        "rules-lab.content.movement-contact.v1",
-        "sha256:20cf54f25d752253105877c6139d8db86549759f9dbb80fad873686498f26f5f",
+        "rules-lab.breakdown.truck.v1",
+        "sha256:e6631e81ad8f97e39fd9d7eec93bad7fe2b39db4d2d3059ed94a02dd4093e7a3",
+        "rules-lab.content.breakdown-truck.v1",
+        "sha256:646e76e69ecceb82216b37d84e950928099acd8a3cb04b51526d0fe631e512ee",
         scenarioId,
         Cna1979Ruleset.Manifest.Hash,
         "land.position.operation-1.first-player.movement-and-combat.movement",

@@ -97,7 +97,7 @@ public sealed class CampaignObservationSerializationTests
             null,
             CampaignTestHarness.Create(
                 "campaign-1",
-                Cna1979Ruleset.Manifest.Hash,
+                Cna1979Ruleset.HistoricalManifestV8.Hash,
                 12345,
                 setup.SetupId,
                 setup.Hash));

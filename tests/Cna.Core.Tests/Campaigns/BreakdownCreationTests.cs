@@ -60,7 +60,7 @@ public sealed class BreakdownCreationTests
         var position = mutation == "position-version" ? Cna1979LandSequence.CreateTurn(1)[0]
             : Cna1979LandSequenceV4.CreateTurn(1)[mutation == "position" ? 1 : 0];
         Assert.Throws<ArgumentException>(() => CampaignCreationV10Factory.Create("breakdown-campaign",
-            mutation == "ruleset" ? Cna1979Ruleset.Manifest.Hash : Cna1979BreakdownRuleset.Manifest.Hash,
+            mutation == "ruleset" ? Cna1979Ruleset.HistoricalManifestV8.Hash : Cna1979BreakdownRuleset.Manifest.Hash,
             BreakdownSetupTests.CreateSetup(), artifact, scenario, rng, position));
     }
 

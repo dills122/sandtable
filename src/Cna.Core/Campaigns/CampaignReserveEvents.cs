@@ -59,7 +59,7 @@ internal abstract record ReserveDesignationEvent : CampaignEvent
                 FromPositionId,
                 ReservePosition(GameTurn).PositionId,
                 StringComparison.Ordinal)
-            || SequencePosition != expectedPosition
+            || SequencePosition != CampaignPreambleSequenceBinding.Rebind(expectedPosition, SequencePosition.ContractVersion)
             || Sources.Any(source => source is null)
             || !Sources.SequenceEqual(expectedSources))
         {

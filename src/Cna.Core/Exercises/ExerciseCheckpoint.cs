@@ -7,7 +7,7 @@ public sealed class ExerciseCheckpoint
 {
     public const int CurrentContractVersion = 1;
 
-    internal ExerciseCheckpoint(CampaignSnapshotV10 snapshot)
+    internal ExerciseCheckpoint(CampaignSnapshotV11 snapshot)
     {
         ArgumentNullException.ThrowIfNull(snapshot);
         ContractVersion = CurrentContractVersion;

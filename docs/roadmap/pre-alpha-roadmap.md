@@ -898,4 +898,6 @@ The accepted `CONTACT-001` rulings are retained in the
 [governing specification](../specs/breakdown-adjudication-v1.md): decisions accepted and Task 001
 contract freeze complete; Task 002 dormant outcome rules implemented with a passing full gate, independent review
 Ready. Tasks 003–005 dormant campaign contracts, certified Truck fixture, shared move accounting/replay,
-stop/check authority and exact RNG replay are implemented; Task 006 coherent public activation and privacy is next. Public adjudication remains unimplemented.
+stop/check authority and exact RNG replay are implemented. [Task 006 public activation](../research/breakdown-public-activation.md)
+activates certified authority, privacy and strict readback through first-side Combat entry. Task 007
+checked Runner scenario migration and clean-run closeout is next.

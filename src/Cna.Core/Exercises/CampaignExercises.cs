@@ -16,12 +16,11 @@ public static class CampaignExercises
         var session = new ExerciseSession(
             execution.CurrentSnapshot!,
             execution.Context!,
-            [execution.CurrentCreatedEvent!],
-            [execution.CreatedEvent!]);
+            [execution.CurrentCreatedEvent!]);
         return ExerciseStartResult.Started(
             session,
             CampaignCurrentEventSerializer.Serialize(execution.CurrentCreatedEvent!),
-            CampaignSnapshotV10Serializer.Serialize(execution.CurrentSnapshot!));
+            CampaignCurrentSnapshotSerializer.Serialize(execution.CurrentSnapshot!));
     }
 
     public static CampaignLegalActionQueryResult Query(
@@ -41,7 +40,10 @@ public static class CampaignExercises
     }
 
     public static ExerciseCheckpoint ReadCheckpoint(ReadOnlyMemory<byte> canonicalSnapshot) =>
-        new(CampaignSnapshotV10Serializer.Deserialize(canonicalSnapshot));
+        new(CampaignCurrentSnapshotSerializer.Deserialize(canonicalSnapshot));
+
+    public static void ValidateCanonicalEvent(ReadOnlyMemory<byte> canonicalEvent) =>
+        _ = CampaignCurrentEventSerializer.Deserialize(canonicalEvent);
 
     public static ExerciseStepResult Submit(
         ExerciseSession session,
@@ -57,30 +59,18 @@ public static class CampaignExercises
             return ExerciseStepResult.Rejected(execution.RejectionReason);
 
         var history = session.CurrentHistory.Add(execution.AcceptedEvent!);
-        var legacyHistory = execution.AcceptedEvent is CampaignEvent legacyEvent
-            ? session.History.Add(legacyEvent)
-            : session.History;
-        var successor = new ExerciseSession(
-            execution.SuccessorSnapshot!,
-            session.Context,
-            history,
-            legacyHistory,
-            execution.SuccessorSnapshot!.ReactionWindow is null
-                ? CampaignV10LegacyBridge.ToLegacy(
-                    execution.SuccessorSnapshot,
-                    session.Context)
-                : session.Snapshot);
+        var successor = new ExerciseSession(execution.SuccessorSnapshot!, session.Context, history);
         var evidence = new ExerciseStepEvidence(
             execution.Receipt!,
             CampaignCurrentEventSerializer.Serialize(execution.AcceptedEvent!),
-            CampaignSnapshotV10Serializer.Serialize(execution.SuccessorSnapshot!));
+            CampaignCurrentSnapshotSerializer.Serialize(execution.SuccessorSnapshot!));
         return ExerciseStepResult.Accepted(successor, evidence);
     }
 
     public static ExerciseReconstructionResult Reconstruct(ExerciseSession completedSession)
     {
         ArgumentNullException.ThrowIfNull(completedSession);
-        var expectedBytes = CampaignSnapshotV10Serializer.Serialize(completedSession.CurrentSnapshot);
+        var expectedBytes = CampaignCurrentSnapshotSerializer.Serialize(completedSession.CurrentSnapshot);
         var expectedHash = Hash(expectedBytes);
         string? eventStreamHash = null;
 
@@ -94,7 +84,7 @@ public static class CampaignExercises
                 .Select(value => CampaignCurrentEventSerializer.Deserialize(value))
                 .ToArray();
             var replayed = CampaignCurrentProjector.Replay(replayEvents, completedSession.Context);
-            var replayedBytes = CampaignSnapshotV10Serializer.Serialize(replayed);
+            var replayedBytes = CampaignCurrentSnapshotSerializer.Serialize(replayed);
             var replayedHash = Hash(replayedBytes);
             var failureReason = expectedBytes.AsSpan().SequenceEqual(replayedBytes)
                 ? ExerciseReconstructionFailureReason.None

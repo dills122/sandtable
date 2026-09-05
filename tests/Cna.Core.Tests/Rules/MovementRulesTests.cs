@@ -171,11 +171,11 @@ public sealed class MovementRulesTests
             "sha256:9d016292838fb9ad3397d699ecfab10e0d867eeee09ed3d7c4f78a26b3394ba5",
             artifact.ContentHash);
         var manifestArtifact = Assert.Single(
-            Cna1979Ruleset.Manifest.Artifacts,
+            Cna1979Ruleset.HistoricalManifestV8.Artifacts,
             value => value.ArtifactId == artifact.ArtifactId);
         Assert.Equal(artifact.ContentHash, manifestArtifact.ContentHash);
         Assert.Equal(artifact.Sources, manifestArtifact.Sources);
-        Assert.Equal(8, Cna1979Ruleset.ContractVersion);
+        Assert.Equal(8, Cna1979Ruleset.HistoricalManifestV8.ContractVersion);
     }
 
     [Fact]

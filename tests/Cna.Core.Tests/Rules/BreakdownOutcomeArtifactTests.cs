@@ -121,7 +121,7 @@ public sealed class BreakdownOutcomeArtifactTests
     }
 
     [Fact]
-    public void AcceptedRulingsAreCompleteButNotRegisteredWithActiveRuleset()
+    public void AcceptedRulingsAreCompleteAndAbsentFromHistoricalRulesetEight()
     {
         var rulings = Cna1979BreakdownAdjudication.CreateRulings();
         Assert.Equal(["BRK-DEC-004", "BRK-DEC-005", "BRK-DEC-006", "BRK-DEC-007"],
@@ -135,16 +135,16 @@ public sealed class BreakdownOutcomeArtifactTests
             Assert.Contains(ruling.SelectedBehaviorId, ruling.AlternativeIds);
             Assert.NotEmpty(ruling.Sources);
             Assert.NotEmpty(ruling.ProtectingTestIds);
-            Assert.DoesNotContain(Cna1979Ruleset.Manifest.Rulings, r => r.RulingId == ruling.RulingId);
+            Assert.DoesNotContain(Cna1979Ruleset.HistoricalManifestV8.Rulings, r => r.RulingId == ruling.RulingId);
         });
         Assert.Equal(Cna1979BreakdownAdjudication.ExactFractionsRulingId, rulings[0].RulingId);
         Assert.Equal(new[] { new RuleReference("spi-1979-land-rules", "21.34"),
             new RuleReference("spi-1979-land-rules", "21.35") }, rulings[0].Sources);
         Assert.All(Cna1979BreakdownAdjudication.Definition.OutcomeFractions,
             f => Assert.Equal(rulings[0].RulingId, f.RulingId));
-        Assert.Equal(8, Cna1979Ruleset.Manifest.ContractVersion);
+        Assert.Equal(8, Cna1979Ruleset.HistoricalManifestV8.ContractVersion);
         Assert.Equal("0e80a8ba917113b401ea709f9f2a6cd7fb7cfec03b8adbdae978f1b219e141e0",
-            Cna1979Ruleset.Manifest.Hash);
+            Cna1979Ruleset.HistoricalManifestV8.Hash);
         Assert.Equal("sha256:c7061325838dfcdd2f2388be3c6f6ec998bfa96df14b4cd6e733dd1c5d16c747",
             Cna1979Breakdown.CreateArtifact().ContentHash);
         Assert.NotEqual(Cna1979Breakdown.CreateArtifact().ContentHash,

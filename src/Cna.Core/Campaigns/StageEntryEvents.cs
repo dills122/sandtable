@@ -30,7 +30,7 @@ internal abstract record StageEntryResolved : CampaignEvent
 
         var sourceCopy = sources.ToArray();
         if (!string.Equals(fromPositionId, expectedFromPositionId, StringComparison.Ordinal)
-            || sequencePosition != expectedSequencePosition
+            || sequencePosition != CampaignPreambleSequenceBinding.Rebind(expectedSequencePosition, sequencePosition.ContractVersion)
             || sourceCopy.Any(source => source is null)
             || !sourceCopy.SequenceEqual(expectedSources))
         {

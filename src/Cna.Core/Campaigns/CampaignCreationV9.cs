@@ -238,7 +238,7 @@ internal static class CampaignCreationV9Factory
         var legacyIdentity = ContentPackArtifact.Create(
             artifact.Definition.LegacyDefinition).Identity;
         var expectedPosition = Cna1979LandSequence.CreateTurn(scenario.Start.GameTurn)[0];
-        if (!Cna1979Ruleset.IsCanonicalHash(rulesetHash)
+        if (!Cna1979Ruleset.IsHistoricalHashV8(rulesetHash)
             || !CampaignWorldV5Validator.ContainsScenario(artifact, scenario)
             || setup.Content.Pack != legacyIdentity
             || !string.Equals(setup.Content.ScenarioId, scenario.ScenarioId,

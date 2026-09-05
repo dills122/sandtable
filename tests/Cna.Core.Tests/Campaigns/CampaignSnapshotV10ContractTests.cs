@@ -379,7 +379,7 @@ public sealed class CampaignSnapshotV10ContractTests
             null,
             CampaignTestHarness.Create(
                 "campaign-active-identities",
-                Cna1979Ruleset.Manifest.Hash,
+                Cna1979Ruleset.HistoricalManifestV8.Hash,
                 12345,
                 setup.SetupId,
                 setup.Hash));

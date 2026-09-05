@@ -345,7 +345,7 @@ public static partial class ExerciseController
         MatrixMovementSelection selection)
     {
         var movementCandidates = selected.Candidates.Where(candidate => candidate.Kind is
-            "move-element" or "complete-movement-segment").ToArray();
+            "move-element" or "complete-movement-segment" or "stop-element-movement").ToArray();
         if (movementCandidates.Length == 0) return null;
 
         var completions = movementCandidates.Where(candidate => string.Equals(
@@ -356,14 +356,18 @@ public static partial class ExerciseController
             candidate.Kind,
             "move-element",
             StringComparison.Ordinal)).ToArray();
+        var stops = movementCandidates.Where(candidate => candidate.Kind == "stop-element-movement").ToArray();
         if (movementCandidates.Length != selected.Candidates.Count
-            || completions.Length != 1
+            || completions.Length + stops.Length != 1
             || moves.Any(candidate => candidate.ElementId is null
                 || candidate.OriginLocationId is null
                 || candidate.DestinationLocationId is null
                 || candidate.MovementTotalCost is null))
             return ExerciseControllerSelection.Failed(
                 ExerciseControllerSelectionFailure.PolicyFailed);
+
+        if (stops.Length == 1)
+            return ExerciseControllerSelection.Selected(selected.Audience, stops[0].ActionId);
 
         var prior = selected.PriorMovedElementIds.ToHashSet(StringComparer.Ordinal);
         var eligible = moves.Where(candidate => !prior.Contains(candidate.ElementId!));

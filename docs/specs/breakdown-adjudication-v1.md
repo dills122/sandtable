@@ -314,5 +314,6 @@ No remote services or timing-sensitive assertions are required.
 Independent research/design reviews 1–3 apply to their recorded historical targets; they do not claim
 to review these new freeze bytes. That delivery's three-instance budget remains exhausted. Subsequent
 production review belongs to its concrete implementation scope and cannot be used to rerun this
-research decision loop. Task 005 is complete; next is **BRK-TASK-006: coherent public activation and privacy**.
-[Stop/check evidence](../research/breakdown-stop-adjudication.md) records dormant authority and replay verification.
+research decision loop. Task 006 is complete; next is **BRK-TASK-007: checked Runner fixtures and closeout**.
+[Stop/check evidence](../research/breakdown-stop-adjudication.md) records dormant authority and replay verification;
+[public activation evidence](../research/breakdown-public-activation.md) records current boundaries and gates.

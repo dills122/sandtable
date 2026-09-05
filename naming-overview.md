@@ -637,7 +637,9 @@ and persistent broken-vehicle lots. Task 002 supplies dormant outcome Rules and 
 [Task 003](docs/research/breakdown-campaign-contracts.md) adds dormant campaign contracts and a certified Truck fixture.
 [Task 004](docs/research/breakdown-move-accounting.md) adds shared BP accounting and dormant move replay.
 [Task 005](docs/research/breakdown-stop-adjudication.md) adds stop resolution, persistent loss lots, explicit Reaction continuation and dormant replay to Combat entry.
-Public activation and Runner Tasks 006–007 remain pending. Truck convoy movement is distinct from combat/Reaction eligibility; the initial profile
+[Task 006](docs/research/breakdown-public-activation.md) activates those contracts, side-safe Breakdown waiting,
+owner lot summaries and current history/readback. Public authority stops at first-side Combat;
+Task 007 checked Runner migration and clean-run closeout remain pending. Truck convoy movement is distinct from combat/Reaction eligibility; the initial profile
 defers public positive ZOC and motorized-infantry losses.
 
 **War College** is where we evaluate commanders.

@@ -100,11 +100,11 @@ internal static class ReactionRunnerTestData
 {
     internal static ExerciseManifest Manifest(ExerciseControllerPolicy policy) => new(
         ExerciseManifest.CurrentContractVersion, "reaction-study",
-        "rules-lab.initiative.predetermined",
-        "sha256:48ad98fd232f7c7c50d4f925dd83e3de97f2eb48cc6929a17aa1fb172cdbd394",
-        "rules-lab.content.movement-contact.v1",
-        "sha256:20cf54f25d752253105877c6139d8db86549759f9dbb80fad873686498f26f5f",
-        "movement-contact-lab", Cna.Core.Rules.Cna1979Ruleset.Manifest.Hash,
+        "rules-lab.breakdown.reaction.v1",
+        "sha256:ed4e33358ede11f3c25661798add9088f11d8853053dbf7c8992ba5f92d9a36e",
+        "rules-lab.content.breakdown-reaction.v1",
+        "sha256:1e10648bb65f7ec6d4ad3f33bbf612f51c11a927ebc2e8b110aa5544af3918dd",
+        "breakdown-reaction-lab", Cna.Core.Rules.Cna1979Ruleset.Manifest.Hash,
         "land.position.operation-1.first-player.movement-and-combat.breakdown-determination",
         50, 0, ExerciseBuildMode.Exploratory, ExerciseConfidentiality.TrustedAuthority,
         ExerciseDetail.Forensic, new(policy, policy, policy), null);

@@ -208,7 +208,7 @@ public sealed class CampaignReplayTests
             CampaignSnapshotSerializer.Serialize(execution.Snapshot));
         var expected = "{\"contractVersion\":9,\"campaignId\":\"campaign-1\"," +
             "\"stateVersion\":1,\"rulesetHash\":\"" +
-            Cna1979Ruleset.Manifest.Hash +
+            Cna1979Ruleset.HistoricalManifestV8.Hash +
             "\",\"setup\":{\"schemaVersion\":5," +
             "\"setupId\":\"rules-lab.initiative.predetermined\"," +
             "\"setupHash\":\"sha256:9e55e3de11338ba6432768ccb6740a6fed83b37503f69cc7ff8ecd58e205634f\"," +
@@ -298,7 +298,7 @@ public sealed class CampaignReplayTests
         [
             CampaignTestHarness.Create(
                 "campaign-1",
-                Cna1979Ruleset.Manifest.Hash,
+                Cna1979Ruleset.HistoricalManifestV8.Hash,
                 12345,
                 setup.SetupId,
                 setup.Hash),
@@ -323,7 +323,7 @@ public sealed class CampaignReplayTests
         [
             CampaignTestHarness.Create(
                 "campaign-1",
-                Cna1979Ruleset.Manifest.Hash,
+                Cna1979Ruleset.HistoricalManifestV8.Hash,
                 seed,
                 setup.SetupId,
                 setup.Hash),

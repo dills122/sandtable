@@ -15,7 +15,7 @@ public sealed class Version3AuthorityTests
         var setup = Cna1979SetupCatalog.Definitions[1];
         var command = CampaignTestHarness.Create(
             "campaign-1",
-            Cna1979Ruleset.Manifest.Hash,
+            Cna1979Ruleset.HistoricalManifestV8.Hash,
             12345,
             setup.SetupId,
             setup.Hash);
@@ -49,7 +49,7 @@ public sealed class Version3AuthorityTests
             null,
             CampaignTestHarness.Create(
                 "campaign-1",
-                Cna1979Ruleset.Manifest.Hash,
+                Cna1979Ruleset.HistoricalManifestV8.Hash,
                 12345,
                 setupId,
                 setupHash));
@@ -88,7 +88,7 @@ public sealed class Version3AuthorityTests
     [Fact]
     public void CanonicalManifestCutsOverAllAuthoritativeArtifacts()
     {
-        Assert.Equal(8, Cna1979Ruleset.Manifest.ContractVersion);
+        Assert.Equal(8, Cna1979Ruleset.HistoricalManifestV8.ContractVersion);
         Assert.Equal(
             [
                 "cna-1979.1.breakdown-tables",
@@ -101,7 +101,7 @@ public sealed class Version3AuthorityTests
                 "cna-1979.1.weather-tables",
                 "cna-1979.1.zoc-rules",
             ],
-            Cna1979Ruleset.Manifest.Artifacts
+            Cna1979Ruleset.HistoricalManifestV8.Artifacts
                 .Select(artifact => artifact.ArtifactId)
                 .Order(StringComparer.Ordinal));
     }
@@ -142,7 +142,7 @@ public sealed class Version3AuthorityTests
         var created = new CampaignCreated(
             "campaign-retired",
             1,
-            Cna1979Ruleset.Manifest.Hash,
+            Cna1979Ruleset.HistoricalManifestV8.Hash,
             CampaignSetupSnapshot.FromDefinition(definition),
             CampaignWorldFactory.CreateInitial(
                 Cna1979SyntheticContentCatalog.Artifact,
@@ -216,7 +216,7 @@ public sealed class Version3AuthorityTests
             null,
             CampaignTestHarness.Create(
                 "campaign-1",
-                Cna1979Ruleset.Manifest.Hash,
+                Cna1979Ruleset.HistoricalManifestV8.Hash,
                 12345,
                 setup.SetupId,
                 setup.Hash));

@@ -24,7 +24,7 @@ public sealed class CampaignReserveSubmissionTests
             handle.Snapshot,
             handle.Context,
             submission);
-        var result = CampaignLegalActions.Submit(handle, submission);
+        var result = HistoricalCampaignActions.Submit(handle, submission);
 
         Assert.Equal(CampaignActionSubmissionRejectionReason.None,
             execution.RejectionReason);

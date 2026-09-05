@@ -44,7 +44,8 @@ the pre-alpha roadmap carry repository-wide rationale and delivery state.
   implemented with full gate passing and independent review Ready. [Task 003 campaign contracts](research/breakdown-campaign-contracts.md)
   and certified Truck fixture implemented. [Task 004 move accounting](research/breakdown-move-accounting.md)
   implemented. [Task 005 stop/check authority](research/breakdown-stop-adjudication.md) implemented;
-  Task 006 coherent public activation and privacy next. Public adjudication remains unimplemented.
+  [Task 006 public activation and privacy](research/breakdown-public-activation.md) activates current
+  authority through first-side Combat entry. Task 007 checked Runner migration and clean-run closeout next.
 - ZOC and Reaction: approved [specification](specs/zoc-reaction-v1.md),
   [technical design](design/zoc-reaction-v1.md), and
   [research packet](research/contact-reaction-zoc-spike.md), with the accepted

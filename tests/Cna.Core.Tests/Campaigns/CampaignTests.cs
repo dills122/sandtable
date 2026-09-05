@@ -13,7 +13,7 @@ public sealed class CampaignTests
         var setup = Cna1979SetupCatalog.Definitions[0];
         var command = CampaignTestHarness.Create(
             "campaign-1",
-            Cna1979Ruleset.Manifest.Hash,
+            Cna1979Ruleset.HistoricalManifestV8.Hash,
             12345,
             setup.SetupId,
             setup.Hash);
@@ -26,7 +26,7 @@ public sealed class CampaignTests
 
         var snapshot = CampaignTestHarness.Replay(result.Events);
         Assert.Equal("campaign-1", snapshot.CampaignId);
-        Assert.Equal(Cna1979Ruleset.Manifest.Hash, snapshot.RulesetHash);
+        Assert.Equal(Cna1979Ruleset.HistoricalManifestV8.Hash, snapshot.RulesetHash);
         Assert.Equal(12345UL, snapshot.RandomState.Seed);
         Assert.Equal(setup.SetupId, snapshot.Setup.SetupId);
         Assert.Null(snapshot.InitiativeHolder);
@@ -163,7 +163,7 @@ public sealed class CampaignTests
             null,
             CampaignTestHarness.Create(
                 "campaign-1",
-                Cna1979Ruleset.Manifest.Hash,
+                Cna1979Ruleset.HistoricalManifestV8.Hash,
                 12345,
                 setup.SetupId,
                 setup.Hash));

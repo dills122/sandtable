@@ -1,6 +1,6 @@
 namespace Cna.Core.Content;
 
-internal sealed class ContentPackV6Definition
+public sealed class ContentPackV6Definition
 {
     public const int SchemaVersion = 6;
     public const string CanonicalFormatId = "sandtable.content-json.v5";

@@ -261,7 +261,7 @@ public sealed class WeatherCampaignTests
         [
             CampaignTestHarness.Create(
                 "campaign-weather",
-                Cna1979Ruleset.Manifest.Hash,
+                Cna1979Ruleset.HistoricalManifestV8.Hash,
                 seed,
                 setup.SetupId,
                 setup.Hash),

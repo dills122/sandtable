@@ -82,6 +82,26 @@ public static class Cna1979SyntheticContentCatalog
 
     public static ContentPackV5Artifact ArtifactV5 { get; } = CreateArtifactV5();
 
+    public static ContentPackV6Artifact ArtifactV6 => Cna1979BreakdownContentCatalog.Artifact;
+
+    public static ContentPackV6Artifact ArtifactBreakdownReactionV6 =>
+        Cna1979BreakdownContentCatalog.ReactionArtifact;
+
+    public static ContentPackV6CatalogResolution ResolveV6(string packId, string expectedHash)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(packId);
+        ArgumentException.ThrowIfNullOrWhiteSpace(expectedHash);
+        var artifact = string.Equals(packId, ArtifactV6.Identity.PackId, StringComparison.Ordinal)
+            ? ArtifactV6
+            : string.Equals(packId, ArtifactBreakdownReactionV6.Identity.PackId, StringComparison.Ordinal)
+                ? ArtifactBreakdownReactionV6 : null;
+        if (artifact is null)
+            return ContentPackV6CatalogResolution.Rejected(ContentCatalogRejectionReason.UnknownPackId);
+        return string.Equals(expectedHash, artifact.Identity.Hash, StringComparison.Ordinal)
+            ? ContentPackV6CatalogResolution.Resolved(artifact)
+            : ContentPackV6CatalogResolution.Rejected(ContentCatalogRejectionReason.HashMismatch);
+    }
+
     public static ContentPresentationCatalog Presentation { get; } = CreatePresentation();
 
     public static ContentCatalogResolution Resolve(string packId, string expectedHash)

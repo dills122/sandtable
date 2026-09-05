@@ -13,7 +13,7 @@ internal static class CampaignSnapshotValidator
         ArgumentNullException.ThrowIfNull(context);
 
         if (!IsLocallyValid(snapshot)
-            || !Cna1979Ruleset.IsCanonicalHash(snapshot.RulesetHash)
+            || !Cna1979Ruleset.IsHistoricalHashV8(snapshot.RulesetHash)
             || snapshot.Setup.Content != context.Selection
             || snapshot.Setup.InitialGameTurn != context.Scenario.Start.GameTurn
             || !IsContextAuthoritativelyValid(snapshot, context))

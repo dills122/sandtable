@@ -301,7 +301,7 @@ public sealed class CampaignObservationContractTests
             CampaignObservation.CurrentPolicyId,
             "campaign-1",
             1,
-            rulesetHash ?? Cna1979Ruleset.Manifest.Hash,
+            rulesetHash ?? Cna1979Ruleset.HistoricalManifestV8.Hash,
             "movement-contact-lab",
             LandSide.Axis,
             CreatePosition(),

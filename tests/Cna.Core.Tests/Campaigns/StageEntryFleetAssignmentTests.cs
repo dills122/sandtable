@@ -43,12 +43,12 @@ public sealed class StageEntryFleetAssignmentTests
     }
 
     [Fact]
-    public void CurrentSystemAssignmentSubmissionIsAcceptedOnce()
+    public void HistoricalSystemAssignmentSubmissionIsAcceptedOnce()
     {
         var assignment = ReachAssignment().Snapshot!;
         var handle = new CampaignAuthorityHandle(assignment,
             CampaignTestHarness.ContextFor(assignment));
-        var query = CampaignLegalActions.Query(handle, CampaignActionAudience.System);
+        var query = HistoricalCampaignActions.Query(handle, CampaignActionAudience.System);
         Assert.True(query.IsSuccessful);
         var candidate = Assert.Single(query.ActionSet!.Candidates);
         var submission = new CampaignActionSubmission(
@@ -59,7 +59,7 @@ public sealed class StageEntryFleetAssignmentTests
             query.ActionSet.Audience,
             candidate.ActionId);
 
-        var accepted = CampaignLegalActions.Submit(handle, submission);
+        var accepted = HistoricalCampaignActions.Submit(handle, submission);
 
         Assert.True(accepted.IsAccepted);
         Assert.Equal(9, accepted.SuccessorHandle!.Snapshot.StateVersion);
@@ -67,7 +67,7 @@ public sealed class StageEntryFleetAssignmentTests
             accepted.SuccessorHandle.Snapshot.SegmentId);
         Assert.Equal(9, accepted.Receipt!.CommittedStateVersion);
 
-        var duplicate = CampaignLegalActions.Submit(accepted.SuccessorHandle, submission);
+        var duplicate = HistoricalCampaignActions.Submit(accepted.SuccessorHandle, submission);
         Assert.False(duplicate.IsAccepted);
         Assert.Equal(CampaignActionSubmissionRejectionReason.StaleState,
             duplicate.RejectionReason);
@@ -151,7 +151,7 @@ public sealed class StageEntryFleetAssignmentTests
         CampaignCommand[] commands =
         [
             CampaignTestHarness.Create("campaign-stage-entry-assignment",
-                Cna1979Ruleset.Manifest.Hash, 12345, setup.SetupId, setup.Hash),
+                Cna1979Ruleset.HistoricalManifestV8.Hash, 12345, setup.SetupId, setup.Hash),
             new ResolveInitiative(1, "land.position.initiative-determination"),
             new ResolveNoObligationNavalConvoySchedule(2,
                 "land.position.naval-convoy.schedule"),

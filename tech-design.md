@@ -675,7 +675,7 @@ is an original nine-hex nonhistorical rules laboratory using the same path inten
 source-derived content. Exact catalog lookup requires both pack ID and hash and never substitutes a
 default; presentation labels remain outside authoritative equality and bytes.
 
-The current Campaign World capability uses world snapshot contract 5 and records exact
+The current Campaign World capability uses world snapshot contract 6 and records exact
 ruleset, setup, content, and scenario identities; resolves immutable content before an authoritative
 grain turn; and projects mutable element locations, per-element Reserve status, exact
 Operation-Stage expenditure/Cohesion/Movement-ended state, exact component TOE provenance, and
@@ -693,15 +693,17 @@ four exact empty obligations; Reserve Designation accepts only current owner can
 through one exact completion event to Movement. The Movement foundation plus approved
 Breakdown-continuity clean cut first advanced the ruleset to contract 7, snapshot to contract 9,
 Campaign World to contract 4, creation event to contract 8, and Content Pack to schema 4 / canonical
-format v3. ZOC/Reaction activation now advances the complete current set together to Ruleset 8,
-Snapshot 10, Campaign World 5, creation event 9, and Content Pack schema 5 / canonical format v4.
+format v3. ZOC/Reaction activation established Ruleset 8, Snapshot 10, Campaign World 5,
+creation event 9 and Content Pack schema 5 / canonical format v4. Breakdown activation advances
+the complete current set to Ruleset 9, Snapshot 11, World 6, creation event 10, Setup/Content 6
+and sequence/catalog 4; old readers remain explicit historical contracts.
 No generic sequence bypass exists.
 See the Content Pack v1
 [research](docs/research/content-pack-v1-spike.md),
 [specification](docs/specs/content-pack-v1.md), and
 [technical design](docs/design/content-pack-v1.md).
 
-The implemented Campaign Observation boundary lives in `Cna.Core.Observations`. Contract 6 accepts only
+The implemented Campaign Observation boundary lives in `Cna.Core.Observations`. Contract 7 accepts only
 a fully admitted Campaign World snapshot, its already-resolved exact content context, and a defined
 viewer side. A pure projector then copies a closed allowlist of public campaign/turn/topology facts,
 the current source-free Weather summary, exact own mobility/operational ledger/Reserve status and
@@ -885,13 +887,19 @@ continuations, deterministic checks and persistent lots. Owner accepted `BRK-DEC
 `BRK-TASK-001` is complete and [Task 002 dormant outcome Rules](docs/research/breakdown-outcome-rules.md)
 are implemented with a passing full gate; independent review is Ready.
 [Task 003 campaign contracts and the certified Truck fixture](docs/research/breakdown-campaign-contracts.md)
-are implemented: dormant Content 6, Setup 6, World 6, Snapshot 11, Created 10 and sequence/catalog 4
-compose a dormant Ruleset 9 manifest. [Task 004](docs/research/breakdown-move-accounting.md) adds shared
+established Content 6, Setup 6, World 6, Snapshot 11, Created 10 and sequence/catalog 4
+under Ruleset 9. [Task 004](docs/research/breakdown-move-accounting.md) adds shared
 BP accounting and rederived ordinary/Reaction move events. [Task 005](docs/research/breakdown-stop-adjudication.md) adds
 stop/check authority, explicit Reaction continuation and exact RNG replay through first-side Combat entry.
-Task 006 public activation and privacy follow. The initial certified Truck/
-battalion profile defers public positive ZOC and motorized-infantry losses; original evidence stays
-historical and bounded fixture successors remain implementation obligations. Runtime remains unchanged.
+[Task 006](docs/research/breakdown-public-activation.md) activates these contracts together with
+Observation 7, projected history 2, legal-action policy 3 and disclosure manifest 2. Public pending
+stops admit one System action; both players receive generic waiting. Current checkpoint admission
+recomputes retained Initiative/Weather/preamble evidence; full replay separately verifies historical
+transitions. Runner event admission shares Core's strict decoder, and bounded move controllers stop
+an open route before selecting another element. Current queries end at unsupported first-side Combat.
+The certified Truck/battalion profile defers public positive ZOC and motorized-infantry losses;
+original checked Runner fixture bytes stay historical. Task 007 owns checked successor scenarios,
+strict-bundle closeout and clean-run evidence.
 The implemented paired comparison does not block that engine work.
 
 [1]: https://learn.microsoft.com/en-us/dotnet/orleans/grains/external-tasks-and-grains "External tasks and grains - .NET | Microsoft Learn"

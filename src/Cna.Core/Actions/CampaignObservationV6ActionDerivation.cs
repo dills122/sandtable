@@ -143,7 +143,8 @@ internal static class CampaignObservationV6ActionDerivation
             observation.RulesetHash,
             observation.Position.PositionId,
             audience,
-            candidates);
+            candidates,
+            CampaignLegalActionSet.HistoricalPolicyIdV2);
 
     private static CampaignActionCandidate[] DeriveOrdinaryMovement(
         CampaignObservationV6 observation)

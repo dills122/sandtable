@@ -51,7 +51,7 @@ public sealed class CampaignReserveFogOfWarTests
         AssertByteInvariant(reserveHandles.Select(handle =>
             CampaignObservationSerializer.SerializeCanonical(Project(handle, opponent))));
         AssertByteInvariant(reserveHandles.Select(handle =>
-            CampaignLegalActionSerializer.Serialize(
+            CampaignLegalActionSerializer.SerializeHistoricalV2(
                 CampaignReserveActionTestData.Query(handle, opponentAudience))));
 
         var staleSet = CampaignReserveActionTestData.Query(initial, actingAudience);
@@ -59,7 +59,7 @@ public sealed class CampaignReserveFogOfWarTests
             .OrderBy(candidate => candidate.ElementId, StringComparer.Ordinal)
             .First();
         var changed = reserveHandles[1];
-        var stale = CampaignLegalActions.Submit(
+        var stale = HistoricalCampaignActions.Submit(
             changed,
             CampaignReserveActionTestData.Bind(staleSet, staleCandidate));
         Assert.False(stale.IsAccepted);
@@ -82,7 +82,7 @@ public sealed class CampaignReserveFogOfWarTests
         AssertByteInvariant(movementHandles.Select(handle =>
             CampaignObservationSerializer.SerializeCanonical(Project(handle, opponent))));
         AssertByteInvariant(movementHandles.Select(handle =>
-            CampaignLegalActionSerializer.Serialize(
+            CampaignLegalActionSerializer.SerializeHistoricalV2(
                 CampaignReserveActionTestData.Query(handle, opponentAudience))));
 
         Assert.Equal(3, movementHandles.Select(handle =>
@@ -104,7 +104,7 @@ public sealed class CampaignReserveFogOfWarTests
                 .FirstOrDefault();
             if (candidate is null) break;
 
-            var result = CampaignLegalActions.Submit(
+            var result = HistoricalCampaignActions.Submit(
                 handle,
                 CampaignReserveActionTestData.Bind(set, candidate));
             handle = Assert.IsType<CampaignAuthorityHandle>(result.SuccessorHandle);
@@ -119,7 +119,7 @@ public sealed class CampaignReserveFogOfWarTests
         var set = CampaignReserveActionTestData.Query(handle, actingAudience);
         var candidate = Assert.Single(
             set.Candidates.OfType<CompleteReserveDesignationAction>());
-        var result = CampaignLegalActions.Submit(
+        var result = HistoricalCampaignActions.Submit(
             handle,
             CampaignReserveActionTestData.Bind(set, candidate));
         return Assert.IsType<CampaignAuthorityHandle>(result.SuccessorHandle);

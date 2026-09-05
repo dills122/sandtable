@@ -73,7 +73,7 @@ public sealed class CampaignReactionIdentityTests
             "commonwealth-brigade-alpha");
         var baseline = CampaignReactionIdentity.CreateWindow(
             "campaign-1",
-            Cna1979Ruleset.Manifest.Hash,
+            Cna1979Ruleset.HistoricalManifestV8.Hash,
             2,
             42,
             trigger,
@@ -82,7 +82,7 @@ public sealed class CampaignReactionIdentityTests
             LandSide.Commonwealth);
         var equivalent = CampaignReactionIdentity.CreateWindow(
             "campaign-1",
-            Cna1979Ruleset.Manifest.Hash,
+            Cna1979Ruleset.HistoricalManifestV8.Hash,
             2,
             42,
             equivalentTrigger,
@@ -100,28 +100,28 @@ public sealed class CampaignReactionIdentityTests
             opportunity.Value);
         Assert.NotEqual(baseline.Value, opportunity.Value);
         Assert.NotEqual(baseline, CampaignReactionIdentity.CreateWindow(
-            "campaign-2", Cna1979Ruleset.Manifest.Hash, 2, 42, trigger,
+            "campaign-2", Cna1979Ruleset.HistoricalManifestV8.Hash, 2, 42, trigger,
             "west", "east", LandSide.Commonwealth));
         Assert.NotEqual(baseline, CampaignReactionIdentity.CreateWindow(
-            "campaign-1", Cna1979Ruleset.Manifest.Hash, 3, 42, trigger,
+            "campaign-1", Cna1979Ruleset.HistoricalManifestV8.Hash, 3, 42, trigger,
             "west", "east", LandSide.Commonwealth));
         Assert.NotEqual(baseline, CampaignReactionIdentity.CreateWindow(
-            "campaign-1", Cna1979Ruleset.Manifest.Hash, 2, 43, trigger,
+            "campaign-1", Cna1979Ruleset.HistoricalManifestV8.Hash, 2, 43, trigger,
             "west", "east", LandSide.Commonwealth));
         Assert.NotEqual(baseline, CampaignReactionIdentity.CreateWindow(
-            "campaign-1", Cna1979Ruleset.Manifest.Hash, 2, 42,
+            "campaign-1", Cna1979Ruleset.HistoricalManifestV8.Hash, 2, 42,
             Representation("map-representation.0003", "east", "axis-battalion-alpha"),
             "west", "east", LandSide.Commonwealth));
         Assert.NotEqual(baseline, CampaignReactionIdentity.CreateWindow(
-            "campaign-1", Cna1979Ruleset.Manifest.Hash, 2, 42, trigger,
+            "campaign-1", Cna1979Ruleset.HistoricalManifestV8.Hash, 2, 42, trigger,
             "north-west", "east", LandSide.Commonwealth));
         Assert.NotEqual(baseline, CampaignReactionIdentity.CreateWindow(
-            "campaign-1", Cna1979Ruleset.Manifest.Hash, 2, 42,
+            "campaign-1", Cna1979Ruleset.HistoricalManifestV8.Hash, 2, 42,
             Representation("map-representation.0001", "north-east",
                 "axis-battalion-alpha"),
             "west", "north-east", LandSide.Commonwealth));
         Assert.NotEqual(baseline, CampaignReactionIdentity.CreateWindow(
-            "campaign-1", Cna1979Ruleset.Manifest.Hash, 2, 42, trigger,
+            "campaign-1", Cna1979Ruleset.HistoricalManifestV8.Hash, 2, 42, trigger,
             "west", "east", LandSide.Axis));
         Assert.NotEqual(opportunity,
             CampaignReactionIdentity.CreateOpportunity(

@@ -44,7 +44,7 @@ public sealed class CampaignReserveAudienceTests
             var audience = observer == LandSide.Axis
                 ? CampaignActionAudience.Axis
                 : CampaignActionAudience.Commonwealth;
-            var legalActions = CampaignLegalActions.Query(
+            var legalActions = HistoricalCampaignActions.Query(
                 new CampaignAuthorityHandle(reserve, context), audience);
             Assert.True(legalActions.IsSuccessful);
             Assert.Equal(audience, legalActions.ActionSet!.Audience);
@@ -66,7 +66,7 @@ public sealed class CampaignReserveAudienceTests
         CampaignCommand[] commands =
         [
             CampaignTestHarness.Create("campaign-reserve-audience",
-                Cna1979Ruleset.Manifest.Hash, 12345, setup.SetupId, setup.Hash),
+                Cna1979Ruleset.HistoricalManifestV8.Hash, 12345, setup.SetupId, setup.Hash),
             new ResolveInitiative(1, "land.position.initiative-determination"),
             new ResolveNoObligationNavalConvoySchedule(2,
                 "land.position.naval-convoy.schedule"),

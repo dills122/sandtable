@@ -2,7 +2,7 @@ using System.Security.Cryptography;
 
 namespace Cna.Core.Content;
 
-internal sealed record ContentPackV6Identity
+public sealed record ContentPackV6Identity
 {
     public ContentPackV6Identity(
         int schemaVersion,
@@ -42,7 +42,7 @@ internal sealed record ContentPackV6Identity
     public string Hash { get; }
 }
 
-internal sealed class ContentPackV6Artifact
+public sealed class ContentPackV6Artifact
 {
     private readonly byte[] canonicalBytes;
 

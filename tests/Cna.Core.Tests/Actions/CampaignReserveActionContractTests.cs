@@ -86,10 +86,10 @@ public sealed class CampaignReserveActionContractTests
     [Fact]
     public void ReserveCandidateSetSerializationIsExactAndClosed()
     {
-        var set = new CampaignLegalActionSet(
+        var set = HistoricalLegalActionSetTestData.Create(
             "campaign-reserve",
             10,
-            Cna1979Ruleset.Manifest.Hash,
+            Cna1979Ruleset.HistoricalManifestV8.Hash,
             "land.position.operation-1.reserve-designation",
             CampaignActionAudience.Axis,
             [
@@ -100,7 +100,7 @@ public sealed class CampaignReserveActionContractTests
         Assert.Equal(
             $"{{\"contractVersion\":2,\"policyId\":\"sandtable.legal-actions.v2\"," +
             $"\"campaignId\":\"campaign-reserve\",\"stateVersion\":10," +
-            $"\"rulesetHash\":\"{Cna1979Ruleset.Manifest.Hash}\"," +
+            $"\"rulesetHash\":\"{Cna1979Ruleset.HistoricalManifestV8.Hash}\"," +
             "\"positionId\":\"land.position.operation-1.reserve-designation\"," +
             "\"audience\":\"axis\",\"candidates\":[" +
             "{\"contractVersion\":1," +
@@ -109,17 +109,17 @@ public sealed class CampaignReserveActionContractTests
             "{\"contractVersion\":1," +
             "\"actionId\":\"sha256:cc92582163def43d5ef16267cbc50e3d55e8db5e7bd949a12943303fada50c60\"," +
             "\"kind\":\"designate-reserve\",\"elementId\":\"axis-element-a\"}]}",
-            Encoding.UTF8.GetString(CampaignLegalActionSerializer.Serialize(set)));
+            Encoding.UTF8.GetString(CampaignLegalActionSerializer.SerializeHistoricalV2(set)));
 
-        var unsupported = new CampaignLegalActionSet(
+        var unsupported = HistoricalLegalActionSetTestData.Create(
             "campaign-reserve",
             10,
-            Cna1979Ruleset.Manifest.Hash,
+            Cna1979Ruleset.HistoricalManifestV8.Hash,
             "land.position.operation-1.reserve-designation",
             CampaignActionAudience.Axis,
             [new UnsupportedPayloadAction()]);
         Assert.Throws<ArgumentOutOfRangeException>(() =>
-            CampaignLegalActionSerializer.Serialize(unsupported));
+            CampaignLegalActionSerializer.SerializeHistoricalV2(unsupported));
     }
 
     [Fact]

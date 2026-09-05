@@ -55,17 +55,17 @@ declare whether to act first or last in Operation Stage 1; resolve Weather; emit
 events; explicitly resolve empty Organization, Naval Convoy Arrival, Fleet Assignment, and Fleet
 Repair obligations; adjudicate the first-acting side's Reserve Designation; execute supported
 first-side Movement; open, adjudicate, close, and resume bounded ZOC Reaction interrupts; complete
-Movement to Breakdown Determination; and
-replay those events to byte-identical state. Reserve authority now carries per-element status,
+Movement through Breakdown Determination to unsupported first-side Combat; resolve explicit
+route stops with exact BP checks and persistent broken-vehicle lots; and replay those events to byte-identical state. Reserve authority now carries per-element status,
 owner-only observation, exact acting-side candidates, closed command mapping, bounded checkpoints,
 and canonical designation/completion events. The Movement foundation additionally records exact
 per-Operation-Stage expenditure/Cohesion state and opaque one-to-one map representations. It now
 also carries typed move/completion candidates, deterministic action identities, an exact side-safe
 cost breakdown, strict non-authoritative readback, internal authoritative non-contact move
 adjudication/replay, and observation-derived public action membership with exact submission
-revalidation. Ruleset manifest contract 8, setup schema 5, snapshot contract 10,
-Campaign World snapshot contract 5, Campaign Observation contract 6, legal-action-set contract 2,
-and Content Pack schema 5 / canonical format v4 use an original nine-hex,
+revalidation. Ruleset manifest contract 9, setup schema 6, snapshot contract 11,
+Campaign World snapshot contract 6, Campaign Observation contract 7, legal-action-set contract 2
+with policy v3, and Content Pack schema 6 / canonical format v5 use an original nine-hex,
 nonhistorical rules laboratory to develop game systems without redistributing published assets.
 Campaign Observation derives deterministic side-safe public topology, audience-visible turn
 revision, exact own mobility/ledger/Reserve and approved vehicle-risk facts, plus only opaque
@@ -81,10 +81,12 @@ sequence position keeps `ActiveSide` unset; current Movement materializes that r
 successor Movement and Reaction identities bind it. Raw snapshots, commands, events, content
 context, projection, and replay are not public mutation seams.
 
-Current Campaign Observation 6 freezes the
-`sandtable.observation.zoc-reaction-side-safe.v1` policy, one canonical source-unmapped aggregate
+Campaign Observation 7 uses the
+`sandtable.observation.breakdown-side-safe.v1` policy, one canonical source-unmapped aggregate
 of apparent enemy-controlled locations, exact owner-visible Movement-ended membership, and a closed
-normal/phasing/reacting decision-state union. Its reacting view contains only the apparent trigger,
+normal/phasing/reacting/Breakdown-waiting decision-state union. Pending stops expose one
+System capability and generic player waiting; own lot summaries contain cohort/location counts
+without lot IDs or evidence, and reactor waiting omits owner rows that could reveal bindings. Its reacting view contains only the apparent trigger,
 the observer's current state-scoped capability handles with closed current move-option/cost
 capabilities, and the optional active own participant. Raw element Movement, ledger, Cohesion,
 Reserve, mobility, organization, and stacking inputs remain inside Core. Reacting construction and
@@ -104,18 +106,26 @@ strict current readback, and unpublished typed submission intents. Public Core q
 checkpoint, serialization, and replay paths now use this complete successor set; bounded Exercise
 Runner Reaction controllers implement `ZOR-TASK-007A`: explicit bounded policies support
 participant ordering, one/two-step episodes, decline/subset close, and System fallback.
-Current Movement completion preserves accepted Reaction costs through the Breakdown boundary.
+Current Movement completion preserves accepted Reaction costs through the Breakdown boundary;
+explicit Breakdown completion advances to unsupported Combat without another draw.
 `ZOR-TASK-007B` closes the package with strict evidence, matching clean-run fingerprints, and
 a Ready independent review; see [checked Reaction trajectories](docs/research/simulator-reaction-trajectories.md).
-Owner accepted Breakdown decisions `BRK-DEC-004`–`007`; [BRK-TASK-001 contract freeze](docs/specs/breakdown-adjudication-v1.md) is complete. [Task 002 dormant outcome rules](docs/research/breakdown-outcome-rules.md) are implemented and the full gate passes; independent review is Ready. [Task 003 dormant campaign contracts and certified Truck fixture](docs/research/breakdown-campaign-contracts.md) are implemented. [Task 004 shared BP accounting and successor move events](docs/research/breakdown-move-accounting.md) are implemented. [Task 005 stop/check authority and exact RNG replay](docs/research/breakdown-stop-adjudication.md) are implemented. Next is Task 006 coherent public activation and privacy. The certified Truck profile defers public positive ZOC and motorized-infantry losses; its [fixture migration](docs/specs/breakdown-fixture-migration.v1.json) preserves historical coverage. Current public runtime still stops at Breakdown; successor adjudication remains dormant.
+Owner accepted Breakdown decisions `BRK-DEC-004`–`007`. Tasks 001–005 supplied the frozen contracts,
+certified world, BP accounting and deterministic stop lifecycle. [Task 006 public activation](docs/research/breakdown-public-activation.md)
+activates that complete identity set, Observation 7, projected history 2 and disclosure manifest 2.
+Current creation, checkpoints and event admission reject legacy or mixed contracts; retained
+Initiative, Weather and preamble evidence is recomputed, while full history is verified separately
+by replay. Public queries stop at first-side Combat entry. Positive ZOC, motorized-infantry losses
+and later-stage reset remain outside the certified profile. Task 007 owns checked Runner scenario
+migration and clean-run closeout; [original fixtures](docs/specs/breakdown-fixture-migration.v1.json)
+remain historical with unchanged bytes.
 
 The local `Cna.ExerciseRunner` supports that synthetic rules-laboratory path as either one
 bounded, deterministic **Exercise** or one serial **Maneuver**. An Exercise uses a fresh opaque Core
 capability, selects only current legal actions, stops at its exact declared boundary, proves both
 event-history reconstruction and fresh-session re-adjudication, and writes a manifest-last
-`trusted-authority` evidence bundle. The original Organization fixture and nine-step Reserve
-fixture remain regression checkpoints; a checked 12-step Reserve Designation profile now
-designates both eligible elements and completes to first-side Movement. A serial-unpaired Maneuver
+`trusted-authority` evidence bundle. The original Organization, Reserve and Reaction checked fixtures are historical. Current regression
+tests use certified Truck and contact inputs; checked successor manifests remain Task 007 work. A serial-unpaired Maneuver
 strictly admits one canonical ordered `serial-unpaired` manifest,
 derives explicit child identities from its sole parent root seed, and runs each child in process
 through the same coordinator. Each completed child bundle is read once for semantic validation and
@@ -311,8 +321,11 @@ dotnet test --solution Sandtable.slnx --no-build
 dotnet run --project src/Cna.AppHost/Cna.AppHost.csproj
 ```
 
-Run the Organization-boundary Exercise and
-write its ignored evidence bundle with:
+The checked Runner commands below retain historical Rules 8 fixture paths. Current admission
+rejects those manifests until Task 007 adds their certified successors; do not use these commands
+as current smoke tests. `dotnet test --solution Sandtable.slnx --no-build` exercises current inputs.
+
+Historical Organization-boundary command:
 
 ```sh
 dotnet run --project src/Cna.ExerciseRunner/Cna.ExerciseRunner.csproj -- \

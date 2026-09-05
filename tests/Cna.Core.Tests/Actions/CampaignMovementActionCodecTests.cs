@@ -18,7 +18,7 @@ public sealed class CampaignMovementActionCodecTests
         var expected =
             $"{{\"contractVersion\":2,\"policyId\":\"sandtable.legal-actions.v2\"," +
             $"\"campaignId\":\"campaign-movement\",\"stateVersion\":10," +
-            $"\"rulesetHash\":\"{Cna1979Ruleset.Manifest.Hash}\"," +
+            $"\"rulesetHash\":\"{Cna1979Ruleset.HistoricalManifestV8.Hash}\"," +
             "\"positionId\":\"land.position.operation-1.first-player.movement-and-combat.movement\"," +
             "\"audience\":\"axis\",\"candidates\":[" +
             "{\"contractVersion\":1," +
@@ -36,14 +36,14 @@ public sealed class CampaignMovementActionCodecTests
             "{\"hexsideId\":\"land.hexside.slope\",\"direction\":\"up\"," +
             "\"addedCost\":{\"numerator\":1,\"denominator\":2}}]," +
             "\"totalCost\":{\"numerator\":5,\"denominator\":2}}}]}";
-        var canonical = CampaignLegalActionSerializer.Serialize(set);
+        var canonical = CampaignLegalActionSerializer.SerializeHistoricalV2(set);
 
         Assert.Equal(expected, Encoding.UTF8.GetString(canonical));
 
-        var readback = CampaignLegalActionSerializer.DeserializeCanonical(canonical);
+        var readback = CampaignLegalActionSerializer.DeserializeHistoricalV2(canonical);
 
         Assert.Equal(set, readback);
-        Assert.Equal(canonical, CampaignLegalActionSerializer.Serialize(readback));
+        Assert.Equal(canonical, CampaignLegalActionSerializer.SerializeHistoricalV2(readback));
         Assert.IsType<CompleteMovementSegmentAction>(readback.Candidates[0]);
         var move = Assert.IsType<MoveElementAction>(readback.Candidates[1]);
         Assert.Equal(new CapabilityPointAmount(5, 2), move.CostBreakdown.TotalCost);
@@ -69,16 +69,16 @@ public sealed class CampaignMovementActionCodecTests
             CreateMove(),
             new CompleteMovementSegmentAction(),
         ];
-        var set = new CampaignLegalActionSet(
+        var set = HistoricalLegalActionSetTestData.Create(
             "campaign-all-kinds",
             10,
-            Cna1979Ruleset.Manifest.Hash,
+            Cna1979Ruleset.HistoricalManifestV8.Hash,
             "land.position.operation-1.first-player.movement-and-combat.movement",
             CampaignActionAudience.Axis,
             candidates);
-        var canonical = CampaignLegalActionSerializer.Serialize(set);
+        var canonical = CampaignLegalActionSerializer.SerializeHistoricalV2(set);
 
-        var readback = CampaignLegalActionSerializer.DeserializeCanonical(canonical);
+        var readback = CampaignLegalActionSerializer.DeserializeHistoricalV2(canonical);
 
         Assert.Equal(set, readback);
         Assert.Equal(
@@ -86,7 +86,7 @@ public sealed class CampaignMovementActionCodecTests
                 type => candidates.Single(candidate => candidate.GetType() == type).Kind,
                 StringComparer.Ordinal),
             readback.Candidates.Select(value => value.GetType()));
-        Assert.Equal(canonical, CampaignLegalActionSerializer.Serialize(readback));
+        Assert.Equal(canonical, CampaignLegalActionSerializer.SerializeHistoricalV2(readback));
     }
 
     [Fact]
@@ -273,10 +273,10 @@ public sealed class CampaignMovementActionCodecTests
         AssertRejectsReceipt(expected + "\n");
     }
 
-    private static CampaignLegalActionSet CreateMovementSet() => new(
+    private static CampaignLegalActionSet CreateMovementSet() => HistoricalLegalActionSetTestData.Create(
         "campaign-movement",
         10,
-        Cna1979Ruleset.Manifest.Hash,
+        Cna1979Ruleset.HistoricalManifestV8.Hash,
         "land.position.operation-1.first-player.movement-and-combat.movement",
         CampaignActionAudience.Axis,
         [CreateMove(), new CompleteMovementSegmentAction()]);
@@ -305,10 +305,10 @@ public sealed class CampaignMovementActionCodecTests
             new CapabilityPointAmount(5, 2)));
 
     private static string SerializeMovementSetText() => Encoding.UTF8.GetString(
-        CampaignLegalActionSerializer.Serialize(CreateMovementSet()));
+        CampaignLegalActionSerializer.SerializeHistoricalV2(CreateMovementSet()));
 
     private static void AssertRejects(string value) => Assert.Throws<JsonException>(() =>
-        CampaignLegalActionSerializer.DeserializeCanonical(Encoding.UTF8.GetBytes(value)));
+        CampaignLegalActionSerializer.DeserializeHistoricalV2(Encoding.UTF8.GetBytes(value)));
 
     private static void AssertRejectsSubmission(string value) => Assert.Throws<JsonException>(() =>
         CampaignActionSubmissionSerializer.DeserializeCanonical(Encoding.UTF8.GetBytes(value)));

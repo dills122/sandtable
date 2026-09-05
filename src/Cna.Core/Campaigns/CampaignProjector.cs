@@ -78,7 +78,7 @@ internal static class CampaignProjector
         if (created.ContractVersion != 8
             || created.StateVersion != 1
             || string.IsNullOrWhiteSpace(created.CampaignId)
-            || !Cna1979Ruleset.IsCanonicalHash(created.RulesetHash)
+            || !Cna1979Ruleset.IsHistoricalHashV8(created.RulesetHash)
             || !CampaignSnapshotValidator.IsValidSetup(created.Setup)
             || created.Setup.Content != context.Selection
             || created.InitialWorld is null

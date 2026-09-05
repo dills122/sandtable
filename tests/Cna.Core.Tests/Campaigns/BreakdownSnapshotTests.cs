@@ -38,7 +38,7 @@ public sealed class BreakdownSnapshotTests
             case "snapshot-version": root["contractVersion"] = 10; break;
             case "world-version": root["world"]!["contractVersion"] = 5; break;
             case "sequence-version": root["currentPosition"]!["sequencePosition"]!["contractVersion"] = 3; break;
-            case "ruleset": root["rulesetHash"] = Cna1979Ruleset.Manifest.Hash; break;
+            case "ruleset": root["rulesetHash"] = Cna1979Ruleset.HistoricalManifestV8.Hash; break;
             case "unknown-root": root["extra"] = false; break;
             case "idle-route": root["breakdownFlow"]!["route"] = null; break;
             case "initial-moving": root["breakdownFlow"] = JsonNode.Parse(CampaignBreakdownCodec.Serialize(new CampaignBreakdownFlow.Moving(Route(Create(true), "axis-infantry")))); break;

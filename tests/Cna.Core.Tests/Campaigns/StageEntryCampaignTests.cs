@@ -113,7 +113,7 @@ public sealed class StageEntryCampaignTests
         CampaignAuthorityHandle handle,
         CampaignActionAudience audience)
     {
-        var result = CampaignLegalActions.Query(handle, audience);
+        var result = HistoricalCampaignActions.Query(handle, audience);
         Assert.True(result.IsSuccessful);
         return result.ActionSet!;
     }
@@ -138,7 +138,7 @@ internal static class StageEntryCampaignTestData
             null,
             CampaignTestHarness.Create(
                 "campaign-stage-entry-complete",
-                Cna1979Ruleset.Manifest.Hash,
+                Cna1979Ruleset.HistoricalManifestV8.Hash,
                 seed,
                 setup.SetupId,
                 setup.Hash));

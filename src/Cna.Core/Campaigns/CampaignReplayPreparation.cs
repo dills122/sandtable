@@ -70,7 +70,7 @@ internal static class CampaignReplayPreparation
                 CampaignReplayPreparationRejectionReason.InvalidHistory);
         }
 
-        if (!Cna1979Ruleset.IsCanonicalHash(created.RulesetHash))
+        if (!Cna1979Ruleset.IsHistoricalHashV8(created.RulesetHash))
         {
             return CampaignReplayPreparationResult.Rejected(
                 CampaignReplayPreparationRejectionReason.UnsupportedRuleset);

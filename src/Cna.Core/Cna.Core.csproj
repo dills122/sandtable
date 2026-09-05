@@ -6,5 +6,7 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="Cna.Core.Tests" />
+    <EmbeddedResource Include="Content/Fixtures/rules-lab.content.breakdown-truck.v1.json" />
+    <EmbeddedResource Include="Content/Fixtures/rules-lab.content.breakdown-reaction.v1.json" />
   </ItemGroup>
 </Project>

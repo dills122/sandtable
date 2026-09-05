@@ -4,7 +4,7 @@ using Cna.Core.Rules;
 
 namespace Cna.Core.Content;
 
-internal static class ContentPackV6Serializer
+public static class ContentPackV6Serializer
 {
     public static byte[] SerializeCanonical(ContentPackV6Definition definition)
     {

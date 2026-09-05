@@ -56,7 +56,7 @@ public sealed class BreakdownMoveReplayTests
             case "weather": node["breakdownAccounting"]![0]!["weatherKind"] = "hot"; break;
             case "missing-accounting": node["breakdownAccounting"] = new JsonArray(); break;
             case "route": node["breakdownFlowAfter"]!["route"]!["originLocationId"] = "east"; break;
-            case "rules": node["rulesetHash"] = Cna1979Ruleset.Manifest.Hash; break;
+            case "rules": node["rulesetHash"] = Cna1979Ruleset.HistoricalManifestV8.Hash; break;
             case "version": node["contractVersion"] = 2; break;
             case "unknown": node["counterfeit"] = true; break;
         }

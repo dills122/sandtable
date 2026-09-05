@@ -8,8 +8,10 @@ namespace Cna.ExerciseRunner.Tests.Artifacts;
 
 public sealed class ManeuverManifestCodecTests
 {
-    private const string CanonicalManifest =
-        "{\"contractVersion\":2,\"schemeId\":\"sandtable.maneuver-manifest.v2\",\"maneuverId\":\"rules-lab.serial\",\"mode\":\"serial-unpaired\",\"rootSeed\":0,\"report\":{\"profile\":\"trusted-authority\"},\"exercises\":[{\"contractVersion\":2,\"exerciseId\":\"organization-boundary.first\",\"setupId\":\"rules-lab.initiative.predetermined\",\"setupHash\":\"sha256:48ad98fd232f7c7c50d4f925dd83e3de97f2eb48cc6929a17aa1fb172cdbd394\",\"contentPackId\":\"rules-lab.content.movement-contact.v1\",\"contentHash\":\"sha256:20cf54f25d752253105877c6139d8db86549759f9dbb80fad873686498f26f5f\",\"scenarioId\":\"movement-contact-lab\",\"rulesetHash\":\"0e80a8ba917113b401ea709f9f2a6cd7fb7cfec03b8adbdae978f1b219e141e0\",\"terminalBoundary\":\"land.position.operation-1.organization\",\"maximumSteps\":8,\"buildMode\":\"exploratory\",\"confidentiality\":\"trusted-authority\",\"detail\":\"forensic\",\"controllers\":{\"system\":\"first-by-action-id\",\"axis\":\"first-by-action-id\",\"commonwealth\":\"first-by-action-id\"},\"assertFailureCategory\":null}]}";
+    private static readonly string CanonicalManifest =
+        "{\"contractVersion\":2,\"schemeId\":\"sandtable.maneuver-manifest.v2\",\"maneuverId\":\"rules-lab.serial\",\"mode\":\"serial-unpaired\",\"rootSeed\":0,\"report\":{\"profile\":\"trusted-authority\"},\"exercises\":[{\"contractVersion\":2,\"exerciseId\":\"organization-boundary.first\",\"setupId\":\"rules-lab.breakdown.truck.v1\",\"setupHash\":\"sha256:e6631e81ad8f97e39fd9d7eec93bad7fe2b39db4d2d3059ed94a02dd4093e7a3\",\"contentPackId\":\"rules-lab.content.breakdown-truck.v1\",\"contentHash\":\"sha256:646e76e69ecceb82216b37d84e950928099acd8a3cb04b51526d0fe631e512ee\",\"scenarioId\":\"breakdown-truck-lab\",\"rulesetHash\":\"0e80a8ba917113b401ea709f9f2a6cd7fb7cfec03b8adbdae978f1b219e141e0\",\"terminalBoundary\":\"land.position.operation-1.organization\",\"maximumSteps\":8,\"buildMode\":\"exploratory\",\"confidentiality\":\"trusted-authority\",\"detail\":\"forensic\",\"controllers\":{\"system\":\"first-by-action-id\",\"axis\":\"first-by-action-id\",\"commonwealth\":\"first-by-action-id\"},\"assertFailureCategory\":null}]}".Replace(
+            "0e80a8ba917113b401ea709f9f2a6cd7fb7cfec03b8adbdae978f1b219e141e0",
+            Cna1979Ruleset.Manifest.Hash, StringComparison.Ordinal);
 
     [Fact]
     public void ManifestHasTheFrozenCanonicalVersionTwoBytes()
@@ -264,11 +266,11 @@ public sealed class ManeuverManifestCodecTests
             ExerciseControllerPolicy.FirstByActionId) => new(
         ExerciseManifest.CurrentContractVersion,
         exerciseId,
-        "rules-lab.initiative.predetermined",
-        "sha256:48ad98fd232f7c7c50d4f925dd83e3de97f2eb48cc6929a17aa1fb172cdbd394",
-        "rules-lab.content.movement-contact.v1",
-        "sha256:20cf54f25d752253105877c6139d8db86549759f9dbb80fad873686498f26f5f",
-        "movement-contact-lab",
+        "rules-lab.breakdown.truck.v1",
+        "sha256:e6631e81ad8f97e39fd9d7eec93bad7fe2b39db4d2d3059ed94a02dd4093e7a3",
+        "rules-lab.content.breakdown-truck.v1",
+        "sha256:646e76e69ecceb82216b37d84e950928099acd8a3cb04b51526d0fe631e512ee",
+        "breakdown-truck-lab",
         Cna1979Ruleset.Manifest.Hash,
         "land.position.operation-1.organization",
         8,

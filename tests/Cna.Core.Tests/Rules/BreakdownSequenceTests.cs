@@ -57,7 +57,7 @@ public sealed class BreakdownSequenceTests
     }
 
     [Fact]
-    public void CanonicalCatalogAndManifestChangeOnlyDormantIdentities()
+    public void CanonicalCatalogAndManifestPreserveExplicitHistoricalIdentityDifference()
     {
         var bytes = Cna1979LandSequenceV4.SerializeCanonicalCatalog();
         using var document = JsonDocument.Parse(bytes);
@@ -66,20 +66,20 @@ public sealed class BreakdownSequenceTests
         Assert.Equal("land.position.breakdown-stop", document.RootElement.GetProperty("interruptPositions")[0].GetProperty("positionId").GetString());
         Assert.Equal($"sha256:{Convert.ToHexStringLower(SHA256.HashData(bytes))}", Cna1979LandSequenceV4.CreateArtifact().ContentHash);
         Assert.Equal(9, Cna1979BreakdownRuleset.Manifest.ContractVersion);
-        Assert.Equal(8, Cna1979Ruleset.Manifest.ContractVersion);
-        Assert.Equal("0e80a8ba917113b401ea709f9f2a6cd7fb7cfec03b8adbdae978f1b219e141e0", Cna1979Ruleset.Manifest.Hash);
-        Assert.False(Cna1979BreakdownRuleset.IsCanonicalHash(Cna1979Ruleset.Manifest.Hash));
-        Assert.False(Cna1979Ruleset.IsCanonicalHash(Cna1979BreakdownRuleset.Manifest.Hash));
-        Assert.Equal(Cna1979Ruleset.Manifest.Rulings.Count + 4, Cna1979BreakdownRuleset.Manifest.Rulings.Count);
+        Assert.Equal(8, Cna1979Ruleset.HistoricalManifestV8.ContractVersion);
+        Assert.Equal("0e80a8ba917113b401ea709f9f2a6cd7fb7cfec03b8adbdae978f1b219e141e0", Cna1979Ruleset.HistoricalManifestV8.Hash);
+        Assert.False(Cna1979BreakdownRuleset.IsCanonicalHash(Cna1979Ruleset.HistoricalManifestV8.Hash));
+        Assert.False(Cna1979Ruleset.IsHistoricalHashV8(Cna1979BreakdownRuleset.Manifest.Hash));
+        Assert.Equal(Cna1979Ruleset.HistoricalManifestV8.Rulings.Count + 4, Cna1979BreakdownRuleset.Manifest.Rulings.Count);
         foreach (var artifactId in new[] { Cna1979LandSequenceV4.ArtifactId, Cna1979Breakdown.ArtifactId })
         {
             var mixed = new RulesetManifest(Cna1979Ruleset.RulesetId, 9,
                 Cna1979BreakdownRuleset.Manifest.Artifacts.Select(artifact => artifact.ArtifactId == artifactId
-                    ? Cna1979Ruleset.Manifest.Artifacts.Single(value => value.ArtifactId == artifactId) : artifact),
+                    ? Cna1979Ruleset.HistoricalManifestV8.Artifacts.Single(value => value.ArtifactId == artifactId) : artifact),
                 Cna1979BreakdownRuleset.Manifest.Rulings);
             Assert.False(Cna1979BreakdownRuleset.IsCanonicalHash(mixed.Hash));
         }
-        foreach (var artifact in Cna1979Ruleset.Manifest.Artifacts.Where(artifact => artifact.ArtifactId != Cna1979LandSequenceV4.ArtifactId && artifact.ArtifactId != Cna1979Breakdown.ArtifactId))
+        foreach (var artifact in Cna1979Ruleset.HistoricalManifestV8.Artifacts.Where(artifact => artifact.ArtifactId != Cna1979LandSequenceV4.ArtifactId && artifact.ArtifactId != Cna1979Breakdown.ArtifactId))
             Assert.Equal(artifact, Cna1979BreakdownRuleset.Manifest.Artifacts.Single(value => value.ArtifactId == artifact.ArtifactId));
     }
 

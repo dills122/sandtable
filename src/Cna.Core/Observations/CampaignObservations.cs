@@ -5,7 +5,7 @@ namespace Cna.Core.Observations;
 
 public static class CampaignObservations
 {
-    public static CampaignObservationV6ProjectionResult Query(
+    public static CampaignObservationV7ProjectionResult Query(
         CampaignAuthorityHandle handle,
         LandSide observer)
     {
@@ -13,31 +13,29 @@ public static class CampaignObservations
         var snapshot = handle.CurrentSnapshot;
         if (!Enum.IsDefined(observer)
             || snapshot is null
-            || handle.Context.ArtifactV5 is null
-            || !CampaignSnapshotV10Validator.IsValid(
+            || handle.Context.ArtifactV6 is null
+            || !CampaignSnapshotV11Admission.IsValid(
                 snapshot,
-                handle.Context.ArtifactV5,
+                handle.Context.ArtifactV6,
                 handle.Context.Scenario))
         {
-            return CampaignObservationV6ProjectionResult.Rejected(
+            return CampaignObservationV7ProjectionResult.Rejected(
                 !Enum.IsDefined(observer)
                     ? CampaignObservationRejectionReason.InvalidObserver
                     : CampaignObservationRejectionReason.InvalidState);
         }
 
-        var authority = CampaignElementMovedV2Factory.DeriveZocAuthority(
-            snapshot.World,
-            handle.Context.ArtifactV5,
-            handle.Context.Scenario,
+        var controlledLocations = CampaignElementMovedV3Factory.DeriveControlledLocationIds(
+            snapshot.World, handle.Context.ArtifactV6, handle.Context.Scenario,
             observer == LandSide.Axis ? LandSide.Commonwealth : LandSide.Axis);
-        return CampaignObservationV6ProjectionResult.Projected(
-            CampaignObservationV6Projector.Project(
+        return CampaignObservationV7ProjectionResult.Projected(
+            CampaignObservationV7Projector.Project(
                 snapshot,
-                handle.Context.ArtifactV5,
+                handle.Context.ArtifactV6,
                 handle.Context.Scenario,
                 observer,
                 new CampaignObservationV6AuthorityFacts(
-                    authority.ControlledLocationIds,
-                    authority.SourceRepresentationIds)));
+                    controlledLocations,
+                    [])));
     }
 }

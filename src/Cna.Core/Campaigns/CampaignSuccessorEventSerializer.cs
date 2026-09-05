@@ -245,7 +245,7 @@ internal static class CampaignSuccessorEventSerializer
             created.Setup.InitialGameTurn)[0];
         if (created.ContractVersion != CampaignCreatedV9.CurrentContractVersion
             || created.StateVersion != 1
-            || !Cna1979Ruleset.IsCanonicalHash(created.RulesetHash)
+            || !Cna1979Ruleset.IsHistoricalHashV8(created.RulesetHash)
             || created.Setup.Content.Pack.SchemaVersion != 5
             || !string.Equals(created.Setup.Content.Pack.FormatId,
                 "sandtable.content-json.v4", StringComparison.Ordinal)

@@ -174,10 +174,10 @@ older current readers; no dual-current downgrade mode.
 | `BRK-TASK-003` | **Complete:** dormant Content/Setup/World/Snapshot/creation/lot/stop contracts, sequence/catalog 4 and bounded Truck fixture; `Content`, `Campaigns`, `Rules` | [Evidence](../research/breakdown-campaign-contracts.md): strict codecs, conservation, certified creation and state negatives, mixed-version rejection; event transition proofs remain Tasks 004–005 and public activation remains Task 006 |
 | `BRK-TASK-004` | **Complete:** shared BP deltas and dormant successor ordinary/Reaction events/projectors | [Evidence](../research/breakdown-move-accounting.md): terrain/route/weather vectors, atomic forged-delta rejection, preserved CP/Reaction behavior, routes/forced-stop precedence and immutable lots |
 | `BRK-TASK-005` | **Complete:** dormant stop/check authority, exact RNG replay and continuation | [Evidence](../research/breakdown-stop-adjudication.md): nested phasing/reactor/forced-close transitions, zero-roll vs zero-loss, immutable lots, no duplicate costs/draws |
-| `BRK-TASK-006` | Observation, action membership, disclosure manifest, projected history and atomic public activation | 005; privacy/forgery/identity matrix and mandatory boundary gate; stop at unsupported Combat |
+| `BRK-TASK-006` | **Complete:** Observation, action membership, disclosure manifest, projected history and atomic public activation | [Evidence](../research/breakdown-public-activation.md): certified creation, privacy/forgery/identity matrix, strict Core/Runner admission and boundary gate; stop at unsupported Combat |
 | `BRK-TASK-007` | Checked Runner fixtures, strict bundles, research reconciliation and closeout | 006; exact accounting/lots/continuation, two clean runs, full gate and independent review |
 
-Tasks 001–005 are complete; Tasks 006–007 remain pending. Safe independent research lanes
+Tasks 001–006 are complete; Task 007 remains pending. Safe independent research lanes
 are grouped allocation,
 transport consequences and origin-placement/capture/repair; they do not modify these shared contracts.
 
@@ -208,7 +208,7 @@ Accepted battalion-size limits exclude public positive ZOC because current ZOC n
 The migration inventory preserves all original fixture bytes as historical at activation, requires
 bounded successors for 13 of 15 Reaction children, and explicitly defers positive local/remote ZOC.
 Truck ordinary moves are admitted separately; combat-only Reaction triggers remain unchanged.
-Task 005 is complete; next is BRK-TASK-006: coherent public activation and privacy.
+Task 006 is complete; next is BRK-TASK-007: checked Runner fixtures and closeout.
 
 [Task 001 verification evidence](../research/breakdown-contract-freeze-checks.md) records exact
 specification checks and their limits.

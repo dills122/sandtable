@@ -198,7 +198,7 @@ public sealed class CampaignObservationV6ActionDerivationTests
             move.DestinationLocationId,
             move.OriginLocationId,
             move.CostBreakdown);
-        var forged = new CampaignLegalActionSet(
+        var forged = HistoricalLegalActionSetTestData.Create(
             set.CampaignId,
             set.StateVersion,
             set.RulesetHash,
