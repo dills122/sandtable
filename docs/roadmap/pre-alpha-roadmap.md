@@ -582,7 +582,7 @@ Owner accepted `BRK-DEC-004`–`007` after [BRK-RSH-002](../research/breakdown-a
 [BRK-TASK-001](../specs/breakdown-adjudication-v1.md) freezes exact contracts, finite continuations
 and fixture migration. [Task 002 dormant outcomes](../research/breakdown-outcome-rules.md) are implemented
 with a passing full gate and independent review Ready. [Task 003 campaign contracts and certified Truck fixture](../research/breakdown-campaign-contracts.md)
-are implemented. [Task 004 move accounting/replay](../research/breakdown-move-accounting.md) is implemented; Tasks 005–007 follow in order.
+are implemented. [Task 004 move accounting/replay](../research/breakdown-move-accounting.md) is implemented. [Task 005 stop/check authority](../research/breakdown-stop-adjudication.md) is implemented; Tasks 006–007 follow in order.
 Certified unladen Trucks and battalion combat limits defer public positive ZOC and motorized-infantry
 losses. Historical artifacts stay intact; 13 Reaction children require bounded successors and two
 positive-ZOC children remain deferred. No runtime identity changed in this freeze.
@@ -598,7 +598,7 @@ The following bounded lanes can proceed without colliding with that serial autho
 | Lane | Scope now | Collision / merge gate |
 | --- | --- | --- |
 | ZOC/Reaction authority lane | Stable approved requirements, technical design, task slices, and traceability from accepted `CONTACT-001` rulings | Core checkpoints `ZOR-TASK-002A`-`006C` are implemented; `007A` Runner adoption is implemented; `007B` verification and independent review are complete; approval did not collapse the dependency graph |
-| Breakdown adjudication | `BRK-RSH-002` complete; DEC-004–007 accepted; `BRK-TASK-001` contract/fixture freeze complete | `BRK-TASK-002` dormant outcome rules implemented, full gate passing and independent review Ready; 003 campaign contracts/Truck fixture and 004 shared move accounting/replay implemented; next 005 stop/check authority, with atomic public activation only in 006 |
+| Breakdown adjudication | `BRK-RSH-002` complete; DEC-004–007 accepted; `BRK-TASK-001` contract/fixture freeze complete | `BRK-TASK-002` dormant outcome rules implemented, full gate passing and independent review Ready; 003 campaign contracts/Truck fixture, 004 shared move accounting/replay and 005 dormant stop/check authority implemented; next 006 coherent public activation and privacy |
 | `CMB-RSH-003`-`004`, `CYCLE-RSH-001`, `RESREL-RSH-001` | Continue bounded mutable-state, RNG, cycle-identity, and Reserve Release research | Research only; the ZOC package adopts only the minimum approved static component/current-TOE foundation and no Combat resolution |
 | `CIH-IMP-004` offline Markdown links | Add a repository-local offline link gate with reviewed exclusions and a broken-link negative | Begin after the central documentation sync; keep shared architecture/status docs under one owner |
 
@@ -897,5 +897,5 @@ The accepted `CONTACT-001` rulings are retained in the
 `007B`. Next is the [Breakdown decision packet](../research/breakdown-adjudication-spike.md) and
 [governing specification](../specs/breakdown-adjudication-v1.md): decisions accepted and Task 001
 contract freeze complete; Task 002 dormant outcome rules implemented with a passing full gate, independent review
-Ready. Tasks 003–004 dormant campaign contracts, certified Truck fixture and shared move accounting/replay
-are implemented; Task 005 stop/check authority and exact RNG replay are next. Public adjudication remains unimplemented.
+Ready. Tasks 003–005 dormant campaign contracts, certified Truck fixture, shared move accounting/replay,
+stop/check authority and exact RNG replay are implemented; Task 006 coherent public activation and privacy is next. Public adjudication remains unimplemented.

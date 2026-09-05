@@ -1,6 +1,6 @@
 # BRK-TASK-005 — Dormant stop adjudication
 
-**Status:** Complete, 2026-09-05; full repository gate passed. Requested independent checkpoint pending.
+**Status:** Complete, 2026-09-05; full repository gate passed. [Independent checkpoint 3](../reviews/brk-progress-review-3.md): Ready with non-blocking follow-ups; documentation follow-up corrected.
 **Branch:** `codex/breakdown-adjudication-design`; prerequisite `d511ec7` (Task 004).
 **Authority:** [behavior](../specs/breakdown-adjudication-v1.md),
 [wire contract](../specs/breakdown-wire-contract-v1.md), [plan](../design/breakdown-adjudication-v1.md).
@@ -76,5 +76,6 @@ Changed-document local links and staged whitespace checked before commit.
 
 Task 006 owns coherent public activation and privacy. Task 007 owns checked Runner fixture migration
 and end-to-end closeout. No BP reset, repair, later-stage execution or Combat adjudication is included.
-Requested fresh independent checkpoint is instance 3 of 3 for this implementation flow, reviewing
-completed progress through Task 005. Research/design review remains closed at 3 of 3.
+Fresh independent checkpoint 3 of 3 reviewed completed progress through Task 005.
+No implementation defect found; accepted documentation status correction is retained with the report.
+Implementation review loop is now closed; no automatic fourth instance. Research/design review remains closed at 3 of 3.
