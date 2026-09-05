@@ -135,3 +135,9 @@ invariants, rather than secret-dependent runtime support. No qualifying larger c
 arise in an admitted history, so the placement predicate is always false. General placement remains
 a later versioned gate requiring immutable start-time threat/blocker evidence; a route-origin ID
 alone is explicitly insufficient. Scope remains the same bounded research/design item.
+
+[Review 2](../reviews/breakdown-adjudication-design-review-2.md) returned **Ready for owner
+decisions**, with no actionable findings remaining. It independently compared every outcome-bound
+row to the chart and reconfirmed the numerical, hash, link and diff checks. This closes
+`BRK-RSH-002`; DEC-004–007 and `BRK-TASK-001` remain pending. No production tests were run because
+this delivery changes only documentation and research artifacts, not runtime behavior.
