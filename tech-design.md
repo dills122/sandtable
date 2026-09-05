@@ -877,7 +877,8 @@ All five `CONTACT-001` rulings and the governing specification/design package ar
 World/creation/snapshot/event-replay, Observation 6/policy/history, topology-local
 action/readback/mapping seams, the user-space declassification manifest/transcript gate, internal
 trigger/ZOC adjudication, window closure/resumption, and participant episodes. `007A` adds bounded
-Runner adoption and checked fixtures; `007B` adds strict Reaction evidence and package closeout.
+Runner adoption and checked fixtures; `007B` completes strict Reaction evidence, matching clean-run
+fingerprints, full repository verification, and independent review.
 The implemented paired comparison does not block that engine work.
 
 [1]: https://learn.microsoft.com/en-us/dotnet/orleans/grains/external-tasks-and-grains "External tasks and grains - .NET | Microsoft Learn"

@@ -42,11 +42,11 @@ the pre-alpha roadmap carry repository-wide rationale and delivery state.
   [research packet](research/contact-reaction-zoc-spike.md), with the accepted
   [user-space boundary decision](research/user-space-declassification-boundary-enforcement.md) and
   [disclosure manifest](specs/user-space-disclosure-manifest.v1.json). Movement and Breakdown continuity
-  prerequisites are complete; `ZOR-TASK-002A`-`004C` implement dormant Rules/Content/fixture,
-  Campaign World/creation/Snapshot/event-replay, and side-safe Observation 6/policy/history seams,
-  plus topology-local action/readback/mapping and declassification-boundary contracts;
-  `ZOR-TASK-005` is the next
-  dependency-ordered slice.
+  prerequisites are complete; `ZOR-TASK-002A`-`006C` implement and activate Rules/Content/fixture,
+  Campaign World/creation/Snapshot/event-replay, side-safe Observation 6/policy/history,
+  topology-local Movement/Reaction, participant episodes, and exact closure/resumption.
+  `007A`-`007B` complete bounded Runner adoption, strict checked evidence, matching clean runs,
+  and [Ready independent review](reviews/zor-task-007-review-1.md).
 - Combat: [source inventory](research/combat-cycle-source-inventory.md) and completed
   [rules/result-surface spike](research/combat-rules-result-surface-spike.md). Research is active;
   implementation contracts are not frozen.

@@ -105,6 +105,8 @@ checkpoint, serialization, and replay paths now use this complete successor set;
 Runner Reaction controllers implement `ZOR-TASK-007A`: explicit bounded policies support
 participant ordering, one/two-step episodes, decline/subset close, and System fallback.
 Current Movement completion preserves accepted Reaction costs through the Breakdown boundary.
+`ZOR-TASK-007B` closes the package with strict evidence, matching clean-run fingerprints, and
+a Ready independent review; see [checked Reaction trajectories](docs/research/simulator-reaction-trajectories.md).
 
 The local `Cna.ExerciseRunner` supports that synthetic rules-laboratory path as either one
 bounded, deterministic **Exercise** or one serial **Maneuver**. An Exercise uses a fresh opaque Core
@@ -178,7 +180,7 @@ The current delivery boundary is:
 | Ruleset/provenance, synthetic content, campaign authority, deterministic randomness, events, and replay | Implemented foundation |
 | Side-safe observations and exact-audience legal actions | Implemented for the current rules-laboratory path |
 | Mandatory turn preamble | Implemented through Reserve Designation completion; authority reaches first-side Movement |
-| Movement/contact and combat loops | Movement Foundation is complete through merged `MOV-TASK-010` / PR #79; `ZOR-TASK-002A`-`006C` now activate Ruleset 8, Land sequence 3, Content 5, World 5, CampaignCreated 9, Snapshot 10, `ElementMoved` v2, Observation 6, topology-local ZOC/Reaction actions, exact closure/resumption, and replay-complete participant episodes on the public Core path; `007A` adds bounded Runner adoption and checked scenarios; `007B` final verification/review is in progress |
+| Movement/contact and combat loops | Movement Foundation is complete through merged `MOV-TASK-010` / PR #79; `ZOR-TASK-002A`-`006C` now activate Ruleset 8, Land sequence 3, Content 5, World 5, CampaignCreated 9, Snapshot 10, `ElementMoved` v2, Observation 6, topology-local ZOC/Reaction actions, exact closure/resumption, and replay-complete participant episodes on the public Core path; `007A` adds bounded Runner adoption and checked scenarios; `007B` verification and independent review are complete |
 | Published first-scenario data, remaining Land rules, victory, persistence, and Maproom | Milestone-level; not started |
 | Player Intent Composer | Direction reviewed; representative decision after the combat skeleton, no-model prototype before Maproom, optional parser evaluation after deterministic MVP |
 | Exercise Harness | Single-Exercise, serial-unpaired two-setup/controller/Movement Maneuvers, and optional serial-paired Reserve-policy and Movement-cost descriptive comparisons implemented with strict readback |
@@ -246,8 +248,7 @@ cost/RNG mutation. It also selects the first participant atomically with its mov
 steps bound to that active participant, accumulates exact shared Movement CP/provenance, and resolves
 participants without World or RNG mutation. `ZOR-TASK-006C` now activates the complete successor
 identity set on public Core creation, observation, action, checkpoint, and replay paths; legacy
-creation and Movement roots reject. Bounded Runner adoption in `ZOR-TASK-007A` is implemented; `007B` final verification/review
-is in progress.
+creation and Movement roots reject. Bounded Runner adoption in `ZOR-TASK-007A` is implemented; `007B` verification and independent review are complete.
 The optional paired comparison is implemented Runner instrumentation and does not block
 gameplay-engine progress.
 Combat research has progressed beyond the initial source inventory: `CMB-RSH-001` now retains the

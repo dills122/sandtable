@@ -630,6 +630,7 @@ replay paths. `ZOR-TASK-007A` Runner adoption adds bounded Reaction controllers 
 public capabilities by action ID, close participant episodes or windows explicitly, and preserve
 Umpire-owned costs on final Movement completion. A checked 15-child Maneuver retains trusted
 authority evidence; `007B` strict readback reconstructs and re-adjudicates its Reaction events.
+The package is verified through matching clean runs and a Ready independent review.
 
 **War College** is where we evaluate commanders.
 

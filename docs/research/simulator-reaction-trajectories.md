@@ -1,6 +1,6 @@
 # Checked Reaction trajectories
 
-**Status:** ZOR-TASK-007A implemented; ZOR-TASK-007B final gate and independent review in progress.
+**Status:** ZOR-TASK-007A and ZOR-TASK-007B complete; full gate passed; independent review Ready.
 
 The [checked Maneuver](../../scenarios/maneuvers/rules-lab.reaction.serial.v2.json) runs fifteen
 fresh campaigns through public Core creation, legal-action query, submission, strict evidence
@@ -63,8 +63,11 @@ negatives.
 ## Accounting and strict evidence
 
 Final per-element CP equals the exact rational sum of all accepted ordinary and Reaction move
-costs. Completion and closure preserve committed costs. Existing vehicle-Breakdown state and
-provenance remain intact; this package does not add Breakdown rolls or losses. The final RNG cursor
+costs. Completion and closure preserve committed costs. Commonwealth A inherits the motorized
+Truck cohort, so accepted Reaction movement also exercises motorized accounting continuity.
+Existing vehicle-Breakdown state and provenance remain intact; the existing Movement Foundation boundary
+(`MOV-REQ-015` / `MOV-AC-017`) forbids post-creation BP mutation. This package does not add BP
+ledger mutation, Breakdown rolls, or losses. The final RNG cursor
 equals the last pre-Movement random event cursor, proving the checked Movement/Reaction paths add
 no random draws. Current Movement completion uses Snapshot 10 directly: predecessor validation
 would incorrectly reject moved non-phasing elements after an otherwise legal Reaction.
@@ -104,3 +107,38 @@ just check
 Use a second artifact root for a repeated run. Compare validated `reportFingerprint` values,
 canonical event streams, accepted actions, final snapshots, and proof bytes; run IDs, paths,
 timings, and build working-tree diagnostics are intentionally outside deterministic report identity.
+
+## Verified closeout
+
+Candidate source commit: `dad5f1cddf6e5e3b81bbef9b1cdc7deae7169671`, following the bounded-controller
+and current-Movement-completion checkpoint `965050a`.
+
+- `just check` passed restore, format verification, build, 48/48 boundary tests, and 1,216/1,216
+  solution tests with zero failures or skips.
+- A detached clean checkout restored and built successfully with zero warnings/errors. Two public
+  CLI runs each completed all fifteen children. Every child build identity retained `dirty=false`
+  and the candidate commit above.
+- All sixty reconstruction/re-adjudication proofs across both runs were `verified`. Nine files per
+  child matched byte-for-byte: Exercise manifest, seed ledger, accepted actions, canonical events,
+  initial/final snapshots, step evidence, reconstruction proof, and re-adjudication proof (135
+  comparisons). Deterministic report objects also matched exactly.
+- [Independent review 1 of 3](../reviews/zor-task-007-review-1.md) found no actionable defects and
+  returned `Ready`; no remediation or additional review instance was required.
+
+Both clean runs retained this report fingerprint:
+
+```text
+sha256:21e2e2dde1002c677b382a398c6ff3e40635c324437fe1c3ab1d30c90694f845
+```
+
+SHA-256 of the per-child canonical file-hash matrix (sorted Exercise IDs and filenames, compact
+JSON containing lowercase file SHA-256 values):
+
+```text
+sha256:00d3f8d351c4722653fe531e2121f067be1bf7e72e7815a26a2e60b7eae1ec43
+```
+
+Both runs use the checked manifest's exploratory build mode; clean source identity and equal
+transcripts do not relabel these runs as baseline-mode artifacts. Runtime/diagnostic paths and
+timings remain excluded from deterministic identity. Evidence closes the approved ZOR group;
+Breakdown adjudication and later Combat/hosting gates retain their separate scope.
