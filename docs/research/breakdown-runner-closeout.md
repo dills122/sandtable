@@ -1,6 +1,6 @@
 # Breakdown Runner migration and closeout
 
-**Status:** Task 007 implementation, full gate and two matching clean runs verified. Final independent review awaits authorization: implementation review budget is exhausted at 3 of 3.
+**Status:** Task 007 implementation, full gate and two matching clean runs verified. [Final review 4](../reviews/brk-final-review-4.md) is **Not ready** for acceptance closeout: Task 006 still needs BRK-AC-009 full current-version audience transcript/progress privacy evidence. Review limit is exhausted at 4 of 4 after explicit user authorization.
 
 The frozen [migration inventory](../specs/breakdown-fixture-migration.v1.json) remains unchanged. Fourteen named successor files preserve the earlier checkpoint/controller purposes within the certified Truck/battalion profile. The original fourteen files remain byte-identical historical artifacts. Thirteen Reaction children retain bounded episode, close and continuation behavior; positive local and remote ZOC remain deferred.
 
@@ -52,4 +52,4 @@ python3 docs/research/verify-breakdown-runner-runs.py compare "$PWD" /tmp/brk-re
 
 The [historical Reaction study](simulator-reaction-trajectories.md) remains evidence for Rules 8 at its recorded commit, not a current Rules 9 fingerprint claim. Broader positive ZOC, positive cohort Reaction loss, motorized infantry, grouped losses, general placement, capture/towing/repair and later-stage BP reset remain outside this public capability.
 
-Task 007 final independent checkpoint is pending. [Implementation review 3](../reviews/brk-progress-review-3.md) reviewed through Task 005; it did not review Task 006 public activation or Task 007 migration. No new reviewer has been started and no Ready verdict is claimed for those changes.
+[Implementation review 3](../reviews/brk-progress-review-3.md) reviewed through Task 005. [Final review 4](../reviews/brk-final-review-4.md) reviewed Tasks 006–007, independently reran build, tests, format and audits, and checked retained clean-run artifacts. Its **Not ready** verdict leaves AC-009 full current-version transcript/progress privacy coverage open; no runtime disclosure defect was demonstrated. Normative status wording was corrected during review retention. Next work belongs to Core observation/privacy tests under Task 006 and gates Task 007 acceptance. No further review instance starts without renewed explicit authorization.

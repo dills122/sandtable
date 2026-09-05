@@ -1,7 +1,10 @@
 # BRK-TASK-006 — Public activation and privacy
 
 Task 006 activates the certified Breakdown implementation through first-side Combat entry.
-Task 007 retains checked Runner scenario migration, clean-run artifacts and independent closeout.
+Task 007 retains checked Runner scenario migration and clean-run artifacts.
+[Final review 4](../reviews/brk-final-review-4.md) leaves BRK-AC-009 acceptance open: isolated
+Observation 7 and boundary tests need full current-version audience transcript/progress comparisons.
+No runtime disclosure defect was demonstrated; public activation is implemented.
 
 ## Current contract set
 

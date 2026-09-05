@@ -1,7 +1,7 @@
 {
   "schemeId": "sandtable.research.breakdown-runner-migration-results.v1",
   "sourceInventory": "docs/specs/breakdown-fixture-migration.v1.json",
-  "status": "implementation-verified-independent-review-authorization-pending",
+  "status": "implementation-verified-acceptance-open-ac009",
   "supplementalScenarioFiles": [
     {
       "path": "scenarios/maneuvers/rules-lab.breakdown-truck.serial.v1.json",
@@ -310,8 +310,12 @@
     "format": "passed",
     "numericAudit": "passed",
     "freezeAudit": "passed",
-    "independentReview": "pending-additional-authorization",
-    "completedImplementationReviewInstances": 3,
-    "configuredImplementationReviewLimit": 3
+    "independentReview": "not-ready",
+    "completedImplementationReviewInstances": 4,
+    "configuredImplementationReviewLimit": 4,
+    "independentReviewReport": "docs/reviews/brk-final-review-4.md",
+    "openAcceptanceCriteria": [
+      "BRK-AC-009"
+    ]
   }
 }

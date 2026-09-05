@@ -1,6 +1,6 @@
 # Breakdown v1 wire contract freeze
 
-**Status:** Normative BRK-TASK-001 freeze; dormant Rules schema 2 implemented in Task 002; Task 003 campaign codecs and sequence/catalog 4 implemented. Task 004 move codecs/accounting/replay implemented. Task 005 stop/completion codecs and dormant replay implemented. Task 006 public activation remains pending.
+**Status:** Normative BRK-TASK-001 freeze; dormant Rules schema 2 implemented in Task 002; Task 003 campaign codecs and sequence/catalog 4 implemented. Task 004 move codecs/accounting/replay implemented. Task 005 stop/completion codecs and dormant replay implemented. Task 006 activates the successor public identity set; Task 007 Runner migration is implemented. [Final review 4](../reviews/brk-final-review-4.md) leaves acceptance open for BRK-AC-009 current-history privacy evidence. The historical freeze baseline below is unchanged.
 **Governing behavior:** [Breakdown specification](breakdown-adjudication-v1.md).
 **Baseline:** Every predecessor reference below means repository commit `a047547`, never an evolving
 file of the same name. This is a precise delta specification: inherit predecessor field names,
