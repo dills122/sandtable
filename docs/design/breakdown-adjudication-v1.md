@@ -1,6 +1,6 @@
 # Breakdown adjudication v1 — design and task plan
 
-**Status:** Owner accepted BRK-DEC-004–007 on 2026-09-05; BRK-TASK-001 contract freeze complete. Task 002 dormant Rules implemented; verification passed and independent review Ready. Campaign adjudication unimplemented.
+**Status:** Owner accepted BRK-DEC-004–007 on 2026-09-05; BRK-TASK-001 contract freeze complete. Task 002 dormant Rules implemented; verification passed and independent review Ready. Task 003 dormant campaign contracts and certified Truck fixture implemented. Campaign adjudication unimplemented.
 
 **Governing contract:** [specification](../specs/breakdown-adjudication-v1.md),
 [wire schemas](../specs/breakdown-wire-contract-v1.md), and
@@ -171,13 +171,13 @@ older current readers; no dual-current downgrade mode.
 | --- | --- | --- |
 | `BRK-TASK-001` | **Complete:** accepted decisions, governing spec, finite stop states, exact schema deltas/identities, public certification/rejections and fixture migration | Owner accepted DEC-004–007 after design review 3; numeric and freeze audits pass; new freeze bytes self-checked, not covered by historical independent reviews |
 | `BRK-TASK-002` | **Complete:** dormant outcome rules, exact loss arithmetic, source/ruling factories; `Cna.Core/Rules` | [Evidence](../research/breakdown-outcome-rules.md): 324 cells, exact rounding/one-point, no-roll and artifact negatives; manifest stays current until coupled activation |
-| `BRK-TASK-003` | Dormant World/Snapshot/creation/lot/stop contracts and bounded Truck fixture; `Content`, `Campaigns` | 002; strict codec, conservation, public profile creation/transition negatives, mixed-version rejection |
+| `BRK-TASK-003` | **Complete:** dormant Content/Setup/World/Snapshot/creation/lot/stop contracts, sequence/catalog 4 and bounded Truck fixture; `Content`, `Campaigns`, `Rules` | [Evidence](../research/breakdown-campaign-contracts.md): strict codecs, conservation, certified creation and state negatives, mixed-version rejection; event transition proofs remain Tasks 004–005 and public activation remains Task 006 |
 | `BRK-TASK-004` | Shared BP deltas and successor ordinary/Reaction events/projectors | 003; terrain/route/weather vectors, atomic forged-delta rejection, preserved CP/Reaction behavior |
 | `BRK-TASK-005` | Stop/check authority, exact RNG replay and continuation; no public activation | 004; nested phasing/reactor/forced-close transitions, zero-roll vs zero-loss, no duplicate costs/draws |
 | `BRK-TASK-006` | Observation, action membership, disclosure manifest, projected history and atomic public activation | 005; privacy/forgery/identity matrix and mandatory boundary gate; stop at unsupported Combat |
 | `BRK-TASK-007` | Checked Runner fixtures, strict bundles, research reconciliation and closeout | 006; exact accounting/lots/continuation, two clean runs, full gate and independent review |
 
-Tasks 001 and 002 are complete; Tasks 003–007 remain pending. Safe independent research lanes
+Tasks 001–003 are complete; Tasks 004–007 remain pending. Safe independent research lanes
 are grouped allocation,
 transport consequences and origin-placement/capture/repair; they do not modify these shared contracts.
 
@@ -208,7 +208,7 @@ Accepted battalion-size limits exclude public positive ZOC because current ZOC n
 The migration inventory preserves all original fixture bytes as historical at activation, requires
 bounded successors for 13 of 15 Reaction children, and explicitly defers positive local/remote ZOC.
 Truck ordinary moves are admitted separately; combat-only Reaction triggers remain unchanged.
-Task 002 is complete; next is BRK-TASK-003: dormant campaign contracts and the certified Truck fixture.
+Task 003 is complete; next is BRK-TASK-004: shared BP accounting and successor ordinary/Reaction move events.
 
 [Task 001 verification evidence](../research/breakdown-contract-freeze-checks.md) records exact
 specification checks and their limits.

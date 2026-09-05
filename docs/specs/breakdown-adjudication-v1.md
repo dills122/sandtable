@@ -1,6 +1,6 @@
 # Breakdown adjudication v1 specification
 
-**Status:** BRK-TASK-001 contract freeze complete, 2026-09-05. Task 002 dormant Rules implemented, verification passed and independent review Ready; Tasks 003–007 pending.
+**Status:** BRK-TASK-001 contract freeze complete, 2026-09-05. Task 002 dormant Rules implemented, verification passed and independent review Ready. Task 003 dormant campaign contracts and certified Truck fixture implemented; Tasks 004–007 pending.
 **Authority:** Owner accepted BRK-DEC-004–007 and scope after design review 3; DEC-001–003 already accepted.
 **Rules:** `cna-1979.1`. **Predecessor:** ZOR-007 at `0512ec2`; exact source baseline `a047547`.
 
@@ -284,7 +284,8 @@ candidates only and retain explicit stop/resolution counters to bound steps.
 ## Traceability and validation
 
 The inherited twelve acceptance IDs are frozen here. [Task 002 evidence](../research/breakdown-outcome-rules.md)
-records passing Rules-level portions; complete campaign/Runner acceptance remains pending.
+records passing Rules-level portions; [Task 003 evidence](../research/breakdown-campaign-contracts.md)
+records contract-level portions of AC-006/007/008/011. Complete campaign/Runner acceptance remains pending.
 
 | Acceptance ID | Governing requirements / decisions | Implementing tasks | Required executable evidence |
 | --- | --- | --- | --- |
@@ -311,4 +312,4 @@ No remote services or timing-sensitive assertions are required.
 Independent research/design reviews 1–3 apply to their recorded historical targets; they do not claim
 to review these new freeze bytes. That delivery's three-instance budget remains exhausted. Subsequent
 production review belongs to its concrete implementation scope and cannot be used to rerun this
-research decision loop. Task 002 is complete; next is **BRK-TASK-003: dormant campaign contracts and Truck fixture**.
+research decision loop. Task 003 is complete; next is **BRK-TASK-004: shared BP accounting and successor ordinary/Reaction move events**.

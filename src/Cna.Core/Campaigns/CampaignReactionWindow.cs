@@ -5,16 +5,33 @@ namespace Cna.Core.Campaigns;
 
 internal sealed record CampaignReactionTriggerAuthority
 {
+    public static CampaignReactionTriggerAuthority CreateForBreakdown(
+        string elementId,
+        CampaignMapRepresentationState triggeringRepresentation,
+        string originLocationId,
+        string destinationLocationId) => new(3, elementId, triggeringRepresentation, originLocationId, destinationLocationId, true);
+
     public CampaignReactionTriggerAuthority(
         int moveContractVersion,
         string elementId,
         CampaignMapRepresentationState triggeringRepresentation,
         string originLocationId,
         string destinationLocationId)
+        : this(moveContractVersion, elementId, triggeringRepresentation, originLocationId, destinationLocationId, false)
+    {
+    }
+
+    private CampaignReactionTriggerAuthority(
+        int moveContractVersion,
+        string elementId,
+        CampaignMapRepresentationState triggeringRepresentation,
+        string originLocationId,
+        string destinationLocationId,
+        bool breakdown)
     {
         ArgumentOutOfRangeException.ThrowIfNotEqual(
             moveContractVersion,
-            ElementMovedV2.CurrentContractVersion);
+            breakdown ? 3 : ElementMovedV2.CurrentContractVersion);
         ArgumentNullException.ThrowIfNull(triggeringRepresentation);
         ElementId = ContentContractGuards.RequireStableId(elementId, nameof(elementId));
         OriginLocationId = ContentContractGuards.RequireStableId(
@@ -197,6 +214,13 @@ internal sealed record CampaignReactionWindow
         ArgumentNullException.ThrowIfNull(reactingPosition);
         ArgumentNullException.ThrowIfNull(triggerAuthority);
         ArgumentNullException.ThrowIfNull(apparentTrigger);
+        if ((reactingPosition.SuspendedMovementPosition.ContractVersion == Cna1979LandSequence.ContractVersion
+                && triggerAuthority.MoveContractVersion != ElementMovedV2.CurrentContractVersion)
+            || (reactingPosition.SuspendedMovementPosition.ContractVersion == Cna1979LandSequenceV4.ContractVersion
+                && triggerAuthority.MoveContractVersion != 3))
+        {
+            throw new ArgumentException("Reaction position and triggering move contracts must belong to the same version set.");
+        }
         var frozen = ContentContractGuards.CopyValues(
             frozenOpportunities,
             nameof(frozenOpportunities));

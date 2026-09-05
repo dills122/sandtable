@@ -43,6 +43,7 @@ public enum CampaignCreationRejectionReason
     SetupContentMismatch,
     ScenarioStartMismatch,
     InvalidState,
+    UnsupportedCapabilityProfile = 11,
 }
 
 public sealed record CampaignAuthorityCreationResult

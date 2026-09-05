@@ -883,8 +883,10 @@ The accepted [Breakdown specification](docs/specs/breakdown-adjudication-v1.md) 
 [wire freeze](docs/specs/breakdown-wire-contract-v1.md) define shared BP accounting, finite stop
 continuations, deterministic checks and persistent lots. Owner accepted `BRK-DEC-004`–`007`;
 `BRK-TASK-001` is complete and [Task 002 dormant outcome Rules](docs/research/breakdown-outcome-rules.md)
-are implemented with a passing full gate; independent review is Ready. Task 003 campaign
-contracts and the certified Truck fixture follow. The initial certified Truck/
+are implemented with a passing full gate; independent review is Ready.
+[Task 003 campaign contracts and the certified Truck fixture](docs/research/breakdown-campaign-contracts.md)
+are implemented: dormant Content 6, Setup 6, World 6, Snapshot 11, Created 10 and sequence/catalog 4
+compose a dormant Ruleset 9 manifest. Task 004 shared BP accounting and successor move events follow. The initial certified Truck/
 battalion profile defers public positive ZOC and motorized-infantry losses; original evidence stays
 historical and bounded fixture successors remain implementation obligations. Runtime remains unchanged.
 The implemented paired comparison does not block that engine work.

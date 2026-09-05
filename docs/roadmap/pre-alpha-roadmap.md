@@ -581,7 +581,8 @@ later Sprint 4/5 slices rather than hidden additions to the first Movement resol
 Owner accepted `BRK-DEC-004`–`007` after [BRK-RSH-002](../research/breakdown-adjudication-spike.md).
 [BRK-TASK-001](../specs/breakdown-adjudication-v1.md) freezes exact contracts, finite continuations
 and fixture migration. [Task 002 dormant outcomes](../research/breakdown-outcome-rules.md) are implemented
-with a passing full gate and independent review Ready; Tasks 003–007 follow in order.
+with a passing full gate and independent review Ready. [Task 003 campaign contracts and certified Truck fixture](../research/breakdown-campaign-contracts.md)
+are implemented; Tasks 004–007 follow in order.
 Certified unladen Trucks and battalion combat limits defer public positive ZOC and motorized-infantry
 losses. Historical artifacts stay intact; 13 Reaction children require bounded successors and two
 positive-ZOC children remain deferred. No runtime identity changed in this freeze.
@@ -896,4 +897,5 @@ The accepted `CONTACT-001` rulings are retained in the
 `007B`. Next is the [Breakdown decision packet](../research/breakdown-adjudication-spike.md) and
 [governing specification](../specs/breakdown-adjudication-v1.md): decisions accepted and Task 001
 contract freeze complete; Task 002 dormant outcome rules implemented with a passing full gate, independent review
-Ready. Task 003 campaign contracts/Truck fixture next; public adjudication remains unimplemented.
+Ready. Task 003 dormant campaign contracts and certified Truck fixture are implemented; Task 004 shared BP
+accounting and successor move events are next. Public adjudication remains unimplemented.

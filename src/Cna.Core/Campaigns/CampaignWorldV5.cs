@@ -151,6 +151,12 @@ internal sealed record CampaignWorldSnapshotV5
     {
         ArgumentOutOfRangeException.ThrowIfNotEqual(contractVersion, CurrentContractVersion);
         var elementCopy = ContentContractGuards.CopyValues(elements, nameof(elements));
+        if (elementCopy.Any(element => element.OperationalState.MovementEnded is { } ended
+                && ended.SequenceContractVersion != Cna1979LandSequence.ContractVersion))
+        {
+            throw new ArgumentException("World v5 requires sequence 3 Movement-ended state.", nameof(elements));
+        }
+
         var representationCopy = ContentContractGuards.CopyValues(
             representations,
             nameof(representations));

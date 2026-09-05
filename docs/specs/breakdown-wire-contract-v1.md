@@ -1,6 +1,6 @@
 # Breakdown v1 wire contract freeze
 
-**Status:** Normative BRK-TASK-001 freeze; dormant Rules schema 2 implemented in Task 002; remaining successor codecs pending.
+**Status:** Normative BRK-TASK-001 freeze; dormant Rules schema 2 implemented in Task 002; Task 003 campaign codecs and sequence/catalog 4 implemented. Event/public activation codecs remain pending.
 **Governing behavior:** [Breakdown specification](breakdown-adjudication-v1.md).
 **Baseline:** Every predecessor reference below means repository commit `a047547`, never an evolving
 file of the same name. This is a precise delta specification: inherit predecessor field names,
@@ -45,7 +45,7 @@ Content 6 → content hash; Setup 6 binds content/profile → setup hash; creati
 RNG → snapshots/events → Observation and public capability/action hashes → Runner fingerprints.
 Existing SHA-256 formatting remains contract-specific (ruleset hash unprefixed lowercase 64 hex;
 other `Hash` values `sha256:` plus lowercase 64 hex). Each dependent artifact recomputes from canonical
-bytes, not a patched old hash. Future golden bytes/hashes are Task 003–007 output, not fabricated here.
+bytes, not a patched old hash. Successor golden bytes/hashes are Task 003–007 output; Task 003 now retains its canonical Truck fixture in the linked evidence.
 
 All new objects use UTF-8 compact JSON, fields in listed order, explicit null for nullable members,
 no duplicate/unknown properties, comments, trailing commas or noncanonical numeric encodings.
@@ -150,6 +150,10 @@ Trusted identities use SHA-256 over an ordered JSON object with `domain` first, 
 Route hash excludes mutable current location. Stop/check/lot IDs are authority-only. Identity does
 not substitute for validating full sources, inputs and outcome. These records contain no recursively
 typed continuation. Serialization depth is bounded by the six flow variants.
+
+Task 003 pins lot placement `sources` to exactly `[{sourceId:"spi-1979-land-rules",locator:"21.41"}]`.
+The lot codec retains this field after `createdStateVersion`; snapshot certification validates it
+separately from the lot hash. Outcome/chart/ruling sources belong to check evidence in Task 005.
 
 ## World, snapshot and creation
 
@@ -302,5 +306,6 @@ not permit arbitrary JSON fields. Derive route/stop/check counts from existing a
 final lots and exact cursors belong in those trusted payloads, with no extra report-root fields; player reports consume only projected history.
 
 Task 002 implementation/evidence: [dormant outcome Rules](../research/breakdown-outcome-rules.md).
-Its artifact and ruling factories are complete; full Ruleset 9 hash waits for sequence 4 and coupled
-registration. Active Ruleset 8 and schema 1 stay unchanged.
+Its artifact and ruling factories are complete. [Task 003 campaign contracts](../research/breakdown-campaign-contracts.md)
+add sequence/catalog 4 and compose the dormant Ruleset 9 hash. Coupled registration remains Task 006;
+active Ruleset 8 and schema 1 stay unchanged.

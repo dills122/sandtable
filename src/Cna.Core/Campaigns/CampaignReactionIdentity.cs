@@ -8,9 +8,17 @@ namespace Cna.Core.Campaigns;
 
 internal sealed record CampaignMovementEndedState
 {
+    public static CampaignMovementEndedState CreateForBreakdown(LandSequencePosition movementPosition) => new(movementPosition, true);
+
     public CampaignMovementEndedState(LandSequencePosition movementPosition)
+        : this(movementPosition, false)
     {
-        CampaignSequenceV5Guards.RequireMaterializedMovement(movementPosition);
+    }
+
+    private CampaignMovementEndedState(LandSequencePosition movementPosition, bool breakdown)
+    {
+        if (breakdown) Cna1979LandSequenceV4.RequireMaterializedMovement(movementPosition);
+        else CampaignSequenceV5Guards.RequireMaterializedMovement(movementPosition);
         SequenceContractVersion = movementPosition.ContractVersion;
         PositionId = movementPosition.PositionId;
         GameTurn = movementPosition.GameTurn;
@@ -40,9 +48,17 @@ internal sealed record CampaignMovementEndedState
 
 internal sealed record CampaignReactingPosition
 {
+    public static CampaignReactingPosition CreateForBreakdown(LandSequencePosition suspendedMovementPosition) => new(suspendedMovementPosition, true);
+
     public CampaignReactingPosition(LandSequencePosition suspendedMovementPosition)
+        : this(suspendedMovementPosition, false)
     {
-        CampaignSequenceV5Guards.RequireMaterializedMovement(suspendedMovementPosition);
+    }
+
+    private CampaignReactingPosition(LandSequencePosition suspendedMovementPosition, bool breakdown)
+    {
+        if (breakdown) Cna1979LandSequenceV4.RequireMaterializedMovement(suspendedMovementPosition);
+        else CampaignSequenceV5Guards.RequireMaterializedMovement(suspendedMovementPosition);
         SuspendedMovementPosition = suspendedMovementPosition;
         PhasingSide = suspendedMovementPosition.ActiveSide!.Value;
         ReactingSide = PhasingSide == LandSide.Axis
