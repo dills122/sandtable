@@ -1,6 +1,6 @@
 # Breakdown v1 wire contract freeze
 
-**Status:** Normative BRK-TASK-001 freeze; successor codecs unimplemented.
+**Status:** Normative BRK-TASK-001 freeze; dormant Rules schema 2 implemented in Task 002; remaining successor codecs pending.
 **Governing behavior:** [Breakdown specification](breakdown-adjudication-v1.md).
 **Baseline:** Every predecessor reference below means repository commit `a047547`, never an evolving
 file of the same name. This is a precise delta specification: inherit predecessor field names,
@@ -11,7 +11,7 @@ new fields into old serializers. This avoids duplicating unrelated existing even
 
 | Contract/artifact | Baseline | Successor | Change / owner task |
 | --- | --- | --- | --- |
-| Ruleset manifest `cna-1979.1` | contract 8 | 9 | Outcome artifact and accepted rulings / 002 |
+| Ruleset manifest `cna-1979.1` | contract 8 | 9 | Outcome artifact/ruling factories / 002; full hash after sequence 4, registration / 006 |
 | `cna-1979.1.breakdown-tables` | schema 1 | 2 | Outcome cells/fractions / 002 |
 | Land sequence / catalog | 3 / 3 | 4 / 4 | System stop position and first-side Breakdown completion / 003,005 |
 | Content / canonical format | 5 / `sandtable.content-json.v4` | 6 / `sandtable.content-json.v5` | Public certified profile / 003 |
@@ -300,3 +300,7 @@ successor tuples above for current runs, rejects predecessor/mixed event identit
 complete snapshots and re-adjudicates every event from prior authority. This registry change does
 not permit arbitrary JSON fields. Derive route/stop/check counts from existing action-kind counters and the new event payloads;
 final lots and exact cursors belong in those trusted payloads, with no extra report-root fields; player reports consume only projected history.
+
+Task 002 implementation/evidence: [dormant outcome Rules](../research/breakdown-outcome-rules.md).
+Its artifact and ruling factories are complete; full Ruleset 9 hash waits for sequence 4 and coupled
+registration. Active Ruleset 8 and schema 1 stay unchanged.

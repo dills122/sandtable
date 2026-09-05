@@ -633,8 +633,8 @@ authority evidence; `007B` strict readback reconstructs and re-adjudicates its R
 The package is verified through matching clean runs and a Ready independent review.
 The next Umpire package is [Breakdown adjudication](docs/specs/breakdown-adjudication-v1.md).
 Owner accepted its decisions; Task 001 freezes movement routes, bounded pending stops, check evidence
-and persistent broken-vehicle lots. These are specified contracts, with production Tasks 002–007
-pending. Truck convoy movement is distinct from combat/Reaction eligibility; the initial profile
+and persistent broken-vehicle lots. Task 002 now supplies dormant outcome Rules and exact loss arithmetic; campaign contracts and
+production Tasks 003–007 remain pending. Truck convoy movement is distinct from combat/Reaction eligibility; the initial profile
 defers public positive ZOC and motorized-infantry losses.
 
 **War College** is where we evaluate commanders.
