@@ -190,7 +190,7 @@ transport consequences and origin-placement/capture/repair; they do not modify t
 | `BRK-AC-003` | Raw <=3, BAR-shifted below surface, unchanged checked band and no working points produce no roll; cap and higher-band behavior exact |
 | `BRK-AC-004` | Zero-loss eligible roll retains exact RNG/check memory; fractional loss/one-point exception follow accepted DEC-004 |
 | `BRK-AC-005` | Same-seed events/snapshots/RNG match; rejection-sampling cursor exceeds two when appropriate; invalid submission emits nothing |
-| `BRK-AC-006` | Deliberate/forced stops, active Reaction fallback and deferred phasing stop each resume exact continuation once |
+| `BRK-AC-006` | Deliberate/forced phasing stops, final-CP Reaction retaining active route until completion/System closure, active fallback and deferred phasing stop each resume exact continuation once |
 | `BRK-AC-007` | Working points plus persistent lots conserve counts; later survivor movement leaves lots fixed; zero-working cohorts cannot move |
 | `BRK-AC-008` | Public profile rejects multiple same-side Truck cohorts, passenger/cargo capability, and any larger combat unit/aggregate at creation; every transition preserves certification. No valid stop has hidden-dependent support. Broader start-time placement evidence explicitly deferred |
 | `BRK-AC-009` | Within the admitted profile, hidden binding/BP/eligibility/position/blocker permutations preserve approved player transcript, including progress and action availability. Creation negatives cover excluded larger/grouped worlds; disclosure manifest and boundary-check pass |

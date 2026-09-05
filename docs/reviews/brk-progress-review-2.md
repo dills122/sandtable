@@ -82,3 +82,8 @@ Clarify phasing-only forced stops and preserve explicit exhausted-Reaction compl
 closure, with a final-CP Reaction acceptance vector, before Task 003 implementation. This review
 does not apply that correction or change the implementation plan. Report retention is covered by
 the owner's existing instruction to commit progress on the feature branch.
+
+Follow-up applied after owner authorization: BRK-REQ-004 now limits same-event forced stops to
+phasing steps and explicitly retains exhausted Reaction routes until completion/System closure.
+BRK-AC-006 and the design acceptance matrix carry the final-CP Reaction vector. Numeric and
+contract-freeze audits pass; runtime transition evidence remains assigned to Tasks 003/005.

@@ -116,13 +116,15 @@ current route has a recorded and resolved stop. Stopping does not replenish CP o
 After resolution, surviving elements may start another route unless Movement-ended restrictions
 apply; that route receives a new origin and identity.
 
-`stop-element-movement` records a deliberate phasing stop. A step that sets existing Movement-ended
+`stop-element-movement` records a deliberate phasing stop. A phasing step that sets existing Movement-ended
 status or exhausts the mover's admitted CP allowance records a forced stop in the same move event.
 Do not infer a forced stop merely from an empty geometry-dependent move list. A stuck route always
 retains explicit stop membership. A forced stop cannot be submitted twice. Reaction participant
 completion records its moved route's stop, resolves that opportunity and clears its active slot.
 The next participant waits for System resolution. Completion is legal after at least one accepted
-step, even when no further move is legal. Reaction steps never open nested Reaction windows.
+step, even when no further move is legal. A Reaction step exhausting CP retains its active route and
+opportunity until explicit participant completion or active System closure records the reactor stop;
+it does not record a forced stop in the move event. Reaction steps never open nested Reaction windows.
 
 Movement completion requires no Reaction window, open route or pending stop. This is the concrete
 implementation of draining all stops **before** the segment advances; segment completion does not
@@ -291,7 +293,7 @@ records passing Rules-level portions; complete campaign/Runner acceptance remain
 | BRK-AC-003 | REQ-006 / DEC-001,003 | 002,005 | Exact >3 threshold, null/unchanged/capped band, zero working and reason precedence |
 | BRK-AC-004 | REQ-001,006 / DEC-004 | 002,005 | Upward rounding, one-point 10%, exact one-third; zero-loss roll advances memory |
 | BRK-AC-005 | REQ-006,009 / DEC-001 | 005 | Same-seed replay, rejected-byte cursor, atomic batch rejection with no emitted event |
-| BRK-AC-006 | REQ-004,005 / DEC-005 | 003,005 | Every finite transition, first/last step, active fallback, deferred phasing stop, no duplicate costs/draws |
+| BRK-AC-006 | REQ-004,005 / DEC-005 | 003,005 | Every finite transition, first/last step, final-CP Reaction retains active route until completion or System closure, active fallback, deferred phasing stop, no duplicate costs/draws |
 | BRK-AC-007 | REQ-003,007 / DEC-006,007 | 003,005 | Conservation, stationary lots after survivor movement, zero-working action exclusion |
 | BRK-AC-008 | REQ-002,009 / DEC-006,007 | 003,006 | All six certification diagnostic classes; every transition preserves public invariant |
 | BRK-AC-009 | REQ-008 / DEC-005,006,007 | 006 | Full audience transcript/progress equivalence, strict disclosure manifest and boundary gate |
