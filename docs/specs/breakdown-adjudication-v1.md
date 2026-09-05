@@ -1,6 +1,6 @@
 # Breakdown adjudication v1 specification
 
-**Status:** BRK-TASK-001 contract freeze complete, 2026-09-05. Task 002 dormant Rules implemented, verification passed and independent review Ready. Task 003 dormant campaign contracts and certified Truck fixture implemented. Task 004 shared move accounting/replay implemented; Tasks 005–007 pending.
+**Status:** BRK-TASK-001 contract freeze complete, 2026-09-05. Task 002 dormant Rules implemented, verification passed and independent review Ready. Task 003 dormant campaign contracts and certified Truck fixture implemented. Task 004 shared move accounting/replay and Task 005 stop/check authority implemented; Tasks 006–007 pending.
 **Authority:** Owner accepted BRK-DEC-004–007 and scope after design review 3; DEC-001–003 already accepted.
 **Rules:** `cna-1979.1`. **Predecessor:** ZOR-007 at `0512ec2`; exact source baseline `a047547`.
 
@@ -314,4 +314,5 @@ No remote services or timing-sensitive assertions are required.
 Independent research/design reviews 1–3 apply to their recorded historical targets; they do not claim
 to review these new freeze bytes. That delivery's three-instance budget remains exhausted. Subsequent
 production review belongs to its concrete implementation scope and cannot be used to rerun this
-research decision loop. Task 004 is complete; next is **BRK-TASK-005: stop/check authority, continuation and exact RNG replay**.
+research decision loop. Task 005 is complete; next is **BRK-TASK-006: coherent public activation and privacy**.
+[Stop/check evidence](../research/breakdown-stop-adjudication.md) records dormant authority and replay verification.

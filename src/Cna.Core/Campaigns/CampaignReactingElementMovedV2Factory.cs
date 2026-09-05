@@ -71,7 +71,7 @@ internal static class CampaignReactingElementMovedV2Factory
             publicWindow, publicOpportunity, window.WindowId, opportunityId, option.OriginLocationId, destination);
     }
 
-    private static ObservedReactionMoveOption[] MoveOptions(CampaignSnapshotV11 prior,
+    internal static ObservedReactionMoveOption[] MoveOptions(CampaignSnapshotV11 prior,
         ContentPackV6Artifact artifact, ContentScenario scenario, CampaignFrozenReactionOpportunity opportunity)
     {
         var definition = artifact.Definition.LegacyDefinition;
@@ -133,7 +133,7 @@ internal static class CampaignReactingElementMovedV2Factory
     }
 
     // Same public domain and ordered input as the predecessor; only the dormant ruleset identity changes.
-    private static string CreateWindowCapability(CampaignSnapshotV11 prior)
+    internal static string CreateWindowCapability(CampaignSnapshotV11 prior)
     {
         using var stream = new MemoryStream();
         using (var writer = new Utf8JsonWriter(stream))
