@@ -177,7 +177,7 @@ older current readers; no dual-current downgrade mode.
 | `BRK-TASK-006` | **Implemented; AC-009 evidence open:** Observation, action membership, disclosure manifest, projected history and atomic public activation | [Evidence](../research/breakdown-public-activation.md): certified creation, privacy/forgery/identity matrix, strict Core/Runner admission and boundary gate; stop at unsupported Combat |
 | `BRK-TASK-007` | **Implemented; acceptance blocked on AC-009:** checked Runner fixtures, strict bundles and research reconciliation | [Closeout evidence](../research/breakdown-runner-closeout.md): exact accounting/lots/continuation, full gate and two clean runs; [review 4](../reviews/brk-final-review-4.md) requires full current-version transcript/progress privacy evidence under Task 006 |
 
-Tasks 001–005 are complete; Tasks 006–007 are implemented, with verification recorded in closeout evidence. Review 4 leaves Task 006 AC-009 current-history privacy coverage open, gating Task 007 acceptance. Safe independent research lanes
+Tasks 001–005 are complete; Tasks 006–007 are implemented, with verification recorded in closeout evidence. [AC-009 transcript follow-up](../research/breakdown-transcript-privacy.md) adds current-history privacy coverage for review 4 P2; user-requested independent review 5 remains the acceptance gate. Safe independent research lanes
 are grouped allocation,
 transport consequences and origin-placement/capture/repair; they do not modify these shared contracts.
 
