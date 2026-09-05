@@ -1,6 +1,6 @@
 # Breakdown adjudication decision packet
 
-**Status:** Research/design complete; proposed decisions require owner resolution before implementation.
+**Status:** Research/design complete; owner accepted BRK-DEC-004–007 on 2026-09-05. Contract freeze follows in BRK-TASK-001; production remains unimplemented.
 
 **Work item:** `BRK-RSH-002` — next Sprint 4 gate after ZOR-007.
 
@@ -13,10 +13,9 @@ then handles movement stops, deterministic checks, persistent broken-vehicle loc
 replay. A dice-only action at the existing Breakdown checkpoint would leave accepted movement
 histories without their inputs and would miss stops inside Reaction.
 
-This packet proposes contracts and ordered work in the [design](../design/breakdown-adjudication-v1.md).
-It does not approve new authority. Existing `BRK-DEC-001` through `003` remain accepted:
-sequential d6, continuity now, and accumulated-BP Sandstorm attribution. Proposed `004` through `007`
-below are not added to the active rules manifest.
+This packet records accepted decisions and ordered work in the [design](../design/breakdown-adjudication-v1.md).
+Acceptance opens the bounded contract-freeze task. Existing `BRK-DEC-001` through `003` remain accepted:
+sequential d6, continuity now, and accumulated-BP Sandstorm attribution. Decisions `004` through `007` below are now accepted; they are not yet added to the active rules manifest.
 
 ## Method and source lock
 
@@ -48,7 +47,7 @@ boundaries were examined separately. No chart image or rules text is redistribut
 - Errata 21.12 changes Italian M13/40 BAR, not Truck BAR or dice interpretation.
 
 These are source facts. Stop scheduling, canonical ties, and the first supported content boundary
-below are proposed software decisions, not printed procedures.
+below are accepted software decisions, not printed procedures.
 
 ## Repository observations
 
@@ -73,8 +72,7 @@ repair authority to assume as an available continuation.
 ## Outcome normalization and experiment
 
 [Research-only bounds](fixtures/breakdown-outcome-bounds.v1.json) encode the numerical outcome
-surface by inclusive sequential-coordinate bounds. The printed `33` remains a label until
-`BRK-DEC-004` is accepted. No production code reads this file.
+surface by inclusive sequential-coordinate bounds. The printed `33` label maps to exact one-third under accepted `BRK-DEC-004`. No production code reads this file.
 
 ```bash
 python3 docs/research/verify-breakdown-outcomes.py
@@ -88,12 +86,15 @@ checks do not independently prove every transcribed boundary; visual source comp
 Exact transcription hash:
 `f63dc336364648acb52d20070bb1076205a36a40769f4391531ba65aaf94c401`.
 The experiment asserts the source example: 30 points at 10% gives 3 losses; 20 at the `33` label
-gives 7 under the proposed one-third interpretation. A 100-point case distinguishes that proposal
+gives 7 under the accepted one-third interpretation. A 100-point case distinguishes that ruling
 from literal 33/100. Existing source rules/rulings, not this Python checker, remain authority.
 
-## Proposed owner decisions
+## Accepted owner decisions
 
-| ID | Recommendation | Alternative and consequence |
+Owner accepted all four recommendations and their scope restrictions on 2026-09-05 after review 3.
+Alternatives below retain decision rationale; they are not open choices.
+
+| ID | Accepted choice | Rejected alternative and consequence |
 | --- | --- | --- |
 | `BRK-DEC-004` | Treat printed `33` as exact `1/3`; other labels use exact percentage fractions. Apply the one-point/10% exception at the admitted check-unit boundary. | Literal `33/100` differs for larger counts and loses the example's exact fraction. Grouped one-point exceptions need an explicit later interpretation. |
 | `BRK-DEC-005` | Introduce explicit per-element stop boundaries. Finish a triggered Reaction window before resolving a phasing stop; resolve an active reactor's stop before another participant or phasing Movement resumes. A forced System close records the stop and pending continuation without discarding costs. | Segment-only checks are smaller but omit intermediate stops. Breakdown-before-Reaction changes interruption order and potentially the trigger's visible facts; source precedence is not fully explicit. |
@@ -113,13 +114,12 @@ resolution. Motorized-infantry Reaction adjudication remains a later transport-s
 ## Confidence, limits, and next gate
 
 High confidence in chart coordinates, existing BP gap, and RNG cursor requirement. Medium confidence
-in the proposed interrupt ordering and first delivery boundary; those require owner decisions.
+in source-determined interrupt ordering; the owner has now resolved scheduling and delivery scope explicitly.
 Map terrain BP inputs are reused from the approved continuity normalization, not newly source-audited
 in this packet. No exhaustive repair, towing, capture, transport-capacity or vehicle-class research
 is claimed.
 
-Resolve proposed decisions `004`–`007` against this concrete design, then freeze the complete successor
-identity table and acceptance criteria in `BRK-TASK-001`. Only that approved contract freeze opens
+Decisions `004`–`007` are accepted. Freeze the complete successor identity table and acceptance criteria in `BRK-TASK-001`. Only that approved contract freeze opens
 production tasks. A future claim of general Breakdown support additionally needs grouped loss
 allocation, origin-placement, passenger/cargo consequences and later-domain gates.
 
@@ -130,7 +130,7 @@ allocation, origin-placement, passenger/cargo consequences and later-domain gate
 Both are **accepted**: hidden placement-dependent runtime failure could disclose private facts;
 recomputing placement after Reaction could lose beginning-of-route enemy/blocker truth.
 
-DEC-006/007 now propose a public capability profile with structural creation and transition
+DEC-006/007 define a public capability profile with structural creation and transition
 invariants, rather than secret-dependent runtime support. No qualifying larger combat context can
 arise in an admitted history, so the placement predicate is always false. General placement remains
 a later versioned gate requiring immutable start-time threat/blocker evidence; a route-origin ID
@@ -139,5 +139,7 @@ alone is explicitly insufficient. Scope remains the same bounded research/design
 [Review 2](../reviews/breakdown-adjudication-design-review-2.md) returned **Ready for owner
 decisions**, with no actionable findings remaining. It independently compared every outcome-bound
 row to the chart and reconfirmed the numerical, hash, link and diff checks. This closes
-`BRK-RSH-002`; DEC-004–007 and `BRK-TASK-001` remain pending. No production tests were run because
+`BRK-RSH-002`. At that review, DEC-004–007 and `BRK-TASK-001` remained pending; owner acceptance followed review 3 on 2026-09-05. No production tests were run because
 this delivery changes only documentation and research artifacts, not runtime behavior.
+
+[Review 3](../reviews/breakdown-adjudication-design-review-3.md) was Ready for owner decisions and contract freeze. Its three-instance research/design review budget is exhausted. Acceptance does not imply that later schema edits or production code received that review.

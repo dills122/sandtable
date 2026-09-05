@@ -1,11 +1,11 @@
-# Breakdown adjudication v1 — proposed design and task plan
+# Breakdown adjudication v1 — design and task plan
 
-**Status:** Proposed, research-complete; owner decisions and contract freeze pending. No implementation approval.
+**Status:** Owner accepted BRK-DEC-004–007 on 2026-09-05; BRK-TASK-001 contract freeze in progress. Production unimplemented.
 
 **Research:** [BRK-RSH-002 decision packet](../research/breakdown-adjudication-spike.md).
 
 **Baseline:** ZOR-007 complete at `0512ec2`. **Initial supported profile:** Truck; bounded content
-and placement scope proposed in BRK-DEC-006/007. Other profiles and full transport/repair rules are
+and placement scope accepted in BRK-DEC-006/007. Other profiles and full transport/repair rules are
 explicit later gates. This is not a specification for all Section 21 behavior.
 
 ## Outcome and authority
@@ -20,13 +20,11 @@ Core owns calculation, RNG, stop lifecycle, legal membership, loss projection an
 selects only current public actions and records trusted evidence. No inference, remote service,
 hosting scheduler, wall-clock deadline or new protobuf contract is required.
 
-## Decisions before production
+## Accepted decisions and next gate
 
-BRK-DEC-001–003 are already approved. This design depends on proposed BRK-DEC-004–007 in the research
-packet. Pending decisions cover exact `33` arithmetic, stop/Reaction precedence, the first supported
-check-unit/content boundary, and persistent placement. Alternatives remain explicit; implementation
-must not choose silently. Task 001 must convert accepted choices into governing requirements,
-acceptance IDs, wire schemas, and one exhaustive activation matrix.
+BRK-DEC-001–007 are accepted. Owner accepted DEC-004–007 and their explicit capability exclusions
+on 2026-09-05 after independent review 3. Task 001 turns those choices into governing requirements,
+acceptance IDs, wire schemas, and an exhaustive activation matrix before production consumers.
 
 ## Shared accounting before adjudication
 
@@ -44,7 +42,7 @@ and cost queries consume no RNG. Existing accepted v2/v1 move bytes retain their
 
 ## Stop and continuation model
 
-Proposed authority state has one nullable `PendingBreakdownStop`, which may suspend a normal
+Authority state has one nullable `PendingBreakdownStop`, which may suspend a normal
 sequence position or a specific Reaction continuation. It is distinct from the existing Reaction
 window, which continues to own frozen opportunities. Never replace one pending state with the other.
 
@@ -56,7 +54,7 @@ window, which continues to own frozen opportunities. Never replace one pending s
 - System unavailable/timeout closure records an active participant's stop when needed, resolves the
   window, and retains the suspended phasing continuation. An active stop is drained before that
   continuation becomes executable. Empty/no-active closure creates no fictitious route.
-- Under proposed DEC-005, a phasing stop coincident with a trigger defers its Breakdown resolution
+- Under accepted DEC-005, a phasing stop coincident with a trigger defers its Breakdown resolution
   until the triggered window closes. A reactor stop can therefore precede that deferred phasing stop.
   The contract must retain both continuations explicitly, not overwrite the deferred stop.
 - Forced Movement end records a stop once. Merely exhausting current legal moves must not silently
@@ -101,7 +99,7 @@ initial admitted points while no capture/repair authority exists. A later workin
 moves old lots. Lots are not combat elements, cannot acquire legal Movement/Reaction actions, and
 do not invent ZOC or stacking strength.
 
-Under proposed DEC-006, the initial public capability profile admits at most one unladen standalone
+Under accepted DEC-006, the initial public capability profile admits at most one unladen standalone
 Truck cohort per side in the entire campaign, with no passengers/cargo or commands capable of
 creating, splitting or merging such cohorts. This stronger structural bound prevents grouped/mixed
 checks regardless of hidden BP, eligibility or co-location. Zero-working cohorts cannot move; survivors use
@@ -111,7 +109,7 @@ movement accounting remains testable through dormant successor contracts. Positi
 Reaction-stop/forced-close vectors use non-cohort combat reactors and verify zero-roll continuation;
 a positive motorized-infantry Reaction loss awaits transport support.
 
-Under proposed DEC-007, the same public profile excludes any combat unit, represented formation,
+Under accepted DEC-007, the same public profile excludes any combat unit, represented formation,
 or combined combat grouping larger than a single battalion. Use a conservative structural bound,
 including aggregates: absence of a larger individual leaf is insufficient. Certification checks
 all authoritative components at creation, and every admitted transition must preserve this bound.
@@ -178,7 +176,7 @@ transport consequences and origin-placement/capture/repair; they do not modify t
 
 ## Acceptance matrix for contract freeze
 
-| Proposed ID | Required evidence |
+| ID | Required evidence |
 | --- | --- |
 | `BRK-AC-001` | All legal dice coordinates and nine outcome columns; illegal coordinates, gaps and duplicate outcomes reject |
 | `BRK-AC-002` | Exact BP terrain/route/hexside costs, Rainstorm transformation, Sandstorm half threshold, ordinary/Reaction equality |
@@ -193,5 +191,5 @@ transport consequences and origin-placement/capture/repair; they do not modify t
 | `BRK-AC-011` | All-legacy, all-successor and each partial-mixture identity vector checked across current boundaries |
 | `BRK-AC-012` | Checked public Truck trajectory reaches exact Combat boundary; repeated clean artifacts match; later-stage reset remains explicitly unsupported |
 
-These are proposed acceptance criteria for Task 001. Research experiment validates the numeric
+These acceptance criteria must be bound by Task 001. Research experiment validates the numeric
 transcription and conditional arithmetic only; it does not satisfy future Core acceptance tests.
