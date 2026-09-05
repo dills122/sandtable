@@ -1,6 +1,11 @@
 # Breakdown adjudication v1 — design and task plan
 
-**Status:** Owner accepted BRK-DEC-004–007 on 2026-09-05; BRK-TASK-001 contract freeze in progress. Production unimplemented.
+**Status:** Owner accepted BRK-DEC-004–007 on 2026-09-05; BRK-TASK-001 contract freeze complete. Production unimplemented.
+
+**Governing contract:** [specification](../specs/breakdown-adjudication-v1.md),
+[wire schemas](../specs/breakdown-wire-contract-v1.md), and
+[fixture migration](../specs/breakdown-fixture-migration.v1.json). These supersede the exploratory
+contract details below.
 
 **Research:** [BRK-RSH-002 decision packet](../research/breakdown-adjudication-spike.md).
 
@@ -12,8 +17,8 @@ explicit later gates. This is not a specification for all Section 21 behavior.
 
 The first supported vertical accepts exact BP-bearing moves, records a deliberate or forced stop,
 adjudicates supported Truck cohorts once at the appropriate effective band, retains broken equipment
-at an explicit location, and continues to the exact suspended authority position. At first-side
-Breakdown Determination it drains remaining supported stops, completes that segment and stops at
+at an explicit location, and continues to the exact suspended authority position. Movement completion requires all stops drained; first-side Breakdown Determination completes
+that segment and stops at
 the existing Combat checkpoint. It neither fabricates Combat nor enables the continual cycle.
 
 Core owns calculation, RNG, stop lifecycle, legal membership, loss projection and replay. Runner
@@ -23,8 +28,8 @@ hosting scheduler, wall-clock deadline or new protobuf contract is required.
 ## Accepted decisions and next gate
 
 BRK-DEC-001–007 are accepted. Owner accepted DEC-004–007 and their explicit capability exclusions
-on 2026-09-05 after independent review 3. Task 001 turns those choices into governing requirements,
-acceptance IDs, wire schemas, and an exhaustive activation matrix before production consumers.
+on 2026-09-05 after independent review 3. Task 001 froze governing requirements, acceptance IDs,
+wire schemas and the activation/fixture matrix. Tasks 002–007 now follow that governing package; no runtime activation is included here.
 
 ## Shared accounting before adjudication
 
@@ -42,13 +47,13 @@ and cost queries consume no RNG. Existing accepted v2/v1 move bytes retain their
 
 ## Stop and continuation model
 
-Authority state has one nullable `PendingBreakdownStop`, which may suspend a normal
-sequence position or a specific Reaction continuation. It is distinct from the existing Reaction
-window, which continues to own frozen opportunities. Never replace one pending state with the other.
+Authority uses the wire contract's closed `BreakdownFlow` union: one executable stop plus an
+optional deferred phasing route/stop while Reaction owns the interrupt. The separate Reaction window
+continues to own frozen opportunities. Neither state can overwrite the other.
 
 - A public owner `stop-element-movement` action records the current route's origin, last location,
-  moved cohort membership, state/version/rules identity, and exact continuation. Completing the
-  Movement Segment records any still-open routes before advancing.
+  moved cohort membership, state/version/rules identity, and exact continuation. Movement Segment
+  completion is available only after the one open phasing route has stopped and resolved.
 - Reaction participant completion records a stop after its accepted steps. The participant cannot
   be selected again in that window; another participant cannot begin until the pending stop drains.
 - System unavailable/timeout closure records an active participant's stop when needed, resolves the
@@ -60,7 +65,8 @@ window, which continues to own frozen opportunities. Never replace one pending s
 - Forced Movement end records a stop once. Merely exhausting current legal moves must not silently
   skip completion. Repeating the same action or resubmitting an old handle cannot make another stop.
 
-Task 001 must give each transition an explicit diagram and closed discriminator. One record with
+The governing specification gives each transition an explicit diagram and closed discriminator.
+One record with
 arbitrary recursive continuations is not acceptable; allow only the bounded normal/phasing-deferred/
 reactor-stop combinations above and reject impossible mixtures. Route-origin lifetime begins with
 first movement after the previous resolved stop, so later stops cannot reuse a stale origin.
@@ -89,7 +95,7 @@ after every accepted transition. No legal stop in an admitted history can become
 because hidden placement/grouping facts differ. Invalid roots reject before player-visible campaign
 creation; malformed/stale/forged later submissions emit no event and change no RNG or World.
 A violated invariant indicates invalid authority, not an ordinary zero-loss or hidden-dependent
-unsupported result. Task 001 freezes those exact admission/rejection result contracts.
+unsupported result. The wire contract freezes those admission/rejection results.
 
 ## Working points and broken lots
 
@@ -149,8 +155,8 @@ Affected identities include the Breakdown rules artifact/ruleset; World and Snap
 creation; normal/Reaction move events; stop/check/completion events; relevant action/policy and
 Observation/projected-history schemes; and Runner strict event admission. Content needs a successor
 only where new schemas or admission invariants require it; adding a fixture alone is not a reason
-to change every content schema. Task 001 must enumerate exact existing and successor versions and
-hash dependencies, including disclosure-manifest changes, before generating consumers.
+to change every content schema. The wire contract enumerates exact predecessor/successor versions
+and hash dependencies, including disclosure-manifest changes, before consumers are generated.
 
 Keep successor contracts dormant until replay, projection, actions and observation agree. Activation
 rejects legacy-only and every mixed identity set on all current creation/readback/submission paths.
@@ -163,7 +169,7 @@ older current readers; no dual-current downgrade mode.
 
 | Task | Deliverable and owner modules | Prerequisite / exit evidence |
 | --- | --- | --- |
-| `BRK-TASK-001` | Accepted decisions, governing spec, closed stop diagrams, exact schemas/identity matrix, public capability certification and rejection vocabulary | Owner resolves DEC-004–007; independent design review; no open authority ambiguity |
+| `BRK-TASK-001` | **Complete:** accepted decisions, governing spec, finite stop states, exact schema deltas/identities, public certification/rejections and fixture migration | Owner accepted DEC-004–007 after design review 3; numeric and freeze audits pass; new freeze bytes self-checked, not covered by historical independent reviews |
 | `BRK-TASK-002` | Dormant outcome rules, exact loss arithmetic, source/ruling provenance; `Cna.Core/Rules` | 001; all 324 table cells/coordinate boundaries, rounding/one-point, column and no-roll tests |
 | `BRK-TASK-003` | Dormant World/Snapshot/creation/lot/stop contracts and bounded Truck fixture; `Content`, `Campaigns` | 002; strict codec, conservation, public profile creation/transition negatives, mixed-version rejection |
 | `BRK-TASK-004` | Shared BP deltas and successor ordinary/Reaction events/projectors | 003; terrain/route/weather vectors, atomic forged-delta rejection, preserved CP/Reaction behavior |
@@ -171,10 +177,11 @@ older current readers; no dual-current downgrade mode.
 | `BRK-TASK-006` | Observation, action membership, disclosure manifest, projected history and atomic public activation | 005; privacy/forgery/identity matrix and mandatory boundary gate; stop at unsupported Combat |
 | `BRK-TASK-007` | Checked Runner fixtures, strict bundles, research reconciliation and closeout | 006; exact accounting/lots/continuation, two clean runs, full gate and independent review |
 
-No production task is marked complete. Safe independent research lanes are grouped allocation,
+Task 001 is complete; production Tasks 002–007 remain pending. Safe independent research lanes
+are grouped allocation,
 transport consequences and origin-placement/capture/repair; they do not modify these shared contracts.
 
-## Acceptance matrix for contract freeze
+## Acceptance matrix (implementation pending)
 
 | ID | Required evidence |
 | --- | --- |
@@ -191,5 +198,17 @@ transport consequences and origin-placement/capture/repair; they do not modify t
 | `BRK-AC-011` | All-legacy, all-successor and each partial-mixture identity vector checked across current boundaries |
 | `BRK-AC-012` | Checked public Truck trajectory reaches exact Combat boundary; repeated clean artifacts match; later-stage reset remains explicitly unsupported |
 
-These acceptance criteria must be bound by Task 001. Research experiment validates the numeric
+The governing specification binds these acceptance criteria to requirement and task IDs.
+Research experiment validates the numeric
 transcription and conditional arithmetic only; it does not satisfy future Core acceptance tests.
+
+## Frozen capability consequence
+
+Accepted battalion-size limits exclude public positive ZOC because current ZOC needs stacking >1.
+The migration inventory preserves all original fixture bytes as historical at activation, requires
+bounded successors for 13 of 15 Reaction children, and explicitly defers positive local/remote ZOC.
+Truck ordinary moves are admitted separately; combat-only Reaction triggers remain unchanged.
+The next task is BRK-TASK-002, dormant outcomes and exact arithmetic.
+
+[Task 001 verification evidence](../research/breakdown-contract-freeze-checks.md) records exact
+specification checks and their limits.

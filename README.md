@@ -107,9 +107,7 @@ participant ordering, one/two-step episodes, decline/subset close, and System fa
 Current Movement completion preserves accepted Reaction costs through the Breakdown boundary.
 `ZOR-TASK-007B` closes the package with strict evidence, matching clean-run fingerprints, and
 a Ready independent review; see [checked Reaction trajectories](docs/research/simulator-reaction-trajectories.md).
-The next gate is [Breakdown adjudication research/design](docs/research/breakdown-adjudication-spike.md):
-source-locked outcomes and a proposed seven-task plan are ready for owner decisions. Current runtime
-still stops at Breakdown; no Breakdown adjudication is implemented.
+Owner accepted Breakdown decisions `BRK-DEC-004`–`007`; [BRK-TASK-001 contract freeze](docs/specs/breakdown-adjudication-v1.md) is complete. Next is dormant outcome rules in Task 002. The certified Truck profile defers public positive ZOC and motorized-infantry losses; its [fixture migration](docs/specs/breakdown-fixture-migration.v1.json) preserves historical coverage. Current runtime still stops at Breakdown; adjudication is unimplemented.
 
 The local `Cna.ExerciseRunner` supports that synthetic rules-laboratory path as either one
 bounded, deterministic **Exercise** or one serial **Maneuver**. An Exercise uses a fresh opaque Core

@@ -879,10 +879,12 @@ action/readback/mapping seams, the user-space declassification manifest/transcri
 trigger/ZOC adjudication, window closure/resumption, and participant episodes. `007A` adds bounded
 Runner adoption and checked fixtures; `007B` completes strict Reaction evidence, matching clean-run
 fingerprints, full repository verification, and independent review.
-The [proposed Breakdown design](docs/design/breakdown-adjudication-v1.md) now frames shared BP
-accounting, explicit stop continuations, deterministic checks and persistent broken lots.
-`BRK-RSH-002` is research-complete; decisions `BRK-DEC-004`–`007` and the complete successor
-contract freeze remain gates before implementation.
+The accepted [Breakdown specification](docs/specs/breakdown-adjudication-v1.md) and
+[wire freeze](docs/specs/breakdown-wire-contract-v1.md) define shared BP accounting, finite stop
+continuations, deterministic checks and persistent lots. Owner accepted `BRK-DEC-004`–`007`;
+`BRK-TASK-001` is complete and dormant outcome Rules (002) are next. The initial certified Truck/
+battalion profile defers public positive ZOC and motorized-infantry losses; original evidence stays
+historical and bounded fixture successors remain implementation obligations. Runtime remains unchanged.
 The implemented paired comparison does not block that engine work.
 
 [1]: https://learn.microsoft.com/en-us/dotnet/orleans/grains/external-tasks-and-grains "External tasks and grains - .NET | Microsoft Learn"

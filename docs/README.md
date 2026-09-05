@@ -38,8 +38,9 @@ the pre-alpha roadmap carry repository-wide rationale and delivery state.
 - Breakdown continuity: [decision packet](research/breakdown-continuity-spike.md). The approved
   continuity seam is implemented through Task 004B and projected side-safely by Task 005.
 - Breakdown adjudication: [source/decision packet](research/breakdown-adjudication-spike.md) and
-  [proposed design/task plan](design/breakdown-adjudication-v1.md). `BRK-RSH-002` is complete;
-  owner decisions `004`–`007` precede production contract freeze.
+  [design/task plan](design/breakdown-adjudication-v1.md), [governing specification](specs/breakdown-adjudication-v1.md),
+  [wire freeze](specs/breakdown-wire-contract-v1.md) and [fixture migration](specs/breakdown-fixture-migration.v1.json).
+  Decisions `004`–`007` accepted; Task 001 complete; dormant outcome Task 002 next. Production unimplemented.
 - ZOC and Reaction: approved [specification](specs/zoc-reaction-v1.md),
   [technical design](design/zoc-reaction-v1.md), and
   [research packet](research/contact-reaction-zoc-spike.md), with the accepted

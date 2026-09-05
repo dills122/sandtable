@@ -631,9 +631,11 @@ public capabilities by action ID, close participant episodes or windows explicit
 Umpire-owned costs on final Movement completion. A checked 15-child Maneuver retains trusted
 authority evidence; `007B` strict readback reconstructs and re-adjudicates its Reaction events.
 The package is verified through matching clean runs and a Ready independent review.
-The next proposed Umpire package is [Breakdown adjudication](docs/design/breakdown-adjudication-v1.md).
-Its technical vocabulary uses a pending movement stop, check evidence, and persistent broken-vehicle
-lots; these remain design terms until owner decisions and contract freeze are approved.
+The next Umpire package is [Breakdown adjudication](docs/specs/breakdown-adjudication-v1.md).
+Owner accepted its decisions; Task 001 freezes movement routes, bounded pending stops, check evidence
+and persistent broken-vehicle lots. These are specified contracts, with production Tasks 002–007
+pending. Truck convoy movement is distinct from combat/Reaction eligibility; the initial profile
+defers public positive ZOC and motorized-infantry losses.
 
 **War College** is where we evaluate commanders.
 

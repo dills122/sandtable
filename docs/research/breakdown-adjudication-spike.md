@@ -1,6 +1,6 @@
 # Breakdown adjudication decision packet
 
-**Status:** Research/design complete; owner accepted BRK-DEC-004–007 on 2026-09-05. Contract freeze follows in BRK-TASK-001; production remains unimplemented.
+**Status:** Research/design complete; owner accepted BRK-DEC-004–007 on 2026-09-05. [BRK-TASK-001 contract freeze](../specs/breakdown-adjudication-v1.md) complete; production remains unimplemented.
 
 **Work item:** `BRK-RSH-002` — next Sprint 4 gate after ZOR-007.
 
@@ -119,8 +119,8 @@ Map terrain BP inputs are reused from the approved continuity normalization, not
 in this packet. No exhaustive repair, towing, capture, transport-capacity or vehicle-class research
 is claimed.
 
-Decisions `004`–`007` are accepted. Freeze the complete successor identity table and acceptance criteria in `BRK-TASK-001`. Only that approved contract freeze opens
-production tasks. A future claim of general Breakdown support additionally needs grouped loss
+Decisions `004`–`007` are accepted and [Task 001](../specs/breakdown-adjudication-v1.md) freezes
+successor identities, requirements and acceptance criteria. Next is Task 002 dormant outcome rules. A future claim of general Breakdown support additionally needs grouped loss
 allocation, origin-placement, passenger/cargo consequences and later-domain gates.
 
 
@@ -143,3 +143,5 @@ row to the chart and reconfirmed the numerical, hash, link and diff checks. This
 this delivery changes only documentation and research artifacts, not runtime behavior.
 
 [Review 3](../reviews/breakdown-adjudication-design-review-3.md) was Ready for owner decisions and contract freeze. Its three-instance research/design review budget is exhausted. Acceptance does not imply that later schema edits or production code received that review.
+
+Task 001 makes the accepted size limit explicit: positive ZOC requires more than one battalion of stacking, so public positive-ZOC scenarios remain deferred under this profile. The migration inventory preserves their historical/direct evidence; this is a capability exclusion, not a change to ZOC rules.
