@@ -125,6 +125,10 @@ internal static class CampaignSnapshotV10Serializer
 
         try
         {
+            CampaignSequenceV5Guards.RequireCurrentPosition(
+                snapshot.CurrentPosition.SequencePosition
+                ?? snapshot.CurrentPosition.ReactingPosition!.SuspendedMovementPosition,
+                snapshot.OperationStageOrders);
             snapshot.ReactionWindow?.ValidateIdentities(
                 snapshot.CampaignId,
                 snapshot.RulesetHash);

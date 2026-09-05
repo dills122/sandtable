@@ -277,14 +277,14 @@ public sealed class StageEntryEventContractTests
         $"\"locator\":\"{primaryLocator}\"}}]}}";
 
     private const string OrganizationSuccessorJson =
-        "{\"contractVersion\":2,\"positionId\":\"land.position.operation-1.naval-convoy-arrival\"," +
+        "{\"contractVersion\":3,\"positionId\":\"land.position.operation-1.naval-convoy-arrival\"," +
         "\"gameTurn\":1,\"operationStage\":1,\"stageId\":\"land.stage.operation\"," +
         "\"phaseId\":\"land.phase.naval-convoy-arrival\",\"segmentId\":null,\"stepId\":null," +
         "\"actorRole\":\"none\",\"activeSide\":null,\"sources\":[{" +
         "\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"5.2\"}]}";
 
     private const string ArrivalSuccessorJson =
-        "{\"contractVersion\":2," +
+        "{\"contractVersion\":3," +
         "\"positionId\":\"land.position.operation-1.commonwealth-fleet.assignment\"," +
         "\"gameTurn\":1,\"operationStage\":1,\"stageId\":\"land.stage.operation\"," +
         "\"phaseId\":\"land.phase.commonwealth-fleet\"," +
@@ -293,7 +293,7 @@ public sealed class StageEntryEventContractTests
         "\"sources\":[{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"5.2\"}]}";
 
     private const string AssignmentSuccessorJson =
-        "{\"contractVersion\":2," +
+        "{\"contractVersion\":3," +
         "\"positionId\":\"land.position.operation-1.commonwealth-fleet.repair\"," +
         "\"gameTurn\":1,\"operationStage\":1,\"stageId\":\"land.stage.operation\"," +
         "\"phaseId\":\"land.phase.commonwealth-fleet\"," +
@@ -302,7 +302,7 @@ public sealed class StageEntryEventContractTests
         "\"sources\":[{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"5.2\"}]}";
 
     private const string RepairSuccessorJson =
-        "{\"contractVersion\":2," +
+        "{\"contractVersion\":3," +
         "\"positionId\":\"land.position.operation-1.first-player.reserve-designation\"," +
         "\"gameTurn\":1,\"operationStage\":1,\"stageId\":\"land.stage.operation\"," +
         "\"phaseId\":\"land.phase.reserve-designation\",\"segmentId\":null,\"stepId\":null," +

@@ -122,9 +122,9 @@ public sealed class OpeningPreambleCampaignTests
 
         Assert.Equal(
             [
-                "2909a7be43524a09157b503028c6674db88ad70b75ec82778dcaffb4778bca4b",
-                "9630a341351759960cee1b45209cf0df42529d1c61e781b4a59fff1cb2f839cc",
-                "a1be460078494d9b4d6293aeee14cd27242ab9a43365a2239f43e94630d730e6",
+                "1e52dc704e61df2ee70f1aa59703ca934b50fb78a9c706d041734878aaea4d01",
+                "716ba5b8cd23029c2abda264e457a0f060f1abb23b33a54b5346b422060d57cd",
+                "6e8cb94a31e429ed205feac46acffd77a9776e0c13000b2c6ccf674be52b380c",
             ],
             hashes);
     }

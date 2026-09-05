@@ -176,12 +176,12 @@ public sealed class CampaignWorldV5Tests
     }
 
     [Fact]
-    public void ActiveContractIdentitiesAndFactoryRemainUnchanged()
+    public void HistoricalFactoryIdentityRemainsAvailableAlongsideActiveSequence()
     {
         Assert.Equal(4, CampaignWorldSnapshot.CurrentContractVersion);
         Assert.Equal(9, CampaignSnapshot.CurrentContractVersion);
-        Assert.Equal(2, Cna1979LandSequence.ContractVersion);
-        Assert.Equal(2, Cna1979LandSequence.CatalogSchemaVersion);
+        Assert.Equal(3, Cna1979LandSequence.ContractVersion);
+        Assert.Equal(3, Cna1979LandSequence.CatalogSchemaVersion);
         Assert.Equal(
             [typeof(ContentPackArtifact), typeof(ContentScenario)],
             typeof(CampaignWorldFactory).GetMethod(nameof(CampaignWorldFactory.CreateInitial))!

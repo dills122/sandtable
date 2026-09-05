@@ -85,7 +85,7 @@ public sealed class CampaignEventSerializationTests
             "\"boundElementIds\":[\"commonwealth-element-b\"]}]}," +
             "\"randomState\":{\"contractVersion\":1," +
             "\"algorithmId\":\"sandtable.sha256-counter.v1\",\"seed\":12345," +
-            "\"nextByteCursor\":0},\"sequencePosition\":{\"contractVersion\":2," +
+            "\"nextByteCursor\":0},\"sequencePosition\":{\"contractVersion\":3," +
             "\"positionId\":\"land.position.initiative-determination\"," +
             "\"gameTurn\":1,\"operationStage\":0," +
             "\"stageId\":\"land.stage.initiative-determination\"," +
@@ -140,7 +140,7 @@ public sealed class CampaignEventSerializationTests
             "\"holder\":\"commonwealth\"}," +
             "\"randomAlgorithmId\":\"sandtable.sha256-counter.v1\"," +
             "\"randomCursorBefore\":0,\"randomCursorAfter\":5," +
-            "\"sequencePosition\":{\"contractVersion\":2," +
+            "\"sequencePosition\":{\"contractVersion\":3," +
             "\"positionId\":\"land.position.naval-convoy.schedule\"," +
             "\"gameTurn\":43,\"operationStage\":0," +
             "\"stageId\":\"land.stage.naval-convoy\"," +
@@ -202,8 +202,8 @@ public sealed class CampaignEventSerializationTests
         var created = Encoding.UTF8.GetString(CampaignEventSerializer.Serialize(history[0]));
         var determined = Encoding.UTF8.GetString(CampaignEventSerializer.Serialize(history[1]));
         var extra = created.Replace(
-            "{\"contractVersion\":2,",
-            "{\"extra\":true,\"contractVersion\":2,",
+            "{\"contractVersion\":8,",
+            "{\"extra\":true,\"contractVersion\":8,",
             StringComparison.Ordinal);
         var unknownType = created.Replace(
             "\"campaign-created\"",

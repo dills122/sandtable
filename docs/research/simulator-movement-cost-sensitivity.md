@@ -4,6 +4,13 @@
 
 **Date:** 2026-08-30
 
+> **Current compatibility note (2026-09-04):** These observations preserve the original
+> pre-Reaction study. Under `ZOR-TASK-006C`, the stable-route arm opens Reaction after its cost-8
+> move and fails closed after 11 actions, while the lowest-cost arm avoids the trigger and reaches
+> Breakdown in 13 actions. Current paired fingerprint is
+> `sha256:6a61e195d8c3eda656ff04b1b80e1ddbd2dd5e5ca56d194b71eedb74c69ada8b`;
+> Runner Reaction selection remains `ZOR-TASK-007A`.
+
 ## Decision question
 
 On the admitted synthetic non-contact setup, does selecting each element's lowest-public-cost legal

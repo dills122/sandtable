@@ -54,7 +54,8 @@ Determination and both admitted no-obligation Naval Convoy checkpoints; let the 
 declare whether to act first or last in Operation Stage 1; resolve Weather; emit authoritative
 events; explicitly resolve empty Organization, Naval Convoy Arrival, Fleet Assignment, and Fleet
 Repair obligations; adjudicate the first-acting side's Reserve Designation; execute supported
-first-side non-contact Movement; complete Movement to Breakdown Determination; and
+first-side Movement; open, adjudicate, close, and resume bounded ZOC Reaction interrupts; complete
+Movement to Breakdown Determination; and
 replay those events to byte-identical state. Reserve authority now carries per-element status,
 owner-only observation, exact acting-side candidates, closed command mapping, bounded checkpoints,
 and canonical designation/completion events. The Movement foundation additionally records exact
@@ -62,24 +63,25 @@ per-Operation-Stage expenditure/Cohesion state and opaque one-to-one map represe
 also carries typed move/completion candidates, deterministic action identities, an exact side-safe
 cost breakdown, strict non-authoritative readback, internal authoritative non-contact move
 adjudication/replay, and observation-derived public action membership with exact submission
-revalidation. Ruleset manifest contract 7, setup schema 5, snapshot contract 9,
-Campaign World snapshot contract 4, Campaign Observation contract 5, legal-action-set contract 2,
-and Content Pack schema 4 / canonical format v3 use an original nine-hex,
+revalidation. Ruleset manifest contract 8, setup schema 5, snapshot contract 10,
+Campaign World snapshot contract 5, Campaign Observation contract 6, legal-action-set contract 2,
+and Content Pack schema 5 / canonical format v4 use an original nine-hex,
 nonhistorical rules laboratory to develop game systems without redistributing published assets.
 Campaign Observation derives deterministic side-safe public topology, audience-visible turn
 revision, exact own mobility/ledger/Reserve and approved vehicle-risk facts, plus only opaque
-opposing representation/location/current-ZOC rows. It exposes neither complete Content identity,
+opposing representation/location rows and the source-unmapped current-ZOC aggregate. It exposes neither complete Content identity,
 real opposing bindings/force facts, nor hidden Reserve counts. Legal Actions v1 exposes those
 mechanics through an opaque campaign-authority handle,
 deterministic system/side action sets, exact-audience membership enforcement, and side-safe
 acceptance receipts. Weather Determination v1 resolves corrected source-cited Weather through that
 same boundary and records pair-keyed evidence. Operation-Stage Entry v1 then resolves only the four
 explicitly admitted empty obligations through mechanic-specific actions and events. Side-safe
-queries derive the Reserve audience from the recorded first/second actor order while authoritative
-`ActiveSide` remains unset. Raw snapshots, commands, events, content context, projection, and replay
-are not public mutation seams.
+queries derive the Reserve audience from the recorded first/second actor order while its symbolic
+sequence position keeps `ActiveSide` unset; current Movement materializes that resolved side because
+successor Movement and Reaction identities bind it. Raw snapshots, commands, events, content
+context, projection, and replay are not public mutation seams.
 
-A separate direct-only dormant Campaign Observation 6 successor now freezes the
+Current Campaign Observation 6 freezes the
 `sandtable.observation.zoc-reaction-side-safe.v1` policy, one canonical source-unmapped aggregate
 of apparent enemy-controlled locations, exact owner-visible Movement-ended membership, and a closed
 normal/phasing/reacting decision-state union. Its reacting view contains only the apparent trigger,
@@ -95,11 +97,12 @@ window identity; phasing receives only generic waiting while retaining its ordin
 versioned disclosure manifest and mandatory `boundary-check` gate register
 this outward surface and protect retained cross-state transcripts from copied-fingerprint joins.
 A distinct strict projected-history contract retains the same redacted decision state without
-authority bindings, source mappings, evidence, or internal reasons. A separate dormant action layer
-now derives topology-local ordinary Movement and first/later Reaction movement, participant
+authority bindings, source mappings, evidence, or internal reasons. The current action layer derives
+topology-local ordinary Movement and first/later Reaction movement, participant
 completion, player decline, and reason-specific System close membership with canonical identities,
-strict current readback, and unpublished typed submission intents. These successors are not
-registered on the active Observation 5 query, action, submission, or execution path.
+strict current readback, and unpublished typed submission intents. Public Core query, submission,
+checkpoint, serialization, and replay paths now use this complete successor set; bounded Exercise
+Runner Reaction controllers remain `ZOR-TASK-007A`.
 
 The local `Cna.ExerciseRunner` supports that synthetic rules-laboratory path as either one
 bounded, deterministic **Exercise** or one serial **Maneuver**. An Exercise uses a fresh opaque Core
@@ -119,19 +122,22 @@ Exercise detail tiers expose progressively richer evidence without changing simu
 current two-setup serial-unpaired Maneuver proves the same Movement-terminal path for predetermined
 and contested initiative. A separate checked six-child controller matrix crosses
 `act-first`/`act-last` with Reserve `none`/`one`/`all`, producing exact 10/11/12-action Movement
-trajectories. A checked six-child Movement Maneuver extends those policies through exact first-side
-Breakdown Determination with deterministic 2/1/0 move counts. Optional `serial-paired` Maneuvers run
+trajectories. The checked six-child Movement Maneuver now reaches Breakdown for the four
+non-triggering Reserve-one/all profiles and deterministically fails closed after 11 actions for the
+two Reserve-none profiles when their first move opens a Reaction window. Runner-owned Reaction
+selection remains `ZOR-TASK-007A`. Optional `serial-paired` Maneuvers run
 isolated baseline and candidate arms
 sequentially from identical declared initial conditions, initial role-specific random streams,
 campaign creation inputs, build cohort, and initial snapshot. Its strictly read-back comparison is
 descriptive only: trajectories and random consumption may diverge after the first differing choice,
 and it makes no causal, statistical-significance, gameplay-balance, recommendation, or
-synchronized-post-divergence claim. Model controllers and side-safe exports are not implemented.
+synchronized-post-divergence claim. Runner model controllers and side-safe exports are not
+implemented.
 
 The checked Exercise and serial-unpaired Maneuver profiles use manifest v2, with unpaired report
 scheme `sandtable.maneuver-report.v1`; the separate paired Maneuver uses
 `sandtable.paired-maneuver-manifest.v1` and
-`sandtable.paired-maneuver-report.v1`. All use ruleset v7, snapshot v9, world v4, strict
+`sandtable.paired-maneuver-report.v1`. All use Ruleset 8, Snapshot 10, World 5, strict
 `trusted-authority` evidence admission, and deterministic v2 controller configuration identity.
 
 The first two retained simulator studies now verify repeated Movement-terminal determinism,
@@ -142,11 +148,14 @@ none/one/all controller profiles rather than seed variation alone. See
 [Baseline 2](docs/research/simulator-baseline-2.md). The follow-on
 [controller-policy matrix](docs/research/simulator-controller-matrix.md) closes that explicit
 coverage gap with 6/6 strictly read-back trajectories and a repeatable aggregate fingerprint.
-The merged [Movement trajectory study](docs/research/simulator-movement-trajectories.md) adds 48
-repeat trajectories across six controllers and four deliberate seed probes. The follow-on
+The merged [Movement trajectory study](docs/research/simulator-movement-trajectories.md) retains its
+pre-Reaction 48-trajectory baseline across six controllers and four deliberate seed probes. Under
+current successor authority, Reserve-none repeats stop deterministically at the opened Reaction
+window while the other profiles retain exact Breakdown evidence. The follow-on
 [Movement cost-sensitivity study](docs/research/simulator-movement-cost-sensitivity.md) adds a
-checked paired stable-route/lowest-public-cost comparison; both arms reach Breakdown in 13 actions,
-while the first route changes from exact cost 8 to 1/2 under equal initial evidence.
+checked paired stable-route/lowest-public-cost comparison: the stable-route arm opens Reaction and
+fails closed after its cost-8 move, while the lowest-cost arm avoids the trigger and reaches
+Breakdown after routes costing 1/2 and 1 under equal initial evidence.
 
 Breakdown adjudication, contact, combat, published scenario content, persistence, and the Maproom
 player interface remain future work.
@@ -164,7 +173,7 @@ The current delivery boundary is:
 | Ruleset/provenance, synthetic content, campaign authority, deterministic randomness, events, and replay | Implemented foundation |
 | Side-safe observations and exact-audience legal actions | Implemented for the current rules-laboratory path |
 | Mandatory turn preamble | Implemented through Reserve Designation completion; authority reaches first-side Movement |
-| Movement/contact and combat loops | Movement Foundation is complete through merged `MOV-TASK-010` / PR #79; approved ZOC/Reaction checkpoints `ZOR-TASK-002A`-`004C` now include dormant Rules/Content, World 5/creation 9, Snapshot 10, `ElementMoved` v2 replay, Observation 6/policy/history, topology-local action/readback/mapping seams, and the enforced user-space declassification boundary while the complete legacy runtime identity set remains authoritative; `005` is next |
+| Movement/contact and combat loops | Movement Foundation is complete through merged `MOV-TASK-010` / PR #79; `ZOR-TASK-002A`-`006C` now activate Ruleset 8, Land sequence 3, Content 5, World 5, CampaignCreated 9, Snapshot 10, `ElementMoved` v2, Observation 6, topology-local ZOC/Reaction actions, exact closure/resumption, and replay-complete participant episodes on the public Core path; bounded Runner adoption in `007A` is next |
 | Published first-scenario data, remaining Land rules, victory, persistence, and Maproom | Milestone-level; not started |
 | Player Intent Composer | Direction reviewed; representative decision after the combat skeleton, no-model prototype before Maproom, optional parser evaluation after deterministic MVP |
 | Exercise Harness | Single-Exercise, serial-unpaired two-setup/controller/Movement Maneuvers, and optional serial-paired Reserve-policy and Movement-cost descriptive comparisons implemented with strict readback |
@@ -218,14 +227,21 @@ Exercise/Maneuver evidence. `MOV-TASK-010` completed synchronization and indepen
 merged in PR #79. Breakdown public actions and adjudication remain absent. The approved next engine
 package is the ZOC/Reaction
 [specification](docs/specs/zoc-reaction-v1.md) and
-[technical design](docs/design/zoc-reaction-v1.md). `ZOR-TASK-002A`-`004C` implement dormant
+[technical design](docs/design/zoc-reaction-v1.md). `ZOR-TASK-002A`-`006B` implement dormant
 Rules/Content/fixture, Campaign World 5/creation 9, Snapshot 10, and `ElementMoved` v2 successors,
 including exact current-TOE provenance, nullable/empty Reaction-window truth, strict canonical
 readback, atomic projection, checkpoint replay, and the side-safe Observation 6/policy and redacted
 decision-history contracts described above. Dormant topology-local Movement/Reaction candidate,
 strict current-readback, stable-identity, unpublished mapping, move-option capability,
 manifest-registration, semantic-admission, and retained-transcript contracts are also complete.
-Active runtime identities remain unchanged; `ZOR-TASK-005` is next.
+The direct-only authority path reconstructs atomic move/window truth, freezes only individually
+adjacent eligible reactors, applies topology-local enemy-ZOC entry/exit semantics, and closes
+player-declined, unavailable, timed-out, or empty windows with exact Movement resumption and no
+cost/RNG mutation. It also selects the first participant atomically with its move, keeps later
+steps bound to that active participant, accumulates exact shared Movement CP/provenance, and resolves
+participants without World or RNG mutation. `ZOR-TASK-006C` now activates the complete successor
+identity set on public Core creation, observation, action, checkpoint, and replay paths; legacy
+creation and Movement roots reject. Bounded Runner adoption in `ZOR-TASK-007A` is next.
 The optional paired comparison is implemented Runner instrumentation and does not block
 gameplay-engine progress.
 Combat research has progressed beyond the initial source inventory: `CMB-RSH-001` now retains the

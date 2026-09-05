@@ -16,7 +16,7 @@ public sealed class StageEntryRulingTests
             manifest.Rulings,
             candidate => candidate.RulingId == RulingId);
 
-        Assert.Equal(7, manifest.ContractVersion);
+        Assert.Equal(8, manifest.ContractVersion);
         Assert.Equal("cna-1979.1.conflict.empty-stage-entry-phase", ruling.ConflictId);
         Assert.Equal(
             [

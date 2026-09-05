@@ -155,7 +155,7 @@ public sealed class ManeuverRunCommandTests : IDisposable
         Assert.Equal(MovementBoundary,
             Assert.IsType<BoundaryReached>(terminal.Outcome).PositionId);
         Assert.Equal(
-            "sha256:9621ee95f7b944f3cea226a9f00f63d782cc417f094543e34f8c36c683f68e1e",
+            "sha256:1a8bcb32433ce370f5bb0e221e71df83e1219a6498b0188cbbb6bc571766eac1",
             artifact.Report.ReportFingerprint);
     }
 
@@ -219,12 +219,12 @@ public sealed class ManeuverRunCommandTests : IDisposable
         Assert.Equal(MovementBoundary,
             Assert.IsType<BoundaryReached>(terminal.Outcome).PositionId);
         Assert.Equal(
-            "sha256:cab825d30b128ab1f1e2032879ca0ac3f793abc054a2c710dbdf22e93f49e71c",
+            "sha256:b2353ba7e732597b9235eeae379b138f15de4c2a5603c66fcc89e2c3c4fc95f5",
             artifact.Report.ReportFingerprint);
     }
 
     [Fact]
-    public void CheckedMovementFixtureRunsAllSixPoliciesToBreakdownWithExactEvidence()
+    public void CheckedMovementFixtureFailsClosedWhenAReactionWindowOpens()
     {
         var standardOutput = new StringWriter();
         var standardError = new StringWriter();
@@ -235,8 +235,10 @@ public sealed class ManeuverRunCommandTests : IDisposable
             standardError,
             TestContext.Current.CancellationToken);
 
-        Assert.Equal(ManeuverProcessExitCode.Succeeded, exitCode);
-        Assert.Equal(string.Empty, standardError.ToString());
+        Assert.Equal(ManeuverProcessExitCode.ExerciseFailed, exitCode);
+        Assert.Equal(
+            "Maneuver completed with one or more Exercise failures.\n",
+            NormalizeNewlines(standardError.ToString()));
         var output = ParseOutput(standardOutput.ToString(), expectedExerciseBundles: 6);
         var bundles = output.ExerciseBundlePaths.Select(ExerciseBundleReader.Read).ToArray();
         Assert.Equal(
@@ -249,40 +251,56 @@ public sealed class ManeuverRunCommandTests : IDisposable
                 "movement-execution.act-last.reserve-all",
             ],
             bundles.Select(value => value.NormalizedManifest!.ExerciseId));
-        Assert.All(bundles, bundle =>
+        for (var index = 0; index < bundles.Length; index++)
         {
-            Assert.Equal(13, bundle.AcceptedActions.Count);
-            Assert.Equal(13, bundle.CanonicalEvents.Count);
-            Assert.Equal(13, bundle.StepEvidence.Count);
-            Assert.Equal(94, bundle.CheckResults.Results.Count);
-            Assert.All(bundle.CheckResults.Results, result => Assert.True(result.IsPassed));
-            Assert.True(bundle.ReconstructionProof!.IsVerified);
-            Assert.True(bundle.ReadjudicationProof!.IsVerified);
-            Assert.Single(bundle.CanonicalEvents, value => EventType(value) ==
-                "movement-segment-completed");
-            var completion = Assert.IsType<ExerciseSucceeded>(bundle.RunResult.Completion);
-            Assert.Equal(
-                BreakdownBoundary,
-                Assert.IsType<BoundaryReached>(completion.Outcome).PositionId);
-        });
+            var bundle = bundles[index];
+            var opensReaction = index is 0 or 3;
+            Assert.Equal(opensReaction ? 11 : 13, bundle.AcceptedActions.Count);
+            Assert.Equal(opensReaction ? 11 : 13, bundle.CanonicalEvents.Count);
+            Assert.Equal(opensReaction ? 11 : 13, bundle.StepEvidence.Count);
+            if (opensReaction)
+            {
+                var completion = Assert.IsType<ExerciseFailed>(bundle.RunResult.Completion);
+                Assert.Equal(
+                    ExerciseFailureCategory.InvariantFailed,
+                    completion.Failure.Category);
+                Assert.Equal(80, bundle.CheckResults.Results.Count(result => result.IsPassed));
+                Assert.Equal(2, bundle.CheckResults.Results.Count(result => !result.IsPassed));
+                Assert.Null(bundle.ReconstructionProof);
+                Assert.Null(bundle.ReadjudicationProof);
+                Assert.DoesNotContain(bundle.CanonicalEvents, value => EventType(value) ==
+                    "movement-segment-completed");
+            }
+            else
+            {
+                Assert.Equal(94, bundle.CheckResults.Results.Count);
+                Assert.All(bundle.CheckResults.Results, result => Assert.True(result.IsPassed));
+                Assert.True(bundle.ReconstructionProof!.IsVerified);
+                Assert.True(bundle.ReadjudicationProof!.IsVerified);
+                Assert.Single(bundle.CanonicalEvents, value => EventType(value) ==
+                    "movement-segment-completed");
+                var completion = Assert.IsType<ExerciseSucceeded>(bundle.RunResult.Completion);
+                Assert.Equal(
+                    BreakdownBoundary,
+                    Assert.IsType<BoundaryReached>(completion.Outcome).PositionId);
+            }
+        }
         Assert.Equal([0, 1, 2, 0, 1, 2], bundles.Select(bundle =>
             bundle.CanonicalEvents.Count(value => EventType(value) ==
                 "reserve-element-designated")));
-        Assert.Equal([2, 1, 0, 2, 1, 0], bundles.Select(bundle =>
+        Assert.Equal([1, 1, 0, 1, 1, 0], bundles.Select(bundle =>
             bundle.CanonicalEvents.Count(value => EventType(value) == "element-moved")));
 
         AssertMovement(
             bundles[0],
-            ("axis-element-a", "west", "center", 0, 8),
-            ("axis-element-b", "north-west", "north", 0, 1));
+            ("axis-element-a", "west", "center", 0, 8));
         AssertMovement(
             bundles[1],
             ("axis-element-b", "north-west", "north", 0, 1));
         AssertMovement(bundles[2]);
         AssertMovement(
             bundles[3],
-            ("commonwealth-element-a", "east", "center", 0, 8),
-            ("commonwealth-element-b", "south-east", "east", 0, 1));
+            ("commonwealth-element-a", "east", "center", 0, 8));
         AssertMovement(
             bundles[4],
             ("commonwealth-element-b", "south-east", "east", 0, 1));
@@ -290,15 +308,20 @@ public sealed class ManeuverRunCommandTests : IDisposable
 
         var artifact = ManeuverReportReader.Read(output.ReportPath);
         Assert.Equal(output.ReportFingerprint, artifact.Report.ReportFingerprint);
-        Assert.Equal(ManeuverReportStatus.Succeeded, artifact.Report.Deterministic.Status);
-        Assert.Equal(6, artifact.Report.Deterministic.Counts.SucceededExerciseCount);
+        Assert.Equal(ManeuverReportStatus.ExerciseFailed, artifact.Report.Deterministic.Status);
+        Assert.Equal(4, artifact.Report.Deterministic.Counts.SucceededExerciseCount);
+        Assert.Equal(2, artifact.Report.Deterministic.Counts.FailedExerciseCount);
         var terminal = Assert.Single(artifact.Report.Deterministic.TerminalCounts);
-        Assert.Equal(6, terminal.Count);
+        Assert.Equal(4, terminal.Count);
         Assert.Equal(
             BreakdownBoundary,
             Assert.IsType<BoundaryReached>(terminal.Outcome).PositionId);
         Assert.Equal(
-            "sha256:c1c20270dcd3402886931c28851bea7f23cd1e0778b45f94c43d85ed01d41c4b",
+            2,
+            artifact.Report.Deterministic.FailureCounts.Single(value =>
+                value.Category == ExerciseFailureCategory.InvariantFailed).Count);
+        Assert.Equal(
+            "sha256:e0c0c0e7dcdaf5125d1b255a8796e92b4b22f531fe550e95abcfd42815354523",
             artifact.Report.ReportFingerprint);
     }
 
@@ -362,7 +385,7 @@ public sealed class ManeuverRunCommandTests : IDisposable
     }
 
     [Fact]
-    public void CheckedMovementCostPairRetainsEqualInputsAndExactRouteCostDivergence()
+    public void CheckedMovementCostPairRetainsDivergenceWhenBaselineOpensReaction()
     {
         CommandOutput Run(string directory)
         {
@@ -373,8 +396,10 @@ public sealed class ManeuverRunCommandTests : IDisposable
                 standardOutput,
                 standardError,
                 TestContext.Current.CancellationToken);
-            Assert.Equal(ManeuverProcessExitCode.Succeeded, exitCode);
-            Assert.Equal(string.Empty, standardError.ToString());
+            Assert.Equal(ManeuverProcessExitCode.ExerciseFailed, exitCode);
+            Assert.Equal(
+                "Maneuver completed with one or more Exercise failures.\n",
+                NormalizeNewlines(standardError.ToString()));
             return ParseOutput(standardOutput.ToString(), expectedExerciseBundles: 2);
         }
 
@@ -383,7 +408,11 @@ public sealed class ManeuverRunCommandTests : IDisposable
         var bundles = firstOutput.ExerciseBundlePaths.Select(ExerciseBundleReader.Read).ToArray();
         Assert.Equal(["movement-cost.baseline", "movement-cost.lowest-cost"],
             bundles.Select(value => value.NormalizedManifest!.ExerciseId));
-        Assert.All(bundles, value => Assert.Equal(13, value.AcceptedActions.Count));
+        Assert.Equal([11, 13], bundles.Select(value => value.AcceptedActions.Count));
+        Assert.Equal(
+            ExerciseFailureCategory.InvariantFailed,
+            Assert.IsType<ExerciseFailed>(bundles[0].RunResult.Completion).Failure.Category);
+        Assert.IsType<ExerciseSucceeded>(bundles[1].RunResult.Completion);
         Assert.Equal(bundles[0].InitialSnapshotBytes, bundles[1].InitialSnapshotBytes);
         Assert.Equal(
             SeedLedgerCodec.Serialize(bundles[0].SeedLedger!),
@@ -391,23 +420,31 @@ public sealed class ManeuverRunCommandTests : IDisposable
 
         var baselineMoves = MovementFacts(bundles[0]);
         var candidateMoves = MovementFacts(bundles[1]);
-        Assert.Equal(["center", "north"], baselineMoves.Select(value => value.Destination));
+        Assert.Equal(["center"], baselineMoves.Select(value => value.Destination));
         Assert.Equal(["north-west", "north"],
             candidateMoves.Select(value => value.Destination));
         Assert.Equal(
-            [new CapabilityPointAmount(8, 1), new CapabilityPointAmount(1, 1)],
+            [new CapabilityPointAmount(8, 1)],
             baselineMoves.Select(value => value.Cost));
         Assert.Equal(
             [new CapabilityPointAmount(1, 2), new CapabilityPointAmount(1, 1)],
             candidateMoves.Select(value => value.Cost));
 
         var report = PairedReportReader.Read(firstOutput.ReportPath).Report;
+        Assert.Equal(ManeuverReportStatus.ExerciseFailed, report.Deterministic.Status);
+        Assert.Equal(1, report.Deterministic.Counts.SucceededExerciseCount);
+        Assert.Equal(1, report.Deterministic.Counts.FailedExerciseCount);
         var comparison = Assert.Single(report.Deterministic.Comparisons);
         Assert.Equal(PairedComparisonStatus.Compared, comparison.Status);
         Assert.Equal(PairedDivergenceKind.AcceptedAction, comparison.FirstDivergence!.Kind);
         Assert.Equal(10, comparison.FirstDivergence.StepOrdinal);
-        Assert.Equal(0, comparison.AcceptedStepCountDelta);
+        Assert.Equal(2, comparison.AcceptedStepCountDelta);
+        Assert.False(comparison.TerminalOutcomeEqual);
+        Assert.False(comparison.FailureCategoryEqual);
         Assert.Equal(firstOutput.ReportFingerprint, secondOutput.ReportFingerprint);
+        Assert.Equal(
+            "sha256:6a61e195d8c3eda656ff04b1b80e1ddbd2dd5e5ca56d194b71eedb74c69ada8b",
+            firstOutput.ReportFingerprint);
     }
 
     [Fact]
@@ -829,9 +866,9 @@ public sealed class ManeuverRunCommandTests : IDisposable
         ExerciseManifest.CurrentContractVersion,
         exerciseId,
         "rules-lab.initiative.predetermined",
-        "sha256:9e55e3de11338ba6432768ccb6740a6fed83b37503f69cc7ff8ecd58e205634f",
+        "sha256:48ad98fd232f7c7c50d4f925dd83e3de97f2eb48cc6929a17aa1fb172cdbd394",
         "rules-lab.content.movement-contact.v1",
-        "sha256:40f0e7a0a8876e4fefc4f06c1d752253cf338da614e587b9ff017e04541e7d79",
+        "sha256:20cf54f25d752253105877c6139d8db86549759f9dbb80fad873686498f26f5f",
         "movement-contact-lab",
         Cna1979Ruleset.Manifest.Hash,
         Boundary,

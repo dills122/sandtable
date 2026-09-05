@@ -278,7 +278,7 @@ public sealed class CampaignReplayTests
             "\"operationStageWeather\":[]," +
             "\"randomState\":{\"contractVersion\":1," +
             "\"algorithmId\":\"sandtable.sha256-counter.v1\",\"seed\":12345," +
-            "\"nextByteCursor\":0},\"sequencePosition\":{\"contractVersion\":2," +
+            "\"nextByteCursor\":0},\"sequencePosition\":{\"contractVersion\":3," +
             "\"positionId\":\"land.position.initiative-determination\"," +
             "\"gameTurn\":1,\"operationStage\":0," +
             "\"stageId\":\"land.stage.initiative-determination\"," +

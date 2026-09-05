@@ -4,6 +4,12 @@
 
 **Date:** 2026-08-29
 
+> **Current compatibility note (2026-09-04):** These observations preserve the merged
+> pre-Reaction baseline. After `ZOR-TASK-006C` activated successor Reaction authority, the two
+> Reserve-none profiles deterministically stop after their first triggering move because Runner
+> Reaction selection is deferred to `ZOR-TASK-007A`. Reserve-one/all profiles still reach
+> Breakdown, and all repeat comparisons remain exact.
+
 ## Question
 
 Does the bounded Movement controller repeat exact trusted evidence across deliberately selected seed
@@ -41,8 +47,8 @@ accepted `element-moved` event.
   `south-east -> east` at exact CP cost 1.
 - Reserve `one` moved only the eligible B element on its cost-1 route. Reserve `all` moved no
   element. These are 2/1/0 moves for the none/one/all policies.
-- The checked six-child CLI fixture separately retains 13 actions/events and 94 passed checks per
-  child. Its current local aggregate is 78 actions/events, six Reserve designations, six Reserve
+- The checked six-child CLI fixture separately retained 13 actions/events and 94 passed checks per
+  child at merger. Its pre-Reaction aggregate was 78 actions/events, six Reserve designations, six Reserve
   completions, six moves, six Movement completions, and exact final CP expenditure 20.
 - Two clean CLI executions into separate artifact roots reconfirmed aggregate fingerprint
   `sha256:c1c20270dcd3402886931c28851bea7f23cd1e0778b45f94c43d85ed01d41c4b`.

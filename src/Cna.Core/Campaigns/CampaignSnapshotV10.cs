@@ -104,6 +104,10 @@ internal sealed record CampaignSnapshotV10
 
         ArgumentNullException.ThrowIfNull(randomState);
         ArgumentNullException.ThrowIfNull(currentPosition);
+        CampaignSequenceV5Guards.RequireCurrentPosition(
+            currentPosition.SequencePosition
+            ?? currentPosition.ReactingPosition!.SuspendedMovementPosition,
+            orders);
         if ((reactionWindow is null
                 && currentPosition.Kind != CampaignPositionV10Kind.Sequence)
             || (reactionWindow is not null
@@ -213,6 +217,18 @@ internal static class CampaignSnapshotV10Validator
             || snapshot.RandomState.ContractVersion != SandtableRandom.ContractVersion
             || !string.Equals(snapshot.RandomState.AlgorithmId, SandtableRandom.AlgorithmId,
                 StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        try
+        {
+            CampaignSequenceV5Guards.RequireCurrentPosition(
+                snapshot.CurrentPosition.SequencePosition
+                ?? snapshot.CurrentPosition.ReactingPosition!.SuspendedMovementPosition,
+                snapshot.OperationStageOrders);
+        }
+        catch (ArgumentException)
         {
             return false;
         }

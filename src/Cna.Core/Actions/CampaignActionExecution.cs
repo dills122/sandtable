@@ -72,8 +72,7 @@ internal static class CampaignActionExecution
             return CampaignActionExecutionResult.Rejected(
                 CampaignActionSubmissionRejectionReason.UnexpectedPosition);
 
-        var handle = new CampaignAuthorityHandle(snapshot, context);
-        var query = CampaignLegalActions.Query(handle, submission.Audience);
+        var query = CampaignLegalActions.QueryLegacy(snapshot, context, submission.Audience);
         if (!query.IsSuccessful)
             return CampaignActionExecutionResult.Rejected(
                 CampaignActionSubmissionRejectionReason.InvalidAuthority);

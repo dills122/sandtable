@@ -20,13 +20,13 @@ public sealed class LandSequenceTests
     }
 
     [Fact]
-    public void EveryPositionHasAUniqueStableIdAndSerializableVersion2Contract()
+    public void EveryPositionHasAUniqueStableIdAndSerializableVersion3Contract()
     {
         var positions = Cna1979LandSequence.CreateTurn(1);
 
         Assert.All(positions, position =>
         {
-            Assert.Equal(2, position.ContractVersion);
+            Assert.Equal(3, position.ContractVersion);
             Assert.False(string.IsNullOrWhiteSpace(position.PositionId));
             Assert.Contains(Cna1979LandSequence.SourceReference, position.Sources);
 

@@ -2,8 +2,8 @@ namespace Cna.Core.Rules;
 
 public static class Cna1979LandSequence
 {
-    public const int ContractVersion = 2;
-    public const int CatalogSchemaVersion = 2;
+    public const int ContractVersion = 3;
+    public const int CatalogSchemaVersion = 3;
 
     public static RuleReference SourceReference { get; } = new("spi-1979-land-rules", "5.2");
     public static RuleReference InitiativeSideSourceReference { get; } = new("spi-1979-land-rules", "7.11");

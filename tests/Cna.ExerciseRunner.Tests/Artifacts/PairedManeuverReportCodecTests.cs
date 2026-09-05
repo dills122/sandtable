@@ -38,7 +38,7 @@ public sealed class PairedManeuverReportCodecTests
             StringComparison.Ordinal);
         Assert.Contains(PairedManeuverReport.Interpretation, json, StringComparison.Ordinal);
         Assert.Equal(
-            "sha256:7307c5d620bf001440b54af198c51877c34b7cf6a93ef24b7d37574a83ad2012",
+            "sha256:577a153450835a1c0273aaae7cea8a4f26ae5c72942c398c1854d51a23a19b6a",
             report.ReportFingerprint);
         Assert.Equal(report.ReportFingerprint, admitted.ReportFingerprint);
     }
@@ -215,9 +215,9 @@ public sealed class PairedManeuverReportCodecTests
         ExerciseManifest.CurrentContractVersion,
         exerciseId,
         "rules-lab.initiative.predetermined",
-        "sha256:9e55e3de11338ba6432768ccb6740a6fed83b37503f69cc7ff8ecd58e205634f",
+        "sha256:48ad98fd232f7c7c50d4f925dd83e3de97f2eb48cc6929a17aa1fb172cdbd394",
         "rules-lab.content.movement-contact.v1",
-        "sha256:40f0e7a0a8876e4fefc4f06c1d752253cf338da614e587b9ff017e04541e7d79",
+        "sha256:20cf54f25d752253105877c6139d8db86549759f9dbb80fad873686498f26f5f",
         "movement-contact-lab",
         Cna1979Ruleset.Manifest.Hash,
         Boundary,

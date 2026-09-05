@@ -1,6 +1,7 @@
 using System.Text;
 using System.Text.Json;
 using Cna.Core.Campaigns;
+using Cna.Core.Exercises;
 using Cna.Core.Randomness;
 using Cna.Core.Rules;
 using Cna.Core.Setups;
@@ -109,6 +110,106 @@ public sealed class CampaignSnapshotV10ContractTests
             Encoding.UTF8.GetBytes(duplicate)));
         Assert.Throws<JsonException>(() => CampaignSnapshotSerializer.Deserialize(
             Encoding.UTF8.GetBytes(canonical)));
+    }
+
+    [Theory]
+    [InlineData(
+        "\"contractVersion\":3,\"positionId\":\"land.position.operation-1.first-player.movement-and-combat.movement\"",
+        "\"contractVersion\":2,\"positionId\":\"land.position.operation-1.first-player.movement-and-combat.movement\"")]
+    [InlineData(
+        "\"phaseId\":\"land.phase.movement-and-combat\",\"segmentId\":\"land.segment.movement\"",
+        "\"phaseId\":\"land.phase.reserve-designation\",\"segmentId\":\"land.segment.movement\"")]
+    public void PublicCheckpointReaderRejectsLegacyAndNoncatalogSequencePositions(
+        string current,
+        string replacement)
+    {
+        var fixture = CampaignV10TestData.Create();
+        var canonical = Encoding.UTF8.GetString(
+            CampaignSnapshotV10Serializer.Serialize(fixture.MovementSnapshot));
+        var mixed = canonical.Replace(current, replacement, StringComparison.Ordinal);
+
+        Assert.NotEqual(canonical, mixed);
+        Assert.Throws<JsonException>(() => CampaignExercises.ReadCheckpoint(
+            Encoding.UTF8.GetBytes(mixed)));
+    }
+
+    [Fact]
+    public void PublicCheckpointReaderRejectsNoncatalogSuspendedMovementPosition()
+    {
+        var fixture = CampaignV10TestData.Create();
+        var reacting = CampaignV10Projector.ApplyMovement(
+            fixture.MovementSnapshot,
+            fixture.TriggeringMove,
+            fixture.Artifact,
+            fixture.Scenario,
+            (_, _) => fixture.TriggeringMove);
+        var canonical = Encoding.UTF8.GetString(
+            CampaignSnapshotV10Serializer.Serialize(reacting));
+        var mixed = canonical.Replace(
+            "\"phaseId\":\"land.phase.movement-and-combat\",\"segmentId\":\"land.segment.movement\"",
+            "\"phaseId\":\"land.phase.reserve-designation\",\"segmentId\":\"land.segment.movement\"",
+            StringComparison.Ordinal);
+
+        Assert.NotEqual(canonical, mixed);
+        Assert.Throws<JsonException>(() => CampaignExercises.ReadCheckpoint(
+            Encoding.UTF8.GetBytes(mixed)));
+    }
+
+    [Fact]
+    public void PublicCheckpointReaderRejectsMovementSideThatContradictsRetainedOrder()
+    {
+        var fixture = CampaignV10TestData.Create();
+        var canonical = Encoding.UTF8.GetString(
+            CampaignSnapshotV10Serializer.Serialize(fixture.MovementSnapshot));
+        var mixed = canonical.Replace(
+            "\"activeSide\":\"axis\"",
+            "\"activeSide\":\"commonwealth\"",
+            StringComparison.Ordinal);
+
+        Assert.NotEqual(canonical, mixed);
+        Assert.Throws<JsonException>(() => CampaignExercises.ReadCheckpoint(
+            Encoding.UTF8.GetBytes(mixed)));
+    }
+
+    [Fact]
+    public void PublicCheckpointReaderRejectsSuspendedSideThatContradictsRetainedOrder()
+    {
+        var fixture = CampaignV10TestData.Create();
+        var emptyMove = CampaignV10TestData.CreateTriggeringMove(
+            fixture.MovementSnapshot,
+            []);
+        var reacting = CampaignV10Projector.ApplyMovement(
+            fixture.MovementSnapshot,
+            emptyMove,
+            fixture.Artifact,
+            fixture.Scenario,
+            (_, _) => emptyMove);
+        var window = reacting.ReactionWindow!;
+        var wrongWindowId = CampaignReactionIdentity.CreateWindow(
+            reacting.CampaignId,
+            reacting.RulesetHash,
+            window.TriggerAuthority.MoveContractVersion,
+            window.TriggerCommittedStateVersion,
+            window.TriggerAuthority.TriggeringRepresentation,
+            window.TriggerAuthority.OriginLocationId,
+            window.TriggerAuthority.DestinationLocationId,
+            LandSide.Axis);
+        var canonical = Encoding.UTF8.GetString(
+            CampaignSnapshotV10Serializer.Serialize(reacting));
+        var mixed = canonical
+            .Replace(window.WindowId.Value, wrongWindowId.Value, StringComparison.Ordinal)
+            .Replace(
+                "\"activeSide\":\"axis\"",
+                "\"activeSide\":\"commonwealth\"",
+                StringComparison.Ordinal)
+            .Replace(
+                "\"phasingSide\":\"axis\",\"reactingSide\":\"commonwealth\"",
+                "\"phasingSide\":\"commonwealth\",\"reactingSide\":\"axis\"",
+                StringComparison.Ordinal);
+
+        Assert.NotEqual(canonical, mixed);
+        Assert.Throws<JsonException>(() => CampaignExercises.ReadCheckpoint(
+            Encoding.UTF8.GetBytes(mixed)));
     }
 
     [Fact]
@@ -271,7 +372,7 @@ public sealed class CampaignSnapshotV10ContractTests
     }
 
     [Fact]
-    public void ActiveContractIdentitiesRemainUnchanged()
+    public void HistoricalContractsRemainAvailableAlongsideActiveSequence()
     {
         var setup = Cna1979SetupCatalog.Definitions[0];
         var creation = CampaignTestHarness.Decide(
@@ -303,8 +404,8 @@ public sealed class CampaignSnapshotV10ContractTests
             Assert.IsType<CampaignCreated>(Assert.Single(creation.Events)).ContractVersion);
         Assert.Equal(1,
             Assert.IsType<ElementMoved>(Assert.Single(moved.Events)).ContractVersion);
-        Assert.Equal(2, Cna1979LandSequence.ContractVersion);
-        Assert.Equal(2, Cna1979LandSequence.CatalogSchemaVersion);
+        Assert.Equal(3, Cna1979LandSequence.ContractVersion);
+        Assert.Equal(3, Cna1979LandSequence.CatalogSchemaVersion);
         Assert.DoesNotContain("ReactingSide", Enum.GetNames<LandActorRole>());
     }
 }

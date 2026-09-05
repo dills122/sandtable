@@ -5,9 +5,25 @@ using Cna.Core.Rules;
 
 namespace Cna.Core.Observations;
 
+internal sealed record CampaignObservationV6AuthorityProjection(
+    CampaignObservationV6 Observation,
+    IReadOnlyList<CampaignObservationV6DisclosureAlias> ReactionAliases);
+
 internal static class CampaignObservationV6Projector
 {
     public static CampaignObservationV6 Project(
+        CampaignSnapshotV10 snapshot,
+        ContentPackV5Artifact artifact,
+        ContentScenario scenario,
+        LandSide observer,
+        CampaignObservationV6AuthorityFacts authorityFacts) => ProjectWithAuthority(
+        snapshot,
+        artifact,
+        scenario,
+        observer,
+        authorityFacts).Observation;
+
+    public static CampaignObservationV6AuthorityProjection ProjectWithAuthority(
         CampaignSnapshotV10 snapshot,
         ContentPackV5Artifact artifact,
         ContentScenario scenario,
@@ -87,6 +103,9 @@ internal static class CampaignObservationV6Projector
         var sequence = snapshot.CurrentPosition.Kind == CampaignPositionV10Kind.Sequence
             ? snapshot.CurrentPosition.SequencePosition!
             : snapshot.CurrentPosition.ReactingPosition!.SuspendedMovementPosition;
+        var activeSide = sequence.ActorRole == LandActorRole.FirstActingSide
+            ? FirstActingSideResolver.Resolve(snapshot)
+            : sequence.ActiveSide;
         var position = new CampaignObservationPosition(
             sequence.PositionId,
             sequence.GameTurn,
@@ -96,9 +115,9 @@ internal static class CampaignObservationV6Projector
             sequence.SegmentId,
             sequence.StepId,
             sequence.ActorRole,
-            sequence.ActiveSide,
+            activeSide,
             snapshot.InitiativeHolder);
-        var decision = ProjectDecisionState(
+        var decisionProjection = ProjectDecisionState(
             snapshot,
             observer,
             position,
@@ -107,6 +126,7 @@ internal static class CampaignObservationV6Projector
             apparent,
             authorityFacts.ApparentEnemyControlledLocationIds,
             ownElements);
+        var decision = decisionProjection.DecisionState;
         var publishedOwnElements = decision is CampaignObservationReactingDecisionState
             ? []
             : ownElements;
@@ -117,7 +137,7 @@ internal static class CampaignObservationV6Projector
             .Select(element => element.ElementId)
             .ToArray();
 
-        return new CampaignObservationV6(
+        var observation = new CampaignObservationV6(
             CampaignObservationV6.CurrentContractVersion,
             CampaignObservationV6.CurrentPolicyId,
             snapshot.CampaignId,
@@ -137,9 +157,12 @@ internal static class CampaignObservationV6Projector
             authorityFacts.ApparentEnemyControlledLocationIds,
             movementEndedElementIds,
             decision);
+        return new CampaignObservationV6AuthorityProjection(
+            observation,
+            decisionProjection.ReactionAliases);
     }
 
-    private static CampaignObservationDecisionState ProjectDecisionState(
+    private static DecisionProjection ProjectDecisionState(
         CampaignSnapshotV10 snapshot,
         LandSide observer,
         CampaignObservationPosition position,
@@ -152,7 +175,9 @@ internal static class CampaignObservationV6Projector
         var window = snapshot.ReactionWindow;
         if (window is null)
         {
-            return new CampaignObservationNormalDecisionState();
+            return new DecisionProjection(
+                new CampaignObservationNormalDecisionState(),
+                []);
         }
 
         var publicWindowId = CampaignObservationV6DisclosureIdentity.CreateWindow(
@@ -163,7 +188,9 @@ internal static class CampaignObservationV6Projector
 
         if (observer == window.PhasingSide)
         {
-            return new CampaignObservationPhasingWaitingDecisionState(publicWindowId);
+            return new DecisionProjection(
+                new CampaignObservationPhasingWaitingDecisionState(publicWindowId),
+                []);
         }
 
         if (observer != window.ReactingSide)
@@ -246,14 +273,16 @@ internal static class CampaignObservationV6Projector
                     StringComparison.Ordinal)).PublicId);
         }
 
-        return new CampaignObservationReactingDecisionState(
-            publicWindowId,
-            new ObservedApparentReactionTrigger(
-                window.ApparentTrigger.ApparentRepresentationId,
-                window.ApparentTrigger.OriginLocationId,
-                window.ApparentTrigger.DestinationLocationId),
-            opportunities,
-            active);
+        return new DecisionProjection(
+            new CampaignObservationReactingDecisionState(
+                publicWindowId,
+                new ObservedApparentReactionTrigger(
+                    window.ApparentTrigger.ApparentRepresentationId,
+                    window.ApparentTrigger.OriginLocationId,
+                    window.ApparentTrigger.DestinationLocationId),
+                opportunities,
+                active),
+            aliases);
     }
 
     private static ObservedOwnElement ProjectOwnElement(
@@ -331,4 +360,8 @@ internal static class CampaignObservationV6Projector
             CampaignElementReserveStatus.ReserveII => CampaignObservationReserveStatus.ReserveII,
             _ => throw new ArgumentOutOfRangeException(nameof(status)),
         };
+
+    private sealed record DecisionProjection(
+        CampaignObservationDecisionState DecisionState,
+        IReadOnlyList<CampaignObservationV6DisclosureAlias> ReactionAliases);
 }
