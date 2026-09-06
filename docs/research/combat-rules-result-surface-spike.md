@@ -26,7 +26,7 @@ ordered two-die coordinate in every one of those five columns must be normalized
 vector can become authoritative. A favorable fixed seed cannot narrow implementation scope.
 
 Within that closed surface, the chart can produce zero or percentage losses, an attacker Engaged
-result, a one- or two-hex defender Retreat, and a Captured trigger for either side. Captured invokes
+result, a one-hex defender Retreat, and a Captured trigger for either side. Captured invokes
 one additional die and the Prisoners Captured table. The semantic outcomes are source-locked
 below; the source chart matrix is not reproduced in this repository.
 
@@ -191,7 +191,7 @@ coordinate ranges.
 | `-1` | `0`, `5`, `10`, `15`, `20`, `25` | `0`, `5`, `10`, `15`, `20` | no | no | yes | zero or one hex |
 | `0` | `0`, `5`, `10`, `15`, `20`, `25` | `0`, `5`, `10`, `15`, `20` | no | yes | yes | zero or one hex |
 | `+1` | `0`, `5`, `10`, `15`, `20`, `25` | `0`, `5`, `10`, `15`, `20` | no | yes | yes | zero or one hex |
-| `+2` | `0`, `5`, `10`, `15`, `20`, `25` | `0`, `5`, `10`, `15`, `20`, `25` | no | yes | yes | zero, one, or two hexes |
+| `+2` | `0`, `5`, `10`, `15`, `20`, `25` | `0`, `5`, `10`, `15`, `20`, `25` | no | yes | yes | zero or one hex |
 
 `Engaged possible` refers to the attacker's arithmetic-sum test. A defender Retreat takes priority
 if both occur.
@@ -201,7 +201,7 @@ if both occur.
 | Attacker percentage loss | `0`, `5`, `10`, `15`, `20`, or `25` percent | Applied to 10 Raw Points and rounded upward, producing `0`, `1`, `2`, or `3` Raw Points lost |
 | Defender percentage loss | `0`, `5`, `10`, `15`, `20`, or `25` percent | Applied to 10 Raw Points and rounded downward, producing `0`, `1`, or `2` Raw Points lost |
 | Attacker Engaged test | false or true | May create Engaged if no defender Retreat takes priority |
-| Defender mandated Retreat | zero, one, or two hexes | Retreat takes priority over Engaged; two hexes is reachable only at differential `+2` in this surface |
+| Defender mandated Retreat | zero or one hex | Retreat takes priority over Engaged; two-hex results start at differential `+3`, outside this surface |
 | Attacker Captured trigger | false or true | When true, one additional d6 selects the captured share of attacker losses |
 | Defender Captured trigger | false or true | When true, one additional d6 selects the captured share of defender losses |
 | Captured share | `10`, `25`, `33`, `50`, or `75` percent | Applied to the affected side's losses and rounded upward |
@@ -212,7 +212,7 @@ loss corresponds to one TOE point. That equivalence belongs only to this synthet
 loss allocation must use the actual participating ratings and unit types.
 
 The retained golden evidence path executes a required one-hex Retreat when produced. The complete
-selected surface also reaches a two-hex Retreat at differential `+2`. A later state contract must
+selected surface has no two-hex Retreat. A later state contract must
 retain the exact mandated distance until the defender supplies any required retreat choice, and a
 later action contract must validate a route or the source-defined additional-loss alternative.
 This packet does not select the event boundary for those steps. The alternative loss, its possible
@@ -302,8 +302,8 @@ implementation remain blocked until the roadmap's Breakdown and ZOC/Reaction gat
    and captured-share values listed above.
 5. A fixed golden vector must include zero attacker loss, non-zero defender loss, and safe one-hex
    Retreat, as required by the retained Combat-cycle inventory.
-6. A differential-`+2` vector must exercise the source-reachable two-hex Retreat and preserve its
-   pending distance through the later state/action handoff without silently reducing it to one hex.
+6. A differential-`+2`, defender-sum-11 vector must preserve the absence of a Retreat, without
+   borrowing the two-hex result from the adjacent `+3` column.
 7. Reordered, missing, duplicated, out-of-range, or uncited table rows must fail rules-artifact
    admission before campaign mutation.
 8. Unsupported Barrage, Anti-Armor, modifier, result, loss-allocation, capture, retreat, Contact,
@@ -312,6 +312,10 @@ implementation remain blocked until the roadmap's Breakdown and ZOC/Reaction gat
    RNG, command, event, snapshot, and replay contracts exist.
 
 ## Confidence and limitations
+
+**2026-09-06 correction:** independent Combat/Reserve review found the original two-hex `+2`
+claim read the adjacent `+3` column. The selected surface and acceptance vector above are corrected;
+the five differential columns and other semantic outcomes remain unchanged.
 
 Confidence is high in the selected calculation, Morale outcome set, five reachable differential
 columns, and semantic result union because each was checked against the primary rules, common
