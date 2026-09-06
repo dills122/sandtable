@@ -107,7 +107,7 @@ Optional parser evidence gate
 | Side-safe observations and legal-action enforcement | Implemented for the current synthetic path | Extend only with each new mechanic and its disclosure tests |
 | Mandatory turn preamble | Implemented through Reserve Designation completion | Preserve the exact Movement terminal while later mechanics expand |
 | Movement and contact | Movement Foundation is complete through merged `MOV-TASK-010` / PR #79; ZOC/Reaction Core authority is activated through `ZOR-TASK-006C` | `007A` Runner adoption implemented; `007B` verification and independent review complete; Breakdown adjudication remains separate |
-| Combat | `CMB-RSH-001` complete; `002`–`004` and `RESREL-RSH-001` research decision-ready; implementation not started | Independent research review 2 Ready; owner decisions, then Contact/Combat/cycle design |
+| Combat | Research decision-ready; `CMB-DES-001`-`003` bounded designs complete for review; implementation not started | Next: `CMB-DES-004` cost/resolution ordering; research rulings and remaining design gates stay open |
 | Working pre-alpha skeleton | Not reached | Requires one authentic movement/contact/combat loop with replay |
 | First-scenario content and remaining Land systems | Milestone-level; not started | Re-estimate after the skeleton exposes exercised-rule and transcription scope |
 | Campaign lifecycle and Maproom | Milestone-level; not started | Requires stable playable authority, Chronicle persistence, and save/resume contracts |
@@ -128,7 +128,7 @@ persistence, and Maproom remain absent.
 | 2 — Rules laboratory and legal-action boundary | Complete for the admitted synthetic path | Keep outward actions observation-derived and revalidate exact membership at submission |
 | 3 — Mandatory turn preamble | Complete for the admitted synthetic no-obligation path | Positive Organization/convoy/fleet cases remain explicit later-scenario work; authority now reaches the Breakdown Determination checkpoint |
 | 4 — Movement, Breakdown, and Reaction boundary | Active | Movement Tasks 001-010 are complete and merged; ZOC/Reaction Core authority is activated through `ZOR-TASK-006C`, with `007A` Runner adoption implemented, `007B` verification and independent review complete, and Breakdown adjudication separate |
-| 5 — Combat and continual-cycle loop | Source inventory and `CMB-RSH-001` complete; `002`–`004` decision-ready; not implementation-ready | Complete remaining research and reconcile implemented Breakdown/ZOC with Contact/Engaged and Combat design before contract freeze |
+| 5 — Combat and continual-cycle loop | Research decision-ready; bounded identity/protocol/step designs complete for review; not implementation-ready | Complete remaining Contact/Combat/cycle design and research rulings before contract freeze |
 | 6 — Scenario Group One content | Milestone-level; not started | Begin after the working pre-alpha skeleton measures the exact exercised-rule/data surface |
 | 7 — Remaining required Land systems | Milestone-level; not started | Split from the measured first-scenario rule inventory rather than treating it as one task |
 | 8 — Minimal Maproom and campaign lifecycle | Milestone-level; not started | Requires stable playable authority, Chronicle persistence/save-resume, and the no-model intent prototype |
@@ -729,7 +729,19 @@ oversized executable-looking tasks with explicit research and design gates.
 do not freeze production contracts. `CYCLE-RSH-001` identity/history research is complete.
 `RESREL-RSH-001` [release eligibility/history](../research/reserve-release-history-spike.md) is
 decision-ready. [Independent review 2](../reviews/combat-reserve-research-review-2.md) is Ready for
-owner decisions. Next: approve research choices, then the Combat/cycle design gates.
+owner decisions. `CMB-DES-001` [identity design](../design/combat-opportunity-identity-v1.md) is
+complete for review, using merged research as design inputs without blanket approval of pending
+rulings. It separates unit history from target-hex use, voluntary adjacency from Contact, and
+internal authority from outward references. `CMB-DES-002`
+[sealed protocol](../design/combat-sealed-decision-protocol-v1.md) is complete for review: two private
+slots share one base, incomplete voluntary rounds cancel without invented choices, and prepared or
+committed rounds recover without controllers. `CMB-DES-003`
+[Combat-step transitions](../design/combat-step-transitions-v1.md) is complete for review: explicit
+selection/decline, six ordered step closures, exact prepared-round advance and cancellation/settlement
+handoffs. Next: `CMB-DES-004` cost/resolution ordering; remaining design and research approval gates
+stay open. Actual RBA movement and broader combat categories remain outside the selected fixture.
+[Independent design review 2](../reviews/combat-design-review-2.md) returned Ready for
+DES-001/DES-002/DES-003 with no actionable findings; it does not approve production.
 Later design must settle every reachable loss, capture/custody, retreat,
 ammunition, and Cohesion obligation before claiming the repeating skeleton is complete.
 
