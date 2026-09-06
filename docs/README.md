@@ -67,7 +67,9 @@ the pre-alpha roadmap carry repository-wide rationale and delivery state.
   [Independent review 2](reviews/combat-reserve-research-review-2.md) is Ready for owner decisions;
   [CMB-DES-001 identity design](design/combat-opportunity-identity-v1.md) is complete for review,
   covering the bounded infantry opportunity, target, participant and Contact/Engaged identity
-  handoffs. Next: `CMB-DES-002` sealed protocol. Production and the remaining design gates stay open.
+  handoffs. [CMB-DES-002 sealed protocol](design/combat-sealed-decision-protocol-v1.md) is complete
+  for review, defining frozen choices, persisted lifecycle, cancellation fallback and strict
+  readback. Next: `CMB-DES-003` Combat-step transitions. Production and remaining gates stay open.
 - Sprint 4-5 dependencies: [research-gate audit](research/sprint-4-5-research-gates.md).
 
 ## Reviewed future product work

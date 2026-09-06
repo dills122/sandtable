@@ -6,7 +6,8 @@
 This packet selects identity semantics for the first one-attacker/one-defender infantry Close
 Assault. It advances the [Combat/cycle inventory](../research/combat-cycle-source-inventory.md)
 using merged research as design inputs. It does not approve every pending research proposal,
-freeze a wire schema, activate combat, or admit multi-unit combat. `CMB-DES-002` is next.
+freeze a wire schema, activate combat, or admit multi-unit combat. The
+[CMB-DES-002 protocol](combat-sealed-decision-protocol-v1.md) now defines the next design layer.
 
 ## Governing evidence and scope
 

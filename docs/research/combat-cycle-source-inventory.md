@@ -3,7 +3,7 @@
 **Status:** Source inventory, `CMB-RSH-001` result-surface research, `CMB-RSH-002` static-content
 research, `CMB-RSH-003` mutable-state research, `CMB-RSH-004` RNG/golden research, and the
 `CYCLE-RSH-001` cycle identity/history decision and `RESREL-RSH-001` release research are complete
-and decision-ready; `CMB-DES-001` identity design is complete for review;
+and decision-ready; `CMB-DES-001` identity and `CMB-DES-002` protocol designs are complete for review;
 production remains gated by the remaining Contact/Combat and Reserve Release design
 
 **Date:** 2026-08-25
@@ -140,7 +140,9 @@ remains part of these design gates):
 7. `CMB-DES-001` — [combat opportunity/target/participant identity](../design/combat-opportunity-identity-v1.md)
    **complete for review:** bounded singleton Close Assault identity, separate target-hex use and
    unit history, Contact/Engaged membership, fog-safe reference requirements and extension gates.
-8. `CMB-DES-002` — sealed decision/event/readback protocol and fallback.
+8. `CMB-DES-002` — [sealed decision/event/readback protocol and fallback](../design/combat-sealed-decision-protocol-v1.md)
+   **complete for review:** typed singleton assignments, private/audience revision separation,
+   persisted deadline/cancellation, pre-RNG commitment and strict restart/readback requirements.
 9. `CMB-DES-003` — position/barrage/Retreat Before Assault/force-assignment transitions.
 10. `CMB-DES-004` — simultaneous Barrage/Anti-Armor and sequential Close Assault boundaries.
 11. `CMB-DES-005` — loss/retreat/capture/Contact/Engaged projection and Chronicle redaction.
@@ -159,5 +161,6 @@ an independent plan review.
   recommends full-game infantry consumption for the bounded assault);
 - approval and design of prisoner custody/escape settlement (`CMB-RSH-003` retains reachable
   infantry capture; captured equipment remains outside the selected infantry surface);
-- deterministic fallback timing for private decisions; and
+- approval of `CMB-DES-002` private-decision timing/cancellation policy; hosted implementation and
+  mandatory-attack fallback remain later gates; and
 - Breakdown/Retreat BP continuity and broken-vehicle consequences.
