@@ -71,9 +71,11 @@ the pre-alpha roadmap carry repository-wide rationale and delivery state.
   reviewed, defining frozen choices, persisted lifecycle, cancellation fallback and strict
   readback. [CMB-DES-003 Combat-step transitions](design/combat-step-transitions-v1.md) is complete
   for review: explicit selection/decline, six closure proofs and prepared/cancelled/settled paths.
-  Next: `CMB-DES-004` cost/resolution ordering. Production and remaining gates stay open.
+  [CMB-DES-004 cost/resolution ordering](design/combat-cost-resolution-order-v1.md) defines atomic
+  costs, role-ordered result publication and simultaneous-stage extension boundaries. Next:
+  `CMB-DES-005` settlement/disclosure. Production and remaining gates stay open.
   [Independent design review 2](reviews/combat-design-review-2.md) returned Ready for
-  DES-001/DES-002/DES-003, with no actionable findings; production gates remain open.
+  DES-001/DES-002/DES-003, with no actionable findings; subsequent DES-004 is outside that review.
 - Sprint 4-5 dependencies: [research-gate audit](research/sprint-4-5-research-gates.md).
 
 ## Reviewed future product work

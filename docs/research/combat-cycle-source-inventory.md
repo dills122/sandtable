@@ -3,8 +3,9 @@
 **Status:** Source inventory, `CMB-RSH-001` result-surface research, `CMB-RSH-002` static-content
 research, `CMB-RSH-003` mutable-state research, `CMB-RSH-004` RNG/golden research, and the
 `CYCLE-RSH-001` cycle identity/history decision and `RESREL-RSH-001` release research are complete
-and decision-ready; `CMB-DES-001` identity, `002` protocol and `003` step designs are complete for review;
-production remains gated by the remaining Contact/Combat and Reserve Release design
+and decision-ready; `CMB-DES-001` identity, `002` protocol, `003` steps and `004` cost/resolution
+designs are complete for review; production remains gated by the remaining Contact/Combat and
+Reserve Release design.
 
 **Date:** 2026-08-25
 
@@ -147,7 +148,9 @@ remains part of these design gates):
    **complete for review:** bounded decline-only infantry path, provisional selection, six ordered
    closure proofs, exact prepared-round suffix and no-attack versus settled completion. Actual
    RBA movement, gun/Barrage and broader assignment paths remain explicit extension gates.
-10. `CMB-DES-004` — simultaneous Barrage/Anti-Armor and sequential Close Assault boundaries.
+10. `CMB-DES-004` — [cost/resolution ordering](../design/combat-cost-resolution-order-v1.md)
+    is complete for review: atomic committed use, deterministic result publication, settlement
+    handoff and explicit simultaneous-stage/sequential-assault extension requirements.
 11. `CMB-DES-005` — loss/retreat/capture/Contact/Engaged projection and Chronicle redaction.
 12. `CYCLE-DES-001` — Reserve Release to repeat/finish plus Exercise/Maneuver evidence.
 
@@ -156,7 +159,8 @@ an independent plan review.
 
 [Independent design review 2](../reviews/combat-design-review-2.md) is Ready for the
 bounded `CMB-DES-001`/`002`/`003` inputs, with no actionable findings. This checkpoint does not replace
-the combined implementation-plan review or approve pending policy/production contracts.
+the combined implementation-plan review or approve pending policy/production contracts; it does
+not cover subsequent DES-004.
 
 ## Retained unknowns
 
