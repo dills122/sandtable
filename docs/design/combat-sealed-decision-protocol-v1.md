@@ -7,7 +7,8 @@ This protocol lets Umpire persist private choices against one frozen combat base
 restart, and commit an attack exactly once. It continues the
 [identity design](combat-opportunity-identity-v1.md) and
 [Combat/cycle inventory](../research/combat-cycle-source-inventory.md). It selects the bounded
-singleton infantry protocol; `CMB-DES-003` next composes the six Combat steps around it.
+singleton infantry protocol; [CMB-DES-003](combat-step-transitions-v1.md) composes the six Combat
+steps around it.
 
 ## Authority, scope, and current gaps
 
