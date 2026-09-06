@@ -74,7 +74,7 @@ VECTORS = [
     (26, 0, "36541166", "9ef5fa5dc04ee9e9", 0, 25, 0, False, 0, 0, 0, (3, 0, 0, 0, 3, 0, 0)),
     (47, 0, "223514112", "5bf7b6a6067b3cc69d", 0, 15, 20, False, 0, 0, 25, (2, 2, 0, 1, 0, 0, 0)),
     (208, 0, "21665513", "c7e42911a034d87a", 1, 0, 20, True, 1, 1, 0, (0, 3, 0, 0, 0, 3, 0)),
-    (1296, 0, "11665665", "6660d795881dfda164", 2, 0, 0, True, 2, 0, 0, (0, 0, 0, 0, 0, 0, 3)),
+    (1296, 0, "11665665", "6660d795881dfda164", 2, 0, 0, True, 0, 0, 0, (0, 0, 0, 0, 0, 0, 0)),
     (4983, 0, "66113545", "bf1d3c7e2028ab46", -2, 10, 0, False, 1, 0, 0, (1, 0, 0, 0, 0, 0, 3)),
     (31707, 0, "661111635", "3b11728a60307de082", -2, 25, 0, False, 1, 0, 50, (3, 0, 2, 0, 3, 0, 3)),
     (0, 30, "66443222", "4dd79fabb6070dc7", -1, 10, 10, False, 0, 0, 0, (1, 1, 0, 0, 0, 0, 0)),
@@ -105,7 +105,7 @@ def main():
         check(a_sum in {-2: (10, 11), -1: (10, 11, 12), 0: (9, 10, 12),
                         1: (9, 10, 11), 2: (9, 10, 11, 12)}[diff], engaged, "raw Engaged")
         one_hex = {-2: (9,), -1: (8,), 0: (5, 6), 1: (4, 5, 6), 2: (5, 6, 7)}
-        check(2 if diff == 2 and d_sum == 11 else int(d_sum in one_hex[diff]), retreat, "retreat distance")
+        check(int(d_sum in one_hex[diff]), retreat, "retreat distance")
         a_loss, d_loss = (10 * ap + 99) // 100, 10 * (dp + 10 * refused) // 100
         a_cap = (a_loss * share + 99) // 100 if side == "attacker" else 0
         d_cap = (d_loss * share + 99) // 100 if side == "defender" else 0

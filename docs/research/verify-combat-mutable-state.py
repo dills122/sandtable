@@ -18,7 +18,7 @@ def loss(side, percent, unfulfilled=0, capture_percent=0, toe=10):
         raise ValueError("unknown side")
     if percent not in (0, 5, 10, 15, 20, 25):
         raise ValueError("outside selected loss envelope")
-    if unfulfilled not in (0, 1, 2) or (side == "attacker" and unfulfilled):
+    if unfulfilled not in (0, 1) or (side == "attacker" and unfulfilled):
         raise ValueError("outside selected retreat envelope")
     if capture_percent not in (0, 10, 25, 33, 50, 75):
         raise ValueError("outside selected capture envelope")
@@ -33,13 +33,18 @@ def check(actual, expected, label):
         raise AssertionError(f"{label}: expected {expected!r}, got {actual!r}")
 
 
+def moving_guards(prisoners):
+    """Errata 28.17: one Guard Point per five moving Prisoner Points."""
+    return ceil_ratio(prisoners, 5)
+
+
 def main():
     # Independently stated tuples: loss, captured, other loss, remaining, loss DP.
     vectors = [
         ("attacker", 25, 0, 0, 10, (3, 0, 3, 7, 3)),
         ("defender", 25, 0, 0, 10, (2, 0, 2, 8, 0)),
         ("defender", 15, 1, 0, 10, (2, 0, 2, 8, 0)),
-        ("defender", 25, 2, 0, 10, (4, 0, 4, 6, 3)),
+        ("defender", 20, 1, 0, 10, (3, 0, 3, 7, 3)),
         ("attacker", 25, 0, 33, 10, (3, 1, 2, 7, 3)),
         ("defender", 20, 1, 75, 10, (3, 3, 0, 7, 3)),
         ("defender", 0, 0, 75, 10, (0, 0, 0, 10, 0)),
@@ -53,7 +58,7 @@ def main():
     for side in ("attacker", "defender"):
         for percent, unfulfilled, share in product(
             (0, 5, 10, 15, 20, 25),
-            (0,) if side == "attacker" else (0, 1, 2),
+            (0,) if side == "attacker" else (0, 1),
             (0, 10, 25, 33, 50, 75),
         ):
             lost, captured, other, remaining, dp = loss(side, percent, unfulfilled, share)
@@ -67,14 +72,16 @@ def main():
             check(lost, expected_loss, "loss oracle")
             check(captured, expected_capture, "capture oracle")
             check(remaining + other + captured, 10, "TOE conservation")
-            check(0 <= captured <= lost <= (3 if side == "attacker" else 4), True, "bounds")
+            check(0 <= captured <= lost <= 3, True, "bounds")
             check(dp, 3 if Fraction(lost, 10) >= Fraction(3, 10) else 0, "DP threshold")
             checked += 1
-    check(checked, 144, "envelope size")
+    check(checked, 108, "envelope size")
+    for prisoners, guards in ((0, 0), (5, 1), (6, 2)):
+        check(moving_guards(prisoners), guards, "moving guard capacity")
 
     print(json.dumps({
         "status": "passed", "boundary_vectors": len(vectors),
-        "conditional_arithmetic_combinations": checked,
+        "conditional_arithmetic_combinations": checked, "guard_capacity_probes": 3,
         "coverage": "synthetic arithmetic only; no chart correlation or runtime proof",
     }, indent=2))
 

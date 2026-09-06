@@ -99,7 +99,7 @@ Pairs below are attacker Morale / defender Morale / attacker assault / defender 
 | 26 / 0 | 36 / 54 / 11 / 66 | 0 | Attacker 25% rounds to 3 TOE: 3 loss DP; defender loses zero |
 | 47 / 0 | 22 / 35 / 14 / 11; 2 | 0 | Losses 2/2; one defender Prisoner Point from 25% capture share; end 9 |
 | 208 / 0 | 21 / 66 / 55 / 13 | +1 | Defender 20% plus one refused retreat hex becomes 3 TOE lost and 3 DP; no victory RP |
-| 1296 / 0 | 11 / 66 / 56 / 65 | +2 | Zero losses, two-hex retreat, raw Engaged; rejected byte before defender pair; end 9 |
+| 1296 / 0 | 11 / 66 / 56 / 65 | +2 | Zero losses, no retreat, Engaged and no victory RP; rejected byte before defender pair; end 9 |
 | 4983 / 0 | 66 / 11 / 35 / 45 | −2 | Attacker loses 1; zero defender loss still requires one-hex retreat |
 | 31707 / 0 | 66 / 11 / 11 / 63; 5 | −2 | Attacker loses 3, including 2 captured; defender retreats one hex; attacker loss DP and later victory RP both 3 |
 | 0 / 30 | 66 / 44 / 32 / 22 | −1 | Crosses SHA block boundary without resetting; end cursor 38 |
@@ -111,10 +111,10 @@ Retreat/custody settlement, guard formation, CP effects of paths, and final Cont
 projection remain with `CMB-DES-005`. Keep raw Engaged and retreat evidence until settlement;
 the RNG packet must not turn a roll into proof of completed movement.
 
-The correlated result check sharpens `CMB-RSH-003`'s deliberately conservative arithmetic envelope:
-four defender TOE lost is not reachable at this initial 10-TOE surface. Two-hex retreat occurs at
-zero-loss coordinates; the actual maximum after refusal is three, shown by seed 208. Thus defender
-loss DP remains required, but the artificial 25% plus two-refused-hex combination is not a golden.
+Independent review corrected an inherited source-column error: two-hex Retreat first appears at
+`+3`, outside this surface. Seed 1296 therefore stays Engaged without retreat or victory RP.
+`CMB-RSH-003` now limits its conservative arithmetic envelope to one refused hex. The actual
+defender maximum after refusal is three, shown by seed 208, so defender loss DP remains required.
 
 ## Coverage and its limits
 

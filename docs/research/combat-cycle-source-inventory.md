@@ -110,7 +110,7 @@ Research that can proceed now:
 1. `CMB-RSH-001` — **complete:** the
    [Combat rules and result surface spike](combat-rules-result-surface-spike.md) normalizes the
    selected infantry Close Assault calculation, Morale closure, five reachable differential
-   columns, semantic outcomes including the reachable two-hex Retreat, and errata boundary without
+   columns, semantic outcomes including one-hex Retreat, and errata boundary without
    freezing contracts or reproducing the source chart.
 2. `CMB-RSH-002` — **decision-ready:** the
    [Combat Content and static schema spike](combat-content-static-schema-spike.md) selects

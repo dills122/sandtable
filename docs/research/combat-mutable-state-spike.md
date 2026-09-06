@@ -45,7 +45,7 @@ chart matrices are copied. PDF page numbers below are one-based.
 | Land Game rules | §§28.11–28.24, PDF 40 | Prisoner identity, relocation, guards, escape, feeding |
 | [Complete rules compilation](https://www.spigames.net/PDFv2/CampaignNorthAfrica.pdf) | Air/Logistics §§50.0–50.17, printed 20–21 / PDF 67–68 | Carried ammunition, consumption, accessible stock, immediate debit |
 | Complete rules compilation | §§51.12, 52.51–52.53, printed 21–22 / PDF 68–69 | Prisoner upkeep and water-dependent infantry readiness |
-| [September 1979 errata](https://www.spigames.net/db_pages/ERR_CampaignforNorthAfrica.pdf) | §§15.88, 50.12, 50.2 | Surrender trigger correction; infantry ammunition rate |
+| [September 1979 errata](https://www.spigames.net/db_pages/ERR_CampaignforNorthAfrica.pdf) | §§15.88, 28.17, 50.12, 50.2 | Surrender trigger, corrected moving guard capacity, infantry ammunition rate |
 
 **Observation:** CCE located current Content and Campaign definitions; direct inspection of those
 definitions confirmed the following baseline. Older research absence statements describe their
@@ -77,7 +77,7 @@ not an implicit implementation of prior Logistics phases or a perpetual `supplie
 
 **Documented fact:** the prior result-surface spike reaches five final differentials, −2 through +2;
 attacker losses reach 25%, defender losses reach 25%, capture can affect either side, and defender
-retreat can require two hexes. Engaged and zero-loss retreat also remain possible. The favorable
+retreat can require one hex. Engaged and zero-loss retreat also remain possible. The favorable
 one-hex-retreat golden is only one evidence vector.
 
 **Inference:** admission must support the entire selected surface, including infantry prisoners
@@ -114,7 +114,7 @@ For the selected infantry rating of 1, raw points lost and TOE lost coincide.
 | Attacker: 10 TOE, 25% loss | 3 lost, 7 remain; actual loss is 30%, therefore 3 DP |
 | Defender: 10 TOE, 25% loss, retreat fulfilled | 2 lost, 8 remain; no loss DP |
 | Defender: 15% table loss, one unfulfilled retreat hex | Floor of 25% × 10 = 2 |
-| Defender: 25% table loss, two unfulfilled retreat hexes | Floor of 45% × 10 = 4; 6 remain and 3 DP |
+| Defender: 20% table loss, one unfulfilled retreat hex | Floor of 30% × 10 = 3; 7 remain and 3 DP |
 | Either side: 3 lost, capture share 33% | 1 Prisoner Point, 2 other losses, 7 remain; never deduct capture again |
 | Zero loss with a retreat / Engaged result | Preserve the positional / relationship consequence; Retreat takes precedence over Engaged |
 
@@ -159,7 +159,8 @@ in this fixture, but remain explicit future capability boundaries.
 
 **Documented facts:** infantry capture yields one Prisoner Point per captured TOE (§28.11).
 The captor may relocate prisoners up to three hexes immediately, subject to map/enemy restrictions
-(§28.12). Guards are required; moving custody uses one guard per ten Prisoner Points, and a guard
+(§28.12). Guards are required; moving custody uses one guard per five Prisoner Points (errata
+§28.17 corrects the printed rule), and a guard
 can be formed by removing one infantry TOE (§§28.17, 28.22). Unguarded or excess prisoners can
 escape immediately (§28.23). Prisoner feeding has priority at the later supply obligation
 (§28.15; Logistics §51.12).
@@ -172,6 +173,8 @@ dead TOE. Capture can occur to either side; defender capture of attackers needs 
 
 For the selected arithmetic envelope, at most three Prisoner Points arise in one assault. Existing
 custody is excluded from the fixture. That bounds quantity, not the legal guard/escape choices.
+The general moving-custody capacity boundary is five prisoners needing one guard, six needing two;
+the verifier retains that separate source arithmetic probe without admitting a six-prisoner fixture.
 Later convoy movement, feeding, camps, and departure are not implemented by this research; campaign
 advance must stop before an unsupported obligation. A full repeating skeleton must close those
 gates, not merely save a pending record forever.
@@ -206,18 +209,20 @@ Run from repository root with Python 3 (standard library only):
 python3 docs/research/verify-combat-mutable-state.py
 ```
 
-The verifier checks independently specified boundary examples and 144 conditional arithmetic
-combinations, including capture shares 0/10/25/33/50/75 and refusal additions 0/10/20. This is a
+The verifier checks independently specified boundary examples and 108 conditional arithmetic
+combinations, including capture shares 0/10/25/33/50/75 and refusal additions 0/10. This is a
 conservative arithmetic envelope, **not** a claim that every cross-product is a reachable joint
 chart coordinate. It has no source chart, RNG implementation, or runtime integration. It cannot
 prove replay, custody legality, privacy, or full Combat correctness.
 
-The subsequent [RNG/golden spike](combat-rng-golden-spike.md) checks actual chart correlations:
-the selected defender maximum including retreat refusal is three TOE, not this envelope's four.
-Its seed 208 demonstrates the reachable defender loss-DP case; this arithmetic envelope remains
-useful as a conservative calculation check, not a source-reachability claim.
+The subsequent [RNG/golden spike](combat-rng-golden-spike.md) checks actual chart correlations.
+Its seed 208 demonstrates the reachable defender maximum of three TOE and the loss-DP case.
+Independent review corrected an inherited two-hex `+2` claim: two-hex results start at `+3`, outside
+the selected surface. This envelope now permits at most one refused hex; combinations still do
+not imply joint chart reachability.
 
-**Observed validation:** Python 3.14.6; eight boundary vectors and all 144 combinations pass.
+**Observed validation:** Python 3.14.6; eight loss boundary vectors, three guard-capacity probes,
+and all 108 combinations pass.
 Temporary in-memory mutations of attacker rounding, capture double deduction, loss-DP threshold,
 and separate refusal rounding must each fail the boundary evidence. Source scans and mutation
 copies remain outside the change; no .NET behavior changed, so no runtime test claim is made.
