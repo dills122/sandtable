@@ -79,12 +79,14 @@ the pre-alpha roadmap carry repository-wide rationale and delivery state.
   release windows, repeat/finish and occurrence-aware evidence. The
   [policy register](design/combat-cycle-policy-reconciliation.md) consolidates eight owner choices;
   the [combined contract/implementation plan](design/combat-cycle-implementation-plan.md) defines
-  25 staged tasks and their evidence. Next: owner decisions and combined-plan review, then exact
-  source/contract freeze. Production gates stay open.
+  25 staged tasks and their evidence. Next: owner policy/plan acceptance, including the review4
+  correction, then exact source/contract freeze. Production gates stay open.
   [Independent design review 2](reviews/combat-design-review-2.md) returned Ready for
   DES-001/DES-002/DES-003. [Independent design review 3](reviews/combat-settlement-review-3.md)
   returned Ready for DES-004/DES-005, with no actionable findings; subsequent cycle design is outside
-  that review. The independent-review budget is exhausted at 3 of 3.
+  that review. [Review4](reviews/combat-cycle-plan-review-4.md) assessed cycle/combined planning at
+  9f683d1: Not ready with one ordinary break-off handoff gap. Author correction assigns the missing
+  work; no independent reassessment is claimed. User-approved review budget is exhausted at4of4.
 - Sprint 4-5 dependencies: [research-gate audit](research/sprint-4-5-research-gates.md).
 
 ## Reviewed future product work

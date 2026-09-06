@@ -162,14 +162,17 @@ remains part of these design gates):
 The [policy register](../design/combat-cycle-policy-reconciliation.md) reconciles those design inputs
 into eight explicit owner choices. The [combined contract/implementation plan](../design/combat-cycle-implementation-plan.md)
 now defines 25 staged tasks, contract ownership and acceptance evidence. Tasks are planned, not
-started; owner decisions, independent combined-plan review and exact contract freeze remain gates.
+started; owner policy/plan acceptance and exact contract freeze remain gates.
+[Review4](../reviews/combat-cycle-plan-review-4.md) records the combined assessment and author correction.
 
 [Independent design review 2](../reviews/combat-design-review-2.md) is Ready for the
 bounded `CMB-DES-001`/`002`/`003` inputs, with no actionable findings. This checkpoint does not replace
 the combined implementation-plan review or approve pending policy/production contracts; it does
 not cover subsequent DES-004/005. [Independent design review 3](../reviews/combat-settlement-review-3.md)
-returned Ready for those bounded inputs, with no actionable findings. Review budget3of3 is exhausted;
-remaining policy/production gates stay open. Subsequent CYCLE-DES-001 is outside that checkpoint.
+returned Ready for those bounded inputs, with no actionable findings; subsequent CYCLE-DES-001
+is outside that checkpoint. User authorized review4, which found one missing ordinary break-off
+handoff in cycle/combined planning. Author correction assigns it without claiming an independent
+Ready reassessment; remaining policy/production gates stay open.
 
 ## Retained gates and deferrals
 
@@ -183,5 +186,6 @@ remaining policy/production gates stay open. Subsequent CYCLE-DES-001 is outside
 - General resupply, prisoner upkeep/maturity execution, vehicle retreat, real RBA, released-Reserve
   offensive Combat and hosted decisions remain extensions. Bounded Truck Convoy entry retains
   future obligations; it is not a complete playable campaign.
-- CYCLE-DES-001 and the combined plan still need their independent assessment. Current review
-  budget remains exhausted at3of3; no fourth review is implied by this planning closeout.
+- Review4 returned Not ready at9f683d1. Its ordinary break-off finding is addressed by the author
+  in cycle design and TASK-001/003/018/019; owner acceptance remains pending. User-approved review
+  budget is exhausted at4of4; no fifth review or independent reassessment is implied.

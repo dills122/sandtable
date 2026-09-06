@@ -172,6 +172,21 @@ legality is a capability failure, not a false value meaning no source-legal acti
 profile must certify the required decision surface before execution; it cannot hide missing rules
 behind automatic finish.
 
+Ordinary Movement must account for retained Contact/Engaged membership even when the fixture has
+no ZOC. DES-001's break-off handoff is therefore part of this continuation design, not a real-RBA
+extension. Under Land8.15/8.24, a zero-loss Engaged attacker with CPA10, spent5 and an otherwise
+legal Clear neighbor can spend4 break-off CP plus1 terrain CP. Terrain-only calculation would
+undercharge; zero ammo does not prove no Movement continuation. The move must atomically charge
+applicable CP, move the unit and end the relevant memberships without erasing unrelated relations.
+
+The [combined plan](combat-cycle-implementation-plan.md) assigns source cost precedence to
+TASK-001, exact movement/relationship receipts to TASK-003, ordinary break-off implementation and
+replay to TASK-018, and use of that same rule in continuation assessment to TASK-019. Cover Contact,
+Engaged without ZOC, overlapping applicable costs, last-counterpart departure, insufficient CP and
+restart. Freeze exact precedence before consumers; relation multiplicity must not invent additive
+charges. This makes the existing DES-001 obligation explicit and does not admit actual RBA or new
+ZOC categories. Any alternative exclusion requires an all-result profile proof before admission.
+
 | Immediate obligations | Legal supported continuation | Material progress | Outcome |
 | --- | --- | --- | --- |
 | Pending | Any | Any | Neither repeat nor finish; resolve live obligation first. |
@@ -259,7 +274,7 @@ simulation-evidence subset, with diagnostics outside equality and honest build i
 | `CYCLE-COMP-AC-004` | Timeout midway through first release preserves accepted choices, converts remainingI deterministically and completes; restart/late replies cannot renew deadline or auto-release/repeat. | 003 |
 | `CYCLE-COMP-AC-005` | CPA9/II/spent3 gives voluntary ceiling4, not fresh4. Mandatory overspend persists. Offensive commitment consumes one allowance, defense does not; II DP precedes Morale and requires broader combat admission. | 004 |
 | `CYCLE-COMP-AC-006` | Next-Movement exception spans exactly one occurrence and expires even unused. Prior Movement-end proximity survives combat movement; finish and other scopes cannot revive rights. | 004/006 |
-| `CYCLE-COMP-AC-007` | Exercise each continuation truth-table row. Missing capability/hidden-dependent legality cannot masquerade as proved no-continuation; accepted fallback finish emits no RNG. | 005 |
+| `CYCLE-COMP-AC-007` | Exercise each continuation truth-table row, including no-ZOC Engaged break-off (spent5 +4 +1 =CPA10), insufficient CP and atomic CP/membership restart. Missing capability/hidden-dependent legality cannot masquerade as proved no-continuation; accepted fallback finish emits no RNG. | 005 |
 | `CYCLE-COMP-AC-008` | Only allowlisted actual effects set progress; empty Breakdown/retention/private seals/cancelled selections do not. No-progress repeats reject and cannot synthesize a new release opportunity. | 006 |
 | `CYCLE-COMP-AC-009` | Repeat resets target-hex use and closed segment controls, preserving stage attack/release/resource/BP/relation/future-obligation facts. Zero ammo never replenishes. | 004/006-007 |
 | `CYCLE-COMP-AC-010` | Every checkpoint/suffix reproduces full active-stage history, identity, pending owner and side actions. Omitted history, reopened control, duplicate repeat or premature stage reset fails strict readback. | 002/007 |
@@ -271,9 +286,11 @@ approved Reserve/custody/fallback/disclosure policies; complete normalized table
 event/snapshot/observation/Dispatch schemas and migration matrix; canonical codec goldens and size/
 numeric limits; repeat-aware Movement/Breakdown and guard/CP/entitlement authority; current and
 future obligation admission; occurrence-aware Exercise terminals; and hosted recovery/privacy tests.
-Then cut implementation-sized tasks and obtain the separately authorized combined-plan review.
-The earlier independent-review budget is exhausted at3of3 and does not cover this subsequent packet.
-No new independent instance or production approval is implied by design completion. Old readers
+The [combined plan](combat-cycle-implementation-plan.md) now assigns implementation-sized tasks.
+[Review4](../reviews/combat-cycle-plan-review-4.md) assessed the combined scope at9f683d1 and found
+one missing ordinary break-off handoff; the author correction above assigns its contracts and tests.
+The frozen-head verdict remains Not ready; this correction has not had another independent pass.
+The user-authorized review budget is exhausted at4of4; policy/contract approval remains pending. Old readers
 must reject new cycle state; a snapshot without cycle evidence cannot be upgraded by guessing its
 ordinal from position/version. Any activation migration needs authenticated history and an explicit
 validated mapping, while old artifacts and replay readers remain available.

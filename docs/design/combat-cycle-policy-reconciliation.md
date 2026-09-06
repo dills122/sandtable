@@ -32,14 +32,15 @@ here; a request to prepare this packet does not supply that approval. No approva
 | Ammo/readiness unspecified | POL-002/003 select explicit scenario seeds and retained resource/readiness provenance. Exact schema validation is TASK-002/003; general supply and replenishment are deferred. |
 | Retreat/Breakdown continuity | The admitted infantry route has no vehicle/BP charge. Existing BP, checked bands and broken lots still survive repetition; TASK-018 tests continuity. Vehicle retreat needs an extension. |
 | Cycle identity unresolved | CYCLE-DEC-001–014 remain accepted; POL-008 addresses the later composition proposal, not their approval status. |
-| “Reviewed” means ready to implement | Reviews1–3 cover DES-001–005 in their recorded scopes. CYCLE-DES-001 and this combined plan remain outside those reviews. |
+| “Reviewed” means ready to implement | Reviews1–3 cover DES-001–005. [Review4](../reviews/combat-cycle-plan-review-4.md) covers cycle/combined planning at9f683d1 and returns Not ready with one break-off handoff gap. Author correction assigns it to TASK-001/003/018/019; policies/contracts remain pending. |
 
 ## Decision and implementation gates
 
 1. Record owner decisions on POL-001–008 and review this task plan. Rejected/modified rows require
    corresponding design and traceability edits before dependent implementation starts.
-2. Obtain the outstanding independent combined-plan assessment, explicitly including CYCLE-DES-001.
-   The existing review budget is exhausted at **3 of 3**; no new pass has been run or authorized here.
+2. Review4 assessed the combined plan including CYCLE-DES-001. Retain its finding and the author
+   correction in plan acceptance; no independent Ready verdict exists for the correction. The user
+   approved one additional pass on2026-09-06; the revised budget is exhausted at **4 of 4**.
 3. Execute TASK-001–004 to close source/calendar and exact schema/compatibility questions. Review
    their concrete contracts before consumers. A remaining unsupported reachable effect blocks
    activation; it cannot be relabelled a successful bounded result.
