@@ -5,6 +5,7 @@ import importlib.util
 import json
 import sys
 from collections import Counter
+from fractions import Fraction
 from itertools import product
 from pathlib import Path
 
@@ -78,6 +79,45 @@ def move_cost(spent, relations, terrain=1, release=None):
     return after, max(0, after - 10) - max(0, spent - 10)
 
 
+def compare_repairs(data, raw):
+    """Assess proposals under explicit heuristics; never infer historical intent."""
+    research = data['ruling_research']
+    neighbors = {int(d): expand(bands) for d, bands in research['neighbor_defender_loss_bands'].items()}
+    require(all(len(t) == 36 for t in neighbors.values()), 'neighbor coverage')
+    adjacent = {1: raw[('defender', 1)], **neighbors}
+    threshold_counts = {d: sum(v >= 10 for v in t.values()) for d, t in adjacent.items()}
+    require(threshold_counts == {1: 15, 3: 20, 4: 23}, 'neighbor threshold facts')
+    results = []
+    for index, repair in enumerate(research['candidates']):
+        table = raw[('defender', 2)] | dict(zip((34, 35, 36), repair, strict=True))
+        require(len(table) == 36, 'repair incomplete')
+        require(all(table[c] == v for c, v in raw[('defender', 2)].items()), 'source overwritten')
+        require(all(table[a] >= table[b] for a, b in zip(COORDS, COORDS[1:])), 'row loss ordering')
+        require(all(adjacent[1][c] <= table[c] <= adjacent[3][c] for c in (34, 35, 36)),
+                'repaired cells exceed neighboring values')
+        # Number of changed endpoints of the original 10% and 5% bands.
+        endpoint_edits = int(max(c for c, v in table.items() if v == 10) != 33)
+        endpoint_edits += int(min(c for c, v in table.items() if v == 5) != 41)
+        require(endpoint_edits == research['endpoint_edits'][index], 'endpoint edit count')
+        threshold = sum(v >= 10 for v in table.values())
+        require(threshold == 15 + index, 'candidate threshold count')
+        results.append({'repair': repair, 'endpoint_edits': endpoint_edits,
+                        'at_least_10_percent_rolls': threshold,
+                        'mean_percent': str(Fraction(sum(table.values()), 36)),
+                        'mean_base_toe_loss': str(Fraction(sum(v // 10 for v in table.values()), 36))})
+    require(results[0]['mean_base_toe_loss'] == '1/2' and
+            results[3]['mean_base_toe_loss'] == '7/12', 'rounded loss sensitivity')
+    # With the selected equal-strength Morale0 profile, +2 occurs only on 11 versus 66.
+    affected = sum(a == 11 and d == 66 and roll in (34, 35, 36)
+                   for a, d, roll in product(COORDS, repeat=3))
+    require(Fraction(affected, 36**3) == Fraction(1, 15552), 'selected-profile sensitivity')
+    # Existing printed cells already violate global column monotonicity; do not "repair" them.
+    require(raw[('defender', 0)][23] == 15 and raw[('defender', 1)][23] == 10,
+            'retain known printed nonmonotonicity')
+    return {'candidates': results, 'affected_probability': '1/15552',
+            'limit': 'local smoothness is a decision heuristic, not a source rule'}
+
+
 def main():
     data = json.loads(FIXTURE.read_text())
     require(data['ordered_coordinates'] == COORDS, 'coordinate order changed')
@@ -92,6 +132,7 @@ def main():
     rejected(lambda: loss(raw, 'defender', 3, 11), 'unselected differential accepted')
     mutated = copy.deepcopy(data['attacker_loss_bands']['0']) + [[0, 11, 11]]
     rejected(lambda: expand(mutated), 'overlap accepted')
+    repair_comparison = compare_repairs(data, raw)
 
     proposed = data['proposed_ruling']
     require(proposed['status'] == 'pending-owner-decision', 'research must retain pending status')
@@ -163,6 +204,7 @@ def main():
                       'candidate_settlement_cases': rows, 'candidate_capture_paths': capture_paths,
                       'seeded_cross_checks': len(oracle.VECTORS), 'calendar_vectors': len(calendar_vectors),
                       'movement_vectors': len(movement_vectors),
+                      'repair_comparison': repair_comparison,
                       'limit': 'research/candidate arithmetic only; no adopted repair or runtime proof'}, indent=2))
 
 

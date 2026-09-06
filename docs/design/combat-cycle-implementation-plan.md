@@ -226,3 +226,11 @@ Source admission remains blocked. Calendar normalization is a four-turn/12-stage
 phase-specific maturity execution remains deferred. Ordinary break-off is highest applicable 2/4 CP
 plus terrain, with immediate DP above CPA and a 150% ordinary infantry ceiling. These findings
 constrain TASK-003/007/018/019; they do not certify runtime, replay or independent engineering review.
+
+TASK-001 ruling follow-up, 2026-09-06: the source packet now records wider errata, integrated-rule
+and VASSAL chart checks plus all four adjacent-band repairs. Recommendation remains 10% with
+moderate confidence, based on one endpoint edit and smoother neighboring probability thresholds;
+no direct historical correction was found. Source admission remains pending owner disposition.
+The source diagnostic verifier passed all four candidate comparisons and the existing 12 seeded
+cross-checks; original fixture facts remained unchanged, 65 local links resolved,
+and Python syntax/whitespace checks passed. No .NET runtime changed or tests were needed.

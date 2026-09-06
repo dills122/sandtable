@@ -18,8 +18,8 @@ uses an existing result value and closes the selected surface without excluding 
 
 | Option | Observable effect for 10 committed defender TOE | Assessment |
 | --- | --- | --- |
-| Extend 10% band through 36 | One base TOE loss on 34/35/36; on 34, refusal of its one-hex retreat raises loss to 2 | Recommend: one endpoint change closes the gap before the next band starts 41. Source alone does not prove intent. |
-| Start 5% band at 34 | Zero base TOE loss on 34/35/36; refusal on34 raises loss to 1 | Coherent alternative, but changes the next band's lower endpoint instead. Requires its own owner ruling. |
+| Extend 10% band through 36 | One base TOE loss on 34/35/36; on 34, refusal of its one-hex retreat raises loss to 2 | Recommend: one endpoint change and smoother neighboring loss thresholds. Historical intent remains unproved. |
+| Start 5% band at 34 | Zero base TOE loss on 34/35/36; refusal on 34 raises loss to 1 | Coherent alternative, but changes the next band's lower endpoint instead. Requires its own owner ruling. |
 | Leave unresolved | No supported result for three reachable rolls | Current authority: block selected-profile admission before mutation. Never wait to discover the missing row after drawing. |
 
 POL-001 approved complete selected coverage, not fabricated missing values. Approving this new ruling
@@ -52,6 +52,84 @@ A bounded web search checked the SPI preservation errata index and the retained 
 no matching +2 correction was located. This does not establish that no additional erratum exists.
 The duplicate PDF scan cannot resolve the ambiguity. Another identifiable primary correction or
 owner-supplied physical chart would supersede the inference after provenance reconciliation.
+
+## Ruling follow-up: wider evidence and comparative decision
+
+**Research input:** `ac5b188`, 2026-09-06; owner requested a research-backed decision before choosing
+a repair. **Decision:** recommend the existing 10% proposal with **moderate confidence**. Its
+advantage is local distribution continuity with one endpoint edit. Minimal editing alone was not
+enough to distinguish it from 5%; the earlier recommendation needed this comparison. Owner
+acceptance of the gameplay amendment is still unrecorded; this research does not adopt it.
+
+### What the wider search established
+
+- [Grognard's September addenda transcription](https://grognard.com/errata1/cna.html), §15.79,
+  matches the retained official +4 correction. It supplies no +2 value. Its introductory note
+  encourages resolving obvious mistakes, but does not prescribe this particular repair.
+- [July 2021 Land rules with integrated errata](https://friendorfoe.com/d/CfNA/CNA%20-%20Rules%20Land.pdf),
+  PDF26/§15.79, repeats that +4 correction and refers readers to separate charts. The
+  [host attributes the edited PDFs to Clay Stone](https://friendorfoe.com/war/cfna/).
+  This is a later transcription, not a newly discovered SPI correction.
+- [VASSAL module v1](https://vassalengine.org/wiki_old/wiki/Module:The_Campaign_for_North_Africa:_The_Desert_War_1940-43)
+  retains the same +2 gap in its embedded §15.79 chart while correcting +4 to 34–45. Inspected
+  `images/15.79 The Close Assault Combat Results Table.png` and `incorporated errata.txt` inside
+  the [public module](https://obj.vassalengine.org/images/a/af/CNA.vmod); archive and image hashes
+  are retained in the fixture. The module was inspected as data, not executed. Its original chart
+  lineage is not independently established; it is evidence of the digital gap, not another original
+  printing or endorsement of either repair.
+- SPI's preservation indexes, the attributed edited rules, the module and focused public searches
+  produced no direct +2 amendment. That bounded search is not proof that none exists; no private
+  forum, physical-copy or designer confirmation is claimed. Additional matching copies of the same
+  source would not establish intent.
+
+### Compare all four adjacent-band completions
+
+Preserving every defined cell, using the existing neighboring 5%/10% values and keeping loss
+non-increasing with ordered rolls gives four possible assignments. For each proposal, all 36
++2 coordinates are covered. Counts below are over uniform ordered-d6 rolls at **fixed +2**.
+
+| Loss at 34/35/36 | Printed endpoints changed | Rolls producing at least 10% loss | Mean chart loss | Mean base TOE loss at strength 10 |
+| --- | --- | --- | --- | --- |
+| 5/5/5% | 1 | 15/36 | 7.500% | 0.500 |
+| 10/5/5% | 2 | 16/36 | 7.639% | 0.528 |
+| 10/10/5% | 2 | 17/36 | 7.778% | 0.556 |
+| **10/10/10%** | **1** | **18/36** | **7.917%** | **0.583** |
+
+**Structural inference:** the printed +1 and +3 columns produce at least 10% loss on 15/36 and 20/36
+rolls; corrected +4 does so on 23/36. The recommended repair yields counts 15→18→20→23. The all 5%
+repair yields 15→15→20→23, leaving a plateau then a five-roll jump. Counting ordered outcomes is
+appropriate here; interpolating decimal labels such as 33 and 42 would misread the d6 domain.
+The two split repairs are plausible, but require editing both adjoining endpoints without a source
+specifying a split. These are judgment criteria, not proof that the original table followed a
+linear formula. In fact, existing differential 0/roll 23 is 15% while +1/roll 23 is 10%: global
+monotonicity already has an exception. Preserve it; do not smooth or rebalance printed values.
+
+**Gameplay sensitivity:** 10% versus 5% changes three of 36 defender rolls at fixed +2 (8.333%).
+At the admitted strength 10, each affected roll adds exactly one base TOE loss. Roll 34 also calls
+for a one-hex retreat: actual retreat gives 1 versus 0 loss; refusal gives 2 versus 1. Rolls 35/36 do
+not require retreat. Capture and Engaged triggers, draw count and already-defined cells stay fixed.
+Mean chart loss differs by 5/12 percentage points; mean base TOE loss differs by 1/12 at fixed +2.
+
+Under the current equal-strength, Basic-Morale0/Cohesion0 profile and independent uniform accepted
+dice, +2 itself needs attacker Morale 11 and defender Morale 66: probability 1/1296. Thus the repairs
+differ on 1/15,552 assaults (about 0.00643%) before conditioning on selected seeds/outcomes. This
+small unconditional frequency is specific to this profile, not evidence that the cells may be
+ignored or a forecast for broader combat. The conditional effect remains a full TOE point.
+
+### Best path forward and reversal condition
+
+Retain 10% as `CMB-SRC-RUL-001`; once accepted, record it as an explicit Sandtable amendment over the
+unchanged scan-derived data. Include its identity and three exact replacements in the future
+rules/configuration digest. Preserve existing 357 values, sum flags, capture shares and RNG order.
+Do not add a generic gap filler, reroll, seed filter, or default-zero result. TASK-005 tests must
+cover all three cells, including roll 34 retreat/refusal; historical rules identities must stay stable.
+
+Confidence is **high** that the retained sources have the gap and that the proposal closes it;
+**moderate** that 10% is the best practical repair; **unknown** for the designer's intended endpoint.
+A verifiable primary chart/correction specifying these cells would reopen the ruling through an
+explicit versioned amendment. Another community transcription alone warrants comparison, not
+silent replacement. The search stop condition is met; further unfocused browsing has no identified
+source likely to change the decision. Continue to TASK-002 after the amendment is accepted.
 
 ## Table coverage and anomalies
 
@@ -131,7 +209,8 @@ Run `python3 docs/research/verify-combat-source-freeze.py`. Expected result: dia
 **source admission BLOCKED**, exactly three missing coordinates, candidate-only closure, five
 calendar vectors and eight positive movement vectors. Negative checks reject incomplete admission,
 overlap, invalid dice/differentials, invalid game scopes and voluntary spending above the applicable
-ceiling. Existing research oracles remain supplementary rather than production proof.
+ceiling. The same verifier compares all four repairs, neighboring thresholds, rounded losses and exact
+profile sensitivity. Existing research oracles remain supplementary rather than production proof.
 
 TASK-001's investigation and reviewable proposal are retained; its complete normalized-table gate
 remains open until `CMB-SRC-RUL-001` is decided. No frozen production schema or runtime changed.

@@ -192,7 +192,28 @@
     "differential": 2,
     "coordinates": [34, 35, 36],
     "loss_percent": 10,
-    "reason": "Extend 10percent upper bound33 to36; smallest endpoint repair. This is a proposal, not printed fact or adopted erratum."
+    "reason": "Extend 10percent upper bound33 to36: one endpoint edit and smoother neighboring probability thresholds than all5percent. Both single-endpoint repairs are possible; no located source establishes intent. Proposal remains unadopted."
+  },
+  "ruling_research": {
+    "date": "2026-09-06",
+    "input_commit": "ac5b188",
+    "recommendation": "10percent for all three missing cells; moderate confidence, historical intent unproved",
+    "additional_sources": [
+      {"url": "https://grognard.com/errata1/cna.html", "locator": "September1979 15.79", "finding": "same official +4 correction; no +2 correction"},
+      {"url": "https://friendorfoe.com/d/CfNA/CNA%20-%20Rules%20Land.pdf", "locator": "July2021 edition, PDF26, 15.79", "finding": "repeats +4 correction and refers to separate charts; no +2 repair"},
+      {"url": "https://obj.vassalengine.org/images/a/af/CNA.vmod", "locator": "v1, images/15.79 The Close Assault Combat Results Table.png", "finding": "same +2 gap; +4 corrected; not an independent original printing",
+       "module_sha256": "b275d4652af5ec599cf0bceca6bd3407783d319e01e822ac6513c543c3de88d2",
+       "chart_sha256": "5234693da7989a179bb5d0767c622e74daac7d419c5b1c90509b4c544ad3b2c6"}
+    ],
+    "neighbor_defender_loss_bands": {
+      "3": [[25, 11, 11], [20, 12, 14], [15, 15, 25], [10, 26, 42], [5, 43, 54], [0, 55, 66]],
+      "4": [[25, 11, 12], [20, 13, 16], [15, 21, 33], [10, 34, 45], [5, 46, 56], [0, 61, 66]]
+    },
+    "neighbor_provenance": "common-charts PDF4 visual plus existing optical extraction; +4 uses official September15.79 correction; research comparison only, no wider profile admission",
+    "candidate_order": "34,35,36",
+    "candidates": [[5, 5, 5], [10, 5, 5], [10, 10, 5], [10, 10, 10]],
+    "endpoint_edits": [1, 2, 2, 1],
+    "probability_scope": "independent uniform accepted d6; equal strengths, both Basic Morale0 and Cohesion0; excludes broader profiles and selection-conditioned samples"
   },
   "calendar": {
     "game_turns_per_month_delay": 4,
