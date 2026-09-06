@@ -1,0 +1,242 @@
+{
+  "schemaVersion": 1,
+  "startedUtc": "2026-09-06T00:33:10.540607+00:00",
+  "commits": {
+    "current": "5c16fdb61f8854453d5daefc91c6aa9d912b929e",
+    "baseline": "59679493866d7f23ea0a69964e93bbfb67bd2841"
+  },
+  "environment": {
+    "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+    "machine": "arm64",
+    "python": "3.14.6",
+    "dotnetSdk": "10.0.400",
+    "dotnetRuntimes": [
+      "Microsoft.AspNetCore.App 10.0.11 [/opt/homebrew/Cellar/dotnet/10.0.400/libexec/shared/Microsoft.AspNetCore.App]",
+      "Microsoft.NETCore.App 10.0.11 [/opt/homebrew/Cellar/dotnet/10.0.400/libexec/shared/Microsoft.NETCore.App]"
+    ]
+  },
+  "artifactRoot": "/private/tmp/sandtable-simulator-checkin-20260906-v3",
+  "timing": {
+    "study": "scenarios/maneuvers/rules-lab.breakdown-truck.serial.v1.json",
+    "warmupsPerSource": 1,
+    "pairs": [
+      {
+        "pair": 0,
+        "order": [
+          "baseline",
+          "current"
+        ],
+        "baseline": {
+          "wallMs": 12001.207,
+          "reportMs": 11869.435
+        },
+        "current": {
+          "wallMs": 12576.781,
+          "reportMs": 12404.085
+        }
+      },
+      {
+        "pair": 1,
+        "order": [
+          "current",
+          "baseline"
+        ],
+        "current": {
+          "wallMs": 12915.073,
+          "reportMs": 12564.545
+        },
+        "baseline": {
+          "wallMs": 16055.125,
+          "reportMs": 15897.903
+        }
+      },
+      {
+        "pair": 2,
+        "order": [
+          "baseline",
+          "current"
+        ],
+        "baseline": {
+          "wallMs": 16261.507,
+          "reportMs": 16088.156
+        },
+        "current": {
+          "wallMs": 14152.62,
+          "reportMs": 14006.447
+        }
+      },
+      {
+        "pair": 3,
+        "order": [
+          "current",
+          "baseline"
+        ],
+        "current": {
+          "wallMs": 13122.818,
+          "reportMs": 12982.21
+        },
+        "baseline": {
+          "wallMs": 13805.06,
+          "reportMs": 13654.947
+        }
+      },
+      {
+        "pair": 4,
+        "order": [
+          "baseline",
+          "current"
+        ],
+        "baseline": {
+          "wallMs": 13565.129,
+          "reportMs": 13414.406
+        },
+        "current": {
+          "wallMs": 16344.604,
+          "reportMs": 16200.084
+        }
+      },
+      {
+        "pair": 5,
+        "order": [
+          "current",
+          "baseline"
+        ],
+        "current": {
+          "wallMs": 13608.907,
+          "reportMs": 13464.961
+        },
+        "baseline": {
+          "wallMs": 13738.307,
+          "reportMs": 13585.013
+        }
+      }
+    ],
+    "sources": {
+      "baseline": {
+        "wallMs": {
+          "minMs": 12001.207,
+          "medianMs": 13771.683,
+          "maxMs": 16261.507
+        },
+        "reportMs": {
+          "minMs": 11869.435,
+          "medianMs": 13619.98,
+          "maxMs": 16088.156
+        }
+      },
+      "current": {
+        "wallMs": {
+          "minMs": 12576.781,
+          "medianMs": 13365.862,
+          "maxMs": 16344.604
+        },
+        "reportMs": {
+          "minMs": 12404.085,
+          "medianMs": 13223.585,
+          "maxMs": 16200.084
+        }
+      }
+    },
+    "medianPairedWallChangePercent": -2.94
+  },
+  "checked": {
+    "manifests": 15,
+    "runs": 2,
+    "canonicalFileComparisons": 423,
+    "priorCandidateFileComparisons": 423,
+    "canonicalMatrixHash": "sha256:a76c84cb48baf39bcd6ee7d06b1555905e442b3f66227b47d5576ac0be40a347",
+    "reportFingerprints": {
+      "rules-lab.controller-matrix.serial.breakdown.v1": "sha256:37137db2219a31709e3a6ad0f659f6d60cc124ad1aa599426c84d8b45cab49b9",
+      "rules-lab.movement-cost.paired.breakdown.v1": "sha256:9c0bb30bbfb64c1048660519ec1e1383be4d7acad7672fe851da69c0d5672039",
+      "rules-lab.movement.serial.breakdown.v1": "sha256:190080ce770c701a94425553797ad953053726e27a80167763ac67944118d67d",
+      "rules-lab.reaction.serial.breakdown.v1": "sha256:8b6b61fc7f097341a421003d7bba4048d14a5017341f744a6bce4947e9c5d928",
+      "rules-lab.reserve-designation.serial.breakdown.v1": "sha256:e69380dbef8e6116daf01739dd2808b516ffc927d334c01c2daf57c812c6f07d",
+      "rules-lab.reserve-policy.paired.breakdown.v1": "sha256:ccbed4d42ec14325800ae27c617ecdf5be5290991f405e422d8363bdd20079b9",
+      "rules-lab.serial.breakdown.v1": "sha256:d81cb9ea88a3619fe19162e9f64262d801de38be201ede1676566adc625787e3",
+      "rules-lab.stage-entry.serial.breakdown.v1": "sha256:085a2b599eee046a56a61be62f872065cc3b6c058b99e55428c6c8301befb8ff",
+      "rules-lab.breakdown-truck.serial.v1": "sha256:42c41dbdb50891c480522e35692ae088c237953c2beeb0cc923d03b6b7543588"
+    },
+    "oneRunTotals": {
+      "campaigns": 47,
+      "steps": 659,
+      "reactionMoves": 19,
+      "stopResolutions": 49,
+      "rolledChecks": 9,
+      "noRollChecks": 2,
+      "zeroLossRolls": 3,
+      "lostPoints": 15,
+      "zeroWorkingCohorts": 1,
+      "weather": {
+        "hot": 14,
+        "normal": 26,
+        "rainstorm": 6,
+        "sandstorm": 1
+      },
+      "noRollReasons": {
+        "raw-bp-not-above-three": 2
+      },
+      "terminals": {
+        "land.position.operation-1.first-player.movement-and-combat.breakdown-determination": 22,
+        "land.position.operation-1.first-player.movement-and-combat.combat.position-determination": 5,
+        "land.position.operation-1.first-player.movement-and-combat.movement": 12,
+        "land.position.operation-1.first-player.reserve-designation": 4,
+        "land.position.operation-1.organization": 4
+      }
+    },
+    "artifactRoot": "/private/tmp/sandtable-simulator-checkin-20260906-v2"
+  },
+  "sweep": {
+    "rootSeeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+    ],
+    "studies": [
+      "scenarios/maneuvers/rules-lab.breakdown-truck.serial.v1.json",
+      "scenarios/maneuvers/rules-lab.reaction.serial.breakdown.v1.json"
+    ],
+    "runs": 2,
+    "canonicalFileComparisons": 2736,
+    "oneRunTotals": {
+      "campaigns": 304,
+      "steps": 5645,
+      "reactionMoves": 304,
+      "stopResolutions": 680,
+      "rolledChecks": 152,
+      "noRollChecks": 16,
+      "zeroLossRolls": 75,
+      "lostPoints": 172,
+      "zeroWorkingCohorts": 8,
+      "weather": {
+        "hot": 75,
+        "normal": 161,
+        "rainstorm": 45,
+        "sandstorm": 23
+      },
+      "noRollReasons": {
+        "raw-bp-not-above-three": 16
+      },
+      "terminals": {
+        "land.position.operation-1.first-player.movement-and-combat.breakdown-determination": 224,
+        "land.position.operation-1.first-player.movement-and-combat.combat.position-determination": 80
+      }
+    },
+    "seedDatasetHash": "sha256:d3330a564470335194b0bec3968666d035d201d7d4ab9f48c54ce584e18cc005"
+  },
+  "totalExecutedCampaigns": 786,
+  "verifiedProofs": 1572,
+  "completedUtc": "2026-09-06T01:02:29.625037+00:00"
+}
