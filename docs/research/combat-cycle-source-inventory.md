@@ -5,8 +5,8 @@ research, `CMB-RSH-003` mutable-state research, `CMB-RSH-004` RNG/golden researc
 `CYCLE-RSH-001` cycle identity/history decision and `RESREL-RSH-001` release research are complete
 and decision-ready; `CMB-DES-001` identity, `002` protocol, `003` steps, `004` cost/resolution and
 `005` settlement/disclosure plus `CYCLE-DES-001` composition are complete for review. Production
-remains gated by the three-cell source ruling and exact combined contracts; the eight policies and
-corrected implementation plan are owner-approved.
+remains gated by exact combined contracts; the eight policies, corrected implementation plan and
+three-cell source ruling are owner-approved. TASK-001 source research is complete.
 
 **Date:** 2026-08-25
 
@@ -121,11 +121,11 @@ Research that can proceed now:
 3. `CMB-RSH-003` — **decision-ready:** the
    [Combat mutable-state spike](combat-mutable-state-spike.md) reconciles current TOE/ledger
    authority, full-game ammunition, loss/capture conservation, immediate custody, retreat, and
-   Cohesion consequences. Includes synthetic arithmetic evidence; owner approval remains pending.
+   Cohesion consequences. Includes synthetic arithmetic evidence; POL-003/005 now record owner acceptance.
 4. `CMB-RSH-004` — **decision-ready:** the
    [Combat RNG/golden spike](combat-rng-golden-spike.md) proposes role-ordered dice on the existing
    campaign stream, with conditional capture, twelve seeded vectors, and exhaustive draw-domain
-   counts. Full loss-table normalization and production contracts remain design-gated.
+   counts. TASK-001 now completes selected loss-table normalization; production contracts remain gated.
 5. `CYCLE-RSH-001` — **complete:** the
    [Continual-cycle identity and attacked-target history decision](continual-cycle-identity-and-history-decision.md)
    freezes the phase-local ordinal, repeat/finish closure, ordered repeat-permitting attacked-target
@@ -163,9 +163,10 @@ The [policy register](../design/combat-cycle-policy-reconciliation.md) reconcile
 into eight explicit owner choices. The [combined contract/implementation plan](../design/combat-cycle-implementation-plan.md)
 now defines 25 staged tasks, contract ownership and acceptance evidence. Owner accepted the eight
 policies and corrected plan on2026-09-06. [TASK-001 source evidence](combat-source-freeze-v1.md)
-was committed in `0f08694`: 357 defined loss values and three missing defender +2 cells. Proposed
-`CMB-SRC-RUL-001` remains pending, blocking complete normalization. Calendar/break-off findings are
-retained; later tasks and exact contract freeze are still ahead.
+was completed in `635d95a`: 357 defined loss values preserved and three missing defender +2 cells
+filled by accepted `CMB-SRC-RUL-001` (10%). Research-backed fidelity and uncertainty about historical
+intent are recorded. Calendar/break-off findings are retained; TASK-002 Content freeze is next,
+with later contracts and future phase-specific maturity execution still gated.
 [Review4](../reviews/combat-cycle-plan-review-4.md) records the combined assessment and author correction.
 
 [Independent design review 2](../reviews/combat-design-review-2.md) is Ready for the

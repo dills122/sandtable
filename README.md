@@ -268,9 +268,10 @@ creation and Movement roots reject. Bounded Runner adoption in `ZOR-TASK-007A` i
 The optional paired comparison is implemented Runner instrumentation and does not block
 gameplay-engine progress.
 Combat policies and the [25-task plan](docs/design/combat-cycle-implementation-plan.md) are owner-approved.
-[TASK-001 source evidence](docs/research/combat-source-freeze-v1.md) retains 357 defined loss values,
-three missing cells requiring a new owner ruling, and calendar/break-off findings. Complete table
-normalization and exact contract freeze remain open; Combat runtime implementation has not started.
+[TASK-001 source evidence](docs/research/combat-source-freeze-v1.md) is complete: 357 defined loss
+values preserved, three source gaps filled by accepted amendment CMB-SRC-RUL-001, and calendar/
+break-off findings retained. TASK-002 Content contract freeze is next; Combat runtime implementation
+has not started. Future maturity execution and exact combined contracts remain gated.
 
 See the [pre-alpha roadmap](docs/roadmap/pre-alpha-roadmap.md) for the capability-level plan and
 completion criteria.
