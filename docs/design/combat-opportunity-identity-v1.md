@@ -227,10 +227,18 @@ tests do not exist for this packet and must be implemented with the eventual gov
 | `CMB-ID-AC-008` | Commit singleton `A -> B` once before RNG; duplicate replay fails. Same target hex cannot be assaulted again that segment, even with a new attacker. | 003/006; DES-002/004 |
 | `CMB-ID-AC-009` | Later cycle allows a new pair occurrence only with current resources; stage history persists and target-use resets. Reserve limits remain independent. | 006; CYCLE-DES-001 |
 | `CMB-ID-AC-010` | Multi-unit, partial assignment, attachment, Probe, Barrage and Anti-Armor remain closed; empty structural steps produce no attacks. | 008; DES-003/004 |
-| `CMB-ID-AC-011` | Hidden identity/TOE/count permutations do not alter equal visible artifacts. Indistinguishable capabilities cannot be ordered by authority ID. | 007; DES-005 |
+| `CMB-ID-AC-011` | Hidden identity/TOE/count permutations do not alter equal visible artifacts. A profile permitting indistinguishable hidden bindings fails trusted certification before any active decision; no opportunity/action is offered and no hidden count/reason reaches side-visible errors. Suppressing extra bindings or ordering by authority ID does not satisfy this gate. | 007; DES-005 |
 | `CMB-ID-AC-012` | Restart before either envelope, after commitment and after relation settlement reproduces IDs, mappings, history and target-use without duplicate RNG. | 001-007; DES-002/005, CYCLE-DES-001 |
 
 Completion means the bounded identity proposal and explicit handoffs are reviewable, not that the
 whole Contact/Combat design gate is approved. Remaining production blockers are DES-002 through
 005, CYCLE-DES-001, selected research rulings, complete reachable-result settlement, a governing
 specification/contract freeze, implementation-sized tasks and independent plan review.
+
+**Checks (2026-09-06):** 159 local link targets across this packet and the three updated navigation
+documents resolve; eight decision IDs and twelve acceptance IDs are unique and ordered;
+`git diff --check` passes. A bounded second-model design review found one acceptance gap: AC-011
+needed explicit pre-decision closure for ambiguous bindings. The reviewer verified the added
+assertion resolves that finding; no other bounded design defects were reported.
+This was a design-quality check, not the later independent review of the complete implementation
+plan. No .NET build or tests were run because this change modifies documentation only.
