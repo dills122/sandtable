@@ -740,8 +740,8 @@ committed rounds recover without controllers. `CMB-DES-003`
 selection/decline, six ordered step closures, exact prepared-round advance and cancellation/settlement
 handoffs. Next: `CMB-DES-004` cost/resolution ordering; remaining design and research approval gates
 stay open. Actual RBA movement and broader combat categories remain outside the selected fixture.
-[Independent design review 1](../reviews/combat-identity-protocol-review-1.md) returned Ready for
-DES-001/DES-002 with no actionable findings; it does not cover subsequent DES-003 or approve production.
+[Independent design review 2](../reviews/combat-design-review-2.md) returned Ready for
+DES-001/DES-002/DES-003 with no actionable findings; it does not approve production.
 Later design must settle every reachable loss, capture/custody, retreat,
 ammunition, and Cohesion obligation before claiming the repeating skeleton is complete.
 
