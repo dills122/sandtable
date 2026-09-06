@@ -62,8 +62,9 @@ the pre-alpha roadmap carry repository-wide rationale and delivery state.
   [rules/result-surface spike](research/combat-rules-result-surface-spike.md), with decision-ready
   [static Content](research/combat-content-static-schema-spike.md) and
   [mutable-state research](research/combat-mutable-state-spike.md), and
-  [RNG/golden research](research/combat-rng-golden-spike.md). Reserve release research is next;
-  implementation contracts are not frozen.
+  [RNG/golden research](research/combat-rng-golden-spike.md), plus
+  [Reserve release/history](research/reserve-release-history-spike.md). Independent review and
+  owner decisions precede Combat/cycle design; implementation contracts are not frozen.
 - Sprint 4-5 dependencies: [research-gate audit](research/sprint-4-5-research-gates.md).
 
 ## Reviewed future product work

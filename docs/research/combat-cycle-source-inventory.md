@@ -2,7 +2,8 @@
 
 **Status:** Source inventory, `CMB-RSH-001` result-surface research, `CMB-RSH-002` static-content
 research, `CMB-RSH-003` mutable-state research, `CMB-RSH-004` RNG/golden research, and the
-`CYCLE-RSH-001` cycle identity/history decision are complete and decision-ready;
+`CYCLE-RSH-001` cycle identity/history decision and `RESREL-RSH-001` release research are complete
+and decision-ready;
 production remains gated by Contact/ZOC reconciliation, later combat, and Reserve Release design
 
 **Date:** 2026-08-25
@@ -128,7 +129,10 @@ Research that can proceed now:
    freezes the phase-local ordinal, repeat/finish closure, ordered repeat-permitting attacked-target
    history, replay/snapshot boundary, and fog-safe identity/projection requirements without
    authorizing contracts.
-6. `RESREL-RSH-001` — freeze Reserve I/II release eligibility/history and movement handoff.
+6. `RESREL-RSH-001` — **decision-ready:** the
+   [Reserve release/history spike](reserve-release-history-spike.md) proposes first/later release
+   obligations, persistent stage ceilings and offensive-use limits, II combat-DP handoff, and the
+   immediate next-Movement exception. Full lifecycle activation and owner rulings remain gated.
 
 Design that waits for approved Contact and Breakdown boundaries:
 
