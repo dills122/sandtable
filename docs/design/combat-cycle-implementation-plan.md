@@ -5,7 +5,10 @@
 [source ruling CMB-SRC-RUL-001](../research/combat-source-freeze-v1.md). [TASK-002 Content freeze](../specs/combat-content-v7.md) is complete as a contract packet;
 [Checkpoint A author check](../reviews/combat-checkpoint-a-author-check.md) is complete, and owner
 requested continuation. [TASK-003A creation/initial ledger](../specs/combat-creation-ledger-v1.md) is complete as a contract
-slice; parent003 remains in progress,003B is next. TASK-004–025 not started. Future maturity execution and checkpoint B remain gated.
+slice; [TASK-003B World/settlement](../specs/combat-world-settlement-v1.md) is complete as a contract packet.
+[Progress review5](../reviews/combat-progress-review-5.md) returned Ready with non-blocking follow-ups;
+its status correction is applied (5of7 passes used). Parent003 remains open for003C/D;003C is next.
+TASK-004–025 not started. Future maturity execution and checkpoint B remain gated.
 **Original input:** `d2bc67c`. Exact contract freeze and production gates remain open.
 
 ## Outcome and boundary
@@ -104,7 +107,7 @@ only after all four slices and their cross-contract checks pass; this is not a l
 | Slice | Frozen output | Verification / successor |
 | --- | --- | --- |
 | `CMB-TASK-003A` | Registry inventory, Setup7 binding/initialization, initial component/CP/ammo/readiness value shapes | [Setup/initial-value packet](../specs/combat-creation-ledger-v1.md) complete:63 negative vectors, hash/provenance/stage checks; implementation remains gated |
-| `CMB-TASK-003B` | Durable World7, relationship/loss/capture/guard/escape/future-obligation values and settlement receipts | Conservation, calendar/guard bounds, canonical values and settlement restart cuts; after003A |
+| `CMB-TASK-003B` | Durable World7, relationship/loss/capture/guard/escape/future-obligation values and settlement receipts | [World7/settlement packet](../specs/combat-world-settlement-v1.md) complete:6goldens/57 negatives/112 isolated cuts; [review5](../reviews/combat-progress-review-5.md) Ready with non-blocking follow-ups, status correction applied |
 | `CMB-TASK-003C` | Exact Rules10/config bundle bytes/hash, Snapshot/creation and sealed selection/round/step/commit/result command/event envelopes | Exact version/identity/hash framing, deadline/retry suffix and restart-cut matrix; after003B |
 | `CMB-TASK-003D` | Cycle/release/history and ordinary break-off movement receipts; combined CON-002–004 reconciliation | Cumulative CP/immediate DP, affected-membership endings, prefix/release/history/continuation vectors and parent003 closeout; after003C |
 
@@ -228,7 +231,7 @@ They do not prove production source tables, live settlement, replay, privacy or 
 [Review4](../reviews/combat-cycle-plan-review-4.md) assessed this plan and CYCLE-DES-001 at9f683d1:
 **Not ready**, one P2 ordinary break-off handoff gap. Author accepted the finding and assigned
 source/contract/implementation/witness evidence to TASK-001/003/018/019 above. This correction
-has local checks only; no new independent Ready verdict is claimed. User-approved limit: **4/4 used**.
+has local checks only; no new independent Ready verdict is claimed. Historical user-approved limit at that checkpoint: **4/4 used**. The newly requested progress review below extends the initiating flow cap to7, preserving that count.
 
 Planning-packet validation, 2026-09-06: 246 local path links resolved across the five changed docs;
 25 ordered task IDs/dependency rows, eight policy IDs, six contract IDs and all 72 design ACs checked.
@@ -271,10 +274,10 @@ direction anchors without adding live supply or duplicate CP/Cohesion authority.
 70 rejection vectors, eight initial custody/escape probes across both retreat directions,
 shuffled construction and provenance hash sensitivity all pass. Policy/field mapping is retained
 in the contract. No production code, existing fixture bytes or simulator support changed.
-Checkpoint A review remains open; no additional independent review has run (budget4/4). TASK-003
+At that historical checkpoint, independent review remained open (budget4/4). TASK-003
 must reconcile creation ledger/readiness/Normal Weather and Rules binding before checkpoint B.
 
-TASK-003A checkpoint, 2026-09-06 (input `4303004`): [Setup7/initial ledger contract](../specs/combat-creation-ledger-v1.md),
+Historical TASK-003A checkpoint, 2026-09-06 (input `4303004`): [Setup7/initial ledger contract](../specs/combat-creation-ledger-v1.md),
 [retained goldens/vectors](../specs/fixtures/combat-creation-ledger-v1.json) and
 [oracle](../specs/verify-combat-creation-ledger-v1.py) freeze explicit zero-ledger initialization,
 source/current parent and exact Content seed/origin bindings. Stage1-only creation is explicit;
@@ -283,3 +286,23 @@ Verifier passes1,655 Setup bytes,2,685 initial-element bytes,63 rejection vector
 provenance hash propagation, stage2 refusal and shuffled construction. Parent003 remains open;
 003B durable World/settlement values next,003C full Rules/creation/snapshot/sealed envelopes and
 003D cycle/history/movement reconciliation follow. No runtime or additional independent review.
+
+TASK-003B review checkpoint, 2026-09-06 (input `e3d1a26`): [World/settlement contract](../specs/combat-world-settlement-v1.md),
+[exact schema inventory](../specs/combat-world-settlement-v1.schema.json),
+[goldens/vectors](../specs/fixtures/combat-world-settlement-v1.json) and
+[oracle](../specs/verify-combat-world-settlement-v1.py) complete as a contract packet. Six canonical World goldens,57
+rejection vectors,112 isolated receipt-cut readbacks/20scenarios,8,840 source arithmetic cases and
+eight calendar boundaries pass. Full source, Content7 and creation oracles also pass. No production
+World reader, Snapshot/event schema, actual restart or public projection is claimed.003C/003D/004
+remain required before combined checkpoint B and runtime consumers.
+
+Owner requested003B then independent-review rounds on today's remaining progress. Prior work is
+already locally committed; the review target is the unmerged feature branch plus the explicit new
+working-tree boundary, with unrelated main-checkout edits excluded. The initiating review flow now
+permits at most7 total passes (four prior, up to three newly authorized); **5 of7 used**.
+[Review5](../reviews/combat-progress-review-5.md) assessed all28 frozen branch/working-tree files
+and returned **Ready with non-blocking follow-ups**. Its independent fixture sweep passed19,456
+World materializations. Sole P3 finding: stale navigation/status summaries; accepted and corrected
+without changing schema, goldens or verifier logic. No further pass is warranted for this status-only
+correction. Reviewers receive no inherited implementation conversation and remain read-only.
+Further passes require material changes; a heavy pivot returns to owner.003C is next.
