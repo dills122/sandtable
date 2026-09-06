@@ -4,7 +4,8 @@
 `CMB-TASK-001` **complete** within its research scope, including accepted
 [source ruling CMB-SRC-RUL-001](../research/combat-source-freeze-v1.md). [TASK-002 Content freeze](../specs/combat-content-v7.md) is complete as a contract packet;
 [Checkpoint A author check](../reviews/combat-checkpoint-a-author-check.md) is complete, and owner
-requested continuation. TASK-003 is in progress through the bounded slices below; TASK-004–025 not started. Future maturity execution and checkpoint B remain gated.
+requested continuation. [TASK-003A creation/initial ledger](../specs/combat-creation-ledger-v1.md) is complete as a contract
+slice; parent003 remains in progress,003B is next. TASK-004–025 not started. Future maturity execution and checkpoint B remain gated.
 **Original input:** `d2bc67c`. Exact contract freeze and production gates remain open.
 
 ## Outcome and boundary
@@ -102,9 +103,9 @@ only after all four slices and their cross-contract checks pass; this is not a l
 
 | Slice | Frozen output | Verification / successor |
 | --- | --- | --- |
-| `CMB-TASK-003A` | Registry inventory, Setup7 binding/initialization, initial component/CP/ammo/readiness value shapes | Exact canonical Setup and initial element vectors, provenance/scope/zero-ledger negatives; in progress |
+| `CMB-TASK-003A` | Registry inventory, Setup7 binding/initialization, initial component/CP/ammo/readiness value shapes | [Setup/initial-value packet](../specs/combat-creation-ledger-v1.md) complete:63 negative vectors, hash/provenance/stage checks; implementation remains gated |
 | `CMB-TASK-003B` | Durable World7, relationship/loss/capture/guard/escape/future-obligation values and settlement receipts | Conservation, calendar/guard bounds, canonical values and settlement restart cuts; after003A |
-| `CMB-TASK-003C` | Snapshot/creation and sealed selection/round/step/commit/result command/event envelopes | Exact version/identity/hash framing, deadline/retry suffix and restart-cut matrix; after003B |
+| `CMB-TASK-003C` | Exact Rules10/config bundle bytes/hash, Snapshot/creation and sealed selection/round/step/commit/result command/event envelopes | Exact version/identity/hash framing, deadline/retry suffix and restart-cut matrix; after003B |
 | `CMB-TASK-003D` | Cycle/release/history and ordinary break-off movement receipts; combined CON-002–004 reconciliation | Cumulative CP/immediate DP, affected-membership endings, prefix/release/history/continuation vectors and parent003 closeout; after003C |
 
 Checkpoint B: accept exact combined contracts and resolve any changed policy with owner. Reconcile
@@ -272,3 +273,13 @@ shuffled construction and provenance hash sensitivity all pass. Policy/field map
 in the contract. No production code, existing fixture bytes or simulator support changed.
 Checkpoint A review remains open; no additional independent review has run (budget4/4). TASK-003
 must reconcile creation ledger/readiness/Normal Weather and Rules binding before checkpoint B.
+
+TASK-003A checkpoint, 2026-09-06 (input `4303004`): [Setup7/initial ledger contract](../specs/combat-creation-ledger-v1.md),
+[retained goldens/vectors](../specs/fixtures/combat-creation-ledger-v1.json) and
+[oracle](../specs/verify-combat-creation-ledger-v1.py) freeze explicit zero-ledger initialization,
+source/current parent and exact Content seed/origin bindings. Stage1-only creation is explicit;
+Weather remains ordinarily adjudicated and actual Normal Weather is a later assault admission gate.
+Verifier passes1,655 Setup bytes,2,685 initial-element bytes,63 rejection vectors, alternate holder,
+provenance hash propagation, stage2 refusal and shuffled construction. Parent003 remains open;
+003B durable World/settlement values next,003C full Rules/creation/snapshot/sealed envelopes and
+003D cycle/history/movement reconciliation follow. No runtime or additional independent review.
