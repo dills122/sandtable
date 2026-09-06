@@ -737,6 +737,8 @@ internal authority from outward references. `CMB-DES-002`
 slots share one base, incomplete voluntary rounds cancel without invented choices, and prepared or
 committed rounds recover without controllers. Next: `CMB-DES-003` Combat-step transitions; remaining
 design and research approval gates stay open.
+[Independent design review 1](../reviews/combat-identity-protocol-review-1.md) returned Ready for
+these bounded inputs with no actionable findings; it is not production approval.
 Later design must settle every reachable loss, capture/custody, retreat,
 ammunition, and Cohesion obligation before claiming the repeating skeleton is complete.
 

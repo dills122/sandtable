@@ -1,6 +1,6 @@
 # Combat Sealed Decisions, Events, Readback, and Fallback
 
-**Status:** `CMB-DES-002` design packet complete for review; no production contract activation.
+**Status:** `CMB-DES-002` design packet independently reviewed; no production contract activation.
 **Date:** 2026-09-06. **Input checkpoint:** `0363d0c` (`CMB-DES-001`).
 
 This protocol lets Umpire persist private choices against one frozen combat base, resume after a
@@ -279,8 +279,12 @@ Production readiness additionally requires the remaining design gates, accepted 
 the combined contract freeze and implemented tests above. Model-backed service availability is
 never a prerequisite for recovering an already committed combat.
 
-**Executed checks (2026-09-06):** local-link validation resolved 175 targets across the two design
+**Executed checks (2026-09-06, `893aeec`):** local-link validation resolved 175 targets across the two design
 packets and three navigation documents. All 15 decision rows and 24 acceptance rows have unique,
 ordered IDs. `git diff --check` passed. These checks validate documentation structure; state/race
 semantics still require engineering review and the future runtime tests above. No .NET build or
 tests were run for this documentation-only change.
+
+[Independent review 1](../reviews/combat-identity-protocol-review-1.md) returned Ready for the
+bounded DES-001/DES-002 design inputs at `893aeec`, with no actionable findings. Pending policy,
+disclosure, exact contract and implementation gates remain unchanged.

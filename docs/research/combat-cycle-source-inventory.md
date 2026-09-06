@@ -151,6 +151,10 @@ remains part of these design gates):
 Only after those gates should Sprint 5 receive implementation-sized tasks, acceptance criteria, and
 an independent plan review.
 
+[Independent design review 1](../reviews/combat-identity-protocol-review-1.md) is Ready for the
+bounded `CMB-DES-001`/`002` inputs, with no actionable findings. This checkpoint does not replace
+the combined implementation-plan review or approve pending policy/production contracts.
+
 ## Retained unknowns
 
 - approval of the bounded `CMB-DES-001` identity proposal; multi-unit expansion and exact outward
