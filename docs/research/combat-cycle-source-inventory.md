@@ -1,7 +1,8 @@
 # Combat and Continual-Cycle Source Inventory
 
 **Status:** Source inventory, `CMB-RSH-001` result-surface research, `CMB-RSH-002` static-content
-research, and the `CYCLE-RSH-001` cycle identity/history decision are complete and decision-ready;
+research, `CMB-RSH-003` mutable-state research, and the `CYCLE-RSH-001` cycle identity/history
+decision are complete and decision-ready;
 production remains gated by Contact/ZOC reconciliation, later combat, and Reserve Release design
 
 **Date:** 2026-08-25
@@ -37,11 +38,17 @@ pre-resolution choices, simultaneous Anti-Armor effects, sequential Close Assaul
 loss/retreat/contact/engagement outcomes. Reserve I/II release changes later movement/combat
 eligibility.
 
-**Repository observation:** The Land catalog has one linear pass then advances. Content lacks TOE
-strength/composition, combat ratings, Basic Morale, ammunition/fuel, and gun-position capability.
+**Historical repository observation (2026-08-25):** The Land catalog has one linear pass then
+advances. Content lacks TOE strength/composition, combat ratings, Basic Morale, ammunition/fuel,
+and gun-position capability.
 World state lacks losses, pinning, Contact/Engaged, pending private choices, attacked-target history,
 cycle ordinal, retreat/release history, and prisoners/captured equipment. Observation/action/event
 and RNG contracts have no combat vocabulary.
+
+**2026-09-06 reconciliation:** ZOC delivery now supplies component classification, maximum/current
+TOE and defensive Close Assault ratings. The [mutable-state spike](combat-mutable-state-spike.md)
+maps that current authority and the remaining Combat obligations at merged PR #88. Its proposals
+remain owner-review inputs, not production schema approval.
 
 **Inference:** Keep structural Land positions stable and add authoritative cycle ordinal/history
 rather than duplicating an arbitrary number of positions. Reserve Release should expose deliberate
@@ -108,7 +115,10 @@ Research that can proceed now:
    [Combat Content and static schema spike](combat-content-static-schema-spike.md) selects
    component-granular immutable facts, bounded synthetic values, validation boundaries, and
    explicit mutable/ZOC deferrals without freezing a production schema.
-3. `CMB-RSH-003` — choose mutable loss/prisoner/ammunition/Disorganization boundary.
+3. `CMB-RSH-003` — **decision-ready:** the
+   [Combat mutable-state spike](combat-mutable-state-spike.md) reconciles current TOE/ledger
+   authority, full-game ammunition, loss/capture conservation, immediate custody, retreat, and
+   Cohesion consequences. Includes synthetic arithmetic evidence; owner approval remains pending.
 4. `CMB-RSH-004` — freeze RNG draw order and golden vectors.
 5. `CYCLE-RSH-001` — **complete:** the
    [Continual-cycle identity and attacked-target history decision](continual-cycle-identity-and-history-decision.md)
@@ -134,7 +144,9 @@ an independent plan review.
 - exact Contact-derived combat-group identity and outward disclosure;
 - whether the first combat vertical normalizes the entire reachable selected table surface or a
   different safely closed subset;
-- minimum ammunition/supply state;
-- whether prisoner/captured-equipment outcomes enter the first skeleton;
+- production ammunition/readiness representation and later supply continuity (`CMB-RSH-003`
+  recommends full-game infantry consumption for the bounded assault);
+- approval and design of prisoner custody/escape settlement (`CMB-RSH-003` retains reachable
+  infantry capture; captured equipment remains outside the selected infantry surface);
 - deterministic fallback timing for private decisions; and
 - Breakdown/Retreat BP continuity and broken-vehicle consequences.
