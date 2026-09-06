@@ -746,8 +746,9 @@ defines losses, retreat/refusal, custody/escape, deterministic fallback and side
 Actual RBA movement and broader combat categories remain outside the selected fixture.
 [Independent design review 2](../reviews/combat-design-review-2.md) returned Ready for
 DES-001/DES-002/DES-003 with no actionable findings; it does not cover subsequent DES-004/005 or
-approve production.
-Later design must settle every reachable loss, capture/custody, retreat,
+approve production. [Independent design review 3](../reviews/combat-settlement-review-3.md)
+returned Ready for DES-004/DES-005, with no actionable findings; remaining gates stay open.
+Later contracts and implementation must settle every reachable loss, capture/custody, retreat,
 ammunition, and Cohesion obligation before claiming the repeating skeleton is complete.
 
 After Breakdown and ZOC/Reaction boundaries are implemented, `CMB-DES-001` through `005` and `CYCLE-DES-001` freeze

@@ -77,7 +77,8 @@ the pre-alpha roadmap carry repository-wide rationale and delivery state.
   choice fallback, loss/retreat/custody conservation and side projections. Next: `CYCLE-DES-001`
   composition. Production and remaining gates stay open.
   [Independent design review 2](reviews/combat-design-review-2.md) returned Ready for
-  DES-001/DES-002/DES-003, with no actionable findings; subsequent DES-004/005 are outside that review.
+  DES-001/DES-002/DES-003. [Independent design review 3](reviews/combat-settlement-review-3.md)
+  returned Ready for DES-004/DES-005, with no actionable findings. Production gates remain open.
 - Sprint 4-5 dependencies: [research-gate audit](research/sprint-4-5-research-gates.md).
 
 ## Reviewed future product work

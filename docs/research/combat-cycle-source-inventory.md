@@ -162,7 +162,9 @@ an independent plan review.
 [Independent design review 2](../reviews/combat-design-review-2.md) is Ready for the
 bounded `CMB-DES-001`/`002`/`003` inputs, with no actionable findings. This checkpoint does not replace
 the combined implementation-plan review or approve pending policy/production contracts; it does
-not cover subsequent DES-004/005.
+not cover subsequent DES-004/005. [Independent design review 3](../reviews/combat-settlement-review-3.md)
+returned Ready for those bounded inputs, with no actionable findings. Review budget3of3 is exhausted;
+remaining policy/production gates stay open.
 
 ## Retained unknowns
 
