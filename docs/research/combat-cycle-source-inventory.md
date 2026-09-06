@@ -3,8 +3,8 @@
 **Status:** Source inventory, `CMB-RSH-001` result-surface research, `CMB-RSH-002` static-content
 research, `CMB-RSH-003` mutable-state research, `CMB-RSH-004` RNG/golden research, and the
 `CYCLE-RSH-001` cycle identity/history decision and `RESREL-RSH-001` release research are complete
-and decision-ready;
-production remains gated by Contact/ZOC reconciliation, later combat, and Reserve Release design
+and decision-ready; `CMB-DES-001` identity design is complete for review;
+production remains gated by the remaining Contact/Combat and Reserve Release design
 
 **Date:** 2026-08-25
 
@@ -134,9 +134,12 @@ Research that can proceed now:
    obligations, persistent stage ceilings and offensive-use limits, II combat-DP handoff, and the
    immediate next-Movement exception. Full lifecycle activation and owner rulings remain gated.
 
-Design that waits for approved Contact and Breakdown boundaries:
+Design following implemented ZOC/Reaction and Breakdown boundaries (Contact/Engaged lifecycle
+remains part of these design gates):
 
-7. `CMB-DES-001` — combat opportunity/target/participant identity.
+7. `CMB-DES-001` — [combat opportunity/target/participant identity](../design/combat-opportunity-identity-v1.md)
+   **complete for review:** bounded singleton Close Assault identity, separate target-hex use and
+   unit history, Contact/Engaged membership, fog-safe reference requirements and extension gates.
 8. `CMB-DES-002` — sealed decision/event/readback protocol and fallback.
 9. `CMB-DES-003` — position/barrage/Retreat Before Assault/force-assignment transitions.
 10. `CMB-DES-004` — simultaneous Barrage/Anti-Armor and sequential Close Assault boundaries.
@@ -148,7 +151,8 @@ an independent plan review.
 
 ## Retained unknowns
 
-- exact Contact-derived combat-group identity and outward disclosure;
+- approval of the bounded `CMB-DES-001` identity proposal; multi-unit expansion and exact outward
+  disclosure contracts remain gated;
 - whether the first combat vertical normalizes the entire reachable selected table surface or a
   different safely closed subset;
 - production ammunition/readiness representation and later supply continuity (`CMB-RSH-003`

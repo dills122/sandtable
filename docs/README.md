@@ -65,7 +65,9 @@ the pre-alpha roadmap carry repository-wide rationale and delivery state.
   [RNG/golden research](research/combat-rng-golden-spike.md), plus
   [Reserve release/history](research/reserve-release-history-spike.md).
   [Independent review 2](reviews/combat-reserve-research-review-2.md) is Ready for owner decisions;
-  Combat/cycle design and implementation contracts remain later gates.
+  [CMB-DES-001 identity design](design/combat-opportunity-identity-v1.md) is complete for review,
+  covering the bounded infantry opportunity, target, participant and Contact/Engaged identity
+  handoffs. Next: `CMB-DES-002` sealed protocol. Production and the remaining design gates stay open.
 - Sprint 4-5 dependencies: [research-gate audit](research/sprint-4-5-research-gates.md).
 
 ## Reviewed future product work
