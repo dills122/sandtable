@@ -6,7 +6,9 @@ research, `CMB-RSH-003` mutable-state research, `CMB-RSH-004` RNG/golden researc
 and decision-ready; `CMB-DES-001` identity, `002` protocol, `003` steps, `004` cost/resolution and
 `005` settlement/disclosure plus `CYCLE-DES-001` composition are complete for review. Production
 remains gated by exact combined contracts; the eight policies, corrected implementation plan and
-three-cell source ruling are owner-approved. TASK-001 source research is complete.
+three-cell source ruling are owner-approved. TASK-001 source research and the
+[TASK-002 Content7 contract packet](../specs/combat-content-v7.md) are complete; checkpoint A review
+remains open before TASK-003 authority freeze.
 
 **Date:** 2026-08-25
 
@@ -165,8 +167,11 @@ now defines 25 staged tasks, contract ownership and acceptance evidence. Owner a
 policies and corrected plan on2026-09-06. [TASK-001 source evidence](combat-source-freeze-v1.md)
 was completed in `635d95a`: 357 defined loss values preserved and three missing defender +2 cells
 filled by accepted `CMB-SRC-RUL-001` (10%). Research-backed fidelity and uncertainty about historical
-intent are recorded. Calendar/break-off findings are retained; TASK-002 Content freeze is next,
-with later contracts and future phase-specific maturity execution still gated.
+intent are recorded. Calendar/break-off findings are retained. [TASK-002 Content7 freeze](../specs/combat-content-v7.md)
+is committed in `c465a0f`: reused component/class vocabulary, parent Morale, explicit scenario seeds,
+canonical bytes/hash,70 rejection vectors and eight initial geometry probes. Checkpoint A review
+and TASK-003 authority freeze are next; later contracts and future phase-specific maturity execution
+remain gated.
 [Review4](../reviews/combat-cycle-plan-review-4.md) records the combined assessment and author correction.
 
 [Independent design review 2](../reviews/combat-design-review-2.md) is Ready for the

@@ -1,7 +1,9 @@
 # Combat Content and Static Schema Spike
 
-**Status:** Decision-ready `CMB-RSH-002` research; project-owner approval and all production
-contracts remain pending
+**Status:** Historical `CMB-RSH-002` research. POL-002 accepted on2026-09-06;
+[TASK-002 Content7 contract](../specs/combat-content-v7.md), committed in `c465a0f`, now supersedes
+this spike's logical token names, two-hex example and pending exact-schema choices. Runtime
+implementation and combined checkpoint B remain gated; the original research below is retained.
 
 **Date:** 2026-08-29
 
