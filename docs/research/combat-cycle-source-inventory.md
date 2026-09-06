@@ -4,8 +4,9 @@
 research, `CMB-RSH-003` mutable-state research, `CMB-RSH-004` RNG/golden research, and the
 `CYCLE-RSH-001` cycle identity/history decision and `RESREL-RSH-001` release research are complete
 and decision-ready; `CMB-DES-001` identity, `002` protocol, `003` steps, `004` cost/resolution and
-`005` settlement/disclosure designs are complete for review; production remains gated by the remaining Contact/Combat and
-Reserve Release design.
+`005` settlement/disclosure plus `CYCLE-DES-001` composition are complete for review. Production
+remains gated by pending Contact/Combat/Reserve policy, combined contracts and implementation-plan
+gates.
 
 **Date:** 2026-08-25
 
@@ -154,7 +155,9 @@ remains part of these design gates):
 11. `CMB-DES-005` — [settlement/disclosure](../design/combat-settlement-disclosure-v1.md)
     is complete for review: causal loss/retreat/custody closure, scripted mandatory fallback,
     original-participant relations and side-specific Chronicle/decision projections.
-12. `CYCLE-DES-001` — Reserve Release to repeat/finish plus Exercise/Maneuver evidence.
+12. `CYCLE-DES-001` — [cycle/Reserve composition](../design/continual-cycle-reserve-composition-v1.md)
+    is complete for review: identity/prefix and audience bindings, persistent release restrictions,
+    repeat/finish control, carried obligations and occurrence-aware Exercise/Maneuver evidence.
 
 Only after those gates should Sprint 5 receive implementation-sized tasks, acceptance criteria, and
 an independent plan review.
@@ -164,7 +167,7 @@ bounded `CMB-DES-001`/`002`/`003` inputs, with no actionable findings. This chec
 the combined implementation-plan review or approve pending policy/production contracts; it does
 not cover subsequent DES-004/005. [Independent design review 3](../reviews/combat-settlement-review-3.md)
 returned Ready for those bounded inputs, with no actionable findings. Review budget3of3 is exhausted;
-remaining policy/production gates stay open.
+remaining policy/production gates stay open. Subsequent CYCLE-DES-001 is outside that checkpoint.
 
 ## Retained unknowns
 

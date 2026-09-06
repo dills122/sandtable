@@ -235,7 +235,9 @@ fields, guard/custody/replacement representation, calendar semantics and migrati
 
 These are future executable tests. Source/state-trace checks and research arithmetic validate
 this proposal, not World schemas, full chart entry, hosted recovery or simulator behavior.
-Next: CYCLE-DES-001 composition, owner policy rulings and combined contract/implementation-plan review.
+[CYCLE-DES-001](continual-cycle-reserve-composition-v1.md) now composes these obligations with
+Reserve Release and cycle control. Owner policy rulings and combined contract/implementation-plan
+review remain next.
 
 **Checks (2026-09-06):** existing research verifiers passed 12 seeded RNG vectors, eight loss
 boundary vectors, 108 conditional arithmetic combinations and three guard-capacity probes.

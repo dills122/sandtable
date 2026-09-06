@@ -72,13 +72,16 @@ the pre-alpha roadmap carry repository-wide rationale and delivery state.
   readback. [CMB-DES-003 Combat-step transitions](design/combat-step-transitions-v1.md) is complete
   for review: explicit selection/decline, six closure proofs and prepared/cancelled/settled paths.
   [CMB-DES-004 cost/resolution ordering](design/combat-cost-resolution-order-v1.md) defines atomic
-  costs, role-ordered result publication and simultaneous-stage extension boundaries. Next:
+  costs, role-ordered result publication and simultaneous-stage extension boundaries.
   [CMB-DES-005 settlement/disclosure](design/combat-settlement-disclosure-v1.md) defines mandatory
-  choice fallback, loss/retreat/custody conservation and side projections. Next: `CYCLE-DES-001`
-  composition. Production and remaining gates stay open.
+  choice fallback, loss/retreat/custody conservation and side projections. `CYCLE-DES-001`
+  [cycle/Reserve composition](design/continual-cycle-reserve-composition-v1.md) now defines
+  release windows, repeat/finish and occurrence-aware evidence. Next: policy reconciliation and
+  combined contract/implementation plan. Production gates stay open.
   [Independent design review 2](reviews/combat-design-review-2.md) returned Ready for
   DES-001/DES-002/DES-003. [Independent design review 3](reviews/combat-settlement-review-3.md)
-  returned Ready for DES-004/DES-005, with no actionable findings. Production gates remain open.
+  returned Ready for DES-004/DES-005, with no actionable findings; subsequent cycle design is outside
+  that review. The independent-review budget is exhausted at 3 of 3.
 - Sprint 4-5 dependencies: [research-gate audit](research/sprint-4-5-research-gates.md).
 
 ## Reviewed future product work
