@@ -5,8 +5,8 @@ research, `CMB-RSH-003` mutable-state research, `CMB-RSH-004` RNG/golden researc
 `CYCLE-RSH-001` cycle identity/history decision and `RESREL-RSH-001` release research are complete
 and decision-ready; `CMB-DES-001` identity, `002` protocol, `003` steps, `004` cost/resolution and
 `005` settlement/disclosure plus `CYCLE-DES-001` composition are complete for review. Production
-remains gated by pending Contact/Combat/Reserve policy, combined contracts and implementation-plan
-gates.
+remains gated by the three-cell source ruling and exact combined contracts; the eight policies and
+corrected implementation plan are owner-approved.
 
 **Date:** 2026-08-25
 
@@ -162,8 +162,10 @@ remains part of these design gates):
 The [policy register](../design/combat-cycle-policy-reconciliation.md) reconciles those design inputs
 into eight explicit owner choices. The [combined contract/implementation plan](../design/combat-cycle-implementation-plan.md)
 now defines 25 staged tasks, contract ownership and acceptance evidence. Owner accepted the eight
-policies and corrected plan on2026-09-06; TASK-001 source/calendar/break-off verification is in
-progress, with later tasks and exact contract freeze still ahead.
+policies and corrected plan on2026-09-06. [TASK-001 source evidence](combat-source-freeze-v1.md)
+was committed in `0f08694`: 357 defined loss values and three missing defender +2 cells. Proposed
+`CMB-SRC-RUL-001` remains pending, blocking complete normalization. Calendar/break-off findings are
+retained; later tasks and exact contract freeze are still ahead.
 [Review4](../reviews/combat-cycle-plan-review-4.md) records the combined assessment and author correction.
 
 [Independent design review 2](../reviews/combat-design-review-2.md) is Ready for the

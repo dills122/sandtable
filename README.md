@@ -267,9 +267,10 @@ identity set on public Core creation, observation, action, checkpoint, and repla
 creation and Movement roots reject. Bounded Runner adoption in `ZOR-TASK-007A` is implemented; `007B` verification and independent review are complete.
 The optional paired comparison is implemented Runner instrumentation and does not block
 gameplay-engine progress.
-Combat research has progressed beyond the initial source inventory: `CMB-RSH-001` now retains the
-first bounded rules/result-surface normalization. Combat contracts and implementation remain gated
-on approved Breakdown and ZOC/Reaction boundaries.
+Combat policies and the [25-task plan](docs/design/combat-cycle-implementation-plan.md) are owner-approved.
+[TASK-001 source evidence](docs/research/combat-source-freeze-v1.md) retains 357 defined loss values,
+three missing cells requiring a new owner ruling, and calendar/break-off findings. Complete table
+normalization and exact contract freeze remain open; Combat runtime implementation has not started.
 
 See the [pre-alpha roadmap](docs/roadmap/pre-alpha-roadmap.md) for the capability-level plan and
 completion criteria.

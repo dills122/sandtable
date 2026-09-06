@@ -107,7 +107,7 @@ Optional parser evidence gate
 | Side-safe observations and legal-action enforcement | Implemented for the current synthetic path | Extend only with each new mechanic and its disclosure tests |
 | Mandatory turn preamble | Implemented through Reserve Designation completion | Preserve the exact Movement terminal while later mechanics expand |
 | Movement and contact | Movement Foundation is complete through merged `MOV-TASK-010` / PR #79; ZOC/Reaction Core authority is activated through `ZOR-TASK-006C` | `007A` Runner adoption implemented; `007B` verification and independent review complete; Breakdown adjudication remains separate |
-| Combat | Research decision-ready; `CMB-DES-001`-`005` bounded designs complete for review; implementation not started | Policies and corrected 25-task plan accepted2026-09-06; TASK-001 source/calendar/break-off verification in progress before exact contract freeze |
+| Combat | Research decision-ready; `CMB-DES-001`-`005` bounded designs complete for review; implementation not started | Policies and corrected 25-task plan accepted2026-09-06; TASK-001 research retained, three-cell source ruling pending before complete normalization and exact contract freeze |
 | Working pre-alpha skeleton | Not reached | Requires one authentic movement/contact/combat loop with replay |
 | First-scenario content and remaining Land systems | Milestone-level; not started | Re-estimate after the skeleton exposes exercised-rule and transcription scope |
 | Campaign lifecycle and Maproom | Milestone-level; not started | Requires stable playable authority, Chronicle persistence, and save/resume contracts |
@@ -750,8 +750,10 @@ defines 25 staged tasks and evidence requirements. [Review4](../reviews/combat-c
 assessed cycle/combined planning at9f683d1: Not ready with one ordinary break-off handoff gap.
 Author correction assigns source/contract/movement/witness coverage to TASK-001/003/018/019; no
 independent reassessment is claimed. Owner accepted POL-001–008 and the corrected plan at a10a588
-on2026-09-06. TASK-001 source/calendar/break-off verification is in progress; exact contract freeze
-follows. Production remains gated.
+on2026-09-06. [TASK-001 source evidence](../research/combat-source-freeze-v1.md) is retained in
+`0f08694`: 357 defined loss values and three missing defender +2 cells. `CMB-SRC-RUL-001` proposes
+10% loss but remains pending owner decision. Calendar/break-off findings constrain subsequent
+contracts; complete source normalization and exact contract freeze remain open. Production is gated.
 Actual RBA movement and broader combat categories remain outside the selected fixture.
 [Independent design review 2](../reviews/combat-design-review-2.md) returned Ready for
 DES-001/DES-002/DES-003 with no actionable findings; it does not cover subsequent DES-004/005 or
