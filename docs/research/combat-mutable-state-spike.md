@@ -212,6 +212,11 @@ conservative arithmetic envelope, **not** a claim that every cross-product is a 
 chart coordinate. It has no source chart, RNG implementation, or runtime integration. It cannot
 prove replay, custody legality, privacy, or full Combat correctness.
 
+The subsequent [RNG/golden spike](combat-rng-golden-spike.md) checks actual chart correlations:
+the selected defender maximum including retreat refusal is three TOE, not this envelope's four.
+Its seed 208 demonstrates the reachable defender loss-DP case; this arithmetic envelope remains
+useful as a conservative calculation check, not a source-reachability claim.
+
 **Observed validation:** Python 3.14.6; eight boundary vectors and all 144 combinations pass.
 Temporary in-memory mutations of attacker rounding, capture double deduction, loss-DP threshold,
 and separate refusal rounding must each fail the boundary evidence. Source scans and mutation

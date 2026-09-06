@@ -1,8 +1,8 @@
 # Combat and Continual-Cycle Source Inventory
 
 **Status:** Source inventory, `CMB-RSH-001` result-surface research, `CMB-RSH-002` static-content
-research, `CMB-RSH-003` mutable-state research, and the `CYCLE-RSH-001` cycle identity/history
-decision are complete and decision-ready;
+research, `CMB-RSH-003` mutable-state research, `CMB-RSH-004` RNG/golden research, and the
+`CYCLE-RSH-001` cycle identity/history decision are complete and decision-ready;
 production remains gated by Contact/ZOC reconciliation, later combat, and Reserve Release design
 
 **Date:** 2026-08-25
@@ -119,7 +119,10 @@ Research that can proceed now:
    [Combat mutable-state spike](combat-mutable-state-spike.md) reconciles current TOE/ledger
    authority, full-game ammunition, loss/capture conservation, immediate custody, retreat, and
    Cohesion consequences. Includes synthetic arithmetic evidence; owner approval remains pending.
-4. `CMB-RSH-004` — freeze RNG draw order and golden vectors.
+4. `CMB-RSH-004` — **decision-ready:** the
+   [Combat RNG/golden spike](combat-rng-golden-spike.md) proposes role-ordered dice on the existing
+   campaign stream, with conditional capture, twelve seeded vectors, and exhaustive draw-domain
+   counts. Full loss-table normalization and production contracts remain design-gated.
 5. `CYCLE-RSH-001` — **complete:** the
    [Continual-cycle identity and attacked-target history decision](continual-cycle-identity-and-history-decision.md)
    freezes the phase-local ordinal, repeat/finish closure, ordered repeat-permitting attacked-target

@@ -61,7 +61,8 @@ the pre-alpha roadmap carry repository-wide rationale and delivery state.
 - Combat: [source inventory](research/combat-cycle-source-inventory.md) and completed
   [rules/result-surface spike](research/combat-rules-result-surface-spike.md), with decision-ready
   [static Content](research/combat-content-static-schema-spike.md) and
-  [mutable-state research](research/combat-mutable-state-spike.md). RNG/golden research is next;
+  [mutable-state research](research/combat-mutable-state-spike.md), and
+  [RNG/golden research](research/combat-rng-golden-spike.md). Reserve release research is next;
   implementation contracts are not frozen.
 - Sprint 4-5 dependencies: [research-gate audit](research/sprint-4-5-research-gates.md).
 
