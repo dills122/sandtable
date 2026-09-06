@@ -79,8 +79,9 @@ the pre-alpha roadmap carry repository-wide rationale and delivery state.
   release windows, repeat/finish and occurrence-aware evidence. The
   [policy register](design/combat-cycle-policy-reconciliation.md) consolidates eight owner choices;
   the [combined contract/implementation plan](design/combat-cycle-implementation-plan.md) defines
-  25 staged tasks and their evidence. Next: owner policy/plan acceptance, including the review4
-  correction, then exact source/contract freeze. Production gates stay open.
+  25 staged tasks and their evidence. Owner accepted all eight policies and the review4 correction
+  on2026-09-06. TASK-001 source/calendar/break-off verification is in progress; exact contract
+  freeze follows. Production gates stay open.
   [Independent design review 2](reviews/combat-design-review-2.md) returned Ready for
   DES-001/DES-002/DES-003. [Independent design review 3](reviews/combat-settlement-review-3.md)
   returned Ready for DES-004/DES-005, with no actionable findings; subsequent cycle design is outside

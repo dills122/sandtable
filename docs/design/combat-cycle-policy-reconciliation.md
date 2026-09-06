@@ -1,19 +1,23 @@
 # Combat and Cycle Policy Reconciliation
 
-**Status:** `CMB-POL-001`–`008` recommended, awaiting owner decision. Planning task complete;
-production approval is not implied. **Date:** 2026-09-06. **Input:** `d2bc67c`.
+**Status:** `CMB-POL-001`–`008` **accepted by project owner, 2026-09-06**.
+Corrected plan at `a10a588` accepted; exact contracts and production activation remain gated.
+**Original input:** `d2bc67c`. **Approval checkpoint:** `a10a588`.
 
-This register consolidates the six bounded designs without changing source rules or declaring
-their recommendations approved. The [combined plan](combat-cycle-implementation-plan.md) owns
+This register consolidates the six bounded designs and records the accepted bounded policies.
+Approval does not change source rules or turn proposed production fields into frozen contracts. The [combined plan](combat-cycle-implementation-plan.md) owns
 contract work, task dependencies and evidence. Historical research remains evidence at its stated
 checkpoint; this register replaces its scattered next-step questions with current dispositions.
 
 ## Decision register
 
-Each row is independently decidable. Approval must name the IDs and retain the owner/date/evidence
-here; a request to prepare this packet does not supply that approval. No approvals recorded yet.
+All eight rows below are accepted. Approval evidence: after the initiating task explicitly proposed
+“accept the eight policy recommendations and corrected plan, then begin source/contract freeze,”
+the project owner replied “Okay sounds good to me lets do it” on2026-09-06. This accepts
+`CMB-POL-001`–`008` and the review4 author correction at `a10a588`; it does not authorize a fifth
+review or bypass checkpoint B's exact-contract acceptance. Original alternatives remain rationale.
 
-| ID | Recommended choice and consequence | Reconciled inputs / alternative |
+| ID | Accepted choice and consequence | Reconciled inputs / alternative |
 | --- | --- | --- |
 | `CMB-POL-001` | Adopt the closed singleton infantry exercise in DES-001–005: full 10-TOE assignments, ratings1/1, Basic Morale0, post-cost Cohesion0, integer CP, ten carried Ammo each, certified one-hex retreat/custody geometry, decline-only RBA and empty gun/armor steps. Normalize and verify **every reachable coordinate/result** in the selected −2…+2 surface before admission. Explicitly label this a bounded exercise. | [Identity](combat-opportunity-identity-v1.md), [steps](combat-step-transitions-v1.md), [costs](combat-cost-resolution-order-v1.md), [settlement](combat-settlement-disclosure-v1.md); supersedes the unresolved “whole selected table or subset” question. Alternative: design a different closed profile first; never filter by seed or drop capture. Multi-unit, real RBA and broader combat remain deferred. |
 | `CMB-POL-002` | Adopt `CMB-CNT-DEC-001`–`007`; preserve the exclusions in `008`–`010`. Reuse existing explicit component/classification facts where compatible. Close `011` with versioned scenario seeds for current TOE, ammo and readiness; close `012` with a contract-level class/parent reconciliation before coding. Use a dedicated synthetic pack with rules-lab provenance. | [Static Content research](../research/combat-content-static-schema-spike.md). Existing Content6 facts are not proof of Combat admission. No default strength/ammo, inferred infantry class, copied historical unit values or flat combat-stat bag. Exact tokens/field names remain contract work. |
@@ -28,16 +32,16 @@ here; a request to prepare this packet does not supply that approval. No approva
 
 | Earlier uncertainty | Current disposition |
 | --- | --- |
-| Missing custody/escape design | DES-005 supplies the design; POL-005 is the remaining policy choice. Calendar mapping and versioned records are assigned to TASK-001/003. |
+| Missing custody/escape design | DES-005 supplies the design; POL-005 is accepted. Calendar mapping and versioned records are assigned to TASK-001/003. |
 | Ammo/readiness unspecified | POL-002/003 select explicit scenario seeds and retained resource/readiness provenance. Exact schema validation is TASK-002/003; general supply and replenishment are deferred. |
 | Retreat/Breakdown continuity | The admitted infantry route has no vehicle/BP charge. Existing BP, checked bands and broken lots still survive repetition; TASK-018 tests continuity. Vehicle retreat needs an extension. |
 | Cycle identity unresolved | CYCLE-DEC-001–014 remain accepted; POL-008 addresses the later composition proposal, not their approval status. |
-| “Reviewed” means ready to implement | Reviews1–3 cover DES-001–005. [Review4](../reviews/combat-cycle-plan-review-4.md) covers cycle/combined planning at9f683d1 and returns Not ready with one break-off handoff gap. Author correction assigns it to TASK-001/003/018/019; policies/contracts remain pending. |
+| “Reviewed” means ready to implement | Reviews1–3 cover DES-001–005. [Review4](../reviews/combat-cycle-plan-review-4.md) covers cycle/combined planning at9f683d1 and returns Not ready with one break-off handoff gap. Author correction assigns it to TASK-001/003/018/019; policies and corrected plan are now accepted; exact contracts remain pending. |
 
 ## Decision and implementation gates
 
-1. Record owner decisions on POL-001–008 and review this task plan. Rejected/modified rows require
-   corresponding design and traceability edits before dependent implementation starts.
+1. **Complete:** owner accepted POL-001–008 and the corrected plan on2026-09-06. G0 is satisfied
+   through that acceptance and recorded disposition of the review4 finding.
 2. Review4 assessed the combined plan including CYCLE-DES-001. Retain its finding and the author
    correction in plan acceptance; no independent Ready verdict exists for the correction. The user
    approved one additional pass on2026-09-06; the revised budget is exhausted at **4 of 4**.

@@ -1,7 +1,8 @@
 # Combat and Cycle Combined Contract / Implementation Plan
 
-**Status:** `CMB-PLAN-001` complete for review; all tasks below **not started**.
-**Date:** 2026-09-06. **Input:** `d2bc67c`. Policy and independent plan-review gates remain open.
+**Status:** `CMB-PLAN-001` and POL-001–008 accepted by owner on2026-09-06 at `a10a588`.
+`CMB-TASK-001` source verification **in progress**; TASK-002–025 not started.
+**Original input:** `d2bc67c`. Exact contract freeze and production gates remain open.
 
 ## Outcome and boundary
 
@@ -56,8 +57,8 @@ set is deferred; Core and simulator controllers use typed in-process decisions f
 
 All IDs below use prefix `CMB-TASK-`. Numbers in dependency columns refer to those IDs. Entry gate
 `G0` means recorded POL-001–008 decisions, owner plan review and disposition of the independent
-combined-plan findings. Review4 and its bounded author correction are recorded below; acceptance
-remains pending. TASK-001–004 produce source/contract artifacts; runtime consumers start only
+combined-plan findings. Review4 and its bounded author correction are recorded below; owner
+accepted the correction and policies on2026-09-06, satisfying G0. TASK-001–004 produce source/contract artifacts; runtime consumers start only
 after checkpoint B accepts their concrete freeze. No task is complete without a commit and retained
 verification evidence linked here. Current evidence for every task: **none**.
 

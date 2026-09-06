@@ -161,8 +161,9 @@ remains part of these design gates):
 
 The [policy register](../design/combat-cycle-policy-reconciliation.md) reconciles those design inputs
 into eight explicit owner choices. The [combined contract/implementation plan](../design/combat-cycle-implementation-plan.md)
-now defines 25 staged tasks, contract ownership and acceptance evidence. Tasks are planned, not
-started; owner policy/plan acceptance and exact contract freeze remain gates.
+now defines 25 staged tasks, contract ownership and acceptance evidence. Owner accepted the eight
+policies and corrected plan on2026-09-06; TASK-001 source/calendar/break-off verification is in
+progress, with later tasks and exact contract freeze still ahead.
 [Review4](../reviews/combat-cycle-plan-review-4.md) records the combined assessment and author correction.
 
 [Independent design review 2](../reviews/combat-design-review-2.md) is Ready for the
@@ -176,9 +177,9 @@ Ready reassessment; remaining policy/production gates stay open.
 
 ## Retained gates and deferrals
 
-- `CMB-POL-001`–`008` in the policy register await recorded owner decisions; accepted cycle
-  semantics remain accepted. Settlement design now exists; custody timing/fallback/disclosure
-  approval remains explicit rather than an unspecified design gap.
+- `CMB-POL-001`–`008` and the corrected plan were accepted by owner on2026-09-06. Custody,
+  fallback and disclosure policy is settled for the bounded profile; exact contract/source
+  verification and broader capability gates remain.
 - `CMB-TASK-001`–`004` own complete selected-table source verification, calendar mapping, exact
   Content/world/command/event/snapshot/side/Exercise contracts and compatibility vectors.
 - The proposed table choice covers the entire reachable selected surface; another profile would
@@ -187,5 +188,5 @@ Ready reassessment; remaining policy/production gates stay open.
   offensive Combat and hosted decisions remain extensions. Bounded Truck Convoy entry retains
   future obligations; it is not a complete playable campaign.
 - Review4 returned Not ready at9f683d1. Its ordinary break-off finding is addressed by the author
-  in cycle design and TASK-001/003/018/019; owner acceptance remains pending. User-approved review
+  in cycle design and TASK-001/003/018/019; owner accepted that correction on2026-09-06. User-approved review
   budget is exhausted at4of4; no fifth review or independent reassessment is implied.

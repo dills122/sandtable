@@ -107,7 +107,7 @@ Optional parser evidence gate
 | Side-safe observations and legal-action enforcement | Implemented for the current synthetic path | Extend only with each new mechanic and its disclosure tests |
 | Mandatory turn preamble | Implemented through Reserve Designation completion | Preserve the exact Movement terminal while later mechanics expand |
 | Movement and contact | Movement Foundation is complete through merged `MOV-TASK-010` / PR #79; ZOC/Reaction Core authority is activated through `ZOR-TASK-006C` | `007A` Runner adoption implemented; `007B` verification and independent review complete; Breakdown adjudication remains separate |
-| Combat | Research decision-ready; `CMB-DES-001`-`005` bounded designs complete for review; implementation not started | Policy register and 25-task combined plan complete for review; next owner policy/plan acceptance with review4 correction, then exact contract freeze |
+| Combat | Research decision-ready; `CMB-DES-001`-`005` bounded designs complete for review; implementation not started | Policies and corrected 25-task plan accepted2026-09-06; TASK-001 source/calendar/break-off verification in progress before exact contract freeze |
 | Working pre-alpha skeleton | Not reached | Requires one authentic movement/contact/combat loop with replay |
 | First-scenario content and remaining Land systems | Milestone-level; not started | Re-estimate after the skeleton exposes exercised-rule and transcription scope |
 | Campaign lifecycle and Maproom | Milestone-level; not started | Requires stable playable authority, Chronicle persistence, and save/resume contracts |
@@ -128,7 +128,7 @@ persistence, and Maproom remain absent.
 | 2 — Rules laboratory and legal-action boundary | Complete for the admitted synthetic path | Keep outward actions observation-derived and revalidate exact membership at submission |
 | 3 — Mandatory turn preamble | Complete for the admitted synthetic no-obligation path | Positive Organization/convoy/fleet cases remain explicit later-scenario work; authority now reaches the Breakdown Determination checkpoint |
 | 4 — Movement, Breakdown, and Reaction boundary | Active | Movement Tasks 001-010 are complete and merged; ZOC/Reaction Core authority is activated through `ZOR-TASK-006C`, with `007A` Runner adoption implemented, `007B` verification and independent review complete, and Breakdown adjudication separate |
-| 5 — Combat and continual-cycle loop | Research decision-ready; bounded Combat designs complete for review; not implementation-ready | Accept policies/plan with the review4 correction before exact source/contract freeze |
+| 5 — Combat and continual-cycle loop | Research decision-ready; bounded Combat designs complete for review; not implementation-ready | Owner accepted policies/plan and review4 correction; source verification and exact contract freeze remain |
 | 6 — Scenario Group One content | Milestone-level; not started | Begin after the working pre-alpha skeleton measures the exact exercised-rule/data surface |
 | 7 — Remaining required Land systems | Milestone-level; not started | Split from the measured first-scenario rule inventory rather than treating it as one task |
 | 8 — Minimal Maproom and campaign lifecycle | Milestone-level; not started | Requires stable playable authority, Chronicle persistence/save-resume, and the no-model intent prototype |
@@ -749,8 +749,9 @@ choices; the [combined contract/implementation plan](../design/combat-cycle-impl
 defines 25 staged tasks and evidence requirements. [Review4](../reviews/combat-cycle-plan-review-4.md)
 assessed cycle/combined planning at9f683d1: Not ready with one ordinary break-off handoff gap.
 Author correction assigns source/contract/movement/witness coverage to TASK-001/003/018/019; no
-independent reassessment is claimed. Next: owner policy/plan acceptance, then source/calendar and
-exact contract freeze. Production remains gated.
+independent reassessment is claimed. Owner accepted POL-001–008 and the corrected plan at a10a588
+on2026-09-06. TASK-001 source/calendar/break-off verification is in progress; exact contract freeze
+follows. Production remains gated.
 Actual RBA movement and broader combat categories remain outside the selected fixture.
 [Independent design review 2](../reviews/combat-design-review-2.md) returned Ready for
 DES-001/DES-002/DES-003 with no actionable findings; it does not cover subsequent DES-004/005 or
