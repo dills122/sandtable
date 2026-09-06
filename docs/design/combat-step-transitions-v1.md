@@ -134,8 +134,10 @@ Both selection and RBA waits use DES-002's pinned finite-budget, trusted-time, a
 receipt and exact-deadline rules, applied to their own decision contexts. Each real stage opens
 its deadline once. Retries/readback/restart cannot refresh it; progressing to a different stage
 creates that stage's own configured decision, never another instance of the old choice.
-Clock regression/loss of clock confidence follows trusted unavailability. Selection timeout closes
-with no-selection; RBA timeout/unavailability emits `CombatSelectionCancelled`, closes the pending
+Clock regression/loss of clock confidence follows trusted unavailability. Selection timeout or
+trusted controller-unavailable input emits system-authored `CombatSelectionClosed(no-selection)`;
+after selection closes, its old timer/unavailability commands are no-ops and cannot affect a later
+decision context. RBA timeout/unavailability emits `CombatSelectionCancelled`, closes the pending
 defender decision and disposes the selected attempt. It records no decline and opens no sealed round.
 Cancellation causes/clock diagnostics remain private. After a decline has been accepted, its stale
 timer is a no-op; the system completes RBA without waiting for the defender again.
@@ -163,7 +165,8 @@ inputs. From that validated post-opening state until `CombatAttackCommitted`, re
 
 1. the two valid DES-002 seals, in either accepted order, with their allowed receipt/time/revision
    bookkeeping;
-2. one Force Assignment completion, deriving `Prepared` from those seals and advancing to Anti-Armor;
+2. one Force Assignment completion, requiring and preserving the `Prepared` state already derived
+   by the second seal, and advancing to Anti-Armor;
 3. one empty Anti-Armor completion, preserving the prepared round and advancing to Close Assault.
 
 A restart or readback adds no event. Expired/stale timer commands add no event once prepared. No
@@ -211,10 +214,10 @@ before public activation. Arbitrary omission of hidden obligations is not a priv
 | `CMB-STEP-AC-001` | Only exact completed Breakdown/no-Reaction authority opens Combat. Wrong stage/side/order rejects; CP/BP/Cohesion/TOE/RNG remain unchanged. | 001 |
 | `CMB-STEP-AC-002` | Selection creates no attack/round. Force Assignment derives its final opportunity from the later snapshot and links the original selected participants and decline. | 002/004 |
 | `CMB-STEP-AC-003` | Selected decline/full-assignment trace has exactly six ordered step completions. Each successor is the same cycle/slot's next step, ending at Reserve Release. | 001/003/005 |
-| `CMB-STEP-AC-004` | No-candidate system closure and voluntary no-selection produce no model/RBA/assignment round; all six steps still close without attack or resource effects. | 002-003/006 |
+| `CMB-STEP-AC-004` | No-candidate closure, voluntary no-selection and selection timeout/trusted unavailability produce no RBA/assignment round; zero candidates creates no model decision. All six steps close without attack/resource effects; old timer/unavailability commands after selection closure cannot affect the next decision. | 002-003/006 |
 | `CMB-STEP-AC-005` | Missing RBA response cancels without a decline receipt; accepted decline defeats a later timer. Stale/wrong-side/cross-selection decline rejects without mutation. | 004/007 |
 | `CMB-STEP-AC-006` | RBA/assignment cancellation traverses remaining steps once, preserves earlier receipts/resources and never permits reselection or synthetic material progress. | 003-004/006 |
-| `CMB-STEP-AC-007` | Either valid seal order permits exactly FA->AA->CA; injected extra event, changed world/round or forged empty-AA proof fails replay. Prepared choices cannot expire. | 003/005/007 |
+| `CMB-STEP-AC-007` | Second seal derives Prepared; FA completion requires and preserves it, then permits exactly FA->AA->CA for either valid seal order. Injected extra event, changed world/round or forged empty-AA proof fails replay. Prepared choices cannot expire. | 003/005/007 |
 | `CMB-STEP-AC-008` | Committed/partially settled CA cannot complete or become no-attack. Only fully settled terminal proof advances to Reserve Release; release itself remains separate. | 005-006 |
 | `CMB-STEP-AC-009` | Restart after opening, selection, empty steps, RBA opening/decline, either seal, preparation and settlement reconstructs the same next capability and bytes without refreshed deadlines. | 001-007 |
 | `CMB-STEP-AC-010` | Duplicate/out-of-order/cross-cycle step receipts and caller-supplied empty lists cannot advance authority. Each accepted completion advances authority exactly once. | 001/003/007 |
@@ -224,3 +227,11 @@ before public activation. Arbitrary omission of hidden obligations is not a priv
 These are future executable-test obligations. Source and state-trace inspection plus local
 link/ID/diff checks validate the present design artifact; they do not establish runtime support.
 DES-003 completes this bounded transition proposal, not the full Combat/cycle capability gate.
+
+**Verification (2026-09-06):** 193 local link targets, five design/review heading anchors, 22 combined
+decision rows and 36 combined acceptance rows passed structural checks across the branch documents.
+`git diff --check` passed. Ordinary second-model quality review identified two wording/coverage
+defects: the second seal must derive Prepared, and pending selection must explicitly close on trusted
+unavailability. Both were corrected with AC-004/007 coverage and verified by that reviewer; no
+actionable findings remain in this bounded check. This was not a new independent-review checkpoint.
+No .NET build or tests ran because the change is documentation only.
