@@ -11,6 +11,7 @@ the pre-alpha roadmap carry repository-wide rationale and delivery state.
 - [Security policy](../SECURITY.md)
 - [Technical design](../tech-design.md)
 - [Checked ZOC/Reaction Maneuver evidence](research/simulator-reaction-trajectories.md)
+- [Post-merge simulator check-in (Rules 9)](research/simulator-post-merge-checkin.md)
 - [Naming and domain vocabulary](../naming-overview.md)
 - [Pre-alpha roadmap](roadmap/pre-alpha-roadmap.md)
 
