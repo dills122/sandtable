@@ -159,8 +159,10 @@ remains part of these design gates):
     is complete for review: identity/prefix and audience bindings, persistent release restrictions,
     repeat/finish control, carried obligations and occurrence-aware Exercise/Maneuver evidence.
 
-Only after those gates should Sprint 5 receive implementation-sized tasks, acceptance criteria, and
-an independent plan review.
+The [policy register](../design/combat-cycle-policy-reconciliation.md) reconciles those design inputs
+into eight explicit owner choices. The [combined contract/implementation plan](../design/combat-cycle-implementation-plan.md)
+now defines 25 staged tasks, contract ownership and acceptance evidence. Tasks are planned, not
+started; owner decisions, independent combined-plan review and exact contract freeze remain gates.
 
 [Independent design review 2](../reviews/combat-design-review-2.md) is Ready for the
 bounded `CMB-DES-001`/`002`/`003` inputs, with no actionable findings. This checkpoint does not replace
@@ -169,16 +171,17 @@ not cover subsequent DES-004/005. [Independent design review 3](../reviews/comba
 returned Ready for those bounded inputs, with no actionable findings. Review budget3of3 is exhausted;
 remaining policy/production gates stay open. Subsequent CYCLE-DES-001 is outside that checkpoint.
 
-## Retained unknowns
+## Retained gates and deferrals
 
-- approval of the bounded `CMB-DES-001` identity proposal; multi-unit expansion and exact outward
-  disclosure contracts remain gated;
-- whether the first combat vertical normalizes the entire reachable selected table surface or a
-  different safely closed subset;
-- production ammunition/readiness representation and later supply continuity (`CMB-RSH-003`
-  recommends full-game infantry consumption for the bounded assault);
-- approval and design of prisoner custody/escape settlement (`CMB-RSH-003` retains reachable
-  infantry capture; captured equipment remains outside the selected infantry surface);
-- approval of `CMB-DES-002` private-decision timing/cancellation policy; hosted implementation and
-  mandatory-attack fallback remain later gates; and
-- Breakdown/Retreat BP continuity and broken-vehicle consequences.
+- `CMB-POL-001`–`008` in the policy register await recorded owner decisions; accepted cycle
+  semantics remain accepted. Settlement design now exists; custody timing/fallback/disclosure
+  approval remains explicit rather than an unspecified design gap.
+- `CMB-TASK-001`–`004` own complete selected-table source verification, calendar mapping, exact
+  Content/world/command/event/snapshot/side/Exercise contracts and compatibility vectors.
+- The proposed table choice covers the entire reachable selected surface; another profile would
+  require a new closed design. No favorable seed or unhandled capture may narrow admission.
+- General resupply, prisoner upkeep/maturity execution, vehicle retreat, real RBA, released-Reserve
+  offensive Combat and hosted decisions remain extensions. Bounded Truck Convoy entry retains
+  future obligations; it is not a complete playable campaign.
+- CYCLE-DES-001 and the combined plan still need their independent assessment. Current review
+  budget remains exhausted at3of3; no fourth review is implied by this planning closeout.

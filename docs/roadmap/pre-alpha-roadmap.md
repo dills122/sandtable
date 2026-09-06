@@ -107,7 +107,7 @@ Optional parser evidence gate
 | Side-safe observations and legal-action enforcement | Implemented for the current synthetic path | Extend only with each new mechanic and its disclosure tests |
 | Mandatory turn preamble | Implemented through Reserve Designation completion | Preserve the exact Movement terminal while later mechanics expand |
 | Movement and contact | Movement Foundation is complete through merged `MOV-TASK-010` / PR #79; ZOC/Reaction Core authority is activated through `ZOR-TASK-006C` | `007A` Runner adoption implemented; `007B` verification and independent review complete; Breakdown adjudication remains separate |
-| Combat | Research decision-ready; `CMB-DES-001`-`005` bounded designs complete for review; implementation not started | Next: policy reconciliation and combined contract/implementation plan; cycle design complete for review |
+| Combat | Research decision-ready; `CMB-DES-001`-`005` bounded designs complete for review; implementation not started | Policy register and 25-task combined plan complete for review; next owner decisions, plan review and exact contract freeze |
 | Working pre-alpha skeleton | Not reached | Requires one authentic movement/contact/combat loop with replay |
 | First-scenario content and remaining Land systems | Milestone-level; not started | Re-estimate after the skeleton exposes exercised-rule and transcription scope |
 | Campaign lifecycle and Maproom | Milestone-level; not started | Requires stable playable authority, Chronicle persistence, and save/resume contracts |
@@ -128,7 +128,7 @@ persistence, and Maproom remain absent.
 | 2 — Rules laboratory and legal-action boundary | Complete for the admitted synthetic path | Keep outward actions observation-derived and revalidate exact membership at submission |
 | 3 — Mandatory turn preamble | Complete for the admitted synthetic no-obligation path | Positive Organization/convoy/fleet cases remain explicit later-scenario work; authority now reaches the Breakdown Determination checkpoint |
 | 4 — Movement, Breakdown, and Reaction boundary | Active | Movement Tasks 001-010 are complete and merged; ZOC/Reaction Core authority is activated through `ZOR-TASK-006C`, with `007A` Runner adoption implemented, `007B` verification and independent review complete, and Breakdown adjudication separate |
-| 5 — Combat and continual-cycle loop | Research decision-ready; bounded Combat designs complete for review; not implementation-ready | Reconcile completed bounded designs and pending research policies before contract/implementation-plan freeze |
+| 5 — Combat and continual-cycle loop | Research decision-ready; bounded Combat designs complete for review; not implementation-ready | Decide the reconciled policy register and review the combined plan before exact source/contract freeze |
 | 6 — Scenario Group One content | Milestone-level; not started | Begin after the working pre-alpha skeleton measures the exact exercised-rule/data surface |
 | 7 — Remaining required Land systems | Milestone-level; not started | Split from the measured first-scenario rule inventory rather than treating it as one task |
 | 8 — Minimal Maproom and campaign lifecycle | Milestone-level; not started | Requires stable playable authority, Chronicle persistence/save-resume, and the no-model intent prototype |
@@ -744,7 +744,10 @@ extension boundaries. `CMB-DES-005` [settlement/disclosure](../design/combat-set
 defines losses, retreat/refusal, custody/escape, deterministic fallback and side projections.
 [CYCLE-DES-001 composition](../design/continual-cycle-reserve-composition-v1.md) now defines cycle
 identity, release windows, repeat/finish, carried obligations and Exercise/Maneuver proof boundaries.
-Next: policy reconciliation and combined contract/implementation plan; production remains gated.
+The [policy register](../design/combat-cycle-policy-reconciliation.md) now consolidates eight owner
+choices; the [combined contract/implementation plan](../design/combat-cycle-implementation-plan.md)
+defines 25 staged tasks and evidence requirements. Next: recorded owner decisions and independent
+combined-plan review, then source/calendar and exact contract freeze. Production remains gated.
 Actual RBA movement and broader combat categories remain outside the selected fixture.
 [Independent design review 2](../reviews/combat-design-review-2.md) returned Ready for
 DES-001/DES-002/DES-003 with no actionable findings; it does not cover subsequent DES-004/005 or
@@ -754,10 +757,12 @@ CYCLE-DES-001. The 3-of-3 review budget is exhausted; remaining gates stay open.
 Later contracts and implementation must settle every reachable loss, capture/custody, retreat,
 ammunition, and Cohesion obligation before claiming the repeating skeleton is complete.
 
-After Breakdown and ZOC/Reaction boundaries are implemented, `CMB-DES-001` through `005` and `CYCLE-DES-001` freeze
-Contact-derived opportunity identity, trusted-Umpire sealed choices, simultaneous/sequential
-resolution boundaries, losses/retreat/disclosure, and Reserve Release repeat/finish authority.
-Only then may a reviewed specification/design cut implementation-sized Sprint 5 tasks.
+The bounded designs specify Contact-derived opportunity identity, trusted-Umpire sealed choices,
+resolution and settlement ordering, and Reserve Release repeat/finish authority. The combined plan
+turns those proposals into implementation-sized tasks; it does not approve policies or allocate
+production schema versions. Its first checkpoint work closes source and exact contract questions.
+Bounded simulator evidence ends at Truck Convoy entry with future obligations retained; full
+repeating-skeleton acceptance must still account for every required continuation dependency.
 
 **Planning acceptance gate:** every reachable random result for an admitted table coordinate is
 implemented or the campaign rejects before mutation under an approved bounded rule; legality never

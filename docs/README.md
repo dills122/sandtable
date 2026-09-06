@@ -76,8 +76,11 @@ the pre-alpha roadmap carry repository-wide rationale and delivery state.
   [CMB-DES-005 settlement/disclosure](design/combat-settlement-disclosure-v1.md) defines mandatory
   choice fallback, loss/retreat/custody conservation and side projections. `CYCLE-DES-001`
   [cycle/Reserve composition](design/continual-cycle-reserve-composition-v1.md) now defines
-  release windows, repeat/finish and occurrence-aware evidence. Next: policy reconciliation and
-  combined contract/implementation plan. Production gates stay open.
+  release windows, repeat/finish and occurrence-aware evidence. The
+  [policy register](design/combat-cycle-policy-reconciliation.md) consolidates eight owner choices;
+  the [combined contract/implementation plan](design/combat-cycle-implementation-plan.md) defines
+  25 staged tasks and their evidence. Next: owner decisions and combined-plan review, then exact
+  source/contract freeze. Production gates stay open.
   [Independent design review 2](reviews/combat-design-review-2.md) returned Ready for
   DES-001/DES-002/DES-003. [Independent design review 3](reviews/combat-settlement-review-3.md)
   returned Ready for DES-004/DES-005, with no actionable findings; subsequent cycle design is outside
