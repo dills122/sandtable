@@ -107,7 +107,7 @@ Optional parser evidence gate
 | Side-safe observations and legal-action enforcement | Implemented for the current synthetic path | Extend only with each new mechanic and its disclosure tests |
 | Mandatory turn preamble | Implemented through Reserve Designation completion | Preserve the exact Movement terminal while later mechanics expand |
 | Movement and contact | Movement Foundation is complete through merged `MOV-TASK-010` / PR #79; ZOC/Reaction Core authority is activated through `ZOR-TASK-006C` | `007A` Runner adoption implemented; `007B` verification and independent review complete; Breakdown adjudication remains separate |
-| Combat | Research decision-ready; `CMB-DES-001`-`004` bounded designs complete for review; implementation not started | Next: `CMB-DES-005` settlement/disclosure; research rulings and remaining design gates stay open |
+| Combat | Research decision-ready; `CMB-DES-001`-`005` bounded designs complete for review; implementation not started | Next: `CYCLE-DES-001` composition; research rulings and remaining design gates stay open |
 | Working pre-alpha skeleton | Not reached | Requires one authentic movement/contact/combat loop with replay |
 | First-scenario content and remaining Land systems | Milestone-level; not started | Re-estimate after the skeleton exposes exercised-rule and transcription scope |
 | Campaign lifecycle and Maproom | Milestone-level; not started | Requires stable playable authority, Chronicle persistence, and save/resume contracts |
@@ -128,7 +128,7 @@ persistence, and Maproom remain absent.
 | 2 — Rules laboratory and legal-action boundary | Complete for the admitted synthetic path | Keep outward actions observation-derived and revalidate exact membership at submission |
 | 3 — Mandatory turn preamble | Complete for the admitted synthetic no-obligation path | Positive Organization/convoy/fleet cases remain explicit later-scenario work; authority now reaches the Breakdown Determination checkpoint |
 | 4 — Movement, Breakdown, and Reaction boundary | Active | Movement Tasks 001-010 are complete and merged; ZOC/Reaction Core authority is activated through `ZOR-TASK-006C`, with `007A` Runner adoption implemented, `007B` verification and independent review complete, and Breakdown adjudication separate |
-| 5 — Combat and continual-cycle loop | Research decision-ready; bounded identity/protocol/step/resolution designs complete for review; not implementation-ready | Complete remaining Contact/Combat/cycle design and research rulings before contract freeze |
+| 5 — Combat and continual-cycle loop | Research decision-ready; bounded Combat designs complete for review; not implementation-ready | Complete remaining Contact/Combat/cycle design and research rulings before contract freeze |
 | 6 — Scenario Group One content | Milestone-level; not started | Begin after the working pre-alpha skeleton measures the exact exercised-rule/data surface |
 | 7 — Remaining required Land systems | Milestone-level; not started | Split from the measured first-scenario rule inventory rather than treating it as one task |
 | 8 — Minimal Maproom and campaign lifecycle | Milestone-level; not started | Requires stable playable authority, Chronicle persistence/save-resume, and the no-model intent prototype |
@@ -740,10 +740,12 @@ committed rounds recover without controllers. `CMB-DES-003`
 selection/decline, six ordered step closures, exact prepared-round advance and cancellation/settlement
 handoffs. `CMB-DES-004` [cost/resolution ordering](../design/combat-cost-resolution-order-v1.md)
 is complete for review: atomic commitment/costs, role-ordered results and simultaneous-stage
-extension boundaries. Next: `CMB-DES-005` settlement/disclosure; remaining approval gates stay open.
+extension boundaries. `CMB-DES-005` [settlement/disclosure](../design/combat-settlement-disclosure-v1.md)
+defines losses, retreat/refusal, custody/escape, deterministic fallback and side projections. Next:
+`CYCLE-DES-001` composition; remaining policy, schema and implementation-plan gates stay open.
 Actual RBA movement and broader combat categories remain outside the selected fixture.
 [Independent design review 2](../reviews/combat-design-review-2.md) returned Ready for
-DES-001/DES-002/DES-003 with no actionable findings; it does not cover subsequent DES-004 or
+DES-001/DES-002/DES-003 with no actionable findings; it does not cover subsequent DES-004/005 or
 approve production.
 Later design must settle every reachable loss, capture/custody, retreat,
 ammunition, and Cohesion obligation before claiming the repeating skeleton is complete.

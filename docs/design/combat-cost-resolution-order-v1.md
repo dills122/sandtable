@@ -7,7 +7,8 @@ This packet joins [identity](combat-opportunity-identity-v1.md),
 [sealed decisions](combat-sealed-decision-protocol-v1.md) and
 [step transitions](combat-step-transitions-v1.md). It defines the irreversible cost boundary,
 one deterministic Close Assault result and the settlement handoff. It preserves the selected
-singleton infantry fixture. `CMB-DES-005` next owns losses, retreat, custody and disclosure.
+singleton infantry fixture. [CMB-DES-005](combat-settlement-disclosure-v1.md) owns losses, retreat,
+custody and disclosure.
 These are proposed semantic contracts, not implemented events or approved production schemas.
 
 ## Evidence and scope
@@ -60,7 +61,9 @@ resetting earlier Movement or Breakdown history. For this proposal require `E_at
 and `E_defender + 3 <= 10`, using exact CP arithmetic. Current Cohesion must already be 0.
 Thus the fixed cost produces no over-CPA DP and both pre-roll Cohesion values remain 0. Equality
 at CPA is allowed; any excess, even a fractional amount, is outside this profile before choices.
-This is a capability boundary, not a source rule forbidding all combat beyond CPA.
+This is a capability boundary, not a source rule forbidding all combat beyond CPA. DES-005 further
+requires integer settlement expenditure and certified retreat/custody/reunion geometry; these cost
+thresholds alone are not complete admission.
 
 Certify these conditions before selection and revalidate at round opening and commit. DES-003's
 permitted precommit suffix changes bookkeeping only; nothing can consume these resources between
@@ -208,8 +211,8 @@ Disabling new admission must retain compatible recovery for committed or settlin
 
 These are future executable obligations. This packet's evidence is source inspection, semantic
 traces, existing research-oracle runs and local link/ID/diff checks. It does not establish runtime
-Combat support or approve pending research policy. Next: DES-005 settlement and disclosure, then
-cycle composition and combined contract/implementation-plan review.
+Combat support or approve pending research policy. DES-005 now defines the bounded settlement
+and disclosure layer; cycle composition and combined contract/implementation-plan review follow.
 
 **Verification (2026-09-06):** both existing research verifiers passed: 12 RNG vectors with a
 6,480-coordinate domain and 1,900,656 expanded leaves; eight mutable-state boundary cases,
