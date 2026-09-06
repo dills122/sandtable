@@ -1,37 +1,42 @@
 # Combat Selected-Source Manifest and Continuation Facts
 
-**Status:** `CMB-TASK-001` research decision-ready; source normalization **blocked** on
-`CMB-SRC-RUL-001`. No production table is admitted. **Date:** 2026-09-06.
+**Status:** `CMB-TASK-001` complete within its research scope; `CMB-SRC-RUL-001` accepted by owner.
+All 360 selected loss coordinates normalize using preserved source facts plus the explicit amendment.
+No production table is admitted. **Date:** 2026-09-06.
 **Input:** `9b71faa` after owner acceptance of POL-001–008 and corrected plan at `a10a588`.
 
-## Conclusion and decision requested
+## Accepted decision
 
 The complete selected surface contains **360 role/differential/loss coordinates**. Both manual and
 optical source extraction define 357 values and find the same three missing cells: defender, final
 differential +2, rolls 34/35/36. The [September errata](https://www.spigames.net/db_pages/ERR_CampaignforNorthAfrica.pdf)
 15.79 correction concerns +4, not +2. No applicable correction was found in the retained baseline.
 
-**Recommend `CMB-SRC-RUL-001`: assign 10% defender loss to those three coordinates**, extending the
-printed 10% interval 24–33 to 24–36. This is a proposed Sandtable ruling, **not** a transcribed source
-fact. Owner decision remains pending. The proposed repair preserves all 357 defined source values,
+**Accepted `CMB-SRC-RUL-001`: assign 10% defender loss to those three coordinates**, extending the
+printed 10% interval 24–33 to 24–36 in the normalized table. This is an explicit Sandtable amendment;
+the original source bands and optical nulls remain unchanged. The repair preserves all 357 defined source values,
 uses an existing result value and closes the selected surface without excluding a seed or outcome.
 
 | Option | Observable effect for 10 committed defender TOE | Assessment |
 | --- | --- | --- |
-| Extend 10% band through 36 | One base TOE loss on 34/35/36; on 34, refusal of its one-hex retreat raises loss to 2 | Recommend: one endpoint change and smoother neighboring loss thresholds. Historical intent remains unproved. |
+| Extend 10% band through 36 | One base TOE loss on 34/35/36; on 34, refusal of its one-hex retreat raises loss to 2 | Accepted: one endpoint change and smoother neighboring loss thresholds. Historical intent remains unproved. |
 | Start 5% band at 34 | Zero base TOE loss on 34/35/36; refusal on 34 raises loss to 1 | Coherent alternative, but changes the next band's lower endpoint instead. Requires its own owner ruling. |
-| Leave unresolved | No supported result for three reachable rolls | Current authority: block selected-profile admission before mutation. Never wait to discover the missing row after drawing. |
+| Leave unresolved | No supported result for three reachable rolls | Rejected alternative; unamended data still fails complete normalization before mutation. Never wait to discover the missing row after drawing. |
 
-POL-001 approved complete selected coverage, not fabricated missing values. Approving this new ruling
-must record the owner/date and amendment identity separately; TASK-002 may inspect static facts, but
-source-dependent contract acceptance/TASK-005 cannot treat the proposed repaired table as adopted.
+Owner accepted the recommendation researched at `4f44c30` on2026-09-06:
+“Okay as long as we backed this decision with some research and also is accurate or mostly to the original game”.
+Acceptance is recorded on that basis: the repair is research-backed, leaves every defined selected
+loss value intact and explicitly retains uncertainty about designer intent. It does not certify
+perfect historical accuracy or broaden the admitted profile. POL-001 and the existing policy digest
+must include this amendment when production contracts are frozen; no generic missing-cell default.
+The numeric fixture records owner/date, research commit and exact amendment separately from raw facts.
 
 ## Method and source index
 
 [Source baseline](cna-source-material-spike.md) permits derived factual data with provenance and
 requires explicit rulings for ambiguities. Scans, copied chart layout/artwork and OCR prose remain
 outside Git. The [research fixture](fixtures/combat-selected-source-v1.json) retains source hashes,
-manual numeric bands, a separate optical coordinate vector, declared gaps and the unapplied proposal.
+manual numeric bands, a separate optical coordinate vector, declared gaps and the separately accepted amendment.
 It is not a production Rules schema, version allocation or activation capability.
 
 | Source | Inspected locators | Evidence role |
@@ -58,8 +63,8 @@ owner-supplied physical chart would supersede the inference after provenance rec
 **Research input:** `ac5b188`, 2026-09-06; owner requested a research-backed decision before choosing
 a repair. **Decision:** recommend the existing 10% proposal with **moderate confidence**. Its
 advantage is local distribution continuity with one endpoint edit. Minimal editing alone was not
-enough to distinguish it from 5%; the earlier recommendation needed this comparison. Owner
-acceptance of the gameplay amendment is still unrecorded; this research does not adopt it.
+enough to distinguish it from 5%; the earlier recommendation needed this comparison. At the
+`4f44c30` research checkpoint this was a proposal; the subsequent owner acceptance is recorded above.
 
 ### What the wider search established
 
@@ -118,8 +123,7 @@ ignored or a forecast for broader combat. The conditional effect remains a full 
 
 ### Best path forward and reversal condition
 
-Retain 10% as `CMB-SRC-RUL-001`; once accepted, record it as an explicit Sandtable amendment over the
-unchanged scan-derived data. Include its identity and three exact replacements in the future
+Use accepted 10% amendment `CMB-SRC-RUL-001` over the unchanged scan-derived data. Include its identity and three exact replacements in the future
 rules/configuration digest. Preserve existing 357 values, sum flags, capture shares and RNG order.
 Do not add a generic gap filler, reroll, seed filter, or default-zero result. TASK-005 tests must
 cover all three cells, including roll 34 retreat/refusal; historical rules identities must stay stable.
@@ -129,7 +133,7 @@ Confidence is **high** that the retained sources have the gap and that the propo
 A verifiable primary chart/correction specifying these cells would reopen the ruling through an
 explicit versioned amendment. Another community transcription alone warrants comparison, not
 silent replacement. The search stop condition is met; further unfocused browsing has no identified
-source likely to change the decision. Continue to TASK-002 after the amendment is accepted.
+source likely to change the decision. TASK-002 Content contract freeze is now next.
 
 ## Table coverage and anomalies
 
@@ -143,11 +147,11 @@ attacker −2/20% band is printed 13–18: preserving that printed endpoint and 
 d6 coordinates selects 13–16; 17/18 are invalid inputs, not extra rolls. Defender +2/10% ends 33 while
 5% starts 41, leaving 34/35/36 undefined. Both visual and optical inputs expose these facts.
 
-**Candidate-only evidence:** applying the proposed three-cell repair yields 6,480 joint assault
+**Normalized research evidence:** applying the accepted three-cell amendment yields 6,480 joint assault
 coordinates and 8,840 refusal/capture settlement combinations. Maximum loss remains 3 per side;
 all capture amounts are subsets. Morale weighting still yields 44,208 capture paths among 36^4
 base draw paths. All 12 earlier seeded research vectors retain their expected losses and flags.
-These checks prove numeric closure of a proposal, not its historical correctness or adoption.
+These checks prove numeric closure of the accepted amendment; historical intent and production behavior remain unproved.
 
 ## Calendar normalization and retained obligations
 
@@ -206,13 +210,15 @@ actual movement/replay and final policy-bundle hashing remain future implementat
 ## Verification and next gate
 
 Run `python3 docs/research/verify-combat-source-freeze.py`. Expected result: diagnostic checks pass,
-**source admission BLOCKED**, exactly three missing coordinates, candidate-only closure, five
+**source normalization passed**, exactly three raw-source gaps and all 360 normalized coordinates, five
 calendar vectors and eight positive movement vectors. Negative checks reject incomplete admission,
 overlap, invalid dice/differentials, invalid game scopes and voluntary spending above the applicable
 ceiling. The same verifier compares all four repairs, neighboring thresholds, rounded losses and exact
 profile sensitivity. Existing research oracles remain supplementary rather than production proof.
 
-TASK-001's investigation and reviewable proposal are retained; its complete normalized-table gate
-remains open until `CMB-SRC-RUL-001` is decided. No frozen production schema or runtime changed.
-Next: owner ruling on the three missing cells, then TASK-002 Content contract freeze with this
-manifest and TASK-003's retained calendar/break-off obligations.
+The verifier also rejects an unaccepted or altered amendment and explicitly checks all three
+repaired rolls, including retreat/refusal at34. TASK-001 is complete: selected-source manifest,
+visual/optical cross-check with disclosed limits, accepted gap ruling, calendar inference and
+explicit future maturity gate, break-off precedence and arithmetic evidence are retained.
+No frozen production schema or runtime changed. Next: TASK-002 Content contract freeze with this
+manifest and TASK-003's retained calendar/break-off obligations; checkpoint B still gates consumers.

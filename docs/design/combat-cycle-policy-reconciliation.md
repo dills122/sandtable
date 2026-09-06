@@ -28,6 +28,16 @@ review or bypass checkpoint B's exact-contract acceptance. Original alternatives
 | `CMB-POL-007` | Adopt `RESREL-DEC-001`–`004`: first release is friendly-phase-relative; unavailable first-release I converts to II, later II retains; voluntary ceilings use cumulative stage CP; committed offensive-use history and the immediate next-Movement exception survive status changes. | [Reserve research](../research/reserve-release-history-spike.md), [cycle composition](continual-cycle-reserve-composition-v1.md). One release-window budget, no renewed deadline per unit. Pre-release I movement and offensive Combat by released reserves remain excluded until their extension is designed. |
 | `CMB-POL-008` | Adopt CYCLE-DES-001's proposed event/codec composition and bounded evidence terminal: retain pre-event prefix, public/authority separation, Movement-end eligibility and semantic progress; repeat needs supported legal continuation; finish reaches same-slot Truck Convoy entry. Retain guard/upkeep/replacement obligations and reject unsupported requested terminals at admission. | [Cycle composition](continual-cycle-reserve-composition-v1.md). This implements, rather than reopens, accepted `CYCLE-DEC-001`–`014`. No seed-derived legality, guessed cycle history, silent stage reset or two-assault claim from one ammo load. Exact production schemas still require freeze. |
 
+## Accepted source amendment
+
+`CMB-SRC-RUL-001` was accepted by owner on2026-09-06 after the research at `4f44c30`, subject to
+research-backed fidelity to the original game. The [source manifest](../research/combat-source-freeze-v1.md)
+records the acceptance, alternatives, provenance and limits. Assign10% defender loss at final +2,
+ordered rolls34/35/36. Preserve all357 defined selected loss values and raw source gaps separately;
+no historical designer-intent claim. Include the amendment identity and exact cells in the future
+rules/config digest. This completes POL-001's selected-source investigation; contract/runtime gates
+remain. Any later verified primary correction requires an explicit versioned amendment.
+
 ## Reconciliation outcomes
 
 | Earlier uncertainty | Current disposition |

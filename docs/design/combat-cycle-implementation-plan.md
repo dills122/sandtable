@@ -1,8 +1,9 @@
 # Combat and Cycle Combined Contract / Implementation Plan
 
 **Status:** `CMB-PLAN-001` and POL-001–008 accepted by owner on2026-09-06 at `a10a588`.
-`CMB-TASK-001` research decision-ready; complete normalization **blocked** on the three-cell
-[source ruling CMB-SRC-RUL-001](../research/combat-source-freeze-v1.md). TASK-002–025 not started.
+`CMB-TASK-001` **complete** within its research scope, including accepted
+[source ruling CMB-SRC-RUL-001](../research/combat-source-freeze-v1.md). TASK-002 Content freeze is next;
+TASK-002–025 not started. Future maturity execution and checkpoint B remain gated.
 **Original input:** `d2bc67c`. Exact contract freeze and production gates remain open.
 
 ## Outcome and boundary
@@ -62,7 +63,7 @@ combined-plan findings. Review4 and its bounded author correction are recorded b
 accepted the correction and policies on2026-09-06, satisfying G0. TASK-001–004 produce source/contract artifacts; runtime consumers start only
 after checkpoint B accepts their concrete freeze. No task is complete without a commit and retained
 verification evidence linked here. TASK-001 has [retained source diagnostics](../research/combat-source-freeze-v1.md)
-and a pending owner ruling; no implementation task is complete.
+and the accepted source ruling; source research is complete, with no runtime implementation task complete.
 
 Commit each task on a feature branch. Package one checkpoint at a time for future PRs; report file
 and line counts before publication. The current documentation branch is not authorization for one
@@ -216,21 +217,28 @@ All three research scripts above passed; staged whitespace check passed. No .NET
 for this documentation-only change. CCE recall/search and memory writes returned `Transport closed`;
 local files supplied the fallback evidence. These checks do not complete any implementation task.
 
-TASK-001 research checkpoint, 2026-09-06: [source packet](../research/combat-source-freeze-v1.md),
+Historical TASK-001 research checkpoint at `0f08694`, 2026-09-06: [source packet](../research/combat-source-freeze-v1.md),
 [numeric fixture](../research/fixtures/combat-selected-source-v1.json) and
 [diagnostic verifier](../research/verify-combat-source-freeze.py). Visual and optical extraction
 agree on 357 defined loss values and three source gaps; the PDF copies contain identical scan
-pixels. Proposed 10% repair remains unadopted. Candidate checks cover 6,480 joint coordinates,
+pixels. At that checkpoint, the proposed 10% repair was unadopted. Candidate checks cover 6,480 joint coordinates,
 8,840 settlement combinations and 12 prior seeded vectors; calendar and movement arithmetic pass.
-Source admission remains blocked. Calendar normalization is a four-turn/12-stage inference;
+Source admission was blocked at that checkpoint. Calendar normalization is a four-turn/12-stage inference;
 phase-specific maturity execution remains deferred. Ordinary break-off is highest applicable 2/4 CP
 plus terrain, with immediate DP above CPA and a 150% ordinary infantry ceiling. These findings
 constrain TASK-003/007/018/019; they do not certify runtime, replay or independent engineering review.
 
-TASK-001 ruling follow-up, 2026-09-06: the source packet now records wider errata, integrated-rule
+Historical TASK-001 ruling follow-up at `4f44c30`, 2026-09-06: the source packet now records wider errata, integrated-rule
 and VASSAL chart checks plus all four adjacent-band repairs. Recommendation remains 10% with
 moderate confidence, based on one endpoint edit and smoother neighboring probability thresholds;
-no direct historical correction was found. Source admission remains pending owner disposition.
+no direct historical correction was found. Source admission was pending owner disposition at that checkpoint.
 The source diagnostic verifier passed all four candidate comparisons and the existing 12 seeded
 cross-checks; original fixture facts remained unchanged, 65 local links resolved,
 and Python syntax/whitespace checks passed. No .NET runtime changed or tests were needed.
+
+TASK-001 acceptance/closeout, 2026-09-06: owner accepted CMB-SRC-RUL-001 on the researched fidelity
+basis retained in the source manifest and policy register. Verifier checks 360 normalized loss values,
+357 unchanged source values, the three exact10% amendments, 6,480 joint outcomes, 8,840 settlement
+combinations and12 prior seeded vectors. Raw gaps remain visible; unaccepted/altered amendment
+negatives reject. Calendar and break-off findings satisfy source research with future phase-specific
+maturity execution explicitly deferred to its activation gate. No production schema/runtime changed.

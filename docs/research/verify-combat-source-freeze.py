@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""TASK-001 source diagnostics; candidate evaluation is not production admission."""
+"""TASK-001 normalization with an accepted source amendment; no production admission."""
 import copy
 import importlib.util
 import json
@@ -46,6 +46,21 @@ def gaps(values):
 def strict_admission(values):
     if gaps(values):
         raise ValueError('source table incomplete; owner ruling required before admission')
+
+
+def normalize(raw, ruling):
+    require(ruling['status'] == 'accepted', 'unaccepted source amendment')
+    require((ruling['id'], ruling['role'], ruling['differential'], ruling['coordinates'],
+             ruling['loss_percent']) == ('CMB-SRC-RUL-001', 'defender', 2, [34, 35, 36], 10),
+            'amendment differs from accepted decision')
+    normalized = copy.deepcopy(raw)
+    for coordinate in ruling['coordinates']:
+        require(coordinate not in normalized[('defender', 2)], 'amendment overwrites source fact')
+        normalized[('defender', 2)][coordinate] = ruling['loss_percent']
+    strict_admission(normalized)
+    require(sum(a.get(c) != normalized[k].get(c) for k, a in raw.items() for c in COORDS) == 3,
+            'amendment changed more than the three missing cells')
+    return normalized
 
 
 def loss(values, role, differential, coordinate):
@@ -134,15 +149,18 @@ def main():
     rejected(lambda: expand(mutated), 'overlap accepted')
     repair_comparison = compare_repairs(data, raw)
 
-    proposed = data['proposed_ruling']
-    require(proposed['status'] == 'pending-owner-decision', 'research must retain pending status')
-    candidate = copy.deepcopy(raw)
-    for c in proposed['coordinates']:
-        require(c not in candidate[('defender', 2)], 'proposal overwrites a defined source cell')
-        candidate[('defender', 2)][c] = proposed['loss_percent']
-    strict_admission(candidate)  # Hypothetical numeric closure only; proposal is NOT adopted.
-    require(sum(a.get(c) != candidate[k].get(c) for k, a in raw.items() for c in COORDS) == 3,
-            'candidate changed more than three missing cells')
+    ruling = data['source_ruling']
+    normalized = normalize(raw, ruling)
+    for field, invalid in [('status', 'pending-owner-decision'), ('loss_percent', 5),
+                           ('coordinates', [34, 35, 36, 41]), ('role', 'attacker')]:
+        rejected(lambda: normalize(raw, ruling | {field: invalid}), 'unaccepted amendment admitted')
+    for coordinate in (34, 35, 36):
+        percent = loss(normalized, 'defender', 2, coordinate)
+        retreat = coordinate // 10 + coordinate % 10 in data['defender_retreat_one_hex_sums']['2']
+        require(percent == 10 and retreat == (coordinate == 34), 'amended result/retreat mismatch')
+        require(10 * percent // 100 == 1, 'amended base TOE loss')
+        if retreat:
+            require(10 * (percent + 10) // 100 == 2, 'amended refusal TOE loss')
 
     morale = expand(data['cohesion_zero_morale_bands'])
     require(len(morale) == 36 and Counter(morale.values()) == {0: 34, 1: 1, -1: 1}, 'morale row')
@@ -160,8 +178,8 @@ def main():
             capture_paths += weights[diff]
         retreat = d_sum in data['defender_retreat_one_hex_sums'][str(diff)]
         for refusal in range(2 if retreat else 1):
-            al = (10*loss(candidate, 'attacker', diff, ac)+99)//100
-            dl = (10*(loss(candidate, 'defender', diff, dc)+10*refusal))//100
+            al = (10*loss(normalized, 'attacker', diff, ac)+99)//100
+            dl = (10*(loss(normalized, 'defender', diff, dc)+10*refusal))//100
             max_losses = [max(max_losses[0], al), max(max_losses[1], dl)]
             for share in data['capture_share_percent_by_die'] if ca or cd else [0]:
                 for total, captured in ((al, (al*share+99)//100 if ca else 0),
@@ -169,7 +187,7 @@ def main():
                     require(0 <= captured <= total <= 3, 'loss/capture bounds')
                     require((10-total)+captured+(total-captured) == 10, 'TOE conservation')
                 rows += 1
-    require(max_losses == [3, 3] and capture_paths == 44208, 'candidate semantic envelope')
+    require(max_losses == [3, 3] and capture_paths == 44208, 'normalized semantic envelope')
     # A pre-existing research oracle supplies expected seeded losses/flags.
     sys.dont_write_bytecode = True
     spec = importlib.util.spec_from_file_location('rng_oracle', ROOT / 'verify-combat-rng.py')
@@ -178,8 +196,8 @@ def main():
     for v in oracle.VECTORS:
         _, _, dice, _, diff, ap, dp, engaged, retreat, *_ = v
         ac, dc = int(dice[4:6]), int(dice[6:8])
-        require(loss(candidate, 'attacker', diff, ac) == ap, 'seeded attacker loss differs')
-        require(loss(candidate, 'defender', diff, dc) == dp, 'seeded defender loss differs')
+        require(loss(normalized, 'attacker', diff, ac) == ap, 'seeded attacker loss differs')
+        require(loss(normalized, 'defender', diff, dc) == dp, 'seeded defender loss differs')
         require((ac//10+ac%10 in data['attacker_engaged_sums'][str(diff)]) == engaged, 'Engaged flag')
         require(int(dc//10+dc%10 in data['defender_retreat_one_hex_sums'][str(diff)]) == retreat, 'Retreat flag')
 
@@ -198,14 +216,16 @@ def main():
         require(move_cost(spent, relations, release=release) == expected, 'break-off precedence/DP')
     for spent, relations, release in [(11, ['engaged'], None), (6, ['engaged'], 'I'), (3, ['contact'], 'II')]:
         rejected(lambda: move_cost(spent, relations, release=release), 'excess voluntary spend accepted')
-    print(json.dumps({'diagnostics': 'passed', 'source_admission': 'BLOCKED: CMB-SRC-RUL-001 pending',
-                      'loss_coordinates': 360, 'defined_source_values': 357, 'gaps': missing,
-                      'morale_coordinates': 36, 'candidate_joint_coordinates': 6480,
-                      'candidate_settlement_cases': rows, 'candidate_capture_paths': capture_paths,
+    print(json.dumps({'diagnostics': 'passed', 'source_normalization': 'passed: CMB-SRC-RUL-001 accepted',
+                      'production_admission': 'not implemented',
+                      'loss_coordinates': 360, 'defined_source_values': 357, 'raw_source_gaps': missing,
+                      'normalized_loss_values': sum(len(t) for t in normalized.values()),
+                      'morale_coordinates': 36, 'normalized_joint_coordinates': 6480,
+                      'normalized_settlement_cases': rows, 'normalized_capture_paths': capture_paths,
                       'seeded_cross_checks': len(oracle.VECTORS), 'calendar_vectors': len(calendar_vectors),
                       'movement_vectors': len(movement_vectors),
                       'repair_comparison': repair_comparison,
-                      'limit': 'research/candidate arithmetic only; no adopted repair or runtime proof'}, indent=2))
+                      'limit': 'accepted source normalization and research arithmetic; no runtime proof'}, indent=2))
 
 
 if __name__ == '__main__':

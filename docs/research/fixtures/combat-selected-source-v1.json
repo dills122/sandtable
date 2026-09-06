@@ -185,14 +185,18 @@
       "meaning": "Printed 10percent ends33; 5percent starts41. September15.79 corrects +4 only. No source value may be invented."
     }
   ],
-  "proposed_ruling": {
+  "source_ruling": {
     "id": "CMB-SRC-RUL-001",
-    "status": "pending-owner-decision",
+    "status": "accepted",
+    "accepted_date": "2026-09-06",
+    "accepted_by": "project-owner",
+    "research_commit": "4f44c30",
+    "acceptance_basis": "Owner accepted research-backed original-game fidelity; preserve every defined source cell and label the missing-cell repair as a Sandtable amendment, with historical intent unproved",
     "role": "defender",
     "differential": 2,
     "coordinates": [34, 35, 36],
     "loss_percent": 10,
-    "reason": "Extend 10percent upper bound33 to36: one endpoint edit and smoother neighboring probability thresholds than all5percent. Both single-endpoint repairs are possible; no located source establishes intent. Proposal remains unadopted."
+    "reason": "Extend 10percent upper bound33 to36: one endpoint edit and smoother neighboring probability thresholds than all5percent. Both single-endpoint repairs are possible; no located source establishes intent. Accepted Sandtable amendment; historical intent remains unproved."
   },
   "ruling_research": {
     "date": "2026-09-06",
