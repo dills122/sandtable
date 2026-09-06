@@ -3,7 +3,8 @@
 **Status:** `CMB-PLAN-001` and POL-001–008 accepted by owner on2026-09-06 at `a10a588`.
 `CMB-TASK-001` **complete** within its research scope, including accepted
 [source ruling CMB-SRC-RUL-001](../research/combat-source-freeze-v1.md). [TASK-002 Content freeze](../specs/combat-content-v7.md) is complete as a contract packet;
-checkpoint A review remains open. TASK-003 authority freeze is next; TASK-003–025 not started. Future maturity execution and checkpoint B remain gated.
+[Checkpoint A author check](../reviews/combat-checkpoint-a-author-check.md) is complete, and owner
+requested continuation. TASK-003 is in progress through the bounded slices below; TASK-004–025 not started. Future maturity execution and checkpoint B remain gated.
 **Original input:** `d2bc67c`. Exact contract freeze and production gates remain open.
 
 ## Outcome and boundary
@@ -82,7 +83,8 @@ not tests that already exist.
 | `CMB-TASK-001` / M, 3–5 files | Produce selected-table source manifest and calendar mapping decision; resolve ordinary Contact/Engaged break-off cost precedence under Land8.15/8.24 and the applicable Contact rules. Cover all reachable coordinates/effects and record independent source cross-check; define one-game-month maturity/guard obligation boundaries or leave an explicit activation blocker. | Coordinate-domain enumeration against source, discrepancy log; month-boundary examples independently calculated. Research scripts alone cannot certify untranscribed rows. | G0; [research](../research/), [Rules](../../src/Cna.Core/Rules/) source manifest and new focused oracle fixtures. |
 | `CMB-TASK-002` / M, 3–5 files | Freeze CON-001 names/versions/capability, source-parent/class vocabulary, scenario seed types and canonical fixture format. Reuse existing facts; reject partial/extra categories and absent seed/readiness provenance. | Positive canonical bytes plus single-field negative mutations; review policy/source-to-field mapping. | 001; [Content7 contract](../specs/combat-content-v7.md), [canonical fixture](../specs/fixtures/combat-content-v7.canonical.json), [rejection vectors](../specs/fixtures/combat-content-v7.vectors.json), [oracle](../specs/verify-combat-content-v7.py). Production test fixtures follow in006. |
 
-Checkpoint A: review source coverage and Content freeze; unresolved source/calendar facts stay
+Checkpoint A: [author check at57866a7](../reviews/combat-checkpoint-a-author-check.md) and owner
+continuation permit TASK-003; no independent Ready verdict is claimed. Unresolved source/calendar facts stay
 visible. No favorable-vector or synthetic arithmetic result substitutes for full selected coverage.
 
 ### Checkpoint B — authority and outward contract freeze
@@ -91,6 +93,19 @@ visible. No favorable-vector or synthetic arithmetic result substitutes for full
 | --- | --- | --- | --- |
 | `CMB-TASK-003` / M, 3–5 files | Freeze CON-002–004 world/event/snapshot/command schemas and state transitions. Allocate exact versions after registry inventory; pin causal receipts, bounds, loss/guard/CP conservation, cycle prefix, deadline and migration/recovery behavior. Freeze ordinary movement receipts that atomically debit break-off/terrain CP, apply immediate excess-CPA DP and end only affected relation memberships. Retain earned/due replacement scopes and the unresolved phase-specific maturity gate. | Field-by-field design trace, canonical positive/negative vectors and restart-cut matrix; explicit unsupported-state rejection. | 001–002; new authority contract packet and vectors under [design](./), [Campaign tests](../../tests/Cna.Core.Tests/Campaigns/). |
 | `CMB-TASK-004` / M, 3–5 files | Freeze CON-005/006 side and Exercise contracts, candidate bytes and terminal evidence. Enumerate every design AC in an evidence index; mark deferred transport requirements without allocating fake production support. | Equal-authorized-history vectors, authority-leak negatives, ordinal/terminal tampering and all 72 ACs mapped to a task and planned test. | 003; new side/evidence packet, [Observation tests](../../tests/Cna.Core.Tests/Observations/), [Exercise tests](../../tests/Cna.Core.Tests/Exercises/). |
+
+TASK-003 sizing refinement, 2026-09-06, before authority edits: its three contract families cross
+independent subsystems and cannot honestly fit one3–5-file change. Preserve parent003 and split
+into the following ordered contract checkpoints, each at most five primary files including its
+verification and plan update. Small navigation updates may follow separately. Parent003 closes
+only after all four slices and their cross-contract checks pass; this is not a larger PR request.
+
+| Slice | Frozen output | Verification / successor |
+| --- | --- | --- |
+| `CMB-TASK-003A` | Registry inventory, Setup7 binding/initialization, initial component/CP/ammo/readiness value shapes | Exact canonical Setup and initial element vectors, provenance/scope/zero-ledger negatives; in progress |
+| `CMB-TASK-003B` | Durable World7, relationship/loss/capture/guard/escape/future-obligation values and settlement receipts | Conservation, calendar/guard bounds, canonical values and settlement restart cuts; after003A |
+| `CMB-TASK-003C` | Snapshot/creation and sealed selection/round/step/commit/result command/event envelopes | Exact version/identity/hash framing, deadline/retry suffix and restart-cut matrix; after003B |
+| `CMB-TASK-003D` | Cycle/release/history and ordinary break-off movement receipts; combined CON-002–004 reconciliation | Cumulative CP/immediate DP, affected-membership endings, prefix/release/history/continuation vectors and parent003 closeout; after003C |
 
 Checkpoint B: accept exact combined contracts and resolve any changed policy with owner. Reconcile
 task sizes with frozen types. Runtime implementation remains gated until this checkpoint passes.
