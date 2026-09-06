@@ -273,7 +273,9 @@ values preserved, three source gaps filled by accepted amendment CMB-SRC-RUL-001
 break-off findings retained. [TASK-002 Content7 contract](docs/specs/combat-content-v7.md) is frozen
 in `c465a0f`, with canonical bytes and70 passing rejection vectors. Checkpoint A author validation
 is recorded; [TASK-003A Setup/initial ledger](docs/specs/combat-creation-ledger-v1.md) is frozen in
-`23c3fff`, with63 passing rejection vectors. TASK-003B durable World/settlement contracts are next;
+`23c3fff`, with63 passing rejection vectors. [TASK-003B World/settlement packet](docs/specs/combat-world-settlement-v1.md)
+is complete as a contract slice. [Progress review5](docs/reviews/combat-progress-review-5.md) returned
+Ready with non-blocking follow-ups; its status correction is applied (5of7 passes used).003C is next;
 parent003, future maturity execution and combined checkpoint B remain open. Combat runtime
 implementation has not started.
 

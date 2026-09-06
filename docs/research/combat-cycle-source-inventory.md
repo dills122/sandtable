@@ -9,7 +9,9 @@ remains gated by exact combined contracts; the eight policies, corrected impleme
 three-cell source ruling are owner-approved. TASK-001 source research and the
 [TASK-002 Content7 contract packet](../specs/combat-content-v7.md) are complete. Checkpoint A author
 validation permits the next contract work; [TASK-003A](../specs/combat-creation-ledger-v1.md) is frozen,
-TASK-003B is next and the parent authority/combined-contract gate remains open.
+[TASK-003B](../specs/combat-world-settlement-v1.md) is complete as a contract slice;
+[review5](../reviews/combat-progress-review-5.md) returned Ready with non-blocking follow-ups,
+status correction applied (5of7 passes used).003C/D/004 and the combined-contract gate remain open.
 
 **Date:** 2026-08-25
 
@@ -174,7 +176,7 @@ canonical bytes/hash,70 rejection vectors and eight initial geometry probes.
 [Checkpoint A author check](../reviews/combat-checkpoint-a-author-check.md) at `4303004` records
 source/Content validation and the bounded003A–D split; no new independent verdict is claimed.
 [TASK-003A](../specs/combat-creation-ledger-v1.md) at `23c3fff` freezes Setup7 and initial authority
-values with63 rejection vectors.003B durable World/settlement contracts are next; parent003,
+values with63 rejection vectors. [003B World/settlement values](../specs/combat-world-settlement-v1.md) are complete as a contract slice; review5 covers progress through003B. Parent003,
 later combined contracts and future phase-specific maturity execution remain gated.
 [Review4](../reviews/combat-cycle-plan-review-4.md) records the combined assessment and author correction.
 
@@ -201,4 +203,6 @@ Ready reassessment; remaining policy/production gates stay open.
   future obligations; it is not a complete playable campaign.
 - Review4 returned Not ready at9f683d1. Its ordinary break-off finding is addressed by the author
   in cycle design and TASK-001/003/018/019; owner accepted that correction on2026-09-06. User-approved review
-  budget is exhausted at4of4; no fifth review or independent reassessment is implied.
+  budget was exhausted at4of4 at that historical checkpoint. Owner later authorized three more
+  passes; [review5](../reviews/combat-progress-review-5.md) returned Ready with non-blocking follow-ups
+  for progress through003B. Its status correction is applied; cumulative use is5of7.
