@@ -2,8 +2,8 @@
 
 **Status:** `CMB-PLAN-001` and POL-001–008 accepted by owner on2026-09-06 at `a10a588`.
 `CMB-TASK-001` **complete** within its research scope, including accepted
-[source ruling CMB-SRC-RUL-001](../research/combat-source-freeze-v1.md). TASK-002 Content freeze is next;
-TASK-002–025 not started. Future maturity execution and checkpoint B remain gated.
+[source ruling CMB-SRC-RUL-001](../research/combat-source-freeze-v1.md). [TASK-002 Content freeze](../specs/combat-content-v7.md) is complete as a contract packet;
+checkpoint A review remains open. TASK-003 authority freeze is next; TASK-003–025 not started. Future maturity execution and checkpoint B remain gated.
 **Original input:** `d2bc67c`. Exact contract freeze and production gates remain open.
 
 ## Outcome and boundary
@@ -23,9 +23,11 @@ where those dependencies are required; this package supplies bounded evidence to
 
 ## Combined contract inventory
 
-These are required contract contents, **not allocated production versions or executable schemas**.
-TASK-002–004 must freeze exact field names, types, bounds, tags, canonical ordering/escaping,
-errors, schema/format/capability versions and golden bytes before any consumer is implemented.
+CON-001 now has the [Content7 contract/oracle](../specs/combat-content-v7.md); its reserved identity
+is not registered in runtime. The remaining rows are required contents, **not allocated production
+versions or executable schemas**. TASK-003–004 must freeze exact field names, types, bounds, tags,
+canonical ordering/escaping, errors, schema/format/capability versions and golden bytes before any
+consumer is implemented.
 Use new versioned contracts; never alter historical canonical bytes or infer absent fields.
 
 | ID / owner | Required contents and invariants | Freeze / consumers |
@@ -63,7 +65,8 @@ combined-plan findings. Review4 and its bounded author correction are recorded b
 accepted the correction and policies on2026-09-06, satisfying G0. TASK-001–004 produce source/contract artifacts; runtime consumers start only
 after checkpoint B accepts their concrete freeze. No task is complete without a commit and retained
 verification evidence linked here. TASK-001 has [retained source diagnostics](../research/combat-source-freeze-v1.md)
-and the accepted source ruling; source research is complete, with no runtime implementation task complete.
+and the accepted source ruling. TASK-002 has [canonical Content evidence](../specs/combat-content-v7.md#task-002-verification);
+source research and the Content contract packet are complete, with no runtime implementation task complete.
 
 Commit each task on a feature branch. Package one checkpoint at a time for future PRs; report file
 and line counts before publication. The current documentation branch is not authorization for one
@@ -77,7 +80,7 @@ not tests that already exist.
 | Task / size | Output and acceptance criteria | Verification | Dependencies / likely paths |
 | --- | --- | --- | --- |
 | `CMB-TASK-001` / M, 3–5 files | Produce selected-table source manifest and calendar mapping decision; resolve ordinary Contact/Engaged break-off cost precedence under Land8.15/8.24 and the applicable Contact rules. Cover all reachable coordinates/effects and record independent source cross-check; define one-game-month maturity/guard obligation boundaries or leave an explicit activation blocker. | Coordinate-domain enumeration against source, discrepancy log; month-boundary examples independently calculated. Research scripts alone cannot certify untranscribed rows. | G0; [research](../research/), [Rules](../../src/Cna.Core/Rules/) source manifest and new focused oracle fixtures. |
-| `CMB-TASK-002` / M, 3–5 files | Freeze CON-001 names/versions/capability, source-parent/class vocabulary, scenario seed types and canonical fixture format. Reuse existing facts; reject partial/extra categories and absent seed/readiness provenance. | Positive canonical bytes plus single-field negative mutations; review policy/source-to-field mapping. | 001; new contract packet under [design](./), [Content test fixtures](../../tests/Cna.Core.Tests/Content/Fixtures/). |
+| `CMB-TASK-002` / M, 3–5 files | Freeze CON-001 names/versions/capability, source-parent/class vocabulary, scenario seed types and canonical fixture format. Reuse existing facts; reject partial/extra categories and absent seed/readiness provenance. | Positive canonical bytes plus single-field negative mutations; review policy/source-to-field mapping. | 001; [Content7 contract](../specs/combat-content-v7.md), [canonical fixture](../specs/fixtures/combat-content-v7.canonical.json), [rejection vectors](../specs/fixtures/combat-content-v7.vectors.json), [oracle](../specs/verify-combat-content-v7.py). Production test fixtures follow in006. |
 
 Checkpoint A: review source coverage and Content freeze; unresolved source/calendar facts stay
 visible. No favorable-vector or synthetic arithmetic result substitutes for full selected coverage.
@@ -242,3 +245,15 @@ basis retained in the source manifest and policy register. Verifier checks 360 n
 combinations and12 prior seeded vectors. Raw gaps remain visible; unaccepted/altered amendment
 negatives reject. Calendar and break-off findings satisfy source research with future phase-specific
 maturity execution explicitly deferred to its activation gate. No production schema/runtime changed.
+
+TASK-002 contract checkpoint, 2026-09-06 (input `448e370`): Content schema7 / format
+`sandtable.content-json.v6` and closed `sandtable.capability.combat-cycle-infantry.v1` reserved after
+registry inventory. Reuses existing class/component IDs; freezes offensive ratings, source-parent
+Morale and explicit TOE/ammo/stage-readiness origins. Six-hex synthetic fixture adds two retreat
+direction anchors without adding live supply or duplicate CP/Cohesion authority.
+`python3 docs/specs/verify-combat-content-v7.py`: 10,339 canonical bytes with pinned SHA-256,
+70 rejection vectors, eight initial custody/escape probes across both retreat directions,
+shuffled construction and provenance hash sensitivity all pass. Policy/field mapping is retained
+in the contract. No production code, existing fixture bytes or simulator support changed.
+Checkpoint A review remains open; no additional independent review has run (budget4/4). TASK-003
+must reconcile creation ledger/readiness/Normal Weather and Rules binding before checkpoint B.
