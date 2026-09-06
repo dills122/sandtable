@@ -6,8 +6,9 @@
 This packet joins the [identity](combat-opportunity-identity-v1.md) and
 [sealed protocol](combat-sealed-decision-protocol-v1.md) designs to the six structural Combat
 steps. It defines voluntary selection, an explicit Retreat Before Assault decline, empty-step
-proofs, assignment handoff and cancellation/settlement closure. `CMB-DES-004` next owns cost and
-resolution ordering. Exact wire schemas and implementation tasks still require the combined freeze.
+proofs, assignment handoff and cancellation/settlement closure. `CMB-DES-004` owns cost and
+resolution ordering in the [cost/resolution packet](combat-cost-resolution-order-v1.md). Exact wire
+schemas and implementation tasks still require the combined freeze.
 
 ## Evidence and admitted path
 

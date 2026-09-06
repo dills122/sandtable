@@ -71,9 +71,27 @@ the pre-alpha roadmap carry repository-wide rationale and delivery state.
   reviewed, defining frozen choices, persisted lifecycle, cancellation fallback and strict
   readback. [CMB-DES-003 Combat-step transitions](design/combat-step-transitions-v1.md) is complete
   for review: explicit selection/decline, six closure proofs and prepared/cancelled/settled paths.
-  Next: `CMB-DES-004` cost/resolution ordering. Production and remaining gates stay open.
+  [CMB-DES-004 cost/resolution ordering](design/combat-cost-resolution-order-v1.md) defines atomic
+  costs, role-ordered result publication and simultaneous-stage extension boundaries.
+  [CMB-DES-005 settlement/disclosure](design/combat-settlement-disclosure-v1.md) defines mandatory
+  choice fallback, loss/retreat/custody conservation and side projections. `CYCLE-DES-001`
+  [cycle/Reserve composition](design/continual-cycle-reserve-composition-v1.md) now defines
+  release windows, repeat/finish and occurrence-aware evidence. The
+  [policy register](design/combat-cycle-policy-reconciliation.md) consolidates eight owner choices;
+  the [combined contract/implementation plan](design/combat-cycle-implementation-plan.md) defines
+  25 staged tasks and their evidence. Owner accepted all eight policies and the review4 correction
+  on2026-09-06. TASK-001 source research, TASK-002 Content and TASK-003A Setup/initial ledger
+  packets are complete. [TASK-003B World/settlement](specs/combat-world-settlement-v1.md) is complete
+  as a contract slice;003C/D/004 and production gates stay open.
   [Independent design review 2](reviews/combat-design-review-2.md) returned Ready for
-  DES-001/DES-002/DES-003, with no actionable findings; production gates remain open.
+  DES-001/DES-002/DES-003. [Independent design review 3](reviews/combat-settlement-review-3.md)
+  returned Ready for DES-004/DES-005, with no actionable findings; subsequent cycle design is outside
+  that review. [Review4](reviews/combat-cycle-plan-review-4.md) assessed cycle/combined planning at
+  9f683d1: Not ready with one ordinary break-off handoff gap. Author correction assigns the missing
+  work. That checkpoint exhausted its then-authorized4of4 budget. Owner subsequently authorized
+  up to three more passes. [Progress review5](reviews/combat-progress-review-5.md) covers the
+  unmerged branch through003B: Ready with non-blocking follow-ups; its status correction is applied.
+  Cumulative review use is5of7;003C is next.
 - Sprint 4-5 dependencies: [research-gate audit](research/sprint-4-5-research-gates.md).
 
 ## Reviewed future product work

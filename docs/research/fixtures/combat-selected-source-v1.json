@@ -1,0 +1,242 @@
+{
+  "research_schema": 1,
+  "profile": "CMB-POL-001",
+  "source_input_commit": "9b71faa",
+  "sources": [
+    {
+      "id": "spi-1979-common-charts",
+      "url": "https://spigames.net/PDFv10/CNA_ChartsBothPlayers.pdf",
+      "sha256": "51aa5a5bfdaca3d23794da71a45a830d98b798d060097cde6418126d6bd63bb0",
+      "pages": [3, 4, 5],
+      "sections": [
+        "15.79",
+        "15.89",
+        "17.4"
+      ]
+    },
+    {
+      "id": "spi-1979-compilation",
+      "url": "https://www.spigames.net/PDFv2/CampaignNorthAfrica.pdf",
+      "sha256": "836c14949c4fef1b066043e19a570256b22598d8ae2948d26844b949f53b60a5",
+      "pages": [98, 99, 100]
+    },
+    {
+      "id": "spi-1979-land-rules",
+      "url": "https://www.spigames.net/PDFv10/CNA_LandGameRules.pdf",
+      "sha256": "b362870368b9fb8abe6918195fdcf878d4a8041c557b835b9a1bdde3c8b76e99",
+      "pages": [11, 13, 14, 15, 31, 32, 40]
+    },
+    {
+      "id": "spi-1979-september-errata",
+      "url": "https://www.spigames.net/db_pages/ERR_CampaignforNorthAfrica.pdf",
+      "sha256": "5db539e1fac4aea3ef152370fb732f1938307fe4b2d47ad93eb605db0a09f0fb",
+      "sections": [
+        "8.23",
+        "15.27",
+        "15.79",
+        "20.72",
+        "28.17",
+        "29.61"
+      ]
+    }
+  ],
+  "ordered_coordinates": [11, 12, 13, 14, 15, 16, 21, 22, 23, 24, 25, 26, 31, 32, 33, 34, 35, 36, 41, 42, 43, 44, 45, 46, 51, 52, 53, 54, 55, 56, 61, 62, 63, 64, 65, 66],
+  "attacker_loss_bands": {
+    "-2": [
+      [25, 11, 12],
+      [20, 13, 18],
+      [15, 21, 33],
+      [10, 34, 44],
+      [5, 45, 54],
+      [0, 55, 66]
+    ],
+    "-1": [
+      [25, 11, 11],
+      [20, 12, 13],
+      [15, 14, 26],
+      [10, 31, 42],
+      [5, 43, 52],
+      [0, 53, 66]
+    ],
+    "0": [
+      [25, 11, 11],
+      [20, 12, 12],
+      [15, 13, 24],
+      [10, 25, 36],
+      [5, 41, 51],
+      [0, 52, 66]
+    ],
+    "1": [
+      [25, 11, 11],
+      [20, 12, 12],
+      [15, 13, 22],
+      [10, 23, 33],
+      [5, 34, 46],
+      [0, 51, 66]
+    ],
+    "2": [
+      [25, 11, 11],
+      [20, 12, 12],
+      [15, 13, 16],
+      [10, 21, 31],
+      [5, 32, 44],
+      [0, 45, 66]
+    ]
+  },
+  "defender_loss_bands": {
+    "-2": [
+      [20, 11, 11],
+      [15, 12, 13],
+      [10, 14, 23],
+      [5, 24, 44],
+      [0, 45, 66]
+    ],
+    "-1": [
+      [20, 11, 11],
+      [15, 12, 16],
+      [10, 21, 26],
+      [5, 31, 46],
+      [0, 51, 66]
+    ],
+    "0": [
+      [20, 11, 12],
+      [15, 13, 23],
+      [10, 24, 32],
+      [5, 33, 51],
+      [0, 52, 66]
+    ],
+    "1": [
+      [20, 11, 13],
+      [15, 14, 22],
+      [10, 23, 33],
+      [5, 34, 51],
+      [0, 52, 66]
+    ],
+    "2": [
+      [25, 11, 11],
+      [20, 12, 13],
+      [15, 14, 23],
+      [10, 24, 33],
+      [5, 41, 52],
+      [0, 53, 66]
+    ]
+  },
+  "attacker_engaged_sums": {
+    "-2": [10, 11],
+    "-1": [10, 11, 12],
+    "0": [9, 10, 12],
+    "1": [9, 10, 11],
+    "2": [9, 10, 11, 12]
+  },
+  "defender_retreat_one_hex_sums": {
+    "-2": [9],
+    "-1": [8],
+    "0": [5, 6],
+    "1": [4, 5, 6],
+    "2": [5, 6, 7]
+  },
+  "attacker_capture_sums": {
+    "-2": [2],
+    "-1": [],
+    "0": [],
+    "1": [],
+    "2": []
+  },
+  "defender_capture_sums": {
+    "-2": [],
+    "-1": [],
+    "0": [2],
+    "1": [2],
+    "2": [2]
+  },
+  "capture_share_percent_by_die": [10, 25, 33, 50, 50, 75],
+  "cohesion_zero_morale_bands": [
+    [1, 11, 11],
+    [0, 12, 65],
+    [-1, 66, 66]
+  ],
+  "optical_loss_percent_by_coordinate": {
+    "attacker:-2": [25, 25, 20, 20, 20, 20, 15, 15, 15, 15, 15, 15, 15, 15, 15, 10, 10, 10, 10, 10, 10, 10, 5, 5, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0],
+    "attacker:-1": [25, 20, 20, 15, 15, 15, 15, 15, 15, 15, 15, 15, 10, 10, 10, 10, 10, 10, 10, 10, 5, 5, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    "attacker:0": [25, 20, 15, 15, 15, 15, 15, 15, 15, 15, 10, 10, 10, 10, 10, 10, 10, 10, 5, 5, 5, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    "attacker:1": [25, 20, 15, 15, 15, 15, 15, 15, 10, 10, 10, 10, 10, 10, 10, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    "attacker:2": [25, 20, 15, 15, 15, 15, 10, 10, 10, 10, 10, 10, 10, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    "defender:-2": [20, 15, 15, 10, 10, 10, 10, 10, 10, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    "defender:-1": [20, 15, 15, 15, 15, 15, 10, 10, 10, 10, 10, 10, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    "defender:0": [20, 20, 15, 15, 15, 15, 15, 15, 15, 10, 10, 10, 10, 10, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    "defender:1": [20, 20, 20, 15, 15, 15, 15, 15, 10, 10, 10, 10, 10, 10, 10, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    "defender:2": [25, 20, 20, 15, 15, 15, 15, 15, 15, 10, 10, 10, 10, 10, 10, null, null, null, 5, 5, 5, 5, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  },
+  "cross_check": {
+    "method": "manual ranges versus Apple Vision optical extraction: 56 occupied loss cells; 357 defined coordinate values and 3 matching gaps",
+    "limitation": "PDF copies render identical assault pixels, not independent editions. Visual and optical extraction are separate processes by the same author, not independent human/agent review.",
+    "render_sha256": "589b9d696b6f683091ff980a7b04dd2bef65bd925e9fee8a21ba043b60e6bcd6",
+    "optical_output_sha256": "2814d8181350681e2ebe66e7114d42f00c420eda904d3bb8a6b9c2584b9026dd"
+  },
+  "source_anomalies": [
+    {
+      "cell": "attacker:-2:20percent",
+      "printed_range": [13, 18],
+      "meaning": "Intersect printed interval with ordered d6 domain; 17/18 cannot occur. Keep source endpoints; reject invalid dice."
+    },
+    {
+      "cell": "defender:2",
+      "missing_coordinates": [34, 35, 36],
+      "meaning": "Printed 10percent ends33; 5percent starts41. September15.79 corrects +4 only. No source value may be invented."
+    }
+  ],
+  "source_ruling": {
+    "id": "CMB-SRC-RUL-001",
+    "status": "accepted",
+    "accepted_date": "2026-09-06",
+    "accepted_by": "project-owner",
+    "research_commit": "4f44c30",
+    "acceptance_basis": "Owner accepted research-backed original-game fidelity; preserve every defined source cell and label the missing-cell repair as a Sandtable amendment, with historical intent unproved",
+    "role": "defender",
+    "differential": 2,
+    "coordinates": [34, 35, 36],
+    "loss_percent": 10,
+    "reason": "Extend 10percent upper bound33 to36: one endpoint edit and smoother neighboring probability thresholds than all5percent. Both single-endpoint repairs are possible; no located source establishes intent. Accepted Sandtable amendment; historical intent remains unproved."
+  },
+  "ruling_research": {
+    "date": "2026-09-06",
+    "input_commit": "ac5b188",
+    "recommendation": "10percent for all three missing cells; moderate confidence, historical intent unproved",
+    "additional_sources": [
+      {"url": "https://grognard.com/errata1/cna.html", "locator": "September1979 15.79", "finding": "same official +4 correction; no +2 correction"},
+      {"url": "https://friendorfoe.com/d/CfNA/CNA%20-%20Rules%20Land.pdf", "locator": "July2021 edition, PDF26, 15.79", "finding": "repeats +4 correction and refers to separate charts; no +2 repair"},
+      {"url": "https://obj.vassalengine.org/images/a/af/CNA.vmod", "locator": "v1, images/15.79 The Close Assault Combat Results Table.png", "finding": "same +2 gap; +4 corrected; not an independent original printing",
+       "module_sha256": "b275d4652af5ec599cf0bceca6bd3407783d319e01e822ac6513c543c3de88d2",
+       "chart_sha256": "5234693da7989a179bb5d0767c622e74daac7d419c5b1c90509b4c544ad3b2c6"}
+    ],
+    "neighbor_defender_loss_bands": {
+      "3": [[25, 11, 11], [20, 12, 14], [15, 15, 25], [10, 26, 42], [5, 43, 54], [0, 55, 66]],
+      "4": [[25, 11, 12], [20, 13, 16], [15, 21, 33], [10, 34, 45], [5, 46, 56], [0, 61, 66]]
+    },
+    "neighbor_provenance": "common-charts PDF4 visual plus existing optical extraction; +4 uses official September15.79 correction; research comparison only, no wider profile admission",
+    "candidate_order": "34,35,36",
+    "candidates": [[5, 5, 5], [10, 5, 5], [10, 10, 5], [10, 10, 10]],
+    "endpoint_edits": [1, 2, 2, 1],
+    "probability_scope": "independent uniform accepted d6; equal strengths, both Basic Morale0 and Cohesion0; excludes broader profiles and selection-conditioned samples"
+  },
+  "calendar": {
+    "game_turns_per_month_delay": 4,
+    "operation_stages_per_game_turn": 3,
+    "basis": [
+      "Land5.1",
+      "Land20.21",
+      "September20.72",
+      "Land28.24"
+    ],
+    "classification": "source-backed normalization inference; phase-specific maturity execution remains deferred",
+    "civil_date_arithmetic": false,
+    "maturity_effect": "replacement-points-eligible-for-training; never direct TOE assignment"
+  },
+  "break_off": {
+    "contact_cp": 2,
+    "engaged_cp": 4,
+    "mixed_membership_policy": "highest applicable one-time break-off cost; never sum per counterpart",
+    "ordinary_nonmotorized_ceiling_ratio": [3, 2],
+    "scope": "integer-CP ordinary infantry; retain stricter released-Reserve ceilings; Reaction/actual RBA not implemented"
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "contract": "combat-world-settlement-v1",
+  "worldVersion": 7,
+  "primitiveContracts": "combat-creation-ledger-v1.md",
+  "objects": {
+    "World": "contractVersion:int creationBinding:id elements:Element[] representations:Representation[] brokenVehicleLots:LegacyBrokenVehicleLot[] cohesionCauses:Cause[] relationships:Relationship[] custodyLots:Lot[] guards:Guard[] replacementEntitlements:Entitlement[] futureObligations:Obligation[] settlements:Settlement[]",
+    "Representation": "representationId:id currentLocationId:id bindingKind:string boundElementIds:id[]",
+    "UnitKey": "creationBinding:id originalSide:side elementId:id",
+    "ComponentKey": "unit:UnitKey componentId:id",
+    "Scope": "gameTurn:int operationStage:int",
+    "FutureScope": "gameTurn:futureTurn operationStage:int",
+    "Cause": "causeId:id ordinal:int receiptId:id elementId:id gameTurn:int operationStage:int kind:string points:int before:int after:int",
+    "Relationship": "relationId:id creationReceiptId:id kind:string attacker:UnitKey defender:UnitKey gameTurn:int operationStage:int active:bool endedByReceiptId:id? endingCause:string?",
+    "Lot": "lotId:id lossReceiptId:id originalComponent:ComponentKey captor:UnitKey quantity:int originLocationId:id currentLocationId:id? status:string guardId:id? escapeReceiptId:id?",
+    "Guard": "guardId:id formationReceiptId:id lotId:id originComponent:ComponentKey currentLocationId:id toe:int baseCapabilityPointAllowance:int offensiveCloseAssaultRating:int defensiveCloseAssaultRating:int operationalState:Operational ammunition:Ammunition readiness:Readiness",
+    "Entitlement": "entitlementId:id escapeReceiptId:id lotId:id originalComponent:ComponentKey quantity:int reunionLocationId:id earnedScope:Scope delayOperationStages:int eligibleScope:FutureScope status:string",
+    "Obligation": "obligationId:id receiptId:id kind:string subjectId:id earnedScope:Scope eligibleScope:FutureScope? activationGate:string status:string",
+    "Result": "differential:int attackerCoordinate:int defenderCoordinate:int captureDie:int? attackerPercent:int defenderPercent:int rawEngaged:bool requiredRetreat:int capturedRole:string? captureShare:int",
+    "Disposition": "receiptId:id predecessorReceiptId:id kind:string requiredDistance:int plannedDistance:int unfulfilledDistance:int route:Route",
+    "RoleLoss": "role:string component:ComponentKey committedToe:int tablePercent:int refusalPercent:int lossToe:int capturedToe:int otherLossToe:int remainingToe:int lossDp:int",
+    "Losses": "receiptId:id predecessorReceiptId:id roles:RoleLoss[]",
+    "Retreat": "receiptId:id predecessorReceiptId:id kind:string route:Route completedDistance:int beforeCp:Cp afterCp:Cp excessCpDp:int attackerVictoryRp:int",
+    "Custody": "receiptId:id predecessorReceiptId:id lotId:id kind:string route:Route guardId:id? entitlementId:id? donorToeBefore:int donorToeAfter:int",
+    "RelationsReceipt": "receiptId:id predecessorReceiptId:id relationshipId:id? kind:string?",
+    "Settlement": "settlementId:id commitmentId:id resultId:id gameTurn:int operationStage:int attacker:UnitKey defender:UnitKey preLossElements:Element[] result:Result disposition:Disposition? losses:Losses? retreat:Retreat? custody:Custody? relationships:RelationsReceipt?"
+  },
+  "sortedArrays": {
+    "Representation": ["representationId"],
+    "Cause": ["ordinal"],
+    "Relationship": ["relationId"],
+    "Lot": ["lotId"],
+    "Guard": ["guardId"],
+    "Entitlement": ["entitlementId"],
+    "Obligation": ["obligationId"],
+    "Settlement": ["settlementId"],
+    "RoleLoss": ["role"]
+  },
+  "externalTypes": {
+    "LegacyBrokenVehicleLot": "CampaignBreakdownCodec.WriteLot/ParseLot: unchanged predecessor value codec; selected Content7 nonmotorized profile admits only an empty array"
+  },
+  "orderedArrays": ["Route"]
+}

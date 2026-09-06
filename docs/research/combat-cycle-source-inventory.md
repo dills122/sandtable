@@ -3,8 +3,15 @@
 **Status:** Source inventory, `CMB-RSH-001` result-surface research, `CMB-RSH-002` static-content
 research, `CMB-RSH-003` mutable-state research, `CMB-RSH-004` RNG/golden research, and the
 `CYCLE-RSH-001` cycle identity/history decision and `RESREL-RSH-001` release research are complete
-and decision-ready; `CMB-DES-001` identity, `002` protocol and `003` step designs are complete for review;
-production remains gated by the remaining Contact/Combat and Reserve Release design
+and decision-ready; `CMB-DES-001` identity, `002` protocol, `003` steps, `004` cost/resolution and
+`005` settlement/disclosure plus `CYCLE-DES-001` composition are complete for review. Production
+remains gated by exact combined contracts; the eight policies, corrected implementation plan and
+three-cell source ruling are owner-approved. TASK-001 source research and the
+[TASK-002 Content7 contract packet](../specs/combat-content-v7.md) are complete. Checkpoint A author
+validation permits the next contract work; [TASK-003A](../specs/combat-creation-ledger-v1.md) is frozen,
+[TASK-003B](../specs/combat-world-settlement-v1.md) is complete as a contract slice;
+[review5](../reviews/combat-progress-review-5.md) returned Ready with non-blocking follow-ups,
+status correction applied (5of7 passes used).003C/D/004 and the combined-contract gate remain open.
 
 **Date:** 2026-08-25
 
@@ -119,11 +126,11 @@ Research that can proceed now:
 3. `CMB-RSH-003` — **decision-ready:** the
    [Combat mutable-state spike](combat-mutable-state-spike.md) reconciles current TOE/ledger
    authority, full-game ammunition, loss/capture conservation, immediate custody, retreat, and
-   Cohesion consequences. Includes synthetic arithmetic evidence; owner approval remains pending.
+   Cohesion consequences. Includes synthetic arithmetic evidence; POL-003/005 now record owner acceptance.
 4. `CMB-RSH-004` — **decision-ready:** the
    [Combat RNG/golden spike](combat-rng-golden-spike.md) proposes role-ordered dice on the existing
    campaign stream, with conditional capture, twelve seeded vectors, and exhaustive draw-domain
-   counts. Full loss-table normalization and production contracts remain design-gated.
+   counts. TASK-001 now completes selected loss-table normalization; production contracts remain gated.
 5. `CYCLE-RSH-001` — **complete:** the
    [Continual-cycle identity and attacked-target history decision](continual-cycle-identity-and-history-decision.md)
    freezes the phase-local ordinal, repeat/finish closure, ordered repeat-permitting attacked-target
@@ -147,27 +154,55 @@ remains part of these design gates):
    **complete for review:** bounded decline-only infantry path, provisional selection, six ordered
    closure proofs, exact prepared-round suffix and no-attack versus settled completion. Actual
    RBA movement, gun/Barrage and broader assignment paths remain explicit extension gates.
-10. `CMB-DES-004` — simultaneous Barrage/Anti-Armor and sequential Close Assault boundaries.
-11. `CMB-DES-005` — loss/retreat/capture/Contact/Engaged projection and Chronicle redaction.
-12. `CYCLE-DES-001` — Reserve Release to repeat/finish plus Exercise/Maneuver evidence.
+10. `CMB-DES-004` — [cost/resolution ordering](../design/combat-cost-resolution-order-v1.md)
+    is complete for review: atomic committed use, deterministic result publication, settlement
+    handoff and explicit simultaneous-stage/sequential-assault extension requirements.
+11. `CMB-DES-005` — [settlement/disclosure](../design/combat-settlement-disclosure-v1.md)
+    is complete for review: causal loss/retreat/custody closure, scripted mandatory fallback,
+    original-participant relations and side-specific Chronicle/decision projections.
+12. `CYCLE-DES-001` — [cycle/Reserve composition](../design/continual-cycle-reserve-composition-v1.md)
+    is complete for review: identity/prefix and audience bindings, persistent release restrictions,
+    repeat/finish control, carried obligations and occurrence-aware Exercise/Maneuver evidence.
 
-Only after those gates should Sprint 5 receive implementation-sized tasks, acceptance criteria, and
-an independent plan review.
+The [policy register](../design/combat-cycle-policy-reconciliation.md) reconciles those design inputs
+into eight explicit owner choices. The [combined contract/implementation plan](../design/combat-cycle-implementation-plan.md)
+now defines 25 staged tasks, contract ownership and acceptance evidence. Owner accepted the eight
+policies and corrected plan on2026-09-06. [TASK-001 source evidence](combat-source-freeze-v1.md)
+was completed in `635d95a`: 357 defined loss values preserved and three missing defender +2 cells
+filled by accepted `CMB-SRC-RUL-001` (10%). Research-backed fidelity and uncertainty about historical
+intent are recorded. Calendar/break-off findings are retained. [TASK-002 Content7 freeze](../specs/combat-content-v7.md)
+is committed in `c465a0f`: reused component/class vocabulary, parent Morale, explicit scenario seeds,
+canonical bytes/hash,70 rejection vectors and eight initial geometry probes.
+[Checkpoint A author check](../reviews/combat-checkpoint-a-author-check.md) at `4303004` records
+source/Content validation and the bounded003A–D split; no new independent verdict is claimed.
+[TASK-003A](../specs/combat-creation-ledger-v1.md) at `23c3fff` freezes Setup7 and initial authority
+values with63 rejection vectors. [003B World/settlement values](../specs/combat-world-settlement-v1.md) are complete as a contract slice; review5 covers progress through003B. Parent003,
+later combined contracts and future phase-specific maturity execution remain gated.
+[Review4](../reviews/combat-cycle-plan-review-4.md) records the combined assessment and author correction.
 
 [Independent design review 2](../reviews/combat-design-review-2.md) is Ready for the
 bounded `CMB-DES-001`/`002`/`003` inputs, with no actionable findings. This checkpoint does not replace
-the combined implementation-plan review or approve pending policy/production contracts.
+the combined implementation-plan review or approve pending policy/production contracts; it does
+not cover subsequent DES-004/005. [Independent design review 3](../reviews/combat-settlement-review-3.md)
+returned Ready for those bounded inputs, with no actionable findings; subsequent CYCLE-DES-001
+is outside that checkpoint. User authorized review4, which found one missing ordinary break-off
+handoff in cycle/combined planning. Author correction assigns it without claiming an independent
+Ready reassessment; remaining policy/production gates stay open.
 
-## Retained unknowns
+## Retained gates and deferrals
 
-- approval of the bounded `CMB-DES-001` identity proposal; multi-unit expansion and exact outward
-  disclosure contracts remain gated;
-- whether the first combat vertical normalizes the entire reachable selected table surface or a
-  different safely closed subset;
-- production ammunition/readiness representation and later supply continuity (`CMB-RSH-003`
-  recommends full-game infantry consumption for the bounded assault);
-- approval and design of prisoner custody/escape settlement (`CMB-RSH-003` retains reachable
-  infantry capture; captured equipment remains outside the selected infantry surface);
-- approval of `CMB-DES-002` private-decision timing/cancellation policy; hosted implementation and
-  mandatory-attack fallback remain later gates; and
-- Breakdown/Retreat BP continuity and broken-vehicle consequences.
+- `CMB-POL-001`–`008` and the corrected plan were accepted by owner on2026-09-06. Custody,
+  fallback and disclosure policy is settled for the bounded profile; exact contract/source
+  verification and broader capability gates remain.
+- `CMB-TASK-001`–`004` own complete selected-table source verification, calendar mapping, exact
+  Content/world/command/event/snapshot/side/Exercise contracts and compatibility vectors.
+- The proposed table choice covers the entire reachable selected surface; another profile would
+  require a new closed design. No favorable seed or unhandled capture may narrow admission.
+- General resupply, prisoner upkeep/maturity execution, vehicle retreat, real RBA, released-Reserve
+  offensive Combat and hosted decisions remain extensions. Bounded Truck Convoy entry retains
+  future obligations; it is not a complete playable campaign.
+- Review4 returned Not ready at9f683d1. Its ordinary break-off finding is addressed by the author
+  in cycle design and TASK-001/003/018/019; owner accepted that correction on2026-09-06. User-approved review
+  budget was exhausted at4of4 at that historical checkpoint. Owner later authorized three more
+  passes; [review5](../reviews/combat-progress-review-5.md) returned Ready with non-blocking follow-ups
+  for progress through003B. Its status correction is applied; cumulative use is5of7.
