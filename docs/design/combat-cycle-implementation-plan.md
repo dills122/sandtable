@@ -1,7 +1,8 @@
 # Combat and Cycle Combined Contract / Implementation Plan
 
 **Status:** `CMB-PLAN-001` and POL-001–008 accepted by owner on2026-09-06 at `a10a588`.
-`CMB-TASK-001` source verification **in progress**; TASK-002–025 not started.
+`CMB-TASK-001` research decision-ready; complete normalization **blocked** on the three-cell
+[source ruling CMB-SRC-RUL-001](../research/combat-source-freeze-v1.md). TASK-002–025 not started.
 **Original input:** `d2bc67c`. Exact contract freeze and production gates remain open.
 
 ## Outcome and boundary
@@ -29,7 +30,7 @@ Use new versioned contracts; never alter historical canonical bytes or infer abs
 | ID / owner | Required contents and invariants | Freeze / consumers |
 | --- | --- | --- |
 | `CMB-CON-001` Content / Rules | Reconcile [Content6](../../src/Cna.Core/Content/ContentPackV6Models.cs) component IDs/classification/ratings with maximum TOE, parent Basic Morale and explicit current seed provenance. Closed capability and dedicated synthetic fixture; tables/modifiers stay Rules-owned. Complete selected table source/coordinate manifest and approved policy digest contribute to rules/config identity. | 001–002 / 005–006 |
-| `CMB-CON-002` Core world / Archives | Successor to [World6](../../src/Cna.Core/Campaigns/CampaignWorldV6.cs): current component TOE/ammo/readiness, CP including mandatory overrun, separately attributable DP/RP, participant relationships, loss/capture lots, guard provenance, escape entitlement and future obligation records. Preserve existing BP/bands/broken lots. Calendar maturity representation must be source-checked, never guessed. | 001/003 / 007–008, 014–016 |
+| `CMB-CON-002` Core world / Archives | Successor to [World6](../../src/Cna.Core/Campaigns/CampaignWorldV6.cs): current component TOE/ammo/readiness, CP including ordinary infantry up to 150% CPA and mandatory overrun, separately attributable DP/RP, participant relationships, loss/capture lots, guard provenance, escape entitlement and future obligation records. Preserve existing BP/bands/broken lots. Retain earned/due game scopes and the source-backed four-turn delay; phase-specific maturity, training and absorption remain activation gates. | 001/003 / 007–008, 014–016 |
 | `CMB-CON-003` Core commands / Chronicle | Versioned segment selection/closure, real RBA decline, private two-slot round, commit/result, retreat intent, loss/retreat/custody/relationship settlement and round closure. Include causal predecessor, opportunity/unit/component bindings, rules/config/base evidence, exact receipt identity and pre/post versions. Persist budgets/deadline/high-water time, consumed decisions, accepted input and terminal cause. Result retains role-labelled rolls/cursors; costs, results and each settlement publish atomically. | 003 / 009–016 |
 | `CMB-CON-004` Core cycle / Archives | First-cycle opening in ReserveDesignationCompleted, repeat/finish events, pre-event prefix, ordinal/relative slot/resolved actor, release window/dispositions, Movement-end proximity, release/offensive-use history, exception expiry, ordinary break-off CP/relationship receipts, material progress and continuation witness. Reconstruct complete active-stage history; no-history restore rejects. Phase finish preserves future obligations and is not stage end. | 003 / 017–019 |
 | `CMB-CON-005` Core side projection / future Dispatch | Closed per-audience choices, errors and observation fields; own revision/action set separate from authority version; exact candidate codecs and stable public refs. Authorized disclosure only, including declared inferences. Future transport must carry decision/state/rules/config bindings without sending private authority version/hash as an outward token; specify an explicit audience mapping. | 004 / 020–021; hosted adapter deferred |
@@ -60,7 +61,8 @@ All IDs below use prefix `CMB-TASK-`. Numbers in dependency columns refer to tho
 combined-plan findings. Review4 and its bounded author correction are recorded below; owner
 accepted the correction and policies on2026-09-06, satisfying G0. TASK-001–004 produce source/contract artifacts; runtime consumers start only
 after checkpoint B accepts their concrete freeze. No task is complete without a commit and retained
-verification evidence linked here. Current evidence for every task: **none**.
+verification evidence linked here. TASK-001 has [retained source diagnostics](../research/combat-source-freeze-v1.md)
+and a pending owner ruling; no implementation task is complete.
 
 Commit each task on a feature branch. Package one checkpoint at a time for future PRs; report file
 and line counts before publication. The current documentation branch is not authorization for one
@@ -83,7 +85,7 @@ visible. No favorable-vector or synthetic arithmetic result substitutes for full
 
 | Task / size | Output and acceptance criteria | Verification | Dependencies / likely paths |
 | --- | --- | --- | --- |
-| `CMB-TASK-003` / M, 3–5 files | Freeze CON-002–004 world/event/snapshot/command schemas and state transitions. Allocate exact versions after registry inventory; pin causal receipts, bounds, loss/guard/CP conservation, cycle prefix, deadline and migration/recovery behavior. Freeze ordinary movement receipts that atomically debit break-off/terrain CP and end only affected relation memberships. | Field-by-field design trace, canonical positive/negative vectors and restart-cut matrix; explicit unsupported-state rejection. | 001–002; new authority contract packet and vectors under [design](./), [Campaign tests](../../tests/Cna.Core.Tests/Campaigns/). |
+| `CMB-TASK-003` / M, 3–5 files | Freeze CON-002–004 world/event/snapshot/command schemas and state transitions. Allocate exact versions after registry inventory; pin causal receipts, bounds, loss/guard/CP conservation, cycle prefix, deadline and migration/recovery behavior. Freeze ordinary movement receipts that atomically debit break-off/terrain CP, apply immediate excess-CPA DP and end only affected relation memberships. Retain earned/due replacement scopes and the unresolved phase-specific maturity gate. | Field-by-field design trace, canonical positive/negative vectors and restart-cut matrix; explicit unsupported-state rejection. | 001–002; new authority contract packet and vectors under [design](./), [Campaign tests](../../tests/Cna.Core.Tests/Campaigns/). |
 | `CMB-TASK-004` / M, 3–5 files | Freeze CON-005/006 side and Exercise contracts, candidate bytes and terminal evidence. Enumerate every design AC in an evidence index; mark deferred transport requirements without allocating fake production support. | Equal-authorized-history vectors, authority-leak negatives, ordinal/terminal tampering and all 72 ACs mapped to a task and planned test. | 003; new side/evidence packet, [Observation tests](../../tests/Cna.Core.Tests/Observations/), [Exercise tests](../../tests/Cna.Core.Tests/Exercises/). |
 
 Checkpoint B: accept exact combined contracts and resolve any changed policy with owner. Reconcile
@@ -103,7 +105,7 @@ exist, but no active Combat capability is advertised.
 
 | Task / size | Output and acceptance criteria | Verification | Dependencies / likely paths |
 | --- | --- | --- | --- |
-| `CMB-TASK-007` / M, 3–5 files | Implement frozen world/obligation types and validated creation seeds. Permit mandatory CP overrun without weakening voluntary limits; retain distinct guard/loss/replacement provenance and existing Breakdown state. | `CombatWorld` boundary/conservation/overflow tests, including E10→11, guard transfer and malformed lots. | 003/006; [Campaigns](../../src/Cna.Core/Campaigns/), [Campaign tests](../../tests/Cna.Core.Tests/Campaigns/). |
+| `CMB-TASK-007` / M, 3–5 files | Implement frozen world/obligation types and validated creation seeds. Represent ordinary integer infantry spending up to 150% CPA with immediate excess-CPA DP, stricter released-Reserve ceilings and separately valid mandatory overrun; retain distinct guard/loss/replacement provenance and existing Breakdown state. | `CombatWorld` boundary/conservation/overflow tests, including ordinary CPA10 spending 11/15 versus rejected16, mandatory E10→11, Reserve ceilings, guard transfer and malformed lots. | 003/006; [Campaigns](../../src/Cna.Core/Campaigns/), [Campaign tests](../../tests/Cna.Core.Tests/Campaigns/). |
 | `CMB-TASK-008` / M, 3–5 files | Implement canonical snapshot/history codec and strict restore for new state. Historical bytes unchanged; reject missing/forged cycle or settlement evidence and unsupported migration. | `CombatPersistence` roundtrip/golden/tamper tests; recovery works when fresh admission is disabled. | 007; [Campaigns](../../src/Cna.Core/Campaigns/), [Campaign tests](../../tests/Cna.Core.Tests/Campaigns/). |
 
 Checkpoint D: persistence tests prove stored obligations survive restart. Later lifecycle tasks add
@@ -146,7 +148,7 @@ admission evidence still wait for checkpoint I.
 | Task / size | Output and acceptance criteria | Verification | Dependencies / likely paths |
 | --- | --- | --- | --- |
 | `CMB-TASK-017` / M, 3–5 files | Implement release window and canonical own-unit dispositions, one pinned budget, first-I conversion/later-II retention fallback and explicit completion. Status changes retain release restrictions/history. | `ReserveRelease` first/later/empty, consumed convert, duplicate/stale/expiry, cumulative CP ceilings and no auto-release/repeat. | 016; [Campaigns](../../src/Cna.Core/Campaigns/), focused Core tests. |
-| `CMB-TASK-018` / M, 3–5 files | Implement retained Movement-end proximity, next-Movement exception and ordinary Contact/Engaged break-off under the frozen cost precedence. Charge CP, move and update affected memberships atomically; preserve unrelated relations and CP/BP/bands/broken lots, ammo/TOE/Cohesion and offensive-use history. | `CycleMovement` Contact/no-ZOC Engaged/overlapping-cost and last-counterpart cases, spent5+4+1=CPA10 versus insufficient CP, atomic restart; exception expiry, changed enemy position, mandatory overspend, retained resource/Breakdown history and exhausted-assault rejection. | 017; [Campaigns](../../src/Cna.Core/Campaigns/), focused Core tests. |
+| `CMB-TASK-018` / M, 3–5 files | Implement retained Movement-end proximity, next-Movement exception and ordinary Contact/Engaged break-off under the frozen cost precedence and ordinary 150%-CPA ceiling (stricter for released Reserves). Charge CP and any immediate excess-CPA DP, move and update affected memberships atomically; preserve unrelated relations and CP/BP/bands/broken lots, ammo/TOE/Cohesion and offensive-use history. | `CycleMovement` Contact/no-ZOC Engaged/overlapping-cost and last-counterpart cases, spent5+4+1=CPA10, ordinary totals11/15 with DP versus rejected16, stricter Reserve ceilings, atomic restart; exception expiry, changed enemy position, mandatory overspend, retained resource/Breakdown history and exhausted-assault rejection. | 017; [Campaigns](../../src/Cna.Core/Campaigns/), focused Core tests. |
 | `CMB-TASK-019` / M, 3–5 files | Implement first opening, semantic progress, supported continuation witness and repeat/finish control. Use TASK-018's relation-aware move rule for witnesses; never infer no Movement from exhausted ammo or a missing break-off implementation. Prefix excludes opening event; finish enters same-slot Truck Convoy without stage housekeeping. | `CycleControl` full truth table, ordinal/prefix forks, no-op/cancel/retain-only history, reachable zero-loss Engaged repeat with break-off witness, lost reply/deadline, pending and future obligations; unsupported continuation is not “none legal.” | 018; [Campaigns](../../src/Cna.Core/Campaigns/), [Rules](../../src/Cna.Core/Rules/), focused Core tests. |
 
 Checkpoint H: demonstrate actual Movement/Reserve repetition and settled Combat-to-finish through
@@ -213,3 +215,14 @@ Planning-packet validation, 2026-09-06: 246 local path links resolved across the
 All three research scripts above passed; staged whitespace check passed. No .NET build/tests run
 for this documentation-only change. CCE recall/search and memory writes returned `Transport closed`;
 local files supplied the fallback evidence. These checks do not complete any implementation task.
+
+TASK-001 research checkpoint, 2026-09-06: [source packet](../research/combat-source-freeze-v1.md),
+[numeric fixture](../research/fixtures/combat-selected-source-v1.json) and
+[diagnostic verifier](../research/verify-combat-source-freeze.py). Visual and optical extraction
+agree on 357 defined loss values and three source gaps; the PDF copies contain identical scan
+pixels. Proposed 10% repair remains unadopted. Candidate checks cover 6,480 joint coordinates,
+8,840 settlement combinations and 12 prior seeded vectors; calendar and movement arithmetic pass.
+Source admission remains blocked. Calendar normalization is a four-turn/12-stage inference;
+phase-specific maturity execution remains deferred. Ordinary break-off is highest applicable 2/4 CP
+plus terrain, with immediate DP above CPA and a 150% ordinary infantry ceiling. These findings
+constrain TASK-003/007/018/019; they do not certify runtime, replay or independent engineering review.
