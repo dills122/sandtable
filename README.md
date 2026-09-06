@@ -278,7 +278,9 @@ is complete as a contract slice. [Progress review5](docs/reviews/combat-progress
 Ready with non-blocking follow-ups; its status correction is applied.
 [003C1 rules inputs and timing](docs/specs/combat-rules-inputs-v1.md) is complete as a contract
 slice; [review6](docs/reviews/combat-inputs-review-6.md) returned Ready, no actionable findings
-(6of7 passes used).003D1 sequence/cycle bytes are next, before003C2 full Rules10/creation/snapshot assembly;
+(6of7 used at that checkpoint). [003D1 sequence/cycle contracts](docs/specs/combat-cycle-sequence-v1.md)
+are complete; [review7](docs/reviews/combat-sequence-review-7.md) returned Ready, no actionable findings.
+Cumulative review use is7of7.003C2 full Rules10/creation/snapshot assembly is next;
 parent003, future maturity execution and combined checkpoint B remain open. Combat runtime
 implementation has not started.
 

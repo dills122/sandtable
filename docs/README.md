@@ -93,7 +93,9 @@ the pre-alpha roadmap carry repository-wide rationale and delivery state.
   unmerged branch through003B: Ready with non-blocking follow-ups; its status correction is applied.
   [003C1 rules inputs/timing](specs/combat-rules-inputs-v1.md) is complete as a contract slice;
   [review6](reviews/combat-inputs-review-6.md) returned Ready, no actionable findings (6of7 used).
-  The plan orders003D1 sequence/cycle next, before full Rules10 assembly; parent003C/D stays open.
+  [003D1 sequence/cycle contracts](specs/combat-cycle-sequence-v1.md) are complete;
+  [review7](reviews/combat-sequence-review-7.md) returned Ready, no actionable findings (7of7 used).
+  Next003C2 assembles full Rules10/creation/snapshot; parent003C/D stays open.
 - Sprint 4-5 dependencies: [research-gate audit](research/sprint-4-5-research-gates.md).
 
 ## Reviewed future product work

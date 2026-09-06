@@ -107,7 +107,7 @@ Optional parser evidence gate
 | Side-safe observations and legal-action enforcement | Implemented for the current synthetic path | Extend only with each new mechanic and its disclosure tests |
 | Mandatory turn preamble | Implemented through Reserve Designation completion | Preserve the exact Movement terminal while later mechanics expand |
 | Movement, Reaction and Breakdown | Complete within the certified synthetic profile through Breakdown Tasks006–007 | Public authority and checked Runner successors reach first-side Combat entry; Contact/Engaged and Combat adjudication remain deferred |
-| Combat | Research decision-ready; `CMB-DES-001`-`005` bounded designs complete for review; implementation not started | Policies and corrected 25-task plan accepted2026-09-06; TASK-001 source research complete with accepted three-cell amendment; TASK-002 Content7 contract frozen in `c465a0f`; checkpoint A author check complete; TASK-003A Setup/initial ledger frozen in `23c3fff`;003B/003C1 contract slices complete; review6 Ready, no findings (6of7);003D1 sequence/cycle bytes next; parent003 and combined checkpoint B remain open |
+| Combat | Research decision-ready; `CMB-DES-001`-`005` bounded designs complete for review; implementation not started | Policies and corrected 25-task plan accepted2026-09-06; TASK-001 source research complete with accepted three-cell amendment; TASK-002 Content7 contract frozen in `c465a0f`; checkpoint A author check complete; TASK-003A Setup/initial ledger frozen in `23c3fff`;003B/003C1/003D1 contract slices complete; review7 Ready, no findings (7of7);003C2 full Rules/creation/snapshot next; parent003 and combined checkpoint B remain open |
 | Working pre-alpha skeleton | Not reached | Requires one authentic movement/contact/combat loop with replay |
 | First-scenario content and remaining Land systems | Milestone-level; not started | Re-estimate after the skeleton exposes exercised-rule and transcription scope |
 | Campaign lifecycle and Maproom | Milestone-level; not started | Requires stable playable authority, Chronicle persistence, and save/resume contracts |
@@ -131,7 +131,7 @@ Maproom remain future work.
 | 2 — Rules laboratory and legal-action boundary | Complete for the admitted synthetic path | Keep outward actions observation-derived and revalidate exact membership at submission |
 | 3 — Mandatory turn preamble | Complete for the admitted synthetic no-obligation path | Positive Organization/convoy/fleet cases remain explicit later-scenario work; subsequent bounded mechanics now reach first-side Combat entry |
 | 4 — Movement, Breakdown, and Reaction boundary | Complete within the certified synthetic profile | Movement and ZOC/Reaction are implemented; Breakdown Tasks006–007 public activation, Runner adoption and transcript/privacy follow-up are complete. Positive ZOC and broader Breakdown categories remain extensions |
-| 5 — Combat and continual-cycle loop | Research decision-ready; bounded Combat designs complete for review; not implementation-ready | Owner accepted policies/plan and review4 correction; TASK-001 source and TASK-002 Content packets complete; checkpoint A author check complete; TASK-003A/003B/003C1 complete as contract slices;003D1 next; parent003C/D and outward exact contracts stay open |
+| 5 — Combat and continual-cycle loop | Research decision-ready; bounded Combat designs complete for review; not implementation-ready | Owner accepted policies/plan and review4 correction; TASK-001 source and TASK-002 Content packets complete; checkpoint A author check complete; TASK-003A/003B/003C1/003D1 complete as contract slices;003C2 next; parent003C/D and outward exact contracts stay open |
 | 6 — Scenario Group One content | Milestone-level; not started | Begin after the working pre-alpha skeleton measures the exact exercised-rule/data surface |
 | 7 — Remaining required Land systems | Milestone-level; not started | Split from the measured first-scenario rule inventory rather than treating it as one task |
 | 8 — Minimal Maproom and campaign lifecycle | Milestone-level; not started | Requires stable playable authority, Chronicle persistence/save-resume, and the no-model intent prototype |
@@ -620,7 +620,7 @@ packets without authorizing their implementations:
 | --- | --- | --- |
 | `BREAKDOWN-001` | Approved and completed in `MOV-TASK-004B` | Exact BP, synthetic Truck cohort, Sandstorm-attributed world continuity, identity migration, and review are closed; Task 005 projects the approved owner subset |
 | `CONTACT-001` | Decision-complete; all five rulings accepted in PR #71; ZOC/Reaction spec/design approved after PR #80 merged | Core implementation is activated through `ZOR-TASK-006C`; `007A` Runner adoption is implemented; `007B` verification and independent review are complete; Contact/Engaged remain Sprint 5 |
-| `COMBAT-CYCLE-001` | Source inventory and TASK-001/002 source/Content packets complete; checkpoint A author check and003A/003B/003C1 complete; parent003C/D and remaining combined contracts open | Replace provisional Sprint 5 headings with reviewed private-choice, simultaneous-resolution, Reserve Release, and repeat-cycle contracts |
+| `COMBAT-CYCLE-001` | Source inventory and TASK-001/002 source/Content packets complete; checkpoint A author check and003A/003B/003C1/003D1 complete; parent003C/D and remaining combined contracts open | Replace provisional Sprint 5 headings with reviewed private-choice, simultaneous-resolution, Reserve Release, and repeat-cycle contracts |
 
 ### Task 4.1 - Capability Points and the initial cohesion ledger
 
@@ -765,7 +765,9 @@ with63 rejection vectors. Parent003 is split into bounded A–D slices;003B dura
 contracts are complete as a contract slice. [Review5](../reviews/combat-progress-review-5.md) covers
 progress through003B: Ready with non-blocking follow-ups, status correction applied.
 [003C1 rules inputs/timing](../specs/combat-rules-inputs-v1.md) is complete;
-[review6](../reviews/combat-inputs-review-6.md) returned Ready, no actionable findings.003D1 is next;
+[review6](../reviews/combat-inputs-review-6.md) returned Ready, no actionable findings.
+[003D1 sequence/cycle contracts](../specs/combat-cycle-sequence-v1.md) are complete;
+[review7](../reviews/combat-sequence-review-7.md) returned Ready, no actionable findings.003C2 is next;
 Parent003C/D,004, combined checkpoint B and production remain gated.
 Actual RBA movement and broader combat categories remain outside the selected fixture.
 [Independent design review 2](../reviews/combat-design-review-2.md) returned Ready for
@@ -773,7 +775,8 @@ DES-001/DES-002/DES-003 with no actionable findings; it does not cover subsequen
 approve production. [Independent design review 3](../reviews/combat-settlement-review-3.md)
 returned Ready for DES-004/DES-005, with no actionable findings; it does not cover subsequent
 CYCLE-DES-001. Review4 exhausted its then-authorized4-of-4 budget. User subsequently authorized
-three more passes; review6 brings cumulative use to6of7. Remaining contract gates stay open.
+three more passes; review7 brings cumulative use to7of7, exhausting the current independent-review
+budget. Remaining contract gates stay open.
 Later contracts and implementation must settle every reachable loss, capture/custody, retreat,
 ammunition, and Cohesion obligation before claiming the repeating skeleton is complete.
 
