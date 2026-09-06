@@ -91,7 +91,9 @@ the pre-alpha roadmap carry repository-wide rationale and delivery state.
   work. That checkpoint exhausted its then-authorized4of4 budget. Owner subsequently authorized
   up to three more passes. [Progress review5](reviews/combat-progress-review-5.md) covers the
   unmerged branch through003B: Ready with non-blocking follow-ups; its status correction is applied.
-  Cumulative review use is5of7;003C is next.
+  [003C1 rules inputs/timing](specs/combat-rules-inputs-v1.md) is complete as a contract slice;
+  [review6](reviews/combat-inputs-review-6.md) returned Ready, no actionable findings (6of7 used).
+  The plan orders003D1 sequence/cycle next, before full Rules10 assembly; parent003C/D stays open.
 - Sprint 4-5 dependencies: [research-gate audit](research/sprint-4-5-research-gates.md).
 
 ## Reviewed future product work
