@@ -63,8 +63,9 @@ the pre-alpha roadmap carry repository-wide rationale and delivery state.
   [static Content](research/combat-content-static-schema-spike.md) and
   [mutable-state research](research/combat-mutable-state-spike.md), and
   [RNG/golden research](research/combat-rng-golden-spike.md), plus
-  [Reserve release/history](research/reserve-release-history-spike.md). Independent review and
-  owner decisions precede Combat/cycle design; implementation contracts are not frozen.
+  [Reserve release/history](research/reserve-release-history-spike.md).
+  [Independent review 2](reviews/combat-reserve-research-review-2.md) is Ready for owner decisions;
+  Combat/cycle design and implementation contracts remain later gates.
 - Sprint 4-5 dependencies: [research-gate audit](research/sprint-4-5-research-gates.md).
 
 ## Reviewed future product work

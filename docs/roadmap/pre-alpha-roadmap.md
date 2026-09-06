@@ -107,7 +107,7 @@ Optional parser evidence gate
 | Side-safe observations and legal-action enforcement | Implemented for the current synthetic path | Extend only with each new mechanic and its disclosure tests |
 | Mandatory turn preamble | Implemented through Reserve Designation completion | Preserve the exact Movement terminal while later mechanics expand |
 | Movement and contact | Movement Foundation is complete through merged `MOV-TASK-010` / PR #79; ZOC/Reaction Core authority is activated through `ZOR-TASK-006C` | `007A` Runner adoption implemented; `007B` verification and independent review complete; Breakdown adjudication remains separate |
-| Combat | `CMB-RSH-001` complete; `002`–`004` and `RESREL-RSH-001` research decision-ready; implementation not started | Independent review and owner decisions, then Contact/Combat/cycle design |
+| Combat | `CMB-RSH-001` complete; `002`–`004` and `RESREL-RSH-001` research decision-ready; implementation not started | Independent research review 2 Ready; owner decisions, then Contact/Combat/cycle design |
 | Working pre-alpha skeleton | Not reached | Requires one authentic movement/contact/combat loop with replay |
 | First-scenario content and remaining Land systems | Milestone-level; not started | Re-estimate after the skeleton exposes exercised-rule and transcription scope |
 | Campaign lifecycle and Maproom | Milestone-level; not started | Requires stable playable authority, Chronicle persistence, and save/resume contracts |
@@ -728,7 +728,8 @@ oversized executable-looking tasks with explicit research and design gates.
 [RNG/goldens](../research/combat-rng-golden-spike.md), are decision-ready; their recommendations
 do not freeze production contracts. `CYCLE-RSH-001` identity/history research is complete.
 `RESREL-RSH-001` [release eligibility/history](../research/reserve-release-history-spike.md) is
-decision-ready. Next: independent review and owner decisions, then the Combat/cycle design gates.
+decision-ready. [Independent review 2](../reviews/combat-reserve-research-review-2.md) is Ready for
+owner decisions. Next: approve research choices, then the Combat/cycle design gates.
 Later design must settle every reachable loss, capture/custody, retreat,
 ammunition, and Cohesion obligation before claiming the repeating skeleton is complete.
 
