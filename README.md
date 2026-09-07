@@ -275,7 +275,12 @@ in `c465a0f`, with canonical bytes and70 passing rejection vectors. Checkpoint A
 is recorded; [TASK-003A Setup/initial ledger](docs/specs/combat-creation-ledger-v1.md) is frozen in
 `23c3fff`, with63 passing rejection vectors. [TASK-003B World/settlement packet](docs/specs/combat-world-settlement-v1.md)
 is complete as a contract slice. [Progress review5](docs/reviews/combat-progress-review-5.md) returned
-Ready with non-blocking follow-ups; its status correction is applied (5of7 passes used).003C is next;
+Ready with non-blocking follow-ups; its status correction is applied.
+[003C1 rules inputs and timing](docs/specs/combat-rules-inputs-v1.md) is complete as a contract
+slice; [review6](docs/reviews/combat-inputs-review-6.md) returned Ready, no actionable findings
+(6of7 used at that checkpoint). [003D1 sequence/cycle contracts](docs/specs/combat-cycle-sequence-v1.md)
+are complete; [review7](docs/reviews/combat-sequence-review-7.md) returned Ready, no actionable findings.
+Cumulative review use is7of7.003C2 full Rules10/creation/snapshot assembly is next;
 parent003, future maturity execution and combined checkpoint B remain open. Combat runtime
 implementation has not started.
 

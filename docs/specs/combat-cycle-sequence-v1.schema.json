@@ -1,0 +1,14 @@
+{
+  "contract": "combat-cycle-sequence-v1",
+  "objects": {
+    "Catalog": "schemaVersion:int positions:Position[] interruptPositions:Position[] cycles:CycleEdge[]",
+    "Position": "contractVersion:int positionId:id gameTurn:int operationStage:int stageId:id phaseId:id segmentId:id? stepId:id? actorRole:id activeSide:id? sources:Reference[]",
+    "Reference": "sourceId:id locator:text",
+    "CycleEdge": "operationStage:int playerPhaseSlot:id entryFromPositionId:id movementPositionId:id breakdownPositionId:id combatPositionIds:id[] releasePositionId:id finishPositionId:id",
+    "Authority": "contractVersion:int campaignId:id rulesetHash:rawHash setupId:id setupHash:hash contentPackId:id contentHash:hash scenarioId:id gameTurn:int operationStage:int playerPhaseSlot:id actingSide:id ordinal:int openedAuthorityVersion:long openingPrefix:hash admittedPolicyBundleDigest:hash",
+    "Public": "contractVersion:int campaignId:id rulesetHash:rawHash gameTurn:int operationStage:int playerPhaseSlot:id actingSide:id ordinal:int",
+    "Occurrence": "contractVersion:int cycleId:hash positionId:id"
+  },
+  "orderedArrays": ["Catalog.positions", "Catalog.interruptPositions", "Catalog.cycles", "CycleEdge.combatPositionIds"],
+  "sortedArrays": {"Reference": ["sourceId", "locator"]}
+}

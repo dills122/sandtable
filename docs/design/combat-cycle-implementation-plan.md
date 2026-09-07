@@ -7,7 +7,12 @@
 requested continuation. [TASK-003A creation/initial ledger](../specs/combat-creation-ledger-v1.md) is complete as a contract
 slice; [TASK-003B World/settlement](../specs/combat-world-settlement-v1.md) is complete as a contract packet.
 [Progress review5](../reviews/combat-progress-review-5.md) returned Ready with non-blocking follow-ups;
-its status correction is applied (5of7 passes used). Parent003 remains open for003C/D;003C is next.
+its status correction is applied. Parent003 remains open for003C/D.
+[003C1 rules inputs/config](../specs/combat-rules-inputs-v1.md) is complete as a contract slice;
+[review6](../reviews/combat-inputs-review-6.md) returned Ready with no actionable findings (6of7 used at that checkpoint).
+[003D1 sequence/cycle packet](../specs/combat-cycle-sequence-v1.md) is complete;
+[review7](../reviews/combat-sequence-review-7.md) returned Ready with no actionable findings (7of7 used).
+003C2 full Rules10/creation/snapshot assembly is next.
 TASK-004–025 not started. Future maturity execution and checkpoint B remain gated.
 **Original input:** `d2bc67c`. Exact contract freeze and production gates remain open.
 
@@ -110,6 +115,23 @@ only after all four slices and their cross-contract checks pass; this is not a l
 | `CMB-TASK-003B` | Durable World7, relationship/loss/capture/guard/escape/future-obligation values and settlement receipts | [World7/settlement packet](../specs/combat-world-settlement-v1.md) complete:6goldens/57 negatives/112 isolated cuts; [review5](../reviews/combat-progress-review-5.md) Ready with non-blocking follow-ups, status correction applied |
 | `CMB-TASK-003C` | Exact Rules10/config bundle bytes/hash, Snapshot/creation and sealed selection/round/step/commit/result command/event envelopes | Exact version/identity/hash framing, deadline/retry suffix and restart-cut matrix; after003B |
 | `CMB-TASK-003D` | Cycle/release/history and ordinary break-off movement receipts; combined CON-002–004 reconciliation | Cumulative CP/immediate DP, affected-membership endings, prefix/release/history/continuation vectors and parent003 closeout; after003C |
+
+TASK-003C/D dependency refinement, 2026-09-06, before003C implementation:003C combines Rules,
+configuration and several independent authority codecs. Its final Rules10 hash depends on the
+sequence/cycle artifact assigned to003D. Preserve the parent IDs and use the following bounded
+order; never insert a placeholder hash or declare the full Rules bundle frozen early.
+
+| Ordered slice | Contract output / dependency |
+| --- | --- |
+| `003C1` | [Rules-input/config packet](../specs/combat-rules-inputs-v1.md) complete:3 goldens,47 mutations,39 raw-byte rejections,7 clock cases and14 kind/budget/UTC boundaries; review6 Ready. Full Rules10 manifest remains open. |
+| `003D1` | [Sequence/catalog5 and cycle codec1](../specs/combat-cycle-sequence-v1.md) complete; review7 Ready:112 positions,1 interrupt,6 cycle edges; binary preimages/prefix probes,38 mutations,3,996 scope identities and896 actor materializations. No movement/history implementation. |
+| `003C2` | Assemble exact Rules10 manifest from retained predecessor artifacts plus frozen successors; freeze Created11/Snapshot12 binding and creation/recovery vectors; after003D1. |
+| `003C3` | Freeze selection, six-step, sealed-round, commit/result/settlement event and command envelopes, persisted timing/receipt suffixes and tamper/restart matrix; after003C2. |
+| `003D2` | Freeze release/history/ordinary movement receipts and reconcile CON-002–004 against003C3; close parent003 only after cross-contract checks. |
+
+Each slice retains the five-primary-file cap, including verification and plan update.003C1 inputs
+are prospective Rules artifacts, not a new registered ruleset or permission to begin005. The
+sequence/identity dependency moves earlier; accepted gameplay policies and checkpoint B stay intact.
 
 Checkpoint B: accept exact combined contracts and resolve any changed policy with owner. Reconcile
 task sizes with frozen types. Runtime implementation remains gated until this checkpoint passes.
@@ -296,7 +318,7 @@ eight calendar boundaries pass. Full source, Content7 and creation oracles also 
 World reader, Snapshot/event schema, actual restart or public projection is claimed.003C/003D/004
 remain required before combined checkpoint B and runtime consumers.
 
-Owner requested003B then independent-review rounds on today's remaining progress. Prior work is
+At the historical003B checkpoint, owner requested independent-review rounds on that day's remaining progress. Prior work is
 already locally committed; the review target is the unmerged feature branch plus the explicit new
 working-tree boundary, with unrelated main-checkout edits excluded. The initiating review flow now
 permits at most7 total passes (four prior, up to three newly authorized); **5 of7 used**.
@@ -305,4 +327,36 @@ and returned **Ready with non-blocking follow-ups**. Its independent fixture swe
 World materializations. Sole P3 finding: stale navigation/status summaries; accepted and corrected
 without changing schema, goldens or verifier logic. No further pass is warranted for this status-only
 correction. Reviewers receive no inherited implementation conversation and remain read-only.
-Further passes require material changes; a heavy pivot returns to owner.003C is next.
+Further passes require material changes; a heavy pivot returns to owner.003C was next at that checkpoint.
+
+TASK-003C1 checkpoint, 2026-09-06 (input `8bbea59`, merged PR91):
+[rules-input/config contract](../specs/combat-rules-inputs-v1.md),
+[schema](../specs/combat-rules-inputs-v1.schema.json),
+[goldens/vectors](../specs/fixtures/combat-rules-inputs-v1.json) and
+[oracle](../specs/verify-combat-rules-inputs-v1.py) complete. Three canonical artifacts,47 isolated
+mutations,39 raw-byte rejections,7 clock cases,14 window/budget/UTC boundaries and full360-cell/36-Morale
+source checks pass. Existing source/Content/creation/World oracles pass unchanged.
+[Independent review6](../reviews/combat-inputs-review-6.md) returned **Ready**, no actionable findings;
+all five reviewed target hashes verified before/after. Author accepts the result; no material fix
+or additional pass warranted. Cumulative use is **6of7**. Only plan status/navigation and retained
+review evidence changed after review; contract/schema/golden/verifier bytes remain frozen.
+Next003D1 supplies exact sequence/cycle artifact bytes before003C2 full Rules10 assembly. Parent003C/D,
+004, checkpoint B and runtime gates remain open. This checkpoint is not full003C completion.
+
+
+TASK-003D1 checkpoint, 2026-09-06 (input `4c2bd03`):
+[Sequence/catalog5 and cycle codec1](../specs/combat-cycle-sequence-v1.md),
+[schema](../specs/combat-cycle-sequence-v1.schema.json),
+[goldens/vectors](../specs/fixtures/combat-cycle-sequence-v1.json) and
+[oracle](../specs/verify-combat-cycle-sequence-v1.py) complete. Actual C# catalog4 capture anchors112
+positions and one interrupt; catalog5 adds six same-slot cycle edges. Two artifact and two identity
+goldens,38 mutations,3,996 scoped identities and896 actor materializations pass, including prefix
+framing/fork and occurrence-binding negatives. Existing rules-input/World/creation/Content/source
+oracles pass. Reviewer used explicit Homebrew Python3.14/.NET10 for checks where default PATH
+selected incompatible older runtimes; details retained in report.
+[Independent review7](../reviews/combat-sequence-review-7.md) returned **Ready**, no actionable findings.
+All five target hashes matched before and after review. Author accepts result; no material fix or
+additional pass warranted. Cumulative use is **7of7**, exhausting current independent-review budget.
+Only plan status/navigation and review retention changed after review; four contract artifacts remain
+byte-identical to reviewed manifest. Next003C2 assembles full Rules10/Created11/Snapshot12.
+Parent003C/D,003C3,003D2,004, checkpoint B and runtime/replay/privacy evidence remain open.

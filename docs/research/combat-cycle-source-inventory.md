@@ -11,7 +11,12 @@ three-cell source ruling are owner-approved. TASK-001 source research and the
 validation permits the next contract work; [TASK-003A](../specs/combat-creation-ledger-v1.md) is frozen,
 [TASK-003B](../specs/combat-world-settlement-v1.md) is complete as a contract slice;
 [review5](../reviews/combat-progress-review-5.md) returned Ready with non-blocking follow-ups,
-status correction applied (5of7 passes used).003C/D/004 and the combined-contract gate remain open.
+status correction applied. [003C1 rules inputs/timing](../specs/combat-rules-inputs-v1.md) supplies
+complete canonical source/policy/config bytes; [review6](../reviews/combat-inputs-review-6.md) is Ready,
+no actionable findings at that checkpoint. [003D1 sequence/cycle](../specs/combat-cycle-sequence-v1.md)
+is complete; [review7](../reviews/combat-sequence-review-7.md) returned Ready, no actionable findings
+(7of7 used). Full Rules10 assembly in003C2 is next.
+Parent003C/D/004 and the combined-contract gate remain open; the plan retains current review accounting.
 
 **Date:** 2026-08-25
 
@@ -205,4 +210,7 @@ Ready reassessment; remaining policy/production gates stay open.
   in cycle design and TASK-001/003/018/019; owner accepted that correction on2026-09-06. User-approved review
   budget was exhausted at4of4 at that historical checkpoint. Owner later authorized three more
   passes; [review5](../reviews/combat-progress-review-5.md) returned Ready with non-blocking follow-ups
-  for progress through003B. Its status correction is applied; cumulative use is5of7.
+  for progress through003B. Its status correction is applied. Later [review6](../reviews/combat-inputs-review-6.md) is Ready for003C1;
+  no material fix or further pass was required for that slice. Later
+  [review7](../reviews/combat-sequence-review-7.md) is Ready for003D1; cumulative use is7of7.
+  No further independent pass is authorized by the current flow.

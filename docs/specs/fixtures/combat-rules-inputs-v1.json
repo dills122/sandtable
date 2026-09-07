@@ -1,0 +1,419 @@
+{
+  "contract": "combat-rules-inputs-v1",
+  "goldens": [
+    {
+      "kind": "RulesInput",
+      "canonicalUtf8": "{\"schemaVersion\":1,\"artifactId\":\"cna-1979.1.combat-selected-inputs.v1\",\"profileId\":\"sandtable.capability.combat-cycle-infantry.v1\",\"sources\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"CMB-POL-001-008;CMB-SRC-RUL-001\"},{\"sourceId\":\"spi-1979-common-charts\",\"locator\":\"15.79;15.89;17.4\"},{\"sourceId\":\"spi-1979-compilation\",\"locator\":\"Logistics50.0-50.17\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"6.21-6.24;11.21-11.27;15.61-15.87;20.21;28.24\"},{\"sourceId\":\"spi-1979-september-errata\",\"locator\":\"15.27;20.72;50.2;50.12\"}],\"sourceEvidence\":[{\"sourceId\":\"spi-1979-common-charts\",\"sha256\":\"sha256:51aa5a5bfdaca3d23794da71a45a830d98b798d060097cde6418126d6bd63bb0\"},{\"sourceId\":\"spi-1979-compilation\",\"sha256\":\"sha256:836c14949c4fef1b066043e19a570256b22598d8ae2948d26844b949f53b60a5\"},{\"sourceId\":\"spi-1979-land-rules\",\"sha256\":\"sha256:b362870368b9fb8abe6918195fdcf878d4a8041c557b835b9a1bdde3c8b76e99\"},{\"sourceId\":\"spi-1979-september-errata\",\"sha256\":\"sha256:5db539e1fac4aea3ef152370fb732f1938307fe4b2d47ad93eb605db0a09f0fb\"}],\"amendment\":{\"rulingId\":\"CMB-SRC-RUL-001\",\"role\":\"defender\",\"differential\":2,\"coordinates\":[34,35,36],\"lossPercent\":10},\"morale\":[{\"coordinate\":11,\"adjustment\":1},{\"coordinate\":12,\"adjustment\":0},{\"coordinate\":13,\"adjustment\":0},{\"coordinate\":14,\"adjustment\":0},{\"coordinate\":15,\"adjustment\":0},{\"coordinate\":16,\"adjustment\":0},{\"coordinate\":21,\"adjustment\":0},{\"coordinate\":22,\"adjustment\":0},{\"coordinate\":23,\"adjustment\":0},{\"coordinate\":24,\"adjustment\":0},{\"coordinate\":25,\"adjustment\":0},{\"coordinate\":26,\"adjustment\":0},{\"coordinate\":31,\"adjustment\":0},{\"coordinate\":32,\"adjustment\":0},{\"coordinate\":33,\"adjustment\":0},{\"coordinate\":34,\"adjustment\":0},{\"coordinate\":35,\"adjustment\":0},{\"coordinate\":36,\"adjustment\":0},{\"coordinate\":41,\"adjustment\":0},{\"coordinate\":42,\"adjustment\":0},{\"coordinate\":43,\"adjustment\":0},{\"coordinate\":44,\"adjustment\":0},{\"coordinate\":45,\"adjustment\":0},{\"coordinate\":46,\"adjustment\":0},{\"coordinate\":51,\"adjustment\":0},{\"coordinate\":52,\"adjustment\":0},{\"coordinate\":53,\"adjustment\":0},{\"coordinate\":54,\"adjustment\":0},{\"coordinate\":55,\"adjustment\":0},{\"coordinate\":56,\"adjustment\":0},{\"coordinate\":61,\"adjustment\":0},{\"coordinate\":62,\"adjustment\":0},{\"coordinate\":63,\"adjustment\":0},{\"coordinate\":64,\"adjustment\":0},{\"coordinate\":65,\"adjustment\":0},{\"coordinate\":66,\"adjustment\":-1}],\"losses\":[{\"role\":\"attacker\",\"differential\":-2,\"coordinate\":11,\"lossPercent\":25},{\"role\":\"attacker\",\"differential\":-2,\"coordinate\":12,\"lossPercent\":25},{\"role\":\"attacker\",\"differential\":-2,\"coordinate\":13,\"lossPercent\":20},{\"role\":\"attacker\",\"differential\":-2,\"coordinate\":14,\"lossPercent\":20},{\"role\":\"attacker\",\"differential\":-2,\"coordinate\":15,\"lossPercent\":20},{\"role\":\"attacker\",\"differential\":-2,\"coordinate\":16,\"lossPercent\":20},{\"role\":\"attacker\",\"differential\":-2,\"coordinate\":21,\"lossPercent\":15},{\"role\":\"attacker\",\"differential\":-2,\"coordinate\":22,\"lossPercent\":15},{\"role\":\"attacker\",\"differential\":-2,\"coordinate\":23,\"lossPercent\":15},{\"role\":\"attacker\",\"differential\":-2,\"coordinate\":24,\"lossPercent\":15},{\"role\":\"attacker\",\"differential\":-2,\"coordinate\":25,\"lossPercent\":15},{\"role\":\"attacker\",\"differential\":-2,\"coordinate\":26,\"lossPercent\":15},{\"role\":\"attacker\",\"differential\":-2,\"coordinate\":31,\"lossPercent\":15},{\"role\":\"attacker\",\"differential\":-2,\"coordinate\":32,\"lossPercent\":15},{\"role\":\"attacker\",\"differential\":-2,\"coordinate\":33,\"lossPercent\":15},{\"role\":\"attacker\",\"differential\":-2,\"coordinate\":34,\"lossPercent\":10},{\"role\":\"attacker\",\"differential\":-2,\"coordinate\":35,\"lossPercent\":10},{\"role\":\"attacker\",\"differential\":-2,\"coordinate\":36,\"lossPercent\":10},{\"role\":\"attacker\",\"differential\":-2,\"coordinate\":41,\"lossPercent\":10},{\"role\":\"attacker\",\"differential\":-2,\"coordinate\":42,\"lossPercent\":10},{\"role\":\"attacker\",\"differential\":-2,\"coordinate\":43,\"lossPercent\":10},{\"role\":\"attacker\",\"differential\":-2,\"coordinate\":44,\"lossPercent\":10},{\"role\":\"attacker\",\"differential\":-2,\"coordinate\":45,\"lossPercent\":5},{\"role\":\"attacker\",\"differential\":-2,\"coordinate\":46,\"lossPercent\":5},{\"role\":\"attacker\",\"differential\":-2,\"coordinate\":51,\"lossPercent\":5},{\"role\":\"attacker\",\"differential\":-2,\"coordinate\":52,\"lossPercent\":5},{\"role\":\"attacker\",\"differential\":-2,\"coordinate\":53,\"lossPercent\":5},{\"role\":\"attacker\",\"differential\":-2,\"coordinate\":54,\"lossPercent\":5},{\"role\":\"attacker\",\"differential\":-2,\"coordinate\":55,\"lossPercent\":0},{\"role\":\"attacker\",\"differential\":-2,\"coordinate\":56,\"lossPercent\":0},{\"role\":\"attacker\",\"differential\":-2,\"coordinate\":61,\"lossPercent\":0},{\"role\":\"attacker\",\"differential\":-2,\"coordinate\":62,\"lossPercent\":0},{\"role\":\"attacker\",\"differential\":-2,\"coordinate\":63,\"lossPercent\":0},{\"role\":\"attacker\",\"differential\":-2,\"coordinate\":64,\"lossPercent\":0},{\"role\":\"attacker\",\"differential\":-2,\"coordinate\":65,\"lossPercent\":0},{\"role\":\"attacker\",\"differential\":-2,\"coordinate\":66,\"lossPercent\":0},{\"role\":\"attacker\",\"differential\":-1,\"coordinate\":11,\"lossPercent\":25},{\"role\":\"attacker\",\"differential\":-1,\"coordinate\":12,\"lossPercent\":20},{\"role\":\"attacker\",\"differential\":-1,\"coordinate\":13,\"lossPercent\":20},{\"role\":\"attacker\",\"differential\":-1,\"coordinate\":14,\"lossPercent\":15},{\"role\":\"attacker\",\"differential\":-1,\"coordinate\":15,\"lossPercent\":15},{\"role\":\"attacker\",\"differential\":-1,\"coordinate\":16,\"lossPercent\":15},{\"role\":\"attacker\",\"differential\":-1,\"coordinate\":21,\"lossPercent\":15},{\"role\":\"attacker\",\"differential\":-1,\"coordinate\":22,\"lossPercent\":15},{\"role\":\"attacker\",\"differential\":-1,\"coordinate\":23,\"lossPercent\":15},{\"role\":\"attacker\",\"differential\":-1,\"coordinate\":24,\"lossPercent\":15},{\"role\":\"attacker\",\"differential\":-1,\"coordinate\":25,\"lossPercent\":15},{\"role\":\"attacker\",\"differential\":-1,\"coordinate\":26,\"lossPercent\":15},{\"role\":\"attacker\",\"differential\":-1,\"coordinate\":31,\"lossPercent\":10},{\"role\":\"attacker\",\"differential\":-1,\"coordinate\":32,\"lossPercent\":10},{\"role\":\"attacker\",\"differential\":-1,\"coordinate\":33,\"lossPercent\":10},{\"role\":\"attacker\",\"differential\":-1,\"coordinate\":34,\"lossPercent\":10},{\"role\":\"attacker\",\"differential\":-1,\"coordinate\":35,\"lossPercent\":10},{\"role\":\"attacker\",\"differential\":-1,\"coordinate\":36,\"lossPercent\":10},{\"role\":\"attacker\",\"differential\":-1,\"coordinate\":41,\"lossPercent\":10},{\"role\":\"attacker\",\"differential\":-1,\"coordinate\":42,\"lossPercent\":10},{\"role\":\"attacker\",\"differential\":-1,\"coordinate\":43,\"lossPercent\":5},{\"role\":\"attacker\",\"differential\":-1,\"coordinate\":44,\"lossPercent\":5},{\"role\":\"attacker\",\"differential\":-1,\"coordinate\":45,\"lossPercent\":5},{\"role\":\"attacker\",\"differential\":-1,\"coordinate\":46,\"lossPercent\":5},{\"role\":\"attacker\",\"differential\":-1,\"coordinate\":51,\"lossPercent\":5},{\"role\":\"attacker\",\"differential\":-1,\"coordinate\":52,\"lossPercent\":5},{\"role\":\"attacker\",\"differential\":-1,\"coordinate\":53,\"lossPercent\":0},{\"role\":\"attacker\",\"differential\":-1,\"coordinate\":54,\"lossPercent\":0},{\"role\":\"attacker\",\"differential\":-1,\"coordinate\":55,\"lossPercent\":0},{\"role\":\"attacker\",\"differential\":-1,\"coordinate\":56,\"lossPercent\":0},{\"role\":\"attacker\",\"differential\":-1,\"coordinate\":61,\"lossPercent\":0},{\"role\":\"attacker\",\"differential\":-1,\"coordinate\":62,\"lossPercent\":0},{\"role\":\"attacker\",\"differential\":-1,\"coordinate\":63,\"lossPercent\":0},{\"role\":\"attacker\",\"differential\":-1,\"coordinate\":64,\"lossPercent\":0},{\"role\":\"attacker\",\"differential\":-1,\"coordinate\":65,\"lossPercent\":0},{\"role\":\"attacker\",\"differential\":-1,\"coordinate\":66,\"lossPercent\":0},{\"role\":\"attacker\",\"differential\":0,\"coordinate\":11,\"lossPercent\":25},{\"role\":\"attacker\",\"differential\":0,\"coordinate\":12,\"lossPercent\":20},{\"role\":\"attacker\",\"differential\":0,\"coordinate\":13,\"lossPercent\":15},{\"role\":\"attacker\",\"differential\":0,\"coordinate\":14,\"lossPercent\":15},{\"role\":\"attacker\",\"differential\":0,\"coordinate\":15,\"lossPercent\":15},{\"role\":\"attacker\",\"differential\":0,\"coordinate\":16,\"lossPercent\":15},{\"role\":\"attacker\",\"differential\":0,\"coordinate\":21,\"lossPercent\":15},{\"role\":\"attacker\",\"differential\":0,\"coordinate\":22,\"lossPercent\":15},{\"role\":\"attacker\",\"differential\":0,\"coordinate\":23,\"lossPercent\":15},{\"role\":\"attacker\",\"differential\":0,\"coordinate\":24,\"lossPercent\":15},{\"role\":\"attacker\",\"differential\":0,\"coordinate\":25,\"lossPercent\":10},{\"role\":\"attacker\",\"differential\":0,\"coordinate\":26,\"lossPercent\":10},{\"role\":\"attacker\",\"differential\":0,\"coordinate\":31,\"lossPercent\":10},{\"role\":\"attacker\",\"differential\":0,\"coordinate\":32,\"lossPercent\":10},{\"role\":\"attacker\",\"differential\":0,\"coordinate\":33,\"lossPercent\":10},{\"role\":\"attacker\",\"differential\":0,\"coordinate\":34,\"lossPercent\":10},{\"role\":\"attacker\",\"differential\":0,\"coordinate\":35,\"lossPercent\":10},{\"role\":\"attacker\",\"differential\":0,\"coordinate\":36,\"lossPercent\":10},{\"role\":\"attacker\",\"differential\":0,\"coordinate\":41,\"lossPercent\":5},{\"role\":\"attacker\",\"differential\":0,\"coordinate\":42,\"lossPercent\":5},{\"role\":\"attacker\",\"differential\":0,\"coordinate\":43,\"lossPercent\":5},{\"role\":\"attacker\",\"differential\":0,\"coordinate\":44,\"lossPercent\":5},{\"role\":\"attacker\",\"differential\":0,\"coordinate\":45,\"lossPercent\":5},{\"role\":\"attacker\",\"differential\":0,\"coordinate\":46,\"lossPercent\":5},{\"role\":\"attacker\",\"differential\":0,\"coordinate\":51,\"lossPercent\":5},{\"role\":\"attacker\",\"differential\":0,\"coordinate\":52,\"lossPercent\":0},{\"role\":\"attacker\",\"differential\":0,\"coordinate\":53,\"lossPercent\":0},{\"role\":\"attacker\",\"differential\":0,\"coordinate\":54,\"lossPercent\":0},{\"role\":\"attacker\",\"differential\":0,\"coordinate\":55,\"lossPercent\":0},{\"role\":\"attacker\",\"differential\":0,\"coordinate\":56,\"lossPercent\":0},{\"role\":\"attacker\",\"differential\":0,\"coordinate\":61,\"lossPercent\":0},{\"role\":\"attacker\",\"differential\":0,\"coordinate\":62,\"lossPercent\":0},{\"role\":\"attacker\",\"differential\":0,\"coordinate\":63,\"lossPercent\":0},{\"role\":\"attacker\",\"differential\":0,\"coordinate\":64,\"lossPercent\":0},{\"role\":\"attacker\",\"differential\":0,\"coordinate\":65,\"lossPercent\":0},{\"role\":\"attacker\",\"differential\":0,\"coordinate\":66,\"lossPercent\":0},{\"role\":\"attacker\",\"differential\":1,\"coordinate\":11,\"lossPercent\":25},{\"role\":\"attacker\",\"differential\":1,\"coordinate\":12,\"lossPercent\":20},{\"role\":\"attacker\",\"differential\":1,\"coordinate\":13,\"lossPercent\":15},{\"role\":\"attacker\",\"differential\":1,\"coordinate\":14,\"lossPercent\":15},{\"role\":\"attacker\",\"differential\":1,\"coordinate\":15,\"lossPercent\":15},{\"role\":\"attacker\",\"differential\":1,\"coordinate\":16,\"lossPercent\":15},{\"role\":\"attacker\",\"differential\":1,\"coordinate\":21,\"lossPercent\":15},{\"role\":\"attacker\",\"differential\":1,\"coordinate\":22,\"lossPercent\":15},{\"role\":\"attacker\",\"differential\":1,\"coordinate\":23,\"lossPercent\":10},{\"role\":\"attacker\",\"differential\":1,\"coordinate\":24,\"lossPercent\":10},{\"role\":\"attacker\",\"differential\":1,\"coordinate\":25,\"lossPercent\":10},{\"role\":\"attacker\",\"differential\":1,\"coordinate\":26,\"lossPercent\":10},{\"role\":\"attacker\",\"differential\":1,\"coordinate\":31,\"lossPercent\":10},{\"role\":\"attacker\",\"differential\":1,\"coordinate\":32,\"lossPercent\":10},{\"role\":\"attacker\",\"differential\":1,\"coordinate\":33,\"lossPercent\":10},{\"role\":\"attacker\",\"differential\":1,\"coordinate\":34,\"lossPercent\":5},{\"role\":\"attacker\",\"differential\":1,\"coordinate\":35,\"lossPercent\":5},{\"role\":\"attacker\",\"differential\":1,\"coordinate\":36,\"lossPercent\":5},{\"role\":\"attacker\",\"differential\":1,\"coordinate\":41,\"lossPercent\":5},{\"role\":\"attacker\",\"differential\":1,\"coordinate\":42,\"lossPercent\":5},{\"role\":\"attacker\",\"differential\":1,\"coordinate\":43,\"lossPercent\":5},{\"role\":\"attacker\",\"differential\":1,\"coordinate\":44,\"lossPercent\":5},{\"role\":\"attacker\",\"differential\":1,\"coordinate\":45,\"lossPercent\":5},{\"role\":\"attacker\",\"differential\":1,\"coordinate\":46,\"lossPercent\":5},{\"role\":\"attacker\",\"differential\":1,\"coordinate\":51,\"lossPercent\":0},{\"role\":\"attacker\",\"differential\":1,\"coordinate\":52,\"lossPercent\":0},{\"role\":\"attacker\",\"differential\":1,\"coordinate\":53,\"lossPercent\":0},{\"role\":\"attacker\",\"differential\":1,\"coordinate\":54,\"lossPercent\":0},{\"role\":\"attacker\",\"differential\":1,\"coordinate\":55,\"lossPercent\":0},{\"role\":\"attacker\",\"differential\":1,\"coordinate\":56,\"lossPercent\":0},{\"role\":\"attacker\",\"differential\":1,\"coordinate\":61,\"lossPercent\":0},{\"role\":\"attacker\",\"differential\":1,\"coordinate\":62,\"lossPercent\":0},{\"role\":\"attacker\",\"differential\":1,\"coordinate\":63,\"lossPercent\":0},{\"role\":\"attacker\",\"differential\":1,\"coordinate\":64,\"lossPercent\":0},{\"role\":\"attacker\",\"differential\":1,\"coordinate\":65,\"lossPercent\":0},{\"role\":\"attacker\",\"differential\":1,\"coordinate\":66,\"lossPercent\":0},{\"role\":\"attacker\",\"differential\":2,\"coordinate\":11,\"lossPercent\":25},{\"role\":\"attacker\",\"differential\":2,\"coordinate\":12,\"lossPercent\":20},{\"role\":\"attacker\",\"differential\":2,\"coordinate\":13,\"lossPercent\":15},{\"role\":\"attacker\",\"differential\":2,\"coordinate\":14,\"lossPercent\":15},{\"role\":\"attacker\",\"differential\":2,\"coordinate\":15,\"lossPercent\":15},{\"role\":\"attacker\",\"differential\":2,\"coordinate\":16,\"lossPercent\":15},{\"role\":\"attacker\",\"differential\":2,\"coordinate\":21,\"lossPercent\":10},{\"role\":\"attacker\",\"differential\":2,\"coordinate\":22,\"lossPercent\":10},{\"role\":\"attacker\",\"differential\":2,\"coordinate\":23,\"lossPercent\":10},{\"role\":\"attacker\",\"differential\":2,\"coordinate\":24,\"lossPercent\":10},{\"role\":\"attacker\",\"differential\":2,\"coordinate\":25,\"lossPercent\":10},{\"role\":\"attacker\",\"differential\":2,\"coordinate\":26,\"lossPercent\":10},{\"role\":\"attacker\",\"differential\":2,\"coordinate\":31,\"lossPercent\":10},{\"role\":\"attacker\",\"differential\":2,\"coordinate\":32,\"lossPercent\":5},{\"role\":\"attacker\",\"differential\":2,\"coordinate\":33,\"lossPercent\":5},{\"role\":\"attacker\",\"differential\":2,\"coordinate\":34,\"lossPercent\":5},{\"role\":\"attacker\",\"differential\":2,\"coordinate\":35,\"lossPercent\":5},{\"role\":\"attacker\",\"differential\":2,\"coordinate\":36,\"lossPercent\":5},{\"role\":\"attacker\",\"differential\":2,\"coordinate\":41,\"lossPercent\":5},{\"role\":\"attacker\",\"differential\":2,\"coordinate\":42,\"lossPercent\":5},{\"role\":\"attacker\",\"differential\":2,\"coordinate\":43,\"lossPercent\":5},{\"role\":\"attacker\",\"differential\":2,\"coordinate\":44,\"lossPercent\":5},{\"role\":\"attacker\",\"differential\":2,\"coordinate\":45,\"lossPercent\":0},{\"role\":\"attacker\",\"differential\":2,\"coordinate\":46,\"lossPercent\":0},{\"role\":\"attacker\",\"differential\":2,\"coordinate\":51,\"lossPercent\":0},{\"role\":\"attacker\",\"differential\":2,\"coordinate\":52,\"lossPercent\":0},{\"role\":\"attacker\",\"differential\":2,\"coordinate\":53,\"lossPercent\":0},{\"role\":\"attacker\",\"differential\":2,\"coordinate\":54,\"lossPercent\":0},{\"role\":\"attacker\",\"differential\":2,\"coordinate\":55,\"lossPercent\":0},{\"role\":\"attacker\",\"differential\":2,\"coordinate\":56,\"lossPercent\":0},{\"role\":\"attacker\",\"differential\":2,\"coordinate\":61,\"lossPercent\":0},{\"role\":\"attacker\",\"differential\":2,\"coordinate\":62,\"lossPercent\":0},{\"role\":\"attacker\",\"differential\":2,\"coordinate\":63,\"lossPercent\":0},{\"role\":\"attacker\",\"differential\":2,\"coordinate\":64,\"lossPercent\":0},{\"role\":\"attacker\",\"differential\":2,\"coordinate\":65,\"lossPercent\":0},{\"role\":\"attacker\",\"differential\":2,\"coordinate\":66,\"lossPercent\":0},{\"role\":\"defender\",\"differential\":-2,\"coordinate\":11,\"lossPercent\":20},{\"role\":\"defender\",\"differential\":-2,\"coordinate\":12,\"lossPercent\":15},{\"role\":\"defender\",\"differential\":-2,\"coordinate\":13,\"lossPercent\":15},{\"role\":\"defender\",\"differential\":-2,\"coordinate\":14,\"lossPercent\":10},{\"role\":\"defender\",\"differential\":-2,\"coordinate\":15,\"lossPercent\":10},{\"role\":\"defender\",\"differential\":-2,\"coordinate\":16,\"lossPercent\":10},{\"role\":\"defender\",\"differential\":-2,\"coordinate\":21,\"lossPercent\":10},{\"role\":\"defender\",\"differential\":-2,\"coordinate\":22,\"lossPercent\":10},{\"role\":\"defender\",\"differential\":-2,\"coordinate\":23,\"lossPercent\":10},{\"role\":\"defender\",\"differential\":-2,\"coordinate\":24,\"lossPercent\":5},{\"role\":\"defender\",\"differential\":-2,\"coordinate\":25,\"lossPercent\":5},{\"role\":\"defender\",\"differential\":-2,\"coordinate\":26,\"lossPercent\":5},{\"role\":\"defender\",\"differential\":-2,\"coordinate\":31,\"lossPercent\":5},{\"role\":\"defender\",\"differential\":-2,\"coordinate\":32,\"lossPercent\":5},{\"role\":\"defender\",\"differential\":-2,\"coordinate\":33,\"lossPercent\":5},{\"role\":\"defender\",\"differential\":-2,\"coordinate\":34,\"lossPercent\":5},{\"role\":\"defender\",\"differential\":-2,\"coordinate\":35,\"lossPercent\":5},{\"role\":\"defender\",\"differential\":-2,\"coordinate\":36,\"lossPercent\":5},{\"role\":\"defender\",\"differential\":-2,\"coordinate\":41,\"lossPercent\":5},{\"role\":\"defender\",\"differential\":-2,\"coordinate\":42,\"lossPercent\":5},{\"role\":\"defender\",\"differential\":-2,\"coordinate\":43,\"lossPercent\":5},{\"role\":\"defender\",\"differential\":-2,\"coordinate\":44,\"lossPercent\":5},{\"role\":\"defender\",\"differential\":-2,\"coordinate\":45,\"lossPercent\":0},{\"role\":\"defender\",\"differential\":-2,\"coordinate\":46,\"lossPercent\":0},{\"role\":\"defender\",\"differential\":-2,\"coordinate\":51,\"lossPercent\":0},{\"role\":\"defender\",\"differential\":-2,\"coordinate\":52,\"lossPercent\":0},{\"role\":\"defender\",\"differential\":-2,\"coordinate\":53,\"lossPercent\":0},{\"role\":\"defender\",\"differential\":-2,\"coordinate\":54,\"lossPercent\":0},{\"role\":\"defender\",\"differential\":-2,\"coordinate\":55,\"lossPercent\":0},{\"role\":\"defender\",\"differential\":-2,\"coordinate\":56,\"lossPercent\":0},{\"role\":\"defender\",\"differential\":-2,\"coordinate\":61,\"lossPercent\":0},{\"role\":\"defender\",\"differential\":-2,\"coordinate\":62,\"lossPercent\":0},{\"role\":\"defender\",\"differential\":-2,\"coordinate\":63,\"lossPercent\":0},{\"role\":\"defender\",\"differential\":-2,\"coordinate\":64,\"lossPercent\":0},{\"role\":\"defender\",\"differential\":-2,\"coordinate\":65,\"lossPercent\":0},{\"role\":\"defender\",\"differential\":-2,\"coordinate\":66,\"lossPercent\":0},{\"role\":\"defender\",\"differential\":-1,\"coordinate\":11,\"lossPercent\":20},{\"role\":\"defender\",\"differential\":-1,\"coordinate\":12,\"lossPercent\":15},{\"role\":\"defender\",\"differential\":-1,\"coordinate\":13,\"lossPercent\":15},{\"role\":\"defender\",\"differential\":-1,\"coordinate\":14,\"lossPercent\":15},{\"role\":\"defender\",\"differential\":-1,\"coordinate\":15,\"lossPercent\":15},{\"role\":\"defender\",\"differential\":-1,\"coordinate\":16,\"lossPercent\":15},{\"role\":\"defender\",\"differential\":-1,\"coordinate\":21,\"lossPercent\":10},{\"role\":\"defender\",\"differential\":-1,\"coordinate\":22,\"lossPercent\":10},{\"role\":\"defender\",\"differential\":-1,\"coordinate\":23,\"lossPercent\":10},{\"role\":\"defender\",\"differential\":-1,\"coordinate\":24,\"lossPercent\":10},{\"role\":\"defender\",\"differential\":-1,\"coordinate\":25,\"lossPercent\":10},{\"role\":\"defender\",\"differential\":-1,\"coordinate\":26,\"lossPercent\":10},{\"role\":\"defender\",\"differential\":-1,\"coordinate\":31,\"lossPercent\":5},{\"role\":\"defender\",\"differential\":-1,\"coordinate\":32,\"lossPercent\":5},{\"role\":\"defender\",\"differential\":-1,\"coordinate\":33,\"lossPercent\":5},{\"role\":\"defender\",\"differential\":-1,\"coordinate\":34,\"lossPercent\":5},{\"role\":\"defender\",\"differential\":-1,\"coordinate\":35,\"lossPercent\":5},{\"role\":\"defender\",\"differential\":-1,\"coordinate\":36,\"lossPercent\":5},{\"role\":\"defender\",\"differential\":-1,\"coordinate\":41,\"lossPercent\":5},{\"role\":\"defender\",\"differential\":-1,\"coordinate\":42,\"lossPercent\":5},{\"role\":\"defender\",\"differential\":-1,\"coordinate\":43,\"lossPercent\":5},{\"role\":\"defender\",\"differential\":-1,\"coordinate\":44,\"lossPercent\":5},{\"role\":\"defender\",\"differential\":-1,\"coordinate\":45,\"lossPercent\":5},{\"role\":\"defender\",\"differential\":-1,\"coordinate\":46,\"lossPercent\":5},{\"role\":\"defender\",\"differential\":-1,\"coordinate\":51,\"lossPercent\":0},{\"role\":\"defender\",\"differential\":-1,\"coordinate\":52,\"lossPercent\":0},{\"role\":\"defender\",\"differential\":-1,\"coordinate\":53,\"lossPercent\":0},{\"role\":\"defender\",\"differential\":-1,\"coordinate\":54,\"lossPercent\":0},{\"role\":\"defender\",\"differential\":-1,\"coordinate\":55,\"lossPercent\":0},{\"role\":\"defender\",\"differential\":-1,\"coordinate\":56,\"lossPercent\":0},{\"role\":\"defender\",\"differential\":-1,\"coordinate\":61,\"lossPercent\":0},{\"role\":\"defender\",\"differential\":-1,\"coordinate\":62,\"lossPercent\":0},{\"role\":\"defender\",\"differential\":-1,\"coordinate\":63,\"lossPercent\":0},{\"role\":\"defender\",\"differential\":-1,\"coordinate\":64,\"lossPercent\":0},{\"role\":\"defender\",\"differential\":-1,\"coordinate\":65,\"lossPercent\":0},{\"role\":\"defender\",\"differential\":-1,\"coordinate\":66,\"lossPercent\":0},{\"role\":\"defender\",\"differential\":0,\"coordinate\":11,\"lossPercent\":20},{\"role\":\"defender\",\"differential\":0,\"coordinate\":12,\"lossPercent\":20},{\"role\":\"defender\",\"differential\":0,\"coordinate\":13,\"lossPercent\":15},{\"role\":\"defender\",\"differential\":0,\"coordinate\":14,\"lossPercent\":15},{\"role\":\"defender\",\"differential\":0,\"coordinate\":15,\"lossPercent\":15},{\"role\":\"defender\",\"differential\":0,\"coordinate\":16,\"lossPercent\":15},{\"role\":\"defender\",\"differential\":0,\"coordinate\":21,\"lossPercent\":15},{\"role\":\"defender\",\"differential\":0,\"coordinate\":22,\"lossPercent\":15},{\"role\":\"defender\",\"differential\":0,\"coordinate\":23,\"lossPercent\":15},{\"role\":\"defender\",\"differential\":0,\"coordinate\":24,\"lossPercent\":10},{\"role\":\"defender\",\"differential\":0,\"coordinate\":25,\"lossPercent\":10},{\"role\":\"defender\",\"differential\":0,\"coordinate\":26,\"lossPercent\":10},{\"role\":\"defender\",\"differential\":0,\"coordinate\":31,\"lossPercent\":10},{\"role\":\"defender\",\"differential\":0,\"coordinate\":32,\"lossPercent\":10},{\"role\":\"defender\",\"differential\":0,\"coordinate\":33,\"lossPercent\":5},{\"role\":\"defender\",\"differential\":0,\"coordinate\":34,\"lossPercent\":5},{\"role\":\"defender\",\"differential\":0,\"coordinate\":35,\"lossPercent\":5},{\"role\":\"defender\",\"differential\":0,\"coordinate\":36,\"lossPercent\":5},{\"role\":\"defender\",\"differential\":0,\"coordinate\":41,\"lossPercent\":5},{\"role\":\"defender\",\"differential\":0,\"coordinate\":42,\"lossPercent\":5},{\"role\":\"defender\",\"differential\":0,\"coordinate\":43,\"lossPercent\":5},{\"role\":\"defender\",\"differential\":0,\"coordinate\":44,\"lossPercent\":5},{\"role\":\"defender\",\"differential\":0,\"coordinate\":45,\"lossPercent\":5},{\"role\":\"defender\",\"differential\":0,\"coordinate\":46,\"lossPercent\":5},{\"role\":\"defender\",\"differential\":0,\"coordinate\":51,\"lossPercent\":5},{\"role\":\"defender\",\"differential\":0,\"coordinate\":52,\"lossPercent\":0},{\"role\":\"defender\",\"differential\":0,\"coordinate\":53,\"lossPercent\":0},{\"role\":\"defender\",\"differential\":0,\"coordinate\":54,\"lossPercent\":0},{\"role\":\"defender\",\"differential\":0,\"coordinate\":55,\"lossPercent\":0},{\"role\":\"defender\",\"differential\":0,\"coordinate\":56,\"lossPercent\":0},{\"role\":\"defender\",\"differential\":0,\"coordinate\":61,\"lossPercent\":0},{\"role\":\"defender\",\"differential\":0,\"coordinate\":62,\"lossPercent\":0},{\"role\":\"defender\",\"differential\":0,\"coordinate\":63,\"lossPercent\":0},{\"role\":\"defender\",\"differential\":0,\"coordinate\":64,\"lossPercent\":0},{\"role\":\"defender\",\"differential\":0,\"coordinate\":65,\"lossPercent\":0},{\"role\":\"defender\",\"differential\":0,\"coordinate\":66,\"lossPercent\":0},{\"role\":\"defender\",\"differential\":1,\"coordinate\":11,\"lossPercent\":20},{\"role\":\"defender\",\"differential\":1,\"coordinate\":12,\"lossPercent\":20},{\"role\":\"defender\",\"differential\":1,\"coordinate\":13,\"lossPercent\":20},{\"role\":\"defender\",\"differential\":1,\"coordinate\":14,\"lossPercent\":15},{\"role\":\"defender\",\"differential\":1,\"coordinate\":15,\"lossPercent\":15},{\"role\":\"defender\",\"differential\":1,\"coordinate\":16,\"lossPercent\":15},{\"role\":\"defender\",\"differential\":1,\"coordinate\":21,\"lossPercent\":15},{\"role\":\"defender\",\"differential\":1,\"coordinate\":22,\"lossPercent\":15},{\"role\":\"defender\",\"differential\":1,\"coordinate\":23,\"lossPercent\":10},{\"role\":\"defender\",\"differential\":1,\"coordinate\":24,\"lossPercent\":10},{\"role\":\"defender\",\"differential\":1,\"coordinate\":25,\"lossPercent\":10},{\"role\":\"defender\",\"differential\":1,\"coordinate\":26,\"lossPercent\":10},{\"role\":\"defender\",\"differential\":1,\"coordinate\":31,\"lossPercent\":10},{\"role\":\"defender\",\"differential\":1,\"coordinate\":32,\"lossPercent\":10},{\"role\":\"defender\",\"differential\":1,\"coordinate\":33,\"lossPercent\":10},{\"role\":\"defender\",\"differential\":1,\"coordinate\":34,\"lossPercent\":5},{\"role\":\"defender\",\"differential\":1,\"coordinate\":35,\"lossPercent\":5},{\"role\":\"defender\",\"differential\":1,\"coordinate\":36,\"lossPercent\":5},{\"role\":\"defender\",\"differential\":1,\"coordinate\":41,\"lossPercent\":5},{\"role\":\"defender\",\"differential\":1,\"coordinate\":42,\"lossPercent\":5},{\"role\":\"defender\",\"differential\":1,\"coordinate\":43,\"lossPercent\":5},{\"role\":\"defender\",\"differential\":1,\"coordinate\":44,\"lossPercent\":5},{\"role\":\"defender\",\"differential\":1,\"coordinate\":45,\"lossPercent\":5},{\"role\":\"defender\",\"differential\":1,\"coordinate\":46,\"lossPercent\":5},{\"role\":\"defender\",\"differential\":1,\"coordinate\":51,\"lossPercent\":5},{\"role\":\"defender\",\"differential\":1,\"coordinate\":52,\"lossPercent\":0},{\"role\":\"defender\",\"differential\":1,\"coordinate\":53,\"lossPercent\":0},{\"role\":\"defender\",\"differential\":1,\"coordinate\":54,\"lossPercent\":0},{\"role\":\"defender\",\"differential\":1,\"coordinate\":55,\"lossPercent\":0},{\"role\":\"defender\",\"differential\":1,\"coordinate\":56,\"lossPercent\":0},{\"role\":\"defender\",\"differential\":1,\"coordinate\":61,\"lossPercent\":0},{\"role\":\"defender\",\"differential\":1,\"coordinate\":62,\"lossPercent\":0},{\"role\":\"defender\",\"differential\":1,\"coordinate\":63,\"lossPercent\":0},{\"role\":\"defender\",\"differential\":1,\"coordinate\":64,\"lossPercent\":0},{\"role\":\"defender\",\"differential\":1,\"coordinate\":65,\"lossPercent\":0},{\"role\":\"defender\",\"differential\":1,\"coordinate\":66,\"lossPercent\":0},{\"role\":\"defender\",\"differential\":2,\"coordinate\":11,\"lossPercent\":25},{\"role\":\"defender\",\"differential\":2,\"coordinate\":12,\"lossPercent\":20},{\"role\":\"defender\",\"differential\":2,\"coordinate\":13,\"lossPercent\":20},{\"role\":\"defender\",\"differential\":2,\"coordinate\":14,\"lossPercent\":15},{\"role\":\"defender\",\"differential\":2,\"coordinate\":15,\"lossPercent\":15},{\"role\":\"defender\",\"differential\":2,\"coordinate\":16,\"lossPercent\":15},{\"role\":\"defender\",\"differential\":2,\"coordinate\":21,\"lossPercent\":15},{\"role\":\"defender\",\"differential\":2,\"coordinate\":22,\"lossPercent\":15},{\"role\":\"defender\",\"differential\":2,\"coordinate\":23,\"lossPercent\":15},{\"role\":\"defender\",\"differential\":2,\"coordinate\":24,\"lossPercent\":10},{\"role\":\"defender\",\"differential\":2,\"coordinate\":25,\"lossPercent\":10},{\"role\":\"defender\",\"differential\":2,\"coordinate\":26,\"lossPercent\":10},{\"role\":\"defender\",\"differential\":2,\"coordinate\":31,\"lossPercent\":10},{\"role\":\"defender\",\"differential\":2,\"coordinate\":32,\"lossPercent\":10},{\"role\":\"defender\",\"differential\":2,\"coordinate\":33,\"lossPercent\":10},{\"role\":\"defender\",\"differential\":2,\"coordinate\":34,\"lossPercent\":10},{\"role\":\"defender\",\"differential\":2,\"coordinate\":35,\"lossPercent\":10},{\"role\":\"defender\",\"differential\":2,\"coordinate\":36,\"lossPercent\":10},{\"role\":\"defender\",\"differential\":2,\"coordinate\":41,\"lossPercent\":5},{\"role\":\"defender\",\"differential\":2,\"coordinate\":42,\"lossPercent\":5},{\"role\":\"defender\",\"differential\":2,\"coordinate\":43,\"lossPercent\":5},{\"role\":\"defender\",\"differential\":2,\"coordinate\":44,\"lossPercent\":5},{\"role\":\"defender\",\"differential\":2,\"coordinate\":45,\"lossPercent\":5},{\"role\":\"defender\",\"differential\":2,\"coordinate\":46,\"lossPercent\":5},{\"role\":\"defender\",\"differential\":2,\"coordinate\":51,\"lossPercent\":5},{\"role\":\"defender\",\"differential\":2,\"coordinate\":52,\"lossPercent\":5},{\"role\":\"defender\",\"differential\":2,\"coordinate\":53,\"lossPercent\":0},{\"role\":\"defender\",\"differential\":2,\"coordinate\":54,\"lossPercent\":0},{\"role\":\"defender\",\"differential\":2,\"coordinate\":55,\"lossPercent\":0},{\"role\":\"defender\",\"differential\":2,\"coordinate\":56,\"lossPercent\":0},{\"role\":\"defender\",\"differential\":2,\"coordinate\":61,\"lossPercent\":0},{\"role\":\"defender\",\"differential\":2,\"coordinate\":62,\"lossPercent\":0},{\"role\":\"defender\",\"differential\":2,\"coordinate\":63,\"lossPercent\":0},{\"role\":\"defender\",\"differential\":2,\"coordinate\":64,\"lossPercent\":0},{\"role\":\"defender\",\"differential\":2,\"coordinate\":65,\"lossPercent\":0},{\"role\":\"defender\",\"differential\":2,\"coordinate\":66,\"lossPercent\":0}],\"effects\":[{\"differential\":-2,\"attackerEngagedSums\":[10,11],\"defenderRetreatOneHexSums\":[9],\"attackerCaptureSums\":[2],\"defenderCaptureSums\":[]},{\"differential\":-1,\"attackerEngagedSums\":[10,11,12],\"defenderRetreatOneHexSums\":[8],\"attackerCaptureSums\":[],\"defenderCaptureSums\":[]},{\"differential\":0,\"attackerEngagedSums\":[9,10,12],\"defenderRetreatOneHexSums\":[5,6],\"attackerCaptureSums\":[],\"defenderCaptureSums\":[2]},{\"differential\":1,\"attackerEngagedSums\":[9,10,11],\"defenderRetreatOneHexSums\":[4,5,6],\"attackerCaptureSums\":[],\"defenderCaptureSums\":[2]},{\"differential\":2,\"attackerEngagedSums\":[9,10,11,12],\"defenderRetreatOneHexSums\":[5,6,7],\"attackerCaptureSums\":[],\"defenderCaptureSums\":[2]}],\"captureShares\":[{\"die\":1,\"percent\":10},{\"die\":2,\"percent\":25},{\"die\":3,\"percent\":33},{\"die\":4,\"percent\":50},{\"die\":5,\"percent\":50},{\"die\":6,\"percent\":75}],\"procedure\":{\"procedureId\":\"sandtable.combat.role-ordered-d6.v1\",\"streamAlgorithm\":\"sandtable.sha256-counter.v1\",\"acceptedByteUpperExclusive\":252,\"faces\":6,\"orderedPurposes\":[\"attacker.morale.tens\",\"attacker.morale.ones\",\"defender.morale.tens\",\"defender.morale.ones\",\"attacker.assault.tens\",\"attacker.assault.ones\",\"defender.assault.tens\",\"defender.assault.ones\"],\"conditionalCapturePurposes\":[\"attacker.capture.share\",\"defender.capture.share\"]},\"costs\":{\"committedToePerRole\":10,\"ratingPerRole\":1,\"basicMoralePerRole\":0,\"requiredCohesionPerRole\":0,\"baseCapabilityPointAllowance\":10,\"attackerCapabilityPoints\":5,\"defenderCapabilityPoints\":3,\"ammunitionPointsPerToe\":1},\"settlement\":{\"attackerLossRounding\":\"ceiling\",\"defenderLossRounding\":\"floor\",\"capturedLossRounding\":\"ceiling\",\"refusalPercentPerHex\":10,\"lossDpThresholdToe\":3,\"lossDpPoints\":3,\"victoryRpPoints\":3,\"cohesionUpperCap\":10,\"clearRetreatCapabilityPointsPerHex\":1,\"guardToe\":1,\"guardCapabilityPointAllowance\":10,\"guardAttackRating\":0,\"guardDefenseRating\":1,\"guardInitialAmmunition\":0,\"guardedPathMaximumHexes\":3,\"escapePathMaximumCapabilityPoints\":8,\"replacementDelayOperationStages\":12,\"operationStagesPerGameTurn\":3},\"policies\":[{\"policyId\":\"CMB-POL-001\",\"contractVersion\":1,\"selectedBehaviorId\":\"closed-singleton-infantry\"},{\"policyId\":\"CMB-POL-002\",\"contractVersion\":1,\"selectedBehaviorId\":\"explicit-content-seeds-and-provenance\"},{\"policyId\":\"CMB-POL-003\",\"contractVersion\":1,\"selectedBehaviorId\":\"single-ledger-atomic-costs-role-ordered-rng\"},{\"policyId\":\"CMB-POL-004\",\"contractVersion\":1,\"selectedBehaviorId\":\"persisted-deadline-fallback\"},{\"policyId\":\"CMB-POL-005\",\"contractVersion\":1,\"selectedBehaviorId\":\"atomic-custody-rendezvous-and-delayed-escape\"},{\"policyId\":\"CMB-POL-006\",\"contractVersion\":1,\"selectedBehaviorId\":\"side-disclosure-allowlist\"},{\"policyId\":\"CMB-POL-007\",\"contractVersion\":1,\"selectedBehaviorId\":\"relative-release-and-cumulative-history\"},{\"policyId\":\"CMB-POL-008\",\"contractVersion\":1,\"selectedBehaviorId\":\"supported-cycle-continuation-to-truck-entry\"}]}",
+      "byteCount": 30395,
+      "sha256": "sha256:fafb24792c9e3f774c368f85c02d1d068f84c9c78e67bf8324723257d0f13029"
+    },
+    {
+      "kind": "Config",
+      "canonicalUtf8": "{\"schemaVersion\":1,\"configId\":\"rules-lab.combat-timing.v1\",\"profileId\":\"sandtable.capability.combat-cycle-infantry.v1\",\"rulesInputHash\":\"sha256:fafb24792c9e3f774c368f85c02d1d068f84c9c78e67bf8324723257d0f13029\",\"codecId\":\"sandtable.combat.inputs-json.v1\",\"timingPolicyId\":\"sandtable.combat.fixed-deadline.v1\",\"windows\":[{\"kind\":\"custody\",\"decisionBudgetMilliseconds\":30000,\"fallback\":\"leave-unguarded\"},{\"kind\":\"cycle-control\",\"decisionBudgetMilliseconds\":30000,\"fallback\":\"finish-phase\"},{\"kind\":\"force-assignment\",\"decisionBudgetMilliseconds\":30000,\"fallback\":\"cancel-incomplete-voluntary-round\"},{\"kind\":\"rba\",\"decisionBudgetMilliseconds\":30000,\"fallback\":\"cancel-without-decline\"},{\"kind\":\"reserve-release\",\"decisionBudgetMilliseconds\":30000,\"fallback\":\"convert-unresolved-i-retain-ii\"},{\"kind\":\"retreat\",\"decisionBudgetMilliseconds\":30000,\"fallback\":\"refuse-retreat\"},{\"kind\":\"selection\",\"decisionBudgetMilliseconds\":30000,\"fallback\":\"no-selection\"}]}",
+      "byteCount": 955,
+      "sha256": "sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34"
+    },
+    {
+      "kind": "Timing",
+      "canonicalUtf8": "{\"contractVersion\":1,\"configHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"kind\":\"force-assignment\",\"decisionBudgetMilliseconds\":30000,\"openedAtUnixMilliseconds\":1000,\"deadlineUnixMilliseconds\":31000,\"highWaterUnixMilliseconds\":1000}",
+      "byteCount": 267,
+      "sha256": "sha256:aae6214307d4d48fb8bd7b25a525a7d357b123185e6f388b33ce37aec659e26a"
+    }
+  ],
+  "negativeVectors": [
+    {
+      "name": "schema-0",
+      "kind": "RulesInput",
+      "path": "/schemaVersion",
+      "value": 0,
+      "error": "CMB-INP-003"
+    },
+    {
+      "name": "schema-2",
+      "kind": "RulesInput",
+      "path": "/schemaVersion",
+      "value": 2,
+      "error": "CMB-INP-003"
+    },
+    {
+      "name": "schema-True",
+      "kind": "RulesInput",
+      "path": "/schemaVersion",
+      "value": true,
+      "error": "CMB-INP-001"
+    },
+    {
+      "name": "schema-1.0",
+      "kind": "RulesInput",
+      "path": "/schemaVersion",
+      "value": 1.0,
+      "error": "CMB-INP-001"
+    },
+    {
+      "name": "schema-0",
+      "kind": "Config",
+      "path": "/schemaVersion",
+      "value": 0,
+      "error": "CMB-INP-003"
+    },
+    {
+      "name": "schema-2",
+      "kind": "Config",
+      "path": "/schemaVersion",
+      "value": 2,
+      "error": "CMB-INP-003"
+    },
+    {
+      "name": "schema-True",
+      "kind": "Config",
+      "path": "/schemaVersion",
+      "value": true,
+      "error": "CMB-INP-001"
+    },
+    {
+      "name": "schema-1.0",
+      "kind": "Config",
+      "path": "/schemaVersion",
+      "value": 1.0,
+      "error": "CMB-INP-001"
+    },
+    {
+      "name": "/amendment/lossPercent",
+      "kind": "RulesInput",
+      "path": "/amendment/lossPercent",
+      "value": 5,
+      "error": "CMB-INP-004"
+    },
+    {
+      "name": "/amendment/coordinates",
+      "kind": "RulesInput",
+      "path": "/amendment/coordinates",
+      "value": [
+        34,
+        35,
+        36,
+        41
+      ],
+      "error": "CMB-INP-004"
+    },
+    {
+      "name": "/losses/0/coordinate",
+      "kind": "RulesInput",
+      "path": "/losses/0/coordinate",
+      "value": 18,
+      "error": "CMB-INP-004"
+    },
+    {
+      "name": "/losses/0/lossPercent",
+      "kind": "RulesInput",
+      "path": "/losses/0/lossPercent",
+      "value": 0,
+      "error": "CMB-INP-004"
+    },
+    {
+      "name": "/losses/0/role",
+      "kind": "RulesInput",
+      "path": "/losses/0/role",
+      "value": "defender",
+      "error": "CMB-INP-004"
+    },
+    {
+      "name": "/morale/0/adjustment",
+      "kind": "RulesInput",
+      "path": "/morale/0/adjustment",
+      "value": 0,
+      "error": "CMB-INP-004"
+    },
+    {
+      "name": "/effects/2/attackerEngagedSums",
+      "kind": "RulesInput",
+      "path": "/effects/2/attackerEngagedSums",
+      "value": [],
+      "error": "CMB-INP-004"
+    },
+    {
+      "name": "/captureShares/0/percent",
+      "kind": "RulesInput",
+      "path": "/captureShares/0/percent",
+      "value": 100,
+      "error": "CMB-INP-004"
+    },
+    {
+      "name": "/procedure/faces",
+      "kind": "RulesInput",
+      "path": "/procedure/faces",
+      "value": 8,
+      "error": "CMB-INP-004"
+    },
+    {
+      "name": "/procedure/acceptedByteUpperExclusive",
+      "kind": "RulesInput",
+      "path": "/procedure/acceptedByteUpperExclusive",
+      "value": 256,
+      "error": "CMB-INP-004"
+    },
+    {
+      "name": "/procedure/orderedPurposes",
+      "kind": "RulesInput",
+      "path": "/procedure/orderedPurposes",
+      "value": [
+        "defender.assault.ones",
+        "defender.assault.tens",
+        "attacker.assault.ones",
+        "attacker.assault.tens",
+        "defender.morale.ones",
+        "defender.morale.tens",
+        "attacker.morale.ones",
+        "attacker.morale.tens"
+      ],
+      "error": "CMB-INP-004"
+    },
+    {
+      "name": "/costs/attackerCapabilityPoints",
+      "kind": "RulesInput",
+      "path": "/costs/attackerCapabilityPoints",
+      "value": 4,
+      "error": "CMB-INP-004"
+    },
+    {
+      "name": "/costs/ammunitionPointsPerToe",
+      "kind": "RulesInput",
+      "path": "/costs/ammunitionPointsPerToe",
+      "value": 0,
+      "error": "CMB-INP-004"
+    },
+    {
+      "name": "/settlement/replacementDelayOperationStages",
+      "kind": "RulesInput",
+      "path": "/settlement/replacementDelayOperationStages",
+      "value": 4,
+      "error": "CMB-INP-004"
+    },
+    {
+      "name": "/settlement/defenderLossRounding",
+      "kind": "RulesInput",
+      "path": "/settlement/defenderLossRounding",
+      "value": "ceiling",
+      "error": "CMB-INP-004"
+    },
+    {
+      "name": "/policies/0/selectedBehaviorId",
+      "kind": "RulesInput",
+      "path": "/policies/0/selectedBehaviorId",
+      "value": "broader-profile",
+      "error": "CMB-INP-004"
+    },
+    {
+      "name": "/sourceEvidence/0/sha256",
+      "kind": "RulesInput",
+      "path": "/sourceEvidence/0/sha256",
+      "value": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "error": "CMB-INP-004"
+    },
+    {
+      "name": "/rulesInputHash",
+      "kind": "Config",
+      "path": "/rulesInputHash",
+      "value": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "error": "CMB-INP-005"
+    },
+    {
+      "name": "/rulesInputHash",
+      "kind": "Config",
+      "path": "/rulesInputHash",
+      "value": "sha256:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+      "error": "CMB-INP-002"
+    },
+    {
+      "name": "/profileId",
+      "kind": "Config",
+      "path": "/profileId",
+      "value": "unsupported",
+      "error": "CMB-INP-003"
+    },
+    {
+      "name": "/codecId",
+      "kind": "Config",
+      "path": "/codecId",
+      "value": "other-codec",
+      "error": "CMB-INP-003"
+    },
+    {
+      "name": "/timingPolicyId",
+      "kind": "Config",
+      "path": "/timingPolicyId",
+      "value": "renew-on-retry",
+      "error": "CMB-INP-003"
+    },
+    {
+      "name": "/windows/0/kind",
+      "kind": "Config",
+      "path": "/windows/0/kind",
+      "value": "hidden-window",
+      "error": "CMB-INP-005"
+    },
+    {
+      "name": "/windows/0/fallback",
+      "kind": "Config",
+      "path": "/windows/0/fallback",
+      "value": "guard-automatically",
+      "error": "CMB-INP-005"
+    },
+    {
+      "name": "/windows/0/decisionBudgetMilliseconds",
+      "kind": "Config",
+      "path": "/windows/0/decisionBudgetMilliseconds",
+      "value": 0,
+      "error": "CMB-INP-002"
+    },
+    {
+      "name": "/windows/0/decisionBudgetMilliseconds",
+      "kind": "Config",
+      "path": "/windows/0/decisionBudgetMilliseconds",
+      "value": -1,
+      "error": "CMB-INP-002"
+    },
+    {
+      "name": "/windows/0/decisionBudgetMilliseconds",
+      "kind": "Config",
+      "path": "/windows/0/decisionBudgetMilliseconds",
+      "value": 2147483648,
+      "error": "CMB-INP-002"
+    },
+    {
+      "name": "/windows/0/decisionBudgetMilliseconds",
+      "kind": "Config",
+      "path": "/windows/0/decisionBudgetMilliseconds",
+      "value": true,
+      "error": "CMB-INP-001"
+    },
+    {
+      "name": "/windows/0/decisionBudgetMilliseconds",
+      "kind": "Config",
+      "path": "/windows/0/decisionBudgetMilliseconds",
+      "value": 1.5,
+      "error": "CMB-INP-001"
+    },
+    {
+      "name": "/configId",
+      "kind": "Config",
+      "path": "/configId",
+      "value": "",
+      "error": "CMB-INP-002"
+    },
+    {
+      "name": "/contractVersion",
+      "kind": "Timing",
+      "path": "/contractVersion",
+      "value": 2,
+      "error": "CMB-INP-003"
+    },
+    {
+      "name": "/configHash",
+      "kind": "Timing",
+      "path": "/configHash",
+      "value": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "error": "CMB-INP-005"
+    },
+    {
+      "name": "/kind",
+      "kind": "Timing",
+      "path": "/kind",
+      "value": "hidden-window",
+      "error": "CMB-INP-005"
+    },
+    {
+      "name": "/decisionBudgetMilliseconds",
+      "kind": "Timing",
+      "path": "/decisionBudgetMilliseconds",
+      "value": 30001,
+      "error": "CMB-INP-006"
+    },
+    {
+      "name": "/openedAtUnixMilliseconds",
+      "kind": "Timing",
+      "path": "/openedAtUnixMilliseconds",
+      "value": -1,
+      "error": "CMB-INP-002"
+    },
+    {
+      "name": "/deadlineUnixMilliseconds",
+      "kind": "Timing",
+      "path": "/deadlineUnixMilliseconds",
+      "value": 31001,
+      "error": "CMB-INP-006"
+    },
+    {
+      "name": "/deadlineUnixMilliseconds",
+      "kind": "Timing",
+      "path": "/deadlineUnixMilliseconds",
+      "value": 253402300800000,
+      "error": "CMB-INP-002"
+    },
+    {
+      "name": "/highWaterUnixMilliseconds",
+      "kind": "Timing",
+      "path": "/highWaterUnixMilliseconds",
+      "value": 999,
+      "error": "CMB-INP-006"
+    },
+    {
+      "name": "/highWaterUnixMilliseconds",
+      "kind": "Timing",
+      "path": "/highWaterUnixMilliseconds",
+      "value": true,
+      "error": "CMB-INP-001"
+    }
+  ],
+  "clockCases": [
+    {
+      "name": "before",
+      "highWater": 1000,
+      "now": 30999,
+      "available": true,
+      "expected": "before-deadline"
+    },
+    {
+      "name": "equality",
+      "highWater": 1000,
+      "now": 31000,
+      "available": true,
+      "expected": "expired"
+    },
+    {
+      "name": "after",
+      "highWater": 1000,
+      "now": 31001,
+      "available": true,
+      "expected": "expired"
+    },
+    {
+      "name": "regression",
+      "highWater": 2000,
+      "now": 1999,
+      "available": true,
+      "expected": "unavailable"
+    },
+    {
+      "name": "same-instant",
+      "highWater": 2000,
+      "now": 2000,
+      "available": true,
+      "expected": "before-deadline"
+    },
+    {
+      "name": "clock-lost",
+      "highWater": 1000,
+      "now": null,
+      "available": false,
+      "expected": "unavailable"
+    },
+    {
+      "name": "clock-lost-at-expiry",
+      "highWater": 1000,
+      "now": 31000,
+      "available": false,
+      "expected": "unavailable"
+    }
+  ]
+}

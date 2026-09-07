@@ -1,0 +1,11 @@
+{
+  "base": "4c2bd033edb5ef994dd11bf7606d551e02b63f10",
+  "branch": "codex/cmb-task-003c-authority-envelopes",
+  "paths": {
+    "docs/design/combat-cycle-implementation-plan.md": "1adcaae8431a86afcb7f6a355f158e51e350ff7de5418c5eb9d638083d080f9b",
+    "docs/specs/combat-cycle-sequence-v1.md": "5c5691e8b4d7e0c2e46a0ac94dd544e21b065d7036929102eb0b782b9062ea6a",
+    "docs/specs/combat-cycle-sequence-v1.schema.json": "6e09dc5bc6ca79d8580db6ed1e76ad5007c26a30df11b4dd9da0a9c7b5f5e0c5",
+    "docs/specs/fixtures/combat-cycle-sequence-v1.json": "de89ebcd86f171119d206d0a90553cdeb815e7b8b6fc8903c9dfcacbd1db5b3f",
+    "docs/specs/verify-combat-cycle-sequence-v1.py": "d43ae974e1f6e2c30067efe4635df655c6d2e4791968ece00dfd473145c3cc8a"
+  }
+}

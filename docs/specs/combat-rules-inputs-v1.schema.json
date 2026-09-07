@@ -1,0 +1,33 @@
+{
+  "contract": "combat-rules-inputs-v1",
+  "schemaVersion": 1,
+  "objects": {
+    "RulesInput": "schemaVersion:int artifactId:id profileId:id sources:Reference[] sourceEvidence:SourceEvidence[] amendment:Amendment morale:MoraleCell[] losses:LossCell[] effects:EffectRow[] captureShares:Share[] procedure:Procedure costs:Costs settlement:SettlementRules policies:Policy[]",
+    "Reference": "sourceId:id locator:text",
+    "SourceEvidence": "sourceId:id sha256:hash",
+    "Amendment": "rulingId:id role:id differential:int coordinates:int[] lossPercent:int",
+    "MoraleCell": "coordinate:int adjustment:int",
+    "LossCell": "role:id differential:int coordinate:int lossPercent:int",
+    "EffectRow": "differential:int attackerEngagedSums:int[] defenderRetreatOneHexSums:int[] attackerCaptureSums:int[] defenderCaptureSums:int[]",
+    "Share": "die:int percent:int",
+    "Procedure": "procedureId:id streamAlgorithm:id acceptedByteUpperExclusive:int faces:int orderedPurposes:id[] conditionalCapturePurposes:id[]",
+    "Costs": "committedToePerRole:int ratingPerRole:int basicMoralePerRole:int requiredCohesionPerRole:int baseCapabilityPointAllowance:int attackerCapabilityPoints:int defenderCapabilityPoints:int ammunitionPointsPerToe:int",
+    "SettlementRules": "attackerLossRounding:id defenderLossRounding:id capturedLossRounding:id refusalPercentPerHex:int lossDpThresholdToe:int lossDpPoints:int victoryRpPoints:int cohesionUpperCap:int clearRetreatCapabilityPointsPerHex:int guardToe:int guardCapabilityPointAllowance:int guardAttackRating:int guardDefenseRating:int guardInitialAmmunition:int guardedPathMaximumHexes:int escapePathMaximumCapabilityPoints:int replacementDelayOperationStages:int operationStagesPerGameTurn:int",
+    "Policy": "policyId:id contractVersion:int selectedBehaviorId:id",
+    "Config": "schemaVersion:int configId:id profileId:id rulesInputHash:hash codecId:id timingPolicyId:id windows:WindowPolicy[]",
+    "WindowPolicy": "kind:id decisionBudgetMilliseconds:int fallback:id",
+    "Timing": "contractVersion:int configHash:hash kind:id decisionBudgetMilliseconds:int openedAtUnixMilliseconds:utc deadlineUnixMilliseconds:utc highWaterUnixMilliseconds:utc"
+  },
+  "sortedArrays": {
+    "Reference": ["sourceId", "locator"],
+    "SourceEvidence": ["sourceId"],
+    "MoraleCell": ["coordinate"],
+    "LossCell": ["role", "differential", "coordinate"],
+    "EffectRow": ["differential"],
+    "Share": ["die"],
+    "Policy": ["policyId"],
+    "WindowPolicy": ["kind"]
+  },
+  "orderedArrays": ["Procedure.orderedPurposes", "Procedure.conditionalCapturePurposes"],
+  "limits": {"bytes": 1048576, "depth": 32, "arrayItems": 512, "utcMinimum": 0, "utcMaximum": 253402300799999}
+}
