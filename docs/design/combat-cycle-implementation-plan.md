@@ -12,9 +12,17 @@ its status correction is applied. Parent003 remains open for003C/D.
 [review6](../reviews/combat-inputs-review-6.md) returned Ready with no actionable findings (6of7 used at that checkpoint).
 [003D1 sequence/cycle packet](../specs/combat-cycle-sequence-v1.md) is complete;
 [review7](../reviews/combat-sequence-review-7.md) returned Ready with no actionable findings (7of7 used).
-003C2 full Rules10/creation/snapshot assembly is next.
+[003C2 Rules10/creation envelopes](../specs/combat-authority-envelope-v1.md) are complete for the creation cut,
+with author verification and independent review8 Ready (local report recorded below).
+[003C3a selection/step contracts](../specs/combat-selection-steps-v1.md) are
+complete as a bounded control fragment;003C3b sealed assignments are next.
 TASK-004–025 not started. Future maturity execution and checkpoint B remain gated.
 **Original input:** `d2bc67c`. Exact contract freeze and production gates remain open.
+
+Cross-package sequencing lives in the [roadmap checkpoint](../roadmap/pre-alpha-roadmap.md#current-checkpoint-and-next-gates).
+Task005 begins dormant implementation; public activation is020–021 and Combat simulator evidence
+is022–024. The proposed Orleans planning checkpoint follows that working loop/evidence and does
+not change this package's accepted dependencies or authorize hosted/model integration.
 
 ## Outcome and boundary
 
@@ -123,15 +131,29 @@ order; never insert a placeholder hash or declare the full Rules bundle frozen e
 
 | Ordered slice | Contract output / dependency |
 | --- | --- |
-| `003C1` | [Rules-input/config packet](../specs/combat-rules-inputs-v1.md) complete:3 goldens,47 mutations,39 raw-byte rejections,7 clock cases and14 kind/budget/UTC boundaries; review6 Ready. Full Rules10 manifest remains open. |
+| `003C1` | [Rules-input/config packet](../specs/combat-rules-inputs-v1.md) complete:3 goldens,47 mutations,39 raw-byte rejections,7 clock cases and14 kind/budget/UTC boundaries; review6 Ready. Full Rules10 manifest is assembled by003C2. |
 | `003D1` | [Sequence/catalog5 and cycle codec1](../specs/combat-cycle-sequence-v1.md) complete; review7 Ready:112 positions,1 interrupt,6 cycle edges; binary preimages/prefix probes,38 mutations,3,996 scope identities and896 actor materializations. No movement/history implementation. |
-| `003C2` | Assemble exact Rules10 manifest from retained predecessor artifacts plus frozen successors; freeze Created11/Snapshot12 binding and creation/recovery vectors; after003D1. |
-| `003C3` | Freeze selection, six-step, sealed-round, commit/result/settlement event and command envelopes, persisted timing/receipt suffixes and tamper/restart matrix; after003C2. |
+| `003C2` | [Rules10/Created11/Snapshot12 creation cut](../specs/combat-authority-envelope-v1.md) complete:4 goldens,67 mutations,36 raw-byte rejections,9 recovery boundary checks,12 identity/context forks and2 turn boundaries; actual C# Rules9 capture and Rules10 hash parity. Author verification only. |
+| `003C3` | Freeze selection, six-step, sealed-round, commit/result/settlement event and command envelopes, noninitial Snapshot12 state arms, persisted timing/receipt suffixes and tamper/restart matrix; after003C2. |
 | `003D2` | Freeze release/history/ordinary movement receipts and reconcile CON-002–004 against003C3; close parent003 only after cross-contract checks. |
 
 Each slice retains the five-primary-file cap, including verification and plan update.003C1 inputs
 are prospective Rules artifacts, not a new registered ruleset or permission to begin005. The
 sequence/identity dependency moves earlier; accepted gameplay policies and checkpoint B stay intact.
+
+TASK-003C3 sizing refinement, 2026-09-07, before event/command edits: selection/step control,
+two-party private rounds, and committed result/settlement are separate transition families. Keep
+parent003C3 open and freeze them in dependency order, each within five primary files:
+
+| Slice | Contract boundary |
+| --- | --- |
+| `003C3a` | [Selection/step control](../specs/combat-selection-steps-v1.md) complete:5 literal traces/41 event-control cuts,5 Control goldens,246 event mutations,164 raw rejects and time/retry/weather/FA guards. Positive path stops at Force Assignment; author checks only. |
+| `003C3b` | Opportunity and sealed two-slot round, permitted FA/AA trace, atomic commitment and history identity; prepared/cancelled handoff to step control. |
+| `003C3c` | Committed RNG/result/settlement envelopes, completed round/CA closure and noninitial Snapshot12 composition with C3a/b; reconcile complete C3 restart/tamper matrix. |
+
+This refinement changes no gameplay policy, acceptance criterion or review budget. C3a rejects
+prepared/resolved/settled states until their exact dependent contracts exist; later C3b/c freeze
+the same prospective family before checkpoint B, with no production version registered early.
 
 Checkpoint B: accept exact combined contracts and resolve any changed policy with owner. Reconcile
 task sizes with frozen types. Runtime implementation remains gated until this checkpoint passes.
@@ -360,3 +382,44 @@ additional pass warranted. Cumulative use is **7of7**, exhausting current indepe
 Only plan status/navigation and review retention changed after review; four contract artifacts remain
 byte-identical to reviewed manifest. Next003C2 assembles full Rules10/Created11/Snapshot12.
 Parent003C/D,003C3,003D2,004, checkpoint B and runtime/replay/privacy evidence remain open.
+
+
+TASK-003C2 checkpoint, 2026-09-07 (input `d59446e`, merged PR92):
+[Rules10/creation envelope contract](../specs/combat-authority-envelope-v1.md),
+[schema](../specs/combat-authority-envelope-v1.schema.json),
+[goldens/vectors](../specs/fixtures/combat-authority-envelope-v1.json) and
+[oracle](../specs/verify-combat-authority-envelope-v1.py) complete for creation cut. Full Rules10
+manifest is10,495 bytes with11 artifacts/11 rulings; hash
+`8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18`.
+Package-free temporary C# capture reproduced actual9,168-byte Rules9 hash and existing
+RulesetManifest constructed from new manifest reproduced Rules10 hash. Both helper builds passed
+with0warnings/errors and retained local binlogs. No production Created11/Snapshot12 C# parity claim.
+Four goldens,67 mutations,36 raw-byte rejections,9 recovery boundary checks,12 seed/context forks
+and2 turn boundaries plus693 nested type rejections pass. All six predecessor
+source/Content/Setup/World/inputs/sequence oracles pass.
+Author verification only: no independent pass started; prior review flow remains exhausted **7of7**.
+Creation binding precedes World construction; snapshot binds exact validated Created11 bytes and
+003D1 prefix. Recovery tests are pure contract decisions, not durable publication or actual restart.
+C2 freezes only creation-state Snapshot12: noninitial variants fail closed until003C3/003D2 complete
+its prospective contract before checkpoint B. No opaque saved-state payload or inferred upgrade.
+Next003C3 freezes command/event envelopes, later snapshot state and causal suffixes; parent003C/D,
+004, checkpoint B and all runtime/replay/privacy gates remain open.
+
+
+TASK-003C3a checkpoint, 2026-09-07 (input `568027c`):
+[Selection/step contract](../specs/combat-selection-steps-v1.md),
+[schema](../specs/combat-selection-steps-v1.schema.json),
+[fixture](../specs/fixtures/combat-selection-steps-v1.json) and
+[oracle](../specs/verify-combat-selection-steps-v1.py) freeze no-selection traversal, selected intent,
+RBA decline/cancellation and pre-assignment handoff. Five literal traces contain41 events and five
+final Control goldens.41 event/control cuts,246 event mutations,164 raw rejections plus exact retry,
+deadline, unavailable-clock, stale timer, actor/candidate, weather/geometry and FA guards pass.
+All seven predecessor oracles pass unchanged;427 local Markdown links resolve, JSON/Python syntax
+and changed-file whitespace checks pass. No .NET/runtime files changed in this slice.
+Boundary fixtures are explicit isolated probes; real Breakdown/Weather/Movement history and complete
+Snapshot12 remain future consumers. No CP/ammo/TOE/RNG/world changes or production activation.
+C2 independent review8of8 returned Ready with no actionable findings; retained report at local
+`.planning/cmb-task-003c2/review8/report.md` outside Git. Its verdict applies only to C2; C3a receives
+author checks, with no additional review pass. Current review maximum remains8of8.
+Next003C3b freezes sealed assignments/FA-AA trace and commitment;003C3c composes result/settlement
+and noninitial Snapshot12, then003D2/004 complete checkpoint B before runtime Task005 begins.

@@ -14,6 +14,7 @@ the pre-alpha roadmap carry repository-wide rationale and delivery state.
 - [Post-merge simulator check-in (Rules 9)](research/simulator-post-merge-checkin.md)
 - [Naming and domain vocabulary](../naming-overview.md)
 - [Pre-alpha roadmap](roadmap/pre-alpha-roadmap.md)
+- [Current checkpoint, simulation and Orleans planning gates](roadmap/pre-alpha-roadmap.md#current-checkpoint-and-next-gates)
 
 ## Implemented capability packages
 
@@ -95,7 +96,9 @@ the pre-alpha roadmap carry repository-wide rationale and delivery state.
   [review6](reviews/combat-inputs-review-6.md) returned Ready, no actionable findings (6of7 used).
   [003D1 sequence/cycle contracts](specs/combat-cycle-sequence-v1.md) are complete;
   [review7](reviews/combat-sequence-review-7.md) returned Ready, no actionable findings (7of7 used).
-  Next003C2 assembles full Rules10/creation/snapshot; parent003C/D stays open.
+  [003C2 Rules10/creation envelopes](specs/combat-authority-envelope-v1.md) are complete for the creation
+  cut. [003C3a selection/step control](specs/combat-selection-steps-v1.md) is complete with author checks;
+  003C3b sealed assignments are next. Parent003C/D stays open.
 - Sprint 4-5 dependencies: [research-gate audit](research/sprint-4-5-research-gates.md).
 
 ## Reviewed future product work

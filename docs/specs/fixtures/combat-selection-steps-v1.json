@@ -1,0 +1,1032 @@
+{
+  "contract": "combat-selection-steps-v1",
+  "fixtureBoundary": "Isolated trusted-boundary probes; not creation-to-Combat campaign history or production Snapshot12.",
+  "cases": [
+    {
+      "name": "no-candidate",
+      "inputs": [
+        {
+          "command": {
+            "contractVersion": 1,
+            "kind": "open-segment",
+            "segmentId": "seg.46e298070b4dc47056198991c531c19dcef8c96d2bb8440e7778d30d2a1e1e3b",
+            "decisionId": null,
+            "fromPositionId": null,
+            "expectedPriorVersion": 20,
+            "choice": null,
+            "candidate": null,
+            "participant": null
+          },
+          "actor": "system",
+          "admittedAt": null,
+          "clockAvailable": true
+        },
+        {
+          "command": {
+            "contractVersion": 1,
+            "kind": "close-empty-selection",
+            "segmentId": "seg.46e298070b4dc47056198991c531c19dcef8c96d2bb8440e7778d30d2a1e1e3b",
+            "decisionId": null,
+            "fromPositionId": null,
+            "expectedPriorVersion": 21,
+            "choice": null,
+            "candidate": null,
+            "participant": null
+          },
+          "actor": "system",
+          "admittedAt": null,
+          "clockAvailable": true
+        },
+        {
+          "command": {
+            "contractVersion": 1,
+            "kind": "complete-step",
+            "segmentId": "seg.46e298070b4dc47056198991c531c19dcef8c96d2bb8440e7778d30d2a1e1e3b",
+            "decisionId": null,
+            "fromPositionId": "land.position.operation-1.first-player.movement-and-combat.combat.position-determination",
+            "expectedPriorVersion": 22,
+            "choice": null,
+            "candidate": null,
+            "participant": null
+          },
+          "actor": "system",
+          "admittedAt": null,
+          "clockAvailable": true
+        },
+        {
+          "command": {
+            "contractVersion": 1,
+            "kind": "complete-step",
+            "segmentId": "seg.46e298070b4dc47056198991c531c19dcef8c96d2bb8440e7778d30d2a1e1e3b",
+            "decisionId": null,
+            "fromPositionId": "land.position.operation-1.first-player.movement-and-combat.combat.barrage",
+            "expectedPriorVersion": 23,
+            "choice": null,
+            "candidate": null,
+            "participant": null
+          },
+          "actor": "system",
+          "admittedAt": null,
+          "clockAvailable": true
+        },
+        {
+          "command": {
+            "contractVersion": 1,
+            "kind": "complete-step",
+            "segmentId": "seg.46e298070b4dc47056198991c531c19dcef8c96d2bb8440e7778d30d2a1e1e3b",
+            "decisionId": null,
+            "fromPositionId": "land.position.operation-1.first-player.movement-and-combat.combat.retreat-before-assault",
+            "expectedPriorVersion": 24,
+            "choice": null,
+            "candidate": null,
+            "participant": null
+          },
+          "actor": "system",
+          "admittedAt": null,
+          "clockAvailable": true
+        },
+        {
+          "command": {
+            "contractVersion": 1,
+            "kind": "complete-step",
+            "segmentId": "seg.46e298070b4dc47056198991c531c19dcef8c96d2bb8440e7778d30d2a1e1e3b",
+            "decisionId": null,
+            "fromPositionId": "land.position.operation-1.first-player.movement-and-combat.combat.force-assignment",
+            "expectedPriorVersion": 25,
+            "choice": null,
+            "candidate": null,
+            "participant": null
+          },
+          "actor": "system",
+          "admittedAt": null,
+          "clockAvailable": true
+        },
+        {
+          "command": {
+            "contractVersion": 1,
+            "kind": "complete-step",
+            "segmentId": "seg.46e298070b4dc47056198991c531c19dcef8c96d2bb8440e7778d30d2a1e1e3b",
+            "decisionId": null,
+            "fromPositionId": "land.position.operation-1.first-player.movement-and-combat.combat.anti-armor",
+            "expectedPriorVersion": 26,
+            "choice": null,
+            "candidate": null,
+            "participant": null
+          },
+          "actor": "system",
+          "admittedAt": null,
+          "clockAvailable": true
+        },
+        {
+          "command": {
+            "contractVersion": 1,
+            "kind": "complete-step",
+            "segmentId": "seg.46e298070b4dc47056198991c531c19dcef8c96d2bb8440e7778d30d2a1e1e3b",
+            "decisionId": null,
+            "fromPositionId": "land.position.operation-1.first-player.movement-and-combat.combat.close-assault",
+            "expectedPriorVersion": 27,
+            "choice": null,
+            "candidate": null,
+            "participant": null
+          },
+          "actor": "system",
+          "admittedAt": null,
+          "clockAvailable": true
+        }
+      ],
+      "events": [
+        {
+          "canonicalUtf8": "{\"contractVersion\":1,\"eventType\":\"combat-segment-opened\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:d886d82a4a80cb59acd158b7040135ade9a82e910339d4282ef6793559940f1d\",\"segmentId\":\"seg.46e298070b4dc47056198991c531c19dcef8c96d2bb8440e7778d30d2a1e1e3b\",\"priorVersion\":20,\"stateVersion\":21,\"priorPrefix\":\"sha256:7931527dd7d964dc4436798d8c2467424fdaee54909f6a95080ddff57d31ec5f\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"open-segment\",\"segmentId\":\"seg.46e298070b4dc47056198991c531c19dcef8c96d2bb8440e7778d30d2a1e1e3b\",\"decisionId\":null,\"fromPositionId\":null,\"expectedPriorVersion\":20,\"choice\":null,\"candidate\":null,\"participant\":null},\"actor\":\"system\",\"admittedAt\":null,\"clockAvailable\":true},\"effect\":{\"kind\":\"segment-opened\",\"boundaryHash\":\"sha256:44eb785c815a79b48cc79137c6c3843b61565cecf651624de153042644e9ebff\",\"window\":null},\"receiptId\":\"cmb.8a8e2468ce38547544ca51d4d5def49d8a4f80f7f44bb0c0ab3d8a39aa143c28\"}",
+          "sha256": "sha256:ff5a2405765ff93fda993bfba82667babaa24b5a31b0e88f99b8579358397b3e",
+          "byteCount": 1107
+        },
+        {
+          "canonicalUtf8": "{\"contractVersion\":1,\"eventType\":\"combat-selection-closed\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:d886d82a4a80cb59acd158b7040135ade9a82e910339d4282ef6793559940f1d\",\"segmentId\":\"seg.46e298070b4dc47056198991c531c19dcef8c96d2bb8440e7778d30d2a1e1e3b\",\"priorVersion\":21,\"stateVersion\":22,\"priorPrefix\":\"sha256:76ece730e9dafe0a0a93467b8dd62c90a09cb01a6f242931084fec80cbb21f92\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"close-empty-selection\",\"segmentId\":\"seg.46e298070b4dc47056198991c531c19dcef8c96d2bb8440e7778d30d2a1e1e3b\",\"decisionId\":null,\"fromPositionId\":null,\"expectedPriorVersion\":21,\"choice\":null,\"candidate\":null,\"participant\":null},\"actor\":\"system\",\"admittedAt\":null,\"clockAvailable\":true},\"effect\":{\"kind\":\"selection-closed\",\"outcome\":\"no-selection\",\"candidate\":null,\"timing\":null},\"receiptId\":\"cmb.d5315989702eb2f8ced1f412db6377439e1c9c5ed6ece66b86fb51c5b5da716f\"}",
+          "sha256": "sha256:d3b499780aa274fa3885b1b29054f43a64e53145297e3fe4a741d8b3dbe2f86e",
+          "byteCount": 1073
+        },
+        {
+          "canonicalUtf8": "{\"contractVersion\":1,\"eventType\":\"combat-step-completed\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:d886d82a4a80cb59acd158b7040135ade9a82e910339d4282ef6793559940f1d\",\"segmentId\":\"seg.46e298070b4dc47056198991c531c19dcef8c96d2bb8440e7778d30d2a1e1e3b\",\"priorVersion\":22,\"stateVersion\":23,\"priorPrefix\":\"sha256:d20f329f1bcdf79846f7e121af63839bab0db625c6374c328d63d33cf8f07338\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"complete-step\",\"segmentId\":\"seg.46e298070b4dc47056198991c531c19dcef8c96d2bb8440e7778d30d2a1e1e3b\",\"decisionId\":null,\"fromPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.position-determination\",\"expectedPriorVersion\":22,\"choice\":null,\"candidate\":null,\"participant\":null},\"actor\":\"system\",\"admittedAt\":null,\"clockAvailable\":true},\"effect\":{\"kind\":\"step-completed\",\"fromPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.position-determination\",\"toPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.barrage\",\"previousStepReceiptId\":\"cmb.8a8e2468ce38547544ca51d4d5def49d8a4f80f7f44bb0c0ab3d8a39aa143c28\",\"dispositionReceiptId\":\"cmb.d5315989702eb2f8ced1f412db6377439e1c9c5ed6ece66b86fb51c5b5da716f\",\"proofKind\":\"no-attack\"},\"receiptId\":\"cmb.b891261593015bc83d8b3bf67dc2fc308f2dc347e16d7e1f195455361505e511\"}",
+          "sha256": "sha256:01febdfb2458eeb3be8928fb55aac2bf1ac5da598dda2816616694d2f7c7de3c",
+          "byteCount": 1503
+        },
+        {
+          "canonicalUtf8": "{\"contractVersion\":1,\"eventType\":\"combat-step-completed\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:d886d82a4a80cb59acd158b7040135ade9a82e910339d4282ef6793559940f1d\",\"segmentId\":\"seg.46e298070b4dc47056198991c531c19dcef8c96d2bb8440e7778d30d2a1e1e3b\",\"priorVersion\":23,\"stateVersion\":24,\"priorPrefix\":\"sha256:51363384d0e44e38f6e3766346315d7c019952bc28ea42377e53f9c91cdaf90b\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"complete-step\",\"segmentId\":\"seg.46e298070b4dc47056198991c531c19dcef8c96d2bb8440e7778d30d2a1e1e3b\",\"decisionId\":null,\"fromPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.barrage\",\"expectedPriorVersion\":23,\"choice\":null,\"candidate\":null,\"participant\":null},\"actor\":\"system\",\"admittedAt\":null,\"clockAvailable\":true},\"effect\":{\"kind\":\"step-completed\",\"fromPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.barrage\",\"toPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.retreat-before-assault\",\"previousStepReceiptId\":\"cmb.b891261593015bc83d8b3bf67dc2fc308f2dc347e16d7e1f195455361505e511\",\"dispositionReceiptId\":\"cmb.d5315989702eb2f8ced1f412db6377439e1c9c5ed6ece66b86fb51c5b5da716f\",\"proofKind\":\"no-attack\"},\"receiptId\":\"cmb.0ebab499bac276780cfb1a0b7523427d532a80439f7915502d893859f4f645bc\"}",
+          "sha256": "sha256:9143e0b27e8e36526bcd871506cacd6def6d2dbc6d06819cd4532e5fc835c19b",
+          "byteCount": 1488
+        },
+        {
+          "canonicalUtf8": "{\"contractVersion\":1,\"eventType\":\"combat-step-completed\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:d886d82a4a80cb59acd158b7040135ade9a82e910339d4282ef6793559940f1d\",\"segmentId\":\"seg.46e298070b4dc47056198991c531c19dcef8c96d2bb8440e7778d30d2a1e1e3b\",\"priorVersion\":24,\"stateVersion\":25,\"priorPrefix\":\"sha256:84ac77a9d5ba3721a9e91e15a03f14639b61dec733582ead877a6c77ddba41e8\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"complete-step\",\"segmentId\":\"seg.46e298070b4dc47056198991c531c19dcef8c96d2bb8440e7778d30d2a1e1e3b\",\"decisionId\":null,\"fromPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.retreat-before-assault\",\"expectedPriorVersion\":24,\"choice\":null,\"candidate\":null,\"participant\":null},\"actor\":\"system\",\"admittedAt\":null,\"clockAvailable\":true},\"effect\":{\"kind\":\"step-completed\",\"fromPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.retreat-before-assault\",\"toPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.force-assignment\",\"previousStepReceiptId\":\"cmb.0ebab499bac276780cfb1a0b7523427d532a80439f7915502d893859f4f645bc\",\"dispositionReceiptId\":\"cmb.d5315989702eb2f8ced1f412db6377439e1c9c5ed6ece66b86fb51c5b5da716f\",\"proofKind\":\"no-attack\"},\"receiptId\":\"cmb.4ce4f880009b64b9645f4badd5b988b634dd647b017bee52083476a02291c009\"}",
+          "sha256": "sha256:c4548e5233ace3386104a16d8d1ff3b743054a2ed7fc1d4230249e0e169ce2a4",
+          "byteCount": 1512
+        },
+        {
+          "canonicalUtf8": "{\"contractVersion\":1,\"eventType\":\"combat-step-completed\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:d886d82a4a80cb59acd158b7040135ade9a82e910339d4282ef6793559940f1d\",\"segmentId\":\"seg.46e298070b4dc47056198991c531c19dcef8c96d2bb8440e7778d30d2a1e1e3b\",\"priorVersion\":25,\"stateVersion\":26,\"priorPrefix\":\"sha256:1e06bcecfb82f86a11c5fff6f847d204045aed86516bc6d7cebe0efce9e536d4\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"complete-step\",\"segmentId\":\"seg.46e298070b4dc47056198991c531c19dcef8c96d2bb8440e7778d30d2a1e1e3b\",\"decisionId\":null,\"fromPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.force-assignment\",\"expectedPriorVersion\":25,\"choice\":null,\"candidate\":null,\"participant\":null},\"actor\":\"system\",\"admittedAt\":null,\"clockAvailable\":true},\"effect\":{\"kind\":\"step-completed\",\"fromPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.force-assignment\",\"toPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.anti-armor\",\"previousStepReceiptId\":\"cmb.4ce4f880009b64b9645f4badd5b988b634dd647b017bee52083476a02291c009\",\"dispositionReceiptId\":\"cmb.d5315989702eb2f8ced1f412db6377439e1c9c5ed6ece66b86fb51c5b5da716f\",\"proofKind\":\"no-attack\"},\"receiptId\":\"cmb.7bacfe5391531d5007b34ba594da548b8aab02921caf58a6bab254b2561ea607\"}",
+          "sha256": "sha256:7e87ddd1d02a1106463c3724411ba49ec77063eb5bbee9fc022aaaf078325295",
+          "byteCount": 1494
+        },
+        {
+          "canonicalUtf8": "{\"contractVersion\":1,\"eventType\":\"combat-step-completed\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:d886d82a4a80cb59acd158b7040135ade9a82e910339d4282ef6793559940f1d\",\"segmentId\":\"seg.46e298070b4dc47056198991c531c19dcef8c96d2bb8440e7778d30d2a1e1e3b\",\"priorVersion\":26,\"stateVersion\":27,\"priorPrefix\":\"sha256:bbdcd5d48e3c73a83472ed2364ddc09bac97909b3a529608ff699372732055b7\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"complete-step\",\"segmentId\":\"seg.46e298070b4dc47056198991c531c19dcef8c96d2bb8440e7778d30d2a1e1e3b\",\"decisionId\":null,\"fromPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.anti-armor\",\"expectedPriorVersion\":26,\"choice\":null,\"candidate\":null,\"participant\":null},\"actor\":\"system\",\"admittedAt\":null,\"clockAvailable\":true},\"effect\":{\"kind\":\"step-completed\",\"fromPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.anti-armor\",\"toPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.close-assault\",\"previousStepReceiptId\":\"cmb.7bacfe5391531d5007b34ba594da548b8aab02921caf58a6bab254b2561ea607\",\"dispositionReceiptId\":\"cmb.d5315989702eb2f8ced1f412db6377439e1c9c5ed6ece66b86fb51c5b5da716f\",\"proofKind\":\"no-attack\"},\"receiptId\":\"cmb.291a78fc17fa335932c14dc43ff101d139b165d5653d3db6ca87b2536d9d6086\"}",
+          "sha256": "sha256:7117e586001425ba125a7b4327e4b04f72c662a36c3860a3d8a42762a60de753",
+          "byteCount": 1485
+        },
+        {
+          "canonicalUtf8": "{\"contractVersion\":1,\"eventType\":\"combat-step-completed\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:d886d82a4a80cb59acd158b7040135ade9a82e910339d4282ef6793559940f1d\",\"segmentId\":\"seg.46e298070b4dc47056198991c531c19dcef8c96d2bb8440e7778d30d2a1e1e3b\",\"priorVersion\":27,\"stateVersion\":28,\"priorPrefix\":\"sha256:4fb8ddd93a1b62ce63628dcc8955d6544842b634e649690ad8dc6d2900bea070\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"complete-step\",\"segmentId\":\"seg.46e298070b4dc47056198991c531c19dcef8c96d2bb8440e7778d30d2a1e1e3b\",\"decisionId\":null,\"fromPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.close-assault\",\"expectedPriorVersion\":27,\"choice\":null,\"candidate\":null,\"participant\":null},\"actor\":\"system\",\"admittedAt\":null,\"clockAvailable\":true},\"effect\":{\"kind\":\"step-completed\",\"fromPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.close-assault\",\"toPositionId\":\"land.position.operation-1.first-player.movement-and-combat.reserve-release\",\"previousStepReceiptId\":\"cmb.291a78fc17fa335932c14dc43ff101d139b165d5653d3db6ca87b2536d9d6086\",\"dispositionReceiptId\":\"cmb.d5315989702eb2f8ced1f412db6377439e1c9c5ed6ece66b86fb51c5b5da716f\",\"proofKind\":\"no-attack\"},\"receiptId\":\"cmb.76eb0f8257d71f2eb011fea5b330ac4429c60623f03a568e7e1b2e0606130ae4\"}",
+          "sha256": "sha256:9ef5d3c5b8c2cc9c566e5b64f77ab2d4d2e733f218b52cc17a395523071d4b1f",
+          "byteCount": 1486
+        }
+      ],
+      "expected": {
+        "stepCount": 6,
+        "terminal": "no-attack",
+        "stateVersion": 28,
+        "prefix": "sha256:5c90c49ffd96ea710e03dd25a247d7b0aa34f9fd2b701d9f981c66ae8a920526"
+      },
+      "controlGolden": {
+        "canonicalUtf8": "{\"contractVersion\":1,\"boundaryHash\":\"sha256:44eb785c815a79b48cc79137c6c3843b61565cecf651624de153042644e9ebff\",\"segmentId\":\"seg.46e298070b4dc47056198991c531c19dcef8c96d2bb8440e7778d30d2a1e1e3b\",\"stateVersion\":28,\"prefix\":\"sha256:5c90c49ffd96ea710e03dd25a247d7b0aa34f9fd2b701d9f981c66ae8a920526\",\"stepIndex\":6,\"selectionOutcome\":\"no-selection\",\"selection\":null,\"selectionReceiptId\":\"cmb.d5315989702eb2f8ced1f412db6377439e1c9c5ed6ece66b86fb51c5b5da716f\",\"declineReceiptId\":null,\"cancellationReceiptId\":null,\"selectionWindow\":null,\"rbaWindow\":null,\"stepReceipts\":[\"cmb.b891261593015bc83d8b3bf67dc2fc308f2dc347e16d7e1f195455361505e511\",\"cmb.0ebab499bac276780cfb1a0b7523427d532a80439f7915502d893859f4f645bc\",\"cmb.4ce4f880009b64b9645f4badd5b988b634dd647b017bee52083476a02291c009\",\"cmb.7bacfe5391531d5007b34ba594da548b8aab02921caf58a6bab254b2561ea607\",\"cmb.291a78fc17fa335932c14dc43ff101d139b165d5653d3db6ca87b2536d9d6086\",\"cmb.76eb0f8257d71f2eb011fea5b330ac4429c60623f03a568e7e1b2e0606130ae4\"],\"receipts\":[{\"commandHash\":\"sha256:d9a4d5a15f941c6486a23811136c0b6f37e76d0f407e3cc5d3332903c00256c7\",\"eventHash\":\"sha256:ff5a2405765ff93fda993bfba82667babaa24b5a31b0e88f99b8579358397b3e\",\"receiptId\":\"cmb.8a8e2468ce38547544ca51d4d5def49d8a4f80f7f44bb0c0ab3d8a39aa143c28\",\"actor\":\"system\",\"stateVersion\":21},{\"commandHash\":\"sha256:914bae0c5de22e69e354cca3e67f0dc7c95382907075edd0802d3a212d0542e8\",\"eventHash\":\"sha256:d3b499780aa274fa3885b1b29054f43a64e53145297e3fe4a741d8b3dbe2f86e\",\"receiptId\":\"cmb.d5315989702eb2f8ced1f412db6377439e1c9c5ed6ece66b86fb51c5b5da716f\",\"actor\":\"system\",\"stateVersion\":22},{\"commandHash\":\"sha256:f1161aae9771197239eeff7c315704348b48db1f2cc6fe581603fccf8310f8ad\",\"eventHash\":\"sha256:01febdfb2458eeb3be8928fb55aac2bf1ac5da598dda2816616694d2f7c7de3c\",\"receiptId\":\"cmb.b891261593015bc83d8b3bf67dc2fc308f2dc347e16d7e1f195455361505e511\",\"actor\":\"system\",\"stateVersion\":23},{\"commandHash\":\"sha256:4d75dd6b375c3be421acf5fec4c58dc0e95e51fa86b6639ad6ea4a3a781f4194\",\"eventHash\":\"sha256:9143e0b27e8e36526bcd871506cacd6def6d2dbc6d06819cd4532e5fc835c19b\",\"receiptId\":\"cmb.0ebab499bac276780cfb1a0b7523427d532a80439f7915502d893859f4f645bc\",\"actor\":\"system\",\"stateVersion\":24},{\"commandHash\":\"sha256:c98ab6f29c19d89c3c81251a1075f3245607bb0ad86ef08e3110f2b94a52cbd5\",\"eventHash\":\"sha256:c4548e5233ace3386104a16d8d1ff3b743054a2ed7fc1d4230249e0e169ce2a4\",\"receiptId\":\"cmb.4ce4f880009b64b9645f4badd5b988b634dd647b017bee52083476a02291c009\",\"actor\":\"system\",\"stateVersion\":25},{\"commandHash\":\"sha256:f9ba33d2892ea0cab9bc33e3da9416cead99e59528f949e6b48cf5b64a755ef2\",\"eventHash\":\"sha256:7e87ddd1d02a1106463c3724411ba49ec77063eb5bbee9fc022aaaf078325295\",\"receiptId\":\"cmb.7bacfe5391531d5007b34ba594da548b8aab02921caf58a6bab254b2561ea607\",\"actor\":\"system\",\"stateVersion\":26},{\"commandHash\":\"sha256:8678929aa63cc4758d698d1f585f1f339fedf83d96516df44d50aad0088c2a4c\",\"eventHash\":\"sha256:7117e586001425ba125a7b4327e4b04f72c662a36c3860a3d8a42762a60de753\",\"receiptId\":\"cmb.291a78fc17fa335932c14dc43ff101d139b165d5653d3db6ca87b2536d9d6086\",\"actor\":\"system\",\"stateVersion\":27},{\"commandHash\":\"sha256:3954d54879fec001f9bc5a3164b30849c5f52a8c5f32f1db7385548b72b6225a\",\"eventHash\":\"sha256:9ef5d3c5b8c2cc9c566e5b64f77ab2d4d2e733f218b52cc17a395523071d4b1f\",\"receiptId\":\"cmb.76eb0f8257d71f2eb011fea5b330ac4429c60623f03a568e7e1b2e0606130ae4\",\"actor\":\"system\",\"stateVersion\":28}],\"closed\":true}",
+        "byteCount": 3366,
+        "sha256": "sha256:4a0d553f67d79654e73e332e20e91681f309e68c41bfdda6cdec1f2f5fd4294e"
+      },
+      "boundaryIndex": 0
+    },
+    {
+      "name": "voluntary-pass",
+      "inputs": [
+        {
+          "command": {
+            "contractVersion": 1,
+            "kind": "open-segment",
+            "segmentId": "seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822",
+            "decisionId": null,
+            "fromPositionId": null,
+            "expectedPriorVersion": 20,
+            "choice": null,
+            "candidate": null,
+            "participant": null
+          },
+          "actor": "system",
+          "admittedAt": 1000,
+          "clockAvailable": true
+        },
+        {
+          "command": {
+            "contractVersion": 1,
+            "kind": "choose-selection",
+            "segmentId": "seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822",
+            "decisionId": "seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822.selection",
+            "fromPositionId": null,
+            "expectedPriorVersion": null,
+            "choice": "finish-without-attack",
+            "candidate": null,
+            "participant": null
+          },
+          "actor": "axis",
+          "admittedAt": 1001,
+          "clockAvailable": true
+        },
+        {
+          "command": {
+            "contractVersion": 1,
+            "kind": "complete-step",
+            "segmentId": "seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822",
+            "decisionId": null,
+            "fromPositionId": "land.position.operation-1.first-player.movement-and-combat.combat.position-determination",
+            "expectedPriorVersion": 22,
+            "choice": null,
+            "candidate": null,
+            "participant": null
+          },
+          "actor": "system",
+          "admittedAt": null,
+          "clockAvailable": true
+        },
+        {
+          "command": {
+            "contractVersion": 1,
+            "kind": "complete-step",
+            "segmentId": "seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822",
+            "decisionId": null,
+            "fromPositionId": "land.position.operation-1.first-player.movement-and-combat.combat.barrage",
+            "expectedPriorVersion": 23,
+            "choice": null,
+            "candidate": null,
+            "participant": null
+          },
+          "actor": "system",
+          "admittedAt": null,
+          "clockAvailable": true
+        },
+        {
+          "command": {
+            "contractVersion": 1,
+            "kind": "complete-step",
+            "segmentId": "seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822",
+            "decisionId": null,
+            "fromPositionId": "land.position.operation-1.first-player.movement-and-combat.combat.retreat-before-assault",
+            "expectedPriorVersion": 24,
+            "choice": null,
+            "candidate": null,
+            "participant": null
+          },
+          "actor": "system",
+          "admittedAt": null,
+          "clockAvailable": true
+        },
+        {
+          "command": {
+            "contractVersion": 1,
+            "kind": "complete-step",
+            "segmentId": "seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822",
+            "decisionId": null,
+            "fromPositionId": "land.position.operation-1.first-player.movement-and-combat.combat.force-assignment",
+            "expectedPriorVersion": 25,
+            "choice": null,
+            "candidate": null,
+            "participant": null
+          },
+          "actor": "system",
+          "admittedAt": null,
+          "clockAvailable": true
+        },
+        {
+          "command": {
+            "contractVersion": 1,
+            "kind": "complete-step",
+            "segmentId": "seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822",
+            "decisionId": null,
+            "fromPositionId": "land.position.operation-1.first-player.movement-and-combat.combat.anti-armor",
+            "expectedPriorVersion": 26,
+            "choice": null,
+            "candidate": null,
+            "participant": null
+          },
+          "actor": "system",
+          "admittedAt": null,
+          "clockAvailable": true
+        },
+        {
+          "command": {
+            "contractVersion": 1,
+            "kind": "complete-step",
+            "segmentId": "seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822",
+            "decisionId": null,
+            "fromPositionId": "land.position.operation-1.first-player.movement-and-combat.combat.close-assault",
+            "expectedPriorVersion": 27,
+            "choice": null,
+            "candidate": null,
+            "participant": null
+          },
+          "actor": "system",
+          "admittedAt": null,
+          "clockAvailable": true
+        }
+      ],
+      "events": [
+        {
+          "canonicalUtf8": "{\"contractVersion\":1,\"eventType\":\"combat-segment-opened\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:d886d82a4a80cb59acd158b7040135ade9a82e910339d4282ef6793559940f1d\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"priorVersion\":20,\"stateVersion\":21,\"priorPrefix\":\"sha256:7931527dd7d964dc4436798d8c2467424fdaee54909f6a95080ddff57d31ec5f\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"open-segment\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"decisionId\":null,\"fromPositionId\":null,\"expectedPriorVersion\":20,\"choice\":null,\"candidate\":null,\"participant\":null},\"actor\":\"system\",\"admittedAt\":1000,\"clockAvailable\":true},\"effect\":{\"kind\":\"segment-opened\",\"boundaryHash\":\"sha256:7ab9050b1bebc05b936df2988a8a9240abedc0e83aa5313e9aed8205038cf780\",\"window\":{\"decisionId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822.selection\",\"owner\":\"axis\",\"timing\":{\"contractVersion\":1,\"configHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"kind\":\"selection\",\"decisionBudgetMilliseconds\":30000,\"openedAtUnixMilliseconds\":1000,\"deadlineUnixMilliseconds\":31000,\"highWaterUnixMilliseconds\":1000}}},\"receiptId\":\"cmb.1a86ccdc32ef912d1ecd492206dec0b6110c92e1476d52d879a62d789f38ec10\"}",
+          "sha256": "sha256:d44810a94ad539ae381ae8ea53df1cdefc32a5a353c7ebcf32bf383647765eb2",
+          "byteCount": 1483
+        },
+        {
+          "canonicalUtf8": "{\"contractVersion\":1,\"eventType\":\"combat-selection-closed\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:d886d82a4a80cb59acd158b7040135ade9a82e910339d4282ef6793559940f1d\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"priorVersion\":21,\"stateVersion\":22,\"priorPrefix\":\"sha256:43c8f0ad34391150a4f3e112d758df526de50f601c35c863c72cfc6e0188fa93\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"choose-selection\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"decisionId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822.selection\",\"fromPositionId\":null,\"expectedPriorVersion\":null,\"choice\":\"finish-without-attack\",\"candidate\":null,\"participant\":null},\"actor\":\"axis\",\"admittedAt\":1001,\"clockAvailable\":true},\"effect\":{\"kind\":\"selection-closed\",\"outcome\":\"no-selection\",\"candidate\":null,\"timing\":{\"contractVersion\":1,\"configHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"kind\":\"selection\",\"decisionBudgetMilliseconds\":30000,\"openedAtUnixMilliseconds\":1000,\"deadlineUnixMilliseconds\":31000,\"highWaterUnixMilliseconds\":1001}},\"receiptId\":\"cmb.cdc5bdeeb3491db7d3ce54f1c9c7a99590391fc380de7c8b1d737fedec26076d\"}",
+          "sha256": "sha256:1fb3663c5e1a4c6bdc7cd7a561a846a8b4229bbd07a0bda8e65a332f25cbf45f",
+          "byteCount": 1419
+        },
+        {
+          "canonicalUtf8": "{\"contractVersion\":1,\"eventType\":\"combat-step-completed\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:d886d82a4a80cb59acd158b7040135ade9a82e910339d4282ef6793559940f1d\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"priorVersion\":22,\"stateVersion\":23,\"priorPrefix\":\"sha256:680e800a67fb88fd3088d6180594882e3c40669408bf497e57f7f8ed859a508f\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"complete-step\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"decisionId\":null,\"fromPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.position-determination\",\"expectedPriorVersion\":22,\"choice\":null,\"candidate\":null,\"participant\":null},\"actor\":\"system\",\"admittedAt\":null,\"clockAvailable\":true},\"effect\":{\"kind\":\"step-completed\",\"fromPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.position-determination\",\"toPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.barrage\",\"previousStepReceiptId\":\"cmb.1a86ccdc32ef912d1ecd492206dec0b6110c92e1476d52d879a62d789f38ec10\",\"dispositionReceiptId\":\"cmb.cdc5bdeeb3491db7d3ce54f1c9c7a99590391fc380de7c8b1d737fedec26076d\",\"proofKind\":\"no-attack\"},\"receiptId\":\"cmb.f9ab00f0ffef006ae69a60b4719886475ddc1d6019997670efcac256e9c8f38f\"}",
+          "sha256": "sha256:08c4b52c778c7b8a6c8c60747d55c9b44e1d6eeb89fb6365ae416e0b94b81964",
+          "byteCount": 1503
+        },
+        {
+          "canonicalUtf8": "{\"contractVersion\":1,\"eventType\":\"combat-step-completed\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:d886d82a4a80cb59acd158b7040135ade9a82e910339d4282ef6793559940f1d\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"priorVersion\":23,\"stateVersion\":24,\"priorPrefix\":\"sha256:7821e6b71d68f4d8e95118dc858bcd3e59cbafce8106363a154bab2a7020e628\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"complete-step\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"decisionId\":null,\"fromPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.barrage\",\"expectedPriorVersion\":23,\"choice\":null,\"candidate\":null,\"participant\":null},\"actor\":\"system\",\"admittedAt\":null,\"clockAvailable\":true},\"effect\":{\"kind\":\"step-completed\",\"fromPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.barrage\",\"toPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.retreat-before-assault\",\"previousStepReceiptId\":\"cmb.f9ab00f0ffef006ae69a60b4719886475ddc1d6019997670efcac256e9c8f38f\",\"dispositionReceiptId\":\"cmb.cdc5bdeeb3491db7d3ce54f1c9c7a99590391fc380de7c8b1d737fedec26076d\",\"proofKind\":\"no-attack\"},\"receiptId\":\"cmb.e5f05a1e014dc4dc8262bcb49d3e106472766a75edb1e95689426430982b66ea\"}",
+          "sha256": "sha256:241aba235fc312c7605f90a4d18eae41b76dd7b09eed5a8105634ea046170c6d",
+          "byteCount": 1488
+        },
+        {
+          "canonicalUtf8": "{\"contractVersion\":1,\"eventType\":\"combat-step-completed\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:d886d82a4a80cb59acd158b7040135ade9a82e910339d4282ef6793559940f1d\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"priorVersion\":24,\"stateVersion\":25,\"priorPrefix\":\"sha256:b92ccc62507b15f9967b34af0c39ce8673dc24ca27c0d1c97f9f9ba38a313d12\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"complete-step\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"decisionId\":null,\"fromPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.retreat-before-assault\",\"expectedPriorVersion\":24,\"choice\":null,\"candidate\":null,\"participant\":null},\"actor\":\"system\",\"admittedAt\":null,\"clockAvailable\":true},\"effect\":{\"kind\":\"step-completed\",\"fromPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.retreat-before-assault\",\"toPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.force-assignment\",\"previousStepReceiptId\":\"cmb.e5f05a1e014dc4dc8262bcb49d3e106472766a75edb1e95689426430982b66ea\",\"dispositionReceiptId\":\"cmb.cdc5bdeeb3491db7d3ce54f1c9c7a99590391fc380de7c8b1d737fedec26076d\",\"proofKind\":\"no-attack\"},\"receiptId\":\"cmb.bea02321ed7c594cafdc18aa5668c4d9d6670cb36d24ac82c4544b13a7c8935e\"}",
+          "sha256": "sha256:a8cd1fd7e5173b60c5886ffdc1d8399cf8106bbbc360c205c0c715844ebe0711",
+          "byteCount": 1512
+        },
+        {
+          "canonicalUtf8": "{\"contractVersion\":1,\"eventType\":\"combat-step-completed\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:d886d82a4a80cb59acd158b7040135ade9a82e910339d4282ef6793559940f1d\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"priorVersion\":25,\"stateVersion\":26,\"priorPrefix\":\"sha256:58dee4b91c3145e0ecfc4ebdaf2db9ca5bbe8515e229206d5a7efdb509516871\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"complete-step\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"decisionId\":null,\"fromPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.force-assignment\",\"expectedPriorVersion\":25,\"choice\":null,\"candidate\":null,\"participant\":null},\"actor\":\"system\",\"admittedAt\":null,\"clockAvailable\":true},\"effect\":{\"kind\":\"step-completed\",\"fromPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.force-assignment\",\"toPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.anti-armor\",\"previousStepReceiptId\":\"cmb.bea02321ed7c594cafdc18aa5668c4d9d6670cb36d24ac82c4544b13a7c8935e\",\"dispositionReceiptId\":\"cmb.cdc5bdeeb3491db7d3ce54f1c9c7a99590391fc380de7c8b1d737fedec26076d\",\"proofKind\":\"no-attack\"},\"receiptId\":\"cmb.e0f403bfa8e9860d82a3d28ab1988704b79def7562799290c3c81ecea230e230\"}",
+          "sha256": "sha256:8b5632555ade4d90542512ee9838229897d9516bc19e3794ecdbf48cbd212fe7",
+          "byteCount": 1494
+        },
+        {
+          "canonicalUtf8": "{\"contractVersion\":1,\"eventType\":\"combat-step-completed\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:d886d82a4a80cb59acd158b7040135ade9a82e910339d4282ef6793559940f1d\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"priorVersion\":26,\"stateVersion\":27,\"priorPrefix\":\"sha256:9e66d798fa3d2f7b8af0722cde44a403c4d96aa879756ba620e909827a0eb934\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"complete-step\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"decisionId\":null,\"fromPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.anti-armor\",\"expectedPriorVersion\":26,\"choice\":null,\"candidate\":null,\"participant\":null},\"actor\":\"system\",\"admittedAt\":null,\"clockAvailable\":true},\"effect\":{\"kind\":\"step-completed\",\"fromPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.anti-armor\",\"toPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.close-assault\",\"previousStepReceiptId\":\"cmb.e0f403bfa8e9860d82a3d28ab1988704b79def7562799290c3c81ecea230e230\",\"dispositionReceiptId\":\"cmb.cdc5bdeeb3491db7d3ce54f1c9c7a99590391fc380de7c8b1d737fedec26076d\",\"proofKind\":\"no-attack\"},\"receiptId\":\"cmb.d06c0907021582ffee2f6884f1d0af9c010823f54c24299c3b0971681ec94404\"}",
+          "sha256": "sha256:cd537e59cef5021adccff3575d331fc246bd5a2ff878558f7df2b0ee71815761",
+          "byteCount": 1485
+        },
+        {
+          "canonicalUtf8": "{\"contractVersion\":1,\"eventType\":\"combat-step-completed\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:d886d82a4a80cb59acd158b7040135ade9a82e910339d4282ef6793559940f1d\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"priorVersion\":27,\"stateVersion\":28,\"priorPrefix\":\"sha256:a5f1605e6db2279f9c864d39976e5d74aae9927e72ce432695a8cb83bb8b2728\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"complete-step\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"decisionId\":null,\"fromPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.close-assault\",\"expectedPriorVersion\":27,\"choice\":null,\"candidate\":null,\"participant\":null},\"actor\":\"system\",\"admittedAt\":null,\"clockAvailable\":true},\"effect\":{\"kind\":\"step-completed\",\"fromPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.close-assault\",\"toPositionId\":\"land.position.operation-1.first-player.movement-and-combat.reserve-release\",\"previousStepReceiptId\":\"cmb.d06c0907021582ffee2f6884f1d0af9c010823f54c24299c3b0971681ec94404\",\"dispositionReceiptId\":\"cmb.cdc5bdeeb3491db7d3ce54f1c9c7a99590391fc380de7c8b1d737fedec26076d\",\"proofKind\":\"no-attack\"},\"receiptId\":\"cmb.57e385b5b387889df7a4be41035e92ebc69284631175cec3ceda23157973e285\"}",
+          "sha256": "sha256:6a8f3372cbab0aedb4b15cc3c92c19844ddcdf08181e19abc148bd15cc3ba324",
+          "byteCount": 1486
+        }
+      ],
+      "expected": {
+        "stepCount": 6,
+        "terminal": "no-attack",
+        "stateVersion": 28,
+        "prefix": "sha256:a48cac1330ef5ca4930786657174ddebe1819ca98f51d3ebb378b5ba7d24ca17"
+      },
+      "controlGolden": {
+        "canonicalUtf8": "{\"contractVersion\":1,\"boundaryHash\":\"sha256:7ab9050b1bebc05b936df2988a8a9240abedc0e83aa5313e9aed8205038cf780\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"stateVersion\":28,\"prefix\":\"sha256:a48cac1330ef5ca4930786657174ddebe1819ca98f51d3ebb378b5ba7d24ca17\",\"stepIndex\":6,\"selectionOutcome\":\"no-selection\",\"selection\":null,\"selectionReceiptId\":\"cmb.cdc5bdeeb3491db7d3ce54f1c9c7a99590391fc380de7c8b1d737fedec26076d\",\"declineReceiptId\":null,\"cancellationReceiptId\":null,\"selectionWindow\":{\"decisionId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822.selection\",\"owner\":\"axis\",\"timing\":{\"contractVersion\":1,\"configHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"kind\":\"selection\",\"decisionBudgetMilliseconds\":30000,\"openedAtUnixMilliseconds\":1000,\"deadlineUnixMilliseconds\":31000,\"highWaterUnixMilliseconds\":1001}},\"rbaWindow\":null,\"stepReceipts\":[\"cmb.f9ab00f0ffef006ae69a60b4719886475ddc1d6019997670efcac256e9c8f38f\",\"cmb.e5f05a1e014dc4dc8262bcb49d3e106472766a75edb1e95689426430982b66ea\",\"cmb.bea02321ed7c594cafdc18aa5668c4d9d6670cb36d24ac82c4544b13a7c8935e\",\"cmb.e0f403bfa8e9860d82a3d28ab1988704b79def7562799290c3c81ecea230e230\",\"cmb.d06c0907021582ffee2f6884f1d0af9c010823f54c24299c3b0971681ec94404\",\"cmb.57e385b5b387889df7a4be41035e92ebc69284631175cec3ceda23157973e285\"],\"receipts\":[{\"commandHash\":\"sha256:81177879f8fe3c13a92ff1b98a5a2b9fd88e0bb06035439b832992bed36f8144\",\"eventHash\":\"sha256:d44810a94ad539ae381ae8ea53df1cdefc32a5a353c7ebcf32bf383647765eb2\",\"receiptId\":\"cmb.1a86ccdc32ef912d1ecd492206dec0b6110c92e1476d52d879a62d789f38ec10\",\"actor\":\"system\",\"stateVersion\":21},{\"commandHash\":\"sha256:85a502ff5452db491fd62e8164d4f9624826b927a5973aadf9668bdc120a9c42\",\"eventHash\":\"sha256:1fb3663c5e1a4c6bdc7cd7a561a846a8b4229bbd07a0bda8e65a332f25cbf45f\",\"receiptId\":\"cmb.cdc5bdeeb3491db7d3ce54f1c9c7a99590391fc380de7c8b1d737fedec26076d\",\"actor\":\"axis\",\"stateVersion\":22},{\"commandHash\":\"sha256:ccd5fc3faa87d64da44309f62491b1aa601edd3f64a19db1658774040c6b3778\",\"eventHash\":\"sha256:08c4b52c778c7b8a6c8c60747d55c9b44e1d6eeb89fb6365ae416e0b94b81964\",\"receiptId\":\"cmb.f9ab00f0ffef006ae69a60b4719886475ddc1d6019997670efcac256e9c8f38f\",\"actor\":\"system\",\"stateVersion\":23},{\"commandHash\":\"sha256:9cacf077466f4d186fe786961d2a3566ecef6c9ac2950c2d0e0e087f526cffd4\",\"eventHash\":\"sha256:241aba235fc312c7605f90a4d18eae41b76dd7b09eed5a8105634ea046170c6d\",\"receiptId\":\"cmb.e5f05a1e014dc4dc8262bcb49d3e106472766a75edb1e95689426430982b66ea\",\"actor\":\"system\",\"stateVersion\":24},{\"commandHash\":\"sha256:c5d38a372dd347036e76cd0f9be43c2c342dbb610239f34a431fa45c6a49db67\",\"eventHash\":\"sha256:a8cd1fd7e5173b60c5886ffdc1d8399cf8106bbbc360c205c0c715844ebe0711\",\"receiptId\":\"cmb.bea02321ed7c594cafdc18aa5668c4d9d6670cb36d24ac82c4544b13a7c8935e\",\"actor\":\"system\",\"stateVersion\":25},{\"commandHash\":\"sha256:44d5f3dd90df2dfb11d649c2c1f2bbe017c9cc3b2237d795599e45a6eea470c2\",\"eventHash\":\"sha256:8b5632555ade4d90542512ee9838229897d9516bc19e3794ecdbf48cbd212fe7\",\"receiptId\":\"cmb.e0f403bfa8e9860d82a3d28ab1988704b79def7562799290c3c81ecea230e230\",\"actor\":\"system\",\"stateVersion\":26},{\"commandHash\":\"sha256:5f5b36b3d87f1294d3e385548f2f986b01914ae029130db3b1ddd290823b3bad\",\"eventHash\":\"sha256:cd537e59cef5021adccff3575d331fc246bd5a2ff878558f7df2b0ee71815761\",\"receiptId\":\"cmb.d06c0907021582ffee2f6884f1d0af9c010823f54c24299c3b0971681ec94404\",\"actor\":\"system\",\"stateVersion\":27},{\"commandHash\":\"sha256:ad7cac1566147e30dce944adb4a334142276ae3f621c08cfdd446fa2ab6998ae\",\"eventHash\":\"sha256:6a8f3372cbab0aedb4b15cc3c92c19844ddcdf08181e19abc148bd15cc3ba324\",\"receiptId\":\"cmb.57e385b5b387889df7a4be41035e92ebc69284631175cec3ceda23157973e285\",\"actor\":\"system\",\"stateVersion\":28}],\"closed\":true}",
+        "byteCount": 3740,
+        "sha256": "sha256:496bdefb4d8314777fd1b5a1ff13aa03162f431545c57ebb4e8cc7af42ce35de"
+      },
+      "boundaryIndex": 1
+    },
+    {
+      "name": "selection-expiry",
+      "inputs": [
+        {
+          "command": {
+            "contractVersion": 1,
+            "kind": "open-segment",
+            "segmentId": "seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822",
+            "decisionId": null,
+            "fromPositionId": null,
+            "expectedPriorVersion": 20,
+            "choice": null,
+            "candidate": null,
+            "participant": null
+          },
+          "actor": "system",
+          "admittedAt": 1000,
+          "clockAvailable": true
+        },
+        {
+          "command": {
+            "contractVersion": 1,
+            "kind": "expire-window",
+            "segmentId": "seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822",
+            "decisionId": "seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822.selection",
+            "fromPositionId": null,
+            "expectedPriorVersion": null,
+            "choice": null,
+            "candidate": null,
+            "participant": null
+          },
+          "actor": "system",
+          "admittedAt": 31000,
+          "clockAvailable": true
+        },
+        {
+          "command": {
+            "contractVersion": 1,
+            "kind": "complete-step",
+            "segmentId": "seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822",
+            "decisionId": null,
+            "fromPositionId": "land.position.operation-1.first-player.movement-and-combat.combat.position-determination",
+            "expectedPriorVersion": 22,
+            "choice": null,
+            "candidate": null,
+            "participant": null
+          },
+          "actor": "system",
+          "admittedAt": null,
+          "clockAvailable": true
+        },
+        {
+          "command": {
+            "contractVersion": 1,
+            "kind": "complete-step",
+            "segmentId": "seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822",
+            "decisionId": null,
+            "fromPositionId": "land.position.operation-1.first-player.movement-and-combat.combat.barrage",
+            "expectedPriorVersion": 23,
+            "choice": null,
+            "candidate": null,
+            "participant": null
+          },
+          "actor": "system",
+          "admittedAt": null,
+          "clockAvailable": true
+        },
+        {
+          "command": {
+            "contractVersion": 1,
+            "kind": "complete-step",
+            "segmentId": "seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822",
+            "decisionId": null,
+            "fromPositionId": "land.position.operation-1.first-player.movement-and-combat.combat.retreat-before-assault",
+            "expectedPriorVersion": 24,
+            "choice": null,
+            "candidate": null,
+            "participant": null
+          },
+          "actor": "system",
+          "admittedAt": null,
+          "clockAvailable": true
+        },
+        {
+          "command": {
+            "contractVersion": 1,
+            "kind": "complete-step",
+            "segmentId": "seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822",
+            "decisionId": null,
+            "fromPositionId": "land.position.operation-1.first-player.movement-and-combat.combat.force-assignment",
+            "expectedPriorVersion": 25,
+            "choice": null,
+            "candidate": null,
+            "participant": null
+          },
+          "actor": "system",
+          "admittedAt": null,
+          "clockAvailable": true
+        },
+        {
+          "command": {
+            "contractVersion": 1,
+            "kind": "complete-step",
+            "segmentId": "seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822",
+            "decisionId": null,
+            "fromPositionId": "land.position.operation-1.first-player.movement-and-combat.combat.anti-armor",
+            "expectedPriorVersion": 26,
+            "choice": null,
+            "candidate": null,
+            "participant": null
+          },
+          "actor": "system",
+          "admittedAt": null,
+          "clockAvailable": true
+        },
+        {
+          "command": {
+            "contractVersion": 1,
+            "kind": "complete-step",
+            "segmentId": "seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822",
+            "decisionId": null,
+            "fromPositionId": "land.position.operation-1.first-player.movement-and-combat.combat.close-assault",
+            "expectedPriorVersion": 27,
+            "choice": null,
+            "candidate": null,
+            "participant": null
+          },
+          "actor": "system",
+          "admittedAt": null,
+          "clockAvailable": true
+        }
+      ],
+      "events": [
+        {
+          "canonicalUtf8": "{\"contractVersion\":1,\"eventType\":\"combat-segment-opened\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:d886d82a4a80cb59acd158b7040135ade9a82e910339d4282ef6793559940f1d\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"priorVersion\":20,\"stateVersion\":21,\"priorPrefix\":\"sha256:7931527dd7d964dc4436798d8c2467424fdaee54909f6a95080ddff57d31ec5f\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"open-segment\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"decisionId\":null,\"fromPositionId\":null,\"expectedPriorVersion\":20,\"choice\":null,\"candidate\":null,\"participant\":null},\"actor\":\"system\",\"admittedAt\":1000,\"clockAvailable\":true},\"effect\":{\"kind\":\"segment-opened\",\"boundaryHash\":\"sha256:7ab9050b1bebc05b936df2988a8a9240abedc0e83aa5313e9aed8205038cf780\",\"window\":{\"decisionId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822.selection\",\"owner\":\"axis\",\"timing\":{\"contractVersion\":1,\"configHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"kind\":\"selection\",\"decisionBudgetMilliseconds\":30000,\"openedAtUnixMilliseconds\":1000,\"deadlineUnixMilliseconds\":31000,\"highWaterUnixMilliseconds\":1000}}},\"receiptId\":\"cmb.1a86ccdc32ef912d1ecd492206dec0b6110c92e1476d52d879a62d789f38ec10\"}",
+          "sha256": "sha256:d44810a94ad539ae381ae8ea53df1cdefc32a5a353c7ebcf32bf383647765eb2",
+          "byteCount": 1483
+        },
+        {
+          "canonicalUtf8": "{\"contractVersion\":1,\"eventType\":\"combat-selection-closed\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:d886d82a4a80cb59acd158b7040135ade9a82e910339d4282ef6793559940f1d\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"priorVersion\":21,\"stateVersion\":22,\"priorPrefix\":\"sha256:43c8f0ad34391150a4f3e112d758df526de50f601c35c863c72cfc6e0188fa93\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"expire-window\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"decisionId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822.selection\",\"fromPositionId\":null,\"expectedPriorVersion\":null,\"choice\":null,\"candidate\":null,\"participant\":null},\"actor\":\"system\",\"admittedAt\":31000,\"clockAvailable\":true},\"effect\":{\"kind\":\"selection-closed\",\"outcome\":\"no-selection\",\"candidate\":null,\"timing\":{\"contractVersion\":1,\"configHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"kind\":\"selection\",\"decisionBudgetMilliseconds\":30000,\"openedAtUnixMilliseconds\":1000,\"deadlineUnixMilliseconds\":31000,\"highWaterUnixMilliseconds\":31000}},\"receiptId\":\"cmb.afb5f7e99080eddcc654ad1dc0f98740bac82c96ba8a5241509f85f77345e3a4\"}",
+          "sha256": "sha256:6bbee76b35fce373c05c1ab39d836d0fd1134c9a4d5e86d654becbde5a660e34",
+          "byteCount": 1401
+        },
+        {
+          "canonicalUtf8": "{\"contractVersion\":1,\"eventType\":\"combat-step-completed\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:d886d82a4a80cb59acd158b7040135ade9a82e910339d4282ef6793559940f1d\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"priorVersion\":22,\"stateVersion\":23,\"priorPrefix\":\"sha256:119d1680fff44ad682c473d1d2847bf73a2e6c2383073d639a0de62ee4272166\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"complete-step\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"decisionId\":null,\"fromPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.position-determination\",\"expectedPriorVersion\":22,\"choice\":null,\"candidate\":null,\"participant\":null},\"actor\":\"system\",\"admittedAt\":null,\"clockAvailable\":true},\"effect\":{\"kind\":\"step-completed\",\"fromPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.position-determination\",\"toPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.barrage\",\"previousStepReceiptId\":\"cmb.1a86ccdc32ef912d1ecd492206dec0b6110c92e1476d52d879a62d789f38ec10\",\"dispositionReceiptId\":\"cmb.afb5f7e99080eddcc654ad1dc0f98740bac82c96ba8a5241509f85f77345e3a4\",\"proofKind\":\"no-attack\"},\"receiptId\":\"cmb.f5e1649dee44f370f4a4a5c0cc1785bec743308c599702387c6b5b62a1403652\"}",
+          "sha256": "sha256:4f50e4fc71697794ee61dbcda79d7b1539621abb85dbfdc3b707d0ca527fd1b4",
+          "byteCount": 1503
+        },
+        {
+          "canonicalUtf8": "{\"contractVersion\":1,\"eventType\":\"combat-step-completed\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:d886d82a4a80cb59acd158b7040135ade9a82e910339d4282ef6793559940f1d\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"priorVersion\":23,\"stateVersion\":24,\"priorPrefix\":\"sha256:00eedc71234c8e52ea5edbee7541ac8b5016a95c4e121da15c4060d5b39c5e4b\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"complete-step\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"decisionId\":null,\"fromPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.barrage\",\"expectedPriorVersion\":23,\"choice\":null,\"candidate\":null,\"participant\":null},\"actor\":\"system\",\"admittedAt\":null,\"clockAvailable\":true},\"effect\":{\"kind\":\"step-completed\",\"fromPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.barrage\",\"toPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.retreat-before-assault\",\"previousStepReceiptId\":\"cmb.f5e1649dee44f370f4a4a5c0cc1785bec743308c599702387c6b5b62a1403652\",\"dispositionReceiptId\":\"cmb.afb5f7e99080eddcc654ad1dc0f98740bac82c96ba8a5241509f85f77345e3a4\",\"proofKind\":\"no-attack\"},\"receiptId\":\"cmb.c1179c4e1974f1feb4656d5b95759233155ea7604b1e0082bf42618789db2047\"}",
+          "sha256": "sha256:f548ba5a7526bbc46203e7987356ed83079ce9520b3b2cd82df90e318b18d9ee",
+          "byteCount": 1488
+        },
+        {
+          "canonicalUtf8": "{\"contractVersion\":1,\"eventType\":\"combat-step-completed\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:d886d82a4a80cb59acd158b7040135ade9a82e910339d4282ef6793559940f1d\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"priorVersion\":24,\"stateVersion\":25,\"priorPrefix\":\"sha256:5ab2e9b0fc3ac0f805a45fefc84b0cdaa4d8beac8b9a0f8745dc9c1dbf227509\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"complete-step\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"decisionId\":null,\"fromPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.retreat-before-assault\",\"expectedPriorVersion\":24,\"choice\":null,\"candidate\":null,\"participant\":null},\"actor\":\"system\",\"admittedAt\":null,\"clockAvailable\":true},\"effect\":{\"kind\":\"step-completed\",\"fromPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.retreat-before-assault\",\"toPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.force-assignment\",\"previousStepReceiptId\":\"cmb.c1179c4e1974f1feb4656d5b95759233155ea7604b1e0082bf42618789db2047\",\"dispositionReceiptId\":\"cmb.afb5f7e99080eddcc654ad1dc0f98740bac82c96ba8a5241509f85f77345e3a4\",\"proofKind\":\"no-attack\"},\"receiptId\":\"cmb.6521cb5af4cf78612ed4d86ed19dcb86b92ba08abaac9e33da365b7e254415a6\"}",
+          "sha256": "sha256:2af315e2d76e10c1329a714acc3fd7111e5bda12be460a4288c583debe67df78",
+          "byteCount": 1512
+        },
+        {
+          "canonicalUtf8": "{\"contractVersion\":1,\"eventType\":\"combat-step-completed\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:d886d82a4a80cb59acd158b7040135ade9a82e910339d4282ef6793559940f1d\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"priorVersion\":25,\"stateVersion\":26,\"priorPrefix\":\"sha256:0ca275ee080ac7a20bf71c25c4ec550e333db1fb0454d69b8aea0f30035926d7\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"complete-step\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"decisionId\":null,\"fromPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.force-assignment\",\"expectedPriorVersion\":25,\"choice\":null,\"candidate\":null,\"participant\":null},\"actor\":\"system\",\"admittedAt\":null,\"clockAvailable\":true},\"effect\":{\"kind\":\"step-completed\",\"fromPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.force-assignment\",\"toPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.anti-armor\",\"previousStepReceiptId\":\"cmb.6521cb5af4cf78612ed4d86ed19dcb86b92ba08abaac9e33da365b7e254415a6\",\"dispositionReceiptId\":\"cmb.afb5f7e99080eddcc654ad1dc0f98740bac82c96ba8a5241509f85f77345e3a4\",\"proofKind\":\"no-attack\"},\"receiptId\":\"cmb.8656fa79a5414e1858cb7d1c146b19b324459e35a36c35e48d82774d2a71c2d9\"}",
+          "sha256": "sha256:9a1a9e7782df1c20870ff7e53d415827da9c57adf0b4148635d23919a684efeb",
+          "byteCount": 1494
+        },
+        {
+          "canonicalUtf8": "{\"contractVersion\":1,\"eventType\":\"combat-step-completed\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:d886d82a4a80cb59acd158b7040135ade9a82e910339d4282ef6793559940f1d\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"priorVersion\":26,\"stateVersion\":27,\"priorPrefix\":\"sha256:125b174712e3686fa83c96021dab48e0e31a82eaa6d93f17895a8ee4673e125f\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"complete-step\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"decisionId\":null,\"fromPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.anti-armor\",\"expectedPriorVersion\":26,\"choice\":null,\"candidate\":null,\"participant\":null},\"actor\":\"system\",\"admittedAt\":null,\"clockAvailable\":true},\"effect\":{\"kind\":\"step-completed\",\"fromPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.anti-armor\",\"toPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.close-assault\",\"previousStepReceiptId\":\"cmb.8656fa79a5414e1858cb7d1c146b19b324459e35a36c35e48d82774d2a71c2d9\",\"dispositionReceiptId\":\"cmb.afb5f7e99080eddcc654ad1dc0f98740bac82c96ba8a5241509f85f77345e3a4\",\"proofKind\":\"no-attack\"},\"receiptId\":\"cmb.6ed3a0226be6ec78d8e5a82b1803111b9d100a5ba50d239da0ff74376f33a328\"}",
+          "sha256": "sha256:ed9c2a549af69dcf96af7e3d9b289140fd4d532058d1b65d1bf22dd82372ee68",
+          "byteCount": 1485
+        },
+        {
+          "canonicalUtf8": "{\"contractVersion\":1,\"eventType\":\"combat-step-completed\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:d886d82a4a80cb59acd158b7040135ade9a82e910339d4282ef6793559940f1d\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"priorVersion\":27,\"stateVersion\":28,\"priorPrefix\":\"sha256:63ae1becdac12b947cd1f36b274d0d96a090d76c1fb4fd9c87426c0037392aa3\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"complete-step\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"decisionId\":null,\"fromPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.close-assault\",\"expectedPriorVersion\":27,\"choice\":null,\"candidate\":null,\"participant\":null},\"actor\":\"system\",\"admittedAt\":null,\"clockAvailable\":true},\"effect\":{\"kind\":\"step-completed\",\"fromPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.close-assault\",\"toPositionId\":\"land.position.operation-1.first-player.movement-and-combat.reserve-release\",\"previousStepReceiptId\":\"cmb.6ed3a0226be6ec78d8e5a82b1803111b9d100a5ba50d239da0ff74376f33a328\",\"dispositionReceiptId\":\"cmb.afb5f7e99080eddcc654ad1dc0f98740bac82c96ba8a5241509f85f77345e3a4\",\"proofKind\":\"no-attack\"},\"receiptId\":\"cmb.6329c835822b919cf613165b2b229c979dbd9f45552d8e8ba38cb56c00c49170\"}",
+          "sha256": "sha256:09f7abb748015b15665a4ebb36b333e4428bd35807ba60645ac1b0d8ddbe0f36",
+          "byteCount": 1486
+        }
+      ],
+      "expected": {
+        "stepCount": 6,
+        "terminal": "no-attack",
+        "stateVersion": 28,
+        "prefix": "sha256:54cc29bf2f5483b5e035c6892ba0834c2d10bc699656d714f6ab4c9ff83cc9d7"
+      },
+      "controlGolden": {
+        "canonicalUtf8": "{\"contractVersion\":1,\"boundaryHash\":\"sha256:7ab9050b1bebc05b936df2988a8a9240abedc0e83aa5313e9aed8205038cf780\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"stateVersion\":28,\"prefix\":\"sha256:54cc29bf2f5483b5e035c6892ba0834c2d10bc699656d714f6ab4c9ff83cc9d7\",\"stepIndex\":6,\"selectionOutcome\":\"no-selection\",\"selection\":null,\"selectionReceiptId\":\"cmb.afb5f7e99080eddcc654ad1dc0f98740bac82c96ba8a5241509f85f77345e3a4\",\"declineReceiptId\":null,\"cancellationReceiptId\":null,\"selectionWindow\":{\"decisionId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822.selection\",\"owner\":\"axis\",\"timing\":{\"contractVersion\":1,\"configHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"kind\":\"selection\",\"decisionBudgetMilliseconds\":30000,\"openedAtUnixMilliseconds\":1000,\"deadlineUnixMilliseconds\":31000,\"highWaterUnixMilliseconds\":31000}},\"rbaWindow\":null,\"stepReceipts\":[\"cmb.f5e1649dee44f370f4a4a5c0cc1785bec743308c599702387c6b5b62a1403652\",\"cmb.c1179c4e1974f1feb4656d5b95759233155ea7604b1e0082bf42618789db2047\",\"cmb.6521cb5af4cf78612ed4d86ed19dcb86b92ba08abaac9e33da365b7e254415a6\",\"cmb.8656fa79a5414e1858cb7d1c146b19b324459e35a36c35e48d82774d2a71c2d9\",\"cmb.6ed3a0226be6ec78d8e5a82b1803111b9d100a5ba50d239da0ff74376f33a328\",\"cmb.6329c835822b919cf613165b2b229c979dbd9f45552d8e8ba38cb56c00c49170\"],\"receipts\":[{\"commandHash\":\"sha256:81177879f8fe3c13a92ff1b98a5a2b9fd88e0bb06035439b832992bed36f8144\",\"eventHash\":\"sha256:d44810a94ad539ae381ae8ea53df1cdefc32a5a353c7ebcf32bf383647765eb2\",\"receiptId\":\"cmb.1a86ccdc32ef912d1ecd492206dec0b6110c92e1476d52d879a62d789f38ec10\",\"actor\":\"system\",\"stateVersion\":21},{\"commandHash\":\"sha256:c04a9fcf8395f64cd95898ae6956b9fae1dadacc7a8094f21df00bb70fdd4c05\",\"eventHash\":\"sha256:6bbee76b35fce373c05c1ab39d836d0fd1134c9a4d5e86d654becbde5a660e34\",\"receiptId\":\"cmb.afb5f7e99080eddcc654ad1dc0f98740bac82c96ba8a5241509f85f77345e3a4\",\"actor\":\"system\",\"stateVersion\":22},{\"commandHash\":\"sha256:ccd5fc3faa87d64da44309f62491b1aa601edd3f64a19db1658774040c6b3778\",\"eventHash\":\"sha256:4f50e4fc71697794ee61dbcda79d7b1539621abb85dbfdc3b707d0ca527fd1b4\",\"receiptId\":\"cmb.f5e1649dee44f370f4a4a5c0cc1785bec743308c599702387c6b5b62a1403652\",\"actor\":\"system\",\"stateVersion\":23},{\"commandHash\":\"sha256:9cacf077466f4d186fe786961d2a3566ecef6c9ac2950c2d0e0e087f526cffd4\",\"eventHash\":\"sha256:f548ba5a7526bbc46203e7987356ed83079ce9520b3b2cd82df90e318b18d9ee\",\"receiptId\":\"cmb.c1179c4e1974f1feb4656d5b95759233155ea7604b1e0082bf42618789db2047\",\"actor\":\"system\",\"stateVersion\":24},{\"commandHash\":\"sha256:c5d38a372dd347036e76cd0f9be43c2c342dbb610239f34a431fa45c6a49db67\",\"eventHash\":\"sha256:2af315e2d76e10c1329a714acc3fd7111e5bda12be460a4288c583debe67df78\",\"receiptId\":\"cmb.6521cb5af4cf78612ed4d86ed19dcb86b92ba08abaac9e33da365b7e254415a6\",\"actor\":\"system\",\"stateVersion\":25},{\"commandHash\":\"sha256:44d5f3dd90df2dfb11d649c2c1f2bbe017c9cc3b2237d795599e45a6eea470c2\",\"eventHash\":\"sha256:9a1a9e7782df1c20870ff7e53d415827da9c57adf0b4148635d23919a684efeb\",\"receiptId\":\"cmb.8656fa79a5414e1858cb7d1c146b19b324459e35a36c35e48d82774d2a71c2d9\",\"actor\":\"system\",\"stateVersion\":26},{\"commandHash\":\"sha256:5f5b36b3d87f1294d3e385548f2f986b01914ae029130db3b1ddd290823b3bad\",\"eventHash\":\"sha256:ed9c2a549af69dcf96af7e3d9b289140fd4d532058d1b65d1bf22dd82372ee68\",\"receiptId\":\"cmb.6ed3a0226be6ec78d8e5a82b1803111b9d100a5ba50d239da0ff74376f33a328\",\"actor\":\"system\",\"stateVersion\":27},{\"commandHash\":\"sha256:ad7cac1566147e30dce944adb4a334142276ae3f621c08cfdd446fa2ab6998ae\",\"eventHash\":\"sha256:09f7abb748015b15665a4ebb36b333e4428bd35807ba60645ac1b0d8ddbe0f36\",\"receiptId\":\"cmb.6329c835822b919cf613165b2b229c979dbd9f45552d8e8ba38cb56c00c49170\",\"actor\":\"system\",\"stateVersion\":28}],\"closed\":true}",
+        "byteCount": 3743,
+        "sha256": "sha256:71b80c38440332fdac7f975ac74d81e61ffbcaa2d4639fc4238b3bc0c31c303d"
+      },
+      "boundaryIndex": 1
+    },
+    {
+      "name": "accepted-decline",
+      "inputs": [
+        {
+          "command": {
+            "contractVersion": 1,
+            "kind": "open-segment",
+            "segmentId": "seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822",
+            "decisionId": null,
+            "fromPositionId": null,
+            "expectedPriorVersion": 20,
+            "choice": null,
+            "candidate": null,
+            "participant": null
+          },
+          "actor": "system",
+          "admittedAt": 1000,
+          "clockAvailable": true
+        },
+        {
+          "command": {
+            "contractVersion": 1,
+            "kind": "choose-selection",
+            "segmentId": "seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822",
+            "decisionId": "seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822.selection",
+            "fromPositionId": null,
+            "expectedPriorVersion": null,
+            "choice": "select-close-assault",
+            "candidate": {
+              "attacker": {
+                "unit": {
+                  "creationBinding": "creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b",
+                  "originalSide": "axis",
+                  "elementId": "axis-assault-battalion"
+                },
+                "representationId": "map-representation.0001",
+                "locationId": "assault-west",
+                "componentIds": [
+                  "axis-assault-battalion.toe.infantry"
+                ]
+              },
+              "defender": {
+                "unit": {
+                  "creationBinding": "creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b",
+                  "originalSide": "commonwealth",
+                  "elementId": "commonwealth-assault-battalion"
+                },
+                "representationId": "map-representation.0002",
+                "locationId": "assault-east",
+                "componentIds": [
+                  "commonwealth-assault-battalion.toe.infantry"
+                ]
+              },
+              "targetLocationId": "assault-east",
+              "basis": "voluntary-adjacent"
+            },
+            "participant": null
+          },
+          "actor": "axis",
+          "admittedAt": 1001,
+          "clockAvailable": true
+        },
+        {
+          "command": {
+            "contractVersion": 1,
+            "kind": "complete-step",
+            "segmentId": "seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822",
+            "decisionId": null,
+            "fromPositionId": "land.position.operation-1.first-player.movement-and-combat.combat.position-determination",
+            "expectedPriorVersion": 22,
+            "choice": null,
+            "candidate": null,
+            "participant": null
+          },
+          "actor": "system",
+          "admittedAt": null,
+          "clockAvailable": true
+        },
+        {
+          "command": {
+            "contractVersion": 1,
+            "kind": "complete-step",
+            "segmentId": "seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822",
+            "decisionId": null,
+            "fromPositionId": "land.position.operation-1.first-player.movement-and-combat.combat.barrage",
+            "expectedPriorVersion": 23,
+            "choice": null,
+            "candidate": null,
+            "participant": null
+          },
+          "actor": "system",
+          "admittedAt": null,
+          "clockAvailable": true
+        },
+        {
+          "command": {
+            "contractVersion": 1,
+            "kind": "open-rba",
+            "segmentId": "seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822",
+            "decisionId": null,
+            "fromPositionId": "land.position.operation-1.first-player.movement-and-combat.combat.retreat-before-assault",
+            "expectedPriorVersion": 24,
+            "choice": null,
+            "candidate": null,
+            "participant": null
+          },
+          "actor": "system",
+          "admittedAt": 2000,
+          "clockAvailable": true
+        },
+        {
+          "command": {
+            "contractVersion": 1,
+            "kind": "decline-rba",
+            "segmentId": "seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822",
+            "decisionId": "seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822.rba",
+            "fromPositionId": null,
+            "expectedPriorVersion": null,
+            "choice": null,
+            "candidate": null,
+            "participant": {
+              "creationBinding": "creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b",
+              "originalSide": "commonwealth",
+              "elementId": "commonwealth-assault-battalion"
+            }
+          },
+          "actor": "commonwealth",
+          "admittedAt": 2001,
+          "clockAvailable": true
+        },
+        {
+          "command": {
+            "contractVersion": 1,
+            "kind": "complete-step",
+            "segmentId": "seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822",
+            "decisionId": null,
+            "fromPositionId": "land.position.operation-1.first-player.movement-and-combat.combat.retreat-before-assault",
+            "expectedPriorVersion": 26,
+            "choice": null,
+            "candidate": null,
+            "participant": null
+          },
+          "actor": "system",
+          "admittedAt": null,
+          "clockAvailable": true
+        }
+      ],
+      "events": [
+        {
+          "canonicalUtf8": "{\"contractVersion\":1,\"eventType\":\"combat-segment-opened\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:d886d82a4a80cb59acd158b7040135ade9a82e910339d4282ef6793559940f1d\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"priorVersion\":20,\"stateVersion\":21,\"priorPrefix\":\"sha256:7931527dd7d964dc4436798d8c2467424fdaee54909f6a95080ddff57d31ec5f\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"open-segment\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"decisionId\":null,\"fromPositionId\":null,\"expectedPriorVersion\":20,\"choice\":null,\"candidate\":null,\"participant\":null},\"actor\":\"system\",\"admittedAt\":1000,\"clockAvailable\":true},\"effect\":{\"kind\":\"segment-opened\",\"boundaryHash\":\"sha256:7ab9050b1bebc05b936df2988a8a9240abedc0e83aa5313e9aed8205038cf780\",\"window\":{\"decisionId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822.selection\",\"owner\":\"axis\",\"timing\":{\"contractVersion\":1,\"configHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"kind\":\"selection\",\"decisionBudgetMilliseconds\":30000,\"openedAtUnixMilliseconds\":1000,\"deadlineUnixMilliseconds\":31000,\"highWaterUnixMilliseconds\":1000}}},\"receiptId\":\"cmb.1a86ccdc32ef912d1ecd492206dec0b6110c92e1476d52d879a62d789f38ec10\"}",
+          "sha256": "sha256:d44810a94ad539ae381ae8ea53df1cdefc32a5a353c7ebcf32bf383647765eb2",
+          "byteCount": 1483
+        },
+        {
+          "canonicalUtf8": "{\"contractVersion\":1,\"eventType\":\"combat-selection-closed\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:d886d82a4a80cb59acd158b7040135ade9a82e910339d4282ef6793559940f1d\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"priorVersion\":21,\"stateVersion\":22,\"priorPrefix\":\"sha256:43c8f0ad34391150a4f3e112d758df526de50f601c35c863c72cfc6e0188fa93\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"choose-selection\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"decisionId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822.selection\",\"fromPositionId\":null,\"expectedPriorVersion\":null,\"choice\":\"select-close-assault\",\"candidate\":{\"attacker\":{\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"axis\",\"elementId\":\"axis-assault-battalion\"},\"representationId\":\"map-representation.0001\",\"locationId\":\"assault-west\",\"componentIds\":[\"axis-assault-battalion.toe.infantry\"]},\"defender\":{\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"},\"representationId\":\"map-representation.0002\",\"locationId\":\"assault-east\",\"componentIds\":[\"commonwealth-assault-battalion.toe.infantry\"]},\"targetLocationId\":\"assault-east\",\"basis\":\"voluntary-adjacent\"},\"participant\":null},\"actor\":\"axis\",\"admittedAt\":1001,\"clockAvailable\":true},\"effect\":{\"kind\":\"selection-closed\",\"outcome\":\"selected\",\"candidate\":{\"attacker\":{\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"axis\",\"elementId\":\"axis-assault-battalion\"},\"representationId\":\"map-representation.0001\",\"locationId\":\"assault-west\",\"componentIds\":[\"axis-assault-battalion.toe.infantry\"]},\"defender\":{\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"},\"representationId\":\"map-representation.0002\",\"locationId\":\"assault-east\",\"componentIds\":[\"commonwealth-assault-battalion.toe.infantry\"]},\"targetLocationId\":\"assault-east\",\"basis\":\"voluntary-adjacent\"},\"timing\":{\"contractVersion\":1,\"configHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"kind\":\"selection\",\"decisionBudgetMilliseconds\":30000,\"openedAtUnixMilliseconds\":1000,\"deadlineUnixMilliseconds\":31000,\"highWaterUnixMilliseconds\":1001}},\"receiptId\":\"cmb.cc5e3b342dd4e56ae376c5cb89ebbab1aeb688d6acb1b415b62fc3da6dcba254\"}",
+          "sha256": "sha256:d2d9e3b76ca27693dd71324d979753b3839657bc85eb35d607a7f295df840848",
+          "byteCount": 2794
+        },
+        {
+          "canonicalUtf8": "{\"contractVersion\":1,\"eventType\":\"combat-step-completed\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:d886d82a4a80cb59acd158b7040135ade9a82e910339d4282ef6793559940f1d\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"priorVersion\":22,\"stateVersion\":23,\"priorPrefix\":\"sha256:24e088b83698a089ca1be3c835920102a4af8ab0bcd61feb77f879d3d554b2e6\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"complete-step\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"decisionId\":null,\"fromPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.position-determination\",\"expectedPriorVersion\":22,\"choice\":null,\"candidate\":null,\"participant\":null},\"actor\":\"system\",\"admittedAt\":null,\"clockAvailable\":true},\"effect\":{\"kind\":\"step-completed\",\"fromPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.position-determination\",\"toPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.barrage\",\"previousStepReceiptId\":\"cmb.1a86ccdc32ef912d1ecd492206dec0b6110c92e1476d52d879a62d789f38ec10\",\"dispositionReceiptId\":\"cmb.cc5e3b342dd4e56ae376c5cb89ebbab1aeb688d6acb1b415b62fc3da6dcba254\",\"proofKind\":\"no-gun-positions\"},\"receiptId\":\"cmb.909d7c3f017c2de88ab5cdf26b5a7c46a6ded85f611f5fecb591b3b6b7cd3fdd\"}",
+          "sha256": "sha256:3984975c8f99814cff1991e370acbf744396ae2cf3d4b18ef7231113df2d0cbb",
+          "byteCount": 1510
+        },
+        {
+          "canonicalUtf8": "{\"contractVersion\":1,\"eventType\":\"combat-step-completed\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:d886d82a4a80cb59acd158b7040135ade9a82e910339d4282ef6793559940f1d\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"priorVersion\":23,\"stateVersion\":24,\"priorPrefix\":\"sha256:f6d08e3c41e76cdf7d08a67df85731a7b217f2cffa55cc73ab72765a84880341\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"complete-step\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"decisionId\":null,\"fromPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.barrage\",\"expectedPriorVersion\":23,\"choice\":null,\"candidate\":null,\"participant\":null},\"actor\":\"system\",\"admittedAt\":null,\"clockAvailable\":true},\"effect\":{\"kind\":\"step-completed\",\"fromPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.barrage\",\"toPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.retreat-before-assault\",\"previousStepReceiptId\":\"cmb.909d7c3f017c2de88ab5cdf26b5a7c46a6ded85f611f5fecb591b3b6b7cd3fdd\",\"dispositionReceiptId\":\"cmb.cc5e3b342dd4e56ae376c5cb89ebbab1aeb688d6acb1b415b62fc3da6dcba254\",\"proofKind\":\"no-barrage-work\"},\"receiptId\":\"cmb.8200d84cc6fb197b2d23bae0ddffd7d5c31e2f464ac5a9f78c658a2d22e00cab\"}",
+          "sha256": "sha256:d2cfed4c96ac4919ebbc2984cd4a0f4ce1351296b0fedc997796ab0cef780bce",
+          "byteCount": 1494
+        },
+        {
+          "canonicalUtf8": "{\"contractVersion\":1,\"eventType\":\"combat-rba-opened\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:d886d82a4a80cb59acd158b7040135ade9a82e910339d4282ef6793559940f1d\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"priorVersion\":24,\"stateVersion\":25,\"priorPrefix\":\"sha256:d54a33cfc63254202ee826249d0dc58bba2e566950b46c659573696746792faa\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"open-rba\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"decisionId\":null,\"fromPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.retreat-before-assault\",\"expectedPriorVersion\":24,\"choice\":null,\"candidate\":null,\"participant\":null},\"actor\":\"system\",\"admittedAt\":2000,\"clockAvailable\":true},\"effect\":{\"kind\":\"rba-opened\",\"selectionReceiptId\":\"cmb.cc5e3b342dd4e56ae376c5cb89ebbab1aeb688d6acb1b415b62fc3da6dcba254\",\"window\":{\"decisionId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822.rba\",\"owner\":\"commonwealth\",\"timing\":{\"contractVersion\":1,\"configHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"kind\":\"rba\",\"decisionBudgetMilliseconds\":30000,\"openedAtUnixMilliseconds\":2000,\"deadlineUnixMilliseconds\":32000,\"highWaterUnixMilliseconds\":2000}}},\"receiptId\":\"cmb.16c11a39ef1e04fc9fe87c076f901c53acb794f95118ffeff72ab51b1c9573a7\"}",
+          "sha256": "sha256:202afab07f674872eade448f1e6c2a8ca4fa29227f1b94a0f88d921aa0e60610",
+          "byteCount": 1556
+        },
+        {
+          "canonicalUtf8": "{\"contractVersion\":1,\"eventType\":\"combat-rba-declined\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:d886d82a4a80cb59acd158b7040135ade9a82e910339d4282ef6793559940f1d\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"priorVersion\":25,\"stateVersion\":26,\"priorPrefix\":\"sha256:d16b39df48984b153e5261ffc1584becf4c70947e4cf8776994e02ab53bb095c\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"decline-rba\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"decisionId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822.rba\",\"fromPositionId\":null,\"expectedPriorVersion\":null,\"choice\":null,\"candidate\":null,\"participant\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"}},\"actor\":\"commonwealth\",\"admittedAt\":2001,\"clockAvailable\":true},\"effect\":{\"kind\":\"rba-declined\",\"selectionReceiptId\":\"cmb.cc5e3b342dd4e56ae376c5cb89ebbab1aeb688d6acb1b415b62fc3da6dcba254\",\"participant\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"},\"timing\":{\"contractVersion\":1,\"configHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"kind\":\"rba\",\"decisionBudgetMilliseconds\":30000,\"openedAtUnixMilliseconds\":2000,\"deadlineUnixMilliseconds\":32000,\"highWaterUnixMilliseconds\":2001}},\"receiptId\":\"cmb.b7cb808791a685595f2bef94a2c490792ae4b9e4c1d77654eb6ee816a8d09bc7\"}",
+          "sha256": "sha256:2c8d9011bb56b56c03a54f814cf48426d7f1ba0ddefc2881086aaadb511368d1",
+          "byteCount": 1784
+        },
+        {
+          "canonicalUtf8": "{\"contractVersion\":1,\"eventType\":\"combat-step-completed\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:d886d82a4a80cb59acd158b7040135ade9a82e910339d4282ef6793559940f1d\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"priorVersion\":26,\"stateVersion\":27,\"priorPrefix\":\"sha256:67a19b4d46be2218f2a4ebfe63fb3dfa93531d2d818215e3b2c59fd8ed627601\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"complete-step\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"decisionId\":null,\"fromPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.retreat-before-assault\",\"expectedPriorVersion\":26,\"choice\":null,\"candidate\":null,\"participant\":null},\"actor\":\"system\",\"admittedAt\":null,\"clockAvailable\":true},\"effect\":{\"kind\":\"step-completed\",\"fromPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.retreat-before-assault\",\"toPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.force-assignment\",\"previousStepReceiptId\":\"cmb.8200d84cc6fb197b2d23bae0ddffd7d5c31e2f464ac5a9f78c658a2d22e00cab\",\"dispositionReceiptId\":\"cmb.b7cb808791a685595f2bef94a2c490792ae4b9e4c1d77654eb6ee816a8d09bc7\",\"proofKind\":\"accepted-decline\"},\"receiptId\":\"cmb.1b5baa4c871f7e842072a20ca0933187c3394f2b5fe32c39619f79fbc63dc288\"}",
+          "sha256": "sha256:a9ee376b7e4b0870054d989ef1ebdcadc971943705c47924f4bfbd9313d3630f",
+          "byteCount": 1519
+        }
+      ],
+      "expected": {
+        "stepCount": 3,
+        "terminal": "force-assignment-handoff",
+        "stateVersion": 27,
+        "prefix": "sha256:0556affbe3d2f53fd9412b7c18414279d7ee2e15f6fde19138079e888940c26e"
+      },
+      "controlGolden": {
+        "canonicalUtf8": "{\"contractVersion\":1,\"boundaryHash\":\"sha256:7ab9050b1bebc05b936df2988a8a9240abedc0e83aa5313e9aed8205038cf780\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"stateVersion\":27,\"prefix\":\"sha256:0556affbe3d2f53fd9412b7c18414279d7ee2e15f6fde19138079e888940c26e\",\"stepIndex\":3,\"selectionOutcome\":\"selected\",\"selection\":{\"attacker\":{\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"axis\",\"elementId\":\"axis-assault-battalion\"},\"representationId\":\"map-representation.0001\",\"locationId\":\"assault-west\",\"componentIds\":[\"axis-assault-battalion.toe.infantry\"]},\"defender\":{\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"},\"representationId\":\"map-representation.0002\",\"locationId\":\"assault-east\",\"componentIds\":[\"commonwealth-assault-battalion.toe.infantry\"]},\"targetLocationId\":\"assault-east\",\"basis\":\"voluntary-adjacent\"},\"selectionReceiptId\":\"cmb.cc5e3b342dd4e56ae376c5cb89ebbab1aeb688d6acb1b415b62fc3da6dcba254\",\"declineReceiptId\":\"cmb.b7cb808791a685595f2bef94a2c490792ae4b9e4c1d77654eb6ee816a8d09bc7\",\"cancellationReceiptId\":null,\"selectionWindow\":{\"decisionId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822.selection\",\"owner\":\"axis\",\"timing\":{\"contractVersion\":1,\"configHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"kind\":\"selection\",\"decisionBudgetMilliseconds\":30000,\"openedAtUnixMilliseconds\":1000,\"deadlineUnixMilliseconds\":31000,\"highWaterUnixMilliseconds\":1001}},\"rbaWindow\":{\"decisionId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822.rba\",\"owner\":\"commonwealth\",\"timing\":{\"contractVersion\":1,\"configHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"kind\":\"rba\",\"decisionBudgetMilliseconds\":30000,\"openedAtUnixMilliseconds\":2000,\"deadlineUnixMilliseconds\":32000,\"highWaterUnixMilliseconds\":2001}},\"stepReceipts\":[\"cmb.909d7c3f017c2de88ab5cdf26b5a7c46a6ded85f611f5fecb591b3b6b7cd3fdd\",\"cmb.8200d84cc6fb197b2d23bae0ddffd7d5c31e2f464ac5a9f78c658a2d22e00cab\",\"cmb.1b5baa4c871f7e842072a20ca0933187c3394f2b5fe32c39619f79fbc63dc288\"],\"receipts\":[{\"commandHash\":\"sha256:81177879f8fe3c13a92ff1b98a5a2b9fd88e0bb06035439b832992bed36f8144\",\"eventHash\":\"sha256:d44810a94ad539ae381ae8ea53df1cdefc32a5a353c7ebcf32bf383647765eb2\",\"receiptId\":\"cmb.1a86ccdc32ef912d1ecd492206dec0b6110c92e1476d52d879a62d789f38ec10\",\"actor\":\"system\",\"stateVersion\":21},{\"commandHash\":\"sha256:ea8cff7b88f096026b535d376c9138ae550e89320f32894e3d5329a0fb715b05\",\"eventHash\":\"sha256:d2d9e3b76ca27693dd71324d979753b3839657bc85eb35d607a7f295df840848\",\"receiptId\":\"cmb.cc5e3b342dd4e56ae376c5cb89ebbab1aeb688d6acb1b415b62fc3da6dcba254\",\"actor\":\"axis\",\"stateVersion\":22},{\"commandHash\":\"sha256:ccd5fc3faa87d64da44309f62491b1aa601edd3f64a19db1658774040c6b3778\",\"eventHash\":\"sha256:3984975c8f99814cff1991e370acbf744396ae2cf3d4b18ef7231113df2d0cbb\",\"receiptId\":\"cmb.909d7c3f017c2de88ab5cdf26b5a7c46a6ded85f611f5fecb591b3b6b7cd3fdd\",\"actor\":\"system\",\"stateVersion\":23},{\"commandHash\":\"sha256:9cacf077466f4d186fe786961d2a3566ecef6c9ac2950c2d0e0e087f526cffd4\",\"eventHash\":\"sha256:d2cfed4c96ac4919ebbc2984cd4a0f4ce1351296b0fedc997796ab0cef780bce\",\"receiptId\":\"cmb.8200d84cc6fb197b2d23bae0ddffd7d5c31e2f464ac5a9f78c658a2d22e00cab\",\"actor\":\"system\",\"stateVersion\":24},{\"commandHash\":\"sha256:24c50c0654099ec154232d6e965e716513db824992323c9ccdd687c494005d64\",\"eventHash\":\"sha256:202afab07f674872eade448f1e6c2a8ca4fa29227f1b94a0f88d921aa0e60610\",\"receiptId\":\"cmb.16c11a39ef1e04fc9fe87c076f901c53acb794f95118ffeff72ab51b1c9573a7\",\"actor\":\"system\",\"stateVersion\":25},{\"commandHash\":\"sha256:ba6080966debe6e6ccd22beb7a7d7f3a077d8db793430baf4cf5fc1364e68b59\",\"eventHash\":\"sha256:2c8d9011bb56b56c03a54f814cf48426d7f1ba0ddefc2881086aaadb511368d1\",\"receiptId\":\"cmb.b7cb808791a685595f2bef94a2c490792ae4b9e4c1d77654eb6ee816a8d09bc7\",\"actor\":\"commonwealth\",\"stateVersion\":26},{\"commandHash\":\"sha256:e3dd342f298dbc9acc4203b80fab3ef0b879ff20cb2173f099d55f1ab1087501\",\"eventHash\":\"sha256:a9ee376b7e4b0870054d989ef1ebdcadc971943705c47924f4bfbd9313d3630f\",\"receiptId\":\"cmb.1b5baa4c871f7e842072a20ca0933187c3394f2b5fe32c39619f79fbc63dc288\",\"actor\":\"system\",\"stateVersion\":27}],\"closed\":false}",
+        "byteCount": 4364,
+        "sha256": "sha256:6f2eff1d07df4f1d0c22b370b8d58f6dec60fe7e2bbf499e6ca238df6abfa893"
+      },
+      "boundaryIndex": 1
+    },
+    {
+      "name": "rba-expiry",
+      "inputs": [
+        {
+          "command": {
+            "contractVersion": 1,
+            "kind": "open-segment",
+            "segmentId": "seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822",
+            "decisionId": null,
+            "fromPositionId": null,
+            "expectedPriorVersion": 20,
+            "choice": null,
+            "candidate": null,
+            "participant": null
+          },
+          "actor": "system",
+          "admittedAt": 1000,
+          "clockAvailable": true
+        },
+        {
+          "command": {
+            "contractVersion": 1,
+            "kind": "choose-selection",
+            "segmentId": "seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822",
+            "decisionId": "seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822.selection",
+            "fromPositionId": null,
+            "expectedPriorVersion": null,
+            "choice": "select-close-assault",
+            "candidate": {
+              "attacker": {
+                "unit": {
+                  "creationBinding": "creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b",
+                  "originalSide": "axis",
+                  "elementId": "axis-assault-battalion"
+                },
+                "representationId": "map-representation.0001",
+                "locationId": "assault-west",
+                "componentIds": [
+                  "axis-assault-battalion.toe.infantry"
+                ]
+              },
+              "defender": {
+                "unit": {
+                  "creationBinding": "creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b",
+                  "originalSide": "commonwealth",
+                  "elementId": "commonwealth-assault-battalion"
+                },
+                "representationId": "map-representation.0002",
+                "locationId": "assault-east",
+                "componentIds": [
+                  "commonwealth-assault-battalion.toe.infantry"
+                ]
+              },
+              "targetLocationId": "assault-east",
+              "basis": "voluntary-adjacent"
+            },
+            "participant": null
+          },
+          "actor": "axis",
+          "admittedAt": 1001,
+          "clockAvailable": true
+        },
+        {
+          "command": {
+            "contractVersion": 1,
+            "kind": "complete-step",
+            "segmentId": "seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822",
+            "decisionId": null,
+            "fromPositionId": "land.position.operation-1.first-player.movement-and-combat.combat.position-determination",
+            "expectedPriorVersion": 22,
+            "choice": null,
+            "candidate": null,
+            "participant": null
+          },
+          "actor": "system",
+          "admittedAt": null,
+          "clockAvailable": true
+        },
+        {
+          "command": {
+            "contractVersion": 1,
+            "kind": "complete-step",
+            "segmentId": "seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822",
+            "decisionId": null,
+            "fromPositionId": "land.position.operation-1.first-player.movement-and-combat.combat.barrage",
+            "expectedPriorVersion": 23,
+            "choice": null,
+            "candidate": null,
+            "participant": null
+          },
+          "actor": "system",
+          "admittedAt": null,
+          "clockAvailable": true
+        },
+        {
+          "command": {
+            "contractVersion": 1,
+            "kind": "open-rba",
+            "segmentId": "seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822",
+            "decisionId": null,
+            "fromPositionId": "land.position.operation-1.first-player.movement-and-combat.combat.retreat-before-assault",
+            "expectedPriorVersion": 24,
+            "choice": null,
+            "candidate": null,
+            "participant": null
+          },
+          "actor": "system",
+          "admittedAt": 2000,
+          "clockAvailable": true
+        },
+        {
+          "command": {
+            "contractVersion": 1,
+            "kind": "expire-window",
+            "segmentId": "seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822",
+            "decisionId": "seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822.rba",
+            "fromPositionId": null,
+            "expectedPriorVersion": null,
+            "choice": null,
+            "candidate": null,
+            "participant": null
+          },
+          "actor": "system",
+          "admittedAt": 32000,
+          "clockAvailable": true
+        },
+        {
+          "command": {
+            "contractVersion": 1,
+            "kind": "complete-step",
+            "segmentId": "seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822",
+            "decisionId": null,
+            "fromPositionId": "land.position.operation-1.first-player.movement-and-combat.combat.retreat-before-assault",
+            "expectedPriorVersion": 26,
+            "choice": null,
+            "candidate": null,
+            "participant": null
+          },
+          "actor": "system",
+          "admittedAt": null,
+          "clockAvailable": true
+        },
+        {
+          "command": {
+            "contractVersion": 1,
+            "kind": "complete-step",
+            "segmentId": "seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822",
+            "decisionId": null,
+            "fromPositionId": "land.position.operation-1.first-player.movement-and-combat.combat.force-assignment",
+            "expectedPriorVersion": 27,
+            "choice": null,
+            "candidate": null,
+            "participant": null
+          },
+          "actor": "system",
+          "admittedAt": null,
+          "clockAvailable": true
+        },
+        {
+          "command": {
+            "contractVersion": 1,
+            "kind": "complete-step",
+            "segmentId": "seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822",
+            "decisionId": null,
+            "fromPositionId": "land.position.operation-1.first-player.movement-and-combat.combat.anti-armor",
+            "expectedPriorVersion": 28,
+            "choice": null,
+            "candidate": null,
+            "participant": null
+          },
+          "actor": "system",
+          "admittedAt": null,
+          "clockAvailable": true
+        },
+        {
+          "command": {
+            "contractVersion": 1,
+            "kind": "complete-step",
+            "segmentId": "seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822",
+            "decisionId": null,
+            "fromPositionId": "land.position.operation-1.first-player.movement-and-combat.combat.close-assault",
+            "expectedPriorVersion": 29,
+            "choice": null,
+            "candidate": null,
+            "participant": null
+          },
+          "actor": "system",
+          "admittedAt": null,
+          "clockAvailable": true
+        }
+      ],
+      "events": [
+        {
+          "canonicalUtf8": "{\"contractVersion\":1,\"eventType\":\"combat-segment-opened\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:d886d82a4a80cb59acd158b7040135ade9a82e910339d4282ef6793559940f1d\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"priorVersion\":20,\"stateVersion\":21,\"priorPrefix\":\"sha256:7931527dd7d964dc4436798d8c2467424fdaee54909f6a95080ddff57d31ec5f\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"open-segment\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"decisionId\":null,\"fromPositionId\":null,\"expectedPriorVersion\":20,\"choice\":null,\"candidate\":null,\"participant\":null},\"actor\":\"system\",\"admittedAt\":1000,\"clockAvailable\":true},\"effect\":{\"kind\":\"segment-opened\",\"boundaryHash\":\"sha256:7ab9050b1bebc05b936df2988a8a9240abedc0e83aa5313e9aed8205038cf780\",\"window\":{\"decisionId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822.selection\",\"owner\":\"axis\",\"timing\":{\"contractVersion\":1,\"configHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"kind\":\"selection\",\"decisionBudgetMilliseconds\":30000,\"openedAtUnixMilliseconds\":1000,\"deadlineUnixMilliseconds\":31000,\"highWaterUnixMilliseconds\":1000}}},\"receiptId\":\"cmb.1a86ccdc32ef912d1ecd492206dec0b6110c92e1476d52d879a62d789f38ec10\"}",
+          "sha256": "sha256:d44810a94ad539ae381ae8ea53df1cdefc32a5a353c7ebcf32bf383647765eb2",
+          "byteCount": 1483
+        },
+        {
+          "canonicalUtf8": "{\"contractVersion\":1,\"eventType\":\"combat-selection-closed\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:d886d82a4a80cb59acd158b7040135ade9a82e910339d4282ef6793559940f1d\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"priorVersion\":21,\"stateVersion\":22,\"priorPrefix\":\"sha256:43c8f0ad34391150a4f3e112d758df526de50f601c35c863c72cfc6e0188fa93\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"choose-selection\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"decisionId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822.selection\",\"fromPositionId\":null,\"expectedPriorVersion\":null,\"choice\":\"select-close-assault\",\"candidate\":{\"attacker\":{\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"axis\",\"elementId\":\"axis-assault-battalion\"},\"representationId\":\"map-representation.0001\",\"locationId\":\"assault-west\",\"componentIds\":[\"axis-assault-battalion.toe.infantry\"]},\"defender\":{\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"},\"representationId\":\"map-representation.0002\",\"locationId\":\"assault-east\",\"componentIds\":[\"commonwealth-assault-battalion.toe.infantry\"]},\"targetLocationId\":\"assault-east\",\"basis\":\"voluntary-adjacent\"},\"participant\":null},\"actor\":\"axis\",\"admittedAt\":1001,\"clockAvailable\":true},\"effect\":{\"kind\":\"selection-closed\",\"outcome\":\"selected\",\"candidate\":{\"attacker\":{\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"axis\",\"elementId\":\"axis-assault-battalion\"},\"representationId\":\"map-representation.0001\",\"locationId\":\"assault-west\",\"componentIds\":[\"axis-assault-battalion.toe.infantry\"]},\"defender\":{\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"},\"representationId\":\"map-representation.0002\",\"locationId\":\"assault-east\",\"componentIds\":[\"commonwealth-assault-battalion.toe.infantry\"]},\"targetLocationId\":\"assault-east\",\"basis\":\"voluntary-adjacent\"},\"timing\":{\"contractVersion\":1,\"configHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"kind\":\"selection\",\"decisionBudgetMilliseconds\":30000,\"openedAtUnixMilliseconds\":1000,\"deadlineUnixMilliseconds\":31000,\"highWaterUnixMilliseconds\":1001}},\"receiptId\":\"cmb.cc5e3b342dd4e56ae376c5cb89ebbab1aeb688d6acb1b415b62fc3da6dcba254\"}",
+          "sha256": "sha256:d2d9e3b76ca27693dd71324d979753b3839657bc85eb35d607a7f295df840848",
+          "byteCount": 2794
+        },
+        {
+          "canonicalUtf8": "{\"contractVersion\":1,\"eventType\":\"combat-step-completed\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:d886d82a4a80cb59acd158b7040135ade9a82e910339d4282ef6793559940f1d\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"priorVersion\":22,\"stateVersion\":23,\"priorPrefix\":\"sha256:24e088b83698a089ca1be3c835920102a4af8ab0bcd61feb77f879d3d554b2e6\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"complete-step\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"decisionId\":null,\"fromPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.position-determination\",\"expectedPriorVersion\":22,\"choice\":null,\"candidate\":null,\"participant\":null},\"actor\":\"system\",\"admittedAt\":null,\"clockAvailable\":true},\"effect\":{\"kind\":\"step-completed\",\"fromPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.position-determination\",\"toPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.barrage\",\"previousStepReceiptId\":\"cmb.1a86ccdc32ef912d1ecd492206dec0b6110c92e1476d52d879a62d789f38ec10\",\"dispositionReceiptId\":\"cmb.cc5e3b342dd4e56ae376c5cb89ebbab1aeb688d6acb1b415b62fc3da6dcba254\",\"proofKind\":\"no-gun-positions\"},\"receiptId\":\"cmb.909d7c3f017c2de88ab5cdf26b5a7c46a6ded85f611f5fecb591b3b6b7cd3fdd\"}",
+          "sha256": "sha256:3984975c8f99814cff1991e370acbf744396ae2cf3d4b18ef7231113df2d0cbb",
+          "byteCount": 1510
+        },
+        {
+          "canonicalUtf8": "{\"contractVersion\":1,\"eventType\":\"combat-step-completed\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:d886d82a4a80cb59acd158b7040135ade9a82e910339d4282ef6793559940f1d\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"priorVersion\":23,\"stateVersion\":24,\"priorPrefix\":\"sha256:f6d08e3c41e76cdf7d08a67df85731a7b217f2cffa55cc73ab72765a84880341\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"complete-step\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"decisionId\":null,\"fromPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.barrage\",\"expectedPriorVersion\":23,\"choice\":null,\"candidate\":null,\"participant\":null},\"actor\":\"system\",\"admittedAt\":null,\"clockAvailable\":true},\"effect\":{\"kind\":\"step-completed\",\"fromPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.barrage\",\"toPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.retreat-before-assault\",\"previousStepReceiptId\":\"cmb.909d7c3f017c2de88ab5cdf26b5a7c46a6ded85f611f5fecb591b3b6b7cd3fdd\",\"dispositionReceiptId\":\"cmb.cc5e3b342dd4e56ae376c5cb89ebbab1aeb688d6acb1b415b62fc3da6dcba254\",\"proofKind\":\"no-barrage-work\"},\"receiptId\":\"cmb.8200d84cc6fb197b2d23bae0ddffd7d5c31e2f464ac5a9f78c658a2d22e00cab\"}",
+          "sha256": "sha256:d2cfed4c96ac4919ebbc2984cd4a0f4ce1351296b0fedc997796ab0cef780bce",
+          "byteCount": 1494
+        },
+        {
+          "canonicalUtf8": "{\"contractVersion\":1,\"eventType\":\"combat-rba-opened\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:d886d82a4a80cb59acd158b7040135ade9a82e910339d4282ef6793559940f1d\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"priorVersion\":24,\"stateVersion\":25,\"priorPrefix\":\"sha256:d54a33cfc63254202ee826249d0dc58bba2e566950b46c659573696746792faa\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"open-rba\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"decisionId\":null,\"fromPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.retreat-before-assault\",\"expectedPriorVersion\":24,\"choice\":null,\"candidate\":null,\"participant\":null},\"actor\":\"system\",\"admittedAt\":2000,\"clockAvailable\":true},\"effect\":{\"kind\":\"rba-opened\",\"selectionReceiptId\":\"cmb.cc5e3b342dd4e56ae376c5cb89ebbab1aeb688d6acb1b415b62fc3da6dcba254\",\"window\":{\"decisionId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822.rba\",\"owner\":\"commonwealth\",\"timing\":{\"contractVersion\":1,\"configHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"kind\":\"rba\",\"decisionBudgetMilliseconds\":30000,\"openedAtUnixMilliseconds\":2000,\"deadlineUnixMilliseconds\":32000,\"highWaterUnixMilliseconds\":2000}}},\"receiptId\":\"cmb.16c11a39ef1e04fc9fe87c076f901c53acb794f95118ffeff72ab51b1c9573a7\"}",
+          "sha256": "sha256:202afab07f674872eade448f1e6c2a8ca4fa29227f1b94a0f88d921aa0e60610",
+          "byteCount": 1556
+        },
+        {
+          "canonicalUtf8": "{\"contractVersion\":1,\"eventType\":\"combat-selection-cancelled\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:d886d82a4a80cb59acd158b7040135ade9a82e910339d4282ef6793559940f1d\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"priorVersion\":25,\"stateVersion\":26,\"priorPrefix\":\"sha256:d16b39df48984b153e5261ffc1584becf4c70947e4cf8776994e02ab53bb095c\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"expire-window\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"decisionId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822.rba\",\"fromPositionId\":null,\"expectedPriorVersion\":null,\"choice\":null,\"candidate\":null,\"participant\":null},\"actor\":\"system\",\"admittedAt\":32000,\"clockAvailable\":true},\"effect\":{\"kind\":\"selection-cancelled\",\"selectionReceiptId\":\"cmb.cc5e3b342dd4e56ae376c5cb89ebbab1aeb688d6acb1b415b62fc3da6dcba254\",\"timing\":{\"contractVersion\":1,\"configHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"kind\":\"rba\",\"decisionBudgetMilliseconds\":30000,\"openedAtUnixMilliseconds\":2000,\"deadlineUnixMilliseconds\":32000,\"highWaterUnixMilliseconds\":32000}},\"receiptId\":\"cmb.e48c9d35ddf6bc18ab92355c1f25a385fa7cdc8478ce951fa15a5bd7a1f1ebf4\"}",
+          "sha256": "sha256:b02917aabe380c152d45d18165ce1ee330f8cc48da0c6a645a0ee8c1ddf389a5",
+          "byteCount": 1445
+        },
+        {
+          "canonicalUtf8": "{\"contractVersion\":1,\"eventType\":\"combat-step-completed\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:d886d82a4a80cb59acd158b7040135ade9a82e910339d4282ef6793559940f1d\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"priorVersion\":26,\"stateVersion\":27,\"priorPrefix\":\"sha256:344cd03959db93caefb66485cc38176ac81bfa6a8c0475d9a310cc26c3115b97\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"complete-step\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"decisionId\":null,\"fromPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.retreat-before-assault\",\"expectedPriorVersion\":26,\"choice\":null,\"candidate\":null,\"participant\":null},\"actor\":\"system\",\"admittedAt\":null,\"clockAvailable\":true},\"effect\":{\"kind\":\"step-completed\",\"fromPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.retreat-before-assault\",\"toPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.force-assignment\",\"previousStepReceiptId\":\"cmb.8200d84cc6fb197b2d23bae0ddffd7d5c31e2f464ac5a9f78c658a2d22e00cab\",\"dispositionReceiptId\":\"cmb.e48c9d35ddf6bc18ab92355c1f25a385fa7cdc8478ce951fa15a5bd7a1f1ebf4\",\"proofKind\":\"no-attack\"},\"receiptId\":\"cmb.950cc7232c1fe2d45a74d9aca314917597374631f39b4f74f59a1075cc44a3cc\"}",
+          "sha256": "sha256:3c4030aa5df8f8977fa00367e8ecc8d1f80561dd99b8c62d5acc0c9ea0baa248",
+          "byteCount": 1512
+        },
+        {
+          "canonicalUtf8": "{\"contractVersion\":1,\"eventType\":\"combat-step-completed\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:d886d82a4a80cb59acd158b7040135ade9a82e910339d4282ef6793559940f1d\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"priorVersion\":27,\"stateVersion\":28,\"priorPrefix\":\"sha256:64601193560b4f9b215dddb3dd04fec67ff0823a3eab51ef41c851edbf102435\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"complete-step\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"decisionId\":null,\"fromPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.force-assignment\",\"expectedPriorVersion\":27,\"choice\":null,\"candidate\":null,\"participant\":null},\"actor\":\"system\",\"admittedAt\":null,\"clockAvailable\":true},\"effect\":{\"kind\":\"step-completed\",\"fromPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.force-assignment\",\"toPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.anti-armor\",\"previousStepReceiptId\":\"cmb.950cc7232c1fe2d45a74d9aca314917597374631f39b4f74f59a1075cc44a3cc\",\"dispositionReceiptId\":\"cmb.e48c9d35ddf6bc18ab92355c1f25a385fa7cdc8478ce951fa15a5bd7a1f1ebf4\",\"proofKind\":\"no-attack\"},\"receiptId\":\"cmb.1fcde3e595f5cd82c44a99459a0a8992e697ac81681a8ff2c2429bf75fcf727e\"}",
+          "sha256": "sha256:2adc67d89ef3229278e9344f3b605c14f8711976b82e87f56eeb1668905c61a7",
+          "byteCount": 1494
+        },
+        {
+          "canonicalUtf8": "{\"contractVersion\":1,\"eventType\":\"combat-step-completed\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:d886d82a4a80cb59acd158b7040135ade9a82e910339d4282ef6793559940f1d\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"priorVersion\":28,\"stateVersion\":29,\"priorPrefix\":\"sha256:3b97aefec2bd29560adb7d88ebe9bfdcd5399f88bc5ec20688d4d46be25d3a58\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"complete-step\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"decisionId\":null,\"fromPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.anti-armor\",\"expectedPriorVersion\":28,\"choice\":null,\"candidate\":null,\"participant\":null},\"actor\":\"system\",\"admittedAt\":null,\"clockAvailable\":true},\"effect\":{\"kind\":\"step-completed\",\"fromPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.anti-armor\",\"toPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.close-assault\",\"previousStepReceiptId\":\"cmb.1fcde3e595f5cd82c44a99459a0a8992e697ac81681a8ff2c2429bf75fcf727e\",\"dispositionReceiptId\":\"cmb.e48c9d35ddf6bc18ab92355c1f25a385fa7cdc8478ce951fa15a5bd7a1f1ebf4\",\"proofKind\":\"no-attack\"},\"receiptId\":\"cmb.2603c880440fd1f421176db75e2ab03fd9f0c249598a39654c43aae4cdccc2f4\"}",
+          "sha256": "sha256:dfae79468057072745716be1c6d64d594f84c4f2684beeff8a3515bc2a49e380",
+          "byteCount": 1485
+        },
+        {
+          "canonicalUtf8": "{\"contractVersion\":1,\"eventType\":\"combat-step-completed\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:d886d82a4a80cb59acd158b7040135ade9a82e910339d4282ef6793559940f1d\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"priorVersion\":29,\"stateVersion\":30,\"priorPrefix\":\"sha256:435a77c55408bbf385229e21d0dadc8c98bcb546314870f01b40cc974ca8b5c7\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"complete-step\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"decisionId\":null,\"fromPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.close-assault\",\"expectedPriorVersion\":29,\"choice\":null,\"candidate\":null,\"participant\":null},\"actor\":\"system\",\"admittedAt\":null,\"clockAvailable\":true},\"effect\":{\"kind\":\"step-completed\",\"fromPositionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.close-assault\",\"toPositionId\":\"land.position.operation-1.first-player.movement-and-combat.reserve-release\",\"previousStepReceiptId\":\"cmb.2603c880440fd1f421176db75e2ab03fd9f0c249598a39654c43aae4cdccc2f4\",\"dispositionReceiptId\":\"cmb.e48c9d35ddf6bc18ab92355c1f25a385fa7cdc8478ce951fa15a5bd7a1f1ebf4\",\"proofKind\":\"no-attack\"},\"receiptId\":\"cmb.d85ef50f378e8d77a07db38a1bb100f0003c467aed90f0dd30f0bd7d40330375\"}",
+          "sha256": "sha256:72ac87824d1a12b7c6a344ef25d8fcb21ab43285a12e65d40586514d76557f01",
+          "byteCount": 1486
+        }
+      ],
+      "expected": {
+        "stepCount": 6,
+        "terminal": "no-attack",
+        "stateVersion": 30,
+        "prefix": "sha256:674e068d7651d26cf64ce760e38e7a38301bcc5b01ec3fc3d3b86438557e1a85"
+      },
+      "controlGolden": {
+        "canonicalUtf8": "{\"contractVersion\":1,\"boundaryHash\":\"sha256:7ab9050b1bebc05b936df2988a8a9240abedc0e83aa5313e9aed8205038cf780\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"stateVersion\":30,\"prefix\":\"sha256:674e068d7651d26cf64ce760e38e7a38301bcc5b01ec3fc3d3b86438557e1a85\",\"stepIndex\":6,\"selectionOutcome\":\"cancelled\",\"selection\":{\"attacker\":{\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"axis\",\"elementId\":\"axis-assault-battalion\"},\"representationId\":\"map-representation.0001\",\"locationId\":\"assault-west\",\"componentIds\":[\"axis-assault-battalion.toe.infantry\"]},\"defender\":{\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"},\"representationId\":\"map-representation.0002\",\"locationId\":\"assault-east\",\"componentIds\":[\"commonwealth-assault-battalion.toe.infantry\"]},\"targetLocationId\":\"assault-east\",\"basis\":\"voluntary-adjacent\"},\"selectionReceiptId\":\"cmb.cc5e3b342dd4e56ae376c5cb89ebbab1aeb688d6acb1b415b62fc3da6dcba254\",\"declineReceiptId\":null,\"cancellationReceiptId\":\"cmb.e48c9d35ddf6bc18ab92355c1f25a385fa7cdc8478ce951fa15a5bd7a1f1ebf4\",\"selectionWindow\":{\"decisionId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822.selection\",\"owner\":\"axis\",\"timing\":{\"contractVersion\":1,\"configHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"kind\":\"selection\",\"decisionBudgetMilliseconds\":30000,\"openedAtUnixMilliseconds\":1000,\"deadlineUnixMilliseconds\":31000,\"highWaterUnixMilliseconds\":1001}},\"rbaWindow\":{\"decisionId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822.rba\",\"owner\":\"commonwealth\",\"timing\":{\"contractVersion\":1,\"configHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"kind\":\"rba\",\"decisionBudgetMilliseconds\":30000,\"openedAtUnixMilliseconds\":2000,\"deadlineUnixMilliseconds\":32000,\"highWaterUnixMilliseconds\":32000}},\"stepReceipts\":[\"cmb.909d7c3f017c2de88ab5cdf26b5a7c46a6ded85f611f5fecb591b3b6b7cd3fdd\",\"cmb.8200d84cc6fb197b2d23bae0ddffd7d5c31e2f464ac5a9f78c658a2d22e00cab\",\"cmb.950cc7232c1fe2d45a74d9aca314917597374631f39b4f74f59a1075cc44a3cc\",\"cmb.1fcde3e595f5cd82c44a99459a0a8992e697ac81681a8ff2c2429bf75fcf727e\",\"cmb.2603c880440fd1f421176db75e2ab03fd9f0c249598a39654c43aae4cdccc2f4\",\"cmb.d85ef50f378e8d77a07db38a1bb100f0003c467aed90f0dd30f0bd7d40330375\"],\"receipts\":[{\"commandHash\":\"sha256:81177879f8fe3c13a92ff1b98a5a2b9fd88e0bb06035439b832992bed36f8144\",\"eventHash\":\"sha256:d44810a94ad539ae381ae8ea53df1cdefc32a5a353c7ebcf32bf383647765eb2\",\"receiptId\":\"cmb.1a86ccdc32ef912d1ecd492206dec0b6110c92e1476d52d879a62d789f38ec10\",\"actor\":\"system\",\"stateVersion\":21},{\"commandHash\":\"sha256:ea8cff7b88f096026b535d376c9138ae550e89320f32894e3d5329a0fb715b05\",\"eventHash\":\"sha256:d2d9e3b76ca27693dd71324d979753b3839657bc85eb35d607a7f295df840848\",\"receiptId\":\"cmb.cc5e3b342dd4e56ae376c5cb89ebbab1aeb688d6acb1b415b62fc3da6dcba254\",\"actor\":\"axis\",\"stateVersion\":22},{\"commandHash\":\"sha256:ccd5fc3faa87d64da44309f62491b1aa601edd3f64a19db1658774040c6b3778\",\"eventHash\":\"sha256:3984975c8f99814cff1991e370acbf744396ae2cf3d4b18ef7231113df2d0cbb\",\"receiptId\":\"cmb.909d7c3f017c2de88ab5cdf26b5a7c46a6ded85f611f5fecb591b3b6b7cd3fdd\",\"actor\":\"system\",\"stateVersion\":23},{\"commandHash\":\"sha256:9cacf077466f4d186fe786961d2a3566ecef6c9ac2950c2d0e0e087f526cffd4\",\"eventHash\":\"sha256:d2cfed4c96ac4919ebbc2984cd4a0f4ce1351296b0fedc997796ab0cef780bce\",\"receiptId\":\"cmb.8200d84cc6fb197b2d23bae0ddffd7d5c31e2f464ac5a9f78c658a2d22e00cab\",\"actor\":\"system\",\"stateVersion\":24},{\"commandHash\":\"sha256:24c50c0654099ec154232d6e965e716513db824992323c9ccdd687c494005d64\",\"eventHash\":\"sha256:202afab07f674872eade448f1e6c2a8ca4fa29227f1b94a0f88d921aa0e60610\",\"receiptId\":\"cmb.16c11a39ef1e04fc9fe87c076f901c53acb794f95118ffeff72ab51b1c9573a7\",\"actor\":\"system\",\"stateVersion\":25},{\"commandHash\":\"sha256:a176f6298b5f4b149c5ce55464be46aed29700a8b7d6905fdf019531d71bdf6b\",\"eventHash\":\"sha256:b02917aabe380c152d45d18165ce1ee330f8cc48da0c6a645a0ee8c1ddf389a5\",\"receiptId\":\"cmb.e48c9d35ddf6bc18ab92355c1f25a385fa7cdc8478ce951fa15a5bd7a1f1ebf4\",\"actor\":\"system\",\"stateVersion\":26},{\"commandHash\":\"sha256:e3dd342f298dbc9acc4203b80fab3ef0b879ff20cb2173f099d55f1ab1087501\",\"eventHash\":\"sha256:3c4030aa5df8f8977fa00367e8ecc8d1f80561dd99b8c62d5acc0c9ea0baa248\",\"receiptId\":\"cmb.950cc7232c1fe2d45a74d9aca314917597374631f39b4f74f59a1075cc44a3cc\",\"actor\":\"system\",\"stateVersion\":27},{\"commandHash\":\"sha256:a1def91e2b65b9c10302aa2d1c4ec0c2a3ca681bcf717f65f37653093af1b5bb\",\"eventHash\":\"sha256:2adc67d89ef3229278e9344f3b605c14f8711976b82e87f56eeb1668905c61a7\",\"receiptId\":\"cmb.1fcde3e595f5cd82c44a99459a0a8992e697ac81681a8ff2c2429bf75fcf727e\",\"actor\":\"system\",\"stateVersion\":28},{\"commandHash\":\"sha256:11f9f14c4af78b94ee501d81ca963d6603c82e729474cc67fc1077a8be7d068d\",\"eventHash\":\"sha256:dfae79468057072745716be1c6d64d594f84c4f2684beeff8a3515bc2a49e380\",\"receiptId\":\"cmb.2603c880440fd1f421176db75e2ab03fd9f0c249598a39654c43aae4cdccc2f4\",\"actor\":\"system\",\"stateVersion\":29},{\"commandHash\":\"sha256:84cc7362cb216d800069b8940fd168cd9df6230263beaabf7a4c0c356f2f4058\",\"eventHash\":\"sha256:72ac87824d1a12b7c6a344ef25d8fcb21ab43285a12e65d40586514d76557f01\",\"receiptId\":\"cmb.d85ef50f378e8d77a07db38a1bb100f0003c467aed90f0dd30f0bd7d40330375\",\"actor\":\"system\",\"stateVersion\":30}],\"closed\":true}",
+        "byteCount": 5454,
+        "sha256": "sha256:937182ae2d26f3a1269e8b05d1c405ea21be9f8f02a7ab702d1cb9723ac6dcaf"
+      },
+      "boundaryIndex": 1
+    }
+  ],
+  "boundaries": [
+    {
+      "canonicalUtf8": "{\"contractVersion\":1,\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"cycle\":{\"contractVersion\":1,\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"setupId\":\"rules-lab.combat.close-assault.v1\",\"setupHash\":\"sha256:22495e26528c2f4db8335d3b4041194aef26295f30aab0e4e6f384ff17069848\",\"contentPackId\":\"rules-lab.content.close-assault.v1\",\"contentHash\":\"sha256:ee4fde9638ceb61ec08612fe32f9ac81db05572aac5ca20941e402d2fed25847\",\"scenarioId\":\"close-assault-positive-v1\",\"gameTurn\":1,\"operationStage\":1,\"playerPhaseSlot\":\"first-acting-side\",\"actingSide\":\"axis\",\"ordinal\":1,\"openedAuthorityVersion\":12,\"openingPrefix\":\"sha256:07ef36fec645c632463dcb1e7446b1d914cc8f91506bac968c2bac84a55def45\",\"admittedPolicyBundleDigest\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\"},\"firstActingSide\":\"axis\",\"priorVersion\":20,\"priorPrefix\":\"sha256:7931527dd7d964dc4436798d8c2467424fdaee54909f6a95080ddff57d31ec5f\",\"completedBreakdownReceipt\":\"sha256:ee951d526e35d25703a47c62aacaa093aaffa76494e6a3e15f08ac4c69c182cc\",\"position\":{\"contractVersion\":5,\"positionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.position-determination\",\"gameTurn\":1,\"operationStage\":1,\"stageId\":\"land.stage.operation\",\"phaseId\":\"land.phase.movement-and-combat\",\"segmentId\":\"land.segment.combat\",\"stepId\":\"land.step.position-determination\",\"actorRole\":\"first-acting-side\",\"activeSide\":\"axis\",\"sources\":[{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"5.2\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"7.11\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"7.14\"}]},\"world\":{\"contractVersion\":7,\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"elements\":[{\"elementId\":\"axis-assault-battalion\",\"currentLocationId\":\"assault-west\",\"reserveStatus\":\"none\",\"operationalState\":{\"ledgerGameTurn\":1,\"ledgerOperationStage\":1,\"capabilityPointsExpended\":{\"numerator\":6,\"denominator\":1},\"cohesionLevel\":0,\"vehicleBreakdownState\":null,\"movementEnded\":null,\"initialLedgerOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:initial-ledger\"}]}},\"components\":[{\"componentId\":\"axis-assault-battalion.toe.infantry\",\"currentToe\":10,\"initialToeOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:toe.axis-assault-battalion.toe.infantry\"}]}}],\"sourceParentFormationId\":\"axis-assault-formation\",\"currentParentFormationId\":\"axis-assault-formation\",\"ammunition\":{\"points\":10,\"initialAmmunitionOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:ammo.axis-assault-battalion\"}]}},\"readiness\":{\"gameTurn\":1,\"operationStage\":1,\"waterStatus\":\"distributed-for-stage\",\"storesStatus\":\"distributed-for-stage\",\"pinned\":false,\"initialReadinessOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:readiness.axis-assault-battalion\"}]}}},{\"elementId\":\"commonwealth-assault-battalion\",\"currentLocationId\":\"assault-east\",\"reserveStatus\":\"none\",\"operationalState\":{\"ledgerGameTurn\":1,\"ledgerOperationStage\":1,\"capabilityPointsExpended\":{\"numerator\":0,\"denominator\":1},\"cohesionLevel\":0,\"vehicleBreakdownState\":null,\"movementEnded\":null,\"initialLedgerOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:initial-ledger\"}]}},\"components\":[{\"componentId\":\"commonwealth-assault-battalion.toe.infantry\",\"currentToe\":10,\"initialToeOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:toe.commonwealth-assault-battalion.toe.infantry\"}]}}],\"sourceParentFormationId\":\"commonwealth-assault-formation\",\"currentParentFormationId\":\"commonwealth-assault-formation\",\"ammunition\":{\"points\":10,\"initialAmmunitionOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:ammo.commonwealth-assault-battalion\"}]}},\"readiness\":{\"gameTurn\":1,\"operationStage\":1,\"waterStatus\":\"distributed-for-stage\",\"storesStatus\":\"distributed-for-stage\",\"pinned\":false,\"initialReadinessOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:readiness.commonwealth-assault-battalion\"}]}}}],\"representations\":[{\"representationId\":\"map-representation.0001\",\"currentLocationId\":\"assault-west\",\"bindingKind\":\"independent-element\",\"boundElementIds\":[\"axis-assault-battalion\"]},{\"representationId\":\"map-representation.0002\",\"currentLocationId\":\"assault-east\",\"bindingKind\":\"independent-element\",\"boundElementIds\":[\"commonwealth-assault-battalion\"]}],\"brokenVehicleLots\":[],\"cohesionCauses\":[],\"relationships\":[],\"custodyLots\":[],\"guards\":[],\"replacementEntitlements\":[],\"futureObligations\":[],\"settlements\":[]},\"randomState\":{\"contractVersion\":1,\"algorithmId\":\"sandtable.sha256-counter.v1\",\"seed\":0,\"nextByteCursor\":0},\"weather\":{\"gameTurn\":1,\"operationStage\":1,\"attackerKind\":\"normal\",\"defenderKind\":\"normal\",\"weatherReceiptHash\":\"sha256:7f0803dc1ca205e6a8166969883519d733da68641abef8bbebf205aeac7b76f0\"},\"breakdownFlow\":{\"kind\":\"idle\"},\"reactionWindow\":null}",
+      "byteCount": 5365,
+      "sha256": "sha256:44eb785c815a79b48cc79137c6c3843b61565cecf651624de153042644e9ebff"
+    },
+    {
+      "canonicalUtf8": "{\"contractVersion\":1,\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"cycle\":{\"contractVersion\":1,\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"setupId\":\"rules-lab.combat.close-assault.v1\",\"setupHash\":\"sha256:22495e26528c2f4db8335d3b4041194aef26295f30aab0e4e6f384ff17069848\",\"contentPackId\":\"rules-lab.content.close-assault.v1\",\"contentHash\":\"sha256:ee4fde9638ceb61ec08612fe32f9ac81db05572aac5ca20941e402d2fed25847\",\"scenarioId\":\"close-assault-positive-v1\",\"gameTurn\":1,\"operationStage\":1,\"playerPhaseSlot\":\"first-acting-side\",\"actingSide\":\"axis\",\"ordinal\":1,\"openedAuthorityVersion\":12,\"openingPrefix\":\"sha256:07ef36fec645c632463dcb1e7446b1d914cc8f91506bac968c2bac84a55def45\",\"admittedPolicyBundleDigest\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\"},\"firstActingSide\":\"axis\",\"priorVersion\":20,\"priorPrefix\":\"sha256:7931527dd7d964dc4436798d8c2467424fdaee54909f6a95080ddff57d31ec5f\",\"completedBreakdownReceipt\":\"sha256:ee951d526e35d25703a47c62aacaa093aaffa76494e6a3e15f08ac4c69c182cc\",\"position\":{\"contractVersion\":5,\"positionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.position-determination\",\"gameTurn\":1,\"operationStage\":1,\"stageId\":\"land.stage.operation\",\"phaseId\":\"land.phase.movement-and-combat\",\"segmentId\":\"land.segment.combat\",\"stepId\":\"land.step.position-determination\",\"actorRole\":\"first-acting-side\",\"activeSide\":\"axis\",\"sources\":[{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"5.2\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"7.11\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"7.14\"}]},\"world\":{\"contractVersion\":7,\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"elements\":[{\"elementId\":\"axis-assault-battalion\",\"currentLocationId\":\"assault-west\",\"reserveStatus\":\"none\",\"operationalState\":{\"ledgerGameTurn\":1,\"ledgerOperationStage\":1,\"capabilityPointsExpended\":{\"numerator\":0,\"denominator\":1},\"cohesionLevel\":0,\"vehicleBreakdownState\":null,\"movementEnded\":null,\"initialLedgerOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:initial-ledger\"}]}},\"components\":[{\"componentId\":\"axis-assault-battalion.toe.infantry\",\"currentToe\":10,\"initialToeOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:toe.axis-assault-battalion.toe.infantry\"}]}}],\"sourceParentFormationId\":\"axis-assault-formation\",\"currentParentFormationId\":\"axis-assault-formation\",\"ammunition\":{\"points\":10,\"initialAmmunitionOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:ammo.axis-assault-battalion\"}]}},\"readiness\":{\"gameTurn\":1,\"operationStage\":1,\"waterStatus\":\"distributed-for-stage\",\"storesStatus\":\"distributed-for-stage\",\"pinned\":false,\"initialReadinessOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:readiness.axis-assault-battalion\"}]}}},{\"elementId\":\"commonwealth-assault-battalion\",\"currentLocationId\":\"assault-east\",\"reserveStatus\":\"none\",\"operationalState\":{\"ledgerGameTurn\":1,\"ledgerOperationStage\":1,\"capabilityPointsExpended\":{\"numerator\":0,\"denominator\":1},\"cohesionLevel\":0,\"vehicleBreakdownState\":null,\"movementEnded\":null,\"initialLedgerOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:initial-ledger\"}]}},\"components\":[{\"componentId\":\"commonwealth-assault-battalion.toe.infantry\",\"currentToe\":10,\"initialToeOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:toe.commonwealth-assault-battalion.toe.infantry\"}]}}],\"sourceParentFormationId\":\"commonwealth-assault-formation\",\"currentParentFormationId\":\"commonwealth-assault-formation\",\"ammunition\":{\"points\":10,\"initialAmmunitionOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:ammo.commonwealth-assault-battalion\"}]}},\"readiness\":{\"gameTurn\":1,\"operationStage\":1,\"waterStatus\":\"distributed-for-stage\",\"storesStatus\":\"distributed-for-stage\",\"pinned\":false,\"initialReadinessOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:readiness.commonwealth-assault-battalion\"}]}}}],\"representations\":[{\"representationId\":\"map-representation.0001\",\"currentLocationId\":\"assault-west\",\"bindingKind\":\"independent-element\",\"boundElementIds\":[\"axis-assault-battalion\"]},{\"representationId\":\"map-representation.0002\",\"currentLocationId\":\"assault-east\",\"bindingKind\":\"independent-element\",\"boundElementIds\":[\"commonwealth-assault-battalion\"]}],\"brokenVehicleLots\":[],\"cohesionCauses\":[],\"relationships\":[],\"custodyLots\":[],\"guards\":[],\"replacementEntitlements\":[],\"futureObligations\":[],\"settlements\":[]},\"randomState\":{\"contractVersion\":1,\"algorithmId\":\"sandtable.sha256-counter.v1\",\"seed\":0,\"nextByteCursor\":0},\"weather\":{\"gameTurn\":1,\"operationStage\":1,\"attackerKind\":\"normal\",\"defenderKind\":\"normal\",\"weatherReceiptHash\":\"sha256:7f0803dc1ca205e6a8166969883519d733da68641abef8bbebf205aeac7b76f0\"},\"breakdownFlow\":{\"kind\":\"idle\"},\"reactionWindow\":null}",
+      "byteCount": 5365,
+      "sha256": "sha256:7ab9050b1bebc05b936df2988a8a9240abedc0e83aa5313e9aed8205038cf780"
+    }
+  ]
+}

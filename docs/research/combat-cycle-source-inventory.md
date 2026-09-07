@@ -15,7 +15,9 @@ status correction applied. [003C1 rules inputs/timing](../specs/combat-rules-inp
 complete canonical source/policy/config bytes; [review6](../reviews/combat-inputs-review-6.md) is Ready,
 no actionable findings at that checkpoint. [003D1 sequence/cycle](../specs/combat-cycle-sequence-v1.md)
 is complete; [review7](../reviews/combat-sequence-review-7.md) returned Ready, no actionable findings
-(7of7 used). Full Rules10 assembly in003C2 is next.
+(7of7 used). [003C2 Rules10/creation envelopes](../specs/combat-authority-envelope-v1.md) are complete
+for the creation cut. [003C3a selection/step control](../specs/combat-selection-steps-v1.md) is complete
+with author checks;003C3b sealed assignments are next.
 Parent003C/D/004 and the combined-contract gate remain open; the plan retains current review accounting.
 
 **Date:** 2026-08-25
@@ -212,5 +214,6 @@ Ready reassessment; remaining policy/production gates stay open.
   passes; [review5](../reviews/combat-progress-review-5.md) returned Ready with non-blocking follow-ups
   for progress through003B. Its status correction is applied. Later [review6](../reviews/combat-inputs-review-6.md) is Ready for003C1;
   no material fix or further pass was required for that slice. Later
-  [review7](../reviews/combat-sequence-review-7.md) is Ready for003D1; cumulative use is7of7.
+  [review7](../reviews/combat-sequence-review-7.md) is Ready for003D1; use was7of7 at that checkpoint. Owner later authorized review8
+  for003C2, which returned Ready; current use is8of8. Report retained in local planning files.
   No further independent pass is authorized by the current flow.
