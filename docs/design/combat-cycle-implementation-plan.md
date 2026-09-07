@@ -13,7 +13,8 @@ its status correction is applied. Parent003 remains open for003C/D.
 [003D1 sequence/cycle packet](../specs/combat-cycle-sequence-v1.md) is complete;
 [review7](../reviews/combat-sequence-review-7.md) returned Ready with no actionable findings (7of7 used).
 [003C2 Rules10/creation envelopes](../specs/combat-authority-envelope-v1.md) are complete for the creation cut,
-with author verification.003C3 command/event envelopes and later snapshot state are next.
+with author verification. [003C3a selection/step contracts](../specs/combat-selection-steps-v1.md) are
+complete as a bounded control fragment;003C3b sealed assignments are next.
 TASK-004–025 not started. Future maturity execution and checkpoint B remain gated.
 **Original input:** `d2bc67c`. Exact contract freeze and production gates remain open.
 
@@ -133,6 +134,20 @@ order; never insert a placeholder hash or declare the full Rules bundle frozen e
 Each slice retains the five-primary-file cap, including verification and plan update.003C1 inputs
 are prospective Rules artifacts, not a new registered ruleset or permission to begin005. The
 sequence/identity dependency moves earlier; accepted gameplay policies and checkpoint B stay intact.
+
+TASK-003C3 sizing refinement, 2026-09-07, before event/command edits: selection/step control,
+two-party private rounds, and committed result/settlement are separate transition families. Keep
+parent003C3 open and freeze them in dependency order, each within five primary files:
+
+| Slice | Contract boundary |
+| --- | --- |
+| `003C3a` | [Selection/step control](../specs/combat-selection-steps-v1.md) complete:5 literal traces/41 event-control cuts,5 Control goldens,246 event mutations,164 raw rejects and time/retry/weather/FA guards. Positive path stops at Force Assignment; author checks only. |
+| `003C3b` | Opportunity and sealed two-slot round, permitted FA/AA trace, atomic commitment and history identity; prepared/cancelled handoff to step control. |
+| `003C3c` | Committed RNG/result/settlement envelopes, completed round/CA closure and noninitial Snapshot12 composition with C3a/b; reconcile complete C3 restart/tamper matrix. |
+
+This refinement changes no gameplay policy, acceptance criterion or review budget. C3a rejects
+prepared/resolved/settled states until their exact dependent contracts exist; later C3b/c freeze
+the same prospective family before checkpoint B, with no production version registered early.
 
 Checkpoint B: accept exact combined contracts and resolve any changed policy with owner. Reconcile
 task sizes with frozen types. Runtime implementation remains gated until this checkpoint passes.
@@ -383,3 +398,22 @@ C2 freezes only creation-state Snapshot12: noninitial variants fail closed until
 its prospective contract before checkpoint B. No opaque saved-state payload or inferred upgrade.
 Next003C3 freezes command/event envelopes, later snapshot state and causal suffixes; parent003C/D,
 004, checkpoint B and all runtime/replay/privacy gates remain open.
+
+
+TASK-003C3a checkpoint, 2026-09-07 (input `568027c`):
+[Selection/step contract](../specs/combat-selection-steps-v1.md),
+[schema](../specs/combat-selection-steps-v1.schema.json),
+[fixture](../specs/fixtures/combat-selection-steps-v1.json) and
+[oracle](../specs/verify-combat-selection-steps-v1.py) freeze no-selection traversal, selected intent,
+RBA decline/cancellation and pre-assignment handoff. Five literal traces contain41 events and five
+final Control goldens.41 event/control cuts,246 event mutations,164 raw rejections plus exact retry,
+deadline, unavailable-clock, stale timer, actor/candidate, weather/geometry and FA guards pass.
+All seven predecessor oracles pass unchanged;427 local Markdown links resolve, JSON/Python syntax
+and changed-file whitespace checks pass. No .NET/runtime files changed in this slice.
+Boundary fixtures are explicit isolated probes; real Breakdown/Weather/Movement history and complete
+Snapshot12 remain future consumers. No CP/ammo/TOE/RNG/world changes or production activation.
+C2 independent review8of8 returned Ready with no actionable findings; retained report at local
+`.planning/cmb-task-003c2/review8/report.md` outside Git. Its verdict applies only to C2; C3a receives
+author checks, with no additional review pass. Current review maximum remains8of8.
+Next003C3b freezes sealed assignments/FA-AA trace and commitment;003C3c composes result/settlement
+and noninitial Snapshot12, then003D2/004 complete checkpoint B before runtime Task005 begins.

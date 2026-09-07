@@ -1,0 +1,45 @@
+{
+  "contract": "combat-selection-steps-v1",
+  "objects": {
+    "Boundary": "contractVersion:int creationBinding:id cycle:Authority firstActingSide:side priorVersion:long priorPrefix:hash completedBreakdownReceipt:hash position:Position world:World randomState:Random weather:ApplicableWeather breakdownFlow:Idle reactionWindow:null",
+    "Participant": "unit:UnitKey representationId:id locationId:id componentIds:id[]",
+    "Candidate": "attacker:Participant defender:Participant targetLocationId:id basis:id",
+    "Window": "decisionId:id owner:side timing:Timing",
+    "Command": "contractVersion:int kind:id segmentId:id decisionId:id? fromPositionId:id? expectedPriorVersion:long? choice:id? candidate:Candidate? participant:UnitKey?",
+    "Input": "command:Command actor:actor admittedAt:utc? clockAvailable:bool",
+    "Event": "contractVersion:int eventType:id campaignId:id rulesetHash:rawHash configurationHash:hash cycleId:hash segmentId:id priorVersion:long stateVersion:long priorPrefix:hash input:Input effect:Effect receiptId:id",
+    "OpenEffect": "kind:id boundaryHash:hash window:Window?",
+    "SelectionEffect": "kind:id outcome:id candidate:Candidate? timing:Timing?",
+    "RbaOpenEffect": "kind:id selectionReceiptId:id window:Window",
+    "DeclineEffect": "kind:id selectionReceiptId:id participant:UnitKey timing:Timing",
+    "CancelEffect": "kind:id selectionReceiptId:id timing:Timing?",
+    "StepEffect": "kind:id fromPositionId:id toPositionId:id previousStepReceiptId:id dispositionReceiptId:id proofKind:id",
+    "Receipt": "commandHash:hash eventHash:hash receiptId:id actor:actor stateVersion:long",
+    "Control": "contractVersion:int boundaryHash:hash segmentId:id stateVersion:long prefix:hash stepIndex:int selectionOutcome:id selection:Candidate? selectionReceiptId:id? declineReceiptId:id? cancellationReceiptId:id? selectionWindow:Window? rbaWindow:Window? stepReceipts:id[] receipts:Receipt[] closed:bool",
+    "ApplicableWeather": "gameTurn:int operationStage:int attackerKind:id defenderKind:id weatherReceiptHash:hash"
+  },
+  "effectTags": {
+    "segment-opened": "OpenEffect",
+    "selection-closed": "SelectionEffect",
+    "rba-opened": "RbaOpenEffect",
+    "rba-declined": "DeclineEffect",
+    "selection-cancelled": "CancelEffect",
+    "step-completed": "StepEffect"
+  },
+  "externalContracts": [
+    "combat-authority-envelope-v1.schema.json",
+    "combat-world-settlement-v1.schema.json",
+    "combat-rules-inputs-v1.schema.json",
+    "combat-cycle-sequence-v1.schema.json"
+  ],
+  "domains": {
+    "segment": "sandtable.combat.segment.v1",
+    "receipt": "sandtable.combat.step-receipt.v1"
+  },
+  "limits": {
+    "bytes": 1048576,
+    "depth": 32,
+    "events": 16
+  },
+  "scope": "C3a control fragment; positive selected path stops at Force Assignment pending C3b/c. Not a full Snapshot12 or creation-to-Combat replay."
+}
