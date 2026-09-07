@@ -19,7 +19,9 @@ real transcription and integration cost.
 
 ## Current checkpoint and next gates
 
-The executable engine remains Rules9 through first-side Combat **entry**. Combat003C2 and003C3a
+[Author doc/planning review](../reviews/combat-delivery-plan-author-review.md) records the current
+findings, corrections and proposed hosting sequence. The executable engine remains Rules9 through
+first-side Combat **entry**. Combat003C2 and003C3a
 freeze prospective creation and selection/step contracts; they do not activate Combat in Core or
 the simulator. The [combined Combat plan](../design/combat-cycle-implementation-plan.md) owns task
 dependencies; this roadmap owns cross-package sequencing. Historical review and simulator reports
@@ -27,24 +29,29 @@ apply only to their stated commits and capabilities.
 
 | Next gate | Concrete outcome |
 | --- | --- |
-| Contract checkpoint B | Finish003C3b sealed rounds,003C3c result/settlement/noninitial snapshots,003D2 cycle envelopes and004 public/Exercise contracts. |
+| Contract checkpoint B | Finish003C3b sealed rounds,003C3c result/settlement/noninitial snapshots,003D2 cycle envelopes and004 public/Exercise contracts. Explicitly allocate the inherited pre-Combat path and first-cycle opening before accepting the runtime child plan. |
 | Core implementation,005–021 | Start with dormant tables and fixtures at005–006; implement state, decisions, settlement and cycle before public activation at020–021. Task005 alone is not a playable combat loop. |
 | Combat simulator,022–024 | Adopt public actions and terminals, prove replay/readjudication, then compare two clean runs covering empty, settled-assault and Movement-repeat paths. Existing Rules9 checks cannot substitute. |
 | Package closeout,025 | Reconcile evidence and remaining skeleton gaps; scope the next cross-package increment. |
 
 The [current simulator checkpoint](../research/simulator-post-merge-checkin.md#combat-contract-branch-smoke-check)
-repeats the existing Truck study. Broader Combat seed/branch coverage belongs after022–024; balance
+repeats the existing Truck study. Broader Combat seed/branch coverage belongs after022–024; dormant
+Core integration evidence is required earlier at E/G/H. Balance
 claims and model-backed commander evaluation remain separate future studies.
 
 OrleansHost currently supplies a development silo, not campaign grains or durable campaign storage.
 DecisionWorker registers its client but does not dispatch campaign decisions. Sprint8 retains the
-campaign-lifecycle milestone. **Proposed next planning checkpoint:** once the public Core loop and
-simulator evidence above work, scope a small Orleans hosting increment before expanding more Land
-systems. Define campaign activation through the existing Core boundary, persistence/publication
-semantics, duplicate and stale submission handling, and restart equivalence. Keep audience privacy
-in its acceptance tests. This is a proposal to bring hosting forward, not an approved rescheduling
-or a new runtime task. Model-backed dispatch requires its own durable pending-decision and off-turn
-I/O contracts; it need not be bundled with initial campaign hosting.
+accepted campaign-lifecycle milestone. **Proposed refinement:** investigate hosting/persistence now
+against the existing Rules9 Core boundary, without blocking Combat contracts or selecting a provider
+prematurely. A bounded probe should compare direct Core and hosted execution and test duplicate
+submission, lost reply and storage failure. It does not need Combat to be implemented first.
+
+Production hosting remains a separately approved contract-first increment. The earliest proposed
+handoff is after public Core activation020–021 and one verified Combat Runner trace at023; complete
+024's regression matrix before claiming the Combat package closed. Broad balance/performance studies
+and025 documentation closeout are not technical prerequisites for hosting design. Actual scheduling
+and storage/publication choices remain pending the probe and owner decision. Model-backed dispatch
+needs its own durable pending-decision/off-turn I/O contracts and is not bundled with first hosting.
 
 ## Product boundaries
 
@@ -619,24 +626,22 @@ Certified unladen Trucks and battalion combat limits defer public positive ZOC a
 losses. Historical artifacts stay intact; 13 Reaction children have bounded successors and two
 positive-ZOC children remain deferred. No runtime identity changed in this freeze.
 
-### Current parallel execution window
+### Current execution lanes
 
-Movement closeout is complete through merged `MOV-TASK-010` / PR #79. ZOC/Reaction Core authority
-is implemented and publicly activated through `ZOR-TASK-006C`; bounded Runner adoption in `007A` is implemented
-and `007B` verification and independent review are complete.
+Movement, bounded ZOC/Reaction and Breakdown packages are complete within their certified profiles.
+The current serial authority lane is Combat contract completion, beginning003C3b. Completed research
+below remains evidence; it is not an instruction to restart those investigations.
 
-The following bounded lanes can proceed without colliding with that serial authority path:
+| Lane | Current priority and boundary |
+| --- | --- |
+| Combat |003C3b →003C3c →003D2 →004 → checkpoint B; then the accepted Core/public/Runner gates. |
+| Orleans feasibility | Proposed bounded investigation on existing Rules9; see the author review. No new runtime task, storage choice or implementation approval is implied. |
+| `CIH-IMP-004` offline Markdown links | Secondary maintenance candidate from the retained CI research. Retain its baseline/exclusion gate and existing authorization scope; keep it off Combat's critical path. |
+| Completed Movement/ZOC/Breakdown and Combat research | Regression and source evidence; reopen only for a concrete failure, new source evidence or approved capability expansion. |
 
-| Lane | Scope now | Collision / merge gate |
-| --- | --- | --- |
-| ZOC/Reaction authority lane | Stable approved requirements, technical design, task slices, and traceability from accepted `CONTACT-001` rulings | Core checkpoints `ZOR-TASK-002A`-`006C` are implemented; `007A` Runner adoption is implemented; `007B` verification and independent review are complete; approval did not collapse the dependency graph |
-| Breakdown adjudication | `BRK-RSH-002` complete; DEC-004–007 accepted; `BRK-TASK-001` contract/fixture freeze complete | `BRK-TASK-002` dormant outcome rules implemented, full gate passing and independent review Ready; 003 campaign contracts/Truck fixture, 004 shared move accounting/replay and 005 dormant stop/check authority implemented; 006 coherent public activation/privacy and 007 checked Runner migration implemented; review 5 accepts AC-009 transcript follow-up; bounded Tasks 006–007 complete |
-| `CMB-RSH-003`-`004`, `CYCLE-RSH-001`, `RESREL-RSH-001` | Continue bounded mutable-state, RNG, cycle-identity, and Reserve Release research | Research only; the ZOC package adopts only the minimum approved static component/current-TOE foundation and no Combat resolution |
-| `CIH-IMP-004` offline Markdown links | Add a repository-local offline link gate with reviewed exclusions and a broken-link negative | Begin after the central documentation sync; keep shared architecture/status docs under one owner |
-
-Maproom, campaign hosting/dispatch, provider-backed Intelligence, and their behavior-level
-observability remain held until their roadmap triggers exist. Current service projects are
-scaffolds, not unfinished work that should compete with the authoritative Movement path.
+Maproom and model-backed dispatch remain behind their roadmap triggers. Local hosting feasibility
+can be investigated separately from those product features; starting a development silo does not
+establish campaign persistence or reliable dispatch.
 
 Movement Tasks 005-010 are complete. The owner approved the bounded Rules/Content/World BP
 continuity lane as Task 004B before Task 005 and subsequently approved the ZOC/Reaction governing
@@ -649,7 +654,7 @@ packets without authorizing their implementations:
 | --- | --- | --- |
 | `BREAKDOWN-001` | Approved and completed in `MOV-TASK-004B` | Exact BP, synthetic Truck cohort, Sandstorm-attributed world continuity, identity migration, and review are closed; Task 005 projects the approved owner subset |
 | `CONTACT-001` | Decision-complete; all five rulings accepted in PR #71; ZOC/Reaction spec/design approved after PR #80 merged | Core implementation is activated through `ZOR-TASK-006C`; `007A` Runner adoption is implemented; `007B` verification and independent review are complete; Contact/Engaged remain Sprint 5 |
-| `COMBAT-CYCLE-001` | Source inventory and TASK-001/002 source/Content packets complete; checkpoint A author check and003A/003B/003C1/003D1/003C2 contract slices complete (C2 creation cut); parent003C/D and remaining combined contracts open | Replace provisional Sprint 5 headings with reviewed private-choice, simultaneous-resolution, Reserve Release, and repeat-cycle contracts |
+| `COMBAT-CYCLE-001` | Source inventory and TASK-001/002 source/Content packets complete; checkpoint A author check and003A/003B/003C1/003D1/003C2/003C3a contract slices complete (C2 creation cut, C3a bounded control); parent003C/D and remaining combined contracts open | Replace provisional Sprint 5 headings with reviewed private-choice, simultaneous-resolution, Reserve Release, and repeat-cycle contracts |
 
 ### Task 4.1 - Capability Points and the initial cohesion ledger
 
@@ -744,14 +749,12 @@ resulting state and Chronicle explanation.
 **Goal:** Resolve a representative combat through Reserve Release, then explicitly repeat or finish
 the Movement/Breakdown/Combat/Reserve Release cycle.
 
-Sprint 5 is currently a capability plan. Its source/table inventory, hidden-choice contract, exact
-segment state, and task-sized implementation plan must be approved after the movement/contact state
-model is proven.
-
-**Status:** Source inventory complete; contract/task freeze still requires Contact/Engaged and
-Combat design reconciled with the implemented Breakdown and ZOC/Reaction boundaries. The
-[Combat-cycle inventory](../research/combat-cycle-source-inventory.md) replaces the former three
-oversized executable-looking tasks with explicit research and design gates.
+**Status:** Owner accepted POL-001–008 and the corrected combined plan at `a10a588`.
+Source research and the listed contract fragments are complete;003C3b/c,003D2,004 and checkpoint B
+remain open. No Combat runtime capability is active. The
+[combined plan](../design/combat-cycle-implementation-plan.md) owns exact current dependencies;
+the [source inventory](../research/combat-cycle-source-inventory.md) retains research lineage.
+The paragraphs below describe those historical inputs and review scopes, not new approval gates.
 
 `CMB-RSH-001` is complete in the
 [Combat rules and result surface spike](../research/combat-rules-result-surface-spike.md).
@@ -816,8 +819,8 @@ ammunition, and Cohesion obligation before claiming the repeating skeleton is co
 
 The bounded designs specify Contact-derived opportunity identity, trusted-Umpire sealed choices,
 resolution and settlement ordering, and Reserve Release repeat/finish authority. The combined plan
-turns those proposals into implementation-sized tasks; it does not approve policies or allocate
-production schema versions. Its first checkpoint work closes source and exact contract questions.
+implements the accepted policy direction through staged tasks; task completion does not itself
+register production schema versions. Source work is complete and exact contract freeze remains open.
 Bounded simulator evidence ends at Truck Convoy entry with future obligations retained; full
 repeating-skeleton acceptance must still account for every required continuation dependency.
 
