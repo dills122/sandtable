@@ -6,6 +6,23 @@
 implementation evidence. Author review requested after the planning sync; not a fresh-context
 independent review, and not another verdict on C3a code. Independent-review use remains8of8.
 
+## Owner disposition
+
+After reviewing commit `b8be39a`, owner requested incorporating the new information into documentation
+and planning and opening a PR. Accepted direction: preserve003C3b as next Combat task, explicitly
+allocate the inherited pre-Combat path and first opening at B, retain progressive Core integration
+evidence, and run a bounded Orleans investigation during remaining contract work.
+
+The governing [roadmap](../roadmap/pre-alpha-roadmap.md#bounded-hosting-investigation--host-rsh-001)
+now records `HOST-RSH-001`, scheduled after003C3b. Investigation is authorized and unstarted.
+The recommendation/proposal labels in the original review below retain the review-time status;
+this disposition supersedes them for the accepted investigation and planning direction.
+Exact runtime child plans still require B acceptance; production hosting still needs a host
+contract/storage decision. No provider, deployment, model dispatch or new independent review round
+was approved. This acceptance is planning evidence, not an executed experiment. Follow-up checks
+passed403 local link targets,11 Markdown anchors,25 stable tasks/backward dependencies,72 unchanged
+design ACs,8 policy IDs and whitespace. No runtime/scenario/frozen-spec files changed.
+
 ## Conclusion
 
 Keep the accepted contract → dormant Core → public authority → Runner sequence. It protects the

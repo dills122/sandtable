@@ -21,8 +21,11 @@ TASK-004–025 not started. Future maturity execution and checkpoint B remain ga
 
 Cross-package sequencing lives in the [roadmap checkpoint](../roadmap/pre-alpha-roadmap.md#current-checkpoint-and-next-gates).
 Task005 begins dormant implementation; public activation is020–021 and Combat simulator evidence
-is022–024. The proposed Orleans planning checkpoint follows that working loop/evidence and does
-not change this package's accepted dependencies or authorize hosted/model integration.
+is022–024. Owner accepted the author review's planning direction after `b8be39a`: the bounded
+`HOST-RSH-001` investigation is scheduled after003C3b during remaining contract work. It can use
+current Rules9 and is not a dependency of B. Production hosting still requires its own contract and
+storage decision; the planning target follows020–021 and one verified023 trace. No hosted/model
+capability or durable provider is authorized by this documentation update.
 
 ## Outcome and boundary
 
@@ -178,10 +181,11 @@ compatibility/replay requirements, not permission to broaden the certified capab
   capacity, unsupported-history rejection and the inherited-path handoff. Completed fragment oracles
   do not by themselves close parent003 or B.
 
-The [review proposal](../reviews/combat-delivery-plan-author-review.md#recommended-sequence) recommends
-splitting008 into codec/restore and inherited-path adapters, with first opening brought forward
-from019. Exact child IDs and dependencies require checkpoint B acceptance; existing task order below
-is not silently rewritten by this recommendation.
+Owner accepted the [review direction](../reviews/combat-delivery-plan-author-review.md#owner-disposition)
+to split008 into codec/restore and inherited-path adapters, bringing first opening forward from019
+as needed for composed tests. Exact child IDs, scope and dependencies remain outputs of contract
+freeze and require checkpoint B acceptance. The numbered parent rows below retain their identities;
+this planning acceptance does not declare B passed or start runtime implementation.
 
 ### Checkpoint C — dormant table and fixture foundations
 

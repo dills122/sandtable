@@ -20,7 +20,7 @@ real transcription and integration cost.
 ## Current checkpoint and next gates
 
 [Author doc/planning review](../reviews/combat-delivery-plan-author-review.md) records the current
-findings, corrections and proposed hosting sequence. The executable engine remains Rules9 through
+findings, corrections and the owner-accepted planning direction. The executable engine remains Rules9 through
 first-side Combat **entry**. Combat003C2 and003C3a
 freeze prospective creation and selection/step contracts; they do not activate Combat in Core or
 the simulator. The [combined Combat plan](../design/combat-cycle-implementation-plan.md) owns task
@@ -40,18 +40,37 @@ Core integration evidence is required earlier at E/G/H. Balance
 claims and model-backed commander evaluation remain separate future studies.
 
 OrleansHost currently supplies a development silo, not campaign grains or durable campaign storage.
-DecisionWorker registers its client but does not dispatch campaign decisions. Sprint8 retains the
-accepted campaign-lifecycle milestone. **Proposed refinement:** investigate hosting/persistence now
-against the existing Rules9 Core boundary, without blocking Combat contracts or selecting a provider
-prematurely. A bounded probe should compare direct Core and hosted execution and test duplicate
-submission, lost reply and storage failure. It does not need Combat to be implemented first.
+DecisionWorker registers its client but does not dispatch campaign decisions. Owner accepted the
+review's planning direction after `b8be39a`: keep003C3b next, require the inherited-path handoff and
+progressive Core evidence, and investigate Orleans during the remaining contract phase.
 
-Production hosting remains a separately approved contract-first increment. The earliest proposed
-handoff is after public Core activation020–021 and one verified Combat Runner trace at023; complete
-024's regression matrix before claiming the Combat package closed. Broad balance/performance studies
-and025 documentation closeout are not technical prerequisites for hosting design. Actual scheduling
-and storage/publication choices remain pending the probe and owner decision. Model-backed dispatch
-needs its own durable pending-decision/off-turn I/O contracts and is not bundled with first hosting.
+### Bounded hosting investigation — HOST-RSH-001
+
+**Status:** Planned and authorized for investigation; not started. Schedule after the003C3b
+checkpoint, during the remaining contract work. It is independent of checkpoint B and must not
+block Combat contract completion. Scope is one focused investigation with at most three primary
+files; unresolved questions become explicit follow-ups rather than an expanded implementation.
+
+- Use one current synthetic Rules9 campaign in an isolated test host. Inventory creation, query,
+  submission and checkpoint seams; compare a direct-Core accepted trace with hosted execution.
+- Test duplicate/stale submissions, lost reply after write, write failure and reactivation. Record
+  provider/test-double semantics; memory-backed reactivation is not proof of durable process restart.
+- Retain commands, source identity, canonical outcomes and failures in a research packet. Compare an
+  atomic record with a journal/reconstructable checkpoint and recommend the event/checkpoint/receipt
+  publication contract, audience mapping, recovery behavior and bounded implementation tasks.
+
+The [accepted probe scope](../reviews/combat-delivery-plan-author-review.md#proposed-orleans-feasibility-probe)
+excludes shared authority registration changes, cloud deployment and model-backed dispatch. No
+production provider is selected. The experiment closes with a decision-ready report, including
+failed or inconclusive cases; it does not close a durable-host acceptance gate.
+
+Production hosting remains a separately approved contract-first increment. The planning target is
+public Core activation020–021 plus one verified Combat Runner trace at023 and acceptance of the
+host contract/storage decision.024's regression matrix remains mandatory for Combat closeout.
+Broad balance/performance studies and025 documentation closeout are not technical prerequisites
+for hosting design. Sprint8 still owns complete scenario lifecycle and Maproom; the early bounded
+host does not claim those product milestones. Exact host implementation scheduling follows the
+probe. Model-backed dispatch requires its own durable pending-decision/off-turn I/O contracts.
 
 ## Product boundaries
 
@@ -635,7 +654,7 @@ below remains evidence; it is not an instruction to restart those investigations
 | Lane | Current priority and boundary |
 | --- | --- |
 | Combat |003C3b →003C3c →003D2 →004 → checkpoint B; then the accepted Core/public/Runner gates. |
-| Orleans feasibility | Proposed bounded investigation on existing Rules9; see the author review. No new runtime task, storage choice or implementation approval is implied. |
+| Orleans feasibility / `HOST-RSH-001` | Authorized bounded investigation after003C3b, during contract work; source/probe evidence and a decision packet. Runtime implementation and provider selection remain gated. |
 | `CIH-IMP-004` offline Markdown links | Secondary maintenance candidate from the retained CI research. Retain its baseline/exclusion gate and existing authorization scope; keep it off Combat's critical path. |
 | Completed Movement/ZOC/Breakdown and Combat research | Regression and source evidence; reopen only for a concrete failure, new source evidence or approved capability expansion. |
 
