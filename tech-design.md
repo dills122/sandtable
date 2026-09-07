@@ -739,6 +739,11 @@ instrumentation consumer; neither receives a public raw replay or projection mut
 [specification](docs/specs/legal-actions-v1.md), and
 [technical design](docs/design/legal-actions-v1.md).
 
+The isolated [HOST-RSH-001 probe](docs/research/orleans-publication-feasibility.md) exercised Rules9
+publication and same-process Orleans reactivation using the trusted Exercise seam. It recommends
+an atomic event/receipt/journal-head batch with derived checkpoints; production contracts, provider
+choice and a trusted event-history restore adapter remain unapproved and unimplemented.
+
 The proposed, not-yet-implemented Player Intent Composer keeps future complex Maproom decisions
 prompt-forward without making them prompt-only. Contextual suggested approaches, short language,
 map/list interaction, and structured controls edit one private typed draft; deterministic validation

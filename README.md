@@ -193,7 +193,8 @@ The current delivery boundary is:
 
 See the [current checkpoint and next gates](docs/roadmap/pre-alpha-roadmap.md#current-checkpoint-and-next-gates)
 for contract versus runtime status, the Combat simulator gate, and the accepted bounded Orleans
-investigation after003C3b. Production hosting remains separately gated.
+[investigation](docs/research/orleans-publication-feasibility.md), now complete with a bounded Rules9 probe.
+Its production publication/storage proposal remains unapproved;003C3c is complete as a bounded contract checkpoint;003D2 is next.
 The [latest smoke check](docs/research/simulator-post-merge-checkin.md#combat-contract-branch-smoke-check)
 verifies the existing Rules9 path; prospective Combat contracts are not executable game support.
 
@@ -288,8 +289,11 @@ slice; [review6](docs/reviews/combat-inputs-review-6.md) returned Ready, no acti
 are complete; [review7](docs/reviews/combat-sequence-review-7.md) returned Ready, no actionable findings.
 Cumulative review use is8of8 after review8 of003C2 (Ready; report retained locally). [003C2 Rules10/creation envelopes](docs/specs/combat-authority-envelope-v1.md)
 are complete for the creation cut. [003C3a selection/step control](docs/specs/combat-selection-steps-v1.md)
-is complete with author checks;003C3b sealed assignments are next;
-parent003, future maturity execution and combined checkpoint B remain open. Combat runtime
+is complete with author checks; [003C3b sealed round/commitment](docs/specs/combat-sealed-round-v1.md)
+is also complete as a bounded authority fragment. HOST-RSH-001 research is complete;003C3c is complete as a bounded contract checkpoint;003D2 is next;
+[Result/settlement](docs/specs/combat-result-settlement-v1.md) and
+[full snapshot composition](docs/specs/combat-snapshot-composition-v1.md) retain synthetic pre-Combat
+lineage and author-only evidence. Parent003, future maturity execution and combined checkpoint B remain open. Combat runtime
 implementation has not started.
 
 See the [pre-alpha roadmap](docs/roadmap/pre-alpha-roadmap.md) for the capability-level plan and

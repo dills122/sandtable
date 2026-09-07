@@ -1,0 +1,52 @@
+{
+  "contract": "combat-sealed-round-v1",
+  "objects": {
+    "Base": "contractVersion:int boundary:Boundary steps:Control",
+    "Allocation": "kind:id unit:UnitKey componentId:id committedToe:int",
+    "Slot": "role:role owner:side slotId:id allocation:Allocation sealedReceiptId:id? sealedAt:utc?",
+    "RoundCommand": "contractVersion:int kind:id segmentId:id roundId:id? slotId:id? expectedPriorVersion:long? allocation:Allocation?",
+    "RoundInput": "command:RoundCommand actor:actor admittedAt:utc? clockAvailable:bool",
+    "RoundEvent": "contractVersion:int eventType:id author:actor campaignId:id rulesetHash:rawHash configurationHash:hash cycleId:hash segmentId:id roundId:id priorVersion:long stateVersion:long priorPrefix:hash input:RoundInput effect:RoundEffect receiptId:id",
+    "RoundOpen": "kind:id baseHash:hash opportunityId:id timing:Timing slots:Slot[]",
+    "RoundSeal": "kind:id slotId:id allocation:Allocation timing:Timing prepared:bool",
+    "RoundCancel": "kind:id cause:id timing:Timing",
+    "RoundStep": "kind:id fromPositionId:id toPositionId:id previousStepReceiptId:id proofReceipts:id[]",
+    "RoundCommit": "kind:id commitmentId:id allocations:Allocation[] costs:Cost[] preResultRandomState:Random",
+    "Cost": "unit:UnitKey beforeCp:int afterCp:int beforeAmmo:int afterAmmo:int",
+    "AttackHistory": "commitmentId:id cycleId:hash segmentId:id attacker:UnitKey defender:UnitKey targetLocationId:id gameTurn:int operationStage:int",
+    "TargetUse": "commitmentId:id segmentId:id targetLocationId:id",
+    "RoundState": "contractVersion:int baseHash:hash opportunityId:id? roundId:id? stateVersion:long prefix:hash stepIndex:int status:id openingReceiptId:id? timing:Timing? slots:Slot[] stepReceipts:id[] world:World randomState:Random attackHistory:AttackHistory[] targetUses:TargetUse[] commitmentId:id? cancellationReceiptId:id? receipts:Receipt[] closed:bool"
+  },
+  "effectTags": {
+    "round-opened": "RoundOpen",
+    "choice-sealed": "RoundSeal",
+    "round-cancelled": "RoundCancel",
+    "step-completed": "RoundStep",
+    "attack-committed": "RoundCommit"
+  },
+  "domains": {
+    "base": "sandtable.combat.base-fragment.v1",
+    "opportunity": "sandtable.combat.opportunity.v1",
+    "round": "sandtable.combat.round.v1",
+    "slot": "sandtable.combat.slot.v1",
+    "commitment": "sandtable.combat.commitment.v1",
+    "receipt": "sandtable.combat.round-receipt.v1"
+  },
+  "limits": {
+    "bytes": 1048576,
+    "depth": 32,
+    "events": 16,
+    "slots": 2
+  },
+  "externalContracts": [
+    "combat-selection-steps-v1.schema.json"
+  ],
+  "scope": "Private authority fragment after validated C3a decline. Full snapshot, public slots/actions, result and durable publication remain separate gates.",
+  "eventTypes": {
+    "round-opened": "combat-round-opened",
+    "choice-sealed": "combat-choice-sealed",
+    "round-cancelled": "combat-round-cancelled",
+    "step-completed": "combat-round-step-completed",
+    "attack-committed": "combat-attack-committed"
+  }
+}

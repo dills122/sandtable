@@ -99,7 +99,11 @@ the pre-alpha roadmap carry repository-wide rationale and delivery state.
   [review7](reviews/combat-sequence-review-7.md) returned Ready, no actionable findings (7of7 used).
   [003C2 Rules10/creation envelopes](specs/combat-authority-envelope-v1.md) are complete for the creation
   cut. [003C3a selection/step control](specs/combat-selection-steps-v1.md) is complete with author checks;
-  003C3b sealed assignments are next. Parent003C/D stays open.
+  [003C3b sealed round/commitment](specs/combat-sealed-round-v1.md) is also complete as a bounded
+  authority fragment. [HOST-RSH-001](research/orleans-publication-feasibility.md) research is complete;
+  003C3c is complete as a bounded contract checkpoint;003D2 is next. See [result/settlement](specs/combat-result-settlement-v1.md) and
+  [snapshot composition/audit](specs/combat-snapshot-composition-v1.md). Synthetic inherited lineage
+  remains explicit. Production hosting remains gated; parent003C/D stays open.
 - Sprint 4-5 dependencies: [research-gate audit](research/sprint-4-5-research-gates.md).
 
 ## Reviewed future product work
