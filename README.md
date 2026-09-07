@@ -191,6 +191,11 @@ parser remains behind a post-MVP evidence gate and cannot block the playable cam
 
 The current delivery boundary is:
 
+See the [current checkpoint and next gates](docs/roadmap/pre-alpha-roadmap.md#current-checkpoint-and-next-gates)
+for contract versus runtime status, the Combat simulator gate, and the proposed Orleans hosting
+checkpoint. The [latest smoke check](docs/research/simulator-post-merge-checkin.md#combat-contract-branch-smoke-check)
+verifies the existing Rules9 path; prospective Combat contracts are not executable game support.
+
 | Area | Status |
 | --- | --- |
 | Ruleset/provenance, synthetic content, campaign authority, deterministic randomness, events, and replay | Implemented foundation |

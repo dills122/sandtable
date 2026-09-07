@@ -13,10 +13,16 @@ its status correction is applied. Parent003 remains open for003C/D.
 [003D1 sequence/cycle packet](../specs/combat-cycle-sequence-v1.md) is complete;
 [review7](../reviews/combat-sequence-review-7.md) returned Ready with no actionable findings (7of7 used).
 [003C2 Rules10/creation envelopes](../specs/combat-authority-envelope-v1.md) are complete for the creation cut,
-with author verification. [003C3a selection/step contracts](../specs/combat-selection-steps-v1.md) are
+with author verification and independent review8 Ready (local report recorded below).
+[003C3a selection/step contracts](../specs/combat-selection-steps-v1.md) are
 complete as a bounded control fragment;003C3b sealed assignments are next.
 TASK-004–025 not started. Future maturity execution and checkpoint B remain gated.
 **Original input:** `d2bc67c`. Exact contract freeze and production gates remain open.
+
+Cross-package sequencing lives in the [roadmap checkpoint](../roadmap/pre-alpha-roadmap.md#current-checkpoint-and-next-gates).
+Task005 begins dormant implementation; public activation is020–021 and Combat simulator evidence
+is022–024. The proposed Orleans planning checkpoint follows that working loop/evidence and does
+not change this package's accepted dependencies or authorize hosted/model integration.
 
 ## Outcome and boundary
 

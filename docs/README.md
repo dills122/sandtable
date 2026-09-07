@@ -14,6 +14,7 @@ the pre-alpha roadmap carry repository-wide rationale and delivery state.
 - [Post-merge simulator check-in (Rules 9)](research/simulator-post-merge-checkin.md)
 - [Naming and domain vocabulary](../naming-overview.md)
 - [Pre-alpha roadmap](roadmap/pre-alpha-roadmap.md)
+- [Current checkpoint, simulation and Orleans planning gates](roadmap/pre-alpha-roadmap.md#current-checkpoint-and-next-gates)
 
 ## Implemented capability packages
 

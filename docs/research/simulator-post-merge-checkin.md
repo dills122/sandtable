@@ -123,3 +123,52 @@ passed. Python syntax/help checks, exact input identity checks, complete artifac
 artifact/summary/CSV/timing re-audit and `git diff --check` passed. CSV uses LF endings so Git preserves
 the recorded dataset hash; the original CRLF export is retained locally. This documentation/helper
 change does not rerun or claim a new full-solution .NET test gate.
+
+## Combat contract branch smoke check
+
+A bounded follow-up at clean commit `a15a0a929039c291e36aaf09aff1a3a408579558` repeated
+`scenarios/maneuvers/rules-lab.breakdown-truck.serial.v1.json` twice. This is additional evidence;
+it does not replace or increase the earlier study's786-execution total. The feature diff against
+merged main `d59446e` changes no `src`, `scenarios` or `Directory.Packages.props` files.
+
+Runner restore/build passed with zero build warnings/errors. Both unique binlogs remain under
+`artifacts/binlogs/pr-smoke-{restore,build}-*.binlog`. The existing reproduction helper checked
+clean source identity, exact inputs and requested terminals, both proof statuses, all indexed
+artifact lengths/hashes, nine canonical files per child and deterministic aggregate reports.
+
+- 12 campaign executions succeeded;24 proof records verified.
+- 54 canonical files matched byte-for-byte between passes; deterministic reports matched.
+- One pass:106 accepted steps,2 Reaction moves,12 Breakdown stop resolutions,8 rolled checks,
+  1 explicit no-roll check, and15 lost vehicle points. Terminals:1 Breakdown entry and5 Combat
+  entries. Weather:3 hot,2 normal,1 rainstorm.
+- Canonical hash-ledger digest:
+  `sha256:4a1e1e90e4090c5a3835d7790ccb7a061e9acc95e0f16c17a9745a5fef5e7550`.
+
+Raw evidence, CLI logs, hash ledgers and `summary.json` are retained locally under
+`/tmp/sandtable-combat-pr-smoke-a15a0a9`; they are trusted-authority artifacts, not player output.
+Documentation-only planning edits follow the tested commit. No runtime changes, full-solution test
+rerun, cross-commit performance comparison, new seed sweep, Combat execution, or balance/AI
+validation is claimed. Next Combat-specific simulation work is TASK022–024 after public Core
+activation; see the [current gates](../roadmap/pre-alpha-roadmap.md#current-checkpoint-and-next-gates).
+
+To repeat the bounded check, build the Runner in a clean worktree as above, then run this from its
+root with a fresh output directory. Python imports the existing helper; no new verifier is required.
+
+```python
+import importlib.util
+from pathlib import Path
+
+repo = Path.cwd().resolve()
+spec = importlib.util.spec_from_file_location(
+    "checkin", repo / "docs/research/verify-simulator-checkin.py")
+checkin = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(checkin)
+commit = checkin.identity(repo)
+output = Path("/tmp/sandtable-combat-smoke-repeat")
+output.mkdir(exist_ok=False)
+manifest = repo / checkin.STUDIES[0]
+first = checkin.execute(repo, manifest, output / "pass-a", commit)
+second = checkin.execute(repo, manifest, output / "pass-b", commit)
+assert checkin.compare(first, second) == 54
+print("PASS: 12 campaigns, 24 verified proofs, 54 matching canonical files")
+```

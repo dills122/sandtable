@@ -17,6 +17,35 @@ Sprints below are capability increments rather than calendar promises. The first
 in implementation-sized tasks. Later work remains milestone-level until the skeleton exposes the
 real transcription and integration cost.
 
+## Current checkpoint and next gates
+
+The executable engine remains Rules9 through first-side Combat **entry**. Combat003C2 and003C3a
+freeze prospective creation and selection/step contracts; they do not activate Combat in Core or
+the simulator. The [combined Combat plan](../design/combat-cycle-implementation-plan.md) owns task
+dependencies; this roadmap owns cross-package sequencing. Historical review and simulator reports
+apply only to their stated commits and capabilities.
+
+| Next gate | Concrete outcome |
+| --- | --- |
+| Contract checkpoint B | Finish003C3b sealed rounds,003C3c result/settlement/noninitial snapshots,003D2 cycle envelopes and004 public/Exercise contracts. |
+| Core implementation,005–021 | Start with dormant tables and fixtures at005–006; implement state, decisions, settlement and cycle before public activation at020–021. Task005 alone is not a playable combat loop. |
+| Combat simulator,022–024 | Adopt public actions and terminals, prove replay/readjudication, then compare two clean runs covering empty, settled-assault and Movement-repeat paths. Existing Rules9 checks cannot substitute. |
+| Package closeout,025 | Reconcile evidence and remaining skeleton gaps; scope the next cross-package increment. |
+
+The [current simulator checkpoint](../research/simulator-post-merge-checkin.md#combat-contract-branch-smoke-check)
+repeats the existing Truck study. Broader Combat seed/branch coverage belongs after022–024; balance
+claims and model-backed commander evaluation remain separate future studies.
+
+OrleansHost currently supplies a development silo, not campaign grains or durable campaign storage.
+DecisionWorker registers its client but does not dispatch campaign decisions. Sprint8 retains the
+campaign-lifecycle milestone. **Proposed next planning checkpoint:** once the public Core loop and
+simulator evidence above work, scope a small Orleans hosting increment before expanding more Land
+systems. Define campaign activation through the existing Core boundary, persistence/publication
+semantics, duplicate and stale submission handling, and restart equivalence. Keep audience privacy
+in its acceptance tests. This is a proposal to bring hosting forward, not an approved rescheduling
+or a new runtime task. Model-backed dispatch requires its own durable pending-decision and off-turn
+I/O contracts; it need not be bundled with initial campaign hosting.
+
 ## Product boundaries
 
 ### Working pre-alpha skeleton
