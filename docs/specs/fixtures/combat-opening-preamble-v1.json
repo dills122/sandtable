@@ -1,0 +1,137 @@
+{
+  "contractVersion": 1,
+  "sourceHashes": {
+    "src/Cna.Core/Campaigns/CampaignV11Preamble.cs": "sha256:54103730ae29d0a7ea0392c462e2ebc3153389277c9e4d028ff5ca0dc9c559d4",
+    "src/Cna.Core/Campaigns/CampaignV11PreambleCodec.cs": "sha256:842894783e5916dcc678a178802b68a71b0942152659649d714251e7519f1c1d",
+    "src/Cna.Core/Campaigns/CampaignCurrentEventRuntime.cs": "sha256:283102f40d891c1b901bd03e4a12499638bc4fb98ebbf2cb7644dae5b98c042a",
+    "src/Cna.Core/Campaigns/CampaignCommand.cs": "sha256:bd7ff8d857fbe787ba3f3f27ce3f67a15fd2829bc6be806fad121827c50fd6a8",
+    "src/Cna.Core/Campaigns/InitiativeResolver.cs": "sha256:7f97e4667db41d7e3e0eb5ea9f8f9e1e8b547b193ffe1434b547984d2c8128a5",
+    "src/Cna.Core/Campaigns/InitiativeEventFactory.cs": "sha256:25b5f22cf9171d2f5c0bf7389a453188068f6102a86ea9cff88b549691b2c3f2",
+    "src/Cna.Core/Campaigns/OpeningPreambleEventFactory.cs": "sha256:5ada40340aa06c56c37c6d30f5a923ccf8391e157797959c6ce36b9ff56669df",
+    "src/Cna.Core/Campaigns/CampaignEventSerializer.cs": "sha256:d97923522ef8812ec5a59aebeb3d62bbae5648dfd3f4959e3d2ea0de6c3b133d",
+    "src/Cna.Core/Setups/Cna1979SetupCatalog.cs": "sha256:4a16a685315c78d7eaee4f8255e671722a15a528217e23d54cfd2fd06dc16f80"
+  },
+  "declarationsHash": "sha256:4a92d0f0890839a9c491561adff4e8feef8ee7442c7246c043f246a2f1038262",
+  "cases": [
+    {
+      "name": "0-act-first",
+      "seed": 0,
+      "choice": "act-first",
+      "expectedFirst": "axis",
+      "expectedSecond": "commonwealth",
+      "positions": ["land.position.initiative-determination","land.position.naval-convoy.schedule","land.position.naval-convoy.tactical-shipping","land.position.operation-1.initiative-declaration","land.position.operation-1.weather-determination"],
+      "goldens": {
+        "creation": {"bytes":7520,"sha256":"sha256:a36c8abd3864442c62d13c9beb41af2c88048534b31bd47bc82a897c808bf798"},
+        "event-1": {"bytes":1829,"sha256":"sha256:e91344536f6b655c41b21f024963a76454823e552118079fe3ac62df010a4cae"},
+        "event-2": {"bytes":1686,"sha256":"sha256:2da8ae406bf8047b8ecef28ab8ae87f37bef991d2c762b9f42b86c9606a3bbb1"},
+        "event-3": {"bytes":1819,"sha256":"sha256:21c0b8ba167163a6711b8ffd2236e55c06ea0312c19cc53d4733432ed094625b"},
+        "event-4": {"bytes":1951,"sha256":"sha256:e548a3d9d2660277aa55f93ced3414ddcecebff2e63bcb682f3bc003e172ae59"},
+        "state-0": {"bytes":4388,"sha256":"sha256:d9fc430eada7c2a7bb2e9481814695ff34f82e48b4378f38fb4518e6491dbaf6"},
+        "state-1": {"bytes":4664,"sha256":"sha256:37238af2bd291aaedcd163e6ba8550365ea54b1183a9aea7ed19817a19fe8a68"},
+        "state-2": {"bytes":4962,"sha256":"sha256:e1ca5ad0b82362f2b95d8f8acb7b9383087005af2ae0079ab460262f1b94ada6"},
+        "state-3": {"bytes":5378,"sha256":"sha256:86a82890b99e3d52a93531231412d2bc818af5f43d2a2f6719fc2fd8bfbe30bc"},
+        "state-4": {"bytes":5767,"sha256":"sha256:4c4374eab98e899be53358de4774d843e70e002892ab9267126c9cf4592836c0"}
+      }
+    },
+    {
+      "name": "0-act-last",
+      "seed": 0,
+      "choice": "act-last",
+      "expectedFirst": "commonwealth",
+      "expectedSecond": "axis",
+      "positions": ["land.position.initiative-determination","land.position.naval-convoy.schedule","land.position.naval-convoy.tactical-shipping","land.position.operation-1.initiative-declaration","land.position.operation-1.weather-determination"],
+      "goldens": {
+        "creation": {"bytes":7520,"sha256":"sha256:a36c8abd3864442c62d13c9beb41af2c88048534b31bd47bc82a897c808bf798"},
+        "event-1": {"bytes":1829,"sha256":"sha256:e91344536f6b655c41b21f024963a76454823e552118079fe3ac62df010a4cae"},
+        "event-2": {"bytes":1686,"sha256":"sha256:2da8ae406bf8047b8ecef28ab8ae87f37bef991d2c762b9f42b86c9606a3bbb1"},
+        "event-3": {"bytes":1819,"sha256":"sha256:21c0b8ba167163a6711b8ffd2236e55c06ea0312c19cc53d4733432ed094625b"},
+        "event-4": {"bytes":1950,"sha256":"sha256:47582a7ae851f36a86c48061841f0e153f53096852ef9bd9793f5ea9e816ad6d"},
+        "state-0": {"bytes":4388,"sha256":"sha256:d9fc430eada7c2a7bb2e9481814695ff34f82e48b4378f38fb4518e6491dbaf6"},
+        "state-1": {"bytes":4664,"sha256":"sha256:37238af2bd291aaedcd163e6ba8550365ea54b1183a9aea7ed19817a19fe8a68"},
+        "state-2": {"bytes":4962,"sha256":"sha256:e1ca5ad0b82362f2b95d8f8acb7b9383087005af2ae0079ab460262f1b94ada6"},
+        "state-3": {"bytes":5378,"sha256":"sha256:86a82890b99e3d52a93531231412d2bc818af5f43d2a2f6719fc2fd8bfbe30bc"},
+        "state-4": {"bytes":5767,"sha256":"sha256:46cfc844882673150790d7b6742fb2fefa48cc3d00cb2e8b559353f1de3a1c8c"}
+      }
+    },
+    {
+      "name": "12345-act-first",
+      "seed": 12345,
+      "choice": "act-first",
+      "expectedFirst": "axis",
+      "expectedSecond": "commonwealth",
+      "positions": ["land.position.initiative-determination","land.position.naval-convoy.schedule","land.position.naval-convoy.tactical-shipping","land.position.operation-1.initiative-declaration","land.position.operation-1.weather-determination"],
+      "goldens": {
+        "creation": {"bytes":7528,"sha256":"sha256:c1a423cb8e9339e4892215b491c42579dbb2497034aa6ba497a9a83c7ccf5912"},
+        "event-1": {"bytes":1829,"sha256":"sha256:d47480ab723eecad6cdde2c9855a6343f3452c8af9076c31230ef24d5797ab3d"},
+        "event-2": {"bytes":1686,"sha256":"sha256:3c49b9a6b981f8859e7203e5ed394f760d29a97529704ab41e542edecef50bda"},
+        "event-3": {"bytes":1819,"sha256":"sha256:6301d7fc84205caf0cd197a095baa630970d1ecca4c983497b14dcd20e577391"},
+        "event-4": {"bytes":1951,"sha256":"sha256:40b27a6b7226591c76a1edc29e10f38ff40ce24e90e86798299e8411223ae13b"},
+        "state-0": {"bytes":4392,"sha256":"sha256:f94e7564b06043e4be57da0c2149d36a572275fe2ca6c46eecb8426ed3bb9c01"},
+        "state-1": {"bytes":4668,"sha256":"sha256:9c7b611b83c02ec2555e3556b9f444952430e79178c75ff15b594232aa327b51"},
+        "state-2": {"bytes":4966,"sha256":"sha256:fc846e3866e9310b5714316118755c40979500ef69ecf432667e94c36a4620e5"},
+        "state-3": {"bytes":5382,"sha256":"sha256:3a6af2bb9fa6e15d7a8ce0f7baf726d83b9a2236d6bd6fd40651d59b07835dbd"},
+        "state-4": {"bytes":5771,"sha256":"sha256:7f7141dea96878d3b83c3e813cbbb0fa356caf48fde4c8080d1830e1c8618beb"}
+      }
+    },
+    {
+      "name": "12345-act-last",
+      "seed": 12345,
+      "choice": "act-last",
+      "expectedFirst": "commonwealth",
+      "expectedSecond": "axis",
+      "positions": ["land.position.initiative-determination","land.position.naval-convoy.schedule","land.position.naval-convoy.tactical-shipping","land.position.operation-1.initiative-declaration","land.position.operation-1.weather-determination"],
+      "goldens": {
+        "creation": {"bytes":7528,"sha256":"sha256:c1a423cb8e9339e4892215b491c42579dbb2497034aa6ba497a9a83c7ccf5912"},
+        "event-1": {"bytes":1829,"sha256":"sha256:d47480ab723eecad6cdde2c9855a6343f3452c8af9076c31230ef24d5797ab3d"},
+        "event-2": {"bytes":1686,"sha256":"sha256:3c49b9a6b981f8859e7203e5ed394f760d29a97529704ab41e542edecef50bda"},
+        "event-3": {"bytes":1819,"sha256":"sha256:6301d7fc84205caf0cd197a095baa630970d1ecca4c983497b14dcd20e577391"},
+        "event-4": {"bytes":1950,"sha256":"sha256:3d43575d8fa355f38e6f606329525272b654544eabc58cfeb5de1811d0fd86fd"},
+        "state-0": {"bytes":4392,"sha256":"sha256:f94e7564b06043e4be57da0c2149d36a572275fe2ca6c46eecb8426ed3bb9c01"},
+        "state-1": {"bytes":4668,"sha256":"sha256:9c7b611b83c02ec2555e3556b9f444952430e79178c75ff15b594232aa327b51"},
+        "state-2": {"bytes":4966,"sha256":"sha256:fc846e3866e9310b5714316118755c40979500ef69ecf432667e94c36a4620e5"},
+        "state-3": {"bytes":5382,"sha256":"sha256:3a6af2bb9fa6e15d7a8ce0f7baf726d83b9a2236d6bd6fd40651d59b07835dbd"},
+        "state-4": {"bytes":5771,"sha256":"sha256:aa55e3fa364a5cdbcb6b51d965af87c1505b5aa11f9f71814c067013dcbf57e4"}
+      }
+    },
+    {
+      "name": "18446744073709551615-act-first",
+      "seed": 18446744073709551615,
+      "choice": "act-first",
+      "expectedFirst": "axis",
+      "expectedSecond": "commonwealth",
+      "positions": ["land.position.initiative-determination","land.position.naval-convoy.schedule","land.position.naval-convoy.tactical-shipping","land.position.operation-1.initiative-declaration","land.position.operation-1.weather-determination"],
+      "goldens": {
+        "creation": {"bytes":7558,"sha256":"sha256:91026cdc519b4bd782c959e5ac08020ea75e8d14b0e0b2a8acf723bb404a9055"},
+        "event-1": {"bytes":1829,"sha256":"sha256:69a2a02057f7d95b22bb833035d6272185b3e0b7a7d853a52c88078637d930e2"},
+        "event-2": {"bytes":1686,"sha256":"sha256:f65ca73a7fb8332e0c32fbb1f3885c37b77520900fc82cb6f97f1d93fcca828f"},
+        "event-3": {"bytes":1819,"sha256":"sha256:727eac40b3dc73753d735da3ef6c4e063db172303f2dddcb49ac612c3d8fa892"},
+        "event-4": {"bytes":1951,"sha256":"sha256:243c419499ea5f8eaada2152080be509b082bfeb85f45efdd0958e0b8c70a9a8"},
+        "state-0": {"bytes":4407,"sha256":"sha256:048583629ce8b8c57c7681a12c5c824a9eb9f4c1195e1102551e97bc3001ebb1"},
+        "state-1": {"bytes":4683,"sha256":"sha256:280ba5a3aa532647703e8dbb497daf2ac85072be4f8d3fd5c42a35551a4f5772"},
+        "state-2": {"bytes":4981,"sha256":"sha256:15580adfff90aef6791514db04b31ef77532291fd3030f2dc8fedf58de67e011"},
+        "state-3": {"bytes":5397,"sha256":"sha256:359076541b62d3e260de97ac34d037151ed150b2a7d1716c20e9dbd073c7d48c"},
+        "state-4": {"bytes":5786,"sha256":"sha256:0d849b62317721aec512c09ffa8759e4247d239b86baa807cf000a51bb1f8910"}
+      }
+    },
+    {
+      "name": "18446744073709551615-act-last",
+      "seed": 18446744073709551615,
+      "choice": "act-last",
+      "expectedFirst": "commonwealth",
+      "expectedSecond": "axis",
+      "positions": ["land.position.initiative-determination","land.position.naval-convoy.schedule","land.position.naval-convoy.tactical-shipping","land.position.operation-1.initiative-declaration","land.position.operation-1.weather-determination"],
+      "goldens": {
+        "creation": {"bytes":7558,"sha256":"sha256:91026cdc519b4bd782c959e5ac08020ea75e8d14b0e0b2a8acf723bb404a9055"},
+        "event-1": {"bytes":1829,"sha256":"sha256:69a2a02057f7d95b22bb833035d6272185b3e0b7a7d853a52c88078637d930e2"},
+        "event-2": {"bytes":1686,"sha256":"sha256:f65ca73a7fb8332e0c32fbb1f3885c37b77520900fc82cb6f97f1d93fcca828f"},
+        "event-3": {"bytes":1819,"sha256":"sha256:727eac40b3dc73753d735da3ef6c4e063db172303f2dddcb49ac612c3d8fa892"},
+        "event-4": {"bytes":1950,"sha256":"sha256:321a5f250ed972d90879534c6b462121396af173fa6d6db8d1ffbfc4f0052f20"},
+        "state-0": {"bytes":4407,"sha256":"sha256:048583629ce8b8c57c7681a12c5c824a9eb9f4c1195e1102551e97bc3001ebb1"},
+        "state-1": {"bytes":4683,"sha256":"sha256:280ba5a3aa532647703e8dbb497daf2ac85072be4f8d3fd5c42a35551a4f5772"},
+        "state-2": {"bytes":4981,"sha256":"sha256:15580adfff90aef6791514db04b31ef77532291fd3030f2dc8fedf58de67e011"},
+        "state-3": {"bytes":5397,"sha256":"sha256:359076541b62d3e260de97ac34d037151ed150b2a7d1716c20e9dbd073c7d48c"},
+        "state-4": {"bytes":5786,"sha256":"sha256:aa1404e3d2536710250ecb97a891b2a873cbf7a4b2035bf7478c12bacc8b76b8"}
+      }
+    }
+  ]
+}
