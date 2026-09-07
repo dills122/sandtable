@@ -107,7 +107,7 @@ Optional parser evidence gate
 | Side-safe observations and legal-action enforcement | Implemented for the current synthetic path | Extend only with each new mechanic and its disclosure tests |
 | Mandatory turn preamble | Implemented through Reserve Designation completion | Preserve the exact Movement terminal while later mechanics expand |
 | Movement, Reaction and Breakdown | Complete within the certified synthetic profile through Breakdown Tasks006–007 | Public authority and checked Runner successors reach first-side Combat entry; Contact/Engaged and Combat adjudication remain deferred |
-| Combat | Research decision-ready; `CMB-DES-001`-`005` bounded designs complete for review; implementation not started | Policies and corrected 25-task plan accepted2026-09-06; TASK-001 source research complete with accepted three-cell amendment; TASK-002 Content7 contract frozen in `c465a0f`; checkpoint A author check complete; TASK-003A Setup/initial ledger frozen in `23c3fff`;003B/003C1/003D1/003C2 contract slices complete (C2 creation cut, author verified); prior review7 Ready (7of7);003C3 command/event and later snapshot contracts next; parent003 and combined checkpoint B remain open |
+| Combat | Research decision-ready; `CMB-DES-001`-`005` bounded designs complete for review; implementation not started | Policies and corrected 25-task plan accepted2026-09-06; TASK-001 source research complete with accepted three-cell amendment; TASK-002 Content7 contract frozen in `c465a0f`; checkpoint A author check complete; TASK-003A Setup/initial ledger frozen in `23c3fff`;003B/003C1/003D1/003C2 contract slices complete (C2 creation cut, author verified); prior review7 Ready (7of7);003C3a selection/step control complete with author checks;003C3b sealed assignments next; parent003 and combined checkpoint B remain open |
 | Working pre-alpha skeleton | Not reached | Requires one authentic movement/contact/combat loop with replay |
 | First-scenario content and remaining Land systems | Milestone-level; not started | Re-estimate after the skeleton exposes exercised-rule and transcription scope |
 | Campaign lifecycle and Maproom | Milestone-level; not started | Requires stable playable authority, Chronicle persistence, and save/resume contracts |
@@ -131,7 +131,7 @@ Maproom remain future work.
 | 2 — Rules laboratory and legal-action boundary | Complete for the admitted synthetic path | Keep outward actions observation-derived and revalidate exact membership at submission |
 | 3 — Mandatory turn preamble | Complete for the admitted synthetic no-obligation path | Positive Organization/convoy/fleet cases remain explicit later-scenario work; subsequent bounded mechanics now reach first-side Combat entry |
 | 4 — Movement, Breakdown, and Reaction boundary | Complete within the certified synthetic profile | Movement and ZOC/Reaction are implemented; Breakdown Tasks006–007 public activation, Runner adoption and transcript/privacy follow-up are complete. Positive ZOC and broader Breakdown categories remain extensions |
-| 5 — Combat and continual-cycle loop | Research decision-ready; bounded Combat designs complete for review; not implementation-ready | Owner accepted policies/plan and review4 correction; TASK-001 source and TASK-002 Content packets complete; checkpoint A author check complete; TASK-003A/003B/003C1/003D1/003C2 complete as contract slices (C2 creation cut);003C3 next; parent003C/D and outward exact contracts stay open |
+| 5 — Combat and continual-cycle loop | Research decision-ready; bounded Combat designs complete for review; not implementation-ready | Owner accepted policies/plan and review4 correction; TASK-001 source and TASK-002 Content packets complete; checkpoint A author check complete; TASK-003A/003B/003C1/003D1/003C2 complete as contract slices (C2 creation cut);003C3a selection/step control complete;003C3b next; parent003C/D and outward exact contracts stay open |
 | 6 — Scenario Group One content | Milestone-level; not started | Begin after the working pre-alpha skeleton measures the exact exercised-rule/data surface |
 | 7 — Remaining required Land systems | Milestone-level; not started | Split from the measured first-scenario rule inventory rather than treating it as one task |
 | 8 — Minimal Maproom and campaign lifecycle | Milestone-level; not started | Requires stable playable authority, Chronicle persistence/save-resume, and the no-model intent prototype |
@@ -769,7 +769,8 @@ progress through003B: Ready with non-blocking follow-ups, status correction appl
 [003D1 sequence/cycle contracts](../specs/combat-cycle-sequence-v1.md) are complete;
 [review7](../reviews/combat-sequence-review-7.md) returned Ready, no actionable findings.
 [003C2 Rules10/creation envelopes](../specs/combat-authority-envelope-v1.md) are complete for the creation
-cut with author verification;003C3 command/event and later snapshot contracts are next;
+cut. [003C3a selection/step control](../specs/combat-selection-steps-v1.md) is complete with author checks;
+003C3b sealed assignments are next;
 Parent003C/D,004, combined checkpoint B and production remain gated.
 Actual RBA movement and broader combat categories remain outside the selected fixture.
 [Independent design review 2](../reviews/combat-design-review-2.md) returned Ready for
@@ -778,7 +779,9 @@ approve production. [Independent design review 3](../reviews/combat-settlement-r
 returned Ready for DES-004/DES-005, with no actionable findings; it does not cover subsequent
 CYCLE-DES-001. Review4 exhausted its then-authorized4-of-4 budget. User subsequently authorized
 three more passes; review7 brings cumulative use to7of7, exhausting the current independent-review
-budget. Remaining contract gates stay open.
+budget at that checkpoint. Owner later authorized review8 for003C2; it returned Ready with no
+actionable findings (report retained locally). Current use is8of8;003C3a has author checks only.
+Remaining contract gates stay open.
 Later contracts and implementation must settle every reachable loss, capture/custody, retreat,
 ammunition, and Cohesion obligation before claiming the repeating skeleton is complete.
 

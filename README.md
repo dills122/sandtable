@@ -280,8 +280,9 @@ Ready with non-blocking follow-ups; its status correction is applied.
 slice; [review6](docs/reviews/combat-inputs-review-6.md) returned Ready, no actionable findings
 (6of7 used at that checkpoint). [003D1 sequence/cycle contracts](docs/specs/combat-cycle-sequence-v1.md)
 are complete; [review7](docs/reviews/combat-sequence-review-7.md) returned Ready, no actionable findings.
-Cumulative review use is7of7. [003C2 Rules10/creation envelopes](docs/specs/combat-authority-envelope-v1.md)
-are complete for the creation cut with author verification;003C3 command/event and later snapshot contracts are next;
+Cumulative review use is8of8 after review8 of003C2 (Ready; report retained locally). [003C2 Rules10/creation envelopes](docs/specs/combat-authority-envelope-v1.md)
+are complete for the creation cut. [003C3a selection/step control](docs/specs/combat-selection-steps-v1.md)
+is complete with author checks;003C3b sealed assignments are next;
 parent003, future maturity execution and combined checkpoint B remain open. Combat runtime
 implementation has not started.
 
