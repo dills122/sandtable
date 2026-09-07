@@ -21,8 +21,11 @@ TASK-004–025 not started. Future maturity execution and checkpoint B remain ga
 
 Cross-package sequencing lives in the [roadmap checkpoint](../roadmap/pre-alpha-roadmap.md#current-checkpoint-and-next-gates).
 Task005 begins dormant implementation; public activation is020–021 and Combat simulator evidence
-is022–024. The proposed Orleans planning checkpoint follows that working loop/evidence and does
-not change this package's accepted dependencies or authorize hosted/model integration.
+is022–024. Owner accepted the author review's planning direction after `b8be39a`: the bounded
+`HOST-RSH-001` investigation is scheduled after003C3b during remaining contract work. It can use
+current Rules9 and is not a dependency of B. Production hosting still requires its own contract and
+storage decision; the planning target follows020–021 and one verified023 trace. No hosted/model
+capability or durable provider is authorized by this documentation update.
 
 ## Outcome and boundary
 
@@ -133,7 +136,7 @@ order; never insert a placeholder hash or declare the full Rules bundle frozen e
 | --- | --- |
 | `003C1` | [Rules-input/config packet](../specs/combat-rules-inputs-v1.md) complete:3 goldens,47 mutations,39 raw-byte rejections,7 clock cases and14 kind/budget/UTC boundaries; review6 Ready. Full Rules10 manifest is assembled by003C2. |
 | `003D1` | [Sequence/catalog5 and cycle codec1](../specs/combat-cycle-sequence-v1.md) complete; review7 Ready:112 positions,1 interrupt,6 cycle edges; binary preimages/prefix probes,38 mutations,3,996 scope identities and896 actor materializations. No movement/history implementation. |
-| `003C2` | [Rules10/Created11/Snapshot12 creation cut](../specs/combat-authority-envelope-v1.md) complete:4 goldens,67 mutations,36 raw-byte rejections,9 recovery boundary checks,12 identity/context forks and2 turn boundaries; actual C# Rules9 capture and Rules10 hash parity. Author verification only. |
+| `003C2` | [Rules10/Created11/Snapshot12 creation cut](../specs/combat-authority-envelope-v1.md) complete:4 goldens,67 mutations,36 raw-byte rejections,9 recovery boundary checks,12 identity/context forks and2 turn boundaries; actual C# Rules9 capture and Rules10 hash parity. Independent review8 Ready; local report recorded below. |
 | `003C3` | Freeze selection, six-step, sealed-round, commit/result/settlement event and command envelopes, noninitial Snapshot12 state arms, persisted timing/receipt suffixes and tamper/restart matrix; after003C2. |
 | `003D2` | Freeze release/history/ordinary movement receipts and reconcile CON-002–004 against003C3; close parent003 only after cross-contract checks. |
 
@@ -158,6 +161,32 @@ the same prospective family before checkpoint B, with no production version regi
 Checkpoint B: accept exact combined contracts and resolve any changed policy with owner. Reconcile
 task sizes with frozen types. Runtime implementation remains gated until this checkpoint passes.
 
+[Author planning audit](../reviews/combat-delivery-plan-author-review.md) identifies an inherited
+campaign-path handoff that this gate must make concrete. These are completion checks on the existing
+compatibility/replay requirements, not permission to broaden the certified capability:
+
+- 003C3c inventories creation, preamble, Weather, Reserve, Movement, Reaction and Breakdown event,
+  reader and writer compatibility under Rules10/World7/Snapshot12. For each inherited family, record
+  whether canonical bytes remain valid or a versioned successor is required, and the implementation
+  owner.003D2 binds first-cycle opening and retained history to the actual Combat boundary.
+- Assign bounded implementation children before accepting B. Task008 owns codec/restore work;
+  first-cycle opening is currently assigned to019. The child plan must schedule the new-context
+  pre-Combat path and first opening before the first end-to-end predecessor-to-Combat test, without hiding those
+  adapters into021 registration. Split any child crossing five primary files or an independent family.
+- The contract packet must include a composed prospective trace with cross-family identity, prefix,
+  version and resource checks; label assumed preconditions. In-process implementation tests must
+  later derive the boundary from accepted predecessors, never promote C3a's synthetic probe hashes
+  to authoritative history. Runtime proof remains unimplemented at B.
+- 004 maps every design AC to named contract and implementation evidence, including composed snapshot
+  capacity, unsupported-history rejection and the inherited-path handoff. Completed fragment oracles
+  do not by themselves close parent003 or B.
+
+Owner accepted the [review direction](../reviews/combat-delivery-plan-author-review.md#owner-disposition)
+to split008 into codec/restore and inherited-path adapters, bringing first opening forward from019
+as needed for composed tests. Exact child IDs, scope and dependencies remain outputs of contract
+freeze and require checkpoint B acceptance. The numbered parent rows below retain their identities;
+this planning acceptance does not declare B passed or start runtime implementation.
+
 ### Checkpoint C — dormant table and fixture foundations
 
 | Task / size | Output and acceptance criteria | Verification | Dependencies / likely paths |
@@ -175,8 +204,11 @@ exist, but no active Combat capability is advertised.
 | `CMB-TASK-007` / M, 3–5 files | Implement frozen world/obligation types and validated creation seeds. Represent ordinary integer infantry spending up to 150% CPA with immediate excess-CPA DP, stricter released-Reserve ceilings and separately valid mandatory overrun; retain distinct guard/loss/replacement provenance and existing Breakdown state. | `CombatWorld` boundary/conservation/overflow tests, including ordinary CPA10 spending 11/15 versus rejected16, mandatory E10→11, Reserve ceilings, guard transfer and malformed lots. | 003/006; [Campaigns](../../src/Cna.Core/Campaigns/), [Campaign tests](../../tests/Cna.Core.Tests/Campaigns/). |
 | `CMB-TASK-008` / M, 3–5 files | Implement canonical snapshot/history codec and strict restore for new state. Historical bytes unchanged; reject missing/forged cycle or settlement evidence and unsupported migration. | `CombatPersistence` roundtrip/golden/tamper tests; recovery works when fresh admission is disabled. | 007; [Campaigns](../../src/Cna.Core/Campaigns/), [Campaign tests](../../tests/Cna.Core.Tests/Campaigns/). |
 
-Checkpoint D: persistence tests prove stored obligations survive restart. Later lifecycle tasks add
-their event handlers and boundary cuts to this same contract, without changing frozen bytes silently.
+Checkpoint D: codec tests prove obligations survive serialization and fresh Core reconstruction
+for the states whose handlers exist. Later lifecycle tasks add their event handlers and boundary
+cuts to this same contract, without changing frozen bytes silently. This is in-process recovery
+evidence, not durable storage, silo/process restart or atomic Chronicle publication; those require
+the separately scoped hosting work.
 
 ### Checkpoint E — identity and private choices
 
@@ -253,6 +285,25 @@ full repository gate at public activation and closeout. Record command, commit, 
 location when executed. Failed checks block dependent activation. User review precedes moving
 beyond a checkpoint when its policy/contract/acceptance boundary changes; routine compatible fixes
 and feature commits remain within authorized implementation work once G0 and B pass.
+
+## Progressive execution evidence
+
+Do not wait for Runner024 to discover whether the runtime components compose. Preserve the existing
+E/G/H/I/J gates and make their evidence cumulative; this clarifies verification within their assigned
+scope and does not activate an incomplete public capability.
+
+| Gate | Required composed evidence | Claim boundary |
+| --- | --- | --- |
+| E /010–011 | Replay no-selection/cancelled steps and both seal orders through dormant Core; record the boundary's provenance and restore at each implemented cut. | Pending/Prepared lifecycle, no settled assault claim. |
+| G /016 | Join selection, seals, costs, result and mandatory settlement into a complete dormant assault; include representative positive capture and retreat cases alongside all-branch focused tests. | Real Core settlement; public privacy still gated. |
+| H /019 | Join the inherited pre-Combat path, assault/no-attack path and supported repeat/finish; reconstruct each accepted event and compare final state. | Dormant cycle proof, not simulator or hosted execution. |
+| I /020–021 | Exercise the same path through audience-safe queries/submissions, paired hidden-state tests and public admission. | Supported public capability. |
+| J /022–024 | Runner/Exercise replay, re-adjudication and clean repeated bundles, followed by branch/seed coverage justified by observed gaps. | Bounded simulation; no balance, AI or durable-host claim. |
+
+Use compatible fixtures and explicit trusted test inputs until the inherited-path implementation is
+available; identify that limit on early E/G evidence. H must close it with a real predecessor trace.
+Re-run broad simulator/timing studies when executable inputs, runtime or measured concerns change;
+documentation-only changes do not require another full seed sweep.
 
 ## Requirement-to-task evidence index
 

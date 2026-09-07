@@ -15,6 +15,7 @@ the pre-alpha roadmap carry repository-wide rationale and delivery state.
 - [Naming and domain vocabulary](../naming-overview.md)
 - [Pre-alpha roadmap](roadmap/pre-alpha-roadmap.md)
 - [Current checkpoint, simulation and Orleans planning gates](roadmap/pre-alpha-roadmap.md#current-checkpoint-and-next-gates)
+- [Combat delivery review and owner disposition](reviews/combat-delivery-plan-author-review.md#owner-disposition)
 
 ## Implemented capability packages
 
