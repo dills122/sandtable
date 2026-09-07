@@ -15,7 +15,8 @@ status correction applied. [003C1 rules inputs/timing](../specs/combat-rules-inp
 complete canonical source/policy/config bytes; [review6](../reviews/combat-inputs-review-6.md) is Ready,
 no actionable findings at that checkpoint. [003D1 sequence/cycle](../specs/combat-cycle-sequence-v1.md)
 is complete; [review7](../reviews/combat-sequence-review-7.md) returned Ready, no actionable findings
-(7of7 used). Full Rules10 assembly in003C2 is next.
+(7of7 used). [003C2 Rules10/creation envelopes](../specs/combat-authority-envelope-v1.md) are complete
+for the creation cut with author verification.003C3 command/event and later snapshot contracts are next.
 Parent003C/D/004 and the combined-contract gate remain open; the plan retains current review accounting.
 
 **Date:** 2026-08-25

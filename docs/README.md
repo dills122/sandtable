@@ -95,7 +95,8 @@ the pre-alpha roadmap carry repository-wide rationale and delivery state.
   [review6](reviews/combat-inputs-review-6.md) returned Ready, no actionable findings (6of7 used).
   [003D1 sequence/cycle contracts](specs/combat-cycle-sequence-v1.md) are complete;
   [review7](reviews/combat-sequence-review-7.md) returned Ready, no actionable findings (7of7 used).
-  Next003C2 assembles full Rules10/creation/snapshot; parent003C/D stays open.
+  [003C2 Rules10/creation envelopes](specs/combat-authority-envelope-v1.md) are complete for the creation
+  cut with author verification;003C3 command/event and later snapshot contracts are next. Parent003C/D stays open.
 - Sprint 4-5 dependencies: [research-gate audit](research/sprint-4-5-research-gates.md).
 
 ## Reviewed future product work
