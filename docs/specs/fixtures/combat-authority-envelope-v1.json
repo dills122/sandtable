@@ -1,0 +1,551 @@
+{
+  "contract": "combat-authority-envelope-v1",
+  "inputCommit": "d59446eda4446c4d96fc9a10cc816fd2bb3a7011",
+  "sourceHashes": {
+    "src/Cna.Core/Rules/RulesetManifest.cs": "sha256:f1862024d2bee3d13e3fb6a17cc563e6a216a5c9fe956d61b46c4edba0e8cd93",
+    "src/Cna.Core/Rules/Cna1979Ruleset.cs": "sha256:ed492a52acc417880546e47d59464f90eb3a54cfbabebb871d216d2bc08daa82",
+    "src/Cna.Core/Rules/Cna1979BreakdownRuleset.cs": "sha256:911c5c54b96f0f625f783dcead40627c10e038670e79804566bed3726aa85832",
+    "src/Cna.Core/Campaigns/CampaignCreatedV10Serializer.cs": "sha256:998f61a3caa0f15ad53fbd1ef8603d6e1b461c54381c18223e7779907fc3b150",
+    "src/Cna.Core/Campaigns/CampaignSnapshotV11Serializer.cs": "sha256:7f9006b937c96fd773dcd2477da81d5ca8df1262a41d0e9f68dddda9cabfdff7",
+    "src/Cna.Core/Campaigns/CampaignCreationV10.cs": "sha256:d2f678cb5db2c02533033a1ae70f910f11e69e89d80d8823ae285fa5ebdc3c10"
+  },
+  "predecessor": {
+    "canonicalUtf8": "{\"rulesetId\":\"cna-1979.1\",\"contractVersion\":9,\"artifacts\":[{\"artifactId\":\"cna-1979.1.breakdown-tables\",\"contentHash\":\"sha256:0459f4a9ebb4ece6237f789000d3ec4fcddbf7ee3d341012d81ce77fb6ef3e08\",\"sources\":[{\"sourceId\":\"spi-1979-common-charts\",\"locator\":\"21.38\"},{\"sourceId\":\"spi-1979-errata\",\"locator\":\"8.37\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"21.11-21.14\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"21.31\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"21.34\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"21.35\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"21.37a\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"21.37b\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"21.37c\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"21.37d\"},{\"sourceId\":\"spi-1979-map-a\",\"locator\":\"8.37\"}]},{\"artifactId\":\"cna-1979.1.content-vocabulary\",\"contentHash\":\"sha256:d12a8f280cc0b7546981e102824ca88edb12cf96cb8fe0f870c786254aa94e7f\",\"sources\":[{\"sourceId\":\"spi-1979-common-charts\",\"locator\":\"7.2.initiative-ratings\"},{\"sourceId\":\"spi-1979-common-charts\",\"locator\":\"9.4.stacking-point-values\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"4.23.organization-size-key\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"8.33\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"8.35\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"8.43\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"8.45.clear-hex\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"8.45.desert-hex\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"8.46\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"8.47\"}]},{\"artifactId\":\"cna-1979.1.initiative-ratings\",\"contentHash\":\"sha256:d9219cffbba133c7531f00471e9619b27602cf9dfd87ee105f103cb646122c96\",\"sources\":[{\"sourceId\":\"spi-1979-common-charts\",\"locator\":\"initiative-ratings\"},{\"sourceId\":\"spi-1979-common-charts\",\"locator\":\"initiative-ratings-note\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"7.13\"}]},{\"artifactId\":\"cna-1979.1.land-sequence\",\"contentHash\":\"sha256:42b4e721252ddf5f1107927d12b3a7f0c7ed956b08c766a3b9e2d28e3601ab9c\",\"sources\":[{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"21.24-21.26\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"5.2\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"7.11\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"7.14\"}]},{\"artifactId\":\"cna-1979.1.movement-tables\",\"contentHash\":\"sha256:9d016292838fb9ad3397d699ecfab10e0d867eeee09ed3d7c4f78a26b3394ba5\",\"sources\":[{\"sourceId\":\"spi-1979-common-charts\",\"locator\":\"9.4.stacking-point-values\"},{\"sourceId\":\"spi-1979-errata\",\"locator\":\"8.37\"},{\"sourceId\":\"spi-1979-map-a\",\"locator\":\"8.37\"}]},{\"artifactId\":\"cna-1979.1.random-procedure\",\"contentHash\":\"sha256:f677c8726634fd6997f7335e02684f13f18a042264164712ce003acf4a56165a\",\"sources\":[{\"sourceId\":\"sandtable-random-procedure\",\"locator\":\"sha256-counter.v1\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"29.1\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"7.14\"}]},{\"artifactId\":\"cna-1979.1.reserve-designation\",\"contentHash\":\"sha256:3d5fb13758e4539a14c89f0c884abd230f8a3a14f0e57be68aa914716278c0ca\",\"sources\":[{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"18.11\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"18.12\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"18.15\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"18.21\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"18.26\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"5.2.reserve-designation\"}]},{\"artifactId\":\"cna-1979.1.weather-tables\",\"contentHash\":\"sha256:10c92c736d61c6f88359b203d0a735df0d8a676b60e170b79b46053cfd223037\",\"sources\":[{\"sourceId\":\"cna-1979.1.ruling.weather-season-boundary\",\"locator\":\"selected-behavior\"},{\"sourceId\":\"spi-1979-common-charts\",\"locator\":\"29.61\"},{\"sourceId\":\"spi-1979-common-charts\",\"locator\":\"29.7\"},{\"sourceId\":\"spi-1979-errata\",\"locator\":\"29.1\"},{\"sourceId\":\"spi-1979-errata\",\"locator\":\"29.61\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"29.0-29.1\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"29.1\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"29.41\"}]},{\"artifactId\":\"cna-1979.1.zoc-rules\",\"contentHash\":\"sha256:2bf4d85240fbd373ed0dd3703f038a0ac712027a2175436344c71547e79bb0a2\",\"sources\":[{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"10.11\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"10.12\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"10.13\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"10.14\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"10.15\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"10.21\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"10.21a\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"10.21b\"}]}],\"rulings\":[{\"rulingId\":\"cna-1979.1.ruling.breakdown-sandstorm-basis\",\"conflictId\":\"cna-1979.1.conflict.breakdown-sandstorm-threshold-basis\",\"alternativeIds\":[\"use-breakdown-point-share\",\"use-capability-point-share\"],\"selectedBehaviorId\":\"use-breakdown-point-share\",\"protectingTestIds\":[\"MOV-AC-014\"],\"sources\":[{\"sourceId\":\"spi-1979-common-charts\",\"locator\":\"21.38\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"21.37d\"}]},{\"rulingId\":\"cna-1979.1.ruling.breakdown-sequential-dice\",\"conflictId\":\"cna-1979.1.conflict.breakdown-dice-coordinate\",\"alternativeIds\":[\"add-two-d6\",\"form-sequential-d6-coordinate\"],\"selectedBehaviorId\":\"form-sequential-d6-coordinate\",\"protectingTestIds\":[\"MOV-AC-014\"],\"sources\":[{\"sourceId\":\"spi-1979-common-charts\",\"locator\":\"21.38\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"21.34\"}]},{\"rulingId\":\"cna-1979.1.ruling.empty-reserve-designation\",\"conflictId\":\"cna-1979.1.conflict.reserve-designation-minimum\",\"alternativeIds\":[\"allow-empty-reserve-designation\",\"require-at-least-one-reserve-designation\"],\"selectedBehaviorId\":\"allow-empty-reserve-designation\",\"protectingTestIds\":[\"RES-AC-002\",\"RES-AC-006\",\"RES-AC-009\"],\"sources\":[{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"18.11\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"5.2.reserve-designation\"}]},{\"rulingId\":\"cna-1979.1.ruling.explicit-empty-opening-convoy-resolution\",\"conflictId\":\"cna-1979.1.conflict.empty-opening-convoy-phase\",\"alternativeIds\":[\"reject-empty-opening-convoy-as-unsupported\",\"resolve-explicitly-admitted-empty-opening-convoy\"],\"selectedBehaviorId\":\"resolve-explicitly-admitted-empty-opening-convoy\",\"protectingTestIds\":[\"ACT-AC-002\",\"ACT-AC-003\",\"ACT-AC-016\"],\"sources\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"opening-preamble.no-naval-convoy-obligations.v1\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"32.43\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"32.61\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"5.2\"}]},{\"rulingId\":\"cna-1979.1.ruling.explicit-empty-stage-entry-resolution\",\"conflictId\":\"cna-1979.1.conflict.empty-stage-entry-phase\",\"alternativeIds\":[\"reject-empty-stage-entry-as-unsupported\",\"resolve-explicitly-admitted-empty-stage-entry\"],\"selectedBehaviorId\":\"resolve-explicitly-admitted-empty-stage-entry\",\"protectingTestIds\":[\"STG-AC-001\",\"STG-AC-002\",\"STG-AC-004\",\"STG-AC-005\",\"STG-AC-006\",\"STG-AC-009\",\"STG-AC-010\"],\"sources\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"stage-entry.no-obligations.v1\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"5.2\"}]},{\"rulingId\":\"cna-1979.1.ruling.weather-season-boundary\",\"conflictId\":\"cna-1979.1.conflict.weather-season-boundary\",\"alternativeIds\":[\"use-errata-29.61-parenthetical-and-derive-shifted-ranges\",\"use-rule-29.1-boundaries-and-remap-chart-game-turns\"],\"selectedBehaviorId\":\"use-rule-29.1-boundaries-and-remap-chart-game-turns\",\"protectingTestIds\":[\"WTH-AC-001\",\"WTH-AC-002\",\"WTH-AC-004\"],\"sources\":[{\"sourceId\":\"spi-1979-common-charts\",\"locator\":\"29.61\"},{\"sourceId\":\"spi-1979-errata\",\"locator\":\"29.1\"},{\"sourceId\":\"spi-1979-errata\",\"locator\":\"29.61\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"29.0-29.1\"}]},{\"rulingId\":\"land.breakdown.ruling.exact-outcome-fractions\",\"conflictId\":\"BRK-DEC-004\",\"alternativeIds\":[\"exact-fractions-ceiling-single-point-exception\",\"literal-thirty-three-percent\"],\"selectedBehaviorId\":\"exact-fractions-ceiling-single-point-exception\",\"protectingTestIds\":[\"BRK-AC-001\",\"BRK-AC-004\"],\"sources\":[{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"21.34\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"21.35\"}]},{\"rulingId\":\"land.breakdown.ruling.persistent-stop-lots\",\"conflictId\":\"BRK-DEC-007\",\"alternativeIds\":[\"persistent-stop-location-lots\",\"scalar-broken-count\"],\"selectedBehaviorId\":\"persistent-stop-location-lots\",\"protectingTestIds\":[\"BRK-AC-007\",\"BRK-AC-008\"],\"sources\":[{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"21.41-21.45\"}]},{\"rulingId\":\"land.breakdown.ruling.standalone-truck-profile\",\"conflictId\":\"BRK-DEC-006\",\"alternativeIds\":[\"certified-unladen-truck-battalion\",\"general-motorized-infantry\"],\"selectedBehaviorId\":\"certified-unladen-truck-battalion\",\"protectingTestIds\":[\"BRK-AC-007\",\"BRK-AC-008\"],\"sources\":[{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"21.27-21.29\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"21.36\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"21.42-21.45\"}]},{\"rulingId\":\"land.breakdown.ruling.stop-reaction-precedence\",\"conflictId\":\"BRK-DEC-005\",\"alternativeIds\":[\"breakdown-before-reaction\",\"reaction-before-phasing-stop\"],\"selectedBehaviorId\":\"reaction-before-phasing-stop\",\"protectingTestIds\":[\"BRK-AC-006\"],\"sources\":[{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"21.24-21.26\"}]}]}",
+    "byteCount": 9168,
+    "sha256": "sha256:17f3e6047f34b5bf6f5f809055863b664a4bd82a8481db83ee83e0ae5cad3a2a"
+  },
+  "goldens": {
+    "manifest": {
+      "canonicalUtf8": "{\"rulesetId\":\"cna-1979.1\",\"contractVersion\":10,\"artifacts\":[{\"artifactId\":\"cna-1979.1.breakdown-tables\",\"contentHash\":\"sha256:0459f4a9ebb4ece6237f789000d3ec4fcddbf7ee3d341012d81ce77fb6ef3e08\",\"sources\":[{\"sourceId\":\"spi-1979-common-charts\",\"locator\":\"21.38\"},{\"sourceId\":\"spi-1979-errata\",\"locator\":\"8.37\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"21.11-21.14\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"21.31\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"21.34\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"21.35\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"21.37a\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"21.37b\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"21.37c\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"21.37d\"},{\"sourceId\":\"spi-1979-map-a\",\"locator\":\"8.37\"}]},{\"artifactId\":\"cna-1979.1.combat-selected-inputs.v1\",\"contentHash\":\"sha256:fafb24792c9e3f774c368f85c02d1d068f84c9c78e67bf8324723257d0f13029\",\"sources\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"CMB-POL-001-008;CMB-SRC-RUL-001\"},{\"sourceId\":\"spi-1979-common-charts\",\"locator\":\"15.79;15.89;17.4\"},{\"sourceId\":\"spi-1979-compilation\",\"locator\":\"Logistics50.0-50.17\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"6.21-6.24;11.21-11.27;15.61-15.87;20.21;28.24\"},{\"sourceId\":\"spi-1979-september-errata\",\"locator\":\"15.27;20.72;50.2;50.12\"}]},{\"artifactId\":\"cna-1979.1.content-vocabulary\",\"contentHash\":\"sha256:d12a8f280cc0b7546981e102824ca88edb12cf96cb8fe0f870c786254aa94e7f\",\"sources\":[{\"sourceId\":\"spi-1979-common-charts\",\"locator\":\"7.2.initiative-ratings\"},{\"sourceId\":\"spi-1979-common-charts\",\"locator\":\"9.4.stacking-point-values\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"4.23.organization-size-key\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"8.33\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"8.35\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"8.43\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"8.45.clear-hex\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"8.45.desert-hex\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"8.46\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"8.47\"}]},{\"artifactId\":\"cna-1979.1.cycle-identity.v1\",\"contentHash\":\"sha256:6b442b9a9b6d49ea8629bb47b048e8bebcda14dbd6a6cf84596aef2d5629e9dc\",\"sources\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"CYCLE-DES-001:CYCLE-COMP-001-002\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"5.2\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"7.11\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"7.14\"}]},{\"artifactId\":\"cna-1979.1.initiative-ratings\",\"contentHash\":\"sha256:d9219cffbba133c7531f00471e9619b27602cf9dfd87ee105f103cb646122c96\",\"sources\":[{\"sourceId\":\"spi-1979-common-charts\",\"locator\":\"initiative-ratings\"},{\"sourceId\":\"spi-1979-common-charts\",\"locator\":\"initiative-ratings-note\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"7.13\"}]},{\"artifactId\":\"cna-1979.1.land-sequence\",\"contentHash\":\"sha256:9f0828f10511fa49bd650c51eb5d5909637aa663b0593c712a2740a0b670ceb1\",\"sources\":[{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"21.24-21.26\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"5.2\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"7.11\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"7.14\"}]},{\"artifactId\":\"cna-1979.1.movement-tables\",\"contentHash\":\"sha256:9d016292838fb9ad3397d699ecfab10e0d867eeee09ed3d7c4f78a26b3394ba5\",\"sources\":[{\"sourceId\":\"spi-1979-common-charts\",\"locator\":\"9.4.stacking-point-values\"},{\"sourceId\":\"spi-1979-errata\",\"locator\":\"8.37\"},{\"sourceId\":\"spi-1979-map-a\",\"locator\":\"8.37\"}]},{\"artifactId\":\"cna-1979.1.random-procedure\",\"contentHash\":\"sha256:f677c8726634fd6997f7335e02684f13f18a042264164712ce003acf4a56165a\",\"sources\":[{\"sourceId\":\"sandtable-random-procedure\",\"locator\":\"sha256-counter.v1\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"29.1\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"7.14\"}]},{\"artifactId\":\"cna-1979.1.reserve-designation\",\"contentHash\":\"sha256:3d5fb13758e4539a14c89f0c884abd230f8a3a14f0e57be68aa914716278c0ca\",\"sources\":[{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"18.11\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"18.12\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"18.15\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"18.21\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"18.26\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"5.2.reserve-designation\"}]},{\"artifactId\":\"cna-1979.1.weather-tables\",\"contentHash\":\"sha256:10c92c736d61c6f88359b203d0a735df0d8a676b60e170b79b46053cfd223037\",\"sources\":[{\"sourceId\":\"cna-1979.1.ruling.weather-season-boundary\",\"locator\":\"selected-behavior\"},{\"sourceId\":\"spi-1979-common-charts\",\"locator\":\"29.61\"},{\"sourceId\":\"spi-1979-common-charts\",\"locator\":\"29.7\"},{\"sourceId\":\"spi-1979-errata\",\"locator\":\"29.1\"},{\"sourceId\":\"spi-1979-errata\",\"locator\":\"29.61\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"29.0-29.1\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"29.1\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"29.41\"}]},{\"artifactId\":\"cna-1979.1.zoc-rules\",\"contentHash\":\"sha256:2bf4d85240fbd373ed0dd3703f038a0ac712027a2175436344c71547e79bb0a2\",\"sources\":[{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"10.11\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"10.12\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"10.13\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"10.14\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"10.15\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"10.21\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"10.21a\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"10.21b\"}]}],\"rulings\":[{\"rulingId\":\"cna-1979.1.ruling.breakdown-sandstorm-basis\",\"conflictId\":\"cna-1979.1.conflict.breakdown-sandstorm-threshold-basis\",\"alternativeIds\":[\"use-breakdown-point-share\",\"use-capability-point-share\"],\"selectedBehaviorId\":\"use-breakdown-point-share\",\"protectingTestIds\":[\"MOV-AC-014\"],\"sources\":[{\"sourceId\":\"spi-1979-common-charts\",\"locator\":\"21.38\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"21.37d\"}]},{\"rulingId\":\"cna-1979.1.ruling.breakdown-sequential-dice\",\"conflictId\":\"cna-1979.1.conflict.breakdown-dice-coordinate\",\"alternativeIds\":[\"add-two-d6\",\"form-sequential-d6-coordinate\"],\"selectedBehaviorId\":\"form-sequential-d6-coordinate\",\"protectingTestIds\":[\"MOV-AC-014\"],\"sources\":[{\"sourceId\":\"spi-1979-common-charts\",\"locator\":\"21.38\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"21.34\"}]},{\"rulingId\":\"cna-1979.1.ruling.combat-source-gap\",\"conflictId\":\"CMB-SRC-GAP-001\",\"alternativeIds\":[\"defer-positive-assault\",\"fill-defender-plus2-34-35-36-with10\"],\"selectedBehaviorId\":\"fill-defender-plus2-34-35-36-with10\",\"protectingTestIds\":[\"combat-envelope.source-ruling\"],\"sources\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"CMB-SRC-RUL-001\"},{\"sourceId\":\"spi-1979-common-charts\",\"locator\":\"15.79\"}]},{\"rulingId\":\"cna-1979.1.ruling.empty-reserve-designation\",\"conflictId\":\"cna-1979.1.conflict.reserve-designation-minimum\",\"alternativeIds\":[\"allow-empty-reserve-designation\",\"require-at-least-one-reserve-designation\"],\"selectedBehaviorId\":\"allow-empty-reserve-designation\",\"protectingTestIds\":[\"RES-AC-002\",\"RES-AC-006\",\"RES-AC-009\"],\"sources\":[{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"18.11\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"5.2.reserve-designation\"}]},{\"rulingId\":\"cna-1979.1.ruling.explicit-empty-opening-convoy-resolution\",\"conflictId\":\"cna-1979.1.conflict.empty-opening-convoy-phase\",\"alternativeIds\":[\"reject-empty-opening-convoy-as-unsupported\",\"resolve-explicitly-admitted-empty-opening-convoy\"],\"selectedBehaviorId\":\"resolve-explicitly-admitted-empty-opening-convoy\",\"protectingTestIds\":[\"ACT-AC-002\",\"ACT-AC-003\",\"ACT-AC-016\"],\"sources\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"opening-preamble.no-naval-convoy-obligations.v1\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"32.43\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"32.61\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"5.2\"}]},{\"rulingId\":\"cna-1979.1.ruling.explicit-empty-stage-entry-resolution\",\"conflictId\":\"cna-1979.1.conflict.empty-stage-entry-phase\",\"alternativeIds\":[\"reject-empty-stage-entry-as-unsupported\",\"resolve-explicitly-admitted-empty-stage-entry\"],\"selectedBehaviorId\":\"resolve-explicitly-admitted-empty-stage-entry\",\"protectingTestIds\":[\"STG-AC-001\",\"STG-AC-002\",\"STG-AC-004\",\"STG-AC-005\",\"STG-AC-006\",\"STG-AC-009\",\"STG-AC-010\"],\"sources\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"stage-entry.no-obligations.v1\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"5.2\"}]},{\"rulingId\":\"cna-1979.1.ruling.weather-season-boundary\",\"conflictId\":\"cna-1979.1.conflict.weather-season-boundary\",\"alternativeIds\":[\"use-errata-29.61-parenthetical-and-derive-shifted-ranges\",\"use-rule-29.1-boundaries-and-remap-chart-game-turns\"],\"selectedBehaviorId\":\"use-rule-29.1-boundaries-and-remap-chart-game-turns\",\"protectingTestIds\":[\"WTH-AC-001\",\"WTH-AC-002\",\"WTH-AC-004\"],\"sources\":[{\"sourceId\":\"spi-1979-common-charts\",\"locator\":\"29.61\"},{\"sourceId\":\"spi-1979-errata\",\"locator\":\"29.1\"},{\"sourceId\":\"spi-1979-errata\",\"locator\":\"29.61\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"29.0-29.1\"}]},{\"rulingId\":\"land.breakdown.ruling.exact-outcome-fractions\",\"conflictId\":\"BRK-DEC-004\",\"alternativeIds\":[\"exact-fractions-ceiling-single-point-exception\",\"literal-thirty-three-percent\"],\"selectedBehaviorId\":\"exact-fractions-ceiling-single-point-exception\",\"protectingTestIds\":[\"BRK-AC-001\",\"BRK-AC-004\"],\"sources\":[{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"21.34\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"21.35\"}]},{\"rulingId\":\"land.breakdown.ruling.persistent-stop-lots\",\"conflictId\":\"BRK-DEC-007\",\"alternativeIds\":[\"persistent-stop-location-lots\",\"scalar-broken-count\"],\"selectedBehaviorId\":\"persistent-stop-location-lots\",\"protectingTestIds\":[\"BRK-AC-007\",\"BRK-AC-008\"],\"sources\":[{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"21.41-21.45\"}]},{\"rulingId\":\"land.breakdown.ruling.standalone-truck-profile\",\"conflictId\":\"BRK-DEC-006\",\"alternativeIds\":[\"certified-unladen-truck-battalion\",\"general-motorized-infantry\"],\"selectedBehaviorId\":\"certified-unladen-truck-battalion\",\"protectingTestIds\":[\"BRK-AC-007\",\"BRK-AC-008\"],\"sources\":[{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"21.27-21.29\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"21.36\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"21.42-21.45\"}]},{\"rulingId\":\"land.breakdown.ruling.stop-reaction-precedence\",\"conflictId\":\"BRK-DEC-005\",\"alternativeIds\":[\"breakdown-before-reaction\",\"reaction-before-phasing-stop\"],\"selectedBehaviorId\":\"reaction-before-phasing-stop\",\"protectingTestIds\":[\"BRK-AC-006\"],\"sources\":[{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"21.24-21.26\"}]}]}",
+      "byteCount": 10495,
+      "sha256": "sha256:8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18"
+    },
+    "request": {
+      "canonicalUtf8": "{\"contractVersion\":1,\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"setupId\":\"rules-lab.combat.close-assault.v1\",\"setupHash\":\"sha256:22495e26528c2f4db8335d3b4041194aef26295f30aab0e4e6f384ff17069848\",\"content\":{\"schemaVersion\":7,\"formatId\":\"sandtable.content-json.v6\",\"packId\":\"rules-lab.content.close-assault.v1\",\"rulesetId\":\"cna-1979.1\",\"hash\":\"sha256:ee4fde9638ceb61ec08612fe32f9ac81db05572aac5ca20941e402d2fed25847\",\"scenarioId\":\"close-assault-positive-v1\"},\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"randomState\":{\"contractVersion\":1,\"algorithmId\":\"sandtable.sha256-counter.v1\",\"seed\":0,\"nextByteCursor\":0}}",
+      "byteCount": 741,
+      "sha256": "sha256:2d52027125435d4053da20f76b570ac6f1040f3cbe4ece0aa10a96501b35e1f1"
+    },
+    "created": {
+      "canonicalUtf8": "{\"contractVersion\":11,\"eventType\":\"campaign-created\",\"campaignId\":\"rules-lab.combat-creation.1\",\"stateVersion\":1,\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"setup\":{\"schemaVersion\":7,\"setupId\":\"rules-lab.combat.close-assault.v1\",\"setupHash\":\"sha256:22495e26528c2f4db8335d3b4041194aef26295f30aab0e4e6f384ff17069848\",\"isSynthetic\":true,\"capabilityProfileId\":\"sandtable.capability.combat-cycle-infantry.v1\",\"initialGameTurn\":1,\"initialInitiative\":{\"kind\":\"predetermined\",\"holder\":\"axis\"},\"openingPreamble\":{\"contractVersion\":1,\"kind\":\"no-opening-naval-convoy-obligations\",\"sources\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"opening-preamble.no-naval-convoy-obligations.v1\"}]},\"weather\":{\"contractVersion\":1,\"kind\":\"no-immediate-weather-effect-subjects\",\"sources\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"weather.no-immediate-effect-subjects.v1\"}]},\"stageEntry\":{\"contractVersion\":1,\"gameTurn\":1,\"operationStage\":1,\"organization\":\"explicit-none\",\"navalConvoyArrival\":\"explicit-none\",\"fleetAssignment\":\"explicit-none\",\"fleetRepair\":\"explicit-none\",\"sources\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"stage-entry.no-obligations.v1\"}]},\"combatInitialization\":{\"contractVersion\":1,\"gameTurn\":1,\"operationStage\":1,\"capabilityPointsExpended\":{\"numerator\":0,\"denominator\":1},\"cohesionLevel\":0,\"reserveStatus\":\"none\",\"origin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:initial-ledger\"}]}},\"content\":{\"schemaVersion\":7,\"formatId\":\"sandtable.content-json.v6\",\"packId\":\"rules-lab.content.close-assault.v1\",\"rulesetId\":\"cna-1979.1\",\"hash\":\"sha256:ee4fde9638ceb61ec08612fe32f9ac81db05572aac5ca20941e402d2fed25847\",\"scenarioId\":\"close-assault-positive-v1\"},\"sources\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:setup\"}]},\"configuration\":{\"schemaVersion\":1,\"configId\":\"rules-lab.combat-timing.v1\",\"profileId\":\"sandtable.capability.combat-cycle-infantry.v1\",\"rulesInputHash\":\"sha256:fafb24792c9e3f774c368f85c02d1d068f84c9c78e67bf8324723257d0f13029\",\"codecId\":\"sandtable.combat.inputs-json.v1\",\"timingPolicyId\":\"sandtable.combat.fixed-deadline.v1\",\"windows\":[{\"kind\":\"custody\",\"decisionBudgetMilliseconds\":30000,\"fallback\":\"leave-unguarded\"},{\"kind\":\"cycle-control\",\"decisionBudgetMilliseconds\":30000,\"fallback\":\"finish-phase\"},{\"kind\":\"force-assignment\",\"decisionBudgetMilliseconds\":30000,\"fallback\":\"cancel-incomplete-voluntary-round\"},{\"kind\":\"rba\",\"decisionBudgetMilliseconds\":30000,\"fallback\":\"cancel-without-decline\"},{\"kind\":\"reserve-release\",\"decisionBudgetMilliseconds\":30000,\"fallback\":\"convert-unresolved-i-retain-ii\"},{\"kind\":\"retreat\",\"decisionBudgetMilliseconds\":30000,\"fallback\":\"refuse-retreat\"},{\"kind\":\"selection\",\"decisionBudgetMilliseconds\":30000,\"fallback\":\"no-selection\"}]},\"creationRequest\":{\"contractVersion\":1,\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"setupId\":\"rules-lab.combat.close-assault.v1\",\"setupHash\":\"sha256:22495e26528c2f4db8335d3b4041194aef26295f30aab0e4e6f384ff17069848\",\"content\":{\"schemaVersion\":7,\"formatId\":\"sandtable.content-json.v6\",\"packId\":\"rules-lab.content.close-assault.v1\",\"rulesetId\":\"cna-1979.1\",\"hash\":\"sha256:ee4fde9638ceb61ec08612fe32f9ac81db05572aac5ca20941e402d2fed25847\",\"scenarioId\":\"close-assault-positive-v1\"},\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"randomState\":{\"contractVersion\":1,\"algorithmId\":\"sandtable.sha256-counter.v1\",\"seed\":0,\"nextByteCursor\":0}},\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"initialWorld\":{\"contractVersion\":7,\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"elements\":[{\"elementId\":\"axis-assault-battalion\",\"currentLocationId\":\"assault-west\",\"reserveStatus\":\"none\",\"operationalState\":{\"ledgerGameTurn\":1,\"ledgerOperationStage\":1,\"capabilityPointsExpended\":{\"numerator\":0,\"denominator\":1},\"cohesionLevel\":0,\"vehicleBreakdownState\":null,\"movementEnded\":null,\"initialLedgerOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:initial-ledger\"}]}},\"components\":[{\"componentId\":\"axis-assault-battalion.toe.infantry\",\"currentToe\":10,\"initialToeOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:toe.axis-assault-battalion.toe.infantry\"}]}}],\"sourceParentFormationId\":\"axis-assault-formation\",\"currentParentFormationId\":\"axis-assault-formation\",\"ammunition\":{\"points\":10,\"initialAmmunitionOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:ammo.axis-assault-battalion\"}]}},\"readiness\":{\"gameTurn\":1,\"operationStage\":1,\"waterStatus\":\"distributed-for-stage\",\"storesStatus\":\"distributed-for-stage\",\"pinned\":false,\"initialReadinessOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:readiness.axis-assault-battalion\"}]}}},{\"elementId\":\"commonwealth-assault-battalion\",\"currentLocationId\":\"assault-east\",\"reserveStatus\":\"none\",\"operationalState\":{\"ledgerGameTurn\":1,\"ledgerOperationStage\":1,\"capabilityPointsExpended\":{\"numerator\":0,\"denominator\":1},\"cohesionLevel\":0,\"vehicleBreakdownState\":null,\"movementEnded\":null,\"initialLedgerOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:initial-ledger\"}]}},\"components\":[{\"componentId\":\"commonwealth-assault-battalion.toe.infantry\",\"currentToe\":10,\"initialToeOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:toe.commonwealth-assault-battalion.toe.infantry\"}]}}],\"sourceParentFormationId\":\"commonwealth-assault-formation\",\"currentParentFormationId\":\"commonwealth-assault-formation\",\"ammunition\":{\"points\":10,\"initialAmmunitionOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:ammo.commonwealth-assault-battalion\"}]}},\"readiness\":{\"gameTurn\":1,\"operationStage\":1,\"waterStatus\":\"distributed-for-stage\",\"storesStatus\":\"distributed-for-stage\",\"pinned\":false,\"initialReadinessOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:readiness.commonwealth-assault-battalion\"}]}}}],\"representations\":[{\"representationId\":\"map-representation.0001\",\"currentLocationId\":\"assault-west\",\"bindingKind\":\"independent-element\",\"boundElementIds\":[\"axis-assault-battalion\"]},{\"representationId\":\"map-representation.0002\",\"currentLocationId\":\"assault-east\",\"bindingKind\":\"independent-element\",\"boundElementIds\":[\"commonwealth-assault-battalion\"]}],\"brokenVehicleLots\":[],\"cohesionCauses\":[],\"relationships\":[],\"custodyLots\":[],\"guards\":[],\"replacementEntitlements\":[],\"futureObligations\":[],\"settlements\":[]},\"randomState\":{\"contractVersion\":1,\"algorithmId\":\"sandtable.sha256-counter.v1\",\"seed\":0,\"nextByteCursor\":0},\"sequencePosition\":{\"contractVersion\":5,\"positionId\":\"land.position.initiative-determination\",\"gameTurn\":1,\"operationStage\":0,\"stageId\":\"land.stage.initiative-determination\",\"phaseId\":\"land.phase.initiative-determination\",\"segmentId\":null,\"stepId\":null,\"actorRole\":\"none\",\"activeSide\":null,\"sources\":[{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"5.2\"}]},\"breakdownFlow\":{\"kind\":\"idle\"}}",
+      "byteCount": 7520,
+      "sha256": "sha256:a36c8abd3864442c62d13c9beb41af2c88048534b31bd47bc82a897c808bf798"
+    },
+    "snapshot": {
+      "canonicalUtf8": "{\"contractVersion\":12,\"campaignId\":\"rules-lab.combat-creation.1\",\"stateVersion\":1,\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"setup\":{\"schemaVersion\":7,\"setupId\":\"rules-lab.combat.close-assault.v1\",\"setupHash\":\"sha256:22495e26528c2f4db8335d3b4041194aef26295f30aab0e4e6f384ff17069848\",\"isSynthetic\":true,\"capabilityProfileId\":\"sandtable.capability.combat-cycle-infantry.v1\",\"initialGameTurn\":1,\"initialInitiative\":{\"kind\":\"predetermined\",\"holder\":\"axis\"},\"openingPreamble\":{\"contractVersion\":1,\"kind\":\"no-opening-naval-convoy-obligations\",\"sources\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"opening-preamble.no-naval-convoy-obligations.v1\"}]},\"weather\":{\"contractVersion\":1,\"kind\":\"no-immediate-weather-effect-subjects\",\"sources\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"weather.no-immediate-effect-subjects.v1\"}]},\"stageEntry\":{\"contractVersion\":1,\"gameTurn\":1,\"operationStage\":1,\"organization\":\"explicit-none\",\"navalConvoyArrival\":\"explicit-none\",\"fleetAssignment\":\"explicit-none\",\"fleetRepair\":\"explicit-none\",\"sources\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"stage-entry.no-obligations.v1\"}]},\"combatInitialization\":{\"contractVersion\":1,\"gameTurn\":1,\"operationStage\":1,\"capabilityPointsExpended\":{\"numerator\":0,\"denominator\":1},\"cohesionLevel\":0,\"reserveStatus\":\"none\",\"origin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:initial-ledger\"}]}},\"content\":{\"schemaVersion\":7,\"formatId\":\"sandtable.content-json.v6\",\"packId\":\"rules-lab.content.close-assault.v1\",\"rulesetId\":\"cna-1979.1\",\"hash\":\"sha256:ee4fde9638ceb61ec08612fe32f9ac81db05572aac5ca20941e402d2fed25847\",\"scenarioId\":\"close-assault-positive-v1\"},\"sources\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:setup\"}]},\"world\":{\"contractVersion\":7,\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"elements\":[{\"elementId\":\"axis-assault-battalion\",\"currentLocationId\":\"assault-west\",\"reserveStatus\":\"none\",\"operationalState\":{\"ledgerGameTurn\":1,\"ledgerOperationStage\":1,\"capabilityPointsExpended\":{\"numerator\":0,\"denominator\":1},\"cohesionLevel\":0,\"vehicleBreakdownState\":null,\"movementEnded\":null,\"initialLedgerOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:initial-ledger\"}]}},\"components\":[{\"componentId\":\"axis-assault-battalion.toe.infantry\",\"currentToe\":10,\"initialToeOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:toe.axis-assault-battalion.toe.infantry\"}]}}],\"sourceParentFormationId\":\"axis-assault-formation\",\"currentParentFormationId\":\"axis-assault-formation\",\"ammunition\":{\"points\":10,\"initialAmmunitionOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:ammo.axis-assault-battalion\"}]}},\"readiness\":{\"gameTurn\":1,\"operationStage\":1,\"waterStatus\":\"distributed-for-stage\",\"storesStatus\":\"distributed-for-stage\",\"pinned\":false,\"initialReadinessOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:readiness.axis-assault-battalion\"}]}}},{\"elementId\":\"commonwealth-assault-battalion\",\"currentLocationId\":\"assault-east\",\"reserveStatus\":\"none\",\"operationalState\":{\"ledgerGameTurn\":1,\"ledgerOperationStage\":1,\"capabilityPointsExpended\":{\"numerator\":0,\"denominator\":1},\"cohesionLevel\":0,\"vehicleBreakdownState\":null,\"movementEnded\":null,\"initialLedgerOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:initial-ledger\"}]}},\"components\":[{\"componentId\":\"commonwealth-assault-battalion.toe.infantry\",\"currentToe\":10,\"initialToeOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:toe.commonwealth-assault-battalion.toe.infantry\"}]}}],\"sourceParentFormationId\":\"commonwealth-assault-formation\",\"currentParentFormationId\":\"commonwealth-assault-formation\",\"ammunition\":{\"points\":10,\"initialAmmunitionOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:ammo.commonwealth-assault-battalion\"}]}},\"readiness\":{\"gameTurn\":1,\"operationStage\":1,\"waterStatus\":\"distributed-for-stage\",\"storesStatus\":\"distributed-for-stage\",\"pinned\":false,\"initialReadinessOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:readiness.commonwealth-assault-battalion\"}]}}}],\"representations\":[{\"representationId\":\"map-representation.0001\",\"currentLocationId\":\"assault-west\",\"bindingKind\":\"independent-element\",\"boundElementIds\":[\"axis-assault-battalion\"]},{\"representationId\":\"map-representation.0002\",\"currentLocationId\":\"assault-east\",\"bindingKind\":\"independent-element\",\"boundElementIds\":[\"commonwealth-assault-battalion\"]}],\"brokenVehicleLots\":[],\"cohesionCauses\":[],\"relationships\":[],\"custodyLots\":[],\"guards\":[],\"replacementEntitlements\":[],\"futureObligations\":[],\"settlements\":[]},\"initiativeHolder\":null,\"operationStageOrders\":[],\"operationStageWeather\":[],\"randomState\":{\"contractVersion\":1,\"algorithmId\":\"sandtable.sha256-counter.v1\",\"seed\":0,\"nextByteCursor\":0},\"currentPosition\":{\"kind\":\"sequence\",\"sequencePosition\":{\"contractVersion\":5,\"positionId\":\"land.position.initiative-determination\",\"gameTurn\":1,\"operationStage\":0,\"stageId\":\"land.stage.initiative-determination\",\"phaseId\":\"land.phase.initiative-determination\",\"segmentId\":null,\"stepId\":null,\"actorRole\":\"none\",\"activeSide\":null,\"sources\":[{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"5.2\"}]}},\"reactionWindow\":null,\"breakdownFlow\":{\"kind\":\"idle\"},\"configuration\":{\"schemaVersion\":1,\"configId\":\"rules-lab.combat-timing.v1\",\"profileId\":\"sandtable.capability.combat-cycle-infantry.v1\",\"rulesInputHash\":\"sha256:fafb24792c9e3f774c368f85c02d1d068f84c9c78e67bf8324723257d0f13029\",\"codecId\":\"sandtable.combat.inputs-json.v1\",\"timingPolicyId\":\"sandtable.combat.fixed-deadline.v1\",\"windows\":[{\"kind\":\"custody\",\"decisionBudgetMilliseconds\":30000,\"fallback\":\"leave-unguarded\"},{\"kind\":\"cycle-control\",\"decisionBudgetMilliseconds\":30000,\"fallback\":\"finish-phase\"},{\"kind\":\"force-assignment\",\"decisionBudgetMilliseconds\":30000,\"fallback\":\"cancel-incomplete-voluntary-round\"},{\"kind\":\"rba\",\"decisionBudgetMilliseconds\":30000,\"fallback\":\"cancel-without-decline\"},{\"kind\":\"reserve-release\",\"decisionBudgetMilliseconds\":30000,\"fallback\":\"convert-unresolved-i-retain-ii\"},{\"kind\":\"retreat\",\"decisionBudgetMilliseconds\":30000,\"fallback\":\"refuse-retreat\"},{\"kind\":\"selection\",\"decisionBudgetMilliseconds\":30000,\"fallback\":\"no-selection\"}]},\"creationReceipt\":{\"contractVersion\":1,\"creationRequest\":{\"contractVersion\":1,\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"setupId\":\"rules-lab.combat.close-assault.v1\",\"setupHash\":\"sha256:22495e26528c2f4db8335d3b4041194aef26295f30aab0e4e6f384ff17069848\",\"content\":{\"schemaVersion\":7,\"formatId\":\"sandtable.content-json.v6\",\"packId\":\"rules-lab.content.close-assault.v1\",\"rulesetId\":\"cna-1979.1\",\"hash\":\"sha256:ee4fde9638ceb61ec08612fe32f9ac81db05572aac5ca20941e402d2fed25847\",\"scenarioId\":\"close-assault-positive-v1\"},\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"randomState\":{\"contractVersion\":1,\"algorithmId\":\"sandtable.sha256-counter.v1\",\"seed\":0,\"nextByteCursor\":0}},\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"creationEventHash\":\"sha256:a36c8abd3864442c62d13c9beb41af2c88048534b31bd47bc82a897c808bf798\"},\"chroniclePrefix\":\"sha256:07ef36fec645c632463dcb1e7446b1d914cc8f91506bac968c2bac84a55def45\",\"cycleState\":null,\"combatState\":null,\"commandReceipts\":[]}",
+      "byteCount": 7903,
+      "sha256": "sha256:f34480d09318f42437c9170176bff149cb35ee49f80f7405dfb3125faa65f42b"
+    }
+  },
+  "rulesetHash": "8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18",
+  "request": {
+    "contractVersion": 1,
+    "campaignId": "rules-lab.combat-creation.1",
+    "rulesetHash": "8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18",
+    "setupId": "rules-lab.combat.close-assault.v1",
+    "setupHash": "sha256:22495e26528c2f4db8335d3b4041194aef26295f30aab0e4e6f384ff17069848",
+    "content": {
+      "schemaVersion": 7,
+      "formatId": "sandtable.content-json.v6",
+      "packId": "rules-lab.content.close-assault.v1",
+      "rulesetId": "cna-1979.1",
+      "hash": "sha256:ee4fde9638ceb61ec08612fe32f9ac81db05572aac5ca20941e402d2fed25847",
+      "scenarioId": "close-assault-positive-v1"
+    },
+    "configurationHash": "sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34",
+    "randomState": {
+      "contractVersion": 1,
+      "algorithmId": "sandtable.sha256-counter.v1",
+      "seed": 0,
+      "nextByteCursor": 0
+    }
+  },
+  "creationBinding": "creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b",
+  "requestPreimageHex": "73616e647461626c652e636f6d6261742e6372656174696f6e2d726571756573742e7631007b22636f6e747261637456657273696f6e223a312c2263616d706169676e4964223a2272756c65732d6c61622e636f6d6261742d6372656174696f6e2e31222c2272756c6573657448617368223a2238616632353663366332626266373163623732656137653239393232646239633463383937633235333531323161363861363834396262643036653062643138222c2273657475704964223a2272756c65732d6c61622e636f6d6261742e636c6f73652d61737361756c742e7631222c22736574757048617368223a227368613235363a32323439356532363532386332663464623833333564336234303431313934616566323632393566333061616230653465366633383466663137303639383438222c22636f6e74656e74223a7b22736368656d6156657273696f6e223a372c22666f726d61744964223a2273616e647461626c652e636f6e74656e742d6a736f6e2e7636222c227061636b4964223a2272756c65732d6c61622e636f6e74656e742e636c6f73652d61737361756c742e7631222c2272756c657365744964223a22636e612d313937392e31222c2268617368223a227368613235363a65653466646539363338636562363165633038363132666533326639616338316462303535373261616335636132303934316534303264326665643235383437222c227363656e6172696f4964223a22636c6f73652d61737361756c742d706f7369746976652d7631227d2c22636f6e66696775726174696f6e48617368223a227368613235363a33646533306334353162613765383164346664646536343933653037643464303631313032303961383930333564396535396262613733386630616562613334222c2272616e646f6d5374617465223a7b22636f6e747261637456657273696f6e223a312c22616c676f726974686d4964223a2273616e647461626c652e7368613235362d636f756e7465722e7631222c2273656564223a302c226e65787442797465437572736f72223a307d7d",
+  "creationPrefix": "sha256:07ef36fec645c632463dcb1e7446b1d914cc8f91506bac968c2bac84a55def45",
+  "negativeVectors": [
+    {
+      "target": "manifest",
+      "path": "/extra",
+      "value": 1,
+      "code": "CMB-ENV-001",
+      "op": "set"
+    },
+    {
+      "target": "manifest",
+      "path": "/contractVersion",
+      "value": true,
+      "code": "CMB-ENV-001",
+      "op": "set"
+    },
+    {
+      "target": "manifest",
+      "path": "/contractVersion",
+      "value": 99,
+      "code": "CMB-ENV-003",
+      "op": "set"
+    },
+    {
+      "target": "request",
+      "path": "/extra",
+      "value": 1,
+      "code": "CMB-ENV-001",
+      "op": "set"
+    },
+    {
+      "target": "request",
+      "path": "/contractVersion",
+      "value": true,
+      "code": "CMB-ENV-001",
+      "op": "set"
+    },
+    {
+      "target": "request",
+      "path": "/contractVersion",
+      "value": 99,
+      "code": "CMB-ENV-003",
+      "op": "set"
+    },
+    {
+      "target": "created",
+      "path": "/extra",
+      "value": 1,
+      "code": "CMB-ENV-001",
+      "op": "set"
+    },
+    {
+      "target": "created",
+      "path": "/contractVersion",
+      "value": true,
+      "code": "CMB-ENV-001",
+      "op": "set"
+    },
+    {
+      "target": "created",
+      "path": "/contractVersion",
+      "value": 99,
+      "code": "CMB-ENV-003",
+      "op": "set"
+    },
+    {
+      "target": "snapshot",
+      "path": "/extra",
+      "value": 1,
+      "code": "CMB-ENV-001",
+      "op": "set"
+    },
+    {
+      "target": "snapshot",
+      "path": "/contractVersion",
+      "value": true,
+      "code": "CMB-ENV-001",
+      "op": "set"
+    },
+    {
+      "target": "snapshot",
+      "path": "/contractVersion",
+      "value": 99,
+      "code": "CMB-ENV-003",
+      "op": "set"
+    },
+    {
+      "target": "manifest",
+      "path": "/rulesetId",
+      "value": "other",
+      "code": "CMB-ENV-004",
+      "op": "set"
+    },
+    {
+      "target": "manifest",
+      "path": "/artifacts/0/contentHash",
+      "value": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "code": "CMB-ENV-004",
+      "op": "set"
+    },
+    {
+      "target": "manifest",
+      "path": "/rulings/0/selectedBehaviorId",
+      "value": "other",
+      "code": "CMB-ENV-004",
+      "op": "set"
+    },
+    {
+      "target": "manifest",
+      "path": "/artifacts/0",
+      "value": null,
+      "code": "CMB-ENV-004",
+      "op": "delete"
+    },
+    {
+      "target": "manifest",
+      "path": "/rulings/0",
+      "value": null,
+      "code": "CMB-ENV-004",
+      "op": "delete"
+    },
+    {
+      "target": "request",
+      "path": "/campaignId",
+      "value": "a/b",
+      "code": "CMB-ENV-002",
+      "op": "set"
+    },
+    {
+      "target": "request",
+      "path": "/rulesetHash",
+      "value": "sha256:8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18",
+      "code": "CMB-ENV-002",
+      "op": "set"
+    },
+    {
+      "target": "request",
+      "path": "/rulesetHash",
+      "value": "0000000000000000000000000000000000000000000000000000000000000000",
+      "code": "CMB-ENV-005",
+      "op": "set"
+    },
+    {
+      "target": "request",
+      "path": "/setupHash",
+      "value": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "code": "CMB-ENV-005",
+      "op": "set"
+    },
+    {
+      "target": "request",
+      "path": "/configurationHash",
+      "value": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "code": "CMB-ENV-005",
+      "op": "set"
+    },
+    {
+      "target": "request",
+      "path": "/content/scenarioId",
+      "value": "other",
+      "code": "CMB-ENV-005",
+      "op": "set"
+    },
+    {
+      "target": "request",
+      "path": "/randomState/seed",
+      "value": -1,
+      "code": "CMB-ENV-002",
+      "op": "set"
+    },
+    {
+      "target": "request",
+      "path": "/randomState/seed",
+      "value": 18446744073709551616,
+      "code": "CMB-ENV-002",
+      "op": "set"
+    },
+    {
+      "target": "request",
+      "path": "/randomState/nextByteCursor",
+      "value": 1,
+      "code": "CMB-ENV-005",
+      "op": "set"
+    },
+    {
+      "target": "request",
+      "path": "/randomState/algorithmId",
+      "value": "other",
+      "code": "CMB-ENV-005",
+      "op": "set"
+    },
+    {
+      "target": "request",
+      "path": "/setupId",
+      "value": "other",
+      "code": "CMB-ENV-005",
+      "op": "set"
+    },
+    {
+      "target": "created",
+      "path": "/stateVersion",
+      "value": 2,
+      "code": "CMB-ENV-006",
+      "op": "set"
+    },
+    {
+      "target": "created",
+      "path": "/rulesetHash",
+      "value": "0000000000000000000000000000000000000000000000000000000000000000",
+      "code": "CMB-ENV-006",
+      "op": "set"
+    },
+    {
+      "target": "created",
+      "path": "/randomState/nextByteCursor",
+      "value": 1,
+      "code": "CMB-ENV-006",
+      "op": "set"
+    },
+    {
+      "target": "created",
+      "path": "/randomState/seed",
+      "value": 1,
+      "code": "CMB-ENV-006",
+      "op": "set"
+    },
+    {
+      "target": "created",
+      "path": "/breakdownFlow/kind",
+      "value": "active",
+      "code": "CMB-ENV-006",
+      "op": "set"
+    },
+    {
+      "target": "created",
+      "path": "/setup/initialInitiative/holder",
+      "value": "commonwealth",
+      "code": "CMB-ENV-006",
+      "op": "set"
+    },
+    {
+      "target": "created",
+      "path": "/configuration/windows/0/decisionBudgetMilliseconds",
+      "value": 1,
+      "code": "CMB-ENV-006",
+      "op": "set"
+    },
+    {
+      "target": "created",
+      "path": "/initialWorld/creationBinding",
+      "value": "creation.other",
+      "code": "CMB-ENV-006",
+      "op": "set"
+    },
+    {
+      "target": "created",
+      "path": "/initialWorld/elements/0/ammunition/points",
+      "value": 0,
+      "code": "CMB-ENV-006",
+      "op": "set"
+    },
+    {
+      "target": "created",
+      "path": "/initialWorld/elements/0/components/0/currentToe",
+      "value": 9,
+      "code": "CMB-ENV-006",
+      "op": "set"
+    },
+    {
+      "target": "created",
+      "path": "/initialWorld/elements/0/operationalState/capabilityPointsExpended/numerator",
+      "value": 5,
+      "code": "CMB-ENV-006",
+      "op": "set"
+    },
+    {
+      "target": "created",
+      "path": "/initialWorld/elements/0/readiness/pinned",
+      "value": true,
+      "code": "CMB-ENV-006",
+      "op": "set"
+    },
+    {
+      "target": "created",
+      "path": "/initialWorld/representations/0/currentLocationId",
+      "value": "other",
+      "code": "CMB-ENV-006",
+      "op": "set"
+    },
+    {
+      "target": "snapshot",
+      "path": "/stateVersion",
+      "value": 2,
+      "code": "CMB-ENV-006",
+      "op": "set"
+    },
+    {
+      "target": "snapshot",
+      "path": "/rulesetHash",
+      "value": "0000000000000000000000000000000000000000000000000000000000000000",
+      "code": "CMB-ENV-006",
+      "op": "set"
+    },
+    {
+      "target": "snapshot",
+      "path": "/randomState/nextByteCursor",
+      "value": 1,
+      "code": "CMB-ENV-006",
+      "op": "set"
+    },
+    {
+      "target": "snapshot",
+      "path": "/randomState/seed",
+      "value": 1,
+      "code": "CMB-ENV-006",
+      "op": "set"
+    },
+    {
+      "target": "snapshot",
+      "path": "/breakdownFlow/kind",
+      "value": "active",
+      "code": "CMB-ENV-006",
+      "op": "set"
+    },
+    {
+      "target": "snapshot",
+      "path": "/setup/initialInitiative/holder",
+      "value": "commonwealth",
+      "code": "CMB-ENV-006",
+      "op": "set"
+    },
+    {
+      "target": "snapshot",
+      "path": "/configuration/windows/0/decisionBudgetMilliseconds",
+      "value": 1,
+      "code": "CMB-ENV-006",
+      "op": "set"
+    },
+    {
+      "target": "snapshot",
+      "path": "/world/creationBinding",
+      "value": "creation.other",
+      "code": "CMB-ENV-006",
+      "op": "set"
+    },
+    {
+      "target": "snapshot",
+      "path": "/world/elements/0/ammunition/points",
+      "value": 0,
+      "code": "CMB-ENV-006",
+      "op": "set"
+    },
+    {
+      "target": "snapshot",
+      "path": "/world/elements/0/components/0/currentToe",
+      "value": 9,
+      "code": "CMB-ENV-006",
+      "op": "set"
+    },
+    {
+      "target": "snapshot",
+      "path": "/world/elements/0/operationalState/capabilityPointsExpended/numerator",
+      "value": 5,
+      "code": "CMB-ENV-006",
+      "op": "set"
+    },
+    {
+      "target": "snapshot",
+      "path": "/world/elements/0/readiness/pinned",
+      "value": true,
+      "code": "CMB-ENV-006",
+      "op": "set"
+    },
+    {
+      "target": "snapshot",
+      "path": "/world/representations/0/currentLocationId",
+      "value": "other",
+      "code": "CMB-ENV-006",
+      "op": "set"
+    },
+    {
+      "target": "created",
+      "path": "/eventType",
+      "value": "other-event",
+      "code": "CMB-ENV-006",
+      "op": "set"
+    },
+    {
+      "target": "created",
+      "path": "/creationBinding",
+      "value": "creation.other",
+      "code": "CMB-ENV-006",
+      "op": "set"
+    },
+    {
+      "target": "created",
+      "path": "/creationRequest/randomState/seed",
+      "value": 1,
+      "code": "CMB-ENV-006",
+      "op": "set"
+    },
+    {
+      "target": "created",
+      "path": "/sequencePosition/activeSide",
+      "value": "axis",
+      "code": "CMB-ENV-006",
+      "op": "set"
+    },
+    {
+      "target": "snapshot",
+      "path": "/chroniclePrefix",
+      "value": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "code": "CMB-ENV-006",
+      "op": "set"
+    },
+    {
+      "target": "snapshot",
+      "path": "/creationReceipt/creationEventHash",
+      "value": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "code": "CMB-ENV-006",
+      "op": "set"
+    },
+    {
+      "target": "snapshot",
+      "path": "/initiativeHolder",
+      "value": "axis",
+      "code": "CMB-ENV-001",
+      "op": "set"
+    },
+    {
+      "target": "snapshot",
+      "path": "/cycleState",
+      "value": {},
+      "code": "CMB-ENV-001",
+      "op": "set"
+    },
+    {
+      "target": "snapshot",
+      "path": "/combatState",
+      "value": {},
+      "code": "CMB-ENV-001",
+      "op": "set"
+    },
+    {
+      "target": "snapshot",
+      "path": "/commandReceipts",
+      "value": [
+        {}
+      ],
+      "code": "CMB-ENV-001",
+      "op": "set"
+    },
+    {
+      "target": "snapshot",
+      "path": "/operationStageWeather",
+      "value": [
+        {}
+      ],
+      "code": "CMB-ENV-001",
+      "op": "set"
+    },
+    {
+      "target": "snapshot",
+      "path": "/currentPosition/kind",
+      "value": "reaction",
+      "code": "CMB-ENV-006",
+      "op": "set"
+    },
+    {
+      "target": "snapshot",
+      "path": "/creationReceipt/creationRequest/campaignId",
+      "value": "other",
+      "code": "CMB-ENV-006",
+      "op": "set"
+    }
+  ],
+  "recoveryCuts": [
+    "unpublished-admission-enabled",
+    "exact-retry-response-lost",
+    "retained-retry-admission-disabled",
+    "snapshot-with-trusted-creation",
+    "unpublished-admission-disabled",
+    "missing-reader",
+    "missing-creation-evidence",
+    "conflicting-retry",
+    "later-state-rejected"
+  ]
+}
