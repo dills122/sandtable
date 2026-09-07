@@ -1,0 +1,23 @@
+{
+  "contract": "combat-reserve-release-v1",
+  "objects": {
+    "ReleaseScope": "gameTurn:int operationStage:int playerPhaseSlot:id actingSide:side",
+    "MovementException": "scope:ReleaseScope ordinal:int status:id completionReceiptId:id?",
+    "ReleaseHistory": "scope:ReleaseScope designationReceiptId:id? conversionReceiptId:id? releasedType:id? releaseReceiptId:id? releaseCycle:int? cpaBasis:int? voluntaryCeiling:int? offensiveCommitmentId:id? nextMovement:MovementException?",
+    "ReserveMember": "unit:UnitKey status:id baseCpa:int spentCp:Cp history:ReleaseHistory",
+    "ReleaseBase": "contractVersion:int profile:id cycle:Authority firstActingSide:side positionId:id priorVersion:long priorPrefix:hash combatCompletionReceiptId:id retainedWorldHash:hash randomState:Random acceptedHighWater:utc? members:ReserveMember[] attackHistory:AttackHistory[]",
+    "ReleaseCommand": "contractVersion:int kind:id releaseId:id expectedPriorVersion:long? decisionId:id? unit:UnitKey? choice:id?",
+    "ReleaseInput": "command:ReleaseCommand actor:actor admittedAt:utc? clockAvailable:bool",
+    "ReleaseOpenEffect": "kind:id decisionId:id? timing:Timing? openingClockFailure:bool pending:UnitKey[]",
+    "ReleaseDispositionEffect": "kind:id unit:UnitKey choice:id beforeStatus:id afterStatus:id reason:id cpaBasis:int voluntaryCeiling:int? nextMovement:MovementException? timing:Timing? fallbackLocked:bool",
+    "ReleaseCompleteEffect": "kind:id reason:id retainedUnits:UnitKey[] dispositionReceipts:id[] timing:Timing? fallbackLocked:bool",
+    "ReleaseEvent": "contractVersion:int eventType:id author:actor campaignId:id rulesetHash:rawHash configurationHash:hash cycleId:hash positionId:id baseHash:hash releaseId:id priorVersion:long stateVersion:long priorPrefix:hash input:ReleaseInput effect:ReleaseEffect receiptId:id",
+    "ReleaseDisposition": "receiptId:id unit:UnitKey choice:id beforeStatus:id afterStatus:id",
+    "ReleaseState": "contractVersion:int baseHash:hash releaseId:id stateVersion:long prefix:hash status:id openingReceiptId:id? decisionId:id? timing:Timing? openingClockFailure:bool acceptedHighWater:utc? fallbackLocked:bool fallbackReason:id? members:ReserveMember[] pending:UnitKey[] dispositions:ReleaseDisposition[] completionReceiptId:id? retainedWorldHash:hash randomState:Random attackHistory:AttackHistory[] receipts:Receipt[]"
+  },
+  "effectTags": {"release-opened":"ReleaseOpenEffect","unit-disposition":"ReleaseDispositionEffect","release-completed":"ReleaseCompleteEffect"},
+  "domains": {"release":"sandtable.combat.reserve-release.v1","receipt":"sandtable.combat.reserve-release-receipt.v1"},
+  "externalContracts": ["combat-result-settlement-v1.schema.json"],
+  "limits": {"bytes":1048576,"depth":32,"members":32,"events":34,"arrayItems":512},
+  "scope": "Private Release arm. Multi-unit/provenance seeds are isolated ledger probes. Full World/Snapshot and actual inherited history integration remain D2c."
+}

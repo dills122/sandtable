@@ -1,0 +1,18 @@
+{
+  "contract": "combat-ordinary-movement-v1",
+  "objects": {
+    "MovementBase": "contractVersion:int profile:id settledStateHash:hash settlementCaReceiptId:id cycle:Authority firstActingSide:side position:Position stateVersion:long prefix:hash world:World randomState:Random attackHistory:AttackHistory[]",
+    "MovementCommand": "contractVersion:int kind:id cycleId:hash positionId:id expectedPriorVersion:long unit:UnitKey originLocationId:id destinationLocationId:id",
+    "MovementInput": "command:MovementCommand actor:actor",
+    "MovementCost": "terrainCost:int breakOffCost:int totalCost:int baseCpa:int voluntaryCeiling:int beforeCp:int afterCp:int excessCpDp:int beforeCohesion:int afterCohesion:int",
+    "MembershipEnd": "relationId:id creationReceiptId:id kind:id attacker:UnitKey defender:UnitKey endingCause:id",
+    "MovementEffect": "kind:id unit:UnitKey representationId:id originLocationId:id destinationLocationId:id costs:MovementCost endedMemberships:MembershipEnd[]",
+    "MovementEvent": "contractVersion:int eventType:id author:side campaignId:id rulesetHash:rawHash configurationHash:hash cycleId:hash positionId:id baseHash:hash priorVersion:long stateVersion:long priorPrefix:hash input:MovementInput effect:MovementEffect receiptId:id",
+    "MovementTrack": "unit:UnitKey route:Route",
+    "MovementState": "contractVersion:int baseHash:hash stateVersion:long prefix:hash world:World randomState:Random attackHistory:AttackHistory[] tracks:MovementTrack[] receipts:Receipt[]"
+  },
+  "domains": {"receipt": "sandtable.combat.ordinary-movement-receipt.v1"},
+  "externalContracts": ["combat-result-settlement-v1.schema.json"],
+  "limits": {"bytes": 1048576, "depth": 32, "events": 32, "arrayItems": 512},
+  "scope": "Prospective ordinary integer infantry movement at an independently trusted Movement boundary. Fixture release/repeat lineage is synthetic. No current C# event registration or full Snapshot12 reader."
+}

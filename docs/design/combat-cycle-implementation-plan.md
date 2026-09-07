@@ -19,7 +19,14 @@ complete as a bounded control fragment. [003C3b sealed round/commitment](../spec
 is complete with author checks. [HOST-RSH-001](../research/orleans-publication-feasibility.md) research
 is complete. [003C3c result/settlement](../specs/combat-result-settlement-v1.md) and
 [noninitial Snapshot12 composition](../specs/combat-snapshot-composition-v1.md) are complete as bounded
-contract checkpoints with author checks;003D2 is next.
+contract checkpoints with author checks. [003D2a ordinary movement](../specs/combat-ordinary-movement-v1.md)
+is complete with author checks. [003D2b.1 Reserve Release](../specs/combat-reserve-release-v1.md) is
+complete as a private control/history arm. [003D2b.2 guarded repeat/finish](../specs/combat-cycle-control-v1.md)
+is complete for the private exhausted-ammunition continuation boundary and Movement-expiry projection;
+003D2c inherited history/capability reconciliation is next. Parent003D2 remains open.
+[Progress review9](../reviews/combat-progress-review-9.md) assessed all13 unmerged commits through
+`a96d2a1`: Ready with non-blocking follow-ups; its sole P3 documentation-status finding is corrected.
+All15 Python oracles and the focused Orleans build/run/format passed. Review budget9of9 is exhausted.
 TASK-004–025 not started. Future maturity execution and checkpoint B remain gated.
 **Original input:** `d2bc67c`. Exact contract freeze and production gates remain open.
 
@@ -171,6 +178,34 @@ This refinement changes no gameplay policy, acceptance criterion or review budge
 prepared/resolved/settled states until their exact dependent contracts exist; later C3b/c freeze
 the same prospective family before checkpoint B, with no production version registered early.
 
+D2 execution refinement (input `3ac1283`, 2026-09-07): three independent transition families
+require separate checkpoints, each at most five primary files including verification and this plan.
+Preserve parent003D2 and all25 top-level IDs:
+
+| D2 slice | Boundary / order |
+| --- | --- |
+| `003D2a` | [Ordinary integer-infantry Movement/break-off receipt](../specs/combat-ordinary-movement-v1.md) complete: terrain plus maximum applicable Contact/Engaged cost, cumulative CP ceiling, immediate excess-CPA DP and atomic affected-membership endings. 36 replay cuts,486 mutations,120 raw rejections,630 source arithmetic coordinates and14 atomic guards pass. Continuation assessment must consume this same rule. |
+| `003D2b` | Reserve Release dispositions/history and guarded repeat/finish control, including timing, progress, next-Movement exception and retained obligations. AfterD2a; split further before edits if release and cycle control exceed the five-file bound. |
+| `003D2c` | Exact inherited sequence5 successor inventory, first-opening/prior-history binding and full noninitial composition/reconciliation against CON-002–004. AfterD2b; bound individual inherited families before editing. Parent003 stays open until all cross-contract checks pass. |
+
+D2b execution refinement (input `89eac24`, 2026-09-07): `003D2b.1` [Reserve Release
+control/history](../specs/combat-reserve-release-v1.md) is complete:13 literal cases/48 side-slot
+traces,188 cuts,2368 mutations,840 raw rejects,20 timing and27 boundary checks. `003D2b.2` [guarded cycle control](../specs/combat-cycle-control-v1.md) is complete within its declared
+private boundary:19 literal cases/64 side-slot traces,164 cuts,1748 mutations,700 raw rejects,43
+boundary checks and216 cost coordinates. Release-completion replay, accepted progress, D2a movement
+cost witnesses, repeat/finish timing and scoped Movement exception expiry are frozen. Actual
+inherited Movement/Reaction/Breakdown progress adapters and potentially armed Combat continuation
+remain explicit D2c/004 capability gates; unsupported inputs reject, never imply no continuation. Each checkpoint retains the
+five-primary-file cap. Release history is a private authority arm; D2c still owns its full Snapshot12
+and inherited predecessor integration. Multi-unit deadline probes are isolated ledger tests, not
+an expansion of the selected one-unit-per-side Combat capability. D2b private control checkpoints
+are complete; full positive World/Snapshot, inherited progress/continuation and CON-002–004
+reconciliation remain D2c before parent003D2/003 closes. No new policy or review round is introduced.
+
+D2a isolated Movement fixtures may derive a settled World from C3c, but any intervening release/repeat
+boundary remains explicitly synthetic untilD2b/c. Such probes do not certify actual continuation,
+released-Reserve history, runtime movement, Reaction or a reachable repeating campaign.
+
 Checkpoint B: accept exact combined contracts and resolve any changed policy with owner. Reconcile
 task sizes with frozen types. Runtime implementation remains gated until this checkpoint passes.
 
@@ -260,7 +295,7 @@ admission evidence still wait for checkpoint I.
 | Task / size | Output and acceptance criteria | Verification | Dependencies / likely paths |
 | --- | --- | --- | --- |
 | `CMB-TASK-017` / M, 3–5 files | Implement release window and canonical own-unit dispositions, one pinned budget, first-I conversion/later-II retention fallback and explicit completion. Status changes retain release restrictions/history. | `ReserveRelease` first/later/empty, consumed convert, duplicate/stale/expiry, cumulative CP ceilings and no auto-release/repeat. | 016; [Campaigns](../../src/Cna.Core/Campaigns/), focused Core tests. |
-| `CMB-TASK-018` / M, 3–5 files | Implement retained Movement-end proximity, next-Movement exception and ordinary Contact/Engaged break-off under the frozen cost precedence and ordinary 150%-CPA ceiling (stricter for released Reserves). Charge CP and any immediate excess-CPA DP, move and update affected memberships atomically; preserve unrelated relations and CP/BP/bands/broken lots, ammo/TOE/Cohesion and offensive-use history. | `CycleMovement` Contact/no-ZOC Engaged/overlapping-cost and last-counterpart cases, spent5+4+1=CPA10, ordinary totals11/15 with DP versus rejected16, stricter Reserve ceilings, atomic restart; exception expiry, changed enemy position, mandatory overspend, retained resource/Breakdown history and exhausted-assault rejection. | 017; [Campaigns](../../src/Cna.Core/Campaigns/), focused Core tests. |
+| `CMB-TASK-018` / M, 3–5 files | Implement retained Movement-end proximity, next-Movement exception and ordinary Contact/Engaged break-off under the frozen cost precedence and ordinary 150%-CPA ceiling (stricter for released Reserves). Charge CP and any immediate excess-CPA DP, move and update affected memberships atomically; preserve unrelated relations and CP/BP/bands/broken lots, ammo/TOE/Cohesion and offensive-use history. | `CycleMovement` Contact/no-ZOC Engaged/overlapping-cost and last-counterpart cases, Clear2: spent5+4+2=11/DP1, spent9+4+2=15/DP5 versus rejected16, stricter Reserve ceilings, atomic restart; exception expiry, changed enemy position, mandatory overspend, retained resource/Breakdown history and exhausted-assault rejection. | 017; [Campaigns](../../src/Cna.Core/Campaigns/), focused Core tests. |
 | `CMB-TASK-019` / M, 3–5 files | Implement first opening, semantic progress, supported continuation witness and repeat/finish control. Use TASK-018's relation-aware move rule for witnesses; never infer no Movement from exhausted ammo or a missing break-off implementation. Prefix excludes opening event; finish enters same-slot Truck Convoy without stage housekeeping. | `CycleControl` full truth table, ordinal/prefix forks, no-op/cancel/retain-only history, reachable zero-loss Engaged repeat with break-off witness, lost reply/deadline, pending and future obligations; unsupported continuation is not “none legal.” | 018; [Campaigns](../../src/Cna.Core/Campaigns/), [Rules](../../src/Cna.Core/Rules/), focused Core tests. |
 
 Checkpoint H: demonstrate actual Movement/Reserve repetition and settled Combat-to-finish through
@@ -470,6 +505,9 @@ Next003C3 freezes command/event envelopes, later snapshot state and causal suffi
 004, checkpoint B and all runtime/replay/privacy gates remain open.
 
 
+The following checkpoint notes retain their original next-step and review-count statements as
+historical evidence. Current completion and review status are recorded at the top of this plan.
+
 TASK-003C3a checkpoint, 2026-09-07 (input `568027c`):
 [Selection/step contract](../specs/combat-selection-steps-v1.md),
 [schema](../specs/combat-selection-steps-v1.schema.json),
@@ -533,3 +571,52 @@ TASK-003C3c checkpoint, 2026-09-07 (input `7bb2d11`):
 
 C3 closes as this bounded contract checkpoint. Next003D2 →004 → checkpoint B; parent003C/D and
 runtime005–025 remain open. Author verification only; independent review budget remains8of8.
+
+
+TASK-003D2a checkpoint, 2026-09-07 (input `3ac1283`):
+
+- Atomic ordinary movement packet freezes World7 location/representation/CP/Cohesion changes and
+  original-pair endings in one prospective receipt. Eight literal cases, both sides,36 replay cuts,
+  486 mutations,120 raw negatives,630 arithmetic coordinates and14 atomic guards pass. Guard,
+  entitlement, RNG, ammunition and active-stage attack history remain unchanged by movement.
+- Author review corrected the former Clear1 example against original Map A chart8.37 and the
+  existing Movement artifact: Clear2 gives5+4+2=11/DP1 and9+4+2=15/DP5;16 rejects. Source/design
+  correction is committed separately at `a1f890b`. All72 AC IDs remain stable; AC007's example is
+  explicitly corrected. This changes no accepted policy, Rules artifact or frozen assault bytes.
+- All twelve predecessor/source/RNG oracles pass, including full Snapshot12 composition.
+  Regression event/state goldens require exact readback. No runtime code/registration/Exercise
+  changes; synthetic release/repeat gap remains explicit. This does not close D2 or prove actual
+  continuation. D2b freezes release/control; D2c freezes actual first-opening/inherited adapters and
+  combined CON-002–004 reconciliation;004 and checkpoint B follow. Author checks only,8of8 unchanged.
+
+
+TASK-003D2b.1 checkpoint, 2026-09-07 (input `89eac24`):
+
+- Private Release arm freezes exact opening/disposition/completion events and commands, one Config
+  deadline, canonical own-unit queue and locked conversion/retention fallback. Status changes retain
+  original keys, CPA/spent values, release/conversion/offensive links and next-Movement scope.
+- 13 literal cases/48 side-slot traces pass188 replay cuts,2368 mutations,840 raw rejects,20 timing
+  and27 boundary checks. Midway expiry preserves accepted choices. Author reproduced and fixed the
+  post-last-choice/pre-completion expiry cut; it now emits completion without repeating disposition.
+- Positive/multi-unit history remains synthetic ledger evidence. C3c guard/escape fixtures compose
+  empty Release and preserve actual settled World/RNG/history from their cut; earlier synthetic
+  pre-Combat lineage remains explicit. No positive Reserve World/Snapshot12 or runtime admission.
+- All fourteen predecessor/research oracles, syntax/link/plan checks and frozen-byte checks pass.
+- NextD2b.2 consumes this completion receipt for guarded repeat/finish, supported continuation,
+  material progress and exception expiry. D2c still owes inherited successors/actual first opening
+  and full CON-002–004 reconciliation;004/B follow. ParentD2b/D2/003 remain open. All25 task IDs,
+  72 AC IDs and8 policies retained; author verification only, independent budget8of8 unchanged.
+
+
+TASK-003D2b.2 checkpoint, 2026-09-07 (input `184b16c`):
+
+- [Private cycle-control packet](../specs/combat-cycle-control-v1.md) freezes guarded repeat/finish,
+  D2b.1 completion binding, derived commitment/release progress, D2a cost witnesses and scoped
+  Movement expiry.19 literal cases/64 side-slot traces,164 cuts,1748 mutations,700 raw rejects,
+  43 boundary checks and216 arithmetic coordinates pass. Frozen16 expiry outputs include both slots.
+- Author RED test caught opening with insufficient authority-version room for mandatory closure;
+  corrected before freeze. Full World/RNG, stage histories and future obligations remain unchanged.
+- All15 predecessor/research oracles pass; all prior specs/src/tests/scenarios retain exact bytes.
+  Actual inherited progress/Movement proof, armed Combat continuation and positive World/Snapshot
+  composition remain D2c/004/B gates. No runtime, simulator, .NET or additional independent review.
+- D2c is next; bound inherited successor families before editing. Parent003D2/003 stays open.

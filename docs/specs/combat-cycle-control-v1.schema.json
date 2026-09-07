@@ -1,0 +1,23 @@
+{
+  "contract":"combat-cycle-control-v1",
+  "objects":{
+    "EndLocation":"unit:UnitKey locationId:id",
+    "MovementEndProof":"scope:ReleaseScope ordinal:int completionReceiptId:id endLocations:EndLocation[] excludedBefore:UnitKey[]",
+    "ProgressRef":"eventType:id receiptId:id eventHash:hash",
+    "CycleControlBase":"contractVersion:int profile:id releaseBase:ReleaseBase releaseInputs:ReleaseInput[] releaseEvents:ReleaseEvent[] world:World movementEnd:MovementEndProof progress:ProgressRef[] targetUses:TargetUse[]",
+    "ContinuationWitness":"kind:id unit:UnitKey destinationLocationId:id terrainCost:int breakOffCost:int afterCp:int excessCpDp:int usesReleaseException:bool",
+    "CycleAssessment":"releaseCompletionReceiptId:id movementCompletionReceiptId:id progress:ProgressRef[] witnesses:ContinuationWitness[] combatAssessment:id",
+    "CycleControlCommand":"contractVersion:int kind:id controlId:id cycleId:hash expectedPriorVersion:long? decisionId:id?",
+    "CycleControlInput":"command:CycleControlCommand actor:actor admittedAt:utc? clockAvailable:bool",
+    "CycleControlEffect":"kind:id reason:id assessment:CycleAssessment timing:Timing? openingClockFailure:bool successorPositionId:id nextCycle:Authority? expiredUnits:UnitKey[]",
+    "CycleControlEvent":"contractVersion:int eventType:id author:actor campaignId:id rulesetHash:rawHash configurationHash:hash cycleId:hash positionId:id baseHash:hash controlId:id priorVersion:long stateVersion:long priorPrefix:hash input:CycleControlInput effect:CycleControlEffect receiptId:id",
+    "CycleClosure":"cycleId:hash ordinal:int outcome:id receiptId:id",
+    "CycleControlState":"contractVersion:int baseHash:hash controlId:id stateVersion:long prefix:hash status:id positionId:id activeCycle:Authority? closure:CycleClosure? decisionId:id? timing:Timing? openingClockFailure:bool acceptedHighWater:utc? assessment:CycleAssessment? members:ReserveMember[] world:World randomState:Random attackHistory:AttackHistory[] targetUses:TargetUse[] nextCycleProgress:ProgressRef[] receipts:Receipt[]",
+    "MovementExpiryInput":"contractVersion:int cycle:Authority firstActingSide:side priorProof:MovementEndProof endLocations:EndLocation[] completionReceiptId:id members:ReserveMember[]",
+    "MovementExpiryResult":"contractVersion:int members:ReserveMember[] proof:MovementEndProof"
+  },
+  "domains":{"control":"sandtable.combat.cycle-control.v1","receipt":"sandtable.combat.cycle-control-receipt.v1"},
+  "externalContracts":["combat-reserve-release-v1.schema.json","combat-ordinary-movement-v1.schema.json"],
+  "limits":{"bytes":1048576,"depth":32,"arrayItems":512,"events":2},
+  "scope":"Private cycle control and pure Movement-completion projection. Synthetic Movement-end/inherited history and isolated Reserve Worlds require D2c integration. No production registration."
+}

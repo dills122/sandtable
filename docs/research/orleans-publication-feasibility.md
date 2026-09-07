@@ -35,8 +35,8 @@ head under an expected prior head. A checkpoint is a verified, reconstructable c
 Start provider evaluation with this contract; do not select a database from this memory-store result.
 The tested whole-record aggregate is a useful bounded baseline, not an unbounded campaign layout.
 
-Owner acceptance is still required before production host/storage implementation. Continue Combat
-003C3c →003D2 →004 → checkpoint B now. Production host timing remains the accepted020–021 public Core
+Owner acceptance is still required before production host/storage implementation. Current contract progression is
+003D2b.2 →003D2c →004 → checkpoint B; see the [combined plan](../design/combat-cycle-implementation-plan.md). Production host timing remains the accepted020–021 public Core
 activation plus one verified023 trace and accepted host contract/storage decision;024 remains required
 for Combat closeout. This research does not activate Combat or complete campaign lifecycle/Maproom.
 
@@ -229,4 +229,6 @@ Author review checked conditional publication, failure recovery, duplicate-befor
 Core authority boundaries, bounded history and explicit provider/authentication limits. Focused
 format verification and `git diff --check` pass. Navigation check:520 local links,9 anchors;
 25 stable task IDs/dependencies,72 unchanged design acceptance criteria and8 policy IDs. No new
-independent review round was run. Next scheduled work is003C3c, not production host deployment.
+independent review round was run. At this historical experiment checkpoint, next work was003C3c. Current progress and next gates
+are maintained in the [combined plan](../design/combat-cycle-implementation-plan.md); production host
+deployment remains gated.

@@ -1,0 +1,304 @@
+{
+  "contract": "combat-reserve-release-v1",
+  "scope": "Prospective private Release arm; isolated ledger/provenance fixtures, plus no-disposition composition from C3c. No actual campaign opening/repeat or multi-unit Combat.",
+  "cases": [
+    {
+      "name": "first-release",
+      "ordinal": 1,
+      "statuses": [
+        "I"
+      ],
+      "actions": [
+        "release-I"
+      ],
+      "expectedStatuses": [
+        "none"
+      ],
+      "expectedReleased": [
+        "I"
+      ],
+      "expectedFallback": false
+    },
+    {
+      "name": "first-convert",
+      "ordinal": 1,
+      "statuses": [
+        "I"
+      ],
+      "actions": [
+        "convert-to-II"
+      ],
+      "expectedStatuses": [
+        "II"
+      ],
+      "expectedReleased": [
+        null
+      ],
+      "expectedFallback": false
+    },
+    {
+      "name": "first-timeout-midway",
+      "ordinal": 1,
+      "statuses": [
+        "I",
+        "I"
+      ],
+      "actions": [
+        "release-I",
+        "expire"
+      ],
+      "expectedStatuses": [
+        "none",
+        "II"
+      ],
+      "expectedReleased": [
+        "I",
+        null
+      ],
+      "expectedFallback": true
+    },
+    {
+      "name": "first-clock-regression",
+      "ordinal": 1,
+      "statuses": [
+        "I",
+        "I"
+      ],
+      "actions": [
+        "release-I",
+        "regressed-choice"
+      ],
+      "expectedStatuses": [
+        "none",
+        "II"
+      ],
+      "expectedReleased": [
+        "I",
+        null
+      ],
+      "expectedFallback": true
+    },
+    {
+      "name": "first-unavailable",
+      "ordinal": 1,
+      "statuses": [
+        "I",
+        "I"
+      ],
+      "actions": [
+        "unavailable"
+      ],
+      "expectedStatuses": [
+        "II",
+        "II"
+      ],
+      "expectedReleased": [
+        null,
+        null
+      ],
+      "expectedFallback": true
+    },
+    {
+      "name": "first-opening-clock-loss",
+      "ordinal": 1,
+      "statuses": [
+        "I"
+      ],
+      "actions": [
+        "expire"
+      ],
+      "openingClock": false,
+      "expectedStatuses": [
+        "II"
+      ],
+      "expectedReleased": [
+        null
+      ],
+      "expectedFallback": true
+    },
+    {
+      "name": "later-release-retain",
+      "ordinal": 2,
+      "statuses": [
+        "II",
+        "II"
+      ],
+      "cpa": [
+        9,
+        10
+      ],
+      "spent": [
+        3,
+        7
+      ],
+      "actions": [
+        "release-II",
+        "retain-II"
+      ],
+      "expectedStatuses": [
+        "none",
+        "II"
+      ],
+      "expectedReleased": [
+        "II",
+        null
+      ],
+      "expectedFallback": false
+    },
+    {
+      "name": "later-complete-intent",
+      "ordinal": 2,
+      "statuses": [
+        "II",
+        "II"
+      ],
+      "actions": [
+        "complete-release"
+      ],
+      "expectedStatuses": [
+        "II",
+        "II"
+      ],
+      "expectedReleased": [
+        null,
+        null
+      ],
+      "expectedFallback": false
+    },
+    {
+      "name": "later-expiry",
+      "ordinal": 2,
+      "statuses": [
+        "II",
+        "II"
+      ],
+      "actions": [
+        "expire"
+      ],
+      "expectedStatuses": [
+        "II",
+        "II"
+      ],
+      "expectedReleased": [
+        null,
+        null
+      ],
+      "expectedFallback": true
+    },
+    {
+      "name": "empty",
+      "ordinal": 1,
+      "statuses": [],
+      "actions": [],
+      "expectedStatuses": [],
+      "expectedReleased": [],
+      "expectedFallback": false
+    },
+    {
+      "name": "prior-release-retained",
+      "ordinal": 3,
+      "statuses": [
+        "none"
+      ],
+      "priorRelease": true,
+      "actions": [],
+      "expectedStatuses": [
+        "none"
+      ],
+      "expectedReleased": [
+        "I"
+      ],
+      "expectedFallback": false
+    },
+    {
+      "name": "settled-guard-empty",
+      "ordinal": 1,
+      "statuses": [
+        "none"
+      ],
+      "settledCase": "defender-capture-guard",
+      "actions": [],
+      "expectedStatuses": [
+        "none"
+      ],
+      "expectedReleased": [
+        null
+      ],
+      "expectedFallback": false
+    },
+    {
+      "name": "settled-escape-empty",
+      "ordinal": 1,
+      "statuses": [
+        "none"
+      ],
+      "settledCase": "defender-capture-escape",
+      "actions": [],
+      "expectedStatuses": [
+        "none"
+      ],
+      "expectedReleased": [
+        null
+      ],
+      "expectedFallback": false
+    }
+  ],
+  "sourceHashes": {
+    "verify-combat-result-settlement-v1.py": "sha256:1f7dff5b87ce036c406562686f4dc1ce983a4a8dfa15b2401eae72a0d9879ffd",
+    "fixtures/combat-result-settlement-v1.json": "sha256:cc25c358c997e54dd61fe1d843db5e7385c4a85706c462b87badacb939ec71c2",
+    "combat-sealed-round-v1.schema.json": "sha256:5556404caa296ce41020654f8fb64c0349fd13051edabf6b4934e47d675c32db",
+    "fixtures/combat-rules-inputs-v1.json": "sha256:5401cd9a690be8b81f19795f1f66c0c6fe24f5055a06cda5facd6193b3e0a29a",
+    "../research/verify-reserve-release.py": "sha256:d070dee76f115c8ae51f28e42f4c9189a52dc889093715f6590840cd6db43be4"
+  },
+  "goldenMethod": "Regression vectors recorded after literal behavior checks; 48 base bindings,188 state frames,140 event hashes and3 full terminal events. Not independent serializer parity.",
+  "goldens": [
+    {"case":"first-release","side":"axis","slot":"first-acting-side","baseHash":"sha256:553d6c04a2445c352e094f58c42f500eb43d939580ea9ef19f64df8112e92652","frames":[{"cut":0,"hash":"sha256:d37ebd10424ef769af43c725ce86173824fc66e0661a1e64373199ac48a5f115","bytes":1339},{"cut":1,"hash":"sha256:c048ad17b38b922936ea34570d302f666532208224180dfb4c66825a4a59cf69","bytes":2184},{"cut":2,"hash":"sha256:f129bfd810fbc183adc4f5f535e1948fdee7b8b024cf5899b3f1323ebf3935af","bytes":2843},{"cut":3,"hash":"sha256:8236b0b230de513228e2bd9f2d3d4d6bd4a0f99bb3f47abd6e99c2f48726d919","bytes":3207}],"eventHashes":["sha256:0c5fd391a18ab76d9ae4341d50da87f0124836cae0af0bda82be310cada29936","sha256:0c8f86438f411b7101d8daa54b96343c328cf2ca658b5bf05383a196c2eaf85d","sha256:c65fb0e4a9285fc9edb1077b74da5770f42960bf2cc3fa46db2a88c64f3c6317"]},
+    {"case":"first-release","side":"axis","slot":"second-acting-side","baseHash":"sha256:bd8f8381b552991caf6df523abea29e7b356fdf74dd15aaa031b0bb53e4e11ab","frames":[{"cut":0,"hash":"sha256:0624987844dfd598acadb5a534d4dad52b427af2b1e70641c87ac6199aa72cbd","bytes":1340},{"cut":1,"hash":"sha256:86eecb91a5eeb30c4d45f9e349a3d86f9ebe48efa3742b22dfa87cc29e417dae","bytes":2185},{"cut":2,"hash":"sha256:3450af94d5ab771f4393c0da28b2c4a54203d875dac721e126973d0462637141","bytes":2845},{"cut":3,"hash":"sha256:7ca7199dacd12df3a4cfc31c4a9b04b06321ae4a54f0929f20bbba428278e780","bytes":3209}],"eventHashes":["sha256:fbc90a8c21588a8bfd8c02713e8d97af01f98df730f7fd0224f6352432de2e18","sha256:69b8e27b21e9fff39a81105df2f9bf57538d925e396187b7deaed59c086a8b0d","sha256:ec6fd0cf4cb3105d96af880806d47e2a3f99c919d6fae17f5faed615461e1983"]},
+    {"case":"first-release","side":"commonwealth","slot":"first-acting-side","baseHash":"sha256:dabaa9a3159c9ea11c8242bc3be2cf25fbc9a221fde1b3d58b2eb1ae6308fdfe","frames":[{"cut":0,"hash":"sha256:333f2251939a4846f7cbce1505a77cd4dc3daaca992a00a4bed8b8f16ed4612a","bytes":1363},{"cut":1,"hash":"sha256:78a9dc61299ee0a13f52848762b46ada861ce40b036c5beeada4a87aa38e0276","bytes":2224},{"cut":2,"hash":"sha256:064eea03d3b71cbbb1cff035374b5b2bf5931274f720a60c615bea0b210b9e51","bytes":2899},{"cut":3,"hash":"sha256:edaf9a0842100640ebd391ecabf02299aa36b4328dcebead30ba1906af3e0fb8","bytes":3263}],"eventHashes":["sha256:51997475cd95b0c98b3fa6721c7539eff1a0f2cdfdaa11b1cde5b195e34eacfe","sha256:bfb99b0f4d18e01adf44052a4da5430b094665ded858e7f078f2e6bc6bb0fcb2","sha256:a274ff21f1849e80ccdd037fcc0b516d346f26af2ed5d73e74d8d0c7f4dd41ce"]},
+    {"case":"first-release","side":"commonwealth","slot":"second-acting-side","baseHash":"sha256:288033d7767b8acaef63968d022f2e6bda0d1c3ca1d00a84298567367a5d6d78","frames":[{"cut":0,"hash":"sha256:f63655ddd7d7fbc248c969de31d63811870e2565c248f8e7dabae7f131ad2b56","bytes":1364},{"cut":1,"hash":"sha256:3b1c86f078a2f672cfd098e285d4a75ed54d9f883a53db039e7ae2ec58a46f8d","bytes":2225},{"cut":2,"hash":"sha256:a375fe4522ae72aea83dc736a8f4bdfeca769dddf9a9b6633f0389b46635acaa","bytes":2901},{"cut":3,"hash":"sha256:e618f35b59633d29509a657137b374c76c5bc68742d2b5461e94f6e873ad2b5d","bytes":3265}],"eventHashes":["sha256:d3307809794ebc6f0d8fc4a5fc2d51220c556ee3c4b8d1099ec4d795edfc20a7","sha256:c80572f65db2bc3a1a052033aeb6f31d02eec35f7dfbf779a39157f99a7926ba","sha256:a2ca8471e5195e70676b85f453b639805b8c89eab6963f05d4148b47e5f60f8c"]},
+    {"case":"first-convert","side":"axis","slot":"first-acting-side","baseHash":"sha256:f42592c7786513e7f637a7afec8986130c8b752a94a3523868be1adc719cf041","frames":[{"cut":0,"hash":"sha256:d1bde29fcc3762c10d1ffe813f6ca749501ddee1dbb1d249b993460748b36bbe","bytes":1339},{"cut":1,"hash":"sha256:25ca068afc3f21da606677e8d4c2819a40b44e66763b70d5dbdc471c808e6250","bytes":2184},{"cut":2,"hash":"sha256:f78910368a23a497de26394f95f22fbf68b6bc8b907636e82357d79fed7029da","bytes":2696},{"cut":3,"hash":"sha256:f4c864175836d7e046f3c93bb9d2e1df7c436491ebbd6ade7ddc6cf81d305afe","bytes":3060}],"eventHashes":["sha256:b6b73d69a3e457526deff5c0c3a6ed42de666aa33de079a27a263aa647126f4a","sha256:d5e1f8325bab1f6d8aabed160feb939e795c1d1abbfea273b6a9892ce2f6bae4","sha256:05badb7fb6580b92e3efe46356eb670e6278151128271d39b97a6501ed7385b9"]},
+    {"case":"first-convert","side":"axis","slot":"second-acting-side","baseHash":"sha256:b3704fc98feebe0b2cbc89645ab12beee6c3a844b02faa55dbea86153ba9e0c0","frames":[{"cut":0,"hash":"sha256:33f0abcc58b0c778cca00ef3c70909b0f30fd13a6fe0255126fd4e3fbce107d4","bytes":1340},{"cut":1,"hash":"sha256:07a584d2241869d121817b69067aca22de1168822143c756d3bc96b35232d955","bytes":2185},{"cut":2,"hash":"sha256:74fc2790627b03c504d94764de8b1f7c38c9b4e5a4fd0fdc246a8b7623e324af","bytes":2697},{"cut":3,"hash":"sha256:0762a83f7f0154205890fefcf20130da598812821317ec0f75f60c91b42a4ed0","bytes":3061}],"eventHashes":["sha256:7addf11b08b310066c0902d77de452462e55c139b022a9a98b57a004622aabec","sha256:031f1825100190c2d59230da6661b34eae78132080cd5d061f883a34dfc3df4c","sha256:415574fa42b585b578ca037a0c4e4f3c55af778e21c8aba3c35019464bb5fa8a"]},
+    {"case":"first-convert","side":"commonwealth","slot":"first-acting-side","baseHash":"sha256:c3ed50efe6e7a56c0253e86d9adb173fe1a4f92ac82d8509f42f7439bb929180","frames":[{"cut":0,"hash":"sha256:e118faf6400240302f8b82bb36985aef06bfad75d233afc553e4c4690b0172ed","bytes":1363},{"cut":1,"hash":"sha256:9090c472d482736757b990130a5008fdccc7026756a26ced2f2d19f6973a3f08","bytes":2224},{"cut":2,"hash":"sha256:6b9ba71329499ef050d015d9ad9cd0af1d0a99113cb837e21e220c020fb5105a","bytes":2744},{"cut":3,"hash":"sha256:feeaa0367dfdf244581caab298ea7a238cf9bace04d566a6941907a85409163b","bytes":3108}],"eventHashes":["sha256:72cd03a6e1de652fd8805a74f69c60e17c6a7dad82f7dd3870367fb26ab63f4c","sha256:975b59cbdc43e363e728ed0a29945ecf23de6c3d2ab9d2d966a5f5cd4524ee25","sha256:08b5afe915b8617afbb306b1db6408acf43ed7385d4a36e6adbc5f54fe0b3038"]},
+    {"case":"first-convert","side":"commonwealth","slot":"second-acting-side","baseHash":"sha256:6b83b33cf3bc2142c173c386f4fec246f24d418ae989aa9bc2540ced73054a66","frames":[{"cut":0,"hash":"sha256:2a811ad935dbba4f3605c37331353b30f69410cab12101c65a958ff763a638f2","bytes":1364},{"cut":1,"hash":"sha256:f2309bd41771cebfd79981c39080c01e9250349fcb71d2fb37bd77fa862d6d4c","bytes":2225},{"cut":2,"hash":"sha256:0261c3cf9ff2dedcba2b4efcceed0f81102dace60bac27db77f6a4cb7ea60251","bytes":2745},{"cut":3,"hash":"sha256:07b2126c026e05b1798ba484f9f17542ecb16eba8798f94003072b7326b1c0cb","bytes":3109}],"eventHashes":["sha256:f7cd64fa8662dd87f8400ab2749abd38b7c83f26be9c4ae63abd2a9b860b1cc3","sha256:69b3cce173fe1296c1c61301b870ab94d1082a4c26540cdb307cf4fb4b8705b4","sha256:4d19153d254355bd4348c97b54e4b4a8e3c22c3a8595e2d717912b4c0d01411d"]},
+    {"case":"first-timeout-midway","side":"axis","slot":"first-acting-side","baseHash":"sha256:656673546ad57195c96b661a3df932f63469ab9c45a73bbd82aa88d8821dafee","frames":[{"cut":0,"hash":"sha256:5ef69d111cce78232cfa5901f164291597b25d28139213c60c8f24ac02badb21","bytes":1916},{"cut":1,"hash":"sha256:15c0c793eac5a37fcc6459f7116cd34ece415324e9ab6a314f545efa9a3fa268","bytes":2924},{"cut":2,"hash":"sha256:ecc32e52b01b786e203b5464559e0368a48642932aa8826da9c1a59df458b2f9","bytes":3582},{"cut":3,"hash":"sha256:49dca3833f9047a6262a828d3279641603a0b63d09414fb00fd80609b8af09a9","bytes":4104},{"cut":4,"hash":"sha256:55eaf5dec1adba570ce4595b4677c879e858bf510bf4aab2d89d09100ca15775","bytes":4468}],"eventHashes":["sha256:25e667be16c9047ac0e8545c8dc284ca40469fd7adc198105a84b1315ce0d6bc","sha256:4a2482b01b0cecc8556a90520b0d2a25b416edf058633cdbce6363fdb4745aa1","sha256:58d518a1e0fde17eacd11c9c9200f86cc422548f6fe4e30c80dec3fe0e5ebc67","sha256:40dc6b869f5c2b2e32112aff339b77556fcd512f84713a44913679602d109319"],"terminalEvent":"{\"contractVersion\":1,\"eventType\":\"reserve-release-completed\",\"author\":\"system\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:6ecfd4259a6c479d33af41fa54465e48887dcfef1d076be351f43fbbce56498e\",\"positionId\":\"land.position.operation-1.first-player.movement-and-combat.reserve-release\",\"baseHash\":\"sha256:656673546ad57195c96b661a3df932f63469ab9c45a73bbd82aa88d8821dafee\",\"releaseId\":\"rel.0a282b0572528137e16ebfc36ff0b55b09e36bf93c0302fd79188bf2b1ad82e2\",\"priorVersion\":103,\"stateVersion\":104,\"priorPrefix\":\"sha256:1f321b55a368c138e5d5b3e36d70358557711ca94dee4008f74e3e8ebf438c15\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"fallback-step\",\"releaseId\":\"rel.0a282b0572528137e16ebfc36ff0b55b09e36bf93c0302fd79188bf2b1ad82e2\",\"expectedPriorVersion\":103,\"decisionId\":\"rel.0a282b0572528137e16ebfc36ff0b55b09e36bf93c0302fd79188bf2b1ad82e2.decision\",\"unit\":null,\"choice\":null},\"actor\":\"system\",\"admittedAt\":null,\"clockAvailable\":true},\"effect\":{\"kind\":\"release-completed\",\"reason\":\"deadline\",\"retainedUnits\":[],\"dispositionReceipts\":[\"rr.efbcb433a7391c1d73ae9595d6ca07b0a871126ceb0ecc89cdc1919096938e9f\",\"rr.c903b2144f3e571f4649bb0f9ea919b28c15e8ecf2cfae8d2a082a22b6e7e838\"],\"timing\":{\"contractVersion\":1,\"configHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"kind\":\"reserve-release\",\"decisionBudgetMilliseconds\":30000,\"openedAtUnixMilliseconds\":2000,\"deadlineUnixMilliseconds\":32000,\"highWaterUnixMilliseconds\":32000},\"fallbackLocked\":true},\"receiptId\":\"rr.7ed2628119ddf3ed5c6e207c680133169750deda987597e743223539bb8e94c0\"}"},
+    {"case":"first-timeout-midway","side":"axis","slot":"second-acting-side","baseHash":"sha256:ef038a4d7b7ccf0f7f500488f8f1aba22d041fe019e6b7cd1983d2fa9e1e13df","frames":[{"cut":0,"hash":"sha256:5a8cccd96cceba6d551c09ee3da92400801721d4e5ed204a202fe9d0bb8b2b16","bytes":1918},{"cut":1,"hash":"sha256:44091c8771b7628be593d83d6c24048a70420c6836f157238257b6dbc619b87b","bytes":2926},{"cut":2,"hash":"sha256:381f3b76548de300ae8fbafd3611ecad3b2786f89d2f2f324922b3c18e9ac084","bytes":3585},{"cut":3,"hash":"sha256:d09be8fe0107d4b2e9da119af310da31ae757e6ca53d214884af6af441b88c87","bytes":4107},{"cut":4,"hash":"sha256:6167805a8b61d28aeb888e17e6a960c1f909a0703bddb85ae7372c3bdad4eff0","bytes":4471}],"eventHashes":["sha256:fbadeec95bee114c26f0d9fc9e753b1cbedb7a6d50ad9d3eb568926aa3ab50cc","sha256:30f35236be74a8fa26de5889ccef811de714f826ebeacc1d04e7bc5a82ee897f","sha256:b91a652c07474a59fedf7a0965ebe3ee3f1f1b35e355046d881af8fec9a01be1","sha256:14b50f7c97dd2a1fd8ea578b4b2872c56355c1b044a305bbcbc00b8e40ddf6a4"]},
+    {"case":"first-timeout-midway","side":"commonwealth","slot":"first-acting-side","baseHash":"sha256:822ba52ff153581e6ed182b81930ce3ee9cb4ec6d578cd11f4b978dd2b7e7eaa","frames":[{"cut":0,"hash":"sha256:ba52667a438df98ab12d52a38e59209f89d89de2664f0aec18e6adda4769a168","bytes":1964},{"cut":1,"hash":"sha256:2cb130f3a7e38bb6107e1e2de9d28971efc256f82e70e5b6d65312dba48a4395","bytes":3004},{"cut":2,"hash":"sha256:be7687fe4e99287789733125846f0e0fecd768ddc58d967444a20280e63f6c01","bytes":3678},{"cut":3,"hash":"sha256:395a48aa736c09c87d9a2828c5ed6d18214a8995cbd92e0b3cf6b0949895dacf","bytes":4200},{"cut":4,"hash":"sha256:51d4af36fc467a082ad29e49ae637d89768a707243afd6002d3280aab7c34fa8","bytes":4564}],"eventHashes":["sha256:67d1799bf4463ee7dd6791406a65642c873b9a364e6fd1e580701dcffa52b434","sha256:e020364142cd1f670bbbe302932457397adc0f5ad955103620c086d4523ed513","sha256:6f4239102da6d93bdd55b12bf9d571e3d9ffe39596232f90c98d6f08fc9935e5","sha256:4adcbd36d9f4efdad37e4d5bb12c8698963630732a6de43939bedc6b84b38dc1"]},
+    {"case":"first-timeout-midway","side":"commonwealth","slot":"second-acting-side","baseHash":"sha256:285c14e6c4423b773f51e3986af203efdc9f6a15a8e5dd5ca08d385e41d4dd92","frames":[{"cut":0,"hash":"sha256:dcc1e31478d3c1e57a37e89b5eba44d0dec46cf146e04eba4c246b1899067b66","bytes":1966},{"cut":1,"hash":"sha256:9d800cc01f33a73379fff0baa4e41ed47948aa0bf064159ad72917ed490ae872","bytes":3006},{"cut":2,"hash":"sha256:ecfae4a348634d37c02ec411fecf16874a261714efcc6bca1a247a6fc92b35c4","bytes":3681},{"cut":3,"hash":"sha256:e4cfe9afc6fa86c65aa201827affbb2be2a78e576028945183d1f5d92bd8f610","bytes":4203},{"cut":4,"hash":"sha256:22da2b3f96facac8f3869659f6f556712d9ce78c457c0f1a7142b5aa16da624b","bytes":4567}],"eventHashes":["sha256:0250197e707ca2f7df84074f86e9631b1b7e3df7262488e4eea8a702844be9c2","sha256:c91d144fd383de041231b508023dc672fb20e93108a91e5d3abf0ef6d0212833","sha256:f7e05f05d3c1c918249f94aa7b1fd754cc89e62ea822e69c3e3a6cc06ba14ba4","sha256:4bf6c93597ba28de8158fc2bdaba0500a31947c96400a7f3b8a625a8bb5bd762"]},
+    {"case":"first-clock-regression","side":"axis","slot":"first-acting-side","baseHash":"sha256:746e62d04298b8ca1fe667e3714da1ebe6f4f1edc30943bf34c011fcd5e809ac","frames":[{"cut":0,"hash":"sha256:0392333f288a625c48bd82e0da3e3f6179c28640034b296e743cbfe0b510b06a","bytes":1916},{"cut":1,"hash":"sha256:54a7980d7837dce8fdb98c4a5c291954427b70effcd8b48b134397ea9d3c8ee7","bytes":2924},{"cut":2,"hash":"sha256:440c5a7bf42e366152170bd9d6b7c93aeff0ccb8c369ce42bdae2e01d2d26aa6","bytes":3582},{"cut":3,"hash":"sha256:d210d4ebc9375e26aa768034886f3bf40301008e032ab5b99ca3478ca35cb651","bytes":4109},{"cut":4,"hash":"sha256:614626b0cf3dc175120552c762f5cec106a32fe936a1237981e8ef707768b6f9","bytes":4473}],"eventHashes":["sha256:4591e0d6be3615b9758e5a555e800f9d65e3b9eac278e84a7a4ed0b74c4956d4","sha256:6803bb7718254b570dfe08389b9ad8b9fc80cea52e9140e1959ca412834664d6","sha256:2c37161d70705254d9243cce658b3a3aee28c3565fd22268c6631168e0b6281a","sha256:e8392a2aec650570a9301272f21018d68bb67276ac87e70cc856dfd943dec2ed"]},
+    {"case":"first-clock-regression","side":"axis","slot":"second-acting-side","baseHash":"sha256:5e482c1e4392226a56be3eaf4a26eb8ee3986642ff340eabcdfaa1249d07a872","frames":[{"cut":0,"hash":"sha256:fd66a612987b52280dc1bc7ed9204c95c150e41bebfc1ef109e7d9e1ba388014","bytes":1918},{"cut":1,"hash":"sha256:0e13a62ab412415307c38b4dfc07411c7619e3fcaa39180f25a1b9947740392b","bytes":2926},{"cut":2,"hash":"sha256:fb00c9c293148d8fe575c7ec72bf7053439614bafe438fbc019478bb5e6de463","bytes":3585},{"cut":3,"hash":"sha256:bec5a3ae5f84008a71ebd7798eee2f8480057d26dd9b31dc25a70083f6d39f01","bytes":4112},{"cut":4,"hash":"sha256:ae1e36ae510a2d13c88248d7cd59c27acbbf5cfc4c582142bfebf47c656fe1ed","bytes":4476}],"eventHashes":["sha256:49d872bd68c1aa44fa164b5697bc9f7ac9f87e885d26135ce79e96e5537f6e5e","sha256:b40afb4f592375ae4b7e7af3f8a26fa983625ef065e53d6e6d36f0cb717f2bbf","sha256:0f553dbe3576f4e743881b298ae30e2f7b40378adfbedc4bb0cefde334585b10","sha256:209d9fcc723ce242eec190c8c59432fbc93378e630d2a050bfc69678c1106d08"]},
+    {"case":"first-clock-regression","side":"commonwealth","slot":"first-acting-side","baseHash":"sha256:41a02b4128ef6da546a12cacf8d4284bc29d86b2cd874fc0fbb0aa00e206b285","frames":[{"cut":0,"hash":"sha256:52dab303609025f256de1226def414a70233c41b7160f4332f5cd9a46878182b","bytes":1964},{"cut":1,"hash":"sha256:93c6c28f08f094ee5e07e7b6914e046da1d7a841a6e12dbbda7800f81546e8d6","bytes":3004},{"cut":2,"hash":"sha256:0cca9198015c44b96e789b608d7e479da6691c7f53da6f3b757c670a1852ddf3","bytes":3678},{"cut":3,"hash":"sha256:a3a8ecf83c53e9fb43d3c6cfedc0b7823b955d65e45950ffa69a5106ca5c6d3f","bytes":4213},{"cut":4,"hash":"sha256:f67d13bb3e9806f9096739855a91d0fceab2a44659c271de345d14b4d15dbab7","bytes":4577}],"eventHashes":["sha256:c5b5156e6f917dcaa0d19de9e1a0ebec4c949f05d0a9c751f754a309f37e3066","sha256:31cd1e9c116508bc3e019ac3f435f31065eb4dda3c32ee35d677c4ee02e58949","sha256:76a1bbddf7d5a21818f8c272960531dd6e569562ec9c1f7ae6c5fa191f11e51b","sha256:b7cbcbf98917e1bc186abb02299bf825d22706ca87cc4458ea3d2a15039ee20b"]},
+    {"case":"first-clock-regression","side":"commonwealth","slot":"second-acting-side","baseHash":"sha256:a12b45b6ceb6feb00b3d97f4b32f13144672aad5a93b4f65c5ca9876baade2d3","frames":[{"cut":0,"hash":"sha256:d5fcfe5eb8bb922b20afe6240b46ff7e148add553fbd4bed22a20c09a1aea5ff","bytes":1966},{"cut":1,"hash":"sha256:17520c47e5592eb4c1275cda750cd8a3e46e549be37025174da62198efd23ab7","bytes":3006},{"cut":2,"hash":"sha256:93566134797615a1255a9e0669903adf8f24a5f2b62edaa603e15f7f26d2a9d0","bytes":3681},{"cut":3,"hash":"sha256:96f6ef9b8465c169c29f6ebf62f65e113766c958125e50494a02b9aa709e5f50","bytes":4216},{"cut":4,"hash":"sha256:55f1db59d714aee47de2a4b59a29aec219bb598d6fe8d7a209aa23db43a64673","bytes":4580}],"eventHashes":["sha256:69cb602bb09a08d17be6b3b2a2f3a64e5d3893c1ef081d968a0d65dbc17488c5","sha256:da8abc7b8754b692c542977f205877e0fdab7adfcb2719a3d9114e7cd2a8ddc4","sha256:75971ba3de742ee4bd1e4d22e0777704ae7f482b2c7f1ebc49b20c878f316078","sha256:ba81095196447d7a96128823bd3643c625800108c6f4616f22983a677819808e"]},
+    {"case":"first-unavailable","side":"axis","slot":"first-acting-side","baseHash":"sha256:803bc1401f841bd9f434420d52cd01098fd990257b4351bef876a98288eb986d","frames":[{"cut":0,"hash":"sha256:9f6156a254176a86726470109d806315290104a195c9fd97bb38c18b89755d44","bytes":1916},{"cut":1,"hash":"sha256:caf743cb704301dafc3b857beeedd35e0faf79126f4f537baf4f7088fef3a247","bytes":2924},{"cut":2,"hash":"sha256:15c272655b2e85d8ab3e37022a7f89bca14b663c016f82e344af8faf0e185295","bytes":3456},{"cut":3,"hash":"sha256:9433bf22d8af0c33ef90f2713f95b0c1a0218bc9d5bf7ebe6b4152f4628cd7b0","bytes":3971},{"cut":4,"hash":"sha256:99129e5338a9b26322bc2eb3387b2bda998d2b19f4d77f9a7d259236d266b0e8","bytes":4335}],"eventHashes":["sha256:5379db57c9d0e70f3961fb6da9c1a3825c6d7a8b3e7707faa7ef916956ca6aa7","sha256:1e2f64cdf3d1039d9490314edb6184ba350149b2a338323c72c5747919643681","sha256:d480748e9faa7d8e0988ccb54503daaa9bc883f59902b4fed036c837d634b757","sha256:cccd9d10f668971e589778b658e78fc5e9ab26cd29937df316dbfe4bb6351119"]},
+    {"case":"first-unavailable","side":"axis","slot":"second-acting-side","baseHash":"sha256:2fe749fc6c14bb13db30544f47d238b87489aa2b108338dcbf4bf79805a9676f","frames":[{"cut":0,"hash":"sha256:95e9462090a333f9c50a0883192737da8f6081e6acd5703488e80dff619df45b","bytes":1918},{"cut":1,"hash":"sha256:4a35ccb4e9f4787591cded722e89162cb34f0687c8bdf8801b33beaf492e6e05","bytes":2926},{"cut":2,"hash":"sha256:a2a6dbed21b1e592e84d7b5533d0c60701960740fd16be89b1d893f1b7db48a7","bytes":3458},{"cut":3,"hash":"sha256:e0bf8ac186693f05bc16d19fd3c17c0854fba378142347bcdc6dec2cc537e120","bytes":3973},{"cut":4,"hash":"sha256:7c8c32247055da87966a71d57bf26e8717de55a86c32d3169bed6c27e205f688","bytes":4337}],"eventHashes":["sha256:f5e0864dc5c8575ab61adebf5980a27aa5397c1bc2c07eaa6f5c33bd3a0445af","sha256:c6a15a99b3d818ca1a08ea16283482458791e9c2b18f93fa2447db72933a2d03","sha256:6d804884f5f1dae268f1bcda7e76e4c178e1faf43f7da3c602bb0cc7da823025","sha256:7585fe69c359c9f43aa494935ef4c21f1ac8bc1b4235e1cc3287fb013f26b9bb"]},
+    {"case":"first-unavailable","side":"commonwealth","slot":"first-acting-side","baseHash":"sha256:e1e10cde1c7339e623a5c44c141bd6a67189fcae764c542288a73bbb12198d53","frames":[{"cut":0,"hash":"sha256:3f14739db6751c4821ff8b031ba3fd0ded09eb25c908cfae8f7f8a0eb243238e","bytes":1964},{"cut":1,"hash":"sha256:bc3970833a5f4ee2e15826897c4a2ec1a3ff4fcbb4e297e948895021c3a839ff","bytes":3004},{"cut":2,"hash":"sha256:7fe29d639bf66ac1c878857f5d7693c598cdb04a27c1c5544b4471ed20ec41bd","bytes":3536},{"cut":3,"hash":"sha256:53ec3aa49e8d3ca1b466c3b59aef3abaab8adad9419c11cc0ad84a8c1047f0ee","bytes":4051},{"cut":4,"hash":"sha256:c4ba59a7c64fd9a044c9cc0e5ce6a83588a3929797948893a533e3d384b76827","bytes":4415}],"eventHashes":["sha256:2ae7fc044fbdeb45802f11512b8614c0dd26f1990683d3c5ffd074b572854c7e","sha256:97e20ab7931ea3ba45b306e4452655cd495703bc2bd41fd25b506c57cde9546a","sha256:a42c7ac76474cd9691489e23d9f35dff2ec60a73bf2fa463a40bffdcb8962168","sha256:8a5a1cdc7d56c8e1c404dce46fb6d4b34781ed9c574e8b365cfc9220d86dcfde"]},
+    {"case":"first-unavailable","side":"commonwealth","slot":"second-acting-side","baseHash":"sha256:7d3095c51991625f79e9f49057d2ef7340b81baa136d6e184c887b383ee82016","frames":[{"cut":0,"hash":"sha256:b331607876599ba4ee2bacb82e6a132cc492db518cb06c82190c9f266f353ae7","bytes":1966},{"cut":1,"hash":"sha256:792dcb68f2b1f39414bc6885f4ac79564b1fbce9542d8ca128d1911ead337e3a","bytes":3006},{"cut":2,"hash":"sha256:630226ffd18546579ca4ed545a5ed25cb2162c8847c95746f5bde64c340fc928","bytes":3538},{"cut":3,"hash":"sha256:7fb958ba3268eb92aec390a289fdd197f2c0a2ed3a43eea8867d9655277285bc","bytes":4053},{"cut":4,"hash":"sha256:c3201f03efa55ac9f88858bdae7eabbc7870434c3b1634bcd430d446b9cda515","bytes":4417}],"eventHashes":["sha256:28001420cc1ad8e5b7f39c8169011e31cc66602fa2e547d8d80b3ef964de1f73","sha256:2d44f2872c389c8e61f531b2f67e060d5653ef003f181f079dbcafb476a0de3f","sha256:7ca9984d4b58baad2ed91c052d57482f3d725ad4c20f0a28b8c300f3a49e8e3a","sha256:d0997cdfc62e5e799f4584a8c46e0d936c20ba0d0950f759349f726e1a85e3d6"]},
+    {"case":"first-opening-clock-loss","side":"axis","slot":"first-acting-side","baseHash":"sha256:ac0e7412ae3d9e8037e4ef92fafd18f027ca25a1966ec5b321c1155a98b8c006","frames":[{"cut":0,"hash":"sha256:6739fc4b3cbbe6b570f28c9b15e01650738522edafa54b596a1dd43b22875ce6","bytes":1339},{"cut":1,"hash":"sha256:441dbdfaa9a27b210c84879e4a0d67e88d0ce03140bfe8e49ac82780bbe83e1c","bytes":1921},{"cut":2,"hash":"sha256:8b2c8206ec3eb9effe6b116159beb8994e606df643d27b9c6d69c8e73014ebc3","bytes":2457},{"cut":3,"hash":"sha256:cca31fa34d50c448ef0f6e5711754e18d7d0d86f170259331d78a6141e620460","bytes":2821}],"eventHashes":["sha256:970cda97a0ab5d411f528530e20fc74564025bb3a9eb608bb48fd9614f9474d0","sha256:ad49b31e997acfdf6b995d1756ba1bbcafb4899c1d4952e08ca8741b8e504107","sha256:cf8b00d3671c0de56d16ef4b9627028be417b953dece693ba75ea3098157f29f"]},
+    {"case":"first-opening-clock-loss","side":"axis","slot":"second-acting-side","baseHash":"sha256:094a0b5e3782f62264088ee1022b5e0af7f1fb759b0b47f267d3742082e054a8","frames":[{"cut":0,"hash":"sha256:7fe665ffc32d47491de44d5466be91d4164abdf551590e032fefb6f2d6f9807b","bytes":1340},{"cut":1,"hash":"sha256:05271f1e8e5204d3482a7cd2e2753d4d3c7d3aec8767d824cf44d8054a45c537","bytes":1922},{"cut":2,"hash":"sha256:48598b7664aa7b7428adff6a033fbd21b208c6071a97430d2f32cf281106d032","bytes":2458},{"cut":3,"hash":"sha256:50617e66adbd34ef29cc2fb2f506ba86c5f676e86657189039f069cac5f7989f","bytes":2822}],"eventHashes":["sha256:a5f9dd217155aba5d761427396919c571a95bb5bafafee645bd45a5f7eacf399","sha256:28c41baa0fd88db0105bd48f3188e3f1ef69bc2ce703c486718da003c54a4100","sha256:9d31c71247f6093bc23798bc0f54aa3f3e996f17ddd8d5891d60040a0033f652"]},
+    {"case":"first-opening-clock-loss","side":"commonwealth","slot":"first-acting-side","baseHash":"sha256:81cd70fa3a2efab46bb41a107b4185471cb8d15fc2d7e8661f4fd6caebed6e74","frames":[{"cut":0,"hash":"sha256:0166a8355c0af7ebdfd3d6e27775fa8b34380d5d111b96aec4b6b17462d791cc","bytes":1363},{"cut":1,"hash":"sha256:4f195227bfca9be6f83322a14579f8dd1fa0048f0798ab5ec259bf6093037d2f","bytes":1961},{"cut":2,"hash":"sha256:e0f070710e82cf67e4e313b66308513167ffa267a9a79152e8e65651c8a57c8d","bytes":2497},{"cut":3,"hash":"sha256:3914bd824ca039e359ff5d68141885ea4237ef65ea34bfa6d084b0ceda535649","bytes":2861}],"eventHashes":["sha256:da6351704556f164522fa5e1abdaa71932d97f915542216a1dfa18822c470d23","sha256:838deb6603cc83a07167a44cb28ef5a37e0924b9643216f2f3bab0e93d07311e","sha256:c926d48b06d45401f807b3235f4adbde803ab687693d8a3ab4039deb34c3ef5a"]},
+    {"case":"first-opening-clock-loss","side":"commonwealth","slot":"second-acting-side","baseHash":"sha256:05c6ac0501a4d869a2dd1900ae1254e1f01969e69b0781eb53974de1d76cab53","frames":[{"cut":0,"hash":"sha256:21de2a8c1244af8ea022f0440610d57db27fc156f071624294429ae51dda2dd9","bytes":1364},{"cut":1,"hash":"sha256:e7111ff13df2f53d3cc09469ccbbc90e9be9a1282fcc2b8165bf95fa1aaccc75","bytes":1962},{"cut":2,"hash":"sha256:ada034aaedd31ae342e0a9ae9d4c3065d604f94dd4408c660d4d91d11fa10a78","bytes":2498},{"cut":3,"hash":"sha256:57bd9e026d95a93a965580578bb4b418088e32254ebb0dfd165bd403e5f88331","bytes":2862}],"eventHashes":["sha256:61435072b647e0f0645fe967ec540f6325dd9fb495e55b47f9a41ed90da94c74","sha256:648e9daf75df67e1efae9cfab0f6aec710955a2203206de090470d7ed0c6c537","sha256:3921310e622c9209c0314b161d77e3aeb5b8077c49c6c7c407312224e351c2ad"]},
+    {"case":"later-release-retain","side":"axis","slot":"first-acting-side","baseHash":"sha256:f134a839a5bb7fe6a9257c3f77216417120e679c58d0417e05023b13b78141e7","frames":[{"cut":0,"hash":"sha256:329842297448393aa85f0cca276a3c7c1a25c872d05ee3e95b83279ddb083ba2","bytes":1949},{"cut":1,"hash":"sha256:f747f1bfbde8f4b2d2b6cc5bbd42ecedc6c1c5c4f96841136ceb98893e4959d3","bytes":2957},{"cut":2,"hash":"sha256:3823e67268d056b8cabe15cc29db9a3f6da9c4a4e845e3c0adaa2aed26a98181","bytes":3615},{"cut":3,"hash":"sha256:7696e6622c97b39a2d9a55a2ae8002df6279c1172b21227541383d2546f90a35","bytes":4059},{"cut":4,"hash":"sha256:d00f3f9e0551d63af0c854e3d632db339971685b1bb56832f7b1bf4fc642c3ed","bytes":4423}],"eventHashes":["sha256:3f6771a719edd2c3e905cda871f155ecf3e0da7cfc2281ef7dea55f783a223c1","sha256:d39ead16e7bd52d5b53b9faad053d9da4630228b905e917610d20f626f24e220","sha256:57da42d1127ff3628937df49b2883b63d22e2eeaeac33209045be1f90624de01","sha256:91de595c1c598388423fdee3d2be7603f382abd34d9fabe75fd9c7e9e8fe3bdb"]},
+    {"case":"later-release-retain","side":"axis","slot":"second-acting-side","baseHash":"sha256:5ba3b2bf881213da8c99c3b60f492bf256269ed35353e14a4352c059f0079f00","frames":[{"cut":0,"hash":"sha256:fb03a31289bd6b1e2d6d757adc97c9b6d3689cd0600a284f7f5bf388bb705231","bytes":1951},{"cut":1,"hash":"sha256:2d16770cfe66228a30522efd218419a7f20bea7f4580933a897dea5afb9903e0","bytes":2959},{"cut":2,"hash":"sha256:51b05979d089c12e30931f24e30a24ebd2507f6a80648dff013e6c863153295c","bytes":3618},{"cut":3,"hash":"sha256:00703c6b00a64e6f8e2a92142ad44e2ed2e68c3058adc14cea71a65290e15ae0","bytes":4062},{"cut":4,"hash":"sha256:ded8024991f7e407e9c779231fab79aaea86cd17111dc42f3f02b14c0e156ead","bytes":4426}],"eventHashes":["sha256:42014ce5176f5f62c27c3fb19527d21aac01a70f1d5b733e53c89d5b10acb7ee","sha256:bd8dab834e1b10dc7ea31ba80b175599701b55091805e013b73dd3397877c406","sha256:d44cd5adc1c9c5425562003a5457607a6113901a9be3290a7c8362e95144f150","sha256:386fffa8f088fa0785cb6d335e1c7cd963ed42fbe15200d71141e8565be08f79"]},
+    {"case":"later-release-retain","side":"commonwealth","slot":"first-acting-side","baseHash":"sha256:3b948a6a81a72db852eee5a92badfb313d13ef93f1b8b368127b30338a8db6ab","frames":[{"cut":0,"hash":"sha256:2997bcea5d74385cd886c6a65b5a14bfc3ffb9a32fd27380dc2f8e073d9d201f","bytes":1997},{"cut":1,"hash":"sha256:aba11e684fab966e6079035d54b790efeeabf36956b3403bbf447efecb270a87","bytes":3037},{"cut":2,"hash":"sha256:2ec140f0abae86826629641e89a1ab45eb10ca9c92256444585df505a31825f6","bytes":3711},{"cut":3,"hash":"sha256:16772ef81d509ac93b15f6ddebf25ef280c59ecc4c7c1551c0c77033f393c7bc","bytes":4163},{"cut":4,"hash":"sha256:eff1aeaf2ce0c4e9d1a9455bdd9a15c75edbe8841df04671bf486f3fc925bced","bytes":4527}],"eventHashes":["sha256:b7c3760be9f94445c99cde66d0bb2080cd87aed0bbf3781a7dad03f4360e21cb","sha256:7b4ab6c70ea6e61af6302a85ba65c0a6fd4429f36d9b6eff2e3804b78e3a73f8","sha256:2b9a46ad9936e6041f981d44298ed9f4378bc1f052954d98e5babd509d4da3a7","sha256:866d018cf73dc1a4eb2d744c06d8e61879d03a50b9c27267d6ce470302cb58e8"]},
+    {"case":"later-release-retain","side":"commonwealth","slot":"second-acting-side","baseHash":"sha256:8d62e0dbb3f58dfbb9a9cb8f288c383759c9479c79c602f4ca69bea55087c67f","frames":[{"cut":0,"hash":"sha256:02269f99cfa23881dfd41729c5bb2bafe146eb04318204f3b508aa17e4afc0a0","bytes":1999},{"cut":1,"hash":"sha256:4ed29f715e982c6c9d1e9533608f3e7a816a91583535685c1d9cc965a29702df","bytes":3039},{"cut":2,"hash":"sha256:12f307eac60fa66e91da375e16e77ba02feb2ebe8e5472f6b894bbd490326d82","bytes":3714},{"cut":3,"hash":"sha256:27282112b064a6a900fb466995e5c1234e23f5542e180f75c843cf3ab4a7c06e","bytes":4166},{"cut":4,"hash":"sha256:65f5dba911621675aec5d1d378bfa3e2462aa3b631e13688e894472c864b7564","bytes":4530}],"eventHashes":["sha256:ca3347038c767ca18177a9dae2bba5676ac49d6d695d48bb1527f0837253fc48","sha256:9a88ae04487b95dd5fa858ffa2760de5d1b4f25075c1ec1157c093e63757dcfe","sha256:b186682a7ebfa025c219bf576b2eda8931bddaf28f425326409b313c032d8837","sha256:172da1d90f6d99fd17b4fce3f529a7e87ee270057abf8edc64575593611b2d61"]},
+    {"case":"later-complete-intent","side":"axis","slot":"first-acting-side","baseHash":"sha256:2cfc68fc56071fa8033197a0ef8665730402699304391ee1878479b3a5e1b1e8","frames":[{"cut":0,"hash":"sha256:736df3e2212babb9eeaf0b3e064c4454b5dcb79a9cff98e60374ed9e7d7fb97c","bytes":1950},{"cut":1,"hash":"sha256:a6d26d32fc85516e8477124a8294ced213e1493705d30a568687865d164198d3","bytes":2958},{"cut":2,"hash":"sha256:cadeda3415f435333c97b3be6001c407edbe27fb29432e2abb79763c348dbb5c","bytes":3003}],"eventHashes":["sha256:99eb34557f950c53f2676ec0705e40f02e9f77d54eb15a057e16ea9ce07942dd","sha256:7687763625d6f79fcaa099da7bbdfcd9e15a10b1d9d2618ee78c5e1405c51fc0"],"terminalEvent":"{\"contractVersion\":1,\"eventType\":\"reserve-release-completed\",\"author\":\"system\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:99aeff8c0c666924c5e091d49ff62d89b43ff081ab5013525794b514e260dcb1\",\"positionId\":\"land.position.operation-1.first-player.movement-and-combat.reserve-release\",\"baseHash\":\"sha256:2cfc68fc56071fa8033197a0ef8665730402699304391ee1878479b3a5e1b1e8\",\"releaseId\":\"rel.82394e21da45c41d371b9c06e6c23da42d3fcb492d6197e5706b69d82bbae470\",\"priorVersion\":101,\"stateVersion\":102,\"priorPrefix\":\"sha256:e666e74e7a4f5075f902547569ad2b15b6b1b3c2be581ff05ababe1c783f1b03\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"complete-release\",\"releaseId\":\"rel.82394e21da45c41d371b9c06e6c23da42d3fcb492d6197e5706b69d82bbae470\",\"expectedPriorVersion\":101,\"decisionId\":\"rel.82394e21da45c41d371b9c06e6c23da42d3fcb492d6197e5706b69d82bbae470.decision\",\"unit\":null,\"choice\":null},\"actor\":\"axis\",\"admittedAt\":2100,\"clockAvailable\":true},\"effect\":{\"kind\":\"release-completed\",\"reason\":\"owner-complete-release\",\"retainedUnits\":[{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"axis\",\"elementId\":\"axis-assault-battalion\"},{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"axis\",\"elementId\":\"axis-assault-battalion.probe-2\"}],\"dispositionReceipts\":[],\"timing\":{\"contractVersion\":1,\"configHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"kind\":\"reserve-release\",\"decisionBudgetMilliseconds\":30000,\"openedAtUnixMilliseconds\":2000,\"deadlineUnixMilliseconds\":32000,\"highWaterUnixMilliseconds\":2100},\"fallbackLocked\":false},\"receiptId\":\"rr.9426511b3177c4fbaabbcd92dc7ecc26d2c43f23404b4bc2a69dfaab2cd0c3f9\"}"},
+    {"case":"later-complete-intent","side":"axis","slot":"second-acting-side","baseHash":"sha256:097f67aa4156ca564c262df4d4b5a9003aa5aebf1792a7c9d3a8d0733a6e6ac8","frames":[{"cut":0,"hash":"sha256:3c181ef64b142690f4ab14e270f19116f87decd4e92352768fb53c631ab7fc7d","bytes":1952},{"cut":1,"hash":"sha256:d57d488834b9588f106e64210a74e80115fdf3e3b421523f69d0bacba41b40c2","bytes":2960},{"cut":2,"hash":"sha256:44177d4d0684ac53a22544fc146aaeb374aa6527d98ddedb0319f4ba0bb76f90","bytes":3005}],"eventHashes":["sha256:dc03ebb858ee5ef1430c2ab25423a982a523f6900f5e307c5216d896aa8ffe3a","sha256:f172e1c5daab32814d6ad12ed81a3de98196acdc6fe56c6c5cf7f9c0ea3d9ec9"]},
+    {"case":"later-complete-intent","side":"commonwealth","slot":"first-acting-side","baseHash":"sha256:5c8b66b79add0466c40f7b7cd812ef48fcf8f2483d1015619e328951c164d780","frames":[{"cut":0,"hash":"sha256:0af33bfdc988675dcd0252769ac7d007a133da68916d4b2fb1ae0e0e5f814175","bytes":1998},{"cut":1,"hash":"sha256:02fc7732d8c611070093d28936126fbf8852439d5bedededbc7df98f22714b23","bytes":3038},{"cut":2,"hash":"sha256:1d61fd93c1f852bb7529f6267beeac5991301150be93abdf077bf046e60a0457","bytes":3059}],"eventHashes":["sha256:7deaa6a519de8e8f65662099129534bfff2e246e49802d03e71194fe6d093a5c","sha256:c13106f4de5a4303580ef0e9fb7642041b0a0df48208db5c19302d85ce3c6293"]},
+    {"case":"later-complete-intent","side":"commonwealth","slot":"second-acting-side","baseHash":"sha256:af09713613163d0a7af2c93d555c5e80edd01c00133e36b66489db62232eb469","frames":[{"cut":0,"hash":"sha256:72b46f5af24c282a1432b380c25f32651971ad8d6ef7169cf3335b67e9b6a9fa","bytes":2000},{"cut":1,"hash":"sha256:81dc5839a900de84abbb389ab0c8185a887c812be7de6db1a81206a162a0d844","bytes":3040},{"cut":2,"hash":"sha256:16cfea38a1dc6d5e4f252fc21a51763ea36870183fe36927f162ddc78c0307f8","bytes":3061}],"eventHashes":["sha256:d2355d5045569e119db79a0c1ebe596971e99a99267de4403deec1de89aa9d56","sha256:2513989b2d4ea4593e143c521672f89348f2d04d3090be6069e038eb1f9719db"]},
+    {"case":"later-expiry","side":"axis","slot":"first-acting-side","baseHash":"sha256:3c1414df965d0b06318ce091554f29a380dab9d572d2a8d67d1be06226e75f01","frames":[{"cut":0,"hash":"sha256:59bbc85e85bba20b7e541bdee6d9031119044fd15e31fd38ad0b8891b422f5ea","bytes":1950},{"cut":1,"hash":"sha256:a0f99e36d717fa4f8858b58894f3259481429794b87391bacad8b8627109f47d","bytes":2958},{"cut":2,"hash":"sha256:2656235e6ef8a30d9d8ecefabbcb4c2f6c750884d58b89efa2d9a4144ef8051a","bytes":3012}],"eventHashes":["sha256:b09c06581849582bd6fc93c24ab7aed44ca0d78190b3de2fe043a27f323038fa","sha256:c645e218cc2368c0c8a6b5ef7e184e40655333a0410e1c90db6060528669cb91"]},
+    {"case":"later-expiry","side":"axis","slot":"second-acting-side","baseHash":"sha256:0ea01643bb7281bd2a904538ddd976cb2a799b8ffda2d1200efabc127da8e59d","frames":[{"cut":0,"hash":"sha256:022eddea5ca0ae251e4033fe22324146856ce1ec5d54264e77bb3437a27f2a43","bytes":1952},{"cut":1,"hash":"sha256:276217156a72049da5ea5acff670817f62392fecd83e2d6ba1e1a71d6efaddd9","bytes":2960},{"cut":2,"hash":"sha256:1ae06fa322589c2892888c1474f95dd98d8f9db0f1359adeb59015d20c582429","bytes":3014}],"eventHashes":["sha256:7246e813cae4a76cca7d20910a66e04c12b77148da37e406c860c64da84ace64","sha256:ec466195811f0376bdc28b997af933d8643389f9fea8bf34a1e361eb94cf67ec"]},
+    {"case":"later-expiry","side":"commonwealth","slot":"first-acting-side","baseHash":"sha256:14214af8de0c424b48f67eeba5964fbfa5eb6fdd8abfe62e684424ed8e1dac60","frames":[{"cut":0,"hash":"sha256:172186012a2b611db359c323ec572c352750586db3e1454b30a6033c5cf505da","bytes":1998},{"cut":1,"hash":"sha256:88de205d4e7c98a5c93d2097f768bb6ea01e41b6c62b69287c0ba42f1ed92f01","bytes":3038},{"cut":2,"hash":"sha256:dfda5bd8421a7515ade83ef4f7f3d5a94cc01e27e45c4822cfc0d6da84f64e1f","bytes":3060}],"eventHashes":["sha256:75eae6a2069eb72fcadcf0d1d2c84ead653fcf5e5c3fd25176bf8764210f5f87","sha256:5aa689fbd754f6df83524d84fd584de8e2952c0f4f28310cce6b25170111020c"]},
+    {"case":"later-expiry","side":"commonwealth","slot":"second-acting-side","baseHash":"sha256:7fb120c36b78164c59dc50d9f6dd8a24a64bf83f1c052d1d61f593ac4196d40b","frames":[{"cut":0,"hash":"sha256:08549d8f22f4615864234362bf6b052a23910171ed92ab413de849d59db4914a","bytes":2000},{"cut":1,"hash":"sha256:3fed9a66f6a94847e4e04453fd991d9d77d8ddd712d55990149bd605fc895bbc","bytes":3040},{"cut":2,"hash":"sha256:6257d795f82e05894725eb4ed4c66bf277593cdb6500e454956fc746c97b6a72","bytes":3062}],"eventHashes":["sha256:e0118ed6cd7f5d8377ccf5a9f4bff84e7f336021db0085cd21b91c5bad588eab","sha256:cf303a292132c0e48b81be45103a55c349affada55e2640d059ff364b751a045"]},
+    {"case":"empty","side":"axis","slot":"first-acting-side","baseHash":"sha256:a55a907be470b210b6a1f6d445de56d582a4279dae9db487c19afd8b7f0ae049","frames":[{"cut":0,"hash":"sha256:7fdb264121bf585958ecbceb1a22340973051ae384da81a86704c28abed5109a","bytes":771},{"cut":1,"hash":"sha256:ff16ad4a310576eb116790b254e316b54d6ebe795cff3b541548c3d2a06e6bed","bytes":1125},{"cut":2,"hash":"sha256:438437f9ef5f90701b3607d3900b4c6ee8c271008a2b7da39b00bbb9fa46a4a1","bytes":1489}],"eventHashes":["sha256:34652c4c17887089f3456847c5dd89aea9242ee13b2b84b16d438b945e5fc9e3","sha256:02a334e82efc902b810c4d716d2b5a74b381c8f65dd9a25b6e8106307c2b21a2"]},
+    {"case":"empty","side":"axis","slot":"second-acting-side","baseHash":"sha256:afa89dcc59ad98accf315d79a36343ccad59b9466c9d770c11426b34b37f90d8","frames":[{"cut":0,"hash":"sha256:5d2ee9a6f8ccab0d5a225fd562ae797c0e972820a852d3e490cdaf9bd4ac14e2","bytes":771},{"cut":1,"hash":"sha256:34e46c603bb8d1afcff1eb7e93362f29f4a38ce0395f3033eb1a2a39cbc27878","bytes":1125},{"cut":2,"hash":"sha256:577d389032ffc97e74f4fa614dab17e233ab592a49067e0096316833355a845c","bytes":1489}],"eventHashes":["sha256:a446dee592ef39b6d21f0e87d55cab8176ba28875d6d4a20986c24880fb1d44b","sha256:03b7cb7ee71571bf4c6d15e16a0ffad6d782a314a0a2fb0b066fd30660f48727"]},
+    {"case":"empty","side":"commonwealth","slot":"first-acting-side","baseHash":"sha256:d6d597b9946b4c5c3162ff4002087442fbeece513362516a2f707e22d956d8ff","frames":[{"cut":0,"hash":"sha256:f9f623782beddfc8bede50981eb897566e08c4c0ca6dd6ce9e0d7070211ae974","bytes":771},{"cut":1,"hash":"sha256:3850be66d720bf94708e8a27de3d292b00c272f9bf78debd61b278c78b1f3640","bytes":1125},{"cut":2,"hash":"sha256:65531ef96f93fd2e52d2793694146ce14b70147e79c0257cdba632862c95dc24","bytes":1489}],"eventHashes":["sha256:7c5f11cfe79809013cc6bd6244a782fb9c15e0fd38726c2e275bf33cbe2c4406","sha256:ea36ba6e2195ff29962065b74fcb6f64b616cd633b20b2ef566facb7b1b52b25"]},
+    {"case":"empty","side":"commonwealth","slot":"second-acting-side","baseHash":"sha256:01072f3ce2fd21ee6866a871571b08700c7d81356af773d3815cac7ee8575455","frames":[{"cut":0,"hash":"sha256:5589a4eaddc88c7486324314650c58595464d3514509f38c878b0f2d70478f72","bytes":771},{"cut":1,"hash":"sha256:28485dbf1c28705cdb57c476f622981c3b7755c0cf4e5f575e1f0c63181b197a","bytes":1125},{"cut":2,"hash":"sha256:dac3c24660a0c2cdb3b1590fd54ba0dc64da26cf79f6a379e1abf8bfbcf49f48","bytes":1489}],"eventHashes":["sha256:f73bf1563cc25f297d6de268583b2a47adff974fd197fe06c2e7ab98b6927b9a","sha256:7a507274344af3dda7bcd5e395f19c806c48c2ca123a5f2c9017c16e5858332b"]},
+    {"case":"prior-release-retained","side":"axis","slot":"first-acting-side","baseHash":"sha256:3dff80cb62985a26476ec1eca7f219b4c64a77a51bfaf5cd1ab7fd09f9ad9a86","frames":[{"cut":0,"hash":"sha256:bd18f910c79464f6c9f36237872f4021ddea7dbd258258ed3f594b2c55c0fdb8","bytes":1524},{"cut":1,"hash":"sha256:ea41b0025f0b3014fc043df2fa9b21bd964b1830bdedbd622c653f2c76803e77","bytes":1878},{"cut":2,"hash":"sha256:28627ec3bebbaf4f535e4ae799d2a6f4ac38a2207664cc15c687299774fb665d","bytes":2242}],"eventHashes":["sha256:83fc4c2b07b6f0f662b2fa62406bf87525d47a3ff452aec62a17ba0628d4c893","sha256:d0d07e55342fbcf28dba8bef1c958336f76844d13b1505277737ab5d252ff1b1"]},
+    {"case":"prior-release-retained","side":"axis","slot":"second-acting-side","baseHash":"sha256:c0774e6448a6a1eef24f6e822962ca7134cb1651b3f0907ee4d69dd090b2a1fc","frames":[{"cut":0,"hash":"sha256:2b62751c9112aded8ab57709f0c0e042174ed6f866d34e2c002aaec62e73c957","bytes":1526},{"cut":1,"hash":"sha256:679d28a816afda24c3ded13c5d5ecf099dd4ddef6010b07dbe41e5a581d813f6","bytes":1880},{"cut":2,"hash":"sha256:9e4637d58c32fd509ad1c579dd36a5cf00d03f34ee3f045cdbedc7b3013f6dfa","bytes":2244}],"eventHashes":["sha256:c58c8d3c6c7418cc89da2f6ad37c10b0c72b5bdd20fc25b57f89ab3b13162b40","sha256:a8f9c63e4d753bc21d7979af2737014fb6aa1d20acf1632074367cbe528c9bb9"]},
+    {"case":"prior-release-retained","side":"commonwealth","slot":"first-acting-side","baseHash":"sha256:0e8cc327cac92769bde5d527a2529b43d9f960ae20aef5a60fdea403c2afe358","frames":[{"cut":0,"hash":"sha256:1ef4c26e28454c5956fda613e53a7eae489f2411817c17fe02e9bfbdefe51dc6","bytes":1556},{"cut":1,"hash":"sha256:00782ffe83d0f728c256a191d06064566ff86c8d5328d6f8196a19800a716330","bytes":1910},{"cut":2,"hash":"sha256:2e6cbd6074d480c189d78076de210c5cd195094dda4d351922388c79e2e9cf69","bytes":2274}],"eventHashes":["sha256:27e3e95cd3a4ece275be453333c2d2b2b91c4047705155312a047bb70488581f","sha256:236486938fa6577bfe9ef6df7e400d62934c3917ca4257b89370846095dd737c"]},
+    {"case":"prior-release-retained","side":"commonwealth","slot":"second-acting-side","baseHash":"sha256:dda220a6bf933015e117845921cc940fe54a519a477ba73a8cf04b92c525d109","frames":[{"cut":0,"hash":"sha256:b691f25501ab9161d5fa663a2d4786e9b2d45fe7c6546027a4144d76854707c9","bytes":1558},{"cut":1,"hash":"sha256:74c808aef1bf2b79499e135e3b79efa91a5075cc803cbbabf424ed1b3c994ccb","bytes":1912},{"cut":2,"hash":"sha256:d704ab94d876d87d311aa3dc833ede30864f572968aef793740af576c8b9c78d","bytes":2276}],"eventHashes":["sha256:ebfe9d7e72f49a80cf9d41caeec93d50e132f8cad48caf3685269cac27ee28aa","sha256:60cfd6e823cd296b3d7ab269412dfddfa304c0c56114c6ab2670f88e38be2e3a"]},
+    {"case":"settled-guard-empty","side":"axis","slot":"first-acting-side","baseHash":"sha256:bdc579a1053d8404feae344bd595d6eb2ce3eb1d256a4e1617bb7539a36f2dc6","frames":[{"cut":0,"hash":"sha256:feb9a58c3b586901f67424d079cb3c3f9998107171af6a77ac1319df09020720","bytes":1994},{"cut":1,"hash":"sha256:9b4e1ccc2d0b3bf2876889fcd273814119e806bd0a803aadc276fc47eada9cfc","bytes":2347},{"cut":2,"hash":"sha256:dc3866e19c2d9366d1e798e6894c300eb3d61d6e9ba54949669417588b559d5f","bytes":2710}],"eventHashes":["sha256:754c8806d19a45bdf827a6bf727b2dc57ff5154cfb758d375a1131352fb0730b","sha256:9bbb432b4ce4b7c72ad73e23d542281e91078e168f3085c0c6c096c92fcd0940"],"terminalEvent":"{\"contractVersion\":1,\"eventType\":\"reserve-release-completed\",\"author\":\"system\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:d886d82a4a80cb59acd158b7040135ade9a82e910339d4282ef6793559940f1d\",\"positionId\":\"land.position.operation-1.first-player.movement-and-combat.reserve-release\",\"baseHash\":\"sha256:bdc579a1053d8404feae344bd595d6eb2ce3eb1d256a4e1617bb7539a36f2dc6\",\"releaseId\":\"rel.0bc114ebe12869996119cf2497ea958a7a2fb7a6be2766984d9ad857e7c688e1\",\"priorVersion\":43,\"stateVersion\":44,\"priorPrefix\":\"sha256:293fb424283476ececdacdca2dce929d8ded99c1471dcc702f3e8be9695c8483\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"complete\",\"releaseId\":\"rel.0bc114ebe12869996119cf2497ea958a7a2fb7a6be2766984d9ad857e7c688e1\",\"expectedPriorVersion\":43,\"decisionId\":null,\"unit\":null,\"choice\":null},\"actor\":\"system\",\"admittedAt\":null,\"clockAvailable\":true},\"effect\":{\"kind\":\"release-completed\",\"reason\":\"units-resolved\",\"retainedUnits\":[],\"dispositionReceipts\":[],\"timing\":null,\"fallbackLocked\":false},\"receiptId\":\"rr.35d2c92cfee6afaed534aa078dabfdea2c920cdcd091a09228a56d860455ef61\"}"},
+    {"case":"settled-guard-empty","side":"commonwealth","slot":"first-acting-side","baseHash":"sha256:66ff019ceeb98781f0f0ea20f375300dfb2bf071817d1d10a72dac4b6104cbcd","frames":[{"cut":0,"hash":"sha256:e8e0f52280c8db806e42d4cdd1b8f4019954a98764e082f5b7d298f8008c7e8a","bytes":2018},{"cut":1,"hash":"sha256:dc3696da4cca2abf2617cdc053c60545caddbe7c330d39cbfaafb54c253d3c97","bytes":2371},{"cut":2,"hash":"sha256:b1e4b787ed196bccdb67b40c428090bf785d3c7b9ee167c5847e1a369d516dc3","bytes":2734}],"eventHashes":["sha256:89ab69435626ce2924ee77bd55d0ee7f000e464fb77bae5d9c46b027ff0e6175","sha256:f00e987fb89811d5e35f8dbf22ed7059fca47fc76ca52e24fa914ef03dd57db1"]},
+    {"case":"settled-escape-empty","side":"axis","slot":"first-acting-side","baseHash":"sha256:5743eac9006fac1e42f2aa7495611178aad785c6ac01aabccf9890fdea8e15dd","frames":[{"cut":0,"hash":"sha256:a1617093c1a42766f3ff58be95bdc9c063db7d0edb55e3e0db9046e7865461e9","bytes":1994},{"cut":1,"hash":"sha256:060945672b51b624ac4fac6d42717b7ca6a50479edcdcd4531220c8fdc3dd18f","bytes":2347},{"cut":2,"hash":"sha256:8320c1397d89230abb108f651360e68d7282b762d8fe0c9030f8479228c11781","bytes":2710}],"eventHashes":["sha256:1fa47f92ad4cfae3b5af2b3018ab2028779e66cac5473cf11b401c24a84b921f","sha256:7d162ac191236f362532b27cae8499d284ce5918e2e4d6b96fb22e53de831d59"]},
+    {"case":"settled-escape-empty","side":"commonwealth","slot":"first-acting-side","baseHash":"sha256:5b86c27f78116c77e3e405c3900d82c746476bb9c78bab1613de6488d3ea5f60","frames":[{"cut":0,"hash":"sha256:ace7ef5911de379d35a95b89bb4555544b03dc2f53d5c30c6ed6cc3c5c54fdfc","bytes":2018},{"cut":1,"hash":"sha256:c27f7a372d8a2503008909f9015537137432859c93c9224cccbd7714d8fcdc83","bytes":2371},{"cut":2,"hash":"sha256:598d5870e9f9447c18f498481be5ae18963ab8f1f2d72baa2062c5e8843562dc","bytes":2734}],"eventHashes":["sha256:d08c9e98dc225b51a759fc804989c38a0047c004e5e3337e5fd87ea32199250e","sha256:d2511b4d5f391649ff29a85c5520fe17ddf1e9c79c9b0e8afd6ee5a088c716d9"]}
+  ]
+}

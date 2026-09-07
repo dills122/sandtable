@@ -101,9 +101,15 @@ the pre-alpha roadmap carry repository-wide rationale and delivery state.
   cut. [003C3a selection/step control](specs/combat-selection-steps-v1.md) is complete with author checks;
   [003C3b sealed round/commitment](specs/combat-sealed-round-v1.md) is also complete as a bounded
   authority fragment. [HOST-RSH-001](research/orleans-publication-feasibility.md) research is complete;
-  003C3c is complete as a bounded contract checkpoint;003D2 is next. See [result/settlement](specs/combat-result-settlement-v1.md) and
-  [snapshot composition/audit](specs/combat-snapshot-composition-v1.md). Synthetic inherited lineage
-  remains explicit. Production hosting remains gated; parent003C/D stays open.
+  003C3c/D2a/D2b are complete as bounded private contract checkpoints;003D2c inherited history and capability reconciliation is next.
+  See [result/settlement](specs/combat-result-settlement-v1.md) and
+  [snapshot composition/audit](specs/combat-snapshot-composition-v1.md). See
+  [ordinary movement](specs/combat-ordinary-movement-v1.md) for D2a evidence and source correction.
+  [Reserve Release](specs/combat-reserve-release-v1.md) freezes the private control/history arm.
+  [Cycle control](specs/combat-cycle-control-v1.md) freezes guarded repeat/finish and Movement expiry
+  with19 literal cases/64 traces. [Review9](reviews/combat-progress-review-9.md) returned Ready with
+  non-blocking follow-ups at `a96d2a1`; its status corrections are applied;9of9 budget exhausted.
+  Synthetic inherited lineage remains explicit. Production hosting remains gated; parent003C/D stays open.
 - Sprint 4-5 dependencies: [research-gate audit](research/sprint-4-5-research-gates.md).
 
 ## Reviewed future product work

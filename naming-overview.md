@@ -104,6 +104,11 @@ call completion a generic sequence advance: the Umpire emits `ReserveDesignation
 projects the exact first-acting-side Movement successor. Movement behavior and the later Reserve
 lifecycle remain separate capabilities.
 
+The prospective [cycle-control contract](docs/specs/combat-cycle-control-v1.md) uses
+`movement-combat-cycle-repeated` for closing one occurrence and opening the next Movement in the
+same relative player slot, and `movement-combat-phase-finished` for entering that slot’s Truck
+Convoy phase. Neither name implies stage housekeeping or production runtime admission.
+
 ---
 
 # 2. Maproom — the player-facing application

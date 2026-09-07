@@ -197,14 +197,14 @@ Actual RBA and additional ZOC categories remain outside this task.
 
 **Documented source limit:** ordinary non-motorized units may voluntarily reach 150% of base CPA
 (8.17), while CP above CPA adds immediate DP (6.21/6.22). For admitted CPA 10 integer infantry,
-spent 6 plus Engaged 4 plus Clear 1 reaches 11 and adds 1 DP; it is not rejected solely for exceeding 10.
-Spent 10 plus 5 reaches 15 and adds 5 DP; spent 11 plus 5 exceeds the voluntary ceiling. Released-Reserve
+spent 5 plus Engaged 4 plus Clear 2 reaches 11 and adds 1 DP; it is not rejected solely for exceeding 10.
+Spent 9 plus 6 reaches 15 and adds 5 DP; spent 10 plus 6 exceeds the voluntary ceiling. Released-Reserve
 I/II retain their stricter cumulative ceilings 10/5. Mandatory costs remain a separate case.
 
 This corrects a potential misuse of the existing narrower Movement ceiling without changing the
 approved pre-assault Cohesion 0 admission. Post-assault movement may alter Cohesion; exhausted Ammo
-still prevents a second assault. The verifier's eight positive and three rejection vectors cover
-these distinctions, mixed membership, unbound arrivals and released-Reserve ceilings. Topology,
+still prevents a second assault. The verifier's eight positive and three rejection vectors use generic terrain/route cost1 and
+cover these distinctions, mixed membership, unbound arrivals and released-Reserve ceilings. Topology,
 actual movement/replay and final policy-bundle hashing remain future implementation evidence.
 
 ## Verification and next gate
@@ -222,3 +222,21 @@ visual/optical cross-check with disclosed limits, accepted gap ruling, calendar 
 explicit future maturity gate, break-off precedence and arithmetic evidence are retained.
 No frozen production schema or runtime changed. Next: TASK-002 Content contract freeze with this
 manifest and TASK-003's retained calendar/break-off obligations; checkpoint B still gates consumers.
+
+
+## D2 terrain-example correction, 2026-09-07
+
+Author contract review found that the earlier continuation example mislabeled a1-CP traversal as
+featureless Clear. Original [Map A](https://spigames.net/PDFv10/CNA_Maps.pdf), first PDF page,
+Terrain Effects Chart8.37, visually confirms **Clear2 CP for nonmotorized and motorized units**;
+nonmotorized Road is1. Download SHA256:
+`8830ec78df489607a2cc7e2cbc8ddcc9457ecbad3b11df071a60d825dadfd030`.
+The existing [Movement source lock](movement-foundation-spike.md#movement-and-sequence) and current
+`Cna1979Movement` table already carry those values. Selected Content7 has Clear nodes and no edge
+features, so its concrete moves must use2. No chart/rule/Rules10 artifact is amended.
+
+Corrected examples above and CYCLE-COMP-AC-007 retain the same maximum-break-off,150%-CPA and
+incremental-DP requirements. The unchanged research oracle's default cost1 vectors remain generic
+arithmetic probes; they never prove this map's traversal. D2 supplies explicit terrain2 vectors,
+including spent5+4+2=11/DP1, spent9+4+2=15/DP5, and rejection at16. This factual correction changes
+neither the approved Reserve policies nor the selected assault table/amendment or frozen C3 bytes.
