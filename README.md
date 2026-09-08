@@ -197,7 +197,8 @@ for contract versus runtime status, the Combat simulator gate, and the accepted 
 Its production publication/storage proposal remains unapproved. Combat contract checkpoints through
 003C3c/D2a/D2b private checkpoints and D2c.1 successor/opening contracts are complete;
 [D2c.2a opening provenance](docs/specs/combat-opening-preamble-v1.md) now reaches Weather entry
-from validated Created11 bytes. D2c.2b Weather is next; full creation-to-Reserve provenance remains open.
+from validated Created11 bytes. [D2c.2b Weather](docs/specs/combat-weather-v1.md) now reaches Organization
+entry; D2c.2c stage entry is next. Full creation-to-Reserve provenance remains open.
 The [latest smoke check](docs/research/simulator-post-merge-checkin.md#combat-contract-branch-smoke-check)
 verifies the existing Rules9 path; prospective Combat contracts are not executable game support.
 
@@ -292,7 +293,8 @@ slice; [review6](docs/reviews/combat-inputs-review-6.md) returned Ready, no acti
 are complete; [review7](docs/reviews/combat-sequence-review-7.md) returned Ready, no actionable findings.
 [Review9](docs/reviews/combat-progress-review-9.md) returned Ready with non-blocking follow-ups at
 `a96d2a1`; its documentation corrections are applied. [Review10](docs/reviews/combat-progress-review-10.md) returned Ready with non-blocking follow-ups
-for D2b.2/D2c.1; both findings are corrected. Review budget10of10 is exhausted. [003C2 Rules10/creation envelopes](docs/specs/combat-authority-envelope-v1.md)
+for D2b.2/D2c.1; both findings are corrected. Review11 across mergedPR95–98 returned Ready with no
+findings; budget11of11 is exhausted. The subsequent Weather slice has author verification only. [003C2 Rules10/creation envelopes](docs/specs/combat-authority-envelope-v1.md)
 are complete for the creation cut. [003C3a selection/step control](docs/specs/combat-selection-steps-v1.md)
 is complete with author checks; [003C3b sealed round/commitment](docs/specs/combat-sealed-round-v1.md)
 is also complete as a bounded authority fragment. HOST-RSH-001 research,003C3c contracts and003D2a
@@ -300,8 +302,9 @@ ordinary movement contracts are complete. D2b Release and guarded control contra
 [D2c.1 inherited successors/first opening](docs/specs/combat-inherited-successors-v1.md) is complete
 as an isolated boundary:20 event declarations, four opening traces.
 [D2c.2a opening preamble](docs/specs/combat-opening-preamble-v1.md) freezes four of those successors
-with6 creation-rooted traces/30 cuts through Weather entry. D2c.2b Weather is next, followed by
-stage entry/Reserve; D2c.3–4 continuation and full composition remain open.
+with6 creation-rooted traces/30 cuts through Weather entry. [D2c.2b Weather](docs/specs/combat-weather-v1.md)
+adds34 traces/68 cuts through Organization entry, preserving all four outcomes and exact RNG/receipt
+evidence. Stage entry/Reserve are next; D2c.3–4 continuation and full composition remain open.
 [Result/settlement](docs/specs/combat-result-settlement-v1.md) and
 [full snapshot composition](docs/specs/combat-snapshot-composition-v1.md) retain synthetic pre-Combat
 lineage; review9 assessed these bounded artifacts. Parent003, future maturity execution and combined checkpoint B

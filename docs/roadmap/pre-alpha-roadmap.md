@@ -29,7 +29,7 @@ apply only to their stated commits and capabilities.
 
 | Next gate | Concrete outcome |
 | --- | --- |
-| Contract checkpoint B | 003C3c result/settlement/noninitial snapshots are complete within the synthetic first-Combat profile; D2a ordinary movement andD2b private Release/control are complete; finish003D2c inherited/capability envelopes and004 public/Exercise contracts. D2c.1 declares008A–H/019A and isolated first opening; D2c.2a derives Weather entry from creation. Remaining Weather/stage-entry/Reserve history and checkpoint B acceptance are still required. |
+| Contract checkpoint B | 003C3c result/settlement/noninitial snapshots are complete within the synthetic first-Combat profile; D2a ordinary movement andD2b private Release/control are complete; finish003D2c inherited/capability envelopes and004 public/Exercise contracts. D2c.1 declares008A–H/019A and isolated first opening; D2c.2a derives Weather entry from creation; D2c.2b derives Organization entry. Remaining stage-entry/Reserve history and checkpoint B acceptance are still required. |
 | Core implementation,005–021 | Start with dormant tables and fixtures at005–006; implement state, decisions, settlement and cycle before public activation at020–021. Task005 alone is not a playable combat loop. |
 | Combat simulator,022–024 | Adopt public actions and terminals, prove replay/readjudication, then compare two clean runs covering empty, settled-assault and Movement-repeat paths. Existing Rules9 checks cannot substitute. |
 | Package closeout,025 | Reconcile evidence and remaining skeleton gaps; scope the next cross-package increment. |
@@ -50,7 +50,7 @@ progressive Core evidence, and investigate Orleans during the remaining contract
 production publication/storage proposal awaits owner acceptance. One isolated Rules9 probe matched12
 accepted commands,13 writes and12 same-process reactivations, with duplicate/stale and write/reply
 failure checks. Memory-backed recovery does not prove durable process restart. Scope stayed within
-three primary files. Combat003C3c is complete as a bounded contract checkpoint;003D2a ordinary movement is complete;003D2b Release/control is complete as a private checkpoint;003D2c.1 declarations/isolated opening is complete;003D2c.2a creation-to-Weather-entry provenance is complete;003D2c.2b Weather is next; this investigation is independent of checkpoint B.
+three primary files. Combat003C3c is complete as a bounded contract checkpoint;003D2a ordinary movement is complete;003D2b Release/control is complete as a private checkpoint;003D2c.1 declarations/isolated opening is complete;003D2c.2a creation-to-Weather-entry provenance is complete;003D2c.2b Weather is complete;003D2c.2c stage entry is next; this investigation is independent of checkpoint B.
 
 The completed investigation used this accepted scope:
 
@@ -165,7 +165,7 @@ Optional parser evidence gate
 | Side-safe observations and legal-action enforcement | Implemented for the current synthetic path | Extend only with each new mechanic and its disclosure tests |
 | Mandatory turn preamble | Implemented through Reserve Designation completion | Preserve the exact Movement terminal while later mechanics expand |
 | Movement, Reaction and Breakdown | Complete within the certified synthetic profile through Breakdown Tasks006–007 | Public authority and checked Runner successors reach first-side Combat entry; Contact/Engaged and Combat adjudication remain deferred |
-| Combat | Research decision-ready; `CMB-DES-001`-`005` bounded designs complete for review; implementation not started | Policies and corrected 25-task plan accepted2026-09-06; TASK-001 source research complete with accepted three-cell amendment; TASK-002 Content7 contract frozen in `c465a0f`; checkpoint A author check complete; TASK-003A Setup/initial ledger frozen in `23c3fff`;003B/003C1/003D1/003C2 contract slices complete (C2 creation cut, author verified); prior review7 Ready (7of7);003C3a selection/step control complete with author checks;003C3b sealed-round fragment complete; HOST-RSH-001 research complete;003C3c bounded result/snapshot contracts complete;003D2a movement complete;003D2b private Release/control complete;003D2c.1 isolated opening complete;003D2c.2a opening provenance complete;003D2c.2b next; parent003 and combined checkpoint B remain open |
+| Combat | Research decision-ready; `CMB-DES-001`-`005` bounded designs complete for review; implementation not started | Policies and corrected 25-task plan accepted2026-09-06; TASK-001 source research complete with accepted three-cell amendment; TASK-002 Content7 contract frozen in `c465a0f`; checkpoint A author check complete; TASK-003A Setup/initial ledger frozen in `23c3fff`;003B/003C1/003D1/003C2 contract slices complete (C2 creation cut, author verified); prior review7 Ready (7of7);003C3a selection/step control complete with author checks;003C3b sealed-round fragment complete; HOST-RSH-001 research complete;003C3c bounded result/snapshot contracts complete;003D2a movement complete;003D2b private Release/control complete;003D2c.1 isolated opening complete;003D2c.2a opening provenance complete;003D2c.2b Weather complete;003D2c.2c next; parent003 and combined checkpoint B remain open |
 | Working pre-alpha skeleton | Not reached | Requires one authentic movement/contact/combat loop with replay |
 | First-scenario content and remaining Land systems | Milestone-level; not started | Re-estimate after the skeleton exposes exercised-rule and transcription scope |
 | Campaign lifecycle and Maproom | Milestone-level; not started | Requires stable playable authority, Chronicle persistence, and save/resume contracts |
@@ -189,7 +189,7 @@ Maproom remain future work.
 | 2 — Rules laboratory and legal-action boundary | Complete for the admitted synthetic path | Keep outward actions observation-derived and revalidate exact membership at submission |
 | 3 — Mandatory turn preamble | Complete for the admitted synthetic no-obligation path | Positive Organization/convoy/fleet cases remain explicit later-scenario work; subsequent bounded mechanics now reach first-side Combat entry |
 | 4 — Movement, Breakdown, and Reaction boundary | Complete within the certified synthetic profile | Movement and ZOC/Reaction are implemented; Breakdown Tasks006–007 public activation, Runner adoption and transcript/privacy follow-up are complete. Positive ZOC and broader Breakdown categories remain extensions |
-| 5 — Combat and continual-cycle loop | Research decision-ready; bounded Combat designs complete for review; not implementation-ready | Owner accepted policies/plan and review4 correction; TASK-001 source and TASK-002 Content packets complete; checkpoint A author check complete; TASK-003A/003B/003C1/003D1/003C2 complete as contract slices (C2 creation cut);003C3a selection/step control complete;003C3b sealed-round fragment complete; HOST-RSH-001 research complete;003C3c bounded result/snapshot contracts complete;003D2a movement complete;003D2b private Release/control complete;003D2c.1 isolated opening complete;003D2c.2a opening provenance complete;003D2c.2b next; parent003C/D and outward exact contracts stay open |
+| 5 — Combat and continual-cycle loop | Research decision-ready; bounded Combat designs complete for review; not implementation-ready | Owner accepted policies/plan and review4 correction; TASK-001 source and TASK-002 Content packets complete; checkpoint A author check complete; TASK-003A/003B/003C1/003D1/003C2 complete as contract slices (C2 creation cut);003C3a selection/step control complete;003C3b sealed-round fragment complete; HOST-RSH-001 research complete;003C3c bounded result/snapshot contracts complete;003D2a movement complete;003D2b private Release/control complete;003D2c.1 isolated opening complete;003D2c.2a opening provenance complete;003D2c.2b Weather complete;003D2c.2c next; parent003C/D and outward exact contracts stay open |
 | 6 — Scenario Group One content | Milestone-level; not started | Begin after the working pre-alpha skeleton measures the exact exercised-rule/data surface |
 | 7 — Remaining required Land systems | Milestone-level; not started | Split from the measured first-scenario rule inventory rather than treating it as one task |
 | 8 — Minimal Maproom and campaign lifecycle | Milestone-level; not started | Requires stable playable authority, Chronicle persistence/save-resume, and the no-model intent prototype |
@@ -653,19 +653,21 @@ positive-ZOC children remain deferred. No runtime identity changed in this freez
 [D2c.1](../specs/combat-inherited-successors-v1.md) freezes20 inherited successor declarations
 and isolated first opening:4 traces/8 cuts,216 mutations/32 raw rejects/88 boundary checks.
 [D2c.2a](../specs/combat-opening-preamble-v1.md) now reaches Weather entry from validated
-Created11:6traces/30cuts,1050event and3348state mutations. Weather is next in2b;2c/2d retain
+Created11:6traces/30cuts,1050event and3348state mutations. [D2c.2b Weather](../specs/combat-weather-v1.md)
+now reaches Organization entry with34traces/68cuts and all19 oracles passing. Next2c and then2d retain
 stage-entry/Reserve provenance, and D2c.3–4 retain continuation and full Snapshot/capacity ownership.
 
 [Review9](../reviews/combat-progress-review-9.md) returned Ready with non-blocking follow-ups at
 `a96d2a1`; its sole P3 status correction is applied. [Review10](../reviews/combat-progress-review-10.md) assessed subsequent D2b.2/D2c.1 progress:
-Ready with non-blocking follow-ups. Both findings are corrected; budget10of10 is exhausted.
-Subsequent
+Ready with non-blocking follow-ups. Both findings are corrected. Review11 of mergedPR95–98
+returned Ready with no findings; budget11of11 is exhausted. New Weather work has author checks only.
+The
 [D2b.2 cycle control](../specs/combat-cycle-control-v1.md) has author evidence:19 cases/64 traces,164
 cuts,1748 mutations and700 raw rejects. D2c must supply actual inherited progress, armed Combat
 continuation admission and full World/Snapshot composition before parent003/checkpoint B closes.
 
 Movement, bounded ZOC/Reaction and Breakdown packages are complete within their certified profiles.
-The next Combat slice is003D2c.2b Weather; D2c.2a creation-rooted opening provenance is complete; D2c.1 declarations/isolated opening is complete; private Reserve Release/control D2b is complete; D2a ordinary movement is complete; C3c result/snapshot contracts are complete; HOST-RSH-001 research is complete after003C3b. Completed research
+The next Combat slice is003D2c.2c stage entry; D2c.2b Weather is complete; D2c.2a creation-rooted opening provenance is complete; D2c.1 declarations/isolated opening is complete; private Reserve Release/control D2b is complete; D2a ordinary movement is complete; C3c result/snapshot contracts are complete; HOST-RSH-001 research is complete after003C3b. Completed research
 below remains evidence; it is not an instruction to restart those investigations.
 
 | Lane | Current priority and boundary |
@@ -839,7 +841,7 @@ progress through003B: Ready with non-blocking follow-ups, status correction appl
 [003C2 Rules10/creation envelopes](../specs/combat-authority-envelope-v1.md) are complete for the creation
 cut. [003C3a selection/step control](../specs/combat-selection-steps-v1.md) is complete with author checks;
 [003C3b sealed round/commitment](../specs/combat-sealed-round-v1.md) is complete as a bounded
-private authority fragment with author checks. HOST-RSH-001 research complete;003C3c is complete as a bounded contract checkpoint;003D2a ordinary movement is complete;003D2b Release/control is complete as a private checkpoint;003D2c.1 declarations/isolated opening is complete;003D2c.2a creation-to-Weather-entry provenance is complete;003D2c.2b Weather is next;
+private authority fragment with author checks. HOST-RSH-001 research complete;003C3c is complete as a bounded contract checkpoint;003D2a ordinary movement is complete;003D2b Release/control is complete as a private checkpoint;003D2c.1 declarations/isolated opening is complete;003D2c.2a creation-to-Weather-entry provenance is complete;003D2c.2b Weather is complete;003D2c.2c stage entry is next;
 Parent003C/D,004, combined checkpoint B and production remain gated.
 Actual RBA movement and broader combat categories remain outside the selected fixture.
 [Independent design review 2](../reviews/combat-design-review-2.md) returned Ready for
@@ -852,7 +854,9 @@ budget at that checkpoint. Owner later authorized review8 for003C2; it returned 
 actionable findings (report retained locally). Owner then authorized [review9](../reviews/combat-progress-review-9.md)
 for the full unmerged checkpoint throughD2b.1: Ready with non-blocking follow-ups; its sole status
 finding is corrected. [Review10](../reviews/combat-progress-review-10.md) returned Ready with
-non-blocking follow-ups for D2b.2/D2c.1; both findings are corrected. Budget10of10 is exhausted. Remaining
+non-blocking follow-ups for D2b.2/D2c.1; both findings are corrected. Owner then authorized review11
+acrossPR95–98 throughD2c.2a: Ready, no findings. Budget11of11 is exhausted; later Weather2b has author
+verification only. Remaining
 contract gates stay open.
 Later contracts and implementation must settle every reachable loss, capture/custody, retreat,
 ammunition, and Cohesion obligation before claiming the repeating skeleton is complete.

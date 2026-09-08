@@ -714,7 +714,7 @@ Subsequent review11of11 assessed all contents of mergedPR95–98, including2a: R
 Exact final tree equals`bf10c9b`;24 intermediate/final oracle jobs and focused Orleans checks passed
 independently. The merge process preserved every reviewed tree/diff and reran CI after rebases.
 
-TASK-003D2c.2b checkpoint (input `3ca453a`):
+TASK-003D2c.2b checkpoint (input `3ca453a`, contract commit `25cf4e7`):
 [Weather specification](../specs/combat-weather-v1.md),
 [schema](../specs/combat-weather-v1.schema.json),
 [retained vectors](../specs/fixtures/combat-weather-v1.json) and
@@ -726,4 +726,5 @@ row for both order choices, including rejected RNG bytes. All18 predecessor orac
 Full World and initiative/order history are preserved; Weather/RNG/receipts derive from accepted
 creation+four preamble events. Private WeatherState is not Snapshot12. No production source, test,
 scenario, historical contract or policy bytes changed. Author verification only; no additional
-independent review. Next2c stage-entry then2d Reserve/first opening; parent003/004/B stays open.
+independent review. Navigation closeout verifies670 local links/17anchors,25 task IDs,72 design ACs
+and8 policies. Next2c stage-entry then2d Reserve/first opening; parent003/004/B stays open.
