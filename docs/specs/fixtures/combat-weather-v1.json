@@ -1,0 +1,529 @@
+{
+  "contract": "combat-weather-v1",
+  "sourceHashes": {
+    "src/Cna.Core/Rules/Cna1979Weather.cs": "sha256:b16f72e7848bfc3f8e4e68a58e72eb18c75512f9c2523ce852f77f739de68832",
+    "src/Cna.Core/Rules/WeatherRulesArtifactCodec.cs": "sha256:63b692cdc4d6337170b811ac912b1767f4cd12b796e27d8393028c8b388afeb0",
+    "src/Cna.Core/Rules/WeatherRulesArtifactValidator.cs": "sha256:34b6fb287cf5fbad4eff258e6e1fc3f8fba463db766b75809a310ea3ede40f6f",
+    "src/Cna.Core/Randomness/SandtableRandom.cs": "sha256:1d8f34a947f591190f543c1e1b3f3fef73a6530c3e762dbb6aedc52e1ad69541",
+    "src/Cna.Core/Campaigns/CampaignV11Preamble.cs": "sha256:54103730ae29d0a7ea0392c462e2ebc3153389277c9e4d028ff5ca0dc9c559d4",
+    "src/Cna.Core/Campaigns/CampaignV11PreambleCodec.cs": "sha256:842894783e5916dcc678a178802b68a71b0942152659649d714251e7519f1c1d",
+    "src/Cna.Core/Campaigns/CampaignCurrentEventRuntime.cs": "sha256:283102f40d891c1b901bd03e4a12499638bc4fb98ebbf2cb7644dae5b98c042a",
+    "src/Cna.Core/Campaigns/WeatherEventFactory.cs": "sha256:927aca20bbd276dc9b1663089b072cf57b4d4618ecfd61b2aa7e2b693b5c5dec",
+    "src/Cna.Core/Campaigns/WeatherDetermined.cs": "sha256:d7b23516aa359efa05352ff06c90f3770ff78abadd2b502d35de01e5564e7c97",
+    "src/Cna.Core/Campaigns/CampaignOperationStageWeather.cs": "sha256:2dd130e07f84927c7ff470b3734f3f12c70ee4a1b7cb92bb1e6bf2f744abf70c",
+    "src/Cna.Core/Campaigns/CampaignCommand.cs": "sha256:bd7ff8d857fbe787ba3f3f27ce3f67a15fd2829bc6be806fad121827c50fd6a8",
+    "src/Cna.Core/Setups/CampaignWeatherPolicy.cs": "sha256:3eef45ba9b277c4ef65253191c0767afdf18e4e0b06e9d2907867d3be4fc3762",
+    "tests/Cna.Core.Tests/Campaigns/WeatherCampaignTests.cs": "sha256:8c84cf27d0b67838707307500282b5d1a535b9443fca08468b0135bf3dbf1b6d"
+  },
+  "tableKinds": {
+    "fall": "NNNNNN NNNNNN NNNNNH HHHHHH HHHHSS SRRRRR",
+    "winter": "NNNNNN NNNNNN NNNNNN NNNNNN NNRRRR RRRRRR",
+    "spring": "NNNNNN NNNNNN NNNNNN NNHHHH HHHHHS SSSSRR",
+    "summer": "NNNNNN NNNHHH HHHHHH HHHHHH HHHHHS SSSSSS"
+  },
+  "locationAreas": [
+    [
+      "a",
+      "b"
+    ],
+    [
+      "c",
+      "d"
+    ],
+    [
+      "d",
+      "e"
+    ],
+    [
+      "b",
+      "c"
+    ],
+    [
+      "b",
+      "d"
+    ],
+    [
+      "b",
+      "c",
+      "d"
+    ]
+  ],
+  "cases": [
+    {
+      "seed": 0,
+      "expected": {"firstDie":6,"secondDie":6,"kind":"rainstorm","scope":"listed-areas","locationDie":2,"affectedAreas":["c","d"],"cursor":3,"consumedHex":"8311c7","rejectedBytes":0},
+      "goldens": {
+        "act-first": {
+          "creation": {"bytes": 7520, "sha256": "sha256:a36c8abd3864442c62d13c9beb41af2c88048534b31bd47bc82a897c808bf798"},
+          "preamble-1": {"bytes": 1829, "sha256": "sha256:e91344536f6b655c41b21f024963a76454823e552118079fe3ac62df010a4cae"},
+          "preamble-2": {"bytes": 1686, "sha256": "sha256:2da8ae406bf8047b8ecef28ab8ae87f37bef991d2c762b9f42b86c9606a3bbb1"},
+          "preamble-3": {"bytes": 1819, "sha256": "sha256:21c0b8ba167163a6711b8ffd2236e55c06ea0312c19cc53d4733432ed094625b"},
+          "preamble-4": {"bytes": 1951, "sha256": "sha256:e548a3d9d2660277aa55f93ced3414ddcecebff2e63bcb682f3bc003e172ae59"},
+          "input": {"bytes": 359, "sha256": "sha256:b4149912660d75f5439f2244b725d3b9fe6f4169734b3e40d79eb2767578efbf"},
+          "weather": {"bytes": 2347, "sha256": "sha256:18e113e0d41ad471041ce4dc5d270925ef7947a97dd1ec32040aaf6b3c38065b"},
+          "before": {"bytes": 5794, "sha256": "sha256:fc7c873188399d797bdbd68d4f207b9e3b2906f1b35497b2d14e05f184684c1b"},
+          "after": {"bytes": 6247, "sha256": "sha256:64ecce6bbd77b7d68773777f6144151b0bc89167beb98fa79f21d6c7d207dfb4"}
+        },
+        "act-last": {
+          "creation": {"bytes": 7520, "sha256": "sha256:a36c8abd3864442c62d13c9beb41af2c88048534b31bd47bc82a897c808bf798"},
+          "preamble-1": {"bytes": 1829, "sha256": "sha256:e91344536f6b655c41b21f024963a76454823e552118079fe3ac62df010a4cae"},
+          "preamble-2": {"bytes": 1686, "sha256": "sha256:2da8ae406bf8047b8ecef28ab8ae87f37bef991d2c762b9f42b86c9606a3bbb1"},
+          "preamble-3": {"bytes": 1819, "sha256": "sha256:21c0b8ba167163a6711b8ffd2236e55c06ea0312c19cc53d4733432ed094625b"},
+          "preamble-4": {"bytes": 1950, "sha256": "sha256:47582a7ae851f36a86c48061841f0e153f53096852ef9bd9793f5ea9e816ad6d"},
+          "input": {"bytes": 359, "sha256": "sha256:b4149912660d75f5439f2244b725d3b9fe6f4169734b3e40d79eb2767578efbf"},
+          "weather": {"bytes": 2347, "sha256": "sha256:3bdd9e633f51436b12774324009acf350af91c7a013a5a2c5568115752dadfd9"},
+          "before": {"bytes": 5794, "sha256": "sha256:4b5b3881db01b6d12d5b0ef4fd9bf27ac804b7cef0a27afd4556807d638bbcfb"},
+          "after": {"bytes": 6247, "sha256": "sha256:f0303b43d82088880fd078ae49974f4df2bbf52e8120115b74e2ad6d17e709a7"}
+        }
+      }
+    },
+    {
+      "seed": 1,
+      "expected": {"firstDie":2,"secondDie":2,"kind":"normal","scope":"none","locationDie":null,"affectedAreas":[],"cursor":2,"consumedHex":"b5a9","rejectedBytes":0},
+      "goldens": {
+        "act-first": {
+          "creation": {"bytes": 7520, "sha256": "sha256:fc41759ff3220519ce4cfee40b7662eaa4d4f07ce9d788563e90d8dbbfe68ad8"},
+          "preamble-1": {"bytes": 1829, "sha256": "sha256:39629d2c4cdca0092a9b317ec0a2ed7548f686681754ba449a5d805360cc16bd"},
+          "preamble-2": {"bytes": 1686, "sha256": "sha256:4c9774e3bccc7465f7e0cee1e2852634ffdc4a447d3a47ae4ddd182c9e6697ca"},
+          "preamble-3": {"bytes": 1819, "sha256": "sha256:1882a2353d6e7be8784dbb9a15c464621a59ca954bfe95560766bdbff72b946b"},
+          "preamble-4": {"bytes": 1951, "sha256": "sha256:96b43abce91e84a1ca12a6cc410fd569bca82f4f1dd9ffcdf4052f9c42a2be53"},
+          "input": {"bytes": 359, "sha256": "sha256:0fabb2e063886708ade5be698ce3d258e802978d752efb09e5196637e5225f25"},
+          "weather": {"bytes": 2276, "sha256": "sha256:ccc0d5d277149f991cec9b12b35a9180b5212be8b62493324df0234b02844e83"},
+          "before": {"bytes": 5794, "sha256": "sha256:2d5765a21a0b91849bf653dffa95dbdb2b97861381d2b83eb48553c506202528"},
+          "after": {"bytes": 6232, "sha256": "sha256:03970b6936802694c8e0d3f69b4fcf38e75dc294dff924d27cc2399e48936778"}
+        },
+        "act-last": {
+          "creation": {"bytes": 7520, "sha256": "sha256:fc41759ff3220519ce4cfee40b7662eaa4d4f07ce9d788563e90d8dbbfe68ad8"},
+          "preamble-1": {"bytes": 1829, "sha256": "sha256:39629d2c4cdca0092a9b317ec0a2ed7548f686681754ba449a5d805360cc16bd"},
+          "preamble-2": {"bytes": 1686, "sha256": "sha256:4c9774e3bccc7465f7e0cee1e2852634ffdc4a447d3a47ae4ddd182c9e6697ca"},
+          "preamble-3": {"bytes": 1819, "sha256": "sha256:1882a2353d6e7be8784dbb9a15c464621a59ca954bfe95560766bdbff72b946b"},
+          "preamble-4": {"bytes": 1950, "sha256": "sha256:eb5e1bdc12f9136ee355a62f3e06022a10b16a79dcc5bb2660793ead6bd4fa24"},
+          "input": {"bytes": 359, "sha256": "sha256:0fabb2e063886708ade5be698ce3d258e802978d752efb09e5196637e5225f25"},
+          "weather": {"bytes": 2276, "sha256": "sha256:51495df4db64ceaad4af84d049579c67d792f3c4c510914d553a12a988e8f5b6"},
+          "before": {"bytes": 5794, "sha256": "sha256:1b477b60fedd7dfa3e248d4db4ce15be49ee089a36d820ec8a198383412f4f42"},
+          "after": {"bytes": 6232, "sha256": "sha256:a18a3b06525c796caeaef72ee880885f3a3f04a392c8db9fcb23183bec735fa4"}
+        }
+      }
+    },
+    {
+      "seed": 2,
+      "expected": {"firstDie":5,"secondDie":1,"kind":"hot","scope":"global","locationDie":null,"affectedAreas":[],"cursor":2,"consumedHex":"64a8","rejectedBytes":0},
+      "goldens": {
+        "act-first": {
+          "creation": {"bytes": 7520, "sha256": "sha256:fd704a158e8dc7d55b1f3182eb534b940ceb2a6019d35b73390079e7baf4845e"},
+          "preamble-1": {"bytes": 1829, "sha256": "sha256:ec30fed81260f2d1bfef51d4688441ca6c9d6b3c23d0fec4d941df21166e407e"},
+          "preamble-2": {"bytes": 1686, "sha256": "sha256:2d4e070e18e95eae6a078e3a85e2f5287652e8b59bafa1e5f3d60c493af4ccd6"},
+          "preamble-3": {"bytes": 1819, "sha256": "sha256:4ad79d8f2b932b9d44b2220a128eacc46412f4a2028aeebf90de75ac908f2626"},
+          "preamble-4": {"bytes": 1951, "sha256": "sha256:126230b4b5a4e6e0e09642383f3c07c2d10fc2aabbe302d7946f9922d3262d12"},
+          "input": {"bytes": 359, "sha256": "sha256:51ec8376dde6e82063bd6d063ebe9593b3a98dba3997f2865f5a448911de38ab"},
+          "weather": {"bytes": 2329, "sha256": "sha256:5c98bddd19b2f8690128a4c69e46b3712a27079519614f1765182664bbf43a4b"},
+          "before": {"bytes": 5794, "sha256": "sha256:c6c70a265a690e66808c481a2e5be7b1b44c6bd89a5e25926149753118eb1501"},
+          "after": {"bytes": 6231, "sha256": "sha256:6be15ab6ad6c82d593e4f83cb640b632100261bbf072bb15e7e42de59b0a63e7"}
+        },
+        "act-last": {
+          "creation": {"bytes": 7520, "sha256": "sha256:fd704a158e8dc7d55b1f3182eb534b940ceb2a6019d35b73390079e7baf4845e"},
+          "preamble-1": {"bytes": 1829, "sha256": "sha256:ec30fed81260f2d1bfef51d4688441ca6c9d6b3c23d0fec4d941df21166e407e"},
+          "preamble-2": {"bytes": 1686, "sha256": "sha256:2d4e070e18e95eae6a078e3a85e2f5287652e8b59bafa1e5f3d60c493af4ccd6"},
+          "preamble-3": {"bytes": 1819, "sha256": "sha256:4ad79d8f2b932b9d44b2220a128eacc46412f4a2028aeebf90de75ac908f2626"},
+          "preamble-4": {"bytes": 1950, "sha256": "sha256:f1a8a0870c8316597f9d4740998bff7f188ef0b435c1e5549f2df64b32e80a18"},
+          "input": {"bytes": 359, "sha256": "sha256:51ec8376dde6e82063bd6d063ebe9593b3a98dba3997f2865f5a448911de38ab"},
+          "weather": {"bytes": 2329, "sha256": "sha256:52d7a6cc3e141e5d03cf973969636587d8d5b5942a2e7f9c2bdf6d0fbb0badc8"},
+          "before": {"bytes": 5794, "sha256": "sha256:9952f2f67521fa87b3c5b4e1de32f914e81a56c056ff1cdcce942ae76eb877f9"},
+          "after": {"bytes": 6231, "sha256": "sha256:a39b73895d7835b5e14c84bc9c81f275f2e020eb442d3b7a78ba29b3dec1b198"}
+        }
+      }
+    },
+    {
+      "seed": 3,
+      "expected": {"firstDie":5,"secondDie":6,"kind":"sandstorm","scope":"listed-areas","locationDie":5,"affectedAreas":["b","d"],"cursor":3,"consumedHex":"5247dc","rejectedBytes":0},
+      "goldens": {
+        "act-first": {
+          "creation": {"bytes": 7520, "sha256": "sha256:ec683835a867d598047bbe33ff50b0d1e10f4e92c00497960235615ce99fd52b"},
+          "preamble-1": {"bytes": 1829, "sha256": "sha256:84052d94c7feb1b272e45b669461174f9af66cea0bffc9e65d9eaf534fa10854"},
+          "preamble-2": {"bytes": 1686, "sha256": "sha256:c4d7381706ef3be769c9ff45c8a44b0f675fd005c7102f06cc6fe838e06665f4"},
+          "preamble-3": {"bytes": 1819, "sha256": "sha256:fc2e57ac60f204a1a00769216ed9198d3c755f6cce0b9cecebf6ea08ab8cee1a"},
+          "preamble-4": {"bytes": 1951, "sha256": "sha256:39e4ab9e48bf2cf36b131c1cf9df3f3f8eae36c56232e7733e5f06dbe9f10dd1"},
+          "input": {"bytes": 359, "sha256": "sha256:9c9c402cb15ff132e55dba96bd0e0f95e7a399f715e6a5ba7604fcf9485324ee"},
+          "weather": {"bytes": 2452, "sha256": "sha256:9cd8d466f70c5ea2eee29220c02d70051d2acdbf5cf5d659736ab9a5eac24124"},
+          "before": {"bytes": 5794, "sha256": "sha256:a41adf194e1938e9141b625fc6b5c87c762f12cb2e2bb73ea34097d948ddcf01"},
+          "after": {"bytes": 6247, "sha256": "sha256:d3d1c99dd8e59e521a42ad0eddc9b8b51afdd5ac2fb8410651c752e2fadd94a0"}
+        },
+        "act-last": {
+          "creation": {"bytes": 7520, "sha256": "sha256:ec683835a867d598047bbe33ff50b0d1e10f4e92c00497960235615ce99fd52b"},
+          "preamble-1": {"bytes": 1829, "sha256": "sha256:84052d94c7feb1b272e45b669461174f9af66cea0bffc9e65d9eaf534fa10854"},
+          "preamble-2": {"bytes": 1686, "sha256": "sha256:c4d7381706ef3be769c9ff45c8a44b0f675fd005c7102f06cc6fe838e06665f4"},
+          "preamble-3": {"bytes": 1819, "sha256": "sha256:fc2e57ac60f204a1a00769216ed9198d3c755f6cce0b9cecebf6ea08ab8cee1a"},
+          "preamble-4": {"bytes": 1950, "sha256": "sha256:faf305f1d8eda965d8d58e8984e99d278c17e73e91a855e2187d7e7d092dd046"},
+          "input": {"bytes": 359, "sha256": "sha256:9c9c402cb15ff132e55dba96bd0e0f95e7a399f715e6a5ba7604fcf9485324ee"},
+          "weather": {"bytes": 2452, "sha256": "sha256:14c9e6765cdffda25b990415689004a5792a002c1ac0c2be9af9c97ac1e9c0d1"},
+          "before": {"bytes": 5794, "sha256": "sha256:b94bac1874554c6031b885df34906f01b70a31558e75e7e65a2768c6ef6ae9df"},
+          "after": {"bytes": 6247, "sha256": "sha256:63e9d959abf9661cf99c3fc28269d8c3f368fb63c0b7ab31299525b86ed0e4d6"}
+        }
+      }
+    },
+    {
+      "seed": 9,
+      "expected": {"firstDie":5,"secondDie":6,"kind":"sandstorm","scope":"listed-areas","locationDie":2,"affectedAreas":["c","d"],"cursor":3,"consumedHex":"7c1d5b","rejectedBytes":0},
+      "goldens": {
+        "act-first": {
+          "creation": {"bytes": 7520, "sha256": "sha256:f29292c8e30abed479cb0c83ba26fda69277063291692247ee6d2b30bf548642"},
+          "preamble-1": {"bytes": 1829, "sha256": "sha256:6c0c380864ae8531b92e3b2025ce0672c0de9fb7e91b7ac60474dc4bb347c826"},
+          "preamble-2": {"bytes": 1686, "sha256": "sha256:ea970709d16783abdab0878d5aee4aeb919ae85294b3508a4f7e28e1355ce45e"},
+          "preamble-3": {"bytes": 1819, "sha256": "sha256:2d2a397a5d94e614ca5ce4d4408833e1c04d66f1aedd4df8164ac31e87dd792a"},
+          "preamble-4": {"bytes": 1951, "sha256": "sha256:941e4f21e01ab6be592455958f46ed8b90474781f5dda2c4229b1c32a2fc1a6d"},
+          "input": {"bytes": 359, "sha256": "sha256:98ee13aea2213f306133c824efda322a34efdd3c11d48eff02b8f48be45be612"},
+          "weather": {"bytes": 2452, "sha256": "sha256:b1d0168446838d7128537a56360a34b7bb993693d5ac01e26f787466b2552b57"},
+          "before": {"bytes": 5794, "sha256": "sha256:95b334e4289608b789ccb83b79f2f6e884d4e98b54838710b321fa6788161c7f"},
+          "after": {"bytes": 6247, "sha256": "sha256:63bed3ab843d3e2c1e4e2d05eb4a2b9c08b60d81618e011d7ac86ba1a763b859"}
+        },
+        "act-last": {
+          "creation": {"bytes": 7520, "sha256": "sha256:f29292c8e30abed479cb0c83ba26fda69277063291692247ee6d2b30bf548642"},
+          "preamble-1": {"bytes": 1829, "sha256": "sha256:6c0c380864ae8531b92e3b2025ce0672c0de9fb7e91b7ac60474dc4bb347c826"},
+          "preamble-2": {"bytes": 1686, "sha256": "sha256:ea970709d16783abdab0878d5aee4aeb919ae85294b3508a4f7e28e1355ce45e"},
+          "preamble-3": {"bytes": 1819, "sha256": "sha256:2d2a397a5d94e614ca5ce4d4408833e1c04d66f1aedd4df8164ac31e87dd792a"},
+          "preamble-4": {"bytes": 1950, "sha256": "sha256:90e504d2ea3e5e91e6233eae0b5f22cba0bc3c3d1942855b6e9dff21e3229ee1"},
+          "input": {"bytes": 359, "sha256": "sha256:98ee13aea2213f306133c824efda322a34efdd3c11d48eff02b8f48be45be612"},
+          "weather": {"bytes": 2452, "sha256": "sha256:77b19091b9b5bfa547431c3a9b555b6516148382eb02c68a8af3bce76acfc582"},
+          "before": {"bytes": 5794, "sha256": "sha256:3c550e89e1a6218867c7661f719e46ec6a56b777443416def98f1be37aa516d2"},
+          "after": {"bytes": 6247, "sha256": "sha256:80e618d0caabcca6a8102270b7873b284dd701997f3096dd331b97c1bdc9ad02"}
+        }
+      }
+    },
+    {
+      "seed": 16,
+      "expected": {"firstDie":6,"secondDie":2,"kind":"rainstorm","scope":"listed-areas","locationDie":1,"affectedAreas":["a","b"],"cursor":3,"consumedHex":"a13d24","rejectedBytes":0},
+      "goldens": {
+        "act-first": {
+          "creation": {"bytes": 7522, "sha256": "sha256:63bb7bd7b6de3f6a493c9b24ac540735be6fda93bf7e336d38aa5b06dbd4466f"},
+          "preamble-1": {"bytes": 1829, "sha256": "sha256:57083431aac32e9bf38a0478a60ab0aaf530585cf2a7ef4ab577185a44793758"},
+          "preamble-2": {"bytes": 1686, "sha256": "sha256:575b31c531ff06787e78a50046776f85dd9fe1a6dd07f655648ce059dee416c3"},
+          "preamble-3": {"bytes": 1819, "sha256": "sha256:592b0134fbe5349b63f7301a79ed49241ddc8b077c1cb077fcb90d4dc5696282"},
+          "preamble-4": {"bytes": 1951, "sha256": "sha256:ab105c47e1fb3ed549fa24206085bcecdcced352c9d5b0737d41ffc81259ab6b"},
+          "input": {"bytes": 359, "sha256": "sha256:07f58da044fd5f3d6a16dfbd5012d7ee712c45792b3389f79d2d6c267d51bd63"},
+          "weather": {"bytes": 2347, "sha256": "sha256:c04349e60db0afb5995d19cbc4a47265f75480e7b092c0c84dc714bd9b265fd3"},
+          "before": {"bytes": 5795, "sha256": "sha256:34f7f87f7ede5d0acc0be132c998c319ac54a43dc00256c8930d6771c8b04d8d"},
+          "after": {"bytes": 6248, "sha256": "sha256:2643e0664f74871e6d405cefa4051a81b0df80953e24d6359f689acf6c2b2339"}
+        },
+        "act-last": {
+          "creation": {"bytes": 7522, "sha256": "sha256:63bb7bd7b6de3f6a493c9b24ac540735be6fda93bf7e336d38aa5b06dbd4466f"},
+          "preamble-1": {"bytes": 1829, "sha256": "sha256:57083431aac32e9bf38a0478a60ab0aaf530585cf2a7ef4ab577185a44793758"},
+          "preamble-2": {"bytes": 1686, "sha256": "sha256:575b31c531ff06787e78a50046776f85dd9fe1a6dd07f655648ce059dee416c3"},
+          "preamble-3": {"bytes": 1819, "sha256": "sha256:592b0134fbe5349b63f7301a79ed49241ddc8b077c1cb077fcb90d4dc5696282"},
+          "preamble-4": {"bytes": 1950, "sha256": "sha256:a924cf15c2134d09db01fdeb7c6e93ca6677589b977d9c501606d3637d306f98"},
+          "input": {"bytes": 359, "sha256": "sha256:07f58da044fd5f3d6a16dfbd5012d7ee712c45792b3389f79d2d6c267d51bd63"},
+          "weather": {"bytes": 2347, "sha256": "sha256:d2eca532f4ecadf83538e54b03297472a6e9091a882667cc2afcf5c3cd4a3e27"},
+          "before": {"bytes": 5795, "sha256": "sha256:7bc2875188bcbb01033d99e54655c50dc9f14b7af33b42de1d0b62d55db1580c"},
+          "after": {"bytes": 6248, "sha256": "sha256:4a5d4f75928f4a6e803848ff4cd5cc118b7e8361c3d822f31d5b340b128b0ec2"}
+        }
+      }
+    },
+    {
+      "seed": 18,
+      "expected": {"firstDie":6,"secondDie":5,"kind":"rainstorm","scope":"listed-areas","locationDie":5,"affectedAreas":["b","d"],"cursor":3,"consumedHex":"65c46a","rejectedBytes":0},
+      "goldens": {
+        "act-first": {
+          "creation": {"bytes": 7522, "sha256": "sha256:b28cc21ff809184e8de6c01db532364286335fa6a8664b4b72a9363ff6084df3"},
+          "preamble-1": {"bytes": 1829, "sha256": "sha256:57e01df594c39ca8fe7141df2b25cc8e1e4b36771e90ef8f80e5192b0a255458"},
+          "preamble-2": {"bytes": 1686, "sha256": "sha256:fe53cf0f7b1876093fa8a28e0312dfa3908fbc371cf86ba518b0d437bccb8394"},
+          "preamble-3": {"bytes": 1819, "sha256": "sha256:f461346288a02235fce0cdeed932581756caa63008b1751c9b8a2f24afc8cbd1"},
+          "preamble-4": {"bytes": 1951, "sha256": "sha256:0e9b4e5b85c02d53e8fcbdd71b1e60e216a2958e280eec1f67b4576697864a02"},
+          "input": {"bytes": 359, "sha256": "sha256:af28d1a04ad0b3830d51ec8b656556067dbc52eea9c8a966ec0066c171f307a2"},
+          "weather": {"bytes": 2347, "sha256": "sha256:79e9f80b11976fb313c49525cf7c6bd71aae3b76e3d1674ef084ff3aa6274e4c"},
+          "before": {"bytes": 5795, "sha256": "sha256:a22b0dd089e7fa6e720cf417939d43d89834c91f45fdd70f3c99b2fb446e1e1e"},
+          "after": {"bytes": 6248, "sha256": "sha256:cf82a08afcb34e41c1b5592de95020f04f542c3c0b58000989e570edb8838c33"}
+        },
+        "act-last": {
+          "creation": {"bytes": 7522, "sha256": "sha256:b28cc21ff809184e8de6c01db532364286335fa6a8664b4b72a9363ff6084df3"},
+          "preamble-1": {"bytes": 1829, "sha256": "sha256:57e01df594c39ca8fe7141df2b25cc8e1e4b36771e90ef8f80e5192b0a255458"},
+          "preamble-2": {"bytes": 1686, "sha256": "sha256:fe53cf0f7b1876093fa8a28e0312dfa3908fbc371cf86ba518b0d437bccb8394"},
+          "preamble-3": {"bytes": 1819, "sha256": "sha256:f461346288a02235fce0cdeed932581756caa63008b1751c9b8a2f24afc8cbd1"},
+          "preamble-4": {"bytes": 1950, "sha256": "sha256:7d519fb51e5bbe422d21040dbfbbc95feb73f6470bdf4896b2729de8ffe4f8a7"},
+          "input": {"bytes": 359, "sha256": "sha256:af28d1a04ad0b3830d51ec8b656556067dbc52eea9c8a966ec0066c171f307a2"},
+          "weather": {"bytes": 2347, "sha256": "sha256:f7ff4f8b059283c7b10baa21f0a7503cba1ad510a4133acbff9c8609dba8f9ba"},
+          "before": {"bytes": 5795, "sha256": "sha256:41eb69a328f40ce52fbc0b13dd6001f2da2989304e809b5e62ab28cdc3975849"},
+          "after": {"bytes": 6248, "sha256": "sha256:2d1a443f88ab777a48744c7b1a4decf47b2bb640671faba164b492022f79e8af"}
+        }
+      }
+    },
+    {
+      "seed": 33,
+      "expected": {"firstDie":5,"secondDie":5,"kind":"sandstorm","scope":"listed-areas","locationDie":3,"affectedAreas":["d","e"],"cursor":3,"consumedHex":"a028ce","rejectedBytes":0},
+      "goldens": {
+        "act-first": {
+          "creation": {"bytes": 7522, "sha256": "sha256:53a052e78a344b8c320538417e5ba794b5eec8ec567a2a8c4ce2bf700b92358b"},
+          "preamble-1": {"bytes": 1829, "sha256": "sha256:1111d6383e5af35e03a8905fbc610b7e0700d6b6fdd849467e6c9add39087ed8"},
+          "preamble-2": {"bytes": 1686, "sha256": "sha256:b8a9a07407c9478f9d8cd045949d49409319176de35ae76bb5e9666d1e59e95b"},
+          "preamble-3": {"bytes": 1819, "sha256": "sha256:2552fe011f76b8227abc78e2acf8122abb34870f41f7d36cfb33c9002a7cb839"},
+          "preamble-4": {"bytes": 1951, "sha256": "sha256:31ded0711aa17d71a172f829501309958a46247147e88c04c3b2b3466fc59dc2"},
+          "input": {"bytes": 359, "sha256": "sha256:989ccdbf8ec21ea2e5a578488a9f519ebf83d977ad8f380cb7ec745478b57c3e"},
+          "weather": {"bytes": 2452, "sha256": "sha256:05d9ee60c0bdd21f6652118be7a399e203b79dd31a1dcbc4055adee2fa3eaf86"},
+          "before": {"bytes": 5795, "sha256": "sha256:4cdf0b386eba81203f5710091373fa4f13d951dc841ac5637c361c64567e0d1b"},
+          "after": {"bytes": 6248, "sha256": "sha256:b1f3a0a552480e4a83bec93b6e67fee37112c70755b6e6cdac97a56d8e064774"}
+        },
+        "act-last": {
+          "creation": {"bytes": 7522, "sha256": "sha256:53a052e78a344b8c320538417e5ba794b5eec8ec567a2a8c4ce2bf700b92358b"},
+          "preamble-1": {"bytes": 1829, "sha256": "sha256:1111d6383e5af35e03a8905fbc610b7e0700d6b6fdd849467e6c9add39087ed8"},
+          "preamble-2": {"bytes": 1686, "sha256": "sha256:b8a9a07407c9478f9d8cd045949d49409319176de35ae76bb5e9666d1e59e95b"},
+          "preamble-3": {"bytes": 1819, "sha256": "sha256:2552fe011f76b8227abc78e2acf8122abb34870f41f7d36cfb33c9002a7cb839"},
+          "preamble-4": {"bytes": 1950, "sha256": "sha256:79f2b9f8fb10f12580aafdaa8e7b547eb0964365f082198bdc2e577e34edb722"},
+          "input": {"bytes": 359, "sha256": "sha256:989ccdbf8ec21ea2e5a578488a9f519ebf83d977ad8f380cb7ec745478b57c3e"},
+          "weather": {"bytes": 2452, "sha256": "sha256:c24fac03a22e6bc7048ba8cbceead45a67440d1301280fe211277a641d52e4fe"},
+          "before": {"bytes": 5795, "sha256": "sha256:f2027c1762700c130d5093eaa867a8f82f368e62454dbc05430d5c9e3084d0bd"},
+          "after": {"bytes": 6248, "sha256": "sha256:f954b63b61ded001ab0372088d05ab5f74a11b4e19db779704da22f2f24fd0ca"}
+        }
+      }
+    },
+    {
+      "seed": 70,
+      "expected": {"firstDie":6,"secondDie":5,"kind":"rainstorm","scope":"listed-areas","locationDie":6,"affectedAreas":["b","c","d"],"cursor":3,"consumedHex":"9bac47","rejectedBytes":0},
+      "goldens": {
+        "act-first": {
+          "creation": {"bytes": 7522, "sha256": "sha256:4c0f6031b6eaad609f1aa3822f773005a132d68b4716668b479ca8f84c6dced7"},
+          "preamble-1": {"bytes": 1829, "sha256": "sha256:0e4a372f4c0d3e9ab61a2e847c30579139270589131f8f3e8fade665539087dd"},
+          "preamble-2": {"bytes": 1686, "sha256": "sha256:eae99157bde884d156a2e79efedcc70275f16ad72255d560aded0da435b61745"},
+          "preamble-3": {"bytes": 1819, "sha256": "sha256:c6a44ab099622c007ee03f4ef552b7fa8a72308956969eed2e8bee6a3ae36bd3"},
+          "preamble-4": {"bytes": 1951, "sha256": "sha256:1ed85b7e80625e58c8dd8b17da855378fe3d18cff2e46d4f56057a1754d17cc3"},
+          "input": {"bytes": 359, "sha256": "sha256:82d6b38d275b481f3da58535d1938d1bb31212eeeb1cb7ca7c9a2a1d738469b4"},
+          "weather": {"bytes": 2351, "sha256": "sha256:87a522d9672cb1d99164aea4fa01fab52511e47b7480cf18215f618df81d0d96"},
+          "before": {"bytes": 5795, "sha256": "sha256:c656b000237ca7b2e22211340ea29ab744123471836b98c4e31410af81776c36"},
+          "after": {"bytes": 6252, "sha256": "sha256:cca03c5ce735cffa6c884214cbdacea46f94b012584dc4471bb2074c0dcb3b9f"}
+        },
+        "act-last": {
+          "creation": {"bytes": 7522, "sha256": "sha256:4c0f6031b6eaad609f1aa3822f773005a132d68b4716668b479ca8f84c6dced7"},
+          "preamble-1": {"bytes": 1829, "sha256": "sha256:0e4a372f4c0d3e9ab61a2e847c30579139270589131f8f3e8fade665539087dd"},
+          "preamble-2": {"bytes": 1686, "sha256": "sha256:eae99157bde884d156a2e79efedcc70275f16ad72255d560aded0da435b61745"},
+          "preamble-3": {"bytes": 1819, "sha256": "sha256:c6a44ab099622c007ee03f4ef552b7fa8a72308956969eed2e8bee6a3ae36bd3"},
+          "preamble-4": {"bytes": 1950, "sha256": "sha256:9898d622d391f0080b579bd75e0c641aa49253af1b5f21763a4551b38137d2aa"},
+          "input": {"bytes": 359, "sha256": "sha256:82d6b38d275b481f3da58535d1938d1bb31212eeeb1cb7ca7c9a2a1d738469b4"},
+          "weather": {"bytes": 2351, "sha256": "sha256:e3437fbc444dfe3f188c0646296ad072d44127f8a25d21346542e3b89d10b23a"},
+          "before": {"bytes": 5795, "sha256": "sha256:d5bf6d03679e98079428cc1ace0ac88c5e48f33d9d18b28a26508c69db4cbffb"},
+          "after": {"bytes": 6252, "sha256": "sha256:6c8236af0cc561fa66331747785bb1dc08e4e19855c26fc1776fcd032399d470"}
+        }
+      }
+    },
+    {
+      "seed": 74,
+      "expected": {"firstDie":5,"secondDie":6,"kind":"sandstorm","scope":"listed-areas","locationDie":1,"affectedAreas":["a","b"],"cursor":3,"consumedHex":"b28f1e","rejectedBytes":0},
+      "goldens": {
+        "act-first": {
+          "creation": {"bytes": 7522, "sha256": "sha256:66ace9f0231cdc528122137d92371bf7b39edada24a5ba69470ddbe512a035ec"},
+          "preamble-1": {"bytes": 1829, "sha256": "sha256:a3ea09b9bc32376116317ec9003775884208bf6e06e665ea85146f37f6b98376"},
+          "preamble-2": {"bytes": 1686, "sha256": "sha256:b867985d4df6897f23d373a85851beaaafc300196b9ca492ef2268979ad29000"},
+          "preamble-3": {"bytes": 1819, "sha256": "sha256:abe12da29e399beebb8e471051610b10c7a4eb556d6f41af8b1e662b9a982ad4"},
+          "preamble-4": {"bytes": 1951, "sha256": "sha256:a7f4b0836ef36359e09282403f8ca2191cfd461025c4c174f86c3606fd688cf7"},
+          "input": {"bytes": 359, "sha256": "sha256:df75a00e65cf5387219cbd434f2a8ec75a012e6ad1f1511858a4ef0fa164d2f1"},
+          "weather": {"bytes": 2452, "sha256": "sha256:583c2adb886526fb2f34a9dcdb67ff546d066c2f87208a5ae6126798d9466a06"},
+          "before": {"bytes": 5795, "sha256": "sha256:c39bc1a76ae7832e0d51d72db3aee6598ec7ea8181e3e4d27751ff96e1d03b6f"},
+          "after": {"bytes": 6248, "sha256": "sha256:f1c5c5bced4eace7b6d5370e1497cbc264b50bf269e3229a21180a11f1b0d144"}
+        },
+        "act-last": {
+          "creation": {"bytes": 7522, "sha256": "sha256:66ace9f0231cdc528122137d92371bf7b39edada24a5ba69470ddbe512a035ec"},
+          "preamble-1": {"bytes": 1829, "sha256": "sha256:a3ea09b9bc32376116317ec9003775884208bf6e06e665ea85146f37f6b98376"},
+          "preamble-2": {"bytes": 1686, "sha256": "sha256:b867985d4df6897f23d373a85851beaaafc300196b9ca492ef2268979ad29000"},
+          "preamble-3": {"bytes": 1819, "sha256": "sha256:abe12da29e399beebb8e471051610b10c7a4eb556d6f41af8b1e662b9a982ad4"},
+          "preamble-4": {"bytes": 1950, "sha256": "sha256:1299306521b154f05e38e274f811e44460c077eeda6f5edf6655bec1db6f355b"},
+          "input": {"bytes": 359, "sha256": "sha256:df75a00e65cf5387219cbd434f2a8ec75a012e6ad1f1511858a4ef0fa164d2f1"},
+          "weather": {"bytes": 2452, "sha256": "sha256:d0b7066ce8b3c16656569acd843c0928d249327ed6e3025b3701bf0ffc2e96de"},
+          "before": {"bytes": 5795, "sha256": "sha256:123753089f545a900c51ac3cd691ee8c0514e32a4122c0e9978159f5eccfbc29"},
+          "after": {"bytes": 6248, "sha256": "sha256:2a17836d540529fc4c633fcf0e0017ceb24bff8fd31ddf3aed08e13e1eb063d6"}
+        }
+      }
+    },
+    {
+      "seed": 80,
+      "expected": {"firstDie":5,"secondDie":6,"kind":"sandstorm","scope":"listed-areas","locationDie":4,"affectedAreas":["b","c"],"cursor":3,"consumedHex":"0a7703","rejectedBytes":0},
+      "goldens": {
+        "act-first": {
+          "creation": {"bytes": 7522, "sha256": "sha256:d056f4b333faa6eca9e79b482aff381d84cae501f88dc894a3dcf9bbf685aff6"},
+          "preamble-1": {"bytes": 1829, "sha256": "sha256:e99f8ce2d8931985c91ea4ab6539b78723f3070b29c09b1629c1b1115f7c3faf"},
+          "preamble-2": {"bytes": 1686, "sha256": "sha256:f473147c202725b764600216f8a58c212e462f2f7d28c52f0893674f2d0fc655"},
+          "preamble-3": {"bytes": 1819, "sha256": "sha256:f35d393a1da47129380a003d6faa6b2afb98b0d3dd7e84bd647c52405365f2b6"},
+          "preamble-4": {"bytes": 1951, "sha256": "sha256:933709c125bc655e77fb71cf8a9de0a1901e867519b0693ff5213c6167755a13"},
+          "input": {"bytes": 359, "sha256": "sha256:42cfd0da5b568c3bde276954ec7fa2aab19822d4ba8713c62e58e1e28c10d594"},
+          "weather": {"bytes": 2452, "sha256": "sha256:042ebb17ef0f248e8e9a7bdae3547628d8e5150619ebb4016a406367d70a17e8"},
+          "before": {"bytes": 5795, "sha256": "sha256:5b5ad8e8f0e1e3af903dac7234f9049721001bfb9f2819d7acd80517e435625f"},
+          "after": {"bytes": 6248, "sha256": "sha256:a6528bc86ef560ad7277da16d92786ab3d13457dad830b5840516b99965beec6"}
+        },
+        "act-last": {
+          "creation": {"bytes": 7522, "sha256": "sha256:d056f4b333faa6eca9e79b482aff381d84cae501f88dc894a3dcf9bbf685aff6"},
+          "preamble-1": {"bytes": 1829, "sha256": "sha256:e99f8ce2d8931985c91ea4ab6539b78723f3070b29c09b1629c1b1115f7c3faf"},
+          "preamble-2": {"bytes": 1686, "sha256": "sha256:f473147c202725b764600216f8a58c212e462f2f7d28c52f0893674f2d0fc655"},
+          "preamble-3": {"bytes": 1819, "sha256": "sha256:f35d393a1da47129380a003d6faa6b2afb98b0d3dd7e84bd647c52405365f2b6"},
+          "preamble-4": {"bytes": 1950, "sha256": "sha256:5aa49cf99fece063e182f26235c46098d08c1f9a890043f91cf6bf824470d113"},
+          "input": {"bytes": 359, "sha256": "sha256:42cfd0da5b568c3bde276954ec7fa2aab19822d4ba8713c62e58e1e28c10d594"},
+          "weather": {"bytes": 2452, "sha256": "sha256:172ce560a3a1fd05371d42215e8dddfd47b6f28ec2b75ec6448390703ae4e26a"},
+          "before": {"bytes": 5795, "sha256": "sha256:1bde951ff5bf6a2b5a9cecc0ae0e79e39e3cf0bab8850d83f05df2506ba745ef"},
+          "after": {"bytes": 6248, "sha256": "sha256:12bc3f39c355db4aa5adf833e52747c49f5995e58e14ac6f2de8d16328db43a5"}
+        }
+      }
+    },
+    {
+      "seed": 81,
+      "expected": {"firstDie":6,"secondDie":1,"kind":"sandstorm","scope":"listed-areas","locationDie":4,"affectedAreas":["b","c"],"cursor":4,"consumedHex":"47fe0033","rejectedBytes":1},
+      "goldens": {
+        "act-first": {
+          "creation": {"bytes": 7522, "sha256": "sha256:2a4fcee4b72609ea082213e1c042573f8ad511acd5ad9373c3a8b9d1ab45934f"},
+          "preamble-1": {"bytes": 1829, "sha256": "sha256:8134a5854f9aeee3081e87ecfcdba6beff10d0ea3da37cd7fd931a49c9547888"},
+          "preamble-2": {"bytes": 1686, "sha256": "sha256:6c994106426e9164bb19a40e01240b3603d9c89406c3a5afd8a3dd098c6c1632"},
+          "preamble-3": {"bytes": 1819, "sha256": "sha256:d7e96b743048a41d38b84a333bc37d6568abe94a739f8add7f36038d58b0cd75"},
+          "preamble-4": {"bytes": 1951, "sha256": "sha256:cf7fabf8e97bb4ded8c1507577ce0d99fa9ff346f47b718071f5132d9dcb0363"},
+          "input": {"bytes": 359, "sha256": "sha256:068030a528e082d08c6ff94434f5afa7889bca05a5737884276cc0b540597dd6"},
+          "weather": {"bytes": 2452, "sha256": "sha256:a14419c051dd6ad6a4ae15016f0d55dc5ce5e4531de296e484295258b6b3bd19"},
+          "before": {"bytes": 5795, "sha256": "sha256:902bf036850f234506c245d6151bdeaa386fe8863f51004e7c4f42455ac218e4"},
+          "after": {"bytes": 6248, "sha256": "sha256:aab1fb0f5b1ba68677b074000030b6ecba2c4c3d96b3ec29fdaf9b8c91b104c3"}
+        },
+        "act-last": {
+          "creation": {"bytes": 7522, "sha256": "sha256:2a4fcee4b72609ea082213e1c042573f8ad511acd5ad9373c3a8b9d1ab45934f"},
+          "preamble-1": {"bytes": 1829, "sha256": "sha256:8134a5854f9aeee3081e87ecfcdba6beff10d0ea3da37cd7fd931a49c9547888"},
+          "preamble-2": {"bytes": 1686, "sha256": "sha256:6c994106426e9164bb19a40e01240b3603d9c89406c3a5afd8a3dd098c6c1632"},
+          "preamble-3": {"bytes": 1819, "sha256": "sha256:d7e96b743048a41d38b84a333bc37d6568abe94a739f8add7f36038d58b0cd75"},
+          "preamble-4": {"bytes": 1950, "sha256": "sha256:4fc67007b0d54dd60a80954631e70680fffb685c2a124e8a2df561c0b2394a25"},
+          "input": {"bytes": 359, "sha256": "sha256:068030a528e082d08c6ff94434f5afa7889bca05a5737884276cc0b540597dd6"},
+          "weather": {"bytes": 2452, "sha256": "sha256:3dc6b38f1fa16af58236a14c16a2b9a07c41a6ac0093eef2117fcca0c2529d22"},
+          "before": {"bytes": 5795, "sha256": "sha256:4b869a5f1a5042f8002bf0f179996bfd3f416ecfaca5e9319447b928f57cfc10"},
+          "after": {"bytes": 6248, "sha256": "sha256:2f6e014d58347e3c61d5c0ce999781031a10dc79dc5f0e31a43f47e13aa65db2"}
+        }
+      }
+    },
+    {
+      "seed": 97,
+      "expected": {"firstDie":6,"secondDie":3,"kind":"rainstorm","scope":"listed-areas","locationDie":3,"affectedAreas":["d","e"],"cursor":3,"consumedHex":"a792aa","rejectedBytes":0},
+      "goldens": {
+        "act-first": {
+          "creation": {"bytes": 7522, "sha256": "sha256:2af592db3711a887b47d2be6d68d4c7cefcea8165acf45dd56c243c047541331"},
+          "preamble-1": {"bytes": 1829, "sha256": "sha256:c45fe0b7712b684c7b576f7356482a2daeee1a0c12969d4c2bf0022599e27482"},
+          "preamble-2": {"bytes": 1686, "sha256": "sha256:99d3d516b97e2f157787889b6153ce1873e63d8ea29df0b9ca05b3338f780926"},
+          "preamble-3": {"bytes": 1819, "sha256": "sha256:cf5616faf9f0b04395b49ed3f385a54a51479aa3db95e1357957e07e16044dbe"},
+          "preamble-4": {"bytes": 1951, "sha256": "sha256:1c00674189b177e53c7ae8d170d77191c0157db563532c45e58ba88ba25d28ec"},
+          "input": {"bytes": 359, "sha256": "sha256:1cf0962a0c5196a1a271003bc0ead5885ecb3c2ea834291a01cf2fe379666ff1"},
+          "weather": {"bytes": 2347, "sha256": "sha256:7af698de51a7867d9ec40a4a610d3e845bb186812dba6ed1220acc60b35762ae"},
+          "before": {"bytes": 5795, "sha256": "sha256:408fc43d6d53c24a507cbfa5597c4148b6261abb312dd92e20e8e2132ca779fc"},
+          "after": {"bytes": 6248, "sha256": "sha256:37aeb4e5654d7f0e3b84cbb050d7f685d897962f6224e8cfe875f81a8450f6e8"}
+        },
+        "act-last": {
+          "creation": {"bytes": 7522, "sha256": "sha256:2af592db3711a887b47d2be6d68d4c7cefcea8165acf45dd56c243c047541331"},
+          "preamble-1": {"bytes": 1829, "sha256": "sha256:c45fe0b7712b684c7b576f7356482a2daeee1a0c12969d4c2bf0022599e27482"},
+          "preamble-2": {"bytes": 1686, "sha256": "sha256:99d3d516b97e2f157787889b6153ce1873e63d8ea29df0b9ca05b3338f780926"},
+          "preamble-3": {"bytes": 1819, "sha256": "sha256:cf5616faf9f0b04395b49ed3f385a54a51479aa3db95e1357957e07e16044dbe"},
+          "preamble-4": {"bytes": 1950, "sha256": "sha256:6a5c3edbf8ffc34d41cac5cdfc78fecc0622ca36ec3684286c4dc89b95345d89"},
+          "input": {"bytes": 359, "sha256": "sha256:1cf0962a0c5196a1a271003bc0ead5885ecb3c2ea834291a01cf2fe379666ff1"},
+          "weather": {"bytes": 2347, "sha256": "sha256:02f18784b9f96e13f10ebd9b0f42fee6bac9f9c5f6387e2a161718492d0d89e4"},
+          "before": {"bytes": 5795, "sha256": "sha256:5567f278fac890445c1889b1735bd43b529cd91d00710754d038493373348045"},
+          "after": {"bytes": 6248, "sha256": "sha256:7763c9de5d8e94d79c56dc31c8ed4ee12aa944ea75e9671d856a4a7b14a7180a"}
+        }
+      }
+    },
+    {
+      "seed": 141,
+      "expected": {"firstDie":6,"secondDie":1,"kind":"sandstorm","scope":"listed-areas","locationDie":6,"affectedAreas":["b","c","d"],"cursor":3,"consumedHex":"6512c5","rejectedBytes":0},
+      "goldens": {
+        "act-first": {
+          "creation": {"bytes": 7524, "sha256": "sha256:0751c31a645906eb7bdb269e666af2cd7fe55ea22cd570f7885281d39a6e58db"},
+          "preamble-1": {"bytes": 1829, "sha256": "sha256:1c89b7e2c589b99e0c325769bdf9f3940c25dac2c1b0520fbd99f43bf044d102"},
+          "preamble-2": {"bytes": 1686, "sha256": "sha256:528b388da57f49936f5323b01eadb3e846c61b1e2a468b7a5bdbb369cf69c393"},
+          "preamble-3": {"bytes": 1819, "sha256": "sha256:04c86b6770196491e96895a20c2ee8c49b110c3c07dc657048e8866015da2804"},
+          "preamble-4": {"bytes": 1951, "sha256": "sha256:906da862f26b70fad92903cbca3aa7ed7e443e70fb0d575516a05a577eb1264a"},
+          "input": {"bytes": 359, "sha256": "sha256:32b1467a3642e6766e6d63d173876d00611cb1cbb1ee52816daa9d539c836fcd"},
+          "weather": {"bytes": 2456, "sha256": "sha256:2a6d777839bf3fd752aa2bec3106e861c382e5ca53adad56c841264266cf6ef2"},
+          "before": {"bytes": 5796, "sha256": "sha256:989595be01edc5542b974e0313cc73a59a984e1738485dc55586320e6fbc071a"},
+          "after": {"bytes": 6253, "sha256": "sha256:496b0da2ca1ba73eabbc33d272dc9ac2b755defde38bee04c9dcb1a7d2cc7929"}
+        },
+        "act-last": {
+          "creation": {"bytes": 7524, "sha256": "sha256:0751c31a645906eb7bdb269e666af2cd7fe55ea22cd570f7885281d39a6e58db"},
+          "preamble-1": {"bytes": 1829, "sha256": "sha256:1c89b7e2c589b99e0c325769bdf9f3940c25dac2c1b0520fbd99f43bf044d102"},
+          "preamble-2": {"bytes": 1686, "sha256": "sha256:528b388da57f49936f5323b01eadb3e846c61b1e2a468b7a5bdbb369cf69c393"},
+          "preamble-3": {"bytes": 1819, "sha256": "sha256:04c86b6770196491e96895a20c2ee8c49b110c3c07dc657048e8866015da2804"},
+          "preamble-4": {"bytes": 1950, "sha256": "sha256:b97f0c28ed75c788da8c02919590eaca7a42212947cefdaa2bac21ff7689b1a6"},
+          "input": {"bytes": 359, "sha256": "sha256:32b1467a3642e6766e6d63d173876d00611cb1cbb1ee52816daa9d539c836fcd"},
+          "weather": {"bytes": 2456, "sha256": "sha256:e5f4eafa9dc6f060d0565d4942ad23fca7e446be9df33334e42edf88797dbf7e"},
+          "before": {"bytes": 5796, "sha256": "sha256:41ea3c89bc66b0a78997790e8de6636a712b899d2ced25695d1d7c65545695da"},
+          "after": {"bytes": 6253, "sha256": "sha256:eb7537c53283d5b1057d557bc48764fc7e47f066a55bb6e3b4c451c8b5257e6c"}
+        }
+      }
+    },
+    {
+      "seed": 183,
+      "expected": {"firstDie":6,"secondDie":4,"kind":"rainstorm","scope":"listed-areas","locationDie":4,"affectedAreas":["b","c"],"cursor":3,"consumedHex":"11bd9f","rejectedBytes":0},
+      "goldens": {
+        "act-first": {
+          "creation": {"bytes": 7524, "sha256": "sha256:7549e6882b5d53fa41ce60c1882b255c7110ecda4997e6013b2560e85c8896ac"},
+          "preamble-1": {"bytes": 1829, "sha256": "sha256:788fbd1ab176c94322d175114e51a8890fc851f7c5c8f0bd6fd078c57fb63525"},
+          "preamble-2": {"bytes": 1686, "sha256": "sha256:0a47bb899690f3714d7328fea821a8608c17b147bb8f7dc0b791263eb2359970"},
+          "preamble-3": {"bytes": 1819, "sha256": "sha256:f6525878ba12e2d04326ed293f7e3cd9e9c63f9f89300c0d43e47b014d7bb291"},
+          "preamble-4": {"bytes": 1951, "sha256": "sha256:8c16d5652c9e89f447c253a12f22a10021f89c4085d4ba1cf03f7f4f6bb1c44a"},
+          "input": {"bytes": 359, "sha256": "sha256:2a8b06e177b3e0d73f81ccae5c75a13bae3147a48a8a92b21583b4f9d44ac99b"},
+          "weather": {"bytes": 2347, "sha256": "sha256:4509c37a32a87d489c47a6ad39115b4c1e124b4f66d8a94aa19b5a98f781adf8"},
+          "before": {"bytes": 5796, "sha256": "sha256:b26ab25de7656d142477ecd51769c52a6622c0bae5758b1f16b7d9287332803f"},
+          "after": {"bytes": 6249, "sha256": "sha256:af9d2a8b16761c02ee1ec4d4d43b5155d0fa17da5b57b02853395d3274db29dc"}
+        },
+        "act-last": {
+          "creation": {"bytes": 7524, "sha256": "sha256:7549e6882b5d53fa41ce60c1882b255c7110ecda4997e6013b2560e85c8896ac"},
+          "preamble-1": {"bytes": 1829, "sha256": "sha256:788fbd1ab176c94322d175114e51a8890fc851f7c5c8f0bd6fd078c57fb63525"},
+          "preamble-2": {"bytes": 1686, "sha256": "sha256:0a47bb899690f3714d7328fea821a8608c17b147bb8f7dc0b791263eb2359970"},
+          "preamble-3": {"bytes": 1819, "sha256": "sha256:f6525878ba12e2d04326ed293f7e3cd9e9c63f9f89300c0d43e47b014d7bb291"},
+          "preamble-4": {"bytes": 1950, "sha256": "sha256:ecc5fb0d91725d5bf9aa0b65315fe245ac6bed6f85a64e350ef1dd3537be690a"},
+          "input": {"bytes": 359, "sha256": "sha256:2a8b06e177b3e0d73f81ccae5c75a13bae3147a48a8a92b21583b4f9d44ac99b"},
+          "weather": {"bytes": 2347, "sha256": "sha256:db9d4c7313aa15bf9bd5a4a0d1200bd481601aee2c228ac51f371e336c311925"},
+          "before": {"bytes": 5796, "sha256": "sha256:545d43eea58857eedf7c0c02247542d0f9c7bfa48144f5ca376144217ef315c9"},
+          "after": {"bytes": 6249, "sha256": "sha256:d98b01f355a9afee0ff374dd0f5f118db13d0c557f67e35f3c5de9794877db9d"}
+        }
+      }
+    },
+    {
+      "seed": 12345,
+      "expected": {"firstDie":2,"secondDie":4,"kind":"normal","scope":"none","locationDie":null,"affectedAreas":[],"cursor":2,"consumedHex":"0d63","rejectedBytes":0},
+      "goldens": {
+        "act-first": {
+          "creation": {"bytes": 7528, "sha256": "sha256:c1a423cb8e9339e4892215b491c42579dbb2497034aa6ba497a9a83c7ccf5912"},
+          "preamble-1": {"bytes": 1829, "sha256": "sha256:d47480ab723eecad6cdde2c9855a6343f3452c8af9076c31230ef24d5797ab3d"},
+          "preamble-2": {"bytes": 1686, "sha256": "sha256:3c49b9a6b981f8859e7203e5ed394f760d29a97529704ab41e542edecef50bda"},
+          "preamble-3": {"bytes": 1819, "sha256": "sha256:6301d7fc84205caf0cd197a095baa630970d1ecca4c983497b14dcd20e577391"},
+          "preamble-4": {"bytes": 1951, "sha256": "sha256:40b27a6b7226591c76a1edc29e10f38ff40ce24e90e86798299e8411223ae13b"},
+          "input": {"bytes": 359, "sha256": "sha256:04f76caf36f8239033422f9f0a2ae28041d944cc4374236a7b8aca1299a3bb83"},
+          "weather": {"bytes": 2276, "sha256": "sha256:5b58f188f45cafd03771854258a1c58f6845a2f649333f0c20387114f4977ef4"},
+          "before": {"bytes": 5798, "sha256": "sha256:d8a0d00959cb9ffbae7ace89d4a5431ba70a2980eb59090e57828601669a962c"},
+          "after": {"bytes": 6236, "sha256": "sha256:184b79cf0ae8c8487862e912af935c83bb9fe9166367d6cb82009ea125b04f0e"}
+        },
+        "act-last": {
+          "creation": {"bytes": 7528, "sha256": "sha256:c1a423cb8e9339e4892215b491c42579dbb2497034aa6ba497a9a83c7ccf5912"},
+          "preamble-1": {"bytes": 1829, "sha256": "sha256:d47480ab723eecad6cdde2c9855a6343f3452c8af9076c31230ef24d5797ab3d"},
+          "preamble-2": {"bytes": 1686, "sha256": "sha256:3c49b9a6b981f8859e7203e5ed394f760d29a97529704ab41e542edecef50bda"},
+          "preamble-3": {"bytes": 1819, "sha256": "sha256:6301d7fc84205caf0cd197a095baa630970d1ecca4c983497b14dcd20e577391"},
+          "preamble-4": {"bytes": 1950, "sha256": "sha256:3d43575d8fa355f38e6f606329525272b654544eabc58cfeb5de1811d0fd86fd"},
+          "input": {"bytes": 359, "sha256": "sha256:04f76caf36f8239033422f9f0a2ae28041d944cc4374236a7b8aca1299a3bb83"},
+          "weather": {"bytes": 2276, "sha256": "sha256:69ed29674fbd643d9d8a0e3ce05889a6a258685b6c58501d1598866da1043f29"},
+          "before": {"bytes": 5798, "sha256": "sha256:003ae5a85c1e86667976c07dfa0ed20abd946a81ecc2865d2e201b45dd811eda"},
+          "after": {"bytes": 6236, "sha256": "sha256:92ee229553c78b6040c100d3aaf4b7778ea9a875dfe97d8cc6ddbf03d7a85f41"}
+        }
+      }
+    },
+    {
+      "seed": 18446744073709551615,
+      "expected": {"firstDie":4,"secondDie":4,"kind":"hot","scope":"global","locationDie":null,"affectedAreas":[],"cursor":3,"consumedHex":"a5ffbd","rejectedBytes":1},
+      "goldens": {
+        "act-first": {
+          "creation": {"bytes": 7558, "sha256": "sha256:91026cdc519b4bd782c959e5ac08020ea75e8d14b0e0b2a8acf723bb404a9055"},
+          "preamble-1": {"bytes": 1829, "sha256": "sha256:69a2a02057f7d95b22bb833035d6272185b3e0b7a7d853a52c88078637d930e2"},
+          "preamble-2": {"bytes": 1686, "sha256": "sha256:f65ca73a7fb8332e0c32fbb1f3885c37b77520900fc82cb6f97f1d93fcca828f"},
+          "preamble-3": {"bytes": 1819, "sha256": "sha256:727eac40b3dc73753d735da3ef6c4e063db172303f2dddcb49ac612c3d8fa892"},
+          "preamble-4": {"bytes": 1951, "sha256": "sha256:243c419499ea5f8eaada2152080be509b082bfeb85f45efdd0958e0b8c70a9a8"},
+          "input": {"bytes": 359, "sha256": "sha256:12cb199898ec000c90c205eeb38b73ac089ee014c8ac3b4eb4c9d15d4ce3f95d"},
+          "weather": {"bytes": 2329, "sha256": "sha256:f6bf4512f457d97d09e566996fb979640b138cc409c2e446a0a44adfd0060771"},
+          "before": {"bytes": 5813, "sha256": "sha256:b96a241bec952d9cdb32f8d40527ff47f1efb2f458c64126b873267c046f45f9"},
+          "after": {"bytes": 6250, "sha256": "sha256:d69c359585c8d1d36957afe63b78ff993be3c953b735b5e03c9e6b3162683f13"}
+        },
+        "act-last": {
+          "creation": {"bytes": 7558, "sha256": "sha256:91026cdc519b4bd782c959e5ac08020ea75e8d14b0e0b2a8acf723bb404a9055"},
+          "preamble-1": {"bytes": 1829, "sha256": "sha256:69a2a02057f7d95b22bb833035d6272185b3e0b7a7d853a52c88078637d930e2"},
+          "preamble-2": {"bytes": 1686, "sha256": "sha256:f65ca73a7fb8332e0c32fbb1f3885c37b77520900fc82cb6f97f1d93fcca828f"},
+          "preamble-3": {"bytes": 1819, "sha256": "sha256:727eac40b3dc73753d735da3ef6c4e063db172303f2dddcb49ac612c3d8fa892"},
+          "preamble-4": {"bytes": 1950, "sha256": "sha256:321a5f250ed972d90879534c6b462121396af173fa6d6db8d1ffbfc4f0052f20"},
+          "input": {"bytes": 359, "sha256": "sha256:12cb199898ec000c90c205eeb38b73ac089ee014c8ac3b4eb4c9d15d4ce3f95d"},
+          "weather": {"bytes": 2329, "sha256": "sha256:34132e128df2bae1a686e931d6529260b90ced0fd1f10946f20e4423bdbac0a9"},
+          "before": {"bytes": 5813, "sha256": "sha256:e103534446354c3195e76a37e26e68e7bec2c11eb5d210279afe3b99094e7773"},
+          "after": {"bytes": 6250, "sha256": "sha256:0cd48967371485f1f4ff70c65b379c03f0efb6dedd0acc3471a929099fb2bb72"}
+        }
+      }
+    }
+  ]
+}
