@@ -32,7 +32,8 @@ completes bounded creation-to-first-opening contracts with author checks. Parent
 D2c/D2/003 remains open. [D2c.3a inherited ordinary Movement](../specs/combat-inherited-movement-v1.md)
 is complete as a bounded contract checkpoint. [D2c.3b route lifecycle](../specs/combat-inherited-movement-lifecycle-v1.md)
 derives owner stop2, System empty resolution2 and owner Movement-completion3 with actual end proof.
-Next3c bounds Breakdown-segment completion2 into Combat entry. The [preparation matrix](combat-inherited-movement-preparation.md)
+[D2c.3c Breakdown completion](../specs/combat-inherited-breakdown-completion-v1.md) reaches actual Combat entry.
+Next3d bounds actual-entry/no-candidate selection. The [preparation matrix](combat-inherited-movement-preparation.md)
 remains the field/provenance baseline; other .3 capabilities and .4 composition stay open.
 [Progress review9](../reviews/combat-progress-review-9.md) assessed all13 unmerged commits through
 `a96d2a1`: Ready with non-blocking follow-ups; its sole P3 documentation-status finding is corrected.
@@ -48,7 +49,7 @@ ran Reserve and two immediate predecessor oracles, focused probes, source mappin
 checks; it did not rerun all historical oracles. Owner then explicitly authorized a separate review
 chat for3a at `d76ac3f`: review13 returned Ready, no actionable findings, after three relevant oracles,
 61 public rejection probes, source/plan checks and changed-document path checks. Its blind preliminary
-preceded the separate author explanation. Budget13of13 is exhausted; new3b has author checks only.
+preceded the separate author explanation. Budget13of13 is exhausted;3b/3c have author checks only.
 TASK-004–025 not started. Future maturity execution and checkpoint B remain gated.
 **Original input:** `d2bc67c`. Exact contract freeze and production gates remain open.
 
@@ -306,6 +307,17 @@ This child ends at Breakdown Determination. Next bounded3c must retain actual Sy
 `breakdown-segment-completed`2 before Combat Position Determination. It cannot certify armed Combat
 continuation or close Reaction/vehicle/Reserve families, .4 composition,003/004/B or runtime gates.
 User authorized continuation after reading review13; no further review instance is launched.
+
+D2c.3c execution boundary (input `a3f2f76`, before implementation): one new
+[spec/schema/fixture/oracle packet](../specs/combat-inherited-breakdown-completion-v1.md) plus this plan.
+Derive System `breakdown-segment-completed`2 from the complete actual3b prefix, retaining all11
+legacy fields and stage1 action identity. Sources belong to the predecessor Breakdown position;
+successor is the next sequence5 first Combat Position Determination. Preserve World/RNG, members,
+actual Movement-end proof, progress, original receipts and opening/cycle authority. Eight both-owner
+CP2/10/12/14 cases, strict canonical replay/cache, authenticated retry, re-signed effects and missing/
+foreign lifecycle histories are required. One event/receipt/version/prefix increment only. This
+does not admit Combat actions, a synthetic C3a base, positive Reaction/vehicle/Reserve or continuation,
+or full Snapshot composition. No new independent-review pass is authorized by this continuation.
 
 D2c.4 owns the **Task004 handoff** section in its planned
 `docs/specs/combat-authority-composition-v1.md` contract packet, within the same five-primary-file
@@ -918,3 +930,42 @@ Documentation closeout:778 local Markdown targets/18 anchors,25 stable ordered t
 design AC IDs and8 policy IDs pass. Offline Lychee0.24.2 checks162 Markdown documents:1619 links,
 1292 successful local checks,327 external exclusions, zero errors. Python AST and both new JSON
 documents pass; final changed-path/diff checks preserve all runtime and predecessor files.
+
+TASK-003D2c.3c checkpoint, 2026-09-08 (input `a3f2f76`):
+[Breakdown completion specification](../specs/combat-inherited-breakdown-completion-v1.md),
+[inventory](../specs/combat-inherited-breakdown-completion-v1.schema.json),
+[vectors](../specs/fixtures/combat-inherited-breakdown-completion-v1.json) and
+[oracle](../specs/verify-combat-inherited-breakdown-completion-v1.py) derive actual System
+`breakdown-segment-completed`2 from full3b history. All11 legacy fields/order persist; the exact
+version1 stage1 action identity is wrapped by command2. Sources come from predecessor Breakdown
+position (5.2/7.11/7.14), and successor is first Combat Position Determination with null activeSide.
+No World/RNG/member/proof/progress mutation or synthetic Combat admission occurs. One new event,
+command receipt, completion ID, version and Chronicle prefix contribution closes this boundary.
+
+Eight both-owner CP2/10/12/14 traces pass16 cuts,8 retries,426 event/cache mutations,92 raw rejections,
+298 boundary checks and10 source pins. Every event leaf is challenged for both owners with re-signed
+well-typed effects; incomplete/foreign lifecycle, altered proof/progress, stale/changed retry, owning
+player System-step submission and missing-stage action IDs reject. Additional author integration
+checks both CP12 owners, independent receipt/action hashes, exact11 legacy and26 inherited state
+fields, preserved source/proof/World/RNG/progress, later-Barrage/proof/cross-cut rejection, and five
+failing fixture controls. Semantic RED fails missing Combat-entry/version/prefix; GREEN passes.
+Direct3b lifecycle oracle also passes its8 traces/24 events,32 cuts,24 retries,946 mutations,
+152 raw cases,304 boundaries and16 pins. No whole historical-oracle/.NET/simulator/hosted-CI run.
+Review13 applies to3a only;3b/3c retain author verification and no new review was launched.
+
+Next bounded3d: actual Combat-entry admission and no-candidate selection opening/closure for these
+rear/supply infantry histories. Frozen C3a is not a drop-in adapter: its boundary materializes the
+acting side, requires original World locations and CP0..10, and fixes the C2 request seed
+(`verify-combat-selection-steps-v1.py`, `boundary`). New admission must preserve moved
+World, CP12/14, Cohesion, actual Weather/Breakdown receipts/prefix and symbolic sequence5 identity,
+then prove no candidate from the admitted state. Boundary rejection cannot mean empty selection.
+Full no-attack step traversal can follow as a separate bounded child; positive armed continuation
+is still open. This is an execution choice consuming3c, not a new DAG dependency: runtime008F
+Reaction and008G Breakdown still depend on008E Movement directly, as declared in the inherited
+successor inventory. Positive Reaction/vehicle/Reserve families, repeat expiry, .4 composition,
+Task004's handoff/map and gateB remain open.3c completion closes none of those parents.
+
+Documentation closeout:799 local Markdown targets/18 anchors,25 stable ordered tasks,72 stable
+design AC IDs and8 policy IDs pass. Offline Lychee0.24.2 checks163 Markdown documents:1640 links,
+1313 successful local checks,327 external exclusions, zero errors. New Python AST and both JSON
+documents pass; all predecessor contracts and runtime/source/test/scenario bytes remain unchanged.

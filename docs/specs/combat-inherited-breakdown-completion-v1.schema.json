@@ -1,0 +1,23 @@
+{
+  "contract": "combat-inherited-breakdown-completion-v1",
+  "objects": {
+    "EntryCommand": "contractVersion:int kind:id operationStage:int actionId:hash creationBinding:id creationEventHash:hash cycleId:hash expectedPriorVersion:long expectedPositionId:id",
+    "EntryInput": "command:EntryCommand actor:actor",
+    "EntryEvent": "contractVersion:int eventType:id campaignId:id stateVersion:long priorStateVersion:long rulesetHash:rawHash fromPositionId:id actionId:hash sequencePosition:Position breakdownFlowAfter:IdleFlow sources:Reference[] configurationHash:hash creationBinding:id creationEventHash:hash cycleId:hash openingBaseHash:hash completionReceiptId:id movementCompletionReceiptId:id priorPrefix:hash input:EntryInput receiptId:id",
+    "CombatEntryState": "contractVersion:int campaignId:id rulesetHash:rawHash configurationHash:hash creationBinding:id creationEventHash:hash stateVersion:long prefix:hash sequencePosition:Position initiativeHolder:side operationStageOrders:PreambleOrder[] operationStageWeather:WeatherValue[] world:World randomState:Random receipts:PreambleReceipt[] firstActingSide:side members:ReserveMember[] cycle:Authority? cycleId:hash? openingBaseHash:hash? completionReceiptId:id? tracks:InheritedTrack[] actualProgressRefs:ActualProgressRef[] breakdownFlow:LifecycleFlow interruptContext:InterruptContext? movementEnd:MovementEndProof? breakdownCompletionReceiptId:id?"
+  },
+  "externalContracts": [
+    "combat-inherited-movement-lifecycle-v1.schema.json"
+  ],
+  "domains": {
+    "receipt": "sandtable.combat.inherited-breakdown-completion-receipt.v2"
+  },
+  "legacyFieldCount": 11,
+  "limits": {
+    "bytes": 1048576,
+    "depth": 32,
+    "arrayItems": 512,
+    "events": 1
+  },
+  "scope": "Completed3b history, first ordinal/slot/stage/turn, ordinary NONE infantry, normal Weather, idle with no pending interrupt. System Breakdown completion2 enters first Combat Position Determination only. No Combat action, later cycle or positive vehicle/Reaction/Reserve admission."
+}
