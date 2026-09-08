@@ -32,9 +32,12 @@ composes creation-to-first-opening history for the closed initial-infantry profi
 003D2c.3–4 continuation and full composition remain open. [Movement preparation](../design/combat-inherited-movement-preparation.md)
 maps legacy fields and remaining proofs. [003D2c.3a inherited Movement](../specs/combat-inherited-movement-v1.md)
 now completes actual ordinary Move4 provenance within the normal-Weather infantry profile;
-Movement completion/proof and other .3 families remain open. See [D2a movement](../specs/combat-ordinary-movement-v1.md) for the Clear2 source correction and
+[003D2c.3b route lifecycle](../specs/combat-inherited-movement-lifecycle-v1.md) now derives actual
+stop/resolution/completion and first Movement-end proof. Its source mapping preserves capability
+identity, suspended context, empty-resolution provenance and distance2/3 exclusion semantics.
+Breakdown-segment completion and other .3 families remain open. See [D2a movement](../specs/combat-ordinary-movement-v1.md) for the Clear2 source correction and
 atomic break-off evidence; [D2b.1 Release](../specs/combat-reserve-release-v1.md) freezes ordered
-control and retained history. Actual inherited history/runtime proof remains open.
+control and retained history. Full inherited integration/runtime proof remains open.
 Parent003C/D/004 and the combined-contract gate remain open; the plan retains current review accounting.
 
 **Date:** 2026-08-25

@@ -885,7 +885,7 @@ and final diff checks pass; source/runtime/scenario/predecessor bytes are unchan
 Three relevant oracles (new inherited Movement, direct Reserve and D2a Movement) ran this turn;
 no full historical-oracle, .NET, simulator, hosted-CI or new independent-review run is claimed.
 
-TASK-003D2c.3b checkpoint, 2026-09-08 (input `d76ac3f` after review13 Ready):
+TASK-003D2c.3b checkpoint, 2026-09-08 (input `d76ac3f` after review13 Ready; contract commit `9e9a324`):
 [Route lifecycle specification](../specs/combat-inherited-movement-lifecycle-v1.md),
 [inventory](../specs/combat-inherited-movement-lifecycle-v1.schema.json),
 [vectors](../specs/fixtures/combat-inherited-movement-lifecycle-v1.json) and
