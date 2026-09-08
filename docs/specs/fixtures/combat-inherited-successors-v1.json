@@ -1,0 +1,152 @@
+{
+  "contractVersion": 1,
+  "sourceHashes": {
+    "src/Cna.Core/Campaigns/CampaignCurrentEventRuntime.cs": "sha256:283102f40d891c1b901bd03e4a12499638bc4fb98ebbf2cb7644dae5b98c042a",
+    "src/Cna.Core/Campaigns/CampaignV11PreambleCodec.cs": "sha256:842894783e5916dcc678a178802b68a71b0942152659649d714251e7519f1c1d",
+    "src/Cna.Core/Campaigns/CampaignEventSerializer.cs": "sha256:d97923522ef8812ec5a59aebeb3d62bbae5648dfd3f4959e3d2ea0de6c3b133d",
+    "src/Cna.Core/Campaigns/CampaignBreakdownEventSerializer.cs": "sha256:33bc246d9422a378418f9a8678a849640e81de6226aed26aabc3eb7e88c82175",
+    "src/Cna.Core/Campaigns/CampaignBreakdownMoveEventSerializer.cs": "sha256:2885afd854bc57c5b8f782be0e0cd875fe13eb78658f433145568d45b2b1c704",
+    "src/Cna.Core/Campaigns/CampaignBreakdownLifecycleCodec.cs": "sha256:5d8c11b6d13df33d767f4d3812f52fdf463ef85ce645b92e73d50cea074beb2c",
+    "src/Cna.Core/Campaigns/CampaignBreakdownStopResolvedCodec.cs": "sha256:eacdb23a86ec62d1306203bda6f6ddc68e4e19782b9f6016e50aa03e78c471bf",
+    "src/Cna.Core/Campaigns/CampaignCreationV10.cs": "sha256:d2f678cb5db2c02533033a1ae70f910f11e69e89d80d8823ae285fa5ebdc3c10",
+    "src/Cna.Core/Campaigns/CampaignCreatedV10Serializer.cs": "sha256:998f61a3caa0f15ad53fbd1ef8603d6e1b461c54381c18223e7779907fc3b150",
+    "src/Cna.Core/Campaigns/InitiativeDetermined.cs": "sha256:ba0db678788c48099f095d154aee5dfad3abe6f165cf36fac1d02aca7802d926",
+    "src/Cna.Core/Campaigns/OpeningPreambleEvents.cs": "sha256:02240ab5287cf29c708e1c5c898d396f95da1f739cc140c694ec8299946c06d7",
+    "src/Cna.Core/Campaigns/WeatherDetermined.cs": "sha256:d7b23516aa359efa05352ff06c90f3770ff78abadd2b502d35de01e5564e7c97",
+    "src/Cna.Core/Campaigns/StageEntryEvents.cs": "sha256:92850f05b9696fcb2ef7784a7003ab053b8acfc384e87b72153aeb14b93e4b90",
+    "src/Cna.Core/Campaigns/CampaignReserveEvents.cs": "sha256:aef7be708d608fcf1489c4cc2f7a0103e032561a66fbc2a2e8d5fa07427a8e3a",
+    "src/Cna.Core/Rules/ReserveRulesArtifactDefinition.cs": "sha256:5910be3781b050f94d1bb138f092bf3c1c5f1321d5af5798404de094f91dc024"
+  },
+  "inventoryHash": "sha256:21f45eb61af1b7b5cbfdce9b62f4285c70864c47ebfbacdf9f4e90bf5f638d51",
+  "ownersHash": "sha256:1fc546f7b31763ec5879ffd5f1c4cccc4c613453fa122c143dbf42db98392d02",
+  "cases": [
+    {
+      "name": "axis-none",
+      "side": "axis",
+      "reserve": "none",
+      "priorVersion": 20,
+      "expectedVersion": 21,
+      "cursor": 9,
+      "spent": 0,
+      "expectedPosition": "land.position.operation-1.first-player.movement-and-combat.movement",
+      "goldens": {
+        "base": {
+          "bytes": 5420,
+          "sha256": "sha256:42c60bee4e8d7ccdc1e2ee73571d0b5928070a848d9a118c9e8afc952acfdf77"
+        },
+        "input": {
+          "bytes": 279,
+          "sha256": "sha256:7329d9d3f0d8045a20532e5e862509312542192067a29ba09796293ef13d3daa"
+        },
+        "initial": {
+          "bytes": 4707,
+          "sha256": "sha256:4fb0dd5ac4ee9534dd2c0058a662efe3732a84f916a4277f0fa2f8df40eb6e95"
+        },
+        "event": {
+          "bytes": 2450,
+          "sha256": "sha256:72540cf8e177fcb5dc67323b519d1f830f0f448cacec10a879499cd886160422"
+        },
+        "final": {
+          "bytes": 5803,
+          "sha256": "sha256:341d4feb036e0974307b1a9e0532d360e696b096a40d529fdbdacf26a3cf0d2f"
+        }
+      }
+    },
+    {
+      "name": "axis-I",
+      "side": "axis",
+      "reserve": "I",
+      "priorVersion": 20,
+      "expectedVersion": 21,
+      "cursor": 9,
+      "spent": 3,
+      "expectedPosition": "land.position.operation-1.first-player.movement-and-combat.movement",
+      "goldens": {
+        "base": {
+          "bytes": 5434,
+          "sha256": "sha256:83e44c0442e0dfdc41098296e23c6e4078a8c17deb1acb85f159303f07621910"
+        },
+        "input": {
+          "bytes": 279,
+          "sha256": "sha256:141d42fe3a5fe7fd5ea847e2dd79acf641c0c2b3af5251d8198ecdbe02ebf893"
+        },
+        "initial": {
+          "bytes": 4721,
+          "sha256": "sha256:e19191d3fca9058947ce897a05f0ee1aa71231cf919f20e1535035bb0487a5fb"
+        },
+        "event": {
+          "bytes": 2450,
+          "sha256": "sha256:6e32c199ed1621d66a313b1b8a7e11e71767c1b3228045b34ae5ad2e66bd5971"
+        },
+        "final": {
+          "bytes": 5817,
+          "sha256": "sha256:e4dd554f953b461d562a9023495b2d5b343dded15009bd97eebd17e2f0910389"
+        }
+      }
+    },
+    {
+      "name": "commonwealth-none",
+      "side": "commonwealth",
+      "reserve": "none",
+      "priorVersion": 20,
+      "expectedVersion": 21,
+      "cursor": 9,
+      "spent": 0,
+      "expectedPosition": "land.position.operation-1.first-player.movement-and-combat.movement",
+      "goldens": {
+        "base": {
+          "bytes": 5452,
+          "sha256": "sha256:7340fef8b76fee58d34ddf3d1dc3ba22f2050013e3dae8eb96d2f2d80f99e121"
+        },
+        "input": {
+          "bytes": 287,
+          "sha256": "sha256:c4862784867436b07eb4a3d63bd0b420bc3a3c7934c11b4214b7a08ce43697ac"
+        },
+        "initial": {
+          "bytes": 4731,
+          "sha256": "sha256:8951a7b9059ffdc922cc8ab660c6ccd3a4e1d101123f5c0a4ba59ad8efe8c453"
+        },
+        "event": {
+          "bytes": 2466,
+          "sha256": "sha256:570918cfe581bd1d0eb006a81e94888608ee46084b5f755e9128e0fc42e14957"
+        },
+        "final": {
+          "bytes": 5843,
+          "sha256": "sha256:66deb5daa676c13a0d2f5f4f7c2865a21e5e19deca392b33d9b0f48f4f460825"
+        }
+      }
+    },
+    {
+      "name": "commonwealth-I",
+      "side": "commonwealth",
+      "reserve": "I",
+      "priorVersion": 20,
+      "expectedVersion": 21,
+      "cursor": 9,
+      "spent": 3,
+      "expectedPosition": "land.position.operation-1.first-player.movement-and-combat.movement",
+      "goldens": {
+        "base": {
+          "bytes": 5474,
+          "sha256": "sha256:afe7c575c7f082e3308ef7d1b46e9d3cd8affa0a8d88301fed26c2cf3f3dcbb9"
+        },
+        "input": {
+          "bytes": 287,
+          "sha256": "sha256:d5838c5135a0b71c8809b35034e5fd2cb04f8ceefea2ba003e6c0a5c30266602"
+        },
+        "initial": {
+          "bytes": 4753,
+          "sha256": "sha256:fff247aea2d1809dae2b87d6e00e22061e1837e5893c0cefa8bbfd746d88ae26"
+        },
+        "event": {
+          "bytes": 2466,
+          "sha256": "sha256:0bc46fbdb2c7fdc4d6977582849af4c9d90dba026f884d5b26ca38be7973cd1d"
+        },
+        "final": {
+          "bytes": 5865,
+          "sha256": "sha256:d59769c0b76479d52760a4858d0d2e0a58078dd13cce6ac5da7744d1c699ae45"
+        }
+      }
+    }
+  ]
+}

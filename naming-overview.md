@@ -104,6 +104,13 @@ call completion a generic sequence advance: the Umpire emits `ReserveDesignation
 projects the exact first-acting-side Movement successor. Movement behavior and the later Reserve
 lifecycle remain separate capabilities.
 
+The [inherited successor packet](docs/specs/combat-inherited-successors-v1.md) keeps
+`reserve-designation-completed` as the atomic first-cycle opening event; it introduces no separate
+product or service. Its private `OpeningState` is an oracle projection, not an Archives snapshot.
+The [opening preamble packet](docs/specs/combat-opening-preamble-v1.md) similarly uses private
+`PreambleState` for creation-rooted contract replay through Weather entry. Chronicle retains the
+accepted events; the future Archives reader must reconstruct and validate their complete chain.
+
 The prospective [cycle-control contract](docs/specs/combat-cycle-control-v1.md) uses
 `movement-combat-cycle-repeated` for closing one occurrence and opening the next Movement in the
 same relative player slot, and `movement-combat-phase-finished` for entering that slot’s Truck

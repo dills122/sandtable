@@ -101,7 +101,9 @@ the pre-alpha roadmap carry repository-wide rationale and delivery state.
   cut. [003C3a selection/step control](specs/combat-selection-steps-v1.md) is complete with author checks;
   [003C3b sealed round/commitment](specs/combat-sealed-round-v1.md) is also complete as a bounded
   authority fragment. [HOST-RSH-001](research/orleans-publication-feasibility.md) research is complete;
-  003C3c/D2a/D2b are complete as bounded private contract checkpoints;003D2c inherited history and capability reconciliation is next.
+  003C3c/D2a/D2b and [D2c.1 successor/opening contracts](specs/combat-inherited-successors-v1.md)
+  are complete within their private boundaries. [D2c.2a opening provenance](specs/combat-opening-preamble-v1.md)
+  reaches Weather entry from Created11; D2c.2b Weather is next. Stage entry/Reserve and full D2c.2 remain open.
   See [result/settlement](specs/combat-result-settlement-v1.md) and
   [snapshot composition/audit](specs/combat-snapshot-composition-v1.md). See
   [ordinary movement](specs/combat-ordinary-movement-v1.md) for D2a evidence and source correction.

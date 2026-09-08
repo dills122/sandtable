@@ -1,0 +1,20 @@
+{
+  "contract": "combat-opening-preamble-v1",
+  "objects": {
+    "PreambleCommand": "contractVersion:int kind:id creationBinding:id creationEventHash:hash expectedPriorVersion:long expectedPositionId:id operationStage:int? declaringSide:side? choice:id?",
+    "PreambleInput": "command:PreambleCommand actor:actor",
+    "PredeterminedOutcome": "kind:id holder:side",
+    "PreambleInitiativeEvent": "contractVersion:int eventType:id campaignId:id rulesetHash:rawHash configurationHash:hash creationBinding:id creationEventHash:hash priorVersion:long stateVersion:long priorPrefix:hash fromPositionId:id input:PreambleInput outcome:PredeterminedOutcome randomAlgorithmId:id randomCursorBefore:ulong randomCursorAfter:ulong sequencePosition:Position sources:Reference[] receiptId:id",
+    "PreambleAdvanceEvent": "contractVersion:int eventType:id campaignId:id rulesetHash:rawHash configurationHash:hash creationBinding:id creationEventHash:hash priorVersion:long stateVersion:long priorPrefix:hash fromPositionId:id input:PreambleInput sequencePosition:Position sources:Reference[] receiptId:id",
+    "PreambleOrderEvent": "contractVersion:int eventType:id campaignId:id rulesetHash:rawHash configurationHash:hash creationBinding:id creationEventHash:hash priorVersion:long stateVersion:long priorPrefix:hash fromPositionId:id input:PreambleInput operationStage:int declaringHolder:side firstSide:side secondSide:side sequencePosition:Position sources:Reference[] receiptId:id",
+    "PreambleOrder": "contractVersion:int gameTurn:int operationStage:int firstSide:side secondSide:side",
+    "PreambleReceipt": "commandHash:hash eventHash:hash receiptId:id actor:actor stateVersion:long",
+    "PreambleState": "contractVersion:int campaignId:id rulesetHash:rawHash configurationHash:hash creationBinding:id creationEventHash:hash stateVersion:long prefix:hash sequencePosition:Position initiativeHolder:side? operationStageOrders:PreambleOrder[] world:World randomState:Random receipts:PreambleReceipt[]"
+  },
+  "eventTags": {"initiative-determined":"PreambleInitiativeEvent","no-obligation-naval-convoy-schedule-resolved":"PreambleAdvanceEvent","no-obligation-tactical-shipping-resolved":"PreambleAdvanceEvent","initiative-order-declared":"PreambleOrderEvent"},
+  "events": [{"command":"resolve-initiative","currentCommandVersion":2,"commandVersion":3,"eventType":"initiative-determined","eventVersion":3,"actor":"system"},{"command":"resolve-no-obligation-naval-convoy-schedule","currentCommandVersion":1,"commandVersion":2,"eventType":"no-obligation-naval-convoy-schedule-resolved","eventVersion":2,"actor":"system"},{"command":"resolve-no-obligation-tactical-shipping","currentCommandVersion":1,"commandVersion":2,"eventType":"no-obligation-tactical-shipping-resolved","eventVersion":2,"actor":"system"},{"command":"declare-initiative-order","currentCommandVersion":1,"commandVersion":2,"eventType":"initiative-order-declared","eventVersion":2,"actor":"initiative-holder"}],
+  "domains": {"receipt":"sandtable.combat.opening-preamble-receipt.v1"},
+  "externalContracts": ["combat-authority-envelope-v1.schema.json","combat-inherited-successors-v1.schema.json"],
+  "limits": {"bytes":1048576,"depth":32,"arrayItems":512,"events":4},
+  "scope": "Prospective creation-rooted first-turn opening preamble through Weather entry. Selected Setup7 predetermined Axis and no-convoy-obligation policy only. No Weather/Reserve effects, Snapshot12 admission, C# codec or runtime activation."
+}

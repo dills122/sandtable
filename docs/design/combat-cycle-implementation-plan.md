@@ -23,10 +23,15 @@ contract checkpoints with author checks. [003D2a ordinary movement](../specs/com
 is complete with author checks. [003D2b.1 Reserve Release](../specs/combat-reserve-release-v1.md) is
 complete as a private control/history arm. [003D2b.2 guarded repeat/finish](../specs/combat-cycle-control-v1.md)
 is complete for the private exhausted-ammunition continuation boundary and Movement-expiry projection;
-003D2c inherited history/capability reconciliation is next. Parent003D2 remains open.
+[003D2c.1 successor declarations/first opening](../specs/combat-inherited-successors-v1.md) is complete
+as an isolated contract boundary. [003D2c.2a opening provenance](../specs/combat-opening-preamble-v1.md)
+is complete through Weather entry;003D2c.2b Weather is next. ParentD2c.2/D2c/D2 remains open.
 [Progress review9](../reviews/combat-progress-review-9.md) assessed all13 unmerged commits through
 `a96d2a1`: Ready with non-blocking follow-ups; its sole P3 documentation-status finding is corrected.
-All15 Python oracles and the focused Orleans build/run/format passed. Review budget9of9 is exhausted.
+All15 Python oracles and the focused Orleans build/run/format passed at that checkpoint.
+[Review10](../reviews/combat-progress-review-10.md) returned Ready with non-blocking follow-ups
+for D2b.2/D2c.1. Its P2 handoff ambiguity and P3 source-inventory status drift are corrected below.
+All17 oracles passed independently; review budget10of10 is exhausted.
 TASK-004–025 not started. Future maturity execution and checkpoint B remain gated.
 **Original input:** `d2bc67c`. Exact contract freeze and production gates remain open.
 
@@ -202,6 +207,43 @@ an expansion of the selected one-unit-per-side Combat capability. D2b private co
 are complete; full positive World/Snapshot, inherited progress/continuation and CON-002–004
 reconciliation remain D2c before parent003D2/003 closes. No new policy or review round is introduced.
 
+D2c execution refinement (input `faa3282`, before edits): inherited families and composed authority
+exceed one five-file checkpoint. Preserve parent003D2c/003 and execute these bounded children:
+
+| D2c slice | Boundary and acceptance |
+| --- | --- |
+| `003D2c.1` | Exact current/successor dispatch declarations, bounded008/019 first-opening owner graph, and Reserve-completion/first-cycle-opening contract. Strict source/identity/readback evidence; isolated predecessor prefix remains explicit. |
+| `003D2c.2` | Actual prospective creation→preamble/Weather→Reserve provenance and initial opening input. Split preamble, Weather and Reserve field families before edits; derive headers/receipts/RNG from accepted contracts. |
+| `003D2c.3` | Sequence5 Movement/Reaction/Breakdown successors, Movement-end/progress provenance, positive Reserve movement and armed Combat continuation admission. Bound each independent family before edits; unsupported input never means no continuation. |
+| `003D2c.4` | Full World/Snapshot composition, actual first-opening/continuation trace, retained history/obligations/capacity and CON-002–004 reconciliation. Close parent003 after all003 dependencies, integrated contract checks and the003-owned Task004 handoff below are complete;004 then produces the complete AC map. |
+
+D2c.2 refinement (input `387445b`, before edits): four sequential family checkpoints,
+each at most five primary files including its spec/schema/fixture/oracle/plan:
+
+| D2c.2 slice | Contract boundary / order |
+| --- | --- |
+| `003D2c.2a` | Opening preamble: validated Created11→Initiative3→no-obligation convoy2→tactical2→order2→Weather entry. Actual prospective prefix/version/receipt/RNG provenance, both order choices, strict cut replay. |
+| `003D2c.2b` | Weather2: consume2a's accepted history, adjudicate Weather from certified RNG and Rules, retain effects/receipt/cursor and exact Organization successor. |
+| `003D2c.2c` | Stage-entry successors: Organization/arrival/fleet-assignment/fleet-repair2 after2b; derive explicit no-obligation gates and actual Reserve-entry history. |
+| `003D2c.2d` | Reserve2 designation/completion: consume2c, derive real designation history and compose atomic first opening fromD2c.1 without synthetic predecessor hashes. |
+
+These are prospective contract/oracle chains, not C# runtime replay. ParentD2c.2 stays open until2d
+composes the accepted creation-to-opening chain; later Movement/continuation and full Snapshot
+admission remainD2c.3–4/004/B. No additional independent-review pass is authorized.
+
+D2c.4 owns the **Task004 handoff** section in its planned
+`docs/specs/combat-authority-composition-v1.md` contract packet, within the same five-primary-file
+cap. That section must identify the frozen CON-002–004 versions/hashes, composed trace and capacity
+results, relevant requirement IDs, explicit capability exclusions and remaining runtime evidence
+owners. This is003's contract handoff, not004's complete72-AC map. Parent003 closes after all003
+slices and their integrated checks, including this handoff, are complete. Task004 then consumes the
+handoff, freezes CON-005/006 and completes its72-AC evidence map. Checkpoint B requires both003 and004;
+003 does not depend on004 starting or completing.
+
+Each checkpoint retains the five-primary-file cap. These refine already-required inherited work;
+no gameplay policy, runtime activation or checkpoint-B acceptance changes. User requested one
+additional independent pitstop after the next checkpoint: review10of10, not a reset of the count.
+
 D2a isolated Movement fixtures may derive a settled World from C3c, but any intervening release/repeat
 boundary remains explicitly synthetic untilD2b/c. Such probes do not certify actual continuation,
 released-Reserve history, runtime movement, Reaction or a reachable repeating campaign.
@@ -218,21 +260,22 @@ compatibility/replay requirements, not permission to broaden the certified capab
   whether canonical bytes remain valid or a versioned successor is required, and the implementation
   owner.003D2 binds first-cycle opening and retained history to the actual Combat boundary.
 - Assign bounded implementation children before accepting B. Task008 owns codec/restore work;
-  first-cycle opening is currently assigned to019. The child plan must schedule the new-context
+  first-cycle opening is assigned to019A after008D. The child plan schedules the new-context
   pre-Combat path and first opening before the first end-to-end predecessor-to-Combat test, without hiding those
   adapters into021 registration. Split any child crossing five primary files or an independent family.
 - The contract packet must include a composed prospective trace with cross-family identity, prefix,
   version and resource checks; label assumed preconditions. In-process implementation tests must
   later derive the boundary from accepted predecessors, never promote C3a's synthetic probe hashes
   to authoritative history. Runtime proof remains unimplemented at B.
-- 004 maps every design AC to named contract and implementation evidence, including composed snapshot
-  capacity, unsupported-history rejection and the inherited-path handoff. Completed fragment oracles
-  do not by themselves close parent003 or B.
+- After003 closes with its integrated contract checks and Task004 handoff,004 maps every design AC
+  to named contract and implementation evidence, including composed snapshot capacity and
+  unsupported-history rejection. Fragment oracles alone do not close003; neither003 alone nor the
+  handoff alone closes checkpoint B.
 
 Owner accepted the [review direction](../reviews/combat-delivery-plan-author-review.md#owner-disposition)
 to split008 into codec/restore and inherited-path adapters, bringing first opening forward from019
-as needed for composed tests. Exact child IDs, scope and dependencies remain outputs of contract
-freeze and require checkpoint B acceptance. The numbered parent rows below retain their identities;
+as needed for composed tests. [D2c.1](../specs/combat-inherited-successors-v1.md#bounded-implementation-ownership) now declares008A–H
+and019A with bounded scope/dependencies; these still require checkpoint B acceptance. The numbered parent rows below retain their identities;
 this planning acceptance does not declare B passed or start runtime implementation.
 
 ### Checkpoint C — dormant table and fixture foundations
@@ -620,3 +663,36 @@ TASK-003D2b.2 checkpoint, 2026-09-07 (input `184b16c`):
   Actual inherited progress/Movement proof, armed Combat continuation and positive World/Snapshot
   composition remain D2c/004/B gates. No runtime, simulator, .NET or additional independent review.
 - D2c is next; bound inherited successor families before editing. Parent003D2/003 stays open.
+
+
+TASK-003D2c.1 checkpoint, 2026-09-07 (input `faa3282`):
+[Inherited successor/first-opening contract](../specs/combat-inherited-successors-v1.md),
+[schema](../specs/combat-inherited-successors-v1.schema.json),
+[fixture](../specs/fixtures/combat-inherited-successors-v1.json) and
+[oracle](../specs/verify-combat-inherited-successors-v1.py) freeze20 exact successor declarations
+and one isolated Reserve-completion2 transition. Four traces/eight replay cuts,216 event mutations,
+32 raw rejections and88 boundary checks pass; fifteen current source hashes pin the inventory.
+008A–H/019A provide a bounded, acyclic inherited-path owner graph, with first opening before shared
+restore composition and no registration shortcut. Full predecessor provenance, armed continuation,
+nonempty obligations, general Snapshot12 and capacity remain D2c.2–4/004/B. No runtime or simulator
+claim. NextD2c.2 must split preamble/Weather/Reserve families before edits. [Independent review10of10](../reviews/combat-progress-review-10.md) assessed progress since
+review9, including D2b.2: Ready with non-blocking follow-ups. Both planning/status findings are
+accepted and corrected; parent003 stays open.
+
+
+TASK-003D2c.2a checkpoint (input `387445b`):
+[Opening preamble contract](../specs/combat-opening-preamble-v1.md),
+[schema](../specs/combat-opening-preamble-v1.schema.json),
+[vectors](../specs/fixtures/combat-opening-preamble-v1.json) and
+[oracle](../specs/verify-combat-opening-preamble-v1.py) freeze four declared inherited successors.
+Six creation-rooted prospective traces reach Weather entry from actual C2-validated Created11 bytes;
+30cuts/1050event mutations/3348state mutations/192raw rejections/204boundary-retry checks pass.
+Both order choices preserve Initiative holder and all RNG/World bytes;60artifact entries and9source
+hashes are retained. Caches reconstruct from full accepted history, with no synthetic prior-prefix
+seed. This is contract evidence, not C# replay. NextD2c.2b derives Weather from this accepted chain;
+2c/2d still owe stage entry/Reserve/first opening. Parent003/004/B remain open. Author verification
+only; review10of10 remains exhausted, and its earlier verdict does not cover this new checkpoint.
+
+Author closeout: all18 contract/research oracles pass, including all17 predecessors.648 local
+Markdown targets/17anchors and25 task/72 AC/8 policy IDs pass; existing contract and runtime bytes
+are unchanged. Self-check covers source/identity/retry/readback, scope and003→004→B ordering.

@@ -1,0 +1,290 @@
+{
+  "contract": "combat-inherited-successors-v1",
+  "objects": {
+    "OpeningBase": "contractVersion:int profile:id creationRequest:Request firstActingSide:side position:Position priorVersion:long priorPrefix:hash world:World randomState:Random members:ReserveMember[]",
+    "OpeningCommand": "contractVersion:int kind:id baseHash:hash expectedPriorVersion:long expectedPositionId:id",
+    "OpeningInput": "command:OpeningCommand actor:actor",
+    "OpeningEvent": "contractVersion:int eventType:id campaignId:id rulesetHash:rawHash configurationHash:hash baseHash:hash priorVersion:long stateVersion:long priorPrefix:hash fromPositionId:id sources:Reference[] input:OpeningInput sequencePosition:Position cycle:Authority cycleId:hash receiptId:id",
+    "OpeningState": "contractVersion:int baseHash:hash stateVersion:long prefix:hash position:Position cycle:Authority? world:World randomState:Random members:ReserveMember[] receipts:Receipt[]"
+  },
+  "domains": {
+    "receipt": "sandtable.combat.reserve-completion-receipt.v2"
+  },
+  "externalContracts": [
+    "combat-reserve-release-v1.schema.json"
+  ],
+  "limits": {
+    "bytes": 1048576,
+    "depth": 32,
+    "arrayItems": 512,
+    "members": 32,
+    "events": 1
+  },
+  "currentContext": {
+    "content": 6,
+    "setup": 6,
+    "world": 6,
+    "snapshot": 11,
+    "sequence": 4
+  },
+  "prospectiveContext": {
+    "content": 7,
+    "setup": 7,
+    "world": 7,
+    "snapshot": 12,
+    "sequence": 5
+  },
+  "inheritedEvents": [
+    {
+      "eventType": "campaign-created",
+      "currentVersion": 10,
+      "successorVersion": 11,
+      "family": "creation",
+      "currentType": "CampaignCreatedV10",
+      "status": "frozen-c2"
+    },
+    {
+      "eventType": "initiative-determined",
+      "currentVersion": 2,
+      "successorVersion": 3,
+      "family": "preamble",
+      "currentType": "InitiativeDetermined",
+      "status": "declared"
+    },
+    {
+      "eventType": "no-obligation-naval-convoy-schedule-resolved",
+      "currentVersion": 1,
+      "successorVersion": 2,
+      "family": "preamble",
+      "currentType": "NoObligationNavalConvoyScheduleResolved",
+      "status": "declared"
+    },
+    {
+      "eventType": "no-obligation-tactical-shipping-resolved",
+      "currentVersion": 1,
+      "successorVersion": 2,
+      "family": "preamble",
+      "currentType": "NoObligationTacticalShippingResolved",
+      "status": "declared"
+    },
+    {
+      "eventType": "initiative-order-declared",
+      "currentVersion": 1,
+      "successorVersion": 2,
+      "family": "preamble",
+      "currentType": "InitiativeOrderDeclared",
+      "status": "declared"
+    },
+    {
+      "eventType": "weather-determined",
+      "currentVersion": 1,
+      "successorVersion": 2,
+      "family": "weather",
+      "currentType": "WeatherDetermined",
+      "status": "declared"
+    },
+    {
+      "eventType": "no-obligation-organization-resolved",
+      "currentVersion": 1,
+      "successorVersion": 2,
+      "family": "preamble",
+      "currentType": "NoObligationOrganizationResolved",
+      "status": "declared"
+    },
+    {
+      "eventType": "no-obligation-naval-convoy-arrival-resolved",
+      "currentVersion": 1,
+      "successorVersion": 2,
+      "family": "preamble",
+      "currentType": "NoObligationNavalConvoyArrivalResolved",
+      "status": "declared"
+    },
+    {
+      "eventType": "no-obligation-fleet-assignment-resolved",
+      "currentVersion": 1,
+      "successorVersion": 2,
+      "family": "preamble",
+      "currentType": "NoObligationFleetAssignmentResolved",
+      "status": "declared"
+    },
+    {
+      "eventType": "no-obligation-fleet-repair-resolved",
+      "currentVersion": 1,
+      "successorVersion": 2,
+      "family": "preamble",
+      "currentType": "NoObligationFleetRepairResolved",
+      "status": "declared"
+    },
+    {
+      "eventType": "reserve-element-designated",
+      "currentVersion": 1,
+      "successorVersion": 2,
+      "family": "reserve",
+      "currentType": "ReserveElementDesignated",
+      "status": "declared"
+    },
+    {
+      "eventType": "reserve-designation-completed",
+      "currentVersion": 1,
+      "successorVersion": 2,
+      "family": "reserve",
+      "currentType": "ReserveDesignationCompleted",
+      "status": "frozen-isolated-opening"
+    },
+    {
+      "eventType": "element-moved",
+      "currentVersion": 3,
+      "successorVersion": 4,
+      "family": "movement",
+      "currentType": "ElementMovedV3",
+      "status": "declared"
+    },
+    {
+      "eventType": "reacting-element-moved",
+      "currentVersion": 2,
+      "successorVersion": 3,
+      "family": "reaction",
+      "currentType": "ReactingElementMovedV2",
+      "status": "declared"
+    },
+    {
+      "eventType": "reaction-participant-completed",
+      "currentVersion": 2,
+      "successorVersion": 3,
+      "family": "reaction",
+      "currentType": "ReactionParticipantCompletedV2",
+      "status": "declared"
+    },
+    {
+      "eventType": "reaction-window-closed",
+      "currentVersion": 2,
+      "successorVersion": 3,
+      "family": "reaction",
+      "currentType": "ReactionWindowClosedV2",
+      "status": "declared"
+    },
+    {
+      "eventType": "movement-segment-completed",
+      "currentVersion": 2,
+      "successorVersion": 3,
+      "family": "movement",
+      "currentType": "MovementSegmentCompletedV2",
+      "status": "declared"
+    },
+    {
+      "eventType": "element-movement-stopped",
+      "currentVersion": 1,
+      "successorVersion": 2,
+      "family": "breakdown",
+      "currentType": "ElementMovementStopped",
+      "status": "declared"
+    },
+    {
+      "eventType": "breakdown-stop-resolved",
+      "currentVersion": 1,
+      "successorVersion": 2,
+      "family": "breakdown",
+      "currentType": "BreakdownStopResolved",
+      "status": "declared"
+    },
+    {
+      "eventType": "breakdown-segment-completed",
+      "currentVersion": 1,
+      "successorVersion": 2,
+      "family": "breakdown",
+      "currentType": "BreakdownSegmentCompleted",
+      "status": "declared"
+    }
+  ],
+  "owners": [
+    {
+      "id": "008A",
+      "family": "creation",
+      "after": [
+        "007"
+      ],
+      "maxPrimaryFiles": 5
+    },
+    {
+      "id": "008B",
+      "family": "preamble",
+      "after": [
+        "008A"
+      ],
+      "maxPrimaryFiles": 5
+    },
+    {
+      "id": "008C",
+      "family": "weather",
+      "after": [
+        "008B"
+      ],
+      "maxPrimaryFiles": 5
+    },
+    {
+      "id": "008D",
+      "family": "reserve",
+      "after": [
+        "008C"
+      ],
+      "maxPrimaryFiles": 5
+    },
+    {
+      "id": "019A",
+      "family": "first-cycle-opening",
+      "after": [
+        "008D"
+      ],
+      "maxPrimaryFiles": 5
+    },
+    {
+      "id": "008E",
+      "family": "movement",
+      "after": [
+        "008D"
+      ],
+      "maxPrimaryFiles": 5
+    },
+    {
+      "id": "008F",
+      "family": "reaction",
+      "after": [
+        "008E"
+      ],
+      "maxPrimaryFiles": 5
+    },
+    {
+      "id": "008G",
+      "family": "breakdown",
+      "after": [
+        "008E"
+      ],
+      "maxPrimaryFiles": 5
+    },
+    {
+      "id": "008H",
+      "family": "dispatch-restore",
+      "after": [
+        "008B",
+        "008C",
+        "008D",
+        "008E",
+        "008F",
+        "008G",
+        "019A"
+      ],
+      "maxPrimaryFiles": 5
+    }
+  ],
+  "scope": "Version declarations plus a private first-stage, first-slot Reserve-completion boundary. Prior prefix and designation receipts are trusted isolated inputs until D2c.2. No production registration, snapshot reader, or actual inherited replay.",
+  "completionSources": [
+    {
+      "sourceId": "spi-1979-land-rules",
+      "locator": "18.11"
+    },
+    {
+      "sourceId": "spi-1979-land-rules",
+      "locator": "5.2.reserve-designation"
+    }
+  ]
+}
