@@ -1,0 +1,199 @@
+{
+  "contractVersion": 1,
+  "cases": [
+    {
+      "name": "axis-stop-after-1",
+      "actor": "axis",
+      "moves": 1,
+      "expected": {"cp": 2, "cohesion": 0, "locationSuffix": "rear", "excluded": false},
+      "goldens": {
+        "bytes": [963, 637, 600, 557, 4219, 3059, 2893, 10616, 12384, 10901, 11859],
+        "sha256": [
+          "sha256:674ff0e64d260ec9c7fc8de220f2483619ad711697f6854f9bc39acb177067b5",
+          "sha256:b256e55e857396cb6164f073964ef2517f057e08f26b6e4f8a67168533df3f1e",
+          "sha256:857e3454faa579a0b20baa809d475ae383e246d84c01565cab272df4e61657d1",
+          "sha256:173240bc6aee6181d88e6dc1a8545a09adc4f24ce709651f38bbf643264b435e",
+          "sha256:1cae749760f7f8a08cad22ed7ac1c5122b234263245245269dcb67858778f88c",
+          "sha256:c4b8183cd1dafa000899542722cc5be695e9282ad740793f7d07bf95ff07450c",
+          "sha256:147e2254df459dbc6de51b79d12c49aa37644a611cef9801546587dc1692a9e1",
+          "sha256:1507e79fa276e216f2b066ea1e88d2c91d79361396e138f778462d6085bc3382",
+          "sha256:91cf21981e4ae5116492667e363061e3c06cbfd3901c010758975b581d83c790",
+          "sha256:2fab6fc16c7e056e27323f8ab3a8ef28508944c46253a1c3675096dc2a55cfb1",
+          "sha256:6451a4fca6805ff4c2d04e316d7f38fbf68e5cb75a5d913ba92da9775d9cafe2"
+        ]
+      }
+    },
+    {
+      "name": "axis-stop-after-5",
+      "actor": "axis",
+      "moves": 5,
+      "expected": {"cp": 10, "cohesion": 0, "locationSuffix": "rear", "excluded": false},
+      "goldens": {
+        "bytes": [1259, 637, 600, 557, 4219, 3059, 3689, 12634, 14402, 12919, 13877],
+        "sha256": [
+          "sha256:ab194bb793180655ec52950c2d0ccc74336278b1660f1ed14fa9b8e3b7b0fc00",
+          "sha256:897c40a3445b993b3e149990edd749d23e2667973d7096aaa293ffb2255ebacd",
+          "sha256:99f3031418ad314f3806f5966704a637e8971b57313862423950c0abe065bb70",
+          "sha256:01cc1ba2daba5724f7b2ed85c5aea072e9ddf50f6b302fea8d91b6b55d393b59",
+          "sha256:11d75d6ae529b35421c30747c8f8dce9f21f9bef7460337437fd667c08321f47",
+          "sha256:fb66ad4adc178233756a4187baea7f12d7ab3a870ddc6165acd89db94607a9b7",
+          "sha256:d1c1ae30a0847d824672ed267b5207b92f349fe9d40e3143063b4bbe7b47a4b6",
+          "sha256:22832f63ea51398dac9cd8b1c4625f6905c39d860fc6c9b82fa7d793ef5acf0d",
+          "sha256:bd85a35e81f5fcce66c054de3cd48579de5d7d5c7acea2862cd00576d96e922b",
+          "sha256:a51213e4908b441503059d870ec7edb6528ce2cf59c9e515425be1699be1db57",
+          "sha256:7edf711b27960f86eee511c299b65576ba84ca8e8b18644531feaa4160a2f706"
+        ]
+      }
+    },
+    {
+      "name": "axis-stop-after-6",
+      "actor": "axis",
+      "moves": 6,
+      "expected": {"cp": 12, "cohesion": -2, "locationSuffix": "supply", "excluded": true},
+      "goldens": {
+        "bytes": [1333, 637, 600, 557, 4221, 3061, 4044, 13468, 15236, 13751, 14865],
+        "sha256": [
+          "sha256:ec1f91586aa528987db521ecf98d082356ecc307011880e26c235c9bd0727e84",
+          "sha256:70a562ad832f153b7460de060153fb7ba984f833fc6fb4ffc1456f0de3eaa85d",
+          "sha256:a37163b677d7474e34d4feef9cef260900efe702e3ac1bc4d7b1fe30f530925d",
+          "sha256:adcfcb037b1c0cd282832fd357d766f4f2c3d441fc79aad58c9ddabbde03b57d",
+          "sha256:73ccb46c0283637bf53466be4fb38e73157919b1ef36cf8ad9f7bc1fd6124d6d",
+          "sha256:fabbd465a1de7e6af59f81b30663a4ce2a0a2fa87d3fdd72fe3cecb9f097e656",
+          "sha256:8a07b7f285c93dde46e59a22725f4e9e611ec404779ea2f383612130d6abdb3b",
+          "sha256:2d5ee435a0b251c66dd45f4759713acc868efa552d2737e2f2936ea04136951d",
+          "sha256:4ee5413cecf6b3cc191f1750d7b5fbf8aaa8e312e4aa470c53881fef1a419aea",
+          "sha256:abe2482a0f3244aaaafd1f6a5df1998e7d6c7c85fd95684fa767e25c1922126d",
+          "sha256:c5e2d704ad5b35d9039bb615467258746427098df750fcd1337f0e00ebb704ed"
+        ]
+      }
+    },
+    {
+      "name": "axis-stop-after-7",
+      "actor": "axis",
+      "moves": 7,
+      "expected": {"cp": 14, "cohesion": -4, "locationSuffix": "rear", "excluded": false},
+      "goldens": {
+        "bytes": [1407, 637, 600, 557, 4219, 3059, 4087, 14289, 16057, 14574, 15532],
+        "sha256": [
+          "sha256:5bfce05a3abb956f75c7ba85f2de8d5dd25ef5675ff871d4fe6c742ee2f3062e",
+          "sha256:8d822a860f8663d7e707b37a638fda31c43f7f73a089411d964d6277a39f0a62",
+          "sha256:e90a61dd32b680c0ba0952298a96c0e006cfeaa036cf5cfe4087b60eabd080e3",
+          "sha256:f33f28b1f999cb6bd1c06f95a159157328d71a58eccedfad7c7748b6044be441",
+          "sha256:2a0029634ae5b345f2c21e8516c4ef24e2a49458ccb90fb49e387ba25c5a9b9f",
+          "sha256:e2d816ba36116beaf77d232cef65b84541e0a7bdba100d3c56c2128787841640",
+          "sha256:e0cd158243e41bfbd026f153eae28eff18a333007b6669e1a9bb41e33f84e8c2",
+          "sha256:e352055cceba679c1b695534c858b6d103c0f5c1111b2d2e09af37f4bcfe002c",
+          "sha256:c0af6524a576e1f345afd0cded49fd13e87a1f6a7607868e5488df224a1daaf4",
+          "sha256:301fcef6e9e0529d1853582f2020116c2a7a69a0e2da8eef67cc1c08c6989244",
+          "sha256:d0dea0fb87732711c4063cba6e8bcb28d05ad52e1466154584afe43a14416ecb"
+        ]
+      }
+    },
+    {
+      "name": "commonwealth-stop-after-1",
+      "actor": "commonwealth",
+      "moves": 1,
+      "expected": {"cp": 2, "cohesion": 0, "locationSuffix": "rear", "excluded": false},
+      "goldens": {
+        "bytes": [963, 645, 600, 565, 4267, 3083, 2917, 10736, 12520, 11005, 11987],
+        "sha256": [
+          "sha256:9a26f12cce3caeacb7f1eb408d4f4f11cbfa88b5e7f88c6f4b2db13fd0d5a5cd",
+          "sha256:2403c4b14e26b2890501c16f502c931be2a5b311b39f5d9fe65ae1765fb9e8a1",
+          "sha256:bb3745b64c460c800d1406555d707cd934f6daaabcb928a0627294727a3e5620",
+          "sha256:c204dd6c0a262b0e4df9df4526c232242ace777cb52cb42dab0b994c8beabf3c",
+          "sha256:452e89771e552f9dcbc0b6f5176f0bdcda25c61cc7ac9b7e0e16e9d06cc88cb9",
+          "sha256:c87ce098ad75bf2dc1b2ff8079575c5d4d7e957c658c041954c70569cfe73701",
+          "sha256:b53ea3d8c0f756d166ebeebab3772ed8b84b873b3d015d842114ab0829ef7b79",
+          "sha256:183a9b0244d8c3defe7f1807712abb40faba490f1ea83676a3d3777bd4973a89",
+          "sha256:4c960bcaa61d12a9fc94a08dce9f9999c264f9325de9cf9410cf23a9b9318378",
+          "sha256:a28dc8b4f8f01661fdd9c7754d3f79d7e94448b8989350b15694177697149314",
+          "sha256:094dd3fbf61c577a2bfdc9eaf76669b4786dccde6a0bda93525d6d437ab9e869"
+        ]
+      }
+    },
+    {
+      "name": "commonwealth-stop-after-5",
+      "actor": "commonwealth",
+      "moves": 5,
+      "expected": {"cp": 10, "cohesion": 0, "locationSuffix": "rear", "excluded": false},
+      "goldens": {
+        "bytes": [1259, 645, 600, 565, 4267, 3083, 3713, 12818, 14602, 13087, 14069],
+        "sha256": [
+          "sha256:ef641bba3b8b9b0838e65b1977a5199760169d257ba7b8b4dd9b572e3454583b",
+          "sha256:1401ce0b868c4e300c34202ceb688ae2286742724da490a616d87c9f61c3db8c",
+          "sha256:3f016d9559e36f879a9256c2f0cb6165af6ed05be1d82071e0e7552232038ecf",
+          "sha256:ff78e45b5127361216db4242a6b678a85f267814f4e11440e8b7d110ee0f8417",
+          "sha256:4ae29efb570901f37fddb99f8dfda8c5b7a936a1c9bdbca121f12534f8a760f7",
+          "sha256:29f0952c7a8172100405805245b7ca9608141bfb5288a6473c06dd8d70c2b7ce",
+          "sha256:4883a353650c8f76f0cc48fd006703338de0b560b4ced13f56e76532538b1907",
+          "sha256:bbad1f2973d29984abeb5c18e13c0f1723a067726338f5381bc6cb45ed129e96",
+          "sha256:db6090bfb04b1d1b6b750947a9e934e47bb10440beba1c2fda86b3e256362cf5",
+          "sha256:25c65acfe5180707436d538e2bf20df2ece1ef9a1965ee5f4e22a17137cab677",
+          "sha256:9b3ef59d09597d79d5eb94b4a172df4894cf0c6d6a0f78e61565ff5f94096e45"
+        ]
+      }
+    },
+    {
+      "name": "commonwealth-stop-after-6",
+      "actor": "commonwealth",
+      "moves": 6,
+      "expected": {"cp": 12, "cohesion": -2, "locationSuffix": "supply", "excluded": true},
+      "goldens": {
+        "bytes": [1333, 645, 600, 565, 4269, 3085, 4084, 13676, 15460, 13943, 15097],
+        "sha256": [
+          "sha256:8212fa02fd99bc85b2c10090c3b338fc321f17db630b0629584c97777ed1b844",
+          "sha256:a19016009aaf348592362b735a9a7b11a25265b01bee0a0c18ce3c6ab7faada6",
+          "sha256:bda184889d3f36889bbd5c5c79fbc4dc0767d842160495bf4dd79822c93783ec",
+          "sha256:04c7cd07d2928d999312331e0cf011a39b5bea48657fa76f2ba01b087ba19e62",
+          "sha256:d59dfe33a015df7292b4d70403c575fc8e5307cb2660593fb1a996ca8fb93680",
+          "sha256:3dc356f6af9cbb3dac8b7ae3b19ff5d34a1376cfbc3d740c4447956a57175864",
+          "sha256:af5a76217f33c12727ce76fa9595c325016ff8e02723a181347561551a794a50",
+          "sha256:c66cd3a2196a0d359e4c5a5d22c48ce3b6c09437c32907972677c2b069b88b6a",
+          "sha256:95aa193d1f1c77262ed1b8380cab811bb6919660f0416fbdce954558d9b5f597",
+          "sha256:a1e304d64805d27d7e84347d079c8419d4a307bf3eaead9fdcc63ce98e02a9be",
+          "sha256:497bd61063083970b77effb44df0cd2405b92673e6a49e4443456f193145d722"
+        ]
+      }
+    },
+    {
+      "name": "commonwealth-stop-after-7",
+      "actor": "commonwealth",
+      "moves": 7,
+      "expected": {"cp": 14, "cohesion": -4, "locationSuffix": "rear", "excluded": false},
+      "goldens": {
+        "bytes": [1407, 645, 600, 565, 4267, 3083, 4111, 14521, 16305, 14790, 15772],
+        "sha256": [
+          "sha256:2615bc350a71f3667abedd800cb9c41069ba0a4a5889c4cf8e3db516cbba5420",
+          "sha256:588754239d8d05d6b1afa34183f110579db13d271981714dfdc6246567806f45",
+          "sha256:4fa46543cedf599ae0816406342e592648add27331d210649d52c29be8501e15",
+          "sha256:002c60546f175c6f210cb201d1b575c32f6a379d4174b936f859994dfb477341",
+          "sha256:f28b0527b8b690a46d6c5c6075298ef604abf4148a6408648e0947568c13ad1f",
+          "sha256:0eb01752d5e1709e95ccd7589da3cf373c5a1245d6f7585bf871deba6c9fee91",
+          "sha256:fc04f25164db59ba0091f604293c248917157fa5253ede2ec85fe44cb59159bc",
+          "sha256:30f3419b2810eb137db0c768eb3c5f00e2895542e7f8bdc682323184afa692b0",
+          "sha256:5cbbc332a3c36222c538abc7e7f9fbbeeff1297dc70f9b1210460e4f095d33d0",
+          "sha256:790a3e4217262339fbdd8e93025f3637d9f955dec73b7d46b547c5f7456846b4",
+          "sha256:f33932c61e0103dfad24544a87530c7c0ddb1c8ad6ab39704ef674d23a5d2b73"
+        ]
+      }
+    }
+  ],
+  "sourcePins": [
+    {"path": "docs/specs/combat-inherited-movement-v1.schema.json", "sha256": "sha256:a9ad67ee9b9302f17582fb5087f6dd6e7e62574741e6cea7b5a3e58bf7fe2069"},
+    {"path": "docs/specs/verify-combat-inherited-movement-v1.py", "sha256": "sha256:c10c51cd97fca3f3f04fc0983e90d474a35a6b58f4a2cce396272916910579e1"},
+    {"path": "docs/specs/fixtures/combat-inherited-movement-v1.json", "sha256": "sha256:fe617c27d23732228571dc5f323c61e15b7614e3bf4302433e0420133abaafdc"},
+    {"path": "docs/specs/combat-cycle-control-v1.schema.json", "sha256": "sha256:8c517db6daa734d415bd1d474280c2cf6e65013490c4a2568795d50e6112f7da"},
+    {"path": "docs/specs/verify-combat-cycle-control-v1.py", "sha256": "sha256:9039f9e1067b2cdd2e0a57ae16e711350b4bbdceb500d22bbbd715f39e8ccc9f"},
+    {"path": "docs/specs/combat-cycle-sequence-v1.schema.json", "sha256": "sha256:6e09dc5bc6ca79d8580db6ed1e76ad5007c26a30df11b4dd9da0a9c7b5f5e0c5"},
+    {"path": "src/Cna.Core/Campaigns/CampaignBreakdownLifecycleFactory.cs", "sha256": "sha256:07b97600a212bf2b255004bafdeba7da0804624198be354814d25ede5f0d4413"},
+    {"path": "src/Cna.Core/Campaigns/CampaignBreakdownLifecycleCodec.cs", "sha256": "sha256:5d8c11b6d13df33d767f4d3812f52fdf463ef85ce645b92e73d50cea074beb2c"},
+    {"path": "src/Cna.Core/Campaigns/CampaignBreakdownStopResolvedFactory.cs", "sha256": "sha256:2a1cb53659532592aa1c0fe7aaf72b1420a311d41f720443346c26f8516b553f"},
+    {"path": "src/Cna.Core/Campaigns/CampaignBreakdownStopResolvedCodec.cs", "sha256": "sha256:eacdb23a86ec62d1306203bda6f6ddc68e4e19782b9f6016e50aa03e78c471bf"},
+    {"path": "src/Cna.Core/Campaigns/CampaignBreakdownCodec.cs", "sha256": "sha256:6badc5510db11b593b35b9fc03031a709add9c694c64b923650e578494b9ab79"},
+    {"path": "src/Cna.Core/Campaigns/CampaignBreakdownRecords.cs", "sha256": "sha256:63dc7cddecd89dbe4a038accc4cf9d1675464e53c0391d18c0e37b121ad4c23e"},
+    {"path": "src/Cna.Core/Campaigns/CampaignV11BreakdownProjector.cs", "sha256": "sha256:a1ed1aefd2ceb6fe3641d82b13ab0d04eb26505bdf98ccf3745cd974cee49826"},
+    {"path": "src/Cna.Core/Actions/CampaignActionCandidate.cs", "sha256": "sha256:c0e1c240a51dfeb140e370cac71cd204d92954eacc6d47a08c44006850cbc590"},
+    {"path": "src/Cna.Core/Actions/CampaignMovementActionCandidate.cs", "sha256": "sha256:adf60e8a864b659db3fe370ecd33052d509c43a171b3b11ab4b529e8d57285b1"},
+    {"path": "src/Cna.Core/Rules/Cna1979BreakdownAdjudication.cs", "sha256": "sha256:63434a89e439094ff756d2171d6a2a185d93543a9f7f9d89d529ad0c050a7494"}
+  ]
+}

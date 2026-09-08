@@ -908,7 +908,13 @@ from that opening in the normal-Weather ordinary-infantry profile. It preserves 
 fields while binding actual input/cycle/receipt/prefix evidence; cumulative CP and excess-CPA DP
 update with element/representation locations, an active route and accepted progress references.
 No stop occurs at CPA10 under the successor ordinary15 ceiling. Reaction adjacency, positive
-Reserve and vehicle behavior remain separate capability gates; Movement completion/proof is next.
+Reserve and vehicle behavior remain separate capability gates. The
+[inherited route lifecycle](docs/specs/combat-inherited-movement-lifecycle-v1.md) now derives owner
+stop2, System empty-cohort resolution2 and owner Movement-completion3 from that actual history.
+The generic Breakdown interrupt carries exact suspended cycle/Movement context; resolution restores
+Movement before completion reaches Breakdown Determination. First ordinal1 end proof binds final
+locations, distance-based exclusions and the new completion receipt without a synthetic prior proof.
+World, RNG, members and material progress persist. Breakdown-segment completion into Combat is next.
 These private projections are not Snapshot12 readers.
 All five `CONTACT-001` rulings and the governing specification/design package are approved.
 `ZOR-TASK-002A`-`006C` implement and activate Rules/Content/fixture, Campaign
