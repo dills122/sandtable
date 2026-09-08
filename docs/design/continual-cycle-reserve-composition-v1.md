@@ -4,11 +4,13 @@
 **Date:** 2026-09-06. **Input checkpoint:** `2e7fbe0`.
 
 This packet composes the [accepted cycle semantics](../research/continual-cycle-identity-and-history-decision.md),
-[proposed Reserve rulings](../research/reserve-release-history-spike.md),
+[Reserve ruling rationale](../research/reserve-release-history-spike.md),
 [Combat steps](combat-step-transitions-v1.md) and
 [settlement/disclosure](combat-settlement-disclosure-v1.md). It defines cycle identities, release
-records, continuation and retained evidence. It completes the bounded design series, not policy
-approval, a production schema, a playable repeat loop or simulator adoption.
+records, continuation and retained evidence. This completed the bounded design series at its original checkpoint. Policies were subsequently
+accepted in the [policy register](combat-cycle-policy-reconciliation.md); current contract completion
+lives in the [combined plan](combat-cycle-implementation-plan.md). This is not a production schema,
+a playable repeat loop or simulator adoption.
 
 ## Source and current boundary
 
@@ -18,7 +20,7 @@ approval, a production schema, a playable repeat loop or simulator adoption.
 | Land rules, PDF p14, 8.23-8.25; [September errata](https://www.spigames.net/db_pages/ERR_CampaignforNorthAfrica.pdf), 8.23 | Continued movement depends on prior Movement-end proximity, with the Reserve exception. Repeated attacks on the same unit are possible subject to current legality. |
 | Land rules, PDF p28, 18.13-18.26 | First friendly release resolves I; later II may release. Ceilings, one offensive use and next-Movement exception survive the status change; release costs no CP. |
 | `CYCLE-DEC-001`-`014` | Ordinal, authority/public separation, material progress, no-continuation finish and stage history are accepted semantic inputs. |
-| `RESREL-DEC-001`-`004` | Friendly-relative first release, fallback, cumulative ceilings and exception scope remain proposed policies requiring owner approval. |
+| `RESREL-DEC-001`-`004` | Friendly-relative first release, fallback, cumulative ceilings and exception scope are accepted through POL-007/008; exact contracts remain governed by the combined plan. |
 
 Land pages12/14/28 and errata8.23 were checked. Digital event boundaries and codecs below are
 proposals. Current [sequence V4](../../src/Cna.Core/Rules/Cna1979LandSequenceV4.cs) stops supported
@@ -108,7 +110,7 @@ No releases are inferred merely from reaching the structural segment.
 | I, first friendly release (ordinal1) | `release-I` to None or `convert-to-II`; retaining I is forbidden. |
 | II, later friendly release | `release-II` to None or `retain-II`; segment completion may retain all remaining II. |
 | None | No per-unit work. |
-| II at fresh first release, or unresolved I later | Invalid history under proposed RESREL-DEC-001; no silent normalization. |
+| II at fresh first release, or unresolved I later | Invalid history under accepted POL-007 / RESREL-DEC-001; no silent normalization. |
 
 Use canonical own-unit order and one current unit at a time, not a power set of release subsets.
 `ReserveUnitDispositionRecorded` consumes that unit's binding and retains exact before/after status,
@@ -129,7 +131,7 @@ clock confidence loss locks fallback: convert each unresolved I toII in canonica
 retain II later, then complete. Persist fallback mode in the first fallback disposition (or
 completion if no I remains); no late player choice can interleave with its remaining work. Accepted
 prior choices remain. Recovery does not renew budget per unit or wait for a new model request.
-The fallback is a proposed policy; it never auto-releases or auto-repeats.
+The fallback follows accepted POL-004/007; it never auto-releases or auto-repeats.
 
 ## Release restrictions and continuation assessment
 
@@ -175,7 +177,8 @@ behind automatic finish.
 Ordinary Movement must account for retained Contact/Engaged membership even when the fixture has
 no ZOC. DES-001's break-off handoff is therefore part of this continuation design, not a real-RBA
 extension. Under Land8.15/8.24, a zero-loss Engaged attacker with CPA10, spent5 and an otherwise
-legal Clear neighbor can spend4 break-off CP plus1 terrain CP. Terrain-only calculation would
+legal Clear neighbor can spend4 break-off CP plus2 terrain CP, reaching11 with1 immediate DP
+within the ordinary150%-CPA ceiling. Terrain-only calculation would
 undercharge; zero ammo does not prove no Movement continuation. The move must atomically charge
 applicable CP, move the unit and end the relevant memberships without erasing unrelated relations.
 
@@ -264,6 +267,10 @@ Maneuver assertions. Every child bundle and parent report must pass strict readb
 bundles remain authoritative/private, not side-safe exports. Two clean runs compare the existing
 simulation-evidence subset, with diagnostics outside equality and honest build identity.
 
+The [D2 source correction](../research/combat-source-freeze-v1.md#d2-terrain-example-correction-2026-09-07)
+fixes the former Clear1 example to the already-published Clear2 terrain rule. Acceptance IDs and
+policy requirements remain stable; generic1-CP arithmetic does not represent this featureless map.
+
 ## Acceptance and combined-freeze gate
 
 | Case | Required observation | Decisions |
@@ -274,7 +281,7 @@ simulation-evidence subset, with diagnostics outside equality and honest build i
 | `CYCLE-COMP-AC-004` | Timeout midway through first release preserves accepted choices, converts remainingI deterministically and completes; restart/late replies cannot renew deadline or auto-release/repeat. | 003 |
 | `CYCLE-COMP-AC-005` | CPA9/II/spent3 gives voluntary ceiling4, not fresh4. Mandatory overspend persists. Offensive commitment consumes one allowance, defense does not; II DP precedes Morale and requires broader combat admission. | 004 |
 | `CYCLE-COMP-AC-006` | Next-Movement exception spans exactly one occurrence and expires even unused. Prior Movement-end proximity survives combat movement; finish and other scopes cannot revive rights. | 004/006 |
-| `CYCLE-COMP-AC-007` | Exercise each continuation truth-table row, including no-ZOC Engaged break-off (spent5 +4 +1 =CPA10), insufficient CP and atomic CP/membership restart. Missing capability/hidden-dependent legality cannot masquerade as proved no-continuation; accepted fallback finish emits no RNG. | 005 |
+| `CYCLE-COMP-AC-007` | Exercise each continuation truth-table row, including no-ZOC Engaged break-off (spent5 +4 +2 =11, with1 immediate DP and ordinary ceiling15), insufficient CP and atomic CP/membership restart. Missing capability/hidden-dependent legality cannot masquerade as proved no-continuation; accepted fallback finish emits no RNG. | 005 |
 | `CYCLE-COMP-AC-008` | Only allowlisted actual effects set progress; empty Breakdown/retention/private seals/cancelled selections do not. No-progress repeats reject and cannot synthesize a new release opportunity. | 006 |
 | `CYCLE-COMP-AC-009` | Repeat resets target-hex use and closed segment controls, preserving stage attack/release/resource/BP/relation/future-obligation facts. Zero ammo never replenishes. | 004/006-007 |
 | `CYCLE-COMP-AC-010` | Every checkpoint/suffix reproduces full active-stage history, identity, pending owner and side actions. Omitted history, reopened control, duplicate repeat or premature stage reset fails strict readback. | 002/007 |
@@ -289,8 +296,12 @@ future obligation admission; occurrence-aware Exercise terminals; and hosted rec
 The [combined plan](combat-cycle-implementation-plan.md) now assigns implementation-sized tasks.
 [Review4](../reviews/combat-cycle-plan-review-4.md) assessed the combined scope at9f683d1 and found
 one missing ordinary break-off handoff; the author correction above assigns its contracts and tests.
-The frozen-head verdict remains Not ready; this correction has not had another independent pass.
-The user-authorized review budget is exhausted at4of4; policy/contract approval remains pending. Old readers
+At that historical Review4 checkpoint, the frozen-head verdict was Not ready and the4of4 budget
+was exhausted. Owner subsequently accepted POL-001–008 and the corrected plan; see the
+[current policy register](combat-cycle-policy-reconciliation.md) and [combined plan](combat-cycle-implementation-plan.md).
+[Review9](../reviews/combat-progress-review-9.md) returned Ready with non-blocking follow-ups at
+`a96d2a1`; its status corrections are applied here. The authorized9of9 budget is exhausted. Exact
+combined contracts and checkpoint B remain open. Old readers
 must reject new cycle state; a snapshot without cycle evidence cannot be upgraded by guessing its
 ordinal from position/version. Any activation migration needs authenticated history and an explicit
 validated mapping, while old artifacts and replay readers remain available.

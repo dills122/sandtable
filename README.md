@@ -194,7 +194,9 @@ The current delivery boundary is:
 See the [current checkpoint and next gates](docs/roadmap/pre-alpha-roadmap.md#current-checkpoint-and-next-gates)
 for contract versus runtime status, the Combat simulator gate, and the accepted bounded Orleans
 [investigation](docs/research/orleans-publication-feasibility.md), now complete with a bounded Rules9 probe.
-Its production publication/storage proposal remains unapproved;003C3c is complete as a bounded contract checkpoint;003D2 is next.
+Its production publication/storage proposal remains unapproved. Combat contract checkpoints through
+003C3c/D2a/D2b private contract checkpoints are complete;003D2c inherited history and capability
+reconciliation is next.
 The [latest smoke check](docs/research/simulator-post-merge-checkin.md#combat-contract-branch-smoke-check)
 verifies the existing Rules9 path; prospective Combat contracts are not executable game support.
 
@@ -287,14 +289,23 @@ Ready with non-blocking follow-ups; its status correction is applied.
 slice; [review6](docs/reviews/combat-inputs-review-6.md) returned Ready, no actionable findings
 (6of7 used at that checkpoint). [003D1 sequence/cycle contracts](docs/specs/combat-cycle-sequence-v1.md)
 are complete; [review7](docs/reviews/combat-sequence-review-7.md) returned Ready, no actionable findings.
-Cumulative review use is8of8 after review8 of003C2 (Ready; report retained locally). [003C2 Rules10/creation envelopes](docs/specs/combat-authority-envelope-v1.md)
+[Review9](docs/reviews/combat-progress-review-9.md) returned Ready with non-blocking follow-ups at
+`a96d2a1`; its documentation corrections are applied. Review budget9of9 is exhausted. [003C2 Rules10/creation envelopes](docs/specs/combat-authority-envelope-v1.md)
 are complete for the creation cut. [003C3a selection/step control](docs/specs/combat-selection-steps-v1.md)
 is complete with author checks; [003C3b sealed round/commitment](docs/specs/combat-sealed-round-v1.md)
-is also complete as a bounded authority fragment. HOST-RSH-001 research is complete;003C3c is complete as a bounded contract checkpoint;003D2 is next;
+is also complete as a bounded authority fragment. HOST-RSH-001 research,003C3c contracts and003D2a
+ordinary movement contracts are complete. D2b Release and guarded control contracts are complete;
+D2c inherited history/capability reconciliation is next.
 [Result/settlement](docs/specs/combat-result-settlement-v1.md) and
 [full snapshot composition](docs/specs/combat-snapshot-composition-v1.md) retain synthetic pre-Combat
-lineage and author-only evidence. Parent003, future maturity execution and combined checkpoint B remain open. Combat runtime
-implementation has not started.
+lineage; review9 assessed these bounded artifacts. Parent003, future maturity execution and combined checkpoint B
+remain open. The [ordinary movement packet](docs/specs/combat-ordinary-movement-v1.md) freezes break-off/CP/DP
+and corrects the former Clear1 example to the existing Clear2 rule. The
+[Reserve Release packet](docs/specs/combat-reserve-release-v1.md) freezes single-deadline control
+and retained history. The [cycle-control packet](docs/specs/combat-cycle-control-v1.md) freezes guarded
+repeat/finish and Movement exception expiry:19 cases/64 traces,164 cuts. Its exhausted-ammunition
+continuation surface remains private; full history, armed Combat assessment and Snapshot integration
+remain D2c/004. Combat runtime implementation has not started.
 
 See the [pre-alpha roadmap](docs/roadmap/pre-alpha-roadmap.md) for the capability-level plan and
 completion criteria.

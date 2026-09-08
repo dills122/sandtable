@@ -21,7 +21,9 @@ with author checks; [003C3b sealed round/commitment](../specs/combat-sealed-roun
 as a bounded authority fragment. [HOST-RSH-001](orleans-publication-feasibility.md) research is
 complete;003C3c [result/settlement](../specs/combat-result-settlement-v1.md) and
 [snapshot composition](../specs/combat-snapshot-composition-v1.md) are complete within the synthetic
-first-Combat contract profile;003D2 is next. Actual inherited history/runtime proof remains open.
+first-Combat contract profile;003D2a ordinary movement is complete;003D2b.1 Release is complete;003D2b.2 repeat/finish control is next. See [D2a movement](../specs/combat-ordinary-movement-v1.md) for the Clear2 source correction and
+atomic break-off evidence; [D2b.1 Release](../specs/combat-reserve-release-v1.md) freezes ordered
+control and retained history. Actual inherited history/runtime proof remains open.
 Parent003C/D/004 and the combined-contract gate remain open; the plan retains current review accounting.
 
 **Date:** 2026-08-25

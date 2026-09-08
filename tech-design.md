@@ -874,13 +874,17 @@ immediate enemy-ZOC entry and the interrupting Reaction window from Contact and 
 entry creates neither relationship: Contact is derived from enemy-ZOC presence at the beginning of
 a Movement Segment, while Engaged is a Close Assault result; both remain Sprint 5 contract work. The
 [Combat-cycle inventory](docs/research/combat-cycle-source-inventory.md) permits source/table
-normalization now but defers contract freeze until the Breakdown and ZOC/Reaction boundaries are
-implemented. The
+normalization and contract work after the completed bounded Breakdown and ZOC/Reaction boundaries. The
 first bounded follow-up, [Combat rules and result surface](docs/research/combat-rules-result-surface-spike.md),
 completed `CMB-RSH-001` by normalizing the admitted combat-table/result surface; it is research
 evidence, not an implemented combat contract. Current proposals use trusted-Umpire sealed choices,
 the same pre-state for simultaneous combat, and structural sequence positions plus cycle identity;
-none is implemented or approved yet.
+production Combat is not implemented. The [policy register](docs/design/combat-cycle-policy-reconciliation.md)
+now records owner-approved policies, and the [combined plan](docs/design/combat-cycle-implementation-plan.md)
+records bounded contract completion through D2b. The [cycle-control contract](docs/specs/combat-cycle-control-v1.md)
+binds release completion, semantic progress, current-cost witnesses and exact repeat/finish successors.
+Its Movement-expiry projection retains exclusions and release history. Actual inherited history,
+armed Combat continuation and full Snapshot composition remain D2c/004/checkpoint B gates.
 All five `CONTACT-001` rulings and the governing specification/design package are approved.
 `ZOR-TASK-002A`-`006C` implement and activate Rules/Content/fixture, Campaign
 World/creation/snapshot/event-replay, Observation 6/policy/history, topology-local

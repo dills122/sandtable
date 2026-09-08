@@ -1,0 +1,498 @@
+{
+  "contract": "combat-ordinary-movement-v1",
+  "scope": "Contract experiment; C3c settled World with synthetic release/repeat boundary, not reachable campaign replay.",
+  "cases": [
+    {
+      "name": "contact-two-moves",
+      "resultCase": "ordinary",
+      "preAssaultCp": null,
+      "moves": 2,
+      "expected": [
+        {
+          "afterCp": 9,
+          "dp": 0,
+          "ended": 1
+        },
+        {
+          "afterCp": 11,
+          "dp": 1,
+          "ended": 0
+        }
+      ]
+    },
+    {
+      "name": "engaged-clear-two-moves",
+      "resultCase": "zero-engaged",
+      "preAssaultCp": null,
+      "moves": 2,
+      "expected": [
+        {
+          "afterCp": 11,
+          "dp": 1,
+          "ended": 1
+        },
+        {
+          "afterCp": 13,
+          "dp": 2,
+          "ended": 0
+        }
+      ]
+    },
+    {
+      "name": "engaged-excess-two",
+      "resultCase": "zero-engaged",
+      "preAssaultCp": [
+        1,
+        0
+      ],
+      "moves": 1,
+      "expected": [
+        {
+          "afterCp": 12,
+          "dp": 2,
+          "ended": 1
+        }
+      ]
+    },
+    {
+      "name": "engaged-at-ceiling",
+      "resultCase": "zero-engaged",
+      "preAssaultCp": [
+        4,
+        0
+      ],
+      "moves": 1,
+      "expected": [
+        {
+          "afterCp": 15,
+          "dp": 5,
+          "ended": 1
+        }
+      ]
+    },
+    {
+      "name": "retreat-keeps-victory",
+      "resultCase": "zero-retreat",
+      "preAssaultCp": null,
+      "moves": 1,
+      "expected": [
+        {
+          "afterCp": 7,
+          "dp": 0,
+          "ended": 0
+        }
+      ]
+    },
+    {
+      "name": "guard-obligation-retained",
+      "resultCase": "defender-capture-guard",
+      "preAssaultCp": null,
+      "moves": 1,
+      "expected": [
+        {
+          "afterCp": 9,
+          "dp": 0,
+          "ended": 1
+        }
+      ]
+    },
+    {
+      "name": "escape-entitlement-retained",
+      "resultCase": "defender-capture-escape",
+      "preAssaultCp": null,
+      "moves": 1,
+      "expected": [
+        {
+          "afterCp": 9,
+          "dp": 0,
+          "ended": 1
+        }
+      ]
+    },
+    {
+      "name": "mandatory-overspend-retained",
+      "resultCase": "attacker-capture-guard-cp-limit",
+      "preAssaultCp": null,
+      "moves": 1,
+      "expected": [
+        {
+          "afterCp": 12,
+          "dp": 2,
+          "ended": 0
+        }
+      ]
+    }
+  ],
+  "costVectors": [
+    {
+      "cpa": 10,
+      "spent": 5,
+      "relations": [
+        "engaged"
+      ],
+      "release": null,
+      "expected": [
+        10,
+        0
+      ],
+      "terrainCost": 1
+    },
+    {
+      "cpa": 10,
+      "spent": 6,
+      "relations": [
+        "engaged"
+      ],
+      "release": null,
+      "expected": [
+        11,
+        1
+      ],
+      "terrainCost": 1
+    },
+    {
+      "cpa": 10,
+      "spent": 10,
+      "relations": [
+        "engaged"
+      ],
+      "release": null,
+      "expected": [
+        15,
+        5
+      ],
+      "terrainCost": 1
+    },
+    {
+      "cpa": 10,
+      "spent": 5,
+      "relations": [
+        "contact",
+        "engaged",
+        "engaged"
+      ],
+      "release": null,
+      "expected": [
+        10,
+        0
+      ],
+      "terrainCost": 1
+    },
+    {
+      "cpa": 10,
+      "spent": 5,
+      "relations": [
+        "contact"
+      ],
+      "release": null,
+      "expected": [
+        8,
+        0
+      ],
+      "terrainCost": 1
+    },
+    {
+      "cpa": 10,
+      "spent": 2,
+      "relations": [
+        "contact"
+      ],
+      "release": "II",
+      "expected": [
+        5,
+        0
+      ],
+      "terrainCost": 1
+    },
+    {
+      "cpa": 10,
+      "spent": 5,
+      "relations": [
+        "engaged"
+      ],
+      "release": "I",
+      "expected": [
+        10,
+        0
+      ],
+      "terrainCost": 1
+    },
+    {
+      "cpa": 9,
+      "spent": 3,
+      "relations": [],
+      "release": "II",
+      "expected": [
+        4,
+        0
+      ],
+      "terrainCost": 1
+    },
+    {
+      "cpa": 10,
+      "spent": 5,
+      "relations": [
+        "engaged"
+      ],
+      "release": null,
+      "expected": [
+        11,
+        1
+      ],
+      "terrainCost": 2
+    },
+    {
+      "cpa": 10,
+      "spent": 9,
+      "relations": [
+        "engaged"
+      ],
+      "release": null,
+      "expected": [
+        15,
+        5
+      ],
+      "terrainCost": 2
+    },
+    {
+      "cpa": 10,
+      "spent": 5,
+      "relations": [
+        "contact"
+      ],
+      "release": null,
+      "expected": [
+        9,
+        0
+      ],
+      "terrainCost": 2
+    },
+    {
+      "cpa": 10,
+      "spent": 10,
+      "relations": [],
+      "release": null,
+      "expected": [
+        12,
+        2
+      ],
+      "terrainCost": 2
+    }
+  ],
+  "rejectedCosts": [
+    [
+      10,
+      11,
+      [
+        "engaged"
+      ],
+      null
+    ],
+    [
+      10,
+      6,
+      [
+        "engaged"
+      ],
+      "I"
+    ],
+    [
+      10,
+      3,
+      [
+        "contact"
+      ],
+      "II"
+    ],
+    [
+      9,
+      5,
+      [],
+      "II"
+    ]
+  ],
+  "goldens": [
+    {
+      "case": "contact-two-moves",
+      "side": "axis",
+      "baseHash": "sha256:dfc6c874ba70d49280c849d59088f9f7d2aef72f399b43f1d327743b042f8760",
+      "events": [
+        "{\"contractVersion\":1,\"eventType\":\"combat-cycle-element-moved\",\"author\":\"axis\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:723583dc0f297f1d99665f708e579bff841970874ba3c80d64cbbe30342bf3ea\",\"positionId\":\"land.position.operation-1.first-player.movement-and-combat.movement\",\"baseHash\":\"sha256:dfc6c874ba70d49280c849d59088f9f7d2aef72f399b43f1d327743b042f8760\",\"priorVersion\":50,\"stateVersion\":51,\"priorPrefix\":\"sha256:d5a5079fda59f491dde82b2133ef95a3362246087dc07322b1dad9afad49cbce\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"move\",\"cycleId\":\"sha256:723583dc0f297f1d99665f708e579bff841970874ba3c80d64cbbe30342bf3ea\",\"positionId\":\"land.position.operation-1.first-player.movement-and-combat.movement\",\"expectedPriorVersion\":50,\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"axis\",\"elementId\":\"axis-assault-battalion\"},\"originLocationId\":\"assault-west\",\"destinationLocationId\":\"axis-rear\"},\"actor\":\"axis\"},\"effect\":{\"kind\":\"ordinary-move\",\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"axis\",\"elementId\":\"axis-assault-battalion\"},\"representationId\":\"map-representation.0001\",\"originLocationId\":\"assault-west\",\"destinationLocationId\":\"axis-rear\",\"costs\":{\"terrainCost\":2,\"breakOffCost\":2,\"totalCost\":4,\"baseCpa\":10,\"voluntaryCeiling\":15,\"beforeCp\":5,\"afterCp\":9,\"excessCpDp\":0,\"beforeCohesion\":0,\"afterCohesion\":0},\"endedMemberships\":[{\"relationId\":\"set.c02ba9ae1d19ae17989d08c4c3cc8f5e9a8040ac9d97ba06de932d86b30a39c8.relation\",\"creationReceiptId\":\"set.c02ba9ae1d19ae17989d08c4c3cc8f5e9a8040ac9d97ba06de932d86b30a39c8.relationships\",\"kind\":\"contact\",\"attacker\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"axis\",\"elementId\":\"axis-assault-battalion\"},\"defender\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"},\"endingCause\":\"ordinary-break-off\"}]},\"receiptId\":\"mov.1005c59ee2bff408e947d86b11c91b46cdcec4e8366fd6b04264d2eda860866f\"}",
+        "{\"contractVersion\":1,\"eventType\":\"combat-cycle-element-moved\",\"author\":\"axis\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:723583dc0f297f1d99665f708e579bff841970874ba3c80d64cbbe30342bf3ea\",\"positionId\":\"land.position.operation-1.first-player.movement-and-combat.movement\",\"baseHash\":\"sha256:dfc6c874ba70d49280c849d59088f9f7d2aef72f399b43f1d327743b042f8760\",\"priorVersion\":51,\"stateVersion\":52,\"priorPrefix\":\"sha256:4102f8fd22c81c49683a1cea862816b658ddb18da0bdfef0dc0fb53bb97f3f34\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"move\",\"cycleId\":\"sha256:723583dc0f297f1d99665f708e579bff841970874ba3c80d64cbbe30342bf3ea\",\"positionId\":\"land.position.operation-1.first-player.movement-and-combat.movement\",\"expectedPriorVersion\":51,\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"axis\",\"elementId\":\"axis-assault-battalion\"},\"originLocationId\":\"axis-rear\",\"destinationLocationId\":\"assault-west\"},\"actor\":\"axis\"},\"effect\":{\"kind\":\"ordinary-move\",\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"axis\",\"elementId\":\"axis-assault-battalion\"},\"representationId\":\"map-representation.0001\",\"originLocationId\":\"axis-rear\",\"destinationLocationId\":\"assault-west\",\"costs\":{\"terrainCost\":2,\"breakOffCost\":0,\"totalCost\":2,\"baseCpa\":10,\"voluntaryCeiling\":15,\"beforeCp\":9,\"afterCp\":11,\"excessCpDp\":1,\"beforeCohesion\":0,\"afterCohesion\":-1},\"endedMemberships\":[]},\"receiptId\":\"mov.0feebb70c5d47a2c88529baf4551136f08abc071a31b4f66f9b07d3f980f214c\"}"
+      ],
+      "finalHash": "sha256:b4c9e01b1327e209b31dc99b11c2bc864e7336bf683af71a6dca8f0842a22b6d",
+      "finalBytes": 11818
+    },
+    {
+      "case": "contact-two-moves",
+      "side": "commonwealth",
+      "baseHash": "sha256:de95887e97c00a602bb2d61a117456f3d70d2080ebaf82e8638afbe051e28078",
+      "events": [
+        "{\"contractVersion\":1,\"eventType\":\"combat-cycle-element-moved\",\"author\":\"commonwealth\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:bd095bb5789d5161374bd1a7ca36a43799c6e1e302d4749fb4dd8498e69e9a01\",\"positionId\":\"land.position.operation-1.first-player.movement-and-combat.movement\",\"baseHash\":\"sha256:de95887e97c00a602bb2d61a117456f3d70d2080ebaf82e8638afbe051e28078\",\"priorVersion\":50,\"stateVersion\":51,\"priorPrefix\":\"sha256:710272aea8b10785ef10708c272cc0367a373623260232da2db51a49642f83a2\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"move\",\"cycleId\":\"sha256:bd095bb5789d5161374bd1a7ca36a43799c6e1e302d4749fb4dd8498e69e9a01\",\"positionId\":\"land.position.operation-1.first-player.movement-and-combat.movement\",\"expectedPriorVersion\":50,\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"},\"originLocationId\":\"assault-east\",\"destinationLocationId\":\"commonwealth-rear\"},\"actor\":\"commonwealth\"},\"effect\":{\"kind\":\"ordinary-move\",\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"},\"representationId\":\"map-representation.0002\",\"originLocationId\":\"assault-east\",\"destinationLocationId\":\"commonwealth-rear\",\"costs\":{\"terrainCost\":2,\"breakOffCost\":2,\"totalCost\":4,\"baseCpa\":10,\"voluntaryCeiling\":15,\"beforeCp\":5,\"afterCp\":9,\"excessCpDp\":0,\"beforeCohesion\":0,\"afterCohesion\":0},\"endedMemberships\":[{\"relationId\":\"set.8cd818b4da4e32525038176fe4188a92562908cd667ae857d86fb54d55b10843.relation\",\"creationReceiptId\":\"set.8cd818b4da4e32525038176fe4188a92562908cd667ae857d86fb54d55b10843.relationships\",\"kind\":\"contact\",\"attacker\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"},\"defender\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"axis\",\"elementId\":\"axis-assault-battalion\"},\"endingCause\":\"ordinary-break-off\"}]},\"receiptId\":\"mov.09c90b2981abab38dae77f6251b5fcfecc26e03e17003c6bec7b8310f158e2d9\"}",
+        "{\"contractVersion\":1,\"eventType\":\"combat-cycle-element-moved\",\"author\":\"commonwealth\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:bd095bb5789d5161374bd1a7ca36a43799c6e1e302d4749fb4dd8498e69e9a01\",\"positionId\":\"land.position.operation-1.first-player.movement-and-combat.movement\",\"baseHash\":\"sha256:de95887e97c00a602bb2d61a117456f3d70d2080ebaf82e8638afbe051e28078\",\"priorVersion\":51,\"stateVersion\":52,\"priorPrefix\":\"sha256:29b2cce450e925d5fe48bdb8f183a0886c01fb878981a028fd89a77d6e72306f\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"move\",\"cycleId\":\"sha256:bd095bb5789d5161374bd1a7ca36a43799c6e1e302d4749fb4dd8498e69e9a01\",\"positionId\":\"land.position.operation-1.first-player.movement-and-combat.movement\",\"expectedPriorVersion\":51,\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"},\"originLocationId\":\"commonwealth-rear\",\"destinationLocationId\":\"assault-east\"},\"actor\":\"commonwealth\"},\"effect\":{\"kind\":\"ordinary-move\",\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"},\"representationId\":\"map-representation.0002\",\"originLocationId\":\"commonwealth-rear\",\"destinationLocationId\":\"assault-east\",\"costs\":{\"terrainCost\":2,\"breakOffCost\":0,\"totalCost\":2,\"baseCpa\":10,\"voluntaryCeiling\":15,\"beforeCp\":9,\"afterCp\":11,\"excessCpDp\":1,\"beforeCohesion\":0,\"afterCohesion\":-1},\"endedMemberships\":[]},\"receiptId\":\"mov.386a39cfa7c6bf058d1621b0324ae2e9954ccdb138ffbecb2b0e99a193c15596\"}"
+      ],
+      "finalHash": "sha256:6f9953099b3b74da9462e011ee05c1ea7dd89bd27a5773e5af25e3a001c2cbf5",
+      "finalBytes": 11866
+    },
+    {
+      "case": "engaged-clear-two-moves",
+      "side": "axis",
+      "baseHash": "sha256:9bef9c0eafefaaada03492eb75a86cc9dca51e05610328a4c0588cb352b9bfd1",
+      "events": [
+        "{\"contractVersion\":1,\"eventType\":\"combat-cycle-element-moved\",\"author\":\"axis\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:ec73d78859449ea6c99d2929530c27c0b9843e0efb0c93a3e83c661ad3c5332d\",\"positionId\":\"land.position.operation-1.first-player.movement-and-combat.movement\",\"baseHash\":\"sha256:9bef9c0eafefaaada03492eb75a86cc9dca51e05610328a4c0588cb352b9bfd1\",\"priorVersion\":50,\"stateVersion\":51,\"priorPrefix\":\"sha256:37b02771b470a3873af8dca9b20e259f1768767ea642869b15e65fce4e035424\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"move\",\"cycleId\":\"sha256:ec73d78859449ea6c99d2929530c27c0b9843e0efb0c93a3e83c661ad3c5332d\",\"positionId\":\"land.position.operation-1.first-player.movement-and-combat.movement\",\"expectedPriorVersion\":50,\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"axis\",\"elementId\":\"axis-assault-battalion\"},\"originLocationId\":\"assault-west\",\"destinationLocationId\":\"axis-rear\"},\"actor\":\"axis\"},\"effect\":{\"kind\":\"ordinary-move\",\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"axis\",\"elementId\":\"axis-assault-battalion\"},\"representationId\":\"map-representation.0001\",\"originLocationId\":\"assault-west\",\"destinationLocationId\":\"axis-rear\",\"costs\":{\"terrainCost\":2,\"breakOffCost\":4,\"totalCost\":6,\"baseCpa\":10,\"voluntaryCeiling\":15,\"beforeCp\":5,\"afterCp\":11,\"excessCpDp\":1,\"beforeCohesion\":0,\"afterCohesion\":-1},\"endedMemberships\":[{\"relationId\":\"set.73c1a05dadf0fe82bad96b26813a6ae351375794bc451d90854c6bdcffe0413f.relation\",\"creationReceiptId\":\"set.73c1a05dadf0fe82bad96b26813a6ae351375794bc451d90854c6bdcffe0413f.relationships\",\"kind\":\"engaged\",\"attacker\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"axis\",\"elementId\":\"axis-assault-battalion\"},\"defender\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"},\"endingCause\":\"ordinary-break-off\"}]},\"receiptId\":\"mov.06e400fa6805ed5e105c3c70480f83f9c0b15d598d1200821f19c2ac63d3ef03\"}",
+        "{\"contractVersion\":1,\"eventType\":\"combat-cycle-element-moved\",\"author\":\"axis\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:ec73d78859449ea6c99d2929530c27c0b9843e0efb0c93a3e83c661ad3c5332d\",\"positionId\":\"land.position.operation-1.first-player.movement-and-combat.movement\",\"baseHash\":\"sha256:9bef9c0eafefaaada03492eb75a86cc9dca51e05610328a4c0588cb352b9bfd1\",\"priorVersion\":51,\"stateVersion\":52,\"priorPrefix\":\"sha256:f70629e431ddd746e674986df397fcdbe0ba118265a978e1fc91a7e3e87b61bb\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"move\",\"cycleId\":\"sha256:ec73d78859449ea6c99d2929530c27c0b9843e0efb0c93a3e83c661ad3c5332d\",\"positionId\":\"land.position.operation-1.first-player.movement-and-combat.movement\",\"expectedPriorVersion\":51,\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"axis\",\"elementId\":\"axis-assault-battalion\"},\"originLocationId\":\"axis-rear\",\"destinationLocationId\":\"assault-west\"},\"actor\":\"axis\"},\"effect\":{\"kind\":\"ordinary-move\",\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"axis\",\"elementId\":\"axis-assault-battalion\"},\"representationId\":\"map-representation.0001\",\"originLocationId\":\"axis-rear\",\"destinationLocationId\":\"assault-west\",\"costs\":{\"terrainCost\":2,\"breakOffCost\":0,\"totalCost\":2,\"baseCpa\":10,\"voluntaryCeiling\":15,\"beforeCp\":11,\"afterCp\":13,\"excessCpDp\":2,\"beforeCohesion\":-1,\"afterCohesion\":-3},\"endedMemberships\":[]},\"receiptId\":\"mov.85eb3d854ab2aeacdb6e5a79981ac97835badcc8f00da8df9f784cffeb25b614\"}"
+      ],
+      "finalHash": "sha256:5504021e69471b9bccc25164514dbaaf28d83467ccfb339177fbfff795d51eab",
+      "finalBytes": 12141
+    },
+    {
+      "case": "engaged-clear-two-moves",
+      "side": "commonwealth",
+      "baseHash": "sha256:cd0ff4276b7a678dfc90eb1624691b5fd007685db5f8b94bf6c6b7074e972f08",
+      "events": [
+        "{\"contractVersion\":1,\"eventType\":\"combat-cycle-element-moved\",\"author\":\"commonwealth\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:7cebee49879d157a898f1afd8066e5621be8c424a57eef0e1b04795950a60318\",\"positionId\":\"land.position.operation-1.first-player.movement-and-combat.movement\",\"baseHash\":\"sha256:cd0ff4276b7a678dfc90eb1624691b5fd007685db5f8b94bf6c6b7074e972f08\",\"priorVersion\":50,\"stateVersion\":51,\"priorPrefix\":\"sha256:7adfae4003863bf8bb29b9273ff15b8895dbac5641b27a901706575cec26b080\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"move\",\"cycleId\":\"sha256:7cebee49879d157a898f1afd8066e5621be8c424a57eef0e1b04795950a60318\",\"positionId\":\"land.position.operation-1.first-player.movement-and-combat.movement\",\"expectedPriorVersion\":50,\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"},\"originLocationId\":\"assault-east\",\"destinationLocationId\":\"commonwealth-rear\"},\"actor\":\"commonwealth\"},\"effect\":{\"kind\":\"ordinary-move\",\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"},\"representationId\":\"map-representation.0002\",\"originLocationId\":\"assault-east\",\"destinationLocationId\":\"commonwealth-rear\",\"costs\":{\"terrainCost\":2,\"breakOffCost\":4,\"totalCost\":6,\"baseCpa\":10,\"voluntaryCeiling\":15,\"beforeCp\":5,\"afterCp\":11,\"excessCpDp\":1,\"beforeCohesion\":0,\"afterCohesion\":-1},\"endedMemberships\":[{\"relationId\":\"set.523ad36e512964073ffd15f40e5faf2059513fe2fc9953c0be74279ee1b5ac76.relation\",\"creationReceiptId\":\"set.523ad36e512964073ffd15f40e5faf2059513fe2fc9953c0be74279ee1b5ac76.relationships\",\"kind\":\"engaged\",\"attacker\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"},\"defender\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"axis\",\"elementId\":\"axis-assault-battalion\"},\"endingCause\":\"ordinary-break-off\"}]},\"receiptId\":\"mov.61d74885c3b201a975866c9729f32cfd91da855f80a0f28d8def19986fb97a18\"}",
+        "{\"contractVersion\":1,\"eventType\":\"combat-cycle-element-moved\",\"author\":\"commonwealth\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:7cebee49879d157a898f1afd8066e5621be8c424a57eef0e1b04795950a60318\",\"positionId\":\"land.position.operation-1.first-player.movement-and-combat.movement\",\"baseHash\":\"sha256:cd0ff4276b7a678dfc90eb1624691b5fd007685db5f8b94bf6c6b7074e972f08\",\"priorVersion\":51,\"stateVersion\":52,\"priorPrefix\":\"sha256:6be2ac8b73bc4995ba18d5d8de90b76dffe731808d0ad31641e0c5d73b864079\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"move\",\"cycleId\":\"sha256:7cebee49879d157a898f1afd8066e5621be8c424a57eef0e1b04795950a60318\",\"positionId\":\"land.position.operation-1.first-player.movement-and-combat.movement\",\"expectedPriorVersion\":51,\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"},\"originLocationId\":\"commonwealth-rear\",\"destinationLocationId\":\"assault-east\"},\"actor\":\"commonwealth\"},\"effect\":{\"kind\":\"ordinary-move\",\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"},\"representationId\":\"map-representation.0002\",\"originLocationId\":\"commonwealth-rear\",\"destinationLocationId\":\"assault-east\",\"costs\":{\"terrainCost\":2,\"breakOffCost\":0,\"totalCost\":2,\"baseCpa\":10,\"voluntaryCeiling\":15,\"beforeCp\":11,\"afterCp\":13,\"excessCpDp\":2,\"beforeCohesion\":-1,\"afterCohesion\":-3},\"endedMemberships\":[]},\"receiptId\":\"mov.5fb85e4bb669fe2dc498f915dafd2327cb3bc4e1883834e9636832ee6c358ced\"}"
+      ],
+      "finalHash": "sha256:e097670eb41eccde2ef14be70eb86ae66cf2b7500f2c15d79d23419be9ab78a6",
+      "finalBytes": 12197
+    },
+    {
+      "case": "engaged-excess-two",
+      "side": "axis",
+      "baseHash": "sha256:7eba39f399ecf806a5208f7737da14d89e42a2716c559127e1723e9f87bbea27",
+      "events": [
+        "{\"contractVersion\":1,\"eventType\":\"combat-cycle-element-moved\",\"author\":\"axis\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:80c5d8e38307dcdf649c1c062f72d1c0fd984c71e5a89e216d95c9a563c5122d\",\"positionId\":\"land.position.operation-1.first-player.movement-and-combat.movement\",\"baseHash\":\"sha256:7eba39f399ecf806a5208f7737da14d89e42a2716c559127e1723e9f87bbea27\",\"priorVersion\":50,\"stateVersion\":51,\"priorPrefix\":\"sha256:a0e35fd07c67676ce6c15adc3c481781f6449af5e73dbbf14296f934322d5b4c\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"move\",\"cycleId\":\"sha256:80c5d8e38307dcdf649c1c062f72d1c0fd984c71e5a89e216d95c9a563c5122d\",\"positionId\":\"land.position.operation-1.first-player.movement-and-combat.movement\",\"expectedPriorVersion\":50,\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"axis\",\"elementId\":\"axis-assault-battalion\"},\"originLocationId\":\"assault-west\",\"destinationLocationId\":\"axis-rear\"},\"actor\":\"axis\"},\"effect\":{\"kind\":\"ordinary-move\",\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"axis\",\"elementId\":\"axis-assault-battalion\"},\"representationId\":\"map-representation.0001\",\"originLocationId\":\"assault-west\",\"destinationLocationId\":\"axis-rear\",\"costs\":{\"terrainCost\":2,\"breakOffCost\":4,\"totalCost\":6,\"baseCpa\":10,\"voluntaryCeiling\":15,\"beforeCp\":6,\"afterCp\":12,\"excessCpDp\":2,\"beforeCohesion\":0,\"afterCohesion\":-2},\"endedMemberships\":[{\"relationId\":\"set.af43d7f33fe9db1d1ded1b8703c6346023b14576f075b90cdade849b43c0c63a.relation\",\"creationReceiptId\":\"set.af43d7f33fe9db1d1ded1b8703c6346023b14576f075b90cdade849b43c0c63a.relationships\",\"kind\":\"engaged\",\"attacker\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"axis\",\"elementId\":\"axis-assault-battalion\"},\"defender\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"},\"endingCause\":\"ordinary-break-off\"}]},\"receiptId\":\"mov.5c5e2ce30d8feaf1503046766c93d791a4312d6d2cd88ddb4fd66b2c20558cda\"}"
+      ],
+      "finalHash": "sha256:142c1e814acb9f152b7fb4e06ab31751088950dd9f68a72282216ddd42ffdbb6",
+      "finalBytes": 11504
+    },
+    {
+      "case": "engaged-excess-two",
+      "side": "commonwealth",
+      "baseHash": "sha256:62cc5bd8bd7ae6ab1c0f1469d9b7ca293f5ac0796213f9792da26f59c0accce1",
+      "events": [
+        "{\"contractVersion\":1,\"eventType\":\"combat-cycle-element-moved\",\"author\":\"commonwealth\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:c628045ff0e3a15c2ff394090bfab84836a6ab476079d959a746f4adeba10e12\",\"positionId\":\"land.position.operation-1.first-player.movement-and-combat.movement\",\"baseHash\":\"sha256:62cc5bd8bd7ae6ab1c0f1469d9b7ca293f5ac0796213f9792da26f59c0accce1\",\"priorVersion\":50,\"stateVersion\":51,\"priorPrefix\":\"sha256:34dc06b679613bb58d357cee5271afe5532cadbf116295f1bd5acb9a652b3173\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"move\",\"cycleId\":\"sha256:c628045ff0e3a15c2ff394090bfab84836a6ab476079d959a746f4adeba10e12\",\"positionId\":\"land.position.operation-1.first-player.movement-and-combat.movement\",\"expectedPriorVersion\":50,\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"},\"originLocationId\":\"assault-east\",\"destinationLocationId\":\"commonwealth-rear\"},\"actor\":\"commonwealth\"},\"effect\":{\"kind\":\"ordinary-move\",\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"},\"representationId\":\"map-representation.0002\",\"originLocationId\":\"assault-east\",\"destinationLocationId\":\"commonwealth-rear\",\"costs\":{\"terrainCost\":2,\"breakOffCost\":4,\"totalCost\":6,\"baseCpa\":10,\"voluntaryCeiling\":15,\"beforeCp\":6,\"afterCp\":12,\"excessCpDp\":2,\"beforeCohesion\":0,\"afterCohesion\":-2},\"endedMemberships\":[{\"relationId\":\"set.329cf5ec7e91217249491b460ede1f2d3508c5c933dcffbd084b0aa0f1fc8dc6.relation\",\"creationReceiptId\":\"set.329cf5ec7e91217249491b460ede1f2d3508c5c933dcffbd084b0aa0f1fc8dc6.relationships\",\"kind\":\"engaged\",\"attacker\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"},\"defender\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"axis\",\"elementId\":\"axis-assault-battalion\"},\"endingCause\":\"ordinary-break-off\"}]},\"receiptId\":\"mov.1496a0b62cc37fbddddb36ad647dcdb6ad29bdb49e950925f56ebd13ae21dc45\"}"
+      ],
+      "finalHash": "sha256:32dec3a575248633db096f4ebcce1208e8225d27d18476e168007ad9075600f5",
+      "finalBytes": 11560
+    },
+    {
+      "case": "engaged-at-ceiling",
+      "side": "axis",
+      "baseHash": "sha256:68c77bd4faaf62e34b85ce54547153a9846dfc29fd380e198f2fa1744430476a",
+      "events": [
+        "{\"contractVersion\":1,\"eventType\":\"combat-cycle-element-moved\",\"author\":\"axis\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:7d8a6562f124dbdf86643424bff435f5528cafd915992a4a956ca5372a1aa0c2\",\"positionId\":\"land.position.operation-1.first-player.movement-and-combat.movement\",\"baseHash\":\"sha256:68c77bd4faaf62e34b85ce54547153a9846dfc29fd380e198f2fa1744430476a\",\"priorVersion\":50,\"stateVersion\":51,\"priorPrefix\":\"sha256:173a595425782661b2f721d3c3f87c44cda65a6aa97b64f8afaf645e6fd67a02\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"move\",\"cycleId\":\"sha256:7d8a6562f124dbdf86643424bff435f5528cafd915992a4a956ca5372a1aa0c2\",\"positionId\":\"land.position.operation-1.first-player.movement-and-combat.movement\",\"expectedPriorVersion\":50,\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"axis\",\"elementId\":\"axis-assault-battalion\"},\"originLocationId\":\"assault-west\",\"destinationLocationId\":\"axis-rear\"},\"actor\":\"axis\"},\"effect\":{\"kind\":\"ordinary-move\",\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"axis\",\"elementId\":\"axis-assault-battalion\"},\"representationId\":\"map-representation.0001\",\"originLocationId\":\"assault-west\",\"destinationLocationId\":\"axis-rear\",\"costs\":{\"terrainCost\":2,\"breakOffCost\":4,\"totalCost\":6,\"baseCpa\":10,\"voluntaryCeiling\":15,\"beforeCp\":9,\"afterCp\":15,\"excessCpDp\":5,\"beforeCohesion\":0,\"afterCohesion\":-5},\"endedMemberships\":[{\"relationId\":\"set.7b61beefc90735560f43499d1f90ea6c15323dfeaa3870a663757458cf6c9042.relation\",\"creationReceiptId\":\"set.7b61beefc90735560f43499d1f90ea6c15323dfeaa3870a663757458cf6c9042.relationships\",\"kind\":\"engaged\",\"attacker\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"axis\",\"elementId\":\"axis-assault-battalion\"},\"defender\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"},\"endingCause\":\"ordinary-break-off\"}]},\"receiptId\":\"mov.e50acae32e11a8cc1a5750092a7953e1c72d6cb07ce156b786122d2e6572828d\"}"
+      ],
+      "finalHash": "sha256:862e0f3e78fee944d5b4016450bb79ef73323e91d940b99f0626228f4593a984",
+      "finalBytes": 11504
+    },
+    {
+      "case": "engaged-at-ceiling",
+      "side": "commonwealth",
+      "baseHash": "sha256:41dd76515143589aea1c9892381a41e07fba6efbaa3ec1fa327503fcb28e2b3e",
+      "events": [
+        "{\"contractVersion\":1,\"eventType\":\"combat-cycle-element-moved\",\"author\":\"commonwealth\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:2246ebffab8c458e5f09ab4cd87ac05c5db44027e520bacc3bca4c95da963aa9\",\"positionId\":\"land.position.operation-1.first-player.movement-and-combat.movement\",\"baseHash\":\"sha256:41dd76515143589aea1c9892381a41e07fba6efbaa3ec1fa327503fcb28e2b3e\",\"priorVersion\":50,\"stateVersion\":51,\"priorPrefix\":\"sha256:9c419a4e6f31073373ba19169793d7b43bdeccd5779a5045741004d331276fed\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"move\",\"cycleId\":\"sha256:2246ebffab8c458e5f09ab4cd87ac05c5db44027e520bacc3bca4c95da963aa9\",\"positionId\":\"land.position.operation-1.first-player.movement-and-combat.movement\",\"expectedPriorVersion\":50,\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"},\"originLocationId\":\"assault-east\",\"destinationLocationId\":\"commonwealth-rear\"},\"actor\":\"commonwealth\"},\"effect\":{\"kind\":\"ordinary-move\",\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"},\"representationId\":\"map-representation.0002\",\"originLocationId\":\"assault-east\",\"destinationLocationId\":\"commonwealth-rear\",\"costs\":{\"terrainCost\":2,\"breakOffCost\":4,\"totalCost\":6,\"baseCpa\":10,\"voluntaryCeiling\":15,\"beforeCp\":9,\"afterCp\":15,\"excessCpDp\":5,\"beforeCohesion\":0,\"afterCohesion\":-5},\"endedMemberships\":[{\"relationId\":\"set.1c6d0fc0b403d947c437abcc644d28c8a7feb4f69af08fb299dce977df8ccca3.relation\",\"creationReceiptId\":\"set.1c6d0fc0b403d947c437abcc644d28c8a7feb4f69af08fb299dce977df8ccca3.relationships\",\"kind\":\"engaged\",\"attacker\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"},\"defender\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"axis\",\"elementId\":\"axis-assault-battalion\"},\"endingCause\":\"ordinary-break-off\"}]},\"receiptId\":\"mov.dc6e0495ed3dfcc26ae6c607a777ed5f5544ebd6476d1de4b4412cc7fd953236\"}"
+      ],
+      "finalHash": "sha256:df2f6a8a498c42a92b3ad127badb88a2910cf79dca6622bfc8ab56bd2e752773",
+      "finalBytes": 11560
+    },
+    {
+      "case": "retreat-keeps-victory",
+      "side": "axis",
+      "baseHash": "sha256:a46982a99e7e8dee5d40d36c68e273413a64649816a3f98075a46add0ac5fed4",
+      "events": [
+        "{\"contractVersion\":1,\"eventType\":\"combat-cycle-element-moved\",\"author\":\"axis\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:d9810a81a213fc8a3ccdae57316a1862636b92158b832850eb322f75d819b963\",\"positionId\":\"land.position.operation-1.first-player.movement-and-combat.movement\",\"baseHash\":\"sha256:a46982a99e7e8dee5d40d36c68e273413a64649816a3f98075a46add0ac5fed4\",\"priorVersion\":51,\"stateVersion\":52,\"priorPrefix\":\"sha256:4edaa87a832d71f7c6693f80d88e116441092b576545dd89bb3748e39079d41f\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"move\",\"cycleId\":\"sha256:d9810a81a213fc8a3ccdae57316a1862636b92158b832850eb322f75d819b963\",\"positionId\":\"land.position.operation-1.first-player.movement-and-combat.movement\",\"expectedPriorVersion\":51,\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"axis\",\"elementId\":\"axis-assault-battalion\"},\"originLocationId\":\"assault-west\",\"destinationLocationId\":\"axis-rear\"},\"actor\":\"axis\"},\"effect\":{\"kind\":\"ordinary-move\",\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"axis\",\"elementId\":\"axis-assault-battalion\"},\"representationId\":\"map-representation.0001\",\"originLocationId\":\"assault-west\",\"destinationLocationId\":\"axis-rear\",\"costs\":{\"terrainCost\":2,\"breakOffCost\":0,\"totalCost\":2,\"baseCpa\":10,\"voluntaryCeiling\":15,\"beforeCp\":5,\"afterCp\":7,\"excessCpDp\":0,\"beforeCohesion\":3,\"afterCohesion\":3},\"endedMemberships\":[]},\"receiptId\":\"mov.f84c5fbc407babea10212d4d519c315fbf58e3228d999776b7259cb6bc03b311\"}"
+      ],
+      "finalHash": "sha256:858e93fcb4b9db68000202316fdb6fe32c026c7b81ae998c774f771687c8ce0e",
+      "finalBytes": 10744
+    },
+    {
+      "case": "retreat-keeps-victory",
+      "side": "commonwealth",
+      "baseHash": "sha256:faf3adf1cd8300b4acc67f7712196f75e942f5dd708be3d7af36e03ec6d681ab",
+      "events": [
+        "{\"contractVersion\":1,\"eventType\":\"combat-cycle-element-moved\",\"author\":\"commonwealth\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:905f86d417bbff74b90d2be8702f49f2006875d9e7c7ee3acc56b5027d961063\",\"positionId\":\"land.position.operation-1.first-player.movement-and-combat.movement\",\"baseHash\":\"sha256:faf3adf1cd8300b4acc67f7712196f75e942f5dd708be3d7af36e03ec6d681ab\",\"priorVersion\":51,\"stateVersion\":52,\"priorPrefix\":\"sha256:597a6ff0750468ddfa80dda4292996b8265725ebde50c5994e1559d9adc97908\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"move\",\"cycleId\":\"sha256:905f86d417bbff74b90d2be8702f49f2006875d9e7c7ee3acc56b5027d961063\",\"positionId\":\"land.position.operation-1.first-player.movement-and-combat.movement\",\"expectedPriorVersion\":51,\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"},\"originLocationId\":\"assault-east\",\"destinationLocationId\":\"commonwealth-rear\"},\"actor\":\"commonwealth\"},\"effect\":{\"kind\":\"ordinary-move\",\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"},\"representationId\":\"map-representation.0002\",\"originLocationId\":\"assault-east\",\"destinationLocationId\":\"commonwealth-rear\",\"costs\":{\"terrainCost\":2,\"breakOffCost\":0,\"totalCost\":2,\"baseCpa\":10,\"voluntaryCeiling\":15,\"beforeCp\":5,\"afterCp\":7,\"excessCpDp\":0,\"beforeCohesion\":3,\"afterCohesion\":3},\"endedMemberships\":[]},\"receiptId\":\"mov.706b334a8bde725aeb5a863efbd00e5787c65375c8431506d328b55f951b85e1\"}"
+      ],
+      "finalHash": "sha256:c35bd52c5312fca6b9ffddfaa3534cbeb29bb3b54e2f3c43731e4d3e83870103",
+      "finalBytes": 10776
+    },
+    {
+      "case": "guard-obligation-retained",
+      "side": "axis",
+      "baseHash": "sha256:8163788ddb158a0f69d9d5f9e872ccbf194ab86e6130f2c6ab66c4b4b7130d8a",
+      "events": [
+        "{\"contractVersion\":1,\"eventType\":\"combat-cycle-element-moved\",\"author\":\"axis\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:d056c6d26b21eb19241a2a68833301e603ddc06380893b9beb3e7607aa508ce9\",\"positionId\":\"land.position.operation-1.first-player.movement-and-combat.movement\",\"baseHash\":\"sha256:8163788ddb158a0f69d9d5f9e872ccbf194ab86e6130f2c6ab66c4b4b7130d8a\",\"priorVersion\":52,\"stateVersion\":53,\"priorPrefix\":\"sha256:e0363911e611897e556a2fea03c756bcb45004de5b7068733ae5f22ed8ba6db7\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"move\",\"cycleId\":\"sha256:d056c6d26b21eb19241a2a68833301e603ddc06380893b9beb3e7607aa508ce9\",\"positionId\":\"land.position.operation-1.first-player.movement-and-combat.movement\",\"expectedPriorVersion\":52,\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"axis\",\"elementId\":\"axis-assault-battalion\"},\"originLocationId\":\"assault-west\",\"destinationLocationId\":\"axis-rear\"},\"actor\":\"axis\"},\"effect\":{\"kind\":\"ordinary-move\",\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"axis\",\"elementId\":\"axis-assault-battalion\"},\"representationId\":\"map-representation.0001\",\"originLocationId\":\"assault-west\",\"destinationLocationId\":\"axis-rear\",\"costs\":{\"terrainCost\":2,\"breakOffCost\":2,\"totalCost\":4,\"baseCpa\":10,\"voluntaryCeiling\":15,\"beforeCp\":5,\"afterCp\":9,\"excessCpDp\":0,\"beforeCohesion\":0,\"afterCohesion\":0},\"endedMemberships\":[{\"relationId\":\"set.e06ba57b78817d612579649e0100d3f532bb401f1e8e5d000eee60140b7f84c6.relation\",\"creationReceiptId\":\"set.e06ba57b78817d612579649e0100d3f532bb401f1e8e5d000eee60140b7f84c6.relationships\",\"kind\":\"contact\",\"attacker\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"axis\",\"elementId\":\"axis-assault-battalion\"},\"defender\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"},\"endingCause\":\"ordinary-break-off\"}]},\"receiptId\":\"mov.42a948fee6d79980de1b77208df61da13c4d85cc87fd3af35079ef750f920bdf\"}"
+      ],
+      "finalHash": "sha256:48f07d18da89e0e58fbae5eb08a0ef07e13142bc8113fd60f36814a08aba2afa",
+      "finalBytes": 14464
+    },
+    {
+      "case": "guard-obligation-retained",
+      "side": "commonwealth",
+      "baseHash": "sha256:bdfff3998a61aeee019ab4c9cff449e3057c6556cfbf4b6e3a6e8763094ede3a",
+      "events": [
+        "{\"contractVersion\":1,\"eventType\":\"combat-cycle-element-moved\",\"author\":\"commonwealth\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:9f11f841b1349b1e65e6ca742cd5e2ca2e51427bed48a7c5b26948249207c929\",\"positionId\":\"land.position.operation-1.first-player.movement-and-combat.movement\",\"baseHash\":\"sha256:bdfff3998a61aeee019ab4c9cff449e3057c6556cfbf4b6e3a6e8763094ede3a\",\"priorVersion\":52,\"stateVersion\":53,\"priorPrefix\":\"sha256:f46ecf5ac4282dc3c27809f1e2fd1a12b6f5130f5a37a02d7ceac38543135193\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"move\",\"cycleId\":\"sha256:9f11f841b1349b1e65e6ca742cd5e2ca2e51427bed48a7c5b26948249207c929\",\"positionId\":\"land.position.operation-1.first-player.movement-and-combat.movement\",\"expectedPriorVersion\":52,\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"},\"originLocationId\":\"assault-east\",\"destinationLocationId\":\"commonwealth-rear\"},\"actor\":\"commonwealth\"},\"effect\":{\"kind\":\"ordinary-move\",\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"},\"representationId\":\"map-representation.0002\",\"originLocationId\":\"assault-east\",\"destinationLocationId\":\"commonwealth-rear\",\"costs\":{\"terrainCost\":2,\"breakOffCost\":2,\"totalCost\":4,\"baseCpa\":10,\"voluntaryCeiling\":15,\"beforeCp\":5,\"afterCp\":9,\"excessCpDp\":0,\"beforeCohesion\":0,\"afterCohesion\":0},\"endedMemberships\":[{\"relationId\":\"set.f10f2e10fa5ae8b911f9a687674d194bf2e77474986f176dadff7b36690ac530.relation\",\"creationReceiptId\":\"set.f10f2e10fa5ae8b911f9a687674d194bf2e77474986f176dadff7b36690ac530.relationships\",\"kind\":\"contact\",\"attacker\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"},\"defender\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"axis\",\"elementId\":\"axis-assault-battalion\"},\"endingCause\":\"ordinary-break-off\"}]},\"receiptId\":\"mov.46ebf641186f68fbe5db4ab0c4e788ab252bc661321618f57208b138925744df\"}"
+      ],
+      "finalHash": "sha256:b97b5eaa2e29498503b3be6102b67643aceab9ec07843a9529ad8777a55df641",
+      "finalBytes": 14544
+    },
+    {
+      "case": "escape-entitlement-retained",
+      "side": "axis",
+      "baseHash": "sha256:f143b9cf83a669f7d463576978375e30fb84b6814c8bbe145dbdb8184d0500ed",
+      "events": [
+        "{\"contractVersion\":1,\"eventType\":\"combat-cycle-element-moved\",\"author\":\"axis\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:5188ab6c947fb720a19c70f1ed65b05f9c69c040b0a2d359dd11c156f4fc88c2\",\"positionId\":\"land.position.operation-1.first-player.movement-and-combat.movement\",\"baseHash\":\"sha256:f143b9cf83a669f7d463576978375e30fb84b6814c8bbe145dbdb8184d0500ed\",\"priorVersion\":52,\"stateVersion\":53,\"priorPrefix\":\"sha256:182f76fc32920884d4591866c1bd007fa1972ebe670569bc9c055e1f3728030a\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"move\",\"cycleId\":\"sha256:5188ab6c947fb720a19c70f1ed65b05f9c69c040b0a2d359dd11c156f4fc88c2\",\"positionId\":\"land.position.operation-1.first-player.movement-and-combat.movement\",\"expectedPriorVersion\":52,\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"axis\",\"elementId\":\"axis-assault-battalion\"},\"originLocationId\":\"assault-west\",\"destinationLocationId\":\"axis-rear\"},\"actor\":\"axis\"},\"effect\":{\"kind\":\"ordinary-move\",\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"axis\",\"elementId\":\"axis-assault-battalion\"},\"representationId\":\"map-representation.0001\",\"originLocationId\":\"assault-west\",\"destinationLocationId\":\"axis-rear\",\"costs\":{\"terrainCost\":2,\"breakOffCost\":2,\"totalCost\":4,\"baseCpa\":10,\"voluntaryCeiling\":15,\"beforeCp\":5,\"afterCp\":9,\"excessCpDp\":0,\"beforeCohesion\":0,\"afterCohesion\":0},\"endedMemberships\":[{\"relationId\":\"set.e06ba57b78817d612579649e0100d3f532bb401f1e8e5d000eee60140b7f84c6.relation\",\"creationReceiptId\":\"set.e06ba57b78817d612579649e0100d3f532bb401f1e8e5d000eee60140b7f84c6.relationships\",\"kind\":\"contact\",\"attacker\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"axis\",\"elementId\":\"axis-assault-battalion\"},\"defender\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"},\"endingCause\":\"ordinary-break-off\"}]},\"receiptId\":\"mov.2d054f8cf571bbb3f5f41fbf3d80191142a6b54ef0cf421367673f6b89803c8e\"}"
+      ],
+      "finalHash": "sha256:c39e14f5fbc3c6b9799a8952bf1db615bf56759be472755993cbe634881f66f4",
+      "finalBytes": 13744
+    },
+    {
+      "case": "escape-entitlement-retained",
+      "side": "commonwealth",
+      "baseHash": "sha256:4a22c13964d7ed92208771c78b658231e03bdc8fc574414fb2729522c1dc1147",
+      "events": [
+        "{\"contractVersion\":1,\"eventType\":\"combat-cycle-element-moved\",\"author\":\"commonwealth\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:fa2a55a5a7d2ee48f5434d80900f41e33280984f035e001b904e10b54b140405\",\"positionId\":\"land.position.operation-1.first-player.movement-and-combat.movement\",\"baseHash\":\"sha256:4a22c13964d7ed92208771c78b658231e03bdc8fc574414fb2729522c1dc1147\",\"priorVersion\":52,\"stateVersion\":53,\"priorPrefix\":\"sha256:4bca67f64027c5ab7e92795b3716ace94d8a37f29c844943fd02010936893ab3\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"move\",\"cycleId\":\"sha256:fa2a55a5a7d2ee48f5434d80900f41e33280984f035e001b904e10b54b140405\",\"positionId\":\"land.position.operation-1.first-player.movement-and-combat.movement\",\"expectedPriorVersion\":52,\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"},\"originLocationId\":\"assault-east\",\"destinationLocationId\":\"commonwealth-rear\"},\"actor\":\"commonwealth\"},\"effect\":{\"kind\":\"ordinary-move\",\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"},\"representationId\":\"map-representation.0002\",\"originLocationId\":\"assault-east\",\"destinationLocationId\":\"commonwealth-rear\",\"costs\":{\"terrainCost\":2,\"breakOffCost\":2,\"totalCost\":4,\"baseCpa\":10,\"voluntaryCeiling\":15,\"beforeCp\":5,\"afterCp\":9,\"excessCpDp\":0,\"beforeCohesion\":0,\"afterCohesion\":0},\"endedMemberships\":[{\"relationId\":\"set.f10f2e10fa5ae8b911f9a687674d194bf2e77474986f176dadff7b36690ac530.relation\",\"creationReceiptId\":\"set.f10f2e10fa5ae8b911f9a687674d194bf2e77474986f176dadff7b36690ac530.relationships\",\"kind\":\"contact\",\"attacker\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"},\"defender\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"axis\",\"elementId\":\"axis-assault-battalion\"},\"endingCause\":\"ordinary-break-off\"}]},\"receiptId\":\"mov.d592fc481c1fa4c9e90e0e77877fee6f6c2bb01e28c9b2a181a451153c4b2cc4\"}"
+      ],
+      "finalHash": "sha256:eee3de8a1fc1aedbbdae0968d486cfd1adb341d8664e4c4038f23f5c15479a24",
+      "finalBytes": 13760
+    },
+    {
+      "case": "mandatory-overspend-retained",
+      "side": "axis",
+      "baseHash": "sha256:b3068b6999b446a941aab2fb368547061de111258303714bbf968c3a8b6aa507",
+      "events": [
+        "{\"contractVersion\":1,\"eventType\":\"combat-cycle-element-moved\",\"author\":\"axis\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:21b4fc3a8c72b095e86825b7b06d8ebccef175011ef080836108f91a7214f4ce\",\"positionId\":\"land.position.operation-1.first-player.movement-and-combat.movement\",\"baseHash\":\"sha256:b3068b6999b446a941aab2fb368547061de111258303714bbf968c3a8b6aa507\",\"priorVersion\":53,\"stateVersion\":54,\"priorPrefix\":\"sha256:64d2b6b3980def8d0da4265ded52afdbfe653a0d0182547fcce2a132ebef240b\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"move\",\"cycleId\":\"sha256:21b4fc3a8c72b095e86825b7b06d8ebccef175011ef080836108f91a7214f4ce\",\"positionId\":\"land.position.operation-1.first-player.movement-and-combat.movement\",\"expectedPriorVersion\":53,\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"axis\",\"elementId\":\"axis-assault-battalion\"},\"originLocationId\":\"assault-west\",\"destinationLocationId\":\"axis-rear\"},\"actor\":\"axis\"},\"effect\":{\"kind\":\"ordinary-move\",\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"axis\",\"elementId\":\"axis-assault-battalion\"},\"representationId\":\"map-representation.0001\",\"originLocationId\":\"assault-west\",\"destinationLocationId\":\"axis-rear\",\"costs\":{\"terrainCost\":2,\"breakOffCost\":0,\"totalCost\":2,\"baseCpa\":10,\"voluntaryCeiling\":15,\"beforeCp\":10,\"afterCp\":12,\"excessCpDp\":2,\"beforeCohesion\":0,\"afterCohesion\":-2},\"endedMemberships\":[]},\"receiptId\":\"mov.e7b2e8b624c54466c1215cecfbb37cc84d25e35f6ebddfe80202f8e7fb1543cb\"}"
+      ],
+      "finalHash": "sha256:5f68e1ff483c4638ddc501fae3be908bb7eefdc947fef17f68ce186b5b534b5a",
+      "finalBytes": 15098
+    },
+    {
+      "case": "mandatory-overspend-retained",
+      "side": "commonwealth",
+      "baseHash": "sha256:7e3ad80939911100d9b0855163ac7863acc97142d4afe6bdcc15c5adb7142361",
+      "events": [
+        "{\"contractVersion\":1,\"eventType\":\"combat-cycle-element-moved\",\"author\":\"commonwealth\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:8b9bbe69ab23f048dc31d47d10f28b4688699223197f94b30f7243e105ab78c3\",\"positionId\":\"land.position.operation-1.first-player.movement-and-combat.movement\",\"baseHash\":\"sha256:7e3ad80939911100d9b0855163ac7863acc97142d4afe6bdcc15c5adb7142361\",\"priorVersion\":53,\"stateVersion\":54,\"priorPrefix\":\"sha256:26fd9646588683aff76f02ed748dd265d1a50de7e70266d1621a80545aa3731d\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"move\",\"cycleId\":\"sha256:8b9bbe69ab23f048dc31d47d10f28b4688699223197f94b30f7243e105ab78c3\",\"positionId\":\"land.position.operation-1.first-player.movement-and-combat.movement\",\"expectedPriorVersion\":53,\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"},\"originLocationId\":\"assault-east\",\"destinationLocationId\":\"commonwealth-rear\"},\"actor\":\"commonwealth\"},\"effect\":{\"kind\":\"ordinary-move\",\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"},\"representationId\":\"map-representation.0002\",\"originLocationId\":\"assault-east\",\"destinationLocationId\":\"commonwealth-rear\",\"costs\":{\"terrainCost\":2,\"breakOffCost\":0,\"totalCost\":2,\"baseCpa\":10,\"voluntaryCeiling\":15,\"beforeCp\":10,\"afterCp\":12,\"excessCpDp\":2,\"beforeCohesion\":0,\"afterCohesion\":-2},\"endedMemberships\":[]},\"receiptId\":\"mov.b3561f8cde3ad3bf90eacb6cb88ca0bbc9c363fa7c13c6fd1760a0c6290a6478\"}"
+      ],
+      "finalHash": "sha256:9e6f2e1a75dd2d9994118ab37f09966b881a2e199bdcea4300f8f1c198f28ca4",
+      "finalBytes": 15082
+    }
+  ],
+  "sourceHashes": {
+    "verify-combat-result-settlement-v1.py": "sha256:1f7dff5b87ce036c406562686f4dc1ce983a4a8dfa15b2401eae72a0d9879ffd",
+    "fixtures/combat-result-settlement-v1.json": "sha256:cc25c358c997e54dd61fe1d843db5e7385c4a85706c462b87badacb939ec71c2",
+    "verify-combat-world-settlement-v1.py": "sha256:d5f49e5a4165ec568f0a8896ea491341a639da256bcfd573998f529e80ef9f25",
+    "fixtures/combat-content-v7.canonical.json": "sha256:ee4fde9638ceb61ec08612fe32f9ac81db05572aac5ca20941e402d2fed25847",
+    "../research/verify-combat-source-freeze.py": "sha256:f21a97150e344337f6ee4c2c1a1752ac7d41b8b8c8bf6a61a06a1fe5a0483e7e",
+    "../../src/Cna.Core/Rules/Cna1979Movement.cs": "sha256:c941b833400b6081f45c8a3df8ef525de941b81954ed58c0abada736755ced8e"
+  },
+  "terrainEvidence": {
+    "sourceId": "spi-1979-map-a",
+    "locator": "8.37",
+    "url": "https://spigames.net/PDFv10/CNA_Maps.pdf",
+    "sha256": "sha256:8830ec78df489607a2cc7e2cbc8ddcc9457ecbad3b11df071a60d825dadfd030",
+    "page": 1,
+    "nonmotorizedClearCp": 2,
+    "nonmotorizedRoadCp": 1,
+    "method": "2026-09-07 author visual chart check and unchanged Cna1979Movement source; no independent-review verdict"
+  }
+}
