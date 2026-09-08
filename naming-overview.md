@@ -110,7 +110,9 @@ product or service. Its private `OpeningState` is an oracle projection, not an A
 The [opening preamble packet](docs/specs/combat-opening-preamble-v1.md) similarly uses private
 `PreambleState` for creation-rooted contract replay through Weather entry. The
 [Weather packet](docs/specs/combat-weather-v1.md) uses private `WeatherState` through Organization
-entry and retains the `weather-determined` successor name. Neither projection is Snapshot12. Chronicle retains the
+entry and retains the `weather-determined` successor name. The
+[stage-entry packet](docs/specs/combat-stage-entry-v1.md) uses private `StageEntryState` through Reserve
+entry and retains the four `no-obligation-…-resolved` event names. These projections are not Snapshot12. Chronicle retains the
 accepted events; the future Archives reader must reconstruct and validate their complete chain.
 
 The prospective [cycle-control contract](docs/specs/combat-cycle-control-v1.md) uses

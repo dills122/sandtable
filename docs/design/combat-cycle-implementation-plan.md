@@ -738,7 +738,7 @@ scenario, historical contract or policy bytes changed. Author verification only;
 independent review. Navigation closeout verifies670 local links/17anchors,25 task IDs,72 design ACs
 and8 policies. Next2c stage-entry then2d Reserve/first opening; parent003/004/B stays open.
 
-TASK-003D2c.2c checkpoint (input `78be145`):
+TASK-003D2c.2c checkpoint (input `78be145`, contract commit `5f68d21`):
 [Stage-entry specification](../specs/combat-stage-entry-v1.md),
 [schema](../specs/combat-stage-entry-v1.schema.json),
 [retained vectors](../specs/fixtures/combat-stage-entry-v1.json) and
@@ -754,3 +754,6 @@ creation validation fixes it, with unchanged goldens and a passing full rerun.
 No runtime/source/test/scenario/historical-contract changes, public or Snapshot12 admission, or new
 independent review. Next2d owns designation/completion and actual first opening; parent003/004/B
 stays open. Author source/replay/identity/retry checks and the003→004→B dependency review are complete.
+Navigation closeout: all20 contract/research oracles pass;692 local Markdown targets/17 anchors,
+25 stable task IDs,72 design AC IDs and8 policy IDs check clean. Current navigation points to2d;
+review11's scope stays limited to mergedPR95–98. Historical specs and runtime bytes are unchanged.

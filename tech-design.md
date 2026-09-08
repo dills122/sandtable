@@ -881,7 +881,7 @@ evidence, not an implemented combat contract. Current proposals use trusted-Umpi
 the same pre-state for simultaneous combat, and structural sequence positions plus cycle identity;
 production Combat is not implemented. The [policy register](docs/design/combat-cycle-policy-reconciliation.md)
 now records owner-approved policies, and the [combined plan](docs/design/combat-cycle-implementation-plan.md)
-records bounded contract completion through D2c.2b. The [cycle-control contract](docs/specs/combat-cycle-control-v1.md)
+records bounded contract completion through D2c.2c. The [cycle-control contract](docs/specs/combat-cycle-control-v1.md)
 binds release completion, semantic progress, current-cost witnesses and exact repeat/finish successors.
 Its Movement-expiry projection retains exclusions and release history. Actual inherited history,
 armed Combat continuation and full Snapshot composition remain D2c/004/checkpoint B gates.
@@ -893,8 +893,11 @@ and the Weather-entry prefix from validated Created11 and four accepted events. 
 World/RNG and separates Initiative holder from declared first side. The
 [Weather contract](docs/specs/combat-weather-v1.md) consumes that chain and preserves the accepted
 Weather table, conditional location die and rejection-sampled cursor through Organization entry.
-Its explicit no-subject policy keeps World unchanged; stage-entry/Reserve successors still need
-composition. These private projections are not Snapshot12 readers.
+Its explicit no-subject policy keeps World unchanged. The [stage-entry contract](docs/specs/combat-stage-entry-v1.md)
+consumes that complete history and four explicit Setup7 no-obligation gates through Reserve entry,
+preserving Weather, RNG, World and nine receipts. The terminal position retains null activeSide and
+first-acting-side role; the accepted order supplies the next actor. Reserve designation/completion
+and first opening still need composition. These private projections are not Snapshot12 readers.
 All five `CONTACT-001` rulings and the governing specification/design package are approved.
 `ZOR-TASK-002A`-`006C` implement and activate Rules/Content/fixture, Campaign
 World/creation/snapshot/event-replay, Observation 6/policy/history, topology-local
