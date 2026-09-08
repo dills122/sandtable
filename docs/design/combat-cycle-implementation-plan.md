@@ -29,8 +29,8 @@ is complete through Weather entry. [003D2c.2b Weather](../specs/combat-weather-v
 through Organization entry. [003D2c.2c stage entry](../specs/combat-stage-entry-v1.md) is complete
 through Reserve entry. [003D2c.2d Reserve designation/completion](../specs/combat-reserve-designation-v1.md)
 completes bounded creation-to-first-opening contracts with author checks. ParentD2c.2 is complete;
-D2c/D2/003 remains open. D2c.3 inherited Movement/continuation is next; separate field/provenance
-preparation is being reconciled against this frozen opening boundary.
+D2c/D2/003 remains open. D2c.3 inherited Movement/continuation is next; its
+[field/provenance preparation](combat-inherited-movement-preparation.md) is complete as preparation only.
 [Progress review9](../reviews/combat-progress-review-9.md) assessed all13 unmerged commits through
 `a96d2a1`: Ready with non-blocking follow-ups; its sole P3 documentation-status finding is corrected.
 All15 Python oracles and the focused Orleans build/run/format passed at that checkpoint.
@@ -770,7 +770,7 @@ Navigation closeout: all20 contract/research oracles pass;692 local Markdown tar
 25 stable task IDs,72 design AC IDs and8 policy IDs check clean. Current navigation points to2d;
 review11's scope stays limited to mergedPR95–98. Historical specs and runtime bytes are unchanged.
 
-TASK-003D2c.2d checkpoint, 2026-09-08 (input `4c10ede`):
+TASK-003D2c.2d checkpoint, 2026-09-08 (input `4c10ede`, contract commit `4d5199c`):
 [Reserve designation specification](../specs/combat-reserve-designation-v1.md),
 [schema](../specs/combat-reserve-designation-v1.schema.json),
 [retained vectors](../specs/fixtures/combat-reserve-designation-v1.json) and
@@ -793,3 +793,12 @@ ParentD2c.2 is complete within this closed initial-infantry contract profile. D2
 Movement/Reaction/Breakdown, positive Reserve movement and armed continuation are next; .4 retains
 full World/Snapshot/capacity and003's Task004 handoff. ParentD2c/D2/003/004/B and runtime gates remain
 open. This checkpoint has author verification only; review11's earlier scope is unchanged.
+
+Parallel Movement preparation checkpoint:
+[Inherited Movement field/provenance matrix](combat-inherited-movement-preparation.md) maps all26
+Move3 and12 Completion2 fields, five legacy test cases and eight proof obligations. Eleven baseline
+source pins and four actual2d handoff pins bind field/API claims to source. Four entry signatures
+and21 ReserveState fields match the frozen2d reader/schema. The next packet must reconcile legacy
+unchanged-Cohesion validation with incremental excess-CPA DP, and materialized sequence4 Movement
+with2d's symbolic sequence5 position. No successor payload, positive inherited replay or .3
+implementation is completed by preparation. Runtime owner dependencies and003→004→B remain intact.
