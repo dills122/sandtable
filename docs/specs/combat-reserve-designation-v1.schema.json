@@ -1,0 +1,20 @@
+{
+  "contract": "combat-reserve-designation-v1",
+  "objects": {
+    "DesignationCommand": "contractVersion:int kind:id creationBinding:id creationEventHash:hash expectedPriorVersion:long expectedPositionId:id elementId:id",
+    "DesignationInput": "command:DesignationCommand actor:actor",
+    "DesignationEvent": "contractVersion:int eventType:id campaignId:id rulesetHash:rawHash configurationHash:hash creationBinding:id creationEventHash:hash priorVersion:long stateVersion:long priorPrefix:hash fromPositionId:id input:DesignationInput gameTurn:int operationStage:int actingSide:side elementId:id priorStatus:id resultingStatus:id sequencePosition:Position sources:Reference[] receiptId:id",
+    "ReserveState": "contractVersion:int campaignId:id rulesetHash:rawHash configurationHash:hash creationBinding:id creationEventHash:hash stateVersion:long prefix:hash sequencePosition:Position initiativeHolder:side operationStageOrders:PreambleOrder[] operationStageWeather:WeatherValue[] world:World randomState:Random receipts:PreambleReceipt[] firstActingSide:side members:ReserveMember[] cycle:Authority? cycleId:hash? openingBaseHash:hash? completionReceiptId:id?"
+  },
+  "designation": {"command":"designate-reserve-element","currentCommandVersion":1,"commandVersion":2,"eventType":"reserve-element-designated","currentEventVersion":1,"eventVersion":2,"priorStatus":"none","resultingStatus":"I"},
+  "designationSources": [
+    {"sourceId":"spi-1979-land-rules","locator":"18.11"},
+    {"sourceId":"spi-1979-land-rules","locator":"18.12"},
+    {"sourceId":"spi-1979-land-rules","locator":"18.15"}
+  ],
+  "domains": {"receipt":"sandtable.combat.reserve-designation-receipt.v2"},
+  "externalContracts": ["combat-stage-entry-v1.schema.json","combat-inherited-successors-v1.schema.json"],
+  "completion": {"commandKind":"complete-reserve-designation","commandType":"OpeningInput","eventType":"OpeningEvent","eventVersion":2,"baseType":"OpeningBase","baseProfile":"isolated-first-opening"},
+  "limits": {"bytes":1048576,"depth":32,"arrayItems":512,"preambleEvents":4,"weatherEvents":1,"stageEntryEvents":4,"reserveEvents":2,"ownMembers":1},
+  "scope":"Actual creation-rooted first-side Reserve designation and atomic ordinal1 opening; private projection, no Snapshot12/runtime or Movement admission. OpeningBase structural profile retained verbatim; authority derives exclusively from accepted history."
+}

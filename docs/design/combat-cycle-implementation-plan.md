@@ -27,8 +27,10 @@ is complete for the private exhausted-ammunition continuation boundary and Movem
 as an isolated contract boundary. [003D2c.2a opening provenance](../specs/combat-opening-preamble-v1.md)
 is complete through Weather entry. [003D2c.2b Weather](../specs/combat-weather-v1.md) is complete
 through Organization entry. [003D2c.2c stage entry](../specs/combat-stage-entry-v1.md) is complete
-through Reserve entry with author checks;003D2c.2d Reserve designation/completion and first opening are next.
-ParentD2c.2/D2c/D2 remains open.
+through Reserve entry. [003D2c.2d Reserve designation/completion](../specs/combat-reserve-designation-v1.md)
+completes bounded creation-to-first-opening contracts with author checks. ParentD2c.2 is complete;
+D2c/D2/003 remains open. D2c.3 inherited Movement/continuation is next; separate field/provenance
+preparation is being reconciled against this frozen opening boundary.
 [Progress review9](../reviews/combat-progress-review-9.md) assessed all13 unmerged commits through
 `a96d2a1`: Ready with non-blocking follow-ups; its sole P3 documentation-status finding is corrected.
 All15 Python oracles and the focused Orleans build/run/format passed at that checkpoint.
@@ -36,8 +38,8 @@ All15 Python oracles and the focused Orleans build/run/format passed at that che
 for D2b.2/D2c.1. Its P2 handoff ambiguity and P3 source-inventory status drift are corrected below.
 All17 oracles passed independently at review10. Review11 across merged
 [PR95–98](https://github.com/dills122/sandtable/pull/98) returned Ready with no findings and independently
-passed24 oracle jobs plus the Orleans probe. Budget11of11 is exhausted; Weather2b and stage-entry2c are subsequent
-author-verified work and are not covered by that verdict.
+passed24 oracle jobs plus the Orleans probe. Budget11of11 is exhausted; Weather2b, stage-entry2c, Reserve2d and Movement preparation are subsequent
+author-checked work and are not covered by that verdict.
 TASK-004–025 not started. Future maturity execution and checkpoint B remain gated.
 **Original input:** `d2bc67c`. Exact contract freeze and production gates remain open.
 
@@ -249,8 +251,18 @@ Naval Convoy Arrival, Fleet Assignment and Fleet Repair2 in order, preserving Wo
 holder/order and prior receipts. Stop at state10's unmaterialized first-side Reserve entry.
 Strict replay/cached-state/retry/cross-history negatives and source pins precede completion.
 
-These are prospective contract/oracle chains, not C# runtime replay. ParentD2c.2 stays open until2d
-composes the accepted creation-to-opening chain; later Movement/continuation and full Snapshot
+D2c.2d execution boundary (input `4c10ede`, before implementation): Reserve-designation specification,
+schema, retained fixture, oracle and this plan are the five primary files. Consume complete2c
+history, derive real designation receipts and compose the frozenD2c.1 completion/first-opening
+semantics. Preserve World/Weather/RNG/order/history; verify empty/I choices, both acting sides,
+exact retry and all predecessor/identity/cache rejection boundaries. Existing contracts stay frozen.
+Owner approved parallel delivery: independentCIH-IMP-004 maintenance runs on a separate branch;
+one Movement field/provenance preparation document may proceed alongside2d, with final interface
+references bound only after2d freezes. Preparation does not complete3 or authorize runtime work.
+Shared plan/navigation edits remain with the lead; publish separate bounded checkpoints.
+
+These are prospective contract/oracle chains, not C# runtime replay. ParentD2c.2 closes with2d
+composing the accepted creation-to-opening chain; later Movement/continuation and full Snapshot
 admission remainD2c.3–4/004/B. No additional independent-review pass is authorized.
 
 D2c.4 owns the **Task004 handoff** section in its planned
@@ -757,3 +769,27 @@ stays open. Author source/replay/identity/retry checks and the003→004→B depe
 Navigation closeout: all20 contract/research oracles pass;692 local Markdown targets/17 anchors,
 25 stable task IDs,72 design AC IDs and8 policy IDs check clean. Current navigation points to2d;
 review11's scope stays limited to mergedPR95–98. Historical specs and runtime bytes are unchanged.
+
+TASK-003D2c.2d checkpoint, 2026-09-08 (input `4c10ede`):
+[Reserve designation specification](../specs/combat-reserve-designation-v1.md),
+[schema](../specs/combat-reserve-designation-v1.schema.json),
+[retained vectors](../specs/fixtures/combat-reserve-designation-v1.json) and
+[oracle](../specs/verify-combat-reserve-designation-v1.py) compose real state10 Reserve authority
+through optional designation2 and atomic completion2/ordinal1 opening.16 creation-rooted traces,
+40 replay/state cuts,2342 leaf mutations,733 raw rejections,1578 boundary/retry checks and14 source
+pins pass;152 literal artifact entries retained. Four compatible actual bases match frozenD2c.1
+completion bytes. All20 predecessor/research oracles pass without historical artifact changes.
+The adapter derives its structural OpeningBase only from full accepted history, preserving the
+frozen completion shape/domain and historical profile string; it does not admit isolated bases.
+Empty/I selection reaches state11/12 and10/11 receipts for either acting side. Accepted Weather,
+RNG, orders and prior receipts survive; only own Reserve status/designation history changes.
+Both terminal positions remain symbolic; cycle authority resolves the acting side. Exact retries
+at later cuts return original events plus current state. Author integration passes eight paths
+covering full-head readback, terminal retries, actor rejection and sequence/cycle-owner semantics.
+Author checks caught malformed trusted policy leaking a predecessor error class. New boundary
+normalizes explicit predecessor errors;34 regression probes and final full oracle pass. Four
+corrupted source/literal/digest/case controls reject. No old reader or fixture was changed.
+ParentD2c.2 is complete within this closed initial-infantry contract profile. D2c.3 inherited
+Movement/Reaction/Breakdown, positive Reserve movement and armed continuation are next; .4 retains
+full World/Snapshot/capacity and003's Task004 handoff. ParentD2c/D2/003/004/B and runtime gates remain
+open. This checkpoint has author verification only; review11's earlier scope is unchanged.

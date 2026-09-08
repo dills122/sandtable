@@ -1,0 +1,902 @@
+{
+  "contractVersion": 1,
+  "contract": "combat-reserve-designation-v1",
+  "sourceHashes": {
+    "docs/specs/combat-reserve-designation-v1.schema.json": "sha256:f324fb22e53ff6d9e084c2f65532e5af89277f632087549756b7df1dcb1710d9",
+    "docs/specs/combat-stage-entry-v1.md": "sha256:e0da33a94641f2c5800d4cd8c031ed114656e50a8d1ad1b652304c603d93171b",
+    "docs/specs/combat-stage-entry-v1.schema.json": "sha256:5d0f85fec61f219e7fd3575037894c147580ec9fe1570603d621c9d76b38889e",
+    "docs/specs/verify-combat-stage-entry-v1.py": "sha256:85cd2b32f9ad104ec29034180775e1ac1905e5aa7f78caa3c1a26e6675901435",
+    "docs/specs/fixtures/combat-stage-entry-v1.json": "sha256:b2ff1b71934047cc22393a00536ee04b5bb61540d7782ef3c245d098f904d4f7",
+    "docs/specs/combat-inherited-successors-v1.md": "sha256:50469a7ec9937287947d8639f89786518e7812911892ca1c4dcf1c7b16acab40",
+    "docs/specs/combat-inherited-successors-v1.schema.json": "sha256:474d8b5b22457921082c1799c89a42d9ec448b5c6ea131a3458f364ff980babc",
+    "docs/specs/verify-combat-inherited-successors-v1.py": "sha256:f9cbf73f2045c304c96fc8dcf4d09ba10026db87ff5446c751ad22e19e4fe5de",
+    "docs/specs/fixtures/combat-inherited-successors-v1.json": "sha256:1de03913aa0026f986edd4bc474fe0579573a2fb3a18458dd889fc2f2c1a3192",
+    "src/Cna.Core/Campaigns/CampaignReserveEvents.cs": "sha256:aef7be708d608fcf1489c4cc2f7a0103e032561a66fbc2a2e8d5fa07427a8e3a",
+    "src/Cna.Core/Campaigns/ReserveCommands.cs": "sha256:a19268fd485cddbb48bb4b4a1861b34725feea10e8a365f75133528fc6ed04fe",
+    "src/Cna.Core/Campaigns/CampaignV11PreambleCodec.cs": "sha256:842894783e5916dcc678a178802b68a71b0942152659649d714251e7519f1c1d",
+    "src/Cna.Core/Campaigns/CampaignEventSerializer.cs": "sha256:d97923522ef8812ec5a59aebeb3d62bbae5648dfd3f4959e3d2ea0de6c3b133d",
+    "src/Cna.Core/Rules/ReserveRulesArtifactDefinition.cs": "sha256:5910be3781b050f94d1bb138f092bf3c1c5f1321d5af5798404de094f91dc024"
+  },
+  "cases": [
+    {
+      "name": "rainstorm-act-first-none",
+      "seed": 0,
+      "choice": "act-first",
+      "reserve": "none",
+      "expected": {
+        "stateVersion": 11,
+        "receiptCount": 10,
+        "ordinal": 1,
+        "actor": "axis",
+        "weatherKind": "rainstorm",
+        "weatherCursor": 3,
+        "movementPositionId": "land.position.operation-1.first-player.movement-and-combat.movement"
+      },
+      "goldens": {
+        "request": {
+          "bytes": 741,
+          "sha256": "sha256:2d52027125435d4053da20f76b570ac6f1040f3cbe4ece0aa10a96501b35e1f1"
+        },
+        "creation": {
+          "bytes": 7520,
+          "sha256": "sha256:a36c8abd3864442c62d13c9beb41af2c88048534b31bd47bc82a897c808bf798"
+        },
+        "predecessor-records": {
+          "bytes": 26246,
+          "sha256": "sha256:560fd30c6e07b4790e9657ee90cf50912ec21d128093a64b9252591bf43bac6b"
+        },
+        "input-1": {
+          "bytes": 279,
+          "sha256": "sha256:eb9ef5607bfb9e25ace250eafd78bbeae72c6ebc3498c0da4101fa18a852911b"
+        },
+        "event-1": {
+          "bytes": 2450,
+          "sha256": "sha256:3455a1ee9569ce301dd86014dbd617947880d3ebf81b81631fc94a286f0083a4"
+        },
+        "state-10": {
+          "bytes": 8235,
+          "sha256": "sha256:cc99769d0c5691430b67adf24c82bd0580c629a96eca170d33943b3e75cc40bf"
+        },
+        "state-11": {
+          "bytes": 9535,
+          "sha256": "sha256:5b3ecb0bc88a95f7bd01053279869a3baa398deb5a13a412adaa06dba939814a"
+        },
+        "opening-base": {
+          "bytes": 5420,
+          "sha256": "sha256:8389d085687541ee3dea5f9b445937f556fd0929a3752315a48804e3a399ed5d"
+        }
+      }
+    },
+    {
+      "name": "rainstorm-act-first-I",
+      "seed": 0,
+      "choice": "act-first",
+      "reserve": "I",
+      "expected": {
+        "stateVersion": 12,
+        "receiptCount": 11,
+        "ordinal": 1,
+        "actor": "axis",
+        "weatherKind": "rainstorm",
+        "weatherCursor": 3,
+        "movementPositionId": "land.position.operation-1.first-player.movement-and-combat.movement"
+      },
+      "goldens": {
+        "request": {
+          "bytes": 741,
+          "sha256": "sha256:2d52027125435d4053da20f76b570ac6f1040f3cbe4ece0aa10a96501b35e1f1"
+        },
+        "creation": {
+          "bytes": 7520,
+          "sha256": "sha256:a36c8abd3864442c62d13c9beb41af2c88048534b31bd47bc82a897c808bf798"
+        },
+        "predecessor-records": {
+          "bytes": 26246,
+          "sha256": "sha256:560fd30c6e07b4790e9657ee90cf50912ec21d128093a64b9252591bf43bac6b"
+        },
+        "input-1": {
+          "bytes": 416,
+          "sha256": "sha256:60a6f876165936d6be0e0b077703851dbc88402958c7c14f8213e1e744a5376c"
+        },
+        "input-2": {
+          "bytes": 279,
+          "sha256": "sha256:7e83c5b520a9b3aefe9a8a990a41a233f230a51da7291529dc9bcc108bb7503b"
+        },
+        "event-1": {
+          "bytes": 1951,
+          "sha256": "sha256:0634a4991a8f15e8cf168f60c4be511a3f3e7724b1ba17f8f16498b7f96c9655"
+        },
+        "event-2": {
+          "bytes": 2450,
+          "sha256": "sha256:b6c5b06c8c0bbe739b4a3dab03326890804437088853d6a8618d829306b844b5"
+        },
+        "state-10": {
+          "bytes": 8235,
+          "sha256": "sha256:cc99769d0c5691430b67adf24c82bd0580c629a96eca170d33943b3e75cc40bf"
+        },
+        "state-11": {
+          "bytes": 8585,
+          "sha256": "sha256:ad8b9d86d8dd943f2aca1eba542512bbccc57cf9846236534b9cd01969d1cb30"
+        },
+        "state-12": {
+          "bytes": 9885,
+          "sha256": "sha256:948ad8ae5291659f015cd78bb0a6a68578ccad276c230ef61e138d5dd7233d0e"
+        },
+        "opening-base": {
+          "bytes": 5479,
+          "sha256": "sha256:beb0a4440176847d531c6da850df6afe95f54c10226e3cfcdca0db6f5c45f664"
+        }
+      }
+    },
+    {
+      "name": "rainstorm-act-last-none",
+      "seed": 0,
+      "choice": "act-last",
+      "reserve": "none",
+      "expected": {
+        "stateVersion": 11,
+        "receiptCount": 10,
+        "ordinal": 1,
+        "actor": "commonwealth",
+        "weatherKind": "rainstorm",
+        "weatherCursor": 3,
+        "movementPositionId": "land.position.operation-1.first-player.movement-and-combat.movement"
+      },
+      "goldens": {
+        "request": {
+          "bytes": 741,
+          "sha256": "sha256:2d52027125435d4053da20f76b570ac6f1040f3cbe4ece0aa10a96501b35e1f1"
+        },
+        "creation": {
+          "bytes": 7520,
+          "sha256": "sha256:a36c8abd3864442c62d13c9beb41af2c88048534b31bd47bc82a897c808bf798"
+        },
+        "predecessor-records": {
+          "bytes": 26245,
+          "sha256": "sha256:722978e741e30ac23f3e93c186ece4c757b25d63d5a380d534439cc1360fc3dd"
+        },
+        "input-1": {
+          "bytes": 287,
+          "sha256": "sha256:485f2bef41e8e4a688bff47d4825bbbb221210b23631231be622e00c14dd8001"
+        },
+        "event-1": {
+          "bytes": 2466,
+          "sha256": "sha256:189c1145949e04eba0e0e4d68ea45521a4d8aee1c497a3176a83eba0509f8780"
+        },
+        "state-10": {
+          "bytes": 8267,
+          "sha256": "sha256:ef512e4fd1c0311b2f087166bd04010e39e55e7551102dbb863af4c79fa29382"
+        },
+        "state-11": {
+          "bytes": 9583,
+          "sha256": "sha256:97b1060cd039acfafedf1c35b6e64b1832f05c515128921832e97d4b977d28b2"
+        },
+        "opening-base": {
+          "bytes": 5452,
+          "sha256": "sha256:2a374a68ff7948d2b9ddb27faa54f9589435db5d5c44b6a7ea0b3f6bef462c24"
+        }
+      }
+    },
+    {
+      "name": "rainstorm-act-last-I",
+      "seed": 0,
+      "choice": "act-last",
+      "reserve": "I",
+      "expected": {
+        "stateVersion": 12,
+        "receiptCount": 11,
+        "ordinal": 1,
+        "actor": "commonwealth",
+        "weatherKind": "rainstorm",
+        "weatherCursor": 3,
+        "movementPositionId": "land.position.operation-1.first-player.movement-and-combat.movement"
+      },
+      "goldens": {
+        "request": {
+          "bytes": 741,
+          "sha256": "sha256:2d52027125435d4053da20f76b570ac6f1040f3cbe4ece0aa10a96501b35e1f1"
+        },
+        "creation": {
+          "bytes": 7520,
+          "sha256": "sha256:a36c8abd3864442c62d13c9beb41af2c88048534b31bd47bc82a897c808bf798"
+        },
+        "predecessor-records": {
+          "bytes": 26245,
+          "sha256": "sha256:722978e741e30ac23f3e93c186ece4c757b25d63d5a380d534439cc1360fc3dd"
+        },
+        "input-1": {
+          "bytes": 432,
+          "sha256": "sha256:cdde0ad76610aac06921aa3a4b975eab80c056d795db77c7cefa38fb31b8c39c"
+        },
+        "input-2": {
+          "bytes": 287,
+          "sha256": "sha256:5e48d3a65396de7d55947c3cdc5c3a4115535af3cf045f2d1c46c943879828e3"
+        },
+        "event-1": {
+          "bytes": 1983,
+          "sha256": "sha256:9ddd6fd8e66903634fa81593b44cc0c3210d456b5b2e9fd68325881180d0cfd7"
+        },
+        "event-2": {
+          "bytes": 2466,
+          "sha256": "sha256:04d2d397ed575fd96152c5ae4bc3cbaa970d6ca536379184b9f11d6617d6f7d1"
+        },
+        "state-10": {
+          "bytes": 8267,
+          "sha256": "sha256:ef512e4fd1c0311b2f087166bd04010e39e55e7551102dbb863af4c79fa29382"
+        },
+        "state-11": {
+          "bytes": 8625,
+          "sha256": "sha256:a9d500c692ab5412ed67010f640bb03150c5351f6175817dc4e5a8aa4909e737"
+        },
+        "state-12": {
+          "bytes": 9941,
+          "sha256": "sha256:507067fa0b7552a439864b72888e0114077df88c98b43ade64b0c3ad2e776097"
+        },
+        "opening-base": {
+          "bytes": 5511,
+          "sha256": "sha256:0c3b10708824e8fedb03ed69f7140dfe085588cacde1a1ebec85eb29032ef16d"
+        }
+      }
+    },
+    {
+      "name": "normal-act-first-none",
+      "seed": 1,
+      "choice": "act-first",
+      "reserve": "none",
+      "expected": {
+        "stateVersion": 11,
+        "receiptCount": 10,
+        "ordinal": 1,
+        "actor": "axis",
+        "weatherKind": "normal",
+        "weatherCursor": 2,
+        "movementPositionId": "land.position.operation-1.first-player.movement-and-combat.movement"
+      },
+      "goldens": {
+        "request": {
+          "bytes": 741,
+          "sha256": "sha256:b8c96173e432f7f8f09b68cd13e2d1e1a2d49e1a2380815b49fe23dd5510a16c"
+        },
+        "creation": {
+          "bytes": 7520,
+          "sha256": "sha256:fc41759ff3220519ce4cfee40b7662eaa4d4f07ce9d788563e90d8dbbfe68ad8"
+        },
+        "predecessor-records": {
+          "bytes": 26163,
+          "sha256": "sha256:56141b6e0779da6241b9d18ad47be268c31a0d1d1413bdf9331afdbd36eb0df6"
+        },
+        "input-1": {
+          "bytes": 279,
+          "sha256": "sha256:465ae639a317b8a42d9ebbb42185f3b5105fe0dd49ad6abd0350603c0966bcdb"
+        },
+        "event-1": {
+          "bytes": 2450,
+          "sha256": "sha256:0d033008fc8f3137a065104694f4ec8bf5080ee5657d41b2d1751fb17803e54f"
+        },
+        "state-10": {
+          "bytes": 8220,
+          "sha256": "sha256:c708abdcb2a1776e40c531670e7f78eb171d431d0b3615978d413c27e15604c1"
+        },
+        "state-11": {
+          "bytes": 9520,
+          "sha256": "sha256:f2d1c3adbf8a7623417a5679cc7465f2c39c37d4412c7073e86cfab3623d6d5a"
+        },
+        "opening-base": {
+          "bytes": 5420,
+          "sha256": "sha256:6d7ff81bea105f9cbd916d5090aecace748906ea521d69785b01cae0331e3e3b"
+        }
+      }
+    },
+    {
+      "name": "normal-act-first-I",
+      "seed": 1,
+      "choice": "act-first",
+      "reserve": "I",
+      "expected": {
+        "stateVersion": 12,
+        "receiptCount": 11,
+        "ordinal": 1,
+        "actor": "axis",
+        "weatherKind": "normal",
+        "weatherCursor": 2,
+        "movementPositionId": "land.position.operation-1.first-player.movement-and-combat.movement"
+      },
+      "goldens": {
+        "request": {
+          "bytes": 741,
+          "sha256": "sha256:b8c96173e432f7f8f09b68cd13e2d1e1a2d49e1a2380815b49fe23dd5510a16c"
+        },
+        "creation": {
+          "bytes": 7520,
+          "sha256": "sha256:fc41759ff3220519ce4cfee40b7662eaa4d4f07ce9d788563e90d8dbbfe68ad8"
+        },
+        "predecessor-records": {
+          "bytes": 26163,
+          "sha256": "sha256:56141b6e0779da6241b9d18ad47be268c31a0d1d1413bdf9331afdbd36eb0df6"
+        },
+        "input-1": {
+          "bytes": 416,
+          "sha256": "sha256:6d74cefbf89ce12359768ccabc494fbb03ac8d7367c0ea559b627728b8914198"
+        },
+        "input-2": {
+          "bytes": 279,
+          "sha256": "sha256:c336be23071771f679857ec3e3f4d8c881c75c0257a0a0282153a3e9dfb7c6ed"
+        },
+        "event-1": {
+          "bytes": 1951,
+          "sha256": "sha256:f48bda5a0b8282997038737c47aaf9bb6228066aebbffcf8b46e2e11e6018ab3"
+        },
+        "event-2": {
+          "bytes": 2450,
+          "sha256": "sha256:23f952d9206f261f095fb5d946ce09891bfdefb4b5a956dfc42760395424fd0f"
+        },
+        "state-10": {
+          "bytes": 8220,
+          "sha256": "sha256:c708abdcb2a1776e40c531670e7f78eb171d431d0b3615978d413c27e15604c1"
+        },
+        "state-11": {
+          "bytes": 8570,
+          "sha256": "sha256:859345d025d45625d8cd04bb054475c8766f006456a21adc20319f72739e159c"
+        },
+        "state-12": {
+          "bytes": 9870,
+          "sha256": "sha256:d0c5293ffd251bbfbe9a66f00f4f0bdc388a1d987f8d3dbac39c5ff9a2c867d3"
+        },
+        "opening-base": {
+          "bytes": 5479,
+          "sha256": "sha256:74733d09d199cc3b90d4083226711e9dc6e6eb0223f94fb282ea9617fd21be7f"
+        }
+      }
+    },
+    {
+      "name": "normal-act-last-none",
+      "seed": 1,
+      "choice": "act-last",
+      "reserve": "none",
+      "expected": {
+        "stateVersion": 11,
+        "receiptCount": 10,
+        "ordinal": 1,
+        "actor": "commonwealth",
+        "weatherKind": "normal",
+        "weatherCursor": 2,
+        "movementPositionId": "land.position.operation-1.first-player.movement-and-combat.movement"
+      },
+      "goldens": {
+        "request": {
+          "bytes": 741,
+          "sha256": "sha256:b8c96173e432f7f8f09b68cd13e2d1e1a2d49e1a2380815b49fe23dd5510a16c"
+        },
+        "creation": {
+          "bytes": 7520,
+          "sha256": "sha256:fc41759ff3220519ce4cfee40b7662eaa4d4f07ce9d788563e90d8dbbfe68ad8"
+        },
+        "predecessor-records": {
+          "bytes": 26162,
+          "sha256": "sha256:000637fa35b8eb41ec4f4e675d2802b775800aa1237f1953512f61c9447755c4"
+        },
+        "input-1": {
+          "bytes": 287,
+          "sha256": "sha256:3082bfb1ac1d56ae354ec65786105aae28f8644687d75993d5c6b3af6133f5f1"
+        },
+        "event-1": {
+          "bytes": 2466,
+          "sha256": "sha256:731b7387a472d408c5bf8e18a587716076a5f78a91a9ea2e9629229a68f3d672"
+        },
+        "state-10": {
+          "bytes": 8252,
+          "sha256": "sha256:31d27de2a3cd827fe657baf052b35f750533053011b5d568705ddb34fef0418d"
+        },
+        "state-11": {
+          "bytes": 9568,
+          "sha256": "sha256:1a784cf9296bb3402ab665bcba2391ce6c7a991d6cfb94f34cff88c2e0bb7a0d"
+        },
+        "opening-base": {
+          "bytes": 5452,
+          "sha256": "sha256:268fa275f49bcd6b0356cfeda24967b341b2c973475769bcf00d63f14d7dbbbd"
+        }
+      }
+    },
+    {
+      "name": "normal-act-last-I",
+      "seed": 1,
+      "choice": "act-last",
+      "reserve": "I",
+      "expected": {
+        "stateVersion": 12,
+        "receiptCount": 11,
+        "ordinal": 1,
+        "actor": "commonwealth",
+        "weatherKind": "normal",
+        "weatherCursor": 2,
+        "movementPositionId": "land.position.operation-1.first-player.movement-and-combat.movement"
+      },
+      "goldens": {
+        "request": {
+          "bytes": 741,
+          "sha256": "sha256:b8c96173e432f7f8f09b68cd13e2d1e1a2d49e1a2380815b49fe23dd5510a16c"
+        },
+        "creation": {
+          "bytes": 7520,
+          "sha256": "sha256:fc41759ff3220519ce4cfee40b7662eaa4d4f07ce9d788563e90d8dbbfe68ad8"
+        },
+        "predecessor-records": {
+          "bytes": 26162,
+          "sha256": "sha256:000637fa35b8eb41ec4f4e675d2802b775800aa1237f1953512f61c9447755c4"
+        },
+        "input-1": {
+          "bytes": 432,
+          "sha256": "sha256:14fa03524a74943d056d5cda333f9991b61cf89975bd2c83398f5a0d67f100b9"
+        },
+        "input-2": {
+          "bytes": 287,
+          "sha256": "sha256:c8df33a7c45c43fc2996a2074413320d15f840f2b284fdeceeaa9fb7c9309ab2"
+        },
+        "event-1": {
+          "bytes": 1983,
+          "sha256": "sha256:751b3f2c89d5945eff11d19a771054d981fc58b6c4e97a92a55f0f993b4d9b29"
+        },
+        "event-2": {
+          "bytes": 2466,
+          "sha256": "sha256:377635dcf9eada187a45ab812faeef93cc065bb3266bfdf0d3dc6c65bc9d731d"
+        },
+        "state-10": {
+          "bytes": 8252,
+          "sha256": "sha256:31d27de2a3cd827fe657baf052b35f750533053011b5d568705ddb34fef0418d"
+        },
+        "state-11": {
+          "bytes": 8610,
+          "sha256": "sha256:150f53cee28bba297f2670c27adce722959bcb051167155e2d189763443ff0bf"
+        },
+        "state-12": {
+          "bytes": 9926,
+          "sha256": "sha256:dc7a081b0707e0f04262fab00bcad9e298a2b7305143d7421a9270fa50202e32"
+        },
+        "opening-base": {
+          "bytes": 5511,
+          "sha256": "sha256:2b226531712f36b8e7ce34bc7121dbb06e0dbb7622ffc8bf8414d0bbcf36a11d"
+        }
+      }
+    },
+    {
+      "name": "hot-act-first-none",
+      "seed": 2,
+      "choice": "act-first",
+      "reserve": "none",
+      "expected": {
+        "stateVersion": 11,
+        "receiptCount": 10,
+        "ordinal": 1,
+        "actor": "axis",
+        "weatherKind": "hot",
+        "weatherCursor": 2,
+        "movementPositionId": "land.position.operation-1.first-player.movement-and-combat.movement"
+      },
+      "goldens": {
+        "request": {
+          "bytes": 741,
+          "sha256": "sha256:e6804b25042ee9d8715815319d2e1859fb97c6470578b71c211a54c8a1b1101c"
+        },
+        "creation": {
+          "bytes": 7520,
+          "sha256": "sha256:fd704a158e8dc7d55b1f3182eb534b940ceb2a6019d35b73390079e7baf4845e"
+        },
+        "predecessor-records": {
+          "bytes": 26224,
+          "sha256": "sha256:41b4fc4d81ee69d4b20ff556a6f319a9a180b7be1e2e4c712dc78dbe40989bd3"
+        },
+        "input-1": {
+          "bytes": 279,
+          "sha256": "sha256:68023519e819b6e2b83206a8cde4b023a54583c59d0a8561527bb17ad44ee01b"
+        },
+        "event-1": {
+          "bytes": 2450,
+          "sha256": "sha256:7820cbfa2aba2a2013d35c42796fc18ab4b45a8cc0cca764050c30d239cb8e53"
+        },
+        "state-10": {
+          "bytes": 8219,
+          "sha256": "sha256:ef72e89a62770e46258a2286a9a5fdb068718478f50623d951da9bd90d2d722d"
+        },
+        "state-11": {
+          "bytes": 9519,
+          "sha256": "sha256:b799547ae7d9e673165b0c96631b838edda22caf387ae75e73fe778bd7d6948a"
+        },
+        "opening-base": {
+          "bytes": 5420,
+          "sha256": "sha256:1a3529e4d60c62dd9e38d91ff5d3bbc02754a39a6a72c6d2a980f1c28b2792dd"
+        }
+      }
+    },
+    {
+      "name": "hot-act-first-I",
+      "seed": 2,
+      "choice": "act-first",
+      "reserve": "I",
+      "expected": {
+        "stateVersion": 12,
+        "receiptCount": 11,
+        "ordinal": 1,
+        "actor": "axis",
+        "weatherKind": "hot",
+        "weatherCursor": 2,
+        "movementPositionId": "land.position.operation-1.first-player.movement-and-combat.movement"
+      },
+      "goldens": {
+        "request": {
+          "bytes": 741,
+          "sha256": "sha256:e6804b25042ee9d8715815319d2e1859fb97c6470578b71c211a54c8a1b1101c"
+        },
+        "creation": {
+          "bytes": 7520,
+          "sha256": "sha256:fd704a158e8dc7d55b1f3182eb534b940ceb2a6019d35b73390079e7baf4845e"
+        },
+        "predecessor-records": {
+          "bytes": 26224,
+          "sha256": "sha256:41b4fc4d81ee69d4b20ff556a6f319a9a180b7be1e2e4c712dc78dbe40989bd3"
+        },
+        "input-1": {
+          "bytes": 416,
+          "sha256": "sha256:42ec737ad07c93e2761353aff1ba54f4bba511f01919fac7d14cad401257c58b"
+        },
+        "input-2": {
+          "bytes": 279,
+          "sha256": "sha256:4abf5d07f672beb3cabdfbee122cc3bffc85c86b9729785c9cf024646ed0e309"
+        },
+        "event-1": {
+          "bytes": 1951,
+          "sha256": "sha256:e9a4565b88b4ccfeb74671499cfb598d7e8e9e301aaa5862fdfa66e78c9c8fb3"
+        },
+        "event-2": {
+          "bytes": 2450,
+          "sha256": "sha256:3bc51ed7865d1105c23fb466504c5b6c152fc438ad5e9006957df14e2af5f7a5"
+        },
+        "state-10": {
+          "bytes": 8219,
+          "sha256": "sha256:ef72e89a62770e46258a2286a9a5fdb068718478f50623d951da9bd90d2d722d"
+        },
+        "state-11": {
+          "bytes": 8569,
+          "sha256": "sha256:00cce8a2b4d1c87891519df369dd4ddbb7b1e005dc236c7b21ae48f79abfc528"
+        },
+        "state-12": {
+          "bytes": 9869,
+          "sha256": "sha256:304423a5dd6dab705e34835d78902f47e8ec2b44be0c03a8e90fa6fd4ddd4501"
+        },
+        "opening-base": {
+          "bytes": 5479,
+          "sha256": "sha256:949ea98d4e4847d9fe7ab5038f9887b69ce31823e4a7b891be40438a2db595ec"
+        }
+      }
+    },
+    {
+      "name": "hot-act-last-none",
+      "seed": 2,
+      "choice": "act-last",
+      "reserve": "none",
+      "expected": {
+        "stateVersion": 11,
+        "receiptCount": 10,
+        "ordinal": 1,
+        "actor": "commonwealth",
+        "weatherKind": "hot",
+        "weatherCursor": 2,
+        "movementPositionId": "land.position.operation-1.first-player.movement-and-combat.movement"
+      },
+      "goldens": {
+        "request": {
+          "bytes": 741,
+          "sha256": "sha256:e6804b25042ee9d8715815319d2e1859fb97c6470578b71c211a54c8a1b1101c"
+        },
+        "creation": {
+          "bytes": 7520,
+          "sha256": "sha256:fd704a158e8dc7d55b1f3182eb534b940ceb2a6019d35b73390079e7baf4845e"
+        },
+        "predecessor-records": {
+          "bytes": 26223,
+          "sha256": "sha256:6b59032304f74543aaecbfbc6caeb19c0721c410501da1356829a101132b6229"
+        },
+        "input-1": {
+          "bytes": 287,
+          "sha256": "sha256:9d60111677798ffa7f28d24f67f066bd58403a68268b5e494cfc52dcf982fc4c"
+        },
+        "event-1": {
+          "bytes": 2466,
+          "sha256": "sha256:d449b3e959178185154c43b5c7eec868b1ac8ddb6148cbc3477fbeb0441ec4d0"
+        },
+        "state-10": {
+          "bytes": 8251,
+          "sha256": "sha256:346c743b68f385b24d2f969590a520968073fc3f5d3db6a050d9df762a968d23"
+        },
+        "state-11": {
+          "bytes": 9567,
+          "sha256": "sha256:e9de8bfe97dbde6a6350b5862be223a894aea8ec7b03241017394300f3ea4fa6"
+        },
+        "opening-base": {
+          "bytes": 5452,
+          "sha256": "sha256:84ef4aa73c07b4927fee25f1fc21cfb74466b151ec6798bf07840d219ab15a6e"
+        }
+      }
+    },
+    {
+      "name": "hot-act-last-I",
+      "seed": 2,
+      "choice": "act-last",
+      "reserve": "I",
+      "expected": {
+        "stateVersion": 12,
+        "receiptCount": 11,
+        "ordinal": 1,
+        "actor": "commonwealth",
+        "weatherKind": "hot",
+        "weatherCursor": 2,
+        "movementPositionId": "land.position.operation-1.first-player.movement-and-combat.movement"
+      },
+      "goldens": {
+        "request": {
+          "bytes": 741,
+          "sha256": "sha256:e6804b25042ee9d8715815319d2e1859fb97c6470578b71c211a54c8a1b1101c"
+        },
+        "creation": {
+          "bytes": 7520,
+          "sha256": "sha256:fd704a158e8dc7d55b1f3182eb534b940ceb2a6019d35b73390079e7baf4845e"
+        },
+        "predecessor-records": {
+          "bytes": 26223,
+          "sha256": "sha256:6b59032304f74543aaecbfbc6caeb19c0721c410501da1356829a101132b6229"
+        },
+        "input-1": {
+          "bytes": 432,
+          "sha256": "sha256:e1edc1493f2160198192da7fd07bfe96023379012cfbe4f0a08aa0cb3472f9b8"
+        },
+        "input-2": {
+          "bytes": 287,
+          "sha256": "sha256:de8147812118b63d2fabd5ebbaca9ec511a8d216acbaca769b99b3ebb6d1dfde"
+        },
+        "event-1": {
+          "bytes": 1983,
+          "sha256": "sha256:51556e410716566e7ce016e452d516ef4fb93a6b32ab753a546d8334ebf2ec8a"
+        },
+        "event-2": {
+          "bytes": 2466,
+          "sha256": "sha256:cf632ed254cf717669f4b1c544d8089c3afeb60a7f356bd65a383dfbb2ad0d64"
+        },
+        "state-10": {
+          "bytes": 8251,
+          "sha256": "sha256:346c743b68f385b24d2f969590a520968073fc3f5d3db6a050d9df762a968d23"
+        },
+        "state-11": {
+          "bytes": 8609,
+          "sha256": "sha256:68091ef0d383c1e0dc82c53eeef8f66becc62d6cd1fc62fd2288127b7ccebbba"
+        },
+        "state-12": {
+          "bytes": 9925,
+          "sha256": "sha256:c465fdb0a9354015c24e41b3860675ebe2fbcef99c5da1fd322bdaee83654da6"
+        },
+        "opening-base": {
+          "bytes": 5511,
+          "sha256": "sha256:b3d05f3b7059e4ce1bbb7c9a519ae70b0d9a62a4c5b9b66142f564cc7f0603a6"
+        }
+      }
+    },
+    {
+      "name": "sandstorm-act-first-none",
+      "seed": 3,
+      "choice": "act-first",
+      "reserve": "none",
+      "expected": {
+        "stateVersion": 11,
+        "receiptCount": 10,
+        "ordinal": 1,
+        "actor": "axis",
+        "weatherKind": "sandstorm",
+        "weatherCursor": 3,
+        "movementPositionId": "land.position.operation-1.first-player.movement-and-combat.movement"
+      },
+      "goldens": {
+        "request": {
+          "bytes": 741,
+          "sha256": "sha256:fe1bc0bb725032039776cc2f41ad7f7e9dd793b739967ebfc306596f4366f3e6"
+        },
+        "creation": {
+          "bytes": 7520,
+          "sha256": "sha256:ec683835a867d598047bbe33ff50b0d1e10f4e92c00497960235615ce99fd52b"
+        },
+        "predecessor-records": {
+          "bytes": 26367,
+          "sha256": "sha256:be9aa9aaf50782e1bfe9a67cd19de2fd2255d75177ab690f477dc320a6189c9a"
+        },
+        "input-1": {
+          "bytes": 279,
+          "sha256": "sha256:e75aff833277f133c074f02c82c4e58491967d28883071bd7dad0313a09c9d27"
+        },
+        "event-1": {
+          "bytes": 2450,
+          "sha256": "sha256:392e192e064cfb516781e61d488e3e9c3dc6735c5266aa88837ada41055d2d80"
+        },
+        "state-10": {
+          "bytes": 8235,
+          "sha256": "sha256:26272227acf1f14a57e9135494a13e51df68dc97f9bbbcd3595eaa9e237e8485"
+        },
+        "state-11": {
+          "bytes": 9535,
+          "sha256": "sha256:1527df83571cd4c8f95f43049c29b7542f0568ee5b8a23fefca7c9d18f1ea3a7"
+        },
+        "opening-base": {
+          "bytes": 5420,
+          "sha256": "sha256:d89169c43a365d842117283d401b29604e68e5d3147673ba8c41c834d6cf9b29"
+        }
+      }
+    },
+    {
+      "name": "sandstorm-act-first-I",
+      "seed": 3,
+      "choice": "act-first",
+      "reserve": "I",
+      "expected": {
+        "stateVersion": 12,
+        "receiptCount": 11,
+        "ordinal": 1,
+        "actor": "axis",
+        "weatherKind": "sandstorm",
+        "weatherCursor": 3,
+        "movementPositionId": "land.position.operation-1.first-player.movement-and-combat.movement"
+      },
+      "goldens": {
+        "request": {
+          "bytes": 741,
+          "sha256": "sha256:fe1bc0bb725032039776cc2f41ad7f7e9dd793b739967ebfc306596f4366f3e6"
+        },
+        "creation": {
+          "bytes": 7520,
+          "sha256": "sha256:ec683835a867d598047bbe33ff50b0d1e10f4e92c00497960235615ce99fd52b"
+        },
+        "predecessor-records": {
+          "bytes": 26367,
+          "sha256": "sha256:be9aa9aaf50782e1bfe9a67cd19de2fd2255d75177ab690f477dc320a6189c9a"
+        },
+        "input-1": {
+          "bytes": 416,
+          "sha256": "sha256:088257986922b5ac2c9d2cad1a6e249d1b798e747418ba3174565d5679ac7552"
+        },
+        "input-2": {
+          "bytes": 279,
+          "sha256": "sha256:da1d66a7aef38b481dd80d7effad741b2bd68ce931e2e12eb072ec137610d8f2"
+        },
+        "event-1": {
+          "bytes": 1951,
+          "sha256": "sha256:71cc1719de8619cdb8bc6591d3fec2c1366bafeb473f940609710fabe35eee12"
+        },
+        "event-2": {
+          "bytes": 2450,
+          "sha256": "sha256:0aff167e57936137eacad7032458816618a1d85bca10f41972b056376f562286"
+        },
+        "state-10": {
+          "bytes": 8235,
+          "sha256": "sha256:26272227acf1f14a57e9135494a13e51df68dc97f9bbbcd3595eaa9e237e8485"
+        },
+        "state-11": {
+          "bytes": 8585,
+          "sha256": "sha256:0d64fe5edd2ab94dcf6e8d157302dba4180a0fc8db57b21ead504965fef9c2f4"
+        },
+        "state-12": {
+          "bytes": 9885,
+          "sha256": "sha256:5071c27af58f5c9059add5e52ce2ede361b1de8817e41580406374ca0c0d6c61"
+        },
+        "opening-base": {
+          "bytes": 5479,
+          "sha256": "sha256:c292e04ffd2d721329aec8d87e3442ddc0a8d9703f8e85331680b26d9daaa0b5"
+        }
+      }
+    },
+    {
+      "name": "sandstorm-act-last-none",
+      "seed": 3,
+      "choice": "act-last",
+      "reserve": "none",
+      "expected": {
+        "stateVersion": 11,
+        "receiptCount": 10,
+        "ordinal": 1,
+        "actor": "commonwealth",
+        "weatherKind": "sandstorm",
+        "weatherCursor": 3,
+        "movementPositionId": "land.position.operation-1.first-player.movement-and-combat.movement"
+      },
+      "goldens": {
+        "request": {
+          "bytes": 741,
+          "sha256": "sha256:fe1bc0bb725032039776cc2f41ad7f7e9dd793b739967ebfc306596f4366f3e6"
+        },
+        "creation": {
+          "bytes": 7520,
+          "sha256": "sha256:ec683835a867d598047bbe33ff50b0d1e10f4e92c00497960235615ce99fd52b"
+        },
+        "predecessor-records": {
+          "bytes": 26366,
+          "sha256": "sha256:26cd9f07ca50dd170250e3e71cff74280614741f2146222bf11878e99f0886de"
+        },
+        "input-1": {
+          "bytes": 287,
+          "sha256": "sha256:5f3425803c7e41c674cfee601d3667134ee77fb065e976402d4966dc373130bd"
+        },
+        "event-1": {
+          "bytes": 2466,
+          "sha256": "sha256:78f2755cc31b5d1bd9606d6e54513f9b9d06852de443f314e29255126648ceb1"
+        },
+        "state-10": {
+          "bytes": 8267,
+          "sha256": "sha256:0241060cc8ef26d7591f9b9381e58bcc5512ca957e5b6caa7bf5113471417f3f"
+        },
+        "state-11": {
+          "bytes": 9583,
+          "sha256": "sha256:624bd3d83749f5c5189b0ab0c407e71313976c4942e3b90bf0a47834eab801e4"
+        },
+        "opening-base": {
+          "bytes": 5452,
+          "sha256": "sha256:f747b4cd11e521b18b57b27faa5e5380d66e32f170528a33bf293751652d7ce4"
+        }
+      }
+    },
+    {
+      "name": "sandstorm-act-last-I",
+      "seed": 3,
+      "choice": "act-last",
+      "reserve": "I",
+      "expected": {
+        "stateVersion": 12,
+        "receiptCount": 11,
+        "ordinal": 1,
+        "actor": "commonwealth",
+        "weatherKind": "sandstorm",
+        "weatherCursor": 3,
+        "movementPositionId": "land.position.operation-1.first-player.movement-and-combat.movement"
+      },
+      "goldens": {
+        "request": {
+          "bytes": 741,
+          "sha256": "sha256:fe1bc0bb725032039776cc2f41ad7f7e9dd793b739967ebfc306596f4366f3e6"
+        },
+        "creation": {
+          "bytes": 7520,
+          "sha256": "sha256:ec683835a867d598047bbe33ff50b0d1e10f4e92c00497960235615ce99fd52b"
+        },
+        "predecessor-records": {
+          "bytes": 26366,
+          "sha256": "sha256:26cd9f07ca50dd170250e3e71cff74280614741f2146222bf11878e99f0886de"
+        },
+        "input-1": {
+          "bytes": 432,
+          "sha256": "sha256:e78c0fe311e31a00a0a92da9834f2b8f4fdf6c47f74ac74c864691981fa82f2a"
+        },
+        "input-2": {
+          "bytes": 287,
+          "sha256": "sha256:2f6d622206677aa55c8bfc43b9f41f3f8234016c176453343e9d091c63891999"
+        },
+        "event-1": {
+          "bytes": 1983,
+          "sha256": "sha256:077cbb784b3cc6a5c348769372ed7fac7329b05144a0273da80d8ab77c7e5c43"
+        },
+        "event-2": {
+          "bytes": 2466,
+          "sha256": "sha256:84c525947e2d9688eee9f2b5ad70f7c64771c8214913aeaff11d71b4782296e9"
+        },
+        "state-10": {
+          "bytes": 8267,
+          "sha256": "sha256:0241060cc8ef26d7591f9b9381e58bcc5512ca957e5b6caa7bf5113471417f3f"
+        },
+        "state-11": {
+          "bytes": 8625,
+          "sha256": "sha256:cae11d36e11e959c100ec27c4b7244c69dab2c21990c5d236613ea6d8b001cda"
+        },
+        "state-12": {
+          "bytes": 9941,
+          "sha256": "sha256:7f2b59a2621c4ed0cc9a60ee2ae76d150080673c82010d2ac07a82cc13674ce5"
+        },
+        "opening-base": {
+          "bytes": 5511,
+          "sha256": "sha256:062c2f7e5ba584218a2822caa1a2513e363c180d623ff7ecbfe66fcaf5ab83f8"
+        }
+      }
+    }
+  ]
+}
