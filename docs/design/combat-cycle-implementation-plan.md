@@ -15,7 +15,11 @@ its status correction is applied. Parent003 remains open for003C/D.
 [003C2 Rules10/creation envelopes](../specs/combat-authority-envelope-v1.md) are complete for the creation cut,
 with author verification and independent review8 Ready (local report recorded below).
 [003C3a selection/step contracts](../specs/combat-selection-steps-v1.md) are
-complete as a bounded control fragment;003C3b sealed assignments are next.
+complete as a bounded control fragment. [003C3b sealed round/commitment](../specs/combat-sealed-round-v1.md)
+is complete with author checks. [HOST-RSH-001](../research/orleans-publication-feasibility.md) research
+is complete. [003C3c result/settlement](../specs/combat-result-settlement-v1.md) and
+[noninitial Snapshot12 composition](../specs/combat-snapshot-composition-v1.md) are complete as bounded
+contract checkpoints with author checks;003D2 is next.
 TASK-004–025 not started. Future maturity execution and checkpoint B remain gated.
 **Original input:** `d2bc67c`. Exact contract freeze and production gates remain open.
 
@@ -151,8 +155,17 @@ parent003C3 open and freeze them in dependency order, each within five primary f
 | Slice | Contract boundary |
 | --- | --- |
 | `003C3a` | [Selection/step control](../specs/combat-selection-steps-v1.md) complete:5 literal traces/41 event-control cuts,5 Control goldens,246 event mutations,164 raw rejects and time/retry/weather/FA guards. Positive path stops at Force Assignment; author checks only. |
-| `003C3b` | Opportunity and sealed two-slot round, permitted FA/AA trace, atomic commitment and history identity; prepared/cancelled handoff to step control. |
-| `003C3c` | Committed RNG/result/settlement envelopes, completed round/CA closure and noninitial Snapshot12 composition with C3a/b; reconcile complete C3 restart/tamper matrix. |
+| `003C3b` | [Sealed round/commitment fragment](../specs/combat-sealed-round-v1.md) complete:4 traces/23 replay cuts,276 event/state mutations,138 raw rejections; both seal orders, deadlines/retries, FA-AA proof and CP/ammo/history. Author checks only; full Snapshot12/public projection remain C3c/D2/004. |
+| `003C3c` | Complete as a bounded first-Combat contract checkpoint: result/RNG/settlement, round/CA closure and composed noninitial Snapshot12 with inherited-family audit. Synthetic pre-Combat lineage remains explicit; D2/004/B gates stay open. |
+
+C3c execution refinement (input `7bb2d11`): finish two bounded checkpoints in order, each with
+spec/schema/fixture/oracle and this plan as five primary files. `003C3c.1` [result/settlement](../specs/combat-result-settlement-v1.md) is complete:68 replay cuts,728
+mutations,340 raw rejections and96 timing checks. It freezes result/RNG,
+settlement choices/effects and round/CA closure. `003C3c.2` [snapshot composition](../specs/combat-snapshot-composition-v1.md)
+is complete:17 traces/149 full Snapshot12 cuts,1358 mutations and596 raw rejections, plus the
+inherited-family compatibility/owner audit. Both checkpoints pass; C3c/C3 close within this bounded
+first-Combat contract scope. Parent003C/D stays open for D2 cross-contract reconciliation and004/B.
+This is a delivery split, with no new gameplay policy or independent-review budget.
 
 This refinement changes no gameplay policy, acceptance criterion or review budget. C3a rejects
 prepared/resolved/settled states until their exact dependent contracts exist; later C3b/c freeze
@@ -474,3 +487,49 @@ C2 independent review8of8 returned Ready with no actionable findings; retained r
 author checks, with no additional review pass. Current review maximum remains8of8.
 Next003C3b freezes sealed assignments/FA-AA trace and commitment;003C3c composes result/settlement
 and noninitial Snapshot12, then003D2/004 complete checkpoint B before runtime Task005 begins.
+
+
+TASK-003C3b checkpoint (input `c126f16`, merged PR94):
+[Sealed-round contract](../specs/combat-sealed-round-v1.md),
+[schema](../specs/combat-sealed-round-v1.schema.json),
+[fixtures](../specs/fixtures/combat-sealed-round-v1.json) and
+[oracle](../specs/verify-combat-sealed-round-v1.py) complete as a bounded private authority fragment.
+Two slots share a pinned base and deadline; second seal derives Prepared; exact FA/AA proof permits
+one atomic CP/ammo/history commitment before RNG. Zero/one-seal cancellation closes remaining steps
+without attack effects. Four traces/23 event-state cuts,276 mutations,138 raw rejections and
+clock/retry/CP-ceiling/commitment guards pass; all eight predecessor oracles pass unchanged.
+C3a's four artifact bytes remain frozen. Golden bytes are recorded regression vectors, not independent
+serializer parity; the independent literal expectations cover resources and terminal states.
+Base retains the disclosed C3a isolated-probe lineage. Full pre-round Snapshot12 binding, inherited
+pre-Combat history, all-result certification, public slot/revision/privacy contracts and durable
+publication remain C3c/D2/004/runtime or hosting gates. No production version is registered.
+Author verification only; no new independent review and current use remains8of8.
+At this checkpoint the scheduled next task was HOST-RSH-001; then resume003C3c,
+003D2 and004 before checkpoint B and runtime005. Parent003C3 and003 remain open.
+
+HOST-RSH-001 checkpoint (input `6852088`): [research/probe](../research/orleans-publication-feasibility.md)
+complete. Isolated Rules9 silo matched12 direct-Core accepted commands,13 writes and12 same-process
+reactivations through first-side Combat entry, including duplicate/stale and failure/reply recovery.
+No production provider, durable process-restart acceptance or Combat runtime claim. Publication
+proposal awaits owner acceptance; next003C3c →003D2 →004 → checkpoint B. No independent review added.
+
+
+TASK-003C3c checkpoint, 2026-09-07 (input `7bb2d11`):
+
+- C3c.1 freezes eight literal result/settlement cases, mirrored roles/reversed seals, exact RNG
+  cursor/purpose evidence, choice clocks, custody/escape, CP limits and round/CA closure.68 replay
+  cuts,728 mutations,340 raw rejections and96 timing checks pass; commit `65d708b` plus mandatory
+  regression-vector presence guard.
+- C3c.2 composes149 complete Snapshot12 cuts across17 selection, round and settlement traces;
+  1358 mutations and596 raw rejections pass. Full pre-round binding and inherited ledger retention
+  are checked against replay-derived state. Golden bytes are regression vectors, not independent
+  serializer parity. Layered counts overlap and must not be added as distinct runtime scenarios.
+- Compatibility inventory assigns explicit new-context/sequence5 successors to bounded008 adapter
+  families;019 supplies first-opening before predecessor-to-Combat integration. D2/004/B must settle
+  exact successor declarations, actual first-opening/history provenance and whole-envelope capacity.
+- All ten predecessor/source/RNG oracles pass. Frozen predecessors and runtime remain unchanged.
+  Synthetic Weather/Breakdown prefixes and inherited receipts remain assumed probe inputs; this is
+  neither a reachable full-campaign trace nor production restore/privacy/hosting evidence.
+
+C3 closes as this bounded contract checkpoint. Next003D2 →004 → checkpoint B; parent003C/D and
+runtime005–025 remain open. Author verification only; independent review budget remains8of8.

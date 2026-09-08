@@ -1,0 +1,28 @@
+{
+  "contract": "combat-snapshot-composition-v1",
+  "objects": {
+    "StageOrder": "contractVersion:int gameTurn:int operationStage:int firstSide:side secondSide:side",
+    "StageWeather": "contractVersion:int gameTurn:int operationStage:int determiningSide:side season:id firstDie:int secondDie:int kind:id scope:id locationDie:int? affectedAreas:id[] fuelWaterReductionSubjectCount:int restoredWellCount:int damagedGroundedAircraftCount:int",
+    "Header": "initiativeHolder:side operationStageOrders:StageOrder[] operationStageWeather:StageWeather[] commandReceipts:Receipt[]",
+    "CycleFrame": "kind:id authority:Authority authorityId:hash firstActingSide:side attackHistory:AttackHistory[] targetUses:TargetUse[]",
+    "SelectionArm": "kind:id boundary:Boundary control:Control",
+    "RoundArm": "kind:id base:Base preRoundSnapshotHash:hash round:RoundState",
+    "SettlementArm": "kind:id base:Base preRoundSnapshotHash:hash committed:RoundState result:ResultState",
+    "FullSnapshot": "contractVersion:int campaignId:id stateVersion:long rulesetHash:rawHash setup:Setup world:World initiativeHolder:side operationStageOrders:StageOrder[] operationStageWeather:StageWeather[] randomState:Random currentPosition:CurrentPosition reactionWindow:null breakdownFlow:Idle configuration:Config creationReceipt:CreationReceipt chroniclePrefix:hash cycleState:CycleFrame combatState:CombatArm commandReceipts:Receipt[]"
+  },
+  "armTags": {
+    "selection": "SelectionArm",
+    "round": "RoundArm",
+    "settlement": "SettlementArm"
+  },
+  "externalContracts": [
+    "combat-result-settlement-v1.schema.json"
+  ],
+  "creationReceiptAlias": "combat-authority-envelope-v1.schema.json:Receipt",
+  "limits": {
+    "bytes": 1048576,
+    "depth": 32,
+    "array": 512,
+    "worldCauses": 4096
+  }
+}

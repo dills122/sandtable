@@ -17,7 +17,11 @@ no actionable findings at that checkpoint. [003D1 sequence/cycle](../specs/comba
 is complete; [review7](../reviews/combat-sequence-review-7.md) returned Ready, no actionable findings
 (7of7 used). [003C2 Rules10/creation envelopes](../specs/combat-authority-envelope-v1.md) are complete
 for the creation cut. [003C3a selection/step control](../specs/combat-selection-steps-v1.md) is complete
-with author checks;003C3b sealed assignments are next.
+with author checks; [003C3b sealed round/commitment](../specs/combat-sealed-round-v1.md) is complete
+as a bounded authority fragment. [HOST-RSH-001](orleans-publication-feasibility.md) research is
+complete;003C3c [result/settlement](../specs/combat-result-settlement-v1.md) and
+[snapshot composition](../specs/combat-snapshot-composition-v1.md) are complete within the synthetic
+first-Combat contract profile;003D2 is next. Actual inherited history/runtime proof remains open.
 Parent003C/D/004 and the combined-contract gate remain open; the plan retains current review accounting.
 
 **Date:** 2026-08-25

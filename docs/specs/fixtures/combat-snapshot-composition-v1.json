@@ -1,0 +1,1066 @@
+{
+  "contract": "combat-snapshot-composition-v1",
+  "lineage": "Prospective full snapshots with independently supplied synthetic header/receipt history; not actual pre-Combat replay.",
+  "expected": {
+    "selectionCases": 5,
+    "roundCases": 4,
+    "resultCases": 8
+  },
+  "sourceHashes": {
+    "verify-combat-result-settlement-v1.py": "sha256:1f7dff5b87ce036c406562686f4dc1ce983a4a8dfa15b2401eae72a0d9879ffd",
+    "fixtures/combat-result-settlement-v1.json": "sha256:cc25c358c997e54dd61fe1d843db5e7385c4a85706c462b87badacb939ec71c2",
+    "verify-combat-sealed-round-v1.py": "sha256:497e295e71c4b4da43539ee9b6c30de6d33f409a2f14b6cc24d9030390525ae0",
+    "fixtures/combat-sealed-round-v1.json": "sha256:8832568d97d3bd7cfe0d8f5dcd875bed58ea401250c38a178afeb7b1662cef6e",
+    "verify-combat-selection-steps-v1.py": "sha256:dc037282f74c34246d350faebeea55e81677d27dd181de858b8270e4eaa73c86",
+    "fixtures/combat-selection-steps-v1.json": "sha256:151c8da5037dfd5fa921abf1f675ef1a10211f8b84a4e1fb385d6beb62b1d0de",
+    "../../tests/Cna.Core.Tests/Rules/Fixtures/cna-1979.1.weather-tables.v1.golden.json": "sha256:7f134b9c5dcc356d48a9dfc51976a166b60f02fa93e73b4c0ccfdd354380c182"
+  },
+  "goldenMethod": "Recorded regression bytes/digests after full-cut verification; no independent serializer parity. Two terminal full-byte vectors; every cut has size/digest.",
+  "frames": [
+    {
+      "case": "no-candidate",
+      "lane": "selection",
+      "cut": 0,
+      "bytes": 19953,
+      "hash": "sha256:b03bb166a857aa01363c851517e3538f29bfb5ec10b18b54668776f7ad660c4e"
+    },
+    {
+      "case": "no-candidate",
+      "lane": "selection",
+      "cut": 1,
+      "bytes": 20551,
+      "hash": "sha256:6bfefde66e3625c17e06c50a32624401034f928aac758805fd42a7774ff18cb0"
+    },
+    {
+      "case": "no-candidate",
+      "lane": "selection",
+      "cut": 2,
+      "bytes": 21198,
+      "hash": "sha256:5475e97feab8c2c3696f23bf13c3d0cc6d87a22b6c344f403cf6c470aad5a567"
+    },
+    {
+      "case": "no-candidate",
+      "lane": "selection",
+      "cut": 3,
+      "bytes": 21826,
+      "hash": "sha256:6e23f45d13b2f0c0b167661d066f09632100a0b458a701423b525f09ec55d7a3"
+    },
+    {
+      "case": "no-candidate",
+      "lane": "selection",
+      "cut": 4,
+      "bytes": 22515,
+      "hash": "sha256:b5615b6b525b0e9c3bb9455faf46027922cf8b347eb2e0c814e06142a4a4f544"
+    },
+    {
+      "case": "no-candidate",
+      "lane": "selection",
+      "cut": 5,
+      "bytes": 23162,
+      "hash": "sha256:e20c3c579788e975f73f6fb6208c7104039f501628da3bf234710139a843ed6e"
+    },
+    {
+      "case": "no-candidate",
+      "lane": "selection",
+      "cut": 6,
+      "bytes": 23809,
+      "hash": "sha256:3a3c26dc3bf58d759008eb487a1a20b08b83da31aa831294c1fc1ff8f60b4930"
+    },
+    {
+      "case": "no-candidate",
+      "lane": "selection",
+      "cut": 7,
+      "bytes": 24474,
+      "hash": "sha256:d922fe30b82bc71603b8679eae2a7286f1c9f9938c5dab0ad236b50eea243db0"
+    },
+    {
+      "case": "no-candidate",
+      "lane": "selection",
+      "cut": 8,
+      "bytes": 25115,
+      "hash": "sha256:f51e69992d5d72e7d0f7b9f24e6a1ad84f7fbe8514b968512f9f6dc97eac244a"
+    },
+    {
+      "case": "voluntary-pass",
+      "lane": "selection",
+      "cut": 0,
+      "bytes": 19953,
+      "hash": "sha256:dcee0a204163e64520565a7dbe04fa18a69366c9b94ef048a5281e8f2d82e091"
+    },
+    {
+      "case": "voluntary-pass",
+      "lane": "selection",
+      "cut": 1,
+      "bytes": 20915,
+      "hash": "sha256:2d934e97a66e61e1f0e5d32e7aa37c9e8aaa32a5378cbc095ed057bdc52f90f3"
+    },
+    {
+      "case": "voluntary-pass",
+      "lane": "selection",
+      "cut": 2,
+      "bytes": 21570,
+      "hash": "sha256:13b67886872c7e024ee44f15f8b0bdc023fed51baa825687aa130e18c2d2eddb"
+    },
+    {
+      "case": "voluntary-pass",
+      "lane": "selection",
+      "cut": 3,
+      "bytes": 22198,
+      "hash": "sha256:863ce19895075e206cdb5038b13e452d380286c78e719d3c014ec44bbd350e0d"
+    },
+    {
+      "case": "voluntary-pass",
+      "lane": "selection",
+      "cut": 4,
+      "bytes": 22887,
+      "hash": "sha256:3e8385b6ac2dedbdf2a649a3a6bb08d3864f7586f02dc3b1e8c5c146dc6cc554"
+    },
+    {
+      "case": "voluntary-pass",
+      "lane": "selection",
+      "cut": 5,
+      "bytes": 23534,
+      "hash": "sha256:40fc36a8293ddc6ef8c999ab8cd162946298e9bf88c0e1fa8b56c589e18f0b25"
+    },
+    {
+      "case": "voluntary-pass",
+      "lane": "selection",
+      "cut": 6,
+      "bytes": 24181,
+      "hash": "sha256:250f15379ad17ed499cab3d43bca1467429b445145cdda2b5fda1fe7d16ad24b"
+    },
+    {
+      "case": "voluntary-pass",
+      "lane": "selection",
+      "cut": 7,
+      "bytes": 24846,
+      "hash": "sha256:0198f1cf13f4be8fe846d6a9a611b56e4f3c5f528b12dadba14547e7d8d82b78"
+    },
+    {
+      "case": "voluntary-pass",
+      "lane": "selection",
+      "cut": 8,
+      "bytes": 25487,
+      "hash": "sha256:a80c57c9da0ac5d787fb559a8bae646174d0aac66565c760d0972e29ac966a30"
+    },
+    {
+      "case": "selection-expiry",
+      "lane": "selection",
+      "cut": 0,
+      "bytes": 19953,
+      "hash": "sha256:dcee0a204163e64520565a7dbe04fa18a69366c9b94ef048a5281e8f2d82e091"
+    },
+    {
+      "case": "selection-expiry",
+      "lane": "selection",
+      "cut": 1,
+      "bytes": 20915,
+      "hash": "sha256:2d934e97a66e61e1f0e5d32e7aa37c9e8aaa32a5378cbc095ed057bdc52f90f3"
+    },
+    {
+      "case": "selection-expiry",
+      "lane": "selection",
+      "cut": 2,
+      "bytes": 21575,
+      "hash": "sha256:ac1bde25989544adc89bf088e284ebfe25e64ed230b591e81c5eb675b3fbcdeb"
+    },
+    {
+      "case": "selection-expiry",
+      "lane": "selection",
+      "cut": 3,
+      "bytes": 22203,
+      "hash": "sha256:1f37fc4a920293463c12f372cb96945961cc7d08626ae9585a53ffd7c3ce1303"
+    },
+    {
+      "case": "selection-expiry",
+      "lane": "selection",
+      "cut": 4,
+      "bytes": 22892,
+      "hash": "sha256:9cfd66ab1ecd089942ff099f5f281ecd1e5c6381e4e8021e3134397bda83e807"
+    },
+    {
+      "case": "selection-expiry",
+      "lane": "selection",
+      "cut": 5,
+      "bytes": 23539,
+      "hash": "sha256:ede0daa3e11bdd6df2f76f15c2a0e5b5decdcf7e0ca129a2f0ae6fa4a5b73d25"
+    },
+    {
+      "case": "selection-expiry",
+      "lane": "selection",
+      "cut": 6,
+      "bytes": 24186,
+      "hash": "sha256:52a8aca89fab496f1321912d1e7b16765a3f88bb666b27060d1f8dd95c6eb3f2"
+    },
+    {
+      "case": "selection-expiry",
+      "lane": "selection",
+      "cut": 7,
+      "bytes": 24851,
+      "hash": "sha256:a843eea659137a949b85355b5f625ad7789a25687ac599aef3e5f42330557899"
+    },
+    {
+      "case": "selection-expiry",
+      "lane": "selection",
+      "cut": 8,
+      "bytes": 25492,
+      "hash": "sha256:93c9aba80cd2ffaa7ad700051d633fb1863255731161d9ccb086f52ce1e4fd1a"
+    },
+    {
+      "case": "accepted-decline",
+      "lane": "selection",
+      "cut": 0,
+      "bytes": 19953,
+      "hash": "sha256:dcee0a204163e64520565a7dbe04fa18a69366c9b94ef048a5281e8f2d82e091"
+    },
+    {
+      "case": "accepted-decline",
+      "lane": "selection",
+      "cut": 1,
+      "bytes": 20915,
+      "hash": "sha256:2d934e97a66e61e1f0e5d32e7aa37c9e8aaa32a5378cbc095ed057bdc52f90f3"
+    },
+    {
+      "case": "accepted-decline",
+      "lane": "selection",
+      "cut": 2,
+      "bytes": 22256,
+      "hash": "sha256:56323950272ea808b0a139b2b3a68b1a143a1c4dc93522776aa9a73b2c3599cc"
+    },
+    {
+      "case": "accepted-decline",
+      "lane": "selection",
+      "cut": 3,
+      "bytes": 22884,
+      "hash": "sha256:a7228c14417d802a4922f793fa1f8844704bd34a4934f118ac05aded7febb94c"
+    },
+    {
+      "case": "accepted-decline",
+      "lane": "selection",
+      "cut": 4,
+      "bytes": 23573,
+      "hash": "sha256:543dbb1215a9c61582e55095de9ecb714312e6030fb8b8956bf1ab3e3967a66c"
+    },
+    {
+      "case": "accepted-decline",
+      "lane": "selection",
+      "cut": 5,
+      "bytes": 24533,
+      "hash": "sha256:6c8ad4cc9ea9245297826cbd82adeed3565e574002282c4ad310ca3155e6fb39"
+    },
+    {
+      "case": "accepted-decline",
+      "lane": "selection",
+      "cut": 6,
+      "bytes": 25199,
+      "hash": "sha256:8fa34fccacb4b3bfde66777eae5dec11b805298cf295ba4d19b01521d65124b3"
+    },
+    {
+      "case": "accepted-decline",
+      "lane": "selection",
+      "cut": 7,
+      "bytes": 25846,
+      "hash": "sha256:da56f2e4573f6838e8dabfd16bdd3f3a4dffa198c41ff830f2a26af009864cfb"
+    },
+    {
+      "case": "rba-expiry",
+      "lane": "selection",
+      "cut": 0,
+      "bytes": 19953,
+      "hash": "sha256:dcee0a204163e64520565a7dbe04fa18a69366c9b94ef048a5281e8f2d82e091"
+    },
+    {
+      "case": "rba-expiry",
+      "lane": "selection",
+      "cut": 1,
+      "bytes": 20915,
+      "hash": "sha256:2d934e97a66e61e1f0e5d32e7aa37c9e8aaa32a5378cbc095ed057bdc52f90f3"
+    },
+    {
+      "case": "rba-expiry",
+      "lane": "selection",
+      "cut": 2,
+      "bytes": 22256,
+      "hash": "sha256:56323950272ea808b0a139b2b3a68b1a143a1c4dc93522776aa9a73b2c3599cc"
+    },
+    {
+      "case": "rba-expiry",
+      "lane": "selection",
+      "cut": 3,
+      "bytes": 22884,
+      "hash": "sha256:a7228c14417d802a4922f793fa1f8844704bd34a4934f118ac05aded7febb94c"
+    },
+    {
+      "case": "rba-expiry",
+      "lane": "selection",
+      "cut": 4,
+      "bytes": 23573,
+      "hash": "sha256:543dbb1215a9c61582e55095de9ecb714312e6030fb8b8956bf1ab3e3967a66c"
+    },
+    {
+      "case": "rba-expiry",
+      "lane": "selection",
+      "cut": 5,
+      "bytes": 24533,
+      "hash": "sha256:6c8ad4cc9ea9245297826cbd82adeed3565e574002282c4ad310ca3155e6fb39"
+    },
+    {
+      "case": "rba-expiry",
+      "lane": "selection",
+      "cut": 6,
+      "bytes": 25189,
+      "hash": "sha256:5951214c2ee45d148fb932cb75466e7cefa4a56bbe4e45f5cfdef6f2d812c1ca"
+    },
+    {
+      "case": "rba-expiry",
+      "lane": "selection",
+      "cut": 7,
+      "bytes": 25836,
+      "hash": "sha256:e4694618e0bcb8163d510c3e11806167d94955bc1d8aa5cb59f5bf4e468636be"
+    },
+    {
+      "case": "rba-expiry",
+      "lane": "selection",
+      "cut": 8,
+      "bytes": 26483,
+      "hash": "sha256:60792c4070e49e19e2f1befbf756dd338de0224512c1a72c7e805705a516c25e"
+    },
+    {
+      "case": "rba-expiry",
+      "lane": "selection",
+      "cut": 9,
+      "bytes": 27148,
+      "hash": "sha256:7e8be85fe64ba22ed91afcbc2dac2f437b7c420d99d5bae7923584b0707faf89"
+    },
+    {
+      "case": "rba-expiry",
+      "lane": "selection",
+      "cut": 10,
+      "bytes": 27789,
+      "hash": "sha256:5d606dd26c0c0842386600ab127278acab0361e794ae88f339056376269c91a8"
+    },
+    {
+      "case": "attacker-first",
+      "lane": "round",
+      "cut": 0,
+      "bytes": 30087,
+      "hash": "sha256:b4cf1d1ef8057419d0a8b33753a7e4c2ee61dee7174492bf258655e671a0b162"
+    },
+    {
+      "case": "attacker-first",
+      "lane": "round",
+      "cut": 1,
+      "bytes": 32026,
+      "hash": "sha256:87541b61bf73bf90ff84ed5059f1e570f2cbb386e200628d80ffd905c732d4c0"
+    },
+    {
+      "case": "attacker-first",
+      "lane": "round",
+      "cut": 2,
+      "bytes": 32676,
+      "hash": "sha256:95768c575e30fcf18dd206221fe738f68e9c88d1b704d1f7bbf9b8172db01e3a"
+    },
+    {
+      "case": "attacker-first",
+      "lane": "round",
+      "cut": 3,
+      "bytes": 33340,
+      "hash": "sha256:aaf8af24f180db58e3f27fcee38387dea329f065483ba264ac7878875e6d8cdb"
+    },
+    {
+      "case": "attacker-first",
+      "lane": "round",
+      "cut": 4,
+      "bytes": 33987,
+      "hash": "sha256:d9972ebc2848bc9eb5417aaafb8ef3b5c7221dfa8aa5f93012fe930c5fe45a58"
+    },
+    {
+      "case": "attacker-first",
+      "lane": "round",
+      "cut": 5,
+      "bytes": 34652,
+      "hash": "sha256:e67f7c03262013be25ba975c431883e8d0a9aad2503bda7903f14267e8166f1a"
+    },
+    {
+      "case": "attacker-first",
+      "lane": "round",
+      "cut": 6,
+      "bytes": 37047,
+      "hash": "sha256:17b1fb1479a0f7b0209c43e5f6abbc65f5e795ae737852cdfb1e7b2e1a42e57a"
+    },
+    {
+      "case": "defender-first",
+      "lane": "round",
+      "cut": 0,
+      "bytes": 30087,
+      "hash": "sha256:b4cf1d1ef8057419d0a8b33753a7e4c2ee61dee7174492bf258655e671a0b162"
+    },
+    {
+      "case": "defender-first",
+      "lane": "round",
+      "cut": 1,
+      "bytes": 32026,
+      "hash": "sha256:87541b61bf73bf90ff84ed5059f1e570f2cbb386e200628d80ffd905c732d4c0"
+    },
+    {
+      "case": "defender-first",
+      "lane": "round",
+      "cut": 2,
+      "bytes": 32692,
+      "hash": "sha256:3f891075bb865845577f4cc1300fccbe520ab882d188b3835bde8be08648f32b"
+    },
+    {
+      "case": "defender-first",
+      "lane": "round",
+      "cut": 3,
+      "bytes": 33340,
+      "hash": "sha256:e4e0187ec425ed84caaf6ef6da83aefc448117ac286004fe9d0cc430b2000307"
+    },
+    {
+      "case": "defender-first",
+      "lane": "round",
+      "cut": 4,
+      "bytes": 33987,
+      "hash": "sha256:750fa170a95b9cf95fc805b4dad1a9782252a9bbdaee0cac72bd04ef09ea19e2"
+    },
+    {
+      "case": "defender-first",
+      "lane": "round",
+      "cut": 5,
+      "bytes": 34652,
+      "hash": "sha256:b023240344598c2c0849c3e32daeb04e043e58384f8b235372785e2d2b6f7125"
+    },
+    {
+      "case": "defender-first",
+      "lane": "round",
+      "cut": 6,
+      "bytes": 37047,
+      "hash": "sha256:0e1bb0e80953b63740223663b938cab74c121cc25d7899e214179049cea67d98"
+    },
+    {
+      "case": "empty-expiry",
+      "lane": "round",
+      "cut": 0,
+      "bytes": 30087,
+      "hash": "sha256:b4cf1d1ef8057419d0a8b33753a7e4c2ee61dee7174492bf258655e671a0b162"
+    },
+    {
+      "case": "empty-expiry",
+      "lane": "round",
+      "cut": 1,
+      "bytes": 32026,
+      "hash": "sha256:87541b61bf73bf90ff84ed5059f1e570f2cbb386e200628d80ffd905c732d4c0"
+    },
+    {
+      "case": "empty-expiry",
+      "lane": "round",
+      "cut": 2,
+      "bytes": 32680,
+      "hash": "sha256:779051f6c53e1a08bf4c545fab262060945b8ae5ccf88971979d11176569362f"
+    },
+    {
+      "case": "empty-expiry",
+      "lane": "round",
+      "cut": 3,
+      "bytes": 33327,
+      "hash": "sha256:7243601a4b26acd8c27f539ea46c7328e13f6116e601f4b475ad7bc19e8c91a0"
+    },
+    {
+      "case": "empty-expiry",
+      "lane": "round",
+      "cut": 4,
+      "bytes": 33992,
+      "hash": "sha256:3ddd9a2ce90770fd8acbd7b4eca52682a9a6816f5bd3c1ab13ba6833bb4ad7f6"
+    },
+    {
+      "case": "empty-expiry",
+      "lane": "round",
+      "cut": 5,
+      "bytes": 34633,
+      "hash": "sha256:0c0633de239095fc3dda5b4a8a4e769788b7284440a126cdf5bfa2585125d524"
+    },
+    {
+      "case": "partial-expiry",
+      "lane": "round",
+      "cut": 0,
+      "bytes": 30087,
+      "hash": "sha256:b4cf1d1ef8057419d0a8b33753a7e4c2ee61dee7174492bf258655e671a0b162"
+    },
+    {
+      "case": "partial-expiry",
+      "lane": "round",
+      "cut": 1,
+      "bytes": 32026,
+      "hash": "sha256:87541b61bf73bf90ff84ed5059f1e570f2cbb386e200628d80ffd905c732d4c0"
+    },
+    {
+      "case": "partial-expiry",
+      "lane": "round",
+      "cut": 2,
+      "bytes": 32676,
+      "hash": "sha256:95768c575e30fcf18dd206221fe738f68e9c88d1b704d1f7bbf9b8172db01e3a"
+    },
+    {
+      "case": "partial-expiry",
+      "lane": "round",
+      "cut": 3,
+      "bytes": 33330,
+      "hash": "sha256:203c4f9f34e917212ccac815e184c34fde3d31209f4c4db1ebf4267a58222650"
+    },
+    {
+      "case": "partial-expiry",
+      "lane": "round",
+      "cut": 4,
+      "bytes": 33977,
+      "hash": "sha256:e245564f4b06eabd1d048508ef15338b9949c4fb38fec553e8ff9c40629010c6"
+    },
+    {
+      "case": "partial-expiry",
+      "lane": "round",
+      "cut": 5,
+      "bytes": 34642,
+      "hash": "sha256:8b86a07d3aa9bd6805f6b0a490c79c3ba760b076a99229231e0bd58d9ef720e7"
+    },
+    {
+      "case": "partial-expiry",
+      "lane": "round",
+      "cut": 6,
+      "bytes": 35283,
+      "hash": "sha256:f15cd7c4902638816d77e1d3d84cf30ed1fbba0b509a2ba53429da4477d92aec"
+    },
+    {
+      "case": "ordinary",
+      "lane": "settlement",
+      "cut": 0,
+      "bytes": 40900,
+      "hash": "sha256:bc4a66f4da8e171a5cb733d6629ab7adc9351922e99b3d083e8ef6ca2eba8bfc"
+    },
+    {
+      "case": "ordinary",
+      "lane": "settlement",
+      "cut": 1,
+      "bytes": 50445,
+      "hash": "sha256:faace1699ce64273db982e5c77c56ab2efd477b065840fa64bae3eb74adfb8e9"
+    },
+    {
+      "case": "ordinary",
+      "lane": "settlement",
+      "cut": 2,
+      "bytes": 51632,
+      "hash": "sha256:8ec0408dc70cd6a6e2a898e8c47f57d4598f3405c06bd3c6adfcb7d43a3ccf31"
+    },
+    {
+      "case": "ordinary",
+      "lane": "settlement",
+      "cut": 3,
+      "bytes": 54169,
+      "hash": "sha256:cfff3174e78be8c5d8d68656d396d768ca24706dc7ef81c6b5c4e28831178abf"
+    },
+    {
+      "case": "ordinary",
+      "lane": "settlement",
+      "cut": 4,
+      "bytes": 55518,
+      "hash": "sha256:4a2450e1746d035e9bccdd7dd4f7dfcf83a06bcfcf47da318b4c166c970bf1dd"
+    },
+    {
+      "case": "ordinary",
+      "lane": "settlement",
+      "cut": 5,
+      "bytes": 58038,
+      "hash": "sha256:7e737ac11eaafd58466098f2b46e63ca63856769c3de46a12b20fe1c67716e6d"
+    },
+    {
+      "case": "ordinary",
+      "lane": "settlement",
+      "cut": 6,
+      "bytes": 58691,
+      "hash": "sha256:6a80aab4ce87297483931df6caa29854b6149da8cb2ce54ae44c596c21f8aa51"
+    },
+    {
+      "case": "ordinary",
+      "lane": "settlement",
+      "cut": 7,
+      "bytes": 59321,
+      "hash": "sha256:28b1f6f56f17e9619d550c6b2cfc6285ead13413fac4c584565f0999f3bc21e6",
+      "canonicalUtf8": "{\"contractVersion\":12,\"campaignId\":\"rules-lab.combat-creation.1\",\"stateVersion\":40,\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"setup\":{\"schemaVersion\":7,\"setupId\":\"rules-lab.combat.close-assault.v1\",\"setupHash\":\"sha256:22495e26528c2f4db8335d3b4041194aef26295f30aab0e4e6f384ff17069848\",\"isSynthetic\":true,\"capabilityProfileId\":\"sandtable.capability.combat-cycle-infantry.v1\",\"initialGameTurn\":1,\"initialInitiative\":{\"kind\":\"predetermined\",\"holder\":\"axis\"},\"openingPreamble\":{\"contractVersion\":1,\"kind\":\"no-opening-naval-convoy-obligations\",\"sources\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"opening-preamble.no-naval-convoy-obligations.v1\"}]},\"weather\":{\"contractVersion\":1,\"kind\":\"no-immediate-weather-effect-subjects\",\"sources\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"weather.no-immediate-effect-subjects.v1\"}]},\"stageEntry\":{\"contractVersion\":1,\"gameTurn\":1,\"operationStage\":1,\"organization\":\"explicit-none\",\"navalConvoyArrival\":\"explicit-none\",\"fleetAssignment\":\"explicit-none\",\"fleetRepair\":\"explicit-none\",\"sources\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"stage-entry.no-obligations.v1\"}]},\"combatInitialization\":{\"contractVersion\":1,\"gameTurn\":1,\"operationStage\":1,\"capabilityPointsExpended\":{\"numerator\":0,\"denominator\":1},\"cohesionLevel\":0,\"reserveStatus\":\"none\",\"origin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:initial-ledger\"}]}},\"content\":{\"schemaVersion\":7,\"formatId\":\"sandtable.content-json.v6\",\"packId\":\"rules-lab.content.close-assault.v1\",\"rulesetId\":\"cna-1979.1\",\"hash\":\"sha256:ee4fde9638ceb61ec08612fe32f9ac81db05572aac5ca20941e402d2fed25847\",\"scenarioId\":\"close-assault-positive-v1\"},\"sources\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:setup\"}]},\"world\":{\"contractVersion\":7,\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"elements\":[{\"elementId\":\"axis-assault-battalion\",\"currentLocationId\":\"assault-west\",\"reserveStatus\":\"none\",\"operationalState\":{\"ledgerGameTurn\":1,\"ledgerOperationStage\":1,\"capabilityPointsExpended\":{\"numerator\":5,\"denominator\":1},\"cohesionLevel\":0,\"vehicleBreakdownState\":null,\"movementEnded\":null,\"initialLedgerOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:initial-ledger\"}]}},\"components\":[{\"componentId\":\"axis-assault-battalion.toe.infantry\",\"currentToe\":8,\"initialToeOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:toe.axis-assault-battalion.toe.infantry\"}]}}],\"sourceParentFormationId\":\"axis-assault-formation\",\"currentParentFormationId\":\"axis-assault-formation\",\"ammunition\":{\"points\":0,\"initialAmmunitionOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:ammo.axis-assault-battalion\"}]}},\"readiness\":{\"gameTurn\":1,\"operationStage\":1,\"waterStatus\":\"distributed-for-stage\",\"storesStatus\":\"distributed-for-stage\",\"pinned\":false,\"initialReadinessOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:readiness.axis-assault-battalion\"}]}}},{\"elementId\":\"commonwealth-assault-battalion\",\"currentLocationId\":\"assault-east\",\"reserveStatus\":\"none\",\"operationalState\":{\"ledgerGameTurn\":1,\"ledgerOperationStage\":1,\"capabilityPointsExpended\":{\"numerator\":3,\"denominator\":1},\"cohesionLevel\":0,\"vehicleBreakdownState\":null,\"movementEnded\":null,\"initialLedgerOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:initial-ledger\"}]}},\"components\":[{\"componentId\":\"commonwealth-assault-battalion.toe.infantry\",\"currentToe\":9,\"initialToeOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:toe.commonwealth-assault-battalion.toe.infantry\"}]}}],\"sourceParentFormationId\":\"commonwealth-assault-formation\",\"currentParentFormationId\":\"commonwealth-assault-formation\",\"ammunition\":{\"points\":0,\"initialAmmunitionOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:ammo.commonwealth-assault-battalion\"}]}},\"readiness\":{\"gameTurn\":1,\"operationStage\":1,\"waterStatus\":\"distributed-for-stage\",\"storesStatus\":\"distributed-for-stage\",\"pinned\":false,\"initialReadinessOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:readiness.commonwealth-assault-battalion\"}]}}}],\"representations\":[{\"representationId\":\"map-representation.0001\",\"currentLocationId\":\"assault-west\",\"bindingKind\":\"independent-element\",\"boundElementIds\":[\"axis-assault-battalion\"]},{\"representationId\":\"map-representation.0002\",\"currentLocationId\":\"assault-east\",\"bindingKind\":\"independent-element\",\"boundElementIds\":[\"commonwealth-assault-battalion\"]}],\"brokenVehicleLots\":[],\"cohesionCauses\":[],\"relationships\":[{\"relationId\":\"set.c02ba9ae1d19ae17989d08c4c3cc8f5e9a8040ac9d97ba06de932d86b30a39c8.relation\",\"creationReceiptId\":\"set.c02ba9ae1d19ae17989d08c4c3cc8f5e9a8040ac9d97ba06de932d86b30a39c8.relationships\",\"kind\":\"contact\",\"attacker\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"axis\",\"elementId\":\"axis-assault-battalion\"},\"defender\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"},\"gameTurn\":1,\"operationStage\":1,\"active\":true,\"endedByReceiptId\":null,\"endingCause\":null}],\"custodyLots\":[],\"guards\":[],\"replacementEntitlements\":[],\"futureObligations\":[],\"settlements\":[{\"settlementId\":\"set.c02ba9ae1d19ae17989d08c4c3cc8f5e9a8040ac9d97ba06de932d86b30a39c8\",\"commitmentId\":\"cmt.63f9e34245b1fd04766cbb64d68461193b20cdc59217a7fbf9b54652e82d9e7c\",\"resultId\":\"res.6fad776ca8a5d2662ef7779f20f205d4721b889c03f5ead4584e35156b441445\",\"gameTurn\":1,\"operationStage\":1,\"attacker\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"axis\",\"elementId\":\"axis-assault-battalion\"},\"defender\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"},\"preLossElements\":[{\"elementId\":\"axis-assault-battalion\",\"currentLocationId\":\"assault-west\",\"reserveStatus\":\"none\",\"operationalState\":{\"ledgerGameTurn\":1,\"ledgerOperationStage\":1,\"capabilityPointsExpended\":{\"numerator\":5,\"denominator\":1},\"cohesionLevel\":0,\"vehicleBreakdownState\":null,\"movementEnded\":null,\"initialLedgerOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:initial-ledger\"}]}},\"components\":[{\"componentId\":\"axis-assault-battalion.toe.infantry\",\"currentToe\":10,\"initialToeOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:toe.axis-assault-battalion.toe.infantry\"}]}}],\"sourceParentFormationId\":\"axis-assault-formation\",\"currentParentFormationId\":\"axis-assault-formation\",\"ammunition\":{\"points\":0,\"initialAmmunitionOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:ammo.axis-assault-battalion\"}]}},\"readiness\":{\"gameTurn\":1,\"operationStage\":1,\"waterStatus\":\"distributed-for-stage\",\"storesStatus\":\"distributed-for-stage\",\"pinned\":false,\"initialReadinessOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:readiness.axis-assault-battalion\"}]}}},{\"elementId\":\"commonwealth-assault-battalion\",\"currentLocationId\":\"assault-east\",\"reserveStatus\":\"none\",\"operationalState\":{\"ledgerGameTurn\":1,\"ledgerOperationStage\":1,\"capabilityPointsExpended\":{\"numerator\":3,\"denominator\":1},\"cohesionLevel\":0,\"vehicleBreakdownState\":null,\"movementEnded\":null,\"initialLedgerOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:initial-ledger\"}]}},\"components\":[{\"componentId\":\"commonwealth-assault-battalion.toe.infantry\",\"currentToe\":10,\"initialToeOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:toe.commonwealth-assault-battalion.toe.infantry\"}]}}],\"sourceParentFormationId\":\"commonwealth-assault-formation\",\"currentParentFormationId\":\"commonwealth-assault-formation\",\"ammunition\":{\"points\":0,\"initialAmmunitionOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:ammo.commonwealth-assault-battalion\"}]}},\"readiness\":{\"gameTurn\":1,\"operationStage\":1,\"waterStatus\":\"distributed-for-stage\",\"storesStatus\":\"distributed-for-stage\",\"pinned\":false,\"initialReadinessOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:readiness.commonwealth-assault-battalion\"}]}}}],\"result\":{\"differential\":-1,\"attackerCoordinate\":12,\"defenderCoordinate\":23,\"captureDie\":null,\"attackerPercent\":20,\"defenderPercent\":10,\"rawEngaged\":false,\"requiredRetreat\":0,\"capturedRole\":null,\"captureShare\":0},\"disposition\":{\"receiptId\":\"set.c02ba9ae1d19ae17989d08c4c3cc8f5e9a8040ac9d97ba06de932d86b30a39c8.disposition\",\"predecessorReceiptId\":\"res.6fad776ca8a5d2662ef7779f20f205d4721b889c03f5ead4584e35156b441445\",\"kind\":\"not-required\",\"requiredDistance\":0,\"plannedDistance\":0,\"unfulfilledDistance\":0,\"route\":[\"assault-east\"]},\"losses\":{\"receiptId\":\"set.c02ba9ae1d19ae17989d08c4c3cc8f5e9a8040ac9d97ba06de932d86b30a39c8.losses\",\"predecessorReceiptId\":\"set.c02ba9ae1d19ae17989d08c4c3cc8f5e9a8040ac9d97ba06de932d86b30a39c8.disposition\",\"roles\":[{\"role\":\"attacker\",\"component\":{\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"axis\",\"elementId\":\"axis-assault-battalion\"},\"componentId\":\"axis-assault-battalion.toe.infantry\"},\"committedToe\":10,\"tablePercent\":20,\"refusalPercent\":0,\"lossToe\":2,\"capturedToe\":0,\"otherLossToe\":2,\"remainingToe\":8,\"lossDp\":0},{\"role\":\"defender\",\"component\":{\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"},\"componentId\":\"commonwealth-assault-battalion.toe.infantry\"},\"committedToe\":10,\"tablePercent\":10,\"refusalPercent\":0,\"lossToe\":1,\"capturedToe\":0,\"otherLossToe\":1,\"remainingToe\":9,\"lossDp\":0}]},\"retreat\":{\"receiptId\":\"set.c02ba9ae1d19ae17989d08c4c3cc8f5e9a8040ac9d97ba06de932d86b30a39c8.retreat\",\"predecessorReceiptId\":\"set.c02ba9ae1d19ae17989d08c4c3cc8f5e9a8040ac9d97ba06de932d86b30a39c8.losses\",\"kind\":\"not-required\",\"route\":[\"assault-east\"],\"completedDistance\":0,\"beforeCp\":{\"numerator\":3,\"denominator\":1},\"afterCp\":{\"numerator\":3,\"denominator\":1},\"excessCpDp\":0,\"attackerVictoryRp\":0},\"custody\":null,\"relationships\":{\"receiptId\":\"set.c02ba9ae1d19ae17989d08c4c3cc8f5e9a8040ac9d97ba06de932d86b30a39c8.relationships\",\"predecessorReceiptId\":\"set.c02ba9ae1d19ae17989d08c4c3cc8f5e9a8040ac9d97ba06de932d86b30a39c8.retreat\",\"relationshipId\":\"set.c02ba9ae1d19ae17989d08c4c3cc8f5e9a8040ac9d97ba06de932d86b30a39c8.relation\",\"kind\":\"contact\"}}]},\"initiativeHolder\":\"axis\",\"operationStageOrders\":[{\"contractVersion\":1,\"gameTurn\":1,\"operationStage\":1,\"firstSide\":\"axis\",\"secondSide\":\"commonwealth\"}],\"operationStageWeather\":[{\"contractVersion\":1,\"gameTurn\":1,\"operationStage\":1,\"determiningSide\":\"axis\",\"season\":\"fall\",\"firstDie\":1,\"secondDie\":1,\"kind\":\"normal\",\"scope\":\"none\",\"locationDie\":null,\"affectedAreas\":[],\"fuelWaterReductionSubjectCount\":0,\"restoredWellCount\":0,\"damagedGroundedAircraftCount\":0}],\"randomState\":{\"contractVersion\":1,\"algorithmId\":\"sandtable.sha256-counter.v1\",\"seed\":0,\"nextByteCursor\":8},\"currentPosition\":{\"kind\":\"sequence\",\"sequencePosition\":{\"contractVersion\":5,\"positionId\":\"land.position.operation-1.first-player.movement-and-combat.reserve-release\",\"gameTurn\":1,\"operationStage\":1,\"stageId\":\"land.stage.operation\",\"phaseId\":\"land.phase.movement-and-combat\",\"segmentId\":\"land.segment.reserve-release\",\"stepId\":null,\"actorRole\":\"first-acting-side\",\"activeSide\":\"axis\",\"sources\":[{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"5.2\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"7.11\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"7.14\"}]}},\"reactionWindow\":null,\"breakdownFlow\":{\"kind\":\"idle\"},\"configuration\":{\"schemaVersion\":1,\"configId\":\"rules-lab.combat-timing.v1\",\"profileId\":\"sandtable.capability.combat-cycle-infantry.v1\",\"rulesInputHash\":\"sha256:fafb24792c9e3f774c368f85c02d1d068f84c9c78e67bf8324723257d0f13029\",\"codecId\":\"sandtable.combat.inputs-json.v1\",\"timingPolicyId\":\"sandtable.combat.fixed-deadline.v1\",\"windows\":[{\"kind\":\"custody\",\"decisionBudgetMilliseconds\":30000,\"fallback\":\"leave-unguarded\"},{\"kind\":\"cycle-control\",\"decisionBudgetMilliseconds\":30000,\"fallback\":\"finish-phase\"},{\"kind\":\"force-assignment\",\"decisionBudgetMilliseconds\":30000,\"fallback\":\"cancel-incomplete-voluntary-round\"},{\"kind\":\"rba\",\"decisionBudgetMilliseconds\":30000,\"fallback\":\"cancel-without-decline\"},{\"kind\":\"reserve-release\",\"decisionBudgetMilliseconds\":30000,\"fallback\":\"convert-unresolved-i-retain-ii\"},{\"kind\":\"retreat\",\"decisionBudgetMilliseconds\":30000,\"fallback\":\"refuse-retreat\"},{\"kind\":\"selection\",\"decisionBudgetMilliseconds\":30000,\"fallback\":\"no-selection\"}]},\"creationReceipt\":{\"contractVersion\":1,\"creationRequest\":{\"contractVersion\":1,\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"setupId\":\"rules-lab.combat.close-assault.v1\",\"setupHash\":\"sha256:22495e26528c2f4db8335d3b4041194aef26295f30aab0e4e6f384ff17069848\",\"content\":{\"schemaVersion\":7,\"formatId\":\"sandtable.content-json.v6\",\"packId\":\"rules-lab.content.close-assault.v1\",\"rulesetId\":\"cna-1979.1\",\"hash\":\"sha256:ee4fde9638ceb61ec08612fe32f9ac81db05572aac5ca20941e402d2fed25847\",\"scenarioId\":\"close-assault-positive-v1\"},\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"randomState\":{\"contractVersion\":1,\"algorithmId\":\"sandtable.sha256-counter.v1\",\"seed\":0,\"nextByteCursor\":0}},\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"creationEventHash\":\"sha256:a36c8abd3864442c62d13c9beb41af2c88048534b31bd47bc82a897c808bf798\"},\"chroniclePrefix\":\"sha256:f5424215cecced607de0feb474bc7b576aca901fded28d8e8dae27f72c2a11bc\",\"cycleState\":{\"kind\":\"combat-boundary\",\"authority\":{\"contractVersion\":1,\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"setupId\":\"rules-lab.combat.close-assault.v1\",\"setupHash\":\"sha256:22495e26528c2f4db8335d3b4041194aef26295f30aab0e4e6f384ff17069848\",\"contentPackId\":\"rules-lab.content.close-assault.v1\",\"contentHash\":\"sha256:ee4fde9638ceb61ec08612fe32f9ac81db05572aac5ca20941e402d2fed25847\",\"scenarioId\":\"close-assault-positive-v1\",\"gameTurn\":1,\"operationStage\":1,\"playerPhaseSlot\":\"first-acting-side\",\"actingSide\":\"axis\",\"ordinal\":1,\"openedAuthorityVersion\":12,\"openingPrefix\":\"sha256:07ef36fec645c632463dcb1e7446b1d914cc8f91506bac968c2bac84a55def45\",\"admittedPolicyBundleDigest\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\"},\"authorityId\":\"sha256:d886d82a4a80cb59acd158b7040135ade9a82e910339d4282ef6793559940f1d\",\"firstActingSide\":\"axis\",\"attackHistory\":[{\"commitmentId\":\"cmt.63f9e34245b1fd04766cbb64d68461193b20cdc59217a7fbf9b54652e82d9e7c\",\"cycleId\":\"sha256:d886d82a4a80cb59acd158b7040135ade9a82e910339d4282ef6793559940f1d\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"attacker\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"axis\",\"elementId\":\"axis-assault-battalion\"},\"defender\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"},\"targetLocationId\":\"assault-east\",\"gameTurn\":1,\"operationStage\":1}],\"targetUses\":[{\"commitmentId\":\"cmt.63f9e34245b1fd04766cbb64d68461193b20cdc59217a7fbf9b54652e82d9e7c\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"targetLocationId\":\"assault-east\"}]},\"combatState\":{\"kind\":\"settlement\",\"base\":{\"contractVersion\":1,\"boundary\":{\"contractVersion\":1,\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"cycle\":{\"contractVersion\":1,\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"setupId\":\"rules-lab.combat.close-assault.v1\",\"setupHash\":\"sha256:22495e26528c2f4db8335d3b4041194aef26295f30aab0e4e6f384ff17069848\",\"contentPackId\":\"rules-lab.content.close-assault.v1\",\"contentHash\":\"sha256:ee4fde9638ceb61ec08612fe32f9ac81db05572aac5ca20941e402d2fed25847\",\"scenarioId\":\"close-assault-positive-v1\",\"gameTurn\":1,\"operationStage\":1,\"playerPhaseSlot\":\"first-acting-side\",\"actingSide\":\"axis\",\"ordinal\":1,\"openedAuthorityVersion\":12,\"openingPrefix\":\"sha256:07ef36fec645c632463dcb1e7446b1d914cc8f91506bac968c2bac84a55def45\",\"admittedPolicyBundleDigest\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\"},\"firstActingSide\":\"axis\",\"priorVersion\":20,\"priorPrefix\":\"sha256:7931527dd7d964dc4436798d8c2467424fdaee54909f6a95080ddff57d31ec5f\",\"completedBreakdownReceipt\":\"sha256:ee951d526e35d25703a47c62aacaa093aaffa76494e6a3e15f08ac4c69c182cc\",\"position\":{\"contractVersion\":5,\"positionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.position-determination\",\"gameTurn\":1,\"operationStage\":1,\"stageId\":\"land.stage.operation\",\"phaseId\":\"land.phase.movement-and-combat\",\"segmentId\":\"land.segment.combat\",\"stepId\":\"land.step.position-determination\",\"actorRole\":\"first-acting-side\",\"activeSide\":\"axis\",\"sources\":[{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"5.2\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"7.11\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"7.14\"}]},\"world\":{\"contractVersion\":7,\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"elements\":[{\"elementId\":\"axis-assault-battalion\",\"currentLocationId\":\"assault-west\",\"reserveStatus\":\"none\",\"operationalState\":{\"ledgerGameTurn\":1,\"ledgerOperationStage\":1,\"capabilityPointsExpended\":{\"numerator\":0,\"denominator\":1},\"cohesionLevel\":0,\"vehicleBreakdownState\":null,\"movementEnded\":null,\"initialLedgerOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:initial-ledger\"}]}},\"components\":[{\"componentId\":\"axis-assault-battalion.toe.infantry\",\"currentToe\":10,\"initialToeOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:toe.axis-assault-battalion.toe.infantry\"}]}}],\"sourceParentFormationId\":\"axis-assault-formation\",\"currentParentFormationId\":\"axis-assault-formation\",\"ammunition\":{\"points\":10,\"initialAmmunitionOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:ammo.axis-assault-battalion\"}]}},\"readiness\":{\"gameTurn\":1,\"operationStage\":1,\"waterStatus\":\"distributed-for-stage\",\"storesStatus\":\"distributed-for-stage\",\"pinned\":false,\"initialReadinessOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:readiness.axis-assault-battalion\"}]}}},{\"elementId\":\"commonwealth-assault-battalion\",\"currentLocationId\":\"assault-east\",\"reserveStatus\":\"none\",\"operationalState\":{\"ledgerGameTurn\":1,\"ledgerOperationStage\":1,\"capabilityPointsExpended\":{\"numerator\":0,\"denominator\":1},\"cohesionLevel\":0,\"vehicleBreakdownState\":null,\"movementEnded\":null,\"initialLedgerOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:initial-ledger\"}]}},\"components\":[{\"componentId\":\"commonwealth-assault-battalion.toe.infantry\",\"currentToe\":10,\"initialToeOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:toe.commonwealth-assault-battalion.toe.infantry\"}]}}],\"sourceParentFormationId\":\"commonwealth-assault-formation\",\"currentParentFormationId\":\"commonwealth-assault-formation\",\"ammunition\":{\"points\":10,\"initialAmmunitionOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:ammo.commonwealth-assault-battalion\"}]}},\"readiness\":{\"gameTurn\":1,\"operationStage\":1,\"waterStatus\":\"distributed-for-stage\",\"storesStatus\":\"distributed-for-stage\",\"pinned\":false,\"initialReadinessOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:readiness.commonwealth-assault-battalion\"}]}}}],\"representations\":[{\"representationId\":\"map-representation.0001\",\"currentLocationId\":\"assault-west\",\"bindingKind\":\"independent-element\",\"boundElementIds\":[\"axis-assault-battalion\"]},{\"representationId\":\"map-representation.0002\",\"currentLocationId\":\"assault-east\",\"bindingKind\":\"independent-element\",\"boundElementIds\":[\"commonwealth-assault-battalion\"]}],\"brokenVehicleLots\":[],\"cohesionCauses\":[],\"relationships\":[],\"custodyLots\":[],\"guards\":[],\"replacementEntitlements\":[],\"futureObligations\":[],\"settlements\":[]},\"randomState\":{\"contractVersion\":1,\"algorithmId\":\"sandtable.sha256-counter.v1\",\"seed\":0,\"nextByteCursor\":0},\"weather\":{\"gameTurn\":1,\"operationStage\":1,\"attackerKind\":\"normal\",\"defenderKind\":\"normal\",\"weatherReceiptHash\":\"sha256:7f0803dc1ca205e6a8166969883519d733da68641abef8bbebf205aeac7b76f0\"},\"breakdownFlow\":{\"kind\":\"idle\"},\"reactionWindow\":null},\"steps\":{\"contractVersion\":1,\"boundaryHash\":\"sha256:7ab9050b1bebc05b936df2988a8a9240abedc0e83aa5313e9aed8205038cf780\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"stateVersion\":27,\"prefix\":\"sha256:0556affbe3d2f53fd9412b7c18414279d7ee2e15f6fde19138079e888940c26e\",\"stepIndex\":3,\"selectionOutcome\":\"selected\",\"selection\":{\"attacker\":{\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"axis\",\"elementId\":\"axis-assault-battalion\"},\"representationId\":\"map-representation.0001\",\"locationId\":\"assault-west\",\"componentIds\":[\"axis-assault-battalion.toe.infantry\"]},\"defender\":{\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"},\"representationId\":\"map-representation.0002\",\"locationId\":\"assault-east\",\"componentIds\":[\"commonwealth-assault-battalion.toe.infantry\"]},\"targetLocationId\":\"assault-east\",\"basis\":\"voluntary-adjacent\"},\"selectionReceiptId\":\"cmb.cc5e3b342dd4e56ae376c5cb89ebbab1aeb688d6acb1b415b62fc3da6dcba254\",\"declineReceiptId\":\"cmb.b7cb808791a685595f2bef94a2c490792ae4b9e4c1d77654eb6ee816a8d09bc7\",\"cancellationReceiptId\":null,\"selectionWindow\":{\"decisionId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822.selection\",\"owner\":\"axis\",\"timing\":{\"contractVersion\":1,\"configHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"kind\":\"selection\",\"decisionBudgetMilliseconds\":30000,\"openedAtUnixMilliseconds\":1000,\"deadlineUnixMilliseconds\":31000,\"highWaterUnixMilliseconds\":1001}},\"rbaWindow\":{\"decisionId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822.rba\",\"owner\":\"commonwealth\",\"timing\":{\"contractVersion\":1,\"configHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"kind\":\"rba\",\"decisionBudgetMilliseconds\":30000,\"openedAtUnixMilliseconds\":2000,\"deadlineUnixMilliseconds\":32000,\"highWaterUnixMilliseconds\":2001}},\"stepReceipts\":[\"cmb.909d7c3f017c2de88ab5cdf26b5a7c46a6ded85f611f5fecb591b3b6b7cd3fdd\",\"cmb.8200d84cc6fb197b2d23bae0ddffd7d5c31e2f464ac5a9f78c658a2d22e00cab\",\"cmb.1b5baa4c871f7e842072a20ca0933187c3394f2b5fe32c39619f79fbc63dc288\"],\"receipts\":[{\"commandHash\":\"sha256:81177879f8fe3c13a92ff1b98a5a2b9fd88e0bb06035439b832992bed36f8144\",\"eventHash\":\"sha256:d44810a94ad539ae381ae8ea53df1cdefc32a5a353c7ebcf32bf383647765eb2\",\"receiptId\":\"cmb.1a86ccdc32ef912d1ecd492206dec0b6110c92e1476d52d879a62d789f38ec10\",\"actor\":\"system\",\"stateVersion\":21},{\"commandHash\":\"sha256:ea8cff7b88f096026b535d376c9138ae550e89320f32894e3d5329a0fb715b05\",\"eventHash\":\"sha256:d2d9e3b76ca27693dd71324d979753b3839657bc85eb35d607a7f295df840848\",\"receiptId\":\"cmb.cc5e3b342dd4e56ae376c5cb89ebbab1aeb688d6acb1b415b62fc3da6dcba254\",\"actor\":\"axis\",\"stateVersion\":22},{\"commandHash\":\"sha256:ccd5fc3faa87d64da44309f62491b1aa601edd3f64a19db1658774040c6b3778\",\"eventHash\":\"sha256:3984975c8f99814cff1991e370acbf744396ae2cf3d4b18ef7231113df2d0cbb\",\"receiptId\":\"cmb.909d7c3f017c2de88ab5cdf26b5a7c46a6ded85f611f5fecb591b3b6b7cd3fdd\",\"actor\":\"system\",\"stateVersion\":23},{\"commandHash\":\"sha256:9cacf077466f4d186fe786961d2a3566ecef6c9ac2950c2d0e0e087f526cffd4\",\"eventHash\":\"sha256:d2cfed4c96ac4919ebbc2984cd4a0f4ce1351296b0fedc997796ab0cef780bce\",\"receiptId\":\"cmb.8200d84cc6fb197b2d23bae0ddffd7d5c31e2f464ac5a9f78c658a2d22e00cab\",\"actor\":\"system\",\"stateVersion\":24},{\"commandHash\":\"sha256:24c50c0654099ec154232d6e965e716513db824992323c9ccdd687c494005d64\",\"eventHash\":\"sha256:202afab07f674872eade448f1e6c2a8ca4fa29227f1b94a0f88d921aa0e60610\",\"receiptId\":\"cmb.16c11a39ef1e04fc9fe87c076f901c53acb794f95118ffeff72ab51b1c9573a7\",\"actor\":\"system\",\"stateVersion\":25},{\"commandHash\":\"sha256:ba6080966debe6e6ccd22beb7a7d7f3a077d8db793430baf4cf5fc1364e68b59\",\"eventHash\":\"sha256:2c8d9011bb56b56c03a54f814cf48426d7f1ba0ddefc2881086aaadb511368d1\",\"receiptId\":\"cmb.b7cb808791a685595f2bef94a2c490792ae4b9e4c1d77654eb6ee816a8d09bc7\",\"actor\":\"commonwealth\",\"stateVersion\":26},{\"commandHash\":\"sha256:e3dd342f298dbc9acc4203b80fab3ef0b879ff20cb2173f099d55f1ab1087501\",\"eventHash\":\"sha256:a9ee376b7e4b0870054d989ef1ebdcadc971943705c47924f4bfbd9313d3630f\",\"receiptId\":\"cmb.1b5baa4c871f7e842072a20ca0933187c3394f2b5fe32c39619f79fbc63dc288\",\"actor\":\"system\",\"stateVersion\":27}],\"closed\":false}},\"preRoundSnapshotHash\":\"sha256:da56f2e4573f6838e8dabfd16bdd3f3a4dffa198c41ff830f2a26af009864cfb\",\"committed\":{\"contractVersion\":1,\"baseHash\":\"sha256:414b50656f7eaa9615786c7f6ea45e6887cf71bb4cceb948e2708b5936a07147\",\"opportunityId\":\"opp.39ab18927df51fbf09927bc53f27c486ee7c7e2ada8253543602e48b5a32b908\",\"roundId\":\"rnd.a944d935e858978bc0969efcf5a4924e1ee05413d5e8414198cc227773a7b59f\",\"stateVersion\":33,\"prefix\":\"sha256:16eac521b31e2a1a09140a949bc296de7c459c0e4b6ee0257f58c0366fe8adcc\",\"stepIndex\":5,\"status\":\"committed\",\"openingReceiptId\":\"cmb.a068a47bab06cd6400bb27bad8a8c3dfe820d93e1f5172cabf0b935378f5cb25\",\"timing\":{\"contractVersion\":1,\"configHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"kind\":\"force-assignment\",\"decisionBudgetMilliseconds\":30000,\"openedAtUnixMilliseconds\":3000,\"deadlineUnixMilliseconds\":33000,\"highWaterUnixMilliseconds\":4001},\"slots\":[{\"role\":\"attacker\",\"owner\":\"axis\",\"slotId\":\"slt.9f16792a0e3ce4d867fee87a7e76940610dec5924823aefdd4f4001912ea63c3\",\"allocation\":{\"kind\":\"full-close-assault\",\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"axis\",\"elementId\":\"axis-assault-battalion\"},\"componentId\":\"axis-assault-battalion.toe.infantry\",\"committedToe\":10},\"sealedReceiptId\":\"cmb.a94f5c99ceff6103ea094371b447abf3affdd68a16bd228f6cb6c39d55e497a5\",\"sealedAt\":4000},{\"role\":\"defender\",\"owner\":\"commonwealth\",\"slotId\":\"slt.c1867f0a4ca506b719a7c7360d91985f9d50d0aab224532022e40bd8a934fdca\",\"allocation\":{\"kind\":\"full-close-assault\",\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"},\"componentId\":\"commonwealth-assault-battalion.toe.infantry\",\"committedToe\":10},\"sealedReceiptId\":\"cmb.6b3f08f8735e8d6d0f03fb46fcfd673ab1f6ae1b8c5963de6361a882eff62ab1\",\"sealedAt\":4001}],\"stepReceipts\":[\"cmb.909d7c3f017c2de88ab5cdf26b5a7c46a6ded85f611f5fecb591b3b6b7cd3fdd\",\"cmb.8200d84cc6fb197b2d23bae0ddffd7d5c31e2f464ac5a9f78c658a2d22e00cab\",\"cmb.1b5baa4c871f7e842072a20ca0933187c3394f2b5fe32c39619f79fbc63dc288\",\"cmb.e52270c432132131a2b18b33ebf3e28123d142c23c30f16524144bb96ac0742e\",\"cmb.065b4cb6436ae71e98f6d099995e12aea80da1a56e1903c5fdce7aa93bf3ef3e\"],\"world\":{\"contractVersion\":7,\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"elements\":[{\"elementId\":\"axis-assault-battalion\",\"currentLocationId\":\"assault-west\",\"reserveStatus\":\"none\",\"operationalState\":{\"ledgerGameTurn\":1,\"ledgerOperationStage\":1,\"capabilityPointsExpended\":{\"numerator\":5,\"denominator\":1},\"cohesionLevel\":0,\"vehicleBreakdownState\":null,\"movementEnded\":null,\"initialLedgerOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:initial-ledger\"}]}},\"components\":[{\"componentId\":\"axis-assault-battalion.toe.infantry\",\"currentToe\":10,\"initialToeOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:toe.axis-assault-battalion.toe.infantry\"}]}}],\"sourceParentFormationId\":\"axis-assault-formation\",\"currentParentFormationId\":\"axis-assault-formation\",\"ammunition\":{\"points\":0,\"initialAmmunitionOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:ammo.axis-assault-battalion\"}]}},\"readiness\":{\"gameTurn\":1,\"operationStage\":1,\"waterStatus\":\"distributed-for-stage\",\"storesStatus\":\"distributed-for-stage\",\"pinned\":false,\"initialReadinessOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:readiness.axis-assault-battalion\"}]}}},{\"elementId\":\"commonwealth-assault-battalion\",\"currentLocationId\":\"assault-east\",\"reserveStatus\":\"none\",\"operationalState\":{\"ledgerGameTurn\":1,\"ledgerOperationStage\":1,\"capabilityPointsExpended\":{\"numerator\":3,\"denominator\":1},\"cohesionLevel\":0,\"vehicleBreakdownState\":null,\"movementEnded\":null,\"initialLedgerOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:initial-ledger\"}]}},\"components\":[{\"componentId\":\"commonwealth-assault-battalion.toe.infantry\",\"currentToe\":10,\"initialToeOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:toe.commonwealth-assault-battalion.toe.infantry\"}]}}],\"sourceParentFormationId\":\"commonwealth-assault-formation\",\"currentParentFormationId\":\"commonwealth-assault-formation\",\"ammunition\":{\"points\":0,\"initialAmmunitionOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:ammo.commonwealth-assault-battalion\"}]}},\"readiness\":{\"gameTurn\":1,\"operationStage\":1,\"waterStatus\":\"distributed-for-stage\",\"storesStatus\":\"distributed-for-stage\",\"pinned\":false,\"initialReadinessOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:readiness.commonwealth-assault-battalion\"}]}}}],\"representations\":[{\"representationId\":\"map-representation.0001\",\"currentLocationId\":\"assault-west\",\"bindingKind\":\"independent-element\",\"boundElementIds\":[\"axis-assault-battalion\"]},{\"representationId\":\"map-representation.0002\",\"currentLocationId\":\"assault-east\",\"bindingKind\":\"independent-element\",\"boundElementIds\":[\"commonwealth-assault-battalion\"]}],\"brokenVehicleLots\":[],\"cohesionCauses\":[],\"relationships\":[],\"custodyLots\":[],\"guards\":[],\"replacementEntitlements\":[],\"futureObligations\":[],\"settlements\":[]},\"randomState\":{\"contractVersion\":1,\"algorithmId\":\"sandtable.sha256-counter.v1\",\"seed\":0,\"nextByteCursor\":0},\"attackHistory\":[{\"commitmentId\":\"cmt.63f9e34245b1fd04766cbb64d68461193b20cdc59217a7fbf9b54652e82d9e7c\",\"cycleId\":\"sha256:d886d82a4a80cb59acd158b7040135ade9a82e910339d4282ef6793559940f1d\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"attacker\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"axis\",\"elementId\":\"axis-assault-battalion\"},\"defender\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"},\"targetLocationId\":\"assault-east\",\"gameTurn\":1,\"operationStage\":1}],\"targetUses\":[{\"commitmentId\":\"cmt.63f9e34245b1fd04766cbb64d68461193b20cdc59217a7fbf9b54652e82d9e7c\",\"segmentId\":\"seg.f2802ad104916183383e00c2eafcc738a176f2a531da2d8f20496d4dfdacd822\",\"targetLocationId\":\"assault-east\"}],\"commitmentId\":\"cmt.63f9e34245b1fd04766cbb64d68461193b20cdc59217a7fbf9b54652e82d9e7c\",\"cancellationReceiptId\":null,\"receipts\":[{\"commandHash\":\"sha256:783a37c144cab4b416856e7643ba01b6fc4b7a5d4677b26dd4140b54078f7b90\",\"eventHash\":\"sha256:6ba29035df3241e33ef4915d09712362da09f5d894dfa4750d1f85bd7109c77c\",\"receiptId\":\"cmb.a068a47bab06cd6400bb27bad8a8c3dfe820d93e1f5172cabf0b935378f5cb25\",\"actor\":\"system\",\"stateVersion\":28},{\"commandHash\":\"sha256:f84d9ed6116f299d0bd6ab57a624ad7b6bf943498aeaaa4ef1f8a50d327f4979\",\"eventHash\":\"sha256:c92f2546aca97f555ee30659750c82a13de60a82a75b9d95eed7dae4b2fa4483\",\"receiptId\":\"cmb.a94f5c99ceff6103ea094371b447abf3affdd68a16bd228f6cb6c39d55e497a5\",\"actor\":\"axis\",\"stateVersion\":29},{\"commandHash\":\"sha256:cd362a1f1bcb68a49bca00253b837d6871137ac7d2e3be74c05bf24ba60a9c4e\",\"eventHash\":\"sha256:4dc95d679cebefebb93635a984f1b460bb787e313e6ce983b7347fe8917592b2\",\"receiptId\":\"cmb.6b3f08f8735e8d6d0f03fb46fcfd673ab1f6ae1b8c5963de6361a882eff62ab1\",\"actor\":\"commonwealth\",\"stateVersion\":30},{\"commandHash\":\"sha256:dd4beadc391d428a0a8e1af74476e4e49630f5549ed79da8c092a2d0319a656b\",\"eventHash\":\"sha256:7b91c3bf58618e545134b43b51a6b8a07ece159ad2dae3513616da3a4357ebbe\",\"receiptId\":\"cmb.e52270c432132131a2b18b33ebf3e28123d142c23c30f16524144bb96ac0742e\",\"actor\":\"system\",\"stateVersion\":31},{\"commandHash\":\"sha256:84a7367edb2378ec96d77af5c058691adeebf4ffa6fe3d61ac8cf29bf21d5367\",\"eventHash\":\"sha256:a180b3ea81041dafe1b8ff5e988bca805069568372439330d74e47187ff55a4b\",\"receiptId\":\"cmb.065b4cb6436ae71e98f6d099995e12aea80da1a56e1903c5fdce7aa93bf3ef3e\",\"actor\":\"system\",\"stateVersion\":32},{\"commandHash\":\"sha256:0ba48ca01dca37b1c70f7ec593526a57b49284d5772a421301983a3c1d488903\",\"eventHash\":\"sha256:601a54a8bbaacba5814f0dfc7fbe9a1aadc30dbb4caba92d476260897b70f87e\",\"receiptId\":\"cmb.b177f206a072cc0b6343decb788f949a608b62fa495f50cae8185306143e0131\",\"actor\":\"system\",\"stateVersion\":33}],\"closed\":false},\"result\":{\"contractVersion\":1,\"committedHash\":\"sha256:25c0bcaf83d38fa4f6adf316a136eed232fed7f3a425a113d0b39d872eeed7b8\",\"stateVersion\":40,\"prefix\":\"sha256:f5424215cecced607de0feb474bc7b576aca901fded28d8e8dae27f72c2a11bc\",\"status\":\"closed\",\"result\":{\"resultId\":\"res.6fad776ca8a5d2662ef7779f20f205d4721b889c03f5ead4584e35156b441445\",\"commitmentId\":\"cmt.63f9e34245b1fd04766cbb64d68461193b20cdc59217a7fbf9b54652e82d9e7c\",\"rulesInputHash\":\"sha256:fafb24792c9e3f774c368f85c02d1d068f84c9c78e67bf8324723257d0f13029\",\"procedureId\":\"sandtable.combat.role-ordered-d6.v1\",\"beforeRandomState\":{\"contractVersion\":1,\"algorithmId\":\"sandtable.sha256-counter.v1\",\"seed\":0,\"nextByteCursor\":0},\"afterRandomState\":{\"contractVersion\":1,\"algorithmId\":\"sandtable.sha256-counter.v1\",\"seed\":0,\"nextByteCursor\":8},\"draws\":[{\"purpose\":\"attacker.morale.tens\",\"beforeCursor\":0,\"afterCursor\":1,\"die\":6,\"consumed\":[131]},{\"purpose\":\"attacker.morale.ones\",\"beforeCursor\":1,\"afterCursor\":2,\"die\":6,\"consumed\":[17]},{\"purpose\":\"defender.morale.tens\",\"beforeCursor\":2,\"afterCursor\":3,\"die\":2,\"consumed\":[199]},{\"purpose\":\"defender.morale.ones\",\"beforeCursor\":3,\"afterCursor\":4,\"die\":4,\"consumed\":[231]},{\"purpose\":\"attacker.assault.tens\",\"beforeCursor\":4,\"afterCursor\":5,\"die\":1,\"consumed\":[138]},{\"purpose\":\"attacker.assault.ones\",\"beforeCursor\":5,\"afterCursor\":6,\"die\":2,\"consumed\":[175]},{\"purpose\":\"defender.assault.tens\",\"beforeCursor\":6,\"afterCursor\":7,\"die\":2,\"consumed\":[157]},{\"purpose\":\"defender.assault.ones\",\"beforeCursor\":7,\"afterCursor\":8,\"die\":3,\"consumed\":[230]}],\"attackerMoraleCoordinate\":66,\"defenderMoraleCoordinate\":24,\"attackerMorale\":-1,\"defenderMorale\":0,\"basicDifferential\":0,\"facts\":{\"differential\":-1,\"attackerCoordinate\":12,\"defenderCoordinate\":23,\"captureDie\":null,\"attackerPercent\":20,\"defenderPercent\":10,\"rawEngaged\":false,\"requiredRetreat\":0,\"capturedRole\":null,\"captureShare\":0}},\"settlementId\":\"set.c02ba9ae1d19ae17989d08c4c3cc8f5e9a8040ac9d97ba06de932d86b30a39c8\",\"window\":null,\"acceptedHighWater\":4001,\"world\":{\"contractVersion\":7,\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"elements\":[{\"elementId\":\"axis-assault-battalion\",\"currentLocationId\":\"assault-west\",\"reserveStatus\":\"none\",\"operationalState\":{\"ledgerGameTurn\":1,\"ledgerOperationStage\":1,\"capabilityPointsExpended\":{\"numerator\":5,\"denominator\":1},\"cohesionLevel\":0,\"vehicleBreakdownState\":null,\"movementEnded\":null,\"initialLedgerOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:initial-ledger\"}]}},\"components\":[{\"componentId\":\"axis-assault-battalion.toe.infantry\",\"currentToe\":8,\"initialToeOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:toe.axis-assault-battalion.toe.infantry\"}]}}],\"sourceParentFormationId\":\"axis-assault-formation\",\"currentParentFormationId\":\"axis-assault-formation\",\"ammunition\":{\"points\":0,\"initialAmmunitionOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:ammo.axis-assault-battalion\"}]}},\"readiness\":{\"gameTurn\":1,\"operationStage\":1,\"waterStatus\":\"distributed-for-stage\",\"storesStatus\":\"distributed-for-stage\",\"pinned\":false,\"initialReadinessOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:readiness.axis-assault-battalion\"}]}}},{\"elementId\":\"commonwealth-assault-battalion\",\"currentLocationId\":\"assault-east\",\"reserveStatus\":\"none\",\"operationalState\":{\"ledgerGameTurn\":1,\"ledgerOperationStage\":1,\"capabilityPointsExpended\":{\"numerator\":3,\"denominator\":1},\"cohesionLevel\":0,\"vehicleBreakdownState\":null,\"movementEnded\":null,\"initialLedgerOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:initial-ledger\"}]}},\"components\":[{\"componentId\":\"commonwealth-assault-battalion.toe.infantry\",\"currentToe\":9,\"initialToeOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:toe.commonwealth-assault-battalion.toe.infantry\"}]}}],\"sourceParentFormationId\":\"commonwealth-assault-formation\",\"currentParentFormationId\":\"commonwealth-assault-formation\",\"ammunition\":{\"points\":0,\"initialAmmunitionOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:ammo.commonwealth-assault-battalion\"}]}},\"readiness\":{\"gameTurn\":1,\"operationStage\":1,\"waterStatus\":\"distributed-for-stage\",\"storesStatus\":\"distributed-for-stage\",\"pinned\":false,\"initialReadinessOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:readiness.commonwealth-assault-battalion\"}]}}}],\"representations\":[{\"representationId\":\"map-representation.0001\",\"currentLocationId\":\"assault-west\",\"bindingKind\":\"independent-element\",\"boundElementIds\":[\"axis-assault-battalion\"]},{\"representationId\":\"map-representation.0002\",\"currentLocationId\":\"assault-east\",\"bindingKind\":\"independent-element\",\"boundElementIds\":[\"commonwealth-assault-battalion\"]}],\"brokenVehicleLots\":[],\"cohesionCauses\":[],\"relationships\":[{\"relationId\":\"set.c02ba9ae1d19ae17989d08c4c3cc8f5e9a8040ac9d97ba06de932d86b30a39c8.relation\",\"creationReceiptId\":\"set.c02ba9ae1d19ae17989d08c4c3cc8f5e9a8040ac9d97ba06de932d86b30a39c8.relationships\",\"kind\":\"contact\",\"attacker\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"axis\",\"elementId\":\"axis-assault-battalion\"},\"defender\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"},\"gameTurn\":1,\"operationStage\":1,\"active\":true,\"endedByReceiptId\":null,\"endingCause\":null}],\"custodyLots\":[],\"guards\":[],\"replacementEntitlements\":[],\"futureObligations\":[],\"settlements\":[{\"settlementId\":\"set.c02ba9ae1d19ae17989d08c4c3cc8f5e9a8040ac9d97ba06de932d86b30a39c8\",\"commitmentId\":\"cmt.63f9e34245b1fd04766cbb64d68461193b20cdc59217a7fbf9b54652e82d9e7c\",\"resultId\":\"res.6fad776ca8a5d2662ef7779f20f205d4721b889c03f5ead4584e35156b441445\",\"gameTurn\":1,\"operationStage\":1,\"attacker\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"axis\",\"elementId\":\"axis-assault-battalion\"},\"defender\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"},\"preLossElements\":[{\"elementId\":\"axis-assault-battalion\",\"currentLocationId\":\"assault-west\",\"reserveStatus\":\"none\",\"operationalState\":{\"ledgerGameTurn\":1,\"ledgerOperationStage\":1,\"capabilityPointsExpended\":{\"numerator\":5,\"denominator\":1},\"cohesionLevel\":0,\"vehicleBreakdownState\":null,\"movementEnded\":null,\"initialLedgerOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:initial-ledger\"}]}},\"components\":[{\"componentId\":\"axis-assault-battalion.toe.infantry\",\"currentToe\":10,\"initialToeOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:toe.axis-assault-battalion.toe.infantry\"}]}}],\"sourceParentFormationId\":\"axis-assault-formation\",\"currentParentFormationId\":\"axis-assault-formation\",\"ammunition\":{\"points\":0,\"initialAmmunitionOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:ammo.axis-assault-battalion\"}]}},\"readiness\":{\"gameTurn\":1,\"operationStage\":1,\"waterStatus\":\"distributed-for-stage\",\"storesStatus\":\"distributed-for-stage\",\"pinned\":false,\"initialReadinessOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:readiness.axis-assault-battalion\"}]}}},{\"elementId\":\"commonwealth-assault-battalion\",\"currentLocationId\":\"assault-east\",\"reserveStatus\":\"none\",\"operationalState\":{\"ledgerGameTurn\":1,\"ledgerOperationStage\":1,\"capabilityPointsExpended\":{\"numerator\":3,\"denominator\":1},\"cohesionLevel\":0,\"vehicleBreakdownState\":null,\"movementEnded\":null,\"initialLedgerOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:initial-ledger\"}]}},\"components\":[{\"componentId\":\"commonwealth-assault-battalion.toe.infantry\",\"currentToe\":10,\"initialToeOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:toe.commonwealth-assault-battalion.toe.infantry\"}]}}],\"sourceParentFormationId\":\"commonwealth-assault-formation\",\"currentParentFormationId\":\"commonwealth-assault-formation\",\"ammunition\":{\"points\":0,\"initialAmmunitionOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:ammo.commonwealth-assault-battalion\"}]}},\"readiness\":{\"gameTurn\":1,\"operationStage\":1,\"waterStatus\":\"distributed-for-stage\",\"storesStatus\":\"distributed-for-stage\",\"pinned\":false,\"initialReadinessOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:readiness.commonwealth-assault-battalion\"}]}}}],\"result\":{\"differential\":-1,\"attackerCoordinate\":12,\"defenderCoordinate\":23,\"captureDie\":null,\"attackerPercent\":20,\"defenderPercent\":10,\"rawEngaged\":false,\"requiredRetreat\":0,\"capturedRole\":null,\"captureShare\":0},\"disposition\":{\"receiptId\":\"set.c02ba9ae1d19ae17989d08c4c3cc8f5e9a8040ac9d97ba06de932d86b30a39c8.disposition\",\"predecessorReceiptId\":\"res.6fad776ca8a5d2662ef7779f20f205d4721b889c03f5ead4584e35156b441445\",\"kind\":\"not-required\",\"requiredDistance\":0,\"plannedDistance\":0,\"unfulfilledDistance\":0,\"route\":[\"assault-east\"]},\"losses\":{\"receiptId\":\"set.c02ba9ae1d19ae17989d08c4c3cc8f5e9a8040ac9d97ba06de932d86b30a39c8.losses\",\"predecessorReceiptId\":\"set.c02ba9ae1d19ae17989d08c4c3cc8f5e9a8040ac9d97ba06de932d86b30a39c8.disposition\",\"roles\":[{\"role\":\"attacker\",\"component\":{\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"axis\",\"elementId\":\"axis-assault-battalion\"},\"componentId\":\"axis-assault-battalion.toe.infantry\"},\"committedToe\":10,\"tablePercent\":20,\"refusalPercent\":0,\"lossToe\":2,\"capturedToe\":0,\"otherLossToe\":2,\"remainingToe\":8,\"lossDp\":0},{\"role\":\"defender\",\"component\":{\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"},\"componentId\":\"commonwealth-assault-battalion.toe.infantry\"},\"committedToe\":10,\"tablePercent\":10,\"refusalPercent\":0,\"lossToe\":1,\"capturedToe\":0,\"otherLossToe\":1,\"remainingToe\":9,\"lossDp\":0}]},\"retreat\":{\"receiptId\":\"set.c02ba9ae1d19ae17989d08c4c3cc8f5e9a8040ac9d97ba06de932d86b30a39c8.retreat\",\"predecessorReceiptId\":\"set.c02ba9ae1d19ae17989d08c4c3cc8f5e9a8040ac9d97ba06de932d86b30a39c8.losses\",\"kind\":\"not-required\",\"route\":[\"assault-east\"],\"completedDistance\":0,\"beforeCp\":{\"numerator\":3,\"denominator\":1},\"afterCp\":{\"numerator\":3,\"denominator\":1},\"excessCpDp\":0,\"attackerVictoryRp\":0},\"custody\":null,\"relationships\":{\"receiptId\":\"set.c02ba9ae1d19ae17989d08c4c3cc8f5e9a8040ac9d97ba06de932d86b30a39c8.relationships\",\"predecessorReceiptId\":\"set.c02ba9ae1d19ae17989d08c4c3cc8f5e9a8040ac9d97ba06de932d86b30a39c8.retreat\",\"relationshipId\":\"set.c02ba9ae1d19ae17989d08c4c3cc8f5e9a8040ac9d97ba06de932d86b30a39c8.relation\",\"kind\":\"contact\"}}]},\"randomState\":{\"contractVersion\":1,\"algorithmId\":\"sandtable.sha256-counter.v1\",\"seed\":0,\"nextByteCursor\":8},\"roundClosureReceiptId\":\"cmb.1d9ea13bb1e8d1f0da9333887429a7349be9a9f6ddc00685860a3f44125e14e0\",\"caCompletionReceiptId\":\"cmb.f523f7ed22834b04e58a2d597a1cbb8e62b0eab0ec9427e3634de59c4fa03447\",\"receipts\":[{\"commandHash\":\"sha256:03ed24032af4ef7e72a5672f8fef9e97df04736864bfa277d42212628fc168d3\",\"eventHash\":\"sha256:0be9eedd3cc6298e27dae918fc51bc63ce3146e2e042ea6163b71b24913fb884\",\"receiptId\":\"cmb.11bc31d04bbe0e0a197b8ce38a3cc31f419ecb63d1083a2fba7a44a78eccdfe3\",\"actor\":\"system\",\"stateVersion\":34},{\"commandHash\":\"sha256:3f1c69558b13a4ed8f42198538439e337d81b9125f34653c45c15f8052a72ad8\",\"eventHash\":\"sha256:0013e3472ec0349012b5ca7cff81577b56f7f7a427d210a2918e872f79c73273\",\"receiptId\":\"cmb.edb33f5f4983da8b8f0ad7c06bf5e3a322faa6e178513942a01ef93b8f21fe03\",\"actor\":\"system\",\"stateVersion\":35},{\"commandHash\":\"sha256:8937bdcf1bbffc37cef152ddf87fa8719902dba0851412a8dc4a0a510cf198c9\",\"eventHash\":\"sha256:d1c18a06235a133a85d9a1301f46a61839a48e3d256d20b4e56a01c55f9d6d68\",\"receiptId\":\"cmb.8cc41bf88e3f1a1dff900cbcaa2f74ded953ae4a66a5cc3423ca4c98064b5895\",\"actor\":\"system\",\"stateVersion\":36},{\"commandHash\":\"sha256:4c987efbdbcc23e379063456491617b42cfd65ff48bb790585a25ceaea291da8\",\"eventHash\":\"sha256:4b142442ef9fc54f773b2dd24e9a4edce2702c4c74a1f09aeecdc7a53e93e34a\",\"receiptId\":\"cmb.73b46b45f80cf5e4122cc91e5aca13d7f7f0760658f0d615a6c9d68e3efc5855\",\"actor\":\"system\",\"stateVersion\":37},{\"commandHash\":\"sha256:3170462068f1dee576abfa9f51609935f46109d1c083ef7ef12cbab43d84f796\",\"eventHash\":\"sha256:54ef85d4e95ee43e306bc17edeadf08775754d951e6de462382ffe81997b6fed\",\"receiptId\":\"cmb.437dd526c0cb0ecb25bbbb13390bc18e3aec4b9738f010da2fd2bf8d56325a86\",\"actor\":\"system\",\"stateVersion\":38},{\"commandHash\":\"sha256:2bdc9baf9e695a1acf1bb18ba33ba32b465bd7baebb024f3b0c69427f3d2b6c6\",\"eventHash\":\"sha256:cc85957dc7e6b7c5c5d6015efcb5967529f9aecd9a8c3dbfbbb43e4428c9fae7\",\"receiptId\":\"cmb.1d9ea13bb1e8d1f0da9333887429a7349be9a9f6ddc00685860a3f44125e14e0\",\"actor\":\"system\",\"stateVersion\":39},{\"commandHash\":\"sha256:1a3205b0c4e60ef757b7f2e1a88d1821c9b0024bc283d5481e21237f3b6c62f1\",\"eventHash\":\"sha256:3cba6814173ad3227a6a8aab75f2fa904f584a03f577ace5615ca31ead6de2f0\",\"receiptId\":\"cmb.f523f7ed22834b04e58a2d597a1cbb8e62b0eab0ec9427e3634de59c4fa03447\",\"actor\":\"system\",\"stateVersion\":40}],\"closed\":true}},\"commandReceipts\":[{\"commandHash\":\"sha256:28810771a9b26e8f6582f63ace0c916edf45f9087167a1ed890fae4c92261479\",\"eventHash\":\"sha256:46d0a7bd3a2d675ec9d72d89143bdcc0a26ca2c7df950d02e92347a0d82ba723\",\"receiptId\":\"probe.receipt.2\",\"actor\":\"system\",\"stateVersion\":2},{\"commandHash\":\"sha256:cf6d49b0a192d0bf3be5ec1e71d3b0d00f83392615f8bf56881fc305e7801362\",\"eventHash\":\"sha256:f567df06ac4f01b1c76e7494e1017b241c947e53c9164b22911a362adca24643\",\"receiptId\":\"probe.receipt.3\",\"actor\":\"system\",\"stateVersion\":3},{\"commandHash\":\"sha256:dd89bd4d7baebce7b95fada805e262d0d17e380d26950947990b2457f40100b3\",\"eventHash\":\"sha256:30bf6137b30ce50dc430d88d92c162ec43e3492e7e7499697e80368a5c53c9a1\",\"receiptId\":\"probe.receipt.4\",\"actor\":\"system\",\"stateVersion\":4},{\"commandHash\":\"sha256:14352755ae8b58db92e76f6278711285442165163d81b27ca0fff9845ab1afa4\",\"eventHash\":\"sha256:b333f98aea793c1e3e505fd5a208a809f3dd040537ed32164e8f5407d94f4cd0\",\"receiptId\":\"probe.receipt.5\",\"actor\":\"system\",\"stateVersion\":5},{\"commandHash\":\"sha256:9e282aacf95a730437e872cab415e4ad683ef01ef560925976a72ee29cc1da11\",\"eventHash\":\"sha256:ff1b9fa8cc0ec0668b3480db0d01d6930f2af23b0f1fcefe2dcc5ec4372c115e\",\"receiptId\":\"probe.receipt.6\",\"actor\":\"system\",\"stateVersion\":6},{\"commandHash\":\"sha256:e99c5a638d67bc843784f11e968092515340d31116bc077b69cc4369122b4f9c\",\"eventHash\":\"sha256:c3fc50ee65a7579059aac6c269ad5d363ddce209b33217a810451e1917ab5dd2\",\"receiptId\":\"probe.receipt.7\",\"actor\":\"system\",\"stateVersion\":7},{\"commandHash\":\"sha256:066667bb084a4e9c066a6650259d81a1e7ca44a4f33ba0b4e5ea6e025efe7894\",\"eventHash\":\"sha256:9c1bee423d12f92165ebae5001afdc85f46e70ee172e16f76dfc2042132e56a1\",\"receiptId\":\"probe.receipt.8\",\"actor\":\"system\",\"stateVersion\":8},{\"commandHash\":\"sha256:7a86521f0d7690bf94ebfc80cab20450ad0e9aad9e8161f8f33a683488cc500d\",\"eventHash\":\"sha256:628e443f6cbbcfda5c7f1ae999c6b847ec033d20c769582b574eaf393fc8335c\",\"receiptId\":\"probe.receipt.9\",\"actor\":\"system\",\"stateVersion\":9},{\"commandHash\":\"sha256:6c841c7359e7925bd3d7478654b5ca54827e91486c13e59ab85bf244221af0ca\",\"eventHash\":\"sha256:cd753c1a3c049418f68b031dc5938e673760371a835bae00ad23b9d491164302\",\"receiptId\":\"probe.receipt.10\",\"actor\":\"system\",\"stateVersion\":10},{\"commandHash\":\"sha256:b95676fad4898fd0158b95fd75d7c1595c5ea13f71898a5bd0a5a1905cda5377\",\"eventHash\":\"sha256:ab54f4e304d0f48f6875ef16b3f51b72dbc3a52d2265169b0c056cefe02da745\",\"receiptId\":\"probe.receipt.11\",\"actor\":\"system\",\"stateVersion\":11},{\"commandHash\":\"sha256:c4ad0067a9dbe907e0ae6feb6877c8a31047b9d35ed739c0c2538b909ba55b0d\",\"eventHash\":\"sha256:cee368f0db4f398595f8312d7f62ae4185fdb584b7f9d6758c9960847654f940\",\"receiptId\":\"probe.receipt.12\",\"actor\":\"system\",\"stateVersion\":12},{\"commandHash\":\"sha256:d6d6005d91f9021ef18895a05bb46f811915362abb8d66a66c5e1380b4f6996a\",\"eventHash\":\"sha256:6e149e4cd64328859d35c0c116c69fc56b95c9aac7c87d893f190b6b293d6ecc\",\"receiptId\":\"probe.receipt.13\",\"actor\":\"system\",\"stateVersion\":13},{\"commandHash\":\"sha256:336b55beaf17f556a0e06e75f0a78be7bd28200eef59019d15519a4dd2b0b045\",\"eventHash\":\"sha256:68df71ddd1a36080493bd63cb568aecd3ff6f44623345f2d8df463316ce643c8\",\"receiptId\":\"probe.receipt.14\",\"actor\":\"system\",\"stateVersion\":14},{\"commandHash\":\"sha256:2ea1ae2a1dca795f2c8c95957c908a59ac3eb51d19165bc81d12967801b7da7b\",\"eventHash\":\"sha256:4c030c2a81c9dec2ede986d675b5d14911e396d88eee8d5ede7a1557909d3ece\",\"receiptId\":\"probe.receipt.15\",\"actor\":\"system\",\"stateVersion\":15},{\"commandHash\":\"sha256:6175339c4380805a4c7c471f0440e76545e9d9e1a378a854dfc0f65fa72e5017\",\"eventHash\":\"sha256:f07619a44dec3e58f1317d511b74dca56e52e8d92fdd6df078e26e316070cca2\",\"receiptId\":\"probe.receipt.16\",\"actor\":\"system\",\"stateVersion\":16},{\"commandHash\":\"sha256:65de9f5bfe3e11464ea59a7d15d5248a5c60de969e504da0701841224c705fa5\",\"eventHash\":\"sha256:203b50593fd505312e1beb9a86551b6f6477f518a67860b470382d99c75d7c45\",\"receiptId\":\"probe.receipt.17\",\"actor\":\"system\",\"stateVersion\":17},{\"commandHash\":\"sha256:3fd6956b58d85097840b72c17dd818343543a55bf1dc946589ffe1d42fe6506b\",\"eventHash\":\"sha256:d44e8b17ab1610cdfaa8d8f56d0b3617ea1309a68392d199447998798753e605\",\"receiptId\":\"probe.receipt.18\",\"actor\":\"system\",\"stateVersion\":18},{\"commandHash\":\"sha256:9d80e366e19fe1b90c1062fcef2c9b6eac59cfd397bead321369765f60824f1f\",\"eventHash\":\"sha256:df8f9b25677cbf7252e7a6875805d85d3fcaf46a3cfc3244880c93269ab350a0\",\"receiptId\":\"probe.receipt.19\",\"actor\":\"system\",\"stateVersion\":19},{\"commandHash\":\"sha256:e0c318971f57625afc62b1cd5510a5dcd4bfe6feab4347bf158e0648ee83afca\",\"eventHash\":\"sha256:ee951d526e35d25703a47c62aacaa093aaffa76494e6a3e15f08ac4c69c182cc\",\"receiptId\":\"probe.receipt.20\",\"actor\":\"system\",\"stateVersion\":20},{\"commandHash\":\"sha256:81177879f8fe3c13a92ff1b98a5a2b9fd88e0bb06035439b832992bed36f8144\",\"eventHash\":\"sha256:d44810a94ad539ae381ae8ea53df1cdefc32a5a353c7ebcf32bf383647765eb2\",\"receiptId\":\"cmb.1a86ccdc32ef912d1ecd492206dec0b6110c92e1476d52d879a62d789f38ec10\",\"actor\":\"system\",\"stateVersion\":21},{\"commandHash\":\"sha256:ea8cff7b88f096026b535d376c9138ae550e89320f32894e3d5329a0fb715b05\",\"eventHash\":\"sha256:d2d9e3b76ca27693dd71324d979753b3839657bc85eb35d607a7f295df840848\",\"receiptId\":\"cmb.cc5e3b342dd4e56ae376c5cb89ebbab1aeb688d6acb1b415b62fc3da6dcba254\",\"actor\":\"axis\",\"stateVersion\":22},{\"commandHash\":\"sha256:ccd5fc3faa87d64da44309f62491b1aa601edd3f64a19db1658774040c6b3778\",\"eventHash\":\"sha256:3984975c8f99814cff1991e370acbf744396ae2cf3d4b18ef7231113df2d0cbb\",\"receiptId\":\"cmb.909d7c3f017c2de88ab5cdf26b5a7c46a6ded85f611f5fecb591b3b6b7cd3fdd\",\"actor\":\"system\",\"stateVersion\":23},{\"commandHash\":\"sha256:9cacf077466f4d186fe786961d2a3566ecef6c9ac2950c2d0e0e087f526cffd4\",\"eventHash\":\"sha256:d2cfed4c96ac4919ebbc2984cd4a0f4ce1351296b0fedc997796ab0cef780bce\",\"receiptId\":\"cmb.8200d84cc6fb197b2d23bae0ddffd7d5c31e2f464ac5a9f78c658a2d22e00cab\",\"actor\":\"system\",\"stateVersion\":24},{\"commandHash\":\"sha256:24c50c0654099ec154232d6e965e716513db824992323c9ccdd687c494005d64\",\"eventHash\":\"sha256:202afab07f674872eade448f1e6c2a8ca4fa29227f1b94a0f88d921aa0e60610\",\"receiptId\":\"cmb.16c11a39ef1e04fc9fe87c076f901c53acb794f95118ffeff72ab51b1c9573a7\",\"actor\":\"system\",\"stateVersion\":25},{\"commandHash\":\"sha256:ba6080966debe6e6ccd22beb7a7d7f3a077d8db793430baf4cf5fc1364e68b59\",\"eventHash\":\"sha256:2c8d9011bb56b56c03a54f814cf48426d7f1ba0ddefc2881086aaadb511368d1\",\"receiptId\":\"cmb.b7cb808791a685595f2bef94a2c490792ae4b9e4c1d77654eb6ee816a8d09bc7\",\"actor\":\"commonwealth\",\"stateVersion\":26},{\"commandHash\":\"sha256:e3dd342f298dbc9acc4203b80fab3ef0b879ff20cb2173f099d55f1ab1087501\",\"eventHash\":\"sha256:a9ee376b7e4b0870054d989ef1ebdcadc971943705c47924f4bfbd9313d3630f\",\"receiptId\":\"cmb.1b5baa4c871f7e842072a20ca0933187c3394f2b5fe32c39619f79fbc63dc288\",\"actor\":\"system\",\"stateVersion\":27},{\"commandHash\":\"sha256:783a37c144cab4b416856e7643ba01b6fc4b7a5d4677b26dd4140b54078f7b90\",\"eventHash\":\"sha256:6ba29035df3241e33ef4915d09712362da09f5d894dfa4750d1f85bd7109c77c\",\"receiptId\":\"cmb.a068a47bab06cd6400bb27bad8a8c3dfe820d93e1f5172cabf0b935378f5cb25\",\"actor\":\"system\",\"stateVersion\":28},{\"commandHash\":\"sha256:f84d9ed6116f299d0bd6ab57a624ad7b6bf943498aeaaa4ef1f8a50d327f4979\",\"eventHash\":\"sha256:c92f2546aca97f555ee30659750c82a13de60a82a75b9d95eed7dae4b2fa4483\",\"receiptId\":\"cmb.a94f5c99ceff6103ea094371b447abf3affdd68a16bd228f6cb6c39d55e497a5\",\"actor\":\"axis\",\"stateVersion\":29},{\"commandHash\":\"sha256:cd362a1f1bcb68a49bca00253b837d6871137ac7d2e3be74c05bf24ba60a9c4e\",\"eventHash\":\"sha256:4dc95d679cebefebb93635a984f1b460bb787e313e6ce983b7347fe8917592b2\",\"receiptId\":\"cmb.6b3f08f8735e8d6d0f03fb46fcfd673ab1f6ae1b8c5963de6361a882eff62ab1\",\"actor\":\"commonwealth\",\"stateVersion\":30},{\"commandHash\":\"sha256:dd4beadc391d428a0a8e1af74476e4e49630f5549ed79da8c092a2d0319a656b\",\"eventHash\":\"sha256:7b91c3bf58618e545134b43b51a6b8a07ece159ad2dae3513616da3a4357ebbe\",\"receiptId\":\"cmb.e52270c432132131a2b18b33ebf3e28123d142c23c30f16524144bb96ac0742e\",\"actor\":\"system\",\"stateVersion\":31},{\"commandHash\":\"sha256:84a7367edb2378ec96d77af5c058691adeebf4ffa6fe3d61ac8cf29bf21d5367\",\"eventHash\":\"sha256:a180b3ea81041dafe1b8ff5e988bca805069568372439330d74e47187ff55a4b\",\"receiptId\":\"cmb.065b4cb6436ae71e98f6d099995e12aea80da1a56e1903c5fdce7aa93bf3ef3e\",\"actor\":\"system\",\"stateVersion\":32},{\"commandHash\":\"sha256:0ba48ca01dca37b1c70f7ec593526a57b49284d5772a421301983a3c1d488903\",\"eventHash\":\"sha256:601a54a8bbaacba5814f0dfc7fbe9a1aadc30dbb4caba92d476260897b70f87e\",\"receiptId\":\"cmb.b177f206a072cc0b6343decb788f949a608b62fa495f50cae8185306143e0131\",\"actor\":\"system\",\"stateVersion\":33},{\"commandHash\":\"sha256:03ed24032af4ef7e72a5672f8fef9e97df04736864bfa277d42212628fc168d3\",\"eventHash\":\"sha256:0be9eedd3cc6298e27dae918fc51bc63ce3146e2e042ea6163b71b24913fb884\",\"receiptId\":\"cmb.11bc31d04bbe0e0a197b8ce38a3cc31f419ecb63d1083a2fba7a44a78eccdfe3\",\"actor\":\"system\",\"stateVersion\":34},{\"commandHash\":\"sha256:3f1c69558b13a4ed8f42198538439e337d81b9125f34653c45c15f8052a72ad8\",\"eventHash\":\"sha256:0013e3472ec0349012b5ca7cff81577b56f7f7a427d210a2918e872f79c73273\",\"receiptId\":\"cmb.edb33f5f4983da8b8f0ad7c06bf5e3a322faa6e178513942a01ef93b8f21fe03\",\"actor\":\"system\",\"stateVersion\":35},{\"commandHash\":\"sha256:8937bdcf1bbffc37cef152ddf87fa8719902dba0851412a8dc4a0a510cf198c9\",\"eventHash\":\"sha256:d1c18a06235a133a85d9a1301f46a61839a48e3d256d20b4e56a01c55f9d6d68\",\"receiptId\":\"cmb.8cc41bf88e3f1a1dff900cbcaa2f74ded953ae4a66a5cc3423ca4c98064b5895\",\"actor\":\"system\",\"stateVersion\":36},{\"commandHash\":\"sha256:4c987efbdbcc23e379063456491617b42cfd65ff48bb790585a25ceaea291da8\",\"eventHash\":\"sha256:4b142442ef9fc54f773b2dd24e9a4edce2702c4c74a1f09aeecdc7a53e93e34a\",\"receiptId\":\"cmb.73b46b45f80cf5e4122cc91e5aca13d7f7f0760658f0d615a6c9d68e3efc5855\",\"actor\":\"system\",\"stateVersion\":37},{\"commandHash\":\"sha256:3170462068f1dee576abfa9f51609935f46109d1c083ef7ef12cbab43d84f796\",\"eventHash\":\"sha256:54ef85d4e95ee43e306bc17edeadf08775754d951e6de462382ffe81997b6fed\",\"receiptId\":\"cmb.437dd526c0cb0ecb25bbbb13390bc18e3aec4b9738f010da2fd2bf8d56325a86\",\"actor\":\"system\",\"stateVersion\":38},{\"commandHash\":\"sha256:2bdc9baf9e695a1acf1bb18ba33ba32b465bd7baebb024f3b0c69427f3d2b6c6\",\"eventHash\":\"sha256:cc85957dc7e6b7c5c5d6015efcb5967529f9aecd9a8c3dbfbbb43e4428c9fae7\",\"receiptId\":\"cmb.1d9ea13bb1e8d1f0da9333887429a7349be9a9f6ddc00685860a3f44125e14e0\",\"actor\":\"system\",\"stateVersion\":39},{\"commandHash\":\"sha256:1a3205b0c4e60ef757b7f2e1a88d1821c9b0024bc283d5481e21237f3b6c62f1\",\"eventHash\":\"sha256:3cba6814173ad3227a6a8aab75f2fa904f584a03f577ace5615ca31ead6de2f0\",\"receiptId\":\"cmb.f523f7ed22834b04e58a2d597a1cbb8e62b0eab0ec9427e3634de59c4fa03447\",\"actor\":\"system\",\"stateVersion\":40}]}"
+    },
+    {
+      "case": "zero-retreat",
+      "lane": "settlement",
+      "cut": 0,
+      "bytes": 40908,
+      "hash": "sha256:4aac44e90eecb514a9904226a9a41c0793ca841a9f41c5203f0d009e194d2b25"
+    },
+    {
+      "case": "zero-retreat",
+      "lane": "settlement",
+      "cut": 1,
+      "bytes": 50481,
+      "hash": "sha256:1ed643f7a7d9419a5065117f4d99f4e9d1c85556825bc3cf8780f588b73809c2"
+    },
+    {
+      "case": "zero-retreat",
+      "lane": "settlement",
+      "cut": 2,
+      "bytes": 51483,
+      "hash": "sha256:0b74fb43ad53989081f818ecac416bc9383fa6353d7d8d4dba4a2fa377c22fa1"
+    },
+    {
+      "case": "zero-retreat",
+      "lane": "settlement",
+      "cut": 3,
+      "bytes": 52299,
+      "hash": "sha256:8e5272fafb6ede6ef743407c96fe878785617808310de732d4efbd470eed44b9"
+    },
+    {
+      "case": "zero-retreat",
+      "lane": "settlement",
+      "cut": 4,
+      "bytes": 54840,
+      "hash": "sha256:88f331e6c49432efe28c2593df41be8bb68f4b932b6455cb41d340b62bc576fa"
+    },
+    {
+      "case": "zero-retreat",
+      "lane": "settlement",
+      "cut": 5,
+      "bytes": 56915,
+      "hash": "sha256:a29a7ba2fe2033d7aee6c95803d457bb70a60a4d7cb23fa5a1564949addd5a88"
+    },
+    {
+      "case": "zero-retreat",
+      "lane": "settlement",
+      "cut": 6,
+      "bytes": 57969,
+      "hash": "sha256:1eefc494013e8f582decadf53228421386a69b0bec16cd761c6e30d6f01f5e2e"
+    },
+    {
+      "case": "zero-retreat",
+      "lane": "settlement",
+      "cut": 7,
+      "bytes": 58622,
+      "hash": "sha256:f1428b00dc436a8023007c4cfef7551e946f3dcdcd4d7d4fbcc3f04e7b08483a"
+    },
+    {
+      "case": "zero-retreat",
+      "lane": "settlement",
+      "cut": 8,
+      "bytes": 59252,
+      "hash": "sha256:ddc15320598221190fdaa1cae6541e1fc76f02eac43ce6b50ac74728768274fe"
+    },
+    {
+      "case": "refusal-loss-dp",
+      "lane": "settlement",
+      "cut": 0,
+      "bytes": 40908,
+      "hash": "sha256:71a6c141c324bc17328519d0fbe38651def21683339aae8ee7daa5c7f9b2924c"
+    },
+    {
+      "case": "refusal-loss-dp",
+      "lane": "settlement",
+      "cut": 1,
+      "bytes": 50478,
+      "hash": "sha256:e192c727cc72f3d0a810a203baaa151675a5014b0c59f80136ce37bb8436ba2e"
+    },
+    {
+      "case": "refusal-loss-dp",
+      "lane": "settlement",
+      "cut": 2,
+      "bytes": 51480,
+      "hash": "sha256:a23a255f0d85250beeb81e5b137e4842c72f7cf492e81a990e638399c94440f9"
+    },
+    {
+      "case": "refusal-loss-dp",
+      "lane": "settlement",
+      "cut": 3,
+      "bytes": 52270,
+      "hash": "sha256:0d58a4ce7cff5718743fc70a033e8b73ceb3e63e75f997546f30c9f5376e611c"
+    },
+    {
+      "case": "refusal-loss-dp",
+      "lane": "settlement",
+      "cut": 4,
+      "bytes": 55473,
+      "hash": "sha256:966a34f7e8161ebdf5284332914c88aae9e52364169162f5ce0599340bf4b481"
+    },
+    {
+      "case": "refusal-loss-dp",
+      "lane": "settlement",
+      "cut": 5,
+      "bytes": 56826,
+      "hash": "sha256:3553c30001742f580f12d4c0da6dca3d1d71f10751cfb85cc560d4cd046e55b1"
+    },
+    {
+      "case": "refusal-loss-dp",
+      "lane": "settlement",
+      "cut": 6,
+      "bytes": 59346,
+      "hash": "sha256:83cb83e346fa97207a8c39e2c88b00e0002cdcad71bb6552c77168c2c7734001"
+    },
+    {
+      "case": "refusal-loss-dp",
+      "lane": "settlement",
+      "cut": 7,
+      "bytes": 59999,
+      "hash": "sha256:51e8a79a71eae2d09991203aa529bfd6090c8c8e745cbc99a6c060982713ad8c"
+    },
+    {
+      "case": "refusal-loss-dp",
+      "lane": "settlement",
+      "cut": 8,
+      "bytes": 60629,
+      "hash": "sha256:b256dd149e053a2e583b2effb9b827982c30c3d5f36686063245795c3eb3e1bd"
+    },
+    {
+      "case": "zero-engaged",
+      "lane": "settlement",
+      "cut": 0,
+      "bytes": 40904,
+      "hash": "sha256:59e405ca70e8620725f710de95695a8342bab5d948d2ad70cd2ec897487785a1"
+    },
+    {
+      "case": "zero-engaged",
+      "lane": "settlement",
+      "cut": 1,
+      "bytes": 50450,
+      "hash": "sha256:f0d169f3cd08530227d9985837b871865f9f0c69702fc94fb4e870581e6d3f4f"
+    },
+    {
+      "case": "zero-engaged",
+      "lane": "settlement",
+      "cut": 2,
+      "bytes": 51637,
+      "hash": "sha256:c97165e835cc722eab464503845444047ab928bcf70fc65868606eaabaffb22e"
+    },
+    {
+      "case": "zero-engaged",
+      "lane": "settlement",
+      "cut": 3,
+      "bytes": 54178,
+      "hash": "sha256:1ecd8571bd794bce99c213d4467533c53373cda46af8758b6b6327551974e5b8"
+    },
+    {
+      "case": "zero-engaged",
+      "lane": "settlement",
+      "cut": 4,
+      "bytes": 55527,
+      "hash": "sha256:98d855f1fc6d4e7ba6eec028030fcbf206f921466f0cc11c43cc521633a01d24"
+    },
+    {
+      "case": "zero-engaged",
+      "lane": "settlement",
+      "cut": 5,
+      "bytes": 58047,
+      "hash": "sha256:0117ef6d9eabc236daa73c5352c001a302bc6bf0ac40c9bef4369938b53f7a90"
+    },
+    {
+      "case": "zero-engaged",
+      "lane": "settlement",
+      "cut": 6,
+      "bytes": 58700,
+      "hash": "sha256:8614e45ebb766df48916a723be164e679c7f86ef9ca54a8f96247a274257e85e"
+    },
+    {
+      "case": "zero-engaged",
+      "lane": "settlement",
+      "cut": 7,
+      "bytes": 59330,
+      "hash": "sha256:f754bc2d16fb8483ccf1c33c7827b61d259d2128e9c9baa288dd14f4ada2c395"
+    },
+    {
+      "case": "defender-capture-guard",
+      "lane": "settlement",
+      "cut": 0,
+      "bytes": 40904,
+      "hash": "sha256:9b39767123bbff7f5d98a88b877aa23f1e45d34897936d07bf6c6b580c2504d0"
+    },
+    {
+      "case": "defender-capture-guard",
+      "lane": "settlement",
+      "cut": 1,
+      "bytes": 50569,
+      "hash": "sha256:da5a3c3f141b8ab496d125c0de48e81f1a6e1638d8eb7964a044c3efccfa43df"
+    },
+    {
+      "case": "defender-capture-guard",
+      "lane": "settlement",
+      "cut": 2,
+      "bytes": 51756,
+      "hash": "sha256:4bf9937feecefdaacc8a4a60f7b562ce0caf1b1bb489771e4873c51059173ffd"
+    },
+    {
+      "case": "defender-capture-guard",
+      "lane": "settlement",
+      "cut": 3,
+      "bytes": 55785,
+      "hash": "sha256:67730841f245f9726a7c74f229ed2b968e51895c4b4e69c91d939a6ea5648a40"
+    },
+    {
+      "case": "defender-capture-guard",
+      "lane": "settlement",
+      "cut": 4,
+      "bytes": 57134,
+      "hash": "sha256:c02d32b4cdb6e4477b7d874621aa7cdb37493aa4afed3fe67b051ec192d03984"
+    },
+    {
+      "case": "defender-capture-guard",
+      "lane": "settlement",
+      "cut": 5,
+      "bytes": 58129,
+      "hash": "sha256:6a6187ffbb62075e763a015b97508df0aa195516d8dcedb43bac719ba7e32cb5"
+    },
+    {
+      "case": "defender-capture-guard",
+      "lane": "settlement",
+      "cut": 6,
+      "bytes": 63373,
+      "hash": "sha256:bb0926ae3fc85f621dbac0a8b4b09e30d975386b9675555f8bdb44d03c35aee5"
+    },
+    {
+      "case": "defender-capture-guard",
+      "lane": "settlement",
+      "cut": 7,
+      "bytes": 65893,
+      "hash": "sha256:e3840daab18abb8188dace0aa32e863374ebb31084f331ab6bfcba2295770a9c"
+    },
+    {
+      "case": "defender-capture-guard",
+      "lane": "settlement",
+      "cut": 8,
+      "bytes": 66546,
+      "hash": "sha256:b94f1bd9992c7707f8dc7d7b5404c5e8dba4f07f33ebdc1b2ec673ae345bca73"
+    },
+    {
+      "case": "defender-capture-guard",
+      "lane": "settlement",
+      "cut": 9,
+      "bytes": 67176,
+      "hash": "sha256:619d5506f203e17537ecf6b42042b36b2d4274088052fcf29d225ae91ade8b4b"
+    },
+    {
+      "case": "defender-capture-escape",
+      "lane": "settlement",
+      "cut": 0,
+      "bytes": 40904,
+      "hash": "sha256:9b39767123bbff7f5d98a88b877aa23f1e45d34897936d07bf6c6b580c2504d0"
+    },
+    {
+      "case": "defender-capture-escape",
+      "lane": "settlement",
+      "cut": 1,
+      "bytes": 50569,
+      "hash": "sha256:da5a3c3f141b8ab496d125c0de48e81f1a6e1638d8eb7964a044c3efccfa43df"
+    },
+    {
+      "case": "defender-capture-escape",
+      "lane": "settlement",
+      "cut": 2,
+      "bytes": 51756,
+      "hash": "sha256:4bf9937feecefdaacc8a4a60f7b562ce0caf1b1bb489771e4873c51059173ffd"
+    },
+    {
+      "case": "defender-capture-escape",
+      "lane": "settlement",
+      "cut": 3,
+      "bytes": 55785,
+      "hash": "sha256:67730841f245f9726a7c74f229ed2b968e51895c4b4e69c91d939a6ea5648a40"
+    },
+    {
+      "case": "defender-capture-escape",
+      "lane": "settlement",
+      "cut": 4,
+      "bytes": 57134,
+      "hash": "sha256:c02d32b4cdb6e4477b7d874621aa7cdb37493aa4afed3fe67b051ec192d03984"
+    },
+    {
+      "case": "defender-capture-escape",
+      "lane": "settlement",
+      "cut": 5,
+      "bytes": 58129,
+      "hash": "sha256:6a6187ffbb62075e763a015b97508df0aa195516d8dcedb43bac719ba7e32cb5"
+    },
+    {
+      "case": "defender-capture-escape",
+      "lane": "settlement",
+      "cut": 6,
+      "bytes": 61933,
+      "hash": "sha256:64031c3709e583fbce15e2417d5b9aa9a3f9eb05c96d8d3e95c1c803f57f4674"
+    },
+    {
+      "case": "defender-capture-escape",
+      "lane": "settlement",
+      "cut": 7,
+      "bytes": 64453,
+      "hash": "sha256:89f1f43d9aa303bba141a01594bde1167e1e1626efa491f1318e48b59f7d7a2d"
+    },
+    {
+      "case": "defender-capture-escape",
+      "lane": "settlement",
+      "cut": 8,
+      "bytes": 65106,
+      "hash": "sha256:624aea2c79b7ccf39d5261cd7b3db59420b6b693421ad97b10eb528d0bb57e3c"
+    },
+    {
+      "case": "defender-capture-escape",
+      "lane": "settlement",
+      "cut": 9,
+      "bytes": 65736,
+      "hash": "sha256:c10706df7ab59294a451d4af5c9c9519dd252dd36369c0da09951732f0218521"
+    },
+    {
+      "case": "attacker-capture-guard-cp-limit",
+      "lane": "settlement",
+      "cut": 0,
+      "bytes": 40926,
+      "hash": "sha256:694a2dd292b3e9aa99b3fb210544b41c56ed9a69019aaeca4eb0196edfb6bee3"
+    },
+    {
+      "case": "attacker-capture-guard-cp-limit",
+      "lane": "settlement",
+      "cut": 1,
+      "bytes": 50680,
+      "hash": "sha256:506b72b619bbcb3f0906dc021a43cf968281b359bd7b19398bdb04e44af420a2"
+    },
+    {
+      "case": "attacker-capture-guard-cp-limit",
+      "lane": "settlement",
+      "cut": 2,
+      "bytes": 51682,
+      "hash": "sha256:93c403da62d17bc8985b6e802437e4dcc46072d601887976e0bb9c3ff9d3c611"
+    },
+    {
+      "case": "attacker-capture-guard-cp-limit",
+      "lane": "settlement",
+      "cut": 3,
+      "bytes": 52498,
+      "hash": "sha256:76e759cd303b2200d2f2fa6a86c09b3a3f9896473671126ccc0e364471639d04"
+    },
+    {
+      "case": "attacker-capture-guard-cp-limit",
+      "lane": "settlement",
+      "cut": 4,
+      "bytes": 57147,
+      "hash": "sha256:63cf1c759725088f6889a0ea3ac3fb791eced66ff053f6d11ec0ab3f34b99eee"
+    },
+    {
+      "case": "attacker-capture-guard-cp-limit",
+      "lane": "settlement",
+      "cut": 5,
+      "bytes": 59938,
+      "hash": "sha256:dad7c7b08f13b2017e0452eda0b27ed492db0e0febe2cc578dd194ce20618146"
+    },
+    {
+      "case": "attacker-capture-guard-cp-limit",
+      "lane": "settlement",
+      "cut": 6,
+      "bytes": 60940,
+      "hash": "sha256:a0374f48877a409dd908fe3f6ea0acff6766b8599a254b873b419d60948f060a"
+    },
+    {
+      "case": "attacker-capture-guard-cp-limit",
+      "lane": "settlement",
+      "cut": 7,
+      "bytes": 66336,
+      "hash": "sha256:a97e7081637a056531713947cb1fb87b0fbea2c963c3cac88bad1094732b9dbd"
+    },
+    {
+      "case": "attacker-capture-guard-cp-limit",
+      "lane": "settlement",
+      "cut": 8,
+      "bytes": 67390,
+      "hash": "sha256:e385ebe458300d85b278cc918a954fadda926fb535de3aeb36fe33bb378b9589"
+    },
+    {
+      "case": "attacker-capture-guard-cp-limit",
+      "lane": "settlement",
+      "cut": 9,
+      "bytes": 68043,
+      "hash": "sha256:f73be22a749508e803894ab066a7e7379c69bc2268d47c7e95505d73dcb9b84a"
+    },
+    {
+      "case": "attacker-capture-guard-cp-limit",
+      "lane": "settlement",
+      "cut": 10,
+      "bytes": 68673,
+      "hash": "sha256:3a90e4a565e83edc23856c6fabe7a146ae1b6f7164ec8e2119d6d1b0d3121226",
+      "canonicalUtf8": "{\"contractVersion\":12,\"campaignId\":\"rules-lab.combat-creation.1\",\"stateVersion\":43,\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"setup\":{\"schemaVersion\":7,\"setupId\":\"rules-lab.combat.close-assault.v1\",\"setupHash\":\"sha256:22495e26528c2f4db8335d3b4041194aef26295f30aab0e4e6f384ff17069848\",\"isSynthetic\":true,\"capabilityProfileId\":\"sandtable.capability.combat-cycle-infantry.v1\",\"initialGameTurn\":1,\"initialInitiative\":{\"kind\":\"predetermined\",\"holder\":\"axis\"},\"openingPreamble\":{\"contractVersion\":1,\"kind\":\"no-opening-naval-convoy-obligations\",\"sources\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"opening-preamble.no-naval-convoy-obligations.v1\"}]},\"weather\":{\"contractVersion\":1,\"kind\":\"no-immediate-weather-effect-subjects\",\"sources\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"weather.no-immediate-effect-subjects.v1\"}]},\"stageEntry\":{\"contractVersion\":1,\"gameTurn\":1,\"operationStage\":1,\"organization\":\"explicit-none\",\"navalConvoyArrival\":\"explicit-none\",\"fleetAssignment\":\"explicit-none\",\"fleetRepair\":\"explicit-none\",\"sources\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"stage-entry.no-obligations.v1\"}]},\"combatInitialization\":{\"contractVersion\":1,\"gameTurn\":1,\"operationStage\":1,\"capabilityPointsExpended\":{\"numerator\":0,\"denominator\":1},\"cohesionLevel\":0,\"reserveStatus\":\"none\",\"origin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:initial-ledger\"}]}},\"content\":{\"schemaVersion\":7,\"formatId\":\"sandtable.content-json.v6\",\"packId\":\"rules-lab.content.close-assault.v1\",\"rulesetId\":\"cna-1979.1\",\"hash\":\"sha256:ee4fde9638ceb61ec08612fe32f9ac81db05572aac5ca20941e402d2fed25847\",\"scenarioId\":\"close-assault-positive-v1\"},\"sources\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:setup\"}]},\"world\":{\"contractVersion\":7,\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"elements\":[{\"elementId\":\"axis-assault-battalion\",\"currentLocationId\":\"assault-west\",\"reserveStatus\":\"none\",\"operationalState\":{\"ledgerGameTurn\":1,\"ledgerOperationStage\":1,\"capabilityPointsExpended\":{\"numerator\":10,\"denominator\":1},\"cohesionLevel\":0,\"vehicleBreakdownState\":null,\"movementEnded\":null,\"initialLedgerOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:initial-ledger\"}]}},\"components\":[{\"componentId\":\"axis-assault-battalion.toe.infantry\",\"currentToe\":7,\"initialToeOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:toe.axis-assault-battalion.toe.infantry\"}]}}],\"sourceParentFormationId\":\"axis-assault-formation\",\"currentParentFormationId\":\"axis-assault-formation\",\"ammunition\":{\"points\":0,\"initialAmmunitionOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:ammo.axis-assault-battalion\"}]}},\"readiness\":{\"gameTurn\":1,\"operationStage\":1,\"waterStatus\":\"distributed-for-stage\",\"storesStatus\":\"distributed-for-stage\",\"pinned\":false,\"initialReadinessOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:readiness.axis-assault-battalion\"}]}}},{\"elementId\":\"commonwealth-assault-battalion\",\"currentLocationId\":\"commonwealth-rear\",\"reserveStatus\":\"none\",\"operationalState\":{\"ledgerGameTurn\":1,\"ledgerOperationStage\":1,\"capabilityPointsExpended\":{\"numerator\":11,\"denominator\":1},\"cohesionLevel\":-1,\"vehicleBreakdownState\":null,\"movementEnded\":null,\"initialLedgerOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:initial-ledger\"}]}},\"components\":[{\"componentId\":\"commonwealth-assault-battalion.toe.infantry\",\"currentToe\":9,\"initialToeOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:toe.commonwealth-assault-battalion.toe.infantry\"}]}}],\"sourceParentFormationId\":\"commonwealth-assault-formation\",\"currentParentFormationId\":\"commonwealth-assault-formation\",\"ammunition\":{\"points\":0,\"initialAmmunitionOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:ammo.commonwealth-assault-battalion\"}]}},\"readiness\":{\"gameTurn\":1,\"operationStage\":1,\"waterStatus\":\"distributed-for-stage\",\"storesStatus\":\"distributed-for-stage\",\"pinned\":false,\"initialReadinessOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:readiness.commonwealth-assault-battalion\"}]}}}],\"representations\":[{\"representationId\":\"map-representation.0001\",\"currentLocationId\":\"assault-west\",\"bindingKind\":\"independent-element\",\"boundElementIds\":[\"axis-assault-battalion\"]},{\"representationId\":\"map-representation.0002\",\"currentLocationId\":\"commonwealth-rear\",\"bindingKind\":\"independent-element\",\"boundElementIds\":[\"commonwealth-assault-battalion\"]}],\"brokenVehicleLots\":[],\"cohesionCauses\":[{\"causeId\":\"set.06f42ed3e9505e6a870798aebd9d2231cd0ee378e272f80da0c3a7f31d06e7fa.loss-dp.axis\",\"ordinal\":1,\"receiptId\":\"set.06f42ed3e9505e6a870798aebd9d2231cd0ee378e272f80da0c3a7f31d06e7fa.losses\",\"elementId\":\"axis-assault-battalion\",\"gameTurn\":1,\"operationStage\":1,\"kind\":\"loss-dp\",\"points\":3,\"before\":0,\"after\":-3},{\"causeId\":\"set.06f42ed3e9505e6a870798aebd9d2231cd0ee378e272f80da0c3a7f31d06e7fa.retreat-excess-dp.commonwealth\",\"ordinal\":2,\"receiptId\":\"set.06f42ed3e9505e6a870798aebd9d2231cd0ee378e272f80da0c3a7f31d06e7fa.retreat\",\"elementId\":\"commonwealth-assault-battalion\",\"gameTurn\":1,\"operationStage\":1,\"kind\":\"retreat-excess-dp\",\"points\":1,\"before\":0,\"after\":-1},{\"causeId\":\"set.06f42ed3e9505e6a870798aebd9d2231cd0ee378e272f80da0c3a7f31d06e7fa.assault-victory-rp.axis\",\"ordinal\":3,\"receiptId\":\"set.06f42ed3e9505e6a870798aebd9d2231cd0ee378e272f80da0c3a7f31d06e7fa.retreat\",\"elementId\":\"axis-assault-battalion\",\"gameTurn\":1,\"operationStage\":1,\"kind\":\"assault-victory-rp\",\"points\":3,\"before\":-3,\"after\":0}],\"relationships\":[],\"custodyLots\":[{\"lotId\":\"set.06f42ed3e9505e6a870798aebd9d2231cd0ee378e272f80da0c3a7f31d06e7fa.captives\",\"lossReceiptId\":\"set.06f42ed3e9505e6a870798aebd9d2231cd0ee378e272f80da0c3a7f31d06e7fa.losses\",\"originalComponent\":{\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"axis\",\"elementId\":\"axis-assault-battalion\"},\"componentId\":\"axis-assault-battalion.toe.infantry\"},\"captor\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"},\"quantity\":2,\"originLocationId\":\"assault-west\",\"currentLocationId\":\"commonwealth-rear\",\"status\":\"guarded\",\"guardId\":\"set.06f42ed3e9505e6a870798aebd9d2231cd0ee378e272f80da0c3a7f31d06e7fa.guard\",\"escapeReceiptId\":null}],\"guards\":[{\"guardId\":\"set.06f42ed3e9505e6a870798aebd9d2231cd0ee378e272f80da0c3a7f31d06e7fa.guard\",\"formationReceiptId\":\"set.06f42ed3e9505e6a870798aebd9d2231cd0ee378e272f80da0c3a7f31d06e7fa.custody\",\"lotId\":\"set.06f42ed3e9505e6a870798aebd9d2231cd0ee378e272f80da0c3a7f31d06e7fa.captives\",\"originComponent\":{\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"},\"componentId\":\"commonwealth-assault-battalion.toe.infantry\"},\"currentLocationId\":\"commonwealth-rear\",\"toe\":1,\"baseCapabilityPointAllowance\":10,\"offensiveCloseAssaultRating\":0,\"defensiveCloseAssaultRating\":1,\"operationalState\":{\"ledgerGameTurn\":1,\"ledgerOperationStage\":1,\"capabilityPointsExpended\":{\"numerator\":11,\"denominator\":1},\"cohesionLevel\":-1,\"vehicleBreakdownState\":null,\"movementEnded\":null,\"initialLedgerOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:initial-ledger\"}]}},\"ammunition\":{\"points\":0,\"initialAmmunitionOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:ammo.commonwealth-assault-battalion\"}]}},\"readiness\":{\"gameTurn\":1,\"operationStage\":1,\"waterStatus\":\"distributed-for-stage\",\"storesStatus\":\"distributed-for-stage\",\"pinned\":false,\"initialReadinessOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:readiness.commonwealth-assault-battalion\"}]}}}],\"replacementEntitlements\":[],\"futureObligations\":[{\"obligationId\":\"set.06f42ed3e9505e6a870798aebd9d2231cd0ee378e272f80da0c3a7f31d06e7fa.upkeep\",\"receiptId\":\"set.06f42ed3e9505e6a870798aebd9d2231cd0ee378e272f80da0c3a7f31d06e7fa.custody\",\"kind\":\"guard-priority-upkeep\",\"subjectId\":\"set.06f42ed3e9505e6a870798aebd9d2231cd0ee378e272f80da0c3a7f31d06e7fa.guard\",\"earnedScope\":{\"gameTurn\":1,\"operationStage\":1},\"eligibleScope\":null,\"activationGate\":\"before-prisoner-upkeep-or-guard-action\",\"status\":\"retained-unimplemented\"}],\"settlements\":[{\"settlementId\":\"set.06f42ed3e9505e6a870798aebd9d2231cd0ee378e272f80da0c3a7f31d06e7fa\",\"commitmentId\":\"cmt.95e6f054529c13956c0da21e3326e77d4130ee8d346c5f76582928a257164fa5\",\"resultId\":\"res.3377821968aaf8c7ab395c3d568a60dfb2b454f64cd4a1cb86fbf7545fc196d6\",\"gameTurn\":1,\"operationStage\":1,\"attacker\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"axis\",\"elementId\":\"axis-assault-battalion\"},\"defender\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"},\"preLossElements\":[{\"elementId\":\"axis-assault-battalion\",\"currentLocationId\":\"assault-west\",\"reserveStatus\":\"none\",\"operationalState\":{\"ledgerGameTurn\":1,\"ledgerOperationStage\":1,\"capabilityPointsExpended\":{\"numerator\":10,\"denominator\":1},\"cohesionLevel\":0,\"vehicleBreakdownState\":null,\"movementEnded\":null,\"initialLedgerOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:initial-ledger\"}]}},\"components\":[{\"componentId\":\"axis-assault-battalion.toe.infantry\",\"currentToe\":10,\"initialToeOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:toe.axis-assault-battalion.toe.infantry\"}]}}],\"sourceParentFormationId\":\"axis-assault-formation\",\"currentParentFormationId\":\"axis-assault-formation\",\"ammunition\":{\"points\":0,\"initialAmmunitionOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:ammo.axis-assault-battalion\"}]}},\"readiness\":{\"gameTurn\":1,\"operationStage\":1,\"waterStatus\":\"distributed-for-stage\",\"storesStatus\":\"distributed-for-stage\",\"pinned\":false,\"initialReadinessOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:readiness.axis-assault-battalion\"}]}}},{\"elementId\":\"commonwealth-assault-battalion\",\"currentLocationId\":\"assault-east\",\"reserveStatus\":\"none\",\"operationalState\":{\"ledgerGameTurn\":1,\"ledgerOperationStage\":1,\"capabilityPointsExpended\":{\"numerator\":10,\"denominator\":1},\"cohesionLevel\":0,\"vehicleBreakdownState\":null,\"movementEnded\":null,\"initialLedgerOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:initial-ledger\"}]}},\"components\":[{\"componentId\":\"commonwealth-assault-battalion.toe.infantry\",\"currentToe\":10,\"initialToeOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:toe.commonwealth-assault-battalion.toe.infantry\"}]}}],\"sourceParentFormationId\":\"commonwealth-assault-formation\",\"currentParentFormationId\":\"commonwealth-assault-formation\",\"ammunition\":{\"points\":0,\"initialAmmunitionOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:ammo.commonwealth-assault-battalion\"}]}},\"readiness\":{\"gameTurn\":1,\"operationStage\":1,\"waterStatus\":\"distributed-for-stage\",\"storesStatus\":\"distributed-for-stage\",\"pinned\":false,\"initialReadinessOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:readiness.commonwealth-assault-battalion\"}]}}}],\"result\":{\"differential\":-2,\"attackerCoordinate\":11,\"defenderCoordinate\":36,\"captureDie\":4,\"attackerPercent\":25,\"defenderPercent\":5,\"rawEngaged\":false,\"requiredRetreat\":1,\"capturedRole\":\"attacker\",\"captureShare\":50},\"disposition\":{\"receiptId\":\"set.06f42ed3e9505e6a870798aebd9d2231cd0ee378e272f80da0c3a7f31d06e7fa.disposition\",\"predecessorReceiptId\":\"res.3377821968aaf8c7ab395c3d568a60dfb2b454f64cd4a1cb86fbf7545fc196d6\",\"kind\":\"retreat\",\"requiredDistance\":1,\"plannedDistance\":1,\"unfulfilledDistance\":0,\"route\":[\"assault-east\",\"commonwealth-rear\"]},\"losses\":{\"receiptId\":\"set.06f42ed3e9505e6a870798aebd9d2231cd0ee378e272f80da0c3a7f31d06e7fa.losses\",\"predecessorReceiptId\":\"set.06f42ed3e9505e6a870798aebd9d2231cd0ee378e272f80da0c3a7f31d06e7fa.disposition\",\"roles\":[{\"role\":\"attacker\",\"component\":{\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"axis\",\"elementId\":\"axis-assault-battalion\"},\"componentId\":\"axis-assault-battalion.toe.infantry\"},\"committedToe\":10,\"tablePercent\":25,\"refusalPercent\":0,\"lossToe\":3,\"capturedToe\":2,\"otherLossToe\":1,\"remainingToe\":7,\"lossDp\":3},{\"role\":\"defender\",\"component\":{\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"},\"componentId\":\"commonwealth-assault-battalion.toe.infantry\"},\"committedToe\":10,\"tablePercent\":5,\"refusalPercent\":0,\"lossToe\":0,\"capturedToe\":0,\"otherLossToe\":0,\"remainingToe\":10,\"lossDp\":0}]},\"retreat\":{\"receiptId\":\"set.06f42ed3e9505e6a870798aebd9d2231cd0ee378e272f80da0c3a7f31d06e7fa.retreat\",\"predecessorReceiptId\":\"set.06f42ed3e9505e6a870798aebd9d2231cd0ee378e272f80da0c3a7f31d06e7fa.losses\",\"kind\":\"retreat\",\"route\":[\"assault-east\",\"commonwealth-rear\"],\"completedDistance\":1,\"beforeCp\":{\"numerator\":10,\"denominator\":1},\"afterCp\":{\"numerator\":11,\"denominator\":1},\"excessCpDp\":1,\"attackerVictoryRp\":3},\"custody\":{\"receiptId\":\"set.06f42ed3e9505e6a870798aebd9d2231cd0ee378e272f80da0c3a7f31d06e7fa.custody\",\"predecessorReceiptId\":\"set.06f42ed3e9505e6a870798aebd9d2231cd0ee378e272f80da0c3a7f31d06e7fa.retreat\",\"lotId\":\"set.06f42ed3e9505e6a870798aebd9d2231cd0ee378e272f80da0c3a7f31d06e7fa.captives\",\"kind\":\"relocate-and-guard\",\"route\":[\"assault-west\",\"assault-east\",\"commonwealth-rear\"],\"guardId\":\"set.06f42ed3e9505e6a870798aebd9d2231cd0ee378e272f80da0c3a7f31d06e7fa.guard\",\"entitlementId\":null,\"donorToeBefore\":10,\"donorToeAfter\":9},\"relationships\":{\"receiptId\":\"set.06f42ed3e9505e6a870798aebd9d2231cd0ee378e272f80da0c3a7f31d06e7fa.relationships\",\"predecessorReceiptId\":\"set.06f42ed3e9505e6a870798aebd9d2231cd0ee378e272f80da0c3a7f31d06e7fa.custody\",\"relationshipId\":null,\"kind\":null}}]},\"initiativeHolder\":\"axis\",\"operationStageOrders\":[{\"contractVersion\":1,\"gameTurn\":1,\"operationStage\":1,\"firstSide\":\"axis\",\"secondSide\":\"commonwealth\"}],\"operationStageWeather\":[{\"contractVersion\":1,\"gameTurn\":1,\"operationStage\":1,\"determiningSide\":\"axis\",\"season\":\"fall\",\"firstDie\":1,\"secondDie\":1,\"kind\":\"normal\",\"scope\":\"none\",\"locationDie\":null,\"affectedAreas\":[],\"fuelWaterReductionSubjectCount\":0,\"restoredWellCount\":0,\"damagedGroundedAircraftCount\":0}],\"randomState\":{\"contractVersion\":1,\"algorithmId\":\"sandtable.sha256-counter.v1\",\"seed\":0,\"nextByteCursor\":174128},\"currentPosition\":{\"kind\":\"sequence\",\"sequencePosition\":{\"contractVersion\":5,\"positionId\":\"land.position.operation-1.first-player.movement-and-combat.reserve-release\",\"gameTurn\":1,\"operationStage\":1,\"stageId\":\"land.stage.operation\",\"phaseId\":\"land.phase.movement-and-combat\",\"segmentId\":\"land.segment.reserve-release\",\"stepId\":null,\"actorRole\":\"first-acting-side\",\"activeSide\":\"axis\",\"sources\":[{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"5.2\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"7.11\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"7.14\"}]}},\"reactionWindow\":null,\"breakdownFlow\":{\"kind\":\"idle\"},\"configuration\":{\"schemaVersion\":1,\"configId\":\"rules-lab.combat-timing.v1\",\"profileId\":\"sandtable.capability.combat-cycle-infantry.v1\",\"rulesInputHash\":\"sha256:fafb24792c9e3f774c368f85c02d1d068f84c9c78e67bf8324723257d0f13029\",\"codecId\":\"sandtable.combat.inputs-json.v1\",\"timingPolicyId\":\"sandtable.combat.fixed-deadline.v1\",\"windows\":[{\"kind\":\"custody\",\"decisionBudgetMilliseconds\":30000,\"fallback\":\"leave-unguarded\"},{\"kind\":\"cycle-control\",\"decisionBudgetMilliseconds\":30000,\"fallback\":\"finish-phase\"},{\"kind\":\"force-assignment\",\"decisionBudgetMilliseconds\":30000,\"fallback\":\"cancel-incomplete-voluntary-round\"},{\"kind\":\"rba\",\"decisionBudgetMilliseconds\":30000,\"fallback\":\"cancel-without-decline\"},{\"kind\":\"reserve-release\",\"decisionBudgetMilliseconds\":30000,\"fallback\":\"convert-unresolved-i-retain-ii\"},{\"kind\":\"retreat\",\"decisionBudgetMilliseconds\":30000,\"fallback\":\"refuse-retreat\"},{\"kind\":\"selection\",\"decisionBudgetMilliseconds\":30000,\"fallback\":\"no-selection\"}]},\"creationReceipt\":{\"contractVersion\":1,\"creationRequest\":{\"contractVersion\":1,\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"setupId\":\"rules-lab.combat.close-assault.v1\",\"setupHash\":\"sha256:22495e26528c2f4db8335d3b4041194aef26295f30aab0e4e6f384ff17069848\",\"content\":{\"schemaVersion\":7,\"formatId\":\"sandtable.content-json.v6\",\"packId\":\"rules-lab.content.close-assault.v1\",\"rulesetId\":\"cna-1979.1\",\"hash\":\"sha256:ee4fde9638ceb61ec08612fe32f9ac81db05572aac5ca20941e402d2fed25847\",\"scenarioId\":\"close-assault-positive-v1\"},\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"randomState\":{\"contractVersion\":1,\"algorithmId\":\"sandtable.sha256-counter.v1\",\"seed\":0,\"nextByteCursor\":0}},\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"creationEventHash\":\"sha256:a36c8abd3864442c62d13c9beb41af2c88048534b31bd47bc82a897c808bf798\"},\"chroniclePrefix\":\"sha256:9907d1aef60d837312e5aa10ec38d176617ab8ed31f433bf97ff18f8471158cc\",\"cycleState\":{\"kind\":\"combat-boundary\",\"authority\":{\"contractVersion\":1,\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"setupId\":\"rules-lab.combat.close-assault.v1\",\"setupHash\":\"sha256:22495e26528c2f4db8335d3b4041194aef26295f30aab0e4e6f384ff17069848\",\"contentPackId\":\"rules-lab.content.close-assault.v1\",\"contentHash\":\"sha256:ee4fde9638ceb61ec08612fe32f9ac81db05572aac5ca20941e402d2fed25847\",\"scenarioId\":\"close-assault-positive-v1\",\"gameTurn\":1,\"operationStage\":1,\"playerPhaseSlot\":\"first-acting-side\",\"actingSide\":\"axis\",\"ordinal\":1,\"openedAuthorityVersion\":12,\"openingPrefix\":\"sha256:07ef36fec645c632463dcb1e7446b1d914cc8f91506bac968c2bac84a55def45\",\"admittedPolicyBundleDigest\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\"},\"authorityId\":\"sha256:d886d82a4a80cb59acd158b7040135ade9a82e910339d4282ef6793559940f1d\",\"firstActingSide\":\"axis\",\"attackHistory\":[{\"commitmentId\":\"cmt.95e6f054529c13956c0da21e3326e77d4130ee8d346c5f76582928a257164fa5\",\"cycleId\":\"sha256:d886d82a4a80cb59acd158b7040135ade9a82e910339d4282ef6793559940f1d\",\"segmentId\":\"seg.8dc46c77d0519036dbdeb7fc16d197bdadf183a8ae758421380dabfd5217d411\",\"attacker\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"axis\",\"elementId\":\"axis-assault-battalion\"},\"defender\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"},\"targetLocationId\":\"assault-east\",\"gameTurn\":1,\"operationStage\":1}],\"targetUses\":[{\"commitmentId\":\"cmt.95e6f054529c13956c0da21e3326e77d4130ee8d346c5f76582928a257164fa5\",\"segmentId\":\"seg.8dc46c77d0519036dbdeb7fc16d197bdadf183a8ae758421380dabfd5217d411\",\"targetLocationId\":\"assault-east\"}]},\"combatState\":{\"kind\":\"settlement\",\"base\":{\"contractVersion\":1,\"boundary\":{\"contractVersion\":1,\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"cycle\":{\"contractVersion\":1,\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"setupId\":\"rules-lab.combat.close-assault.v1\",\"setupHash\":\"sha256:22495e26528c2f4db8335d3b4041194aef26295f30aab0e4e6f384ff17069848\",\"contentPackId\":\"rules-lab.content.close-assault.v1\",\"contentHash\":\"sha256:ee4fde9638ceb61ec08612fe32f9ac81db05572aac5ca20941e402d2fed25847\",\"scenarioId\":\"close-assault-positive-v1\",\"gameTurn\":1,\"operationStage\":1,\"playerPhaseSlot\":\"first-acting-side\",\"actingSide\":\"axis\",\"ordinal\":1,\"openedAuthorityVersion\":12,\"openingPrefix\":\"sha256:07ef36fec645c632463dcb1e7446b1d914cc8f91506bac968c2bac84a55def45\",\"admittedPolicyBundleDigest\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\"},\"firstActingSide\":\"axis\",\"priorVersion\":20,\"priorPrefix\":\"sha256:7931527dd7d964dc4436798d8c2467424fdaee54909f6a95080ddff57d31ec5f\",\"completedBreakdownReceipt\":\"sha256:ee951d526e35d25703a47c62aacaa093aaffa76494e6a3e15f08ac4c69c182cc\",\"position\":{\"contractVersion\":5,\"positionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.position-determination\",\"gameTurn\":1,\"operationStage\":1,\"stageId\":\"land.stage.operation\",\"phaseId\":\"land.phase.movement-and-combat\",\"segmentId\":\"land.segment.combat\",\"stepId\":\"land.step.position-determination\",\"actorRole\":\"first-acting-side\",\"activeSide\":\"axis\",\"sources\":[{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"5.2\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"7.11\"},{\"sourceId\":\"spi-1979-land-rules\",\"locator\":\"7.14\"}]},\"world\":{\"contractVersion\":7,\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"elements\":[{\"elementId\":\"axis-assault-battalion\",\"currentLocationId\":\"assault-west\",\"reserveStatus\":\"none\",\"operationalState\":{\"ledgerGameTurn\":1,\"ledgerOperationStage\":1,\"capabilityPointsExpended\":{\"numerator\":5,\"denominator\":1},\"cohesionLevel\":0,\"vehicleBreakdownState\":null,\"movementEnded\":null,\"initialLedgerOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:initial-ledger\"}]}},\"components\":[{\"componentId\":\"axis-assault-battalion.toe.infantry\",\"currentToe\":10,\"initialToeOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:toe.axis-assault-battalion.toe.infantry\"}]}}],\"sourceParentFormationId\":\"axis-assault-formation\",\"currentParentFormationId\":\"axis-assault-formation\",\"ammunition\":{\"points\":10,\"initialAmmunitionOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:ammo.axis-assault-battalion\"}]}},\"readiness\":{\"gameTurn\":1,\"operationStage\":1,\"waterStatus\":\"distributed-for-stage\",\"storesStatus\":\"distributed-for-stage\",\"pinned\":false,\"initialReadinessOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:readiness.axis-assault-battalion\"}]}}},{\"elementId\":\"commonwealth-assault-battalion\",\"currentLocationId\":\"assault-east\",\"reserveStatus\":\"none\",\"operationalState\":{\"ledgerGameTurn\":1,\"ledgerOperationStage\":1,\"capabilityPointsExpended\":{\"numerator\":7,\"denominator\":1},\"cohesionLevel\":0,\"vehicleBreakdownState\":null,\"movementEnded\":null,\"initialLedgerOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:initial-ledger\"}]}},\"components\":[{\"componentId\":\"commonwealth-assault-battalion.toe.infantry\",\"currentToe\":10,\"initialToeOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:toe.commonwealth-assault-battalion.toe.infantry\"}]}}],\"sourceParentFormationId\":\"commonwealth-assault-formation\",\"currentParentFormationId\":\"commonwealth-assault-formation\",\"ammunition\":{\"points\":10,\"initialAmmunitionOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:ammo.commonwealth-assault-battalion\"}]}},\"readiness\":{\"gameTurn\":1,\"operationStage\":1,\"waterStatus\":\"distributed-for-stage\",\"storesStatus\":\"distributed-for-stage\",\"pinned\":false,\"initialReadinessOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:readiness.commonwealth-assault-battalion\"}]}}}],\"representations\":[{\"representationId\":\"map-representation.0001\",\"currentLocationId\":\"assault-west\",\"bindingKind\":\"independent-element\",\"boundElementIds\":[\"axis-assault-battalion\"]},{\"representationId\":\"map-representation.0002\",\"currentLocationId\":\"assault-east\",\"bindingKind\":\"independent-element\",\"boundElementIds\":[\"commonwealth-assault-battalion\"]}],\"brokenVehicleLots\":[],\"cohesionCauses\":[],\"relationships\":[],\"custodyLots\":[],\"guards\":[],\"replacementEntitlements\":[],\"futureObligations\":[],\"settlements\":[]},\"randomState\":{\"contractVersion\":1,\"algorithmId\":\"sandtable.sha256-counter.v1\",\"seed\":0,\"nextByteCursor\":174118},\"weather\":{\"gameTurn\":1,\"operationStage\":1,\"attackerKind\":\"normal\",\"defenderKind\":\"normal\",\"weatherReceiptHash\":\"sha256:7f0803dc1ca205e6a8166969883519d733da68641abef8bbebf205aeac7b76f0\"},\"breakdownFlow\":{\"kind\":\"idle\"},\"reactionWindow\":null},\"steps\":{\"contractVersion\":1,\"boundaryHash\":\"sha256:3206df14e0f55d13016cf90aa555743618730cbdad8f86267ac37ae530891a0b\",\"segmentId\":\"seg.8dc46c77d0519036dbdeb7fc16d197bdadf183a8ae758421380dabfd5217d411\",\"stateVersion\":27,\"prefix\":\"sha256:9fcf6f8ddea270e5157eab0fb6d323beb3cdedc79ad8e5c42db56eed8b6cd948\",\"stepIndex\":3,\"selectionOutcome\":\"selected\",\"selection\":{\"attacker\":{\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"axis\",\"elementId\":\"axis-assault-battalion\"},\"representationId\":\"map-representation.0001\",\"locationId\":\"assault-west\",\"componentIds\":[\"axis-assault-battalion.toe.infantry\"]},\"defender\":{\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"},\"representationId\":\"map-representation.0002\",\"locationId\":\"assault-east\",\"componentIds\":[\"commonwealth-assault-battalion.toe.infantry\"]},\"targetLocationId\":\"assault-east\",\"basis\":\"voluntary-adjacent\"},\"selectionReceiptId\":\"cmb.5630c40a7169ff3de4d5934f9c7718836371dcfe146b128869b86b89fe170172\",\"declineReceiptId\":\"cmb.a900ffff8460b662269be3ba7638a24c6ab2f7e606534b917b742ea88f99784c\",\"cancellationReceiptId\":null,\"selectionWindow\":{\"decisionId\":\"seg.8dc46c77d0519036dbdeb7fc16d197bdadf183a8ae758421380dabfd5217d411.selection\",\"owner\":\"axis\",\"timing\":{\"contractVersion\":1,\"configHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"kind\":\"selection\",\"decisionBudgetMilliseconds\":30000,\"openedAtUnixMilliseconds\":1000,\"deadlineUnixMilliseconds\":31000,\"highWaterUnixMilliseconds\":1001}},\"rbaWindow\":{\"decisionId\":\"seg.8dc46c77d0519036dbdeb7fc16d197bdadf183a8ae758421380dabfd5217d411.rba\",\"owner\":\"commonwealth\",\"timing\":{\"contractVersion\":1,\"configHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"kind\":\"rba\",\"decisionBudgetMilliseconds\":30000,\"openedAtUnixMilliseconds\":2000,\"deadlineUnixMilliseconds\":32000,\"highWaterUnixMilliseconds\":2001}},\"stepReceipts\":[\"cmb.28bd4e59d4b866a9d03c0b58b071f246c9e197d558a3aacfcfe722351dbdfc02\",\"cmb.7ac896dc850275919ad6a0a1675c0fecbb25733b4bf5d3320d923ea4323522f0\",\"cmb.6d2b2797ea9950997676677cf88fb91f5294c1fb71382bca12b1aa2f01f347b6\"],\"receipts\":[{\"commandHash\":\"sha256:0efaacd9f46df9c5b063ba90abd8c90a7f463f67e28b59e059d5860805335085\",\"eventHash\":\"sha256:d1e6747bf1985ccb39d27b84b742322b652e163f6851db1b71e18c517b839671\",\"receiptId\":\"cmb.52f910bea32519f73f00e4e6f24ce517829da55b2daa9c76f708c4ebc0cc3d43\",\"actor\":\"system\",\"stateVersion\":21},{\"commandHash\":\"sha256:0cced396a21631b8aca55e54470a798311b8071b2052ef0dae8aa356c1e12e9e\",\"eventHash\":\"sha256:da93389bfe3bbef2fdda580b942761cfefdf9a565e70fe602d414672ec986b16\",\"receiptId\":\"cmb.5630c40a7169ff3de4d5934f9c7718836371dcfe146b128869b86b89fe170172\",\"actor\":\"axis\",\"stateVersion\":22},{\"commandHash\":\"sha256:e525336297bca39371c493b3a89c551f6606fd4d6e37cb0b1693f60ebf16baf6\",\"eventHash\":\"sha256:9b0947720854383f6fe05564f202071c7ffb31712bd31b1457f8cb8f8b0062c8\",\"receiptId\":\"cmb.28bd4e59d4b866a9d03c0b58b071f246c9e197d558a3aacfcfe722351dbdfc02\",\"actor\":\"system\",\"stateVersion\":23},{\"commandHash\":\"sha256:ab541ac50cb9ecb2d4316111ccfd0c52522838174a1087274d367bbc8e69bae8\",\"eventHash\":\"sha256:27d178d800b5c3abcee5a975806c94cc8f3c660fc834a3f9b6b7fc8ff1a293fa\",\"receiptId\":\"cmb.7ac896dc850275919ad6a0a1675c0fecbb25733b4bf5d3320d923ea4323522f0\",\"actor\":\"system\",\"stateVersion\":24},{\"commandHash\":\"sha256:9187cc1366d15341296de5d373104a3ad6990b098c26a488219e3f3b7b5ba93e\",\"eventHash\":\"sha256:cccf4cdc983faaa9450cacc17fd5d5983386984c85692c2dfc54181dc7ab23e9\",\"receiptId\":\"cmb.20b74279560c01b89eb11a78f2d09367c056612a55378e0092f4d5f59032edce\",\"actor\":\"system\",\"stateVersion\":25},{\"commandHash\":\"sha256:dd545c52e7b12d8c4c4908e5b2f0823a20940eaeb9e33cadea8e476ef4d95911\",\"eventHash\":\"sha256:b80780f3ea5c148c3bf530fd90a51c6ce671726248896c01a50eef06e174a51f\",\"receiptId\":\"cmb.a900ffff8460b662269be3ba7638a24c6ab2f7e606534b917b742ea88f99784c\",\"actor\":\"commonwealth\",\"stateVersion\":26},{\"commandHash\":\"sha256:a025be09ff4992ef063cf2a8f637fb2651157edfbf11482240d382c0d021eb33\",\"eventHash\":\"sha256:7d0182fc42354642393b7620c66a71b4453f14061dd2c666b6cd4623b792066a\",\"receiptId\":\"cmb.6d2b2797ea9950997676677cf88fb91f5294c1fb71382bca12b1aa2f01f347b6\",\"actor\":\"system\",\"stateVersion\":27}],\"closed\":false}},\"preRoundSnapshotHash\":\"sha256:757b0e3a1736ed5cd98e1b98d4fa2d13a5b956512489f66cc6aaa4f6a61d0f3d\",\"committed\":{\"contractVersion\":1,\"baseHash\":\"sha256:1ab0a6eb26150f14e636b81530ba747aee599087e056f7a1b49f972c2c02b8cd\",\"opportunityId\":\"opp.e0f898668a7c228e819388f4fbec7a7b715cb35273b2790fd37953b356b6d4a4\",\"roundId\":\"rnd.474c1ab7f4e7284068aed8341854d898c0bee68ab99a0588d98628be6d88da87\",\"stateVersion\":33,\"prefix\":\"sha256:66f41da622c2f6da2751a26821ee00292795099c55f6080cacd9a492a48f03b3\",\"stepIndex\":5,\"status\":\"committed\",\"openingReceiptId\":\"cmb.ddba9fb1115299b5f4c83861bdf5a2bbbd8a4faec71cb91520d3deca535fa60e\",\"timing\":{\"contractVersion\":1,\"configHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"kind\":\"force-assignment\",\"decisionBudgetMilliseconds\":30000,\"openedAtUnixMilliseconds\":3000,\"deadlineUnixMilliseconds\":33000,\"highWaterUnixMilliseconds\":4001},\"slots\":[{\"role\":\"attacker\",\"owner\":\"axis\",\"slotId\":\"slt.a34e7067a405b265f0fc14b00432d6dbc19b041fb73bb7dd173157898fa74edb\",\"allocation\":{\"kind\":\"full-close-assault\",\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"axis\",\"elementId\":\"axis-assault-battalion\"},\"componentId\":\"axis-assault-battalion.toe.infantry\",\"committedToe\":10},\"sealedReceiptId\":\"cmb.fcaa852bee6efd51d8e81a641aad2eec0a50e5237e2c9537581983400faa262d\",\"sealedAt\":4000},{\"role\":\"defender\",\"owner\":\"commonwealth\",\"slotId\":\"slt.00fce134f77459ad0454d0a6c971ac3366bff7de530e0e74ee89c95beecbb83e\",\"allocation\":{\"kind\":\"full-close-assault\",\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"},\"componentId\":\"commonwealth-assault-battalion.toe.infantry\",\"committedToe\":10},\"sealedReceiptId\":\"cmb.f4a2c6b429a5e1d2f84c1014cacd1974e3d8883c59a0fba2287cbaf497263b4a\",\"sealedAt\":4001}],\"stepReceipts\":[\"cmb.28bd4e59d4b866a9d03c0b58b071f246c9e197d558a3aacfcfe722351dbdfc02\",\"cmb.7ac896dc850275919ad6a0a1675c0fecbb25733b4bf5d3320d923ea4323522f0\",\"cmb.6d2b2797ea9950997676677cf88fb91f5294c1fb71382bca12b1aa2f01f347b6\",\"cmb.54a5424aaabb9deb7c7fbffa65ca3bd080fbb595c0c0cb191a6a4e40070e650c\",\"cmb.d025aec5a79c8303ad339dec99d32b57d3819273e049aca452c49ba05cdb3918\"],\"world\":{\"contractVersion\":7,\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"elements\":[{\"elementId\":\"axis-assault-battalion\",\"currentLocationId\":\"assault-west\",\"reserveStatus\":\"none\",\"operationalState\":{\"ledgerGameTurn\":1,\"ledgerOperationStage\":1,\"capabilityPointsExpended\":{\"numerator\":10,\"denominator\":1},\"cohesionLevel\":0,\"vehicleBreakdownState\":null,\"movementEnded\":null,\"initialLedgerOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:initial-ledger\"}]}},\"components\":[{\"componentId\":\"axis-assault-battalion.toe.infantry\",\"currentToe\":10,\"initialToeOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:toe.axis-assault-battalion.toe.infantry\"}]}}],\"sourceParentFormationId\":\"axis-assault-formation\",\"currentParentFormationId\":\"axis-assault-formation\",\"ammunition\":{\"points\":0,\"initialAmmunitionOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:ammo.axis-assault-battalion\"}]}},\"readiness\":{\"gameTurn\":1,\"operationStage\":1,\"waterStatus\":\"distributed-for-stage\",\"storesStatus\":\"distributed-for-stage\",\"pinned\":false,\"initialReadinessOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:readiness.axis-assault-battalion\"}]}}},{\"elementId\":\"commonwealth-assault-battalion\",\"currentLocationId\":\"assault-east\",\"reserveStatus\":\"none\",\"operationalState\":{\"ledgerGameTurn\":1,\"ledgerOperationStage\":1,\"capabilityPointsExpended\":{\"numerator\":10,\"denominator\":1},\"cohesionLevel\":0,\"vehicleBreakdownState\":null,\"movementEnded\":null,\"initialLedgerOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:initial-ledger\"}]}},\"components\":[{\"componentId\":\"commonwealth-assault-battalion.toe.infantry\",\"currentToe\":10,\"initialToeOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:toe.commonwealth-assault-battalion.toe.infantry\"}]}}],\"sourceParentFormationId\":\"commonwealth-assault-formation\",\"currentParentFormationId\":\"commonwealth-assault-formation\",\"ammunition\":{\"points\":0,\"initialAmmunitionOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:ammo.commonwealth-assault-battalion\"}]}},\"readiness\":{\"gameTurn\":1,\"operationStage\":1,\"waterStatus\":\"distributed-for-stage\",\"storesStatus\":\"distributed-for-stage\",\"pinned\":false,\"initialReadinessOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:readiness.commonwealth-assault-battalion\"}]}}}],\"representations\":[{\"representationId\":\"map-representation.0001\",\"currentLocationId\":\"assault-west\",\"bindingKind\":\"independent-element\",\"boundElementIds\":[\"axis-assault-battalion\"]},{\"representationId\":\"map-representation.0002\",\"currentLocationId\":\"assault-east\",\"bindingKind\":\"independent-element\",\"boundElementIds\":[\"commonwealth-assault-battalion\"]}],\"brokenVehicleLots\":[],\"cohesionCauses\":[],\"relationships\":[],\"custodyLots\":[],\"guards\":[],\"replacementEntitlements\":[],\"futureObligations\":[],\"settlements\":[]},\"randomState\":{\"contractVersion\":1,\"algorithmId\":\"sandtable.sha256-counter.v1\",\"seed\":0,\"nextByteCursor\":174118},\"attackHistory\":[{\"commitmentId\":\"cmt.95e6f054529c13956c0da21e3326e77d4130ee8d346c5f76582928a257164fa5\",\"cycleId\":\"sha256:d886d82a4a80cb59acd158b7040135ade9a82e910339d4282ef6793559940f1d\",\"segmentId\":\"seg.8dc46c77d0519036dbdeb7fc16d197bdadf183a8ae758421380dabfd5217d411\",\"attacker\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"axis\",\"elementId\":\"axis-assault-battalion\"},\"defender\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"},\"targetLocationId\":\"assault-east\",\"gameTurn\":1,\"operationStage\":1}],\"targetUses\":[{\"commitmentId\":\"cmt.95e6f054529c13956c0da21e3326e77d4130ee8d346c5f76582928a257164fa5\",\"segmentId\":\"seg.8dc46c77d0519036dbdeb7fc16d197bdadf183a8ae758421380dabfd5217d411\",\"targetLocationId\":\"assault-east\"}],\"commitmentId\":\"cmt.95e6f054529c13956c0da21e3326e77d4130ee8d346c5f76582928a257164fa5\",\"cancellationReceiptId\":null,\"receipts\":[{\"commandHash\":\"sha256:66518644328f4a7e8c8897f358a6b7d22790119dc400e5c316c28bd90827c322\",\"eventHash\":\"sha256:a3fb355a36dbc807139ca71bc90a18ae263adf63e7da3a205e904da9bcd231d9\",\"receiptId\":\"cmb.ddba9fb1115299b5f4c83861bdf5a2bbbd8a4faec71cb91520d3deca535fa60e\",\"actor\":\"system\",\"stateVersion\":28},{\"commandHash\":\"sha256:c0cdf37763607f695d08adca122ef8f770c26c295691bd8a5a33be2769df4244\",\"eventHash\":\"sha256:c4fda1c2e446e99a75b4a9f814445136c13c2f750d7f2b16ab7c6586d643a51b\",\"receiptId\":\"cmb.fcaa852bee6efd51d8e81a641aad2eec0a50e5237e2c9537581983400faa262d\",\"actor\":\"axis\",\"stateVersion\":29},{\"commandHash\":\"sha256:16d1a21abd4c07b3643d98268458fb386cc50af8bda5d58ca64d32b6c233cb36\",\"eventHash\":\"sha256:47705d17b2c846b214d97d1c8017a658f1d6d1a7760215e47abc17e7fd2d8b2f\",\"receiptId\":\"cmb.f4a2c6b429a5e1d2f84c1014cacd1974e3d8883c59a0fba2287cbaf497263b4a\",\"actor\":\"commonwealth\",\"stateVersion\":30},{\"commandHash\":\"sha256:23b5221fcda9134a75d452d8e13f83b4db9a6f38eea0241ad32f3db05bc1f5f6\",\"eventHash\":\"sha256:9b841a3fd34b5a2acdbb9b582a57dab35eac4a04c0f43cd76e5a41ad0054ce61\",\"receiptId\":\"cmb.54a5424aaabb9deb7c7fbffa65ca3bd080fbb595c0c0cb191a6a4e40070e650c\",\"actor\":\"system\",\"stateVersion\":31},{\"commandHash\":\"sha256:61b16ec2309bf3ca06e9cdf27ec28e55ccf04ef989cd6475dbd03339bd505f51\",\"eventHash\":\"sha256:a71371e800cd0eb82b37a5f8197288ca781bc2ba5019aae97f2ffe05eb8adbbb\",\"receiptId\":\"cmb.d025aec5a79c8303ad339dec99d32b57d3819273e049aca452c49ba05cdb3918\",\"actor\":\"system\",\"stateVersion\":32},{\"commandHash\":\"sha256:f7c737bf4ec2dda4a923f87617402408be6b7287053ff43044cdaf3593324f99\",\"eventHash\":\"sha256:e1920097f83e0d7087035b91451d0760bb7e538cff4b1091557da8115091cf15\",\"receiptId\":\"cmb.c8d56cb31b2de8c81ea2778396830c6b18d47918b8aef5432846005290f4c368\",\"actor\":\"system\",\"stateVersion\":33}],\"closed\":false},\"result\":{\"contractVersion\":1,\"committedHash\":\"sha256:ef7e5a498bf103ef3e8211feee11517e6576c83b8c42438c18cd1b41fa5f7dc6\",\"stateVersion\":43,\"prefix\":\"sha256:9907d1aef60d837312e5aa10ec38d176617ab8ed31f433bf97ff18f8471158cc\",\"status\":\"closed\",\"result\":{\"resultId\":\"res.3377821968aaf8c7ab395c3d568a60dfb2b454f64cd4a1cb86fbf7545fc196d6\",\"commitmentId\":\"cmt.95e6f054529c13956c0da21e3326e77d4130ee8d346c5f76582928a257164fa5\",\"rulesInputHash\":\"sha256:fafb24792c9e3f774c368f85c02d1d068f84c9c78e67bf8324723257d0f13029\",\"procedureId\":\"sandtable.combat.role-ordered-d6.v1\",\"beforeRandomState\":{\"contractVersion\":1,\"algorithmId\":\"sandtable.sha256-counter.v1\",\"seed\":0,\"nextByteCursor\":174118},\"afterRandomState\":{\"contractVersion\":1,\"algorithmId\":\"sandtable.sha256-counter.v1\",\"seed\":0,\"nextByteCursor\":174128},\"draws\":[{\"purpose\":\"attacker.morale.tens\",\"beforeCursor\":174118,\"afterCursor\":174119,\"die\":6,\"consumed\":[23]},{\"purpose\":\"attacker.morale.ones\",\"beforeCursor\":174119,\"afterCursor\":174120,\"die\":6,\"consumed\":[83]},{\"purpose\":\"defender.morale.tens\",\"beforeCursor\":174120,\"afterCursor\":174121,\"die\":1,\"consumed\":[60]},{\"purpose\":\"defender.morale.ones\",\"beforeCursor\":174121,\"afterCursor\":174122,\"die\":1,\"consumed\":[150]},{\"purpose\":\"attacker.assault.tens\",\"beforeCursor\":174122,\"afterCursor\":174123,\"die\":1,\"consumed\":[36]},{\"purpose\":\"attacker.assault.ones\",\"beforeCursor\":174123,\"afterCursor\":174124,\"die\":1,\"consumed\":[132]},{\"purpose\":\"defender.assault.tens\",\"beforeCursor\":174124,\"afterCursor\":174125,\"die\":3,\"consumed\":[218]},{\"purpose\":\"defender.assault.ones\",\"beforeCursor\":174125,\"afterCursor\":174126,\"die\":6,\"consumed\":[155]},{\"purpose\":\"attacker.capture.share\",\"beforeCursor\":174126,\"afterCursor\":174128,\"die\":4,\"consumed\":[253,207]}],\"attackerMoraleCoordinate\":66,\"defenderMoraleCoordinate\":11,\"attackerMorale\":-1,\"defenderMorale\":1,\"basicDifferential\":0,\"facts\":{\"differential\":-2,\"attackerCoordinate\":11,\"defenderCoordinate\":36,\"captureDie\":4,\"attackerPercent\":25,\"defenderPercent\":5,\"rawEngaged\":false,\"requiredRetreat\":1,\"capturedRole\":\"attacker\",\"captureShare\":50}},\"settlementId\":\"set.06f42ed3e9505e6a870798aebd9d2231cd0ee378e272f80da0c3a7f31d06e7fa\",\"window\":null,\"acceptedHighWater\":11002,\"world\":{\"contractVersion\":7,\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"elements\":[{\"elementId\":\"axis-assault-battalion\",\"currentLocationId\":\"assault-west\",\"reserveStatus\":\"none\",\"operationalState\":{\"ledgerGameTurn\":1,\"ledgerOperationStage\":1,\"capabilityPointsExpended\":{\"numerator\":10,\"denominator\":1},\"cohesionLevel\":0,\"vehicleBreakdownState\":null,\"movementEnded\":null,\"initialLedgerOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:initial-ledger\"}]}},\"components\":[{\"componentId\":\"axis-assault-battalion.toe.infantry\",\"currentToe\":7,\"initialToeOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:toe.axis-assault-battalion.toe.infantry\"}]}}],\"sourceParentFormationId\":\"axis-assault-formation\",\"currentParentFormationId\":\"axis-assault-formation\",\"ammunition\":{\"points\":0,\"initialAmmunitionOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:ammo.axis-assault-battalion\"}]}},\"readiness\":{\"gameTurn\":1,\"operationStage\":1,\"waterStatus\":\"distributed-for-stage\",\"storesStatus\":\"distributed-for-stage\",\"pinned\":false,\"initialReadinessOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:readiness.axis-assault-battalion\"}]}}},{\"elementId\":\"commonwealth-assault-battalion\",\"currentLocationId\":\"commonwealth-rear\",\"reserveStatus\":\"none\",\"operationalState\":{\"ledgerGameTurn\":1,\"ledgerOperationStage\":1,\"capabilityPointsExpended\":{\"numerator\":11,\"denominator\":1},\"cohesionLevel\":-1,\"vehicleBreakdownState\":null,\"movementEnded\":null,\"initialLedgerOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:initial-ledger\"}]}},\"components\":[{\"componentId\":\"commonwealth-assault-battalion.toe.infantry\",\"currentToe\":9,\"initialToeOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:toe.commonwealth-assault-battalion.toe.infantry\"}]}}],\"sourceParentFormationId\":\"commonwealth-assault-formation\",\"currentParentFormationId\":\"commonwealth-assault-formation\",\"ammunition\":{\"points\":0,\"initialAmmunitionOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:ammo.commonwealth-assault-battalion\"}]}},\"readiness\":{\"gameTurn\":1,\"operationStage\":1,\"waterStatus\":\"distributed-for-stage\",\"storesStatus\":\"distributed-for-stage\",\"pinned\":false,\"initialReadinessOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:readiness.commonwealth-assault-battalion\"}]}}}],\"representations\":[{\"representationId\":\"map-representation.0001\",\"currentLocationId\":\"assault-west\",\"bindingKind\":\"independent-element\",\"boundElementIds\":[\"axis-assault-battalion\"]},{\"representationId\":\"map-representation.0002\",\"currentLocationId\":\"commonwealth-rear\",\"bindingKind\":\"independent-element\",\"boundElementIds\":[\"commonwealth-assault-battalion\"]}],\"brokenVehicleLots\":[],\"cohesionCauses\":[{\"causeId\":\"set.06f42ed3e9505e6a870798aebd9d2231cd0ee378e272f80da0c3a7f31d06e7fa.loss-dp.axis\",\"ordinal\":1,\"receiptId\":\"set.06f42ed3e9505e6a870798aebd9d2231cd0ee378e272f80da0c3a7f31d06e7fa.losses\",\"elementId\":\"axis-assault-battalion\",\"gameTurn\":1,\"operationStage\":1,\"kind\":\"loss-dp\",\"points\":3,\"before\":0,\"after\":-3},{\"causeId\":\"set.06f42ed3e9505e6a870798aebd9d2231cd0ee378e272f80da0c3a7f31d06e7fa.retreat-excess-dp.commonwealth\",\"ordinal\":2,\"receiptId\":\"set.06f42ed3e9505e6a870798aebd9d2231cd0ee378e272f80da0c3a7f31d06e7fa.retreat\",\"elementId\":\"commonwealth-assault-battalion\",\"gameTurn\":1,\"operationStage\":1,\"kind\":\"retreat-excess-dp\",\"points\":1,\"before\":0,\"after\":-1},{\"causeId\":\"set.06f42ed3e9505e6a870798aebd9d2231cd0ee378e272f80da0c3a7f31d06e7fa.assault-victory-rp.axis\",\"ordinal\":3,\"receiptId\":\"set.06f42ed3e9505e6a870798aebd9d2231cd0ee378e272f80da0c3a7f31d06e7fa.retreat\",\"elementId\":\"axis-assault-battalion\",\"gameTurn\":1,\"operationStage\":1,\"kind\":\"assault-victory-rp\",\"points\":3,\"before\":-3,\"after\":0}],\"relationships\":[],\"custodyLots\":[{\"lotId\":\"set.06f42ed3e9505e6a870798aebd9d2231cd0ee378e272f80da0c3a7f31d06e7fa.captives\",\"lossReceiptId\":\"set.06f42ed3e9505e6a870798aebd9d2231cd0ee378e272f80da0c3a7f31d06e7fa.losses\",\"originalComponent\":{\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"axis\",\"elementId\":\"axis-assault-battalion\"},\"componentId\":\"axis-assault-battalion.toe.infantry\"},\"captor\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"},\"quantity\":2,\"originLocationId\":\"assault-west\",\"currentLocationId\":\"commonwealth-rear\",\"status\":\"guarded\",\"guardId\":\"set.06f42ed3e9505e6a870798aebd9d2231cd0ee378e272f80da0c3a7f31d06e7fa.guard\",\"escapeReceiptId\":null}],\"guards\":[{\"guardId\":\"set.06f42ed3e9505e6a870798aebd9d2231cd0ee378e272f80da0c3a7f31d06e7fa.guard\",\"formationReceiptId\":\"set.06f42ed3e9505e6a870798aebd9d2231cd0ee378e272f80da0c3a7f31d06e7fa.custody\",\"lotId\":\"set.06f42ed3e9505e6a870798aebd9d2231cd0ee378e272f80da0c3a7f31d06e7fa.captives\",\"originComponent\":{\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"},\"componentId\":\"commonwealth-assault-battalion.toe.infantry\"},\"currentLocationId\":\"commonwealth-rear\",\"toe\":1,\"baseCapabilityPointAllowance\":10,\"offensiveCloseAssaultRating\":0,\"defensiveCloseAssaultRating\":1,\"operationalState\":{\"ledgerGameTurn\":1,\"ledgerOperationStage\":1,\"capabilityPointsExpended\":{\"numerator\":11,\"denominator\":1},\"cohesionLevel\":-1,\"vehicleBreakdownState\":null,\"movementEnded\":null,\"initialLedgerOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:initial-ledger\"}]}},\"ammunition\":{\"points\":0,\"initialAmmunitionOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:ammo.commonwealth-assault-battalion\"}]}},\"readiness\":{\"gameTurn\":1,\"operationStage\":1,\"waterStatus\":\"distributed-for-stage\",\"storesStatus\":\"distributed-for-stage\",\"pinned\":false,\"initialReadinessOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:readiness.commonwealth-assault-battalion\"}]}}}],\"replacementEntitlements\":[],\"futureObligations\":[{\"obligationId\":\"set.06f42ed3e9505e6a870798aebd9d2231cd0ee378e272f80da0c3a7f31d06e7fa.upkeep\",\"receiptId\":\"set.06f42ed3e9505e6a870798aebd9d2231cd0ee378e272f80da0c3a7f31d06e7fa.custody\",\"kind\":\"guard-priority-upkeep\",\"subjectId\":\"set.06f42ed3e9505e6a870798aebd9d2231cd0ee378e272f80da0c3a7f31d06e7fa.guard\",\"earnedScope\":{\"gameTurn\":1,\"operationStage\":1},\"eligibleScope\":null,\"activationGate\":\"before-prisoner-upkeep-or-guard-action\",\"status\":\"retained-unimplemented\"}],\"settlements\":[{\"settlementId\":\"set.06f42ed3e9505e6a870798aebd9d2231cd0ee378e272f80da0c3a7f31d06e7fa\",\"commitmentId\":\"cmt.95e6f054529c13956c0da21e3326e77d4130ee8d346c5f76582928a257164fa5\",\"resultId\":\"res.3377821968aaf8c7ab395c3d568a60dfb2b454f64cd4a1cb86fbf7545fc196d6\",\"gameTurn\":1,\"operationStage\":1,\"attacker\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"axis\",\"elementId\":\"axis-assault-battalion\"},\"defender\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"},\"preLossElements\":[{\"elementId\":\"axis-assault-battalion\",\"currentLocationId\":\"assault-west\",\"reserveStatus\":\"none\",\"operationalState\":{\"ledgerGameTurn\":1,\"ledgerOperationStage\":1,\"capabilityPointsExpended\":{\"numerator\":10,\"denominator\":1},\"cohesionLevel\":0,\"vehicleBreakdownState\":null,\"movementEnded\":null,\"initialLedgerOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:initial-ledger\"}]}},\"components\":[{\"componentId\":\"axis-assault-battalion.toe.infantry\",\"currentToe\":10,\"initialToeOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:toe.axis-assault-battalion.toe.infantry\"}]}}],\"sourceParentFormationId\":\"axis-assault-formation\",\"currentParentFormationId\":\"axis-assault-formation\",\"ammunition\":{\"points\":0,\"initialAmmunitionOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:ammo.axis-assault-battalion\"}]}},\"readiness\":{\"gameTurn\":1,\"operationStage\":1,\"waterStatus\":\"distributed-for-stage\",\"storesStatus\":\"distributed-for-stage\",\"pinned\":false,\"initialReadinessOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:readiness.axis-assault-battalion\"}]}}},{\"elementId\":\"commonwealth-assault-battalion\",\"currentLocationId\":\"assault-east\",\"reserveStatus\":\"none\",\"operationalState\":{\"ledgerGameTurn\":1,\"ledgerOperationStage\":1,\"capabilityPointsExpended\":{\"numerator\":10,\"denominator\":1},\"cohesionLevel\":0,\"vehicleBreakdownState\":null,\"movementEnded\":null,\"initialLedgerOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:initial-ledger\"}]}},\"components\":[{\"componentId\":\"commonwealth-assault-battalion.toe.infantry\",\"currentToe\":10,\"initialToeOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:toe.commonwealth-assault-battalion.toe.infantry\"}]}}],\"sourceParentFormationId\":\"commonwealth-assault-formation\",\"currentParentFormationId\":\"commonwealth-assault-formation\",\"ammunition\":{\"points\":0,\"initialAmmunitionOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:ammo.commonwealth-assault-battalion\"}]}},\"readiness\":{\"gameTurn\":1,\"operationStage\":1,\"waterStatus\":\"distributed-for-stage\",\"storesStatus\":\"distributed-for-stage\",\"pinned\":false,\"initialReadinessOrigin\":{\"kind\":\"synthetic\",\"references\":[{\"sourceId\":\"sandtable-rules-lab\",\"locator\":\"combat.close-assault-positive.v1:readiness.commonwealth-assault-battalion\"}]}}}],\"result\":{\"differential\":-2,\"attackerCoordinate\":11,\"defenderCoordinate\":36,\"captureDie\":4,\"attackerPercent\":25,\"defenderPercent\":5,\"rawEngaged\":false,\"requiredRetreat\":1,\"capturedRole\":\"attacker\",\"captureShare\":50},\"disposition\":{\"receiptId\":\"set.06f42ed3e9505e6a870798aebd9d2231cd0ee378e272f80da0c3a7f31d06e7fa.disposition\",\"predecessorReceiptId\":\"res.3377821968aaf8c7ab395c3d568a60dfb2b454f64cd4a1cb86fbf7545fc196d6\",\"kind\":\"retreat\",\"requiredDistance\":1,\"plannedDistance\":1,\"unfulfilledDistance\":0,\"route\":[\"assault-east\",\"commonwealth-rear\"]},\"losses\":{\"receiptId\":\"set.06f42ed3e9505e6a870798aebd9d2231cd0ee378e272f80da0c3a7f31d06e7fa.losses\",\"predecessorReceiptId\":\"set.06f42ed3e9505e6a870798aebd9d2231cd0ee378e272f80da0c3a7f31d06e7fa.disposition\",\"roles\":[{\"role\":\"attacker\",\"component\":{\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"axis\",\"elementId\":\"axis-assault-battalion\"},\"componentId\":\"axis-assault-battalion.toe.infantry\"},\"committedToe\":10,\"tablePercent\":25,\"refusalPercent\":0,\"lossToe\":3,\"capturedToe\":2,\"otherLossToe\":1,\"remainingToe\":7,\"lossDp\":3},{\"role\":\"defender\",\"component\":{\"unit\":{\"creationBinding\":\"creation.dc1c1bff9db6122758ab2b06360ba2131231fe2b63871780e416c8fd6ba4490b\",\"originalSide\":\"commonwealth\",\"elementId\":\"commonwealth-assault-battalion\"},\"componentId\":\"commonwealth-assault-battalion.toe.infantry\"},\"committedToe\":10,\"tablePercent\":5,\"refusalPercent\":0,\"lossToe\":0,\"capturedToe\":0,\"otherLossToe\":0,\"remainingToe\":10,\"lossDp\":0}]},\"retreat\":{\"receiptId\":\"set.06f42ed3e9505e6a870798aebd9d2231cd0ee378e272f80da0c3a7f31d06e7fa.retreat\",\"predecessorReceiptId\":\"set.06f42ed3e9505e6a870798aebd9d2231cd0ee378e272f80da0c3a7f31d06e7fa.losses\",\"kind\":\"retreat\",\"route\":[\"assault-east\",\"commonwealth-rear\"],\"completedDistance\":1,\"beforeCp\":{\"numerator\":10,\"denominator\":1},\"afterCp\":{\"numerator\":11,\"denominator\":1},\"excessCpDp\":1,\"attackerVictoryRp\":3},\"custody\":{\"receiptId\":\"set.06f42ed3e9505e6a870798aebd9d2231cd0ee378e272f80da0c3a7f31d06e7fa.custody\",\"predecessorReceiptId\":\"set.06f42ed3e9505e6a870798aebd9d2231cd0ee378e272f80da0c3a7f31d06e7fa.retreat\",\"lotId\":\"set.06f42ed3e9505e6a870798aebd9d2231cd0ee378e272f80da0c3a7f31d06e7fa.captives\",\"kind\":\"relocate-and-guard\",\"route\":[\"assault-west\",\"assault-east\",\"commonwealth-rear\"],\"guardId\":\"set.06f42ed3e9505e6a870798aebd9d2231cd0ee378e272f80da0c3a7f31d06e7fa.guard\",\"entitlementId\":null,\"donorToeBefore\":10,\"donorToeAfter\":9},\"relationships\":{\"receiptId\":\"set.06f42ed3e9505e6a870798aebd9d2231cd0ee378e272f80da0c3a7f31d06e7fa.relationships\",\"predecessorReceiptId\":\"set.06f42ed3e9505e6a870798aebd9d2231cd0ee378e272f80da0c3a7f31d06e7fa.custody\",\"relationshipId\":null,\"kind\":null}}]},\"randomState\":{\"contractVersion\":1,\"algorithmId\":\"sandtable.sha256-counter.v1\",\"seed\":0,\"nextByteCursor\":174128},\"roundClosureReceiptId\":\"cmb.de38fb786290e5f9341bf95fa32b965a71ecd96a8bd03645ac7ca0b81b084086\",\"caCompletionReceiptId\":\"cmb.d667fab679a8689608129da0e88f52fd0c1a0a8c675f2bd758402fa4315f0e2c\",\"receipts\":[{\"commandHash\":\"sha256:66fe500a0a6ff63e1ef05b60ebc7225b45f4194c0f44dcb14de6b63b25aaae1f\",\"eventHash\":\"sha256:a7500edfc39a87a86b9f489f3dbe27b8f04e51bc6554d8cb171a85a2cb63e274\",\"receiptId\":\"cmb.0c12e8ddbe0d2277eacf3e38d4d4731a76a9f1e3d57e53c50916cc88ceac9b1f\",\"actor\":\"system\",\"stateVersion\":34},{\"commandHash\":\"sha256:d6a4f9779125e7c499e7ad47de6233c0584d0bc5f8e2ed7c89d82f49f182478f\",\"eventHash\":\"sha256:58cf1b113bd28a1215a6c567783f89a0231eac3017fc5c042552aa454caceb64\",\"receiptId\":\"cmb.85f16895435e41e3bfb1887f0521966622de47b04f1c545c41319d5f017b5bfd\",\"actor\":\"system\",\"stateVersion\":35},{\"commandHash\":\"sha256:16277cf1541b04f74cf48a37a8199394e943c56905b511c4fbfc4afe7fc79b87\",\"eventHash\":\"sha256:c4bed92633f33707b859fd2933949190b2ad8d5588cc2a0157dc7eb2d2ea8a67\",\"receiptId\":\"cmb.a254732c5d25da848ebfd2de8fcd93187f587e52e27d4a55464a9d29b9fce26b\",\"actor\":\"commonwealth\",\"stateVersion\":36},{\"commandHash\":\"sha256:a434cb027963eacd595208c4ca336fe77a9155368e1ec327c06b41efa2f3eb66\",\"eventHash\":\"sha256:a0b47dc8d02edc1cbee07d9606080f1feb02d0fbb92506f1f40ec2e48f8f88d2\",\"receiptId\":\"cmb.3cba476850c75cebefd2e36d2a029387dfa4e966758d08c0f66bec0433644a3b\",\"actor\":\"system\",\"stateVersion\":37},{\"commandHash\":\"sha256:fcddc83cf6b7d58ce165913d71518f1d9264a6a7ea1be6ea1edc27e0962076e6\",\"eventHash\":\"sha256:f3898935e5bc55ea470c89699d7c48f7334292cb049cc3a3380f688d39e882df\",\"receiptId\":\"cmb.7b2f8c1625ddae7b7ac60fee9ee4c5b1108445377726872352ddece0e7fe7007\",\"actor\":\"system\",\"stateVersion\":38},{\"commandHash\":\"sha256:d6121f12086327fa5cda8bedc162e635b22e743737972cd42665da5543e16323\",\"eventHash\":\"sha256:ff28cb876b52e2b235a8ab233299b07afb4243276e315b9209a04e24a4cf8dd5\",\"receiptId\":\"cmb.80a41028862edea2be3220d88558c3b86047aa0eabe2c7e37c7488791389f2f4\",\"actor\":\"system\",\"stateVersion\":39},{\"commandHash\":\"sha256:0799a38cb281c1fbbdfd24055b3acce8900a96a636a6ae6caafd646eab0fad2f\",\"eventHash\":\"sha256:6f4f5366f5ec190b135f0ae0558179c4ba3e3129330579d47b061cab8585e5d2\",\"receiptId\":\"cmb.88610e7dee15f60830f89eac1649cae921cc42cfb3a6674b0f4cd931d0524ea2\",\"actor\":\"commonwealth\",\"stateVersion\":40},{\"commandHash\":\"sha256:826ab94d27519f635e2e7a2d6ee4e3c1bba66a38ec408e551c6136edb9c37d1b\",\"eventHash\":\"sha256:3f919455f59ee6168de60c5b511808b4b8b6c7a16c61977d98265ce7dab36ee6\",\"receiptId\":\"cmb.e31b02c24a9b60a2624a05896eb9e9ca7995c48911b3fb7e778c9ec4370585f8\",\"actor\":\"system\",\"stateVersion\":41},{\"commandHash\":\"sha256:1691a78078f30b58b72e06fa49f5140f5f0fc3944cb588952eaa2e195ba7591f\",\"eventHash\":\"sha256:0a233e054745348a6793362ecca0e0e2f7e9e814a994ac2325cfb90aa71d9a96\",\"receiptId\":\"cmb.de38fb786290e5f9341bf95fa32b965a71ecd96a8bd03645ac7ca0b81b084086\",\"actor\":\"system\",\"stateVersion\":42},{\"commandHash\":\"sha256:fae16917d67dd6fb34fd0cf7ca1f91711265079ad8bf94d87cafc5e050a303b5\",\"eventHash\":\"sha256:43002c0711ef7dc7609090115590da6c7470c947765517dbc9118de6bbb16089\",\"receiptId\":\"cmb.d667fab679a8689608129da0e88f52fd0c1a0a8c675f2bd758402fa4315f0e2c\",\"actor\":\"system\",\"stateVersion\":43}],\"closed\":true}},\"commandReceipts\":[{\"commandHash\":\"sha256:28810771a9b26e8f6582f63ace0c916edf45f9087167a1ed890fae4c92261479\",\"eventHash\":\"sha256:46d0a7bd3a2d675ec9d72d89143bdcc0a26ca2c7df950d02e92347a0d82ba723\",\"receiptId\":\"probe.receipt.2\",\"actor\":\"system\",\"stateVersion\":2},{\"commandHash\":\"sha256:cf6d49b0a192d0bf3be5ec1e71d3b0d00f83392615f8bf56881fc305e7801362\",\"eventHash\":\"sha256:f567df06ac4f01b1c76e7494e1017b241c947e53c9164b22911a362adca24643\",\"receiptId\":\"probe.receipt.3\",\"actor\":\"system\",\"stateVersion\":3},{\"commandHash\":\"sha256:dd89bd4d7baebce7b95fada805e262d0d17e380d26950947990b2457f40100b3\",\"eventHash\":\"sha256:30bf6137b30ce50dc430d88d92c162ec43e3492e7e7499697e80368a5c53c9a1\",\"receiptId\":\"probe.receipt.4\",\"actor\":\"system\",\"stateVersion\":4},{\"commandHash\":\"sha256:14352755ae8b58db92e76f6278711285442165163d81b27ca0fff9845ab1afa4\",\"eventHash\":\"sha256:b333f98aea793c1e3e505fd5a208a809f3dd040537ed32164e8f5407d94f4cd0\",\"receiptId\":\"probe.receipt.5\",\"actor\":\"system\",\"stateVersion\":5},{\"commandHash\":\"sha256:9e282aacf95a730437e872cab415e4ad683ef01ef560925976a72ee29cc1da11\",\"eventHash\":\"sha256:ff1b9fa8cc0ec0668b3480db0d01d6930f2af23b0f1fcefe2dcc5ec4372c115e\",\"receiptId\":\"probe.receipt.6\",\"actor\":\"system\",\"stateVersion\":6},{\"commandHash\":\"sha256:e99c5a638d67bc843784f11e968092515340d31116bc077b69cc4369122b4f9c\",\"eventHash\":\"sha256:c3fc50ee65a7579059aac6c269ad5d363ddce209b33217a810451e1917ab5dd2\",\"receiptId\":\"probe.receipt.7\",\"actor\":\"system\",\"stateVersion\":7},{\"commandHash\":\"sha256:066667bb084a4e9c066a6650259d81a1e7ca44a4f33ba0b4e5ea6e025efe7894\",\"eventHash\":\"sha256:9c1bee423d12f92165ebae5001afdc85f46e70ee172e16f76dfc2042132e56a1\",\"receiptId\":\"probe.receipt.8\",\"actor\":\"system\",\"stateVersion\":8},{\"commandHash\":\"sha256:7a86521f0d7690bf94ebfc80cab20450ad0e9aad9e8161f8f33a683488cc500d\",\"eventHash\":\"sha256:628e443f6cbbcfda5c7f1ae999c6b847ec033d20c769582b574eaf393fc8335c\",\"receiptId\":\"probe.receipt.9\",\"actor\":\"system\",\"stateVersion\":9},{\"commandHash\":\"sha256:6c841c7359e7925bd3d7478654b5ca54827e91486c13e59ab85bf244221af0ca\",\"eventHash\":\"sha256:cd753c1a3c049418f68b031dc5938e673760371a835bae00ad23b9d491164302\",\"receiptId\":\"probe.receipt.10\",\"actor\":\"system\",\"stateVersion\":10},{\"commandHash\":\"sha256:b95676fad4898fd0158b95fd75d7c1595c5ea13f71898a5bd0a5a1905cda5377\",\"eventHash\":\"sha256:ab54f4e304d0f48f6875ef16b3f51b72dbc3a52d2265169b0c056cefe02da745\",\"receiptId\":\"probe.receipt.11\",\"actor\":\"system\",\"stateVersion\":11},{\"commandHash\":\"sha256:c4ad0067a9dbe907e0ae6feb6877c8a31047b9d35ed739c0c2538b909ba55b0d\",\"eventHash\":\"sha256:cee368f0db4f398595f8312d7f62ae4185fdb584b7f9d6758c9960847654f940\",\"receiptId\":\"probe.receipt.12\",\"actor\":\"system\",\"stateVersion\":12},{\"commandHash\":\"sha256:d6d6005d91f9021ef18895a05bb46f811915362abb8d66a66c5e1380b4f6996a\",\"eventHash\":\"sha256:6e149e4cd64328859d35c0c116c69fc56b95c9aac7c87d893f190b6b293d6ecc\",\"receiptId\":\"probe.receipt.13\",\"actor\":\"system\",\"stateVersion\":13},{\"commandHash\":\"sha256:336b55beaf17f556a0e06e75f0a78be7bd28200eef59019d15519a4dd2b0b045\",\"eventHash\":\"sha256:68df71ddd1a36080493bd63cb568aecd3ff6f44623345f2d8df463316ce643c8\",\"receiptId\":\"probe.receipt.14\",\"actor\":\"system\",\"stateVersion\":14},{\"commandHash\":\"sha256:2ea1ae2a1dca795f2c8c95957c908a59ac3eb51d19165bc81d12967801b7da7b\",\"eventHash\":\"sha256:4c030c2a81c9dec2ede986d675b5d14911e396d88eee8d5ede7a1557909d3ece\",\"receiptId\":\"probe.receipt.15\",\"actor\":\"system\",\"stateVersion\":15},{\"commandHash\":\"sha256:6175339c4380805a4c7c471f0440e76545e9d9e1a378a854dfc0f65fa72e5017\",\"eventHash\":\"sha256:f07619a44dec3e58f1317d511b74dca56e52e8d92fdd6df078e26e316070cca2\",\"receiptId\":\"probe.receipt.16\",\"actor\":\"system\",\"stateVersion\":16},{\"commandHash\":\"sha256:65de9f5bfe3e11464ea59a7d15d5248a5c60de969e504da0701841224c705fa5\",\"eventHash\":\"sha256:203b50593fd505312e1beb9a86551b6f6477f518a67860b470382d99c75d7c45\",\"receiptId\":\"probe.receipt.17\",\"actor\":\"system\",\"stateVersion\":17},{\"commandHash\":\"sha256:3fd6956b58d85097840b72c17dd818343543a55bf1dc946589ffe1d42fe6506b\",\"eventHash\":\"sha256:d44e8b17ab1610cdfaa8d8f56d0b3617ea1309a68392d199447998798753e605\",\"receiptId\":\"probe.receipt.18\",\"actor\":\"system\",\"stateVersion\":18},{\"commandHash\":\"sha256:9d80e366e19fe1b90c1062fcef2c9b6eac59cfd397bead321369765f60824f1f\",\"eventHash\":\"sha256:df8f9b25677cbf7252e7a6875805d85d3fcaf46a3cfc3244880c93269ab350a0\",\"receiptId\":\"probe.receipt.19\",\"actor\":\"system\",\"stateVersion\":19},{\"commandHash\":\"sha256:e0c318971f57625afc62b1cd5510a5dcd4bfe6feab4347bf158e0648ee83afca\",\"eventHash\":\"sha256:ee951d526e35d25703a47c62aacaa093aaffa76494e6a3e15f08ac4c69c182cc\",\"receiptId\":\"probe.receipt.20\",\"actor\":\"system\",\"stateVersion\":20},{\"commandHash\":\"sha256:0efaacd9f46df9c5b063ba90abd8c90a7f463f67e28b59e059d5860805335085\",\"eventHash\":\"sha256:d1e6747bf1985ccb39d27b84b742322b652e163f6851db1b71e18c517b839671\",\"receiptId\":\"cmb.52f910bea32519f73f00e4e6f24ce517829da55b2daa9c76f708c4ebc0cc3d43\",\"actor\":\"system\",\"stateVersion\":21},{\"commandHash\":\"sha256:0cced396a21631b8aca55e54470a798311b8071b2052ef0dae8aa356c1e12e9e\",\"eventHash\":\"sha256:da93389bfe3bbef2fdda580b942761cfefdf9a565e70fe602d414672ec986b16\",\"receiptId\":\"cmb.5630c40a7169ff3de4d5934f9c7718836371dcfe146b128869b86b89fe170172\",\"actor\":\"axis\",\"stateVersion\":22},{\"commandHash\":\"sha256:e525336297bca39371c493b3a89c551f6606fd4d6e37cb0b1693f60ebf16baf6\",\"eventHash\":\"sha256:9b0947720854383f6fe05564f202071c7ffb31712bd31b1457f8cb8f8b0062c8\",\"receiptId\":\"cmb.28bd4e59d4b866a9d03c0b58b071f246c9e197d558a3aacfcfe722351dbdfc02\",\"actor\":\"system\",\"stateVersion\":23},{\"commandHash\":\"sha256:ab541ac50cb9ecb2d4316111ccfd0c52522838174a1087274d367bbc8e69bae8\",\"eventHash\":\"sha256:27d178d800b5c3abcee5a975806c94cc8f3c660fc834a3f9b6b7fc8ff1a293fa\",\"receiptId\":\"cmb.7ac896dc850275919ad6a0a1675c0fecbb25733b4bf5d3320d923ea4323522f0\",\"actor\":\"system\",\"stateVersion\":24},{\"commandHash\":\"sha256:9187cc1366d15341296de5d373104a3ad6990b098c26a488219e3f3b7b5ba93e\",\"eventHash\":\"sha256:cccf4cdc983faaa9450cacc17fd5d5983386984c85692c2dfc54181dc7ab23e9\",\"receiptId\":\"cmb.20b74279560c01b89eb11a78f2d09367c056612a55378e0092f4d5f59032edce\",\"actor\":\"system\",\"stateVersion\":25},{\"commandHash\":\"sha256:dd545c52e7b12d8c4c4908e5b2f0823a20940eaeb9e33cadea8e476ef4d95911\",\"eventHash\":\"sha256:b80780f3ea5c148c3bf530fd90a51c6ce671726248896c01a50eef06e174a51f\",\"receiptId\":\"cmb.a900ffff8460b662269be3ba7638a24c6ab2f7e606534b917b742ea88f99784c\",\"actor\":\"commonwealth\",\"stateVersion\":26},{\"commandHash\":\"sha256:a025be09ff4992ef063cf2a8f637fb2651157edfbf11482240d382c0d021eb33\",\"eventHash\":\"sha256:7d0182fc42354642393b7620c66a71b4453f14061dd2c666b6cd4623b792066a\",\"receiptId\":\"cmb.6d2b2797ea9950997676677cf88fb91f5294c1fb71382bca12b1aa2f01f347b6\",\"actor\":\"system\",\"stateVersion\":27},{\"commandHash\":\"sha256:66518644328f4a7e8c8897f358a6b7d22790119dc400e5c316c28bd90827c322\",\"eventHash\":\"sha256:a3fb355a36dbc807139ca71bc90a18ae263adf63e7da3a205e904da9bcd231d9\",\"receiptId\":\"cmb.ddba9fb1115299b5f4c83861bdf5a2bbbd8a4faec71cb91520d3deca535fa60e\",\"actor\":\"system\",\"stateVersion\":28},{\"commandHash\":\"sha256:c0cdf37763607f695d08adca122ef8f770c26c295691bd8a5a33be2769df4244\",\"eventHash\":\"sha256:c4fda1c2e446e99a75b4a9f814445136c13c2f750d7f2b16ab7c6586d643a51b\",\"receiptId\":\"cmb.fcaa852bee6efd51d8e81a641aad2eec0a50e5237e2c9537581983400faa262d\",\"actor\":\"axis\",\"stateVersion\":29},{\"commandHash\":\"sha256:16d1a21abd4c07b3643d98268458fb386cc50af8bda5d58ca64d32b6c233cb36\",\"eventHash\":\"sha256:47705d17b2c846b214d97d1c8017a658f1d6d1a7760215e47abc17e7fd2d8b2f\",\"receiptId\":\"cmb.f4a2c6b429a5e1d2f84c1014cacd1974e3d8883c59a0fba2287cbaf497263b4a\",\"actor\":\"commonwealth\",\"stateVersion\":30},{\"commandHash\":\"sha256:23b5221fcda9134a75d452d8e13f83b4db9a6f38eea0241ad32f3db05bc1f5f6\",\"eventHash\":\"sha256:9b841a3fd34b5a2acdbb9b582a57dab35eac4a04c0f43cd76e5a41ad0054ce61\",\"receiptId\":\"cmb.54a5424aaabb9deb7c7fbffa65ca3bd080fbb595c0c0cb191a6a4e40070e650c\",\"actor\":\"system\",\"stateVersion\":31},{\"commandHash\":\"sha256:61b16ec2309bf3ca06e9cdf27ec28e55ccf04ef989cd6475dbd03339bd505f51\",\"eventHash\":\"sha256:a71371e800cd0eb82b37a5f8197288ca781bc2ba5019aae97f2ffe05eb8adbbb\",\"receiptId\":\"cmb.d025aec5a79c8303ad339dec99d32b57d3819273e049aca452c49ba05cdb3918\",\"actor\":\"system\",\"stateVersion\":32},{\"commandHash\":\"sha256:f7c737bf4ec2dda4a923f87617402408be6b7287053ff43044cdaf3593324f99\",\"eventHash\":\"sha256:e1920097f83e0d7087035b91451d0760bb7e538cff4b1091557da8115091cf15\",\"receiptId\":\"cmb.c8d56cb31b2de8c81ea2778396830c6b18d47918b8aef5432846005290f4c368\",\"actor\":\"system\",\"stateVersion\":33},{\"commandHash\":\"sha256:66fe500a0a6ff63e1ef05b60ebc7225b45f4194c0f44dcb14de6b63b25aaae1f\",\"eventHash\":\"sha256:a7500edfc39a87a86b9f489f3dbe27b8f04e51bc6554d8cb171a85a2cb63e274\",\"receiptId\":\"cmb.0c12e8ddbe0d2277eacf3e38d4d4731a76a9f1e3d57e53c50916cc88ceac9b1f\",\"actor\":\"system\",\"stateVersion\":34},{\"commandHash\":\"sha256:d6a4f9779125e7c499e7ad47de6233c0584d0bc5f8e2ed7c89d82f49f182478f\",\"eventHash\":\"sha256:58cf1b113bd28a1215a6c567783f89a0231eac3017fc5c042552aa454caceb64\",\"receiptId\":\"cmb.85f16895435e41e3bfb1887f0521966622de47b04f1c545c41319d5f017b5bfd\",\"actor\":\"system\",\"stateVersion\":35},{\"commandHash\":\"sha256:16277cf1541b04f74cf48a37a8199394e943c56905b511c4fbfc4afe7fc79b87\",\"eventHash\":\"sha256:c4bed92633f33707b859fd2933949190b2ad8d5588cc2a0157dc7eb2d2ea8a67\",\"receiptId\":\"cmb.a254732c5d25da848ebfd2de8fcd93187f587e52e27d4a55464a9d29b9fce26b\",\"actor\":\"commonwealth\",\"stateVersion\":36},{\"commandHash\":\"sha256:a434cb027963eacd595208c4ca336fe77a9155368e1ec327c06b41efa2f3eb66\",\"eventHash\":\"sha256:a0b47dc8d02edc1cbee07d9606080f1feb02d0fbb92506f1f40ec2e48f8f88d2\",\"receiptId\":\"cmb.3cba476850c75cebefd2e36d2a029387dfa4e966758d08c0f66bec0433644a3b\",\"actor\":\"system\",\"stateVersion\":37},{\"commandHash\":\"sha256:fcddc83cf6b7d58ce165913d71518f1d9264a6a7ea1be6ea1edc27e0962076e6\",\"eventHash\":\"sha256:f3898935e5bc55ea470c89699d7c48f7334292cb049cc3a3380f688d39e882df\",\"receiptId\":\"cmb.7b2f8c1625ddae7b7ac60fee9ee4c5b1108445377726872352ddece0e7fe7007\",\"actor\":\"system\",\"stateVersion\":38},{\"commandHash\":\"sha256:d6121f12086327fa5cda8bedc162e635b22e743737972cd42665da5543e16323\",\"eventHash\":\"sha256:ff28cb876b52e2b235a8ab233299b07afb4243276e315b9209a04e24a4cf8dd5\",\"receiptId\":\"cmb.80a41028862edea2be3220d88558c3b86047aa0eabe2c7e37c7488791389f2f4\",\"actor\":\"system\",\"stateVersion\":39},{\"commandHash\":\"sha256:0799a38cb281c1fbbdfd24055b3acce8900a96a636a6ae6caafd646eab0fad2f\",\"eventHash\":\"sha256:6f4f5366f5ec190b135f0ae0558179c4ba3e3129330579d47b061cab8585e5d2\",\"receiptId\":\"cmb.88610e7dee15f60830f89eac1649cae921cc42cfb3a6674b0f4cd931d0524ea2\",\"actor\":\"commonwealth\",\"stateVersion\":40},{\"commandHash\":\"sha256:826ab94d27519f635e2e7a2d6ee4e3c1bba66a38ec408e551c6136edb9c37d1b\",\"eventHash\":\"sha256:3f919455f59ee6168de60c5b511808b4b8b6c7a16c61977d98265ce7dab36ee6\",\"receiptId\":\"cmb.e31b02c24a9b60a2624a05896eb9e9ca7995c48911b3fb7e778c9ec4370585f8\",\"actor\":\"system\",\"stateVersion\":41},{\"commandHash\":\"sha256:1691a78078f30b58b72e06fa49f5140f5f0fc3944cb588952eaa2e195ba7591f\",\"eventHash\":\"sha256:0a233e054745348a6793362ecca0e0e2f7e9e814a994ac2325cfb90aa71d9a96\",\"receiptId\":\"cmb.de38fb786290e5f9341bf95fa32b965a71ecd96a8bd03645ac7ca0b81b084086\",\"actor\":\"system\",\"stateVersion\":42},{\"commandHash\":\"sha256:fae16917d67dd6fb34fd0cf7ca1f91711265079ad8bf94d87cafc5e050a303b5\",\"eventHash\":\"sha256:43002c0711ef7dc7609090115590da6c7470c947765517dbc9118de6bbb16089\",\"receiptId\":\"cmb.d667fab679a8689608129da0e88f52fd0c1a0a8c675f2bd758402fa4315f0e2c\",\"actor\":\"system\",\"stateVersion\":43}]}"
+    },
+    {
+      "case": "attacker-capture-escape",
+      "lane": "settlement",
+      "cut": 0,
+      "bytes": 40920,
+      "hash": "sha256:fd3af5d45c984d44f98e44cae9b80a92e32bd33bbef84a6a1845dbd6291a90ba"
+    },
+    {
+      "case": "attacker-capture-escape",
+      "lane": "settlement",
+      "cut": 1,
+      "bytes": 50670,
+      "hash": "sha256:a3dda0df256fc6f9f2ad8e9e5175e7b69dacaef55b5b643c7172ae3698dd2094"
+    },
+    {
+      "case": "attacker-capture-escape",
+      "lane": "settlement",
+      "cut": 2,
+      "bytes": 51672,
+      "hash": "sha256:49ef32db2c8e5717a3c676e25792bd4f11cc8d24ed6527fcd6c1f0ecc901bccc"
+    },
+    {
+      "case": "attacker-capture-escape",
+      "lane": "settlement",
+      "cut": 3,
+      "bytes": 52488,
+      "hash": "sha256:ed95348e3ecc9b1b0bae5d0263500cf89f059b89389385c3af799e53f61e8d29"
+    },
+    {
+      "case": "attacker-capture-escape",
+      "lane": "settlement",
+      "cut": 4,
+      "bytes": 57137,
+      "hash": "sha256:813b58a4db08c85a450814d96ad5957eebc97ec945a840e7c11ebfcea3feb60d"
+    },
+    {
+      "case": "attacker-capture-escape",
+      "lane": "settlement",
+      "cut": 5,
+      "bytes": 59214,
+      "hash": "sha256:6cae22b514a25584b43049f89fe15dee5c3a2a47e9233d341aef45733889cf1f"
+    },
+    {
+      "case": "attacker-capture-escape",
+      "lane": "settlement",
+      "cut": 6,
+      "bytes": 60216,
+      "hash": "sha256:9d3a62619c7fd6c89fcd5d7b79e9461ebe699bfcf4f3f8ba166c5c09924bb592"
+    },
+    {
+      "case": "attacker-capture-escape",
+      "lane": "settlement",
+      "cut": 7,
+      "bytes": 63984,
+      "hash": "sha256:b28aa97217f8bc397f3b9e412a02888f6de0c05cc6772d428228aee1cf3676c6"
+    },
+    {
+      "case": "attacker-capture-escape",
+      "lane": "settlement",
+      "cut": 8,
+      "bytes": 65038,
+      "hash": "sha256:450803b1932dc612deb24a9b5c4be258adbbc817a512c35efa5735a3758f818c"
+    },
+    {
+      "case": "attacker-capture-escape",
+      "lane": "settlement",
+      "cut": 9,
+      "bytes": 65691,
+      "hash": "sha256:5b58c432f583135fd8be8da662a3c426de9252c1c1561f8a746c5be31dbe8f85"
+    },
+    {
+      "case": "attacker-capture-escape",
+      "lane": "settlement",
+      "cut": 10,
+      "bytes": 66321,
+      "hash": "sha256:5a37da1f22a74810be6ad1ecf421fe661ef73cb8a8ee317160a7df1efdc140cd"
+    }
+  ]
+}

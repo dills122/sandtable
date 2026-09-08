@@ -1,0 +1,45 @@
+{
+  "contract": "combat-result-settlement-v1",
+  "objects": {
+    "Draw": "purpose:id beforeCursor:ulong afterCursor:ulong die:int consumed:int[]",
+    "AssaultResult": "resultId:id commitmentId:id rulesInputHash:hash procedureId:id beforeRandomState:Random afterRandomState:Random draws:Draw[] attackerMoraleCoordinate:int defenderMoraleCoordinate:int attackerMorale:int defenderMorale:int basicDifferential:int facts:Result",
+    "ChoiceWindow": "decisionId:id kind:id owner:side timing:Timing",
+    "ResultCommand": "contractVersion:int kind:id roundId:id commitmentId:id expectedPriorVersion:long? decisionId:id? choice:id?",
+    "ResultInput": "command:ResultCommand actor:actor admittedAt:utc? clockAvailable:bool",
+    "ResultEvent": "contractVersion:int eventType:id author:actor campaignId:id rulesetHash:rawHash configurationHash:hash cycleId:hash segmentId:id roundId:id commitmentId:id priorVersion:long stateVersion:long priorPrefix:hash input:ResultInput effect:ResultEffect receiptId:id",
+    "ResolveEffect": "kind:id result:AssaultResult settlementId:id",
+    "WindowEffect": "kind:id window:ChoiceWindow",
+    "DispositionEffect": "kind:id reason:id timing:Timing? payload:Disposition",
+    "LossEffect": "kind:id payload:Losses",
+    "RetreatEffect": "kind:id payload:Retreat",
+    "CustodyEffect": "kind:id reason:id timing:Timing? payload:Custody",
+    "RelationsEffect": "kind:id payload:RelationsReceipt",
+    "CloseEffect": "kind:id settlementId:id proofReceipts:id[]",
+    "CaEffect": "kind:id fromPositionId:id toPositionId:id previousStepReceiptId:id roundClosureReceiptId:id",
+    "ResultState": "contractVersion:int committedHash:hash stateVersion:long prefix:hash status:id result:AssaultResult? settlementId:id? window:ChoiceWindow? acceptedHighWater:utc world:World randomState:Random roundClosureReceiptId:id? caCompletionReceiptId:id? receipts:Receipt[] closed:bool"
+  },
+  "effectTags": {
+    "assault-resolved": "ResolveEffect",
+    "choice-opened": "WindowEffect",
+    "disposition-recorded": "DispositionEffect",
+    "losses-settled": "LossEffect",
+    "retreat-settled": "RetreatEffect",
+    "custody-settled": "CustodyEffect",
+    "relationships-settled": "RelationsEffect",
+    "round-closed": "CloseEffect",
+    "ca-completed": "CaEffect"
+  },
+  "domains": {
+    "result": "sandtable.combat.assault-result.v1",
+    "settlement": "sandtable.combat.settlement.v1",
+    "receipt": "sandtable.combat.result-receipt.v1"
+  },
+  "externalContracts": [
+    "combat-sealed-round-v1.schema.json"
+  ],
+  "limits": {
+    "bytes": 1048576,
+    "depth": 32,
+    "events": 32
+  }
+}

@@ -556,6 +556,10 @@ attempted query, controller, action, and submission context available before the
 College** remains a later evaluation layer, and the current runner is not an Orleans workload,
 tournament system, parallel scheduler, or balance-analysis environment.
 
+[HOST-RSH-001](docs/research/orleans-publication-feasibility.md) is a separate research probe using
+a local Orleans silo and injected memory storage. It leaves Umpire adjudication and Chronicle
+history ownership intact; it does not turn Runner into campaign hosting or activate durable Archives.
+
 Closed controller-policy names describe deterministic test behavior, not commanders or authority.
 The checked policy matrix says exactly `act-first`/`act-last` and Reserve `none`/`one`/`all`; its
 runner-only accepted-designation count is controller history, never campaign state. These policies
