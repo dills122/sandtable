@@ -902,7 +902,14 @@ first-acting-side role; the accepted order supplies the next actor. The
 receipts and atomically opens ordinal1 through the unchanged completion2 wire shape. Empty/I
 selection reaches state11/12 with10/11 receipts; the Movement position retains null activeSide,
 while cycle authority resolves the acting side. [Movement preparation](docs/design/combat-inherited-movement-preparation.md)
-maps inherited fields and remaining replay obligations. These private projections are not Snapshot12 readers.
+maps inherited fields and remaining replay obligations. The
+[inherited Movement contract](docs/specs/combat-inherited-movement-v1.md) now derives `element-moved`4
+from that opening in the normal-Weather ordinary-infantry profile. It preserves all26 inherited
+fields while binding actual input/cycle/receipt/prefix evidence; cumulative CP and excess-CPA DP
+update with element/representation locations, an active route and accepted progress references.
+No stop occurs at CPA10 under the successor ordinary15 ceiling. Reaction adjacency, positive
+Reserve and vehicle behavior remain separate capability gates; Movement completion/proof is next.
+These private projections are not Snapshot12 readers.
 All five `CONTACT-001` rulings and the governing specification/design package are approved.
 `ZOR-TASK-002A`-`006C` implement and activate Rules/Content/fixture, Campaign
 World/creation/snapshot/event-replay, Observation 6/policy/history, topology-local

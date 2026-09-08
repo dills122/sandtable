@@ -30,7 +30,9 @@ reaches Organization entry with34traces/68cuts. [003D2c.2c stage entry](../specs
 reaches Reserve entry with12traces/60cuts. [003D2c.2d Reserve designation/completion](../specs/combat-reserve-designation-v1.md)
 composes creation-to-first-opening history for the closed initial-infantry profile;
 003D2c.3–4 continuation and full composition remain open. [Movement preparation](../design/combat-inherited-movement-preparation.md)
-maps legacy fields and remaining proofs without completing3. See [D2a movement](../specs/combat-ordinary-movement-v1.md) for the Clear2 source correction and
+maps legacy fields and remaining proofs. [003D2c.3a inherited Movement](../specs/combat-inherited-movement-v1.md)
+now completes actual ordinary Move4 provenance within the normal-Weather infantry profile;
+Movement completion/proof and other .3 families remain open. See [D2a movement](../specs/combat-ordinary-movement-v1.md) for the Clear2 source correction and
 atomic break-off evidence; [D2b.1 Release](../specs/combat-reserve-release-v1.md) freezes ordered
 control and retained history. Actual inherited history/runtime proof remains open.
 Parent003C/D/004 and the combined-contract gate remain open; the plan retains current review accounting.
