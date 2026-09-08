@@ -25,13 +25,19 @@ complete as a private control/history arm. [003D2b.2 guarded repeat/finish](../s
 is complete for the private exhausted-ammunition continuation boundary and Movement-expiry projection;
 [003D2c.1 successor declarations/first opening](../specs/combat-inherited-successors-v1.md) is complete
 as an isolated contract boundary. [003D2c.2a opening provenance](../specs/combat-opening-preamble-v1.md)
-is complete through Weather entry;003D2c.2b Weather is next. ParentD2c.2/D2c/D2 remains open.
+is complete through Weather entry. [003D2c.2b Weather](../specs/combat-weather-v1.md) is complete
+through Organization entry. [003D2c.2c stage entry](../specs/combat-stage-entry-v1.md) is complete
+through Reserve entry with author checks;003D2c.2d Reserve designation/completion and first opening are next.
+ParentD2c.2/D2c/D2 remains open.
 [Progress review9](../reviews/combat-progress-review-9.md) assessed all13 unmerged commits through
 `a96d2a1`: Ready with non-blocking follow-ups; its sole P3 documentation-status finding is corrected.
 All15 Python oracles and the focused Orleans build/run/format passed at that checkpoint.
 [Review10](../reviews/combat-progress-review-10.md) returned Ready with non-blocking follow-ups
 for D2b.2/D2c.1. Its P2 handoff ambiguity and P3 source-inventory status drift are corrected below.
-All17 oracles passed independently; review budget10of10 is exhausted.
+All17 oracles passed independently at review10. Review11 across merged
+[PR95–98](https://github.com/dills122/sandtable/pull/98) returned Ready with no findings and independently
+passed24 oracle jobs plus the Orleans probe. Budget11of11 is exhausted; Weather2b and stage-entry2c are subsequent
+author-verified work and are not covered by that verdict.
 TASK-004–025 not started. Future maturity execution and checkpoint B remain gated.
 **Original input:** `d2bc67c`. Exact contract freeze and production gates remain open.
 
@@ -223,9 +229,25 @@ each at most five primary files including its spec/schema/fixture/oracle/plan:
 | D2c.2 slice | Contract boundary / order |
 | --- | --- |
 | `003D2c.2a` | Opening preamble: validated Created11→Initiative3→no-obligation convoy2→tactical2→order2→Weather entry. Actual prospective prefix/version/receipt/RNG provenance, both order choices, strict cut replay. |
-| `003D2c.2b` | Weather2: consume2a's accepted history, adjudicate Weather from certified RNG and Rules, retain effects/receipt/cursor and exact Organization successor. |
-| `003D2c.2c` | Stage-entry successors: Organization/arrival/fleet-assignment/fleet-repair2 after2b; derive explicit no-obligation gates and actual Reserve-entry history. |
+| `003D2c.2b` | [Weather2](../specs/combat-weather-v1.md) complete:34 creation-rooted traces/68 cuts, all four outcomes and12 foul kind/location pairs, rejected RNG bytes, strict receipts/state and exact Organization successor. |
+| `003D2c.2c` | [Stage-entry2](../specs/combat-stage-entry-v1.md) complete:12 creation-rooted traces/60 cuts through Organization/arrival/fleet-assignment/fleet-repair2; explicit Setup7 gates, preserved Weather/RNG/World and actual Reserve-entry history. |
 | `003D2c.2d` | Reserve2 designation/completion: consume2c, derive real designation history and compose atomic first opening fromD2c.1 without synthetic predecessor hashes. |
+
+D2c.2b execution boundary (input `3ca453a`, before implementation):
+[Weather packet](../specs/combat-weather-v1.md), schema, retained fixture, executable oracle and
+this plan are the five primary files. Consume exact C2 creation and all four2a events; bind the
+existing Weather artifact to Rules10, cover four Fall outcomes/all foul location rows and rejected
+RNG bytes, preserve World/holder/order, publish one Weather2 event/receipt and Organization entry.
+Strict input/cached-state/replay/retry/cross-history negatives are required. Current C# source and
+historical canonical artifacts stay unchanged; zero effects require the explicit Setup7 policy.
+
+D2c.2c execution boundary (input `78be145`, before implementation):
+[Stage-entry packet](../specs/combat-stage-entry-v1.md), schema, retained fixture, executable oracle
+and this plan are the five primary files. Consume exact Created11, four preamble events and one
+Weather2 event; require all four explicit Setup7 no-obligation gates. Resolve Organization,
+Naval Convoy Arrival, Fleet Assignment and Fleet Repair2 in order, preserving World/RNG/Weather,
+holder/order and prior receipts. Stop at state10's unmaterialized first-side Reserve entry.
+Strict replay/cached-state/retry/cross-history negatives and source pins precede completion.
 
 These are prospective contract/oracle chains, not C# runtime replay. ParentD2c.2 stays open until2d
 composes the accepted creation-to-opening chain; later Movement/continuation and full Snapshot
@@ -696,3 +718,42 @@ only; review10of10 remains exhausted, and its earlier verdict does not cover thi
 Author closeout: all18 contract/research oracles pass, including all17 predecessors.648 local
 Markdown targets/17anchors and25 task/72 AC/8 policy IDs pass; existing contract and runtime bytes
 are unchanged. Self-check covers source/identity/retry/readback, scope and003→004→B ordering.
+
+Subsequent review11of11 assessed all contents of mergedPR95–98, including2a: Ready, no findings.
+Exact final tree equals`bf10c9b`;24 intermediate/final oracle jobs and focused Orleans checks passed
+independently. The merge process preserved every reviewed tree/diff and reran CI after rebases.
+
+TASK-003D2c.2b checkpoint (input `3ca453a`, contract commit `25cf4e7`):
+[Weather specification](../specs/combat-weather-v1.md),
+[schema](../specs/combat-weather-v1.schema.json),
+[retained vectors](../specs/fixtures/combat-weather-v1.json) and
+[oracle](../specs/verify-combat-weather-v1.py) freeze WeatherDetermined2 and ResolveWeather2.
+34 creation-rooted traces/68 cuts,11516 leaf mutations,921 raw rejections,1651 boundary/retry checks
+and3960 existing Rules coordinates pass. Thirteen source hashes and306 artifact entries are retained.
+Rules10 binds the exact existing Weather artifact;17 seeds cover all outcomes and every foul-location
+row for both order choices, including rejected RNG bytes. All18 predecessor oracles also pass.
+Full World and initiative/order history are preserved; Weather/RNG/receipts derive from accepted
+creation+four preamble events. Private WeatherState is not Snapshot12. No production source, test,
+scenario, historical contract or policy bytes changed. Author verification only; no additional
+independent review. Navigation closeout verifies670 local links/17anchors,25 task IDs,72 design ACs
+and8 policies. Next2c stage-entry then2d Reserve/first opening; parent003/004/B stays open.
+
+TASK-003D2c.2c checkpoint (input `78be145`, contract commit `5f68d21`):
+[Stage-entry specification](../specs/combat-stage-entry-v1.md),
+[schema](../specs/combat-stage-entry-v1.schema.json),
+[retained vectors](../specs/fixtures/combat-stage-entry-v1.json) and
+[oracle](../specs/verify-combat-stage-entry-v1.py) freeze four command/event2 successors through
+Reserve entry.12 creation-rooted traces/60 cuts,11052 leaf mutations,1299 raw rejections and3552
+boundary/retry checks pass;12 source hashes and228 artifact entries retained. All19 predecessors
+pass. Full accepted Created11+preamble+Weather provenance derives state6; four explicit Setup7
+gates lead to state10, preserving World/Weather/RNG/holder/order and all nine receipts. Both orders
+retain the unmaterialized first-side Reserve successor; no System or Commonwealth fleet actor leaks
+into the next side's authority. Exact retries at every later cut return the original event.
+The full oracle exposed a policy-error boundary issue; checking the exact policy before inherited
+creation validation fixes it, with unchanged goldens and a passing full rerun.
+No runtime/source/test/scenario/historical-contract changes, public or Snapshot12 admission, or new
+independent review. Next2d owns designation/completion and actual first opening; parent003/004/B
+stays open. Author source/replay/identity/retry checks and the003→004→B dependency review are complete.
+Navigation closeout: all20 contract/research oracles pass;692 local Markdown targets/17 anchors,
+25 stable task IDs,72 design AC IDs and8 policy IDs check clean. Current navigation points to2d;
+review11's scope stays limited to mergedPR95–98. Historical specs and runtime bytes are unchanged.

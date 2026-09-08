@@ -1,0 +1,99 @@
+{
+  "contract": "combat-stage-entry-v1",
+  "objects": {
+    "StageEntryCommand": "contractVersion:int kind:id creationBinding:id creationEventHash:hash expectedPriorVersion:long expectedPositionId:id",
+    "StageEntryInput": "command:StageEntryCommand actor:actor",
+    "StageEntryEvent": "contractVersion:int eventType:id campaignId:id rulesetHash:rawHash configurationHash:hash creationBinding:id creationEventHash:hash priorVersion:long stateVersion:long priorPrefix:hash fromPositionId:id input:StageEntryInput gameTurn:int operationStage:int sequencePosition:Position sources:Reference[] receiptId:id",
+    "StageEntryState": "contractVersion:int campaignId:id rulesetHash:rawHash configurationHash:hash creationBinding:id creationEventHash:hash stateVersion:long prefix:hash sequencePosition:Position initiativeHolder:side operationStageOrders:PreambleOrder[] operationStageWeather:WeatherValue[] world:World randomState:Random receipts:PreambleReceipt[]",
+    "StageEntryPolicy": "contractVersion:int gameTurn:int operationStage:int organization:id navalConvoyArrival:id fleetAssignment:id fleetRepair:id sources:Reference[]"
+  },
+  "events": [
+    {
+      "command": "resolve-no-obligation-organization",
+      "currentCommandVersion": 1,
+      "commandVersion": 2,
+      "eventType": "no-obligation-organization-resolved",
+      "currentEventVersion": 1,
+      "eventVersion": 2,
+      "policyField": "organization",
+      "priorVersion": 6,
+      "fromPositionIndex": 5,
+      "toPositionIndex": 6,
+      "actor": "system",
+      "locator": "5.2.organization"
+    },
+    {
+      "command": "resolve-no-obligation-naval-convoy-arrival",
+      "currentCommandVersion": 1,
+      "commandVersion": 2,
+      "eventType": "no-obligation-naval-convoy-arrival-resolved",
+      "currentEventVersion": 1,
+      "eventVersion": 2,
+      "policyField": "navalConvoyArrival",
+      "priorVersion": 7,
+      "fromPositionIndex": 6,
+      "toPositionIndex": 7,
+      "actor": "system",
+      "locator": "5.2.naval-convoy-arrival"
+    },
+    {
+      "command": "resolve-no-obligation-fleet-assignment",
+      "currentCommandVersion": 1,
+      "commandVersion": 2,
+      "eventType": "no-obligation-fleet-assignment-resolved",
+      "currentEventVersion": 1,
+      "eventVersion": 2,
+      "policyField": "fleetAssignment",
+      "priorVersion": 8,
+      "fromPositionIndex": 7,
+      "toPositionIndex": 8,
+      "actor": "system",
+      "locator": "5.2.commonwealth-fleet"
+    },
+    {
+      "command": "resolve-no-obligation-fleet-repair",
+      "currentCommandVersion": 1,
+      "commandVersion": 2,
+      "eventType": "no-obligation-fleet-repair-resolved",
+      "currentEventVersion": 1,
+      "eventVersion": 2,
+      "policyField": "fleetRepair",
+      "priorVersion": 9,
+      "fromPositionIndex": 8,
+      "toPositionIndex": 9,
+      "actor": "system",
+      "locator": "5.2.commonwealth-fleet"
+    }
+  ],
+  "domains": {
+    "receipt": "sandtable.combat.stage-entry-receipt.v1"
+  },
+  "stageEntryPolicy": {
+    "contractVersion": 1,
+    "gameTurn": 1,
+    "operationStage": 1,
+    "organization": "explicit-none",
+    "navalConvoyArrival": "explicit-none",
+    "fleetAssignment": "explicit-none",
+    "fleetRepair": "explicit-none",
+    "sources": [
+      {
+        "sourceId": "sandtable-rules-lab",
+        "locator": "stage-entry.no-obligations.v1"
+      }
+    ]
+  },
+  "externalContracts": [
+    "combat-weather-v1.schema.json",
+    "combat-inherited-successors-v1.schema.json"
+  ],
+  "limits": {
+    "bytes": 1048576,
+    "depth": 32,
+    "arrayItems": 512,
+    "preambleEvents": 4,
+    "weatherEvents": 1,
+    "stageEntryEvents": 4
+  },
+  "scope": "Prospective complete creation/preamble/Weather to Reserve entry; explicit no-obligation Setup7, private projection only. No Reserve execution, Snapshot12, runtime or public authentication."
+}

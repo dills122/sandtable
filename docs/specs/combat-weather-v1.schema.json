@@ -1,0 +1,17 @@
+{
+  "contract": "combat-weather-v1",
+  "objects": {
+    "WeatherCommand": "contractVersion:int kind:id creationBinding:id creationEventHash:hash expectedPriorVersion:long expectedPositionId:id",
+    "WeatherInput": "command:WeatherCommand actor:actor",
+    "WeatherValue": "contractVersion:int gameTurn:int operationStage:int determiningSide:side season:id firstDie:int secondDie:int kind:id scope:id locationDie:int? affectedAreas:id[] fuelWaterReductionSubjectCount:int restoredWellCount:int damagedGroundedAircraftCount:int",
+    "WeatherEvent": "contractVersion:int eventType:id campaignId:id rulesetHash:rawHash configurationHash:hash creationBinding:id creationEventHash:hash priorVersion:long stateVersion:long priorPrefix:hash fromPositionId:id input:WeatherInput gameTurn:int operationStage:int determiningSide:side season:id firstDie:int secondDie:int kind:id scope:id locationDie:int? affectedAreas:id[] fuelWaterReductionSubjectCount:int restoredWellCount:int damagedGroundedAircraftCount:int randomAlgorithmId:id randomCursorBefore:ulong randomCursorAfter:ulong sequencePosition:Position sources:Reference[] receiptId:id",
+    "WeatherState": "contractVersion:int campaignId:id rulesetHash:rawHash configurationHash:hash creationBinding:id creationEventHash:hash stateVersion:long prefix:hash sequencePosition:Position initiativeHolder:side operationStageOrders:PreambleOrder[] operationStageWeather:WeatherValue[] world:World randomState:Random receipts:PreambleReceipt[]"
+  },
+  "command": {"kind":"resolve-weather","currentVersion":1,"version":2,"actor":"system"},
+  "event": {"eventType":"weather-determined","currentVersion":1,"version":2},
+  "domains": {"receipt":"sandtable.combat.weather-receipt.v1"},
+  "weatherArtifact": {"artifactId":"cna-1979.1.weather-tables","contentHash":"sha256:10c92c736d61c6f88359b203d0a735df0d8a676b60e170b79b46053cfd223037","path":"tests/Cna.Core.Tests/Rules/Fixtures/cna-1979.1.weather-tables.v1.golden.json"},
+  "externalContracts": ["combat-opening-preamble-v1.schema.json","combat-inherited-successors-v1.schema.json"],
+  "limits": {"bytes":1048576,"depth":32,"arrayItems":512,"preambleEvents":4,"weatherEvents":1},
+  "scope": "Prospective turn1/stage1 Created11+complete opening preamble to Weather2 and Organization entry. Explicit no-immediate-effect-subjects Setup7; all four Weather outcomes preserved. Private projection, not Snapshot12 admission, public authentication, runtime parity or later stage execution."
+}

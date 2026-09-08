@@ -108,7 +108,11 @@ The [inherited successor packet](docs/specs/combat-inherited-successors-v1.md) k
 `reserve-designation-completed` as the atomic first-cycle opening event; it introduces no separate
 product or service. Its private `OpeningState` is an oracle projection, not an Archives snapshot.
 The [opening preamble packet](docs/specs/combat-opening-preamble-v1.md) similarly uses private
-`PreambleState` for creation-rooted contract replay through Weather entry. Chronicle retains the
+`PreambleState` for creation-rooted contract replay through Weather entry. The
+[Weather packet](docs/specs/combat-weather-v1.md) uses private `WeatherState` through Organization
+entry and retains the `weather-determined` successor name. The
+[stage-entry packet](docs/specs/combat-stage-entry-v1.md) uses private `StageEntryState` through Reserve
+entry and retains the four `no-obligation-…-resolved` event names. These projections are not Snapshot12. Chronicle retains the
 accepted events; the future Archives reader must reconstruct and validate their complete chain.
 
 The prospective [cycle-control contract](docs/specs/combat-cycle-control-v1.md) uses
