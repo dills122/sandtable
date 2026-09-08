@@ -30,8 +30,9 @@ through Organization entry. [003D2c.2c stage entry](../specs/combat-stage-entry-
 through Reserve entry. [003D2c.2d Reserve designation/completion](../specs/combat-reserve-designation-v1.md)
 completes bounded creation-to-first-opening contracts with author checks. ParentD2c.2 is complete;
 D2c/D2/003 remains open. [D2c.3a inherited ordinary Movement](../specs/combat-inherited-movement-v1.md)
-is complete as a bounded contract checkpoint. Next3b derives empty-cohort route stop/resolution
-and Movement completion/end proof. The [preparation matrix](combat-inherited-movement-preparation.md)
+is complete as a bounded contract checkpoint. [D2c.3b route lifecycle](../specs/combat-inherited-movement-lifecycle-v1.md)
+derives owner stop2, System empty resolution2 and owner Movement-completion3 with actual end proof.
+Next3c bounds Breakdown-segment completion2 into Combat entry. The [preparation matrix](combat-inherited-movement-preparation.md)
 remains the field/provenance baseline; other .3 capabilities and .4 composition stay open.
 [Progress review9](../reviews/combat-progress-review-9.md) assessed all13 unmerged commits through
 `a96d2a1`: Ready with non-blocking follow-ups; its sole P3 documentation-status finding is corrected.
@@ -44,8 +45,10 @@ passed24 oracle jobs plus the Orleans probe. That exhausted the then-authorized1
 Owner subsequently authorized review12 for Reserve/opening plus Movement preparation at `01ded95`
 and offline-link maintenance at `0e815b2`: Ready for both, no actionable findings. It independently
 ran Reserve and two immediate predecessor oracles, focused probes, source mappings and link/CI
-checks; it did not rerun all historical oracles. Budget12of12 is exhausted. New3a has author checks
-only and is outside that verdict.
+checks; it did not rerun all historical oracles. Owner then explicitly authorized a separate review
+chat for3a at `d76ac3f`: review13 returned Ready, no actionable findings, after three relevant oracles,
+61 public rejection probes, source/plan checks and changed-document path checks. Its blind preliminary
+preceded the separate author explanation. Budget13of13 is exhausted; new3b has author checks only.
 TASK-004–025 not started. Future maturity execution and checkpoint B remain gated.
 **Original input:** `d2bc67c`. Exact contract freeze and production gates remain open.
 
@@ -288,6 +291,21 @@ or runtime closure.
 Owner requested continuation after review12 Ready; reviewed parent branches stay unchanged on this
 separate feature branch. Review12 of12 covers `01ded95` and maintenance `0e815b2` only; new work
 has author checks, with no further independent pass authorized.
+
+D2c.3b execution boundary (input `d76ac3f`, after review13 Ready): one new
+[spec/schema/fixture/oracle packet](../specs/combat-inherited-movement-lifecycle-v1.md) plus this plan.
+Replay actual3a ordinary infantry routes into owner deliberate stop2, System empty-cohort
+stop-resolved2, then owner Movement-completed3. Freeze11/15/12 retained legacy fields plus authority,
+accepted input, suspended sequence5 cycle/Movement context and receipt bindings. All original World,
+RNG, member, route and material-progress evidence persists. Initial ordinal1 Movement-end proof
+uses actual final locations and new completion receipt; no fabricated ordinal0 predecessor proof.
+Both owners, CP2/10/12/14, distance2/3 exclusions, every cut/retry, altered pending context/history,
+re-signed effects, canonical caches and capability-vs-authority identity negatives form acceptance.
+Profile has no release exceptions or positive vehicle checks; broader completion expiry remains open.
+This child ends at Breakdown Determination. Next bounded3c must retain actual System
+`breakdown-segment-completed`2 before Combat Position Determination. It cannot certify armed Combat
+continuation or close Reaction/vehicle/Reserve families, .4 composition,003/004/B or runtime gates.
+User authorized continuation after reading review13; no further review instance is launched.
 
 D2c.4 owns the **Task004 handoff** section in its planned
 `docs/specs/combat-authority-composition-v1.md` contract packet, within the same five-primary-file
@@ -866,3 +884,37 @@ and8 policy IDs pass. Offline Lychee0.24.2 checks all161 tracked Markdown docume
 and final diff checks pass; source/runtime/scenario/predecessor bytes are unchanged.
 Three relevant oracles (new inherited Movement, direct Reserve and D2a Movement) ran this turn;
 no full historical-oracle, .NET, simulator, hosted-CI or new independent-review run is claimed.
+
+TASK-003D2c.3b checkpoint, 2026-09-08 (input `d76ac3f` after review13 Ready):
+[Route lifecycle specification](../specs/combat-inherited-movement-lifecycle-v1.md),
+[inventory](../specs/combat-inherited-movement-lifecycle-v1.schema.json),
+[vectors](../specs/fixtures/combat-inherited-movement-lifecycle-v1.json) and
+[oracle](../specs/verify-combat-inherited-movement-lifecycle-v1.py) freeze owner stop2 → System
+empty stop-resolved2 → owner Movement-completed3 from actual3a Move4 history. Eight both-owner
+CP2/10/12/14 traces and24 events retain every11/15/12 legacy field, pending stop, capability and
+accepted-input identity. Exact suspended cycle/Movement context survives the generic interrupt;
+completion enters Breakdown Determination, never Combat. First end proof uses actual finalWorld,
+the actual completion receipt and distance2/3 exclusion outcomes; no synthetic ordinal0 proof.
+World, RNG, members, tracks, existing receipts and actual material-progress refs remain unchanged
+apart from the three new lifecycle receipts/prefix increments and flow/position/proof projection.
+
+Author evidence:32 cuts,24 terminal retries,946 event/cache mutations,152 raw rejections,304 boundary
+checks and16 source pins pass. Every event leaf is challenged for both owners, including re-signed
+well-typed changes; incomplete/reordered/duplicated and cross-owner/cross-cut histories reject.
+Separate author integration checks four CP12/14 histories, independently hashed receipt/capability/stop
+identities, exact11/15/12 legacy field order, first-proof exclusions and five failing fixture controls.
+Semantic RED failed missing stop/interrupt/version behavior; GREEN passed the actual three-event flow.
+Mutation testing exposed receipt canonicalization before nested type validation; typed-event checking
+now precedes hashing and the original malformed-context mutation rejects normally. Valid goldens did
+not change. The direct inherited Movement and cycle-control predecessor oracles also pass.
+
+This closes3b only. No runtime/source/test/scenario or predecessor-contract changes; no .NET,
+simulator, hosted-CI or entire historical-oracle rerun. Review13 covers input3a only; no further review
+was launched. Next3c is the actual System Breakdown-segment completion2 into Combat Position
+Determination. Positive Reaction/vehicle/Reserve movement, release exceptions, armed continuation,
+full .4 composition, Task004 handoff/map and runtime gateB remain open.
+
+Documentation closeout:778 local Markdown targets/18 anchors,25 stable ordered tasks,72 stable
+design AC IDs and8 policy IDs pass. Offline Lychee0.24.2 checks162 Markdown documents:1619 links,
+1292 successful local checks,327 external exclusions, zero errors. Python AST and both new JSON
+documents pass; final changed-path/diff checks preserve all runtime and predecessor files.

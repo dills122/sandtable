@@ -1,0 +1,51 @@
+{
+  "contract": "combat-inherited-movement-lifecycle-v1",
+  "objects": {
+    "StopCommand": "contractVersion:int kind:id routeId:hash actionId:hash creationBinding:id creationEventHash:hash cycleId:hash expectedPriorVersion:long expectedPositionId:id",
+    "ResolveCommand": "contractVersion:int kind:id stopId:hash actionId:hash creationBinding:id creationEventHash:hash cycleId:hash expectedPriorVersion:long expectedPositionId:id",
+    "CompleteCommand": "contractVersion:int kind:id actionId:hash creationBinding:id creationEventHash:hash cycleId:hash expectedPriorVersion:long expectedPositionId:id",
+    "LifecycleInput": "command:LifecycleCommand actor:actor",
+    "LifecycleStop": "stopId:hash recordedStateVersion:long route:MovingRoute reason:id weatherKind:id cohortInputs:empty",
+    "PhasingStopFlow": "kind:id stop:LifecycleStop",
+    "IdleFlow": "kind:id",
+    "InterruptContext": "cycle:Authority cycleId:hash sequencePosition:Position",
+    "StopEvent": "contractVersion:int eventType:id campaignId:id stateVersion:long priorStateVersion:long rulesetHash:rawHash fromPositionId:id actionId:hash actingSide:side submittedRouteId:hash breakdownFlowAfter:PhasingStopFlow configurationHash:hash creationBinding:id creationEventHash:hash cycleId:hash openingBaseHash:hash completionReceiptId:id priorPrefix:hash input:LifecycleInput sequencePosition:Position interruptContextAfter:InterruptContext? receiptId:id",
+    "ResolveEvent": "contractVersion:int eventType:id campaignId:id stateVersion:long priorStateVersion:long rulesetHash:rawHash fromPositionId:id actionId:hash stop:LifecycleStop randomStateBefore:Random checks:empty createdLots:empty randomStateAfter:Random breakdownFlowAfter:IdleFlow sources:Reference[] configurationHash:hash creationBinding:id creationEventHash:hash cycleId:hash openingBaseHash:hash completionReceiptId:id priorPrefix:hash input:LifecycleInput sequencePosition:Position interruptContextAfter:InterruptContext? receiptId:id",
+    "CompleteEvent": "contractVersion:int eventType:id campaignId:id stateVersion:long priorStateVersion:long fromPositionId:id gameTurn:int operationStage:int actingSide:side sequencePosition:Position rulesetHash:rawHash breakdownFlowAfter:IdleFlow configurationHash:hash creationBinding:id creationEventHash:hash cycleId:hash openingBaseHash:hash completionReceiptId:id priorPrefix:hash input:LifecycleInput interruptContextAfter:InterruptContext? endLocations:EndLocation[] excludedUnits:UnitKey[] progress:ActualProgressRef[] receiptId:id",
+    "LifecycleState": "contractVersion:int campaignId:id rulesetHash:rawHash configurationHash:hash creationBinding:id creationEventHash:hash stateVersion:long prefix:hash sequencePosition:Position initiativeHolder:side operationStageOrders:PreambleOrder[] operationStageWeather:WeatherValue[] world:World randomState:Random receipts:PreambleReceipt[] firstActingSide:side members:ReserveMember[] cycle:Authority? cycleId:hash? openingBaseHash:hash? completionReceiptId:id? tracks:InheritedTrack[] actualProgressRefs:ActualProgressRef[] breakdownFlow:LifecycleFlow interruptContext:InterruptContext? movementEnd:MovementEndProof?"
+  },
+  "externalContracts": [
+    "combat-inherited-movement-v1.schema.json",
+    "combat-cycle-control-v1.schema.json"
+  ],
+  "domains": {
+    "stopReceipt": "sandtable.combat.inherited-movement-stop-receipt.v2",
+    "resolveReceipt": "sandtable.combat.inherited-breakdown-stop-resolved-receipt.v2",
+    "completeReceipt": "sandtable.combat.inherited-movement-completion-receipt.v3"
+  },
+  "legacyFieldCounts": {
+    "StopEvent": 11,
+    "ResolveEvent": 15,
+    "CompleteEvent": 12
+  },
+  "limits": {
+    "bytes": 1048576,
+    "depth": 32,
+    "arrayItems": 512,
+    "moves": 32,
+    "lifecycleEvents": 3
+  },
+  "unions": {
+    "LifecycleCommand": {
+      "stop-element-movement": "StopCommand",
+      "resolve-breakdown-stop": "ResolveCommand",
+      "complete-movement-segment": "CompleteCommand"
+    },
+    "LifecycleFlow": {
+      "moving": "MovingFlow",
+      "phasing-stop": "PhasingStopFlow",
+      "idle": "IdleFlow"
+    }
+  },
+  "scope": "One real inherited ordinary infantry route (1..7 legal moves), owner deliberate stop2, System empty resolution2, owner completion3. First ordinal only; no continued movement after stop, no vehicle/Reaction/Reserve exception or Combat entry."
+}
