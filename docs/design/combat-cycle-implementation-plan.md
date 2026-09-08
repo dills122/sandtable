@@ -931,7 +931,7 @@ design AC IDs and8 policy IDs pass. Offline Lychee0.24.2 checks162 Markdown docu
 1292 successful local checks,327 external exclusions, zero errors. Python AST and both new JSON
 documents pass; final changed-path/diff checks preserve all runtime and predecessor files.
 
-TASK-003D2c.3c checkpoint, 2026-09-08 (input `a3f2f76`):
+TASK-003D2c.3c checkpoint, 2026-09-08 (input `a3f2f76`; contract commit `69a1215`):
 [Breakdown completion specification](../specs/combat-inherited-breakdown-completion-v1.md),
 [inventory](../specs/combat-inherited-breakdown-completion-v1.schema.json),
 [vectors](../specs/fixtures/combat-inherited-breakdown-completion-v1.json) and

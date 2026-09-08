@@ -914,7 +914,12 @@ stop2, System empty-cohort resolution2 and owner Movement-completion3 from that 
 The generic Breakdown interrupt carries exact suspended cycle/Movement context; resolution restores
 Movement before completion reaches Breakdown Determination. First ordinal1 end proof binds final
 locations, distance-based exclusions and the new completion receipt without a synthetic prior proof.
-World, RNG, members and material progress persist. Breakdown-segment completion into Combat is next.
+World, RNG, members and material progress persist.
+[Inherited Breakdown completion](docs/specs/combat-inherited-breakdown-completion-v1.md) now derives
+one System event2 into first Combat Position Determination with predecessor position sources,
+exact stage1 action identity and retained Movement-end proof/progress. Existing synthetic C3a
+boundary assumptions cannot admit this moved World or CP12/14 state unchanged. Next is an additive
+actual-entry/no-candidate selection boundary; no state reset or armed-capability inference is allowed.
 These private projections are not Snapshot12 readers.
 All five `CONTACT-001` rulings and the governing specification/design package are approved.
 `ZOR-TASK-002A`-`006C` implement and activate Rules/Content/fixture, Campaign
