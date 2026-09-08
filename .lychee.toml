@@ -1,0 +1,9 @@
+# CIH-IMP-004: check tracked Markdown through `just docs-links` or docs-links.yml.
+# https://github.com/lycheeverse/lychee/blob/lychee-v0.24.2/README.md
+offline = true
+include_fragments = "anchor-only"
+hidden = true
+no_progress = true
+
+# No local URL or source-path exclusions. Git selects the tracked input corpus;
+# generated output and local-only files are not additional Markdown inputs.

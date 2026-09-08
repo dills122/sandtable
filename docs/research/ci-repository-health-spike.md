@@ -65,6 +65,7 @@ audit snapshot; this section is the current execution record.
 | `CIH-IMP-001` | Complete. Pull request [`#12`](https://github.com/dills122/sandtable/pull/12) merged as `7689f48b7d867de3f72a4b9c09d5b4f63644138e`. The workflow uses immutable action SHAs, Ubuntu 24.04, non-persisted checkout credentials, SDK logging, PR-only cancellation, and PR-only dependency review at `moderate`. | `verify` passed in 51 seconds. Dependency review initially exposed disabled dependency graph/alerts, then passed in 7 seconds after the prerequisite was enabled. See [run `31982048692`](https://github.com/dills122/sandtable/actions/runs/31982048692). |
 | `CIH-SET-001` | Complete. Dependency graph, Dependabot alerts and security updates, secret scanning, push protection, private vulnerability reporting, CodeQL default setup, read-only workflow permissions, and full-SHA action enforcement are enabled. CodeQL remains non-required. | API readback confirmed every setting. Initial CodeQL default setup analyzed Actions in 44 seconds and C# in 1 minute 59 seconds with zero open alerts. See [run `31982906040`](https://github.com/dills122/sandtable/actions/runs/31982906040). |
 | `CIH-SET-002` | Complete. The active `main` ruleset now requires review-thread resolution. It preserves zero approvals, loose required checks, squash-only merging, signed commits, deletion/non-fast-forward protection, and required `verify`. | Ruleset `20898169` readback returned `required_review_thread_resolution: true`, `required_approving_review_count: 0`, and `strict_required_status_checks_policy: false`. |
+| `CIH-IMP-004` | Local check and observational CI implemented after owner approval on 2026-09-08; first hosted run pending. Required-check promotion remains separate. | [Offline baseline](cih-imp-004-offline-link-baseline.md): all 158 tracked Markdown files at `4c10ede`, including three hidden inputs; 1,533 links, 1,206 successful local checks, 327 offline external exclusions, zero errors or local suppressions. Missing-target and missing-anchor negative checks fail; no baseline fixes required. |
 | `CIH-IMP-006` | Deferred at its observation gate. Neither dependency review nor CodeQL is required yet. | Promote dependency review only after 30 days and one dependency-changing pull request. Promote CodeQL only after five representative pull requests, a clean alert baseline, and acceptable timing. |
 
 ## Decision question and scope
@@ -599,6 +600,11 @@ before merging this policy, and document any `NuGetAuditSuppress` by advisory UR
 owner, and expiry.
 
 ### Offline documentation links (`CIH-IMP-004`)
+
+The [2026-09-08 implementation baseline](cih-imp-004-offline-link-baseline.md) records the delivered
+local command, complete tracked input enumeration, explicit anchor checking and separate
+observational workflow. The candidate below is retained as the original proposal; required-check
+promotion and online checking were not included in that implementation.
 
 Candidate job after a clean baseline:
 

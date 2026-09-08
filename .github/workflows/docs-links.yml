@@ -1,0 +1,52 @@
+name: Offline documentation links
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: docs-links-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  docs-links:
+    name: Offline links (observational)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: List tracked Markdown, including hidden paths
+        shell: bash
+        run: |
+          git -c core.quotepath=false ls-files -- '*.md' > "$RUNNER_TEMP/markdown-inputs.txt"
+          test -s "$RUNNER_TEMP/markdown-inputs.txt"
+          wc -l < "$RUNNER_TEMP/markdown-inputs.txt"
+
+      - name: Check local links and Markdown anchors
+        id: links
+        uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2.9.0
+        with:
+          lycheeVersion: v0.24.2
+          args: --config .lychee.toml --root-dir "${{ github.workspace }}" --files-from "${{ runner.temp }}/markdown-inputs.txt"
+          output: ${{ runner.temp }}/docs-links.md
+          token: ''
+          fail: false
+
+      - name: Report observation result
+        if: always() && steps.links.outputs.exit_code != ''
+        env:
+          LYCHEE_EXIT_CODE: ${{ steps.links.outputs.exit_code }}
+        run: |
+          if [ "$LYCHEE_EXIT_CODE" != 0 ]; then
+            echo "::warning::Offline documentation links failed (exit $LYCHEE_EXIT_CODE). See job summary; this check is observational."
+          fi
