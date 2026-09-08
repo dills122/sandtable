@@ -36,7 +36,7 @@ Start provider evaluation with this contract; do not select a database from this
 The tested whole-record aggregate is a useful bounded baseline, not an unbounded campaign layout.
 
 Owner acceptance is still required before production host/storage implementation. Current contract progression is
-remaining003D2c.2d →003D2c.3–4 →004 → checkpoint B; see the [combined plan](../design/combat-cycle-implementation-plan.md). Production host timing remains the accepted020–021 public Core
+remaining003D2c.3–4 →004 → checkpoint B; see the [combined plan](../design/combat-cycle-implementation-plan.md). Production host timing remains the accepted020–021 public Core
 activation plus one verified023 trace and accepted host contract/storage decision;024 remains required
 for Combat closeout. This research does not activate Combat or complete campaign lifecycle/Maproom.
 

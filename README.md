@@ -199,7 +199,8 @@ Its production publication/storage proposal remains unapproved. Combat contract 
 [D2c.2a opening provenance](docs/specs/combat-opening-preamble-v1.md) now reaches Weather entry
 from validated Created11 bytes. [D2c.2b Weather](docs/specs/combat-weather-v1.md) now reaches Organization
 entry. [D2c.2c stage entry](docs/specs/combat-stage-entry-v1.md) now reaches Reserve entry;
-D2c.2d designation/completion and first opening are next.
+[D2c.2d Reserve designation/completion](docs/specs/combat-reserve-designation-v1.md) now derives
+actual first-cycle opening. D2c.3 inherited Movement/continuation is next.
 The [latest smoke check](docs/research/simulator-post-merge-checkin.md#combat-contract-branch-smoke-check)
 verifies the existing Rules9 path; prospective Combat contracts are not executable game support.
 
@@ -306,8 +307,10 @@ as an isolated boundary:20 event declarations, four opening traces.
 with6 creation-rooted traces/30 cuts through Weather entry. [D2c.2b Weather](docs/specs/combat-weather-v1.md)
 adds34 traces/68 cuts through Organization entry, preserving all four outcomes and exact RNG/receipt
 evidence. [D2c.2c stage entry](docs/specs/combat-stage-entry-v1.md) adds12 traces/60 cuts through
-Reserve entry, preserving all accepted history. Reserve designation/completion is next;
-D2c.3–4 continuation and full composition remain open.
+Reserve entry, preserving all accepted history. [D2c.2d Reserve designation/completion](docs/specs/combat-reserve-designation-v1.md)
+closes creation-to-first-opening contracts for empty/I selection and both acting sides.
+[Movement preparation](docs/design/combat-inherited-movement-preparation.md) maps the next inherited
+successors; D2c.3 implementation and D2c.4 full composition remain open.
 [Result/settlement](docs/specs/combat-result-settlement-v1.md) and
 [full snapshot composition](docs/specs/combat-snapshot-composition-v1.md) retain synthetic pre-Combat
 lineage; review9 assessed these bounded artifacts. Parent003, future maturity execution and combined checkpoint B

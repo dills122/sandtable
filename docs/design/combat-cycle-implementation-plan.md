@@ -802,3 +802,9 @@ and21 ReserveState fields match the frozen2d reader/schema. The next packet must
 unchanged-Cohesion validation with incremental excess-CPA DP, and materialized sequence4 Movement
 with2d's symbolic sequence5 position. No successor payload, positive inherited replay or .3
 implementation is completed by preparation. Runtime owner dependencies and003→004→B remain intact.
+Navigation closeout: all21 contract/research oracles pass across the new packet and unchanged
+predecessors.734 local Markdown targets/18 anchors,25 stable task IDs,72 design AC IDs and8 policy
+IDs check clean. Offline Lychee0.24.2 also checks all160 tracked Markdown documents:1575 links,
+1248 successful local checks,327 offline remote exclusions and zero errors. Movement preparation
+is retained separately in `c403dfa`. Shared navigation now points to D2c.3; no independent-review,
+.NET, simulator or hosted-CI evidence is inferred from these contract/document checks.

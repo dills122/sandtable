@@ -105,8 +105,9 @@ the pre-alpha roadmap carry repository-wide rationale and delivery state.
   are complete within their private boundaries. [D2c.2a opening provenance](specs/combat-opening-preamble-v1.md)
   reaches Weather entry from Created11. [D2c.2b Weather](specs/combat-weather-v1.md) reaches Organization
   entry with34 traces/68 cuts and strict RNG/history checks. [D2c.2c stage entry](specs/combat-stage-entry-v1.md)
-  reaches Reserve entry with12 traces/60 cuts. D2c.2d designation/completion and first opening are next;
-  full D2c.2 remains open.
+  reaches Reserve entry with12 traces/60 cuts. [D2c.2d Reserve designation/completion](specs/combat-reserve-designation-v1.md)
+  closes bounded creation-to-first-opening contracts. [Inherited Movement preparation](design/combat-inherited-movement-preparation.md)
+  maps D2c.3 fields and replay obligations; D2c.3 implementation and D2c.4 full composition remain open.
   See [result/settlement](specs/combat-result-settlement-v1.md) and
   [snapshot composition/audit](specs/combat-snapshot-composition-v1.md). See
   [ordinary movement](specs/combat-ordinary-movement-v1.md) for D2a evidence and source correction.
