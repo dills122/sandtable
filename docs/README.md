@@ -107,7 +107,9 @@ the pre-alpha roadmap carry repository-wide rationale and delivery state.
   entry with34 traces/68 cuts and strict RNG/history checks. [D2c.2c stage entry](specs/combat-stage-entry-v1.md)
   reaches Reserve entry with12 traces/60 cuts. [D2c.2d Reserve designation/completion](specs/combat-reserve-designation-v1.md)
   closes bounded creation-to-first-opening contracts. [Inherited Movement preparation](design/combat-inherited-movement-preparation.md)
-  maps D2c.3 fields and replay obligations; D2c.3 implementation and D2c.4 full composition remain open.
+  maps D2c.3 fields and replay obligations. [D2c.3a inherited Movement](specs/combat-inherited-movement-v1.md)
+  supplies actual Move4 provenance, cumulative CP/DP, route and progress receipts. Movement completion
+  and remaining .3 capabilities/.4 full composition stay open.
   See [result/settlement](specs/combat-result-settlement-v1.md) and
   [snapshot composition/audit](specs/combat-snapshot-composition-v1.md). See
   [ordinary movement](specs/combat-ordinary-movement-v1.md) for D2a evidence and source correction.

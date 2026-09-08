@@ -833,7 +833,7 @@ IDs check clean. Offline Lychee0.24.2 also checks all160 tracked Markdown docume
 is retained separately in `c403dfa`. Shared navigation now points to D2c.3; no independent-review,
 .NET, simulator or hosted-CI evidence is inferred from these contract/document checks.
 
-TASK-003D2c.3a checkpoint, 2026-09-08 (input `01ded95`):
+TASK-003D2c.3a checkpoint, 2026-09-08 (input `01ded95`, contract commit `dfa8385`):
 [Inherited Movement specification](../specs/combat-inherited-movement-v1.md),
 [schema](../specs/combat-inherited-movement-v1.schema.json),
 [retained vectors](../specs/fixtures/combat-inherited-movement-v1.json) and
@@ -859,3 +859,10 @@ changes or new independent review. This closes3a only; parent3/4/003/004/B remai
 Next3b must carry actual owner stop2 → System empty-cohort stop-resolved2 → Movement-completion3,
 including suspended cycle/Movement context across the generic Breakdown-stop interrupt. Its terminal
 is Breakdown Determination; further Breakdown-segment completion remains required before Combat.
+
+Navigation closeout:752 local Markdown targets/18 anchors,25 stable task IDs,72 design AC IDs
+and8 policy IDs pass. Offline Lychee0.24.2 checks all161 tracked Markdown documents:1593 links,
+1266 successful local checks,327 remote exclusions and zero errors. Python AST/two JSON documents
+and final diff checks pass; source/runtime/scenario/predecessor bytes are unchanged.
+Three relevant oracles (new inherited Movement, direct Reserve and D2a Movement) ran this turn;
+no full historical-oracle, .NET, simulator, hosted-CI or new independent-review run is claimed.

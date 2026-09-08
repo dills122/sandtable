@@ -115,7 +115,10 @@ entry and retains the `weather-determined` successor name. The
 entry and retains the four `no-obligation-…-resolved` event names. The
 [Reserve designation packet](docs/specs/combat-reserve-designation-v1.md) uses private `ReserveState`
 through atomic first opening, retaining `reserve-element-designated` and
-`reserve-designation-completed`. These projections are not Snapshot12. Chronicle retains the
+`reserve-designation-completed`. The [inherited Movement packet](docs/specs/combat-inherited-movement-v1.md)
+uses private `InheritedState` and freezes `element-moved`4; it remains distinct from D2a
+`combat-cycle-element-moved`1. Actual progress references and moving routes are authority data,
+not new products. These projections are not Snapshot12. Chronicle retains the
 accepted events; the future Archives reader must reconstruct and validate their complete chain.
 
 The prospective [cycle-control contract](docs/specs/combat-cycle-control-v1.md) uses
