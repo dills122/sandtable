@@ -1,0 +1,40 @@
+{
+  "contract": "combat-inherited-movement-v1",
+  "objects": {
+    "InheritedCommand": "contractVersion:int kind:id creationBinding:id creationEventHash:hash cycleId:hash expectedPriorVersion:long expectedPositionId:id unit:UnitKey originLocationId:id destinationLocationId:id",
+    "InheritedInput": "command:InheritedCommand actor:actor",
+    "InheritedCost": "destinationTerrainId:id destinationTerrainCost:Cp destinationTerrainSources:Reference[] routeAdjustment:null crossedHexsideCosts:empty totalCost:Cp",
+    "MovingRoute": "routeId:hash firstMoveStateVersion:long elementId:id representationId:id owner:side originLocationId:id currentLocationId:id cohortIds:empty",
+    "MovingFlow": "kind:id route:MovingRoute",
+    "InheritedEvent": "contractVersion:int eventType:id campaignId:id stateVersion:long priorStateVersion:long fromPositionId:id gameTurn:int operationStage:int actingSide:side elementId:id representationId:id originLocationId:id destinationLocationId:id mobilityId:id mobilitySources:Reference[] cost:InheritedCost capabilityPointsExpendedBefore:Cp capabilityPointsExpendedAfter:Cp cohesionBefore:int cohesionAfter:int movementEndedAfter:null sequencePosition:Position openedReactionWindow:null rulesetHash:rawHash breakdownAccounting:empty breakdownFlowAfter:MovingFlow configurationHash:hash creationBinding:id creationEventHash:hash cycleId:hash openingBaseHash:hash completionReceiptId:id priorPrefix:hash input:InheritedInput receiptId:id",
+    "InheritedTrack": "unit:UnitKey route:OrderedLocations",
+    "ActualProgressRef": "eventType:id receiptId:id eventHash:hash",
+    "InheritedState": "contractVersion:int campaignId:id rulesetHash:rawHash configurationHash:hash creationBinding:id creationEventHash:hash stateVersion:long prefix:hash sequencePosition:Position initiativeHolder:side operationStageOrders:PreambleOrder[] operationStageWeather:WeatherValue[] world:World randomState:Random receipts:PreambleReceipt[] firstActingSide:side members:ReserveMember[] cycle:Authority? cycleId:hash? openingBaseHash:hash? completionReceiptId:id? tracks:InheritedTrack[] actualProgressRefs:ActualProgressRef[] breakdownFlow:MovingFlow?"
+  },
+  "externalContracts": [
+    "combat-reserve-designation-v1.schema.json"
+  ],
+  "domains": {
+    "receipt": "sandtable.combat.inherited-movement-receipt.v4",
+    "route": "sandtable.breakdown.route.v1"
+  },
+  "legacyFieldCount": 26,
+  "limits": {
+    "bytes": 1048576,
+    "depth": 32,
+    "arrayItems": 512,
+    "moves": 32
+  },
+  "scope": "Actual completed first opening, ordinary NONE independent nonmotorized infantry, NORMAL Weather, featureless Clear adjacency, no adjacent enemy combat representation, no positive Reaction/Breakdown; no completion, Reserve movement, later cycle or Snapshot reader.",
+  "tags": {
+    "commandVersion": 2,
+    "commandKind": "move-element",
+    "eventVersion": 4,
+    "eventType": "element-moved"
+  },
+  "closedTypes": {
+    "null": "JSON null only",
+    "empty": "empty JSON array only",
+    "OrderedLocations": "ordered 2..33 stable IDs; revisits retained"
+  }
+}

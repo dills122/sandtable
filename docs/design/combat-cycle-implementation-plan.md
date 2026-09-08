@@ -29,8 +29,10 @@ is complete through Weather entry. [003D2c.2b Weather](../specs/combat-weather-v
 through Organization entry. [003D2c.2c stage entry](../specs/combat-stage-entry-v1.md) is complete
 through Reserve entry. [003D2c.2d Reserve designation/completion](../specs/combat-reserve-designation-v1.md)
 completes bounded creation-to-first-opening contracts with author checks. ParentD2c.2 is complete;
-D2c/D2/003 remains open. D2c.3 inherited Movement/continuation is next; its
-[field/provenance preparation](combat-inherited-movement-preparation.md) is complete as preparation only.
+D2c/D2/003 remains open. [D2c.3a inherited ordinary Movement](../specs/combat-inherited-movement-v1.md)
+is complete as a bounded contract checkpoint. Next3b derives empty-cohort route stop/resolution
+and Movement completion/end proof. The [preparation matrix](combat-inherited-movement-preparation.md)
+remains the field/provenance baseline; other .3 capabilities and .4 composition stay open.
 [Progress review9](../reviews/combat-progress-review-9.md) assessed all13 unmerged commits through
 `a96d2a1`: Ready with non-blocking follow-ups; its sole P3 documentation-status finding is corrected.
 All15 Python oracles and the focused Orleans build/run/format passed at that checkpoint.
@@ -38,8 +40,12 @@ All15 Python oracles and the focused Orleans build/run/format passed at that che
 for D2b.2/D2c.1. Its P2 handoff ambiguity and P3 source-inventory status drift are corrected below.
 All17 oracles passed independently at review10. Review11 across merged
 [PR95–98](https://github.com/dills122/sandtable/pull/98) returned Ready with no findings and independently
-passed24 oracle jobs plus the Orleans probe. Budget11of11 is exhausted; Weather2b, stage-entry2c, Reserve2d and Movement preparation are subsequent
-author-checked work and are not covered by that verdict.
+passed24 oracle jobs plus the Orleans probe. That exhausted the then-authorized11of11 budget.
+Owner subsequently authorized review12 for Reserve/opening plus Movement preparation at `01ded95`
+and offline-link maintenance at `0e815b2`: Ready for both, no actionable findings. It independently
+ran Reserve and two immediate predecessor oracles, focused probes, source mappings and link/CI
+checks; it did not rerun all historical oracles. Budget12of12 is exhausted. New3a has author checks
+only and is outside that verdict.
 TASK-004–025 not started. Future maturity execution and checkpoint B remain gated.
 **Original input:** `d2bc67c`. Exact contract freeze and production gates remain open.
 
@@ -264,6 +270,24 @@ Shared plan/navigation edits remain with the lead; publish separate bounded chec
 These are prospective contract/oracle chains, not C# runtime replay. ParentD2c.2 closes with2d
 composing the accepted creation-to-opening chain; later Movement/continuation and full Snapshot
 admission remainD2c.3–4/004/B. No additional independent-review pass is authorized.
+
+D2c.3a execution boundary (input `01ded95`, before implementation): freeze inherited
+`element-moved`4 in one spec/schema/fixture/oracle plus this plan. Consume completed2d history;
+normal Weather, initial independent nonmotorized infantry, ordinary non-Reserve movement and
+featureless Clear neighbors form the first closed profile. Preserve symbolic sequence5 position
+and resolve actor through accepted cycle authority. Reconcile legacy fields with cumulative CP,
+immediate excess-CPA DP and actual event/receipt/progress provenance. Source-pin no-window and
+empty-cohort accounting claims; preserve active route flow and reject unsupported positive families.
+Strict replay/cache/retry/cross-history negatives and literal movement outcomes precede completion.
+Next bounded3b must derive owner `element-movement-stopped`2, System empty-cohort
+`breakdown-stop-resolved`2 and then `movement-segment-completed`3/end proof in order. Even
+nonvehicle routes require stop resolution before idle completion; never synthesize idle flow.
+This future empty-cohort lifecycle does not close positive vehicle Breakdown or Reaction families.
+Positive Reserve movement and armed continuation remain .3 requirements. No parent .3/.4/003/004/B
+or runtime closure.
+Owner requested continuation after review12 Ready; reviewed parent branches stay unchanged on this
+separate feature branch. Review12 of12 covers `01ded95` and maintenance `0e815b2` only; new work
+has author checks, with no further independent pass authorized.
 
 D2c.4 owns the **Task004 handoff** section in its planned
 `docs/specs/combat-authority-composition-v1.md` contract packet, within the same five-primary-file
@@ -808,3 +832,30 @@ IDs check clean. Offline Lychee0.24.2 also checks all160 tracked Markdown docume
 1248 successful local checks,327 offline remote exclusions and zero errors. Movement preparation
 is retained separately in `c403dfa`. Shared navigation now points to D2c.3; no independent-review,
 .NET, simulator or hosted-CI evidence is inferred from these contract/document checks.
+
+TASK-003D2c.3a checkpoint, 2026-09-08 (input `01ded95`):
+[Inherited Movement specification](../specs/combat-inherited-movement-v1.md),
+[schema](../specs/combat-inherited-movement-v1.schema.json),
+[retained vectors](../specs/fixtures/combat-inherited-movement-v1.json) and
+[oracle](../specs/verify-combat-inherited-movement-v1.py) freeze ordinary `element-moved`4 from
+actual completed2d history. Exact26 legacy fields/order plus nine authority bindings are retained;
+null/empty-only unsupported payloads remain explicit. Two normal-Weather traces,14 moves,16 replay
+cuts,14 exact retries,384 event/cache mutations,66 raw rejections,81 boundary/admission checks and
+18 source pins pass. Four temporary-fixture controls reject missing/duplicate owner, source drift
+and changed golden. Direct Reserve and D2a predecessor oracles pass; their bytes remain unchanged.
+Both accepted actors traverse own rear/supply route to CP14 and four excess-CPA DP; eighth cost16
+rejects ceiling15. Returning toward adjacent opponent requires Reaction and rejects. Element and
+representation locations, member spending, route, progress refs, receipts and prefix update together;
+ammo10, TOE, RNG, Weather, order, history and opening authority persist. No CPA10 route stop is
+invented under the successor ordinary policy; legacy3 remains unchanged. No vehicle cohort still
+carries moving route flow. Source-backed route identity retains first version/origin across revisits.
+Author integration independently checks both seven-move histories, stable route IDs, exact terminal
+retry/restore, preserved authority, cost-specific eighth rejection and unsupported Reaction boundary.
+Semantic RED failed literal destination/CP/version/prefix against no-op behavior; GREEN passes.
+Author checks corrected a mutation harness that restored the receipt being challenged and added
+exact both-owner fixture guards after finding that missing coverage could otherwise pass. Final
+oracle rerun passes without relaxing transition behavior. No source/runtime/scenario/old-contract
+changes or new independent review. This closes3a only; parent3/4/003/004/B remains open.
+Next3b must carry actual owner stop2 → System empty-cohort stop-resolved2 → Movement-completion3,
+including suspended cycle/Movement context across the generic Breakdown-stop interrupt. Its terminal
+is Breakdown Determination; further Breakdown-segment completion remains required before Combat.

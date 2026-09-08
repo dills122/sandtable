@@ -1,0 +1,292 @@
+{
+  "contractVersion": 1,
+  "contract": "combat-inherited-movement-v1",
+  "sourceHashes": {
+    "docs/specs/combat-inherited-movement-v1.schema.json": "sha256:a9ad67ee9b9302f17582fb5087f6dd6e7e62574741e6cea7b5a3e58bf7fe2069",
+    "docs/specs/combat-reserve-designation-v1.md": "sha256:a9ccf1dafc2e0947582151e5d0649e1771f471e1d0d0bc14d9914766ad9dd826",
+    "docs/specs/combat-reserve-designation-v1.schema.json": "sha256:f324fb22e53ff6d9e084c2f65532e5af89277f632087549756b7df1dcb1710d9",
+    "docs/specs/verify-combat-reserve-designation-v1.py": "sha256:fa40ec6b10d0d5ecc113aefba47ff4df44ae616851acdc827e9f676f2412e465",
+    "docs/specs/fixtures/combat-reserve-designation-v1.json": "sha256:6c8abb2038bb61c739e3bd3cab5c8adf00689c265ec3c6bc6ea29bebe66b12c2",
+    "docs/specs/combat-ordinary-movement-v1.md": "sha256:e28cb696892d58c6671dd35de4850644985fb44bf6c217aee4ecfb37d4e484cc",
+    "docs/specs/verify-combat-ordinary-movement-v1.py": "sha256:cc75e52a6d160d4b0c6c880dc43bc65742068f83ef85cc7fb4babbf8756e0dff",
+    "docs/specs/fixtures/combat-content-v7.canonical.json": "sha256:ee4fde9638ceb61ec08612fe32f9ac81db05572aac5ca20941e402d2fed25847",
+    "src/Cna.Core/Campaigns/CampaignElementMovedV3.cs": "sha256:b3ff30e9330c3c923503077d17ffad4945ff0184ec5682b677675d9aeca404f2",
+    "src/Cna.Core/Campaigns/CampaignBreakdownMoveEventSerializer.cs": "sha256:2885afd854bc57c5b8f782be0e0cd875fe13eb78658f433145568d45b2b1c704",
+    "src/Cna.Core/Campaigns/CampaignBreakdownCodec.cs": "sha256:6badc5510db11b593b35b9fc03031a709add9c694c64b923650e578494b9ab79",
+    "src/Cna.Core/Campaigns/CampaignBreakdownRecords.cs": "sha256:63dc7cddecd89dbe4a038accc4cf9d1675464e53c0391d18c0e37b121ad4c23e",
+    "src/Cna.Core/Rules/Cna1979Movement.cs": "sha256:c941b833400b6081f45c8a3df8ef525de941b81954ed58c0abada736755ced8e",
+    "src/Cna.Core/Campaigns/CampaignEventSerializer.cs": "sha256:d97923522ef8812ec5a59aebeb3d62bbae5648dfd3f4959e3d2ea0de6c3b133d",
+    "src/Cna.Core/Campaigns/CampaignMovementEventFactory.cs": "sha256:80885a60310c6fa6ed095a2c8dfc1a0d559bc5459f1c0e6331378f5ff42e131f",
+    "src/Cna.Core/Campaigns/CampaignReactingElementMovedV2Factory.cs": "sha256:58ff4225ed286edd53c8c1bedd870cb64ac4b9c58af437a976eca51b815e9282",
+    "src/Cna.Core/Campaigns/CampaignElementMovedV2Factory.cs": "sha256:4aa1723324434a7f9cf1ae52adc38039eca221e1dafcedf8a332544f6c1e6dca",
+    "src/Cna.Core/Campaigns/CampaignElementMovedV3Factory.cs": "sha256:85bbff98008afad1d06dd6cb071cc8b26883e9f3ebcb4265df215beb8094f2c1"
+  },
+  "cases": [
+    {
+      "name": "axis-ordinary-clear-route",
+      "predecessorCase": "normal-act-first-none",
+      "expected": {
+        "actor": "axis",
+        "route": [
+          "assault-west",
+          "axis-rear",
+          "axis-supply",
+          "axis-rear",
+          "axis-supply",
+          "axis-rear",
+          "axis-supply",
+          "axis-rear"
+        ],
+        "cp": [
+          2,
+          4,
+          6,
+          8,
+          10,
+          12,
+          14
+        ],
+        "cohesion": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          -2,
+          -4
+        ]
+      },
+      "goldens": {
+        "request": {
+          "bytes": 741,
+          "sha256": "sha256:b8c96173e432f7f8f09b68cd13e2d1e1a2d49e1a2380815b49fe23dd5510a16c"
+        },
+        "predecessor-records": {
+          "bytes": 28814,
+          "sha256": "sha256:64dceb092bde438a2e90d670a9c7f0afc591f796d618b588c31eca506d8b7dca"
+        },
+        "input-1": {
+          "bytes": 691,
+          "sha256": "sha256:0cd89e830eaf0c783855ce690d343f9734926c6ef45ad8c6f8fc619fac46af13"
+        },
+        "input-2": {
+          "bytes": 690,
+          "sha256": "sha256:8de85fb009b27bc1693a236a302d0f7b473b1d5b213388fe3efe43855da3828a"
+        },
+        "input-3": {
+          "bytes": 690,
+          "sha256": "sha256:4dcf9acbcda053eb551b11f34c5832258f8b3edc1a41896af283b1c7763809c9"
+        },
+        "input-4": {
+          "bytes": 690,
+          "sha256": "sha256:0ff986b44440814c2cdf2bd5f0152ddb4f052fe3bbfeebac625f56c9bae5a9a1"
+        },
+        "input-5": {
+          "bytes": 690,
+          "sha256": "sha256:54075858363cbdd02675ce5b927c1afad30be397359511eec19fba5f3eef7c45"
+        },
+        "input-6": {
+          "bytes": 690,
+          "sha256": "sha256:2c73be3d8e9b0b1fe03553b2665a20d90c66ab0df5d2e0e08fc2d59801419e23"
+        },
+        "input-7": {
+          "bytes": 690,
+          "sha256": "sha256:6df61b5e93c3c376356f75b54c0af2c73a4c5180f304cd7ab4a83504603353a9"
+        },
+        "event-1": {
+          "bytes": 3397,
+          "sha256": "sha256:987b6c04e49f47e3a54a1402f3986c8b3b4429033ed48a0451dbcfc4894392b4"
+        },
+        "event-2": {
+          "bytes": 3397,
+          "sha256": "sha256:11095d468bf3abb0fc44d74b6042e037b072ad5007f8b0e88be2e16b7b8749b2"
+        },
+        "event-3": {
+          "bytes": 3395,
+          "sha256": "sha256:9c3dddea2e04ee1e2d13e7d1a19ceb4a31cc812aaf53a8f40f63e6828121ed10"
+        },
+        "event-4": {
+          "bytes": 3397,
+          "sha256": "sha256:90a374070c374cfad4528f87e6dd043ee93f0c291fb8a6a090bee25181bc39aa"
+        },
+        "event-5": {
+          "bytes": 3396,
+          "sha256": "sha256:27fbe0654733c044c3eb25182fa328d5b02abf0cbc2d98fdf80b33b84c5084b6"
+        },
+        "event-6": {
+          "bytes": 3400,
+          "sha256": "sha256:825f06ea279de244a19c2ac8112385fa739efacd73bfb35a04ae773da1369bc3"
+        },
+        "event-7": {
+          "bytes": 3399,
+          "sha256": "sha256:a157c5dc12abeb106eaf5d8683c0152f00cb4cea3c781142c783c860501a92af"
+        },
+        "state-11": {
+          "bytes": 9577,
+          "sha256": "sha256:adead0c81ace3646bda0ceb4f446b5d60f1d325c3bdbff9489a29865a2dac725"
+        },
+        "state-12": {
+          "bytes": 10573,
+          "sha256": "sha256:35c45593578a3aaebf02764e6fe48a2e1f14b1756c4c795fff254ac100084dd0"
+        },
+        "state-13": {
+          "bytes": 11084,
+          "sha256": "sha256:cc2e1b2b51140ed4bb1427026b0e6f86fa02b2f082c3bd9285ef6946f1e2e6c8"
+        },
+        "state-14": {
+          "bytes": 11581,
+          "sha256": "sha256:7aee77a7d74500833353aad3ad460a93bbb10672cf123f517a5150142dbe0918"
+        },
+        "state-15": {
+          "bytes": 12092,
+          "sha256": "sha256:fc22a69ffdd905944a661d0210aa631d0f9445576e393ce320a3781995dcd59f"
+        },
+        "state-16": {
+          "bytes": 12591,
+          "sha256": "sha256:3cdd7b65a13c83c38b0776f862debb451fbff3551632e18b7eb2d4da747d8514"
+        },
+        "state-17": {
+          "bytes": 13425,
+          "sha256": "sha256:59de51180da694966158ecb8e4afeec31beaa6247a548796674e06c66b877819"
+        },
+        "state-18": {
+          "bytes": 14246,
+          "sha256": "sha256:f6c40e3b63d55a3c53506ea672704e86543e00298a240261334dd5f6250cc5a4"
+        }
+      }
+    },
+    {
+      "name": "commonwealth-ordinary-clear-route",
+      "predecessorCase": "normal-act-last-none",
+      "expected": {
+        "actor": "commonwealth",
+        "route": [
+          "assault-east",
+          "commonwealth-rear",
+          "commonwealth-supply",
+          "commonwealth-rear",
+          "commonwealth-supply",
+          "commonwealth-rear",
+          "commonwealth-supply",
+          "commonwealth-rear"
+        ],
+        "cp": [
+          2,
+          4,
+          6,
+          8,
+          10,
+          12,
+          14
+        ],
+        "cohesion": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          -2,
+          -4
+        ]
+      },
+      "goldens": {
+        "request": {
+          "bytes": 741,
+          "sha256": "sha256:b8c96173e432f7f8f09b68cd13e2d1e1a2d49e1a2380815b49fe23dd5510a16c"
+        },
+        "predecessor-records": {
+          "bytes": 28829,
+          "sha256": "sha256:c56224fc1bb24b8282d2ac4398df0efaa83b6d5df67db58cc6b2c853f3e2ab31"
+        },
+        "input-1": {
+          "bytes": 723,
+          "sha256": "sha256:7b2e29e1dd366c19b9e0065c9bd8f83f5a6351f21ecca696e662ee50eb52416f"
+        },
+        "input-2": {
+          "bytes": 730,
+          "sha256": "sha256:77aa25e901bdaf519dc96eb36e3a7c20a9236aa3ed2cb68d71737333aa34d72b"
+        },
+        "input-3": {
+          "bytes": 730,
+          "sha256": "sha256:e0eba23d1d4dd9367c80cd46284655d0dc10343d45b7c445a9a6b75136739d8a"
+        },
+        "input-4": {
+          "bytes": 730,
+          "sha256": "sha256:5df1a11059c62549163e8d791b9a43a11b27f8b9c3f82caee83ada091dcfdfed"
+        },
+        "input-5": {
+          "bytes": 730,
+          "sha256": "sha256:5b189451198a168f631947242a4d236f6d4312d40473d23c4881babd434d534d"
+        },
+        "input-6": {
+          "bytes": 730,
+          "sha256": "sha256:4f131d95cef1c44f483eec9c758a34d4bed1d95f5455b47ddcf495035aea2e67"
+        },
+        "input-7": {
+          "bytes": 730,
+          "sha256": "sha256:21d7681312481d622afdb68a12e47df3b3c7f30339ae65db8312bf903a3b02c3"
+        },
+        "event-1": {
+          "bytes": 3477,
+          "sha256": "sha256:44ec2136eb1073960b436816b92e9f3e0acdecac13bc77c6714442b2b0192d07"
+        },
+        "event-2": {
+          "bytes": 3493,
+          "sha256": "sha256:f98e18cc17250bc7be663f33b7b016ec453869c54768c6591d150fea338b5432"
+        },
+        "event-3": {
+          "bytes": 3491,
+          "sha256": "sha256:5e6d545551c2f874440220ab418fcaf9ebecf4d0661b494556392bc27e839e22"
+        },
+        "event-4": {
+          "bytes": 3493,
+          "sha256": "sha256:36e3baa5d4eb5c2a9c50ca186fc5fc4ae52d9add3b2098b4c2825a6f4aba950f"
+        },
+        "event-5": {
+          "bytes": 3492,
+          "sha256": "sha256:34e80e1c3a189c32c1a4012a8cbeeaccf042067764f0303c2123aae0068a1479"
+        },
+        "event-6": {
+          "bytes": 3496,
+          "sha256": "sha256:f5897e9ae0e25157d43ca97ed71711083e6c540381c96eebbf14d8bb48599d55"
+        },
+        "event-7": {
+          "bytes": 3495,
+          "sha256": "sha256:8886dba36e3afc88d64e52ad382a8c50ccd2c3dba24f2f907c83adba9607be19"
+        },
+        "state-11": {
+          "bytes": 9625,
+          "sha256": "sha256:582be3e1c702cfaf09bbbbe1a7858ae7ac5717ce95139ab2ed6e0559243a0912"
+        },
+        "state-12": {
+          "bytes": 10693,
+          "sha256": "sha256:42e418feb61bb03796803f1799331175dab3be1ed48d6f4be3398f76c9d49c9e"
+        },
+        "state-13": {
+          "bytes": 11220,
+          "sha256": "sha256:f64d469012caf110558aae6c321db633003964a0c6488b747d5592ac53a9ffbc"
+        },
+        "state-14": {
+          "bytes": 11733,
+          "sha256": "sha256:abcbbcd264887d012479d567caa1a8dde3cc5604a887ccd517791afdd7c56b46"
+        },
+        "state-15": {
+          "bytes": 12260,
+          "sha256": "sha256:69a56dcc06bdcfc535bf0981af0196fcfab3b241c590e724e0f0233b810da738"
+        },
+        "state-16": {
+          "bytes": 12775,
+          "sha256": "sha256:d7319e7739faa17ec6fc4b3113534b6d05e7f0f9f593e6697f87a22c98914107"
+        },
+        "state-17": {
+          "bytes": 13633,
+          "sha256": "sha256:3e8a10661a9f27eb2504f8416d5b953b19a1dc0e940dda9590d8c7f1433524e8"
+        },
+        "state-18": {
+          "bytes": 14478,
+          "sha256": "sha256:ee2c00270419cce93508ca744fcee4a400d36c5428b5bb74ac8cb4fa0af3620f"
+        }
+      }
+    }
+  ]
+}
