@@ -120,7 +120,9 @@ uses private `InheritedState` and freezes `element-moved`4; it remains distinct 
 `combat-cycle-element-moved`1. Actual progress references and moving routes are authority data,
 not new products. The [inherited route lifecycle](docs/specs/combat-inherited-movement-lifecycle-v1.md)
 uses private `LifecycleState`, retaining `element-movement-stopped`2, `breakdown-stop-resolved`2
-and `movement-segment-completed`3. Suspended context and Movement-end proof remain authority data.
+and `movement-segment-completed`3. The [Breakdown completion packet](docs/specs/combat-inherited-breakdown-completion-v1.md)
+uses private `CombatEntryState` and retains `breakdown-segment-completed`2; reaching that position
+does not admit Combat actions. Suspended context and Movement-end proof remain authority data.
 These projections are not Snapshot12. Chronicle retains the
 accepted events; the future Archives reader must reconstruct and validate their complete chain.
 

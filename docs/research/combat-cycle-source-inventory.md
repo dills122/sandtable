@@ -35,7 +35,9 @@ now completes actual ordinary Move4 provenance within the normal-Weather infantr
 [003D2c.3b route lifecycle](../specs/combat-inherited-movement-lifecycle-v1.md) now derives actual
 stop/resolution/completion and first Movement-end proof. Its source mapping preserves capability
 identity, suspended context, empty-resolution provenance and distance2/3 exclusion semantics.
-Breakdown-segment completion and other .3 families remain open. See [D2a movement](../specs/combat-ordinary-movement-v1.md) for the Clear2 source correction and
+[003D2c.3c Breakdown completion](../specs/combat-inherited-breakdown-completion-v1.md) now reaches
+actual Combat entry, preserving all11 legacy fields and predecessor position sources. Actual
+Combat selection and other .3 families remain open. See [D2a movement](../specs/combat-ordinary-movement-v1.md) for the Clear2 source correction and
 atomic break-off evidence; [D2b.1 Release](../specs/combat-reserve-release-v1.md) freezes ordered
 control and retained history. Full inherited integration/runtime proof remains open.
 Parent003C/D/004 and the combined-contract gate remain open; the plan retains current review accounting.

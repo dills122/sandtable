@@ -1,0 +1,153 @@
+{
+  "contractVersion": 1,
+  "cases": [
+    {
+      "actor": "axis",
+      "moves": 1,
+      "expectedCp": 2,
+      "expectedCohesion": 0,
+      "expectedExclusions": 0,
+      "goldens": {
+        "bytes": [1185, 594, 2592, 11895, 12274],
+        "sha256": [
+          "sha256:9201ef3a90509e3730028fa1e1b232b18b41d96ca1814f8cd7321dfaf6096b19",
+          "sha256:4108d7219daec0d88ad28049dd2c57f050896122ae360313a11798ddaa7c7190",
+          "sha256:0e57e39f3632acd2e0fd03b53222b533c17b3148f8ca86dcf5115f675491faa6",
+          "sha256:8aabb1b9d6d8f82f36207946361f8abad06d4ef53c42b73882844a5177dbbfe8",
+          "sha256:c3d3017d6d6a96f68a9ef0b9f6ae86b57df28a5dac31b75851c8f577665c079e"
+        ]
+      }
+    },
+    {
+      "actor": "axis",
+      "moves": 5,
+      "expectedCp": 10,
+      "expectedCohesion": 0,
+      "expectedExclusions": 0,
+      "goldens": {
+        "bytes": [1481, 594, 2592, 13913, 14292],
+        "sha256": [
+          "sha256:0a09198eadd511cf45a24ccbbde5b70a42b45f23c1f0e8e5e8fa74fd89567d39",
+          "sha256:cde841fa4af32c2750965eb591491d8de6f9ab79745f76d142b22c015585c9aa",
+          "sha256:a9fd58e7de6d136ccd12b335ae082536d38e006484384ee451668b74b670d45f",
+          "sha256:3a82d56b9b02663674d6aee3d543a3cecad2fe4e191c1573d288e679f0cec574",
+          "sha256:5cad4822c660f4c464d18451130db243b3b73cedf337535f0ce80f2e6a2d7da6"
+        ]
+      }
+    },
+    {
+      "actor": "axis",
+      "moves": 6,
+      "expectedCp": 12,
+      "expectedCohesion": -2,
+      "expectedExclusions": 1,
+      "goldens": {
+        "bytes": [1555, 594, 2592, 14901, 15280],
+        "sha256": [
+          "sha256:e1dee318e502c0441fef8ba93957a53d35a78ef2219f701d6e06ad1be9e83ce5",
+          "sha256:a5a1530db20c54da144d6a82337bc9a522094c8489348cb43c9c22d7f0180787",
+          "sha256:406f03cbcb49052d41b0854566a68686069a5cc4934cd9ec64cadfd17f95704f",
+          "sha256:0f1009dd85d88c3c91644cad601b186f08bd3152905f78db40715cc21363e083",
+          "sha256:4d428fe69f61678adab77313e8f6a995c4197552918a4aa0e326b6d7eabc6c43"
+        ]
+      }
+    },
+    {
+      "actor": "axis",
+      "moves": 7,
+      "expectedCp": 14,
+      "expectedCohesion": -4,
+      "expectedExclusions": 0,
+      "goldens": {
+        "bytes": [1629, 594, 2592, 15568, 15947],
+        "sha256": [
+          "sha256:2fbe1c5c6f763e35441527b0b8c7ed3c5ef5f9c8aec36b5a4ceffbbb115dbe6a",
+          "sha256:6e3b0a5a25a81e68ab9d6ac972c835ea0aef4e65c45c40ffe8a45b0d93d43f58",
+          "sha256:c16803010033e81213878ebbaf1cee2775f171614d89109fb27980807e7acf84",
+          "sha256:382e74d936ef573d3fc3ed6a2c265bcae8b35813f8febffbc7dd6959d0070f2a",
+          "sha256:7bda172390c92bb29207b6b884c80c782b650acd9548a89c25f63f7ef8bdba5e"
+        ]
+      }
+    },
+    {
+      "actor": "commonwealth",
+      "moves": 1,
+      "expectedCp": 2,
+      "expectedCohesion": 0,
+      "expectedExclusions": 0,
+      "goldens": {
+        "bytes": [1185, 594, 2592, 12023, 12402],
+        "sha256": [
+          "sha256:ef112758b011dcdeeba7c5689d6a22882b7cc73513d408c8aca5428ad238173a",
+          "sha256:fb64a77a083a4b7f5b32a0a16301fdd301225e30d40fe5e6110ad0c5bcb54194",
+          "sha256:acf76127f564f8b662d313bd4a0bd4c16cccfd5808ee918b08533a158aedc640",
+          "sha256:e77abda001127ed93bf0ef43b488e9f5ee483426280bd943ece26e2d504334eb",
+          "sha256:aa6a66caef48d6aa788b366ea54a72bda31342347d51a50f75c1407ba115fc3f"
+        ]
+      }
+    },
+    {
+      "actor": "commonwealth",
+      "moves": 5,
+      "expectedCp": 10,
+      "expectedCohesion": 0,
+      "expectedExclusions": 0,
+      "goldens": {
+        "bytes": [1481, 594, 2592, 14105, 14484],
+        "sha256": [
+          "sha256:58fbfb04f5da16709f218f26bff75cd3684fb7e746feaa765f5158f7ef58fcc5",
+          "sha256:8cb8a64ae5ba1060af2c410d1f55ab7a8f106988f0885c06fea5bde4eac4bf2a",
+          "sha256:2644a229811a1480cac8a15233b34c8702f6c6d3bf3ae74c6f212e2adeb8abdd",
+          "sha256:85bf20209ef56cdd0a4badd05001b4ee54ea3a138228546e0a931111f60adbc9",
+          "sha256:eb6deb7362f5877d390e798f480d572f4710c97706984ff3d75e2cef78bafc43"
+        ]
+      }
+    },
+    {
+      "actor": "commonwealth",
+      "moves": 6,
+      "expectedCp": 12,
+      "expectedCohesion": -2,
+      "expectedExclusions": 1,
+      "goldens": {
+        "bytes": [1555, 594, 2592, 15133, 15512],
+        "sha256": [
+          "sha256:2f8320a86b9195612f9daaef8425cdd307236c83f3da023d92f57597a1a5caef",
+          "sha256:598e74a90edb1703e924702af1338e13c0f8654e42da27bcb3818484fd033a36",
+          "sha256:6c7281f4232853f0c2783dac2ae21ca2fe82a63a39d002bd9ff1a687f52cb507",
+          "sha256:64f7bfdc97e88c07ad5506a3ea866535f6204842e900ece04107cb40c2c31418",
+          "sha256:cf39dd440aa41d1bc936effac0763875a5831738179122281ba887f2d71168cd"
+        ]
+      }
+    },
+    {
+      "actor": "commonwealth",
+      "moves": 7,
+      "expectedCp": 14,
+      "expectedCohesion": -4,
+      "expectedExclusions": 0,
+      "goldens": {
+        "bytes": [1629, 594, 2592, 15808, 16187],
+        "sha256": [
+          "sha256:b56da977707a54c81266d9b7388b3e24b3aba4d251eb23dc3a3f349d4279e736",
+          "sha256:ba65a67d4207d6803aceace39829da8131d3d5dfb71521b299d21f603541c750",
+          "sha256:eda0c76e8ec9ca65bb99c11976c45c3d009c4ee2f080bd293b37bc8828e6c343",
+          "sha256:8a2078d4aa79d90091b0464947f155621498ec31e6fec8bd3af1150c4c457a6d",
+          "sha256:f0856f4bf7ef91dc7cd388430edf03ea6f5de9b68208f987b8d04bfdb24baa93"
+        ]
+      }
+    }
+  ],
+  "sourcePins": [
+    {"path": "docs/specs/combat-inherited-movement-lifecycle-v1.schema.json", "sha256": "sha256:aac4e07f9546d457defd9042ae701434683e7c22fab2071fe88f872d8d6bc072"},
+    {"path": "docs/specs/verify-combat-inherited-movement-lifecycle-v1.py", "sha256": "sha256:f2ee2292df3fe370ace289dcd01747153dac6d78b82c924b2f3da27df1d81920"},
+    {"path": "docs/specs/fixtures/combat-inherited-movement-lifecycle-v1.json", "sha256": "sha256:027c8c87edee975a82f8060d9a0dc0d1b4346083e43d63c0888e464ce42d78c2"},
+    {"path": "docs/specs/combat-cycle-sequence-v1.schema.json", "sha256": "sha256:6e09dc5bc6ca79d8580db6ed1e76ad5007c26a30df11b4dd9da0a9c7b5f5e0c5"},
+    {"path": "src/Cna.Core/Campaigns/CampaignBreakdownLifecycleFactory.cs", "sha256": "sha256:07b97600a212bf2b255004bafdeba7da0804624198be354814d25ede5f0d4413"},
+    {"path": "src/Cna.Core/Campaigns/CampaignBreakdownLifecycleCodec.cs", "sha256": "sha256:5d8c11b6d13df33d767f4d3812f52fdf463ef85ce645b92e73d50cea074beb2c"},
+    {"path": "src/Cna.Core/Campaigns/CampaignV11BreakdownProjector.cs", "sha256": "sha256:a1ed1aefd2ceb6fe3641d82b13ab0d04eb26505bdf98ccf3745cd974cee49826"},
+    {"path": "src/Cna.Core/Actions/BreakdownActionCandidates.cs", "sha256": "sha256:22aa8459a4a34e67815e83009f0dc0efca67bf171c803ccb60b75944cc435801"},
+    {"path": "src/Cna.Core/Actions/CampaignActionCandidate.cs", "sha256": "sha256:c0e1c240a51dfeb140e370cac71cd204d92954eacc6d47a08c44006850cbc590"},
+    {"path": "src/Cna.Core/Rules/Cna1979LandSequence.cs", "sha256": "sha256:c5426245a156367eac85fc5e61792ece1ae124651a0416793fde00213641b938"}
+  ]
+}

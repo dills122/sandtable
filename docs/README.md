@@ -111,7 +111,8 @@ the pre-alpha roadmap carry repository-wide rationale and delivery state.
   supplies actual Move4 provenance, cumulative CP/DP, route and progress receipts.
   [D2c.3b route lifecycle](specs/combat-inherited-movement-lifecycle-v1.md) closes deliberate stop,
   empty resolution and Movement completion/end proof for that profile:8 traces/24 events.
-  Breakdown-segment completion and remaining .3 capabilities/.4 full composition stay open.
+  [D2c.3c Breakdown completion](specs/combat-inherited-breakdown-completion-v1.md) adds8 one-event
+  traces to actual Combat entry. Selection admission and remaining .3 capabilities/.4 composition stay open.
   See [result/settlement](specs/combat-result-settlement-v1.md) and
   [snapshot composition/audit](specs/combat-snapshot-composition-v1.md). See
   [ordinary movement](specs/combat-ordinary-movement-v1.md) for D2a evidence and source correction.

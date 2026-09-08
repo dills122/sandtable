@@ -203,7 +203,8 @@ entry. [D2c.2c stage entry](docs/specs/combat-stage-entry-v1.md) now reaches Res
 actual first-cycle opening. [D2c.3a inherited Movement](docs/specs/combat-inherited-movement-v1.md)
 now derives ordinary Move4 from that history. [D2c.3b route lifecycle](docs/specs/combat-inherited-movement-lifecycle-v1.md)
 adds deliberate stop, empty-cohort resolution and Movement completion with actual end proof.
-Breakdown-segment completion into Combat entry is next.
+[D2c.3c Breakdown completion](docs/specs/combat-inherited-breakdown-completion-v1.md) now reaches
+actual Combat entry. Admission to selection from that moved state is next.
 The [latest smoke check](docs/research/simulator-post-merge-checkin.md#combat-contract-branch-smoke-check)
 verifies the existing Rules9 path; prospective Combat contracts are not executable game support.
 
@@ -317,7 +318,9 @@ successors. [D2c.3a inherited ordinary Movement](docs/specs/combat-inherited-mov
 traces both sides through seven safe Clear moves, cumulative CP14 and four excess-CPA DP.
 [D2c.3b route lifecycle](docs/specs/combat-inherited-movement-lifecycle-v1.md) adds8 traces/24 events
 through Breakdown Determination, with actual first Movement-end proof and unchanged World/RNG.
-Breakdown-segment completion, positive Reaction/Breakdown, Reserve/armed continuation and D2c.4 remain open.
+[D2c.3c Breakdown completion](docs/specs/combat-inherited-breakdown-completion-v1.md) adds8 one-event
+traces into first Combat Position Determination while retaining that proof and full state.
+Actual Combat selection, positive Reaction/Breakdown, Reserve/armed continuation and D2c.4 remain open.
 [Result/settlement](docs/specs/combat-result-settlement-v1.md) and
 [full snapshot composition](docs/specs/combat-snapshot-composition-v1.md) retain synthetic pre-Combat
 lineage; review9 assessed these bounded artifacts. Parent003, future maturity execution and combined checkpoint B
