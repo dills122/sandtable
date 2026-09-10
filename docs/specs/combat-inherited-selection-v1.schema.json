@@ -1,0 +1,33 @@
+{
+  "contract": "combat-inherited-selection-v1",
+  "objects": {
+    "CandidateAssessment": "actingSide:side actingElementId:id defendingSide:side defendingElementId:id actingLocationId:id defendingLocationId:id normalWeather:bool adjacent:bool actingCapabilityPointsExpended:Cp defendingCapabilityPointsExpended:Cp actingWithinVoluntaryCeiling:bool defendingWithinVoluntaryCeiling:bool candidateIds:id[]",
+    "AdmissionBoundary": "contractVersion:int entry:CombatEntryState assessment:CandidateAssessment",
+    "Command": "contractVersion:int kind:id segmentId:id expectedPriorVersion:long expectedPositionId:id openingReceiptId:id?",
+    "Input": "command:Command actor:actor",
+    "Event": "contractVersion:int eventType:id campaignId:id rulesetHash:rawHash configurationHash:hash cycleId:hash segmentId:id priorVersion:long stateVersion:long priorPrefix:hash input:Input effect:Effect receiptId:id",
+    "OpenEffect": "kind:id boundaryHash:hash assessmentHash:hash candidateCount:int decisionId:null",
+    "CloseEffect": "kind:id outcome:id candidate:null openingReceiptId:id",
+    "Receipt": "commandHash:hash eventHash:hash receiptId:id actor:actor stateVersion:long",
+    "Control": "contractVersion:int boundary:AdmissionBoundary boundaryHash:hash segmentId:id stateVersion:long prefix:hash stepIndex:int selectionOutcome:id candidateIds:id[] openingReceiptId:id? selectionReceiptId:id? receipts:Receipt[] selectionClosed:bool segmentClosed:bool"
+  },
+  "effectTags": {
+    "segment-opened": "OpenEffect",
+    "selection-closed": "CloseEffect"
+  },
+  "externalContracts": [
+    "combat-inherited-breakdown-completion-v1.schema.json",
+    "combat-selection-steps-v1.schema.json",
+    "combat-cycle-sequence-v1.schema.json"
+  ],
+  "domains": {
+    "segment": "sandtable.combat.inherited-selection-segment.v1",
+    "receipt": "sandtable.combat.inherited-selection-receipt.v2"
+  },
+  "limits": {
+    "bytes": 1048576,
+    "depth": 32,
+    "events": 2
+  },
+  "scope": "Actual creation-rooted Combat-entry admission and empty selection opening/closure only; no step traversal, positive candidate, runtime or Snapshot12 activation."
+}

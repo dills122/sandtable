@@ -1,0 +1,103 @@
+{
+  "contractVersion": 1,
+  "cases": [
+    {
+      "actor": "axis",
+      "moves": 6,
+      "expectedCp": 12,
+      "expectedCohesion": -2,
+      "goldens": {
+        "bytes": [1629, 15809, 1227, 1221, 16287, 16657, 17009],
+        "sha256": [
+          "sha256:22a0967978d3bf99ca8e96677f5dc44db1fcc72c91dc6f5fe1f17ada92852c47",
+          "sha256:4b195573569de66562b19d05e62841f82548c01133f4fbd2b3f393e0e0544560",
+          "sha256:3b421d936645c8518f342782c8f0f47c90ff48be87d89eb0b053deaa0c544756",
+          "sha256:35451a363cfb6465c92ece9e347f37dcf26e4bc3442c215d0d34147a581ba807",
+          "sha256:b853c97772ee9da83497c81d500b9345e084a4dad4ffcf7372c747122253366b",
+          "sha256:e8ebb5c14906ed05657754925d50efe17dc978c43d97374603119936aa3f82e1",
+          "sha256:ca11584c60c9056fdf89bc6da5d474f75c438625cd36d6876f0e94a3f6930044"
+        ]
+      }
+    },
+    {
+      "actor": "axis",
+      "moves": 7,
+      "expectedCp": 14,
+      "expectedCohesion": -4,
+      "goldens": {
+        "bytes": [1703, 16474, 1227, 1221, 16952, 17322, 17674],
+        "sha256": [
+          "sha256:c052e32da3a696040ee3c23456c31646b72aae836f04d65154e2fd03f562914b",
+          "sha256:6ded79961a1cc04e7a1fa227ed626c8b18081180911a1d22e667b1d1847df2f6",
+          "sha256:69b31aaad4a7c1eede806bc1ef68f20195c873f852144555078a083abe29eb15",
+          "sha256:4743e5e6f1058230009df388d8bfc9c14d3a1ef7e75bba50774fa147377705c8",
+          "sha256:77c45ed88ed8b95d9d0fcde410b2a57269393a93f55c1c6ac3e8f755fc5e58f6",
+          "sha256:fb5cf55d0d23c97623e48e933990146816fab784930c4c3575fbdb8dca87dcca",
+          "sha256:1136d8a6f961488c6a239eedb24e806a7c9d2f6b7501b4476b6e2413ae190582"
+        ]
+      }
+    },
+    {
+      "actor": "commonwealth",
+      "moves": 6,
+      "expectedCp": 12,
+      "expectedCohesion": -2,
+      "goldens": {
+        "bytes": [1629, 16049, 1227, 1221, 16527, 16897, 17249],
+        "sha256": [
+          "sha256:2e7ed82017d16e073c123cb41a673f89af74a2800b43bfdc30ef568428ae3b8f",
+          "sha256:f9fe2ee5f6ceb68df3ec263529a05d49c9b09c0d3bf3f84c52501cf8bfba01a6",
+          "sha256:7b8f298687b9689b3470c9649ac5b01daf5c4d5890776dcb7b7a93158105a66c",
+          "sha256:381f54181fc3443c22c43b0fb75ea26e680980f8dab97b21d31c8d3229b557fb",
+          "sha256:35c1b2f120f53bf8ebc14d79b5c924005cf141115d1ad3e5c59795edbba8b59e",
+          "sha256:414290b0e0c2da34ecc28723af6250da43e652ef4418276643fe7462138a1526",
+          "sha256:e32ca9bbb500897a6c10b249d9c3f8d1d0996ce9396432e39101d8899c05c140"
+        ]
+      }
+    },
+    {
+      "actor": "commonwealth",
+      "moves": 7,
+      "expectedCp": 14,
+      "expectedCohesion": -4,
+      "goldens": {
+        "bytes": [1703, 16722, 1227, 1221, 17200, 17570, 17922],
+        "sha256": [
+          "sha256:ea30691dae651147d5b300ccb3d93603067a5cf046eda2ab6750aa4d319531be",
+          "sha256:5385427ac1c45a2c9b62b99734dc532a30aa0004099c2b98a0e43ebceb9d671f",
+          "sha256:74d96e3d5dc27383bb273ffcda196d62188765de67c77925ef7c9bd09dd7f9f2",
+          "sha256:76fa8077275c36d1eccfbbd1568864a2efc0b8f489ff6bb0b93ecf08c408e14c",
+          "sha256:c839f653624e2bebd5cc521c1b7ba0c54b519d0fb65c13d46582cefcd26a48c5",
+          "sha256:5845483903a0e89abb4d5c1c9ae4cc4a69a8a3bdfaefcdb33cdb3463c965ea2c",
+          "sha256:f972b9a3b5d36cfb51bb2fd58977e2386990069d968155eea22f5e81659c4e8a"
+        ]
+      }
+    }
+  ],
+  "sourcePins": [
+    {
+      "path": "docs/specs/combat-inherited-breakdown-completion-v1.schema.json",
+      "sha256": "sha256:1ff841c704e1aa46e71513ead562a0ca1c54c05b35bdf97018d6854d8773fec3"
+    },
+    {
+      "path": "docs/specs/verify-combat-inherited-breakdown-completion-v1.py",
+      "sha256": "sha256:db903e019bb457c02930876e42a70b9204387494012419b0b97572c3c9e12eba"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-inherited-breakdown-completion-v1.json",
+      "sha256": "sha256:7d6ee76d454bb047e03d104310758224d9470a0e9aabd30ce841abb32ffc54d1"
+    },
+    {
+      "path": "docs/specs/combat-selection-steps-v1.schema.json",
+      "sha256": "sha256:ef24e125012ab390bb0c932a09472b8220d7e8c95c1b19c29bdb611be532162d"
+    },
+    {
+      "path": "docs/specs/verify-combat-selection-steps-v1.py",
+      "sha256": "sha256:dc037282f74c34246d350faebeea55e81677d27dd181de858b8270e4eaa73c86"
+    },
+    {
+      "path": "docs/design/combat-step-transitions-v1.md",
+      "sha256": "sha256:90b2264ef506c335203e0143adc000b98c59f0f29b4319ba07d9008a1d322f7a"
+    }
+  ]
+}
