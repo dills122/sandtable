@@ -881,7 +881,7 @@ evidence, not an implemented combat contract. Current proposals use trusted-Umpi
 the same pre-state for simultaneous combat, and structural sequence positions plus cycle identity;
 production Combat is not implemented. The [policy register](docs/design/combat-cycle-policy-reconciliation.md)
 now records owner-approved policies, and the [combined plan](docs/design/combat-cycle-implementation-plan.md)
-records bounded contract completion through D2c.2d. The [cycle-control contract](docs/specs/combat-cycle-control-v1.md)
+records bounded contract completion through D2c.3d. The [cycle-control contract](docs/specs/combat-cycle-control-v1.md)
 binds release completion, semantic progress, current-cost witnesses and exact repeat/finish successors.
 Its Movement-expiry projection retains exclusions and release history. Actual inherited history,
 armed Combat continuation and full Snapshot composition remain D2c/004/checkpoint B gates.
@@ -918,8 +918,11 @@ World, RNG, members and material progress persist.
 [Inherited Breakdown completion](docs/specs/combat-inherited-breakdown-completion-v1.md) now derives
 one System event2 into first Combat Position Determination with predecessor position sources,
 exact stage1 action identity and retained Movement-end proof/progress. Existing synthetic C3a
-boundary assumptions cannot admit this moved World or CP12/14 state unchanged. Next is an additive
-actual-entry/no-candidate selection boundary; no state reset or armed-capability inference is allowed.
+boundary assumptions cannot admit this moved World or CP12/14 state unchanged. The
+[inherited selection packet](docs/specs/combat-inherited-selection-v1.md) now admits that exact state,
+derives zero candidates from explicit adjacency/CP/Weather facts, and records System segment opening
+plus no-selection closure without a decision or structural advance. Full no-attack traversal remains
+separate; no state reset or armed-capability inference is allowed.
 These private projections are not Snapshot12 readers.
 All five `CONTACT-001` rulings and the governing specification/design package are approved.
 `ZOR-TASK-002A`-`006C` implement and activate Rules/Content/fixture, Campaign
