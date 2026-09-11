@@ -206,7 +206,8 @@ adds deliberate stop, empty-cohort resolution and Movement completion with actua
 [D2c.3c Breakdown completion](docs/specs/combat-inherited-breakdown-completion-v1.md) now reaches
 actual Combat entry. [D2c.3d actual-entry selection](docs/specs/combat-inherited-selection-v1.md)
 now admits the moved CP12/14 state and closes its zero-candidate selection without a decision.
-Full no-attack structural traversal is next.
+[D2c.3e no-attack traversal](docs/specs/combat-inherited-no-attack-v1.md) carries that closure through
+six exact structural completions to same-slot Reserve Release without material state change.
 The [latest smoke check](docs/research/simulator-post-merge-checkin.md#combat-contract-branch-smoke-check)
 verifies the existing Rules9 path; prospective Combat contracts are not executable game support.
 
@@ -324,7 +325,8 @@ through Breakdown Determination, with actual first Movement-end proof and unchan
 traces into first Combat Position Determination while retaining that proof and full state.
 [D2c.3d actual-entry selection](docs/specs/combat-inherited-selection-v1.md) adds4 traces/8 events,
 derives zero candidates from the moved World and closes selection while retaining stepIndex0.
-Full no-attack traversal, positive Reaction/Breakdown, Reserve/armed continuation and D2c.4 remain open.
+[D2c.3e no-attack traversal](docs/specs/combat-inherited-no-attack-v1.md) adds4 traces/24 events and
+reaches same-slot Reserve Release. Positive Reaction/Breakdown, Reserve/armed continuation and D2c.4 remain open.
 [Result/settlement](docs/specs/combat-result-settlement-v1.md) and
 [full snapshot composition](docs/specs/combat-snapshot-composition-v1.md) retain synthetic pre-Combat
 lineage; review9 assessed these bounded artifacts. Parent003, future maturity execution and combined checkpoint B

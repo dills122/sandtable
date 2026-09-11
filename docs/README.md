@@ -114,7 +114,8 @@ the pre-alpha roadmap carry repository-wide rationale and delivery state.
   [D2c.3c Breakdown completion](specs/combat-inherited-breakdown-completion-v1.md) adds8 one-event
   traces to actual Combat entry. [D2c.3d actual-entry selection](specs/combat-inherited-selection-v1.md)
   adds4 traces/8 events and closes zero-candidate selection without advancing structural steps.
-  Full no-attack traversal and remaining .3 capabilities/.4 composition stay open.
+  [D2c.3e no-attack traversal](specs/combat-inherited-no-attack-v1.md) adds4 traces/24 events and
+  reaches same-slot Reserve Release; remaining .3 capabilities/.4 composition stay open.
   See [result/settlement](specs/combat-result-settlement-v1.md) and
   [snapshot composition/audit](specs/combat-snapshot-composition-v1.md). See
   [ordinary movement](specs/combat-ordinary-movement-v1.md) for D2a evidence and source correction.

@@ -38,8 +38,10 @@ identity, suspended context, empty-resolution provenance and distance2/3 exclusi
 [003D2c.3c Breakdown completion](../specs/combat-inherited-breakdown-completion-v1.md) now reaches
 actual Combat entry, preserving all11 legacy fields and predecessor position sources.
 [003D2c.3d actual-entry selection](../specs/combat-inherited-selection-v1.md) admits that moved state,
-derives zero candidates from explicit facts and closes selection in two System events. Full no-attack
-traversal and other .3 families remain open. See [D2a movement](../specs/combat-ordinary-movement-v1.md) for the Clear2 source correction and
+derives zero candidates from explicit facts and closes selection in two System events.
+[003D2c.3e no-attack traversal](../specs/combat-inherited-no-attack-v1.md) retains that exact Control
+and adds six structural System completions through same-slot Reserve Release. Other .3 families
+remain open. See [D2a movement](../specs/combat-ordinary-movement-v1.md) for the Clear2 source correction and
 atomic break-off evidence; [D2b.1 Release](../specs/combat-reserve-release-v1.md) freezes ordered
 control and retained history. Full inherited integration/runtime proof remains open.
 Parent003C/D/004 and the combined-contract gate remain open; the plan retains current review accounting.
