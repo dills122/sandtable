@@ -365,6 +365,19 @@ zero/multiple-opportunity, post-trigger movement and synthetic-prefix rejection 
 Reaction participant selection/movement/completion/closure, positive vehicle/Reserve movement,
 armed continuation, .4 composition,004/B and runtime remain open.
 
+D2c.3g execution boundary (input `a6e6625`, before implementation): one new
+[spec/schema/fixture/oracle packet](../specs/combat-inherited-reaction-lifecycle-v1.md) plus this plan.
+Consume only the exact accepted 3f one-opportunity Reaction trigger for both owners. The reacting
+independent infantry participant moves once from its assault area to its own rear, selecting the
+sole frozen opportunity and opening its route; explicit participant completion then opens the
+required empty-cohort Reaction-completed Breakdown stop. System resolves that actual stop before a
+System no-eligible close clears the exhausted window and resumes the exact suspended phasing route.
+These four events each advance version/prefix once and retain rotating public capability handles,
+accepted creation/cycle authority and strict retry/readback evidence. World retains both moves;
+RNG is unchanged and only the reacting move adds material progress. Player decline, timeout,
+unavailable closure, another participant or move, positive vehicle/Reserve movement, armed
+continuation, .4 composition,004/B, runtime and simulator remain open.
+
 D2c.4 owns the **Task004 handoff** section in its planned
 `docs/specs/combat-authority-composition-v1.md` contract packet, within the same five-primary-file
 cap. That section must identify the frozen CON-002–004 versions/hashes, composed trace and capacity
@@ -1056,3 +1069,28 @@ remain required.
 No runtime/source/test/scenario or predecessor-contract file changes. Positive Reaction/vehicle/
 Reserve movement, armed continuation, repeat expiry, .4 composition, Task004 handoff/map and
 runtime gateB remain open; next .3 child must be bounded before edits rather than inferred here.
+
+TASK-003D2c.3f checkpoint, 2026-09-10 (input `0c4fa07`; contract commit `d7f9f85`):
+[Reaction-trigger specification](../specs/combat-inherited-reaction-trigger-v1.md), inventory,
+vectors and oracle replay each owner's exact first3a move, then commit one Clear2 return move that
+opens exactly one opposing Reaction opportunity at version13. Trigger/window/opportunity identities,
+the suspended phasing route, explicit Reaction position, World/CP and material progress are retained.
+Author evidence passes2 traces/triggers,4 cuts,2 retries,270 mutations,60 raw rejections,30 boundaries
+and11 source pins. Runtime/source/test/scenario files remain unchanged.
+
+TASK-003D2c.3g checkpoint, 2026-09-10 (input `a6e6625`):
+[Reaction-lifecycle specification](../specs/combat-inherited-reaction-lifecycle-v1.md), inventory,
+vectors and oracle consume only3f's exact one-opportunity trigger. The opposing infantry participant
+moves once assault→own rear, rotates its public opportunity handle over the still-legal rear→supply
+option, then explicitly completes. Completion opens the mandatory empty-cohort Reaction stop;
+System resolution returns to inactive Reaction before System no-eligible closure resumes the exact
+suspended phasing route. Final World retains phasing CP4 and reactor CP2; RNG is unchanged and only
+the reacting move adds material progress.
+
+Author evidence passes2 traces/8 events,10 cuts,8 retries,754 mutations,72 raw rejections,
+76 boundaries and16 source pins. Review caught and corrected the post-move capability-key omission
+before freeze. Direct3f passes2 traces/triggers,4 cuts,2 retries,270 mutations,60 raw rejections,
+30 boundaries and11 pins; compatible3b lifecycle passes8 traces/24 events,32 cuts,24 retries,
+946 mutations,152 raw cases,304 boundaries and16 pins. No runtime/source/test/scenario changes.
+Multiple participant moves/opportunities, alternate closure reasons, vehicle/Reserve movement,
+armed continuation, .4 composition, Tasks004/021/022 and runtime/simulator remain open.

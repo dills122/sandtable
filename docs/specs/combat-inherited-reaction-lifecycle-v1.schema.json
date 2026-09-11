@@ -1,0 +1,53 @@
+{
+  "contract": "combat-inherited-reaction-lifecycle-v1",
+  "objects": {
+    "ReactionCost": "destinationTerrainId:id destinationTerrainCost:Cp routeAdjustment:null crossedHexsideCosts:empty totalCost:Cp",
+    "ReactionMoveOption": "originLocationId:id destinationLocationId:id costBreakdown:ReactionCost",
+    "ReactionMoveCommand": "contractVersion:int kind:id windowId:hash opportunityId:hash originLocationId:id destinationLocationId:id actionId:hash creationBinding:id creationEventHash:hash cycleId:hash expectedPriorVersion:long expectedPositionId:id",
+    "ReactionCompleteCommand": "contractVersion:int kind:id windowId:hash opportunityId:hash actionId:hash creationBinding:id creationEventHash:hash cycleId:hash expectedPriorVersion:long expectedPositionId:id",
+    "ResolveCommand": "contractVersion:int kind:id stopId:hash actionId:hash creationBinding:id creationEventHash:hash cycleId:hash expectedPriorVersion:long expectedPositionId:id",
+    "ReactionCloseCommand": "contractVersion:int kind:id windowId:hash actionId:hash creationBinding:id creationEventHash:hash cycleId:hash expectedPriorVersion:long expectedPositionId:id",
+    "LifecycleInput": "command:LifecycleCommand actor:actor",
+    "ReactionWindow": "reactionWindowId:hash triggerCommittedStateVersion:long phasingSide:side reactingSide:side reactingPosition:ReactingPosition triggerAuthority:TriggerAuthority apparentTrigger:ApparentTrigger frozenOpportunities:FrozenReactionOpportunity[] resolvedOpportunityIds:hash[] activeOpportunityId:hash?",
+    "CurrentReactionPosition": "kind:id reactingPosition:ReactingPosition",
+    "CurrentBreakdownPosition": "kind:id sequencePosition:Position",
+    "CurrentSequencePosition": "kind:id sequencePosition:Position",
+    "ResumeRoute": "kind:id route:MovingRoute",
+    "ReactingFlow": "kind:id phasingContinuation:ResumeRoute reactorRoute:MovingRoute?",
+    "LifecycleStop": "stopId:hash recordedStateVersion:long route:MovingRoute reason:id weatherKind:id cohortInputs:empty",
+    "ReactorStopOpenFlow": "kind:id phasingContinuation:ResumeRoute stop:LifecycleStop",
+    "MoveEvent": "contractVersion:int eventType:id campaignId:id stateVersion:long priorStateVersion:long fromPositionId:id gameTurn:int operationStage:int actingSide:side actionId:hash submittedWindowId:hash submittedOpportunityId:hash windowId:hash opportunityId:hash elementId:id representationId:id originLocationId:id destinationLocationId:id mobilityId:id mobilitySources:Reference[] cost:InheritedCost capabilityPointsExpendedBefore:Cp capabilityPointsExpendedAfter:Cp cohesionBefore:int cohesionAfter:int reactionWindowAfter:ReactionWindow rulesetHash:rawHash breakdownAccounting:empty breakdownFlowAfter:ReactingFlow configurationHash:hash creationBinding:id creationEventHash:hash cycleId:hash openingBaseHash:hash completionReceiptId:id priorPrefix:hash input:LifecycleInput receiptId:id",
+    "CompleteEvent": "contractVersion:int eventType:id campaignId:id stateVersion:long priorStateVersion:long fromPositionId:id actingSide:side actionId:hash submittedWindowId:hash submittedOpportunityId:hash windowId:hash opportunityId:hash reactionWindowAfter:ReactionWindow rulesetHash:rawHash breakdownFlowAfter:ReactorStopOpenFlow configurationHash:hash creationBinding:id creationEventHash:hash cycleId:hash openingBaseHash:hash completionReceiptId:id priorPrefix:hash input:LifecycleInput receiptId:id",
+    "ResolveEvent": "contractVersion:int eventType:id campaignId:id stateVersion:long priorStateVersion:long rulesetHash:rawHash fromPositionId:id actionId:hash stop:LifecycleStop randomStateBefore:Random checks:empty createdLots:empty randomStateAfter:Random breakdownFlowAfter:ReactingFlow sources:Reference[] configurationHash:hash creationBinding:id creationEventHash:hash cycleId:hash openingBaseHash:hash completionReceiptId:id priorPrefix:hash input:LifecycleInput sequencePosition:Position interruptContextAfter:null receiptId:id",
+    "CloseEvent": "contractVersion:int eventType:id campaignId:id stateVersion:long priorStateVersion:long fromPositionId:id actingSide:null actionId:hash submittedWindowId:hash windowId:hash reason:id closedOpportunityIds:empty suspendedSequencePosition:Position rulesetHash:rawHash breakdownFlowAfter:MovingFlow configurationHash:hash creationBinding:id creationEventHash:hash cycleId:hash openingBaseHash:hash completionReceiptId:id priorPrefix:hash input:LifecycleInput receiptId:id",
+    "LifecycleState": "contractVersion:int campaignId:id rulesetHash:rawHash configurationHash:hash creationBinding:id creationEventHash:hash stateVersion:long prefix:hash sequencePosition:Position currentPosition:LifecyclePosition initiativeHolder:side operationStageOrders:PreambleOrder[] operationStageWeather:WeatherValue[] world:World randomState:Random receipts:PreambleReceipt[] firstActingSide:side members:ReserveMember[] cycle:Authority cycleId:hash openingBaseHash:hash completionReceiptId:id tracks:InheritedTrack[] actualProgressRefs:ActualProgressRef[] reactionWindow:ReactionWindow? breakdownFlow:LifecycleFlow"
+  },
+  "externalContracts": [
+    "combat-inherited-reaction-trigger-v1.schema.json",
+    "combat-inherited-movement-lifecycle-v1.schema.json"
+  ],
+  "domains": {
+    "moveReceipt": "sandtable.combat.inherited-reacting-element-moved-receipt.v3",
+    "completeReceipt": "sandtable.combat.inherited-reaction-participant-completed-receipt.v3",
+    "resolveReceipt": "sandtable.combat.inherited-breakdown-stop-resolved-receipt.v2",
+    "closeReceipt": "sandtable.combat.inherited-reaction-window-closed-receipt.v3",
+    "windowCapability": "sandtable.observation.reaction-window.v1",
+    "capability": "sandtable.observation.reaction-capability.v1",
+    "opportunityCapability": "sandtable.observation.reaction-opportunity.v2",
+    "stop": "sandtable.breakdown.stop.v1",
+    "stopCapability": "sandtable.action.breakdown-stop.v1"
+  },
+  "legacyFieldCounts": {"MoveEvent": 29, "CompleteEvent": 15, "ResolveEvent": 15, "CloseEvent": 15},
+  "limits": {"bytes": 1048576, "depth": 32, "arrayItems": 512, "triggerEvents": 1, "lifecycleEvents": 4},
+  "unions": {
+    "LifecycleCommand": {
+      "move-reacting-element": "ReactionMoveCommand",
+      "complete-reaction-participant": "ReactionCompleteCommand",
+      "resolve-breakdown-stop": "ResolveCommand",
+      "close-reaction-window-no-eligible-reactor": "ReactionCloseCommand"
+    },
+    "LifecyclePosition": {"reaction": "CurrentReactionPosition", "breakdown-stop": "CurrentBreakdownPosition", "sequence": "CurrentSequencePosition"},
+    "LifecycleFlow": {"reacting": "ReactingFlow", "reactor-stop-open": "ReactorStopOpenFlow", "moving": "MovingFlow"}
+  },
+  "scope": "Exact creation-rooted one-opportunity Reaction trigger; one opposing ordinary infantry move, explicit completion, mandatory empty-cohort stop resolution, System no-eligible closure and exact phasing-route resumption. No decline/timeout/unavailable, second participant/move, vehicle, Reserve, armed continuation, runtime or simulator admission."
+}
