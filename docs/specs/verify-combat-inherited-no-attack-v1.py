@@ -139,7 +139,8 @@ def authorize(prior, inp):
     require(cmd['dispositionReceiptId'] == prior['selection']['selectionReceiptId'], 5)
 
 
-def transition(prior, inp):
+def _transition(prior, inp):
+    """Pure transition over a Control reconstructed by replay; not an authority boundary."""
     authorize(prior, inp); cmd = inp['command']; ch = sha(raw(inp, 'Input'))
     duplicate = next((r for r in prior['receipts'] if r['commandHash'] == ch), None)
     if duplicate:
@@ -174,7 +175,7 @@ def transition(prior, inp):
 
 def read_event(data, prior, inp):
     event = parse(data, 'Event'); require(event['receiptId'] == receipt(event), 4)
-    state, expected, _ = transition(prior, inp)
+    state, expected, _ = _transition(prior, inp)
     require(expected is not None and data == expected, 6)
     return state
 
@@ -189,6 +190,20 @@ def replay(history, selection_events, events):
     return state
 
 
+def apply(history, selection_events, events, inp, cached_control=None):
+    state = replay(history, selection_events, events)
+    if cached_control is not None:
+        parse(cached_control, 'Control')
+        require(cached_control == raw(state, 'Control'), 6)
+    after, data, rid = _transition(state, inp)
+    if data is None and rid is not None:
+        accepted = next((event for event in events if parse(event, 'Event')['receiptId'] == rid), None)
+        require(accepted is not None, 6)
+        return after, accepted, True
+    require(data is not None, 6)
+    return after, data, False
+
+
 def read_control(data, history, selection_events, events):
     value = parse(data, 'Control'); require(data == raw(replay(history, selection_events, events), 'Control'), 6)
     return value
@@ -200,8 +215,9 @@ def trace(case):
     selection_events = [first, second]; before = initial(selected); state = before
     states = [before]; events = []; inputs = []
     for _ in range(6):
-        inp = trusted(command(state)); state, data, _ = transition(state, inp)
-        require(data is not None, 6); inputs.append(inp); events.append(data); states.append(state)
+        inp = trusted(command(state))
+        state, data, duplicate = apply(history, selection_events, events, inp, raw(state, 'Control'))
+        require(not duplicate, 6); inputs.append(inp); events.append(data); states.append(state)
     route = positions(selected)
     assert [s['position'] for s in states] == route
     assert [parse(e, 'Event')['effect']['proofKind'] for e in events] == ['no-attack']*6
@@ -239,8 +255,8 @@ def verify(result, deep):
         assert read_control(raw(state, 'Control'), history, selection_events, events[:index]) == state
     final = states[-1]
     for inp, data in zip(inputs, events):
-        same, emitted, rid = transition(final, inp)
-        assert same == final and emitted is None and rid == parse(data, 'Event')['receiptId']
+        same, accepted, duplicate = apply(history, selection_events, events, inp, raw(final, 'Control'))
+        assert same == final and duplicate and accepted == data
     for state, inp in zip(states[:-1], inputs):
         side = state['selection']['boundary']['assessment']['actingSide']
         for path, value in ((('actor',), side), (('command','contractVersion'), 1),
@@ -249,7 +265,7 @@ def verify(result, deep):
             (('command','fromPositionId'), 'land.position.foreign'),
             (('command','dispositionReceiptId'), state['selection']['openingReceiptId'])):
             bad = cis.ibc.lc.im.changed(inp, path, value)
-            rejected(lambda b=bad,s=state: transition(s, b)); counts['boundaries'] += 1
+            rejected(lambda b=bad,s=state: _transition(s, b)); counts['boundaries'] += 1
     for sequence in (events[1:], [events[0], events[0]], list(reversed(events)), events+[events[-1]]):
         rejected(lambda e=sequence: replay(history, selection_events, e)); counts['boundaries'] += 1
     other = cis.trace(dict(actor='commonwealth' if states[0]['selection']['boundary']['assessment']['actingSide'] == 'axis'
@@ -258,9 +274,14 @@ def verify(result, deep):
     rejected(lambda: replay(history, selection_events[:1], [])); counts['boundaries'] += 1
     positive = copy.deepcopy(states[0]['selection']); positive['candidateIds'] = ['cand.forged']
     rejected(lambda: initial(positive)); counts['boundaries'] += 1
+    for path in (('prefix',), ('receipts', 0, 'eventHash')):
+        forged = cis.ibc.lc.im.changed(states[1], path, 'sha256:'+'0'*64)
+        rejected(lambda b=raw(forged, 'Control'): apply(history, selection_events, events[:1], inputs[1], b))
+        counts['boundaries'] += 1
     post = trusted(command(final)); post['command']['expectedPriorVersion'] = final['stateVersion']
     post['command']['fromPositionId'] = final['position']['positionId']
-    rejected(lambda: transition(final, post)); counts['boundaries'] += 1
+    rejected(lambda: apply(history, selection_events, events, post, raw(final, 'Control')))
+    counts['boundaries'] += 1
     if deep:
         for index, data in enumerate(events):
             value = parse(data, 'Event'); prior = states[index]

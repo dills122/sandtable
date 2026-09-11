@@ -676,7 +676,11 @@ Ready with non-blocking follow-ups. Both findings are corrected. Review11 of mer
 returned Ready with no findings at its11of11 checkpoint. Owner then authorized review12: Ready
 for Reserve/opening and Movement preparation at `01ded95`, plus offline-link maintenance at
 `0e815b2`, with no actionable findings. Owner then authorized a separate review chat for3a at
-`d76ac3f`: review13 Ready, no actionable findings. Budget13of13 is exhausted;3b/3c/3d have author checks only.
+`d76ac3f`: review13 Ready, no actionable findings. At that checkpoint,3b/3c/3d/3e had author checks
+only. Review14 then assessed3d/3e at `db75340` and
+returned Not ready:3e lacked a history-rooted command boundary and review summaries omitted3e. Both
+accepted findings are corrected after that review with author evidence only. Budget14of14 is
+exhausted; review14 is not a Ready verdict for3d/3e.
 The
 [D2b.2 cycle control](../specs/combat-cycle-control-v1.md) has author evidence:19 cases/64 traces,164
 cuts,1748 mutations and700 raw rejects. D2c must supply actual inherited progress, armed Combat
@@ -876,8 +880,12 @@ Reserve/opening plus Movement preparation at `01ded95` and maintenance at `0e815
 no findings. Its independent checks included Reserve and two direct predecessor oracles; it was
 not a full historical-oracle rerun. Owner then authorized review13 in a separate chat for3a at
 `d76ac3f`: Ready, no actionable findings, three relevant oracles plus independent source/plan and
-public-boundary probes. Budget13of13 is exhausted;3b/3c/3d have author verification only.
-Remaining contract gates stay open.
+public-boundary probes. At that checkpoint, budget13of13 was exhausted and3b/3c/3d/3e had author
+verification only.
+Owner then authorized review14 for3d/3e at `db75340`; it returned Not ready on the3e command authority
+boundary and incomplete review accounting. Both accepted findings are corrected after review with
+author verification only. Budget14of14 is exhausted; review14 is not a Ready verdict. Remaining
+contract gates stay open.
 Later contracts and implementation must settle every reachable loss, capture/custody, retreat,
 ammunition, and Cohesion obligation before claiming the repeating skeleton is complete.
 

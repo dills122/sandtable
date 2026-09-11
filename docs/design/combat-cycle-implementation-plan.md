@@ -53,7 +53,11 @@ ran Reserve and two immediate predecessor oracles, focused probes, source mappin
 checks; it did not rerun all historical oracles. Owner then explicitly authorized a separate review
 chat for3a at `d76ac3f`: review13 returned Ready, no actionable findings, after three relevant oracles,
 61 public rejection probes, source/plan checks and changed-document path checks. Its blind preliminary
-preceded the separate author explanation. Budget13of13 is exhausted;3b/3c/3d have author checks only.
+preceded the separate author explanation. At that checkpoint,3b/3c/3d/3e had author checks only.
+Owner then authorized review14 for3d/3e at `db75340`;
+it returned Not ready because3e lacked a history-rooted command application boundary and cumulative
+review prose omitted3e. Both accepted findings are corrected after that review, with author evidence
+only for the remediation. Budget14of14 is exhausted; review14 is not a Ready verdict for3d/3e.
 TASK-004–025 not started. Future maturity execution and checkpoint B remain gated.
 **Original input:** `d2bc67c`. Exact contract freeze and production gates remain open.
 
@@ -1029,8 +1033,12 @@ the terminal no-attack proof, the3d selection receipt as disposition and opening
 chaining. The final outer Control reaches same-slot Reserve Release and closes without changing the
 nested3d segment flag or any World/RNG/resource/history fact.
 
-Author evidence:4 traces/24 events,28 state cuts,24 retries,956 mutations,36 raw rejections,200
-boundary checks and7 source pins pass. Direct3d and frozen C3a predecessor checks remain required.
+Author evidence:4 traces/24 events,28 state cuts,24 retries,956 mutations,36 raw rejections,208
+boundary checks and7 source pins pass. Fresh commands reconstruct from full accepted history; optional
+cached Control must match replay exactly, and retries read original bytes from accepted event history.
+Review14 at `db75340` returned Not ready on the prior boundary and an accounting omission; both accepted
+findings are corrected here with author verification only. Direct3d and frozen C3a predecessor checks
+remain required.
 No runtime/source/test/scenario or predecessor-contract file changes. Positive Reaction/vehicle/
 Reserve movement, armed continuation, repeat expiry, .4 composition, Task004 handoff/map and
 runtime gateB remain open; next .3 child must be bounded before edits rather than inferred here.
