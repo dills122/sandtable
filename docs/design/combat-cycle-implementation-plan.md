@@ -34,9 +34,11 @@ is complete as a bounded contract checkpoint. [D2c.3b route lifecycle](../specs/
 derives owner stop2, System empty resolution2 and owner Movement-completion3 with actual end proof.
 [D2c.3c Breakdown completion](../specs/combat-inherited-breakdown-completion-v1.md) reaches actual Combat entry.
 [D2c.3d actual-entry selection](../specs/combat-inherited-selection-v1.md) admits the moved CP12/14
-state and closes zero-candidate selection in two System events. Next3e bounds full no-attack
-structural traversal. The [preparation matrix](combat-inherited-movement-preparation.md)
-remains the field/provenance baseline; other .3 capabilities and .4 composition stay open.
+state and closes zero-candidate selection in two System events.
+[D2c.3e actual no-attack traversal](../specs/combat-inherited-no-attack-v1.md) carries that closure
+through six System step completions to same-slot Reserve Release. The
+[preparation matrix](combat-inherited-movement-preparation.md) remains the field/provenance baseline;
+positive Reaction/vehicle/Reserve movement, armed continuation and .4 composition stay open.
 [Progress review9](../reviews/combat-progress-review-9.md) assessed all13 unmerged commits through
 `a96d2a1`: Ready with non-blocking follow-ups; its sole P3 documentation-status finding is corrected.
 All15 Python oracles and the focused Orleans build/run/format passed at that checkpoint.
@@ -332,6 +334,18 @@ segment open for later structural traversal. Strict replay/readback/retry, re-si
 malformed bytes, cross-history/owner and synthetic-C3a substitutions precede completion. Full
 no-attack step traversal must be a separate bounded child. Positive Reaction/vehicle/Reserve
 movement, armed continuation, .4 composition,004/B and runtime remain open.
+
+D2c.3e execution boundary (input `419aae4`, before implementation): one new
+[spec/schema/fixture/oracle packet](../specs/combat-inherited-no-attack-v1.md) plus this plan. Consume
+only the exact closed 3d empty-selection Control for both CP12/14 owners. Nest it byte-identically,
+then emit six System `combat-step-completed`2 events in catalog order from Position Determination
+through Close Assault to same-slot Reserve Release. Every event derives `proofKind=no-attack`, links
+the selection closure as disposition, links opening/prior-step receipt as predecessor, and advances
+version/prefix once. Final outer Control closes; nested 3d segment state remains immutable. Strict
+cut replay/readback/retry, re-signed event/control mutation, malformed bytes, cross-history,
+incomplete predecessor, positive-candidate, order/duplicate and capacity rejection precede
+completion. Arrival performs no release or material mutation. Positive families, .4 composition,
+004/B and runtime remain open.
 
 D2c.4 owns the **Task004 handoff** section in its planned
 `docs/specs/combat-authority-composition-v1.md` contract packet, within the same five-primary-file
@@ -1005,3 +1019,18 @@ Author evidence:4 traces/8 events,12 state cuts,8 retries,1126 mutations,46 raw 
 passes5 literal traces,41 cuts,246 mutations and164 raw rejections. No runtime/source/test/scenario
 or predecessor-contract file changes. Next bounded3e must traverse the six no-attack structural
 steps from this actual closure; it cannot add positive candidates or close3/.4/003/004/B/runtime.
+
+TASK-003D2c.3e checkpoint, 2026-09-10 (input `419aae4`):
+[Actual inherited no-attack specification](../specs/combat-inherited-no-attack-v1.md), inventory,
+vectors and oracle consume the exact3d empty-selection Control as immutable nested history. Four
+both-owner CP12/14 histories traverse Position Determination, Barrage, Retreat Before Assault,
+Force Assignment, Anti-Armor and Close Assault in six exact System step completions. All events use
+the terminal no-attack proof, the3d selection receipt as disposition and opening/prior-step receipt
+chaining. The final outer Control reaches same-slot Reserve Release and closes without changing the
+nested3d segment flag or any World/RNG/resource/history fact.
+
+Author evidence:4 traces/24 events,28 state cuts,24 retries,956 mutations,36 raw rejections,200
+boundary checks and7 source pins pass. Direct3d and frozen C3a predecessor checks remain required.
+No runtime/source/test/scenario or predecessor-contract file changes. Positive Reaction/vehicle/
+Reserve movement, armed continuation, repeat expiry, .4 composition, Task004 handoff/map and
+runtime gateB remain open; next .3 child must be bounded before edits rather than inferred here.
