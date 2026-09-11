@@ -351,6 +351,20 @@ incomplete predecessor, positive-candidate, order/duplicate and capacity rejecti
 completion. Arrival performs no release or material mutation. Positive families, .4 composition,
 004/B and runtime remain open.
 
+D2c.3f execution boundary (input `0c4fa07`, before implementation): one new
+[spec/schema/fixture/oracle packet](../specs/combat-inherited-reaction-trigger-v1.md) plus this plan.
+Consume only the exact accepted first-move prefix from the actual 3a Movement Control for both
+CP12/14 owners, then return the phasing representation from its rear area to its assault origin.
+The committed destination is adjacent to exactly one frozen opposing combat representation, so
+System emits one `element-moved`4 event that charges the Clear2 cost once, advances
+version/prefix once, opens one identity-bound Reaction window, switches current position to the
+explicit Reaction interrupt and suspends the same phasing route. Replay accepted
+history from creation before each fresh command; cache equality is diagnostic only. Strict
+cut replay/readback/retry, re-signed event/control mutation, malformed bytes, cross-history/owner,
+zero/multiple-opportunity, post-trigger movement and synthetic-prefix rejection precede completion.
+Reaction participant selection/movement/completion/closure, positive vehicle/Reserve movement,
+armed continuation, .4 composition,004/B and runtime remain open.
+
 D2c.4 owns the **Task004 handoff** section in its planned
 `docs/specs/combat-authority-composition-v1.md` contract packet, within the same five-primary-file
 cap. That section must identify the frozen CON-002–004 versions/hashes, composed trace and capacity
