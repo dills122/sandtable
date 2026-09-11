@@ -1,0 +1,79 @@
+{
+  "contractVersion": 1,
+  "contract": "combat-inherited-reaction-trigger-v1",
+  "sourceHashes": {
+    "docs/specs/combat-inherited-reaction-trigger-v1.schema.json": "sha256:0a531b3196fbef885a6dcafc07bc6ff79765801cb2f529d099342257ed06cffd",
+    "docs/specs/combat-inherited-movement-v1.md": "sha256:27bb09dd0d1eaf0f7391998275d022d5f98ae98ed870abe77d6944d2c51c7621",
+    "docs/specs/combat-inherited-movement-v1.schema.json": "sha256:a9ad67ee9b9302f17582fb5087f6dd6e7e62574741e6cea7b5a3e58bf7fe2069",
+    "docs/specs/verify-combat-inherited-movement-v1.py": "sha256:c10c51cd97fca3f3f04fc0983e90d474a35a6b58f4a2cce396272916910579e1",
+    "docs/specs/fixtures/combat-inherited-movement-v1.json": "sha256:fe617c27d23732228571dc5f323c61e15b7614e3bf4302433e0420133abaafdc",
+    "src/Cna.Core/Campaigns/CampaignElementMovedV3Factory.cs": "sha256:85bbff98008afad1d06dd6cb071cc8b26883e9f3ebcb4265df215beb8094f2c1",
+    "src/Cna.Core/Campaigns/CampaignReactionIdentity.cs": "sha256:aa9ec04b61b6361d2f92f968dbbe23e85296396d2e3eed9f94b23c44cd5d2ca6",
+    "src/Cna.Core/Campaigns/CampaignReactionWindow.cs": "sha256:ba855947cccf4f2ea391f9774b40a26d5da8d1b3edbba115d64dd30994638c1d",
+    "src/Cna.Core/Campaigns/CampaignV11CanonicalCodec.cs": "sha256:264dcf5e88e3b981e64b5f2de5632167bce5bf6c6ddc3d07274de89e81904b44",
+    "src/Cna.Core/Campaigns/CampaignBreakdownCodec.cs": "sha256:6badc5510db11b593b35b9fc03031a709add9c694c64b923650e578494b9ab79",
+    "src/Cna.Core/Campaigns/CampaignBreakdownMoveEventSerializer.cs": "sha256:2885afd854bc57c5b8f782be0e0cd875fe13eb78658f433145568d45b2b1c704"
+  },
+  "cases": [
+    {
+      "name": "axis-return-opens-reaction",
+      "predecessorCase": "axis-ordinary-clear-route",
+      "expected": {
+        "actor": "axis",
+        "elementId": "axis-assault-battalion",
+        "assault": "assault-west",
+        "rear": "axis-rear",
+        "opponentElementId": "commonwealth-assault-battalion",
+        "opponentAssault": "assault-east"
+      },
+      "goldens": {
+        "movement-prefix": {
+          "bytes": 3397,
+          "sha256": "sha256:987b6c04e49f47e3a54a1402f3986c8b3b4429033ed48a0451dbcfc4894392b4"
+        },
+        "input": {
+          "bytes": 691,
+          "sha256": "sha256:e6114670e476c56bf2147c0885c3d8e3dc45b11bd2532e984d22c87d05ecebbe"
+        },
+        "event": {
+          "bytes": 5262,
+          "sha256": "sha256:70a6dafd61d28703eeb52b9f1d45f6a564931608c497dc4cdb57a205071c40ae"
+        },
+        "state": {
+          "bytes": 13590,
+          "sha256": "sha256:2fd6115239392e88541512adb9be398e78ad59b312706f75a1801974c41f5644"
+        }
+      }
+    },
+    {
+      "name": "commonwealth-return-opens-reaction",
+      "predecessorCase": "commonwealth-ordinary-clear-route",
+      "expected": {
+        "actor": "commonwealth",
+        "elementId": "commonwealth-assault-battalion",
+        "assault": "assault-east",
+        "rear": "commonwealth-rear",
+        "opponentElementId": "axis-assault-battalion",
+        "opponentAssault": "assault-west"
+      },
+      "goldens": {
+        "movement-prefix": {
+          "bytes": 3477,
+          "sha256": "sha256:44ec2136eb1073960b436816b92e9f3e0acdecac13bc77c6714442b2b0192d07"
+        },
+        "input": {
+          "bytes": 723,
+          "sha256": "sha256:5314cfd785a5ccb194297387bbc9514be5a9adf0ff16d38bd8fa73c654b3e16f"
+        },
+        "event": {
+          "bytes": 5358,
+          "sha256": "sha256:f98f844fb018a951b551459d4014bc60bc6991b89f387573ba4e6db30b5616d3"
+        },
+        "state": {
+          "bytes": 13718,
+          "sha256": "sha256:2978ac47e5437ebb9cf52763a570e72dbfb03abe2b6f249cfba1db57e7f46f6b"
+        }
+      }
+    }
+  ]
+}

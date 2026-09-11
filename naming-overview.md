@@ -123,6 +123,20 @@ uses private `LifecycleState`, retaining `element-movement-stopped`2, `breakdown
 and `movement-segment-completed`3. The [Breakdown completion packet](docs/specs/combat-inherited-breakdown-completion-v1.md)
 uses private `CombatEntryState` and retains `breakdown-segment-completed`2; reaching that position
 does not admit Combat actions. Suspended context and Movement-end proof remain authority data.
+The [inherited selection packet](docs/specs/combat-inherited-selection-v1.md) uses private
+`AdmissionBoundary` and `Control` projections, retaining `combat-segment-opened`2 and
+`combat-selection-closed`2. Its supported zero-candidate result creates no decision and does not
+mean the Combat segment or its structural steps are complete.
+The [inherited no-attack packet](docs/specs/combat-inherited-no-attack-v1.md) nests that `Control`
+unchanged and uses its own `Control` projection plus six `combat-step-completed`2 receipts. Outer
+closure means structural arrival at Reserve Release; it does not rename or perform Reserve Release.
+The [inherited Reaction-trigger packet](docs/specs/combat-inherited-reaction-trigger-v1.md) uses
+private `TriggerState`, retains `element-moved`4 and opens one identity-bound `ReactionWindow`.
+`ReactingPosition` suspends Movement; it is not a participant choice, move or window closure.
+The [inherited Reaction-lifecycle packet](docs/specs/combat-inherited-reaction-lifecycle-v1.md) uses
+private `LifecycleState` for one `reacting-element-moved`3, explicit participant completion3,
+compatible empty-stop resolution2 and no-eligible closure3. `reactor-stop-open` is mandatory
+authority, while terminal `moving` resumes the prior phasing route rather than naming a new route.
 These projections are not Snapshot12. Chronicle retains the
 accepted events; the future Archives reader must reconstruct and validate their complete chain.
 

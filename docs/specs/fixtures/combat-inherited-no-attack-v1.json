@@ -1,0 +1,139 @@
+{
+  "contractVersion": 1,
+  "cases": [
+    {
+      "actor": "axis",
+      "moves": 6,
+      "expectedCp": 12,
+      "expectedCohesion": -2,
+      "goldens": {
+        "bytes": [579, 17009, 1489, 1474, 1498, 1480, 1471, 1472, 17835, 18168, 18563, 18916, 19269, 19640, 19987],
+        "sha256": [
+          "sha256:74b3e3e2f51e3085a7b221f0062682b176945b0d146fba65af035b93bd22d56f",
+          "sha256:ca11584c60c9056fdf89bc6da5d474f75c438625cd36d6876f0e94a3f6930044",
+          "sha256:fb7e071a37fb48954ad5b26afbbdc07293fdd0f73febd9d1dce54045eafa8f06",
+          "sha256:fd1bdb20f164b8b439f9469cada5f00311cb0cc2a556107b88295f11474d12d0",
+          "sha256:5a9dc9144ea1bf707aad471ba36993c8eccd6d2734d6ef90661e2ea00a1c9d72",
+          "sha256:edf849f7743b31aa7ee61c4d3ec36b92dc46ba97ecc67e01abf655c7cd330ea6",
+          "sha256:8bf12ff9e03da9daefff270f08a7b2eb15d3731008b615700cb8d42d679282c9",
+          "sha256:598fab186f47d46e113399cb229330544ad68c3d74c5cdb3239f60554b19dbe1",
+          "sha256:1dbf0fc56f19fba7f407169ddd6f25d7c8dedb1a026be5af8ec5e2107e6fe5f9",
+          "sha256:a01238129bbfff7196ba1b4fd23941687bbbda646ddbb472b1bf0ac6bb1c19c4",
+          "sha256:a8433b90af5d0ebb37055cf99dbb8706a30e1ac5ff7adae0e142c33ec33b389b",
+          "sha256:8297678771c6302ec4febdf65d8e480a718056ef72cc8f65f152478047d813af",
+          "sha256:feaab78e87ac0ba44d985059e5ad2bcd3190b08c05691cb6b89e7a82d20e20ec",
+          "sha256:1f1fbfc529a8b19a157239bcfff64369df6d9290cbf77dee36a3805b15b1929b",
+          "sha256:641b843ada4e3651035b785211e15a4914b1aed4a206c5246f2fb16857d8a431"
+        ]
+      }
+    },
+    {
+      "actor": "axis",
+      "moves": 7,
+      "expectedCp": 14,
+      "expectedCohesion": -4,
+      "goldens": {
+        "bytes": [579, 17674, 1489, 1474, 1498, 1480, 1471, 1472, 18500, 18833, 19228, 19581, 19934, 20305, 20652],
+        "sha256": [
+          "sha256:438851904cd5dcc64b19ef04fa7ebea61431c12956b088f2e4ec949fec6decd2",
+          "sha256:1136d8a6f961488c6a239eedb24e806a7c9d2f6b7501b4476b6e2413ae190582",
+          "sha256:37d8277e38263d34da3ef62bd4bfea12cee09800f6f81a923f13473a93ddd1c9",
+          "sha256:8ebde7377ee81b6dbe527874ed78425c4fe7c32ca1fd697338ccd9e4e3cc879b",
+          "sha256:18ccda94daa358ec8492e1aea11fb8200d5c7bb7c0843745c6ca8d7981c4b560",
+          "sha256:ec9f5c7447ed09a1974582f7e9ae97cac405018cf253ffe70da82fa4b2ca7898",
+          "sha256:4df127a8702d7fac7420e092258a18fe919d170613e21ddf9ba4e7c3c9686ac9",
+          "sha256:13e6b0a6144f3bb7ce8adde212b4f52ff2b123afde1546935b312f5ddf73a1fe",
+          "sha256:6fe587f11c4da7b7fb3ffa44edb34cba61f020043f09428fb5d0bdf08e5db847",
+          "sha256:8c310b8466dadc6ea89ecb6d0cbb0a9d7adfbb4b4273a4ecc2eff85a8d89eb1e",
+          "sha256:ff5255c20587e3422e7cba848c079d4816e35571cdbfc260bfa47c7b65002500",
+          "sha256:a95cbad0ede0f81ff69bc98a53879c8da4c5bb0b1bf261cc69c29c4edab4d536",
+          "sha256:e9f98e7bda0bb7bcf74a779d8a8198b21d6aa0c08bf2878771b3c0a81ae4fc23",
+          "sha256:307ba96c56c18a9d725af325ce258f9a4b0f86a924a5c4734c0069ee6354feec",
+          "sha256:4882cccb073361a91b03cb2c1b338dbdff7797ad0e969641322a579d1f318ac4"
+        ]
+      }
+    },
+    {
+      "actor": "commonwealth",
+      "moves": 6,
+      "expectedCp": 12,
+      "expectedCohesion": -2,
+      "goldens": {
+        "bytes": [579, 17249, 1489, 1474, 1498, 1480, 1471, 1472, 18075, 18408, 18803, 19156, 19509, 19880, 20227],
+        "sha256": [
+          "sha256:427313ab169c1ffcc16703749bb520ddb4149b1ebc53ebcf70d23eb0c24023a2",
+          "sha256:e32ca9bbb500897a6c10b249d9c3f8d1d0996ce9396432e39101d8899c05c140",
+          "sha256:a49d63259db32551958a81d198175de814706583535a5ad8b5e3dba208e993ef",
+          "sha256:cc7c43a8bd9b56b6b39a5ab33b29025e69867070213422fcaae1e304dbeac1b4",
+          "sha256:8a871dc7ff4057d2f149dc5e232680c9fb9909fb7d652f6b8896591cf2e6ee5b",
+          "sha256:50e4fcfc67e572a18c86cbb0c319f42f430e549551e973a713651e2fbd1ec147",
+          "sha256:49392379728ed28047384923350e1087aa33284851930c326cae8cdd92e2b6ff",
+          "sha256:2a80e8ce2f41caf60682417d4fa917981c2290e6a197ae3f750dd8e4fea131de",
+          "sha256:f48d7a744bebfe9d3ee5c017e4017a04ad27a9f4d0042ea8616aa9a68df30266",
+          "sha256:6a9b2dd640b3e2107dd080949ca649f8dc35c6082d49d248cbf6e09c1e415244",
+          "sha256:c08de9a6ba4dbb192d4109743e9f6604a19656dc4fd6c486501ef1488a49cc07",
+          "sha256:b3f5768c16ad2efc221e4fd61982981f4332362724de3da9fca138c647348828",
+          "sha256:231defd347d81dc6a2c314367b63d7f75b37c57740ede5dc55e946cba44e84f6",
+          "sha256:718f00316c6c978f57f9c57bc108744f563a3c9f05553bdb79b6a08ad157312b",
+          "sha256:f88c35062fd255884cda76654d1836f10ffb3ce26fe486c374d2eaae12174a83"
+        ]
+      }
+    },
+    {
+      "actor": "commonwealth",
+      "moves": 7,
+      "expectedCp": 14,
+      "expectedCohesion": -4,
+      "goldens": {
+        "bytes": [579, 17922, 1489, 1474, 1498, 1480, 1471, 1472, 18748, 19081, 19476, 19829, 20182, 20553, 20900],
+        "sha256": [
+          "sha256:c0b36458ac86090a1d05a9386616546474c74ee64a7c580bfa40c481ffe9b0c8",
+          "sha256:f972b9a3b5d36cfb51bb2fd58977e2386990069d968155eea22f5e81659c4e8a",
+          "sha256:67a14112cb0806b7230bdc6f5bc768baa560c309073fe9fdf84db5dde5c5360b",
+          "sha256:79e71884aeec432b3b907090de34fd8baa62aa914e2f1ea8ed2b830b0b313c7e",
+          "sha256:b937cbe83fa7cea6fbc41c74510cfe3e65ef8f46cd49d542c631e860f9bbdfbd",
+          "sha256:5e2cd8b4d137d212e9f0789eb249cd48aeb8e4c17c30db519ac46ce401049571",
+          "sha256:2cb0cf249cef92a915ef58c99a9becfacc840434b44520a98c8827b6b009f419",
+          "sha256:099b848c281f15031e93ec84b5866b12fce56ddb7495b12612a98b80ee2ae3de",
+          "sha256:5310e06b31354771a905714b6f12f766822933cf694546fc1157512d13949d25",
+          "sha256:e93660fc58b58cadbfb435e12bc58cf30af17e0e0af86d8f117926f084b7840e",
+          "sha256:e6b416dc10eccfba834f64611f4c762be71e9342f89c54ba29cb79fe915e7b9c",
+          "sha256:a380b736be01cf070b0f9df79b64d5e1092dc947ef8baa4a51da7c459bb19174",
+          "sha256:e02018f798735d7e36491fe9fbdc6f6c1ed3a68fea5b23e634ef5d918442571e",
+          "sha256:cf6d89a9b984ad9a5ed869a2ff76fa23fac5e837f79827223a2794b2670136cf",
+          "sha256:ad84f60202dba903de7f395f51011b63e72fa4f449faf838b5a4af5b8e999878"
+        ]
+      }
+    }
+  ],
+  "sourcePins": [
+    {
+      "path": "docs/specs/combat-inherited-selection-v1.md",
+      "sha256": "sha256:1b2fcf7f92a06eead348e57997e7357deff18a66ad16d82a7aaa6961609ad5d9"
+    },
+    {
+      "path": "docs/specs/combat-inherited-selection-v1.schema.json",
+      "sha256": "sha256:c57bb32899ef7ea536e8985255a2dccc453ed46cce41d311a9f041a36237ac9b"
+    },
+    {
+      "path": "docs/specs/verify-combat-inherited-selection-v1.py",
+      "sha256": "sha256:99e0cdb1cc78089e4af93b8e995ba04483f6bdab86edaf7c6e2e251442cd0bb7"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-inherited-selection-v1.json",
+      "sha256": "sha256:76240f2409f341757deea0f6ab5d346699de5a4a33690f95ccb7e74e160c1f4f"
+    },
+    {
+      "path": "docs/specs/combat-selection-steps-v1.schema.json",
+      "sha256": "sha256:ef24e125012ab390bb0c932a09472b8220d7e8c95c1b19c29bdb611be532162d"
+    },
+    {
+      "path": "docs/specs/verify-combat-selection-steps-v1.py",
+      "sha256": "sha256:dc037282f74c34246d350faebeea55e81677d27dd181de858b8270e4eaa73c86"
+    },
+    {
+      "path": "docs/design/combat-step-transitions-v1.md",
+      "sha256": "sha256:90b2264ef506c335203e0143adc000b98c59f0f29b4319ba07d9008a1d322f7a"
+    }
+  ]
+}

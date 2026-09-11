@@ -1,0 +1,45 @@
+{
+  "contract": "combat-inherited-reaction-trigger-v1",
+  "objects": {
+    "ReactingPosition": "suspendedMovementPosition:Position phasingSide:side reactingSide:side",
+    "TriggerAuthority": "moveContractVersion:int elementId:id triggeringRepresentation:Representation originLocationId:id destinationLocationId:id",
+    "ApparentTrigger": "apparentRepresentationId:id originLocationId:id destinationLocationId:id",
+    "ReactionAdjacencyEvidence": "triggerLocationId:id committedDestinationLocationId:id isAdjacent:bool sources:Reference[]",
+    "FrozenReactionOpportunity": "opportunityId:hash reactingRepresentation:Representation adjacencyEvidence:ReactionAdjacencyEvidence",
+    "ReactionWindow": "reactionWindowId:hash triggerCommittedStateVersion:long phasingSide:side reactingSide:side reactingPosition:ReactingPosition triggerAuthority:TriggerAuthority apparentTrigger:ApparentTrigger frozenOpportunities:FrozenReactionOpportunity[] resolvedOpportunityIds:empty activeOpportunityId:null",
+    "CurrentReactionPosition": "kind:id reactingPosition:ReactingPosition",
+    "ResumeRoute": "kind:id route:MovingRoute",
+    "ReactingFlow": "kind:id phasingContinuation:ResumeRoute reactorRoute:null",
+    "TriggerEvent": "contractVersion:int eventType:id campaignId:id stateVersion:long priorStateVersion:long fromPositionId:id gameTurn:int operationStage:int actingSide:side elementId:id representationId:id originLocationId:id destinationLocationId:id mobilityId:id mobilitySources:Reference[] cost:InheritedCost capabilityPointsExpendedBefore:Cp capabilityPointsExpendedAfter:Cp cohesionBefore:int cohesionAfter:int movementEndedAfter:null sequencePosition:Position openedReactionWindow:ReactionWindow rulesetHash:rawHash breakdownAccounting:empty breakdownFlowAfter:ReactingFlow configurationHash:hash creationBinding:id creationEventHash:hash cycleId:hash openingBaseHash:hash completionReceiptId:id priorPrefix:hash input:InheritedInput receiptId:id",
+    "TriggerState": "contractVersion:int campaignId:id rulesetHash:rawHash configurationHash:hash creationBinding:id creationEventHash:hash stateVersion:long prefix:hash sequencePosition:Position currentPosition:CurrentReactionPosition initiativeHolder:side operationStageOrders:PreambleOrder[] operationStageWeather:WeatherValue[] world:World randomState:Random receipts:PreambleReceipt[] firstActingSide:side members:ReserveMember[] cycle:Authority cycleId:hash openingBaseHash:hash completionReceiptId:id tracks:InheritedTrack[] actualProgressRefs:ActualProgressRef[] reactionWindow:ReactionWindow breakdownFlow:ReactingFlow"
+  },
+  "externalContracts": [
+    "combat-inherited-movement-v1.schema.json"
+  ],
+  "domains": {
+    "receipt": "sandtable.combat.inherited-reaction-trigger-receipt.v1",
+    "window": "sandtable.campaign.reaction-window.v1",
+    "opportunity": "sandtable.campaign.reaction-opportunity.v1"
+  },
+  "legacyFieldCount": 26,
+  "limits": {
+    "bytes": 1048576,
+    "depth": 32,
+    "arrayItems": 512,
+    "movementEvents": 1,
+    "triggerEvents": 1
+  },
+  "scope": "Actual creation through exactly one ordinary inherited Move4, then owner return to assault origin opening exactly one eligible opposing Reaction opportunity; no participant lifecycle, closure, completion, vehicle, Reserve movement, armed continuation, runtime or simulator admission.",
+  "tags": {
+    "commandVersion": 2,
+    "commandKind": "move-element",
+    "eventVersion": 4,
+    "eventType": "element-moved",
+    "positionKind": "reaction",
+    "flowKind": "reacting"
+  },
+  "closedTypes": {
+    "null": "JSON null only",
+    "empty": "empty JSON array only"
+  }
+}

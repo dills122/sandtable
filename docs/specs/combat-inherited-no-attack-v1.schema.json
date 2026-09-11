@@ -1,0 +1,28 @@
+{
+  "contract": "combat-inherited-no-attack-v1",
+  "objects": {
+    "Command": "contractVersion:int kind:id segmentId:id expectedPriorVersion:long fromPositionId:id dispositionReceiptId:id",
+    "Input": "command:Command actor:actor",
+    "Event": "contractVersion:int eventType:id campaignId:id rulesetHash:rawHash configurationHash:hash cycleId:hash segmentId:id priorVersion:long stateVersion:long priorPrefix:hash input:Input effect:Effect receiptId:id",
+    "StepEffect": "kind:id fromPositionId:id toPositionId:id previousStepReceiptId:id dispositionReceiptId:id proofKind:id",
+    "Receipt": "commandHash:hash eventHash:hash receiptId:id actor:actor stateVersion:long",
+    "Control": "contractVersion:int selection:SelectionControl selectionHash:hash stateVersion:long prefix:hash position:Position stepIndex:int stepReceipts:id[] receipts:Receipt[] closed:bool"
+  },
+  "effectTags": {
+    "step-completed": "StepEffect"
+  },
+  "externalContracts": [
+    "combat-inherited-selection-v1.schema.json",
+    "combat-selection-steps-v1.schema.json",
+    "combat-cycle-sequence-v1.schema.json"
+  ],
+  "domains": {
+    "receipt": "sandtable.combat.inherited-no-attack-receipt.v2"
+  },
+  "limits": {
+    "bytes": 1048576,
+    "depth": 32,
+    "events": 6
+  },
+  "scope": "Actual creation-rooted no-attack structural traversal from closed empty selection through six Combat steps to same-slot Reserve Release only; no positive candidate, release action, runtime, or Snapshot12 activation."
+}

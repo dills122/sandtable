@@ -33,8 +33,12 @@ D2c/D2/003 remains open. [D2c.3a inherited ordinary Movement](../specs/combat-in
 is complete as a bounded contract checkpoint. [D2c.3b route lifecycle](../specs/combat-inherited-movement-lifecycle-v1.md)
 derives owner stop2, System empty resolution2 and owner Movement-completion3 with actual end proof.
 [D2c.3c Breakdown completion](../specs/combat-inherited-breakdown-completion-v1.md) reaches actual Combat entry.
-Next3d bounds actual-entry/no-candidate selection. The [preparation matrix](combat-inherited-movement-preparation.md)
-remains the field/provenance baseline; other .3 capabilities and .4 composition stay open.
+[D2c.3d actual-entry selection](../specs/combat-inherited-selection-v1.md) admits the moved CP12/14
+state and closes zero-candidate selection in two System events.
+[D2c.3e actual no-attack traversal](../specs/combat-inherited-no-attack-v1.md) carries that closure
+through six System step completions to same-slot Reserve Release. The
+[preparation matrix](combat-inherited-movement-preparation.md) remains the field/provenance baseline;
+positive Reaction/vehicle/Reserve movement, armed continuation and .4 composition stay open.
 [Progress review9](../reviews/combat-progress-review-9.md) assessed all13 unmerged commits through
 `a96d2a1`: Ready with non-blocking follow-ups; its sole P3 documentation-status finding is corrected.
 All15 Python oracles and the focused Orleans build/run/format passed at that checkpoint.
@@ -49,7 +53,11 @@ ran Reserve and two immediate predecessor oracles, focused probes, source mappin
 checks; it did not rerun all historical oracles. Owner then explicitly authorized a separate review
 chat for3a at `d76ac3f`: review13 returned Ready, no actionable findings, after three relevant oracles,
 61 public rejection probes, source/plan checks and changed-document path checks. Its blind preliminary
-preceded the separate author explanation. Budget13of13 is exhausted;3b/3c have author checks only.
+preceded the separate author explanation. At that checkpoint,3b/3c/3d/3e had author checks only.
+Owner then authorized review14 for3d/3e at `db75340`;
+it returned Not ready because3e lacked a history-rooted command application boundary and cumulative
+review prose omitted3e. Both accepted findings are corrected after that review, with author evidence
+only for the remediation. Budget14of14 is exhausted; review14 is not a Ready verdict for3d/3e.
 TASK-004–025 not started. Future maturity execution and checkpoint B remain gated.
 **Original input:** `d2bc67c`. Exact contract freeze and production gates remain open.
 
@@ -318,6 +326,57 @@ CP2/10/12/14 cases, strict canonical replay/cache, authenticated retry, re-signe
 foreign lifecycle histories are required. One event/receipt/version/prefix increment only. This
 does not admit Combat actions, a synthetic C3a base, positive Reaction/vehicle/Reserve or continuation,
 or full Snapshot composition. No new independent-review pass is authorized by this continuation.
+
+D2c.3d execution boundary (input `8219e16`, before implementation): one new
+[spec/schema/fixture/oracle packet](../specs/combat-inherited-selection-v1.md) plus this plan. Consume
+the complete actual3c history for both CP12/14 owners and retain its moved World, Cohesion,
+Weather/RNG, proof/progress, receipts, prefix and symbolic Combat position. Derive the closed
+voluntary-adjacent candidate assessment from supported facts; rejection or missing support cannot
+mean an empty set. For this rear/supply profile, System opens the Combat segment without a decision
+window and closes selection as no-selection in exactly two events. Preserve stepIndex0 and keep the
+segment open for later structural traversal. Strict replay/readback/retry, re-signed effects,
+malformed bytes, cross-history/owner and synthetic-C3a substitutions precede completion. Full
+no-attack step traversal must be a separate bounded child. Positive Reaction/vehicle/Reserve
+movement, armed continuation, .4 composition,004/B and runtime remain open.
+
+D2c.3e execution boundary (input `419aae4`, before implementation): one new
+[spec/schema/fixture/oracle packet](../specs/combat-inherited-no-attack-v1.md) plus this plan. Consume
+only the exact closed 3d empty-selection Control for both CP12/14 owners. Nest it byte-identically,
+then emit six System `combat-step-completed`2 events in catalog order from Position Determination
+through Close Assault to same-slot Reserve Release. Every event derives `proofKind=no-attack`, links
+the selection closure as disposition, links opening/prior-step receipt as predecessor, and advances
+version/prefix once. Final outer Control closes; nested 3d segment state remains immutable. Strict
+cut replay/readback/retry, re-signed event/control mutation, malformed bytes, cross-history,
+incomplete predecessor, positive-candidate, order/duplicate and capacity rejection precede
+completion. Arrival performs no release or material mutation. Positive families, .4 composition,
+004/B and runtime remain open.
+
+D2c.3f execution boundary (input `0c4fa07`, before implementation): one new
+[spec/schema/fixture/oracle packet](../specs/combat-inherited-reaction-trigger-v1.md) plus this plan.
+Consume only the exact accepted first-move prefix from the actual 3a Movement Control for both
+CP12/14 owners, then return the phasing representation from its rear area to its assault origin.
+The committed destination is adjacent to exactly one frozen opposing combat representation, so
+System emits one `element-moved`4 event that charges the Clear2 cost once, advances
+version/prefix once, opens one identity-bound Reaction window, switches current position to the
+explicit Reaction interrupt and suspends the same phasing route. Replay accepted
+history from creation before each fresh command; cache equality is diagnostic only. Strict
+cut replay/readback/retry, re-signed event/control mutation, malformed bytes, cross-history/owner,
+zero/multiple-opportunity, post-trigger movement and synthetic-prefix rejection precede completion.
+Reaction participant selection/movement/completion/closure, positive vehicle/Reserve movement,
+armed continuation, .4 composition,004/B and runtime remain open.
+
+D2c.3g execution boundary (input `a6e6625`, before implementation): one new
+[spec/schema/fixture/oracle packet](../specs/combat-inherited-reaction-lifecycle-v1.md) plus this plan.
+Consume only the exact accepted 3f one-opportunity Reaction trigger for both owners. The reacting
+independent infantry participant moves once from its assault area to its own rear, selecting the
+sole frozen opportunity and opening its route; explicit participant completion then opens the
+required empty-cohort Reaction-completed Breakdown stop. System resolves that actual stop before a
+System no-eligible close clears the exhausted window and resumes the exact suspended phasing route.
+These four events each advance version/prefix once and retain rotating public capability handles,
+accepted creation/cycle authority and strict retry/readback evidence. World retains both moves;
+RNG is unchanged and only the reacting move adds material progress. Player decline, timeout,
+unavailable closure, another participant or move, positive vehicle/Reserve movement, armed
+continuation, .4 composition,004/B, runtime and simulator remain open.
 
 D2c.4 owns the **Task004 handoff** section in its planned
 `docs/specs/combat-authority-composition-v1.md` contract packet, within the same five-primary-file
@@ -969,3 +1028,69 @@ Documentation closeout:799 local Markdown targets/18 anchors,25 stable ordered t
 design AC IDs and8 policy IDs pass. Offline Lychee0.24.2 checks163 Markdown documents:1640 links,
 1313 successful local checks,327 external exclusions, zero errors. New Python AST and both JSON
 documents pass; all predecessor contracts and runtime/source/test/scenario bytes remain unchanged.
+
+TASK-003D2c.3d checkpoint, 2026-09-10 (input `8219e16`):
+[Actual-entry selection specification](../specs/combat-inherited-selection-v1.md), inventory,
+vectors and oracle compose the accepted3c history into a retained admission boundary. Both owners
+at CP12/14 retain the complete moved CombatEntryState. Candidate assessment explicitly derives
+Normal Weather, current locations and both CP ceilings; all four supported histories have zero
+candidates because the units are nonadjacent and the acting unit exceeds voluntary CP5. Unsupported
+or unauthenticated histories reject before assessment.
+
+System `combat-segment-opened`2 records zero candidates and no decision ID; System
+`combat-selection-closed`2 records no-selection and the exact opening receipt. The two events add
+two versions/receipts/prefix contributions, preserve stepIndex0 and leave segmentClosed=false.
+World/RNG/Weather/Cohesion, Movement/Breakdown proof/progress, inherited receipts and symbolic
+sequence5 position remain byte-identical inside the admission boundary. Exact retries return the
+original events; changed actor/input/history/effect/cache rejects.
+
+Author evidence:4 traces/8 events,12 state cuts,8 retries,1126 mutations,46 raw rejections,
+72 boundary checks and6 source pins pass. Direct3c predecessor evidence passes8 traces/events,
+16 cuts,8 retries,426 mutations,92 raw rejections,298 boundaries and10 pins. Frozen C3a reference
+passes5 literal traces,41 cuts,246 mutations and164 raw rejections. No runtime/source/test/scenario
+or predecessor-contract file changes. Next bounded3e must traverse the six no-attack structural
+steps from this actual closure; it cannot add positive candidates or close3/.4/003/004/B/runtime.
+
+TASK-003D2c.3e checkpoint, 2026-09-10 (input `419aae4`):
+[Actual inherited no-attack specification](../specs/combat-inherited-no-attack-v1.md), inventory,
+vectors and oracle consume the exact3d empty-selection Control as immutable nested history. Four
+both-owner CP12/14 histories traverse Position Determination, Barrage, Retreat Before Assault,
+Force Assignment, Anti-Armor and Close Assault in six exact System step completions. All events use
+the terminal no-attack proof, the3d selection receipt as disposition and opening/prior-step receipt
+chaining. The final outer Control reaches same-slot Reserve Release and closes without changing the
+nested3d segment flag or any World/RNG/resource/history fact.
+
+Author evidence:4 traces/24 events,28 state cuts,24 retries,956 mutations,36 raw rejections,208
+boundary checks and7 source pins pass. Fresh commands reconstruct from full accepted history; optional
+cached Control must match replay exactly, and retries read original bytes from accepted event history.
+Review14 at `db75340` returned Not ready on the prior boundary and an accounting omission; both accepted
+findings are corrected here with author verification only. Direct3d and frozen C3a predecessor checks
+remain required.
+No runtime/source/test/scenario or predecessor-contract file changes. Positive Reaction/vehicle/
+Reserve movement, armed continuation, repeat expiry, .4 composition, Task004 handoff/map and
+runtime gateB remain open; next .3 child must be bounded before edits rather than inferred here.
+
+TASK-003D2c.3f checkpoint, 2026-09-10 (input `0c4fa07`; contract commit `d7f9f85`):
+[Reaction-trigger specification](../specs/combat-inherited-reaction-trigger-v1.md), inventory,
+vectors and oracle replay each owner's exact first3a move, then commit one Clear2 return move that
+opens exactly one opposing Reaction opportunity at version13. Trigger/window/opportunity identities,
+the suspended phasing route, explicit Reaction position, World/CP and material progress are retained.
+Author evidence passes2 traces/triggers,4 cuts,2 retries,270 mutations,60 raw rejections,30 boundaries
+and11 source pins. Runtime/source/test/scenario files remain unchanged.
+
+TASK-003D2c.3g checkpoint, 2026-09-10 (input `a6e6625`):
+[Reaction-lifecycle specification](../specs/combat-inherited-reaction-lifecycle-v1.md), inventory,
+vectors and oracle consume only3f's exact one-opportunity trigger. The opposing infantry participant
+moves once assault→own rear, rotates its public opportunity handle over the still-legal rear→supply
+option, then explicitly completes. Completion opens the mandatory empty-cohort Reaction stop;
+System resolution returns to inactive Reaction before System no-eligible closure resumes the exact
+suspended phasing route. Final World retains phasing CP4 and reactor CP2; RNG is unchanged and only
+the reacting move adds material progress.
+
+Author evidence passes2 traces/8 events,10 cuts,8 retries,754 mutations,72 raw rejections,
+76 boundaries and16 source pins. Review caught and corrected the post-move capability-key omission
+before freeze. Direct3f passes2 traces/triggers,4 cuts,2 retries,270 mutations,60 raw rejections,
+30 boundaries and11 pins; compatible3b lifecycle passes8 traces/24 events,32 cuts,24 retries,
+946 mutations,152 raw cases,304 boundaries and16 pins. No runtime/source/test/scenario changes.
+Multiple participant moves/opportunities, alternate closure reasons, vehicle/Reserve movement,
+armed continuation, .4 composition, Tasks004/021/022 and runtime/simulator remain open.

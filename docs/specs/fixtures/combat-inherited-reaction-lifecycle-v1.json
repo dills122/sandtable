@@ -1,0 +1,66 @@
+{
+  "contractVersion": 1,
+  "contract": "combat-inherited-reaction-lifecycle-v1",
+  "sourceHashes": {
+    "docs/specs/combat-inherited-movement-lifecycle-v1.schema.json": "sha256:aac4e07f9546d457defd9042ae701434683e7c22fab2071fe88f872d8d6bc072",
+    "docs/specs/combat-inherited-reaction-lifecycle-v1.schema.json": "sha256:94ee18139f72ffd883ccae100baa417f4c4b4048842cb33cadc120963923428a",
+    "docs/specs/combat-inherited-reaction-trigger-v1.md": "sha256:a3e2f4ebf9f7ff2e118bdda4133f52e1bc9421dd03644cc73fc1480b3cf086d3",
+    "docs/specs/combat-inherited-reaction-trigger-v1.schema.json": "sha256:0a531b3196fbef885a6dcafc07bc6ff79765801cb2f529d099342257ed06cffd",
+    "docs/specs/fixtures/combat-inherited-reaction-trigger-v1.json": "sha256:cc1ff7d3202eb8677b732215f2fb2cc043acc18f723166a9182249940b063f56",
+    "docs/specs/verify-combat-inherited-reaction-trigger-v1.py": "sha256:551df0d22256a9a8e8601dc9c3c2e9a236e1c0dd76a649ab922bf706706bf0c4",
+    "src/Cna.Core/Actions/CampaignObservationV6ActionCandidates.cs": "sha256:8ec060c36490dee3866285d4832dc0022ffe6cd80aa5012f8fe80c663074486c",
+    "src/Cna.Core/Campaigns/CampaignBreakdownLifecycleCodec.cs": "sha256:5d8c11b6d13df33d767f4d3812f52fdf463ef85ce645b92e73d50cea074beb2c",
+    "src/Cna.Core/Campaigns/CampaignBreakdownLifecycleFactory.cs": "sha256:07b97600a212bf2b255004bafdeba7da0804624198be354814d25ede5f0d4413",
+    "src/Cna.Core/Campaigns/CampaignBreakdownMoveEventSerializer.cs": "sha256:2885afd854bc57c5b8f782be0e0cd875fe13eb78658f433145568d45b2b1c704",
+    "src/Cna.Core/Campaigns/CampaignBreakdownStopResolvedCodec.cs": "sha256:eacdb23a86ec62d1306203bda6f6ddc68e4e19782b9f6016e50aa03e78c471bf",
+    "src/Cna.Core/Campaigns/CampaignBreakdownStopResolvedFactory.cs": "sha256:2a1cb53659532592aa1c0fe7aaf72b1420a311d41f720443346c26f8516b553f",
+    "src/Cna.Core/Campaigns/CampaignReactingElementMovedV2Factory.cs": "sha256:58ff4225ed286edd53c8c1bedd870cb64ac4b9c58af437a976eca51b815e9282",
+    "src/Cna.Core/Campaigns/CampaignV11BreakdownProjector.cs": "sha256:a1ed1aefd2ceb6fe3641d82b13ab0d04eb26505bdf98ccf3745cd974cee49826",
+    "src/Cna.Core/Campaigns/CampaignV11MoveProjector.cs": "sha256:c62fc410cfdf372c11c4e796a354b2e3015d0d2eeb466c3e53729806dfc43241",
+    "src/Cna.Core/Observations/CampaignObservationV6DisclosureIdentity.cs": "sha256:b6d6c7747b1f9ed282693be535604c1291402f5c80a1f83c317b3fae93ed9f87"
+  },
+  "cases": [
+    {
+      "name": "axis-one-participant-reaction-lifecycle",
+      "predecessorCase": "axis-return-opens-reaction",
+      "actor": "axis",
+      "goldens": {
+        "trigger": {"bytes": 5262, "sha256": "sha256:70a6dafd61d28703eeb52b9f1d45f6a564931608c497dc4cdb57a205071c40ae"},
+        "input-1": {"bytes": 814, "sha256": "sha256:4fbb2f92082ced2c687a802696d985698a9ba365d0a0b38c2266943a29c240cf"},
+        "input-2": {"bytes": 744, "sha256": "sha256:f6de754098b03c56eadd097bb1f29c75b7ec857b4b284771dc39be00667ae798"},
+        "input-3": {"bytes": 639, "sha256": "sha256:76a736f5a9c766459cc842f67de445b79dd0b0a00d225f6ac42f03c4b6fbc94d"},
+        "input-4": {"bytes": 660, "sha256": "sha256:9c7ccc355057541957be621aa2405dabbf79b6392f1d02a09c74831debebf6a9"},
+        "event-1": {"bytes": 5724, "sha256": "sha256:24864e3faf49a559d06064e580bb3e574d339902a09d3f4595ac50c66bd8ff27"},
+        "event-2": {"bytes": 5077, "sha256": "sha256:508ab385861534cd28d5be9d6f314480692d33524b078a4c7513770eea174c54"},
+        "event-3": {"bytes": 3502, "sha256": "sha256:7bcc12078ea1a510cc8313dc988e700d8697f6ef6aa9927594594d3f0d8c14bb"},
+        "event-4": {"bytes": 2888, "sha256": "sha256:cf1b79468d354d529dc94a212a458cf479205317a90c43f62d83edaf8ff20789"},
+        "state-0": {"bytes": 13590, "sha256": "sha256:2fd6115239392e88541512adb9be398e78ad59b312706f75a1801974c41f5644"},
+        "state-1": {"bytes": 14712, "sha256": "sha256:2dcff5a632d5661a0f6e810a8faab8cf7e4c75c550368e835c9bf227b7305af7"},
+        "state-2": {"bytes": 15132, "sha256": "sha256:2fa010280d746877d4b509f0fab8d2ed658f2d9e845b5fd2d88a184e928b84b7"},
+        "state-3": {"bytes": 15000, "sha256": "sha256:97253fa90218097ea04816c2320312a12782e7724e312c32b036629974f6d022"},
+        "state-4": {"bytes": 13278, "sha256": "sha256:1cdff202486d7bacda7bf6290e878ea8a447f023486ff351ab5004da6553d74a"}
+      }
+    },
+    {
+      "name": "commonwealth-one-participant-reaction-lifecycle",
+      "predecessorCase": "commonwealth-return-opens-reaction",
+      "actor": "commonwealth",
+      "goldens": {
+        "trigger": {"bytes": 5358, "sha256": "sha256:f98f844fb018a951b551459d4014bc60bc6991b89f387573ba4e6db30b5616d3"},
+        "input-1": {"bytes": 798, "sha256": "sha256:d93a40d9942e5b01ab8767b1518aa5a0527f055ff98de4bb9beeb9348f0f33ae"},
+        "input-2": {"bytes": 736, "sha256": "sha256:1773348e0a827946ebc4f2470cc22da2fdd25dc56afc7adc283c0780c7311825"},
+        "input-3": {"bytes": 639, "sha256": "sha256:7f008374a56459ab1dfe306cd838433db09570ae4c24f6604df75cebc6615d23"},
+        "input-4": {"bytes": 660, "sha256": "sha256:512604ac141aead68feb3fedcb45f55993e742a9be6a88d0676ae212a9514df2"},
+        "event-1": {"bytes": 5700, "sha256": "sha256:4c47af3176e7ef8fec07a5aaba56a09b1b1bc2ee0afb0c54679b64035a1e3584"},
+        "event-2": {"bytes": 5077, "sha256": "sha256:f634479d34e5419e117a4218804e7204ac5a7ac3282d2833fdcad9cc563252f7"},
+        "event-3": {"bytes": 3494, "sha256": "sha256:c64ff15992842ed92c9bdc1f31ca38f74a1ad3f52d50f8e191aaa7d7e20c4f6b"},
+        "event-4": {"bytes": 2904, "sha256": "sha256:08d9fb97c0a4b018e28090885859fd1dff69afc355c0410f8bc142d2f62118e7"},
+        "state-0": {"bytes": 13718, "sha256": "sha256:2978ac47e5437ebb9cf52763a570e72dbfb03abe2b6f249cfba1db57e7f46f6b"},
+        "state-1": {"bytes": 14768, "sha256": "sha256:d43ba4ad9244fe79f0b17857303ea5fe74a59cbb1b37bdf83b7e8d572fc21375"},
+        "state-2": {"bytes": 15180, "sha256": "sha256:262dbb52beffe2ef8035b2e1c90d6199d21692382e710eb80f1d09e2fbf89b8e"},
+        "state-3": {"bytes": 15072, "sha256": "sha256:359a27d7de871adc9816fc44e37905a9abb5ae5aa28ef08099487b84a930868d"},
+        "state-4": {"bytes": 13326, "sha256": "sha256:08f9b79a92f0b94ceb61d70f7d1e2e0a0aee6f76afe59622842a8d1e199f6e86"}
+      }
+    }
+  ]
+}
