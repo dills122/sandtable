@@ -1,0 +1,88 @@
+{
+  "contractVersion": 1,
+  "cases": [
+    {
+      "actor": "axis",
+      "seed": 1,
+      "choice": "act-first",
+      "reserve": "I",
+      "goldens": {
+        "bytes": [963, 9870, 2908, 2585, 2484, 2562, 2824, 2824, 2851, 2815, 2806, 2793, 10874, 11834, 12147, 12518, 12871, 13205, 13600, 13953, 14306, 14677, 15024],
+        "sha256": [
+          "sha256:f19bcd7393f3cbb52f8d4ec8c2af6b28519dc72f0e82f00326c7ec591745a4a0",
+          "sha256:d0c5293ffd251bbfbe9a66f00f4f0bdc388a1d987f8d3dbac39c5ff9a2c867d3",
+          "sha256:7295daead426d089341d582d8955a03c010893111c7426ccbbafade81b0924d8",
+          "sha256:1ad05da447e4d9b8af442641940e3953163ecac3975e11363cf0555813212802",
+          "sha256:cd737d647e9c5c9071b2be857bcd5f061ee9e2abe184eab5da198f518baae8ea",
+          "sha256:c52909799406fd155c70371864342987cfe52bcf05b311a8ddf76c5a1918015d",
+          "sha256:8c9a2f9a387f55d3b0fc0269716be15a0a1942bab732422ba08c32f33b8044a9",
+          "sha256:7c7ff593822e7544d0ec959c0d2f2052f746d1f9c97bd90686d0c3c84fa2c40c",
+          "sha256:463f5e1ffeae35412b0c5aa01393cdc74a2bad3144cb5a9c20488f386300e20b",
+          "sha256:663718ce607869ed90a677c74ca15118d6083f233fcf39a271a35b496bf385d9",
+          "sha256:f7f640518e01347b88f25fb622e61bde86b4e4fc970e4ed8f8475355c57447be",
+          "sha256:a6882b890513f155f1227c685d8f3a1bdab8bcca15522efc75be7b8e2bb5fe77",
+          "sha256:3c8dd607d491c5a5cd52ee279cc3da6e21620b3f09cfc6618e8e767912a39c08",
+          "sha256:507ac0bbc89936deed2a940cbad2d1497d91c2a08716bcd3a21d2f19e9f50350",
+          "sha256:86afe3378bab47fe73c91d69a3ae67ec2efb40a772d6fbba616cd22f03c91ee4",
+          "sha256:c691cdaada1583eda06f7d42272da5a655b267dea3fca1d774ca9f1343213843",
+          "sha256:e505a092d112511b6089fb0c2864d82211e041fdf029cea5aba1be7f2727549f",
+          "sha256:9eba6e847edcaa860c1ea71c890591e48b5b9d6ac629e5669a18b3970cdaec00",
+          "sha256:a1b0fab55bab6f0e9353b8b67293907240572b103b7a9e0e1d247c3a04a7b0f2",
+          "sha256:411a659c3267d41a46303c803674236987a27884cc5011604504fead4f4af663",
+          "sha256:7614c2f2d3f2e5324abab0398fd9c40c8f72ffddf4111fe7061e726de10643a5",
+          "sha256:5d60138d2d222edc6665791b04d1398d3156f8f048ae7b1cc862890c8d7f94ba",
+          "sha256:e306fcedf0909f11b072b7da5ec425b526c51eb5ab93fc727298f53b7ef0824a"
+        ]
+      }
+    },
+    {
+      "actor": "commonwealth",
+      "seed": 1,
+      "choice": "act-last",
+      "reserve": "I",
+      "goldens": {
+        "bytes": [963, 9926, 2924, 2593, 2492, 2570, 2832, 2832, 2859, 2823, 2814, 2801, 10930, 11906, 12219, 12590, 12943, 13277, 13672, 14025, 14378, 14749, 15096],
+        "sha256": [
+          "sha256:524de4610e9a69f07e527c8d974b006b041ca67719b1afc647601e8d9ddd3981",
+          "sha256:dc7a081b0707e0f04262fab00bcad9e298a2b7305143d7421a9270fa50202e32",
+          "sha256:3925cf57032a547cc4f9d46a0c7d854ad0cb44b235e50a77f1d68fe01d1cb99c",
+          "sha256:44346342160a6e5ab36b445d094fbf36b1a2375d087acc193a8152e069038010",
+          "sha256:cf5cd9a1eafefc1e64cef5725167a7fdf0cfe1ea078e0865ff4c556194650fb7",
+          "sha256:dbaac746858655e1f3f39d9201e394a0e79065817467bd67255204a1615979bd",
+          "sha256:e096ca0dc4c7ef14da87788b5d6261c5b0470047303243d8db40bbf3704bbd91",
+          "sha256:a9dbd6d9ccbd6c156e7e245dd2cd1eebaf4c387367d53a9c358df1c2d4a5d901",
+          "sha256:7e1f9aa664291c4fc8c71ee1bc826416e8e20f7648f0eb48a29e957df6f844c3",
+          "sha256:b44aa091694606d8a00dfbb0bdfe1707d7689c9ade7f6700f1142fc4eed7ee7d",
+          "sha256:efb8872da854b50e3131ceb8e7d67903a03e054dabccdb5ad6637e0cc0c18820",
+          "sha256:dd033d1855cb207a74410f2d3fe76d4c7be1b7823ee44c279b76b510fffcb3ac",
+          "sha256:603c0b38749a0aa35b3b4262731bda52d6128ad484dfaf23e715f7fd8814a89d",
+          "sha256:e2386771b46b3f1e0366cc5eb0c6f94ecac12c30ff56d8321900cc2cfc330874",
+          "sha256:b9805a8e1cec0bcd5fdd03c0121f3553c9d2f9568f2aba216570e3308560613e",
+          "sha256:5607fccd68853abd15502043c37ca00169ba46e1e414c528371d5f24d89e9781",
+          "sha256:05a483f3a163bdf7bbf6b9e1543e77f9bee1075cc3b939c7eb80c66af61a750a",
+          "sha256:88515f3ef411442139d09e424faff7c28de17610f2c6ba361bf13734924a2b0a",
+          "sha256:90b66f3631113a259c2450b85d54291cfc7524af0f146b5ead3842f480cccd49",
+          "sha256:b680b2c11f5ed73d6fb3f3de8d8d15d144c92aa4e9eb44f10638f695476721a0",
+          "sha256:8d8cd94d5de6133a022a8194d7274bde95e2bfd3fe6d907702c9a1956d5747d9",
+          "sha256:e5001fc6d6dd05661f728debb197b3c116d59d2ee64ae2ec6b4bf5d33277e1d4",
+          "sha256:35dc8074824be7004079cbfb012b91e2280d4efcf55bea5b05116e8965fd371f"
+        ]
+      }
+    }
+  ],
+  "sourcePins": [
+    {"path": "docs/specs/combat-reserve-designation-v1.schema.json", "sha256": "sha256:f324fb22e53ff6d9e084c2f65532e5af89277f632087549756b7df1dcb1710d9"},
+    {"path": "docs/specs/verify-combat-reserve-designation-v1.py", "sha256": "sha256:fa40ec6b10d0d5ecc113aefba47ff4df44ae616851acdc827e9f676f2412e465"},
+    {"path": "docs/specs/fixtures/combat-reserve-designation-v1.json", "sha256": "sha256:6c8abb2038bb61c739e3bd3cab5c8adf00689c265ec3c6bc6ea29bebe66b12c2"},
+    {"path": "docs/specs/combat-inherited-movement-lifecycle-v1.schema.json", "sha256": "sha256:aac4e07f9546d457defd9042ae701434683e7c22fab2071fe88f872d8d6bc072"},
+    {"path": "docs/specs/verify-combat-inherited-movement-lifecycle-v1.py", "sha256": "sha256:f2ee2292df3fe370ace289dcd01747153dac6d78b82c924b2f3da27df1d81920"},
+    {"path": "docs/specs/combat-inherited-breakdown-completion-v1.schema.json", "sha256": "sha256:1ff841c704e1aa46e71513ead562a0ca1c54c05b35bdf97018d6854d8773fec3"},
+    {"path": "docs/specs/verify-combat-inherited-breakdown-completion-v1.py", "sha256": "sha256:db903e019bb457c02930876e42a70b9204387494012419b0b97572c3c9e12eba"},
+    {"path": "docs/specs/combat-inherited-selection-v1.schema.json", "sha256": "sha256:c57bb32899ef7ea536e8985255a2dccc453ed46cce41d311a9f041a36237ac9b"},
+    {"path": "docs/specs/verify-combat-inherited-selection-v1.py", "sha256": "sha256:99e0cdb1cc78089e4af93b8e995ba04483f6bdab86edaf7c6e2e251442cd0bb7"},
+    {"path": "docs/specs/combat-inherited-no-attack-v1.schema.json", "sha256": "sha256:e225ad74d948328feb96b0f896312cbc64f4e722790be49b22b850ff2a9e3462"},
+    {"path": "docs/specs/verify-combat-inherited-no-attack-v1.py", "sha256": "sha256:2f87b4c9a243ac777bb5180d6fa3f3ef8e40f74ae3a15fb5fd6cba91eb126c35"},
+    {"path": "docs/specs/combat-cycle-sequence-v1.schema.json", "sha256": "sha256:6e09dc5bc6ca79d8580db6ed1e76ad5007c26a30df11b4dd9da0a9c7b5f5e0c5"},
+    {"path": "src/Cna.Core/Campaigns/CampaignBreakdownLifecycleFactory.cs", "sha256": "sha256:07b97600a212bf2b255004bafdeba7da0804624198be354814d25ede5f0d4413"}
+  ]
+}

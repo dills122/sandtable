@@ -378,6 +378,19 @@ RNG is unchanged and only the reacting move adds material progress. Player decli
 unavailable closure, another participant or move, positive vehicle/Reserve movement, armed
 continuation, .4 composition,004/B, runtime and simulator remain open.
 
+D2c.3h execution boundary (input `f75710a`, owner-approved 2026-09-11): one new
+[spec/schema/fixture/oracle packet](../specs/combat-inherited-reserve-cycle-v1.md) plus this plan.
+Consume only 2d's accepted seed1 Normal-Weather `I` histories for both owners. Owner directly
+completes idle Movement without a fabricated route or stop; System completes idle Breakdown,
+opens/closes an empty Combat selection and emits six no-attack step completions to same-slot
+Reserve Release. Ten events preserve the immutable creation-rooted ReserveState, actual designation
+receipt/history, `reserveStatus=I`, World, RNG, Weather, order, cycle and CP0. Movement-end proof
+binds both final locations, empty ordinary-proximity exclusions and the actual completion receipt.
+Public selection exposes zero candidates. Exact replay across11 cuts,20 accepted retries, deep
+event/control mutation, malformed bytes, source drift, capacity and cross-history rejection form
+acceptance. Release, repeat, positive Reserve movement, vehicle continuation, armed Combat, .4,
+004/B, runtime and simulator remain open.
+
 D2c.4 owns the **Task004 handoff** section in its planned
 `docs/specs/combat-authority-composition-v1.md` contract packet, within the same five-primary-file
 cap. That section must identify the frozen CON-002–004 versions/hashes, composed trace and capacity
@@ -1094,3 +1107,14 @@ before freeze. Direct3f passes2 traces/triggers,4 cuts,2 retries,270 mutations,6
 946 mutations,152 raw cases,304 boundaries and16 pins. No runtime/source/test/scenario changes.
 Multiple participant moves/opportunities, alternate closure reasons, vehicle/Reserve movement,
 armed continuation, .4 composition, Tasks004/021/022 and runtime/simulator remain open.
+
+TASK-003D2c.3h checkpoint, 2026-09-11 (input `f75710a`):
+[Inherited Reserve-cycle specification](../specs/combat-inherited-reserve-cycle-v1.md), inventory,
+vectors and oracle branch from 2d's real both-owner Normal-Weather `I` designation histories.
+Owner no-move Movement completion, System idle Breakdown completion, empty Combat selection and six
+System no-attack completions form the exact ten-event path to same-slot Reserve Release. Final state
+retains Reserve I, designation receipt/history, original locations, CP0, World/RNG/Weather and cycle
+authority. Two traces/20 events pass22 cuts,20 retries,1103 deep mutations,46 malformed-byte cases,
+196 boundary checks and13 source pins. No route/stop, release, repeat, positive Reserve move,
+runtime/source/test/scenario or simulator change is claimed. Those capabilities and .4/004/B remain
+open.

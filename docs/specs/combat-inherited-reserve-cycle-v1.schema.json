@@ -1,0 +1,49 @@
+{
+  "contract": "combat-inherited-reserve-cycle-v1",
+  "objects": {
+    "Command": "contractVersion:int kind:id creationBinding:id creationEventHash:hash cycleId:hash expectedPriorVersion:long expectedPositionId:id priorReceiptId:id",
+    "Input": "command:Command actor:actor",
+    "EndLocation": "unit:UnitKey locationId:id",
+    "ReleaseScope": "gameTurn:int operationStage:int playerPhaseSlot:id actingSide:side",
+    "ActualProgressRef": "eventType:id receiptId:id eventHash:hash",
+    "IdleFlow": "kind:id",
+    "MovementEndProof": "scope:ReleaseScope ordinal:int completionReceiptId:id endLocations:EndLocation[] excludedBefore:UnitKey[]",
+    "Selection": "segmentId:id candidateIds:id[] openingReceiptId:id? selectionReceiptId:id? outcome:id",
+    "MovementEffect": "kind:id breakdownFlowAfter:IdleFlow interruptContextAfter:null endLocations:EndLocation[] excludedUnits:UnitKey[] progress:ActualProgressRef[]",
+    "BreakdownEffect": "kind:id breakdownFlowAfter:IdleFlow movementCompletionReceiptId:id",
+    "SelectionOpenEffect": "kind:id candidateCount:int decisionId:null",
+    "SelectionCloseEffect": "kind:id outcome:id openingReceiptId:id",
+    "StepEffect": "kind:id fromPositionId:id toPositionId:id previousStepReceiptId:id dispositionReceiptId:id proofKind:id",
+    "Event": "contractVersion:int eventType:id campaignId:id rulesetHash:rawHash configurationHash:hash creationBinding:id creationEventHash:hash cycleId:hash openingBaseHash:hash openingCompletionReceiptId:id gameTurn:int operationStage:int actingSide:side priorVersion:long stateVersion:long fromPositionId:id sequencePosition:Position sources:Reference[] priorPrefix:hash input:Input effect:Effect receiptId:id",
+    "Receipt": "commandHash:hash eventHash:hash receiptId:id actor:actor stateVersion:long",
+    "Control": "contractVersion:int base:ReserveState baseHash:hash stateVersion:long prefix:hash position:Position breakdownFlow:IdleFlow movementEnd:MovementEndProof? selection:Selection stepIndex:int stepReceipts:id[] receipts:Receipt[] closed:bool"
+  },
+  "effectTags": {
+    "movement-completed": "MovementEffect",
+    "breakdown-completed": "BreakdownEffect",
+    "selection-opened": "SelectionOpenEffect",
+    "selection-closed": "SelectionCloseEffect",
+    "step-completed": "StepEffect"
+  },
+  "eventVersions": {
+    "movement-segment-completed": 3,
+    "breakdown-segment-completed": 2,
+    "combat-selection-opened": 2,
+    "combat-selection-closed": 2,
+    "combat-step-completed": 2
+  },
+  "domains": {
+    "segment": "sandtable.combat.inherited-reserve-cycle-segment.v1",
+    "receipt": "sandtable.combat.inherited-reserve-cycle-receipt.v1"
+  },
+  "externalContracts": [
+    "combat-reserve-designation-v1.schema.json",
+    "combat-inherited-movement-lifecycle-v1.schema.json",
+    "combat-inherited-breakdown-completion-v1.schema.json",
+    "combat-inherited-selection-v1.schema.json",
+    "combat-inherited-no-attack-v1.schema.json",
+    "combat-cycle-sequence-v1.schema.json"
+  ],
+  "limits": {"bytes": 1048576, "depth": 32, "events": 10, "receipts": 10},
+  "scope": "Creation-rooted Normal Weather Reserve-I first-cycle structural path through same-slot Reserve Release; no release, repeat, positive Reserve movement, runtime or Snapshot12 activation."
+}
