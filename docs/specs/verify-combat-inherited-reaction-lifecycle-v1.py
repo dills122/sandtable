@@ -16,13 +16,12 @@ def load(name, filename):
     return module
 
 irt = load("inherited_reaction_trigger", "verify-combat-inherited-reaction-trigger-v1.py")
-iml = load("inherited_movement_lifecycle", "verify-combat-inherited-movement-lifecycle-v1.py")
 imv, world, encode, sha = irt.imv, irt.world, irt.encode, irt.sha
 INVENTORY = json.loads((ROOT / "combat-inherited-reaction-lifecycle-v1.schema.json").read_text())
 FIXTURE = ROOT / "fixtures/combat-inherited-reaction-lifecycle-v1.json"
 LOCAL = {key: [tuple(field.split(":")) for field in value.split()]
     for key, value in INVENTORY["objects"].items()}
-SCHEMA = irt.SCHEMA | iml.SCHEMA | LOCAL
+SCHEMA = irt.SCHEMA | LOCAL
 KINDS = ["move-reacting-element", "complete-reaction-participant", "resolve-breakdown-stop",
     "close-reaction-window-no-eligible-reactor"]
 EVENTS = ["reacting-element-moved", "reaction-participant-completed", "breakdown-stop-resolved",
