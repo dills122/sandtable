@@ -881,7 +881,7 @@ evidence, not an implemented combat contract. Current proposals use trusted-Umpi
 the same pre-state for simultaneous combat, and structural sequence positions plus cycle identity;
 production Combat is not implemented. The [policy register](docs/design/combat-cycle-policy-reconciliation.md)
 now records owner-approved policies, and the [combined plan](docs/design/combat-cycle-implementation-plan.md)
-records bounded contract completion through D2c.3f. The [cycle-control contract](docs/specs/combat-cycle-control-v1.md)
+records bounded contract completion through D2c.3g. The [cycle-control contract](docs/specs/combat-cycle-control-v1.md)
 binds release completion, semantic progress, current-cost witnesses and exact repeat/finish successors.
 Its Movement-expiry projection retains exclusions and release history. Actual inherited history,
 armed Combat continuation and full Snapshot composition remain D2c/004/checkpoint B gates.
@@ -927,7 +927,11 @@ System step completions to same-slot Reserve Release. It preserves nested select
 performs no release or state reset, and infers no armed capability.
 The [inherited Reaction trigger](docs/specs/combat-inherited-reaction-trigger-v1.md) follows the
 separate actual one-move prefix, returns to the assault origin, freezes one eligible opponent and
-enters Reaction while suspending the same phasing route. Participant lifecycle remains separate.
+enters Reaction while suspending the same phasing route.
+The [inherited Reaction lifecycle](docs/specs/combat-inherited-reaction-lifecycle-v1.md) consumes that
+exact window, retains the still-legal post-move capability in the rotated participant handle, then
+chooses completion. Empty-cohort stop resolution remains a required event before no-eligible closure
+removes the window and resumes the suspended phasing route. Wider participant/closure profiles remain separate.
 These private projections are not Snapshot12 readers.
 All five `CONTACT-001` rulings and the governing specification/design package are approved.
 `ZOR-TASK-002A`-`006C` implement and activate Rules/Content/fixture, Campaign

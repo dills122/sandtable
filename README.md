@@ -210,6 +210,9 @@ now admits the moved CP12/14 state and closes its zero-candidate selection witho
 six exact structural completions to same-slot Reserve Release without material state change.
 [D2c.3f Reaction trigger](docs/specs/combat-inherited-reaction-trigger-v1.md) instead replays one
 actual Move4 prefix and opens one frozen-opportunity Reaction interrupt for either owner.
+[D2c.3g Reaction lifecycle](docs/specs/combat-inherited-reaction-lifecycle-v1.md) moves that sole
+participant once, completes it through mandatory empty-stop resolution, and resumes phasing only
+after no-eligible closure.
 The [latest smoke check](docs/research/simulator-post-merge-checkin.md#combat-contract-branch-smoke-check)
 verifies the existing Rules9 path; prospective Combat contracts are not executable game support.
 
@@ -329,8 +332,10 @@ traces into first Combat Position Determination while retaining that proof and f
 derives zero candidates from the moved World and closes selection while retaining stepIndex0.
 [D2c.3e no-attack traversal](docs/specs/combat-inherited-no-attack-v1.md) adds4 traces/24 events and
 reaches same-slot Reserve Release. [D2c.3f Reaction trigger](docs/specs/combat-inherited-reaction-trigger-v1.md)
-adds2 actual owner traces that open one frozen opportunity and stop before participant lifecycle.
-Positive vehicle Breakdown, Reserve/armed continuation, Reaction completion and D2c.4 remain open.
+adds2 actual owner traces that open one frozen opportunity.
+[D2c.3g Reaction lifecycle](docs/specs/combat-inherited-reaction-lifecycle-v1.md) adds2 traces/8 events
+through participant movement/completion, required stop resolution and exact phasing resumption.
+Positive vehicle Breakdown, Reserve/armed continuation, broader Reaction families and D2c.4 remain open.
 [Result/settlement](docs/specs/combat-result-settlement-v1.md) and
 [full snapshot composition](docs/specs/combat-snapshot-composition-v1.md) retain synthetic pre-Combat
 lineage; review9 assessed these bounded artifacts. Parent003, future maturity execution and combined checkpoint B
