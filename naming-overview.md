@@ -130,6 +130,9 @@ mean the Combat segment or its structural steps are complete.
 The [inherited no-attack packet](docs/specs/combat-inherited-no-attack-v1.md) nests that `Control`
 unchanged and uses its own `Control` projection plus six `combat-step-completed`2 receipts. Outer
 closure means structural arrival at Reserve Release; it does not rename or perform Reserve Release.
+The [inherited Reaction-trigger packet](docs/specs/combat-inherited-reaction-trigger-v1.md) uses
+private `TriggerState`, retains `element-moved`4 and opens one identity-bound `ReactionWindow`.
+`ReactingPosition` suspends Movement; it is not a participant choice, move or window closure.
 These projections are not Snapshot12. Chronicle retains the
 accepted events; the future Archives reader must reconstruct and validate their complete chain.
 
