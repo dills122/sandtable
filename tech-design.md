@@ -949,7 +949,9 @@ history and full-result support pins. The
 [inherited guarded cycle-control contract](docs/specs/combat-inherited-cycle-control-v1.md) composes
 that candidate with exact Release state: owner repeat enters ordinal-2 Movement in the same slot,
 while owner or deterministic fallback finish enters Truck Convoy and expires the pending exception.
-Released-Reserve Movement and expiry, broader
+The [inherited released-I Movement contract](docs/specs/combat-inherited-reserve-movement-v1.md)
+then records one ordinal-2 Clear move at CP0→2 under ceiling10, retaining armed resources and the
+pending exception. Movement completion and expiry, broader
 Reaction/vehicle families, full Snapshot composition, and all runtime/public activation remain
 later gates.
 These private projections are not Snapshot12 readers.

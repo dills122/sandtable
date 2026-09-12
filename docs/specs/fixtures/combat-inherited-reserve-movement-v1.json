@@ -1,0 +1,44 @@
+{
+  "contract": "combat-inherited-reserve-movement-v1",
+  "cases": [
+    {
+      "actor": "axis",
+      "golden": {
+        "baseBytes": 30077,
+        "baseHash": "sha256:dfbd69daa8392cc3b57a7f2128e89fc2f9eb9f2248245de58b863973cb795130",
+        "frames": [
+          {"cut": 0, "bytes": 4543, "sha256": "sha256:4d24d2bdd3be84ae8a92f850962bd676d5780dc90a8bc81d13106674560a88f8"},
+          {"cut": 1, "bytes": 5028, "sha256": "sha256:4f3762fcfb6d650e5cc028a3f2e97f1043e3602441240cc5f6ab808af1868c6d"}
+        ],
+        "eventBytes": 1753,
+        "eventHash": "sha256:90c13a9c68fbf7e97b454161322650b71807dc75b45734def9c7151b41040043",
+        "terminalPrefix": "sha256:469e55c3b2bfa5f0fbc67017726d995162c1617db94f64eec9fb940461dabb21",
+        "receiptId": "mov.eb7e4f55ee07ef1020d763a3c7486cee0b4a941394d3da13082920c4d8f93cae"
+      }
+    },
+    {
+      "actor": "commonwealth",
+      "golden": {
+        "baseBytes": 30405,
+        "baseHash": "sha256:75fe614e63feca54f7124530d8cfc6830cae1669089ee52efdebbcc2bb8ff0dc",
+        "frames": [
+          {"cut": 0, "bytes": 4575, "sha256": "sha256:89e058a79cfd0fff3a2f3b55d4b84858cede782e65ca18a175ef04e82ca3f83a"},
+          {"cut": 1, "bytes": 5108, "sha256": "sha256:6b54f83c338d9538e897a8b33af096a0e9ee2a4cbe64f04deade498e82235f30"}
+        ],
+        "eventBytes": 1817,
+        "eventHash": "sha256:2bc55098fb9f12c7c01dc8caf995190023b20148adbb74016e8c788e65c055cd",
+        "terminalPrefix": "sha256:f0dc254cf8ff24c863bf6cde9cb6732ea1e7cedda4999d14b35754b4deb37cbd",
+        "receiptId": "mov.1d1f4641767751b274bbc23212bc6141bd0c901721d66667427e6c7fa6b6d80e"
+      }
+    }
+  ],
+  "sourcePins": [
+    {"path": "docs/specs/combat-inherited-cycle-control-v1.schema.json", "sha256": "sha256:5ceb2cf08932eff3ff0e114b661d7778cdc1373065ddacb0297855941d63f679"},
+    {"path": "docs/specs/verify-combat-inherited-cycle-control-v1.py", "sha256": "sha256:cd87e04f440e24d841958e38d4582c432d87ef64cae7e463a1f33c00033176e0"},
+    {"path": "docs/specs/fixtures/combat-inherited-cycle-control-v1.json", "sha256": "sha256:e2f2c76539a3509310fa2f1822fd1d84e1346f62cfc274ce12682866d02ba236"},
+    {"path": "docs/specs/combat-ordinary-movement-v1.schema.json", "sha256": "sha256:039d5f3cdb908dc761540b4809bfb9c6e77c9ab6efd8c965e69955fbbcf0728a"},
+    {"path": "docs/specs/verify-combat-ordinary-movement-v1.py", "sha256": "sha256:cc75e52a6d160d4b0c6c880dc43bc65742068f83ef85cc7fb4babbf8756e0dff"},
+    {"path": "docs/specs/fixtures/combat-ordinary-movement-v1.json", "sha256": "sha256:fa4cb6e76992e5e1133e5b8b2c7e7547e7e5d4faec743fe5bc6e975f5ba6937e"}
+  ],
+  "goldenMethod": "canonical ASCII JSON; SHA-256 with sha256: prefix"
+}

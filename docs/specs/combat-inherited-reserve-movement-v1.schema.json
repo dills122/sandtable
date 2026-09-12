@@ -1,0 +1,14 @@
+{
+  "contract": "combat-inherited-reserve-movement-v1",
+  "objects": {
+    "InheritedReserveMovementBase": "contractVersion:int actor:side predecessorHash:hash predecessorBase:InheritedCycleControlBase predecessorInputs:CycleControlInput[] predecessorEvents:CycleControlEvent[] cycle:Authority firstActingSide:side position:Position stateVersion:long prefix:hash world:World randomState:Random attackHistory:AttackHistory[] releaseMember:ReserveMember priorMovementEnd:MovementEndProof",
+    "InheritedReserveMovementState": "contractVersion:int baseHash:hash stateVersion:long prefix:hash world:World randomState:Random attackHistory:AttackHistory[] releaseMember:ReserveMember tracks:MovementTrack[] receipts:Receipt[]"
+  },
+  "externalContracts": [
+    "combat-inherited-cycle-control-v1.schema.json",
+    "combat-ordinary-movement-v1.schema.json",
+    "combat-cycle-control-v1.schema.json"
+  ],
+  "limits": {"bytes": 1048576, "depth": 32, "arrayItems": 512, "cases": 2, "eventsPerCase": 1},
+  "scope": "Both-owner actual released-I ordinal-2 atomic Clear Movement only; no completion, exception expiry, Breakdown, Combat, Snapshot12, runtime, public action or simulator activation."
+}

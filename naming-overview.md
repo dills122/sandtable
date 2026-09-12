@@ -153,6 +153,9 @@ does not mean opportunity selection, Combat execution, cycle repeat, or runtime 
 The [inherited guarded cycle-control packet](docs/specs/combat-inherited-cycle-control-v1.md) then
 uses `movement-combat-cycle-repeated` or `movement-combat-phase-finished` for exact owner closure.
 This proves private authority composition only; it does not mean ordinal-2 Movement or Combat ran.
+The [inherited released-I Movement packet](docs/specs/combat-inherited-reserve-movement-v1.md) then
+uses `combat-cycle-element-moved` for one actual ordinal-2 move. “Pending exception” remains true
+until a later accepted Movement-completion receipt expires it.
 These projections are not Snapshot12. Chronicle retains the
 accepted events; the future Archives reader must reconstruct and validate their complete chain.
 
