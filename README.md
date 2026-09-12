@@ -216,6 +216,9 @@ after no-eligible closure.
 [D2c.3h Reserve cycle entry](docs/specs/combat-inherited-reserve-cycle-v1.md) instead carries each
 owner's real held Reserve-I unit through a no-move first cycle to same-slot Reserve Release while
 preserving designation history, location and CP0.
+[D2c.3i inherited Reserve Release](docs/specs/combat-inherited-reserve-release-v1.md) opens the
+actual release window, records owner release-I and completes it with the exact pending ordinal-2
+Movement exception; repeat and movement remain deferred.
 The [latest smoke check](docs/research/simulator-post-merge-checkin.md#combat-contract-branch-smoke-check)
 verifies the existing Rules9 path; prospective Combat contracts are not executable game support.
 
@@ -340,7 +343,9 @@ adds2 actual owner traces that open one frozen opportunity.
 through participant movement/completion, required stop resolution and exact phasing resumption.
 [D2c.3h Reserve cycle entry](docs/specs/combat-inherited-reserve-cycle-v1.md) adds2 traces/20 events
 through no-move Movement, idle Breakdown and no-attack Combat while retaining actual Reserve I.
-Release/repeat/positive Reserve movement, vehicle/armed continuation, broader Reaction and D2c.4 remain open.
+[D2c.3i inherited Reserve Release](docs/specs/combat-inherited-reserve-release-v1.md) adds2 traces/6
+events through owner release-I and deterministic completion. Guarded repeat/positive Reserve
+movement, vehicle/armed continuation, broader Reaction and D2c.4 remain open.
 [Result/settlement](docs/specs/combat-result-settlement-v1.md) and
 [full snapshot composition](docs/specs/combat-snapshot-composition-v1.md) retain synthetic pre-Combat
 lineage; review9 assessed these bounded artifacts. Parent003, future maturity execution and combined checkpoint B

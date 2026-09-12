@@ -1,0 +1,62 @@
+{
+  "contractVersion": 1,
+  "cases": [
+    {
+      "actor": "axis",
+      "seed": 1,
+      "choice": "act-first",
+      "reserve": "I",
+      "openingAt": 1000,
+      "choiceAt": 1100,
+      "goldens": {
+        "predecessorHash": "sha256:e306fcedf0909f11b072b7da5ec425b526c51eb5ab93fc727298f53b7ef0824a",
+        "baseHash": "sha256:78534f19e2d8946e6b7e17c4e5143273cf53782a287bb44197449782eccc730f",
+        "frames": [
+          {"cut": 0, "bytes": 1532, "sha256": "sha256:ea0df4ab2ee4df07dce66b6ea5251db3b3c50fa78ef8018d300079e5da5d2786"},
+          {"cut": 1, "bytes": 2376, "sha256": "sha256:e71291aa9b409e08782e5b4155f2fbbdbaffce2eebb82ca5100d8ecd35738b7c"},
+          {"cut": 2, "bytes": 3251, "sha256": "sha256:2e595c30a3af6e47baef4e9f6e42428c78972a55d56393e5ac823c8ed5749f28"},
+          {"cut": 3, "bytes": 3613, "sha256": "sha256:fa85df7519f622ea05d6af25be4a8bcc23164132a0b0a48fac5e2eff81c4c091"}
+        ],
+        "eventHashes": [
+          "sha256:ace58c8555932790a0a6a2f3c0515bc19f9b2796e0a6da8cd10b1e1687949ec4",
+          "sha256:a624dbe4c060910144c360999b839d9f4f22b9b0ec2a1d7650472b93213f3866",
+          "sha256:b9c646cd96f4f9750c71e142ba97a7247a1ca7ca132d46fd25420c712601e466"
+        ],
+        "terminalEvent": "{\"contractVersion\":1,\"eventType\":\"reserve-release-completed\",\"author\":\"system\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:c328b6ad717a6e8091fc81126862ce525a85fb3886f1676dadbad3c77a32cb0d\",\"positionId\":\"land.position.operation-1.first-player.movement-and-combat.reserve-release\",\"baseHash\":\"sha256:053942826568739216ef78d19d6f5cc377d0674f9afcc78f612e4a4aa44733d3\",\"releaseId\":\"rel.12bbdbcc55e83e72209c4fa6cfdec36d8119c754d7b41e00799b5d069f90fd7e\",\"priorVersion\":24,\"stateVersion\":25,\"priorPrefix\":\"sha256:4c8ab6480c7755d6ea97d7fc1a7eb7c5033889bdda944e0b87d0addf5fdc5e4d\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"complete\",\"releaseId\":\"rel.12bbdbcc55e83e72209c4fa6cfdec36d8119c754d7b41e00799b5d069f90fd7e\",\"expectedPriorVersion\":24,\"decisionId\":\"rel.12bbdbcc55e83e72209c4fa6cfdec36d8119c754d7b41e00799b5d069f90fd7e.decision\",\"unit\":null,\"choice\":null},\"actor\":\"system\",\"admittedAt\":null,\"clockAvailable\":true},\"effect\":{\"kind\":\"release-completed\",\"reason\":\"units-resolved\",\"retainedUnits\":[],\"dispositionReceipts\":[\"rr.317ef207f17f5ce49d06296f97a3379facb525a2350de47558f8276c97a5c41c\"],\"timing\":{\"contractVersion\":1,\"configHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"kind\":\"reserve-release\",\"decisionBudgetMilliseconds\":30000,\"openedAtUnixMilliseconds\":1000,\"deadlineUnixMilliseconds\":31000,\"highWaterUnixMilliseconds\":1100},\"fallbackLocked\":false},\"receiptId\":\"rr.58ba2dbbbd25b9c89fadc8d749a40aef1e811ebb855edca6d27842c902be28af\"}"
+      }
+    },
+    {
+      "actor": "commonwealth",
+      "seed": 1,
+      "choice": "act-last",
+      "reserve": "I",
+      "openingAt": 1000,
+      "choiceAt": 1100,
+      "goldens": {
+        "predecessorHash": "sha256:35dc8074824be7004079cbfb012b91e2280d4efcf55bea5b05116e8965fd371f",
+        "baseHash": "sha256:fe518c2a436195c2c1dcfb000c74e6d936cafda137fe4f549ae442f5bedf09ae",
+        "frames": [
+          {"cut": 0, "bytes": 1556, "sha256": "sha256:7396fc7ed3e990c9c267e1f18f155a75f04847bc70e80a381e627bcbc7dd590b"},
+          {"cut": 1, "bytes": 2416, "sha256": "sha256:a07d9e501e6861a4dca9d79c76a1b82dc2fe795de29874c63b6d2b3142e7f0ef"},
+          {"cut": 2, "bytes": 3307, "sha256": "sha256:44667bead25fa01ce0fbd3deeda777a65238a8af1726864050b7c2b6d3f21df3"},
+          {"cut": 3, "bytes": 3669, "sha256": "sha256:7dec0cd054a18ee9403df2431c06445e66f6a8c699679b7472f0ea9e51bcd0ae"}
+        ],
+        "eventHashes": [
+          "sha256:22e7e6f5ff59b5a815da33c01303e687a52927fd5dd5679237bc557aadef45ec",
+          "sha256:326821d2bacd62a1ba046c56f756c1d2a0a566c81ad6a1ac76c4595eac89b91c",
+          "sha256:3e5c3bec763bfb3a7a54b6461ab6ff2e0fa7d40cfb6b95d0e727fcf04699e7da"
+        ],
+        "terminalEvent": "{\"contractVersion\":1,\"eventType\":\"reserve-release-completed\",\"author\":\"system\",\"campaignId\":\"rules-lab.combat-creation.1\",\"rulesetHash\":\"8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18\",\"configurationHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"cycleId\":\"sha256:cae65655e104cd19da2f4b8c07ffe3d940cb972841293bbd0e176840f328a640\",\"positionId\":\"land.position.operation-1.first-player.movement-and-combat.reserve-release\",\"baseHash\":\"sha256:9cd6be3275e057a179fcf358efc788be31988f92720b3dffa9e6ed2933abbaeb\",\"releaseId\":\"rel.e603d814e134fa90395856967be90f94474fe0e6a1fcc0faeba3eff941894b3c\",\"priorVersion\":24,\"stateVersion\":25,\"priorPrefix\":\"sha256:d2d7d8ecd59d9f8a8abe4b80bbf9a3d92b2aaf00a351beb1095e8355258e4932\",\"input\":{\"command\":{\"contractVersion\":1,\"kind\":\"complete\",\"releaseId\":\"rel.e603d814e134fa90395856967be90f94474fe0e6a1fcc0faeba3eff941894b3c\",\"expectedPriorVersion\":24,\"decisionId\":\"rel.e603d814e134fa90395856967be90f94474fe0e6a1fcc0faeba3eff941894b3c.decision\",\"unit\":null,\"choice\":null},\"actor\":\"system\",\"admittedAt\":null,\"clockAvailable\":true},\"effect\":{\"kind\":\"release-completed\",\"reason\":\"units-resolved\",\"retainedUnits\":[],\"dispositionReceipts\":[\"rr.78ef45628b0f8b40e03ed5354548e391c9709d33cd7e75449415131a6dbc90d6\"],\"timing\":{\"contractVersion\":1,\"configHash\":\"sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34\",\"kind\":\"reserve-release\",\"decisionBudgetMilliseconds\":30000,\"openedAtUnixMilliseconds\":1000,\"deadlineUnixMilliseconds\":31000,\"highWaterUnixMilliseconds\":1100},\"fallbackLocked\":false},\"receiptId\":\"rr.fef97ff6c6faf3d8cc367df36448d9c059541dbf5cbaee14c002b38d71a6ffd6\"}"
+      }
+    }
+  ],
+  "sourcePins": [
+    {"path": "docs/specs/combat-inherited-reserve-cycle-v1.schema.json", "sha256": "sha256:1d311e48923614180ee0ca6600b6ec3d030126637dab4cb77412c37ae5cd6c17"},
+    {"path": "docs/specs/verify-combat-inherited-reserve-cycle-v1.py", "sha256": "sha256:4ee62f545d2c093d4dde93d075aa2119d8dd77fbb1ebb24a6144d2bb964e0ac9"},
+    {"path": "docs/specs/fixtures/combat-inherited-reserve-cycle-v1.json", "sha256": "sha256:22d349c63acd9f567c9691f71bc5ea007334e596b5bf9f4789e1a6c229f7e10e"},
+    {"path": "docs/specs/combat-reserve-release-v1.schema.json", "sha256": "sha256:10ba1ca46e05fbed52c6eef5174c2ac84c4282df0957c44eab6e86079342bc32"},
+    {"path": "docs/specs/verify-combat-reserve-release-v1.py", "sha256": "sha256:105ef18d9db6364ce42f9831afd3c33010fccc71b0ae60af78cec7c185da892b"},
+    {"path": "docs/specs/combat-cycle-control-v1.schema.json", "sha256": "sha256:8c517db6daa734d415bd1d474280c2cf6e65013490c4a2568795d50e6112f7da"},
+    {"path": "docs/specs/verify-combat-cycle-control-v1.py", "sha256": "sha256:9039f9e1067b2cdd2e0a57ae16e711350b4bbdceb500d22bbbd715f39e8ccc9f"}
+  ]
+}

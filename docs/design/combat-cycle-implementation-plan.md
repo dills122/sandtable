@@ -36,9 +36,15 @@ derives owner stop2, System empty resolution2 and owner Movement-completion3 wit
 [D2c.3d actual-entry selection](../specs/combat-inherited-selection-v1.md) admits the moved CP12/14
 state and closes zero-candidate selection in two System events.
 [D2c.3e actual no-attack traversal](../specs/combat-inherited-no-attack-v1.md) carries that closure
-through six System step completions to same-slot Reserve Release. The
+through six System step completions to same-slot Reserve Release.
+[D2c.3f Reaction trigger](../specs/combat-inherited-reaction-trigger-v1.md) and
+[D2c.3g Reaction lifecycle](../specs/combat-inherited-reaction-lifecycle-v1.md) prove one actual
+frozen-opportunity participant episode. [D2c.3h Reserve cycle entry](../specs/combat-inherited-reserve-cycle-v1.md)
+carries actual Reserve-I history through one idle cycle; [D2c.3i inherited Reserve Release](../specs/combat-inherited-reserve-release-v1.md)
+releases that member and freezes its ordinal-2 exception. The
 [preparation matrix](combat-inherited-movement-preparation.md) remains the field/provenance baseline;
-positive Reaction/vehicle/Reserve movement, armed continuation and .4 composition stay open.
+guarded repeat, positive Reserve movement, broader Reaction/vehicle work, armed continuation and .4
+composition stay open.
 [Progress review9](../reviews/combat-progress-review-9.md) assessed all13 unmerged commits through
 `a96d2a1`: Ready with non-blocking follow-ups; its sole P3 documentation-status finding is corrected.
 All15 Python oracles and the focused Orleans build/run/format passed at that checkpoint.
@@ -388,8 +394,20 @@ receipt/history, `reserveStatus=I`, World, RNG, Weather, order, cycle and CP0. M
 binds both final locations, empty ordinary-proximity exclusions and the actual completion receipt.
 Public selection exposes zero candidates. Exact replay across11 cuts,20 accepted retries, deep
 event/control mutation, malformed bytes, source drift, capacity and cross-history rejection form
-acceptance. Release, repeat, positive Reserve movement, vehicle continuation, armed Combat, .4,
-004/B, runtime and simulator remain open.
+acceptance. This checkpoint itself performs no release; 3i below consumes it. Repeat, positive
+Reserve movement, vehicle continuation, armed Combat, .4,004/B, runtime and simulator remain open.
+
+D2c.3i execution boundary (input `fbfd849`, owner-approved 2026-09-11): one new
+[spec/schema/fixture/oracle packet](../specs/combat-inherited-reserve-release-v1.md) plus this plan.
+Replay both 3h Normal-Weather Reserve-I terminals, derive an actual Release base at authority22,
+open one Config-pinned decision, accept owner `release-I`, then complete at authority25 without
+leaving same-slot Reserve Release. The matched own member changes I→none and records release cycle1,
+CPA basis/voluntary ceiling10 and exact pending ordinal-2 Movement exception; World otherwise, RNG,
+Weather, cycle ordinal, locations, CP0 and all prior designation/Movement/Combat history persist.
+Only disposition is material progress. Exact retry/readback, valid-but-wrong mutations, malformed
+bytes, cross-history authority, deadline, clock-loss/unavailable fallback, capacity and source-pin
+checks form acceptance. Guarded repeat, positive Reserve movement, alternate owner conversion,
+broader Reserve profiles, .4,004/B, runtime and simulator remain open.
 
 D2c.4 owns the **Task004 handoff** section in its planned
 `docs/specs/combat-authority-composition-v1.md` contract packet, within the same five-primary-file
@@ -1118,3 +1136,12 @@ authority. Two traces/20 events pass22 cuts,20 retries,1103 deep mutations,46 ma
 196 boundary checks and13 source pins. No route/stop, release, repeat, positive Reserve move,
 runtime/source/test/scenario or simulator change is claimed. Those capabilities and .4/004/B remain
 open.
+
+TASK-003D2c.3i checkpoint, 2026-09-11 (input `fbfd849`):
+[Inherited Reserve Release specification](../specs/combat-inherited-reserve-release-v1.md), inventory,
+vectors and oracle replay both 3h terminals and freeze System open, owner release-I and System
+completion. Six events across two traces advance authority22→25, preserve cycle ordinal1 and all
+prior history, change only the own member's Reserve I→none status, and record a pending ordinal-2
+Movement exception with CPA basis/ceiling10. Eight cuts, six retries,658 mutations,24 malformed-byte
+rejections,15 boundaries, six fallback paths and seven source pins pass. Guarded repeat, positive
+Reserve movement, alternate conversion profiles, .4/004/B, runtime and simulator remain open.

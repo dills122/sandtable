@@ -120,8 +120,9 @@ the pre-alpha roadmap carry repository-wide rationale and delivery state.
   [D2c.3g Reaction lifecycle](specs/combat-inherited-reaction-lifecycle-v1.md) adds2 traces/8 events
   through one participant episode and exact phasing resumption; broader Reaction and remaining .3
   capabilities/.4 composition stay open. [D2c.3h Reserve cycle entry](specs/combat-inherited-reserve-cycle-v1.md)
-  adds2 traces/20 events from actual Reserve-I history through same-slot Reserve Release; release,
-  repeat and positive Reserve movement stay open.
+  adds2 traces/20 events from actual Reserve-I history through same-slot Reserve Release.
+  [D2c.3i inherited Reserve Release](specs/combat-inherited-reserve-release-v1.md) adds2 traces/6
+  events through owner release-I and completion; guarded repeat and positive Reserve movement stay open.
   See [result/settlement](specs/combat-result-settlement-v1.md) and
   [snapshot composition/audit](specs/combat-snapshot-composition-v1.md). See
   [ordinary movement](specs/combat-ordinary-movement-v1.md) for D2a evidence and source correction.
