@@ -1,71 +1,25 @@
 # Combat and Cycle Combined Contract / Implementation Plan
 
-**Status:** `CMB-PLAN-001` and POL-001–008 accepted by owner on2026-09-06 at `a10a588`.
-`CMB-TASK-001` **complete** within its research scope, including accepted
-[source ruling CMB-SRC-RUL-001](../research/combat-source-freeze-v1.md). [TASK-002 Content freeze](../specs/combat-content-v7.md) is complete as a contract packet;
-[Checkpoint A author check](../reviews/combat-checkpoint-a-author-check.md) is complete, and owner
-requested continuation. [TASK-003A creation/initial ledger](../specs/combat-creation-ledger-v1.md) is complete as a contract
-slice; [TASK-003B World/settlement](../specs/combat-world-settlement-v1.md) is complete as a contract packet.
-[Progress review5](../reviews/combat-progress-review-5.md) returned Ready with non-blocking follow-ups;
-its status correction is applied. Parent003 remains open for003C/D.
-[003C1 rules inputs/config](../specs/combat-rules-inputs-v1.md) is complete as a contract slice;
-[review6](../reviews/combat-inputs-review-6.md) returned Ready with no actionable findings (6of7 used at that checkpoint).
-[003D1 sequence/cycle packet](../specs/combat-cycle-sequence-v1.md) is complete;
-[review7](../reviews/combat-sequence-review-7.md) returned Ready with no actionable findings (7of7 used).
-[003C2 Rules10/creation envelopes](../specs/combat-authority-envelope-v1.md) are complete for the creation cut,
-with author verification and independent review8 Ready (local report recorded below).
-[003C3a selection/step contracts](../specs/combat-selection-steps-v1.md) are
-complete as a bounded control fragment. [003C3b sealed round/commitment](../specs/combat-sealed-round-v1.md)
-is complete with author checks. [HOST-RSH-001](../research/orleans-publication-feasibility.md) research
-is complete. [003C3c result/settlement](../specs/combat-result-settlement-v1.md) and
-[noninitial Snapshot12 composition](../specs/combat-snapshot-composition-v1.md) are complete as bounded
-contract checkpoints with author checks. [003D2a ordinary movement](../specs/combat-ordinary-movement-v1.md)
-is complete with author checks. [003D2b.1 Reserve Release](../specs/combat-reserve-release-v1.md) is
-complete as a private control/history arm. [003D2b.2 guarded repeat/finish](../specs/combat-cycle-control-v1.md)
-is complete for the private exhausted-ammunition continuation boundary and Movement-expiry projection;
-[003D2c.1 successor declarations/first opening](../specs/combat-inherited-successors-v1.md) is complete
-as an isolated contract boundary. [003D2c.2a opening provenance](../specs/combat-opening-preamble-v1.md)
-is complete through Weather entry. [003D2c.2b Weather](../specs/combat-weather-v1.md) is complete
-through Organization entry. [003D2c.2c stage entry](../specs/combat-stage-entry-v1.md) is complete
-through Reserve entry. [003D2c.2d Reserve designation/completion](../specs/combat-reserve-designation-v1.md)
-completes bounded creation-to-first-opening contracts with author checks. ParentD2c.2 is complete;
-D2c/D2/003 remains open. [D2c.3a inherited ordinary Movement](../specs/combat-inherited-movement-v1.md)
-is complete as a bounded contract checkpoint. [D2c.3b route lifecycle](../specs/combat-inherited-movement-lifecycle-v1.md)
-derives owner stop2, System empty resolution2 and owner Movement-completion3 with actual end proof.
-[D2c.3c Breakdown completion](../specs/combat-inherited-breakdown-completion-v1.md) reaches actual Combat entry.
-[D2c.3d actual-entry selection](../specs/combat-inherited-selection-v1.md) admits the moved CP12/14
-state and closes zero-candidate selection in two System events.
-[D2c.3e actual no-attack traversal](../specs/combat-inherited-no-attack-v1.md) carries that closure
-through six System step completions to same-slot Reserve Release.
-[D2c.3f Reaction trigger](../specs/combat-inherited-reaction-trigger-v1.md) and
-[D2c.3g Reaction lifecycle](../specs/combat-inherited-reaction-lifecycle-v1.md) prove one actual
-frozen-opportunity participant episode. [D2c.3h Reserve cycle entry](../specs/combat-inherited-reserve-cycle-v1.md)
-carries actual Reserve-I history through one idle cycle; [D2c.3i inherited Reserve Release](../specs/combat-inherited-reserve-release-v1.md)
-releases that member and freezes its ordinal-2 exception. The
-[preparation matrix](combat-inherited-movement-preparation.md) remains the field/provenance baseline;
-guarded repeat, positive Reserve movement, broader Reaction/vehicle work, armed continuation and .4
-composition stay open.
-[Progress review9](../reviews/combat-progress-review-9.md) assessed all13 unmerged commits through
-`a96d2a1`: Ready with non-blocking follow-ups; its sole P3 documentation-status finding is corrected.
-All15 Python oracles and the focused Orleans build/run/format passed at that checkpoint.
-[Review10](../reviews/combat-progress-review-10.md) returned Ready with non-blocking follow-ups
-for D2b.2/D2c.1. Its P2 handoff ambiguity and P3 source-inventory status drift are corrected below.
-All17 oracles passed independently at review10. Review11 across merged
-[PR95–98](https://github.com/dills122/sandtable/pull/98) returned Ready with no findings and independently
-passed24 oracle jobs plus the Orleans probe. That exhausted the then-authorized11of11 budget.
-Owner subsequently authorized review12 for Reserve/opening plus Movement preparation at `01ded95`
-and offline-link maintenance at `0e815b2`: Ready for both, no actionable findings. It independently
-ran Reserve and two immediate predecessor oracles, focused probes, source mappings and link/CI
-checks; it did not rerun all historical oracles. Owner then explicitly authorized a separate review
-chat for3a at `d76ac3f`: review13 returned Ready, no actionable findings, after three relevant oracles,
-61 public rejection probes, source/plan checks and changed-document path checks. Its blind preliminary
-preceded the separate author explanation. At that checkpoint,3b/3c/3d/3e had author checks only.
-Owner then authorized review14 for3d/3e at `db75340`;
-it returned Not ready because3e lacked a history-rooted command application boundary and cumulative
-review prose omitted3e. Both accepted findings are corrected after that review, with author evidence
-only for the remediation. Budget14of14 is exhausted; review14 is not a Ready verdict for3d/3e.
-TASK-004–025 not started. Future maturity execution and checkpoint B remain gated.
-**Original input:** `d2bc67c`. Exact contract freeze and production gates remain open.
+**Status:** Contract checkpoint B in progress; no Combat runtime or public capability is active.
+`CMB-PLAN-001` and POL-001–008 were accepted on 2026-09-06 at `a10a588`. Source and static Content
+work (`001`–`002`) is complete. Parent `003` remains open after bounded contract evidence through
+creation-rooted inherited Reserve Release (`003D2c.3i`). Task `004`, checkpoint B, and runtime tasks
+`005`–`025` have not started.
+
+| Delivery layer | Current boundary | Next required outcome |
+| --- | --- | --- |
+| Research and policy | Complete for the selected bounded profile, including `HOST-RSH-001` | Reopen only for a new source, failed assumption, or approved profile expansion |
+| Authority contracts | C3 result/settlement, D2 movement/release/control, and D2c inherited families through `.3i` are frozen as bounded Python evidence | Finish remaining `.3` capability families, then `.4` full composition and the `003` handoff |
+| Outward contracts | Task004 not started | Freeze side-safe observation/action and Exercise evidence contracts; map every design AC |
+| Runtime | Tasks005–019 not started | Implement dormant tables/state/decisions/settlement/release/repeat with cumulative replay and recovery evidence |
+| Public and simulator | Tasks020–024 not started | Activate the certified side-safe profile, then prove strict Exercise/Runner reconstruction and repeatability |
+| Closeout | Task025 not started | Full gate, evidence reconciliation, and authentic loop demonstration without overstating retained obligations |
+
+The [preparation matrix](combat-inherited-movement-preparation.md) remains the field/provenance
+baseline. Historical checkpoints and review verdicts are retained under
+[progressive execution evidence](#progressive-execution-evidence); they are not the current status
+source. The [roadmap](../roadmap/pre-alpha-roadmap.md#current-checkpoint-and-next-gates) owns
+cross-package sequencing and the route from Combat closeout to the playable MVP.
 
 Cross-package sequencing lives in the [roadmap checkpoint](../roadmap/pre-alpha-roadmap.md#current-checkpoint-and-next-gates).
 Task005 begins dormant implementation; public activation is020–021 and Combat simulator evidence
@@ -554,6 +508,21 @@ full repository gate at public activation and closeout. Record command, commit, 
 location when executed. Failed checks block dependent activation. User review precedes moving
 beyond a checkpoint when its policy/contract/acceptance boundary changes; routine compatible fixes
 and feature commits remain within authorized implementation work once G0 and B pass.
+
+Use verification tiers so fast feedback and exhaustive evidence are both explicit:
+
+| Tier | When | Minimum evidence |
+| --- | --- | --- |
+| Focused | Every edit | Changed packet/test plus direct predecessor and consumer suites, syntax/schema parse, `git diff --check` |
+| Checkpoint | Before closing a bounded child or parent | All affected contract/runtime families, compatibility/recovery cuts, local Markdown targets, build and format for touched projects |
+| Activation | Before Tasks021 and024 | Full repository test/build/format gate, complete contract-oracle sweep, disclosure/admission negatives, reconstruction/readjudication and two clean retained runs |
+| Release | Before skeleton or MVP claims | Clean-checkout reproduction with pinned toolchain/content hashes, operational recovery drill, rights/source audit, and acceptance-criteria readback |
+
+An environment timeout or missing optional checker is recorded as unavailable, not passing. A
+document-only edit may omit runtime tests only when it changes no executable contract, source,
+project, scenario, or generated input; it must still run the focused documentation checks. Avoid
+rerunning every exhaustive composed oracle during the inner edit loop, but never substitute focused
+checks for the Activation or Release tier.
 
 ## Progressive execution evidence
 
@@ -1143,5 +1112,8 @@ vectors and oracle replay both 3h terminals and freeze System open, owner releas
 completion. Six events across two traces advance authority22→25, preserve cycle ordinal1 and all
 prior history, change only the own member's Reserve I→none status, and record a pending ordinal-2
 Movement exception with CPA basis/ceiling10. Eight cuts, six retries,658 mutations,24 malformed-byte
-rejections,15 boundaries, six fallback paths and seven source pins pass. Guarded repeat, positive
-Reserve movement, alternate conversion profiles, .4/004/B, runtime and simulator remain open.
+rejections,31 boundaries, ten recovery paths and seven source pins pass. [Independent review15](../reviews/combat-inherited-reserve-release-review-15.md)
+returned Ready with non-blocking follow-ups; its P3 retained-negative-coverage finding was accepted
+and corrected before commit `719ea0d`. Guarded repeat, positive Reserve movement, alternate
+conversion profiles, .4/004/B, runtime and simulator remain open. The authorized Combat review
+sequence is exhausted at15of15; another pass requires explicit owner authorization.

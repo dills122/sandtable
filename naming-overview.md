@@ -1,7 +1,9 @@
 # Sandtable Naming and Domain Vocabulary
 
 **Status:** Active vocabulary rationale. Current implementation notes and future reserved names are
-labeled in their sections.
+labeled in their sections. The [pre-alpha roadmap](docs/roadmap/pre-alpha-roadmap.md#current-delivery-status)
+owns current delivery status; checkpoint references here explain how accepted names map to the
+domain and are not a separate completion ledger.
 
 **Sandtable** draws its naming theme from historical staff work, Kriegsspiel, military
 administration, and campaign terminology without making the codebase incomprehensible.
@@ -137,6 +139,14 @@ The [inherited Reaction-lifecycle packet](docs/specs/combat-inherited-reaction-l
 private `LifecycleState` for one `reacting-element-moved`3, explicit participant completion3,
 compatible empty-stop resolution2 and no-eligible closure3. `reactor-stop-open` is mandatory
 authority, while terminal `moving` resumes the prior phasing route rather than naming a new route.
+The [inherited Reserve-cycle packet](docs/specs/combat-inherited-reserve-cycle-v1.md) reaches
+`reserve-release` without performing Release. The
+[inherited Reserve Release packet](docs/specs/combat-inherited-reserve-release-v1.md) retains
+`reserve-release-opened`1, `reserve-unit-disposition-recorded`1, and
+`reserve-release-completed`1. A `pending next-Movement exception` is scoped authority for ordinal2,
+not a move, route, destination, or generic permission token. `release-I` changes the matched own
+member from Reserve I to none; `complete` closes only the current Release window. Neither term
+implies cycle repeat, phase finish, or production activation.
 These projections are not Snapshot12. Chronicle retains the
 accepted events; the future Archives reader must reconstruct and validate their complete chain.
 

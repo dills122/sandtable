@@ -48,6 +48,13 @@ play a side; it will never decide the rules or secretly change the campaign stat
 > [!IMPORTANT]
 > Sandtable is pre-alpha infrastructure, not yet a playable adaptation of the published game.
 
+The executable product and the forward contract work are intentionally different. Today, public
+Rules9 authority and checked Runner evidence stop at first-side Combat **entry**. Separate frozen
+contract packets compose selected future Combat/cycle histories through inherited Reserve Release,
+but no Combat or Reserve Release runtime is registered. The
+[pre-alpha roadmap](docs/roadmap/pre-alpha-roadmap.md#current-delivery-status) is the canonical
+delivery ledger and defines the status vocabulary used below.
+
 The current foundation can create a campaign from an exact ruleset, setup, Content Pack, and
 scenario; project the scenario's initial mutable element locations; resolve Initiative
 Determination and both admitted no-obligation Naval Convoy checkpoints; let the initiative holder
@@ -222,27 +229,26 @@ Movement exception; repeat and movement remain deferred.
 The [latest smoke check](docs/research/simulator-post-merge-checkin.md#combat-contract-branch-smoke-check)
 verifies the existing Rules9 path; prospective Combat contracts are not executable game support.
 
-| Area | Status |
-| --- | --- |
-| Ruleset/provenance, synthetic content, campaign authority, deterministic randomness, events, and replay | Implemented foundation |
-| Side-safe observations and exact-audience legal actions | Implemented for the current rules-laboratory path |
-| Mandatory turn preamble | Implemented through Reserve Designation completion; authority reaches first-side Movement |
-| Movement/contact and combat loops | Current Ruleset 9, Content/Setup/World 6, Created 10, Snapshot 11 and Observation 7 support bounded Movement, adjacency-triggered Reaction and Breakdown through first-side Combat entry; Contact and Combat adjudication remain deferred. Task 007 adds checked successors; two matching clean runs are verified; review 5 accepts AC-009 transcript/progress evidence; bounded Tasks 006–007 complete |
-| Published first-scenario data, remaining Land rules, victory, persistence, and Maproom | Milestone-level; not started |
-| Player Intent Composer | Direction reviewed; representative decision after the combat skeleton, no-model prototype before Maproom, optional parser evaluation after deterministic MVP |
-| Exercise Harness | Single-Exercise, serial-unpaired two-setup/controller/Movement Maneuvers, and optional serial-paired Reserve-policy and Movement-cost descriptive comparisons implemented with strict readback |
+| Area | Executable today | Forward evidence / next gate |
+| --- | --- | --- |
+| Authority foundation | Versioned provenance, synthetic content, commands/events, deterministic randomness, replay, side-safe observations, and exact-audience legal actions for the admitted profile | Extend the same compatibility, recovery, and fog boundaries with each mechanic |
+| Preamble and Movement boundary | Initiative through Reserve Designation, bounded Movement, ZOC/Reaction, and Breakdown through first-side Combat entry | Positive scenario-specific obligations and broader vehicle/ZOC profiles remain gated |
+| Combat and continual cycle | Not implemented or activated | Contract-frozen through `003D2c.3i`; finish composition/side contracts, then dormant runtime, public activation, and Runner gates |
+| Working skeleton | Not reached | One authentic movement/contact/combat/release repeat-or-finish loop plus identical replay |
+| Playable MVP | Not started | Source-verified six-turn content/rules/victory, durable save/resume, hot-seat privacy, and minimal no-model Maproom |
+| Exercise Harness | Current bounded Exercise/Maneuver and paired descriptive comparisons | Add Combat actions and terminals only after public Core activation |
 
 The approved high-level path to a playable game is:
 
-1. Implement a complete movement/contact/combat loop through the legal-action boundary.
-2. At the combat-skeleton checkpoint, select the representative Player Intent Composer decision;
-   run its no-model prototype alongside first-scenario data work.
-3. Add the remaining Land systems, source-verified content, and victory rules required by
-   *Graziani's Offensive*.
-4. Deliver deterministic Maproom, local hot-seat play, saves, replay, and the validated no-model
-   intent flow.
-5. Evaluate optional parsing only after the deterministic MVP, then expand into detailed Air and
-   Logistics play, later scenarios, and optional intelligence.
+1. Finish the Combat contract freeze, then implement dormant authority, public side-safe actions,
+   strict Runner evidence, and one authentic repeat-or-finish loop.
+2. Freeze the exact six-turn scenario surface—rules, tables, content, sources, rights, termination,
+   victory, and remaining decisions—before splitting later implementation tasks.
+3. Implement only that measured Land surface and source-verified `Graziani's Offensive` content.
+4. Add durable local save/resume and recovery, then minimal Maproom with complete no-model actions
+   and hot-seat isolation.
+5. Complete two deterministic six-turn playthroughs and replay/privacy/source gates before calling
+   the MVP playable. Optional parsing, hosted play, and model-backed intelligence remain later work.
 
 The serial-Maneuver portion of Exercise Harness v1 now provides validated local multi-run regression
 evidence without adding game rules. The implemented Operation-Stage Entry package retains its
