@@ -1,0 +1,356 @@
+{
+  "contract": "combat-inherited-armed-continuation-v1",
+  "cases": [
+    {
+      "actor": "axis",
+      "proof": {
+        "contractVersion": 1,
+        "predecessorHash": "sha256:fa85df7519f622ea05d6af25be4a8bcc23164132a0b0a48fac5e2eff81c4c091",
+        "currentCycle": {
+          "contractVersion": 1,
+          "campaignId": "rules-lab.combat-creation.1",
+          "rulesetHash": "8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18",
+          "setupId": "rules-lab.combat.close-assault.v1",
+          "setupHash": "sha256:22495e26528c2f4db8335d3b4041194aef26295f30aab0e4e6f384ff17069848",
+          "contentPackId": "rules-lab.content.close-assault.v1",
+          "contentHash": "sha256:ee4fde9638ceb61ec08612fe32f9ac81db05572aac5ca20941e402d2fed25847",
+          "scenarioId": "close-assault-positive-v1",
+          "gameTurn": 1,
+          "operationStage": 1,
+          "playerPhaseSlot": "first-acting-side",
+          "actingSide": "axis",
+          "ordinal": 1,
+          "openedAuthorityVersion": 12,
+          "openingPrefix": "sha256:cad787c7694bd8d47fb89721ffde6fce64a73ceccdfd61c9808f7934dc57b23b",
+          "admittedPolicyBundleDigest": "sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34"
+        },
+        "nextOrdinal": 2,
+        "releaseCompletionReceiptId": "rr.58ba2dbbbd25b9c89fadc8d749a40aef1e811ebb855edca6d27842c902be28af",
+        "movementCompletionReceiptId": "irc.8a214ab7bac5e3360a18c2c1f336370905c8c063c56ca68eb11a4b9b3e204fd1",
+        "progress": {
+          "eventType": "reserve-unit-disposition-recorded",
+          "receiptId": "rr.317ef207f17f5ce49d06296f97a3379facb525a2350de47558f8276c97a5c41c",
+          "eventHash": "sha256:a624dbe4c060910144c360999b839d9f4f22b9b0ec2a1d7650472b93213f3866"
+        },
+        "member": {
+          "unit": {
+            "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+            "originalSide": "axis",
+            "elementId": "axis-assault-battalion"
+          },
+          "status": "none",
+          "baseCpa": 10,
+          "spentCp": {
+            "numerator": 0,
+            "denominator": 1
+          },
+          "history": {
+            "scope": {
+              "gameTurn": 1,
+              "operationStage": 1,
+              "playerPhaseSlot": "first-acting-side",
+              "actingSide": "axis"
+            },
+            "designationReceiptId": "rd.4f2adcf662355e4df5a0f21d517efbeea1c9d8b037a5ee47240babf39b56c789",
+            "conversionReceiptId": null,
+            "releasedType": "I",
+            "releaseReceiptId": "rr.317ef207f17f5ce49d06296f97a3379facb525a2350de47558f8276c97a5c41c",
+            "releaseCycle": 1,
+            "cpaBasis": 10,
+            "voluntaryCeiling": 10,
+            "offensiveCommitmentId": null,
+            "nextMovement": {
+              "scope": {
+                "gameTurn": 1,
+                "operationStage": 1,
+                "playerPhaseSlot": "first-acting-side",
+                "actingSide": "axis"
+              },
+              "ordinal": 2,
+              "status": "pending",
+              "completionReceiptId": null
+            }
+          }
+        },
+        "retainedWorldHash": "sha256:09fc32a42f486a8ced1e0af92a06f2a4181ced65db01690b5617dccc770bc325",
+        "randomStateHash": "sha256:57284170304aca4c14827abef60de4e5405d52e2d8aba59834b8d1e29193d66e",
+        "actingAmmunition": 10,
+        "actingToe": 10,
+        "defendingToe": 10,
+        "assessment": {
+          "actingSide": "axis",
+          "actingElementId": "axis-assault-battalion",
+          "defendingSide": "commonwealth",
+          "defendingElementId": "commonwealth-assault-battalion",
+          "actingLocationId": "assault-west",
+          "defendingLocationId": "assault-east",
+          "normalWeather": true,
+          "adjacent": true,
+          "actingCapabilityPointsExpended": {
+            "numerator": 0,
+            "denominator": 1
+          },
+          "defendingCapabilityPointsExpended": {
+            "numerator": 0,
+            "denominator": 1
+          },
+          "actingWithinVoluntaryCeiling": true,
+          "defendingWithinVoluntaryCeiling": true,
+          "candidateIds": [
+            "cand.d6ce9b01cf7185c8680d9d91eaa78c1cf962e5a9d8462e7e1fb6a4225e2b0deb"
+          ]
+        },
+        "emptyMovementSupported": true,
+        "emptyBreakdownSupported": true,
+        "emptyPrestepsSupported": true,
+        "targetUseAvailable": true,
+        "offensiveUseAvailable": true,
+        "immediateObligationsClear": true,
+        "support": [
+          {
+            "contractId": "combat-selection-steps-v1",
+            "fixtureHash": "sha256:151c8da5037dfd5fa921abf1f675ef1a10211f8b84a4e1fb385d6beb62b1d0de",
+            "evidenceCount": 5
+          },
+          {
+            "contractId": "combat-sealed-round-v1",
+            "fixtureHash": "sha256:8832568d97d3bd7cfe0d8f5dcd875bed58ea401250c38a178afeb7b1662cef6e",
+            "evidenceCount": 4
+          },
+          {
+            "contractId": "combat-result-settlement-v1",
+            "fixtureHash": "sha256:cc25c358c997e54dd61fe1d843db5e7385c4a85706c462b87badacb939ec71c2",
+            "evidenceCount": 8
+          },
+          {
+            "contractId": "combat-snapshot-composition-v1",
+            "fixtureHash": "sha256:392e805f3ee244d9dc988a64b85090d9f992335721fbbc91e8b5b6e2260f834a",
+            "evidenceCount": 17
+          }
+        ],
+        "supportDigest": "sha256:7e38d976eb886929f53a711b5733170322c14e603088b46486e5dabdab109c93",
+        "supported": true
+      },
+      "golden": {
+        "bytes": 3905,
+        "sha256": "sha256:53dcffef879e3dc1f522977bf142b7c6f3da749cbfb1007444a7914d6edf36c6",
+        "predecessorHash": "sha256:fa85df7519f622ea05d6af25be4a8bcc23164132a0b0a48fac5e2eff81c4c091",
+        "candidateId": "cand.d6ce9b01cf7185c8680d9d91eaa78c1cf962e5a9d8462e7e1fb6a4225e2b0deb",
+        "supportDigest": "sha256:7e38d976eb886929f53a711b5733170322c14e603088b46486e5dabdab109c93"
+      }
+    },
+    {
+      "actor": "commonwealth",
+      "proof": {
+        "contractVersion": 1,
+        "predecessorHash": "sha256:7dec0cd054a18ee9403df2431c06445e66f6a8c699679b7472f0ea9e51bcd0ae",
+        "currentCycle": {
+          "contractVersion": 1,
+          "campaignId": "rules-lab.combat-creation.1",
+          "rulesetHash": "8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18",
+          "setupId": "rules-lab.combat.close-assault.v1",
+          "setupHash": "sha256:22495e26528c2f4db8335d3b4041194aef26295f30aab0e4e6f384ff17069848",
+          "contentPackId": "rules-lab.content.close-assault.v1",
+          "contentHash": "sha256:ee4fde9638ceb61ec08612fe32f9ac81db05572aac5ca20941e402d2fed25847",
+          "scenarioId": "close-assault-positive-v1",
+          "gameTurn": 1,
+          "operationStage": 1,
+          "playerPhaseSlot": "first-acting-side",
+          "actingSide": "commonwealth",
+          "ordinal": 1,
+          "openedAuthorityVersion": 12,
+          "openingPrefix": "sha256:59aa58096d2e0e7d94fdc9fd75da36cb3a1a9a277b63c2ffee062424257055b3",
+          "admittedPolicyBundleDigest": "sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34"
+        },
+        "nextOrdinal": 2,
+        "releaseCompletionReceiptId": "rr.fef97ff6c6faf3d8cc367df36448d9c059541dbf5cbaee14c002b38d71a6ffd6",
+        "movementCompletionReceiptId": "irc.91b46434c77d0d935a5b8865322cd9aa0d299db45f13a611bcba10712aae32cd",
+        "progress": {
+          "eventType": "reserve-unit-disposition-recorded",
+          "receiptId": "rr.78ef45628b0f8b40e03ed5354548e391c9709d33cd7e75449415131a6dbc90d6",
+          "eventHash": "sha256:326821d2bacd62a1ba046c56f756c1d2a0a566c81ad6a1ac76c4595eac89b91c"
+        },
+        "member": {
+          "unit": {
+            "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+            "originalSide": "commonwealth",
+            "elementId": "commonwealth-assault-battalion"
+          },
+          "status": "none",
+          "baseCpa": 10,
+          "spentCp": {
+            "numerator": 0,
+            "denominator": 1
+          },
+          "history": {
+            "scope": {
+              "gameTurn": 1,
+              "operationStage": 1,
+              "playerPhaseSlot": "first-acting-side",
+              "actingSide": "commonwealth"
+            },
+            "designationReceiptId": "rd.7df15d06759cc106d4f30c8faccad80b7cddd82b23f6aec7fe684a1935fa1eaa",
+            "conversionReceiptId": null,
+            "releasedType": "I",
+            "releaseReceiptId": "rr.78ef45628b0f8b40e03ed5354548e391c9709d33cd7e75449415131a6dbc90d6",
+            "releaseCycle": 1,
+            "cpaBasis": 10,
+            "voluntaryCeiling": 10,
+            "offensiveCommitmentId": null,
+            "nextMovement": {
+              "scope": {
+                "gameTurn": 1,
+                "operationStage": 1,
+                "playerPhaseSlot": "first-acting-side",
+                "actingSide": "commonwealth"
+              },
+              "ordinal": 2,
+              "status": "pending",
+              "completionReceiptId": null
+            }
+          }
+        },
+        "retainedWorldHash": "sha256:897c7ac8b2f231bfdd4cfa987330b022f9233b540416d5b62dde8ccaeb56eadb",
+        "randomStateHash": "sha256:57284170304aca4c14827abef60de4e5405d52e2d8aba59834b8d1e29193d66e",
+        "actingAmmunition": 10,
+        "actingToe": 10,
+        "defendingToe": 10,
+        "assessment": {
+          "actingSide": "commonwealth",
+          "actingElementId": "commonwealth-assault-battalion",
+          "defendingSide": "axis",
+          "defendingElementId": "axis-assault-battalion",
+          "actingLocationId": "assault-east",
+          "defendingLocationId": "assault-west",
+          "normalWeather": true,
+          "adjacent": true,
+          "actingCapabilityPointsExpended": {
+            "numerator": 0,
+            "denominator": 1
+          },
+          "defendingCapabilityPointsExpended": {
+            "numerator": 0,
+            "denominator": 1
+          },
+          "actingWithinVoluntaryCeiling": true,
+          "defendingWithinVoluntaryCeiling": true,
+          "candidateIds": [
+            "cand.cac80c9bd09b23eacd016cbb2863b56c95437860310cb3d68ea935d4005e4d38"
+          ]
+        },
+        "emptyMovementSupported": true,
+        "emptyBreakdownSupported": true,
+        "emptyPrestepsSupported": true,
+        "targetUseAvailable": true,
+        "offensiveUseAvailable": true,
+        "immediateObligationsClear": true,
+        "support": [
+          {
+            "contractId": "combat-selection-steps-v1",
+            "fixtureHash": "sha256:151c8da5037dfd5fa921abf1f675ef1a10211f8b84a4e1fb385d6beb62b1d0de",
+            "evidenceCount": 5
+          },
+          {
+            "contractId": "combat-sealed-round-v1",
+            "fixtureHash": "sha256:8832568d97d3bd7cfe0d8f5dcd875bed58ea401250c38a178afeb7b1662cef6e",
+            "evidenceCount": 4
+          },
+          {
+            "contractId": "combat-result-settlement-v1",
+            "fixtureHash": "sha256:cc25c358c997e54dd61fe1d843db5e7385c4a85706c462b87badacb939ec71c2",
+            "evidenceCount": 8
+          },
+          {
+            "contractId": "combat-snapshot-composition-v1",
+            "fixtureHash": "sha256:392e805f3ee244d9dc988a64b85090d9f992335721fbbc91e8b5b6e2260f834a",
+            "evidenceCount": 17
+          }
+        ],
+        "supportDigest": "sha256:7e38d976eb886929f53a711b5733170322c14e603088b46486e5dabdab109c93",
+        "supported": true
+      },
+      "golden": {
+        "bytes": 3945,
+        "sha256": "sha256:8f6e1151b5e825ea4fe13208005549f67d9d66bcf02a8b0445653c57fce92c07",
+        "predecessorHash": "sha256:7dec0cd054a18ee9403df2431c06445e66f6a8c699679b7472f0ea9e51bcd0ae",
+        "candidateId": "cand.cac80c9bd09b23eacd016cbb2863b56c95437860310cb3d68ea935d4005e4d38",
+        "supportDigest": "sha256:7e38d976eb886929f53a711b5733170322c14e603088b46486e5dabdab109c93"
+      }
+    }
+  ],
+  "sourcePins": [
+    {
+      "path": "docs/specs/combat-inherited-reserve-release-v1.schema.json",
+      "sha256": "sha256:d3811d65f5e1d3048c7ebe51ef37d2d900b575c04703f2aa5dbac9846b55bdea"
+    },
+    {
+      "path": "docs/specs/verify-combat-inherited-reserve-release-v1.py",
+      "sha256": "sha256:97b06d748555d6642db21b66a7d4f1477a99edc1b253a00a2b04aec4018c0dfe"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-inherited-reserve-release-v1.json",
+      "sha256": "sha256:56479736788241186bce083b915aa5b4912fd6f745e9080e3707a166febfe3d0"
+    },
+    {
+      "path": "docs/specs/combat-inherited-selection-v1.schema.json",
+      "sha256": "sha256:c57bb32899ef7ea536e8985255a2dccc453ed46cce41d311a9f041a36237ac9b"
+    },
+    {
+      "path": "docs/specs/verify-combat-inherited-selection-v1.py",
+      "sha256": "sha256:99e0cdb1cc78089e4af93b8e995ba04483f6bdab86edaf7c6e2e251442cd0bb7"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-inherited-selection-v1.json",
+      "sha256": "sha256:76240f2409f341757deea0f6ab5d346699de5a4a33690f95ccb7e74e160c1f4f"
+    },
+    {
+      "path": "docs/specs/combat-selection-steps-v1.schema.json",
+      "sha256": "sha256:ef24e125012ab390bb0c932a09472b8220d7e8c95c1b19c29bdb611be532162d"
+    },
+    {
+      "path": "docs/specs/verify-combat-selection-steps-v1.py",
+      "sha256": "sha256:dc037282f74c34246d350faebeea55e81677d27dd181de858b8270e4eaa73c86"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-selection-steps-v1.json",
+      "sha256": "sha256:151c8da5037dfd5fa921abf1f675ef1a10211f8b84a4e1fb385d6beb62b1d0de"
+    },
+    {
+      "path": "docs/specs/combat-sealed-round-v1.schema.json",
+      "sha256": "sha256:5556404caa296ce41020654f8fb64c0349fd13051edabf6b4934e47d675c32db"
+    },
+    {
+      "path": "docs/specs/verify-combat-sealed-round-v1.py",
+      "sha256": "sha256:497e295e71c4b4da43539ee9b6c30de6d33f409a2f14b6cc24d9030390525ae0"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-sealed-round-v1.json",
+      "sha256": "sha256:8832568d97d3bd7cfe0d8f5dcd875bed58ea401250c38a178afeb7b1662cef6e"
+    },
+    {
+      "path": "docs/specs/combat-result-settlement-v1.schema.json",
+      "sha256": "sha256:f65c13687bb2fe3fbabdbd82d48298430330dab756583fbfda17dae50bc73ab0"
+    },
+    {
+      "path": "docs/specs/verify-combat-result-settlement-v1.py",
+      "sha256": "sha256:1f7dff5b87ce036c406562686f4dc1ce983a4a8dfa15b2401eae72a0d9879ffd"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-result-settlement-v1.json",
+      "sha256": "sha256:cc25c358c997e54dd61fe1d843db5e7385c4a85706c462b87badacb939ec71c2"
+    },
+    {
+      "path": "docs/specs/combat-snapshot-composition-v1.schema.json",
+      "sha256": "sha256:e9e8f45751cad5fcab1be9e735359d50f34ec4e6bf5bdf41d9011ba9d176a586"
+    },
+    {
+      "path": "docs/specs/verify-combat-snapshot-composition-v1.py",
+      "sha256": "sha256:4abaefa7460774a550ef4579689129b4174dc837b01050893bda52d324e00b8b"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-snapshot-composition-v1.json",
+      "sha256": "sha256:392e805f3ee244d9dc988a64b85090d9f992335721fbbc91e8b5b6e2260f834a"
+    }
+  ],
+  "goldenMethod": "canonical ASCII JSON; SHA-256 with sha256: prefix"
+}

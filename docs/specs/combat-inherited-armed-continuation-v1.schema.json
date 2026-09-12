@@ -1,0 +1,18 @@
+{
+  "contract": "combat-inherited-armed-continuation-v1",
+  "objects": {
+    "ProgressRef": "eventType:id receiptId:id eventHash:hash",
+    "SupportContract": "contractId:id fixtureHash:hash evidenceCount:int",
+    "Proof": "contractVersion:int predecessorHash:hash currentCycle:Authority nextOrdinal:int releaseCompletionReceiptId:id movementCompletionReceiptId:id progress:ProgressRef member:ReserveMember retainedWorldHash:hash randomStateHash:hash actingAmmunition:int actingToe:int defendingToe:int assessment:CandidateAssessment emptyMovementSupported:bool emptyBreakdownSupported:bool emptyPrestepsSupported:bool targetUseAvailable:bool offensiveUseAvailable:bool immediateObligationsClear:bool support:SupportContract[] supportDigest:hash supported:bool"
+  },
+  "externalContracts": [
+    "combat-inherited-reserve-release-v1.schema.json",
+    "combat-inherited-selection-v1.schema.json",
+    "combat-selection-steps-v1.schema.json",
+    "combat-sealed-round-v1.schema.json",
+    "combat-result-settlement-v1.schema.json",
+    "combat-snapshot-composition-v1.schema.json"
+  ],
+  "limits": {"bytes": 1048576, "depth": 32, "arrayItems": 512, "proofs": 2, "supportContracts": 4},
+  "scope": "Both-owner actual 3i released-I armed continuation proof only; no repeat, Movement, Combat execution, Snapshot12 admission, runtime or simulator activation."
+}

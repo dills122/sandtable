@@ -3,13 +3,13 @@
 **Status:** Contract checkpoint B in progress; no Combat runtime or public capability is active.
 `CMB-PLAN-001` and POL-001–008 were accepted on 2026-09-06 at `a10a588`. Source and static Content
 work (`001`–`002`) is complete. Parent `003` remains open after bounded contract evidence through
-creation-rooted inherited Reserve Release (`003D2c.3i`). Task `004`, checkpoint B, and runtime tasks
+released-I armed continuation admission (`003D2c.3j`). Task `004`, checkpoint B, and runtime tasks
 `005`–`025` have not started.
 
 | Delivery layer | Current boundary | Next required outcome |
 | --- | --- | --- |
 | Research and policy | Complete for the selected bounded profile, including `HOST-RSH-001` | Reopen only for a new source, failed assumption, or approved profile expansion |
-| Authority contracts | C3 result/settlement, D2 movement/release/control, and D2c inherited families through `.3i` are frozen as bounded Python evidence | Finish remaining `.3` capability families, then `.4` full composition and the `003` handoff |
+| Authority contracts | C3 result/settlement, D2 movement/release/control, and D2c inherited families through `.3j` are frozen as bounded Python evidence | Compose the armed witness with guarded repeat, finish remaining `.3` capability families, then `.4` full composition and the `003` handoff |
 | Outward contracts | Task004 not started | Freeze side-safe observation/action and Exercise evidence contracts; map every design AC |
 | Runtime | Tasks005–019 not started | Implement dormant tables/state/decisions/settlement/release/repeat with cumulative replay and recovery evidence |
 | Public and simulator | Tasks020–024 not started | Activate the certified side-safe profile, then prove strict Exercise/Runner reconstruction and repeatability |
@@ -363,6 +363,17 @@ bytes, cross-history authority, deadline, clock-loss/unavailable fallback, capac
 checks form acceptance. Guarded repeat, positive Reserve movement, alternate owner conversion,
 broader Reserve profiles, .4,004/B, runtime and simulator remain open.
 
+D2c.3j execution boundary (input `765b2f9`, owner-approved 2026-09-11): one new
+[spec/schema/fixture/oracle packet](../specs/combat-inherited-armed-continuation-v1.md) plus this
+plan. Replay both accepted 3i release-I terminals, retain their exact ammunition10/TOE10/CP0,
+pending ordinal-2 Movement exception and material-progress receipt, then prove an empty
+Movement/Breakdown/prestep path reaches exactly one normal-Weather adjacent Combat candidate for
+each owner. Pin the existing5 selection,4 sealed-round,8 result/settlement, and17 Snapshot
+composition cases as full-result support. This pure proof emits no event and neither repeats nor
+finishes the cycle. Resource, geometry, Weather, history, obligation, cross-owner, source-pin,
+canonical-byte, mutation and capacity failures reject. Guarded repeat/finish composition, positive
+Reserve movement, broader profiles, .4/004/B, runtime and simulator remain open.
+
 D2c.4 owns the **Task004 handoff** section in its planned
 `docs/specs/combat-authority-composition-v1.md` contract packet, within the same five-primary-file
 cap. That section must identify the frozen CON-002–004 versions/hashes, composed trace and capacity
@@ -373,8 +384,8 @@ handoff, freezes CON-005/006 and completes its72-AC evidence map. Checkpoint B r
 003 does not depend on004 starting or completing.
 
 Each checkpoint retains the five-primary-file cap. These refine already-required inherited work;
-no gameplay policy, runtime activation or checkpoint-B acceptance changes. User requested one
-additional independent pitstop after the next checkpoint: review10of10, not a reset of the count.
+no gameplay policy, runtime activation or checkpoint-B acceptance changes. Historical review
+statements below remain scoped evidence; the explicitly extended sequence is exhausted at15of15.
 
 D2a isolated Movement fixtures may derive a settled World from C3c, but any intervening release/repeat
 boundary remains explicitly synthetic untilD2b/c. Such probes do not certify actual continuation,
@@ -1117,3 +1128,13 @@ returned Ready with non-blocking follow-ups; its P3 retained-negative-coverage f
 and corrected before commit `719ea0d`. Guarded repeat, positive Reserve movement, alternate
 conversion profiles, .4/004/B, runtime and simulator remain open. The authorized Combat review
 sequence is exhausted at15of15; another pass requires explicit owner authorization.
+
+TASK-003D2c.3j checkpoint, 2026-09-11 (input `765b2f9`):
+[Inherited armed-continuation specification](../specs/combat-inherited-armed-continuation-v1.md),
+inventory, two proof vectors and oracle replay both 3i terminals and derive one exact candidate per
+owner without mutating authority. Existing selection/seal/result/settlement/Snapshot fixtures are
+hash-pinned as the full-result support boundary. Two readbacks,180 deep mutations,8 malformed or
+alternate-byte cases,18 boundary rejects and18 source pins pass. This is continuation admission,
+not cycle repeat, Movement, Combat execution, runtime or simulator activation. Guarded
+repeat/finish composition, positive released-Reserve Movement/expiry, broader profiles, .4/004/B,
+runtime and simulator remain open. Author verification only; review15 remains the exhausted limit.

@@ -50,7 +50,8 @@ play a side; it will never decide the rules or secretly change the campaign stat
 
 The executable product and the forward contract work are intentionally different. Today, public
 Rules9 authority and checked Runner evidence stop at first-side Combat **entry**. Separate frozen
-contract packets compose selected future Combat/cycle histories through inherited Reserve Release,
+contract packets compose selected future Combat/cycle histories through released-I armed
+continuation admission,
 but no Combat or Reserve Release runtime is registered. The
 [pre-alpha roadmap](docs/roadmap/pre-alpha-roadmap.md#current-delivery-status) is the canonical
 delivery ledger and defines the status vocabulary used below.
@@ -225,7 +226,9 @@ owner's real held Reserve-I unit through a no-move first cycle to same-slot Rese
 preserving designation history, location and CP0.
 [D2c.3i inherited Reserve Release](docs/specs/combat-inherited-reserve-release-v1.md) opens the
 actual release window, records owner release-I and completes it with the exact pending ordinal-2
-Movement exception; repeat and movement remain deferred.
+Movement exception. [D2c.3j armed continuation](docs/specs/combat-inherited-armed-continuation-v1.md)
+proves that exact ammunition10 released-I profile reaches one supported next-cycle Combat candidate
+for either owner without emitting an event; guarded repeat and movement remain deferred.
 The [latest smoke check](docs/research/simulator-post-merge-checkin.md#combat-contract-branch-smoke-check)
 verifies the existing Rules9 path; prospective Combat contracts are not executable game support.
 
@@ -233,7 +236,7 @@ verifies the existing Rules9 path; prospective Combat contracts are not executab
 | --- | --- | --- |
 | Authority foundation | Versioned provenance, synthetic content, commands/events, deterministic randomness, replay, side-safe observations, and exact-audience legal actions for the admitted profile | Extend the same compatibility, recovery, and fog boundaries with each mechanic |
 | Preamble and Movement boundary | Initiative through Reserve Designation, bounded Movement, ZOC/Reaction, and Breakdown through first-side Combat entry | Positive scenario-specific obligations and broader vehicle/ZOC profiles remain gated |
-| Combat and continual cycle | Not implemented or activated | Contract-frozen through `003D2c.3i`; finish composition/side contracts, then dormant runtime, public activation, and Runner gates |
+| Combat and continual cycle | Not implemented or activated | Contract-frozen through `003D2c.3j`; compose guarded repeat, finish composition/side contracts, then dormant runtime, public activation, and Runner gates |
 | Working skeleton | Not reached | One authentic movement/contact/combat/release repeat-or-finish loop plus identical replay |
 | Playable MVP | Not started | Source-verified six-turn content/rules/victory, durable save/resume, hot-seat privacy, and minimal no-model Maproom |
 | Exercise Harness | Current bounded Exercise/Maneuver and paired descriptive comparisons | Add Combat actions and terminals only after public Core activation |
@@ -351,7 +354,10 @@ through participant movement/completion, required stop resolution and exact phas
 through no-move Movement, idle Breakdown and no-attack Combat while retaining actual Reserve I.
 [D2c.3i inherited Reserve Release](docs/specs/combat-inherited-reserve-release-v1.md) adds2 traces/6
 events through owner release-I and deterministic completion. Guarded repeat/positive Reserve
-movement, vehicle/armed continuation, broader Reaction and D2c.4 remain open.
+movement, broader Reaction and D2c.4 remain open.
+[D2c.3j armed continuation](docs/specs/combat-inherited-armed-continuation-v1.md) adds2 pure proofs
+for the actual released-I ammunition10 profile, one candidate per owner, with full-result support
+pins; it does not repeat the cycle or execute Combat.
 [Result/settlement](docs/specs/combat-result-settlement-v1.md) and
 [full snapshot composition](docs/specs/combat-snapshot-composition-v1.md) retain synthetic pre-Combat
 lineage; review9 assessed these bounded artifacts. Parent003, future maturity execution and combined checkpoint B

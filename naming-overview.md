@@ -146,7 +146,10 @@ The [inherited Reserve-cycle packet](docs/specs/combat-inherited-reserve-cycle-v
 `reserve-release-completed`1. A `pending next-Movement exception` is scoped authority for ordinal2,
 not a move, route, destination, or generic permission token. `release-I` changes the matched own
 member from Reserve I to none; `complete` closes only the current Release window. Neither term
-implies cycle repeat, phase finish, or production activation.
+implies cycle repeat, phase finish, or production activation. The
+[inherited armed-continuation proof](docs/specs/combat-inherited-armed-continuation-v1.md) names a
+source-legal, fully supported prospective Combat path for that released-I profile. “Continuation”
+does not mean opportunity selection, Combat execution, cycle repeat, or runtime admission.
 These projections are not Snapshot12. Chronicle retains the
 accepted events; the future Archives reader must reconstruct and validate their complete chain.
 
