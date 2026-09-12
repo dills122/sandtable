@@ -1,8 +1,10 @@
 # Sandtable Documentation Index
 
 This index separates current governing documents from active decision gates and retained historical
-evidence. `README.md` remains the user-facing project map; `tech-design.md`, `naming-overview.md`, and
-the pre-alpha roadmap carry repository-wide rationale and delivery state.
+evidence. `README.md` is the user-facing project map; `tech-design.md` owns architecture;
+`naming-overview.md` owns vocabulary; the
+[pre-alpha roadmap](roadmap/pre-alpha-roadmap.md#status-model-and-document-ownership) alone owns
+current capability status and cross-package sequencing.
 
 ## Start here
 
@@ -16,6 +18,12 @@ the pre-alpha roadmap carry repository-wide rationale and delivery state.
 - [Pre-alpha roadmap](roadmap/pre-alpha-roadmap.md)
 - [Current checkpoint, simulation and Orleans planning gates](roadmap/pre-alpha-roadmap.md#current-checkpoint-and-next-gates)
 - [Combat delivery review and owner disposition](reviews/combat-delivery-plan-author-review.md#owner-disposition)
+
+Current truth in one line: public Rules9 authority and checked Runner evidence stop at first-side
+Combat entry; forward Combat contracts reach creation-rooted inherited Reserve Release through
+`003D2c.3i`; Combat runtime, public activation, and simulator evidence have not started. See the
+[status table](roadmap/pre-alpha-roadmap.md#current-delivery-status) and
+[next gates](roadmap/pre-alpha-roadmap.md#current-checkpoint-and-next-gates) for details.
 
 ## Implemented capability packages
 
@@ -123,14 +131,17 @@ the pre-alpha roadmap carry repository-wide rationale and delivery state.
   adds2 traces/20 events from actual Reserve-I history through same-slot Reserve Release.
   [D2c.3i inherited Reserve Release](specs/combat-inherited-reserve-release-v1.md) adds2 traces/6
   events through owner release-I and completion; guarded repeat and positive Reserve movement stay open.
+  [Review15](reviews/combat-inherited-reserve-release-review-15.md) returned Ready with one
+  non-blocking retained-coverage finding, corrected before `719ea0d`.
   See [result/settlement](specs/combat-result-settlement-v1.md) and
   [snapshot composition/audit](specs/combat-snapshot-composition-v1.md). See
   [ordinary movement](specs/combat-ordinary-movement-v1.md) for D2a evidence and source correction.
   [Reserve Release](specs/combat-reserve-release-v1.md) freezes the private control/history arm.
   [Cycle control](specs/combat-cycle-control-v1.md) freezes guarded repeat/finish and Movement expiry
-  with19 literal cases/64 traces. [Review9](reviews/combat-progress-review-9.md) returned Ready with
-  non-blocking follow-ups at `a96d2a1`; its status corrections are applied;9of9 budget exhausted.
-  Synthetic inherited lineage remains explicit. Production hosting remains gated; parent003C/D stays open.
+  with19 literal cases/64 traces. Historical reviews remain under `docs/reviews`; review15 assessed
+  `003D2c.3i` as Ready with one non-blocking retained-coverage finding, corrected before `719ea0d`.
+  The15of15 sequence is exhausted. Production hosting remains gated; parent003D2c/003 and Task004
+  stay open.
 - Sprint 4-5 dependencies: [research-gate audit](research/sprint-4-5-research-gates.md).
 
 ## Reviewed future product work

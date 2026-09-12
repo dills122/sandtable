@@ -1,6 +1,9 @@
 # Sandtable Technical Design
 
 **Status:** Active architectural rationale; implemented and proposed sections are labeled below.
+The [pre-alpha roadmap](docs/roadmap/pre-alpha-roadmap.md#current-delivery-status) is the canonical
+current-delivery ledger. Task/checkpoint references here explain architecture and must not be read as
+independent completion claims.
 
 Sandtable uses an **authoritative simulation plane** plus a separate
 **intelligence/services plane** connected through gRPC.
@@ -881,7 +884,7 @@ evidence, not an implemented combat contract. Current proposals use trusted-Umpi
 the same pre-state for simultaneous combat, and structural sequence positions plus cycle identity;
 production Combat is not implemented. The [policy register](docs/design/combat-cycle-policy-reconciliation.md)
 now records owner-approved policies, and the [combined plan](docs/design/combat-cycle-implementation-plan.md)
-records bounded contract completion through D2c.3g. The [cycle-control contract](docs/specs/combat-cycle-control-v1.md)
+records bounded contract completion through D2c.3i. The [cycle-control contract](docs/specs/combat-cycle-control-v1.md)
 binds release completion, semantic progress, current-cost witnesses and exact repeat/finish successors.
 Its Movement-expiry projection retains exclusions and release history. Actual inherited history,
 armed Combat continuation and full Snapshot composition remain D2c/004/checkpoint B gates.
@@ -932,6 +935,13 @@ The [inherited Reaction lifecycle](docs/specs/combat-inherited-reaction-lifecycl
 exact window, retains the still-legal post-move capability in the rotated participant handle, then
 chooses completion. Empty-cohort stop resolution remains a required event before no-eligible closure
 removes the window and resumes the suspended phasing route. Wider participant/closure profiles remain separate.
+[Inherited Reserve cycle entry](docs/specs/combat-inherited-reserve-cycle-v1.md) retains a real
+Reserve-I designation through an idle first cycle to same-slot Reserve Release. The
+[inherited Reserve Release contract](docs/specs/combat-inherited-reserve-release-v1.md) then records
+owner release-I, completion, material progress, and the pending ordinal-2 Movement exception from
+that creation-rooted history. Guarded repeat, released-Reserve Movement and expiry, broader
+Reaction/vehicle families, armed continuation, full Snapshot composition, and all runtime/public
+activation remain later gates.
 These private projections are not Snapshot12 readers.
 All five `CONTACT-001` rulings and the governing specification/design package are approved.
 `ZOR-TASK-002A`-`006C` implement and activate Rules/Content/fixture, Campaign
