@@ -3,13 +3,13 @@
 **Status:** Contract checkpoint B in progress; no Combat runtime or public capability is active.
 `CMB-PLAN-001` and POL-001–008 were accepted on 2026-09-06 at `a10a588`. Source and static Content
 work (`001`–`002`) is complete. Parent `003` remains open after bounded contract evidence through
-creation-rooted released-I ordinal-2 Movement (`003D2c.3l`). Task `004`, checkpoint B, and runtime tasks
+creation-rooted released-I ordinal-2 Movement completion (`003D2c.3m`). Task `004`, checkpoint B, and runtime tasks
 `005`–`025` have not started.
 
 | Delivery layer | Current boundary | Next required outcome |
 | --- | --- | --- |
 | Research and policy | Complete for the selected bounded profile, including `HOST-RSH-001` | Reopen only for a new source, failed assumption, or approved profile expansion |
-| Authority contracts | C3 result/settlement, D2 movement/release/control, and D2c inherited families through `.3l` are frozen as bounded Python evidence | Freeze actual Movement completion/exception expiry and remaining `.3` capability families, then `.4` full composition and the `003` handoff |
+| Authority contracts | C3 result/settlement, D2 movement/release/control, and D2c inherited families through `.3m` are frozen as bounded Python evidence | Freeze remaining `.3` capability families, then `.4` full composition and the `003` handoff |
 | Outward contracts | Task004 not started | Freeze side-safe observation/action and Exercise evidence contracts; map every design AC |
 | Runtime | Tasks005–019 not started | Implement dormant tables/state/decisions/settlement/release/repeat with cumulative replay and recovery evidence |
 | Public and simulator | Tasks020–024 not started | Activate the certified side-safe profile, then prove strict Exercise/Runner reconstruction and repeatability |
@@ -1159,3 +1159,13 @@ updates World/member CP atomically, and retains ammunition10, TOE10, Cohesion, R
 pending ordinal-2 exception. Eight readbacks,2 retries,1392 mutations,24 malformed-byte rejects,11
 boundary rejects and6 source pins pass. Movement completion/exception expiry, broader profiles,
 .4/004/B, runtime and simulator remain open. Author verification only; review15 remains exhausted.
+
+TASK-003D2c.3m checkpoint, 2026-09-12 (input `91020d9`):
+[Inherited released-I Movement-completion specification](../specs/combat-inherited-reserve-movement-completion-v1.md),
+inventory, two vectors and oracle replay exact 3l terminals through owner deliberate stop, System
+empty-cohort resolution, and owner Movement completion. Six profile-specific v1 events advance authority28→31,
+retain World/RNG/attack history, route, CP2, ammunition10 and TOE10, derive the ordinal-2 end proof,
+and apply unchanged D2b.2 expiry using each accepted completion receipt. Sixteen readbacks,6 retries,
+1626 mutations,60 malformed-byte rejects,58 authority/order boundaries and10 source pins pass.
+Broader Reaction/vehicle and remaining `.3` families, .4/004/B, runtime and simulator remain open.
+Author verification only; review15 remains exhausted.

@@ -155,7 +155,13 @@ uses `movement-combat-cycle-repeated` or `movement-combat-phase-finished` for ex
 This proves private authority composition only; it does not mean ordinal-2 Movement or Combat ran.
 The [inherited released-I Movement packet](docs/specs/combat-inherited-reserve-movement-v1.md) then
 uses `combat-cycle-element-moved` for one actual ordinal-2 move. “Pending exception” remains true
-until a later accepted Movement-completion receipt expires it.
+until an accepted Movement-completion receipt expires it. The
+[inherited released-I Movement-completion packet](docs/specs/combat-inherited-reserve-movement-completion-v1.md)
+uses profile-specific `combat-cycle-element-movement-stopped`1,
+`combat-cycle-breakdown-stop-resolved`1, and `combat-cycle-movement-segment-completed`1 for that
+closure. These adapt the established lifecycle semantics without claiming compatibility with the
+richer first-cycle envelopes. “Expired exception” means the exact D2b.2 projection bound the
+one-cycle authority to that accepted completion receipt; it does not mean Breakdown ran.
 These projections are not Snapshot12. Chronicle retains the
 accepted events; the future Archives reader must reconstruct and validate their complete chain.
 

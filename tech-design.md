@@ -951,7 +951,10 @@ that candidate with exact Release state: owner repeat enters ordinal-2 Movement 
 while owner or deterministic fallback finish enters Truck Convoy and expires the pending exception.
 The [inherited released-I Movement contract](docs/specs/combat-inherited-reserve-movement-v1.md)
 then records one ordinal-2 Clear move at CP0→2 under ceiling10, retaining armed resources and the
-pending exception. Movement completion and expiry, broader
+pending exception. The
+[inherited released-I Movement-completion contract](docs/specs/combat-inherited-reserve-movement-completion-v1.md)
+then closes that exact route through deliberate stop, empty resolution and accepted completion,
+derives its ordinal-2 proof, and expires the exception with the completion receipt. Broader
 Reaction/vehicle families, full Snapshot composition, and all runtime/public activation remain
 later gates.
 These private projections are not Snapshot12 readers.
