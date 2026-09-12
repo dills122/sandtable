@@ -1,0 +1,150 @@
+{
+  "contract": "combat-inherited-reserve-movement-completion-v1",
+  "cases": [
+    {
+      "actor": "axis",
+      "golden": {
+        "baseBytes": 33959,
+        "baseHash": "sha256:4cb65346af8b331c14bc1ef6bd0432597baa41ec459584db5c9f26b16065ebe1",
+        "frames": [
+          {
+            "cut": 0,
+            "bytes": 6406,
+            "sha256": "sha256:c885eba53b257bf58ab7331d2f81f4f7234c2be8a66ddd373bf9c1f80c410c08"
+          },
+          {
+            "cut": 1,
+            "bytes": 8174,
+            "sha256": "sha256:45a2146b7c3cd5a1b9ef85450c7d35b3f20284b0b8eff35c920ac458ebb8fd9f"
+          },
+          {
+            "cut": 2,
+            "bytes": 6691,
+            "sha256": "sha256:5f7e663f7e807b1e2b446dbd77c5c9b97e99bf73dda3e52c2133442b0ddc5e90"
+          },
+          {
+            "cut": 3,
+            "bytes": 7716,
+            "sha256": "sha256:80ae0703ea8aa8a10fdfd243b97492385ea4c2f8304278c383ce76497cf51624"
+          }
+        ],
+        "events": [
+          {
+            "eventType": "combat-cycle-element-movement-stopped",
+            "bytes": 4128,
+            "sha256": "sha256:e94490dd4d7e1d9424823414542238297995addfa624451f6ead8f66e8757ed0",
+            "receiptId": "irmc.ced111712aaadaaaaa653c916e8090a9b8d8aba876f30f7f597874ef02df15d4"
+          },
+          {
+            "eventType": "combat-cycle-breakdown-stop-resolved",
+            "bytes": 2602,
+            "sha256": "sha256:b15c2f03a432e116ea0eceb62e8797e16399ddde3e16e420b5de6e36e1476e73",
+            "receiptId": "irmc.fcdefcb08f053c545fc8330f58807ce5ec3458d8c4bab72cdf4f20689c99d29f"
+          },
+          {
+            "eventType": "combat-cycle-movement-segment-completed",
+            "bytes": 2529,
+            "sha256": "sha256:8efde671668cfd82dbce7f0fd7c3c391bf0d63cb6f0a9d49c2926578b6e9a660",
+            "receiptId": "irmc.1c4f22a88c8b4bdf9a934eb13c04c6032a18456061b202349cbde6502c1a8c91"
+          }
+        ],
+        "terminalPrefix": "sha256:436d69f9231bb954d981cb7aead5cb034e3c919eb2dc59c0feb320b8e4b17c95",
+        "completionReceiptId": "irmc.1c4f22a88c8b4bdf9a934eb13c04c6032a18456061b202349cbde6502c1a8c91"
+      }
+    },
+    {
+      "actor": "commonwealth",
+      "golden": {
+        "baseBytes": 34399,
+        "baseHash": "sha256:6bcd60fd1a0819c6adaad9cd0b01cbaab72f73b81f7b3b7a5e9a6deaa8431555",
+        "frames": [
+          {
+            "cut": 0,
+            "bytes": 6518,
+            "sha256": "sha256:dcbebb90000eec9aa5cd7395384b13565596fec558fafc3552a08fc104d7da8c"
+          },
+          {
+            "cut": 1,
+            "bytes": 8302,
+            "sha256": "sha256:2a6843e79dba19497dcbbb9fef7f2189e2de09f044c46dcabcc1ee1bbdcc828d"
+          },
+          {
+            "cut": 2,
+            "bytes": 6787,
+            "sha256": "sha256:6c13aa2581df2eb2bcf9dcf0cb4d44b137dd38730075a77d66896161a04ce3a2"
+          },
+          {
+            "cut": 3,
+            "bytes": 7828,
+            "sha256": "sha256:acfe15d78b5590b5f817c8aed2a28fc7fa3e0902f82a820aa47814a3903ca374"
+          }
+        ],
+        "events": [
+          {
+            "eventType": "combat-cycle-element-movement-stopped",
+            "bytes": 4208,
+            "sha256": "sha256:d6646f91e5007e26a62a0f8d64d320a77aacb36da563c6fbec8d45a369b983d4",
+            "receiptId": "irmc.0083e5e262e1e06bb65987f1517c6abbe0c04ec1cc078e11a94e485107954090"
+          },
+          {
+            "eventType": "combat-cycle-breakdown-stop-resolved",
+            "bytes": 2634,
+            "sha256": "sha256:7c25d5129363d26403aaa432d322d8667345caebdd93b6ede41481753bea6489",
+            "receiptId": "irmc.bf3af27bf28d55cc3f6a8cb84669b0a8a581747008f6ee4579f1af355dc3e017"
+          },
+          {
+            "eventType": "combat-cycle-movement-segment-completed",
+            "bytes": 2561,
+            "sha256": "sha256:90988d517e5d8c3ddfb8197428950ad09a2ce218aa6de2f29c83ff66699749ae",
+            "receiptId": "irmc.6b6e79db494dfbdc91ccf0425181ec2fc69d9212a6534706abe0a22990f81c14"
+          }
+        ],
+        "terminalPrefix": "sha256:62b2c0d32d9664a517e27720242038d96a4962572b3731e220f3d1a5df9004ba",
+        "completionReceiptId": "irmc.6b6e79db494dfbdc91ccf0425181ec2fc69d9212a6534706abe0a22990f81c14"
+      }
+    }
+  ],
+  "sourcePins": [
+    {
+      "path": "docs/specs/combat-inherited-reserve-movement-v1.schema.json",
+      "sha256": "sha256:e1a43f0f32a68aa093b05ef0d4d676e4e0346f6c798d0c5720c15fad6516a07f"
+    },
+    {
+      "path": "docs/specs/verify-combat-inherited-reserve-movement-v1.py",
+      "sha256": "sha256:bd8b717007bb46fb08c6356cbbd9722b699ab19ac5e027b6722f667e2d61b2b2"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-inherited-reserve-movement-v1.json",
+      "sha256": "sha256:4feb5dc5e178d9242b8a6ef3b42f8101b3810e60bfe722506fa8838356d6567f"
+    },
+    {
+      "path": "docs/specs/combat-inherited-movement-lifecycle-v1.schema.json",
+      "sha256": "sha256:aac4e07f9546d457defd9042ae701434683e7c22fab2071fe88f872d8d6bc072"
+    },
+    {
+      "path": "docs/specs/verify-combat-inherited-movement-lifecycle-v1.py",
+      "sha256": "sha256:f2ee2292df3fe370ace289dcd01747153dac6d78b82c924b2f3da27df1d81920"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-inherited-movement-lifecycle-v1.json",
+      "sha256": "sha256:027c8c87edee975a82f8060d9a0dc0d1b4346083e43d63c0888e464ce42d78c2"
+    },
+    {
+      "path": "docs/specs/combat-cycle-control-v1.schema.json",
+      "sha256": "sha256:8c517db6daa734d415bd1d474280c2cf6e65013490c4a2568795d50e6112f7da"
+    },
+    {
+      "path": "docs/specs/verify-combat-cycle-control-v1.py",
+      "sha256": "sha256:9039f9e1067b2cdd2e0a57ae16e711350b4bbdceb500d22bbbd715f39e8ccc9f"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-cycle-control-v1.json",
+      "sha256": "sha256:a8f81c538c0a70c28dd7e97638ec63c915558ec16cc9be6f6a102a12159b5bb6"
+    },
+    {
+      "path": "docs/specs/combat-cycle-sequence-v1.schema.json",
+      "sha256": "sha256:6e09dc5bc6ca79d8580db6ed1e76ad5007c26a30df11b4dd9da0a9c7b5f5e0c5"
+    }
+  ],
+  "goldenMethod": "canonical ASCII JSON; SHA-256 with sha256: prefix"
+}

@@ -146,7 +146,22 @@ The [inherited Reserve-cycle packet](docs/specs/combat-inherited-reserve-cycle-v
 `reserve-release-completed`1. A `pending next-Movement exception` is scoped authority for ordinal2,
 not a move, route, destination, or generic permission token. `release-I` changes the matched own
 member from Reserve I to none; `complete` closes only the current Release window. Neither term
-implies cycle repeat, phase finish, or production activation.
+implies cycle repeat, phase finish, or production activation. The
+[inherited armed-continuation proof](docs/specs/combat-inherited-armed-continuation-v1.md) names a
+source-legal, fully supported prospective Combat path for that released-I profile. “Continuation”
+does not mean opportunity selection, Combat execution, cycle repeat, or runtime admission.
+The [inherited guarded cycle-control packet](docs/specs/combat-inherited-cycle-control-v1.md) then
+uses `movement-combat-cycle-repeated` or `movement-combat-phase-finished` for exact owner closure.
+This proves private authority composition only; it does not mean ordinal-2 Movement or Combat ran.
+The [inherited released-I Movement packet](docs/specs/combat-inherited-reserve-movement-v1.md) then
+uses `combat-cycle-element-moved` for one actual ordinal-2 move. “Pending exception” remains true
+until an accepted Movement-completion receipt expires it. The
+[inherited released-I Movement-completion packet](docs/specs/combat-inherited-reserve-movement-completion-v1.md)
+uses profile-specific `combat-cycle-element-movement-stopped`1,
+`combat-cycle-breakdown-stop-resolved`1, and `combat-cycle-movement-segment-completed`1 for that
+closure. These adapt the established lifecycle semantics without claiming compatibility with the
+richer first-cycle envelopes. “Expired exception” means the exact D2b.2 projection bound the
+one-cycle authority to that accepted completion receipt; it does not mean Breakdown ran.
 These projections are not Snapshot12. Chronicle retains the
 accepted events; the future Archives reader must reconstruct and validate their complete chain.
 

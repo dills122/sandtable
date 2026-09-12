@@ -884,10 +884,13 @@ evidence, not an implemented combat contract. Current proposals use trusted-Umpi
 the same pre-state for simultaneous combat, and structural sequence positions plus cycle identity;
 production Combat is not implemented. The [policy register](docs/design/combat-cycle-policy-reconciliation.md)
 now records owner-approved policies, and the [combined plan](docs/design/combat-cycle-implementation-plan.md)
-records bounded contract completion through D2c.3i. The [cycle-control contract](docs/specs/combat-cycle-control-v1.md)
+records bounded contract completion through D2c.3j. The [cycle-control contract](docs/specs/combat-cycle-control-v1.md)
 binds release completion, semantic progress, current-cost witnesses and exact repeat/finish successors.
-Its Movement-expiry projection retains exclusions and release history. Actual inherited history,
-armed Combat continuation and full Snapshot composition remain D2c/004/checkpoint B gates.
+Its Movement-expiry projection retains exclusions and release history. The
+[armed-continuation proof](docs/specs/combat-inherited-armed-continuation-v1.md) now admits both
+actual released-I ammunition10 profiles against the existing full-result contract stack without
+emitting authority. Guarded repeat composition and full Snapshot authority remain
+D2c/004/checkpoint B gates.
 The [inherited successor packet](docs/specs/combat-inherited-successors-v1.md) declares20 exact
 event successors and freezes isolated Reserve completion with atomic cycle1 opening. Actual
 creation-to-first-opening provenance is now composed within the closed initial-infantry profile;
@@ -939,9 +942,21 @@ removes the window and resumes the suspended phasing route. Wider participant/cl
 Reserve-I designation through an idle first cycle to same-slot Reserve Release. The
 [inherited Reserve Release contract](docs/specs/combat-inherited-reserve-release-v1.md) then records
 owner release-I, completion, material progress, and the pending ordinal-2 Movement exception from
-that creation-rooted history. Guarded repeat, released-Reserve Movement and expiry, broader
-Reaction/vehicle families, armed continuation, full Snapshot composition, and all runtime/public
-activation remain later gates.
+that creation-rooted history. The
+[inherited armed-continuation contract](docs/specs/combat-inherited-armed-continuation-v1.md) proves
+one exact next-cycle candidate for either owner while retaining ammunition10, TOE10, CP0, release
+history and full-result support pins. The
+[inherited guarded cycle-control contract](docs/specs/combat-inherited-cycle-control-v1.md) composes
+that candidate with exact Release state: owner repeat enters ordinal-2 Movement in the same slot,
+while owner or deterministic fallback finish enters Truck Convoy and expires the pending exception.
+The [inherited released-I Movement contract](docs/specs/combat-inherited-reserve-movement-v1.md)
+then records one ordinal-2 Clear move at CP0→2 under ceiling10, retaining armed resources and the
+pending exception. The
+[inherited released-I Movement-completion contract](docs/specs/combat-inherited-reserve-movement-completion-v1.md)
+then closes that exact route through deliberate stop, empty resolution and accepted completion,
+derives its ordinal-2 proof, and expires the exception with the completion receipt. Broader
+Reaction/vehicle families, full Snapshot composition, and all runtime/public activation remain
+later gates.
 These private projections are not Snapshot12 readers.
 All five `CONTACT-001` rulings and the governing specification/design package are approved.
 `ZOR-TASK-002A`-`006C` implement and activate Rules/Content/fixture, Campaign

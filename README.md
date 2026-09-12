@@ -50,7 +50,8 @@ play a side; it will never decide the rules or secretly change the campaign stat
 
 The executable product and the forward contract work are intentionally different. Today, public
 Rules9 authority and checked Runner evidence stop at first-side Combat **entry**. Separate frozen
-contract packets compose selected future Combat/cycle histories through inherited Reserve Release,
+contract packets compose selected future Combat/cycle histories through released-I ordinal-2
+Movement completion,
 but no Combat or Reserve Release runtime is registered. The
 [pre-alpha roadmap](docs/roadmap/pre-alpha-roadmap.md#current-delivery-status) is the canonical
 delivery ledger and defines the status vocabulary used below.
@@ -225,7 +226,15 @@ owner's real held Reserve-I unit through a no-move first cycle to same-slot Rese
 preserving designation history, location and CP0.
 [D2c.3i inherited Reserve Release](docs/specs/combat-inherited-reserve-release-v1.md) opens the
 actual release window, records owner release-I and completes it with the exact pending ordinal-2
-Movement exception; repeat and movement remain deferred.
+Movement exception. [D2c.3j armed continuation](docs/specs/combat-inherited-armed-continuation-v1.md)
+proves that exact ammunition10 released-I profile reaches one supported next-cycle Combat candidate
+for either owner without emitting an event. [D2c.3k guarded cycle control](docs/specs/combat-inherited-cycle-control-v1.md)
+composes that proof with exact Release state and freezes both-owner repeat into ordinal-2 Movement
+or finish into Truck Convoy. [D2c.3l released-I Movement](docs/specs/combat-inherited-reserve-movement-v1.md)
+then moves either exact released member one Clear hex at CP0→2 under ceiling10.
+[D2c.3m released-I Movement completion](docs/specs/combat-inherited-reserve-movement-completion-v1.md)
+closes both exact routes through deliberate stop, empty resolution and completion at authority31,
+then expires each pending exception with its accepted completion receipt.
 The [latest smoke check](docs/research/simulator-post-merge-checkin.md#combat-contract-branch-smoke-check)
 verifies the existing Rules9 path; prospective Combat contracts are not executable game support.
 
@@ -233,7 +242,7 @@ verifies the existing Rules9 path; prospective Combat contracts are not executab
 | --- | --- | --- |
 | Authority foundation | Versioned provenance, synthetic content, commands/events, deterministic randomness, replay, side-safe observations, and exact-audience legal actions for the admitted profile | Extend the same compatibility, recovery, and fog boundaries with each mechanic |
 | Preamble and Movement boundary | Initiative through Reserve Designation, bounded Movement, ZOC/Reaction, and Breakdown through first-side Combat entry | Positive scenario-specific obligations and broader vehicle/ZOC profiles remain gated |
-| Combat and continual cycle | Not implemented or activated | Contract-frozen through `003D2c.3i`; finish composition/side contracts, then dormant runtime, public activation, and Runner gates |
+| Combat and continual cycle | Not implemented or activated | Contract-frozen through `003D2c.3m`; freeze remaining `.3` capability families, finish `.4` composition/side contracts, then dormant runtime, public activation, and Runner gates |
 | Working skeleton | Not reached | One authentic movement/contact/combat/release repeat-or-finish loop plus identical replay |
 | Playable MVP | Not started | Source-verified six-turn content/rules/victory, durable save/resume, hot-seat privacy, and minimal no-model Maproom |
 | Exercise Harness | Current bounded Exercise/Maneuver and paired descriptive comparisons | Add Combat actions and terminals only after public Core activation |
@@ -351,7 +360,17 @@ through participant movement/completion, required stop resolution and exact phas
 through no-move Movement, idle Breakdown and no-attack Combat while retaining actual Reserve I.
 [D2c.3i inherited Reserve Release](docs/specs/combat-inherited-reserve-release-v1.md) adds2 traces/6
 events through owner release-I and deterministic completion. Guarded repeat/positive Reserve
-movement, vehicle/armed continuation, broader Reaction and D2c.4 remain open.
+movement, broader Reaction and D2c.4 remain open.
+[D2c.3j armed continuation](docs/specs/combat-inherited-armed-continuation-v1.md) adds2 pure proofs
+for the actual released-I ammunition10 profile, one candidate per owner, with full-result support
+pins; it does not repeat the cycle or execute Combat.
+[D2c.3k guarded cycle control](docs/specs/combat-inherited-cycle-control-v1.md) adds4 exact
+repeat/finish traces while preserving private/non-runtime boundaries.
+[D2c.3l released-I Movement](docs/specs/combat-inherited-reserve-movement-v1.md) adds2 exact
+ordinal-2 Clear moves with released ceiling10.
+[D2c.3m released-I Movement completion](docs/specs/combat-inherited-reserve-movement-completion-v1.md)
+adds2 three-event stop/resolution/completion traces and applies the exact D2b.2 expiry projection
+from each accepted completion receipt; broader profiles and D2c.4 remain open.
 [Result/settlement](docs/specs/combat-result-settlement-v1.md) and
 [full snapshot composition](docs/specs/combat-snapshot-composition-v1.md) retain synthetic pre-Combat
 lineage; review9 assessed these bounded artifacts. Parent003, future maturity execution and combined checkpoint B

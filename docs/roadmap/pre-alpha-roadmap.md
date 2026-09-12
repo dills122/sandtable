@@ -39,13 +39,13 @@ in the same change.
 
 [Author doc/planning review](../reviews/combat-delivery-plan-author-review.md) records the accepted
 planning direction. The executable engine remains Rules9 through first-side Combat **entry**.
-Combat contract packets now compose selected creation-rooted histories through inherited Reserve
-Release, but they do not activate Combat or Reserve Release in Core or the simulator. Historical
+Combat contract packets now compose selected creation-rooted histories through released-I armed
+continuation admission, but they do not activate Combat or Reserve Release in Core or the simulator. Historical
 review and simulator reports apply only to their stated commits and capabilities.
 
 | Next gate | Concrete outcome |
 | --- | --- |
-| Contract checkpoint B | Finish the remaining bounded D2c.3 capability families, then D2c.4 full World/Snapshot composition and Task004's side/Exercise contract plus complete acceptance-criteria map. Accept exact versions, capacity, compatibility, unsupported-state behavior, and the 003-to-004 handoff. |
+| Contract checkpoint B | Freeze remaining bounded D2c.3 capability families, then D2c.4 full World/Snapshot composition and Task004's side/Exercise contract plus complete acceptance-criteria map. Accept exact versions, capacity, compatibility, unsupported-state behavior, and the 003-to-004 handoff. |
 | Dormant Core,005–019 | Implement tables/content, loss-capable state, strict restore, private decisions, settlement, Reserve Release, relation-aware Movement, and guarded repeat/finish in dependency order. Every state-changing family needs replay cuts and recovery evidence before a dependent task starts. |
 | Public Core,020–021 | Add audience-safe observations/actions and authenticated submission mapping, then activate only the certified profile. Unsupported profiles reject before a decision; disabling new admission must not disable recovery. |
 | Exercise and Runner,022–024 | Drive the same public actions through Exercise and Runner, prove reconstruction/readjudication, and retain clean repeated evidence for empty, settled-assault, and Movement-repeat paths. Existing Rules9 studies cannot substitute. |
@@ -183,7 +183,7 @@ Optional parser evidence gate
 | Foundations | Versioned provenance, content, world, commands/events, deterministic RNG, replay, observation, and action contracts | Implemented and activated for the admitted Rules9 synthetic profile | Extend compatibility, replay, and fog tests with each admitted mechanic |
 | Mandatory preamble | Current runtime contracts through Reserve Designation | Implemented and publicly exercised for the admitted no-obligation profile | Add only scenario-required positive obligation families |
 | Movement, Reaction, Breakdown | Frozen and implemented for the certified battalion/Truck profiles | Public actions and checked Runner evidence reach first-side Combat entry | Preserve regressions; broaden positive ZOC/vehicle cases only with an admitted profile |
-| Combat and continual cycle | Research/design complete; contract packets through creation-rooted inherited Reserve Release (`003D2c.3i`) | **Not implemented or activated**; current public authority stops at Combat entry | Remaining D2c.3 families → D2c.4 → Task004 → checkpoint B → runtime005–021 → evidence022–024 |
+| Combat and continual cycle | Research/design complete; contract packets through released-I Movement completion (`003D2c.3m`) | **Not implemented or activated**; current public authority stops at Combat entry | Remaining D2c.3 families → D2c.4 → Task004 → checkpoint B → runtime005–021 → evidence022–024 |
 | Working pre-alpha skeleton | Acceptance boundary defined | Not reached | One authentic movement/contact/combat/release repeat-or-finish loop with identical replay and Chronicle evidence |
 | Six-turn scenario and remaining Land rules | Milestone outcomes defined; exact exercised-rule/data inventory intentionally pending | Not started | Measure after the skeleton, freeze source/content scope, then split implementation-sized tasks |
 | Campaign lifecycle and Maproom | Architecture and no-model interaction direction reviewed | Not started | Stable playable authority, durable save/resume contracts, hot-seat isolation, and deterministic UI path |
@@ -206,7 +206,7 @@ Maproom remain future work.
 | 2 — Rules laboratory and legal-action boundary | Complete for the admitted synthetic path | Keep outward actions observation-derived and revalidate exact membership at submission |
 | 3 — Mandatory turn preamble | Complete for the admitted synthetic no-obligation path | Positive Organization/convoy/fleet cases remain explicit later-scenario work; subsequent bounded mechanics now reach first-side Combat entry |
 | 4 — Movement, Breakdown, and Reaction boundary | Complete within the certified synthetic profile | Movement and ZOC/Reaction are implemented; Breakdown Tasks006–007 public activation, Runner adoption and transcript/privacy follow-up are complete. Positive ZOC and broader Breakdown categories remain extensions |
-| 5 — Combat and continual-cycle loop | Contract freeze in progress; no Combat runtime | `003D2c.3i` is the latest completed child. Finish remaining `.3`, `.4`, Task004 and checkpoint B; then execute005–024 and close025 only after an authentic loop passes |
+| 5 — Combat and continual-cycle loop | Contract freeze in progress; no Combat runtime | `003D2c.3m` is the latest completed child. Finish remaining `.3`, `.4`, Task004 and checkpoint B; then execute005–024 and close025 only after an authentic loop passes |
 | 6 — Scenario Group One content | Milestone-level; not started | Produce the exact exercised-rule/data/source/rights inventory after the skeleton, then split bounded content packets |
 | 7 — Remaining required Land systems | Milestone-level; not started | Implement only the measured six-turn surface, including termination/victory, with the same authority/replay/fog gates |
 | 8 — Minimal Maproom and campaign lifecycle | Milestone-level; not started | Add durable local save/resume and recovery before UI completion; prove hot-seat privacy and a complete no-model action path |
@@ -692,8 +692,25 @@ move, explicit completion, required empty-stop resolution and no-eligible closur
 [D2c.3h Reserve cycle entry](../specs/combat-inherited-reserve-cycle-v1.md) instead retains actual
 Reserve I through an idle first cycle to same-slot Release; [D2c.3i inherited Reserve Release](../specs/combat-inherited-reserve-release-v1.md)
 records owner release-I, completion, material progress, and the pending ordinal-2 Movement
-exception. Guarded repeat, positive released-Reserve Movement/expiry, broader Reaction and vehicle
-families, armed continuation, and D2c.4 composition remain open.
+exception. [D2c.3j armed continuation](../specs/combat-inherited-armed-continuation-v1.md) proves
+one exact ammunition10 next-cycle candidate per owner and pins full-result support without emitting
+authority. Guarded repeat, positive released-Reserve Movement/expiry, broader Reaction and vehicle
+families, and D2c.4 composition remain open.
+
+[D2c.3k guarded cycle control](../specs/combat-inherited-cycle-control-v1.md) now composes those exact
+proofs with inherited Release state. Four System-open/owner-close traces prove repeat into ordinal-2
+Movement or finish into same-slot Truck Convoy for both owners, with deterministic deadline,
+clock-loss, controller-unavailable and overflow handling. Positive ordinal-2 released-Reserve
+Movement/exception expiry, broader Reaction and vehicle families, and D2c.4 composition remain open.
+
+[D2c.3l released-I Movement](../specs/combat-inherited-reserve-movement-v1.md) consumes each exact
+repeat terminal and records one Clear move from assault to own rear at CP0→2 under ceiling10 while
+retaining armed resources and the pending exception.
+
+[D2c.3m released-I Movement completion](../specs/combat-inherited-reserve-movement-completion-v1.md)
+replays those exact terminals through deliberate stop, empty resolution and accepted completion at
+authority31. Its ordinal-2 proof covers current World locations, and unchanged D2b.2 expiry binds
+the released member's exception to the actual completion receipt.
 
 [Review9](../reviews/combat-progress-review-9.md) returned Ready with non-blocking follow-ups at
 `a96d2a1`; its sole P3 status correction is applied. [Review10](../reviews/combat-progress-review-10.md) assessed subsequent D2b.2/D2c.1 progress:
@@ -710,15 +727,18 @@ non-blocking retained-coverage finding, corrected before `719ea0d`; the explicit
 sequence is now exhausted. Unreviewed intervening children retain author verification only.
 The
 [D2b.2 cycle control](../specs/combat-cycle-control-v1.md) has author evidence:19 cases/64 traces,164
-cuts,1748 mutations and700 raw rejects. D2c must supply actual inherited progress, armed Combat
-continuation admission and full World/Snapshot composition before parent003/checkpoint B closes.
+cuts,1748 mutations and700 raw rejects. D2c now authenticates actual ordinal-2 Movement completion
+and exception expiry; it must still supply remaining families and full World/Snapshot composition
+before parent003/checkpoint B closes.
 
 Movement, bounded ZOC/Reaction, and Breakdown are complete within their certified runtime profiles.
-Combat contract work is complete through `003D2c.3i`: creation-rooted ordinary Movement, stop and
+Combat contract work is complete through `003D2c.3m`: creation-rooted ordinary Movement, stop and
 Breakdown completion, empty Combat traversal, one Reaction participant episode, retained Reserve-I
-cycle entry, and inherited Reserve Release. This is executable contract evidence, not Combat
-runtime. Guarded repeat, released-Reserve Movement/exception expiry, broader Reaction and vehicle
-families, armed continuation, D2c.4 composition, Task004, and checkpoint B remain open. Completed
+cycle entry, inherited Reserve Release, armed-continuation admission, guarded repeat/finish, and one
+released-I ordinal-2 move plus accepted completion/exception expiry. This is executable
+contract evidence, not Combat
+runtime. Broader Reaction and vehicle
+families, D2c.4 composition, Task004, and checkpoint B remain open. Completed
 research below remains evidence; it is not an instruction to restart those investigations.
 
 | Lane | Current priority and boundary |
@@ -840,7 +860,7 @@ the Movement/Breakdown/Combat/Reserve Release cycle.
 
 **Status:** Contract freeze in progress; no Combat runtime capability is active. Owner accepted
 POL-001–008 and the corrected combined plan at `a10a588`. Contract evidence now reaches
-creation-rooted inherited Reserve Release through `003D2c.3i`; remaining D2c.3 families, D2c.4,
+released-I ordinal-2 Movement completion through `003D2c.3m`; remaining D2c.3 families, D2c.4,
 Task004, and checkpoint B stay open. The
 [combined plan](../design/combat-cycle-implementation-plan.md) owns exact current dependencies;
 the [source inventory](../research/combat-cycle-source-inventory.md) retains research lineage.
@@ -894,7 +914,7 @@ progress through003B: Ready with non-blocking follow-ups, status correction appl
 cut. [003C3a selection/step control](../specs/combat-selection-steps-v1.md) is complete with author checks;
 [003C3b sealed round/commitment](../specs/combat-sealed-round-v1.md) is complete as a bounded
 private authority fragment with author checks. Subsequent bounded contract packets reach
-creation-rooted inherited Reserve Release through `003D2c.3i`; the combined plan's current status
+released-I ordinal-2 Movement completion through `003D2c.3m`; the combined plan's current status
 table is authoritative for that detailed chain. Parent003D2c/003, Task004, checkpoint B, and all
 production implementation remain gated.
 Actual RBA movement and broader combat categories remain outside the selected fixture.

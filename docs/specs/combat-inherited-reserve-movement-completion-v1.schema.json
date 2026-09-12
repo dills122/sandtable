@@ -1,0 +1,44 @@
+{
+  "contract": "combat-inherited-reserve-movement-completion-v1",
+  "objects": {
+    "StopCommand": "contractVersion:int kind:id baseHash:hash cycleId:hash positionId:id expectedPriorVersion:long routeId:hash actionId:hash",
+    "ResolveCommand": "contractVersion:int kind:id baseHash:hash cycleId:hash positionId:id expectedPriorVersion:long stopId:hash actionId:hash",
+    "CompleteCommand": "contractVersion:int kind:id baseHash:hash cycleId:hash positionId:id expectedPriorVersion:long actionId:hash",
+    "CompletionInput": "command:CompletionCommand actor:actor",
+    "MovingFlow": "kind:id track:MovementTrack movementReceiptId:id",
+    "LifecycleStop": "stopId:hash recordedStateVersion:long track:MovementTrack movementReceiptId:id reason:id weatherKind:id cohortInputs:empty",
+    "PhasingStopFlow": "kind:id stop:LifecycleStop",
+    "IdleFlow": "kind:id",
+    "InterruptContext": "cycle:Authority cycleId:hash sequencePosition:Position",
+    "ProgressRef": "eventType:id receiptId:id eventHash:hash",
+    "StopEvent": "contractVersion:int eventType:id author:actor campaignId:id rulesetHash:rawHash configurationHash:hash cycleId:hash positionId:id baseHash:hash priorVersion:long stateVersion:long priorPrefix:hash input:CompletionInput stop:LifecycleStop sequencePosition:Position breakdownFlowAfter:PhasingStopFlow interruptContextAfter:InterruptContext? receiptId:id",
+    "ResolveEvent": "contractVersion:int eventType:id author:actor campaignId:id rulesetHash:rawHash configurationHash:hash cycleId:hash positionId:id baseHash:hash priorVersion:long stateVersion:long priorPrefix:hash input:CompletionInput stop:LifecycleStop randomStateBefore:Random checks:empty createdLots:empty randomStateAfter:Random sources:Reference[] sequencePosition:Position breakdownFlowAfter:IdleFlow interruptContextAfter:InterruptContext? receiptId:id",
+    "CompleteEvent": "contractVersion:int eventType:id author:actor campaignId:id rulesetHash:rawHash configurationHash:hash cycleId:hash positionId:id baseHash:hash priorVersion:long stateVersion:long priorPrefix:hash input:CompletionInput gameTurn:int operationStage:int actingSide:side endLocations:EndLocation[] excludedUnits:UnitKey[] progress:ProgressRef[] sequencePosition:Position breakdownFlowAfter:IdleFlow interruptContextAfter:InterruptContext? receiptId:id",
+    "InheritedReserveMovementCompletionBase": "contractVersion:int actor:side predecessorHash:hash predecessorBase:InheritedReserveMovementBase predecessorInputs:MovementInput[] predecessorEvents:MovementEvent[] movementPosition:Position interruptPosition:Position breakdownPosition:Position",
+    "InheritedReserveMovementCompletionState": "contractVersion:int baseHash:hash stateVersion:long prefix:hash cycle:Authority sequencePosition:Position world:World randomState:Random attackHistory:AttackHistory[] releaseMember:ReserveMember tracks:MovementTrack[] breakdownFlow:CompletionFlow interruptContext:InterruptContext? movementEnd:MovementEndProof? receipts:Receipt[]"
+  },
+  "externalContracts": [
+    "combat-inherited-reserve-movement-v1.schema.json",
+    "combat-inherited-movement-lifecycle-v1.schema.json",
+    "combat-cycle-control-v1.schema.json"
+  ],
+  "domains": {
+    "stopReceipt": "sandtable.combat.inherited-reserve-movement-stop-receipt.v1",
+    "resolveReceipt": "sandtable.combat.inherited-reserve-breakdown-stop-resolved-receipt.v1",
+    "completeReceipt": "sandtable.combat.inherited-reserve-movement-completion-receipt.v1"
+  },
+  "limits": {"bytes": 1048576, "depth": 32, "arrayItems": 512, "cases": 2, "eventsPerCase": 3},
+  "unions": {
+    "CompletionCommand": {
+      "stop-element-movement": "StopCommand",
+      "resolve-breakdown-stop": "ResolveCommand",
+      "complete-movement-segment": "CompleteCommand"
+    },
+    "CompletionFlow": {
+      "moving": "MovingFlow",
+      "phasing-stop": "PhasingStopFlow",
+      "idle": "IdleFlow"
+    }
+  },
+  "scope": "Both-owner exact 3l ordinal-2 Movement stop, empty resolution, completion and D2b.2 exception expiry in profile-specific v1 envelopes only; no claim of first-cycle lifecycle wire compatibility, Breakdown execution, later Combat, Snapshot12, runtime, public action, Exercise or simulator activation."
+}

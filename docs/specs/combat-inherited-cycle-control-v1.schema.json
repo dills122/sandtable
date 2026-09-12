@@ -1,0 +1,13 @@
+{
+  "contract": "combat-inherited-cycle-control-v1",
+  "objects": {
+    "InheritedCycleControlBase": "contractVersion:int actor:side releaseControlHash:hash armedProofHash:hash armedProof:Proof controlBase:CycleControlBase"
+  },
+  "externalContracts": [
+    "combat-inherited-reserve-release-v1.schema.json",
+    "combat-inherited-armed-continuation-v1.schema.json",
+    "combat-cycle-control-v1.schema.json"
+  ],
+  "limits": {"bytes": 1048576, "depth": 32, "arrayItems": 512, "cases": 4, "eventsPerCase": 2},
+  "scope": "Both-owner actual released-I armed repeat/finish composition only; no Movement or Combat execution, Snapshot12, runtime, public action or simulator activation."
+}
