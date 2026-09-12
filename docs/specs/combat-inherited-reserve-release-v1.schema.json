@@ -1,0 +1,20 @@
+{
+  "contract": "combat-inherited-reserve-release-v1",
+  "objects": {
+    "Base": "contractVersion:int predecessorHash:hash releaseBase:ReleaseBase",
+    "ProgressRef": "eventType:id receiptId:id eventHash:hash",
+    "Control": "contractVersion:int baseHash:hash release:ReleaseState progress:ProgressRef[] closed:bool"
+  },
+  "externalContracts": [
+    "combat-inherited-reserve-cycle-v1.schema.json",
+    "combat-reserve-release-v1.schema.json",
+    "combat-cycle-control-v1.schema.json"
+  ],
+  "eventVersions": {
+    "reserve-release-opened": 1,
+    "reserve-unit-disposition-recorded": 1,
+    "reserve-release-completed": 1
+  },
+  "limits": {"bytes": 1048576, "depth": 32, "events": 3, "receipts": 3, "progress": 1},
+  "scope": "Creation-rooted both-owner first-I release lifecycle only; no cycle repeat, Movement, Snapshot12, runtime or simulator activation."
+}
