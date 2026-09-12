@@ -150,6 +150,9 @@ implies cycle repeat, phase finish, or production activation. The
 [inherited armed-continuation proof](docs/specs/combat-inherited-armed-continuation-v1.md) names a
 source-legal, fully supported prospective Combat path for that released-I profile. “Continuation”
 does not mean opportunity selection, Combat execution, cycle repeat, or runtime admission.
+The [inherited guarded cycle-control packet](docs/specs/combat-inherited-cycle-control-v1.md) then
+uses `movement-combat-cycle-repeated` or `movement-combat-phase-finished` for exact owner closure.
+This proves private authority composition only; it does not mean ordinal-2 Movement or Combat ran.
 These projections are not Snapshot12. Chronicle retains the
 accepted events; the future Archives reader must reconstruct and validate their complete chain.
 

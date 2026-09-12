@@ -1,0 +1,105 @@
+{
+  "contract": "combat-inherited-cycle-control-v1",
+  "cases": [
+    {
+      "actor": "axis",
+      "action": "repeat",
+      "golden": {
+        "baseBytes": 16988,
+        "baseHash": "sha256:da49d7479fde5384e511cfb13b81af5c2420e9971620981c6ad203cd8661f715",
+        "nestedBaseHash": "sha256:791396a0dd7e4540952581ed9d7e0bde7357b24d08f48801a796ca269dfb4cc9",
+        "controlId": "ctl.599ff141d46c0caf1b614736f146ae8deafa3bc2299f42b59173e4749c8c0208",
+        "frames": [
+          {"cut": 0, "bytes": 5674, "sha256": "sha256:bf872dd9c09634f30b42911ee9f6e6617f13483960c5c58d08dac1d5c6436c45"},
+          {"cut": 1, "bytes": 7091, "sha256": "sha256:6756017de89ae01311b63f00611836e94bf1d9a387cdeb0f7a393b098683e357"},
+          {"cut": 2, "bytes": 7575, "sha256": "sha256:d7324702abaa949f57c55ada4b9c9278971539010a8615081ae1da37eb9aa18b"}
+        ],
+        "events": [
+          {"bytes": 2481, "sha256": "sha256:8a2eeb97bcc86f6b9e181daf741f00f81edddec45cc988609e2f1617e91ec11a"},
+          {"bytes": 3325, "sha256": "sha256:3d2af1f895b16c99161f077dad2aa39561ce09893c5db3081cab93d397232092"}
+        ],
+        "terminalPositionId": "land.position.operation-1.first-player.movement-and-combat.movement",
+        "terminalPrefix": "sha256:ca350e0243a89231446119f655fdf5a3436d69513e1b74220fdb9f943c67b2f8",
+        "terminalReceiptId": "cc.dbcd6811b283690eae2f4d88ad2f1d483887f244a0a89e0c192ae4ad30927334"
+      }
+    },
+    {
+      "actor": "axis",
+      "action": "finish",
+      "golden": {
+        "baseBytes": 16988,
+        "baseHash": "sha256:da49d7479fde5384e511cfb13b81af5c2420e9971620981c6ad203cd8661f715",
+        "nestedBaseHash": "sha256:791396a0dd7e4540952581ed9d7e0bde7357b24d08f48801a796ca269dfb4cc9",
+        "controlId": "ctl.599ff141d46c0caf1b614736f146ae8deafa3bc2299f42b59173e4749c8c0208",
+        "frames": [
+          {"cut": 0, "bytes": 5674, "sha256": "sha256:bf872dd9c09634f30b42911ee9f6e6617f13483960c5c58d08dac1d5c6436c45"},
+          {"cut": 1, "bytes": 7091, "sha256": "sha256:6756017de89ae01311b63f00611836e94bf1d9a387cdeb0f7a393b098683e357"},
+          {"cut": 2, "bytes": 6855, "sha256": "sha256:30814b4ef661d3af311989717e41045ae585554fd4d75cb5e70c421ac0377151"}
+        ],
+        "events": [
+          {"bytes": 2481, "sha256": "sha256:8a2eeb97bcc86f6b9e181daf741f00f81edddec45cc988609e2f1617e91ec11a"},
+          {"bytes": 2694, "sha256": "sha256:9f1bfb320c5d31137850ed34910e05a575946e28a8787944a5507301527598c5"}
+        ],
+        "terminalPositionId": "land.position.operation-1.first-player.truck-convoy-movement",
+        "terminalPrefix": "sha256:19b19ebca88b0b133d4ae1d6940189a77ccb6b1bb18e286e051081cd0faaf657",
+        "terminalReceiptId": "cc.fc4642e4ed97abd95a4490bf9fdf8c545d9c48257211d05bcca0b72826e367fe"
+      }
+    },
+    {
+      "actor": "commonwealth",
+      "action": "repeat",
+      "golden": {
+        "baseBytes": 17180,
+        "baseHash": "sha256:66e7f78b1fe94d29fefd9613cb2156df500ad8fe6b0a2190ee73fb447aa8a12b",
+        "nestedBaseHash": "sha256:f603314a901a1aed508c52a3b324c4ae2e1f593eb267a677c74818f8e3bef2e7",
+        "controlId": "ctl.451e5953f87d258cf5862c80a0a4345ee003394f967f1bf4d0389765d16b048f",
+        "frames": [
+          {"cut": 0, "bytes": 5714, "sha256": "sha256:d0a5ee2e3c20557eac523f7d5fa472eff0e3eefc125654d42e5a2749b707617d"},
+          {"cut": 1, "bytes": 7147, "sha256": "sha256:92ca26cd1b8b83fa5d44facbeb65d7d1b4be08dbd1e823e30e92dfd152e04e73"},
+          {"cut": 2, "bytes": 7639, "sha256": "sha256:a95f8bf91878076c4f5b0685efc4139d093235f83a878519dda3cf5e489622f5"}
+        ],
+        "events": [
+          {"bytes": 2497, "sha256": "sha256:b4881a92fbca403507c4394b2356fc3bd82daf5488246427178289a519bd0bcf"},
+          {"bytes": 3365, "sha256": "sha256:8c0bcc4507f2b8fe184eda37e83306851e434d17f5f956767ec97ff92d3a2f05"}
+        ],
+        "terminalPositionId": "land.position.operation-1.first-player.movement-and-combat.movement",
+        "terminalPrefix": "sha256:9c15250ecb10a5fccf02f38b737db9f27307f62d9e69bf4b4b88bfab10bc86cd",
+        "terminalReceiptId": "cc.8cb5669bfb6c9504eef1f7394974583aed0fc85e6cb5e6b70f45cabb15fac06d"
+      }
+    },
+    {
+      "actor": "commonwealth",
+      "action": "finish",
+      "golden": {
+        "baseBytes": 17180,
+        "baseHash": "sha256:66e7f78b1fe94d29fefd9613cb2156df500ad8fe6b0a2190ee73fb447aa8a12b",
+        "nestedBaseHash": "sha256:f603314a901a1aed508c52a3b324c4ae2e1f593eb267a677c74818f8e3bef2e7",
+        "controlId": "ctl.451e5953f87d258cf5862c80a0a4345ee003394f967f1bf4d0389765d16b048f",
+        "frames": [
+          {"cut": 0, "bytes": 5714, "sha256": "sha256:d0a5ee2e3c20557eac523f7d5fa472eff0e3eefc125654d42e5a2749b707617d"},
+          {"cut": 1, "bytes": 7147, "sha256": "sha256:92ca26cd1b8b83fa5d44facbeb65d7d1b4be08dbd1e823e30e92dfd152e04e73"},
+          {"cut": 2, "bytes": 6911, "sha256": "sha256:05a54207e8502d5c6f5cfe91b20b2f05334b19f4506c68794fe4157bde9fc53f"}
+        ],
+        "events": [
+          {"bytes": 2497, "sha256": "sha256:b4881a92fbca403507c4394b2356fc3bd82daf5488246427178289a519bd0bcf"},
+          {"bytes": 2742, "sha256": "sha256:a448513e8f53d13615ca3b955701ed8cc6643a6782c76fdec2f2b8dbb2d8b708"}
+        ],
+        "terminalPositionId": "land.position.operation-1.first-player.truck-convoy-movement",
+        "terminalPrefix": "sha256:18225f4d0ca9a279d0aefda3069143e306f0b098ed547fae5bc00cda101e2adb",
+        "terminalReceiptId": "cc.b792bdf7b97db9207d39c7ffba72ceae4bf19b7af8b40ce6887168319e6f13ca"
+      }
+    }
+  ],
+  "sourcePins": [
+    {"path": "docs/specs/combat-inherited-reserve-release-v1.schema.json", "sha256": "sha256:d3811d65f5e1d3048c7ebe51ef37d2d900b575c04703f2aa5dbac9846b55bdea"},
+    {"path": "docs/specs/verify-combat-inherited-reserve-release-v1.py", "sha256": "sha256:97b06d748555d6642db21b66a7d4f1477a99edc1b253a00a2b04aec4018c0dfe"},
+    {"path": "docs/specs/fixtures/combat-inherited-reserve-release-v1.json", "sha256": "sha256:56479736788241186bce083b915aa5b4912fd6f745e9080e3707a166febfe3d0"},
+    {"path": "docs/specs/combat-inherited-armed-continuation-v1.schema.json", "sha256": "sha256:996cfd224ee8c0fa5fd0faa54e74c28099782b898ada22c32717a89c90422852"},
+    {"path": "docs/specs/verify-combat-inherited-armed-continuation-v1.py", "sha256": "sha256:91f7004b1c9e197d2d587b9cc4ff2ccfdb571bd1d5506117cc22a9165e3e4466"},
+    {"path": "docs/specs/fixtures/combat-inherited-armed-continuation-v1.json", "sha256": "sha256:d86603ff7f07f2e0a3624e8748fedcf4406e2d873360f4e56a30e5952c645b1f"},
+    {"path": "docs/specs/combat-cycle-control-v1.schema.json", "sha256": "sha256:8c517db6daa734d415bd1d474280c2cf6e65013490c4a2568795d50e6112f7da"},
+    {"path": "docs/specs/verify-combat-cycle-control-v1.py", "sha256": "sha256:9039f9e1067b2cdd2e0a57ae16e711350b4bbdceb500d22bbbd715f39e8ccc9f"},
+    {"path": "docs/specs/fixtures/combat-cycle-control-v1.json", "sha256": "sha256:a8f81c538c0a70c28dd7e97638ec63c915558ec16cc9be6f6a102a12159b5bb6"}
+  ],
+  "goldenMethod": "canonical ASCII JSON; SHA-256 with sha256: prefix"
+}

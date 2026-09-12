@@ -945,7 +945,11 @@ owner release-I, completion, material progress, and the pending ordinal-2 Moveme
 that creation-rooted history. The
 [inherited armed-continuation contract](docs/specs/combat-inherited-armed-continuation-v1.md) proves
 one exact next-cycle candidate for either owner while retaining ammunition10, TOE10, CP0, release
-history and full-result support pins. Guarded repeat, released-Reserve Movement and expiry, broader
+history and full-result support pins. The
+[inherited guarded cycle-control contract](docs/specs/combat-inherited-cycle-control-v1.md) composes
+that candidate with exact Release state: owner repeat enters ordinal-2 Movement in the same slot,
+while owner or deterministic fallback finish enters Truck Convoy and expires the pending exception.
+Released-Reserve Movement and expiry, broader
 Reaction/vehicle families, full Snapshot composition, and all runtime/public activation remain
 later gates.
 These private projections are not Snapshot12 readers.

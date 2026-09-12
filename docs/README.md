@@ -21,7 +21,7 @@ current capability status and cross-package sequencing.
 
 Current truth in one line: public Rules9 authority and checked Runner evidence stop at first-side
 Combat entry; forward Combat contracts reach creation-rooted released-I armed-continuation
-admission through `003D2c.3j`; Combat runtime, public activation, and simulator evidence have not
+guarded repeat/finish through `003D2c.3k`; Combat runtime, public activation, and simulator evidence have not
 started. See the
 [status table](roadmap/pre-alpha-roadmap.md#current-delivery-status) and
 [next gates](roadmap/pre-alpha-roadmap.md#current-checkpoint-and-next-gates) for details.
@@ -134,7 +134,8 @@ started. See the
   events through owner release-I and completion; guarded repeat and positive Reserve movement stay open.
   [D2c.3j armed continuation](specs/combat-inherited-armed-continuation-v1.md) adds2 pure proofs for
   one actual ammunition10 candidate per owner and pins full selection-to-Snapshot result support;
-  guarded repeat still stays open.
+  [D2c.3k guarded cycle control](specs/combat-inherited-cycle-control-v1.md) adds4 exact repeat/finish
+  traces for those proofs; positive ordinal-2 released-Reserve Movement/expiry stays open.
   [Review15](reviews/combat-inherited-reserve-release-review-15.md) returned Ready with one
   non-blocking retained-coverage finding, corrected before `719ea0d`.
   See [result/settlement](specs/combat-result-settlement-v1.md) and

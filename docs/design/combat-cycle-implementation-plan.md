@@ -3,13 +3,13 @@
 **Status:** Contract checkpoint B in progress; no Combat runtime or public capability is active.
 `CMB-PLAN-001` and POL-001–008 were accepted on 2026-09-06 at `a10a588`. Source and static Content
 work (`001`–`002`) is complete. Parent `003` remains open after bounded contract evidence through
-released-I armed continuation admission (`003D2c.3j`). Task `004`, checkpoint B, and runtime tasks
+creation-rooted guarded cycle control (`003D2c.3k`). Task `004`, checkpoint B, and runtime tasks
 `005`–`025` have not started.
 
 | Delivery layer | Current boundary | Next required outcome |
 | --- | --- | --- |
 | Research and policy | Complete for the selected bounded profile, including `HOST-RSH-001` | Reopen only for a new source, failed assumption, or approved profile expansion |
-| Authority contracts | C3 result/settlement, D2 movement/release/control, and D2c inherited families through `.3j` are frozen as bounded Python evidence | Compose the armed witness with guarded repeat, finish remaining `.3` capability families, then `.4` full composition and the `003` handoff |
+| Authority contracts | C3 result/settlement, D2 movement/release/control, and D2c inherited families through `.3k` are frozen as bounded Python evidence | Freeze positive ordinal-2 released-Reserve Movement/expiry and remaining `.3` capability families, then `.4` full composition and the `003` handoff |
 | Outward contracts | Task004 not started | Freeze side-safe observation/action and Exercise evidence contracts; map every design AC |
 | Runtime | Tasks005–019 not started | Implement dormant tables/state/decisions/settlement/release/repeat with cumulative replay and recovery evidence |
 | Public and simulator | Tasks020–024 not started | Activate the certified side-safe profile, then prove strict Exercise/Runner reconstruction and repeatability |
@@ -1138,3 +1138,15 @@ alternate-byte cases,18 boundary rejects and18 source pins pass. This is continu
 not cycle repeat, Movement, Combat execution, runtime or simulator activation. Guarded
 repeat/finish composition, positive released-Reserve Movement/expiry, broader profiles, .4/004/B,
 runtime and simulator remain open. Author verification only; review15 remains the exhausted limit.
+
+TASK-003D2c.3k checkpoint, 2026-09-11 (input `36e83f8`):
+[Inherited guarded cycle-control specification](../specs/combat-inherited-cycle-control-v1.md),
+inventory, four vectors and oracle compose both exact 3i Release terminals with both exact 3j armed
+proofs. System open plus owner repeat/finish advances authority25→27. Repeat enters ordinal-2
+Movement in the same owner slot while retaining World/RNG/history, ammunition10, TOE10, CP0 and
+the pending exception; finish enters Truck Convoy and expires that exception with the closure
+receipt. Twenty-four readbacks,12 retries,1648 mutations,84 malformed-byte rejections,14 timing/
+recovery/capacity checks and9 source pins pass. This is private contract evidence, not ordinal-2
+Movement, Combat execution, Snapshot12, runtime or simulator activation. Positive released-Reserve
+Movement/expiry, broader profiles, .4/004/B, runtime and simulator remain open. Author verification
+only; review15 remains the exhausted limit.
