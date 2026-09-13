@@ -21,7 +21,7 @@ current capability status and cross-package sequencing.
 
 Current truth in one line: public Rules9 authority and checked Runner evidence stop at first-side
 Combat entry; forward Combat contracts reach creation-rooted released-I ordinal-2 Movement
-completion plus direct Reaction closure through `003D2c.3n`; Combat runtime, public activation,
+completion plus active-participant System fallback through `003D2c.3o`; Combat runtime, public activation,
 and simulator evidence have not started. See the
 [status table](roadmap/pre-alpha-roadmap.md#current-delivery-status) and
 [next gates](roadmap/pre-alpha-roadmap.md#current-checkpoint-and-next-gates) for details.
@@ -130,6 +130,9 @@ and simulator evidence have not started. See the
   through one participant episode and exact phasing resumption; broader Reaction and remaining .3
   capabilities/.4 composition stay open. [D2c.3n direct Reaction closure](specs/combat-inherited-reaction-closure-v1.md)
   adds6 direct decline/unavailable/timeout forks from the exact triggers with no material effects.
+  [D2c.3o active Reaction fallback](specs/combat-inherited-reaction-active-fallback-v1.md) adds4
+  post-first-move System fallback forks through a reason-specific mandatory stop and exact phasing
+  resumption; second participant moves and multiple-opportunity/vehicle profiles stay open.
   [D2c.3h Reserve cycle entry](specs/combat-inherited-reserve-cycle-v1.md)
   adds2 traces/20 events from actual Reserve-I history through same-slot Reserve Release.
   [D2c.3i inherited Reserve Release](specs/combat-inherited-reserve-release-v1.md) adds2 traces/6
@@ -141,7 +144,7 @@ and simulator evidence have not started. See the
   adds2 exact Clear moves under ceiling10.
   [D2c.3m released-I Movement completion](specs/combat-inherited-reserve-movement-completion-v1.md)
   adds2 exact stop/resolution/completion traces and expires each pending exception from its accepted
-  completion receipt; active-participant/multiple-opportunity Reaction, vehicle profiles and `.4`
+  completion receipt; second participant moves, multiple-opportunity Reaction, vehicle profiles and `.4`
   composition stay open.
   [Review15](reviews/combat-inherited-reserve-release-review-15.md) returned Ready with one
   non-blocking retained-coverage finding, corrected before `719ea0d`.

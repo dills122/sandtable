@@ -142,6 +142,10 @@ authority, while terminal `moving` resumes the prior phasing route rather than n
 The [inherited direct Reaction-closure packet](docs/specs/combat-inherited-reaction-closure-v1.md)
 reuses compatible `reaction-window-closed`3 for `player-decline`, `scripted-unavailable`, and
 `timeout`. Distinct action identities select reason and actor authority; Core does not schedule time.
+The [inherited active Reaction-fallback packet](docs/specs/combat-inherited-reaction-active-fallback-v1.md)
+uses `reactor-stop-closed` after System unavailable/timeout closes an active participant. Closed
+means window authority is gone, not that Breakdown adjudication is skipped; `breakdown-stop-resolved`2
+must restore the retained phasing `moving` route.
 The [inherited Reserve-cycle packet](docs/specs/combat-inherited-reserve-cycle-v1.md) reaches
 `reserve-release` without performing Release. The
 [inherited Reserve Release packet](docs/specs/combat-inherited-reserve-release-v1.md) retains

@@ -3,13 +3,13 @@
 **Status:** Contract checkpoint B in progress; no Combat runtime or public capability is active.
 `CMB-PLAN-001` and POL-001–008 were accepted on 2026-09-06 at `a10a588`. Source and static Content
 work (`001`–`002`) is complete. Parent `003` remains open after bounded contract evidence through
-creation-rooted direct Reaction closure (`003D2c.3n`). Task `004`, checkpoint B, and runtime tasks
+creation-rooted active Reaction fallback (`003D2c.3o`). Task `004`, checkpoint B, and runtime tasks
 `005`–`025` have not started.
 
 | Delivery layer | Current boundary | Next required outcome |
 | --- | --- | --- |
 | Research and policy | Complete for the selected bounded profile, including `HOST-RSH-001` | Reopen only for a new source, failed assumption, or approved profile expansion |
-| Authority contracts | C3 result/settlement, D2 movement/release/control, and D2c inherited families through `.3n` are frozen as bounded Python evidence | Freeze remaining `.3` capability families, then `.4` full composition and the `003` handoff |
+| Authority contracts | C3 result/settlement, D2 movement/release/control, and D2c inherited families through `.3o` are frozen as bounded Python evidence | Freeze remaining `.3` capability families, then `.4` full composition and the `003` handoff |
 | Outward contracts | Task004 not started | Freeze side-safe observation/action and Exercise evidence contracts; map every design AC |
 | Runtime | Tasks005–019 not started | Implement dormant tables/state/decisions/settlement/release/repeat with cumulative replay and recovery evidence |
 | Public and simulator | Tasks020–024 not started | Activate the certified side-safe profile, then prove strict Exercise/Runner reconstruction and repeatability |
@@ -385,6 +385,19 @@ host/worker deadlines remain deferred. Exact retry/readback, actor/reason/action
 authority-handle substitution, predecessor/event mutation, malformed bytes, competing-fork,
 capacity and source-pin checks form acceptance. Active-participant fallback, multiple opportunities,
 second moves, positive vehicle Breakdown, .4/004/B, runtime and simulator remain open.
+
+D2c.3o execution boundary (owner-approved 2026-09-12): one new
+[spec/schema/fixture/oracle packet](../specs/combat-inherited-reaction-active-fallback-v1.md) plus
+this plan. Replay each exact3g post-first-move active Reaction state and fork it through System
+`scripted-unavailable` or `timeout`. One compatible `reaction-window-closed`3 event closes the
+active unresolved opportunity, clears the window, and records a reason-specific
+`reactor-stop-closed` while retaining the exact phasing continuation. One mandatory
+`breakdown-stop-resolved`2 event then consumes the empty-cohort infantry stop and resumes that
+phasing route with unchanged World/RNG/progress. Exact retry/readback, player decline/no-eligible
+rejection, reason/action/actor mismatch, predecessor/event mutation, malformed bytes,
+competing-fork, capacity and source-pin checks form acceptance. Second participant moves,
+multiple opportunities, positive vehicle Breakdown, .4/004/B, runtime, host scheduling, public
+activation and simulator remain open.
 
 D2c.4 owns the **Task004 handoff** section in its planned
 `docs/specs/combat-authority-composition-v1.md` contract packet, within the same five-primary-file
@@ -1192,3 +1205,14 @@ retries,372 mutations,180 malformed-byte rejects,126 authority/fork/capacity bou
 source pins pass. Core timeout proves exact System authority, not host scheduling. Active-participant
 fallback, multiple opportunities/second moves, vehicle profiles, .4/004/B, runtime and simulator
 remain open. Author verification only; review15 remains exhausted.
+
+TASK-003D2c.3o checkpoint, 2026-09-12:
+[Inherited active Reaction-fallback specification](../specs/combat-inherited-reaction-active-fallback-v1.md),
+inventory, four vectors and oracle replay both exact3g post-first-move states through System
+unavailable/timeout closure and mandatory empty-stop resolution. Eight compatible v3/v2 events
+advance authority14→16, record reason-specific `reactor-stop-closed`, remove the window, and resume
+the exact phasing route with unchanged World/RNG/progress. Twelve cuts,8 retries,612 mutations,200
+malformed-byte rejects,132 authority/fork/capacity boundaries and17 source pins pass. Core timeout
+remains authority, not host scheduling. Second participant moves, multiple opportunities, vehicle
+profiles, .4/004/B, runtime, public activation and simulator remain open. Author verification only;
+independent-review sequence remains exhausted.

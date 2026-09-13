@@ -1,0 +1,93 @@
+{
+  "contractVersion": 1,
+  "contract": "combat-inherited-reaction-active-fallback-v1",
+  "sourceHashes": {
+    "docs/design/zoc-reaction-v1.md": "sha256:9627e3250268cda06c7dc0c76f625a092554ba33cf1d3d46cb50d63d062e6c2f",
+    "docs/specs/combat-inherited-reaction-active-fallback-v1.schema.json": "sha256:aec05148d5978472a0c3ee61d949821dedde5a769ecc10b5120597908f910bfc",
+    "docs/specs/combat-inherited-reaction-closure-v1.schema.json": "sha256:ce74cae62b797c74768955d73bfbbffa0a30cc49ccb7278b0870bfe656123297",
+    "docs/specs/combat-inherited-reaction-lifecycle-v1.md": "sha256:ec0b98504ea230cdee907cfee612599fd5872d5a05807b7c060ee5e473ce61aa",
+    "docs/specs/combat-inherited-reaction-lifecycle-v1.schema.json": "sha256:94ee18139f72ffd883ccae100baa417f4c4b4048842cb33cadc120963923428a",
+    "docs/specs/fixtures/combat-inherited-reaction-lifecycle-v1.json": "sha256:ec178fa858e2b9af9d8b97d7646db96fc71f8162ba43386cf903985e683b8494",
+    "docs/specs/verify-combat-inherited-reaction-closure-v1.py": "sha256:9f07f00f8b749c2b3d86f6d3a2e40edbe0eee6af0a147e25d4d87b1ad287355c",
+    "docs/specs/verify-combat-inherited-reaction-lifecycle-v1.py": "sha256:a2dc717ff7a28efcd90f0ecc041391a4603a07c6c319377acdc10e05f61aee31",
+    "docs/specs/zoc-reaction-v1.md": "sha256:909701d99a0b6065c36dd1214492c099298fc23da2105d1132b9af9cdd03d766",
+    "src/Cna.Core/Actions/CampaignObservationV6ActionCandidates.cs": "sha256:8ec060c36490dee3866285d4832dc0022ffe6cd80aa5012f8fe80c663074486c",
+    "src/Cna.Core/Campaigns/CampaignBreakdownLifecycleCodec.cs": "sha256:5d8c11b6d13df33d767f4d3812f52fdf463ef85ce645b92e73d50cea074beb2c",
+    "src/Cna.Core/Campaigns/CampaignBreakdownLifecycleEvents.cs": "sha256:3b875b4fe6885c3ed421bb177aa5bfc85bd9673040c328429c4d4a0cf6d8c420",
+    "src/Cna.Core/Campaigns/CampaignBreakdownLifecycleFactory.cs": "sha256:07b97600a212bf2b255004bafdeba7da0804624198be354814d25ede5f0d4413",
+    "src/Cna.Core/Campaigns/CampaignBreakdownStopResolvedCodec.cs": "sha256:eacdb23a86ec62d1306203bda6f6ddc68e4e19782b9f6016e50aa03e78c471bf",
+    "src/Cna.Core/Campaigns/CampaignBreakdownStopResolvedFactory.cs": "sha256:2a1cb53659532592aa1c0fe7aaf72b1420a311d41f720443346c26f8516b553f",
+    "src/Cna.Core/Campaigns/CampaignV11BreakdownProjector.cs": "sha256:a1ed1aefd2ceb6fe3641d82b13ab0d04eb26505bdf98ccf3745cd974cee49826",
+    "src/Cna.Core/Observations/CampaignObservationV6DisclosureIdentity.cs": "sha256:b6d6c7747b1f9ed282693be535604c1291402f5c80a1f83c317b3fae93ed9f87"
+  },
+  "cases": [
+    {
+      "name": "axis-active-scripted-unavailable",
+      "predecessorCase": "axis-one-participant-reaction-lifecycle",
+      "kind": "close-reaction-window-scripted-unavailable",
+      "reason": "scripted-unavailable",
+      "stopReason": "reaction-unavailable",
+      "goldens": {
+        "participant": {"bytes": 5724, "sha256": "sha256:24864e3faf49a559d06064e580bb3e574d339902a09d3f4595ac50c66bd8ff27"},
+        "input-1": {"bytes": 661, "sha256": "sha256:dd9bb17e1dd610d825c645d5718ba4a474b1d68260d8eb0b40f5bd3503b13753"},
+        "input-2": {"bytes": 639, "sha256": "sha256:76a736f5a9c766459cc842f67de445b79dd0b0a00d225f6ac42f03c4b6fbc94d"},
+        "event-1": {"bytes": 3536, "sha256": "sha256:6300baaed0bed0c92764d770da83051c689628ac7e5ac2726623181e2d6c6974"},
+        "event-2": {"bytes": 3436, "sha256": "sha256:6386a4a439fd29b120d51f70a4f52beb659fa2afcc22b22f9ec3c1505ca0bb3d"},
+        "state-0": {"bytes": 14712, "sha256": "sha256:2dcff5a632d5661a0f6e810a8faab8cf7e4c75c550368e835c9bf227b7305af7"},
+        "state-1": {"bytes": 13263, "sha256": "sha256:58db51abb6e23b4c096c9a77ffb4e81244d2e2ee0f40daf83a59a9978c901690"},
+        "state-2": {"bytes": 12978, "sha256": "sha256:fea7f235d9d26fa8440c8eac3bcf4d7c5176fe8ab7d84cad4d2ad3867d5b7efe"}
+      }
+    },
+    {
+      "name": "axis-active-timeout",
+      "predecessorCase": "axis-one-participant-reaction-lifecycle",
+      "kind": "close-reaction-window-timeout",
+      "reason": "timeout",
+      "stopReason": "reaction-timeout",
+      "goldens": {
+        "participant": {"bytes": 5724, "sha256": "sha256:24864e3faf49a559d06064e580bb3e574d339902a09d3f4595ac50c66bd8ff27"},
+        "input-1": {"bytes": 648, "sha256": "sha256:830e996e07dd5a9d718886aa71ef7681253cedfe8893c3c57a9875bd49d22548"},
+        "input-2": {"bytes": 639, "sha256": "sha256:76a736f5a9c766459cc842f67de445b79dd0b0a00d225f6ac42f03c4b6fbc94d"},
+        "event-1": {"bytes": 3506, "sha256": "sha256:cde960750cb9e2345a7f4e12de19edb6834158a61d477f79f33111aee5f24e02"},
+        "event-2": {"bytes": 3432, "sha256": "sha256:ad7e19bb31157a28ed85187c108ed61132ec773b24f9c9461dfad363c32571d3"},
+        "state-0": {"bytes": 14712, "sha256": "sha256:2dcff5a632d5661a0f6e810a8faab8cf7e4c75c550368e835c9bf227b7305af7"},
+        "state-1": {"bytes": 13259, "sha256": "sha256:a727ff80f10fbaa043f1554101ce08e35c4c8bbf8d82c21f27c3f85c3005eec3"},
+        "state-2": {"bytes": 12978, "sha256": "sha256:7fea9c6340896dd1ddd11d6c98a5a01bfb0cfe87acbdba6301e5eef9c7153fbd"}
+      }
+    },
+    {
+      "name": "commonwealth-active-scripted-unavailable",
+      "predecessorCase": "commonwealth-one-participant-reaction-lifecycle",
+      "kind": "close-reaction-window-scripted-unavailable",
+      "reason": "scripted-unavailable",
+      "stopReason": "reaction-unavailable",
+      "goldens": {
+        "participant": {"bytes": 5700, "sha256": "sha256:4c47af3176e7ef8fec07a5aaba56a09b1b1bc2ee0afb0c54679b64035a1e3584"},
+        "input-1": {"bytes": 661, "sha256": "sha256:00906af39c98d044a4ce849cc26d15357c977ad3215dd7fab9248bbeccd83e98"},
+        "input-2": {"bytes": 639, "sha256": "sha256:7f008374a56459ab1dfe306cd838433db09570ae4c24f6604df75cebc6615d23"},
+        "event-1": {"bytes": 3528, "sha256": "sha256:6d57d14e9e47504b48f5e720bba1cd05932e471fbc1af588a2dcf695656a27ad"},
+        "event-2": {"bytes": 3428, "sha256": "sha256:ac21fc478876c6d874838adbf182b29a1d85b4bd9f79d059fbd08d3e36ecd6a5"},
+        "state-0": {"bytes": 14768, "sha256": "sha256:d43ba4ad9244fe79f0b17857303ea5fe74a59cbb1b37bdf83b7e8d572fc21375"},
+        "state-1": {"bytes": 13295, "sha256": "sha256:e30ce5fc3e2267974c32bbb783bee8e371800d8f82f58582ca431101908fe4e6"},
+        "state-2": {"bytes": 13034, "sha256": "sha256:56d1de8050de07f98df1f49569067715a62810e12a6b20ae94125134aa5906b7"}
+      }
+    },
+    {
+      "name": "commonwealth-active-timeout",
+      "predecessorCase": "commonwealth-one-participant-reaction-lifecycle",
+      "kind": "close-reaction-window-timeout",
+      "reason": "timeout",
+      "stopReason": "reaction-timeout",
+      "goldens": {
+        "participant": {"bytes": 5700, "sha256": "sha256:4c47af3176e7ef8fec07a5aaba56a09b1b1bc2ee0afb0c54679b64035a1e3584"},
+        "input-1": {"bytes": 648, "sha256": "sha256:a3057b55bc06e936fb9a51b5e279e3be587b868cfed95afeee9d1f83452242e1"},
+        "input-2": {"bytes": 639, "sha256": "sha256:7f008374a56459ab1dfe306cd838433db09570ae4c24f6604df75cebc6615d23"},
+        "event-1": {"bytes": 3498, "sha256": "sha256:4a0454dc761e55ad498b48af8095ef70aa2f160fce97ba19d971625fb8b11e6c"},
+        "event-2": {"bytes": 3424, "sha256": "sha256:8cdfb0a64695a5c0386b344302afbd7e69f66315ab1f36362d83aad7b0dadf6f"},
+        "state-0": {"bytes": 14768, "sha256": "sha256:d43ba4ad9244fe79f0b17857303ea5fe74a59cbb1b37bdf83b7e8d572fc21375"},
+        "state-1": {"bytes": 13291, "sha256": "sha256:8597fda776aea1f22d10deb6d8658dc81d45de38859f971ddada71c692d5b3da"},
+        "state-2": {"bytes": 13034, "sha256": "sha256:611cb1e969d1ed92e05965e14f583a83d49adfca40ec3ac44584f7ac0b07264e"}
+      }
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "contract": "combat-inherited-reaction-active-fallback-v1",
+  "objects": {
+    "FallbackCloseCommand": "contractVersion:int kind:id windowId:hash actionId:hash creationBinding:id creationEventHash:hash cycleId:hash expectedPriorVersion:long expectedPositionId:id",
+    "FallbackResolveCommand": "contractVersion:int kind:id stopId:hash actionId:hash creationBinding:id creationEventHash:hash cycleId:hash expectedPriorVersion:long expectedPositionId:id",
+    "FallbackInput": "command:FallbackCommand actor:actor",
+    "ReactorStopClosedFlow": "kind:id phasingContinuation:ResumeRoute stop:LifecycleStop",
+    "FallbackCloseEvent": "contractVersion:int eventType:id campaignId:id stateVersion:long priorStateVersion:long fromPositionId:id actingSide:null actionId:hash submittedWindowId:hash windowId:hash reason:id closedOpportunityIds:hash[] suspendedSequencePosition:Position rulesetHash:rawHash breakdownFlowAfter:ReactorStopClosedFlow configurationHash:hash creationBinding:id creationEventHash:hash cycleId:hash openingBaseHash:hash completionReceiptId:id priorPrefix:hash input:FallbackInput receiptId:id",
+    "FallbackResolveEvent": "contractVersion:int eventType:id campaignId:id stateVersion:long priorStateVersion:long rulesetHash:rawHash fromPositionId:id actionId:hash stop:LifecycleStop randomStateBefore:Random checks:empty createdLots:empty randomStateAfter:Random breakdownFlowAfter:MovingFlow sources:Reference[] configurationHash:hash creationBinding:id creationEventHash:hash cycleId:hash openingBaseHash:hash completionReceiptId:id priorPrefix:hash input:FallbackInput sequencePosition:Position interruptContextAfter:null receiptId:id",
+    "FallbackState": "contractVersion:int campaignId:id rulesetHash:rawHash configurationHash:hash creationBinding:id creationEventHash:hash stateVersion:long prefix:hash sequencePosition:Position currentPosition:FallbackPosition initiativeHolder:side operationStageOrders:PreambleOrder[] operationStageWeather:WeatherValue[] world:World randomState:Random receipts:PreambleReceipt[] firstActingSide:side members:ReserveMember[] cycle:Authority cycleId:hash openingBaseHash:hash completionReceiptId:id tracks:InheritedTrack[] actualProgressRefs:ActualProgressRef[] reactionWindow:ReactionWindow? breakdownFlow:FallbackFlow"
+  },
+  "externalContracts": [
+    "combat-inherited-reaction-lifecycle-v1.schema.json",
+    "combat-inherited-reaction-closure-v1.schema.json"
+  ],
+  "domains": {
+    "closeReceipt": "sandtable.combat.inherited-reaction-window-closed-receipt.v3",
+    "resolveReceipt": "sandtable.combat.inherited-breakdown-stop-resolved-receipt.v2",
+    "windowCapability": "sandtable.observation.reaction-window.v1",
+    "stop": "sandtable.breakdown.stop.v1",
+    "stopCapability": "sandtable.action.breakdown-stop.v1"
+  },
+  "legacyFieldCounts": {"FallbackCloseEvent": 15, "FallbackResolveEvent": 15},
+  "limits": {"bytes": 1048576, "depth": 32, "arrayItems": 512, "participantEvents": 1, "fallbackEvents": 2},
+  "commandReasons": {
+    "close-reaction-window-scripted-unavailable": "scripted-unavailable",
+    "close-reaction-window-timeout": "timeout"
+  },
+  "stopReasons": {
+    "close-reaction-window-scripted-unavailable": "reaction-unavailable",
+    "close-reaction-window-timeout": "reaction-timeout"
+  },
+  "unions": {
+    "FallbackCommand": {
+      "close-reaction-window-scripted-unavailable": "FallbackCloseCommand",
+      "close-reaction-window-timeout": "FallbackCloseCommand",
+      "resolve-breakdown-stop": "FallbackResolveCommand"
+    },
+    "FallbackPosition": {
+      "reaction": "CurrentReactionPosition",
+      "breakdown-stop": "CurrentBreakdownPosition",
+      "sequence": "CurrentSequencePosition"
+    },
+    "FallbackFlow": {
+      "reacting": "ReactingFlow",
+      "reactor-stop-closed": "ReactorStopClosedFlow",
+      "moving": "MovingFlow"
+    }
+  },
+  "scope": "Exact creation-rooted 3g post-first-move active Reaction state; System scripted-unavailable/timeout closes active authority into a reason-specific mandatory empty-cohort stop, whose resolution resumes exact phasing Movement. No player decline, second participant/move, multiple opportunity, vehicle, runtime, host scheduling, public activation or simulator admission."
+}
