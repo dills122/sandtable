@@ -1,0 +1,106 @@
+{
+  "contractVersion": 1,
+  "contract": "combat-inherited-reaction-closure-v1",
+  "sourceHashes": {
+    "docs/design/zoc-reaction-v1.md": "sha256:9627e3250268cda06c7dc0c76f625a092554ba33cf1d3d46cb50d63d062e6c2f",
+    "docs/specs/combat-inherited-reaction-closure-v1.schema.json": "sha256:ce74cae62b797c74768955d73bfbbffa0a30cc49ccb7278b0870bfe656123297",
+    "docs/specs/combat-inherited-reaction-lifecycle-v1.schema.json": "sha256:94ee18139f72ffd883ccae100baa417f4c4b4048842cb33cadc120963923428a",
+    "docs/specs/combat-inherited-reaction-trigger-v1.md": "sha256:a3e2f4ebf9f7ff2e118bdda4133f52e1bc9421dd03644cc73fc1480b3cf086d3",
+    "docs/specs/combat-inherited-reaction-trigger-v1.schema.json": "sha256:0a531b3196fbef885a6dcafc07bc6ff79765801cb2f529d099342257ed06cffd",
+    "docs/specs/fixtures/combat-inherited-reaction-trigger-v1.json": "sha256:cc1ff7d3202eb8677b732215f2fb2cc043acc18f723166a9182249940b063f56",
+    "docs/specs/verify-combat-inherited-reaction-lifecycle-v1.py": "sha256:a2dc717ff7a28efcd90f0ecc041391a4603a07c6c319377acdc10e05f61aee31",
+    "docs/specs/verify-combat-inherited-reaction-trigger-v1.py": "sha256:551df0d22256a9a8e8601dc9c3c2e9a236e1c0dd76a649ab922bf706706bf0c4",
+    "docs/specs/zoc-reaction-v1.md": "sha256:909701d99a0b6065c36dd1214492c099298fc23da2105d1132b9af9cdd03d766",
+    "src/Cna.Core/Actions/CampaignObservationV6ActionCandidates.cs": "sha256:8ec060c36490dee3866285d4832dc0022ffe6cd80aa5012f8fe80c663074486c",
+    "src/Cna.Core/Campaigns/CampaignBreakdownLifecycleCodec.cs": "sha256:5d8c11b6d13df33d767f4d3812f52fdf463ef85ce645b92e73d50cea074beb2c",
+    "src/Cna.Core/Campaigns/CampaignBreakdownLifecycleEvents.cs": "sha256:3b875b4fe6885c3ed421bb177aa5bfc85bd9673040c328429c4d4a0cf6d8c420",
+    "src/Cna.Core/Campaigns/CampaignBreakdownLifecycleFactory.cs": "sha256:07b97600a212bf2b255004bafdeba7da0804624198be354814d25ede5f0d4413",
+    "src/Cna.Core/Campaigns/CampaignV11BreakdownProjector.cs": "sha256:a1ed1aefd2ceb6fe3641d82b13ab0d04eb26505bdf98ccf3745cd974cee49826"
+  },
+  "cases": [
+    {
+      "name": "axis-player-decline",
+      "predecessorCase": "axis-return-opens-reaction",
+      "kind": "decline-reaction-window",
+      "reason": "player-decline",
+      "actor": "commonwealth",
+      "goldens": {
+        "trigger": {"bytes": 5262, "sha256": "sha256:70a6dafd61d28703eeb52b9f1d45f6a564931608c497dc4cdb57a205071c40ae"},
+        "input": {"bytes": 648, "sha256": "sha256:659aff944df94eaf931323377691a721844d36e7dbe95d5647db99a716525504"},
+        "event": {"bytes": 2954, "sha256": "sha256:2f2cb1d90b027de5e7d857bd746035dd0993dd1984ee076a4152e41094db48b5"},
+        "state-before": {"bytes": 13590, "sha256": "sha256:2fd6115239392e88541512adb9be398e78ad59b312706f75a1801974c41f5644"},
+        "state-after": {"bytes": 11947, "sha256": "sha256:0b5c8b47b7631e5e032f5f1f5d39fc73e1d3f00b93298c714876a28b44ed50be"}
+      }
+    },
+    {
+      "name": "axis-scripted-unavailable",
+      "predecessorCase": "axis-return-opens-reaction",
+      "kind": "close-reaction-window-scripted-unavailable",
+      "reason": "scripted-unavailable",
+      "actor": "system",
+      "goldens": {
+        "trigger": {"bytes": 5262, "sha256": "sha256:70a6dafd61d28703eeb52b9f1d45f6a564931608c497dc4cdb57a205071c40ae"},
+        "input": {"bytes": 661, "sha256": "sha256:4a2eb1c838193e5b509ac6a65662a6d9e294d004b6a3cd99d340e850e0cd5a3e"},
+        "event": {"bytes": 2963, "sha256": "sha256:4e73a67cbfc07e9d57d3f593ea403b380fc2db996f88042c82dc498b2c0cbf64"},
+        "state-before": {"bytes": 13590, "sha256": "sha256:2fd6115239392e88541512adb9be398e78ad59b312706f75a1801974c41f5644"},
+        "state-after": {"bytes": 11941, "sha256": "sha256:e22a7aad64318e9d7e820dedb78b98f42dae4c5733d79465812f4e7e1e6f3008"}
+      }
+    },
+    {
+      "name": "axis-timeout",
+      "predecessorCase": "axis-return-opens-reaction",
+      "kind": "close-reaction-window-timeout",
+      "reason": "timeout",
+      "actor": "system",
+      "goldens": {
+        "trigger": {"bytes": 5262, "sha256": "sha256:70a6dafd61d28703eeb52b9f1d45f6a564931608c497dc4cdb57a205071c40ae"},
+        "input": {"bytes": 648, "sha256": "sha256:ccf0d7becab467f719e48aa94304325f269d479db3fc26a22bed7c6722f0b955"},
+        "event": {"bytes": 2937, "sha256": "sha256:716ae2f3ae15f14a99470dfdb7be3c05b085dd0feb7a840793d20a84412f5c73"},
+        "state-before": {"bytes": 13590, "sha256": "sha256:2fd6115239392e88541512adb9be398e78ad59b312706f75a1801974c41f5644"},
+        "state-after": {"bytes": 11941, "sha256": "sha256:8dbdb9ac04f6a51cd5e1b6b63c58754d1b5218a5140f42344ced5d390c56c561"}
+      }
+    },
+    {
+      "name": "commonwealth-player-decline",
+      "predecessorCase": "commonwealth-return-opens-reaction",
+      "kind": "decline-reaction-window",
+      "reason": "player-decline",
+      "actor": "axis",
+      "goldens": {
+        "trigger": {"bytes": 5358, "sha256": "sha256:f98f844fb018a951b551459d4014bc60bc6991b89f387573ba4e6db30b5616d3"},
+        "input": {"bytes": 640, "sha256": "sha256:bbea21546fd5c4449106271e11c6ed24d959de6c0c4b4946240f05f32a2bb5ab"},
+        "event": {"bytes": 2954, "sha256": "sha256:a28414011cbb11381dd72dbb24429d242dc534754bf4c8517ae4d916bae4e9e0"},
+        "state-before": {"bytes": 13718, "sha256": "sha256:2978ac47e5437ebb9cf52763a570e72dbfb03abe2b6f249cfba1db57e7f46f6b"},
+        "state-after": {"bytes": 12043, "sha256": "sha256:0aa842d9ae080b8aa9161b96d360488148d5f2ebc2744f481c5fe82f643fd9af"}
+      }
+    },
+    {
+      "name": "commonwealth-scripted-unavailable",
+      "predecessorCase": "commonwealth-return-opens-reaction",
+      "kind": "close-reaction-window-scripted-unavailable",
+      "reason": "scripted-unavailable",
+      "actor": "system",
+      "goldens": {
+        "trigger": {"bytes": 5358, "sha256": "sha256:f98f844fb018a951b551459d4014bc60bc6991b89f387573ba4e6db30b5616d3"},
+        "input": {"bytes": 661, "sha256": "sha256:e85a82db7caa380771c5e0b1a6aec23791b2ca4a903f388b24988c1ad460fa45"},
+        "event": {"bytes": 2979, "sha256": "sha256:86c4b18d4e7017bc058da97c8337b80bf01f4653f788a6ee4d416b8edcb4d503"},
+        "state-before": {"bytes": 13718, "sha256": "sha256:2978ac47e5437ebb9cf52763a570e72dbfb03abe2b6f249cfba1db57e7f46f6b"},
+        "state-after": {"bytes": 12045, "sha256": "sha256:7bce03c82d9e6385dd49c11f6e530b5c0391cbf0e8f72ae511f2cc1d458e15a8"}
+      }
+    },
+    {
+      "name": "commonwealth-timeout",
+      "predecessorCase": "commonwealth-return-opens-reaction",
+      "kind": "close-reaction-window-timeout",
+      "reason": "timeout",
+      "actor": "system",
+      "goldens": {
+        "trigger": {"bytes": 5358, "sha256": "sha256:f98f844fb018a951b551459d4014bc60bc6991b89f387573ba4e6db30b5616d3"},
+        "input": {"bytes": 648, "sha256": "sha256:7383126af8141b4705fbbef306420d326d92c757b923e43fca1267bfe29effd2"},
+        "event": {"bytes": 2953, "sha256": "sha256:517ef99249aa78bba76626391e938388beab2bdda2fbf492b60864d8056d5be5"},
+        "state-before": {"bytes": 13718, "sha256": "sha256:2978ac47e5437ebb9cf52763a570e72dbfb03abe2b6f249cfba1db57e7f46f6b"},
+        "state-after": {"bytes": 12045, "sha256": "sha256:3562c356eb7ab027914d82992c85b68e85f7a718cebf56f6a1177a83e75fba59"}
+      }
+    }
+  ]
+}

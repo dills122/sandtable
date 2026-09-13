@@ -139,6 +139,9 @@ The [inherited Reaction-lifecycle packet](docs/specs/combat-inherited-reaction-l
 private `LifecycleState` for one `reacting-element-moved`3, explicit participant completion3,
 compatible empty-stop resolution2 and no-eligible closure3. `reactor-stop-open` is mandatory
 authority, while terminal `moving` resumes the prior phasing route rather than naming a new route.
+The [inherited direct Reaction-closure packet](docs/specs/combat-inherited-reaction-closure-v1.md)
+reuses compatible `reaction-window-closed`3 for `player-decline`, `scripted-unavailable`, and
+`timeout`. Distinct action identities select reason and actor authority; Core does not schedule time.
 The [inherited Reserve-cycle packet](docs/specs/combat-inherited-reserve-cycle-v1.md) reaches
 `reserve-release` without performing Release. The
 [inherited Reserve Release packet](docs/specs/combat-inherited-reserve-release-v1.md) retains

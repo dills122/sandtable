@@ -1,0 +1,23 @@
+{
+  "contract": "combat-inherited-reaction-closure-v1",
+  "objects": {
+    "ReactionCloseCommand": "contractVersion:int kind:id windowId:hash actionId:hash creationBinding:id creationEventHash:hash cycleId:hash expectedPriorVersion:long expectedPositionId:id",
+    "ReactionCloseInput": "command:ReactionCloseCommand actor:actor",
+    "DirectCloseEvent": "contractVersion:int eventType:id campaignId:id stateVersion:long priorStateVersion:long fromPositionId:id actingSide:side? actionId:hash submittedWindowId:hash windowId:hash reason:id closedOpportunityIds:hash[] suspendedSequencePosition:Position rulesetHash:rawHash breakdownFlowAfter:MovingFlow configurationHash:hash creationBinding:id creationEventHash:hash cycleId:hash openingBaseHash:hash completionReceiptId:id priorPrefix:hash input:ReactionCloseInput receiptId:id"
+  },
+  "externalContracts": [
+    "combat-inherited-reaction-lifecycle-v1.schema.json"
+  ],
+  "domains": {
+    "closeReceipt": "sandtable.combat.inherited-reaction-window-closed-receipt.v3",
+    "windowCapability": "sandtable.observation.reaction-window.v1"
+  },
+  "legacyFieldCounts": {"DirectCloseEvent": 15},
+  "limits": {"bytes": 1048576, "depth": 32, "arrayItems": 512, "triggerEvents": 1, "closeEvents": 1},
+  "commandReasons": {
+    "decline-reaction-window": "player-decline",
+    "close-reaction-window-scripted-unavailable": "scripted-unavailable",
+    "close-reaction-window-timeout": "timeout"
+  },
+  "scope": "Exact creation-rooted one-opportunity inactive Reaction trigger; reacting-owner decline or System scripted-unavailable/timeout closes the sole unresolved opportunity and resumes exact phasing Movement. No participant, active fallback stop, multiple opportunity, vehicle, Reserve, runtime, host scheduling or simulator admission."
+}

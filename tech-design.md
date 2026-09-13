@@ -938,6 +938,10 @@ The [inherited Reaction lifecycle](docs/specs/combat-inherited-reaction-lifecycl
 exact window, retains the still-legal post-move capability in the rotated participant handle, then
 chooses completion. Empty-cohort stop resolution remains a required event before no-eligible closure
 removes the window and resumes the suspended phasing route. Wider participant/closure profiles remain separate.
+The [inherited direct Reaction closure](docs/specs/combat-inherited-reaction-closure-v1.md) instead
+forks each exact trigger into owner decline or System unavailable/timeout. All three close the sole
+unresolved opportunity and resume the same route without World/RNG/progress effects; host timing is
+still outside Core authority.
 [Inherited Reserve cycle entry](docs/specs/combat-inherited-reserve-cycle-v1.md) retains a real
 Reserve-I designation through an idle first cycle to same-slot Reserve Release. The
 [inherited Reserve Release contract](docs/specs/combat-inherited-reserve-release-v1.md) then records
@@ -955,7 +959,8 @@ pending exception. The
 [inherited released-I Movement-completion contract](docs/specs/combat-inherited-reserve-movement-completion-v1.md)
 then closes that exact route through deliberate stop, empty resolution and accepted completion,
 derives its ordinal-2 proof, and expires the exception with the completion receipt. Broader
-Reaction/vehicle families, full Snapshot composition, and all runtime/public activation remain
+active-participant/multiple-opportunity Reaction and vehicle families, full Snapshot composition,
+and all runtime/public activation remain
 later gates.
 These private projections are not Snapshot12 readers.
 All five `CONTACT-001` rulings and the governing specification/design package are approved.

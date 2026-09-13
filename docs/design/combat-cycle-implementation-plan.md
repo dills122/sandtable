@@ -3,13 +3,13 @@
 **Status:** Contract checkpoint B in progress; no Combat runtime or public capability is active.
 `CMB-PLAN-001` and POL-001–008 were accepted on 2026-09-06 at `a10a588`. Source and static Content
 work (`001`–`002`) is complete. Parent `003` remains open after bounded contract evidence through
-creation-rooted released-I ordinal-2 Movement completion (`003D2c.3m`). Task `004`, checkpoint B, and runtime tasks
+creation-rooted direct Reaction closure (`003D2c.3n`). Task `004`, checkpoint B, and runtime tasks
 `005`–`025` have not started.
 
 | Delivery layer | Current boundary | Next required outcome |
 | --- | --- | --- |
 | Research and policy | Complete for the selected bounded profile, including `HOST-RSH-001` | Reopen only for a new source, failed assumption, or approved profile expansion |
-| Authority contracts | C3 result/settlement, D2 movement/release/control, and D2c inherited families through `.3m` are frozen as bounded Python evidence | Freeze remaining `.3` capability families, then `.4` full composition and the `003` handoff |
+| Authority contracts | C3 result/settlement, D2 movement/release/control, and D2c inherited families through `.3n` are frozen as bounded Python evidence | Freeze remaining `.3` capability families, then `.4` full composition and the `003` handoff |
 | Outward contracts | Task004 not started | Freeze side-safe observation/action and Exercise evidence contracts; map every design AC |
 | Runtime | Tasks005–019 not started | Implement dormant tables/state/decisions/settlement/release/repeat with cumulative replay and recovery evidence |
 | Public and simulator | Tasks020–024 not started | Activate the certified side-safe profile, then prove strict Exercise/Runner reconstruction and repeatability |
@@ -373,6 +373,18 @@ composition cases as full-result support. This pure proof emits no event and nei
 finishes the cycle. Resource, geometry, Weather, history, obligation, cross-owner, source-pin,
 canonical-byte, mutation and capacity failures reject. Guarded repeat/finish composition, positive
 Reserve movement, broader profiles, .4/004/B, runtime and simulator remain open.
+
+D2c.3n execution boundary (input `e2302d2`, owner-approved 2026-09-12): one new
+[spec/schema/fixture/oracle packet](../specs/combat-inherited-reaction-closure-v1.md) plus this plan.
+Replay both exact3f one-opportunity trigger terminals and fork each into reacting-owner
+`player-decline`, System `scripted-unavailable`, or System `timeout`. One compatible
+`reaction-window-closed`3 event closes the sole unresolved opportunity, clears the window and
+interrupt, restores the exact suspended sequence position and resumes the phasing route without
+World/RNG/progress effects. Core timeout is reason-specific System authority, not clock scheduling;
+host/worker deadlines remain deferred. Exact retry/readback, actor/reason/action mismatch,
+authority-handle substitution, predecessor/event mutation, malformed bytes, competing-fork,
+capacity and source-pin checks form acceptance. Active-participant fallback, multiple opportunities,
+second moves, positive vehicle Breakdown, .4/004/B, runtime and simulator remain open.
 
 D2c.4 owns the **Task004 handoff** section in its planned
 `docs/specs/combat-authority-composition-v1.md` contract packet, within the same five-primary-file
@@ -1169,3 +1181,14 @@ and apply unchanged D2b.2 expiry using each accepted completion receipt. Sixteen
 1626 mutations,60 malformed-byte rejects,58 authority/order boundaries and10 source pins pass.
 Broader Reaction/vehicle and remaining `.3` families, .4/004/B, runtime and simulator remain open.
 Author verification only; review15 remains exhausted.
+
+TASK-003D2c.3n checkpoint, 2026-09-12 (input `e2302d2`):
+[Inherited direct Reaction-closure specification](../specs/combat-inherited-reaction-closure-v1.md),
+inventory, six vectors and oracle replay both exact3f trigger terminals through owner decline or
+System unavailable/timeout. One compatible `reaction-window-closed`3 event advances authority13→14,
+closes the sole unresolved opportunity, clears the interrupt, restores the suspended sequence
+position and resumes the exact phasing route with unchanged World/RNG/progress. Twelve cuts,6
+retries,372 mutations,180 malformed-byte rejects,126 authority/fork/capacity boundaries and14
+source pins pass. Core timeout proves exact System authority, not host scheduling. Active-participant
+fallback, multiple opportunities/second moves, vehicle profiles, .4/004/B, runtime and simulator
+remain open. Author verification only; review15 remains exhausted.
