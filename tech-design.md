@@ -946,6 +946,10 @@ The [inherited active Reaction fallback](docs/specs/combat-inherited-reaction-ac
 starts from each exact post-first-move participant state. System unavailable/timeout closes the
 window into a reason-specific `ReactorStopClosed`; mandatory empty-stop resolution then resumes the
 retained phasing route without World/RNG/progress effects. Core still owns no fallback scheduler.
+The [inherited active Reaction second move](docs/specs/combat-inherited-reaction-second-move-v1.md)
+forks from that same active state and reuses `ReactingElementMovedV2` semantics: current reactor
+route advances in place, cumulative CP and derived track advance once, while frozen opportunity,
+active authority and suspended phasing continuation remain exact for later completion.
 [Inherited Reserve cycle entry](docs/specs/combat-inherited-reserve-cycle-v1.md) retains a real
 Reserve-I designation through an idle first cycle to same-slot Reserve Release. The
 [inherited Reserve Release contract](docs/specs/combat-inherited-reserve-release-v1.md) then records
@@ -963,8 +967,8 @@ pending exception. The
 [inherited released-I Movement-completion contract](docs/specs/combat-inherited-reserve-movement-completion-v1.md)
 then closes that exact route through deliberate stop, empty resolution and accepted completion,
 derives its ordinal-2 proof, and expires the exception with the completion receipt. Broader
-second-move/multiple-opportunity Reaction and vehicle families, full Snapshot composition,
-and all runtime/public activation remain
+participant-completion/multiple-opportunity Reaction and vehicle families, full Snapshot
+composition, and all runtime/public activation remain
 later gates.
 These private projections are not Snapshot12 readers.
 All five `CONTACT-001` rulings and the governing specification/design package are approved.

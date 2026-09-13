@@ -146,6 +146,10 @@ The [inherited active Reaction-fallback packet](docs/specs/combat-inherited-reac
 uses `reactor-stop-closed` after System unavailable/timeout closes an active participant. Closed
 means window authority is gone, not that Breakdown adjudication is skipped; `breakdown-stop-resolved`2
 must restore the retained phasing `moving` route.
+The [inherited active Reaction second-move packet](docs/specs/combat-inherited-reaction-second-move-v1.md)
+uses the existing `reacting-element-moved`3 family for another step by the same active participant.
+“Second move” changes current World/route/track location and cumulative CP; it does not mean a
+second opportunity, new route, participant completion, or window closure.
 The [inherited Reserve-cycle packet](docs/specs/combat-inherited-reserve-cycle-v1.md) reaches
 `reserve-release` without performing Release. The
 [inherited Reserve Release packet](docs/specs/combat-inherited-reserve-release-v1.md) retains

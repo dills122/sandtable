@@ -1,0 +1,76 @@
+{
+  "contractVersion": 1,
+  "contract": "combat-inherited-reaction-second-move-v1",
+  "sourceHashes": {
+    "docs/design/zoc-reaction-v1.md": "sha256:9627e3250268cda06c7dc0c76f625a092554ba33cf1d3d46cb50d63d062e6c2f",
+    "docs/specs/combat-inherited-reaction-lifecycle-v1.md": "sha256:ec0b98504ea230cdee907cfee612599fd5872d5a05807b7c060ee5e473ce61aa",
+    "docs/specs/combat-inherited-reaction-lifecycle-v1.schema.json": "sha256:94ee18139f72ffd883ccae100baa417f4c4b4048842cb33cadc120963923428a",
+    "docs/specs/combat-inherited-reaction-second-move-v1.schema.json": "sha256:a5a045e1bed845152b726506c91c5d7e549c917ba345b6805516117015174022",
+    "docs/specs/fixtures/combat-inherited-reaction-lifecycle-v1.json": "sha256:ec178fa858e2b9af9d8b97d7646db96fc71f8162ba43386cf903985e683b8494",
+    "docs/specs/verify-combat-inherited-reaction-lifecycle-v1.py": "sha256:a2dc717ff7a28efcd90f0ecc041391a4603a07c6c319377acdc10e05f61aee31",
+    "docs/specs/zoc-reaction-v1.md": "sha256:909701d99a0b6065c36dd1214492c099298fc23da2105d1132b9af9cdd03d766",
+    "src/Cna.Core/Actions/CampaignObservationV6ActionCandidates.cs": "sha256:8ec060c36490dee3866285d4832dc0022ffe6cd80aa5012f8fe80c663074486c",
+    "src/Cna.Core/Campaigns/CampaignBreakdownMoveEventSerializer.cs": "sha256:2885afd854bc57c5b8f782be0e0cd875fe13eb78658f433145568d45b2b1c704",
+    "src/Cna.Core/Campaigns/CampaignBreakdownRecords.cs": "sha256:63dc7cddecd89dbe4a038accc4cf9d1675464e53c0391d18c0e37b121ad4c23e",
+    "src/Cna.Core/Campaigns/CampaignReactingElementMovedV2.cs": "sha256:74246cf9f4cadb432a565e0982bc0f00c664455a9dd3834f2cc209c5656d0011",
+    "src/Cna.Core/Campaigns/CampaignReactingElementMovedV2Factory.cs": "sha256:58ff4225ed286edd53c8c1bedd870cb64ac4b9c58af437a976eca51b815e9282",
+    "src/Cna.Core/Campaigns/CampaignV11MoveProjector.cs": "sha256:c62fc410cfdf372c11c4e796a354b2e3015d0d2eeb466c3e53729806dfc43241",
+    "src/Cna.Core/Observations/CampaignObservationV6DisclosureIdentity.cs": "sha256:b6d6c7747b1f9ed282693be535604c1291402f5c80a1f83c317b3fae93ed9f87"
+  },
+  "cases": [
+    {
+      "name": "axis-active-second-move",
+      "predecessorCase": "axis-one-participant-reaction-lifecycle",
+      "actor": "axis",
+      "goldens": {
+        "participant": {
+          "bytes": 5724,
+          "sha256": "sha256:24864e3faf49a559d06064e580bb3e574d339902a09d3f4595ac50c66bd8ff27"
+        },
+        "input": {
+          "bytes": 821,
+          "sha256": "sha256:74bffecfef74987f33c2bcce44b5749dd3d089c9e16b63a22ae8b986a5f438ca"
+        },
+        "event": {
+          "bytes": 5740,
+          "sha256": "sha256:805509a6d5a8c2c0f41c2e4a595c0a5170b12e3ea93fbaba35b9365de522698c"
+        },
+        "state-0": {
+          "bytes": 14712,
+          "sha256": "sha256:2dcff5a632d5661a0f6e810a8faab8cf7e4c75c550368e835c9bf227b7305af7"
+        },
+        "state-1": {
+          "bytes": 15248,
+          "sha256": "sha256:69d1dc9e0206d902a526dc85ccc5301597b3543fa15e5b637efaafcd7b800677"
+        }
+      }
+    },
+    {
+      "name": "commonwealth-active-second-move",
+      "predecessorCase": "commonwealth-one-participant-reaction-lifecycle",
+      "actor": "commonwealth",
+      "goldens": {
+        "participant": {
+          "bytes": 5700,
+          "sha256": "sha256:4c47af3176e7ef8fec07a5aaba56a09b1b1bc2ee0afb0c54679b64035a1e3584"
+        },
+        "input": {
+          "bytes": 797,
+          "sha256": "sha256:9a6de477c565f0303c68087f47365034fd85f2429aaf5a234fccccd4eb5440fb"
+        },
+        "event": {
+          "bytes": 5700,
+          "sha256": "sha256:203ac7b8ed4e61911e1af95dacb23a2f32565bdc767177c1489bfe59777a8ccd"
+        },
+        "state-0": {
+          "bytes": 14768,
+          "sha256": "sha256:d43ba4ad9244fe79f0b17857303ea5fe74a59cbb1b37bdf83b7e8d572fc21375"
+        },
+        "state-1": {
+          "bytes": 15288,
+          "sha256": "sha256:c94254909c59f2f5b59887be054140182eafbc67db6a3c61fef84b2cf50bc02c"
+        }
+      }
+    }
+  ]
+}

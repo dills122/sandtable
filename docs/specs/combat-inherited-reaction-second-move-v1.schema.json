@@ -1,0 +1,21 @@
+{
+  "contract": "combat-inherited-reaction-second-move-v1",
+  "objects": {
+    "SecondMoveCommand": "contractVersion:int kind:id windowId:hash opportunityId:hash originLocationId:id destinationLocationId:id actionId:hash creationBinding:id creationEventHash:hash cycleId:hash expectedPriorVersion:long expectedPositionId:id",
+    "SecondMoveInput": "command:SecondMoveCommand actor:actor",
+    "SecondMoveEvent": "contractVersion:int eventType:id campaignId:id stateVersion:long priorStateVersion:long fromPositionId:id gameTurn:int operationStage:int actingSide:side actionId:hash submittedWindowId:hash submittedOpportunityId:hash windowId:hash opportunityId:hash elementId:id representationId:id originLocationId:id destinationLocationId:id mobilityId:id mobilitySources:Reference[] cost:InheritedCost capabilityPointsExpendedBefore:Cp capabilityPointsExpendedAfter:Cp cohesionBefore:int cohesionAfter:int reactionWindowAfter:ReactionWindow rulesetHash:rawHash breakdownAccounting:empty breakdownFlowAfter:ReactingFlow configurationHash:hash creationBinding:id creationEventHash:hash cycleId:hash openingBaseHash:hash completionReceiptId:id priorPrefix:hash input:SecondMoveInput receiptId:id",
+    "SecondMoveState": "contractVersion:int campaignId:id rulesetHash:rawHash configurationHash:hash creationBinding:id creationEventHash:hash stateVersion:long prefix:hash sequencePosition:Position currentPosition:LifecyclePosition initiativeHolder:side operationStageOrders:PreambleOrder[] operationStageWeather:WeatherValue[] world:World randomState:Random receipts:PreambleReceipt[] firstActingSide:side members:ReserveMember[] cycle:Authority cycleId:hash openingBaseHash:hash completionReceiptId:id tracks:InheritedTrack[] actualProgressRefs:ActualProgressRef[] reactionWindow:ReactionWindow? breakdownFlow:LifecycleFlow"
+  },
+  "externalContracts": [
+    "combat-inherited-reaction-lifecycle-v1.schema.json"
+  ],
+  "domains": {
+    "moveReceipt": "sandtable.combat.inherited-reacting-element-moved-receipt.v3",
+    "windowCapability": "sandtable.observation.reaction-window.v1",
+    "capability": "sandtable.observation.reaction-capability.v1",
+    "opportunityCapability": "sandtable.observation.reaction-opportunity.v2"
+  },
+  "legacyFieldCounts": {"SecondMoveEvent": 29},
+  "limits": {"bytes": 1048576, "depth": 32, "arrayItems": 512, "participantEvents": 1, "secondMoveEvents": 1},
+  "scope": "Exact creation-rooted 3g post-first-move active ordinary-infantry Reaction state; one owner-authored rear-to-supply move retains active opportunity and route identity. No participant completion, multiple opportunity, vehicle, runtime, public activation or simulator admission."
+}
