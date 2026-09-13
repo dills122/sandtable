@@ -1,0 +1,62 @@
+{
+  "contractVersion": 1,
+  "contract": "combat-inherited-reaction-movement-completion-v1",
+  "sourceHashes": {
+    "docs/design/zoc-reaction-v1.md": "sha256:9627e3250268cda06c7dc0c76f625a092554ba33cf1d3d46cb50d63d062e6c2f",
+    "docs/specs/combat-inherited-reaction-lifecycle-v1.md": "sha256:ec0b98504ea230cdee907cfee612599fd5872d5a05807b7c060ee5e473ce61aa",
+    "docs/specs/combat-inherited-reaction-lifecycle-v1.schema.json": "sha256:94ee18139f72ffd883ccae100baa417f4c4b4048842cb33cadc120963923428a",
+    "docs/specs/combat-inherited-reaction-movement-completion-v1.schema.json": "sha256:ea4e4ce4b425e00b3bac08310cd93a1638d7c9c51a928b5062e90c101ac2dfad",
+    "docs/specs/combat-inherited-reaction-second-move-v1.md": "sha256:ea340e44f77c886a8e2e36da78e5a8381f9cad7be3f8a73a117e13ed9032bedb",
+    "docs/specs/combat-inherited-reaction-second-move-v1.schema.json": "sha256:a5a045e1bed845152b726506c91c5d7e549c917ba345b6805516117015174022",
+    "docs/specs/fixtures/combat-inherited-reaction-lifecycle-v1.json": "sha256:ec178fa858e2b9af9d8b97d7646db96fc71f8162ba43386cf903985e683b8494",
+    "docs/specs/fixtures/combat-inherited-reaction-second-move-v1.json": "sha256:97d2d5d42f5c279718c6f5cc797bc1963ff735c9ee0a2bbefe7d66376e7a8103",
+    "docs/specs/verify-combat-inherited-reaction-lifecycle-v1.py": "sha256:a2dc717ff7a28efcd90f0ecc041391a4603a07c6c319377acdc10e05f61aee31",
+    "docs/specs/verify-combat-inherited-reaction-second-move-v1.py": "sha256:b9352817db67e8df73438ca26ae978c60726fc9ba664d0db3ab8d23ce473f1f3",
+    "docs/specs/zoc-reaction-v1.md": "sha256:909701d99a0b6065c36dd1214492c099298fc23da2105d1132b9af9cdd03d766",
+    "src/Cna.Core/Actions/CampaignObservationV6ActionCandidates.cs": "sha256:8ec060c36490dee3866285d4832dc0022ffe6cd80aa5012f8fe80c663074486c",
+    "src/Cna.Core/Campaigns/CampaignBreakdownMoveEventSerializer.cs": "sha256:2885afd854bc57c5b8f782be0e0cd875fe13eb78658f433145568d45b2b1c704",
+    "src/Cna.Core/Campaigns/CampaignBreakdownRecords.cs": "sha256:63dc7cddecd89dbe4a038accc4cf9d1675464e53c0391d18c0e37b121ad4c23e",
+    "src/Cna.Core/Campaigns/CampaignReactingElementMovedV2.cs": "sha256:74246cf9f4cadb432a565e0982bc0f00c664455a9dd3834f2cc209c5656d0011",
+    "src/Cna.Core/Campaigns/CampaignReactingElementMovedV2Factory.cs": "sha256:58ff4225ed286edd53c8c1bedd870cb64ac4b9c58af437a976eca51b815e9282",
+    "src/Cna.Core/Campaigns/CampaignV11MoveProjector.cs": "sha256:c62fc410cfdf372c11c4e796a354b2e3015d0d2eeb466c3e53729806dfc43241",
+    "src/Cna.Core/Observations/CampaignObservationV6DisclosureIdentity.cs": "sha256:b6d6c7747b1f9ed282693be535604c1291402f5c80a1f83c317b3fae93ed9f87"
+  },
+  "cases": [
+    {
+      "name": "axis-reaction-movement-completion",
+      "predecessorCase": "axis-active-second-move",
+      "actor": "axis",
+      "goldens": {
+        "second-move": {"bytes": 5740, "sha256": "sha256:805509a6d5a8c2c0f41c2e4a595c0a5170b12e3ea93fbaba35b9365de522698c"},
+        "input-1": {"bytes": 744, "sha256": "sha256:fa440c2d5ca0af24103f7d3f78b1fd80aba9a5e14b7b3beb7c6c1f66b882bfe1"},
+        "input-2": {"bytes": 639, "sha256": "sha256:156783884a509752c8924c0c6b1d4aed32cf6e3266b3e3fd38d0faf4381a1658"},
+        "input-3": {"bytes": 660, "sha256": "sha256:5fa0190bb8384925a21f4b98be52d3bc306fc253b6a3c8d7a7b77ff3fc087281"},
+        "event-1": {"bytes": 5079, "sha256": "sha256:c92e11b93092c94dbc3a5fdbc28da585879f1936484314f5d2f56f1c9c7e1194"},
+        "event-2": {"bytes": 3504, "sha256": "sha256:16ad1298eceb75a73f70f78cc88e5311801f0fc39516f8de67c61d6d4658651b"},
+        "event-3": {"bytes": 2888, "sha256": "sha256:b8ef7e9ea70dbc63bfda95a9d31a754e6e2fc11ce75925b310224ba0d37d7b8b"},
+        "state-0": {"bytes": 15248, "sha256": "sha256:69d1dc9e0206d902a526dc85ccc5301597b3543fa15e5b637efaafcd7b800677"},
+        "state-1": {"bytes": 15668, "sha256": "sha256:7468ea3f42f8271bc151f5e2d77a2868ca5712d1219b5931d06298365a36c0c6"},
+        "state-2": {"bytes": 15534, "sha256": "sha256:76320e5b0e9eef77d68041a6cf97dee7e42cb251a2c14f8a288e7196f09d211b"},
+        "state-3": {"bytes": 13812, "sha256": "sha256:615999f38466c73fe64b5d7e7cc8da8eecf5c50e6facef6b85c0200d228ccfd3"}
+      }
+    },
+    {
+      "name": "commonwealth-reaction-movement-completion",
+      "predecessorCase": "commonwealth-active-second-move",
+      "actor": "commonwealth",
+      "goldens": {
+        "second-move": {"bytes": 5700, "sha256": "sha256:203ac7b8ed4e61911e1af95dacb23a2f32565bdc767177c1489bfe59777a8ccd"},
+        "input-1": {"bytes": 736, "sha256": "sha256:9a08498cb6e1061ae02234b5bb3cd94cefc819c746770bcb5d6a7a4a029edfc3"},
+        "input-2": {"bytes": 639, "sha256": "sha256:aa1ef48d767d71b9fcad66b7ab45119acaea07998431c344c7fc3102fb7e6d14"},
+        "input-3": {"bytes": 660, "sha256": "sha256:70c307bf5e02cc5f5f68a4450f579794e13bb651966b1b69861035bc8034fe39"},
+        "event-1": {"bytes": 5079, "sha256": "sha256:160e7c8fce80e10d781fda107095a55b42e454a33a5ed6d9df262a5f4ec92d1d"},
+        "event-2": {"bytes": 3496, "sha256": "sha256:3e539f89343f4c8073f554dd6d0fea45733b2872a51f5087db7a6111ab17bb8b"},
+        "event-3": {"bytes": 2904, "sha256": "sha256:5dff5a37fc167d6577430f7eed3c0887757a548f391c08f5417306f7c987dee4"},
+        "state-0": {"bytes": 15288, "sha256": "sha256:c94254909c59f2f5b59887be054140182eafbc67db6a3c61fef84b2cf50bc02c"},
+        "state-1": {"bytes": 15700, "sha256": "sha256:5aa3b2088713fdf3d4e761cae259061912103fa71e105ba9020f47ff7665e579"},
+        "state-2": {"bytes": 15590, "sha256": "sha256:b1130d3f705525298a446bae30053735e2c73486b719e597071770460da1c24c"},
+        "state-3": {"bytes": 13844, "sha256": "sha256:6b4943499c0af6c61be00d694d504a222bd729a22a6c7f50c0dc779e423285ce"}
+      }
+    }
+  ]
+}

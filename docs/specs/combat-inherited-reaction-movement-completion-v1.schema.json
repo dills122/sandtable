@@ -1,0 +1,34 @@
+{
+  "contract": "combat-inherited-reaction-movement-completion-v1",
+  "objects": {
+    "ReactionCompleteCommand": "contractVersion:int kind:id windowId:hash opportunityId:hash actionId:hash creationBinding:id creationEventHash:hash cycleId:hash expectedPriorVersion:long expectedPositionId:id",
+    "ResolveCommand": "contractVersion:int kind:id stopId:hash actionId:hash creationBinding:id creationEventHash:hash cycleId:hash expectedPriorVersion:long expectedPositionId:id",
+    "ReactionCloseCommand": "contractVersion:int kind:id windowId:hash actionId:hash creationBinding:id creationEventHash:hash cycleId:hash expectedPriorVersion:long expectedPositionId:id",
+    "CompleteEvent": "contractVersion:int eventType:id campaignId:id stateVersion:long priorStateVersion:long fromPositionId:id actingSide:side actionId:hash submittedWindowId:hash submittedOpportunityId:hash windowId:hash opportunityId:hash reactionWindowAfter:ReactionWindow rulesetHash:rawHash breakdownFlowAfter:ReactorStopOpenFlow configurationHash:hash creationBinding:id creationEventHash:hash cycleId:hash openingBaseHash:hash completionReceiptId:id priorPrefix:hash input:LifecycleInput receiptId:id",
+    "ResolveEvent": "contractVersion:int eventType:id campaignId:id stateVersion:long priorStateVersion:long rulesetHash:rawHash fromPositionId:id actionId:hash stop:LifecycleStop randomStateBefore:Random checks:empty createdLots:empty randomStateAfter:Random breakdownFlowAfter:ReactingFlow sources:Reference[] configurationHash:hash creationBinding:id creationEventHash:hash cycleId:hash openingBaseHash:hash completionReceiptId:id priorPrefix:hash input:LifecycleInput sequencePosition:Position interruptContextAfter:null receiptId:id",
+    "CloseEvent": "contractVersion:int eventType:id campaignId:id stateVersion:long priorStateVersion:long fromPositionId:id actingSide:null actionId:hash submittedWindowId:hash windowId:hash reason:id closedOpportunityIds:empty suspendedSequencePosition:Position rulesetHash:rawHash breakdownFlowAfter:MovingFlow configurationHash:hash creationBinding:id creationEventHash:hash cycleId:hash openingBaseHash:hash completionReceiptId:id priorPrefix:hash input:LifecycleInput receiptId:id",
+    "CompletionState": "contractVersion:int campaignId:id rulesetHash:rawHash configurationHash:hash creationBinding:id creationEventHash:hash stateVersion:long prefix:hash sequencePosition:Position currentPosition:LifecyclePosition initiativeHolder:side operationStageOrders:PreambleOrder[] operationStageWeather:WeatherValue[] world:World randomState:Random receipts:PreambleReceipt[] firstActingSide:side members:ReserveMember[] cycle:Authority cycleId:hash openingBaseHash:hash completionReceiptId:id tracks:InheritedTrack[] actualProgressRefs:ActualProgressRef[] reactionWindow:ReactionWindow? breakdownFlow:LifecycleFlow"
+  },
+  "externalContracts": [
+    "combat-inherited-reaction-second-move-v1.schema.json",
+    "combat-inherited-reaction-lifecycle-v1.schema.json"
+  ],
+  "domains": {
+    "completeReceipt": "sandtable.combat.inherited-reaction-participant-completed-receipt.v3",
+    "resolveReceipt": "sandtable.combat.inherited-breakdown-stop-resolved-receipt.v2",
+    "closeReceipt": "sandtable.combat.inherited-reaction-window-closed-receipt.v3",
+    "windowCapability": "sandtable.observation.reaction-window.v1",
+    "capability": "sandtable.observation.reaction-capability.v1",
+    "opportunityCapability": "sandtable.observation.reaction-opportunity.v2",
+    "stop": "sandtable.breakdown.stop.v1",
+    "stopCapability": "sandtable.action.breakdown-stop.v1"
+  },
+  "legacyFieldCounts": {"CompleteEvent": 15, "ResolveEvent": 15, "CloseEvent": 15},
+  "limits": {"bytes": 1048576, "depth": 32, "arrayItems": 512, "predecessorEvents": 1, "eventsPerCase": 3},
+  "eventSequence": [
+    "reaction-participant-completed@3",
+    "breakdown-stop-resolved@2",
+    "reaction-window-closed@3"
+  ],
+  "scope": "Exact creation-rooted 3p post-second-move active ordinary-infantry Reaction state; owner completion, mandatory empty-cohort stop resolution, System no-eligible closure and exact phasing-route resumption. No multiple opportunity, vehicle, runtime, public activation or simulator admission."
+}
