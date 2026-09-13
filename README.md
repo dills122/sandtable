@@ -230,6 +230,9 @@ System unavailable/timeout, resolves the mandatory empty stop, and only then res
 [D2c.3p active Reaction second move](docs/specs/combat-inherited-reaction-second-move-v1.md)
 instead advances that same active participant from rear to supply at cumulative CP2→4, preserving
 route identity and active opportunity for later completion.
+[D2c.3q Reaction movement completion](docs/specs/combat-inherited-reaction-movement-completion-v1.md)
+then explicitly completes that exact CP4 participant, resolves its mandatory empty stop, closes the
+exhausted window, and resumes the original phasing route.
 [D2c.3h Reserve cycle entry](docs/specs/combat-inherited-reserve-cycle-v1.md) instead carries each
 owner's real held Reserve-I unit through a no-move first cycle to same-slot Reserve Release while
 preserving designation history, location and CP0.
@@ -251,7 +254,7 @@ verifies the existing Rules9 path; prospective Combat contracts are not executab
 | --- | --- | --- |
 | Authority foundation | Versioned provenance, synthetic content, commands/events, deterministic randomness, replay, side-safe observations, and exact-audience legal actions for the admitted profile | Extend the same compatibility, recovery, and fog boundaries with each mechanic |
 | Preamble and Movement boundary | Initiative through Reserve Designation, bounded Movement, ZOC/Reaction, and Breakdown through first-side Combat entry | Positive scenario-specific obligations and broader vehicle/ZOC profiles remain gated |
-| Combat and continual cycle | Not implemented or activated | Contract-frozen through `003D2c.3p`; freeze remaining `.3` capability families, finish `.4` composition/side contracts, then dormant runtime, public activation, and Runner gates |
+| Combat and continual cycle | Not implemented or activated | Contract-frozen through `003D2c.3q`; freeze remaining `.3` capability families, finish `.4` composition/side contracts, then dormant runtime, public activation, and Runner gates |
 | Working skeleton | Not reached | One authentic movement/contact/combat/release repeat-or-finish loop plus identical replay |
 | Playable MVP | Not started | Source-verified six-turn content/rules/victory, durable save/resume, hot-seat privacy, and minimal no-model Maproom |
 | Exercise Harness | Current bounded Exercise/Maneuver and paired descriptive comparisons | Add Combat actions and terminals only after public Core activation |
@@ -386,8 +389,10 @@ forks covering both owners across player decline and distinct System unavailable
 two-event forks from exact post-first-move authority through reason-specific closed stop and
 mandatory resolution. [D2c.3p active Reaction second move](docs/specs/combat-inherited-reaction-second-move-v1.md)
 adds2 one-event owner traces from the same fork point through rear→supply at CP2→4 while retaining
-active authority. Participant completion after that second move, multiple-opportunity Reaction,
-vehicle profiles and D2c.4 remain open.
+active authority. [D2c.3q Reaction movement completion](docs/specs/combat-inherited-reaction-movement-completion-v1.md)
+adds2 three-event owner/System traces through explicit completion, empty-stop resolution, and exact
+phasing resumption at authority18. Multiple-opportunity Reaction, vehicle profiles, and D2c.4 remain
+open.
 [Result/settlement](docs/specs/combat-result-settlement-v1.md) and
 [full snapshot composition](docs/specs/combat-snapshot-composition-v1.md) retain synthetic pre-Combat
 lineage; review9 assessed these bounded artifacts. Parent003, future maturity execution and combined checkpoint B

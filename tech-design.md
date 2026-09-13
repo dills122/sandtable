@@ -950,6 +950,11 @@ The [inherited active Reaction second move](docs/specs/combat-inherited-reaction
 forks from that same active state and reuses `ReactingElementMovedV2` semantics: current reactor
 route advances in place, cumulative CP and derived track advance once, while frozen opportunity,
 active authority and suspended phasing continuation remain exact for later completion.
+The [inherited Reaction movement completion](docs/specs/combat-inherited-reaction-movement-completion-v1.md)
+consumes each exact second-move terminal. Reacting owner explicitly completes the now-optionless
+participant; System resolves its empty `reaction-completed` stop and closes the exhausted window
+before restoring the byte-identical suspended phasing route. CP4 World/track/progress and RNG remain
+unchanged across this three-event tail.
 [Inherited Reserve cycle entry](docs/specs/combat-inherited-reserve-cycle-v1.md) retains a real
 Reserve-I designation through an idle first cycle to same-slot Reserve Release. The
 [inherited Reserve Release contract](docs/specs/combat-inherited-reserve-release-v1.md) then records
@@ -967,8 +972,7 @@ pending exception. The
 [inherited released-I Movement-completion contract](docs/specs/combat-inherited-reserve-movement-completion-v1.md)
 then closes that exact route through deliberate stop, empty resolution and accepted completion,
 derives its ordinal-2 proof, and expires the exception with the completion receipt. Broader
-participant-completion/multiple-opportunity Reaction and vehicle families, full Snapshot
-composition, and all runtime/public activation remain
+multiple-opportunity Reaction and vehicle families, full Snapshot composition, and all runtime/public activation remain
 later gates.
 These private projections are not Snapshot12 readers.
 All five `CONTACT-001` rulings and the governing specification/design package are approved.

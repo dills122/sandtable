@@ -150,6 +150,10 @@ The [inherited active Reaction second-move packet](docs/specs/combat-inherited-r
 uses the existing `reacting-element-moved`3 family for another step by the same active participant.
 “Second move” changes current World/route/track location and cumulative CP; it does not mean a
 second opportunity, new route, participant completion, or window closure.
+The [inherited Reaction movement-completion packet](docs/specs/combat-inherited-reaction-movement-completion-v1.md)
+uses existing `reaction-participant-completed`3, `breakdown-stop-resolved`2, and
+`reaction-window-closed`3 families after that second move. “Movement completion” here closes the
+active Reaction participant episode and resumes phasing; it is not a phasing Movement-segment end.
 The [inherited Reserve-cycle packet](docs/specs/combat-inherited-reserve-cycle-v1.md) reaches
 `reserve-release` without performing Release. The
 [inherited Reserve Release packet](docs/specs/combat-inherited-reserve-release-v1.md) retains
