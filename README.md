@@ -51,7 +51,7 @@ play a side; it will never decide the rules or secretly change the campaign stat
 The executable product and the forward contract work are intentionally different. Today, public
 Rules9 authority and checked Runner evidence stop at first-side Combat **entry**. Separate frozen
 contract packets compose selected future Combat/cycle histories through released-I ordinal-2
-Movement completion,
+Movement completion and direct Reaction closure,
 but no Combat or Reserve Release runtime is registered. The
 [pre-alpha roadmap](docs/roadmap/pre-alpha-roadmap.md#current-delivery-status) is the canonical
 delivery ledger and defines the status vocabulary used below.
@@ -221,6 +221,9 @@ actual Move4 prefix and opens one frozen-opportunity Reaction interrupt for eith
 [D2c.3g Reaction lifecycle](docs/specs/combat-inherited-reaction-lifecycle-v1.md) moves that sole
 participant once, completes it through mandatory empty-stop resolution, and resumes phasing only
 after no-eligible closure.
+[D2c.3n direct Reaction closure](docs/specs/combat-inherited-reaction-closure-v1.md) instead closes
+either exact trigger by reacting-owner decline or reason-specific System unavailable/timeout and
+resumes the same suspended phasing route without material effects.
 [D2c.3h Reserve cycle entry](docs/specs/combat-inherited-reserve-cycle-v1.md) instead carries each
 owner's real held Reserve-I unit through a no-move first cycle to same-slot Reserve Release while
 preserving designation history, location and CP0.
@@ -242,7 +245,7 @@ verifies the existing Rules9 path; prospective Combat contracts are not executab
 | --- | --- | --- |
 | Authority foundation | Versioned provenance, synthetic content, commands/events, deterministic randomness, replay, side-safe observations, and exact-audience legal actions for the admitted profile | Extend the same compatibility, recovery, and fog boundaries with each mechanic |
 | Preamble and Movement boundary | Initiative through Reserve Designation, bounded Movement, ZOC/Reaction, and Breakdown through first-side Combat entry | Positive scenario-specific obligations and broader vehicle/ZOC profiles remain gated |
-| Combat and continual cycle | Not implemented or activated | Contract-frozen through `003D2c.3m`; freeze remaining `.3` capability families, finish `.4` composition/side contracts, then dormant runtime, public activation, and Runner gates |
+| Combat and continual cycle | Not implemented or activated | Contract-frozen through `003D2c.3n`; freeze remaining `.3` capability families, finish `.4` composition/side contracts, then dormant runtime, public activation, and Runner gates |
 | Working skeleton | Not reached | One authentic movement/contact/combat/release repeat-or-finish loop plus identical replay |
 | Playable MVP | Not started | Source-verified six-turn content/rules/victory, durable save/resume, hot-seat privacy, and minimal no-model Maproom |
 | Exercise Harness | Current bounded Exercise/Maneuver and paired descriptive comparisons | Add Combat actions and terminals only after public Core activation |
@@ -371,6 +374,9 @@ ordinal-2 Clear moves with released ceiling10.
 [D2c.3m released-I Movement completion](docs/specs/combat-inherited-reserve-movement-completion-v1.md)
 adds2 three-event stop/resolution/completion traces and applies the exact D2b.2 expiry projection
 from each accepted completion receipt; broader profiles and D2c.4 remain open.
+[D2c.3n direct Reaction closure](docs/specs/combat-inherited-reaction-closure-v1.md) adds6 one-event
+forks covering both owners across player decline and distinct System unavailable/timeout authority;
+active-participant/multiple-opportunity Reaction, vehicle profiles and D2c.4 remain open.
 [Result/settlement](docs/specs/combat-result-settlement-v1.md) and
 [full snapshot composition](docs/specs/combat-snapshot-composition-v1.md) retain synthetic pre-Combat
 lineage; review9 assessed these bounded artifacts. Parent003, future maturity execution and combined checkpoint B
