@@ -51,7 +51,8 @@ play a side; it will never decide the rules or secretly change the campaign stat
 The executable product and the forward contract work are intentionally different. Today, public
 Rules9 authority and checked Runner evidence stop at first-side Combat **entry**. Separate frozen
 contract packets compose selected future Combat/cycle histories through released-I ordinal-2
-Movement completion, direct Reaction closure, and active-participant System fallback,
+Movement completion, direct Reaction closure, active-participant System fallback, and
+same-participant second movement through explicit completion/closure (`003D2c.3q`),
 but no Combat or Reserve Release runtime is registered. The
 [pre-alpha roadmap](docs/roadmap/pre-alpha-roadmap.md#current-delivery-status) is the canonical
 delivery ledger and defines the status vocabulary used below.
@@ -254,7 +255,7 @@ verifies the existing Rules9 path; prospective Combat contracts are not executab
 | --- | --- | --- |
 | Authority foundation | Versioned provenance, synthetic content, commands/events, deterministic randomness, replay, side-safe observations, and exact-audience legal actions for the admitted profile | Extend the same compatibility, recovery, and fog boundaries with each mechanic |
 | Preamble and Movement boundary | Initiative through Reserve Designation, bounded Movement, ZOC/Reaction, and Breakdown through first-side Combat entry | Positive scenario-specific obligations and broader vehicle/ZOC profiles remain gated |
-| Combat and continual cycle | Not implemented or activated | Contract-frozen through `003D2c.3q`; freeze remaining `.3` capability families, finish `.4` composition/side contracts, then dormant runtime, public activation, and Runner gates |
+| Combat and continual cycle | Not implemented or activated | Selected D2c.3 profile contract-frozen through `003D2c.3q`; finish `.4` composition and Task004A/B/C, then dormant runtime, public activation, and Runner gates. Multiple-opportunity Reaction and positive vehicle Breakdown are post-B extensions |
 | Working skeleton | Not reached | One authentic movement/contact/combat/release repeat-or-finish loop plus identical replay |
 | Playable MVP | Not started | Source-verified six-turn content/rules/victory, durable save/resume, hot-seat privacy, and minimal no-model Maproom |
 | Exercise Harness | Current bounded Exercise/Maneuver and paired descriptive comparisons | Add Combat actions and terminals only after public Core activation |
@@ -391,8 +392,8 @@ mandatory resolution. [D2c.3p active Reaction second move](docs/specs/combat-inh
 adds2 one-event owner traces from the same fork point through rear→supply at CP2→4 while retaining
 active authority. [D2c.3q Reaction movement completion](docs/specs/combat-inherited-reaction-movement-completion-v1.md)
 adds2 three-event owner/System traces through explicit completion, empty-stop resolution, and exact
-phasing resumption at authority18. Multiple-opportunity Reaction, vehicle profiles, and D2c.4 remain
-open.
+phasing resumption at authority18. That closes selected-profile D2c.3. Multiple-opportunity
+Reaction and positive vehicle Breakdown are post-B extensions; D2c.4 remains open.
 [Result/settlement](docs/specs/combat-result-settlement-v1.md) and
 [full snapshot composition](docs/specs/combat-snapshot-composition-v1.md) retain synthetic pre-Combat
 lineage; review9 assessed these bounded artifacts. Parent003, future maturity execution and combined checkpoint B

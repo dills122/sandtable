@@ -9,8 +9,8 @@ creation-rooted Reaction completion after second movement (`003D2c.3q`). Task `0
 | Delivery layer | Current boundary | Next required outcome |
 | --- | --- | --- |
 | Research and policy | Complete for the selected bounded profile, including `HOST-RSH-001` | Reopen only for a new source, failed assumption, or approved profile expansion |
-| Authority contracts | C3 result/settlement, D2 movement/release/control, and D2c inherited families through `.3q` are frozen as bounded Python evidence | Freeze remaining `.3` capability families, then `.4` full composition and the `003` handoff |
-| Outward contracts | Task004 not started | Freeze side-safe observation/action and Exercise evidence contracts; map every design AC |
+| Authority contracts | C3 result/settlement, D2 movement/release/control, and the selected D2c.3 infantry/Reserve-I profile through `.3q` are frozen as bounded Python evidence | Complete `.4` full composition and the `003` handoff; multiple-opportunity Reaction and positive vehicle Breakdown are post-B extensions |
+| Outward contracts | Task004 parent and children not started | Freeze side-safe observation/action and Exercise evidence contracts in `004A`/`004B`, then reconcile every design AC in `004C` |
 | Runtime | Tasks005–019 not started | Implement dormant tables/state/decisions/settlement/release/repeat with cumulative replay and recovery evidence |
 | Public and simulator | Tasks020–024 not started | Activate the certified side-safe profile, then prove strict Exercise/Runner reconstruction and repeatability |
 | Closeout | Task025 not started | Full gate, evidence reconciliation, and authentic loop demonstration without overstating retained obligations |
@@ -114,7 +114,7 @@ visible. No favorable-vector or synthetic arithmetic result substitutes for full
 | Task / size | Output and acceptance criteria | Verification | Dependencies / likely paths |
 | --- | --- | --- | --- |
 | `CMB-TASK-003` / M, 3–5 files | Freeze CON-002–004 world/event/snapshot/command schemas and state transitions. Allocate exact versions after registry inventory; pin causal receipts, bounds, loss/guard/CP conservation, cycle prefix, deadline and migration/recovery behavior. Freeze ordinary movement receipts that atomically debit break-off/terrain CP, apply immediate excess-CPA DP and end only affected relation memberships. Retain earned/due replacement scopes and the unresolved phase-specific maturity gate. | Field-by-field design trace, canonical positive/negative vectors and restart-cut matrix; explicit unsupported-state rejection. | 001–002; new authority contract packet and vectors under [design](./), [Campaign tests](../../tests/Cna.Core.Tests/Campaigns/). |
-| `CMB-TASK-004` / M, 3–5 files | Freeze CON-005/006 side and Exercise contracts, candidate bytes and terminal evidence. Enumerate every design AC in an evidence index; mark deferred transport requirements without allocating fake production support. | Equal-authorized-history vectors, authority-leak negatives, ordinal/terminal tampering and all 72 ACs mapped to a task and planned test. | 003; new side/evidence packet, [Observation tests](../../tests/Cna.Core.Tests/Observations/), [Exercise tests](../../tests/Cna.Core.Tests/Exercises/). |
+| `CMB-TASK-004` / parent | Orchestrate the bounded CON-005, CON-006 and 72-AC reconciliation children below. Parent closes only after `004A`–`004C` pass and their retained readback proves the handoff has no gap or duplicate claim. | Child evidence plus final cross-contract readback; parent status follows the least-complete required child. | 003; `004A`–`004C`. |
 
 TASK-003 sizing refinement, 2026-09-06, before authority edits: its three contract families cross
 independent subsystems and cannot honestly fit one3–5-file change. Preserve parent003 and split
@@ -128,6 +128,21 @@ only after all four slices and their cross-contract checks pass; this is not a l
 | `CMB-TASK-003B` | Durable World7, relationship/loss/capture/guard/escape/future-obligation values and settlement receipts | [World7/settlement packet](../specs/combat-world-settlement-v1.md) complete:6goldens/57 negatives/112 isolated cuts; [review5](../reviews/combat-progress-review-5.md) Ready with non-blocking follow-ups, status correction applied |
 | `CMB-TASK-003C` | Exact Rules10/config bundle bytes/hash, Snapshot/creation and sealed selection/round/step/commit/result command/event envelopes | Exact version/identity/hash framing, deadline/retry suffix and restart-cut matrix; after003B |
 | `CMB-TASK-003D` | Cycle/release/history and ordinary break-off movement receipts; combined CON-002–004 reconciliation | Cumulative CP/immediate DP, affected-membership endings, prefix/release/history/continuation vectors and parent003 closeout; after003C |
+
+TASK-004 sizing refinement, 2026-09-14, before outward-contract edits: CON-005 projection,
+CON-006 Exercise/Runner evidence and the complete acceptance-criteria readback are independent
+responsibilities. Preserve parent004 and execute the following bounded children. Each child stays
+within five primary files including its contract, vectors/oracle and plan update; `004A` and `004B`
+may proceed independently only after consuming the exact003D2c.4 handoff.
+
+| Child / size | Output and acceptance criteria | Verification | Dependencies / likely paths |
+| --- | --- | --- | --- |
+| `CMB-TASK-004A` / M, 3–5 files | Freeze CON-005 side projection: per-audience observations, action sets, candidate bytes, stable public references, revision separation and explicit authenticated audience mapping. Preserve hidden-authority boundaries and mark hosted transport allocation deferred. | Equal-authorized-history vectors, opposite-hidden-state forks, authority/hash/handle leak negatives, candidate canonical bytes and submission-mapping tamper cases. | 003D2c.4 handoff; new side packet and [Observation tests](../../tests/Cna.Core.Tests/Observations/). |
+| `CMB-TASK-004B` / M, 3–5 files | Freeze CON-006 Exercise/Runner evidence: supported occurrence/ordinal/position/obligation terminals, checkpoint continuation, strict child manifest/parent report and replay/readjudication/first-divergence shapes. Reject unsupported terminals before execution. | Canonical terminal/continuation vectors; ordinal, manifest, report, replay and terminal tampering; failure/step-limit negative-success cases. | 003D2c.4 handoff; new evidence packet and [Exercise tests](../../tests/Cna.Core.Tests/Exercises/). |
+| `CMB-TASK-004C` / M, 3–5 files | Integrate the003 handoff with `004A`/`004B`; expand all six 12-AC design families into 72 named rows, each mapped to one contract owner, one planned implementation/test owner and one eventual retained-evidence slot. Record explicit deferrals rather than assigning unsupported evidence. | Machine-readable/readback check for exactly72 unique canonical AC IDs, no missing or duplicate owners, valid task dependencies and resolved CON-002–006 references. | 004A–004B; acceptance-evidence index and focused structural verifier. |
+
+Checkpoint B requires parent003 and parent004. Parent004 closes only when `004C` proves that both
+outward child contracts and all72 acceptance criteria consume the final003 handoff consistently.
 
 TASK-003C/D dependency refinement, 2026-09-06, before003C implementation:003C combines Rules,
 configuration and several independent authority codecs. Its final Rules10 hash depends on the
@@ -201,7 +216,7 @@ exceed one five-file checkpoint. Preserve parent003D2c/003 and execute these bou
 | `003D2c.1` | Exact current/successor dispatch declarations, bounded008/019 first-opening owner graph, and Reserve-completion/first-cycle-opening contract. Strict source/identity/readback evidence; isolated predecessor prefix remains explicit. |
 | `003D2c.2` | Actual prospective creation→preamble/Weather→Reserve provenance and initial opening input. Split preamble, Weather and Reserve field families before edits; derive headers/receipts/RNG from accepted contracts. |
 | `003D2c.3` | Sequence5 Movement/Reaction/Breakdown successors, Movement-end/progress provenance, positive Reserve movement and armed Combat continuation admission. Bound each independent family before edits; unsupported input never means no continuation. |
-| `003D2c.4` | Full World/Snapshot composition, actual first-opening/continuation trace, retained history/obligations/capacity and CON-002–004 reconciliation. Close parent003 after all003 dependencies, integrated contract checks and the003-owned Task004 handoff below are complete;004 then produces the complete AC map. |
+| `003D2c.4` | Full World/Snapshot composition, actual first-opening/continuation trace, retained history/obligations/capacity and CON-002–004 reconciliation. Close parent003 after all003 dependencies, integrated contract checks and the003-owned Task004 handoff below are complete;004A/B freeze outward contracts and004C produces the complete AC map. |
 
 D2c.2 refinement (input `387445b`, before edits): four sequential family checkpoints,
 each at most five primary files including its spec/schema/fixture/oracle/plan:
@@ -422,17 +437,42 @@ material progress, consume the original reactor route only through mandatory emp
 and resume the exact suspended phasing route. Exact cut replay/readback/retry, rotated empty-option
 capability, wrong actor/action/history, authoritative-handle substitution, competing-fork,
 event/state mutation, malformed bytes, capacity and source-pin checks form acceptance. Multiple
-opportunities, positive vehicle Breakdown, .4/004/B, runtime, public activation and simulator
-remain open.
+opportunities and positive vehicle Breakdown are explicit post-B extensions; .4/004/B, runtime,
+public activation and simulator remain open.
+
+#### D2c.3 Checkpoint-B closure matrix
+
+The selected Checkpoint-B profile is ordinary independent infantry plus one-opportunity Reaction
+and Reserve-I release/repeat. The following matrix is the exhaustive D2c.3 exit: all17 children
+`3a`–`3q` are accounted for, and no unlisted D2c.3 family is a pre-B dependency. Each completed row
+has canonical positive cases plus strict replay/readback/retry, mutation, malformed-byte, capacity,
+cross-history and source-pin negatives in its linked packet.
+
+| Required pre-B family / dependency | Acceptance evidence | Child status | B disposition |
+| --- | --- | --- | --- |
+| Ordinary Movement route, deliberate stop, empty-cohort stop resolution and Breakdown completion; consumes actual `2d` opening | [Movement](../specs/combat-inherited-movement-v1.md), [lifecycle](../specs/combat-inherited-movement-lifecycle-v1.md), [Breakdown completion](../specs/combat-inherited-breakdown-completion-v1.md) | `3a`–`3c` complete | Required and satisfied |
+| Empty Combat selection and six-step no-attack traversal to Reserve Release; consumes `3c` | [selection](../specs/combat-inherited-selection-v1.md), [no-attack](../specs/combat-inherited-no-attack-v1.md) | `3d`–`3e` complete | Required and satisfied |
+| Exactly one Reaction opportunity: trigger, one participant/first move, direct decline, active unavailable/timeout fallback, second move, completion, empty-stop resolution and closure; consumes `3a` | [trigger](../specs/combat-inherited-reaction-trigger-v1.md), [lifecycle](../specs/combat-inherited-reaction-lifecycle-v1.md), [direct closure](../specs/combat-inherited-reaction-closure-v1.md), [active fallback](../specs/combat-inherited-reaction-active-fallback-v1.md), [second move](../specs/combat-inherited-reaction-second-move-v1.md), [movement completion](../specs/combat-inherited-reaction-movement-completion-v1.md) | `3f`–`3g`, `3n`–`3q` complete | Required and satisfied |
+| Reserve-I idle cycle entry and actual release; consumes actual `2d` Reserve designation | [cycle entry](../specs/combat-inherited-reserve-cycle-v1.md), [release](../specs/combat-inherited-reserve-release-v1.md) | `3h`–`3i` complete | Required and satisfied |
+| Armed continuation admission and guarded repeat/finish; consumes `3i` and frozen Combat result support | [armed continuation](../specs/combat-inherited-armed-continuation-v1.md), [cycle control](../specs/combat-inherited-cycle-control-v1.md) | `3j`–`3k` complete | Required and satisfied |
+| Positive released-I ordinal-2 Movement, completion and exception expiry; consumes `3k` repeat | [Reserve Movement](../specs/combat-inherited-reserve-movement-v1.md), [completion](../specs/combat-inherited-reserve-movement-completion-v1.md) | `3l`–`3m` complete | Required and satisfied |
+| Multiple-opportunity Reaction | No selected-profile acceptance evidence; unsupported input must reject | Deferred | Post-B admitted-profile extension; not a B blocker |
+| Positive vehicle Breakdown and broader vehicle successors | No selected-profile acceptance evidence; unsupported input must reject | Deferred | Post-B admitted-profile extension; not a B blocker |
+
+Therefore `003D2c.3q` closes D2c.3 for the selected Checkpoint-B profile. D2c.4 full
+World/Snapshot composition and the003 handoff are the next authority-contract blockers. Any future
+multiple-opportunity or vehicle work requires an explicit profile expansion, new bounded children
+and its own acceptance evidence; it cannot be inferred from the infantry/empty-cohort packets.
 
 D2c.4 owns the **Task004 handoff** section in its planned
 `docs/specs/combat-authority-composition-v1.md` contract packet, within the same five-primary-file
 cap. That section must identify the frozen CON-002–004 versions/hashes, composed trace and capacity
 results, relevant requirement IDs, explicit capability exclusions and remaining runtime evidence
-owners. This is003's contract handoff, not004's complete72-AC map. Parent003 closes after all003
-slices and their integrated checks, including this handoff, are complete. Task004 then consumes the
-handoff, freezes CON-005/006 and completes its72-AC evidence map. Checkpoint B requires both003 and004;
-003 does not depend on004 starting or completing.
+owners. This is003's contract handoff, not004C's complete72-AC map. Parent003 closes after all003
+slices and their integrated checks, including this handoff, are complete. Task004A and004B then
+consume the handoff to freeze CON-005 and CON-006 independently;004C completes their integrated
+72-AC evidence map and closes parent004. Checkpoint B requires both003 and004;003 does not depend
+on004 starting or completing.
 
 Each checkpoint retains the five-primary-file cap. These refine already-required inherited work;
 no gameplay policy, runtime activation or checkpoint-B acceptance changes. Historical review
@@ -461,10 +501,10 @@ compatibility/replay requirements, not permission to broaden the certified capab
   version and resource checks; label assumed preconditions. In-process implementation tests must
   later derive the boundary from accepted predecessors, never promote C3a's synthetic probe hashes
   to authoritative history. Runtime proof remains unimplemented at B.
-- After003 closes with its integrated contract checks and Task004 handoff,004 maps every design AC
-  to named contract and implementation evidence, including composed snapshot capacity and
-  unsupported-history rejection. Fragment oracles alone do not close003; neither003 alone nor the
-  handoff alone closes checkpoint B.
+- After003 closes with its integrated contract checks and Task004 handoff,004A freezes CON-005,
+  004B freezes CON-006 and004C maps every design AC to named contract, implementation and retained
+  evidence owners, including composed snapshot capacity and unsupported-history rejection.
+  Fragment oracles alone do not close003; neither003 alone nor the handoff alone closes checkpoint B.
 
 Owner accepted the [review direction](../reviews/combat-delivery-plan-author-review.md#owner-disposition)
 to split008 into codec/restore and inherited-path adapters, bringing first opening forward from019
@@ -607,8 +647,9 @@ documentation-only changes do not require another full seed sweep.
 
 ## Requirement-to-task evidence index
 
-Ranges include every numbered AC, not only favorable examples. TASK-004 expands this compact index
-into named tests/vectors; TASK-025 records actual results. No implementation evidence exists yet.
+Ranges include every numbered AC, not only favorable examples. TASK-004C expands this compact index
+into72 unique named contract/test/evidence rows after004A/B freeze their outward contracts;
+TASK-025 records actual results. No implementation evidence exists yet.
 
 | Canonical requirement / decisions | Tasks | Required evidence / current status |
 | --- | --- | --- |
@@ -1218,7 +1259,8 @@ empty-cohort resolution, and owner Movement completion. Six profile-specific v1 
 retain World/RNG/attack history, route, CP2, ammunition10 and TOE10, derive the ordinal-2 end proof,
 and apply unchanged D2b.2 expiry using each accepted completion receipt. Sixteen readbacks,6 retries,
 1626 mutations,60 malformed-byte rejects,58 authority/order boundaries and10 source pins pass.
-Broader Reaction/vehicle and remaining `.3` families, .4/004/B, runtime and simulator remain open.
+At this checkpoint, the later one-opportunity Reaction children `3n`–`3q` remain open; broader
+Reaction/vehicle families are post-B extensions, while .4/004/B, runtime and simulator remain open.
 Author verification only; review15 remains exhausted.
 
 TASK-003D2c.3n checkpoint, 2026-09-12 (input `e2302d2`):
@@ -1261,5 +1303,6 @@ terminals through owner completion, mandatory empty-stop resolution and System n
 Six compatible v3/v2/v3 events advance authority15→18 while retaining supply/CP4 World, exact
 reactor track, RNG and progress before resuming the suspended phasing route. Eight cuts,6 retries,
 506 mutations,54 malformed-byte rejects,72 authority/fork/capacity boundaries and18 source pins
-pass. Multiple opportunities, vehicle profiles, .4/004/B, runtime, public activation and simulator
-remain open. Author verification only; independent-review sequence remains exhausted.
+pass. D2c.3 is complete for the selected Checkpoint-B profile. Multiple opportunities and vehicle
+profiles are post-B extensions; .4/004/B, runtime, public activation and simulator remain open.
+Author verification only; independent-review sequence remains exhausted.
