@@ -1,39 +1,36 @@
-# Blocked draft metadata
+# Current draft PR metadata
+
+## Branch and accepted clock commit
 
 ```text
-Branch: codex/overnight-combat-wave-01
-Commit Message
-docs(combat): retain blocked side-contract candidate and clock privacy evidence
+codex/overnight-combat-wave-01
+3fcd8229f077521759fdb5ae2aaa942aa91f89ac
 ```
+
+## PR title
 
 ```text
-PR Title
-Record blocked Combat side-contract candidate and clock privacy conflict
+Add privacy-preserving Combat clock contracts
 ```
 
-```md
-PR Description
-## Summary
+## PR description
 
-Preserve unaccepted CMB-TASK-004A1 candidate and independently reproduced conflict between accepted clock-regression fallback and equal-outcome privacy. This draft is blocked; no Combat task in this wave or checkpoint B is complete.
+```markdown
+Private Combat seal timestamps previously changed whether an opponent’s unchanged proposal succeeded after a clock regression. Add an explicit v2 round/clock configuration whose acceptance floor stays at the published opening instant. Keep the original deadline, deterministic fallback, receipt recovery and Prepared ordering; preserve historical v1 contracts and their failing privacy diagnostic.
 
-## What Changed
-
-- Add bounded synthetic selection/RBA/assignment side contract, ordered schema, canonical fixtures and oracle.
-- Retain failing both-seal-order privacy diagnostic and ordinary fresh-context review/source evidence.
-- Record overnight execution index, handoff and accurate blocked plan/roadmap/README status.
+The clock packet is accepted. The retained side-projection candidate is still being integrated; Task004/checkpoint B and Task005 remain incomplete. This draft contains contract evidence only and activates no Combat runtime. No merge requested.
 
 ## Validation
 
-- `just check`: baseline and candidate both pass, 81 boundary tests and 1,670 full tests, zero skipped/warnings/errors.
-- `python3 -B docs/specs/verify-combat-side-projection-v1.py`: limited candidate vectors pass, 18 audience traces, 146 cuts, 63 submissions, 297 mutations, 180 raw rejections, 21 receipt/stale checks.
-- Selection, sealed-round, cycle-sequence and baseline authority-composition predecessor oracles pass.
-- `python3 -B .planning/2026-09-14-overnight-combat-wave-01/evidence/clock-high-water-counterexample.py`: FAILS as retained acceptance evidence, both seal orders.
-- AST/JSON/diff checks and local target/new-anchor checks pass; pinned Lychee unavailable.
+- Round-v2 oracle:12semantic groups,10traces,68cuts,610replay mutations,340raw rejects,288clock comparisons/retries,480lifecycle retries,30invalid proposals.
+- Ordinary fresh-context review approved after exact fixture-byte validation fixed numeric type coercion.
+- Independent source audit:136canonical literals,58events,6pins and derived identities;15historical files unchanged.
+- Root independent admission check:88equal-outcome comparisons; historicalv1 counterexample retained.
+- Root `just check`:format/build clean,81boundary tests,1670full tests,0skipped.
 
-## Scope Notes
-
-Same waiting-side bytes and proposal at trusted time3500 accept with private high-water3000, but reject/cancel after hidden opposing seal raises it to4000. POL004 requires regression fallback; POL006/PRO-AC010 require equal outcomes. No source exception was found. Owner must reconcile policies and authorize explicit compatible/versioned contract treatment.
-
-No A1 acceptance;004A/004/checkpoint B open. Task005 not begun;006 deferred. Historical authority bytes, runtime registration and protobuf unchanged. Ordinary quality review only; exhausted formal independent-review budget preserved. Do not merge.
+Clock packet commit:3fcd822. Exact logs, scope limits, owner privacy disposition and renewed eight-hour deadline are retained under `.planning/2026-09-14-overnight-combat-wave-01/`.
 ```
+
+PR: https://github.com/dills122/sandtable/pull/115
+
+Clock packet accepted; side integration in progress;004/B and005 incomplete. No merge.

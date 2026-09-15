@@ -4,15 +4,15 @@
 `CMB-PLAN-001` and POL-001–008 were accepted on 2026-09-06 at `a10a588`. Source and static Content
 work (`001`–`002`) is complete. Parent `003` is complete through the
 [authority-composition handoff](../specs/combat-authority-composition-v1.md). Checkpoint B remains
-open. Task `004` resumed at unaccepted `004A1`: owner selected strict privacy; a versioned clock
-correction and side-contract integration remain required. Runtime tasks
+open. Task `004A1` is accepted with strict clock privacy and versioned round authority.
+Result/settlement clock integration, remaining side families and Exercise contracts remain required. Runtime tasks
 `005`–`025` have not started.
 
 | Delivery layer | Current boundary | Next required outcome |
 | --- | --- | --- |
 | Research and policy | Complete for the selected bounded profile, including `HOST-RSH-001` | Reopen only for a new source, failed assumption, or approved profile expansion |
 | Authority contracts | CON-002–004 and all selected-profile inherited families are reconciled in 28 creation-rooted composition traces; parent003 complete | Preserve exact Task004 handoff while later runtime work derives boundaries from accepted history |
-| Outward contracts | Task004 resumed at unaccepted004A1: strict privacy selected; versioned clock correction pending. Task003 handoff remains unchanged | Verify clock successor, then freeze CON-005/006 and expand all 72 ACs row by row |
+| Outward contracts | Task004A1 accepted with corrected clock profile; Task003 handoff unchanged | Integrate result timing, then freeze CON-005/006 and expand all 72 ACs row by row |
 | Runtime | Tasks005–019 not started | Implement dormant tables/state/decisions/settlement/release/repeat with cumulative replay and recovery evidence |
 | Public and simulator | Tasks020–024 not started | Activate the certified side-safe profile, then prove strict Exercise/Runner reconstruction and repeatability |
 | Closeout | Task025 not started | Full gate, evidence reconciliation, and authentic loop demonstration without overstating retained obligations |
@@ -129,6 +129,21 @@ deliver these sequential slices with at most five primary files each, including 
 | `CMB-TASK-004B` | New Exercise evidence spec, schema, fixture and oracle | After accepted004A; complete CON-006 occurrence/ordinal/terminal/continuation and strict manifest/report/divergence contracts, unsupported-terminal and false-success negatives |
 | `CMB-TASK-004C` | Explicit72-AC index and bounded integrated readback evidence | After accepted004A/B; every AC maps to task/planned test; exact versions, capacity, compatibility and Task003 handoff reconciled before004/checkpoint B closes |
 
+004B sizing refinement before edits: three explicitly unregistered prospective Combat families,
+each spec/schema/fixture/oracle plus this plan, execute after accepted004A:
+
+| Slice | Contract family | Required evidence |
+| --- | --- | --- |
+| 004B1 | `combat-exercise-occurrence-v1` | Tagged synthetic-C3 or historical003 lineage; full-World/RNG typed checkpoint; exact occurrence/position/closure/obligations; continuation and pinned dual-slot schedule |
+| 004B2 | `combat-exercise-child-evidence-v1` | Strict manifest/payload inventory; source replay and separate side-decision re-adjudication; exact Int32 record framing; failure/step-limit distinct from successful terminal |
+| 004B3 | `combat-exercise-parent-evidence-v1` | Validate children before counts/fingerprint; equal initial lineage for pairs; audience/action first divergence, unequal-length null arm and unavailable comparisons |
+
+These typed checkpoints are not CoreSnapshot records. They prove contract replay within explicitly
+tagged lineage; ordinary-Core/Exercise parity remains runtime022, actual publication remains023.
+No full Snapshot successor is needed for this chosen004B route. Preserve old ExerciseManifest
+payload2/labelv1, Checkpoint1/Snapshot11 and all registered readers. New Combat scheme labels remain
+unregistered; old readers never receive prospective Rules10 manifests as current supported input.
+
 Each slice requires focused verification, ordinary fresh-context quality review, brain-run
 `just check` and an accepted commit. This split adds no gameplay policy, production registration or
 formal independent-review pass. Task005 remains gated on complete004/checkpoint B. Small navigation
@@ -179,11 +194,31 @@ closes review's P2 numeric-coercion finding. This accepts only the clock packet;
 open pending side integration. Evidence: [ordinary review](../../.planning/2026-09-14-overnight-combat-wave-01/evidence/clock-v2-review.md),
 [full gate](../../.planning/2026-09-14-overnight-combat-wave-01/evidence/clock-v2-just-check.log).
 
+W01-CLOCK-INTEGRATE /004A1 accepted,2026-09-15: ordinary fresh-context review approved;
+root `just check` passes 81 boundary and 1670 full tests, zero skipped, build zero warnings/errors.
+Side oracle passes 23 semantic groups, 58 traces/466 cuts, 207 submissions, 969 mutations,
+580 raw rejects, 69 receipt/stale bindings and 672 corrected clock comparisons/retries.
+Reviewer independently checked 1152 equal-outcome cases; root checked 144 serialized outcomes
+across eight equal-observation pairs and 17 legacy admission rejects. Source audit verified all
+201 literal goldens and 23 pins; original 18 audience traces remain exact. Historical diagnostic
+still documents v1 failure. This accepts A1 only; A2/A3 and parent004/B remain open.
+Evidence: [review](../../.planning/2026-09-14-overnight-combat-wave-01/evidence/side-clock-review.md),
+[gate](../../.planning/2026-09-14-overnight-combat-wave-01/evidence/side-clock-just-check.log).
+
 Downstream clock integration split before edits: `W01-CLOCK-RESULT` owns new
 `combat-result-settlement-v2` spec/schema/fixture/oracle plus this plan after round-v2 acceptance.
 It retains World7, selected Rules10 arithmetic and role-ordered RNG while validating corrected
 committed-round evidence and mandatory-window timing. Complete this packet before004A2 consumes
-the corrected result lane. `W01-CLOCK-SNAPSHOT`, if full corrected snapshots are used by CON006,
+the corrected result lane. Result-v2 timing disposition: each new mandatory window uses its own
+independently trusted valid opening instant and checked fixed budget. Earlier private accepted
+timestamps cannot gate that opening or trigger fallback. Choices within the live window use its
+own published timing gate; any global accepted-time maximum is audit evidence only. Preserve
+Config1 budget/fallback values and explicitly bind the corrected opening policy in Result2.
+Retained eight-branch corpus has same-owner retreat/custody sequences: the paired10001/11000
+retreat acceptance then10500 custody opening test proves prior-time isolation, not an opposing-
+retreat leak. Do not invent a cross-owner gameplay branch. Retain all eight branches, both acting
+sides and seal orders through exact RoundState2 bytes, including4000→3500 seals.
+`W01-CLOCK-SNAPSHOT`, if full corrected snapshots are used by CON006,
 owns new `combat-snapshot-composition-v2` spec/schema/fixture/oracle plus this plan; freeze its exact
 payload/arm identity before writes. Existing00328trace creation-rooted handoff stays byte-exact;
 corrected positive C3 evidence remains explicitly synthetic.004C reconciles both support sets,

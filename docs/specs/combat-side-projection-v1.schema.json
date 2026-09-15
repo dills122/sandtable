@@ -22,7 +22,8 @@
     "ActionSeed": "decisionId:ref candidate:Candidate",
     "SetSeed": "decisionId:ref openingRevision:revision actions:Action[]",
     "ReceiptSeed": "decisionId:ref actionId:ref",
-    "UnitSeed": "campaignId:id audience:side elementId:id componentId:id?"
+    "UnitSeed": "campaignId:id audience:side elementId:id componentId:id?",
+    "ClockConfigSeed": "selectionBudgetMilliseconds:budget rbaBudgetMilliseconds:budget assignmentBudgetMilliseconds:budget assignmentClockPolicyId:clockPolicy"
   },
   "candidateTags": {
     "select-close-assault": "Select",
@@ -69,6 +70,9 @@
     ],
     "allocation": [
       "full-close-assault"
+    ],
+    "clockPolicy": [
+      "sandtable.combat.public-opening-clock.v2"
     ]
   },
   "integerBounds": {
@@ -111,6 +115,10 @@
     "stage": [
       1,
       3
+    ],
+    "budget": [
+      30000,
+      30000
     ]
   },
   "domains": {
@@ -138,7 +146,12 @@
   "externalContracts": [
     "combat-selection-steps-v1.schema.json",
     "combat-sealed-round-v1.schema.json",
-    "combat-cycle-sequence-v1.schema.json"
+    "combat-cycle-sequence-v1.schema.json",
+    "combat-sealed-round-v2.schema.json"
   ],
-  "scope": "Prospective A1 contract evidence only. No production version, protobuf field, runtime admission or registration allocated. Settlement and Reserve/cycle projection await A2/A3."
+  "scope": "Prospective A1 contract evidence only. No production version, protobuf field, runtime admission or registration allocated. Settlement and Reserve/cycle projection await A2/A3.",
+  "sourceProfiles": {
+    "historical": "Original nine names; offline diagnostics only; shared-high-water counterexample remains failing.",
+    "corrected": "clock-v2.<actingSide>.<case>; ten mirrored C3a and ten authenticated Round2 traces; current admission only."
+  }
 }

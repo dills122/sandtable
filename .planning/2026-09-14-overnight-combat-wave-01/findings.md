@@ -86,3 +86,29 @@
 - Exhaustive expected data uses independent opticalcells+explicitthree-cellamendment; production
   range expansion cannot generate expectedcells.36Morale/360loss/6480joint/8840capture-refusal.
   Morale differential weights1,68,1158,68,1 across1296pairs. No newsourceambiguity found.
+
+##004B concrete contract route
+
+- Source-agent proposes3fourfilepackets: combat-exercise-occurrence-v1 (terminal/checkpoint/schedule),
+  combat-exercise-child-evidence-v1 (strictpayload/replay/readjudication),
+  combat-exercise-parent-evidence-v1 (validatedchildren/aggregation/paireddivergence).
+- Typed tagged-lineage checkpoint carriesfullWorld7/RNG/control/history and sourcebinding; not
+  CoreSnapshot. No fullSnapshot successor requiredforchosen004Broute; runtime022ownsCoreparity.
+- Child replayssourceprefix/fullcausalinputs, derivescheckpoint/terminal, then separately regenerates
+  sideobservations/scheduledcandidates and readjudicates. Matchingclaimedhashes alone insufficient.
+- Hashrecordstreams withbig-endianInt32length+rawrecord, notJSONLnewline/U64cycleprefix.
+- Parentvalidateschildrenbeforecounts. Pairrequiresameevidencescope/root/initialcheckpoint, seeds/
+  gameplay/terminal/limits; controllerconfigurationmaydiffer. Firstdifferentaccepted audience/action
+  determinesdivergence; shorterstreammissingarmnull; unavailablecomparisonfieldsnull.
+- Validatedfailedchildrenmaycompare; unvalidatedchildcannot. Expectedfailurematch doesnotconvert
+  failure/steplimitinto gamesuccess. ProspectiveCombatmanifest/proof schemesunregistered; old
+  ExerciseManifestpayload2/labelv1 andCheckpoint1/Snapshot11 preserved.
+
+## 2026-09-15 12:32 UTC — A1 accepted; result timing bounded
+
+Side integration passes ordinary review, source audit, non-vacuous root144 serialized outcome
+checks and full81+1670 gate. See evidence/side-clock-review.md and exact gate/hash logs.
+Only root status prose changed after frozen review. Original diagnostic remains historical.
+Result-v2 starts next with independent fresh-window opening; earlier private accepted times are
+audit-only. Writer corrected branch interpretation: retained retreat/custody paths are same-owner;
+regression must prove prior-time isolation without claiming an opposing-retreat leak.

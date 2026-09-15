@@ -1,150 +1,108 @@
-# Handoff: overnight Combat wave01 — resumed
+# Latest integration boundary — 2026-09-15 12:33 UTC
 
-## Renewed work authorization — 2026-09-15
+004A1 accepted after ordinary review/source audit/root gate; committing corrected side packet.
+Next writer packet W01-CLOCK-RESULT is new result-settlement-v2 four-file successor. Canonical
+plan records independent mandatory-window opening and same-owner prior-time isolation regression.
+Full objective004/B then005 remains incomplete; renewed deadline19:39:39 UTC. One draft PR115,
+no merge. Historical handoff below remains useful context; newer boundary above takes precedence.
 
-Owner confirmed another eight-hour limit with same scope and no-merge rule: "Yes lets do it".
-Renewed start11:39:39 UTC; deadline19:39:39 UTC. Implementation resumed at clock-design packet;
-required004/B and005 still incomplete. Existing draft PR115 remains integration destination.
-The expiry and stop sections below are historical evidence, superseded by this authorization.
+# Handoff: resumed Combat wave01
 
-## Owner Decision — 2026-09-15
+## Objective and authorization
 
-Owner: "I like maintaining the privacy so lets go that route". Strict equal-outcome privacy stays
-required, including clock faults. Design an explicit versioned clock-contract correction while
-preserving historical authority bytes. No privacy exception authorized. Concrete successor design,
-implementation, regression checks and review remain pending; this decision does not accept004A1.
+Required: complete CMB-TASK-004/checkpoint B then dormant CMB-TASK-005;006stretch only afterward.
+One feature branch and existing draftPR115; commits/push authorized, no merge. Max4active agents
+includingroot; solewriter/freshread-onlyreviewer/read-onlysourceagent; rootowns integration/plan/
+commits/justcheck. Formal independent-review budget exhausted; ordinaryqualityreview only.
 
-Acknowledgment clock11:24:28 UTC exceeded original10:49:17 UTC eight-hour deadline. Policy-choice
-blocker resolved; renewed work window required before implementation resumes. Earlier sections
-below retain the original stop evidence. No behavioral files changed during decision recording.
+Owner chose strict privacy on2026-09-15, then authorized renewed8h: start11:39:39UTC,
+**deadline19:39:39UTC**. Original overnight window expired; this explicitly replaces its deadline.
+User policy choice: "I like maintaining the privacy so lets go that route". Renewal: "Yes lets do it".
+Goal service still saysblocked and exposes noresume operation; work proceeds under explicit user
+resumption without replacing/shrinking unfinished004+005objective or falsely completingit.
 
-## Objective And Boundary
+## Current repository/delivery
 
-Required outcome **incomplete**: CMB-TASK-004/checkpoint B not complete; CMB-TASK-005 not begun.
-CMB-TASK-006 deferred. Work started2026-09-15 02:49:17 UTC; eight-hour deadline10:49:17 UTC.
-Hard stop independently confirmed03:19:38 UTC (~30minutes): accepted clock/privacy policy conflict.
-Only preservation, status reconciliation and authorized draft delivery followed. No automatic resume
-or merge. Owner policy disposition is first safe next action.
+Worktree `/Users/dsteele/.codex/worktrees/0b59/sandtable`.
+Branch `codex/overnight-combat-wave-01`; origin/main remainsff6b5f6.
+HEAD/pushed `3fcd8229f077521759fdb5ae2aaa942aa91f89ac` — acceptedclockv2.
+Prior resumed commitf8231c9 recordsownerdecision/renewal; earlier143b1c1/aec9a84 preserveblockedcandidate.
+DraftPR https://github.com/dills122/sandtable/pull/115 — **Add privacy-preserving Combat clock contracts**.
+ReadbackOPEN/drafttrue/head3fcd822. No merge/runtimeactivation. PRbody updatedwithacceptedclock and
+remaining004/005scope. Workingchanges afterthiscommit are rootplanningupdates and activewriter side
+integration; inspectactualgitstatus beforecommit, neverstageothersblindly.
 
-## Canonical Sources
+## Accepted clock packet
 
-- AGENTS.md
-- docs/design/combat-cycle-implementation-plan.md (current task/dependency/status authority)
-- docs/roadmap/pre-alpha-roadmap.md
-- docs/specs/combat-authority-composition-v1.md (exact unchanged Task003 handoff)
-- docs/design/combat-sealed-decision-protocol-v1.md:124–138,155–163,274
-- docs/design/combat-cycle-policy-reconciliation.md:25–27
-- docs/specs/combat-sealed-round-v1.md:103–106
+Newfourfiles `docs/specs/combat-sealed-round-v2.md`, `.schema.json`,
+`fixtures/combat-sealed-round-v2.json`, `verify-combat-sealed-round-v2.py`.
+Immutable publicopeningfloor anddeadline. Private4000seal then3500ownproposal nowaccepts; accepted
+timestamps remainreplayevidence. No privateRBAacceptancetime gate atnewopening. Validclockloss
+retainsSystemcancel; invalid/staleguards beforeclock; exactretryrecovers beforeclock; Preparedwins
+expiry andcontinuesclockfree. ClockConfiguration2 explicitlysupplementsunchangedConfig1/Rules10.
+SyntheticC3lineage only; no actualcreationrootedassaultclaim.
 
-## Completed Work And Evidence
+Verification:
+- Focused12groups/10traces/68cuts/610mutations/340raw/288clockcomparisons-retries/480lifecycle/
+ 30invalid. Reviewerindependentlypassedplus56Systemclock/changedretrychecks.
+- P2fixturetypecoercionRED forfloat/bool/duplicatekeys; exactdeterministicUTF8fixturecomparisonGREEN.
+- Sourceagent136literals/58events/6pins/allidentityhashes; max10033B;15historicalfilesunchanged.
+- Root88equaloutcomecomparisons andv1accepted/rejectedhistoricalcounterexamplepassed.
+- Rootjustcheckexit0:format/build0warnings/errors;81boundary/1670fulltests,0skipped;3m01.672sfull.
+- Acceptedordinaryreview `evidence/clock-v2-review.md`; fullgate `evidence/clock-v2-just-check.log`;
+ independentadmissionlog andfinalSHAJSON alongside. Specstatusonlyupdatedafterreview; codehashunchanged.
 
-Completed setup, baseline verification, attested execution plan and source audits. Retained one
-**unaccepted**004A1 candidate in four owned files with semantic RED/GREEN history. No accepted
-implementation story or full-CON005 freeze. Canonical status navigation now states blocked.
+## Active next packet — W01-CLOCK-INTEGRATE /004A1
 
-| Check | Exact command | Result |
-| --- | --- | --- |
-| Baseline and candidate integration | `just check` (outside sandbox) | Both exit0; format/build0warnings/errors;81/81 boundary;1670/1670 full tests;0skipped. Full durations3m13.322s baseline,3m32.443s candidate |
-| Task003 baseline | `python3 -B docs/specs/verify-combat-authority-composition-v1.py` | exit0;28traces/9families/31pins/225readbacks/203mutations/6raw/8boundaries |
-| A1 candidate vectors | `python3 -B docs/specs/verify-combat-side-projection-v1.py` | writer and fresh reviewer exit0;14semantic groups;18traces/146cuts/63submissions/297mutations/180raw/21bindings |
-| Selection predecessor | `python3 -B docs/specs/verify-combat-selection-steps-v1.py` | writer exit0;5traces/41cuts/246mutations/164raw |
-| Round predecessor | `python3 -B docs/specs/verify-combat-sealed-round-v1.py` | writer exit0;4traces/23cuts/276mutations/138raw |
-| Cycle predecessor | `python3 -B docs/specs/verify-combat-cycle-sequence-v1.py` | writer exit0;112positions/1interrupt/6edges/38mutations/3996identities/896actor mappings |
-| Privacy acceptance counterexample | `python3 -B .planning/2026-09-14-overnight-combat-wave-01/evidence/clock-high-water-counterexample.py` | **brain exit1**; both genuine seal orders violate equal semantic outcomes |
-| Static checks | `git diff --check`; AST/JSON/whitespace; local Markdown target script | pass;491 local targets in10files before final status edits; final link evidence in progress.md. Lychee absent; fallback does not check external URLs |
+`task004_writer` solewriter owns existingfour `combat-side-projection-v1` spec/schema/fixture/oracle.
+Rootownscombinedplan/navigation/planning. Do notalteracceptedroundv2 orhistoricalauthorityfiles.
 
-Exact root logs and failing diagnostic/output are in this directory's `evidence/`.
-Source agent inspected20pins/146cuts/61literal observations; all hashes/lengths matched.
-Fixture207039bytes; largest outward observation3686bytes (limit65536).
+Preserveoriginal `evidence/clock-high-water-counterexample.py` exact andexit1. It importscurrentside
+oracle `rnd`v1, `source_cases()`legacy names/fivefieldrecords and `submit()`oldsemantics.
+Add distinct correctedprofile source names andtrustedregistrydispatch throughv2reader, plusseparate
+current-admissionhelper rejectinglegacyprofiles. Scopecurrentprivacy/freezetocorrectedprofile;
+legacybranchisexplicitofflinehistoricaldiagnostic, neverclaimfixedprivacythere.
 
-## Blocked Work And Required Decision
+Correctedpublicclockpolicy/configreference beginsatFIRSTsideframe, notjustroundopening. Corrected
+selection/declinepredecessors forbothactingsides mustinheritmatchinghistory/revisions/ownreceipts.
+AvoidconfigRefrotation atunchangedrevision. Fix source-membership/goldenPython equality typecoercion
+usingencoded/exactbytes. TDD, fullclock/receipt/context/admissionmatrix, thenfreshreview/rootgate.
+Do notacceptA1 untilactualsideoutcomesproved; A2/A3stillopen.
 
-P1: same waiting-audience observation bytes and submission at trusted time3500:
+## Remaining bounded sequence
 
-| Genuine retained history | Private clock high-water | Predecessor effect | Outward result |
-| --- | ---: | --- | --- |
-| Opened at3000; no opposite seal |3000| own choice-sealed |accepted|
-| Same open; hidden opposite seal at4000 |4000| System round-cancelled, clock-unavailable |rejected|
+1. Finish/accept004A1 sideintegration.
+2. W01-CLOCK-RESULT: new `combat-result-settlement-v2` fourfilepacket+rootplan, preservingWorld7,
+ selectedRules10/RNG; explicitRoundState2 authentication. Oldresultimportsroundv1 andcannotconsumev2.
+ RoundClockTiming2 replaceshighWaterwithopeningFloor; successorresultmustmaphonestly. Singleowner
+ mandatorywindows retainownpublishedopening/fallback; no newsettlementpolicy.
+3.004A2 side result/retreat/custody/entitlement projection in samefour sidefiles+plan.
+4.004A3a Reserve/cycle choices/livecuts, thenA3b28tracehandoff/projection/coverage. ActualCP14,
+ Cohesion-4 andlaterII3actions exceedA1bounds. Reusefrozenbinarycycle action/set IDs, sortedbytes.
+ Includeownliveinheritedrelease/controlcuts plus13syntheticReserve/19cycledecisionarms; nofakeWorld.
+5. W01-CLOCK-SNAPSHOT ifCON006 embedsfullcorrectedsyntheticstates: newfourfilev2compositionpacket,
+ explicitpayload/armmapping beforeedits. Historical00328creationrootedtraces/digest remainexact.
+ No newpositivecreationrootedselectionbridge requiredfor004; labels stayhonest.
+6.004B CON006 likely3boundedpackets: terminal/continuation/dualslot; strictchildproof;
+ parent/pairedreport. See source-audit-004b.md. Manifestpayload2 haslabelv1; preserveindependentIDs.
+7.004C integratedcontractindex/oracle, all72ACmapped. Proposedexactrows/namedfuturetests/per-rowowners
+ already `evidence/acceptance-source-inventory.json`; sourceagentchecked72exactrows/uniqueIDs/names,
+ rootfixed010stepsvs011seals andexplicitDispatch/provider/IIpreMoraleextensiondeferrals.
+8.005onlyafter004/B. Read-onlyprepcompleted; suggested005A newCombatSelectedRules.cs,
+ Cna1979CombatAdjudication.cs,CombatSelectedRulesTests.cs,testprojectfixturelinks,plan;005B exact
+ RulesInput1artifactcodec/tests/definitionfactory/optionalfixturelinks/plan. ExistingRules9active.
+ Combatcapture33=33/100, notBreakdown1/3. Independentopticalexpectedcells+three-cellamendment;
+ 36Morale/360loss/6480joint/8840conditionalcapture-refusal. ExistingRulesInput1hashfafb2479…13029.
+9.006stretchafter005accepted; noearlycode.
 
-Both attacker-first/Commonwealth and defender-first/Axis reproduce. Deadline33000 stays equal.
-POL004 requires shared high-water regression fallback; POL006/PRO-AC010 require equal accept/reject
-under equal authorized histories. No explicit clock-regression exception found. Timing/traffic
-privacy deferral does not waive semantic equality. Cannot silently restrict comparison to times
-valid in both private histories, publish private high-water, relabel cancellation as acceptance or
-change frozen authority. Owner must reconcile policy and authorize explicit compatible/versioned
-contract treatment before A1 can be accepted. Passing limited tests do not override this failure.
+## Sources/tools and discipline
 
-Blocked:004A1 acceptance,004A/004/B and required005. Deferred:004A2 settlement,004A3 Reserve/cycle,
-004B CON006 freeze,004C72-AC map, optional006. CON006 preparation found versioned terminal/dual-slot/
-continuation seams; source-audit-004b.md proposes bounded future packets but starts no implementation.
-
-## Child Statuses
-
-| Child | Final status |
-| --- | --- |
-| task004_writer | stopped;004A1 candidate blocked/unaccepted; only spec status correction after stop; no commit/push |
-| task004a1_reviewer | ordinary fresh-context five-axis review complete; Request changes/P1; independent counterexample; no writes |
-| task004_evidence | source audits and candidate coverage reconciliation complete; independently confirmed policy conflict; no writes |
-| brain | reproduced failure, reconciled gate/source claims, halted implementation, owns blocked draft/handoff |
-
-No formal independent-review skill/pass invoked; exhausted budget preserved. Maximum four active
-agents including brain; sole writer and protected historical paths maintained.
-
-## Files Retained
-
-Candidate primary packet:
-
-- docs/specs/combat-side-projection-v1.md
-- docs/specs/combat-side-projection-v1.schema.json
-- docs/specs/fixtures/combat-side-projection-v1.json
-- docs/specs/verify-combat-side-projection-v1.py
-
-Requirements/navigation (brain):
-
-- docs/design/combat-cycle-implementation-plan.md
-- docs/roadmap/pre-alpha-roadmap.md
-- README.md
-
-Durable planning: this directory's task_plan.md/.attestation, findings.md, progress.md, handoff.md,
-source-audit-004a.md, source-audit-004b.md, evidence logs/candidate hashes/failing probe, and PR metadata.
-Exact final staged/committed file list is retained as evidence/delivery-files.txt.
-No src/tests/scenarios, existing contract bytes, protobuf fields or runtime registration changes.
-Architecture/naming docs need no authority/name change; existing architecture retained.
-
-## Assumptions And Limitations
-
-A1 uses nine exact synthetic C3 histories, both audiences, not full creation-rooted gameplay.
-Hidden mutations are declassifier-only probes; arbitrary valid unseen history admission unproved.
-Task00328-trace packet pinned and unchanged; full Task004 handoff composition not done.
-No hosting timing/privacy, runtime publication, migrations, new version registration, .NET Combat
-implementation or complete72-AC evidence map. Policy conflict precludes current completion claims.
-Skill sources at `/Users/dsteele/repos/sandtable/.codex/skills/`; worktree lacks local symlinks.
-Broad skill lookup harmless/cancelled; sandbox restore stalled, replacement outside sandbox passed.
-No dependency upgrades, destructive Git operations, user deletions or newer-main conflicts.
-
-## Current Repository State And Delivery
-
-Worktree: `/Users/dsteele/.codex/worktrees/0b59/sandtable`.
-Branch: `codex/overnight-combat-wave-01`.
-Base/latest-main: `ff6b5f60219afbb12d5e06bf836f06f94de32006`, refreshed after hard stop.
-PR113 merge471d17de7837c48c29f5b8184e1ee5e8b21034f8 and PR114 mergeff6b5f6 verified.
-Retained candidate commit: `aec9a847d79d013c6bffe1f628524f83c1f56c4c`
-(`docs(combat): retain blocked side-contract candidate and clock privacy evidence`).
-This final handoff is retained in a subsequent metadata-only commit; final task response records its
-exact SHA. Neither commit represents accepted004A1 delivery.
-Draft PR: [115 — Record blocked Combat side-contract candidate and clock privacy conflict](https://github.com/dills122/sandtable/pull/115).
-Readback verified OPEN/draft=true, base main, head codex/overnight-combat-wave-01, candidate commit.
-Candidate commit scope:22files,+3265/-5; four candidate files plus canonical plan, two navigation
-files and15 planning/evidence files. Exact paths in evidence/delivery-files.txt.
-Dirty state: clean after candidate commit/push; only final planning metadata changed subsequently
-and committed before final response. No retained uncommitted implementation. Hosted CI unassessed.
-
-## First Safe Next Action
-
-Owner selected strict privacy; first obtain renewed work window because original deadline expired.
-Then specify the versioned clock-contract correction, preserve historical bytes through explicit versioning if
-needed, write failing regression first, fix only authorized successor scope, rerun focused and full
-story gates, obtain ordinary fresh-context quality approval, and only then accept004A1/continue.
-Do not start005 until004 and checkpoint B are complete. Do not merge this blocked draft.
-
-GitHub operations use Keychain outside sandbox with `env -u GH_TOKEN -u GITHUB_TOKEN gh ...`.
+Canonical combinedplan/policyregister govern; task_plan.md isexecutionindex, reattestafteredits:
+`PLAN_ID=2026-09-14-overnight-combat-wave-01 sh /Users/dsteele/repos/sandtable/.codex/skills/planning-with-files/scripts/attest-plan.sh`.
+Requiredskills were read frommaincheckout `/Users/dsteele/repos/sandtable/.codex/skills/`; no broadsearch.
+CCEroot works via mcp__cce_sandtable_9d6669; someagentsgetTransportclosed. Knownsourcefallbackallowed.
+Root.NETgate outside sandbox (sandboxrestorehangs); no dependencyupgrade. NativeMTP needs--solution/
+--project. Gitmetadata outside sandbox; `.planning`ignored, forceaddexactreviewedartifacts.
+Everyghcommand `env -u GH_TOKEN -u GITHUB_TOKEN gh ...` withKeychain; notokenextraction.
+Noformalindependentreview; freshordinaryreviewfornextpacket. Previousclockreviewer completed.
+Keepgoinguntilfullobjective orrealhardstop; do notstopmerelybecauseonepacketfinished.

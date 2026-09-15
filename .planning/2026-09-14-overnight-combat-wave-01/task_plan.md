@@ -57,8 +57,8 @@ is exhausted. Ordinary fresh-context five-axis review only.
 | ID | Dependencies | Owner / delivery unit | Owned paths | Acceptance / verification | Status / blockers |
 | --- | --- | --- | --- | --- | --- |
 | W01-SETUP | none | brain | this planning directory | latest main includes ff6b5f6 and merged113/114; skill load; branch; plan attestation | complete |
-| CMB-TASK-004A | 003 verified | task004_writer / internal; task004_evidence read-only; fresh reviewer per slice | docs/specs/combat-side-projection-v1.md, .schema.json, fixtures/combat-side-projection-v1.json, verify-combat-side-projection-v1.py; brain owns combined plan | CON-005 closed audience fields/errors/choices, canonical candidate bytes, equal-authorized-history and leak negatives; focused oracle plus brain just check | blocked; no accepted child |
-| CMB-TASK-004A1 | 003 | task004_writer / internal | same four004A files only | closed common codec/identity/errors, selection/RBA/seals; TDD plus focused/gate/review | blocked/unaccepted: P1 clock/privacy policy conflict; focused+just check pass but independent privacy probe fails |
+| CMB-TASK-004A | 003 verified | task004_writer / internal; task004_evidence read-only; fresh reviewer per slice | docs/specs/combat-side-projection-v1.md, .schema.json, fixtures/combat-side-projection-v1.json, verify-combat-side-projection-v1.py; brain owns combined plan | CON-005 closed audience fields/errors/choices, canonical candidate bytes, equal-authorized-history and leak negatives; focused oracle plus brain just check | in progress; round-v2 and004A1 accepted; result-v2 next |
+| CMB-TASK-004A1 | 003 | task004_writer / internal | same four004A files only | closed common codec/identity/errors, selection/RBA/seals; TDD plus focused/gate/review | accepted: corrected profile, ordinary review, root81+1670 gate; historicalv1 failure retained |
 | CMB-TASK-004A2 | accepted004A1 | same writer / internal | same four004A files only | settlement results, own retreat/custody/replacement disclosure/candidates; TDD plus focused/gate/review | pending |
 | CMB-TASK-004A3 | accepted004A2; sequentialA3a/A3b | same writer / internal | same four004A files only | Reserve I/laterII, cycle/structural projection, exact003 handoff and corpus reconciliation; TDD plus focused/gate/review; only then004A freeze | pending |
 | CMB-TASK-004B | accepted004A | writer / internal subagent; reviewer and evidence read-only | new Exercise-contract spec/schema/fixture/oracle; brain owns combined plan | CON-006 exact terminal/ordinal/continuation, strict manifest/report and divergence, negative success rejection; focused oracle plus just check | pending |
@@ -73,6 +73,11 @@ codec, own live inherited release/control cuts and synthetic ledger decision tes
 both-audience28trace terminal projections, exact003handoff binding, privacy pairs and capacities.
 Both use the same four side-packet files plus root combined plan sequentially, with full story gates.
 Actual own CP14/Cohesion-4 and three-action later-II sets must fit; never truncate side history.
+
+004B refinement: B1newcombat-exercise-occurrence-v1, B2child-evidence-v1, B3parent-evidence-v1;
+each fourfiles plus rootplan, sequential after004A. Tagged replay-backed fullWorld/RNG checkpoints
+avoid a new fullSnapshotpacket; no CoreSnapshot parity claim before022. See source-audit-004b.md
+and findings.md. Existingmanifest2/labelv1 and registeredreaders unchanged; new schemes unregistered.
 
 All child writes disjoint. Shared repository; preserve others' changes. Brain owns integration,
 canonical combined plan, commits, full verification and PR. At most four active agents including brain.

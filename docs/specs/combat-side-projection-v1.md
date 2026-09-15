@@ -1,39 +1,39 @@
 # Combat side projection v1
 
-Status: `CMB-TASK-004A1` **blocked, unaccepted candidate**; contract evidence only. Shared codec,
-selection, RBA and sealed assignment have limited passing vectors; privacy acceptance fails below.
-`004A2` settlement and `004A3` Reserve/cycle plus complete Task003 handoff remain open. A1 is not
-complete; this packet does not freeze CON-005, close parent004 or activate runtime.
+Status: `CMB-TASK-004A1` **corrected-profile accepted checkpoint**; contract evidence only. Shared
+codec, selection, RBA and sealed assignment use the accepted versioned clock correction below.
+`004A2` settlement and `004A3` Reserve/cycle plus complete Task003 handoff remain open. This packet
+does not freeze complete CON-005, close parent004 or activate runtime.
 
 [Combined plan](../design/combat-cycle-implementation-plan.md),
 [ordered schema](combat-side-projection-v1.schema.json),
 [retained vectors](fixtures/combat-side-projection-v1.json), and
 [oracle](verify-combat-side-projection-v1.py) define this bounded checkpoint.
 
-## Known blocker: private seal changes clock-regression outcome
+## Clock correction and preserved historical counterexample
 
-For both attacker-first and defender-first histories, the observing opponent has byte-identical
-views before and after the first private seal. At trusted time 3500, the same canonical proposal
-is accepted before that seal, with retained high-water 3000, but rejected after it, with hidden
-high-water 4000; the underlying round takes its clock-regression cancellation path. The
-[retained diagnostic](../../.planning/2026-09-14-overnight-combat-wave-01/evidence/clock-high-water-counterexample.py)
-checks both orders and fails `CMB-PRO-AC-010` equal-outcome acceptance.
+The [owner disposition](../design/combat-cycle-policy-reconciliation.md#clock-privacy-correction--owner-decision-2026-09-15)
+keeps strict equal-outcome privacy and selects the accepted
+[sealed-round v2](combat-sealed-round-v2.md) successor. Its public opening instant is an immutable
+regression floor; private accepted seal times never raise it. Opening3000, hidden seal4000 and
+own proposal3500 now yield the same accepted public receipt before and after the opposite seal,
+for either acting side and either seal order. Available times below opening, unavailable confidence,
+null time and deadline equality retain their deterministic authority outcomes and common outward
+rejection. Exact own accepted proposals recover the same receipt before clock handling. Opening is derivable
+from published deadline minus the approved fixed30000ms budget; no hidden timestamp enters that bound.
 
-[Accepted policy register](../design/combat-cycle-policy-reconciliation.md#decision-register),
-lines 25 and 27, requires both finite-deadline/regression fallback (`CMB-POL-004`) and equal visible
-history preserving accept/reject behavior (`CMB-POL-006`).
-[DES-002 submission/revision semantics](../design/combat-sealed-decision-protocol-v1.md#submission-and-revision-semantics),
-lines 124–129, forbids hidden bookkeeping from staling an otherwise identical proposal;
-[deadline policy](../design/combat-sealed-decision-protocol-v1.md#deadline-fallback-and-race-policy),
-lines 155–163, retains the shared accepted-seal high-water and requires cancellation on regression.
-The explicit equal-outcome requirement is `CMB-PRO-AC-010`, DES-002 line 274. No accepted exception
-reconciles this counterexample.
+Historical v1 remains unchanged. The
+[original diagnostic](../../.planning/2026-09-14-overnight-combat-wave-01/evidence/clock-high-water-counterexample.py)
+still uses original source names and `rnd=v1`; expected exit1 retains both accepted/rejected
+counterexamples with high-water3000 versus4000. Its failure is historical evidence, not a claim
+that the corrected profile passes through the old authority path. No privacy guarantee is made
+for the legacy diagnostic admission path under clock regression.
 
-Owner disposition is required before changing either clock authority or privacy requirements.
-Preserve frozen predecessor bytes; do not narrow privacy, alter the clock rule, accept A1, or start
-A2/Task005 without that ruling. The focused oracle passes its limited retained vectors, but the
-separate privacy acceptance probe fails. Those focused passes are not an A1 acceptance or formal
-review pass; A1, parent004A, CON-005 and parent004 remain incomplete.
+`submit` remains an offline proposal oracle for historical or corrected named sources.
+`admit_current` requires a separately authenticated corrected source profile before invoking that
+oracle; every original legacy profile rejects through this entry point. Neither helper is a
+production host registration. Current-profile test results and prospective A1 admission claims
+apply only to corrected profiles. Runtime and remaining CON-005 families still require later work.
 
 ## Authority and exact admission boundary
 
@@ -47,13 +47,29 @@ Governing decisions are [DES-001 identity](../design/combat-opportunity-identity
 changes here. POL-006 permits apparent target geometry, own facts and phase progress, including
 assignment implying RBA decline. It does not permit enemy resources, hidden cause or slot counts.
 
-The executable corpus is exactly five frozen [C3a selection/step](combat-selection-steps-v1.md)
-transcripts and four frozen [C3b round](combat-sealed-round-v1.md) transcripts, each observed by
-Axis and Commonwealth. Inputs may stop at any exact retained prefix. Every source name, family,
-base, separately retained input and canonical event must match that corpus; each event also passes
-its predecessor reader. Regenerated round events and terminal state must match historical goldens.
-The round starts from the exact accepted-decline predecessor, including its side histories,
-revisions and own receipts. It does not restart audience revisions at Force Assignment.
+The executable corpus has two explicit source families, each observed by Axis and Commonwealth:
+
+- Nine original legacy sources: five frozen [C3a selection/step](combat-selection-steps-v1.md)
+  transcripts and four [C3b round](combat-sealed-round-v1.md) transcripts. Their names, five-field
+  Source shape, authority bytes and all18 retained audience traces are preserved exactly.
+- Twenty corrected sources named `clock-v2.<actingSide>.<case>`. Ten selection/step sources mirror
+  each of the five C3a cases for both acting sides; ten round sources consume the accepted v2
+  fixture's exact authenticated inputs/events. Mirroring changes phasing identity, selected
+  participants and corresponding ordinary CP values; the no-candidate actor still has spentCP6.
+  These are explicit synthetic bounded vectors, not additional certified gameplay profiles.
+
+Internal family tags are `steps`, `round`, `steps-clock-v2`, and `round-clock-v2`. Trusted registry
+membership selects the reader; a caller cannot select a different codec by editing a family tag.
+Source keeps exactly `{name,family,base,inputs,events}`. Inputs may stop at any exact retained prefix.
+Base and structured input comparisons preserve integer/boolean/float distinctions through encoded
+bytes; events must be exact bytes. Each event also passes its predecessor reader. Reader caches
+are keyed only after this authentication and return copies, never caller-mutable shared state.
+Historical regenerated events/state must match historical goldens; corrected rounds use v2 replay.
+
+Each corrected round inherits its acting-side-matched `clock-v2.<actingSide>.accepted-decline`
+projection, including exact context, history, visible revision and own receipts. Corrected public
+clock policy enters configRef at the first selection frame, so it never rotates silently at the
+Force Assignment handoff. Original and corrected profiles have different public config references.
 
 This is synthetic C3 lineage. C3a's trusted boundary/Weather/Breakdown probes do not become genuine
 creation-to-Combat history through this projection. `Source` is internal experiment context, not an
@@ -138,7 +154,7 @@ Exact domains appear in the inventory. Preimages are closed:
 | `participant`, `component` | `UnitSeed`: campaign, audience, own original element ID, null or exact own component ID. No mutable location/version or authority creation hash. |
 | `target` | `{context:Context,locationId:id}` in that order. The admitted singleton apparent marker has no hidden ID/count salt. |
 | `rules` | `{rulesetHash,profile,policy,candidateCodec}` in that order: exact full public Rules10 raw64 identity, `singleton-infantry-close-assault`, `CMB-POL-006`, integer1. |
-| `config` | `{selectionBudgetMilliseconds:30000,rbaBudgetMilliseconds:30000,assignmentBudgetMilliseconds:30000}` in that order. These are this corpus's published finite budgets, not the private configuration hash. |
+| `config` | Historical sources retain `{selectionBudgetMilliseconds:30000,rbaBudgetMilliseconds:30000,assignmentBudgetMilliseconds:30000}`. Corrected sources use `ClockConfigSeed`: those three fields followed by `assignmentClockPolicyId:"sandtable.combat.public-opening-clock.v2"`. The schema fixes all values and order; no private configuration hash is exposed. |
 | `round`, `decision` | `IdentitySeed`: context, canonical public cycle, position, opening audience revision, decision kind, own participant and apparent target. Round uses `force-assignment`. |
 | `slot` | `SlotSeed`: own round, audience and attacker/defender role. |
 | `action` | `ActionSeed`: public decision and exact typed candidate. |
@@ -210,8 +226,8 @@ host timing/traffic privacy, constant latency, restart scheduling or publication
 | --- | --- | --- |
 | CON-005 closed choices/errors/bytes | Four candidate arms, explicit submission context, canonical vectors, common rejection outcome and strict readback mutations | A2/A3 complete remaining arms;020–021 runtime |
 | ID-AC-006/009/010; PRO-AC-001/002/003/010 | Public domains/cycle codec, actual opposing seal equality, unchanged success/receipt bytes, changed proposal and authority-source rejection |020–021; hosted traffic deferred |
-| STEP-AC-004/005/006/009/010/012 | Five historical selection/step traces, own-only selection/decline receipts, generic closure, all six no-attack positions, inherited C3a→round public history |009–011/020–021 |
-| PRO-AC-012 | No production edits;20 source pins preserve predecessor goldens and exact Task003 files |008/020–024 integration and migration |
+| STEP-AC-004/005/006/009/010/012 | Five historical and ten corrected selection/step traces, own-only selection/decline receipts, generic closure, all six no-attack positions, inherited C3a→round public history |009–011/020–021 |
+| PRO-AC-012 | No production edits;23 source pins preserve predecessor goldens and exact Task003 files |008/020–024 integration and migration |
 | Full CON-005; SET/RES/CYCLE projections | Explicitly incomplete in A1 |004A2/004A3; Task004C maps all72 criteria |
 
 Run:
@@ -220,10 +236,13 @@ Run:
 python3 -B docs/specs/verify-combat-side-projection-v1.py
 python3 -B docs/specs/verify-combat-selection-steps-v1.py
 python3 -B docs/specs/verify-combat-sealed-round-v1.py
+python3 -B docs/specs/verify-combat-sealed-round-v2.py
 python3 -B docs/specs/verify-combat-cycle-sequence-v1.py
 ```
 
-Default verification requires the retained fixture; it never recreates missing or changed goldens.
+Default verification requires the retained fixture and exact deterministic UTF-8 file bytes
+(two-space JSON indentation and a final newline); it never recreates missing or changed goldens.
+Float/integer substitutions, boolean/integer substitutions, duplicate keys and CRLF changes reject.
 Every retained observation cut has byte count/digest; representative canonical observations retain
 all status/decision shapes. Expected own assignment candidate bytes are also literal independent
 vectors. Actual equivalent histories cover both opposing seal orders and empty-versus-private-seal

@@ -207,3 +207,24 @@
 - Root full `just check` exit0: format/build0warnings/errors;81/81boundary,1670/1670fulltests,
  0skipped; fulltests3m01.672s. Accepted W01-CLOCK-CONTRACT, pending acceptedcommit recording.
   Spec status-only update afterreview/gate; schema/fixture/oracle remain finalreviewedhashes.
+
+- Acceptedclockcommit3fcd822 pushed;14files,+7653/-3 (5primaryinclplan,fixturesmajority).
+- PR115updatedtoAdd privacy-preserving Combat clock contracts; OPEN/drafttrue/head3fcd822verified.
+- AssignedW01-CLOCK-INTEGRATE fourexistingsidefiles; preservehistoricaldiagnostic andexplicitcurrent
+  correctedprofileadmission. Root renewedhandoff; all004/Band005stillincomplete.
+
+- Side integration RED: corrected profile absent; legacy profile admitted by current helper.
+  Implemented corrected source registry/current-only admission gate. Second RED: System clock
+  cancellation fabricated own seal receipt; fixed projection to require choice-sealed effect.
+- Writer reports all18historical audience traces byte-preserved; adds40corrected audience traces
+  from10mirrored C3a sources plus10acceptedround2 sources. Publicclockpolicy binds firstframe.
+  Fullfocused run and unchangedhistoricaldiagnostic checks in progress; noA1acceptance yet.
+
+## 2026-09-15 12:32 UTC — A1 accepted; result timing bounded
+
+Side integration passes ordinary review, source audit, non-vacuous root144 serialized outcome
+checks and full81+1670 gate. See evidence/side-clock-review.md and exact gate/hash logs.
+Only root status prose changed after frozen review. Original diagnostic remains historical.
+Result-v2 starts next with independent fresh-window opening; earlier private accepted times are
+audit-only. Writer corrected branch interpretation: retained retreat/custody paths are same-owner;
+regression must prove prior-time isolation without claiming an opposing-retreat leak.

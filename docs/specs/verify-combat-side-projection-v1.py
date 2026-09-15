@@ -18,6 +18,9 @@ spec = importlib.util.spec_from_file_location('side_round', ROOT / 'verify-comba
 rnd = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(rnd)
 steps = rnd.steps
+spec2 = importlib.util.spec_from_file_location('side_round_v2', ROOT / 'verify-combat-sealed-round-v2.py')
+rnd2 = importlib.util.module_from_spec(spec2)
+spec2.loader.exec_module(rnd2)
 SIDES = ('axis', 'commonwealth')
 
 def encode(value):
@@ -112,27 +115,67 @@ def public_ref(domain, value, kind=None):
     return 'pub.' + hashlib.sha256(INVENTORY['domains'][domain].encode('ascii') + b'\0' + payload).hexdigest()
 
 
-def replay_states(source):
+def is_steps(source):
+    return source['family'] in ('steps','steps-clock-v2')
+
+
+def is_round(source):
+    return source['family'] in ('round','round-clock-v2')
+
+
+def corrected(source):
+    # Registry membership is authenticated by replay_states before any authority transition.
+    return source['family'] in ('steps-clock-v2','round-clock-v2')
+
+
+def round_reader(source):
+    return rnd2 if source['family']=='round-clock-v2' else rnd
+
+
+def predecessor_source(source):
+    side = source['base']['boundary']['cycle']['actingSide']
+    name = 'clock-v2.'+side+'.accepted-decline' if corrected(source) else 'accepted-decline'
+    return next(x for x in source_catalog() if x['name']==name)
+
+
+def validate_source(source):
     # Named retained transcripts authenticate this contract experiment. Production must use
     # independently authenticated Chronicle/input history, never caller-asserted actor strings.
     require(type(source) is dict and set(source) == {'name','family','base','inputs','events'})
-    expected = next((x for x in source_cases() if x['name'] == source['name']), None)
+    expected = next((x for x in source_catalog() if x['name'] == source['name']), None)
     require(expected is not None and source['family'] == expected['family']
-            and source['base'] == expected['base'] and type(source['events']) is list
+            and encode(source['base']) == encode(expected['base']) and type(source['events']) is list
             and type(source['inputs']) is list and len(source['events']) == len(source['inputs']))
     count = len(source['events'])
-    require(source['events'] == expected['events'][:count]
-            and source['inputs'] == expected['inputs'][:count] and count <= len(expected['events']))
+    require(all(type(event) is bytes for event in source['events']) and source['events'] == expected['events'][:count]
+            and encode(source['inputs']) == encode(expected['inputs'][:count]) and count <= len(expected['events']))
+    return source['name'],count
+
+
+def replay_states(source):
+    name,count = validate_source(source)
+    return copy.deepcopy(cached_states(name,count))
+
+
+@lru_cache(maxsize=512)
+def cached_states(name,count):
+    source = prefix(next(x for x in source_catalog() if x['name']==name),count)
     base = source['base']
-    if source['family'] == 'steps':
+    if is_steps(source):
         steps.boundary(steps.encode(base))
         state = steps.initial(base)
         reader = steps.read_event
     else:
-        _, predecessor = rnd.start()
-        rnd.read_base(rnd.encode(rnd.canonical(base, 'Base')), predecessor)
-        state = rnd.initial(base)
-        reader = rnd.read_event
+        codec = round_reader(source)
+        if corrected(source):
+            predecessor = predecessor_source(source)
+            evidence = dict(boundary=predecessor['base'],inputs=predecessor['inputs'],
+                            events=[dict(canonicalUtf8=e.decode()) for e in predecessor['events']])
+        else:
+            _, evidence = rnd.start()
+        codec.read_base(codec.encode(codec.canonical(base,'Base')),evidence)
+        state = codec.initial(base)
+        reader = codec.read_event
     result = [state]
     for inp, event in zip(source['inputs'], source['events']):
         state = reader(event, base, state, inp)
@@ -143,7 +186,7 @@ def replay_states(source):
 def audience_facts(source, state, audience):
     """Internal declassifier; source/state already authenticated by replay_states."""
     typed(audience, 'side')
-    base = source['base'] if source['family'] == 'steps' else source['base']['boundary']
+    base = source['base'] if is_steps(source) else source['base']['boundary']
     cycle = base['cycle']
     # Approved public policy/version identifiers and the published finite decision budget only.
     context = dict(campaignId=cycle['campaignId'], audience=audience,
@@ -154,6 +197,10 @@ def audience_facts(source, state, audience):
                        policy='CMB-POL-006', candidateCodec=1)),
                    configRef=public_ref('config', dict(selectionBudgetMilliseconds=30000,
                        rbaBudgetMilliseconds=30000, assignmentBudgetMilliseconds=30000)))
+    if corrected(source):
+        context['configRef'] = public_ref('config',dict(selectionBudgetMilliseconds=30000,
+            rbaBudgetMilliseconds=30000,assignmentBudgetMilliseconds=30000,
+            assignmentClockPolicyId=rnd2.POLICY),'ClockConfigSeed')
     world = state.get('world', base['world'])
     own_element = next(x for x in world['elements'] if x['elementId'] == audience+'-assault-battalion')
     enemy = next(x for x in world['elements'] if x is not own_element)
@@ -168,8 +215,8 @@ def audience_facts(source, state, audience):
                     locationId=enemy['currentLocationId'])
     position = steps.edge(base)['combatPositionIds'][state['stepIndex']] if state['stepIndex'] < 6 else steps.edge(base)['releasePositionId']
     status, decision_kind, deadline, candidates = 'waiting', None, None, []
-    round_open = source['family'] == 'round' and state['status'] != 'unopened'
-    if source['family'] == 'steps':
+    round_open = is_round(source) and state['status'] != 'unopened'
+    if is_steps(source):
         window = steps.active_window(state)
         if window is not None and window['owner'] == audience:
             decision_kind = 'selection' if state['selectionOutcome'] == 'pending' else 'rba'
@@ -202,11 +249,19 @@ def audience_facts(source, state, audience):
 
 
 def views(source, audience):
+    typed(audience,'side')
+    name,count = validate_source(source)
+    return copy.deepcopy(cached_views(name,count,audience))
+
+
+@lru_cache(maxsize=1024)
+def cached_views(name,count,audience):
+    source = prefix(next(x for x in source_catalog() if x['name']==name),count)
     states = replay_states(source)
     result, history, receipts = [], [], []
     revision, previous_facts, round_ref = 0, None, None
-    if source['family'] == 'round':
-        predecessor = next(x for x in source_cases() if x['name']=='accepted-decline')
+    if is_round(source):
+        predecessor = predecessor_source(source)
         inherited = views(predecessor,audience)[-1]
         history, receipts = copy.deepcopy(inherited['history']), copy.deepcopy(inherited['ownReceipts'])
         revision = inherited['visibleRevision']
@@ -216,9 +271,9 @@ def views(source, audience):
         own_receipt = None
         if index:
             inp = source['inputs'][index-1]
-            if inp['actor'] == audience and inp['command']['kind'] in ('choose-selection','decline-rba','seal-choice'):
+            if inp['actor'] == audience and inp['command']['kind'] in ('choose-selection','decline-rba','seal-choice') and (inp['command']['kind']!='seal-choice' or json.loads(source['events'][index-1])['effect']['kind']=='choice-sealed'):
                 previous = result[-1]['decision']
-                chosen = inp['command'].get('choice') or ('full-close-assault' if source['family']=='round' else 'decline-retreat-before-assault')
+                chosen = inp['command'].get('choice') or ('full-close-assault' if is_round(source) else 'decline-retreat-before-assault')
                 action = next(x for x in previous['actions'] if x['candidate']['kind'] == chosen)
                 seed = dict(decisionId=previous['decisionId'], actionId=action['actionId'])
                 own_receipt = seed | dict(receiptRef=public_ref('receipt', seed, 'ReceiptSeed'))
@@ -229,10 +284,10 @@ def views(source, audience):
             revision += 1
         context = facts['context']
         cycle = context['cycle']
-        public_cycle = dict(contractVersion=1, campaignId=context['campaignId'], rulesetHash=(source['base'] if source['family']=='steps' else source['base']['boundary'])['cycle']['rulesetHash'],
+        public_cycle = dict(contractVersion=1, campaignId=context['campaignId'], rulesetHash=(source['base'] if is_steps(source) else source['base']['boundary'])['cycle']['rulesetHash'],
                             gameTurn=cycle['gameTurn'], operationStage=cycle['operationStage'],
                             playerPhaseSlot=cycle['playerPhaseSlot'], actingSide=cycle['phasingSide'], ordinal=cycle['ordinal'])
-        boundary = source['base'] if source['family']=='steps' else source['base']['boundary']
+        boundary = source['base'] if is_steps(source) else source['base']['boundary']
         cycle_ref = 'sha256:'+hashlib.sha256(steps.seq.identity(public_cycle,'Public',boundary['firstActingSide'])).hexdigest()
         seed = dict(context=facts['context'], cycleRef=cycle_ref, positionId=facts['positionId'],
                     openingRevision=revision, kind=facts['decisionKind'] or 'force-assignment',
@@ -281,17 +336,18 @@ def submission(view, action_index=0):
                 actionId=action['actionId'], candidate=action['candidate'])
 
 
-def submit(source, audience, data, now=5000):
+def submit(source, audience, data, now=5000, available=True):
     rejected_outcome = dict(contractVersion=1, status='rejected', receipt=None)
     try:
+        require(type(available) is bool and (now is None or type(now) is int and 0<=now<=253402300799999))
         typed(audience, 'side')  # Authenticated seat precedes attacker-controlled reference lookup.
         proposal = parse(data, 'Submission')
         require(proposal['audience'] == audience)
         projected = views(source, audience)
         # Exact historical action equality supports receipt recovery; never rebind a consumed ID.
         offered_frames = projected
-        if source['family'] == 'round':
-            predecessor = next(x for x in source_cases() if x['name']=='accepted-decline')
+        if is_round(source):
+            predecessor = predecessor_source(source)
             offered_frames = views(predecessor,audience) + projected[1:]
         offered = next((v for v in reversed(offered_frames) if v['decision'] is not None
                         and v['decision']['decisionId'] == proposal['decisionId']), None)
@@ -306,11 +362,12 @@ def submit(source, audience, data, now=5000):
         require(projected[-1]['decision'] == offered['decision'])
         states = replay_states(source)
         state, base, kind = states[-1], source['base'], proposal['candidate']['kind']
-        if source['family'] == 'round':
+        if is_round(source):
             role = 'attacker' if audience == base['boundary']['cycle']['actingSide'] else 'defender'
-            command = rnd.command(base, state, 'seal-choice', role)
-            inp = rnd.trusted(command, audience, now)
-            _, event, _ = rnd.transition(base, state, inp)
+            codec = round_reader(source)
+            command = codec.command(base,state,'seal-choice',role)
+            inp = codec.trusted(command,audience,now,available)
+            _, event, _ = codec.transition(base,state,inp)
         else:
             if kind in ('select-close-assault','finish-without-attack'):
                 command = steps.command(state, 'choose-selection', decisionId=state['selectionWindow']['decisionId'],
@@ -318,14 +375,56 @@ def submit(source, audience, data, now=5000):
             else:
                 command = steps.command(state, 'decline-rba', decisionId=state['rbaWindow']['decisionId'],
                                         participant=state['selection']['defender']['unit'])
-            inp = steps.trusted(command, audience, now)
+            inp = steps.trusted(command,audience,now,available)
             _, event, _ = steps.transition(base, state, inp)
-        expected_effect = 'choice-sealed' if source['family']=='round' else ('rba-declined' if kind=='decline-retreat-before-assault' else 'selection-closed')
+        expected_effect = 'choice-sealed' if is_round(source) else ('rba-declined' if kind=='decline-retreat-before-assault' else 'selection-closed')
         require(event is not None and json.loads(event)['effect']['kind'] == expected_effect)
         seed = dict(decisionId=proposal['decisionId'], actionId=proposal['actionId'])
         return dict(contractVersion=1, status='accepted', receipt=seed | dict(receiptRef=public_ref('receipt', seed, 'ReceiptSeed')))
     except (Invalid, steps.Invalid, rnd.Invalid, StopIteration, KeyError, TypeError, ValueError):
         return rejected_outcome
+
+
+def mirror_steps(source, side):
+    boundary = copy.deepcopy(source['base'])
+    boundary['cycle']['actingSide'] = side
+    boundary['firstActingSide'] = side
+    boundary['position']['activeSide'] = side
+    if side!='axis':
+        elements = boundary['world']['elements']
+        spent = [e['operationalState']['capabilityPointsExpended']['numerator'] for e in elements]
+        for element,value in zip(elements,reversed(spent)):
+            element['operationalState']['capabilityPointsExpended']['numerator'] = value
+    state = steps.initial(steps.boundary(encode(boundary)))
+    inputs,events = [],[]
+    for original in source['inputs']:
+        inp = copy.deepcopy(original)
+        cmd = inp['command']
+        cmd['segmentId'] = state['segmentId']
+        if cmd['expectedPriorVersion'] is not None:
+            cmd['expectedPriorVersion'] = state['stateVersion']
+        if cmd['decisionId'] is not None:
+            cmd['decisionId'] = state['segmentId']+'.'+cmd['decisionId'].rsplit('.',1)[1]
+        if cmd['kind']=='choose-selection':
+            inp['actor'] = side
+            if cmd['candidate'] is not None:
+                cmd['candidate'] = steps.candidate(boundary)
+        if cmd['kind']=='decline-rba':
+            cmd['participant'] = steps.candidate(boundary)['defender']['unit']
+            inp['actor'] = cmd['participant']['originalSide']
+        state,event,_ = steps.transition(boundary,state,inp)
+        inputs.append(inp); events.append(event)
+    return dict(name='clock-v2.'+side+'.'+source['name'],family='steps-clock-v2',base=boundary,inputs=inputs,events=events)
+
+
+def corrected_sources(legacy_sources):
+    result = [mirror_steps(source,side) for side in SIDES for source in legacy_sources if is_steps(source)]
+    rnd2.verify_fixture(rnd2.FIXTURE.read_bytes())
+    for case in json.loads(rnd2.FIXTURE.read_bytes())['cases']:
+        result.append(dict(name='clock-v2.'+case['name'],family='round-clock-v2',
+            base=json.loads(case['baseCanonicalUtf8']),inputs=case['inputs'],
+            events=[e.encode() for e in case['eventCanonicalUtf8']]))
+    return result
 
 
 @lru_cache(maxsize=1)
@@ -340,9 +439,10 @@ def source_catalog():
     base, _ = rnd.start()
     for case in json.loads(rnd.FIXTURE.read_text())['cases']:
         final, inputs, events = rnd.trace_case(base, case)
-        require(inputs == case['inputs'] and events == [x['canonicalUtf8'].encode() for x in case['events']]
+        require(encode(inputs) == encode(case['inputs']) and events == [x['canonicalUtf8'].encode() for x in case['events']]
                 and rnd.encode(rnd.canonical(final, 'RoundState')) == case['stateGolden']['canonicalUtf8'].encode())
         result.append(dict(name=case['name'], family='round', base=base, inputs=inputs, events=events))
+    result.extend(corrected_sources(result))
     return result
 
 def source_cases():
@@ -403,7 +503,7 @@ def test_tight_bounds():
 
 def source_pins():
     paths = []
-    for stem in ('combat-selection-steps-v1','combat-sealed-round-v1','combat-authority-composition-v1','combat-cycle-sequence-v1'):
+    for stem in ('combat-selection-steps-v1','combat-sealed-round-v1','combat-authority-composition-v1','combat-cycle-sequence-v1','combat-sealed-round-v2'):
         paths.extend([f'docs/specs/{stem}.schema.json', f'docs/specs/fixtures/{stem}.json', f'docs/specs/verify-{stem}.py'])
     paths.append('docs/specs/combat-authority-composition-v1.md')
     for stem in ('combat-opportunity-identity-v1','combat-sealed-decision-protocol-v1',
@@ -415,7 +515,7 @@ def source_pins():
 
 
 def test_source_pins():
-    assert len(source_pins()) == 20, 'predecessor/design/handoff sources unpinned'
+    assert len(source_pins()) == 23, 'predecessor/design/handoff sources unpinned'
 
 
 def prefix(source, length):
@@ -472,6 +572,7 @@ def test_privacy_and_binding():
 def verify_matrix():
     counts = dict(traces=0, cuts=0, submissions=0, mutations=0, rawRejects=0, bindings=0)
     for source in source_cases():
+        admit = admit_current if corrected(source) else submit
         for audience in SIDES:
             counts['traces'] += 1
             projected = views(source, audience)
@@ -490,21 +591,23 @@ def verify_matrix():
                         proposal = submission(view,index)
                         encoded = raw(proposal,'Submission')
                         deadline = view['decision']['deadlineUnixMilliseconds']
-                        outcome = submit(current,audience,encoded,deadline-1)
+                        outcome = admit(current,audience,encoded,deadline-1)
                         assert outcome['status']=='accepted', (source['name'],audience,cut)
                         raw(outcome,'Outcome')
-                        assert submit(current,audience,encoded,deadline)['status']=='rejected'
-                        assert submit(current, 'commonwealth' if audience=='axis' else 'axis',encoded)['status']=='rejected'
+                        assert admit(current,audience,encoded,deadline)['status']=='rejected'
+                        assert admit(current, 'commonwealth' if audience=='axis' else 'axis',encoded)['status']=='rejected'
+                        if not corrected(source):
+                            assert admit_current(current,audience,encoded,deadline-1)['status']=='rejected'
                         counts['submissions'] += 3
                         for field in ('decisionId','actionSetId','actionId','rulesRef','configRef','roundRef','slotRef'):
                             bad = proposal | {field:'pub.'+'e'*64}
-                            assert submit(current,audience,raw(bad,'Submission'))['status']=='rejected'
+                            assert admit(current,audience,raw(bad,'Submission'))['status']=='rejected'
                             counts['mutations'] += 1
                         bad = proposal | dict(campaignId='foreign-campaign')
-                        assert submit(current,audience,raw(bad,'Submission'))['status']=='rejected'
+                        assert admit(current,audience,raw(bad,'Submission'))['status']=='rejected'
                         counts['mutations'] += 1
                         bad = proposal | dict(openingRevision=proposal['openingRevision']+1)
-                        assert submit(current,audience,raw(bad,'Submission'))['status']=='rejected'
+                        assert admit(current,audience,raw(bad,'Submission'))['status']=='rejected'
                         counts['mutations'] += 1
                 if cut == len(projected)-1:
                     for path, replacement in ((('visibleRevision',),view['visibleRevision']+1),
@@ -529,11 +632,11 @@ def verify_matrix():
                         proposal = submission(old_view,index)
                         receipt = next((r for r in projected[-1]['ownReceipts'] if r['decisionId']==proposal['decisionId']),None)
                         if receipt:
-                            outcome = submit(source,audience,raw(proposal,'Submission'),999999)
+                            outcome = admit(source,audience,raw(proposal,'Submission'),999999)
                             assert outcome['status'] == ('accepted' if receipt['actionId']==proposal['actionId'] else 'rejected')
                             counts['bindings'] += 1
                         elif projected[-1]['decision'] is None:
-                            assert submit(source,audience,raw(proposal,'Submission'))['status']=='rejected'
+                            assert admit(source,audience,raw(proposal,'Submission'))['status']=='rejected'
                             counts['bindings'] += 1
     return counts
 
@@ -640,20 +743,162 @@ def test_canonical_edges():
         rejected(lambda kind=kind: parse(b'\xff',kind))
 
 
+def admit_current(source, audience, data, now=5000, available=True):
+    try:
+        validate_source(source)
+        require(corrected(source))
+        return submit(source,audience,data,now,available)
+    except (ValueError,KeyError,TypeError):
+        return dict(contractVersion=1,status='rejected',receipt=None)
+
+
+def test_current_profile_boundary():
+    catalog = {source['name']:source for source in source_cases()}
+    assert 'clock-v2.axis.attacker.committed' in catalog, 'corrected authority profile absent'
+    for name in ('attacker-first','defender-first'):
+        source = prefix(catalog[name],1)
+        for audience in SIDES:
+            proposal = raw(submission(views(source,audience)[-1]),'Submission')
+            assert admit_current(source,audience,proposal)['status']=='rejected', 'historical profile entered current admission'
+
+
+def test_current_rejects_legacy():
+    source = prefix(next(x for x in source_cases() if x['name']=='attacker-first'),1)
+    data = raw(submission(views(source,'axis')[-1]),'Submission')
+    assert admit_current(source,'axis',data)['status']=='rejected', 'historical profile entered current admission'
+
+
+def test_corrected_clock_privacy():
+    catalog = {s['name']:s for s in source_cases()}
+    comparisons = 0
+    for side in SIDES:
+        for first in ('attacker','defender'):
+            source = catalog['clock-v2.'+side+'.'+first+'.committed']
+            owner = side if first=='defender' else ('commonwealth' if side=='axis' else 'axis')
+            before,after = prefix(source,1),prefix(source,2)
+            view = views(before,owner)[-1]
+            assert raw(view,'Observation')==raw(views(after,owner)[-1],'Observation')
+            data = raw(submission(view),'Submission')
+            for now,available in rnd2.CLOCKS:
+                outcomes = [admit_current(s,owner,data,now,available) for s in (before,after)]
+                expected = 'accepted' if available and now is not None and 3000<=now<33000 else 'rejected'
+                assert outcomes[0]==outcomes[1] and outcomes[0]['status']==expected,(side,first,now,available,outcomes)
+                comparisons += 2
+            sealed_owner = 'commonwealth' if owner=='axis' else 'axis'
+            seal = raw(submission(views(before,sealed_owner)[-1]),'Submission')
+            for cut in range(2,len(source['events'])+1):
+                for now,available in rnd2.CLOCKS:
+                    result = admit_current(prefix(source,cut),sealed_owner,seal,now,available)
+                    assert result['status']=='accepted'
+                    comparisons += 1
+            for now,available in ((True,True),(3500.0,True),(3500,0),(3500,None),(-1,True)):
+                assert admit_current(after,owner,data,now,available)['status']=='rejected'
+    return comparisons
+
+
+def test_corrected_context_and_history():
+    catalog = {s['name']:s for s in source_cases()}
+    for side in SIDES:
+        predecessor = catalog['clock-v2.'+side+'.accepted-decline']
+        round_source = catalog['clock-v2.'+side+'.attacker.committed']
+        for audience in SIDES:
+            before,after = views(predecessor,audience),views(round_source,audience)
+            assert raw(before[-1],'Observation')==raw(after[0],'Observation'), 'profile context/history changed at unnumbered handoff'
+            assert len({v['context']['configRef'] for v in before+after})==1
+            assert before[0]['context']['configRef']!=views(catalog['accepted-decline'],audience)[0]['context']['configRef']
+            for old in before:
+                if old['decision']:
+                    receipt = next((r for r in after[-1]['ownReceipts'] if r['decisionId']==old['decision']['decisionId']),None)
+                    if receipt:
+                        proposal = raw(submission(old),'Submission')
+                        assert admit_current(round_source,audience,proposal,None,False)['status']=='accepted'
+            legacy = views(catalog['attacker-first'],audience)[1]
+            assert admit_current(prefix(round_source,1),audience,raw(submission(legacy),'Submission'))['status']=='rejected'
+
+
+def test_cancelled_seal_has_no_receipt():
+    for side in SIDES:
+        source = next(s for s in source_cases() if s['name']=='clock-v2.'+side+'.defender.fault')
+        for audience in SIDES:
+            frames = views(source,audience)
+            assert frames[2]['ownReceipts']==frames[3]['ownReceipts'], 'System clock cancellation fabricated own seal receipt'
+            assert frames[3]['status']=='closed'
+
+
+def test_current_source_integrity():
+    source = next(s for s in source_cases() if s['name']=='clock-v2.axis.attacker.committed')
+    for altered in (changed(source,('base','contractVersion'),2.0),
+                    changed(source,('inputs',0,'admittedAt'),3000.0),
+                    changed(source,('inputs',0,'clockAvailable'),1)):
+        rejected(lambda: views(altered,'axis'))
+    view = views(prefix(source,1),'axis')[-1]
+    original = raw(view,'Observation')
+    view['own']['currentToe']=0
+    assert raw(views(prefix(source,1),'axis')[-1],'Observation')==original, 'cached projection mutated by caller'
+    proposal = raw(submission(views(prefix(source,1),'axis')[-1]),'Submission')
+    for malformed in ({},None,source | dict(name='foreign-profile')):
+        assert admit_current(malformed,'axis',proposal)['status']=='rejected'
+
+
+def test_corrected_declassifier_probes():
+    for side in SIDES:
+        for first in ('attacker','defender'):
+            source = prefix(next(s for s in source_cases() if s['name']=='clock-v2.'+side+'.'+first+'.committed'),2)
+            observer = side if first=='defender' else ('commonwealth' if side=='axis' else 'axis')
+            state = replay_states(source)[-1]
+            facts = audience_facts(source,state,observer)
+            enemy_index = next(i for i,e in enumerate(state['world']['elements']) if not e['elementId'].startswith(observer))
+            # These mutations are declassifier probes, never authenticated history evidence.
+            for path,value in ((('prefix',),'sha256:'+'f'*64),(('stateVersion',),state['stateVersion']+1),
+                (('randomState','seed'),999),(('randomState','nextByteCursor'),50),
+                (('world','elements',enemy_index,'ammunition','points'),0),
+                (('world','elements',enemy_index,'components',0,'currentToe'),3),
+                (('world','elements',enemy_index,'operationalState','cohesionLevel'),4)):
+                assert audience_facts(source,changed(state,path,value),observer)==facts
+            forged = changed(source,('base','boundary','world','elements',enemy_index,'ammunition','points'),0)
+            rejected(lambda: views(forged,observer))
+
+
+def test_literal_corrected_configuration():
+    payload = b'{"selectionBudgetMilliseconds":30000,"rbaBudgetMilliseconds":30000,"assignmentBudgetMilliseconds":30000,"assignmentClockPolicyId":"sandtable.combat.public-opening-clock.v2"}'
+    expected = 'pub.'+hashlib.sha256(b'sandtable.observation.combat.config.v1\0'+payload).hexdigest()
+    for source in source_cases():
+        if corrected(source):
+            for audience in SIDES:
+                assert views(source,audience)[0]['context']['configRef']==expected
+
+
+def verify_fixture(data):
+    expected = (json.dumps(generated_fixture(),indent=2)+'\n').encode('utf-8')
+    require(type(data) is bytes and data==expected)
+
+
+def test_fixture_integrity():
+    original = json.loads(FIXTURE.read_bytes())
+    floating = copy.deepcopy(original); floating['traces'][0]['cuts'][0]['cut']=0.0
+    boolean = copy.deepcopy(original); boolean['traces'][0]['cuts'][0]['cut']=False
+    for data in ((json.dumps(floating,indent=2)+'\n').encode(),
+                 (json.dumps(boolean,indent=2)+'\n').encode(),
+                 FIXTURE.read_bytes().replace(b'"contractVersion": 1,',b'"contractVersion": 1, "contractVersion": 1,',1),
+                 FIXTURE.read_bytes().replace(b'\n',b'\r\n')):
+        rejected(lambda: verify_fixture(data))
+
+
 def main():
-    tests = (test_codec, test_selection, test_seals, test_submission, test_tight_bounds, test_source_pins, test_privacy_and_binding, test_explicit_submission_context, test_canonical_cycle_reference, test_round_continues_side_history, test_clock_loss_does_not_accept_choice, test_cycle_scalar_bounds, test_literal_candidate_bytes, test_canonical_edges)
-    failures = []
+    require(FIXTURE.is_file())
+    tests = (test_codec, test_selection, test_seals, test_submission, test_tight_bounds, test_source_pins, test_privacy_and_binding, test_explicit_submission_context, test_canonical_cycle_reference, test_round_continues_side_history, test_clock_loss_does_not_accept_choice, test_cycle_scalar_bounds, test_literal_candidate_bytes, test_canonical_edges, test_current_profile_boundary, test_current_rejects_legacy, test_corrected_clock_privacy, test_corrected_context_and_history, test_cancelled_seal_has_no_receipt, test_current_source_integrity, test_fixture_integrity, test_corrected_declassifier_probes, test_literal_corrected_configuration)
+    failures, results = [], {}
     for test in tests:
         try:
-            test()
+            results[test.__name__] = test()
         except AssertionError as error:
             failures.append(test.__name__)
             print('FAIL:', test.__name__, str(error))
     assert not failures, failures
     counts = verify_matrix()
     require(FIXTURE.is_file())
-    require(FIXTURE.read_text() == json.dumps(generated_fixture(), indent=2)+'\n')
-    print('PASS: 004A1 semantic contract tests;', counts)
+    verify_fixture(FIXTURE.read_bytes())
+    print(f"PASS: 004A1 {len(tests)} semantic groups; {results['test_corrected_clock_privacy']} corrected clock comparisons/retries;", counts)
 
 if __name__ == '__main__':
     main()
