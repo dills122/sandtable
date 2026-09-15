@@ -34,7 +34,7 @@ No new public clock stream, per-side watermark, deadline renewal or historical v
 - W01-CLOCK-INTEGRATE: after accepted successor, sole writer owns existing unaccepted four-file
   side packet; root owns combined plan. Preserve old failing diagnostic as historical evidence;
   prove successor outcomes and source bindings before accepting004A1.
-- W01-CLOCK-RESULT: after roundv2 acceptance, sole writer owns new
+- W01-CLOCK-RESULT: accepted after32traces/ordinaryreview/root81+1670gate; sole writer owns new
   `combat-result-settlement-v2` spec/schema/fixture/oracle; root combined plan. Corrected synthetic
   round-to-settlement causal evidence, unchanged gameplay arithmetic; must precede004A2 use.
 - W01-CLOCK-SNAPSHOT: if needed byCON006, sole writer owns new
@@ -57,7 +57,7 @@ is exhausted. Ordinary fresh-context five-axis review only.
 | ID | Dependencies | Owner / delivery unit | Owned paths | Acceptance / verification | Status / blockers |
 | --- | --- | --- | --- | --- | --- |
 | W01-SETUP | none | brain | this planning directory | latest main includes ff6b5f6 and merged113/114; skill load; branch; plan attestation | complete |
-| CMB-TASK-004A | 003 verified | task004_writer / internal; task004_evidence read-only; fresh reviewer per slice | docs/specs/combat-side-projection-v1.md, .schema.json, fixtures/combat-side-projection-v1.json, verify-combat-side-projection-v1.py; brain owns combined plan | CON-005 closed audience fields/errors/choices, canonical candidate bytes, equal-authorized-history and leak negatives; focused oracle plus brain just check | in progress; round-v2 and004A1 accepted; result-v2 next |
+| CMB-TASK-004A | 003 verified | task004_writer / internal; task004_evidence read-only; fresh reviewer per slice | docs/specs/combat-side-projection-v1.md, .schema.json, fixtures/combat-side-projection-v1.json, verify-combat-side-projection-v1.py; brain owns combined plan | CON-005 closed audience fields/errors/choices, canonical candidate bytes, equal-authorized-history and leak negatives; focused oracle plus brain just check | in progress; round-v2,004A1,result-v2 accepted;004A2 next |
 | CMB-TASK-004A1 | 003 | task004_writer / internal | same four004A files only | closed common codec/identity/errors, selection/RBA/seals; TDD plus focused/gate/review | accepted: corrected profile, ordinary review, root81+1670 gate; historicalv1 failure retained |
 | CMB-TASK-004A2 | accepted004A1 | same writer / internal | same four004A files only | settlement results, own retreat/custody/replacement disclosure/candidates; TDD plus focused/gate/review | pending |
 | CMB-TASK-004A3 | accepted004A2; sequentialA3a/A3b | same writer / internal | same four004A files only | Reserve I/laterII, cycle/structural projection, exact003 handoff and corpus reconciliation; TDD plus focused/gate/review; only then004A freeze | pending |

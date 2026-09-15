@@ -112,3 +112,13 @@ Only root status prose changed after frozen review. Original diagnostic remains 
 Result-v2 starts next with independent fresh-window opening; earlier private accepted times are
 audit-only. Writer corrected branch interpretation: retained retreat/custody paths are same-owner;
 regression must prove prior-time isolation without claiming an opposing-retreat leak.
+
+## 2026-09-15 12:54 UTC — Result2 accepted
+
+Ordinary reviewer approves frozen32-trace packet; source audit784literals/11pins/32historicalfiles;
+root192independent paired outcomes and just check81+1670,0skipped,3m21.794s fulltests. All passing.
+Only final spec status prose changed after freeze. Next004A2 uses explicit Observation2/Submission2/
+Candidate2, source-native CP/Cohesion bounds, distinct public clock/codec profile from first frame,
+actual owner-choice receipts and complete allowlisted settlement facts. Canonical plan records
+version split before writes. A1 exact types/bounds/literals stay frozen. Full004/B then005 required.
+Static72row contract evidence maps retained; partial coverage/runtime owners explicit.

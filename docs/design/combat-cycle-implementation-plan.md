@@ -5,14 +5,14 @@
 work (`001`–`002`) is complete. Parent `003` is complete through the
 [authority-composition handoff](../specs/combat-authority-composition-v1.md). Checkpoint B remains
 open. Task `004A1` is accepted with strict clock privacy and versioned round authority.
-Result/settlement clock integration, remaining side families and Exercise contracts remain required. Runtime tasks
+Result/settlement-v2 clock integration is accepted; remaining side families and Exercise contracts remain required. Runtime tasks
 `005`–`025` have not started.
 
 | Delivery layer | Current boundary | Next required outcome |
 | --- | --- | --- |
 | Research and policy | Complete for the selected bounded profile, including `HOST-RSH-001` | Reopen only for a new source, failed assumption, or approved profile expansion |
 | Authority contracts | CON-002–004 and all selected-profile inherited families are reconciled in 28 creation-rooted composition traces; parent003 complete | Preserve exact Task004 handoff while later runtime work derives boundaries from accepted history |
-| Outward contracts | Task004A1 accepted with corrected clock profile; Task003 handoff unchanged | Integrate result timing, then freeze CON-005/006 and expand all 72 ACs row by row |
+| Outward contracts | Task004A1 accepted with corrected clock profile; Task003 handoff unchanged | Complete side families, then freeze CON-005/006 and expand all 72 ACs row by row |
 | Runtime | Tasks005–019 not started | Implement dormant tables/state/decisions/settlement/release/repeat with cumulative replay and recovery evidence |
 | Public and simulator | Tasks020–024 not started | Activate the certified side-safe profile, then prove strict Exercise/Runner reconstruction and repeatability |
 | Closeout | Task025 not started | Full gate, evidence reconciliation, and authentic loop demonstration without overstating retained obligations |
@@ -162,6 +162,28 @@ actual CP14/Cohesion-4 and three-action later-II sets must fit without truncatio
 All four new files remain under one writer; historical packets remain immutable. If one adapter
 group cannot remain reviewable within this ownership, re-split before further edits.
 
+004A2 version refinement before edits: add separate Observation2, Submission2 and Candidate2
+records within the side packet. Every Candidate2 arm carries explicit version2; disjoint decision,
+action, set and receipt domains bind the new codec. Keep every A1 type, numeric bound, source name
+and literal exact. New settlement profiles project version2 from their first C3a frame, including
+both clock policy IDs and approved budgets in their public configuration identity. Current A1
+admission remains separate from A2 admission. OwnParticipant2 follows existing World primitives:
+nonnegative signed64 CP with certified denominator1; signed32 Cohesion capped at10. These value
+bounds do not claim all possible values are certified gameplay. Add only allowlisted typed own
+settlement/custody/guard/replacement facts, bounded full history and real owner-choice receipts.
+System-authored fallback never creates an own accepted receipt, even when input initiator was owner.
+Old/new readers and cross-profile submissions reject; source authentication precedes projection.
+
+004A3 evidence refinement before edits: canonical first-I release/conversion and later-II
+release/retain/completion sets must be derived and exercised through actual standalone Reserve
+transitions, with canonical bytes, accepted state, revision and receipts. These are explicitly
+synthetic ledger behavior tests, not fullWorld observations. The accepted creation-rooted inherited
+release wrapper supports only the release-I owner path; keep its conversion rejection and bytes.
+Its outward actions describe that bounded replay capability, distinguished by public profile/policy
+identity, not the complete Reserve gameplay legal set. Conversion in an inherited fullWorld profile
+remains unsupported until a separately scoped authority adapter. This retains AC003 coverage via
+the canonical ledger while preserving the existing admitted inherited profile.
+
 004A1 overnight hard stop, 2026-09-14 local /2026-09-15 UTC: ordinary fresh-context review found
 equal waiting-side observations before/after an opposing private seal, but the same proposal at
 trusted time3500 accepts with high-water3000 and cancels/rejects with high-water4000. Both seal
@@ -205,6 +227,17 @@ still documents v1 failure. This accepts A1 only; A2/A3 and parent004/B remain o
 Evidence: [review](../../.planning/2026-09-14-overnight-combat-wave-01/evidence/side-clock-review.md),
 [gate](../../.planning/2026-09-14-overnight-combat-wave-01/evidence/side-clock-just-check.log).
 
+W01-CLOCK-RESULT accepted,2026-09-15: separate version2 command/state/event and policy binding
+consume exact RoundState2 through 32 synthetic branch/side/order lineages. Fresh mandatory windows
+ignore prior audit times; live-window floor/deadline and Config1 fallbacks remain explicit. Ordinary
+fresh-context review approved all five axes. Frozen oracle passes10groups/304cuts/3728mutations/
+1360raw/384timing/200same-owner comparisons; reviewer adds1904retry/272tamper/208clock probes.
+Root independently checked192paired outcomes and `just check` passes81boundary+1670full,zero
+skipped,build zero warnings/errors. Source audit verifies784literals/11pins and32unchanged historical
+files. This accepts only result-v2;004A2/A3/B/C and005 remain open.
+Evidence: [review](../../.planning/2026-09-14-overnight-combat-wave-01/evidence/result-v2-review.md),
+[gate](../../.planning/2026-09-14-overnight-combat-wave-01/evidence/result-v2-just-check.log).
+
 Downstream clock integration split before edits: `W01-CLOCK-RESULT` owns new
 `combat-result-settlement-v2` spec/schema/fixture/oracle plus this plan after round-v2 acceptance.
 It retains World7, selected Rules10 arithmetic and role-ordered RNG while validating corrected
@@ -213,7 +246,9 @@ the corrected result lane. Result-v2 timing disposition: each new mandatory wind
 independently trusted valid opening instant and checked fixed budget. Earlier private accepted
 timestamps cannot gate that opening or trigger fallback. Choices within the live window use its
 own published timing gate; any global accepted-time maximum is audit evidence only. Preserve
-Config1 budget/fallback values and explicitly bind the corrected opening policy in Result2.
+Config1 budget/fallback values. Every ResultCommand2, ResultState2 and ResultEvent2 binds
+`resultClockPolicyId=sandtable.combat.mandatory-window-clock.v2` and the exact
+`roundClockConfigurationHash`; separate v2 identity domains bind the corrected opening policy.
 Retained eight-branch corpus has same-owner retreat/custody sequences: the paired10001/11000
 retreat acceptance then10500 custody opening test proves prior-time isolation, not an opposing-
 retreat leak. Do not invent a cross-owner gameplay branch. Retain all eight branches, both acting
