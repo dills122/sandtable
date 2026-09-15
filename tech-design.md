@@ -895,7 +895,10 @@ accepted. The bridge retains World, RNG and future obligations through empty Res
 same-slot Truck Convoy. Version3 side profiles now expose authenticated own Reserve facts and
 bounded inherited release/control choices with binary cycle action identities. All 28 historical terminal
 projections and continuous corrected bridge histories now complete bounded CON-005 evidence.
-CON-006 Exercise contracts and integrated checkpoint B remain open. The [cycle-control contract](docs/specs/combat-cycle-control-v1.md)
+The [private Exercise occurrence contract](docs/specs/combat-exercise-occurrence-v1.md) authenticates
+134 source histories and 2576 checkpoint cuts, retaining full World, RNG and typed control state.
+Source occurrence and active occurrence remain separate across repeat/finish. Child execution,
+parent comparison and integrated checkpoint B remain open. The [cycle-control contract](docs/specs/combat-cycle-control-v1.md)
 binds release completion, semantic progress, current-cost witnesses and exact repeat/finish successors.
 Its Movement-expiry projection retains exclusions and release history. The
 [armed-continuation proof](docs/specs/combat-inherited-armed-continuation-v1.md) now admits both

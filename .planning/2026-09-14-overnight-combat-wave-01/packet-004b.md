@@ -232,3 +232,14 @@ cycle-control profiles expose different capabilities from first frame despite id
 starting World. Distinguish those families; continue excluding catalog names/future transcript and
 preserve corrected same-start seal/time/choice pairs. This implements existing closed-family/profile
 requirement rather than expanding admission.
+
+## B2 source clarification after accepted B1
+
+Inherited controller configuration binds reserveChoice release-I and cycleChoice repeat|finish.
+Select the unique matching offered public candidate and copy its actual bindings; fixture setup
+may select configuration, but controller choice cannot inspect case names or private future state.
+System semantic identity is invariant when its actual closed key matches. Native decision IDs may
+change indirectly through prefix-derived authority identity; no universal trusted-time invariance
+is claimed. Explicit null decision stays null rather than substituting release/control identity.
+Sources: side oracle candidates3; Reserve release_id; cycle control_id. Read-only source audit
+found no contradiction. This identity remains private and does not widen outward disclosure.

@@ -674,6 +674,10 @@ owner complete-release intent can earn acceptance through authenticated native e
 System authors its completion event. Historical terminal profiles provide exact checkpoint facts with
 no actions; corrected composition profiles preserve continuous own receipts/history through finish.
 These contract profiles are accepted; runtime remains gated.
+A [private Exercise checkpoint](docs/specs/combat-exercise-occurrence-v1.md) records an authenticated
+source prefix and exact current authority state. **Source occurrence** identifies the cycle being
+proved; **active occurrence** identifies the current cycle after continuation. These identities
+can differ after repeat and are distinct from registered CoreSnapshot identity.
 
 **Capability Point expenditure** is the exact amount already spent during the current Operation
 Stage; it is not a replenishing UI movement allowance. **Complete Movement** is a real player
