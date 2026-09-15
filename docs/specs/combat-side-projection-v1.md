@@ -2,8 +2,8 @@
 
 Status: `CMB-TASK-004A1` **corrected-profile accepted checkpoint**; contract evidence only. Shared
 codec, selection, RBA and sealed assignment use the accepted versioned clock correction below.
-`004A2` settlement is an **accepted version2 checkpoint** below; `004A3` Reserve/cycle plus
-complete Task003 handoff remain open. This packet
+`004A2` settlement and `004A3a` live Reserve/cycle projection are **accepted checkpoints** below.
+`004A3b` complete Task003 terminal handoff and corrected bridge projection remain open. This packet
 does not freeze complete CON-005, close parent004 or activate runtime.
 
 [Combined plan](../design/combat-cycle-implementation-plan.md),
@@ -330,6 +330,151 @@ No complete CON-005 or parent004 completion follows from A2. Reserve I/laterII, 
 complete Task003 handoff, runtime activation and hosted timing/traffic privacy remain deferred.
 Future transport must carry the explicit version2 settlement binding in addition to the A1 mapping,
 and must select an admitted profile before parsing; this local codec reserves no production field.
+
+## A3a successor profile: inherited Reserve and cycle control
+
+`004A3a` is accepted after 52 oracle groups, fresh ordinary review, source/literal audit and root
+`just check` (81 boundary tests, 1670 full tests, zero skipped). It adds disjoint local codec3 under `objects3`, `candidateTags3`, `recordTags3`,
+`integerBounds3`, `enums3`, `domains3` and `limits3`. Accepted A1/A2 records, numeric bounds,
+references, domains, entry points and fixture sections remain exact and fingerprinted. This
+checkpoint covers live inherited release/control and separate canonical ledger behavior.
+Complete003 terminal projection and continuous corrected Combat/Result2/finish composition remain
+`004A3b`; no complete CON-005 freeze or production registration follows from A3a.
+
+### Explicit capability and represented history
+
+`Context3` adds `capabilityPolicyId`. Four implemented public values identify supported evidence:
+
+| Policy ID | Meaning |
+| --- | --- |
+| `sandtable.side.inherited-release-I.v3` | Actual inherited release-I owner choice plus deterministic System fallback/completion. |
+| `sandtable.side.inherited-release-control.v3` | Same release history followed by actual inherited armed repeat/finish control. |
+| `sandtable.side.reserve-ledger.v3` | Standalone canonical Reserve ledger; no fullWorld admission. |
+| `sandtable.side.cycle-ledger.v3` | Standalone canonical cycle-control ledger; no fullWorld admission. |
+
+Two additional values, `sandtable.side.corrected-composition.v3` and
+`sandtable.side.historical-terminal.v3`, reserve typed-only A3b capability identities. They have no
+current source, profile, positive fixture or admission support. Reserving them does not reinterpret
+current records or authorize either future adapter.
+
+Both live capabilities begin at accepted inherited Reserve entry, authority22, with audience
+revision0, one represented boundary change and no fabricated prior side receipts. Exact inherited
+creation provenance authenticates that boundary; it does not reconstruct unrepresented public
+history from private authority counts. Control sources retain every represented release frame,
+receipt and side change before control opens. Their capability is fixed from that first frame;
+source name, private proof hash, event prefix and accepted-time maxima never enter outward identity.
+
+`ClockConfigSeed3` contains reserve and cycle budgets30000, the explicit bounded
+`sandtable.side.inherited-retained-clock.v3` policy, capability ID and candidateCodec3. Both budgets
+and policy are bound in version3 configRef before any represented event. The inherited clock policy
+means exact accepted-reader semantics, including retained high-water behavior; it does not claim
+corrected arbitrary-history clock support. Version3 rulesRef binds full public Rules10 identity,
+existing singleton profile/POL-006 and candidateCodec3. It carries no private configuration hash.
+
+Ten named sources produce20 audience traces: two inherited release lineages and two real
+owner-initiated clock-loss fallback forks; two owners each have repeat, finish and control fallback
+histories. Internal five-field Source retains exact case/base, inputs and event bytes. Names are
+`inherited-reserve.<side>[.fallback]` and `inherited-control.<side>.<repeat|finish|fallback>`.
+Only exact retained prefixes enter `views3`, `read_observation3` or `admit_a3`. Authenticate whole
+source and immutable dependency pins before cached readback; cached outputs return copies.
+Inherited release uses its wrapper, which rejects owner conversion. Inherited control uses its
+certified armed assessment and wrapper, never the private exhausted-ammunition assessment.
+
+`admit_a3` is an offline proposal oracle with generic version3 accepted/rejected outcomes. It
+checks seat, codec, full public offer, current set and candidate, then executes the actual wrapper.
+Exact accepted proposals recover original own receipt before clock handling; altered or stale
+proposals reject. System fallback is not accepted player action. No source caller can gain admission
+by relabeling a private ledger or by supplying an allegedly matching checkpoint hash.
+
+### Closed codec3 facts and decisions
+
+Every new candidate, decision, action, receipt, observation and submission carries integer version3.
+`Candidate3` has eight version3 Combat arms with the same semantic payloads as A2, plus seven
+cycle arms: release-I, convert-to-II, release-II, retain-II, complete-release, repeat and finish.
+Combat arms are typed future composition capacity; A3a does not offer them through live admission.
+The first four Reserve arms carry only kind, version and own participantRef; completion/repeat/finish
+carry only kind and version. No private unit creation key or authority completion identifier enters candidate payloads.
+
+`Decision3`, `Submission3` and `OwnReceipt3` use explicit `decisionFamily` tags: `combat` and
+`cycle`. Each variant has a closed descriptor. Combat actions/sets remain `pub.` JSON-domain refs;
+cycle actions/sets require frozen `sha256:` binary hashes. No permissive mixed-reference scalar
+widens A2. Cycle submissions additionally bind the exact public cycle; Combat submissions retain
+explicit nullable round/slot/settlement fields. Unknown families and wrong-family candidates reject.
+
+`Observation3` retains typed own participant, apparent enemy, nullable round/settlement and own
+receipts/history; adds nullable `OwnReserve3` and explicit `Lifecycle3`. Own Reserve contains own
+participantRef, status, baseCPA, source-native spentCP and nullable release record. A release record
+contains released type/ordinal, CPA basis, voluntary ceiling, own offensive-use flag and nullable
+next-Movement exception scope/ordinal/status. Only authenticated member records supply these facts.
+Raw designation, conversion, release, commitment and completion IDs remain private. Never infer
+release merely from status None or manufacture release history when absent.
+
+Lifecycle keeps approved source cycle/ordinal and nullable current cycle/ordinal. Repeat exposes
+actual active ordinal2; finish retains source occurrence while current cycle becomes null.
+`SideChange3` binds cycleRef and ordinal along with visible revision/position/status/own receipt.
+Audience revision advances once per authorized fact or accepted own receipt change. Private release
+opening/choice/completion and control opening do not tick the other audience. Adapter handoffs do
+not themselves add side history. Structural repeat/finish is public progress.
+
+### Frozen cycle set/action codec
+
+Use exact [binary tuple framing](../design/continual-cycle-reserve-composition-v1.md): U32/U64
+unsigned big-endian, S=U32 byte length followed by exact bytes, H=32 raw hash bytes; domain ASCII
+plus one zero byte before payload. Cycle public identity remains frozen codec1 with original public
+Rules10 raw64 identity. It is independent of version3 Combat JSON domains.
+
+```text
+set: sandtable.cycle.actions.v1
+U32(1); S(campaignId); S(audience); H(publicCycle); S(windowKind);
+U64(openingAudienceRevision); S(capabilityPolicyId); U32(candidateCount);
+each S(canonicalCandidateBytes)
+
+action: sandtable.cycle.action.v1
+U32(1); H(setDigest); U32(zeroBasedCandidateIndex)
+```
+
+Candidates use strict ordered canonical ASCII JSON from their closed Candidate3 descriptors. Sort
+as unsigned bytes; reject duplicates before assigning indices. First-I conversion sorts before
+release-I. Later-II complete-release sorts before release-II and retain-II. Action IDs are excluded
+from candidate payloads. Independent literal vectors pin a three-candidate set digest and all three
+index-bound action digests, alongside canonical candidate bytes and field order.
+
+### Separate canonical ledger evidence
+
+`LedgerObservation3` is explicitly separate: context, cycle/position/revision/status, nullable cycle
+decision, own Reserve array, lifecycle, receipts and history. It has no World participant, apparent
+enemy or settlement record. `ledger_cases3`, `ledger_views3` and `admit_ledger3` authenticate a
+separate registry containing all13 Reserve and19 cycle cases, expanded to112 side/slot traces.
+Synthetic membership, retained World hashes and Movement certificates remain private ledger evidence;
+no ledger source enters fullWorld registry. All actual canonical choices execute through native
+transitions and check resulting status/history, receipts, clock fallback, stale proposals and retries.
+
+Later-II `complete-release` is authenticated owner intent whose accepted native completion event
+has System author. It counts as own acceptance only after exact native replay and offer matching:
+owner command `complete-release`, event `release-completed`, reason `owner-complete-release`, and
+fallbackLocked false. Native replay checks optional-II ordinal, bound decision/version, completed
+state, completion receipt and owner command receipt. Ordinary System `complete` and clock fallback
+completion produce no own acceptance. Exact owner completion retry recovers original public receipt.
+The inherited release-I profile offers neither completion intent nor conversion.
+
+### Capacity, compatibility and verification
+
+Version3 limits:65,536 bytes/value, depth20, generic arrays64, actions3, own receipts8 and side
+history64. FullWorld retains singleton own member; standalone ledgers allow32 own members. Source-native
+CP has nonnegative signed64 numerator and denominator1; Cohesion spans signed32 minimum through10.
+Codec probes include CP14/Cohesion−4; actual28 historical terminal vectors remain A3b. Settlement
+asset/route bounds and future-turn115 capacity remain unchanged. Excess rejects; never truncate.
+
+Fixture adds only `successor3`, retaining source pins, all live and ledger cut hashes/lengths,
+representative canonical observations and every distinct candidate/submission. Focused checks cover
+closed versions/families, independent binary literals, all canonical ledger sets, actual wrapper
+admission, clock classes, recovery, context/source/raw mutations, hidden-only equality, cache-copy
+isolation and bounds. A1/A2 complete schema/fixture fingerprints prevent accidental reinterpretation.
+
+Run the side oracle plus direct inherited release/control and private Reserve/cycle predecessors.
+A3b still owns exact28-terminal Task003 handoff projection, continuous corrected bridge history,
+combined privacy comparisons and final corpus capacity reconciliation. No earlier accepted byte or
+runtime reader is replaced here.
 
 ## Compatibility and future Dispatch
 

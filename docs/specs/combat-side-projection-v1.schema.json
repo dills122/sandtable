@@ -337,5 +337,333 @@
       "combat-result-settlement-v2.schema.json"
     ],
     "numericSemantics": "CP signed64 nonnegative numerator and denominator1; Cohesion signed32 with upper cap10. Decoder capacity does not expand source admission."
+  },
+  "objects3": {
+    "Cp3": "numerator:cp3 denominator:one3",
+    "OwnParticipant3": "participantRef:ref componentRef:ref locationId:id currentToe:toe spentCp:Cp3 ammunition:toe cohesion:cohesion3",
+    "Select3": "contractVersion:version3 kind:select participantRef:ref targetRef:ref targetLocationId:id",
+    "Finish3": "contractVersion:version3 kind:finish",
+    "Decline3": "contractVersion:version3 kind:decline participantRef:ref",
+    "Allocation3": "contractVersion:version3 kind:allocation participantRef:ref componentRef:ref committedToe:fullToe",
+    "RetreatChoice3": "contractVersion:version3 kind:retreatKind3 participantRef:ref route:id[] distance:one3 cpCost:one3 excessCpDp:nonnegative3",
+    "RefuseChoice3": "contractVersion:version3 kind:refuseKind3 participantRef:ref",
+    "GuardChoice3": "contractVersion:version3 kind:guardKind3 custodyRef:ref donorComponentRef:ref route:id[] guardToe:one3",
+    "UnguardedChoice3": "contractVersion:version3 kind:unguardedKind3 custodyRef:ref",
+    "Scope3": "gameTurn:turn operationStage:stage",
+    "FutureScope3": "gameTurn:futureTurn3 operationStage:stage",
+    "Loss3": "componentRef:ref committedToe:toe lossToe:toe capturedToe:toe otherLossToe:toe remainingToe:toe",
+    "CohesionCause3": "causeRef:ref kind:causeKind3 points:nonnegative3 before:cohesion3 after:cohesion3 scope:Scope3",
+    "Retreat3": "choice:retreatIntent3 route:id[] plannedDistance:distance3 completedDistance:distance3? beforeCp:Cp3? afterCp:Cp3? excessCpDp:nonnegative3?",
+    "Custody3": "custodyRef:ref quantity:lotQuantity3 originSide:side prisonerClass:infantry3 originLocationId:id currentLocationId:id? status:custodyStatus3 guardRef:ref? guardRoute:id[] donorToeBefore:toe? donorToeAfter:toe?",
+    "Readiness3": "gameTurn:turn operationStage:stage waterStatus:water3 storesStatus:stores3 pinned:bool3",
+    "Guard3": "guardRef:ref custodyRef:ref donorComponentRef:ref locationId:id currentToe:one3 baseCapabilityPoints:fullToe offensiveRating:zero3 defensiveRating:one3 spentCp:Cp3 cohesion:cohesion3 ammunition:zero3 readiness:Readiness3",
+    "Entitlement3": "entitlementRef:ref componentRef:ref quantity:lotQuantity3 reunionLocationId:id earnedScope:Scope3 delayOperationStages:delay3 eligibleScope:FutureScope3 status:entitlementStatus3",
+    "Obligation3": "obligationRef:ref kind:obligationKind3 subjectRef:ref earnedScope:Scope3 eligibleScope:FutureScope3? status:obligationStatus3",
+    "Relation3": "relationRef:ref kind:relationKind3 targetRef:ref",
+    "Settlement3": "settlementRef:ref ownLoss:Loss3? ownRetreat:Retreat3? ownCohesionCauses:CohesionCause3[] ownCustody:Custody3? ownGuards:Guard3[] ownEntitlements:Entitlement3[] ownObligations:Obligation3[] relation:Relation3?",
+    "Observation3": "contractVersion:version3 context:Context3 cycleRef:cycleHash positionId:id visibleRevision:revision own:OwnParticipant3 apparentEnemy:ApparentEnemy roundRef:ref? status:status decision:Decision3? settlement:Settlement3? ownReserve:OwnReserve3? lifecycle:Lifecycle3 ownReceipts:OwnReceipt3[] history:SideChange3[]",
+    "Outcome3": "contractVersion:version3 status:outcome receipt:OwnReceipt3?",
+    "IdentitySeed3": "context:Context3 cycleRef:cycleHash positionId:id openingRevision:revision kind:decisionKind3 participantRef:ref? targetRef:ref?",
+    "ActionSeed3": "decisionId:ref candidate:CombatCandidate3",
+    "SetSeed3": "decisionId:ref openingRevision:revision actions:CombatAction3[]",
+    "ClockConfigSeed3": "reserveBudgetMilliseconds:budget cycleBudgetMilliseconds:budget clockPolicyId:inheritedClock3 capabilityPolicyId:capability3 candidateCodec:version3",
+    "Context3": "campaignId:id audience:side cycle:Cycle rulesRef:ref configRef:ref capabilityPolicyId:capability3",
+    "CombatAction3": "contractVersion:version3 actionId:ref candidate:CombatCandidate3",
+    "CycleAction3": "contractVersion:version3 actionId:cycleHash candidate:CycleCandidate3",
+    "CombatDecision3": "contractVersion:version3 decisionFamily:combatFamily3 decisionId:ref kind:combatKind3 openingRevision:revision slotRef:ref? settlementRef:ref? deadlineUnixMilliseconds:timestamp actionSetId:ref actions:CombatAction3[]",
+    "CycleDecision3": "contractVersion:version3 decisionFamily:cycleFamily3 decisionId:ref kind:cycleKind3 openingRevision:revision deadlineUnixMilliseconds:timestamp actionSetId:cycleHash actions:CycleAction3[]",
+    "CombatReceipt3": "contractVersion:version3 decisionFamily:combatFamily3 decisionId:ref actionId:ref receiptRef:ref",
+    "CycleReceipt3": "contractVersion:version3 decisionFamily:cycleFamily3 decisionId:ref actionId:cycleHash receiptRef:ref",
+    "ReleaseI3": "contractVersion:version3 kind:releaseI3 participantRef:ref",
+    "ConvertII3": "contractVersion:version3 kind:convertII3 participantRef:ref",
+    "ReleaseII3": "contractVersion:version3 kind:releaseII3 participantRef:ref",
+    "RetainII3": "contractVersion:version3 kind:retainII3 participantRef:ref",
+    "CompleteRelease3": "contractVersion:version3 kind:completeRelease3",
+    "Repeat3": "contractVersion:version3 kind:repeat3",
+    "CycleFinish3": "contractVersion:version3 kind:cycleFinish3",
+    "ReleaseScope3": "gameTurn:turn operationStage:stage playerPhaseSlot:slot phasingSide:side",
+    "NextMovement3": "scope:ReleaseScope3 ordinal:ordinal status:exceptionStatus3",
+    "ReleaseRecord3": "releasedType:releasedType3 releaseOrdinal:ordinal cpaBasis:cpa3 voluntaryCeiling:nonnegative3 offensiveUsed:bool3 nextMovement:NextMovement3?",
+    "OwnReserve3": "participantRef:ref status:reserveStatus3 baseCpa:cpa3 spentCp:Cp3 release:ReleaseRecord3?",
+    "Lifecycle3": "sourceCycleRef:cycleHash sourceOrdinal:ordinal activeCycleRef:cycleHash? activeOrdinal:ordinal? status:lifecycleStatus3",
+    "SideChange3": "visibleRevision:revision cycleRef:cycleHash ordinal:ordinal positionId:id status:status ownReceiptRef:ref?",
+    "LedgerObservation3": "contractVersion:version3 context:Context3 cycleRef:cycleHash positionId:id visibleRevision:revision status:status decision:CycleDecision3? ownReserve:OwnReserve3[] lifecycle:Lifecycle3 ownReceipts:CycleReceipt3[] history:SideChange3[]",
+    "CombatSubmission3": "contractVersion:version3 decisionFamily:combatFamily3 campaignId:id rulesRef:ref configRef:ref audience:side roundRef:ref? settlementRef:ref? decisionId:ref slotRef:ref? openingRevision:revision actionSetId:ref actionId:ref candidate:CombatCandidate3",
+    "CycleSubmission3": "contractVersion:version3 decisionFamily:cycleFamily3 campaignId:id rulesRef:ref configRef:ref audience:side cycleRef:cycleHash decisionId:ref openingRevision:revision actionSetId:cycleHash actionId:cycleHash candidate:CycleCandidate3"
+  },
+  "candidateTags3": {
+    "Candidate3": {
+      "select-close-assault": "Select3",
+      "finish-without-attack": "Finish3",
+      "decline-retreat-before-assault": "Decline3",
+      "full-close-assault": "Allocation3",
+      "retreat": "RetreatChoice3",
+      "refuse-retreat": "RefuseChoice3",
+      "relocate-and-guard": "GuardChoice3",
+      "leave-unguarded": "UnguardedChoice3",
+      "release-I": "ReleaseI3",
+      "convert-to-II": "ConvertII3",
+      "release-II": "ReleaseII3",
+      "retain-II": "RetainII3",
+      "complete-release": "CompleteRelease3",
+      "repeat": "Repeat3",
+      "finish": "CycleFinish3"
+    },
+    "CombatCandidate3": {
+      "select-close-assault": "Select3",
+      "finish-without-attack": "Finish3",
+      "decline-retreat-before-assault": "Decline3",
+      "full-close-assault": "Allocation3",
+      "retreat": "RetreatChoice3",
+      "refuse-retreat": "RefuseChoice3",
+      "relocate-and-guard": "GuardChoice3",
+      "leave-unguarded": "UnguardedChoice3"
+    },
+    "CycleCandidate3": {
+      "release-I": "ReleaseI3",
+      "convert-to-II": "ConvertII3",
+      "release-II": "ReleaseII3",
+      "retain-II": "RetainII3",
+      "complete-release": "CompleteRelease3",
+      "repeat": "Repeat3",
+      "finish": "CycleFinish3"
+    }
+  },
+  "recordTags3": {
+    "Decision3": {
+      "combat": "CombatDecision3",
+      "cycle": "CycleDecision3"
+    },
+    "Submission3": {
+      "combat": "CombatSubmission3",
+      "cycle": "CycleSubmission3"
+    },
+    "OwnReceipt3": {
+      "combat": "CombatReceipt3",
+      "cycle": "CycleReceipt3"
+    }
+  },
+  "integerBounds3": {
+    "version3": [
+      3,
+      3
+    ],
+    "one3": [
+      1,
+      1
+    ],
+    "zero3": [
+      0,
+      0
+    ],
+    "cp3": [
+      0,
+      9223372036854775807
+    ],
+    "cohesion3": [
+      -2147483648,
+      10
+    ],
+    "nonnegative3": [
+      0,
+      2147483647
+    ],
+    "distance3": [
+      0,
+      1
+    ],
+    "lotQuantity3": [
+      1,
+      3
+    ],
+    "delay3": [
+      12,
+      12
+    ],
+    "futureTurn3": [
+      1,
+      115
+    ],
+    "cpa3": [
+      1,
+      2147483647
+    ],
+    "ordinal": [
+      1,
+      2147483647
+    ]
+  },
+  "enums3": {
+    "decisionKind3": [
+      "selection",
+      "rba",
+      "force-assignment",
+      "retreat",
+      "custody",
+      "reserve-release",
+      "cycle-control"
+    ],
+    "retreatKind3": [
+      "retreat"
+    ],
+    "refuseKind3": [
+      "refuse-retreat"
+    ],
+    "guardKind3": [
+      "relocate-and-guard"
+    ],
+    "unguardedKind3": [
+      "leave-unguarded"
+    ],
+    "retreatIntent3": [
+      "retreat",
+      "refuse-retreat"
+    ],
+    "causeKind3": [
+      "loss-dp",
+      "retreat-excess-dp",
+      "assault-victory-rp"
+    ],
+    "custodyStatus3": [
+      "pending",
+      "guarded",
+      "escaped"
+    ],
+    "infantry3": [
+      "infantry"
+    ],
+    "water3": [
+      "distributed-for-stage"
+    ],
+    "stores3": [
+      "distributed-for-stage"
+    ],
+    "entitlementStatus3": [
+      "awaiting-eligibility-and-training"
+    ],
+    "obligationKind3": [
+      "guard-priority-upkeep",
+      "replacement-training"
+    ],
+    "obligationStatus3": [
+      "pending"
+    ],
+    "relationKind3": [
+      "contact",
+      "engaged"
+    ],
+    "resultClockPolicy3": [
+      "sandtable.combat.mandatory-window-clock.v2"
+    ],
+    "combatFamily3": [
+      "combat"
+    ],
+    "cycleFamily3": [
+      "cycle"
+    ],
+    "combatKind3": [
+      "selection",
+      "rba",
+      "force-assignment",
+      "retreat",
+      "custody"
+    ],
+    "cycleKind3": [
+      "reserve-release",
+      "cycle-control"
+    ],
+    "capability3": [
+      "sandtable.side.inherited-release-I.v3",
+      "sandtable.side.inherited-release-control.v3",
+      "sandtable.side.reserve-ledger.v3",
+      "sandtable.side.cycle-ledger.v3",
+      "sandtable.side.corrected-composition.v3",
+      "sandtable.side.historical-terminal.v3"
+    ],
+    "inheritedClock3": [
+      "sandtable.side.inherited-retained-clock.v3"
+    ],
+    "releaseI3": [
+      "release-I"
+    ],
+    "convertII3": [
+      "convert-to-II"
+    ],
+    "releaseII3": [
+      "release-II"
+    ],
+    "retainII3": [
+      "retain-II"
+    ],
+    "completeRelease3": [
+      "complete-release"
+    ],
+    "repeat3": [
+      "repeat"
+    ],
+    "cycleFinish3": [
+      "finish"
+    ],
+    "reserveStatus3": [
+      "none",
+      "I",
+      "II"
+    ],
+    "releasedType3": [
+      "I",
+      "II"
+    ],
+    "exceptionStatus3": [
+      "pending",
+      "consumed",
+      "expired"
+    ],
+    "lifecycleStatus3": [
+      "active",
+      "finished"
+    ]
+  },
+  "domains3": {
+    "target": "sandtable.observation.combat.target.v3",
+    "round": "sandtable.observation.combat.round.v3",
+    "slot": "sandtable.observation.combat.slot.v3",
+    "decision": "sandtable.observation.combat.decision.v3",
+    "action": "sandtable.observation.combat.action.v3",
+    "set": "sandtable.observation.combat.set.v3",
+    "receipt": "sandtable.observation.combat.receipt.v3",
+    "rules": "sandtable.observation.combat.rules.v3",
+    "config": "sandtable.observation.combat.config.v3",
+    "settlement": "sandtable.observation.combat.settlement.v3",
+    "custody": "sandtable.observation.combat.custody.v3",
+    "guard": "sandtable.observation.combat.guard.v3",
+    "entitlement": "sandtable.observation.combat.entitlement.v3",
+    "obligation": "sandtable.observation.combat.obligation.v3",
+    "cause": "sandtable.observation.combat.cause.v3",
+    "relation": "sandtable.observation.combat.relation.v3"
+  },
+  "limits3": {
+    "bytes": 65536,
+    "depth": 20,
+    "arrayItems": 64,
+    "actions": 3,
+    "receipts": 8,
+    "history": 64,
+    "ownAssets": 1,
+    "routeNodes": 9,
+    "ledgerMembers": 32
+  },
+  "successor3": {
+    "scope": "004A3a inherited live cuts and separate ledger behavior; corrected Combat v3 and Task003 terminal projections await A3b; no runtime registration",
+    "cycleSetDomain": "sandtable.cycle.actions.v1",
+    "cycleActionDomain": "sandtable.cycle.action.v1",
+    "externalContracts": [
+      "combat-inherited-reserve-release-v1.schema.json",
+      "combat-inherited-cycle-control-v1.schema.json"
+    ],
+    "clockBoundary": "Inherited exact retained-source semantics only; no corrected arbitrary-history clock claim.",
+    "reservedCapabilities": [
+      "sandtable.side.corrected-composition.v3",
+      "sandtable.side.historical-terminal.v3"
+    ]
   }
 }

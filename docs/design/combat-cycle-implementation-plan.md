@@ -140,6 +140,13 @@ each spec/schema/fixture/oracle plus this plan, execute after accepted004A:
 
 These typed checkpoints are not CoreSnapshot records. They prove contract replay within explicitly
 tagged lineage; ordinary-Core/Exercise parity remains runtime022, actual publication remains023.
+B1/B2 bind full source lineage separately from execution profile/start fragment/local cut. Native
+C3 runs execute supported public decisions and System transitions; live inherited Release/control
+starts only at admitted A3 cuts after authenticating its complete prefix. Historical003 terminal
+checkpoints execute zero steps and must already satisfy their exact request with identical initial/
+final checkpoint bytes. Source/proof fragments affect proof identity, not execution step count.
+These checkpoint-scoped proofs do not claim public-controller replay of earlier source-only
+creation/Movement actions or completion of a zero-step historical suite; Task022 owns that parity.
 B1 distinguishes a family-supported requested terminal from its satisfaction by a supplied
 execution prefix. Eight exact A2clock-fallback prefixes can request native closedReserveRelease1
 and stop at accepted-transition limit16/20 while still in CloseAssault. B2 records failedterminal/
@@ -208,6 +215,21 @@ terminal projections and accepted corrected bridge, usingv3 from first C3a frame
 receipts/history throughfinish. Terminal-only sources never invent prior sidehistory or actions
 from authorityreceipt counts. Exact fields and bounds are recorded in
 [packet004A3](../../.planning/2026-09-14-overnight-combat-wave-01/packet-004a3.md).
+Source-backed receipt distinction: canonical later-II `complete-release` is accepted owner intent
+recorded by a System-authored completion with exact `owner-complete-release` reason. Native replay
+and offered-candidate/owner/receipt binding determine acceptance; event author alone does not.
+System completion and clock fallback create no owner acceptance. B2 retains owner semantic action
+for valid accepted completion and System semantic action for rejected fallback; exact retry adds
+no step. This does not expand inherited release-I-only admission.
+
+004A3a accepted2026-09-15:52focused groups, ordinary fresh-context approval, exact source/literal
+checks and root `just check`81boundary/1670full tests,0skips. Live inherited release/control and
+separate canonical ledgers retain A1/A2 bytes. Root reconstructs92binary sets/190action identities;
+audit checks456cuts/344observation literals/190candidate pairs/38pins. Owner complete-release
+receipt follows authenticated intent even with System event author. A3b starts next:28terminal
+projections and continuous corrected bridge history, separate registry and internal configuration
+seed binding all three clock policies from first frame. Bridge offers finish only; historical
+terminal profiles offer no actions. Parent004/checkpointB and005 remain incomplete.
 
 004A1 overnight hard stop, 2026-09-14 local /2026-09-15 UTC: ordinary fresh-context review found
 equal waiting-side observations before/after an opposing private seal, but the same proposal at

@@ -100,8 +100,8 @@ All currentcorpus scopes turn1/stage1/firstrelative slot with either resolvedact
 
 CorrectedResult2 alone does not reach TruckConvoy. Complete combat-then-finish suite requires a
 new exact corrected result→emptyRelease→finish adapter; unrelated003 finish cannot satisfy this
-requirement. Required W01-CLOCK-CYCLE packet is scoped before A3 and B1; four-lineage feasibility
-passes, full32-lineage implementation/review remains pending. No new gameplay policy or fullSnapshot
+requirement. Required W01-CLOCK-CYCLE packet is scoped before A3 and B1; accepted bridge at b5ede50
+passes 32 native lineages, fresh ordinary review and root full gate. No new gameplay policy or fullSnapshot
 requirement follows from this bridge.
 
 ## B1/B2 fallback evidence — supported request versus achieved terminal
@@ -140,3 +140,58 @@ source/RNG determinesarithmeticbranch; controllernotmanufactureit. Existing act-
 covercreationstageDeclaration policies; syntheticC3beginsCombatselection, no inventedInitiative.
 NewCombatcontrollerrecords prospective/unregistered. Fallback uses samepublicpreference; trusted
 clockfault changesauthorityoutcome; readjudication retains realownerinput/Systemfallbackevent.
+
+## Owner completion receipt — source-backed distinction
+
+Reserve spec76–80 and cycle design125–126 explicitly make complete-release an acceptedowner
+intent recorded by oneSystem-authored completion. Afterfullnative replay/offeredcandidatebinding:
+commandcomplete-release, trustedactorcycleowner/audience, prioropenoptional-IIwork/ordinal>1/
+fallbackunlocked/exactdecision-version; eventreserve-release-completed, authorSystem, effect
+release-completed/reasonowner-complete-release/fallbackLockedfalse, matchingcompletedstate/
+completionreceipt/nativeownercommandreceipt. Kernel174–185/225–240/255; helper192alwaysSystemauthor.
+
+Validownercomplete-release earnsownreceipt; Systemcomplete units-resolved/empty-membership earns
+none; ownerclockfallback rejected/null; exactacceptedcompletionretry recoversoldreceipt/noevent.
+Neverclassify byeventauthoralone, receiptactoralone, or finalWorldequality. Retainedlater-complete-
+intent hasAxisinput2100/Systemauthor/owner-complete-release/tworetainedIImembers. This applies
+standalonecanonicalarm; inheritedrelease-Iwrapperstilldoesnotoffercompletion.
+
+B2 semanticAction audience isowner/exactofferedactionID forauthenticatedacceptedcomplete-release,
+evenwhen nativeeventauthorSystem. Rejectedclockfallback remainssemanticSystemaction. Exactretry
+addsnoacceptedstep. This refinesacceptedpublicactionclassification withoutrewritingactualinput
+or nativeeventauthor; eventauthorship and acceptedcontrollerintent aredistinct contractfields.
+
+## B1 full-lineage materialization boundary
+
+Normalized composition.sources() endpoints are not themselves full predecessor histories. B1
+must retain/authenticate family-native creation/root/parent command-event transcripts and controls
+alongside exact28tracehandoff. Do notsubstitute aggregateprivate receipts, RootSnapshot fragments
+or a sourceidentifier for fulltypedlineage. Nativecanonicalstring wrappers remainclosed by their
+pinnednamedreaders; no openobjects or callerclaimedsourcehash authority. Exact nine-family extraction map is retained in
+[source-audit-004b-lineages.md](source-audit-004b-lineages.md); acceptedbridgealreadyretainscompleteResult2source/foursuffixevents.
+
+Terminal scope must be explicit independently of source/execution-start occurrence. Authenticated
+repeat can open activeordinal2 Movement while retaining sourceordinal1 in predecessor evidence;
+finish clearsactivecycle but retains closedsourceoccurrence1 atTruckConvoy. Do notblanket-equate
+requestedterminalscope withinitialscope, deriveordinalfromposition, or inventnextcycle1. Typed
+checkpoint preserves sourcecycle/activecycle distinctions fromnativecontrol; exactterminalrequest
+binds intendedscope/position/closure separately and is checkedagainstactualsuccessor.
+
+## B1/B2 explicit execution scopes — source-backed resolution
+
+Current004 permits replay-authenticatedsourceprefix plus explicitexecution scope; runtime022owns
+fullfreshCore/public-actionparity. Freeze threeclosedscopes, with exactnames choseninschema:
+(1)nativeC3→bridge: syntheticboundary/fullretainedlineage, actualpublicdecisions/Systemtransitions
+fromdeclaredC3start throughsupportedsuffix; (2)liveinheritedRelease/control: reconstructcomplete
+creationprefix toactualadmittedA3startcut, executeonlysubsequentsupportedactions; (3)historical003
+terminalcheckpoint: reconstructfullprefix/exactterminal/obligations, ZEROexecutionsteps, requested
+terminalmustalreadymatch. Terminaltagcannotgainliveactionsfromposition; distinctlivesource required.
+
+BindsourceLineageHash,executionStartFragment+localCut,executionProfile,initialCheckpointHash and
+requestedTerminal. Reconstructionreplaysfullsourceprefix+executedsuffix. Separate re-adjudication
+freshlyauthenticatesprefix/checkpoint, thenchooses/submits onlyexecutionscopepublicactions. Source
+events/proof-onlyartifacts affectsource/proofidentity, notacceptedexecutionordinal. Zeroexecution
+requiresidenticalinitial/finalbytes andexactterminalmatch. Labelproofscheckpoint-scopedcontract
+evidence; neverreuselegacyEXR-010fullfreshsession/publicactionparity forsourceonlyprefixes. Zero
+stepsdonotclaimcompletionofprecedingMovement/releasesuite. Sources canonicalplan141–151/753/
+200–209; exercise-harness-v1.md341–342. Nonewgameplaychoice/runtime/A3expansionneeded.

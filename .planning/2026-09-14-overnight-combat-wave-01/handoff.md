@@ -1,3 +1,35 @@
+# Current acceptance boundary — 2026-09-15 15:26 UTC
+
+A3a accepted:52focused groups/fresh ordinary review/source audit/root full gate81+1670/0skips,
+full-suite3m16.682s. Root manual binary reconstruction92sets/190actions; sourceaudit38pins,
+456cuts/344literal observations/190candidate pairs. Only spec status changed after freeze.
+Sole writer side_cycle_writer stopped; root commits accepted packet then explicitly starts A3b.
+A3b separate registry/APIs, all three clock policies from first C3a frame, exact28terminal
+projection-only sources and continuous corrected bridge history. See packet004A3 baseline.
+No root sessions running. Required A3b→B1→B2→B3→C/checkpointB→005A→005B; deadline19:39:39UTC.
+Same draftPR115, no merge. Actual new HEAD from git log; previous pushed7332bca.
+
+# Current work — 2026-09-15 14:54 UTC
+
+HEAD/pushed7332bca98e2a68230b111fa5b5e7994344f0ea68; PR115OPEN/draft/exacthead. Bridgeaccepted
+b5ede50, nav7332bca;412localnavlinks. Lastfullgate81+1670/0skips/3m21.192s; root1088bridgechecks.
+No runningroottool sessions. Latestmainff6b5f6checked14:46UTC. Publicationownershipcheckedearlier
+andapprovedretry succeeded; no unresolvedapprovalblock. Deadline19:39:39UTC,full004/Bthen005.
+
+Active soleimplementationwriter side_cycle_writer A3a existingfour sidefiles: schema/oracleedits
+startedafterobservedmissingObservation3RED. Fresh side_cycle_reviewer baseline ready, waitfreeze.
+Sourceagent task004_evidence completedownercompletionaudit, readyA3audit. Complete-release accepted
+ownerintent despiteSystemeventauthor onlyunderexactowner-complete-release effect/predicate; source
+spec76–80/design125–126; recordedpacket004A3/B andcanonicalplan. Systemcomplete/fallbacknoownreceipt.
+B2semanticActionownerforacceptedownercompletion,Systemforrejectedfallback. Noinheritedcapability
+expansion. Rootownsallplans/Git/fullgate/PR/navigation. Onlyfour sidefileswriter-owned.
+
+Future exercise_occurrence_writer preparingB1read-onlybaseline; noedits/tests untilA3complete.
+B1newcombat-exercise-occurrence-v1fourfiles; B2child/B3parentseparate. Packet004b includes8exactA2
+fallbackfailedchildren(familysupport≠prefixterminal),threepublic-onlysemanticcontrollerpreferences,
+actualtrustedinput/semanticintent/authorship distinction. A3b stillseparatelater28terminal+fullnative
+bridgev3history. OrderA3a→A3b→B1→B2→B3→C/checkpointB→005A→005B. No merge/runtimeactivation.
+
 # Current acceptance boundary — 2026-09-15 14:48 UTC
 
 W01-CLOCK-CYCLE accepted afterP2scopefix/11groups/freshreview/sourceaudit/root1088checks/fullgate

@@ -657,7 +657,7 @@ def generated_fixture():
                     seen.add(category)
             traces.append(dict(source=source['name'],audience=audience,cuts=cuts,goldens=goldens))
     return dict(contractVersion=1,scope='004A1 synthetic C3 projection; CON005 incomplete',
-                sourcePins=source_pins(),traces=traces,successor2=fixture2())
+                sourcePins=source_pins(),traces=traces,successor2=fixture2(),successor3=fixture3())
 
 
 def test_explicit_submission_context():
@@ -1263,9 +1263,9 @@ def test_a2_rejects_a1():
 
 
 def test_a1_preserved():
-    original={k:v for k,v in INVENTORY.items() if not k.endswith('2')}
+    original={k:v for k,v in INVENTORY.items() if not k.endswith(('2','3'))}
     assert hashlib.sha256(encode(original)).hexdigest()==A1_SCHEMA_HASH, 'A1 schema changed'
-    fixture=json.loads(FIXTURE.read_bytes());fixture.pop('successor2',None)
+    fixture=json.loads(FIXTURE.read_bytes());fixture.pop('successor2',None);fixture.pop('successor3',None)
     assert hashlib.sha256(encode(fixture)).hexdigest()==A1_FIXTURE_HASH, 'A1 literal fixture changed'
 
 
@@ -1577,9 +1577,781 @@ def fixture2():
         sourcePins={name:'sha256:'+hashlib.sha256((ROOT/name).read_bytes()).hexdigest() for name in ('combat-result-settlement-v2.schema.json','verify-combat-result-settlement-v2.py','fixtures/combat-result-settlement-v2.json')},traces=traces)
 
 
+
+# A3 is an immutable-codec successor. Its live registry excludes private ledger probes.
+A2_SCHEMA_HASH='485df290cfaebc39b2d05e1d2a7af332c103a0a3a9283dd0252c281700c3d2ec'
+A2_FIXTURE_HASH='e10d29b9fae1b4ed292aa8ebd55adafa287de79524fb7c9be95cf1281fc78f37'
+SCHEMA3={k:[tuple(f.split(':')) for f in v.split()] for k,v in INVENTORY['objects3'].items()}
+_spec3=importlib.util.spec_from_file_location('side_inherited_control3',ROOT/'verify-combat-inherited-cycle-control-v1.py')
+icc3=importlib.util.module_from_spec(_spec3);_spec3.loader.exec_module(icc3)
+irr3=icc3.iac.irr
+rel3=irr3.release
+cyc3=icc3.cyc
+CAP_RELEASE3='sandtable.side.inherited-release-I.v3'
+CAP_CONTROL3='sandtable.side.inherited-release-control.v3'
+CAP_RESERVE_LEDGER3='sandtable.side.reserve-ledger.v3'
+CAP_CYCLE_LEDGER3='sandtable.side.cycle-ledger.v3'
+PINS3={'combat-inherited-reserve-release-v1.schema.json': 'sha256:d3811d65f5e1d3048c7ebe51ef37d2d900b575c04703f2aa5dbac9846b55bdea', 'verify-combat-inherited-reserve-release-v1.py': 'sha256:97b06d748555d6642db21b66a7d4f1477a99edc1b253a00a2b04aec4018c0dfe', 'fixtures/combat-inherited-reserve-release-v1.json': 'sha256:56479736788241186bce083b915aa5b4912fd6f745e9080e3707a166febfe3d0', 'combat-inherited-cycle-control-v1.schema.json': 'sha256:5ceb2cf08932eff3ff0e114b661d7778cdc1373065ddacb0297855941d63f679', 'verify-combat-inherited-cycle-control-v1.py': 'sha256:cd87e04f440e24d841958e38d4582c432d87ef64cae7e463a1f33c00033176e0', 'fixtures/combat-inherited-cycle-control-v1.json': 'sha256:e2f2c76539a3509310fa2f1822fd1d84e1346f62cfc274ce12682866d02ba236', 'combat-reserve-release-v1.schema.json': 'sha256:10ba1ca46e05fbed52c6eef5174c2ac84c4282df0957c44eab6e86079342bc32', 'verify-combat-reserve-release-v1.py': 'sha256:105ef18d9db6364ce42f9831afd3c33010fccc71b0ae60af78cec7c185da892b', 'fixtures/combat-reserve-release-v1.json': 'sha256:70ed683c21f95a511c06362765dbe0971e0bb024bfcee74be70865be70601af9', 'combat-cycle-control-v1.schema.json': 'sha256:8c517db6daa734d415bd1d474280c2cf6e65013490c4a2568795d50e6112f7da', 'verify-combat-cycle-control-v1.py': 'sha256:9039f9e1067b2cdd2e0a57ae16e711350b4bbdceb500d22bbbd715f39e8ccc9f', 'fixtures/combat-cycle-control-v1.json': 'sha256:a8f81c538c0a70c28dd7e97638ec63c915558ec16cc9be6f6a102a12159b5bb6'}
+
+def source_pins3():
+    actual={name:'sha256:'+hashlib.sha256((ROOT/name).read_bytes()).hexdigest() for name in PINS3}
+    require(actual==PINS3);return actual
+
+
+
+def variant3(value,kind):
+    table=INVENTORY['candidateTags3'].get(kind)
+    field='kind'
+    if table is None: table=INVENTORY['recordTags3'][kind];field='decisionFamily'
+    require(type(value) is dict and type(value.get(field)) is str and value[field] in table)
+    return table[value[field]]
+
+
+def typed3(value,kind,depth=0):
+    require(depth<=INVENTORY['limits3']['depth'])
+    if kind.endswith('?'):
+        if value is not None: typed3(value,kind[:-1],depth)
+    elif kind in INVENTORY['candidateTags3'] or kind in INVENTORY['recordTags3']:
+        typed3(value,variant3(value,kind),depth)
+    elif kind in SCHEMA3:
+        require(type(value) is dict and set(value)=={k for k,_ in SCHEMA3[kind]})
+        for k,t in SCHEMA3[kind]:typed3(value[k],t,depth+1)
+        if kind in ('Observation3','LedgerObservation3'):
+            require(len(value['history'])<=64 and len(value['ownReceipts'])<=8)
+        if kind in ('CombatDecision3','CycleDecision3'):require(1<=len(value['actions'])<=3)
+        if kind=='CycleDecision3':
+            allowed={'reserve-release':{'release-I','convert-to-II','release-II','retain-II','complete-release'},'cycle-control':{'repeat','finish'}}[value['kind']]
+            require(all(a['candidate']['kind'] in allowed for a in value['actions']))
+            candidates=[encode(canonical3(a['candidate'],'CycleCandidate3')) for a in value['actions']]
+            require(candidates==sorted(candidates) and len(set(candidates))==len(candidates))
+        if kind=='LedgerObservation3':require(len(value['ownReserve'])<=32)
+        if kind=='Outcome3':require((value['receipt'] is not None)==(value['status']=='accepted'))
+        if kind=='Lifecycle3':
+            active=value['status']=='active'
+            require((value['activeCycleRef'] is not None)==active and (value['activeOrdinal'] is not None)==active)
+        if 'route' in value:require(len(value['route'])<=9)
+        if kind=='Custody3':require(len(value['guardRoute'])<=4)
+        if kind in ('RetreatChoice3','Retreat3'):require(1<=len(value['route'])<=2)
+        if kind=='Settlement3':require(all(len(value[k])<=1 for k in ('ownGuards','ownEntitlements','ownObligations')))
+    elif kind.endswith('[]'):
+        require(type(value) is list and len(value)<=64)
+        for v in value:typed3(v,kind[:-2],depth+1)
+    elif kind in INVENTORY['integerBounds3']:
+        lo,hi=INVENTORY['integerBounds3'][kind];require(type(value) is int and lo<=value<=hi)
+    elif kind in INVENTORY['enums3']:require(type(value) is str and value in INVENTORY['enums3'][kind])
+    elif kind=='bool3':require(type(value) is bool)
+    else:typed(value,kind,depth)
+
+
+def canonical3(value,kind):
+    if kind.endswith('?'):return None if value is None else canonical3(value,kind[:-1])
+    if kind in INVENTORY['candidateTags3'] or kind in INVENTORY['recordTags3']:return canonical3(value,variant3(value,kind))
+    if kind in SCHEMA3:return {k:canonical3(value[k],t) for k,t in SCHEMA3[kind]}
+    if kind.endswith('[]'):return [canonical3(v,kind[:-2]) for v in value]
+    return canonical(value,kind)
+
+
+def raw3(value,kind):
+    typed3(value,kind);data=encode(canonical3(value,kind));require(len(data)<=65536);return data
+
+
+def parse3(data,kind):
+    require(type(data) is bytes and 0<len(data)<=65536)
+    def pairs(items):
+        value={}
+        for k,v in items:require(k not in value);value[k]=v
+        return value
+    try:value=json.loads(data.decode('ascii'),object_pairs_hook=pairs,parse_constant=lambda _:require(False))
+    except (ValueError,UnicodeError,RecursionError) as error:raise Invalid('CMB-SIDE-REJECTED') from error
+    require(raw3(value,kind)==data);return value
+
+
+def public_ref3(domain,value,kind=None):
+    data=raw3(value,kind) if kind else encode(value)
+    return 'pub.'+hashlib.sha256(INVENTORY['domains3'][domain].encode()+b'\0'+data).hexdigest()
+
+
+def cycle_ref3(cycle,first):
+    public=dict(contractVersion=1,**{k:cycle[k] for k in ('campaignId','rulesetHash','gameTurn','operationStage','playerPhaseSlot','actingSide','ordinal')})
+    return 'sha256:'+hashlib.sha256(steps.seq.identity(public,'Public',first)).hexdigest()
+
+
+def cycle_actions3(context,cycle_ref,window,revision,candidates):
+    """Frozen binary codec1, not Combat-local JSON action/set domains."""
+    typed3(context,'Context3');typed(cycle_ref,'cycleHash');typed3(window,'cycleKind3');typed(revision,'revision')
+    require(type(candidates) is list)
+    encoded=sorted(raw3(c,'CycleCandidate3') for c in candidates)
+    require(1<=len(encoded)<=3 and len(set(encoded))==len(encoded))
+    allowed={'reserve-release':{'release-I','convert-to-II','release-II','retain-II','complete-release'},'cycle-control':{'repeat','finish'}}[window]
+    require(all(c['kind'] in allowed for c in candidates))
+    u32=lambda n:n.to_bytes(4,'big')
+    string=lambda b:u32(len(b))+b
+    payload=u32(1)+string(context['campaignId'].encode())+string(context['audience'].encode())
+    payload+=bytes.fromhex(cycle_ref[7:])+string(window.encode())+revision.to_bytes(8,'big')
+    payload+=string(context['capabilityPolicyId'].encode())+u32(len(encoded))
+    payload+=b''.join(string(c) for c in encoded)
+    digest=hashlib.sha256(b'sandtable.cycle.actions.v1\0'+payload).digest()
+    actions=[dict(contractVersion=3,actionId='sha256:'+hashlib.sha256(b'sandtable.cycle.action.v1\0'+u32(1)+digest+u32(i)).hexdigest(),
+                  candidate=parse3(data,'CycleCandidate3')) for i,data in enumerate(encoded)]
+    return 'sha256:'+digest.hex(),actions
+
+
+def context3(cycle,audience,capability):
+    public_cycle=dict(gameTurn=cycle['gameTurn'],operationStage=cycle['operationStage'],playerPhaseSlot=cycle['playerPhaseSlot'],
+                      phasingSide=cycle['actingSide'],ordinal=cycle['ordinal'])
+    return dict(campaignId=cycle['campaignId'],audience=audience,cycle=public_cycle,
+        rulesRef=public_ref3('rules',dict(rulesetHash=cycle['rulesetHash'],profile='singleton-infantry-close-assault',policy='CMB-POL-006',candidateCodec=3)),
+        configRef=public_ref3('config',dict(reserveBudgetMilliseconds=30000,cycleBudgetMilliseconds=30000,
+            clockPolicyId='sandtable.side.inherited-retained-clock.v3',capabilityPolicyId=capability,candidateCodec=3),'ClockConfigSeed3'),
+        capabilityPolicyId=capability)
+
+
+def member_ref3(cycle,member):
+    unit=member['unit']
+    return public_ref('participant',dict(campaignId=cycle['campaignId'],audience=unit['originalSide'],elementId=unit['elementId'],componentId=None),'UnitSeed')
+
+
+def reserve_fact3(cycle,member):
+    history=member['history'];record=None
+    if history['releasedType'] is not None:
+        ex=history['nextMovement']
+        movement=None if ex is None else dict(scope=dict(gameTurn=ex['scope']['gameTurn'],operationStage=ex['scope']['operationStage'],
+            playerPhaseSlot=ex['scope']['playerPhaseSlot'],phasingSide=ex['scope']['actingSide']),ordinal=ex['ordinal'],status=ex['status'])
+        record=dict(releasedType=history['releasedType'],releaseOrdinal=history['releaseCycle'],cpaBasis=history['cpaBasis'],
+            voluntaryCeiling=history['voluntaryCeiling'],offensiveUsed=history['offensiveCommitmentId'] is not None,nextMovement=movement)
+    return dict(participantRef=member_ref3(cycle,member),status=member['status'],baseCpa=member['baseCpa'],spentCp=copy.deepcopy(member['spentCp']),release=record)
+
+
+def candidates3(rb,state,family,limited=False):
+    if state['status']!='open' or state['timing'] is None or state['openingClockFailure']:return []
+    if family=='cycle':return [dict(contractVersion=3,kind=k) for k in ('repeat','finish')]
+    if state['fallbackLocked'] or not state['pending']:return []
+    member=next(m for m in state['members'] if m['unit']==state['pending'][0])
+    kinds=('release-I',) if limited else rel3.choices(member['status'],rb['cycle']['ordinal'])
+    choices=[dict(contractVersion=3,kind=k,participantRef=member_ref3(rb['cycle'],member)) for k in kinds]
+    if not limited and rb['cycle']['ordinal']>1:choices.append(dict(contractVersion=3,kind='complete-release'))
+    return choices
+
+
+def receipt3(decision,action):
+    seed=dict(decisionFamily=decision['decisionFamily'],decisionId=decision['decisionId'],actionId=action['actionId'])
+    return dict(contractVersion=3,**seed,receiptRef=public_ref3('receipt',seed))
+
+
+def success3(inp,event,audience):
+    if event is None or inp['actor']!=audience:return None
+    event=json.loads(event);effect=event['effect'];kind=inp['command']['kind']
+    if event['author']==audience and effect['reason']=='owner-choice':
+        if kind=='choose' and effect['kind']=='unit-disposition':return inp['command']['choice']
+        if kind in ('repeat','finish') and effect['kind'] in ('cycle-repeated','phase-finished'):return kind
+    # Explicit owner completion emits a System completion receipt in the accepted kernel.
+    if kind=='complete-release' and event['author']=='system' and effect['kind']=='release-completed' and effect['reason']=='owner-complete-release' and effect['fallbackLocked'] is False:return kind
+    return None
+
+
+@lru_cache(maxsize=1)
+def source_catalog3():
+    source_pins3();sources=[]
+    for case in json.loads(irr3.FIXTURE.read_bytes())['cases']:
+        base,parent,states,inputs,events=irr3.trace(case)
+        assert irr3.goldens((base,parent,states,inputs,events))==case['goldens']
+        for fallback in (False,True):
+            ins=copy.deepcopy(inputs);evs=list(events)
+            if fallback:
+                ins[1]['admittedAt']=None;ins[1]['clockAvailable']=False
+                after,evs[1],_=irr3.transition(base,states[1],ins[1])
+                ins[2]=rel3.trusted(rel3.command(after['release'],'fallback-step'))
+                _,evs[2],_=irr3.transition(base,after,ins[2])
+            sources.append(dict(name='inherited-reserve.'+case['actor']+('.fallback' if fallback else ''),family='inherited-reserve',
+                base=dict(case=case,release=base,control=None),inputs=ins,events=evs))
+        for action in ('repeat','finish','fallback'):
+            cb,cs,ci,ce=icc3.trace(case['actor'],'finish' if action=='fallback' else action)
+            assert cb['controlBase']['releaseInputs']==inputs and cb['controlBase']['releaseEvents']==[json.loads(e) for e in events]
+            if action=='fallback':
+                ci[1]['admittedAt']=None;ci[1]['clockAvailable']=False
+                _,ce[1],_=icc3.transition(cb,cs[1],ci[1])
+            sources.append(dict(name='inherited-control.'+case['actor']+'.'+action,family='inherited-control',
+                base=dict(case=case,release=base,control=cb),inputs=copy.deepcopy(inputs+ci),events=events+ce))
+    return sources
+
+
+def source_cases3():return copy.deepcopy(source_catalog3())
+
+
+def validate_source3(source):
+    source_pins3()
+    require(type(source) is dict and set(source)=={'name','family','base','inputs','events'})
+    expected=next((s for s in source_catalog3() if s['name']==source['name']),None)
+    require(expected is not None and source['family']==expected['family'] and encode(source['base'])==encode(expected['base']))
+    require(type(source['inputs']) is list and type(source['events']) is list and len(source['inputs'])==len(source['events'])<=len(expected['events']))
+    count=len(source['events'])
+    require(all(type(e) is bytes for e in source['events']) and source['events']==expected['events'][:count] and encode(source['inputs'])==encode(expected['inputs'][:count]))
+    return source['name'],count
+
+
+@lru_cache(maxsize=256)
+def cached_frames3(name,count):
+    source=next(s for s in source_catalog3() if s['name']==name);base=source['base']
+    irr3.read_base(irr3.raw(base['release'],'Base'),base['case'])
+    state=irr3.initial(base['release']);frames=[('reserve',state)]
+    for i,(inp,event) in enumerate(zip(source['inputs'][:count],source['events'][:count])):
+        family='reserve' if i<3 else 'cycle'
+        if family=='reserve':state=irr3.read_event(event,base['release'],state,inp)
+        else:
+            if i==3:state=icc3.initial(base['control'])
+            state=icc3.read_event(event,base['control'],state,inp)
+        frames.append((family,state))
+    return frames
+
+
+def replay_frames3(source):return copy.deepcopy(cached_frames3(*validate_source3(source)))
+
+
+@lru_cache(maxsize=2)
+def inherited_world3(actor):
+    case=next(c for c in json.loads(irr3.FIXTURE.read_bytes())['cases'] if c['actor']==actor)
+    return irr3.source_trace(case)[2][-1]['base']['world']
+
+
+def live_facts3(source,family,state,audience):
+    base=source['base'];rb=base['release']['releaseBase'];cycle=rb['cycle']
+    if family=='reserve':
+        state=state['release']
+        world=rel3.project_world(inherited_world3(base['case']['actor']),rb,state)
+    else:world=state['world']
+    active=state.get('activeCycle',cycle);shown=active or cycle
+    capability=CAP_CONTROL3 if source['family']=='inherited-control' else CAP_RELEASE3
+    context=context3(shown,audience,capability)
+    own=next(e for e in world['elements'] if e['elementId']==audience+'-assault-battalion')
+    enemies=[e for e in world['elements'] if e['elementId']!=own['elementId']];require(len(enemies)==1);enemy=enemies[0]
+    reps=[r for r in world['representations'] if r['boundElementIds']==[enemy['elementId']]]
+    require(len(reps)==1 and reps[0]['bindingKind']=='independent-element' and reps[0]['currentLocationId']==enemy['currentLocationId'])
+    unit=dict(campaignId=cycle['campaignId'],audience=audience,elementId=own['elementId'],componentId=None)
+    participant=dict(participantRef=public_ref('participant',unit,'UnitSeed'),
+        componentRef=public_ref('component',unit|dict(componentId=own['components'][0]['componentId']),'UnitSeed'),
+        locationId=own['currentLocationId'],currentToe=own['components'][0]['currentToe'],spentCp=copy.deepcopy(own['operationalState']['capabilityPointsExpended']),
+        ammunition=own['ammunition']['points'],cohesion=own['operationalState']['cohesionLevel'])
+    apparent=dict(targetRef=public_ref3('target',dict(context=context,locationId=enemy['currentLocationId'])),locationId=enemy['currentLocationId'])
+    facts=cycle_facts3(rb,state,family,audience,capability,limited=True)
+    members=[m for m in state['members'] if m['unit']['originalSide']==audience]
+    require(len(members)<=1)
+    facts.update(own=participant,apparentEnemy=apparent,roundRef=None,settlement=None,
+                 ownReserve=reserve_fact3(cycle,members[0]) if members else None)
+    return facts
+
+
+def cycle_facts3(rb,state,family,audience,capability,limited=False):
+    cycle=rb['cycle'];active=state.get('activeCycle',cycle);shown=active or cycle
+    cref=cycle_ref3(shown,rb['firstActingSide']);source_ref=cycle_ref3(cycle,rb['firstActingSide'])
+    choices=candidates3(rb,state,family,limited) if audience==cycle['actingSide'] else []
+    return dict(context=context3(shown,audience,capability),cycleRef=cref,positionId=state.get('positionId',rb['positionId']),
+        status='choice-required' if choices else 'closed' if active is None else 'waiting',
+        candidates=choices,window='reserve-release' if family=='reserve' else 'cycle-control',
+        deadline=state['timing']['deadlineUnixMilliseconds'] if choices else None,
+        lifecycle=dict(sourceCycleRef=source_ref,sourceOrdinal=cycle['ordinal'],activeCycleRef=cref if active else None,
+                       activeOrdinal=active['ordinal'] if active else None,status='active' if active else 'finished'))
+
+
+def project_frames3(frames,inputs,events,audience,fact_reader,ledger=False):
+    projected=[];previous=None;revision=0;history=[];receipts=[]
+    for i,(family,state) in enumerate(frames):
+        facts=fact_reader(family,state,audience);own_receipt=None
+        if i:
+            chosen=success3(inputs[i-1],events[i-1],audience)
+            if chosen:
+                prior=projected[-1]['decision'];require(prior is not None)
+                action=next(a for a in prior['actions'] if a['candidate']['kind']==chosen)
+                own_receipt=receipt3(prior,action);receipts.append(own_receipt)
+        # Adapter-family labels are private. Compare only authorized facts.
+        visible={k:v for k,v in facts.items() if k not in ('window','deadline','candidates')}
+        if facts['candidates']:visible.update(window=facts['window'],deadline=facts['deadline'],candidates=facts['candidates'])
+        changed=encode(previous)!=encode(visible) or own_receipt is not None
+        if i and changed:revision+=1
+        decision=None
+        if facts['candidates']:
+            if projected and not changed:decision=projected[-1]['decision']
+            else:
+                seed=dict(context=facts['context'],cycleRef=facts['cycleRef'],positionId=facts['positionId'],openingRevision=revision,
+                    kind=facts['window'],participantRef=None,targetRef=None)
+                set_id,actions=cycle_actions3(facts['context'],facts['cycleRef'],facts['window'],revision,facts['candidates'])
+                decision=dict(contractVersion=3,decisionFamily='cycle',decisionId=public_ref3('decision',seed,'IdentitySeed3'),kind=facts['window'],
+                    openingRevision=revision,deadlineUnixMilliseconds=facts['deadline'],actionSetId=set_id,actions=actions)
+        if changed:history.append(dict(visibleRevision=revision,cycleRef=facts['cycleRef'],ordinal=facts['context']['cycle']['ordinal'],
+            positionId=facts['positionId'],status=facts['status'],ownReceiptRef=own_receipt['receiptRef'] if own_receipt else None))
+        view=dict(contractVersion=3,**{k:v for k,v in facts.items() if k not in ('candidates','window','deadline')},
+            visibleRevision=revision,decision=decision,ownReceipts=copy.deepcopy(receipts),history=copy.deepcopy(history))
+        raw3(view,'LedgerObservation3' if ledger else 'Observation3');projected.append(view);previous=visible
+    return projected
+
+
+@lru_cache(maxsize=512)
+def cached_views3(name,count,audience):
+    source=next(s for s in source_catalog3() if s['name']==name)
+    return project_frames3(cached_frames3(name,count),source['inputs'],source['events'],audience,
+        lambda family,state,side:live_facts3(source,family,state,side))
+
+
+def views3(source,audience):
+    typed(audience,'side');name,count=validate_source3(source)
+    return copy.deepcopy(cached_views3(name,count,audience))
+
+
+def read_observation3(data,source,audience):
+    view=parse3(data,'Observation3');require(data==raw3(views3(source,audience)[-1],'Observation3'));return view
+
+
+def submission3(view,index=0):
+    d=view['decision'];a=d['actions'][index];context=view['context']
+    require(d['decisionFamily']=='cycle')
+    return dict(contractVersion=3,decisionFamily='cycle',campaignId=context['campaignId'],rulesRef=context['rulesRef'],configRef=context['configRef'],
+        audience=context['audience'],cycleRef=view['cycleRef'],decisionId=d['decisionId'],openingRevision=d['openingRevision'],
+        actionSetId=d['actionSetId'],actionId=a['actionId'],candidate=a['candidate'])
+
+
+def attempt3(source,audience,proposal,now,available):
+    family,state=replay_frames3(source)[-1];base=source['base'];kind=proposal['candidate']['kind']
+    if family=='reserve':
+        inp=rel3.trusted(rel3.command(state['release'],'choose',kind),audience,now,available)
+        after,event,_=irr3.transition(base['release'],state,inp)
+    else:
+        inp=cyc3.trusted(cyc3.command(base['control']['controlBase'],state,kind),audience,now,available)
+        after,event,_=icc3.transition(base['control'],state,inp)
+    return inp,after,event
+
+
+def admit_a3(source,audience,data,now=5000,available=True):
+    reject=dict(contractVersion=3,status='rejected',receipt=None)
+    try:
+        typed(audience,'side');require(type(available) is bool and (now is None or type(now) is int and 0<=now<=253402300799999))
+        proposal=parse3(data,'Submission3');require(proposal['audience']==audience and proposal['decisionFamily']=='cycle')
+        projected=views3(source,audience)
+        offered=next((v for v in reversed(projected) if v['decision'] and v['decision']['decisionId']==proposal['decisionId']),None)
+        require(offered is not None)
+        index=next((i for i,a in enumerate(offered['decision']['actions']) if a['actionId']==proposal['actionId']),None)
+        require(index is not None and raw3(submission3(offered,index),'Submission3')==data)
+        receipt=next((r for r in projected[-1]['ownReceipts'] if r['decisionId']==proposal['decisionId']),None)
+        if receipt:
+            require(receipt['actionId']==proposal['actionId']);return dict(contractVersion=3,status='accepted',receipt=receipt)
+        require(projected[-1]['decision']==offered['decision'])
+        inp,_,event=attempt3(source,audience,proposal,now,available)
+        require(success3(inp,event,audience)==proposal['candidate']['kind'])
+        return dict(contractVersion=3,status='accepted',receipt=receipt3(offered['decision'],offered['decision']['actions'][index]))
+    except (ValueError,KeyError,TypeError,StopIteration,OverflowError):return reject
+
+
+
+@lru_cache(maxsize=1)
+def ledger_catalog3():
+    source_pins3();sources=[]
+    for family,kernel in (('ledger-reserve',rel3),('ledger-cycle',cyc3)):
+        for case in json.loads(kernel.FIXTURE.read_bytes())['cases']:
+            for side in SIDES:
+                for slot in (('first-acting-side',) if case.get('settledCase') or case.get('resultCase') else ('first-acting-side','second-acting-side')):
+                    base,_,inputs,events=kernel.trace(case,side,slot)
+                    sources.append(dict(name=family+'.'+case['name']+'.'+side+'.'+slot,family=family,
+                        base=dict(case=case,side=side,slot=slot,native=base),inputs=inputs,events=events))
+    return sources
+
+
+def ledger_cases3():return copy.deepcopy(ledger_catalog3())
+
+
+def validate_ledger3(source):
+    source_pins3()
+    require(type(source) is dict and set(source)=={'name','family','base','inputs','events'})
+    expected=next((s for s in ledger_catalog3() if s['name']==source['name']),None)
+    require(expected is not None and source['family']==expected['family'] and encode(source['base'])==encode(expected['base']))
+    require(type(source['inputs']) is list and type(source['events']) is list and len(source['inputs'])==len(source['events'])<=len(expected['events']))
+    count=len(source['events'])
+    require(all(type(e) is bytes for e in source['events']) and source['events']==expected['events'][:count] and encode(source['inputs'])==encode(expected['inputs'][:count]))
+    return source['name'],count
+
+
+@lru_cache(maxsize=512)
+def cached_ledger_frames3(name,count):
+    source=next(s for s in ledger_catalog3() if s['name']==name);base=source['base'];b=base['native']
+    kernel=rel3 if source['family']=='ledger-reserve' else cyc3
+    family='reserve' if kernel is rel3 else 'cycle'
+    kernel.read_base(kernel.raw(b,'ReleaseBase' if kernel is rel3 else 'CycleControlBase'),base['case'],base['side'],base['slot'])
+    state=kernel.initial(b);frames=[(family,state)]
+    for inp,event in zip(source['inputs'][:count],source['events'][:count]):
+        state=kernel.read_event(event,b,state,inp);frames.append((family,state))
+    return frames
+
+
+def ledger_facts3(source,family,state,audience):
+    base=source['base']['native'];rb=base if family=='reserve' else base['releaseBase']
+    facts=cycle_facts3(rb,state,family,audience,CAP_RESERVE_LEDGER3 if family=='reserve' else CAP_CYCLE_LEDGER3)
+    facts['ownReserve']=[reserve_fact3(rb['cycle'],m) for m in state['members'] if m['unit']['originalSide']==audience]
+    return facts
+
+
+@lru_cache(maxsize=1024)
+def cached_ledger_views3(name,count,audience):
+    source=next(s for s in ledger_catalog3() if s['name']==name)
+    return project_frames3(cached_ledger_frames3(name,count),source['inputs'],source['events'],audience,
+        lambda family,state,side:ledger_facts3(source,family,state,side),ledger=True)
+
+
+def ledger_views3(source,audience):
+    typed(audience,'side');name,count=validate_ledger3(source)
+    return copy.deepcopy(cached_ledger_views3(name,count,audience))
+
+
+def attempt_ledger3(source,audience,proposal,now,available):
+    name,count=validate_ledger3(source);family,state=copy.deepcopy(cached_ledger_frames3(name,count)[-1])
+    b=source['base']['native'];kind=proposal['candidate']['kind']
+    if family=='reserve':
+        inp=rel3.trusted(rel3.command(state,'complete-release' if kind=='complete-release' else 'choose',None if kind=='complete-release' else kind),audience,now,available)
+        after,event,_=rel3.transition(b,state,inp)
+    else:
+        inp=cyc3.trusted(cyc3.command(b,state,kind),audience,now,available)
+        after,event,_=cyc3.transition(b,state,inp)
+    return inp,after,event
+
+
+def admit_ledger3(source,audience,data,now=5000,available=True):
+    """Separate synthetic ledger entry point; never admits a fullWorld observation."""
+    reject=dict(contractVersion=3,status='rejected',receipt=None)
+    try:
+        typed(audience,'side');require(type(available) is bool and (now is None or type(now) is int and 0<=now<=253402300799999))
+        proposal=parse3(data,'Submission3');require(proposal['audience']==audience and proposal['decisionFamily']=='cycle')
+        projected=ledger_views3(source,audience)
+        offered=next((v for v in reversed(projected) if v['decision'] and v['decision']['decisionId']==proposal['decisionId']),None)
+        require(offered is not None)
+        index=next((i for i,a in enumerate(offered['decision']['actions']) if a['actionId']==proposal['actionId']),None)
+        require(index is not None and raw3(submission3(offered,index),'Submission3')==data)
+        receipt=next((r for r in projected[-1]['ownReceipts'] if r['decisionId']==proposal['decisionId']),None)
+        if receipt:
+            require(receipt['actionId']==proposal['actionId']);return dict(contractVersion=3,status='accepted',receipt=receipt)
+        require(projected[-1]['decision']==offered['decision'])
+        inp,_,event=attempt_ledger3(source,audience,proposal,now,available)
+        require(success3(inp,event,audience)==proposal['candidate']['kind'])
+        return dict(contractVersion=3,status='accepted',receipt=receipt3(offered['decision'],offered['decision']['actions'][index]))
+    except (ValueError,KeyError,TypeError,StopIteration,OverflowError):return reject
+
+
+
+def test_a3_preserved():
+    assert hashlib.sha256(encode({k:v for k,v in INVENTORY.items() if not k.endswith('3')})).hexdigest()==A2_SCHEMA_HASH
+    fixture=json.loads(FIXTURE.read_bytes());fixture.pop('successor3',None)
+    assert hashlib.sha256(encode(fixture)).hexdigest()==A2_FIXTURE_HASH
+    test_a1_preserved()
+
+
+def test_a3_binary_literals():
+    context=dict(campaignId='campaign',audience='axis',cycle=dict(gameTurn=1,operationStage=1,playerPhaseSlot='first-acting-side',phasingSide='axis',ordinal=2),
+        rulesRef='pub.'+'0'*64,configRef='pub.'+'0'*64,capabilityPolicyId=CAP_RESERVE_LEDGER3)
+    candidates=[dict(contractVersion=3,kind=k,participantRef='pub.'+'0'*64) for k in ('release-II','retain-II')]+[dict(contractVersion=3,kind='complete-release')]
+    set_id,actions=cycle_actions3(context,'sha256:'+'11'*32,'reserve-release',7,candidates)
+    assert set_id=='sha256:7804dcb56ad75a8c5a703396fa83d69c92eccfa944b7c10c4fdd3be403889b5f'
+    assert [a['actionId'] for a in actions]==[
+        'sha256:d5b9ac205ab597603523dd554079032353bed7ef8dd01b0e2b8be69cfe0d3ba8',
+        'sha256:2a9e8818782abf1751850196b3b910cac1f50357bade2b8d6ba266336a6b4e85',
+        'sha256:5018b05119d718bfa344c21f8d1087e1512491fe5fdaac89dac08d415dcd05df']
+    assert [a['candidate']['kind'] for a in actions]==['complete-release','release-II','retain-II']
+    assert cycle_actions3(context,'sha256:'+'11'*32,'reserve-release',7,list(reversed(candidates)))==(set_id,actions)
+    first=[dict(contractVersion=3,kind=k,participantRef='pub.'+'0'*64) for k in ('release-I','convert-to-II')]
+    assert [a['candidate']['kind'] for a in cycle_actions3(context,'sha256:'+'11'*32,'reserve-release',7,first)[1]]==['convert-to-II','release-I']
+    rejected(lambda:cycle_actions3(context,'sha256:'+'11'*32,'cycle-control',7,candidates))
+    for bad in ([],candidates+candidates[:1],candidates*2):rejected(lambda:cycle_actions3(context,'sha256:'+'11'*32,'reserve-release',7,bad))
+    for context2,cycle,window,revision in ((context|{'audience':'commonwealth'},'sha256:'+'11'*32,'reserve-release',7),
+        (context,'sha256:'+'22'*32,'reserve-release',7),(context,'sha256:'+'11'*32,'reserve-release',8),
+        (context|{'capabilityPolicyId':CAP_RELEASE3},'sha256:'+'11'*32,'reserve-release',7)):
+        assert cycle_actions3(context2,cycle,window,revision,candidates)[0]!=set_id
+    return 12
+
+
+def test_a3_live_histories():
+    cuts=receipts=0
+    for source in source_cases3():
+        actor=source['base']['case']['actor']
+        for audience in SIDES:
+            projected=views3(source,audience)
+            assert projected[0]['visibleRevision']==0 and len(projected[0]['history'])==1 and not projected[0]['ownReceipts']
+            assert len({v['context']['configRef'] for v in projected})==1
+            for cut,v in enumerate(projected):
+                assert read_observation3(raw3(v,'Observation3'),prefix(source,cut),audience)==v;cuts+=1
+                assert not any(secret in raw3(v,'Observation3') for secret in (b'designationReceiptId',b'conversionReceiptId',b'acceptedHighWater',b'completionReceiptId',b'nextByteCursor'))
+                if v['decision'] and v['decision']['kind']=='reserve-release':assert [a['candidate']['kind'] for a in v['decision']['actions']]==['release-I']
+                if audience!=actor and cut<=4:assert raw3(v,'Observation3')==raw3(projected[0],'Observation3')
+            final=projected[-1];receipts+=len(final['ownReceipts'])
+            if audience==actor:
+                reserve=final['ownReserve']
+                if source['name'].endswith('.fallback') and source['family']=='inherited-reserve':
+                    assert reserve['status']=='II' and reserve['release'] is None and not final['ownReceipts']
+                else:
+                    assert reserve['status']=='none' and reserve['release']['releasedType']=='I'
+                    assert reserve['release']['releaseOrdinal']==1 and reserve['release']['voluntaryCeiling']==10
+                    assert not reserve['release']['offensiveUsed']
+                    expected='expired' if final['lifecycle']['status']=='finished' else 'pending'
+                    assert reserve['release']['nextMovement']['status']==expected
+                if source['family']=='inherited-control':
+                    assert projected[3]['ownReceipts']==projected[4]['ownReceipts']
+                    assert projected[4]['history'][:len(projected[3]['history'])]==projected[3]['history']
+                    assert final['lifecycle']['sourceOrdinal']==1
+                    if source['name'].endswith('.repeat'):assert final['lifecycle']['activeOrdinal']==2
+                    else:assert final['lifecycle']['activeCycleRef'] is None
+    return dict(cuts=cuts,receipts=receipts)
+
+
+def test_a3_admission_matrix():
+    outcomes=retries=mutations=stale=0
+    for sources,project,admit,attempt,frames in ((source_cases3(),views3,admit_a3,attempt3,replay_frames3),
+            (ledger_cases3(),ledger_views3,admit_ledger3,attempt_ledger3,lambda s:copy.deepcopy(cached_ledger_frames3(*validate_ledger3(s))))):
+        for source in sources:
+            owner=source['base'].get('side') or source['base']['case']['actor'];projected=project(source,owner)
+            for cut,view in enumerate(projected):
+                if not view['decision']:continue
+                current=prefix(source,cut);family,state=frames(current)[-1]
+                native=state['release'] if 'release' in state else state
+                opened=native['timing']['openedAtUnixMilliseconds'];deadline=view['decision']['deadlineUnixMilliseconds']
+                safe=max(opened,native['acceptedHighWater'] or 0)+1
+                for index,action in enumerate(view['decision']['actions']):
+                    proposal=submission3(view,index);data=raw3(proposal,'Submission3');expected_receipt=receipt3(view['decision'],action)
+                    for now,available,accepted in ((safe,True,True),(deadline-1,True,True),(deadline,True,False),
+                        (opened-1,True,False),(None,True,False),(safe,False,False)):
+                        result=admit(current,owner,data,now,available)
+                        assert result==dict(contractVersion=3,status='accepted' if accepted else 'rejected',receipt=expected_receipt if accepted else None),(source['name'],cut,action['candidate']['kind'],now,available,result)
+                        outcomes+=1
+                        if now==safe and available:
+                            inp,after,event=attempt(current,owner,proposal,now,available);effect=json.loads(event)['effect'];kind=proposal['candidate']['kind']
+                            assert after!=native and event is not None
+                            if kind in ('release-I','release-II','convert-to-II','retain-II'):
+                                assert effect['kind']=='unit-disposition' and effect['choice']==kind and effect['reason']=='owner-choice'
+                                selected=next(m for m in after.get('release',after)['members'] if m['unit']==inp['command']['unit'])
+                                assert selected['status']==('none' if kind.startswith('release-') else 'II')
+                            elif kind=='complete-release':assert effect['kind']=='release-completed' and effect['reason']=='owner-complete-release' and not effect['fallbackLocked']
+                            else:assert effect['kind']==('cycle-repeated' if kind=='repeat' else 'phase-finished')
+                    for later in range(cut+1,len(projected)):
+                        receipt=next((r for r in projected[later]['ownReceipts'] if r['decisionId']==proposal['decisionId']),None)
+                        if receipt:
+                            expected=dict(contractVersion=3,status='accepted',receipt=receipt) if receipt['actionId']==action['actionId'] else dict(contractVersion=3,status='rejected',receipt=None)
+                            assert admit(prefix(source,later),owner,data,None,False)==expected;retries+=1
+                        elif projected[later]['decision']!=view['decision']:
+                            assert admit(prefix(source,later),owner,data,safe)['status']=='rejected';stale+=1
+                    for field in ('campaignId','rulesRef','configRef','cycleRef','decisionId','actionSetId','actionId','openingRevision'):
+                        mutant=copy.deepcopy(proposal);mutant[field]=mutant[field]+1 if type(mutant[field]) is int else ('sha256:' if field in ('cycleRef','actionSetId','actionId') else 'pub.' if field in ('rulesRef','configRef','decisionId') else '')+'f'*64
+                        assert admit(current,owner,raw3(mutant,'Submission3'),safe)['status']=='rejected';mutations+=1
+                    other=next(s for s in SIDES if s!=owner)
+                    assert admit(current,other,data,safe)['status']=='rejected';mutations+=1
+            # Native exact retries are byte-preserving even after all subsequent transitions.
+            family,last=frames(source)[-1]
+            if source['family'].startswith('ledger-'):
+                kernel=rel3 if family=='reserve' else cyc3;b=source['base']['native']
+                for inp in source['inputs']:
+                    after,event,_=kernel.transition(b,last,inp);assert after is last and event is None;retries+=1
+    return dict(outcomes=outcomes,retries=retries,mutations=mutations,stale=stale)
+
+
+def test_a3_ledger_sets():
+    arms=set();offers=complete=0
+    for source in ledger_cases3():
+        owner=source['base']['side'];views_out=ledger_views3(source,owner)
+        for cut,v in enumerate(views_out):
+            if not v['decision']:continue
+            d=v['decision'];kinds={a['candidate']['kind'] for a in d['actions']};arms|=kinds;offers+=1
+            if source['family']=='ledger-cycle':assert kinds=={'repeat','finish'}
+            else:
+                _,state=cached_ledger_frames3(*validate_ledger3(prefix(source,cut)))[-1]
+                m=next(m for m in state['members'] if m['unit']==state['pending'][0])
+                assert kinds==({'release-I','convert-to-II'} if m['status']=='I' else {'release-II','retain-II','complete-release'})
+            assert len(d['actions'])<=3
+        assert admit_a3(source,owner,b'{}')['status']=='rejected'
+        if source['base']['case']['name']=='later-complete-intent':
+            assert len(views_out[-1]['ownReceipts'])==1 and all(m['status']=='II' for m in views_out[-1]['ownReserve']);complete+=1
+        if source['family']=='ledger-cycle' and source['base']['case']['mode']!='owner-choice':assert all(v['decision'] is None for v in views_out)
+    assert arms==set(INVENTORY['candidateTags3']['CycleCandidate3']) and complete==4
+    return dict(offers=offers,arms=len(arms),ownerCompletions=complete)
+
+
+def test_a3_integrity_privacy():
+    mutations=pairs=0
+    for source in source_cases3():
+        actor=source['base']['case']['actor'];other=next(s for s in SIDES if s!=actor)
+        full=views3(source,actor);offer=next(v for v in full if v['decision']);data=raw3(submission3(offer),'Submission3')
+        for mutate in (lambda s:s.__setitem__('family','ledger-reserve'),lambda s:s.__setitem__('name',s['name']+'.forged'),
+            lambda s:s['base']['release']['releaseBase'].__setitem__('acceptedHighWater',0),
+            lambda s:s['base']['release'].__setitem__('contractVersion',True),
+            lambda s:s['inputs'][0].__setitem__('admittedAt',float(s['inputs'][0]['admittedAt'])),
+            lambda s:s['events'].__setitem__(0,s['events'][0]+b'\n'),lambda s:s['events'].reverse(),lambda s:s['inputs'].pop()):
+            bad=copy.deepcopy(source);mutate(bad);assert admit_a3(bad,actor,data)['status']=='rejected';mutations+=1
+        bad=views3(source,actor);bad[-1]['history'].clear();bad[-1]['own']['spentCp']['numerator']=999
+        assert views3(source,actor)==full
+        frames=replay_frames3(source);frames[-1][1]['status']='forged'
+        assert replay_frames3(source)[-1][1].get('status')!='forged'
+        hidden=views3(prefix(source,3),other)
+        assert all(raw3(v,'Observation3')==raw3(hidden[0],'Observation3') for v in hidden);pairs+=len(hidden)-1
+        if source['family']=='inherited-control':
+            assert raw3(views3(prefix(source,4),other)[-1],'Observation3')==raw3(hidden[0],'Observation3');pairs+=1
+    # Explicit pure declassifier probes: altered states are never accepted source histories.
+    source=source_cases3()[0];family,state=replay_frames3(prefix(source,1))[-1]
+    before=live_facts3(source,family,state,'axis');altered=copy.deepcopy(state)
+    altered['release']['acceptedHighWater']+=9;altered['release']['members'][0]['history']['designationReceiptId']='private-other-id'
+    assert live_facts3(source,family,altered,'axis')==before;pairs+=1
+    return dict(mutations=mutations,privacyPairs=pairs)
+
+
+
+
+
+
+def test_a3_reserved_capabilities():
+    source=source_cases3()[0];view=views3(prefix(source,1),'axis')[-1];proposal=raw3(submission3(view),'Submission3');checks=0
+    for capability in INVENTORY['successor3']['reservedCapabilities']:
+        altered=copy.deepcopy(view);altered['context']['capabilityPolicyId']=capability
+        data=raw3(altered,'Observation3');assert parse3(data,'Observation3')==altered
+        rejected(lambda:read_observation3(data,prefix(source,1),'axis'));checks+=1
+        bad=copy.deepcopy(source);bad['family']=capability
+        assert admit_a3(bad,'axis',proposal)['status']=='rejected';checks+=1
+    assert not any(v['context']['capabilityPolicyId'] in INVENTORY['successor3']['reservedCapabilities'] for source in source_cases3() for v in views3(source,'axis'))
+    return checks
+
+
+def test_a3_inherited_restrictions():
+    checks=0
+    for actor in SIDES:
+        source=next(s for s in source_cases3() if s['name']=='inherited-reserve.'+actor)
+        current=prefix(source,1);view=views3(current,actor)[-1];_,state=replay_frames3(current)[-1]
+        proposal=submission3(view);proposal['candidate']['kind']='convert-to-II'
+        assert admit_a3(current,actor,raw3(proposal,'Submission3'))['status']=='rejected';checks+=1
+        inp=rel3.trusted(rel3.command(state['release'],'choose','convert-to-II'),actor,1100)
+        try:irr3.transition(source['base']['release'],state,inp)
+        except irr3.Invalid:checks+=1
+        else:raise AssertionError('inherited conversion admitted')
+        control=next(s for s in source_cases3() if s['name']=='inherited-control.'+actor+'.repeat')
+        assert icc3.assessment(control['base']['control'])['combatAssessment']=='supported-armed-combat';checks+=1
+        current=prefix(control,4);view=views3(current,actor)[-1];original=cyc3.assess
+        assert admit_a3(current,actor,raw3(submission3(view),'Submission3'))['status']=='accepted'
+        assert cyc3.assess is original;checks+=1
+    return checks
+
+
+def test_a3_ledger_member_capacity():
+    # Isolated native ledger proof; deliberately excluded from both named registries.
+    case=copy.deepcopy(json.loads(rel3.FIXTURE.read_bytes())['cases'][0]);case['statuses']=['I']*32
+    b=rel3.base_for(case);state=rel3.initial(b);frames=[('reserve',state)];inputs=[];events=[]
+    for kind,now in (('open',2000),('unavailable',2100)):
+        inp=rel3.trusted(rel3.command(state,kind),now=now);state,event,_=rel3.transition(b,state,inp)
+        inputs.append(inp);events.append(event);frames.append(('reserve',state))
+    while state['status']!='completed':
+        inp=rel3.trusted(rel3.command(state,'fallback-step'));state,event,_=rel3.transition(b,state,inp)
+        inputs.append(inp);events.append(event);frames.append(('reserve',state))
+    source=dict(base=dict(native=b))
+    views_out=project_frames3(frames,inputs,events,'axis',lambda f,s,a:ledger_facts3(source,f,s,a),ledger=True)
+    assert len(views_out[-1]['ownReserve'])==32 and not views_out[-1]['ownReceipts']
+    assert all(m['status']=='II' and m['release'] is None for m in views_out[-1]['ownReserve'])
+    bad=copy.deepcopy(views_out[-1]);bad['ownReserve'].append(copy.deepcopy(bad['ownReserve'][0]))
+    rejected(lambda:raw3(bad,'LedgerObservation3'))
+    return dict(events=len(events),members=32,bytes=len(raw3(views_out[-1],'LedgerObservation3')),history=len(views_out[-1]['history']))
+
+
+def test_a3_ledger_source_integrity():
+    checks=0
+    for family in ('ledger-reserve','ledger-cycle'):
+        source=next(s for s in ledger_cases3() if s['family']==family and any(v['decision'] for v in ledger_views3(s,s['base']['side'])))
+        owner=source['base']['side'];projected=ledger_views3(source,owner);view=next(v for v in projected if v['decision']);proposal=raw3(submission3(view),'Submission3')
+        for mutate in (lambda s:s.__setitem__('family','inherited-control'),lambda s:s.__setitem__('name',s['name']+'.forged'),
+            lambda s:s['base']['native'].__setitem__('contractVersion',True),lambda s:s['base'].__setitem__('side',next(a for a in SIDES if a!=owner)),
+            lambda s:s['inputs'][0].__setitem__('clockAvailable',1),lambda s:s['events'].__setitem__(0,s['events'][0]+b'\n')):
+            bad=copy.deepcopy(source);mutate(bad)
+            assert admit_ledger3(bad,owner,proposal)['status']=='rejected';checks+=1
+        bad=ledger_views3(source,owner);bad[-1]['ownReserve'].clear();assert ledger_views3(source,owner)==projected;checks+=1
+        assert admit_a3(source,owner,proposal)['status']=='rejected';checks+=1
+        rejected(lambda:parse3(raw3(projected[-1],'LedgerObservation3'),'Observation3'));checks+=1
+    live=source_cases3()[0];view=views3(prefix(live,1),'axis')[-1]
+    assert admit_ledger3(live,'axis',raw3(submission3(view),'Submission3'))['status']=='rejected';checks+=1
+    return checks
+
+
+def test_a3_equal_public_prefixes():
+    checks=0;sources=source_cases3()
+    for owner in SIDES:
+        pairs=[(prefix(next(s for s in sources if s['name']=='inherited-reserve.'+owner),1),
+                prefix(next(s for s in sources if s['name']=='inherited-reserve.'+owner+'.fallback'),1))]
+        reference=prefix(next(s for s in sources if s['name']=='inherited-control.'+owner+'.repeat'),4)
+        pairs += [(reference,prefix(next(s for s in sources if s['name']=='inherited-control.'+owner+'.'+ending),4)) for ending in ('finish','fallback')]
+        for left,right in pairs:
+            for audience in SIDES:
+                lv=views3(left,audience)[-1];rv=views3(right,audience)[-1]
+                assert raw3(lv,'Observation3')==raw3(rv,'Observation3');checks+=1
+                if lv['decision']:
+                    for i in range(len(lv['decision']['actions'])):
+                        proposal=raw3(submission3(lv,i),'Submission3');assert proposal==raw3(submission3(rv,i),'Submission3')
+                        for now,available in ((5000,True),(None,False),(lv['decision']['deadlineUnixMilliseconds'],True)):
+                            assert raw3(admit_a3(left,audience,proposal,now,available),'Outcome3')==raw3(admit_a3(right,audience,proposal,now,available),'Outcome3');checks+=1
+            # Earlier accepted release receipts remain equal across all control branches.
+            if left['family']=='inherited-control':
+                earlier=views3(prefix(left,1),owner)[-1];proposal=raw3(submission3(earlier),'Submission3')
+                assert admit_a3(left,owner,proposal,None,False)==admit_a3(right,owner,proposal,None,False);checks+=1
+    return checks
+
+
+def test_a3_raw_bounds():
+    source=next(s for s in source_cases3() if s['name']=='inherited-control.axis.repeat')
+    view=views3(prefix(source,4),'axis')[-1];candidate=view['decision']['actions'][0]['candidate'];data=raw3(candidate,'Candidate3');count=0
+    for bad in (data+b'\n',b'\xef\xbb\xbf'+data,data.replace(b':3',b':3.0'),data.replace(b':3',b':true'),
+        data.replace(b'"kind":',b'"kind":"repeat","kind":'),b'{"extra":0,'+data[1:],data.replace(b'finish',b'\\u0066inish'),data[:-1]):
+        rejected(lambda:parse3(bad,'Candidate3'));count+=1
+    for parser,kind in ((parse,'Candidate'),(parse2,'Candidate2')):rejected(lambda:parser(data,kind));count+=1
+    for bad in (dict(contractVersion=2,kind='repeat'),dict(contractVersion=3,kind='repeat',participantRef='pub.'+'0'*64)):
+        rejected(lambda:raw3(bad,'Candidate3'));count+=1
+    # Decoder numeric capacity follows World; modified values are codec probes, not admission.
+    for cp,cohesion in ((14,-4),(2**63-1,-2**31),(0,10)):
+        probe=copy.deepcopy(view);probe['own']['spentCp']['numerator']=cp;probe['own']['cohesion']=cohesion
+        assert parse3(raw3(probe,'Observation3'),'Observation3')==probe;count+=1
+    for path,value in ((('own','spentCp','numerator'),-1),(('own','spentCp','numerator'),2**63),(('own','spentCp','denominator'),2),
+        (('own','cohesion'),-2**31-1),(('own','cohesion'),11),(('visibleRevision',),True),
+        (('ownReceipts',),view['ownReceipts']*9),(('history',),view['history']*65)):
+        rejected(lambda:raw3(changed(view,path,value),'Observation3'));count+=1
+    proposal=submission3(view);wrong=copy.deepcopy(proposal);wrong['actionId']='pub.'+'0'*64
+    rejected(lambda:raw3(wrong,'Submission3'));count+=1
+    wrong=copy.deepcopy(view);wrong['decision']['actions'].reverse();rejected(lambda:raw3(wrong,'Observation3'));count+=1
+    oversized=copy.deepcopy(view);oversized['context']['campaignId']='x'*129;rejected(lambda:raw3(oversized,'Observation3'));count+=1
+    assert admit_current(source,'axis',raw3(proposal,'Submission3'))['status']=='rejected'
+    assert admit_a2(source,'axis',raw3(proposal,'Submission3'))['status']=='rejected'
+    return count
+
+
+def fixture3():
+    def trace(source,audience,project,kind):
+        cuts=[];goldens=[];candidates=[];seen=set()
+        for cut,view in enumerate(project(source,audience)):
+            data=raw3(view,kind);cuts.append(dict(cut=cut,bytes=len(data),sha256='sha256:'+hashlib.sha256(data).hexdigest(),visibleRevision=view['visibleRevision'],status=view['status']))
+            category=view['decision']['kind'] if view['decision'] else view['status']
+            if category not in seen or cut==len(source['events']):goldens.append(dict(cut=cut,canonicalJson=data.decode()));seen.add(category)
+            if view['decision']:
+                for i,action in enumerate(view['decision']['actions']):
+                    if not any(c['actionId']==action['actionId'] for c in candidates):candidates.append(dict(actionId=action['actionId'],candidateCanonicalJson=raw3(action['candidate'],'Candidate3').decode(),submissionCanonicalJson=raw3(submission3(view,i),'Submission3').decode()))
+        return dict(source=source['name'],audience=audience,cuts=cuts,goldens=goldens,candidates=candidates)
+    return dict(contractVersion=3,scope='004A3a live inherited release/control; separate canonical ledgers; A3b pending',sourcePins=source_pins3(),
+        traces=[trace(s,a,views3,'Observation3') for s in source_cases3() for a in SIDES],
+        ledgerTraces=[trace(s,s['base']['side'],ledger_views3,'LedgerObservation3') for s in ledger_cases3()])
+
+
+def test_a3_fixture():
+    fixture=json.loads(FIXTURE.read_bytes())
+    assert 'successor3' in fixture,'A3 fixture absent'
+    assert fixture['successor3']==fixture3()
+    assert len(fixture['successor3']['traces'])==20 and len(fixture['successor3']['ledgerTraces'])==112
+
+
+def test_a3_codec_boundary():
+    assert 'Observation3' in INVENTORY.get('objects3', {}), 'version3 observation codec absent'
+    assert len(INVENTORY['candidateTags3']['Candidate3']) == 15
+    assert INVENTORY['limits3']['actions'] == 3
+
+
+def test_a3_ledger_boundary():
+    assert 'ledger_cases3' in globals(), 'canonical ledger behavior adapter absent'
+    sources=ledger_cases3()
+    assert len({s['base']['case']['name'] for s in sources if s['family']=='ledger-reserve'})==13
+    assert len({s['base']['case']['name'] for s in sources if s['family']=='ledger-cycle'})==19
+
+
 def main():
     require(FIXTURE.is_file())
-    tests = (test_codec, test_selection, test_seals, test_submission, test_tight_bounds, test_source_pins, test_privacy_and_binding, test_explicit_submission_context, test_canonical_cycle_reference, test_round_continues_side_history, test_clock_loss_does_not_accept_choice, test_cycle_scalar_bounds, test_literal_candidate_bytes, test_canonical_edges, test_current_profile_boundary, test_current_rejects_legacy, test_corrected_clock_privacy, test_corrected_context_and_history, test_cancelled_seal_has_no_receipt, test_current_source_integrity, test_fixture_integrity, test_corrected_declassifier_probes, test_literal_corrected_configuration, test_a2_codec_boundary, test_a2_rejects_a1, test_a1_preserved, test_a2_source_and_handoff, test_a2_game_facts, test_a2_privacy_pairs, test_a2_codec_strictness, test_a2_admission_matrix, test_a2_input_authentication, test_a2_retained_fixture, test_a2_fallback_receipts, test_a2_apparent_representation, test_a2_literal_candidates, test_a2_disclosure_boundary)
+    tests = (test_codec, test_selection, test_seals, test_submission, test_tight_bounds, test_source_pins, test_privacy_and_binding, test_explicit_submission_context, test_canonical_cycle_reference, test_round_continues_side_history, test_clock_loss_does_not_accept_choice, test_cycle_scalar_bounds, test_literal_candidate_bytes, test_canonical_edges, test_current_profile_boundary, test_current_rejects_legacy, test_corrected_clock_privacy, test_corrected_context_and_history, test_cancelled_seal_has_no_receipt, test_current_source_integrity, test_fixture_integrity, test_corrected_declassifier_probes, test_literal_corrected_configuration, test_a2_codec_boundary, test_a2_rejects_a1, test_a1_preserved, test_a2_source_and_handoff, test_a2_game_facts, test_a2_privacy_pairs, test_a2_codec_strictness, test_a2_admission_matrix, test_a2_input_authentication, test_a2_retained_fixture, test_a2_fallback_receipts, test_a2_apparent_representation, test_a2_literal_candidates, test_a2_disclosure_boundary, test_a3_codec_boundary, test_a3_ledger_boundary, test_a3_preserved, test_a3_binary_literals, test_a3_live_histories, test_a3_ledger_sets, test_a3_admission_matrix, test_a3_integrity_privacy, test_a3_reserved_capabilities, test_a3_inherited_restrictions, test_a3_ledger_member_capacity, test_a3_ledger_source_integrity, test_a3_equal_public_prefixes, test_a3_raw_bounds, test_a3_fixture)
     failures, results = [], {}
     for test in tests:
         try:
@@ -1593,6 +2365,7 @@ def main():
     verify_fixture(FIXTURE.read_bytes())
     print(f"PASS: 004A1 preserved; {results['test_corrected_clock_privacy']} corrected clock comparisons/retries;", counts)
     print(f"PASS: {len(tests)} total semantic groups; 004A2", {k:v for k,v in results.items() if k.startswith('test_a2_')})
+    print('PASS: 004A3a', {k:v for k,v in results.items() if k.startswith('test_a3_')})
 
 if __name__ == '__main__':
     main()

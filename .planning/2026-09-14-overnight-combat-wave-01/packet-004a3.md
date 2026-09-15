@@ -58,3 +58,40 @@ assetbounds and futureturn115; reject excess rather than truncate.
 Sources: continual-cycle-reserve-composition-v1.md:67–80; combat-cycle-sequence-v1.md:124;
 source-audit-004a3.md; evidence/004a3-retained-clock-boundary.md. Read-only source preparation
 found no new gameplay/source-policy decision. Fresh ordinary review/rootgate perpacket.
+
+## Owner completion receipt — source-backed distinction
+
+Reserve spec76–80 and cycle design125–126 explicitly make complete-release an acceptedowner
+intent recorded by oneSystem-authored completion. Afterfullnative replay/offeredcandidatebinding:
+commandcomplete-release, trustedactorcycleowner/audience, prioropenoptional-IIwork/ordinal>1/
+fallbackunlocked/exactdecision-version; eventreserve-release-completed, authorSystem, effect
+release-completed/reasonowner-complete-release/fallbackLockedfalse, matchingcompletedstate/
+completionreceipt/nativeownercommandreceipt. Kernel174–185/225–240/255; helper192alwaysSystemauthor.
+
+Validownercomplete-release earnsownreceipt; Systemcomplete units-resolved/empty-membership earns
+none; ownerclockfallback rejected/null; exactacceptedcompletionretry recoversoldreceipt/noevent.
+Neverclassify byeventauthoralone, receiptactoralone, or finalWorldequality. Retainedlater-complete-
+intent hasAxisinput2100/Systemauthor/owner-complete-release/tworetainedIImembers. This applies
+standalonecanonicalarm; inheritedrelease-Iwrapperstilldoesnotoffercompletion.
+
+A3a enum freeze reserves corrected-composition and historical-terminal capability IDs using the
+sameversion3naming convention: sandtable.side.corrected-composition.v3 and
+sandtable.side.historical-terminal.v3. These aretyped-only/unimplemented untilA3b; currentregistry/admission
+rejects them. Fourimplementedlive/ledgerprofilebytes stayexact. This avoidslaterpublicContext3enum
+mutation. A3bmayaddanewinternalconfiguration-seed descriptor withoutchangingexistingpublicrecords;
+correctedcomposition bindsthreeclockpolicies/budgets fromfirstframe. No futurepositivefixture or
+adapterallocatedinA3a; explicitreservedprofile rejectiontests required.
+
+## A3b baseline refinement before edits
+
+Separate A3b registry/projection/admission entry points preserve A3a ten-source live registry,
+ledger APIs and literal fixture sections. New internal CorrectedClockConfigSeed3 binds A2's five
+budgets plus Reserve/cycle budgets, Round2 assignment policy, Result2 policy, accepted bridge
+policy, public capability ID and codec3. Existing public Context3/Observation3 fields stay exact.
+
+Bridge offer is finish-only: underlying standalone cycle kernel's repeat option is outside this
+admitted bridge. Decode exact wrapper nativeEvent for finish owner receipt; wrapper itself lacks
+native effect/author fields. Historical normalized cycle-control cycle has sourceCycle/activeCycle;
+other families retain plain Authority. Position may be string or typed object. Use current item.world
+and actual own arms.members. Terminal-only projection has one explicit initial boundary/revision0,
+no fabricated preceding side history or own receipts, and no admitted submissions.

@@ -304,3 +304,34 @@ checks pass; finaljustcheckexit0:format/build0warnings/errors,81boundary/1670ful
 Initialgate/review retainedseparately. Onlyfinalspecstatus changedafterfreeze. Latestmainff6b5f6
 unchanged. Acceptfiveprimaryfiles+curatedplanning/evidence; next solewriter side_cycle_writer A3a.
 Full004/Bthen005objectiveincomplete; reneweddeadline19:39:39UTC,oneexistingdraftPR/no merge.
+
+## 2026-09-15 14:52 UTC — A3a RED / completion intent source
+
+Bridge/navigation pushed7332bca, PR115OPEN/draft/exacthead;412localnavtargets pass. A3aRED observed
+missingcodec3. Sourceauditconfirms nativecomplete-release isacceptedownerintent despiteSystem
+eventauthor, strictowner-complete-release reason distinguishesclockfallback. Exactpredicaterecorded
+inpacket004A3/B beforewriterreceiptimplementation; no newpolicy or inheritedcapabilityexpansion.
+
+## 2026-09-15 15:04 UTC — A3a first GREEN / B1 scope
+
+Writerinitialmatrix104liveaudiencecuts/12ownreceipts,112standalonetraces/76offers/all7arms/4owner
+completiontraces.1140clockoutcomes/472retries/1710bindingmutants/80sourcemutants/37hiddenstate
+comparisons pass. Nooprawtestvector repaired; fixtureRED/generation/finalchecks pending.
+B1full9familylineagemap retainedsource-audit-004b-lineages.md. Source-backedB1/B2scopeclarification
+separatesfullauthenticatedprefix fromexecutionstart/profile: nativeC3live, admittedinheritedlive,
+terminal-onlyzeroexecution. Explicitcheckpoint-scopedproofs; runtime022fullpublicCoreparitydeferred.
+
+## 2026-09-15 15:06 UTC — A3a fixture RED
+
+WriterconfirmedmissingA3fixtureRED; deterministicsuccessor3 generationactivewithpriorA1/A2full
+fingerprint preservation. Addedrealnamedreleasefallback/controlbranch samepublicprefix tests:
+fullobservations/submissions/outcomes/acceptedrelease retries; ledgerrelabel/mutationisolation.
+Finalfullsideoracle+fourdirectpredecessors pendingfreeze. Handwrittenchangeabout1150lines within
+samefourfiles; nohistorical/runtimeedit.
+
+## 2026-09-15 15:26 UTC — A3a acceptance
+
+52focused groups; fresh ordinary review APPROVE; root independent92binary sets/190actions;
+sourceaudit38pins/456cuts/344literals/190candidate pairs. Root just check exit0,81boundary+1670full,
+zero skipped,3m16.682s. Four-file frozen schema/fixture/oracle exact; status-only spec acceptance.
+A1/A2 preserved. Next separate A3b packet; full004/B and005 incomplete. No merge.
