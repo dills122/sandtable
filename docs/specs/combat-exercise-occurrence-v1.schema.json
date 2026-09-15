@@ -1,0 +1,142 @@
+{
+  "contract": "sandtable.combat-exercise-occurrence.v1",
+  "registration": "unregistered-contract-evidence-only",
+  "limits": {
+    "bytes": 16777216,
+    "depth": 40,
+    "arrayItems": 256,
+    "transitions": 64
+  },
+  "domains": {
+    "source": "sandtable.exercise.source-prefix.v1",
+    "reference": "sandtable.exercise.reference-transcript.v1",
+    "checkpoint": "sandtable.exercise.full-checkpoint.v1",
+    "execution": "sandtable.exercise.execution-prefix.v1"
+  },
+  "enums": {
+    "lineage": [
+      "synthetic-combat",
+      "creation-rooted-handoff"
+    ],
+    "profile": [
+      "native-c3-through-bridge",
+      "live-inherited-release-control",
+      "historical-terminal-checkpoint"
+    ],
+    "surface": [
+      "corrected-v3",
+      "fallback-v2",
+      "inherited-v3",
+      "historical-v3"
+    ],
+    "rootKind": [
+      "synthetic-boundary",
+      "creation-history"
+    ],
+    "slot": [
+      "first-acting-side",
+      "second-acting-side"
+    ],
+    "side": [
+      "axis",
+      "commonwealth"
+    ],
+    "audience": [
+      "axis",
+      "commonwealth",
+      "system"
+    ],
+    "order": [
+      "attacker-first",
+      "defender-first"
+    ],
+    "closure": [
+      "open",
+      "entry",
+      "completed",
+      "resumed",
+      "proof-only",
+      "phase-finished"
+    ],
+    "future": [
+      "retain-without-maturity"
+    ],
+    "clockPolicy": [
+      "native-retained-trusted-clock.v1"
+    ],
+    "fragment": [
+      "preamble",
+      "weather",
+      "stage-entry",
+      "reserve-designation",
+      "movement",
+      "movement-lifecycle",
+      "breakdown-entry",
+      "selection",
+      "noattack",
+      "phasing-movement",
+      "reaction-trigger",
+      "reaction-close",
+      "participant-start",
+      "reaction-fallback",
+      "reaction-second-move",
+      "reaction-completion",
+      "reserve-cycle",
+      "reserve-release",
+      "armed-proof",
+      "cycle-control",
+      "reserve-movement",
+      "reserve-movement-completion",
+      "steps-v2",
+      "round-v2",
+      "result-v2",
+      "result-cycle-bridge"
+    ],
+    "control": [
+      "historical-noattack",
+      "historical-direct",
+      "historical-fallback",
+      "historical-reaction-completion",
+      "historical-reserve-cycle",
+      "historical-reserve-release",
+      "historical-armed",
+      "historical-cycle",
+      "historical-reserve-movement",
+      "steps-v2",
+      "round-v2",
+      "result-v2",
+      "result-cycle-bridge",
+      "live-reserve",
+      "live-cycle"
+    ],
+    "sourceFamily": [
+      "corrected-composition",
+      "settlement-v2",
+      "inherited-reserve",
+      "inherited-control",
+      "historical-terminal"
+    ]
+  },
+  "objects": {
+    "Occurrence": "campaignId:id gameTurn:positive operationStage:positive playerPhaseSlot:slot actingSide:side ordinal:positive",
+    "Cursor": "fragmentIndex:count fragmentKind:fragment localCut:count",
+    "Root": "kind:rootKind requestJson:ascii? createdJson:ascii? boundaryJson:ascii?",
+    "NativeFragment": "kind:fragment baseJson:ascii? proofJson:ascii? inputs:ascii[] events:ascii[] terminalJson:ascii?",
+    "Reference": "surface:surface sourceName:id canonicalJson:ascii",
+    "Source": "contractVersion:version sourceId:id lineageKind:lineage executionProfile:profile root:Root fragments:NativeFragment[] reference:Reference executionStart:Cursor sourceLineageHash:hash referenceTranscriptHash:hash task003HandoffHash:hash?",
+    "NativeControl": "kind:control canonicalJson:ascii",
+    "Checkpoint": "contractVersion:version lineageKind:lineage executionProfile:profile sourceLineageHash:hash executionStart:Cursor executedTransitions:count executionPrefixHash:hash sourceOccurrence:Occurrence activeOccurrence:Occurrence? positionId:id closure:closure authorityVersion:count authorityPrefix:hash rulesetHash:rawHash configurationHash:hash world:World randomState:Random control:NativeControl",
+    "Terminal": "occurrence:Occurrence positionId:id closure:closure futureObligations:future",
+    "Schedule": "contractVersion:version roleOrder:order clockPolicy:clockPolicy",
+    "Request": "contractVersion:version sourceLineageHash:hash referenceTranscriptHash:hash executionStart:Cursor initialCheckpointHash:hash initialOccurrence:Occurrence rulesetHash:rawHash configurationHash:hash requestedTerminal:Terminal schedule:Schedule maximumAcceptedTransitions:count",
+    "ScheduleDecision": "contractVersion:version eligibleAudiences:side[] selectedAudience:audience dualSlot:bool",
+    "SourcePrefixSeed": "lineageKind:lineage executionProfile:profile sourceSurface:surface sourceFamily:sourceFamily root:Root fragments:NativeFragment[] executionStart:Cursor",
+    "ReferenceSeed": "contractVersion:version sourceId:id lineageKind:lineage executionProfile:profile root:Root fragments:NativeFragment[] reference:Reference executionStart:Cursor task003HandoffHash:hash?",
+    "ExecutionSeed": "inputs:ascii[] events:ascii[]"
+  },
+  "nativeContracts": {
+    "World": "combat-world-settlement-v1.World7",
+    "Random": "combat-world-settlement-v1.Random",
+    "nativeStrings": "Closed fragment/control tags bind exact pinned family readers; no codec-name dispatch or arbitrary JSON authority."
+  }
+}

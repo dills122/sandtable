@@ -91,3 +91,23 @@ PairedManeuverPairingEvidence45–85 compares actual audience+actionID, uses nul
 unequal length and null divergence for identical streams. PairedManeuverExecutor204–272 additionally
 requires exact initial snapshots, count integrity, seed ledger, creation inputs and build cohort.
 These are source checks for B2/B3 planning, not new runtime tests or contract acceptance.
+
+## B2 completion classifier probe versus executable child scope
+
+B1's closed full-World registry does not offer owner complete-release. That accepted intent exists
+in A3a's separate canonical Reserve ledger only. B2 verifies its semantic action classification with
+four actual `later-complete-intent` ledger witnesses (both sides and slots), authenticated using
+`validate_ledger3` / `cached_ledger_frames3` and actual `ledger_views3`, `submission3`,
+`admit_ledger3` / `attempt_ledger3`. Compare exact native owner input, System-authored event,
+owner-complete-release effect, accepted public outcome/receipt and semantic owner action ID.
+Label this isolated classifier evidence, not a full-World child run. Do not add a B1 profile,
+synthesize World, or advertise inherited complete-release. Executable B2 children remain bounded
+by accepted B1 registry. Source: side oracle 1945–2026 and test_a3_ledger_sets 2148–2166;
+`admit_ledger3` explicitly never admits fullWorld observations. This retains the accepted three-way
+semantic distinction without expanding authority scope.
+
+Fresh cycle_finish_reviewer independently confirms isolated completion-classifier scope: accepted
+side spec442 separates ledger/fullWorld admission; side test2162 retains exactly four witnesses.
+Require native replay, offered action, accepted receipt and owner-complete-release effect. Exclude
+these witnesses from B1 registry, child counts and terminal/reconstruction claims. No contradiction;
+read-only source check, no tests or edits.

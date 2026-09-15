@@ -366,3 +366,62 @@ Initial gate/review artifacts remain clearly labeled initial, not final acceptan
 
 Reviewed hashes are in 004a3b-reviewed-sha256.json. Final spec changes only acceptance status;
 schema, fixture and oracle hashes remain frozen. Full004/checkpointB and005 are incomplete.
+
+A3b accepted commit b33f69c, navigation commit 3f1ef9d, pushed to existing draft PR115.
+277 local navigation links pass. PR description update initially rejected by auto-review; read-only
+checks verified PUBLIC repository dills122/sandtable, user ownership/ADMIN and same-user draft PR.
+Evidence-backed retry approved; readback OPEN/draft, head3f1ef9d, A3b summary present. No merge.
+B1 sole writer side_cycle_writer active; source auditor prepares independent checkpoint checks.
+
+004C draft mapping reconciled against accepted A3b: 24 evidence/coverage amendments, all 72 original
+IDs, requirements, planned tests/tasks, verification status and runtime owners preserved. Referenced
+oracle functions exist. Prior amendment provenance retained; B and final C acceptance still pending.
+
+B1 prefix identity also binds closed capability family. Inherited Reserve-only and inherited
+cycle-control profiles expose different capabilities from first frame despite identical native
+starting World. Distinguish those families; continue excluding catalog names/future transcript and
+preserve corrected same-start seal/time/choice pairs. This implements existing closed-family/profile
+requirement rather than expanding admission. Writer has corrected initial/intermediate/final probes,
+inherited CP and fallback cut16 open-state probes green; full corpus acceptance still pending.
+
+B1 initial run authenticated all134 sources in268.6s:126 satisfied terminals/eight exact unsatisfied
+fallback prefixes/28 historical zero-execution; max checkpoint52567B;74 equal initial pairs/two
+unequal CP/RNG pairs;59 mutations. Schedule test then found wrong cross-audience roundRef equality
+assumption. Writer fixed same authenticated occurrence/position check while retaining scoped refs,
+added two capability-family difference pairs and safe full-reference replay/view memoization.
+Fresh complete seven-group run pending; initial partial run is not acceptance.
+
+B1 intermediate run36344 stopped exit130 after root found local native_state helper shadowing;
+writer renamed local state_body. Separate source-specific RED showed early bridge ReleaseState
+omits World, so generic fallback restored initial C3 World incorrectly. Writer now retains exact
+authenticated completed Result2 World and adds352 bridge-cut World/RNG comparisons. Fresh initial/
+release/finish probes then eight-group run pending. No intermediate full-pass claim.
+
+B1 ordinary static review found two required fixes: authenticate_source returned cached catalog
+authority, and test_fixture used parsed equality accepting noncanonical/numeric variants. Writer
+accepted both, plans defensive copy plus exact bytes and focused RED/GREEN. Other static source,
+World/occurrence/schedule/identity boundaries consistent; no acceptance yet. Native source auditor
+started independent134-source/588-event comparisons before final fixture, will verify final hashes.
+Root just check93399 running; src/tests unchanged throughout B1 Python fixes.
+
+Root B1 repository gate exit0: format/build clean,81 boundary and1670 full tests,zero skips;
+full suite3m13.738s. Runtime/tests diff empty throughout later Python review fixes. Independent
+literal framing probe passes33 checks across three scope goldens,2576 cut bindings and nine pins.
+Initial full eight-group author command exit0 (827.59s post-import/group timer only); log header
+UTC not reliable whole-run instrumentation. Final two review fixes run has true UTC17:20:02.417418
+start and4.305s import. Final native focused results/review/sourceaudit still pending.
+
+# B1 ordinary final review — APPROVE
+
+cycle_finish_reviewer: no unresolved findings. Fresh native process27318 exit0,245.6s.
+134-source catalog authenticated;18 targeted checks pass: returned-authority copy/mutation rejection
+on four surfaces, defender guard/escape cross-seal equal starts on both sides, guarded bridge
+suffix/full World/obligation retention and forged-obligation rejection, historical source1/active2
+Request distinction. Six independent malformed fixture-byte variants rejected. All four frozen
+hashes rechecked unchanged inside final process.
+
+Reviewed full original eight-group evidence (2576cuts/192dual schedules/52live cuts/352bridgeWorld)
+and revised67rejection/exact1542785Bfixture evidence. Required cache-escape and parsed-fixture-equality
+findings fixed. Read-only ordinary review; no full suite, Git mutation or formal independent review.
+
+B1 accepted after all gates. Root commits packet, then starts sole-writer B2.

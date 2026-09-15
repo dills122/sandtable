@@ -1,3 +1,22 @@
+B1 ACCEPTED17:33UTC: full8groups +final67rejection/5fixturemutants, review18native/6rawchecks, sourceaudit134/2576/588, root81+1670 all pass.
+Root commits five-file packet and curated evidence next, then B2 sole writer. No live root/author/reviewer sessions.
+Required remaining B2/B3/C/checkpointB then005A/B, deadline19:39:39UTC. No merge.
+
+B1 at17:23UTC: initial eight-group run exit0, root gate81+1670 passed3m13.738s, root literal33checks/2576cuts/9pins passed.
+Writer side_cycle_writer final two-fix native run54769 active (author-owned; do not poll from root).
+Source auditor task004_evidence active; cycle_finish_reviewer static done with two fixes, final verification pending.
+Root gate93399 completed exit0; no root live sessions. Author logs /private/tmp/combat-exercise-occurrence-v1-{author,review-fixes}.log.
+All B1 fourfiles remain unaccepted/uncommitted until finalfixes/review/audit pass.
+
+B1 active at16:43:51UTC: side_cycle_writer owns four new combat-exercise-occurrence-v1 files.
+Observed RED missing registry; small corrected checkpoint probes GREEN at0/8/12/24.
+Full134-source native smoke then seven semantic groups/fixture pending; no frozen acceptance yet.
+Root does not own live test sessions. Fresh cycle_finish_reviewer ready; source audit follows freeze.
+Latestmain unchanged ff6b5f6 in latest fetch. Remaining B1/B2/B3/C then005A/B; deadline19:39:39UTC.
+
+Current published HEAD 3f1ef9d; A3b behavior b33f69c. PR115 OPEN/draft, A3b body verified.
+B1 sole writer side_cycle_writer active. Publication rejection resolved with ownership/public-payload evidence.
+
 # Current handoff — 2026-09-15 16:17 UTC
 
 A3b accepted; root full62 oracle exit0, gate81+1670/0skips, fresh review and source audit passed.

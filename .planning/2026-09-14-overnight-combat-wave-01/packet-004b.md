@@ -212,3 +212,23 @@ initial evidence. Same branch with future seal order change may pair. Defender g
 start cursor16, CP[0,0]; attacker guard-cp-limit/escape start CP[5,7] versus[0,0], so cannot pair.
 Historical zero-execution prefix includes complete history, initial/final checkpoint bytes identical.
 Requested terminal remains equal; actual divergent outcomes may produce validated failed children.
+
+## B2 completion classifier probe versus executable child scope
+
+B1's closed full-World registry does not offer owner complete-release. That accepted intent exists
+in A3a's separate canonical Reserve ledger only. B2 verifies its semantic action classification with
+four actual `later-complete-intent` ledger witnesses (both sides and slots), authenticated using
+`validate_ledger3` / `cached_ledger_frames3` and actual `ledger_views3`, `submission3`,
+`admit_ledger3` / `attempt_ledger3`. Compare exact native owner input, System-authored event,
+owner-complete-release effect, accepted public outcome/receipt and semantic owner action ID.
+Label this isolated classifier evidence, not a full-World child run. Do not add a B1 profile,
+synthesize World, or advertise inherited complete-release. Executable B2 children remain bounded
+by accepted B1 registry. Source: side oracle 1945–2026 and test_a3_ledger_sets 2148–2166;
+`admit_ledger3` explicitly never admits fullWorld observations. This retains the accepted three-way
+semantic distinction without expanding authority scope.
+
+B1 prefix identity also binds closed capability family. Inherited Reserve-only and inherited
+cycle-control profiles expose different capabilities from first frame despite identical native
+starting World. Distinguish those families; continue excluding catalog names/future transcript and
+preserve corrected same-start seal/time/choice pairs. This implements existing closed-family/profile
+requirement rather than expanding admission.

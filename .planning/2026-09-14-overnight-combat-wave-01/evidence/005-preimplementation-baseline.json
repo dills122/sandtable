@@ -1,0 +1,8 @@
+{
+  "src/Cna.Core/Rules/Cna1979BreakdownRuleset.cs": "911c5c54b96f0f625f783dcead40627c10e038670e79804566bed3726aa85832",
+  "src/Cna.Core/Rules/Cna1979Combat.cs": "c92d74c0feffd15920899b662757b0370d6a6269ab9275ed517d133e1389a66d",
+  "src/Cna.Core/Rules/Cna1979Ruleset.cs": "ed492a52acc417880546e47d59464f90eb3a54cfbabebb871d216d2bc08daa82",
+  "src/Cna.Core/Rules/CombatRules.cs": "08ce69230fafbca43e42b0ebea4d593e6bc0e4e567e0a75b5433b76b1213f0b3",
+  "src/Cna.Core/Rules/RulesetArtifact.cs": "aa8f4b6f3521f58f01a3b0e504ffcd34dc7d244dafdedac7877ed5134aeb160f",
+  "src/Cna.Core/Rules/RulesetManifest.cs": "f1862024d2bee3d13e3fb6a17cc563e6a216a5c9fe956d61b46c4edba0e8cd93"
+}

@@ -251,6 +251,15 @@ RNG, prefix/cut/profile, gameplay/build, requested terminal and bounds. Each com
 independently authenticated before deriving its prefix. No arbitrary source extensions. Equal-start
 defender guard/escape may pair; attacker CP-limit guard/escape starts differ and must reject.
 
+004B1 accepted 2026-09-15: new private occurrence/checkpoint contract authenticates134 sources,
+2576 cuts and588 historical event instances. Exact source/active occurrence, supported versus reached
+terminal, full World/RNG/control, prefix/reference identities and public-only dual-slot scheduling
+are replay-backed. Historical28 endpoints have zero execution. Eight fallback prefixes remain
+unfinished.352 bridge cuts retain settled World, including native release states without World.
+Fresh ordinary review/source audit and root81boundary/1670full gate pass,zero skips (3m13.738s).
+Authentication returns defensive copies; fixture verification compares exact bytes. B2 execution/
+proofs, B3 parent evidence and C integrated closeout remain required before checkpointB and005.
+
 004A1 overnight hard stop, 2026-09-14 local /2026-09-15 UTC: ordinary fresh-context review found
 equal waiting-side observations before/after an opposing private seal, but the same proposal at
 trusted time3500 accepts with high-water3000 and cancels/rejects with high-water4000. Both seal

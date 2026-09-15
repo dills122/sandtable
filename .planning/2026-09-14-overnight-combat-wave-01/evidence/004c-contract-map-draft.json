@@ -1,5 +1,5 @@
 {
-  "status": "Research draft only; accepted Result2/A2/native bridge/A3a references reconciled. A3b/B and final004C closeout still pending. Runtime tests remain planned.",
+  "status": "Research draft only; accepted Result2/A2/native bridge/A3a/A3b references reconciled. B and final004C closeout pending. Runtime tests remain planned.",
   "sourceAliasFiles": [
     "004c-first36-map.md",
     "004c-last36-map.md"
@@ -106,8 +106,8 @@
       "plannedTest": "CombatIdentityTests.PrivatePrefixChangesAuthorityButNotPublicReferences",
       "verificationStatus": "planned; runtime test not implemented",
       "contractEvidenceDraft": {
-        "evidence": "SEQ:main private-prefix forks; SIDE:test_corrected_declassifier_probes,test_canonical_cycle_reference,test_a2_privacy_pairs,test_a3_equal_public_prefixes",
-        "contractCoverage": "Bounded public separation strengthened by authenticated A2 private-time/seal pairs and A3 identical public prefixes. Pure altered-state probes are not admitted histories; dedicated opportunity-prefix fork remains partial.",
+        "evidence": "SEQ:main private-prefix forks; SIDE:test_corrected_declassifier_probes,test_canonical_cycle_reference,test_a2_privacy_pairs,test_a3_equal_public_prefixes; SIDE:test_a3b_privacy",
+        "contractCoverage": "Authenticated corrected bridge histories add equal public prefixes, candidate identities and serialized clock outcomes. Dedicated opportunity-prefix forks remain partial.",
         "runtimeOwners": "009,020"
       }
     },
@@ -216,8 +216,8 @@
       "plannedTest": "CombatIdentityTests.RestoreReconstructsIdentityAndReceiptsWithoutRngReplay",
       "verificationStatus": "planned; runtime test not implemented",
       "contractEvidenceDraft": {
-        "evidence": "ROUND2:test_replay_tamper; RESULT2:test_all_branches -> behavioral,checkpoint_checks,timing_checks (32 branch\u00d7attacker-side\u00d7seal-order traces); SIDE:test_a2_source_and_handoff; BRIDGE:test_all_lineages,test_authentication,test_commands_events_states; SNAP1:compose_tests historical only",
-        "contractCoverage": "Bounded corrected round/result/settlement and bridge replay cuts covered. Historical Snapshot1 remains historical; process restart, current fullSnapshot composition and B checkpoints pending.",
+        "evidence": "ROUND2:test_replay_tamper; RESULT2:test_all_branches -> behavioral,checkpoint_checks,timing_checks (32 branch\u00d7attacker-side\u00d7seal-order traces); SIDE:test_a2_source_and_handoff; BRIDGE:test_all_lineages,test_authentication,test_commands_events_states; SNAP1:compose_tests historical only; SIDE:test_a3b_continuity,test_a3b_source_integrity",
+        "contractCoverage": "Corrected every-cut native history and side receipts now continue through finish. B checkpoint proofs and durable process restart remain pending.",
         "runtimeOwners": "008,010,011,012,016"
       }
     },
@@ -255,8 +255,8 @@
       "plannedTest": "CombatProtocolTests.ExactRetryRecoversReceiptWithoutNewEvent",
       "verificationStatus": "planned; runtime test not implemented",
       "contractEvidenceDraft": {
-        "evidence": "ROUND2:test_full_clock_matrix,test_expiry_recovery; SIDE:verify_matrix,test_a2_admission_matrix,test_a2_fallback_receipts,test_a3_admission_matrix",
-        "contractCoverage": "Bounded exact receipt recovery, stale/changed proposal rejection and System fallback distinction now cover A1/A2/A3a. Network lost-reply/Dispatch behavior remains deferred.",
+        "evidence": "ROUND2:test_full_clock_matrix,test_expiry_recovery; SIDE:verify_matrix,test_a2_admission_matrix,test_a2_fallback_receipts,test_a3_admission_matrix; SIDE:test_a3b_admission_matrix",
+        "contractCoverage": "Exact owner receipt recovery and System fallback distinction extend through corrected cycle finish. Hosted lost-reply delivery remains deferred.",
         "runtimeOwners": "011,020,021"
       }
     },
@@ -274,8 +274,8 @@
       "plannedTest": "CombatProtocolTests.InvalidBindingsRejectWithoutEffectsOrDiagnostics",
       "verificationStatus": "planned; runtime test not implemented",
       "contractEvidenceDraft": {
-        "evidence": "ROUND2:test_invalid_before_clock,test_predecessor_and_clock_tamper; SIDE:test_current_source_integrity,test_a2_input_authentication,test_a2_admission_matrix,test_a3_admission_matrix",
-        "contractCoverage": "Bounded public-context/seat/candidate/raw-shape and authenticated-source rejection covered across accepted local profiles. General mutable-world recertification remains runtime work.",
+        "evidence": "ROUND2:test_invalid_before_clock,test_predecessor_and_clock_tamper; SIDE:test_current_source_integrity,test_a2_input_authentication,test_a2_admission_matrix,test_a3_admission_matrix; SIDE:test_a3b_admission_matrix,test_a3b_source_integrity",
+        "contractCoverage": "Corrected bridge seat/context/candidate/raw binding rejection accepted. General mutable-world certification remains runtime work.",
         "runtimeOwners": "011,020,021"
       }
     },
@@ -371,8 +371,8 @@
       "plannedTest": "CombatProtocolTests.EveryRoundCutRestoresPendingStateAndReceipts",
       "verificationStatus": "planned; runtime test not implemented",
       "contractEvidenceDraft": {
-        "evidence": "ROUND2:test_replay_tamper; RESULT2:test_all_branches -> behavioral,checkpoint_checks,timing_checks (32 branch\u00d7attacker-side\u00d7seal-order traces); SIDE:test_a2_source_and_handoff; BRIDGE:test_all_lineages,test_authentication,test_commands_events_states",
-        "contractCoverage": "Bounded corrected every-cut result replay, public capability continuity and closed-source-to-finish bridge covered. Bridge rejects unclosed/forged CA sources. B full checkpoint proof and process restart remain pending.",
+        "evidence": "ROUND2:test_replay_tamper; RESULT2:test_all_branches -> behavioral,checkpoint_checks,timing_checks (32 branch\u00d7attacker-side\u00d7seal-order traces); SIDE:test_a2_source_and_handoff; BRIDGE:test_all_lineages,test_authentication,test_commands_events_states; SIDE:test_a3b_continuity,test_a3b_source_integrity",
+        "contractCoverage": "Corrected public history and receipts remain continuous through closed native finish; no unresolved source is admitted. B checkpoint proofs and process restart remain pending.",
         "runtimeOwners": "008,010\u2013016"
       }
     },
@@ -408,8 +408,8 @@
       "verificationStatus": "planned; runtime test not implemented",
       "deferredComponent": "Hosted Dispatch transport: protobuf allocation, authenticated audience mapping, durable delivery, provider handling and timing need separate deferred host task set. Planned local Core/Runner checks do not establish transport privacy.",
       "contractEvidenceDraft": {
-        "evidence": "SIDE:test_corrected_clock_privacy,test_a2_privacy_pairs,test_a2_disclosure_boundary,test_a2_admission_matrix,test_a3_integrity_privacy,test_a3_equal_public_prefixes",
-        "contractCoverage": "Bounded local A1/A2/A3a artifact/outcome privacy accepted; A3a retains explicitly bounded historical clock semantics. A3b/B Runner and actual Dispatch transport remain pending; arbitrary hidden-binding families unproved.",
+        "evidence": "SIDE:test_corrected_clock_privacy,test_a2_privacy_pairs,test_a2_disclosure_boundary,test_a2_admission_matrix,test_a3_integrity_privacy,test_a3_equal_public_prefixes; SIDE:test_a3b_privacy,test_a3b_clock_configuration,test_a3b_admission_matrix",
+        "contractCoverage": "Bounded local A1/A2/A3a/A3b artifact and outcome privacy accepted. Corrected composition binds all policies from first frame. Runner/Dispatch transport and arbitrary hidden-binding families remain deferred.",
         "runtimeOwners": "020,021,023; host"
       }
     },
@@ -427,8 +427,8 @@
       "plannedTest": "CombatProtocolTests.UnsupportedProfileAndCancelledOpportunityCannotRepeat",
       "verificationStatus": "planned; runtime test not implemented",
       "contractEvidenceDraft": {
-        "evidence": "CONTENT:main; ROUND2:test_expiry_recovery; CYCLE:boundary_checks; SIDE:test_a3_ledger_sets,test_a3_ledger_source_integrity",
-        "contractCoverage": "Partial unsupported-input/closed-round and bounded continuation-mode evidence. A3a adds private-ledger/public-mode correspondence; ambiguous/mandatory certification and anti-repeat combination remain partial; A3b/B pending.",
+        "evidence": "CONTENT:main; ROUND2:test_expiry_recovery; CYCLE:boundary_checks; SIDE:test_a3_ledger_sets,test_a3_ledger_source_integrity; SIDE:test_a3b_source_integrity",
+        "contractCoverage": "Partial certification and anti-repeat combination remains unproved. A3b authenticates finish-only corrected capability; B execution evidence remains pending.",
         "runtimeOwners": "006,009,019"
       }
     },
@@ -446,8 +446,8 @@
       "plannedTest": "CombatProtocolTests.OldReadersRejectSuccessorAndDisabledAdmissionStillRecovers",
       "verificationStatus": "planned; runtime test not implemented",
       "contractEvidenceDraft": {
-        "evidence": "ROUND2:test_old_reader_rejection,test_disabled_admission,test_expiry_recovery,test_predecessor_and_clock_tamper; RESULT2:test_version_isolation; SIDE:test_current_profile_boundary,test_a1_preserved,test_a3_preserved",
-        "contractCoverage": "Explicit corrected round/result codec isolation plus preserved A1/A2 bytes covered. Disabled-round admission compatible recovery covered; runtime registration/migration deferred.",
+        "evidence": "ROUND2:test_old_reader_rejection,test_disabled_admission,test_expiry_recovery,test_predecessor_and_clock_tamper; RESULT2:test_version_isolation; SIDE:test_current_profile_boundary,test_a1_preserved,test_a3_preserved; SIDE:test_a3b_preserved,test_a3b_boundary",
+        "contractCoverage": "A1/A2/A3a accepted bytes preserved; new profiles remain separate. Runtime registration and migration remain deferred.",
         "runtimeOwners": "008,011,021"
       }
     },
@@ -521,8 +521,8 @@
       "plannedTest": "CombatStepTests.EmptyAndUnavailableSelectionTraverseWithoutAttack",
       "verificationStatus": "planned; runtime test not implemented",
       "contractEvidenceDraft": {
-        "evidence": "STEPS:`main` `no-candidate`,`voluntary-pass`,`selection-expiry`, unavailable-opening and stale-selection-timer assertions; NOATTACK:`semantic_gate`,`verify`; SIDE:`verify_matrix`",
-        "contractCoverage": "Bounded complete no-attack traversal and zero-decision behavior covered. Actual inherited no-attack terminal outward projection specifically remains A3b pending; A3a release/control does not satisfy that handoff.",
+        "evidence": "STEPS:`main` `no-candidate`,`voluntary-pass`,`selection-expiry`, unavailable-opening and stale-selection-timer assertions; NOATTACK:`semantic_gate`,`verify`; SIDE:`verify_matrix`; SIDE:test_a3b_terminals",
+        "contractCoverage": "All four inherited no-attack terminal profiles now project exact native facts for both audiences with no active actions. Broader inherited traversal evidence remains native, not reconstructed public history.",
         "runtimeOwners": "009,010"
       }
     },
@@ -556,8 +556,8 @@
       "plannedTest": "CombatStepTests.CancellationTraversesOnceWithoutMaterialProgress",
       "verificationStatus": "planned; runtime test not implemented",
       "contractEvidenceDraft": {
-        "evidence": "STEPS:main/rba-expiry; ROUND2:test_expiry_recovery; CYCLE:boundary_checks; SIDE:test_a3_ledger_sets,test_a3_live_histories",
-        "contractCoverage": "Cancellation traversal/recovery and bounded inherited/ledger progress projection covered separately. Cross-family corrected cancellation-to-cycle projected reconciliation remains A3b; no synthetic material progress claim.",
+        "evidence": "STEPS:main/rba-expiry; ROUND2:test_expiry_recovery; CYCLE:boundary_checks; SIDE:test_a3_ledger_sets,test_a3_live_histories; SIDE:test_a3b_terminals,test_a3b_continuity",
+        "contractCoverage": "Actual historical no-attack terminals and corrected Combat-to-finish histories are separately authenticated. No completed corrected cancellation-to-cycle source or synthetic material progress is claimed.",
         "runtimeOwners": "010,011"
       }
     },
@@ -592,8 +592,8 @@
       "plannedTest": "CombatStepTests.UnsettledAssaultCannotEnterReserveRelease",
       "verificationStatus": "planned; runtime test not implemented",
       "contractEvidenceDraft": {
-        "evidence": "RESULT2:test_all_branches -> checkpoint_checks; BRIDGE:test_authentication (closed=false, absent CA receipt, omitted result suffix),test_all_lineages",
-        "contractCoverage": "Corrected settlement readback and fully closed CA bridge gate covered; empty Reserve completion remains explicit separate suffix. Current full public composition through finish remains A3b pending.",
+        "evidence": "RESULT2:test_all_branches -> checkpoint_checks; BRIDGE:test_authentication (closed=false, absent CA receipt, omitted result suffix),test_all_lineages; SIDE:test_a3b_continuity,test_a3b_source_integrity",
+        "contractCoverage": "Continuous corrected public composition through finish accepted; closed native CA gate remains mandatory and Reserve completion remains a separate transition.",
         "runtimeOwners": "014,016"
       }
     },
@@ -609,8 +609,8 @@
       "plannedTest": "CombatStepTests.EveryStepCutRestoresCapabilityWithoutRenewal",
       "verificationStatus": "planned; runtime test not implemented",
       "contractEvidenceDraft": {
-        "evidence": "STEPS:main every-cut readback; ROUND2:test_replay_tamper,test_expiry_recovery; RESULT2:test_all_branches,test_same_owner_clock_matrix; SIDE:test_a2_source_and_handoff,test_a2_admission_matrix; BRIDGE:test_all_lineages",
-        "contractCoverage": "Bounded corrected authority/public settlement capability and deadline/retry reconstruction accepted. Native bridge replay accepted; integrated A3b/B checkpoint and durable process restart still pending.",
+        "evidence": "STEPS:main every-cut readback; ROUND2:test_replay_tamper,test_expiry_recovery; RESULT2:test_all_branches,test_same_owner_clock_matrix; SIDE:test_a2_source_and_handoff,test_a2_admission_matrix; BRIDGE:test_all_lineages; SIDE:test_a3b_continuity,test_a3b_admission_matrix",
+        "contractCoverage": "Corrected public capabilities, receipts and clock policies recover at every retained cut through finish. B checkpoint and durable process restart proofs remain pending.",
         "runtimeOwners": "008"
       }
     },
@@ -665,8 +665,8 @@
       "verificationStatus": "planned; runtime test not implemented",
       "deferredComponent": "Hosted Dispatch transport: protobuf allocation, authenticated audience mapping, durable delivery, provider handling and timing need separate deferred host task set. Planned local Core/Runner checks do not establish transport privacy.",
       "contractEvidenceDraft": {
-        "evidence": "SIDE:test_corrected_clock_privacy,test_corrected_declassifier_probes,test_a2_privacy_pairs,test_a2_disclosure_boundary,test_a3_integrity_privacy,test_a3_equal_public_prefixes",
-        "contractCoverage": "Bounded corrected A1/A2 plus retained-clock A3a local privacy covered. Hidden-cause declassifier probes labelled non-admission. A3b/B Runner and hosted transports remain pending.",
+        "evidence": "SIDE:test_corrected_clock_privacy,test_corrected_declassifier_probes,test_a2_privacy_pairs,test_a2_disclosure_boundary,test_a3_integrity_privacy,test_a3_equal_public_prefixes; SIDE:test_a3b_privacy,test_a3b_clock_configuration",
+        "contractCoverage": "Corrected full-history local privacy accepted; hidden-cause mutation probes remain non-admission evidence. Runner and hosted transport checks remain deferred.",
         "runtimeOwners": "020,021,023; host"
       }
     },
@@ -718,8 +718,8 @@
       "plannedTest": "CombatResolutionTests.CancellationAndRetryNeverChargeTwice",
       "verificationStatus": "planned; runtime test not implemented",
       "contractEvidenceDraft": {
-        "evidence": "S:main/no-selection; Q2:test_expiry_recovery; RESULT2:test_all_branches -> checkpoint_checks; C:trace/exhausted-ammo-still-moves; SIDE:test_a3_live_histories; BRIDGE:test_all_lineages",
-        "contractCoverage": "Bounded no-charge cancellation/retry and unchanged World/RNG through corrected finish accepted. Zero-ammo continuation proof stays separately bounded; no new supplied repeat or integrated A3b public bridge claim.",
+        "evidence": "S:main/no-selection; Q2:test_expiry_recovery; RESULT2:test_all_branches -> checkpoint_checks; C:trace/exhausted-ammo-still-moves; SIDE:test_a3_live_histories; BRIDGE:test_all_lineages; SIDE:test_a3b_continuity",
+        "contractCoverage": "Corrected public bridge preserves native costs, World and RNG through finish. No second assault or supplied repeat is admitted.",
         "runtimeOwners": "012"
       }
     },
@@ -882,8 +882,8 @@
       "plannedTest": "CombatResolutionTests.TamperedResultsRejectAndPrivateEvidenceNeverProjects",
       "verificationStatus": "planned; runtime test not implemented",
       "contractEvidenceDraft": {
-        "evidence": "RESULT2:test_all_branches -> checkpoint_checks,test_event_reader_requires_committed_proof; SIDE:test_a2_privacy_pairs,test_a2_disclosure_boundary,test_a2_input_authentication; BRIDGE:test_authentication; N:compose_tests historical only",
-        "contractCoverage": "Corrected authority tamper rejection and bounded local settlement byte/outcome privacy accepted. Raw resolver/RNG tokens excluded locally; B/host output and current fullSnapshot proof remain pending.",
+        "evidence": "RESULT2:test_all_branches -> checkpoint_checks,test_event_reader_requires_committed_proof; SIDE:test_a2_privacy_pairs,test_a2_disclosure_boundary,test_a2_input_authentication; BRIDGE:test_authentication; N:compose_tests historical only; SIDE:test_a3b_privacy,test_a3b_source_integrity",
+        "contractCoverage": "Corrected source tamper rejection and local public byte/outcome privacy continue through finish. B private evidence and hosted output remain separate; no full CoreSnapshot parity claim.",
         "runtimeOwners": "008,020"
       }
     },
@@ -1007,8 +1007,8 @@
       "plannedTest": "CombatSettlementTests.DelayedEntitlementAndGuardObligationsPersist",
       "verificationStatus": "planned; runtime test not implemented",
       "contractEvidenceDraft": {
-        "evidence": "W:assert_conservation,main/calendarVectors; RESULT2:test_all_branches capture branches; SIDE:test_a2_game_facts; BRIDGE:test_all_lineages (8guard/8entitlement traces)",
-        "contractCoverage": "Corrected entitlement/no-immediate-TOE-restoration and guard/upkeep obligations persist through native finish. Upkeep/maturity execution and A3b public bridge still pending.",
+        "evidence": "W:assert_conservation,main/calendarVectors; RESULT2:test_all_branches capture branches; SIDE:test_a2_game_facts; BRIDGE:test_all_lineages (8guard/8entitlement traces); SIDE:test_a3b_continuity",
+        "contractCoverage": "Guard/upkeep and delayed replacement facts now remain visible to their owner through native finish. Maturity and upkeep execution remain unsupported.",
         "runtimeOwners": "015"
       }
     },
@@ -1062,8 +1062,8 @@
       "plannedTest": "CombatSettlementTests.EverySettlementCutRestoresExactPendingOwner",
       "verificationStatus": "planned; runtime test not implemented",
       "contractEvidenceDraft": {
-        "evidence": "RESULT2:test_all_branches -> checkpoint_checks,test_event_reader_requires_committed_proof; SIDE:test_a2_source_and_handoff,test_a2_input_authentication; BRIDGE:test_authentication,test_commands_events_states; N:compose_tests historical only",
-        "contractCoverage": "Corrected native event/state cuts and local capability/receipt continuity accepted; tampered World and committed proof reject. Current fullSnapshot persistence and B proof composition remain pending.",
+        "evidence": "RESULT2:test_all_branches -> checkpoint_checks,test_event_reader_requires_committed_proof; SIDE:test_a2_source_and_handoff,test_a2_input_authentication; BRIDGE:test_authentication,test_commands_events_states; N:compose_tests historical only; SIDE:test_a3b_continuity,test_a3b_source_integrity",
+        "contractCoverage": "Corrected full native cut/source validation and public receipt/fact continuity extend through finish. B proof composition and fullSnapshot persistence remain pending.",
         "runtimeOwners": "008,014,015,016"
       }
     },
@@ -1082,8 +1082,8 @@
       "verificationStatus": "planned; runtime test not implemented",
       "deferredComponent": "Hosted Dispatch transport: protobuf allocation, authenticated audience mapping, durable delivery, provider handling and timing need separate deferred host task set. Planned local Core/Runner checks do not establish transport privacy.",
       "contractEvidenceDraft": {
-        "evidence": "SIDE:test_a2_privacy_pairs,test_a2_disclosure_boundary,test_a2_admission_matrix,test_a2_fallback_receipts,test_a2_apparent_representation",
-        "contractCoverage": "Bounded A2 own/shared change rules, hidden-equivalent bytes/candidates/outcomes, no raw authority fields, and generic System-fallback rejection accepted. Pure state probes remain non-admission evidence. Runner/Dispatch/War Diary transport evidence remains B/runtime deferred.",
+        "evidence": "SIDE:test_a2_privacy_pairs,test_a2_disclosure_boundary,test_a2_admission_matrix,test_a2_fallback_receipts,test_a2_apparent_representation; SIDE:test_a3b_privacy,test_a3b_admission_matrix",
+        "contractCoverage": "Bounded local own/shared changes and hidden-equivalent artifact/outcome evidence extend through finish. Runner/Dispatch/War Diary transport remains deferred.",
         "runtimeOwners": "020,021,023"
       }
     },
@@ -1099,8 +1099,8 @@
       "plannedTest": "CombatSettlementTests.RoundClosureRequiresNoImmediateObligations",
       "verificationStatus": "planned; runtime test not implemented",
       "contractEvidenceDraft": {
-        "evidence": "RESULT2:test_all_branches -> behavioral,checkpoint_checks; BRIDGE:test_authentication,test_all_lineages,test_source_owner_choice_semantics",
-        "contractCoverage": "Corrected fully closed native settlement-to-empty-Reserve-to-finish lane accepted, future obligations retained. Source remains32 named synthetic branches; fallback completion histories not silently admitted. A3b outward bridge and B terminal semantics pending.",
+        "evidence": "RESULT2:test_all_branches -> behavioral,checkpoint_checks; BRIDGE:test_authentication,test_all_lineages,test_source_owner_choice_semantics; SIDE:test_a3b_continuity,test_a3b_source_integrity",
+        "contractCoverage": "Corrected public bridge accepted with future obligations retained. Completed Result2 owner-choice sources remain required; bridge-finish clock fallback is distinct from unsupported completed Result2 fallback. B terminal semantics pending.",
         "runtimeOwners": "016"
       }
     },
@@ -1117,8 +1117,8 @@
       "plannedTest": "CombatCycleTests.FirstRepeatAndFinishBindExactOccurrence",
       "verificationStatus": "planned; runtime test not implemented",
       "contractEvidenceDraft": {
-        "evidence": "SEQ:main; IC:verify_case/axis-repeat,axis-finish,commonwealth-repeat,commonwealth-finish; COMP:verify/cycle-control; SIDE:test_a3_live_histories; BRIDGE:test_all_lineages",
-        "contractCoverage": "Selected same-slot ordinal repeat/finish authority plus live inherited public lifecycle accepted. Corrected native finish accepted. Other-slot entries unchanged; A3b complete terminal projection and B occurrence evidence pending.",
+        "evidence": "SEQ:main; IC:verify_case/axis-repeat,axis-finish,commonwealth-repeat,commonwealth-finish; COMP:verify/cycle-control; SIDE:test_a3_live_histories; BRIDGE:test_all_lineages; SIDE:test_a3b_terminals,test_a3b_continuity",
+        "contractCoverage": "All 28 exact historical terminals and corrected same-slot finish projections accepted. Active ordinal2 and closed source ordinal1 stay distinct. B occurrence evidence pending.",
         "runtimeOwners": "018,019"
       }
     },
@@ -1209,8 +1209,8 @@
       "plannedTest": "CombatCycleTests.MovementExceptionExpiresAfterOneOccurrence",
       "verificationStatus": "planned; runtime test not implemented",
       "contractEvidenceDraft": {
-        "evidence": "IM:verify_case/axis,commonwealth; C:boundary_checks; C:trace/first-release-finish-expiry,prior-exclusion-finish; SIDE:test_a3_live_histories",
-        "contractCoverage": "Native completion-bound exception/proximity expiry retained; A3a shows own exception pending/expired and actual repeat/finish state. Complete28-terminal public handoff/Movement continuity remains A3b pending.",
+        "evidence": "IM:verify_case/axis,commonwealth; C:boundary_checks; C:trace/first-release-finish-expiry,prior-exclusion-finish; SIDE:test_a3_live_histories; SIDE:test_a3b_movement_member,test_a3b_terminals",
+        "contractCoverage": "Both native Reserve Movement completions project singleton releaseMember history, spent CP and expired next-Movement exception to owner only. All 28 historical terminals match native state; no invented live admission.",
         "runtimeOwners": "018,019"
       }
     },
@@ -1245,8 +1245,8 @@
       "plannedTest": "CombatCycleTests.OnlyMaterialEffectsEnableRepeat",
       "verificationStatus": "planned; runtime test not implemented",
       "contractEvidenceDraft": {
-        "evidence": "C:boundary_checks,verification,trace/no-progress-finish,later-retain-not-progress; COMP:verify; SIDE:test_a3_ledger_sets,test_a3_ledger_source_integrity",
-        "contractCoverage": "Bounded progress allowlist/no-progress repeat rejection and ledger public decision-mode correspondence accepted. A3b cross-family projected continuity and B Runner proof remain pending.",
+        "evidence": "C:boundary_checks,verification,trace/no-progress-finish,later-retain-not-progress; COMP:verify; SIDE:test_a3_ledger_sets,test_a3_ledger_source_integrity; SIDE:test_a3b_terminals,test_a3b_continuity",
+        "contractCoverage": "Cross-family terminal facts and corrected projected history accepted. B execution proof remains pending; no unsupported corrected repeat or progress is invented.",
         "runtimeOwners": "018,019"
       }
     },
@@ -1262,8 +1262,8 @@
       "plannedTest": "CombatCycleTests.RepeatPreservesResourcesAndStageHistory",
       "verificationStatus": "planned; runtime test not implemented",
       "contractEvidenceDraft": {
-        "evidence": "C:trace/engaged-repeat,exhausted-ammo-still-moves,guard-finish; IC:verify_case; SIDE:test_a3_live_histories; BRIDGE:test_all_lineages",
-        "contractCoverage": "Selected inherited repeat reset/preservation and own Reserve lifecycle accepted. Corrected native settlement-to-finish preserves exact World/RNG/history/obligations; does not prove corrected settlement repeat. A3b outward composition pending.",
+        "evidence": "C:trace/engaged-repeat,exhausted-ammo-still-moves,guard-finish; IC:verify_case; SIDE:test_a3_live_histories; BRIDGE:test_all_lineages; SIDE:test_a3b_continuity",
+        "contractCoverage": "Corrected native finish now preserves complete own public settlement/Reserve history and future obligations. Corrected settlement repeat remains unsupported.",
         "runtimeOwners": "019"
       }
     },
@@ -1282,8 +1282,8 @@
       "plannedTest": "CombatCycleTests.FullHistoryRestoreRejectsReopenedControls",
       "verificationStatus": "planned; runtime test not implemented",
       "contractEvidenceDraft": {
-        "evidence": "IC:verify_case; IM:verify_case; COMP:verify; C:checkpoint_checks,boundary_checks; SIDE:test_a3_live_histories,test_a3_admission_matrix,test_a3_integrity_privacy; BRIDGE:test_authentication,test_commands_events_states",
-        "contractCoverage": "Bounded native full-history/suffix and A3a represented public history/current action recovery covered. A3a starts at authenticated inherited boundary without invented earlier side history. A3b terminal/composition and B checkpoints pending.",
+        "evidence": "IC:verify_case; IM:verify_case; COMP:verify; C:checkpoint_checks,boundary_checks; SIDE:test_a3_live_histories,test_a3_admission_matrix,test_a3_integrity_privacy; BRIDGE:test_authentication,test_commands_events_states; SIDE:test_a3b_terminals,test_a3b_continuity,test_a3b_source_integrity",
+        "contractCoverage": "Corrected continuous public history and all exact historical terminal checkpoints accepted. Historical terminals have one boundary and no invented earlier side history. B full private checkpoint proof pending.",
         "runtimeOwners": "008,018,019,020"
       }
     },
@@ -1332,10 +1332,11 @@
   },
   "scopeNotes": [
     "RESULT2 replaces historical RESULT1/R1 as primary corrected result evidence; historical Snapshot1 remains historical.",
-    "Accepted A1/A2/A3a are bounded local contracts, not hosted Dispatch/Runner/War Diary proof.",
-    "A3b/B remain pending. No Task005 production arithmetic implementation claim.",
+    "Accepted A1/A2/A3a/A3b are bounded local contracts, not hosted Dispatch/Runner/War Diary proof.",
+    "B remains pending. No Task005 production arithmetic implementation claim.",
     "A3a canonical Reserve/cycle ledgers are separate from fullWorld inherited release-I capability.",
     "Same-owner prior-time isolation is distinct from opposing privacy; declassifier state mutations remain non-admission probes."
   ],
-  "amendmentSource": "004c-successor-map-amendments.json"
+  "amendmentSource": "004c-successor-map-amendments.json",
+  "amendmentA3bSource": "004c-a3b-map-amendments.json"
 }

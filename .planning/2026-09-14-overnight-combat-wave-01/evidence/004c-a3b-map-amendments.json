@@ -1,0 +1,319 @@
+{
+  "baseSha256": "975f3eb6e4ad7a7fd2a223afad321b157191efcc0a304fa78aa1136b85d35140",
+  "acceptedCommit": "b33f69c",
+  "amendments": [
+    {
+      "id": "CMB-ID-AC-006",
+      "previous": {
+        "evidence": "SEQ:main private-prefix forks; SIDE:test_corrected_declassifier_probes,test_canonical_cycle_reference,test_a2_privacy_pairs,test_a3_equal_public_prefixes",
+        "contractCoverage": "Bounded public separation strengthened by authenticated A2 private-time/seal pairs and A3 identical public prefixes. Pure altered-state probes are not admitted histories; dedicated opportunity-prefix fork remains partial.",
+        "runtimeOwners": "009,020"
+      },
+      "updated": {
+        "evidence": "SEQ:main private-prefix forks; SIDE:test_corrected_declassifier_probes,test_canonical_cycle_reference,test_a2_privacy_pairs,test_a3_equal_public_prefixes; SIDE:test_a3b_privacy",
+        "contractCoverage": "Authenticated corrected bridge histories add equal public prefixes, candidate identities and serialized clock outcomes. Dedicated opportunity-prefix forks remain partial.",
+        "runtimeOwners": "009,020"
+      }
+    },
+    {
+      "id": "CMB-ID-AC-012",
+      "previous": {
+        "evidence": "ROUND2:test_replay_tamper; RESULT2:test_all_branches -> behavioral,checkpoint_checks,timing_checks (32 branch\u00d7attacker-side\u00d7seal-order traces); SIDE:test_a2_source_and_handoff; BRIDGE:test_all_lineages,test_authentication,test_commands_events_states; SNAP1:compose_tests historical only",
+        "contractCoverage": "Bounded corrected round/result/settlement and bridge replay cuts covered. Historical Snapshot1 remains historical; process restart, current fullSnapshot composition and B checkpoints pending.",
+        "runtimeOwners": "008,010,011,012,016"
+      },
+      "updated": {
+        "evidence": "ROUND2:test_replay_tamper; RESULT2:test_all_branches -> behavioral,checkpoint_checks,timing_checks (32 branch\u00d7attacker-side\u00d7seal-order traces); SIDE:test_a2_source_and_handoff; BRIDGE:test_all_lineages,test_authentication,test_commands_events_states; SNAP1:compose_tests historical only; SIDE:test_a3b_continuity,test_a3b_source_integrity",
+        "contractCoverage": "Corrected every-cut native history and side receipts now continue through finish. B checkpoint proofs and durable process restart remain pending.",
+        "runtimeOwners": "008,010,011,012,016"
+      }
+    },
+    {
+      "id": "CMB-PRO-AC-002",
+      "previous": {
+        "evidence": "ROUND2:test_full_clock_matrix,test_expiry_recovery; SIDE:verify_matrix,test_a2_admission_matrix,test_a2_fallback_receipts,test_a3_admission_matrix",
+        "contractCoverage": "Bounded exact receipt recovery, stale/changed proposal rejection and System fallback distinction now cover A1/A2/A3a. Network lost-reply/Dispatch behavior remains deferred.",
+        "runtimeOwners": "011,020,021"
+      },
+      "updated": {
+        "evidence": "ROUND2:test_full_clock_matrix,test_expiry_recovery; SIDE:verify_matrix,test_a2_admission_matrix,test_a2_fallback_receipts,test_a3_admission_matrix; SIDE:test_a3b_admission_matrix",
+        "contractCoverage": "Exact owner receipt recovery and System fallback distinction extend through corrected cycle finish. Hosted lost-reply delivery remains deferred.",
+        "runtimeOwners": "011,020,021"
+      }
+    },
+    {
+      "id": "CMB-PRO-AC-003",
+      "previous": {
+        "evidence": "ROUND2:test_invalid_before_clock,test_predecessor_and_clock_tamper; SIDE:test_current_source_integrity,test_a2_input_authentication,test_a2_admission_matrix,test_a3_admission_matrix",
+        "contractCoverage": "Bounded public-context/seat/candidate/raw-shape and authenticated-source rejection covered across accepted local profiles. General mutable-world recertification remains runtime work.",
+        "runtimeOwners": "011,020,021"
+      },
+      "updated": {
+        "evidence": "ROUND2:test_invalid_before_clock,test_predecessor_and_clock_tamper; SIDE:test_current_source_integrity,test_a2_input_authentication,test_a2_admission_matrix,test_a3_admission_matrix; SIDE:test_a3b_admission_matrix,test_a3b_source_integrity",
+        "contractCoverage": "Corrected bridge seat/context/candidate/raw binding rejection accepted. General mutable-world certification remains runtime work.",
+        "runtimeOwners": "011,020,021"
+      }
+    },
+    {
+      "id": "CMB-PRO-AC-008",
+      "previous": {
+        "evidence": "ROUND2:test_replay_tamper; RESULT2:test_all_branches -> behavioral,checkpoint_checks,timing_checks (32 branch\u00d7attacker-side\u00d7seal-order traces); SIDE:test_a2_source_and_handoff; BRIDGE:test_all_lineages,test_authentication,test_commands_events_states",
+        "contractCoverage": "Bounded corrected every-cut result replay, public capability continuity and closed-source-to-finish bridge covered. Bridge rejects unclosed/forged CA sources. B full checkpoint proof and process restart remain pending.",
+        "runtimeOwners": "008,010\u2013016"
+      },
+      "updated": {
+        "evidence": "ROUND2:test_replay_tamper; RESULT2:test_all_branches -> behavioral,checkpoint_checks,timing_checks (32 branch\u00d7attacker-side\u00d7seal-order traces); SIDE:test_a2_source_and_handoff; BRIDGE:test_all_lineages,test_authentication,test_commands_events_states; SIDE:test_a3b_continuity,test_a3b_source_integrity",
+        "contractCoverage": "Corrected public history and receipts remain continuous through closed native finish; no unresolved source is admitted. B checkpoint proofs and process restart remain pending.",
+        "runtimeOwners": "008,010\u2013016"
+      }
+    },
+    {
+      "id": "CMB-PRO-AC-010",
+      "previous": {
+        "evidence": "SIDE:test_corrected_clock_privacy,test_a2_privacy_pairs,test_a2_disclosure_boundary,test_a2_admission_matrix,test_a3_integrity_privacy,test_a3_equal_public_prefixes",
+        "contractCoverage": "Bounded local A1/A2/A3a artifact/outcome privacy accepted; A3a retains explicitly bounded historical clock semantics. A3b/B Runner and actual Dispatch transport remain pending; arbitrary hidden-binding families unproved.",
+        "runtimeOwners": "020,021,023; host"
+      },
+      "updated": {
+        "evidence": "SIDE:test_corrected_clock_privacy,test_a2_privacy_pairs,test_a2_disclosure_boundary,test_a2_admission_matrix,test_a3_integrity_privacy,test_a3_equal_public_prefixes; SIDE:test_a3b_privacy,test_a3b_clock_configuration,test_a3b_admission_matrix",
+        "contractCoverage": "Bounded local A1/A2/A3a/A3b artifact and outcome privacy accepted. Corrected composition binds all policies from first frame. Runner/Dispatch transport and arbitrary hidden-binding families remain deferred.",
+        "runtimeOwners": "020,021,023; host"
+      }
+    },
+    {
+      "id": "CMB-PRO-AC-011",
+      "previous": {
+        "evidence": "CONTENT:main; ROUND2:test_expiry_recovery; CYCLE:boundary_checks; SIDE:test_a3_ledger_sets,test_a3_ledger_source_integrity",
+        "contractCoverage": "Partial unsupported-input/closed-round and bounded continuation-mode evidence. A3a adds private-ledger/public-mode correspondence; ambiguous/mandatory certification and anti-repeat combination remain partial; A3b/B pending.",
+        "runtimeOwners": "006,009,019"
+      },
+      "updated": {
+        "evidence": "CONTENT:main; ROUND2:test_expiry_recovery; CYCLE:boundary_checks; SIDE:test_a3_ledger_sets,test_a3_ledger_source_integrity; SIDE:test_a3b_source_integrity",
+        "contractCoverage": "Partial certification and anti-repeat combination remains unproved. A3b authenticates finish-only corrected capability; B execution evidence remains pending.",
+        "runtimeOwners": "006,009,019"
+      }
+    },
+    {
+      "id": "CMB-PRO-AC-012",
+      "previous": {
+        "evidence": "ROUND2:test_old_reader_rejection,test_disabled_admission,test_expiry_recovery,test_predecessor_and_clock_tamper; RESULT2:test_version_isolation; SIDE:test_current_profile_boundary,test_a1_preserved,test_a3_preserved",
+        "contractCoverage": "Explicit corrected round/result codec isolation plus preserved A1/A2 bytes covered. Disabled-round admission compatible recovery covered; runtime registration/migration deferred.",
+        "runtimeOwners": "008,011,021"
+      },
+      "updated": {
+        "evidence": "ROUND2:test_old_reader_rejection,test_disabled_admission,test_expiry_recovery,test_predecessor_and_clock_tamper; RESULT2:test_version_isolation; SIDE:test_current_profile_boundary,test_a1_preserved,test_a3_preserved; SIDE:test_a3b_preserved,test_a3b_boundary",
+        "contractCoverage": "A1/A2/A3a accepted bytes preserved; new profiles remain separate. Runtime registration and migration remain deferred.",
+        "runtimeOwners": "008,011,021"
+      }
+    },
+    {
+      "id": "CMB-STEP-AC-004",
+      "previous": {
+        "evidence": "STEPS:`main` `no-candidate`,`voluntary-pass`,`selection-expiry`, unavailable-opening and stale-selection-timer assertions; NOATTACK:`semantic_gate`,`verify`; SIDE:`verify_matrix`",
+        "contractCoverage": "Bounded complete no-attack traversal and zero-decision behavior covered. Actual inherited no-attack terminal outward projection specifically remains A3b pending; A3a release/control does not satisfy that handoff.",
+        "runtimeOwners": "009,010"
+      },
+      "updated": {
+        "evidence": "STEPS:`main` `no-candidate`,`voluntary-pass`,`selection-expiry`, unavailable-opening and stale-selection-timer assertions; NOATTACK:`semantic_gate`,`verify`; SIDE:`verify_matrix`; SIDE:test_a3b_terminals",
+        "contractCoverage": "All four inherited no-attack terminal profiles now project exact native facts for both audiences with no active actions. Broader inherited traversal evidence remains native, not reconstructed public history.",
+        "runtimeOwners": "009,010"
+      }
+    },
+    {
+      "id": "CMB-STEP-AC-006",
+      "previous": {
+        "evidence": "STEPS:main/rba-expiry; ROUND2:test_expiry_recovery; CYCLE:boundary_checks; SIDE:test_a3_ledger_sets,test_a3_live_histories",
+        "contractCoverage": "Cancellation traversal/recovery and bounded inherited/ledger progress projection covered separately. Cross-family corrected cancellation-to-cycle projected reconciliation remains A3b; no synthetic material progress claim.",
+        "runtimeOwners": "010,011"
+      },
+      "updated": {
+        "evidence": "STEPS:main/rba-expiry; ROUND2:test_expiry_recovery; CYCLE:boundary_checks; SIDE:test_a3_ledger_sets,test_a3_live_histories; SIDE:test_a3b_terminals,test_a3b_continuity",
+        "contractCoverage": "Actual historical no-attack terminals and corrected Combat-to-finish histories are separately authenticated. No completed corrected cancellation-to-cycle source or synthetic material progress is claimed.",
+        "runtimeOwners": "010,011"
+      }
+    },
+    {
+      "id": "CMB-STEP-AC-008",
+      "previous": {
+        "evidence": "RESULT2:test_all_branches -> checkpoint_checks; BRIDGE:test_authentication (closed=false, absent CA receipt, omitted result suffix),test_all_lineages",
+        "contractCoverage": "Corrected settlement readback and fully closed CA bridge gate covered; empty Reserve completion remains explicit separate suffix. Current full public composition through finish remains A3b pending.",
+        "runtimeOwners": "014,016"
+      },
+      "updated": {
+        "evidence": "RESULT2:test_all_branches -> checkpoint_checks; BRIDGE:test_authentication (closed=false, absent CA receipt, omitted result suffix),test_all_lineages; SIDE:test_a3b_continuity,test_a3b_source_integrity",
+        "contractCoverage": "Continuous corrected public composition through finish accepted; closed native CA gate remains mandatory and Reserve completion remains a separate transition.",
+        "runtimeOwners": "014,016"
+      }
+    },
+    {
+      "id": "CMB-STEP-AC-009",
+      "previous": {
+        "evidence": "STEPS:main every-cut readback; ROUND2:test_replay_tamper,test_expiry_recovery; RESULT2:test_all_branches,test_same_owner_clock_matrix; SIDE:test_a2_source_and_handoff,test_a2_admission_matrix; BRIDGE:test_all_lineages",
+        "contractCoverage": "Bounded corrected authority/public settlement capability and deadline/retry reconstruction accepted. Native bridge replay accepted; integrated A3b/B checkpoint and durable process restart still pending.",
+        "runtimeOwners": "008"
+      },
+      "updated": {
+        "evidence": "STEPS:main every-cut readback; ROUND2:test_replay_tamper,test_expiry_recovery; RESULT2:test_all_branches,test_same_owner_clock_matrix; SIDE:test_a2_source_and_handoff,test_a2_admission_matrix; BRIDGE:test_all_lineages; SIDE:test_a3b_continuity,test_a3b_admission_matrix",
+        "contractCoverage": "Corrected public capabilities, receipts and clock policies recover at every retained cut through finish. B checkpoint and durable process restart proofs remain pending.",
+        "runtimeOwners": "008"
+      }
+    },
+    {
+      "id": "CMB-STEP-AC-012",
+      "previous": {
+        "evidence": "SIDE:test_corrected_clock_privacy,test_corrected_declassifier_probes,test_a2_privacy_pairs,test_a2_disclosure_boundary,test_a3_integrity_privacy,test_a3_equal_public_prefixes",
+        "contractCoverage": "Bounded corrected A1/A2 plus retained-clock A3a local privacy covered. Hidden-cause declassifier probes labelled non-admission. A3b/B Runner and hosted transports remain pending.",
+        "runtimeOwners": "020,021,023; host"
+      },
+      "updated": {
+        "evidence": "SIDE:test_corrected_clock_privacy,test_corrected_declassifier_probes,test_a2_privacy_pairs,test_a2_disclosure_boundary,test_a3_integrity_privacy,test_a3_equal_public_prefixes; SIDE:test_a3b_privacy,test_a3b_clock_configuration",
+        "contractCoverage": "Corrected full-history local privacy accepted; hidden-cause mutation probes remain non-admission evidence. Runner and hosted transport checks remain deferred.",
+        "runtimeOwners": "020,021,023; host"
+      }
+    },
+    {
+      "id": "CMB-RES-AC-003",
+      "previous": {
+        "evidence": "S:main/no-selection; Q2:test_expiry_recovery; RESULT2:test_all_branches -> checkpoint_checks; C:trace/exhausted-ammo-still-moves; SIDE:test_a3_live_histories; BRIDGE:test_all_lineages",
+        "contractCoverage": "Bounded no-charge cancellation/retry and unchanged World/RNG through corrected finish accepted. Zero-ammo continuation proof stays separately bounded; no new supplied repeat or integrated A3b public bridge claim.",
+        "runtimeOwners": "012"
+      },
+      "updated": {
+        "evidence": "S:main/no-selection; Q2:test_expiry_recovery; RESULT2:test_all_branches -> checkpoint_checks; C:trace/exhausted-ammo-still-moves; SIDE:test_a3_live_histories; BRIDGE:test_all_lineages; SIDE:test_a3b_continuity",
+        "contractCoverage": "Corrected public bridge preserves native costs, World and RNG through finish. No second assault or supplied repeat is admitted.",
+        "runtimeOwners": "012"
+      }
+    },
+    {
+      "id": "CMB-RES-AC-012",
+      "previous": {
+        "evidence": "RESULT2:test_all_branches -> checkpoint_checks,test_event_reader_requires_committed_proof; SIDE:test_a2_privacy_pairs,test_a2_disclosure_boundary,test_a2_input_authentication; BRIDGE:test_authentication; N:compose_tests historical only",
+        "contractCoverage": "Corrected authority tamper rejection and bounded local settlement byte/outcome privacy accepted. Raw resolver/RNG tokens excluded locally; B/host output and current fullSnapshot proof remain pending.",
+        "runtimeOwners": "008,020"
+      },
+      "updated": {
+        "evidence": "RESULT2:test_all_branches -> checkpoint_checks,test_event_reader_requires_committed_proof; SIDE:test_a2_privacy_pairs,test_a2_disclosure_boundary,test_a2_input_authentication; BRIDGE:test_authentication; N:compose_tests historical only; SIDE:test_a3b_privacy,test_a3b_source_integrity",
+        "contractCoverage": "Corrected source tamper rejection and local public byte/outcome privacy continue through finish. B private evidence and hosted output remain separate; no full CoreSnapshot parity claim.",
+        "runtimeOwners": "008,020"
+      }
+    },
+    {
+      "id": "CMB-SET-AC-007",
+      "previous": {
+        "evidence": "W:assert_conservation,main/calendarVectors; RESULT2:test_all_branches capture branches; SIDE:test_a2_game_facts; BRIDGE:test_all_lineages (8guard/8entitlement traces)",
+        "contractCoverage": "Corrected entitlement/no-immediate-TOE-restoration and guard/upkeep obligations persist through native finish. Upkeep/maturity execution and A3b public bridge still pending.",
+        "runtimeOwners": "015"
+      },
+      "updated": {
+        "evidence": "W:assert_conservation,main/calendarVectors; RESULT2:test_all_branches capture branches; SIDE:test_a2_game_facts; BRIDGE:test_all_lineages (8guard/8entitlement traces); SIDE:test_a3b_continuity",
+        "contractCoverage": "Guard/upkeep and delayed replacement facts now remain visible to their owner through native finish. Maturity and upkeep execution remain unsupported.",
+        "runtimeOwners": "015"
+      }
+    },
+    {
+      "id": "CMB-SET-AC-010",
+      "previous": {
+        "evidence": "RESULT2:test_all_branches -> checkpoint_checks,test_event_reader_requires_committed_proof; SIDE:test_a2_source_and_handoff,test_a2_input_authentication; BRIDGE:test_authentication,test_commands_events_states; N:compose_tests historical only",
+        "contractCoverage": "Corrected native event/state cuts and local capability/receipt continuity accepted; tampered World and committed proof reject. Current fullSnapshot persistence and B proof composition remain pending.",
+        "runtimeOwners": "008,014,015,016"
+      },
+      "updated": {
+        "evidence": "RESULT2:test_all_branches -> checkpoint_checks,test_event_reader_requires_committed_proof; SIDE:test_a2_source_and_handoff,test_a2_input_authentication; BRIDGE:test_authentication,test_commands_events_states; N:compose_tests historical only; SIDE:test_a3b_continuity,test_a3b_source_integrity",
+        "contractCoverage": "Corrected full native cut/source validation and public receipt/fact continuity extend through finish. B proof composition and fullSnapshot persistence remain pending.",
+        "runtimeOwners": "008,014,015,016"
+      }
+    },
+    {
+      "id": "CMB-SET-AC-011",
+      "previous": {
+        "evidence": "SIDE:test_a2_privacy_pairs,test_a2_disclosure_boundary,test_a2_admission_matrix,test_a2_fallback_receipts,test_a2_apparent_representation",
+        "contractCoverage": "Bounded A2 own/shared change rules, hidden-equivalent bytes/candidates/outcomes, no raw authority fields, and generic System-fallback rejection accepted. Pure state probes remain non-admission evidence. Runner/Dispatch/War Diary transport evidence remains B/runtime deferred.",
+        "runtimeOwners": "020,021,023"
+      },
+      "updated": {
+        "evidence": "SIDE:test_a2_privacy_pairs,test_a2_disclosure_boundary,test_a2_admission_matrix,test_a2_fallback_receipts,test_a2_apparent_representation; SIDE:test_a3b_privacy,test_a3b_admission_matrix",
+        "contractCoverage": "Bounded local own/shared changes and hidden-equivalent artifact/outcome evidence extend through finish. Runner/Dispatch/War Diary transport remains deferred.",
+        "runtimeOwners": "020,021,023"
+      }
+    },
+    {
+      "id": "CMB-SET-AC-012",
+      "previous": {
+        "evidence": "RESULT2:test_all_branches -> behavioral,checkpoint_checks; BRIDGE:test_authentication,test_all_lineages,test_source_owner_choice_semantics",
+        "contractCoverage": "Corrected fully closed native settlement-to-empty-Reserve-to-finish lane accepted, future obligations retained. Source remains32 named synthetic branches; fallback completion histories not silently admitted. A3b outward bridge and B terminal semantics pending.",
+        "runtimeOwners": "016"
+      },
+      "updated": {
+        "evidence": "RESULT2:test_all_branches -> behavioral,checkpoint_checks; BRIDGE:test_authentication,test_all_lineages,test_source_owner_choice_semantics; SIDE:test_a3b_continuity,test_a3b_source_integrity",
+        "contractCoverage": "Corrected public bridge accepted with future obligations retained. Completed Result2 owner-choice sources remain required; bridge-finish clock fallback is distinct from unsupported completed Result2 fallback. B terminal semantics pending.",
+        "runtimeOwners": "016"
+      }
+    },
+    {
+      "id": "CYCLE-COMP-AC-001",
+      "previous": {
+        "evidence": "SEQ:main; IC:verify_case/axis-repeat,axis-finish,commonwealth-repeat,commonwealth-finish; COMP:verify/cycle-control; SIDE:test_a3_live_histories; BRIDGE:test_all_lineages",
+        "contractCoverage": "Selected same-slot ordinal repeat/finish authority plus live inherited public lifecycle accepted. Corrected native finish accepted. Other-slot entries unchanged; A3b complete terminal projection and B occurrence evidence pending.",
+        "runtimeOwners": "018,019"
+      },
+      "updated": {
+        "evidence": "SEQ:main; IC:verify_case/axis-repeat,axis-finish,commonwealth-repeat,commonwealth-finish; COMP:verify/cycle-control; SIDE:test_a3_live_histories; BRIDGE:test_all_lineages; SIDE:test_a3b_terminals,test_a3b_continuity",
+        "contractCoverage": "All 28 exact historical terminals and corrected same-slot finish projections accepted. Active ordinal2 and closed source ordinal1 stay distinct. B occurrence evidence pending.",
+        "runtimeOwners": "018,019"
+      }
+    },
+    {
+      "id": "CYCLE-COMP-AC-006",
+      "previous": {
+        "evidence": "IM:verify_case/axis,commonwealth; C:boundary_checks; C:trace/first-release-finish-expiry,prior-exclusion-finish; SIDE:test_a3_live_histories",
+        "contractCoverage": "Native completion-bound exception/proximity expiry retained; A3a shows own exception pending/expired and actual repeat/finish state. Complete28-terminal public handoff/Movement continuity remains A3b pending.",
+        "runtimeOwners": "018,019"
+      },
+      "updated": {
+        "evidence": "IM:verify_case/axis,commonwealth; C:boundary_checks; C:trace/first-release-finish-expiry,prior-exclusion-finish; SIDE:test_a3_live_histories; SIDE:test_a3b_movement_member,test_a3b_terminals",
+        "contractCoverage": "Both native Reserve Movement completions project singleton releaseMember history, spent CP and expired next-Movement exception to owner only. All 28 historical terminals match native state; no invented live admission.",
+        "runtimeOwners": "018,019"
+      }
+    },
+    {
+      "id": "CYCLE-COMP-AC-008",
+      "previous": {
+        "evidence": "C:boundary_checks,verification,trace/no-progress-finish,later-retain-not-progress; COMP:verify; SIDE:test_a3_ledger_sets,test_a3_ledger_source_integrity",
+        "contractCoverage": "Bounded progress allowlist/no-progress repeat rejection and ledger public decision-mode correspondence accepted. A3b cross-family projected continuity and B Runner proof remain pending.",
+        "runtimeOwners": "018,019"
+      },
+      "updated": {
+        "evidence": "C:boundary_checks,verification,trace/no-progress-finish,later-retain-not-progress; COMP:verify; SIDE:test_a3_ledger_sets,test_a3_ledger_source_integrity; SIDE:test_a3b_terminals,test_a3b_continuity",
+        "contractCoverage": "Cross-family terminal facts and corrected projected history accepted. B execution proof remains pending; no unsupported corrected repeat or progress is invented.",
+        "runtimeOwners": "018,019"
+      }
+    },
+    {
+      "id": "CYCLE-COMP-AC-009",
+      "previous": {
+        "evidence": "C:trace/engaged-repeat,exhausted-ammo-still-moves,guard-finish; IC:verify_case; SIDE:test_a3_live_histories; BRIDGE:test_all_lineages",
+        "contractCoverage": "Selected inherited repeat reset/preservation and own Reserve lifecycle accepted. Corrected native settlement-to-finish preserves exact World/RNG/history/obligations; does not prove corrected settlement repeat. A3b outward composition pending.",
+        "runtimeOwners": "019"
+      },
+      "updated": {
+        "evidence": "C:trace/engaged-repeat,exhausted-ammo-still-moves,guard-finish; IC:verify_case; SIDE:test_a3_live_histories; BRIDGE:test_all_lineages; SIDE:test_a3b_continuity",
+        "contractCoverage": "Corrected native finish now preserves complete own public settlement/Reserve history and future obligations. Corrected settlement repeat remains unsupported.",
+        "runtimeOwners": "019"
+      }
+    },
+    {
+      "id": "CYCLE-COMP-AC-010",
+      "previous": {
+        "evidence": "IC:verify_case; IM:verify_case; COMP:verify; C:checkpoint_checks,boundary_checks; SIDE:test_a3_live_histories,test_a3_admission_matrix,test_a3_integrity_privacy; BRIDGE:test_authentication,test_commands_events_states",
+        "contractCoverage": "Bounded native full-history/suffix and A3a represented public history/current action recovery covered. A3a starts at authenticated inherited boundary without invented earlier side history. A3b terminal/composition and B checkpoints pending.",
+        "runtimeOwners": "008,018,019,020"
+      },
+      "updated": {
+        "evidence": "IC:verify_case; IM:verify_case; COMP:verify; C:checkpoint_checks,boundary_checks; SIDE:test_a3_live_histories,test_a3_admission_matrix,test_a3_integrity_privacy; BRIDGE:test_authentication,test_commands_events_states; SIDE:test_a3b_terminals,test_a3b_continuity,test_a3b_source_integrity",
+        "contractCoverage": "Corrected continuous public history and all exact historical terminal checkpoints accepted. Historical terminals have one boundary and no invented earlier side history. B full private checkpoint proof pending.",
+        "runtimeOwners": "008,018,019,020"
+      }
+    }
+  ],
+  "invariant": "All original IDs, requirements, planned tests/tasks, verification status and runtime owners unchanged."
+}

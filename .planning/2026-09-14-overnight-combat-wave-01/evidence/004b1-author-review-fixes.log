@@ -1,0 +1,5 @@
+START 2026-09-15T17:20:02.417418+00:00
+IMPORT seconds 4.305
+test_rejection 67 whole elapsed 249.27
+test_fixture {'exactBytes': 1542785, 'rejectedMutations': 5} whole elapsed 378.273
+END 2026-09-15T17:26:20.694769+00:00 whole elapsed 378.273 FOCUSED REVIEW FIXES GREEN
