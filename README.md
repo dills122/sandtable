@@ -43,16 +43,144 @@ Later releases can add the detailed Air and Logistics Games, longer scenarios, t
 campaign, remote multiplayer, and optional AI commanders and narrative. AI is intended to advise or
 play a side; it will never decide the rules or secretly change the campaign state.
 
-## Where is the project now?
+## Project at a glance
+
+> [!IMPORTANT]
+> Sandtable is a tested pre-alpha simulation engine, not yet a playable adaptation of the published
+> game. Current scenarios are synthetic rules-laboratory fixtures, not released campaign content.
+
+| Area | Current state | Meaning |
+| --- | --- | --- |
+| Deterministic Umpire | Working | Versioned rules, seeded randomness, canonical commands/events, replay, checkpoints, and side-safe action boundaries are implemented. |
+| Playable rule path | Working through Combat entry | Runner can execute Initiative, stage preamble, Reserve Designation, Movement, bounded ZOC/Reaction, and Breakdown, then stops before Combat adjudication. |
+| Combat and continual cycle | Contracts complete through parent003 | 28 creation-rooted traces reconcile future Combat/cycle authority, but handlers are not registered in runtime. Task004 is next. |
+| Exercise and Maneuver tools | Working | Deterministic single runs, multi-run matrices, paired comparisons, strict readback, and evidence bundles are available from CLI. |
+| User interface | Not started | `site/` is project website only. Maproom hot-seat client is future work. |
+| Published scenario | Not started | First target is six-turn, Land-only *Graziani's Offensive* after working Combat loop. |
+| Durable save/resume | Not started | Replay/checkpoint contracts exist; user-facing campaign persistence comes later. |
+| Model-backed commanders | Scaffold only | Gateway and worker exist, but no provider is configured and AI never owns authority. |
+
+Current boundary in plain language: you can build engine, run full test suite, launch Aspire service
+stack, and simulate checked rules-lab Movement/Reaction/Breakdown paths. You cannot yet play a
+campaign or resolve Combat in running engine.
+
+Next delivery sequence:
+
+1. Complete Task004 side-safe observation/action and Exercise contracts, mapping all 72 acceptance
+   criteria and closing contract checkpoint B.
+2. Implement dormant Combat/cycle authority, then activate only certified public actions.
+3. Prove authentic Movement → Combat → Reserve Release repeat-or-finish loop through Runner.
+4. Freeze and implement exact six-turn Land scenario, durable save/resume, and minimal Maproom.
+
+See [current roadmap](docs/roadmap/pre-alpha-roadmap.md#current-checkpoint-and-next-gates) for
+authoritative status and [Combat plan](docs/design/combat-cycle-implementation-plan.md) for detailed
+task graph.
+
+## Start, run, and develop
+
+### Prerequisites
+
+- [.NET SDK 10.0.302 or later .NET 10 feature band](https://dotnet.microsoft.com/en-us/download/dotnet/10.0)
+- [Just](https://just.systems/) for short commands (optional)
+- Git
+- Docker only for future container-backed Aspire resources; current stack does not require it
+
+`global.json` selects .NET 10 and Microsoft.Testing.Platform. Check installed SDK with
+`dotnet --version`.
+
+### First checkout
+
+```sh
+git clone https://github.com/dills122/sandtable.git
+cd sandtable
+just setup
+just check
+```
+
+Without Just:
+
+```sh
+dotnet restore Sandtable.slnx
+dotnet build Sandtable.slnx --no-restore
+dotnet test --solution Sandtable.slnx --no-build
+```
+
+### Run service stack
+
+```sh
+just run
+```
+
+Equivalent command:
+
+```sh
+dotnet run --project src/Cna.AppHost/Cna.AppHost.csproj
+```
+
+Open Aspire dashboard URL printed in terminal. It shows Orleans host, Decision Worker, and
+Intelligence Gateway. This launches development services—not a playable Maproom. Stop with
+<kbd>Ctrl</kbd>+<kbd>C</kbd>.
+
+### Run deterministic simulation
+
+Run current bounded Reaction Maneuver and write validated artifacts under `artifacts/exercises`:
+
+```sh
+dotnet run --project src/Cna.ExerciseRunner/Cna.ExerciseRunner.csproj -- \
+  maneuver run --manifest scenarios/maneuvers/rules-lab.reaction.serial.breakdown.v1.json \
+  --artifact-root artifacts/exercises
+```
+
+Runner prints child bundle paths, aggregate report path, and deterministic fingerprint. More
+checked manifests and diagnostic modes are listed in [detailed runbook](#detailed-runbook).
+
+### Preview project website
+
+```sh
+python3 -m http.server 4173
+```
+
+Open `http://localhost:4173/site/`. Website is dependency-free project documentation, not game UI.
+
+### Daily development loop
+
+```sh
+git switch -c feature/my-change
+just check
+```
+
+Use feature branch; never commit directly to `main`. Read [contributor guide](CONTRIBUTING.md),
+[architecture](tech-design.md), and [vocabulary](naming-overview.md) before changing boundaries.
+Update contracts before consumers, add focused deterministic test before behavior, keep remote/model
+I/O outside authoritative turns, then run `just check` before PR.
+
+| Command | Purpose |
+| --- | --- |
+| `just --list` | Show repository recipes |
+| `just setup` | Check SDK and restore dependencies |
+| `just build` | Restore and build solution |
+| `just test` | Build and run all tests |
+| `just boundary-check` | Run user-space disclosure boundary suite |
+| `just format-check` | Verify formatting without edits |
+| `just check` | Full local gate: format, build, boundary tests, all tests |
+| `just run` | Launch Aspire development stack |
+| `just docs-links` | Check tracked Markdown links; requires Lychee 0.24.2 |
+
+Build artifacts live under `artifacts/`. Do not commit generated `artifacts/bin` or `artifacts/obj`
+content. See [security policy](SECURITY.md) for vulnerability reports.
+
+## Detailed project status
+
+<details>
+<summary>Expand implementation ledger and contract history</summary>
 
 > [!IMPORTANT]
 > Sandtable is pre-alpha infrastructure, not yet a playable adaptation of the published game.
 
-The executable product and the forward contract work are intentionally different. Today, public
-Rules9 authority and checked Runner evidence stop at first-side Combat **entry**. Separate frozen
-contract packets compose selected future Combat/cycle histories through released-I ordinal-2
-Movement completion, direct Reaction closure, and active-participant System fallback,
-but no Combat or Reserve Release runtime is registered. The
+Executable product and forward contract work are intentionally different. Today, public Rules9
+authority and checked Runner evidence stop at first-side Combat **entry**. Parent003 frozen contract
+evidence composes 28 selected future Combat/cycle histories and exact Task004 handoff, but no Combat
+or Reserve Release runtime is registered. The
 [pre-alpha roadmap](docs/roadmap/pre-alpha-roadmap.md#current-delivery-status) is the canonical
 delivery ledger and defines the status vocabulary used below.
 
@@ -375,7 +503,8 @@ through participant movement/completion, required stop resolution and exact phas
 through no-move Movement, idle Breakdown and no-attack Combat while retaining actual Reserve I.
 [D2c.3i inherited Reserve Release](docs/specs/combat-inherited-reserve-release-v1.md) adds2 traces/6
 events through owner release-I and deterministic completion. Guarded repeat/positive Reserve
-movement, broader Reaction and D2c.4 remain open.
+movement and broader Reaction remained open at that child boundary; D2c.4 now closes selected
+composition.
 [D2c.3j armed continuation](docs/specs/combat-inherited-armed-continuation-v1.md) adds2 pure proofs
 for the actual released-I ammunition10 profile, one candidate per owner, with full-result support
 pins; it does not repeat the cycle or execute Combat.
@@ -385,7 +514,8 @@ repeat/finish traces while preserving private/non-runtime boundaries.
 ordinal-2 Clear moves with released ceiling10.
 [D2c.3m released-I Movement completion](docs/specs/combat-inherited-reserve-movement-completion-v1.md)
 adds2 three-event stop/resolution/completion traces and applies the exact D2b.2 expiry projection
-from each accepted completion receipt; broader profiles and D2c.4 remain open.
+from each accepted completion receipt; broader profiles remain open while D2c.4 now closes selected
+composition.
 [D2c.3n direct Reaction closure](docs/specs/combat-inherited-reaction-closure-v1.md) adds6 one-event
 forks covering both owners across player decline and distinct System unavailable/timeout authority;
 [D2c.3o active Reaction fallback](docs/specs/combat-inherited-reaction-active-fallback-v1.md) adds4
@@ -394,23 +524,29 @@ mandatory resolution. [D2c.3p active Reaction second move](docs/specs/combat-inh
 adds2 one-event owner traces from the same fork point through rear→supply at CP2→4 while retaining
 active authority. [D2c.3q Reaction movement completion](docs/specs/combat-inherited-reaction-movement-completion-v1.md)
 adds2 three-event owner/System traces through explicit completion, empty-stop resolution, and exact
-phasing resumption at authority18. Multiple-opportunity Reaction, vehicle profiles, and D2c.4 remain
-open.
+phasing resumption at authority18. Multiple-opportunity Reaction and vehicle profiles remain open;
+D2c.4 now closes selected composition.
 [Result/settlement](docs/specs/combat-result-settlement-v1.md) and
 [full snapshot composition](docs/specs/combat-snapshot-composition-v1.md) retain synthetic pre-Combat
-lineage; review9 assessed these bounded artifacts. Parent003, future maturity execution and combined checkpoint B
-remain open. The [ordinary movement packet](docs/specs/combat-ordinary-movement-v1.md) freezes break-off/CP/DP
+lineage; review9 assessed these bounded artifacts. Parent003 now closes through D2c.4; future
+maturity execution and combined checkpoint B remain open. The
+[ordinary movement packet](docs/specs/combat-ordinary-movement-v1.md) freezes break-off/CP/DP
 and corrects the former Clear1 example to the existing Clear2 rule. The
 [Reserve Release packet](docs/specs/combat-reserve-release-v1.md) freezes single-deadline control
 and retained history. The [cycle-control packet](docs/specs/combat-cycle-control-v1.md) freezes guarded
 repeat/finish and Movement exception expiry:19 cases/64 traces,164 cuts. Its exhausted-ammunition
-continuation surface remains private; full history, armed Combat assessment and Snapshot integration
-remain D2c/004. Combat runtime implementation has not started.
+continuation surface remains private; D2c.4 now composes full history, armed Combat assessment and
+Snapshot integration evidence. Combat runtime implementation has not started.
 
 See the [pre-alpha roadmap](docs/roadmap/pre-alpha-roadmap.md) for the capability-level plan and
 completion criteria.
 
-## Up and running
+</details>
+
+## Detailed runbook
+
+<details>
+<summary>Expand all Exercise and Maneuver recipes</summary>
 
 Running the repository today launches the development service scaffold and Aspire dashboard. It
 does not yet launch a playable Maproom client.
@@ -598,6 +734,8 @@ Codex-managed worktrees use `.codex/environments/environment.toml` to seed the r
 Git-ignored AI Central skills and steering before a task starts. The setup expects AI Central at
 `$HOME/.ai-central` by default; set `AI_CENTRAL_HOME` when the shared checkout lives elsewhere.
 The seeder copies only its allowlisted AI context and does not overwrite worktree-owned files.
+
+</details>
 
 ## How it works
 
