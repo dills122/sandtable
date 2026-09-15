@@ -168,6 +168,10 @@ does not mean opportunity selection, Combat execution, cycle repeat, or runtime 
 The [inherited guarded cycle-control packet](docs/specs/combat-inherited-cycle-control-v1.md) then
 uses `movement-combat-cycle-repeated` or `movement-combat-phase-finished` for exact owner closure.
 This proves private authority composition only; it does not mean ordinal-2 Movement or Combat ran.
+The [round-v2 contract](docs/specs/combat-sealed-round-v2.md) calls its immutable public timing
+bound the `openingFloor`. Accepted private seal times are audit evidence, not a shared admission
+watermark. [Corrected side profiles](docs/specs/combat-side-projection-v1.md) name a separately
+authenticated contract family; the name does not register or activate production Combat.
 The [inherited released-I Movement packet](docs/specs/combat-inherited-reserve-movement-v1.md) then
 uses `combat-cycle-element-moved` for one actual ordinal-2 move. “Pending exception” remains true
 until an accepted Movement-completion receipt expires it. The

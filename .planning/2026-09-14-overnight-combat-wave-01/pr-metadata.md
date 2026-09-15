@@ -1,36 +1,33 @@
-# Current draft PR metadata
+# Draft PR115 metadata
 
-## Branch and accepted clock commit
+## Branch
 
 ```text
 codex/overnight-combat-wave-01
-3fcd8229f077521759fdb5ae2aaa942aa91f89ac
 ```
 
-## PR title
+## Title
 
 ```text
 Add privacy-preserving Combat clock contracts
 ```
 
-## PR description
+## Description
 
 ```markdown
-Private Combat seal timestamps previously changed whether an opponent’s unchanged proposal succeeded after a clock regression. Add an explicit v2 round/clock configuration whose acceptance floor stays at the published opening instant. Keep the original deadline, deterministic fallback, receipt recovery and Prepared ordering; preserve historical v1 contracts and their failing privacy diagnostic.
+Private Combat seal timestamps previously changed whether an opponent’s unchanged proposal succeeded after a clock regression. Add an explicit v2 round/clock configuration whose acceptance floor stays at the published opening instant. Integrate authenticated side profiles that preserve identical observations, candidate identities and outcomes across private seals and clock faults.
 
-The clock packet is accepted. The retained side-projection candidate is still being integrated; Task004/checkpoint B and Task005 remain incomplete. This draft contains contract evidence only and activates no Combat runtime. No merge requested.
+Round-v2 and Task004A1 are accepted. Historical v1 contracts, all18 original audience traces and their failing clock diagnostic remain exact. Result/settlement integration, remaining side families, Exercise contracts and Task005 remain incomplete. This draft contains contract evidence only; no Combat runtime activation or merge requested.
 
 ## Validation
 
-- Round-v2 oracle:12semantic groups,10traces,68cuts,610replay mutations,340raw rejects,288clock comparisons/retries,480lifecycle retries,30invalid proposals.
-- Ordinary fresh-context review approved after exact fixture-byte validation fixed numeric type coercion.
-- Independent source audit:136canonical literals,58events,6pins and derived identities;15historical files unchanged.
-- Root independent admission check:88equal-outcome comparisons; historicalv1 counterexample retained.
-- Root `just check`:format/build clean,81boundary tests,1670full tests,0skipped.
+- Round-v2 oracle:12 semantic groups,10 traces,68 cuts,610 replay mutations,340 raw rejects,288 clock comparisons/retries,480 lifecycle retries.
+- Side oracle:23 semantic groups,58 traces/466 cuts,207 submissions,969 mutations,580 raw rejects,69 receipt/stale bindings,672 clock comparisons/retries.
+- Ordinary fresh-context reviews approved both packets; source audits verified retained literals, pins and historical bytes.
+- Root independently checked88 round outcomes and144 serialized side outcomes;17 legacy profile admission rejects. Historical v1 counterexample retained.
+- Root `just check` at each accepted boundary: format/build clean,81 boundary tests,1670 full tests,0 skipped. Latest full-test duration3m25.329s.
 
-Clock packet commit:3fcd822. Exact logs, scope limits, owner privacy disposition and renewed eight-hour deadline are retained under `.planning/2026-09-14-overnight-combat-wave-01/`.
+Accepted behavior commits:3fcd822 and8cb1cef. Exact logs, scope limits, owner privacy disposition and renewed work deadline are retained under `.planning/2026-09-14-overnight-combat-wave-01/`.
 ```
 
 PR: https://github.com/dills122/sandtable/pull/115
-
-Clock packet accepted; side integration in progress;004/B and005 incomplete. No merge.

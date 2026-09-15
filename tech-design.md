@@ -884,13 +884,18 @@ evidence, not an implemented combat contract. Current proposals use trusted-Umpi
 the same pre-state for simultaneous combat, and structural sequence positions plus cycle identity;
 production Combat is not implemented. The [policy register](docs/design/combat-cycle-policy-reconciliation.md)
 now records owner-approved policies, and the [combined plan](docs/design/combat-cycle-implementation-plan.md)
-records bounded contract completion through D2c.3j. The [cycle-control contract](docs/specs/combat-cycle-control-v1.md)
+records parent003 completion and accepted004A1 side contracts. The
+[round-v2 clock contract](docs/specs/combat-sealed-round-v2.md) uses an immutable public opening
+floor: private seal timestamps remain audit evidence and cannot alter opposing admission.
+[Side projections](docs/specs/combat-side-projection-v1.md) authenticate corrected profiles and
+retain exact historical vectors; result/settlement integration and full CON-005/006 remain open. The [cycle-control contract](docs/specs/combat-cycle-control-v1.md)
 binds release completion, semantic progress, current-cost witnesses and exact repeat/finish successors.
 Its Movement-expiry projection retains exclusions and release history. The
 [armed-continuation proof](docs/specs/combat-inherited-armed-continuation-v1.md) now admits both
 actual released-I ammunition10 profiles against the existing full-result contract stack without
-emitting authority. Guarded repeat composition and full Snapshot authority remain
-D2c/004/checkpoint B gates.
+emitting authority. Guarded repeat and inherited authority composition are now retained in the
+[28-trace Task003 handoff](docs/specs/combat-authority-composition-v1.md); outward contracts and
+Exercise evidence remain004/checkpoint B gates.
 The [inherited successor packet](docs/specs/combat-inherited-successors-v1.md) declares20 exact
 event successors and freezes isolated Reserve completion with atomic cycle1 opening. Actual
 creation-to-first-opening provenance is now composed within the closed initial-infantry profile;
