@@ -103,3 +103,40 @@ new exact corrected result→emptyRelease→finish adapter; unrelated003 finish 
 requirement. Required W01-CLOCK-CYCLE packet is scoped before A3 and B1; four-lineage feasibility
 passes, full32-lineage implementation/review remains pending. No new gameplay policy or fullSnapshot
 requirement follows from this bridge.
+
+## B1/B2 fallback evidence — supported request versus achieved terminal
+
+B1 admission distinguishes family-supported requested terminal from terminal satisfaction by
+supplied execution prefix. Exact eight A2fallback sources retain valid nativeResult2contexts whose
+family supports closed ReserveRelease ordinal1; their retained prefixes end earlier. Bind those
+exact contexts/prefixes, request that supported terminal, set accepted-transition limit16 for
+fallback-retreat or20 forfallback-custody. Execute retained fallback transition, then stop atlimit.
+Actualcheckpoint stays CloseAssault, Result2disposition/custody, notclosed. Record StepLimitExceeded
+and failedterminal check; no inventedfailed-attempt checks or reconstruction/readjudication proofs.
+Expectedfailurematch remainsfailed. This exercises actual ownerinitiator/Systemauthor/rejected
+outcome without appending unsupported continuationevents or inventing successfulfallbackclosure.
+
+Count actual publishedfallback once. Keep originalownerinput/proposal/nulltime/unavailableclock,
+rejectedoutcome/nullpublicreceipt, authorityreceipt, Systemevent and semanticSystemaction. Exact
+A2registry remains immutable and endsatfallback. Successfulclosedfallback would need separately
+admitted completedsource; failedchild evidence doesnot. Sources: ExerciseExecutor.cs362,
+ExerciseBundleSemanticValidator.cs710, verify-combat-result-settlement-v2.py209,
+verify-combat-side-projection-v1.py1012/1233. Verify limitsagainstactualeventcounts inB1/B2tests.
+
+## B1/B2 public controller fit
+
+Three versioned semantic preference profiles cover32nativeResult2traces without private/futurestate:
+retreat+guard (ordinary,zero-retreat,zero-engaged,defender-capture-guard,attacker-capture-guard-cp-limit);
+retreat+escape (defender-capture-escape,attacker-capture-escape); refuse+guard (refusal-loss-dp).
+Shared offeredpreferences: select-close-assault,decline-retreat-before-assault,full-close-assault,
+then bridgefinish onlywhenoffered. Same preference config forbothsides; actualdecisionowner chooses
+unique matchingofferedcandidate, preservingroute/refs/amounts/actionID. Missing/ambiguousmatchfails.
+No controller invocation onSystemonlyprogress/absentwindow. Never copyauthoritycommands or inspect
+privateRNG/casename/futurestate toselect. Case-to-profile map is fixtureconfiguration only.
+
+Manifest separatelybinds versionedpreference record, exact admittedsource/initialRNG-CP evidence,
+attacker-first/defender-first scheduler, trustedclock/faultschedule, terminal andsteplimit. Initial
+source/RNG determinesarithmeticbranch; controllernotmanufactureit. Existing act-first/act-last only
+covercreationstageDeclaration policies; syntheticC3beginsCombatselection, no inventedInitiative.
+NewCombatcontrollerrecords prospective/unregistered. Fallback uses samepublicpreference; trusted
+clockfault changesauthorityoutcome; readjudication retains realownerinput/Systemfallbackevent.

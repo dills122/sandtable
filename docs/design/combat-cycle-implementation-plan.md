@@ -140,6 +140,12 @@ each spec/schema/fixture/oracle plus this plan, execute after accepted004A:
 
 These typed checkpoints are not CoreSnapshot records. They prove contract replay within explicitly
 tagged lineage; ordinary-Core/Exercise parity remains runtime022, actual publication remains023.
+B1 distinguishes a family-supported requested terminal from its satisfaction by a supplied
+execution prefix. Eight exact A2clock-fallback prefixes can request native closedReserveRelease1
+and stop at accepted-transition limit16/20 while still in CloseAssault. B2 records failedterminal/
+StepLimitExceeded, actual ownerinitiator/Systemauthor and rejectedoutward proposal; no fabricated
+success, failedattempt or replayproof. No arbitrary continuation past retained source is admitted.
+
 No full Snapshot successor is needed for this chosen004B route. Preserve old ExerciseManifest
 payload2/labelv1, Checkpoint1/Snapshot11 and all registered readers. New Combat scheme labels remain
 unregistered; old readers never receive prospective Rules10 manifests as current supported input.
@@ -190,6 +196,18 @@ Its outward actions describe that bounded replay capability, distinguished by pu
 identity, not the complete Reserve gameplay legal set. Conversion in an inherited fullWorld profile
 remains unsupported until a separately scoped authority adapter. This retains AC003 coverage via
 the canonical ledger while preserving the existing admitted inherited profile.
+
+004A3 version refinement before edits: separate Observation3/Submission3/Candidate3 and owned
+Reserve/cycle records preserve every acceptedA1/A2 descriptor, bound, domain and literal. Public
+capability identity is fixed from first frame and distinguishes bounded inherited admission from
+corrected synthetic support and projection-only terminals. Closed Combat/cycle decision tags keep
+new Combat references separate from frozen binary cycle action/set hashes, unsigned candidate-byte
+sorting and index-bound action IDs. Candidatecapacity3; source-native CP/Cohesion; no truncation.
+A3a owns live inherited release/control plus full standalone ledger behavior. A3b owns28normalized
+terminal projections and accepted corrected bridge, usingv3 from first C3a frame with continuous
+receipts/history throughfinish. Terminal-only sources never invent prior sidehistory or actions
+from authorityreceipt counts. Exact fields and bounds are recorded in
+[packet004A3](../../.planning/2026-09-14-overnight-combat-wave-01/packet-004a3.md).
 
 004A1 overnight hard stop, 2026-09-14 local /2026-09-15 UTC: ordinary fresh-context review found
 equal waiting-side observations before/after an opposing private seal, but the same proposal at
@@ -272,6 +290,14 @@ cycle timing opens independently under explicit bridge policy. Historical kernel
 No repeat, guard action, upkeep or maturity execution. This closes the required combat-then-finish
 evidence seam without new gameplay policy or fullSnapshot allocation. Implement after accepted004A2
 with the sole writer; review/full gate/accepted commit precede A3 consumption.
+
+W01-CLOCK-CYCLE accepted2026-09-15:11focused groups,32native lineages/160cuts/128retries,
+192prior-time comparisons and24source-fallback rejections. Fresh ordinary review approved after
+P2source gate bound actual owner author/reason/disposition; valid retiming remains admitted.
+Independent source audit verifies14pins/320nested literals/128retained suffixes; root1088clock/
+recovery checks and `just check`81boundary/1670full tests pass,0skips. Maximum117109Bbase and
+33361Bstate. Accepted bridge closes synthetic same-lineage combat-then-finish evidence only;
+A3/B/C and005 remain open.
 
 `W01-CLOCK-SNAPSHOT`, if full corrected snapshots are used by CON006,
 owns new `combat-snapshot-composition-v2` spec/schema/fixture/oracle plus this plan; freeze its exact

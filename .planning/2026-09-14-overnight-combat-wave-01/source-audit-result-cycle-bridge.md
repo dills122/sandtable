@@ -30,3 +30,7 @@ Reject unsupported source/certificate/terminal beforeexecution. Historical kerne
 Actual inheritedrelease has one pendingmember; acceptedreleaseI emptiesit, onlySystemcomplete
 remains. No secondfresh ownerchoice and no demonstrated multichoiceclockprivacy gap. Standalone
 multi-member ledgers remain historical authority evidence; do not broaden clock correction speculatively.
+
+Pin graph: bridge depends on immutable Result2/Reserve/cycle/sequence authority artifacts only.
+A2 acceptance is workflow prerequisite, not side-file semantic dependency. Future A3 side packet
+pins bridge, so bridge must not pin mutable whole side files and create circular pin drift.

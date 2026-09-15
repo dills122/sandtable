@@ -269,3 +269,38 @@ gate exit0:format/build0warnings/errors,81boundary/1670full tests,0skips,3m11.78
 outcomes/24cache-source checks pass.37focused groups,96audience traces/2080cuts,7344clock outcomes,
 4872retries,26pins/628literal observations. Spec status only changed after review. Required next
 packet W01-CLOCK-CYCLE; parent004/checkpointB and005 remain incomplete.
+
+## 2026-09-15 14:23 UTC — A2 publication and bridge start
+
+AcceptedA2042edbc; statusdocs febec3d;411local link targets pass. Pushedfebec3d to existingdraftPR115,
+readbackOPEN/drafttrue/exacthead. Initial combinedpush command rejected byautomaticreview for
+unestablishedownership/authorization. Read-only GitHubcheck proved sign-in dills122/DylanSteele
+owns dills122/sandtable, ADMIN, isPrivate=false, sameauthor/headbranchPR115; existingplanrecords
+user-authorizedcommits/push/no merge. Explicit evidence-backed retryapproved andpushsucceeded.
+No unresolvedpublicationblock. Bridgewriterstarted; freshreviewerbaseline ready. A3version/source
+plan recorded beforeedits; futurewriter preparesread-only. Deadline19:39:39UTC.
+
+## 2026-09-15 14:27 UTC — bridge first RED/GREEN
+
+Writer captured missing-base_for RED across32lineage test before implementation. New closed schema/
+spec and exact source/certificate/ReleaseBase plus wrapper command/event/receipt/state replay now
+implemented; first all32GREEN run active. No historical baseconstructor/reader use or changes.
+Freshreview waitsfreeze; no acceptance yet.
+
+## 2026-09-15 14:30 UTC — bridge first GREEN / B fallback refinement
+
+WriterfirstGREEN32lineages/160cuts/128retries, eachowner-choice/exact4events;8guard+8entitlement
+casesretainfullWorld/RNG/history/targetuses. Initial31source-certificate/85state-event-command/
+84raw-bound/17clock-fallback checks pass. Pairedprior-time matrix/pins/freeze remainpending.
+SourceB1/B2refinement uses8exactA2fallback prefixes asStepLimitExceeded failures at16/20events;
+terminalfamilysupport distinct fromactualsatisfaction, no fabricatedsuccess/proofs/continuation.
+
+## 2026-09-15 14:48 UTC — W01-CLOCK-CYCLE accepted
+
+11focused groups/32lineages/160cuts/128retries/192prior-time checks pass. P2sourcefallback gate
+fixedafterRED16realnativeforks; final24rejects incl12sameWorld. FreshordinaryreviewAPPROVE;
+sourceaudit14pins/320nestedliterals/128suffixretention/160cuthashes. Rootfinal1088clock/recovery
+checks pass; finaljustcheckexit0:format/build0warnings/errors,81boundary/1670full,0skips,3m21.192s.
+Initialgate/review retainedseparately. Onlyfinalspecstatus changedafterfreeze. Latestmainff6b5f6
+unchanged. Acceptfiveprimaryfiles+curatedplanning/evidence; next solewriter side_cycle_writer A3a.
+Full004/Bthen005objectiveincomplete; reneweddeadline19:39:39UTC,oneexistingdraftPR/no merge.

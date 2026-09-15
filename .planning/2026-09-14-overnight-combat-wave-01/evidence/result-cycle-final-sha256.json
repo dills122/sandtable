@@ -1,0 +1,6 @@
+{
+  "docs/specs/combat-result-cycle-finish-v1.md": "4055c35e91e192844bd94acd857b9702ea3cb0a7c02ec85b930bb89560d27b02",
+  "docs/specs/combat-result-cycle-finish-v1.schema.json": "cbd61da864d102a08389a166486cd0cf5728a0db5feae002e3c8fb177b52d2d5",
+  "docs/specs/fixtures/combat-result-cycle-finish-v1.json": "a1b6cb5f611586da62667fd4315365aa3a38c34af8afe016314eba4c7c1057c2",
+  "docs/specs/verify-combat-result-cycle-finish-v1.py": "9eb64ccaf6788b60f04662f9569bac23265816d8fba86bdd8078eae27eeac4a9"
+}
