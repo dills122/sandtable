@@ -20,9 +20,9 @@ current capability status and cross-package sequencing.
 - [Combat delivery review and owner disposition](reviews/combat-delivery-plan-author-review.md#owner-disposition)
 
 Current truth in one line: public Rules9 authority and checked Runner evidence stop at first-side
-Combat entry; forward Combat contracts reach creation-rooted released-I ordinal-2 Movement
-completion plus post-second-move Reaction completion through `003D2c.3q`; Combat runtime, public activation,
-and simulator evidence have not started. See the
+Combat entry; parent003 authority contracts now close with 28 creation-rooted composition traces and
+the exact Task004 handoff; Combat runtime, public activation, and simulator evidence have not
+started. See the
 [status table](roadmap/pre-alpha-roadmap.md#current-delivery-status) and
 [next gates](roadmap/pre-alpha-roadmap.md#current-checkpoint-and-next-gates) for details.
 
@@ -148,7 +148,9 @@ and simulator evidence have not started. See the
   adds2 exact Clear moves under ceiling10.
   [D2c.3m released-I Movement completion](specs/combat-inherited-reserve-movement-completion-v1.md)
   adds2 exact stop/resolution/completion traces and expires each pending exception from its accepted
-  completion receipt; multiple-opportunity Reaction, vehicle profiles and `.4` composition stay open.
+  completion receipt; multiple-opportunity Reaction and vehicle profiles stay open.
+  [D2c.4 authority composition](specs/combat-authority-composition-v1.md) reconciles CON-002–004
+  across28 traces, proves capacity and freezes the exact Task004 handoff.
   [Review15](reviews/combat-inherited-reserve-release-review-15.md) returned Ready with one
   non-blocking retained-coverage finding, corrected before `719ea0d`.
   See [result/settlement](specs/combat-result-settlement-v1.md) and
@@ -158,8 +160,8 @@ and simulator evidence have not started. See the
   [Cycle control](specs/combat-cycle-control-v1.md) freezes guarded repeat/finish and Movement expiry
   with19 literal cases/64 traces. Historical reviews remain under `docs/reviews`; review15 assessed
   `003D2c.3i` as Ready with one non-blocking retained-coverage finding, corrected before `719ea0d`.
-  The15of15 sequence is exhausted. Production hosting remains gated; parent003D2c/003 and Task004
-  stay open.
+  The15of15 sequence is exhausted. Production hosting remains gated; parent003D2c/003 is complete,
+  while Task004 and checkpoint B stay open.
 - Sprint 4-5 dependencies: [research-gate audit](research/sprint-4-5-research-gates.md).
 
 ## Reviewed future product work
