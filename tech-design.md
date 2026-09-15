@@ -890,8 +890,9 @@ floor: private seal timestamps remain audit evidence and cannot alter opposing a
 [Side projections](docs/specs/combat-side-projection-v1.md) authenticate corrected profiles and
 retain exact historical vectors. The [settlement-v2 contract](docs/specs/combat-result-settlement-v2.md)
 opens mandatory windows independently; prior accepted times remain audit evidence. Settlement
-projection is accepted; corrected cycle-finish composition, Reserve/cycle projections and complete
-CON-005/006 remain open. The [cycle-control contract](docs/specs/combat-cycle-control-v1.md)
+projection and the [native cycle-finish bridge](docs/specs/combat-result-cycle-finish-v1.md) are
+accepted. The bridge retains World, RNG and future obligations through empty Reserve Release to
+same-slot Truck Convoy. Reserve/cycle projections and complete CON-005/006 remain open. The [cycle-control contract](docs/specs/combat-cycle-control-v1.md)
 binds release completion, semantic progress, current-cost witnesses and exact repeat/finish successors.
 Its Movement-expiry projection retains exclusions and release history. The
 [armed-continuation proof](docs/specs/combat-inherited-armed-continuation-v1.md) now admits both
