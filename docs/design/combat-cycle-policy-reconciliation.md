@@ -28,6 +28,31 @@ review or bypass checkpoint B's exact-contract acceptance. Original alternatives
 | `CMB-POL-007` | Adopt `RESREL-DEC-001`–`004`: first release is friendly-phase-relative; unavailable first-release I converts to II, later II retains; voluntary ceilings use cumulative stage CP; committed offensive-use history and the immediate next-Movement exception survive status changes. | [Reserve research](../research/reserve-release-history-spike.md), [cycle composition](continual-cycle-reserve-composition-v1.md). One release-window budget, no renewed deadline per unit. Pre-release I movement and offensive Combat by released reserves remain excluded until their extension is designed. |
 | `CMB-POL-008` | Adopt CYCLE-DES-001's proposed event/codec composition and bounded evidence terminal: retain pre-event prefix, public/authority separation, Movement-end eligibility and semantic progress; repeat needs supported legal continuation; finish reaches same-slot Truck Convoy entry. Retain guard/upkeep/replacement obligations and reject unsupported requested terminals at admission. | [Cycle composition](continual-cycle-reserve-composition-v1.md). This implements, rather than reopens, accepted `CYCLE-DEC-001`–`014`. No seed-derived legality, guessed cycle history, silent stage reset or two-assault claim from one ammo load. Exact production schemas still require freeze. |
 
+## Clock privacy correction — owner decision 2026-09-15
+
+Owner selected strict privacy after the retained
+[clock-regression counterexample](../../.planning/2026-09-14-overnight-combat-wave-01/evidence/clock-high-water-counterexample.py):
+"I like maintaining the privacy so lets go that route". `CMB-POL-006` equal-outcome privacy remains
+required during clock faults. Correct the clock contract through an explicit versioned successor;
+do not add a clock-fault privacy exception or alter historical authority bytes.
+
+This disposition supersedes the conflicting accepted-seal shared high-water mechanism in DES-002
+for the future corrected profile. It does not change the historical v1 reader or certify a successor
+before its concrete schema, replay, privacy and compatibility checks pass. Finite persisted budgets,
+fixed deadlines, expiry at equality, deterministic unavailable fallback and clock-free prepared/
+committed recovery remain requirements.
+
+Successor design: collecting-round admission uses the immutable published opening instant as its
+regression floor and the original deadline as its exclusive upper bound. Private accepted seal
+timestamps remain strict replay evidence but do not raise this floor. Thus3500 after a hidden4000
+seal is admissible when opening3000/deadline33000 remain unchanged. Below-opening time, unavailable
+trusted time and explicit controller failure retain deterministic fallback; no retry or restart
+recreates the deadline. This intentionally replaces v1's private-seal-based regression test.
+Existing common-terminal disclosure and Prepared-versus-expiry ordering remain authorized.
+
+The [combined plan](combat-cycle-implementation-plan.md) owns the bounded successor and integration
+packets. Task004 and checkpoint B remain incomplete.
+
 ## Accepted source amendment
 
 `CMB-SRC-RUL-001` was accepted by owner on2026-09-06 after the research at `4f44c30`, subject to

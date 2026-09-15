@@ -118,3 +118,35 @@
   handoff status; no schema/fixture/oracle changes after reviewed hashes or repeated runtime tests.
 - All three children completed/stopped; parent objective explicitly incomplete and implementation
   blocked by required owner policy disposition. Source and review evidence recorded in handoff.
+
+## Owner privacy decision — 2026-09-15
+
+- Owner selected strict privacy: "I like maintaining the privacy so lets go that route".
+  Equal-outcome privacy remains required during clock faults; explicit versioned clock correction
+  authorized in principle, with historical authority bytes preserved. No implementation accepted.
+- Clock at acknowledgment11:24:28 UTC; original eight-hour deadline10:49:17 UTC expired.
+  Recorded decision in CCE and local plan/handoff; implementation awaits renewed work window.
+- Initial working tree clean at143b1c1 on codex/overnight-combat-wave-01. This follow-up changes
+  planning metadata only; no new implementation, tests, agents, commit, push or PR change.
+
+## Renewed eight-hour run — 2026-09-15 11:39:39 UTC
+
+- Owner authorized resumption, same scope/no merge. New deadline19:39:39 UTC.
+- Latest origin/main remainsff6b5f6; HEAD143b1c1. Only prior owner-decision planning edits present.
+- Reused writer/evidence agents for separate read-only clock successor design; root owns policy,
+  plan and integration. No successor implementation before bounded packet assignment.
+- Goal service still blocked; no tool supports resume. Preserve full objective without false
+  completion/replacement. Local execution proceeds under explicit user authorization.
+
+- Policy/navigation packet updates policy register, combined plan, README and roadmap to owner-selected
+  strict privacy with versioned correction pending. Local493targets/4files pass; diff check clean.
+- Writer/evidence recommendations reconciled: use immutable public opening floor; no new public
+  clock events or per-side watermark. Approved common terminal disclosure preserves Prepared race.
+
+- Historical authority composition oracle after policy-doc changes: exit0,28traces/9families/
+  31pins/225readbacks/203mutations/6raw/8boundaries. Historical bytes still validate.
+- Root author check of four primary policy/navigation files: owner quote/direction exact, no
+  implementation acceptance, original evidence retained, renewed deadline recorded. Diff clean.
+- Assigned W01-CLOCK-CONTRACT sole writer new roundv2 spec/schema/fixture/oracle; root owns plan.
+  New opening validates trusted public baseline without inherited private RBA seal-time comparison.
+  Successor replay/policy identities and regression matrix required; no historical file writes.

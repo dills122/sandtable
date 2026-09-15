@@ -1,4 +1,22 @@
-# Handoff: overnight Combat wave01 — HARD STOP
+# Handoff: overnight Combat wave01 — resumed
+
+## Renewed work authorization — 2026-09-15
+
+Owner confirmed another eight-hour limit with same scope and no-merge rule: "Yes lets do it".
+Renewed start11:39:39 UTC; deadline19:39:39 UTC. Implementation resumed at clock-design packet;
+required004/B and005 still incomplete. Existing draft PR115 remains integration destination.
+The expiry and stop sections below are historical evidence, superseded by this authorization.
+
+## Owner Decision — 2026-09-15
+
+Owner: "I like maintaining the privacy so lets go that route". Strict equal-outcome privacy stays
+required, including clock faults. Design an explicit versioned clock-contract correction while
+preserving historical authority bytes. No privacy exception authorized. Concrete successor design,
+implementation, regression checks and review remain pending; this decision does not accept004A1.
+
+Acknowledgment clock11:24:28 UTC exceeded original10:49:17 UTC eight-hour deadline. Policy-choice
+blocker resolved; renewed work window required before implementation resumes. Earlier sections
+below retain the original stop evidence. No behavioral files changed during decision recording.
 
 ## Objective And Boundary
 
@@ -123,8 +141,8 @@ and committed before final response. No retained uncommitted implementation. Hos
 
 ## First Safe Next Action
 
-Owner decides how accepted clock-regression behavior and equal-outcome privacy must reconcile.
-Then record policy/contract disposition, preserve historical bytes through explicit versioning if
+Owner selected strict privacy; first obtain renewed work window because original deadline expired.
+Then specify the versioned clock-contract correction, preserve historical bytes through explicit versioning if
 needed, write failing regression first, fix only authorized successor scope, rerun focused and full
 story gates, obtain ordinary fresh-context quality approval, and only then accept004A1/continue.
 Do not start005 until004 and checkpoint B are complete. Do not merge this blocked draft.

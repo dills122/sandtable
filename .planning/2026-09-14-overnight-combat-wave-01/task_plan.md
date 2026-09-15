@@ -8,10 +8,32 @@ Start 2026-09-15 02:49:17 UTC; hard deadline 2026-09-15 10:49:17 UTC.
 Integration destination: `codex/overnight-combat-wave-01`, base/latest-main
 `ff6b5f60219afbb12d5e06bf836f06f94de32006`. No merge to main.
 
-**HARD STOP:** confirmed2026-09-15 03:19:38 UTC. Accepted shared clock-high-water fallback and
-equal-outcome privacy conflict on genuine hidden-seal histories. No implementation resumes without
-owner policy disposition. Required objective incomplete; retain unaccepted candidate/diagnostic in
-one blocked draft PR. See handoff.md and evidence/clock-high-water-counterexample.py.
+**RESUMED:** owner chose strict privacy and authorized a new eight-hour work window on2026-09-15.
+Renewed start11:39:39 UTC; hard deadline19:39:39 UTC (15:39:39 America/Toronto).
+Same required004/checkpoint B then005 outcome,006 stretch, one existing draft PR115, no merge.
+Historical clock/privacy conflict is reproduced and retained. Correct clock handling through an
+explicit versioned successor preserving historical bytes; no privacy exception. First design and
+record bounded successor packets, then TDD/ordinary review/integration gates before A1 acceptance.
+Goal service still reports blocked; it exposes no resume operation. This user-authorized execution
+resumes locally without claiming the unfinished objective complete or replacing it.
+
+### Selected successor design
+
+Collecting gate uses immutable public opening instant and fixed deadline; accepted private seal
+instants remain replay evidence only. Preserve valid clock-loss System cancellation, exact retry
+recovery, invalid-input ordering, Prepared recovery and approved common terminal disclosure.
+No new public clock stream, per-side watermark, deadline renewal or historical v1 rewrite.
+
+### Resumption packets
+
+- W01-CLOCK-DESIGN: root owns canonical policy disposition and bounded split; writer and evidence
+  agents independently advise read-only. No historical contract edits. Define clock evidence,
+  privacy invariants and integration ripple before successor writes.
+- W01-CLOCK-CONTRACT: sole writer owns new `combat-sealed-round-v2` spec/schema/fixture/oracle; root owns combined plan. Focused clock/privacy/replay/compatibility checks,
+  ordinary fresh-context quality review, root just check before accepted commit.
+- W01-CLOCK-INTEGRATE: after accepted successor, sole writer owns existing unaccepted four-file
+  side packet; root owns combined plan. Preserve old failing diagnostic as historical evidence;
+  prove successor outcomes and source bindings before accepting004A1.
 
 ## Canonical sources
 

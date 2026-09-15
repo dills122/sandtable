@@ -30,3 +30,18 @@
   invariant facts; authority-envelope26–42 excludes config/state from Rules. C3C1 ban is raw full
   authority envelopes, not approved public rules hash input. Reviewer independently confirmed.
   Preserve frozen cycle codec/hash; hidden Setup/Content/config/version/prefix remain private.
+
+## Resumed clock design findings
+
+- Minimal correction: immutable public opening floor plus immutable deadline. Accepted private seal
+  timestamps remain audit/replay evidence, never alter opposing gate. Below-opening/None/unavailable
+  can keep System cancellation for otherwise valid collecting proposals; both indistinguishable
+  live-slot histories receive same outcome. At3500 after hidden4000 seal, both now accept explicitly.
+- Per-side mutable floors are unnecessary. New positive-clock publication protocol would add scope.
+- Generic common cancellation vs Prepared no-op is already authorized DES002124–129,172–177;
+  requiring identical future terminal outcomes there would strengthen policy beyond owner request.
+  Evidence agent withdrew that suggestion. Own sealed retries recover original receipt before clock.
+- v1 result/settlement and snapshot/armed-support readers pin sealed-round v1. Corrected causal
+  round-to-result integration needs explicit successor packet(s); cannot patch frozen imports or
+  pass v2 through v1 by silently rewriting hashes/versions. A2 must record that split before edits.
+- Four-file policy/navigation update preserves historical contract files;493 local targets pass.

@@ -4,15 +4,15 @@
 `CMB-PLAN-001` and POL-001–008 were accepted on 2026-09-06 at `a10a588`. Source and static Content
 work (`001`–`002`) is complete. Parent `003` is complete through the
 [authority-composition handoff](../specs/combat-authority-composition-v1.md). Checkpoint B remains
-open. Task `004` is blocked at unaccepted `004A1` side-contract work by the clock/privacy conflict
-below; runtime tasks
+open. Task `004` resumed at unaccepted `004A1`: owner selected strict privacy; a versioned clock
+correction and side-contract integration remain required. Runtime tasks
 `005`–`025` have not started.
 
 | Delivery layer | Current boundary | Next required outcome |
 | --- | --- | --- |
 | Research and policy | Complete for the selected bounded profile, including `HOST-RSH-001` | Reopen only for a new source, failed assumption, or approved profile expansion |
 | Authority contracts | CON-002–004 and all selected-profile inherited families are reconciled in 28 creation-rooted composition traces; parent003 complete | Preserve exact Task004 handoff while later runtime work derives boundaries from accepted history |
-| Outward contracts | Task004 blocked at unaccepted004A1: hidden-seal clock high-water conflicts with equal-outcome privacy. Task003 handoff remains unchanged | Obtain policy disposition, then freeze CON-005/006 and expand all 72 ACs row by row |
+| Outward contracts | Task004 resumed at unaccepted004A1: strict privacy selected; versioned clock correction pending. Task003 handoff remains unchanged | Verify clock successor, then freeze CON-005/006 and expand all 72 ACs row by row |
 | Runtime | Tasks005–019 not started | Implement dormant tables/state/decisions/settlement/release/repeat with cumulative replay and recovery evidence |
 | Public and simulator | Tasks020–024 not started | Activate the certified side-safe profile, then prove strict Exercise/Runner reconstruction and repeatability |
 | Closeout | Task025 not started | Full gate, evidence reconciliation, and authentic loop demonstration without overstating retained obligations |
@@ -152,8 +152,19 @@ The [blocked candidate](../specs/combat-side-projection-v1.md#known-blocker-priv
 and [failing diagnostic](../../.planning/2026-09-14-overnight-combat-wave-01/evidence/clock-high-water-counterexample.py)
 retain the conflict. A1 is not accepted;004A/004/checkpoint B remain open and005 has not begun.
 Focused candidate vectors and repository gate pass, but cannot override this failing privacy
-acceptance case. Owner policy disposition and explicit compatible contract treatment are required
-before implementation resumes. No formal independent-review pass or authority amendment occurred.
+acceptance case. Owner selected strict privacy on2026-09-15; the
+[policy disposition](combat-cycle-policy-reconciliation.md#clock-privacy-correction--owner-decision-2026-09-15)
+authorizes an explicit versioned clock correction preserving historical authority bytes. Owner also
+renewed an eight-hour work window11:39:39–19:39:39 UTC, same scope and no merge. No formal
+independent-review pass occurred; concrete successor verification remains required.
+
+Clock correction split before edits: root owns policy/navigation disposition; `W01-CLOCK-DESIGN`
+selects the minimal correction and exact version boundaries with read-only source evidence.
+`W01-CLOCK-CONTRACT` then owns `combat-sealed-round-v2` spec/schema/fixture/oracle plus this plan, with clock,
+privacy, replay and old-reader rejection vectors. `W01-CLOCK-INTEGRATE` follows in the four
+unaccepted side-packet files plus this plan. No historical packet is rewritten; any additional
+independent contract family requires a recorded bounded split first. Each behavioral packet needs
+TDD, ordinary fresh-context quality review and root `just check` before its accepted commit.
 
 TASK-003 sizing refinement, 2026-09-06, before authority edits: its three contract families cross
 independent subsystems and cannot honestly fit one3–5-file change. Preserve parent003 and split
