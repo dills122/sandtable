@@ -1,0 +1,1167 @@
+{
+  "contractVersion": 1,
+  "contract": "combat-authority-composition-v1",
+  "sourcePins": [
+    {
+      "path": "docs/specs/combat-authority-envelope-v1.schema.json",
+      "sha256": "sha256:91f90ba47cdfff088b3d8e5dba55c6c283d41c96381e56c7bba115bfb5390550"
+    },
+    {
+      "path": "docs/specs/combat-cycle-sequence-v1.schema.json",
+      "sha256": "sha256:6e09dc5bc6ca79d8580db6ed1e76ad5007c26a30df11b4dd9da0a9c7b5f5e0c5"
+    },
+    {
+      "path": "docs/specs/combat-inherited-armed-continuation-v1.schema.json",
+      "sha256": "sha256:996cfd224ee8c0fa5fd0faa54e74c28099782b898ada22c32717a89c90422852"
+    },
+    {
+      "path": "docs/specs/combat-inherited-cycle-control-v1.schema.json",
+      "sha256": "sha256:5ceb2cf08932eff3ff0e114b661d7778cdc1373065ddacb0297855941d63f679"
+    },
+    {
+      "path": "docs/specs/combat-inherited-no-attack-v1.schema.json",
+      "sha256": "sha256:e225ad74d948328feb96b0f896312cbc64f4e722790be49b22b850ff2a9e3462"
+    },
+    {
+      "path": "docs/specs/combat-inherited-reaction-active-fallback-v1.schema.json",
+      "sha256": "sha256:aec05148d5978472a0c3ee61d949821dedde5a769ecc10b5120597908f910bfc"
+    },
+    {
+      "path": "docs/specs/combat-inherited-reaction-closure-v1.schema.json",
+      "sha256": "sha256:ce74cae62b797c74768955d73bfbbffa0a30cc49ccb7278b0870bfe656123297"
+    },
+    {
+      "path": "docs/specs/combat-inherited-reaction-movement-completion-v1.schema.json",
+      "sha256": "sha256:ea4e4ce4b425e00b3bac08310cd93a1638d7c9c51a928b5062e90c101ac2dfad"
+    },
+    {
+      "path": "docs/specs/combat-inherited-reserve-cycle-v1.schema.json",
+      "sha256": "sha256:1d311e48923614180ee0ca6600b6ec3d030126637dab4cb77412c37ae5cd6c17"
+    },
+    {
+      "path": "docs/specs/combat-inherited-reserve-movement-completion-v1.schema.json",
+      "sha256": "sha256:f1210665a5668fb174cfa837f9644fe9f85d74363389109d7a90a880f031b5c2"
+    },
+    {
+      "path": "docs/specs/combat-inherited-reserve-release-v1.schema.json",
+      "sha256": "sha256:d3811d65f5e1d3048c7ebe51ef37d2d900b575c04703f2aa5dbac9846b55bdea"
+    },
+    {
+      "path": "docs/specs/combat-snapshot-composition-v1.schema.json",
+      "sha256": "sha256:e9e8f45751cad5fcab1be9e735359d50f34ec4e6bf5bdf41d9011ba9d176a586"
+    },
+    {
+      "path": "docs/specs/combat-world-settlement-v1.schema.json",
+      "sha256": "sha256:f892545f5dac693c55d1180ad771d95ffeec508176a0d6139b82752ed46bcf0e"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-inherited-armed-continuation-v1.json",
+      "sha256": "sha256:d86603ff7f07f2e0a3624e8748fedcf4406e2d873360f4e56a30e5952c645b1f"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-inherited-cycle-control-v1.json",
+      "sha256": "sha256:e2f2c76539a3509310fa2f1822fd1d84e1346f62cfc274ce12682866d02ba236"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-inherited-no-attack-v1.json",
+      "sha256": "sha256:4e8f8a9fa0d1e973d6a5d7046b3e013f4270bd31c53afa24ed7595f732be6bc1"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-inherited-reaction-active-fallback-v1.json",
+      "sha256": "sha256:9dabfec0459b12c44d048636fa5e1f15267ffe41ae323a30871195cc08e081af"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-inherited-reaction-closure-v1.json",
+      "sha256": "sha256:5653f154f841b6afb64fd149175676e8dd0d12fe5f7246e2b14dae557c1d8945"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-inherited-reaction-movement-completion-v1.json",
+      "sha256": "sha256:fe7b7be0a8aaf65f54f01d33aacc2c396d9b2d156d7b3e0b726592c942e15149"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-inherited-reserve-cycle-v1.json",
+      "sha256": "sha256:22d349c63acd9f567c9691f71bc5ea007334e596b5bf9f4789e1a6c229f7e10e"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-inherited-reserve-movement-completion-v1.json",
+      "sha256": "sha256:e336d9b5afe498b3886318509958cb2e50ae860676ee1c4603c55540a41847d3"
+    },
+    {
+      "path": "docs/specs/fixtures/combat-inherited-reserve-release-v1.json",
+      "sha256": "sha256:56479736788241186bce083b915aa5b4912fd6f745e9080e3707a166febfe3d0"
+    },
+    {
+      "path": "docs/specs/verify-combat-inherited-armed-continuation-v1.py",
+      "sha256": "sha256:91f7004b1c9e197d2d587b9cc4ff2ccfdb571bd1d5506117cc22a9165e3e4466"
+    },
+    {
+      "path": "docs/specs/verify-combat-inherited-cycle-control-v1.py",
+      "sha256": "sha256:cd87e04f440e24d841958e38d4582c432d87ef64cae7e463a1f33c00033176e0"
+    },
+    {
+      "path": "docs/specs/verify-combat-inherited-no-attack-v1.py",
+      "sha256": "sha256:2f87b4c9a243ac777bb5180d6fa3f3ef8e40f74ae3a15fb5fd6cba91eb126c35"
+    },
+    {
+      "path": "docs/specs/verify-combat-inherited-reaction-active-fallback-v1.py",
+      "sha256": "sha256:ff1d0f80306994cc8342ca8028a6b31961437c0f5305182da5a2a1b066b4cb0f"
+    },
+    {
+      "path": "docs/specs/verify-combat-inherited-reaction-closure-v1.py",
+      "sha256": "sha256:9f07f00f8b749c2b3d86f6d3a2e40edbe0eee6af0a147e25d4d87b1ad287355c"
+    },
+    {
+      "path": "docs/specs/verify-combat-inherited-reaction-movement-completion-v1.py",
+      "sha256": "sha256:f4d969450dc3a2156aed8f95bddcad50a27683cc40d8cb8ed8d27a382dce13c3"
+    },
+    {
+      "path": "docs/specs/verify-combat-inherited-reserve-cycle-v1.py",
+      "sha256": "sha256:4ee62f545d2c093d4dde93d075aa2119d8dd77fbb1ebb24a6144d2bb964e0ac9"
+    },
+    {
+      "path": "docs/specs/verify-combat-inherited-reserve-movement-completion-v1.py",
+      "sha256": "sha256:b2c7d3e8b47442352f9547d16da4c5483b87f23a16e86abd6f44389c96059ba7"
+    },
+    {
+      "path": "docs/specs/verify-combat-inherited-reserve-release-v1.py",
+      "sha256": "sha256:97b06d748555d6642db21b66a7d4f1477a99edc1b253a00a2b04aec4018c0dfe"
+    }
+  ],
+  "handoff": {
+    "owner": "CMB-TASK-003",
+    "profile": "combat-infantry-reserve-I-v1",
+    "versions": {
+      "content": 7,
+      "setup": 7,
+      "world": 7,
+      "rules": 10,
+      "createdEvent": 11,
+      "snapshot": 12,
+      "sequence": 5,
+      "cycleCodec": 1
+    },
+    "contractBindings": [
+      {
+        "owner": "CMB-CON-002",
+        "artifactIds": [
+          "setup7",
+          "world7",
+          "settlement-receipts-v1"
+        ],
+        "schemaPaths": [
+          "docs/specs/combat-world-settlement-v1.schema.json"
+        ],
+        "digest": "sha256:d2e1a00a125982dc7073826021e43f34c6139b1fc59ed5da3793a6af8deda94d"
+      },
+      {
+        "owner": "CMB-CON-003",
+        "artifactIds": [
+          "created11",
+          "snapshot12",
+          "combat-command-event-v1"
+        ],
+        "schemaPaths": [
+          "docs/specs/combat-authority-envelope-v1.schema.json",
+          "docs/specs/combat-snapshot-composition-v1.schema.json",
+          "docs/specs/combat-inherited-no-attack-v1.schema.json"
+        ],
+        "digest": "sha256:6e09a8313bf315652f7eb90472fac6d2980921fcf62f3026862feef966481389"
+      },
+      {
+        "owner": "CMB-CON-004",
+        "artifactIds": [
+          "sequence5",
+          "cycle-codec1",
+          "inherited-cycle-v1"
+        ],
+        "schemaPaths": [
+          "docs/specs/combat-cycle-sequence-v1.schema.json",
+          "docs/specs/combat-inherited-reaction-closure-v1.schema.json",
+          "docs/specs/combat-inherited-reaction-active-fallback-v1.schema.json",
+          "docs/specs/combat-inherited-reaction-movement-completion-v1.schema.json",
+          "docs/specs/combat-inherited-reserve-cycle-v1.schema.json",
+          "docs/specs/combat-inherited-reserve-release-v1.schema.json",
+          "docs/specs/combat-inherited-armed-continuation-v1.schema.json",
+          "docs/specs/combat-inherited-cycle-control-v1.schema.json",
+          "docs/specs/combat-inherited-reserve-movement-completion-v1.schema.json"
+        ],
+        "digest": "sha256:71c24cdc77662874cdc436f8f361975f864a7e0c303b44b5a7d053dd0d810104"
+      }
+    ],
+    "requirementBindings": [
+      {
+        "requirementRange": "CMB-ID-AC-001-012",
+        "contractOwners": [
+          "CMB-CON-003",
+          "CMB-CON-005"
+        ],
+        "implementationTasks": [
+          "CMB-TASK-006",
+          "CMB-TASK-009",
+          "CMB-TASK-016",
+          "CMB-TASK-018",
+          "CMB-TASK-019",
+          "CMB-TASK-020",
+          "CMB-TASK-021",
+          "CMB-TASK-022"
+        ],
+        "evidenceOwner": "CMB-TASK-025"
+      },
+      {
+        "requirementRange": "CMB-PRO-AC-001-012",
+        "contractOwners": [
+          "CMB-CON-003",
+          "CMB-CON-005",
+          "CMB-CON-006"
+        ],
+        "implementationTasks": [
+          "CMB-TASK-008",
+          "CMB-TASK-010",
+          "CMB-TASK-011",
+          "CMB-TASK-012",
+          "CMB-TASK-013",
+          "CMB-TASK-020",
+          "CMB-TASK-021",
+          "CMB-TASK-022",
+          "CMB-TASK-023",
+          "CMB-TASK-024"
+        ],
+        "evidenceOwner": "CMB-TASK-025"
+      },
+      {
+        "requirementRange": "CMB-STEP-AC-001-012",
+        "contractOwners": [
+          "CMB-CON-003",
+          "CMB-CON-005",
+          "CMB-CON-006"
+        ],
+        "implementationTasks": [
+          "CMB-TASK-009",
+          "CMB-TASK-010",
+          "CMB-TASK-011",
+          "CMB-TASK-016",
+          "CMB-TASK-020",
+          "CMB-TASK-021",
+          "CMB-TASK-022",
+          "CMB-TASK-023",
+          "CMB-TASK-024"
+        ],
+        "evidenceOwner": "CMB-TASK-025"
+      },
+      {
+        "requirementRange": "CMB-RES-AC-001-012",
+        "contractOwners": [
+          "CMB-CON-002",
+          "CMB-CON-003",
+          "CMB-CON-005",
+          "CMB-CON-006"
+        ],
+        "implementationTasks": [
+          "CMB-TASK-005",
+          "CMB-TASK-006",
+          "CMB-TASK-007",
+          "CMB-TASK-008",
+          "CMB-TASK-012",
+          "CMB-TASK-013",
+          "CMB-TASK-014",
+          "CMB-TASK-015",
+          "CMB-TASK-016",
+          "CMB-TASK-020",
+          "CMB-TASK-022",
+          "CMB-TASK-023",
+          "CMB-TASK-024"
+        ],
+        "evidenceOwner": "CMB-TASK-025"
+      },
+      {
+        "requirementRange": "CMB-SET-AC-001-012",
+        "contractOwners": [
+          "CMB-CON-002",
+          "CMB-CON-003",
+          "CMB-CON-005",
+          "CMB-CON-006"
+        ],
+        "implementationTasks": [
+          "CMB-TASK-007",
+          "CMB-TASK-008",
+          "CMB-TASK-009",
+          "CMB-TASK-014",
+          "CMB-TASK-015",
+          "CMB-TASK-016",
+          "CMB-TASK-020",
+          "CMB-TASK-021",
+          "CMB-TASK-022",
+          "CMB-TASK-023",
+          "CMB-TASK-024"
+        ],
+        "evidenceOwner": "CMB-TASK-025"
+      },
+      {
+        "requirementRange": "CYCLE-COMP-AC-001-012",
+        "contractOwners": [
+          "CMB-CON-004",
+          "CMB-CON-005",
+          "CMB-CON-006"
+        ],
+        "implementationTasks": [
+          "CMB-TASK-008",
+          "CMB-TASK-017",
+          "CMB-TASK-018",
+          "CMB-TASK-019",
+          "CMB-TASK-020",
+          "CMB-TASK-021",
+          "CMB-TASK-022",
+          "CMB-TASK-023",
+          "CMB-TASK-024"
+        ],
+        "evidenceOwner": "CMB-TASK-025"
+      }
+    ],
+    "exclusions": [
+      {
+        "capability": "multiple-opportunity-reaction",
+        "disposition": "post-B-extension",
+        "reason": "selected-profile-has-exactly-one-opportunity"
+      },
+      {
+        "capability": "positive-vehicle-breakdown",
+        "disposition": "post-B-extension",
+        "reason": "selected-profile-breakdown-cohorts-are-empty"
+      },
+      {
+        "capability": "two-runtime-assaults",
+        "disposition": "deferred",
+        "reason": "selected-profile-freezes-one-bounded-assault"
+      },
+      {
+        "capability": "general-resupply",
+        "disposition": "deferred",
+        "reason": "outside-combat-package"
+      },
+      {
+        "capability": "real-rba-movement",
+        "disposition": "deferred",
+        "reason": "decline-only-boundary"
+      },
+      {
+        "capability": "released-reserve-offensive-combat",
+        "disposition": "deferred",
+        "reason": "candidate-proof-is-not-runtime-execution"
+      },
+      {
+        "capability": "motorized-retreat",
+        "disposition": "deferred",
+        "reason": "infantry-profile-only"
+      },
+      {
+        "capability": "gun-armor-combat",
+        "disposition": "deferred",
+        "reason": "infantry-profile-only"
+      },
+      {
+        "capability": "mandatory-attacks",
+        "disposition": "deferred",
+        "reason": "voluntary-profile-only"
+      },
+      {
+        "capability": "new-phase-slot-execution",
+        "disposition": "deferred",
+        "reason": "same-slot-boundary-only"
+      },
+      {
+        "capability": "hosted-intelligence",
+        "disposition": "deferred",
+        "reason": "in-process-contract-only"
+      }
+    ],
+    "runtimeOwners": [
+      {
+        "lane": "codec-and-restore",
+        "taskIds": [
+          "CMB-TASK-008"
+        ],
+        "requiredEvidence": "historical-reader-isolation-and-every-cut-restore"
+      },
+      {
+        "lane": "combat-authority",
+        "taskIds": [
+          "CMB-TASK-009",
+          "CMB-TASK-010",
+          "CMB-TASK-011",
+          "CMB-TASK-012",
+          "CMB-TASK-013",
+          "CMB-TASK-014",
+          "CMB-TASK-015",
+          "CMB-TASK-016"
+        ],
+        "requiredEvidence": "selection-through-atomic-settlement-replay"
+      },
+      {
+        "lane": "cycle-authority",
+        "taskIds": [
+          "CMB-TASK-017",
+          "CMB-TASK-018",
+          "CMB-TASK-019"
+        ],
+        "requiredEvidence": "release-repeat-finish-and-inherited-path-replay"
+      },
+      {
+        "lane": "public-core",
+        "taskIds": [
+          "CMB-TASK-020",
+          "CMB-TASK-021"
+        ],
+        "requiredEvidence": "side-safe-projection-and-authenticated-submission"
+      },
+      {
+        "lane": "exercise-runner",
+        "taskIds": [
+          "CMB-TASK-022",
+          "CMB-TASK-023",
+          "CMB-TASK-024"
+        ],
+        "requiredEvidence": "strict-reconstruction-readjudication-and-repeatability"
+      },
+      {
+        "lane": "closeout",
+        "taskIds": [
+          "CMB-TASK-025"
+        ],
+        "requiredEvidence": "all-72-AC-readback-and-authentic-loop"
+      }
+    ],
+    "selectedTraceIds": [
+      "combat-inherited-no-attack-v1:axis-cp12-cohesion-2",
+      "combat-inherited-no-attack-v1:axis-cp14-cohesion-4",
+      "combat-inherited-no-attack-v1:commonwealth-cp12-cohesion-2",
+      "combat-inherited-no-attack-v1:commonwealth-cp14-cohesion-4",
+      "combat-inherited-reaction-closure-v1:axis-player-decline",
+      "combat-inherited-reaction-closure-v1:axis-scripted-unavailable",
+      "combat-inherited-reaction-closure-v1:axis-timeout",
+      "combat-inherited-reaction-closure-v1:commonwealth-player-decline",
+      "combat-inherited-reaction-closure-v1:commonwealth-scripted-unavailable",
+      "combat-inherited-reaction-closure-v1:commonwealth-timeout",
+      "combat-inherited-reaction-active-fallback-v1:axis-active-scripted-unavailable",
+      "combat-inherited-reaction-active-fallback-v1:axis-active-timeout",
+      "combat-inherited-reaction-active-fallback-v1:commonwealth-active-scripted-unavailable",
+      "combat-inherited-reaction-active-fallback-v1:commonwealth-active-timeout",
+      "combat-inherited-reaction-movement-completion-v1:axis-reaction-movement-completion",
+      "combat-inherited-reaction-movement-completion-v1:commonwealth-reaction-movement-completion",
+      "combat-inherited-reserve-cycle-v1:axis-reserve-I-cycle-entry",
+      "combat-inherited-reserve-cycle-v1:commonwealth-reserve-I-cycle-entry",
+      "combat-inherited-reserve-release-v1:axis-reserve-I-release",
+      "combat-inherited-reserve-release-v1:commonwealth-reserve-I-release",
+      "combat-inherited-armed-continuation-v1:axis-armed-continuation",
+      "combat-inherited-armed-continuation-v1:commonwealth-armed-continuation",
+      "combat-inherited-cycle-control-v1:axis-repeat",
+      "combat-inherited-cycle-control-v1:axis-finish",
+      "combat-inherited-cycle-control-v1:commonwealth-repeat",
+      "combat-inherited-cycle-control-v1:commonwealth-finish",
+      "combat-inherited-reserve-movement-completion-v1:axis-reserve-I-movement-completion",
+      "combat-inherited-reserve-movement-completion-v1:commonwealth-reserve-I-movement-completion"
+    ],
+    "compositionDigest": "sha256:fa0c78360fa59d3996f17ff897788158f16eb53df7202f32f00b3631ee122d50"
+  },
+  "traces": [
+    {
+      "traceId": "combat-inherited-no-attack-v1:axis-cp12-cohesion-2",
+      "family": "ordinary-no-attack",
+      "actor": "axis",
+      "caseId": "axis-cp12-cohesion-2",
+      "sourceContract": "combat-inherited-no-attack-v1",
+      "stateVersion": 29,
+      "prefix": "sha256:255b517fad590c1be78d0a4c20a89f9e1157537d49a263f84b2e390f348f89d1",
+      "worldHash": "sha256:311ba2edefd90cba4f93f614e2205db981bf8101c75b4f839eab77094e4c56f5",
+      "terminalHash": "sha256:641b843ada4e3651035b785211e15a4914b1aed4a206c5246f2fb16857d8a431",
+      "snapshotBytes": 51424,
+      "snapshotHash": "sha256:79f27364b586bccf4605cbfbbefa86399fcb0c1b764bac11dbebe6ec617875b4",
+      "receiptCount": 0,
+      "capacity": {
+        "terminalBytes": 19987,
+        "snapshotBytes": 51424,
+        "maxDepth": 12,
+        "maxArrayItems": 20,
+        "worldCauseCount": 1,
+        "receiptCount": 0,
+        "futureObligationCount": 0,
+        "withinLimits": true
+      }
+    },
+    {
+      "traceId": "combat-inherited-no-attack-v1:axis-cp14-cohesion-4",
+      "family": "ordinary-no-attack",
+      "actor": "axis",
+      "caseId": "axis-cp14-cohesion-4",
+      "sourceContract": "combat-inherited-no-attack-v1",
+      "stateVersion": 30,
+      "prefix": "sha256:38e9c7fadd18b472caf0a90b173a824d8eb6d4ed8eb48e1c36c9dd97b40c8176",
+      "worldHash": "sha256:e9d1d940bfbe3302b5d2c3aee49f28185de94e08297f904db3f11a6aa7cee1c5",
+      "terminalHash": "sha256:4882cccb073361a91b03cb2c1b338dbdff7797ad0e969641322a579d1f318ac4",
+      "snapshotBytes": 53565,
+      "snapshotHash": "sha256:e7d00d17438f8ec3ffd88d76a7bdaa0eba859e8c79863992f80f0f9bb55d3966",
+      "receiptCount": 0,
+      "capacity": {
+        "terminalBytes": 20652,
+        "snapshotBytes": 53565,
+        "maxDepth": 12,
+        "maxArrayItems": 21,
+        "worldCauseCount": 2,
+        "receiptCount": 0,
+        "futureObligationCount": 0,
+        "withinLimits": true
+      }
+    },
+    {
+      "traceId": "combat-inherited-no-attack-v1:commonwealth-cp12-cohesion-2",
+      "family": "ordinary-no-attack",
+      "actor": "commonwealth",
+      "caseId": "commonwealth-cp12-cohesion-2",
+      "sourceContract": "combat-inherited-no-attack-v1",
+      "stateVersion": 29,
+      "prefix": "sha256:5b99d9f8927ea193140a6d5e74e9845c7abcf09d5d6bb8d6a1237d7d259e57a6",
+      "worldHash": "sha256:1a8e33a77b477d3823371c4b3afcb92da6e56450effb120a94671b3b0791b23a",
+      "terminalHash": "sha256:f88c35062fd255884cda76654d1836f10ffb3ce26fe486c374d2eaae12174a83",
+      "snapshotBytes": 52024,
+      "snapshotHash": "sha256:968f2b2b3213f027147b37358d0a6f3a2b54550c4032e467cb2c4dd7b1a143c6",
+      "receiptCount": 0,
+      "capacity": {
+        "terminalBytes": 20227,
+        "snapshotBytes": 52024,
+        "maxDepth": 12,
+        "maxArrayItems": 20,
+        "worldCauseCount": 1,
+        "receiptCount": 0,
+        "futureObligationCount": 0,
+        "withinLimits": true
+      }
+    },
+    {
+      "traceId": "combat-inherited-no-attack-v1:commonwealth-cp14-cohesion-4",
+      "family": "ordinary-no-attack",
+      "actor": "commonwealth",
+      "caseId": "commonwealth-cp14-cohesion-4",
+      "sourceContract": "combat-inherited-no-attack-v1",
+      "stateVersion": 30,
+      "prefix": "sha256:370dc396bdbfd8d78d3c850ab6ebad2e4c7bea220e4322f389e3a04b30f0d7bc",
+      "worldHash": "sha256:5e3749274c082798f0d6bfd81055b1cca29914ff55f420509df3943501dbfe18",
+      "terminalHash": "sha256:ad84f60202dba903de7f395f51011b63e72fa4f449faf838b5a4af5b8e999878",
+      "snapshotBytes": 54181,
+      "snapshotHash": "sha256:c972f99ab9f36b576ba990d42bbe470bba20bbc4b5ee0c559b040444db1ea00f",
+      "receiptCount": 0,
+      "capacity": {
+        "terminalBytes": 20900,
+        "snapshotBytes": 54181,
+        "maxDepth": 12,
+        "maxArrayItems": 21,
+        "worldCauseCount": 2,
+        "receiptCount": 0,
+        "futureObligationCount": 0,
+        "withinLimits": true
+      }
+    },
+    {
+      "traceId": "combat-inherited-reaction-closure-v1:axis-player-decline",
+      "family": "reaction-direct-close",
+      "actor": "axis",
+      "caseId": "axis-player-decline",
+      "sourceContract": "combat-inherited-reaction-closure-v1",
+      "stateVersion": 14,
+      "prefix": "sha256:3aa5e27de6684997207f68e671dc00e21c2fc705403e604faee1f19abfcd666a",
+      "worldHash": "sha256:fe2b272a379fbe182d2ba601171f79f1c0df9dd06ecee17b3a33926bc600aa02",
+      "terminalHash": "sha256:0b5c8b47b7631e5e032f5f1f5d39fc73e1d3f00b93298c714876a28b44ed50be",
+      "snapshotBytes": 26393,
+      "snapshotHash": "sha256:934708ed0bed21382d2c5e3078fbc3676dbb458566f7fe165112dc075dae9620",
+      "receiptCount": 13,
+      "capacity": {
+        "terminalBytes": 11947,
+        "snapshotBytes": 26393,
+        "maxDepth": 9,
+        "maxArrayItems": 13,
+        "worldCauseCount": 0,
+        "receiptCount": 13,
+        "futureObligationCount": 0,
+        "withinLimits": true
+      }
+    },
+    {
+      "traceId": "combat-inherited-reaction-closure-v1:axis-scripted-unavailable",
+      "family": "reaction-direct-close",
+      "actor": "axis",
+      "caseId": "axis-scripted-unavailable",
+      "sourceContract": "combat-inherited-reaction-closure-v1",
+      "stateVersion": 14,
+      "prefix": "sha256:2f7143a8ac1b594168f0cc45d49bf99bb0d2a3383b622e823b27ec30e0d7c1f2",
+      "worldHash": "sha256:fe2b272a379fbe182d2ba601171f79f1c0df9dd06ecee17b3a33926bc600aa02",
+      "terminalHash": "sha256:e22a7aad64318e9d7e820dedb78b98f42dae4c5733d79465812f4e7e1e6f3008",
+      "snapshotBytes": 26393,
+      "snapshotHash": "sha256:581cbd941787e82b4816af6b20308b09258c1302538a69854ca6d0d53a0229f3",
+      "receiptCount": 13,
+      "capacity": {
+        "terminalBytes": 11941,
+        "snapshotBytes": 26393,
+        "maxDepth": 9,
+        "maxArrayItems": 13,
+        "worldCauseCount": 0,
+        "receiptCount": 13,
+        "futureObligationCount": 0,
+        "withinLimits": true
+      }
+    },
+    {
+      "traceId": "combat-inherited-reaction-closure-v1:axis-timeout",
+      "family": "reaction-direct-close",
+      "actor": "axis",
+      "caseId": "axis-timeout",
+      "sourceContract": "combat-inherited-reaction-closure-v1",
+      "stateVersion": 14,
+      "prefix": "sha256:81a612644e6fa26332d8f612e7163d058e52f34e24c0aadf385d126d18537cdc",
+      "worldHash": "sha256:fe2b272a379fbe182d2ba601171f79f1c0df9dd06ecee17b3a33926bc600aa02",
+      "terminalHash": "sha256:8dbdb9ac04f6a51cd5e1b6b63c58754d1b5218a5140f42344ced5d390c56c561",
+      "snapshotBytes": 26367,
+      "snapshotHash": "sha256:aaaa9c9e58ee8a2a4504088cc1e768808278e400be10ac3bbe67e8523331b36e",
+      "receiptCount": 13,
+      "capacity": {
+        "terminalBytes": 11941,
+        "snapshotBytes": 26367,
+        "maxDepth": 9,
+        "maxArrayItems": 13,
+        "worldCauseCount": 0,
+        "receiptCount": 13,
+        "futureObligationCount": 0,
+        "withinLimits": true
+      }
+    },
+    {
+      "traceId": "combat-inherited-reaction-closure-v1:commonwealth-player-decline",
+      "family": "reaction-direct-close",
+      "actor": "commonwealth",
+      "caseId": "commonwealth-player-decline",
+      "sourceContract": "combat-inherited-reaction-closure-v1",
+      "stateVersion": 14,
+      "prefix": "sha256:15a8125fd340d19240ae71846a4ed323a033d38791aa19b6a1f43f64a328125c",
+      "worldHash": "sha256:00fb7cb39ddbfa42ef85bc4e06f9bb402cb164348a8e4149c053bb8b5a15410a",
+      "terminalHash": "sha256:0aa842d9ae080b8aa9161b96d360488148d5f2ebc2744f481c5fe82f643fd9af",
+      "snapshotBytes": 26601,
+      "snapshotHash": "sha256:9669f6cf6464b4fe44c81b794caffd2eac091debb729a5c7a1d4df0709f137fc",
+      "receiptCount": 13,
+      "capacity": {
+        "terminalBytes": 12043,
+        "snapshotBytes": 26601,
+        "maxDepth": 9,
+        "maxArrayItems": 13,
+        "worldCauseCount": 0,
+        "receiptCount": 13,
+        "futureObligationCount": 0,
+        "withinLimits": true
+      }
+    },
+    {
+      "traceId": "combat-inherited-reaction-closure-v1:commonwealth-scripted-unavailable",
+      "family": "reaction-direct-close",
+      "actor": "commonwealth",
+      "caseId": "commonwealth-scripted-unavailable",
+      "sourceContract": "combat-inherited-reaction-closure-v1",
+      "stateVersion": 14,
+      "prefix": "sha256:82131b3a0f052a54aa34c3dba0770d9e9d5388bf1c4865d220c0ce02b82e42b1",
+      "worldHash": "sha256:00fb7cb39ddbfa42ef85bc4e06f9bb402cb164348a8e4149c053bb8b5a15410a",
+      "terminalHash": "sha256:7bce03c82d9e6385dd49c11f6e530b5c0391cbf0e8f72ae511f2cc1d458e15a8",
+      "snapshotBytes": 26617,
+      "snapshotHash": "sha256:b5985d1e9d06438ae8cf64ea26692677643219adaa659d96c073d5901d59f3d2",
+      "receiptCount": 13,
+      "capacity": {
+        "terminalBytes": 12045,
+        "snapshotBytes": 26617,
+        "maxDepth": 9,
+        "maxArrayItems": 13,
+        "worldCauseCount": 0,
+        "receiptCount": 13,
+        "futureObligationCount": 0,
+        "withinLimits": true
+      }
+    },
+    {
+      "traceId": "combat-inherited-reaction-closure-v1:commonwealth-timeout",
+      "family": "reaction-direct-close",
+      "actor": "commonwealth",
+      "caseId": "commonwealth-timeout",
+      "sourceContract": "combat-inherited-reaction-closure-v1",
+      "stateVersion": 14,
+      "prefix": "sha256:3616d1ef3b1f3e541ab950a97623abc64ad7680a455349ca1fe7eb0416403cb5",
+      "worldHash": "sha256:00fb7cb39ddbfa42ef85bc4e06f9bb402cb164348a8e4149c053bb8b5a15410a",
+      "terminalHash": "sha256:3562c356eb7ab027914d82992c85b68e85f7a718cebf56f6a1177a83e75fba59",
+      "snapshotBytes": 26591,
+      "snapshotHash": "sha256:a521f475cb8e8c56a51a3bcf2f7dfafbfa15e4ba82ab4789f934b98029d61377",
+      "receiptCount": 13,
+      "capacity": {
+        "terminalBytes": 12045,
+        "snapshotBytes": 26591,
+        "maxDepth": 9,
+        "maxArrayItems": 13,
+        "worldCauseCount": 0,
+        "receiptCount": 13,
+        "futureObligationCount": 0,
+        "withinLimits": true
+      }
+    },
+    {
+      "traceId": "combat-inherited-reaction-active-fallback-v1:axis-active-scripted-unavailable",
+      "family": "reaction-active-fallback",
+      "actor": "axis",
+      "caseId": "axis-active-scripted-unavailable",
+      "sourceContract": "combat-inherited-reaction-active-fallback-v1",
+      "stateVersion": 16,
+      "prefix": "sha256:3f557caa291e2e03592963539265fb2d385ad47b65441a02714c683d4f2cc7c9",
+      "worldHash": "sha256:d16d160966ddeef78b1ce175e020a20f6802f15f160a261e36f0ad2065a0d270",
+      "terminalHash": "sha256:fea7f235d9d26fa8440c8eac3bcf4d7c5176fe8ab7d84cad4d2ad3867d5b7efe",
+      "snapshotBytes": 28657,
+      "snapshotHash": "sha256:3793fde273f8c38d0424e4cb7ab7c0e0021273f2164b7d2a523460099586043a",
+      "receiptCount": 15,
+      "capacity": {
+        "terminalBytes": 12978,
+        "snapshotBytes": 28657,
+        "maxDepth": 9,
+        "maxArrayItems": 15,
+        "worldCauseCount": 0,
+        "receiptCount": 15,
+        "futureObligationCount": 0,
+        "withinLimits": true
+      }
+    },
+    {
+      "traceId": "combat-inherited-reaction-active-fallback-v1:axis-active-timeout",
+      "family": "reaction-active-fallback",
+      "actor": "axis",
+      "caseId": "axis-active-timeout",
+      "sourceContract": "combat-inherited-reaction-active-fallback-v1",
+      "stateVersion": 16,
+      "prefix": "sha256:5f9c9eb047e62a26362b30e7e5d453ffbf44f796a9c716f7497bb9a273aa1b53",
+      "worldHash": "sha256:d16d160966ddeef78b1ce175e020a20f6802f15f160a261e36f0ad2065a0d270",
+      "terminalHash": "sha256:7fea9c6340896dd1ddd11d6c98a5a01bfb0cfe87acbdba6301e5eef9c7153fbd",
+      "snapshotBytes": 28631,
+      "snapshotHash": "sha256:1d035cde84daed062aa61235b3beb2926620b61612f84c844ceec31e9cd93d84",
+      "receiptCount": 15,
+      "capacity": {
+        "terminalBytes": 12978,
+        "snapshotBytes": 28631,
+        "maxDepth": 9,
+        "maxArrayItems": 15,
+        "worldCauseCount": 0,
+        "receiptCount": 15,
+        "futureObligationCount": 0,
+        "withinLimits": true
+      }
+    },
+    {
+      "traceId": "combat-inherited-reaction-active-fallback-v1:commonwealth-active-scripted-unavailable",
+      "family": "reaction-active-fallback",
+      "actor": "commonwealth",
+      "caseId": "commonwealth-active-scripted-unavailable",
+      "sourceContract": "combat-inherited-reaction-active-fallback-v1",
+      "stateVersion": 16,
+      "prefix": "sha256:8ac7e5d0a44b5df84e9f364502bda0330f955bbe1a34952e3d59db8da5f8067f",
+      "worldHash": "sha256:bc101b216e5e0182520f83260374b38cd37c5f035527303948f84e130e1a8f82",
+      "terminalHash": "sha256:56d1de8050de07f98df1f49569067715a62810e12a6b20ae94125134aa5906b7",
+      "snapshotBytes": 28785,
+      "snapshotHash": "sha256:b93d451a0d8aaae90755f08c6dcc585bb9de57a797097dc56296988c2f0313f8",
+      "receiptCount": 15,
+      "capacity": {
+        "terminalBytes": 13034,
+        "snapshotBytes": 28785,
+        "maxDepth": 9,
+        "maxArrayItems": 15,
+        "worldCauseCount": 0,
+        "receiptCount": 15,
+        "futureObligationCount": 0,
+        "withinLimits": true
+      }
+    },
+    {
+      "traceId": "combat-inherited-reaction-active-fallback-v1:commonwealth-active-timeout",
+      "family": "reaction-active-fallback",
+      "actor": "commonwealth",
+      "caseId": "commonwealth-active-timeout",
+      "sourceContract": "combat-inherited-reaction-active-fallback-v1",
+      "stateVersion": 16,
+      "prefix": "sha256:07a73347899a92a500e015aea313011ad297c43b9d313907dc105f670d1e4b85",
+      "worldHash": "sha256:bc101b216e5e0182520f83260374b38cd37c5f035527303948f84e130e1a8f82",
+      "terminalHash": "sha256:611cb1e969d1ed92e05965e14f583a83d49adfca40ec3ac44584f7ac0b07264e",
+      "snapshotBytes": 28759,
+      "snapshotHash": "sha256:a2f8c0cafb5b36a4f0fac6ab018f0279907518a244881346def14cddfce431bf",
+      "receiptCount": 15,
+      "capacity": {
+        "terminalBytes": 13034,
+        "snapshotBytes": 28759,
+        "maxDepth": 9,
+        "maxArrayItems": 15,
+        "worldCauseCount": 0,
+        "receiptCount": 15,
+        "futureObligationCount": 0,
+        "withinLimits": true
+      }
+    },
+    {
+      "traceId": "combat-inherited-reaction-movement-completion-v1:axis-reaction-movement-completion",
+      "family": "reaction-second-move-completion",
+      "actor": "axis",
+      "caseId": "axis-reaction-movement-completion",
+      "sourceContract": "combat-inherited-reaction-movement-completion-v1",
+      "stateVersion": 18,
+      "prefix": "sha256:d934952e4558b98e51f5fd02bbe9354342dc788d0c5ad5e643871307821f955f",
+      "worldHash": "sha256:7788015b4569c99f2ee9e364b48ab1e4c0e48350375a428686c6f2ad3019f752",
+      "terminalHash": "sha256:615999f38466c73fe64b5d7e7cc8da8eecf5c50e6facef6b85c0200d228ccfd3",
+      "snapshotBytes": 30410,
+      "snapshotHash": "sha256:9c516b80d34a7aefcba1f88b3aba0d38f930737bc4e76246be938b7e2bbfc845",
+      "receiptCount": 17,
+      "capacity": {
+        "terminalBytes": 13812,
+        "snapshotBytes": 30410,
+        "maxDepth": 9,
+        "maxArrayItems": 17,
+        "worldCauseCount": 0,
+        "receiptCount": 17,
+        "futureObligationCount": 0,
+        "withinLimits": true
+      }
+    },
+    {
+      "traceId": "combat-inherited-reaction-movement-completion-v1:commonwealth-reaction-movement-completion",
+      "family": "reaction-second-move-completion",
+      "actor": "commonwealth",
+      "caseId": "commonwealth-reaction-movement-completion",
+      "sourceContract": "combat-inherited-reaction-movement-completion-v1",
+      "stateVersion": 18,
+      "prefix": "sha256:e449664d5b11cd923f4266b9a42fe47a64e7dcc900298b09d0f7e510b62aef49",
+      "worldHash": "sha256:cc6d8b45a54401eeecc99578b956f3339d6e1e78f8544c040fb15b31a16e0f78",
+      "terminalHash": "sha256:6b4943499c0af6c61be00d694d504a222bd729a22a6c7f50c0dc779e423285ce",
+      "snapshotBytes": 30490,
+      "snapshotHash": "sha256:484fd409e279e68cf0d8c1750740e24674adef4f148c64a79aa3b9519cd83b2c",
+      "receiptCount": 17,
+      "capacity": {
+        "terminalBytes": 13844,
+        "snapshotBytes": 30490,
+        "maxDepth": 9,
+        "maxArrayItems": 17,
+        "worldCauseCount": 0,
+        "receiptCount": 17,
+        "futureObligationCount": 0,
+        "withinLimits": true
+      }
+    },
+    {
+      "traceId": "combat-inherited-reserve-cycle-v1:axis-reserve-I-cycle-entry",
+      "family": "reserve-cycle-entry",
+      "actor": "axis",
+      "caseId": "axis-reserve-I-cycle-entry",
+      "sourceContract": "combat-inherited-reserve-cycle-v1",
+      "stateVersion": 22,
+      "prefix": "sha256:261fa40066017c403a134d5d9797bd35062400d972870366cd373b57c7f6e3f2",
+      "worldHash": "sha256:09fc32a42f486a8ced1e0af92a06f2a4181ced65db01690b5617dccc770bc325",
+      "terminalHash": "sha256:e306fcedf0909f11b072b7da5ec425b526c51eb5ab93fc727298f53b7ef0824a",
+      "snapshotBytes": 32605,
+      "snapshotHash": "sha256:7deafea123cea0dd23cba5e1f2cc1d2e3a687f10646ad5a908f6203bc66139fa",
+      "receiptCount": 21,
+      "capacity": {
+        "terminalBytes": 15024,
+        "snapshotBytes": 32605,
+        "maxDepth": 10,
+        "maxArrayItems": 11,
+        "worldCauseCount": 0,
+        "receiptCount": 21,
+        "futureObligationCount": 0,
+        "withinLimits": true
+      }
+    },
+    {
+      "traceId": "combat-inherited-reserve-cycle-v1:commonwealth-reserve-I-cycle-entry",
+      "family": "reserve-cycle-entry",
+      "actor": "commonwealth",
+      "caseId": "commonwealth-reserve-I-cycle-entry",
+      "sourceContract": "combat-inherited-reserve-cycle-v1",
+      "stateVersion": 22,
+      "prefix": "sha256:eb29afdb2cef8b9ee3764c36f1f47c5fa896587287acbde76948d9dc659a243a",
+      "worldHash": "sha256:897c7ac8b2f231bfdd4cfa987330b022f9233b540416d5b62dde8ccaeb56eadb",
+      "terminalHash": "sha256:35dc8074824be7004079cbfb012b91e2280d4efcf55bea5b05116e8965fd371f",
+      "snapshotBytes": 32765,
+      "snapshotHash": "sha256:7eedec5fef3ad501a201ee646b24070ff29142872195cf303487a3066b001365",
+      "receiptCount": 21,
+      "capacity": {
+        "terminalBytes": 15096,
+        "snapshotBytes": 32765,
+        "maxDepth": 10,
+        "maxArrayItems": 11,
+        "worldCauseCount": 0,
+        "receiptCount": 21,
+        "futureObligationCount": 0,
+        "withinLimits": true
+      }
+    },
+    {
+      "traceId": "combat-inherited-reserve-release-v1:axis-reserve-I-release",
+      "family": "reserve-release",
+      "actor": "axis",
+      "caseId": "axis-reserve-I-release",
+      "sourceContract": "combat-inherited-reserve-release-v1",
+      "stateVersion": 25,
+      "prefix": "sha256:c7db02720ef0509238ac33aa0f9d8abf5e3c42639d43f5b2d66c5ab5c76ca182",
+      "worldHash": "sha256:67b2f05af568bbf4b9959e9b31f1b01a407696cb8b25e70128f39f587f9a09ac",
+      "terminalHash": "sha256:fa85df7519f622ea05d6af25be4a8bcc23164132a0b0a48fac5e2eff81c4c091",
+      "snapshotBytes": 24155,
+      "snapshotHash": "sha256:a514390f4153e3b7a8d2aa520e15e4780e2c88091c864fed53e95227c5747cfb",
+      "receiptCount": 24,
+      "capacity": {
+        "terminalBytes": 3613,
+        "snapshotBytes": 24155,
+        "maxDepth": 9,
+        "maxArrayItems": 3,
+        "worldCauseCount": 0,
+        "receiptCount": 24,
+        "futureObligationCount": 0,
+        "withinLimits": true
+      }
+    },
+    {
+      "traceId": "combat-inherited-reserve-release-v1:commonwealth-reserve-I-release",
+      "family": "reserve-release",
+      "actor": "commonwealth",
+      "caseId": "commonwealth-reserve-I-release",
+      "sourceContract": "combat-inherited-reserve-release-v1",
+      "stateVersion": 25,
+      "prefix": "sha256:433ccc1328cfeefdb5efa8cf9e067f114f2d387b908e984444f8178f4e903cb2",
+      "worldHash": "sha256:67b2f05af568bbf4b9959e9b31f1b01a407696cb8b25e70128f39f587f9a09ac",
+      "terminalHash": "sha256:7dec0cd054a18ee9403df2431c06445e66f6a8c699679b7472f0ea9e51bcd0ae",
+      "snapshotBytes": 24371,
+      "snapshotHash": "sha256:12e8a25eb99f91bc3b7a81d1840588b46035d246f9a301c4294cedbe70282013",
+      "receiptCount": 24,
+      "capacity": {
+        "terminalBytes": 3669,
+        "snapshotBytes": 24371,
+        "maxDepth": 9,
+        "maxArrayItems": 3,
+        "worldCauseCount": 0,
+        "receiptCount": 24,
+        "futureObligationCount": 0,
+        "withinLimits": true
+      }
+    },
+    {
+      "traceId": "combat-inherited-armed-continuation-v1:axis-armed-continuation",
+      "family": "armed-continuation",
+      "actor": "axis",
+      "caseId": "axis-armed-continuation",
+      "sourceContract": "combat-inherited-armed-continuation-v1",
+      "stateVersion": 25,
+      "prefix": "sha256:c7db02720ef0509238ac33aa0f9d8abf5e3c42639d43f5b2d66c5ab5c76ca182",
+      "worldHash": "sha256:67b2f05af568bbf4b9959e9b31f1b01a407696cb8b25e70128f39f587f9a09ac",
+      "terminalHash": "sha256:53dcffef879e3dc1f522977bf142b7c6f3da749cbfb1007444a7914d6edf36c6",
+      "snapshotBytes": 28703,
+      "snapshotHash": "sha256:90a0eced69eb95804c5757b34f01bd82e3a7796839715c272c1fc98b6214c83b",
+      "receiptCount": 24,
+      "capacity": {
+        "terminalBytes": 3905,
+        "snapshotBytes": 28703,
+        "maxDepth": 9,
+        "maxArrayItems": 4,
+        "worldCauseCount": 0,
+        "receiptCount": 24,
+        "futureObligationCount": 0,
+        "withinLimits": true
+      }
+    },
+    {
+      "traceId": "combat-inherited-armed-continuation-v1:commonwealth-armed-continuation",
+      "family": "armed-continuation",
+      "actor": "commonwealth",
+      "caseId": "commonwealth-armed-continuation",
+      "sourceContract": "combat-inherited-armed-continuation-v1",
+      "stateVersion": 25,
+      "prefix": "sha256:433ccc1328cfeefdb5efa8cf9e067f114f2d387b908e984444f8178f4e903cb2",
+      "worldHash": "sha256:67b2f05af568bbf4b9959e9b31f1b01a407696cb8b25e70128f39f587f9a09ac",
+      "terminalHash": "sha256:8f6e1151b5e825ea4fe13208005549f67d9d66bcf02a8b0445653c57fce92c07",
+      "snapshotBytes": 28943,
+      "snapshotHash": "sha256:eb4e7c40c91fe56a35b0f1da68ff4b2f86d02812916e1effd16439e12ad10131",
+      "receiptCount": 24,
+      "capacity": {
+        "terminalBytes": 3945,
+        "snapshotBytes": 28943,
+        "maxDepth": 9,
+        "maxArrayItems": 4,
+        "worldCauseCount": 0,
+        "receiptCount": 24,
+        "futureObligationCount": 0,
+        "withinLimits": true
+      }
+    },
+    {
+      "traceId": "combat-inherited-cycle-control-v1:axis-repeat",
+      "family": "cycle-control",
+      "actor": "axis",
+      "caseId": "axis-repeat",
+      "sourceContract": "combat-inherited-cycle-control-v1",
+      "stateVersion": 27,
+      "prefix": "sha256:ca350e0243a89231446119f655fdf5a3436d69513e1b74220fdb9f943c67b2f8",
+      "worldHash": "sha256:67b2f05af568bbf4b9959e9b31f1b01a407696cb8b25e70128f39f587f9a09ac",
+      "terminalHash": "sha256:d7324702abaa949f57c55ada4b9c9278971539010a8615081ae1da37eb9aa18b",
+      "snapshotBytes": 25544,
+      "snapshotHash": "sha256:8693f1fe85ea5271be6493229855a1a60826e19825f41e40e9303fc76731f055",
+      "receiptCount": 26,
+      "capacity": {
+        "terminalBytes": 7575,
+        "snapshotBytes": 25544,
+        "maxDepth": 9,
+        "maxArrayItems": 2,
+        "worldCauseCount": 0,
+        "receiptCount": 26,
+        "futureObligationCount": 0,
+        "withinLimits": true
+      }
+    },
+    {
+      "traceId": "combat-inherited-cycle-control-v1:axis-finish",
+      "family": "cycle-control",
+      "actor": "axis",
+      "caseId": "axis-finish",
+      "sourceContract": "combat-inherited-cycle-control-v1",
+      "stateVersion": 27,
+      "prefix": "sha256:19b19ebca88b0b133d4ae1d6940189a77ccb6b1bb18e286e051081cd0faaf657",
+      "worldHash": "sha256:67b2f05af568bbf4b9959e9b31f1b01a407696cb8b25e70128f39f587f9a09ac",
+      "terminalHash": "sha256:30814b4ef661d3af311989717e41045ae585554fd4d75cb5e70c421ac0377151",
+      "snapshotBytes": 23999,
+      "snapshotHash": "sha256:a81b7ea154aaaf520d93ea349a566df0ca09ef795f8ad63ffebc70b5e95dbac9",
+      "receiptCount": 26,
+      "capacity": {
+        "terminalBytes": 6855,
+        "snapshotBytes": 23999,
+        "maxDepth": 9,
+        "maxArrayItems": 2,
+        "worldCauseCount": 0,
+        "receiptCount": 26,
+        "futureObligationCount": 0,
+        "withinLimits": true
+      }
+    },
+    {
+      "traceId": "combat-inherited-cycle-control-v1:commonwealth-repeat",
+      "family": "cycle-control",
+      "actor": "commonwealth",
+      "caseId": "commonwealth-repeat",
+      "sourceContract": "combat-inherited-cycle-control-v1",
+      "stateVersion": 27,
+      "prefix": "sha256:9c15250ecb10a5fccf02f38b737db9f27307f62d9e69bf4b4b88bfab10bc86cd",
+      "worldHash": "sha256:67b2f05af568bbf4b9959e9b31f1b01a407696cb8b25e70128f39f587f9a09ac",
+      "terminalHash": "sha256:a95f8bf91878076c4f5b0685efc4139d093235f83a878519dda3cf5e489622f5",
+      "snapshotBytes": 25720,
+      "snapshotHash": "sha256:0d5410a9268855046835908bcf39af57dbeefd6ef05f1eaaa68b3758d1486120",
+      "receiptCount": 26,
+      "capacity": {
+        "terminalBytes": 7639,
+        "snapshotBytes": 25720,
+        "maxDepth": 9,
+        "maxArrayItems": 2,
+        "worldCauseCount": 0,
+        "receiptCount": 26,
+        "futureObligationCount": 0,
+        "withinLimits": true
+      }
+    },
+    {
+      "traceId": "combat-inherited-cycle-control-v1:commonwealth-finish",
+      "family": "cycle-control",
+      "actor": "commonwealth",
+      "caseId": "commonwealth-finish",
+      "sourceContract": "combat-inherited-cycle-control-v1",
+      "stateVersion": 27,
+      "prefix": "sha256:18225f4d0ca9a279d0aefda3069143e306f0b098ed547fae5bc00cda101e2adb",
+      "worldHash": "sha256:67b2f05af568bbf4b9959e9b31f1b01a407696cb8b25e70128f39f587f9a09ac",
+      "terminalHash": "sha256:05a54207e8502d5c6f5cfe91b20b2f05334b19f4506c68794fe4157bde9fc53f",
+      "snapshotBytes": 24159,
+      "snapshotHash": "sha256:39f6196c5034a80eeb1c7aebf20c9e76b1eb07cde164d983cb6b235b08aa17d2",
+      "receiptCount": 26,
+      "capacity": {
+        "terminalBytes": 6911,
+        "snapshotBytes": 24159,
+        "maxDepth": 9,
+        "maxArrayItems": 2,
+        "worldCauseCount": 0,
+        "receiptCount": 26,
+        "futureObligationCount": 0,
+        "withinLimits": true
+      }
+    },
+    {
+      "traceId": "combat-inherited-reserve-movement-completion-v1:axis-reserve-I-movement-completion",
+      "family": "reserve-second-movement-completion",
+      "actor": "axis",
+      "caseId": "axis-reserve-I-movement-completion",
+      "sourceContract": "combat-inherited-reserve-movement-completion-v1",
+      "stateVersion": 31,
+      "prefix": "sha256:436d69f9231bb954d981cb7aead5cb034e3c919eb2dc59c0feb320b8e4b17c95",
+      "worldHash": "sha256:90631cc173eb4f619f7a38c72c2898bd90414d01d399d4475e4bf59c7b6af26b",
+      "terminalHash": "sha256:80ae0703ea8aa8a10fdfd243b97492385ea4c2f8304278c383ce76497cf51624",
+      "snapshotBytes": 26563,
+      "snapshotHash": "sha256:2760501e8e7aeb356c7c9bf06f0d541f55fbe14ac2b2c84db37c9bde0b84d9e2",
+      "receiptCount": 27,
+      "capacity": {
+        "terminalBytes": 7716,
+        "snapshotBytes": 26563,
+        "maxDepth": 9,
+        "maxArrayItems": 3,
+        "worldCauseCount": 0,
+        "receiptCount": 27,
+        "futureObligationCount": 0,
+        "withinLimits": true
+      }
+    },
+    {
+      "traceId": "combat-inherited-reserve-movement-completion-v1:commonwealth-reserve-I-movement-completion",
+      "family": "reserve-second-movement-completion",
+      "actor": "commonwealth",
+      "caseId": "commonwealth-reserve-I-movement-completion",
+      "sourceContract": "combat-inherited-reserve-movement-completion-v1",
+      "stateVersion": 31,
+      "prefix": "sha256:62b2c0d32d9664a517e27720242038d96a4962572b3731e220f3d1a5df9004ba",
+      "worldHash": "sha256:bc38c65a6e29c95c23b98dcf047654d1c5f713e0ae1df2f7721ddb74fdc1ae87",
+      "terminalHash": "sha256:acfe15d78b5590b5f817c8aed2a28fc7fa3e0902f82a820aa47814a3903ca374",
+      "snapshotBytes": 26843,
+      "snapshotHash": "sha256:e17e6b04b2a6af79b39d9aed06e7c99f5f34ad2598988cc51f66e1693893f7b2",
+      "receiptCount": 27,
+      "capacity": {
+        "terminalBytes": 7828,
+        "snapshotBytes": 26843,
+        "maxDepth": 9,
+        "maxArrayItems": 3,
+        "worldCauseCount": 0,
+        "receiptCount": 27,
+        "futureObligationCount": 0,
+        "withinLimits": true
+      }
+    }
+  ],
+  "composition": {
+    "bytes": 890546,
+    "sha256": "sha256:1070c75a3a0c095b176cecd4ea19b4b41887ae3325d6ee5dfaeebd58a101f5ed",
+    "compositionDigest": "sha256:fa0c78360fa59d3996f17ff897788158f16eb53df7202f32f00b3631ee122d50",
+    "familyCounts": {
+      "armed-continuation": 2,
+      "cycle-control": 4,
+      "ordinary-no-attack": 4,
+      "reaction-active-fallback": 4,
+      "reaction-direct-close": 6,
+      "reaction-second-move-completion": 2,
+      "reserve-cycle-entry": 2,
+      "reserve-release": 2,
+      "reserve-second-movement-completion": 2
+    },
+    "capacity": {
+      "traceCount": 28,
+      "totalSnapshotBytes": 870258,
+      "maxSnapshotBytes": 54181,
+      "maxTerminalBytes": 20900,
+      "maxDepth": 12,
+      "maxArrayItems": 21,
+      "maxWorldCauses": 2,
+      "maxReceipts": 27,
+      "withinLimits": true
+    }
+  },
+  "goldenMethod": "canonical ASCII JSON; SHA-256 with sha256: prefix; actual predecessor replay"
+}

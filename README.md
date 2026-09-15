@@ -247,6 +247,9 @@ then moves either exact released member one Clear hex at CP0→2 under ceiling10
 [D2c.3m released-I Movement completion](docs/specs/combat-inherited-reserve-movement-completion-v1.md)
 closes both exact routes through deliberate stop, empty resolution and completion at authority31,
 then expires each pending exception with its accepted completion receipt.
+[D2c.4 authority composition](docs/specs/combat-authority-composition-v1.md) now reconciles CON-002–004
+across 28 creation-rooted traces and freezes parent003's exact Task004 handoff. Parent003 is complete;
+Task004 and checkpoint B remain open.
 The [latest smoke check](docs/research/simulator-post-merge-checkin.md#combat-contract-branch-smoke-check)
 verifies the existing Rules9 path; prospective Combat contracts are not executable game support.
 
@@ -254,7 +257,7 @@ verifies the existing Rules9 path; prospective Combat contracts are not executab
 | --- | --- | --- |
 | Authority foundation | Versioned provenance, synthetic content, commands/events, deterministic randomness, replay, side-safe observations, and exact-audience legal actions for the admitted profile | Extend the same compatibility, recovery, and fog boundaries with each mechanic |
 | Preamble and Movement boundary | Initiative through Reserve Designation, bounded Movement, ZOC/Reaction, and Breakdown through first-side Combat entry | Positive scenario-specific obligations and broader vehicle/ZOC profiles remain gated |
-| Combat and continual cycle | Not implemented or activated | Contract-frozen through `003D2c.3q`; freeze remaining `.3` capability families, finish `.4` composition/side contracts, then dormant runtime, public activation, and Runner gates |
+| Combat and continual cycle | Not implemented or activated | Parent003 authority composition complete; Task004 must freeze side/Exercise contracts and map all 72 ACs before checkpoint B, dormant runtime, public activation, and Runner gates |
 | Working skeleton | Not reached | One authentic movement/contact/combat/release repeat-or-finish loop plus identical replay |
 | Playable MVP | Not started | Source-verified six-turn content/rules/victory, durable save/resume, hot-seat privacy, and minimal no-model Maproom |
 | Exercise Harness | Current bounded Exercise/Maneuver and paired descriptive comparisons | Add Combat actions and terminals only after public Core activation |

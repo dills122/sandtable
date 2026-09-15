@@ -1,0 +1,46 @@
+{
+  "contract": "combat-authority-composition-v1",
+  "objects": {
+    "SourcePin": "path:id sha256:hash",
+    "CanonicalFragment": "contract:id type:id canonicalJson:ascii bytes:int sha256:hash",
+    "RootSnapshot": "contractVersion:int traceId:id actor:side sourceContract:id campaignId:id rulesetHash:rawHash configurationHash:hash creationBinding:id creationEventHash:hash stateVersion:long prefix:hash header:CanonicalFragment world:World randomState:Random cycle:CanonicalFragment position:CanonicalFragment authorityArms:CanonicalFragment commandReceipts:CanonicalFragment obligations:CanonicalFragment terminal:CanonicalFragment",
+    "CapacityResult": "terminalBytes:int snapshotBytes:int maxDepth:int maxArrayItems:int worldCauseCount:int receiptCount:int futureObligationCount:int withinLimits:bool",
+    "TraceWitness": "traceId:id family:id actor:side caseId:id sourceContract:id sourceStateType:id snapshot:RootSnapshot capacity:CapacityResult",
+    "VersionSet": "content:int setup:int world:int rules:int createdEvent:int snapshot:int sequence:int cycleCodec:int",
+    "ContractBinding": "owner:id artifactIds:id[] schemaPaths:id[] digest:hash",
+    "RequirementBinding": "requirementRange:id contractOwners:id[] implementationTasks:id[] evidenceOwner:id",
+    "Exclusion": "capability:id disposition:id reason:id",
+    "RuntimeOwner": "lane:id taskIds:id[] requiredEvidence:id",
+    "Task004Handoff": "owner:id profile:id versions:VersionSet contractBindings:ContractBinding[] requirementBindings:RequirementBinding[] exclusions:Exclusion[] runtimeOwners:RuntimeOwner[] selectedTraceIds:id[] compositionDigest:hash",
+    "CapacitySummary": "traceCount:int totalSnapshotBytes:int maxSnapshotBytes:int maxTerminalBytes:int maxDepth:int maxArrayItems:int maxWorldCauses:int maxReceipts:int withinLimits:bool",
+    "AuthorityComposition": "contractVersion:int profile:id handoff:Task004Handoff traces:TraceWitness[] capacity:CapacitySummary"
+  },
+  "externalContracts": [
+    "combat-world-settlement-v1.schema.json",
+    "combat-authority-envelope-v1.schema.json",
+    "combat-cycle-sequence-v1.schema.json",
+    "combat-snapshot-composition-v1.schema.json",
+    "combat-inherited-no-attack-v1.schema.json",
+    "combat-inherited-reaction-closure-v1.schema.json",
+    "combat-inherited-reaction-active-fallback-v1.schema.json",
+    "combat-inherited-reaction-movement-completion-v1.schema.json",
+    "combat-inherited-reserve-cycle-v1.schema.json",
+    "combat-inherited-reserve-release-v1.schema.json",
+    "combat-inherited-armed-continuation-v1.schema.json",
+    "combat-inherited-cycle-control-v1.schema.json",
+    "combat-inherited-reserve-movement-completion-v1.schema.json"
+  ],
+  "limits": {
+    "bytes": 1048576,
+    "depth": 32,
+    "arrayItems": 512,
+    "worldCauses": 4096,
+    "traces": 28,
+    "sourcePins": 31,
+    "contractBindings": 3,
+    "requirementBindings": 6,
+    "exclusions": 11,
+    "runtimeOwners": 6
+  },
+  "scope": "Actual creation-rooted selected-profile authority composition through D2c.3q and the CMB-TASK-003 to CMB-TASK-004 handoff. Contract evidence only; no runtime registration, public action, Exercise, Runner, hosting, multiple-opportunity Reaction, or positive vehicle Breakdown admission."
+}
