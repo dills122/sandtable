@@ -1,0 +1,144 @@
+{
+  "contract": "combat-side-projection-v1",
+  "status": "004A1-only; CON005 remains open through004A2/004A3",
+  "objects": {
+    "Cycle": "gameTurn:turn operationStage:stage playerPhaseSlot:slot phasingSide:side ordinal:positive",
+    "Context": "campaignId:id audience:side cycle:Cycle rulesRef:ref configRef:ref",
+    "OwnParticipant": "participantRef:ref componentRef:ref locationId:id currentToe:toe spentCp:cp ammunition:toe cohesion:cohesion",
+    "ApparentEnemy": "targetRef:ref locationId:id",
+    "Select": "kind:select participantRef:ref targetRef:ref targetLocationId:id",
+    "Finish": "kind:finish",
+    "Decline": "kind:decline participantRef:ref",
+    "Allocation": "kind:allocation participantRef:ref componentRef:ref committedToe:fullToe",
+    "Action": "actionId:ref candidate:Candidate",
+    "Decision": "decisionId:ref kind:decisionKind openingRevision:revision slotRef:ref? deadlineUnixMilliseconds:timestamp actionSetId:ref actions:Action[]",
+    "OwnReceipt": "decisionId:ref actionId:ref receiptRef:ref",
+    "SideChange": "visibleRevision:revision positionId:id status:status ownReceiptRef:ref?",
+    "Observation": "contractVersion:version context:Context cycleRef:cycleHash positionId:id visibleRevision:revision own:OwnParticipant apparentEnemy:ApparentEnemy roundRef:ref? status:status decision:Decision? ownReceipts:OwnReceipt[] history:SideChange[]",
+    "Submission": "contractVersion:version campaignId:id rulesRef:ref configRef:ref audience:side roundRef:ref? decisionId:ref slotRef:ref? openingRevision:revision actionSetId:ref actionId:ref candidate:Candidate",
+    "Outcome": "contractVersion:version status:outcome receipt:OwnReceipt?",
+    "IdentitySeed": "context:Context cycleRef:cycleHash positionId:id openingRevision:revision kind:decisionKind participantRef:ref targetRef:ref",
+    "SlotSeed": "roundRef:ref audience:side role:role",
+    "ActionSeed": "decisionId:ref candidate:Candidate",
+    "SetSeed": "decisionId:ref openingRevision:revision actions:Action[]",
+    "ReceiptSeed": "decisionId:ref actionId:ref",
+    "UnitSeed": "campaignId:id audience:side elementId:id componentId:id?"
+  },
+  "candidateTags": {
+    "select-close-assault": "Select",
+    "finish-without-attack": "Finish",
+    "decline-retreat-before-assault": "Decline",
+    "full-close-assault": "Allocation"
+  },
+  "enums": {
+    "side": [
+      "axis",
+      "commonwealth"
+    ],
+    "slot": [
+      "first-acting-side",
+      "second-acting-side"
+    ],
+    "role": [
+      "attacker",
+      "defender"
+    ],
+    "decisionKind": [
+      "selection",
+      "rba",
+      "force-assignment"
+    ],
+    "status": [
+      "choice-required",
+      "own-choice-sealed",
+      "waiting",
+      "closed"
+    ],
+    "outcome": [
+      "accepted",
+      "rejected"
+    ],
+    "select": [
+      "select-close-assault"
+    ],
+    "finish": [
+      "finish-without-attack"
+    ],
+    "decline": [
+      "decline-retreat-before-assault"
+    ],
+    "allocation": [
+      "full-close-assault"
+    ]
+  },
+  "integerBounds": {
+    "version": [
+      1,
+      1
+    ],
+    "revision": [
+      0,
+      9223372036854775807
+    ],
+    "positive": [
+      1,
+      2147483647
+    ],
+    "timestamp": [
+      0,
+      253402300799999
+    ],
+    "toe": [
+      0,
+      10
+    ],
+    "fullToe": [
+      10,
+      10
+    ],
+    "cp": [
+      0,
+      10
+    ],
+    "cohesion": [
+      0,
+      10
+    ],
+    "turn": [
+      1,
+      111
+    ],
+    "stage": [
+      1,
+      3
+    ]
+  },
+  "domains": {
+    "participant": "sandtable.observation.combat.participant.v1",
+    "component": "sandtable.observation.combat.component.v1",
+    "target": "sandtable.observation.combat.target.v1",
+    "round": "sandtable.observation.combat.round.v1",
+    "slot": "sandtable.observation.combat.slot.v1",
+    "decision": "sandtable.observation.combat.decision.v1",
+    "action": "sandtable.observation.combat.action.v1",
+    "set": "sandtable.observation.combat.set.v1",
+    "receipt": "sandtable.observation.combat.receipt.v1",
+    "rules": "sandtable.observation.combat.rules.v1",
+    "config": "sandtable.observation.combat.config.v1"
+  },
+  "limits": {
+    "bytes": 65536,
+    "depth": 16,
+    "arrayItems": 64,
+    "actions": 2,
+    "receipts": 3,
+    "history": 32,
+    "idLength": 128
+  },
+  "externalContracts": [
+    "combat-selection-steps-v1.schema.json",
+    "combat-sealed-round-v1.schema.json",
+    "combat-cycle-sequence-v1.schema.json"
+  ],
+  "scope": "Prospective A1 contract evidence only. No production version, protobuf field, runtime admission or registration allocated. Settlement and Reserve/cycle projection await A2/A3."
+}

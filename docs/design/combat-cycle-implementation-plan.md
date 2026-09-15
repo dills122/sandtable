@@ -3,14 +3,16 @@
 **Status:** Contract checkpoint B in progress; no Combat runtime or public capability is active.
 `CMB-PLAN-001` and POL-001–008 were accepted on 2026-09-06 at `a10a588`. Source and static Content
 work (`001`–`002`) is complete. Parent `003` is complete through the
-[authority-composition handoff](../specs/combat-authority-composition-v1.md). Task `004`, checkpoint
-B, and runtime tasks `005`–`025` have not started.
+[authority-composition handoff](../specs/combat-authority-composition-v1.md). Checkpoint B remains
+open. Task `004` is blocked at unaccepted `004A1` side-contract work by the clock/privacy conflict
+below; runtime tasks
+`005`–`025` have not started.
 
 | Delivery layer | Current boundary | Next required outcome |
 | --- | --- | --- |
 | Research and policy | Complete for the selected bounded profile, including `HOST-RSH-001` | Reopen only for a new source, failed assumption, or approved profile expansion |
 | Authority contracts | CON-002–004 and all selected-profile inherited families are reconciled in 28 creation-rooted composition traces; parent003 complete | Preserve exact Task004 handoff while later runtime work derives boundaries from accepted history |
-| Outward contracts | Task004 not started; Task003 handoff freezes six 12-AC ranges, exact versions, exclusions and owners | Freeze CON-005/006 side-safe observation/action and Exercise contracts; expand all 72 ACs row by row |
+| Outward contracts | Task004 blocked at unaccepted004A1: hidden-seal clock high-water conflicts with equal-outcome privacy. Task003 handoff remains unchanged | Obtain policy disposition, then freeze CON-005/006 and expand all 72 ACs row by row |
 | Runtime | Tasks005–019 not started | Implement dormant tables/state/decisions/settlement/release/repeat with cumulative replay and recovery evidence |
 | Public and simulator | Tasks020–024 not started | Activate the certified side-safe profile, then prove strict Exercise/Runner reconstruction and repeatability |
 | Closeout | Task025 not started | Full gate, evidence reconciliation, and authentic loop demonstration without overstating retained obligations |
@@ -116,6 +118,42 @@ visible. No favorable-vector or synthetic arithmetic result substitutes for full
 | --- | --- | --- | --- |
 | `CMB-TASK-003` / complete | [Authority-composition packet](../specs/combat-authority-composition-v1.md) freezes and reconciles CON-002–004 world/event/snapshot/command/cycle evidence, exact versions, causal receipts, capacity, compatibility and Task004 handoff. Production registration remains gated. | 28 creation-rooted traces across nine families; 31 direct plus embedded transitive source pins; 225 readbacks, 203 mutations, six raw and eight boundary rejects. | 001–002 complete; Task004 consumes exact handoff. |
 | `CMB-TASK-004` / M, 3–5 files | Freeze CON-005/006 side and Exercise contracts, candidate bytes and terminal evidence. Enumerate every design AC in an evidence index; mark deferred transport requirements without allocating fake production support. | Equal-authorized-history vectors, authority-leak negatives, ordinal/terminal tampering and all 72 ACs mapped to a task and planned test. | 003; new side/evidence packet, [Observation tests](../../tests/Cna.Core.Tests/Observations/), [Exercise tests](../../tests/Cna.Core.Tests/Exercises/). |
+
+TASK-004 execution refinement, 2026-09-14 overnight wave01, before implementation: side projection,
+Exercise evidence and requirement integration cross independent boundaries. Preserve parent004;
+deliver these sequential slices with at most five primary files each, including this plan.
+
+| Slice | Owned contract boundary | Acceptance / dependency |
+| --- | --- | --- |
+| `CMB-TASK-004A` | New `combat-side-projection-v1` spec, ordered schema, retained fixture and executable oracle | Complete CON-005 closed audience fields/choices/errors and canonical candidates, own-revision mapping, equal-authorized-history and authority-leak negatives; exact003 handoff preserved |
+| `CMB-TASK-004B` | New Exercise evidence spec, schema, fixture and oracle | After accepted004A; complete CON-006 occurrence/ordinal/terminal/continuation and strict manifest/report/divergence contracts, unsupported-terminal and false-success negatives |
+| `CMB-TASK-004C` | Explicit72-AC index and bounded integrated readback evidence | After accepted004A/B; every AC maps to task/planned test; exact versions, capacity, compatibility and Task003 handoff reconciled before004/checkpoint B closes |
+
+Each slice requires focused verification, ordinary fresh-context quality review, brain-run
+`just check` and an accepted commit. This split adds no gameplay policy, production registration or
+formal independent-review pass. Task005 remains gated on complete004/checkpoint B. Small navigation
+updates follow separately when verified status changes. Execution evidence lives in the
+[overnight plan](../../.planning/2026-09-14-overnight-combat-wave-01/task_plan.md).
+
+004A sizing refinement before edits: implement the four new packet files sequentially as004A1
+(shared closed codec/identity/errors plus selection/RBA/sealed-round projections),004A2 (settlement
+disclosure, retreat/custody candidates and result facts), then004A3 (Reserve/cycle projections,
+exact Task003 handoff and full corpus reconciliation). Each child has semantic RED/GREEN,
+fresh-context quality review and `just check`; complete CON-005 freeze is claimed only after004A3.
+All four new files remain under one writer; historical packets remain immutable. If one adapter
+group cannot remain reviewable within this ownership, re-split before further edits.
+
+004A1 overnight hard stop, 2026-09-14 local /2026-09-15 UTC: ordinary fresh-context review found
+equal waiting-side observations before/after an opposing private seal, but the same proposal at
+trusted time3500 accepts with high-water3000 and cancels/rejects with high-water4000. Both seal
+orders reproduce this against frozen authority. Accepted POL-004 requires regression fallback;
+POL-006 and PRO-AC-010 require equal semantic outcomes. No explicit regression exception exists.
+The [blocked candidate](../specs/combat-side-projection-v1.md#known-blocker-private-seal-changes-clock-regression-outcome)
+and [failing diagnostic](../../.planning/2026-09-14-overnight-combat-wave-01/evidence/clock-high-water-counterexample.py)
+retain the conflict. A1 is not accepted;004A/004/checkpoint B remain open and005 has not begun.
+Focused candidate vectors and repository gate pass, but cannot override this failing privacy
+acceptance case. Owner policy disposition and explicit compatible contract treatment are required
+before implementation resumes. No formal independent-review pass or authority amendment occurred.
 
 TASK-003 sizing refinement, 2026-09-06, before authority edits: its three contract families cross
 independent subsystems and cannot honestly fit one3–5-file change. Preserve parent003 and split

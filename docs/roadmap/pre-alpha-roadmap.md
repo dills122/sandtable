@@ -46,7 +46,7 @@ review and simulator reports apply only to their stated commits and capabilities
 
 | Next gate | Concrete outcome |
 | --- | --- |
-| Contract checkpoint B | Parent003 authority composition and exact 003-to-004 handoff are complete. Task004 must freeze CON-005/006 side/Exercise contracts, expand all 72 acceptance criteria row by row, and accept exact outward versions, capacity, compatibility and unsupported-state behavior. |
+| Contract checkpoint B | Parent003 authority composition and exact 003-to-004 handoff are complete. Task004 is blocked at unaccepted004A1 by [clock-regression/privacy policy conflict](../specs/combat-side-projection-v1.md#known-blocker-private-seal-changes-clock-regression-outcome). Owner disposition precedes CON-005/006 freeze, all72 AC mapping and checkpoint B acceptance. |
 | Dormant Core,005–019 | Implement tables/content, loss-capable state, strict restore, private decisions, settlement, Reserve Release, relation-aware Movement, and guarded repeat/finish in dependency order. Every state-changing family needs replay cuts and recovery evidence before a dependent task starts. |
 | Public Core,020–021 | Add audience-safe observations/actions and authenticated submission mapping, then activate only the certified profile. Unsupported profiles reject before a decision; disabling new admission must not disable recovery. |
 | Exercise and Runner,022–024 | Drive the same public actions through Exercise and Runner, prove reconstruction/readjudication, and retain clean repeated evidence for empty, settled-assault, and Movement-repeat paths. Existing Rules9 studies cannot substitute. |
