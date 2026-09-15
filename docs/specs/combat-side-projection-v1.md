@@ -2,7 +2,8 @@
 
 Status: `CMB-TASK-004A1` **corrected-profile accepted checkpoint**; contract evidence only. Shared
 codec, selection, RBA and sealed assignment use the accepted versioned clock correction below.
-`004A2` settlement and `004A3` Reserve/cycle plus complete Task003 handoff remain open. This packet
+`004A2` settlement is an **accepted version2 checkpoint** below; `004A3` Reserve/cycle plus
+complete Task003 handoff remain open. This packet
 does not freeze complete CON-005, close parent004 or activate runtime.
 
 [Combined plan](../design/combat-cycle-implementation-plan.md),
@@ -35,7 +36,7 @@ oracle; every original legacy profile rejects through this entry point. Neither 
 production host registration. Current-profile test results and prospective A1 admission claims
 apply only to corrected profiles. Runtime and remaining CON-005 families still require later work.
 
-## Authority and exact admission boundary
+## Accepted A1 authority and exact admission boundary
 
 Governing decisions are [DES-001 identity](../design/combat-opportunity-identity-v1.md),
 [DES-002 protocol](../design/combat-sealed-decision-protocol-v1.md),
@@ -196,6 +197,140 @@ At deadline equality, unaccepted choices reject; an exact previously accepted re
 recoverable after deadline. Existing predecessor authority owns clock/fallback events and RNG.
 All outward rejection reasons share identical Outcome bytes.
 
+## A2 successor profile: result and settlement
+
+`004A2` is a separate local version2 codec in this packet. `objects2`, `candidateTags2`,
+`integerBounds2`, `enums2`, `domains2` and `limits2` define it; original A1 descriptors, domains,
+source names and retained literals remain byte-equivalent. The old decoder rejects every version2
+observation/submission/candidate. `admit_a2` rejects A1 and historical profiles; `admit_current`
+continues to admit only accepted A1 corrected profiles. Neither entry point is registered in runtime.
+
+### Exact source composition and clock binding
+
+The core corpus contains all32 accepted [Result2](combat-result-settlement-v2.md) traces:
+eight retained result branches, both acting sides and both seal orders. Each source carries the
+exact authenticated C3a boundary/input/event predecessor, accepted Round2 base/input/event and
+committed bytes, then Result2 inputs/events. No creation-rooted positive lineage is inferred.
+The first visible frame is the same source's C3a boundary; C3a→Round2 and Round2→Result2 handoffs
+add no synthetic event or revision and preserve all earlier history and own receipts. The private
+result-resolution event itself leaves both views unchanged.
+
+Source names are `settlement-v2.<result-case>.<acting-side>.<first-seal-role>`. Eight additional
+`.prior-time-10001` / `.prior-time-11000` sources replay actual same-owner retreat choices, then
+independently open custody at10500 and choose guard at10600. Eight `.fallback-retreat` /
+`.fallback-custody` sources replay a valid owner proposal with null time/unavailable confidence
+and retain the resulting System fallback. These16 supplemental sources are causal histories,
+not altered-state probes. The resulting48 sources yield96 audience traces; core coverage remains
+32×2. All names and every allowed prefix are closed in the authenticated registry.
+
+Result2's context is exactly `{base,predecessor,roundInputs,roundEvents,committed}` and passes its
+accepted reader before projection. The Source wrapper retains the existing five-field shape;
+its `base` holds this context. Exact context/input bytes and exact event byte prefixes select a
+registered source. No ignored key, float/bool alias, reordered event, arbitrary extension, foreign
+context or independently asserted snapshot becomes trusted history. Caches return copies.
+
+Both corrected policies are present in public `configRef` from the first version2 frame:
+`ClockConfigSeed2` has selection, RBA, assignment, retreat and custody budgets of30000ms, then
+`assignmentClockPolicyId:"sandtable.combat.public-opening-clock.v2"`,
+`resultClockPolicyId:"sandtable.combat.mandatory-window-clock.v2"`, and `candidateCodec:2`.
+It uses the new config domain; configRef never rotates at a fragment handoff. Original Config1
+budgets/fallbacks and full Rules10 identity remain unchanged trusted evidence. A2 rulesRef uses
+its new rules domain and the same public Rules10 identity/profile/POL-006 tuple with candidateCodec2.
+The canonical public cycle keeps its original tuple codec and full public Rules10 identity.
+
+Assignment retains Round2's public opening floor. Every new mandatory Result2 window opens from
+its independently trusted valid opening instant and checked budget. A previous private accepted
+time cannot gate that opening. A live own window uses its own published opening/deadline gate;
+null/unavailable/below-opening valid choices cause the unchanged System fallback, while deadline
+equality rejects unaccepted choices. Global accepted-time maxima remain private audit evidence.
+Own accepted receipts recover before clocks; System fallback receipts never recover as acceptance.
+
+### Closed version2 records and choices
+
+`Observation2`, `Submission2`, `Outcome2`, `Decision2`, `Action2`, `OwnReceipt2` and **every**
+Candidate2 arm carry explicit integer `contractVersion:2`. Observation2 adds nullable Settlement2;
+Submission2 and Decision2 add nullable own `settlementRef`. The remaining explicit campaign,
+rules/config/audience/cycle/round/slot/decision/opening-revision/set/action bindings keep their
+meanings. Slot is non-null only for assignment; settlementRef is non-null only for own mandatory
+settlement decisions. No private authority version, raw result ID or hidden substage is copied.
+
+| Version2 record | Exact authorized meaning |
+| --- | --- |
+| `OwnParticipant2` | Existing own fields, with CP represented by numerator/denominator1 and signed Cohesion. |
+| `Loss2` | Own component reference, committed/lost/captured/other/remaining TOE. No enemy quantity, percentages, differential or roll. |
+| `CohesionCause2` | Own ordered cause reference, `loss-dp`, `retreat-excess-dp` or `assault-victory-rp`, points, own before/after Cohesion and turn/stage. |
+| `Retreat2` | Own retreat/refusal intent, ordered route and planned distance; actual completed distance, before/after CP and excess DP appear only when settled. |
+| `Custody2` | Captor's own lot reference/count, approved prisoner origin side/class/location, current own custody location/status, own guard reference/route and donor transfer. No opposing original unit/component identity or hash. Escape route is withheld from captor. |
+| `Guard2` | Own guard/custody/donor refs, location, one TOE, CPA10, offensive0/defensive1, own CP/Cohesion, ammunition0 and current water/stores/readiness. No initial provenance metadata. |
+| `Entitlement2` | Original owner's component/entitlement refs, captured quantity, reunion location, earned scope,12-operation-stage delay, future eligible scope and awaiting-eligibility/training state. No immediate TOE credit. |
+| `Obligation2` | Own subject/ref, `guard-priority-upkeep` or `replacement-training`, earned/due scope and game-facing `pending` state. Private activation-gate names and implementation status are excluded. |
+| `Relation2` | Original pair's authorized Contact/Engaged kind and apparent target ref. No transitive guard relation. |
+| `Settlement2` | Own nullable loss/retreat/custody/relation plus ordered own causes, guards, entitlements and obligations. Absent until an authorized own fact or decision exists. |
+
+| Owner window | Exact semantic candidate order |
+| --- | --- |
+| Selection | Version2 `select-close-assault`, then `finish-without-attack`, with unchanged gameplay fields. |
+| Defender RBA | Version2 `decline-retreat-before-assault`. |
+| Each assignment owner | Version2 `full-close-assault`, own component, committedTOE10. |
+| Retreat | `retreat` with own participant, exact certified ordered route, required distance1, cost1 and exact resulting excess-CP DP; then `refuse-retreat` with own participant. |
+| Custody | `relocate-and-guard` with own custody/donor refs, exact approved route and guardTOE1; then `leave-unguarded` with own custody ref. |
+
+Nonowners receive no private mandatory-window information. Private openings, retreat intention,
+guard choice and hidden result resolution produce no empty revision tick. A victim's newly earned
+escape/replacement entitlement is an authorized difference. Successful owner-choice effects alone
+mint own receipts: C3a owner selection/decline, Round2 `choice-sealed`, or Result2 owner-authored
+`owner-choice`. Result2 can retain the initiating owner in its private ledger while authoring the
+fallback as System; that case has no public owner acceptance receipt. Conflicting, stale or no-longer
+available proposals return only generic version2 rejection with null receipt.
+
+The apparent opposing original participant location follows the established
+[observation policy](campaign-observation-v1.md), not a new line-of-sight rule: use its current
+approved independent-element representation location. The oracle requires exactly one matching
+representation and equality with the original element's current location before declassification.
+Own retreat can therefore change the opponent's approved apparent marker. Opposing guard location,
+prisoner relocation route and hidden resources remain excluded. Representation/element mismatch
+rejects instead of silently choosing one source. This implements DES-005's delegation to the
+existing observation policy; the C3 certificate alone does not grant extra disclosure.
+
+### Version2 references, limits and evidence
+
+All new domains use `sandtable.observation.combat.<name>.v2`; exact names live in `domains2`.
+Own participant/component aliases retain the existing approved UnitSeed/domain, which contain only
+own public identity. New round/decision identities use IdentitySeed2; action/set use ActionSeed2 /
+SetSeed2; receipt payload is `{decisionId,actionId}`. Slot payload remains own round/audience/role.
+A settlement ref hashes `{context,roundRef,participantRef}`; each singleton custody/guard/entitlement/
+obligation/relation ref hashes `{settlementRef,participantRef}` in its own domain. Own cause refs
+hash `{settlementRef,ownOrdinal,kind}` with zero-based **own filtered** order. No source name,
+raw opposing key, hidden global ordinal, result ID, random cursor, authority hash or timestamp
+enters any outward reference preimage.
+
+Version2 preserves the same strict canonical ASCII JSON rule. Limits are65,536 bytes/value,
+depth20, generic arrays64, actions2, receipts8, history64 and one own guard/entitlement/obligation.
+Retreat routes contain1–2 nodes; custody guard routes at most4; general route capacity9. Actual
+retained histories use at most4 own receipts. CP is a nonnegative signed64 numerator with fixed
+denominator1; Cohesion ranges from signed32 minimum through10. These are source-native numeric
+bounds from the [creation ledger](combat-creation-ledger-v1.md), not fixture maxima. Decoder capacity does
+not authorize unseen histories, additional units, Reserve/cycle choices or different gameplay.
+
+The fixture retains the exact A1 root object and adds only `successor2`, with separate Result2
+source pins, every composed observation cut's digest/length, representative canonical observations
+and every distinct offered Candidate2/Submission2 byte string. The oracle fingerprints the complete
+original A1 schema and retained fixture sections. Exact deterministic fixture bytes reject missing
+fixtures, booleans/floats substituted for integers, duplicate keys or formatting changes.
+
+A2 checks cover all32 core traces for both audiences, every cut, both seal orders and arbitrary
+supported clock classes; real prior-time and fallback histories; current/old/cross-profile rejection;
+exact offer membership, context/reference and candidate mutations; recovered receipts after every
+later cut; private guard/opening/resolution equality; authorized escape differences; signed numeric,
+array/depth/byte bounds; and representation consistency. Literal candidate vectors separately pin
+canonical field order. Pure altered-state declassifier checks are labelled non-admission probes;
+they do not count as authenticated histories.
+
+No complete CON-005 or parent004 completion follows from A2. Reserve I/laterII, repeat/finish,
+complete Task003 handoff, runtime activation and hosted timing/traffic privacy remain deferred.
+Future transport must carry the explicit version2 settlement binding in addition to the A1 mapping,
+and must select an admitted profile before parsing; this local codec reserves no production field.
+
 ## Compatibility and future Dispatch
 
 Current production contracts remain unchanged: Observation5/6/7; legal action set2 with current
@@ -237,6 +372,7 @@ python3 -B docs/specs/verify-combat-side-projection-v1.py
 python3 -B docs/specs/verify-combat-selection-steps-v1.py
 python3 -B docs/specs/verify-combat-sealed-round-v1.py
 python3 -B docs/specs/verify-combat-sealed-round-v2.py
+python3 -B docs/specs/verify-combat-result-settlement-v2.py
 python3 -B docs/specs/verify-combat-cycle-sequence-v1.py
 ```
 

@@ -174,6 +174,13 @@ settlement/custody/guard/replacement facts, bounded full history and real owner-
 System-authored fallback never creates an own accepted receipt, even when input initiator was owner.
 Old/new readers and cross-profile submissions reject; source authentication precedes projection.
 
+004A2 accepted2026-09-15 after37focused groups, ordinary fresh-context approval, source/literal
+audit and root `just check`:81boundary/1670full tests,0skips. Disjoint version2 admits96audience
+traces/2080cuts with7344clock outcomes and4872retries; originalA1 records remain exact. Maximum
+7503observation bytes,18history entries,4own receipts. Root independently checks240fallback
+outcomes and24cache/source mutations. This accepts settlement projection only; bridge/A3/B/C
+and parent004/checkpointB remain open.
+
 004A3 evidence refinement before edits: canonical first-I release/conversion and later-II
 release/retain/completion sets must be derived and exercised through actual standalone Reserve
 transitions, with canonical bytes, accepted state, revision and receipts. These are explicitly
@@ -253,6 +260,19 @@ Retained eight-branch corpus has same-owner retreat/custody sequences: the paire
 retreat acceptance then10500 custody opening test proves prior-time isolation, not an opposing-
 retreat leak. Do not invent a cross-owner gameplay branch. Retain all eight branches, both acting
 sides and seal orders through exact RoundState2 bytes, including4000→3500 seals.
+`W01-CLOCK-CYCLE` is a required bounded bridge before004A3/004B: new
+`combat-result-cycle-finish-v1` spec/schema/fixture/oracle plus this plan. Authenticate each of32
+native Result2 closed lineages, derive existing-shape empty-pending Reserve and settled cycle
+kernel bases explicitly, then replay Reserve open/completion and supported cycle opening/finish
+to same-slot Truck Convoy entry. Retain exact World/RNG/guards/entitlements/future obligations.
+Never invoke old base constructors/readers that reconstruct Result1 or join an unrelated003 finish.
+The pre-retreat Movement-end certificate stays named/pinned synthetic evidence. New empty-release
+clock scope starts with null audit high-water while full Result2 audit history stays retained;
+cycle timing opens independently under explicit bridge policy. Historical kernels/bytes unchanged.
+No repeat, guard action, upkeep or maturity execution. This closes the required combat-then-finish
+evidence seam without new gameplay policy or fullSnapshot allocation. Implement after accepted004A2
+with the sole writer; review/full gate/accepted commit precede A3 consumption.
+
 `W01-CLOCK-SNAPSHOT`, if full corrected snapshots are used by CON006,
 owns new `combat-snapshot-composition-v2` spec/schema/fixture/oracle plus this plan; freeze its exact
 payload/arm identity before writes. Existing00328trace creation-rooted handoff stays byte-exact;

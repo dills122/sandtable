@@ -1,0 +1,1328 @@
+{
+  "status": "Research draft only; maps were prepared before Result2 acceptance and A2/A3/B. Update exact accepted references and coverage before004C closeout. Runtime tests remain planned.",
+  "sourceAliasFiles": [
+    "004c-first36-map.md",
+    "004c-last36-map.md"
+  ],
+  "requirements": [
+    {
+      "id": "CMB-ID-AC-001",
+      "requirement": "Move or change representation: same unit key, new binding; old uncommitted choice fails without events/RNG. Elimination preserves history.",
+      "decisions": "001-002; DES-002/005",
+      "source": "docs/design/combat-opportunity-identity-v1.md",
+      "line": 221,
+      "plannedTasks": [
+        "CMB-TASK-009",
+        "CMB-TASK-020"
+      ],
+      "plannedTest": "CombatIdentityTests.MovingUnitRetainsIdentityAndRejectsOldBinding",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "STEPS:`main` moved-boundary/wrong-target rejects; WORLD:`unit`,`component` stable-key definitions",
+        "contractCoverage": "Partial. No complete move→new binding→old-choice rejection plus elimination-history positive vector identified",
+        "runtimeOwners": "009,020"
+      }
+    },
+    {
+      "id": "CMB-ID-AC-002",
+      "requirement": "Same component name on another unit/campaign does not alias. Duplicate bindings and foreign provenance reject.",
+      "decisions": "001-002/005; DES-002",
+      "source": "docs/design/combat-opportunity-identity-v1.md",
+      "line": 222,
+      "plannedTasks": [
+        "CMB-TASK-006",
+        "CMB-TASK-009"
+      ],
+      "plannedTest": "CombatIdentityTests.ForeignOrDuplicateComponentBindingRejects",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "CONTENT:`main` negative-vector reader; SIDE:`verify_matrix`, `test_current_source_integrity` foreign campaign/audience/source",
+        "contractCoverage": "Partial provenance/binding rejection. Dedicated same-component-name across two units/campaigns remains unproved",
+        "runtimeOwners": "006,009"
+      }
+    },
+    {
+      "id": "CMB-ID-AC-003",
+      "requirement": "Adjacent singleton infantry with empty ZOC can have a voluntary opportunity and no initial Contact. Positive-ZOC admission remains gated.",
+      "decisions": "004/008; DES-003",
+      "source": "docs/design/combat-opportunity-identity-v1.md",
+      "line": 223,
+      "plannedTasks": [
+        "CMB-TASK-006",
+        "CMB-TASK-009"
+      ],
+      "plannedTest": "CombatIdentityTests.CertifiedAdjacentSingletonHasVoluntaryOpportunity",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "STEPS:`main`, `accepted-decline`; ARMED:`verify_case`, both-owner proof fixtures",
+        "contractCoverage": "Bounded voluntary singleton opportunity; armed proof is not execution. Broader positive-ZOC capability remains excluded",
+        "runtimeOwners": "006,009"
+      }
+    },
+    {
+      "id": "CMB-ID-AC-004",
+      "requirement": "Later arrival in a marked hex inherits no relation; ending one of two independent counterpart relations leaves the other intact. No transitive grouping.",
+      "decisions": "004; DES-005 extension vector",
+      "source": "docs/design/combat-opportunity-identity-v1.md",
+      "line": 224,
+      "plannedTasks": [
+        "CMB-TASK-016"
+      ],
+      "plannedTest": "CombatIdentityTests.RelationsDoNotSpreadThroughHexMembership",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "WORLD:`main` original-pair relationship worlds",
+        "contractCoverage": "Partial singleton evidence only. Later arrival, two independent counterpart relations and nontransitive grouping need extension vectors",
+        "runtimeOwners": "016"
+      }
+    },
+    {
+      "id": "CMB-ID-AC-005",
+      "requirement": "Zero-loss Engaged still binds original participants; Retreat priority prevents that Engaged outcome. Adjacent prior assault survivors require the 15.81 Contact evaluation.",
+      "decisions": "004; DES-005",
+      "source": "docs/design/combat-opportunity-identity-v1.md",
+      "line": 225,
+      "plannedTasks": [
+        "CMB-TASK-016"
+      ],
+      "plannedTest": "CombatIdentityTests.RetreatPrecedesEngagedAndSurvivorsReconcileContact",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "RESULT1:`behavioral`,`main`, `zero-engaged`,`zero-retreat`,`refusal-loss-dp`,`ordinary`; WORLD:`main`",
+        "contractCoverage": "Historical authority behavior covered. Corrected Result2 and A2 public relationship integration pending",
+        "runtimeOwners": "016"
+      }
+    },
+    {
+      "id": "CMB-ID-AC-006",
+      "requirement": "Same campaign ID/version but divergent authority prefix changes internal opportunity; equal visible histories leave outward IDs unchanged.",
+      "decisions": "005/007; DES-002/005",
+      "source": "docs/design/combat-opportunity-identity-v1.md",
+      "line": 226,
+      "plannedTasks": [
+        "CMB-TASK-009",
+        "CMB-TASK-020"
+      ],
+      "plannedTest": "CombatIdentityTests.PrivatePrefixChangesAuthorityButNotPublicReferences",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "SEQ:`main` private-prefix fork assertions; SIDE:`test_corrected_declassifier_probes`,`test_canonical_cycle_reference`",
+        "contractCoverage": "Bounded authority/public separation. Declassifier mutations are not authenticated alternate histories; dedicated opportunity fork pair remains partial",
+        "runtimeOwners": "009,020"
+      }
+    },
+    {
+      "id": "CMB-ID-AC-007",
+      "requirement": "Two private envelopes share one base; envelope persistence adds no attacked entry. Combat-fact mutation invalidates the old opportunity.",
+      "decisions": "005-006; DES-002",
+      "source": "docs/design/combat-opportunity-identity-v1.md",
+      "line": 227,
+      "plannedTasks": [
+        "CMB-TASK-011"
+      ],
+      "plannedTest": "CombatIdentityTests.PrivateSealsPreserveSharedBaseAndAttackHistory",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "ROUND2:`test_full_clock_matrix`,`test_replay_tamper`; SIDE:`test_corrected_clock_privacy`,`test_current_source_integrity`",
+        "contractCoverage": "Shared base/timing and hidden-seal outcome evidence retained. Broader moving-resource opportunity invalidation remains partial",
+        "runtimeOwners": "011"
+      }
+    },
+    {
+      "id": "CMB-ID-AC-008",
+      "requirement": "Commit singleton `A -> B` once before RNG; duplicate replay fails. Same target hex cannot be assaulted again that segment, even with a new attacker.",
+      "decisions": "003/006; DES-002/004",
+      "source": "docs/design/combat-opportunity-identity-v1.md",
+      "line": 228,
+      "plannedTasks": [
+        "CMB-TASK-012"
+      ],
+      "plannedTest": "CombatIdentityTests.CommitOnceAndRejectSameSegmentTargetReuse",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "ROUND2:`test_replay_tamper`,`test_expiry_recovery`, both committed orders",
+        "contractCoverage": "Commit/replay evidence bounded. New attacker attempting same-segment target reuse has no retained positive setup; do not claim full AC",
+        "runtimeOwners": "012"
+      }
+    },
+    {
+      "id": "CMB-ID-AC-009",
+      "requirement": "Later cycle allows a new pair occurrence only with current resources; stage history persists and target-use resets. Reserve limits remain independent.",
+      "decisions": "006; CYCLE-DES-001",
+      "source": "docs/design/combat-opportunity-identity-v1.md",
+      "line": 229,
+      "plannedTasks": [
+        "CMB-TASK-018",
+        "CMB-TASK-019"
+      ],
+      "plannedTest": "CombatIdentityTests.RepeatPreservesHistoryAndRevalidatesResources",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "CYCLE:`verify_case`,`trace(actor,\"repeat\")`; ARMED:`verify_case`",
+        "contractCoverage": "History/ordinal/member/resource proof retained. No second assault execution. A3 public repeat/Reserve integration pending",
+        "runtimeOwners": "018,019"
+      }
+    },
+    {
+      "id": "CMB-ID-AC-010",
+      "requirement": "Multi-unit, partial assignment, attachment, Probe, Barrage and Anti-Armor remain closed; empty structural steps produce no attacks.",
+      "decisions": "008; DES-003/004",
+      "source": "docs/design/combat-opportunity-identity-v1.md",
+      "line": 230,
+      "plannedTasks": [
+        "CMB-TASK-006",
+        "CMB-TASK-009"
+      ],
+      "plannedTest": "CombatIdentityTests.UnsupportedCombatProfilesRejectBeforeChoices",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "CONTENT:`main` profile negatives; ROUND2:`test_invalid_before_clock` partial TOE; STEPS:`main` no-attack six steps",
+        "contractCoverage": "Bounded profile/partial-assignment rejection. Exhaustive named attachment/Probe/Barrage/Anti-Armor admission negatives require explicit inventory confirmation",
+        "runtimeOwners": "006,009"
+      }
+    },
+    {
+      "id": "CMB-ID-AC-011",
+      "requirement": "Hidden identity/TOE/count permutations do not alter equal visible artifacts. A profile permitting indistinguishable hidden bindings fails trusted certification before any active decision; no opportunity/action is offered and no hidden count/reason reaches side-visible errors. Suppressing extra bindings or ordering by authority ID does not satisfy this gate.",
+      "decisions": "007; DES-005",
+      "source": "docs/design/combat-opportunity-identity-v1.md",
+      "line": 231,
+      "plannedTasks": [
+        "CMB-TASK-006",
+        "CMB-TASK-009",
+        "CMB-TASK-020"
+      ],
+      "plannedTest": "CombatIdentityTests.IndistinguishableBindingsRejectProfileCertification",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "SIDE:`test_corrected_declassifier_probes`,`test_current_source_integrity`,`verify_matrix`; CONTENT:`main`",
+        "contractCoverage": "Hidden-value suppression and forged-history rejection covered. No complete indistinguishable-count certification family identified; keep partial",
+        "runtimeOwners": "006,009,020"
+      }
+    },
+    {
+      "id": "CMB-ID-AC-012",
+      "requirement": "Restart before either envelope, after commitment and after relation settlement reproduces IDs, mappings, history and target-use without duplicate RNG.",
+      "decisions": "001-007; DES-002/005, CYCLE-DES-001",
+      "source": "docs/design/combat-opportunity-identity-v1.md",
+      "line": 232,
+      "plannedTasks": [
+        "CMB-TASK-008",
+        "CMB-TASK-010",
+        "CMB-TASK-011",
+        "CMB-TASK-012",
+        "CMB-TASK-016"
+      ],
+      "plannedTest": "CombatIdentityTests.RestoreReconstructsIdentityAndReceiptsWithoutRngReplay",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "ROUND2:`test_replay_tamper`; SIDE:`test_corrected_context_and_history`; SNAP1:`compose_tests` settlement lane",
+        "contractCoverage": "Corrected seal/commit cuts covered; settlement snapshot evidence historical. Corrected Result2/A2 and composed evidence pending; process restart unproved",
+        "runtimeOwners": "008,010,011,012,016"
+      }
+    },
+    {
+      "id": "CMB-PRO-AC-001",
+      "requirement": "Either seal order preserves the other side's base, action set and revision; equal final choices yield equal gameplay effects/draws. Each history independently replays byte-identically.",
+      "decisions": "001-003/005",
+      "source": "docs/design/combat-sealed-decision-protocol-v1.md",
+      "line": 265,
+      "plannedTasks": [
+        "CMB-TASK-011",
+        "CMB-TASK-012",
+        "CMB-TASK-013",
+        "CMB-TASK-020"
+      ],
+      "plannedTest": "CombatProtocolTests.BothSealOrdersPreserveOtherSideCapabilities",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "ROUND2:`test_full_clock_matrix`,`test_replay_tamper`; SIDE:`test_corrected_clock_privacy`; RESULT1:`main` reversed seals",
+        "contractCoverage": "Corrected side preservation/replay covered; result/draw equality currently historical. Corrected Result2 integration pending",
+        "runtimeOwners": "011,012,013,020"
+      }
+    },
+    {
+      "id": "CMB-PRO-AC-002",
+      "requirement": "Exact duplicate emits nothing; own readback recovers prior receipt. Changed payload under the same decision ID cannot replace it.",
+      "decisions": "002-003/006",
+      "source": "docs/design/combat-sealed-decision-protocol-v1.md",
+      "line": 266,
+      "plannedTasks": [
+        "CMB-TASK-011",
+        "CMB-TASK-020",
+        "CMB-TASK-021"
+      ],
+      "plannedTest": "CombatProtocolTests.ExactRetryRecoversReceiptWithoutNewEvent",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "ROUND2:`test_full_clock_matrix`,`test_expiry_recovery`; SIDE:`verify_matrix`,`test_corrected_context_and_history`",
+        "contractCoverage": "Bounded exact receipt recovery, no duplicate event and changed/stale binding rejection covered",
+        "runtimeOwners": "011,020,021"
+      }
+    },
+    {
+      "id": "CMB-PRO-AC-003",
+      "requirement": "Wrong audience/round/slot/config, old revision, changed target/resources or unknown fields reject without combat events/RNG or hidden diagnostics.",
+      "decisions": "002-003/007",
+      "source": "docs/design/combat-sealed-decision-protocol-v1.md",
+      "line": 267,
+      "plannedTasks": [
+        "CMB-TASK-011",
+        "CMB-TASK-020",
+        "CMB-TASK-021"
+      ],
+      "plannedTest": "CombatProtocolTests.InvalidBindingsRejectWithoutEffectsOrDiagnostics",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "ROUND2:`test_invalid_before_clock`,`test_predecessor_and_clock_tamper`; SIDE:`verify_matrix`,`test_current_source_integrity`",
+        "contractCoverage": "Bounded round/slot/config/audience/revision/raw-shape failures covered. General mutable-world recertification remains runtime work",
+        "runtimeOwners": "011,020,021"
+      }
+    },
+    {
+      "id": "CMB-PRO-AC-004",
+      "requirement": "Clock at deadline rejects the seal and permits one cancellation; just-before second seal makes expiry a no-op. Restart and backward clock cannot extend the deadline.",
+      "decisions": "003-004",
+      "source": "docs/design/combat-sealed-decision-protocol-v1.md",
+      "line": 268,
+      "plannedTasks": [
+        "CMB-TASK-011"
+      ],
+      "plannedTest": "CombatProtocolTests.FixedPublicOpeningClockPreservesDeadlineAndRace",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "ROUND2:`test_full_clock_matrix`,`test_expiry_recovery`,`test_authenticated_readback`; SIDE:`test_corrected_clock_privacy`",
+        "contractCoverage": "Corrected immutable opening floor, deadline equality, Prepared race and recovery covered; old private-high-water rule superseded",
+        "runtimeOwners": "011"
+      }
+    },
+    {
+      "id": "CMB-PRO-AC-005",
+      "requirement": "Timeout/unavailability with zero or one seal cancels voluntarily without filling slots, costs, history, target use or RNG. Late timers/replies cannot reopen it.",
+      "decisions": "004/006",
+      "source": "docs/design/combat-sealed-decision-protocol-v1.md",
+      "line": 269,
+      "plannedTasks": [
+        "CMB-TASK-011"
+      ],
+      "plannedTest": "CombatProtocolTests.IncompleteVoluntaryRoundCancelsWithoutCosts",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "ROUND2:`test_expiry_recovery`,`test_replay_tamper`; fixtures `*.None.expired`,`*.attacker.expired`,`*.defender.fault`",
+        "contractCoverage": "Bounded zero/one-seal cancellation and closed-state rejection covered; no runtime scheduler claim",
+        "runtimeOwners": "011"
+      }
+    },
+    {
+      "id": "CMB-PRO-AC-006",
+      "requirement": "Prepared/committed restart continues without controller availability; commitment appends once before RNG; provider failure cannot undo or reroll.",
+      "decisions": "004-006",
+      "source": "docs/design/combat-sealed-decision-protocol-v1.md",
+      "line": 270,
+      "plannedTasks": [
+        "CMB-TASK-011",
+        "CMB-TASK-012",
+        "CMB-TASK-013"
+      ],
+      "plannedTest": "CombatProtocolTests.PreparedRecoveryIgnoresControllerFailure",
+      "verificationStatus": "planned; runtime test not implemented",
+      "deferredComponent": "Actual hosted/provider recovery path deferred; planned local evidence uses simulated trusted controller failure.",
+      "contractEvidenceDraft": {
+        "evidence": "ROUND2:`test_expiry_recovery` disabled-admission Prepared continuation; RESULT1:`checkpoint_checks`",
+        "contractCoverage": "Corrected pre-result recovery covered. Corrected result continuation pending; actual provider failure path deferred",
+        "runtimeOwners": "011,012,013; host"
+      }
+    },
+    {
+      "id": "CMB-PRO-AC-007",
+      "requirement": "Certified empty Anti-Armor advance permits commit; forged/extra structural or combat-fact transition fails strict replay. No other action can spend committed allocations.",
+      "decisions": "001/005-006",
+      "source": "docs/design/combat-sealed-decision-protocol-v1.md",
+      "line": 271,
+      "plannedTasks": [
+        "CMB-TASK-010",
+        "CMB-TASK-011",
+        "CMB-TASK-012"
+      ],
+      "plannedTest": "CombatProtocolTests.OnlyCertifiedEmptyAntiArmorPermitsCommit",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "ROUND2:`test_replay_tamper`,`test_predecessor_and_clock_tamper`, committed traces; STEPS:`main` FA gate",
+        "contractCoverage": "Exact retained FA→AA→CA replay covered. Extra spending commands outside closed command union reject; broader allocation consumers unimplemented",
+        "runtimeOwners": "010,011,012"
+      }
+    },
+    {
+      "id": "CMB-PRO-AC-008",
+      "requirement": "Cut/restart at opening, either seal, commit, each settlement boundary and terminal closure reproduces receipts, bytes, history/hex use and RNG; no unresolved obligation permits completed closure.",
+      "decisions": "001-006",
+      "source": "docs/design/combat-sealed-decision-protocol-v1.md",
+      "line": 272,
+      "plannedTasks": [
+        "CMB-TASK-008",
+        "CMB-TASK-010",
+        "CMB-TASK-011",
+        "CMB-TASK-012",
+        "CMB-TASK-013",
+        "CMB-TASK-014",
+        "CMB-TASK-015",
+        "CMB-TASK-016"
+      ],
+      "plannedTest": "CombatProtocolTests.EveryRoundCutRestoresPendingStateAndReceipts",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "ROUND2:`test_replay_tamper`; RESULT1:`checkpoint_checks`; SNAP1:`compose_tests`",
+        "contractCoverage": "Corrected round cuts plus historical settlement cuts. Corrected Result2/A2 and end-to-end evidence pending",
+        "runtimeOwners": "008,010–016"
+      }
+    },
+    {
+      "id": "CMB-PRO-AC-009",
+      "requirement": "Alter base, slot, accepted time, deadline, codec/policy, cursor or terminal cause in snapshot/event evidence: strict readback fails.",
+      "decisions": "005-007",
+      "source": "docs/design/combat-sealed-decision-protocol-v1.md",
+      "line": 273,
+      "plannedTasks": [
+        "CMB-TASK-008"
+      ],
+      "plannedTest": "CombatProtocolTests.TamperedRoundTimePolicyAndEvidenceReject",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "ROUND2:`test_replay_tamper`,`test_predecessor_and_clock_tamper`; SNAP1:`compose_tests`",
+        "contractCoverage": "Corrected round policy/time/base tampering covered; full snapshot tampering currently historical. Corrected checkpoint composition pending004B",
+        "runtimeOwners": "008"
+      }
+    },
+    {
+      "id": "CMB-PRO-AC-010",
+      "requirement": "Hidden opponent identity/choice/acceptance-order/cause variations with equal visible histories preserve side artifacts and identical submission outcomes. No raw hashes/versions in Dispatch or Runner output.",
+      "decisions": "002-003/006",
+      "source": "docs/design/combat-sealed-decision-protocol-v1.md",
+      "line": 274,
+      "plannedTasks": [
+        "CMB-TASK-020",
+        "CMB-TASK-021",
+        "CMB-TASK-023"
+      ],
+      "plannedTest": "CombatProtocolTests.HiddenSealVariantsPreserveSideBytesAndOutcomes",
+      "verificationStatus": "planned; runtime test not implemented",
+      "deferredComponent": "Hosted Dispatch transport: protobuf allocation, authenticated audience mapping, durable delivery, provider handling and timing need separate deferred host task set. Planned local Core/Runner checks do not establish transport privacy.",
+      "contractEvidenceDraft": {
+        "evidence": "SIDE:`test_corrected_clock_privacy`,`test_corrected_declassifier_probes`,`verify_matrix`",
+        "contractCoverage": "Corrected A1 side bytes/outcomes and raw-token exclusions covered. A2/A3/004B Runner integration pending; no Dispatch transport proof",
+        "runtimeOwners": "020,021,023; host"
+      }
+    },
+    {
+      "id": "CMB-PRO-AC-011",
+      "requirement": "Ambiguous or mandatory-attack profile fails trusted certification before any active decision; cancellation never masks obligations or enables a same-opportunity retry/automatic repeat loop.",
+      "decisions": "004/007",
+      "source": "docs/design/combat-sealed-decision-protocol-v1.md",
+      "line": 275,
+      "plannedTasks": [
+        "CMB-TASK-006",
+        "CMB-TASK-009",
+        "CMB-TASK-019"
+      ],
+      "plannedTest": "CombatProtocolTests.UnsupportedProfileAndCancelledOpportunityCannotRepeat",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "CONTENT:`main`; ROUND2:`test_expiry_recovery`; CYCLE:`boundary_checks`",
+        "contractCoverage": "Bounded unsupported-input/closed-round behavior. Ambiguous/mandatory certification and anti-repeat combination remain partial; A3 pending",
+        "runtimeOwners": "006,009,019"
+      }
+    },
+    {
+      "id": "CMB-PRO-AC-012",
+      "requirement": "Historical codecs/bundles unchanged; old reader rejects new open rounds; disabling admission preserves the compatible recovery path.",
+      "decisions": "007",
+      "source": "docs/design/combat-sealed-decision-protocol-v1.md",
+      "line": 276,
+      "plannedTasks": [
+        "CMB-TASK-008",
+        "CMB-TASK-011",
+        "CMB-TASK-021"
+      ],
+      "plannedTest": "CombatProtocolTests.OldReadersRejectSuccessorAndDisabledAdmissionStillRecovers",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "ROUND2:`test_old_reader_rejection`,`test_disabled_admission`,`test_expiry_recovery`,`test_predecessor_and_clock_tamper`; SIDE:`test_current_profile_boundary`",
+        "contractCoverage": "Explicit successor rejection, disabled new admission and compatible recovery covered; runtime registration/migration deferred",
+        "runtimeOwners": "008,011,021"
+      }
+    },
+    {
+      "id": "CMB-STEP-AC-001",
+      "requirement": "Only exact completed Breakdown/no-Reaction authority opens Combat. Wrong stage/side/order rejects; CP/BP/Cohesion/TOE/RNG remain unchanged.",
+      "decisions": "001",
+      "source": "docs/design/combat-step-transitions-v1.md",
+      "line": 215,
+      "plannedTasks": [
+        "CMB-TASK-009",
+        "CMB-TASK-010",
+        "CMB-TASK-019"
+      ],
+      "plannedTest": "CombatStepTests.OnlyCompletedBreakdownOpensCombat",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "SELECT:`verify`,`semantic_red`; NOATTACK:`verify`; STEPS:`main` forged Reaction/moved-boundary negatives",
+        "contractCoverage": "Inherited actual entry plus bounded C3 rejection evidence. General profile/runtime entry certification deferred",
+        "runtimeOwners": "009,010,019"
+      }
+    },
+    {
+      "id": "CMB-STEP-AC-002",
+      "requirement": "Selection creates no attack/round. Force Assignment derives its final opportunity from the later snapshot and links the original selected participants and decline.",
+      "decisions": "002/004",
+      "source": "docs/design/combat-step-transitions-v1.md",
+      "line": 216,
+      "plannedTasks": [
+        "CMB-TASK-009",
+        "CMB-TASK-010",
+        "CMB-TASK-011"
+      ],
+      "plannedTest": "CombatStepTests.SelectionAndLaterRoundHaveExactCausalBinding",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "STEPS:`main`, `accepted-decline`; ROUND2:`test_predecessor_and_clock_tamper`; SIDE:`test_corrected_context_and_history`",
+        "contractCoverage": "Bounded selection→decline→later corrected round/context continuity covered; synthetic C3 lineage explicit",
+        "runtimeOwners": "009,010,011"
+      }
+    },
+    {
+      "id": "CMB-STEP-AC-003",
+      "requirement": "Selected decline/full-assignment trace has exactly six ordered step completions. Each successor is the same cycle/slot's next step, ending at Reserve Release.",
+      "decisions": "001/003/005",
+      "source": "docs/design/combat-step-transitions-v1.md",
+      "line": 217,
+      "plannedTasks": [
+        "CMB-TASK-010",
+        "CMB-TASK-011",
+        "CMB-TASK-016"
+      ],
+      "plannedTest": "CombatStepTests.SelectedAssaultCompletesExactlySixSteps",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "STEPS:`main` `accepted-decline`; ROUND2 committed traces; RESULT1:`behavioral`,`checkpoint_checks`",
+        "contractCoverage": "Six-step closure exists through historical result lane. Corrected Result2/A2 closure remains pending",
+        "runtimeOwners": "010,011,016"
+      }
+    },
+    {
+      "id": "CMB-STEP-AC-004",
+      "requirement": "No-candidate closure, voluntary no-selection and selection timeout/trusted unavailability produce no RBA/assignment round; zero candidates creates no model decision. All six steps close without attack/resource effects; old timer/unavailability commands after selection closure cannot affect the next decision.",
+      "decisions": "002-003/006",
+      "source": "docs/design/combat-step-transitions-v1.md",
+      "line": 218,
+      "plannedTasks": [
+        "CMB-TASK-009",
+        "CMB-TASK-010"
+      ],
+      "plannedTest": "CombatStepTests.EmptyAndUnavailableSelectionTraverseWithoutAttack",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "STEPS:`main` `no-candidate`,`voluntary-pass`,`selection-expiry`, unavailable-opening and stale-selection-timer assertions; NOATTACK:`semantic_gate`,`verify`; SIDE:`verify_matrix`",
+        "contractCoverage": "Bounded complete no-attack traversal and zero-decision behavior covered; actual inherited sources currently await A3 public integration",
+        "runtimeOwners": "009,010"
+      }
+    },
+    {
+      "id": "CMB-STEP-AC-005",
+      "requirement": "Missing RBA response cancels without a decline receipt; accepted decline defeats a later timer. Stale/wrong-side/cross-selection decline rejects without mutation.",
+      "decisions": "004/007",
+      "source": "docs/design/combat-step-transitions-v1.md",
+      "line": 219,
+      "plannedTasks": [
+        "CMB-TASK-010"
+      ],
+      "plannedTest": "CombatStepTests.RbaExpiryCannotManufactureDecline",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "STEPS:`main` `rba-expiry`, wrong-owner decline, unavailable/regressed RBA and accepted-decline stale timer; SIDE:`verify_matrix`",
+        "contractCoverage": "Bounded decline/cancellation semantics and public submission binding covered",
+        "runtimeOwners": "010"
+      }
+    },
+    {
+      "id": "CMB-STEP-AC-006",
+      "requirement": "RBA/assignment cancellation traverses remaining steps once, preserves earlier receipts/resources and never permits reselection or synthetic material progress.",
+      "decisions": "003-004/006",
+      "source": "docs/design/combat-step-transitions-v1.md",
+      "line": 220,
+      "plannedTasks": [
+        "CMB-TASK-010",
+        "CMB-TASK-011"
+      ],
+      "plannedTest": "CombatStepTests.CancellationTraversesOnceWithoutMaterialProgress",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "STEPS:`main` `rba-expiry`; ROUND2 expired/fault traces and `test_expiry_recovery`; CYCLE:`boundary_checks`",
+        "contractCoverage": "Cancellation traversal/recovery covered. Cross-family public semantic-progress reconciliation pendingA3",
+        "runtimeOwners": "010,011"
+      }
+    },
+    {
+      "id": "CMB-STEP-AC-007",
+      "requirement": "Second seal derives Prepared; FA completion requires and preserves it, then permits exactly FA->AA->CA for either valid seal order. Injected extra event, changed world/round or forged empty-AA proof fails replay. Prepared choices cannot expire.",
+      "decisions": "003/005/007",
+      "source": "docs/design/combat-step-transitions-v1.md",
+      "line": 221,
+      "plannedTasks": [
+        "CMB-TASK-010",
+        "CMB-TASK-011"
+      ],
+      "plannedTest": "CombatStepTests.PreparedAssignmentsSurviveExactStepAdvance",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "ROUND2:`test_full_clock_matrix`,`test_expiry_recovery`,`test_replay_tamper`; four committed both-side/order traces",
+        "contractCoverage": "Corrected Prepared retention and exact structural replay covered. Keep golden replay distinct from dedicated each-forged-AA-field tests",
+        "runtimeOwners": "010,011"
+      }
+    },
+    {
+      "id": "CMB-STEP-AC-008",
+      "requirement": "Committed/partially settled CA cannot complete or become no-attack. Only fully settled terminal proof advances to Reserve Release; release itself remains separate.",
+      "decisions": "005-006",
+      "source": "docs/design/combat-step-transitions-v1.md",
+      "line": 222,
+      "plannedTasks": [
+        "CMB-TASK-014",
+        "CMB-TASK-016"
+      ],
+      "plannedTest": "CombatStepTests.UnsettledAssaultCannotEnterReserveRelease",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "RESULT1:`main` advance-before-result rejection; `checkpoint_checks` ordered suffix replay; ROUND2 committed terminal",
+        "contractCoverage": "Historical settlement closure guard covered. Corrected Result2/A2 terminal integration pending",
+        "runtimeOwners": "014,016"
+      }
+    },
+    {
+      "id": "CMB-STEP-AC-009",
+      "requirement": "Restart after opening, selection, empty steps, RBA opening/decline, either seal, preparation and settlement reconstructs the same next capability and bytes without refreshed deadlines.",
+      "decisions": "001-007",
+      "source": "docs/design/combat-step-transitions-v1.md",
+      "line": 223,
+      "plannedTasks": [
+        "CMB-TASK-008"
+      ],
+      "plannedTest": "CombatStepTests.EveryStepCutRestoresCapabilityWithoutRenewal",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "STEPS:`main` every-cut readback; ROUND2:`test_replay_tamper`,`test_expiry_recovery`; SIDE:`verify_matrix`; SNAP1:`compose_tests`",
+        "contractCoverage": "Corrected A1 cuts covered; settlement capability/deadline recovery still historical. Result2/A2/004B pending",
+        "runtimeOwners": "008"
+      }
+    },
+    {
+      "id": "CMB-STEP-AC-010",
+      "requirement": "Duplicate/out-of-order/cross-cycle step receipts and caller-supplied empty lists cannot advance authority. Each accepted completion advances authority exactly once.",
+      "decisions": "001/003/007",
+      "source": "docs/design/combat-step-transitions-v1.md",
+      "line": 224,
+      "plannedTasks": [
+        "CMB-TASK-010",
+        "CMB-TASK-011"
+      ],
+      "plannedTest": "CombatStepTests.DuplicateOrForeignCompletionCannotAdvance",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "STEPS:`main` skipped/reversed steps, removed receipts, changed segment; NOATTACK:`verify`; ROUND2:`test_replay_tamper`",
+        "contractCoverage": "Bounded duplicate/ordering/context/readback rejection covered; accepted receipt recovery distinguished from replaying duplicate event suffix",
+        "runtimeOwners": "010,011"
+      }
+    },
+    {
+      "id": "CMB-STEP-AC-011",
+      "requirement": "Adding a gun/armor/mandatory obligation or requiring actual RBA fails the bounded profile gate before decisions. The decline-only fixture is never advertised as the full source action surface.",
+      "decisions": "003-004/006",
+      "source": "docs/design/combat-step-transitions-v1.md",
+      "line": 225,
+      "plannedTasks": [
+        "CMB-TASK-006",
+        "CMB-TASK-009"
+      ],
+      "plannedTest": "CombatStepTests.UnsupportedStepObligationsRejectCertification",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "CONTENT:`main` profile negatives; STEPS bounded schema and `main`; SIDE spec bounded-admission declaration",
+        "contractCoverage": "Partial selected-profile gate evidence. Explicit gun/armor/mandatory/actual-RBA negative matrix needs inventory confirmation; no broad action-surface claim",
+        "runtimeOwners": "006,009"
+      }
+    },
+    {
+      "id": "CMB-STEP-AC-012",
+      "requirement": "Hidden bindings/reasons with equal authorized visible histories preserve tokens, waiting, step history and submission outcomes; raw authority receipts cannot reach player/model/Runner output.",
+      "decisions": "007",
+      "source": "docs/design/combat-step-transitions-v1.md",
+      "line": 226,
+      "plannedTasks": [
+        "CMB-TASK-020",
+        "CMB-TASK-021",
+        "CMB-TASK-023"
+      ],
+      "plannedTest": "CombatStepTests.HiddenStepCausesPreservePublicArtifacts",
+      "verificationStatus": "planned; runtime test not implemented",
+      "deferredComponent": "Hosted Dispatch transport: protobuf allocation, authenticated audience mapping, durable delivery, provider handling and timing need separate deferred host task set. Planned local Core/Runner checks do not establish transport privacy.",
+      "contractEvidenceDraft": {
+        "evidence": "SIDE:`verify_matrix`,`test_corrected_clock_privacy`,`test_corrected_declassifier_probes`; legacy `test_privacy_and_binding` only as historical",
+        "contractCoverage": "Corrected A1 evidence retained. A2/A3 hidden-cause extensions and004B Runner projection pending; hosted transport deferred",
+        "runtimeOwners": "020,021,023; host"
+      }
+    },
+    {
+      "id": "CMB-RES-AC-001",
+      "requirement": "Exact CP thresholds E=5 attacker/E=7 defender admit at CPA10; any excess or changed Cohesion/readiness fails trusted profile admission before choice/commit. No hidden-state-dependent outward workaround.",
+      "decisions": "001-003",
+      "source": "docs/design/combat-cost-resolution-order-v1.md",
+      "line": 199,
+      "plannedTasks": [
+        "CMB-TASK-006",
+        "CMB-TASK-009",
+        "CMB-TASK-012"
+      ],
+      "plannedTest": "CombatResolutionTests.ExactCpAndReadinessThresholdsGateCommit",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "Q1.main:432-443/resource_boundary_base;S.boundary/candidate;I.main",
+        "contractCoverage": "P:threshold/resource contracts;corrected result/profile integration and A2 pending;no complete outward certification",
+        "runtimeOwners": "006,009,012"
+      }
+    },
+    {
+      "id": "CMB-RES-AC-002",
+      "requirement": "Commit publishes history, hex use, E+5/E+3 and both ammo10->0 together, with unchanged RNG/TOE/positions. Inject publication failure: all prior facts remain.",
+      "decisions": "002/007",
+      "source": "docs/design/combat-cost-resolution-order-v1.md",
+      "line": 200,
+      "plannedTasks": [
+        "CMB-TASK-012"
+      ],
+      "plannedTest": "CombatResolutionTests.CommitPublishesCostsAndHistoryAtomically",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "Q1.main:369-397/attacker-first,defender-first;Q2.test_replay_tamper",
+        "contractCoverage": "H+Q2:single commit event/cost/replay model;publication-failure injection absent",
+        "runtimeOwners": "012"
+      }
+    },
+    {
+      "id": "CMB-RES-AC-003",
+      "requirement": "No-selection/cancellation spends nothing; retry after successful commit does not charge again. Post-debit zero ammo permits this paid use but grants no supplied repeat.",
+      "decisions": "001-002/007",
+      "source": "docs/design/combat-cost-resolution-order-v1.md",
+      "line": 201,
+      "plannedTasks": [
+        "CMB-TASK-012"
+      ],
+      "plannedTest": "CombatResolutionTests.CancellationAndRetryNeverChargeTwice",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "S.main/no-selection branches;Q2.test_expiry_recovery;C.trace/exhausted-ammo-still-moves",
+        "contractCoverage": "P:no-charge cancellation/idempotent replay/no-ammo continuation;A2/A3 bridges pending",
+        "runtimeOwners": "012"
+      }
+    },
+    {
+      "id": "CMB-RES-AC-004",
+      "requirement": "Both seal orders yield equal gameplay/cost/dice results using role order; each history independently replays its own receipt/version bytes.",
+      "decisions": "003-004/007",
+      "source": "docs/design/combat-cost-resolution-order-v1.md",
+      "line": 202,
+      "plannedTasks": [
+        "CMB-TASK-012",
+        "CMB-TASK-013"
+      ],
+      "plannedTest": "CombatResolutionTests.BothSealOrdersRetainRoleOrderedResults",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "Q1.main:428-430;R1.main:348-353/mirrored attackerSide and reversed seals",
+        "contractCoverage": "H:gameplay/role-order/replay evidence;corrected Result2 integration pending",
+        "runtimeOwners": "012,013"
+      }
+    },
+    {
+      "id": "CMB-RES-AC-005",
+      "requirement": "Both sides use the same final differential and frozen pre-loss strength. Swapping casualty application order cannot change either result. CP-induced row changes may not be reset to fixture Cohesion.",
+      "decisions": "001/003",
+      "source": "docs/design/combat-cost-resolution-order-v1.md",
+      "line": 203,
+      "plannedTasks": [
+        "CMB-TASK-005",
+        "CMB-TASK-013"
+      ],
+      "plannedTest": "CombatResolutionTests.BothRolesUseFrozenStrengthAndSharedDifferential",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "R1.resolve;R1.projected_world:133-134;W.main:327-340",
+        "contractCoverage": "H/P:frozen preloss and exhaustive arithmetic;explicit casualty-order permutation assertion absent;Result2 pending",
+        "runtimeOwners": "005,013"
+      }
+    },
+    {
+      "id": "CMB-RES-AC-006",
+      "requirement": "All 36 Morale coordinates and every selected differential/role/assault coordinate exist in independently verified tables. Missing/extra/ambiguous rows fail artifact admission; sampled goldens alone cannot certify tables.",
+      "decisions": "001/004",
+      "source": "docs/design/combat-cost-resolution-order-v1.md",
+      "line": 204,
+      "plannedTasks": [
+        "CMB-TASK-005"
+      ],
+      "plannedTest": "CombatResolutionTests.EverySelectedCoordinateMatchesIndependentSource",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "I.main/RulesInput golden and negativeVectors;SRC.main:136-168",
+        "contractCoverage": "covered:36 Morale/360 normalized loss cells;C# artifact/table parity pending005",
+        "runtimeOwners": "005"
+      }
+    },
+    {
+      "id": "CMB-RES-AC-007",
+      "requirement": "Existing seed18 favorable retreat, seed47/31707 captures, seed208 refusal, seed1296 zero-loss Engaged and rejection/block-crossing vectors retain their correlated facts. Seed208's final losses remain conditional on DES-005 refusal evidence.",
+      "decisions": "003-005",
+      "source": "docs/design/combat-cost-resolution-order-v1.md",
+      "line": 205,
+      "plannedTasks": [
+        "CMB-TASK-005",
+        "CMB-TASK-013",
+        "CMB-TASK-014"
+      ],
+      "plannedTest": "CombatResolutionTests.RetainedSeedVectorsPreserveConditionalResults",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "RNG.VECTORS;R1.behavioral/ordinary,refusal-loss-dp,zero-engaged,defender-capture-guard,attacker-capture-guard-cp-limit",
+        "contractCoverage": "H:seeded numerical and settlement traces;corrected Result2 and A2 pending",
+        "runtimeOwners": "005,013,014"
+      }
+    },
+    {
+      "id": "CMB-RES-AC-008",
+      "requirement": "Eight accepted dice without capture, nine when triggered; rejected bytes advance only cursor. Changed purpose, sorted pair, extra draw or altered final cursor fails strict readback.",
+      "decisions": "004/007",
+      "source": "docs/design/combat-cost-resolution-order-v1.md",
+      "line": 206,
+      "plannedTasks": [
+        "CMB-TASK-013"
+      ],
+      "plannedTest": "CombatResolutionTests.RoleOrderedRngUsesExactConditionalDrawCount",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "R1.checkpoint_checks:295-298;R1.resolve;RNG.VECTORS",
+        "contractCoverage": "H:role purposes/die/cursor readback and research rejection/block crossing;Result2 pending",
+        "runtimeOwners": "013"
+      }
+    },
+    {
+      "id": "CMB-RES-AC-009",
+      "requirement": "Restart before/after commit and result publication preserves exactly one cost/result and RNG continuation. Failed resolution publishes no partial dice/result/cursor; no provider or player needed to resume rolls.",
+      "decisions": "002/004/007",
+      "source": "docs/design/combat-cost-resolution-order-v1.md",
+      "line": 207,
+      "plannedTasks": [
+        "CMB-TASK-008",
+        "CMB-TASK-012",
+        "CMB-TASK-013"
+      ],
+      "plannedTest": "CombatResolutionTests.PublicationFailureAndRestoreNeverReroll",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "Q2.test_replay_tamper,test_expiry_recovery;R1.checkpoint_checks;R1.main:354-355;N.compose_tests",
+        "contractCoverage": "H/P:every-cut replay and pure overflow no-mutation;durable restart/publication-failure atomicity unproved",
+        "runtimeOwners": "008,012,013"
+      }
+    },
+    {
+      "id": "CMB-RES-AC-010",
+      "requirement": "Result leaves retreat/refusal, final losses, custody and relations pending. Zero losses do not erase Retreat/Engaged; capture is a subset and RP waits for proved victory. No unresolved round advances to Reserve Release.",
+      "decisions": "005",
+      "source": "docs/design/combat-cost-resolution-order-v1.md",
+      "line": 208,
+      "plannedTasks": [
+        "CMB-TASK-013",
+        "CMB-TASK-014",
+        "CMB-TASK-016"
+      ],
+      "plannedTest": "CombatResolutionTests.ResolutionRetainsEverySettlementObligation",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "R1.transition,checkpoint_checks/zero-retreat,zero-engaged,refusal-loss-dp,capture cases",
+        "contractCoverage": "H:pending settlement and closure guards;Result2/A2 pending",
+        "runtimeOwners": "013,014,016"
+      }
+    },
+    {
+      "id": "CMB-RES-AC-011",
+      "requirement": "Empty Barrage/AA yield only ordered DES-003 receipts with no cost/draw. Nonempty stages, second assault, extra exposed occupant or reduced-cost differential require extension before active admission.",
+      "decisions": "001/006",
+      "source": "docs/design/combat-cost-resolution-order-v1.md",
+      "line": 209,
+      "plannedTasks": [
+        "CMB-TASK-006",
+        "CMB-TASK-009",
+        "CMB-TASK-010"
+      ],
+      "plannedTest": "CombatResolutionTests.EmptyStagesSpendNothingAndUnsupportedStagesReject",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "S.main/accepted-decline,no-attack traces;Q1.behavioral_checks;Q2.test_replay_tamper",
+        "contractCoverage": "P:empty ordered stages and closed singleton admission;broader stages/second assault remain excluded",
+        "runtimeOwners": "006,009,010"
+      }
+    },
+    {
+      "id": "CMB-RES-AC-012",
+      "requirement": "Tampered cost/base/result/pending evidence fails restore; equal authorized histories preserve projected bytes and outcomes. Raw resolver receipts and RNG state never reach side artifacts.",
+      "decisions": "007",
+      "source": "docs/design/combat-cost-resolution-order-v1.md",
+      "line": 210,
+      "plannedTasks": [
+        "CMB-TASK-008",
+        "CMB-TASK-020"
+      ],
+      "plannedTest": "CombatResolutionTests.TamperedResultsRejectAndPrivateEvidenceNeverProjects",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "R1.checkpoint_checks;N.compose_tests",
+        "contractCoverage": "H/P:authority cost/base/result/pending tamper rejection;settlement side equality and no-raw-receipt proof awaitA2/B",
+        "runtimeOwners": "008,020"
+      }
+    },
+    {
+      "id": "CMB-SET-AC-001",
+      "requirement": "Admission covers every role/result/retreat/custody branch, certified route/reunion geometry and integer settlement CP. Hidden-blocker or unsupported variants fail profile certification before choice; no seed narrows results.",
+      "decisions": "001/007",
+      "source": "docs/design/combat-settlement-disclosure-v1.md",
+      "line": 223,
+      "plannedTasks": [
+        "CMB-TASK-006",
+        "CMB-TASK-009",
+        "CMB-TASK-014",
+        "CMB-TASK-015"
+      ],
+      "plannedTest": "CombatSettlementTests.EveryCertifiedOutcomeHasLegalSettlementBranches",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "W.main:327-340;W.result_facts,world_at;R1.behavioral/all8 cases",
+        "contractCoverage": "H/P:8840 numerical combinations plus certified synthetic route branches;full side admission awaitsA2;unsupported geometry remains rejected",
+        "runtimeOwners": "006,009,014,015"
+      }
+    },
+    {
+      "id": "CMB-SET-AC-002",
+      "requirement": "Refusal adds percentage before rounding; seed208 yields3 defender loss/3DP, while fulfilled retreat changes that result. Capture subset plus other losses conserve original10 TOE.",
+      "decisions": "002",
+      "source": "docs/design/combat-settlement-disclosure-v1.md",
+      "line": 224,
+      "plannedTasks": [
+        "CMB-TASK-005",
+        "CMB-TASK-014"
+      ],
+      "plannedTest": "CombatSettlementTests.RefusalPrecedesRoundingAndLossesConserveToe",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "SRC.main:157-163,172-190;W.main:327-340;R1.behavioral/refusal-loss-dp",
+        "contractCoverage": "H:refusal-before-rounding/conservation;Result2/A2 pending",
+        "runtimeOwners": "005,014"
+      }
+    },
+    {
+      "id": "CMB-SET-AC-003",
+      "requirement": "Guard transfer never counts toward30% loss DP. Loss3 plus captured2 deducts3, not5; subsequent one-TOE guard transfer preserves a separate asset balance.",
+      "decisions": "002/004",
+      "source": "docs/design/combat-settlement-disclosure-v1.md",
+      "line": 225,
+      "plannedTasks": [
+        "CMB-TASK-014",
+        "CMB-TASK-015"
+      ],
+      "plannedTest": "CombatSettlementTests.CaptureAndGuardTransferNeverDoubleDebitLoss",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "W.assert_conservation:274-288;R1.behavioral/attacker-capture-guard-cp-limit",
+        "contractCoverage": "H:separate guard transfer and loss/capture accounting;Result2/A2 pending",
+        "runtimeOwners": "014,015"
+      }
+    },
+    {
+      "id": "CMB-SET-AC-004",
+      "requirement": "Actual one-hex retreat spends1 CP; E=10->11 adds1DP after result. Refusal spends none. Frozen Morale/RNG do not change; DP then proved victory RP retain both causes.",
+      "decisions": "002-003",
+      "source": "docs/design/combat-settlement-disclosure-v1.md",
+      "line": 226,
+      "plannedTasks": [
+        "CMB-TASK-014",
+        "CMB-TASK-016"
+      ],
+      "plannedTest": "CombatSettlementTests.RetreatCpDpAndVictoryRpKeepSeparateCauses",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "W.world_at:170-206;R1.behavioral/attacker-capture-guard-cp-limit,refusal-loss-dp",
+        "contractCoverage": "H:retreat CP/DP and retained cause sequence;Result2/A2 pending",
+        "runtimeOwners": "014,016"
+      }
+    },
+    {
+      "id": "CMB-SET-AC-005",
+      "requirement": "Zero-distance produces no decision; real retreat/refusal takes exactly one disposition/loss/movement path. Lost replies, duplicates and stale timers cannot choose twice or move twice.",
+      "decisions": "001/003/006",
+      "source": "docs/design/combat-settlement-disclosure-v1.md",
+      "line": 227,
+      "plannedTasks": [
+        "CMB-TASK-014"
+      ],
+      "plannedTest": "CombatSettlementTests.RetreatChoiceOrFallbackMovesAtMostOnce",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "R1.checkpoint_checks:279-284;R1.timing_checks:330-340;R1.trace_case/zero-engaged",
+        "contractCoverage": "H:no required window plus exact retry/stale timer model;corrected Result2/A2 pending;real lost-reply delivery deferred",
+        "runtimeOwners": "014"
+      }
+    },
+    {
+      "id": "CMB-SET-AC-006",
+      "requirement": "Captures on either side settle with valid initial route and co-located one-TOE guard transfer, or immediate unguarded escape. No off-map guard, extra prisoner debit or unguarded transient action is possible.",
+      "decisions": "004",
+      "source": "docs/design/combat-settlement-disclosure-v1.md",
+      "line": 228,
+      "plannedTasks": [
+        "CMB-TASK-015"
+      ],
+      "plannedTest": "CombatSettlementTests.BothCaptureOwnersSupportGuardOrEscape",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "R1.behavioral/defender-capture-guard,defender-capture-escape,attacker-capture-guard-cp-limit,attacker-capture-escape;W.world_at:210-237",
+        "contractCoverage": "H:both-role custody routes/guard/escape;Result2/A2 pending",
+        "runtimeOwners": "015"
+      }
+    },
+    {
+      "id": "CMB-SET-AC-007",
+      "requirement": "Escape reunites with certified friendly recipient, removes current custody and creates delayed replacement entitlement without restoring TOE. Guarded branch retains priority feeding and guard obligations across closure.",
+      "decisions": "004/008",
+      "source": "docs/design/combat-settlement-disclosure-v1.md",
+      "line": 229,
+      "plannedTasks": [
+        "CMB-TASK-015"
+      ],
+      "plannedTest": "CombatSettlementTests.DelayedEntitlementAndGuardObligationsPersist",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "W.assert_conservation;W.main/calendarVectors;R1.behavioral/*capture-escape,*capture-guard*",
+        "contractCoverage": "H:entitlement/upkeep retained without TOE restoration;Result2/A2 pending;upkeep/maturity execution excluded",
+        "runtimeOwners": "015"
+      }
+    },
+    {
+      "id": "CMB-SET-AC-008",
+      "requirement": "Deadline equality, controller loss and clock regression produce refusal/unguarded fallback once. Accepted choices defeat later timers; committed attack cannot cancel or renew deadlines.",
+      "decisions": "006",
+      "source": "docs/design/combat-settlement-disclosure-v1.md",
+      "line": 230,
+      "plannedTasks": [
+        "CMB-TASK-014",
+        "CMB-TASK-015"
+      ],
+      "plannedTest": "CombatSettlementTests.MandatoryFallbackPreservesFixedWindowDeadline",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "R1.timing_checks:309-342",
+        "contractCoverage": "H only:historical deadline/fallback/retry checks;Result2 independent window-opening clock correction active and unaccepted;A2 pending",
+        "runtimeOwners": "014,015"
+      }
+    },
+    {
+      "id": "CMB-SET-AC-009",
+      "requirement": "Raw Retreat suppresses Engaged even on refusal; adjacent survivors become Contact. Zero-loss Engaged remains when no Retreat; guard/new arrivals never inherit original relation.",
+      "decisions": "005",
+      "source": "docs/design/combat-settlement-disclosure-v1.md",
+      "line": 231,
+      "plannedTasks": [
+        "CMB-TASK-016"
+      ],
+      "plannedTest": "CombatSettlementTests.RetreatSuppressesEngagedAndContactUsesSurvivors",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "R1.behavioral/zero-engaged,zero-retreat,refusal-loss-dp,*capture-guard*;W.world_at:239-247",
+        "contractCoverage": "H/P:selected original-participant relation reconstruction;Result2/A2 pending;new-arrival extension not certified",
+        "runtimeOwners": "016"
+      }
+    },
+    {
+      "id": "CMB-SET-AC-010",
+      "requirement": "Cuts before/after every event restore the same pending owner/capability, balances, entitlements, receipts and RNG. Wrong order, forged absence proof or altered before/after quantities fails readback.",
+      "decisions": "001/008",
+      "source": "docs/design/combat-settlement-disclosure-v1.md",
+      "line": 232,
+      "plannedTasks": [
+        "CMB-TASK-008",
+        "CMB-TASK-014",
+        "CMB-TASK-015",
+        "CMB-TASK-016"
+      ],
+      "plannedTest": "CombatSettlementTests.EverySettlementCutRestoresExactPendingOwner",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "R1.checkpoint_checks;N.compose_tests;W.main/negativeVectors",
+        "contractCoverage": "H:all retained event/state cuts and field/order tamper;corrected Result2 persistence composition pending",
+        "runtimeOwners": "008,014,015,016"
+      }
+    },
+    {
+      "id": "CMB-SET-AC-011",
+      "requirement": "Own-only changes advance only own projection; approved shared facts advance affected audiences. Hidden-equivalent variants preserve candidates, success/errors and side bytes, with no raw authority receipt in Runner/Dispatch/War Diary.",
+      "decisions": "007",
+      "source": "docs/design/combat-settlement-disclosure-v1.md",
+      "line": 233,
+      "plannedTasks": [
+        "CMB-TASK-020",
+        "CMB-TASK-021",
+        "CMB-TASK-023"
+      ],
+      "plannedTest": "CombatSettlementTests.OwnOnlySettlementAndHiddenVariantsPreserveDisclosure",
+      "verificationStatus": "planned; runtime test not implemented",
+      "deferredComponent": "Hosted Dispatch transport: protobuf allocation, authenticated audience mapping, durable delivery, provider handling and timing need separate deferred host task set. Planned local Core/Runner checks do not establish transport privacy.",
+      "contractEvidenceDraft": {
+        "evidence": "none for settlement side projections;R1/W provide private inputs only",
+        "contractCoverage": "pending:A2 settlement side histories/candidates/outcomes;B Runner/Dispatch/War Diary evidence;A1 does not cover this row",
+        "runtimeOwners": "020,021,023"
+      }
+    },
+    {
+      "id": "CMB-SET-AC-012",
+      "requirement": "No immediate pending loss/retreat/custody/relation allows round closure; later upkeep/replacement records survive. Reserve entry does not prove supported repeat or production readiness.",
+      "decisions": "001/008",
+      "source": "docs/design/combat-settlement-disclosure-v1.md",
+      "line": 234,
+      "plannedTasks": [
+        "CMB-TASK-016"
+      ],
+      "plannedTest": "CombatSettlementTests.RoundClosureRequiresNoImmediateObligations",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "R1.behavioral and transition closure guards;L.checkpoint_checks/settled-guard-empty,settled-escape-empty",
+        "contractCoverage": "H/P:closed settlement retains future work;corrected Result2/A2/A3 bridge pending;repeat/runtime readiness not implied",
+        "runtimeOwners": "016"
+      }
+    },
+    {
+      "id": "CYCLE-COMP-AC-001",
+      "requirement": "First entry opens1; repeat opensk+1 once in same slot and finish targets that slot's Truck Convoy phase. Other stages/slots start1 only through their own supported entry.",
+      "decisions": "001/005",
+      "source": "docs/design/continual-cycle-reserve-composition-v1.md",
+      "line": 278,
+      "plannedTasks": [
+        "CMB-TASK-018",
+        "CMB-TASK-019"
+      ],
+      "plannedTest": "CombatCycleTests.FirstRepeatAndFinishBindExactOccurrence",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "SEQ.main;IC.verify_case/axis-repeat,axis-finish,commonwealth-repeat,commonwealth-finish;COMP.verify/cycle-control",
+        "contractCoverage": "covered selected same-slot authority;A3 side projection and B occurrence evidence pending;other-slot execution excluded",
+        "runtimeOwners": "018,019"
+      }
+    },
+    {
+      "id": "CYCLE-COMP-AC-002",
+      "requirement": "Prefix/order/length/domain tampering changes internal ID or rejects; opening event never hashes itself. Equal hidden forks preserve public refs/action admission.",
+      "decisions": "002",
+      "source": "docs/design/continual-cycle-reserve-composition-v1.md",
+      "line": 279,
+      "plannedTasks": [
+        "CMB-TASK-008",
+        "CMB-TASK-019",
+        "CMB-TASK-020"
+      ],
+      "plannedTest": "CombatCycleTests.CycleCodecRejectsTamperingAndPreservesPublicForks",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "SEQ.main/identity,prefix,occurrence vectors;C.boundary_checks:451-455;IC.verify_case",
+        "contractCoverage": "P:authority framing/self-hash avoidance covered;cycle hidden-fork public action equality awaitsA3",
+        "runtimeOwners": "008,019,020"
+      }
+    },
+    {
+      "id": "CYCLE-COMP-AC-003",
+      "requirement": "First I resolves release/convert; convertedII cannot release in same segment. LaterII release/retain and empty completion work; invalid first/later statuses reject history.",
+      "decisions": "003",
+      "source": "docs/design/continual-cycle-reserve-composition-v1.md",
+      "line": 280,
+      "plannedTasks": [
+        "CMB-TASK-017"
+      ],
+      "plannedTest": "CombatCycleTests.FirstIAndLaterIiHaveDistinctReleaseChoices",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "L.checkpoint_checks/first-release,first-convert,later-release-retain,later-complete-intent,empty;L.boundary_checks:413-429",
+        "contractCoverage": "covered private membership/disposition contract;A3 projection pending",
+        "runtimeOwners": "017"
+      }
+    },
+    {
+      "id": "CYCLE-COMP-AC-004",
+      "requirement": "Timeout midway through first release preserves accepted choices, converts remainingI deterministically and completes; restart/late replies cannot renew deadline or auto-release/repeat.",
+      "decisions": "003",
+      "source": "docs/design/continual-cycle-reserve-composition-v1.md",
+      "line": 281,
+      "plannedTasks": [
+        "CMB-TASK-017"
+      ],
+      "plannedTest": "CombatCycleTests.PartialReleaseTimeoutPreservesAcceptedChoices",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "L.timing_checks:367-410/first-timeout-midway;L.checkpoint_checks",
+        "contractCoverage": "P:single-budget ordered fallback/retry model;corrected public-profile bridge awaitsA3;durable restart deferred",
+        "runtimeOwners": "017"
+      }
+    },
+    {
+      "id": "CYCLE-COMP-AC-005",
+      "requirement": "CPA9/II/spent3 gives voluntary ceiling4, not fresh4. Mandatory overspend persists. Offensive commitment consumes one allowance, defense does not; II DP precedes Morale and requires broader combat admission.",
+      "decisions": "004",
+      "source": "docs/design/continual-cycle-reserve-composition-v1.md",
+      "line": 282,
+      "plannedTasks": [
+        "CMB-TASK-007",
+        "CMB-TASK-012",
+        "CMB-TASK-017",
+        "CMB-TASK-018"
+      ],
+      "plannedTest": "CombatCycleTests.CumulativeCeilingAndOffensiveAllowanceRemainDistinct",
+      "verificationStatus": "planned; runtime test not implemented",
+      "deferredComponent": "Released-II pre-Morale execution is extension-gated. Current planned evidence rejects unsupported admission; no broad Combat execution claimed.",
+      "contractEvidenceDraft": {
+        "evidence": "L.boundary_checks:430-457;C.trace/later-release-cumulative-ceiling,mandatory-overspend-retained",
+        "contractCoverage": "P:cumulative CPA9/II ceiling and commitment history covered;released-II offensive debit/DP-before-Morale execution extension-gated",
+        "runtimeOwners": "007,012,017,018"
+      }
+    },
+    {
+      "id": "CYCLE-COMP-AC-006",
+      "requirement": "Next-Movement exception spans exactly one occurrence and expires even unused. Prior Movement-end proximity survives combat movement; finish and other scopes cannot revive rights.",
+      "decisions": "004/006",
+      "source": "docs/design/continual-cycle-reserve-composition-v1.md",
+      "line": 283,
+      "plannedTasks": [
+        "CMB-TASK-018",
+        "CMB-TASK-019"
+      ],
+      "plannedTest": "CombatCycleTests.MovementExceptionExpiresAfterOneOccurrence",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "IM.verify_case/axis,commonwealth;C.boundary_checks:456-475;C.trace/first-release-finish-expiry,prior-exclusion-finish",
+        "contractCoverage": "covered accepted completion-bound expiry/proximity history;A3 projected continuity pending",
+        "runtimeOwners": "018,019"
+      }
+    },
+    {
+      "id": "CYCLE-COMP-AC-007",
+      "requirement": "Exercise each continuation truth-table row, including no-ZOC Engaged break-off (spent5 +4 +2 =11, with1 immediate DP and ordinary ceiling15), insufficient CP and atomic CP/membership restart. Missing capability/hidden-dependent legality cannot masquerade as proved no-continuation; accepted fallback finish emits no RNG.",
+      "decisions": "005",
+      "source": "docs/design/continual-cycle-reserve-composition-v1.md",
+      "line": 284,
+      "plannedTasks": [
+        "CMB-TASK-018",
+        "CMB-TASK-019"
+      ],
+      "plannedTest": "CombatCycleTests.ContinuationTruthTableUsesExactBreakOffCosts",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "C.verification/control_mode truth table;C.trace/engaged-repeat,later-release-insufficient-cp,no-progress-finish;C.boundary_checks:425-427,476-485",
+        "contractCoverage": "P:continuation proof/unsupported distinction and216 CP coordinates;actual move atomicity and A3/B pending",
+        "runtimeOwners": "018,019"
+      }
+    },
+    {
+      "id": "CYCLE-COMP-AC-008",
+      "requirement": "Only allowlisted actual effects set progress; empty Breakdown/retention/private seals/cancelled selections do not. No-progress repeats reject and cannot synthesize a new release opportunity.",
+      "decisions": "006",
+      "source": "docs/design/continual-cycle-reserve-composition-v1.md",
+      "line": 285,
+      "plannedTasks": [
+        "CMB-TASK-018",
+        "CMB-TASK-019"
+      ],
+      "plannedTest": "CombatCycleTests.OnlyMaterialEffectsEnableRepeat",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "C.boundary_checks:429-431;C.verification:516-518;C.trace/no-progress-finish,later-retain-not-progress;COMP.verify",
+        "contractCoverage": "covered bounded progress allowlist and no-progress rejection;A3/B projected and Runner evidence pending",
+        "runtimeOwners": "018,019"
+      }
+    },
+    {
+      "id": "CYCLE-COMP-AC-009",
+      "requirement": "Repeat resets target-hex use and closed segment controls, preserving stage attack/release/resource/BP/relation/future-obligation facts. Zero ammo never replenishes.",
+      "decisions": "004/006-007",
+      "source": "docs/design/continual-cycle-reserve-composition-v1.md",
+      "line": 286,
+      "plannedTasks": [
+        "CMB-TASK-019"
+      ],
+      "plannedTest": "CombatCycleTests.RepeatPreservesResourcesAndStageHistory",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "C.trace:339-350/engaged-repeat,exhausted-ammo-still-moves,guard-finish;IC.verify_case",
+        "contractCoverage": "P:selected repeat state preservation/reset covered;settled World traces historical pending correctedA2/A3 bridge",
+        "runtimeOwners": "019"
+      }
+    },
+    {
+      "id": "CYCLE-COMP-AC-010",
+      "requirement": "Every checkpoint/suffix reproduces full active-stage history, identity, pending owner and side actions. Omitted history, reopened control, duplicate repeat or premature stage reset fails strict readback.",
+      "decisions": "002/007",
+      "source": "docs/design/continual-cycle-reserve-composition-v1.md",
+      "line": 287,
+      "plannedTasks": [
+        "CMB-TASK-008",
+        "CMB-TASK-018",
+        "CMB-TASK-019",
+        "CMB-TASK-020"
+      ],
+      "plannedTest": "CombatCycleTests.FullHistoryRestoreRejectsReopenedControls",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "IC.verify_case;IM.verify_case;COMP.verify;C.checkpoint_checks,boundary_checks",
+        "contractCoverage": "P:authority suffix/full-history/reopen tamper covered;side actions/current projected checkpoints awaitA3/B",
+        "runtimeOwners": "008,018,019,020"
+      }
+    },
+    {
+      "id": "CYCLE-COMP-AC-011",
+      "requirement": "Occurrence-aware terminal distinguishes Movement1 fromMovement2; child and Maneuver proofs preserve authority parity, replay and first-divergence limits. Trusted bundles remain private.",
+      "decisions": "008",
+      "source": "docs/design/continual-cycle-reserve-composition-v1.md",
+      "line": 288,
+      "plannedTasks": [
+        "CMB-TASK-022",
+        "CMB-TASK-023",
+        "CMB-TASK-024"
+      ],
+      "plannedTest": "CombatCycleTests.OccurrenceTerminalsAndPairedProofsRemainExact",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "SEQ.main/occurrence vectors;COMP.verify/28 authority traces",
+        "contractCoverage": "P:occurrence identity and private authority handoff only;004B child/Maneuver parity/replay/divergence contracts pending",
+        "runtimeOwners": "022,023,024"
+      }
+    },
+    {
+      "id": "CYCLE-COMP-AC-012",
+      "requirement": "Truck Convoy entry retains guard/feeding/replacement work; unsupported terminal, step-limit or maturity crossing is not game success. All pending policy/schema/implementation gates remain visible.",
+      "decisions": "007-008",
+      "source": "docs/design/continual-cycle-reserve-composition-v1.md",
+      "line": 289,
+      "plannedTasks": [
+        "CMB-TASK-022",
+        "CMB-TASK-023"
+      ],
+      "plannedTest": "CombatCycleTests.UnsupportedTerminalsCannotClaimGameSuccess",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "C.trace/guard-finish,escape-timeout;L.checkpoint_checks/settled-guard-empty,settled-escape-empty;COMP.handoff",
+        "contractCoverage": "H/P:future obligations and exclusions retained;004B terminal/step-limit/maturity failure semantics pending;004C gate readback pending",
+        "runtimeOwners": "022,023"
+      }
+    }
+  ]
+}

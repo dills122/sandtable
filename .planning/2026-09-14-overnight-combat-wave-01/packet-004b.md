@@ -57,3 +57,49 @@ make comparison unavailable with null dependent values. No RNG-purpose alignment
 
 Read source-audit-004b.md and canonical plan/Exercise harness before freezing exact fields.
 This preparation is not accepted contract or runtime implementation.
+
+## B2 source decision — published fallback transition
+
+AcceptedStep is one published authority transition, with exact trustedInput/optionalsideProposal/
+exactoutcome/semanticAction/authorityReceipt/eventCanonicalUtf8/successorcheckpointHash.
+For owner clock fallback: initiatorowner, outcome rejected/null publicreceipt, authorityreceipt
+actorowner, eventauthorsystem, semanticAction.audience system. No fabricated accepted owner action.
+Retry/no-op emits no event and consumes no step ordinal. Invalid no-event attempts separate.
+
+Accepted side semantic identity reuses exact accepted outward actionID. System identity uses new
+private/unregistered domain and closed family key binding actual authorityfamily/scope/decision/
+effectkind/reason/disposition, with explicitnulls. Derive only from replayed prior/event. Exclude
+rejected proposalID, initiator, admittedtimestamp, receipt, prefix and auditmax as direct seed fields.
+B3 compares semanticAction audience+ID; trustedinput/outcome differences still affect proof hashes.
+Identical semanticstream means nulldivergence even if trustedinputbytes differ. Never replace actual
+owner trustedinput with fabricated System request during re-adjudication.
+
+New proof transcript/event digest uses BE Int32 framing with distinct scheme. Existing legacy
+HashEventStream uses LF framing; do not silently reuse its scheme/meaning. Old catalog8kinds:
+5step kinds produce7records (System/Axis/Commonwealth queries + cardinality + membership + event
+cardinality + continuity), then3run checks terminal/reconstruction/readjudication. Explicit new
+schedule/cardinality rules; fallback passes valid membership and one-event continuity despite
+outward rejection. Unknown/duplicate/reordered/skipped/after-failure checkrecords reject.
+
+Early failure has no execution/proofs. Execution failure has acceptedsteps and optional failed
+attemptprefix then terminalfail; no replayproofs. Steplimit/cancellation has terminalfail without
+fabricated failed-attempt checks. Reconstructionfailure follows terminalpass; no readjudication.
+Readjudicationfailure follows terminal/reconstructionpass. Success requires both verified proofs.
+Absence null/omitted per frozenprofile, not fabricated emptyhash. Expectedfailure match never success.
+
+Sources: Result2 transition213/257; ReadjudicationVerifier51; ExerciseBundleSemanticValidator363,
+442; ReplayProofContracts148; ExerciseCheckCatalog191; PairedManeuverPairingEvidence45.
+
+## B1 source refinement — no unrelated terminal stitching
+
+Store full typed/tagged lineage once, then bind all checkpoint cuts; preserve full World/RNG and
+source history, not only normalized receipt summary. Support exact current endpoints: Movement1
+resumed Reaction, Reserve Release1 entry/completed/proof-only distinctions, Movement2 repeat,
+TruckConvoy sourceordinal1 finish, Breakdown2 completion, correctedResult2 ReserveRelease1 closure.
+All currentcorpus scopes turn1/stage1/firstrelative slot with either resolvedactor.
+
+CorrectedResult2 alone does not reach TruckConvoy. Complete combat-then-finish suite requires a
+new exact corrected result→emptyRelease→finish adapter; unrelated003 finish cannot satisfy this
+requirement. Required W01-CLOCK-CYCLE packet is scoped before A3 and B1; four-lineage feasibility
+passes, full32-lineage implementation/review remains pending. No new gameplay policy or fullSnapshot
+requirement follows from this bridge.

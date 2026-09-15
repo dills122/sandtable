@@ -1,3 +1,35 @@
+# Current acceptance boundary — 2026-09-15 14:19 UTC
+
+A2 accepted after fresh ordinary review/source audit/root full gate.37focused groups,96audience
+traces/2080cuts,81boundary+1670full tests. Only spec status changed after frozen checks. Root commits
+five primary files plus curated planning/evidence; actual next HEAD from git log.
+Next sole writer cycle_bridge_writer owns new combat-result-cycle-finish-v1 fourfiles; root plan
+fifth. Fresh cycle_finish_reviewer baseline ready. Source agent available for A3 version/source prep.
+Required sequence bridge→A3a→A3b→B1→B2→B3→C/checkpointB→005A→005B. Deadline19:39:39UTC.
+Same draftPR115, no merge. Full objective incomplete. Prior history below remains context.
+
+# Current work — 2026-09-15 13:48 UTC
+
+HEAD/pushed c4654cb07317dc936d8a545aa78e271c6762dae2. DraftPR115 OPEN/draft, no merge.
+Accepted: round-v2 (3fcd822), A1 side integration (8cb1cef), result-v2 (c4654cb).
+Active sole writer task004_writer:004A2 four side files, explicit Observation2/Submission2/Candidate2,
+originalA1 schema fingerprint and literal preservation. RED observed; implementation not frozen.
+Fresh side_settlement_reviewer has baseline context, idle until frozen hashes. Source/evidence agent
+completed bridge feasibility; research probe retention pending. Root owns all integration/plans/Git.
+
+Required order: A2 acceptance → W01-CLOCK-CYCLE nativeResult2/Reserve/finish bridge → A3a live
+Reserve/cycle +canonical ledger behavior → A3b28inherited terminal +corrected bridge projections →
+B1occurrence → B2child → B3parent → C72AC integration/checkpointB →005A tables/arithmetic →005Bcodec.
+Each accepted commit follows focusedTDD, freshordinaryreview androotjustcheck. New bridge scoped in
+canonicalplan,source-audit-result-cycle-bridge.md; four-case feasibility passes with no oldbase-reader
+or monkeypatch. All32lineages/fulltamper gates still pending. Clockscope isolated; syntheticMovement
+certificate explicit. B packet/005 packet and72row draft evidence map prepared under this directory.
+
+Renewed deadline19:39:39 UTC, same required004/B then005,006stretch, one draftPR/no merge. Durable
+goal tool still reportsblocked and exposes noresume API; userexplicitly authorized this continuation.
+No genuine new blocker. Latest fullgate81+1670,zero skipped,3m21.794s. All accepted historical bytes
+preserved. Work below this heading is prior context, not current acceptance status.
+
 # Latest boundary — 2026-09-15 12:54 UTC
 
 Result2 accepted after ordinary review/source audit/root full gate. Committing four new files plus

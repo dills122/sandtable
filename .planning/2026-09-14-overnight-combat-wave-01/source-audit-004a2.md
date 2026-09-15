@@ -61,3 +61,16 @@ nonowner equal histories across private opening/disposition; fallback no player 
 route order/foreign donor/raw opponent ID/wrong lot/changed reuse/cross-profile config reject;
 guard transfer not lossDP; escape not TOE credit; zero-lot no custody; retreat/refusal no Engaged;
 guard no inherited relation; closure retains obligations without A2 release/repeat candidates.
+
+## Apparent location disposition
+
+OBS006/013 uses current apparent representation location (campaign-observation-v1.md46..51,
+103,110); CampaignObservationV7Projector.cs79..101 selects all opposing representations with no
+adjacency filter. Remembered/stale contacts remain deferred. DES005195 permits those established
+updates. World7 spec36 requires exactlyone original-element representation at matching current
+location; retreat oracle201 updates both. Project representation or verify exact equality before
+using element location. Do not invent adjacency suppression or freeze an old apparent marker.
+C3 geometrycertificate alone grants no disclosure; authority is established policy plus World7
+binding. Guarded custody moves prisoners to donor's existing post-retreat location; donor itself
+does not move (DES005121..135). Enemy guard/choice/custody route stays private (DES005194);
+guard assets have no automatic original-unit representation (World7spec38).

@@ -122,3 +122,23 @@ Candidate2, source-native CP/Cohesion bounds, distinct public clock/codec profil
 actual owner-choice receipts and complete allowlisted settlement facts. Canonical plan records
 version split before writes. A1 exact types/bounds/literals stay frozen. Full004/B then005 required.
 Static72row contract evidence maps retained; partial coverage/runtime owners explicit.
+
+## A2 early schema self-check
+
+Root spotted raw Obligation2 activationGate and retained-unimplemented status crossing outward
+boundary. Writer agreed: expose approved own kind/subject/earned/due facts with pending game state;
+keep implementation/activation fields in trusted Result2/Exercise evidence. No gameplay change.
+A2 now builds32retained composed sources plus8authenticated same-owner timing forks. Not frozen.
+
+A2 apparent-location source concern resolved without policy change: OBS006/013 approves current
+opposing representation locations irrespective of adjacency; last-seen rules deferred. Authenticated
+World7 element/representation equivalence permits current post-retreat marker. Writer will verify
+binding explicitly; enemy guard/custodyroute remains hidden. No need to suppress/freeze location.
+
+## 2026-09-15 14:19 UTC — A2 accepted
+
+Frozen ordinary review APPROVE; independent source/literal audit finds no discrepancy. Root full
+gate exit0:format/build0warnings/errors,81boundary/1670full tests,0skips,3m11.782s. Root240fallback
+outcomes/24cache-source checks pass.37focused groups,96audience traces/2080cuts,7344clock outcomes,
+4872retries,26pins/628literal observations. Spec status only changed after review. Required next
+packet W01-CLOCK-CYCLE; parent004/checkpointB and005 remain incomplete.

@@ -153,5 +153,189 @@
   "sourceProfiles": {
     "historical": "Original nine names; offline diagnostics only; shared-high-water counterexample remains failing.",
     "corrected": "clock-v2.<actingSide>.<case>; ten mirrored C3a and ten authenticated Round2 traces; current admission only."
+  },
+  "objects2": {
+    "Cp2": "numerator:cp2 denominator:one2",
+    "OwnParticipant2": "participantRef:ref componentRef:ref locationId:id currentToe:toe spentCp:Cp2 ammunition:toe cohesion:cohesion2",
+    "Select2": "contractVersion:version2 kind:select participantRef:ref targetRef:ref targetLocationId:id",
+    "Finish2": "contractVersion:version2 kind:finish",
+    "Decline2": "contractVersion:version2 kind:decline participantRef:ref",
+    "Allocation2": "contractVersion:version2 kind:allocation participantRef:ref componentRef:ref committedToe:fullToe",
+    "RetreatChoice2": "contractVersion:version2 kind:retreatKind2 participantRef:ref route:id[] distance:one2 cpCost:one2 excessCpDp:nonnegative2",
+    "RefuseChoice2": "contractVersion:version2 kind:refuseKind2 participantRef:ref",
+    "GuardChoice2": "contractVersion:version2 kind:guardKind2 custodyRef:ref donorComponentRef:ref route:id[] guardToe:one2",
+    "UnguardedChoice2": "contractVersion:version2 kind:unguardedKind2 custodyRef:ref",
+    "Action2": "contractVersion:version2 actionId:ref candidate:Candidate2",
+    "Decision2": "contractVersion:version2 decisionId:ref kind:decisionKind2 openingRevision:revision slotRef:ref? settlementRef:ref? deadlineUnixMilliseconds:timestamp actionSetId:ref actions:Action2[]",
+    "OwnReceipt2": "contractVersion:version2 decisionId:ref actionId:ref receiptRef:ref",
+    "Scope2": "gameTurn:turn operationStage:stage",
+    "FutureScope2": "gameTurn:futureTurn2 operationStage:stage",
+    "Loss2": "componentRef:ref committedToe:toe lossToe:toe capturedToe:toe otherLossToe:toe remainingToe:toe",
+    "CohesionCause2": "causeRef:ref kind:causeKind2 points:nonnegative2 before:cohesion2 after:cohesion2 scope:Scope2",
+    "Retreat2": "choice:retreatIntent2 route:id[] plannedDistance:distance2 completedDistance:distance2? beforeCp:Cp2? afterCp:Cp2? excessCpDp:nonnegative2?",
+    "Custody2": "custodyRef:ref quantity:lotQuantity2 originSide:side prisonerClass:infantry2 originLocationId:id currentLocationId:id? status:custodyStatus2 guardRef:ref? guardRoute:id[] donorToeBefore:toe? donorToeAfter:toe?",
+    "Readiness2": "gameTurn:turn operationStage:stage waterStatus:water2 storesStatus:stores2 pinned:bool2",
+    "Guard2": "guardRef:ref custodyRef:ref donorComponentRef:ref locationId:id currentToe:one2 baseCapabilityPoints:fullToe offensiveRating:zero2 defensiveRating:one2 spentCp:Cp2 cohesion:cohesion2 ammunition:zero2 readiness:Readiness2",
+    "Entitlement2": "entitlementRef:ref componentRef:ref quantity:lotQuantity2 reunionLocationId:id earnedScope:Scope2 delayOperationStages:delay2 eligibleScope:FutureScope2 status:entitlementStatus2",
+    "Obligation2": "obligationRef:ref kind:obligationKind2 subjectRef:ref earnedScope:Scope2 eligibleScope:FutureScope2? status:obligationStatus2",
+    "Relation2": "relationRef:ref kind:relationKind2 targetRef:ref",
+    "Settlement2": "settlementRef:ref ownLoss:Loss2? ownRetreat:Retreat2? ownCohesionCauses:CohesionCause2[] ownCustody:Custody2? ownGuards:Guard2[] ownEntitlements:Entitlement2[] ownObligations:Obligation2[] relation:Relation2?",
+    "Observation2": "contractVersion:version2 context:Context cycleRef:cycleHash positionId:id visibleRevision:revision own:OwnParticipant2 apparentEnemy:ApparentEnemy roundRef:ref? status:status decision:Decision2? settlement:Settlement2? ownReceipts:OwnReceipt2[] history:SideChange[]",
+    "Submission2": "contractVersion:version2 campaignId:id rulesRef:ref configRef:ref audience:side roundRef:ref? settlementRef:ref? decisionId:ref slotRef:ref? openingRevision:revision actionSetId:ref actionId:ref candidate:Candidate2",
+    "Outcome2": "contractVersion:version2 status:outcome receipt:OwnReceipt2?",
+    "IdentitySeed2": "context:Context cycleRef:cycleHash positionId:id openingRevision:revision kind:decisionKind2 participantRef:ref targetRef:ref",
+    "ActionSeed2": "decisionId:ref candidate:Candidate2",
+    "SetSeed2": "decisionId:ref openingRevision:revision actions:Action2[]",
+    "ClockConfigSeed2": "selectionBudgetMilliseconds:budget rbaBudgetMilliseconds:budget assignmentBudgetMilliseconds:budget retreatBudgetMilliseconds:budget custodyBudgetMilliseconds:budget assignmentClockPolicyId:clockPolicy resultClockPolicyId:resultClockPolicy2 candidateCodec:version2"
+  },
+  "candidateTags2": {
+    "Candidate2": {
+      "select-close-assault": "Select2",
+      "finish-without-attack": "Finish2",
+      "decline-retreat-before-assault": "Decline2",
+      "full-close-assault": "Allocation2",
+      "retreat": "RetreatChoice2",
+      "refuse-retreat": "RefuseChoice2",
+      "relocate-and-guard": "GuardChoice2",
+      "leave-unguarded": "UnguardedChoice2"
+    }
+  },
+  "integerBounds2": {
+    "version2": [
+      2,
+      2
+    ],
+    "one2": [
+      1,
+      1
+    ],
+    "zero2": [
+      0,
+      0
+    ],
+    "cp2": [
+      0,
+      9223372036854775807
+    ],
+    "cohesion2": [
+      -2147483648,
+      10
+    ],
+    "nonnegative2": [
+      0,
+      2147483647
+    ],
+    "distance2": [
+      0,
+      1
+    ],
+    "lotQuantity2": [
+      1,
+      3
+    ],
+    "delay2": [
+      12,
+      12
+    ],
+    "futureTurn2": [
+      1,
+      115
+    ]
+  },
+  "enums2": {
+    "decisionKind2": [
+      "selection",
+      "rba",
+      "force-assignment",
+      "retreat",
+      "custody"
+    ],
+    "retreatKind2": [
+      "retreat"
+    ],
+    "refuseKind2": [
+      "refuse-retreat"
+    ],
+    "guardKind2": [
+      "relocate-and-guard"
+    ],
+    "unguardedKind2": [
+      "leave-unguarded"
+    ],
+    "retreatIntent2": [
+      "retreat",
+      "refuse-retreat"
+    ],
+    "causeKind2": [
+      "loss-dp",
+      "retreat-excess-dp",
+      "assault-victory-rp"
+    ],
+    "custodyStatus2": [
+      "pending",
+      "guarded",
+      "escaped"
+    ],
+    "infantry2": [
+      "infantry"
+    ],
+    "water2": [
+      "distributed-for-stage"
+    ],
+    "stores2": [
+      "distributed-for-stage"
+    ],
+    "entitlementStatus2": [
+      "awaiting-eligibility-and-training"
+    ],
+    "obligationKind2": [
+      "guard-priority-upkeep",
+      "replacement-training"
+    ],
+    "obligationStatus2": [
+      "pending"
+    ],
+    "relationKind2": [
+      "contact",
+      "engaged"
+    ],
+    "resultClockPolicy2": [
+      "sandtable.combat.mandatory-window-clock.v2"
+    ]
+  },
+  "domains2": {
+    "target": "sandtable.observation.combat.target.v2",
+    "round": "sandtable.observation.combat.round.v2",
+    "slot": "sandtable.observation.combat.slot.v2",
+    "decision": "sandtable.observation.combat.decision.v2",
+    "action": "sandtable.observation.combat.action.v2",
+    "set": "sandtable.observation.combat.set.v2",
+    "receipt": "sandtable.observation.combat.receipt.v2",
+    "rules": "sandtable.observation.combat.rules.v2",
+    "config": "sandtable.observation.combat.config.v2",
+    "settlement": "sandtable.observation.combat.settlement.v2",
+    "custody": "sandtable.observation.combat.custody.v2",
+    "guard": "sandtable.observation.combat.guard.v2",
+    "entitlement": "sandtable.observation.combat.entitlement.v2",
+    "obligation": "sandtable.observation.combat.obligation.v2",
+    "cause": "sandtable.observation.combat.cause.v2",
+    "relation": "sandtable.observation.combat.relation.v2"
+  },
+  "limits2": {
+    "bytes": 65536,
+    "depth": 20,
+    "arrayItems": 64,
+    "actions": 2,
+    "receipts": 8,
+    "history": 64,
+    "ownAssets": 1,
+    "routeNodes": 9
+  },
+  "successor2": {
+    "scope": "004A2 only; A1 unchanged; no Reserve/cycle or runtime registration",
+    "externalContracts": [
+      "combat-result-settlement-v2.schema.json"
+    ],
+    "numericSemantics": "CP signed64 nonnegative numerator and denominator1; Cohesion signed32 with upper cap10. Decoder capacity does not expand source admission."
   }
 }

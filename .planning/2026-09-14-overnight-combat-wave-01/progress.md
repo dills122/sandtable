@@ -245,3 +245,27 @@ Candidate2, source-native CP/Cohesion bounds, distinct public clock/codec profil
 actual owner-choice receipts and complete allowlisted settlement facts. Canonical plan records
 version split before writes. A1 exact types/bounds/literals stay frozen. Full004/B then005 required.
 Static72row contract evidence maps retained; partial coverage/runtime owners explicit.
+
+## 2026-09-15 13:49 UTC — integration preparation
+
+Refetched origin/main; unchanged ff6b5f60219afbb12d5e06bf836f06f94de32006. No newer-main conflict.
+A2 active/unfrozen. Fresh reviewer baseline ready. Required nativeResult2→finish bridge scoped
+beforeA3; four-case feasibility source retained /private/tmp/sandtable-result-cycle-feasibility.py,
+SHA256aceb490318f90bf7e83e34a4eca03d7c075ee7d53d0a9cb6c9727f5fa6706484. Research only.
+Full72 source/planned-test rows merged with static evidence into004c-contract-map-draft.json;
+exact accepted A2/A3/B references still require004C reconciliation. New B2 semantic authority action
+and actual initiator/outward rejection distinction recorded in packet-004b.md; old schemes unchanged.
+
+## 2026-09-15 14:14 UTC — A2 frozen review boundary
+
+37focused groups GREEN; independent root fallback/cache probe240+24checks GREEN. Fresh ordinary
+review and source audit active; full gate running. Required bridge remains next after acceptance.
+Retained A3 alternate-release-clock probe rejects at actual continuation readers; no new blocker.
+
+## 2026-09-15 14:19 UTC — A2 accepted
+
+Frozen ordinary review APPROVE; independent source/literal audit finds no discrepancy. Root full
+gate exit0:format/build0warnings/errors,81boundary/1670full tests,0skips,3m11.782s. Root240fallback
+outcomes/24cache-source checks pass.37focused groups,96audience traces/2080cuts,7344clock outcomes,
+4872retries,26pins/628literal observations. Spec status only changed after review. Required next
+packet W01-CLOCK-CYCLE; parent004/checkpointB and005 remain incomplete.
