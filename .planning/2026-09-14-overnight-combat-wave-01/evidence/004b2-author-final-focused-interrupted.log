@@ -1,0 +1,70 @@
+START 2026-09-15T18:27:22.951431+00:00
+test_boundary 10 elapsed 35.272
+Traceback (most recent call last):
+  File "<string>", line 15, in author_pass
+  File "/Users/dsteele/.codex/worktrees/0b59/sandtable/docs/specs/verify-combat-exercise-child-evidence-v1.py", line 315, in test_supported_admission
+    rows=b.source_cases()
+  File "/Users/dsteele/.codex/worktrees/0b59/sandtable/docs/specs/verify-combat-exercise-occurrence-v1.py", line 262, in source_cases
+    def source_cases():source_pins();return copy.deepcopy(catalog())
+                                                          ~~~~~~~^^
+  File "/Users/dsteele/.codex/worktrees/0b59/sandtable/docs/specs/verify-combat-exercise-occurrence-v1.py", line 228, in catalog
+    rows=[];historical=historical_material();handoff=sha(encode(side.composition_evidence3b()['handoff']))
+                       ~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/dsteele/.codex/worktrees/0b59/sandtable/docs/specs/verify-combat-exercise-occurrence-v1.py", line 159, in historical_material
+    evidence=side.composition_evidence3b();require(set(material)==set(evidence['handoff']['selectedTraceIds']))
+  File "/Users/dsteele/.codex/worktrees/0b59/sandtable/docs/specs/verify-combat-side-projection-v1.py", line 2384, in composition_evidence3b
+    source_pins3b();value=composition3b.build_composition()
+                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/dsteele/.codex/worktrees/0b59/sandtable/docs/specs/verify-combat-authority-composition-v1.py", line 603, in build_composition
+    traces = [build_trace(item) for item in sources()]
+                                            ~~~~~~~^^
+  File "/Users/dsteele/.codex/worktrees/0b59/sandtable/docs/specs/verify-combat-authority-composition-v1.py", line 432, in sources
+    result.extend(factory())
+                  ~~~~~~~^^
+  File "/Users/dsteele/.codex/worktrees/0b59/sandtable/docs/specs/verify-combat-authority-composition-v1.py", line 271, in direct_sources
+    traced = direct.trace(case)
+  File "/Users/dsteele/.codex/worktrees/0b59/sandtable/docs/specs/verify-combat-inherited-reaction-closure-v1.py", line 280, in trace
+    args, before = source_trace(case)
+                   ~~~~~~~~~~~~^^^^^^
+  File "/Users/dsteele/.codex/worktrees/0b59/sandtable/docs/specs/verify-combat-inherited-reaction-closure-v1.py", line 273, in source_trace
+    result = irt.trace(predecessor)
+  File "/Users/dsteele/.codex/worktrees/0b59/sandtable/docs/specs/verify-combat-inherited-reaction-trigger-v1.py", line 338, in trace
+    retried, old, duplicate = apply(*args, [event], inp)
+                              ~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/dsteele/.codex/worktrees/0b59/sandtable/docs/specs/verify-combat-inherited-reaction-trigger-v1.py", line 267, in apply
+    base = initial(request, created, preamble, weather_events, stage_events, reserve_events, movement_events)
+  File "/Users/dsteele/.codex/worktrees/0b59/sandtable/docs/specs/verify-combat-inherited-reaction-trigger-v1.py", line 107, in initial
+    state = imv.replay(request, created, preamble, weather_events, stage_events,
+        reserve_events, movement_events)
+  File "/Users/dsteele/.codex/worktrees/0b59/sandtable/docs/specs/verify-combat-inherited-movement-v1.py", line 199, in replay
+    state=initial(request,created,preamble,weather_events,stage_events,reserve_events)
+  File "/Users/dsteele/.codex/worktrees/0b59/sandtable/docs/specs/verify-combat-inherited-movement-v1.py", line 79, in initial
+    try: state=rd.replay(request,created,preamble,weather_events,stage_events,reserve_events)
+               ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/dsteele/.codex/worktrees/0b59/sandtable/docs/specs/verify-combat-reserve-designation-v1.py", line 176, in replay
+    state=initial(request,created,preamble,weather_events,stage_events)
+  File "/Users/dsteele/.codex/worktrees/0b59/sandtable/docs/specs/verify-combat-reserve-designation-v1.py", line 82, in initial
+    and state['sequencePosition']==opening.position('entryFromPositionId'),4)
+                                   ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/dsteele/.codex/worktrees/0b59/sandtable/docs/specs/verify-combat-inherited-successors-v1.py", line 69, in position
+    return copy.deepcopy(next(p for p in steps.seq.expected_catalog()['positions'] if p['positionId'] == edge()[name]))
+                         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/dsteele/.codex/worktrees/0b59/sandtable/docs/specs/verify-combat-inherited-successors-v1.py", line 69, in <genexpr>
+    return copy.deepcopy(next(p for p in steps.seq.expected_catalog()['positions'] if p['positionId'] == edge()[name]))
+                                                                                                         ~~~~^^
+  File "/Users/dsteele/.codex/worktrees/0b59/sandtable/docs/specs/verify-combat-inherited-successors-v1.py", line 66, in edge
+    def edge(): return steps.seq.expected_catalog()['cycles'][0]
+                       ~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/dsteele/.codex/worktrees/0b59/sandtable/docs/specs/verify-combat-cycle-sequence-v1.py", line 43, in expected_catalog
+    predecessor=json.loads(FIXTURE.read_text())['predecessor']
+                ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/lib/python3.14/json/__init__.py", line 352, in loads
+    return _default_decoder.decode(s)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/lib/python3.14/json/decoder.py", line 345, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/lib/python3.14/json/decoder.py", line 361, in raw_decode
+    obj, end = self.scan_once(s, idx)
+               ~~~~~~~~~~~~~~^^^^^^^^
+KeyboardInterrupt

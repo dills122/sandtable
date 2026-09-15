@@ -863,3 +863,8 @@ The current Umpire foundation is intentionally pure and in-process:
 ## License
 
 No license has been selected yet. All rights are reserved until a license file is added.
+
+<!-- Combat day-stop checkpoint,2026-09-15: -->
+B2 [private child-evidence draft](docs/specs/combat-exercise-child-evidence-v1.md) is saved as an
+unverified local checkpoint. Final fixture regeneration and review remain pending; B2 is not
+accepted. B3, integrated checkpoint B and Task005 remain open.

@@ -884,3 +884,8 @@ And there's a nice **authority hierarchy** underneath all the flavor:
 That could practically become Sandtable's architectural motto.
 
 Of all these, I'd lock in **Sandtable / Umpire / Maproom / Staff / Command / Dispatch / Signals / Chronicle / Archives / Quartermaster / Theater / ORBAT / War College**. They feel cohesive rather than like we've randomly assigned military words to microservices.
+
+<!-- Combat day-stop checkpoint,2026-09-15: -->
+B2 [private child-evidence draft](docs/specs/combat-exercise-child-evidence-v1.md) is saved as an
+unverified local checkpoint. Final fixture regeneration and review remain pending; B2 is not
+accepted. B3, integrated checkpoint B and Task005 remain open.

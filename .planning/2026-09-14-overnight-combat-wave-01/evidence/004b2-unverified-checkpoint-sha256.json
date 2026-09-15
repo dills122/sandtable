@@ -1,0 +1,9 @@
+{
+  "status": "UNVERIFIED; final focused run interrupted; retained fixture stale",
+  "files": {
+    "docs/specs/combat-exercise-child-evidence-v1.md": "056267244b1a74d6dea9fa03a30ba6f4b4fd208c1d4bf41dc07cb06c2baaea04",
+    "docs/specs/combat-exercise-child-evidence-v1.schema.json": "cc8a7c9e89068b9a78f3abb4044230ccc9ef359665198aaa7ef6db5b15782bf6",
+    "docs/specs/fixtures/combat-exercise-child-evidence-v1.json": "222a336c8853359b960cff6f276b26c80b59969f73dd698e6d02f6d9c7fb7384",
+    "docs/specs/verify-combat-exercise-child-evidence-v1.py": "a7385011125ca9105a1fbd3197c2b0b7b1825bf921e479ce9f953a4950343c92"
+  }
+}

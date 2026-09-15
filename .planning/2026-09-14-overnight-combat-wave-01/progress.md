@@ -425,3 +425,55 @@ and revised67rejection/exact1542785Bfixture evidence. Required cache-escape and 
 findings fixed. Read-only ordinary review; no full suite, Git mutation or formal independent review.
 
 B1 accepted after all gates. Root commits packet, then starts sole-writer B2.
+
+## 17:42 UTC B1 accepted / B2 executing
+
+B1 committed ac9baef; navigation9a7ac13 and280local Markdown targets pass. B2 dispatched to sole
+writer with inherited public preference and actual System-key identity clarification. Push rejected
+twice by automatic review despite verified PUBLIC user-owned ADMIN destination and retained prior
+authorization. Direct async approval pending for existing draftPR115/no merge; no further external
+write until answer. All local work continues.
+
+## B2 pre-freeze review
+
+Native smoke exposed transition0 rejection; author diagnosing, no green claim. Source review
+corrected System disposition field mapping. Fresh static review required native provenance IDs,
+separate self-free artifact manifest, attempted failed-proof observations and precise reachable
+fault indices. Author acknowledged fixes. Source auditor preparing native checks; root prepared
+independent literal/domain/framing/inventory probe without native imports (not yet run). C-map B1
+amendments applied to16/72rows with original requirements/tasks/tests/runtime owners preserved.
+
+## 18:02 UTC B2 repository gate
+
+Root just check exit0: format/build clean,81boundary+1670full,0skipped,full3m06.093s.
+No src/tests changes during Python build-identity correction; gate remains applicable. Latest
+origin/main ff6b5f6 unchanged. First native representative passed24fresh transitions and bothproofs.
+Author refroze three files after binding own executor/schema into build; initial exhaustive stopped
+130 before fixture, revised exhaustive25057 running. Fresh native review53304 running; no acceptance
+until final native/fixture/source-audit/review completion. Root gate41018 completed.
+
+## B2 full native behavior pass on3730 freeze
+
+Author log ends2026-09-15T18:15:41.723246UTC,822.895s, allfivegroups GREEN:134sources,
+126succeeded/8failed,2442transitions,44owner-initiatedSystemfallbacks,28historicalzeroexecution;
+19failure/forgerychecks,160native disposition mappings,4isolatedcompletion witnesses. Missing
+fixtureRED observed, initial retainedfixture6,869,998bytes/139summaries generated. This initial
+fixture willbe replaced coherently after supportedconfig admission narrowing; notfinalacceptance.
+
+## User day-stop steering — 18:26 UTC
+
+User requested good stopping point. Finish current B2 only; no B3/C/005 implementation today.
+Two final evidence corrections confirmed: FailedAttempt actual trustedClock only, and admission
+rejects incomplete-reference bounds greater than retained end (complete references may keep
+larger maximum for paired runs). Final focused run restarts coherently; prior all134 canonical
+native/proof behavior and root81+1670 gate remain applicable with AST/equivalence checks.
+
+## Immediate day stop,2026-09-15
+
+User repeated request to speed wrap-up. Root instructed author to interrupt final focused test
+and exit interactive session; reviewer stopped. B2 saved as UNVERIFIED local checkpoint, not
+accepted. Final oracle/schema corrections present; fixture remains prior freeze. Final134 admission,
+changed FailedAttempt checks, fixture generation/readback and final literal review remain pending.
+No B2-to-C map amendments applied; B3/C/005 not started. Existing full-native prior run and root
+81+1670 gate retained with precise applicability. Public push and optional CCE uploads still blocked
+by automatic approval review; no retry or external PR update.

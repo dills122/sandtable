@@ -1036,3 +1036,8 @@ The implemented paired comparison does not block that engine work.
 [2]: https://learn.microsoft.com/en-us/aspnet/core/grpc/performance?view=aspnetcore-10.0 "Performance best practices with gRPC | Microsoft Learn"
 [3]: https://learn.microsoft.com/en-us/aspnet/core/grpc/deadlines-cancellation?view=aspnetcore-10.0 "Reliable gRPC services with deadlines and cancellation | Microsoft Learn"
 [4]: https://learn.microsoft.com/en-us/aspnet/core/grpc/json-transcoding?view=aspnetcore-10.0 "gRPC JSON transcoding in ASP.NET Core gRPC apps | Microsoft Learn"
+
+<!-- Combat day-stop checkpoint,2026-09-15: -->
+B2 [private child-evidence draft](docs/specs/combat-exercise-child-evidence-v1.md) is saved as an
+unverified local checkpoint. Final fixture regeneration and review remain pending; B2 is not
+accepted. B3, integrated checkpoint B and Task005 remain open.

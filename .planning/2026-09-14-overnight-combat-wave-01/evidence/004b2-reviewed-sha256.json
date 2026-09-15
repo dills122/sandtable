@@ -1,0 +1,8 @@
+{
+  "status": "Revised three-file freeze; fixture pending.",
+  "files": {
+    "docs/specs/combat-exercise-child-evidence-v1.md": "0d2b1e040354495563a40fad47f24441cce9ce65d1e9202a91336fec97255fd8",
+    "docs/specs/combat-exercise-child-evidence-v1.schema.json": "1087fd68aaff499421c66f4b73cbfa0471afc08738ccbf70b4fca3c901af5550",
+    "docs/specs/verify-combat-exercise-child-evidence-v1.py": "3730e835087a83003d2893b6514aa2e1ff59fcdc1be808a3c765e67fe18d6538"
+  }
+}

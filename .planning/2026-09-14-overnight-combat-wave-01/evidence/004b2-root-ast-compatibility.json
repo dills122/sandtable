@@ -1,0 +1,31 @@
+{
+  "unchangedFunctions": 44,
+  "changedFunctions": [
+    "admit_manifest",
+    "execute",
+    "generated_fixture",
+    "main",
+    "test_failures_and_forgery",
+    "test_fixture"
+  ],
+  "admissionDelta": [
+    "require(manifest['controller'] == expected['controller'])",
+    "require(manifest['request']['schedule']['roleOrder'] == expected['request']['schedule']['roleOrder'])",
+    "end = len(b.decode_reference(source)['events'])",
+    "require(manifest['request']['maximumAcceptedTransitions'] <= end or b.satisfies(b.checkpoint(source, end), manifest['request']['requestedTerminal']))"
+  ],
+  "executionDelta": "attempt = dict(atTransition=cut, initiator=actor, trustedClock=copy.deepcopy(clock), sideProposalJson=public_raw(source, bad, 'Submission').decode(), outcomeJson=public_raw(source, rejected_outcome, 'Outcome').decode())",
+  "nativeTransitionControllerReconstructionProofBodies": "unchanged; execute differs only at rejected FailedAttempt record",
+  "preservedPredecessorFiles": 163,
+  "preservedExistingSchemaDefinitions": 15,
+  "changedSchemaDefinition": "FailedAttempt uses actual trustedClock instead of unsubmitted native command",
+  "newSchemaDefinitions": [
+    "SourceSummary"
+  ],
+  "applicability": "Full134 canonical native results apply with final all134 admission pass. Changed rejected-attempt record requires final focused rejection/defensive-copy test; final fixture/build hashes regenerated.",
+  "baselineArtifacts": {
+    "004b2-pre-admission-oracle.py": "3730e835087a83003d2893b6514aa2e1ff59fcdc1be808a3c765e67fe18d6538",
+    "004b2-pre-admission-schema.json": "1087fd68aaff499421c66f4b73cbfa0471afc08738ccbf70b4fca3c901af5550"
+  },
+  "baselinePurpose": "Archival comparison inputs, not standalone executable oracles; original source-directory imports required."
+}

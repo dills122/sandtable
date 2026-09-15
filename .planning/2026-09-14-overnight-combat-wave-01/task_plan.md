@@ -2,6 +2,13 @@
 
 ## Objective and boundary
 
+**Day-stop steering, 2026-09-15 18:26 UTC:** user requested a good stopping point today.
+Immediate wrap-up requested again: interrupt remaining B2 test, save UNVERIFIED local checkpoint,
+retain stale-fixture warning and pending final checks; stop now. B2 is not accepted.
+Do not start B3, C or005 today. Full004/checkpointB+005 objective remains incomplete.
+Public push still awaits explicit destination authorization after automatic-review rejection.
+
+
 Required: complete CMB-TASK-004/checkpoint B, then dormant CMB-TASK-005 with integrated evidence,
 accepted story commits and one draft PR. CMB-TASK-006 is stretch only after both pass every gate.
 Start 2026-09-15 02:49:17 UTC; hard deadline 2026-09-15 10:49:17 UTC.
@@ -62,7 +69,7 @@ is exhausted. Ordinary fresh-context five-axis review only.
 | CMB-TASK-004A1 | 003 | task004_writer / internal | same four004A files only | closed common codec/identity/errors, selection/RBA/seals; TDD plus focused/gate/review | accepted: corrected profile, ordinary review, root81+1670 gate; historicalv1 failure retained |
 | CMB-TASK-004A2 | accepted004A1 and Result2 | same writer / internal | same four004A files only | settlement results, own retreat/custody/replacement disclosure/candidates; TDD plus focused/gate/review | accepted:37groups, ordinary review/source audit, root81+1670 gate |
 | CMB-TASK-004A3 | accepted004A2/bridge; sequentialA3a/A3b | side_cycle_writer / internal | same four004A files only | Reserve I/laterII, cycle/structural projection, exact003 handoff and corpus reconciliation; TDD plus focused/gate/review; only then004A freeze | A3a/A3b accepted:62groups/review/source audit/root81+1670; B1 next |
-| CMB-TASK-004B | accepted004A | writer / internal subagent; reviewer and evidence read-only | new Exercise-contract spec/schema/fixture/oracle; brain owns combined plan | CON-006 exact terminal/ordinal/continuation, strict manifest/report and divergence, negative success rejection; focused oracle plus just check | B1 accepted:134sources/2576cuts/8groups/review/audit/root81+1670; B2 next, B3 pending |
+| CMB-TASK-004B | accepted004A | writer / internal subagent; reviewer and evidence read-only | new Exercise-contract spec/schema/fixture/oracle; brain owns combined plan | CON-006 exact terminal/ordinal/continuation, strict manifest/report and divergence, negative success rejection; focused oracle plus just check | B1 accepted:134sources/2576cuts/8groups/review/audit/root81+1670; B2 unverified checkpoint; final test interrupted/stale fixture; B3 pending |
 | CMB-TASK-004C | accepted004A/B | writer / internal subagent; reviewer and evidence read-only | new combat-outward-composition-v1 spec/schema/fixture/oracle; brain owns plan | exact003 handoff, all72 ACs task/planned-test mapped, outward versions/capacity/compatibility checked; all focused plus just check; checkpoint B only on reconciled evidence | pending |
 | W01-NAV | current retained reality | brain | README.md, docs/roadmap/pre-alpha-roadmap.md, tech-design.md, naming-overview.md only where reality changes | coherent blocked status and local links | complete: blocked status synchronized, links checked |
 | CMB-TASK-005 | complete004/B | writer / internal subagent; reviewer and evidence read-only | Rules and focused Rules tests, at most five primary files per recorded slice | full normalized approved-source comparison, every selected coordinate/reachable differential, conditional capture and ordered pairs; TDD; focused tests plus just check; no campaign activation | gated |
