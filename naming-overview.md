@@ -671,7 +671,9 @@ facts and apparent opposing representation locations in a separate version2 cont
 acceptance receipt** records an actual accepted player choice; a System fallback creates none, even
 when a player submitted the triggering proposal. Version3 adds own Reserve and cycle facts. An
 owner complete-release intent can earn acceptance through authenticated native effect even when
-System authors its completion event. Full terminal/bridge projections and runtime remain gated.
+System authors its completion event. Historical terminal profiles provide exact checkpoint facts with
+no actions; corrected composition profiles preserve continuous own receipts/history through finish.
+These contract profiles are accepted; runtime remains gated.
 
 **Capability Point expenditure** is the exact amount already spent during the current Operation
 Stage; it is not a replenishing UI movement allowance. **Complete Movement** is a real player

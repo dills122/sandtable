@@ -1,10 +1,10 @@
-# Draft PR115
+# Draft PR115 metadata
 
 Title: Add privacy-preserving Combat clock contracts
 
 Private Combat seal timestamps previously changed whether an opponent’s unchanged proposal succeeded after a clock regression. Add an explicit v2 round/clock configuration whose acceptance floor stays at the published opening instant. Integrate authenticated side profiles that preserve identical observations, candidate identities and outcomes across private seals and clock faults.
 
-Round-v2, Task004A1/A2/A3a, result/settlement-v2 and native cycle-finish composition are accepted. Historical v1 contracts, all18 original audience traces and their failing clock diagnostic remain exact. Complete terminal/bridge side projections, Exercise contracts and Task005 remain incomplete. This draft contains contract evidence only; no Combat runtime activation or merge requested.
+Round-v2, Task004A1/A2/A3a/A3b, result/settlement-v2 and native cycle-finish composition are accepted. Historical v1 contracts, all18 original audience traces and their failing clock diagnostic remain exact. Exact historical terminal and continuous corrected bridge side projections complete bounded CON-005 evidence. Exercise contracts, integrated checkpoint B and Task005 remain incomplete. This draft contains contract evidence only; no Combat runtime activation or merge requested.
 
 Result-v2 authenticates native committed round evidence and opens each mandatory decision window independently. Earlier accepted timestamps remain audit evidence; each live window retains its fixed budget, deadline and deterministic fallback. The same-owner timing distinction is explicit. Side codec2 carries authenticated own settlement/custody/guard/replacement facts through the same causal history; System fallback creates no accepted player receipt.
 
@@ -16,8 +16,9 @@ Result-v2 authenticates native committed round evidence and opens each mandatory
 - A2 side oracle:37 total groups;96 audience traces/2080 cuts,408 actions,7344 clock outcomes,5852 binding/candidate mutants,4872 retries,210 equal-history pairs and32 seal-order pairs. Independent source audit checked26 pins and628 observation literals. Root added240 fallback/retry outcomes and24 cache/source checks.
 - Native cycle-finish bridge:11 groups,32 lineages/160 cuts/128 retries,192 prior-time comparisons and24 completed-source fallback rejects. Root independently checked1088 clock/recovery outcomes; source audit verified14 pins,320 nested literals and128 suffix transitions retaining exact World/RNG/future obligations.
 - A3a side oracle:52 total groups,104 live cuts,112 ledger traces,1140 clock outcomes,472 retries,96 stale rejections. Root reconstructed92 binary sets/190 action identities; source audit checked456 cuts,344 observation literals,190 candidate pairs and38 pins. Accepted A1/A2 bytes preserved.
-- Ordinary fresh-context reviews approved all six packets; source audits verified retained literals, pins and historical bytes.
+- A3b side oracle:62 total groups;116 sources,4744 cuts,1208 literal observations,720 candidate pairs. Native audit checked all28 terminal profiles, including both releaseMember completion records. Root checked32 native fallback pairs,320 clock outcomes,64 retries and56 terminal admission rejects. A1/A2/A3a bytes preserved.
+- Ordinary fresh-context reviews approved all seven packets; source audits verified retained literals, pins and historical bytes.
 - Root independently checked88 round outcomes and144 serialized side outcomes;17 legacy profile admission rejects. Historical v1 counterexample retained.
-- Root `just check` at each accepted boundary: format/build clean,81 boundary tests,1670 full tests,0 skipped. Latest full-test duration3m16.682s.
+- Root `just check` at each accepted boundary: format/build clean,81 boundary tests,1670 full tests,0 skipped. Latest full-test duration3m31.596s.
 
-Accepted behavior commits:3fcd822,8cb1cef,c4654cb,042edbc b5ede50 anda4f5b2c. Exact logs, scope limits, owner privacy disposition and renewed work deadline are retained under `.planning/2026-09-14-overnight-combat-wave-01/`.
+Accepted behavior commits:3fcd822,8cb1cef,c4654cb,042edbc b5ede50,a4f5b2c andb33f69c. Exact logs, scope limits, owner privacy disposition and renewed work deadline are retained under `.planning/2026-09-14-overnight-combat-wave-01/`.
