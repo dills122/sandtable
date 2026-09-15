@@ -669,7 +669,9 @@ spec/design slices.
 [Combat side projections](docs/specs/combat-side-projection-v1.md) now retain accepted own settlement
 facts and apparent opposing representation locations in a separate version2 contract. An **own
 acceptance receipt** records an actual accepted player choice; a System fallback creates none, even
-when a player submitted the triggering proposal. Reserve/cycle projections and runtime remain gated.
+when a player submitted the triggering proposal. Version3 adds own Reserve and cycle facts. An
+owner complete-release intent can earn acceptance through authenticated native effect even when
+System authors its completion event. Full terminal/bridge projections and runtime remain gated.
 
 **Capability Point expenditure** is the exact amount already spent during the current Operation
 Stage; it is not a replenishing UI movement allowance. **Complete Movement** is a real player
