@@ -884,11 +884,14 @@ evidence, not an implemented combat contract. Current proposals use trusted-Umpi
 the same pre-state for simultaneous combat, and structural sequence positions plus cycle identity;
 production Combat is not implemented. The [policy register](docs/design/combat-cycle-policy-reconciliation.md)
 now records owner-approved policies, and the [combined plan](docs/design/combat-cycle-implementation-plan.md)
-records parent003 completion and accepted004A1 side contracts. The
+records parent003 completion and accepted004A1/A2 side contracts. The
 [round-v2 clock contract](docs/specs/combat-sealed-round-v2.md) uses an immutable public opening
 floor: private seal timestamps remain audit evidence and cannot alter opposing admission.
 [Side projections](docs/specs/combat-side-projection-v1.md) authenticate corrected profiles and
-retain exact historical vectors; result/settlement integration and full CON-005/006 remain open. The [cycle-control contract](docs/specs/combat-cycle-control-v1.md)
+retain exact historical vectors. The [settlement-v2 contract](docs/specs/combat-result-settlement-v2.md)
+opens mandatory windows independently; prior accepted times remain audit evidence. Settlement
+projection is accepted; corrected cycle-finish composition, Reserve/cycle projections and complete
+CON-005/006 remain open. The [cycle-control contract](docs/specs/combat-cycle-control-v1.md)
 binds release completion, semantic progress, current-cost witnesses and exact repeat/finish successors.
 Its Movement-expiry projection retains exclusions and release history. The
 [armed-continuation proof](docs/specs/combat-inherited-armed-continuation-v1.md) now admits both

@@ -666,6 +666,11 @@ a move. Neither is a **Contact** yet: the accepted `CONTACT-001` lock derives Co
 enemy-ZOC presence at the beginning of a Movement Segment and makes Engaged a Close Assault result;
 their production contracts remain gated behind the approved dependency-ordered ZOC/Reaction
 spec/design slices.
+[Combat side projections](docs/specs/combat-side-projection-v1.md) now retain accepted own settlement
+facts and apparent opposing representation locations in a separate version2 contract. An **own
+acceptance receipt** records an actual accepted player choice; a System fallback creates none, even
+when a player submitted the triggering proposal. Reserve/cycle projections and runtime remain gated.
+
 **Capability Point expenditure** is the exact amount already spent during the current Operation
 Stage; it is not a replenishing UI movement allowance. **Complete Movement** is a real player
 decision that advances to Breakdown Determination, not a runner stop condition. These names are
