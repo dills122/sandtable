@@ -104,3 +104,17 @@
 - Final readback: reviewed schema/fixture/oracle SHA256 unchanged; spec-only blocker status added.
   AST/JSON/diff checks pass;10Markdown files/498local targets/2new blocker anchors/0errors;
   external URLs and other anchors excluded. No further executable implementation after hard stop.
+
+## Blocked draft delivery
+
+- Staged scope22files,+3265/-5, explicitly reviewed before publication. Exact list
+  evidence/delivery-files.txt. Planning/evidence force-added because repository ignores .planning.
+- Candidate commit `aec9a847d79d013c6bffe1f628524f83c1f56c4c`; no accepted-story claim.
+- `git push -u origin codex/overnight-combat-wave-01` exit0.
+- `env -u GH_TOKEN -u GITHUB_TOKEN gh pr create --repo dills122/sandtable --base main --head codex/overnight-combat-wave-01 --draft --title 'Record blocked Combat side-contract candidate and clock privacy conflict' --body-file /private/tmp/sandtable-wave01-pr-body.md`
+  exit0: https://github.com/dills122/sandtable/pull/115.
+- PR readback confirms OPEN/isDraft=true/base main/correct head/commit. No merge.
+- `git status --short` empty after candidate push. Final metadata-only commit records PR and
+  handoff status; no schema/fixture/oracle changes after reviewed hashes or repeated runtime tests.
+- All three children completed/stopped; parent objective explicitly incomplete and implementation
+  blocked by required owner policy disposition. Source and review evidence recorded in handoff.

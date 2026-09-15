@@ -110,9 +110,16 @@ Worktree: `/Users/dsteele/.codex/worktrees/0b59/sandtable`.
 Branch: `codex/overnight-combat-wave-01`.
 Base/latest-main: `ff6b5f60219afbb12d5e06bf836f06f94de32006`, refreshed after hard stop.
 PR113 merge471d17de7837c48c29f5b8184e1ee5e8b21034f8 and PR114 mergeff6b5f6 verified.
-Retained commits/draft PR: publication pending; updated below after creation.
-Dirty state before publication: seven candidate/navigation files plus ignored planning packet;
-explicit force-add needed for this requested durable evidence. No accepted-story commit exists.
+Retained candidate commit: `aec9a847d79d013c6bffe1f628524f83c1f56c4c`
+(`docs(combat): retain blocked side-contract candidate and clock privacy evidence`).
+This final handoff is retained in a subsequent metadata-only commit; final task response records its
+exact SHA. Neither commit represents accepted004A1 delivery.
+Draft PR: [115 — Record blocked Combat side-contract candidate and clock privacy conflict](https://github.com/dills122/sandtable/pull/115).
+Readback verified OPEN/draft=true, base main, head codex/overnight-combat-wave-01, candidate commit.
+Candidate commit scope:22files,+3265/-5; four candidate files plus canonical plan, two navigation
+files and15 planning/evidence files. Exact paths in evidence/delivery-files.txt.
+Dirty state: clean after candidate commit/push; only final planning metadata changed subsequently
+and committed before final response. No retained uncommitted implementation. Hosted CI unassessed.
 
 ## First Safe Next Action
 
