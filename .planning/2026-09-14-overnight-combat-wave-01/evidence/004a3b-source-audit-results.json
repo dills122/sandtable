@@ -1,0 +1,479 @@
+{
+  "sourceCount": 116,
+  "sourceFamilies": {
+    "corrected-composition": 88,
+    "historical-terminal": 28
+  },
+  "sourceVariants": {
+    "core": 32,
+    "fallback": 32,
+    "prior-time": 24,
+    "historical": 28
+  },
+  "counts": {
+    "cut_hashes": 4744,
+    "literal_observations": 1208,
+    "candidate_submission_pairs": 720,
+    "native_finish_world_rng": 176,
+    "fixed_initial_context": 176,
+    "continuous_receipt_history_pairs": 4512,
+    "bridge_settlement_round_retention": 880,
+    "owner_finish_receipt": 56,
+    "own_world_projection": 232,
+    "fallback_no_own_receipt": 64,
+    "own_reserve_records": 28,
+    "historical_native_world_occurrence": 56,
+    "fixed_native_member_and_private_receipt": 2
+  },
+  "configRef": "pub.8ec01b88b82d59f594b9e8c64d25886d8dae8856714c7a2cd166683aa11568ac",
+  "terminalOccurrences": [
+    {
+      "case": "axis-cp12-cohesion-2",
+      "audience": "axis",
+      "sourceOrdinal": 1,
+      "activeOrdinal": 1,
+      "status": "active",
+      "ownReserve": true
+    },
+    {
+      "case": "axis-cp12-cohesion-2",
+      "audience": "commonwealth",
+      "sourceOrdinal": 1,
+      "activeOrdinal": 1,
+      "status": "active",
+      "ownReserve": false
+    },
+    {
+      "case": "axis-cp14-cohesion-4",
+      "audience": "axis",
+      "sourceOrdinal": 1,
+      "activeOrdinal": 1,
+      "status": "active",
+      "ownReserve": true
+    },
+    {
+      "case": "axis-cp14-cohesion-4",
+      "audience": "commonwealth",
+      "sourceOrdinal": 1,
+      "activeOrdinal": 1,
+      "status": "active",
+      "ownReserve": false
+    },
+    {
+      "case": "commonwealth-cp12-cohesion-2",
+      "audience": "axis",
+      "sourceOrdinal": 1,
+      "activeOrdinal": 1,
+      "status": "active",
+      "ownReserve": false
+    },
+    {
+      "case": "commonwealth-cp12-cohesion-2",
+      "audience": "commonwealth",
+      "sourceOrdinal": 1,
+      "activeOrdinal": 1,
+      "status": "active",
+      "ownReserve": true
+    },
+    {
+      "case": "commonwealth-cp14-cohesion-4",
+      "audience": "axis",
+      "sourceOrdinal": 1,
+      "activeOrdinal": 1,
+      "status": "active",
+      "ownReserve": false
+    },
+    {
+      "case": "commonwealth-cp14-cohesion-4",
+      "audience": "commonwealth",
+      "sourceOrdinal": 1,
+      "activeOrdinal": 1,
+      "status": "active",
+      "ownReserve": true
+    },
+    {
+      "case": "axis-player-decline",
+      "audience": "axis",
+      "sourceOrdinal": 1,
+      "activeOrdinal": 1,
+      "status": "active",
+      "ownReserve": true
+    },
+    {
+      "case": "axis-player-decline",
+      "audience": "commonwealth",
+      "sourceOrdinal": 1,
+      "activeOrdinal": 1,
+      "status": "active",
+      "ownReserve": false
+    },
+    {
+      "case": "axis-scripted-unavailable",
+      "audience": "axis",
+      "sourceOrdinal": 1,
+      "activeOrdinal": 1,
+      "status": "active",
+      "ownReserve": true
+    },
+    {
+      "case": "axis-scripted-unavailable",
+      "audience": "commonwealth",
+      "sourceOrdinal": 1,
+      "activeOrdinal": 1,
+      "status": "active",
+      "ownReserve": false
+    },
+    {
+      "case": "axis-timeout",
+      "audience": "axis",
+      "sourceOrdinal": 1,
+      "activeOrdinal": 1,
+      "status": "active",
+      "ownReserve": true
+    },
+    {
+      "case": "axis-timeout",
+      "audience": "commonwealth",
+      "sourceOrdinal": 1,
+      "activeOrdinal": 1,
+      "status": "active",
+      "ownReserve": false
+    },
+    {
+      "case": "commonwealth-player-decline",
+      "audience": "axis",
+      "sourceOrdinal": 1,
+      "activeOrdinal": 1,
+      "status": "active",
+      "ownReserve": false
+    },
+    {
+      "case": "commonwealth-player-decline",
+      "audience": "commonwealth",
+      "sourceOrdinal": 1,
+      "activeOrdinal": 1,
+      "status": "active",
+      "ownReserve": true
+    },
+    {
+      "case": "commonwealth-scripted-unavailable",
+      "audience": "axis",
+      "sourceOrdinal": 1,
+      "activeOrdinal": 1,
+      "status": "active",
+      "ownReserve": false
+    },
+    {
+      "case": "commonwealth-scripted-unavailable",
+      "audience": "commonwealth",
+      "sourceOrdinal": 1,
+      "activeOrdinal": 1,
+      "status": "active",
+      "ownReserve": true
+    },
+    {
+      "case": "commonwealth-timeout",
+      "audience": "axis",
+      "sourceOrdinal": 1,
+      "activeOrdinal": 1,
+      "status": "active",
+      "ownReserve": false
+    },
+    {
+      "case": "commonwealth-timeout",
+      "audience": "commonwealth",
+      "sourceOrdinal": 1,
+      "activeOrdinal": 1,
+      "status": "active",
+      "ownReserve": true
+    },
+    {
+      "case": "axis-active-scripted-unavailable",
+      "audience": "axis",
+      "sourceOrdinal": 1,
+      "activeOrdinal": 1,
+      "status": "active",
+      "ownReserve": true
+    },
+    {
+      "case": "axis-active-scripted-unavailable",
+      "audience": "commonwealth",
+      "sourceOrdinal": 1,
+      "activeOrdinal": 1,
+      "status": "active",
+      "ownReserve": false
+    },
+    {
+      "case": "axis-active-timeout",
+      "audience": "axis",
+      "sourceOrdinal": 1,
+      "activeOrdinal": 1,
+      "status": "active",
+      "ownReserve": true
+    },
+    {
+      "case": "axis-active-timeout",
+      "audience": "commonwealth",
+      "sourceOrdinal": 1,
+      "activeOrdinal": 1,
+      "status": "active",
+      "ownReserve": false
+    },
+    {
+      "case": "commonwealth-active-scripted-unavailable",
+      "audience": "axis",
+      "sourceOrdinal": 1,
+      "activeOrdinal": 1,
+      "status": "active",
+      "ownReserve": false
+    },
+    {
+      "case": "commonwealth-active-scripted-unavailable",
+      "audience": "commonwealth",
+      "sourceOrdinal": 1,
+      "activeOrdinal": 1,
+      "status": "active",
+      "ownReserve": true
+    },
+    {
+      "case": "commonwealth-active-timeout",
+      "audience": "axis",
+      "sourceOrdinal": 1,
+      "activeOrdinal": 1,
+      "status": "active",
+      "ownReserve": false
+    },
+    {
+      "case": "commonwealth-active-timeout",
+      "audience": "commonwealth",
+      "sourceOrdinal": 1,
+      "activeOrdinal": 1,
+      "status": "active",
+      "ownReserve": true
+    },
+    {
+      "case": "axis-reaction-movement-completion",
+      "audience": "axis",
+      "sourceOrdinal": 1,
+      "activeOrdinal": 1,
+      "status": "active",
+      "ownReserve": true
+    },
+    {
+      "case": "axis-reaction-movement-completion",
+      "audience": "commonwealth",
+      "sourceOrdinal": 1,
+      "activeOrdinal": 1,
+      "status": "active",
+      "ownReserve": false
+    },
+    {
+      "case": "commonwealth-reaction-movement-completion",
+      "audience": "axis",
+      "sourceOrdinal": 1,
+      "activeOrdinal": 1,
+      "status": "active",
+      "ownReserve": false
+    },
+    {
+      "case": "commonwealth-reaction-movement-completion",
+      "audience": "commonwealth",
+      "sourceOrdinal": 1,
+      "activeOrdinal": 1,
+      "status": "active",
+      "ownReserve": true
+    },
+    {
+      "case": "axis-reserve-I-cycle-entry",
+      "audience": "axis",
+      "sourceOrdinal": 1,
+      "activeOrdinal": 1,
+      "status": "active",
+      "ownReserve": true
+    },
+    {
+      "case": "axis-reserve-I-cycle-entry",
+      "audience": "commonwealth",
+      "sourceOrdinal": 1,
+      "activeOrdinal": 1,
+      "status": "active",
+      "ownReserve": false
+    },
+    {
+      "case": "commonwealth-reserve-I-cycle-entry",
+      "audience": "axis",
+      "sourceOrdinal": 1,
+      "activeOrdinal": 1,
+      "status": "active",
+      "ownReserve": false
+    },
+    {
+      "case": "commonwealth-reserve-I-cycle-entry",
+      "audience": "commonwealth",
+      "sourceOrdinal": 1,
+      "activeOrdinal": 1,
+      "status": "active",
+      "ownReserve": true
+    },
+    {
+      "case": "axis-reserve-I-release",
+      "audience": "axis",
+      "sourceOrdinal": 1,
+      "activeOrdinal": 1,
+      "status": "active",
+      "ownReserve": true
+    },
+    {
+      "case": "axis-reserve-I-release",
+      "audience": "commonwealth",
+      "sourceOrdinal": 1,
+      "activeOrdinal": 1,
+      "status": "active",
+      "ownReserve": false
+    },
+    {
+      "case": "commonwealth-reserve-I-release",
+      "audience": "axis",
+      "sourceOrdinal": 1,
+      "activeOrdinal": 1,
+      "status": "active",
+      "ownReserve": false
+    },
+    {
+      "case": "commonwealth-reserve-I-release",
+      "audience": "commonwealth",
+      "sourceOrdinal": 1,
+      "activeOrdinal": 1,
+      "status": "active",
+      "ownReserve": true
+    },
+    {
+      "case": "axis-armed-continuation",
+      "audience": "axis",
+      "sourceOrdinal": 1,
+      "activeOrdinal": 1,
+      "status": "active",
+      "ownReserve": true
+    },
+    {
+      "case": "axis-armed-continuation",
+      "audience": "commonwealth",
+      "sourceOrdinal": 1,
+      "activeOrdinal": 1,
+      "status": "active",
+      "ownReserve": false
+    },
+    {
+      "case": "commonwealth-armed-continuation",
+      "audience": "axis",
+      "sourceOrdinal": 1,
+      "activeOrdinal": 1,
+      "status": "active",
+      "ownReserve": false
+    },
+    {
+      "case": "commonwealth-armed-continuation",
+      "audience": "commonwealth",
+      "sourceOrdinal": 1,
+      "activeOrdinal": 1,
+      "status": "active",
+      "ownReserve": true
+    },
+    {
+      "case": "axis-repeat",
+      "audience": "axis",
+      "sourceOrdinal": 1,
+      "activeOrdinal": 2,
+      "status": "active",
+      "ownReserve": true
+    },
+    {
+      "case": "axis-repeat",
+      "audience": "commonwealth",
+      "sourceOrdinal": 1,
+      "activeOrdinal": 2,
+      "status": "active",
+      "ownReserve": false
+    },
+    {
+      "case": "axis-finish",
+      "audience": "axis",
+      "sourceOrdinal": 1,
+      "activeOrdinal": null,
+      "status": "finished",
+      "ownReserve": true
+    },
+    {
+      "case": "axis-finish",
+      "audience": "commonwealth",
+      "sourceOrdinal": 1,
+      "activeOrdinal": null,
+      "status": "finished",
+      "ownReserve": false
+    },
+    {
+      "case": "commonwealth-repeat",
+      "audience": "axis",
+      "sourceOrdinal": 1,
+      "activeOrdinal": 2,
+      "status": "active",
+      "ownReserve": false
+    },
+    {
+      "case": "commonwealth-repeat",
+      "audience": "commonwealth",
+      "sourceOrdinal": 1,
+      "activeOrdinal": 2,
+      "status": "active",
+      "ownReserve": true
+    },
+    {
+      "case": "commonwealth-finish",
+      "audience": "axis",
+      "sourceOrdinal": 1,
+      "activeOrdinal": null,
+      "status": "finished",
+      "ownReserve": false
+    },
+    {
+      "case": "commonwealth-finish",
+      "audience": "commonwealth",
+      "sourceOrdinal": 1,
+      "activeOrdinal": null,
+      "status": "finished",
+      "ownReserve": true
+    },
+    {
+      "case": "axis-reserve-I-movement-completion",
+      "audience": "axis",
+      "sourceOrdinal": 2,
+      "activeOrdinal": 2,
+      "status": "active",
+      "ownReserve": true
+    },
+    {
+      "case": "axis-reserve-I-movement-completion",
+      "audience": "commonwealth",
+      "sourceOrdinal": 2,
+      "activeOrdinal": 2,
+      "status": "active",
+      "ownReserve": false
+    },
+    {
+      "case": "commonwealth-reserve-I-movement-completion",
+      "audience": "axis",
+      "sourceOrdinal": 2,
+      "activeOrdinal": 2,
+      "status": "active",
+      "ownReserve": false
+    },
+    {
+      "case": "commonwealth-reserve-I-movement-completion",
+      "audience": "commonwealth",
+      "sourceOrdinal": 2,
+      "activeOrdinal": 2,
+      "status": "active",
+      "ownReserve": true
+    }
+  ]
+}

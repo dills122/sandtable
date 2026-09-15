@@ -195,3 +195,20 @@ requiresidenticalinitial/finalbytes andexactterminalmatch. Labelproofscheckpoint
 evidence; neverreuselegacyEXR-010fullfreshsession/publicactionparity forsourceonlyprefixes. Zero
 stepsdonotclaimcompletionofprecedingMovement/releasesuite. Sources canonicalplan141–151/753/
 200–209; exercise-harness-v1.md341–342. Nonewgameplaychoice/runtime/A3expansionneeded.
+
+## B1/B3 initial identity and retained reference evidence
+
+Fresh source review confirms two private identities. `sourceLineageHash` binds authenticated root,
+native history and proofs THROUGH executionStart, closed family/profile and exact fragment/cut.
+Actual initial World/RNG/control/receipts and authority bindings participate. Separately hash complete
+retained catalog source/base as `referenceTranscriptHash`; bind in child manifest/proof inventory.
+Exclude reference hash/name, future suffix, controller and future schedule from initial checkpoint
+identity and pair equality. Authenticate each full reference first, then derive prefix through native
+readers. Executed suffix still matches supported reference; no arbitrary catalog extension.
+
+Sources: side oracle 2404–2412 retains completed BridgeBase even at zero input prefix; 2433–2441
+validates full base; 2452 derives native initial state. PairedManeuverExecutor 204–272 compares actual
+initial evidence. Same branch with future seal order change may pair. Defender guard/escape both
+start cursor16, CP[0,0]; attacker guard-cp-limit/escape start CP[5,7] versus[0,0], so cannot pair.
+Historical zero-execution prefix includes complete history, initial/final checkpoint bytes identical.
+Requested terminal remains equal; actual divergent outcomes may produce validated failed children.

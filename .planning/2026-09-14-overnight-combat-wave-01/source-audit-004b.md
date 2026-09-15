@@ -80,3 +80,14 @@ Mandatory negatives include ordinal/terminal/obligation tamper, schedule/order, 
 forged proofs, corrupt/foreign children/counts, false divergence, negative-success conflation,
 malformed versions/path/status, raw-bundle side disclosure and false second-assault claims.
 Next action: finish004A then allocate bounded004B packets using this source checklist.
+
+## Root baseline cross-check, 2026-09-15
+
+ExerciseBundleSemanticValidator555–836 confirms seven ordered passed records per accepted step;
+zero-step success requires identical initial/final bytes at requested boundary; StepLimitExceeded
+requires exact maximum accepted count and no failed decision record. Execution failure has no
+proofs; reconstruction/readjudication failure follows ordered terminal/check/proof-presence matrix.
+PairedManeuverPairingEvidence45–85 compares actual audience+actionID, uses null missing arm for
+unequal length and null divergence for identical streams. PairedManeuverExecutor204–272 additionally
+requires exact initial snapshots, count integrity, seed ledger, creation inputs and build cohort.
+These are source checks for B2/B3 planning, not new runtime tests or contract acceptance.

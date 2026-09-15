@@ -1,3 +1,68 @@
+# Current handoff — 2026-09-15 16:17 UTC
+
+A3b accepted; root full62 oracle exit0, gate81+1670/0skips, fresh review and source audit passed.
+Root commits accepted five-file packet plus curated evidence, then sole writer begins B1.
+B1 prefix/reference identity clarification appended packet004B and canonical plan.
+No live root test sessions. Remaining B1/B2/B3/C/checkpointB then005A/B. Deadline19:39:39UTC.
+No merge. Existing draft PR115.
+
+# Current correction — 2026-09-15 16:01 UTC
+
+A3b INITIAL freeze rejectedP2: terminal_view3b onlyarms.members omitsactualreleaseMember onboth
+ReserveMovement-completion owner terminals; ownReserve null losesCP2/releasedI/expiredordinal2.
+Sourceaudit+freshreviewconfirm; nootherfinding. Solewriter side_cycle_writer nowfixing withnative
+positiveRED andall28native-armcorrespondence assertions; samefourfiles, no schema/policyexpansion.
+Initial44sidepins+31Task003pins,1208literals/720candidatepairs/4744cuts pass. Reviewfocused56terminal/
+4512history/4688policy/88finish/32fallback/648retry/48privacy/696source passed butsharedmembers-only
+terminalassumption missedshape. Initialfullrevieworacle stopped130 afterfinding; authorfull37718
+unrecoverableeveninauthorcontext, nofullgreenclaim. Newauthorfull mustwriteSHAREDlogfromstart.
+
+Rootinitialgate52765complete81+1670/0skips/3m24.526s; renamed004a3b-initial-just-check.log.
+Initialcompat328schema/6fixture/144AST+5extensionpasses. Rootinitialfallbackprobe76719exited1 on
+TESTASSUMPTION: expectedclockAvailablefalseandnulltime, actualvalidfallbacknulltime/availabletrue.
+CorrectedprobetonullORunavailable; nativeSystem/clock-unavailable required. Addedactualnative
+releaseMember positivechecks. BothrootprobesREMAINTO RUN onrevisedfreeze. Noroottool sessionslive.
+Initialhashes/review/sourceauditretained004a3b-initial-*; acceptedHEADstill5fea521/draftPR115.
+Reviewer side_cycle_reviewer and source task004_evidence idlewaitingrefreeze; B1reviewercycle_finish
+baseline ready. Resume writerfullresult viaSHAREDfile/ownsession, nevercross-agentsessiontransfer.
+Deadline19:39:39UTC; full004/Bthen005 stillrequired. Cpacket/preflightnotes belowremainvalid.
+
+# Current work — 2026-09-15 15:51 UTC
+
+HEAD/pushed5fea52176a358121927b12f35c70ae333fca9ba0; draftPR115OPEN/draft/exacthead verified.
+A3b solewriter side_cycle_writer has116sources (88corrected+28historical). Focusedgreen176corrected
+traces/4688cuts,56historicalaudiencecuts; max9842B/19history/4receipts; all8Combat arms+finish;
+176privacyhistory comparisons/200clock outcomes/288retries. Catalog fallbackconstructor initially
+omitted fallback=True; actualnativeclock-loss construction fixed, continuity/privacymatrix nowgreen.
+Admission/source matrices andfixturegeneration pending, nofreeze yet. Writer willsendfourSHA/API
+handoff whilefinalfulloracle runs, permittingrootgate/reviewparallel; rootnogatelivesessionsnow.
+Fresh side_cycle_reviewer baseline ready; task004_evidence ready forfrozenA3baudit. B1reviewer
+cycle_finish_reviewer baseline ready. Futureexercise_occurrence_writer toolstatuspending_init;
+interruptreturnedpending_initbutdidnotclearit. Itappearsreserveoneof4slots, soeffectiveavailable
+active lanesroot+writer+source orreviewer; do notbusyretrythreadlimit. ReuseavailablewriterforB1ifneeded.
+
+Rootprepared evidence/004a3b-root-compatibility-probe.py againstaccepted5fea521; RUNONLYONFREEZE.
+B1nativepreflight28endpoints/588postcreationevents passes; script/results/report retainedunder
+planning/evidence/004b-lineage-preflight*. Allnativeprefixesavailable. Important: plainMovement
+completioncycleordinal2 remainsactive despiteabsentactiveCyclefield; onlyexplicitwrappednullfinish.
+C72draftupdated55rows/17unchanged, preservingeveryID/test/owner; exactamendmentreportretained.
+Newpacket004C scopedBEFOREEDITS: combat-outward-composition-v1 fourfiles+rootplan, unregistered
+72AC/source-version-capacity/readbackindex; startsafterBcomplete. Canonicalplan/taskplanattested.
+Rootsource-audit004B addsruntimefailure/pairbaselinechecks; source-audit005notesexistingdormant
+styleonly, neverreuseBreakdown33=1/3 forCombatcapture33/100. Alltheseplanningeditsuncommitted
+withactiveA3bfourfiles; onlyacceptedA3acommitpublished. Deadline19:39:39UTC; A3b→B1/B2/B3→C/B→005A/B.
+
+# Current work — 2026-09-15 15:29 UTC
+
+HEAD/pushed5fea52176a358121927b12f35c70ae333fca9ba0; PR115OPEN/draft/head verified. A3aaccepted
+a4f5b2c, nav5fea521,277localnavlinks. Fullgate81+1670/0skips/3m16.682s; no root sessions live.
+A3b solewriter side_cycle_writer active existingfour sidefiles, rootcanonicalplanfifth. Fresh
+side_cycle_reviewer baseline ready/idle. Source task004_evidence now read-only refining stale72AC
+map references through acceptedResult2/A2/bridge/A3a; will auditA3b onfreeze. B1futurewriter remains
+read-only untilA3baccepted. ExactB1ninefamilylineagemap nowcommittedwithA3a evidence.
+A3b separate APIs/registry preserveA3a, allthreeclockpolicies/configfromFIRSTC3aframe, bridgefinish
+only, historical28terminalsonly/oneboundary/noactions. Deadline19:39:39UTC;004/Bthen005/no merge.
+
 # Current acceptance boundary — 2026-09-15 15:26 UTC
 
 A3a accepted:52focused groups/fresh ordinary review/source audit/root full gate81+1670/0skips,

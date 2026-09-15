@@ -3,8 +3,8 @@
 Status: `CMB-TASK-004A1` **corrected-profile accepted checkpoint**; contract evidence only. Shared
 codec, selection, RBA and sealed assignment use the accepted versioned clock correction below.
 `004A2` settlement and `004A3a` live Reserve/cycle projection are **accepted checkpoints** below.
-`004A3b` complete Task003 terminal handoff and corrected bridge projection remain open. This packet
-does not freeze complete CON-005, close parent004 or activate runtime.
+`004A3b` Task003 terminal handoff and corrected bridge projection are accepted. Together these
+checkpoints freeze bounded CON-005 contract evidence; parent004 and runtime remain separate gates.
 
 [Combined plan](../design/combat-cycle-implementation-plan.md),
 [ordered schema](combat-side-projection-v1.schema.json),
@@ -475,6 +475,106 @@ Run the side oracle plus direct inherited release/control and private Reserve/cy
 A3b still owns exact28-terminal Task003 handoff projection, continuous corrected bridge history,
 combined privacy comparisons and final corpus capacity reconciliation. No earlier accepted byte or
 runtime reader is replaced here.
+
+## A3b composition and exact Task003 handoff
+
+`004A3b` **accepted 2026-09-15**: 62 semantic groups; fresh ordinary review and source audit;
+root `just check` passed 81 boundary and 1670 full tests, zero skips.
+
+This checkpoint activates the two reserved local v3 evidence profiles through a separate registry and
+`views3b`, `read_observation3b`, `submission3b`, `admit_a3b` entry points. A3a's ten-source live
+registry, standalone ledger registry, public descriptors and complete fixture section stay exact.
+A1/A2 remain byte-preserved. This completes this packet's bounded CON-005 evidence families;
+Task004B/C, integrated checkpoint B and runtime activation remain separate acceptance boundaries.
+
+### Corrected composition, from first frame through finish
+
+`corrected-composition.<Result2 case>` names 32 core lineages: eight result branches, both acting
+sides and both first-seal roles. Each has exact C3a input/event history, Round2 commitment, complete
+native Result2 history and the accepted four-event bridge. 32 `.fallback` suffix variants retain
+actual owner-initiated clock-loss at bridge finish, whose native author is System. 24 `.prior-time`
+variants change only real Result2 owner acceptance times by 20,000 ms within their unchanged published
+windows. Eight cases have no owner mandatory choice and require no artificial timestamp variant.
+These 88 sources produce 176 audience traces. Their synthetic C3 lineage remains explicitly distinct
+from creation-rooted Task003 evidence.
+
+All observations use v3 from the first C3a frame. New internal `CorrectedClockConfigSeed3` binds
+selection, RBA, assignment, retreat, custody, Reserve and cycle budgets of 30,000 ms; Round2
+`sandtable.combat.public-opening-clock.v2`; Result2
+`sandtable.combat.mandatory-window-clock.v2`; accepted bridge
+`sandtable.combat.native-result2-cycle-finish.v1`; corrected-composition capability ID; and codec 3.
+Canonical literal bytes independently pin property order. The resulting configRef never rotates
+at a handoff. No public descriptor changes; the new seed and its bridge-policy enum are internal.
+
+Selection/RBA, sealed assignment, own settlement and final cycle finish use original authorized
+fields with v3 domains and typed family tags. Each exact native accepted owner choice adds one own
+receipt. Side history and receipts continue without version reset, authority-count subtraction or
+synthetic adapter event. Round and settlement references remain stable through the entire bridge.
+Private native bridge/base/source/certificate IDs never enter outward reference seeds.
+
+The bridge's empty Reserve stage has no owner release candidate. Its authenticated member record
+can supply own Reserve facts when that native stage is represented; absent prior member records
+remain null instead of fabricated history. Cycle control offers only `finish`, because bridge
+admission excludes kernel repeat. Its set/action use frozen binary framing with corrected public
+capability policy. Native finish events are decoded from the wrapper's exact `nativeEvent`; wrapper
+metadata has no player effect/author field. Actual owner finish produces own receipt, while native
+System fallback closes with no new owner receipt. Earlier own receipts remain recoverable after
+both outcomes. Settlement World, guards, custody, entitlements and future obligations stay retained
+through finish; no upkeep, training, maturity or stage housekeeping is implied.
+
+Source authentication retains exact five-field Source shape. Corrected source base is accepted
+BridgeBase, which already binds all predecessor source bytes and certificate. Every registered
+input/event prefix is exact; source pins and base/prefix comparison precede cache access. Full
+native replay supplies immutable per-cut states; callers receive copies. Named branch semantics
+continue to reject Result2 source fallback even when final World happens to match. Admissible
+bridge finish fallback is a distinct suffix, not a fallback Result2 source.
+
+### Historical terminal projections
+
+`historical-terminal.<Task003 traceId>` names exactly 28 selected normalized checkpoints across
+nine accepted families. The exact authority composition, all selected trace IDs, 31 source pins,
+terminal/snapshot golden hashes and Task004 handoff digest are authenticated before projection.
+Internal Source base carries the exact verified RootSnapshot; it is not an externally asserted
+checkpoint accepted by hash alone. Current snapshot World is the normalized source's current World,
+including actual release/movement changes, not an older creation or pre-release World.
+
+Both audiences get one explicit represented boundary at visible revision 0, one SideChange3 and
+zero own receipts. No earlier public history is inferred from private authority receipt count.
+Every terminal has `decision:null`; even well-formed current v3 proposals reject through admission.
+Supported positions include direct sequence IDs, Position records and authenticated nested
+LifecyclePosition/sequencePosition records. A terminal position never creates a player action.
+
+Own participant CP/Cohesion and own Reserve member records come directly from current World/arms.
+Normalize both native `authorityArms.members` lists and the authenticated `releaseMember` singleton
+at Reserve Movement-completion endpoints. Both owners retain release I history, CP 2, CPA 10 and
+the expired next-Movement exception at ordinal 2; opposing audiences receive no singleton record.
+Native completion receipt authenticates expiration but remains private.
+Actual terminal values include CP 14 and Cohesion −4. Repeat uses actual active ordinal 2; finished
+control retains source cycle/ordinal while active cycle becomes null. Source occurrence and active
+occurrence stay distinct. Historical terminal capability carries bounded retained-source policy;
+it makes no corrected arbitrary-history clock claim and no full preceding-history reconstruction.
+
+### Evidence and retained boundaries
+
+Fixture adds only `successor3b`: six direct dependency pins, exact Task003 handoff, all 232 audience
+traces, every cut digest/length, representative canonical observations and distinct candidate/
+submission literals. Original A1/A2/A3a schema and fixture fingerprints remain exact. Ordinary
+checking requires retained bytes; missing or changed evidence rejects rather than regenerates.
+
+Focused evidence compares complete authorized histories across both seal orders and actual
+owner-timestamp variants, then exact current observations, candidate/submission bytes, clock
+outcomes and receipt retries. Native finish fallback preserves the other audience's full history.
+Every core offered Combat/cycle action executes through its actual predecessor; malformed,
+cross-profile, stale, foreign-source, changed-base and noncanonical inputs reject generically.
+Capacity remains 65,536 bytes, depth 20, actions 3, receipts 8 and history 64; no truncation or new
+public scalar range is introduced. Corrected continuity covers 4,688 cuts across 176 audience
+traces; measured maxima are 9,842 bytes, 19 history entries and four own receipts. Historical
+terminals add 56 cuts. Privacy evidence covers 176 complete-history comparisons, 200 clock
+outcomes and 288 receipt retries across equivalent source histories.
+
+Run `python3 -B docs/specs/verify-combat-side-projection-v1.py`, plus direct bridge and authority
+composition oracles. This is contract evidence only: no protobuf field, production Observation
+version, host registration, durable publication API or runtime migration is allocated.
 
 ## Compatibility and future Dispatch
 

@@ -665,5 +665,20 @@
       "sandtable.side.corrected-composition.v3",
       "sandtable.side.historical-terminal.v3"
     ]
+  },
+  "objects3b": {
+    "CorrectedClockConfigSeed3": "selectionBudgetMilliseconds:budget rbaBudgetMilliseconds:budget assignmentBudgetMilliseconds:budget retreatBudgetMilliseconds:budget custodyBudgetMilliseconds:budget reserveBudgetMilliseconds:budget cycleBudgetMilliseconds:budget assignmentClockPolicyId:clockPolicy resultClockPolicyId:resultClockPolicy3 bridgeClockPolicyId:bridgeClock3b capabilityPolicyId:capability3 candidateCodec:version3"
+  },
+  "enums3b": {
+    "bridgeClock3b": [
+      "sandtable.combat.native-result2-cycle-finish.v1"
+    ]
+  },
+  "successor3b": {
+    "scope": "004A3b corrected full Combat-through-finish projections and 28 exact Task003 projection-only terminals; no runtime registration",
+    "externalContracts": [
+      "combat-result-cycle-finish-v1.schema.json",
+      "combat-authority-composition-v1.schema.json"
+    ]
   }
 }

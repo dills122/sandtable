@@ -1,0 +1,1 @@
+PASS independent native finish/fallback, binary identity and terminal checks {'native_pairs': 32, 'identity_checks': 64, 'prefix_equality': 64, 'clock_outcomes': 320, 'retries': 64, 'terminal_rejects': 56, 'native_member_checks': 2}

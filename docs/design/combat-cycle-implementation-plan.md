@@ -129,6 +129,11 @@ deliver these sequential slices with at most five primary files each, including 
 | `CMB-TASK-004B` | New Exercise evidence spec, schema, fixture and oracle | After accepted004A; complete CON-006 occurrence/ordinal/terminal/continuation and strict manifest/report/divergence contracts, unsupported-terminal and false-success negatives |
 | `CMB-TASK-004C` | Explicit72-AC index and bounded integrated readback evidence | After accepted004A/B; every AC maps to task/planned test; exact versions, capacity, compatibility and Task003 handoff reconciled before004/checkpoint B closes |
 
+004C packet refinement before edits: four new `combat-outward-composition-v1` spec/schema/fixture/
+oracle files plus this plan retain the explicit72-AC index, source/version/capacity compatibility
+and accepted side/Exercise readback. This unregistered evidence index preserves partial/deferred
+runtime coverage. Exact scope is in [packet004C](../../.planning/2026-09-14-overnight-combat-wave-01/packet-004c.md).
+
 004B sizing refinement before edits: three explicitly unregistered prospective Combat families,
 each spec/schema/fixture/oracle plus this plan, execute after accepted004A:
 
@@ -230,6 +235,21 @@ receipt follows authenticated intent even with System event author. A3b starts n
 projections and continuous corrected bridge history, separate registry and internal configuration
 seed binding all three clock policies from first frame. Bridge offers finish only; historical
 terminal profiles offer no actions. Parent004/checkpointB and005 remain incomplete.
+
+004A3b accepted 2026-09-15: 62 semantic groups, fresh ordinary approval and native source audit,
+root `just check` 81 boundary/1670 full tests, zero skips (3m31.596s full suite).
+116 sources cover 4744 cuts, 1208 literal observations and 720 candidate pairs. All 28 historical
+terminal profiles match native World and Reserve state, including both singleton releaseMember
+completion records. Corrected histories preserve all clock policies, receipts and privacy through
+finish. A1/A2/A3a bytes preserved. B1/B2/B3 and C remain required before checkpoint B; 005 follows.
+
+B1/B3 identity clarification: sourceLineageHash binds authenticated root/history/proofs only through
+executionStart. Full future-bearing reference transcript is authenticated and hashed separately in
+child evidence; reference hash/name and future controller/schedule choices never seed initial
+checkpoint identity or pair equality. Pair equality still requires identical actual initial state,
+RNG, prefix/cut/profile, gameplay/build, requested terminal and bounds. Each complete reference is
+independently authenticated before deriving its prefix. No arbitrary source extensions. Equal-start
+defender guard/escape may pair; attacker CP-limit guard/escape starts differ and must reject.
 
 004A1 overnight hard stop, 2026-09-14 local /2026-09-15 UTC: ordinary fresh-context review found
 equal waiting-side observations before/after an opposing private seal, but the same proposal at

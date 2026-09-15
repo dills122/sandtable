@@ -1,0 +1,1 @@
+PASS accepted A3a compatibility {'schema_leaves': 328, 'fixture_sections': 6, 'unchanged_ast': 144, 'extension_ast': 5}

@@ -1,0 +1,1732 @@
+[
+  {
+    "family": "ordinary-no-attack",
+    "case": "axis-cp12-cohesion-2",
+    "creationArtifacts": 2,
+    "eventFragments": {
+      "preamble": 4,
+      "weather": 1,
+      "stage-entry": 4,
+      "reserve-designation": 1,
+      "movement": 6,
+      "movement-lifecycle": 3,
+      "breakdown-entry": 1,
+      "selection": 2,
+      "noattack": 6
+    },
+    "nativeEventCount": 28,
+    "proofOnlyFragments": 0,
+    "rootCycleOrdinal": 1,
+    "sourceCycle": {
+      "contractVersion": 1,
+      "campaignId": "rules-lab.combat-creation.1",
+      "rulesetHash": "8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18",
+      "setupId": "rules-lab.combat.close-assault.v1",
+      "setupHash": "sha256:22495e26528c2f4db8335d3b4041194aef26295f30aab0e4e6f384ff17069848",
+      "contentPackId": "rules-lab.content.close-assault.v1",
+      "contentHash": "sha256:ee4fde9638ceb61ec08612fe32f9ac81db05572aac5ca20941e402d2fed25847",
+      "scenarioId": "close-assault-positive-v1",
+      "gameTurn": 1,
+      "operationStage": 1,
+      "playerPhaseSlot": "first-acting-side",
+      "actingSide": "axis",
+      "ordinal": 1,
+      "openedAuthorityVersion": 11,
+      "openingPrefix": "sha256:93e94d06c9189d0d8b5c0f2c3e546d97fcafdf601455884364ab5ca8fafa08ef",
+      "admittedPolicyBundleDigest": "sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34"
+    },
+    "position": {
+      "contractVersion": 5,
+      "positionId": "land.position.operation-1.first-player.movement-and-combat.reserve-release",
+      "gameTurn": 1,
+      "operationStage": 1,
+      "stageId": "land.stage.operation",
+      "phaseId": "land.phase.movement-and-combat",
+      "segmentId": "land.segment.reserve-release",
+      "stepId": null,
+      "actorRole": "first-acting-side",
+      "activeSide": null,
+      "sources": [
+        {
+          "sourceId": "spi-1979-land-rules",
+          "locator": "5.2"
+        },
+        {
+          "sourceId": "spi-1979-land-rules",
+          "locator": "7.11"
+        },
+        {
+          "sourceId": "spi-1979-land-rules",
+          "locator": "7.14"
+        }
+      ]
+    },
+    "worldHash": "sha256:311ba2edefd90cba4f93f614e2205db981bf8101c75b4f839eab77094e4c56f5"
+  },
+  {
+    "family": "ordinary-no-attack",
+    "case": "axis-cp14-cohesion-4",
+    "creationArtifacts": 2,
+    "eventFragments": {
+      "preamble": 4,
+      "weather": 1,
+      "stage-entry": 4,
+      "reserve-designation": 1,
+      "movement": 7,
+      "movement-lifecycle": 3,
+      "breakdown-entry": 1,
+      "selection": 2,
+      "noattack": 6
+    },
+    "nativeEventCount": 29,
+    "proofOnlyFragments": 0,
+    "rootCycleOrdinal": 1,
+    "sourceCycle": {
+      "contractVersion": 1,
+      "campaignId": "rules-lab.combat-creation.1",
+      "rulesetHash": "8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18",
+      "setupId": "rules-lab.combat.close-assault.v1",
+      "setupHash": "sha256:22495e26528c2f4db8335d3b4041194aef26295f30aab0e4e6f384ff17069848",
+      "contentPackId": "rules-lab.content.close-assault.v1",
+      "contentHash": "sha256:ee4fde9638ceb61ec08612fe32f9ac81db05572aac5ca20941e402d2fed25847",
+      "scenarioId": "close-assault-positive-v1",
+      "gameTurn": 1,
+      "operationStage": 1,
+      "playerPhaseSlot": "first-acting-side",
+      "actingSide": "axis",
+      "ordinal": 1,
+      "openedAuthorityVersion": 11,
+      "openingPrefix": "sha256:93e94d06c9189d0d8b5c0f2c3e546d97fcafdf601455884364ab5ca8fafa08ef",
+      "admittedPolicyBundleDigest": "sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34"
+    },
+    "position": {
+      "contractVersion": 5,
+      "positionId": "land.position.operation-1.first-player.movement-and-combat.reserve-release",
+      "gameTurn": 1,
+      "operationStage": 1,
+      "stageId": "land.stage.operation",
+      "phaseId": "land.phase.movement-and-combat",
+      "segmentId": "land.segment.reserve-release",
+      "stepId": null,
+      "actorRole": "first-acting-side",
+      "activeSide": null,
+      "sources": [
+        {
+          "sourceId": "spi-1979-land-rules",
+          "locator": "5.2"
+        },
+        {
+          "sourceId": "spi-1979-land-rules",
+          "locator": "7.11"
+        },
+        {
+          "sourceId": "spi-1979-land-rules",
+          "locator": "7.14"
+        }
+      ]
+    },
+    "worldHash": "sha256:e9d1d940bfbe3302b5d2c3aee49f28185de94e08297f904db3f11a6aa7cee1c5"
+  },
+  {
+    "family": "ordinary-no-attack",
+    "case": "commonwealth-cp12-cohesion-2",
+    "creationArtifacts": 2,
+    "eventFragments": {
+      "preamble": 4,
+      "weather": 1,
+      "stage-entry": 4,
+      "reserve-designation": 1,
+      "movement": 6,
+      "movement-lifecycle": 3,
+      "breakdown-entry": 1,
+      "selection": 2,
+      "noattack": 6
+    },
+    "nativeEventCount": 28,
+    "proofOnlyFragments": 0,
+    "rootCycleOrdinal": 1,
+    "sourceCycle": {
+      "contractVersion": 1,
+      "campaignId": "rules-lab.combat-creation.1",
+      "rulesetHash": "8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18",
+      "setupId": "rules-lab.combat.close-assault.v1",
+      "setupHash": "sha256:22495e26528c2f4db8335d3b4041194aef26295f30aab0e4e6f384ff17069848",
+      "contentPackId": "rules-lab.content.close-assault.v1",
+      "contentHash": "sha256:ee4fde9638ceb61ec08612fe32f9ac81db05572aac5ca20941e402d2fed25847",
+      "scenarioId": "close-assault-positive-v1",
+      "gameTurn": 1,
+      "operationStage": 1,
+      "playerPhaseSlot": "first-acting-side",
+      "actingSide": "commonwealth",
+      "ordinal": 1,
+      "openedAuthorityVersion": 11,
+      "openingPrefix": "sha256:bdef3392d0ea70832902bd02ec94a3d1018fca5128a4151b649c6fd5579c4462",
+      "admittedPolicyBundleDigest": "sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34"
+    },
+    "position": {
+      "contractVersion": 5,
+      "positionId": "land.position.operation-1.first-player.movement-and-combat.reserve-release",
+      "gameTurn": 1,
+      "operationStage": 1,
+      "stageId": "land.stage.operation",
+      "phaseId": "land.phase.movement-and-combat",
+      "segmentId": "land.segment.reserve-release",
+      "stepId": null,
+      "actorRole": "first-acting-side",
+      "activeSide": null,
+      "sources": [
+        {
+          "sourceId": "spi-1979-land-rules",
+          "locator": "5.2"
+        },
+        {
+          "sourceId": "spi-1979-land-rules",
+          "locator": "7.11"
+        },
+        {
+          "sourceId": "spi-1979-land-rules",
+          "locator": "7.14"
+        }
+      ]
+    },
+    "worldHash": "sha256:1a8e33a77b477d3823371c4b3afcb92da6e56450effb120a94671b3b0791b23a"
+  },
+  {
+    "family": "ordinary-no-attack",
+    "case": "commonwealth-cp14-cohesion-4",
+    "creationArtifacts": 2,
+    "eventFragments": {
+      "preamble": 4,
+      "weather": 1,
+      "stage-entry": 4,
+      "reserve-designation": 1,
+      "movement": 7,
+      "movement-lifecycle": 3,
+      "breakdown-entry": 1,
+      "selection": 2,
+      "noattack": 6
+    },
+    "nativeEventCount": 29,
+    "proofOnlyFragments": 0,
+    "rootCycleOrdinal": 1,
+    "sourceCycle": {
+      "contractVersion": 1,
+      "campaignId": "rules-lab.combat-creation.1",
+      "rulesetHash": "8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18",
+      "setupId": "rules-lab.combat.close-assault.v1",
+      "setupHash": "sha256:22495e26528c2f4db8335d3b4041194aef26295f30aab0e4e6f384ff17069848",
+      "contentPackId": "rules-lab.content.close-assault.v1",
+      "contentHash": "sha256:ee4fde9638ceb61ec08612fe32f9ac81db05572aac5ca20941e402d2fed25847",
+      "scenarioId": "close-assault-positive-v1",
+      "gameTurn": 1,
+      "operationStage": 1,
+      "playerPhaseSlot": "first-acting-side",
+      "actingSide": "commonwealth",
+      "ordinal": 1,
+      "openedAuthorityVersion": 11,
+      "openingPrefix": "sha256:bdef3392d0ea70832902bd02ec94a3d1018fca5128a4151b649c6fd5579c4462",
+      "admittedPolicyBundleDigest": "sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34"
+    },
+    "position": {
+      "contractVersion": 5,
+      "positionId": "land.position.operation-1.first-player.movement-and-combat.reserve-release",
+      "gameTurn": 1,
+      "operationStage": 1,
+      "stageId": "land.stage.operation",
+      "phaseId": "land.phase.movement-and-combat",
+      "segmentId": "land.segment.reserve-release",
+      "stepId": null,
+      "actorRole": "first-acting-side",
+      "activeSide": null,
+      "sources": [
+        {
+          "sourceId": "spi-1979-land-rules",
+          "locator": "5.2"
+        },
+        {
+          "sourceId": "spi-1979-land-rules",
+          "locator": "7.11"
+        },
+        {
+          "sourceId": "spi-1979-land-rules",
+          "locator": "7.14"
+        }
+      ]
+    },
+    "worldHash": "sha256:5e3749274c082798f0d6bfd81055b1cca29914ff55f420509df3943501dbfe18"
+  },
+  {
+    "family": "reaction-direct-close",
+    "case": "axis-player-decline",
+    "creationArtifacts": 2,
+    "eventFragments": {
+      "preamble": 4,
+      "weather": 1,
+      "stage-entry": 4,
+      "reserve-designation": 1,
+      "phasing-movement": 1,
+      "reaction-trigger": 1,
+      "reaction-close": 1
+    },
+    "nativeEventCount": 13,
+    "proofOnlyFragments": 0,
+    "rootCycleOrdinal": 1,
+    "sourceCycle": {
+      "contractVersion": 1,
+      "campaignId": "rules-lab.combat-creation.1",
+      "rulesetHash": "8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18",
+      "setupId": "rules-lab.combat.close-assault.v1",
+      "setupHash": "sha256:22495e26528c2f4db8335d3b4041194aef26295f30aab0e4e6f384ff17069848",
+      "contentPackId": "rules-lab.content.close-assault.v1",
+      "contentHash": "sha256:ee4fde9638ceb61ec08612fe32f9ac81db05572aac5ca20941e402d2fed25847",
+      "scenarioId": "close-assault-positive-v1",
+      "gameTurn": 1,
+      "operationStage": 1,
+      "playerPhaseSlot": "first-acting-side",
+      "actingSide": "axis",
+      "ordinal": 1,
+      "openedAuthorityVersion": 11,
+      "openingPrefix": "sha256:93e94d06c9189d0d8b5c0f2c3e546d97fcafdf601455884364ab5ca8fafa08ef",
+      "admittedPolicyBundleDigest": "sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34"
+    },
+    "position": {
+      "kind": "sequence",
+      "sequencePosition": {
+        "contractVersion": 5,
+        "positionId": "land.position.operation-1.first-player.movement-and-combat.movement",
+        "gameTurn": 1,
+        "operationStage": 1,
+        "stageId": "land.stage.operation",
+        "phaseId": "land.phase.movement-and-combat",
+        "segmentId": "land.segment.movement",
+        "stepId": null,
+        "actorRole": "first-acting-side",
+        "activeSide": null,
+        "sources": [
+          {
+            "sourceId": "spi-1979-land-rules",
+            "locator": "5.2"
+          },
+          {
+            "sourceId": "spi-1979-land-rules",
+            "locator": "7.11"
+          },
+          {
+            "sourceId": "spi-1979-land-rules",
+            "locator": "7.14"
+          }
+        ]
+      }
+    },
+    "worldHash": "sha256:fe2b272a379fbe182d2ba601171f79f1c0df9dd06ecee17b3a33926bc600aa02"
+  },
+  {
+    "family": "reaction-direct-close",
+    "case": "axis-scripted-unavailable",
+    "creationArtifacts": 2,
+    "eventFragments": {
+      "preamble": 4,
+      "weather": 1,
+      "stage-entry": 4,
+      "reserve-designation": 1,
+      "phasing-movement": 1,
+      "reaction-trigger": 1,
+      "reaction-close": 1
+    },
+    "nativeEventCount": 13,
+    "proofOnlyFragments": 0,
+    "rootCycleOrdinal": 1,
+    "sourceCycle": {
+      "contractVersion": 1,
+      "campaignId": "rules-lab.combat-creation.1",
+      "rulesetHash": "8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18",
+      "setupId": "rules-lab.combat.close-assault.v1",
+      "setupHash": "sha256:22495e26528c2f4db8335d3b4041194aef26295f30aab0e4e6f384ff17069848",
+      "contentPackId": "rules-lab.content.close-assault.v1",
+      "contentHash": "sha256:ee4fde9638ceb61ec08612fe32f9ac81db05572aac5ca20941e402d2fed25847",
+      "scenarioId": "close-assault-positive-v1",
+      "gameTurn": 1,
+      "operationStage": 1,
+      "playerPhaseSlot": "first-acting-side",
+      "actingSide": "axis",
+      "ordinal": 1,
+      "openedAuthorityVersion": 11,
+      "openingPrefix": "sha256:93e94d06c9189d0d8b5c0f2c3e546d97fcafdf601455884364ab5ca8fafa08ef",
+      "admittedPolicyBundleDigest": "sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34"
+    },
+    "position": {
+      "kind": "sequence",
+      "sequencePosition": {
+        "contractVersion": 5,
+        "positionId": "land.position.operation-1.first-player.movement-and-combat.movement",
+        "gameTurn": 1,
+        "operationStage": 1,
+        "stageId": "land.stage.operation",
+        "phaseId": "land.phase.movement-and-combat",
+        "segmentId": "land.segment.movement",
+        "stepId": null,
+        "actorRole": "first-acting-side",
+        "activeSide": null,
+        "sources": [
+          {
+            "sourceId": "spi-1979-land-rules",
+            "locator": "5.2"
+          },
+          {
+            "sourceId": "spi-1979-land-rules",
+            "locator": "7.11"
+          },
+          {
+            "sourceId": "spi-1979-land-rules",
+            "locator": "7.14"
+          }
+        ]
+      }
+    },
+    "worldHash": "sha256:fe2b272a379fbe182d2ba601171f79f1c0df9dd06ecee17b3a33926bc600aa02"
+  },
+  {
+    "family": "reaction-direct-close",
+    "case": "axis-timeout",
+    "creationArtifacts": 2,
+    "eventFragments": {
+      "preamble": 4,
+      "weather": 1,
+      "stage-entry": 4,
+      "reserve-designation": 1,
+      "phasing-movement": 1,
+      "reaction-trigger": 1,
+      "reaction-close": 1
+    },
+    "nativeEventCount": 13,
+    "proofOnlyFragments": 0,
+    "rootCycleOrdinal": 1,
+    "sourceCycle": {
+      "contractVersion": 1,
+      "campaignId": "rules-lab.combat-creation.1",
+      "rulesetHash": "8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18",
+      "setupId": "rules-lab.combat.close-assault.v1",
+      "setupHash": "sha256:22495e26528c2f4db8335d3b4041194aef26295f30aab0e4e6f384ff17069848",
+      "contentPackId": "rules-lab.content.close-assault.v1",
+      "contentHash": "sha256:ee4fde9638ceb61ec08612fe32f9ac81db05572aac5ca20941e402d2fed25847",
+      "scenarioId": "close-assault-positive-v1",
+      "gameTurn": 1,
+      "operationStage": 1,
+      "playerPhaseSlot": "first-acting-side",
+      "actingSide": "axis",
+      "ordinal": 1,
+      "openedAuthorityVersion": 11,
+      "openingPrefix": "sha256:93e94d06c9189d0d8b5c0f2c3e546d97fcafdf601455884364ab5ca8fafa08ef",
+      "admittedPolicyBundleDigest": "sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34"
+    },
+    "position": {
+      "kind": "sequence",
+      "sequencePosition": {
+        "contractVersion": 5,
+        "positionId": "land.position.operation-1.first-player.movement-and-combat.movement",
+        "gameTurn": 1,
+        "operationStage": 1,
+        "stageId": "land.stage.operation",
+        "phaseId": "land.phase.movement-and-combat",
+        "segmentId": "land.segment.movement",
+        "stepId": null,
+        "actorRole": "first-acting-side",
+        "activeSide": null,
+        "sources": [
+          {
+            "sourceId": "spi-1979-land-rules",
+            "locator": "5.2"
+          },
+          {
+            "sourceId": "spi-1979-land-rules",
+            "locator": "7.11"
+          },
+          {
+            "sourceId": "spi-1979-land-rules",
+            "locator": "7.14"
+          }
+        ]
+      }
+    },
+    "worldHash": "sha256:fe2b272a379fbe182d2ba601171f79f1c0df9dd06ecee17b3a33926bc600aa02"
+  },
+  {
+    "family": "reaction-direct-close",
+    "case": "commonwealth-player-decline",
+    "creationArtifacts": 2,
+    "eventFragments": {
+      "preamble": 4,
+      "weather": 1,
+      "stage-entry": 4,
+      "reserve-designation": 1,
+      "phasing-movement": 1,
+      "reaction-trigger": 1,
+      "reaction-close": 1
+    },
+    "nativeEventCount": 13,
+    "proofOnlyFragments": 0,
+    "rootCycleOrdinal": 1,
+    "sourceCycle": {
+      "contractVersion": 1,
+      "campaignId": "rules-lab.combat-creation.1",
+      "rulesetHash": "8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18",
+      "setupId": "rules-lab.combat.close-assault.v1",
+      "setupHash": "sha256:22495e26528c2f4db8335d3b4041194aef26295f30aab0e4e6f384ff17069848",
+      "contentPackId": "rules-lab.content.close-assault.v1",
+      "contentHash": "sha256:ee4fde9638ceb61ec08612fe32f9ac81db05572aac5ca20941e402d2fed25847",
+      "scenarioId": "close-assault-positive-v1",
+      "gameTurn": 1,
+      "operationStage": 1,
+      "playerPhaseSlot": "first-acting-side",
+      "actingSide": "commonwealth",
+      "ordinal": 1,
+      "openedAuthorityVersion": 11,
+      "openingPrefix": "sha256:bdef3392d0ea70832902bd02ec94a3d1018fca5128a4151b649c6fd5579c4462",
+      "admittedPolicyBundleDigest": "sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34"
+    },
+    "position": {
+      "kind": "sequence",
+      "sequencePosition": {
+        "contractVersion": 5,
+        "positionId": "land.position.operation-1.first-player.movement-and-combat.movement",
+        "gameTurn": 1,
+        "operationStage": 1,
+        "stageId": "land.stage.operation",
+        "phaseId": "land.phase.movement-and-combat",
+        "segmentId": "land.segment.movement",
+        "stepId": null,
+        "actorRole": "first-acting-side",
+        "activeSide": null,
+        "sources": [
+          {
+            "sourceId": "spi-1979-land-rules",
+            "locator": "5.2"
+          },
+          {
+            "sourceId": "spi-1979-land-rules",
+            "locator": "7.11"
+          },
+          {
+            "sourceId": "spi-1979-land-rules",
+            "locator": "7.14"
+          }
+        ]
+      }
+    },
+    "worldHash": "sha256:00fb7cb39ddbfa42ef85bc4e06f9bb402cb164348a8e4149c053bb8b5a15410a"
+  },
+  {
+    "family": "reaction-direct-close",
+    "case": "commonwealth-scripted-unavailable",
+    "creationArtifacts": 2,
+    "eventFragments": {
+      "preamble": 4,
+      "weather": 1,
+      "stage-entry": 4,
+      "reserve-designation": 1,
+      "phasing-movement": 1,
+      "reaction-trigger": 1,
+      "reaction-close": 1
+    },
+    "nativeEventCount": 13,
+    "proofOnlyFragments": 0,
+    "rootCycleOrdinal": 1,
+    "sourceCycle": {
+      "contractVersion": 1,
+      "campaignId": "rules-lab.combat-creation.1",
+      "rulesetHash": "8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18",
+      "setupId": "rules-lab.combat.close-assault.v1",
+      "setupHash": "sha256:22495e26528c2f4db8335d3b4041194aef26295f30aab0e4e6f384ff17069848",
+      "contentPackId": "rules-lab.content.close-assault.v1",
+      "contentHash": "sha256:ee4fde9638ceb61ec08612fe32f9ac81db05572aac5ca20941e402d2fed25847",
+      "scenarioId": "close-assault-positive-v1",
+      "gameTurn": 1,
+      "operationStage": 1,
+      "playerPhaseSlot": "first-acting-side",
+      "actingSide": "commonwealth",
+      "ordinal": 1,
+      "openedAuthorityVersion": 11,
+      "openingPrefix": "sha256:bdef3392d0ea70832902bd02ec94a3d1018fca5128a4151b649c6fd5579c4462",
+      "admittedPolicyBundleDigest": "sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34"
+    },
+    "position": {
+      "kind": "sequence",
+      "sequencePosition": {
+        "contractVersion": 5,
+        "positionId": "land.position.operation-1.first-player.movement-and-combat.movement",
+        "gameTurn": 1,
+        "operationStage": 1,
+        "stageId": "land.stage.operation",
+        "phaseId": "land.phase.movement-and-combat",
+        "segmentId": "land.segment.movement",
+        "stepId": null,
+        "actorRole": "first-acting-side",
+        "activeSide": null,
+        "sources": [
+          {
+            "sourceId": "spi-1979-land-rules",
+            "locator": "5.2"
+          },
+          {
+            "sourceId": "spi-1979-land-rules",
+            "locator": "7.11"
+          },
+          {
+            "sourceId": "spi-1979-land-rules",
+            "locator": "7.14"
+          }
+        ]
+      }
+    },
+    "worldHash": "sha256:00fb7cb39ddbfa42ef85bc4e06f9bb402cb164348a8e4149c053bb8b5a15410a"
+  },
+  {
+    "family": "reaction-direct-close",
+    "case": "commonwealth-timeout",
+    "creationArtifacts": 2,
+    "eventFragments": {
+      "preamble": 4,
+      "weather": 1,
+      "stage-entry": 4,
+      "reserve-designation": 1,
+      "phasing-movement": 1,
+      "reaction-trigger": 1,
+      "reaction-close": 1
+    },
+    "nativeEventCount": 13,
+    "proofOnlyFragments": 0,
+    "rootCycleOrdinal": 1,
+    "sourceCycle": {
+      "contractVersion": 1,
+      "campaignId": "rules-lab.combat-creation.1",
+      "rulesetHash": "8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18",
+      "setupId": "rules-lab.combat.close-assault.v1",
+      "setupHash": "sha256:22495e26528c2f4db8335d3b4041194aef26295f30aab0e4e6f384ff17069848",
+      "contentPackId": "rules-lab.content.close-assault.v1",
+      "contentHash": "sha256:ee4fde9638ceb61ec08612fe32f9ac81db05572aac5ca20941e402d2fed25847",
+      "scenarioId": "close-assault-positive-v1",
+      "gameTurn": 1,
+      "operationStage": 1,
+      "playerPhaseSlot": "first-acting-side",
+      "actingSide": "commonwealth",
+      "ordinal": 1,
+      "openedAuthorityVersion": 11,
+      "openingPrefix": "sha256:bdef3392d0ea70832902bd02ec94a3d1018fca5128a4151b649c6fd5579c4462",
+      "admittedPolicyBundleDigest": "sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34"
+    },
+    "position": {
+      "kind": "sequence",
+      "sequencePosition": {
+        "contractVersion": 5,
+        "positionId": "land.position.operation-1.first-player.movement-and-combat.movement",
+        "gameTurn": 1,
+        "operationStage": 1,
+        "stageId": "land.stage.operation",
+        "phaseId": "land.phase.movement-and-combat",
+        "segmentId": "land.segment.movement",
+        "stepId": null,
+        "actorRole": "first-acting-side",
+        "activeSide": null,
+        "sources": [
+          {
+            "sourceId": "spi-1979-land-rules",
+            "locator": "5.2"
+          },
+          {
+            "sourceId": "spi-1979-land-rules",
+            "locator": "7.11"
+          },
+          {
+            "sourceId": "spi-1979-land-rules",
+            "locator": "7.14"
+          }
+        ]
+      }
+    },
+    "worldHash": "sha256:00fb7cb39ddbfa42ef85bc4e06f9bb402cb164348a8e4149c053bb8b5a15410a"
+  },
+  {
+    "family": "reaction-active-fallback",
+    "case": "axis-active-scripted-unavailable",
+    "creationArtifacts": 2,
+    "eventFragments": {
+      "preamble": 4,
+      "weather": 1,
+      "stage-entry": 4,
+      "reserve-designation": 1,
+      "phasing-movement": 1,
+      "reaction-trigger": 1,
+      "participant-start": 1,
+      "reaction-fallback": 2
+    },
+    "nativeEventCount": 15,
+    "proofOnlyFragments": 0,
+    "rootCycleOrdinal": 1,
+    "sourceCycle": {
+      "contractVersion": 1,
+      "campaignId": "rules-lab.combat-creation.1",
+      "rulesetHash": "8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18",
+      "setupId": "rules-lab.combat.close-assault.v1",
+      "setupHash": "sha256:22495e26528c2f4db8335d3b4041194aef26295f30aab0e4e6f384ff17069848",
+      "contentPackId": "rules-lab.content.close-assault.v1",
+      "contentHash": "sha256:ee4fde9638ceb61ec08612fe32f9ac81db05572aac5ca20941e402d2fed25847",
+      "scenarioId": "close-assault-positive-v1",
+      "gameTurn": 1,
+      "operationStage": 1,
+      "playerPhaseSlot": "first-acting-side",
+      "actingSide": "axis",
+      "ordinal": 1,
+      "openedAuthorityVersion": 11,
+      "openingPrefix": "sha256:93e94d06c9189d0d8b5c0f2c3e546d97fcafdf601455884364ab5ca8fafa08ef",
+      "admittedPolicyBundleDigest": "sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34"
+    },
+    "position": {
+      "kind": "sequence",
+      "sequencePosition": {
+        "contractVersion": 5,
+        "positionId": "land.position.operation-1.first-player.movement-and-combat.movement",
+        "gameTurn": 1,
+        "operationStage": 1,
+        "stageId": "land.stage.operation",
+        "phaseId": "land.phase.movement-and-combat",
+        "segmentId": "land.segment.movement",
+        "stepId": null,
+        "actorRole": "first-acting-side",
+        "activeSide": null,
+        "sources": [
+          {
+            "sourceId": "spi-1979-land-rules",
+            "locator": "5.2"
+          },
+          {
+            "sourceId": "spi-1979-land-rules",
+            "locator": "7.11"
+          },
+          {
+            "sourceId": "spi-1979-land-rules",
+            "locator": "7.14"
+          }
+        ]
+      }
+    },
+    "worldHash": "sha256:d16d160966ddeef78b1ce175e020a20f6802f15f160a261e36f0ad2065a0d270"
+  },
+  {
+    "family": "reaction-active-fallback",
+    "case": "axis-active-timeout",
+    "creationArtifacts": 2,
+    "eventFragments": {
+      "preamble": 4,
+      "weather": 1,
+      "stage-entry": 4,
+      "reserve-designation": 1,
+      "phasing-movement": 1,
+      "reaction-trigger": 1,
+      "participant-start": 1,
+      "reaction-fallback": 2
+    },
+    "nativeEventCount": 15,
+    "proofOnlyFragments": 0,
+    "rootCycleOrdinal": 1,
+    "sourceCycle": {
+      "contractVersion": 1,
+      "campaignId": "rules-lab.combat-creation.1",
+      "rulesetHash": "8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18",
+      "setupId": "rules-lab.combat.close-assault.v1",
+      "setupHash": "sha256:22495e26528c2f4db8335d3b4041194aef26295f30aab0e4e6f384ff17069848",
+      "contentPackId": "rules-lab.content.close-assault.v1",
+      "contentHash": "sha256:ee4fde9638ceb61ec08612fe32f9ac81db05572aac5ca20941e402d2fed25847",
+      "scenarioId": "close-assault-positive-v1",
+      "gameTurn": 1,
+      "operationStage": 1,
+      "playerPhaseSlot": "first-acting-side",
+      "actingSide": "axis",
+      "ordinal": 1,
+      "openedAuthorityVersion": 11,
+      "openingPrefix": "sha256:93e94d06c9189d0d8b5c0f2c3e546d97fcafdf601455884364ab5ca8fafa08ef",
+      "admittedPolicyBundleDigest": "sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34"
+    },
+    "position": {
+      "kind": "sequence",
+      "sequencePosition": {
+        "contractVersion": 5,
+        "positionId": "land.position.operation-1.first-player.movement-and-combat.movement",
+        "gameTurn": 1,
+        "operationStage": 1,
+        "stageId": "land.stage.operation",
+        "phaseId": "land.phase.movement-and-combat",
+        "segmentId": "land.segment.movement",
+        "stepId": null,
+        "actorRole": "first-acting-side",
+        "activeSide": null,
+        "sources": [
+          {
+            "sourceId": "spi-1979-land-rules",
+            "locator": "5.2"
+          },
+          {
+            "sourceId": "spi-1979-land-rules",
+            "locator": "7.11"
+          },
+          {
+            "sourceId": "spi-1979-land-rules",
+            "locator": "7.14"
+          }
+        ]
+      }
+    },
+    "worldHash": "sha256:d16d160966ddeef78b1ce175e020a20f6802f15f160a261e36f0ad2065a0d270"
+  },
+  {
+    "family": "reaction-active-fallback",
+    "case": "commonwealth-active-scripted-unavailable",
+    "creationArtifacts": 2,
+    "eventFragments": {
+      "preamble": 4,
+      "weather": 1,
+      "stage-entry": 4,
+      "reserve-designation": 1,
+      "phasing-movement": 1,
+      "reaction-trigger": 1,
+      "participant-start": 1,
+      "reaction-fallback": 2
+    },
+    "nativeEventCount": 15,
+    "proofOnlyFragments": 0,
+    "rootCycleOrdinal": 1,
+    "sourceCycle": {
+      "contractVersion": 1,
+      "campaignId": "rules-lab.combat-creation.1",
+      "rulesetHash": "8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18",
+      "setupId": "rules-lab.combat.close-assault.v1",
+      "setupHash": "sha256:22495e26528c2f4db8335d3b4041194aef26295f30aab0e4e6f384ff17069848",
+      "contentPackId": "rules-lab.content.close-assault.v1",
+      "contentHash": "sha256:ee4fde9638ceb61ec08612fe32f9ac81db05572aac5ca20941e402d2fed25847",
+      "scenarioId": "close-assault-positive-v1",
+      "gameTurn": 1,
+      "operationStage": 1,
+      "playerPhaseSlot": "first-acting-side",
+      "actingSide": "commonwealth",
+      "ordinal": 1,
+      "openedAuthorityVersion": 11,
+      "openingPrefix": "sha256:bdef3392d0ea70832902bd02ec94a3d1018fca5128a4151b649c6fd5579c4462",
+      "admittedPolicyBundleDigest": "sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34"
+    },
+    "position": {
+      "kind": "sequence",
+      "sequencePosition": {
+        "contractVersion": 5,
+        "positionId": "land.position.operation-1.first-player.movement-and-combat.movement",
+        "gameTurn": 1,
+        "operationStage": 1,
+        "stageId": "land.stage.operation",
+        "phaseId": "land.phase.movement-and-combat",
+        "segmentId": "land.segment.movement",
+        "stepId": null,
+        "actorRole": "first-acting-side",
+        "activeSide": null,
+        "sources": [
+          {
+            "sourceId": "spi-1979-land-rules",
+            "locator": "5.2"
+          },
+          {
+            "sourceId": "spi-1979-land-rules",
+            "locator": "7.11"
+          },
+          {
+            "sourceId": "spi-1979-land-rules",
+            "locator": "7.14"
+          }
+        ]
+      }
+    },
+    "worldHash": "sha256:bc101b216e5e0182520f83260374b38cd37c5f035527303948f84e130e1a8f82"
+  },
+  {
+    "family": "reaction-active-fallback",
+    "case": "commonwealth-active-timeout",
+    "creationArtifacts": 2,
+    "eventFragments": {
+      "preamble": 4,
+      "weather": 1,
+      "stage-entry": 4,
+      "reserve-designation": 1,
+      "phasing-movement": 1,
+      "reaction-trigger": 1,
+      "participant-start": 1,
+      "reaction-fallback": 2
+    },
+    "nativeEventCount": 15,
+    "proofOnlyFragments": 0,
+    "rootCycleOrdinal": 1,
+    "sourceCycle": {
+      "contractVersion": 1,
+      "campaignId": "rules-lab.combat-creation.1",
+      "rulesetHash": "8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18",
+      "setupId": "rules-lab.combat.close-assault.v1",
+      "setupHash": "sha256:22495e26528c2f4db8335d3b4041194aef26295f30aab0e4e6f384ff17069848",
+      "contentPackId": "rules-lab.content.close-assault.v1",
+      "contentHash": "sha256:ee4fde9638ceb61ec08612fe32f9ac81db05572aac5ca20941e402d2fed25847",
+      "scenarioId": "close-assault-positive-v1",
+      "gameTurn": 1,
+      "operationStage": 1,
+      "playerPhaseSlot": "first-acting-side",
+      "actingSide": "commonwealth",
+      "ordinal": 1,
+      "openedAuthorityVersion": 11,
+      "openingPrefix": "sha256:bdef3392d0ea70832902bd02ec94a3d1018fca5128a4151b649c6fd5579c4462",
+      "admittedPolicyBundleDigest": "sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34"
+    },
+    "position": {
+      "kind": "sequence",
+      "sequencePosition": {
+        "contractVersion": 5,
+        "positionId": "land.position.operation-1.first-player.movement-and-combat.movement",
+        "gameTurn": 1,
+        "operationStage": 1,
+        "stageId": "land.stage.operation",
+        "phaseId": "land.phase.movement-and-combat",
+        "segmentId": "land.segment.movement",
+        "stepId": null,
+        "actorRole": "first-acting-side",
+        "activeSide": null,
+        "sources": [
+          {
+            "sourceId": "spi-1979-land-rules",
+            "locator": "5.2"
+          },
+          {
+            "sourceId": "spi-1979-land-rules",
+            "locator": "7.11"
+          },
+          {
+            "sourceId": "spi-1979-land-rules",
+            "locator": "7.14"
+          }
+        ]
+      }
+    },
+    "worldHash": "sha256:bc101b216e5e0182520f83260374b38cd37c5f035527303948f84e130e1a8f82"
+  },
+  {
+    "family": "reaction-second-move-completion",
+    "case": "axis-reaction-movement-completion",
+    "creationArtifacts": 2,
+    "eventFragments": {
+      "preamble": 4,
+      "weather": 1,
+      "stage-entry": 4,
+      "reserve-designation": 1,
+      "phasing-movement": 1,
+      "reaction-trigger": 1,
+      "participant-start": 1,
+      "reaction-second-move": 1,
+      "reaction-completion": 3
+    },
+    "nativeEventCount": 17,
+    "proofOnlyFragments": 0,
+    "rootCycleOrdinal": 1,
+    "sourceCycle": {
+      "contractVersion": 1,
+      "campaignId": "rules-lab.combat-creation.1",
+      "rulesetHash": "8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18",
+      "setupId": "rules-lab.combat.close-assault.v1",
+      "setupHash": "sha256:22495e26528c2f4db8335d3b4041194aef26295f30aab0e4e6f384ff17069848",
+      "contentPackId": "rules-lab.content.close-assault.v1",
+      "contentHash": "sha256:ee4fde9638ceb61ec08612fe32f9ac81db05572aac5ca20941e402d2fed25847",
+      "scenarioId": "close-assault-positive-v1",
+      "gameTurn": 1,
+      "operationStage": 1,
+      "playerPhaseSlot": "first-acting-side",
+      "actingSide": "axis",
+      "ordinal": 1,
+      "openedAuthorityVersion": 11,
+      "openingPrefix": "sha256:93e94d06c9189d0d8b5c0f2c3e546d97fcafdf601455884364ab5ca8fafa08ef",
+      "admittedPolicyBundleDigest": "sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34"
+    },
+    "position": {
+      "kind": "sequence",
+      "sequencePosition": {
+        "contractVersion": 5,
+        "positionId": "land.position.operation-1.first-player.movement-and-combat.movement",
+        "gameTurn": 1,
+        "operationStage": 1,
+        "stageId": "land.stage.operation",
+        "phaseId": "land.phase.movement-and-combat",
+        "segmentId": "land.segment.movement",
+        "stepId": null,
+        "actorRole": "first-acting-side",
+        "activeSide": null,
+        "sources": [
+          {
+            "sourceId": "spi-1979-land-rules",
+            "locator": "5.2"
+          },
+          {
+            "sourceId": "spi-1979-land-rules",
+            "locator": "7.11"
+          },
+          {
+            "sourceId": "spi-1979-land-rules",
+            "locator": "7.14"
+          }
+        ]
+      }
+    },
+    "worldHash": "sha256:7788015b4569c99f2ee9e364b48ab1e4c0e48350375a428686c6f2ad3019f752"
+  },
+  {
+    "family": "reaction-second-move-completion",
+    "case": "commonwealth-reaction-movement-completion",
+    "creationArtifacts": 2,
+    "eventFragments": {
+      "preamble": 4,
+      "weather": 1,
+      "stage-entry": 4,
+      "reserve-designation": 1,
+      "phasing-movement": 1,
+      "reaction-trigger": 1,
+      "participant-start": 1,
+      "reaction-second-move": 1,
+      "reaction-completion": 3
+    },
+    "nativeEventCount": 17,
+    "proofOnlyFragments": 0,
+    "rootCycleOrdinal": 1,
+    "sourceCycle": {
+      "contractVersion": 1,
+      "campaignId": "rules-lab.combat-creation.1",
+      "rulesetHash": "8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18",
+      "setupId": "rules-lab.combat.close-assault.v1",
+      "setupHash": "sha256:22495e26528c2f4db8335d3b4041194aef26295f30aab0e4e6f384ff17069848",
+      "contentPackId": "rules-lab.content.close-assault.v1",
+      "contentHash": "sha256:ee4fde9638ceb61ec08612fe32f9ac81db05572aac5ca20941e402d2fed25847",
+      "scenarioId": "close-assault-positive-v1",
+      "gameTurn": 1,
+      "operationStage": 1,
+      "playerPhaseSlot": "first-acting-side",
+      "actingSide": "commonwealth",
+      "ordinal": 1,
+      "openedAuthorityVersion": 11,
+      "openingPrefix": "sha256:bdef3392d0ea70832902bd02ec94a3d1018fca5128a4151b649c6fd5579c4462",
+      "admittedPolicyBundleDigest": "sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34"
+    },
+    "position": {
+      "kind": "sequence",
+      "sequencePosition": {
+        "contractVersion": 5,
+        "positionId": "land.position.operation-1.first-player.movement-and-combat.movement",
+        "gameTurn": 1,
+        "operationStage": 1,
+        "stageId": "land.stage.operation",
+        "phaseId": "land.phase.movement-and-combat",
+        "segmentId": "land.segment.movement",
+        "stepId": null,
+        "actorRole": "first-acting-side",
+        "activeSide": null,
+        "sources": [
+          {
+            "sourceId": "spi-1979-land-rules",
+            "locator": "5.2"
+          },
+          {
+            "sourceId": "spi-1979-land-rules",
+            "locator": "7.11"
+          },
+          {
+            "sourceId": "spi-1979-land-rules",
+            "locator": "7.14"
+          }
+        ]
+      }
+    },
+    "worldHash": "sha256:cc6d8b45a54401eeecc99578b956f3339d6e1e78f8544c040fb15b31a16e0f78"
+  },
+  {
+    "family": "reserve-cycle-entry",
+    "case": "axis-reserve-I-cycle-entry",
+    "creationArtifacts": 2,
+    "eventFragments": {
+      "preamble": 4,
+      "weather": 1,
+      "stage-entry": 4,
+      "reserve-designation": 2,
+      "reserve-cycle": 10
+    },
+    "nativeEventCount": 21,
+    "proofOnlyFragments": 0,
+    "rootCycleOrdinal": 1,
+    "sourceCycle": {
+      "contractVersion": 1,
+      "campaignId": "rules-lab.combat-creation.1",
+      "rulesetHash": "8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18",
+      "setupId": "rules-lab.combat.close-assault.v1",
+      "setupHash": "sha256:22495e26528c2f4db8335d3b4041194aef26295f30aab0e4e6f384ff17069848",
+      "contentPackId": "rules-lab.content.close-assault.v1",
+      "contentHash": "sha256:ee4fde9638ceb61ec08612fe32f9ac81db05572aac5ca20941e402d2fed25847",
+      "scenarioId": "close-assault-positive-v1",
+      "gameTurn": 1,
+      "operationStage": 1,
+      "playerPhaseSlot": "first-acting-side",
+      "actingSide": "axis",
+      "ordinal": 1,
+      "openedAuthorityVersion": 12,
+      "openingPrefix": "sha256:cad787c7694bd8d47fb89721ffde6fce64a73ceccdfd61c9808f7934dc57b23b",
+      "admittedPolicyBundleDigest": "sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34"
+    },
+    "position": {
+      "contractVersion": 5,
+      "positionId": "land.position.operation-1.first-player.movement-and-combat.reserve-release",
+      "gameTurn": 1,
+      "operationStage": 1,
+      "stageId": "land.stage.operation",
+      "phaseId": "land.phase.movement-and-combat",
+      "segmentId": "land.segment.reserve-release",
+      "stepId": null,
+      "actorRole": "first-acting-side",
+      "activeSide": null,
+      "sources": [
+        {
+          "sourceId": "spi-1979-land-rules",
+          "locator": "5.2"
+        },
+        {
+          "sourceId": "spi-1979-land-rules",
+          "locator": "7.11"
+        },
+        {
+          "sourceId": "spi-1979-land-rules",
+          "locator": "7.14"
+        }
+      ]
+    },
+    "worldHash": "sha256:09fc32a42f486a8ced1e0af92a06f2a4181ced65db01690b5617dccc770bc325"
+  },
+  {
+    "family": "reserve-cycle-entry",
+    "case": "commonwealth-reserve-I-cycle-entry",
+    "creationArtifacts": 2,
+    "eventFragments": {
+      "preamble": 4,
+      "weather": 1,
+      "stage-entry": 4,
+      "reserve-designation": 2,
+      "reserve-cycle": 10
+    },
+    "nativeEventCount": 21,
+    "proofOnlyFragments": 0,
+    "rootCycleOrdinal": 1,
+    "sourceCycle": {
+      "contractVersion": 1,
+      "campaignId": "rules-lab.combat-creation.1",
+      "rulesetHash": "8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18",
+      "setupId": "rules-lab.combat.close-assault.v1",
+      "setupHash": "sha256:22495e26528c2f4db8335d3b4041194aef26295f30aab0e4e6f384ff17069848",
+      "contentPackId": "rules-lab.content.close-assault.v1",
+      "contentHash": "sha256:ee4fde9638ceb61ec08612fe32f9ac81db05572aac5ca20941e402d2fed25847",
+      "scenarioId": "close-assault-positive-v1",
+      "gameTurn": 1,
+      "operationStage": 1,
+      "playerPhaseSlot": "first-acting-side",
+      "actingSide": "commonwealth",
+      "ordinal": 1,
+      "openedAuthorityVersion": 12,
+      "openingPrefix": "sha256:59aa58096d2e0e7d94fdc9fd75da36cb3a1a9a277b63c2ffee062424257055b3",
+      "admittedPolicyBundleDigest": "sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34"
+    },
+    "position": {
+      "contractVersion": 5,
+      "positionId": "land.position.operation-1.first-player.movement-and-combat.reserve-release",
+      "gameTurn": 1,
+      "operationStage": 1,
+      "stageId": "land.stage.operation",
+      "phaseId": "land.phase.movement-and-combat",
+      "segmentId": "land.segment.reserve-release",
+      "stepId": null,
+      "actorRole": "first-acting-side",
+      "activeSide": null,
+      "sources": [
+        {
+          "sourceId": "spi-1979-land-rules",
+          "locator": "5.2"
+        },
+        {
+          "sourceId": "spi-1979-land-rules",
+          "locator": "7.11"
+        },
+        {
+          "sourceId": "spi-1979-land-rules",
+          "locator": "7.14"
+        }
+      ]
+    },
+    "worldHash": "sha256:897c7ac8b2f231bfdd4cfa987330b022f9233b540416d5b62dde8ccaeb56eadb"
+  },
+  {
+    "family": "reserve-release",
+    "case": "axis-reserve-I-release",
+    "creationArtifacts": 2,
+    "eventFragments": {
+      "preamble": 4,
+      "weather": 1,
+      "stage-entry": 4,
+      "reserve-designation": 2,
+      "reserve-cycle": 10,
+      "reserve-release": 3
+    },
+    "nativeEventCount": 24,
+    "proofOnlyFragments": 0,
+    "rootCycleOrdinal": 1,
+    "sourceCycle": {
+      "contractVersion": 1,
+      "campaignId": "rules-lab.combat-creation.1",
+      "rulesetHash": "8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18",
+      "setupId": "rules-lab.combat.close-assault.v1",
+      "setupHash": "sha256:22495e26528c2f4db8335d3b4041194aef26295f30aab0e4e6f384ff17069848",
+      "contentPackId": "rules-lab.content.close-assault.v1",
+      "contentHash": "sha256:ee4fde9638ceb61ec08612fe32f9ac81db05572aac5ca20941e402d2fed25847",
+      "scenarioId": "close-assault-positive-v1",
+      "gameTurn": 1,
+      "operationStage": 1,
+      "playerPhaseSlot": "first-acting-side",
+      "actingSide": "axis",
+      "ordinal": 1,
+      "openedAuthorityVersion": 12,
+      "openingPrefix": "sha256:cad787c7694bd8d47fb89721ffde6fce64a73ceccdfd61c9808f7934dc57b23b",
+      "admittedPolicyBundleDigest": "sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34"
+    },
+    "position": {
+      "contractVersion": 5,
+      "positionId": "land.position.operation-1.first-player.movement-and-combat.reserve-release",
+      "gameTurn": 1,
+      "operationStage": 1,
+      "stageId": "land.stage.operation",
+      "phaseId": "land.phase.movement-and-combat",
+      "segmentId": "land.segment.reserve-release",
+      "stepId": null,
+      "actorRole": "first-acting-side",
+      "activeSide": null,
+      "sources": [
+        {
+          "sourceId": "spi-1979-land-rules",
+          "locator": "5.2"
+        },
+        {
+          "sourceId": "spi-1979-land-rules",
+          "locator": "7.11"
+        },
+        {
+          "sourceId": "spi-1979-land-rules",
+          "locator": "7.14"
+        }
+      ]
+    },
+    "worldHash": "sha256:67b2f05af568bbf4b9959e9b31f1b01a407696cb8b25e70128f39f587f9a09ac"
+  },
+  {
+    "family": "reserve-release",
+    "case": "commonwealth-reserve-I-release",
+    "creationArtifacts": 2,
+    "eventFragments": {
+      "preamble": 4,
+      "weather": 1,
+      "stage-entry": 4,
+      "reserve-designation": 2,
+      "reserve-cycle": 10,
+      "reserve-release": 3
+    },
+    "nativeEventCount": 24,
+    "proofOnlyFragments": 0,
+    "rootCycleOrdinal": 1,
+    "sourceCycle": {
+      "contractVersion": 1,
+      "campaignId": "rules-lab.combat-creation.1",
+      "rulesetHash": "8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18",
+      "setupId": "rules-lab.combat.close-assault.v1",
+      "setupHash": "sha256:22495e26528c2f4db8335d3b4041194aef26295f30aab0e4e6f384ff17069848",
+      "contentPackId": "rules-lab.content.close-assault.v1",
+      "contentHash": "sha256:ee4fde9638ceb61ec08612fe32f9ac81db05572aac5ca20941e402d2fed25847",
+      "scenarioId": "close-assault-positive-v1",
+      "gameTurn": 1,
+      "operationStage": 1,
+      "playerPhaseSlot": "first-acting-side",
+      "actingSide": "commonwealth",
+      "ordinal": 1,
+      "openedAuthorityVersion": 12,
+      "openingPrefix": "sha256:59aa58096d2e0e7d94fdc9fd75da36cb3a1a9a277b63c2ffee062424257055b3",
+      "admittedPolicyBundleDigest": "sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34"
+    },
+    "position": {
+      "contractVersion": 5,
+      "positionId": "land.position.operation-1.first-player.movement-and-combat.reserve-release",
+      "gameTurn": 1,
+      "operationStage": 1,
+      "stageId": "land.stage.operation",
+      "phaseId": "land.phase.movement-and-combat",
+      "segmentId": "land.segment.reserve-release",
+      "stepId": null,
+      "actorRole": "first-acting-side",
+      "activeSide": null,
+      "sources": [
+        {
+          "sourceId": "spi-1979-land-rules",
+          "locator": "5.2"
+        },
+        {
+          "sourceId": "spi-1979-land-rules",
+          "locator": "7.11"
+        },
+        {
+          "sourceId": "spi-1979-land-rules",
+          "locator": "7.14"
+        }
+      ]
+    },
+    "worldHash": "sha256:67b2f05af568bbf4b9959e9b31f1b01a407696cb8b25e70128f39f587f9a09ac"
+  },
+  {
+    "family": "armed-continuation",
+    "case": "axis-armed-continuation",
+    "creationArtifacts": 2,
+    "eventFragments": {
+      "preamble": 4,
+      "weather": 1,
+      "stage-entry": 4,
+      "reserve-designation": 2,
+      "reserve-cycle": 10,
+      "reserve-release": 3
+    },
+    "nativeEventCount": 24,
+    "proofOnlyFragments": 1,
+    "rootCycleOrdinal": 1,
+    "sourceCycle": {
+      "contractVersion": 1,
+      "campaignId": "rules-lab.combat-creation.1",
+      "rulesetHash": "8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18",
+      "setupId": "rules-lab.combat.close-assault.v1",
+      "setupHash": "sha256:22495e26528c2f4db8335d3b4041194aef26295f30aab0e4e6f384ff17069848",
+      "contentPackId": "rules-lab.content.close-assault.v1",
+      "contentHash": "sha256:ee4fde9638ceb61ec08612fe32f9ac81db05572aac5ca20941e402d2fed25847",
+      "scenarioId": "close-assault-positive-v1",
+      "gameTurn": 1,
+      "operationStage": 1,
+      "playerPhaseSlot": "first-acting-side",
+      "actingSide": "axis",
+      "ordinal": 1,
+      "openedAuthorityVersion": 12,
+      "openingPrefix": "sha256:cad787c7694bd8d47fb89721ffde6fce64a73ceccdfd61c9808f7934dc57b23b",
+      "admittedPolicyBundleDigest": "sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34"
+    },
+    "position": {
+      "contractVersion": 5,
+      "positionId": "land.position.operation-1.first-player.movement-and-combat.reserve-release",
+      "gameTurn": 1,
+      "operationStage": 1,
+      "stageId": "land.stage.operation",
+      "phaseId": "land.phase.movement-and-combat",
+      "segmentId": "land.segment.reserve-release",
+      "stepId": null,
+      "actorRole": "first-acting-side",
+      "activeSide": null,
+      "sources": [
+        {
+          "sourceId": "spi-1979-land-rules",
+          "locator": "5.2"
+        },
+        {
+          "sourceId": "spi-1979-land-rules",
+          "locator": "7.11"
+        },
+        {
+          "sourceId": "spi-1979-land-rules",
+          "locator": "7.14"
+        }
+      ]
+    },
+    "worldHash": "sha256:67b2f05af568bbf4b9959e9b31f1b01a407696cb8b25e70128f39f587f9a09ac"
+  },
+  {
+    "family": "armed-continuation",
+    "case": "commonwealth-armed-continuation",
+    "creationArtifacts": 2,
+    "eventFragments": {
+      "preamble": 4,
+      "weather": 1,
+      "stage-entry": 4,
+      "reserve-designation": 2,
+      "reserve-cycle": 10,
+      "reserve-release": 3
+    },
+    "nativeEventCount": 24,
+    "proofOnlyFragments": 1,
+    "rootCycleOrdinal": 1,
+    "sourceCycle": {
+      "contractVersion": 1,
+      "campaignId": "rules-lab.combat-creation.1",
+      "rulesetHash": "8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18",
+      "setupId": "rules-lab.combat.close-assault.v1",
+      "setupHash": "sha256:22495e26528c2f4db8335d3b4041194aef26295f30aab0e4e6f384ff17069848",
+      "contentPackId": "rules-lab.content.close-assault.v1",
+      "contentHash": "sha256:ee4fde9638ceb61ec08612fe32f9ac81db05572aac5ca20941e402d2fed25847",
+      "scenarioId": "close-assault-positive-v1",
+      "gameTurn": 1,
+      "operationStage": 1,
+      "playerPhaseSlot": "first-acting-side",
+      "actingSide": "commonwealth",
+      "ordinal": 1,
+      "openedAuthorityVersion": 12,
+      "openingPrefix": "sha256:59aa58096d2e0e7d94fdc9fd75da36cb3a1a9a277b63c2ffee062424257055b3",
+      "admittedPolicyBundleDigest": "sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34"
+    },
+    "position": {
+      "contractVersion": 5,
+      "positionId": "land.position.operation-1.first-player.movement-and-combat.reserve-release",
+      "gameTurn": 1,
+      "operationStage": 1,
+      "stageId": "land.stage.operation",
+      "phaseId": "land.phase.movement-and-combat",
+      "segmentId": "land.segment.reserve-release",
+      "stepId": null,
+      "actorRole": "first-acting-side",
+      "activeSide": null,
+      "sources": [
+        {
+          "sourceId": "spi-1979-land-rules",
+          "locator": "5.2"
+        },
+        {
+          "sourceId": "spi-1979-land-rules",
+          "locator": "7.11"
+        },
+        {
+          "sourceId": "spi-1979-land-rules",
+          "locator": "7.14"
+        }
+      ]
+    },
+    "worldHash": "sha256:67b2f05af568bbf4b9959e9b31f1b01a407696cb8b25e70128f39f587f9a09ac"
+  },
+  {
+    "family": "cycle-control",
+    "case": "axis-repeat",
+    "creationArtifacts": 2,
+    "eventFragments": {
+      "preamble": 4,
+      "weather": 1,
+      "stage-entry": 4,
+      "reserve-designation": 2,
+      "reserve-cycle": 10,
+      "reserve-release": 3,
+      "cycle-control": 2
+    },
+    "nativeEventCount": 26,
+    "proofOnlyFragments": 1,
+    "rootCycleOrdinal": 1,
+    "sourceCycle": {
+      "sourceCycle": {
+        "contractVersion": 1,
+        "campaignId": "rules-lab.combat-creation.1",
+        "rulesetHash": "8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18",
+        "setupId": "rules-lab.combat.close-assault.v1",
+        "setupHash": "sha256:22495e26528c2f4db8335d3b4041194aef26295f30aab0e4e6f384ff17069848",
+        "contentPackId": "rules-lab.content.close-assault.v1",
+        "contentHash": "sha256:ee4fde9638ceb61ec08612fe32f9ac81db05572aac5ca20941e402d2fed25847",
+        "scenarioId": "close-assault-positive-v1",
+        "gameTurn": 1,
+        "operationStage": 1,
+        "playerPhaseSlot": "first-acting-side",
+        "actingSide": "axis",
+        "ordinal": 1,
+        "openedAuthorityVersion": 12,
+        "openingPrefix": "sha256:cad787c7694bd8d47fb89721ffde6fce64a73ceccdfd61c9808f7934dc57b23b",
+        "admittedPolicyBundleDigest": "sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34"
+      },
+      "activeCycle": {
+        "contractVersion": 1,
+        "campaignId": "rules-lab.combat-creation.1",
+        "rulesetHash": "8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18",
+        "setupId": "rules-lab.combat.close-assault.v1",
+        "setupHash": "sha256:22495e26528c2f4db8335d3b4041194aef26295f30aab0e4e6f384ff17069848",
+        "contentPackId": "rules-lab.content.close-assault.v1",
+        "contentHash": "sha256:ee4fde9638ceb61ec08612fe32f9ac81db05572aac5ca20941e402d2fed25847",
+        "scenarioId": "close-assault-positive-v1",
+        "gameTurn": 1,
+        "operationStage": 1,
+        "playerPhaseSlot": "first-acting-side",
+        "actingSide": "axis",
+        "ordinal": 2,
+        "openedAuthorityVersion": 27,
+        "openingPrefix": "sha256:cd1236dc588a3ea4e9531e25aedaa944c6b4d48bb035f7219ffe7f4a13bd5e7e",
+        "admittedPolicyBundleDigest": "sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34"
+      }
+    },
+    "position": "land.position.operation-1.first-player.movement-and-combat.movement",
+    "worldHash": "sha256:67b2f05af568bbf4b9959e9b31f1b01a407696cb8b25e70128f39f587f9a09ac"
+  },
+  {
+    "family": "cycle-control",
+    "case": "axis-finish",
+    "creationArtifacts": 2,
+    "eventFragments": {
+      "preamble": 4,
+      "weather": 1,
+      "stage-entry": 4,
+      "reserve-designation": 2,
+      "reserve-cycle": 10,
+      "reserve-release": 3,
+      "cycle-control": 2
+    },
+    "nativeEventCount": 26,
+    "proofOnlyFragments": 1,
+    "rootCycleOrdinal": 1,
+    "sourceCycle": {
+      "sourceCycle": {
+        "contractVersion": 1,
+        "campaignId": "rules-lab.combat-creation.1",
+        "rulesetHash": "8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18",
+        "setupId": "rules-lab.combat.close-assault.v1",
+        "setupHash": "sha256:22495e26528c2f4db8335d3b4041194aef26295f30aab0e4e6f384ff17069848",
+        "contentPackId": "rules-lab.content.close-assault.v1",
+        "contentHash": "sha256:ee4fde9638ceb61ec08612fe32f9ac81db05572aac5ca20941e402d2fed25847",
+        "scenarioId": "close-assault-positive-v1",
+        "gameTurn": 1,
+        "operationStage": 1,
+        "playerPhaseSlot": "first-acting-side",
+        "actingSide": "axis",
+        "ordinal": 1,
+        "openedAuthorityVersion": 12,
+        "openingPrefix": "sha256:cad787c7694bd8d47fb89721ffde6fce64a73ceccdfd61c9808f7934dc57b23b",
+        "admittedPolicyBundleDigest": "sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34"
+      },
+      "activeCycle": null
+    },
+    "position": "land.position.operation-1.first-player.truck-convoy-movement",
+    "worldHash": "sha256:67b2f05af568bbf4b9959e9b31f1b01a407696cb8b25e70128f39f587f9a09ac"
+  },
+  {
+    "family": "cycle-control",
+    "case": "commonwealth-repeat",
+    "creationArtifacts": 2,
+    "eventFragments": {
+      "preamble": 4,
+      "weather": 1,
+      "stage-entry": 4,
+      "reserve-designation": 2,
+      "reserve-cycle": 10,
+      "reserve-release": 3,
+      "cycle-control": 2
+    },
+    "nativeEventCount": 26,
+    "proofOnlyFragments": 1,
+    "rootCycleOrdinal": 1,
+    "sourceCycle": {
+      "sourceCycle": {
+        "contractVersion": 1,
+        "campaignId": "rules-lab.combat-creation.1",
+        "rulesetHash": "8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18",
+        "setupId": "rules-lab.combat.close-assault.v1",
+        "setupHash": "sha256:22495e26528c2f4db8335d3b4041194aef26295f30aab0e4e6f384ff17069848",
+        "contentPackId": "rules-lab.content.close-assault.v1",
+        "contentHash": "sha256:ee4fde9638ceb61ec08612fe32f9ac81db05572aac5ca20941e402d2fed25847",
+        "scenarioId": "close-assault-positive-v1",
+        "gameTurn": 1,
+        "operationStage": 1,
+        "playerPhaseSlot": "first-acting-side",
+        "actingSide": "commonwealth",
+        "ordinal": 1,
+        "openedAuthorityVersion": 12,
+        "openingPrefix": "sha256:59aa58096d2e0e7d94fdc9fd75da36cb3a1a9a277b63c2ffee062424257055b3",
+        "admittedPolicyBundleDigest": "sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34"
+      },
+      "activeCycle": {
+        "contractVersion": 1,
+        "campaignId": "rules-lab.combat-creation.1",
+        "rulesetHash": "8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18",
+        "setupId": "rules-lab.combat.close-assault.v1",
+        "setupHash": "sha256:22495e26528c2f4db8335d3b4041194aef26295f30aab0e4e6f384ff17069848",
+        "contentPackId": "rules-lab.content.close-assault.v1",
+        "contentHash": "sha256:ee4fde9638ceb61ec08612fe32f9ac81db05572aac5ca20941e402d2fed25847",
+        "scenarioId": "close-assault-positive-v1",
+        "gameTurn": 1,
+        "operationStage": 1,
+        "playerPhaseSlot": "first-acting-side",
+        "actingSide": "commonwealth",
+        "ordinal": 2,
+        "openedAuthorityVersion": 27,
+        "openingPrefix": "sha256:6161a4edec0d9ff4379ad5cc65dab130819a5fb603ad35e3f81009c9b4fbf1f2",
+        "admittedPolicyBundleDigest": "sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34"
+      }
+    },
+    "position": "land.position.operation-1.first-player.movement-and-combat.movement",
+    "worldHash": "sha256:67b2f05af568bbf4b9959e9b31f1b01a407696cb8b25e70128f39f587f9a09ac"
+  },
+  {
+    "family": "cycle-control",
+    "case": "commonwealth-finish",
+    "creationArtifacts": 2,
+    "eventFragments": {
+      "preamble": 4,
+      "weather": 1,
+      "stage-entry": 4,
+      "reserve-designation": 2,
+      "reserve-cycle": 10,
+      "reserve-release": 3,
+      "cycle-control": 2
+    },
+    "nativeEventCount": 26,
+    "proofOnlyFragments": 1,
+    "rootCycleOrdinal": 1,
+    "sourceCycle": {
+      "sourceCycle": {
+        "contractVersion": 1,
+        "campaignId": "rules-lab.combat-creation.1",
+        "rulesetHash": "8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18",
+        "setupId": "rules-lab.combat.close-assault.v1",
+        "setupHash": "sha256:22495e26528c2f4db8335d3b4041194aef26295f30aab0e4e6f384ff17069848",
+        "contentPackId": "rules-lab.content.close-assault.v1",
+        "contentHash": "sha256:ee4fde9638ceb61ec08612fe32f9ac81db05572aac5ca20941e402d2fed25847",
+        "scenarioId": "close-assault-positive-v1",
+        "gameTurn": 1,
+        "operationStage": 1,
+        "playerPhaseSlot": "first-acting-side",
+        "actingSide": "commonwealth",
+        "ordinal": 1,
+        "openedAuthorityVersion": 12,
+        "openingPrefix": "sha256:59aa58096d2e0e7d94fdc9fd75da36cb3a1a9a277b63c2ffee062424257055b3",
+        "admittedPolicyBundleDigest": "sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34"
+      },
+      "activeCycle": null
+    },
+    "position": "land.position.operation-1.first-player.truck-convoy-movement",
+    "worldHash": "sha256:67b2f05af568bbf4b9959e9b31f1b01a407696cb8b25e70128f39f587f9a09ac"
+  },
+  {
+    "family": "reserve-second-movement-completion",
+    "case": "axis-reserve-I-movement-completion",
+    "creationArtifacts": 2,
+    "eventFragments": {
+      "preamble": 4,
+      "weather": 1,
+      "stage-entry": 4,
+      "reserve-designation": 2,
+      "reserve-cycle": 10,
+      "reserve-release": 3,
+      "cycle-control": 2,
+      "reserve-movement": 1,
+      "reserve-movement-completion": 3
+    },
+    "nativeEventCount": 30,
+    "proofOnlyFragments": 1,
+    "rootCycleOrdinal": 1,
+    "sourceCycle": {
+      "contractVersion": 1,
+      "campaignId": "rules-lab.combat-creation.1",
+      "rulesetHash": "8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18",
+      "setupId": "rules-lab.combat.close-assault.v1",
+      "setupHash": "sha256:22495e26528c2f4db8335d3b4041194aef26295f30aab0e4e6f384ff17069848",
+      "contentPackId": "rules-lab.content.close-assault.v1",
+      "contentHash": "sha256:ee4fde9638ceb61ec08612fe32f9ac81db05572aac5ca20941e402d2fed25847",
+      "scenarioId": "close-assault-positive-v1",
+      "gameTurn": 1,
+      "operationStage": 1,
+      "playerPhaseSlot": "first-acting-side",
+      "actingSide": "axis",
+      "ordinal": 2,
+      "openedAuthorityVersion": 27,
+      "openingPrefix": "sha256:cd1236dc588a3ea4e9531e25aedaa944c6b4d48bb035f7219ffe7f4a13bd5e7e",
+      "admittedPolicyBundleDigest": "sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34"
+    },
+    "position": {
+      "contractVersion": 5,
+      "positionId": "land.position.operation-1.first-player.movement-and-combat.breakdown-determination",
+      "gameTurn": 1,
+      "operationStage": 1,
+      "stageId": "land.stage.operation",
+      "phaseId": "land.phase.movement-and-combat",
+      "segmentId": "land.segment.breakdown-determination",
+      "stepId": null,
+      "actorRole": "first-acting-side",
+      "activeSide": null,
+      "sources": [
+        {
+          "sourceId": "spi-1979-land-rules",
+          "locator": "5.2"
+        },
+        {
+          "sourceId": "spi-1979-land-rules",
+          "locator": "7.11"
+        },
+        {
+          "sourceId": "spi-1979-land-rules",
+          "locator": "7.14"
+        }
+      ]
+    },
+    "worldHash": "sha256:90631cc173eb4f619f7a38c72c2898bd90414d01d399d4475e4bf59c7b6af26b"
+  },
+  {
+    "family": "reserve-second-movement-completion",
+    "case": "commonwealth-reserve-I-movement-completion",
+    "creationArtifacts": 2,
+    "eventFragments": {
+      "preamble": 4,
+      "weather": 1,
+      "stage-entry": 4,
+      "reserve-designation": 2,
+      "reserve-cycle": 10,
+      "reserve-release": 3,
+      "cycle-control": 2,
+      "reserve-movement": 1,
+      "reserve-movement-completion": 3
+    },
+    "nativeEventCount": 30,
+    "proofOnlyFragments": 1,
+    "rootCycleOrdinal": 1,
+    "sourceCycle": {
+      "contractVersion": 1,
+      "campaignId": "rules-lab.combat-creation.1",
+      "rulesetHash": "8af256c6c2bbf71cb72ea7e29922db9c4c897c2535121a68a6849bbd06e0bd18",
+      "setupId": "rules-lab.combat.close-assault.v1",
+      "setupHash": "sha256:22495e26528c2f4db8335d3b4041194aef26295f30aab0e4e6f384ff17069848",
+      "contentPackId": "rules-lab.content.close-assault.v1",
+      "contentHash": "sha256:ee4fde9638ceb61ec08612fe32f9ac81db05572aac5ca20941e402d2fed25847",
+      "scenarioId": "close-assault-positive-v1",
+      "gameTurn": 1,
+      "operationStage": 1,
+      "playerPhaseSlot": "first-acting-side",
+      "actingSide": "commonwealth",
+      "ordinal": 2,
+      "openedAuthorityVersion": 27,
+      "openingPrefix": "sha256:6161a4edec0d9ff4379ad5cc65dab130819a5fb603ad35e3f81009c9b4fbf1f2",
+      "admittedPolicyBundleDigest": "sha256:3de30c451ba7e81d4fdde6493e07d4d06110209a89035d9e59bba738f0aeba34"
+    },
+    "position": {
+      "contractVersion": 5,
+      "positionId": "land.position.operation-1.first-player.movement-and-combat.breakdown-determination",
+      "gameTurn": 1,
+      "operationStage": 1,
+      "stageId": "land.stage.operation",
+      "phaseId": "land.phase.movement-and-combat",
+      "segmentId": "land.segment.breakdown-determination",
+      "stepId": null,
+      "actorRole": "first-acting-side",
+      "activeSide": null,
+      "sources": [
+        {
+          "sourceId": "spi-1979-land-rules",
+          "locator": "5.2"
+        },
+        {
+          "sourceId": "spi-1979-land-rules",
+          "locator": "7.11"
+        },
+        {
+          "sourceId": "spi-1979-land-rules",
+          "locator": "7.14"
+        }
+      ]
+    },
+    "worldHash": "sha256:bc38c65a6e29c95c23b98dcf047654d1c5f713e0ae1df2f7721ddb74fdc1ae87"
+  }
+]

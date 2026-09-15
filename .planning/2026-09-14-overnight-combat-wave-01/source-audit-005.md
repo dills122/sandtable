@@ -44,3 +44,15 @@ hashes and complete procedure/cost/settlement metadata.
 
 Suggested ownership:005A newtwoRules files,newtests,csproj,plan;005B newcodec,newtests,factory
 adjustment,optionalfixturelinks,plan. Split further before writes if independent surface exceeds cap.
+
+## Root local implementation-pattern check
+
+Existing dormant `Cna1979BreakdownAdjudication` and `BreakdownRulesV2ArtifactCodec` demonstrate
+internal static definitions, explicit input validation, checked integer arithmetic, existing
+RulesetArtifact construction and strict canonical-authority byte comparison without registration.
+Use these only as local style examples. Breakdown printed33 uses1/3 under its own ruling;
+Combat selected capture33 remains exactly33/100 and must not reuse that fraction helper.
+Combat writer additionally must sort unordered construction arrays before canonical comparison,
+preserve procedure order and defensively own all nested source/metadata collections. Existing
+BCL Array.AsReadOnly/copied arrays suffice; no new dependency required. This is read-only source
+preparation;005 implementation remains gated on complete004/checkpointB.
