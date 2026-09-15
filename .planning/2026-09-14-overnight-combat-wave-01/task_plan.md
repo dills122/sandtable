@@ -29,11 +29,18 @@ No new public clock stream, per-side watermark, deadline renewal or historical v
 - W01-CLOCK-DESIGN: root owns canonical policy disposition and bounded split; writer and evidence
   agents independently advise read-only. No historical contract edits. Define clock evidence,
   privacy invariants and integration ripple before successor writes.
-- W01-CLOCK-CONTRACT: sole writer owns new `combat-sealed-round-v2` spec/schema/fixture/oracle; root owns combined plan. Focused clock/privacy/replay/compatibility checks,
+- W01-CLOCK-CONTRACT: accepted after12groups/ordinaryreview/root81+1670gate; sole writer owns new `combat-sealed-round-v2` spec/schema/fixture/oracle; root owns combined plan. Focused clock/privacy/replay/compatibility checks,
   ordinary fresh-context quality review, root just check before accepted commit.
 - W01-CLOCK-INTEGRATE: after accepted successor, sole writer owns existing unaccepted four-file
   side packet; root owns combined plan. Preserve old failing diagnostic as historical evidence;
   prove successor outcomes and source bindings before accepting004A1.
+- W01-CLOCK-RESULT: after roundv2 acceptance, sole writer owns new
+  `combat-result-settlement-v2` spec/schema/fixture/oracle; root combined plan. Corrected synthetic
+  round-to-settlement causal evidence, unchanged gameplay arithmetic; must precede004A2 use.
+- W01-CLOCK-SNAPSHOT: if needed byCON006, sole writer owns new
+  `combat-snapshot-composition-v2` fourfile packet plus root plan; exact newpayload/arms frozen first.
+  Corrected synthetic cuts stay distinct from unchanged00328trace creation-rooted handoff.
+
 
 ## Canonical sources
 
@@ -53,13 +60,19 @@ is exhausted. Ordinary fresh-context five-axis review only.
 | CMB-TASK-004A | 003 verified | task004_writer / internal; task004_evidence read-only; fresh reviewer per slice | docs/specs/combat-side-projection-v1.md, .schema.json, fixtures/combat-side-projection-v1.json, verify-combat-side-projection-v1.py; brain owns combined plan | CON-005 closed audience fields/errors/choices, canonical candidate bytes, equal-authorized-history and leak negatives; focused oracle plus brain just check | blocked; no accepted child |
 | CMB-TASK-004A1 | 003 | task004_writer / internal | same four004A files only | closed common codec/identity/errors, selection/RBA/seals; TDD plus focused/gate/review | blocked/unaccepted: P1 clock/privacy policy conflict; focused+just check pass but independent privacy probe fails |
 | CMB-TASK-004A2 | accepted004A1 | same writer / internal | same four004A files only | settlement results, own retreat/custody/replacement disclosure/candidates; TDD plus focused/gate/review | pending |
-| CMB-TASK-004A3 | accepted004A2 | same writer / internal | same four004A files only | Reserve I/laterII, cycle/structural projection, exact003 handoff and corpus reconciliation; TDD plus focused/gate/review; only then004A freeze | pending |
+| CMB-TASK-004A3 | accepted004A2; sequentialA3a/A3b | same writer / internal | same four004A files only | Reserve I/laterII, cycle/structural projection, exact003 handoff and corpus reconciliation; TDD plus focused/gate/review; only then004A freeze | pending |
 | CMB-TASK-004B | accepted004A | writer / internal subagent; reviewer and evidence read-only | new Exercise-contract spec/schema/fixture/oracle; brain owns combined plan | CON-006 exact terminal/ordinal/continuation, strict manifest/report and divergence, negative success rejection; focused oracle plus just check | pending |
 | CMB-TASK-004C | accepted004A/B | writer / internal subagent; reviewer and evidence read-only | new 72-AC index and integration oracle/fixture as needed; brain owns plan | exact003 handoff, all72 ACs task/planned-test mapped, outward versions/capacity/compatibility checked; all focused plus just check; checkpoint B only on reconciled evidence | pending |
 | W01-NAV | current retained reality | brain | README.md, docs/roadmap/pre-alpha-roadmap.md, tech-design.md, naming-overview.md only where reality changes | coherent blocked status and local links | complete: blocked status synchronized, links checked |
 | CMB-TASK-005 | complete004/B | writer / internal subagent; reviewer and evidence read-only | Rules and focused Rules tests, at most five primary files per recorded slice | full normalized approved-source comparison, every selected coordinate/reachable differential, conditional capture and ordered pairs; TDD; focused tests plus just check; no campaign activation | gated |
 | CMB-TASK-006 | complete005 | writer / internal subagent; reviewer and evidence read-only | Content and focused Content tests, split before edits | versioned synthetic admission, strict provenance/mutations and historical bytes; TDD; focused tests plus just check | stretch/deferred |
 | W01-DELIVERY | coherent hard-stop record, no accepted story | brain | planning/handoff, Git metadata and draft PR | exact commits/files/tests, latest main/dirty state/children, one pushed branch/draft PR | blocked-outcome handoff published as draft PR115, candidate aec9a84; required objective remains incomplete |
+
+004A3 refinement before edits:004A3a covers Reserve/cycle candidate arms, frozen binary action/set
+codec, own live inherited release/control cuts and synthetic ledger decision tests.004A3b adds
+both-audience28trace terminal projections, exact003handoff binding, privacy pairs and capacities.
+Both use the same four side-packet files plus root combined plan sequentially, with full story gates.
+Actual own CP14/Cohesion-4 and three-action later-II sets must fit; never truncate side history.
 
 All child writes disjoint. Shared repository; preserve others' changes. Brain owns integration,
 canonical combined plan, commits, full verification and PR. At most four active agents including brain.

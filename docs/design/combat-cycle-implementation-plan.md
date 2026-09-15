@@ -140,6 +140,10 @@ updates follow separately when verified status changes. Execution evidence lives
 disclosure, retreat/custody candidates and result facts), then004A3 (Reserve/cycle projections,
 exact Task003 handoff and full corpus reconciliation). Each child has semantic RED/GREEN,
 fresh-context quality review and `just check`; complete CON-005 freeze is claimed only after004A3.
+004A3 is further split before edits into004A3a (Reserve/cycle closed choices, frozen binary
+candidate/set IDs and own live cuts) then004A3b (both-audience28trace projections, exact003handoff,
+privacy and capacity reconciliation). Both keep the same four side-packet files plus this plan;
+actual CP14/Cohesion-4 and three-action later-II sets must fit without truncation.
 All four new files remain under one writer; historical packets remain immutable. If one adapter
 group cannot remain reviewable within this ownership, re-split before further edits.
 
@@ -165,6 +169,26 @@ privacy, replay and old-reader rejection vectors. `W01-CLOCK-INTEGRATE` follows 
 unaccepted side-packet files plus this plan. No historical packet is rewritten; any additional
 independent contract family requires a recorded bounded split first. Each behavioral packet needs
 TDD, ordinary fresh-context quality review and root `just check` before its accepted commit.
+
+W01-CLOCK-CONTRACT accepted after ordinary fresh-context review and root gate,2026-09-15:
+[round-v2](../specs/combat-sealed-round-v2.md) retains10synthetictraces/68cuts,12semanticgroups,
+610replay mutations,340raw rejects,288clock comparisons/retries and480lifecycle retries. Root
+independent88admission comparisons pass while v1 counterexample remains reproducible. `just check`
+passes81boundary and1670fulltests,0skipped,build0warnings/errors. Exact fixture-byte validation
+closes review's P2 numeric-coercion finding. This accepts only the clock packet;004A1/004/B remain
+open pending side integration. Evidence: [ordinary review](../../.planning/2026-09-14-overnight-combat-wave-01/evidence/clock-v2-review.md),
+[full gate](../../.planning/2026-09-14-overnight-combat-wave-01/evidence/clock-v2-just-check.log).
+
+Downstream clock integration split before edits: `W01-CLOCK-RESULT` owns new
+`combat-result-settlement-v2` spec/schema/fixture/oracle plus this plan after round-v2 acceptance.
+It retains World7, selected Rules10 arithmetic and role-ordered RNG while validating corrected
+committed-round evidence and mandatory-window timing. Complete this packet before004A2 consumes
+the corrected result lane. `W01-CLOCK-SNAPSHOT`, if full corrected snapshots are used by CON006,
+owns new `combat-snapshot-composition-v2` spec/schema/fixture/oracle plus this plan; freeze its exact
+payload/arm identity before writes. Existing00328trace creation-rooted handoff stays byte-exact;
+corrected positive C3 evidence remains explicitly synthetic.004C reconciles both support sets,
+so no separate positive creation-rooted assault implementation is implied.
+
 
 TASK-003 sizing refinement, 2026-09-06, before authority edits: its three contract families cross
 independent subsystems and cannot honestly fit one3–5-file change. Preserve parent003 and split

@@ -1,0 +1,6 @@
+{
+  "docs/specs/combat-sealed-round-v2.md": "9fb337bdbfeebf0db367f860aafeb6a37b72af0d602036aec41da82678332bc5",
+  "docs/specs/combat-sealed-round-v2.schema.json": "365283c1c51b9e155aa1651c253759b271bbda75f613f52f511ceeb0dec12c7c",
+  "docs/specs/fixtures/combat-sealed-round-v2.json": "8200354f49bef2fd4a976dd9c24e4e485f8c06ad903d8c3deb06d5a9db509a95",
+  "docs/specs/verify-combat-sealed-round-v2.py": "d1091b5d1d6fb1d9ac88da45313c88fcbc922f763e62d01af44311abc8656bf9"
+}

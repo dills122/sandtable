@@ -150,3 +150,60 @@
 - Assigned W01-CLOCK-CONTRACT sole writer new roundv2 spec/schema/fixture/oracle; root owns plan.
   New opening validates trusted public baseline without inherited private RBA seal-time comparison.
   Successor replay/policy identities and regression matrix required; no historical file writes.
+
+- Policy/navigation decision committedf8231c9 (9files,+138/-15;4primary plus planning metadata).
+- Extracted all72 exact acceptance rows from6canonical designs into
+  evidence/acceptance-source-inventory.json as read-only preparation; no mapping/completion claim.
+- Confirmed downstream scope: corrected synthetic C3 round/result/settlement lane plus unchanged
+ 00328trace creation-rooted handoff. No new positive creation-rooted assault bridge required for004.
+
+- W01-CLOCK-CONTRACT writer observed RED (`python3 -B docs/specs/verify-combat-sealed-round-v2.py`,
+  exit1):5semantic failures—private-seal acceptance split, absent successor identity, private RBA
+  time gating opening, disabled admission still opens, old reader accepts successor event.
+- Writer initial GREEN same command exit0,5semantic groups. Full matrix/readback/fixture still in
+  progress; this is not packet acceptance. ClockConfiguration2 binds parentConfig1 and explicit
+  public-opening-clock.v2 domain; Rules10 bytes preserved.
+- Source agent validates proposed AC inventory72unique rows/names,12per6sources, exact source text.
+  Found step/seal task-number drift and missing explicit hosted-transport deferral markers; root
+  awaits exact corrections before retaining public index. All rows remain planned.
+
+- Source-agent AC map corrections applied:011ownsseals/010ownssteps, expanded causal recovery
+  ownership, explicit Dispatch/provider deferrals and released-II pre-Morale extension gate.
+ 72exactrequirements/uniqueplannedtests remain; no runtime implementation/004Cacceptance claimed.
+
+-005source preparation complete (read-only): dormanttables/arithmetic then exactRulesInput1codec,
+  independentopticalexpecteddata, fullcoordinates and33percent distinction. No005codebegun.
+
+- Clock writer readback RED: focused successor test rejected permissive reader with
+  `FAIL: test_authenticated_readback invalid successor accepted`; GREEN after strict replay.
+- Mandatoryfixture absence RED: `CMB-RND2-001 /required-retained-fixture`; retainedfixture nowexists.
+  Writer reports10synthetictraces/allcuts/suffixes,16clockcases plus retry/expiry/Prepared/recovery;
+  final raw/tamper/sourcechecks still pending. No packetacceptance yet.
+- Fresh-context ordinary clock_v2_reviewer assigned fournewfiles, finalverdict afterfreeze; source
+  agent independently reconciles fixture/policy/pins. Max4active includingroot, noformalreviewpass.
+
+- Firstclockfreeze focusedpass:11groups/10traces/68cuts/610mutations/340raw/288clockcomparisons-
+  retries/480lifecycle retries/30invalid. Reader also normalized malformedpredecessor RED into
+  rejection. Writer initially invoked nonexistentverify-sequence-v1.py(exit2), corrected sequence
+  commandpass. Historicalround/selection/sequence checks pass; no sourcechanges.
+- Freshreviewer reproduced focusedpass and56independentSystemclock/changedretry cases; noP0/P1.
+  P2found outerfixture Python equality permitsfloat/int andbool/int substitution. Root assigned
+  test-first strictfixturecomparison fix; firstfreeze superseded, fullgate/acceptance held.
+
+- Source-agent independent firstfreeze byteaudit (no oracleexecution):10cases/68states/58events/
+ 136literals/24clockvectors/6sourcepins match; maxliteral10033B. Independently recomputed
+  Config2/Base2/eventreceipt/prefix/ledgerhashes and parentlink; bothowners/orders retain4000→3500.
+ 15historical predecessor/rules-input/composition files byte-equalHEAD. Awaitcorrectedfreezehashes.
+
+- P2fix RED identifiedfloat/bool/duplicate-key fixture acceptance; exactdeterministicUTF8comparison
+  GREEN. Final12groups,othercountsunchanged. Specae093dd...;oracled1091b5...;schema/fixtureunchanged.
+- Freshreviewer APPROVE boundedclockpacket; noresidualP0/P1/P2. Independent sourceaudit finalhashes
+  confirmed; identities/all136literals/6pinsvalid. Retained evidence/clock-v2-review.md.
+- Root independentadmissionprobe exit0:88equaloutcome comparisons over2sides/2orders/11times/2flags;
+  v1stillaccepted/rejected at3500. Log evidence/clock-v2-independent-admission.log.
+- Root `just check` running outside sandbox, session10765; log evidence/clock-v2-just-check.log.
+  Format/build/boundary81 alreadypass; fulltestcompletion awaited before acceptedcommit.
+
+- Root full `just check` exit0: format/build0warnings/errors;81/81boundary,1670/1670fulltests,
+ 0skipped; fulltests3m01.672s. Accepted W01-CLOCK-CONTRACT, pending acceptedcommit recording.
+  Spec status-only update afterreview/gate; schema/fixture/oracle remain finalreviewedhashes.

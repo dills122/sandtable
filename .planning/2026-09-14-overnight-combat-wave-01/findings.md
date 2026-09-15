@@ -45,3 +45,44 @@
   round-to-result integration needs explicit successor packet(s); cannot patch frozen imports or
   pass v2 through v1 by silently rewriting hashes/versions. A2 must record that split before edits.
 - Four-file policy/navigation update preserves historical contract files;493 local targets pass.
+
+## Corrected authority downstream boundary
+
+- Required synthetic lineage successors: roundv2 then result/settlementv2 (old result reader imports
+  roundv1 and authenticates exact committed state), then snapshot composition if CON006 embeds it.
+- Rules10 gameplay artifact does not hash round schema/oracle; no automatic Rules11 bump. Historical
+  Config has fixed-deadline.v1 semantics and stays exact; newround carries explicit gate capability.
+- Resultv1 acceptedHighWater initially inherits committed timing then each single-owner mandatory
+  window replaces baseline with opening. Roundv2 immutable opening removes inherited private-seal
+  threshold. Preserve single-owner retreat/custody arithmetic and fallback; test end-to-end.
+- Historical003 composition exact digest/28creation-rootedtraces remain preserved and separately
+  pinned in004 support. Synthetic positive lane stays labeled synthetic; no invented lineage.
+-005 read-only prep: current CombatRules/Cna1979Combat provide only ZOCclassification and raw defensive
+  strength. New selected arithmetic should follow dormant Breakdown outcome module patterns.
+  Required normalization360loss cells,36Morale,5effectrows,6capture shares and exactCMB-SRC-RUL001;
+  no tests or production code for005 begun before004/B gate.
+
+##004A3 source preparation
+
+- Source audit completed ninefamilies/28creation-rootedtraces. Actual ownCP12/14 andCohesion-2/-4
+  exceedA1bounds; later-II requires3candidates. Sidehistory/ownreceipts capacities must be measured.
+- Reserve/cycle action/set IDs reuse binary sandtable.cycle.actions.v1/action.v1, unsigned-byte
+  sorted candidate payloads and stablepubliccycle; no JSONpub.action substitute.
+- Need live inheritedrelease/control cuts plus13syntheticReserve/19syntheticcycle decision arms;
+  isolated ledger cases do not fabricate fullWorld observations. Full28handoff projections remain
+  separately authenticated. Approved reactions' hiddenclosurecause stays excluded.
+- Recorded sequentialA3a choices/livecuts thenA3b28tracehandoff/coverage before implementation.
+
+##005 dormant implementation preparation
+
+- Source audit confirms existingregisteredRules9 remains;005 does not activateRules10.
+- Proposed005A: CombatSelectedRules.cs,Cna1979CombatAdjudication.cs,CombatSelectedRulesTests.cs,
+  Cna.Core.Tests.csproj fixturelinks,combinedplan.005B: CombatRulesInputArtifactCodec.cs,
+  CombatRulesInputArtifactTests.cs,definitionfactory adjustment,optionalfixturelinks,plan.
+- New C# codec implements existingRulesInput1 golden/hash exactly; no newartifactversion:
+  sha256:fafb24792c9e3f774c368f85c02d1d068f84c9c78e67bf8324723257d0f13029.
+- Combatcapture33 is33/100, not Breakdown1/3; do not reuse Breakdownloss helper or its one-point
+  exception. Selectedloss≤3 hides that mathematical distinction; assertliteralpercentage.
+- Exhaustive expected data uses independent opticalcells+explicitthree-cellamendment; production
+  range expansion cannot generate expectedcells.36Morale/360loss/6480joint/8840capture-refusal.
+  Morale differential weights1,68,1158,68,1 across1296pairs. No newsourceambiguity found.
