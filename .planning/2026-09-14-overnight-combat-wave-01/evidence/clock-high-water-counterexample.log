@@ -1,0 +1,7 @@
+{"audience": "commonwealth", "equalObservationBytes": true, "highWaterAfter": 4000, "highWaterBefore": 3000, "outcomeAfter": "rejected", "outcomeBefore": "accepted", "source": "attacker-first", "trustedNow": 3500}
+{"audience": "axis", "equalObservationBytes": true, "highWaterAfter": 4000, "highWaterBefore": 3000, "outcomeAfter": "rejected", "outcomeBefore": "accepted", "source": "defender-first", "trustedNow": 3500}
+Traceback (most recent call last):
+  File "/Users/dsteele/.codex/worktrees/0b59/sandtable/.planning/2026-09-14-overnight-combat-wave-01/evidence/clock-high-water-counterexample.py", line 32, in <module>
+    assert not failures, "CMB-PRO-AC-010 equal-outcome conflict: " + ", ".join(failures)
+           ^^^^^^^^^^^^
+AssertionError: CMB-PRO-AC-010 equal-outcome conflict: attacker-first, defender-first

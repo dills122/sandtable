@@ -1,0 +1,16 @@
+{
+  "status": "APPROVED final reviewed freeze; spec-only acceptance status update follows",
+  "files": {
+    "docs/specs/combat-exercise-child-evidence-v1.md": "9413fafd11eb16abc060c20d9c53be14419faac4ff170cc9ef7eabf90d4b5857",
+    "docs/specs/combat-exercise-child-evidence-v1.schema.json": "cc8a7c9e89068b9a78f3abb4044230ccc9ef359665198aaa7ef6db5b15782bf6",
+    "docs/specs/fixtures/combat-exercise-child-evidence-v1.json": "5587cb17e53c48a9ab393532ebaa186f3d1384632eb13b105e1af8a698e799b6",
+    "docs/specs/verify-combat-exercise-child-evidence-v1.py": "a7385011125ca9105a1fbd3197c2b0b7b1825bf921e479ce9f953a4950343c92"
+  },
+  "acceptedFiles": {
+    "docs/specs/combat-exercise-child-evidence-v1.md": "a6688d84555b48efff90bf578f5d00708b4e10aa3246c1c7b9587c2b12afe3d5",
+    "docs/specs/combat-exercise-child-evidence-v1.schema.json": "cc8a7c9e89068b9a78f3abb4044230ccc9ef359665198aaa7ef6db5b15782bf6",
+    "docs/specs/fixtures/combat-exercise-child-evidence-v1.json": "5587cb17e53c48a9ab393532ebaa186f3d1384632eb13b105e1af8a698e799b6",
+    "docs/specs/verify-combat-exercise-child-evidence-v1.py": "a7385011125ca9105a1fbd3197c2b0b7b1825bf921e479ce9f953a4950343c92"
+  },
+  "acceptanceDelta": "Spec status only; oracle/schema/fixture exactly match final reviewed freeze."
+}

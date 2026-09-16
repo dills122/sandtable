@@ -1,0 +1,141 @@
+{
+  "contract": "sandtable.combat-exercise-child-evidence.v1",
+  "registration": "unregistered-contract-evidence-only",
+  "limits": {
+    "bytes": 33554432,
+    "depth": 48,
+    "arrayItems": 1024,
+    "transitions": 64
+  },
+  "domains": {
+    "setup": "sandtable.combat-exercise-child.setup.v1",
+    "manifest": "sandtable.combat-exercise-child.manifest.v1",
+    "system": "sandtable.combat-exercise-child.system.v1",
+    "transcript": "sandtable.combat-exercise-child.transcript.v1",
+    "events": "sandtable.combat-exercise-child.events.v1",
+    "child": "sandtable.combat-exercise-child.child.v1",
+    "build": "sandtable.combat-exercise-child.build.v1"
+  },
+  "enums": {
+    "scope": [
+      "checkpoint-scoped-contract-evidence"
+    ],
+    "privacy": [
+      "private-authority"
+    ],
+    "retreat": [
+      "retreat",
+      "refuse-retreat"
+    ],
+    "custody": [
+      "guard",
+      "escape"
+    ],
+    "reserve": [
+      "release-I"
+    ],
+    "cycle": [
+      "repeat",
+      "finish"
+    ],
+    "fault": [
+      "none",
+      "cancel",
+      "controller-invalid",
+      "reconstruction",
+      "readjudication"
+    ],
+    "failure": [
+      "admission-rejected",
+      "execution-rejected",
+      "step-limit-exceeded",
+      "cancelled",
+      "reconstruction-failed",
+      "readjudication-failed"
+    ],
+    "status": [
+      "succeeded",
+      "failed"
+    ],
+    "family": [
+      "steps",
+      "round",
+      "result",
+      "reserve",
+      "cycle",
+      "bridge"
+    ],
+    "proof": [
+      "reconstruction",
+      "readjudication"
+    ],
+    "check": [
+      "query-system",
+      "query-axis",
+      "query-commonwealth",
+      "cardinality",
+      "membership",
+      "event-cardinality",
+      "continuity",
+      "terminal",
+      "reconstruction",
+      "readjudication"
+    ],
+    "scheme": [
+      "manifest",
+      "result",
+      "checks",
+      "transcript",
+      "source",
+      "checkpoint",
+      "attempt",
+      "reconstruction",
+      "readjudication"
+    ],
+    "artifactPath": [
+      "run-manifest.json",
+      "result.json",
+      "checks.bin",
+      "accepted-steps.bin",
+      "source.json",
+      "initial-checkpoint.json",
+      "final-checkpoint.json",
+      "failed-attempt.json",
+      "reconstruction.json",
+      "readjudication.json"
+    ],
+    "buildKind": [
+      "oracle-source-pins"
+    ],
+    "seedKind": [
+      "initial-rng-state"
+    ]
+  },
+  "objects": {
+    "Preferences": "contractVersion:version retreatChoice:retreat custodyChoice:custody reserveChoice:reserve cycleChoice:cycle",
+    "Clock": "actor:audience admittedAt:utc? clockAvailable:bool",
+    "Fault": "kind:fault atTransition:count",
+    "Manifest": "contractVersion:version childId:id evidenceScope:scope confidentiality:privacy sourceId:id setupId:id setupHash:hash contentPackId:id contentHash:hash scenarioId:id buildKind:buildKind seedKind:seedKind seedHash:hash buildHash:hash request:Request controller:Preferences trustedSchedule:Clock[] fault:Fault expectedFailure:failure?",
+    "SystemKey": "authorityFamily:family scopeId:id? decisionId:id? effectKind:id? reason:id? disposition:id?",
+    "SemanticAction": "audience:audience actionId:id",
+    "AcceptedStep": "contractVersion:version ordinal:count initiator:audience schedule:ScheduleDecision trustedInputJson:ascii sideProposalJson:ascii? outcomeJson:ascii? semanticAction:SemanticAction authorityFamily:family eventAuthor:audience? authorityReceiptId:id eventCanonicalJson:ascii successorCheckpointHash:hash",
+    "FailedAttempt": "atTransition:count initiator:audience trustedInputJson:ascii sideProposalJson:ascii outcomeJson:ascii",
+    "Check": "kind:check ordinal:count? passed:bool",
+    "Proof": "contractVersion:version kind:proof evidenceScope:scope manifestHash:hash sourceLineageHash:hash referenceTranscriptHash:hash initialCheckpointHash:hash finalCheckpointHash:hash acceptedTransitions:count transcriptHash:hash eventHash:hash verified:bool failure:failure? attemptedTranscriptHash:hash observedTranscriptHash:hash? observedFinalCheckpointHash:hash?",
+    "Result": "contractVersion:version status:status failure:failure? expectedFailureMatch:bool acceptedTransitions:count initialCheckpointHash:hash? finalCheckpointHash:hash?",
+    "Artifact": "path:artifactPath scheme:scheme bytes:count hash:hash",
+    "Child": "contractVersion:version manifest:Manifest sourceCanonicalJson:ascii? initialCheckpointCanonicalJson:ascii? finalCheckpointCanonicalJson:ascii? steps:AcceptedStep[] failedAttempt:FailedAttempt? checks:Check[] result:Result reconstruction:Proof? readjudication:Proof? artifactManifest:ArtifactManifest",
+    "ArtifactManifest": "contractVersion:version entries:Artifact[]",
+    "BuildPin": "path:id hash:hash",
+    "BuildDescriptor": "contractVersion:version kind:buildKind oracleHash:hash schemaHash:hash predecessors:BuildPin[]"
+  },
+  "sourcePins": {
+    "combat-exercise-occurrence-v1.schema.json": "sha256:dc4095e6dc7896c98d2110be50eaf703f84286dc0bb5f0e7941c60f61936b301",
+    "verify-combat-exercise-occurrence-v1.py": "sha256:9e46db1943514629754cdc227fdc1a415c53c8b5e573b8fb0afd89c870f1fb53",
+    "fixtures/combat-exercise-occurrence-v1.json": "sha256:aabc20a39229ac121703a6cda077c0ebeffbfdd7bc3142a3d0c1d0805af7a38e"
+  },
+  "externalContracts": [
+    "combat-exercise-occurrence-v1.schema.json"
+  ],
+  "framing": "ASCII domain NUL followed by BE signed Int32 length+record for each transcript/event record; no LF separators"
+}

@@ -1,0 +1,16 @@
+START 2026-09-15T18:01:58.858680+00:00
+test_boundary 10 elapsed 4.363
+registry progress {'sources': 16, 'succeeded': 16, 'failed': 0, 'steps': 392, 'ownerFallbacks': 7, 'historical': 0}
+registry progress {'sources': 32, 'succeeded': 32, 'failed': 0, 'steps': 792, 'ownerFallbacks': 12, 'historical': 0}
+registry progress {'sources': 48, 'succeeded': 48, 'failed': 0, 'steps': 1192, 'ownerFallbacks': 19, 'historical': 0}
+registry progress {'sources': 64, 'succeeded': 64, 'failed': 0, 'steps': 1608, 'ownerFallbacks': 24, 'historical': 0}
+registry progress {'sources': 80, 'succeeded': 80, 'failed': 0, 'steps': 2040, 'ownerFallbacks': 29, 'historical': 0}
+registry progress {'sources': 96, 'succeeded': 88, 'failed': 8, 'steps': 2400, 'ownerFallbacks': 40, 'historical': 0}
+registry progress {'sources': 112, 'succeeded': 104, 'failed': 8, 'steps': 2442, 'ownerFallbacks': 44, 'historical': 6}
+registry progress {'sources': 128, 'succeeded': 120, 'failed': 8, 'steps': 2442, 'ownerFallbacks': 44, 'historical': 22}
+test_registry_execution {'sources': 134, 'succeeded': 126, 'failed': 8, 'steps': 2442, 'ownerFallbacks': 44, 'historical': 28} elapsed 790.227
+test_failures_and_forgery 19 elapsed 807.288
+test_identity_and_controller {'systemKeyFields': 6, 'nativeDispositionMappings': 160, 'completionWitnesses': 4} elapsed 821.574
+EXPECTED RED missing retained fixture
+test_fixture {'bytes': 6869998, 'summaries': 139}
+END 2026-09-15T18:15:41.723246+00:00 elapsed 822.895 B2 ALL FIVE GROUPS GREEN

@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/Users/dsteele/.codex/worktrees/0b59/sandtable/.planning/2026-09-14-overnight-combat-wave-01/evidence/004a3b-root-fallback-probe.py", line 16, in <module>
+    assert fallback['inputs'][-1]['actor']==owner and fallback['inputs'][-1]['admittedAt'] is None and fallback['inputs'][-1]['clockAvailable'] is False
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

@@ -1,0 +1,31 @@
+{"event": "start", "utc": "2026-09-16T00:20:11.861038+00:00", "wallSeconds": 0.0, "cpuSeconds": 0.0, "scope": "final focused checks; prior full native execution retained separately"}
+{"event": "begin", "utc": "2026-09-16T00:20:17.379883+00:00", "wallSeconds": 5.519, "cpuSeconds": 5.212, "phase": "authenticate_catalog"}
+{"event": "progress", "utc": "2026-09-16T00:20:41.866673+00:00", "wallSeconds": 30.006, "cpuSeconds": 28.314, "phase": "authenticate_catalog"}
+{"event": "progress", "utc": "2026-09-16T00:21:11.867555+00:00", "wallSeconds": 60.007, "cpuSeconds": 54.643, "phase": "authenticate_catalog"}
+{"event": "progress", "utc": "2026-09-16T00:21:41.869669+00:00", "wallSeconds": 90.009, "cpuSeconds": 80.826, "phase": "authenticate_catalog"}
+{"event": "progress", "utc": "2026-09-16T00:22:11.874785+00:00", "wallSeconds": 120.014, "cpuSeconds": 109.681, "phase": "authenticate_catalog"}
+{"event": "progress", "utc": "2026-09-16T00:22:41.878795+00:00", "wallSeconds": 150.018, "cpuSeconds": 133.742, "phase": "authenticate_catalog"}
+{"event": "progress", "utc": "2026-09-16T00:23:11.910572+00:00", "wallSeconds": 180.05, "cpuSeconds": 162.223, "phase": "authenticate_catalog"}
+{"event": "progress", "utc": "2026-09-16T00:23:41.926151+00:00", "wallSeconds": 210.066, "cpuSeconds": 189.092, "phase": "authenticate_catalog"}
+{"event": "progress", "utc": "2026-09-16T00:24:11.936373+00:00", "wallSeconds": 240.076, "cpuSeconds": 217.433, "phase": "authenticate_catalog"}
+{"event": "progress", "utc": "2026-09-16T00:24:41.942196+00:00", "wallSeconds": 270.082, "cpuSeconds": 245.817, "phase": "authenticate_catalog"}
+{"event": "progress", "utc": "2026-09-16T00:25:11.946721+00:00", "wallSeconds": 300.087, "cpuSeconds": 274.402, "phase": "authenticate_catalog"}
+{"event": "catalog", "utc": "2026-09-16T00:25:17.420805+00:00", "wallSeconds": 305.561, "cpuSeconds": 279.542, "sources": 134}
+{"event": "begin", "utc": "2026-09-16T00:25:17.420914+00:00", "wallSeconds": 305.561, "cpuSeconds": 279.542, "phase": "test_boundary"}
+{"event": "passed", "utc": "2026-09-16T00:25:17.422646+00:00", "wallSeconds": 305.562, "cpuSeconds": 279.543, "phase": "test_boundary", "result": 10}
+{"event": "begin", "utc": "2026-09-16T00:25:17.422703+00:00", "wallSeconds": 305.563, "cpuSeconds": 279.543, "phase": "test_supported_admission"}
+{"event": "progress", "utc": "2026-09-16T00:25:41.958165+00:00", "wallSeconds": 330.098, "cpuSeconds": 299.638, "phase": "test_supported_admission"}
+{"event": "progress", "utc": "2026-09-16T00:26:11.961553+00:00", "wallSeconds": 360.102, "cpuSeconds": 325.531, "phase": "test_supported_admission"}
+{"event": "passed", "utc": "2026-09-16T00:26:24.852116+00:00", "wallSeconds": 372.992, "cpuSeconds": 337.672, "phase": "test_supported_admission", "result": {"canonicalSources": 134, "unsupportedConfigurations": 2, "incompleteOverrunRejected": 1, "completeHeadroomAdmitted": 1}}
+{"event": "begin", "utc": "2026-09-16T00:26:24.852231+00:00", "wallSeconds": 372.992, "cpuSeconds": 337.672, "phase": "test_representatives"}
+{"event": "progress", "utc": "2026-09-16T00:26:41.964005+00:00", "wallSeconds": 390.104, "cpuSeconds": 353.275, "phase": "test_representatives"}
+{"event": "passed", "utc": "2026-09-16T00:26:59.671852+00:00", "wallSeconds": 407.812, "cpuSeconds": 367.178, "phase": "test_representatives", "result": 7}
+{"event": "begin", "utc": "2026-09-16T00:26:59.671936+00:00", "wallSeconds": 407.812, "cpuSeconds": 367.178, "phase": "test_failures_and_forgery"}
+{"event": "progress", "utc": "2026-09-16T00:27:11.975406+00:00", "wallSeconds": 420.116, "cpuSeconds": 376.756, "phase": "test_failures_and_forgery"}
+{"event": "passed", "utc": "2026-09-16T00:27:23.979901+00:00", "wallSeconds": 432.12, "cpuSeconds": 386.792, "phase": "test_failures_and_forgery", "result": 22}
+{"event": "begin", "utc": "2026-09-16T00:27:23.979995+00:00", "wallSeconds": 432.12, "cpuSeconds": 386.793, "phase": "test_identity_and_controller"}
+{"event": "progress", "utc": "2026-09-16T00:27:42.002061+00:00", "wallSeconds": 450.142, "cpuSeconds": 401.89, "phase": "test_identity_and_controller"}
+{"event": "passed", "utc": "2026-09-16T00:27:44.455188+00:00", "wallSeconds": 452.595, "cpuSeconds": 404.031, "phase": "test_identity_and_controller", "result": {"systemKeyFields": 6, "nativeDispositionMappings": 9, "completionWitnesses": 4}}
+{"event": "expected_red", "utc": "2026-09-16T00:27:46.610463+00:00", "wallSeconds": 454.751, "cpuSeconds": 406.028, "reason": "retained fixture differs from current generated build"}
+{"event": "passed", "utc": "2026-09-16T00:27:50.683429+00:00", "wallSeconds": 458.824, "cpuSeconds": 409.952, "phase": "fixture_generation_and_readback", "result": {"bytes": 7722577, "summaries": 134, "goldens": 12}}
+{"event": "FINAL_FOCUSED_GREEN", "utc": "2026-09-16T00:27:50.688248+00:00", "wallSeconds": 458.829, "cpuSeconds": 409.957, "hashes": {"docs/specs/combat-exercise-child-evidence-v1.md": "9413fafd11eb16abc060c20d9c53be14419faac4ff170cc9ef7eabf90d4b5857", "docs/specs/combat-exercise-child-evidence-v1.schema.json": "cc8a7c9e89068b9a78f3abb4044230ccc9ef359665198aaa7ef6db5b15782bf6", "docs/specs/fixtures/combat-exercise-child-evidence-v1.json": "5587cb17e53c48a9ab393532ebaa186f3d1384632eb13b105e1af8a698e799b6", "docs/specs/verify-combat-exercise-child-evidence-v1.py": "a7385011125ca9105a1fbd3197c2b0b7b1825bf921e479ce9f953a4950343c92"}, "goldens": 12}

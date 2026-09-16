@@ -1,0 +1,6 @@
+{
+  "docs/specs/combat-side-projection-v1.md": "8f2ac6aca621bee6dbf0b30cd616808dba05bd33b8308946415305606b3728f4",
+  "docs/specs/combat-side-projection-v1.schema.json": "fbca44fef91b806906b3287bb851e5efb92e735876af7a6b755d2873f625b664",
+  "docs/specs/fixtures/combat-side-projection-v1.json": "38199b79f3d474775584ffa57d7f4efbb8455743f9ca139dc5f4e23ce1e4be44",
+  "docs/specs/verify-combat-side-projection-v1.py": "6b190a7cebd55f4e430796da001cf64925aeb418ec0150d3a1ecdf9ee750cad3"
+}

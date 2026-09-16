@@ -1,0 +1,146 @@
+{
+  "initialHashes": {
+    "combat-exercise-child-evidence-v1.md": "0d2b1e040354495563a40fad47f24441cce9ce65d1e9202a91336fec97255fd8",
+    "combat-exercise-child-evidence-v1.schema.json": "1087fd68aaff499421c66f4b73cbfa0471afc08738ccbf70b4fca3c901af5550",
+    "verify-combat-exercise-child-evidence-v1.py": "3730e835087a83003d2893b6514aa2e1ff59fcdc1be808a3c765e67fe18d6538"
+  },
+  "checks": {
+    "historicalDirectPins": 3,
+    "buildDescriptor": 1,
+    "nativeProvenance": 15,
+    "nativeSourceCheckpointLiterals": 45,
+    "nativeSeed": 15,
+    "nativeTransitions": 209,
+    "successorCheckpointBindings": 209,
+    "nativeSystemKeys": 209,
+    "nativePublicSchedule": 209,
+    "systemInitiator": 156,
+    "independentSystemHash": 161,
+    "nativeOwnerOutcome": 53,
+    "ownerAccepted": 48,
+    "nativeDispositions": 18,
+    "bridgeOuterReceipt": 24,
+    "nativeTerminal": 15,
+    "independentFramedProof": 26,
+    "ownerFallback": 5,
+    "historicalZeroExecution": 2
+  },
+  "sources": [
+    {
+      "sourceId": "corrected-composition.ordinary.axis.attacker",
+      "status": "succeeded",
+      "steps": 24,
+      "seconds": 6.339,
+      "childHash": "sha256:00c8fd3ea3d102dbb8b997dbfac288283921219e5de1fb1f42424b76fbf215ae"
+    },
+    {
+      "sourceId": "corrected-composition.ordinary.axis.defender",
+      "status": "succeeded",
+      "steps": 24,
+      "seconds": 6.328,
+      "childHash": "sha256:d021b6190c3e70bae01be485b7dfc0f0eb3b32e500915537c0e3792f6c4d70d4"
+    },
+    {
+      "sourceId": "corrected-composition.defender-capture-guard.axis.attacker",
+      "status": "succeeded",
+      "steps": 26,
+      "seconds": 7.111,
+      "childHash": "sha256:62927dd3aabec90b8a13c4e2206011f986466385a2c258b910a0f40c879c6564"
+    },
+    {
+      "sourceId": "corrected-composition.defender-capture-escape.axis.attacker",
+      "status": "succeeded",
+      "steps": 26,
+      "seconds": 7.136,
+      "childHash": "sha256:5e526d1be0de8e9265b4a3ed5e019d26c7afa78ef1a8f2efe11df6492e09c069"
+    },
+    {
+      "sourceId": "corrected-composition.defender-capture-guard.axis.attacker.prior-time",
+      "status": "succeeded",
+      "steps": 26,
+      "seconds": 7.114,
+      "childHash": "sha256:18813a8863f1f4a3b41bc7fb93defb98309b736189584db06465dcb005ffa688"
+    },
+    {
+      "sourceId": "corrected-composition.defender-capture-guard.axis.attacker.fallback",
+      "status": "succeeded",
+      "steps": 26,
+      "seconds": 7.051,
+      "childHash": "sha256:f7bb3c76a9017ecd75a4c39d2280abfd8640f22fe8bc1097148946e1b0d283ee"
+    },
+    {
+      "sourceId": "settlement-v2.attacker-capture-escape.commonwealth.defender.fallback-retreat",
+      "status": "failed",
+      "steps": 16,
+      "seconds": 2.712,
+      "childHash": "sha256:4963dd2ec61cc008f679bc8f0a4d3be6195c14027ab297c214b22f88b5dadb11"
+    },
+    {
+      "sourceId": "settlement-v2.attacker-capture-escape.commonwealth.defender.fallback-custody",
+      "status": "failed",
+      "steps": 20,
+      "seconds": 3.378,
+      "childHash": "sha256:5210606671317f5b32f8c481c5d289cd86c9538a8b10f0ee3f99f4824022fbdd"
+    },
+    {
+      "sourceId": "inherited-reserve.axis",
+      "status": "succeeded",
+      "steps": 3,
+      "seconds": 2.039,
+      "childHash": "sha256:33bf9db01c368824da8c90fd0daae449d70076d852b29856baaddd807ec21e98"
+    },
+    {
+      "sourceId": "inherited-reserve.axis.fallback",
+      "status": "succeeded",
+      "steps": 3,
+      "seconds": 2.039,
+      "childHash": "sha256:f06a3216692f84e0bede279b970a89e2a26bbc2c5a72053afcf66fd379af9874"
+    },
+    {
+      "sourceId": "inherited-control.commonwealth.repeat",
+      "status": "succeeded",
+      "steps": 5,
+      "seconds": 4.003,
+      "childHash": "sha256:8fd4c924f5d56407761a3cb87d8ba68d9cc5d8f41c05e77be50e20dcdcb058ab"
+    },
+    {
+      "sourceId": "inherited-control.commonwealth.finish",
+      "status": "succeeded",
+      "steps": 5,
+      "seconds": 4.088,
+      "childHash": "sha256:62a427b507ddcc845df323cccd273b76f0836d867a932a4122198d48885312b5"
+    },
+    {
+      "sourceId": "inherited-control.commonwealth.fallback",
+      "status": "succeeded",
+      "steps": 5,
+      "seconds": 3.981,
+      "childHash": "sha256:5f9c80d5411b28ac2d2f9f51d4444c41e4afe6012f06e0d8a5ec746ca7e30f6a"
+    },
+    {
+      "sourceId": "historical-terminal.combat-inherited-cycle-control-v1:axis-repeat",
+      "status": "succeeded",
+      "steps": 0,
+      "seconds": 0.234,
+      "childHash": "sha256:9a2a25fc56fe70d2d5210325dfd632791d8eccb4ea74b72d50055d402f2b730d"
+    },
+    {
+      "sourceId": "historical-terminal.combat-inherited-reserve-movement-completion-v1:commonwealth-reserve-I-movement-completion",
+      "status": "succeeded",
+      "steps": 0,
+      "seconds": 0.253,
+      "childHash": "sha256:763db413bdedb9d0baeb7fd1e9b8d033bcae9d02344408bac32c2b055cee79ab"
+    }
+  ],
+  "limits": [
+    "Representative source audit only; author owns exhaustive134-source registry.",
+    "No full oracle/gate execution.",
+    "Historical588-event preflight retained from B1; no duplicate execution attribution."
+  ],
+  "catalogSeconds": 265.895,
+  "nativePhaseStatus": "PASS:15 representatives/209 native transitions; unchanged-body applicability pending final AST reconciliation",
+  "nativePhaseCompletedSeconds": 335.307,
+  "session": 42649,
+  "sessionExitCode": 130,
+  "sessionExitReason": "Agent interrupted obsolete childHash-summary fixture wait after native phase completed; author changing final fixture summary layout and manifest admission. No native assertion failed."
+}

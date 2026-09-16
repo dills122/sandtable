@@ -1,0 +1,12 @@
+APPROVE revised A3b ordinary read-only code review; no unresolved actionable finding. Root-owned full62-group oracle and repository gate remain required acceptance evidence.
+Initial P2 resolved: both Reserve Movement-completion owner terminals project actual releaseMember status none, CP2/CPA10, release-I ordinal1/ceiling10 and expired ordinal2 Movement exception; opposite audiences remain null. No private completion/provenance receipt exposed; terminal views retain revision0/one boundary/no decisions/no own receipts.
+Revised focused checks exit0: movement-member2; all28 terminals/56audience cuts/28ownReserve records/2singleton sources; source integrity18. Independent direct native completion trace correspondence2 passed. Exact fixture-delta proof passed: undo only2owner terminal ownReserve records and associated length/digest, serialize retained fixture, reconstruct initial SHA25638199b79f3d474775584ffa57d7f4efbb8455743f9ca139dc5f4e23ce1e4be44. Corrected and opposing traces unchanged.
+Prior broad independent evidence remains applicable outside fix: history4512/policy4688/finish88/fallback32/retry648/privacy48/source696. Initial terminal probe omitted singleton branch, superseded by corrected56terminal+direct2native correspondence.
+Initial full oracle was intentionally interrupted exit130 after finding; no initial full-suite pass claimed. Revised full oracle/gate not duplicated.
+Final frozen SHA256 readback matches:
+md bb7c2a86d4dbb7d75a11e63358f00be8c0c89567e437827aa30b82e401094945
+schema fbca44fef91b806906b3287bb851e5efb92e735876af7a6b755d2873f625b664
+fixture 07139da2ff125345c3007aa6bd9a5760eec44e4d4f25d0ec85c7e06fed4da44f
+oracle 964f4b6a6901e446e5d0e0a6c49e79e778677ae458947681034a4ddd5d848a0d
+Probe output /tmp/a3b-review-revised-probes.txt
+Scope remains bounded A3b contract evidence; no runtime or parent004/checkpointB activation/completion.

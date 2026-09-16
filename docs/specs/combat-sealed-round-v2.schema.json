@@ -1,0 +1,59 @@
+{
+  "contract": "combat-sealed-round-v2",
+  "objects": {
+    "Base": "contractVersion:int boundary:Boundary steps:Control clockConfiguration:ClockConfiguration",
+    "Allocation": "kind:id unit:UnitKey componentId:id committedToe:int",
+    "Slot": "role:role owner:side slotId:id allocation:Allocation sealedReceiptId:id? sealedAt:utc?",
+    "RoundCommand": "contractVersion:int kind:id clockConfigurationHash:hash segmentId:id roundId:id? slotId:id? expectedPriorVersion:long? allocation:Allocation?",
+    "RoundInput": "command:RoundCommand actor:actor admittedAt:utc? clockAvailable:bool",
+    "RoundEvent": "contractVersion:int eventType:id author:actor campaignId:id rulesetHash:rawHash configurationHash:hash predecessorConfigurationHash:hash cycleId:hash segmentId:id roundId:id priorVersion:long stateVersion:long priorPrefix:hash input:RoundInput effect:RoundEffect receiptId:id",
+    "RoundOpen": "kind:id baseHash:hash opportunityId:id timing:ClockTiming slots:Slot[]",
+    "RoundSeal": "kind:id slotId:id allocation:Allocation timing:ClockTiming prepared:bool",
+    "RoundCancel": "kind:id cause:id timing:ClockTiming",
+    "RoundStep": "kind:id fromPositionId:id toPositionId:id previousStepReceiptId:id proofReceipts:id[]",
+    "RoundCommit": "kind:id commitmentId:id allocations:Allocation[] costs:Cost[] preResultRandomState:Random",
+    "Cost": "unit:UnitKey beforeCp:int afterCp:int beforeAmmo:int afterAmmo:int",
+    "AttackHistory": "commitmentId:id cycleId:hash segmentId:id attacker:UnitKey defender:UnitKey targetLocationId:id gameTurn:int operationStage:int",
+    "TargetUse": "commitmentId:id segmentId:id targetLocationId:id",
+    "RoundState": "contractVersion:int baseHash:hash clockConfigurationHash:hash opportunityId:id? roundId:id? stateVersion:long prefix:hash stepIndex:int status:id openingReceiptId:id? timing:ClockTiming? slots:Slot[] stepReceipts:id[] world:World randomState:Random attackHistory:AttackHistory[] targetUses:TargetUse[] commitmentId:id? cancellationReceiptId:id? receipts:Receipt[] closed:bool",
+    "ClockConfiguration": "contractVersion:int parentConfigurationHash:hash timingPolicyId:id decisionBudgetMilliseconds:int",
+    "ClockTiming": "contractVersion:int clockConfigurationHash:hash kind:id decisionBudgetMilliseconds:int openedAtUnixMilliseconds:utc deadlineUnixMilliseconds:utc openingFloorUnixMilliseconds:utc"
+  },
+  "effectTags": {
+    "round-opened": "RoundOpen",
+    "choice-sealed": "RoundSeal",
+    "round-cancelled": "RoundCancel",
+    "step-completed": "RoundStep",
+    "attack-committed": "RoundCommit"
+  },
+  "domains": {
+    "base": "sandtable.combat.base-fragment.v2",
+    "opportunity": "sandtable.combat.opportunity.v2",
+    "round": "sandtable.combat.round.v2",
+    "slot": "sandtable.combat.slot.v2",
+    "commitment": "sandtable.combat.commitment.v2",
+    "receipt": "sandtable.combat.round-receipt.v2",
+    "configuration": "sandtable.combat.clock-configuration.v2"
+  },
+  "limits": {
+    "bytes": 1048576,
+    "depth": 32,
+    "events": 16,
+    "slots": 2,
+    "arrayItems": 512
+  },
+  "externalContracts": [
+    "combat-selection-steps-v1.schema.json",
+    "combat-sealed-round-v1.schema.json"
+  ],
+  "scope": "Explicit successor clock authority after authenticated C3a decline; immutable opening floor, private accepted-time audit, isolated historical v1 recovery. No runtime or result/snapshot successor activation.",
+  "eventTypes": {
+    "round-opened": "combat-round-opened",
+    "choice-sealed": "combat-choice-sealed",
+    "round-cancelled": "combat-round-cancelled",
+    "step-completed": "combat-round-step-completed",
+    "attack-committed": "combat-attack-committed"
+  },
+  "version": 2,
+  "clockPolicyId": "sandtable.combat.public-opening-clock.v2"
+}

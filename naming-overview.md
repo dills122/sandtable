@@ -168,6 +168,10 @@ does not mean opportunity selection, Combat execution, cycle repeat, or runtime 
 The [inherited guarded cycle-control packet](docs/specs/combat-inherited-cycle-control-v1.md) then
 uses `movement-combat-cycle-repeated` or `movement-combat-phase-finished` for exact owner closure.
 This proves private authority composition only; it does not mean ordinal-2 Movement or Combat ran.
+The [round-v2 contract](docs/specs/combat-sealed-round-v2.md) calls its immutable public timing
+bound the `openingFloor`. Accepted private seal times are audit evidence, not a shared admission
+watermark. [Corrected side profiles](docs/specs/combat-side-projection-v1.md) name a separately
+authenticated contract family; the name does not register or activate production Combat.
 The [inherited released-I Movement packet](docs/specs/combat-inherited-reserve-movement-v1.md) then
 uses `combat-cycle-element-moved` for one actual ordinal-2 move. “Pending exception” remains true
 until an accepted Movement-completion receipt expires it. The
@@ -662,6 +666,24 @@ a move. Neither is a **Contact** yet: the accepted `CONTACT-001` lock derives Co
 enemy-ZOC presence at the beginning of a Movement Segment and makes Engaged a Close Assault result;
 their production contracts remain gated behind the approved dependency-ordered ZOC/Reaction
 spec/design slices.
+[Combat side projections](docs/specs/combat-side-projection-v1.md) now retain accepted own settlement
+facts and apparent opposing representation locations in a separate version2 contract. An **own
+acceptance receipt** records an actual accepted player choice; a System fallback creates none, even
+when a player submitted the triggering proposal. Version3 adds own Reserve and cycle facts. An
+owner complete-release intent can earn acceptance through authenticated native effect even when
+System authors its completion event. Historical terminal profiles provide exact checkpoint facts with
+no actions; corrected composition profiles preserve continuous own receipts/history through finish.
+These contract profiles are accepted; runtime remains gated.
+A [private Exercise checkpoint](docs/specs/combat-exercise-occurrence-v1.md) records an authenticated
+source prefix and exact current authority state. **Source occurrence** identifies the cycle being
+proved; **active occurrence** identifies the current cycle after continuation. These identities
+can differ after repeat and are distinct from registered CoreSnapshot identity.
+A [private Exercise child](docs/specs/combat-exercise-child-evidence-v1.md) binds one configured
+execution to its native source, accepted transitions, terminal result and separate verification
+proofs. Input initiator, native event author and semantic action remain distinct; a rejected owner
+proposal can trigger a System fallback. Expected failure remains a failed result. This contract
+evidence is accepted; parent comparison and runtime artifact publication remain pending.
+
 **Capability Point expenditure** is the exact amount already spent during the current Operation
 Stage; it is not a replenishing UI movement allowance. **Complete Movement** is a real player
 decision that advances to Breakdown Determination, not a runner stop condition. These names are

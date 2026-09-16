@@ -884,13 +884,30 @@ evidence, not an implemented combat contract. Current proposals use trusted-Umpi
 the same pre-state for simultaneous combat, and structural sequence positions plus cycle identity;
 production Combat is not implemented. The [policy register](docs/design/combat-cycle-policy-reconciliation.md)
 now records owner-approved policies, and the [combined plan](docs/design/combat-cycle-implementation-plan.md)
-records bounded contract completion through D2c.3j. The [cycle-control contract](docs/specs/combat-cycle-control-v1.md)
+records parent003 completion and accepted004A1/A2/A3a/A3b side contracts. The
+[round-v2 clock contract](docs/specs/combat-sealed-round-v2.md) uses an immutable public opening
+floor: private seal timestamps remain audit evidence and cannot alter opposing admission.
+[Side projections](docs/specs/combat-side-projection-v1.md) authenticate corrected profiles and
+retain exact historical vectors. The [settlement-v2 contract](docs/specs/combat-result-settlement-v2.md)
+opens mandatory windows independently; prior accepted times remain audit evidence. Settlement
+projection and the [native cycle-finish bridge](docs/specs/combat-result-cycle-finish-v1.md) are
+accepted. The bridge retains World, RNG and future obligations through empty Reserve Release to
+same-slot Truck Convoy. Version3 side profiles now expose authenticated own Reserve facts and
+bounded inherited release/control choices with binary cycle action identities. All 28 historical terminal
+projections and continuous corrected bridge histories now complete bounded CON-005 evidence.
+The [private Exercise occurrence contract](docs/specs/combat-exercise-occurrence-v1.md) authenticates
+134 source histories and 2576 checkpoint cuts, retaining full World, RNG and typed control state.
+Source occurrence and active occurrence remain separate across repeat/finish. The
+[private child-evidence contract](docs/specs/combat-exercise-child-evidence-v1.md) now binds native
+provenance, current build identity, actual transitions, separate reconstruction/re-adjudication
+and explicit failure observations. Parent comparison and integrated checkpoint B remain open. The [cycle-control contract](docs/specs/combat-cycle-control-v1.md)
 binds release completion, semantic progress, current-cost witnesses and exact repeat/finish successors.
 Its Movement-expiry projection retains exclusions and release history. The
 [armed-continuation proof](docs/specs/combat-inherited-armed-continuation-v1.md) now admits both
 actual released-I ammunition10 profiles against the existing full-result contract stack without
-emitting authority. Guarded repeat composition and full Snapshot authority remain
-D2c/004/checkpoint B gates.
+emitting authority. Guarded repeat and inherited authority composition are now retained in the
+[28-trace Task003 handoff](docs/specs/combat-authority-composition-v1.md); outward contracts and
+Exercise evidence remain004/checkpoint B gates.
 The [inherited successor packet](docs/specs/combat-inherited-successors-v1.md) declares20 exact
 event successors and freezes isolated Reserve completion with atomic cycle1 opening. Actual
 creation-to-first-opening provenance is now composed within the closed initial-infantry profile;
