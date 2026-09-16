@@ -5,7 +5,8 @@
 **B2 resumed after day stop:** user requested completion of B2, first checking CCE. CCE Sandtable
 index status operational and session recall successful. Final focused checks, fixture regeneration, ordinary review/source reconciliation completed;
 B2 accepted. Record local acceptance commit. B3/C/005 remain
-out of current resumed scope. Prior publication/upload approval blocks remain in effect.
+out of current resumed scope. Public PR115 push/update now explicitly authorized and completed via Keychain; optional CCE
+upload block remains in effect.
 
 **Day-stop steering, 2026-09-15 18:26 UTC:** user requested a good stopping point today.
 Immediate wrap-up requested again: interrupt remaining B2 test, save UNVERIFIED local checkpoint,

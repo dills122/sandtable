@@ -497,3 +497,11 @@ B3/C/checkpointB/005 remain open; current resumed B2 scope complete. Public push
 
 B2 accepted commit c5c9256. README/tech-design/naming and local PR metadata synchronized.
 Public PR115 unchanged; local branch remains unpublished beyond3f1ef9d pending authorization.
+
+## PR115 publication authorized and completed
+
+User explicitly invoked github-keychain-auth and requested PR publication outside sandbox.
+Keychain dills122 authentication passed; remote branch had zero divergent commits and five queued
+local commits. Push3f1ef9d→51f0274 succeeded. Existing open draft PR115 title/body updated and
+remote head verified. No duplicate PR or merge. Earlier push approval block resolved by explicit
+user authorization; optional CCE upload block remains separate.

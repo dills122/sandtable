@@ -10,16 +10,17 @@ full004/checkpointB and005 objective remains incomplete. Prior day-stop checkpoi
 
 Branch: `codex/overnight-combat-wave-01`.
 Base/latest fetched main: `ff6b5f60219afbb12d5e06bf836f06f94de32006` (unchanged).
-Last pushed head: `3f1ef9d1482eb07fa6335e10ebe17712a3c00243`.
+B2/navigation published head: `51f02748ced3e78d6f242f4ae8505cb12c9920c7`.
+Publication-status follow-up commit travels on the same branch.
 Existing draft: https://github.com/dills122/sandtable/pull/115. No merge.
 
 ## Publication boundary
 
-Automatic approval review rejected public push twice, including retry with read-only ownership
-and existing-PR evidence. Explicit question authorizing this public destination remains unanswered.
-Keep B1/B2 commits local unless user explicitly authorizes pushing to public PR115. Do not retry
-or edit external PR metadata before that answer. Optional CCE record uploads were also rejected;
-project decisions and code-area notes remain local. No upload workaround.
+User explicitly authorized PR publication using github-keychain-auth outside sandbox. Keychain
+account dills122 authenticated; five queued commits pushed successfully to existing public PR115.
+PR title/body updated to “Add privacy-preserving Combat clocks and Exercise evidence” and head
+51f0274 verified. Earlier public-push approval block is resolved. PR remains open/draft; no merge.
+Optional CCE record uploads remain separately unauthorized; retain those notes locally.
 
 ## B2 evidence and limits
 
@@ -85,7 +86,7 @@ interrupted at day stop; do not dispatch new work there today.
 .NET10 native MTP requires `dotnet test --solution ...` or `--project ...`.
 Use feature branch; no direct main commits. New curated `.planning` files require explicit
 `git add -f`; stage exact paths. Git metadata writes may require sandbox escalation.
-If GitHub publication later authorized, use Keychain via `env -u GH_TOKEN -u GITHUB_TOKEN gh ...`;
+For authorized GitHub operations, use Keychain via `env -u GH_TOKEN -u GITHUB_TOKEN gh ...`;
 never extract or display credential bytes. No CCE writes without resolved upload authorization.
 
 Plan attestation:

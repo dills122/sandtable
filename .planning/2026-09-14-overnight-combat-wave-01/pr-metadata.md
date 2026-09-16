@@ -1,29 +1,27 @@
-# Draft PR115 metadata
+# Published draft PR115 metadata
 
-Title: Add privacy-preserving Combat clock contracts
+Title: Add privacy-preserving Combat clocks and Exercise evidence
 
-Private Combat seal timestamps previously changed whether an opponent’s unchanged proposal succeeded after a clock regression. Add an explicit v2 round/clock configuration whose acceptance floor stays at the published opening instant. Integrate authenticated side profiles that preserve identical observations, candidate identities and outcomes across private seals and clock faults.
+URL: https://github.com/dills122/sandtable/pull/115
 
-Round-v2, Task004A1/A2/A3a/A3b, result/settlement-v2 and native cycle-finish composition are accepted. Historical v1 contracts, all18 original audience traces and their failing clock diagnostic remain exact. Exact historical terminal and continuous corrected bridge side projections complete bounded CON-005 evidence. Private Exercise occurrence checkpoints (B1) and child execution/proof evidence (B2) are accepted. Parent comparison, integrated checkpoint B and Task005 remain incomplete. This draft contains contract evidence only; no Combat runtime activation or merge requested.
+## Summary
+Private Combat seal timestamps previously changed whether an opponent’s unchanged proposal succeeded after a clock regression. Keep acceptance tied to the published opening instant, and carry that privacy rule through authenticated side projections, settlement and cycle completion. Add private Exercise checkpoints and child execution evidence through B2.
 
-Result-v2 authenticates native committed round evidence and opens each mandatory decision window independently. Earlier accepted timestamps remain audit evidence; each live window retains its fixed budget, deadline and deterministic fallback. The same-owner timing distinction is explicit. Side codec2 carries authenticated own settlement/custody/guard/replacement facts through the same causal history; System fallback creates no accepted player receipt.
+## What Changed
+- Introduce explicit v2 round/settlement clock contracts. Private accepted timestamps remain audit evidence; mandatory windows retain fixed deadlines and deterministic fallback.
+- Authenticate side observations, candidates, receipts and native cycle-finish history, preserving historical v1 contracts and all 18 original audience traces.
+- Add B1 source-bound occurrence checkpoints across 134 sources and 2,576 cuts, retaining native World, RNG and control state.
+- Add B2 manifests, actual accepted transitions, separate reconstruction/re-adjudication proofs and artifact inventories. Bind current oracle/schema build identity; reject unsupported controller configurations and incomplete-reference overruns. Preserve rejected owner inputs that trigger System fallback, with no fabricated player acceptance.
 
 ## Validation
+- Retained `just check`: format/build clean; 81 boundary tests and 1,670 full tests passed, zero skipped. No runtime source/test changes followed that gate.
+- B1: 134 sources, 2,576 cuts, 192 dual schedules, 352 full-World bridge checks, 67 rejection checks and five exact-byte fixture mutants.
+- B2 complete native run at the preceding code freeze: 134 sources, 2,442 transitions and 44 owner-triggered System fallbacks. Independent AST/schema checks establish applicability to final native execution logic.
+- Final B2 focused driver: 134 admissions, seven native readbacks, 22 failure/clock/copy checks, stale-fixture rejection and regenerated exact readback; exit 0 in 458.829 seconds. Fixture contains 134 source summaries and 12 child records.
+- Independent final literal/source audits and ordinary review passed. Earlier full native execution and final focused verification are recorded separately; no full native rerun on final bytes is claimed.
+- Reproducible final commands and logs: `.planning/2026-09-14-overnight-combat-wave-01/evidence/004b2-author-focused.py`, `004b2-root-literal-probe.py`, `004b2-final-applicability-check.py`, and `004b2-verification-chronology.md`.
 
-- Round-v2 oracle:12 semantic groups,10 traces,68 cuts,610 replay mutations,340 raw rejects,288 clock comparisons/retries,480 lifecycle retries.
-- Side oracle:23 semantic groups,58 traces/466 cuts,207 submissions,969 mutations,580 raw rejects,69 receipt/stale bindings,672 clock comparisons/retries.
-- Result-v2 oracle:10 semantic groups,32 causal traces/304 cuts,3728 mutations,1360 raw rejects,384 timing checks,200 same-owner comparisons. Root added192 paired outcomes; independent source audit verified784 literal records and11 pins.
-- A2 side oracle:37 total groups;96 audience traces/2080 cuts,408 actions,7344 clock outcomes,5852 binding/candidate mutants,4872 retries,210 equal-history pairs and32 seal-order pairs. Independent source audit checked26 pins and628 observation literals. Root added240 fallback/retry outcomes and24 cache/source checks.
-- Native cycle-finish bridge:11 groups,32 lineages/160 cuts/128 retries,192 prior-time comparisons and24 completed-source fallback rejects. Root independently checked1088 clock/recovery outcomes; source audit verified14 pins,320 nested literals and128 suffix transitions retaining exact World/RNG/future obligations.
-- A3a side oracle:52 total groups,104 live cuts,112 ledger traces,1140 clock outcomes,472 retries,96 stale rejections. Root reconstructed92 binary sets/190 action identities; source audit checked456 cuts,344 observation literals,190 candidate pairs and38 pins. Accepted A1/A2 bytes preserved.
-- A3b side oracle:62 total groups;116 sources,4744 cuts,1208 literal observations,720 candidate pairs. Native audit checked all28 terminal profiles, including both releaseMember completion records. Root checked32 native fallback pairs,320 clock outcomes,64 retries and56 terminal admission rejects. A1/A2/A3a bytes preserved.
-- B1 occurrence oracle: 134 sources, 2576 cuts, 192 dual schedules, 352 full-World bridge checks, 67 rejection checks and 5 exact-byte fixture mutants. Native source audit verified every cut; root independently reconstructed hash domains and 2576 fixture bindings.
-- B2: prior full native run covers134 sources/2442 transitions/44 owner-triggered fallbacks. Final focused run passed134 admissions,7 representative readbacks,22 failure/clock/copy checks and exact regenerated fixture readback (134 summaries/12 children). Independent literal/source checks and AST applicability audit passed; prior full and final focused runs remain separately attributed.
-- Ordinary fresh-context reviews approved all nine packets; source audits verified retained literals, pins and historical bytes.
-- Root independently checked88 round outcomes and144 serialized side outcomes;17 legacy profile admission rejects. Historical v1 counterexample retained.
-- Root `just check` at each accepted boundary: format/build clean,81 boundary tests,1670 full tests,0 skipped. Latest full-test duration3m06.093s.
+## Scope Notes
+These are private, unregistered contract evidence artifacts. Combat runtime activation, hosted transport, durable artifact publication and full fresh-session parity remain deferred. B3 parent comparison, integrated checkpoint B and Task005 remain open; this PR stays draft.
 
-Accepted behavior commits:3fcd822,8cb1cef,c4654cb,042edbc b5ede50,a4f5b2c b33f69c, ac9baef and c5c9256. Exact logs, scope limits, owner privacy disposition and B2 resume/acceptance are retained under `.planning/2026-09-14-overnight-combat-wave-01/`.
-
-Publication status: local metadata only. Existing public draft PR115 is not updated while explicit
-public-destination authorization remains pending after automatic approval review rejection.
+Publication verified through51f0274; this metadata-only follow-up uses the same branch.
