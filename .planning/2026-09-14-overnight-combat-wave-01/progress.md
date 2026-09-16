@@ -477,3 +477,20 @@ changed FailedAttempt checks, fixture generation/readback and final literal revi
 No B2-to-C map amendments applied; B3/C/005 not started. Existing full-native prior run and root
 81+1670 gate retained with precise applicability. Public push and optional CCE uploads still blocked
 by automatic approval review; no retry or external PR update.
+
+## B2 resumed after day stop
+
+User requested resume and CCE health check first. Sandtable index_status returned operational;
+session_recall succeeded. Process check found CCE workers running. No restart needed. Existing
+author and ordinary reviewer resumed only final B2 verification; root owns reconciliation and
+local commit. No B3/C/005 work and no retry of blocked public push or optional CCE uploads.
+
+## B2 acceptance,2026-09-16 UTC
+
+Final focused driver exited0 in458.829s;134admissions,7native readbacks,22failure/clock/copy checks.
+Stale fixture RED then regenerated exact readback GREEN:134summaries/12children/7,722,577bytes.
+Root independent literal and native applicability checks pass. Source final audit passes; ordinary
+review scoped APPROVE, no findings. Prior full134native/2442transitions/44fallbacks and repository
+81+1670gate retained with exact chronology; no false final-full-suite rerun claim.
+B2 accepted. Applied12proposed B2 evidence amendments to72-row C draft without closing C.
+B3/C/checkpointB/005 remain open; current resumed B2 scope complete. Public push remains blocked.

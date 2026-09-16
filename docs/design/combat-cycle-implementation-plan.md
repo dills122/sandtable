@@ -258,12 +258,23 @@ are replay-backed. Historical28 endpoints have zero execution. Eight fallback pr
 unfinished.352 bridge cuts retain settled World, including native release states without World.
 Fresh ordinary review/source audit and root81boundary/1670full gate pass,zero skips (3m13.738s).
 Authentication returns defensive copies; fixture verification compares exact bytes. B2 execution/
-proofs, B3 parent evidence and C integrated closeout remain required before checkpointB and005.
+proofs are accepted below; B3 parent evidence and C integrated closeout remain required before
+checkpoint B and005.
 
-004B2 day stop,2026-09-15: unverified child-evidence draft saved at user request. Final focused
-run interrupted; retained fixture predates final oracle/schema and requires regeneration.
-Earlier complete134-source native run and root81/1670 gate retained, but final admission, rejected
-clock record, fixture and ordinary review gates remain open. B2 is not accepted; B3/C/005 deferred.
+004B2 accepted 2026-09-16 UTC: private child evidence binds native setup/content/scenario,
+initial RNG, source/reference/checkpoint and current oracle/schema build identity. Public-only
+controller preferences and schedule must match supported reference; incomplete references reject
+bounds beyond retained history. Exact native transitions, owner/System fallback semantics,
+separate reconstruction/re-adjudication and explicit attempted failure observations are retained.
+FailedAttempt records actual copied trustedClock; artifact inventory excludes its own manifest.
+
+Prior full native run passed134 sources,2442 transitions and44 owner-triggered System fallbacks.
+Final unchanged native bodies are independently AST-checked; final focused run passed134 admissions,
+7 representative readbacks and22 failure/forgery/clock checks. Regenerated fixture contains134 source
+summaries and12 actual children. Fresh ordinary review/source reconciliation and root literal proof/
+inventory checks pass. Root format/build and81 boundary/1670 full tests pass,zero skipped; no src/tests
+changes since gate. Evidence is checkpoint-scoped and unregistered, not full fresh-session/runtime
+Snapshot or publication parity. B3/C remain required before checkpoint B;005 has not started.
 
 004A1 overnight hard stop, 2026-09-14 local /2026-09-15 UTC: ordinary fresh-context review found
 equal waiting-side observations before/after an opposing private seal, but the same proposal at

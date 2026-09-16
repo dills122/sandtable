@@ -1,7 +1,7 @@
 # Combat exercise child evidence v1 — B2
 
-Status: UNVERIFIED day-stop checkpoint. Final focused verification interrupted at user request;
-retained fixture predates final oracle/schema and must be regenerated before acceptance.
+Status: accepted B2 contract evidence, 2026-09-16 UTC. Final focused verification, ordinary
+review, independent source/literal checks and retained repository gate passed.
 Private, unregistered, checkpoint-scoped contract evidence. No runtime registration,
 historical wire-label change, public export, actual artifact publication, or full fresh-session
 parity claim. B1 remains the authority for the three admitted execution scopes and 134 sources.

@@ -1,13 +1,12 @@
 # Combat wave01 — day-stop handoff
 
-## Current stop boundary
+## Completed boundary
 
-User requested a good stopping point on2026-09-15. User subsequently requested immediate wrap-up. Stop remaining test and save B2 as an
-explicitly unverified local checkpoint. Do not start B3, C or005 today. Full004/checkpointB and005 objective remains incomplete.
-B1 accepted at ac9baef, navigation9a7ac13. Author session70465 stopped; interpreter exited0 after KeyboardInterrupt. Test did not pass.
-No author test sessions remain. B2 is UNACCEPTED: final focused test interrupted at user request; fixture remains from prior
-freeze and does not match final oracle/schema. Resume final fixture generation and verification
-before acceptance or B3.
+B2 accepted after resumed work on2026-09-16 UTC. CCE Sandtable operational; no restart needed.
+Final focused checks, fixture regeneration, ordinary review, independent source/literal checks
+and retained repository gate pass. Author/reviewer/source audit sessions completed; no test running.
+Stop after local B2 acceptance/navigation commits. B3/C/005 remain outside this resumed scope;
+full004/checkpointB and005 objective remains incomplete. Prior day-stop checkpoint dd80c9c retained.
 
 Branch: `codex/overnight-combat-wave-01`.
 Base/latest fetched main: `ff6b5f60219afbb12d5e06bf836f06f94de32006` (unchanged).
@@ -37,34 +36,34 @@ trustedClock, rejected proposal/outcome and no unsubmitted native command. Expec
 failed; failed proof observations stay explicit. No runtime activation or fresh public creation/
 Movement execution claim; source prefix remains authenticated provenance.
 
+Final focused run:458.829s;134 admissions,7 native readbacks,22 failure checks; final fixture
+134 summaries/12 children. Root literal134/12/13proofs/95inventory passed. Final ordinary review
+APPROVE; source reconciliation PASS. See [review](evidence/004b2-final-review.md) and
+[source audit](evidence/004b2-final-source-audit.md).
+
 Detailed chronology: [verification](evidence/004b2-verification-chronology.md).
 Complete native prior freeze passed134 sources/2442 transitions/44 owner-triggered fallbacks;
-final focused deltas and regenerated fixture are separately recorded. Root just check passed81
+final focused deltas and regenerated fixture passed and are separately recorded. Root just check passed81
 boundary tests and1670 full tests,zero skipped,3m06.093s. No src/tests edits since gate.
 Root AST comparison preserves44 functions/native logic,15 schema definitions and163 predecessors.
 Do not repeat unchanged native repository suite without new changes or evidence of concern.
 
 ## Resume sequence
 
-1. Finish B2 first: final all134 admission checks, trustedClock rejection/defensive-copy checks,
-   representative native runs/readback, regenerate134 SourceSummary rows and12 actual Child goldens,
-   run retained004b2-root-literal-probe.py, final ordinary review/source reconciliation and commit.
-   Current fixture is stale; expected exact-fixture/readback failure is known. Full prior native run
-   and root gate remain valid as described in chronology; do not mark B2 accepted before final checks.
-2. B3 parent evidence: four new `combat-exercise-parent-evidence-v1` files plus combined plan.
+1. B3 parent evidence: four new `combat-exercise-parent-evidence-v1` files plus combined plan.
    Validate exact child manifest/build/seed/config before counts/fingerprint. Invalid/missing child
    means unavailable/null dependent fields; valid failed child remains comparable. Match actual
    initial checkpoint, source prefix/capability, gameplay/build, terminal and bounds. Supported
    future reference/controller/schedule may differ. Compare first actual semantic audience/action
    divergence, including unequal-length null arm. No RNG-purpose alignment after divergence.
    Four isolated completion witnesses are not child counts or full-World proofs.
-3. C: four new `combat-outward-composition-v1` files plus combined plan. Reconcile exact72-AC map,
+2. C: four new `combat-outward-composition-v1` files plus combined plan. Reconcile exact72-AC map,
    accepted003 historical handoff, corrected live side contracts, B1/B2/B3 and version/capacity/
    readback evidence. Honest partial/deferred runtime coverage. No rootplan/navigation hash pins.
    Only accepted C closes004/checkpointB and permits005.
-4.005A: dormant Rules/types/pure explicit-dice arithmetic and independent tests.
-5.005B: strict RulesInput1 codec and complete provenance metadata; no registration.
-6.006 is stretch only after required004/005 complete.
+3.005A: dormant Rules/types/pure explicit-dice arithmetic and independent tests.
+4.005B: strict RulesInput1 codec and complete provenance metadata; no registration.
+5.006 is stretch only after required004/005 complete.
 
 Packets/source audits already prepared: [004B](packet-004b.md), [004C](packet-004c.md),
 [005](packet-005.md), [B sources](source-audit-004b.md), [005 sources](source-audit-005.md).
