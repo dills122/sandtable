@@ -53,7 +53,7 @@ play a side; it will never decide the rules or secretly change the campaign stat
 | --- | --- | --- |
 | Deterministic Umpire | Working | Versioned rules, seeded randomness, canonical commands/events, replay, checkpoints, and side-safe action boundaries are implemented. |
 | Playable rule path | Working through Combat entry | Runner can execute Initiative, stage preamble, Reserve Designation, Movement, bounded ZOC/Reaction, and Breakdown, then stops before Combat adjudication. |
-| Combat and continual cycle | Contracts complete through parent003 | 28 creation-rooted traces reconcile future Combat/cycle authority, but handlers are not registered in runtime. Versioned round/settlement clocks and Task004A1/A2 side contracts preserve privacy under clock faults. Native settlement-to-cycle-finish composition, live Reserve/cycle side profiles, all 28 historical terminal projections and continuous corrected bridge histories are accepted. Private Exercise occurrence checkpoints are accepted; child/parent evidence and integrated checkpoint B remain open. |
+| Combat and continual cycle | Contracts complete through parent003 | 28 creation-rooted traces reconcile future Combat/cycle authority, but handlers are not registered in runtime. Versioned round/settlement clocks and Task004A1/A2 side contracts preserve privacy under clock faults. Native settlement-to-cycle-finish composition, live Reserve/cycle side profiles, all 28 historical terminal projections and continuous corrected bridge histories are accepted. Private Exercise occurrence checkpoints and child execution/proof evidence are accepted; parent comparison and integrated checkpoint B remain open. |
 | Exercise and Maneuver tools | Working | Deterministic single runs, multi-run matrices, paired comparisons, strict readback, and evidence bundles are available from CLI. |
 | User interface | Not started | `site/` is project website only. Maproom hot-seat client is future work. |
 | Published scenario | Not started | First target is six-turn, Land-only *Graziani's Offensive* after working Combat loop. |
@@ -863,8 +863,3 @@ The current Umpire foundation is intentionally pure and in-process:
 ## License
 
 No license has been selected yet. All rights are reserved until a license file is added.
-
-<!-- Combat day-stop checkpoint,2026-09-15: -->
-B2 [private child-evidence draft](docs/specs/combat-exercise-child-evidence-v1.md) is saved as an
-unverified local checkpoint. Final fixture regeneration and review remain pending; B2 is not
-accepted. B3, integrated checkpoint B and Task005 remain open.

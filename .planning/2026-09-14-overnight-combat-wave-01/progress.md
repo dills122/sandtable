@@ -494,3 +494,6 @@ review scoped APPROVE, no findings. Prior full134native/2442transitions/44fallba
 81+1670gate retained with exact chronology; no false final-full-suite rerun claim.
 B2 accepted. Applied12proposed B2 evidence amendments to72-row C draft without closing C.
 B3/C/checkpointB/005 remain open; current resumed B2 scope complete. Public push remains blocked.
+
+B2 accepted commit c5c9256. README/tech-design/naming and local PR metadata synchronized.
+Public PR115 unchanged; local branch remains unpublished beyond3f1ef9d pending authorization.

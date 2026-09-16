@@ -897,8 +897,10 @@ bounded inherited release/control choices with binary cycle action identities. A
 projections and continuous corrected bridge histories now complete bounded CON-005 evidence.
 The [private Exercise occurrence contract](docs/specs/combat-exercise-occurrence-v1.md) authenticates
 134 source histories and 2576 checkpoint cuts, retaining full World, RNG and typed control state.
-Source occurrence and active occurrence remain separate across repeat/finish. Child execution,
-parent comparison and integrated checkpoint B remain open. The [cycle-control contract](docs/specs/combat-cycle-control-v1.md)
+Source occurrence and active occurrence remain separate across repeat/finish. The
+[private child-evidence contract](docs/specs/combat-exercise-child-evidence-v1.md) now binds native
+provenance, current build identity, actual transitions, separate reconstruction/re-adjudication
+and explicit failure observations. Parent comparison and integrated checkpoint B remain open. The [cycle-control contract](docs/specs/combat-cycle-control-v1.md)
 binds release completion, semantic progress, current-cost witnesses and exact repeat/finish successors.
 Its Movement-expiry projection retains exclusions and release history. The
 [armed-continuation proof](docs/specs/combat-inherited-armed-continuation-v1.md) now admits both
@@ -1036,8 +1038,3 @@ The implemented paired comparison does not block that engine work.
 [2]: https://learn.microsoft.com/en-us/aspnet/core/grpc/performance?view=aspnetcore-10.0 "Performance best practices with gRPC | Microsoft Learn"
 [3]: https://learn.microsoft.com/en-us/aspnet/core/grpc/deadlines-cancellation?view=aspnetcore-10.0 "Reliable gRPC services with deadlines and cancellation | Microsoft Learn"
 [4]: https://learn.microsoft.com/en-us/aspnet/core/grpc/json-transcoding?view=aspnetcore-10.0 "gRPC JSON transcoding in ASP.NET Core gRPC apps | Microsoft Learn"
-
-<!-- Combat day-stop checkpoint,2026-09-15: -->
-B2 [private child-evidence draft](docs/specs/combat-exercise-child-evidence-v1.md) is saved as an
-unverified local checkpoint. Final fixture regeneration and review remain pending; B2 is not
-accepted. B3, integrated checkpoint B and Task005 remain open.

@@ -678,6 +678,11 @@ A [private Exercise checkpoint](docs/specs/combat-exercise-occurrence-v1.md) rec
 source prefix and exact current authority state. **Source occurrence** identifies the cycle being
 proved; **active occurrence** identifies the current cycle after continuation. These identities
 can differ after repeat and are distinct from registered CoreSnapshot identity.
+A [private Exercise child](docs/specs/combat-exercise-child-evidence-v1.md) binds one configured
+execution to its native source, accepted transitions, terminal result and separate verification
+proofs. Input initiator, native event author and semantic action remain distinct; a rejected owner
+proposal can trigger a System fallback. Expected failure remains a failed result. This contract
+evidence is accepted; parent comparison and runtime artifact publication remain pending.
 
 **Capability Point expenditure** is the exact amount already spent during the current Operation
 Stage; it is not a replenishing UI movement allowance. **Complete Movement** is a real player
@@ -884,8 +889,3 @@ And there's a nice **authority hierarchy** underneath all the flavor:
 That could practically become Sandtable's architectural motto.
 
 Of all these, I'd lock in **Sandtable / Umpire / Maproom / Staff / Command / Dispatch / Signals / Chronicle / Archives / Quartermaster / Theater / ORBAT / War College**. They feel cohesive rather than like we've randomly assigned military words to microservices.
-
-<!-- Combat day-stop checkpoint,2026-09-15: -->
-B2 [private child-evidence draft](docs/specs/combat-exercise-child-evidence-v1.md) is saved as an
-unverified local checkpoint. Final fixture regeneration and review remain pending; B2 is not
-accepted. B3, integrated checkpoint B and Task005 remain open.

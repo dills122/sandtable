@@ -2,10 +2,10 @@
 
 ## Completed boundary
 
-B2 accepted after resumed work on2026-09-16 UTC. CCE Sandtable operational; no restart needed.
+B2 accepted in commit c5c9256 after resumed work on2026-09-16 UTC. CCE Sandtable operational; no restart needed.
 Final focused checks, fixture regeneration, ordinary review, independent source/literal checks
 and retained repository gate pass. Author/reviewer/source audit sessions completed; no test running.
-Stop after local B2 acceptance/navigation commits. B3/C/005 remain outside this resumed scope;
+B2 acceptance committed locally; navigation and handoff synchronized. B3/C/005 remain outside this resumed scope;
 full004/checkpointB and005 objective remains incomplete. Prior day-stop checkpoint dd80c9c retained.
 
 Branch: `codex/overnight-combat-wave-01`.
