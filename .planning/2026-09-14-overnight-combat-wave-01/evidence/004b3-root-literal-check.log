@@ -1,0 +1,1 @@
+PASS independent B3 literals: {'parents': 10, 'children': 12, 'validatedEntries': 19, 'comparedPairs': 5, 'unavailablePairs': 4, 'pins': 3}

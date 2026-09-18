@@ -1,5 +1,5 @@
 {
-  "status": "Research draft only; accepted Result2/A2/native bridge/A3a/A3b/B1/B2 references reconciled. B3 and final004C closeout pending. Runtime tests remain planned.",
+  "status": "Research draft only; accepted predecessors and final reviewed B3 evidence mapped. Final004C closeout pending. Runtime tests remain planned.",
   "sourceAliasFiles": [
     "004c-first36-map.md",
     "004c-last36-map.md"
@@ -427,8 +427,8 @@
       "plannedTest": "CombatProtocolTests.UnsupportedProfileAndCancelledOpportunityCannotRepeat",
       "verificationStatus": "planned; runtime test not implemented",
       "contractEvidenceDraft": {
-        "evidence": "CONTENT:main; ROUND2:test_expiry_recovery; CYCLE:boundary_checks; SIDE:test_a3_ledger_sets,test_a3_ledger_source_integrity; SIDE:test_a3b_source_integrity",
-        "contractCoverage": "Partial certification and anti-repeat combination remains unproved. A3b authenticates finish-only corrected capability; B execution evidence remains pending.",
+        "evidence": "CONTENT:main; ROUND2:test_expiry_recovery; CYCLE:boundary_checks; SIDE:test_a3_ledger_sets,test_a3_ledger_source_integrity; SIDE:test_a3b_source_integrity; B2:test_registry_execution,test_identity_and_controller",
+        "contractCoverage": "Partial certification and anti-repeat combination remains unproved. A3b authenticates finish-only corrected capability; B2 executes authenticated admitted references without extending that capability. Broad certification/anti-repeat integration remains runtime work.",
         "runtimeOwners": "006,009,019"
       }
     },
@@ -1227,8 +1227,8 @@
       "plannedTest": "CombatCycleTests.ContinuationTruthTableUsesExactBreakOffCosts",
       "verificationStatus": "planned; runtime test not implemented",
       "contractEvidenceDraft": {
-        "evidence": "C:verification/control_mode truth table,trace/engaged-repeat,later-release-insufficient-cp,no-progress-finish,boundary_checks; SIDE:test_a3_ledger_sets,test_a3_ledger_source_integrity; BRIDGE:test_all_lineages,test_clock_policy; B1:test_continuation_schedule,test_bridge_world",
-        "contractCoverage": "Existing bounded native truth table, separate ledger offers/fallback modes and corrected finish World/RNG preservation remain accepted. B1 adds exact checkpoint suffix continuation for admitted live inherited release/control and corrected bridge sources. This is replay continuation, not a new gameplay continuation-capability proof; broader public Movement atomicity and B2 execution remain pending.",
+        "evidence": "C:verification/control_mode truth table,trace/engaged-repeat,later-release-insufficient-cp,no-progress-finish,boundary_checks; SIDE:test_a3_ledger_sets,test_a3_ledger_source_integrity; BRIDGE:test_all_lineages,test_clock_policy; B1:test_continuation_schedule,test_bridge_world; B2:test_registry_execution,test_identity_and_controller",
+        "contractCoverage": "Existing bounded native truth table, separate ledger offers/fallback modes and corrected finish World/RNG preservation remain accepted. B1/B2 add checkpoint continuation and fresh execution/re-adjudication for admitted inherited release/control and corrected bridge sources. These do not expand gameplay continuation capability; broader public Movement atomicity remains deferred.",
         "runtimeOwners": "018,019"
       }
     },
@@ -1245,8 +1245,8 @@
       "plannedTest": "CombatCycleTests.OnlyMaterialEffectsEnableRepeat",
       "verificationStatus": "planned; runtime test not implemented",
       "contractEvidenceDraft": {
-        "evidence": "C:boundary_checks,verification,trace/no-progress-finish,later-retain-not-progress; COMP:verify; SIDE:test_a3_ledger_sets,test_a3_ledger_source_integrity; SIDE:test_a3b_terminals,test_a3b_continuity",
-        "contractCoverage": "Cross-family terminal facts and corrected projected history accepted. B execution proof remains pending; no unsupported corrected repeat or progress is invented.",
+        "evidence": "C:boundary_checks,verification,trace/no-progress-finish,later-retain-not-progress; COMP:verify; SIDE:test_a3_ledger_sets,test_a3_ledger_source_integrity; SIDE:test_a3b_terminals,test_a3b_continuity; B2:test_registry_execution,test_identity_and_controller",
+        "contractCoverage": "Cross-family terminal facts and corrected projected history accepted. B2 executes the admitted references and independently reconstructs/re-adjudicates their actual transitions; no unsupported corrected repeat or material progress is invented. Broader runtime progress classification remains deferred.",
         "runtimeOwners": "018,019"
       }
     },
@@ -1301,8 +1301,8 @@
       "plannedTest": "CombatCycleTests.OccurrenceTerminalsAndPairedProofsRemainExact",
       "verificationStatus": "planned; runtime test not implemented",
       "contractEvidenceDraft": {
-        "evidence": "SEQ.main/occurrence vectors;COMP.verify/28 authority traces; B1:test_terminals,test_continuation_schedule,test_prefix_identity,test_rejection; B2:test_registry_execution,test_failures_and_forgery,test_identity_and_controller",
-        "contractCoverage": "Partial: B1 occurrence-aware checkpoints and B2 private child execution/proofs bind exact source, manifest, native transitions and terminal, with explicit failed-proof observations. B3 parent validation/first-divergence evidence remains pending; runtime022-024 and actual artifact publication remain planned.",
+        "evidence": "SEQ.main/occurrence vectors;COMP.verify/28 authority traces; B1:test_terminals,test_continuation_schedule,test_prefix_identity,test_rejection; B2:test_registry_execution,test_failures_and_forgery,test_identity_and_controller; B3:test_native_parents,test_invalid_children_and_cache,test_materialization_and_bindings,test_divergence",
+        "contractCoverage": "Bounded private B1 occurrence and B2 child execution/proofs plus B3 authenticated parent comparison. Actual equal-start pairs cover identical/divergent actions and validated failures; unequal-length null arms use authenticated stream-prefix helper tests only, since current admitted pairs have equal lengths. Runtime022-024 and artifact publication remain planned.",
         "runtimeOwners": "022,023,024"
       }
     },
@@ -1319,8 +1319,8 @@
       "plannedTest": "CombatCycleTests.UnsupportedTerminalsCannotClaimGameSuccess",
       "verificationStatus": "planned; runtime test not implemented",
       "contractEvidenceDraft": {
-        "evidence": "BRIDGE:test_all_lineages,test_authentication,test_source_owner_choice_semantics; C:trace/guard-finish,escape-timeout historical; COMP:handoff; B1:test_terminals,test_bridge_world,test_rejection; B2:test_registry_execution,test_failures_and_forgery,test_identity_and_controller",
-        "contractCoverage": "B1/B2 retain future obligations through actual native finish. B2 distinguishes admission, execution, step-limit/cancellation and attempted replay failures; expected-failure match stays failed. Unsupported maturity and successful Game terminal remain excluded; B3/C closeout and runtime publication remain pending.",
+        "evidence": "BRIDGE:test_all_lineages,test_authentication,test_source_owner_choice_semantics; C:trace/guard-finish,escape-timeout historical; COMP:handoff; B1:test_terminals,test_bridge_world,test_rejection; B2:test_registry_execution,test_failures_and_forgery,test_identity_and_controller; B3:test_native_parents,test_invalid_children_and_cache,test_raw_and_report_forgery",
+        "contractCoverage": "B1/B2 retain obligations through native finish and distinguish admission, execution, step-limit/cancellation and replay failures. B3 validates before counts, preserves failed status despite expected-failure match and rejects forged reports. Unsupported maturity and successful Game terminal remain excluded; C closeout and runtime publication remain pending.",
         "runtimeOwners": "022,023"
       }
     }
@@ -1330,7 +1330,8 @@
     "BRIDGE": "docs/specs/verify-combat-result-cycle-finish-v1.py",
     "SIDE": "docs/specs/verify-combat-side-projection-v1.py",
     "B1": "docs/specs/verify-combat-exercise-occurrence-v1.py",
-    "B2": "docs/specs/verify-combat-exercise-child-evidence-v1.py"
+    "B2": "docs/specs/verify-combat-exercise-child-evidence-v1.py",
+    "B3": "docs/specs/verify-combat-exercise-parent-evidence-v1.py"
   },
   "scopeNotes": [
     "RESULT2 replaces historical RESULT1/R1 as primary corrected result evidence; historical Snapshot1 remains historical.",
@@ -1342,5 +1343,6 @@
   "amendmentSource": "004c-successor-map-amendments.json",
   "amendmentA3bSource": "004c-a3b-map-amendments.json",
   "amendmentB1Source": "004c-b1-map-amendments.json",
-  "amendmentB2Source": "004c-b2-map-amendments-proposed.json"
+  "amendmentB2Source": "004c-b2-map-amendments-proposed.json",
+  "amendmentB3Source": "004b3-author-resumed.log and 004b3-root-literal-check.log; final review/acceptance tracked separately"
 }

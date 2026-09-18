@@ -56,3 +56,71 @@ Combat writer additionally must sort unordered construction arrays before canoni
 preserve procedure order and defensively own all nested source/metadata collections. Existing
 BCL Array.AsReadOnly/copied arrays suffice; no new dependency required. This is read-only source
 preparation;005 implementation remains gated on complete004/checkpointB.
+
+## Incremental C# fit check,2026-09-16
+
+
+Read-only; no C# edits, tests, dependencies or registration. Gate remains B3 -> C ->005. Existing packet-005/source-audit-005 remains controlling; below clarifies concrete implementation fit.
+
+## Existing paths and immutability traps
+
+- Production namespace/path: `src/Cna.Core/Rules/`; new internal `CombatSelectedRules.cs` plus `Cna1979CombatAdjudication.cs`. Existing `CombatRules.cs`/`Cna1979Combat.cs` are public ZOC classification/defensive-strength APIs; do not broaden or rename them.
+- Test project: `tests/Cna.Core.Tests/Cna.Core.Tests.csproj`, net10.0, xunit.v3.mtp-v2, native MTP executable. `src/Cna.Core/Cna.Core.csproj:8` already grants InternalsVisibleTo; no public exposure or new assembly attribute needed.
+- `BreakdownOutcomeRules.cs` positional records retain IReadOnlyList references; that type alone is not defensive immutability. Selected constructors need copied arrays wrapped read-only, including nested amendment coordinates, effect numeric sets and procedure purpose arrays. Get-only properties avoid mutable init-list replacement. Copy both input collections and any returned byte arrays.
+- `BreakdownRulesV2ArtifactCodec` is only a closed-authority comparison pattern. Its writer assumes existing order. New RulesInput writer must sort identity/numeric arrays, reject duplicate keys, preserve procedure order, then compare complete resulting canonical authority; raw reader rejects reorder/alternate spellings.
+- Registered `Cna1979Ruleset.ContractVersion` remains9. Do not edit registry or construct Rules10 runtime registration. Existing `RulesetArtifact` constructor accepts exact artifactId/contentHash/reference list; new factory need not change it.
+
+## Minimal ownership after C acceptance
+
+005A: new two Rules files, new `tests/Cna.Core.Tests/Rules/CombatSelectedRulesTests.cs`, test csproj fixture links. Root owns plan fifth file. Full typed RulesInput definition, immutable metadata, selected pure explicit-dice arithmetic. No Config/Timing/RNG/World/clock implementation.
+
+005B: new `src/Cna.Core/Rules/CombatRulesInputArtifactCodec.cs`, new `tests/Cna.Core.Tests/Rules/CombatRulesInputArtifactTests.cs`, existing005A definition factory adjustment, optional test fixture link adjustment. Root plan fifth file. Strict canonical reader/writer + expected content hash + dormant CreateArtifact; no artifact successor or registration.
+
+Link existing files with Content Include/Link/CopyToOutputDirectory in test csproj, not copied goldens:
+- `../../docs/research/fixtures/combat-selected-source-v1.json` -> `Rules/Fixtures/combat-selected-source-v1.json`.
+- `../../docs/specs/fixtures/combat-rules-inputs-v1.json` -> `Rules/Fixtures/combat-rules-inputs-v1.json`.
+
+## Independent expected-data correction
+
+Research fixture has ten expanded optical loss arrays (360 slots), with exactly three nulls: defender:+2 coordinates34,35,36. Test expected lookup reads these arrays and fills only those three with accepted10%; do not derive expected values through production band expansion. No separate optical Morale array exists: use explicit independent36-cell row (11:+1;66:-1;other34:0), not production expansion. Effects/capture shares read direct independent fixture maps. Contract fixture `goldens` is a LIST; select `kind == RulesInput`, then use `canonicalUtf8`/`sha256`/`byteCount`. Do not deserialize envelope as RulesInput or trim canonical text.
+
+RED targets: coordinate17/18/20/67; differential outside-2..2; wrong/missing/extra conditional capture die; refusal without retreat; amendment exactly34/35/36 (only34 retreat); defender0/23=15 versus+1/23=10; attacker25%=>3, defender5%=>0, defender20%+refusal=>3; capture loss2 at25%=>1/loss3 at50%=>2; rawEngaged distinct from retreat; copied nested collections resist caller mutation. Assert capture share die3 literally33/100 because selected losses<=3 cannot expose accidental1/3 numerically. Never inherit Breakdown's one-point10% exception or one-third ruling.
+
+Keep packet exhaustive counts:36Morale/360loss cells,1296Morale pairs,6480joint coordinates,8840capture/refusal rows,44208weighted capture paths. Those are separate counts, not one generated production oracle.
+
+## Exact retained identities
+
+RulesInput schema1; artifact `cna-1979.1.combat-selected-inputs.v1`; profile `sandtable.capability.combat-cycle-infantry.v1`;30395 canonical bytes; content hash `sha256:fafb24792c9e3f774c368f85c02d1d068f84c9c78e67bf8324723257d0f13029`.
+
+Five references remain exact:
+- sandtable-rules-lab / CMB-POL-001-008;CMB-SRC-RUL-001
+- spi-1979-common-charts /15.79;15.89;17.4
+- spi-1979-compilation /Logistics50.0-50.17
+- spi-1979-land-rules /6.21-6.24;11.21-11.27;15.61-15.87;20.21;28.24
+- spi-1979-september-errata /15.27;20.72;50.2;50.12
+
+Four sourceEvidence hashes:
+- common-charts `sha256:51aa5a5bfdaca3d23794da71a45a830d98b798d060097cde6418126d6bd63bb0`
+- compilation `sha256:836c14949c4fef1b066043e19a570256b22598d8ae2948d26844b949f53b60a5`
+- land-rules `sha256:b362870368b9fb8abe6918195fdcf878d4a8041c557b835b9a1bdde3c8b76e99`
+- september-errata `sha256:5db539e1fac4aea3ef152370fb732f1938307fe4b2d47ad93eb605db0a09f0fb`
+
+Preserve all8 policies and exact historical behavior tokens; corrected later clock contracts do not alter these frozen numeric artifact bytes. Amendment remains CMB-SRC-RUL-001, historical intent unproved.
+
+## Exact native commands, later execution only
+
+After building changed code:
+`dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --no-build --filter-class 'Cna.Core.Tests.Rules.CombatSelectedRulesTests'`
+
+005B:
+`dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --no-build --filter-class 'Cna.Core.Tests.Rules.CombatRulesInputArtifactTests'`
+
+Existing native filter syntax corroborated by docs/reviews/brk-task-002-review-1.md:47. Build before --no-build; full solution uses `dotnet test --solution Sandtable.slnx --no-build`. Follow current accelerated packet workflow: focused tests per slice, consolidated full gate at C/final005.
+
+No source/policy blocker found. Current blockers are intentional dependency gates only. No suite run for this memo.
+
+## Applicable instructions and unchanged production state
+
+Read root AGENTS.md. No nested AGENTS.md exists at src/, src/Cna.Core/, src/Cna.Core/Rules/, tests/, tests/Cna.Core.Tests/ or tests/Cna.Core.Tests/Rules/. Root instructions apply: Core owns rules/authority; contract first; small explicit changes; focused deterministic tests; no hidden state leakage; no unrelated generated churn; native MTP requires --project/--solution; CCE retrieval/recall first. Parent owns integration docs/Git and current task prohibits CCE writes.
+
+Read-only `git diff --name-only -- src tests` and `git status --short -- src tests` both returned empty. No production/test files changed at this checkpoint. Only this temporary memo written; implementation remains gated on C acceptance.

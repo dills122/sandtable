@@ -29,3 +29,7 @@ RulesetArtifact without adding to registration. Five references/fourdocumenthash
 Each packet: observedRED→GREEN, focusednativeMTP tests with --project, freshordinaryreview,
 rootjustcheck and acceptedcommit. Split before edits if either crosses independent boundary or
 fiveprimaryfile cap. FullTask005 requires both packets and exact source/artifact parity evidence.
+
+Verification workflow update2026-09-16: follow accelerated-continuation section in task_plan.md.
+All acceptance assertions remain required; focused tests per slice, consolidated full gate at
+C and final005 integration. Reuse authenticated warm caches and unchanged predecessor evidence.

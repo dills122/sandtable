@@ -1,0 +1,10 @@
+{
+  "reviewedSpecSha256": "b1840ce112df387752413653e9bdac7cc4a3e66f707aa7f504358c89c4e23f0c",
+  "acceptedFiles": {
+    "docs/specs/combat-exercise-parent-evidence-v1.md": "8b146b00a08e084cd4dd7e899ddfe68f846adc4a71632937c2dae2fb1be8e953",
+    "docs/specs/combat-exercise-parent-evidence-v1.schema.json": "00d1fcd2cb7d06b6f25d9224ff0839308f23fd2052b42dab24c98ea378b30820",
+    "docs/specs/fixtures/combat-exercise-parent-evidence-v1.json": "08316dae3d4f12298c35bfe05f640dcd2559ae41cbf4144430cd52b121847a9f",
+    "docs/specs/verify-combat-exercise-parent-evidence-v1.py": "bb0134c42293a18c8453513c9b23b13d4c365cb2734f8e93c2989d47773e7345"
+  },
+  "acceptanceOnlyChange": "spec status sentence; schema/fixture/oracle unchanged"
+}

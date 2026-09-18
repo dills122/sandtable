@@ -32,3 +32,7 @@ files, which change status during acceptance and would introduce a dependency cy
 Run focused integrated oracle and appropriate direct predecessor checks; fresh ordinary review,
 read-only source/index audit, root `just check`, then accepted commit. Only reconciled004C acceptance
 closes parent004/checkpoint B and permits005. This plan is preparation, not an acceptance claim.
+
+Verification workflow update2026-09-16: follow accelerated-continuation section in task_plan.md.
+All acceptance assertions remain required; focused tests per slice, consolidated full gate at
+C and final005 integration. Reuse authenticated warm caches and unchanged predecessor evidence.

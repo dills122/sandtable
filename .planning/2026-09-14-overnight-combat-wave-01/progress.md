@@ -505,3 +505,55 @@ Keychain dills122 authentication passed; remote branch had zero divergent commit
 local commits. Push3f1ef9d→51f0274 succeeded. Existing open draft PR115 title/body updated and
 remote head verified. No duplicate PR or merge. Earlier push approval block resolved by explicit
 user authorization; optional CCE upload block remains separate.
+
+## Accelerated continuation,2026-09-16 UTC
+
+User approved speeding delivery without substantial plan deviation or reduced safety. Objective:
+complete B3 then C/checkpoint B, then bounded dormant C# Task005A/B. Preserve existing acceptance
+requirements, privacy policy, historical bytes, source scope, no runtime activation and no merge.
+
+Workflow adjustment: one sole implementation writer; retain one authenticated Python process/cache
+across B3 and C when safe, with current source-pin checks and defensive copies. Focused behavior,
+negative and raw/readback tests for each slice; one ordinary reviewer also reconciles source/index
+facts without duplicating broad native runs. Root runs full just check at C integration and final
+Task005 integration, plus focused C# tests for each005 slice. Earlier successful runtime gate remains
+applicable while src/tests/build inputs are unchanged. A failed/newly changed path triggers relevant
+rerun. No test assertion, contract requirement or final integration gate is removed.
+
+Keep B3/C and005A/B distinct commits/ownership boundaries. Consolidate navigation/handoff updates
+at C and005 checkpoints. Reuse existing source audits and fixtures; add only evidence needed to
+reproduce new checks. Do not expand model families or create extra policy/review packets. Scope
+and reported status must always distinguish contract-model work from dormant C# implementation.
+
+Current: B3 implementation next; C pending;005 source/test preparation read-only until C accepted.
+
+C preflight: all72 unique AC IDs exist in six authoritative source documents; every row has
+planned task/test and runtime-owner mapping. Corrected three stale B2-pending descriptions while
+retaining partial certification/continuation/progress limits. B3 pair fault configuration and
+expectedFailure must match; actual authenticated per-reference schedules may differ.
+
+B3 bounded witness decision: existing equal-initial/terminal completed references have equal
+lengths; incomplete16/20 fallback references cannot share a larger admitted max. Preserve equal
+fault/bound and closed-source constraints. Test unequal-length null-arm logic on authenticated
+stream/prefix as explicit algorithm-only evidence (both orientations, empty, identical), not a
+new end-to-end admissible pair. No source/profile extension solely for test coverage.
+Task005 incremental C# fit audit complete; appended existing source-audit-005.md. No new blocker,
+production changes or gate relaxation.
+
+## Resume2026-09-18
+
+User requested finish accelerated continuation. B3 prior12child/10parent native group passed;
+remaining tests/fixture/review interrupted. Recover author process state before restarting;
+retain prior evidence and avoid duplicate cold catalog/repository suites. C/005 not started.
+
+## B3 acceptance,2026-09-18
+
+Focused command completed successfully in138.722s inside retained warm interpreter21038.
+12authenticated children/10parents;6divergence,2null/absent,5authenticated-prefix helper cases;
+9invalid+1missing+4cache;8materialization+10binding mismatches;5forgery+7raw+8bounds;
+independent hash/copy and4actual fixture-mutant rejects passed. Fixture10,943,909bytes aggregate;
+largest canonical Parent23,998bytes within8MiB per-record limit. Root literal check passed
+10parents/12children/19validated entries/5compared/4unavailable/3pins. Ordinary review APPROVE,
+no open findings. Unequal-length cases remain helper-only; no new source/profile admitted.
+Reviewed-versus-accepted spec hash retained; only status sentence changed after review.
+B3 accepted; C/checkpointB and dormant005A/B remain. Full repository gate scheduled at C.

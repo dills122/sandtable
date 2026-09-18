@@ -162,10 +162,14 @@ No full Snapshot successor is needed for this chosen004B route. Preserve old Exe
 payload2/labelv1, Checkpoint1/Snapshot11 and all registered readers. New Combat scheme labels remain
 unregistered; old readers never receive prospective Rules10 manifests as current supported input.
 
-Each slice requires focused verification, ordinary fresh-context quality review, brain-run
-`just check` and an accepted commit. This split adds no gameplay policy, production registration or
-formal independent-review pass. Task005 remains gated on complete004/checkpoint B. Small navigation
-updates follow separately when verified status changes. Execution evidence lives in the
+Each slice requires focused verification, ordinary quality review and a scoped commit. User-approved
+workflow adjustment,2026-09-16: preserve all acceptance requirements while sharing authenticated
+source warmup across B3/C, reusing unchanged predecessor evidence, and consolidating full `just check`
+at C/checkpoint B and final Task005 integration. Focused C# tests still run for each005 slice; changes
+or failures trigger relevant reruns. No final integration gate or privacy/replay assertion is removed.
+Navigation updates follow at C and005 checkpoints. This split adds no gameplay policy, production
+registration or formal independent-review pass. Task005 implementation remains gated on accepted
+004/checkpoint B. Execution evidence lives in the
 [overnight plan](../../.planning/2026-09-14-overnight-combat-wave-01/task_plan.md).
 
 004A sizing refinement before edits: implement the four new packet files sequentially as004A1
@@ -275,6 +279,12 @@ summaries and12 actual children. Fresh ordinary review/source reconciliation and
 inventory checks pass. Root format/build and81 boundary/1670 full tests pass,zero skipped; no src/tests
 changes since gate. Evidence is checkpoint-scoped and unregistered, not full fresh-session/runtime
 Snapshot or publication parity. B3/C remain required before checkpoint B;005 has not started.
+
+004B3 accepted 2026-09-18: authenticated parent manifests validate children before counts and
+fingerprints, preserve failed status, enforce equal pair bindings and compare actual audience/action
+streams. Final12child/10parent checks and strict rejection/readback tests pass; ordinary review and
+root literal audit pass. Unequal-length null arms are authenticated-prefix helper evidence only.
+C integrated closeout remains required before checkpoint B and dormant005 implementation.
 
 004A1 overnight hard stop, 2026-09-14 local /2026-09-15 UTC: ordinary fresh-context review found
 equal waiting-side observations before/after an opposing private seal, but the same proposal at

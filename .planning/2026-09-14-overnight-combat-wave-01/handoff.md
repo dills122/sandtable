@@ -1,17 +1,27 @@
 # Combat wave01 — day-stop handoff
 
-## Completed boundary
+## Active accelerated continuation
 
-B2 accepted in commit c5c9256 after resumed work on2026-09-16 UTC. CCE Sandtable operational; no restart needed.
-Final focused checks, fixture regeneration, ordinary review, independent source/literal checks
-and retained repository gate pass. Author/reviewer/source audit sessions completed; no test running.
-B2 acceptance committed locally; navigation and handoff synchronized. B3/C/005 remain outside this resumed scope;
-full004/checkpointB and005 objective remains incomplete. Prior day-stop checkpoint dd80c9c retained.
+User approved retaining B3→C→Task005 sequence while reducing duplicate work. B2 accepted c5c9256;
+publication through fd012e4. Current objective: finish B3 and C/checkpoint B, then dormant C#005A/B.
+No new gameplay profiles, privacy exceptions, runtime activation or merge. Full gate at C and
+final005 integration; focused behavior/raw tests and ordinary review per slice.
+
+B3 accepted: final focused command138.722s;12children/10parents, rejection/readback groups,
+root literal audit and ordinary review pass. Writer side_cycle_writer retains warm interpreter21038
+for C. evidence/004b3-author-resumed.log and004b3-ordinary-review.md retain exact evidence.
+Source agent task004_evidence owns005 implementation only after C acceptance; preflight complete.
+Root owns plans, Cmap, commits, integration gates and PR.
+
+B3 pairs preserve same fault/assertion/build/initial source/capability/terminal/bounds. Current
+approved equal-start terminal references cannot yield valid unequal-length pair; test that helper
+branch directly over authenticated stream/prefix and label unit-only evidence. Do not expand scope
+just to create a witness.72-row Cmap preflight complete; three staleB2pending descriptions corrected.
 
 Branch: `codex/overnight-combat-wave-01`.
 Base/latest fetched main: `ff6b5f60219afbb12d5e06bf836f06f94de32006` (unchanged).
-B2/navigation published head: `51f02748ced3e78d6f242f4ae8505cb12c9920c7`.
-Publication-status follow-up commit travels on the same branch.
+Published head: `fd012e4bebb2a1f833e0ccb8b65034f0c5c0f266`.
+2026-09-18 fetch confirmed same main ff6b5f6 and no branch divergence.
 Existing draft: https://github.com/dills122/sandtable/pull/115. No merge.
 
 ## Publication boundary
