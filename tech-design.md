@@ -900,14 +900,17 @@ The [private Exercise occurrence contract](docs/specs/combat-exercise-occurrence
 Source occurrence and active occurrence remain separate across repeat/finish. The
 [private child-evidence contract](docs/specs/combat-exercise-child-evidence-v1.md) now binds native
 provenance, current build identity, actual transitions, separate reconstruction/re-adjudication
-and explicit failure observations. Parent comparison and integrated checkpoint B remain open. The [cycle-control contract](docs/specs/combat-cycle-control-v1.md)
+and explicit failure observations. The [parent-evidence contract](docs/specs/combat-exercise-parent-evidence-v1.md)
+validates each child before deriving counts or comparing authenticated action streams. Missing and
+invalid children provide no derived results; valid failed children retain failed status. The [integrated outward index](docs/specs/combat-outward-composition-v1.md) closes
+contract checkpoint B with all72 AC mappings and bounded readback evidence. The [cycle-control contract](docs/specs/combat-cycle-control-v1.md)
 binds release completion, semantic progress, current-cost witnesses and exact repeat/finish successors.
 Its Movement-expiry projection retains exclusions and release history. The
 [armed-continuation proof](docs/specs/combat-inherited-armed-continuation-v1.md) now admits both
 actual released-I ammunition10 profiles against the existing full-result contract stack without
 emitting authority. Guarded repeat and inherited authority composition are now retained in the
 [28-trace Task003 handoff](docs/specs/combat-authority-composition-v1.md); outward contracts and
-Exercise evidence remain004/checkpoint B gates.
+Exercise evidence now close004/checkpoint B. Dormant Task005 implementation follows.
 The [inherited successor packet](docs/specs/combat-inherited-successors-v1.md) declares20 exact
 event successors and freezes isolated Reserve completion with atomic cycle1 opening. Actual
 creation-to-first-opening provenance is now composed within the closed initial-infantry profile;

@@ -557,3 +557,16 @@ largest canonical Parent23,998bytes within8MiB per-record limit. Root literal ch
 no open findings. Unequal-length cases remain helper-only; no new source/profile admitted.
 Reviewed-versus-accepted spec hash retained; only status sentence changed after review.
 B3 accepted; C/checkpointB and dormant005A/B remain. Full repository gate scheduled at C.
+
+C integration regression gate: just check exit0; format/build clean,81boundary/1670full tests,
+zero skipped. Ran alongside C authoring with src/tests/build inputs unchanged. C focused oracle
+and final ordinary review still required; log evidence/004c-root-just-check.log.
+
+C final integrated command GREEN in19.583s:72requirements/99pins/12profiles/51readbacks/28handoff,
+2440measured records across11capacity groups; native/profile/index/fixture rejection checks pass.
+Fixture138165bytes, canonical index116617bytes. Final ordinary review pending.
+Navigation/spec local target check passed7documents/620targets (external URLs/anchors excluded).
+
+C ordinary review APPROVE, no open findings. Task004/checkpoint B ACCEPTED2026-09-18.
+Warm author interpreter closed exit0; B3 log preserved and C warmup separated. Status-only spec
+hash change recorded. Next005A arithmetic/types then005B exact RulesInput codec; no activation.

@@ -1,0 +1,2866 @@
+{
+  "contractVersion": 1,
+  "scope": "bounded-contract-integration; runtime-AC-tests-remain-planned",
+  "requirements": [
+    {
+      "id": "CMB-ID-AC-001",
+      "requirement": "Move or change representation: same unit key, new binding; old uncommitted choice fails without events/RNG. Elimination preserves history.",
+      "decisions": "001-002; DES-002/005",
+      "source": "docs/design/combat-opportunity-identity-v1.md",
+      "line": 221,
+      "plannedTasks": [
+        "CMB-TASK-009",
+        "CMB-TASK-020"
+      ],
+      "plannedTest": "CombatIdentityTests.MovingUnitRetainsIdentityAndRejectsOldBinding",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "STEPS:main moved-boundary/wrong-target rejects; WORLD:unit,component; SIDE:test_a2_apparent_representation",
+        "contractCoverage": "Partial. Added authenticated apparent-representation mismatch rejection; complete move/new-binding/stale-choice/elimination-history vector remains unproved.",
+        "runtimeOwners": "009,020"
+      }
+    },
+    {
+      "id": "CMB-ID-AC-002",
+      "requirement": "Same component name on another unit/campaign does not alias. Duplicate bindings and foreign provenance reject.",
+      "decisions": "001-002/005; DES-002",
+      "source": "docs/design/combat-opportunity-identity-v1.md",
+      "line": 222,
+      "plannedTasks": [
+        "CMB-TASK-006",
+        "CMB-TASK-009"
+      ],
+      "plannedTest": "CombatIdentityTests.ForeignOrDuplicateComponentBindingRejects",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "CONTENT:main negative-vector reader; SIDE:test_current_source_integrity,test_a2_input_authentication,test_a3_integrity_privacy",
+        "contractCoverage": "Partial provenance/binding rejection across accepted local profiles. Dedicated identical component names across units/campaigns remains unproved.",
+        "runtimeOwners": "006,009"
+      }
+    },
+    {
+      "id": "CMB-ID-AC-003",
+      "requirement": "Adjacent singleton infantry with empty ZOC can have a voluntary opportunity and no initial Contact. Positive-ZOC admission remains gated.",
+      "decisions": "004/008; DES-003",
+      "source": "docs/design/combat-opportunity-identity-v1.md",
+      "line": 223,
+      "plannedTasks": [
+        "CMB-TASK-006",
+        "CMB-TASK-009"
+      ],
+      "plannedTest": "CombatIdentityTests.CertifiedAdjacentSingletonHasVoluntaryOpportunity",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "STEPS:`main`, `accepted-decline`; ARMED:`verify_case`, both-owner proof fixtures",
+        "contractCoverage": "Bounded voluntary singleton opportunity; armed proof is not execution. Broader positive-ZOC capability remains excluded",
+        "runtimeOwners": "006,009"
+      }
+    },
+    {
+      "id": "CMB-ID-AC-004",
+      "requirement": "Later arrival in a marked hex inherits no relation; ending one of two independent counterpart relations leaves the other intact. No transitive grouping.",
+      "decisions": "004; DES-005 extension vector",
+      "source": "docs/design/combat-opportunity-identity-v1.md",
+      "line": 224,
+      "plannedTasks": [
+        "CMB-TASK-016"
+      ],
+      "plannedTest": "CombatIdentityTests.RelationsDoNotSpreadThroughHexMembership",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "WORLD:`main` original-pair relationship worlds",
+        "contractCoverage": "Partial singleton evidence only. Later arrival, two independent counterpart relations and nontransitive grouping need extension vectors",
+        "runtimeOwners": "016"
+      }
+    },
+    {
+      "id": "CMB-ID-AC-005",
+      "requirement": "Zero-loss Engaged still binds original participants; Retreat priority prevents that Engaged outcome. Adjacent prior assault survivors require the 15.81 Contact evaluation.",
+      "decisions": "004; DES-005",
+      "source": "docs/design/combat-opportunity-identity-v1.md",
+      "line": 225,
+      "plannedTasks": [
+        "CMB-TASK-016"
+      ],
+      "plannedTest": "CombatIdentityTests.RetreatPrecedesEngagedAndSurvivorsReconcileContact",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "RESULT2:test_all_branches -> behavioral,checkpoint_checks,timing_checks (32 branch\u00d7attacker-side\u00d7seal-order traces); SIDE:test_a2_game_facts; branches zero-engaged,zero-retreat,refusal-loss-dp,ordinary",
+        "contractCoverage": "Bounded corrected original-participant relationship evidence and public settlement projection accepted. Wider relationship/new-arrival families remain excluded.",
+        "runtimeOwners": "016"
+      }
+    },
+    {
+      "id": "CMB-ID-AC-006",
+      "requirement": "Same campaign ID/version but divergent authority prefix changes internal opportunity; equal visible histories leave outward IDs unchanged.",
+      "decisions": "005/007; DES-002/005",
+      "source": "docs/design/combat-opportunity-identity-v1.md",
+      "line": 226,
+      "plannedTasks": [
+        "CMB-TASK-009",
+        "CMB-TASK-020"
+      ],
+      "plannedTest": "CombatIdentityTests.PrivatePrefixChangesAuthorityButNotPublicReferences",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "SEQ:main private-prefix forks; SIDE:test_corrected_declassifier_probes,test_canonical_cycle_reference,test_a2_privacy_pairs,test_a3_equal_public_prefixes; SIDE:test_a3b_privacy",
+        "contractCoverage": "Authenticated corrected bridge histories add equal public prefixes, candidate identities and serialized clock outcomes. Dedicated opportunity-prefix forks remain partial.",
+        "runtimeOwners": "009,020"
+      }
+    },
+    {
+      "id": "CMB-ID-AC-007",
+      "requirement": "Two private envelopes share one base; envelope persistence adds no attacked entry. Combat-fact mutation invalidates the old opportunity.",
+      "decisions": "005-006; DES-002",
+      "source": "docs/design/combat-opportunity-identity-v1.md",
+      "line": 227,
+      "plannedTasks": [
+        "CMB-TASK-011"
+      ],
+      "plannedTest": "CombatIdentityTests.PrivateSealsPreserveSharedBaseAndAttackHistory",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "ROUND2:`test_full_clock_matrix`,`test_replay_tamper`; SIDE:`test_corrected_clock_privacy`,`test_current_source_integrity`",
+        "contractCoverage": "Shared base/timing and hidden-seal outcome evidence retained. Broader moving-resource opportunity invalidation remains partial",
+        "runtimeOwners": "011"
+      }
+    },
+    {
+      "id": "CMB-ID-AC-008",
+      "requirement": "Commit singleton `A -> B` once before RNG; duplicate replay fails. Same target hex cannot be assaulted again that segment, even with a new attacker.",
+      "decisions": "003/006; DES-002/004",
+      "source": "docs/design/combat-opportunity-identity-v1.md",
+      "line": 228,
+      "plannedTasks": [
+        "CMB-TASK-012"
+      ],
+      "plannedTest": "CombatIdentityTests.CommitOnceAndRejectSameSegmentTargetReuse",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "ROUND2:`test_replay_tamper`,`test_expiry_recovery`, both committed orders",
+        "contractCoverage": "Commit/replay evidence bounded. New attacker attempting same-segment target reuse has no retained positive setup; do not claim full AC",
+        "runtimeOwners": "012"
+      }
+    },
+    {
+      "id": "CMB-ID-AC-009",
+      "requirement": "Later cycle allows a new pair occurrence only with current resources; stage history persists and target-use resets. Reserve limits remain independent.",
+      "decisions": "006; CYCLE-DES-001",
+      "source": "docs/design/combat-opportunity-identity-v1.md",
+      "line": 229,
+      "plannedTasks": [
+        "CMB-TASK-018",
+        "CMB-TASK-019"
+      ],
+      "plannedTest": "CombatIdentityTests.RepeatPreservesHistoryAndRevalidatesResources",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "CYCLE:verify_case/axis-repeat,commonwealth-repeat; ARMED:verify_case; SIDE:test_a3_live_histories,test_a3_admission_matrix,test_a3_ledger_sets",
+        "contractCoverage": "Bounded native and public ordinal2 repeat/Reserve history accepted; live wrapper offers release-I only. No second assault execution or unrestricted later-cycle profile.",
+        "runtimeOwners": "018,019"
+      }
+    },
+    {
+      "id": "CMB-ID-AC-010",
+      "requirement": "Multi-unit, partial assignment, attachment, Probe, Barrage and Anti-Armor remain closed; empty structural steps produce no attacks.",
+      "decisions": "008; DES-003/004",
+      "source": "docs/design/combat-opportunity-identity-v1.md",
+      "line": 230,
+      "plannedTasks": [
+        "CMB-TASK-006",
+        "CMB-TASK-009"
+      ],
+      "plannedTest": "CombatIdentityTests.UnsupportedCombatProfilesRejectBeforeChoices",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "CONTENT:`main` profile negatives; ROUND2:`test_invalid_before_clock` partial TOE; STEPS:`main` no-attack six steps",
+        "contractCoverage": "Bounded profile/partial-assignment rejection. Exhaustive named attachment/Probe/Barrage/Anti-Armor admission negatives require explicit inventory confirmation",
+        "runtimeOwners": "006,009"
+      }
+    },
+    {
+      "id": "CMB-ID-AC-011",
+      "requirement": "Hidden identity/TOE/count permutations do not alter equal visible artifacts. A profile permitting indistinguishable hidden bindings fails trusted certification before any active decision; no opportunity/action is offered and no hidden count/reason reaches side-visible errors. Suppressing extra bindings or ordering by authority ID does not satisfy this gate.",
+      "decisions": "007; DES-005",
+      "source": "docs/design/combat-opportunity-identity-v1.md",
+      "line": 231,
+      "plannedTasks": [
+        "CMB-TASK-006",
+        "CMB-TASK-009",
+        "CMB-TASK-020"
+      ],
+      "plannedTest": "CombatIdentityTests.IndistinguishableBindingsRejectProfileCertification",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "SIDE:test_corrected_declassifier_probes,test_current_source_integrity,test_a2_disclosure_boundary,test_a2_input_authentication,test_a3_integrity_privacy; CONTENT:main",
+        "contractCoverage": "Partial. Suppression, accepted seal/time pairs and forged-history rejection covered; complete indistinguishable hidden-binding/count certification family still absent. Pure declassifier probes do not close certification gap.",
+        "runtimeOwners": "006,009,020"
+      }
+    },
+    {
+      "id": "CMB-ID-AC-012",
+      "requirement": "Restart before either envelope, after commitment and after relation settlement reproduces IDs, mappings, history and target-use without duplicate RNG.",
+      "decisions": "001-007; DES-002/005, CYCLE-DES-001",
+      "source": "docs/design/combat-opportunity-identity-v1.md",
+      "line": 232,
+      "plannedTasks": [
+        "CMB-TASK-008",
+        "CMB-TASK-010",
+        "CMB-TASK-011",
+        "CMB-TASK-012",
+        "CMB-TASK-016"
+      ],
+      "plannedTest": "CombatIdentityTests.RestoreReconstructsIdentityAndReceiptsWithoutRngReplay",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "ROUND2:test_replay_tamper; RESULT2:test_all_branches -> behavioral,checkpoint_checks,timing_checks (32 branch\u00d7attacker-side\u00d7seal-order traces); SIDE:test_a2_source_and_handoff; BRIDGE:test_all_lineages,test_authentication,test_commands_events_states; SNAP1:compose_tests historical only; SIDE:test_a3b_continuity,test_a3b_source_integrity; B1:test_continuation_schedule,test_rejection; B2:test_registry_execution,test_failures_and_forgery,test_identity_and_controller",
+        "contractCoverage": "B1 restores exact private checkpoints from all admitted cuts. B2 adds authenticated complete source plus fresh native execution, reconstruction and public-controller re-adjudication from each admitted execution start. Provenance-only creation/Movement prefixes are authenticated, not newly public-adjudicated; durable process restart remains deferred.",
+        "runtimeOwners": "008,010,011,012,016"
+      }
+    },
+    {
+      "id": "CMB-PRO-AC-001",
+      "requirement": "Either seal order preserves the other side's base, action set and revision; equal final choices yield equal gameplay effects/draws. Each history independently replays byte-identically.",
+      "decisions": "001-003/005",
+      "source": "docs/design/combat-sealed-decision-protocol-v1.md",
+      "line": 265,
+      "plannedTasks": [
+        "CMB-TASK-011",
+        "CMB-TASK-012",
+        "CMB-TASK-013",
+        "CMB-TASK-020"
+      ],
+      "plannedTest": "CombatProtocolTests.BothSealOrdersPreserveOtherSideCapabilities",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "ROUND2:test_full_clock_matrix,test_replay_tamper; RESULT2:test_all_branches; SIDE:test_a2_privacy_pairs,test_a2_disclosure_boundary; B1:test_continuation_schedule,test_prefix_identity; B2:test_registry_execution,test_failures_and_forgery,test_identity_and_controller",
+        "contractCoverage": "Corrected seal-order privacy and native gameplay evidence retained. B2 executes manifest-declared public dual-slot schedules from actual offers and separately re-adjudicates each retained history. Broader runtime order independence and unsupported controller/profile families remain unproved.",
+        "runtimeOwners": "011,012,013,020"
+      }
+    },
+    {
+      "id": "CMB-PRO-AC-002",
+      "requirement": "Exact duplicate emits nothing; own readback recovers prior receipt. Changed payload under the same decision ID cannot replace it.",
+      "decisions": "002-003/006",
+      "source": "docs/design/combat-sealed-decision-protocol-v1.md",
+      "line": 266,
+      "plannedTasks": [
+        "CMB-TASK-011",
+        "CMB-TASK-020",
+        "CMB-TASK-021"
+      ],
+      "plannedTest": "CombatProtocolTests.ExactRetryRecoversReceiptWithoutNewEvent",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "ROUND2:test_full_clock_matrix,test_expiry_recovery; SIDE:verify_matrix,test_a2_admission_matrix,test_a2_fallback_receipts,test_a3_admission_matrix; SIDE:test_a3b_admission_matrix",
+        "contractCoverage": "Exact owner receipt recovery and System fallback distinction extend through corrected cycle finish. Hosted lost-reply delivery remains deferred.",
+        "runtimeOwners": "011,020,021"
+      }
+    },
+    {
+      "id": "CMB-PRO-AC-003",
+      "requirement": "Wrong audience/round/slot/config, old revision, changed target/resources or unknown fields reject without combat events/RNG or hidden diagnostics.",
+      "decisions": "002-003/007",
+      "source": "docs/design/combat-sealed-decision-protocol-v1.md",
+      "line": 267,
+      "plannedTasks": [
+        "CMB-TASK-011",
+        "CMB-TASK-020",
+        "CMB-TASK-021"
+      ],
+      "plannedTest": "CombatProtocolTests.InvalidBindingsRejectWithoutEffectsOrDiagnostics",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "ROUND2:test_invalid_before_clock,test_predecessor_and_clock_tamper; SIDE:test_current_source_integrity,test_a2_input_authentication,test_a2_admission_matrix,test_a3_admission_matrix; SIDE:test_a3b_admission_matrix,test_a3b_source_integrity",
+        "contractCoverage": "Corrected bridge seat/context/candidate/raw binding rejection accepted. General mutable-world certification remains runtime work.",
+        "runtimeOwners": "011,020,021"
+      }
+    },
+    {
+      "id": "CMB-PRO-AC-004",
+      "requirement": "Clock at deadline rejects the seal and permits one cancellation; just-before second seal makes expiry a no-op. Restart and backward clock cannot extend the deadline.",
+      "decisions": "003-004",
+      "source": "docs/design/combat-sealed-decision-protocol-v1.md",
+      "line": 268,
+      "plannedTasks": [
+        "CMB-TASK-011"
+      ],
+      "plannedTest": "CombatProtocolTests.FixedPublicOpeningClockPreservesDeadlineAndRace",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "ROUND2:`test_full_clock_matrix`,`test_expiry_recovery`,`test_authenticated_readback`; SIDE:`test_corrected_clock_privacy`",
+        "contractCoverage": "Corrected immutable opening floor, deadline equality, Prepared race and recovery covered; old private-high-water rule superseded",
+        "runtimeOwners": "011"
+      }
+    },
+    {
+      "id": "CMB-PRO-AC-005",
+      "requirement": "Timeout/unavailability with zero or one seal cancels voluntarily without filling slots, costs, history, target use or RNG. Late timers/replies cannot reopen it.",
+      "decisions": "004/006",
+      "source": "docs/design/combat-sealed-decision-protocol-v1.md",
+      "line": 269,
+      "plannedTasks": [
+        "CMB-TASK-011"
+      ],
+      "plannedTest": "CombatProtocolTests.IncompleteVoluntaryRoundCancelsWithoutCosts",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "ROUND2:`test_expiry_recovery`,`test_replay_tamper`; fixtures `*.None.expired`,`*.attacker.expired`,`*.defender.fault`",
+        "contractCoverage": "Bounded zero/one-seal cancellation and closed-state rejection covered; no runtime scheduler claim",
+        "runtimeOwners": "011"
+      }
+    },
+    {
+      "id": "CMB-PRO-AC-006",
+      "requirement": "Prepared/committed restart continues without controller availability; commitment appends once before RNG; provider failure cannot undo or reroll.",
+      "decisions": "004-006",
+      "source": "docs/design/combat-sealed-decision-protocol-v1.md",
+      "line": 270,
+      "plannedTasks": [
+        "CMB-TASK-011",
+        "CMB-TASK-012",
+        "CMB-TASK-013"
+      ],
+      "plannedTest": "CombatProtocolTests.PreparedRecoveryIgnoresControllerFailure",
+      "verificationStatus": "planned; runtime test not implemented",
+      "deferredComponent": "Actual hosted/provider recovery path deferred; planned local evidence uses simulated trusted controller failure.",
+      "contractEvidenceDraft": {
+        "evidence": "ROUND2:test_expiry_recovery disabled-admission Prepared continuation; RESULT2:test_all_branches -> checkpoint_checks; BRIDGE:test_all_lineages",
+        "contractCoverage": "Corrected Prepared/commit/result continuation and receipt-preserving replay covered without controller-dependent resolution. Actual provider/publication-failure injection and durable process restart remain deferred.",
+        "runtimeOwners": "011,012,013; host"
+      }
+    },
+    {
+      "id": "CMB-PRO-AC-007",
+      "requirement": "Certified empty Anti-Armor advance permits commit; forged/extra structural or combat-fact transition fails strict replay. No other action can spend committed allocations.",
+      "decisions": "001/005-006",
+      "source": "docs/design/combat-sealed-decision-protocol-v1.md",
+      "line": 271,
+      "plannedTasks": [
+        "CMB-TASK-010",
+        "CMB-TASK-011",
+        "CMB-TASK-012"
+      ],
+      "plannedTest": "CombatProtocolTests.OnlyCertifiedEmptyAntiArmorPermitsCommit",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "ROUND2:`test_replay_tamper`,`test_predecessor_and_clock_tamper`, committed traces; STEPS:`main` FA gate",
+        "contractCoverage": "Exact retained FA\u2192AA\u2192CA replay covered. Extra spending commands outside closed command union reject; broader allocation consumers unimplemented",
+        "runtimeOwners": "010,011,012"
+      }
+    },
+    {
+      "id": "CMB-PRO-AC-008",
+      "requirement": "Cut/restart at opening, either seal, commit, each settlement boundary and terminal closure reproduces receipts, bytes, history/hex use and RNG; no unresolved obligation permits completed closure.",
+      "decisions": "001-006",
+      "source": "docs/design/combat-sealed-decision-protocol-v1.md",
+      "line": 272,
+      "plannedTasks": [
+        "CMB-TASK-008",
+        "CMB-TASK-010",
+        "CMB-TASK-011",
+        "CMB-TASK-012",
+        "CMB-TASK-013",
+        "CMB-TASK-014",
+        "CMB-TASK-015",
+        "CMB-TASK-016"
+      ],
+      "plannedTest": "CombatProtocolTests.EveryRoundCutRestoresPendingStateAndReceipts",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "ROUND2:test_replay_tamper; RESULT2:test_all_branches -> behavioral,checkpoint_checks,timing_checks (32 branch\u00d7attacker-side\u00d7seal-order traces); SIDE:test_a2_source_and_handoff; BRIDGE:test_all_lineages,test_authentication,test_commands_events_states; SIDE:test_a3b_continuity,test_a3b_source_integrity; B1:test_continuation_schedule,test_terminals,test_bridge_world; B2:test_registry_execution,test_failures_and_forgery,test_identity_and_controller",
+        "contractCoverage": "B1 exact native checkpoint continuation and settled World/RNG are retained. B2 separately reconstructs and re-adjudicates admitted execution suffixes, preserving owner inputs and System fallback semantics. Incomplete fallback children fail their requested closed terminal; durable process restart remains deferred.",
+        "runtimeOwners": "008,010\u2013016"
+      }
+    },
+    {
+      "id": "CMB-PRO-AC-009",
+      "requirement": "Alter base, slot, accepted time, deadline, codec/policy, cursor or terminal cause in snapshot/event evidence: strict readback fails.",
+      "decisions": "005-007",
+      "source": "docs/design/combat-sealed-decision-protocol-v1.md",
+      "line": 273,
+      "plannedTasks": [
+        "CMB-TASK-008"
+      ],
+      "plannedTest": "CombatProtocolTests.TamperedRoundTimePolicyAndEvidenceReject",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "ROUND2:test_replay_tamper,test_predecessor_and_clock_tamper; RESULT2:test_binding_and_bounds,test_event_reader_requires_committed_proof,test_all_branches; BRIDGE:test_authentication,test_commands_events_states; SNAP1:compose_tests historical only; B1:test_rejection,test_boundary,test_fixture; B2:test_registry_execution,test_failures_and_forgery,test_identity_and_controller",
+        "contractCoverage": "B1 source/checkpoint mutation rejection retained. B2 strict private child readback recomputes manifest, actual execution, attempted proof observations and artifact inventory; rehashed semantic forgeries reject. This is checkpoint-scoped contract evidence, not a registered CoreSnapshot or durable persistence reader.",
+        "runtimeOwners": "008"
+      }
+    },
+    {
+      "id": "CMB-PRO-AC-010",
+      "requirement": "Hidden opponent identity/choice/acceptance-order/cause variations with equal visible histories preserve side artifacts and identical submission outcomes. No raw hashes/versions in Dispatch or Runner output.",
+      "decisions": "002-003/006",
+      "source": "docs/design/combat-sealed-decision-protocol-v1.md",
+      "line": 274,
+      "plannedTasks": [
+        "CMB-TASK-020",
+        "CMB-TASK-021",
+        "CMB-TASK-023"
+      ],
+      "plannedTest": "CombatProtocolTests.HiddenSealVariantsPreserveSideBytesAndOutcomes",
+      "verificationStatus": "planned; runtime test not implemented",
+      "deferredComponent": "Hosted Dispatch transport: protobuf allocation, authenticated audience mapping, durable delivery, provider handling and timing need separate deferred host task set. Planned local Core/Runner checks do not establish transport privacy.",
+      "contractEvidenceDraft": {
+        "evidence": "SIDE:test_corrected_clock_privacy,test_a2_privacy_pairs,test_a2_disclosure_boundary,test_a2_admission_matrix,test_a3_integrity_privacy,test_a3_equal_public_prefixes; SIDE:test_a3b_privacy,test_a3b_clock_configuration,test_a3b_admission_matrix",
+        "contractCoverage": "Bounded local A1/A2/A3a/A3b artifact and outcome privacy accepted. Corrected composition binds all policies from first frame. Runner/Dispatch transport and arbitrary hidden-binding families remain deferred.",
+        "runtimeOwners": "020,021,023; host"
+      }
+    },
+    {
+      "id": "CMB-PRO-AC-011",
+      "requirement": "Ambiguous or mandatory-attack profile fails trusted certification before any active decision; cancellation never masks obligations or enables a same-opportunity retry/automatic repeat loop.",
+      "decisions": "004/007",
+      "source": "docs/design/combat-sealed-decision-protocol-v1.md",
+      "line": 275,
+      "plannedTasks": [
+        "CMB-TASK-006",
+        "CMB-TASK-009",
+        "CMB-TASK-019"
+      ],
+      "plannedTest": "CombatProtocolTests.UnsupportedProfileAndCancelledOpportunityCannotRepeat",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "CONTENT:main; ROUND2:test_expiry_recovery; CYCLE:boundary_checks; SIDE:test_a3_ledger_sets,test_a3_ledger_source_integrity; SIDE:test_a3b_source_integrity; B2:test_registry_execution,test_identity_and_controller",
+        "contractCoverage": "Partial certification and anti-repeat combination remains unproved. A3b authenticates finish-only corrected capability; B2 executes authenticated admitted references without extending that capability. Broad certification/anti-repeat integration remains runtime work.",
+        "runtimeOwners": "006,009,019"
+      }
+    },
+    {
+      "id": "CMB-PRO-AC-012",
+      "requirement": "Historical codecs/bundles unchanged; old reader rejects new open rounds; disabling admission preserves the compatible recovery path.",
+      "decisions": "007",
+      "source": "docs/design/combat-sealed-decision-protocol-v1.md",
+      "line": 276,
+      "plannedTasks": [
+        "CMB-TASK-008",
+        "CMB-TASK-011",
+        "CMB-TASK-021"
+      ],
+      "plannedTest": "CombatProtocolTests.OldReadersRejectSuccessorAndDisabledAdmissionStillRecovers",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "ROUND2:test_old_reader_rejection,test_disabled_admission,test_expiry_recovery,test_predecessor_and_clock_tamper; RESULT2:test_version_isolation; SIDE:test_current_profile_boundary,test_a1_preserved,test_a3_preserved; SIDE:test_a3b_preserved,test_a3b_boundary",
+        "contractCoverage": "A1/A2/A3a accepted bytes preserved; new profiles remain separate. Runtime registration and migration remain deferred.",
+        "runtimeOwners": "008,011,021"
+      }
+    },
+    {
+      "id": "CMB-STEP-AC-001",
+      "requirement": "Only exact completed Breakdown/no-Reaction authority opens Combat. Wrong stage/side/order rejects; CP/BP/Cohesion/TOE/RNG remain unchanged.",
+      "decisions": "001",
+      "source": "docs/design/combat-step-transitions-v1.md",
+      "line": 215,
+      "plannedTasks": [
+        "CMB-TASK-009",
+        "CMB-TASK-010",
+        "CMB-TASK-019"
+      ],
+      "plannedTest": "CombatStepTests.OnlyCompletedBreakdownOpensCombat",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "SELECT:`verify`,`semantic_red`; NOATTACK:`verify`; STEPS:`main` forged Reaction/moved-boundary negatives",
+        "contractCoverage": "Inherited actual entry plus bounded C3 rejection evidence. General profile/runtime entry certification deferred",
+        "runtimeOwners": "009,010,019"
+      }
+    },
+    {
+      "id": "CMB-STEP-AC-002",
+      "requirement": "Selection creates no attack/round. Force Assignment derives its final opportunity from the later snapshot and links the original selected participants and decline.",
+      "decisions": "002/004",
+      "source": "docs/design/combat-step-transitions-v1.md",
+      "line": 216,
+      "plannedTasks": [
+        "CMB-TASK-009",
+        "CMB-TASK-010",
+        "CMB-TASK-011"
+      ],
+      "plannedTest": "CombatStepTests.SelectionAndLaterRoundHaveExactCausalBinding",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "STEPS:`main`, `accepted-decline`; ROUND2:`test_predecessor_and_clock_tamper`; SIDE:`test_corrected_context_and_history`",
+        "contractCoverage": "Bounded selection\u2192decline\u2192later corrected round/context continuity covered; synthetic C3 lineage explicit",
+        "runtimeOwners": "009,010,011"
+      }
+    },
+    {
+      "id": "CMB-STEP-AC-003",
+      "requirement": "Selected decline/full-assignment trace has exactly six ordered step completions. Each successor is the same cycle/slot's next step, ending at Reserve Release.",
+      "decisions": "001/003/005",
+      "source": "docs/design/combat-step-transitions-v1.md",
+      "line": 217,
+      "plannedTasks": [
+        "CMB-TASK-010",
+        "CMB-TASK-011",
+        "CMB-TASK-016"
+      ],
+      "plannedTest": "CombatStepTests.SelectedAssaultCompletesExactlySixSteps",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "STEPS:main/accepted-decline; ROUND2 committed traces; RESULT2:test_all_branches -> checkpoint_checks; SIDE:test_a2_source_and_handoff",
+        "contractCoverage": "Bounded corrected synthetic C3 selection/decline through FA/AA/CA settlement to Reserve Release accepted; exact same-cycle/slot ordered native lineage retained. No creation-rooted positive assault claim.",
+        "runtimeOwners": "010,011,016"
+      }
+    },
+    {
+      "id": "CMB-STEP-AC-004",
+      "requirement": "No-candidate closure, voluntary no-selection and selection timeout/trusted unavailability produce no RBA/assignment round; zero candidates creates no model decision. All six steps close without attack/resource effects; old timer/unavailability commands after selection closure cannot affect the next decision.",
+      "decisions": "002-003/006",
+      "source": "docs/design/combat-step-transitions-v1.md",
+      "line": 218,
+      "plannedTasks": [
+        "CMB-TASK-009",
+        "CMB-TASK-010"
+      ],
+      "plannedTest": "CombatStepTests.EmptyAndUnavailableSelectionTraverseWithoutAttack",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "STEPS:`main` `no-candidate`,`voluntary-pass`,`selection-expiry`, unavailable-opening and stale-selection-timer assertions; NOATTACK:`semantic_gate`,`verify`; SIDE:`verify_matrix`; SIDE:test_a3b_terminals",
+        "contractCoverage": "All four inherited no-attack terminal profiles now project exact native facts for both audiences with no active actions. Broader inherited traversal evidence remains native, not reconstructed public history.",
+        "runtimeOwners": "009,010"
+      }
+    },
+    {
+      "id": "CMB-STEP-AC-005",
+      "requirement": "Missing RBA response cancels without a decline receipt; accepted decline defeats a later timer. Stale/wrong-side/cross-selection decline rejects without mutation.",
+      "decisions": "004/007",
+      "source": "docs/design/combat-step-transitions-v1.md",
+      "line": 219,
+      "plannedTasks": [
+        "CMB-TASK-010"
+      ],
+      "plannedTest": "CombatStepTests.RbaExpiryCannotManufactureDecline",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "STEPS:`main` `rba-expiry`, wrong-owner decline, unavailable/regressed RBA and accepted-decline stale timer; SIDE:`verify_matrix`",
+        "contractCoverage": "Bounded decline/cancellation semantics and public submission binding covered",
+        "runtimeOwners": "010"
+      }
+    },
+    {
+      "id": "CMB-STEP-AC-006",
+      "requirement": "RBA/assignment cancellation traverses remaining steps once, preserves earlier receipts/resources and never permits reselection or synthetic material progress.",
+      "decisions": "003-004/006",
+      "source": "docs/design/combat-step-transitions-v1.md",
+      "line": 220,
+      "plannedTasks": [
+        "CMB-TASK-010",
+        "CMB-TASK-011"
+      ],
+      "plannedTest": "CombatStepTests.CancellationTraversesOnceWithoutMaterialProgress",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "STEPS:main/rba-expiry; ROUND2:test_expiry_recovery; CYCLE:boundary_checks; SIDE:test_a3_ledger_sets,test_a3_live_histories; SIDE:test_a3b_terminals,test_a3b_continuity",
+        "contractCoverage": "Actual historical no-attack terminals and corrected Combat-to-finish histories are separately authenticated. No completed corrected cancellation-to-cycle source or synthetic material progress is claimed.",
+        "runtimeOwners": "010,011"
+      }
+    },
+    {
+      "id": "CMB-STEP-AC-007",
+      "requirement": "Second seal derives Prepared; FA completion requires and preserves it, then permits exactly FA->AA->CA for either valid seal order. Injected extra event, changed world/round or forged empty-AA proof fails replay. Prepared choices cannot expire.",
+      "decisions": "003/005/007",
+      "source": "docs/design/combat-step-transitions-v1.md",
+      "line": 221,
+      "plannedTasks": [
+        "CMB-TASK-010",
+        "CMB-TASK-011"
+      ],
+      "plannedTest": "CombatStepTests.PreparedAssignmentsSurviveExactStepAdvance",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "ROUND2:`test_full_clock_matrix`,`test_expiry_recovery`,`test_replay_tamper`; four committed both-side/order traces",
+        "contractCoverage": "Corrected Prepared retention and exact structural replay covered. Keep golden replay distinct from dedicated each-forged-AA-field tests",
+        "runtimeOwners": "010,011"
+      }
+    },
+    {
+      "id": "CMB-STEP-AC-008",
+      "requirement": "Committed/partially settled CA cannot complete or become no-attack. Only fully settled terminal proof advances to Reserve Release; release itself remains separate.",
+      "decisions": "005-006",
+      "source": "docs/design/combat-step-transitions-v1.md",
+      "line": 222,
+      "plannedTasks": [
+        "CMB-TASK-014",
+        "CMB-TASK-016"
+      ],
+      "plannedTest": "CombatStepTests.UnsettledAssaultCannotEnterReserveRelease",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "RESULT2:test_all_branches -> checkpoint_checks; BRIDGE:test_authentication (closed=false, absent CA receipt, omitted result suffix),test_all_lineages; SIDE:test_a3b_continuity,test_a3b_source_integrity",
+        "contractCoverage": "Continuous corrected public composition through finish accepted; closed native CA gate remains mandatory and Reserve completion remains a separate transition.",
+        "runtimeOwners": "014,016"
+      }
+    },
+    {
+      "id": "CMB-STEP-AC-009",
+      "requirement": "Restart after opening, selection, empty steps, RBA opening/decline, either seal, preparation and settlement reconstructs the same next capability and bytes without refreshed deadlines.",
+      "decisions": "001-007",
+      "source": "docs/design/combat-step-transitions-v1.md",
+      "line": 223,
+      "plannedTasks": [
+        "CMB-TASK-008"
+      ],
+      "plannedTest": "CombatStepTests.EveryStepCutRestoresCapabilityWithoutRenewal",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "STEPS:main every-cut readback; ROUND2:test_replay_tamper,test_expiry_recovery; RESULT2:test_all_branches,test_same_owner_clock_matrix; SIDE:test_a2_source_and_handoff,test_a2_admission_matrix; BRIDGE:test_all_lineages; SIDE:test_a3b_continuity,test_a3b_admission_matrix; B1:test_continuation_schedule,test_rejection; B2:test_registry_execution,test_failures_and_forgery,test_identity_and_controller",
+        "contractCoverage": "B1 native checkpoints/public surfaces remain exact. B2 freshly regenerates eligible public observations, schedule, candidate membership and native outcomes from admitted starts, including inherited release/control. Earlier creation/Movement provenance is authenticated rather than newly publicly adjudicated; durable restart remains deferred.",
+        "runtimeOwners": "008"
+      }
+    },
+    {
+      "id": "CMB-STEP-AC-010",
+      "requirement": "Duplicate/out-of-order/cross-cycle step receipts and caller-supplied empty lists cannot advance authority. Each accepted completion advances authority exactly once.",
+      "decisions": "001/003/007",
+      "source": "docs/design/combat-step-transitions-v1.md",
+      "line": 224,
+      "plannedTasks": [
+        "CMB-TASK-010",
+        "CMB-TASK-011"
+      ],
+      "plannedTest": "CombatStepTests.DuplicateOrForeignCompletionCannotAdvance",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "STEPS:`main` skipped/reversed steps, removed receipts, changed segment; NOATTACK:`verify`; ROUND2:`test_replay_tamper`",
+        "contractCoverage": "Bounded duplicate/ordering/context/readback rejection covered; accepted receipt recovery distinguished from replaying duplicate event suffix",
+        "runtimeOwners": "010,011"
+      }
+    },
+    {
+      "id": "CMB-STEP-AC-011",
+      "requirement": "Adding a gun/armor/mandatory obligation or requiring actual RBA fails the bounded profile gate before decisions. The decline-only fixture is never advertised as the full source action surface.",
+      "decisions": "003-004/006",
+      "source": "docs/design/combat-step-transitions-v1.md",
+      "line": 225,
+      "plannedTasks": [
+        "CMB-TASK-006",
+        "CMB-TASK-009"
+      ],
+      "plannedTest": "CombatStepTests.UnsupportedStepObligationsRejectCertification",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "CONTENT:`main` profile negatives; STEPS bounded schema and `main`; SIDE spec bounded-admission declaration",
+        "contractCoverage": "Partial selected-profile gate evidence. Explicit gun/armor/mandatory/actual-RBA negative matrix needs inventory confirmation; no broad action-surface claim",
+        "runtimeOwners": "006,009"
+      }
+    },
+    {
+      "id": "CMB-STEP-AC-012",
+      "requirement": "Hidden bindings/reasons with equal authorized visible histories preserve tokens, waiting, step history and submission outcomes; raw authority receipts cannot reach player/model/Runner output.",
+      "decisions": "007",
+      "source": "docs/design/combat-step-transitions-v1.md",
+      "line": 226,
+      "plannedTasks": [
+        "CMB-TASK-020",
+        "CMB-TASK-021",
+        "CMB-TASK-023"
+      ],
+      "plannedTest": "CombatStepTests.HiddenStepCausesPreservePublicArtifacts",
+      "verificationStatus": "planned; runtime test not implemented",
+      "deferredComponent": "Hosted Dispatch transport: protobuf allocation, authenticated audience mapping, durable delivery, provider handling and timing need separate deferred host task set. Planned local Core/Runner checks do not establish transport privacy.",
+      "contractEvidenceDraft": {
+        "evidence": "SIDE:test_corrected_clock_privacy,test_corrected_declassifier_probes,test_a2_privacy_pairs,test_a2_disclosure_boundary,test_a3_integrity_privacy,test_a3_equal_public_prefixes; SIDE:test_a3b_privacy,test_a3b_clock_configuration",
+        "contractCoverage": "Corrected full-history local privacy accepted; hidden-cause mutation probes remain non-admission evidence. Runner and hosted transport checks remain deferred.",
+        "runtimeOwners": "020,021,023; host"
+      }
+    },
+    {
+      "id": "CMB-RES-AC-001",
+      "requirement": "Exact CP thresholds E=5 attacker/E=7 defender admit at CPA10; any excess or changed Cohesion/readiness fails trusted profile admission before choice/commit. No hidden-state-dependent outward workaround.",
+      "decisions": "001-003",
+      "source": "docs/design/combat-cost-resolution-order-v1.md",
+      "line": 199,
+      "plannedTasks": [
+        "CMB-TASK-006",
+        "CMB-TASK-009",
+        "CMB-TASK-012"
+      ],
+      "plannedTest": "CombatResolutionTests.ExactCpAndReadinessThresholdsGateCommit",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "Q1:main/resource_boundary_base historical; Q2:test_invalid_before_clock; S:boundary,candidate; I:main; RESULT2:test_successor_binding; SIDE:test_a2_source_and_handoff",
+        "contractCoverage": "Partial threshold/resource contract evidence now binds corrected round/result and A2 context. New evidence does not itself supply complete CP/readiness admission coordinate matrix; no outward hidden-state workaround permitted.",
+        "runtimeOwners": "006,009,012"
+      }
+    },
+    {
+      "id": "CMB-RES-AC-002",
+      "requirement": "Commit publishes history, hex use, E+5/E+3 and both ammo10->0 together, with unchanged RNG/TOE/positions. Inject publication failure: all prior facts remain.",
+      "decisions": "002/007",
+      "source": "docs/design/combat-cost-resolution-order-v1.md",
+      "line": 200,
+      "plannedTasks": [
+        "CMB-TASK-012"
+      ],
+      "plannedTest": "CombatResolutionTests.CommitPublishesCostsAndHistoryAtomically",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "Q2:test_replay_tamper; RESULT2:test_all_branches -> checkpoint_checks; Q1:main/attacker-first,defender-first historical predecessor",
+        "contractCoverage": "Corrected single-commit/cost/RNG and replay contract model retained; injected publication failure remains absent. Do not mark full AC covered.",
+        "runtimeOwners": "012"
+      }
+    },
+    {
+      "id": "CMB-RES-AC-003",
+      "requirement": "No-selection/cancellation spends nothing; retry after successful commit does not charge again. Post-debit zero ammo permits this paid use but grants no supplied repeat.",
+      "decisions": "001-002/007",
+      "source": "docs/design/combat-cost-resolution-order-v1.md",
+      "line": 201,
+      "plannedTasks": [
+        "CMB-TASK-012"
+      ],
+      "plannedTest": "CombatResolutionTests.CancellationAndRetryNeverChargeTwice",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "S:main/no-selection; Q2:test_expiry_recovery; RESULT2:test_all_branches -> checkpoint_checks; C:trace/exhausted-ammo-still-moves; SIDE:test_a3_live_histories; BRIDGE:test_all_lineages; SIDE:test_a3b_continuity",
+        "contractCoverage": "Corrected public bridge preserves native costs, World and RNG through finish. No second assault or supplied repeat is admitted.",
+        "runtimeOwners": "012"
+      }
+    },
+    {
+      "id": "CMB-RES-AC-004",
+      "requirement": "Both seal orders yield equal gameplay/cost/dice results using role order; each history independently replays its own receipt/version bytes.",
+      "decisions": "003-004/007",
+      "source": "docs/design/combat-cost-resolution-order-v1.md",
+      "line": 202,
+      "plannedTasks": [
+        "CMB-TASK-012",
+        "CMB-TASK-013"
+      ],
+      "plannedTest": "CombatResolutionTests.BothSealOrdersRetainRoleOrderedResults",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "RESULT2:test_all_branches -> behavioral,checkpoint_checks (all8 branches\u00d7both attacker sides\u00d7both seal orders); SIDE:test_a2_disclosure_boundary",
+        "contractCoverage": "Corrected role-based gameplay/cost result and independently replayed native histories accepted. Pairwise side equality covered at authorized cuts; historical R1 is no longer primary result evidence.",
+        "runtimeOwners": "012,013"
+      }
+    },
+    {
+      "id": "CMB-RES-AC-005",
+      "requirement": "Both sides use the same final differential and frozen pre-loss strength. Swapping casualty application order cannot change either result. CP-induced row changes may not be reset to fixture Cohesion.",
+      "decisions": "001/003",
+      "source": "docs/design/combat-cost-resolution-order-v1.md",
+      "line": 203,
+      "plannedTasks": [
+        "CMB-TASK-005",
+        "CMB-TASK-013"
+      ],
+      "plannedTest": "CombatResolutionTests.BothRolesUseFrozenStrengthAndSharedDifferential",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "RESULT2:resolve,projected_world,test_all_branches; W:main; branches attacker-capture-guard-cp-limit,refusal-loss-dp",
+        "contractCoverage": "Bounded corrected frozen-preloss arithmetic and CP-induced row/cause evidence accepted. Explicit swapped casualty-application-order assertion remains absent; keep partial.",
+        "runtimeOwners": "005,013"
+      }
+    },
+    {
+      "id": "CMB-RES-AC-006",
+      "requirement": "All 36 Morale coordinates and every selected differential/role/assault coordinate exist in independently verified tables. Missing/extra/ambiguous rows fail artifact admission; sampled goldens alone cannot certify tables.",
+      "decisions": "001/004",
+      "source": "docs/design/combat-cost-resolution-order-v1.md",
+      "line": 204,
+      "plannedTasks": [
+        "CMB-TASK-005"
+      ],
+      "plannedTest": "CombatResolutionTests.EverySelectedCoordinateMatchesIndependentSource",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "I.main/RulesInput golden and negativeVectors;SRC.main:136-168",
+        "contractCoverage": "covered:36 Morale/360 normalized loss cells;C# artifact/table parity pending005",
+        "runtimeOwners": "005"
+      }
+    },
+    {
+      "id": "CMB-RES-AC-007",
+      "requirement": "Existing seed18 favorable retreat, seed47/31707 captures, seed208 refusal, seed1296 zero-loss Engaged and rejection/block-crossing vectors retain their correlated facts. Seed208's final losses remain conditional on DES-005 refusal evidence.",
+      "decisions": "003-005",
+      "source": "docs/design/combat-cost-resolution-order-v1.md",
+      "line": 205,
+      "plannedTasks": [
+        "CMB-TASK-005",
+        "CMB-TASK-013",
+        "CMB-TASK-014"
+      ],
+      "plannedTest": "CombatResolutionTests.RetainedSeedVectorsPreserveConditionalResults",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "RNG:VECTORS; RESULT2:test_all_branches -> behavioral; branches ordinary,zero-retreat,refusal-loss-dp,zero-engaged,defender-capture-guard,attacker-capture-guard-cp-limit; SIDE:test_a2_game_facts",
+        "contractCoverage": "Corrected seeded numeric/settlement/public consequences accepted for retained correlated cases. Independent C# table/RNG artifact parity remains005; no runtime AC completion.",
+        "runtimeOwners": "005,013,014"
+      }
+    },
+    {
+      "id": "CMB-RES-AC-008",
+      "requirement": "Eight accepted dice without capture, nine when triggered; rejected bytes advance only cursor. Changed purpose, sorted pair, extra draw or altered final cursor fails strict readback.",
+      "decisions": "004/007",
+      "source": "docs/design/combat-cost-resolution-order-v1.md",
+      "line": 206,
+      "plannedTasks": [
+        "CMB-TASK-013"
+      ],
+      "plannedTest": "CombatResolutionTests.RoleOrderedRngUsesExactConditionalDrawCount",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "RESULT2:test_all_branches -> checkpoint_checks (die,afterCursor,purpose tampering),resolve; RNG:VECTORS",
+        "contractCoverage": "Corrected purpose/die/cursor strict readback plus research rejection/block-crossing vectors covered. Production RNG resolver integration remains013.",
+        "runtimeOwners": "013"
+      }
+    },
+    {
+      "id": "CMB-RES-AC-009",
+      "requirement": "Restart before/after commit and result publication preserves exactly one cost/result and RNG continuation. Failed resolution publishes no partial dice/result/cursor; no provider or player needed to resume rolls.",
+      "decisions": "002/004/007",
+      "source": "docs/design/combat-cost-resolution-order-v1.md",
+      "line": 207,
+      "plannedTasks": [
+        "CMB-TASK-008",
+        "CMB-TASK-012",
+        "CMB-TASK-013"
+      ],
+      "plannedTest": "CombatResolutionTests.PublicationFailureAndRestoreNeverReroll",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "Q2:test_replay_tamper,test_expiry_recovery; RESULT2:test_all_branches -> checkpoint_checks,test_binding_and_bounds (cursor overflow leaves prior bytes unchanged); BRIDGE:test_all_lineages; N:compose_tests historical only; B1:test_continuation_schedule,test_rejection; B2:test_registry_execution,test_failures_and_forgery,test_identity_and_controller",
+        "contractCoverage": "Corrected native replay/retry/overflow evidence retained. B2 adds full source-bound execution, separate reconstruction and fresh public-controller re-adjudication, with actual event/receipt/checkpoint correspondence. Durable restart and publication-failure atomicity remain runtime work.",
+        "runtimeOwners": "008,012,013"
+      }
+    },
+    {
+      "id": "CMB-RES-AC-010",
+      "requirement": "Result leaves retreat/refusal, final losses, custody and relations pending. Zero losses do not erase Retreat/Engaged; capture is a subset and RP waits for proved victory. No unresolved round advances to Reserve Release.",
+      "decisions": "005",
+      "source": "docs/design/combat-cost-resolution-order-v1.md",
+      "line": 208,
+      "plannedTasks": [
+        "CMB-TASK-013",
+        "CMB-TASK-014",
+        "CMB-TASK-016"
+      ],
+      "plannedTest": "CombatResolutionTests.ResolutionRetainsEverySettlementObligation",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "RESULT2:test_all_branches -> behavioral,checkpoint_checks; SIDE:test_a2_game_facts; BRIDGE:test_authentication; branches zero-retreat,zero-engaged,refusal-loss-dp and4capture branches",
+        "contractCoverage": "Corrected pending settlement, loss/capture/relations and closed CA gate accepted. Public projection accepted through A2; production result/settlement integration deferred.",
+        "runtimeOwners": "013,014,016"
+      }
+    },
+    {
+      "id": "CMB-RES-AC-011",
+      "requirement": "Empty Barrage/AA yield only ordered DES-003 receipts with no cost/draw. Nonempty stages, second assault, extra exposed occupant or reduced-cost differential require extension before active admission.",
+      "decisions": "001/006",
+      "source": "docs/design/combat-cost-resolution-order-v1.md",
+      "line": 209,
+      "plannedTasks": [
+        "CMB-TASK-006",
+        "CMB-TASK-009",
+        "CMB-TASK-010"
+      ],
+      "plannedTest": "CombatResolutionTests.EmptyStagesSpendNothingAndUnsupportedStagesReject",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "S.main/accepted-decline,no-attack traces;Q1.behavioral_checks;Q2.test_replay_tamper",
+        "contractCoverage": "P:empty ordered stages and closed singleton admission;broader stages/second assault remain excluded",
+        "runtimeOwners": "006,009,010"
+      }
+    },
+    {
+      "id": "CMB-RES-AC-012",
+      "requirement": "Tampered cost/base/result/pending evidence fails restore; equal authorized histories preserve projected bytes and outcomes. Raw resolver receipts and RNG state never reach side artifacts.",
+      "decisions": "007",
+      "source": "docs/design/combat-cost-resolution-order-v1.md",
+      "line": 210,
+      "plannedTasks": [
+        "CMB-TASK-008",
+        "CMB-TASK-020"
+      ],
+      "plannedTest": "CombatResolutionTests.TamperedResultsRejectAndPrivateEvidenceNeverProjects",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "RESULT2:test_all_branches -> checkpoint_checks,test_event_reader_requires_committed_proof; SIDE:test_a2_privacy_pairs,test_a2_disclosure_boundary,test_a2_input_authentication; BRIDGE:test_authentication; N:compose_tests historical only; SIDE:test_a3b_privacy,test_a3b_source_integrity; B1:test_rejection; B2:test_registry_execution,test_failures_and_forgery,test_identity_and_controller",
+        "contractCoverage": "Bounded corrected public byte/outcome privacy retained. B2 authenticates private full-source/checkpoint bundles and rejects rehashed manifest/proof/semantic tampering. These private contract artifacts do not prove hosted output, transport privacy or full CoreSnapshot parity.",
+        "runtimeOwners": "008,020"
+      }
+    },
+    {
+      "id": "CMB-SET-AC-001",
+      "requirement": "Admission covers every role/result/retreat/custody branch, certified route/reunion geometry and integer settlement CP. Hidden-blocker or unsupported variants fail profile certification before choice; no seed narrows results.",
+      "decisions": "001/007",
+      "source": "docs/design/combat-settlement-disclosure-v1.md",
+      "line": 223,
+      "plannedTasks": [
+        "CMB-TASK-006",
+        "CMB-TASK-009",
+        "CMB-TASK-014",
+        "CMB-TASK-015"
+      ],
+      "plannedTest": "CombatSettlementTests.EveryCertifiedOutcomeHasLegalSettlementBranches",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "W:main,result_facts,world_at; RESULT2:test_all_branches -> behavioral; SIDE:test_a2_game_facts,test_a2_admission_matrix,test_a2_literal_candidates",
+        "contractCoverage": "Bounded eight-branch synthetic certified geometry, both roles/orders, integer CP and complete local settlement candidate arms accepted. Hidden-blocker/unsupported broad profile certification remains partial; no seed-limited production admission claim.",
+        "runtimeOwners": "006,009,014,015"
+      }
+    },
+    {
+      "id": "CMB-SET-AC-002",
+      "requirement": "Refusal adds percentage before rounding; seed208 yields3 defender loss/3DP, while fulfilled retreat changes that result. Capture subset plus other losses conserve original10 TOE.",
+      "decisions": "002",
+      "source": "docs/design/combat-settlement-disclosure-v1.md",
+      "line": 224,
+      "plannedTasks": [
+        "CMB-TASK-005",
+        "CMB-TASK-014"
+      ],
+      "plannedTest": "CombatSettlementTests.RefusalPrecedesRoundingAndLossesConserveToe",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "SRC:main refusal/conservation normalization; W:main; RESULT2:test_all_branches -> behavioral/refusal-loss-dp; SIDE:test_a2_game_facts",
+        "contractCoverage": "Corrected seed208 refusal-before-rounding and conserved loss consequences accepted. Independent production arithmetic implementation/parity remains005/014.",
+        "runtimeOwners": "005,014"
+      }
+    },
+    {
+      "id": "CMB-SET-AC-003",
+      "requirement": "Guard transfer never counts toward30% loss DP. Loss3 plus captured2 deducts3, not5; subsequent one-TOE guard transfer preserves a separate asset balance.",
+      "decisions": "002/004",
+      "source": "docs/design/combat-settlement-disclosure-v1.md",
+      "line": 225,
+      "plannedTasks": [
+        "CMB-TASK-014",
+        "CMB-TASK-015"
+      ],
+      "plannedTest": "CombatSettlementTests.CaptureAndGuardTransferNeverDoubleDebitLoss",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "W:assert_conservation; RESULT2:test_all_branches -> behavioral/attacker-capture-guard-cp-limit; SIDE:test_a2_game_facts",
+        "contractCoverage": "Corrected separate loss/capture balance and one-TOE guard transfer represented in native and own-side facts. Production settlement remains014/015.",
+        "runtimeOwners": "014,015"
+      }
+    },
+    {
+      "id": "CMB-SET-AC-004",
+      "requirement": "Actual one-hex retreat spends1 CP; E=10->11 adds1DP after result. Refusal spends none. Frozen Morale/RNG do not change; DP then proved victory RP retain both causes.",
+      "decisions": "002-003",
+      "source": "docs/design/combat-settlement-disclosure-v1.md",
+      "line": 226,
+      "plannedTasks": [
+        "CMB-TASK-014",
+        "CMB-TASK-016"
+      ],
+      "plannedTest": "CombatSettlementTests.RetreatCpDpAndVictoryRpKeepSeparateCauses",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "W:world_at; RESULT2:test_all_branches -> behavioral/attacker-capture-guard-cp-limit,refusal-loss-dp; SIDE:test_a2_game_facts,test_a2_literal_candidates",
+        "contractCoverage": "Corrected retreat CP/DP, refusal and ordered loss-DP/retreat-excess-DP/victory-RP own causes accepted. Production execution deferred.",
+        "runtimeOwners": "014,016"
+      }
+    },
+    {
+      "id": "CMB-SET-AC-005",
+      "requirement": "Zero-distance produces no decision; real retreat/refusal takes exactly one disposition/loss/movement path. Lost replies, duplicates and stale timers cannot choose twice or move twice.",
+      "decisions": "001/003/006",
+      "source": "docs/design/combat-settlement-disclosure-v1.md",
+      "line": 227,
+      "plannedTasks": [
+        "CMB-TASK-014"
+      ],
+      "plannedTest": "CombatSettlementTests.RetreatChoiceOrFallbackMovesAtMostOnce",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "RESULT2:test_all_branches -> checkpoint_checks,timing_checks/zero-engaged,zero-retreat; SIDE:test_a2_admission_matrix,test_a2_fallback_receipts",
+        "contractCoverage": "Corrected zero-distance/no-window, exact receipt recovery, stale-timer and single-disposition model accepted. Actual lost-reply delivery remains hosted/runtime obligation.",
+        "runtimeOwners": "014"
+      }
+    },
+    {
+      "id": "CMB-SET-AC-006",
+      "requirement": "Captures on either side settle with valid initial route and co-located one-TOE guard transfer, or immediate unguarded escape. No off-map guard, extra prisoner debit or unguarded transient action is possible.",
+      "decisions": "004",
+      "source": "docs/design/combat-settlement-disclosure-v1.md",
+      "line": 228,
+      "plannedTasks": [
+        "CMB-TASK-015"
+      ],
+      "plannedTest": "CombatSettlementTests.BothCaptureOwnersSupportGuardOrEscape",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "RESULT2:test_all_branches -> behavioral/defender-capture-guard,defender-capture-escape,attacker-capture-guard-cp-limit,attacker-capture-escape; W:world_at; SIDE:test_a2_game_facts,test_a2_literal_candidates",
+        "contractCoverage": "Corrected both-role custody routes/guard/escape and typed own candidates accepted within synthetic certificate. Broader geometry remains excluded.",
+        "runtimeOwners": "015"
+      }
+    },
+    {
+      "id": "CMB-SET-AC-007",
+      "requirement": "Escape reunites with certified friendly recipient, removes current custody and creates delayed replacement entitlement without restoring TOE. Guarded branch retains priority feeding and guard obligations across closure.",
+      "decisions": "004/008",
+      "source": "docs/design/combat-settlement-disclosure-v1.md",
+      "line": 229,
+      "plannedTasks": [
+        "CMB-TASK-015"
+      ],
+      "plannedTest": "CombatSettlementTests.DelayedEntitlementAndGuardObligationsPersist",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "W:assert_conservation,main/calendarVectors; RESULT2:test_all_branches capture branches; SIDE:test_a2_game_facts; BRIDGE:test_all_lineages (8guard/8entitlement traces); SIDE:test_a3b_continuity; B1:test_bridge_world,test_terminals",
+        "contractCoverage": "Guard/upkeep and delayed replacement facts remain visible to owner through native finish. B1 independently binds retained full settled World/RNG across all 352 corrected bridge cuts and forbids requested maturity policy. Maturity/upkeep execution remains unsupported.",
+        "runtimeOwners": "015"
+      }
+    },
+    {
+      "id": "CMB-SET-AC-008",
+      "requirement": "Deadline equality, controller loss and clock regression produce refusal/unguarded fallback once. Accepted choices defeat later timers; committed attack cannot cancel or renew deadlines.",
+      "decisions": "006",
+      "source": "docs/design/combat-settlement-disclosure-v1.md",
+      "line": 230,
+      "plannedTasks": [
+        "CMB-TASK-014",
+        "CMB-TASK-015"
+      ],
+      "plannedTest": "CombatSettlementTests.MandatoryFallbackPreservesFixedWindowDeadline",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "RESULT2:test_independent_mandatory_opening,test_same_owner_clock_matrix,test_all_branches -> timing_checks; SIDE:test_a2_privacy_pairs,test_a2_admission_matrix,test_a2_fallback_receipts",
+        "contractCoverage": "Corrected fresh mandatory-window opening, same-owner prior-time isolation, all current-window clock classes, deterministic fallback and no owner receipt on fallback accepted. R1 timing checks are historical only; hosted delivery deferred.",
+        "runtimeOwners": "014,015"
+      }
+    },
+    {
+      "id": "CMB-SET-AC-009",
+      "requirement": "Raw Retreat suppresses Engaged even on refusal; adjacent survivors become Contact. Zero-loss Engaged remains when no Retreat; guard/new arrivals never inherit original relation.",
+      "decisions": "005",
+      "source": "docs/design/combat-settlement-disclosure-v1.md",
+      "line": 231,
+      "plannedTasks": [
+        "CMB-TASK-016"
+      ],
+      "plannedTest": "CombatSettlementTests.RetreatSuppressesEngagedAndContactUsesSurvivors",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "RESULT2:test_all_branches -> behavioral/zero-engaged,zero-retreat,refusal-loss-dp,capture branches; W:world_at; SIDE:test_a2_game_facts,test_a2_apparent_representation",
+        "contractCoverage": "Bounded corrected original-pair relation outcomes and apparent representation binding accepted. Multi-counterpart/new-arrival extension remains uncertified; keep partial.",
+        "runtimeOwners": "016"
+      }
+    },
+    {
+      "id": "CMB-SET-AC-010",
+      "requirement": "Cuts before/after every event restore the same pending owner/capability, balances, entitlements, receipts and RNG. Wrong order, forged absence proof or altered before/after quantities fails readback.",
+      "decisions": "001/008",
+      "source": "docs/design/combat-settlement-disclosure-v1.md",
+      "line": 232,
+      "plannedTasks": [
+        "CMB-TASK-008",
+        "CMB-TASK-014",
+        "CMB-TASK-015",
+        "CMB-TASK-016"
+      ],
+      "plannedTest": "CombatSettlementTests.EverySettlementCutRestoresExactPendingOwner",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "RESULT2:test_all_branches -> checkpoint_checks,test_event_reader_requires_committed_proof; SIDE:test_a2_source_and_handoff,test_a2_input_authentication; BRIDGE:test_authentication,test_commands_events_states; N:compose_tests historical only; SIDE:test_a3b_continuity,test_a3b_source_integrity; B1:test_continuation_schedule,test_rejection,test_bridge_world; B2:test_registry_execution,test_failures_and_forgery,test_identity_and_controller",
+        "contractCoverage": "B1 exact private continuation and corrected public settlement history remain accepted. B2 separately reconstructs and re-adjudicates admitted settlement/bridge execution, retaining exact native state, receipt and input bindings; attempted failed proofs remain explicit. FullSnapshot persistence remains deferred.",
+        "runtimeOwners": "008,014,015,016"
+      }
+    },
+    {
+      "id": "CMB-SET-AC-011",
+      "requirement": "Own-only changes advance only own projection; approved shared facts advance affected audiences. Hidden-equivalent variants preserve candidates, success/errors and side bytes, with no raw authority receipt in Runner/Dispatch/War Diary.",
+      "decisions": "007",
+      "source": "docs/design/combat-settlement-disclosure-v1.md",
+      "line": 233,
+      "plannedTasks": [
+        "CMB-TASK-020",
+        "CMB-TASK-021",
+        "CMB-TASK-023"
+      ],
+      "plannedTest": "CombatSettlementTests.OwnOnlySettlementAndHiddenVariantsPreserveDisclosure",
+      "verificationStatus": "planned; runtime test not implemented",
+      "deferredComponent": "Hosted Dispatch transport: protobuf allocation, authenticated audience mapping, durable delivery, provider handling and timing need separate deferred host task set. Planned local Core/Runner checks do not establish transport privacy.",
+      "contractEvidenceDraft": {
+        "evidence": "SIDE:test_a2_privacy_pairs,test_a2_disclosure_boundary,test_a2_admission_matrix,test_a2_fallback_receipts,test_a2_apparent_representation; SIDE:test_a3b_privacy,test_a3b_admission_matrix",
+        "contractCoverage": "Bounded local own/shared changes and hidden-equivalent artifact/outcome evidence extend through finish. Runner/Dispatch/War Diary transport remains deferred.",
+        "runtimeOwners": "020,021,023"
+      }
+    },
+    {
+      "id": "CMB-SET-AC-012",
+      "requirement": "No immediate pending loss/retreat/custody/relation allows round closure; later upkeep/replacement records survive. Reserve entry does not prove supported repeat or production readiness.",
+      "decisions": "001/008",
+      "source": "docs/design/combat-settlement-disclosure-v1.md",
+      "line": 234,
+      "plannedTasks": [
+        "CMB-TASK-016"
+      ],
+      "plannedTest": "CombatSettlementTests.RoundClosureRequiresNoImmediateObligations",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "RESULT2:test_all_branches -> behavioral,checkpoint_checks; BRIDGE:test_authentication,test_all_lineages,test_source_owner_choice_semantics; SIDE:test_a3b_continuity,test_a3b_source_integrity; B1:test_terminals,test_bridge_world; B2:test_registry_execution,test_failures_and_forgery,test_identity_and_controller",
+        "contractCoverage": "Corrected bridge/B1 retain future obligations through finish. B2 executes exact incomplete A2 fallback prefixes to failed step-limit terminals, with no false success or invented continuation. Complete owner-choice source remains required for bridge admission; maturity and production activation remain gated.",
+        "runtimeOwners": "016"
+      }
+    },
+    {
+      "id": "CYCLE-COMP-AC-001",
+      "requirement": "First entry opens1; repeat opensk+1 once in same slot and finish targets that slot's Truck Convoy phase. Other stages/slots start1 only through their own supported entry.",
+      "decisions": "001/005",
+      "source": "docs/design/continual-cycle-reserve-composition-v1.md",
+      "line": 278,
+      "plannedTasks": [
+        "CMB-TASK-018",
+        "CMB-TASK-019"
+      ],
+      "plannedTest": "CombatCycleTests.FirstRepeatAndFinishBindExactOccurrence",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "SEQ:main; IC:verify_case/axis-repeat,axis-finish,commonwealth-repeat,commonwealth-finish; COMP:verify/cycle-control; SIDE:test_a3_live_histories; BRIDGE:test_all_lineages; SIDE:test_a3b_terminals,test_a3b_continuity; B1:test_terminals,test_continuation_schedule",
+        "contractCoverage": "Exact historical terminals and corrected same-slot finish remain accepted. B1 requests/checkpoints explicitly distinguish source occurrence1, repeat active occurrence2, null active occurrence after finish, and actual Movement-completion ordinal2; wrong ordinal/side/stage terminal bindings reject. Other turn/stage/relative-slot sources remain outside admitted corpus; runtime cycle entry remains deferred.",
+        "runtimeOwners": "018,019"
+      }
+    },
+    {
+      "id": "CYCLE-COMP-AC-002",
+      "requirement": "Prefix/order/length/domain tampering changes internal ID or rejects; opening event never hashes itself. Equal hidden forks preserve public refs/action admission.",
+      "decisions": "002",
+      "source": "docs/design/continual-cycle-reserve-composition-v1.md",
+      "line": 279,
+      "plannedTasks": [
+        "CMB-TASK-008",
+        "CMB-TASK-019",
+        "CMB-TASK-020"
+      ],
+      "plannedTest": "CombatCycleTests.CycleCodecRejectsTamperingAndPreservesPublicForks",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "SEQ:main identity/prefix/occurrence vectors; C:boundary_checks; IC:verify_case; SIDE:test_a3_binary_literals,test_a3_equal_public_prefixes,test_a3_integrity_privacy,test_a3_admission_matrix",
+        "contractCoverage": "Bounded frozen binary cycle/action/set framing, capability-bound offers and public-prefix equality accepted. Pure hidden-state mutations are not admitted alternate histories; unrestricted hidden-fork histories remain partial.",
+        "runtimeOwners": "008,019,020"
+      }
+    },
+    {
+      "id": "CYCLE-COMP-AC-003",
+      "requirement": "First I resolves release/convert; convertedII cannot release in same segment. LaterII release/retain and empty completion work; invalid first/later statuses reject history.",
+      "decisions": "003",
+      "source": "docs/design/continual-cycle-reserve-composition-v1.md",
+      "line": 280,
+      "plannedTasks": [
+        "CMB-TASK-017"
+      ],
+      "plannedTest": "CombatCycleTests.FirstIAndLaterIiHaveDistinctReleaseChoices",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "L:checkpoint_checks/first-release,first-convert,later-release-retain,later-complete-intent,empty; L:boundary_checks; SIDE:test_a3_ledger_sets,test_a3_admission_matrix,test_a3_inherited_restrictions",
+        "contractCoverage": "Canonical Reserve choices and owner complete-release/System-author distinction accepted in separate13-case ledger profile. FullWorld inherited capability deliberately offers release-I only; no conversion/complete-release advertisement there.",
+        "runtimeOwners": "017"
+      }
+    },
+    {
+      "id": "CYCLE-COMP-AC-004",
+      "requirement": "Timeout midway through first release preserves accepted choices, converts remainingI deterministically and completes; restart/late replies cannot renew deadline or auto-release/repeat.",
+      "decisions": "003",
+      "source": "docs/design/continual-cycle-reserve-composition-v1.md",
+      "line": 281,
+      "plannedTasks": [
+        "CMB-TASK-017"
+      ],
+      "plannedTest": "CombatCycleTests.PartialReleaseTimeoutPreservesAcceptedChoices",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "L:timing_checks/first-timeout-midway,checkpoint_checks; SIDE:test_a3_admission_matrix,test_a3_live_histories,test_a3_ledger_sets",
+        "contractCoverage": "Bounded retained-clock ledger fallback/retry plus actual inherited owner clock-loss fallback accepted; no receipt fabricated for System fallback. Not corrected arbitrary-history clock support; durable restart remains deferred.",
+        "runtimeOwners": "017"
+      }
+    },
+    {
+      "id": "CYCLE-COMP-AC-005",
+      "requirement": "CPA9/II/spent3 gives voluntary ceiling4, not fresh4. Mandatory overspend persists. Offensive commitment consumes one allowance, defense does not; II DP precedes Morale and requires broader combat admission.",
+      "decisions": "004",
+      "source": "docs/design/continual-cycle-reserve-composition-v1.md",
+      "line": 282,
+      "plannedTasks": [
+        "CMB-TASK-007",
+        "CMB-TASK-012",
+        "CMB-TASK-017",
+        "CMB-TASK-018"
+      ],
+      "plannedTest": "CombatCycleTests.CumulativeCeilingAndOffensiveAllowanceRemainDistinct",
+      "verificationStatus": "planned; runtime test not implemented",
+      "deferredComponent": "Released-II pre-Morale execution is extension-gated. Current planned evidence rejects unsupported admission; no broad Combat execution claimed.",
+      "contractEvidenceDraft": {
+        "evidence": "L:boundary_checks; C:trace/later-release-cumulative-ceiling,mandatory-overspend-retained; SIDE:test_a3_ledger_sets,test_a3_admission_matrix",
+        "contractCoverage": "Private arithmetic/history evidence and public ledger CPA/spentCP/release history accepted. Released-II offensive debit/DP-before-Morale execution still extension-gated; no live inherited-II claim.",
+        "runtimeOwners": "007,012,017,018"
+      }
+    },
+    {
+      "id": "CYCLE-COMP-AC-006",
+      "requirement": "Next-Movement exception spans exactly one occurrence and expires even unused. Prior Movement-end proximity survives combat movement; finish and other scopes cannot revive rights.",
+      "decisions": "004/006",
+      "source": "docs/design/continual-cycle-reserve-composition-v1.md",
+      "line": 283,
+      "plannedTasks": [
+        "CMB-TASK-018",
+        "CMB-TASK-019"
+      ],
+      "plannedTest": "CombatCycleTests.MovementExceptionExpiresAfterOneOccurrence",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "IM:verify_case/axis,commonwealth; C:boundary_checks; C:trace/first-release-finish-expiry,prior-exclusion-finish; SIDE:test_a3_live_histories; SIDE:test_a3b_movement_member,test_a3b_terminals; B1:test_sources,test_terminals,test_continuation_schedule",
+        "contractCoverage": "Both native Reserve Movement completions retain singleton releaseMember, CP and expired exception in owner projection. B1 authenticates their complete creation/control/repeat/Movement/completion lineage and actual ordinal2 as zero-execution historical checkpoints. It does not add live Movement execution or revive rights in another scope.",
+        "runtimeOwners": "018,019"
+      }
+    },
+    {
+      "id": "CYCLE-COMP-AC-007",
+      "requirement": "Exercise each continuation truth-table row, including no-ZOC Engaged break-off (spent5 +4 +2 =11, with1 immediate DP and ordinary ceiling15), insufficient CP and atomic CP/membership restart. Missing capability/hidden-dependent legality cannot masquerade as proved no-continuation; accepted fallback finish emits no RNG.",
+      "decisions": "005",
+      "source": "docs/design/continual-cycle-reserve-composition-v1.md",
+      "line": 284,
+      "plannedTasks": [
+        "CMB-TASK-018",
+        "CMB-TASK-019"
+      ],
+      "plannedTest": "CombatCycleTests.ContinuationTruthTableUsesExactBreakOffCosts",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "C:verification/control_mode truth table,trace/engaged-repeat,later-release-insufficient-cp,no-progress-finish,boundary_checks; SIDE:test_a3_ledger_sets,test_a3_ledger_source_integrity; BRIDGE:test_all_lineages,test_clock_policy; B1:test_continuation_schedule,test_bridge_world; B2:test_registry_execution,test_identity_and_controller",
+        "contractCoverage": "Existing bounded native truth table, separate ledger offers/fallback modes and corrected finish World/RNG preservation remain accepted. B1/B2 add checkpoint continuation and fresh execution/re-adjudication for admitted inherited release/control and corrected bridge sources. These do not expand gameplay continuation capability; broader public Movement atomicity remains deferred.",
+        "runtimeOwners": "018,019"
+      }
+    },
+    {
+      "id": "CYCLE-COMP-AC-008",
+      "requirement": "Only allowlisted actual effects set progress; empty Breakdown/retention/private seals/cancelled selections do not. No-progress repeats reject and cannot synthesize a new release opportunity.",
+      "decisions": "006",
+      "source": "docs/design/continual-cycle-reserve-composition-v1.md",
+      "line": 285,
+      "plannedTasks": [
+        "CMB-TASK-018",
+        "CMB-TASK-019"
+      ],
+      "plannedTest": "CombatCycleTests.OnlyMaterialEffectsEnableRepeat",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "C:boundary_checks,verification,trace/no-progress-finish,later-retain-not-progress; COMP:verify; SIDE:test_a3_ledger_sets,test_a3_ledger_source_integrity; SIDE:test_a3b_terminals,test_a3b_continuity; B2:test_registry_execution,test_identity_and_controller",
+        "contractCoverage": "Cross-family terminal facts and corrected projected history accepted. B2 executes the admitted references and independently reconstructs/re-adjudicates their actual transitions; no unsupported corrected repeat or material progress is invented. Broader runtime progress classification remains deferred.",
+        "runtimeOwners": "018,019"
+      }
+    },
+    {
+      "id": "CYCLE-COMP-AC-009",
+      "requirement": "Repeat resets target-hex use and closed segment controls, preserving stage attack/release/resource/BP/relation/future-obligation facts. Zero ammo never replenishes.",
+      "decisions": "004/006-007",
+      "source": "docs/design/continual-cycle-reserve-composition-v1.md",
+      "line": 286,
+      "plannedTasks": [
+        "CMB-TASK-019"
+      ],
+      "plannedTest": "CombatCycleTests.RepeatPreservesResourcesAndStageHistory",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "C:trace/engaged-repeat,exhausted-ammo-still-moves,guard-finish; IC:verify_case; SIDE:test_a3_live_histories; BRIDGE:test_all_lineages; SIDE:test_a3b_continuity",
+        "contractCoverage": "Corrected native finish now preserves complete own public settlement/Reserve history and future obligations. Corrected settlement repeat remains unsupported.",
+        "runtimeOwners": "019"
+      }
+    },
+    {
+      "id": "CYCLE-COMP-AC-010",
+      "requirement": "Every checkpoint/suffix reproduces full active-stage history, identity, pending owner and side actions. Omitted history, reopened control, duplicate repeat or premature stage reset fails strict readback.",
+      "decisions": "002/007",
+      "source": "docs/design/continual-cycle-reserve-composition-v1.md",
+      "line": 287,
+      "plannedTasks": [
+        "CMB-TASK-008",
+        "CMB-TASK-018",
+        "CMB-TASK-019",
+        "CMB-TASK-020"
+      ],
+      "plannedTest": "CombatCycleTests.FullHistoryRestoreRejectsReopenedControls",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "IC:verify_case; IM:verify_case; COMP:verify; C:checkpoint_checks,boundary_checks; SIDE:test_a3_live_histories,test_a3_admission_matrix,test_a3_integrity_privacy; BRIDGE:test_authentication,test_commands_events_states; SIDE:test_a3b_terminals,test_a3b_continuity,test_a3b_source_integrity; B1:test_sources,test_continuation_schedule,test_rejection,test_prefix_identity; B2:test_registry_execution,test_failures_and_forgery,test_identity_and_controller",
+        "contractCoverage": "B1 authenticates complete historical/live source lineage and exact checkpoint cuts. B2 adds fresh execution/reconstruction/re-adjudication from admitted starts, preserving source/active occurrence and full authority state. Historical endpoints remain zero-execution; runtime Snapshot recovery and earlier public Movement execution remain deferred.",
+        "runtimeOwners": "008,018,019,020"
+      }
+    },
+    {
+      "id": "CYCLE-COMP-AC-011",
+      "requirement": "Occurrence-aware terminal distinguishes Movement1 fromMovement2; child and Maneuver proofs preserve authority parity, replay and first-divergence limits. Trusted bundles remain private.",
+      "decisions": "008",
+      "source": "docs/design/continual-cycle-reserve-composition-v1.md",
+      "line": 288,
+      "plannedTasks": [
+        "CMB-TASK-022",
+        "CMB-TASK-023",
+        "CMB-TASK-024"
+      ],
+      "plannedTest": "CombatCycleTests.OccurrenceTerminalsAndPairedProofsRemainExact",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "SEQ.main/occurrence vectors;COMP.verify/28 authority traces; B1:test_terminals,test_continuation_schedule,test_prefix_identity,test_rejection; B2:test_registry_execution,test_failures_and_forgery,test_identity_and_controller; B3:test_native_parents,test_invalid_children_and_cache,test_materialization_and_bindings,test_divergence",
+        "contractCoverage": "Bounded private B1 occurrence and B2 child execution/proofs plus B3 authenticated parent comparison. Actual equal-start pairs cover identical/divergent actions and validated failures; unequal-length null arms use authenticated stream-prefix helper tests only, since current admitted pairs have equal lengths. Runtime022-024 and artifact publication remain planned.",
+        "runtimeOwners": "022,023,024"
+      }
+    },
+    {
+      "id": "CYCLE-COMP-AC-012",
+      "requirement": "Truck Convoy entry retains guard/feeding/replacement work; unsupported terminal, step-limit or maturity crossing is not game success. All pending policy/schema/implementation gates remain visible.",
+      "decisions": "007-008",
+      "source": "docs/design/continual-cycle-reserve-composition-v1.md",
+      "line": 289,
+      "plannedTasks": [
+        "CMB-TASK-022",
+        "CMB-TASK-023"
+      ],
+      "plannedTest": "CombatCycleTests.UnsupportedTerminalsCannotClaimGameSuccess",
+      "verificationStatus": "planned; runtime test not implemented",
+      "contractEvidenceDraft": {
+        "evidence": "BRIDGE:test_all_lineages,test_authentication,test_source_owner_choice_semantics; C:trace/guard-finish,escape-timeout historical; COMP:handoff; B1:test_terminals,test_bridge_world,test_rejection; B2:test_registry_execution,test_failures_and_forgery,test_identity_and_controller; B3:test_native_parents,test_invalid_children_and_cache,test_raw_and_report_forgery",
+        "contractCoverage": "B1/B2 retain obligations through native finish and distinguish admission, execution, step-limit/cancellation and replay failures. B3 validates before counts, preserves failed status despite expected-failure match and rejects forged reports. Unsupported maturity and successful Game terminal remain excluded; Runtime publication remains planned; this index supplies bounded contract closeout evidence.",
+        "runtimeOwners": "022,023"
+      }
+    }
+  ],
+  "aliases": [
+    {
+      "alias": "ARMED",
+      "oracle": "docs/specs/verify-combat-inherited-armed-continuation-v1.py"
+    },
+    {
+      "alias": "B1",
+      "oracle": "docs/specs/verify-combat-exercise-occurrence-v1.py"
+    },
+    {
+      "alias": "B2",
+      "oracle": "docs/specs/verify-combat-exercise-child-evidence-v1.py"
+    },
+    {
+      "alias": "B3",
+      "oracle": "docs/specs/verify-combat-exercise-parent-evidence-v1.py"
+    },
+    {
+      "alias": "BRIDGE",
+      "oracle": "docs/specs/verify-combat-result-cycle-finish-v1.py"
+    },
+    {
+      "alias": "C",
+      "oracle": "docs/specs/verify-combat-cycle-control-v1.py"
+    },
+    {
+      "alias": "COMP",
+      "oracle": "docs/specs/verify-combat-authority-composition-v1.py"
+    },
+    {
+      "alias": "CONTENT",
+      "oracle": "docs/specs/verify-combat-content-v7.py"
+    },
+    {
+      "alias": "CYCLE",
+      "oracle": "docs/specs/verify-combat-inherited-cycle-control-v1.py"
+    },
+    {
+      "alias": "I",
+      "oracle": "docs/specs/verify-combat-rules-inputs-v1.py"
+    },
+    {
+      "alias": "IC",
+      "oracle": "docs/specs/verify-combat-inherited-cycle-control-v1.py"
+    },
+    {
+      "alias": "IM",
+      "oracle": "docs/specs/verify-combat-inherited-reserve-movement-completion-v1.py"
+    },
+    {
+      "alias": "L",
+      "oracle": "docs/specs/verify-combat-reserve-release-v1.py"
+    },
+    {
+      "alias": "N",
+      "oracle": "docs/specs/verify-combat-snapshot-composition-v1.py"
+    },
+    {
+      "alias": "NOATTACK",
+      "oracle": "docs/specs/verify-combat-inherited-no-attack-v1.py"
+    },
+    {
+      "alias": "Q1",
+      "oracle": "docs/specs/verify-combat-sealed-round-v1.py"
+    },
+    {
+      "alias": "Q2",
+      "oracle": "docs/specs/verify-combat-sealed-round-v2.py"
+    },
+    {
+      "alias": "R1",
+      "oracle": "docs/specs/verify-combat-result-settlement-v1.py"
+    },
+    {
+      "alias": "RESULT1",
+      "oracle": "docs/specs/verify-combat-result-settlement-v1.py"
+    },
+    {
+      "alias": "RESULT2",
+      "oracle": "docs/specs/verify-combat-result-settlement-v2.py"
+    },
+    {
+      "alias": "RNG",
+      "oracle": "docs/research/verify-combat-rng.py"
+    },
+    {
+      "alias": "ROUND2",
+      "oracle": "docs/specs/verify-combat-sealed-round-v2.py"
+    },
+    {
+      "alias": "S",
+      "oracle": "docs/specs/verify-combat-selection-steps-v1.py"
+    },
+    {
+      "alias": "SELECT",
+      "oracle": "docs/specs/verify-combat-inherited-selection-v1.py"
+    },
+    {
+      "alias": "SEQ",
+      "oracle": "docs/specs/verify-combat-cycle-sequence-v1.py"
+    },
+    {
+      "alias": "SIDE",
+      "oracle": "docs/specs/verify-combat-side-projection-v1.py"
+    },
+    {
+      "alias": "SNAP1",
+      "oracle": "docs/specs/verify-combat-snapshot-composition-v1.py"
+    },
+    {
+      "alias": "SRC",
+      "oracle": "docs/research/verify-combat-source-freeze.py"
+    },
+    {
+      "alias": "STEPS",
+      "oracle": "docs/specs/verify-combat-selection-steps-v1.py"
+    },
+    {
+      "alias": "W",
+      "oracle": "docs/specs/verify-combat-world-settlement-v1.py"
+    },
+    {
+      "alias": "WORLD",
+      "oracle": "docs/specs/verify-combat-world-settlement-v1.py"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "docs/design/combat-cost-resolution-order-v1.md",
+      "sha256": "sha256:ffea13f61eecdf5baae9e6777d85386fe4971875a8c75274ab2df7bd6e36c2b0",
+      "bytes": 20530
+    },
+    {
+      "path": "docs/design/combat-opportunity-identity-v1.md",
+      "sha256": "sha256:2976a278e51235ff11e74699bf84ed23ed9140c1da6d638de81d8f862c32d762",
+      "bytes": 21713
+    },
+    {
+      "path": "docs/design/combat-sealed-decision-protocol-v1.md",
+      "sha256": "sha256:6c6f805db450877bfa922e75134288cace0f5dae5115794e064b78c2ae764c2e",
+      "bytes": 26156
+    },
+    {
+      "path": "docs/design/combat-settlement-disclosure-v1.md",
+      "sha256": "sha256:84d85139ed0c7111b70c464bde47837963ed7f19571adbc5279e2f8cb1572616",
+      "bytes": 23325
+    },
+    {
+      "path": "docs/design/combat-step-transitions-v1.md",
+      "sha256": "sha256:90b2264ef506c335203e0143adc000b98c59f0f29b4319ba07d9008a1d322f7a",
+      "bytes": 22370
+    },
+    {
+      "path": "docs/design/continual-cycle-reserve-composition-v1.md",
+      "sha256": "sha256:cce5b7b8ebee261f7fbed080bdf4ea27b864d8291e4dbfd7aaa377056badb88b",
+      "bytes": 28169
+    },
+    {
+      "path": "docs/research/verify-combat-rng.py",
+      "sha256": "sha256:f3c7c468f2be0efa583e44c4d04b8fe6d20eef51aae01554bfa535b0ecc0ea30",
+      "bytes": 7426
+    },
+    {
+      "path": "docs/research/verify-combat-source-freeze.py",
+      "sha256": "sha256:f21a97150e344337f6ee4c2c1a1752ac7d41b8b8c8bf6a61a06a1fe5a0483e7e",
+      "bytes": 12591
+    },
+    {
+      "path": "docs/specs/combat-authority-composition-v1.md",
+      "sha256": "sha256:e2df8e53a37055fe514feae1748d59fde6b17fb6faa6ff01ed2a8b3a967f8582",
+      "bytes": 9373
+    },
+    {
+      "path": "docs/specs/combat-authority-composition-v1.schema.json",
+      "sha256": "sha256:47210ccd00d3eba301c97d2190c16354626265707a4f6109754150e30406bd42",
+      "bytes": 3248
+    },
+    {
+      "path": "docs/specs/combat-content-v7.md",
+      "sha256": "sha256:9ebe2882b2d8b41fde015b06fa3d5ff0eaad2283150d06bcf5301280ef391b78",
+      "bytes": 16620
+    },
+    {
+      "path": "docs/specs/combat-cycle-control-v1.md",
+      "sha256": "sha256:2d183ed4e891eda31c73eaa7d9479a3175f7ecc2842b6c405d0f47d768620639",
+      "bytes": 10368
+    },
+    {
+      "path": "docs/specs/combat-cycle-control-v1.schema.json",
+      "sha256": "sha256:8c517db6daa734d415bd1d474280c2cf6e65013490c4a2568795d50e6112f7da",
+      "bytes": 2842
+    },
+    {
+      "path": "docs/specs/combat-cycle-sequence-v1.md",
+      "sha256": "sha256:5c5691e8b4d7e0c2e46a0ac94dd544e21b065d7036929102eb0b782b9062ea6a",
+      "bytes": 14606
+    },
+    {
+      "path": "docs/specs/combat-cycle-sequence-v1.schema.json",
+      "sha256": "sha256:6e09dc5bc6ca79d8580db6ed1e76ad5007c26a30df11b4dd9da0a9c7b5f5e0c5",
+      "bytes": 1284
+    },
+    {
+      "path": "docs/specs/combat-exercise-child-evidence-v1.md",
+      "sha256": "sha256:a6688d84555b48efff90bf578f5d00708b4e10aa3246c1c7b9587c2b12afe3d5",
+      "bytes": 11764
+    },
+    {
+      "path": "docs/specs/combat-exercise-child-evidence-v1.schema.json",
+      "sha256": "sha256:cc8a7c9e89068b9a78f3abb4044230ccc9ef359665198aaa7ef6db5b15782bf6",
+      "bytes": 5593
+    },
+    {
+      "path": "docs/specs/combat-exercise-occurrence-v1.md",
+      "sha256": "sha256:66074c9c78ba8fa24e6572a91cf1b6f54f57a5acbd6f17f7a078b95f33fe045b",
+      "bytes": 13893
+    },
+    {
+      "path": "docs/specs/combat-exercise-occurrence-v1.schema.json",
+      "sha256": "sha256:dc4095e6dc7896c98d2110be50eaf703f84286dc0bb5f0e7941c60f61936b301",
+      "bytes": 5198
+    },
+    {
+      "path": "docs/specs/combat-exercise-parent-evidence-v1.md",
+      "sha256": "sha256:8b146b00a08e084cd4dd7e899ddfe68f846adc4a71632937c2dae2fb1be8e953",
+      "bytes": 6370
+    },
+    {
+      "path": "docs/specs/combat-exercise-parent-evidence-v1.schema.json",
+      "sha256": "sha256:00d1fcd2cb7d06b6f25d9224ff0839308f23fd2052b42dab24c98ea378b30820",
+      "bytes": 4113
+    },
+    {
+      "path": "docs/specs/combat-inherited-armed-continuation-v1.md",
+      "sha256": "sha256:4b14f59a43130dab8501056432ff1f78068934db2997aeca221ebb3d4a0b708c",
+      "bytes": 5524
+    },
+    {
+      "path": "docs/specs/combat-inherited-armed-continuation-v1.schema.json",
+      "sha256": "sha256:996cfd224ee8c0fa5fd0faa54e74c28099782b898ada22c32717a89c90422852",
+      "bytes": 1357
+    },
+    {
+      "path": "docs/specs/combat-inherited-cycle-control-v1.md",
+      "sha256": "sha256:36c0af62d713ef266946f72a9501f727ec185984161809ca2a44942b3ae7a8ac",
+      "bytes": 6147
+    },
+    {
+      "path": "docs/specs/combat-inherited-cycle-control-v1.schema.json",
+      "sha256": "sha256:5ceb2cf08932eff3ff0e114b661d7778cdc1373065ddacb0297855941d63f679",
+      "bytes": 685
+    },
+    {
+      "path": "docs/specs/combat-inherited-no-attack-v1.md",
+      "sha256": "sha256:473d193fca90277c107c31f7b1390ce057b0c09e3215f777f8ab21210c9997bc",
+      "bytes": 7092
+    },
+    {
+      "path": "docs/specs/combat-inherited-no-attack-v1.schema.json",
+      "sha256": "sha256:e225ad74d948328feb96b0f896312cbc64f4e722790be49b22b850ff2a9e3462",
+      "bytes": 1491
+    },
+    {
+      "path": "docs/specs/combat-inherited-reserve-movement-completion-v1.md",
+      "sha256": "sha256:06539f47db7c45e1d67edda82215cbe1ae9515c6d812a6974080d41c0c6884d7",
+      "bytes": 4700
+    },
+    {
+      "path": "docs/specs/combat-inherited-reserve-movement-completion-v1.schema.json",
+      "sha256": "sha256:f1210665a5668fb174cfa837f9644fe9f85d74363389109d7a90a880f031b5c2",
+      "bytes": 4216
+    },
+    {
+      "path": "docs/specs/combat-inherited-selection-v1.md",
+      "sha256": "sha256:1b2fcf7f92a06eead348e57997e7357deff18a66ad16d82a7aaa6961609ad5d9",
+      "bytes": 7546
+    },
+    {
+      "path": "docs/specs/combat-inherited-selection-v1.schema.json",
+      "sha256": "sha256:c57bb32899ef7ea536e8985255a2dccc453ed46cce41d311a9f041a36237ac9b",
+      "bytes": 2136
+    },
+    {
+      "path": "docs/specs/combat-reserve-release-v1.md",
+      "sha256": "sha256:b34215e3200e5e49b45302a4d8a01a0afff071652eecf372ed4eef11aa62c653",
+      "bytes": 11884
+    },
+    {
+      "path": "docs/specs/combat-reserve-release-v1.schema.json",
+      "sha256": "sha256:10ba1ca46e05fbed52c6eef5174c2ac84c4282df0957c44eab6e86079342bc32",
+      "bytes": 2953
+    },
+    {
+      "path": "docs/specs/combat-result-cycle-finish-v1.md",
+      "sha256": "sha256:4055c35e91e192844bd94acd857b9702ea3cb0a7c02ec85b930bb89560d27b02",
+      "bytes": 6961
+    },
+    {
+      "path": "docs/specs/combat-result-cycle-finish-v1.schema.json",
+      "sha256": "sha256:cbd61da864d102a08389a166486cd0cf5728a0db5feae002e3c8fb177b52d2d5",
+      "bytes": 1766
+    },
+    {
+      "path": "docs/specs/combat-result-settlement-v1.md",
+      "sha256": "sha256:79a53790faf0846ece3bc254a7f5b4d55d9ed07a339bb2b2e64d5aa4087057d7",
+      "bytes": 6630
+    },
+    {
+      "path": "docs/specs/combat-result-settlement-v1.schema.json",
+      "sha256": "sha256:f65c13687bb2fe3fbabdbd82d48298430330dab756583fbfda17dae50bc73ab0",
+      "bytes": 2609
+    },
+    {
+      "path": "docs/specs/combat-result-settlement-v2.md",
+      "sha256": "sha256:a040dbd69c8c5e978bbce79b8765088ab2efdc33e8ef95ced22a5f35680fbc68",
+      "bytes": 12547
+    },
+    {
+      "path": "docs/specs/combat-result-settlement-v2.schema.json",
+      "sha256": "sha256:719634c4720b4a92669b2e83e60df58cd32d0e556ec9ef66c546aed1f9c7e9d6",
+      "bytes": 2934
+    },
+    {
+      "path": "docs/specs/combat-rules-inputs-v1.md",
+      "sha256": "sha256:5eca43b4fd7419ff2199b2f5eaeac3e7a75b594197b3561d0c1548fd8342d3cd",
+      "bytes": 16121
+    },
+    {
+      "path": "docs/specs/combat-rules-inputs-v1.schema.json",
+      "sha256": "sha256:1477a9e755a091bbf4539d00184711b18eab2f6289f643596d841b8c314f4797",
+      "bytes": 2709
+    },
+    {
+      "path": "docs/specs/combat-sealed-round-v1.md",
+      "sha256": "sha256:e3d01d757e5fed012e8d176b990f194da07a96b1c0d62a88d1257b44c9ce70dc",
+      "bytes": 12617
+    },
+    {
+      "path": "docs/specs/combat-sealed-round-v1.schema.json",
+      "sha256": "sha256:5556404caa296ce41020654f8fb64c0349fd13051edabf6b4934e47d675c32db",
+      "bytes": 3005
+    },
+    {
+      "path": "docs/specs/combat-sealed-round-v2.md",
+      "sha256": "sha256:9fb337bdbfeebf0db367f860aafeb6a37b72af0d602036aec41da82678332bc5",
+      "bytes": 12000
+    },
+    {
+      "path": "docs/specs/combat-sealed-round-v2.schema.json",
+      "sha256": "sha256:365283c1c51b9e155aa1651c253759b271bbda75f613f52f511ceeb0dec12c7c",
+      "bytes": 3748
+    },
+    {
+      "path": "docs/specs/combat-selection-steps-v1.md",
+      "sha256": "sha256:d1414a4f080c3f92fe48909bebb359adcb46ea39052b31ee915983af2b6a5c6e",
+      "bytes": 15092
+    },
+    {
+      "path": "docs/specs/combat-selection-steps-v1.schema.json",
+      "sha256": "sha256:ef24e125012ab390bb0c932a09472b8220d7e8c95c1b19c29bdb611be532162d",
+      "bytes": 2871
+    },
+    {
+      "path": "docs/specs/combat-side-projection-v1.md",
+      "sha256": "sha256:c86a3054b96d3580c16850e96de6f5957e8fae2b118471bac32880aa0293beaf",
+      "bytes": 49240
+    },
+    {
+      "path": "docs/specs/combat-side-projection-v1.schema.json",
+      "sha256": "sha256:fbca44fef91b806906b3287bb851e5efb92e735876af7a6b755d2873f625b664",
+      "bytes": 26949
+    },
+    {
+      "path": "docs/specs/combat-snapshot-composition-v1.md",
+      "sha256": "sha256:dea661d813ba9f0e160d586bf278c6e0876add828d0507a6055ac9dbd37aba2b",
+      "bytes": 12975
+    },
+    {
+      "path": "docs/specs/combat-snapshot-composition-v1.schema.json",
+      "sha256": "sha256:e9e8f45751cad5fcab1be9e735359d50f34ec4e6bf5bdf41d9011ba9d176a586",
+      "bytes": 1791
+    },
+    {
+      "path": "docs/specs/combat-world-settlement-v1.md",
+      "sha256": "sha256:1e6b0e5f02e0c90211a3a9436ae3f849f0828f4f6f7ec4452bb80ebc382fb87f",
+      "bytes": 17453
+    },
+    {
+      "path": "docs/specs/combat-world-settlement-v1.schema.json",
+      "sha256": "sha256:f892545f5dac693c55d1180ad771d95ffeec508176a0d6139b82752ed46bcf0e",
+      "bytes": 3821
+    },
+    {
+      "path": "docs/specs/fixtures/combat-authority-composition-v1.json",
+      "sha256": "sha256:a90f88de9c05b4b1bd7081e7828abb7553e3e0537a6efa8cad042c87a6df50b1",
+      "bytes": 45458
+    },
+    {
+      "path": "docs/specs/fixtures/combat-content-v7.vectors.json",
+      "sha256": "sha256:37957166b82d756a9c7f43aa8544ed688624122c8b234ba098aca563b14a890e",
+      "bytes": 25584
+    },
+    {
+      "path": "docs/specs/fixtures/combat-cycle-control-v1.json",
+      "sha256": "sha256:a8f81c538c0a70c28dd7e97638ec63c915558ec16cc9be6f6a102a12159b5bb6",
+      "bytes": 43258
+    },
+    {
+      "path": "docs/specs/fixtures/combat-cycle-sequence-v1.json",
+      "sha256": "sha256:de89ebcd86f171119d206d0a90553cdeb815e7b8b6fc8903c9dfcacbd1db5b3f",
+      "bytes": 137624
+    },
+    {
+      "path": "docs/specs/fixtures/combat-exercise-child-evidence-v1.json",
+      "sha256": "sha256:5587cb17e53c48a9ab393532ebaa186f3d1384632eb13b105e1af8a698e799b6",
+      "bytes": 7722577
+    },
+    {
+      "path": "docs/specs/fixtures/combat-exercise-occurrence-v1.json",
+      "sha256": "sha256:aabc20a39229ac121703a6cda077c0ebeffbfdd7bc3142a3d0c1d0805af7a38e",
+      "bytes": 1542785
+    },
+    {
+      "path": "docs/specs/fixtures/combat-exercise-parent-evidence-v1.json",
+      "sha256": "sha256:08316dae3d4f12298c35bfe05f640dcd2559ae41cbf4144430cd52b121847a9f",
+      "bytes": 10943909
+    },
+    {
+      "path": "docs/specs/fixtures/combat-inherited-armed-continuation-v1.json",
+      "sha256": "sha256:d86603ff7f07f2e0a3624e8748fedcf4406e2d873360f4e56a30e5952c645b1f",
+      "bytes": 15243
+    },
+    {
+      "path": "docs/specs/fixtures/combat-inherited-cycle-control-v1.json",
+      "sha256": "sha256:e2f2c76539a3509310fa2f1822fd1d84e1346f62cfc274ce12682866d02ba236",
+      "bytes": 7012
+    },
+    {
+      "path": "docs/specs/fixtures/combat-inherited-no-attack-v1.json",
+      "sha256": "sha256:4e8f8a9fa0d1e973d6a5d7046b3e013f4270bd31c53afa24ed7595f732be6bc1",
+      "bytes": 7483
+    },
+    {
+      "path": "docs/specs/fixtures/combat-inherited-reserve-movement-completion-v1.json",
+      "sha256": "sha256:e336d9b5afe498b3886318509958cb2e50ae860676ee1c4603c55540a41847d3",
+      "bytes": 6073
+    },
+    {
+      "path": "docs/specs/fixtures/combat-inherited-selection-v1.json",
+      "sha256": "sha256:76240f2409f341757deea0f6ab5d346699de5a4a33690f95ccb7e74e160c1f4f",
+      "bytes": 4428
+    },
+    {
+      "path": "docs/specs/fixtures/combat-reserve-release-v1.json",
+      "sha256": "sha256:70ed683c21f95a511c06362765dbe0971e0bb024bfcee74be70865be70601af9",
+      "bytes": 49728
+    },
+    {
+      "path": "docs/specs/fixtures/combat-result-cycle-finish-v1.json",
+      "sha256": "sha256:a1b6cb5f611586da62667fd4315365aa3a38c34af8afe016314eba4c7c1057c2",
+      "bytes": 653015
+    },
+    {
+      "path": "docs/specs/fixtures/combat-result-settlement-v1.json",
+      "sha256": "sha256:cc25c358c997e54dd61fe1d843db5e7385c4a85706c462b87badacb939ec71c2",
+      "bytes": 319507
+    },
+    {
+      "path": "docs/specs/fixtures/combat-result-settlement-v2.json",
+      "sha256": "sha256:6a1f6cda74424680669539d73583fa3ba5affc612380b3a3efe2e8986a09804a",
+      "bytes": 3658583
+    },
+    {
+      "path": "docs/specs/fixtures/combat-rules-inputs-v1.json",
+      "sha256": "sha256:5401cd9a690be8b81f19795f1f66c0c6fe24f5055a06cda5facd6193b3e0a29a",
+      "bytes": 46027
+    },
+    {
+      "path": "docs/specs/fixtures/combat-sealed-round-v1.json",
+      "sha256": "sha256:8832568d97d3bd7cfe0d8f5dcd875bed58ea401250c38a178afeb7b1662cef6e",
+      "bytes": 111770
+    },
+    {
+      "path": "docs/specs/fixtures/combat-sealed-round-v2.json",
+      "sha256": "sha256:8200354f49bef2fd4a976dd9c24e4e485f8c06ad903d8c3deb06d5a9db509a95",
+      "bytes": 1051587
+    },
+    {
+      "path": "docs/specs/fixtures/combat-selection-steps-v1.json",
+      "sha256": "sha256:151c8da5037dfd5fa921abf1f675ef1a10211f8b84a4e1fb385d6beb62b1d0de",
+      "bytes": 138224
+    },
+    {
+      "path": "docs/specs/fixtures/combat-side-projection-v1.json",
+      "sha256": "sha256:07139da2ff125345c3007aa6bd9a5760eec44e4d4f25d0ec85c7e06fed4da44f",
+      "bytes": 13882180
+    },
+    {
+      "path": "docs/specs/fixtures/combat-snapshot-composition-v1.json",
+      "sha256": "sha256:392e805f3ee244d9dc988a64b85090d9f992335721fbbc91e8b5b6e2260f834a",
+      "bytes": 169754
+    },
+    {
+      "path": "docs/specs/fixtures/combat-world-settlement-v1.json",
+      "sha256": "sha256:f3d2de110a901058635b789e78c31dd7ccbbfb0fac8bc1a423d2d7756a0a6037",
+      "bytes": 83835
+    },
+    {
+      "path": "docs/specs/verify-combat-authority-composition-v1.py",
+      "sha256": "sha256:97f9500f5b0566c9f8b295a1a7d524fdf53387038655872ea0d8005abe8702b7",
+      "bytes": 37606
+    },
+    {
+      "path": "docs/specs/verify-combat-content-v7.py",
+      "sha256": "sha256:eaab770988e8d2b0f11cb9a8a39b45f961977aa9048f95de8bf32f46e361bcbd",
+      "bytes": 17341
+    },
+    {
+      "path": "docs/specs/verify-combat-cycle-control-v1.py",
+      "sha256": "sha256:9039f9e1067b2cdd2e0a57ae16e711350b4bbdceb500d22bbbd715f39e8ccc9f",
+      "bytes": 40393
+    },
+    {
+      "path": "docs/specs/verify-combat-cycle-sequence-v1.py",
+      "sha256": "sha256:d43ae974e1f6e2c30067efe4635df655c6d2e4791968ece00dfd473145c3cc8a",
+      "bytes": 17336
+    },
+    {
+      "path": "docs/specs/verify-combat-exercise-child-evidence-v1.py",
+      "sha256": "sha256:a7385011125ca9105a1fbd3197c2b0b7b1825bf921e479ce9f953a4950343c92",
+      "bytes": 38418
+    },
+    {
+      "path": "docs/specs/verify-combat-exercise-occurrence-v1.py",
+      "sha256": "sha256:9e46db1943514629754cdc227fdc1a415c53c8b5e573b8fb0afd89c870f1fb53",
+      "bytes": 40692
+    },
+    {
+      "path": "docs/specs/verify-combat-exercise-parent-evidence-v1.py",
+      "sha256": "sha256:bb0134c42293a18c8453513c9b23b13d4c365cb2734f8e93c2989d47773e7345",
+      "bytes": 26149
+    },
+    {
+      "path": "docs/specs/verify-combat-inherited-armed-continuation-v1.py",
+      "sha256": "sha256:91f7004b1c9e197d2d587b9cc4ff2ccfdb571bd1d5506117cc22a9165e3e4466",
+      "bytes": 17260
+    },
+    {
+      "path": "docs/specs/verify-combat-inherited-cycle-control-v1.py",
+      "sha256": "sha256:cd87e04f440e24d841958e38d4582c432d87ef64cae7e463a1f33c00033176e0",
+      "bytes": 22856
+    },
+    {
+      "path": "docs/specs/verify-combat-inherited-no-attack-v1.py",
+      "sha256": "sha256:2f87b4c9a243ac777bb5180d6fa3f3ef8e40f74ae3a15fb5fd6cba91eb126c35",
+      "bytes": 19936
+    },
+    {
+      "path": "docs/specs/verify-combat-inherited-reserve-movement-completion-v1.py",
+      "sha256": "sha256:b2c7d3e8b47442352f9547d16da4c5483b87f23a16e86abd6f44389c96059ba7",
+      "bytes": 27763
+    },
+    {
+      "path": "docs/specs/verify-combat-inherited-selection-v1.py",
+      "sha256": "sha256:99e0cdb1cc78089e4af93b8e995ba04483f6bdab86edaf7c6e2e251442cd0bb7",
+      "bytes": 23876
+    },
+    {
+      "path": "docs/specs/verify-combat-reserve-release-v1.py",
+      "sha256": "sha256:105ef18d9db6364ce42f9831afd3c33010fccc71b0ae60af78cec7c185da892b",
+      "bytes": 36968
+    },
+    {
+      "path": "docs/specs/verify-combat-result-cycle-finish-v1.py",
+      "sha256": "sha256:9eb64ccaf6788b60f04662f9569bac23265816d8fba86bdd8078eae27eeac4a9",
+      "bytes": 40469
+    },
+    {
+      "path": "docs/specs/verify-combat-result-settlement-v1.py",
+      "sha256": "sha256:1f7dff5b87ce036c406562686f4dc1ce983a4a8dfa15b2401eae72a0d9879ffd",
+      "bytes": 24952
+    },
+    {
+      "path": "docs/specs/verify-combat-result-settlement-v2.py",
+      "sha256": "sha256:a6a781976f26b78a9dc098ebfbb3b516284aa1d5873744d96d8fa23aa50d83a2",
+      "bytes": 37568
+    },
+    {
+      "path": "docs/specs/verify-combat-rules-inputs-v1.py",
+      "sha256": "sha256:ffb6daf98db7097d307ac7c185bf7d68a2ff1d0ac9a357ea063a746aab42081d",
+      "bytes": 16611
+    },
+    {
+      "path": "docs/specs/verify-combat-sealed-round-v1.py",
+      "sha256": "sha256:497e295e71c4b4da43539ee9b6c30de6d33f409a2f14b6cc24d9030390525ae0",
+      "bytes": 28682
+    },
+    {
+      "path": "docs/specs/verify-combat-sealed-round-v2.py",
+      "sha256": "sha256:d1091b5d1d6fb1d9ac88da45313c88fcbc922f763e62d01af44311abc8656bf9",
+      "bytes": 39247
+    },
+    {
+      "path": "docs/specs/verify-combat-selection-steps-v1.py",
+      "sha256": "sha256:dc037282f74c34246d350faebeea55e81677d27dd181de858b8270e4eaa73c86",
+      "bytes": 26298
+    },
+    {
+      "path": "docs/specs/verify-combat-side-projection-v1.py",
+      "sha256": "sha256:964f4b6a6901e446e5d0e0a6c49e79e778677ae458947681034a4ddd5d848a0d",
+      "bytes": 200688
+    },
+    {
+      "path": "docs/specs/verify-combat-snapshot-composition-v1.py",
+      "sha256": "sha256:4abaefa7460774a550ef4579689129b4174dc837b01050893bda52d324e00b8b",
+      "bytes": 11911
+    },
+    {
+      "path": "docs/specs/verify-combat-world-settlement-v1.py",
+      "sha256": "sha256:d5f49e5a4165ec568f0a8896ea491341a639da256bcfd573998f529e80ef9f25",
+      "bytes": 21056
+    }
+  ],
+  "profiles": [
+    {
+      "id": "a1-historical",
+      "contractVersion": 1,
+      "payloadType": "Observation",
+      "capability": null,
+      "sourceCount": 9,
+      "traceCount": 18,
+      "admission": "historical-diagnostic-only",
+      "clockPolicies": [],
+      "scope": "Original nine sources and historical counterexample; no current admission."
+    },
+    {
+      "id": "a1-corrected",
+      "contractVersion": 1,
+      "payloadType": "Observation",
+      "capability": null,
+      "sourceCount": 20,
+      "traceCount": 40,
+      "admission": "current-local",
+      "clockPolicies": [
+        "sandtable.combat.public-opening-clock.v2"
+      ],
+      "scope": "Corrected local selection/round only."
+    },
+    {
+      "id": "a2-corrected",
+      "contractVersion": 2,
+      "payloadType": "Observation2",
+      "capability": null,
+      "sourceCount": 48,
+      "traceCount": 96,
+      "admission": "current-local",
+      "clockPolicies": [
+        "sandtable.combat.public-opening-clock.v2",
+        "sandtable.combat.mandatory-window-clock.v2"
+      ],
+      "scope": "Corrected local settlement; no Reserve/control."
+    },
+    {
+      "id": "inherited-reserve",
+      "contractVersion": 3,
+      "payloadType": "Observation3",
+      "capability": "sandtable.side.inherited-release-I.v3",
+      "sourceCount": 4,
+      "traceCount": 8,
+      "admission": "current-local",
+      "clockPolicies": [
+        "sandtable.side.inherited-retained-clock.v3"
+      ],
+      "scope": "Exact inherited full-World sources and bounded retained-clock semantics."
+    },
+    {
+      "id": "inherited-control",
+      "contractVersion": 3,
+      "payloadType": "Observation3",
+      "capability": "sandtable.side.inherited-release-control.v3",
+      "sourceCount": 6,
+      "traceCount": 12,
+      "admission": "current-local",
+      "clockPolicies": [
+        "sandtable.side.inherited-retained-clock.v3"
+      ],
+      "scope": "Exact inherited full-World sources and bounded retained-clock semantics."
+    },
+    {
+      "id": "ledger-reserve",
+      "contractVersion": 3,
+      "payloadType": "LedgerObservation3",
+      "capability": "sandtable.side.reserve-ledger.v3",
+      "sourceCount": 48,
+      "traceCount": 48,
+      "admission": "standalone-ledger-only",
+      "clockPolicies": [
+        "sandtable.side.inherited-retained-clock.v3"
+      ],
+      "scope": "Canonical ledger behavior; not a full-World source or B1/B2 child."
+    },
+    {
+      "id": "ledger-cycle",
+      "contractVersion": 3,
+      "payloadType": "LedgerObservation3",
+      "capability": "sandtable.side.cycle-ledger.v3",
+      "sourceCount": 64,
+      "traceCount": 64,
+      "admission": "standalone-ledger-only",
+      "clockPolicies": [
+        "sandtable.side.inherited-retained-clock.v3"
+      ],
+      "scope": "Canonical ledger behavior; not a full-World source or B1/B2 child."
+    },
+    {
+      "id": "a3b-corrected",
+      "contractVersion": 3,
+      "payloadType": "Observation3",
+      "capability": "sandtable.side.corrected-composition.v3",
+      "sourceCount": 88,
+      "traceCount": 176,
+      "admission": "current-local",
+      "clockPolicies": [
+        "sandtable.combat.public-opening-clock.v2",
+        "sandtable.combat.mandatory-window-clock.v2",
+        "sandtable.combat.native-result2-cycle-finish.v1"
+      ],
+      "scope": "Full corrected C3 through Result2, empty Reserve and finish-only bridge."
+    },
+    {
+      "id": "a3b-historical-terminal",
+      "contractVersion": 3,
+      "payloadType": "Observation3",
+      "capability": "sandtable.side.historical-terminal.v3",
+      "sourceCount": 28,
+      "traceCount": 56,
+      "admission": "projection-only",
+      "clockPolicies": [
+        "sandtable.side.inherited-retained-clock.v3"
+      ],
+      "scope": "Exact Task003 terminal; no fabricated earlier public history/actions."
+    },
+    {
+      "id": "b1-private",
+      "contractVersion": 1,
+      "payloadType": "Checkpoint",
+      "capability": null,
+      "sourceCount": 134,
+      "traceCount": 3,
+      "admission": "current-local",
+      "clockPolicies": [
+        "native-retained-trusted-clock.v1"
+      ],
+      "scope": "Three explicit private execution scopes; source prefix and full reference identities remain distinct."
+    },
+    {
+      "id": "b2-private",
+      "contractVersion": 1,
+      "payloadType": "Child",
+      "capability": null,
+      "sourceCount": 134,
+      "traceCount": 12,
+      "admission": "current-local",
+      "clockPolicies": [],
+      "scope": "Selected actual current-build children plus134 authenticated reference summaries; not134 repeated executions."
+    },
+    {
+      "id": "b3-private",
+      "contractVersion": 1,
+      "payloadType": "Parent",
+      "capability": null,
+      "sourceCount": 12,
+      "traceCount": 10,
+      "admission": "current-local",
+      "clockPolicies": [],
+      "scope": "Validated aggregation/pairs; unequal-stream prefix unit tests do not claim an admitted unequal-length pair."
+    }
+  ],
+  "handoff": {
+    "owner": "CMB-TASK-003",
+    "traceIds": [
+      "combat-inherited-no-attack-v1:axis-cp12-cohesion-2",
+      "combat-inherited-no-attack-v1:axis-cp14-cohesion-4",
+      "combat-inherited-no-attack-v1:commonwealth-cp12-cohesion-2",
+      "combat-inherited-no-attack-v1:commonwealth-cp14-cohesion-4",
+      "combat-inherited-reaction-closure-v1:axis-player-decline",
+      "combat-inherited-reaction-closure-v1:axis-scripted-unavailable",
+      "combat-inherited-reaction-closure-v1:axis-timeout",
+      "combat-inherited-reaction-closure-v1:commonwealth-player-decline",
+      "combat-inherited-reaction-closure-v1:commonwealth-scripted-unavailable",
+      "combat-inherited-reaction-closure-v1:commonwealth-timeout",
+      "combat-inherited-reaction-active-fallback-v1:axis-active-scripted-unavailable",
+      "combat-inherited-reaction-active-fallback-v1:axis-active-timeout",
+      "combat-inherited-reaction-active-fallback-v1:commonwealth-active-scripted-unavailable",
+      "combat-inherited-reaction-active-fallback-v1:commonwealth-active-timeout",
+      "combat-inherited-reaction-movement-completion-v1:axis-reaction-movement-completion",
+      "combat-inherited-reaction-movement-completion-v1:commonwealth-reaction-movement-completion",
+      "combat-inherited-reserve-cycle-v1:axis-reserve-I-cycle-entry",
+      "combat-inherited-reserve-cycle-v1:commonwealth-reserve-I-cycle-entry",
+      "combat-inherited-reserve-release-v1:axis-reserve-I-release",
+      "combat-inherited-reserve-release-v1:commonwealth-reserve-I-release",
+      "combat-inherited-armed-continuation-v1:axis-armed-continuation",
+      "combat-inherited-armed-continuation-v1:commonwealth-armed-continuation",
+      "combat-inherited-cycle-control-v1:axis-repeat",
+      "combat-inherited-cycle-control-v1:axis-finish",
+      "combat-inherited-cycle-control-v1:commonwealth-repeat",
+      "combat-inherited-cycle-control-v1:commonwealth-finish",
+      "combat-inherited-reserve-movement-completion-v1:axis-reserve-I-movement-completion",
+      "combat-inherited-reserve-movement-completion-v1:commonwealth-reserve-I-movement-completion"
+    ],
+    "versionsCanonicalJson": "{\"content\":7,\"setup\":7,\"world\":7,\"rules\":10,\"createdEvent\":11,\"snapshot\":12,\"sequence\":5,\"cycleCodec\":1}",
+    "compositionDigest": "sha256:fa0c78360fa59d3996f17ff897788158f16eb53df7202f32f00b3631ee122d50",
+    "canonicalHash": "sha256:0b30daba9208499d10832879711f6c48916ce3741e40eaf8953ec47c47563c47"
+  },
+  "capacities": [
+    {
+      "profile": "a1",
+      "payloadType": "Observation",
+      "records": 201,
+      "maximumBytes": 3702,
+      "byteLimit": 65536,
+      "maximumDepth": 5,
+      "depthLimit": 16,
+      "maximumArrayItems": 12,
+      "arrayLimit": 64,
+      "recordsHash": "sha256:5f11ca93afeed0fe64483ff12738ea375b3c9d4107b2b7073aa3cf3ceac355fc"
+    },
+    {
+      "profile": "a2",
+      "payloadType": "Observation2",
+      "records": 628,
+      "maximumBytes": 7503,
+      "byteLimit": 65536,
+      "maximumDepth": 6,
+      "depthLimit": 20,
+      "maximumArrayItems": 18,
+      "arrayLimit": 64,
+      "recordsHash": "sha256:424ce58b8c6a211bc8cd75a096a76173cebc80de61f8217b305788b3bb22eed4"
+    },
+    {
+      "profile": "a3-inherited",
+      "payloadType": "Observation3",
+      "records": 56,
+      "maximumBytes": 3864,
+      "byteLimit": 65536,
+      "maximumDepth": 5,
+      "depthLimit": 20,
+      "maximumArrayItems": 5,
+      "arrayLimit": 64,
+      "recordsHash": "sha256:59b45b31a0b8bb0d912ae38e4233c23f4b24a3f193f20d7c6d0d51a4d0f45e1f"
+    },
+    {
+      "profile": "a3-ledger",
+      "payloadType": "LedgerObservation3",
+      "records": 288,
+      "maximumBytes": 3316,
+      "byteLimit": 65536,
+      "maximumDepth": 6,
+      "depthLimit": 20,
+      "maximumArrayItems": 4,
+      "arrayLimit": 64,
+      "recordsHash": "sha256:2f13b227c54916b6b6e01763e9c7a0c09a444f373c57027598987a7eee9a5a3b"
+    },
+    {
+      "profile": "a3b-corrected",
+      "payloadType": "Observation3",
+      "records": 1152,
+      "maximumBytes": 9842,
+      "byteLimit": 65536,
+      "maximumDepth": 6,
+      "depthLimit": 20,
+      "maximumArrayItems": 19,
+      "arrayLimit": 64,
+      "recordsHash": "sha256:a003f2e8a01a40b17f00ece83a50b5c01aacccb45093cd9f9656581923556410"
+    },
+    {
+      "profile": "a3b-historical",
+      "payloadType": "Observation3",
+      "records": 56,
+      "maximumBytes": 2127,
+      "byteLimit": 65536,
+      "maximumDepth": 5,
+      "depthLimit": 20,
+      "maximumArrayItems": 1,
+      "arrayLimit": 64,
+      "recordsHash": "sha256:51c85cdfdd42e5b72eb3eb4658086101e2384b7f212005953a3f2d707cbafe06"
+    },
+    {
+      "profile": "b1-source",
+      "payloadType": "Source",
+      "records": 3,
+      "maximumBytes": 537356,
+      "byteLimit": 16777216,
+      "maximumDepth": 4,
+      "depthLimit": 40,
+      "maximumArrayItems": 10,
+      "arrayLimit": 256,
+      "recordsHash": "sha256:c184ef41d99f4c61b499a4a8b6733b722134e92f80b7c1d5ba6b9bf7d9f5302e"
+    },
+    {
+      "profile": "b1-checkpoint",
+      "payloadType": "Checkpoint",
+      "records": 6,
+      "maximumBytes": 43060,
+      "byteLimit": 16777216,
+      "maximumDepth": 11,
+      "depthLimit": 40,
+      "maximumArrayItems": 2,
+      "arrayLimit": 256,
+      "recordsHash": "sha256:6c2b7fbc2f5884aa2626b21515bc8940b4d76889e050ef9d8b05ced21d1a029c"
+    },
+    {
+      "profile": "b2-child",
+      "payloadType": "Child",
+      "records": 12,
+      "maximumBytes": 829068,
+      "byteLimit": 33554432,
+      "maximumDepth": 5,
+      "depthLimit": 48,
+      "maximumArrayItems": 171,
+      "arrayLimit": 1024,
+      "recordsHash": "sha256:650bf4bc4f376a466e55a4e6e05b75f84f3bd7c4de076508d6344f471f8685f3"
+    },
+    {
+      "profile": "b3-parent",
+      "payloadType": "Parent",
+      "records": 10,
+      "maximumBytes": 23998,
+      "byteLimit": 8388608,
+      "maximumDepth": 7,
+      "depthLimit": 52,
+      "maximumArrayItems": 26,
+      "arrayLimit": 128,
+      "recordsHash": "sha256:02d64245425c3f4ca4b71bf939c957ee008974ca3d88e28dac0051db480b1d42"
+    },
+    {
+      "profile": "task003-snapshot",
+      "payloadType": "RootSnapshot",
+      "records": 28,
+      "maximumBytes": 54181,
+      "byteLimit": 1048576,
+      "maximumDepth": 9,
+      "depthLimit": 32,
+      "maximumArrayItems": 2,
+      "arrayLimit": 512,
+      "recordsHash": "sha256:b7b4518b935b28ab84804fdc590f4622bd081cbfacf1061d84847b71aa671b03"
+    }
+  ],
+  "readbacks": [
+    {
+      "name": "task003-composition",
+      "reader": "read_composition",
+      "sourceId": "task003",
+      "cut": null,
+      "audience": null,
+      "payloadType": "AuthorityComposition",
+      "contractVersion": 1,
+      "bytes": 890546,
+      "sha256": "sha256:1070c75a3a0c095b176cecd4ea19b4b41887ae3325d6ee5dfaeebd58a101f5ed"
+    },
+    {
+      "name": "a1.axis.0",
+      "reader": "read_observation",
+      "sourceId": "clock-v2.axis.accepted-decline",
+      "cut": 0,
+      "audience": "axis",
+      "payloadType": "Observation",
+      "contractVersion": 1,
+      "bytes": 1223,
+      "sha256": "sha256:52eab13b14a4fbbcd3002aff7afde27e382388069bf344cda42dea26432d1ab7"
+    },
+    {
+      "name": "a1.axis.1",
+      "reader": "read_observation",
+      "sourceId": "clock-v2.axis.accepted-decline",
+      "cut": 1,
+      "audience": "axis",
+      "payloadType": "Observation",
+      "contractVersion": 1,
+      "bytes": 2132,
+      "sha256": "sha256:8db07a797a4d6fb0294aedbf2e69d710191c98687e4b2ab3c6e2ffef807f254e"
+    },
+    {
+      "name": "a1.axis.7",
+      "reader": "read_observation",
+      "sourceId": "clock-v2.axis.accepted-decline",
+      "cut": 7,
+      "audience": "axis",
+      "payloadType": "Observation",
+      "contractVersion": 1,
+      "bytes": 2351,
+      "sha256": "sha256:edf9b1a6da75e23d04da34f57ef78da3ce85ff0dceb2a789a8f33f0341f6f830"
+    },
+    {
+      "name": "a1.commonwealth.0",
+      "reader": "read_observation",
+      "sourceId": "clock-v2.axis.accepted-decline",
+      "cut": 0,
+      "audience": "commonwealth",
+      "payloadType": "Observation",
+      "contractVersion": 1,
+      "bytes": 1231,
+      "sha256": "sha256:f51ba50d269ec2152a11bd27631dc37962e0ec35bf99f2770a38f38781f4f573"
+    },
+    {
+      "name": "a1.commonwealth.5",
+      "reader": "read_observation",
+      "sourceId": "clock-v2.axis.accepted-decline",
+      "cut": 5,
+      "audience": "commonwealth",
+      "payloadType": "Observation",
+      "contractVersion": 1,
+      "bytes": 2215,
+      "sha256": "sha256:158f9662c46c55b14a7ddde3bcf5f415a7747eba8b464a248231cb8c470c9838"
+    },
+    {
+      "name": "a1.commonwealth.7",
+      "reader": "read_observation",
+      "sourceId": "clock-v2.axis.accepted-decline",
+      "cut": 7,
+      "audience": "commonwealth",
+      "payloadType": "Observation",
+      "contractVersion": 1,
+      "bytes": 2359,
+      "sha256": "sha256:acac925a37b751a4d37e0df3e0643e174b20438303574e59150f0dc8da8ff378"
+    },
+    {
+      "name": "a2.axis.0",
+      "reader": "read_observation2",
+      "sourceId": "settlement-v2.defender-capture-guard.axis.attacker",
+      "cut": 0,
+      "audience": "axis",
+      "payloadType": "Observation2",
+      "contractVersion": 2,
+      "bytes": 1271,
+      "sha256": "sha256:40f6e6afcb68308ffb7952fe9ddbd31b151339f9cd3ffec96c62f9728be7d364"
+    },
+    {
+      "name": "a2.axis.1",
+      "reader": "read_observation2",
+      "sourceId": "settlement-v2.defender-capture-guard.axis.attacker",
+      "cut": 1,
+      "audience": "axis",
+      "payloadType": "Observation2",
+      "contractVersion": 2,
+      "bytes": 2301,
+      "sha256": "sha256:b6fc1d66b1444f4d0a59e9b9f3e79fea41f41af7bfb42cf2338d3c4a67b6896e"
+    },
+    {
+      "name": "a2.axis.8",
+      "reader": "read_observation2",
+      "sourceId": "settlement-v2.defender-capture-guard.axis.attacker",
+      "cut": 8,
+      "audience": "axis",
+      "payloadType": "Observation2",
+      "contractVersion": 2,
+      "bytes": 3398,
+      "sha256": "sha256:081f9bb0328907036db0b76e88927dd1324101fb62c28d7a76054e75158365b9"
+    },
+    {
+      "name": "a2.axis.9",
+      "reader": "read_observation2",
+      "sourceId": "settlement-v2.defender-capture-guard.axis.attacker",
+      "cut": 9,
+      "audience": "axis",
+      "payloadType": "Observation2",
+      "contractVersion": 2,
+      "bytes": 3171,
+      "sha256": "sha256:1249af287cf8cb3901531725521e860211a23502a7443f2db203443460f0a923"
+    },
+    {
+      "name": "a2.axis.18",
+      "reader": "read_observation2",
+      "sourceId": "settlement-v2.defender-capture-guard.axis.attacker",
+      "cut": 18,
+      "audience": "axis",
+      "payloadType": "Observation2",
+      "contractVersion": 2,
+      "bytes": 5675,
+      "sha256": "sha256:d2a929828aefbbfbe895c77220f18327acc97672a9bf7d6e7964ae92af1a0637"
+    },
+    {
+      "name": "a2.axis.22",
+      "reader": "read_observation2",
+      "sourceId": "settlement-v2.defender-capture-guard.axis.attacker",
+      "cut": 22,
+      "audience": "axis",
+      "payloadType": "Observation2",
+      "contractVersion": 2,
+      "bytes": 6592,
+      "sha256": "sha256:5eb4d5274c0926975e675d5e9451751c33c294d9350d643b2b083f1b0eb8303d"
+    },
+    {
+      "name": "a2.commonwealth.0",
+      "reader": "read_observation2",
+      "sourceId": "settlement-v2.defender-capture-guard.axis.attacker",
+      "cut": 0,
+      "audience": "commonwealth",
+      "payloadType": "Observation2",
+      "contractVersion": 2,
+      "bytes": 1279,
+      "sha256": "sha256:faf3e8f1aa3530644240f48abffaa0f04e070937ee5ba418a50ada41c2fcc62d"
+    },
+    {
+      "name": "a2.commonwealth.5",
+      "reader": "read_observation2",
+      "sourceId": "settlement-v2.defender-capture-guard.axis.attacker",
+      "cut": 5,
+      "audience": "commonwealth",
+      "payloadType": "Observation2",
+      "contractVersion": 2,
+      "bytes": 2344,
+      "sha256": "sha256:f0a9ce629b87826997b3cabc095b62e1463b5b1effc0c5a98b85925ac9c14757"
+    },
+    {
+      "name": "a2.commonwealth.8",
+      "reader": "read_observation2",
+      "sourceId": "settlement-v2.defender-capture-guard.axis.attacker",
+      "cut": 8,
+      "audience": "commonwealth",
+      "payloadType": "Observation2",
+      "contractVersion": 2,
+      "bytes": 3406,
+      "sha256": "sha256:4b7594fd4c3e919f29fd9d454952b0cabd033e933ba7e38391f2c746b995857a"
+    },
+    {
+      "name": "a2.commonwealth.10",
+      "reader": "read_observation2",
+      "sourceId": "settlement-v2.defender-capture-guard.axis.attacker",
+      "cut": 10,
+      "audience": "commonwealth",
+      "payloadType": "Observation2",
+      "contractVersion": 2,
+      "bytes": 3179,
+      "sha256": "sha256:fb365f5da197b959c396cdfaba2ae1767c53cfbe97e581238e676c708308a78d"
+    },
+    {
+      "name": "a2.commonwealth.22",
+      "reader": "read_observation2",
+      "sourceId": "settlement-v2.defender-capture-guard.axis.attacker",
+      "cut": 22,
+      "audience": "commonwealth",
+      "payloadType": "Observation2",
+      "contractVersion": 2,
+      "bytes": 4671,
+      "sha256": "sha256:4d3712f4dcdd8ee9da72e55a3bca3eaa4ed066e2a67bbf26020fe62e792cdbc0"
+    },
+    {
+      "name": "a3-live.axis.0",
+      "reader": "read_observation3",
+      "sourceId": "inherited-reserve.axis",
+      "cut": 0,
+      "audience": "axis",
+      "payloadType": "Observation3",
+      "contractVersion": 3,
+      "bytes": 1837,
+      "sha256": "sha256:71d191ae2060c41e9056822bd4a7ff8aa400b44aa21418057bf483238f890e84"
+    },
+    {
+      "name": "a3-live.axis.1",
+      "reader": "read_observation3",
+      "sourceId": "inherited-reserve.axis",
+      "cut": 1,
+      "audience": "axis",
+      "payloadType": "Observation3",
+      "contractVersion": 3,
+      "bytes": 2654,
+      "sha256": "sha256:8015a806c50d9bb6ba5c002ca6869c9bf62aa1606d0fd0272ec2322992e52339"
+    },
+    {
+      "name": "a3-live.axis.3",
+      "reader": "read_observation3",
+      "sourceId": "inherited-reserve.axis",
+      "cut": 3,
+      "audience": "axis",
+      "payloadType": "Observation3",
+      "contractVersion": 3,
+      "bytes": 2953,
+      "sha256": "sha256:a074d846ce9b15248b3193095b9fecf08d045aa19992007e2165155d41b6bccf"
+    },
+    {
+      "name": "a3-live.commonwealth.0",
+      "reader": "read_observation3",
+      "sourceId": "inherited-reserve.axis",
+      "cut": 0,
+      "audience": "commonwealth",
+      "payloadType": "Observation3",
+      "contractVersion": 3,
+      "bytes": 1677,
+      "sha256": "sha256:30368116338924af6f34ecd6845e3cd0e34cfdd1ee615d1878e5dce352c0fe01"
+    },
+    {
+      "name": "a3-live.commonwealth.3",
+      "reader": "read_observation3",
+      "sourceId": "inherited-reserve.axis",
+      "cut": 3,
+      "audience": "commonwealth",
+      "payloadType": "Observation3",
+      "contractVersion": 3,
+      "bytes": 1677,
+      "sha256": "sha256:30368116338924af6f34ecd6845e3cd0e34cfdd1ee615d1878e5dce352c0fe01"
+    },
+    {
+      "name": "a3b-corrected.axis.0",
+      "reader": "read_observation3b",
+      "sourceId": "corrected-composition.defender-capture-guard.axis.attacker",
+      "cut": 0,
+      "audience": "axis",
+      "payloadType": "Observation3",
+      "contractVersion": 3,
+      "bytes": 1699,
+      "sha256": "sha256:89b148c29233448e899266ae97da8cc0ef42f37e92ea1ad57dfe5f6273a90446"
+    },
+    {
+      "name": "a3b-corrected.axis.1",
+      "reader": "read_observation3b",
+      "sourceId": "corrected-composition.defender-capture-guard.axis.attacker",
+      "cut": 1,
+      "audience": "axis",
+      "payloadType": "Observation3",
+      "contractVersion": 3,
+      "bytes": 2852,
+      "sha256": "sha256:41f40653bea33a7e68c1f5628720310111e820931514fb41f7c91cfbef72a5c9"
+    },
+    {
+      "name": "a3b-corrected.axis.8",
+      "reader": "read_observation3b",
+      "sourceId": "corrected-composition.defender-capture-guard.axis.attacker",
+      "cut": 8,
+      "audience": "axis",
+      "payloadType": "Observation3",
+      "contractVersion": 3,
+      "bytes": 4460,
+      "sha256": "sha256:f45fae54bcc4962ec7ea57b8c30fae443559be96b5e19110e9c2a8e161c6f575"
+    },
+    {
+      "name": "a3b-corrected.axis.9",
+      "reader": "read_observation3b",
+      "sourceId": "corrected-composition.defender-capture-guard.axis.attacker",
+      "cut": 9,
+      "audience": "axis",
+      "payloadType": "Observation3",
+      "contractVersion": 3,
+      "bytes": 4330,
+      "sha256": "sha256:59b2e5e3d4ec5763ad4c52755e4bf97d358d65fc864fec57dcb99760d9fcbae3"
+    },
+    {
+      "name": "a3b-corrected.axis.18",
+      "reader": "read_observation3b",
+      "sourceId": "corrected-composition.defender-capture-guard.axis.attacker",
+      "cut": 18,
+      "audience": "axis",
+      "payloadType": "Observation3",
+      "contractVersion": 3,
+      "bytes": 7345,
+      "sha256": "sha256:e927b3cb0cedef2f7f0d583f352257ae4508196a07988e4022daa1b961b0f638"
+    },
+    {
+      "name": "a3b-corrected.axis.25",
+      "reader": "read_observation3b",
+      "sourceId": "corrected-composition.defender-capture-guard.axis.attacker",
+      "cut": 25,
+      "audience": "axis",
+      "payloadType": "Observation3",
+      "contractVersion": 3,
+      "bytes": 9702,
+      "sha256": "sha256:a81880ac2d9250dafe2839ab1a0d86a5e8582d6e09ee5f5408011430acff46cb"
+    },
+    {
+      "name": "a3b-corrected.axis.26",
+      "reader": "read_observation3b",
+      "sourceId": "corrected-composition.defender-capture-guard.axis.attacker",
+      "cut": 26,
+      "audience": "axis",
+      "payloadType": "Observation3",
+      "contractVersion": 3,
+      "bytes": 9756,
+      "sha256": "sha256:5b5d19ea427881cebc078180d821ccb1ccfcc68a8b2df476a0e23a46cadd2517"
+    },
+    {
+      "name": "a3b-corrected.commonwealth.0",
+      "reader": "read_observation3b",
+      "sourceId": "corrected-composition.defender-capture-guard.axis.attacker",
+      "cut": 0,
+      "audience": "commonwealth",
+      "payloadType": "Observation3",
+      "contractVersion": 3,
+      "bytes": 1707,
+      "sha256": "sha256:f1b0435d76e2b55d03704ac931d97e48534ad9b6000b0ac397fdecb7780bd422"
+    },
+    {
+      "name": "a3b-corrected.commonwealth.5",
+      "reader": "read_observation3b",
+      "sourceId": "corrected-composition.defender-capture-guard.axis.attacker",
+      "cut": 5,
+      "audience": "commonwealth",
+      "payloadType": "Observation3",
+      "contractVersion": 3,
+      "bytes": 3089,
+      "sha256": "sha256:626b832f99445b545f0dd567b5c63968bc4c1db0740d8405bea9b4813012937c"
+    },
+    {
+      "name": "a3b-corrected.commonwealth.8",
+      "reader": "read_observation3b",
+      "sourceId": "corrected-composition.defender-capture-guard.axis.attacker",
+      "cut": 8,
+      "audience": "commonwealth",
+      "payloadType": "Observation3",
+      "contractVersion": 3,
+      "bytes": 4468,
+      "sha256": "sha256:ec4d393bc3856889edc59d2d59b13dabd47e4a564cc1e7ffeb6f48a8b151686c"
+    },
+    {
+      "name": "a3b-corrected.commonwealth.10",
+      "reader": "read_observation3b",
+      "sourceId": "corrected-composition.defender-capture-guard.axis.attacker",
+      "cut": 10,
+      "audience": "commonwealth",
+      "payloadType": "Observation3",
+      "contractVersion": 3,
+      "bytes": 4338,
+      "sha256": "sha256:28282618baa736638085bbe9d986835dc40ea9b945d52957c5b1ff3d220768ad"
+    },
+    {
+      "name": "a3b-corrected.commonwealth.26",
+      "reader": "read_observation3b",
+      "sourceId": "corrected-composition.defender-capture-guard.axis.attacker",
+      "cut": 26,
+      "audience": "commonwealth",
+      "payloadType": "Observation3",
+      "contractVersion": 3,
+      "bytes": 6570,
+      "sha256": "sha256:4d24e17058bf856e592f61ba321c80e398f2e5e17dc4fc1e7274b7a291de9e15"
+    },
+    {
+      "name": "terminal.historical-terminal.combat-inherited-reserve-movement-completion-v1:axis-reserve-I-movement-completion.axis",
+      "reader": "read_observation3b",
+      "sourceId": "historical-terminal.combat-inherited-reserve-movement-completion-v1:axis-reserve-I-movement-completion",
+      "cut": 0,
+      "audience": "axis",
+      "payloadType": "Observation3",
+      "contractVersion": 3,
+      "bytes": 2095,
+      "sha256": "sha256:3035697c5765a886e717efd571c03d37f02096bd06d54fe9303b3a51a1c9689a"
+    },
+    {
+      "name": "terminal.historical-terminal.combat-inherited-reserve-movement-completion-v1:axis-reserve-I-movement-completion.commonwealth",
+      "reader": "read_observation3b",
+      "sourceId": "historical-terminal.combat-inherited-reserve-movement-completion-v1:axis-reserve-I-movement-completion",
+      "cut": 0,
+      "audience": "commonwealth",
+      "payloadType": "Observation3",
+      "contractVersion": 3,
+      "bytes": 1690,
+      "sha256": "sha256:a76af9f2fd9d5e4fbc0d5f4f7c8712bd0a48c5cddf66d5d2c3490ffb8d6a2c2d"
+    },
+    {
+      "name": "terminal.historical-terminal.combat-inherited-reserve-movement-completion-v1:commonwealth-reserve-I-movement-completion.axis",
+      "reader": "read_observation3b",
+      "sourceId": "historical-terminal.combat-inherited-reserve-movement-completion-v1:commonwealth-reserve-I-movement-completion",
+      "cut": 0,
+      "audience": "axis",
+      "payloadType": "Observation3",
+      "contractVersion": 3,
+      "bytes": 1698,
+      "sha256": "sha256:ad05ae6b81e27c1d501db8e783b86231cd03bd78c2d260876316307a11eecc95"
+    },
+    {
+      "name": "terminal.historical-terminal.combat-inherited-reserve-movement-completion-v1:commonwealth-reserve-I-movement-completion.commonwealth",
+      "reader": "read_observation3b",
+      "sourceId": "historical-terminal.combat-inherited-reserve-movement-completion-v1:commonwealth-reserve-I-movement-completion",
+      "cut": 0,
+      "audience": "commonwealth",
+      "payloadType": "Observation3",
+      "contractVersion": 3,
+      "bytes": 2127,
+      "sha256": "sha256:488a47ab7288ec6d59a0c1d412775d92dc9403adad7b3c374202d809b60b4c3d"
+    },
+    {
+      "name": "ledger.0",
+      "reader": "parse3+ledger_views3",
+      "sourceId": "ledger-reserve.later-complete-intent.axis.first-acting-side",
+      "cut": 0,
+      "audience": "axis",
+      "payloadType": "LedgerObservation3",
+      "contractVersion": 3,
+      "bytes": 1549,
+      "sha256": "sha256:18066bd655f8a571e0f26b68277611ec129911b22a3c3c337cd0cd938ac0b98a"
+    },
+    {
+      "name": "ledger.1",
+      "reader": "parse3+ledger_views3",
+      "sourceId": "ledger-reserve.later-complete-intent.axis.first-acting-side",
+      "cut": 1,
+      "audience": "axis",
+      "payloadType": "LedgerObservation3",
+      "contractVersion": 3,
+      "bytes": 2782,
+      "sha256": "sha256:4b34cf1cac9ab026de1220a1e808ab5e977ec6b98b41d5729b141fc074dbe626"
+    },
+    {
+      "name": "ledger.2",
+      "reader": "parse3+ledger_views3",
+      "sourceId": "ledger-reserve.later-complete-intent.axis.first-acting-side",
+      "cut": 2,
+      "audience": "axis",
+      "payloadType": "LedgerObservation3",
+      "contractVersion": 3,
+      "bytes": 2420,
+      "sha256": "sha256:1c417bd86cea6833a89af42897f31503faff9ec26a9eeab8d453a1819b085e3a"
+    },
+    {
+      "name": "b1-source",
+      "reader": "read_source",
+      "sourceId": "corrected-composition.defender-capture-guard.axis.attacker",
+      "cut": null,
+      "audience": null,
+      "payloadType": "Source",
+      "contractVersion": 1,
+      "bytes": 582407,
+      "sha256": "sha256:204da32284ec443f0f0c406990a83c80240b8d41330f2cf27efe9a2cdfd1d36b"
+    },
+    {
+      "name": "b1-checkpoint.0",
+      "reader": "read_checkpoint",
+      "sourceId": "corrected-composition.defender-capture-guard.axis.attacker",
+      "cut": 0,
+      "audience": null,
+      "payloadType": "Checkpoint",
+      "contractVersion": 1,
+      "bytes": 5186,
+      "sha256": "sha256:1b19720320555a47e145a9f81e72f87d85a1fe54f708d6ae8b93cfa959f97351"
+    },
+    {
+      "name": "b1-checkpoint.26",
+      "reader": "read_checkpoint",
+      "sourceId": "corrected-composition.defender-capture-guard.axis.attacker",
+      "cut": 26,
+      "audience": null,
+      "payloadType": "Checkpoint",
+      "contractVersion": 1,
+      "bytes": 50400,
+      "sha256": "sha256:dba83ca47c64a6d5b6df5ac18e9ac8ac2df00dc26d4d051e93e8bcd7c47e368b"
+    },
+    {
+      "name": "b2-guard",
+      "reader": "validate_child",
+      "sourceId": "corrected-composition.defender-capture-guard.axis.attacker",
+      "cut": null,
+      "audience": null,
+      "payloadType": "Child",
+      "contractVersion": 1,
+      "bytes": 901912,
+      "sha256": "sha256:31dd4411b79daf2b0e5c8561158ed9bf287fc93ce475975dfc80d5504dbfcc59"
+    },
+    {
+      "name": "b2-failed-guard",
+      "reader": "validate_child",
+      "sourceId": "corrected-composition.defender-capture-guard.axis.attacker",
+      "cut": null,
+      "audience": null,
+      "payloadType": "Child",
+      "contractVersion": 1,
+      "bytes": 900530,
+      "sha256": "sha256:67d895e5e1dbfd31ce84263b780263dd319b0c6364ab06622b7f08e3c5bdf096"
+    },
+    {
+      "name": "b2-fallback-a",
+      "reader": "validate_child",
+      "sourceId": "settlement-v2.attacker-capture-escape.axis.attacker.fallback-retreat",
+      "cut": null,
+      "audience": null,
+      "payloadType": "Child",
+      "contractVersion": 1,
+      "bytes": 424060,
+      "sha256": "sha256:369ee68fd371444424cb76e026310c123b268b87eb66c240e532ad3343fddc75"
+    },
+    {
+      "name": "b3-guard-escape",
+      "reader": "validate_parent",
+      "sourceId": "parent.guard-escape",
+      "cut": null,
+      "audience": null,
+      "payloadType": "Parent",
+      "contractVersion": 1,
+      "bytes": 23777,
+      "sha256": "sha256:7c2f2b92acf3f7e6327ec3bb57d7a9803f8aa84dbc28d6dfaaec11224c1260ba"
+    },
+    {
+      "name": "b3-validated-failures",
+      "reader": "validate_parent",
+      "sourceId": "parent.validated-failures",
+      "cut": null,
+      "audience": null,
+      "payloadType": "Parent",
+      "contractVersion": 1,
+      "bytes": 23998,
+      "sha256": "sha256:f24799a8b7daa3a1443b84d7a66e068a96e7795b72c69ae447b978a2b4e958f3"
+    },
+    {
+      "name": "b3-limit-mismatch",
+      "reader": "validate_parent",
+      "sourceId": "parent.limit-mismatch",
+      "cut": null,
+      "audience": null,
+      "payloadType": "Parent",
+      "contractVersion": 1,
+      "bytes": 16474,
+      "sha256": "sha256:6d4720b9ae4383cf2e74aef67e277fce20b7008b4a386993dbaf2a7e983e2e23"
+    }
+  ],
+  "exclusions": [
+    {
+      "id": "runtime",
+      "disposition": "Hosted Dispatch, provider, Runner, War Diary and persistence activation remain planned; no production registration."
+    },
+    {
+      "id": "unsupported-profiles",
+      "disposition": "Multiple-opportunity Reaction, positive vehicle Breakdown, arbitrary geometry and broader attachment/Probe/Barrage/Anti-Armor families remain unadmitted."
+    },
+    {
+      "id": "historical-clock",
+      "disposition": "Original historical diagnostic/counterexample is retained; it is not a passing current-profile acceptance test."
+    },
+    {
+      "id": "calendar",
+      "disposition": "Future upkeep/replacement obligations retained; maturity execution and successful Game terminal excluded."
+    },
+    {
+      "id": "ledger",
+      "disposition": "Standalone canonical ledgers and four isolated owner-completion classifier witnesses are not full-World children."
+    },
+    {
+      "id": "pairing",
+      "disposition": "Unequal-length null-arm algorithm uses authenticated prefixes only; no current comparable unequal-length child pair or post-divergence RNG alignment claimed."
+    },
+    {
+      "id": "task005",
+      "disposition": "Production/dormant C# arithmetic, RulesInput provenance and table parity remain Task005 work; no implementation claim made here."
+    }
+  ]
+}

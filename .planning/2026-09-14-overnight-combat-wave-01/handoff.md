@@ -1,16 +1,17 @@
-# Combat wave01 — day-stop handoff
+# Combat wave01 — delivery handoff
 
 ## Active accelerated continuation
 
 User approved retaining B3→C→Task005 sequence while reducing duplicate work. B2 accepted c5c9256;
-publication through fd012e4. Current objective: finish B3 and C/checkpoint B, then dormant C#005A/B.
+B3 accepted36ef7bb; publication through fd012e4. C/checkpoint B accepted. Current objective: finish dormant C#005A/B.
 No new gameplay profiles, privacy exceptions, runtime activation or merge. Full gate at C and
 final005 integration; focused behavior/raw tests and ordinary review per slice.
 
 B3 accepted: final focused command138.722s;12children/10parents, rejection/readback groups,
 root literal audit and ordinary review pass. Writer side_cycle_writer retains warm interpreter21038
-for C. evidence/004b3-author-resumed.log and004b3-ordinary-review.md retain exact evidence.
-Source agent task004_evidence owns005 implementation only after C acceptance; preflight complete.
+closed exit0 after C. evidence/004b3-author-resumed.log and004b3-ordinary-review.md retain exact evidence.
+C accepted:72ACs/99pins/51readbacks/28handoff, focused19.583s plus ordinary review and root81/1670 gate.
+Source agent task004_evidence owns005 implementation next; preflight complete.
 Root owns plans, Cmap, commits, integration gates and PR.
 
 B3 pairs preserve same fault/assertion/build/initial source/capability/terminal/bounds. Current

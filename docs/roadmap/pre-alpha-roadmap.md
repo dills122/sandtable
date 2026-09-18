@@ -46,7 +46,7 @@ review and simulator reports apply only to their stated commits and capabilities
 
 | Next gate | Concrete outcome |
 | --- | --- |
-| Contract checkpoint B | Parent003 authority composition and exact 003-to-004 handoff are complete. Task004A1/A2, round-v2, result-v2 and native cycle-finish composition are accepted under [strict clock privacy](../design/combat-cycle-policy-reconciliation.md#clock-privacy-correction--owner-decision-2026-09-15). Complete Reserve/cycle side families, CON-006 and all72 AC mapping before checkpoint B acceptance. |
+| Contract checkpoint B | Parent003 authority composition and exact 003-to-004 handoff are complete. Task004A/B side and private Exercise contracts, round-v2, result-v2 and native cycle-finish composition are accepted under [strict clock privacy](../design/combat-cycle-policy-reconciliation.md#clock-privacy-correction--owner-decision-2026-09-15). Task004C integrated readback and all72 AC reconciliation are accepted; checkpoint B is complete. |
 | Dormant Core,005–019 | Implement tables/content, loss-capable state, strict restore, private decisions, settlement, Reserve Release, relation-aware Movement, and guarded repeat/finish in dependency order. Every state-changing family needs replay cuts and recovery evidence before a dependent task starts. |
 | Public Core,020–021 | Add audience-safe observations/actions and authenticated submission mapping, then activate only the certified profile. Unsupported profiles reject before a decision; disabling new admission must not disable recovery. |
 | Exercise and Runner,022–024 | Drive the same public actions through Exercise and Runner, prove reconstruction/readjudication, and retain clean repeated evidence for empty, settled-assault, and Movement-repeat paths. Existing Rules9 studies cannot substitute. |
@@ -184,7 +184,7 @@ Optional parser evidence gate
 | Foundations | Versioned provenance, content, world, commands/events, deterministic RNG, replay, observation, and action contracts | Implemented and activated for the admitted Rules9 synthetic profile | Extend compatibility, replay, and fog tests with each admitted mechanic |
 | Mandatory preamble | Current runtime contracts through Reserve Designation | Implemented and publicly exercised for the admitted no-obligation profile | Add only scenario-required positive obligation families |
 | Movement, Reaction, Breakdown | Frozen and implemented for the certified battalion/Truck profiles | Public actions and checked Runner evidence reach first-side Combat entry | Preserve regressions; broaden positive ZOC/vehicle cases only with an admitted profile |
-| Combat and continual cycle | Research/design and parent003 authority composition complete; 28 creation-rooted traces freeze CON-002–004 and Task004 handoff | **Not implemented or activated**; current public authority stops at Combat entry | Task004 → checkpoint B → runtime005–021 → evidence022–024 |
+| Combat and continual cycle | Research/design and parent003 authority composition complete; 28 creation-rooted traces freeze CON-002–004 and Task004 handoff | **Not implemented or activated**; current public authority stops at Combat entry | Checkpoint B accepted → dormant005–019 → public020–021 → evidence022–024 |
 | Working pre-alpha skeleton | Acceptance boundary defined | Not reached | One authentic movement/contact/combat/release repeat-or-finish loop with identical replay and Chronicle evidence |
 | Six-turn scenario and remaining Land rules | Milestone outcomes defined; exact exercised-rule/data inventory intentionally pending | Not started | Measure after the skeleton, freeze source/content scope, then split implementation-sized tasks |
 | Campaign lifecycle and Maproom | Architecture and no-model interaction direction reviewed | Not started | Stable playable authority, durable save/resume contracts, hot-seat isolation, and deterministic UI path |
@@ -207,7 +207,7 @@ Maproom remain future work.
 | 2 — Rules laboratory and legal-action boundary | Complete for the admitted synthetic path | Keep outward actions observation-derived and revalidate exact membership at submission |
 | 3 — Mandatory turn preamble | Complete for the admitted synthetic no-obligation path | Positive Organization/convoy/fleet cases remain explicit later-scenario work; subsequent bounded mechanics now reach first-side Combat entry |
 | 4 — Movement, Breakdown, and Reaction boundary | Complete within the certified synthetic profile | Movement and ZOC/Reaction are implemented; Breakdown Tasks006–007 public activation, Runner adoption and transcript/privacy follow-up are complete. Positive ZOC and broader Breakdown categories remain extensions |
-| 5 — Combat and continual-cycle loop | Parent003 authority freeze complete; no Combat runtime | Complete Task004 and checkpoint B; then execute005–024 and close025 only after an authentic loop passes |
+| 5 — Combat and continual-cycle loop | Parent003 authority freeze complete; no Combat runtime | Checkpoint B accepted; execute005–024 and close025 only after an authentic loop passes |
 | 6 — Scenario Group One content | Milestone-level; not started | Produce the exact exercised-rule/data/source/rights inventory after the skeleton, then split bounded content packets |
 | 7 — Remaining required Land systems | Milestone-level; not started | Implement only the measured six-turn surface, including termination/victory, with the same authority/replay/fog gates |
 | 8 — Minimal Maproom and campaign lifecycle | Milestone-level; not started | Add durable local save/resume and recovery before UI completion; prove hot-seat privacy and a complete no-model action path |
@@ -784,7 +784,7 @@ research below remains evidence; it is not an instruction to restart those inves
 
 | Lane | Current priority and boundary |
 | --- | --- |
-| Combat critical path | Task004/Checkpoint B → dormant005–019 → public020–021 → Runner022–024 → closeout025. Parent003 integrated composition and handoff are complete. |
+| Combat critical path | Checkpoint B accepted → dormant005–019 → public020–021 → Runner022–024 → closeout025. Parent003 integrated composition and handoff are complete. |
 | Product critical path | Sprint5 authentic loop → measured six-turn scenario inventory → source/content and remaining Land/victory work → durable save/resume → minimal Maproom/hot-seat privacy → two complete deterministic playthroughs. |
 | Orleans feasibility / `HOST-RSH-001` | Research/probe complete; atomic commit-batch and derived-checkpoint proposal awaits owner acceptance. Production work waits for public Core activation, one verified Runner trace, and an approved storage contract. |
 | Completed foundations | Movement/ZOC/Breakdown and Combat research remain regression/source evidence. Reopen only for a concrete failure, new source evidence, or approved capability expansion. |

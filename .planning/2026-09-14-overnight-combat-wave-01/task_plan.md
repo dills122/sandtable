@@ -20,10 +20,12 @@ reproduce new checks. Do not expand model families or create extra policy/review
 and reported status must always distinguish contract-model work from dormant C# implementation.
 
 Current resume2026-09-18: B3 accepted after focused tests, exact fixture, root literal audit
-and ordinary review. Next C/checkpoint B and dormant005A/B. Older day-stop/time limits below
+and ordinary review. C/checkpoint B now accepted; next dormant005A/B. Older day-stop/time limits below
 are historical and superseded by user request to finish accelerated continuation.
 
-## Objective and boundary
+## Historical scope and boundary records
+
+The current accelerated continuation above supersedes earlier day-stop and B2-only scope.
 
 **B2 resumed after day stop:** user requested completion of B2, first checking CCE. CCE Sandtable
 index status operational and session recall successful. Final focused checks, fixture regeneration, ordinary review/source reconciliation completed;
@@ -99,9 +101,9 @@ is exhausted. Ordinary fresh-context five-axis review only.
 | CMB-TASK-004A2 | accepted004A1 and Result2 | same writer / internal | same four004A files only | settlement results, own retreat/custody/replacement disclosure/candidates; TDD plus focused/gate/review | accepted:37groups, ordinary review/source audit, root81+1670 gate |
 | CMB-TASK-004A3 | accepted004A2/bridge; sequentialA3a/A3b | side_cycle_writer / internal | same four004A files only | Reserve I/laterII, cycle/structural projection, exact003 handoff and corpus reconciliation; TDD plus focused/gate/review; only then004A freeze | A3a/A3b accepted:62groups/review/source audit/root81+1670; B1/B2 accepted |
 | CMB-TASK-004B | accepted004A | writer / internal subagent; reviewer and evidence read-only | new Exercise-contract spec/schema/fixture/oracle; brain owns combined plan | CON-006 exact terminal/ordinal/continuation, strict manifest/report and divergence, negative success rejection; focused oracle plus just check | B1 accepted:134sources/2576cuts/8groups/review/audit/root81+1670; B2 accepted:134 admissions/7 native readbacks/22 failure checks, final fixture/review/source/root checks; B3 accepted12children/10parents, focused rejection/readback checks and ordinary review |
-| CMB-TASK-004C | accepted004A/B | writer / internal subagent; reviewer and evidence read-only | new combat-outward-composition-v1 spec/schema/fixture/oracle; brain owns plan | exact003 handoff, all72 ACs task/planned-test mapped, outward versions/capacity/compatibility checked; all focused plus just check; checkpoint B only on reconciled evidence | pending |
+| CMB-TASK-004C | accepted004A/B | writer / internal subagent; reviewer and evidence read-only | new combat-outward-composition-v1 spec/schema/fixture/oracle; brain owns plan | exact003 handoff, all72 ACs task/planned-test mapped, outward versions/capacity/compatibility checked; all focused plus just check; checkpoint B only on reconciled evidence | accepted:72ACs/99pins/51readbacks/28handoff/11capacity groups; focused tests/review/root81+1670 gate pass |
 | W01-NAV | current retained reality | brain | README.md, docs/roadmap/pre-alpha-roadmap.md, tech-design.md, naming-overview.md only where reality changes | coherent blocked status and local links | complete: blocked status synchronized, links checked |
-| CMB-TASK-005 | complete004/B | writer / internal subagent; reviewer and evidence read-only | Rules and focused Rules tests, at most five primary files per recorded slice | full normalized approved-source comparison, every selected coordinate/reachable differential, conditional capture and ordered pairs; TDD; focused tests plus just check; no campaign activation | gated |
+| CMB-TASK-005 | complete004/B | writer / internal subagent; reviewer and evidence read-only | Rules and focused Rules tests, at most five primary files per recorded slice | full normalized approved-source comparison, every selected coordinate/reachable differential, conditional capture and ordered pairs; TDD; focused tests plus just check; no campaign activation | ready:004/checkpoint B accepted;005A begins next |
 | CMB-TASK-006 | complete005 | writer / internal subagent; reviewer and evidence read-only | Content and focused Content tests, split before edits | versioned synthetic admission, strict provenance/mutations and historical bytes; TDD; focused tests plus just check | stretch/deferred |
 | W01-DELIVERY | accepted packet evidence and final outcome | brain | planning/handoff, Git metadata and draft PR | exact commits/files/tests, latest main/dirty state/children, one pushed branch/draft PR | draftPR115 retained; renewed packets accepted, required004/005 objective still incomplete |
 

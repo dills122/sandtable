@@ -1,0 +1,44 @@
+{"event": "C_INTEGRATED_START", "utc": "2026-09-18T23:49:06.370478+00:00", "wallSeconds": 1509.034, "cpuSeconds": 380.324, "priorRedLog": "004b3-author-resumed.log"}
+{"event": "C_REQUIREMENTS_GREEN", "utc": "2026-09-18T23:49:06.454876+00:00", "wallSeconds": 1509.118, "cpuSeconds": 380.408, "result": {"requirements": 72, "mutationRejects": 7}}
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+    sys.stdout=open(ROOT/'.planning/2026-09-14-overnight-combat-wave-01/evidence/004c-author-integrated.log','a',buffering=1); sys.stderr=sys.stdout; report('C_INTEGRATED_START', priorRedLog='004b3-author-resumed.log'); integration=load('combat_outward','verify-combat-outward-composition-v1.py'); report('C_REQUIREMENTS_GREEN', result=integration.test_requirements()); c_start=time.monotonic(); ci=integration.build_index(); report('C_INDEX_READY', seconds=round(time.monotonic()-c_start,3), readbacks=len(ci['readbacks']))
+                                                                                                                                                                                                                                                                                                                                                                                                               ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/dsteele/.codex/worktrees/0b59/sandtable/docs/specs/verify-combat-outward-composition-v1.py", line 179, in build_index
+    artifacts=retained_artifacts();requirements=validate_requirements(INVENTORY['requirements']);readbacks,handoff=selected_readbacks(artifacts)
+                                                                                                                   ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/Users/dsteele/.codex/worktrees/0b59/sandtable/docs/specs/verify-combat-outward-composition-v1.py", line 142, in selected_readbacks
+    require(len(terminals)==2)
+    ~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "/Users/dsteele/.codex/worktrees/0b59/sandtable/docs/specs/verify-combat-outward-composition-v1.py", line 18, in require
+    if not value:raise Invalid('CMB-OUTWARD-COMPOSITION-REJECTED')
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+combat_outward.Invalid: CMB-OUTWARD-COMPOSITION-REJECTED
+{"event": "C_FINAL_RUN_START", "utc": "2026-09-18T23:51:19.182805+00:00", "wallSeconds": 1641.85, "cpuSeconds": 387.363}
+test_requirements {'requirements': 72, 'mutationRejects': 7} 0.08
+test_integrated_readback {'requirements': 72, 'pins': 99, 'profiles': 12, 'readbacks': 51, 'handoff': 28, 'capacityGroups': 11, 'canonicalIndexBytes': 116617} 26.543
+test_native_rejections {'occurrence': 1, 'source': 1, 'childSuccessAndProof': 2, 'parent': 1} 32.931
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+    integration=load('combat_outward','verify-combat-outward-composition-v1.py'); report('C_FINAL_RUN_START'); integration.main(generate=True); report('C_COMMAND_COMPLETED', result='passed')
+                                                                                                               ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/dsteele/.codex/worktrees/0b59/sandtable/docs/specs/verify-combat-outward-composition-v1.py", line 273, in main
+    for test in TESTS:print(test.__name__,test(),round(time.monotonic()-started,3),flush=True)
+                                          ~~~~^^
+  File "/Users/dsteele/.codex/worktrees/0b59/sandtable/docs/specs/verify-combat-outward-composition-v1.py", line 230, in test_profile_separation
+    proposal=s.raw3(s.submission3(offered),'Submission3');rejected(lambda:s.admit_a3b(s.prefix(ledger,cut),'axis',proposal));break
+                                                          ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/dsteele/.codex/worktrees/0b59/sandtable/docs/specs/verify-combat-outward-composition-v1.py", line 53, in rejected
+    raise AssertionError('invalid integration evidence accepted')
+AssertionError: invalid integration evidence accepted
+{"event": "C_FINAL_RUN_START", "utc": "2026-09-18T23:54:56.849039+00:00", "wallSeconds": 1859.522, "cpuSeconds": 418.85}
+test_requirements {'requirements': 72, 'mutationRejects': 7} 0.079
+test_integrated_readback {'requirements': 72, 'pins': 99, 'profiles': 12, 'readbacks': 51, 'handoff': 28, 'capacityGroups': 11, 'canonicalIndexBytes': 116617} 11.832
+test_native_rejections {'occurrence': 1, 'source': 1, 'childSuccessAndProof': 2, 'parent': 1} 18.182
+test_profile_separation {'crossVersionProfileRejects': 7, 'equalPublicHistoryAudiences': 2, 'firstFrameClockConfiguration': 1} 18.362
+test_capacity_and_compatibility {'measuredRecords': 2440, 'groups': 11, 'immutablePredecessorSections': 3, 'boundaryRejects': 5} 18.542
+test_index_authentication {'indexMutations': 6, 'pinBeforeCache': 1, 'rawRejects': 7, 'boundaryRejects': 4} 19.308
+EXPECTED RED missing/stale C fixture
+test_fixture {'bytes': 138165, 'requirements': 72, 'readbacks': 51, 'rawMutationRejects': 4}
+C_FOCUSED_GREEN {"seconds": 19.583, "hashes": {"combat-outward-composition-v1.md": "78f3363d18c3c74fae914c52df944116b72b5a9f2e5c81e5c0581e9f50c58f0c", "combat-outward-composition-v1.schema.json": "6e8ec1103315238c0c5520c6cff9b31b20d6de2386e197944265a48168021344", "fixtures/combat-outward-composition-v1.json": "28e37f48c80ed6ca6b7f7fabb4fb72b5d3433305ad662e091e2625a017bc1c24", "verify-combat-outward-composition-v1.py": "db89c64a001fad3871b0f93122e8a5e903b0e3e6083e4fb269b766a3070d3508"}}
+{"event": "C_COMMAND_COMPLETED", "utc": "2026-09-18T23:55:16.431351+00:00", "wallSeconds": 1879.105, "cpuSeconds": 438.415, "result": "passed"}

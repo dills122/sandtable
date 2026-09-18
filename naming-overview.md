@@ -682,7 +682,12 @@ A [private Exercise child](docs/specs/combat-exercise-child-evidence-v1.md) bind
 execution to its native source, accepted transitions, terminal result and separate verification
 proofs. Input initiator, native event author and semantic action remain distinct; a rejected owner
 proposal can trigger a System fallback. Expected failure remains a failed result. This contract
-evidence is accepted; parent comparison and runtime artifact publication remain pending.
+evidence is accepted. A [private Exercise parent](docs/specs/combat-exercise-parent-evidence-v1.md)
+aggregates authenticated children and compares actual audience/action streams only when their initial
+state and required configuration agree. **First divergence** marks the earliest unequal action; it
+does not establish a cause or align later randomness. The
+[outward integration index](docs/specs/combat-outward-composition-v1.md) reconciles those private
+contract terms with all72 planned runtime requirements. Runtime artifact publication remains pending.
 
 **Capability Point expenditure** is the exact amount already spent during the current Operation
 Stage; it is not a replenishing UI movement allowance. **Complete Movement** is a real player
