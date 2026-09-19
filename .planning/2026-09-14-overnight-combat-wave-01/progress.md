@@ -588,3 +588,7 @@ just check exit0: format/build clean,81boundary/1741full tests,zero failures/ski
 Rules/registration hashes reconcile. Local link audit7documents/627targets passes (no external or
 anchor audit claim). B3/C/checkpoint B and dormant005A/B complete. Task006 next, no gameplay
 activation, hosted transport, durable publication or merge. Publish existing open/ready PR115.
+
+Publication complete: pushedfd012e4→b732656, verified matching PR115 head. Title updated to
+“Add dormant Combat rules and privacy-safe evidence”; final body includes code/scope/test evidence.
+PR remains OPEN/ready, no merge. Required delivery complete; publication-only follow-up records it.

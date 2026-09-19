@@ -11,8 +11,9 @@ Combat gameplay still stops at entry; public activation remains Tasks020–021 a
 
 Branch `codex/overnight-combat-wave-01`; latest fetched main `ff6b5f60219afbb12d5e06bf836f06f94de32006`.
 Existing open PR115: https://github.com/dills122/sandtable/pull/115. Live state is ready for review,
-not draft; preserve user-managed state. Final005B acceptance commit contains this handoff and is
-the publication target. User authorized Keychain-backed push/PR update outside sandbox; no merge.
+not draft; preserve user-managed state. Final005B code commit `b7326561140ef9ca66c16ed2d137aaaa3b6b3187` was pushed and
+verified as PR head; title/body updated to include actual C# implementation. This follow-up records
+publication only. User authorized Keychain-backed push/PR update outside sandbox; no merge.
 For GitHub CLI unset inherited GH_TOKEN and GITHUB_TOKEN; never extract credential bytes.
 Optional CCE record uploads remain unauthorized; no write was attempted.
 
