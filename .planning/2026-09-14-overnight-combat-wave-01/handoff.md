@@ -23,7 +23,7 @@ Branch: `codex/overnight-combat-wave-01`.
 Base/latest fetched main: `ff6b5f60219afbb12d5e06bf836f06f94de32006` (unchanged).
 Published head: `fd012e4bebb2a1f833e0ccb8b65034f0c5c0f266`.
 2026-09-18 fetch confirmed same main ff6b5f6 and no branch divergence.
-Existing draft: https://github.com/dills122/sandtable/pull/115. No merge.
+Existing open PR: https://github.com/dills122/sandtable/pull/115. Live check now shows isDraft=false; preserve user-managed review status. No merge.
 
 ## Publication boundary
 

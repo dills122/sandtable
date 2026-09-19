@@ -570,3 +570,12 @@ Navigation/spec local target check passed7documents/620targets (external URLs/an
 C ordinary review APPROVE, no open findings. Task004/checkpoint B ACCEPTED2026-09-18.
 Warm author interpreter closed exit0; B3 log preserved and C warmup separated. Status-only spec
 hash change recorded. Next005A arithmetic/types then005B exact RulesInput codec; no activation.
+
+Publication preflight: latest main remainsff6b5f6, local branch2ahead/0behind remote after B3/C.
+PR115 OPEN, live isDraft=false (changed since earlier records); preserve current review status.
+No merge.005A initial focused RED observed:10assertion failures, build0warnings/errors.
+
+005A ACCEPTED: immutable full RulesInput1 definitions, pure explicit-dice arithmetic and
+independent tests. RED10failures; GREEN19passed0failed0skipped,build0warnings/errors,scopedformat
+and ordinary review pass. Source/exhaustive counts and four final hashes retained. Six existing
+Rules/registration files match baseline.005B codec and final full gate remain.
