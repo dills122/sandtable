@@ -714,6 +714,10 @@ without independently trusted request/artifacts, and this reader cannot restore 
 Its receipts identify accepted causal occurrences; retry returns the original event and current
 projection. It is not a general Snapshot12 or a published Chronicle head.
 
+**WeatherState1** extends the private opening projection with retained Weather1 and its advanced
+RNG cursor. It requires trusted creation and complete opening/Weather history; it cannot independently
+certify a campaign state or stand in for Snapshot12.
+
 **Capability Point expenditure** is the exact amount already spent during the current Operation
 Stage; it is not a replenishing UI movement allowance. **Complete Movement** is a real player
 decision that advances to Breakdown Determination, not a runner stop condition. These names are

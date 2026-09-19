@@ -945,6 +945,10 @@ Task008 B1 reconstructs four opening transitions from trusted creation and retai
 Private PreambleState1 carries derived receipts, order and Chronicle prefix through Weather entry;
 exact retries retain original event bytes while returning current replay state. Fixed first-turn
 Axis context remains dormant. Weather C precedes stage-entry B2; neither is synthesized by B1.
+Task008 C extends accepted opening history with one Weather event. Existing Rules and seeded RNG
+derive the outcome; exact replay retains all weather kinds, five receipts and the advanced cursor.
+Axis remains determining side under either initiative order. Explicit absence of immediate-effect
+subjects permits zero effect counts; World stays unchanged through Organization entry.
 Creation publication evaluation now targets an expected-head per-campaign commit batch. The
 [HOST-PUB-001 evidence allocation](docs/specs/combat-authority-envelope-v1.md#runtime-evidence-ownership)
 keeps actual atomic uniqueness, commit ambiguity and process-recovery proof open until provider
