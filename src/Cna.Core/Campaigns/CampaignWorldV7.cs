@@ -126,13 +126,15 @@ internal sealed record CampaignWorldSnapshotV7
             throw new ArgumentException("Settlement refers outside this world.", nameof(settlements));
         if (Settlements.Count == 0)
         {
-            if (CustodyLots.Count != 0)
-                throw new ArgumentException("Custody lots require a retained loss settlement.", nameof(custodyLots));
+            if (CustodyLots.Count != 0 || Relationships.Count != 0)
+                throw new ArgumentException("Custody and relationships require a retained settlement.", nameof(settlements));
         }
         else
         {
             var settlement = Settlements[0];
             ValidateCustodyLot(settlement);
+            ValidateCustodyAssets(settlement);
+            ValidateRelationship(settlement);
             ValidateSettlementCauses(settlement);
             if (settlement.Relationships is null)
                 ValidateOpenSettlementEffects(settlement);
@@ -207,6 +209,22 @@ internal sealed record CampaignWorldSnapshotV7
 
     private void ValidateOpenSettlementEffects(CampaignCombatSettlementState settlement)
     {
+        var expected = ExpectedPreCustodyElements(settlement);
+        if (settlement.Custody is { Kind: "relocate-and-guard" })
+        {
+            var captorId = CustodyLots[0].Captor.ElementId;
+            var donor = expected[captorId];
+            expected[captorId] = WithEffects(donor, donor.CurrentLocationId,
+                donor.OperationalState.CapabilityPointsExpended, donor.OperationalState.CohesionLevel,
+                checked(donor.Components[0].CurrentToe - 1));
+        }
+        if (!Elements.SequenceEqual(expected.Values.OrderBy(value => value.ElementId, StringComparer.Ordinal)))
+            throw new ArgumentException("Current elements differ from open settlement receipt effects.");
+    }
+
+    private static Dictionary<string, CampaignElementStateV6> ExpectedPreCustodyElements(
+        CampaignCombatSettlementState settlement)
+    {
         var expected = settlement.PreLossElements.ToDictionary(value => value.ElementId, StringComparer.Ordinal);
         if (settlement.Losses is not null)
         {
@@ -232,16 +250,59 @@ internal sealed record CampaignWorldSnapshotV7
                 retreat.AfterCp, checked(defender.OperationalState.CohesionLevel - retreat.ExcessCpDp),
                 defender.Components[0].CurrentToe);
         }
-        if (settlement.Custody is { Kind: "relocate-and-guard" })
+        return expected;
+    }
+
+    private void ValidateRelationship(CampaignCombatSettlementState settlement)
+    {
+        var receipt = settlement.Relationships;
+        if (receipt?.RelationshipId is null)
         {
-            var captorId = CustodyLots[0].Captor.ElementId;
-            var donor = expected[captorId];
-            expected[captorId] = WithEffects(donor, donor.CurrentLocationId,
-                donor.OperationalState.CapabilityPointsExpended, donor.OperationalState.CohesionLevel,
-                checked(donor.Components[0].CurrentToe - 1));
+            if (Relationships.Count != 0)
+                throw new ArgumentException("Relationship has no publication receipt.");
+            return;
         }
-        if (!Elements.SequenceEqual(expected.Values.OrderBy(value => value.ElementId, StringComparer.Ordinal)))
-            throw new ArgumentException("Current elements differ from open settlement receipt effects.");
+        if (Relationships.Count != 1)
+            throw new ArgumentException("Published relationship must be retained.");
+        var relation = Relationships[0];
+        if (relation.RelationId != receipt.RelationshipId || relation.CreationReceiptId != receipt.ReceiptId ||
+            relation.Kind != receipt.Kind || relation.Attacker != settlement.Attacker ||
+            relation.Defender != settlement.Defender || relation.GameTurn != settlement.GameTurn ||
+            relation.OperationStage != settlement.OperationStage || !relation.Active)
+            throw new ArgumentException("Relationship differs from its publication receipt.");
+    }
+
+    private void ValidateCustodyAssets(CampaignCombatSettlementState settlement)
+    {
+        var custody = settlement.Custody;
+        if (custody is null)
+        {
+            if (Guards.Count != 0)
+                throw new ArgumentException("Guard requires a custody receipt.");
+            return;
+        }
+        var lot = CustodyLots[0];
+        var donor = ExpectedPreCustodyElements(settlement)[lot.Captor.ElementId];
+        var donorComponent = donor.Components[0];
+        var transfer = custody.Kind == "relocate-and-guard" ? 1 : 0;
+        if (custody.DonorToeBefore != donorComponent.CurrentToe ||
+            custody.DonorToeAfter != donorComponent.CurrentToe - transfer)
+            throw new ArgumentException("Custody donor TOE differs from retained settlement state.");
+        if (transfer == 0)
+        {
+            if (Guards.Count != 0)
+                throw new ArgumentException("Unguarded custody cannot retain a guard.");
+            return;
+        }
+        if (Guards.Count != 1)
+            throw new ArgumentException("Guarded custody requires one guard.");
+        var guard = Guards[0];
+        if (guard.GuardId != custody.GuardId || guard.FormationReceiptId != custody.ReceiptId ||
+            guard.LotId != lot.LotId || guard.OriginComponent != new CampaignCombatComponentKey(lot.Captor,
+                donorComponent.ComponentId) || guard.CurrentLocationId != donor.CurrentLocationId ||
+            guard.OperationalState != donor.OperationalState || guard.Readiness != donor.Readiness ||
+            guard.Ammunition.InitialAmmunitionOrigin != donor.Ammunition.InitialAmmunitionOrigin)
+            throw new ArgumentException("Guard differs from retained donor provenance.");
     }
 
     private void ValidateSettlementCauses(CampaignCombatSettlementState settlement)
