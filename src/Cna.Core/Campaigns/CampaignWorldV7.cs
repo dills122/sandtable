@@ -85,6 +85,35 @@ internal sealed record CampaignWorldSnapshotV7
                 ? !guardById.ContainsKey(value.SubjectId)
                 : !ReplacementEntitlements.Any(entitlement => entitlement.EntitlementId == value.SubjectId)))
             throw new ArgumentException("Future obligation refers to a missing subject.", nameof(futureObligations));
+        foreach (var obligation in FutureObligations)
+        {
+            var settlement = Settlements.SingleOrDefault(value => value.Custody?.ReceiptId == obligation.ReceiptId);
+            if (settlement is null || obligation.EarnedScope.GameTurn != settlement.GameTurn ||
+                obligation.EarnedScope.OperationStage != settlement.OperationStage)
+                throw new ArgumentException("Future obligation must match its custody settlement scope.", nameof(futureObligations));
+            if (obligation.Kind == "guard-priority-upkeep")
+            {
+                var guard = guardById[obligation.SubjectId];
+                if (obligation.ObligationId != $"{settlement.SettlementId}.upkeep" ||
+                    settlement.Custody!.Kind != "relocate-and-guard" ||
+                    settlement.Custody.GuardId != guard.GuardId ||
+                    settlement.Custody.LotId != guard.LotId ||
+                    guard.FormationReceiptId != obligation.ReceiptId)
+                    throw new ArgumentException("Guard obligation does not match custody formation.", nameof(futureObligations));
+            }
+            else
+            {
+                var entitlement = ReplacementEntitlements.Single(value => value.EntitlementId == obligation.SubjectId);
+                if (obligation.ObligationId != $"{settlement.SettlementId}.training" ||
+                    settlement.Custody!.Kind != "leave-unguarded" ||
+                    settlement.Custody.EntitlementId != entitlement.EntitlementId ||
+                    settlement.Custody.LotId != entitlement.LotId ||
+                    entitlement.EscapeReceiptId != obligation.ReceiptId ||
+                    obligation.EarnedScope != entitlement.EarnedScope ||
+                    obligation.EligibleScope != entitlement.EligibleScope)
+                    throw new ArgumentException("Replacement obligation does not match custody entitlement.", nameof(futureObligations));
+            }
+        }
         if (Guards.Any(value => !FutureObligations.Any(obligation =>
                 obligation.Kind == "guard-priority-upkeep" && obligation.SubjectId == value.GuardId)) ||
             ReplacementEntitlements.Any(value => !FutureObligations.Any(obligation =>

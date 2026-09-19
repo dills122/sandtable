@@ -215,6 +215,108 @@ public sealed class CombatWorldTests
     }
 
     [Fact]
+    public void ReplacementObligationMustMatchEntitlementAndCustody()
+    {
+        var world = InitialWorld();
+        var attacker = new CampaignCombatUnitKey(world.CreationBinding, "axis", "axis-assault-battalion");
+        var defender = new CampaignCombatUnitKey(world.CreationBinding, "commonwealth", "commonwealth-assault-battalion");
+        var component = new CampaignCombatComponentKey(attacker, "axis-assault-battalion.toe.infantry");
+        var result = new CampaignCombatResultFacts(-2, 11, 36, 6, 25, 5, false, 1, "attacker", 75);
+        var disposition = new CampaignCombatRetreatDisposition("settlement.001.disposition",
+            "settlement.001.result", "retreat", 1, 1, 0, ["assault-east", "commonwealth-rear"]);
+        var losses = new CampaignCombatLossReceipt("settlement.001.losses", disposition.ReceiptId,
+            [new CampaignCombatRoleLoss("attacker", component, 10, 25, 0, 3, 3, 0, 7, 3),
+             new CampaignCombatRoleLoss("defender", new CampaignCombatComponentKey(defender,
+                "commonwealth-assault-battalion.toe.infantry"), 10, 5, 0, 0, 0, 0, 10, 0)]);
+        var retreat = new CampaignCombatRetreatReceipt("settlement.001.retreat", losses.ReceiptId,
+            "retreat", disposition.Route, 1, new CapabilityPointAmount(3, 1),
+            new CapabilityPointAmount(4, 1), 0, 3);
+        var custody = new CampaignCombatCustodyReceipt("settlement.001.custody", retreat.ReceiptId,
+            "settlement.001.captives", "leave-unguarded", ["assault-west"], null,
+            "settlement.001.replacement", 10, 10);
+        var relationships = new CampaignCombatRelationshipsReceipt("settlement.001.relationships",
+            custody.ReceiptId, null, null);
+        var settlement = new CampaignCombatSettlementState("settlement.001", "settlement.001.commit",
+            "settlement.001.result", 1, 1, attacker, defender, PaidPreLossElements(world), result,
+            disposition, losses, retreat, custody, relationships);
+        var lot = new CampaignCombatCustodyLot("settlement.001.captives", losses.ReceiptId,
+            component, defender, 3, "assault-west", null, "escaped", null, custody.ReceiptId);
+        var earned = new CampaignCombatScope(1, 1);
+        var eligible = new CampaignCombatScope(5, 1);
+        var entitlement = new CampaignCombatReplacementEntitlement("settlement.001.replacement",
+            custody.ReceiptId, lot.LotId, component, 3, "assault-west", earned, 12, eligible,
+            "awaiting-eligibility-and-training");
+        CampaignWorldSnapshotV7 With(CampaignCombatFutureObligation obligation) => new(
+            7, world.CreationBinding, world.Elements, world.Representations, [], [], [],
+            [lot], [], [entitlement], [obligation], [settlement]);
+        CampaignCombatFutureObligation Obligation(string obligationId, string receiptId,
+            CampaignCombatScope earnedScope, CampaignCombatScope eligibleScope) => new(
+                obligationId, receiptId, "replacement-training-gate", entitlement.EntitlementId,
+                earnedScope, eligibleScope, "before-replacement-eligibility-training",
+                "retained-unimplemented");
+
+        Assert.Single(With(Obligation("settlement.001.training", custody.ReceiptId, earned, eligible)).FutureObligations);
+        Assert.Throws<ArgumentException>(() => With(Obligation("settlement.001.training", custody.ReceiptId,
+            new CampaignCombatScope(2, 1), new CampaignCombatScope(6, 1))));
+        Assert.Throws<ArgumentException>(() => With(Obligation("settlement.001.training", "foreign.custody",
+            earned, eligible)));
+        Assert.Throws<ArgumentException>(() => With(Obligation("foreign.training", custody.ReceiptId,
+            earned, eligible)));
+    }
+
+    [Fact]
+    public void GuardUpkeepObligationMustMatchCustodyFormation()
+    {
+        var world = InitialWorld();
+        var attackerElement = Assert.Single(world.Elements, value => value.ElementId == "axis-assault-battalion");
+        var donor = Assert.Single(world.Elements, value => value.ElementId == "commonwealth-assault-battalion");
+        var attacker = new CampaignCombatUnitKey(world.CreationBinding, "axis", attackerElement.ElementId);
+        var defender = new CampaignCombatUnitKey(world.CreationBinding, "commonwealth", donor.ElementId);
+        var component = new CampaignCombatComponentKey(attacker, Assert.Single(attackerElement.Components).ComponentId);
+        var result = new CampaignCombatResultFacts(-2, 11, 36, 6, 25, 5, false, 1, "attacker", 75);
+        var disposition = new CampaignCombatRetreatDisposition("settlement.001.disposition",
+            "settlement.001.result", "retreat", 1, 1, 0, ["assault-east", "commonwealth-rear"]);
+        var losses = new CampaignCombatLossReceipt("settlement.001.losses", disposition.ReceiptId,
+            [new CampaignCombatRoleLoss("attacker", component, 10, 25, 0, 3, 3, 0, 7, 3),
+             new CampaignCombatRoleLoss("defender", new CampaignCombatComponentKey(defender,
+                Assert.Single(donor.Components).ComponentId), 10, 5, 0, 0, 0, 0, 10, 0)]);
+        var retreat = new CampaignCombatRetreatReceipt("settlement.001.retreat", losses.ReceiptId,
+            "retreat", disposition.Route, 1, new CapabilityPointAmount(3, 1),
+            new CapabilityPointAmount(4, 1), 0, 3);
+        var custody = new CampaignCombatCustodyReceipt("settlement.001.custody", retreat.ReceiptId,
+            "settlement.001.captives", "relocate-and-guard",
+            [attackerElement.CurrentLocationId, donor.CurrentLocationId],
+            "settlement.001.guard", null, 10, 9);
+        var relationships = new CampaignCombatRelationshipsReceipt("settlement.001.relationships",
+            custody.ReceiptId, null, null);
+        var settlement = new CampaignCombatSettlementState("settlement.001", "settlement.001.commit",
+            "settlement.001.result", 1, 1, attacker, defender, PaidPreLossElements(world), result,
+            disposition, losses, retreat, custody, relationships);
+        var pending = new CampaignCombatCustodyLot("settlement.001.captives", losses.ReceiptId,
+            component, defender, 3, attackerElement.CurrentLocationId, attackerElement.CurrentLocationId,
+            "pending", null, null);
+        var transfer = CampaignCombatGuardFormation.Transfer(donor, pending,
+            Assert.Single(donor.Components).ComponentId, custody.ReceiptId, "settlement.001.guard");
+        CampaignWorldSnapshotV7 With(CampaignCombatFutureObligation obligation) => new(
+            7, world.CreationBinding,
+            world.Elements.Select(value => value.ElementId == donor.ElementId ? transfer.Donor : value),
+            world.Representations, [], [], [], [transfer.Lot], [transfer.Guard], [], [obligation], [settlement]);
+        CampaignCombatFutureObligation Obligation(string obligationId, string receiptId,
+            CampaignCombatScope earnedScope) => new(obligationId, receiptId, "guard-priority-upkeep",
+                transfer.Guard.GuardId, earnedScope, null, "before-prisoner-upkeep-or-guard-action",
+                "retained-unimplemented");
+
+        Assert.Single(With(Obligation("settlement.001.upkeep", custody.ReceiptId,
+            new CampaignCombatScope(1, 1))).FutureObligations);
+        Assert.Throws<ArgumentException>(() => With(Obligation("foreign.upkeep", custody.ReceiptId,
+            new CampaignCombatScope(1, 1))));
+        Assert.Throws<ArgumentException>(() => With(Obligation("settlement.001.upkeep", "foreign.custody",
+            new CampaignCombatScope(1, 1))));
+        Assert.Throws<ArgumentException>(() => With(Obligation("settlement.001.upkeep", custody.ReceiptId,
+            new CampaignCombatScope(2, 1))));
+    }
+
+    [Fact]
     public void SpendingRetainsPreexistingBreakdownAndInitialLedgerProvenance()
     {
         var origin = InitialPolicy(Assert.Single(Cna1979CombatContentCatalog.Artifact.Definition.Scenarios)).Origin;
@@ -235,6 +337,7 @@ public sealed class CombatWorldTests
     public void SettlementReceiptsKeepOrderedRouteAndRejectForgedPredecessor()
     {
         var world = InitialWorld();
+        var preLoss = PaidPreLossElements(world);
         var axis = Assert.Single(world.Elements, value => value.ElementId == "axis-assault-battalion");
         var commonwealth = Assert.Single(world.Elements, value => value.ElementId == "commonwealth-assault-battalion");
         var result = new CampaignCombatResultFacts(-2, 11, 36, 6, 25, 5, false, 1, "attacker", 75);
@@ -247,12 +350,12 @@ public sealed class CombatWorldTests
         var defender = new CampaignCombatUnitKey(world.CreationBinding, "commonwealth", commonwealth.ElementId);
         Assert.Throws<ArgumentException>(() => new CampaignCombatSettlementState("settlement.001",
             "settlement.001.commit", "settlement.001.result", 1, 1, attacker, defender,
-            world.Elements, result,
+            preLoss, result,
             new CampaignCombatRetreatDisposition("settlement.001.disposition", "wrong.result",
                 "retreat", 1, 1, 0, ["assault-east", "commonwealth-rear"]),
             null, null, null, null));
         var settlement = new CampaignCombatSettlementState("settlement.001", "settlement.001.commit",
-            "settlement.001.result", 1, 1, attacker, defender, world.Elements, result,
+            "settlement.001.result", 1, 1, attacker, defender, preLoss, result,
             disposition, null, null, null, null);
         Assert.Equal("assault-east", settlement.Disposition!.Route[0]);
     }
@@ -422,6 +525,7 @@ public sealed class CombatWorldTests
     public void SettlementRequiresEveryReceiptPrefixEvenWhenRetreatIsNotRequired()
     {
         var world = InitialWorld();
+        var preLoss = PaidPreLossElements(world);
         var attacker = new CampaignCombatUnitKey(world.CreationBinding, "axis", "axis-assault-battalion");
         var defender = new CampaignCombatUnitKey(world.CreationBinding, "commonwealth", "commonwealth-assault-battalion");
         var result = new CampaignCombatResultFacts(0, 44, 44, null, 5, 5, false, 0, null, 0);
@@ -439,19 +543,19 @@ public sealed class CombatWorldTests
             "settlement.001.result", losses.Roles);
         Assert.Throws<ArgumentException>(() => new CampaignCombatSettlementState("settlement.001",
             "settlement.001.commit", "settlement.001.result", 1, 1, attacker, defender,
-            world.Elements, result, null, lossesWithoutDisposition, null, null, null));
+            preLoss, result, null, lossesWithoutDisposition, null, null, null));
         var relationshipsWithoutRetreat = new CampaignCombatRelationshipsReceipt(
             "settlement.001.relationships", "settlement.001.losses", null, null);
         Assert.Throws<ArgumentException>(() => new CampaignCombatSettlementState("settlement.001",
             "settlement.001.commit", "settlement.001.result", 1, 1, attacker, defender,
-            world.Elements, result, disposition, losses, null, null, relationshipsWithoutRetreat));
+            preLoss, result, disposition, losses, null, null, relationshipsWithoutRetreat));
 
         var retreat = new CampaignCombatRetreatReceipt("settlement.001.retreat",
             "settlement.001.losses", "not-required", ["assault-east"], 0,
             CapabilityPointAmount.Zero, CapabilityPointAmount.Zero, 0, 0);
         var complete = new CampaignCombatSettlementState("settlement.001",
             "settlement.001.commit", "settlement.001.result", 1, 1, attacker, defender,
-            world.Elements, result, disposition, losses, retreat, null, relationships);
+            preLoss, result, disposition, losses, retreat, null, relationships);
         Assert.NotNull(complete.Relationships);
     }
 
@@ -459,6 +563,7 @@ public sealed class CombatWorldTests
     public void SettlementLossesMustBindResultCaptureAndRetreatRefusal()
     {
         var world = InitialWorld();
+        var preLoss = PaidPreLossElements(world);
         var attacker = new CampaignCombatUnitKey(world.CreationBinding, "axis", "axis-assault-battalion");
         var defender = new CampaignCombatUnitKey(world.CreationBinding, "commonwealth", "commonwealth-assault-battalion");
         var attackerComponent = new CampaignCombatComponentKey(attacker, "axis-assault-battalion.toe.infantry");
@@ -474,7 +579,7 @@ public sealed class CombatWorldTests
             new("settlement.001.losses", "settlement.001.disposition", [first, second]);
         CampaignCombatSettlementState Settlement(CampaignCombatRetreatDisposition choice, CampaignCombatLossReceipt losses) =>
             new("settlement.001", "settlement.001.commit", "settlement.001.result", 1, 1,
-                attacker, defender, world.Elements, result, choice, losses, null, null, null);
+                attacker, defender, preLoss, result, choice, losses, null, null, null);
 
         Assert.NotNull(Settlement(disposition, Receipt(attackerLoss, defenderLoss)).Losses);
         Assert.Throws<ArgumentException>(() => Settlement(disposition, Receipt(
@@ -490,6 +595,36 @@ public sealed class CombatWorldTests
         var refusalLoss = new CampaignCombatRoleLoss("defender", defenderComponent, 10, 5, 10,
             1, 0, 1, 9, 0);
         Assert.NotNull(Settlement(refusal, Receipt(attackerLoss, refusalLoss)).Losses);
+    }
+
+    [Fact]
+    public void SettlementRequiresPaidPostCommitPreLossState()
+    {
+        var world = InitialWorld();
+        var attacker = new CampaignCombatUnitKey(world.CreationBinding, "axis", "axis-assault-battalion");
+        var defender = new CampaignCombatUnitKey(world.CreationBinding, "commonwealth", "commonwealth-assault-battalion");
+        var result = new CampaignCombatResultFacts(0, 44, 44, null, 5, 5, false, 0, null, 0);
+        var paid = PaidPreLossElements(world);
+        CampaignCombatSettlementState Settlement(IEnumerable<CampaignElementStateV6> elements) =>
+            new("settlement.001", "settlement.001.commit", "settlement.001.result", 1, 1,
+                attacker, defender, elements, result, null, null, null, null, null);
+        CampaignElementStateV6 Rebuild(CampaignElementStateV6 element,
+            CampaignElementOperationalStateV6? operational = null, CampaignElementAmmunitionState? ammunition = null) =>
+            new(element.ElementId, element.CurrentLocationId, element.ReserveStatus,
+                operational ?? element.OperationalState, element.Components, element.SourceParentFormationId,
+                element.CurrentParentFormationId, ammunition ?? element.Ammunition, element.Readiness);
+
+        Assert.Throws<ArgumentException>(() => Settlement(world.Elements));
+        Assert.NotNull(Settlement(paid));
+        var attackElement = Assert.Single(paid, value => value.ElementId == attacker.ElementId);
+        var underpaid = Rebuild(attackElement, new CampaignElementOperationalStateV6(1, 1,
+            new CapabilityPointAmount(4, 1), 0, null, null, attackElement.OperationalState.InitialLedgerOrigin));
+        Assert.Throws<ArgumentException>(() => Settlement(
+            paid.Select(value => value.ElementId == attacker.ElementId ? underpaid : value)));
+        var loaded = Rebuild(attackElement, ammunition: new CampaignElementAmmunitionState(
+            1, attackElement.Ammunition.InitialAmmunitionOrigin));
+        Assert.Throws<ArgumentException>(() => Settlement(
+            paid.Select(value => value.ElementId == attacker.ElementId ? loaded : value)));
     }
 
     [Fact]
@@ -553,6 +688,18 @@ public sealed class CombatWorldTests
         return CampaignWorldV7Factory.CreateInitial(artifact, scenario, InitialPolicy(scenario),
             "fixture.creation-001");
     }
+
+    private static CampaignElementStateV6[] PaidPreLossElements(CampaignWorldSnapshotV7 world) =>
+        world.Elements.Select(element => new CampaignElementStateV6(
+            element.ElementId, element.CurrentLocationId, element.ReserveStatus,
+            new CampaignElementOperationalStateV6(
+                element.OperationalState.LedgerGameTurn, element.OperationalState.LedgerOperationStage,
+                new CapabilityPointAmount(element.ElementId == "axis-assault-battalion" ? 5 : 3, 1),
+                0, element.OperationalState.VehicleBreakdownState, element.OperationalState.MovementEnded,
+                element.OperationalState.InitialLedgerOrigin),
+            element.Components, element.SourceParentFormationId, element.CurrentParentFormationId,
+            new CampaignElementAmmunitionState(0, element.Ammunition.InitialAmmunitionOrigin),
+            element.Readiness)).ToArray();
 
     private static CampaignCombatInitializationPolicy InitialPolicy(ContentCombatScenario scenario) => new(
         1,

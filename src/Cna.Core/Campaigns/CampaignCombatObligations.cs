@@ -253,6 +253,17 @@ internal sealed record CampaignCombatSettlementState
             !copy.Select(value => value.ElementId).ToHashSet(StringComparer.Ordinal)
                 .SetEquals([attacker.ElementId, defender.ElementId]))
             throw new ArgumentException("Settlement must retain both original pre-loss elements.", nameof(preLossElements));
+        if (copy.Any(value =>
+        {
+            var ledger = value.OperationalState;
+            var cp = ledger.CapabilityPointsExpended;
+            var minimumCp = value.ElementId == attacker.ElementId ? 5 : 3;
+            return value.Ammunition.Points != 0 || ledger.CohesionLevel != 0 ||
+                ledger.LedgerGameTurn != gameTurn || ledger.LedgerOperationStage != operationStage ||
+                cp.Denominator != 1 || cp.Numerator < minimumCp || cp.Numerator > 10 ||
+                value.Components.Count != 1 || value.Components[0].CurrentToe != 10;
+        }))
+            throw new ArgumentException("Pre-loss elements must retain selected paid post-commit state.", nameof(preLossElements));
         PreLossElements = Array.AsReadOnly(copy.OrderBy(value => value.ElementId, StringComparer.Ordinal).ToArray());
         Result = result ?? throw new ArgumentNullException(nameof(result));
         if ((losses is not null && disposition is null) ||
