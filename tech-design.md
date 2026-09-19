@@ -700,8 +700,11 @@ Breakdown-continuity clean cut first advanced the ruleset to contract 7, snapsho
 Campaign World to contract 4, creation event to contract 8, and Content Pack to schema 4 / canonical
 format v3. ZOC/Reaction activation established Ruleset 8, Snapshot 10, Campaign World 5,
 creation event 9 and Content Pack schema 5 / canonical format v4. Breakdown activation advances
-the complete current set to Ruleset 9, Snapshot 11, World 6, creation event 10, Setup/Content 6
-and sequence/catalog 4; old readers remain explicit historical contracts.
+the complete active set to Ruleset 9, Snapshot 11, World 6, creation event 10, Setup/Content 6
+and sequence/catalog 4; old readers remain explicit historical contracts. Dormant Combat Content7
+adds strict schema7 / `sandtable.content-json.v6` admission for one certified six-hex infantry
+scenario. Its internal catalog validates exact component, Morale, Ammo/readiness, provenance and
+retreat-supply facts without changing active Content6 lookup or advertising Combat actions.
 No generic sequence bypass exists.
 See the Content Pack v1
 [research](docs/research/content-pack-v1-spike.md),
@@ -887,6 +890,10 @@ dormant selected Rules and explicit-dice arithmetic are implemented in
 [Cna1979CombatAdjudication](src/Cna.Core/Rules/Cna1979CombatAdjudication.cs). They preserve exact
 source metadata, immutable collections and role-specific loss/capture rounding. Campaign state,
 RNG consumption and public registration remain later work. The
+[Content7 codec](src/Cna.Core/Content/ContentPackV7Serializer.cs) admits only the certified
+synthetic Combat profile, preserves canonical construction identity, and rejects all frozen
+shape/identity/provenance/profile/seed mutations before any future world creation. Its catalog is
+internal; Task007 owns copying validated seeds into authoritative state. The
 [RulesInput1 codec](src/Cna.Core/Rules/CombatRulesInputArtifactCodec.cs) normalizes typed set arrays
 and accepts only exact approved canonical bytes on readback. It reproduces the existing30,395-byte
 artifact and frozen hash, including all source/amendment/policy metadata. Artifact creation leaves

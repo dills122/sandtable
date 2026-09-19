@@ -49,6 +49,14 @@
       Include="../../docs/specs/fixtures/combat-rules-inputs-v1.json"
       Link="Rules/Fixtures/combat-rules-inputs-v1.json"
       CopyToOutputDirectory="PreserveNewest" />
+    <Content
+      Include="../../docs/specs/fixtures/combat-content-v7.canonical.json"
+      Link="Content/Fixtures/combat-content-v7.canonical.json"
+      CopyToOutputDirectory="PreserveNewest" />
+    <Content
+      Include="../../docs/specs/fixtures/combat-content-v7.vectors.json"
+      Link="Content/Fixtures/combat-content-v7.vectors.json"
+      CopyToOutputDirectory="PreserveNewest" />
     <Using Include="Xunit" />
   </ItemGroup>
 

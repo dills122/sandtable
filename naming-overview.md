@@ -693,6 +693,10 @@ contract terms with all72 planned runtime requirements. Runtime artifact publica
 separate result facts. These helpers do not advance a campaign or consume authoritative randomness.
 **RulesInput1** is the same frozen selected-rules artifact now emitted and checked by its dormant
 C# codec; creating it does not register a new live ruleset version.
+**Combat Content7** names the dormant `sandtable.content-json.v6` package for the certified
+`close-assault-positive-v1` synthetic scenario. **Initial Ammunition**, **Initial Combat Readiness**
+and **Retreat Supply Anchor** are immutable scenario seeds/direction facts, not live balances,
+resupply authority or gameplay activation. Exact validation precedes Task007 world creation.
 
 **Capability Point expenditure** is the exact amount already spent during the current Operation
 Stage; it is not a replenishing UI movement allowance. **Complete Movement** is a real player

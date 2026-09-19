@@ -1,19 +1,19 @@
 # Combat and Cycle Combined Contract / Implementation Plan
 
-**Status:** Contract checkpoint B and dormant Task005 accepted. Task006 Content/scenario admission is next; Combat gameplay remains inactive.
+**Status:** Contract checkpoint B and dormant Tasks005–006 accepted. Task007 Combat world/creation is next; Combat gameplay remains inactive.
 `CMB-PLAN-001` and POL-001–008 were accepted on 2026-09-06 at `a10a588`. Source and static Content
 work (`001`–`002`) is complete. Parent `003` is complete through the
 [authority-composition handoff](../specs/combat-authority-composition-v1.md). Checkpoint B closes through the
 [Task004C integration index](../specs/combat-outward-composition-v1.md). Task004A side contracts and Task004B occurrence, child and
-parent evidence are accepted with strict clock privacy and versioned round/settlement authority. Dormant Task005 is complete; tasks
-`006`–`025` have not started.
+parent evidence are accepted with strict clock privacy and versioned round/settlement authority. Dormant Tasks005–006 are complete;
+tasks `007`–`025` have not started.
 
 | Delivery layer | Current boundary | Next required outcome |
 | --- | --- | --- |
 | Research and policy | Complete for the selected bounded profile, including `HOST-RSH-001` | Reopen only for a new source, failed assumption, or approved profile expansion |
 | Authority contracts | CON-002–004 and all selected-profile inherited families are reconciled in 28 creation-rooted composition traces; parent003 complete | Preserve exact Task004 handoff while later runtime work derives boundaries from accepted history |
 | Outward contracts | Task004A/B/C accepted; all 72 ACs mapped with bounded evidence and explicit runtime deferrals | Preserve accepted bytes and source/privacy boundaries during dormant implementation |
-| Runtime | Dormant Task005 selected Rules/arithmetic/codec complete; Tasks006–019 not started | Implement Content/state/decisions/settlement/release/repeat with cumulative replay and recovery evidence |
+| Runtime | Dormant Tasks005–006 selected Rules/arithmetic/codec and exact Content7 admission complete; Tasks007–019 not started | Implement state/decisions/settlement/release/repeat with cumulative replay and recovery evidence |
 | Public and simulator | Tasks020–024 not started | Activate the certified side-safe profile, then prove strict Exercise/Runner reconstruction and repeatability |
 | Closeout | Task025 not started | Full gate, evidence reconciliation, and authentic loop demonstration without overstating retained obligations |
 
@@ -772,10 +772,10 @@ this planning acceptance does not declare B passed or start runtime implementati
 | Task / size | Output and acceptance criteria | Verification | Dependencies / likely paths |
 | --- | --- | --- | --- |
 | `CMB-TASK-005` / M, 3–5 files | Implement Rules-owned selected tables and pure arithmetic from approved manifest; preserve ordered pair coordinates and conditional capture. No campaign activation. | Full normalized source comparison, every coordinate and all reachable differential branches; RNG research goldens as supplemental vectors. | 001–004; [Rules](../../src/Cna.Core/Rules/), [Rules tests](../../tests/Cna.Core.Tests/Rules/). |
-| `CMB-TASK-006` / M, 3–5 files | Implement versioned synthetic Content/scenario seed admission with explicit component and supply facts; preserve historical Content bytes. Reject profile mutations before active decisions. | `CombatContent` canonical/readback, missing/extra facts, provenance and historical compatibility tests. | 002–005; [Content](../../src/Cna.Core/Content/), [Content tests](../../tests/Cna.Core.Tests/Content/). |
+| `CMB-TASK-006` / complete | Versioned synthetic Content/scenario admission loads explicit component, Ammo/readiness and retreat-supply facts through an internal certified catalog. Content4/5/6 bytes and readers remain unchanged; malformed, altered, extra and unsupported profile data reject before gameplay. | `CombatContentTests`: exact 10,339-byte/hash readback, all70 frozen negative vectors, defensive copying, structural equality, construction-order stability, provenance hash sensitivity and historical reader compatibility. | 002–005; [Content7 models](../../src/Cna.Core/Content/ContentPackV7Models.cs), [strict codec](../../src/Cna.Core/Content/ContentPackV7Serializer.cs), [Content tests](../../tests/Cna.Core.Tests/Content/CombatContentTests.cs). |
 
-Checkpoint C: focused suites and repository build/format gates pass; verified tables and fixture
-exist, but no active Combat capability is advertised.
+Checkpoint C complete: focused suites and repository build/format/full gates pass; verified tables
+and exact Content7 fixture exist, but no active Combat capability is advertised.
 
 ### Checkpoint D — loss-capable state and strict persistence
 
