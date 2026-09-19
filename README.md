@@ -66,7 +66,7 @@ campaign or resolve Combat in running engine.
 
 Next delivery sequence:
 
-1. Continue with Task008 Combat snapshot/history codec and strict restore; dormant Tasks005–007 Rules, Content and World foundations are implemented.
+1. Continue Task008's bounded Combat persistence children: initial World7 canonical readback is implemented; next add Rules10/Setup7/configuration/request and Created11 creation binding, then Snapshot12 and inherited event families. Dormant Tasks005–007 Rules, Content and World foundations are implemented.
 2. Continue dormant Combat/cycle authority, then activate only certified public actions.
 3. Prove authentic Movement → Combat → Reserve Release repeat-or-finish loop through Runner.
 4. Freeze and implement exact six-turn Land scenario, durable save/resume, and minimal Maproom.
