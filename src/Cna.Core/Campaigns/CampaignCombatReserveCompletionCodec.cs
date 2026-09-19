@@ -129,7 +129,7 @@ internal static class CampaignCombatReserveCompletionCodec
         return CampaignOpeningPreambleCodec.Hash(stream.ToArray());
     }
 
-    private static void WriteCycle(Utf8JsonWriter writer, CampaignCombatCycleAuthority cycle)
+    internal static void WriteCycle(Utf8JsonWriter writer, CampaignCombatCycleAuthority cycle)
     {
         writer.WriteStartObject();
         writer.WriteNumber("contractVersion", cycle.ContractVersion);

@@ -958,7 +958,9 @@ infantry designation from none to I, and binds its actual receipt into member hi
 World writer validates the typed history-derived mutation; the initial-only World reader stays strict.
 Task008 D2 reconstructs that full history before deriving canonical completion2 bytes and ordinal-1
 cycle identity. Its evidence retains the actual predecessor; it does not publish a terminal state.
-Task019A must apply that same event atomically before Movement replay.
+Task019A applies that same event atomically to private terminal ReserveState1, extending prefix and
+receipt ledger once. Full retained history reconstitutes each cut; exact retries return original event
+with current state, including designation retries after completion. Movement adjudication remains next.
 Creation publication evaluation now targets an expected-head per-campaign commit batch. The
 [HOST-PUB-001 evidence allocation](docs/specs/combat-authority-envelope-v1.md#runtime-evidence-ownership)
 keeps actual atomic uniqueness, commit ambiguity and process-recovery proof open until provider

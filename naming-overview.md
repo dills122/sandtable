@@ -727,7 +727,9 @@ state. D1 supports only pre-completion cuts: cycle, cycle ID, opening-base hash 
 remain null. **Reserve I designation** changes only the accepted own member’s Reserve status.
 **Reserve completion evidence** (D2) binds canonical completion2 bytes and cycle authority to actual
 creation-rooted history. Its **OpeningBase** carries the frozen compatibility profile literal; it is
-not an admission path. Applying that same event to terminal ReserveState1 belongs to Task019A.
+not an admission path. Task019A applies that same event to terminal **ReserveState1**, retaining
+precompletion World/member authority while publishing cycle, position, prefix and receipt together
+within the private projection. This is not durable Chronicle publication.
 
 **Capability Point expenditure** is the exact amount already spent during the current Operation
 Stage; it is not a replenishing UI movement allowance. **Complete Movement** is a real player
