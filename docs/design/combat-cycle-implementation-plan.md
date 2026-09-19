@@ -5,8 +5,8 @@
 work (`001`–`002`) is complete. Parent `003` is complete through the
 [authority-composition handoff](../specs/combat-authority-composition-v1.md). Checkpoint B closes through the
 [Task004C integration index](../specs/combat-outward-composition-v1.md). Task004A side contracts and Task004B occurrence, child and
-parent evidence are accepted with strict clock privacy and versioned round/settlement authority. Dormant Task005 is complete; tasks
-`006`–`025` have not started.
+parent evidence are accepted with strict clock privacy and versioned round/settlement authority. Dormant Tasks005–006 are complete;
+tasks `007`–`025` have not started.
 
 | Delivery layer | Current boundary | Next required outcome |
 | --- | --- | --- |

@@ -8,6 +8,10 @@ internal static class ContentPackV7Validator
         var issues = new List<ContentValidationIssue>();
         void Add(string code, string path, string message) => issues.Add(new(code, path, message));
 
+        ValidateSerializedPrimitives(definition, issues);
+        if (issues.Count > 0)
+            return new ContentValidationResult(issues);
+
         if (definition.PackId != ContentPackV7Definition.SupportedPackId)
             Add(CombatContentDiagnostics.Profile, "/packId", "Only the certified synthetic Combat pack is supported.");
         if (definition.RulesetId != ContentPackV7Definition.SupportedRulesetId
@@ -300,6 +304,185 @@ internal static class ContentPackV7Validator
                 issues.Add(new(CombatContentDiagnostics.Reference, $"{path}/{index}/{property}", "Duplicate identity."));
         }
         return result;
+    }
+
+    private static void ValidateSerializedPrimitives(
+        ContentPackV7Definition definition,
+        List<ContentValidationIssue> issues)
+    {
+        void AddShape(string path, string message) =>
+            issues.Add(new(CombatContentDiagnostics.Shape, path, message));
+        void AddBounds(string path, string message) =>
+            issues.Add(new(CombatContentDiagnostics.Bounds, path, message));
+        void Id(string? value, string path)
+        {
+            if (value is null || value.Length is < 1 or > 128)
+            {
+                AddBounds(path, "Stable ID is outside bounds.");
+                return;
+            }
+
+            try
+            {
+                ContentContractGuards.RequireStableId(value, path);
+            }
+            catch (ArgumentException)
+            {
+                AddBounds(path, "Invalid stable ID.");
+            }
+        }
+        void Integer(int value, int minimum, int maximum, string path)
+        {
+            if (value < minimum || value > maximum)
+                AddBounds(path, "Integer is outside supported bounds.");
+        }
+        void Required(object? value, string path)
+        {
+            if (value is null)
+                AddShape(path, "Required value is missing.");
+        }
+        void Origin(ContentOrigin? origin, string path)
+        {
+            if (origin is null)
+            {
+                AddShape(path, "Required origin is missing.");
+                return;
+            }
+
+            for (var index = 0; index < origin.References.Count; index++)
+            {
+                var reference = origin.References[index];
+                Id(reference.SourceId, $"{path}/references/{index}/sourceId");
+                if (reference.Locator.Length is < 1 or > 128)
+                    AddBounds($"{path}/references/{index}/locator", "Source locator is outside bounds.");
+            }
+        }
+
+        Id(definition.PackId, "/packId");
+        Id(definition.RulesetId, "/rulesetId");
+        for (var index = 0; index < definition.Capabilities.Count; index++)
+            Id(definition.Capabilities[index], $"/capabilities/{index}");
+        Id(definition.CapabilityProfileId, "/capabilityProfileId");
+
+        for (var index = 0; index < definition.SourceIndex.Count; index++)
+            Id(definition.SourceIndex[index].SourceId, $"/sourceIndex/{index}/sourceId");
+        for (var index = 0; index < definition.Locations.Count; index++)
+        {
+            var value = definition.Locations[index];
+            Id(value.LocationId, $"/locations/{index}/locationId");
+            Id(value.TerrainId, $"/locations/{index}/terrainId");
+            Origin(value.Origin, $"/locations/{index}/origin");
+        }
+        for (var index = 0; index < definition.WeatherAreaAssignments.Count; index++)
+        {
+            var value = definition.WeatherAreaAssignments[index];
+            Id(value.LocationId, $"/weatherAreaAssignments/{index}/locationId");
+            Origin(value.Origin, $"/weatherAreaAssignments/{index}/origin");
+        }
+        for (var index = 0; index < definition.Edges.Count; index++)
+        {
+            var value = definition.Edges[index];
+            Id(value.FirstLocationId, $"/edges/{index}/firstLocationId");
+            Id(value.SecondLocationId, $"/edges/{index}/secondLocationId");
+            Origin(value.Origin, $"/edges/{index}/origin");
+        }
+        for (var index = 0; index < definition.Formations.Count; index++)
+        {
+            var value = definition.Formations[index];
+            var path = $"/formations/{index}";
+            Id(value.FormationId, path + "/formationId");
+            Id(value.SideId, path + "/sideId");
+            if (value.ParentFormationId is not null) Id(value.ParentFormationId, path + "/parentFormationId");
+            Id(value.OrganizationId, path + "/organizationId");
+            Integer(value.BasicMorale, -3, 3, path + "/basicMorale");
+            Origin(value.BasicMoraleOrigin, path + "/basicMoraleOrigin");
+            Origin(value.Origin, path + "/origin");
+        }
+        for (var index = 0; index < definition.Elements.Count; index++)
+        {
+            var value = definition.Elements[index];
+            var path = $"/elements/{index}";
+            Id(value.ElementId, path + "/elementId");
+            Id(value.SideId, path + "/sideId");
+            Id(value.ParentFormationId, path + "/parentFormationId");
+            Id(value.OrganizationId, path + "/organizationId");
+            Id(value.MobilityId, path + "/mobilityId");
+            Integer(value.BaseCapabilityPointAllowance, 1, int.MaxValue, path + "/baseCapabilityPointAllowance");
+            Id(value.CombatClassificationId, path + "/combatClassificationId");
+            Origin(value.CombatOrigin, path + "/combatOrigin");
+            for (var componentIndex = 0; componentIndex < value.Components.Count; componentIndex++)
+            {
+                var component = value.Components[componentIndex];
+                var componentPath = $"{path}/components/{componentIndex}";
+                Id(component.ComponentId, componentPath + "/componentId");
+                Id(component.ComponentClassId, componentPath + "/componentClassId");
+                Integer(component.MaximumToe, 1, int.MaxValue, componentPath + "/maximumToe");
+                Integer(component.OffensiveCloseAssaultRating, 0, int.MaxValue, componentPath + "/offensiveCloseAssaultRating");
+                Integer(component.DefensiveCloseAssaultRating, 0, int.MaxValue, componentPath + "/defensiveCloseAssaultRating");
+                Origin(component.Origin, componentPath + "/origin");
+            }
+            Origin(value.Origin, path + "/origin");
+        }
+        for (var scenarioIndex = 0; scenarioIndex < definition.Scenarios.Count; scenarioIndex++)
+        {
+            var scenario = definition.Scenarios[scenarioIndex];
+            var path = $"/scenarios/{scenarioIndex}";
+            Id(scenario.ScenarioId, path + "/scenarioId");
+            Required(scenario.Start, path + "/start");
+            Required(scenario.End, path + "/end");
+            if (scenario.Start is not null)
+            {
+                Integer(scenario.Start.GameTurn, 1, 111, path + "/start/gameTurn");
+                Integer(scenario.Start.OperationStage, 1, 3, path + "/start/operationStage");
+            }
+            if (scenario.End is not null)
+            {
+                Integer(scenario.End.GameTurn, 1, 111, path + "/end/gameTurn");
+                Integer(scenario.End.OperationStage, 1, 3, path + "/end/operationStage");
+            }
+            for (var placementIndex = 0; placementIndex < scenario.InitialPlacements.Count; placementIndex++)
+            {
+                var placement = scenario.InitialPlacements[placementIndex];
+                var placementPath = $"{path}/initialPlacements/{placementIndex}";
+                Id(placement.ElementId, placementPath + "/elementId");
+                Id(placement.LocationId, placementPath + "/locationId");
+                for (var toeIndex = 0; toeIndex < placement.InitialComponentToes.Count; toeIndex++)
+                {
+                    var toe = placement.InitialComponentToes[toeIndex];
+                    var toePath = $"{placementPath}/initialComponentToes/{toeIndex}";
+                    Id(toe.ComponentId, toePath + "/componentId");
+                    Integer(toe.CurrentToe, 0, int.MaxValue, toePath + "/currentToe");
+                    Origin(toe.Origin, toePath + "/origin");
+                }
+                Required(placement.InitialAmmunition, placementPath + "/initialAmmunition");
+                if (placement.InitialAmmunition is not null)
+                {
+                    Integer(placement.InitialAmmunition.Points, 0, int.MaxValue, placementPath + "/initialAmmunition/points");
+                    Origin(placement.InitialAmmunition.Origin, placementPath + "/initialAmmunition/origin");
+                }
+                Required(placement.InitialReadiness, placementPath + "/initialReadiness");
+                if (placement.InitialReadiness is not null)
+                {
+                    var readiness = placement.InitialReadiness;
+                    Integer(readiness.GameTurn, 1, 111, placementPath + "/initialReadiness/gameTurn");
+                    Integer(readiness.OperationStage, 1, 3, placementPath + "/initialReadiness/operationStage");
+                    Required(readiness.WaterStatus, placementPath + "/initialReadiness/waterStatus");
+                    Required(readiness.StoresStatus, placementPath + "/initialReadiness/storesStatus");
+                    Origin(readiness.Origin, placementPath + "/initialReadiness/origin");
+                }
+                Origin(placement.Origin, placementPath + "/origin");
+            }
+            for (var anchorIndex = 0; anchorIndex < scenario.RetreatSupplyAnchors.Count; anchorIndex++)
+            {
+                var anchor = scenario.RetreatSupplyAnchors[anchorIndex];
+                var anchorPath = $"{path}/retreatSupplyAnchors/{anchorIndex}";
+                Id(anchor.SideId, anchorPath + "/sideId");
+                Id(anchor.LocationId, anchorPath + "/locationId");
+                Required(anchor.Kind, anchorPath + "/kind");
+                Origin(anchor.Origin, anchorPath + "/origin");
+            }
+            Origin(scenario.Origin, path + "/origin");
+        }
     }
 
     private static IEnumerable<(ContentOrigin Origin, string Path)> Origins(ContentPackV7Definition definition)

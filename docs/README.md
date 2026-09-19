@@ -94,7 +94,8 @@ started. See the
   25 staged tasks and their evidence. Owner accepted all eight policies and the review4 correction
   on2026-09-06. TASK-001 source research, TASK-002 Content and TASK-003A Setup/initial ledger
   packets are complete. [TASK-003B World/settlement](specs/combat-world-settlement-v1.md) is complete
-  as a contract slice;003C/D/004 and production gates stay open.
+  as a contract slice;003C/D/004 contract packets are complete, while production runtime activation
+  gates stay closed.
   [Independent design review 2](reviews/combat-design-review-2.md) returned Ready for
   DES-001/DES-002/DES-003. [Independent design review 3](reviews/combat-settlement-review-3.md)
   returned Ready for DES-004/DES-005, with no actionable findings; subsequent cycle design is outside

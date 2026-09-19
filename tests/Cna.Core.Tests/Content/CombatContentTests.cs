@@ -206,6 +206,85 @@ public sealed class CombatContentTests
     }
 
     [Fact]
+    public void SerializerRejectsConstructedMalformedPrimitivesAndAcceptedBytesSelfRead()
+    {
+        var definition = ContentPackV7Serializer.Deserialize(CombatContentFixture.Bytes()).Definition!;
+        var scenario = Assert.Single(definition.Scenarios);
+        var placement = scenario.InitialPlacements[0];
+
+        AssertSerializationIssue(
+            definition.WithCollections(
+                definition.SourceIndex,
+                definition.Locations,
+                definition.WeatherAreaAssignments,
+                definition.Edges,
+                definition.Formations,
+                definition.Elements,
+                [new ContentCombatScenario(
+                    "Bad_Id",
+                    scenario.Start,
+                    scenario.End,
+                    scenario.InitialPlacements,
+                    scenario.RetreatSupplyAnchors,
+                    scenario.Origin)]),
+            CombatContentDiagnostics.Bounds,
+            "/scenarios/0/scenarioId");
+
+        var lateBoundary = new ContentScenarioBoundary(112, scenario.Start.OperationStage);
+        AssertSerializationIssue(
+            definition.WithCollections(
+                definition.SourceIndex,
+                definition.Locations,
+                definition.WeatherAreaAssignments,
+                definition.Edges,
+                definition.Formations,
+                definition.Elements,
+                [new ContentCombatScenario(
+                    scenario.ScenarioId,
+                    lateBoundary,
+                    lateBoundary,
+                    scenario.InitialPlacements.Select(value => new ContentInitialPlacementCombatFactsV2(
+                        value.ElementId,
+                        value.LocationId,
+                        value.InitialComponentToes,
+                        value.InitialAmmunition,
+                        value.InitialReadiness with { GameTurn = 112 },
+                        value.Origin)),
+                    scenario.RetreatSupplyAnchors,
+                    scenario.Origin)]),
+            CombatContentDiagnostics.Bounds,
+            "/scenarios/0/start/gameTurn");
+
+        var missingOriginPlacement = new ContentInitialPlacementCombatFactsV2(
+            placement.ElementId,
+            placement.LocationId,
+            placement.InitialComponentToes,
+            placement.InitialAmmunition with { Origin = null! },
+            placement.InitialReadiness,
+            placement.Origin);
+        AssertSerializationIssue(
+            definition.WithCollections(
+                definition.SourceIndex,
+                definition.Locations,
+                definition.WeatherAreaAssignments,
+                definition.Edges,
+                definition.Formations,
+                definition.Elements,
+                [new ContentCombatScenario(
+                    scenario.ScenarioId,
+                    scenario.Start,
+                    scenario.End,
+                    [missingOriginPlacement, .. scenario.InitialPlacements.Skip(1)],
+                    scenario.RetreatSupplyAnchors,
+                    scenario.Origin)]),
+            CombatContentDiagnostics.Shape,
+            "/scenarios/0/initialPlacements/0/initialAmmunition/origin");
+
+        var canonical = ContentPackV7Serializer.SerializeCanonical(definition);
+        Assert.True(ContentPackV7Serializer.Deserialize(canonical).IsSuccess);
+    }
+
+    [Fact]
     public void HistoricalContentReadersAndBytesRemainIndependent()
     {
         var v4Bytes = Cna1979SyntheticContentCatalog.Artifact.GetCanonicalBytes();
@@ -233,6 +312,16 @@ public sealed class CombatContentTests
         Assert.Equal(CombatContentFixture.Bytes(), Cna1979CombatContentCatalog.Artifact.GetCanonicalBytes());
         Assert.Equal("close-assault-positive-v1", Assert.Single(
             Cna1979CombatContentCatalog.Artifact.Definition.Scenarios).ScenarioId);
+    }
+
+    private static void AssertSerializationIssue(
+        ContentPackV7Definition definition,
+        string code,
+        string path)
+    {
+        var exception = Assert.Throws<InvalidContentPackException>(
+            () => ContentPackV7Serializer.SerializeCanonical(definition));
+        Assert.Contains(exception.Issues, issue => issue.Code == code && issue.Path == path);
     }
 
     private static byte[] ApplyVector(byte[] canonical, JsonNode root, JsonObject vector)
