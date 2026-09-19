@@ -1,106 +1,51 @@
-# Combat wave01 — delivery handoff
+# Combat wave01 — completed delivery
 
-## Active accelerated continuation
+## Outcome
 
-User approved retaining B3→C→Task005 sequence while reducing duplicate work. B2 accepted c5c9256;
-B3 accepted36ef7bb; publication through fd012e4. C/checkpoint B accepted. Current objective: finish dormant C#005A/B.
-No new gameplay profiles, privacy exceptions, runtime activation or merge. Full gate at C and
-final005 integration; focused behavior/raw tests and ordinary review per slice.
+B3 parent evidence, C/Task004/checkpoint B and dormant C#Task005A/B accepted. Required accelerated
+continuation complete. Next planned implementation: Task006 synthetic Content/scenario admission.
+Combat gameplay still stops at entry; public activation remains Tasks020–021 and Runner evidence
+022–024. No new gameplay profile, privacy exception, hosted service, durable provider or merge.
 
-B3 accepted: final focused command138.722s;12children/10parents, rejection/readback groups,
-root literal audit and ordinary review pass. Writer side_cycle_writer retains warm interpreter21038
-closed exit0 after C. evidence/004b3-author-resumed.log and004b3-ordinary-review.md retain exact evidence.
-C accepted:72ACs/99pins/51readbacks/28handoff, focused19.583s plus ordinary review and root81/1670 gate.
-Source agent task004_evidence owns005 implementation next; preflight complete.
-Root owns plans, Cmap, commits, integration gates and PR.
+## Branch and publication
 
-B3 pairs preserve same fault/assertion/build/initial source/capability/terminal/bounds. Current
-approved equal-start terminal references cannot yield valid unequal-length pair; test that helper
-branch directly over authenticated stream/prefix and label unit-only evidence. Do not expand scope
-just to create a witness.72-row Cmap preflight complete; three staleB2pending descriptions corrected.
+Branch `codex/overnight-combat-wave-01`; latest fetched main `ff6b5f60219afbb12d5e06bf836f06f94de32006`.
+Existing open PR115: https://github.com/dills122/sandtable/pull/115. Live state is ready for review,
+not draft; preserve user-managed state. Final005B acceptance commit contains this handoff and is
+the publication target. User authorized Keychain-backed push/PR update outside sandbox; no merge.
+For GitHub CLI unset inherited GH_TOKEN and GITHUB_TOKEN; never extract credential bytes.
+Optional CCE record uploads remain unauthorized; no write was attempted.
 
-Branch: `codex/overnight-combat-wave-01`.
-Base/latest fetched main: `ff6b5f60219afbb12d5e06bf836f06f94de32006` (unchanged).
-Published head: `fd012e4bebb2a1f833e0ccb8b65034f0c5c0f266`.
-2026-09-18 fetch confirmed same main ff6b5f6 and no branch divergence.
-Existing open PR: https://github.com/dills122/sandtable/pull/115. Live check now shows isDraft=false; preserve user-managed review status. No merge.
+## Delivered code
 
-## Publication boundary
+- CombatSelectedRules.cs: complete immutable selected RulesInput1 definitions.
+- Cna1979CombatAdjudication.cs: pure explicit-dice arithmetic and dormant artifact factory.
+- CombatRulesInputArtifactCodec.cs: canonical typed serialization and exact-authority raw readback.
+- CombatSelectedRulesTests.cs and CombatRulesInputArtifactTests.cs: independent source parity,
+  exhaustive arithmetic, metadata, malformed/forged input and defensive-copy coverage.
 
-User explicitly authorized PR publication using github-keychain-auth outside sandbox. Keychain
-account dills122 authenticated; five queued commits pushed successfully to existing public PR115.
-PR title/body updated to “Add privacy-preserving Combat clocks and Exercise evidence” and head
-51f0274 verified. Earlier public-push approval block is resolved. PR remains open/draft; no merge.
-Optional CCE record uploads remain separately unauthorized; retain those notes locally.
+Exact artifact30395bytes, hash `sha256:fafb24792c9e3f774c368f85c02d1d068f84c9c78e67bf8324723257d0f13029`.
+Existing CombatRules/Cna1979Combat/Rules9 registration and six baseline files remain unchanged.
 
-## B2 evidence and limits
+## Verification
 
-Four primary files: `docs/specs/combat-exercise-child-evidence-v1.md`, matching schema,
-`docs/specs/fixtures/combat-exercise-child-evidence-v1.json`, and
-`docs/specs/verify-combat-exercise-child-evidence-v1.py`. Root owns combined implementation plan.
+- B3:12authenticated children/10parents; strict negatives and exact fixture; ordinary review.
+- C:72requirements/99pins/51readbacks/28handoff;2440records in11capacity groups; ordinary review.
+-005A:RED10failures then GREEN19tests;36/360source cells,3approved gaps,1296/6480/8840/44208 combinations.
+-005B:RED5failures then GREEN52tests; exact artifact and strict rejection/readback.
+- Final `just check`: format/build clean,81boundary and1741full tests,zero failures/skips.
+- Six final reviewed code hashes/six legacy Rules baselines and627local file links checked.
 
-Private, unregistered, checkpoint-scoped child evidence. Manifest authenticates native provenance,
-actual initial RNG, own oracle/schema build hashes and B1 pins. Public-only controller choices
-must match supported reference preferences and schedule. Incomplete references cannot admit a
-step bound beyond retained history. Full native execution, separate reconstruction and fresh
-public-controller re-adjudication bind accepted native transitions. FailedAttempt retains actual
-trustedClock, rejected proposal/outcome and no unsubmitted native command. Expected failure stays
-failed; failed proof observations stay explicit. No runtime activation or fresh public creation/
-Movement execution claim; source prefix remains authenticated provenance.
+Evidence lives in `evidence/004b3-*`, `004c-*`, `005a-*`, `005b-*`, `005-root-just-check.log`
+and `005-root-final-literals.json`. Reviewed/accepted spec status hashes recorded separately.
+B3/C author interpreter closed exit0. All writers/reviewers done; no active code or test process.
+Earlier full native B2 run and final focused evidence retain distinct chronology; no duplicate
+full native rerun claimed. Unequal B3 pair lengths remain authenticated-prefix helper evidence,
+since current admitted equal-start completed references have equal lengths.
 
-Final focused run:458.829s;134 admissions,7 native readbacks,22 failure checks; final fixture
-134 summaries/12 children. Root literal134/12/13proofs/95inventory passed. Final ordinary review
-APPROVE; source reconciliation PASS. See [review](evidence/004b2-final-review.md) and
-[source audit](evidence/004b2-final-source-audit.md).
+## Working rules for next task
 
-Detailed chronology: [verification](evidence/004b2-verification-chronology.md).
-Complete native prior freeze passed134 sources/2442 transitions/44 owner-triggered fallbacks;
-final focused deltas and regenerated fixture passed and are separately recorded. Root just check passed81
-boundary tests and1670 full tests,zero skipped,3m06.093s. No src/tests edits since gate.
-Root AST comparison preserves44 functions/native logic,15 schema definitions and163 predecessors.
-Do not repeat unchanged native repository suite without new changes or evidence of concern.
-
-## Resume sequence
-
-1. B3 parent evidence: four new `combat-exercise-parent-evidence-v1` files plus combined plan.
-   Validate exact child manifest/build/seed/config before counts/fingerprint. Invalid/missing child
-   means unavailable/null dependent fields; valid failed child remains comparable. Match actual
-   initial checkpoint, source prefix/capability, gameplay/build, terminal and bounds. Supported
-   future reference/controller/schedule may differ. Compare first actual semantic audience/action
-   divergence, including unequal-length null arm. No RNG-purpose alignment after divergence.
-   Four isolated completion witnesses are not child counts or full-World proofs.
-2. C: four new `combat-outward-composition-v1` files plus combined plan. Reconcile exact72-AC map,
-   accepted003 historical handoff, corrected live side contracts, B1/B2/B3 and version/capacity/
-   readback evidence. Honest partial/deferred runtime coverage. No rootplan/navigation hash pins.
-   Only accepted C closes004/checkpointB and permits005.
-3.005A: dormant Rules/types/pure explicit-dice arithmetic and independent tests.
-4.005B: strict RulesInput1 codec and complete provenance metadata; no registration.
-5.006 is stretch only after required004/005 complete.
-
-Packets/source audits already prepared: [004B](packet-004b.md), [004C](packet-004c.md),
-[005](packet-005.md), [B sources](source-audit-004b.md), [005 sources](source-audit-005.md).
-Draft72-AC map remains research evidence until C acceptance.
-
-## Working rules
-
-Preserve strict privacy: immutable public opening floor, private seal times audit-only, identical
-opposing admission for identical authorized inputs. Historical v1 bytes/18 original audience traces
-and failing diagnostic remain exact; its exit1 is retained historical evidence, not current blocker.
-Keep full World/RNG and authority boundaries; new contracts remain unregistered.
-
-Formal independent-review budget exhausted. Use ordinary code-quality review only. One sole writer,
-read-only reviewer and source auditor per bounded packet, at most four active agents including root.
-Prior useful agents: side_cycle_writer, result_v2_reviewer, task004_evidence, cycle_finish_reviewer.
-Do not assume old process/session still active. Pending-init exercise_occurrence_writer had been
-interrupted at day stop; do not dispatch new work there today.
-
-.NET10 native MTP requires `dotnet test --solution ...` or `--project ...`.
-Use feature branch; no direct main commits. New curated `.planning` files require explicit
-`git add -f`; stage exact paths. Git metadata writes may require sandbox escalation.
-For authorized GitHub operations, use Keychain via `env -u GH_TOKEN -u GITHUB_TOKEN gh ...`;
-never extract or display credential bytes. No CCE writes without resolved upload authorization.
-
-Plan attestation:
-`PLAN_ID=2026-09-14-overnight-combat-wave-01 sh /Users/dsteele/repos/sandtable/.codex/skills/planning-with-files/scripts/attest-plan.sh`
-
-Historical chronology is retained in [progress](progress.md) and Git history.
+Preserve contract-first order, strict fog of war, deterministic fallback and immutable public
+opening clocks. Historical diagnostic bytes remain unchanged. Follow canonical combined plan;
+no formal independent-review budget remains. Read CCE context first for source questions, but
+keep optional CCE uploads blocked. Do not repeat unchanged expensive oracles without cause.

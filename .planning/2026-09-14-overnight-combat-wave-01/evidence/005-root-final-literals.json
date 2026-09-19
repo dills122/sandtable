@@ -1,0 +1,10 @@
+{
+  "reviewedFinalCodeFiles": 6,
+  "unchangedLegacyRuleFiles": 6,
+  "localLinkDocuments": 7,
+  "localLinkTargets": 627,
+  "excludedLinkChecks": [
+    "external URLs",
+    "anchors"
+  ]
+}

@@ -1,3 +1,5 @@
+using System.Security.Cryptography;
+
 namespace Cna.Core.Rules;
 
 /// <summary>Dormant selected Combat arithmetic; no campaign or RNG activation.</summary>
@@ -9,6 +11,10 @@ internal static class Cna1979CombatAdjudication
     public const string ContentHash = "sha256:fafb24792c9e3f774c368f85c02d1d068f84c9c78e67bf8324723257d0f13029";
 
     public static CombatRulesInputDefinition Definition { get; } = CreateDefinition();
+
+    public static RulesetArtifact CreateArtifact() => new(ArtifactId,
+        $"sha256:{Convert.ToHexStringLower(SHA256.HashData(
+            CombatRulesInputArtifactCodec.SerializeCanonical(Definition)))}", Definition.Sources);
 
     public static int LookupMoraleAdjustment(int coordinate) =>
         Definition.Morale[CoordinateIndex(coordinate)].Adjustment;

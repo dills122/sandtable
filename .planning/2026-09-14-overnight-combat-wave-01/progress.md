@@ -579,3 +579,12 @@ No merge.005A initial focused RED observed:10assertion failures, build0warnings/
 independent tests. RED10failures; GREEN19passed0failed0skipped,build0warnings/errors,scopedformat
 and ordinary review pass. Source/exhaustive counts and four final hashes retained. Six existing
 Rules/registration files match baseline.005B codec and final full gate remain.
+
+## Required delivery complete
+
+005B and parent005 ACCEPTED after52focused tests and ordinary review, no findings. Final root
+just check exit0: format/build clean,81boundary/1741full tests,zero failures/skips; full test phase
+3m18.001s. Exact30395byte RulesInput1 golden/hash matches; six reviewed code files and six legacy
+Rules/registration hashes reconcile. Local link audit7documents/627targets passes (no external or
+anchor audit claim). B3/C/checkpoint B and dormant005A/B complete. Task006 next, no gameplay
+activation, hosted transport, durable publication or merge. Publish existing open/ready PR115.

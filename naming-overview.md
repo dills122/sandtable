@@ -688,6 +688,11 @@ state and required configuration agree. **First divergence** marks the earliest 
 does not establish a cause or align later randomness. The
 [outward integration index](docs/specs/combat-outward-composition-v1.md) reconciles those private
 contract terms with all72 planned runtime requirements. Runtime artifact publication remains pending.
+**Selected Combat Rules** now name dormant C# definitions and pure explicit-dice arithmetic.
+**Captured TOE** is a subset of eventual losses, while **Raw Engaged** and required retreat remain
+separate result facts. These helpers do not advance a campaign or consume authoritative randomness.
+**RulesInput1** is the same frozen selected-rules artifact now emitted and checked by its dormant
+C# codec; creating it does not register a new live ruleset version.
 
 **Capability Point expenditure** is the exact amount already spent during the current Operation
 Stage; it is not a replenishing UI movement allowance. **Complete Movement** is a real player

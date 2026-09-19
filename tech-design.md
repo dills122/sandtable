@@ -882,7 +882,15 @@ first bounded follow-up, [Combat rules and result surface](docs/research/combat-
 completed `CMB-RSH-001` by normalizing the admitted combat-table/result surface; it is research
 evidence, not an implemented combat contract. Current proposals use trusted-Umpire sealed choices,
 the same pre-state for simultaneous combat, and structural sequence positions plus cycle identity;
-production Combat is not implemented. The [policy register](docs/design/combat-cycle-policy-reconciliation.md)
+dormant selected Rules and explicit-dice arithmetic are implemented in
+[CombatSelectedRules](src/Cna.Core/Rules/CombatSelectedRules.cs) and
+[Cna1979CombatAdjudication](src/Cna.Core/Rules/Cna1979CombatAdjudication.cs). They preserve exact
+source metadata, immutable collections and role-specific loss/capture rounding. Campaign state,
+RNG consumption and public registration remain later work. The
+[RulesInput1 codec](src/Cna.Core/Rules/CombatRulesInputArtifactCodec.cs) normalizes typed set arrays
+and accepts only exact approved canonical bytes on readback. It reproduces the existing30,395-byte
+artifact and frozen hash, including all source/amendment/policy metadata. Artifact creation leaves
+Rules9 registration unchanged. The [policy register](docs/design/combat-cycle-policy-reconciliation.md)
 now records owner-approved policies, and the [combined plan](docs/design/combat-cycle-implementation-plan.md)
 records parent003 completion and accepted004A1/A2/A3a/A3b side contracts. The
 [round-v2 clock contract](docs/specs/combat-sealed-round-v2.md) uses an immutable public opening
@@ -910,7 +918,7 @@ Its Movement-expiry projection retains exclusions and release history. The
 actual released-I ammunition10 profiles against the existing full-result contract stack without
 emitting authority. Guarded repeat and inherited authority composition are now retained in the
 [28-trace Task003 handoff](docs/specs/combat-authority-composition-v1.md); outward contracts and
-Exercise evidence now close004/checkpoint B. Dormant Task005 implementation follows.
+Exercise evidence now close004/checkpoint B. Dormant Task005 supplies selected arithmetic and strict artifact integration.
 The [inherited successor packet](docs/specs/combat-inherited-successors-v1.md) declares20 exact
 event successors and freezes isolated Reserve completion with atomic cycle1 opening. Actual
 creation-to-first-opening provenance is now composed within the closed initial-infantry profile;

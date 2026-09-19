@@ -1,11 +1,11 @@
 # Combat and Cycle Combined Contract / Implementation Plan
 
-**Status:** Contract checkpoint B accepted; dormant Task005 implementation in progress. No Combat runtime or public capability is active.
+**Status:** Contract checkpoint B and dormant Task005 accepted. Task006 Content/scenario admission is next; Combat gameplay remains inactive.
 `CMB-PLAN-001` and POL-001–008 were accepted on 2026-09-06 at `a10a588`. Source and static Content
 work (`001`–`002`) is complete. Parent `003` is complete through the
 [authority-composition handoff](../specs/combat-authority-composition-v1.md). Checkpoint B closes through the
 [Task004C integration index](../specs/combat-outward-composition-v1.md). Task004A side contracts and Task004B occurrence, child and
-parent evidence are accepted with strict clock privacy and versioned round/settlement authority. Dormant Task005 is in progress; tasks
+parent evidence are accepted with strict clock privacy and versioned round/settlement authority. Dormant Task005 is complete; tasks
 `006`–`025` have not started.
 
 | Delivery layer | Current boundary | Next required outcome |
@@ -13,7 +13,7 @@ parent evidence are accepted with strict clock privacy and versioned round/settl
 | Research and policy | Complete for the selected bounded profile, including `HOST-RSH-001` | Reopen only for a new source, failed assumption, or approved profile expansion |
 | Authority contracts | CON-002–004 and all selected-profile inherited families are reconciled in 28 creation-rooted composition traces; parent003 complete | Preserve exact Task004 handoff while later runtime work derives boundaries from accepted history |
 | Outward contracts | Task004A/B/C accepted; all 72 ACs mapped with bounded evidence and explicit runtime deferrals | Preserve accepted bytes and source/privacy boundaries during dormant implementation |
-| Runtime | Dormant Task005 in progress; Tasks006–019 not started | Implement dormant tables/state/decisions/settlement/release/repeat with cumulative replay and recovery evidence |
+| Runtime | Dormant Task005 selected Rules/arithmetic/codec complete; Tasks006–019 not started | Implement Content/state/decisions/settlement/release/repeat with cumulative replay and recovery evidence |
 | Public and simulator | Tasks020–024 not started | Activate the certified side-safe profile, then prove strict Exercise/Runner reconstruction and repeatability |
 | Closeout | Task025 not started | Full gate, evidence reconciliation, and authentic loop demonstration without overstating retained obligations |
 
@@ -300,6 +300,17 @@ Source parity covers36 morale/360 loss cells with only3 approved gap amendments;
 1296 morale pairs,6480 joint coordinates,8840 capture/refusal rows and44208 weighted paths pass.
 Focused native19/19 tests and build0warnings/errors pass; ordinary review approves. Existing
 Rules9 registration and Combat code remain unchanged. Strict005B codec and final full gate remain.
+
+
+005B and parent005 accepted: strict RulesInput1 codec reproduces30,395 canonical bytes and frozen
+sha256:fafb24792c9e3f774c368f85c02d1d068f84c9c78e67bf8324723257d0f13029. Typed serialization
+normalizes copied identity/numeric sets while preserving procedure order; raw readback accepts
+only exact approved authority bytes and expected hash. Complete source/provenance/amendment/
+policy metadata, malformed/forged input rejection, limits and defensive-copy tests pass.
+Dormant artifact factory leaves registered Rules9 unchanged. Focused005B52/52 tests, ordinary
+review and final root just check pass: format/build clean,81 boundary/1741 full tests,zero skipped.
+All71 new focused tests and six legacy Rules/registration baselines reconcile. Task006 follows;
+public Combat/cycle actions, hosted transport, durable publication and Runner activation remain later.
 
 004A1 overnight hard stop, 2026-09-14 local /2026-09-15 UTC: ordinary fresh-context review found
 equal waiting-side observations before/after an opposing private seal, but the same proposal at
