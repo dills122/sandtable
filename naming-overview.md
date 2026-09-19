@@ -725,6 +725,9 @@ designating side. The private projection requires complete creation-to-stage his
 **ReserveState1** adds first-side ownership, own members and designation history to retained stage
 state. D1 supports only pre-completion cuts: cycle, cycle ID, opening-base hash and completion receipt
 remain null. **Reserve I designation** changes only the accepted own member’s Reserve status.
+**Reserve completion evidence** (D2) binds canonical completion2 bytes and cycle authority to actual
+creation-rooted history. Its **OpeningBase** carries the frozen compatibility profile literal; it is
+not an admission path. Applying that same event to terminal ReserveState1 belongs to Task019A.
 
 **Capability Point expenditure** is the exact amount already spent during the current Operation
 Stage; it is not a replenishing UI movement allowance. **Complete Movement** is a real player

@@ -956,7 +956,9 @@ ActiveSide while final first-acting-side Reserve position remains null until its
 Task008 D1 derives first-side Reserve ownership from accepted stage history, permits one own original
 infantry designation from none to I, and binds its actual receipt into member history. A bounded
 World writer validates the typed history-derived mutation; the initial-only World reader stays strict.
-D2 completion bytes and019A same-event atomic first opening remain required before Movement replay.
+Task008 D2 reconstructs that full history before deriving canonical completion2 bytes and ordinal-1
+cycle identity. Its evidence retains the actual predecessor; it does not publish a terminal state.
+Task019A must apply that same event atomically before Movement replay.
 Creation publication evaluation now targets an expected-head per-campaign commit batch. The
 [HOST-PUB-001 evidence allocation](docs/specs/combat-authority-envelope-v1.md#runtime-evidence-ownership)
 keeps actual atomic uniqueness, commit ambiguity and process-recovery proof open until provider
