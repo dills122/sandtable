@@ -61,6 +61,10 @@
       Include="../../docs/specs/fixtures/combat-world-settlement-v1.json"
       Link="Campaigns/Fixtures/combat-world-settlement-v1.json"
       CopyToOutputDirectory="PreserveNewest" />
+    <Content
+      Include="../../docs/specs/fixtures/combat-authority-envelope-v1.json"
+      Link="Rules/Fixtures/combat-authority-envelope-v1.json"
+      CopyToOutputDirectory="PreserveNewest" />
     <Using Include="Xunit" />
   </ItemGroup>
 
