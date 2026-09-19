@@ -124,6 +124,19 @@ internal sealed record CampaignWorldSnapshotV7
                 !locations.ContainsKey(value.Attacker.ElementId) ||
                 !locations.ContainsKey(value.Defender.ElementId)))
             throw new ArgumentException("Settlement refers outside this world.", nameof(settlements));
+        if (Settlements.Count == 0)
+        {
+            if (CustodyLots.Count != 0)
+                throw new ArgumentException("Custody lots require a retained loss settlement.", nameof(custodyLots));
+        }
+        else
+        {
+            var settlement = Settlements[0];
+            ValidateCustodyLot(settlement);
+            ValidateSettlementCauses(settlement);
+            if (settlement.Relationships is null)
+                ValidateOpenSettlementEffects(settlement);
+        }
     }
 
     public int ContractVersion { get; }
@@ -157,6 +170,145 @@ internal sealed record CampaignWorldSnapshotV7
         if (copy.Select(key).Distinct(StringComparer.Ordinal).Count() != copy.Length)
             throw new ArgumentException("IDs must be unique.", parameter);
         return Array.AsReadOnly(copy.OrderBy(key, StringComparer.Ordinal).ToArray());
+    }
+
+    private void ValidateCustodyLot(CampaignCombatSettlementState settlement)
+    {
+        var captured = settlement.Losses?.Roles.SingleOrDefault(value => value.CapturedToe > 0);
+        if (captured is null)
+        {
+            if (CustodyLots.Count != 0)
+                throw new ArgumentException("Custody lot has no captured loss receipt.");
+            return;
+        }
+        if (CustodyLots.Count != 1)
+            throw new ArgumentException("Positive captured loss requires one custody lot.");
+        var lot = CustodyLots[0];
+        var captor = captured.Role == "attacker" ? settlement.Defender : settlement.Attacker;
+        var original = settlement.PreLossElements.Single(value => value.ElementId == captured.Component.Unit.ElementId);
+        if (lot.LossReceiptId != settlement.Losses!.ReceiptId ||
+            lot.OriginalComponent != captured.Component || lot.Captor != captor ||
+            lot.Quantity != captured.CapturedToe || lot.OriginLocationId != original.CurrentLocationId)
+            throw new ArgumentException("Custody lot differs from retained captured loss.");
+        var custody = settlement.Custody;
+        if (custody is null)
+        {
+            if (lot.Status != "pending")
+                throw new ArgumentException("Lot must remain pending before custody disposition.");
+        }
+        else if (custody.LotId != lot.LotId ||
+            (custody.Kind == "relocate-and-guard" &&
+                (lot.Status != "guarded" || lot.GuardId != custody.GuardId ||
+                    lot.CurrentLocationId != custody.Route[^1])) ||
+            (custody.Kind == "leave-unguarded" &&
+                (lot.Status != "escaped" || lot.EscapeReceiptId != custody.ReceiptId)))
+            throw new ArgumentException("Custody lot differs from its disposition receipt.");
+    }
+
+    private void ValidateOpenSettlementEffects(CampaignCombatSettlementState settlement)
+    {
+        var expected = settlement.PreLossElements.ToDictionary(value => value.ElementId, StringComparer.Ordinal);
+        if (settlement.Losses is not null)
+        {
+            foreach (var loss in settlement.Losses.Roles)
+            {
+                var original = expected[loss.Component.Unit.ElementId];
+                expected[original.ElementId] = WithEffects(original, original.CurrentLocationId,
+                    original.OperationalState.CapabilityPointsExpended,
+                    checked(original.OperationalState.CohesionLevel - loss.LossDp), loss.RemainingToe);
+            }
+        }
+        if (settlement.Retreat is not null)
+        {
+            var retreat = settlement.Retreat;
+            var attacker = expected[settlement.Attacker.ElementId];
+            var defender = expected[settlement.Defender.ElementId];
+            expected[attacker.ElementId] = WithEffects(attacker, attacker.CurrentLocationId,
+                attacker.OperationalState.CapabilityPointsExpended,
+                Math.Min(10, checked(attacker.OperationalState.CohesionLevel + retreat.AttackerVictoryRp)),
+                attacker.Components[0].CurrentToe);
+            expected[defender.ElementId] = WithEffects(defender,
+                retreat.Kind == "retreat" ? retreat.Route[^1] : defender.CurrentLocationId,
+                retreat.AfterCp, checked(defender.OperationalState.CohesionLevel - retreat.ExcessCpDp),
+                defender.Components[0].CurrentToe);
+        }
+        if (settlement.Custody is { Kind: "relocate-and-guard" })
+        {
+            var captorId = CustodyLots[0].Captor.ElementId;
+            var donor = expected[captorId];
+            expected[captorId] = WithEffects(donor, donor.CurrentLocationId,
+                donor.OperationalState.CapabilityPointsExpended, donor.OperationalState.CohesionLevel,
+                checked(donor.Components[0].CurrentToe - 1));
+        }
+        if (!Elements.SequenceEqual(expected.Values.OrderBy(value => value.ElementId, StringComparer.Ordinal)))
+            throw new ArgumentException("Current elements differ from open settlement receipt effects.");
+    }
+
+    private void ValidateSettlementCauses(CampaignCombatSettlementState settlement)
+    {
+        var expected = new List<(string Id, string Receipt, string Element, string Kind, int Points, int Before, int After)>();
+        void Add(string receipt, CampaignCombatUnitKey unit, string kind, int points, int before, int after)
+        {
+            if (points > 0)
+                expected.Add(($"{settlement.SettlementId}.{kind}.{unit.OriginalSide}",
+                    receipt, unit.ElementId, kind, points, before, after));
+        }
+        var attackerBefore = settlement.PreLossElements.Single(value => value.ElementId == settlement.Attacker.ElementId)
+            .OperationalState.CohesionLevel;
+        var defenderBefore = settlement.PreLossElements.Single(value => value.ElementId == settlement.Defender.ElementId)
+            .OperationalState.CohesionLevel;
+        if (settlement.Losses is not null)
+        {
+            var attackerLoss = settlement.Losses.Roles.Single(value => value.Role == "attacker");
+            var defenderLoss = settlement.Losses.Roles.Single(value => value.Role == "defender");
+            Add(settlement.Losses.ReceiptId, settlement.Attacker, "loss-dp", attackerLoss.LossDp,
+                attackerBefore, checked(attackerBefore - attackerLoss.LossDp));
+            Add(settlement.Losses.ReceiptId, settlement.Defender, "loss-dp", defenderLoss.LossDp,
+                defenderBefore, checked(defenderBefore - defenderLoss.LossDp));
+            attackerBefore = checked(attackerBefore - attackerLoss.LossDp);
+            defenderBefore = checked(defenderBefore - defenderLoss.LossDp);
+        }
+        if (settlement.Retreat is not null)
+        {
+            Add(settlement.Retreat.ReceiptId, settlement.Defender, "retreat-excess-dp",
+                settlement.Retreat.ExcessCpDp, defenderBefore,
+                checked(defenderBefore - settlement.Retreat.ExcessCpDp));
+            Add(settlement.Retreat.ReceiptId, settlement.Attacker, "assault-victory-rp",
+                settlement.Retreat.AttackerVictoryRp, attackerBefore,
+                Math.Min(10, checked(attackerBefore + settlement.Retreat.AttackerVictoryRp)));
+        }
+        var actual = CohesionCauses.Where(value =>
+                value.CauseId.StartsWith($"{settlement.SettlementId}.", StringComparison.Ordinal) ||
+                value.ReceiptId == settlement.Losses?.ReceiptId ||
+                value.ReceiptId == settlement.Retreat?.ReceiptId)
+            .OrderBy(value => value.Ordinal).ToArray();
+        if (actual.Length != expected.Count)
+            throw new ArgumentException("Settlement Cohesion cause count differs from receipts.");
+        for (var index = 0; index < actual.Length; index++)
+        {
+            var cause = actual[index];
+            var requirement = expected[index];
+            if (cause.CauseId != requirement.Id || cause.ReceiptId != requirement.Receipt ||
+                cause.ElementId != requirement.Element || cause.Kind != requirement.Kind ||
+                cause.Points != requirement.Points || cause.Before != requirement.Before ||
+                cause.After != requirement.After || cause.GameTurn != settlement.GameTurn ||
+                cause.OperationStage != settlement.OperationStage ||
+                cause.Ordinal != actual[0].Ordinal + index)
+                throw new ArgumentException("Settlement Cohesion cause differs from receipt effects.");
+        }
+    }
+
+    private static CampaignElementStateV6 WithEffects(CampaignElementStateV6 element,
+        string location, CapabilityPointAmount cp, int cohesion, int toe)
+    {
+        var source = element.Components[0];
+        var ledger = element.OperationalState;
+        return new CampaignElementStateV6(element.ElementId, location, element.ReserveStatus,
+            new CampaignElementOperationalStateV6(ledger.LedgerGameTurn, ledger.LedgerOperationStage,
+                cp, cohesion, ledger.VehicleBreakdownState, ledger.MovementEnded, ledger.InitialLedgerOrigin),
+            [new CampaignComponentToeState(source.ComponentId, toe, source.InitialToeOrigin)],
+            element.SourceParentFormationId, element.CurrentParentFormationId,
+            element.Ammunition, element.Readiness);
     }
 }
 

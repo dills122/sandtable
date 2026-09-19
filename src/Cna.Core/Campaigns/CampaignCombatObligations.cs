@@ -277,6 +277,10 @@ internal sealed record CampaignCombatSettlementState
             (retreat.Kind != disposition.Kind || retreat.CompletedDistance != disposition.PlannedDistance ||
                 !retreat.Route.SequenceEqual(disposition.Route)))
             throw new ArgumentException("Retreat receipt must match its disposition.", nameof(retreat));
+        if (retreat is not null && retreat.BeforeCp !=
+            PreLossElements.Single(value => value.ElementId == Defender.ElementId)
+                .OperationalState.CapabilityPointsExpended)
+            throw new ArgumentException("Retreat CP must start from the frozen paid defender ledger.", nameof(retreat));
         var hasCapturedToe = losses?.Roles.Any(value => value.CapturedToe > 0) ?? false;
         if ((custody is not null && !hasCapturedToe) ||
             (relationships is not null && hasCapturedToe != (custody is not null)))
