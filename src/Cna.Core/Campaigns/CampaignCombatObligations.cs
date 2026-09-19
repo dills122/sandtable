@@ -255,11 +255,21 @@ internal sealed record CampaignCombatSettlementState
             throw new ArgumentException("Settlement must retain both original pre-loss elements.", nameof(preLossElements));
         PreLossElements = Array.AsReadOnly(copy.OrderBy(value => value.ElementId, StringComparer.Ordinal).ToArray());
         Result = result ?? throw new ArgumentNullException(nameof(result));
-        if ((losses is not null && result.RequiredRetreat != 0 && disposition is null) ||
+        if ((losses is not null && disposition is null) ||
             (retreat is not null && losses is null) ||
-            (custody is not null && (losses is null || retreat is null)) ||
-            (relationships is not null && losses is null))
+            (custody is not null && retreat is null) ||
+            (relationships is not null && retreat is null))
             throw new ArgumentException("Settlement receipts are out of order.", nameof(losses));
+        if (disposition is not null && disposition.RequiredDistance != result.RequiredRetreat)
+            throw new ArgumentException("Disposition must match the resolved retreat requirement.", nameof(disposition));
+        if (retreat is not null && disposition is not null &&
+            (retreat.Kind != disposition.Kind || retreat.CompletedDistance != disposition.PlannedDistance ||
+                !retreat.Route.SequenceEqual(disposition.Route)))
+            throw new ArgumentException("Retreat receipt must match its disposition.", nameof(retreat));
+        var hasCapturedToe = losses?.Roles.Any(value => value.CapturedToe > 0) ?? false;
+        if ((custody is not null && !hasCapturedToe) ||
+            (relationships is not null && hasCapturedToe != (custody is not null)))
+            throw new ArgumentException("Custody receipt presence must match captured TOE.", nameof(custody));
         string previous = ResultId;
         if (disposition is not null)
         {

@@ -59,6 +59,10 @@ internal sealed record CampaignCombatRetreatDisposition
         if (requiredDistance is < 0 or > 1 || plannedDistance < 0 || unfulfilledDistance < 0 ||
             (long)plannedDistance + unfulfilledDistance != requiredDistance)
             throw new ArgumentException("Retreat distance does not conserve.", nameof(plannedDistance));
+        if ((Kind == "retreat" && (requiredDistance != 1 || plannedDistance != 1 || unfulfilledDistance != 0)) ||
+            (Kind == "refuse-retreat" && (requiredDistance != 1 || plannedDistance != 0 || unfulfilledDistance != 1)) ||
+            (Kind == "not-required" && (requiredDistance != 0 || plannedDistance != 0 || unfulfilledDistance != 0)))
+            throw new ArgumentException("Retreat disposition kind contradicts its distance.", nameof(kind));
         RequiredDistance = requiredDistance;
         PlannedDistance = plannedDistance;
         UnfulfilledDistance = unfulfilledDistance;

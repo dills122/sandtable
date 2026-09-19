@@ -19,7 +19,15 @@ internal sealed record CampaignCombatCohesionCause
         ArgumentOutOfRangeException.ThrowIfLessThan(gameTurn, 1);
         if (operationStage is < 1 or > 3) throw new ArgumentOutOfRangeException(nameof(operationStage));
         ArgumentOutOfRangeException.ThrowIfLessThan(points, 1);
-        if (after != checked(before - points)) throw new ArgumentException("Cohesion cause does not conserve points.", nameof(after));
+        if (before > 10 || after > 10) throw new ArgumentOutOfRangeException(nameof(after));
+        var expectedAfter = kind switch
+        {
+            "assault-victory-rp" => Math.Min(10L, (long)before + points),
+            "loss-dp" or "retreat-excess-dp" or "ordinary-movement-excess-cp-dp" => (long)before - points,
+            _ => throw new ArgumentException("Unsupported Cohesion cause kind.", nameof(kind)),
+        };
+        if (expectedAfter < int.MinValue || after != expectedAfter)
+            throw new ArgumentException("Cohesion cause does not conserve points.", nameof(after));
         CauseId = ContentContractGuards.RequireStableId(causeId, nameof(causeId));
         Ordinal = ordinal;
         ReceiptId = ContentContractGuards.RequireStableId(receiptId, nameof(receiptId));
@@ -46,12 +54,14 @@ internal sealed record CampaignCombatCohesionCause
 
 internal sealed record CampaignCombatSpendResult(
     CampaignElementOperationalStateV6 State,
-    CampaignCombatCohesionCause? Cause);
+    CampaignCombatCohesionCause? Cause,
+    IReadOnlyList<CampaignCombatCohesionCause> Causes);
 
 internal static class CampaignCombatSpending
 {
     public static CampaignCombatSpendResult ChargeOrdinary(CampaignElementOperationalStateV6 state,
-        CapabilityPointAmount cost, int cpa, CampaignCombatSpendCeiling ceiling, string elementId, string receiptId)
+        CapabilityPointAmount cost, int cpa, CampaignCombatSpendCeiling ceiling, string elementId,
+        string receiptId, IReadOnlyList<CampaignCombatCohesionCause> priorCauses)
     {
         ArgumentNullException.ThrowIfNull(state);
         ArgumentNullException.ThrowIfNull(cost);
@@ -66,23 +76,31 @@ internal static class CampaignCombatSpending
             CampaignCombatSpendCeiling.ReleasedReserveII => cpa / 2,
             _ => throw new ArgumentOutOfRangeException(nameof(ceiling)),
         };
-        return Charge(state, cost, cpa, limit, elementId, receiptId, "excess-cp-dp");
+        return Charge(state, cost, cpa, limit, elementId, receiptId, $"{receiptId}.dp",
+            "ordinary-movement-excess-cp-dp", priorCauses);
     }
 
     public static CampaignCombatSpendResult ChargeMandatoryRetreat(CampaignElementOperationalStateV6 state,
-        int cpa, string elementId, string receiptId)
+        int cpa, string elementId, string receiptId, string causeId,
+        IReadOnlyList<CampaignCombatCohesionCause> priorCauses)
     {
         ArgumentNullException.ThrowIfNull(state);
         ArgumentOutOfRangeException.ThrowIfLessThan(cpa, 1);
         return Charge(state, new CapabilityPointAmount(1, 1), cpa, long.MaxValue,
-            elementId, receiptId, "retreat-excess-cp-dp");
+            elementId, receiptId, causeId, "retreat-excess-dp", priorCauses);
     }
 
     private static CampaignCombatSpendResult Charge(CampaignElementOperationalStateV6 state,
-        CapabilityPointAmount cost, int cpa, long limit, string elementId, string receiptId, string causeKind)
+        CapabilityPointAmount cost, int cpa, long limit, string elementId, string receiptId,
+        string causeId, string causeKind, IReadOnlyList<CampaignCombatCohesionCause> priorCauses)
     {
         ContentContractGuards.RequireStableId(elementId, nameof(elementId));
         ContentContractGuards.RequireStableId(receiptId, nameof(receiptId));
+        ContentContractGuards.RequireStableId(causeId, nameof(causeId));
+        var history = ContentContractGuards.CopyValues(priorCauses, nameof(priorCauses));
+        if (history.Length > 4096 || history.Where((cause, index) => cause.Ordinal != index + 1).Any() ||
+            history.Select(cause => cause.CauseId).Distinct(StringComparer.Ordinal).Count() != history.Length)
+            throw new ArgumentException("Prior Cohesion causes must be a contiguous unique history.", nameof(priorCauses));
         if (state.CapabilityPointsExpended.Denominator != 1)
             throw new ArgumentException("Selected infantry ledger requires integer CP.", nameof(state));
         var before = state.CapabilityPointsExpended.Numerator;
@@ -93,10 +111,15 @@ internal static class CampaignCombatSpending
         var next = new CampaignElementOperationalStateV6(state.LedgerGameTurn, state.LedgerOperationStage,
             new CapabilityPointAmount(after, 1), cohesion, state.VehicleBreakdownState,
             state.MovementEnded, state.InitialLedgerOrigin);
+        if (points > 0 && history.Length == 4096)
+            throw new ArgumentOutOfRangeException(nameof(priorCauses), "Cohesion cause capacity is exhausted.");
+        if (points > 0 && history.Any(cause => cause.CauseId == causeId))
+            throw new ArgumentException("Cohesion cause ID already exists.", nameof(causeId));
         var cause = points == 0 ? null : new CampaignCombatCohesionCause(
-            $"{receiptId}.excess-cp", 1, receiptId, elementId,
+            causeId, history.Length + 1, receiptId, elementId,
             state.LedgerGameTurn, state.LedgerOperationStage, causeKind, points,
             state.CohesionLevel, cohesion);
-        return new CampaignCombatSpendResult(next, cause);
+        var causes = cause is null ? history : [.. history, cause];
+        return new CampaignCombatSpendResult(next, cause, Array.AsReadOnly(causes));
     }
 }

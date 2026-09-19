@@ -98,37 +98,39 @@ public sealed class CombatWorldTests
             0, null, null, origin);
 
         var eleven = CampaignCombatSpending.ChargeOrdinary(atFive, new CapabilityPointAmount(6, 1), 10,
-            CampaignCombatSpendCeiling.Ordinary, "axis-assault-battalion", "move.11");
+            CampaignCombatSpendCeiling.Ordinary, "axis-assault-battalion", "move.11", []);
         Assert.Equal(new CapabilityPointAmount(11, 1), eleven.State.CapabilityPointsExpended);
         Assert.Equal(-1, eleven.State.CohesionLevel);
         Assert.Equal(1, Assert.IsType<CampaignCombatCohesionCause>(eleven.Cause).Points);
 
         var fifteen = CampaignCombatSpending.ChargeOrdinary(atNine, new CapabilityPointAmount(6, 1), 10,
-            CampaignCombatSpendCeiling.Ordinary, "axis-assault-battalion", "move.15");
+            CampaignCombatSpendCeiling.Ordinary, "axis-assault-battalion", "move.15", []);
         Assert.Equal(new CapabilityPointAmount(15, 1), fifteen.State.CapabilityPointsExpended);
         Assert.Equal(-5, fifteen.State.CohesionLevel);
         Assert.Equal(5, Assert.IsType<CampaignCombatCohesionCause>(fifteen.Cause).Points);
 
         Assert.Throws<ArgumentOutOfRangeException>(() => CampaignCombatSpending.ChargeOrdinary(
             atTen, new CapabilityPointAmount(6, 1), 10, CampaignCombatSpendCeiling.Ordinary,
-            "axis-assault-battalion", "move.16"));
+            "axis-assault-battalion", "move.16", []));
 
         var mandatory = CampaignCombatSpending.ChargeMandatoryRetreat(atTen, 10,
-            "axis-assault-battalion", "retreat.11");
+            "axis-assault-battalion", "settlement.001.retreat",
+            "settlement.001.retreat-excess-dp.axis", []);
         Assert.Equal(new CapabilityPointAmount(11, 1), mandatory.State.CapabilityPointsExpended);
         Assert.Equal(-1, mandatory.State.CohesionLevel);
         Assert.Equal(1, Assert.IsType<CampaignCombatCohesionCause>(mandatory.Cause).Points);
 
         Assert.Throws<ArgumentOutOfRangeException>(() => CampaignCombatSpending.ChargeOrdinary(
             atNine, new CapabilityPointAmount(2, 1), 10, CampaignCombatSpendCeiling.ReleasedReserveI,
-            "axis-assault-battalion", "move.reserve-i"));
+            "axis-assault-battalion", "move.reserve-i", []));
         Assert.Throws<ArgumentOutOfRangeException>(() => CampaignCombatSpending.ChargeOrdinary(
             atFive, new CapabilityPointAmount(1, 1), 10, CampaignCombatSpendCeiling.ReleasedReserveII,
-            "axis-assault-battalion", "move.reserve-ii"));
+            "axis-assault-battalion", "move.reserve-ii", []));
 
         Assert.Throws<OverflowException>(() => CampaignCombatSpending.ChargeMandatoryRetreat(
             new CampaignElementOperationalStateV6(1, 1, new CapabilityPointAmount(long.MaxValue, 1),
-                0, null, null, origin), 10, "axis-assault-battalion", "retreat.overflow"));
+                0, null, null, origin), 10, "axis-assault-battalion", "retreat.overflow",
+            "retreat.overflow.dp", []));
     }
 
     [Fact]
@@ -222,7 +224,7 @@ public sealed class CombatWorldTests
             0, breakdown, null, origin);
 
         var charged = CampaignCombatSpending.ChargeOrdinary(state, new CapabilityPointAmount(2, 1),
-            10, CampaignCombatSpendCeiling.Ordinary, "axis-assault-battalion", "move.breakdown");
+            10, CampaignCombatSpendCeiling.Ordinary, "axis-assault-battalion", "move.breakdown", []);
 
         Assert.Same(breakdown, charged.State.VehicleBreakdownState);
         Assert.Same(origin, charged.State.InitialLedgerOrigin);
@@ -260,7 +262,7 @@ public sealed class CombatWorldTests
     {
         var world = InitialWorld();
         var cause = new CampaignCombatCohesionCause("cause.002", 2, "move.002",
-            "axis-assault-battalion", 1, 1, "excess-cp-dp", 1, 0, -1);
+            "axis-assault-battalion", 1, 1, "ordinary-movement-excess-cp-dp", 1, 0, -1);
         Assert.Throws<ArgumentException>(() => new CampaignWorldSnapshotV7(7, world.CreationBinding,
             world.Elements, world.Representations, [], [cause], [], [], [], [], [], []));
     }
@@ -279,6 +281,117 @@ public sealed class CombatWorldTests
         Assert.Throws<ArgumentException>(() => new CampaignCombatCustodyReceipt(
             "settlement.001.custody", "settlement.001.retreat", "lot.001",
             "relocate-and-guard", ["a", "b", "c", "d", "e"], "guard.001", null, 10, 9));
+    }
+
+    [Fact]
+    public void VictoryRecoveryCauseAddsCohesionAndCapsAtTen()
+    {
+        var recovered = new CampaignCombatCohesionCause("settlement.001.assault-victory-rp.axis", 1,
+            "settlement.001.retreat", "axis-assault-battalion", 1, 1,
+            "assault-victory-rp", 3, -3, 0);
+        var capped = new CampaignCombatCohesionCause("settlement.002.assault-victory-rp.axis", 2,
+            "settlement.002.retreat", "axis-assault-battalion", 1, 1,
+            "assault-victory-rp", 3, 9, 10);
+        var alreadyCapped = new CampaignCombatCohesionCause("settlement.003.assault-victory-rp.axis", 3,
+            "settlement.003.retreat", "axis-assault-battalion", 1, 1,
+            "assault-victory-rp", 3, 10, 10);
+
+        Assert.Equal(0, recovered.After);
+        Assert.Equal(10, capped.After);
+        Assert.Equal(10, alreadyCapped.After);
+        Assert.Throws<ArgumentException>(() => new CampaignCombatCohesionCause(
+            "settlement.003.assault-victory-rp.axis", 3, "settlement.003.retreat",
+            "axis-assault-battalion", 1, 1, "assault-victory-rp", 3, 9, 9));
+        Assert.Throws<ArgumentOutOfRangeException>(() => new CampaignCombatCohesionCause(
+            "settlement.003.assault-victory-rp.axis", 3, "settlement.003.retreat",
+            "axis-assault-battalion", 1, 1, "assault-victory-rp", 3, 9, 12));
+    }
+
+    [Fact]
+    public void SettlementRequiresEveryReceiptPrefixEvenWhenRetreatIsNotRequired()
+    {
+        var world = InitialWorld();
+        var attacker = new CampaignCombatUnitKey(world.CreationBinding, "axis", "axis-assault-battalion");
+        var defender = new CampaignCombatUnitKey(world.CreationBinding, "commonwealth", "commonwealth-assault-battalion");
+        var result = new CampaignCombatResultFacts(0, 11, 36, null, 0, 0, false, 0, null, 0);
+        var losses = new CampaignCombatLossReceipt("settlement.001.losses", "settlement.001.disposition",
+            [new CampaignCombatRoleLoss("attacker", new CampaignCombatComponentKey(attacker,
+                "axis-assault-battalion.toe.infantry"), 10, 0, 0, 0, 0, 0, 10, 0),
+             new CampaignCombatRoleLoss("defender", new CampaignCombatComponentKey(defender,
+                "commonwealth-assault-battalion.toe.infantry"), 10, 0, 0, 0, 0, 0, 10, 0)]);
+        var disposition = new CampaignCombatRetreatDisposition("settlement.001.disposition",
+            "settlement.001.result", "not-required", 0, 0, 0, ["assault-east"]);
+        var relationships = new CampaignCombatRelationshipsReceipt("settlement.001.relationships",
+            "settlement.001.retreat", null, null);
+
+        var lossesWithoutDisposition = new CampaignCombatLossReceipt("settlement.001.losses",
+            "settlement.001.result", losses.Roles);
+        Assert.Throws<ArgumentException>(() => new CampaignCombatSettlementState("settlement.001",
+            "settlement.001.commit", "settlement.001.result", 1, 1, attacker, defender,
+            world.Elements, result, null, lossesWithoutDisposition, null, null, null));
+        var relationshipsWithoutRetreat = new CampaignCombatRelationshipsReceipt(
+            "settlement.001.relationships", "settlement.001.losses", null, null);
+        Assert.Throws<ArgumentException>(() => new CampaignCombatSettlementState("settlement.001",
+            "settlement.001.commit", "settlement.001.result", 1, 1, attacker, defender,
+            world.Elements, result, disposition, losses, null, null, relationshipsWithoutRetreat));
+
+        var retreat = new CampaignCombatRetreatReceipt("settlement.001.retreat",
+            "settlement.001.losses", "not-required", ["assault-east"], 0,
+            CapabilityPointAmount.Zero, CapabilityPointAmount.Zero, 0, 0);
+        var complete = new CampaignCombatSettlementState("settlement.001",
+            "settlement.001.commit", "settlement.001.result", 1, 1, attacker, defender,
+            world.Elements, result, disposition, losses, retreat, null, relationships);
+        Assert.NotNull(complete.Relationships);
+    }
+
+    [Fact]
+    public void RetreatDispositionKindDeterminesTheOnlyAllowedDistances()
+    {
+        Assert.Throws<ArgumentException>(() => new CampaignCombatRetreatDisposition(
+            "settlement.001.disposition", "settlement.001.result", "not-required", 1, 1, 0,
+            ["assault-east", "commonwealth-rear"]));
+        Assert.Throws<ArgumentException>(() => new CampaignCombatRetreatDisposition(
+            "settlement.001.disposition", "settlement.001.result", "refuse-retreat", 1, 1, 0,
+            ["assault-east", "commonwealth-rear"]));
+        Assert.Throws<ArgumentException>(() => new CampaignCombatRetreatDisposition(
+            "settlement.001.disposition", "settlement.001.result", "retreat", 1, 0, 1,
+            ["assault-east"]));
+    }
+
+    [Fact]
+    public void ConsecutiveExcessSpendsAppendDistinctOrderedCauses()
+    {
+        var world = InitialWorld();
+        var element = Assert.Single(world.Elements, value => value.ElementId == "axis-assault-battalion");
+        var atTen = new CampaignElementOperationalStateV6(1, 1, new CapabilityPointAmount(10, 1),
+            0, null, null, element.OperationalState.InitialLedgerOrigin);
+
+        var first = CampaignCombatSpending.ChargeOrdinary(atTen, new CapabilityPointAmount(1, 1),
+            10, CampaignCombatSpendCeiling.Ordinary, element.ElementId, "move.11", []);
+        var suppliedHistory = first.Causes.ToArray();
+        var second = CampaignCombatSpending.ChargeOrdinary(first.State, new CapabilityPointAmount(1, 1),
+            10, CampaignCombatSpendCeiling.Ordinary, element.ElementId, "move.12", suppliedHistory);
+        suppliedHistory[0] = second.Cause!;
+
+        Assert.Equal(1, Assert.IsType<CampaignCombatCohesionCause>(first.Cause).Ordinal);
+        Assert.Equal(2, Assert.IsType<CampaignCombatCohesionCause>(second.Cause).Ordinal);
+        Assert.Equal("move.11.dp", first.Cause!.CauseId);
+        Assert.Equal("move.12.dp", second.Cause!.CauseId);
+        Assert.Equal("ordinary-movement-excess-cp-dp", second.Cause.Kind);
+        Assert.Equal(2, second.Causes.Count);
+        Assert.Equal("move.11.dp", second.Causes[0].CauseId);
+        Assert.Throws<ArgumentException>(() => CampaignCombatSpending.ChargeOrdinary(first.State,
+            new CapabilityPointAmount(1, 1), 10, CampaignCombatSpendCeiling.Ordinary,
+            element.ElementId, "move.11", first.Causes));
+
+        var updated = new CampaignElementStateV6(element.ElementId, element.CurrentLocationId,
+            element.ReserveStatus, second.State, element.Components,
+            element.SourceParentFormationId, element.CurrentParentFormationId,
+            element.Ammunition, element.Readiness);
+        var replay = new CampaignWorldSnapshotV7(7, world.CreationBinding,
+            world.Elements.Select(value => value.ElementId == element.ElementId ? updated : value),
+            world.Representations, [], second.Causes, [], [], [], [], [], []);
+        Assert.Equal(2, replay.CohesionCauses.Count);
     }
 
     private static CampaignWorldSnapshotV7 WithLots(CampaignWorldSnapshotV7 world,
