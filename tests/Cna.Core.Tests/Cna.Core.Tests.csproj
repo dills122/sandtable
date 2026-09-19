@@ -69,6 +69,10 @@
       Include="../../docs/specs/fixtures/combat-creation-ledger-v1.json"
       Link="Campaigns/Fixtures/combat-creation-ledger-v1.json"
       CopyToOutputDirectory="PreserveNewest" />
+    <Content
+      Include="../../docs/specs/fixtures/combat-opening-preamble-v1.json"
+      Link="Campaigns/Fixtures/combat-opening-preamble-v1.json"
+      CopyToOutputDirectory="PreserveNewest" />
     <Using Include="Xunit" />
   </ItemGroup>
 
