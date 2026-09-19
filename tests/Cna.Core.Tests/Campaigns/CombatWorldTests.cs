@@ -321,6 +321,68 @@ public sealed class CombatWorldTests
     }
 
     [Fact]
+    public void ResultFactsMustMatchSelectedRulesTablesAndEffects()
+    {
+        var valid = new CampaignCombatResultFacts(-2, 11, 36, 6, 25, 5, false, 1, "attacker", 75);
+        Assert.Equal(25, valid.AttackerPercent);
+
+        Assert.Throws<ArgumentException>(() => new CampaignCombatResultFacts(
+            -2, 11, 36, 6, 0, 5, false, 1, "attacker", 75));
+        Assert.Throws<ArgumentException>(() => new CampaignCombatResultFacts(
+            -2, 11, 36, 6, 25, 0, false, 1, "attacker", 75));
+        Assert.Throws<ArgumentException>(() => new CampaignCombatResultFacts(
+            -2, 11, 36, 6, 25, 5, true, 1, "attacker", 75));
+        Assert.Throws<ArgumentException>(() => new CampaignCombatResultFacts(
+            -2, 11, 36, 6, 25, 5, false, 0, "attacker", 75));
+        Assert.Throws<ArgumentException>(() => new CampaignCombatResultFacts(
+            -2, 11, 36, null, 25, 5, false, 1, null, 0));
+        Assert.Throws<ArgumentException>(() => new CampaignCombatResultFacts(
+            -2, 11, 36, 6, 25, 5, false, 1, "attacker", 50));
+    }
+
+    [Fact]
+    public void RoleLossMustUseRoleSpecificRoundingAndRefusalBound()
+    {
+        var component = new CampaignCombatComponentKey(
+            new CampaignCombatUnitKey("fixture.creation-001", "axis", "axis-assault-battalion"),
+            "axis-assault-battalion.toe.infantry");
+        Assert.Throws<ArgumentException>(() => new CampaignCombatRoleLoss("attacker", component,
+            10, 20, 0, 0, 0, 0, 10, 0));
+        Assert.Throws<ArgumentException>(() => new CampaignCombatRoleLoss("defender", component,
+            10, 20, 0, 3, 0, 3, 7, 3));
+        Assert.Throws<ArgumentException>(() => new CampaignCombatRoleLoss("attacker", component,
+            10, 20, 10, 3, 0, 3, 7, 3));
+        Assert.Throws<ArgumentException>(() => new CampaignCombatRoleLoss("defender", component,
+            10, 0, 20, 2, 0, 2, 8, 0));
+
+        Assert.Equal(3, new CampaignCombatRoleLoss("defender", component,
+            10, 20, 10, 3, 0, 3, 7, 3).LossToe);
+    }
+
+    [Fact]
+    public void RetreatReceiptMustChargeExactCpAndImmediateEffects()
+    {
+        var before = new CapabilityPointAmount(10, 1);
+        var after = new CapabilityPointAmount(11, 1);
+        var valid = new CampaignCombatRetreatReceipt("settlement.001.retreat", "settlement.001.losses",
+            "retreat", ["assault-east", "commonwealth-rear"], 1, before, after, 1, 3);
+        Assert.Equal(1, valid.ExcessCpDp);
+
+        Assert.Throws<ArgumentException>(() => new CampaignCombatRetreatReceipt(
+            "settlement.001.retreat", "settlement.001.losses", "retreat",
+            ["assault-east", "commonwealth-rear"], 1, before, before, 0, 3));
+        Assert.Throws<ArgumentException>(() => new CampaignCombatRetreatReceipt(
+            "settlement.001.retreat", "settlement.001.losses", "retreat",
+            ["assault-east", "commonwealth-rear"], 1, before, after, 0, 3));
+        Assert.Throws<ArgumentException>(() => new CampaignCombatRetreatReceipt(
+            "settlement.001.retreat", "settlement.001.losses", "retreat",
+            ["assault-east", "commonwealth-rear"], 1, before, after, 1, 0));
+        Assert.Throws<ArgumentException>(() => new CampaignCombatRetreatReceipt(
+            "settlement.001.retreat", "settlement.001.losses", "not-required",
+            ["assault-east"], 0, before, after, 1, 0));
+    }
+
+    [Fact]
     public void UnguardedEscapeRouteUsesClearTerrainCpNotEdgeCount()
     {
         var fourEdges = new CampaignCombatCustodyReceipt("settlement.001.custody", "settlement.001.retreat",
@@ -362,12 +424,12 @@ public sealed class CombatWorldTests
         var world = InitialWorld();
         var attacker = new CampaignCombatUnitKey(world.CreationBinding, "axis", "axis-assault-battalion");
         var defender = new CampaignCombatUnitKey(world.CreationBinding, "commonwealth", "commonwealth-assault-battalion");
-        var result = new CampaignCombatResultFacts(0, 11, 36, null, 0, 0, false, 0, null, 0);
+        var result = new CampaignCombatResultFacts(0, 44, 44, null, 5, 5, false, 0, null, 0);
         var losses = new CampaignCombatLossReceipt("settlement.001.losses", "settlement.001.disposition",
             [new CampaignCombatRoleLoss("attacker", new CampaignCombatComponentKey(attacker,
-                "axis-assault-battalion.toe.infantry"), 10, 0, 0, 0, 0, 0, 10, 0),
+                "axis-assault-battalion.toe.infantry"), 10, 5, 0, 1, 0, 1, 9, 0),
              new CampaignCombatRoleLoss("defender", new CampaignCombatComponentKey(defender,
-                "commonwealth-assault-battalion.toe.infantry"), 10, 0, 0, 0, 0, 0, 10, 0)]);
+                "commonwealth-assault-battalion.toe.infantry"), 10, 5, 0, 0, 0, 0, 10, 0)]);
         var disposition = new CampaignCombatRetreatDisposition("settlement.001.disposition",
             "settlement.001.result", "not-required", 0, 0, 0, ["assault-east"]);
         var relationships = new CampaignCombatRelationshipsReceipt("settlement.001.relationships",
@@ -391,6 +453,43 @@ public sealed class CombatWorldTests
             "settlement.001.commit", "settlement.001.result", 1, 1, attacker, defender,
             world.Elements, result, disposition, losses, retreat, null, relationships);
         Assert.NotNull(complete.Relationships);
+    }
+
+    [Fact]
+    public void SettlementLossesMustBindResultCaptureAndRetreatRefusal()
+    {
+        var world = InitialWorld();
+        var attacker = new CampaignCombatUnitKey(world.CreationBinding, "axis", "axis-assault-battalion");
+        var defender = new CampaignCombatUnitKey(world.CreationBinding, "commonwealth", "commonwealth-assault-battalion");
+        var attackerComponent = new CampaignCombatComponentKey(attacker, "axis-assault-battalion.toe.infantry");
+        var defenderComponent = new CampaignCombatComponentKey(defender, "commonwealth-assault-battalion.toe.infantry");
+        var result = new CampaignCombatResultFacts(-2, 11, 36, 6, 25, 5, false, 1, "attacker", 75);
+        var disposition = new CampaignCombatRetreatDisposition("settlement.001.disposition",
+            "settlement.001.result", "retreat", 1, 1, 0, ["assault-east", "commonwealth-rear"]);
+        var attackerLoss = new CampaignCombatRoleLoss("attacker", attackerComponent, 10, 25, 0,
+            3, 3, 0, 7, 3);
+        var defenderLoss = new CampaignCombatRoleLoss("defender", defenderComponent, 10, 5, 0,
+            0, 0, 0, 10, 0);
+        CampaignCombatLossReceipt Receipt(CampaignCombatRoleLoss first, CampaignCombatRoleLoss second) =>
+            new("settlement.001.losses", "settlement.001.disposition", [first, second]);
+        CampaignCombatSettlementState Settlement(CampaignCombatRetreatDisposition choice, CampaignCombatLossReceipt losses) =>
+            new("settlement.001", "settlement.001.commit", "settlement.001.result", 1, 1,
+                attacker, defender, world.Elements, result, choice, losses, null, null, null);
+
+        Assert.NotNull(Settlement(disposition, Receipt(attackerLoss, defenderLoss)).Losses);
+        Assert.Throws<ArgumentException>(() => Settlement(disposition, Receipt(
+            new CampaignCombatRoleLoss("attacker", attackerComponent, 10, 25, 0, 3, 2, 1, 7, 3),
+            defenderLoss)));
+        Assert.Throws<ArgumentException>(() => Settlement(disposition, Receipt(
+            new CampaignCombatRoleLoss("attacker", attackerComponent, 10, 20, 0, 2, 2, 0, 8, 0),
+            defenderLoss)));
+
+        var refusal = new CampaignCombatRetreatDisposition("settlement.001.disposition",
+            "settlement.001.result", "refuse-retreat", 1, 0, 1, ["assault-east"]);
+        Assert.Throws<ArgumentException>(() => Settlement(refusal, Receipt(attackerLoss, defenderLoss)));
+        var refusalLoss = new CampaignCombatRoleLoss("defender", defenderComponent, 10, 5, 10,
+            1, 0, 1, 9, 0);
+        Assert.NotNull(Settlement(refusal, Receipt(attackerLoss, refusalLoss)).Losses);
     }
 
     [Fact]

@@ -282,6 +282,19 @@ internal sealed record CampaignCombatSettlementState
             if (losses.Roles.Any(value => value.Component.Unit !=
                     (value.Role == "attacker" ? Attacker : Defender)))
                 throw new ArgumentException("Loss role must bind the original participant.", nameof(losses));
+            foreach (var loss in losses.Roles)
+            {
+                var expectedElement = PreLossElements.Single(value => value.ElementId == loss.Component.Unit.ElementId);
+                var expectedPercent = loss.Role == "attacker" ? Result.AttackerPercent : Result.DefenderPercent;
+                var expectedRefusal = loss.Role == "defender" ? 10 * disposition!.UnfulfilledDistance : 0;
+                var expectedCaptured = loss.Role == Result.CapturedRole
+                    ? (loss.LossToe * Result.CaptureShare + 99) / 100 : 0;
+                if (loss.TablePercent != expectedPercent || loss.RefusalPercent != expectedRefusal ||
+                    loss.CapturedToe != expectedCaptured ||
+                    !expectedElement.Components.Any(value => value.ComponentId == loss.Component.ComponentId &&
+                        value.CurrentToe == loss.CommittedToe))
+                    throw new ArgumentException("Loss receipt differs from result, disposition, or pre-loss component.", nameof(losses));
+            }
             previous = losses.ReceiptId;
         }
         if (retreat is not null)

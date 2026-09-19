@@ -21,6 +21,21 @@ internal sealed record CampaignCombatResultFacts
         if (captureShare is < 0 or > 100 || (capturedRole is null) != (captureDie is null) ||
             (capturedRole is null && captureShare != 0))
             throw new ArgumentException("Capture result fields disagree.", nameof(captureShare));
+        var rules = Cna1979CombatAdjudication.Definition;
+        var effects = rules.Effects[differential + 2];
+        var attackerSum = attackerCoordinate / 10 + attackerCoordinate % 10;
+        var defenderSum = defenderCoordinate / 10 + defenderCoordinate % 10;
+        var expectedCapturedRole = effects.AttackerCaptureSums.Contains(attackerSum) ? "attacker"
+            : effects.DefenderCaptureSums.Contains(defenderSum) ? "defender" : null;
+        if (attackerPercent != Cna1979CombatAdjudication.LookupLossPercent(
+                CombatRole.Attacker, differential, attackerCoordinate) ||
+            defenderPercent != Cna1979CombatAdjudication.LookupLossPercent(
+                CombatRole.Defender, differential, defenderCoordinate) ||
+            rawEngaged != effects.AttackerEngagedSums.Contains(attackerSum) ||
+            requiredRetreat != (effects.DefenderRetreatOneHexSums.Contains(defenderSum) ? 1 : 0) ||
+            capturedRole != expectedCapturedRole ||
+            captureShare != (captureDie is int die ? rules.CaptureShares[die - 1].Percent : 0))
+            throw new ArgumentException("Result facts differ from selected Rules tables or effects.", nameof(differential));
         Differential = differential;
         AttackerCoordinate = attackerCoordinate;
         DefenderCoordinate = defenderCoordinate;
@@ -107,6 +122,15 @@ internal sealed record CampaignCombatRoleLoss
             throw new ArgumentException("Role loss does not conserve TOE.", nameof(lossToe));
         if (lossDp != (lossToe >= 3 ? 3 : 0))
             throw new ArgumentException("Loss DP must match the selected 30%-of-10 threshold.", nameof(lossDp));
+        if ((role == "attacker" && refusalPercent != 0) ||
+            (role == "defender" && refusalPercent is not (0 or 10)))
+            throw new ArgumentException("Refusal percent does not match the selected role bound.", nameof(refusalPercent));
+        var effectivePercent = tablePercent + refusalPercent;
+        var expectedLoss = role == "attacker"
+            ? (10 * effectivePercent + 99) / 100
+            : 10 * effectivePercent / 100;
+        if (lossToe != expectedLoss)
+            throw new ArgumentException("Role loss does not match selected rounding.", nameof(lossToe));
         Role = role;
         CommittedToe = committedToe;
         TablePercent = tablePercent;
@@ -166,6 +190,14 @@ internal sealed record CampaignCombatRetreatReceipt
         AfterCp = afterCp ?? throw new ArgumentNullException(nameof(afterCp));
         if (afterCp < beforeCp || excessCpDp < 0 || attackerVictoryRp < 0)
             throw new ArgumentException("Retreat cannot refund CP or cause balances.", nameof(afterCp));
+        if (beforeCp.Denominator != 1 || afterCp.Denominator != 1)
+            throw new ArgumentException("Selected retreat requires integer CP.", nameof(beforeCp));
+        var actualRetreat = Kind == "retreat";
+        if (completedDistance != (actualRetreat ? 1 : 0) ||
+            afterCp.Numerator - beforeCp.Numerator != (actualRetreat ? 1 : 0) ||
+            excessCpDp != Math.Max(0L, afterCp.Numerator - 10) - Math.Max(0L, beforeCp.Numerator - 10) ||
+            attackerVictoryRp != (actualRetreat ? 3 : 0))
+            throw new ArgumentException("Retreat CP and effects do not match selected outcome.", nameof(afterCp));
         CompletedDistance = completedDistance;
         ExcessCpDp = excessCpDp;
         AttackerVictoryRp = attackerVictoryRp;
