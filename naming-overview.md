@@ -705,6 +705,10 @@ canonical snapshot/history persistence, and gameplay activation remains later.
 construction. **Created11** carries the resulting dormant creation event; **Creation Binding** is
 its nonrecursive request-derived identity, not an event hash or public authority handle. Retry
 selection returns retained canonical bytes; it is not Chronicle publication.
+**Creation Snapshot12** names the creation-only readback value derived from trusted Created11.
+**Creation Receipt1** binds request, creation identity and exact event hash; **Chronicle Prefix**
+frames the creation event with its byte length. Neither checksum authenticates imported evidence
+without independently trusted request/artifacts, and this reader cannot restore later game state.
 
 **Capability Point expenditure** is the exact amount already spent during the current Operation
 Stage; it is not a replenishing UI movement allowance. **Complete Movement** is a real player

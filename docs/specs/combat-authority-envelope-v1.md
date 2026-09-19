@@ -155,6 +155,47 @@ cuts using actual persistence. Later readers must validate trusted whole history
 World and embedded context are changed. Same-ID registry substitutions are not trusted inputs;
 registry/archive must pin exact digests instead of resolving latest-by-name.
 
+### Runtime evidence ownership
+
+Task008's actual-persistence obligation above remains **open** until `HOST-PUB-001` supplies
+provider-backed evidence. A1c's pure creation cut and A2's creation Snapshot12 reader prove the
+Core byte/identity boundary only. Checkpoint D and child H can establish the codec/causal-replay
+gate used by later dormant Core work; do not label Task008's publication obligation complete from
+that result. This distinction preserves the requirement while retaining the separately scheduled
+storage decision in [HOST-RSH-001](../research/orleans-publication-feasibility.md).
+
+`HOST-PUB-001` is owned jointly by Core and OrleansHost, after public Tasks020–021 and one verified
+Task023 trace, before production campaign hosting or durable save/resume acceptance. Its evaluation
+target is a versioned per-campaign commit batch, conditional on the expected prior journal head.
+Creation expects an absent campaign record and must atomically retain canonical request/binding,
+exact Created11 bytes, creation receipt and P0. Snapshot12 is a verified reconstructable checkpoint;
+independently saving its fields does not publish creation. Provider and production schema remain
+unselected; no new transport or storage API is frozen by this evidence allocation.
+
+The Core seam is exact request/Created11 validation and pure creation selection, followed by
+creation Snapshot12 projection/readback against separately retained trusted inputs. Host ingress
+authenticates before retained-identity lookup. An exact retained retry returns its original evidence
+before consulting fresh admission; changed immutable inputs conflict. On an unknown commit outcome,
+reread authoritative identity/head/receipt; if truth cannot be established, remain unavailable.
+Do not regenerate creation or infer failure from a lost acknowledgment.
+
+Required `HOST-PUB-001` evidence against the selected provider:
+
+| Cut | Required observation |
+| --- | --- |
+| Concurrent identical and changed creation requests | One campaign-ID winner; exact retries return identical retained evidence; changed requests conflict |
+| Failure before commit | No partial event, receipt or head; retry can publish once |
+| Commit succeeds, storage acknowledgment or application reply lost | Authoritative reread recovers exact committed bytes; no second initialization/event/RNG advance |
+| Ambiguous commit followed by read failure | Unavailable result until authoritative truth recovered; no unsafe retry publication |
+| Process crash/restart and stale writer/fencing conflict | Committed identity/history survives; stale writer cannot overwrite it |
+| Missing/corrupt trusted artifacts, event/receipt/head, or lagging checkpoint | Reject inconsistent evidence; rebuild valid checkpoint from trusted retained history with fresh admission disabled |
+| Deduplication retention and record growth | Explicit measured bounds and tombstone/retention policy preserve required retry guarantees |
+
+Tests must compare full canonical Core/host bytes and retain exact commit/provider/configuration,
+failure-injection points and results. Existing Rules9 same-process memory-CAS probe is supporting
+design evidence only; it does not satisfy this matrix. Task025 and the hosting/MVP ledger must carry
+the open publication obligation until these checks pass, even if the dormant Core loop is complete.
+
 ## Diagnostics and verification
 
 Private codes: `CMB-ENV-001` decode/shape/type/limit, `002` primitive grammar/range, `003` unsupported

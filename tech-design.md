@@ -936,6 +936,15 @@ Content7 and configuration determine canonical request bytes; domain-separated r
 seeds World7 creation before event serialization. Created11 readback requires a separately retained
 request. Pure retry selection validates retained bytes before checking fresh admission; atomic
 publication and Snapshot12 recovery remain separate gates.
+Task008 A2 adds creation-only Snapshot12 projection/readback from separately trusted request and
+exact validated Created11 bytes. A private evidence copy binds receipt/event hash and the framed
+Chronicle creation prefix; every current field is reconstructed and compared with canonical bytes.
+Noninitial values reject instead of resetting state. Recovery is independent of fresh-admission
+selection, and later causal readers remain required.
+Creation publication evaluation now targets an expected-head per-campaign commit batch. The
+[HOST-PUB-001 evidence allocation](docs/specs/combat-authority-envelope-v1.md#runtime-evidence-ownership)
+keeps actual atomic uniqueness, commit ambiguity and process-recovery proof open until provider
+tests run at the production-host gate; Core creation codecs do not provide those guarantees.
 The [inherited successor packet](docs/specs/combat-inherited-successors-v1.md) declares20 exact
 event successors and freezes isolated Reserve completion with atomic cycle1 opening. Actual
 creation-to-first-opening provenance is now composed within the closed initial-infantry profile;
