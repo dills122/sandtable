@@ -53,7 +53,7 @@ play a side; it will never decide the rules or secretly change the campaign stat
 | --- | --- | --- |
 | Deterministic Umpire | Working | Versioned rules, seeded randomness, canonical commands/events, replay, checkpoints, and side-safe action boundaries are implemented. |
 | Playable rule path | Working through Combat entry | Runner can execute Initiative, stage preamble, Reserve Designation, Movement, bounded ZOC/Reaction, and Breakdown, then stops before Combat adjudication. |
-| Combat and continual cycle | Checkpoint C foundations implemented; gameplay dormant | 28 creation-rooted traces reconcile future Combat/cycle authority, but handlers are not registered in runtime. Versioned round/settlement clocks and Task004A1/A2 side contracts preserve privacy under clock faults. Native settlement-to-cycle-finish composition, live Reserve/cycle side profiles, all 28 historical terminal projections and continuous corrected bridge histories are accepted. Private Exercise occurrence, child execution/proof and validated parent comparison evidence are accepted; integrated checkpoint B is accepted with all 72 requirements mapped. Dormant C# selected tables, explicit-dice arithmetic, strict RulesInput1 codec, and exact Content7 synthetic scenario admission now match their frozen contracts; campaign activation remains deferred. |
+| Combat and continual cycle | Checkpoint C foundations implemented; gameplay dormant | 28 creation-rooted traces reconcile future Combat/cycle authority, but handlers are not registered in runtime. Versioned round/settlement clocks and Task004A1/A2 side contracts preserve privacy under clock faults. Native settlement-to-cycle-finish composition, live Reserve/cycle side profiles, all 28 historical terminal projections and continuous corrected bridge histories are accepted. Private Exercise occurrence, child execution/proof and validated parent comparison evidence are accepted; integrated checkpoint B is accepted with all 72 requirements mapped. Dormant C# selected tables, explicit-dice arithmetic, strict RulesInput1 codec, exact Content7 scenario admission, and typed World7 creation/obligation state now match their bounded contracts; persistence and campaign activation remain deferred. |
 | Exercise and Maneuver tools | Working | Deterministic single runs, multi-run matrices, paired comparisons, strict readback, and evidence bundles are available from CLI. |
 | User interface | Not started | `site/` is project website only. Maproom hot-seat client is future work. |
 | Published scenario | Not started | First target is six-turn, Land-only *Graziani's Offensive* after working Combat loop. |
@@ -66,7 +66,7 @@ campaign or resolve Combat in running engine.
 
 Next delivery sequence:
 
-1. Continue with Task007 Combat world state and validated creation seeds; dormant Tasks005–006 Rules and Content foundations are implemented.
+1. Continue with Task008 Combat snapshot/history codec and strict restore; dormant Tasks005–007 Rules, Content and World foundations are implemented.
 2. Continue dormant Combat/cycle authority, then activate only certified public actions.
 3. Prove authentic Movement → Combat → Reserve Release repeat-or-finish loop through Runner.
 4. Freeze and implement exact six-turn Land scenario, durable save/resume, and minimal Maproom.

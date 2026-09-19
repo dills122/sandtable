@@ -926,6 +926,11 @@ actual released-I ammunition10 profiles against the existing full-result contrac
 emitting authority. Guarded repeat and inherited authority composition are now retained in the
 [28-trace Task003 handoff](docs/specs/combat-authority-composition-v1.md); outward contracts and
 Exercise evidence now close004/checkpoint B. Dormant Task005 supplies selected arithmetic and strict artifact integration.
+Dormant Task006 admits the certified Content7 scenario; Task007 constructs typed Combat World7
+initial elements with exact component, ammunition, readiness and ledger provenance. World7 retains
+distinct custody/guard/replacement obligations and checked infantry spending/guard-transfer values
+without registering gameplay transitions. Task008 owns canonical snapshot/history codec and strict
+restore, so these typed values alone are not replay authority.
 The [inherited successor packet](docs/specs/combat-inherited-successors-v1.md) declares20 exact
 event successors and freezes isolated Reserve completion with atomic cycle1 opening. Actual
 creation-to-first-opening provenance is now composed within the closed initial-infantry profile;
