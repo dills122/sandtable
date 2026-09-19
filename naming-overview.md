@@ -696,7 +696,11 @@ C# codec; creating it does not register a new live ruleset version.
 **Combat Content7** names the dormant `sandtable.content-json.v6` package for the certified
 `close-assault-positive-v1` synthetic scenario. **Initial Ammunition**, **Initial Combat Readiness**
 and **Retreat Supply Anchor** are immutable scenario seeds/direction facts, not live balances,
-resupply authority or gameplay activation. Exact validation precedes Task007 world creation.
+resupply authority or gameplay activation. **Combat World7** now names the dormant typed creation
+state built from certified Content7: original elements, map representations, cause history and
+distinct custody/guard/replacement/future-obligation records. Guard TOE transfer is not a new
+component or current balance on the donor. Exact validation precedes creation; Task008 owns
+canonical snapshot/history persistence, and gameplay activation remains later.
 
 **Capability Point expenditure** is the exact amount already spent during the current Operation
 Stage; it is not a replenishing UI movement allowance. **Complete Movement** is a real player

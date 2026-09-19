@@ -1,12 +1,12 @@
 # Combat and Cycle Combined Contract / Implementation Plan
 
-**Status:** Contract checkpoint B and dormant Tasks005–006 accepted. Task007 Combat world/creation is next; Combat gameplay remains inactive.
+**Status:** Contract checkpoint B and dormant Tasks005–007 implemented. Task008 canonical persistence/restore is next; Combat gameplay remains inactive.
 `CMB-PLAN-001` and POL-001–008 were accepted on 2026-09-06 at `a10a588`. Source and static Content
 work (`001`–`002`) is complete. Parent `003` is complete through the
 [authority-composition handoff](../specs/combat-authority-composition-v1.md). Checkpoint B closes through the
 [Task004C integration index](../specs/combat-outward-composition-v1.md). Task004A side contracts and Task004B occurrence, child and
-parent evidence are accepted with strict clock privacy and versioned round/settlement authority. Dormant Tasks005–006 are complete;
-tasks `007`–`025` have not started.
+parent evidence are accepted with strict clock privacy and versioned round/settlement authority. Dormant Tasks005–007 are implemented;
+tasks `008`–`025` have not started.
 
 | Delivery layer | Current boundary | Next required outcome |
 | --- | --- | --- |
@@ -781,7 +781,7 @@ and exact Content7 fixture exist, but no active Combat capability is advertised.
 
 | Task / size | Output and acceptance criteria | Verification | Dependencies / likely paths |
 | --- | --- | --- | --- |
-| `CMB-TASK-007` / M, 3–5 files | Implement frozen world/obligation types and validated creation seeds. Represent ordinary integer infantry spending up to 150% CPA with immediate excess-CPA DP, stricter released-Reserve ceilings and separately valid mandatory overrun; retain distinct guard/loss/replacement provenance and existing Breakdown state. | `CombatWorld` boundary/conservation/overflow tests, including ordinary CPA10 spending 11/15 versus rejected16, mandatory E10→11, Reserve ceilings, guard transfer and malformed lots. | 003/006; [Campaigns](../../src/Cna.Core/Campaigns/), [Campaign tests](../../tests/Cna.Core.Tests/Campaigns/). |
+| `CMB-TASK-007` / implemented | Dormant World7, typed creation/settlement obligations and certified Content7 initial seeds retain component/ammo/readiness provenance. Integer infantry spending enforces ordinary 150% CPA and stricter released-Reserve ceilings, immediate excess-CPA DP, and separate mandatory retreat overrun; guard transfer conserves TOE and preserves existing Breakdown state. No gameplay activation or persistence. | `CombatWorldTests`: initial inventory/provenance, foreign scenario/policy rejection, CPA10 11/15 versus rejected16, mandatory E10→11, Reserve ceilings, guard transfer, malformed/dangling lots, future scope and receipt links. Full `just check`: 1,760 passed; 003A/003B frozen verifiers pass. | 003/006; [World7](../../src/Cna.Core/Campaigns/CampaignWorldV7.cs), [Combat values](../../src/Cna.Core/Campaigns/CampaignCombatWorldV7.cs), [Campaign tests](../../tests/Cna.Core.Tests/Campaigns/CombatWorldTests.cs). |
 | `CMB-TASK-008` / M, 3–5 files | Implement canonical snapshot/history codec and strict restore for new state. Historical bytes unchanged; reject missing/forged cycle or settlement evidence and unsupported migration. | `CombatPersistence` roundtrip/golden/tamper tests; recovery works when fresh admission is disabled. | 007; [Campaigns](../../src/Cna.Core/Campaigns/), [Campaign tests](../../tests/Cna.Core.Tests/Campaigns/). |
 
 Checkpoint D: codec tests prove obligations survive serialization and fresh Core reconstruction
