@@ -20,8 +20,9 @@ current capability status and cross-package sequencing.
 - [Combat delivery review and owner disposition](reviews/combat-delivery-plan-author-review.md#owner-disposition)
 
 Current truth in one line: public Rules9 authority and checked Runner evidence stop at first-side
-Combat entry; parent003 authority contracts now close with 28 creation-rooted composition traces and
-the exact Task004 handoff; Combat runtime, public activation, and simulator evidence have not
+Combat entry; parent003 authority contracts close with 28 creation-rooted composition traces and
+the exact Task004 handoff; dormant selected Rules and exact Content7 scenario admission are
+implemented, while Combat state/decisions, public activation, and simulator evidence have not
 started. See the
 [status table](roadmap/pre-alpha-roadmap.md#current-delivery-status) and
 [next gates](roadmap/pre-alpha-roadmap.md#current-checkpoint-and-next-gates) for details.

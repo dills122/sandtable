@@ -1,8 +1,8 @@
 # Combat Content 7 contract
 
-**Status:** TASK-002 contract packet, prepared against `448e370` (2026-09-06).
-CON-001 is frozen here for checkpoint A review; implementation remains gated by combined checkpoint B.
-No runtime reader/writer, catalog registration, campaign migration or public capability is added.
+**Status:** TASK-002 contract frozen; TASK-006 C# reader, validator, artifact and internal certified
+catalog implemented on 2026-09-18. No public catalog registration, campaign migration or Combat
+capability activation is added.
 [Accepted policies](../design/combat-cycle-policy-reconciliation.md) and
 [source manifest](../research/combat-source-freeze-v1.md) govern this contract.
 
@@ -178,11 +178,11 @@ It is a contract oracle, not the future C# implementation or independent enginee
 | POL-007/008 | Seeds never reseed; original unit inventory and side binding retained | TASK-017…019 Reserve and cycle history/witness enforcement |
 | Source amendment CMB-SRC-RUL-001; RES-AC-001…012 | Required Rules/config binding, zero table data in Content | TASK-003/005 canonical Rules bundle and all source coordinates; TASK-004 full AC index |
 
-TASK-006 must reproduce the exact golden bytes/hash, preserve all predecessor fixture hashes, reject
-these vectors through real C# parsing and test defensive copying, equality, shuffled-construction
-canonical stability and one-fact hash changes. This packet does not allocate Setup/World/event/
-snapshot/observation/protobuf versions or pass combined checkpoint B. TASK-003 authority freeze is
-next after checkpoint A review; no runtime consumer starts solely from this packet's completion.
+TASK-006 reproduces the exact golden bytes/hash, preserves all predecessor fixture hashes, rejects
+these vectors through real C# parsing and tests defensive copying, equality, shuffled-construction
+canonical stability and one-fact hash changes. Its catalog remains internal and dormant. This packet
+does not allocate Setup/World/event/snapshot/observation/protobuf versions or activate gameplay;
+Task007 consumes the validated seeds when it implements world creation.
 
 ## TASK-002 verification
 

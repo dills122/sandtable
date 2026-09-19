@@ -18,5 +18,8 @@
     <EmbeddedResource Include="Content/Fixtures/rules-lab.content.breakdown-truck-cost.v1.json" />
     <EmbeddedResource Include="Content/Fixtures/rules-lab.content.breakdown-truck-one-point.v1.json" />
     <EmbeddedResource Include="Content/Fixtures/rules-lab.content.breakdown-battalion-matrix.v1.json" />
+    <EmbeddedResource
+      Include="../../docs/specs/fixtures/combat-content-v7.canonical.json"
+      Link="Content/Fixtures/combat-content-v7.canonical.json" />
   </ItemGroup>
 </Project>
