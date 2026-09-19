@@ -931,6 +931,11 @@ initial elements with exact component, ammunition, readiness and ledger provenan
 distinct custody/guard/replacement obligations and checked infantry spending/guard-transfer values
 without registering gameplay transitions. Task008 owns canonical snapshot/history codec and strict
 restore, so these typed values alone are not replay authority.
+Task008 A1c adds dormant creation request and Created11 binding: trusted Rules10, Setup7,
+Content7 and configuration determine canonical request bytes; domain-separated request digest
+seeds World7 creation before event serialization. Created11 readback requires a separately retained
+request. Pure retry selection validates retained bytes before checking fresh admission; atomic
+publication and Snapshot12 recovery remain separate gates.
 The [inherited successor packet](docs/specs/combat-inherited-successors-v1.md) declares20 exact
 event successors and freezes isolated Reserve completion with atomic cycle1 opening. Actual
 creation-to-first-opening provenance is now composed within the closed initial-infantry profile;
