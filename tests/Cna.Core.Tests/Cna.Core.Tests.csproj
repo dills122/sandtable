@@ -77,6 +77,10 @@
       Include="../../docs/specs/fixtures/combat-weather-v1.json"
       Link="Campaigns/Fixtures/combat-weather-v1.json"
       CopyToOutputDirectory="PreserveNewest" />
+    <Content
+      Include="../../docs/specs/fixtures/combat-stage-entry-v1.json"
+      Link="Campaigns/Fixtures/combat-stage-entry-v1.json"
+      CopyToOutputDirectory="PreserveNewest" />
     <Using Include="Xunit" />
   </ItemGroup>
 
