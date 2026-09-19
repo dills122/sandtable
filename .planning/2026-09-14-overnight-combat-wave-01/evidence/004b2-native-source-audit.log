@@ -1,0 +1,23 @@
+4.73 imported frozen B2; warming native B1 catalog
+265.895 catalog ready 134
+272.588 representative passed corrected-composition.ordinary.axis.attacker 24
+279.162 representative passed corrected-composition.ordinary.axis.defender 24
+286.532 representative passed corrected-composition.defender-capture-guard.axis.attacker 26
+293.926 representative passed corrected-composition.defender-capture-escape.axis.attacker 26
+301.298 representative passed corrected-composition.defender-capture-guard.axis.attacker.prior-time 26
+308.607 representative passed corrected-composition.defender-capture-guard.axis.attacker.fallback 26
+311.585 representative passed settlement-v2.attacker-capture-escape.commonwealth.defender.fallback-retreat 16
+315.118 representative passed settlement-v2.attacker-capture-escape.commonwealth.defender.fallback-custody 20
+318.653 representative passed inherited-reserve.axis 3
+320.809 representative passed inherited-reserve.axis.fallback 3
+326.319 representative passed inherited-control.commonwealth.repeat 5
+330.532 representative passed inherited-control.commonwealth.finish 5
+334.64 representative passed inherited-control.commonwealth.fallback 5
+334.962 representative passed historical-terminal.combat-inherited-cycle-control-v1:axis-repeat 0
+335.307 representative passed historical-terminal.combat-inherited-reserve-movement-completion-v1:commonwealth-reserve-I-movement-completion 0
+335.307 representative native checks complete; waiting retained fixture if needed
+Traceback (most recent call last):
+  File "/private/tmp/004b2-native-source-audit.py", line 92, in <module>
+    time.sleep(15)
+    ~~~~~~~~~~^^^^
+KeyboardInterrupt

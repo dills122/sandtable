@@ -1,0 +1,84 @@
+{
+  "contract": "sandtable.combat-exercise-parent-evidence.v1",
+  "registration": "unregistered-private-contract-evidence-only",
+  "limits": {
+    "bytes": 8388608,
+    "depth": 52,
+    "arrayItems": 128,
+    "children": 32,
+    "pairs": 16
+  },
+  "domains": {
+    "parent": "sandtable.combat-exercise-parent.report.v1",
+    "initial": "sandtable.combat-exercise-parent.initial-evidence.v1"
+  },
+  "enums": {
+    "validation": [
+      "validated",
+      "missing",
+      "invalid"
+    ],
+    "comparisonStatus": [
+      "compared",
+      "unavailable"
+    ],
+    "unavailableReason": [
+      "child-missing",
+      "child-invalid",
+      "initial-evidence-unavailable",
+      "initial-binding-mismatch"
+    ],
+    "bindingField": [
+      "lineageKind",
+      "executionProfile",
+      "root",
+      "sourceLineageHash",
+      "executionStart",
+      "initialCheckpointCanonicalJson",
+      "evidenceScope",
+      "confidentiality",
+      "setupId",
+      "setupHash",
+      "contentPackId",
+      "contentHash",
+      "scenarioId",
+      "buildKind",
+      "buildHash",
+      "seedKind",
+      "seedHash",
+      "initialOccurrence",
+      "rulesetHash",
+      "configurationHash",
+      "requestedTerminal",
+      "maximumAcceptedTransitions",
+      "clockPolicy",
+      "fault",
+      "expectedFailure"
+    ],
+    "interpretation": [
+      "Paired by authenticated identical initial evidence. Actual action trajectories and later random consumption may diverge; no causal, statistical, gameplay-balance or synchronized-post-divergence claim."
+    ]
+  },
+  "objects": {
+    "ChildPlan": "childId:id sourceId:id maximumAcceptedTransitions:count fault:Fault expectedFailure:failure?",
+    "ExpectedChild": "plan:ChildPlan manifestCanonicalJson:ascii",
+    "PairPlan": "pairId:id baselineChildId:id candidateChildId:id",
+    "ParentManifest": "contractVersion:version parentId:id children:ExpectedChild[] pairs:PairPlan[]",
+    "Action": "ordinal:count audience:audience actionId:id",
+    "Entry": "ordinal:count childId:id sourceId:id validation:validation childHash:hash? manifestHash:hash? childStatus:status? failure:failure? expectedFailureMatch:bool? acceptedTransitions:count? initialCheckpointHash:hash? finalCheckpointHash:hash? actions:Action[]?",
+    "Divergence": "ordinal:count baseline:Action? candidate:Action?",
+    "Comparison": "pairId:id baselineEntryOrdinal:count candidateEntryOrdinal:count status:comparisonStatus reason:unavailableReason? mismatchField:bindingField? initialEvidenceHash:hash? baselineActions:Action[]? candidateActions:Action[]? firstDivergence:Divergence? acceptedStepCountDelta:delta? terminalOutcomeEqual:bool? failureCategoryEqual:bool?",
+    "Counts": "expected:count validated:count missing:count invalid:count succeeded:count failed:count acceptedTransitions:count comparedPairs:count unavailablePairs:count",
+    "PairKey": "lineageKind:lineage executionProfile:profile root:Root sourceLineageHash:hash executionStart:Cursor initialCheckpointCanonicalJson:ascii evidenceScope:scope confidentiality:privacy setupId:id setupHash:hash contentPackId:id contentHash:hash scenarioId:id buildKind:buildKind buildHash:hash seedKind:seedKind seedHash:hash initialOccurrence:Occurrence rulesetHash:rawHash configurationHash:hash requestedTerminal:Terminal maximumAcceptedTransitions:count clockPolicy:clockPolicy fault:Fault expectedFailure:failure?",
+    "Deterministic": "manifest:ParentManifest status:status counts:Counts entries:Entry[] comparisons:Comparison[] interpretation:interpretation",
+    "Parent": "contractVersion:version deterministic:Deterministic fingerprint:hash"
+  },
+  "externalContracts": [
+    "combat-exercise-child-evidence-v1.schema.json"
+  ],
+  "sourcePins": {
+    "combat-exercise-child-evidence-v1.schema.json": "sha256:cc8a7c9e89068b9a78f3abb4044230ccc9ef359665198aaa7ef6db5b15782bf6",
+    "verify-combat-exercise-child-evidence-v1.py": "sha256:a7385011125ca9105a1fbd3197c2b0b7b1825bf921e479ce9f953a4950343c92",
+    "fixtures/combat-exercise-child-evidence-v1.json": "sha256:5587cb17e53c48a9ab393532ebaa186f3d1384632eb13b105e1af8a698e799b6"
+  }
+}

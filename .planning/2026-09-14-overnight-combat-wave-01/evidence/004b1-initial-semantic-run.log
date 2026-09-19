@@ -1,0 +1,10 @@
+START B1 final eight-group author run 2026-09-15 16:54:59 UTC
+test_boundary None elapsed 0.0
+test_sources {'corrected-v3': 88, 'fallback-v2': 8, 'inherited-v3': 10, 'historical-v3': 28} elapsed 264.81
+test_terminals {'success': 126, 'fallback': 8, 'historical': 28, 'maxCheckpointBytes': 52567} elapsed 321.26
+test_bridge_world 352 elapsed 335.13
+test_prefix_identity {'equalInitialPairs': 74, 'differentInitialPairs': 2, 'differentInitialCapabilityPairs': 2} elapsed 337.3
+test_rejection 59 elapsed 337.96
+test_continuation_schedule {'cuts': 2576, 'dualSchedules': 192, 'liveCuts': 52} elapsed 753.19
+EXPECTED FIXTURE RED retained B1 fixture absent
+B1 ALL EIGHT GROUPS GREEN with exact retained fixture; elapsed 827.59

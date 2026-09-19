@@ -1,0 +1,10 @@
+{
+  "reviewedSpecSha256": "78f3363d18c3c74fae914c52df944116b72b5a9f2e5c81e5c0581e9f50c58f0c",
+  "acceptedFiles": {
+    "docs/specs/combat-outward-composition-v1.md": "b96ab0a476084e514a63b17b4e06821c98faae6fdbf9fb7e97eee6957a6c1eed",
+    "docs/specs/combat-outward-composition-v1.schema.json": "6e8ec1103315238c0c5520c6cff9b31b20d6de2386e197944265a48168021344",
+    "docs/specs/fixtures/combat-outward-composition-v1.json": "28e37f48c80ed6ca6b7f7fabb4fb72b5d3433305ad662e091e2625a017bc1c24",
+    "docs/specs/verify-combat-outward-composition-v1.py": "db89c64a001fad3871b0f93122e8a5e903b0e3e6083e4fb269b766a3070d3508"
+  },
+  "acceptanceOnlyChange": "spec status sentence; schema/fixture/oracle unchanged"
+}

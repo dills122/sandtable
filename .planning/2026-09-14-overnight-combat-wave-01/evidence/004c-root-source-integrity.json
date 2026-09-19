@@ -1,0 +1,14 @@
+{
+  "status": "read-only draft integrity, not C acceptance",
+  "originalRowsPreserved": 72,
+  "exactSourceLineIdMatches": 72,
+  "sourceFiles": {
+    "docs/design/combat-opportunity-identity-v1.md": "2976a278e51235ff11e74699bf84ed23ed9140c1da6d638de81d8f862c32d762",
+    "docs/design/combat-sealed-decision-protocol-v1.md": "6c6f805db450877bfa922e75134288cace0f5dae5115794e064b78c2ae764c2e",
+    "docs/design/combat-step-transitions-v1.md": "90b2264ef506c335203e0143adc000b98c59f0f29b4319ba07d9008a1d322f7a",
+    "docs/design/combat-cost-resolution-order-v1.md": "ffea13f61eecdf5baae9e6777d85386fe4971875a8c75274ab2df7bd6e36c2b0",
+    "docs/design/combat-settlement-disclosure-v1.md": "84d85139ed0c7111b70c464bde47837963ed7f19571adbc5279e2f8cb1572616",
+    "docs/design/continual-cycle-reserve-composition-v1.md": "cce5b7b8ebee261f7fbed080bdf4ea27b864d8291e4dbfd7aaa377056badb88b"
+  },
+  "draftSha256": "f86fd1803a0618e0c4fac78a615ed00448d5f7e5c0cdccf26f4ef15d185add9a"
+}

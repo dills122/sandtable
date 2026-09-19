@@ -1,0 +1,47 @@
+Running tests from /Users/dsteele/.codex/worktrees/0b59/sandtable/artifacts/bin/Cna.Core.Tests/debug/Cna.Core.Tests.dll (net10.0|arm64)
+failed Cna.Core.Tests.Rules.CombatRulesInputArtifactTests.CanonicalArtifactExactlyMatchesFrozenRulesInputBytesAndHash (16ms)
+  from /Users/dsteele/.codex/worktrees/0b59/sandtable/artifacts/bin/Cna.Core.Tests/debug/Cna.Core.Tests.dll (net10.0|arm64)
+  Assert.Equal() Failure: Values differ
+  Expected: 30395
+  Actual:   0
+    at Cna.Core.Tests.Rules.CombatRulesInputArtifactTests.CanonicalArtifactExactlyMatchesFrozenRulesInputBytesAndHash() in /Users/dsteele/.codex/worktrees/0b59/sandtable/tests/Cna.Core.Tests/Rules/CombatRulesInputArtifactTests.cs:16
+    at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+    at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+failed Cna.Core.Tests.Rules.CombatRulesInputArtifactTests.NoncanonicalRawArtifactsReject(text: "{}") (1ms)
+  from /Users/dsteele/.codex/worktrees/0b59/sandtable/artifacts/bin/Cna.Core.Tests/debug/Cna.Core.Tests.dll (net10.0|arm64)
+  Assert.Throws() Failure: No exception was thrown
+  Expected: typeof(System.Text.Json.JsonException)
+    at Cna.Core.Tests.Rules.CombatRulesInputArtifactTests.NoncanonicalRawArtifactsReject(String text) in /Users/dsteele/.codex/worktrees/0b59/sandtable/tests/Cna.Core.Tests/Rules/CombatRulesInputArtifactTests.cs:28
+    at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+    at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+failed Cna.Core.Tests.Rules.CombatRulesInputArtifactTests.NoncanonicalRawArtifactsReject(text: "") (0ms)
+  from /Users/dsteele/.codex/worktrees/0b59/sandtable/artifacts/bin/Cna.Core.Tests/debug/Cna.Core.Tests.dll (net10.0|arm64)
+  Assert.Throws() Failure: No exception was thrown
+  Expected: typeof(System.Text.Json.JsonException)
+    at Cna.Core.Tests.Rules.CombatRulesInputArtifactTests.NoncanonicalRawArtifactsReject(String text) in /Users/dsteele/.codex/worktrees/0b59/sandtable/tests/Cna.Core.Tests/Rules/CombatRulesInputArtifactTests.cs:28
+    at InvokeStub_CombatRulesInputArtifactTests.NoncanonicalRawArtifactsReject(Object, Span`1)
+    at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+failed Cna.Core.Tests.Rules.CombatRulesInputArtifactTests.NoncanonicalRawArtifactsReject(text: "null") (0ms)
+  from /Users/dsteele/.codex/worktrees/0b59/sandtable/artifacts/bin/Cna.Core.Tests/debug/Cna.Core.Tests.dll (net10.0|arm64)
+  Assert.Throws() Failure: No exception was thrown
+  Expected: typeof(System.Text.Json.JsonException)
+    at Cna.Core.Tests.Rules.CombatRulesInputArtifactTests.NoncanonicalRawArtifactsReject(String text) in /Users/dsteele/.codex/worktrees/0b59/sandtable/tests/Cna.Core.Tests/Rules/CombatRulesInputArtifactTests.cs:28
+    at InvokeStub_CombatRulesInputArtifactTests.NoncanonicalRawArtifactsReject(Object, Span`1)
+    at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+failed Cna.Core.Tests.Rules.CombatRulesInputArtifactTests.NoncanonicalRawArtifactsReject(text: "{\"schemaVersion\":true}") (0ms)
+  from /Users/dsteele/.codex/worktrees/0b59/sandtable/artifacts/bin/Cna.Core.Tests/debug/Cna.Core.Tests.dll (net10.0|arm64)
+  Assert.Throws() Failure: No exception was thrown
+  Expected: typeof(System.Text.Json.JsonException)
+    at Cna.Core.Tests.Rules.CombatRulesInputArtifactTests.NoncanonicalRawArtifactsReject(String text) in /Users/dsteele/.codex/worktrees/0b59/sandtable/tests/Cna.Core.Tests/Rules/CombatRulesInputArtifactTests.cs:28
+    at InvokeStub_CombatRulesInputArtifactTests.NoncanonicalRawArtifactsReject(Object, Span`1)
+    at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+/Users/dsteele/.codex/worktrees/0b59/sandtable/artifacts/bin/Cna.Core.Tests/debug/Cna.Core.Tests.dll (net10.0|arm64) failed with 5 error(s) (717ms)
+Exit code: 2
+
+Test run summary: Failed!
+  total: 5
+  failed: 5
+  succeeded: 0
+  skipped: 0
+  duration: 1s 122ms
+Test run completed with non-success exit code: 2 (see: https://aka.ms/testingplatform/exitcodes)

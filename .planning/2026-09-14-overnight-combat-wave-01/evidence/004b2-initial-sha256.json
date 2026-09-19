@@ -1,0 +1,8 @@
+{
+  "status": "Initial three-file review freeze; superseded by required build-identity correction. Fixture not frozen.",
+  "files": {
+    "spec": "c9a62d4d4e8bcaeb4a0c2a73da7ebf7a43017475ec405a30aa53608246e2d8f3",
+    "schema": "109fc7db43474d22b3f0bfd45ac13e59846d59cb61dc452e3ae09d7ac01185ba",
+    "oracle": "b2061547239c11a62765d442db7eb042138fa58373527bb0597b433396c51c2a"
+  }
+}

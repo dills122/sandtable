@@ -1,0 +1,70 @@
+{"event": "C_START", "utc": "2026-09-18T23:37:56.039884+00:00", "wallSeconds": 838.685, "cpuSeconds": 380.308, "warm": true, "b3": "36ef7bb"}
+>>> Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+    integration=load('combat_outward','verify-combat-outward-composition-v1.py'); integration.test_requirements()
+                                                                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/dsteele/.codex/worktrees/0b59/sandtable/docs/specs/verify-combat-outward-composition-v1.py", line 54, in test_requirements
+    validate_requirements(INVENTORY['requirements'])
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/dsteele/.codex/worktrees/0b59/sandtable/docs/specs/verify-combat-outward-composition-v1.py", line 52, in validate_requirements
+    raise NotImplementedError('TDD exact 72 source-bound mappings')
+NotImplementedError: TDD exact 72 source-bound mappings
+>>> Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+    integration=load('combat_outward','verify-combat-outward-composition-v1.py'); report('C_REQUIREMENTS_GREEN', result=integration.test_requirements()); c_start=time.monotonic(); ci=integration.build_index(); report('C_INDEX_READY', seconds=round(time.monotonic()-c_start,3), readbacks=len(ci['readbacks']))
+                                                                                                                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/dsteele/.codex/worktrees/0b59/sandtable/docs/specs/verify-combat-outward-composition-v1.py", line 186, in test_requirements
+    validate_requirements(INVENTORY['requirements'])
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/dsteele/.codex/worktrees/0b59/sandtable/docs/specs/verify-combat-outward-composition-v1.py", line 52, in validate_requirements
+    raw(rows,'Requirement[]');require(len(rows)==72 and raw(rows,'Requirement[]')==raw(INVENTORY['requirements'],'Requirement[]'))
+    ~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/dsteele/.codex/worktrees/0b59/sandtable/docs/specs/verify-combat-outward-composition-v1.py", line 37, in raw
+    typed(value,kind);data=c.encode(canonical(value,kind));require(len(data)<=2097152);return data
+    ~~~~~^^^^^^^^^^^^
+  File "/Users/dsteele/.codex/worktrees/0b59/sandtable/docs/specs/verify-combat-outward-composition-v1.py", line 25, in typed
+    for item in value:typed(item,kind[:-2],depth+1)
+                      ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/dsteele/.codex/worktrees/0b59/sandtable/docs/specs/verify-combat-outward-composition-v1.py", line 28, in typed
+    for key,t in SCHEMA[kind]:typed(value[key],t,depth+1)
+                              ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/dsteele/.codex/worktrees/0b59/sandtable/docs/specs/verify-combat-outward-composition-v1.py", line 28, in typed
+    for key,t in SCHEMA[kind]:typed(value[key],t,depth+1)
+                              ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/dsteele/.codex/worktrees/0b59/sandtable/docs/specs/verify-combat-outward-composition-v1.py", line 30, in typed
+    else:c.typed(value,kind,depth)
+         ~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/Users/dsteele/.codex/worktrees/0b59/sandtable/docs/specs/verify-combat-exercise-child-evidence-v1.py", line 31, in typed
+    else:b.typed(v,t,depth)
+         ~~~~~~~^^^^^^^^^^^
+  File "/Users/dsteele/.codex/worktrees/0b59/sandtable/docs/specs/verify-combat-exercise-occurrence-v1.py", line 47, in typed
+    elif t in ('ascii','id'):require(type(v) is str and v.isascii() and 0<len(v)<= (16777216 if t=='ascii' else 512) and (t!='id' or all(ord(x)>=32 for x in v)))
+                             ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/dsteele/.codex/worktrees/0b59/sandtable/docs/specs/verify-combat-exercise-occurrence-v1.py", line 18, in require
+    if not value:raise Invalid('CMB-OCC-REJECTED')
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+child_occurrence.Invalid: CMB-OCC-REJECTED
+>>> Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+    integration=load('combat_outward','verify-combat-outward-composition-v1.py'); report('C_REQUIREMENTS_GREEN', result=integration.test_requirements()); c_start=time.monotonic(); ci=integration.build_index(); report('C_INDEX_READY', seconds=round(time.monotonic()-c_start,3), readbacks=len(ci['readbacks']))
+                                                                                                                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/dsteele/.codex/worktrees/0b59/sandtable/docs/specs/verify-combat-outward-composition-v1.py", line 187, in test_requirements
+    validate_requirements(INVENTORY['requirements'])
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/dsteele/.codex/worktrees/0b59/sandtable/docs/specs/verify-combat-outward-composition-v1.py", line 53, in validate_requirements
+    raw(rows,'Requirement[]');require(len(rows)==72 and raw(rows,'Requirement[]')==raw(INVENTORY['requirements'],'Requirement[]'))
+    ~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/dsteele/.codex/worktrees/0b59/sandtable/docs/specs/verify-combat-outward-composition-v1.py", line 38, in raw
+    typed(value,kind);data=c.encode(canonical(value,kind));require(len(data)<=2097152);return data
+    ~~~~~^^^^^^^^^^^^
+  File "/Users/dsteele/.codex/worktrees/0b59/sandtable/docs/specs/verify-combat-outward-composition-v1.py", line 25, in typed
+    for item in value:typed(item,kind[:-2],depth+1)
+                      ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/dsteele/.codex/worktrees/0b59/sandtable/docs/specs/verify-combat-outward-composition-v1.py", line 27, in typed
+    require(type(value) is dict and set(value)=={k for k,_ in SCHEMA[kind]})
+    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/dsteele/.codex/worktrees/0b59/sandtable/docs/specs/verify-combat-outward-composition-v1.py", line 18, in require
+    if not value:raise Invalid('CMB-OUTWARD-COMPOSITION-REJECTED')
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+combat_outward.Invalid: CMB-OUTWARD-COMPOSITION-REJECTED
+>>> >>> >>> >>>

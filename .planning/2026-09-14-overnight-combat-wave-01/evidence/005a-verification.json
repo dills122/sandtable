@@ -1,0 +1,49 @@
+{
+  "status": "005A accepted after focused GREEN and ordinary review;005B and final full gate pending",
+  "files": {
+    "src/Cna.Core/Rules/CombatSelectedRules.cs": "3d45c5baf2c7db9d4f4924cb9e49cb6bd7fc3ef4d797a85d9267e91bcbc54bfc",
+    "src/Cna.Core/Rules/Cna1979CombatAdjudication.cs": "6dc28a87d30cdfaa37599babf610b13012c04e3f5de6bab99f09bbd5038ba6eb",
+    "tests/Cna.Core.Tests/Rules/CombatSelectedRulesTests.cs": "c08852e21099bcedb9662754e0165aaff25ace54f4d6dd1db2a5e6812efddb6d",
+    "tests/Cna.Core.Tests/Cna.Core.Tests.csproj": "511743ed9525726b1875b68bbd08a2f3d0c6e23bd8e231d98e4fc3dd36e042d7"
+  },
+  "red": {
+    "build": "exit0/0warnings",
+    "tests": "10failed/0passed/0skipped;exit2;910ms",
+    "command": "dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --no-build --filter-class 'Cna.Core.Tests.Rules.CombatSelectedRulesTests'",
+    "logs": [
+      ".planning/2026-09-14-overnight-combat-wave-01/evidence/005a-red-build.log",
+      ".planning/2026-09-14-overnight-combat-wave-01/evidence/005a-red-tests.log"
+    ]
+  },
+  "green": {
+    "build": "exit0/0warnings/0errors;3.56s",
+    "tests": "19passed/0failed/0skipped;exit0;1.371s",
+    "command": "dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --no-build --filter-class 'Cna.Core.Tests.Rules.CombatSelectedRulesTests'",
+    "logs": [
+      ".planning/2026-09-14-overnight-combat-wave-01/evidence/005a-build.log",
+      ".planning/2026-09-14-overnight-combat-wave-01/evidence/005a-green-tests.log"
+    ]
+  },
+  "format": {
+    "status": "exit0;scoped owned3.cs whitespace",
+    "command": "dotnet format whitespace Sandtable.slnx --include src/Cna.Core/Rules/CombatSelectedRules.cs src/Cna.Core/Rules/Cna1979CombatAdjudication.cs tests/Cna.Core.Tests/Rules/CombatSelectedRulesTests.cs --no-restore"
+  },
+  "counts": {
+    "morale": 36,
+    "lossCells": 360,
+    "amendedGaps": 3,
+    "moralePairs": 1296,
+    "jointCoordinates": 6480,
+    "captureRefusalRows": 8840,
+    "weightedCapturePaths": 44208
+  },
+  "scope": [
+    "Dormant internal selected-profile definitions and pure explicit-dice arithmetic only.",
+    "Five references/fourdocumenthashes/allmetadata compared with existing completeRulesInput1 golden.",
+    "All nested collections copied/read-only; production bands independent of optical expected loss arrays.",
+    "ExistingCombatRules/Cna1979Combat/Rules9 registration unchanged. No RNG/world changes.",
+    "Initial sandbox IPC failures were environmental; successful escalated runs above. Two analyzer-only constant allocation fixes; no unresolved build/test failures.",
+    "No fulljustcheck; root consolidated final005B gate."
+  ],
+  "legacyScopeCheck": "Six preimplementation Rules/registration baseline hashes unchanged"
+}

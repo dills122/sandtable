@@ -1,0 +1,23 @@
+{
+  "contract": "combat-result-cycle-finish-v1",
+  "version": 1,
+  "sourcePolicyId": "sandtable.combat.native-result2-cycle-finish.v1",
+  "certificatePolicyId": "sandtable.combat.synthetic-pre-retreat-movement.v1",
+  "objects": {
+    "Source": "caseId:id roundBase:native predecessor:native roundInputs:native[] roundEvents:native[] committed:native resultInputs:native[] resultEvents:native[] resultState:native",
+    "Certificate": "policyId:id provenance:id boundaryWorldHash:hash proof:native",
+    "BridgeBase": "contractVersion:int sourcePolicyId:id source:Source certificate:Certificate releaseBase:native",
+    "BridgeCommand": "contractVersion:int bridgeId:id kernel:id nativeCommand:native",
+    "BridgeInput": "command:BridgeCommand actor:actor admittedAt:utc? clockAvailable:bool",
+    "BridgeEvent": "contractVersion:int sourcePolicyId:id bridgeId:id baseHash:hash input:BridgeInput nativeEvent:native receiptId:id",
+    "BridgeState": "contractVersion:int bridgeId:id baseHash:hash phase:id stateVersion:long prefix:hash kernelState:native inputs:BridgeInput[] events:BridgeEvent[]"
+  },
+  "domains": {
+    "bridge": "sandtable.combat.result-cycle-finish.v1",
+    "receipt": "sandtable.combat.result-cycle-finish-receipt.v1"
+  },
+  "externalContracts": ["combat-result-settlement-v2.schema.json", "combat-reserve-release-v1.schema.json", "combat-cycle-control-v1.schema.json"],
+  "limits": {"bytes": 1048576, "depth": 32, "arrayItems": 512, "resultEvents": 32, "suffixEvents": 4},
+  "nativeEncoding": "Canonical UTF-8 JSON string, authenticated by named native reader. Wrapper never rewrites native commands/events.",
+  "scope": "Synthetic native Result2 lineage to empty-pending Reserve and same-slot cycle finish. No repeat or runtime activation."
+}

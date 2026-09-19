@@ -1,0 +1,62 @@
+{
+  "task": "005B",
+  "status": "005B and parentTask005 accepted after focused tests, ordinary review and final root just check",
+  "red": {
+    "buildExit": 0,
+    "testExit": 2,
+    "failed": 5,
+    "passed": 0,
+    "skipped": 0,
+    "durationSeconds": 1.122,
+    "logs": [
+      ".planning/2026-09-14-overnight-combat-wave-01/evidence/005b-red-build.log",
+      ".planning/2026-09-14-overnight-combat-wave-01/evidence/005b-red-tests.log"
+    ]
+  },
+  "green": {
+    "buildExit": 0,
+    "buildWarnings": 0,
+    "buildErrors": 0,
+    "buildDurationSeconds": 1.26,
+    "testExit": 0,
+    "passed": 52,
+    "failed": 0,
+    "skipped": 0,
+    "testDurationSeconds": 1.369,
+    "command": "dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --no-build --filter-class 'Cna.Core.Tests.Rules.CombatRulesInputArtifactTests'",
+    "logs": [
+      ".planning/2026-09-14-overnight-combat-wave-01/evidence/005b-build.log",
+      ".planning/2026-09-14-overnight-combat-wave-01/evidence/005b-tests.log"
+    ]
+  },
+  "format": {
+    "exit": 0,
+    "scope": [
+      "src/Cna.Core/Rules/CombatRulesInputArtifactCodec.cs",
+      "src/Cna.Core/Rules/Cna1979CombatAdjudication.cs",
+      "tests/Cna.Core.Tests/Rules/CombatRulesInputArtifactTests.cs"
+    ],
+    "log": ".planning/2026-09-14-overnight-combat-wave-01/evidence/005b-format.log"
+  },
+  "diffCheckExit": 0,
+  "artifact": {
+    "bytes": 30395,
+    "sha256": "fafb24792c9e3f774c368f85c02d1d068f84c9c78e67bf8324723257d0f13029"
+  },
+  "files": {
+    "src/Cna.Core/Rules/CombatRulesInputArtifactCodec.cs": "dcd5e3c5a5f1e19fb1129d4463960aa7055b2df7f1e710df468004b6a91f7118",
+    "src/Cna.Core/Rules/Cna1979CombatAdjudication.cs": "35d702bdd4dfd59995c0b581cc0525f31a9092cb66b604a27173231f247109f4",
+    "tests/Cna.Core.Tests/Rules/CombatRulesInputArtifactTests.cs": "9f67d158fe4ffe2545d67c52a87d2b14cea5e02ec02dee9e3eb0de7f74238067"
+  },
+  "rootGate": {
+    "command": "just check",
+    "exitCode": 0,
+    "boundaryTests": 81,
+    "fullTests": 1741,
+    "failed": 0,
+    "skipped": 0,
+    "buildWarnings": 0,
+    "buildErrors": 0,
+    "log": ".planning/2026-09-14-overnight-combat-wave-01/evidence/005-root-just-check.log"
+  }
+}

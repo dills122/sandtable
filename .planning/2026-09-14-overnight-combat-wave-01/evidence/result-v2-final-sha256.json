@@ -1,0 +1,6 @@
+{
+  "docs/specs/combat-result-settlement-v2.md": "a040dbd69c8c5e978bbce79b8765088ab2efdc33e8ef95ced22a5f35680fbc68",
+  "docs/specs/combat-result-settlement-v2.schema.json": "719634c4720b4a92669b2e83e60df58cd32d0e556ec9ef66c546aed1f9c7e9d6",
+  "docs/specs/fixtures/combat-result-settlement-v2.json": "6a1f6cda74424680669539d73583fa3ba5affc612380b3a3efe2e8986a09804a",
+  "docs/specs/verify-combat-result-settlement-v2.py": "a6a781976f26b78a9dc098ebfbb3b516284aa1d5873744d96d8fa23aa50d83a2"
+}

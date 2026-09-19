@@ -1,0 +1,168 @@
+{
+  "status": "PASS bounded final source/literal reconciliation",
+  "checks": {
+    "B1SummaryCorrespondence": 134,
+    "directSourcePins": 3,
+    "normalExecutionAST": 1,
+    "canonicalChildIdentity": 12,
+    "B1CheckpointCutBinding": 22,
+    "literalNativeProvenance": 11,
+    "retainedStepNativeReference": 122,
+    "retainedFramedProof": 13,
+    "fullLiteralSourceReferenceAndEventHash": 7
+  },
+  "unchangedFunctions": [
+    "require",
+    "encode",
+    "sha",
+    "typed",
+    "canonical",
+    "raw",
+    "parse",
+    "identity",
+    "framed",
+    "stream_hash",
+    "pins",
+    "fixture_bytes",
+    "build_descriptor",
+    "build_hash",
+    "rejected",
+    "preference_for",
+    "role_for",
+    "source_provenance",
+    "manifest_for",
+    "controller",
+    "schedule_views",
+    "context",
+    "start_state",
+    "kernel",
+    "fresh_views",
+    "proposal_for",
+    "public_raw",
+    "public_admit",
+    "owner_input",
+    "native_event",
+    "system_key",
+    "semantic_action",
+    "outcome_for",
+    "check",
+    "reconstruct",
+    "proof",
+    "artifact_inventory",
+    "run",
+    "validate_child",
+    "child_hash",
+    "completion_witnesses",
+    "test_boundary",
+    "test_registry_execution",
+    "test_identity_and_controller"
+  ],
+  "sourceLiteralIds": [
+    "corrected-composition.ordinary.axis.attacker",
+    "inherited-reserve.axis",
+    "historical-terminal.combat-inherited-no-attack-v1:axis-cp12-cohesion-2",
+    "settlement-v2.attacker-capture-escape.axis.attacker.fallback-retreat",
+    "settlement-v2.attacker-capture-escape.axis.attacker.fallback-custody",
+    "inherited-control.axis.repeat",
+    "inherited-control.axis.finish"
+  ],
+  "goldens": [
+    {
+      "name": "corrected-composition.ordinary.axis.attacker",
+      "sourceId": "corrected-composition.ordinary.axis.attacker",
+      "status": "succeeded",
+      "failure": null,
+      "steps": 24
+    },
+    {
+      "name": "settlement-v2.attacker-capture-escape.axis.attacker.fallback-retreat",
+      "sourceId": "settlement-v2.attacker-capture-escape.axis.attacker.fallback-retreat",
+      "status": "failed",
+      "failure": "step-limit-exceeded",
+      "steps": 16
+    },
+    {
+      "name": "settlement-v2.attacker-capture-escape.axis.attacker.fallback-custody",
+      "sourceId": "settlement-v2.attacker-capture-escape.axis.attacker.fallback-custody",
+      "status": "failed",
+      "failure": "step-limit-exceeded",
+      "steps": 20
+    },
+    {
+      "name": "inherited-reserve.axis",
+      "sourceId": "inherited-reserve.axis",
+      "status": "succeeded",
+      "failure": null,
+      "steps": 3
+    },
+    {
+      "name": "inherited-control.axis.repeat",
+      "sourceId": "inherited-control.axis.repeat",
+      "status": "succeeded",
+      "failure": null,
+      "steps": 5
+    },
+    {
+      "name": "inherited-control.axis.finish",
+      "sourceId": "inherited-control.axis.finish",
+      "status": "succeeded",
+      "failure": null,
+      "steps": 5
+    },
+    {
+      "name": "historical-terminal.combat-inherited-no-attack-v1:axis-cp12-cohesion-2",
+      "sourceId": "historical-terminal.combat-inherited-no-attack-v1:axis-cp12-cohesion-2",
+      "status": "succeeded",
+      "failure": null,
+      "steps": 0
+    },
+    {
+      "name": "failure.cancel",
+      "sourceId": "corrected-composition.ordinary.axis.attacker",
+      "status": "failed",
+      "failure": "cancelled",
+      "steps": 0
+    },
+    {
+      "name": "failure.controller-invalid",
+      "sourceId": "corrected-composition.ordinary.axis.attacker",
+      "status": "failed",
+      "failure": "execution-rejected",
+      "steps": 1
+    },
+    {
+      "name": "failure.reconstruction",
+      "sourceId": "corrected-composition.ordinary.axis.attacker",
+      "status": "failed",
+      "failure": "reconstruction-failed",
+      "steps": 24
+    },
+    {
+      "name": "failure.readjudication",
+      "sourceId": "corrected-composition.ordinary.axis.attacker",
+      "status": "failed",
+      "failure": "readjudication-failed",
+      "steps": 24
+    },
+    {
+      "name": "failure.admission",
+      "sourceId": "corrected-composition.ordinary.axis.attacker",
+      "status": "failed",
+      "failure": "admission-rejected",
+      "steps": 0
+    }
+  ],
+  "hashes": {
+    "combat-exercise-child-evidence-v1.md": "sha256:9413fafd11eb16abc060c20d9c53be14419faac4ff170cc9ef7eabf90d4b5857",
+    "combat-exercise-child-evidence-v1.schema.json": "sha256:cc8a7c9e89068b9a78f3abb4044230ccc9ef359665198aaa7ef6db5b15782bf6",
+    "verify-combat-exercise-child-evidence-v1.py": "sha256:a7385011125ca9105a1fbd3197c2b0b7b1825bf921e479ce9f953a4950343c92",
+    "fixtures/combat-exercise-child-evidence-v1.json": "sha256:5587cb17e53c48a9ab393532ebaa186f3d1384632eb13b105e1af8a698e799b6"
+  },
+  "fixtureBytes": 7722577,
+  "elapsedSeconds": 0.183,
+  "limitations": [
+    "No new cold134-source native execution; prior15-source/209-transition native audit applies by AST correspondence.",
+    "All134 summary identities/counts compared with accepted B1 literals; event hashes independently recomputed only for complete source literals listed here.",
+    "Author final focused native reader checks own exhaustive134-summary generation; root owns independent full literal/proof inventory audit."
+  ]
+}

@@ -1,0 +1,55 @@
+{"event": "start", "utc": "2026-09-18T23:13:31.059683+00:00", "wallSeconds": 0.0, "cpuSeconds": 0.0}
+{"event": "progress", "utc": "2026-09-18T23:14:01.063527+00:00", "wallSeconds": 30.005, "cpuSeconds": 29.801, "phase": "authenticate-catalog"}
+{"event": "progress", "utc": "2026-09-18T23:23:30.013924+00:00", "wallSeconds": 60.019, "cpuSeconds": 59.366, "phase": "authenticate-catalog"}
+{"event": "progress", "utc": "2026-09-18T23:25:27.396001+00:00", "wallSeconds": 90.02, "cpuSeconds": 88.962, "phase": "authenticate-catalog"}
+{"event": "progress", "utc": "2026-09-18T23:25:57.398445+00:00", "wallSeconds": 120.023, "cpuSeconds": 118.886, "phase": "authenticate-catalog"}
+{"event": "progress", "utc": "2026-09-18T23:26:27.401651+00:00", "wallSeconds": 150.027, "cpuSeconds": 148.724, "phase": "authenticate-catalog"}
+{"event": "progress", "utc": "2026-09-18T23:26:57.408077+00:00", "wallSeconds": 180.035, "cpuSeconds": 176.573, "phase": "authenticate-catalog"}
+{"event": "progress", "utc": "2026-09-18T23:27:27.415614+00:00", "wallSeconds": 210.043, "cpuSeconds": 206.413, "phase": "authenticate-catalog"}
+{"event": "progress", "utc": "2026-09-18T23:27:57.419899+00:00", "wallSeconds": 240.048, "cpuSeconds": 236.34, "phase": "authenticate-catalog"}
+{"event": "catalog-ready", "utc": "2026-09-18T23:28:02.977307+00:00", "wallSeconds": 245.606, "cpuSeconds": 241.897, "sources": 134}
+{"event": "warm-ready", "utc": "2026-09-18T23:28:02.977393+00:00", "wallSeconds": 245.606, "cpuSeconds": 241.897}
+warning: can't use pyrepl: (5, "terminal doesn't have the required clear capability"); TERM=dumb
+>>> Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+    parent=load('combat_parent','verify-combat-exercise-parent-evidence-v1.py'); parent.test_missing_and_null()
+                                                                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/dsteele/.codex/worktrees/0b59/sandtable/docs/specs/verify-combat-exercise-parent-evidence-v1.py", line 165, in test_missing_and_null
+    assert invalid['entries'][0]['validation']=='invalid' and invalid['counts']['invalid']==1
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError
+>>> {"event": "progress", "utc": "2026-09-18T23:28:27.424186+00:00", "wallSeconds": 270.053, "cpuSeconds": 242.585, "phase": "warm-ready"}
+{"event": "begin", "utc": "2026-09-18T23:28:45.377975+00:00", "wallSeconds": 288.007, "cpuSeconds": 242.605, "phase": "test_divergence"}
+{"event": "passed", "utc": "2026-09-18T23:28:45.378183+00:00", "wallSeconds": 288.008, "cpuSeconds": 242.605, "phase": "test_divergence", "result": 6}
+{"event": "begin", "utc": "2026-09-18T23:28:45.378205+00:00", "wallSeconds": 288.008, "cpuSeconds": 242.605, "phase": "test_missing_and_null"}
+{"event": "passed", "utc": "2026-09-18T23:28:45.892391+00:00", "wallSeconds": 288.522, "cpuSeconds": 243.117, "phase": "test_missing_and_null", "result": 2}
+{"event": "begin", "utc": "2026-09-18T23:28:45.892488+00:00", "wallSeconds": 288.522, "cpuSeconds": 243.117, "phase": "test_native_parents"}
+B3 authenticated child base succeeded 24
+{"event": "progress", "utc": "2026-09-18T23:28:57.428923+00:00", "wallSeconds": 300.059, "cpuSeconds": 254.592, "phase": "test_native_parents"}
+B3 authenticated child twin succeeded 24
+B3 authenticated child order succeeded 24
+B3 authenticated child guard succeeded 26
+{"event": "progress", "utc": "2026-09-18T23:29:27.434033+00:00", "wallSeconds": 330.065, "cpuSeconds": 284.381, "phase": "test_native_parents"}
+B3 authenticated child escape succeeded 26
+B3 authenticated child failed-guard failed 26
+B3 authenticated child failed-escape failed 26
+B3 authenticated child fallback-a failed 16
+B3 authenticated child fallback-b failed 16
+B3 authenticated child limit succeeded 24
+B3 authenticated child early failed 0
+B3 authenticated child historical succeeded 0
+{"event": "progress", "utc": "2026-09-18T23:29:57.437341+00:00", "wallSeconds": 360.069, "cpuSeconds": 314.224, "phase": "test_native_parents"}
+{"event": "passed", "utc": "2026-09-18T23:30:07.296566+00:00", "wallSeconds": 369.928, "cpuSeconds": 323.796, "phase": "test_native_parents", "result": {"children": 12, "parents": 10, "authenticatedPrefixUnitCases": 5}}
+{"event": "begin", "utc": "2026-09-18T23:30:07.296650+00:00", "wallSeconds": 369.928, "cpuSeconds": 323.796, "phase": "test_invalid_children_and_cache"}
+{"event": "passed", "utc": "2026-09-18T23:30:23.579996+00:00", "wallSeconds": 386.212, "cpuSeconds": 339.971, "phase": "test_invalid_children_and_cache", "result": {"invalidChildren": 9, "missing": 1, "cacheIsolationChecks": 4}}
+{"event": "begin", "utc": "2026-09-18T23:30:23.580081+00:00", "wallSeconds": 386.212, "cpuSeconds": 339.971, "phase": "test_materialization_and_bindings"}
+{"event": "passed", "utc": "2026-09-18T23:30:24.446068+00:00", "wallSeconds": 387.078, "cpuSeconds": 340.834, "phase": "test_materialization_and_bindings", "result": {"materializationRejects": 8, "pairBindingMismatches": 10}}
+{"event": "begin", "utc": "2026-09-18T23:30:24.446162+00:00", "wallSeconds": 387.078, "cpuSeconds": 340.834, "phase": "test_raw_and_report_forgery"}
+{"event": "progress", "utc": "2026-09-18T23:30:27.438975+00:00", "wallSeconds": 390.071, "cpuSeconds": 343.817, "phase": "test_raw_and_report_forgery"}
+{"event": "passed", "utc": "2026-09-18T23:30:28.350817+00:00", "wallSeconds": 390.983, "cpuSeconds": 344.726, "phase": "test_raw_and_report_forgery", "result": {"forgedReports": 5, "rawRejects": 7, "boundaryRejects": 8, "independentHash": 1, "returnedCopy": 1}}
+{"event": "EXPECTED_RED", "utc": "2026-09-18T23:30:28.350958+00:00", "wallSeconds": 390.983, "cpuSeconds": 344.726, "phase": "missing-or-stale-fixture"}
+{"event": "progress", "utc": "2026-09-18T23:30:57.449537+00:00", "wallSeconds": 420.083, "cpuSeconds": 373.703, "phase": "fixture-generation"}
+{"event": "passed", "utc": "2026-09-18T23:31:04.069638+00:00", "wallSeconds": 426.703, "cpuSeconds": 380.301, "phase": "fixture-readback", "result": {"bytes": 10943909, "children": 12, "parents": 10, "fixtureMutationRejects": 4, "largestParentBytes": 23998}}
+{"event": "B3_FOCUSED_GREEN", "utc": "2026-09-18T23:31:04.076078+00:00", "wallSeconds": 426.709, "cpuSeconds": 380.307, "hashes": {"combat-exercise-parent-evidence-v1.md": "b1840ce112df387752413653e9bdac7cc4a3e66f707aa7f504358c89c4e23f0c", "combat-exercise-parent-evidence-v1.schema.json": "00d1fcd2cb7d06b6f25d9224ff0839308f23fd2052b42dab24c98ea378b30820", "fixtures/combat-exercise-parent-evidence-v1.json": "08316dae3d4f12298c35bfe05f640dcd2559ae41cbf4144430cd52b121847a9f", "verify-combat-exercise-parent-evidence-v1.py": "bb0134c42293a18c8453513c9b23b13d4c365cb2734f8e93c2989d47773e7345"}}
+{"event": "B3_COMMAND_COMPLETED", "utc": "2026-09-18T23:31:04.076157+00:00", "wallSeconds": 426.71, "cpuSeconds": 380.307, "elapsedSeconds": 138.722, "result": "passed"}
+>>> 

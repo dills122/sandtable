@@ -1,0 +1,6 @@
+{
+  "docs/specs/combat-exercise-occurrence-v1.md": "3e7594535c8fe6c9f3d8c3e5cc669b9cd8b0ac434db6d0ac056441b40ddd6c66",
+  "docs/specs/combat-exercise-occurrence-v1.schema.json": "dc4095e6dc7896c98d2110be50eaf703f84286dc0bb5f0e7941c60f61936b301",
+  "docs/specs/fixtures/combat-exercise-occurrence-v1.json": "aabc20a39229ac121703a6cda077c0ebeffbfdd7bc3142a3d0c1d0805af7a38e",
+  "docs/specs/verify-combat-exercise-occurrence-v1.py": "9e46db1943514629754cdc227fdc1a415c53c8b5e573b8fb0afd89c870f1fb53"
+}

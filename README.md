@@ -53,7 +53,7 @@ play a side; it will never decide the rules or secretly change the campaign stat
 | --- | --- | --- |
 | Deterministic Umpire | Working | Versioned rules, seeded randomness, canonical commands/events, replay, checkpoints, and side-safe action boundaries are implemented. |
 | Playable rule path | Working through Combat entry | Runner can execute Initiative, stage preamble, Reserve Designation, Movement, bounded ZOC/Reaction, and Breakdown, then stops before Combat adjudication. |
-| Combat and continual cycle | Contracts complete through parent003 | 28 creation-rooted traces reconcile future Combat/cycle authority, but handlers are not registered in runtime. Task004 is next. |
+| Combat and continual cycle | Checkpoint B accepted; dormant Rules implemented | 28 creation-rooted traces reconcile future Combat/cycle authority, but handlers are not registered in runtime. Versioned round/settlement clocks and Task004A1/A2 side contracts preserve privacy under clock faults. Native settlement-to-cycle-finish composition, live Reserve/cycle side profiles, all 28 historical terminal projections and continuous corrected bridge histories are accepted. Private Exercise occurrence, child execution/proof and validated parent comparison evidence are accepted; integrated checkpoint B is accepted with all 72 requirements mapped. Dormant C# selected tables, explicit-dice arithmetic and strict RulesInput1 codec now match the frozen source; campaign activation remains deferred. |
 | Exercise and Maneuver tools | Working | Deterministic single runs, multi-run matrices, paired comparisons, strict readback, and evidence bundles are available from CLI. |
 | User interface | Not started | `site/` is project website only. Maproom hot-seat client is future work. |
 | Published scenario | Not started | First target is six-turn, Land-only *Graziani's Offensive* after working Combat loop. |
@@ -66,9 +66,8 @@ campaign or resolve Combat in running engine.
 
 Next delivery sequence:
 
-1. Complete Task004 side-safe observation/action and Exercise contracts, mapping all 72 acceptance
-   criteria and closing contract checkpoint B.
-2. Implement dormant Combat/cycle authority, then activate only certified public actions.
+1. Continue with Task006 synthetic Content/scenario admission; dormant Task005 Rules and codec are implemented.
+2. Continue dormant Combat/cycle authority, then activate only certified public actions.
 3. Prove authentic Movement → Combat → Reserve Release repeat-or-finish loop through Runner.
 4. Freeze and implement exact six-turn Land scenario, durable save/resume, and minimal Maproom.
 
@@ -377,7 +376,7 @@ closes both exact routes through deliberate stop, empty resolution and completio
 then expires each pending exception with its accepted completion receipt.
 [D2c.4 authority composition](docs/specs/combat-authority-composition-v1.md) now reconciles CON-002–004
 across 28 creation-rooted traces and freezes parent003's exact Task004 handoff. Parent003 is complete;
-Task004 and checkpoint B remain open.
+Task004 and checkpoint B are accepted through the [outward integration index](docs/specs/combat-outward-composition-v1.md).
 The [latest smoke check](docs/research/simulator-post-merge-checkin.md#combat-contract-branch-smoke-check)
 verifies the existing Rules9 path; prospective Combat contracts are not executable game support.
 
@@ -385,7 +384,7 @@ verifies the existing Rules9 path; prospective Combat contracts are not executab
 | --- | --- | --- |
 | Authority foundation | Versioned provenance, synthetic content, commands/events, deterministic randomness, replay, side-safe observations, and exact-audience legal actions for the admitted profile | Extend the same compatibility, recovery, and fog boundaries with each mechanic |
 | Preamble and Movement boundary | Initiative through Reserve Designation, bounded Movement, ZOC/Reaction, and Breakdown through first-side Combat entry | Positive scenario-specific obligations and broader vehicle/ZOC profiles remain gated |
-| Combat and continual cycle | Not implemented or activated | Parent003 authority composition complete; Task004 must freeze side/Exercise contracts and map all 72 ACs before checkpoint B, dormant runtime, public activation, and Runner gates |
+| Combat and continual cycle | Dormant selected Rules, arithmetic and artifact codec; gameplay not activated | Contract checkpoint B accepted; dormant implementation, public activation and Runner gates remain |
 | Working skeleton | Not reached | One authentic movement/contact/combat/release repeat-or-finish loop plus identical replay |
 | Playable MVP | Not started | Source-verified six-turn content/rules/victory, durable save/resume, hot-seat privacy, and minimal no-model Maproom |
 | Exercise Harness | Current bounded Exercise/Maneuver and paired descriptive comparisons | Add Combat actions and terminals only after public Core activation |

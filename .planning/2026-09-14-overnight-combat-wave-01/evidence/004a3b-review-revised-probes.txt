@@ -1,0 +1,6 @@
+focused movement 2
+focused all terminals {'traces': 28, 'cuts': 56, 'ownReserveRecords': 28, 'singletonSources': 2, 'cp': [0, 2, 4, 12, 14], 'cohesion': [-4, -2, 0]}
+focused source integrity 18
+independent actual native completion correspondence 2
+exact fixture delta: only two owner terminal records; reconstructed initial SHA256 matches
+REVISED FOCUSED REVIEW PROBES PASS

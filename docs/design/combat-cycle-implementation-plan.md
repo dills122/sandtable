@@ -1,17 +1,19 @@
 # Combat and Cycle Combined Contract / Implementation Plan
 
-**Status:** Contract checkpoint B in progress; no Combat runtime or public capability is active.
+**Status:** Contract checkpoint B and dormant Task005 accepted. Task006 Content/scenario admission is next; Combat gameplay remains inactive.
 `CMB-PLAN-001` and POL-001–008 were accepted on 2026-09-06 at `a10a588`. Source and static Content
 work (`001`–`002`) is complete. Parent `003` is complete through the
-[authority-composition handoff](../specs/combat-authority-composition-v1.md). Task `004`, checkpoint
-B, and runtime tasks `005`–`025` have not started.
+[authority-composition handoff](../specs/combat-authority-composition-v1.md). Checkpoint B closes through the
+[Task004C integration index](../specs/combat-outward-composition-v1.md). Task004A side contracts and Task004B occurrence, child and
+parent evidence are accepted with strict clock privacy and versioned round/settlement authority. Dormant Task005 is complete; tasks
+`006`–`025` have not started.
 
 | Delivery layer | Current boundary | Next required outcome |
 | --- | --- | --- |
 | Research and policy | Complete for the selected bounded profile, including `HOST-RSH-001` | Reopen only for a new source, failed assumption, or approved profile expansion |
 | Authority contracts | CON-002–004 and all selected-profile inherited families are reconciled in 28 creation-rooted composition traces; parent003 complete | Preserve exact Task004 handoff while later runtime work derives boundaries from accepted history |
-| Outward contracts | Task004 not started; Task003 handoff freezes six 12-AC ranges, exact versions, exclusions and owners | Freeze CON-005/006 side-safe observation/action and Exercise contracts; expand all 72 ACs row by row |
-| Runtime | Tasks005–019 not started | Implement dormant tables/state/decisions/settlement/release/repeat with cumulative replay and recovery evidence |
+| Outward contracts | Task004A/B/C accepted; all 72 ACs mapped with bounded evidence and explicit runtime deferrals | Preserve accepted bytes and source/privacy boundaries during dormant implementation |
+| Runtime | Dormant Task005 selected Rules/arithmetic/codec complete; Tasks006–019 not started | Implement Content/state/decisions/settlement/release/repeat with cumulative replay and recovery evidence |
 | Public and simulator | Tasks020–024 not started | Activate the certified side-safe profile, then prove strict Exercise/Runner reconstruction and repeatability |
 | Closeout | Task025 not started | Full gate, evidence reconciliation, and authentic loop demonstration without overstating retained obligations |
 
@@ -116,6 +118,296 @@ visible. No favorable-vector or synthetic arithmetic result substitutes for full
 | --- | --- | --- | --- |
 | `CMB-TASK-003` / complete | [Authority-composition packet](../specs/combat-authority-composition-v1.md) freezes and reconciles CON-002–004 world/event/snapshot/command/cycle evidence, exact versions, causal receipts, capacity, compatibility and Task004 handoff. Production registration remains gated. | 28 creation-rooted traces across nine families; 31 direct plus embedded transitive source pins; 225 readbacks, 203 mutations, six raw and eight boundary rejects. | 001–002 complete; Task004 consumes exact handoff. |
 | `CMB-TASK-004` / M, 3–5 files | Freeze CON-005/006 side and Exercise contracts, candidate bytes and terminal evidence. Enumerate every design AC in an evidence index; mark deferred transport requirements without allocating fake production support. | Equal-authorized-history vectors, authority-leak negatives, ordinal/terminal tampering and all 72 ACs mapped to a task and planned test. | 003; new side/evidence packet, [Observation tests](../../tests/Cna.Core.Tests/Observations/), [Exercise tests](../../tests/Cna.Core.Tests/Exercises/). |
+
+TASK-004 execution refinement, 2026-09-14 overnight wave01, before implementation: side projection,
+Exercise evidence and requirement integration cross independent boundaries. Preserve parent004;
+deliver these sequential slices with at most five primary files each, including this plan.
+
+| Slice | Owned contract boundary | Acceptance / dependency |
+| --- | --- | --- |
+| `CMB-TASK-004A` | New `combat-side-projection-v1` spec, ordered schema, retained fixture and executable oracle | Complete CON-005 closed audience fields/choices/errors and canonical candidates, own-revision mapping, equal-authorized-history and authority-leak negatives; exact003 handoff preserved |
+| `CMB-TASK-004B` | New Exercise evidence spec, schema, fixture and oracle | After accepted004A; complete CON-006 occurrence/ordinal/terminal/continuation and strict manifest/report/divergence contracts, unsupported-terminal and false-success negatives |
+| `CMB-TASK-004C` | Explicit72-AC index and bounded integrated readback evidence | After accepted004A/B; every AC maps to task/planned test; exact versions, capacity, compatibility and Task003 handoff reconciled before004/checkpoint B closes |
+
+004C packet refinement before edits: four new `combat-outward-composition-v1` spec/schema/fixture/
+oracle files plus this plan retain the explicit72-AC index, source/version/capacity compatibility
+and accepted side/Exercise readback. This unregistered evidence index preserves partial/deferred
+runtime coverage. Exact scope is in [packet004C](../../.planning/2026-09-14-overnight-combat-wave-01/packet-004c.md).
+
+004B sizing refinement before edits: three explicitly unregistered prospective Combat families,
+each spec/schema/fixture/oracle plus this plan, execute after accepted004A:
+
+| Slice | Contract family | Required evidence |
+| --- | --- | --- |
+| 004B1 | `combat-exercise-occurrence-v1` | Tagged synthetic-C3 or historical003 lineage; full-World/RNG typed checkpoint; exact occurrence/position/closure/obligations; continuation and pinned dual-slot schedule |
+| 004B2 | `combat-exercise-child-evidence-v1` | Strict manifest/payload inventory; source replay and separate side-decision re-adjudication; exact Int32 record framing; failure/step-limit distinct from successful terminal |
+| 004B3 | `combat-exercise-parent-evidence-v1` | Validate children before counts/fingerprint; equal initial lineage for pairs; audience/action first divergence, unequal-length null arm and unavailable comparisons |
+
+These typed checkpoints are not CoreSnapshot records. They prove contract replay within explicitly
+tagged lineage; ordinary-Core/Exercise parity remains runtime022, actual publication remains023.
+B1/B2 bind full source lineage separately from execution profile/start fragment/local cut. Native
+C3 runs execute supported public decisions and System transitions; live inherited Release/control
+starts only at admitted A3 cuts after authenticating its complete prefix. Historical003 terminal
+checkpoints execute zero steps and must already satisfy their exact request with identical initial/
+final checkpoint bytes. Source/proof fragments affect proof identity, not execution step count.
+These checkpoint-scoped proofs do not claim public-controller replay of earlier source-only
+creation/Movement actions or completion of a zero-step historical suite; Task022 owns that parity.
+B1 distinguishes a family-supported requested terminal from its satisfaction by a supplied
+execution prefix. Eight exact A2clock-fallback prefixes can request native closedReserveRelease1
+and stop at accepted-transition limit16/20 while still in CloseAssault. B2 records failedterminal/
+StepLimitExceeded, actual ownerinitiator/Systemauthor and rejectedoutward proposal; no fabricated
+success, failedattempt or replayproof. No arbitrary continuation past retained source is admitted.
+
+No full Snapshot successor is needed for this chosen004B route. Preserve old ExerciseManifest
+payload2/labelv1, Checkpoint1/Snapshot11 and all registered readers. New Combat scheme labels remain
+unregistered; old readers never receive prospective Rules10 manifests as current supported input.
+
+Each slice requires focused verification, ordinary quality review and a scoped commit. User-approved
+workflow adjustment,2026-09-16: preserve all acceptance requirements while sharing authenticated
+source warmup across B3/C, reusing unchanged predecessor evidence, and consolidating full `just check`
+at C/checkpoint B and final Task005 integration. Focused C# tests still run for each005 slice; changes
+or failures trigger relevant reruns. No final integration gate or privacy/replay assertion is removed.
+Navigation updates follow at C and005 checkpoints. This split adds no gameplay policy, production
+registration or formal independent-review pass. Task005 implementation remains gated on accepted
+004/checkpoint B. Execution evidence lives in the
+[overnight plan](../../.planning/2026-09-14-overnight-combat-wave-01/task_plan.md).
+
+004A sizing refinement before edits: implement the four new packet files sequentially as004A1
+(shared closed codec/identity/errors plus selection/RBA/sealed-round projections),004A2 (settlement
+disclosure, retreat/custody candidates and result facts), then004A3 (Reserve/cycle projections,
+exact Task003 handoff and full corpus reconciliation). Each child has semantic RED/GREEN,
+fresh-context quality review and `just check`; complete CON-005 freeze is claimed only after004A3.
+004A3 is further split before edits into004A3a (Reserve/cycle closed choices, frozen binary
+candidate/set IDs and own live cuts) then004A3b (both-audience28trace projections, exact003handoff,
+privacy and capacity reconciliation). Both keep the same four side-packet files plus this plan;
+actual CP14/Cohesion-4 and three-action later-II sets must fit without truncation.
+All four new files remain under one writer; historical packets remain immutable. If one adapter
+group cannot remain reviewable within this ownership, re-split before further edits.
+
+004A2 version refinement before edits: add separate Observation2, Submission2 and Candidate2
+records within the side packet. Every Candidate2 arm carries explicit version2; disjoint decision,
+action, set and receipt domains bind the new codec. Keep every A1 type, numeric bound, source name
+and literal exact. New settlement profiles project version2 from their first C3a frame, including
+both clock policy IDs and approved budgets in their public configuration identity. Current A1
+admission remains separate from A2 admission. OwnParticipant2 follows existing World primitives:
+nonnegative signed64 CP with certified denominator1; signed32 Cohesion capped at10. These value
+bounds do not claim all possible values are certified gameplay. Add only allowlisted typed own
+settlement/custody/guard/replacement facts, bounded full history and real owner-choice receipts.
+System-authored fallback never creates an own accepted receipt, even when input initiator was owner.
+Old/new readers and cross-profile submissions reject; source authentication precedes projection.
+
+004A2 accepted2026-09-15 after37focused groups, ordinary fresh-context approval, source/literal
+audit and root `just check`:81boundary/1670full tests,0skips. Disjoint version2 admits96audience
+traces/2080cuts with7344clock outcomes and4872retries; originalA1 records remain exact. Maximum
+7503observation bytes,18history entries,4own receipts. Root independently checks240fallback
+outcomes and24cache/source mutations. This accepts settlement projection only; bridge/A3/B/C
+and parent004/checkpointB remain open.
+
+004A3 evidence refinement before edits: canonical first-I release/conversion and later-II
+release/retain/completion sets must be derived and exercised through actual standalone Reserve
+transitions, with canonical bytes, accepted state, revision and receipts. These are explicitly
+synthetic ledger behavior tests, not fullWorld observations. The accepted creation-rooted inherited
+release wrapper supports only the release-I owner path; keep its conversion rejection and bytes.
+Its outward actions describe that bounded replay capability, distinguished by public profile/policy
+identity, not the complete Reserve gameplay legal set. Conversion in an inherited fullWorld profile
+remains unsupported until a separately scoped authority adapter. This retains AC003 coverage via
+the canonical ledger while preserving the existing admitted inherited profile.
+
+004A3 version refinement before edits: separate Observation3/Submission3/Candidate3 and owned
+Reserve/cycle records preserve every acceptedA1/A2 descriptor, bound, domain and literal. Public
+capability identity is fixed from first frame and distinguishes bounded inherited admission from
+corrected synthetic support and projection-only terminals. Closed Combat/cycle decision tags keep
+new Combat references separate from frozen binary cycle action/set hashes, unsigned candidate-byte
+sorting and index-bound action IDs. Candidatecapacity3; source-native CP/Cohesion; no truncation.
+A3a owns live inherited release/control plus full standalone ledger behavior. A3b owns28normalized
+terminal projections and accepted corrected bridge, usingv3 from first C3a frame with continuous
+receipts/history throughfinish. Terminal-only sources never invent prior sidehistory or actions
+from authorityreceipt counts. Exact fields and bounds are recorded in
+[packet004A3](../../.planning/2026-09-14-overnight-combat-wave-01/packet-004a3.md).
+Source-backed receipt distinction: canonical later-II `complete-release` is accepted owner intent
+recorded by a System-authored completion with exact `owner-complete-release` reason. Native replay
+and offered-candidate/owner/receipt binding determine acceptance; event author alone does not.
+System completion and clock fallback create no owner acceptance. B2 retains owner semantic action
+for valid accepted completion and System semantic action for rejected fallback; exact retry adds
+no step. This does not expand inherited release-I-only admission.
+
+004A3a accepted2026-09-15:52focused groups, ordinary fresh-context approval, exact source/literal
+checks and root `just check`81boundary/1670full tests,0skips. Live inherited release/control and
+separate canonical ledgers retain A1/A2 bytes. Root reconstructs92binary sets/190action identities;
+audit checks456cuts/344observation literals/190candidate pairs/38pins. Owner complete-release
+receipt follows authenticated intent even with System event author. A3b starts next:28terminal
+projections and continuous corrected bridge history, separate registry and internal configuration
+seed binding all three clock policies from first frame. Bridge offers finish only; historical
+terminal profiles offer no actions. Parent004/checkpointB and005 remain incomplete.
+
+004A3b accepted 2026-09-15: 62 semantic groups, fresh ordinary approval and native source audit,
+root `just check` 81 boundary/1670 full tests, zero skips (3m31.596s full suite).
+116 sources cover 4744 cuts, 1208 literal observations and 720 candidate pairs. All 28 historical
+terminal profiles match native World and Reserve state, including both singleton releaseMember
+completion records. Corrected histories preserve all clock policies, receipts and privacy through
+finish. A1/A2/A3a bytes preserved. B1/B2/B3 and C remain required before checkpoint B; 005 follows.
+
+B1/B3 identity clarification: sourceLineageHash binds authenticated root/history/proofs only through
+executionStart. Full future-bearing reference transcript is authenticated and hashed separately in
+child evidence; reference hash/name and future controller/schedule choices never seed initial
+checkpoint identity or pair equality. Pair equality still requires identical actual initial state,
+RNG, prefix/cut/profile, gameplay/build, requested terminal and bounds. Each complete reference is
+independently authenticated before deriving its prefix. No arbitrary source extensions. Equal-start
+defender guard/escape may pair; attacker CP-limit guard/escape starts differ and must reject.
+
+004B1 accepted 2026-09-15: new private occurrence/checkpoint contract authenticates134 sources,
+2576 cuts and588 historical event instances. Exact source/active occurrence, supported versus reached
+terminal, full World/RNG/control, prefix/reference identities and public-only dual-slot scheduling
+are replay-backed. Historical28 endpoints have zero execution. Eight fallback prefixes remain
+unfinished.352 bridge cuts retain settled World, including native release states without World.
+Fresh ordinary review/source audit and root81boundary/1670full gate pass,zero skips (3m13.738s).
+Authentication returns defensive copies; fixture verification compares exact bytes. B2 execution/
+proofs are accepted below; B3 parent evidence and C integrated closeout remain required before
+checkpoint B and005.
+
+004B2 accepted 2026-09-16 UTC: private child evidence binds native setup/content/scenario,
+initial RNG, source/reference/checkpoint and current oracle/schema build identity. Public-only
+controller preferences and schedule must match supported reference; incomplete references reject
+bounds beyond retained history. Exact native transitions, owner/System fallback semantics,
+separate reconstruction/re-adjudication and explicit attempted failure observations are retained.
+FailedAttempt records actual copied trustedClock; artifact inventory excludes its own manifest.
+
+Prior full native run passed134 sources,2442 transitions and44 owner-triggered System fallbacks.
+Final unchanged native bodies are independently AST-checked; final focused run passed134 admissions,
+7 representative readbacks and22 failure/forgery/clock checks. Regenerated fixture contains134 source
+summaries and12 actual children. Fresh ordinary review/source reconciliation and root literal proof/
+inventory checks pass. Root format/build and81 boundary/1670 full tests pass,zero skipped; no src/tests
+changes since gate. Evidence is checkpoint-scoped and unregistered, not full fresh-session/runtime
+Snapshot or publication parity. B3/C remain required before checkpoint B;005 has not started.
+
+004B3 accepted 2026-09-18: authenticated parent manifests validate children before counts and
+fingerprints, preserve failed status, enforce equal pair bindings and compare actual audience/action
+streams. Final12child/10parent checks and strict rejection/readback tests pass; ordinary review and
+root literal audit pass. Unequal-length null arms are authenticated-prefix helper evidence only.
+C integrated closeout remains required before checkpoint B and dormant005 implementation.
+
+
+004C accepted 2026-09-18: exact72 requirements and planned runtime mappings reconcile99 source
+pins,12 profiles,51 accepted-reader witnesses,28 Task003 traces and2440 measured records across
+11 capacity groups. Integrated rejection/readback checks pass in19.583s; ordinary source/code
+review approves. Root just check passes format/build,81 boundary and1670 full tests,zero skipped.
+This closes Task004 and contract checkpoint B; dormant005A/B may begin. No runtime activation,
+artifact publication, hosted service, full Snapshot parity or completion of planned runtime ACs
+is implied. Reviewed-versus-accepted spec hashes and all evidence are retained locally.
+
+005A accepted: dormant complete RulesInput1 types and pure explicit-dice Combat arithmetic.
+Source parity covers36 morale/360 loss cells with only3 approved gap amendments; exhaustive
+1296 morale pairs,6480 joint coordinates,8840 capture/refusal rows and44208 weighted paths pass.
+Focused native19/19 tests and build0warnings/errors pass; ordinary review approves. Existing
+Rules9 registration and Combat code remain unchanged. Strict005B codec and final full gate remain.
+
+
+005B and parent005 accepted: strict RulesInput1 codec reproduces30,395 canonical bytes and frozen
+sha256:fafb24792c9e3f774c368f85c02d1d068f84c9c78e67bf8324723257d0f13029. Typed serialization
+normalizes copied identity/numeric sets while preserving procedure order; raw readback accepts
+only exact approved authority bytes and expected hash. Complete source/provenance/amendment/
+policy metadata, malformed/forged input rejection, limits and defensive-copy tests pass.
+Dormant artifact factory leaves registered Rules9 unchanged. Focused005B52/52 tests, ordinary
+review and final root just check pass: format/build clean,81 boundary/1741 full tests,zero skipped.
+All71 new focused tests and six legacy Rules/registration baselines reconcile. Task006 follows;
+public Combat/cycle actions, hosted transport, durable publication and Runner activation remain later.
+
+004A1 overnight hard stop, 2026-09-14 local /2026-09-15 UTC: ordinary fresh-context review found
+equal waiting-side observations before/after an opposing private seal, but the same proposal at
+trusted time3500 accepts with high-water3000 and cancels/rejects with high-water4000. Both seal
+orders reproduce this against frozen authority. Accepted POL-004 requires regression fallback;
+POL-006 and PRO-AC-010 require equal semantic outcomes. No explicit regression exception exists.
+The [blocked candidate](../specs/combat-side-projection-v1.md#known-blocker-private-seal-changes-clock-regression-outcome)
+and [failing diagnostic](../../.planning/2026-09-14-overnight-combat-wave-01/evidence/clock-high-water-counterexample.py)
+retain the conflict. A1 is not accepted;004A/004/checkpoint B remain open and005 has not begun.
+Focused candidate vectors and repository gate pass, but cannot override this failing privacy
+acceptance case. Owner selected strict privacy on2026-09-15; the
+[policy disposition](combat-cycle-policy-reconciliation.md#clock-privacy-correction--owner-decision-2026-09-15)
+authorizes an explicit versioned clock correction preserving historical authority bytes. Owner also
+renewed an eight-hour work window11:39:39–19:39:39 UTC, same scope and no merge. No formal
+independent-review pass occurred; concrete successor verification remains required.
+
+Clock correction split before edits: root owns policy/navigation disposition; `W01-CLOCK-DESIGN`
+selects the minimal correction and exact version boundaries with read-only source evidence.
+`W01-CLOCK-CONTRACT` then owns `combat-sealed-round-v2` spec/schema/fixture/oracle plus this plan, with clock,
+privacy, replay and old-reader rejection vectors. `W01-CLOCK-INTEGRATE` follows in the four
+unaccepted side-packet files plus this plan. No historical packet is rewritten; any additional
+independent contract family requires a recorded bounded split first. Each behavioral packet needs
+TDD, ordinary fresh-context quality review and root `just check` before its accepted commit.
+
+W01-CLOCK-CONTRACT accepted after ordinary fresh-context review and root gate,2026-09-15:
+[round-v2](../specs/combat-sealed-round-v2.md) retains10synthetictraces/68cuts,12semanticgroups,
+610replay mutations,340raw rejects,288clock comparisons/retries and480lifecycle retries. Root
+independent88admission comparisons pass while v1 counterexample remains reproducible. `just check`
+passes81boundary and1670fulltests,0skipped,build0warnings/errors. Exact fixture-byte validation
+closes review's P2 numeric-coercion finding. This accepts only the clock packet;004A1/004/B remain
+open pending side integration. Evidence: [ordinary review](../../.planning/2026-09-14-overnight-combat-wave-01/evidence/clock-v2-review.md),
+[full gate](../../.planning/2026-09-14-overnight-combat-wave-01/evidence/clock-v2-just-check.log).
+
+W01-CLOCK-INTEGRATE /004A1 accepted,2026-09-15: ordinary fresh-context review approved;
+root `just check` passes 81 boundary and 1670 full tests, zero skipped, build zero warnings/errors.
+Side oracle passes 23 semantic groups, 58 traces/466 cuts, 207 submissions, 969 mutations,
+580 raw rejects, 69 receipt/stale bindings and 672 corrected clock comparisons/retries.
+Reviewer independently checked 1152 equal-outcome cases; root checked 144 serialized outcomes
+across eight equal-observation pairs and 17 legacy admission rejects. Source audit verified all
+201 literal goldens and 23 pins; original 18 audience traces remain exact. Historical diagnostic
+still documents v1 failure. This accepts A1 only; A2/A3 and parent004/B remain open.
+Evidence: [review](../../.planning/2026-09-14-overnight-combat-wave-01/evidence/side-clock-review.md),
+[gate](../../.planning/2026-09-14-overnight-combat-wave-01/evidence/side-clock-just-check.log).
+
+W01-CLOCK-RESULT accepted,2026-09-15: separate version2 command/state/event and policy binding
+consume exact RoundState2 through 32 synthetic branch/side/order lineages. Fresh mandatory windows
+ignore prior audit times; live-window floor/deadline and Config1 fallbacks remain explicit. Ordinary
+fresh-context review approved all five axes. Frozen oracle passes10groups/304cuts/3728mutations/
+1360raw/384timing/200same-owner comparisons; reviewer adds1904retry/272tamper/208clock probes.
+Root independently checked192paired outcomes and `just check` passes81boundary+1670full,zero
+skipped,build zero warnings/errors. Source audit verifies784literals/11pins and32unchanged historical
+files. This accepts only result-v2;004A2/A3/B/C and005 remain open.
+Evidence: [review](../../.planning/2026-09-14-overnight-combat-wave-01/evidence/result-v2-review.md),
+[gate](../../.planning/2026-09-14-overnight-combat-wave-01/evidence/result-v2-just-check.log).
+
+Downstream clock integration split before edits: `W01-CLOCK-RESULT` owns new
+`combat-result-settlement-v2` spec/schema/fixture/oracle plus this plan after round-v2 acceptance.
+It retains World7, selected Rules10 arithmetic and role-ordered RNG while validating corrected
+committed-round evidence and mandatory-window timing. Complete this packet before004A2 consumes
+the corrected result lane. Result-v2 timing disposition: each new mandatory window uses its own
+independently trusted valid opening instant and checked fixed budget. Earlier private accepted
+timestamps cannot gate that opening or trigger fallback. Choices within the live window use its
+own published timing gate; any global accepted-time maximum is audit evidence only. Preserve
+Config1 budget/fallback values. Every ResultCommand2, ResultState2 and ResultEvent2 binds
+`resultClockPolicyId=sandtable.combat.mandatory-window-clock.v2` and the exact
+`roundClockConfigurationHash`; separate v2 identity domains bind the corrected opening policy.
+Retained eight-branch corpus has same-owner retreat/custody sequences: the paired10001/11000
+retreat acceptance then10500 custody opening test proves prior-time isolation, not an opposing-
+retreat leak. Do not invent a cross-owner gameplay branch. Retain all eight branches, both acting
+sides and seal orders through exact RoundState2 bytes, including4000→3500 seals.
+`W01-CLOCK-CYCLE` is a required bounded bridge before004A3/004B: new
+`combat-result-cycle-finish-v1` spec/schema/fixture/oracle plus this plan. Authenticate each of32
+native Result2 closed lineages, derive existing-shape empty-pending Reserve and settled cycle
+kernel bases explicitly, then replay Reserve open/completion and supported cycle opening/finish
+to same-slot Truck Convoy entry. Retain exact World/RNG/guards/entitlements/future obligations.
+Never invoke old base constructors/readers that reconstruct Result1 or join an unrelated003 finish.
+The pre-retreat Movement-end certificate stays named/pinned synthetic evidence. New empty-release
+clock scope starts with null audit high-water while full Result2 audit history stays retained;
+cycle timing opens independently under explicit bridge policy. Historical kernels/bytes unchanged.
+No repeat, guard action, upkeep or maturity execution. This closes the required combat-then-finish
+evidence seam without new gameplay policy or fullSnapshot allocation. Implement after accepted004A2
+with the sole writer; review/full gate/accepted commit precede A3 consumption.
+
+W01-CLOCK-CYCLE accepted2026-09-15:11focused groups,32native lineages/160cuts/128retries,
+192prior-time comparisons and24source-fallback rejections. Fresh ordinary review approved after
+P2source gate bound actual owner author/reason/disposition; valid retiming remains admitted.
+Independent source audit verifies14pins/320nested literals/128retained suffixes; root1088clock/
+recovery checks and `just check`81boundary/1670full tests pass,0skips. Maximum117109Bbase and
+33361Bstate. Accepted bridge closes synthetic same-lineage combat-then-finish evidence only;
+A3/B/C and005 remain open.
+
+`W01-CLOCK-SNAPSHOT`, if full corrected snapshots are used by CON006,
+owns new `combat-snapshot-composition-v2` spec/schema/fixture/oracle plus this plan; freeze its exact
+payload/arm identity before writes. Existing00328trace creation-rooted handoff stays byte-exact;
+corrected positive C3 evidence remains explicitly synthetic.004C reconciles both support sets,
+so no separate positive creation-rooted assault implementation is implied.
+
 
 TASK-003 sizing refinement, 2026-09-06, before authority edits: its three contract families cross
 independent subsystems and cannot honestly fit one3–5-file change. Preserve parent003 and split

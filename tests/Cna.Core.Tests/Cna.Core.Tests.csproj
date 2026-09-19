@@ -41,6 +41,14 @@
     <Content
       Include="Rules/Fixtures/cna-1979.1.breakdown-tables.v2.golden.json"
       CopyToOutputDirectory="PreserveNewest" />
+    <Content
+      Include="../../docs/research/fixtures/combat-selected-source-v1.json"
+      Link="Rules/Fixtures/combat-selected-source-v1.json"
+      CopyToOutputDirectory="PreserveNewest" />
+    <Content
+      Include="../../docs/specs/fixtures/combat-rules-inputs-v1.json"
+      Link="Rules/Fixtures/combat-rules-inputs-v1.json"
+      CopyToOutputDirectory="PreserveNewest" />
     <Using Include="Xunit" />
   </ItemGroup>
 
