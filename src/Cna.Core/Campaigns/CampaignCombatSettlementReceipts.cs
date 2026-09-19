@@ -101,10 +101,12 @@ internal sealed record CampaignCombatRoleLoss
     {
         if (role is not ("attacker" or "defender")) throw new ArgumentException("Unknown role.", nameof(role));
         Component = component ?? throw new ArgumentNullException(nameof(component));
-        if (committedToe < 0 || tablePercent is < 0 or > 100 || refusalPercent is < 0 or > 100 ||
+        if (committedToe != 10 || tablePercent is < 0 or > 100 || refusalPercent is < 0 or > 100 ||
             lossToe < 0 || capturedToe < 0 || otherLossToe < 0 || remainingToe < 0 || lossDp < 0 ||
             committedToe != checked(lossToe + remainingToe) || lossToe != checked(capturedToe + otherLossToe))
             throw new ArgumentException("Role loss does not conserve TOE.", nameof(lossToe));
+        if (lossDp != (lossToe >= 3 ? 3 : 0))
+            throw new ArgumentException("Loss DP must match the selected 30%-of-10 threshold.", nameof(lossDp));
         Role = role;
         CommittedToe = committedToe;
         TablePercent = tablePercent;
@@ -197,7 +199,7 @@ internal sealed record CampaignCombatCustodyReceipt
         Kind = kind is "relocate-and-guard" or "leave-unguarded" ? kind
             : throw new ArgumentException("Unknown custody disposition.", nameof(kind));
         Route = CampaignCombatRetreatDisposition.CopyRoute(route);
-        if (Route.Count - 1 > (kind == "relocate-and-guard" ? 3 : 8))
+        if (Route.Count - 1 > (kind == "relocate-and-guard" ? 3 : 4))
             throw new ArgumentException("Custody route exceeds the selected source bound.", nameof(route));
         GuardId = guardId is null ? null : ContentContractGuards.RequireStableId(guardId, nameof(guardId));
         EntitlementId = entitlementId is null ? null : ContentContractGuards.RequireStableId(entitlementId, nameof(entitlementId));

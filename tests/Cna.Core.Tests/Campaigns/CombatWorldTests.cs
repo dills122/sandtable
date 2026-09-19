@@ -284,6 +284,55 @@ public sealed class CombatWorldTests
     }
 
     [Fact]
+    public void EndedRelationshipRequiresBothReceiptAndCause()
+    {
+        var world = InitialWorld();
+        var attacker = new CampaignCombatUnitKey(world.CreationBinding, "axis", "axis-assault-battalion");
+        var defender = new CampaignCombatUnitKey(world.CreationBinding, "commonwealth", "commonwealth-assault-battalion");
+
+        Assert.Throws<ArgumentException>(() => new CampaignCombatRelationship("relation.001", "settlement.001.relationships",
+            "contact", attacker, defender, 1, 1, false, "move.001", null));
+        Assert.Throws<ArgumentException>(() => new CampaignCombatRelationship("relation.001", "settlement.001.relationships",
+            "contact", attacker, defender, 1, 1, false, null, "ordinary-movement-breakoff"));
+
+        var ended = new CampaignCombatRelationship("relation.001", "settlement.001.relationships",
+            "contact", attacker, defender, 1, 1, false, "move.001", "ordinary-movement-breakoff");
+        Assert.False(ended.Active);
+    }
+
+    [Fact]
+    public void RoleLossRequiresSelectedToeAndThirtyPercentDpThreshold()
+    {
+        var component = new CampaignCombatComponentKey(
+            new CampaignCombatUnitKey("fixture.creation-001", "axis", "axis-assault-battalion"),
+            "axis-assault-battalion.toe.infantry");
+
+        Assert.Throws<ArgumentException>(() => new CampaignCombatRoleLoss("attacker", component,
+            10, 20, 0, 2, 0, 2, 8, 3));
+        Assert.Throws<ArgumentException>(() => new CampaignCombatRoleLoss("attacker", component,
+            10, 30, 0, 3, 0, 3, 7, 0));
+        Assert.Throws<ArgumentException>(() => new CampaignCombatRoleLoss("attacker", component,
+            9, 30, 0, 3, 0, 3, 6, 3));
+
+        Assert.Equal(0, new CampaignCombatRoleLoss("attacker", component,
+            10, 20, 0, 2, 0, 2, 8, 0).LossDp);
+        Assert.Equal(3, new CampaignCombatRoleLoss("attacker", component,
+            10, 30, 0, 3, 0, 3, 7, 3).LossDp);
+    }
+
+    [Fact]
+    public void UnguardedEscapeRouteUsesClearTerrainCpNotEdgeCount()
+    {
+        var fourEdges = new CampaignCombatCustodyReceipt("settlement.001.custody", "settlement.001.retreat",
+            "lot.001", "leave-unguarded", ["a", "b", "c", "d", "e"], null, "entitlement.001", 10, 10);
+        Assert.Equal(5, fourEdges.Route.Count);
+
+        Assert.Throws<ArgumentException>(() => new CampaignCombatCustodyReceipt(
+            "settlement.001.custody", "settlement.001.retreat", "lot.001", "leave-unguarded",
+            ["a", "b", "c", "d", "e", "f"], null, "entitlement.001", 10, 10));
+    }
+
+    [Fact]
     public void VictoryRecoveryCauseAddsCohesionAndCapsAtTen()
     {
         var recovered = new CampaignCombatCohesionCause("settlement.001.assault-victory-rp.axis", 1,

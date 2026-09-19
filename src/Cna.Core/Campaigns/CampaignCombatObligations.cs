@@ -59,7 +59,7 @@ internal sealed record CampaignCombatRelationship
         if (attacker == defender || attacker.CreationBinding != defender.CreationBinding ||
             attacker.OriginalSide == defender.OriginalSide)
             throw new ArgumentException("Relation requires distinct units from one creation.", nameof(defender));
-        if (active != (endedByReceiptId is null && endingCause is null))
+        if ((endedByReceiptId is null) != (endingCause is null) || active != (endedByReceiptId is null))
             throw new ArgumentException("Relation ending must be complete and agree with active state.", nameof(endedByReceiptId));
         Active = active;
         EndedByReceiptId = endedByReceiptId is null ? null : ContentContractGuards.RequireStableId(endedByReceiptId, nameof(endedByReceiptId));
