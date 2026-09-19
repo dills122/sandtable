@@ -1,19 +1,18 @@
 # Combat and Cycle Combined Contract / Implementation Plan
 
-**Status:** Contract checkpoint B and dormant Tasks005–007 implemented. Task008 canonical persistence/restore is next; Combat gameplay remains inactive.
+**Status:** Contract checkpoint B and dormant Tasks005–007 implemented. Task008 is in progress through merged children A0/A1a/A1b; A1c is next. Combat gameplay remains inactive.
 `CMB-PLAN-001` and POL-001–008 were accepted on 2026-09-06 at `a10a588`. Source and static Content
 work (`001`–`002`) is complete. Parent `003` is complete through the
 [authority-composition handoff](../specs/combat-authority-composition-v1.md). Checkpoint B closes through the
 [Task004C integration index](../specs/combat-outward-composition-v1.md). Task004A side contracts and Task004B occurrence, child and
-parent evidence are accepted with strict clock privacy and versioned round/settlement authority. Dormant Tasks005–007 are implemented;
-tasks `008`–`025` have not started.
+parent evidence are accepted with strict clock privacy and versioned round/settlement authority. Dormant Tasks005–007 and bounded Task008 children A0/A1a/A1b are implemented; A1c/A2/B–H and Tasks009–025 remain pending.
 
 | Delivery layer | Current boundary | Next required outcome |
 | --- | --- | --- |
 | Research and policy | Complete for the selected bounded profile, including `HOST-RSH-001` | Reopen only for a new source, failed assumption, or approved profile expansion |
 | Authority contracts | CON-002–004 and all selected-profile inherited families are reconciled in 28 creation-rooted composition traces; parent003 complete | Preserve exact Task004 handoff while later runtime work derives boundaries from accepted history |
 | Outward contracts | Task004A/B/C accepted; all 72 ACs mapped with bounded evidence and explicit runtime deferrals | Preserve accepted bytes and source/privacy boundaries during dormant implementation |
-| Runtime | Dormant Tasks005–006 selected Rules/arithmetic/codec and exact Content7 admission complete; Tasks007–019 not started | Implement state/decisions/settlement/release/repeat with cumulative replay and recovery evidence |
+| Runtime | Dormant Tasks005–007 and Task008 A0/A1a/A1b implemented; Task008 parent incomplete; Tasks009–019 pending | Finish creation binding, Snapshot12 root, inherited adapters and full retained-history restore before dependent authority work |
 | Public and simulator | Tasks020–024 not started | Activate the certified side-safe profile, then prove strict Exercise/Runner reconstruction and repeatability |
 | Closeout | Task025 not started | Full gate, evidence reconciliation, and authentic loop demonstration without overstating retained obligations |
 
@@ -24,10 +23,9 @@ source. The [roadmap](../roadmap/pre-alpha-roadmap.md#current-checkpoint-and-nex
 cross-package sequencing and the route from Combat closeout to the playable MVP.
 
 Cross-package sequencing lives in the [roadmap checkpoint](../roadmap/pre-alpha-roadmap.md#current-checkpoint-and-next-gates).
-Task005 begins dormant implementation; public activation is020–021 and Combat simulator evidence
+Task005 began dormant implementation; public activation is020–021 and Combat simulator evidence
 is022–024. Owner accepted the author review's planning direction after `b8be39a`: the bounded
-`HOST-RSH-001` investigation is scheduled after003C3b during remaining contract work. It can use
-current Rules9 and is not a dependency of B. Production hosting still requires its own contract and
+`HOST-RSH-001` investigation is complete; its memory CAS probe did not select storage. Production hosting still requires its own contract and
 storage decision; the planning target follows020–021 and one verified023 trace. No hosted/model
 capability or durable provider is authorized by this documentation update.
 
@@ -48,11 +46,11 @@ where those dependencies are required; this package supplies bounded evidence to
 
 ## Combined contract inventory
 
-CON-001 now has the [Content7 contract/oracle](../specs/combat-content-v7.md); its reserved identity
-is not registered in runtime. Task003 freezes prospective CON-002–004 schema evidence and exact
-versions in the [composition handoff](../specs/combat-authority-composition-v1.md); Task004 still
-must freeze CON-005/006. These are executable contract oracles, **not allocated production types or
-registered runtime versions**. Exact fields, bounds, canonical bytes and compatibility must remain
+CON-001 has the [Content7 contract/oracle](../specs/combat-content-v7.md); its reserved identity
+is not registered in runtime. Task003 froze CON-002–004 schema evidence and exact
+versions in the [composition handoff](../specs/combat-authority-composition-v1.md); Task004 froze
+CON-005/006 at checkpoint B. These executable contract oracles alone do not prove complete production
+types or registered runtime versions. Exact fields, bounds, canonical bytes and compatibility must remain
 frozen before any consumer is implemented.
 Use new versioned contracts; never alter historical canonical bytes or infer absent fields.
 
@@ -736,9 +734,9 @@ D2a isolated Movement fixtures may derive a settled World from C3c, but any inte
 boundary remains explicitly synthetic untilD2b/c. Such probes do not certify actual continuation,
 released-Reserve history, runtime movement, Reaction or a reachable repeating campaign.
 
-Checkpoint B: Task003 authority contracts are accepted by retained composition evidence. Task004
-must freeze outward contracts, expand and reconcile all 72 ACs, and resolve any changed policy with
-owner. Runtime implementation remains gated until this checkpoint passes.
+Historical pre-B gate: Task003 authority contracts were accepted by retained composition evidence.
+Task004 then froze outward contracts and reconciled all 72 ACs. Checkpoint B is now accepted;
+the checks below remain constraints on runtime implementation.
 
 [Author planning audit](../reviews/combat-delivery-plan-author-review.md) identifies an inherited
 campaign-path handoff that this gate must make concrete. These are completion checks on the existing
@@ -764,8 +762,7 @@ compatibility/replay requirements, not permission to broaden the certified capab
 Owner accepted the [review direction](../reviews/combat-delivery-plan-author-review.md#owner-disposition)
 to split008 into codec/restore and inherited-path adapters, bringing first opening forward from019
 as needed for composed tests. [D2c.1](../specs/combat-inherited-successors-v1.md#bounded-implementation-ownership) now declares008A–H
-and019A with bounded scope/dependencies; these still require checkpoint B acceptance. The numbered parent rows below retain their identities;
-this planning acceptance does not declare B passed or start runtime implementation.
+and019A with bounded scope/dependencies. Checkpoint B is now accepted; the numbered parent rows below retain their identities.
 
 ### Checkpoint C — dormant table and fixture foundations
 
@@ -784,7 +781,34 @@ and exact Content7 fixture exist, but no active Combat capability is advertised.
 | `CMB-TASK-007` / implemented | Dormant World7, typed creation/settlement obligations and certified Content7 initial seeds retain component/ammo/readiness provenance. Integer infantry spending enforces ordinary 150% CPA and stricter released-Reserve ceilings, immediate excess-CPA DP, and separate mandatory retreat overrun; guard transfer conserves TOE and preserves existing Breakdown state. No gameplay activation or persistence. | `CombatWorldTests`: initial inventory/provenance, foreign scenario/policy rejection, CPA10 11/15 versus rejected16, mandatory E10→11, Reserve ceilings, guard transfer, malformed/dangling lots, future scope and receipt links. Review fixes cover capped victory RP, complete receipt prefixes/relationship endings, disposition distance/kind agreement, ordered repeated excess-CP causes, selected loss TOE/DP threshold, Clear-cost escape bounds, source-backed result facts, role-specific loss/capture arithmetic, exact retreat CP/DP/RP, paid pre-loss resource bounds, custody-linked guard/replacement obligations, open-prefix element/lot/cause effects, relationship publication, and custody donor/guard provenance. Full `just check`: 1,778 passed, zero skipped; 003A/003B frozen verifiers pass. | 003/006; [World7](../../src/Cna.Core/Campaigns/CampaignWorldV7.cs), [Combat values](../../src/Cna.Core/Campaigns/CampaignCombatWorldV7.cs), [Campaign tests](../../tests/Cna.Core.Tests/Campaigns/CombatWorldTests.cs). |
 | `CMB-TASK-008` / parent, in progress | Implement canonical snapshot/history codec and strict restore for new state through bounded children below. Historical bytes unchanged; reject missing/forged cycle or settlement evidence and unsupported migration. No child alone enables live Combat admission. | Per-child canonical golden, tamper and readback tests; completed parent must recover full retained history when fresh admission is disabled. | 007; [Campaigns](../../src/Cna.Core/Campaigns/), [Campaign tests](../../tests/Cna.Core.Tests/Campaigns/). |
 
-Task008 child order follows the frozen [Snapshot12 composition contract](../specs/combat-snapshot-composition-v1.md). `008A0` / implemented adds exact initial World7 bytes and trusted creation-only readback; noninitial Worlds reject until their causal reader exists. Its three C# codec tests match the frozen 3,273-byte World golden and reject altered bytes or a noninitial writer input; full `just check` passes 1,781 tests, zero skipped, and the authority-envelope, World-settlement and creation-ledger verifiers pass. `008A1` is split to keep each PR bounded: `008A1a` implements the dormant Rules10 manifest with exact 10,495-byte golden parity and predecessor-hash preservation; `008A1b` implements Setup7 and configuration codecs with exact 1,655/955-byte golden parity, trusted Content/Rules binding, canonical rejection, alternate-holder and budget-variant tests. Its full `just check` passes 1,788 tests, zero skipped; creation-ledger, rules-input and authority-envelope verifiers pass. `008A1c` next adds the creation request and Created11 binding. `008A2` adds the Snapshot12 creation root and strict retained-creation readback. Subsequent bounded `008B`–`008G` children adapt preamble, Weather, Reserve, Movement, Reaction and Breakdown in that order, retaining predecessor meaning while versioning new-context envelopes. `008H` composes noninitial Snapshot12 arms and complete trusted-history restore after their required event families exist. Each child needs its own exact bytes, negative vectors and focused C# tests; shared dispatch wiring follows verified families. Task021, not Task008, owns public/current registration.
+#### Task008 execution index
+
+Merge snapshot: local `origin/main` at `1d5e5f5`, 2026-09-19.
+
+Objective: implement canonical Combat creation, snapshot and inherited-history codecs with strict trusted restore. The [creation envelope](../specs/combat-authority-envelope-v1.md), [Snapshot12 composition](../specs/combat-snapshot-composition-v1.md) and [successor ownership](../specs/combat-inherited-successors-v1.md#bounded-implementation-ownership) own exact bytes and meanings. Status below is implementation and merge state, not public admission. Each pending child needs literal parity, malformed/forged/alternate-byte rejection, focused C# tests and predecessor compatibility evidence; the parent additionally needs full retained-history recovery with **fresh admission disabled**. No child alone closes that parent gate.
+
+| Slice / objective | After | Acceptance evidence and test focus | Current status / blocker | On local main |
+| --- | --- | --- | --- | --- |
+| `008A0` initial World7 codec/readback | 007 | 3 C# codec tests; 3,273-byte golden, altered-byte and noninitial rejection; `just check` 1,781 pass | Implemented; noninitial reader awaits causal families | Yes, `09734ff` (#118) |
+| `008A1a` dormant Rules10 manifest | A0 | Manifest C# test; 10,495-byte golden, Rules9 hash and source identity | Implemented; no gameplay registration | Yes, `5ad833a` (#119) |
+| `008A1b` Setup7/configuration codecs | A1a | Creation-input C# tests; 1,655/955-byte goldens, trusted binding, variants and canonical negatives; `just check` 1,788 pass | Implemented; request/Created11 still absent | Yes, `1d5e5f5` (#122) |
+| `008A1c` creation request and Created11 binding | A1b | Exact request/Created11 goldens, identity/retry conflicts, changed trusted artifact and raw-byte negatives | Pending, **next**; no runtime binder | No |
+| `008A2` Snapshot12 creation root/readback | A1c | Exact creation Snapshot12 golden; recompute from trusted request/Created11/World; disabled-admission readback and noninitial rejection | Pending; needs A1c | No |
+| `008B` preamble/sequence adapter | A2 | Versioned initiative/order/no-obligation/stage event parity, prior-prefix and old-reader negatives | Pending; needs creation root | No |
+| `008C` Weather adapter | B | Retained dice/RNG and source/context parity across replay cuts | Pending; needs preamble | No |
+| `008D` Reserve adapter | C | Designation/completion receipts, own history and no resource reset | Pending; needs Weather | No |
+| `008E` Movement adapter | D | Move/stop/completion event parity, CP/DP/history and old-context rejection | Pending; needs Reserve | No |
+| `008F` Reaction adapter | E | Trigger/participant/closure replay, position/owner privacy and unsupported-profile rejection | Pending; needs Movement | No |
+| `008G` Breakdown adapter | E | Stop/resolution/completion, BP/lot provenance and Combat-entry boundary | Pending; needs Movement | No |
+| `008H` noninitial Snapshot12 and full restore | B–G and `019A` first opening | Complete trusted event/receipt ledger, each causal cut and tamper/reorder/omission rejection; recover with fresh admission disabled | Pending; needs all required families and first opening | No |
+
+`019A` is the separately owned first-cycle-opening projector after `008D`; it must precede `008H` and the first predecessor-to-Combat integration test. B–G may need smaller PRs at the five-primary-file limit. No Task008 child is in progress in this local main snapshot. The three merged rows are ancestry-verified locally; remote freshness could not be checked during this sync.
+
+**Gate audit.** A1c→A2 is the immediate creation-binding path; B→C→D and D→E→F/G, then `019A`/H, provide the inherited replay path. The [creation contract](../specs/combat-authority-envelope-v1.md#creation-publication-and-recovery-contract) additionally asks Task008 to prove atomic uniqueness and lost-response behavior using actual persistence, while this plan's checkpoint D describes in-process recovery and [HOST-RSH-001](../research/orleans-publication-feasibility.md) leaves durable provider choice open. Before A2 or parent008 acceptance, the Core/host owners must pin the tested publication seam and its exact evidence boundary; A1c codec parity alone cannot satisfy publication or parent restore. Do not infer durable process restart from a memory CAS test.
+
+Tasks009–019 already name identity, seal, debit, result, settlement, release, Movement and cycle witnesses with focused tests; [E/G/H](#progressive-execution-evidence) require cumulative Core replay and H needs an actual predecessor trace. Tasks020–021 own side-safe admission and recovery registration; 022–024 own Exercise/Runner readjudication and clean retained runs; 025 reconciles all 72 ACs. The cross-gate risk is promoting the [synthetic C3a lineage](../specs/combat-snapshot-composition-v1.md#trusted-composition-boundary) or a partial Task008 reader into E/H/I evidence. Close it with a recorded accepted-predecessor trace at H, unsupported-history negatives at H/I and a Task025 evidence map that cites runtime results rather than contract oracles. The [roadmap MVP gates](../roadmap/pre-alpha-roadmap.md#post-skeleton-milestones-toward-the-first-playable-mvp) retain six-turn inventory, source/rights, durable process recovery and Maproom/hot-seat proof after the skeleton.
+
+**Research check-in.** No new spike is justified at A1c: C2 fixes creation bytes and `HOST-RSH-001` already answers the bounded Orleans direction. The later decision question is which storage contract/provider can atomically publish command, event, receipt and head while recovering an ambiguous acknowledgment. Alternatives remain a bounded whole-record conditional write or a transactional append batch with derived checkpoint. The isolated same-process memory CAS probe supports retry/failure invariants, but cannot establish process durability, provider fencing or comparative cost. Recommendation: use its proposed versioned per-campaign commit batch as the evaluation target, without selecting storage. Core/host owners revisit the Task008 publication-evidence seam by A2 review and the provider decision at the production host gate (public020–021 plus one verified023 trace); evaluate actual commit ambiguity, crash/restart, fencing and bounded record size there. Six-turn content inventory stays post-skeleton unless a new source or measured dependency changes that gate.
 
 Checkpoint D: codec tests prove obligations survive serialization and fresh Core reconstruction
 for the states whose handlers exist. Later lifecycle tasks add their event handlers and boundary
@@ -905,7 +929,7 @@ documentation-only changes do not require another full seed sweep.
 ## Requirement-to-task evidence index
 
 Ranges include every numbered AC, not only favorable examples. TASK-004 expands this compact index
-into named tests/vectors; TASK-025 records actual results. No implementation evidence exists yet.
+into named tests/vectors; TASK-025 records actual results. Tasks005–007 and 008A0/A1a/A1b have bounded implementation evidence above; the remaining runtime AC mapping is still planned.
 
 | Canonical requirement / decisions | Tasks | Required evidence / current status |
 | --- | --- | --- |

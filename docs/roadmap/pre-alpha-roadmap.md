@@ -47,7 +47,7 @@ review and simulator reports apply only to their stated commits and capabilities
 | Next gate | Concrete outcome |
 | --- | --- |
 | Contract checkpoint B | Parent003 authority composition and exact 003-to-004 handoff are complete. Task004A/B side and private Exercise contracts, round-v2, result-v2 and native cycle-finish composition are accepted under [strict clock privacy](../design/combat-cycle-policy-reconciliation.md#clock-privacy-correction--owner-decision-2026-09-15). Task004C integrated readback and all72 AC reconciliation are accepted; checkpoint B is complete. |
-| Dormant Core,005–019 | Tasks005–006 selected tables, arithmetic, strict Rules artifact codec and exact Content7 scenario admission are implemented. Next implement Task007 loss-capable state, strict restore, private decisions, settlement, Reserve Release, relation-aware Movement, and guarded repeat/finish in dependency order. Every state-changing family needs replay cuts and recovery evidence before a dependent task starts. |
+| Dormant Core,005–019 | Tasks005–007 and Task008 A0/A1a/A1b are implemented and merged in the local default-branch snapshot. Task008 parent remains open; [A1c creation request/Created11, then A2 Snapshot12 and B–H](../design/combat-cycle-implementation-plan.md#task008-execution-index) are next. Private decisions, settlement, Reserve Release, relation-aware Movement and guarded repeat/finish follow their dependencies. Every state-changing family needs replay cuts and recovery evidence before dependent activation. |
 | Public Core,020–021 | Add audience-safe observations/actions and authenticated submission mapping, then activate only the certified profile. Unsupported profiles reject before a decision; disabling new admission must not disable recovery. |
 | Exercise and Runner,022–024 | Drive the same public actions through Exercise and Runner, prove reconstruction/readjudication, and retain clean repeated evidence for empty, settled-assault, and Movement-repeat paths. Existing Rules9 studies cannot substitute. |
 | Skeleton closeout,025 | Reconcile all Combat ACs and remaining Contact/Engaged gaps, run the full gate, and demonstrate one authentic start-to-repeat-or-finish loop before declaring the working skeleton reached. |
@@ -59,9 +59,9 @@ Core integration evidence is required earlier at E/G/H. Balance
 claims and model-backed commander evaluation remain separate future studies.
 
 OrleansHost currently supplies a development silo, not campaign grains or durable campaign storage.
-DecisionWorker registers its client but does not dispatch campaign decisions. Owner accepted the
-review's planning direction after `b8be39a`: keep003C3b next, require the inherited-path handoff and
-progressive Core evidence, and investigate Orleans during the remaining contract phase.
+DecisionWorker registers its client but does not dispatch campaign decisions. The earlier planning
+direction after `b8be39a` has been executed through checkpoint B and the bounded Orleans probe;
+the inherited-path handoff and progressive Core evidence remain implementation gates.
 
 ### Bounded hosting investigation — HOST-RSH-001
 
@@ -184,7 +184,7 @@ Optional parser evidence gate
 | Foundations | Versioned provenance, content, world, commands/events, deterministic RNG, replay, observation, and action contracts | Implemented and activated for the admitted Rules9 synthetic profile | Extend compatibility, replay, and fog tests with each admitted mechanic |
 | Mandatory preamble | Current runtime contracts through Reserve Designation | Implemented and publicly exercised for the admitted no-obligation profile | Add only scenario-required positive obligation families |
 | Movement, Reaction, Breakdown | Frozen and implemented for the certified battalion/Truck profiles | Public actions and checked Runner evidence reach first-side Combat entry | Preserve regressions; broaden positive ZOC/vehicle cases only with an admitted profile |
-| Combat and continual cycle | Checkpoint C complete; dormant Task005 Rules/arithmetic/codec and Task006 Content7 admission implemented | **Gameplay not activated**; current public authority stops at Combat entry | Dormant007–019 → public020–021 → evidence022–024 |
+| Combat and continual cycle | Checkpoint B accepted; Tasks005–007 and Task008 A0/A1a/A1b merged, parent008 still open | **Gameplay not activated**; current public authority stops at Combat entry | Task008 A1c→A2→B–H, then dormant009–019 → public020–021 → evidence022–024 |
 | Working pre-alpha skeleton | Acceptance boundary defined | Not reached | One authentic movement/contact/combat/release repeat-or-finish loop with identical replay and Chronicle evidence |
 | Six-turn scenario and remaining Land rules | Milestone outcomes defined; exact exercised-rule/data inventory intentionally pending | Not started | Measure after the skeleton, freeze source/content scope, then split implementation-sized tasks |
 | Campaign lifecycle and Maproom | Architecture and no-model interaction direction reviewed | Not started | Stable playable authority, durable save/resume contracts, hot-seat isolation, and deterministic UI path |
@@ -207,7 +207,7 @@ Maproom remain future work.
 | 2 — Rules laboratory and legal-action boundary | Complete for the admitted synthetic path | Keep outward actions observation-derived and revalidate exact membership at submission |
 | 3 — Mandatory turn preamble | Complete for the admitted synthetic no-obligation path | Positive Organization/convoy/fleet cases remain explicit later-scenario work; subsequent bounded mechanics now reach first-side Combat entry |
 | 4 — Movement, Breakdown, and Reaction boundary | Complete within the certified synthetic profile | Movement and ZOC/Reaction are implemented; Breakdown Tasks006–007 public activation, Runner adoption and transcript/privacy follow-up are complete. Positive ZOC and broader Breakdown categories remain extensions |
-| 5 — Combat and continual-cycle loop | Parent003 authority freeze complete; no Combat runtime | Checkpoint B accepted; execute005–024 and close025 only after an authentic loop passes |
+| 5 — Combat and continual-cycle loop | Checkpoint B accepted; dormant005–007 and 008A0/A1a/A1b implemented; no Combat gameplay | Complete008, then009–024; close025 only after an authentic loop passes |
 | 6 — Scenario Group One content | Milestone-level; not started | Produce the exact exercised-rule/data/source/rights inventory after the skeleton, then split bounded content packets |
 | 7 — Remaining required Land systems | Milestone-level; not started | Implement only the measured six-turn surface, including termination/victory, with the same authority/replay/fog gates |
 | 8 — Minimal Maproom and campaign lifecycle | Milestone-level; not started | Add durable local save/resume and recovery before UI completion; prove hot-seat privacy and a complete no-model action path |
@@ -666,7 +666,11 @@ Certified unladen Trucks and battalion combat limits defer public positive ZOC a
 losses. Historical artifacts stay intact; 13 Reaction children have bounded successors and two
 positive-ZOC children remain deferred. No runtime identity changed in this freeze.
 
-### Current execution lanes
+### Retained contract execution checkpoint
+
+The following notes and lane table record the pre-runtime contract checkpoint. The [current
+checkpoint](#current-checkpoint-and-next-gates) and [current delivery status](#current-delivery-status)
+supersede their then-next statements.
 
 [D2c.1](../specs/combat-inherited-successors-v1.md) freezes20 inherited successor declarations
 and isolated first opening:4 traces/8 cuts,216 mutations/32 raw rejects/88 boundary checks.

@@ -53,7 +53,7 @@ play a side; it will never decide the rules or secretly change the campaign stat
 | --- | --- | --- |
 | Deterministic Umpire | Working | Versioned rules, seeded randomness, canonical commands/events, replay, checkpoints, and side-safe action boundaries are implemented. |
 | Playable rule path | Working through Combat entry | Runner can execute Initiative, stage preamble, Reserve Designation, Movement, bounded ZOC/Reaction, and Breakdown, then stops before Combat adjudication. |
-| Combat and continual cycle | Checkpoint C foundations implemented; gameplay dormant | 28 creation-rooted traces reconcile future Combat/cycle authority, but handlers are not registered in runtime. Versioned round/settlement clocks and Task004A1/A2 side contracts preserve privacy under clock faults. Native settlement-to-cycle-finish composition, live Reserve/cycle side profiles, all 28 historical terminal projections and continuous corrected bridge histories are accepted. Private Exercise occurrence, child execution/proof and validated parent comparison evidence are accepted; integrated checkpoint B is accepted with all 72 requirements mapped. Dormant C# selected tables, explicit-dice arithmetic, strict RulesInput1 codec, exact Content7 scenario admission, and typed World7 creation/obligation state now match their bounded contracts; persistence and campaign activation remain deferred. |
+| Combat and continual cycle | Checkpoint B accepted; dormant Tasks005–007 and Task008 A0/A1a/A1b implemented; gameplay dormant | 28 creation-rooted traces and Task004 acceptance map all 72 requirements. Selected Rules, Content7 and World7 state are implemented; initial World7, Rules10, Setup7 and configuration codecs have exact C# parity. Task008 parent restore and later gameplay, public activation and simulator gates remain open. |
 | Exercise and Maneuver tools | Working | Deterministic single runs, multi-run matrices, paired comparisons, strict readback, and evidence bundles are available from CLI. |
 | User interface | Not started | `site/` is project website only. Maproom hot-seat client is future work. |
 | Published scenario | Not started | First target is six-turn, Land-only *Graziani's Offensive* after working Combat loop. |
@@ -527,15 +527,16 @@ phasing resumption at authority18. Multiple-opportunity Reaction and vehicle pro
 D2c.4 now closes selected composition.
 [Result/settlement](docs/specs/combat-result-settlement-v1.md) and
 [full snapshot composition](docs/specs/combat-snapshot-composition-v1.md) retain synthetic pre-Combat
-lineage; review9 assessed these bounded artifacts. Parent003 now closes through D2c.4; future
-maturity execution and combined checkpoint B remain open. The
+lineage; review9 assessed these bounded artifacts. Parent003 closed through D2c.4; future
+maturity execution remains open, while combined checkpoint B was subsequently accepted. The
 [ordinary movement packet](docs/specs/combat-ordinary-movement-v1.md) freezes break-off/CP/DP
 and corrects the former Clear1 example to the existing Clear2 rule. The
 [Reserve Release packet](docs/specs/combat-reserve-release-v1.md) freezes single-deadline control
 and retained history. The [cycle-control packet](docs/specs/combat-cycle-control-v1.md) freezes guarded
 repeat/finish and Movement exception expiry:19 cases/64 traces,164 cuts. Its exhausted-ammunition
 continuation surface remains private; D2c.4 now composes full history, armed Combat assessment and
-Snapshot integration evidence. Combat runtime implementation has not started.
+Snapshot integration evidence. Later dormant World7 and codec work is summarized in the current
+[delivery table](#project-at-a-glance); Combat gameplay remains inactive.
 
 See the [pre-alpha roadmap](docs/roadmap/pre-alpha-roadmap.md) for the capability-level plan and
 completion criteria.
