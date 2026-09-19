@@ -85,6 +85,10 @@
       Include="../../docs/specs/fixtures/combat-reserve-designation-v1.json"
       Link="Campaigns/Fixtures/combat-reserve-designation-v1.json"
       CopyToOutputDirectory="PreserveNewest" />
+    <Content
+      Include="../../docs/specs/fixtures/combat-inherited-movement-v1.json"
+      Link="Campaigns/Fixtures/combat-inherited-movement-v1.json"
+      CopyToOutputDirectory="PreserveNewest" />
     <Using Include="Xunit" />
   </ItemGroup>
 

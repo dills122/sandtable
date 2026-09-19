@@ -730,6 +730,10 @@ creation-rooted history. Its **OpeningBase** carries the frozen compatibility pr
 not an admission path. Task019A applies that same event to terminal **ReserveState1**, retaining
 precompletion World/member authority while publishing cycle, position, prefix and receipt together
 within the private projection. This is not durable Chronicle publication.
+**Inherited MovementState1** adds chronological tracks, actual move-progress references and nullable
+Breakdown flow to full Reserve history. Move4 makes flow moving even without vehicles; **idle** requires
+an accepted stop/resolution pair. Ordered routes preserve revisits. Movement completion and its end
+proof remain distinct from Reserve completion and its receipt.
 
 **Capability Point expenditure** is the exact amount already spent during the current Operation
 Stage; it is not a replenishing UI movement allowance. **Complete Movement** is a real player
