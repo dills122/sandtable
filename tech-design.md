@@ -965,8 +965,11 @@ Task008 E1 consumes that completed history for Normal-Weather ordinary infantry 
 terrain/spending kernels derive Clear2 costs, ordinary CPA10/ceiling15 and immediate excess-CP Cohesion
 causes bound to actual move receipts. Each move updates typed World, own spent CP, ordered route and
 actual progress together; legacy route identity persists across revisits. Bounded World serialization
-replays causal moves before accepting current fields. Flow stays moving until E2/G1 supplies actual
-owner stop, System empty-cohort resolution and Movement completion; G2 supplies Combat entry.
+replays causal moves before accepting current fields. E2/G1 now consumes that actual moving route through owner stop, System empty-cohort resolution and
+owner Movement completion. Stop captures exact cycle/position, resolution restores it, and completion
+records every original unit's location plus own distance-based exclusions in an actual receipt-bound
+Movement-end proof. World, spending, causal DP and material-progress references stay unchanged.
+G2 still supplies the separate Breakdown-to-Combat transition.
 Creation publication evaluation now targets an expected-head per-campaign commit batch. The
 [HOST-PUB-001 evidence allocation](docs/specs/combat-authority-envelope-v1.md#runtime-evidence-ownership)
 keeps actual atomic uniqueness, commit ambiguity and process-recovery proof open until provider
