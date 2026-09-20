@@ -10,7 +10,9 @@ C checkpoint: `a0babdb`, `codex/combat-task008-weather`,
 [PR127](https://github.com/dills122/sandtable/pull/127), stacked on PR126.
 B2 checkpoint: `3ded1eb`, `codex/combat-task008-stage-entry`,
 [PR128](https://github.com/dills122/sandtable/pull/128), stacked on PR127.
-Active D1 branch: `codex/combat-task008-reserve-designation`, based on B2 checkpoint.
+D1 checkpoint: `073423f`, `codex/combat-task008-reserve-designation`,
+[PR129](https://github.com/dills122/sandtable/pull/129), stacked on PR128.
+Active D2 branch: `codex/combat-task008-reserve-completion`, based on D1 checkpoint.
 Integration destination: reviewed feature branch; lead owns retained commits and PR.
 
 ## Objective and boundaries
@@ -33,7 +35,8 @@ No public activation or parent completion inferred from a codec slice.
 | 008C Weather | B1 | implementation internal subagent; lead integrates | 34chains/68cuts, focused42/full1928 pass; dev+three Ready review rounds | Accepted; feature-branch checkpoint |
 | 008B2 stage-entry | C | implementation internal subagent; lead integrates | 12chains/60cuts, focused17/full1945 pass; dev+three Ready rounds | Accepted; B parent adapters complete |
 | 008D1 Reserve designation | B2 | implementation internal subagent; lead integrates | 16rows/24cuts/88fingerprints;focused23/full1968;dev+threeReadyrounds | Accepted; feature-branchcheckpoint |
-| 008D2 →019A | D1 | unassigned | exact completion2 codec then same-event atomicterminalprojection | Pending |
+| 008D2 completion codec | D1 | implementation internal subagent;lead integrates | 16chains48fingerprints;focused44/full1989;dev+threeReadyrounds | Accepted; feature-branchcheckpoint |
+| 019A first opening | D2 | unassigned | same-event atomicterminalprojection, fullterminalreplay/retry/readback | Pending |
 | 008B–H, 019A | canonical dependency graph | unassigned | cumulative Core replay, full retained-history restore | Pending |
 | 009–025 | canonical gates | unassigned | cumulative gameplay/public/Runner/72-AC evidence | Pending |
 
@@ -71,3 +74,5 @@ Record exact commands, failures and totals in per-slice evidence; never count un
 - Weather PR127 remote verify/dependency-review/offline links passed during B2 work.
 
 - B2 PR128 remote verify, dependency-review and observational offline links passed during D1 work.
+
+- D1 PR129 remote verify, dependency-review and observational offline links passed during D2 work.

@@ -113,8 +113,18 @@ internal static class CampaignCombatReserveCodec
         }
         writer.WriteEndArray();
         writer.WriteString("firstActingSide", CampaignSnapshotSerializer.FormatSide(state.FirstActingSide));
+        WriteMembers(writer, state.Members);
+        writer.WriteNull("cycle");
+        writer.WriteNull("cycleId");
+        writer.WriteNull("openingBaseHash");
+        writer.WriteNull("completionReceiptId");
+        writer.WriteEndObject();
+    });
+
+    internal static void WriteMembers(Utf8JsonWriter writer, IReadOnlyList<CampaignCombatReserveMember> members)
+    {
         writer.WriteStartArray("members");
-        foreach (var member in state.Members)
+        foreach (var member in members)
         {
             writer.WriteStartObject();
             writer.WriteStartObject("unit");
@@ -146,12 +156,7 @@ internal static class CampaignCombatReserveCodec
             writer.WriteEndObject();
         }
         writer.WriteEndArray();
-        writer.WriteNull("cycle");
-        writer.WriteNull("cycleId");
-        writer.WriteNull("openingBaseHash");
-        writer.WriteNull("completionReceiptId");
-        writer.WriteEndObject();
-    });
+    }
 
     private static void WriteAuthority(Utf8JsonWriter writer, CampaignCombatReserveState state)
     {
@@ -218,7 +223,7 @@ internal static class CampaignCombatReserveCodec
         "commonwealth" => CampaignOpeningPreambleActor.Commonwealth,
         _ => throw new JsonException("Unknown Reserve designation actor."),
     };
-    private static byte[] WriteWorld(CampaignCombatReserveState state)
+    internal static byte[] WriteWorld(CampaignCombatReserveState state)
     {
         // This writer handles only the history-derived initial/none-to-I World profile.
         // Equality protects hardcoded absent fields; it never admits an arbitrary World7.
