@@ -710,6 +710,10 @@ selection returns retained canonical bytes; it is not Chronicle publication.
 frames the creation event with its byte length. Neither checksum authenticates imported evidence
 without independently trusted request/artifacts, and this reader cannot restore later game state.
 
+**PreambleState1** is the private creation-rooted opening replay projection through Weather entry.
+Its receipts identify accepted causal occurrences; retry returns the original event and current
+projection. It is not a general Snapshot12 or a published Chronicle head.
+
 **Capability Point expenditure** is the exact amount already spent during the current Operation
 Stage; it is not a replenishing UI movement allowance. **Complete Movement** is a real player
 decision that advances to Breakdown Determination, not a runner stop condition. These names are

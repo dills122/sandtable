@@ -941,6 +941,10 @@ exact validated Created11 bytes. A private evidence copy binds receipt/event has
 Chronicle creation prefix; every current field is reconstructed and compared with canonical bytes.
 Noninitial values reject instead of resetting state. Recovery is independent of fresh-admission
 selection, and later causal readers remain required.
+Task008 B1 reconstructs four opening transitions from trusted creation and retained canonical events.
+Private PreambleState1 carries derived receipts, order and Chronicle prefix through Weather entry;
+exact retries retain original event bytes while returning current replay state. Fixed first-turn
+Axis context remains dormant. Weather C precedes stage-entry B2; neither is synthesized by B1.
 Creation publication evaluation now targets an expected-head per-campaign commit batch. The
 [HOST-PUB-001 evidence allocation](docs/specs/combat-authority-envelope-v1.md#runtime-evidence-ownership)
 keeps actual atomic uniqueness, commit ambiguity and process-recovery proof open until provider

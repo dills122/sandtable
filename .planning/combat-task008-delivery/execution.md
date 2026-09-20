@@ -2,7 +2,9 @@
 
 Initial base: `e64bed9` (merged planning PR #123). A1c checkpoint: `a8eed35`,
 `codex/combat-task008-creation-binding`, [PR124](https://github.com/dills122/sandtable/pull/124).
-Active A2 branch: `codex/combat-task008-creation-snapshot`, based on A1c checkpoint.
+A2 checkpoint: `b67b4f9`, `codex/combat-task008-creation-snapshot`,
+[PR125](https://github.com/dills122/sandtable/pull/125), stacked on PR124.
+Active B1 branch: `codex/combat-task008-opening-preamble`, based on A2 checkpoint.
 Integration destination: reviewed feature branch; lead owns retained commits and PR.
 
 ## Objective and boundaries
@@ -17,10 +19,12 @@ No public activation or parent completion inferred from a codec slice.
 | Item | Dependencies | Owner / unit | Evidence | Status |
 | --- | --- | --- | --- | --- |
 | 008A1c | merged A1b | implementation internal subagent; lead integrates | frozen request/Created11 bytes, trusted inputs, retry/conflict/raw-byte negatives; focused52, boundary81, final full1840 pass | Accepted; feature-branch checkpoint |
-| A2 publication boundary | existing contract and HOST-RSH-001 | read-only research subagent; lead decides | explicit seam and evidence limits, no provider selection | Research complete; lead documenting ownership |
+| A2 publication boundary | existing contract and HOST-RSH-001 | read-only research subagent; lead decides | explicit seam and evidence limits, no provider selection | Complete; HOST-PUB-001 retains actual-persistence obligation |
 | 008A1c dev review | implementation | lead | code-review-and-quality axes, spec/test reconciliation | Complete; no remaining findings |
 | 008A1c independent rounds 1–3 | dev review, fixes serially | fresh-context reviewers | separate bootstrap/author/report per round | Round1 Ready; round2 P2 accepted/fixed with RED/GREEN; round3 Ready; accepted |
 | 008A2 | A1c accepted | implementation internal subagent; lead integrates | focused34/full1874 pass; dev review plus three Ready independent rounds; publication obligation explicitly open | Accepted; feature-branch checkpoint |
+| 008B1 | A2 | implementation internal subagent; lead integrates | six frozen traces/30cuts, focused12/full1886 pass; dev+three Ready independent rounds | Accepted; feature-branch checkpoint |
+| 008C → B2 → D | B1 | unassigned | actual Weather before stage-entry; complete state10 history before Reserve | Pending |
 | 008B–H, 019A | canonical dependency graph | unassigned | cumulative Core replay, full retained-history restore | Pending |
 | 009–025 | canonical gates | unassigned | cumulative gameplay/public/Runner/72-AC evidence | Pending |
 
@@ -47,3 +51,6 @@ Record exact commands, failures and totals in per-slice evidence; never count un
 - CCE current-task search returned unrelated/stale matches; canonical local files used as fallback.
 - A1c PR124 remote checks verified during A2: verify, CodeQL (all language jobs), dependency-review
   and observational offline links all passed. No merge performed; A2 remains stacked on A1c.
+- B parent split into opening B1 and stage-entry B2; Weather C must run between them. Canonical
+  opening terminal is state5; stage-entry requires actual C replay tostate6. This is a compatible
+  execution refinement, not a wire-contract change or synthetic predecessor admission.
