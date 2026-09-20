@@ -27,3 +27,6 @@ Core6m47s139, Runner3m33s282, Contracts666ms. /tmp/h4-suite.log.
 Boundary gate started only after suite process closed. Format process exit0 observed by root.
 Boundary gate passed exit0: 81 passed, zero failed/skipped, 9s806; /tmp/h4-boundary.log.
 All root .NET processes closed. Independent focused rerun may now use frozen source/build.
+Independent round3 focused run: 11 passed, zero failed/skipped, 14s915ms, exit0.
+/tmp/h4-review3-20260920-062049--6851--WJ2Mqv-dotnet-test.binlog.
+All three fresh reviews Ready; candidate30e9921bef2d6f528be27ca3a2abc110eabf5b76 remote CI pending.

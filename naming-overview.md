@@ -147,7 +147,7 @@ resumes phasing Movement, and resolved opportunity IDs differ from the empty clo
 The accepted [inherited Snapshot12 contract](docs/specs/combat-inherited-snapshot-v1.md) defines literal retained roots.
 Its `reserve-designation` and `inherited-cycle` tags describe typed `cycleState` arms;
 `InheritedCommandReceipt` names the existing preamble receipt grammar. These are persisted data
-shapes, not new services or public actions. Runtime restore remains a separate H gate.
+shapes, not new services or public actions. Accepted H4 provides bounded Initial H runtime restore; later families retain their own gates.
 H1's `CampaignCombatRetainedHistory` and `CampaignCombatHistoryProjection` are internal evidence
 and typed replay results. `CampaignCombatHistoryReplay` derives causal family partitions from one
 retained stream. H2 adds typed Movement, MovementLifecycle and BreakdownCompletion projections

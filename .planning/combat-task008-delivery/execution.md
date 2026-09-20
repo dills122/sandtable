@@ -25,7 +25,7 @@ G2 checkpoint: `b9cb26f`, `codex/combat-task008-breakdown-completion`,
 F1 checkpoint: `32e4e6d`, `codex/combat-task008-reaction-trigger`,
 [PR135](https://github.com/dills122/sandtable/pull/135), stacked on PR134.
 Active delivery branch: `codex/combat-task008-reaction-lifecycle`, based on reconciled main.
-Integration destination: main-based PR136; F2–F6/H0/H1/H2/H3 accepted; H4 literal-root restore active.
+Integration destination: main-based PR136; F2–F6/H0–H4 accepted; Initial H Core codec/replay gate complete, publication open. Task009A active.
 Lead owns retained commits and PR; earlier stacked targets above describe historical publication.
 
 ## Objective and boundaries
@@ -171,3 +171,11 @@ Record exact commands, failures and totals in per-slice evidence; never count un
   CodeQL106029073591 SUCCESS. Total21accepted slices/63ordinary+1conditional=64reviews. H4next.
 
 - H4 worker dispatched fromca43442; fiveprimarypaths, scope/dispatch retained.
+
+- H4 accepted code30e9921: exact368roots/286histories/62sharedgroups, focused11/full2244/boundary81,
+  build/format, dev review and three fresh Ready reviews. Independent round3 repeats11/11.
+  verify35493892961 and CodeQL106033440865 SUCCESS on exactcodehead. No fourth review needed.
+  Total22accepted slices/66ordinary+1conditional=67reviews. Core codec/replay gate complete;
+  HOST-PUB-001 and later28runtime/gameplay/public gates remain open.
+- Next009 split:009A actual inherited G2 assessment/bindings, then009B positive exhaustive
+  certification and opportunity-v2 mechanism. Parent009 remains open until both;010/011 unchanged.

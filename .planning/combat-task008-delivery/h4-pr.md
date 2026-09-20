@@ -9,8 +9,9 @@ Movement position remain distinct; creation-only Snapshot12 compatibility is pre
 
 All 368 reference roots across 286 histories match exact bytes, lengths and hashes. Eleven focused
 tests pass, including full disabled-admission restore, ledger/prefix checks, causal-slot mutations,
-pre-history bounds and defensive ownership. Build and full format pass. Full solution 2,244/2,244 and boundary 81/81 pass. Independent rounds 1 and 2 returned Ready;
-round 3 and exact-head GitHub checks remain pending. H4 is not yet accepted.
+pre-history bounds and defensive ownership. Build and full format pass. Full solution 2,244/2,244 and boundary 81/81 pass. All three independent reviews returned Ready; round 3 independently reran 11 focused tests.
+Exact-head GitHub verification and CodeQL passed at30e9921. H4 / Initial H Core codec/replay gate
+is accepted; publication evidence remains open. Task009A inherited assessment/bindings is next.
 
 Prior F2–F6 and H0–H3 acceptance evidence is retained. H0 includes one bounded CodeQL experiment
 and final fourth review. This is one main-based draft PR. Scope is bounded Initial H; later gameplay,

@@ -998,8 +998,8 @@ Retries authenticate against each command's owner/System role before returning r
 The accepted [H0 inherited Snapshot12 contract](docs/specs/combat-inherited-snapshot-v1.md) defines368selected retained cuts.
 It preserves the nineteen-field root and creation bytes while adding typed Reserve/inherited-cycle
 state slots. Full roots derive from trusted creation and complete causal history; identical histories
-must yield identical bytes across family interfaces. Runtime routing and disabled-admission restore
-remain later H gates; contract vectors do not prove those behaviors.
+must yield identical bytes across family interfaces. H1–H4 now provide runtime routing and disabled-admission restore for these selected cuts;
+contract vectors alone were not treated as proof of those behaviors.
 H1 pre-cycle routing is implemented and reviewed. `CampaignCombatRetainedHistory` captures one bounded
 owned Created11/event transcript; `CampaignCombatHistoryReplay` derives fixed causal partitions and
 invokes accepted readers through atomic first opening. Reserve membership is materialized already at
@@ -1007,9 +1007,11 @@ stage-entry's terminal cut. Typed projections and exact retained buffers remain 
 persisted full-root snapshot. H2 extends the same retained stream through ordinary Movement,
 mandatory stop/resolution/completion and Breakdown completion. H3 extends routing through
 Reaction trigger, participant, direct closure, fallback and second-move forks using existing strict
-readers. H4 is adding a separate inherited Snapshot12 codec that derives the nineteen-field root
+readers. Accepted H4 adds a separate inherited Snapshot12 codec that derives the nineteen-field root
 from this replay and verifies supplied bytes against retained history. Its restore path uses the
-existing creation-admission policy; creation-only readback remains strict.
+existing creation-admission policy; creation-only readback remains strict. Exact368root vectors
+and disabled-admission restore pass for all286selected histories. Initial H Core codec/replay gate
+is complete; later authority families must extend this evidence.
 Creation publication evaluation now targets an expected-head per-campaign commit batch. The
 [HOST-PUB-001 evidence allocation](docs/specs/combat-authority-envelope-v1.md#runtime-evidence-ownership)
 keeps actual atomic uniqueness, commit ambiguity and process-recovery proof open until provider

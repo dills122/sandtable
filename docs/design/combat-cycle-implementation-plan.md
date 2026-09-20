@@ -1,18 +1,18 @@
 # Combat and Cycle Combined Contract / Implementation Plan
 
-**Status:** Contract checkpoint B and dormant Tasks005–007 implemented. Task008 creation and selected inherited adapters through F1 are merged to main; F2–F6 are implemented and independently reviewed in main-based PR136. Initial H restore work is active. Combat gameplay remains inactive.
+**Status:** Contract checkpoint B and dormant Tasks005–007 implemented. Task008 creation and selected inherited adapters through F1 are merged to main; F2–F6 are implemented and independently reviewed in main-based PR136. Initial H Core codec/replay gate is complete in PR136; publication evidence remains open. Combat gameplay remains inactive.
 `CMB-PLAN-001` and POL-001–008 were accepted on 2026-09-06 at `a10a588`. Source and static Content
 work (`001`–`002`) is complete. Parent `003` is complete through the
 [authority-composition handoff](../specs/combat-authority-composition-v1.md). Checkpoint B closes through the
 [Task004C integration index](../specs/combat-outward-composition-v1.md). Task004A side contracts and Task004B occurrence, child and
-parent evidence are accepted with strict clock privacy and versioned round/settlement authority. Dormant Tasks005–007 and Task008 creation/inherited adapters are implemented for the selected profile. Initial H full restore and Tasks009–025 remain pending.
+parent evidence are accepted with strict clock privacy and versioned round/settlement authority. Dormant Tasks005–007 and Task008 creation/inherited adapters are implemented for the selected profile. Initial H full restore is accepted; Tasks009–025 and HOST-PUB-001 remain pending.
 
 | Delivery layer | Current boundary | Next required outcome |
 | --- | --- | --- |
 | Research and policy | Complete for the selected bounded profile, including `HOST-RSH-001` | Reopen only for a new source, failed assumption, or approved profile expansion |
 | Authority contracts | CON-002–004 and all selected-profile inherited families are reconciled in 28 creation-rooted composition traces; parent003 complete | Preserve exact Task004 handoff while later runtime work derives boundaries from accepted history |
 | Outward contracts | Task004A/B/C accepted; all 72 ACs mapped with bounded evidence and explicit runtime deferrals | Preserve accepted bytes and source/privacy boundaries during dormant implementation |
-| Runtime | Dormant Tasks005–007 and Task008 creation/inherited adapters implemented; Task008 parent incomplete; Tasks009–019 pending | Finish full retained-history restore before dependent authority work; retain open HOST-PUB-001 publication proof |
+| Runtime | Dormant Tasks005–007 and Task008 creation/inherited adapters implemented; Task008 parent incomplete; Tasks009–019 pending | Initial H restore accepted; proceed to dormant009A/009B while retaining open HOST-PUB-001 publication proof |
 | Public and simulator | Tasks020–024 not started | Activate the certified side-safe profile, then prove strict Exercise/Runner reconstruction and repeatability |
 | Closeout | Task025 not started | Full gate, evidence reconciliation, and authentic loop demonstration without overstating retained obligations |
 
@@ -819,7 +819,7 @@ Objective: implement canonical Combat creation, snapshot and inherited-history c
 | `008H1` pre-cycle retained-history router | Accepted H0 and creation/B–D/019A | One trusted ordered event stream through first opening; derive partitions, reject unsupported tails and retain exact buffers | Accepted; focused53/full2,157/boundary81, dev+three Ready reviews and exact-head CI pass; full-root codec and disabled-admission seam remain H4 | No |
 | `008H2` Movement/Breakdown retained-history router | Accepted H1 and E1/E2G1/G2 | Derive ordinary moves, mandatory stop/resolution/completion and Breakdown completion from one stream | Accepted; focused70/full2,174/boundary81, dev+three Ready reviews and exact-head CI pass; Reaction H3 and full-root restore H4 remain open | No |
 | `008H3` Reaction retained-history router | Accepted H2 and F1–F6 | Derive trigger, participant, closure, fallback and second-move forks from one stream | Accepted; focused129/full2,233/boundary81, dev+three Ready reviews and exact-head CI pass; literal full-root restore H4 remains open | No |
-| `008H4` literal inherited Snapshot12 and restore | Accepted H3 | Exact nineteen-field roots at every selected retained cut; restore with fresh admission disabled | Implementation active; initial H only, later runtime traces/publication remain open | No |
+| `008H4` literal inherited Snapshot12 and restore | Accepted H3 | Exact nineteen-field roots at every selected retained cut; restore with fresh admission disabled | Accepted at30e9921; exact368roots/286histories, focused11/full2,244/boundary81, dev+three Ready reviews and exact-head CI pass; later runtime traces/publication remain open | No |
 
 `019A` is the separately owned first-cycle-opening projector after `008D2`; it must precede inherited Movement replay, `008H` and the first predecessor-to-Combat integration test. B–G may need smaller PRs at the five-primary-file limit. A1c is accepted at `a8eed35` ([PR124](https://github.com/dills122/sandtable/pull/124)); A2 at `b67b4f9` ([PR125](https://github.com/dills122/sandtable/pull/125)); B1 at `22f8da6` ([PR126](https://github.com/dills122/sandtable/pull/126)); C at `a0babdb` ([PR127](https://github.com/dills122/sandtable/pull/127)); B2 at `3ded1eb` ([PR128](https://github.com/dills122/sandtable/pull/128)); D1 at `073423f` ([PR129](https://github.com/dills122/sandtable/pull/129)); D2 at `fa5e723` ([PR130](https://github.com/dills122/sandtable/pull/130));019A at `ba58c43` ([PR131](https://github.com/dills122/sandtable/pull/131)); E1 at `e641bd3` ([PR132](https://github.com/dills122/sandtable/pull/132)); E2/G1 at `e177a4b` ([PR133](https://github.com/dills122/sandtable/pull/133)); G2 at `b9cb26f` ([PR134](https://github.com/dills122/sandtable/pull/134)); F1 at `32e4e6d` ([PR135](https://github.com/dills122/sandtable/pull/135)); F2 participant lifecycle is accepted after dev review and three Ready independent rounds; publication targets main. Main inclusion through F1 is verified by complete-tree equality after squash reconciliation, not original slice commit ancestry.
 
@@ -858,6 +858,15 @@ dependency does not close the whole creation/publication contract.
 | `CMB-TASK-009` / M, 3–5 files | Implement bounded certification and unit/component/opportunity bindings. Separate target-hex use from directional unit history; Contact/Engaged uses original participants, not location groups. | `CombatIdentity` relocation/new-arrival/ambiguous-profile/hidden-fork cases and all-result geometry certification. | 005–008; [Campaigns](../../src/Cna.Core/Campaigns/), focused Core tests. |
 | `CMB-TASK-010` / M, 3–5 files | Implement dormant segment/selection/RBA-decline controls and six exact step closures. Empty/cancelled paths produce no attack, synthetic decline or progress; Prepared continuation is reserved for valid seals. | `CombatSteps` selected/empty/timeout/stale/out-of-order traces; restart at each step. | 009; [Campaigns](../../src/Cna.Core/Campaigns/), focused Core tests. |
 | `CMB-TASK-011` / M, 3–5 files | Implement two private slots, duplicate readback, pinned deadlines and Prepared continuation. First seal preserves other-side revision; incomplete cancellation consumes no costs/history/RNG. | `CombatSeals` both orders, changed retry, before/equal deadline, backward clock, unavailable controller and forged suffix. | 010; [Campaigns](../../src/Cna.Core/Campaigns/), [Decisions](../../src/Cna.Core/Decisions/), focused Core tests. |
+
+**Task009 execution refinement.** 009A derives the existing inherited AdmissionBoundary and participant
+bindings from actual retained G2 history: both owners after six/seven moves, with no eligible
+candidate. 009B adds exhaustive positive profile/result/geometry certification and exact Candidate
+and opportunity-v2 identity mechanics. Each bounded slice requires dev review and three independent
+rounds; parent009 remains open until both pass. Positive synthetic mechanism fixtures retain their
+stated provenance. Final admitted opportunity requires010 selection/decline and011 authenticated
+Base2; whole successor-root capacity and later actual assault composition remain integration gates.
+No new public action or competing Content certificate is introduced by this split.
 
 Checkpoint E: run lifecycle/recovery and paired-authorized-input checks. No hosting or public
 activation yet; new capabilities are exercised through dormant Core tests.
