@@ -6,7 +6,9 @@ Exact retries return retained bytes. World/RNG/resources and nested selection re
 010A reconstructs all88 frozen hash/length commitments across four histories,40 Control cuts and96
 retained retries. Focused7tests, existingIdentity14tests and build pass; dev review complete.
 Ownership regression was reproduced and fixed by capturing Created before caller-list access.
-Full solution/Boundary/format, three fresh independent reviews and exact-head CI are pending.
+Full solution2,265/Boundary81/build/format and exact-head CI passed at2eda2ed.
+Three sequential fresh independent reviews are Ready with no findings; final reviewer rebuilt
+and independently passed21 tests and both frozen oracles. 010A is accepted.
 Timed C3a controls and cumulative router integration remain010B/010C. Fragment readback does not
 claim extended Snapshot12 persistence, release actions, positive assault or host publication.
 

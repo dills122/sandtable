@@ -9,4 +9,10 @@ Rootdevreview allfivepaths/changedgrammar andcanonicaloracles; cachebytebound be
 ownedCreated correction inspected, no remainingfinding. Sourcehashesallmatch.
 Rootbuild0warnings/errors4.16s /tmp/task010a-build.log;
 /tmp/task010a-build-20260920-082329--15970--iXTRTs.binlog.
-Rootfullsuite/fullformat active; Boundary/remoteCI/freshreviews pending. Noacceptanceclaim.
+Root full suite: 2265 passed, zero failed/skipped, 7m42.953s; /tmp/task010a-suite.log.
+Boundary: 81 passed, zero failed/skipped, 10.137s; /tmp/task010a-boundary.log.
+Build, full suite, Boundary and full format processes closed. No acceptance claim.
+Candidate2eda2edca9f56d8b0d736cf7b8259598255c61ef publishedPR136/main.
+Fullformat observedexit0 /tmp/task010a-format-full.log. Source unchanged.
+
+Exact candidate CI: verify35499515347/job106048643712 passed10m41s; CodeQL106048711327 and all four analysis jobs passed; dependency review and offline links passed.

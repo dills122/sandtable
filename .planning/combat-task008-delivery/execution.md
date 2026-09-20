@@ -203,3 +203,5 @@ fullresults, all10Round2vectors. No positivehistory/publicationclaim; parent009 
 010A frozen: twoactualevents+sixnoattacksteps,88commitments/40cuts/96retries. Devreview complete;
 cachebound andownedCreated fixes retained withownershipRED. Focused7/7 36.320s, Identity14/14
 12.104s, rootbuild0warnings/errors4.16s. Fullgate andfreshreview1active; parent010B/Cstillopen.
+
+010A ACCEPTED at2eda2edca9f56d8b0d736cf7b8259598255c61ef: 88 commitments/40 cuts/96 retries across four actual histories. Full2265/Boundary81/build/format/exactheadCI passed; dev review and three sequential fresh isolated reviews Ready/no findings. Final reviewer independently rebuilt and passed21tests plus both oracles. 25accepted slices75ordinary+2conditionalfinalreviews. Proceed010B timed C3a; parent010 needs010B/C, extendedSnapshot12/publication remain open.
