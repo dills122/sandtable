@@ -969,7 +969,9 @@ replays causal moves before accepting current fields. E2/G1 now consumes that ac
 owner Movement completion. Stop captures exact cycle/position, resolution restores it, and completion
 records every original unit's location plus own distance-based exclusions in an actual receipt-bound
 Movement-end proof. World, spending, causal DP and material-progress references stay unchanged.
-G2 still supplies the separate Breakdown-to-Combat transition.
+G2 consumes all three actual lifecycle records before System completion enters Combat Position
+Determination. It preserves World, RNG and Movement-end proof, carries predecessor Breakdown sources,
+and appends a distinct Breakdown receipt without material progress. Combat actions remain dormant.
 Creation publication evaluation now targets an expected-head per-campaign commit batch. The
 [HOST-PUB-001 evidence allocation](docs/specs/combat-authority-envelope-v1.md#runtime-evidence-ownership)
 keeps actual atomic uniqueness, commit ambiguity and process-recovery proof open until provider
