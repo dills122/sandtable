@@ -1217,3 +1217,11 @@ representation together, permits mandatory CP beyond ten with incremental cohesi
 grants capped attacker victory relief. Immutable settlement appends validate identity and stage;
 serialization checks status/window/receipt agreement and the full allowed World projection.
 Custody decisions and relationship/round closure remain subsequent gates.
+
+Task015 extends dormant Result2 through guarded custody or immediate escape entitlement. Positive
+captured lots open an independent Config1 window owned by their actual captor. Accepted retreat
+timestamps cannot constrain its local clock. Guard creation transfers one TOE and inherits current
+post-retreat donor resources; escape retains original identity and quantity with a twelve-stage
+training-gated entitlement, without restoring TOE. Typed projection and canonical serialization
+retain guard provenance and future upkeep/training obligations. No future duty executes here;
+relationships, round closure and Close Assault completion remain Task016.

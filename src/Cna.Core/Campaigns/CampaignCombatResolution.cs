@@ -90,6 +90,7 @@ internal abstract record CombatResolutionEffect(string Kind)
     internal sealed record Resolve(CombatAssaultResult Result, string SettlementId) : CombatResolutionEffect("assault-resolved");
     internal sealed record Open(CombatResolutionWindow Window) : CombatResolutionEffect("choice-opened");
     internal sealed record Disposition(string Reason, CombatStepsTiming? Timing, CampaignCombatRetreatDisposition Payload) : CombatResolutionEffect("disposition-recorded");
+    internal sealed record Custody(string Reason, CombatStepsTiming? Timing, CampaignCombatCustodyReceipt Payload) : CombatResolutionEffect("custody-settled");
     internal sealed record Loss(CampaignCombatLossReceipt Payload) : CombatResolutionEffect("losses-settled");
     internal sealed record Retreat(CampaignCombatRetreatReceipt Payload) : CombatResolutionEffect("retreat-settled");
 }
@@ -184,22 +185,30 @@ internal static class CampaignCombatResolution
         Require(command.Kind is "resolve" or "advance" ? command.DecisionId is null : window is not null && command.DecisionId == window.DecisionId,
             "Wrong Result2 decision.");
         var next = prior; var author = input.Actor; CombatResolutionEffect effect;
-        void RecordDisposition(string choice)
+        void RecordChoice(string choice)
         {
             var settlement = prior.World.Settlements.Single();
-            var disposition = CampaignCombatLossRetreat.Disposition(prior.Context, settlement, choice);
+            var retreatChoice = window?.Kind == "retreat" || prior.Status == "resolved";
+            var updated = retreatChoice
+                ? settlement.WithResultV2Disposition(CampaignCombatLossRetreat.Disposition(prior.Context, settlement, choice))
+                : settlement.WithResultV2Custody(CampaignCombatLossRetreat.Custody(prior.Context, prior.World, choice));
             next = next with
             {
-                World = CampaignCombatLossRetreat.Project(prior.Context, prior.Result!, settlement.WithResultV2Disposition(disposition)),
-                Status = "disposition",
+                World = CampaignCombatLossRetreat.Project(prior.Context, prior.Result!, updated),
+                Status = retreatChoice ? "disposition" : "custody",
                 Window = null
             };
         }
+        CombatResolutionEffect ChoiceEffect(string reason, CombatStepsTiming? timing) => next.Status == "disposition"
+            ? new CombatResolutionEffect.Disposition(reason, timing, next.World.Settlements.Single().Disposition!)
+            : new CombatResolutionEffect.Custody(reason, timing, next.World.Settlements.Single().Custody!);
         if (command.Kind is "choose" or "expire" or "unavailable")
         {
-            Require(window is { Kind: "retreat" }, "Only retreat choice is implemented.");
+            Require(window is { Kind: "retreat" or "custody" }, "Unknown mandatory choice window.");
+            var fallbackChoice = window!.Kind == "retreat" ? "refuse-retreat" : "leave-unguarded";
+            var activeChoice = window.Kind == "retreat" ? "retreat" : "relocate-and-guard";
             if (command.Kind == "choose") Require(CampaignCombatSealedRoundCodec.Actor(input.Actor) == window!.Owner &&
-                command.Choice is "retreat" or "refuse-retreat", "Foreign or invalid retreat choice.");
+                (command.Choice == activeChoice || command.Choice == fallbackChoice), "Foreign or invalid mandatory choice.");
             var timing = window!.Timing;
             var lost = !input.ClockAvailable || input.AdmittedAt is null || input.AdmittedAt < timing.HighWaterUnixMilliseconds;
             var late = input.AdmittedAt is { } now && now >= timing.DeadlineUnixMilliseconds;
@@ -213,8 +222,8 @@ internal static class CampaignCombatResolution
             }
             var reason = fallback ? lost ? "clock-unavailable" : command.Kind == "unavailable" ? "controller-unavailable" : "deadline" : "owner-choice";
             if (fallback) author = CampaignOpeningPreambleActor.System;
-            RecordDisposition(fallback ? "refuse-retreat" : command.Choice!);
-            effect = new CombatResolutionEffect.Disposition(reason, timing, next.World.Settlements.Single().Disposition!);
+            RecordChoice(fallback ? fallbackChoice : command.Choice!);
+            effect = ChoiceEffect(reason, timing);
         }
         else if (command.Kind == "resolve")
         {
@@ -229,21 +238,23 @@ internal static class CampaignCombatResolution
         else
         {
             Require(window is null, "Structural work cannot bypass a retreat window.");
-            if (prior.Status == "resolved" && prior.Result!.Facts.RequiredRetreat > 0)
+            if (prior.Status == "resolved" && prior.Result!.Facts.RequiredRetreat > 0 || prior.Status == "retreat" && prior.World.CustodyLots.Count > 0)
             {
-                var budget = prior.Context.Creation.Configuration.Windows.Single(w => w.Kind == "retreat").DecisionBudgetMilliseconds;
+                var kind = prior.Status == "resolved" ? "retreat" : "custody";
+                var fallback = kind == "retreat" ? "refuse-retreat" : "leave-unguarded";
+                var budget = prior.Context.Creation.Configuration.Windows.Single(w => w.Kind == kind).DecisionBudgetMilliseconds;
                 var now = input.AdmittedAt;
                 if (!input.ClockAvailable || now is null || now > CampaignCombatSelectionSteps.UtcMaximum - budget)
                 {
-                    RecordDisposition("refuse-retreat");
-                    effect = new CombatResolutionEffect.Disposition("opening-clock-unavailable", null, next.World.Settlements.Single().Disposition!);
+                    RecordChoice(fallback);
+                    effect = ChoiceEffect("opening-clock-unavailable", null);
                 }
                 else
                 {
-                    var timing = new CombatStepsTiming(1, prior.Context.Creation.Configuration.Hash, "retreat", budget, now.Value, now.Value + budget, now.Value);
-                    var opened = new CombatResolutionWindow(prior.World.Settlements.Single().SettlementId + ".choice.retreat", "retreat",
-                        committed.Base.Steps.Selection!.Defender.Unit.OriginalSide, timing);
-                    next = prior with { Window = opened, Status = "waiting-retreat", AcceptedHighWater = Math.Max(prior.AcceptedHighWater, now.Value) };
+                    var timing = new CombatStepsTiming(1, prior.Context.Creation.Configuration.Hash, kind, budget, now.Value, now.Value + budget, now.Value);
+                    var opened = new CombatResolutionWindow(prior.World.Settlements.Single().SettlementId + ".choice." + kind, kind,
+                        kind == "retreat" ? committed.Base.Steps.Selection!.Defender.Unit.OriginalSide : prior.World.CustodyLots.Single().Captor.OriginalSide, timing);
+                    next = prior with { Window = opened, Status = "waiting-" + kind, AcceptedHighWater = Math.Max(prior.AcceptedHighWater, now.Value) };
                     effect = new CombatResolutionEffect.Open(opened);
                 }
             }
@@ -252,7 +263,7 @@ internal static class CampaignCombatResolution
                 Require(input.AdmittedAt is null && input.ClockAvailable, "Structural settlement requires null time and available confidence.");
                 if (prior.Status == "resolved")
                 {
-                    RecordDisposition("not-required");
+                    RecordChoice("not-required");
                     effect = new CombatResolutionEffect.Disposition("not-required", null, next.World.Settlements.Single().Disposition!);
                 }
                 else if (prior.Status == "disposition")
@@ -267,7 +278,7 @@ internal static class CampaignCombatResolution
                     next = prior with { World = CampaignCombatLossRetreat.Project(prior.Context, prior.Result!, settlement.WithResultV2Retreat(retreat)), Status = "retreat" };
                     effect = new CombatResolutionEffect.Retreat(retreat);
                 }
-                else throw new JsonException("Custody, relationships and closure require later tasks.");
+                else throw new JsonException("Relationships and closure require later tasks.");
             }
         }
         var unsigned = CampaignCombatResolutionCodec.SerializeEvent(prior, input, effect, author, null);

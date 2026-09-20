@@ -25,7 +25,9 @@ public sealed class CombatLossRetreatTests
             }
             var final = Replay(test, inputs[..end], literals[..end]); Assert.Equal("retreat", final.Status); Assert.Null(final.Window);
             Assert.Null(final.World.Settlements.Single().Custody); Assert.Null(final.World.Settlements.Single().Relationships);
-            for (var i = end; i < inputs.Length; i++) Assert.ThrowsAny<JsonException>(() => Apply(test, inputs[..end], literals[..end], inputs[i]));
+            // Task015 now admits custody; preserve this Task014 prefix and later relationship rejection.
+            var future = Array.FindIndex(literals, e => JsonNode.Parse(e)!["effect"]!["kind"]!.GetValue<string>() == "relationships-settled");
+            for (var i = future; i < inputs.Length; i++) Assert.ThrowsAny<JsonException>(() => Apply(test, inputs[..end], literals[..end], inputs[i]));
         }
         Assert.Equal(144, events); Assert.Equal(176, cuts);
     }

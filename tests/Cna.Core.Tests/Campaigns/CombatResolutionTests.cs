@@ -111,8 +111,8 @@ public sealed class CombatResolutionTests
             Assert.ThrowsAny<JsonException>(() => Replay(test, [input, input], [bytes, bytes]));
             var laterInputs = row.GetProperty("resultInputs").EnumerateArray().Select(i => CampaignCombatResolutionCodec.ReadInput(JsonSerializer.SerializeToUtf8Bytes(i))).ToArray();
             var laterEvents = row.GetProperty("resultEventCanonicalUtf8").EnumerateArray().Select(e => Encoding.UTF8.GetBytes(e.GetString()!)).ToArray();
-            // Task014 now supports disposition/loss/retreat; custody and closure remain future work.
-            var laterStart = Array.FindIndex(laterEvents, e => JsonNode.Parse(e)!["effect"]!["kind"]!.GetValue<string>() == "retreat-settled") + 1;
+            // Task015 supports custody; relationships and closure remain future work.
+            var laterStart = Array.FindIndex(laterEvents, e => JsonNode.Parse(e)!["effect"]!["kind"]!.GetValue<string>() == "relationships-settled");
             for (var i = laterStart; i < laterInputs.Length; i++)
             {
                 Assert.ThrowsAny<JsonException>(() => Apply(test, laterInputs[i], [input], [bytes]));

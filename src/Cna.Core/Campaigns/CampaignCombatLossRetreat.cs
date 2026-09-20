@@ -55,7 +55,7 @@ internal static class CampaignCombatLossRetreat
         if (retained.Disposition is { } disposition) expected = expected.WithResultV2Disposition(Disposition(context, expected, disposition.Kind));
         if (retained.Losses is not null) expected = expected.WithResultV2Losses(Losses(expected));
         if (retained.Retreat is not null) expected = expected.WithResultV2Retreat(Retreat(expected));
-        Require(expected == retained, "Settlement differs from original result and causal typed receipts.");
+
         var elements = paid.Elements.ToDictionary(e => e.ElementId, StringComparer.Ordinal);
         var causes = paid.CohesionCauses.ToList(); var lots = paid.CustodyLots.ToList();
         void Cause(string elementId, string receipt, string kind, int points)
@@ -100,9 +100,76 @@ internal static class CampaignCombatLossRetreat
         }
         var representations = paid.Representations.Select(r => new CampaignMapRepresentationState(r.RepresentationId,
             elements[r.BoundElementIds.Single()].CurrentLocationId, r.BindingKind, r.BoundElementIds));
-        return new(7, paid.CreationBinding, elements.Values, representations, paid.BrokenVehicleLots, causes,
+        var beforeCustody = new CampaignWorldSnapshotV7(7, paid.CreationBinding, elements.Values, representations, paid.BrokenVehicleLots, causes,
             paid.Relationships, lots, paid.Guards, paid.ReplacementEntitlements, paid.FutureObligations, [expected]);
+        if (retained.Custody is null)
+        {
+            Require(expected == retained, "Settlement differs from original result and causal typed receipts.");
+            return beforeCustody;
+        }
+        var custody = Custody(context, beforeCustody, retained.Custody.Kind);
+        expected = expected.WithResultV2Custody(custody);
+        Require(expected == retained, "Custody differs from causal typed receipt.");
+        var lot = beforeCustody.CustodyLots.Single(); var donor = elements[lot.Captor.ElementId];
+        var guards = paid.Guards.ToList(); var entitlements = paid.ReplacementEntitlements.ToList(); var obligations = paid.FutureObligations.ToList();
+        var earned = new CampaignCombatScope(expected.GameTurn, expected.OperationStage);
+        if (custody.Kind == "relocate-and-guard")
+        {
+            elements[donor.ElementId] = WithEffects(donor, toe: custody.DonorToeAfter);
+            guards.Add(new(custody.GuardId!, custody.ReceiptId, lot.LotId, new(lot.Captor, donor.Components.Single().ComponentId),
+                donor.CurrentLocationId, 1, 10, 0, 1, donor.OperationalState, donor.Ammunition, donor.Readiness));
+            lots[0] = new(lot.LotId, lot.LossReceiptId, lot.OriginalComponent, lot.Captor, lot.Quantity,
+                lot.OriginLocationId, donor.CurrentLocationId, "guarded", custody.GuardId, null);
+            obligations.Add(new(expected.SettlementId + ".upkeep", custody.ReceiptId, "guard-priority-upkeep", custody.GuardId!, earned,
+                null, "before-prisoner-upkeep-or-guard-action", "retained-unimplemented"));
+        }
+        else
+        {
+            var ordinal = checked((earned.GameTurn - 1) * 3 + earned.OperationStage - 1 + 12);
+            var eligible = new CampaignCombatScope(ordinal / 3 + 1, ordinal % 3 + 1, future: true);
+            entitlements.Add(new(custody.EntitlementId!, custody.ReceiptId, lot.LotId, lot.OriginalComponent, lot.Quantity,
+                custody.Route[^1], earned, 12, eligible, "awaiting-eligibility-and-training"));
+            lots[0] = new(lot.LotId, lot.LossReceiptId, lot.OriginalComponent, lot.Captor, lot.Quantity,
+                lot.OriginLocationId, null, "escaped", null, custody.ReceiptId);
+            obligations.Add(new(expected.SettlementId + ".training", custody.ReceiptId, "replacement-training-gate", custody.EntitlementId!,
+                earned, eligible, "before-replacement-eligibility-training", "retained-unimplemented"));
+        }
+        return new(7, paid.CreationBinding, elements.Values, beforeCustody.Representations, paid.BrokenVehicleLots, causes,
+            paid.Relationships, lots, guards, entitlements, obligations, [expected]);
     }
+
+    internal static CampaignCombatCustodyReceipt Custody(CombatResolutionContext context, CampaignWorldSnapshotV7 world, string kind)
+    {
+        Require(kind is "relocate-and-guard" or "leave-unguarded", "Unknown custody choice.");
+        var settlement = world.Settlements.Single();
+        Require(settlement.Retreat is not null && settlement.Custody is null && world.CustodyLots.Count == 1, "Custody requires positive pending lot after retreat.");
+        var lot = world.CustodyLots.Single(); Require(lot.Status == "pending", "Custody lot already settled.");
+        var donor = world.Elements.Single(e => e.ElementId == lot.Captor.ElementId);
+        var victim = world.Elements.Single(e => e.ElementId == lot.OriginalComponent.Unit.ElementId);
+        var guarded = kind == "relocate-and-guard";
+        var route = ContentPath(context, lot.OriginLocationId, guarded ? donor.CurrentLocationId : victim.CurrentLocationId);
+        var before = donor.Components.Single().CurrentToe;
+        if (guarded)
+            Require(route.Length - 1 <= 3 && !route.Skip(1).Contains(victim.CurrentLocationId) && before > 1 && lot.Quantity <= 5,
+                "Unsupported custody guard path or resources.");
+        else
+        {
+            var content = context.Creation.Setup.Artifact.Definition;
+            long cost = 0;
+            foreach (var destination in route.Skip(1))
+            {
+                var terrain = content.Locations.Single(l => l.LocationId == destination).TerrainId;
+                var move = Cna1979Movement.LookupTerrain(terrain, Cna1979Movement.NonMotorizedMobilityId);
+                Require(terrain == "land.terrain.clear" && move.IsSupported && move.Value.Cost.Denominator == 1, "Unsupported escape terrain.");
+                cost = checked(cost + move.Value.Cost.Numerator);
+            }
+            Require(cost <= 8 && route.Length - 1 <= 4, "Escape path exceeds source CP limit.");
+        }
+        return new(settlement.SettlementId + ".custody", settlement.Retreat!.ReceiptId, lot.LotId, kind, route,
+            guarded ? settlement.SettlementId + ".guard" : null, guarded ? null : settlement.SettlementId + ".replacement",
+            before, guarded ? before - 1 : before);
+    }
+
     private static CampaignElementStateV6 WithEffects(CampaignElementStateV6 element, string? location = null,
         CapabilityPointAmount? cp = null, int? cohesion = null, int? toe = null)
     {
@@ -115,25 +182,25 @@ internal static class CampaignCombatLossRetreat
     }
     private static string[] RetreatRoute(CombatResolutionContext context, CampaignCombatSettlementState settlement)
     {
-        var content = context.Creation.Setup.Artifact.Definition;
-        var graph = content.Locations.ToDictionary(l => l.LocationId, _ => new List<string>(), StringComparer.Ordinal);
-        foreach (var edge in content.Edges) { graph[edge.FirstLocationId].Add(edge.SecondLocationId); graph[edge.SecondLocationId].Add(edge.FirstLocationId); }
         var defender = settlement.PreLossElements.Single(e => e.ElementId == settlement.Defender.ElementId).CurrentLocationId;
         var attacker = settlement.PreLossElements.Single(e => e.ElementId == settlement.Attacker.ElementId).CurrentLocationId;
         var anchor = context.Creation.Setup.Scenario.RetreatSupplyAnchors.Single(a => a.SideId == settlement.Defender.OriginalSide).LocationId;
-        var route = Path(defender, anchor);
-        Require(route.Length >= 2 && route[1] != attacker && Path(attacker, route[1]).Length == 3, "Unsupported actual retreat geometry.");
+        var route = ContentPath(context, defender, anchor);
+        Require(route.Length >= 2 && route[1] != attacker && ContentPath(context, attacker, route[1]).Length == 3, "Unsupported actual retreat geometry.");
         return [defender, route[1]];
-        string[] Path(string start, string end)
+    }
+    private static string[] ContentPath(CombatResolutionContext context, string start, string end)
+    {
+        var content = context.Creation.Setup.Artifact.Definition;
+        var graph = content.Locations.ToDictionary(l => l.LocationId, _ => new List<string>(), StringComparer.Ordinal);
+        foreach (var edge in content.Edges) { graph[edge.FirstLocationId].Add(edge.SecondLocationId); graph[edge.SecondLocationId].Add(edge.FirstLocationId); }
+        var queue = new Queue<string[]>(); queue.Enqueue([start]); var seen = new HashSet<string>(StringComparer.Ordinal) { start };
+        while (queue.TryDequeue(out var path))
         {
-            var queue = new Queue<string[]>(); queue.Enqueue([start]); var seen = new HashSet<string>(StringComparer.Ordinal) { start };
-            while (queue.TryDequeue(out var path))
-            {
-                if (path[^1] == end) return path;
-                foreach (var next in graph[path[^1]]) if (seen.Add(next)) queue.Enqueue([.. path, next]);
-            }
-            throw new JsonException("No certified retreat route.");
+            if (path[^1] == end) return path;
+            foreach (var next in graph[path[^1]]) if (seen.Add(next)) queue.Enqueue([.. path, next]);
         }
+        throw new JsonException("No certified content route.");
     }
     private static void Require(bool condition, string message) { if (!condition) throw new JsonException(message); }
 }

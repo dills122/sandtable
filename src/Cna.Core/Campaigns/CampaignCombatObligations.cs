@@ -278,10 +278,18 @@ internal sealed record CampaignCombatSettlementState
             throw new ArgumentException("Retreat requires retained joint Result2 losses.");
         return ResultV2Next(Disposition, Losses, retreat);
     }
+    internal CampaignCombatSettlementState WithResultV2Custody(CampaignCombatCustodyReceipt custody)
+    {
+        ArgumentNullException.ThrowIfNull(custody);
+        if (Disposition is null || Losses is null || Retreat is null || Custody is not null || Relationships is not null ||
+            !Losses.Roles.Any(role => role.CapturedToe > 0))
+            throw new ArgumentException("Custody requires retained retreat and positive captured allocation.");
+        return ResultV2Next(Disposition, Losses, Retreat, custody);
+    }
     private CampaignCombatSettlementState ResultV2Next(CampaignCombatRetreatDisposition disposition,
-        CampaignCombatLossReceipt? losses, CampaignCombatRetreatReceipt? retreat) =>
+        CampaignCombatLossReceipt? losses, CampaignCombatRetreatReceipt? retreat, CampaignCombatCustodyReceipt? custody = null) =>
         new(SettlementId, CommitmentId, ResultId, GameTurn, OperationStage, Attacker, Defender, PreLossElements,
-            Result, disposition, losses, retreat, null, null, true);
+            Result, disposition, losses, retreat, custody, null, true);
 
     private CampaignCombatSettlementState(string settlementId, string commitmentId, string resultId,
         int gameTurn, int operationStage, CampaignCombatUnitKey attacker, CampaignCombatUnitKey defender,

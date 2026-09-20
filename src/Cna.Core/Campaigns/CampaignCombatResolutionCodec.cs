@@ -106,13 +106,20 @@ internal static class CampaignCombatResolutionCodec
         var correctStage = state.Status switch
         {
             "committed" => state.Result is null && settlement is null,
-            "resolved" or "waiting-retreat" => state.Result is not null && settlement is { Disposition: null, Losses: null, Retreat: null },
-            "disposition" => settlement is { Disposition: not null, Losses: null, Retreat: null },
-            "losses" => settlement is { Disposition: not null, Losses: not null, Retreat: null },
-            "retreat" => settlement is { Disposition: not null, Losses: not null, Retreat: not null },
+            "resolved" or "waiting-retreat" => state.Result is not null && settlement is { Disposition: null, Losses: null, Retreat: null, Custody: null, Relationships: null },
+            "disposition" => settlement is { Disposition: not null, Losses: null, Retreat: null, Custody: null, Relationships: null },
+            "losses" => settlement is { Disposition: not null, Losses: not null, Retreat: null, Custody: null, Relationships: null },
+            "retreat" or "waiting-custody" => settlement is { Disposition: not null, Losses: not null, Retreat: not null, Custody: null, Relationships: null },
+            "custody" => settlement is { Disposition: not null, Losses: not null, Retreat: not null, Custody: not null, Relationships: null },
             _ => false,
         };
-        if (!correctStage || (state.Status == "waiting-retreat") != (state.Window is not null))
+        var correctWindow = state.Status switch
+        {
+            "waiting-retreat" => state.Window is { Kind: "retreat" },
+            "waiting-custody" => state.Window is { Kind: "custody" },
+            _ => state.Window is null,
+        };
+        if (!correctStage || !correctWindow)
             throw new JsonException("Result2 status, window and settlement stage disagree.");
         var allowed = state.Result is null ? paid : CampaignCombatLossRetreat.Project(state.Context, state.Result,
             settlement ?? throw new JsonException("Result2 settlement missing."));
@@ -134,7 +141,7 @@ internal static class CampaignCombatResolutionCodec
                 disposition = settlement.Disposition,
                 losses = settlement.Losses,
                 retreat = settlement.Retreat,
-                custody = (object?)null,
+                custody = settlement.Custody,
                 relationships = (object?)null
             }, Options);
             root["settlements"] = new JsonArray(pending);
@@ -152,6 +159,30 @@ internal static class CampaignCombatResolutionCodec
             item!["currentLocationId"] = state.World.Representations.Single(r => r.RepresentationId == item["representationId"]!.GetValue<string>()).CurrentLocationId;
         root["cohesionCauses"] = JsonSerializer.SerializeToNode(state.World.CohesionCauses, Options);
         root["custodyLots"] = JsonSerializer.SerializeToNode(state.World.CustodyLots, Options);
+        var guards = new JsonArray();
+        foreach (var guard in state.World.Guards)
+        {
+            // Full typed equality above proves these owned canonical donor resources match the guard.
+            var donor = root["elements"]!.AsArray().Single(e => e!["elementId"]!.GetValue<string>() == guard.OriginComponent.Unit.ElementId)!;
+            guards.Add(JsonSerializer.SerializeToNode(new
+            {
+                guardId = guard.GuardId,
+                formationReceiptId = guard.FormationReceiptId,
+                lotId = guard.LotId,
+                originComponent = guard.OriginComponent,
+                currentLocationId = guard.CurrentLocationId,
+                toe = guard.Toe,
+                baseCapabilityPointAllowance = guard.BaseCapabilityPointAllowance,
+                offensiveCloseAssaultRating = guard.OffensiveCloseAssaultRating,
+                defensiveCloseAssaultRating = guard.DefensiveCloseAssaultRating,
+                operationalState = donor["operationalState"]!.DeepClone(),
+                ammunition = donor["ammunition"]!.DeepClone(),
+                readiness = donor["readiness"]!.DeepClone()
+            }, Options));
+        }
+        root["guards"] = guards;
+        root["replacementEntitlements"] = JsonSerializer.SerializeToNode(state.World.ReplacementEntitlements, Options);
+        root["futureObligations"] = JsonSerializer.SerializeToNode(state.World.FutureObligations, Options);
         return root;
     }
     internal static byte[] SerializeEvent(CombatResolutionState prior, CombatResolutionInput input, CombatResolutionEffect effect,
@@ -187,6 +218,7 @@ internal static class CampaignCombatResolutionCodec
         CombatResolutionEffect.Resolve value => new { kind = value.Kind, result = ResultValue(value.Result), settlementId = value.SettlementId },
         CombatResolutionEffect.Open value => new { kind = value.Kind, window = value.Window },
         CombatResolutionEffect.Disposition value => new { kind = value.Kind, reason = value.Reason, timing = value.Timing, payload = value.Payload },
+        CombatResolutionEffect.Custody value => new { kind = value.Kind, reason = value.Reason, timing = value.Timing, payload = value.Payload },
         CombatResolutionEffect.Loss value => new { kind = value.Kind, payload = value.Payload },
         CombatResolutionEffect.Retreat value => new { kind = value.Kind, payload = value.Payload },
         _ => throw new JsonException("Unsupported Result2 effect.")
