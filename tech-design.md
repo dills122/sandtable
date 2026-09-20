@@ -986,6 +986,11 @@ F1 window. One close resumes the phasing route without a reactor stop or changes
 F4 active-participant fallback closes the window into a reason-specific `ReactorStopClosed`,
 then requires System empty-stop resolution before resuming that same phasing route. No fallback
 event changes World resources or material progress; Core introduces no clock or scheduler.
+F5 derives the second reactor move from actual F2 first-move history. It rotates the public
+opportunity handle over the sole rear-to-supply option, charges CP2→4, extends the existing track,
+and preserves reactor route identity and suspended phasing continuation. Its own history-derived
+World guard rejects unsupported typed fields before bounded serialization. The Reaction window
+remains active; F6 owns subsequent completion, mandatory stop resolution and closure.
 Creation publication evaluation now targets an expected-head per-campaign commit batch. The
 [HOST-PUB-001 evidence allocation](docs/specs/combat-authority-envelope-v1.md#runtime-evidence-ownership)
 keeps actual atomic uniqueness, commit ambiguity and process-recovery proof open until provider

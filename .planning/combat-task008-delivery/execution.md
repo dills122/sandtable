@@ -24,8 +24,9 @@ G2 checkpoint: `b9cb26f`, `codex/combat-task008-breakdown-completion`,
 [PR134](https://github.com/dills122/sandtable/pull/134), stacked on PR133.
 F1 checkpoint: `32e4e6d`, `codex/combat-task008-reaction-trigger`,
 [PR135](https://github.com/dills122/sandtable/pull/135), stacked on PR134.
-Active F2 branch: `codex/combat-task008-reaction-lifecycle`, based on F1 checkpoint.
-Integration destination: reviewed feature branch; lead owns retained commits and PR.
+Active delivery branch: `codex/combat-task008-reaction-lifecycle`, based on reconciled main.
+Integration destination: main-based PR136; F2–F5 accepted; F6 next.
+Lead owns retained commits and PR; earlier stacked targets above describe historical publication.
 
 ## Objective and boundaries
 
@@ -56,7 +57,8 @@ No public activation or parent completion inferred from a codec slice.
 | 008F2 participant lifecycle | F1 | implementation subagent; lead integrates | 2traces8events10cuts28artifacts;focused16/full2060;dev+threeReadyreviews | Accepted; publication against main |
 | 008F3 direct closure | F1 trigger; after F2 review | implementation subagent; lead integrates | six traces/six events/12 cuts/30 artifacts;focused25/full2069/boundary81;dev+threeReadyreviews | Accepted; main-based PR136 |
 | 008F4 active fallback | F2 first participant move; after F3 review | implementation subagent; lead integrates | four traces/eight events/12cuts/32artifacts;focused29/full2080/boundary81;dev+threeReadyreviews | Accepted; main-based PR136 |
-| 008F5–F6 Reaction continuation | canonical F graph | unassigned | selected second-move/completion histories | Pending |
+| 008F5 second Reaction move | F2 first participant cut; after F4 review | implementation subagent; lead integrates | two traces/two events/four cuts/10 artifacts;focused22/full2093/boundary81;dev+threeReadyreviews | Accepted; main-based PR136 |
+| 008F6 Reaction completion | F5; after F5 review | unassigned | selected post-second-move completion history | Pending |
 | 008B–H, 019A | canonical dependency graph | unassigned | cumulative Core replay, full retained-history restore | Pending |
 | 009–025 | canonical gates | unassigned | cumulative gameplay/public/Runner/72-AC evidence | Pending |
 
@@ -124,3 +126,7 @@ Record exact commands, failures and totals in per-slice evidence; never count un
 
 - F3 accepted and published as `f0cb5ca` in main-based PR136; focused25/full2069/boundary81,
   build/format and three independent Ready rounds. F4 active fallback now executing.
+
+- F4 accepted and published as `26ff137` in main-based PR136; focused29/full2080/boundary81,
+  build/format and three independent Ready rounds. F5 second reactor move now executing;
+  causal predecessor remains F2 first participant cut. PR136 still open against main.

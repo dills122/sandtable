@@ -140,7 +140,9 @@ as distinct causal events; completing a participant does not close its window. F
 uses the same close3 family for player decline, scripted-unavailable and timeout, with reason derived
 from command kind; direct closure creates no reactor stop. F4 active fallback instead records
 `reactor-stop-closed` with `reaction-unavailable` or `reaction-timeout`, and a distinct
-`breakdown-stop-resolved`2 resumes phasing Movement. The [inherited Reaction-trigger packet](docs/specs/combat-inherited-reaction-trigger-v1.md) uses
+`breakdown-stop-resolved`2 resumes phasing Movement. F5 retains `reacting-element-moved`3 for
+the second reactor move; its existing route stays open and its track extends to supply.
+The [inherited Reaction-trigger packet](docs/specs/combat-inherited-reaction-trigger-v1.md) uses
 private `TriggerState`, retains `element-moved`4 and opens one identity-bound `ReactionWindow`.
 `ReactingPosition` suspends Movement; it is not a participant choice, move or window closure.
 The [inherited Reaction-lifecycle packet](docs/specs/combat-inherited-reaction-lifecycle-v1.md) uses
