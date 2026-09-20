@@ -960,7 +960,13 @@ Task008 D2 reconstructs that full history before deriving canonical completion2 
 cycle identity. Its evidence retains the actual predecessor; it does not publish a terminal state.
 Task019A applies that same event atomically to private terminal ReserveState1, extending prefix and
 receipt ledger once. Full retained history reconstitutes each cut; exact retries return original event
-with current state, including designation retries after completion. Movement adjudication remains next.
+with current state, including designation retries after completion.
+Task008 E1 consumes that completed history for Normal-Weather ordinary infantry Move4. Existing pure
+terrain/spending kernels derive Clear2 costs, ordinary CPA10/ceiling15 and immediate excess-CP Cohesion
+causes bound to actual move receipts. Each move updates typed World, own spent CP, ordered route and
+actual progress together; legacy route identity persists across revisits. Bounded World serialization
+replays causal moves before accepting current fields. Flow stays moving until E2/G1 supplies actual
+owner stop, System empty-cohort resolution and Movement completion; G2 supplies Combat entry.
 Creation publication evaluation now targets an expected-head per-campaign commit batch. The
 [HOST-PUB-001 evidence allocation](docs/specs/combat-authority-envelope-v1.md#runtime-evidence-ownership)
 keeps actual atomic uniqueness, commit ambiguity and process-recovery proof open until provider
