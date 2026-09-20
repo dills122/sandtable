@@ -718,6 +718,10 @@ projection. It is not a general Snapshot12 or a published Chronicle head.
 RNG cursor. It requires trusted creation and complete opening/Weather history; it cannot independently
 certify a campaign state or stand in for Snapshot12.
 
+**StageEntryState1** preserves WeatherState1 fields through four explicit-none stage gates.
+Its Reserve-entry position keeps null ActiveSide; retained turn/stage order supplies the eventual
+designating side. The private projection requires complete creation-to-stage history.
+
 **Capability Point expenditure** is the exact amount already spent during the current Operation
 Stage; it is not a replenishing UI movement allowance. **Complete Movement** is a real player
 decision that advances to Breakdown Determination, not a runner stop condition. These names are

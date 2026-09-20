@@ -6,7 +6,9 @@ A2 checkpoint: `b67b4f9`, `codex/combat-task008-creation-snapshot`,
 [PR125](https://github.com/dills122/sandtable/pull/125), stacked on PR124.
 B1 checkpoint: `22f8da6`, `codex/combat-task008-opening-preamble`,
 [PR126](https://github.com/dills122/sandtable/pull/126), stacked on PR125.
-Active C branch: `codex/combat-task008-weather`, based on B1 checkpoint.
+C checkpoint: `a0babdb`, `codex/combat-task008-weather`,
+[PR127](https://github.com/dills122/sandtable/pull/127), stacked on PR126.
+Active B2 branch: `codex/combat-task008-stage-entry`, based on C checkpoint.
 Integration destination: reviewed feature branch; lead owns retained commits and PR.
 
 ## Objective and boundaries
@@ -27,7 +29,8 @@ No public activation or parent completion inferred from a codec slice.
 | 008A2 | A1c accepted | implementation internal subagent; lead integrates | focused34/full1874 pass; dev review plus three Ready independent rounds; publication obligation explicitly open | Accepted; feature-branch checkpoint |
 | 008B1 | A2 | implementation internal subagent; lead integrates | six frozen traces/30cuts, focused12/full1886 pass; dev+three Ready independent rounds | Accepted; feature-branch checkpoint |
 | 008C Weather | B1 | implementation internal subagent; lead integrates | 34chains/68cuts, focused42/full1928 pass; dev+three Ready review rounds | Accepted; feature-branch checkpoint |
-| 008B2 → D | C | unassigned | actual Weather before stage-entry; complete state10 history before Reserve | Pending |
+| 008B2 stage-entry | C | implementation internal subagent; lead integrates | 12chains/60cuts, focused17/full1945 pass; dev+three Ready rounds | Accepted; B parent adapters complete |
+| 008D Reserve | B2 | unassigned | complete state10 predecessor history | Pending |
 | 008B–H, 019A | canonical dependency graph | unassigned | cumulative Core replay, full retained-history restore | Pending |
 | 009–025 | canonical gates | unassigned | cumulative gameplay/public/Runner/72-AC evidence | Pending |
 

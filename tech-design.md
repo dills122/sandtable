@@ -949,6 +949,10 @@ Task008 C extends accepted opening history with one Weather event. Existing Rule
 derive the outcome; exact replay retains all weather kinds, five receipts and the advanced cursor.
 Axis remains determining side under either initiative order. Explicit absence of immediate-effect
 subjects permits zero effect counts; World stays unchanged through Organization entry.
+Task008 B2 reconstructs four explicit-none stage-entry events from accepted Weather history.
+All four policy gates are checked before predecessor replay. Weather, World, holder, order and RNG
+remain unchanged; nine chronological receipts reach Reserve entry. Fleet positions retain Commonwealth
+ActiveSide while final first-acting-side Reserve position remains null until its later owner resolves it.
 Creation publication evaluation now targets an expected-head per-campaign commit batch. The
 [HOST-PUB-001 evidence allocation](docs/specs/combat-authority-envelope-v1.md#runtime-evidence-ownership)
 keeps actual atomic uniqueness, commit ambiguity and process-recovery proof open until provider
