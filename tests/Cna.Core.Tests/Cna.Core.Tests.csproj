@@ -93,6 +93,10 @@
       Include="../../docs/specs/fixtures/combat-inherited-movement-lifecycle-v1.json"
       Link="Campaigns/Fixtures/combat-inherited-movement-lifecycle-v1.json"
       CopyToOutputDirectory="PreserveNewest" />
+    <Content
+      Include="../../docs/specs/fixtures/combat-inherited-breakdown-completion-v1.json"
+      Link="Campaigns/Fixtures/combat-inherited-breakdown-completion-v1.json"
+      CopyToOutputDirectory="PreserveNewest" />
     <Using Include="Xunit" />
   </ItemGroup>
 

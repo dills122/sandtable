@@ -124,7 +124,8 @@ not new products. The [inherited route lifecycle](docs/specs/combat-inherited-mo
 uses private `LifecycleState`, retaining `element-movement-stopped`2, `breakdown-stop-resolved`2
 and `movement-segment-completed`3. The [Breakdown completion packet](docs/specs/combat-inherited-breakdown-completion-v1.md)
 uses private `CombatEntryState` and retains `breakdown-segment-completed`2; reaching that position
-does not admit Combat actions. Suspended context and Movement-end proof remain authority data.
+does not admit Combat actions. Task008 G2 implements this full-history transition with distinct
+Reserve, Movement and Breakdown completion receipts. Suspended context and Movement-end proof remain authority data.
 The [inherited selection packet](docs/specs/combat-inherited-selection-v1.md) uses private
 `AdmissionBoundary` and `Control` projections, retaining `combat-segment-opened`2 and
 `combat-selection-closed`2. Its supported zero-candidate result creates no decision and does not
