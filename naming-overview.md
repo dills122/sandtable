@@ -124,7 +124,8 @@ not new products. The [inherited route lifecycle](docs/specs/combat-inherited-mo
 uses private `LifecycleState`, retaining `element-movement-stopped`2, `breakdown-stop-resolved`2
 and `movement-segment-completed`3. The [Breakdown completion packet](docs/specs/combat-inherited-breakdown-completion-v1.md)
 uses private `CombatEntryState` and retains `breakdown-segment-completed`2; reaching that position
-does not admit Combat actions. Suspended context and Movement-end proof remain authority data.
+does not admit Combat actions. Task008 G2 implements this full-history transition with distinct
+Reserve, Movement and Breakdown completion receipts. Suspended context and Movement-end proof remain authority data.
 The [inherited selection packet](docs/specs/combat-inherited-selection-v1.md) uses private
 `AdmissionBoundary` and `Control` projections, retaining `combat-segment-opened`2 and
 `combat-selection-closed`2. Its supported zero-candidate result creates no decision and does not
@@ -132,7 +133,8 @@ mean the Combat segment or its structural steps are complete.
 The [inherited no-attack packet](docs/specs/combat-inherited-no-attack-v1.md) nests that `Control`
 unchanged and uses its own `Control` projection plus six `combat-step-completed`2 receipts. Outer
 closure means structural arrival at Reserve Release; it does not rename or perform Reserve Release.
-The [inherited Reaction-trigger packet](docs/specs/combat-inherited-reaction-trigger-v1.md) uses
+Task008 F1 implements the bounded trigger with persisted Reaction identities; public capability handles
+belong to later participant admission. The [inherited Reaction-trigger packet](docs/specs/combat-inherited-reaction-trigger-v1.md) uses
 private `TriggerState`, retains `element-moved`4 and opens one identity-bound `ReactionWindow`.
 `ReactingPosition` suspends Movement; it is not a participant choice, move or window closure.
 The [inherited Reaction-lifecycle packet](docs/specs/combat-inherited-reaction-lifecycle-v1.md) uses
@@ -705,6 +707,37 @@ canonical snapshot/history persistence, and gameplay activation remains later.
 construction. **Created11** carries the resulting dormant creation event; **Creation Binding** is
 its nonrecursive request-derived identity, not an event hash or public authority handle. Retry
 selection returns retained canonical bytes; it is not Chronicle publication.
+**Creation Snapshot12** names the creation-only readback value derived from trusted Created11.
+**Creation Receipt1** binds request, creation identity and exact event hash; **Chronicle Prefix**
+frames the creation event with its byte length. Neither checksum authenticates imported evidence
+without independently trusted request/artifacts, and this reader cannot restore later game state.
+
+**PreambleState1** is the private creation-rooted opening replay projection through Weather entry.
+Its receipts identify accepted causal occurrences; retry returns the original event and current
+projection. It is not a general Snapshot12 or a published Chronicle head.
+
+**WeatherState1** extends the private opening projection with retained Weather1 and its advanced
+RNG cursor. It requires trusted creation and complete opening/Weather history; it cannot independently
+certify a campaign state or stand in for Snapshot12.
+
+**StageEntryState1** preserves WeatherState1 fields through four explicit-none stage gates.
+Its Reserve-entry position keeps null ActiveSide; retained turn/stage order supplies the eventual
+designating side. The private projection requires complete creation-to-stage history.
+
+**ReserveState1** adds first-side ownership, own members and designation history to retained stage
+state. D1 supports only pre-completion cuts: cycle, cycle ID, opening-base hash and completion receipt
+remain null. **Reserve I designation** changes only the accepted own member’s Reserve status.
+**Reserve completion evidence** (D2) binds canonical completion2 bytes and cycle authority to actual
+creation-rooted history. Its **OpeningBase** carries the frozen compatibility profile literal; it is
+not an admission path. Task019A applies that same event to terminal **ReserveState1**, retaining
+precompletion World/member authority while publishing cycle, position, prefix and receipt together
+within the private projection. This is not durable Chronicle publication.
+**Inherited MovementState1** adds chronological tracks, actual move-progress references and nullable
+Breakdown flow to full Reserve history. Move4 makes flow moving even without vehicles; **idle** requires
+an accepted stop/resolution pair. Ordered routes preserve revisits. **LifecycleState1** retains that
+moving history plus captured **interruptContext** and actual **MovementEndProof**. Movement completion
+and its proof receipt remain distinct from Reserve completion. Empty-cohort resolution is still a
+real System event; an idle cache cannot substitute for it.
 
 **Capability Point expenditure** is the exact amount already spent during the current Operation
 Stage; it is not a replenishing UI movement allowance. **Complete Movement** is a real player

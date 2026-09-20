@@ -936,6 +936,51 @@ Content7 and configuration determine canonical request bytes; domain-separated r
 seeds World7 creation before event serialization. Created11 readback requires a separately retained
 request. Pure retry selection validates retained bytes before checking fresh admission; atomic
 publication and Snapshot12 recovery remain separate gates.
+Task008 A2 adds creation-only Snapshot12 projection/readback from separately trusted request and
+exact validated Created11 bytes. A private evidence copy binds receipt/event hash and the framed
+Chronicle creation prefix; every current field is reconstructed and compared with canonical bytes.
+Noninitial values reject instead of resetting state. Recovery is independent of fresh-admission
+selection, and later causal readers remain required.
+Task008 B1 reconstructs four opening transitions from trusted creation and retained canonical events.
+Private PreambleState1 carries derived receipts, order and Chronicle prefix through Weather entry;
+exact retries retain original event bytes while returning current replay state. Fixed first-turn
+Axis context remains dormant. Weather C precedes stage-entry B2; neither is synthesized by B1.
+Task008 C extends accepted opening history with one Weather event. Existing Rules and seeded RNG
+derive the outcome; exact replay retains all weather kinds, five receipts and the advanced cursor.
+Axis remains determining side under either initiative order. Explicit absence of immediate-effect
+subjects permits zero effect counts; World stays unchanged through Organization entry.
+Task008 B2 reconstructs four explicit-none stage-entry events from accepted Weather history.
+All four policy gates are checked before predecessor replay. Weather, World, holder, order and RNG
+remain unchanged; nine chronological receipts reach Reserve entry. Fleet positions retain Commonwealth
+ActiveSide while final first-acting-side Reserve position remains null until its later owner resolves it.
+Task008 D1 derives first-side Reserve ownership from accepted stage history, permits one own original
+infantry designation from none to I, and binds its actual receipt into member history. A bounded
+World writer validates the typed history-derived mutation; the initial-only World reader stays strict.
+Task008 D2 reconstructs that full history before deriving canonical completion2 bytes and ordinal-1
+cycle identity. Its evidence retains the actual predecessor; it does not publish a terminal state.
+Task019A applies that same event atomically to private terminal ReserveState1, extending prefix and
+receipt ledger once. Full retained history reconstitutes each cut; exact retries return original event
+with current state, including designation retries after completion.
+Task008 E1 consumes that completed history for Normal-Weather ordinary infantry Move4. Existing pure
+terrain/spending kernels derive Clear2 costs, ordinary CPA10/ceiling15 and immediate excess-CP Cohesion
+causes bound to actual move receipts. Each move updates typed World, own spent CP, ordered route and
+actual progress together; legacy route identity persists across revisits. Bounded World serialization
+replays causal moves before accepting current fields. E2/G1 now consumes that actual moving route through owner stop, System empty-cohort resolution and
+owner Movement completion. Stop captures exact cycle/position, resolution restores it, and completion
+records every original unit's location plus own distance-based exclusions in an actual receipt-bound
+Movement-end proof. World, spending, causal DP and material-progress references stay unchanged.
+G2 consumes all three actual lifecycle records before System completion enters Combat Position
+Determination. It preserves World, RNG and Movement-end proof, carries predecessor Breakdown sources,
+and appends a distinct Breakdown receipt without material progress. Combat actions remain dormant.
+Task008 F1 branches from actual first ordinary Move4, then commits the return move opening one
+opposing Reaction opportunity. It derives adjacency before eligibility, retains persisted window/
+opportunity identities and the suspended symbolic Movement position, and carries the same phasing
+route through Reacting/ResumeRoute flow. New bounded types support Move4 without weakening legacy
+materialized-position guards; current World serialization rederives and checks actual history.
+Creation publication evaluation now targets an expected-head per-campaign commit batch. The
+[HOST-PUB-001 evidence allocation](docs/specs/combat-authority-envelope-v1.md#runtime-evidence-ownership)
+keeps actual atomic uniqueness, commit ambiguity and process-recovery proof open until provider
+tests run at the production-host gate; Core creation codecs do not provide those guarantees.
 The [inherited successor packet](docs/specs/combat-inherited-successors-v1.md) declares20 exact
 event successors and freezes isolated Reserve completion with atomic cycle1 opening. Actual
 creation-to-first-opening provenance is now composed within the closed initial-infantry profile;

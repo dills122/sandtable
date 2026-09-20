@@ -69,7 +69,36 @@
       Include="../../docs/specs/fixtures/combat-creation-ledger-v1.json"
       Link="Campaigns/Fixtures/combat-creation-ledger-v1.json"
       CopyToOutputDirectory="PreserveNewest" />
+    <Content
+      Include="../../docs/specs/fixtures/combat-opening-preamble-v1.json"
+      Link="Campaigns/Fixtures/combat-opening-preamble-v1.json"
+      CopyToOutputDirectory="PreserveNewest" />
+    <Content
+      Include="../../docs/specs/fixtures/combat-weather-v1.json"
+      Link="Campaigns/Fixtures/combat-weather-v1.json"
+      CopyToOutputDirectory="PreserveNewest" />
+    <Content
+      Include="../../docs/specs/fixtures/combat-stage-entry-v1.json"
+      Link="Campaigns/Fixtures/combat-stage-entry-v1.json"
+      CopyToOutputDirectory="PreserveNewest" />
+    <Content
+      Include="../../docs/specs/fixtures/combat-reserve-designation-v1.json"
+      Link="Campaigns/Fixtures/combat-reserve-designation-v1.json"
+      CopyToOutputDirectory="PreserveNewest" />
+    <Content
+      Include="../../docs/specs/fixtures/combat-inherited-movement-v1.json"
+      Link="Campaigns/Fixtures/combat-inherited-movement-v1.json"
+      CopyToOutputDirectory="PreserveNewest" />
+    <Content
+      Include="../../docs/specs/fixtures/combat-inherited-movement-lifecycle-v1.json"
+      Link="Campaigns/Fixtures/combat-inherited-movement-lifecycle-v1.json"
+      CopyToOutputDirectory="PreserveNewest" />
+    <Content
+      Include="../../docs/specs/fixtures/combat-inherited-breakdown-completion-v1.json"
+      Link="Campaigns/Fixtures/combat-inherited-breakdown-completion-v1.json"
+      CopyToOutputDirectory="PreserveNewest" />
     <Using Include="Xunit" />
+    <None Include="../../docs/specs/fixtures/combat-inherited-reaction-trigger-v1.json" Link="Campaigns/Fixtures/combat-inherited-reaction-trigger-v1.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>

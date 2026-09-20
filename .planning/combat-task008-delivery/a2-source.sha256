@@ -1,0 +1,3 @@
+8fbd296e1b820cf20a43db59fe566750db61530abbd95017a8b32805b8f230ab  src/Cna.Core/Campaigns/CampaignCreationSnapshotV12.cs
+148f458b818d769c579f4ee299ae56687e2a666b247d74736cf7b04ede118d3b  src/Cna.Core/Campaigns/CampaignCreationSnapshotV12Codec.cs
+ab5d7babc7caa7962ae8133e06357dbaffe21ac60092e287b885d5113211b19a  tests/Cna.Core.Tests/Campaigns/CombatCreationSnapshotTests.cs

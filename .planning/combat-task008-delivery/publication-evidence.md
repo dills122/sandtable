@@ -2,6 +2,12 @@
 
 Read-only research complete; proposal awaiting A2 implementation/review, not a storage selection.
 
+A2 decision: choose the preservation alternative below. Actual-persistence obligation remains
+open as HOST-PUB-001; Core D/H report their in-process scope separately and Task025 carries the
+pending obligation. Canonical envelope and plan now pin owner, seam and exact provider matrix.
+No requirement is relabeled satisfied by codecs or memory CAS. Three independent A2 reviews accepted
+this allocation without finding; actual provider evidence remains open.
+
 Sources: [creation contract](../../docs/specs/combat-authority-envelope-v1.md#creation-publication-and-recovery-contract),
 [Task008 index](../../docs/design/combat-cycle-implementation-plan.md#task008-execution-index),
 [HOST-RSH-001](../../docs/research/orleans-publication-feasibility.md).
