@@ -1171,5 +1171,5 @@ retained C2 creation profile remains pinned. Selection and RBA deadlines retain 
 high-water policy, while later Round2 uses its separately versioned public opening floor.
 Exact Command retries check actor separately and recover original bytes; stale timer callbacks
 are no-ops, and cancelled paths perform no attack or resource mutation. Positive continuation
-stops at Force Assignment pending Task011. This mechanism is under verification and supplies
+stops at Force Assignment pending Task011. This verified dormant mechanism supplies
 no actual positive-history adapter, public action, durable publication or extended Snapshot12.
