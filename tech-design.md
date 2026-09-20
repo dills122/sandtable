@@ -1161,7 +1161,7 @@ selection/decline/Base2 and final opportunity admission. No costs, RNG or events
 Task010A extends actual retained G2 histories with empty selection and six no-attack steps.
 Selection and traversal each reconstruct complete predecessor evidence; cached Controls cannot
 authorize events. Arrival at same-slot Reserve Release preserves World/RNG and releases nothing.
-Timed C3a controls and generic router integration remain010B/010C; new Snapshot12 persistence
+Timed C3a controls and generic routing are separate010B/010C gates; new Snapshot12 persistence
 is not implied by fragment readback.
 
 Task010B implements the dormant C3a timed selection and RBA mechanism over an independently
@@ -1173,3 +1173,10 @@ Exact Command retries check actor separately and recover original bytes; stale t
 are no-ops, and cancelled paths perform no attack or resource mutation. Positive continuation
 stops at Force Assignment pending Task011. This verified dormant mechanism supplies
 no actual positive-history adapter, public action, durable publication or extended Snapshot12.
+
+Task010C extends generic retained-history replay through actual empty selection and no-attack
+traversal. Successor admission receives an exact completed G2 prefix, so recursive predecessor
+validation terminates before the successor tail. Closed typed projections expose cumulative owned
+receipts without changing local Control bytes. Every trailing event is consumed or rejected;
+synthetic timed C3a events remain outside this actual-history route. Snapshot12 explicitly rejects
+new projections until a separately specified root extension exists.

@@ -1,0 +1,5 @@
+Combat delivery now routes complete actual empty-selection and no-attack histories from Created through Reserve Release entry. Strict predecessor replay ends exactly at G2; cumulative projections retain every receipt without changing local Control bytes. Extra, forged, foreign and synthetic C3a suffixes are rejected. Existing Snapshot12 intentionally rejects these new families pending its separate contract.
+
+010C is implemented and under verification: seven focused tests pass, covering four histories,32 new cuts,36 including G2 and118 prefix visits. Created-before-caller-list ownership correction has RED/GREEN evidence. Full solution, boundary, format, remote CI and three sequential independent reviews remain pending. Parent010 remains open until those gates pass.
+
+Prior F2–F6/H0–H4/009A/B/010A/B are accepted on this main-based draft PR. Latest010B at762468e passed full2,277/Boundary81/build/format/exact-head CI and three fresh Ready reviews. H4 proves368exactroots/286histories. Task008 HOST-PUB-001, actual positive provenance, Prepared011, public activation and025 acceptance closure remain open. No merge is requested by this update.

@@ -2,14 +2,17 @@ using System.Text.Json;
 
 namespace Cna.Core.Campaigns;
 
-/// <summary>Dormant creation-rooted routing through Movement, Reaction forks and Breakdown completion.</summary>
+/// <summary>Dormant creation-rooted routing through Movement, Reaction forks and actual no-attack steps.</summary>
 internal static class CampaignCombatHistoryReplay
 {
     public static CampaignCombatHistoryResult Replay(CampaignCombatCreationRequest request,
         ReadOnlySpan<byte> createdBytes, IReadOnlyList<byte[]> events)
     {
         ArgumentNullException.ThrowIfNull(request);
-        var history = CampaignCombatRetainedHistory.Capture(createdBytes, events);
+        if (createdBytes.Length is 0 or > 1_048_576) throw new JsonException("Missing or oversized independently retained Created11.");
+        // Caller list access must not change the creation evidence used by this replay.
+        var ownedCreated = createdBytes.ToArray();
+        var history = CampaignCombatRetainedHistory.Capture(ownedCreated, events);
         var created = history.CreatedSpan;
         // This profile has fixed causal gates. Each partition is admitted in order by the
         // actual reader before its successor is reachable; count is never proof of validity.
@@ -58,8 +61,23 @@ internal static class CampaignCombatHistoryReplay
         if (cursor == history.Count) return new(history, new CampaignCombatHistoryProjection.MovementLifecycle(lifecycle));
 
         var breakdown = CampaignCombatBreakdownCompletion.Replay(request, created, preamble, weatherEvents,
-            stageEvents, reserveEvents, moves, lifecycleEvents, history.CopyRange(cursor, history.Count - cursor));
-        return new(history, new CampaignCombatHistoryProjection.BreakdownCompletion(breakdown));
+            stageEvents, reserveEvents, moves, lifecycleEvents, history.CopyRange(cursor++, 1));
+        if (cursor == history.Count) return new(history, new CampaignCombatHistoryProjection.BreakdownCompletion(breakdown));
+        if (breakdown.Completion is null) throw new JsonException("Selection requires actual Breakdown completion.");
+
+        // Successor admission replays only this exact G2 prefix. Passing the outer tail
+        // would recursively admit the same successor instead of proving its predecessor.
+        var predecessorEvents = history.CopyRange(0, cursor);
+        var selectionEvents = history.CopyRange(cursor, Math.Min(2, history.Count - cursor));
+        var selection = CampaignCombatInheritedSelection.Replay(request, created, predecessorEvents, selectionEvents);
+        cursor += selectionEvents.Length;
+        if (cursor == history.Count) return new(history, new CampaignCombatHistoryProjection.Selection(selection));
+        if (!selection.SelectionClosed) throw new JsonException("Traversal requires closed actual selection.");
+
+        // Pass every remaining record to the bounded strict reader; never truncate a tail.
+        var traversal = CampaignCombatInheritedNoAttack.Replay(request, created, predecessorEvents, selectionEvents,
+            history.CopyRange(cursor, history.Count - cursor));
+        return new(history, new CampaignCombatHistoryProjection.NoAttack(traversal));
     }
 
     private static CampaignCombatHistoryResult ReplayReaction(CampaignCombatCreationRequest request,

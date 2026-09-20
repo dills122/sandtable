@@ -63,6 +63,37 @@ internal abstract record CampaignCombatHistoryProjection
         public override IReadOnlyList<CampaignOpeningPreambleReceipt> Receipts => State.Receipts;
     }
 
+    internal sealed record Selection : CampaignCombatHistoryProjection
+    {
+        public Selection(CampaignCombatInheritedSelection.State state)
+        {
+            State = state;
+            Receipts = Array.AsReadOnly(state.Boundary.Entry.Receipts.Concat(state.Receipts).ToArray());
+        }
+
+        public CampaignCombatInheritedSelection.State State { get; }
+        public override long StateVersion => State.StateVersion;
+        public override string Prefix => State.Prefix;
+        public override LandSequencePosition SequencePosition => State.Boundary.Entry.SequencePosition;
+        public override IReadOnlyList<CampaignOpeningPreambleReceipt> Receipts { get; }
+    }
+
+    internal sealed record NoAttack : CampaignCombatHistoryProjection
+    {
+        public NoAttack(CampaignCombatInheritedNoAttack.State state)
+        {
+            State = state;
+            Receipts = Array.AsReadOnly(state.Selection.Boundary.Entry.Receipts
+                .Concat(state.Selection.Receipts).Concat(state.Receipts).ToArray());
+        }
+
+        public CampaignCombatInheritedNoAttack.State State { get; }
+        public override long StateVersion => State.StateVersion;
+        public override string Prefix => State.Prefix;
+        public override LandSequencePosition SequencePosition => State.Position;
+        public override IReadOnlyList<CampaignOpeningPreambleReceipt> Receipts { get; }
+    }
+
     internal sealed record ReactionTrigger(CampaignCombatReactionTriggerState State) : CampaignCombatHistoryProjection
     {
         public override long StateVersion => State.StateVersion;

@@ -1,0 +1,5 @@
+# Task010C verification facts
+Base fe5664d; explicit working-tree target, three primary files pinned in task010c-source.sha256. Documentation also changes; source frozen while review proceeds.
+Initial valid suffix RED1failure3.986s exit2 /tmp/010c-red.log. Ownership RED1failure4.023s /tmp/010c-ownership-red.log; Created copied before caller-list access. Expanded intermediate failure incorrectly assumed opposite-side Created differed; corrected test mutates campaignId binding, retained /tmp/010c-expanded.log. Expanded GREEN7/0/0 45.499s /tmp/010c-green2.log. Final formatted focused7/0/0 44.705s /tmp/010c-final.log. Scoped format exit0 emptylog. Shared regressions active; root fullgate pending.32newcuts/36withG2/118prefixvisits, four actual histories; no unique118history claim. No fixture/schema/oracle/Snapshot writer edits.
+
+Shared regressions49/0/0 1m07.838s /tmp/010c-shared.log; scopedverify exit0 emptylog. All worker processes closed. Root build exit0,0warnings/errors3.99s /tmp/task010c-build.log; binlog /tmp/task010c-build-20260920-094931--22651--uQSqiY.binlog. Root fullsuite and fullformat now active.
