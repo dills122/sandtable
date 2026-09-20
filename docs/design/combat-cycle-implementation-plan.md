@@ -885,8 +885,9 @@ Task010A/B/C dormant gates are accepted in PR136 (010C code9b999a7; full2,284/Bo
 dev review, three independent rounds and exact-head CI). This closes bounded parent010;
 Task011 private seals/Prepared is accepted at94a4ecd (full2,292/Boundary81, dev review, three
 independent rounds and exact-head CI). Atomic commitment012 is accepted at8fcf8b9
-(full2,301/Boundary81, dev review, three independent rounds and exact-head CI); result/cursor013
-is next. Actual positive campaign provenance, extended Snapshot12
+(full2,301/Boundary81, dev review, three independent rounds and exact-head CI). Result/cursor013
+is accepted at1c51464 (full2,311/Boundary81, dev review, three independent rounds and exact-head CI);
+loss/retreat014 is next. Actual positive campaign provenance, extended Snapshot12
 and host publication remain separate integration obligations.
 
 Checkpoint E: run lifecycle/recovery and paired-authorized-input checks. No hosting or public

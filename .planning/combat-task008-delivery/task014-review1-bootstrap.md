@@ -1,0 +1,9 @@
+# Fresh Review Bootstrap
+
+Review instance 1 of3. Only after accepted013 and frozen014. Exactbase/head/pins suppliedatdispatch. BlindcanonicalTask014/checkpointG, Result2spec/schema/oracle, namedsource/tests first; persistownpreliminaryledgerbeforeauthor/checks. Nopriorreviews/aggregateevidence/worker/devnotes/proposalrationale/executionhistory/CCE. AllCCEdisabled; no broad docs/reviewscontentsearch.
+
+Scopefive materialpaths: Resolutionengine/state, ResolutionCodec, Obligationssafehashedevolution, newLossRetreatprojection/helper, newLossRetreatTests. Sixthphysicalpath is narrowexistingCombatResolutionTests future-familyassertion update, preservingoriginal013proof whileauthorizing014. VerifyrealtrustedC3a/Round/Resultreplay, originalpaidcontext/result/RNGinvariants, privatehashedconstructorvalidationonallpaths, immutableappendstages. IndependentmandatoryopeningusesoriginalConfig1; localdeadline/highwateronly, auditmaximumcannotblockopening; owner/shape/contextbeforefallback, acceptedintentimmunetotimers, exactretrieswithoutduplicateeffects.
+
+Evidence144literalevents176HASHcuts across32contexts, notliteralintermediateJSON. Simultaneousloss/capturefromprelossroles, refusalmodifier, thresholdDP, pendinglotspre-losslocations, contentderivedretreat+element/representationcoherence, mandatoryCP10→11incrementalDP andcappedvictoryRPafteractualevacuationonly. FulltypedallowedWorldequalitymustremain; no arbitrarystate/cacheauthority. Stopstatusretreat; rejectcustody/relationships/closure/CA/ReserveRelease. DormantCorediscard/replayisnothosttransaction; actualpositivehistory/Snapshot/publicgatesopen.
+
+Readonlysource/Git; writeonlyown task014-review1-report.md. Nofixes/commits/agents/newworkstreams/extrareviews. Rootownsacceptance. .NETclearance atdispatch; nativeMTP --project/login:false/approvedIPC/uniquebinlogs; no --disable-build-servers ondotnettest. Closeallprocesses; findingsfirst/code+plan/claimreconciliation/exactchecks+limits/oneverdict.

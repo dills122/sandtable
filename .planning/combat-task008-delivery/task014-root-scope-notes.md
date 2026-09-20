@@ -1,0 +1,5 @@
+# Task014 final scope reconciliation
+
+013 accepted1c51464. Root reread existing CombatResolutionTests: DiscardRetryIndependentInputsAndLaterFamiliesCannotRerollOrSettle currently asserts allpostresolveevents rejected. Task014 intentionallyenablesfirstadvance/disposition etc, so unchangedoldassertionswouldbeincorrect. Authorize narrowexistingtestexpectationmaintenance as sixthphysicalpath besidefive materialcomponents. Preserveoriginal01332events64hashcuts/draw/overflow/provenance/retrytests and later015/016guards. No contractchange or extracomponent; ordinarytestmaintenance within authorizeddelivery, no userapproval inferredfromfilecount. Newhelper keepsprojectionreadable ratherthancompressing engine solelytofitfivephysicalfiles.
+
+Finalscope Resolution,ResolutionCodec,Obligations,newLossRetreathelper,newLossRetreatTests,narrowCombatResolutionTests. Rootdispatch/neutralbootstraps updatedbeforeimplementation. All otherproposallimits unchanged.
