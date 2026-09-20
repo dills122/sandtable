@@ -232,17 +232,25 @@ internal static class CampaignCombatIdentityCodec
         WriteBoundarySyntax(writer, value, kind, preserveArrayOrder: true);
     }
 
+    internal static void WriteResultExternalSyntax(Utf8JsonWriter writer, JsonElement value, string kind)
+    {
+        if (kind is not ("World" or "Result" or "Random" or "UnitKey" or "Disposition" or "Losses" or "Retreat" or
+            "Custody" or "RelationsReceipt" or "id" or "hash" or "rawHash" or "int" or "long" or "ulong" or "bool" or "side" or "actor" or "null"))
+            throw new JsonException("Unsupported Result2 external syntax kind.");
+        WriteBoundarySyntax(writer, value, kind, preserveArrayOrder: true, resultProfile: true);
+    }
+
     private static void WriteBoundarySyntax(Utf8JsonWriter writer, JsonElement value, string kind,
-        bool assessmentArray = false, bool preserveArrayOrder = false)
+        bool assessmentArray = false, bool preserveArrayOrder = false, bool resultProfile = false)
     {
         // C3a's authority-envelope primitive grammar forbids these external values,
         // including empty Route arrays. Inherited noninitial profiles keep their own rules.
-        if (preserveArrayOrder && kind is "Route" or "LegacyBrokenVehicleLot")
+        if (preserveArrayOrder && (kind == "LegacyBrokenVehicleLot" || kind == "Route" && !resultProfile))
             throw new JsonException("C3a forbids noninitial external route/vehicle values.");
         if (kind.EndsWith('?'))
         {
             if (value.ValueKind == JsonValueKind.Null) writer.WriteNullValue();
-            else WriteBoundarySyntax(writer, value, kind[..^1], preserveArrayOrder: preserveArrayOrder);
+            else WriteBoundarySyntax(writer, value, kind[..^1], preserveArrayOrder: preserveArrayOrder, resultProfile: resultProfile);
             return;
         }
         if (kind == "LifecycleFlow")
@@ -278,7 +286,7 @@ internal static class CampaignCombatIdentityCodec
             foreach (var field in fields)
             {
                 writer.WritePropertyName(field[0]);
-                WriteBoundarySyntax(writer, value.GetProperty(field[0]), field[1], kind == "CandidateAssessment" || InheritedStepShapes.ContainsKey(kind), preserveArrayOrder);
+                WriteBoundarySyntax(writer, value.GetProperty(field[0]), field[1], kind == "CandidateAssessment" || InheritedStepShapes.ContainsKey(kind), preserveArrayOrder, resultProfile);
             }
             writer.WriteEndObject(); return;
         }
@@ -290,7 +298,7 @@ internal static class CampaignCombatIdentityCodec
             var child = kind.EndsWith("[]", StringComparison.Ordinal) ? kind[..^2] : "id";
             var items = value.EnumerateArray().ToArray();
             writer.WriteStartArray();
-            foreach (var item in items) WriteBoundarySyntax(writer, item, child, preserveArrayOrder: preserveArrayOrder);
+            foreach (var item in items) WriteBoundarySyntax(writer, item, child, preserveArrayOrder: preserveArrayOrder, resultProfile: resultProfile);
             writer.WriteEndArray();
             // Canonical external arrays sort by frozen keys; route order and assessment IDs
             // remain semantic. Validate order after children so malformed keys cannot escape.

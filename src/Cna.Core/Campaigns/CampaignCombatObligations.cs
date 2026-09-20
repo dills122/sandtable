@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Cna.Core.Content;
 
 namespace Cna.Core.Campaigns;
@@ -233,12 +234,36 @@ internal sealed record CampaignCombatSettlementState
         CampaignCombatRetreatDisposition? disposition, CampaignCombatLossReceipt? losses,
         CampaignCombatRetreatReceipt? retreat, CampaignCombatCustodyReceipt? custody,
         CampaignCombatRelationshipsReceipt? relationships)
+        : this(settlementId, commitmentId, resultId, gameTurn, operationStage, attacker, defender,
+            preLossElements, result, disposition, losses, retreat, custody, relationships, false)
+    { }
+
+    internal static CampaignCombatSettlementState CreateResolvedResultV2(string commitmentId, string resultId,
+        int gameTurn, int operationStage, CampaignCombatUnitKey attacker, CampaignCombatUnitKey defender,
+        IEnumerable<CampaignElementStateV6> preLossElements, CampaignCombatResultFacts result)
+    {
+        static bool Valid(string value, string prefix) => value is not null && value.StartsWith(prefix, StringComparison.Ordinal) &&
+            value.Length == prefix.Length + 64 && value[prefix.Length..].All(c => c is >= '0' and <= '9' or >= 'a' and <= 'f');
+        if (!Valid(commitmentId, "cmt.") || !Valid(resultId, "res."))
+            throw new ArgumentException("Result2 occurrence identities require exact domain hashes.");
+        var settlementId = "set." + CampaignOpeningPreambleCodec.HashWithDomain("sandtable.combat.settlement.v2",
+            JsonSerializer.SerializeToUtf8Bytes(new { commitmentId, resultId }))[7..];
+        return new(settlementId, commitmentId, resultId, gameTurn, operationStage, attacker, defender,
+            preLossElements, result, null, null, null, null, null, true);
+    }
+
+    private CampaignCombatSettlementState(string settlementId, string commitmentId, string resultId,
+        int gameTurn, int operationStage, CampaignCombatUnitKey attacker, CampaignCombatUnitKey defender,
+        IEnumerable<CampaignElementStateV6> preLossElements, CampaignCombatResultFacts result,
+        CampaignCombatRetreatDisposition? disposition, CampaignCombatLossReceipt? losses,
+        CampaignCombatRetreatReceipt? retreat, CampaignCombatCustodyReceipt? custody,
+        CampaignCombatRelationshipsReceipt? relationships, bool resolvedV2)
     {
         SettlementId = ContentContractGuards.RequireStableId(settlementId, nameof(settlementId));
         if (SettlementId.Length > 80) throw new ArgumentOutOfRangeException(nameof(settlementId));
         CommitmentId = ContentContractGuards.RequireStableId(commitmentId, nameof(commitmentId));
         ResultId = ContentContractGuards.RequireStableId(resultId, nameof(resultId));
-        if (CommitmentId != $"{SettlementId}.commit" || ResultId != $"{SettlementId}.result")
+        if (!resolvedV2 && (CommitmentId != $"{SettlementId}.commit" || ResultId != $"{SettlementId}.result"))
             throw new ArgumentException("Settlement IDs must bind the same occurrence.", nameof(resultId));
         _ = new CampaignCombatScope(gameTurn, operationStage);
         GameTurn = gameTurn;

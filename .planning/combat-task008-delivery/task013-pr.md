@@ -1,0 +1,5 @@
+Dormant Combat now resolves an authenticated paid commitment into an exact result, final RNG cursor and pending settlement in one immutable candidate. It retains rejected random bytes and uses eight ordered dice plus a capture die only when required. Exact retries recover original bytes without rerolling; loss/retreat/custody settlement remains pending.
+
+Task013 is under verification:32 literal result events and64 initial/resolved state-hash cuts,10focused/100shared tests pass, scopedformat clean. Development review completed; full repository gate, exact-head CI and three sequential independent reviews pending. Narrow settlement factory and Result2 grammar profile preserve legacy/C3a behavior.
+
+Task012 accepted at8fcf8b9 after full2,301/Boundary81/build/format/exact-head CI and three Ready reviews. Prior F2–F6/H0–H4/009A/B/010A/B/C/011 also accepted in this main-based draft. Actual positive campaign provenance, extended Snapshot12, HOST-PUB-001, mandatory settlement, public activation and025 acceptance closure remain open. No merge requested.

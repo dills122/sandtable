@@ -1197,3 +1197,13 @@ Original Base2 retains pre-use eligibility, while current typed World records pa
 Exact retries recover original bytes after ammunition reaches zero without recharging. Core
 candidate discard/replay demonstrates local atomicity; durable host publication remains separate.
 Result, mandatory settlement and Close Assault completion remain later gates.
+
+Task013 adds dormant Result2 resolution over an independently replayed paid Round2 commitment.
+The result retains every consumed RNG byte, including rejected values, and eight ordered dice
+plus a capture die only when required. One immutable candidate carries result, final cursor,
+pending settlement World and event/head update. Both roles use paid pre-loss facts; resolution
+applies no further resource debit or consequence. A named Result2 settlement factory derives
+hashed identities while preserving legacy constructor checks. Its named grammar profile allows
+semantic Route arrays without changing C3a syntax. Exact retries recover the original result;
+overflow or discarded publication leaves retained authority unchanged. This is Core candidate
+atomicity; host durability, actual positive campaign history and settlement remain later gates.
