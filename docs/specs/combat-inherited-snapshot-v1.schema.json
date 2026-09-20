@@ -1,0 +1,48 @@
+{
+  "contract": "combat-inherited-snapshot-v1",
+  "objects": {
+    "Snapshot": "contractVersion:int campaignId:id stateVersion:long rulesetHash:rawHash setup:C2.Setup world:Movement.World initiativeHolder:side? operationStageOrders:Pre.PreambleOrder[] operationStageWeather:Weather.WeatherValue[] randomState:C2.Random currentPosition:RootPosition reactionWindow:Reaction.ReactionWindow? breakdownFlow:RootFlow configuration:C2.Config creationReceipt:C2.Receipt chroniclePrefix:hash cycleState:CycleState? combatState:null commandReceipts:InheritedCommandReceipt[]",
+    "ReserveDesignation": "kind:id firstActingSide:side members:Reserve.ReserveMember[]",
+    "InheritedCycle": "kind:id firstActingSide:side members:Reserve.ReserveMember[] cycle:Reserve.Authority cycleId:hash openingBaseHash:hash completionReceiptId:id sequencePosition:C2.Position tracks:Movement.InheritedTrack[] actualProgressRefs:Movement.ActualProgressRef[] interruptContext:Lifecycle.InterruptContext? movementEnd:Lifecycle.MovementEndProof? breakdownCompletionReceiptId:id?"
+  },
+  "aliases": {
+    "InheritedCommandReceipt": "Pre.PreambleReceipt"
+  },
+  "unions": {
+    "CycleState": {
+      "reserve-designation": "ReserveDesignation",
+      "inherited-cycle": "InheritedCycle"
+    },
+    "RootPosition": {
+      "sequence": "Reaction.CurrentSequencePosition",
+      "reaction": "Reaction.CurrentReactionPosition",
+      "breakdown-stop": "Reaction.CurrentBreakdownPosition"
+    },
+    "RootFlow": {
+      "idle": "Lifecycle.IdleFlow",
+      "moving": "Movement.MovingFlow",
+      "phasing-stop": "Lifecycle.PhasingStopFlow",
+      "reacting": "Reaction.ReactingFlow",
+      "reactor-stop-open": "Reaction.ReactorStopOpenFlow",
+      "reactor-stop-closed": "Fallback.ReactorStopClosedFlow"
+    }
+  },
+  "limits": {
+    "bytes": 1048576,
+    "depth": 32,
+    "arrayItems": 512,
+    "worldCauses": 4096,
+    "historyEvents": 512,
+    "historyBytes": 16777216
+  },
+  "externalContracts": {
+    "C2": "combat-authority-envelope-v1.schema.json",
+    "Pre": "combat-opening-preamble-v1.schema.json",
+    "Weather": "combat-weather-v1.schema.json",
+    "Reserve": "combat-reserve-designation-v1.schema.json",
+    "Movement": "combat-inherited-movement-v1.schema.json",
+    "Lifecycle": "combat-inherited-movement-lifecycle-v1.schema.json",
+    "Reaction": "combat-inherited-reaction-lifecycle-v1.schema.json",
+    "Fallback": "combat-inherited-reaction-active-fallback-v1.schema.json"
+  }
+}

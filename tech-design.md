@@ -995,6 +995,11 @@ F6 implements those three distinct events from actual second-move authority. Com
 empty move inventory and records the retained route; System resolution returns inactive Reaction,
 then System closure resumes the phasing route. All three preserve World, tracks, progress and RNG.
 Retries authenticate against each command's owner/System role before returning retained effects.
+The accepted [H0 inherited Snapshot12 contract](docs/specs/combat-inherited-snapshot-v1.md) defines368selected retained cuts.
+It preserves the nineteen-field root and creation bytes while adding typed Reserve/inherited-cycle
+state slots. Full roots derive from trusted creation and complete causal history; identical histories
+must yield identical bytes across family interfaces. Runtime routing and disabled-admission restore
+remain later H gates; contract vectors do not prove those behaviors.
 Creation publication evaluation now targets an expected-head per-campaign commit batch. The
 [HOST-PUB-001 evidence allocation](docs/specs/combat-authority-envelope-v1.md#runtime-evidence-ownership)
 keeps actual atomic uniqueness, commit ambiguity and process-recovery proof open until provider

@@ -144,6 +144,10 @@ from command kind; direct closure creates no reactor stop. F4 active fallback in
 the second reactor move; its existing route stays open and its track extends to supply.
 F6 then retains explicit completion3, stop resolution2 and noeligible closure3; only closure
 resumes phasing Movement, and resolved opportunity IDs differ from the empty closed-ID list.
+The accepted [inherited Snapshot12 contract](docs/specs/combat-inherited-snapshot-v1.md) defines literal retained roots.
+Its `reserve-designation` and `inherited-cycle` tags describe typed `cycleState` arms;
+`InheritedCommandReceipt` names the existing preamble receipt grammar. These are persisted data
+shapes, not new services or public actions. Runtime restore remains a separate H gate.
 The [inherited Reaction-trigger packet](docs/specs/combat-inherited-reaction-trigger-v1.md) uses
 private `TriggerState`, retains `element-moved`4 and opens one identity-bound `ReactionWindow`.
 `ReactingPosition` suspends Movement; it is not a participant choice, move or window closure.
