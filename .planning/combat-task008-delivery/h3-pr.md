@@ -11,8 +11,8 @@ H3 focused129 tests and final inventory check pass; build/full format pass. All5
 34histories are covered, including32new histories; cumulative H1–H3 covers all286selected histories.
 Tests include exact predecessor goldens, H0 state fields, canonical re-signed effects/actors, malformed
 routing hints, conflicting forks and byte ownership. Full runtime root bytes and disabled-admission
-restore remain H4. Dev review and two independent rounds passed. Cumulative gate, final review and exact-head CI
-remain pending at this draft checkpoint; no H3 acceptance claim yet.
+restore remain H4. Dev review, all three independent rounds, cumulative2,233/boundary81 and exact-head CI passed
+atc5f8db3. H3 is accepted; H4 literal-root restore is next.
 
 Earlier F2–F6/H0/H1/H2 acceptance evidence is retained. H0 counter-log CodeQL alert cleared through
 one bounded experiment and final review4; exact-head CI passed. One main-based draft PR. H4 full

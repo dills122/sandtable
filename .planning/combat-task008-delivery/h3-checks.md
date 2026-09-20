@@ -22,3 +22,9 @@ Rootbuild exit0/0warnings/0errors4.21s; /tmp/h3-build.log and
 /tmp/h3-build-20260920-053224--2270--aHwwFx.binlog. Fullsuite/formatnowrunning, boundaryafterfullsuite.
 
 Rootfullformat verification exit0, /tmp/h3-format-full.log empty. Fourfrozenhashes unchanged.
+
+Rootfullsuite exit0:2233pass/0fail/0skip6m38s458; Core6m38s275,Runner3m32s373,Contracts609ms.
+/tmp/h3-suite.log; process98093closed. Boundary nowrunning; finalreviewsourcepassconcurrent.
+
+Boundary81pass/0fail/0skip9s902 /tmp/h3-boundary.log; process46107closed. Allroot.NETprocessesclosed;
+review3clearedfor independentfocusedrerun. Localgatecomplete; sourcehashesunchanged.
