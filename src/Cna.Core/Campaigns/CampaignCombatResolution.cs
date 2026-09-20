@@ -64,6 +64,7 @@ internal sealed class CombatResolutionContext
     public string CommittedHash { get; }
     internal ReadOnlySpan<byte> WorldBytes => worldBytes;
 }
+internal sealed record CombatResolutionClosureOrigin(long PriorVersion, string PriorPrefix);
 internal sealed record CombatResolutionState
 {
     internal CombatResolutionState(CombatResolutionContext context)
@@ -82,6 +83,11 @@ internal sealed record CombatResolutionState
     public long StateVersion { get; init; }
     public string Prefix { get; init; }
     public string Status { get; init; } = "committed";
+    public string? RoundClosureReceiptId { get; init; }
+    public string? CaCompletionReceiptId { get; init; }
+    public bool Closed { get; init; }
+    internal CombatResolutionClosureOrigin? RoundClosureOrigin { get; init; }
+    internal CombatResolutionClosureOrigin? CaCompletionOrigin { get; init; }
     public IReadOnlyList<CampaignOpeningPreambleReceipt> Receipts { get => receipts; init => receipts = Array.AsReadOnly(value.ToArray()); }
 }
 internal sealed record CombatResolutionWindow(string DecisionId, string Kind, string Owner, CombatStepsTiming Timing);
@@ -93,6 +99,18 @@ internal abstract record CombatResolutionEffect(string Kind)
     internal sealed record Custody(string Reason, CombatStepsTiming? Timing, CampaignCombatCustodyReceipt Payload) : CombatResolutionEffect("custody-settled");
     internal sealed record Loss(CampaignCombatLossReceipt Payload) : CombatResolutionEffect("losses-settled");
     internal sealed record Retreat(CampaignCombatRetreatReceipt Payload) : CombatResolutionEffect("retreat-settled");
+    internal sealed record Relationships(CampaignCombatRelationshipsReceipt Payload) : CombatResolutionEffect("relationships-settled");
+    internal sealed record RoundClosed : CombatResolutionEffect
+    {
+        internal RoundClosed(string settlementId, IEnumerable<string> proofReceipts) : base("round-closed")
+        {
+            SettlementId = settlementId; ProofReceipts = Array.AsReadOnly(proofReceipts.ToArray());
+        }
+        public string SettlementId { get; }
+        public IReadOnlyList<string> ProofReceipts { get; }
+    }
+    internal sealed record CaCompleted(string FromPositionId, string ToPositionId, string PreviousStepReceiptId,
+        string RoundClosureReceiptId) : CombatResolutionEffect("ca-completed");
 }
 internal sealed class CombatResolutionResult(CombatResolutionState state, CombatStepsDisposition disposition, byte[]? eventBytes, string? receiptId)
 {
@@ -103,7 +121,7 @@ internal sealed class CombatResolutionResult(CombatResolutionState state, Combat
     public string? ReceiptId { get; } = receiptId;
 }
 
-/// <summary>Authenticated dormant result/cursor projection; mandatory settlement remains pending.</summary>
+/// <summary>Authenticated dormant result, mandatory settlement and terminal CA closure.</summary>
 internal static class CampaignCombatResolution
 {
     internal const string Policy = "sandtable.combat.mandatory-window-clock.v2";
@@ -180,6 +198,7 @@ internal static class CampaignCombatResolution
         var window = prior.Window;
         if (command.Kind is "expire" or "unavailable" && (window is null || command.DecisionId != window.DecisionId))
             return new(prior, CombatStepsDisposition.NoOp, null, null);
+        Require(!prior.Closed, "Result2 already closed.");
         Require(prior.Receipts.Count < 32 && prior.StateVersion < long.MaxValue, "Result2 receipt/version capacity exceeded.");
         Require(command.Kind is not ("resolve" or "advance") || command.ExpectedPriorVersion == prior.StateVersion, "Stale Result2 version.");
         Require(command.Kind is "resolve" or "advance" ? command.DecisionId is null : window is not null && command.DecisionId == window.DecisionId,
@@ -278,7 +297,30 @@ internal static class CampaignCombatResolution
                     next = prior with { World = CampaignCombatLossRetreat.Project(prior.Context, prior.Result!, settlement.WithResultV2Retreat(retreat)), Status = "retreat" };
                     effect = new CombatResolutionEffect.Retreat(retreat);
                 }
-                else throw new JsonException("Relationships and closure require later tasks.");
+                else if (prior.Status is "retreat" or "custody")
+                {
+                    var settlement = prior.World.Settlements.Single(); var relationships = CampaignCombatLossRetreat.Relationships(prior.Context, prior.World);
+                    next = prior with { World = CampaignCombatLossRetreat.Project(prior.Context, prior.Result!, settlement.WithResultV2Relationships(relationships)), Status = "relationships" };
+                    effect = new CombatResolutionEffect.Relationships(relationships);
+                }
+                else if (prior.Status == "relationships")
+                {
+                    var settlement = prior.World.Settlements.Single();
+                    var proof = new[] { settlement.Disposition!.ReceiptId, settlement.Losses!.ReceiptId, settlement.Retreat!.ReceiptId,
+                        settlement.Custody?.ReceiptId, settlement.Relationships!.ReceiptId }.OfType<string>();
+                    next = prior with { Status = "round-closed" };
+                    effect = new CombatResolutionEffect.RoundClosed(settlement.SettlementId, proof);
+                }
+                else if (prior.Status == "round-closed")
+                {
+                    var positions = Cna1979LandSequence.CreateTurn(1).ToArray();
+                    var start = Array.FindIndex(positions, p => p.PositionId == committed.Base.Boundary.Position.PositionId);
+                    Require(start >= 0 && start + 6 < positions.Length, "Missing authenticated CA route.");
+                    next = prior with { Status = "closed", Closed = true };
+                    effect = new CombatResolutionEffect.CaCompleted(positions[start + 5].PositionId, positions[start + 6].PositionId,
+                        committed.StepReceipts[^1], prior.RoundClosureReceiptId!);
+                }
+                else throw new JsonException("Invalid Result2 structural stage.");
             }
         }
         var unsigned = CampaignCombatResolutionCodec.SerializeEvent(prior, input, effect, author, null);
@@ -290,6 +332,8 @@ internal static class CampaignCombatResolution
             Prefix = CampaignOpeningPreambleCodec.EventPrefix(prior.Prefix, bytes),
             Receipts = [.. prior.Receipts, new(hash, CampaignOpeningPreambleCodec.Hash(bytes), receiptId, input.Actor, prior.StateVersion + 1)]
         };
+        if (effect is CombatResolutionEffect.RoundClosed) next = next with { RoundClosureReceiptId = receiptId, RoundClosureOrigin = new(prior.StateVersion, prior.Prefix) };
+        if (effect is CombatResolutionEffect.CaCompleted) next = next with { CaCompletionReceiptId = receiptId, CaCompletionOrigin = new(prior.StateVersion, prior.Prefix) };
         _ = CampaignCombatResolutionCodec.SerializeState(next);
         return new(next, CombatStepsDisposition.Accepted, bytes, receiptId);
     }

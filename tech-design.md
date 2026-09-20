@@ -1216,7 +1216,7 @@ and pending custody lots at their pre-loss origin. Actual evacuation updates ele
 representation together, permits mandatory CP beyond ten with incremental cohesion cost, and
 grants capped attacker victory relief. Immutable settlement appends validate identity and stage;
 serialization checks status/window/receipt agreement and the full allowed World projection.
-Custody decisions and relationship/round closure remain subsequent gates.
+Tasks015/016 add custody decisions and relationship/round closure after this frontier.
 
 Task015 extends dormant Result2 through guarded custody or immediate escape entitlement. Positive
 captured lots open an independent Config1 window owned by their actual captor. Accepted retreat
@@ -1224,4 +1224,32 @@ timestamps cannot constrain its local clock. Guard creation transfers one TOE an
 post-retreat donor resources; escape retains original identity and quantity with a twelve-stage
 training-gated entitlement, without restoring TOE. Typed projection and canonical serialization
 retain guard provenance and future upkeep/training obligations. No future duty executes here;
-relationships, round closure and Close Assault completion remain Task016.
+Task016 supplies relationships, round closure and Close Assault completion.
+
+Task015 custody acceptance completed three fresh independent reviews on2026-09-20;
+[retained evidence](.planning/combat-task008-delivery/task015-evidence.md) distinguishes historical full
+gates, exact-candidate CI and independently rebuilt focused/boundary checks. Public behavior and
+future-duty execution remain unchanged.
+
+Task016 extends dormant Result2 through original-participant relationships, round closure and Close
+Assault completion to Reserve Release. Current original locations and authenticated Content edges
+determine adjacency; raw required retreat suppresses Engaged even when refused. Null relationships
+still retain a receipt. Complete typed World comparison remains required after relationships;
+World7's later-movement allowance does not authorize changed Result2 resources. Ordered immediate
+settlement receipts bind round closure, then CA binds that actual event and original fifth step.
+Immutable internal pre-event facts let serialization recompute terminal event identities and prefix
+links; canonical wire fields remain unchanged and full trusted history replay remains authoritative.
+Retry survives closure, while fresh actions reject and stale callbacks remain NoOp. Future duties
+remain stored and unexecuted. Task016 acceptance includes full2,331/Boundary81, three fresh Ready reviews and exact-candidate CI; [evidence](.planning/combat-task008-delivery/task016-evidence.md) retains checks. Reserve Release execution,
+actual positive campaign history, extended Snapshot and durable publication remain later gates.
+
+Task017A1 adds an accepted dormant isolated ReleaseBase model/codec foundation. Caller
+retains both creation context and independently expected typed base; raw canonical bytes must match
+that complete expected value. Immutable Release history records preserve designation/conversion,
+release ceilings and expired next-Movement exception facts. This isolated probe boundary does not
+authenticate actual campaign World from a hash. Native Release lifecycle and positive predecessor
+admission remain separate Task017 children; historical Result1 fixture rows are not adapted here.
+
+Task017A1 acceptance:44isolated base hashes, full2,337/Boundary81, clean build/format, three fresh
+Ready reviews and exact-candidate CI. [Evidence](.planning/combat-task008-delivery/task017a1-evidence.md)
+distinguishes base validation from later Release lifecycle and actual campaign provenance.

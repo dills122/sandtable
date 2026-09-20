@@ -104,12 +104,10 @@ internal static class CampaignCombatLossRetreat
             paid.Relationships, lots, paid.Guards, paid.ReplacementEntitlements, paid.FutureObligations, [expected]);
         if (retained.Custody is null)
         {
-            Require(expected == retained, "Settlement differs from original result and causal typed receipts.");
-            return beforeCustody;
+            return FinishRelationships(context, beforeCustody, retained);
         }
         var custody = Custody(context, beforeCustody, retained.Custody.Kind);
         expected = expected.WithResultV2Custody(custody);
-        Require(expected == retained, "Custody differs from causal typed receipt.");
         var lot = beforeCustody.CustodyLots.Single(); var donor = elements[lot.Captor.ElementId];
         var guards = paid.Guards.ToList(); var entitlements = paid.ReplacementEntitlements.ToList(); var obligations = paid.FutureObligations.ToList();
         var earned = new CampaignCombatScope(expected.GameTurn, expected.OperationStage);
@@ -134,8 +132,38 @@ internal static class CampaignCombatLossRetreat
             obligations.Add(new(expected.SettlementId + ".training", custody.ReceiptId, "replacement-training-gate", custody.EntitlementId!,
                 earned, eligible, "before-replacement-eligibility-training", "retained-unimplemented"));
         }
-        return new(7, paid.CreationBinding, elements.Values, beforeCustody.Representations, paid.BrokenVehicleLots, causes,
+        var afterCustody = new CampaignWorldSnapshotV7(7, paid.CreationBinding, elements.Values, beforeCustody.Representations, paid.BrokenVehicleLots, causes,
             paid.Relationships, lots, guards, entitlements, obligations, [expected]);
+        return FinishRelationships(context, afterCustody, retained);
+    }
+
+    internal static CampaignCombatRelationshipsReceipt Relationships(CombatResolutionContext context, CampaignWorldSnapshotV7 world)
+    {
+        var settlement = world.Settlements.Single();
+        var attacker = world.Elements.Single(e => e.ElementId == settlement.Attacker.ElementId).CurrentLocationId;
+        var defender = world.Elements.Single(e => e.ElementId == settlement.Defender.ElementId).CurrentLocationId;
+        var adjacent = context.Creation.Setup.Artifact.Definition.Edges.Any(e =>
+            e.FirstLocationId == attacker && e.SecondLocationId == defender || e.FirstLocationId == defender && e.SecondLocationId == attacker);
+        var kind = adjacent ? settlement.Result.RawEngaged && settlement.Result.RequiredRetreat == 0 ? "engaged" : "contact" : null;
+        return new(settlement.SettlementId + ".relationships", settlement.Custody?.ReceiptId ?? settlement.Retreat?.ReceiptId
+            ?? throw new JsonException("Relationships require retreat."), kind is null ? null : settlement.SettlementId + ".relation", kind);
+    }
+
+    private static CampaignWorldSnapshotV7 FinishRelationships(CombatResolutionContext context, CampaignWorldSnapshotV7 frontier,
+        CampaignCombatSettlementState retained)
+    {
+        var expected = frontier.Settlements.Single(); var relations = frontier.Relationships.ToList();
+        if (retained.Relationships is not null)
+        {
+            var receipt = Relationships(context, frontier);
+            expected = expected.WithResultV2Relationships(receipt);
+            if (receipt.Kind is not null)
+                relations.Add(new(receipt.RelationshipId!, receipt.ReceiptId, receipt.Kind, expected.Attacker, expected.Defender,
+                    expected.GameTurn, expected.OperationStage, true, null, null));
+        }
+        Require(expected == retained, "Settlement differs from original result and causal typed receipts.");
+        return new(7, frontier.CreationBinding, frontier.Elements, frontier.Representations, frontier.BrokenVehicleLots, frontier.CohesionCauses,
+            relations, frontier.CustodyLots, frontier.Guards, frontier.ReplacementEntitlements, frontier.FutureObligations, [expected]);
     }
 
     internal static CampaignCombatCustodyReceipt Custody(CombatResolutionContext context, CampaignWorldSnapshotV7 world, string kind)

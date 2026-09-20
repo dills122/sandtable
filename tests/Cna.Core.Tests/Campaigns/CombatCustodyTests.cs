@@ -26,7 +26,8 @@ public sealed class CombatCustodyTests
             var final = Replay(test, inputs[..end], literals[..end]); Assert.Null(final.Window); Assert.Null(final.World.Settlements.Single().Relationships);
             if (final.World.Guards.Count > 0) guards++; else if (final.World.ReplacementEntitlements.Count > 0) escapes++;
             Assert.Equal(final.World.CustodyLots.Count > 0 ? "custody" : "retreat", final.Status);
-            for (var i = end; i < inputs.Length; i++) Assert.ThrowsAny<JsonException>(() => Apply(test, inputs[..end], literals[..end], inputs[i]));
+            Assert.Equal(literals[end], Apply(test, inputs[..end], literals[..end], inputs[end]).EventBytes);
+            for (var i = end + 1; i < inputs.Length; i++) Assert.ThrowsAny<JsonException>(() => Apply(test, inputs[..end], literals[..end], inputs[i]));
         }
         Assert.Equal((176, 208, 8, 8), (events, cuts, guards, escapes));
     }

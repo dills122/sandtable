@@ -1,18 +1,18 @@
 # Combat and Cycle Combined Contract / Implementation Plan
 
-**Status:** Contract checkpoint B, dormant foundations, and Initial H Core codec/replay gate are complete. Dormant Tasks009–014 are accepted; Task015 custody is merged and tested, with independent review acceptance pending. PR136 is merged to main. Actual publication evidence remains open; public Combat gameplay remains inactive.
+**Status:** Contract checkpoint B, dormant foundations, and Initial H Core codec/replay gate are complete. Dormant Tasks009–015 are accepted, including custody after three fresh independent reviews. PR136 is merged to main. Actual publication evidence remains open; public Combat gameplay remains inactive.
 `CMB-PLAN-001` and POL-001–008 were accepted on 2026-09-06 at `a10a588`. Source and static Content
 work (`001`–`002`) is complete. Parent `003` is complete through the
 [authority-composition handoff](../specs/combat-authority-composition-v1.md). Checkpoint B closes through the
 [Task004C integration index](../specs/combat-outward-composition-v1.md). Task004A side contracts and Task004B occurrence, child and
-parent evidence are accepted with strict clock privacy and versioned round/settlement authority. Dormant Tasks005–007 and Task008 creation/inherited adapters are implemented for the selected profile. Initial H full restore and dormant Tasks009–014 are accepted in PR136; Task015 is implemented with review acceptance pending; Tasks016–025 and HOST-PUB-001 remain open.
+parent evidence are accepted with strict clock privacy and versioned round/settlement authority. Dormant Tasks005–007 and Task008 creation/inherited adapters are implemented for the selected profile. Initial H full restore and dormant Tasks009–015 are accepted in PR136; Tasks016–025 and HOST-PUB-001 remain open.
 
 | Delivery layer | Current boundary | Next required outcome |
 | --- | --- | --- |
 | Research and policy | Complete for the selected bounded profile, including `HOST-RSH-001` | Reopen only for a new source, failed assumption, or approved profile expansion |
 | Authority contracts | CON-002–004 and all selected-profile inherited families are reconciled in 28 creation-rooted composition traces; parent003 complete | Preserve exact Task004 handoff while later runtime work derives boundaries from accepted history |
 | Outward contracts | Task004A/B/C accepted; all 72 ACs mapped with bounded evidence and explicit runtime deferrals | Preserve accepted bytes and source/privacy boundaries during dormant implementation |
-| Runtime | Dormant foundations and Initial H Core restore implemented; Task008 publication incomplete; Tasks009–014 accepted; Task015 custody merged and tested, review acceptance pending | Finish015 independent review before016–019, retaining actual positive-history, Snapshot successor and HOST-PUB-001 publication obligations |
+| Runtime | Dormant foundations and Initial H Core restore implemented; Task008 publication incomplete; Tasks009–015 accepted | Implement016–019, retaining actual positive-history, Snapshot successor and HOST-PUB-001 publication obligations |
 | Public and simulator | Tasks020–024 not started | Activate the certified side-safe profile, then prove strict Exercise/Runner reconstruction and repeatability |
 | Closeout | Task025 not started | Full gate, evidence reconciliation, and authentic loop demonstration without overstating retained obligations |
 
@@ -888,8 +888,9 @@ independent rounds and exact-head CI). Atomic commitment012 is accepted at8fcf8b
 (full2,301/Boundary81, dev review, three independent rounds and exact-head CI). Result/cursor013
 is accepted at1c51464 (full2,311/Boundary81, dev review, three independent rounds and exact-head CI);
 loss/retreat014 is accepted ate7c9e8f (full2,318/Boundary81, dev review, three independent rounds
-and exact-head CI). Custody015 is implemented at `00a8b68` and merged via PR136; independent review acceptance
-remains pending. Actual positive campaign provenance, extended Snapshot12
+and exact-head CI). Custody015 is accepted at `00a8b68`, merged via PR136, after dev review and three fresh Ready reviews
+([acceptance evidence](../../.planning/combat-task008-delivery/task015-evidence.md)): retained full2,324/Boundary81/build/format,
+verified exact-candidate CI, and reviewer3 independent rebuild plus123 focused/81 Boundary checks. Actual positive campaign provenance, extended Snapshot12
 and host publication remain separate integration obligations.
 
 Checkpoint E: run lifecycle/recovery and paired-authorized-input checks. No hosting or public
@@ -913,6 +914,19 @@ intermediate checkpoint; it cannot advance into Reserve Release.
 | `CMB-TASK-015` / M, 3–5 files | Implement all positive-capture branches: guarded rendezvous/guard transfer or immediate unguarded escape entitlement. Preserve source origin, guard resources and future feeding/maturity obligations; no immediate TOE reunion. | `CombatCustody` both captor roles, route/cost/guard conservation, timeout and restart, retained future obligations. | 014; [Campaigns](../../src/Cna.Core/Campaigns/), focused Core tests. |
 | `CMB-TASK-016` / M, 3–5 files | Implement original-participant relationships and terminal round closure. Raw Retreat suppresses Engaged even if refused; guards/new arrivals do not inherit. Immediate obligations must be empty before CA closes. | `CombatClosure` refusal/Engaged/adjacency variants and tampered/duplicate closure; future obligations remain stored. | 015; [Campaigns](../../src/Cna.Core/Campaigns/), focused Core tests. |
 
+Task016 execution refinement, 2026-09-20: user-authorized continuation retains one bounded
+Result2 closure slice after Task015 independent acceptance. This explicitly refines the general
+five-file split rule for this slice: five material source/test paths (Resolution, its codec,
+Obligations, existing LossRetreat projection and new Closure tests), plus at most three dependent
+regression-maintenance paths. LossRetreat/Custody tests retain their earlier golden frontiers while
+updating only obsolete future-family assertions; Resolution tests retain skipped-prefix rejection
+assertions and need only a stale-comment correction. No shared World7, receipt model, contract,
+fixture, topology or registration change is included. Planning, status and review evidence are
+additional administrative files, counted separately in publication scope. The
+[resume reconciliation](../../.planning/combat-task008-delivery/task016-resume-reconciliation.md)
+records API/fixture evidence and alternatives. If implementation exceeds this boundary or requires
+another subsystem, split and re-scope before edits. Task016 is accepted at `d480556` after full2,331/Boundary81, clean build/format, development review, three fresh Ready reviews (third independently rebuilt full solution), and exact-candidate CI. [Acceptance evidence](../../.planning/combat-task008-delivery/task016-evidence.md) retains checks and limits. Bounded dormant checkpoint G settlement is complete; actual campaign/public integration remains open.
+
 Checkpoint G: exercise every reachable settlement branch and restart cut. Settlement/state ACs now have concrete Core evidence; outward transcript and coherent public
 admission evidence still wait for checkpoint I.
 
@@ -923,6 +937,25 @@ admission evidence still wait for checkpoint I.
 | `CMB-TASK-017` / M, 3–5 files | Implement release window and canonical own-unit dispositions, one pinned budget, first-I conversion/later-II retention fallback and explicit completion. Status changes retain release restrictions/history. | `ReserveRelease` first/later/empty, consumed convert, duplicate/stale/expiry, cumulative CP ceilings and no auto-release/repeat. | 016; [Campaigns](../../src/Cna.Core/Campaigns/), focused Core tests. |
 | `CMB-TASK-018` / M, 3–5 files | Implement retained Movement-end proximity, next-Movement exception and ordinary Contact/Engaged break-off under the frozen cost precedence and ordinary 150%-CPA ceiling (stricter for released Reserves). Charge CP and any immediate excess-CPA DP, move and update affected memberships atomically; preserve unrelated relations and CP/BP/bands/broken lots, ammo/TOE/Cohesion and offensive-use history. | `CycleMovement` Contact/no-ZOC Engaged/overlapping-cost and last-counterpart cases, Clear2: spent5+4+2=11/DP1, spent9+4+2=15/DP5 versus rejected16, stricter Reserve ceilings, atomic restart; exception expiry, changed enemy position, mandatory overspend, retained resource/Breakdown history and exhausted-assault rejection. | 017; [Campaigns](../../src/Cna.Core/Campaigns/), focused Core tests. |
 | `CMB-TASK-019` / M, 3–5 files | Implement first opening, semantic progress, supported continuation witness and repeat/finish control. Use TASK-018's relation-aware move rule for witnesses; never infer no Movement from exhausted ammo or a missing break-off implementation. Prefix excludes opening event; finish enters same-slot Truck Convoy without stage housekeeping. | `CycleControl` full truth table, ordinal/prefix forks, no-op/cancel/retain-only history, reachable zero-loss Engaged repeat with break-off witness, lost reply/deadline, pending and future obligations; unsupported continuation is not “none legal.” | 018; [Campaigns](../../src/Cna.Core/Campaigns/), [Rules](../../src/Cna.Core/Rules/), focused Core tests. |
+
+Task017 execution refinement, 2026-09-20: dependency-valid children preserve parent
+acceptance criteria while keeping implementation bounded. Dispatch requires accepted016 and a
+root-owned exact manifest. [Research](../../.planning/combat-task008-delivery/task017-research-proposal.md)
+and [A1 scope](../../.planning/combat-task008-delivery/task017a1-dispatch-proposal.md) distinguish
+isolated mechanism evidence from actual campaign provenance.
+
+| Child | Bounded output and proof | Dependency / status |
+| --- | --- | --- |
+| `017A1` | Immutable Release scope/history/exception/member/base values and independently expected-base canonical codec. Exactly44 isolated frozen base hashes; zero transition/event/state proof. Four source/test paths plus this root-owned plan; no lifecycle or World adapter. | 016; accepted at `77ef166` after full2,337/Boundary81, clean build/format, dev review, three fresh Ready reviews and exact CI; [evidence](../../.planning/combat-task008-delivery/task017a1-evidence.md) |
+| `017A2` | Native Release lifecycle, state/event codecs, timers, canonical dispositions, conversion/retention fallback, retry and explicit completion. Target132 event hashes/176 state hashes/2 literal terminal events from44 isolated rows. Exact manifest must fit or split before edits. | AcceptedA1; not dispatched |
+| `017B` | Actual retained Result2-to-empty-Release adapter across32 selected contexts;64 native event literals and independently replayed native cuts. Preserve resources/history/future duties and separate hash domains. | AcceptedA2/016; not dispatched |
+| Positive prerequisite and bridge | Separately implement/certify held-I no-move3h predecessor, then positive3i Release bridge; current inherited Movement requires moves and rejects held Reserve. Later-II/consumed actual campaign lineage also remains to be demonstrated. | Exact bounded manifest required; not dispatched |
+
+Four historical settled Result1 fixture rows remain historical evidence, excluded from A1/A2's44
+isolated claim. Current World7 and Result2 are not weakened to admit old occurrence identities.
+Parent017 remains open until required lifecycle, native adapters and positive provenance pass;
+private codec/kernel or empty bridge alone cannot close it. [A2 API handoff](../../.planning/combat-task008-delivery/task017a2-api-handoff.md) records current types and separate initial-base/state validation; it does not authorize implementation. No automatic A2 dispatch, Snapshot
+successor, public admission, durable publication or Task018/019 execution follows from A1.
 
 Checkpoint H: demonstrate actual Movement/Reserve repetition and settled Combat-to-finish through
 dormant authority. No second assault is claimed without a separately certified strength/ammo path.

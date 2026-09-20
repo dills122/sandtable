@@ -1,11 +1,37 @@
 # Fresh Review Bootstrap
 
-Review instance 3 of3. Only after accepted014/frozen015; exactbase/head/pins suppliedatdispatch. BlindcanonicalTask015/checkpointG, Result2/Worldsettlementspec/schema/oracle, namedsource/tests first. Persist own preliminary ledger before author/checks. No priorreviews/aggregateevidence/worker/devnotes/proposalrationale/executionhistory/CCE; allCCEdisabled, exactreads/scopedrg only.
+Review instance: 3 of 3. Resumed 2026-09-20; interrupted prior round1 does not count.
 
-Sevenphysicalpaths: Resolution, Codec, Obligations, LossRetreat projection, newCustodyTests, narrowoldLossRetreatTests andResolutionTests cutoffmaintenance. Check actualindependentlytrustedC3a/Round/Result replay, immutablepaidContext and currentpostretreat donor provenance, validatedhashedappend, fulltypedWorldequality/status/windowstage. No callerpriorstate authority or mutableJSONcache.
+## Review Objective
+Review Task015 custody implementation and plan against canonical requirements. Return an independent evidence-backed verdict; do not presume readiness.
 
-176literal events208stateHASHcuts across32contexts; prior144/176 and32/64 preserved.16positivebranches8guard8escape, no emptycustody onnoncapture. Custodyowneractualcaptor; independentConfig1opening ignoresprioraudit, localclockexclusive deadline;200pairedsameownercomparisons. Choice/owner/context beforefallback, exactretry, staleNoOp, immutablediscard. Guarddonor1TOE conserved, inheritscurrentledger/ammo/readiness includingCP11, routes<=3edges avoidvictim; escape<=8NormalClearCP, exact12stageentitlement/noimmediateTOE. Obligationsretainedunimplemented; no feeding/training/relationships/closure. Complete canonicaloriginserialization/Worldvalidation remains.
+## Repository And Worktree
+Integration worktree `/Users/dsteele/.codex/worktrees/8fcc/sandtable`. Review in a separate clone under `/tmp`, with a fresh context and no inherited conversation. Original `/Users/dsteele/repos/sandtable` checkout is read-only and excluded from review execution.
 
-Literalguardroutes1/2edges andescape0edge do not prove maximum3edge/8CP: reconcile selectedcertification/sharedmodelproof honestly. Rejectforgedlinks/route/resource-reset/omittedobligations/rehashedpayload/raw-beforecontext; ownedbuffers. SyntheticdormantCore only, notactualpositivehistory/Snapshot/hostpublication/publicactivation.
+## Base, Head, Branch, And Dirty State
+Immutable review base `d00a230`, candidate `00a8b68c580a7efc38070571750c9a973e0fa579`. Integration branch `codex/combat-custody-closure-session` starts at refreshed main `ba54efd720b38627b473cfd5d2e2ba4ee638d6b2`. Source/test tree matches candidate; verify before review. Integration-only evidence updates are outside candidate diff. Review clone must be detached at candidate.
 
-Readonlysource/Git, writeonlyown task015-review3-report.md; no fixes/commits/agents/extrareviews/workstreams. Rootownsacceptance; .NETclearanceatdispatch, nativeMTP/login:false/approvedIPC/uniquebinlogs. Closeallprocesses; findingsfirst/code+plan/claimreconciliation/exactchecks+limits/oneverdict.
+## In-Scope Commits And Paths
+Reconstruct complete `d00a230..00a8b68` diff, including candidate documentation. Seven physical source/test paths:
+
+- `src/Cna.Core/Campaigns/CampaignCombatResolution.cs`
+- `src/Cna.Core/Campaigns/CampaignCombatResolutionCodec.cs`
+- `src/Cna.Core/Campaigns/CampaignCombatObligations.cs`
+- `src/Cna.Core/Campaigns/CampaignCombatLossRetreat.cs`
+- `tests/Cna.Core.Tests/Campaigns/CombatCustodyTests.cs`
+- `tests/Cna.Core.Tests/Campaigns/CombatLossRetreatTests.cs`
+- `tests/Cna.Core.Tests/Campaigns/CombatResolutionTests.cs`
+
+## Canonical Requirements And Plan
+Read AGENTS.md; `docs/design/combat-cycle-implementation-plan.md` Task015/checkpointG; `docs/specs/combat-result-settlement-v2.md` and corresponding schema, fixture and oracle; relevant World settlement requirements. Inspect tests before implementation and inspect smallest relevant context.
+
+## Explicit Exclusions
+No source fixes, commits, further reviews, or subagents. Task016 relationship/round closure is excluded. Public activation, actual positive creation-rooted history, Snapshot successor and durable host publication remain open. Do not read prior reviews, execution history, aggregate evidence or author/worker/dev rationale before blind ledger. Do not call ANY CCE/context_search/session_recall or cross-session memory tools; this explicit independence boundary supersedes repository retrieval instructions.
+
+## Verification Commands Available To Reviewer
+.NET is cleared in the isolated clone. Use native MTP `--project`/`--solution`, login:false and unique binlogs. Restore/build as required; run proportionate focused C# checks and report exact commands/results. Reviewer3 must independently rebuild. Close all owned processes. Write only own preliminary ledger/report to integration `.planning/combat-task008-delivery/task015-review3-{preliminary,report}.md`; generated checks/logs stay in clone or `/tmp`.
+
+## Author Explanation Location Or Delivery Step
+First persist blind preliminary ledger. Then read candidate `.planning/combat-task008-delivery/task015-author.md` and verification/worker evidence, treating claims as testimony. Reconcile stale pending statuses using supplied evidence only after blind assessment; never infer a pass from author prose.
+
+Use $independent-review in reviewer mode. This is review instance 3 of 3. Work from the Fresh Review Bootstrap first and record a preliminary review before reading the Author Explanation. Then verify the explanation against the repository, review both the implementation and its plan, run proportionate non-mutating checks, and return an evidence-backed verdict. Do not implement fixes, create further review instances, or split the work into new workstreams.

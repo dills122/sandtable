@@ -727,6 +727,10 @@ state built from certified Content7: original elements, map representations, cau
 distinct custody/guard/replacement/future-obligation records. Guard TOE transfer is not a new
 component or current balance on the donor. Exact validation precedes creation; Task008 owns
 canonical snapshot/history persistence, and gameplay activation remains later.
+**Relationship settlement** records only the original assault participants; guards do not inherit
+Contact or Engaged. **Round closure** proves all immediate settlement receipts are present;
+**Close Assault completion** then arrives at Reserve Release. These dormant Task016 names do not
+mean Reserve Release executes, future prisoner duties run, or public Combat is activated.
 **Creation Request1** fixes campaign identity, seed and trusted artifact selections before World
 construction. **Created11** carries the resulting dormant creation event; **Creation Binding** is
 its nonrecursive request-derived identity, not an event hash or public authority handle. Retry
@@ -982,3 +986,8 @@ Control states remain distinct: traversal retains selection unchanged and owns t
 `ReplayTrustedBoundary` and `ApplyTrustedBoundary` APIs make caller provenance explicit;
 `CombatStepsInput` carries separately authenticated actor/time, and `CombatStepsControl` is
 derived replay state. These types do not imply live campaign admission or publication.
+
+**Release base** names the immutable input ledger for the future Reserve Release arm. Its isolated
+codec checks canonical history against independently retained expected values; it does not mean a
+Release window opened, a unit changed status, or actual campaign provenance was established.
+Task017A1 owns this foundation; native lifecycle and campaign adapters remain separate work.
