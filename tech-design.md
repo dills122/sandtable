@@ -1012,7 +1012,7 @@ from this replay and verifies supplied bytes against retained history. Its resto
 existing creation-admission policy; creation-only readback remains strict. Exact368root vectors
 and disabled-admission restore pass for all286selected histories. Initial H Core codec/replay gate
 is complete; later authority families must extend this evidence.
-Task009A is adding dormant inherited admission assessment over actual completed G2 history. It
+Task009A adds dormant inherited admission assessment over actual completed G2 history. It
 binds original unit/component identity separately from current representation and location, and
 writes the existing inherited AdmissionBoundary for the four supported empty-candidate histories.
 Positive certification and opportunity-v2 mechanics remain009B; selection and sealed-round

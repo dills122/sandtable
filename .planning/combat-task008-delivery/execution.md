@@ -187,3 +187,9 @@ Record exact commands, failures and totals in per-slice evidence; never count un
 Regression RED proved each; latest focused10/10 passed11.891s, scopedformat clean.
 Final corrected build passed0warnings/errors12.89s; fullgate/review3 pending.
 009B remains research-only until009A acceptance. Private Boundary syntax inventory audited51shapes.
+009A finalcorrected code39dccfe: full2254/boundary81/build/format/exactheadCI allpass.
+Ordinaryreview3Ready10focused+oracle, but CCE leaked priorreview snippet. Treatindependence as
+processblocker; singleconditionalexperiment disables11CCE per-process verified viaMCPinventory;
+finalreview4running. No furtherordinaryreview/reset; iffinalblocker persists stopforintervention.
+
+009A ACCEPTED at39dccfe4bac27d88e816ec787eda8a0f71583ff0. Devreview; ordinary1/2 findings fixed; ordinary3Ready qualifiedbyCCE leakage. One bounded isolationexperiment and final4Ready, cleanblindledger, independent10/0/0 11.033s and canonicaloracle pass. Final code full2254/boundary81/build0warnings/errors/format/exactheadCI clear. No blocker.23accepted slices,69ordinary reviews plus2conditional finals (H0,009A); qualifiedround3 retained honestly. Proceed009B; parent009 and008publication remainopen.
