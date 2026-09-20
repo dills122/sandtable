@@ -22,7 +22,9 @@ E2/G1 checkpoint: `e177a4b`, `codex/combat-task008-movement-lifecycle`,
 [PR133](https://github.com/dills122/sandtable/pull/133), stacked on PR132.
 G2 checkpoint: `b9cb26f`, `codex/combat-task008-breakdown-completion`,
 [PR134](https://github.com/dills122/sandtable/pull/134), stacked on PR133.
-Active F1 branch: `codex/combat-task008-reaction-trigger`, based on G2 checkpoint.
+F1 checkpoint: `32e4e6d`, `codex/combat-task008-reaction-trigger`,
+[PR135](https://github.com/dills122/sandtable/pull/135), stacked on PR134.
+Active F2 branch: `codex/combat-task008-reaction-lifecycle`, based on F1 checkpoint.
 Integration destination: reviewed feature branch; lead owns retained commits and PR.
 
 ## Objective and boundaries
@@ -51,7 +53,8 @@ No public activation or parent completion inferred from a codec slice.
 | 008E2/G1 route lifecycle |E1| implementation subagent;lead integrates | 8traces24events32cuts88artifacts;focused20/full2032;dev+threeReadyreviews | Accepted; feature-branchcheckpoint |
 | 008G2 Breakdown completion |E2/G1| implementation subagent;lead integrates | 8traces8events16cuts40artifacts;focused24/full2044;dev+threeReadyreviews | Accepted; feature-branch checkpoint |
 | 008F1 Reaction trigger | E1 first-move cut | implementation subagent; lead integrates | 2traces2events4cuts8artifacts;focused15/full2051;dev+threeReadyreviews | Accepted; feature-branch checkpoint |
-| 008F2–F6 Reaction continuation | canonical F graph | unassigned | selected participant/direct/fallback/second-move histories | Pending |
+| 008F2 participant lifecycle | F1 | implementation subagent; lead integrates | 2traces8events10cuts28artifacts;focused16/full2060;dev+threeReadyreviews | Accepted; publication against main |
+| 008F3–F6 Reaction continuation | canonical F graph | unassigned | selected participant/direct/fallback/second-move histories | Pending |
 | 008B–H, 019A | canonical dependency graph | unassigned | cumulative Core replay, full retained-history restore | Pending |
 | 009–025 | canonical gates | unassigned | cumulative gameplay/public/Runner/72-AC evidence | Pending |
 
@@ -101,3 +104,14 @@ Record exact commands, failures and totals in per-slice evidence; never count un
 - E2/G1 PR133 remote verify, dependency-review and offline links passed during G2 work.
 
 - G2 PR134 remote verify, dependency-review and offline links passed during F1 work.
+
+- F1 PR135 remote verify, dependency-review and offline links passed during F2 work.
+
+- Main integration repaired after user merge audit: PR124 alone had reached main; PR125–134
+  had merged into predecessor feature branches. PR135 retargeted main and squash-merged as
+  `dd22088fb64dc9ffa4b513d7e1095b066f36ee81`. Fresh remote main exactly equals reviewed F1
+  tree; all PR124–135 content present. Isolated restore/build/format/boundary81/full2051
+  passed, plus GitHub checks. Merge-commit mode rejected by GitHub; squash used without bypass.
+  Detailed evidence: `merge-audit.md`. Future PRs target main.
+- F2 third independent review returned Ready; all three rounds complete. F2 remains separate
+  from main reconciliation pending final acceptance/publication bookkeeping.

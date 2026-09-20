@@ -134,7 +134,9 @@ The [inherited no-attack packet](docs/specs/combat-inherited-no-attack-v1.md) ne
 unchanged and uses its own `Control` projection plus six `combat-step-completed`2 receipts. Outer
 closure means structural arrival at Reserve Release; it does not rename or perform Reserve Release.
 Task008 F1 implements the bounded trigger with persisted Reaction identities; public capability handles
-belong to later participant admission. The [inherited Reaction-trigger packet](docs/specs/combat-inherited-reaction-trigger-v1.md) uses
+belong to participant admission. F2 keeps `reacting-element-moved`3,
+`reaction-participant-completed`3, `breakdown-stop-resolved`2 and `reaction-window-closed`3
+as distinct causal events; completing a participant does not close its window. The [inherited Reaction-trigger packet](docs/specs/combat-inherited-reaction-trigger-v1.md) uses
 private `TriggerState`, retains `element-moved`4 and opens one identity-bound `ReactionWindow`.
 `ReactingPosition` suspends Movement; it is not a participant choice, move or window closure.
 The [inherited Reaction-lifecycle packet](docs/specs/combat-inherited-reaction-lifecycle-v1.md) uses

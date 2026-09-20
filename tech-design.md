@@ -977,6 +977,10 @@ opposing Reaction opportunity. It derives adjacency before eligibility, retains 
 opportunity identities and the suspended symbolic Movement position, and carries the same phasing
 route through Reacting/ResumeRoute flow. New bounded types support Move4 without weakening legacy
 materialized-position guards; current World serialization rederives and checks actual history.
+F2 continues actual trigger history through reactor movement, participant completion, explicit empty
+stop resolution and no-eligible closure. Commands bind public handles derived from complete current
+move options; those handles differ from persisted authority IDs. Only reactor movement adds material
+progress. Closure resumes the exact suspended phasing route after resolution, preserving RNG.
 Creation publication evaluation now targets an expected-head per-campaign commit batch. The
 [HOST-PUB-001 evidence allocation](docs/specs/combat-authority-envelope-v1.md#runtime-evidence-ownership)
 keeps actual atomic uniqueness, commit ambiguity and process-recovery proof open until provider
