@@ -242,7 +242,16 @@ internal static class CampaignCombatIdentityCodec
                 _ => throw new JsonException("Unknown lifecycle flow tag."),
             };
         }
-        if (BoundaryShapes.TryGetValue(kind, out var shape))
+        if (kind == "InheritedTraversalEffect" && (value.ValueKind != JsonValueKind.Object ||
+            !value.TryGetProperty("kind", out var traversalTag) || traversalTag.ValueKind != JsonValueKind.String || traversalTag.GetString() != "step-completed"))
+            throw new JsonException("Unknown inherited traversal effect.");
+        if (kind == "InheritedSelectionEffect")
+        {
+            if (value.ValueKind != JsonValueKind.Object || !value.TryGetProperty("kind", out var effectTag) || effectTag.ValueKind != JsonValueKind.String)
+                throw new JsonException("Missing inherited selection effect tag.");
+            kind = effectTag.GetString() switch { "segment-opened" => "InheritedSelectionOpen", "selection-closed" => "InheritedSelectionClose", _ => throw new JsonException("Unknown inherited selection effect.") };
+        }
+        if (BoundaryShapes.TryGetValue(kind, out var shape) || InheritedStepShapes.TryGetValue(kind, out shape))
         {
             if (value.ValueKind != JsonValueKind.Object) throw new JsonException("Boundary requires closed objects.");
             var fields = shape.Split(' ').Select(field => field.Split(':')).ToArray();
@@ -254,7 +263,7 @@ internal static class CampaignCombatIdentityCodec
             foreach (var field in fields)
             {
                 writer.WritePropertyName(field[0]);
-                WriteBoundarySyntax(writer, value.GetProperty(field[0]), field[1], kind == "CandidateAssessment");
+                WriteBoundarySyntax(writer, value.GetProperty(field[0]), field[1], kind == "CandidateAssessment" || InheritedStepShapes.ContainsKey(kind));
             }
             writer.WriteEndObject(); return;
         }
@@ -339,6 +348,166 @@ internal static class CampaignCombatIdentityCodec
             if (compared != 0) return compared;
         }
         return 0;
+    }
+
+    public static byte[] SerializeSelectionInput(CampaignCombatInheritedSelection.Input input)
+    {
+        ArgumentNullException.ThrowIfNull(input); ArgumentNullException.ThrowIfNull(input.Command);
+        var command = input.Command;
+        var bytes = Bytes(writer =>
+        {
+            writer.WriteStartObject(); writer.WriteStartObject("command");
+            writer.WriteNumber("contractVersion", command.ContractVersion); writer.WriteString("kind", command.Kind); writer.WriteString("segmentId", command.SegmentId);
+            writer.WriteNumber("expectedPriorVersion", command.ExpectedPriorVersion); writer.WriteString("expectedPositionId", command.ExpectedPositionId);
+            writer.WriteString("openingReceiptId", command.OpeningReceiptId); writer.WriteEndObject(); writer.WriteString("actor", StepActor(input.Actor)); writer.WriteEndObject();
+        });
+        ValidateStepSyntax(bytes, "InheritedSelectionInput"); return bytes;
+    }
+    public static byte[] SerializeTraversalInput(CampaignCombatInheritedNoAttack.Input input)
+    {
+        ArgumentNullException.ThrowIfNull(input); ArgumentNullException.ThrowIfNull(input.Command);
+        var command = input.Command;
+        var bytes = Bytes(writer =>
+        {
+            writer.WriteStartObject(); writer.WriteStartObject("command");
+            writer.WriteNumber("contractVersion", command.ContractVersion); writer.WriteString("kind", command.Kind); writer.WriteString("segmentId", command.SegmentId);
+            writer.WriteNumber("expectedPriorVersion", command.ExpectedPriorVersion); writer.WriteString("fromPositionId", command.FromPositionId);
+            writer.WriteString("dispositionReceiptId", command.DispositionReceiptId); writer.WriteEndObject(); writer.WriteString("actor", StepActor(input.Actor)); writer.WriteEndObject();
+        });
+        ValidateStepSyntax(bytes, "InheritedTraversalInput"); return bytes;
+    }
+    internal static CampaignCombatInheritedSelection.Input ReadSelectionEventInput(byte[] bytes)
+    {
+        ValidateStepSyntax(bytes, "InheritedSelectionEvent");
+        using var doc = JsonDocument.Parse(bytes); var input = doc.RootElement.GetProperty("input"); var command = input.GetProperty("command");
+        var opening = command.GetProperty("openingReceiptId");
+        return new(new(command.GetProperty("contractVersion").GetInt32(), command.GetProperty("kind").GetString()!, command.GetProperty("segmentId").GetString()!,
+            command.GetProperty("expectedPriorVersion").GetInt64(), command.GetProperty("expectedPositionId").GetString()!, opening.ValueKind == JsonValueKind.Null ? null : opening.GetString()), ReadStepActor(input));
+    }
+    internal static CampaignCombatInheritedNoAttack.Input ReadTraversalEventInput(byte[] bytes)
+    {
+        ValidateStepSyntax(bytes, "InheritedTraversalEvent");
+        using var doc = JsonDocument.Parse(bytes); var input = doc.RootElement.GetProperty("input"); var command = input.GetProperty("command");
+        return new(new(command.GetProperty("contractVersion").GetInt32(), command.GetProperty("kind").GetString()!, command.GetProperty("segmentId").GetString()!,
+            command.GetProperty("expectedPriorVersion").GetInt64(), command.GetProperty("fromPositionId").GetString()!, command.GetProperty("dispositionReceiptId").GetString()!), ReadStepActor(input));
+    }
+    public static byte[] SerializeSelectionControl(CampaignCombatInheritedSelection.State state)
+    {
+        var bytes = Bytes(writer =>
+        {
+            writer.WriteStartObject(); writer.WriteNumber("contractVersion", 1); writer.WritePropertyName("boundary"); writer.WriteRawValue(SerializeBoundary(state.Boundary));
+            writer.WriteString("boundaryHash", state.BoundaryHash); writer.WriteString("segmentId", state.SegmentId);
+            writer.WriteNumber("stateVersion", state.StateVersion); writer.WriteString("prefix", state.Prefix); writer.WriteNumber("stepIndex", 0);
+            writer.WriteString("selectionOutcome", state.SelectionOutcome); writer.WriteStartArray("candidateIds"); writer.WriteEndArray();
+            writer.WriteString("openingReceiptId", state.OpeningReceiptId); writer.WriteString("selectionReceiptId", state.SelectionReceiptId);
+            WriteStepReceipts(writer, state.Receipts); writer.WriteBoolean("selectionClosed", state.SelectionClosed); writer.WriteBoolean("segmentClosed", false); writer.WriteEndObject();
+        });
+        ValidateSelectionControl(bytes); return bytes;
+    }
+    public static byte[] SerializeTraversalControl(CampaignCombatInheritedNoAttack.State state)
+    {
+        var bytes = Bytes(writer =>
+        {
+            writer.WriteStartObject(); writer.WriteNumber("contractVersion", 1); writer.WritePropertyName("selection"); writer.WriteRawValue(SerializeSelectionControl(state.Selection));
+            writer.WriteString("selectionHash", state.SelectionHash); writer.WriteNumber("stateVersion", state.StateVersion); writer.WriteString("prefix", state.Prefix);
+            CampaignV11CanonicalCodec.WritePosition(writer, "position", state.Position); writer.WriteNumber("stepIndex", state.StepIndex);
+            writer.WriteStartArray("stepReceipts"); foreach (var receipt in state.Receipts) writer.WriteStringValue(receipt.ReceiptId); writer.WriteEndArray();
+            WriteStepReceipts(writer, state.Receipts); writer.WriteBoolean("closed", state.Closed); writer.WriteEndObject();
+        });
+        ValidateTraversalControl(bytes); return bytes;
+    }
+    internal static void ValidateSelectionControl(ReadOnlySpan<byte> bytes) => ValidateStepSyntax(bytes, "InheritedSelectionControl");
+    internal static void ValidateTraversalControl(ReadOnlySpan<byte> bytes) => ValidateStepSyntax(bytes, "InheritedTraversalControl");
+    internal static byte[] SerializeSelectionEvent(CampaignCombatInheritedSelection.State state, CampaignCombatInheritedSelection.Input input, string? receipt)
+    {
+        var opening = input.Command.Kind == "open-segment";
+        return StepEvent(state.Boundary, state.SegmentId, state.StateVersion, state.Prefix, SerializeSelectionInput(input),
+            opening ? "combat-segment-opened" : "combat-selection-closed", writer =>
+            {
+                writer.WriteStartObject(); writer.WriteString("kind", opening ? "segment-opened" : "selection-closed");
+                if (opening)
+                {
+                    writer.WriteString("boundaryHash", state.BoundaryHash);
+                    using var doc = JsonDocument.Parse(SerializeBoundary(state.Boundary));
+                    writer.WriteString("assessmentHash", CampaignOpeningPreambleCodec.Hash(System.Text.Encoding.UTF8.GetBytes(doc.RootElement.GetProperty("assessment").GetRawText())));
+                    writer.WriteNumber("candidateCount", 0); writer.WriteNull("decisionId");
+                }
+                else
+                {
+                    writer.WriteString("outcome", "no-selection"); writer.WriteNull("candidate"); writer.WriteString("openingReceiptId", state.OpeningReceiptId);
+                }
+                writer.WriteEndObject();
+            }, receipt, "InheritedSelectionEvent");
+    }
+    internal static byte[] SerializeTraversalEvent(CampaignCombatInheritedNoAttack.State state, CampaignCombatInheritedNoAttack.Input input, string? receipt) =>
+        StepEvent(state.Selection.Boundary, state.Selection.SegmentId, state.StateVersion, state.Prefix, SerializeTraversalInput(input), "combat-step-completed", writer =>
+        {
+            writer.WriteStartObject(); writer.WriteString("kind", "step-completed"); writer.WriteString("fromPositionId", state.Position.PositionId);
+            writer.WriteString("toPositionId", CampaignCombatInheritedNoAttack.Route(state.Selection)[state.StepIndex + 1].PositionId);
+            writer.WriteString("previousStepReceiptId", state.Receipts.Count == 0 ? state.Selection.OpeningReceiptId : state.Receipts[^1].ReceiptId);
+            writer.WriteString("dispositionReceiptId", state.Selection.SelectionReceiptId); writer.WriteString("proofKind", "no-attack"); writer.WriteEndObject();
+        }, receipt, "InheritedTraversalEvent");
+    private static byte[] StepEvent(CampaignCombatAdmissionBoundary boundary, string segment, long version, string prefix, byte[] input,
+        string eventType, Action<Utf8JsonWriter> effect, string? receipt, string kind)
+    {
+        var cycle = boundary.Entry.Lifecycle.Movement.Opening.Cycle!;
+        var bytes = Bytes(writer =>
+        {
+            writer.WriteStartObject(); writer.WriteNumber("contractVersion", 2); writer.WriteString("eventType", eventType);
+            writer.WriteString("campaignId", cycle.CampaignId); writer.WriteString("rulesetHash", cycle.RulesetHash);
+            writer.WriteString("configurationHash", cycle.AdmittedPolicyBundleDigest); writer.WriteString("cycleId", boundary.Entry.Lifecycle.Movement.Opening.CycleId);
+            writer.WriteString("segmentId", segment); writer.WriteNumber("priorVersion", version); writer.WriteNumber("stateVersion", checked(version + 1));
+            writer.WriteString("priorPrefix", prefix); writer.WritePropertyName("input"); writer.WriteRawValue(input);
+            writer.WritePropertyName("effect"); effect(writer); if (receipt is not null) writer.WriteString("receiptId", receipt); writer.WriteEndObject();
+        });
+        if (receipt is not null) ValidateStepSyntax(bytes, kind);
+        return bytes;
+    }
+    private static void WriteStepReceipts(Utf8JsonWriter writer, IReadOnlyList<CampaignOpeningPreambleReceipt> receipts)
+    {
+        writer.WriteStartArray("receipts"); foreach (var receipt in receipts)
+        {
+            writer.WriteStartObject(); writer.WriteString("commandHash", receipt.CommandHash); writer.WriteString("eventHash", receipt.EventHash);
+            writer.WriteString("receiptId", receipt.ReceiptId); writer.WriteString("actor", StepActor(receipt.Actor)); writer.WriteNumber("stateVersion", receipt.StateVersion); writer.WriteEndObject();
+        }
+        writer.WriteEndArray();
+    }
+    private static string StepActor(CampaignOpeningPreambleActor actor) => actor switch
+    {
+        CampaignOpeningPreambleActor.System => "system",
+        CampaignOpeningPreambleActor.Axis => "axis",
+        CampaignOpeningPreambleActor.Commonwealth => "commonwealth",
+        _ => throw new JsonException("Unsupported Combat actor."),
+    };
+    private static CampaignOpeningPreambleActor ReadStepActor(JsonElement input) => input.GetProperty("actor").GetString() switch
+    {
+        "system" => CampaignOpeningPreambleActor.System,
+        "axis" => CampaignOpeningPreambleActor.Axis,
+        "commonwealth" => CampaignOpeningPreambleActor.Commonwealth,
+        _ => throw new JsonException("Unsupported Combat actor."),
+    };
+    private static readonly Dictionary<string, string> InheritedStepShapes = new(StringComparer.Ordinal)
+    {
+        ["InheritedSelectionCommand"] = "contractVersion:int kind:id segmentId:id expectedPriorVersion:long expectedPositionId:id openingReceiptId:id?",
+        ["InheritedSelectionInput"] = "command:InheritedSelectionCommand actor:actor",
+        ["InheritedSelectionEvent"] = "contractVersion:int eventType:id campaignId:id rulesetHash:rawHash configurationHash:hash cycleId:hash segmentId:id priorVersion:long stateVersion:long priorPrefix:hash input:InheritedSelectionInput effect:InheritedSelectionEffect receiptId:id",
+        ["InheritedSelectionOpen"] = "kind:id boundaryHash:hash assessmentHash:hash candidateCount:int decisionId:null",
+        ["InheritedSelectionClose"] = "kind:id outcome:id candidate:null openingReceiptId:id",
+        ["InheritedSelectionControl"] = "contractVersion:int boundary:AdmissionBoundary boundaryHash:hash segmentId:id stateVersion:long prefix:hash stepIndex:int selectionOutcome:id candidateIds:id[] openingReceiptId:id? selectionReceiptId:id? receipts:PreambleReceipt[] selectionClosed:bool segmentClosed:bool",
+        ["InheritedTraversalCommand"] = "contractVersion:int kind:id segmentId:id expectedPriorVersion:long fromPositionId:id dispositionReceiptId:id",
+        ["InheritedTraversalInput"] = "command:InheritedTraversalCommand actor:actor",
+        ["InheritedTraversalEvent"] = "contractVersion:int eventType:id campaignId:id rulesetHash:rawHash configurationHash:hash cycleId:hash segmentId:id priorVersion:long stateVersion:long priorPrefix:hash input:InheritedTraversalInput effect:InheritedTraversalEffect receiptId:id",
+        ["InheritedTraversalEffect"] = "kind:id fromPositionId:id toPositionId:id previousStepReceiptId:id dispositionReceiptId:id proofKind:id",
+        ["InheritedTraversalControl"] = "contractVersion:int selection:InheritedSelectionControl selectionHash:hash stateVersion:long prefix:hash position:Position stepIndex:int stepReceipts:id[] receipts:PreambleReceipt[] closed:bool",
+    };
+    private static void ValidateStepSyntax(ReadOnlySpan<byte> bytes, string kind)
+    {
+        ValidateBounds(bytes);
+        using var document = JsonDocument.Parse(bytes.ToArray(), new JsonDocumentOptions { MaxDepth = 33 });
+        using var stream = new MemoryStream();
+        using (var writer = new Utf8JsonWriter(stream, new JsonWriterOptions { Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping }))
+            WriteBoundarySyntax(writer, document.RootElement, kind);
+        if (!bytes.SequenceEqual(stream.ToArray())) throw new JsonException("Noncanonical inherited Combat bytes.");
     }
 
     private static byte[] Bytes(Action<Utf8JsonWriter> write)

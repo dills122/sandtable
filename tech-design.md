@@ -1157,3 +1157,9 @@ profile. It checks every reachable selected result and retreat/custody support b
 a provisional Candidate. The actual inherited G2 admission remains empty. Candidate serialization
 and the pure opportunity-v2 digest bind values;010/011 retain responsibility for authenticated
 selection/decline/Base2 and final opportunity admission. No costs, RNG or events publish here.
+
+Task010A extends actual retained G2 histories with empty selection and six no-attack steps.
+Selection and traversal each reconstruct complete predecessor evidence; cached Controls cannot
+authorize events. Arrival at same-slot Reserve Release preserves World/RNG and releases nothing.
+Timed C3a controls and generic router integration remain010B/010C; new Snapshot12 persistence
+is not implied by fragment readback.

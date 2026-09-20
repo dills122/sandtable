@@ -973,3 +973,7 @@ Task009B adds the frozen provisional `CampaignCombatCandidate` value.
 `CertifyInitialProfileFacts` names its caller-trusted provenance explicitly; it does not authenticate
 a positive history. `CalculateOpportunityId` is the pure Round2 identity calculation, whose
 inputs require later selection and Base2 admission.
+
+`CampaignCombatInheritedSelection` owns actual empty selection;
+`CampaignCombatInheritedNoAttack` owns its six structural completions. Their immutable local
+Control states remain distinct: traversal retains selection unchanged and owns terminal closure.
