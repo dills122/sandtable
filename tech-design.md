@@ -981,6 +981,9 @@ F2 continues actual trigger history through reactor movement, participant comple
 stop resolution and no-eligible closure. Commands bind public handles derived from complete current
 move options; those handles differ from persisted authority IDs. Only reactor movement adds material
 progress. Closure resumes the exact suspended phasing route after resolution, preserving RNG.
+F3 adds direct owner decline and reason-specific System unavailable/timeout from the actual inactive
+F1 window. One close resumes the phasing route without a reactor stop or changes to World/resources;
+active-participant fallback retains a separate mandatory-stop gate in F4.
 Creation publication evaluation now targets an expected-head per-campaign commit batch. The
 [HOST-PUB-001 evidence allocation](docs/specs/combat-authority-envelope-v1.md#runtime-evidence-ownership)
 keeps actual atomic uniqueness, commit ambiguity and process-recovery proof open until provider

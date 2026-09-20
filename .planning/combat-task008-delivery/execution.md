@@ -54,7 +54,8 @@ No public activation or parent completion inferred from a codec slice.
 | 008G2 Breakdown completion |E2/G1| implementation subagent;lead integrates | 8traces8events16cuts40artifacts;focused24/full2044;dev+threeReadyreviews | Accepted; feature-branch checkpoint |
 | 008F1 Reaction trigger | E1 first-move cut | implementation subagent; lead integrates | 2traces2events4cuts8artifacts;focused15/full2051;dev+threeReadyreviews | Accepted; feature-branch checkpoint |
 | 008F2 participant lifecycle | F1 | implementation subagent; lead integrates | 2traces8events10cuts28artifacts;focused16/full2060;dev+threeReadyreviews | Accepted; publication against main |
-| 008F3–F6 Reaction continuation | canonical F graph | unassigned | selected participant/direct/fallback/second-move histories | Pending |
+| 008F3 direct closure | F1 trigger; after F2 review | implementation subagent; lead integrates | six traces/six events/12 cuts/30 artifacts;focused25/full2069/boundary81;dev+threeReadyreviews | Accepted; main-based PR136 |
+| 008F4–F6 Reaction continuation | canonical F graph | unassigned | selected fallback/second-move histories | Pending |
 | 008B–H, 019A | canonical dependency graph | unassigned | cumulative Core replay, full retained-history restore | Pending |
 | 009–025 | canonical gates | unassigned | cumulative gameplay/public/Runner/72-AC evidence | Pending |
 
@@ -115,3 +116,7 @@ Record exact commands, failures and totals in per-slice evidence; never count un
   Detailed evidence: `merge-audit.md`. Future PRs target main.
 - F2 third independent review returned Ready; all three rounds complete. F2 remains separate
   from main reconciliation pending final acceptance/publication bookkeeping.
+
+- F2 accepted as `c83d7c4`, main-based [PR136](https://github.com/dills122/sandtable/pull/136).
+  Rebase from reviewed F1 to squash main preserved exact complete tree. Continue accepted slices
+  in this single main-based delivery PR until merged; no manual chain of feature-branch PR targets.
