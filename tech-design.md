@@ -1004,7 +1004,7 @@ H1 pre-cycle routing is implemented and reviewed. `CampaignCombatRetainedHistory
 owned Created11/event transcript; `CampaignCombatHistoryReplay` derives fixed causal partitions and
 invokes accepted readers through atomic first opening. Reserve membership is materialized already at
 stage-entry's terminal cut. Typed projections and exact retained buffers remain distinct from a
-persisted full-root snapshot. H2 is extending the same retained stream through ordinary Movement,
+persisted full-root snapshot. H2 extends the same retained stream through ordinary Movement,
 mandatory stop/resolution/completion and Breakdown completion; Reaction remains the H3 gate.
 Creation publication evaluation now targets an expected-head per-campaign commit batch. The
 [HOST-PUB-001 evidence allocation](docs/specs/combat-authority-envelope-v1.md#runtime-evidence-ownership)

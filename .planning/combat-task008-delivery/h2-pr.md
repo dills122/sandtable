@@ -10,8 +10,7 @@ reject. Full literal root serialization and disabled-admission restore remain H4
 
 H2 validation: 70 focused tests; all64 assigned fixture cuts/48distinct histories, exact predecessor
 state/event goldens, full state/ledger comparisons, ownership and genuinely re-signed causal forgeries.
-Build/format, cumulative2,174 and boundary81 pass. Dev review and two independent rounds passed;
-final independent round and exact-head CI remain pending at this draft checkpoint. Earlier F2–F6/H0/H1 review evidence remains retained; H0's remote CodeQL
+Build/format, cumulative2,174 and boundary81 pass. Dev review, all three independent rounds and exact-head CI passed at4a43ff4. H2 is accepted. Earlier F2–F6/H0/H1 review evidence remains retained; H0's remote CodeQL
 counter-log alert was cleared by one bounded experiment and final review4, with exact-head CI passing.
 
 One main-based draft PR. H3 Reaction routing, H4 full restore, later009–025/public activation,
