@@ -91,3 +91,9 @@ primary files unchanged after round3. H1 implementation next; runtimeH/publicati
 Post-publication remoteCodeQLblocker: check106020410356/analysis1805996846 reports integercounter
 logging atoracle691. H1paused; userconditional oneexperiment/finalreview4 now invoked. See
 h0-codeql-experiment.md. No completedremediationclaim yet; original3reviews remainhistorical.
+
+Recovery complete: one-line remedy c48ce72 passes normaloracle128.583s, finalindependentreview4
+Ready with independentoracle133.309s and unchanged368rootfixture. Root read fullreport and accepts.
+Blindordering limitation disclosed by reviewer; no inheritedimplementationconversation/priorreports.
+ExactheadCodeQLcheck106021490989 SUCCESS/0annotations,all4scansPASS,CIverify5m6s anddependency/links
+PASS. No blocker remains; userconditionalbudget exhaustedsuccessfully, no fifthreview. H1 resumes.

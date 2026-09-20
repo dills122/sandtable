@@ -25,7 +25,7 @@ G2 checkpoint: `b9cb26f`, `codex/combat-task008-breakdown-completion`,
 F1 checkpoint: `32e4e6d`, `codex/combat-task008-reaction-trigger`,
 [PR135](https://github.com/dills122/sandtable/pull/135), stacked on PR134.
 Active delivery branch: `codex/combat-task008-reaction-lifecycle`, based on reconciled main.
-Integration destination: main-based PR136; F2–F6/H0 accepted; H1 pre-cycle router next.
+Integration destination: main-based PR136; F2–F6/H0 accepted; H1 pre-cycle router active.
 Lead owns retained commits and PR; earlier stacked targets above describe historical publication.
 
 ## Objective and boundaries
@@ -141,4 +141,13 @@ Record exact commands, failures and totals in per-slice evidence; never count un
 
 - H0 accepted after dev review and three Ready independent rounds;368literalcuts,286histories,
   62sharedgroups and15predecessor regressions passed.18accepted slices/54independent rounds total.
-  H1 pre-cycle ordered-history router next; no conditional experiment/fourth review needed.
+  H1 pre-cycle ordered-history router next; initial local gate required no fourth review; subsequent remote recovery is recorded below.
+
+- H0 published4d652d30201b2b38e380007b855513be1a04ad83 to OPEN main-based PR136.
+  H1 worker owns five primary paths per h1-dispatch.md; root owns integration/docs/reviews.
+
+- H0 remoteCodeQLcounterlogging alert at4d652d3 reopened gate. One bounded investigation/experiment
+  produced one-line constantstatus remedy c48ce728b886de2d67d2d88164d15ca0c5d3d073. Fulloracle
+  128.583s passed; final freshreview4 Ready (ownoracle133.309s), exactheadCodeQL0alerts and allCI
+  passed includingverify5m6s. H1pauseddrafts preserved, now resumes. No further H0 review budget.
+  Total18accepted slices,54ordinary independent rounds plus1conditional finalround=55.

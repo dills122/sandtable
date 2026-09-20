@@ -21,7 +21,9 @@ H0 normal oracle and15direct predecessor oracles pass;6992root edits,6992omissio
 only; prior .NET results are the unchanged runtime checkpoint, not a new H0 test run.
 
 F2–F6 and H0 each completed dev review and three sequential independent rounds with no remaining
-findings. Frozen source manifests, exact logs
+findings. H0 additionally cleared a post-review CodeQL counter-logging alert through one bounded
+investigation/experiment and final independent review4; exact-head security and CI checks pass.
+Frozen source manifests, exact logs
 and reports retained per slice. One main-based PR, no manually chained PR targets.
 
 Initial H1–H4 runtime routing/full-root codec/disabled-admission restore remains open. Later009–025

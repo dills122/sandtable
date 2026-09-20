@@ -40,3 +40,12 @@ Local experiment result: normal oracle exit0,128.583seconds, /tmp/h0-codeql-expe
 All368roots and entire unchanged fixture (including detailed falsification counts) compare exactly;
 169sourcepins and imported-schema immutability pass. Only production-facing delta is constant console
 status instead of counterdictionary. Remote CodeQL rerun and conditional finalreview4 still pending.
+
+Remote experiment result: check106021490989 on exact c48ce728b886de2d67d2d88164d15ca0c5d3d073
+completedSUCCESS,0annotations,'No new alerts in code changed by this pull request'. All4language
+jobs pass. Root records raw result in h0-final-review-checks.md. OriginalH0generalCI passed;
+remedy generalverify stillrunning, finalreview4 pending. One experiment complete; no suppression.
+
+Final outcome: independentreview4 Ready, independentnormaloracle133.309seconds passes; all remote
+checks on c48ce72 pass includinggeneralverify5m6s. Lead accepts recovery, resumes H1. No remaining
+blocker or fifthreview. Exact sourcehashes unchanged after finalreview; next commit records evidence.
