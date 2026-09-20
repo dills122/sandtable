@@ -1224,7 +1224,7 @@ timestamps cannot constrain its local clock. Guard creation transfers one TOE an
 post-retreat donor resources; escape retains original identity and quantity with a twelve-stage
 training-gated entitlement, without restoring TOE. Typed projection and canonical serialization
 retain guard provenance and future upkeep/training obligations. No future duty executes here;
-relationships, round closure and Close Assault completion remain Task016.
+Task016 supplies relationships, round closure and Close Assault completion.
 
 Task015 custody acceptance completed three fresh independent reviews on2026-09-20;
 [retained evidence](.planning/combat-task008-delivery/task015-evidence.md) distinguishes historical full
@@ -1240,5 +1240,5 @@ settlement receipts bind round closure, then CA binds that actual event and orig
 Immutable internal pre-event facts let serialization recompute terminal event identities and prefix
 links; canonical wire fields remain unchanged and full trusted history replay remains authoritative.
 Retry survives closure, while fresh actions reject and stale callbacks remain NoOp. Future duties
-remain stored and unexecuted. Implementation is under verification; Reserve Release execution,
+remain stored and unexecuted. Task016 acceptance includes full2,331/Boundary81, three fresh Ready reviews and exact-candidate CI; [evidence](.planning/combat-task008-delivery/task016-evidence.md) retains checks. Reserve Release execution,
 actual positive campaign history, extended Snapshot and durable publication remain later gates.

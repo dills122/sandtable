@@ -25,3 +25,7 @@ Documentation check: `python3 /tmp/check-combat-resume-links.py` exit0,27 Markdo
 18:32 UTC: Task016 dispatched fromd600966 to internal worker under task016-dispatch.md. Source/test ownership eight paths maximum, separate worker evidence/pins. Root owns full gate/dev/reviews/commits. Task017 proposal retained as research only; parent cannot close on private kernel or empty bridge because positive held-I/no-move predecessor remains absent.
 
 18:35 UTC: Task016 meaningfulRED nativeMTP0/1 exit2 at accepted015 prefix next relationship advance; production message Relationships and closure require later tasks. Worker implementing four production files; no016 acceptance claim.
+
+18:55 UTC: Task016 frozen coded480556 pushedPR138. Root full2,331/Boundary81/build/format passed, processes closed. Review1Ready;2active;3pending; exactCIverify pending at last lookup. Further Reserve research narrows017A1 to immutable isolated Release base/history codec with44 goldenbase hashes; no implementation before016 accepted. Worker17 research artifacts currently ignored/local, retain at next metadata commit.
+
+19:05 UTC: Task016 accepted at d480556 after dev/full gates, three fresh Ready reviews and exact CI. Root read all reports. Canonical status synchronized through016; Task017A1 proposed five-path split retained, parent017 still open.
