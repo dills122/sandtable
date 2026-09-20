@@ -1,0 +1,5 @@
+Combat delivery now includes dormant private seals and Prepared continuation using the frozen Round2 public opening-floor clock policy. Replay requires independently authenticated predecessor and round inputs; exact retries recover retained bytes, malformed proposals cannot trigger cancellation, and first seal preserves the waiting owner's admission behavior. Prepared stops before atomic commitment; cancellation spends no resources.
+
+Task011 is under verification:10 Bases,54 literal precommit events and64 states match;192 fresh clock outcomes and96 retries pass. Four commitment events remain Task012. Full solution/boundary/format/CI and three independent review verdicts are pending. No acceptance or runtime activation claim yet.
+
+Prior F2–F6/H0–H4/009A/B/010A/B/C are accepted on this main-based draft. Parent010 completed at9b999a7 with full2,284/Boundary81/build/format/exact-head CI and three Ready reviews. Task008 HOST-PUB-001, positive campaign provenance, extended Snapshot12, public activation and025 acceptance closure remain open. No merge requested.

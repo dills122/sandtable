@@ -1180,3 +1180,12 @@ validation terminates before the successor tail. Closed typed projections expose
 receipts without changing local Control bytes. Every trailing event is consumed or rejected;
 synthetic timed C3a events remain outside this actual-history route. Snapshot12 explicitly rejects
 new projections until a separately specified root extension exists.
+
+Task011 implements dormant Round2 private seals over a separately authenticated C3a predecessor
+and separately trusted round inputs. Supplemental configuration binds the public opening-floor
+clock policy without rewriting original Config1. Both slots retain role order; an opponent seal
+cannot raise the opening floor or alter the waiting owner's admission outcome. Exact retries
+recover retained bytes before clock/status gates, while malformed own proposals reject before
+cancellation. Prepared continues through Force Assignment and empty Anti-Armor; cancellation
+closes without costs or RNG. Atomic commitment remains Task012. This mechanism does not supply
+positive campaign provenance, public observation, host publication or a new Snapshot12 family.

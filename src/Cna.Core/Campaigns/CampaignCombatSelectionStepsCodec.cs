@@ -263,6 +263,15 @@ internal static class CampaignCombatSelectionStepsCodec
         else if (value.ValueKind == JsonValueKind.Object)
             foreach (var property in value.EnumerateObject()) CheckBounds(property.Value, depth + 1);
     }
+    // Round2 reuses the exact C3a external grammar and semantic array ordering.
+    internal static void WriteSealedRoundExternalSyntax(Utf8JsonWriter writer, JsonElement value, string kind)
+    {
+        if (kind is not ("Boundary" or "Control" or "Receipt" or "World" or "Random" or "UnitKey" or
+            "id" or "hash" or "rawHash" or "int" or "long" or "utc" or "bool" or "side" or "actor"))
+            throw new JsonException("Unsupported Round2 external syntax kind.");
+        WriteSyntax(writer, value, kind);
+    }
+
     private static void WriteSyntax(Utf8JsonWriter writer, JsonElement value, string kind)
     {
         if (kind.EndsWith('?'))
