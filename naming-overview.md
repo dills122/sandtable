@@ -977,3 +977,8 @@ inputs require later selection and Base2 admission.
 `CampaignCombatInheritedSelection` owns actual empty selection;
 `CampaignCombatInheritedNoAttack` owns its six structural completions. Their immutable local
 Control states remain distinct: traversal retains selection unchanged and owns terminal closure.
+
+`CampaignCombatSelectionSteps` names the dormant timed C3a mechanism. Its
+`ReplayTrustedBoundary` and `ApplyTrustedBoundary` APIs make caller provenance explicit;
+`CombatStepsInput` carries separately authenticated actor/time, and `CombatStepsControl` is
+derived replay state. These types do not imply live campaign admission or publication.

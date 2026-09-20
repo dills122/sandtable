@@ -1163,3 +1163,13 @@ Selection and traversal each reconstruct complete predecessor evidence; cached C
 authorize events. Arrival at same-slot Reserve Release preserves World/RNG and releases nothing.
 Timed C3a controls and generic router integration remain010B/010C; new Snapshot12 persistence
 is not implied by fragment readback.
+
+Task010B implements the dormant C3a timed selection and RBA mechanism over an independently
+trusted Boundary and separately authenticated input history. Replay compares every event with
+that trusted tuple; event payloads cannot supply their own actor or clock authority. The exact
+retained C2 creation profile remains pinned. Selection and RBA deadlines retain the historical
+high-water policy, while later Round2 uses its separately versioned public opening floor.
+Exact Command retries check actor separately and recover original bytes; stale timer callbacks
+are no-ops, and cancelled paths perform no attack or resource mutation. Positive continuation
+stops at Force Assignment pending Task011. This mechanism is under verification and supplies
+no actual positive-history adapter, public action, durable publication or extended Snapshot12.
