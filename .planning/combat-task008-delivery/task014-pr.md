@@ -1,0 +1,5 @@
+Dormant Combat now settles retreat disposition, simultaneous losses and mandatory evacuation from authenticated paid result history. Independent owner windows use local clocks; immutable receipts preserve original participants, captive origin and complete typed World consistency. Retries and discarded candidates cannot duplicate losses or movement. Custody and closure remain later gates.
+
+Task014 accepted ate7c9e8f:144 literal events/176 state-hash cuts,17 focused/100 shared tests; full2,318/0fail/0skip, Boundary81, build0warnings/errors, formatting and exact-commit CI pass. Development review plus three sequential fresh independent reviews all Ready:46,63 and80 independent tests respectively; final reviewer rebuilt from source. Serializer-stage negative test caught and fixed a real mismatch before freeze.
+
+Prior F2–F6/H0–H4/009A/B/010A/B/C/011/012/013 accepted in this main-based draft. Task015 custody is next. Actual positive campaign provenance, extended Snapshot12, HOST-PUB-001, public activation and025 acceptance closure remain open. Core discard/retry evidence is not host transaction proof. No merge requested.

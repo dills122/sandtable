@@ -5,14 +5,14 @@
 work (`001`–`002`) is complete. Parent `003` is complete through the
 [authority-composition handoff](../specs/combat-authority-composition-v1.md). Checkpoint B closes through the
 [Task004C integration index](../specs/combat-outward-composition-v1.md). Task004A side contracts and Task004B occurrence, child and
-parent evidence are accepted with strict clock privacy and versioned round/settlement authority. Dormant Tasks005–007 and Task008 creation/inherited adapters are implemented for the selected profile. Initial H full restore is accepted; Tasks009–025 and HOST-PUB-001 remain pending.
+parent evidence are accepted with strict clock privacy and versioned round/settlement authority. Dormant Tasks005–007 and Task008 creation/inherited adapters are implemented for the selected profile. Initial H full restore and dormant Tasks009–014 are accepted in PR136; Tasks015–025 and HOST-PUB-001 remain pending.
 
 | Delivery layer | Current boundary | Next required outcome |
 | --- | --- | --- |
 | Research and policy | Complete for the selected bounded profile, including `HOST-RSH-001` | Reopen only for a new source, failed assumption, or approved profile expansion |
 | Authority contracts | CON-002–004 and all selected-profile inherited families are reconciled in 28 creation-rooted composition traces; parent003 complete | Preserve exact Task004 handoff while later runtime work derives boundaries from accepted history |
 | Outward contracts | Task004A/B/C accepted; all 72 ACs mapped with bounded evidence and explicit runtime deferrals | Preserve accepted bytes and source/privacy boundaries during dormant implementation |
-| Runtime | Dormant Tasks005–007 and Task008 creation/inherited adapters implemented; Task008 parent incomplete; Tasks009–019 pending | Initial H restore accepted; proceed to dormant009A/009B while retaining open HOST-PUB-001 publication proof |
+| Runtime | Dormant Tasks005–007 and Task008 creation/inherited adapters implemented; Task008 parent incomplete; dormant Tasks009–014 accepted; Tasks015–019 pending | Proceed to custody015 while retaining actual positive-history, Snapshot successor and HOST-PUB-001 publication obligations |
 | Public and simulator | Tasks020–024 not started | Activate the certified side-safe profile, then prove strict Exercise/Runner reconstruction and repeatability |
 | Closeout | Task025 not started | Full gate, evidence reconciliation, and authentic loop demonstration without overstating retained obligations |
 
@@ -887,7 +887,8 @@ Task011 private seals/Prepared is accepted at94a4ecd (full2,292/Boundary81, dev 
 independent rounds and exact-head CI). Atomic commitment012 is accepted at8fcf8b9
 (full2,301/Boundary81, dev review, three independent rounds and exact-head CI). Result/cursor013
 is accepted at1c51464 (full2,311/Boundary81, dev review, three independent rounds and exact-head CI);
-loss/retreat014 is next. Actual positive campaign provenance, extended Snapshot12
+loss/retreat014 is accepted ate7c9e8f (full2,318/Boundary81, dev review, three independent rounds
+and exact-head CI). Custody015 is next. Actual positive campaign provenance, extended Snapshot12
 and host publication remain separate integration obligations.
 
 Checkpoint E: run lifecycle/recovery and paired-authorized-input checks. No hosting or public
