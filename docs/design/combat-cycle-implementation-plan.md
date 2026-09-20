@@ -925,7 +925,7 @@ fixture, topology or registration change is included. Planning, status and revie
 additional administrative files, counted separately in publication scope. The
 [resume reconciliation](../../.planning/combat-task008-delivery/task016-resume-reconciliation.md)
 records API/fixture evidence and alternatives. If implementation exceeds this boundary or requires
-another subsystem, split and re-scope before edits. Task016 remains unimplemented until dispatched.
+another subsystem, split and re-scope before edits. Task016 was dispatched from `d600966`; implementation is under verification and not yet accepted.
 
 Checkpoint G: exercise every reachable settlement branch and restart cut. Settlement/state ACs now have concrete Core evidence; outward transcript and coherent public
 admission evidence still wait for checkpoint I.

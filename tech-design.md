@@ -1230,3 +1230,15 @@ Task015 custody acceptance completed three fresh independent reviews on2026-09-2
 [retained evidence](.planning/combat-task008-delivery/task015-evidence.md) distinguishes historical full
 gates, exact-candidate CI and independently rebuilt focused/boundary checks. Public behavior and
 future-duty execution remain unchanged.
+
+Task016 extends dormant Result2 through original-participant relationships, round closure and Close
+Assault completion to Reserve Release. Current original locations and authenticated Content edges
+determine adjacency; raw required retreat suppresses Engaged even when refused. Null relationships
+still retain a receipt. Complete typed World comparison remains required after relationships;
+World7's later-movement allowance does not authorize changed Result2 resources. Ordered immediate
+settlement receipts bind round closure, then CA binds that actual event and original fifth step.
+Immutable internal pre-event facts let serialization recompute terminal event identities and prefix
+links; canonical wire fields remain unchanged and full trusted history replay remains authoritative.
+Retry survives closure, while fresh actions reject and stale callbacks remain NoOp. Future duties
+remain stored and unexecuted. Implementation is under verification; Reserve Release execution,
+actual positive campaign history, extended Snapshot and durable publication remain later gates.

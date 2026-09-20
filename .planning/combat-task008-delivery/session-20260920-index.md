@@ -19,3 +19,9 @@ Task016 research reconciled and canonical execution refinement recorded: five ma
 18:25 UTC: review2 Ready, independent clean build/52 C# tests and Result2+World7 oracles. No actionable findings; author accepts. Review3 dispatched fresh with required independent full-solution rebuild and focused/Boundary verification. Separate read-only Task017 proposal research may proceed; no017 implementation before016 accepted.
 
 Documentation check: `python3 /tmp/check-combat-resume-links.py` exit0,27 Markdown files/226 local file targets/0 missing; anchor semantics not checked. `git diff --check` exit0. Isolated root `dotnet restore Sandtable.slnx` exit0; original checkout remains untouched.
+
+18:31 UTC: Task015 accepted, code00a8b68 unchanged; metadata committed d600966. Third Ready report includes independent full rebuild0warnings/errors,123 focused and81 Boundary. All three reports read/accepted, no source remediation. README/roadmap/plan/design/site synchronized; naming unchanged. Draft main-based PR138 https://github.com/dills122/sandtable/pull/138 created and attached; no merge authorized.
+
+18:32 UTC: Task016 dispatched fromd600966 to internal worker under task016-dispatch.md. Source/test ownership eight paths maximum, separate worker evidence/pins. Root owns full gate/dev/reviews/commits. Task017 proposal retained as research only; parent cannot close on private kernel or empty bridge because positive held-I/no-move predecessor remains absent.
+
+18:35 UTC: Task016 meaningfulRED nativeMTP0/1 exit2 at accepted015 prefix next relationship advance; production message Relationships and closure require later tasks. Worker implementing four production files; no016 acceptance claim.

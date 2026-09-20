@@ -63,8 +63,8 @@ internal static class CampaignCombatResolutionCodec
             acceptedHighWater = state.AcceptedHighWater,
             world = WorldValue(state),
             randomState = state.RandomState,
-            roundClosureReceiptId = (string?)null,
-            caCompletionReceiptId = (string?)null,
+            roundClosureReceiptId = state.RoundClosureReceiptId,
+            caCompletionReceiptId = state.CaCompletionReceiptId,
             receipts = state.Receipts.Select(r => new
             {
                 commandHash = r.CommandHash,
@@ -73,9 +73,46 @@ internal static class CampaignCombatResolutionCodec
                 actor = CampaignCombatSealedRoundCodec.Actor(r.Actor),
                 stateVersion = r.StateVersion
             }),
-            closed = false
+            closed = state.Closed
         }, "ResultState");
     }
+    private static bool ValidClosureEvidence(CombatResolutionState state)
+    {
+        if (state.Status is not ("round-closed" or "closed"))
+            return state.RoundClosureOrigin is null && state.CaCompletionOrigin is null;
+        var terminalCount = state.Closed ? 2 : 1;
+        if (state.RoundClosureOrigin is not { } roundOrigin || state.Receipts.Count < terminalCount ||
+            (state.CaCompletionOrigin is not null) != state.Closed) return false;
+        var settlement = state.World.Settlements.Single(); var committed = state.Context.Committed;
+        var proof = new[] { settlement.Disposition!.ReceiptId, settlement.Losses!.ReceiptId, settlement.Retreat!.ReceiptId,
+            settlement.Custody?.ReceiptId, settlement.Relationships!.ReceiptId }.OfType<string>();
+        string? Verify(CombatResolutionClosureOrigin origin, CombatResolutionEffect effect, int index)
+        {
+            var receipt = state.Receipts[index];
+            if (origin.PriorVersion != receipt.StateVersion - 1 || receipt.Actor != CampaignOpeningPreambleActor.System) return null;
+            var input = new CombatResolutionInput(new(2, committed.Base.ConfigurationHash, CampaignCombatResolution.Policy,
+                "advance", committed.RoundId!, committed.CommitmentId!, origin.PriorVersion), CampaignOpeningPreambleActor.System);
+            var prior = state with { StateVersion = origin.PriorVersion, Prefix = origin.PriorPrefix };
+            var unsigned = SerializeEvent(prior, input, effect, CampaignOpeningPreambleActor.System, null);
+            var id = "cmb." + CampaignOpeningPreambleCodec.HashWithDomain("sandtable.combat.result-receipt.v2", unsigned)[7..];
+            var bytes = SerializeEvent(prior, input, effect, CampaignOpeningPreambleActor.System, id);
+            if (receipt.ReceiptId != id || receipt.CommandHash != CampaignOpeningPreambleCodec.Hash(SerializeCommand(input.Command)) ||
+                receipt.EventHash != CampaignOpeningPreambleCodec.Hash(bytes)) return null;
+            return CampaignOpeningPreambleCodec.EventPrefix(origin.PriorPrefix, bytes);
+        }
+        var roundPrefix = Verify(roundOrigin, new CombatResolutionEffect.RoundClosed(settlement.SettlementId, proof), state.Receipts.Count - terminalCount);
+        if (roundPrefix is null) return false;
+        if (!state.Closed) return state.StateVersion == roundOrigin.PriorVersion + 1 && state.Prefix == roundPrefix;
+        var caOrigin = state.CaCompletionOrigin!;
+        if (caOrigin.PriorPrefix != roundPrefix || caOrigin.PriorVersion != roundOrigin.PriorVersion + 1) return false;
+        var positions = Cna.Core.Rules.Cna1979LandSequence.CreateTurn(1).ToArray();
+        var start = Array.FindIndex(positions, p => p.PositionId == committed.Base.Boundary.Position.PositionId);
+        if (start < 0 || start + 6 >= positions.Length) return false;
+        var caPrefix = Verify(caOrigin, new CombatResolutionEffect.CaCompleted(positions[start + 5].PositionId, positions[start + 6].PositionId,
+            committed.StepReceipts[^1], state.RoundClosureReceiptId!), state.Receipts.Count - 1);
+        return caPrefix is not null && state.StateVersion == caOrigin.PriorVersion + 1 && state.Prefix == caPrefix;
+    }
+
     internal static byte[] SerializeResultPreimage(CombatAssaultResult result)
     {
         var node = JsonSerializer.SerializeToNode(ResultValue(result), Options)!;
@@ -111,6 +148,7 @@ internal static class CampaignCombatResolutionCodec
             "losses" => settlement is { Disposition: not null, Losses: not null, Retreat: null, Custody: null, Relationships: null },
             "retreat" or "waiting-custody" => settlement is { Disposition: not null, Losses: not null, Retreat: not null, Custody: null, Relationships: null },
             "custody" => settlement is { Disposition: not null, Losses: not null, Retreat: not null, Custody: not null, Relationships: null },
+            "relationships" or "round-closed" or "closed" => settlement is { Disposition: not null, Losses: not null, Retreat: not null, Relationships: not null },
             _ => false,
         };
         var correctWindow = state.Status switch
@@ -119,7 +157,15 @@ internal static class CampaignCombatResolutionCodec
             "waiting-custody" => state.Window is { Kind: "custody" },
             _ => state.Window is null,
         };
-        if (!correctStage || !correctWindow)
+        var correctClosure = state.Status switch
+        {
+            "round-closed" => !state.Closed && state.CaCompletionReceiptId is null && state.Receipts.Count > 0 &&
+                state.RoundClosureReceiptId == state.Receipts[^1].ReceiptId,
+            "closed" => state.Closed && state.Receipts.Count > 1 && state.RoundClosureReceiptId == state.Receipts[^2].ReceiptId &&
+                state.CaCompletionReceiptId == state.Receipts[^1].ReceiptId,
+            _ => !state.Closed && state.RoundClosureReceiptId is null && state.CaCompletionReceiptId is null,
+        };
+        if (!correctStage || !correctWindow || !correctClosure || !ValidClosureEvidence(state))
             throw new JsonException("Result2 status, window and settlement stage disagree.");
         var allowed = state.Result is null ? paid : CampaignCombatLossRetreat.Project(state.Context, state.Result,
             settlement ?? throw new JsonException("Result2 settlement missing."));
@@ -142,7 +188,7 @@ internal static class CampaignCombatResolutionCodec
                 losses = settlement.Losses,
                 retreat = settlement.Retreat,
                 custody = settlement.Custody,
-                relationships = (object?)null
+                relationships = settlement.Relationships
             }, Options);
             root["settlements"] = new JsonArray(pending);
         }
@@ -157,6 +203,7 @@ internal static class CampaignCombatResolutionCodec
         }
         foreach (var item in root["representations"]!.AsArray())
             item!["currentLocationId"] = state.World.Representations.Single(r => r.RepresentationId == item["representationId"]!.GetValue<string>()).CurrentLocationId;
+        root["relationships"] = JsonSerializer.SerializeToNode(state.World.Relationships, Options);
         root["cohesionCauses"] = JsonSerializer.SerializeToNode(state.World.CohesionCauses, Options);
         root["custodyLots"] = JsonSerializer.SerializeToNode(state.World.CustodyLots, Options);
         var guards = new JsonArray();
@@ -221,6 +268,16 @@ internal static class CampaignCombatResolutionCodec
         CombatResolutionEffect.Custody value => new { kind = value.Kind, reason = value.Reason, timing = value.Timing, payload = value.Payload },
         CombatResolutionEffect.Loss value => new { kind = value.Kind, payload = value.Payload },
         CombatResolutionEffect.Retreat value => new { kind = value.Kind, payload = value.Payload },
+        CombatResolutionEffect.Relationships value => new { kind = value.Kind, payload = value.Payload },
+        CombatResolutionEffect.RoundClosed value => new { kind = value.Kind, settlementId = value.SettlementId, proofReceipts = value.ProofReceipts },
+        CombatResolutionEffect.CaCompleted value => new
+        {
+            kind = value.Kind,
+            fromPositionId = value.FromPositionId,
+            toPositionId = value.ToPositionId,
+            previousStepReceiptId = value.PreviousStepReceiptId,
+            roundClosureReceiptId = value.RoundClosureReceiptId
+        },
         _ => throw new JsonException("Unsupported Result2 effect.")
     };
     private static byte[] Encode(object value, string kind)
