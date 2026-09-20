@@ -19,11 +19,11 @@ current capability status and cross-package sequencing.
 - [Current checkpoint, simulation and Orleans planning gates](roadmap/pre-alpha-roadmap.md#current-checkpoint-and-next-gates)
 - [Combat delivery review and owner disposition](reviews/combat-delivery-plan-author-review.md#owner-disposition)
 
-Current truth in one line: public Rules9 authority and checked Runner evidence stop at first-side
-Combat entry; parent003 authority contracts close with 28 creation-rooted composition traces and
-the exact Task004 handoff; dormant selected Rules and exact Content7 scenario admission are
-implemented. Dormant World7 and Task008 A0/A1a/A1b codecs are also merged; Task008 parent restore,
-Combat decisions, public activation and simulator evidence remain open. See the
+Current checkpoint: public Rules9 authority and checked Runner evidence reach first-side Combat
+entry. Dormant Combat creation and inherited-history restore are implemented; identity, decisions,
+costs, results, and loss/retreat settlement are accepted through Task014. Task015 custody is merged
+and tested, with independent review acceptance still pending. Public Combat activation, the full
+continual cycle, and actual host publication evidence remain open. See the
 [status table](roadmap/pre-alpha-roadmap.md#current-delivery-status) and
 [next gates](roadmap/pre-alpha-roadmap.md#current-checkpoint-and-next-gates) for details.
 
@@ -162,8 +162,8 @@ Combat decisions, public activation and simulator evidence remain open. See the
   [Cycle control](specs/combat-cycle-control-v1.md) freezes guarded repeat/finish and Movement expiry
   with19 literal cases/64 traces. Historical reviews remain under `docs/reviews`; review15 assessed
   `003D2c.3i` as Ready with one non-blocking retained-coverage finding, corrected before `719ea0d`.
-  The15of15 sequence is exhausted. Production hosting remains gated; parent003D2c/003 is complete,
-  while Task004 and checkpoint B stay open.
+  That historical 15-review sequence is complete. Parent003, Task004 and checkpoint B are now
+  complete; production hosting remains gated. See the current checkpoint above for runtime progress.
 - Sprint 4-5 dependencies: [research-gate audit](research/sprint-4-5-research-gates.md).
 
 ## Reviewed future product work
