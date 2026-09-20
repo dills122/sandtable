@@ -688,7 +688,7 @@ def main():
     require(schema_guard() == schemas_before, 'predecessor schema mutation')
     require(json.loads(FIXTURE.read_text()) == result, 'frozen fixture mismatch')
     print('H0 literal Snapshot12:', json.dumps(result['measured'], sort_keys=True))
-    print('Falsification:', json.dumps(result['falsification'], sort_keys=True))
+    print('Falsification checks match frozen counts.')
     print('Elapsed seconds:', round(time.monotonic() - started, 3), 'memoization:', memoized_root.cache_info())
     print('Family cuts:', json.dumps(result['familyCuts'], sort_keys=True))
     print('Contract evidence only; runtime router, disabled-admission restore and publication remain open.')

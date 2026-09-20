@@ -87,3 +87,7 @@ Round3 Ready/no findings: independent oracle129.028s, fixture/ledger/prefix audi
 pass. Root read allthree reports and accepts H0 contract only.18accepted slices/54independent rounds.
 No remaining blocker, no experiment/fourth required. Supporting docs status updated after acceptance;
 primary files unchanged after round3. H1 implementation next; runtimeH/publication remain open.
+
+Post-publication remoteCodeQLblocker: check106020410356/analysis1805996846 reports integercounter
+logging atoracle691. H1paused; userconditional oneexperiment/finalreview4 now invoked. See
+h0-codeql-experiment.md. No completedremediationclaim yet; original3reviews remainhistorical.
