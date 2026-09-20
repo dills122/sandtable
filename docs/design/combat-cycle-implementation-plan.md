@@ -809,7 +809,7 @@ Objective: implement canonical Combat creation, snapshot and inherited-history c
 | `008F1` Reaction trigger | E1 first-move cut | Real return Move4, adjacency/eligibility, persisted window/opportunity and reacting flow | Implemented and reviewed on `codex/combat-task008-reaction-trigger`; focused15/full2,051 pass, three Ready rounds | Yes, `dd22088` (#135) |
 | `008F2` participant lifecycle | F1 | Reactor move3, participant completion3, System empty stop resolution2 and no-eligible closure3 | Implemented and reviewed on `codex/combat-task008-reaction-lifecycle`; focused16/full2,060 pass, three Ready rounds | No |
 | `008F3` direct closure | F1 | Owner decline and System unavailable/timeout without participant | Implemented and reviewed in main-based PR136; focused25/full2,069 pass, three Ready rounds | No |
-| `008F4` active fallback | F2 first-participant-move cut | System unavailable/timeout and mandatory empty stop resolution | Pending | No |
+| `008F4` active fallback | F2 first-participant-move cut | System unavailable/timeout and mandatory empty stop resolution | Implemented and reviewed in main-based PR136; focused29/full2,080 pass, three Ready rounds | No |
 | `008F5` second reactor move | F2 first-participant-move cut | Actual second move with route/history/receipt continuity | Pending | No |
 | `008F6` second-move completion | F5 | Participant completion, empty stop resolution and window closure | Pending | No |
 | `008G` Breakdown adapter, parent | E2/G1 and G2 below | Stop/resolution/completion, BP/lot provenance and Combat-entry boundary | Assigned E2/G1 and G2 evidence complete for empty-cohort profile; positive vehicles unsupported | No |

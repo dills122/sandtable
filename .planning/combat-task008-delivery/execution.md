@@ -55,7 +55,8 @@ No public activation or parent completion inferred from a codec slice.
 | 008F1 Reaction trigger | E1 first-move cut | implementation subagent; lead integrates | 2traces2events4cuts8artifacts;focused15/full2051;dev+threeReadyreviews | Accepted; feature-branch checkpoint |
 | 008F2 participant lifecycle | F1 | implementation subagent; lead integrates | 2traces8events10cuts28artifacts;focused16/full2060;dev+threeReadyreviews | Accepted; publication against main |
 | 008F3 direct closure | F1 trigger; after F2 review | implementation subagent; lead integrates | six traces/six events/12 cuts/30 artifacts;focused25/full2069/boundary81;dev+threeReadyreviews | Accepted; main-based PR136 |
-| 008F4–F6 Reaction continuation | canonical F graph | unassigned | selected fallback/second-move histories | Pending |
+| 008F4 active fallback | F2 first participant move; after F3 review | implementation subagent; lead integrates | four traces/eight events/12cuts/32artifacts;focused29/full2080/boundary81;dev+threeReadyreviews | Accepted; main-based PR136 |
+| 008F5–F6 Reaction continuation | canonical F graph | unassigned | selected second-move/completion histories | Pending |
 | 008B–H, 019A | canonical dependency graph | unassigned | cumulative Core replay, full retained-history restore | Pending |
 | 009–025 | canonical gates | unassigned | cumulative gameplay/public/Runner/72-AC evidence | Pending |
 
@@ -120,3 +121,6 @@ Record exact commands, failures and totals in per-slice evidence; never count un
 - F2 accepted as `c83d7c4`, main-based [PR136](https://github.com/dills122/sandtable/pull/136).
   Rebase from reviewed F1 to squash main preserved exact complete tree. Continue accepted slices
   in this single main-based delivery PR until merged; no manual chain of feature-branch PR targets.
+
+- F3 accepted and published as `f0cb5ca` in main-based PR136; focused25/full2069/boundary81,
+  build/format and three independent Ready rounds. F4 active fallback now executing.
