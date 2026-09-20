@@ -102,6 +102,7 @@
     <None Include="../../docs/specs/fixtures/combat-inherited-reaction-active-fallback-v1.json" Link="Campaigns/Fixtures/combat-inherited-reaction-active-fallback-v1.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="../../docs/specs/fixtures/combat-inherited-reaction-second-move-v1.json" Link="Campaigns/Fixtures/combat-inherited-reaction-second-move-v1.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="../../docs/specs/fixtures/combat-inherited-reaction-movement-completion-v1.json" Link="Campaigns/Fixtures/combat-inherited-reaction-movement-completion-v1.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../../docs/specs/fixtures/combat-inherited-snapshot-v1.json" Link="Campaigns/Fixtures/combat-inherited-snapshot-v1.json" CopyToOutputDirectory="PreserveNewest" />
     <Using Include="Xunit" />
     <None Include="../../docs/specs/fixtures/combat-inherited-reaction-trigger-v1.json" Link="Campaigns/Fixtures/combat-inherited-reaction-trigger-v1.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>

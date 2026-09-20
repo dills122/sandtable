@@ -1000,6 +1000,11 @@ It preserves the nineteen-field root and creation bytes while adding typed Reser
 state slots. Full roots derive from trusted creation and complete causal history; identical histories
 must yield identical bytes across family interfaces. Runtime routing and disabled-admission restore
 remain later H gates; contract vectors do not prove those behaviors.
+H1 pre-cycle routing is under development. `CampaignCombatRetainedHistory` captures one bounded
+owned Created11/event transcript; `CampaignCombatHistoryReplay` derives fixed causal partitions and
+invokes accepted readers through atomic first opening. Reserve membership is materialized already at
+stage-entry's terminal cut. Typed projections and exact retained buffers remain distinct from a
+persisted full-root snapshot; unsupported later tails reject until H2/H3 extend routing.
 Creation publication evaluation now targets an expected-head per-campaign commit batch. The
 [HOST-PUB-001 evidence allocation](docs/specs/combat-authority-envelope-v1.md#runtime-evidence-ownership)
 keeps actual atomic uniqueness, commit ambiguity and process-recovery proof open until provider
