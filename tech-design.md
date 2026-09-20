@@ -1225,3 +1225,8 @@ post-retreat donor resources; escape retains original identity and quantity with
 training-gated entitlement, without restoring TOE. Typed projection and canonical serialization
 retain guard provenance and future upkeep/training obligations. No future duty executes here;
 relationships, round closure and Close Assault completion remain Task016.
+
+Task015 custody acceptance completed three fresh independent reviews on2026-09-20;
+[retained evidence](.planning/combat-task008-delivery/task015-evidence.md) distinguishes historical full
+gates, exact-candidate CI and independently rebuilt focused/boundary checks. Public behavior and
+future-duty execution remain unchanged.

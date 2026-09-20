@@ -15,3 +15,8 @@ Expanded4testattempt3pass1fail19.873s /tmp/015-expanded.log: conservationtestcom
 Rootreadfinalnegative/ownership drafts: locallyrehashedcustodyreceipt/lot/route/TOE, omittedfutureassets/obligations, origin/quantity/CPreset/maturity, appendduplicate/forgedroute, serializerborrowedWorld/windowkind, malformednewpayload beforehistorysentry, futureTurn116/array513/originkindnumeric, returnedbuffer/collections. ResultpreservationnowcomparesID+exactpreimage. Nofurtherfinding; finalformatted23testcombined andsharedpending.
 
 Finalfrozen23/0/0passed30.265s; rootdevelopmentreviewcomplete, no remainingfinding. Sevenphysicalpins captured. Shared/formatverify/fullgates/reviewsremainpending.
+
+
+## Resume development review — 2026-09-20
+
+Rechecked frozen four-production-file diff and custody tests against merged main. Whole source/test tree identical to00a8b68; seven pins pass. No new implementation changes or additional findings. Confirmed projection reconstructs donor after retreat; one-TOE debit and guard retain exact current operational/ammo/readiness facts, escape retains source quantity and12-stage entitlement; unconditional typed settlement and complete World equality remain. Independent windows derive actual captor/config and retain retry-before-time rules. Existing dev review remains complete; fresh independent acceptance pending. No claim of route-max literal coverage or actual durable publication.

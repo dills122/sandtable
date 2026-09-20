@@ -1,0 +1,7 @@
+# Task016 root scope decision — pending015 acceptance
+
+Read root proposal and worker API reconciliation in full. Select one bounded closure slice, explicit8physicalpaths: five material Resolution/Codec/Obligations/existingLossRetreat/newClosureTests plus THREE narrow prior-test assertion updates ResolutionTests/LossRetreatTests/CustodyTests. Retain all priorgoldens and Custody End frontier. This is ordinarytestmaintenance and boundedlocalprojectionfinalization, no newauthority/schema/World7relaxation or architecturalpivot.
+
+Criticaldistinction: World7 intentionallyallowslaterelementmovement once relationshipreceipt exists; Result2 serializerstillmustcompareentiretypedWorld with exactallowedprojection throughfinalclosure. Add constructedtypedWorldregression, notonlyrawReplaymismatch. Convergeprojection branches beforederivedrelationship; neveracceptretainedWorld asfrontier. Relationship usesactualoriginalpositions/content, rawretreatsuppression, no guards. ClosureIDs matchterminalreceiptpositions/closedstage, newinputguardafterretry/stalecallback. Proof4/5receiptorder, CAofficialtopology/fifthstep andexactroundeventreceipt. Ownedproofcollection.
+
+No newrootoracle/NET forresearch. Countsindependentlyrecounted272/304/32wholefinalJSON,16contact4engaged12null. Actualpositivehistory/Snapshot/HOST-PUB-001/publicintegration remainopen. No016implementation until015accepted andexplicitdispatch.
