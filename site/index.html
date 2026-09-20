@@ -73,7 +73,7 @@
           </p>
           <div class="hero__actions">
             <a class="action" href="#play">See the player loop</a>
-            <a class="text-link" href="https://github.com/dills122/sandtable#up-and-running">
+            <a class="text-link" href="https://github.com/dills122/sandtable#start-run-and-develop">
               Run the foundation <span aria-hidden="true">→</span>
             </a>
           </div>
@@ -282,29 +282,33 @@
 
       <section class="frontier-section" id="frontier" aria-labelledby="frontier-title">
         <header class="section-head section-head--compact">
-          <p>Repository status</p>
+          <p>Repository status · <time datetime="2026-09-20">20 September 2026</time></p>
           <h2 id="frontier-title">A real simulation foundation. Not a playable adaptation yet.</h2>
         </header>
 
         <div class="frontier-grid">
           <article class="frontier-grid__implemented">
-            <h3>Working now</h3>
+            <h3>Implemented today</h3>
             <ul class="check-list">
               <li>Versioned rules, content, snapshots, observations, and legal actions</li>
               <li>Initiative, weather, stage-entry obligations, and Reserve Designation</li>
-              <li>Supported first-side non-contact movement to Breakdown Determination</li>
-              <li>Byte-identical replay and strict Exercise/Maneuver evidence readback</li>
+              <li>Public Movement, bounded Reaction, and Breakdown paths through Combat entry</li>
+              <li>Byte-identical replay, inherited-history restore, and checked Exercise/Maneuver evidence</li>
+              <li>Combat internals reviewed through orders, costs, results, losses, and retreat</li>
+              <li>Custody handling merged and tested; independent review acceptance still pending</li>
             </ul>
+            <p>Combat internals run in engine tests. Public Combat play is not yet activated.</p>
           </article>
 
           <article class="frontier-grid__next">
             <h3>On the road to Maproom</h3>
             <ol>
-              <li>Complete movement, contact, reaction, breakdown, and combat</li>
+              <li>Finish custody review, round closure, Reserve Release, and cycle repeat/finish</li>
+              <li>Activate side-safe Combat actions and prove the complete loop through Runner</li>
               <li>Add source-verified first-scenario content and victory rules</li>
               <li>Build local hot-seat Maproom, saves, fog, and replay</li>
-              <li>Evaluate optional commander intelligence after deterministic play works</li>
             </ol>
+            <a class="text-link" href="https://github.com/dills122/sandtable/blob/main/docs/roadmap/pre-alpha-roadmap.md#current-checkpoint-and-next-gates">Follow the delivery roadmap <span aria-hidden="true">↗</span></a>
           </article>
         </div>
 
@@ -315,7 +319,8 @@
           </div>
           <p>
             A six-turn, Land-only local hot-seat scenario with a schematic original map, strict fog
-            of war, legal-action guidance, save/resume, and deterministic replay.
+            of war, legal-action guidance, save/resume, and deterministic replay. The MVP exit gate is
+            two complete, reproducible six-turn games.
           </p>
         </aside>
       </section>

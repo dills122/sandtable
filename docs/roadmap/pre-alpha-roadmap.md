@@ -47,7 +47,7 @@ review and simulator reports apply only to their stated commits and capabilities
 | Next gate | Concrete outcome |
 | --- | --- |
 | Contract checkpoint B | Parent003 authority composition and exact 003-to-004 handoff are complete. Task004A/B side and private Exercise contracts, round-v2, result-v2 and native cycle-finish composition are accepted under [strict clock privacy](../design/combat-cycle-policy-reconciliation.md#clock-privacy-correction--owner-decision-2026-09-15). Task004C integrated readback and all72 AC reconciliation are accepted; checkpoint B is complete. |
-| Dormant Core,005–019 | Tasks005–007 and Task008 A0/A1a/A1b are implemented and merged. A1c creation request/Created11 is reviewed in PR124; A2 creation-only Snapshot12 is reviewed in PR125. B1 opening replay is reviewed in PR126; C Weather replay is reviewed in PR127. B2 stage-entry is reviewed in PR128. D1 own Reserve designation is reviewed in PR129; D2 completion codecs are reviewed in PR130. Task019A first opening is reviewed in PR131. E1 ordinary Move4 is reviewed in PR132; joint E2/G1 route lifecycle is reviewed in PR133; G2 Breakdown completion is reviewed in PR134; F1 Reaction trigger is reviewed in PR135; F2 participant lifecycle is implemented and reviewed in PR136 (focused16/full2,060; three independent rounds); F3 direct closure is implemented and reviewed in PR136 (focused25/full2,069; three independent rounds); F4 active fallback is implemented and reviewed in PR136 (focused29/full2,080; three independent rounds). F5 second reactor move is implemented and reviewed in PR136 (focused22/full2,093; three independent rounds). F6 completion is implemented and reviewed in PR136 (focused24/full2,104; three independent rounds). [Initial H](../design/combat-cycle-implementation-plan.md#task008-execution-index) is accepted in PR136:368 exact roots/286 histories, full2,244/boundary81, dev review, three independent rounds and exact-head CI. Core codec/replay gate is complete; Task008 actual-publication evidence remains open. Task009A inherited assessment/bindings is accepted (focused10/full2,254/boundary81; dev review, three ordinary rounds and one conditional isolated final review, exact-head CI);009B positive certification is accepted (full2,258/boundary81; dev review, three independent rounds and exact-head CI). Task009 dormant mechanisms are complete;010A actual empty selection/traversal is accepted (full2,265/boundary81; dev review, three independent rounds and exact-head CI). Timed selection010B is accepted (full2,277/boundary81; dev review, three independent rounds and exact-head CI). Cumulative routing010C is accepted (full2,284/boundary81; dev review, three independent rounds and exact-head CI). Parent010 dormant gate is complete; private seals/Prepared011 is accepted (full2,292/boundary81; dev review, three independent rounds and exact-head CI). Atomic commitment012 is accepted (full2,301/boundary81; dev review, three independent rounds and exact-head CI). Result/cursor013 is accepted (full2,311/boundary81; dev review, three independent rounds and exact-head CI). Loss/retreat014 is accepted (full2,318/boundary81; dev review, three independent rounds and exact-head CI). Custody015 implementation is under verification; relationship and round closure016 follows its review gate. Private decisions, settlement, Reserve Release, relation-aware Movement and guarded repeat/finish follow their dependencies. Every state-changing family needs replay cuts and recovery evidence before dependent activation. |
+| Dormant Core,005–019 | Foundations, creation and selected inherited adapters are implemented. [Initial H](../design/combat-cycle-implementation-plan.md#task008-execution-index) is accepted with 368 exact restore roots across 286 retained histories; actual-publication evidence remains open. Tasks009–014 are accepted: identity, selection, private orders, atomic costs, deterministic results, losses and retreat. Task015 custody is merged and tested; independent review acceptance remains pending. Finish that review gate before Tasks016–019 relationship/round closure, Reserve Release, relation-aware Movement and guarded repeat/finish. Every state-changing family retains cumulative replay and recovery obligations. |
 | Public Core,020–021 | Add audience-safe observations/actions and authenticated submission mapping, then activate only the certified profile. Unsupported profiles reject before a decision; disabling new admission must not disable recovery. |
 | Exercise and Runner,022–024 | Drive the same public actions through Exercise and Runner, prove reconstruction/readjudication, and retain clean repeated evidence for empty, settled-assault, and Movement-repeat paths. Existing Rules9 studies cannot substitute. |
 | Skeleton closeout,025 | Reconcile all Combat ACs and remaining Contact/Engaged gaps, run the full gate, and demonstrate one authentic start-to-repeat-or-finish loop before declaring the working skeleton reached. |
@@ -188,7 +188,7 @@ Optional parser evidence gate
 | Foundations | Versioned provenance, content, world, commands/events, deterministic RNG, replay, observation, and action contracts | Implemented and activated for the admitted Rules9 synthetic profile | Extend compatibility, replay, and fog tests with each admitted mechanic |
 | Mandatory preamble | Current runtime contracts through Reserve Designation | Implemented and publicly exercised for the admitted no-obligation profile | Add only scenario-required positive obligation families |
 | Movement, Reaction, Breakdown | Frozen and implemented for the certified battalion/Truck profiles | Public actions and checked Runner evidence reach first-side Combat entry | Preserve regressions; broaden positive ZOC/vehicle cases only with an admitted profile |
-| Combat and continual cycle | Checkpoint B accepted; dormant foundations and Initial H Core codec/replay gate complete;008 publication open | **Gameplay not activated**; current public authority stops at Combat entry | Dormant009A/009B →010–019 → public020–021 → evidence022–024 |
+| Combat and continual cycle | Checkpoint B accepted; Initial H Core restore and dormant Tasks009–014 accepted; Task008 publication open | **Gameplay not activated**; Task015 custody merged and tested, independent review acceptance pending | Finish015 review → dormant016–019 → public020–021 → evidence022–024 → closeout025 |
 | Working pre-alpha skeleton | Acceptance boundary defined | Not reached | One authentic movement/contact/combat/release repeat-or-finish loop with identical replay and Chronicle evidence |
 | Six-turn scenario and remaining Land rules | Milestone outcomes defined; exact exercised-rule/data inventory intentionally pending | Not started | Measure after the skeleton, freeze source/content scope, then split implementation-sized tasks |
 | Campaign lifecycle and Maproom | Architecture and no-model interaction direction reviewed | Not started | Stable playable authority, durable save/resume contracts, hot-seat isolation, and deterministic UI path |
@@ -198,9 +198,11 @@ The roadmap deliberately distinguishes foundation maturity from playable breadth
 is substantially established. Bounded Movement, Reaction and Breakdown authority now reaches
 first-side Combat entry. [Breakdown closeout](../research/breakdown-runner-closeout.md) records two
 matching clean runs of47 campaigns; [transcript/privacy follow-up](../research/breakdown-transcript-privacy.md)
-records1,670 tests and81 boundary cases. The campaign is not yet playable: Contact/Engaged, Combat
-adjudication, published scenario content, remaining Land rules, victory, campaign persistence and
-Maproom remain future work.
+records1,670 tests and81 boundary cases. Dormant Combat now has reviewed decisions, costs, results and loss/retreat settlement through
+Task014; Task015 custody is merged and tested but awaits independent review acceptance. The campaign
+is not yet playable: relationship/round closure, public Combat actions, the full continual cycle,
+published scenario content, remaining Land rules, victory, campaign persistence and Maproom remain
+future work.
 
 ### Sprint status summary
 
@@ -211,7 +213,7 @@ Maproom remain future work.
 | 2 — Rules laboratory and legal-action boundary | Complete for the admitted synthetic path | Keep outward actions observation-derived and revalidate exact membership at submission |
 | 3 — Mandatory turn preamble | Complete for the admitted synthetic no-obligation path | Positive Organization/convoy/fleet cases remain explicit later-scenario work; subsequent bounded mechanics now reach first-side Combat entry |
 | 4 — Movement, Breakdown, and Reaction boundary | Complete within the certified synthetic profile | Movement and ZOC/Reaction are implemented; Breakdown Tasks006–007 public activation, Runner adoption and transcript/privacy follow-up are complete. Positive ZOC and broader Breakdown categories remain extensions |
-| 5 — Combat and continual-cycle loop | Checkpoint B accepted; dormant005–007 and 008A0/A1a/A1b implemented; no Combat gameplay | Complete008, then009–024; close025 only after an authentic loop passes |
+| 5 — Combat and continual-cycle loop | Dormant Core accepted through Task014; Task015 merged and tested, review acceptance pending; public Combat inactive | Finish015 review, then016–024; close025 only after an authentic loop passes |
 | 6 — Scenario Group One content | Milestone-level; not started | Produce the exact exercised-rule/data/source/rights inventory after the skeleton, then split bounded content packets |
 | 7 — Remaining required Land systems | Milestone-level; not started | Implement only the measured six-turn surface, including termination/victory, with the same authority/replay/fog gates |
 | 8 — Minimal Maproom and campaign lifecycle | Milestone-level; not started | Add durable local save/resume and recovery before UI completion; prove hot-seat privacy and a complete no-model action path |
@@ -792,7 +794,7 @@ research below remains evidence; it is not an instruction to restart those inves
 
 | Lane | Current priority and boundary |
 | --- | --- |
-| Combat critical path | Checkpoint B/Task005 complete → dormant006–019 → public020–021 → Runner022–024 → closeout025. Parent003 integrated composition and handoff are complete. |
+| Combat critical path | Dormant authority accepted through014 →015 review acceptance →016–019 closure/release/repeat → public020–021 → Runner022–024 → closeout025. Actual publication evidence remains open. |
 | Product critical path | Sprint5 authentic loop → measured six-turn scenario inventory → source/content and remaining Land/victory work → durable save/resume → minimal Maproom/hot-seat privacy → two complete deterministic playthroughs. |
 | Orleans feasibility / `HOST-RSH-001` | Research/probe complete; atomic commit-batch and derived-checkpoint proposal awaits owner acceptance. Production work waits for public Core activation, one verified Runner trace, and an approved storage contract. |
 | Completed foundations | Movement/ZOC/Breakdown and Combat research remain regression/source evidence. Reopen only for a concrete failure, new source evidence, or approved capability expansion. |
@@ -908,8 +910,9 @@ resulting state and Chronicle explanation.
 the Movement/Breakdown/Combat/Reserve Release cycle.
 
 **Status:** Contract checkpoint B is complete; Combat gameplay remains dormant. Initial H Core
-codec/replay gate is accepted in PR136; Task009A inherited assessment/bindings is accepted and
-HOST-PUB-001 publication evidence remains open. D2c.4 contract evidence covers28creation-rooted
+codec/replay gate and dormant Tasks009–014 are accepted in merged PR136. Task015 custody is merged
+and tested, but its independent review acceptance remains unfinished. Relationship/round closure016
+follows that gate. HOST-PUB-001 publication evidence remains open. D2c.4 contract evidence covers28creation-rooted
 traces; this is not a claim all28later runtime traces are implemented. The
 [combined plan](../design/combat-cycle-implementation-plan.md) owns exact current dependencies;
 the [source inventory](../research/combat-cycle-source-inventory.md) retains research lineage.
