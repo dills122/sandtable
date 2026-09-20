@@ -1,0 +1,9 @@
+# Fresh Review Bootstrap
+
+Review instance: 1 of3. Repo /Users/dsteele/repos/sandtable; branch codex/combat-task008-reaction-lifecycle. Base/head and source pins supplied at dispatch. Do not begin before011 implementation freeze;010C acceptance is prerequisite.
+
+Scope: dormant Round2 precommit two-slot seals, original public-opening-floor timing policy, exact retries, cancellations and Prepared structural continuation. Canonical Task011 and frozen Round2 contracts govern. Task012 debit/commit is excluded. Independently trusted Boundary plus separately authenticated predecessor and Round2 input histories must establish authority; untrusted event.input cannot authenticate itself. Exact retained Created/configuration binding and typed strict grammar remain required. First seal preserves other-side witness; no costs/history/RNG until separately authorized commitment. Four fixture attack-committed suffixes are outside011; do not report full58events68states as implemented precommit evidence.
+
+Inspect code/tests/canonical plan blind before author explanation. Persist preliminary ledger in task011-review1-report.md before reading task011-author.md and task011-checks.md. No prior review reports, aggregate evidence, worker/devnotes, proposal rationale, execution history or cross-session retrieval. CCE disabled per process, local exact reads/rg fallback. Read-only source/Git; write only own report. No fixes/commits/agents/new workstreams or extra reviews. Root owns review budget and acceptance. Review both implementation AND plan.
+
+.NET clearance, exact target and verification commands supplied at dispatch. NativeMTP --project, login:false, approved IPC and unique binlogs; no optional --disable-build-servers on dotnet test. Finish all processes. Findings first, plan assessment, claim reconciliation, exact checks/limits, one verdict. Parent gates/publication remain explicit.
