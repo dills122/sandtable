@@ -33,3 +33,9 @@ Documentation check: `python3 /tmp/check-combat-resume-links.py` exit0,27 Markdo
 19:06 UTC: accepted016 metadata afdcd9e pushed. Task017A1 dispatched fromafdcd9e to fresh medium worker, four source/test paths only. CCE context lookup and recall rejected by automatic approval review; use local source inspection and retain local decisions, no retry. No delivery blocker.
 
 19:20UTC Task017A1 source handoff complete; worker20focused/shared passed,44basehashes, no lifecycle claim. Root development findings fixed; full root build/suite/Boundary/format started. Four source pins frozen; candidate/reviews next.
+
+19:23UTC A1 candidate77ef166 pushedPR138; root build0warnings/errors2.72s/fullformat passed, fullsuite/Boundary running. Review1 fresh isolated clone active;2/3pending. PR title now Close dormant Combat settlement and validate Release bases. Task016 pins still match; aggregate Markdown file-target check54files/689targets/0missing (no anchor semantics). Live handoff created under docs/work/handoffs, not yet final or committed.
+
+19:31UTC A1 root full2,337/Boundary81/build/format passed, root processes closed. Reviews1/2Ready; full reports read/accepted. Review3active with independent full rebuild. CIsevenchecks success, verify pending. No source changes since77ef166.
+
+19:36UTC Task017A1 accepted at77ef166; all three fresh Ready reports read/accepted, third full rebuild14.59s. Exact CI allchecks success, full2,337 confirmed. Session completed nine fresh reviews across015/016/A1. Parent017/lifecycle and actual campaign gates remain open. Closing docs/PR/handoff; A2 not dispatched.

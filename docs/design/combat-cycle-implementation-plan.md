@@ -938,7 +938,7 @@ admission evidence still wait for checkpoint I.
 | `CMB-TASK-018` / M, 3–5 files | Implement retained Movement-end proximity, next-Movement exception and ordinary Contact/Engaged break-off under the frozen cost precedence and ordinary 150%-CPA ceiling (stricter for released Reserves). Charge CP and any immediate excess-CPA DP, move and update affected memberships atomically; preserve unrelated relations and CP/BP/bands/broken lots, ammo/TOE/Cohesion and offensive-use history. | `CycleMovement` Contact/no-ZOC Engaged/overlapping-cost and last-counterpart cases, Clear2: spent5+4+2=11/DP1, spent9+4+2=15/DP5 versus rejected16, stricter Reserve ceilings, atomic restart; exception expiry, changed enemy position, mandatory overspend, retained resource/Breakdown history and exhausted-assault rejection. | 017; [Campaigns](../../src/Cna.Core/Campaigns/), focused Core tests. |
 | `CMB-TASK-019` / M, 3–5 files | Implement first opening, semantic progress, supported continuation witness and repeat/finish control. Use TASK-018's relation-aware move rule for witnesses; never infer no Movement from exhausted ammo or a missing break-off implementation. Prefix excludes opening event; finish enters same-slot Truck Convoy without stage housekeeping. | `CycleControl` full truth table, ordinal/prefix forks, no-op/cancel/retain-only history, reachable zero-loss Engaged repeat with break-off witness, lost reply/deadline, pending and future obligations; unsupported continuation is not “none legal.” | 018; [Campaigns](../../src/Cna.Core/Campaigns/), [Rules](../../src/Cna.Core/Rules/), focused Core tests. |
 
-Task017 execution refinement, 2026-09-20: proposed dependency-valid children preserve parent
+Task017 execution refinement, 2026-09-20: dependency-valid children preserve parent
 acceptance criteria while keeping implementation bounded. Dispatch requires accepted016 and a
 root-owned exact manifest. [Research](../../.planning/combat-task008-delivery/task017-research-proposal.md)
 and [A1 scope](../../.planning/combat-task008-delivery/task017a1-dispatch-proposal.md) distinguish
@@ -946,7 +946,7 @@ isolated mechanism evidence from actual campaign provenance.
 
 | Child | Bounded output and proof | Dependency / status |
 | --- | --- | --- |
-| `017A1` | Immutable Release scope/history/exception/member/base values and independently expected-base canonical codec. Exactly44 isolated frozen base hashes; zero transition/event/state proof. Four source/test paths plus this root-owned plan; no lifecycle or World adapter. | 016; dispatched from `afdcd9e`, under implementation and not accepted |
+| `017A1` | Immutable Release scope/history/exception/member/base values and independently expected-base canonical codec. Exactly44 isolated frozen base hashes; zero transition/event/state proof. Four source/test paths plus this root-owned plan; no lifecycle or World adapter. | 016; accepted at `77ef166` after full2,337/Boundary81, clean build/format, dev review, three fresh Ready reviews and exact CI; [evidence](../../.planning/combat-task008-delivery/task017a1-evidence.md) |
 | `017A2` | Native Release lifecycle, state/event codecs, timers, canonical dispositions, conversion/retention fallback, retry and explicit completion. Target132 event hashes/176 state hashes/2 literal terminal events from44 isolated rows. Exact manifest must fit or split before edits. | AcceptedA1; not dispatched |
 | `017B` | Actual retained Result2-to-empty-Release adapter across32 selected contexts;64 native event literals and independently replayed native cuts. Preserve resources/history/future duties and separate hash domains. | AcceptedA2/016; not dispatched |
 | Positive prerequisite and bridge | Separately implement/certify held-I no-move3h predecessor, then positive3i Release bridge; current inherited Movement requires moves and rejects held Reserve. Later-II/consumed actual campaign lineage also remains to be demonstrated. | Exact bounded manifest required; not dispatched |
@@ -954,7 +954,7 @@ isolated mechanism evidence from actual campaign provenance.
 Four historical settled Result1 fixture rows remain historical evidence, excluded from A1/A2's44
 isolated claim. Current World7 and Result2 are not weakened to admit old occurrence identities.
 Parent017 remains open until required lifecycle, native adapters and positive provenance pass;
-private codec/kernel or empty bridge alone cannot close it. No automatic A2 dispatch, Snapshot
+private codec/kernel or empty bridge alone cannot close it. [A2 API handoff](../../.planning/combat-task008-delivery/task017a2-api-handoff.md) records current types and separate initial-base/state validation; it does not authorize implementation. No automatic A2 dispatch, Snapshot
 successor, public admission, durable publication or Task018/019 execution follows from A1.
 
 Checkpoint H: demonstrate actual Movement/Reserve repetition and settled Combat-to-finish through

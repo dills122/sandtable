@@ -1243,9 +1243,13 @@ Retry survives closure, while fresh actions reject and stale callbacks remain No
 remain stored and unexecuted. Task016 acceptance includes full2,331/Boundary81, three fresh Ready reviews and exact-candidate CI; [evidence](.planning/combat-task008-delivery/task016-evidence.md) retains checks. Reserve Release execution,
 actual positive campaign history, extended Snapshot and durable publication remain later gates.
 
-Task017A1 adds a dormant isolated ReleaseBase model/codec foundation under verification. Caller
+Task017A1 adds an accepted dormant isolated ReleaseBase model/codec foundation. Caller
 retains both creation context and independently expected typed base; raw canonical bytes must match
 that complete expected value. Immutable Release history records preserve designation/conversion,
 release ceilings and expired next-Movement exception facts. This isolated probe boundary does not
 authenticate actual campaign World from a hash. Native Release lifecycle and positive predecessor
 admission remain separate Task017 children; historical Result1 fixture rows are not adapted here.
+
+Task017A1 acceptance:44isolated base hashes, full2,337/Boundary81, clean build/format, three fresh
+Ready reviews and exact-candidate CI. [Evidence](.planning/combat-task008-delivery/task017a1-evidence.md)
+distinguishes base validation from later Release lifecycle and actual campaign provenance.
