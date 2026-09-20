@@ -946,7 +946,7 @@ isolated mechanism evidence from actual campaign provenance.
 
 | Child | Bounded output and proof | Dependency / status |
 | --- | --- | --- |
-| `017A1` | Immutable Release scope/history/exception/member/base values and independently expected-base canonical codec. Exactly44 isolated frozen base hashes; zero transition/event/state proof. Four source/test paths plus this root-owned plan; no lifecycle or World adapter. | 016; prepared, not dispatched |
+| `017A1` | Immutable Release scope/history/exception/member/base values and independently expected-base canonical codec. Exactly44 isolated frozen base hashes; zero transition/event/state proof. Four source/test paths plus this root-owned plan; no lifecycle or World adapter. | 016; dispatched from `afdcd9e`, under implementation and not accepted |
 | `017A2` | Native Release lifecycle, state/event codecs, timers, canonical dispositions, conversion/retention fallback, retry and explicit completion. Target132 event hashes/176 state hashes/2 literal terminal events from44 isolated rows. Exact manifest must fit or split before edits. | AcceptedA1; not dispatched |
 | `017B` | Actual retained Result2-to-empty-Release adapter across32 selected contexts;64 native event literals and independently replayed native cuts. Preserve resources/history/future duties and separate hash domains. | AcceptedA2/016; not dispatched |
 | Positive prerequisite and bridge | Separately implement/certify held-I no-move3h predecessor, then positive3i Release bridge; current inherited Movement requires moves and rejects held Reserve. Later-II/consumed actual campaign lineage also remains to be demonstrated. | Exact bounded manifest required; not dispatched |

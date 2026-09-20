@@ -986,3 +986,8 @@ Control states remain distinct: traversal retains selection unchanged and owns t
 `ReplayTrustedBoundary` and `ApplyTrustedBoundary` APIs make caller provenance explicit;
 `CombatStepsInput` carries separately authenticated actor/time, and `CombatStepsControl` is
 derived replay state. These types do not imply live campaign admission or publication.
+
+**Release base** names the immutable input ledger for the future Reserve Release arm. Its isolated
+codec checks canonical history against independently retained expected values; it does not mean a
+Release window opened, a unit changed status, or actual campaign provenance was established.
+Task017A1 owns this foundation; native lifecycle and campaign adapters remain separate work.

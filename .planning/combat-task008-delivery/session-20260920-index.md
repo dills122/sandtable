@@ -29,3 +29,7 @@ Documentation check: `python3 /tmp/check-combat-resume-links.py` exit0,27 Markdo
 18:55 UTC: Task016 frozen coded480556 pushedPR138. Root full2,331/Boundary81/build/format passed, processes closed. Review1Ready;2active;3pending; exactCIverify pending at last lookup. Further Reserve research narrows017A1 to immutable isolated Release base/history codec with44 goldenbase hashes; no implementation before016 accepted. Worker17 research artifacts currently ignored/local, retain at next metadata commit.
 
 19:05 UTC: Task016 accepted at d480556 after dev/full gates, three fresh Ready reviews and exact CI. Root read all reports. Canonical status synchronized through016; Task017A1 proposed five-path split retained, parent017 still open.
+
+19:06 UTC: accepted016 metadata afdcd9e pushed. Task017A1 dispatched fromafdcd9e to fresh medium worker, four source/test paths only. CCE context lookup and recall rejected by automatic approval review; use local source inspection and retain local decisions, no retry. No delivery blocker.
+
+19:20UTC Task017A1 source handoff complete; worker20focused/shared passed,44basehashes, no lifecycle claim. Root development findings fixed; full root build/suite/Boundary/format started. Four source pins frozen; candidate/reviews next.

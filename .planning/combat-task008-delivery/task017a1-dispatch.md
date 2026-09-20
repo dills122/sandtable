@@ -1,6 +1,6 @@
-# Task017A1 delivery dispatch — prepared, not yet authorized
+# Task017A1 delivery dispatch — authorized
 
-Root changes status and records base only after Task016 acceptance. Exact scope and semantic requirements: [dispatch proposal](task017a1-dispatch-proposal.md). Proposal is binding unless root records an explicit correction before affected edits. Parent017 remains open.
+Authorized19:06 UTC after Task016 accepted; immutable implementation base `afdcd9e`. Exact scope and semantic requirements: [dispatch proposal](task017a1-dispatch-proposal.md). Proposal is binding unless root records an explicit correction before affected edits. Parent017 remains open.
 
 Worker owns four files only: new CampaignCombatReserveReleaseModels.cs and CampaignCombatReserveReleaseCodec.cs under src/Cna.Core/Campaigns; new CombatReserveReleaseBaseTests.cs under tests/Cna.Core.Tests/Campaigns; existing tests/Cna.Core.Tests/Cna.Core.Tests.csproj fixture link only. Root owns canonical plan and synchronized README/tech-design/naming/roadmap/site, development review, commits, full gates and three sequential fresh independent reviews. Do not edit source pins until implementation complete; then record exact four-file SHA256 inventory. Administrative worker evidence allowed in task017a1-worker-evidence.md.
 

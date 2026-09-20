@@ -200,7 +200,7 @@ first-side Combat entry. [Breakdown closeout](../research/breakdown-runner-close
 matching clean runs of47 campaigns; [transcript/privacy follow-up](../research/breakdown-transcript-privacy.md)
 records1,670 tests and81 boundary cases. Dormant Combat now has reviewed decisions, costs, results and loss/retreat settlement through
 Task016, including relationships and round closure after three fresh independent reviews. The campaign
-is not yet playable: relationship/round closure, public Combat actions, the full continual cycle,
+is not yet playable: Reserve Release, public Combat actions, the full continual cycle,
 published scenario content, remaining Land rules, victory, campaign persistence and Maproom remain
 future work.
 
