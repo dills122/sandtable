@@ -8,7 +8,9 @@ B1 checkpoint: `22f8da6`, `codex/combat-task008-opening-preamble`,
 [PR126](https://github.com/dills122/sandtable/pull/126), stacked on PR125.
 C checkpoint: `a0babdb`, `codex/combat-task008-weather`,
 [PR127](https://github.com/dills122/sandtable/pull/127), stacked on PR126.
-Active B2 branch: `codex/combat-task008-stage-entry`, based on C checkpoint.
+B2 checkpoint: `3ded1eb`, `codex/combat-task008-stage-entry`,
+[PR128](https://github.com/dills122/sandtable/pull/128), stacked on PR127.
+Active D1 branch: `codex/combat-task008-reserve-designation`, based on B2 checkpoint.
 Integration destination: reviewed feature branch; lead owns retained commits and PR.
 
 ## Objective and boundaries
@@ -30,7 +32,8 @@ No public activation or parent completion inferred from a codec slice.
 | 008B1 | A2 | implementation internal subagent; lead integrates | six frozen traces/30cuts, focused12/full1886 pass; dev+three Ready independent rounds | Accepted; feature-branch checkpoint |
 | 008C Weather | B1 | implementation internal subagent; lead integrates | 34chains/68cuts, focused42/full1928 pass; dev+three Ready review rounds | Accepted; feature-branch checkpoint |
 | 008B2 stage-entry | C | implementation internal subagent; lead integrates | 12chains/60cuts, focused17/full1945 pass; dev+three Ready rounds | Accepted; B parent adapters complete |
-| 008D Reserve | B2 | unassigned | complete state10 predecessor history | Pending |
+| 008D1 Reserve designation | B2 | implementation internal subagent; lead integrates | 16rows/24cuts/88fingerprints;focused23/full1968;dev+threeReadyrounds | Accepted; feature-branchcheckpoint |
+| 008D2 →019A | D1 | unassigned | exact completion2 codec then same-event atomicterminalprojection | Pending |
 | 008B–H, 019A | canonical dependency graph | unassigned | cumulative Core replay, full retained-history restore | Pending |
 | 009–025 | canonical gates | unassigned | cumulative gameplay/public/Runner/72-AC evidence | Pending |
 
@@ -62,3 +65,9 @@ Record exact commands, failures and totals in per-slice evidence; never count un
   execution refinement, not a wire-contract change or synthetic predecessor admission.
 
 - B1 PR126 remote verify, dependency-review and observational offline links passed during C work.
+
+- D split D1 designation/D2 completioncodec then019A applies sameevent; full terminalReserve replay
+  and Movement handoff require019A. Preserve atomiccompletion wire contract; no syntheticstate.
+- Weather PR127 remote verify/dependency-review/offline links passed during B2 work.
+
+- B2 PR128 remote verify, dependency-review and observational offline links passed during D1 work.

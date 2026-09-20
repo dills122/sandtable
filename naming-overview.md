@@ -722,6 +722,10 @@ certify a campaign state or stand in for Snapshot12.
 Its Reserve-entry position keeps null ActiveSide; retained turn/stage order supplies the eventual
 designating side. The private projection requires complete creation-to-stage history.
 
+**ReserveState1** adds first-side ownership, own members and designation history to retained stage
+state. D1 supports only pre-completion cuts: cycle, cycle ID, opening-base hash and completion receipt
+remain null. **Reserve I designation** changes only the accepted own member’s Reserve status.
+
 **Capability Point expenditure** is the exact amount already spent during the current Operation
 Stage; it is not a replenishing UI movement allowance. **Complete Movement** is a real player
 decision that advances to Breakdown Determination, not a runner stop condition. These names are
