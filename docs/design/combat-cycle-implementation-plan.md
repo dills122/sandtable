@@ -868,6 +868,19 @@ stated provenance. Final admitted opportunity requires010 selection/decline and0
 Base2; whole successor-root capacity and later actual assault composition remain integration gates.
 No new public action or competing Content certificate is introduced by this split.
 
+Task009A/009B dormant mechanism gates are accepted in PR136 (009B code0f3ec7b;
+full2,258/Boundary81, dev review, three fresh independent rounds and exact-head CI). This does
+not authenticate a positive campaign history or close later publication/composition gates.
+
+**Task010 execution refinement.** 010A implements actual inherited empty selection and all six
+no-attack steps with full creation-rooted predecessor reconstruction at every operation. 010B
+implements the frozen timed C3a provisional selection, explicit RBA decline and cancellation
+mechanisms, retaining synthetic input provenance. 010C integrates actual010A families into the
+cumulative history router. Each child requires dev review and three independent rounds. Parent010
+closes only after all three and cumulative replay/cut evidence pass; Prepared remains011. Fragment
+readback does not claim extended Snapshot12 persistence. Exact existing grammars and bytes remain
+unchanged; no new event, public action, timing policy or gameplay profile is introduced by this split.
+
 Checkpoint E: run lifecycle/recovery and paired-authorized-input checks. No hosting or public
 activation yet; new capabilities are exercised through dormant Core tests.
 

@@ -25,7 +25,7 @@ G2 checkpoint: `b9cb26f`, `codex/combat-task008-breakdown-completion`,
 F1 checkpoint: `32e4e6d`, `codex/combat-task008-reaction-trigger`,
 [PR135](https://github.com/dills122/sandtable/pull/135), stacked on PR134.
 Active delivery branch: `codex/combat-task008-reaction-lifecycle`, based on reconciled main.
-Integration destination: main-based PR136; F2–F6/H0–H4 accepted; Initial H Core codec/replay gate complete, publication open. Task009A accepted; Task009B implementation active.
+Integration destination: main-based PR136; F2–F6/H0–H4 accepted; Initial H Core codec/replay gate complete, publication open. Task009A/009B accepted; Task010A implementation active.
 Lead owns retained commits and PR; earlier stacked targets above describe historical publication.
 
 ## Objective and boundaries
@@ -197,3 +197,5 @@ finalreview4running. No furtherordinaryreview/reset; iffinalblocker persists sto
 009B frozen: fiveprimarypaths, focused14/0/0 12.331s; devreview nofinding; rootbuild0warnings/errors
 4.21s. Fullsuite/fullformat/review1 active; no.NETrevieweruntilpostBoundarymarker. Catalogue8840→637
 fullresults, all10Round2vectors. No positivehistory/publicationclaim; parent009 stillopen.
+
+009B ACCEPTED at0f3ec7b3714686ec669624a9462d0618d38003d4. Devreview and3freshisolatedreviewsReady/no findings; round1/2 independent14tests each; round3 independently rebuilt and62identity/rules/worldtests plusbothoracles/sourceaudit. Full2258/Boundary81/build0warnings/errors/format/exactheadCI pass. Parent009 dormantmechanismgatecomplete; actualpositivehistory/Base2/fullroot/publication remainfuture.24accepted slices72ordinary+2conditionalfinalreviews. Proceed010A onlyaftercanonicalrefinementretained.

@@ -1152,7 +1152,7 @@ The implemented paired comparison does not block that engine work.
 [3]: https://learn.microsoft.com/en-us/aspnet/core/grpc/deadlines-cancellation?view=aspnetcore-10.0 "Reliable gRPC services with deadlines and cancellation | Microsoft Learn"
 [4]: https://learn.microsoft.com/en-us/aspnet/core/grpc/json-transcoding?view=aspnetcore-10.0 "gRPC JSON transcoding in ASP.NET Core gRPC apps | Microsoft Learn"
 
-Task009B is implementing a separate trusted-facts predicate for the frozen initial C3a infantry
+Task009B implements a separate trusted-facts predicate for the frozen initial C3a infantry
 profile. It checks every reachable selected result and retreat/custody support before producing
 a provisional Candidate. The actual inherited G2 admission remains empty. Candidate serialization
 and the pure opportunity-v2 digest bind values;010/011 retain responsibility for authenticated
