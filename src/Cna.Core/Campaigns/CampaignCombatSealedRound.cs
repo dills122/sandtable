@@ -1,8 +1,9 @@
 using System.Text.Json;
+using Cna.Core.Rules;
 
 namespace Cna.Core.Campaigns;
 
-/// <summary>Dormant authenticated Round2 precommit mechanism; no positive-history adapter or publication.</summary>
+/// <summary>Dormant authenticated Round2 choice and atomic commitment mechanism; no positive-history adapter or publication.</summary>
 internal static class CampaignCombatSealedRound
 {
     private sealed record Frame(CombatRoundState State, byte[][] Events);
@@ -98,7 +99,9 @@ internal static class CampaignCombatSealedRound
         }
         if (kind is "expire-round" or "controller-unavailable" && (command.RoundId != prior.RoundId || prior.Status != "collecting"))
             return new(prior, CombatStepsDisposition.NoOp, null, null);
-        Require(!prior.Closed, "Round2 is closed.");
+        Require(!prior.Closed && prior.Status != "committed", "Round2 is closed or already committed.");
+        Require(prior.World == basis.Boundary.World && prior.AttackHistory.Count == 0 && prior.TargetUses.Count == 0,
+            "Round2 precommit facts differ from original authenticated eligibility.");
         if (kind != "open-round") Require(command.RoundId == prior.RoundId, "Round2 round identity mismatch.");
         if (command.ExpectedPriorVersion is { } version) Require(version == prior.StateVersion, "Stale Round2 version.");
         Require(prior.StateVersion < long.MaxValue && prior.Receipts.Count < 16, "Round2 authority capacity exceeded.");
@@ -155,7 +158,31 @@ internal static class CampaignCombatSealedRound
                 Require(proofs.All(p => p is not null), "Round2 disposition proof missing.");
                 effect = new CombatRoundEffect.Step(route[prior.StepIndex], route[prior.StepIndex + 1], prior.StepReceipts[^1], Array.AsReadOnly(proofs));
                 break;
-            default: throw new JsonException("Round2 commitment requires Task012.");
+            case "commit-attack":
+                Require(input.AdmittedAt is null && input.ClockAvailable, "Round2 commitment requires structural input.");
+                Require(prior.Status == "prepared" && prior.StepIndex == 5 && prior.StepReceipts.Count == 5 &&
+                    prior.Slots.Count == 2 && prior.Slots.All(s => s.SealedReceiptId is not null), "Round2 commitment requires complete Prepared proof.");
+                var rules = Cna1979CombatAdjudication.Definition.Costs;
+                Require(rules.AttackerCapabilityPoints == 5 && rules.DefenderCapabilityPoints == 3 &&
+                    rules.BaseCapabilityPointAllowance == 10 && rules.CommittedToePerRole == 10 && rules.AmmunitionPointsPerToe == 1,
+                    "Unsupported Round2 cost profile.");
+                var allocations = Array.AsReadOnly(prior.Slots.Select(s => s.Allocation).ToArray());
+                var commitment = CampaignCombatSealedRoundCodec.CommitmentId(prior, allocations);
+                var costs = new List<CombatRoundCost>();
+                for (var index = 0; index < prior.Slots.Count; index++)
+                {
+                    var unit = prior.Slots[index].Allocation.Unit;
+                    var element = prior.World.Elements.Single(e => e.ElementId == unit.ElementId);
+                    var cp = element.OperationalState.CapabilityPointsExpended;
+                    var cost = index == 0 ? rules.AttackerCapabilityPoints : rules.DefenderCapabilityPoints;
+                    var after = checked(cp.Numerator + cost);
+                    Require(cp.Denominator == 1 && after <= rules.BaseCapabilityPointAllowance && element.Ammunition.Points == 10,
+                        "Round2 selected CP/ammunition eligibility changed.");
+                    costs.Add(new(unit, checked((int)cp.Numerator), checked((int)after), 10, 0));
+                }
+                effect = new CombatRoundEffect.Commit(commitment, allocations, Array.AsReadOnly(costs.ToArray()), basis.Boundary.RandomState);
+                break;
+            default: throw new JsonException("Unsupported Round2 continuation.");
         }
         var unsigned = CampaignCombatSealedRoundCodec.SerializeEvent(prior, next.RoundId!, input, author, effect, null);
         var receipt = "cmb." + CampaignOpeningPreambleCodec.HashWithDomain("sandtable.combat.round-receipt.v2", unsigned)[7..];
@@ -168,6 +195,7 @@ internal static class CampaignCombatSealedRound
                 Slots = next.Slots.Select(s => s.SlotId == seal.SlotId ? s with { SealedReceiptId = receipt, SealedAt = input.AdmittedAt } : s).ToArray(),
                 Status = seal.Prepared ? "prepared" : "collecting",
             },
+            CombatRoundEffect.Commit commit => Commit(next, commit, receipt),
             CombatRoundEffect.Cancel => next with { Status = "cancelled", CancellationReceiptId = receipt },
             CombatRoundEffect.Step => next with { StepIndex = next.StepIndex + 1, StepReceipts = [.. next.StepReceipts, receipt], Closed = next.StepIndex == 5 },
             _ => throw new JsonException("Unsupported Round2 fold."),
@@ -180,6 +208,37 @@ internal static class CampaignCombatSealedRound
         };
         _ = CampaignCombatSealedRoundCodec.SerializeState(next);
         return new(next, CombatStepsDisposition.Accepted, bytes, receipt);
+    }
+
+    private static CombatRoundState Commit(CombatRoundState state, CombatRoundEffect.Commit effect, string receipt)
+    {
+        var world = state.World;
+        var elements = world.Elements.Select(element =>
+        {
+            var cost = effect.Costs.Single(c => c.Unit.ElementId == element.ElementId);
+            // General ordinary spending permits excess CPA; selected Combat must not.
+            Require(cost.AfterCp <= 10, "Round2 selected CP ceiling exceeded.");
+            var paid = CampaignCombatSpending.ChargeOrdinary(element.OperationalState, new(cost.AfterCp - cost.BeforeCp, 1),
+                10, CampaignCombatSpendCeiling.Ordinary, element.ElementId, receipt, world.CohesionCauses);
+            Require(paid.Cause is null && paid.State.CohesionLevel == element.OperationalState.CohesionLevel &&
+                paid.State.CapabilityPointsExpended.Numerator == cost.AfterCp, "Round2 cost produced an unsupported Cohesion change.");
+            return new CampaignElementStateV6(element.ElementId, element.CurrentLocationId, element.ReserveStatus, paid.State,
+                element.Components, element.SourceParentFormationId, element.CurrentParentFormationId,
+                new(cost.AfterAmmo, element.Ammunition.InitialAmmunitionOrigin), element.Readiness);
+        }).ToArray();
+        var paidWorld = new CampaignWorldSnapshotV7(7, world.CreationBinding, elements, world.Representations, world.BrokenVehicleLots,
+            world.CohesionCauses, world.Relationships, world.CustodyLots, world.Guards, world.ReplacementEntitlements, world.FutureObligations, world.Settlements);
+        var basis = state.Base;
+        var candidate = basis.Steps.Selection!;
+        return state with
+        {
+            World = paidWorld,
+            Status = "committed",
+            CommitmentId = effect.CommitmentId,
+            AttackHistory = [new(effect.CommitmentId, CampaignCombatReserveCompletionCodec.CycleId(basis.Boundary.Cycle), basis.Steps.SegmentId,
+                candidate.Attacker.Unit, candidate.Defender.Unit, candidate.TargetLocationId, basis.Boundary.Cycle.GameTurn, basis.Boundary.Cycle.OperationStage)],
+            TargetUses = [new(effect.CommitmentId, basis.Steps.SegmentId, candidate.TargetLocationId)],
+        };
     }
 
     private static string Gate(CombatRoundTiming timing, CombatRoundInput input) =>

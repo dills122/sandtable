@@ -1,0 +1,5 @@
+Combat delivery now includes dormant atomic commitment after both private seals and exact Prepared structural proof. One immutable result records CP5/3, ammunition10 each, directional attack history and segment target use with no RNG draw. Original eligibility remains bound in Base2; paid-state readback and exact retries do not charge again.
+
+Task012 is under verification. Four new literal commitments complete58 events/68 state cuts, including prior precommit and cancellation traces. Expanded checks cover selectedCP ceilings, malformed/early/cancelled proposals, candidate discard and response-loss recovery. Final full gates, CI and three independent review verdicts remain pending.
+
+Prior F2–F6/H0–H4/009A/B/010A/B/C/011 accepted on this main-based draft. Latest011 at94a4ecd passed full2,292/Boundary81/build/format/exact-head CI and three fresh Ready reviews. Actual positive campaign provenance, extended Snapshot12, HOST-PUB-001, result/settlement, public activation and025 acceptance closure remain open. No merge requested.

@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Cna.Core.Randomness;
 
 namespace Cna.Core.Campaigns;
 
@@ -8,6 +9,10 @@ internal sealed record CombatRoundTiming(int ContractVersion, string ClockConfig
     int DecisionBudgetMilliseconds, long OpenedAtUnixMilliseconds, long DeadlineUnixMilliseconds,
     long OpeningFloorUnixMilliseconds);
 internal sealed record CombatRoundAllocation(string Kind, CampaignCombatUnitKey Unit, string ComponentId, int CommittedToe);
+internal sealed record CombatRoundCost(CampaignCombatUnitKey Unit, int BeforeCp, int AfterCp, int BeforeAmmo, int AfterAmmo);
+internal sealed record CombatRoundAttackHistory(string CommitmentId, string CycleId, string SegmentId,
+    CampaignCombatUnitKey Attacker, CampaignCombatUnitKey Defender, string TargetLocationId, int GameTurn, int OperationStage);
+internal sealed record CombatRoundTargetUse(string CommitmentId, string SegmentId, string TargetLocationId);
 internal sealed record CombatRoundSlot(string Role, string Owner, string SlotId, CombatRoundAllocation Allocation,
     string? SealedReceiptId = null, long? SealedAt = null);
 internal sealed record CombatRoundCommand(int ContractVersion, string Kind, string ClockConfigurationHash,
@@ -50,6 +55,7 @@ internal sealed record CombatRoundState
     internal CombatRoundState(CombatRoundBase basis)
     {
         Base = basis;
+        World = basis.Boundary.World;
         StateVersion = basis.Steps.StateVersion;
         Prefix = basis.Steps.Prefix;
         StepReceipts = basis.Steps.StepReceipts;
@@ -57,7 +63,13 @@ internal sealed record CombatRoundState
     private IReadOnlyList<CombatRoundSlot> slots = Array.Empty<CombatRoundSlot>();
     private IReadOnlyList<string> steps = Array.Empty<string>();
     private IReadOnlyList<CampaignOpeningPreambleReceipt> receipts = Array.Empty<CampaignOpeningPreambleReceipt>();
+    private IReadOnlyList<CombatRoundAttackHistory> attackHistory = Array.Empty<CombatRoundAttackHistory>();
+    private IReadOnlyList<CombatRoundTargetUse> targetUses = Array.Empty<CombatRoundTargetUse>();
     public CombatRoundBase Base { get; }
+    public CampaignWorldSnapshotV7 World { get; init; }
+    public IReadOnlyList<CombatRoundAttackHistory> AttackHistory { get => attackHistory; init => attackHistory = Array.AsReadOnly(value.ToArray()); }
+    public IReadOnlyList<CombatRoundTargetUse> TargetUses { get => targetUses; init => targetUses = Array.AsReadOnly(value.ToArray()); }
+    public string? CommitmentId { get; init; }
     public string? OpportunityId { get; init; }
     public string? RoundId { get; init; }
     public long StateVersion { get; init; }
@@ -80,6 +92,8 @@ internal abstract record CombatRoundEffect(string Kind)
     internal sealed record Seal(string SlotId, CombatRoundAllocation Allocation, CombatRoundTiming Timing,
         bool Prepared) : CombatRoundEffect("choice-sealed");
     internal sealed record Cancel(string Cause, CombatRoundTiming Timing) : CombatRoundEffect("round-cancelled");
+    internal sealed record Commit(string CommitmentId, IReadOnlyList<CombatRoundAllocation> Allocations,
+        IReadOnlyList<CombatRoundCost> Costs, RandomStreamState PreResultRandomState) : CombatRoundEffect("attack-committed");
     internal sealed record Step(string FromPositionId, string ToPositionId, string PreviousStepReceiptId,
         IReadOnlyList<string> ProofReceipts) : CombatRoundEffect("step-completed");
 }

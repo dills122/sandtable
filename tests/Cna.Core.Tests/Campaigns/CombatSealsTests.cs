@@ -42,9 +42,8 @@ public sealed class CombatSealsTests
             }
             if (test.Count < test.Events.Length)
             {
-                Assert.ThrowsAny<JsonException>(() => Apply(test, test.Count, test.Inputs[test.Count]));
-                Assert.ThrowsAny<JsonException>(() => ReadState(test, test.Events.Length,
-                    Encoding.UTF8.GetBytes(row.GetProperty("stateCanonicalUtf8")[test.Events.Length].GetString()!)));
+                // Task012 now admits the next paid cut; this test retains all original precommit assertions.
+                Assert.Equal("committed", Apply(test, test.Count, test.Inputs[test.Count]).State.Status);
                 excluded++;
             }
         }
@@ -361,9 +360,9 @@ public sealed class CombatSealsTests
     private static CombatRoundState ReadState(TestCase test, int count, byte[] bytes) => CampaignCombatSealedRoundCodec.ReadState(bytes, test.Request,
         test.Created, test.Boundary, test.PredecessorInputs, test.PredecessorEvents, test.Inputs[..count], test.Events[..count]);
 
-    private sealed record TestCase(CampaignCombatCreationRequest Request, byte[] Created, CombatStepsBoundary Boundary,
+    internal sealed record TestCase(CampaignCombatCreationRequest Request, byte[] Created, CombatStepsBoundary Boundary,
         CombatStepsInput[] PredecessorInputs, byte[][] PredecessorEvents, CombatRoundInput[] Inputs, byte[][] Events, int Count);
-    private static TestCase Case(JsonElement row)
+    internal static TestCase Case(JsonElement row)
     {
         using var authority = JsonDocument.Parse(File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory, "Rules", "Fixtures", "combat-authority-envelope-v1.json")));
         var created = Encoding.UTF8.GetBytes(authority.RootElement.GetProperty("goldens").GetProperty("created").GetProperty("canonicalUtf8").GetString()!);
@@ -398,17 +397,17 @@ public sealed class CombatSealsTests
             events, count < 0 ? events.Length : count);
     }
 
-    private static CampaignWorldSnapshotV7 WithCp(CampaignWorldSnapshotV7 world, long[] amounts) => new(7, world.CreationBinding,
+    internal static CampaignWorldSnapshotV7 WithCp(CampaignWorldSnapshotV7 world, long[] amounts) => new(7, world.CreationBinding,
         world.Elements.Select((e, index) => new CampaignElementStateV6(e.ElementId, e.CurrentLocationId, e.ReserveStatus,
             new(e.OperationalState.LedgerGameTurn, e.OperationalState.LedgerOperationStage, new(amounts[index], 1), e.OperationalState.CohesionLevel,
                 e.OperationalState.VehicleBreakdownState, e.OperationalState.MovementEnded, e.OperationalState.InitialLedgerOrigin), e.Components,
             e.SourceParentFormationId, e.CurrentParentFormationId, e.Ammunition, e.Readiness)), world.Representations, world.BrokenVehicleLots,
         world.CohesionCauses, world.Relationships, world.CustodyLots, world.Guards, world.ReplacementEntitlements, world.FutureObligations, world.Settlements);
-    private static JsonDocument Fixture() => JsonDocument.Parse(File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory, "Campaigns", "Fixtures", "combat-sealed-round-v2.json")));
+    internal static JsonDocument Fixture() => JsonDocument.Parse(File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory, "Campaigns", "Fixtures", "combat-sealed-round-v2.json")));
     private static LandSide Side(string side) => side == "axis" ? LandSide.Axis : LandSide.Commonwealth;
     private static WeatherKind Weather(string weather) => weather switch { "normal" => WeatherKind.Normal, "hot" => WeatherKind.Hot, "sandstorm" => WeatherKind.Sandstorm, _ => WeatherKind.Rainstorm };
-    private static CombatRoundState Replay(TestCase test, int count) => CampaignCombatSealedRound.ReplayTrustedBoundary(test.Request, test.Created,
+    internal static CombatRoundState Replay(TestCase test, int count) => CampaignCombatSealedRound.ReplayTrustedBoundary(test.Request, test.Created,
         test.Boundary, test.PredecessorInputs, test.PredecessorEvents, test.Inputs[..count], test.Events[..count]);
-    private static CombatRoundResult Apply(TestCase test, int count, CombatRoundInput input, bool enabled = true) => CampaignCombatSealedRound.ApplyTrustedBoundary(test.Request,
+    internal static CombatRoundResult Apply(TestCase test, int count, CombatRoundInput input, bool enabled = true) => CampaignCombatSealedRound.ApplyTrustedBoundary(test.Request,
         test.Created, test.Boundary, test.PredecessorInputs, test.PredecessorEvents, test.Inputs[..count], test.Events[..count], input, enabled);
 }

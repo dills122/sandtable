@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace Cna.Core.Campaigns;
 
@@ -69,10 +70,23 @@ internal static class CampaignCombatSealedRoundCodec
         writer.WritePropertyName("timing"); WriteTiming(writer, state.Timing);
         writer.WritePropertyName("slots"); WriteSlots(writer, state.Slots);
         WriteStrings(writer, "stepReceipts", state.StepReceipts);
-        writer.WritePropertyName("world"); writer.WriteRawValue(state.Base.WorldBytes);
+        writer.WritePropertyName("world"); WriteWorld(writer, state);
         CampaignSnapshotSerializer.WriteRandomState(writer, state.Base.Boundary.RandomState);
-        writer.WriteStartArray("attackHistory"); writer.WriteEndArray(); writer.WriteStartArray("targetUses"); writer.WriteEndArray();
-        writer.WriteNull("commitmentId"); writer.WriteString("cancellationReceiptId", state.CancellationReceiptId);
+        writer.WriteStartArray("attackHistory");
+        foreach (var attack in state.AttackHistory)
+        {
+            writer.WriteStartObject(); writer.WriteString("commitmentId", attack.CommitmentId); writer.WriteString("cycleId", attack.CycleId);
+            writer.WriteString("segmentId", attack.SegmentId); writer.WritePropertyName("attacker"); WriteUnit(writer, attack.Attacker);
+            writer.WritePropertyName("defender"); WriteUnit(writer, attack.Defender); writer.WriteString("targetLocationId", attack.TargetLocationId);
+            writer.WriteNumber("gameTurn", attack.GameTurn); writer.WriteNumber("operationStage", attack.OperationStage); writer.WriteEndObject();
+        }
+        writer.WriteEndArray(); writer.WriteStartArray("targetUses");
+        foreach (var target in state.TargetUses)
+        {
+            writer.WriteStartObject(); writer.WriteString("commitmentId", target.CommitmentId); writer.WriteString("segmentId", target.SegmentId);
+            writer.WriteString("targetLocationId", target.TargetLocationId); writer.WriteEndObject();
+        }
+        writer.WriteEndArray(); writer.WriteString("commitmentId", state.CommitmentId); writer.WriteString("cancellationReceiptId", state.CancellationReceiptId);
         writer.WriteStartArray("receipts");
         foreach (var receipt in state.Receipts)
         {
@@ -94,6 +108,7 @@ internal static class CampaignCombatSealedRoundCodec
             "choice-sealed" => "combat-choice-sealed",
             "round-cancelled" => "combat-round-cancelled",
             "step-completed" => "combat-round-step-completed",
+            "attack-committed" => "combat-attack-committed",
             _ => throw new JsonException("Unsupported Round2 effect."),
         });
         writer.WriteString("author", Actor(author)); writer.WriteString("campaignId", basis.Boundary.Cycle.CampaignId);
@@ -107,6 +122,51 @@ internal static class CampaignCombatSealedRoundCodec
         if (receiptId is not null) writer.WriteString("receiptId", receiptId);
         writer.WriteEndObject();
     });
+
+    // Only the typed CP/ammunition fields can differ from authenticated pre-use World.
+    // Derive on every serialization; no cached bytes can drift from record-with state.
+    private static void WriteWorld(Utf8JsonWriter writer, CombatRoundState state)
+    {
+        var original = state.Base.Boundary.World;
+        var allowedElements = original.Elements.Select(element =>
+        {
+            var current = state.World.Elements.Single(e => e.ElementId == element.ElementId);
+            var prior = element.OperationalState;
+            return new CampaignElementStateV6(element.ElementId, element.CurrentLocationId, element.ReserveStatus,
+                new(prior.LedgerGameTurn, prior.LedgerOperationStage, current.OperationalState.CapabilityPointsExpended,
+                    prior.CohesionLevel, prior.VehicleBreakdownState, prior.MovementEnded, prior.InitialLedgerOrigin),
+                element.Components, element.SourceParentFormationId, element.CurrentParentFormationId,
+                new(current.Ammunition.Points, element.Ammunition.InitialAmmunitionOrigin), element.Readiness);
+        });
+        var allowed = new CampaignWorldSnapshotV7(7, original.CreationBinding, allowedElements, original.Representations, original.BrokenVehicleLots,
+            original.CohesionCauses, original.Relationships, original.CustodyLots, original.Guards, original.ReplacementEntitlements, original.FutureObligations, original.Settlements);
+        if (state.World != allowed) throw new JsonException("Round2 World changed beyond derived cost fields.");
+        var root = JsonNode.Parse(state.Base.WorldBytes)!;
+        foreach (var element in root["elements"]!.AsArray())
+        {
+            var current = state.World.Elements.Single(e => e.ElementId == element!["elementId"]!.GetValue<string>());
+            element!["operationalState"]!["capabilityPointsExpended"]!["numerator"] = current.OperationalState.CapabilityPointsExpended.Numerator;
+            element["operationalState"]!["capabilityPointsExpended"]!["denominator"] = current.OperationalState.CapabilityPointsExpended.Denominator;
+            element["ammunition"]!["points"] = current.Ammunition.Points;
+        }
+        writer.WriteRawValue(root.ToJsonString());
+    }
+
+    internal static string CommitmentId(CombatRoundState state, IReadOnlyList<CombatRoundAllocation> allocations) => "cmt." +
+        CampaignOpeningPreambleCodec.HashWithDomain("sandtable.combat.commitment.v2", Bytes(null, writer =>
+        {
+            writer.WriteStartObject(); writer.WriteString("roundId", state.RoundId); writer.WriteNumber("priorVersion", state.StateVersion);
+            writer.WriteString("priorPrefix", state.Prefix); writer.WritePropertyName("allocations"); WriteAllocations(writer, allocations); writer.WriteEndObject();
+        }))[7..];
+    private static void WriteAllocations(Utf8JsonWriter writer, IReadOnlyList<CombatRoundAllocation> allocations)
+    {
+        writer.WriteStartArray(); foreach (var allocation in allocations) WriteAllocation(writer, allocation); writer.WriteEndArray();
+    }
+    private static void WriteUnit(Utf8JsonWriter writer, CampaignCombatUnitKey unit)
+    {
+        writer.WriteStartObject(); writer.WriteString("creationBinding", unit.CreationBinding); writer.WriteString("originalSide", unit.OriginalSide);
+        writer.WriteString("elementId", unit.ElementId); writer.WriteEndObject();
+    }
 
     internal static string RoundId(CombatRoundState state, string opportunity, CombatRoundTiming timing) => "rnd." +
         CampaignOpeningPreambleCodec.HashWithDomain("sandtable.combat.round.v2", Bytes(null, writer =>
@@ -176,6 +236,21 @@ internal static class CampaignCombatSealedRoundCodec
                 writer.WritePropertyName("timing"); WriteTiming(writer, seal.Timing); writer.WriteBoolean("prepared", seal.Prepared); break;
             case CombatRoundEffect.Cancel cancel:
                 writer.WriteString("cause", cancel.Cause); writer.WritePropertyName("timing"); WriteTiming(writer, cancel.Timing); break;
+            case CombatRoundEffect.Commit commit:
+                writer.WriteString("commitmentId", commit.CommitmentId); writer.WritePropertyName("allocations"); WriteAllocations(writer, commit.Allocations);
+                writer.WriteStartArray("costs");
+                foreach (var cost in commit.Costs)
+                {
+                    writer.WriteStartObject(); writer.WritePropertyName("unit"); WriteUnit(writer, cost.Unit);
+                    writer.WriteNumber("beforeCp", cost.BeforeCp); writer.WriteNumber("afterCp", cost.AfterCp);
+                    writer.WriteNumber("beforeAmmo", cost.BeforeAmmo); writer.WriteNumber("afterAmmo", cost.AfterAmmo); writer.WriteEndObject();
+                }
+                writer.WriteEndArray();
+                writer.WritePropertyName("preResultRandomState");
+                var random = commit.PreResultRandomState;
+                writer.WriteStartObject(); writer.WriteNumber("contractVersion", random.ContractVersion); writer.WriteString("algorithmId", random.AlgorithmId);
+                writer.WriteNumber("seed", random.Seed); writer.WriteNumber("nextByteCursor", random.NextByteCursor); writer.WriteEndObject();
+                break;
             case CombatRoundEffect.Step step:
                 writer.WriteString("fromPositionId", step.FromPositionId); writer.WriteString("toPositionId", step.ToPositionId);
                 writer.WriteString("previousStepReceiptId", step.PreviousStepReceiptId); WriteStrings(writer, "proofReceipts", step.ProofReceipts); break;

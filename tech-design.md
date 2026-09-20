@@ -1189,3 +1189,11 @@ recover retained bytes before clock/status gates, while malformed own proposals 
 cancellation. Prepared continues through Force Assignment and empty Anti-Armor; cancellation
 closes without costs or RNG. Atomic commitment remains Task012. This mechanism does not supply
 positive campaign provenance, public observation, host publication or a new Snapshot12 family.
+
+Task012 adds dormant atomic Round2 commitment at Prepared Close Assault entry. Both role costs
+(CP5/3 and ammunition10 each), directional attack history and segment target use enter one
+immutable result with one event/head update; RNG and structural position remain unchanged.
+Original Base2 retains pre-use eligibility, while current typed World records paid balances.
+Exact retries recover original bytes after ammunition reaches zero without recharging. Core
+candidate discard/replay demonstrates local atomicity; durable host publication remains separate.
+Result, mandatory settlement and Close Assault completion remain later gates.

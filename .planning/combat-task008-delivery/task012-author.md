@@ -1,0 +1,9 @@
+# Task012 author explanation — frozen candidate
+
+Base6f9b501 after accepted011. Extend exact authenticated Round2 through commitment at Prepared step5. Five primary paths: threeSealedRound files, newCombatCommitTests and narrowCombatSealsTests helper/assertion update. Frozen contract already contains commit grammar; no schema/fixture/oracle/publicversion change.
+
+Each Apply/Replay reconstructs original trustedBoundary, separate010B predecessor and RoundInputs/events. Privatecommit consumes that exactderivedPreparedstate, verifies frozenpreusefacts and both roleorderedseals/stepreceipts, then derives both CP/ammo costs, commitment, directionalattackhistory and segmenttargetuse as oneimmutablecandidate. Exactretry checkscommand+actor beforecommitted/depletedstate gates; no secondcharge or RNG draw. Base2 remains preuseevidence whilecurrenttypedWorld carries debit. Paidammo0 state is validhistoricalreadback; no neweligibleassault implied.
+
+Selectedcost5attacker/3defender,ammo10each with explicitCPafter<=10 guard beforegeneralspendinghelper. PreserveWorldotherfields/turn/stage/origin/cohesion/RNG. Event/receipt/version/prefix publishonce withallcosts/history/use; nointermediate mutable state. Commitment staysstep5notclosed. Result/settlement/publication/positiveactualhistory/Snapshot12 remainexcluded.
+
+Frozen source manifest task012-source.sha256 and verification facts task012-checks.md supplied. Requiredfournewliteralcommits/states complete58events68cuts across10traces, with precommit54/64 retained. SupplementalCP5/7boundary histories reconstructedthrough APIs, raw/provenance/forgery/ownership/retry guards, candidate discard and response-loss retry evidence passed focused tests. Authorhistoricalclaims aretestimony; independentreviewers should challenge authorityhand-offs, rolecosts, originaleligibilityvspaidWorld, no partialmutations and exactcanonicalserialization. Full repository gate and independent reviews pending.
