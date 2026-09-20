@@ -63,6 +63,54 @@ internal abstract record CampaignCombatHistoryProjection
         public override IReadOnlyList<CampaignOpeningPreambleReceipt> Receipts => State.Receipts;
     }
 
+    internal sealed record ReactionTrigger(CampaignCombatReactionTriggerState State) : CampaignCombatHistoryProjection
+    {
+        public override long StateVersion => State.StateVersion;
+        public override string Prefix => State.Prefix;
+        public override LandSequencePosition SequencePosition => State.SequencePosition;
+        public override IReadOnlyList<CampaignOpeningPreambleReceipt> Receipts => State.Receipts;
+    }
+
+    internal sealed record ReactionLifecycle(CampaignCombatReactionLifecycleState State) : CampaignCombatHistoryProjection
+    {
+        public override long StateVersion => State.StateVersion;
+        public override string Prefix => State.Prefix;
+        public override LandSequencePosition SequencePosition => State.SequencePosition;
+        public override IReadOnlyList<CampaignOpeningPreambleReceipt> Receipts => State.Receipts;
+    }
+
+    internal sealed record ReactionClosure(CampaignCombatReactionClosureState State) : CampaignCombatHistoryProjection
+    {
+        public override long StateVersion => State.StateVersion;
+        public override string Prefix => State.Prefix;
+        public override LandSequencePosition SequencePosition => State.SequencePosition;
+        public override IReadOnlyList<CampaignOpeningPreambleReceipt> Receipts => State.Receipts;
+    }
+
+    internal sealed record ReactionFallback(CampaignCombatReactionFallbackState State) : CampaignCombatHistoryProjection
+    {
+        public override long StateVersion => State.StateVersion;
+        public override string Prefix => State.Prefix;
+        public override LandSequencePosition SequencePosition => State.SequencePosition;
+        public override IReadOnlyList<CampaignOpeningPreambleReceipt> Receipts => State.Receipts;
+    }
+
+    internal sealed record ReactionSecondMove(CampaignCombatReactionSecondMoveState State) : CampaignCombatHistoryProjection
+    {
+        public override long StateVersion => State.StateVersion;
+        public override string Prefix => State.Prefix;
+        public override LandSequencePosition SequencePosition => State.SequencePosition;
+        public override IReadOnlyList<CampaignOpeningPreambleReceipt> Receipts => State.Receipts;
+    }
+
+    internal sealed record ReactionCompletion(CampaignCombatReactionCompletionState State) : CampaignCombatHistoryProjection
+    {
+        public override long StateVersion => State.StateVersion;
+        public override string Prefix => State.Prefix;
+        public override LandSequencePosition SequencePosition => State.SequencePosition;
+        public override IReadOnlyList<CampaignOpeningPreambleReceipt> Receipts => State.Receipts;
+    }
+
 }
 
 internal sealed record CampaignCombatHistoryResult(CampaignCombatRetainedHistory History, CampaignCombatHistoryProjection Projection);

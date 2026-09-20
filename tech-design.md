@@ -1005,7 +1005,9 @@ owned Created11/event transcript; `CampaignCombatHistoryReplay` derives fixed ca
 invokes accepted readers through atomic first opening. Reserve membership is materialized already at
 stage-entry's terminal cut. Typed projections and exact retained buffers remain distinct from a
 persisted full-root snapshot. H2 extends the same retained stream through ordinary Movement,
-mandatory stop/resolution/completion and Breakdown completion; Reaction remains the H3 gate.
+mandatory stop/resolution/completion and Breakdown completion. H3 is extending routing through
+Reaction trigger, participant, direct closure, fallback and second-move forks using existing strict
+readers. Literal full-root serialization and disabled-admission restore remain H4.
 Creation publication evaluation now targets an expected-head per-campaign commit batch. The
 [HOST-PUB-001 evidence allocation](docs/specs/combat-authority-envelope-v1.md#runtime-evidence-ownership)
 keeps actual atomic uniqueness, commit ambiguity and process-recovery proof open until provider

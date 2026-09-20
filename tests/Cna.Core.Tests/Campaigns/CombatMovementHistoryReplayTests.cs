@@ -88,7 +88,7 @@ public sealed class CombatMovementHistoryReplayTests
     [Theory]
     [InlineData("axis")]
     [InlineData("commonwealth")]
-    public void SameTagActualReactionTailRejectsThroughStrictOrdinaryEffects(string side)
+    public void SameTagActualReactionTailAdmitsThroughStrictReactionEffects(string side)
     {
         var (request, created, opening, weather, stage, reserve, moves) = Moved(side);
         var state = CampaignCombatReactionTrigger.Replay(request, created, opening, [weather], stage, reserve, moves, []);
@@ -98,7 +98,7 @@ public sealed class CombatMovementHistoryReplayTests
         Assert.Equal("element-moved", node.RootElement.GetProperty("eventType").GetString());
         Assert.Equal(4, node.RootElement.GetProperty("contractVersion").GetInt32());
         Assert.ThrowsAny<JsonException>(() => CampaignCombatInheritedMovement.Replay(request, created, opening, [weather], stage, reserve, moves.Append(reaction.EventBytes).ToArray()));
-        Assert.ThrowsAny<JsonException>(() => CampaignCombatHistoryReplay.Replay(request, created, history));
+        Assert.Equal(13, CampaignCombatHistoryReplay.Replay(request, created, history).Projection.StateVersion);
     }
 
     [Theory]
