@@ -4,11 +4,180 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Cna.Core.Campaigns;
+using Cna.Core.Rules;
 
 namespace Cna.Core.Tests.Campaigns;
 
 public sealed class CombatIdentityTests
 {
+    [Fact]
+    public void SyntheticInitialFactsCertifyEveryResultForBothRolesWithoutClaimingHistoryAdmission()
+    {
+        var history = Supported();
+        var inherited = CampaignCombatCertification.Admit(history.Request, history.Created, history.Events);
+        var initial = CampaignCreatedV11Serializer.Deserialize(history.Created, history.Request).InitialWorld;
+        foreach (var side in new[] { LandSide.Axis, LandSide.Commonwealth })
+        {
+            var cycle = inherited.Entry.Lifecycle.Movement.Opening.Cycle! with { ActingSide = side };
+            var candidate = CampaignCombatCertification.CertifyInitialProfileFacts(history.Request, history.Created, initial,
+                cycle, side, WeatherKind.Normal, WeatherKind.Normal);
+            Assert.NotNull(candidate);
+            Assert.Equal(side == LandSide.Axis ? "axis" : "commonwealth", candidate.Attacker.Unit.OriginalSide);
+            Assert.Equal(candidate.Defender.LocationId, candidate.TargetLocationId);
+            Assert.Equal("voluntary-adjacent", candidate.Basis);
+            var bytes = CampaignCombatIdentityCodec.SerializeCandidate(candidate);
+            Assert.Equal(bytes, CampaignCombatIdentityCodec.SerializeCandidate(CampaignCombatIdentityCodec.ReadCandidate(bytes, candidate)));
+            Assert.ThrowsAny<JsonException>(() => CampaignCombatIdentityCodec.ReadCandidate([.. bytes, (byte)' '], null!));
+            Assert.Throws<ArgumentNullException>(() => CampaignCombatIdentityCodec.ReadCandidate(bytes, null!));
+            Assert.Null(CampaignCombatCertification.CertifyInitialProfileFacts(history.Request, history.Created, initial,
+                cycle, side, WeatherKind.Hot, WeatherKind.Normal));
+            Assert.ThrowsAny<JsonException>(() => CampaignCombatCertification.CertifyInitialProfileFacts(history.Request, history.Created,
+                inherited.Entry.Lifecycle.Movement.World, cycle, side, WeatherKind.Normal, WeatherKind.Normal));
+        }
+        Assert.Equal((1296, 6480, 8840), CampaignCombatCertification.SupportCoverage);
+        Assert.Empty(inherited.Assessment.CandidateIds);
+        Assert.Equal(initial, CampaignCreatedV11Serializer.Deserialize(history.Created, history.Request).InitialWorld);
+    }
+
+    [Fact]
+    public void PositiveFactsKeepCurrentCpAndRejectForeignOrUnsupportedInventoryAndScope()
+    {
+        var history = Supported(); var initial = CampaignCreatedV11Serializer.Deserialize(history.Created, history.Request).InitialWorld;
+        var actual = CampaignCombatCertification.Admit(history.Request, history.Created, history.Events);
+        foreach (var side in new[] { LandSide.Axis, LandSide.Commonwealth })
+        {
+            var cycle = actual.Entry.Lifecycle.Movement.Opening.Cycle! with { ActingSide = side };
+            var sideName = side == LandSide.Axis ? "axis" : "commonwealth";
+            foreach (var (a, d, eligible) in new[] { (0, 0, true), (5, 7, true), (6, 7, false), (5, 8, false), (10, 10, false) })
+            {
+                var current = CopyWorld(initial, initial.Elements.Select(e => ProfileElement(e, new(e.ElementId.StartsWith(sideName, StringComparison.Ordinal) ? a : d, 1))));
+                var snapshot = current.Elements.Select(e => e.OperationalState.CapabilityPointsExpended).ToArray();
+                Assert.Equal(eligible, Certify(current) is not null);
+                Assert.Equal(snapshot, current.Elements.Select(e => e.OperationalState.CapabilityPointsExpended));
+                foreach (var weather in new[] { WeatherKind.Hot, WeatherKind.Sandstorm, WeatherKind.Rainstorm })
+                {
+                    Assert.Null(CampaignCombatCertification.CertifyInitialProfileFacts(history.Request, history.Created, current, cycle, side, weather, WeatherKind.Normal));
+                    Assert.Null(CampaignCombatCertification.CertifyInitialProfileFacts(history.Request, history.Created, current, cycle, side, WeatherKind.Normal, weather));
+                }
+            }
+            foreach (var cp in new[] { new CapabilityPointAmount(1, 2), new CapabilityPointAmount(11, 1), new CapabilityPointAmount(long.MaxValue, 1) })
+                Reject(CopyWorld(initial, initial.Elements.Select(e => ProfileElement(e, cp))));
+            foreach (var element in initial.Elements)
+            {
+                foreach (var changed in new[] { ProfileElement(element, cohesion: -1), ProfileElement(element, ammo: 9),
+                    ProfileElement(element, toe: 9), ProfileElement(element, location: "axis-rear"), ProfileElement(element, parent: "foreign.parent"),
+                    ProfileElement(element, pinned: true), ProfileElement(element, stage: 2), ProfileElement(element, reserve: CampaignElementReserveStatus.ReserveI) })
+                {
+                    var world = CopyWorld(initial, initial.Elements.Select(e => e.ElementId == element.ElementId ? changed : e),
+                        initial.Representations.Select(r => r.BoundElementIds.Contains(element.ElementId) ? new CampaignMapRepresentationState(r.RepresentationId, changed.CurrentLocationId, r.BindingKind, r.BoundElementIds) : r));
+                    Reject(world);
+                }
+            }
+            Reject(CopyWorld(initial, creationBinding: "foreign.creation"));
+            foreach (var count in new[] { 1, 512, 4096 })
+            {
+                var causes = Enumerable.Range(1, count).Select(i => new CampaignCombatCohesionCause($"cause.{i}", i, $"receipt.{i}",
+                    initial.Elements[0].ElementId, 1, 1, "loss-dp", 1, 0, -1));
+                Reject(new CampaignWorldSnapshotV7(7, initial.CreationBinding, initial.Elements, initial.Representations, [], causes, [], [], [], [], [], []));
+            }
+            foreach (var changed in new[] { cycle with { CampaignId = "foreign.campaign" }, cycle with { SetupHash = "sha256:" + new string('a', 64) },
+                cycle with { ContentHash = "sha256:" + new string('a', 64) }, cycle with { GameTurn = 2 }, cycle with { Ordinal = 2 },
+                cycle with { PlayerPhaseSlot = "second-acting-side" }, cycle with { OpeningPrefix = "bad" }, cycle with { OpenedAuthorityVersion = 0 } })
+                Assert.ThrowsAny<JsonException>(() => CampaignCombatCertification.CertifyInitialProfileFacts(history.Request, history.Created, initial, changed, side, WeatherKind.Normal, WeatherKind.Normal));
+            Assert.ThrowsAny<JsonException>(() => CampaignCombatCertification.CertifyInitialProfileFacts(history.Request, [], initial, cycle, side, WeatherKind.Normal, WeatherKind.Normal));
+            Assert.ThrowsAny<JsonException>(() => CampaignCombatCertification.CertifyInitialProfileFacts(history.Request, history.Created, initial, cycle, side, (WeatherKind)99, WeatherKind.Normal));
+            CampaignCombatCandidate? Certify(CampaignWorldSnapshotV7 world) => CampaignCombatCertification.CertifyInitialProfileFacts(history.Request, history.Created, world, cycle, side, WeatherKind.Normal, WeatherKind.Normal);
+            void Reject(CampaignWorldSnapshotV7 world) => Assert.ThrowsAny<JsonException>(() => Certify(world));
+        }
+        // Independent frozen source-oracle reduction: 637 complete result tuples, including
+        // 141 accepted retreats,141 refusals,45 attacker captures and125 defender captures.
+        // Each successful CP5/7 certification above executes every tuple, including defender
+        // paidCP10→mandatoryCP11. Existing CombatWorldTests proves that helper's exact DP.
+        Assert.Equal(637, CampaignCombatCertification.DistinctSupportResultCount);
+    }
+
+    [Fact]
+    public void CandidateGrammarAndCanonicalSpellingPrecedeTrustedExpectedAndOwnTheirBytes()
+    {
+        using var fixture = Fixture("combat-sealed-round-v2.json");
+        using var baseValue = JsonDocument.Parse(fixture.RootElement.GetProperty("cases")[0].GetProperty("baseCanonicalUtf8").GetString()!);
+        var selection = baseValue.RootElement.GetProperty("steps").GetProperty("selection");
+        var expected = Candidate(selection); var bytes = Encoding.UTF8.GetBytes(selection.GetRawText());
+        Assert.Equal(bytes, CampaignCombatIdentityCodec.SerializeCandidate(expected));
+        var root = JsonNode.Parse(bytes)!; var text = Encoding.UTF8.GetString(bytes);
+        foreach (var bad in new[] { "null", "{}", "[]", "[", text + " ", "\uFEFF" + text,
+            text.Replace("\"attacker\"", "\"a\\u0074tacker\"", StringComparison.Ordinal),
+            text.Replace("\"basis\":", "\"basis\":\"voluntary-adjacent\",\"basis\":", StringComparison.Ordinal) }) Reject(Encoding.UTF8.GetBytes(bad));
+        foreach (var field in new[] { "attacker", "defender", "targetLocationId", "basis" })
+        {
+            var missing = root.DeepClone(); missing.AsObject().Remove(field); Reject(Bytes(missing));
+            var wrong = root.DeepClone(); wrong[field] = false; Reject(Bytes(wrong));
+            var nulled = root.DeepClone(); nulled[field] = null; Reject(Bytes(nulled));
+        }
+        foreach (var role in new[] { "attacker", "defender" })
+        {
+            var unknown = root.DeepClone(); unknown[role]!["unit"]!["unknown"] = "value"; Reject(Bytes(unknown));
+            var missing = root.DeepClone(); missing[role]!.AsObject().Remove("componentIds"); Reject(Bytes(missing));
+            var oversized = root.DeepClone(); oversized[role]!["locationId"] = new string('a', 129); Reject(Bytes(oversized));
+            var components = root.DeepClone(); components[role]!["componentIds"] = new JsonArray(Enumerable.Range(0, 513).Select(i => (JsonNode?)JsonValue.Create($"component.{i:D3}")).ToArray()); Reject(Bytes(components));
+            var duplicate = root.DeepClone(); duplicate[role]!["componentIds"]!.AsArray().Add(duplicate[role]!["componentIds"]![0]!.DeepClone()); Reject(Bytes(duplicate));
+        }
+        Reject(new byte[1_048_577]);
+        Reject(Encoding.UTF8.GetBytes(new string('[', 33) + "0" + new string(']', 33)));
+        var reversed = new JsonObject(); foreach (var pair in root.AsObject().Reverse()) reversed.Add(pair.Key, pair.Value?.DeepClone()); Reject(Bytes(reversed));
+        Assert.Throws<ArgumentNullException>(() => CampaignCombatIdentityCodec.ReadCandidate(bytes, null!));
+        var foreign = new CampaignCombatCandidate(expected.Attacker, expected.Defender, "axis-supply", expected.Basis);
+        Assert.ThrowsAny<JsonException>(() => CampaignCombatIdentityCodec.ReadCandidate(bytes, foreign));
+        var returned = CampaignCombatIdentityCodec.ReadCandidate(bytes, expected); Array.Fill(bytes, (byte)0);
+        Assert.Equal(selection.GetRawText(), Encoding.UTF8.GetString(CampaignCombatIdentityCodec.SerializeCandidate(returned)));
+        void Reject(byte[] value) => Assert.ThrowsAny<JsonException>(() => CampaignCombatIdentityCodec.ReadCandidate(value, null!));
+    }
+
+    [Fact]
+    public void CurrentRoundTwoLiteralOpportunitiesBindEveryPreimageField()
+    {
+        using var fixture = Fixture("combat-sealed-round-v2.json"); var checkedCases = 0;
+        const string position = "land.position.operation-1.first-player.movement-and-combat.combat.force-assignment";
+        foreach (var row in fixture.RootElement.GetProperty("cases").EnumerateArray())
+        {
+            Assert.StartsWith("synthetic-C3a", row.GetProperty("provenance").GetString());
+            using var baseValue = JsonDocument.Parse(row.GetProperty("baseCanonicalUtf8").GetString()!);
+            using var opened = JsonDocument.Parse(row.GetProperty("eventCanonicalUtf8")[0].GetString()!);
+            var effect = opened.RootElement.GetProperty("effect");
+            var baseHash = effect.GetProperty("baseHash").GetString()!;
+            Assert.Equal(baseHash, "sha256:" + Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes("sandtable.combat.base-fragment.v2\0" + row.GetProperty("baseCanonicalUtf8").GetString()))));
+            var cycleId = opened.RootElement.GetProperty("cycleId").GetString()!;
+            var steps = baseValue.RootElement.GetProperty("steps"); var candidate = Candidate(steps.GetProperty("selection"));
+            var decline = steps.GetProperty("declineReceiptId").GetString()!;
+            var expected = effect.GetProperty("opportunityId").GetString()!;
+            Assert.Equal(expected, CampaignCombatIdentityCodec.CalculateOpportunityId(baseHash, cycleId, position, candidate, decline));
+            Assert.NotEqual(expected, CampaignCombatIdentityCodec.CalculateOpportunityId("sha256:" + new string('a', 64), cycleId, position, candidate, decline));
+            Assert.NotEqual(expected, CampaignCombatIdentityCodec.CalculateOpportunityId(baseHash, "sha256:" + new string('a', 64), position, candidate, decline));
+            Assert.NotEqual(expected, CampaignCombatIdentityCodec.CalculateOpportunityId(baseHash, cycleId, "other.position", candidate, decline));
+            Assert.NotEqual(expected, CampaignCombatIdentityCodec.CalculateOpportunityId(baseHash, cycleId, position, candidate, "other.decline"));
+            Assert.NotEqual(expected, CampaignCombatIdentityCodec.CalculateOpportunityId(baseHash, cycleId, position, new(candidate.Attacker, candidate.Defender, "other.target", candidate.Basis), decline));
+            checkedCases++;
+        }
+        Assert.Equal(10, checkedCases);
+    }
+
+    private static CampaignCombatCandidate Candidate(JsonElement value) => new(Participant(value.GetProperty("attacker")), Participant(value.GetProperty("defender")),
+        value.GetProperty("targetLocationId").GetString()!, value.GetProperty("basis").GetString()!);
+    private static CampaignCombatParticipant Participant(JsonElement value)
+    {
+        var unit = value.GetProperty("unit");
+        return new(new(unit.GetProperty("creationBinding").GetString()!, unit.GetProperty("originalSide").GetString()!, unit.GetProperty("elementId").GetString()!),
+            value.GetProperty("representationId").GetString()!, value.GetProperty("locationId").GetString()!, value.GetProperty("componentIds").EnumerateArray().Select(v => v.GetString()!).ToArray());
+    }
+    private static CampaignElementStateV6 ProfileElement(CampaignElementStateV6 source, CapabilityPointAmount? cp = null, int? cohesion = null,
+        int? ammo = null, int? toe = null, string? location = null, string? parent = null, bool? pinned = null, int? stage = null, CampaignElementReserveStatus? reserve = null) =>
+        new(source.ElementId, location ?? source.CurrentLocationId, reserve ?? source.ReserveStatus,
+            new(source.OperationalState.LedgerGameTurn, stage ?? source.OperationalState.LedgerOperationStage, cp ?? source.OperationalState.CapabilityPointsExpended,
+                cohesion ?? source.OperationalState.CohesionLevel, source.OperationalState.VehicleBreakdownState, source.OperationalState.MovementEnded, source.OperationalState.InitialLedgerOrigin),
+            source.Components.Select(c => new CampaignComponentToeState(c.ComponentId, toe ?? c.CurrentToe, c.InitialToeOrigin)), source.SourceParentFormationId,
+            parent ?? source.CurrentParentFormationId, new(ammo ?? source.Ammunition.Points, source.Ammunition.InitialAmmunitionOrigin),
+            new(source.Readiness.GameTurn, source.Readiness.OperationStage, source.Readiness.WaterStatus, source.Readiness.StoresStatus, pinned ?? source.Readiness.Pinned, source.Readiness.InitialReadinessOrigin));
+
     [Fact]
     public void FourActualCompletedHistoriesMatchFrozenAdmissionBoundaryAndLiteralAssessment()
     {

@@ -67,6 +67,56 @@ internal static class CampaignCombatIdentityCodec
         }
     }
 
+    public static byte[] SerializeCandidate(CampaignCombatCandidate candidate)
+    {
+        ArgumentNullException.ThrowIfNull(candidate);
+        return Bytes(writer =>
+        {
+            writer.WriteStartObject();
+            writer.WritePropertyName("attacker"); writer.WriteRawValue(SerializeParticipant(candidate.Attacker));
+            writer.WritePropertyName("defender"); writer.WriteRawValue(SerializeParticipant(candidate.Defender));
+            writer.WriteString("targetLocationId", candidate.TargetLocationId); writer.WriteString("basis", candidate.Basis);
+            writer.WriteEndObject();
+        });
+    }
+
+    public static CampaignCombatCandidate ReadCandidate(ReadOnlySpan<byte> bytes, CampaignCombatCandidate trustedExpected)
+    {
+        ValidateBounds(bytes);
+        using var document = JsonDocument.Parse(bytes.ToArray()); var root = document.RootElement;
+        string[] fields = ["attacker", "defender", "targetLocationId", "basis"];
+        if (root.ValueKind != JsonValueKind.Object || root.EnumerateObject().Count() != fields.Length ||
+            fields.Any(field => !root.TryGetProperty(field, out _))) throw new JsonException("Candidate requires its closed shape.");
+        foreach (var field in fields[2..])
+            if (root.GetProperty(field).ValueKind != JsonValueKind.String) throw new JsonException("Candidate requires string IDs.");
+        var parsed = new CampaignCombatCandidate(
+            ParseParticipant(System.Text.Encoding.UTF8.GetBytes(root.GetProperty("attacker").GetRawText())),
+            ParseParticipant(System.Text.Encoding.UTF8.GetBytes(root.GetProperty("defender").GetRawText())),
+            root.GetProperty("targetLocationId").GetString()!, root.GetProperty("basis").GetString()!);
+        if (!bytes.SequenceEqual(SerializeCandidate(parsed))) throw new JsonException("Noncanonical Candidate bytes.");
+        ArgumentNullException.ThrowIfNull(trustedExpected);
+        if (!bytes.SequenceEqual(SerializeCandidate(trustedExpected))) throw new JsonException("Candidate differs from independently certified facts.");
+        return trustedExpected;
+    }
+
+    /// <summary>Pure Round2 digest primitive; caller authenticates Base2, FA position and decline receipt.</summary>
+    public static string CalculateOpportunityId(string baseHash, string cycleId, string positionId,
+        CampaignCombatCandidate candidate, string declineReceiptId)
+    {
+        var bytes = Bytes(writer =>
+        {
+            writer.WriteStartObject();
+            foreach (var (name, value, kind) in new[] { ("baseHash", baseHash, "hash"), ("cycleId", cycleId, "hash"), ("positionId", positionId, "id") })
+            {
+                writer.WritePropertyName(name); WriteBoundarySyntax(writer, JsonSerializer.SerializeToElement(value), kind);
+            }
+            writer.WritePropertyName("candidate"); writer.WriteRawValue(SerializeCandidate(candidate));
+            writer.WritePropertyName("declineReceiptId"); WriteBoundarySyntax(writer, JsonSerializer.SerializeToElement(declineReceiptId), "id");
+            writer.WriteEndObject();
+        });
+        return "opp." + CampaignOpeningPreambleCodec.HashWithDomain("sandtable.combat.opportunity.v2", bytes)[7..];
+    }
+
     public static byte[] SerializeBoundary(CampaignCombatAdmissionBoundary boundary)
     {
         ArgumentNullException.ThrowIfNull(boundary);

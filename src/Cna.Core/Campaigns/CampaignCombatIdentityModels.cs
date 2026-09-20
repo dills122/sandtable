@@ -32,7 +32,7 @@ internal sealed class CampaignCombatParticipant
     public string LocationId { get; }
     public IReadOnlyList<string> ComponentIds { get; }
     public IReadOnlyList<CampaignCombatComponentKey> Components { get; }
-    private static void CheckId(string value)
+    internal static void CheckId(string value)
     {
         if (value is null || value.Length is < 1 or > 128) throw new JsonException("Participant ID exceeds bounds.");
         try { _ = ContentContractGuards.RequireStableId(value, nameof(value)); }
@@ -56,4 +56,20 @@ internal sealed class CampaignCombatAdmissionBoundary
     public CampaignCombatRetainedHistory History { get; }
     public CampaignCombatBreakdownCompletionState Entry { get; }
     public CampaignCombatCandidateAssessment Assessment { get; }
+}
+
+/// <summary>Frozen provisional Candidate identity; construction does not authenticate or admit a choice.</summary>
+internal sealed class CampaignCombatCandidate
+{
+    public CampaignCombatCandidate(CampaignCombatParticipant attacker, CampaignCombatParticipant defender,
+        string targetLocationId, string basis)
+    {
+        ArgumentNullException.ThrowIfNull(attacker); ArgumentNullException.ThrowIfNull(defender);
+        CampaignCombatParticipant.CheckId(targetLocationId); CampaignCombatParticipant.CheckId(basis);
+        Attacker = attacker; Defender = defender; TargetLocationId = targetLocationId; Basis = basis;
+    }
+    public CampaignCombatParticipant Attacker { get; }
+    public CampaignCombatParticipant Defender { get; }
+    public string TargetLocationId { get; }
+    public string Basis { get; }
 }

@@ -968,3 +968,8 @@ And there's a nice **authority hierarchy** underneath all the flavor:
 That could practically become Sandtable's architectural motto.
 
 Of all these, I'd lock in **Sandtable / Umpire / Maproom / Staff / Command / Dispatch / Signals / Chronicle / Archives / Quartermaster / Theater / ORBAT / War College**. They feel cohesive rather than like we've randomly assigned military words to microservices.
+
+Task009B adds the frozen provisional `CampaignCombatCandidate` value.
+`CertifyInitialProfileFacts` names its caller-trusted provenance explicitly; it does not authenticate
+a positive history. `CalculateOpportunityId` is the pure Round2 identity calculation, whose
+inputs require later selection and Base2 admission.
