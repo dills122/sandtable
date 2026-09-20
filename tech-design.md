@@ -972,6 +972,11 @@ Movement-end proof. World, spending, causal DP and material-progress references 
 G2 consumes all three actual lifecycle records before System completion enters Combat Position
 Determination. It preserves World, RNG and Movement-end proof, carries predecessor Breakdown sources,
 and appends a distinct Breakdown receipt without material progress. Combat actions remain dormant.
+Task008 F1 branches from actual first ordinary Move4, then commits the return move opening one
+opposing Reaction opportunity. It derives adjacency before eligibility, retains persisted window/
+opportunity identities and the suspended symbolic Movement position, and carries the same phasing
+route through Reacting/ResumeRoute flow. New bounded types support Move4 without weakening legacy
+materialized-position guards; current World serialization rederives and checks actual history.
 Creation publication evaluation now targets an expected-head per-campaign commit batch. The
 [HOST-PUB-001 evidence allocation](docs/specs/combat-authority-envelope-v1.md#runtime-evidence-ownership)
 keeps actual atomic uniqueness, commit ambiguity and process-recovery proof open until provider

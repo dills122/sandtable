@@ -20,7 +20,9 @@ E1 checkpoint: `e641bd3`, `codex/combat-task008-inherited-movement`,
 [PR132](https://github.com/dills122/sandtable/pull/132), stacked on PR131.
 E2/G1 checkpoint: `e177a4b`, `codex/combat-task008-movement-lifecycle`,
 [PR133](https://github.com/dills122/sandtable/pull/133), stacked on PR132.
-ActiveG2 branch: `codex/combat-task008-breakdown-completion`, based on E2/G1 checkpoint.
+G2 checkpoint: `b9cb26f`, `codex/combat-task008-breakdown-completion`,
+[PR134](https://github.com/dills122/sandtable/pull/134), stacked on PR133.
+Active F1 branch: `codex/combat-task008-reaction-trigger`, based on G2 checkpoint.
 Integration destination: reviewed feature branch; lead owns retained commits and PR.
 
 ## Objective and boundaries
@@ -48,6 +50,8 @@ No public activation or parent completion inferred from a codec slice.
 | 008E1 ordinary Move4 |019A| implementation subagent;lead integrates | twoowners14moves16cuts48artifacts;focused31/full2020;dev+threeReadyreviews | Accepted; feature-branchcheckpoint |
 | 008E2/G1 route lifecycle |E1| implementation subagent;lead integrates | 8traces24events32cuts88artifacts;focused20/full2032;dev+threeReadyreviews | Accepted; feature-branchcheckpoint |
 | 008G2 Breakdown completion |E2/G1| implementation subagent;lead integrates | 8traces8events16cuts40artifacts;focused24/full2044;dev+threeReadyreviews | Accepted; feature-branch checkpoint |
+| 008F1 Reaction trigger | E1 first-move cut | implementation subagent; lead integrates | 2traces2events4cuts8artifacts;focused15/full2051;dev+threeReadyreviews | Accepted; feature-branch checkpoint |
+| 008F2–F6 Reaction continuation | canonical F graph | unassigned | selected participant/direct/fallback/second-move histories | Pending |
 | 008B–H, 019A | canonical dependency graph | unassigned | cumulative Core replay, full retained-history restore | Pending |
 | 009–025 | canonical gates | unassigned | cumulative gameplay/public/Runner/72-AC evidence | Pending |
 
@@ -95,3 +99,5 @@ Record exact commands, failures and totals in per-slice evidence; never count un
 - E1 PR132 remote verify, dependency-review and observational offline links passed during E2/G1 work.
 
 - E2/G1 PR133 remote verify, dependency-review and offline links passed during G2 work.
+
+- G2 PR134 remote verify, dependency-review and offline links passed during F1 work.
