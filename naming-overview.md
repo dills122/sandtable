@@ -205,6 +205,10 @@ richer first-cycle envelopes. “Expired exception” means the exact D2b.2 proj
 one-cycle authority to that accepted completion receipt; it does not mean Breakdown ran.
 These projections are not Snapshot12. Chronicle retains the
 accepted events; the future Archives reader must reconstruct and validate their complete chain.
+Task009A introduces `CampaignCombatParticipant`, `CampaignCombatCandidateAssessment` and
+`CampaignCombatAdmissionBoundary` as internal identity/assessment values. `CampaignCombatCertification`
+derives supported inherited admission from replay; binding a participant alone does not certify
+combat eligibility. No new service or public capability is introduced.
 
 The prospective [cycle-control contract](docs/specs/combat-cycle-control-v1.md) uses
 `movement-combat-cycle-repeated` for closing one occurrence and opening the next Movement in the

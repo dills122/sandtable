@@ -179,3 +179,11 @@ Record exact commands, failures and totals in per-slice evidence; never count un
   HOST-PUB-001 and later28runtime/gameplay/public gates remain open.
 - Next009 split:009A actual inherited G2 assessment/bindings, then009B positive exhaustive
   certification and opportunity-v2 mechanism. Parent009 remains open until both;010/011 unchanged.
+
+-009A worker active fromf84b312, five owned paths perdispatch. Initial focusedRED missingAPI;
+  first implementation exact-byte assertion under investigation; no acceptance or positiveofferclaim.
+
+009A round1 Participant ordering and round2 Boundary ordering findings accepted and corrected.
+Regression RED proved each; latest focused10/10 passed11.891s, scopedformat clean.
+Final corrected build passed0warnings/errors12.89s; fullgate/review3 pending.
+009B remains research-only until009A acceptance. Private Boundary syntax inventory audited51shapes.

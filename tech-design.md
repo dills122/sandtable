@@ -1012,6 +1012,11 @@ from this replay and verifies supplied bytes against retained history. Its resto
 existing creation-admission policy; creation-only readback remains strict. Exact368root vectors
 and disabled-admission restore pass for all286selected histories. Initial H Core codec/replay gate
 is complete; later authority families must extend this evidence.
+Task009A is adding dormant inherited admission assessment over actual completed G2 history. It
+binds original unit/component identity separately from current representation and location, and
+writes the existing inherited AdmissionBoundary for the four supported empty-candidate histories.
+Positive certification and opportunity-v2 mechanics remain009B; selection and sealed-round
+admission remain010–011. These internal values create no public actions or new events.
 Creation publication evaluation now targets an expected-head per-campaign commit batch. The
 [HOST-PUB-001 evidence allocation](docs/specs/combat-authority-envelope-v1.md#runtime-evidence-ownership)
 keeps actual atomic uniqueness, commit ambiguity and process-recovery proof open until provider
