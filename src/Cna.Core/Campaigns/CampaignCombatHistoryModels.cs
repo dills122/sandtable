@@ -39,6 +39,30 @@ internal abstract record CampaignCombatHistoryProjection
         public override LandSequencePosition SequencePosition => State.SequencePosition;
         public override IReadOnlyList<CampaignOpeningPreambleReceipt> Receipts => State.Receipts;
     }
+    internal sealed record Movement(CampaignCombatInheritedMovementState State) : CampaignCombatHistoryProjection
+    {
+        public override long StateVersion => State.StateVersion;
+        public override string Prefix => State.Prefix;
+        public override LandSequencePosition SequencePosition => State.SequencePosition;
+        public override IReadOnlyList<CampaignOpeningPreambleReceipt> Receipts => State.Receipts;
+    }
+
+    internal sealed record MovementLifecycle(CampaignCombatMovementLifecycleState State) : CampaignCombatHistoryProjection
+    {
+        public override long StateVersion => State.StateVersion;
+        public override string Prefix => State.Prefix;
+        public override LandSequencePosition SequencePosition => State.SequencePosition;
+        public override IReadOnlyList<CampaignOpeningPreambleReceipt> Receipts => State.Receipts;
+    }
+
+    internal sealed record BreakdownCompletion(CampaignCombatBreakdownCompletionState State) : CampaignCombatHistoryProjection
+    {
+        public override long StateVersion => State.StateVersion;
+        public override string Prefix => State.Prefix;
+        public override LandSequencePosition SequencePosition => State.SequencePosition;
+        public override IReadOnlyList<CampaignOpeningPreambleReceipt> Receipts => State.Receipts;
+    }
+
 }
 
 internal sealed record CampaignCombatHistoryResult(CampaignCombatRetainedHistory History, CampaignCombatHistoryProjection Projection);

@@ -203,7 +203,7 @@ public sealed class CombatHistoryReplayTests
     }
 
     [Fact]
-    public void ValidFutureMovementTailRejectsWithoutTruncation()
+    public void ValidOrdinaryMovementTailNowReplaysWithoutTruncation()
     {
         var trace = Trace(seed: 1);
         var opening = trace.Events.Take(4).ToArray();
@@ -213,7 +213,9 @@ public sealed class CombatHistoryReplayTests
         var input = CampaignCombatInheritedMovement.Command(state, "axis-rear");
         var next = CampaignCombatInheritedMovement.Apply(trace.Request, trace.Created, opening, [trace.Events[4]], stage, reserve, [], input);
         Assert.Equal(state.StateVersion + 1, next.State.StateVersion);
-        Reject(trace, trace.Events.Append(next.EventBytes).ToArray());
+        var result = CampaignCombatHistoryReplay.Replay(trace.Request, trace.Created, trace.Events.Append(next.EventBytes).ToArray());
+        Assert.Equal(next.State.StateVersion, result.Projection.StateVersion);
+        Assert.Equal(next.State.Prefix, result.Projection.Prefix);
     }
 
     [Fact]
