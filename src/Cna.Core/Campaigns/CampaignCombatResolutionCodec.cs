@@ -59,8 +59,8 @@ internal static class CampaignCombatResolutionCodec
             status = state.Status,
             result = state.Result is null ? null : ResultValue(state.Result),
             settlementId = state.World.Settlements.SingleOrDefault()?.SettlementId,
-            window = (object?)null,
-            acceptedHighWater = committed.Timing!.OpeningFloorUnixMilliseconds,
+            window = state.Window,
+            acceptedHighWater = state.AcceptedHighWater,
             world = WorldValue(state),
             randomState = state.RandomState,
             roundClosureReceiptId = (string?)null,
@@ -102,16 +102,21 @@ internal static class CampaignCombatResolutionCodec
     private static JsonNode WorldValue(CombatResolutionState state)
     {
         var paid = state.Context.Committed.World;
-        CampaignCombatSettlementState? settlement = null;
-        if (state.Result is { } result)
+        var settlement = state.World.Settlements.SingleOrDefault();
+        var correctStage = state.Status switch
         {
-            var committed = state.Context.Committed; var selection = committed.Base.Steps.Selection!;
-            settlement = CampaignCombatSettlementState.CreateResolvedResultV2(committed.CommitmentId!, result.ResultId,
-                committed.Base.Boundary.Cycle.GameTurn, committed.Base.Boundary.Cycle.OperationStage,
-                selection.Attacker.Unit, selection.Defender.Unit, paid.Elements, result.Facts);
-        }
-        var allowed = settlement is null ? paid : CampaignCombatResolution.PendingWorld(paid, settlement);
-        if (state.World != allowed) throw new JsonException("Result2 World differs from typed pending settlement.");
+            "committed" => state.Result is null && settlement is null,
+            "resolved" or "waiting-retreat" => state.Result is not null && settlement is { Disposition: null, Losses: null, Retreat: null },
+            "disposition" => settlement is { Disposition: not null, Losses: null, Retreat: null },
+            "losses" => settlement is { Disposition: not null, Losses: not null, Retreat: null },
+            "retreat" => settlement is { Disposition: not null, Losses: not null, Retreat: not null },
+            _ => false,
+        };
+        if (!correctStage || (state.Status == "waiting-retreat") != (state.Window is not null))
+            throw new JsonException("Result2 status, window and settlement stage disagree.");
+        var allowed = state.Result is null ? paid : CampaignCombatLossRetreat.Project(state.Context, state.Result,
+            settlement ?? throw new JsonException("Result2 settlement missing."));
+        if (state.World != allowed) throw new JsonException("Result2 World differs from typed settlement projection.");
         var root = JsonNode.Parse(state.Context.WorldBytes)!;
         if (settlement is not null)
         {
@@ -126,18 +131,31 @@ internal static class CampaignCombatResolutionCodec
                 defender = settlement.Defender,
                 preLossElements = root["elements"]!.DeepClone(),
                 result = settlement.Result,
-                disposition = (object?)null,
-                losses = (object?)null,
-                retreat = (object?)null,
+                disposition = settlement.Disposition,
+                losses = settlement.Losses,
+                retreat = settlement.Retreat,
                 custody = (object?)null,
                 relationships = (object?)null
             }, Options);
             root["settlements"] = new JsonArray(pending);
         }
+        foreach (var item in root["elements"]!.AsArray())
+        {
+            var element = state.World.Elements.Single(e => e.ElementId == item!["elementId"]!.GetValue<string>());
+            item!["currentLocationId"] = element.CurrentLocationId;
+            item["components"]![0]!["currentToe"] = element.Components.Single().CurrentToe;
+            item["operationalState"]!["capabilityPointsExpended"]!["numerator"] = element.OperationalState.CapabilityPointsExpended.Numerator;
+            item["operationalState"]!["capabilityPointsExpended"]!["denominator"] = element.OperationalState.CapabilityPointsExpended.Denominator;
+            item["operationalState"]!["cohesionLevel"] = element.OperationalState.CohesionLevel;
+        }
+        foreach (var item in root["representations"]!.AsArray())
+            item!["currentLocationId"] = state.World.Representations.Single(r => r.RepresentationId == item["representationId"]!.GetValue<string>()).CurrentLocationId;
+        root["cohesionCauses"] = JsonSerializer.SerializeToNode(state.World.CohesionCauses, Options);
+        root["custodyLots"] = JsonSerializer.SerializeToNode(state.World.CustodyLots, Options);
         return root;
     }
-    internal static byte[] SerializeEvent(CombatResolutionState prior, CombatResolutionInput input, CombatAssaultResult result,
-        string settlementId, string? receiptId)
+    internal static byte[] SerializeEvent(CombatResolutionState prior, CombatResolutionInput input, CombatResolutionEffect effect,
+        CampaignOpeningPreambleActor author, string? receiptId)
     {
         var c = prior.Context.Committed; var b = c.Base.Boundary;
         var node = JsonSerializer.SerializeToNode(new
@@ -145,8 +163,8 @@ internal static class CampaignCombatResolutionCodec
             contractVersion = 2,
             roundClockConfigurationHash = c.Base.ConfigurationHash,
             resultClockPolicyId = CampaignCombatResolution.Policy,
-            eventType = "combat-result-assault-resolved",
-            author = "system",
+            eventType = "combat-result-" + effect.Kind,
+            author = CampaignCombatSealedRoundCodec.Actor(author),
             campaignId = b.Cycle.CampaignId,
             rulesetHash = b.Cycle.RulesetHash,
             configurationHash = c.Base.Configuration.ParentConfigurationHash,
@@ -158,12 +176,21 @@ internal static class CampaignCombatResolutionCodec
             stateVersion = checked(prior.StateVersion + 1),
             priorPrefix = prior.Prefix,
             input = InputValue(input),
-            effect = new { kind = "assault-resolved", result = ResultValue(result), settlementId },
+            effect = EffectValue(effect),
             receiptId
         }, Options)!;
         if (receiptId is not null) return Encode(node, "ResultEvent");
         node.AsObject().Remove("receiptId"); return JsonSerializer.SerializeToUtf8Bytes(node);
     }
+    private static object EffectValue(CombatResolutionEffect effect) => effect switch
+    {
+        CombatResolutionEffect.Resolve value => new { kind = value.Kind, result = ResultValue(value.Result), settlementId = value.SettlementId },
+        CombatResolutionEffect.Open value => new { kind = value.Kind, window = value.Window },
+        CombatResolutionEffect.Disposition value => new { kind = value.Kind, reason = value.Reason, timing = value.Timing, payload = value.Payload },
+        CombatResolutionEffect.Loss value => new { kind = value.Kind, payload = value.Payload },
+        CombatResolutionEffect.Retreat value => new { kind = value.Kind, payload = value.Payload },
+        _ => throw new JsonException("Unsupported Result2 effect.")
+    };
     private static byte[] Encode(object value, string kind)
     {
         var element = JsonSerializer.SerializeToElement(value, Options);

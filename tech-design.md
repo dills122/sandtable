@@ -1207,3 +1207,13 @@ hashed identities while preserving legacy constructor checks. Its named grammar 
 semantic Route arrays without changing C3a syntax. Exact retries recover the original result;
 overflow or discarded publication leaves retained authority unchanged. This is Core candidate
 atomicity; host durability, actual positive campaign history and settlement remain later gates.
+
+Task014 extends dormant Result2 through mandatory retreat disposition, simultaneous losses and
+retreat settlement. Required retreat opens an independent owner window under original Config1;
+local deadline and high-water govern that window while a separate maximum records audit time.
+Losses and captures use both original paid participants, then project typed World consequences
+and pending custody lots at their pre-loss origin. Actual evacuation updates element and
+representation together, permits mandatory CP beyond ten with incremental cohesion cost, and
+grants capped attacker victory relief. Immutable settlement appends validate identity and stage;
+serialization checks status/window/receipt agreement and the full allowed World projection.
+Custody decisions and relationship/round closure remain subsequent gates.
