@@ -1,0 +1,7 @@
+# Task013 root scope assessment — research only
+
+Read entire task013-dispatch-proposal.md while011 gates run. Frozen Result2 differs intentionally from legacy sample settlement IDs and C3a Route grammar. Preferred narrow solution is named resolved-only Result2 settlement factory plus named external grammar profile, preserving legacy constructor/default/C3a behavior. Distinct pending-overlay would duplicate authoritative World representation and is not selected.
+
+Five material files plus one mechanical existingfixture csprojlink is a justified bounded plan, not six architecture components. No user approval inferred solely from physical filecount. Final dispatch must explicitly name allsix paths and reread accepted012API; no013implementation authorization yet. No contractchange, newwireversion or broadmodelrelaxation authorized. Old constructor must keep originalvalidation; newfactory derives exactsetID and validates allpaidpreloss/opposingparticipants/scope invariants. No skipvalidationflag.
+
+Evidence distinction accepted:32literalresolveevents/64initial+resolvedHASHcuts, full272events304hashcuts later;16eight/16nine draws,12rejectiontraces,zero literalblockcrossings. Required existingseed0cursor30 supplemental vector proves blockcrossing via authenticated runtime replay, not fabricated committedcache or newliteralgolden. Host publication and fullsettlement remainopen. This is bounded implementation planning within authorized delivery, not a heavyarchitecturepivot.

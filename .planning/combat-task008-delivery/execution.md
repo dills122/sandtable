@@ -217,3 +217,5 @@ cachebound andownedCreated fixes retained withownershipRED. Focused7/7 36.320s, 
 010C accepted9b999a7 after rootfull2284/Boundary81/build/format/exactCI and three Ready reviews.27slices81ordinary+2conditional=83reviews. Review3 historical-unrelated-search disclosure retained, no010Cpriorverdict exposure/no blocker. Parent010 complete;011 implementation dispatched against committedproposal,012 remainsresearch.
 
 011 frozen: fivepaths,10Bases54events64states,192fresh+96clockretries,8focused/26shared pass; developmentreview nofinding, rootbuildpass/fullsuite+format active. Independentreview1blindactive; no reviewer.NET before rootBoundarymarker. No011acceptanceyet.012proposalawaits011;013researchonly dispatched.
+
+011accepted94a4ecd after full2292/Boundary81/build/format/exactCI/devreview+3freshReady.28slices84ordinary+2conditional=86reviews.012atomiccommit dispatched, fiveprimarypaths asproposal/exactcurrentAPI;013research complete with narrowfactory/grammar recommendation and mechanicalfixturelinkscope, remainsundispatched.

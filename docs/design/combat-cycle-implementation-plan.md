@@ -883,7 +883,8 @@ unchanged; no new event, public action, timing policy or gameplay profile is int
 
 Task010A/B/C dormant gates are accepted in PR136 (010C code9b999a7; full2,284/Boundary81,
 dev review, three independent rounds and exact-head CI). This closes bounded parent010;
-Task011 private seals/Prepared is next. Actual positive campaign provenance, extended Snapshot12
+Task011 private seals/Prepared is accepted at94a4ecd (full2,292/Boundary81, dev review, three
+independent rounds and exact-head CI). Atomic commitment012 is next. Actual positive campaign provenance, extended Snapshot12
 and host publication remain separate integration obligations.
 
 Checkpoint E: run lifecycle/recovery and paired-authorized-input checks. No hosting or public
