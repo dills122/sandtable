@@ -1000,7 +1000,7 @@ It preserves the nineteen-field root and creation bytes while adding typed Reser
 state slots. Full roots derive from trusted creation and complete causal history; identical histories
 must yield identical bytes across family interfaces. Runtime routing and disabled-admission restore
 remain later H gates; contract vectors do not prove those behaviors.
-H1 pre-cycle routing is under development. `CampaignCombatRetainedHistory` captures one bounded
+H1 pre-cycle routing is implemented and reviewed. `CampaignCombatRetainedHistory` captures one bounded
 owned Created11/event transcript; `CampaignCombatHistoryReplay` derives fixed causal partitions and
 invokes accepted readers through atomic first opening. Reserve membership is materialized already at
 stage-entry's terminal cut. Typed projections and exact retained buffers remain distinct from a

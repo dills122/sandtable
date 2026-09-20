@@ -25,7 +25,7 @@ G2 checkpoint: `b9cb26f`, `codex/combat-task008-breakdown-completion`,
 F1 checkpoint: `32e4e6d`, `codex/combat-task008-reaction-trigger`,
 [PR135](https://github.com/dills122/sandtable/pull/135), stacked on PR134.
 Active delivery branch: `codex/combat-task008-reaction-lifecycle`, based on reconciled main.
-Integration destination: main-based PR136; F2–F6/H0 accepted; H1 pre-cycle router active.
+Integration destination: main-based PR136; F2–F6/H0/H1 accepted; H2 Movement/Breakdown router next.
 Lead owns retained commits and PR; earlier stacked targets above describe historical publication.
 
 ## Objective and boundaries
@@ -60,7 +60,7 @@ No public activation or parent completion inferred from a codec slice.
 | 008F5 second Reaction move | F2 first participant cut; after F4 review | implementation subagent; lead integrates | two traces/two events/four cuts/10 artifacts;focused22/full2093/boundary81;dev+threeReadyreviews | Accepted; main-based PR136 |
 | 008F6 Reaction completion | F5; after F5 review | implementation subagent; lead integrates | two traces/six events/eight cuts/22 artifacts;focused24/full2104/boundary81;dev+threeReadyreviews | Accepted; main-based PR136 |
 | 008H0 literal inherited Snapshot12 contract | accepted B–G/019A and contract audit | implementation subagent; lead integrates | 368cuts/286histories/62sharedgroups;15predecessors;dev+threeReadyreviews;no runtimeclaim | Accepted; main-based PR136 |
-| 008H1 pre-cycle retained-history router | accepted H0; after remote recovery/final review4 | implementation subagent; lead integrates | one complete stream/actual causal readers/owned buffers/every pre-cycle prefix | Implementation active |
+| 008H1 pre-cycle retained-history router | accepted H0; after remote recovery/final review4 | implementation subagent; lead integrates | one complete stream/actual causal readers/owned buffers/every pre-cycle prefix | Accepted; focused53/full2157/boundary81; dev+three Ready and remote CI |
 | 008B–H, 019A | canonical dependency graph | unassigned | cumulative Core replay, full retained-history restore | Pending |
 | 009–025 | canonical gates | unassigned | cumulative gameplay/public/Runner/72-AC evidence | Pending |
 
@@ -152,3 +152,8 @@ Record exact commands, failures and totals in per-slice evidence; never count un
   128.583s passed; final freshreview4 Ready (ownoracle133.309s), exactheadCodeQL0alerts and allCI
   passed includingverify5m6s. H1pauseddrafts preserved, now resumes. No further H0 review budget.
   Total18accepted slices,54ordinary independent rounds plus1conditional finalround=55.
+
+- H1 accepted at d684be88d34c7b1e444aad6e173213efa647c2f5: dev review, three Ready independent
+  rounds, focused53/full2157/boundary81, build/format and exact-head CI pass. Review3 independently
+  ran53 focused tests and verified256vectors/208histories. Verify35490149139 SUCCESS; CodeQL106023656712
+  SUCCESS. Total19accepted slices/57ordinary rounds+1conditional finalround=58. H2 next.

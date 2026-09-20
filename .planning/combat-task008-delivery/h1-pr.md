@@ -20,6 +20,5 @@ bounds/forgery tests. H0 normaloracle and15predecessor oracles pass. H0 CodeQL c
 by a one-line constantstatus remedy, one bounded experiment and final independentreview4; exact-head
 CodeQL and CI passed. F2–F6/H0 earlier dev+three ordinary rounds retained.
 
-H1 is a frozen draft candidate: devreview/localgate passed; independent acceptance pending final
-required rounds and exact-head CI. Fullrootcodec/admissiondisabled H4, later009–025/publicactivation,
+H1 is accepted: dev review, all three independent rounds and exact-head CI passed at d684be8. Fullrootcodec/admissiondisabled H4, later009–025/publicactivation,
 all28runtime traces and HOST-PUB-001 durable publication remain open. One main-based PR.
