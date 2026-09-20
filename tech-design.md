@@ -991,6 +991,10 @@ opportunity handle over the sole rear-to-supply option, charges CP2→4, extends
 and preserves reactor route identity and suspended phasing continuation. Its own history-derived
 World guard rejects unsupported typed fields before bounded serialization. The Reaction window
 remains active; F6 owns subsequent completion, mandatory stop resolution and closure.
+F6 implements those three distinct events from actual second-move authority. Completion binds an
+empty move inventory and records the retained route; System resolution returns inactive Reaction,
+then System closure resumes the phasing route. All three preserve World, tracks, progress and RNG.
+Retries authenticate against each command's owner/System role before returning retained effects.
 Creation publication evaluation now targets an expected-head per-campaign commit batch. The
 [HOST-PUB-001 evidence allocation](docs/specs/combat-authority-envelope-v1.md#runtime-evidence-ownership)
 keeps actual atomic uniqueness, commit ambiguity and process-recovery proof open until provider
