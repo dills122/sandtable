@@ -12,6 +12,16 @@ namespace Cna.Core.Tests.Campaigns;
 
 public sealed class CombatHistoryReplayTests
 {
+    internal static IEnumerable<(CampaignCombatCreationRequest Request, byte[] Created, byte[][] Events)> SnapshotHistories()
+    {
+        foreach (var values in Cases())
+        {
+            var trace = Trace((ulong)values[0], (string)values[1], (bool)values[2]);
+            for (var cut = 0; cut <= (int)values[3]; cut++)
+                yield return (trace.Request, trace.Created.ToArray(), trace.Events.Take(cut).Select(bytes => bytes.ToArray()).ToArray());
+        }
+    }
+
     public static IEnumerable<object[]> Cases()
     {
         foreach (ulong seed in new ulong[] { 0, 1, 2, 3, 9, 16, 18, 33, 70, 74, 80, 81, 97, 141, 183, 12345, ulong.MaxValue })

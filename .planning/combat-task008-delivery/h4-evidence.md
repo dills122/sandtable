@@ -1,0 +1,35 @@
+# H4 literal inherited Snapshot12 evidence
+
+Baseca43442 acceptedH3code c5f8db3. Fiveprimarypaths perh4-dispatch. Rootacceptedprivate mapping
+of freshlyreplayed typedfamilycanonicalstate toordered19fieldroot; no callerJSON/cacheauthority.
+Actualrestore wiresexistingCreationCut.Decide, mandatoryretainedCreated beforefreshgeneration,
+RequiresPublication=false. Three tinytesthistoryenumerators reuseaccepted Trace/Cases.
+TDD/implementation active; nofullrestore/InitialHacceptanceclaim yet. Dev/fullgate/3reviews pending.
+
+RED /tmp/h4-focused-red.log exits1: missingCampaignCombatInheritedSnapshotV12Codec CS0103
+(and cascading xUnit overload diagnostic). Initialtest comparesall368rootrows over286exacthistories,
+restores eachwithadmissionfalse andcheckscreationbytes/completeledger/legacycreationreaderstrictness.
+
+WorkerfirstpositiveGREEN /tmp/h4-focused-green.log:all368literalroots/286histories/62sharedgroups
+exactbytes/length/hash anddisabledrestoreallcuts, exactC2creation/legacyreaderstrictness. Expanded
+negativesactive; testcorrection differentseedneededbecausebothReactionownersshareCreated/request.
+Rootdevsourcepassfoundnoblocker; requestedboundspre-historysentries andgenuinecanonicalforgeries.
+
+Devfinding: ValidateBounds dotjoinedpath allowedliteralrootproperty world.cohesionCauses toinherit
+4096exception instead ofordinary512. This cannotadmitbadroot (wholebyteslaterreject) butviolates
+pre-historybounds. Requested sentrynegative513itemsandstructuralparent/fieldcheckbeforefreeze.
+
+Finalfivepathfreeze11focusedpass14.930s. Rootdevboundsfindingresolved andregressionRED/GREEN
+verified; allothercode/tests reviewed. No remainingdevfinding. Fullbuildstarted; review1next.
+
+Round1 completed in fresh ephemeral read-only CLI session after collaboration spawn failed with
+agent thread limit. Ready, no actionable findings. Independently audited all368 roots/286 histories/
+62shared groups, prefix completeness and ledger facts; no dotnet while root suite active. CCE blocked
+by child approval policy; local source fallback disclosed. Historical plan/execution summaries seen,
+no prior reports. Root consumed full report and accepts residual scope; round2 fresh session started.
+Root full build and format passed. Full suite still running; no H4 acceptance yet.
+
+Round2 fresh ephemeral read-only CLI review Ready, no findings. Blind-first pass and independent
+fixture audit; no prior reports/aggregate ledger read. CCE approval unavailable disclosed. Root read
+complete report; accepts bounded residual risks. Full2244/0/0 and boundary81/0/0 pass; build/format
+pass. Publishing frozen candidate before third review; H4 acceptance remains pending round3 and CI.

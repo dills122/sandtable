@@ -11,6 +11,16 @@ namespace Cna.Core.Tests.Campaigns;
 
 public sealed class CombatReactionHistoryReplayTests
 {
+    internal static IEnumerable<(CampaignCombatCreationRequest Request, byte[] Created, byte[][] Events)> SnapshotHistories()
+    {
+        foreach (var values in Cases())
+        {
+            var trace = Trace((string)values[0], (string)values[1]);
+            for (var cut = 11; cut <= trace.Events.Length; cut++)
+                yield return (trace.Request, trace.Created.ToArray(), trace.Events.Take(cut).Select(bytes => bytes.ToArray()).ToArray());
+        }
+    }
+
     public static IEnumerable<object[]> Cases()
     {
         foreach (var side in new[] { "axis", "commonwealth" })

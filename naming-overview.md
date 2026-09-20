@@ -152,7 +152,8 @@ H1's `CampaignCombatRetainedHistory` and `CampaignCombatHistoryProjection` are i
 and typed replay results. `CampaignCombatHistoryReplay` derives causal family partitions from one
 retained stream. H2 adds typed Movement, MovementLifecycle and BreakdownCompletion projections
 under that same router. H3 adds corresponding typed Reaction projections; these names do not
-introduce a public restore endpoint or new service.
+introduce a public restore endpoint or new service. H4 adds `CampaignCombatInheritedSnapshotV12Codec`
+for literal inherited roots and retained restore; `CampaignCreationSnapshotV12Codec` stays creation-only.
 The [inherited Reaction-trigger packet](docs/specs/combat-inherited-reaction-trigger-v1.md) uses
 private `TriggerState`, retains `element-moved`4 and opens one identity-bound `ReactionWindow`.
 `ReactingPosition` suspends Movement; it is not a participant choice, move or window closure.

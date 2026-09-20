@@ -25,7 +25,7 @@ G2 checkpoint: `b9cb26f`, `codex/combat-task008-breakdown-completion`,
 F1 checkpoint: `32e4e6d`, `codex/combat-task008-reaction-trigger`,
 [PR135](https://github.com/dills122/sandtable/pull/135), stacked on PR134.
 Active delivery branch: `codex/combat-task008-reaction-lifecycle`, based on reconciled main.
-Integration destination: main-based PR136; F2–F6/H0/H1/H2/H3 accepted; H4 literal-root restore next.
+Integration destination: main-based PR136; F2–F6/H0/H1/H2/H3 accepted; H4 literal-root restore active.
 Lead owns retained commits and PR; earlier stacked targets above describe historical publication.
 
 ## Objective and boundaries
@@ -169,3 +169,5 @@ Record exact commands, failures and totals in per-slice evidence; never count un
 - H3 accepted atc5f8db3954a868ed47bd172e87242e5429d034ad:129focused+inventory1/full2233/
   boundary81/build/format,dev+threeReadyreviews. Exact-headverify35492219221 SUCCESS;
   CodeQL106029073591 SUCCESS. Total21accepted slices/63ordinary+1conditional=64reviews. H4next.
+
+- H4 worker dispatched fromca43442; fiveprimarypaths, scope/dispatch retained.

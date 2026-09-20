@@ -1007,7 +1007,9 @@ stage-entry's terminal cut. Typed projections and exact retained buffers remain 
 persisted full-root snapshot. H2 extends the same retained stream through ordinary Movement,
 mandatory stop/resolution/completion and Breakdown completion. H3 extends routing through
 Reaction trigger, participant, direct closure, fallback and second-move forks using existing strict
-readers. Literal full-root serialization and disabled-admission restore remain H4.
+readers. H4 is adding a separate inherited Snapshot12 codec that derives the nineteen-field root
+from this replay and verifies supplied bytes against retained history. Its restore path uses the
+existing creation-admission policy; creation-only readback remains strict.
 Creation publication evaluation now targets an expected-head per-campaign commit batch. The
 [HOST-PUB-001 evidence allocation](docs/specs/combat-authority-envelope-v1.md#runtime-evidence-ownership)
 keeps actual atomic uniqueness, commit ambiguity and process-recovery proof open until provider
