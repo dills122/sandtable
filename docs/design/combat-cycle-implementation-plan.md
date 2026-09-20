@@ -1,11 +1,11 @@
 # Combat and Cycle Combined Contract / Implementation Plan
 
-**Status:** Contract checkpoint B and dormant Tasks005–007 implemented. Task008 is in progress through merged children A0/A1a/A1b; A1c is next. Combat gameplay remains inactive.
+**Status:** Contract checkpoint B and dormant Tasks005–007 implemented. Task008 is in progress through merged children A0/A1a/A1b; A1c is implemented and independently reviewed on the current feature branch. Combat gameplay remains inactive.
 `CMB-PLAN-001` and POL-001–008 were accepted on 2026-09-06 at `a10a588`. Source and static Content
 work (`001`–`002`) is complete. Parent `003` is complete through the
 [authority-composition handoff](../specs/combat-authority-composition-v1.md). Checkpoint B closes through the
 [Task004C integration index](../specs/combat-outward-composition-v1.md). Task004A side contracts and Task004B occurrence, child and
-parent evidence are accepted with strict clock privacy and versioned round/settlement authority. Dormant Tasks005–007 and bounded Task008 children A0/A1a/A1b are implemented; A1c/A2/B–H and Tasks009–025 remain pending.
+parent evidence are accepted with strict clock privacy and versioned round/settlement authority. Dormant Tasks005–007 and bounded Task008 children A0/A1a/A1b are implemented; A1c is implemented and reviewed on the current feature branch; A2/B–H and Tasks009–025 remain pending.
 
 | Delivery layer | Current boundary | Next required outcome |
 | --- | --- | --- |
@@ -783,7 +783,7 @@ and exact Content7 fixture exist, but no active Combat capability is advertised.
 
 #### Task008 execution index
 
-Merge snapshot: local `origin/main` at `1d5e5f5`, 2026-09-19.
+Merge snapshot: base `e64bed9` (planning sync #123), 2026-09-19.
 
 Objective: implement canonical Combat creation, snapshot and inherited-history codecs with strict trusted restore. The [creation envelope](../specs/combat-authority-envelope-v1.md), [Snapshot12 composition](../specs/combat-snapshot-composition-v1.md) and [successor ownership](../specs/combat-inherited-successors-v1.md#bounded-implementation-ownership) own exact bytes and meanings. Status below is implementation and merge state, not public admission. Each pending child needs literal parity, malformed/forged/alternate-byte rejection, focused C# tests and predecessor compatibility evidence; the parent additionally needs full retained-history recovery with **fresh admission disabled**. No child alone closes that parent gate.
 
@@ -792,8 +792,8 @@ Objective: implement canonical Combat creation, snapshot and inherited-history c
 | `008A0` initial World7 codec/readback | 007 | 3 C# codec tests; 3,273-byte golden, altered-byte and noninitial rejection; `just check` 1,781 pass | Implemented; noninitial reader awaits causal families | Yes, `09734ff` (#118) |
 | `008A1a` dormant Rules10 manifest | A0 | Manifest C# test; 10,495-byte golden, Rules9 hash and source identity | Implemented; no gameplay registration | Yes, `5ad833a` (#119) |
 | `008A1b` Setup7/configuration codecs | A1a | Creation-input C# tests; 1,655/955-byte goldens, trusted binding, variants and canonical negatives; `just check` 1,788 pass | Implemented; request/Created11 still absent | Yes, `1d5e5f5` (#122) |
-| `008A1c` creation request and Created11 binding | A1b | Exact request/Created11 goldens, identity/retry conflicts, changed trusted artifact and raw-byte negatives | Pending, **next**; no runtime binder | No |
-| `008A2` Snapshot12 creation root/readback | A1c | Exact creation Snapshot12 golden; recompute from trusted request/Created11/World; disabled-admission readback and noninitial rejection | Pending; needs A1c | No |
+| `008A1c` creation request and Created11 binding | A1b | Exact request/Created11 goldens, identity/retry conflicts, changed trusted artifact and raw-byte negatives | Implemented and reviewed on `codex/combat-task008-creation-binding`; focused52/full1,840 pass, three independent rounds complete | No |
+| `008A2` Snapshot12 creation root/readback | A1c | Exact creation Snapshot12 golden; recompute from trusted request/Created11/World; disabled-admission readback and noninitial rejection | Pending, **next**; A1c accepted on feature branch | No |
 | `008B` preamble/sequence adapter | A2 | Versioned initiative/order/no-obligation/stage event parity, prior-prefix and old-reader negatives | Pending; needs creation root | No |
 | `008C` Weather adapter | B | Retained dice/RNG and source/context parity across replay cuts | Pending; needs preamble | No |
 | `008D` Reserve adapter | C | Designation/completion receipts, own history and no resource reset | Pending; needs Weather | No |
@@ -802,7 +802,7 @@ Objective: implement canonical Combat creation, snapshot and inherited-history c
 | `008G` Breakdown adapter | E | Stop/resolution/completion, BP/lot provenance and Combat-entry boundary | Pending; needs Movement | No |
 | `008H` noninitial Snapshot12 and full restore | B–G and `019A` first opening | Complete trusted event/receipt ledger, each causal cut and tamper/reorder/omission rejection; recover with fresh admission disabled | Pending; needs all required families and first opening | No |
 
-`019A` is the separately owned first-cycle-opening projector after `008D`; it must precede `008H` and the first predecessor-to-Combat integration test. B–G may need smaller PRs at the five-primary-file limit. No Task008 child is in progress in this local main snapshot. The three merged rows are ancestry-verified locally; remote freshness could not be checked during this sync.
+`019A` is the separately owned first-cycle-opening projector after `008D`; it must precede `008H` and the first predecessor-to-Combat integration test. B–G may need smaller PRs at the five-primary-file limit. A1c is the active feature-branch slice. The three merged rows are ancestry-verified against the base above.
 
 **Gate audit.** A1c→A2 is the immediate creation-binding path; B→C→D and D→E→F/G, then `019A`/H, provide the inherited replay path. The [creation contract](../specs/combat-authority-envelope-v1.md#creation-publication-and-recovery-contract) additionally asks Task008 to prove atomic uniqueness and lost-response behavior using actual persistence, while this plan's checkpoint D describes in-process recovery and [HOST-RSH-001](../research/orleans-publication-feasibility.md) leaves durable provider choice open. Before A2 or parent008 acceptance, the Core/host owners must pin the tested publication seam and its exact evidence boundary; A1c codec parity alone cannot satisfy publication or parent restore. Do not infer durable process restart from a memory CAS test.
 

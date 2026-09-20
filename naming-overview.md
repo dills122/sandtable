@@ -701,6 +701,10 @@ state built from certified Content7: original elements, map representations, cau
 distinct custody/guard/replacement/future-obligation records. Guard TOE transfer is not a new
 component or current balance on the donor. Exact validation precedes creation; Task008 owns
 canonical snapshot/history persistence, and gameplay activation remains later.
+**Creation Request1** fixes campaign identity, seed and trusted artifact selections before World
+construction. **Created11** carries the resulting dormant creation event; **Creation Binding** is
+its nonrecursive request-derived identity, not an event hash or public authority handle. Retry
+selection returns retained canonical bytes; it is not Chronicle publication.
 
 **Capability Point expenditure** is the exact amount already spent during the current Operation
 Stage; it is not a replenishing UI movement allowance. **Complete Movement** is a real player
