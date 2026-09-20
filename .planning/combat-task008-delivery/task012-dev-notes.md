@@ -10,3 +10,5 @@ Interim productiondiff reviewed afterliteralGREEN: meaningfulRED1failure1.203s a
 Independentread-only fixtureaudit fourfinaleffects: bothsides/bothfirstroles,version32→33,statuscommitted,rolecostdeltas5/3,ammo10→0both,RNGequalspriorandpreResultRandomState,singlehistory/use,step5notclosed. No neworacleexecution orfixturechange; priorfrozencontract pass retained.
 
 Final five-path development review complete: full production diff, all9Commit tests and narrowSeals update inspected. Requested noncostWorld rejection and changed-version recommit guards covered. Supplemental CP5/7 rebuilt through predecessor APIs; 17focused/55shared pass. No outstanding development finding. Fullsuite/format/Boundary and three independent reviews required before acceptance.
+
+Root Boundary filter correction: initial --filter-class *Boundary* passed17/0/0 1.095s /tmp/task012-boundary.log but was not repository gate. Re-read justfile22; exact --filter-trait Boundary=UserSpace now running at /tmp/task012-boundary-trait.log. No source change or hidden failure; retain both commands/evidence.

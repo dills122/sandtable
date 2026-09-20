@@ -1,0 +1,11 @@
+# Fresh Review Bootstrap
+
+Review instance 3 of3. Review only after accepted012 and frozen013 implementation; not an implementation authorization. Exact base/head/source pins supplied at dispatch. Read canonical Task013/checkpointF, active Result2 spec/schema/oracle, named production/test paths, then persist blind ledger before author/checks packets.
+
+Scope: authenticated initial→resolved Result2, atomic eight/nine ordered dice, retained rejection bytes, unchanged paid resources and singleton pending settlement. Reconstruct actual012 committed state from separately trusted Boundary/C3a/Round inputs and events. No caller cache or event.input self-authentication. Original configuration hash and supplemental round clock binding remain distinct. Strict raw grammar before context, UInt64 RNG, ownership and whole-byte causal readback required.
+
+Five material paths plus mechanical sixth fixture link: newResolution engine/models and codec, narrowObligations resolved-only factory, narrowIdentity Result2 grammar profile, newCombatResolutionTests, Cna.Core.Tests.csproj fixture link. Check legacy settlement constructor and default/C3a grammar unchanged; Result2 Route permission must not weaken C3a or allow LegacyBrokenVehicleLot. Typed pending World must preserve all paid preloss facts and null consequence receipts; no duplicate authority/cached byte drift.
+
+Expected evidence32literal resolveevents plus64 initial/resolved HASHcuts (not literal intermediate stateJSON). Eight/nine draws, rejected bytes and supplemental authenticated cursor30 block crossing. Overflow/discard/lostreply must preserve prior authority and retry original bytes without reroll. No later disposition/settlement/closure/public/HistoryReplay/Snapshot/hosttransaction claim.
+
+No priorreviews, aggregateevidence, worker/devnotes, researchproposal/rationale, executionhistory orCCE. AllCCEdisabled perprocess; no broad docs/reviews content search. Readonlysource/Git, writeonly own task013-review3-report.md. No fixes/commits/agents/newworkstreams/extrareviews. Root ownsacceptance. .NET clearance supplied atdispatch; nativeMTP --project/login:false/approvedIPC/unique binlogs, no --disable-build-servers on dotnet test. Closeallprocesses; findingsfirst/code+planassessment/claimreconciliation/exactchecks+limits/oneverdict.
