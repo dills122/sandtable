@@ -732,8 +732,10 @@ precompletion World/member authority while publishing cycle, position, prefix an
 within the private projection. This is not durable Chronicle publication.
 **Inherited MovementState1** adds chronological tracks, actual move-progress references and nullable
 Breakdown flow to full Reserve history. Move4 makes flow moving even without vehicles; **idle** requires
-an accepted stop/resolution pair. Ordered routes preserve revisits. Movement completion and its end
-proof remain distinct from Reserve completion and its receipt.
+an accepted stop/resolution pair. Ordered routes preserve revisits. **LifecycleState1** retains that
+moving history plus captured **interruptContext** and actual **MovementEndProof**. Movement completion
+and its proof receipt remain distinct from Reserve completion. Empty-cohort resolution is still a
+real System event; an idle cache cannot substitute for it.
 
 **Capability Point expenditure** is the exact amount already spent during the current Operation
 Stage; it is not a replenishing UI movement allowance. **Complete Movement** is a real player

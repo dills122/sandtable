@@ -16,7 +16,9 @@ D2 checkpoint: `fa5e723`, `codex/combat-task008-reserve-completion`,
 [PR130](https://github.com/dills122/sandtable/pull/130), stacked on PR129.
 019A checkpoint: `ba58c43`, `codex/combat-task019a-first-opening`,
 [PR131](https://github.com/dills122/sandtable/pull/131), stacked on PR130.
-ActiveE1 branch: `codex/combat-task008-inherited-movement`, based on019A checkpoint.
+E1 checkpoint: `e641bd3`, `codex/combat-task008-inherited-movement`,
+[PR132](https://github.com/dills122/sandtable/pull/132), stacked on PR131.
+ActiveE2/G1 branch: `codex/combat-task008-movement-lifecycle`, based on E1 checkpoint.
 Integration destination: reviewed feature branch; lead owns retained commits and PR.
 
 ## Objective and boundaries
@@ -42,7 +44,7 @@ No public activation or parent completion inferred from a codec slice.
 | 008D2 completion codec | D1 | implementation internal subagent;lead integrates | 16chains48fingerprints;focused44/full1989;dev+threeReadyrounds | Accepted; feature-branchcheckpoint |
 | 019A first opening | D2 | implementation subagent; lead integrates | 16traces40cuts152artifacts;focused67/full2012;dev+threeReadyrounds | Accepted; feature-branchcheckpoint |
 | 008E1 ordinary Move4 |019A| implementation subagent;lead integrates | twoowners14moves16cuts48artifacts;focused31/full2020;dev+threeReadyreviews | Accepted; feature-branchcheckpoint |
-| 008E2/G1 route lifecycle |E1| unassigned | ownerstop,Systemresolution,Movementcompletion actualhistory | Pending |
+| 008E2/G1 route lifecycle |E1| implementation subagent;lead integrates | 8traces24events32cuts88artifacts;focused20/full2032;dev+threeReadyreviews | Accepted; feature-branchcheckpoint |
 | 008G2 Breakdown completion |E2/G1| unassigned | actualCombatentry | Pending |
 | 008B–H, 019A | canonical dependency graph | unassigned | cumulative Core replay, full retained-history restore | Pending |
 | 009–025 | canonical gates | unassigned | cumulative gameplay/public/Runner/72-AC evidence | Pending |
@@ -87,3 +89,5 @@ Record exact commands, failures and totals in per-slice evidence; never count un
 - D2 PR130 remote verify, dependency-review and observational offline links passed during019A work.
 
 -019A PR131 remote verify, dependency-review and observational offline links passed duringE1 work.
+
+- E1 PR132 remote verify, dependency-review and observational offline links passed during E2/G1 work.
