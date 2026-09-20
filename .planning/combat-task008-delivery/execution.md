@@ -4,7 +4,9 @@ Initial base: `e64bed9` (merged planning PR #123). A1c checkpoint: `a8eed35`,
 `codex/combat-task008-creation-binding`, [PR124](https://github.com/dills122/sandtable/pull/124).
 A2 checkpoint: `b67b4f9`, `codex/combat-task008-creation-snapshot`,
 [PR125](https://github.com/dills122/sandtable/pull/125), stacked on PR124.
-Active B1 branch: `codex/combat-task008-opening-preamble`, based on A2 checkpoint.
+B1 checkpoint: `22f8da6`, `codex/combat-task008-opening-preamble`,
+[PR126](https://github.com/dills122/sandtable/pull/126), stacked on PR125.
+Active C branch: `codex/combat-task008-weather`, based on B1 checkpoint.
 Integration destination: reviewed feature branch; lead owns retained commits and PR.
 
 ## Objective and boundaries
@@ -24,7 +26,8 @@ No public activation or parent completion inferred from a codec slice.
 | 008A1c independent rounds 1–3 | dev review, fixes serially | fresh-context reviewers | separate bootstrap/author/report per round | Round1 Ready; round2 P2 accepted/fixed with RED/GREEN; round3 Ready; accepted |
 | 008A2 | A1c accepted | implementation internal subagent; lead integrates | focused34/full1874 pass; dev review plus three Ready independent rounds; publication obligation explicitly open | Accepted; feature-branch checkpoint |
 | 008B1 | A2 | implementation internal subagent; lead integrates | six frozen traces/30cuts, focused12/full1886 pass; dev+three Ready independent rounds | Accepted; feature-branch checkpoint |
-| 008C → B2 → D | B1 | unassigned | actual Weather before stage-entry; complete state10 history before Reserve | Pending |
+| 008C Weather | B1 | implementation internal subagent; lead integrates | 34chains/68cuts, focused42/full1928 pass; dev+three Ready review rounds | Accepted; feature-branch checkpoint |
+| 008B2 → D | C | unassigned | actual Weather before stage-entry; complete state10 history before Reserve | Pending |
 | 008B–H, 019A | canonical dependency graph | unassigned | cumulative Core replay, full retained-history restore | Pending |
 | 009–025 | canonical gates | unassigned | cumulative gameplay/public/Runner/72-AC evidence | Pending |
 
@@ -54,3 +57,5 @@ Record exact commands, failures and totals in per-slice evidence; never count un
 - B parent split into opening B1 and stage-entry B2; Weather C must run between them. Canonical
   opening terminal is state5; stage-entry requires actual C replay tostate6. This is a compatible
   execution refinement, not a wire-contract change or synthetic predecessor admission.
+
+- B1 PR126 remote verify, dependency-review and observational offline links passed during C work.
