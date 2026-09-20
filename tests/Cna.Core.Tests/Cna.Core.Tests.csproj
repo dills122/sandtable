@@ -97,6 +97,17 @@
       Include="../../docs/specs/fixtures/combat-inherited-breakdown-completion-v1.json"
       Link="Campaigns/Fixtures/combat-inherited-breakdown-completion-v1.json"
       CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../../docs/specs/fixtures/combat-inherited-reaction-lifecycle-v1.json" Link="Campaigns/Fixtures/combat-inherited-reaction-lifecycle-v1.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../../docs/specs/fixtures/combat-inherited-reaction-closure-v1.json" Link="Campaigns/Fixtures/combat-inherited-reaction-closure-v1.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../../docs/specs/fixtures/combat-inherited-reaction-active-fallback-v1.json" Link="Campaigns/Fixtures/combat-inherited-reaction-active-fallback-v1.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../../docs/specs/fixtures/combat-inherited-reaction-second-move-v1.json" Link="Campaigns/Fixtures/combat-inherited-reaction-second-move-v1.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../../docs/specs/fixtures/combat-inherited-reaction-movement-completion-v1.json" Link="Campaigns/Fixtures/combat-inherited-reaction-movement-completion-v1.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../../docs/specs/fixtures/combat-inherited-snapshot-v1.json" Link="Campaigns/Fixtures/combat-inherited-snapshot-v1.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../../docs/specs/fixtures/combat-inherited-selection-v1.json" Link="Campaigns/Fixtures/combat-inherited-selection-v1.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../../docs/specs/fixtures/combat-selection-steps-v1.json" Link="Campaigns/Fixtures/combat-selection-steps-v1.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../../docs/specs/fixtures/combat-sealed-round-v2.json" Link="Campaigns/Fixtures/combat-sealed-round-v2.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../../docs/specs/fixtures/combat-result-settlement-v2.json" Link="Campaigns/Fixtures/combat-result-settlement-v2.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../../docs/specs/fixtures/combat-inherited-no-attack-v1.json" Link="Campaigns/Fixtures/combat-inherited-no-attack-v1.json" CopyToOutputDirectory="PreserveNewest" />
     <Using Include="Xunit" />
     <None Include="../../docs/specs/fixtures/combat-inherited-reaction-trigger-v1.json" Link="Campaigns/Fixtures/combat-inherited-reaction-trigger-v1.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>

@@ -977,6 +977,46 @@ opposing Reaction opportunity. It derives adjacency before eligibility, retains 
 opportunity identities and the suspended symbolic Movement position, and carries the same phasing
 route through Reacting/ResumeRoute flow. New bounded types support Move4 without weakening legacy
 materialized-position guards; current World serialization rederives and checks actual history.
+F2 continues actual trigger history through reactor movement, participant completion, explicit empty
+stop resolution and no-eligible closure. Commands bind public handles derived from complete current
+move options; those handles differ from persisted authority IDs. Only reactor movement adds material
+progress. Closure resumes the exact suspended phasing route after resolution, preserving RNG.
+F3 adds direct owner decline and reason-specific System unavailable/timeout from the actual inactive
+F1 window. One close resumes the phasing route without a reactor stop or changes to World/resources;
+F4 active-participant fallback closes the window into a reason-specific `ReactorStopClosed`,
+then requires System empty-stop resolution before resuming that same phasing route. No fallback
+event changes World resources or material progress; Core introduces no clock or scheduler.
+F5 derives the second reactor move from actual F2 first-move history. It rotates the public
+opportunity handle over the sole rear-to-supply option, charges CP2→4, extends the existing track,
+and preserves reactor route identity and suspended phasing continuation. Its own history-derived
+World guard rejects unsupported typed fields before bounded serialization. The Reaction window
+remains active; F6 owns subsequent completion, mandatory stop resolution and closure.
+F6 implements those three distinct events from actual second-move authority. Completion binds an
+empty move inventory and records the retained route; System resolution returns inactive Reaction,
+then System closure resumes the phasing route. All three preserve World, tracks, progress and RNG.
+Retries authenticate against each command's owner/System role before returning retained effects.
+The accepted [H0 inherited Snapshot12 contract](docs/specs/combat-inherited-snapshot-v1.md) defines368selected retained cuts.
+It preserves the nineteen-field root and creation bytes while adding typed Reserve/inherited-cycle
+state slots. Full roots derive from trusted creation and complete causal history; identical histories
+must yield identical bytes across family interfaces. H1–H4 now provide runtime routing and disabled-admission restore for these selected cuts;
+contract vectors alone were not treated as proof of those behaviors.
+H1 pre-cycle routing is implemented and reviewed. `CampaignCombatRetainedHistory` captures one bounded
+owned Created11/event transcript; `CampaignCombatHistoryReplay` derives fixed causal partitions and
+invokes accepted readers through atomic first opening. Reserve membership is materialized already at
+stage-entry's terminal cut. Typed projections and exact retained buffers remain distinct from a
+persisted full-root snapshot. H2 extends the same retained stream through ordinary Movement,
+mandatory stop/resolution/completion and Breakdown completion. H3 extends routing through
+Reaction trigger, participant, direct closure, fallback and second-move forks using existing strict
+readers. Accepted H4 adds a separate inherited Snapshot12 codec that derives the nineteen-field root
+from this replay and verifies supplied bytes against retained history. Its restore path uses the
+existing creation-admission policy; creation-only readback remains strict. Exact368root vectors
+and disabled-admission restore pass for all286selected histories. Initial H Core codec/replay gate
+is complete; later authority families must extend this evidence.
+Task009A adds dormant inherited admission assessment over actual completed G2 history. It
+binds original unit/component identity separately from current representation and location, and
+writes the existing inherited AdmissionBoundary for the four supported empty-candidate histories.
+Positive certification and opportunity-v2 mechanics remain009B; selection and sealed-round
+admission remain010–011. These internal values create no public actions or new events.
 Creation publication evaluation now targets an expected-head per-campaign commit batch. The
 [HOST-PUB-001 evidence allocation](docs/specs/combat-authority-envelope-v1.md#runtime-evidence-ownership)
 keeps actual atomic uniqueness, commit ambiguity and process-recovery proof open until provider
@@ -1111,3 +1151,77 @@ The implemented paired comparison does not block that engine work.
 [2]: https://learn.microsoft.com/en-us/aspnet/core/grpc/performance?view=aspnetcore-10.0 "Performance best practices with gRPC | Microsoft Learn"
 [3]: https://learn.microsoft.com/en-us/aspnet/core/grpc/deadlines-cancellation?view=aspnetcore-10.0 "Reliable gRPC services with deadlines and cancellation | Microsoft Learn"
 [4]: https://learn.microsoft.com/en-us/aspnet/core/grpc/json-transcoding?view=aspnetcore-10.0 "gRPC JSON transcoding in ASP.NET Core gRPC apps | Microsoft Learn"
+
+Task009B implements a separate trusted-facts predicate for the frozen initial C3a infantry
+profile. It checks every reachable selected result and retreat/custody support before producing
+a provisional Candidate. The actual inherited G2 admission remains empty. Candidate serialization
+and the pure opportunity-v2 digest bind values;010/011 retain responsibility for authenticated
+selection/decline/Base2 and final opportunity admission. No costs, RNG or events publish here.
+
+Task010A extends actual retained G2 histories with empty selection and six no-attack steps.
+Selection and traversal each reconstruct complete predecessor evidence; cached Controls cannot
+authorize events. Arrival at same-slot Reserve Release preserves World/RNG and releases nothing.
+Timed C3a controls and generic routing are separate010B/010C gates; new Snapshot12 persistence
+is not implied by fragment readback.
+
+Task010B implements the dormant C3a timed selection and RBA mechanism over an independently
+trusted Boundary and separately authenticated input history. Replay compares every event with
+that trusted tuple; event payloads cannot supply their own actor or clock authority. The exact
+retained C2 creation profile remains pinned. Selection and RBA deadlines retain the historical
+high-water policy, while later Round2 uses its separately versioned public opening floor.
+Exact Command retries check actor separately and recover original bytes; stale timer callbacks
+are no-ops, and cancelled paths perform no attack or resource mutation. Positive continuation
+stops at Force Assignment pending Task011. This verified dormant mechanism supplies
+no actual positive-history adapter, public action, durable publication or extended Snapshot12.
+
+Task010C extends generic retained-history replay through actual empty selection and no-attack
+traversal. Successor admission receives an exact completed G2 prefix, so recursive predecessor
+validation terminates before the successor tail. Closed typed projections expose cumulative owned
+receipts without changing local Control bytes. Every trailing event is consumed or rejected;
+synthetic timed C3a events remain outside this actual-history route. Snapshot12 explicitly rejects
+new projections until a separately specified root extension exists.
+
+Task011 implements dormant Round2 private seals over a separately authenticated C3a predecessor
+and separately trusted round inputs. Supplemental configuration binds the public opening-floor
+clock policy without rewriting original Config1. Both slots retain role order; an opponent seal
+cannot raise the opening floor or alter the waiting owner's admission outcome. Exact retries
+recover retained bytes before clock/status gates, while malformed own proposals reject before
+cancellation. Prepared continues through Force Assignment and empty Anti-Armor; cancellation
+closes without costs or RNG. Atomic commitment remains Task012. This mechanism does not supply
+positive campaign provenance, public observation, host publication or a new Snapshot12 family.
+
+Task012 adds dormant atomic Round2 commitment at Prepared Close Assault entry. Both role costs
+(CP5/3 and ammunition10 each), directional attack history and segment target use enter one
+immutable result with one event/head update; RNG and structural position remain unchanged.
+Original Base2 retains pre-use eligibility, while current typed World records paid balances.
+Exact retries recover original bytes after ammunition reaches zero without recharging. Core
+candidate discard/replay demonstrates local atomicity; durable host publication remains separate.
+Result, mandatory settlement and Close Assault completion remain later gates.
+
+Task013 adds dormant Result2 resolution over an independently replayed paid Round2 commitment.
+The result retains every consumed RNG byte, including rejected values, and eight ordered dice
+plus a capture die only when required. One immutable candidate carries result, final cursor,
+pending settlement World and event/head update. Both roles use paid pre-loss facts; resolution
+applies no further resource debit or consequence. A named Result2 settlement factory derives
+hashed identities while preserving legacy constructor checks. Its named grammar profile allows
+semantic Route arrays without changing C3a syntax. Exact retries recover the original result;
+overflow or discarded publication leaves retained authority unchanged. This is Core candidate
+atomicity; host durability, actual positive campaign history and settlement remain later gates.
+
+Task014 extends dormant Result2 through mandatory retreat disposition, simultaneous losses and
+retreat settlement. Required retreat opens an independent owner window under original Config1;
+local deadline and high-water govern that window while a separate maximum records audit time.
+Losses and captures use both original paid participants, then project typed World consequences
+and pending custody lots at their pre-loss origin. Actual evacuation updates element and
+representation together, permits mandatory CP beyond ten with incremental cohesion cost, and
+grants capped attacker victory relief. Immutable settlement appends validate identity and stage;
+serialization checks status/window/receipt agreement and the full allowed World projection.
+Custody decisions and relationship/round closure remain subsequent gates.
+
+Task015 extends dormant Result2 through guarded custody or immediate escape entitlement. Positive
+captured lots open an independent Config1 window owned by their actual captor. Accepted retreat
+timestamps cannot constrain its local clock. Guard creation transfers one TOE and inherits current
+post-retreat donor resources; escape retains original identity and quantity with a twelve-stage
+training-gated entitlement, without restoring TOE. Typed projection and canonical serialization
+retain guard provenance and future upkeep/training obligations. No future duty executes here;
+relationships, round closure and Close Assault completion remain Task016.

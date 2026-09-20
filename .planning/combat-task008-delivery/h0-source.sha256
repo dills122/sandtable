@@ -1,0 +1,4 @@
+15c6b9d1922c150e0dc1e845e40730f65835e3236c42f110c390663431ed492b  docs/specs/combat-inherited-snapshot-v1.md
+0aa314b547fbb13816b518dedf8b7534331384baffdd5348fa82c1b211c1a810  docs/specs/combat-inherited-snapshot-v1.schema.json
+9dab9b8f72c3643fd50c62fd6e97335e5bc719ad1f61f4a15a910597224c862f  docs/specs/fixtures/combat-inherited-snapshot-v1.json
+82e88a8f4f7a256c5519cebdadfc4cac78639edfad77169d543bb440b01b0fd6  docs/specs/verify-combat-inherited-snapshot-v1.py

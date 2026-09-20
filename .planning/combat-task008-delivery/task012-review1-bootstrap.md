@@ -1,0 +1,11 @@
+# Fresh Review Bootstrap
+
+Review instance: 1 of3. Repo /Users/dsteele/repos/sandtable; branch codex/combat-task008-reaction-lifecycle. Base/head/source pins supplied at dispatch. No review before accepted011 and012 implementation freeze.
+
+Review dormant atomic commitment against canonical Task012, active sealed-round-v2 spec/schema/oracle and costs/opportunity design. Five primary paths: three SealedRound files, newCombatCommitTests and narrowCombatSealsTests update. Frozen commitment changes both CP ledgers5/3 and ammo10→0 with one commitment/event/receipt, directional attackHistory and segment targetUse; RNG unchanged, step5notclosed. Exact retry must recover original bytes without charging twice; original authenticated eligibility supports paid-state readback after ammo0. No public/actualpositivehistory/Snapshot/result/settlement continuation or hosttransaction claim. Dormant candidate discard/replay proof must be labeled honestly.
+
+Reconstruct authority from independently trusted Boundary and separate010B/Round input histories; event.input cannot authenticate itself. Base stays original pre-use evidence while typed currentWorld reflects atomic debit. No precommit cache or rehashed committed state can replace replay. Fournewcommit events/states complete full58events68cuts; prior54/64 remains regression scope. Test literalbothsides/bothorders, cumulativeCP5/7ceilings, rolecosts/proofs, forged/missing inputs, no partialmutation, response-loss retries, currentWorld serialization and rawgrammar beforetrustedcontext.
+
+Blind code/tests/canonicalplan first; persist preliminary ledger in task012-review1-report.md before task012-author.md/checks.md. Do not read priorreports,aggregate evidence,worker/devnotes,proposal rationale,executionhistory orCCE. CCEdisabledperprocess; restrict content searches to named canonical/source/test paths, excluding broad docs/reviews searches. Readonlysource/Git, writeonlyownreport. No fixes/commits/agents/newworkstreams/extrareviews. Root ownsbudget/acceptance.
+
+.NET clearance and exactverification supplied at dispatch. NativeMTP --project/login:false/approvedIPC/uniquebinlogs; no --disable-build-servers on dotnet test. Closeallprocesses. Findingsfirst, code+planassessment, claimreconciliation, exactchecks/limits and oneverdict.

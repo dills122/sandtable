@@ -134,7 +134,27 @@ The [inherited no-attack packet](docs/specs/combat-inherited-no-attack-v1.md) ne
 unchanged and uses its own `Control` projection plus six `combat-step-completed`2 receipts. Outer
 closure means structural arrival at Reserve Release; it does not rename or perform Reserve Release.
 Task008 F1 implements the bounded trigger with persisted Reaction identities; public capability handles
-belong to later participant admission. The [inherited Reaction-trigger packet](docs/specs/combat-inherited-reaction-trigger-v1.md) uses
+belong to participant admission. F2 keeps `reacting-element-moved`3,
+`reaction-participant-completed`3, `breakdown-stop-resolved`2 and `reaction-window-closed`3
+as distinct causal events; completing a participant does not close its window. F3 direct closure
+uses the same close3 family for player decline, scripted-unavailable and timeout, with reason derived
+from command kind; direct closure creates no reactor stop. F4 active fallback instead records
+`reactor-stop-closed` with `reaction-unavailable` or `reaction-timeout`, and a distinct
+`breakdown-stop-resolved`2 resumes phasing Movement. F5 retains `reacting-element-moved`3 for
+the second reactor move; its existing route stays open and its track extends to supply.
+F6 then retains explicit completion3, stop resolution2 and noeligible closure3; only closure
+resumes phasing Movement, and resolved opportunity IDs differ from the empty closed-ID list.
+The accepted [inherited Snapshot12 contract](docs/specs/combat-inherited-snapshot-v1.md) defines literal retained roots.
+Its `reserve-designation` and `inherited-cycle` tags describe typed `cycleState` arms;
+`InheritedCommandReceipt` names the existing preamble receipt grammar. These are persisted data
+shapes, not new services or public actions. Accepted H4 provides bounded Initial H runtime restore; later families retain their own gates.
+H1's `CampaignCombatRetainedHistory` and `CampaignCombatHistoryProjection` are internal evidence
+and typed replay results. `CampaignCombatHistoryReplay` derives causal family partitions from one
+retained stream. H2 adds typed Movement, MovementLifecycle and BreakdownCompletion projections
+under that same router. H3 adds corresponding typed Reaction projections; these names do not
+introduce a public restore endpoint or new service. H4 adds `CampaignCombatInheritedSnapshotV12Codec`
+for literal inherited roots and retained restore; `CampaignCreationSnapshotV12Codec` stays creation-only.
+The [inherited Reaction-trigger packet](docs/specs/combat-inherited-reaction-trigger-v1.md) uses
 private `TriggerState`, retains `element-moved`4 and opens one identity-bound `ReactionWindow`.
 `ReactingPosition` suspends Movement; it is not a participant choice, move or window closure.
 The [inherited Reaction-lifecycle packet](docs/specs/combat-inherited-reaction-lifecycle-v1.md) uses
@@ -185,6 +205,10 @@ richer first-cycle envelopes. “Expired exception” means the exact D2b.2 proj
 one-cycle authority to that accepted completion receipt; it does not mean Breakdown ran.
 These projections are not Snapshot12. Chronicle retains the
 accepted events; the future Archives reader must reconstruct and validate their complete chain.
+Task009A introduces `CampaignCombatParticipant`, `CampaignCombatCandidateAssessment` and
+`CampaignCombatAdmissionBoundary` as internal identity/assessment values. `CampaignCombatCertification`
+derives supported inherited admission from replay; binding a participant alone does not certify
+combat eligibility. No new service or public capability is introduced.
 
 The prospective [cycle-control contract](docs/specs/combat-cycle-control-v1.md) uses
 `movement-combat-cycle-repeated` for closing one occurrence and opening the next Movement in the
@@ -944,3 +968,17 @@ And there's a nice **authority hierarchy** underneath all the flavor:
 That could practically become Sandtable's architectural motto.
 
 Of all these, I'd lock in **Sandtable / Umpire / Maproom / Staff / Command / Dispatch / Signals / Chronicle / Archives / Quartermaster / Theater / ORBAT / War College**. They feel cohesive rather than like we've randomly assigned military words to microservices.
+
+Task009B adds the frozen provisional `CampaignCombatCandidate` value.
+`CertifyInitialProfileFacts` names its caller-trusted provenance explicitly; it does not authenticate
+a positive history. `CalculateOpportunityId` is the pure Round2 identity calculation, whose
+inputs require later selection and Base2 admission.
+
+`CampaignCombatInheritedSelection` owns actual empty selection;
+`CampaignCombatInheritedNoAttack` owns its six structural completions. Their immutable local
+Control states remain distinct: traversal retains selection unchanged and owns terminal closure.
+
+`CampaignCombatSelectionSteps` names the dormant timed C3a mechanism. Its
+`ReplayTrustedBoundary` and `ApplyTrustedBoundary` APIs make caller provenance explicit;
+`CombatStepsInput` carries separately authenticated actor/time, and `CombatStepsControl` is
+derived replay state. These types do not imply live campaign admission or publication.

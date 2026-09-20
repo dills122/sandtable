@@ -1,0 +1,9 @@
+# Task014 author explanation
+
+Base6ee5980 after accepted013. Six physical paths: Resolution state/engine, ResolutionCodec, Obligations, new LossRetreat helper/tests, narrow prior Resolution test cutoff. Full01332event/64hash evidence retained. Scope extends authenticated independent Boundary/C3a/Round/Result tuples through retreat only; no arbitrary supplied state becomes Apply authority.
+
+Context retains original authenticated creation/configuration and owned paid World. Required retreat opens independently from prior audit/private maxima; local exclusive deadline/high-water controls accepted intent. Shape/owner checks precede lost-clock fallback; exact retry precedes stale status/time checks. Accepted disposition cannot be displaced by late callbacks. Lost/overflow opening deterministically refuses; normal opening uses original Config1.
+
+Immutable hashed settlement append methods enforce derived identity, receipt chain and exact stage, preserving legacy constructor behavior. Projection derives both roles' losses from original paid participants, records pending captives at original victim location, then applies mandatory evacuation to element/representation with CP10-to11/incremental DP and actual-retreat-only capped victory RP. Current typed World must equal complete allowed projection. No cached JSON authority or dropped unrelated-field checks. Explicit status/window/receipt-stage check rejects swapping an earlier World into later state.
+
+Cumulative proof144 literal events/176 state-hash cuts across32 contexts, not literal intermediate JSON. Supplemental20 openings/56 owner choices, capture/loss conservation, all retained-cut retries/discard, rehashed payload/World forgery, raw-before-context and ownership tests. Custody/relationships/closure/CA remain rejected. Core candidate atomicity is not host durability; actual positive campaign history, extended Snapshot12, HOST-PUB-001 and public activation remain open.

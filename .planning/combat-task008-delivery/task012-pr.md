@@ -1,0 +1,5 @@
+Dormant Combat delivery now includes atomic commitment after both private seals and Prepared proof. One immutable result records CP5/3, ammunition10 each, directional attack history and segment target use without drawing RNG. Original eligibility supports paid-state readback; exact retries recover original bytes without charging again.
+
+Task012 accepted at8fcf8b9:58 literal events/68 state cuts,17 focused and55 shared tests; full2,301/0fail/0skip, Boundary81, build0warnings/errors, formatting and exact-commit CI pass. Development review and three sequential fresh independent reviews all Ready. Third reviewer independently rebuilt and passed17focused+84shared tests and frozen oracle. Core discard/retry evidence is not host transaction proof.
+
+Prior F2–F6/H0–H4/009A/B/010A/B/C/011 accepted in this main-based draft. Task013 result/cursor is next. Actual positive campaign provenance, extended Snapshot12, HOST-PUB-001, mandatory settlement, public activation and025 acceptance closure remain open. No merge requested.

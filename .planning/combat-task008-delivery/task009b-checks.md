@@ -1,0 +1,20 @@
+# Task009B verification facts
+Base652c49a; workingcandidate frozenbytask009b-source.sha256. Allworkerprocessesclosed.
+TDDREDmissingAPIs exit1; firstGREEN11/0/0,11.838s. ExpandedcompiletypoReserveI corrected;
+expanded14/0/0,12.713s, finalhostile14/0/0,12.389s, capacity14/0/0,12.606s.
+Final formattedsource14/0/0,12.331s /tmp/task009b-frozen.log;
+binlogs074107--12904--oI0f1Y and074111--12904--8Lxs2T-dotnet-test.
+Scoped fullformat/verify exit0; diffcheckclean. See worker-evidence exactcommands.
+Root devreview allfivepaths and canonicalcontracts, no confirmedremainingfinding.
+Root build0warnings/errors4.21s /tmp/task009b-build.log;
+/tmp/task009b-build-20260920-074306--12978--aCW1cr.binlog.
+Root fullsuite/fullformat active; boundary/freshreviews/remoteCI pending. No acceptanceclaim.
+Candidate committed0f3ec7b3714686ec669624a9462d0618d38003d4, samefivehashes.
+Root fullformat process observedexit0 /tmp/task009b-format-full.log. Fullsuite active.
+Root fullsuite2258/0/0,7m03s732 exit0 /tmp/task009b-suite.log; Core7m03s565,
+Runner3m26s814,Contracts724ms. Boundary startedonlyaftersuiteclosed.
+Boundary81/0/0,10.055s exit0 /tmp/task009b-boundary.log. Allroot.NETclosed, markerclearedreviewer.
+Exact0f3ec7b CI35497694392SUCCESS; CodeQL106043731184SUCCESS/all4languageanalyses,
+dependency andoffline links passed. Rootobservedremoteconclusion. No sourcechanges.
+
+Finalsource unchangedat0f3ec7b. Rootdev/alllocalandremoteverificationcomplete.
