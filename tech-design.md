@@ -1253,3 +1253,15 @@ admission remain separate Task017 children; historical Result1 fixture rows are 
 Task017A1 acceptance:44isolated base hashes, full2,337/Boundary81, clean build/format, three fresh
 Ready reviews and exact-candidate CI. [Evidence](.planning/combat-task008-delivery/task017a1-evidence.md)
 distinguishes base validation from later Release lifecycle and actual campaign provenance.
+
+
+Task017A2 adds a dormant isolated Release lifecycle over independently retained base/request and
+separately admitted input/event history. Apply reconstructs prior state by replay; no imported
+state object authorizes a transition. Opening fixes one queue and Config budget. First-I fallback
+converts unresolved members; later-II fallback retains them in one completion. Receipt hashes are
+computed before projecting receipt-linked conversion/release history. Completion stays at Release.
+State readback validates raw shape before context and compares the complete replay-derived bytes.
+Initial-base validation remains distinct from converted-II and pending-exception lifecycle states.
+The implementation matches44isolated traces/132event hashes/176state cuts/two terminal literals;
+acceptance checks and fresh reviews remain pending. Native settled adapters, actual positive lineage,
+World projection, Movement execution, public admission and parent017 completion remain separate gates.
