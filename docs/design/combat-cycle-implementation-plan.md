@@ -947,15 +947,15 @@ isolated mechanism evidence from actual campaign provenance.
 | Child | Bounded output and proof | Dependency / status |
 | --- | --- | --- |
 | `017A1` | Immutable Release scope/history/exception/member/base values and independently expected-base canonical codec. Exactly44 isolated frozen base hashes; zero transition/event/state proof. Four source/test paths plus this root-owned plan; no lifecycle or World adapter. | 016; accepted at `77ef166` after full2,337/Boundary81, clean build/format, dev review, three fresh Ready reviews and exact CI; [evidence](../../.planning/combat-task008-delivery/task017a1-evidence.md) |
-| `017A2` | Native Release lifecycle, state/event codecs, timers, canonical dispositions, conversion/retention fallback, retry and explicit completion. Target132 event hashes/176 state hashes/2 literal terminal events from44 isolated rows. Exact manifest must fit or split before edits. | AcceptedA1; dispatched2026-09-21 on `codex/combat-reserve-release-lifecycle`; [exact manifest](../../.planning/combat-task008-delivery/task017a2-dispatch.md), implementation and acceptance pending |
+| `017A2` | Native Release lifecycle, state/event codecs, timers, canonical dispositions, conversion/retention fallback, retry and explicit completion. Target132 event hashes/176 state hashes/2 literal terminal events from44 isolated rows. Exact manifest must fit or split before edits. | AcceptedA1; accepted at `a4b4f63` after full2,347/Boundary81, clean build/format, dev review, three fresh Ready reviews (third full rebuild) and exact CI; [evidence](../../.planning/combat-task008-delivery/task017a2-evidence.md) |
 | `017B` | Actual retained Result2-to-empty-Release adapter across32 selected contexts;64 native event literals and independently replayed native cuts. Preserve resources/history/future duties and separate hash domains. | AcceptedA2/016; not dispatched |
 | Positive prerequisite and bridge | Separately implement/certify held-I no-move3h predecessor, then positive3i Release bridge; current inherited Movement requires moves and rejects held Reserve. Later-II/consumed actual campaign lineage also remains to be demonstrated. | Exact bounded manifest required; not dispatched |
 
 Four historical settled Result1 fixture rows remain historical evidence, excluded from A1/A2's44
 isolated claim. Current World7 and Result2 are not weakened to admit old occurrence identities.
 Parent017 remains open until required lifecycle, native adapters and positive provenance pass;
-private codec/kernel or empty bridge alone cannot close it. [A2 API handoff](../../.planning/combat-task008-delivery/task017a2-api-handoff.md) records current types and separate initial-base/state validation; it does not authorize implementation. No automatic A2 dispatch, Snapshot
-successor, public admission, durable publication or Task018/019 execution follows from A1.
+private codec/kernel or empty bridge alone cannot close it. [A2 API handoff](../../.planning/combat-task008-delivery/task017a2-api-handoff.md) records current types and separate initial-base/state validation; it does not authorize implementation. A2 acceptance does not dispatch the native adapter, Snapshot successor, public admission, durable
+publication or Task018/019 execution; each retains its own manifest and gates.
 
 Checkpoint H: demonstrate actual Movement/Reserve repetition and settled Combat-to-finish through
 dormant authority. No second assault is claimed without a separately certified strength/ammo path.

@@ -1240,15 +1240,15 @@ settlement receipts bind round closure, then CA binds that actual event and orig
 Immutable internal pre-event facts let serialization recompute terminal event identities and prefix
 links; canonical wire fields remain unchanged and full trusted history replay remains authoritative.
 Retry survives closure, while fresh actions reject and stale callbacks remain NoOp. Future duties
-remain stored and unexecuted. Task016 acceptance includes full2,331/Boundary81, three fresh Ready reviews and exact-candidate CI; [evidence](.planning/combat-task008-delivery/task016-evidence.md) retains checks. Reserve Release execution,
-actual positive campaign history, extended Snapshot and durable publication remain later gates.
+remain stored and unexecuted. Task016 acceptance includes full2,331/Boundary81, three fresh Ready reviews and exact-candidate CI; [evidence](.planning/combat-task008-delivery/task016-evidence.md) retains checks. Actual campaign Release integration,
+positive campaign history, extended Snapshot and durable publication remain later gates.
 
 Task017A1 adds an accepted dormant isolated ReleaseBase model/codec foundation. Caller
 retains both creation context and independently expected typed base; raw canonical bytes must match
 that complete expected value. Immutable Release history records preserve designation/conversion,
 release ceilings and expired next-Movement exception facts. This isolated probe boundary does not
-authenticate actual campaign World from a hash. Native Release lifecycle and positive predecessor
-admission remain separate Task017 children; historical Result1 fixture rows are not adapted here.
+authenticate actual campaign World from a hash. Native Release lifecycle belongs to A2 below; positive predecessor
+admission remains a separate Task017 child; historical Result1 fixture rows are not adapted here.
 
 Task017A1 acceptance:44isolated base hashes, full2,337/Boundary81, clean build/format, three fresh
 Ready reviews and exact-candidate CI. [Evidence](.planning/combat-task008-delivery/task017a1-evidence.md)
@@ -1263,5 +1263,6 @@ computed before projecting receipt-linked conversion/release history. Completion
 State readback validates raw shape before context and compares the complete replay-derived bytes.
 Initial-base validation remains distinct from converted-II and pending-exception lifecycle states.
 The implementation matches44isolated traces/132event hashes/176state cuts/two terminal literals;
-acceptance checks and fresh reviews remain pending. Native settled adapters, actual positive lineage,
+acceptance includes full2,347/Boundary81, clean build/format, three fresh Ready reviews (third full
+Release solution rebuild) and exact-candidate CI. [A2 evidence](.planning/combat-task008-delivery/task017a2-evidence.md) records the bounded proof. Native settled adapters, actual positive lineage,
 World projection, Movement execution, public admission and parent017 completion remain separate gates.
