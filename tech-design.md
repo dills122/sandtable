@@ -1278,4 +1278,6 @@ state authorizes progress. The32 base literals and64 native event literals are r
 regeneration;96 native replay cuts are independent recovery checks, not wrapper-state hash claims.
 Upstream boundaries remain synthetic and exact canonical lineage pins do not establish authentic
 positive Reserve history. Completion stays at Reserve Release; no cycle advance or public API.
-Implementation acceptance remains pending.
+Task017B acceptance: full2,354/Boundary81, clean build/format, three fresh Ready reviews (third
+independent full Release rebuild) and exact-candidate CI at `3c9aad3`.
+[B evidence](.planning/combat-task008-delivery/task017b-evidence.md) retains exact checks and limits.
