@@ -987,7 +987,13 @@ Control states remain distinct: traversal retains selection unchanged and owns t
 `CombatStepsInput` carries separately authenticated actor/time, and `CombatStepsControl` is
 derived replay state. These types do not imply live campaign admission or publication.
 
-**Release base** names the immutable input ledger for the future Reserve Release arm. Its isolated
+**Release base** names the immutable input ledger for the Reserve Release arm. Its isolated
 codec checks canonical history against independently retained expected values; it does not mean a
 Release window opened, a unit changed status, or actual campaign provenance was established.
-Task017A1 owns this foundation; native lifecycle and campaign adapters remain separate work.
+Task017A1 owns this foundation. **Release lifecycle** names Task017A2's dormant queue, timed
+choices, fallback and explicit completion. `CampaignCombatReserveRelease` reconstructs state from
+independently retained base and trusted input/event history; its completion does not advance cycle
+control or establish actual campaign lineage. **Settled empty Release adapter** names
+`CampaignCombatResultRelease` (Task017B): authenticated native Result2 history derives an empty
+Release base, then reuses native open/completion. Its retained upstream boundary remains synthetic;
+this name does not imply positive Reserve lineage, cycle advancement or public campaign admission.

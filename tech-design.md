@@ -1240,16 +1240,44 @@ settlement receipts bind round closure, then CA binds that actual event and orig
 Immutable internal pre-event facts let serialization recompute terminal event identities and prefix
 links; canonical wire fields remain unchanged and full trusted history replay remains authoritative.
 Retry survives closure, while fresh actions reject and stale callbacks remain NoOp. Future duties
-remain stored and unexecuted. Task016 acceptance includes full2,331/Boundary81, three fresh Ready reviews and exact-candidate CI; [evidence](.planning/combat-task008-delivery/task016-evidence.md) retains checks. Reserve Release execution,
-actual positive campaign history, extended Snapshot and durable publication remain later gates.
+remain stored and unexecuted. Task016 acceptance includes full2,331/Boundary81, three fresh Ready reviews and exact-candidate CI; [evidence](.planning/combat-task008-delivery/task016-evidence.md) retains checks. Actual campaign Release integration,
+positive campaign history, extended Snapshot and durable publication remain later gates.
 
 Task017A1 adds an accepted dormant isolated ReleaseBase model/codec foundation. Caller
 retains both creation context and independently expected typed base; raw canonical bytes must match
 that complete expected value. Immutable Release history records preserve designation/conversion,
 release ceilings and expired next-Movement exception facts. This isolated probe boundary does not
-authenticate actual campaign World from a hash. Native Release lifecycle and positive predecessor
-admission remain separate Task017 children; historical Result1 fixture rows are not adapted here.
+authenticate actual campaign World from a hash. Native Release lifecycle belongs to A2 below; positive predecessor
+admission remains a separate Task017 child; historical Result1 fixture rows are not adapted here.
 
 Task017A1 acceptance:44isolated base hashes, full2,337/Boundary81, clean build/format, three fresh
 Ready reviews and exact-candidate CI. [Evidence](.planning/combat-task008-delivery/task017a1-evidence.md)
 distinguishes base validation from later Release lifecycle and actual campaign provenance.
+
+
+Task017A2 adds a dormant isolated Release lifecycle over independently retained base/request and
+separately admitted input/event history. Apply reconstructs prior state by replay; no imported
+state object authorizes a transition. Opening fixes one queue and Config budget. First-I fallback
+converts unresolved members; later-II fallback retains them in one completion. Receipt hashes are
+computed before projecting receipt-linked conversion/release history. Completion stays at Release.
+State readback validates raw shape before context and compares the complete replay-derived bytes.
+Initial-base validation remains distinct from converted-II and pending-exception lifecycle states.
+The implementation matches44isolated traces/132event hashes/176state cuts/two terminal literals;
+acceptance includes full2,347/Boundary81, clean build/format, three fresh Ready reviews (third full
+Release solution rebuild) and exact-candidate CI. [A2 evidence](.planning/combat-task008-delivery/task017a2-evidence.md) records the bounded proof. Actual positive lineage, general World projection, Movement execution, public admission and parent017 completion remain separate gates.
+
+Task017B adds `CampaignCombatResultRelease`, a bounded native Result2-to-empty-Release adapter.
+Owned typed source history is replayed through Selection, Round2 and Result2. A32-case compatibility
+catalog pins canonical upstream lineage and command/choice/actor signatures; valid Result2 fallback
+history remains excluded even when its final World equals an owner-selected result. Reliable owner
+retiming remains admissible. The adapter derives the complete native ReleaseBase from settled state,
+starts an independent null Release clock, and emits only System open/complete through the existing
+Release kernel. Full settled World, RNG, resources, custody, guards, entitlements and future duties
+remain unchanged. Raw base/state readers compare against replay-derived authority; no imported
+state authorizes progress. The32 base literals and64 native event literals are reused without fixture
+regeneration;96 native replay cuts are independent recovery checks, not wrapper-state hash claims.
+Upstream boundaries remain synthetic and exact canonical lineage pins do not establish authentic
+positive Reserve history. Completion stays at Reserve Release; no cycle advance or public API.
+Task017B acceptance: full2,354/Boundary81, clean build/format, three fresh Ready reviews (third
+independent full Release rebuild) and exact-candidate CI at `3c9aad3`.
+[B evidence](.planning/combat-task008-delivery/task017b-evidence.md) retains exact checks and limits.
