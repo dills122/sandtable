@@ -993,4 +993,7 @@ Release window opened, a unit changed status, or actual campaign provenance was 
 Task017A1 owns this foundation. **Release lifecycle** names Task017A2's dormant queue, timed
 choices, fallback and explicit completion. `CampaignCombatReserveRelease` reconstructs state from
 independently retained base and trusted input/event history; its completion does not advance cycle
-control or establish actual campaign lineage. Campaign adapters remain separate work.
+control or establish actual campaign lineage. **Settled empty Release adapter** names
+`CampaignCombatResultRelease` (Task017B): authenticated native Result2 history derives an empty
+Release base, then reuses native open/completion. Its retained upstream boundary remains synthetic;
+this name does not imply positive Reserve lineage, cycle advancement or public campaign admission.

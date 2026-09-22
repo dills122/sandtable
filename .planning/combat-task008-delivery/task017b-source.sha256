@@ -1,0 +1,4 @@
+bbecab53b266adfa23e287e174a9aa6bbcb79558ce8674af236b0580e3bf96d1  src/Cna.Core/Campaigns/CampaignCombatResultRelease.cs
+c8bc56b9aa50b6e874d5dd4493fe5b45158681f03fd23bdd0ad222d7fc803c5d  src/Cna.Core/Campaigns/CampaignCombatReserveReleaseCodec.cs
+3508fa78677220f0a96d65852ea4866c27d7127e770df418e0a7927470888a53  tests/Cna.Core.Tests/Campaigns/CombatResultReleaseTests.cs
+db6e7bb6f6c6f472e81cce804dce4bb69da0da94a35eb255f887b352d6c5f65f  tests/Cna.Core.Tests/Cna.Core.Tests.csproj

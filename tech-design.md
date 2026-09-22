@@ -1264,5 +1264,18 @@ State readback validates raw shape before context and compares the complete repl
 Initial-base validation remains distinct from converted-II and pending-exception lifecycle states.
 The implementation matches44isolated traces/132event hashes/176state cuts/two terminal literals;
 acceptance includes full2,347/Boundary81, clean build/format, three fresh Ready reviews (third full
-Release solution rebuild) and exact-candidate CI. [A2 evidence](.planning/combat-task008-delivery/task017a2-evidence.md) records the bounded proof. Native settled adapters, actual positive lineage,
-World projection, Movement execution, public admission and parent017 completion remain separate gates.
+Release solution rebuild) and exact-candidate CI. [A2 evidence](.planning/combat-task008-delivery/task017a2-evidence.md) records the bounded proof. Actual positive lineage, general World projection, Movement execution, public admission and parent017 completion remain separate gates.
+
+Task017B adds `CampaignCombatResultRelease`, a bounded native Result2-to-empty-Release adapter.
+Owned typed source history is replayed through Selection, Round2 and Result2. A32-case compatibility
+catalog pins canonical upstream lineage and command/choice/actor signatures; valid Result2 fallback
+history remains excluded even when its final World equals an owner-selected result. Reliable owner
+retiming remains admissible. The adapter derives the complete native ReleaseBase from settled state,
+starts an independent null Release clock, and emits only System open/complete through the existing
+Release kernel. Full settled World, RNG, resources, custody, guards, entitlements and future duties
+remain unchanged. Raw base/state readers compare against replay-derived authority; no imported
+state authorizes progress. The32 base literals and64 native event literals are reused without fixture
+regeneration;96 native replay cuts are independent recovery checks, not wrapper-state hash claims.
+Upstream boundaries remain synthetic and exact canonical lineage pins do not establish authentic
+positive Reserve history. Completion stays at Reserve Release; no cycle advance or public API.
+Implementation acceptance remains pending.

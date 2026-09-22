@@ -57,7 +57,7 @@ internal static class CampaignCombatReserveReleaseCodec
     {
         ArgumentNullException.ThrowIfNull(request);
         var c = b.Cycle; var setup = request.Context.Setup;
-        Require(c is not null && b.RandomState is not null && b.ContractVersion == 1 && b.Profile == "isolated-ledger");
+        Require(c is not null && b.RandomState is not null && b.ContractVersion == 1 && b.Profile is "isolated-ledger" or "settled-empty-release");
         Require(c!.ContractVersion == 1 && c.GameTurn is >= 1 and <= 111 && c.OperationStage is >= 1 and <= 3 && c.Ordinal >= 1 && c.OpenedAuthorityVersion >= 1);
         Require(c.CampaignId == request.CampaignId && c.RulesetHash == request.Context.RulesetHash && c.SetupId == setup.SetupId && c.SetupHash == setup.SetupHash &&
             c.ContentPackId == setup.Artifact.Identity.PackId && c.ContentHash == setup.Artifact.Identity.Hash && c.ScenarioId == setup.Scenario.ScenarioId && c.AdmittedPolicyBundleDigest == request.Context.Configuration.Hash);
@@ -67,6 +67,13 @@ internal static class CampaignCombatReserveReleaseCodec
         Require(Cna1979LandSequence.CreateTurn(c.GameTurn).Any(p => p.PositionId == b.PositionId && p.OperationStage == c.OperationStage && p.SegmentId == LandSegmentIds.ReserveRelease && p.ActorRole == role));
         Require(b.PriorVersion >= c.OpenedAuthorityVersion && b.Members.Count <= 32 && b.AttackHistory.Count <= 512);
         var scope = new CombatReleaseScope(c.GameTurn, c.OperationStage, c.PlayerPhaseSlot, c.ActingSide);
+        if (b.Profile == "settled-empty-release")
+        {
+            Require(b.AcceptedHighWater is null && b.Members.Count == 1);
+            var member = b.Members[0];
+            Require(member is not null && member.Status == CampaignElementReserveStatus.None &&
+                member.History == new CombatReleaseHistory(scope));
+        }
         Require(b.AttackHistory.All(a => a is not null && a.Attacker is not null && a.Defender is not null));
         CampaignCombatUnitKey? previous = null;
         foreach (var m in b.Members)
@@ -132,6 +139,8 @@ internal static class CampaignCombatReserveReleaseCodec
     { if (value is { } n) w.WriteNumber(name, n); else w.WriteNull(name); }
     private static string Side(LandSide side) => CampaignSnapshotSerializer.FormatSide(side);
     private static void Require([DoesNotReturnIf(false)] bool condition) { if (!condition) throw new JsonException("Invalid isolated Release base."); }
+
+    internal static void ValidateBaseSyntax(ReadOnlySpan<byte> bytes) => CheckRaw(bytes);
 
     private static void CheckRaw(ReadOnlySpan<byte> bytes)
     {
