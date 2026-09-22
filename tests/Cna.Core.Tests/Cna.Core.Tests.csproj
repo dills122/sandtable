@@ -110,6 +110,7 @@
     <None Include="../../docs/specs/fixtures/combat-inherited-no-attack-v1.json" Link="Campaigns/Fixtures/combat-inherited-no-attack-v1.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="../../docs/specs/fixtures/combat-reserve-release-v1.json" Link="Campaigns/Fixtures/combat-reserve-release-v1.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="../../docs/specs/fixtures/combat-result-cycle-finish-v1.json" Link="Campaigns/Fixtures/combat-result-cycle-finish-v1.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../../docs/specs/fixtures/combat-inherited-reserve-cycle-v1.json" Link="Campaigns/Fixtures/combat-inherited-reserve-cycle-v1.json" CopyToOutputDirectory="PreserveNewest" />
     <Using Include="Xunit" />
     <None Include="../../docs/specs/fixtures/combat-inherited-reaction-trigger-v1.json" Link="Campaigns/Fixtures/combat-inherited-reaction-trigger-v1.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>

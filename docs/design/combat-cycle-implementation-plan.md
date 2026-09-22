@@ -949,7 +949,20 @@ isolated mechanism evidence from actual campaign provenance.
 | `017A1` | Immutable Release scope/history/exception/member/base values and independently expected-base canonical codec. Exactly44 isolated frozen base hashes; zero transition/event/state proof. Four source/test paths plus this root-owned plan; no lifecycle or World adapter. | 016; accepted at `77ef166` after full2,337/Boundary81, clean build/format, dev review, three fresh Ready reviews and exact CI; [evidence](../../.planning/combat-task008-delivery/task017a1-evidence.md) |
 | `017A2` | Native Release lifecycle, state/event codecs, timers, canonical dispositions, conversion/retention fallback, retry and explicit completion. Target132 event hashes/176 state hashes/2 literal terminal events from44 isolated rows. Exact manifest must fit or split before edits. | AcceptedA1; accepted at `a4b4f63` after full2,347/Boundary81, clean build/format, dev review, three fresh Ready reviews (third full rebuild) and exact CI; [evidence](../../.planning/combat-task008-delivery/task017a2-evidence.md) |
 | `017B` | Actual retained Result2-to-empty-Release adapter across32 selected contexts;64 native event literals and independently replayed native cuts. Preserve resources/history/future duties and separate hash domains. | AcceptedA2/016; accepted at `3c9aad3` after full2,354/Boundary81, clean build/format, dev review, three fresh Ready reviews (third full rebuild) and exact CI; [evidence](../../.planning/combat-task008-delivery/task017b-evidence.md) |
-| Positive prerequisite and bridge | Separately implement/certify held-I no-move3h predecessor, then positive3i Release bridge; current inherited Movement requires moves and rejects held Reserve. Later-II/consumed actual campaign lineage also remains to be demonstrated. | Exact bounded manifest required; not dispatched |
+| Held-I no-move predecessor | Dedicated dormant3h adapter replays actual first opening through ten no-move/no-attack events to Reserve Release; held-I and all resources remain retained. Ordinary Movement admission unchanged. | Locally accepted:20event/22Control goldens, full2,361/Boundary81, clean build/format, independent review and verified follow-up; [evidence](../../.planning/combat-positive-reserve-release/predecessor-evidence.md) |
+| Positive3i Release bridge | Connect accepted held-I terminal to native Release; later-II/consumed actual lineage remains separate. | Next bounded slice; [exact manifest](../../.planning/combat-positive-reserve-release/bridge-plan.md), not implemented |
+
+Task017 positive predecessor implementation, 2026-09-22: user authorized continuing the delivery
+sequence. First slice is the frozen both-owner Normal held-I no-move3h history, before the3i
+Release bridge. Exact primary manifest: `CampaignCombatInheritedReserveCycle.cs`,
+`CampaignCombatInheritedReserveCycleCodec.cs`, `CombatInheritedReserveCycleTests.cs`,
+`tests/Cna.Core.Tests/Cna.Core.Tests.csproj`, and this plan. New source files live in Core Campaigns;
+test lives in Core.Tests Campaigns. Full creation-through-opening replay is mandatory; no supplied
+terminal World substitutes. Preserve all frozen predecessor artifacts and ordinary Movement admission.
+Acceptance:20 event hashes,22 Control hashes, both bases and predecessor hash lists; every cut/retry,
+forged cache/event/input and cross-history rejection. Full build/format/tests and independent review
+precede acceptance. Public activation, Snapshot/history dispatcher extension and positive Release
+remain separate. Status: locally accepted; GitHub publication checks tracked separately.
 
 Four historical settled Result1 fixture rows remain historical evidence, excluded from A1/A2's44
 isolated claim. Current World7 and Result2 are not weakened to admit old occurrence identities.

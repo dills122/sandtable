@@ -53,7 +53,7 @@ play a side; it will never decide the rules or secretly change the campaign stat
 | --- | --- | --- |
 | Deterministic Umpire | Working | Versioned rules, seeded randomness, canonical commands/events, replay, checkpoints, and side-safe action boundaries are implemented. |
 | Playable rule path | Working through Combat entry | Runner can execute Initiative, stage preamble, Reserve Designation, Movement, bounded ZOC/Reaction, and Breakdown, then stops before Combat adjudication. |
-| Combat and continual cycle | Dormant Core reviewed through settled empty Release | Creation and inherited-history restore, identity, decisions, costs, results, loss/retreat settlement, custody, relationships and round closure are implemented and reviewed through Task016. Isolated Release bases and lifecycle (017A1/A2) are also reviewed, including timed choices, deterministic fallback and completion. Task017B also connects verified settled Combat to empty Release opening/completion across32 reviewed contexts. Public Combat play and full cycle closure remain future gates. |
+| Combat and continual cycle | Dormant Core reviewed through settled empty Release | Creation and inherited-history restore, identity, decisions, costs, results, loss/retreat settlement, custody, relationships and round closure are implemented and reviewed through Task016. Isolated Release bases and lifecycle (017A1/A2) are also reviewed, including timed choices, deterministic fallback and completion. Task017B also connects verified settled Combat to empty Release opening/completion across32 reviewed contexts. Held-I no-move predecessor now replays genuine first-opening history through empty Combat to Reserve Release. Public Combat play and full cycle closure remain future gates. |
 | Exercise and Maneuver tools | Working | Deterministic single runs, multi-run matrices, paired comparisons, strict readback, and evidence bundles are available from CLI. |
 | User interface | Not started | `site/` is project website only. Maproom hot-seat client is future work. |
 | Published scenario | Not started | First target is six-turn, Land-only *Graziani's Offensive* after working Combat loop. |
@@ -67,8 +67,8 @@ dormant Core tests; they are not yet exposed as playable actions.
 
 Next delivery sequence:
 
-1. Implement Reserve Release,
-   relation-aware Movement, and guarded repeat/finish (Tasks017–019).
+1. Connect the held-I predecessor to positive Reserve Release, then implement
+   relation-aware Movement and guarded repeat/finish (Tasks017–019).
 2. Activate certified, side-safe public Combat actions (Tasks020–021), then prove Exercise/Runner
    replay and repeatability (Tasks022–024).
 3. Reconcile all 72 acceptance criteria and demonstrate the authentic continual cycle (Task025).
@@ -390,7 +390,7 @@ verifies the existing Rules9 path; prospective Combat contracts are not executab
 | --- | --- | --- |
 | Authority foundation | Versioned provenance, synthetic content, commands/events, deterministic randomness, replay, side-safe observations, and exact-audience legal actions for the admitted profile | Extend the same compatibility, recovery, and fog boundaries with each mechanic |
 | Preamble and Movement boundary | Initiative through Reserve Designation, bounded Movement, ZOC/Reaction, and Breakdown through first-side Combat entry | Positive scenario-specific obligations and broader vehicle/ZOC profiles remain gated |
-| Combat and continual cycle | Dormant Core reviewed through settled empty Release | Creation and inherited-history restore, identity, decisions, costs, results, loss/retreat settlement, custody, relationships and round closure are implemented and reviewed through Task016. Isolated Release bases and lifecycle (017A1/A2) are also reviewed, including timed choices, deterministic fallback and completion. Task017B also connects verified settled Combat to empty Release opening/completion across32 reviewed contexts. Public Combat play and full cycle closure remain future gates. |
+| Combat and continual cycle | Dormant Core reviewed through settled empty Release | Creation and inherited-history restore, identity, decisions, costs, results, loss/retreat settlement, custody, relationships and round closure are implemented and reviewed through Task016. Isolated Release bases and lifecycle (017A1/A2) are also reviewed, including timed choices, deterministic fallback and completion. Task017B also connects verified settled Combat to empty Release opening/completion across32 reviewed contexts. Held-I no-move predecessor now replays genuine first-opening history through empty Combat to Reserve Release. Public Combat play and full cycle closure remain future gates. |
 | Working skeleton | Not reached | One authentic movement/contact/combat/release repeat-or-finish loop plus identical replay |
 | Playable MVP | Not started | Source-verified six-turn content/rules/victory, durable save/resume, hot-seat privacy, and minimal no-model Maproom |
 | Exercise Harness | Current bounded Exercise/Maneuver and paired descriptive comparisons | Add Combat actions and terminals only after public Core activation |
