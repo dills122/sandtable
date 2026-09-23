@@ -1001,4 +1001,9 @@ this name does not imply positive Reserve lineage, cycle advancement or public c
 **Held-I cycle predecessor** names `CampaignCombatInheritedReserveCycle`: actual held Reserve I
 passes through no-move Movement completion and empty Combat while preserving designation and
 resources. Its terminal means arrival at Reserve Release, with no release or cycle advance. This
-dormant3h adapter is separate from ordinary moved-unit traversal and future positive3i Release.
+dormant3h adapter is separate from ordinary moved-unit traversal and positive3i Release.
+
+**Inherited Reserve Release bridge** names `CampaignCombatInheritedReserveRelease` (Task017C):
+actual held-I predecessor history authorizes first owner release-I or deterministic conversion
+fallback. Its progress receipt means a Reserve disposition, not cycle advancement. Pending
+next-Movement history is recorded for future ordinal2 consumption; public play remains inactive.

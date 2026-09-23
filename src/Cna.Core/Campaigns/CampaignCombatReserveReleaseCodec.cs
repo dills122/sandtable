@@ -57,7 +57,7 @@ internal static class CampaignCombatReserveReleaseCodec
     {
         ArgumentNullException.ThrowIfNull(request);
         var c = b.Cycle; var setup = request.Context.Setup;
-        Require(c is not null && b.RandomState is not null && b.ContractVersion == 1 && b.Profile is "isolated-ledger" or "settled-empty-release");
+        Require(c is not null && b.RandomState is not null && b.ContractVersion == 1 && b.Profile is "isolated-ledger" or "settled-empty-release" or "inherited-reserve-cycle");
         Require(c!.ContractVersion == 1 && c.GameTurn is >= 1 and <= 111 && c.OperationStage is >= 1 and <= 3 && c.Ordinal >= 1 && c.OpenedAuthorityVersion >= 1);
         Require(c.CampaignId == request.CampaignId && c.RulesetHash == request.Context.RulesetHash && c.SetupId == setup.SetupId && c.SetupHash == setup.SetupHash &&
             c.ContentPackId == setup.Artifact.Identity.PackId && c.ContentHash == setup.Artifact.Identity.Hash && c.ScenarioId == setup.Scenario.ScenarioId && c.AdmittedPolicyBundleDigest == request.Context.Configuration.Hash);
@@ -73,6 +73,16 @@ internal static class CampaignCombatReserveReleaseCodec
             var member = b.Members[0];
             Require(member is not null && member.Status == CampaignElementReserveStatus.None &&
                 member.History == new CombatReleaseHistory(scope));
+        }
+        if (b.Profile == "inherited-reserve-cycle")
+        {
+            Require(c.GameTurn == 1 && c.OperationStage == 1 && c.Ordinal == 1 && c.OpenedAuthorityVersion == 12 &&
+                c.PlayerPhaseSlot == "first-acting-side" && b.PriorVersion == 22 && b.AcceptedHighWater is null &&
+                b.Members.Count == 1 && b.AttackHistory.Count == 0);
+            var member = b.Members[0];
+            Require(member is not null && member.History is not null && member.Status == CampaignElementReserveStatus.ReserveI &&
+                member.BaseCpa == 10 && member.SpentCp == new CapabilityPointAmount(0, 1) &&
+                member.History.DesignationReceiptId is not null && member.History == new CombatReleaseHistory(scope, member.History.DesignationReceiptId));
         }
         Require(b.AttackHistory.All(a => a is not null && a.Attacker is not null && a.Defender is not null));
         CampaignCombatUnitKey? previous = null;
