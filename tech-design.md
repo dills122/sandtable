@@ -1281,3 +1281,13 @@ positive Reserve history. Completion stays at Reserve Release; no cycle advance 
 Task017B acceptance: full2,354/Boundary81, clean build/format, three fresh Ready reviews (third
 independent full Release rebuild) and exact-candidate CI at `3c9aad3`.
 [B evidence](.planning/combat-task008-delivery/task017b-evidence.md) retains exact checks and limits.
+
+Task017 positive predecessor adds `CampaignCombatInheritedReserveCycle` and its canonical codec.
+The dormant adapter replays actual creation, preamble, Weather, stage entry, Reserve designation and
+first opening before accepting the held-I no-move profile. Ten frozen events carry authority12→22
+through direct Movement completion, idle Breakdown, empty selection and six no-attack steps.
+World, designation history, CP, resources, Weather and RNG remain unchanged. Cache and event bytes
+must equal full-history reconstruction; exact retries return original bytes. Both-owner fixtures
+match20 event hashes and22 Control hashes. Ordinary Movement admission is unchanged. This supplies
+the3h prerequisite; positive3i Release, HistoryReplay/Snapshot integration and public activation
+remain separate gates. Evidence lives in `.planning/combat-positive-reserve-release/`.

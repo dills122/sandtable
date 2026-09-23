@@ -997,3 +997,8 @@ control or establish actual campaign lineage. **Settled empty Release adapter** 
 `CampaignCombatResultRelease` (Task017B): authenticated native Result2 history derives an empty
 Release base, then reuses native open/completion. Its retained upstream boundary remains synthetic;
 this name does not imply positive Reserve lineage, cycle advancement or public campaign admission.
+
+**Held-I cycle predecessor** names `CampaignCombatInheritedReserveCycle`: actual held Reserve I
+passes through no-move Movement completion and empty Combat while preserving designation and
+resources. Its terminal means arrival at Reserve Release, with no release or cycle advance. This
+dormant3h adapter is separate from ordinary moved-unit traversal and future positive3i Release.
