@@ -1728,3 +1728,26 @@ exception expiry, repeat or public admission. Accepted locally after focused49/f
 clean build/format, frozen oracle and fresh independent review1 with no actionable findings.
 [Evidence](../../.planning/combat-cycle-movement/evidence.md) retains checks. Next018B manifest
 remains separate; parent017–019 and public activation stay open.
+
+Task018B dispatch, 2026-09-23, base0dfea4d: user authorized next atomic Movement/replay slice.
+Audit: D2a Movement schema inherits unchanged World/settlement value shapes through Result1;
+Result2 changes upstream command/clocks/receipt identity, so native source hashes differ and no
+historical D2a golden-parity claim is made. Reuse authenticated32-context ResultRelease source
+replay to derive current settled World. Retain explicit isolated-next-movement synthetic ordinal2
+gap; no actual release/repeat admission. Existing World7 constructor requires published relation
+active, so add a narrow computed successor factory; keep constructor/readers strict.
+Exact five-primary-file manifest: CampaignWorldV7.cs, new CampaignCombatCycleMovement.cs,
+new CampaignCombatCycleMovementCodec.cs (Core Campaigns); new CombatCycleMovementTests.cs
+(Core.Tests Campaigns); this canonical plan. Models remain with engine. Frozen schemas/fixtures
+and existing movement/spending APIs unchanged. Acceptance: both owners; Contact/Engaged and
+second move after break-off; CP/DP/resource/relationship atomicity; actual source replay and every
+suffix cut/retry; changed/re-signed event, cache/base, stale/foreign/missing history rejection;
+no renewed allowance, unsupported lineage rejects. Clear2/no positive ZOC/current-stage singleton
+infantry only; preserve guards/future duties. Full gates and independent review before acceptance.
+
+Task018B locally accepted:66 focused,2,407 full and81 Boundary tests passed with0 skips;
+build0 warnings/errors,format/frozen Movement oracle/diff checks passed. Fresh review1of3 found
+no actionable issues; full-suite condition satisfied with reviewed source/test hashes unchanged.
+[Evidence](../../.planning/combat-cycle-movement/task018b-evidence.md) and
+[review](../../.planning/combat-cycle-movement/task018b-review-report.md) retain results and limits.
+Next019 guarded continuation/repeat; actual018 Movement admission and remaining017 lineage open.

@@ -1304,5 +1304,14 @@ Task018A adds pure `CampaignCombatCycleMovementRules`: separately admitted curre
 relationships yield original-key affected membership and terrain plus maximum Contact2/Engaged4
 cost. Optional provisional charging reuses `CampaignCombatSpending`, preserving cumulative ceilings
 and incremental excess-CPA DP. This internal assessment owns its result collections, emits no event
-and grants no movement or Reserve exception authority. Atomic Movement and actual repeat-dependent
-admission remain later children in the Movement delivery plan.
+and grants no movement or Reserve exception authority.
+
+Task018B adds internal `CampaignCombatCycleMovement` and its canonical codec. Authenticated
+Result2 source replay supplies an explicit isolated ordinal2 Movement boundary. Adjacent Clear2
+moves atomically update location/representation, cumulative CP/DP, relationship ends and causes;
+full input/event replay regenerates exact bytes and retries return original receipts. A narrow
+computed World7 successor retains resources, guards, future duties, RNG and attack history.
+Movement readback reconstructs from authenticated history; generic World/Snapshot readers retain
+their existing strict settlement rules. Historical Result1 Movement fixtures stay unchanged; no
+historical golden-byte parity or actual release/repeat authority is claimed. Guarded019 continuation
+and actual repeat-dependent admission remain open, as does public activation.

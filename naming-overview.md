@@ -1011,3 +1011,8 @@ next-Movement history is recorded for future ordinal2 consumption; public play r
 **Cycle Movement assessment** names `CampaignCombatCycleMovementRules` (Task018A): pure
 relationship membership/cost assessment and provisional spending at a trusted current-stage
 boundary. An assessment is not a move receipt, World update or continuation authorization.
+
+**Isolated cycle Movement** names `CampaignCombatCycleMovement` and its codec (Task018B):
+authenticated Result2 history supplies an explicit synthetic next-Movement boundary for atomic
+ordinary moves and canonical replay. Move receipts record actual projected movement within this
+isolated mechanism; they do not prove campaign repeat or grant Reserve exception authority.

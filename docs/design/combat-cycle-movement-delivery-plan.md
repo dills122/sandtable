@@ -2,7 +2,7 @@
 
 Baseline: merged PR141, `54029a502859a270cea0846e99fc397ea9b00d54`, all PR checks successful.
 User approved dependency reconciliation and definition of smallest implementation slice.
-Task018A locally accepted: focused49/full2,397/Boundary81, clean build/format, frozen oracle and independent review. Later children remain planned.
+Task018A locally accepted: focused49/full2,397/Boundary81, clean build/format, frozen oracle and independent review. Task018B locally accepted: focused66/full2,407/Boundary81, clean build/format, frozen oracle and independent review. Later children remain planned.
 
 ## Dependency reconciliation
 
@@ -121,4 +121,26 @@ World tests passed. Added final full-key opposite-side identity test; final focu
 Independent review1 of3: Ready with non-blocking follow-ups, no actionable findings; full-suite
 condition satisfied. Reviewed source/test hashes unchanged. [Evidence](../../.planning/combat-cycle-movement/evidence.md)
 and [review](../../.planning/combat-cycle-movement/review-report.md) retain exact checks and limits.
-Next018B requires its own bounded native-event/provenance manifest; parent018 remains open.
+Task018B has its own bounded native-event/provenance manifest below; parent018 remains open.
+
+## Task018B implementation
+
+Exact five-primary-file manifest retained in canonical implementation plan before coding:
+World7, Movement engine, Movement codec, focused tests and canonical plan. Current Result2
+source replay authenticates all32 accepted owner-selected settled contexts; synthetic ordinal2
+`isolated-next-movement` remains explicit. Historical D2a Result1 bytes are not native parity evidence.
+
+Selected nonmotorized independent CPA10 singleton infantry moves across adjacent unoccupied
+featureless Clear edges at cost2 plus maximum active Contact2/Engaged4 break-off. Atomic
+projection updates element/representation location, cumulative CP/DP, ended relationships and
+causes while retaining other resources, guards and duties. Later moves preserve spent allowance
+and do not recharge ended relationships. Event-derived receipts, exact full-history reconstruction,
+original-byte retries and source-bound base/cache/state readers reject stale or forged input.
+
+World7 gains only a computed successor; ordinary constructor and generic readers stay strict.
+Movement readback reconstructs typed World through its own authenticated replay. No public action
+or Snapshot routing is added.018B does not accept actual repeated Movement or reserve-release rights.
+Next dependency is019 guarded continuation/finish/repeat, followed by018 integrated admission,
+then remaining017 later-II/consumed lineage. All parent acceptance criteria remain open.
+
+Validation and independent review: [Task018B evidence](../../.planning/combat-cycle-movement/task018b-evidence.md).
