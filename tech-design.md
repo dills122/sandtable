@@ -1289,5 +1289,13 @@ through direct Movement completion, idle Breakdown, empty selection and six no-a
 World, designation history, CP, resources, Weather and RNG remain unchanged. Cache and event bytes
 must equal full-history reconstruction; exact retries return original bytes. Both-owner fixtures
 match20 event hashes and22 Control hashes. Ordinary Movement admission is unchanged. This supplies
-the3h prerequisite; positive3i Release, HistoryReplay/Snapshot integration and public activation
-remain separate gates. Evidence lives in `.planning/combat-positive-reserve-release/`.
+the3h prerequisite; HistoryReplay/Snapshot integration and public activation remain separate gates. Evidence lives in `.planning/combat-positive-reserve-release/`.
+
+Task017C adds `CampaignCombatInheritedReserveRelease`, a dormant bridge from fully replayed3h
+history to native Release. Its owned source copies every predecessor record; replay derives the
+first-cycle single held-I base and a new null clock. Owner release-I records pending ordinal2
+Movement allowance with ceiling10; deterministic fallback converts I→II. Only Reserve status
+changes in projected World. Base/Control readers and caches compare against full reconstruction,
+and duplicate retries return retained event bytes. Two frozen examples pin2 bases,6 native events,
+8 wrapper Control frames and2 terminal literals. Completion remains ordinal1 at Reserve Release.
+Later-II/consumed campaign lineage and public activation remain open.

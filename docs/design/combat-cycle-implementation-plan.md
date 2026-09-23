@@ -950,7 +950,7 @@ isolated mechanism evidence from actual campaign provenance.
 | `017A2` | Native Release lifecycle, state/event codecs, timers, canonical dispositions, conversion/retention fallback, retry and explicit completion. Target132 event hashes/176 state hashes/2 literal terminal events from44 isolated rows. Exact manifest must fit or split before edits. | AcceptedA1; accepted at `a4b4f63` after full2,347/Boundary81, clean build/format, dev review, three fresh Ready reviews (third full rebuild) and exact CI; [evidence](../../.planning/combat-task008-delivery/task017a2-evidence.md) |
 | `017B` | Actual retained Result2-to-empty-Release adapter across32 selected contexts;64 native event literals and independently replayed native cuts. Preserve resources/history/future duties and separate hash domains. | AcceptedA2/016; accepted at `3c9aad3` after full2,354/Boundary81, clean build/format, dev review, three fresh Ready reviews (third full rebuild) and exact CI; [evidence](../../.planning/combat-task008-delivery/task017b-evidence.md) |
 | Held-I no-move predecessor | Dedicated dormant3h adapter replays actual first opening through ten no-move/no-attack events to Reserve Release; held-I and all resources remain retained. Ordinary Movement admission unchanged. | Locally accepted:20event/22Control goldens, full2,361/Boundary81, clean build/format, independent review and verified follow-up; [evidence](../../.planning/combat-positive-reserve-release/predecessor-evidence.md) |
-| Positive3i Release bridge | Connect accepted held-I terminal to native Release; later-II/consumed actual lineage remains separate. | Next bounded slice; [exact manifest](../../.planning/combat-positive-reserve-release/bridge-plan.md), not implemented |
+| Positive3i Release bridge | Connect accepted held-I terminal to native Release; later-II/consumed actual lineage remains separate. | Locally accepted:16focused/full2,377/Boundary81, clean build/format, frozen oracle and fresh Ready review; [evidence](../../.planning/combat-positive-reserve-release/bridge-evidence.md). Parent017 later-II/consumed lineage remains open. |
 
 Task017 positive predecessor implementation, 2026-09-22: user authorized continuing the delivery
 sequence. First slice is the frozen both-owner Normal held-I no-move3h history, before the3i
@@ -1698,3 +1698,15 @@ reactor track, RNG and progress before resuming the suspended phasing route. Eig
 506 mutations,54 malformed-byte rejects,72 authority/fork/capacity boundaries and18 source pins
 pass. Multiple opportunities, vehicle profiles, .4/004/B, runtime, public activation and simulator
 remain open. Author verification only; independent-review sequence remains exhausted.
+
+Task017C dispatch, 2026-09-23: user authorized implementation of retained five-primary-file bridge manifest.
+Reuse native Release kernel; exact creation-rooted3h history owns admission. Match both frozen3i
+base identities,6events,8Control frames and2terminal literals; prove recovery/fallback/status-only
+World projection. Full build/format/regression and fresh independent review precede acceptance.
+Parent017 later-II/consumed lineage, Tasks018–019, Snapshot/publication and public activation remain open.
+
+Task017C acceptance: both frozen owner histories match2 wrapper bases,6 native events,8 Control
+frames and2 terminal literals. Full2,377 and Boundary81 pass, build/format clean; independent
+review1 of3 Ready with no actionable findings. Full run restarted after user interruption and
+passed unchanged source. Positive and fallback projection alter only Reserve status. Parent017,
+Tasks018–019, public activation and HOST-PUB-001 remain open.
