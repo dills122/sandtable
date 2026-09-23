@@ -1007,3 +1007,7 @@ dormant3h adapter is separate from ordinary moved-unit traversal and positive3i 
 actual held-I predecessor history authorizes first owner release-I or deterministic conversion
 fallback. Its progress receipt means a Reserve disposition, not cycle advancement. Pending
 next-Movement history is recorded for future ordinal2 consumption; public play remains inactive.
+
+**Cycle Movement assessment** names `CampaignCombatCycleMovementRules` (Task018A): pure
+relationship membership/cost assessment and provisional spending at a trusted current-stage
+boundary. An assessment is not a move receipt, World update or continuation authorization.

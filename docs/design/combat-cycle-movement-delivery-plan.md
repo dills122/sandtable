@@ -1,0 +1,124 @@
+# Task018 Movement delivery plan
+
+Baseline: merged PR141, `54029a502859a270cea0846e99fc397ea9b00d54`, all PR checks successful.
+User approved dependency reconciliation and definition of smallest implementation slice.
+Task018A locally accepted: focused49/full2,397/Boundary81, clean build/format, frozen oracle and independent review. Later children remain planned.
+
+## Dependency reconciliation
+
+Parent017 remains open for later-II and consumed offensive history. Requiring its full closure
+before any018 work would block prerequisites needed to produce that history. Split mechanism
+acceptance from actual campaign admission; do not waive any parent acceptance criterion.
+
+1. **018A — relation-aware break-off assessment:** reuse accepted spending and relationship types.
+2. **018B — atomic ordinary Movement at a trusted boundary:** native command/event/replay and
+   World projection. Bind independently retained inputs; label isolated evidence explicitly.
+3. **019 mechanism and inherited adapters:** use accepted018 rules for Movement witnesses;
+   implement supported armed continuation (frozen3j) and guarded repeat/finish (3k) as separately
+   bounded children. Missing support must reject, never mean no legal continuation.
+4. **018 campaign integration:** actual repeat authorizes released-I Movement (3l), completion
+   and pending-exception expiry (3m). Reuse retained Movement-end proximity evidence.
+5. **017 remaining provenance:** real conversion, repeat, Movement and offensive history supply
+   later-II/consumed admission. Bound and reconcile those paths before claiming parent closure.
+
+The original018→019 dependency means accepted movement rules/event mechanism, not completion of
+future repeat-dependent campaign traces. Parent018/019 remain open until their full criteria pass.
+No public action, Snapshot/history dispatcher or simulator activation belongs to these children.
+
+## First slice: 018A
+
+Objective: derive deterministic affected relationship set and total voluntary movement cost from
+original unit identity and retained relationships, then apply existing spending semantics through
+one reusable internal rule. This rule supplies later execution and continuation assessment.
+
+Exact primary manifest (four paths):
+
+- `src/Cna.Core/Campaigns/CampaignCombatCycleMovementRules.cs` — new internal immutable assessment
+  and pure rule; keep small result types in same file. Derive affected pairs and maximum break-off
+  cost; delegate CP ceiling and immediate incremental DP charging to `CampaignCombatSpending`.
+- `tests/Cna.Core.Tests/Campaigns/CombatCycleMovementRulesTests.cs` — focused literal and rejection
+  cases, independent expected arithmetic and prior-input preservation.
+- `docs/design/combat-cycle-movement-delivery-plan.md` — retained scope/evidence.
+- `docs/design/combat-cycle-implementation-plan.md` — root status and parent acceptance mapping.
+
+Existing `CampaignCombatSpending.cs`, `CampaignCombatObligations.cs` and frozen schemas/fixtures
+are reuse-only. If implementation requires changing their contracts or exceeding this manifest,
+revise scope before edits rather than silently expanding. Administrative README/roadmap status
+updates do not add runtime behavior.
+
+Acceptance criteria:
+
+1. Derive active membership by complete original UnitKey, never proximity. Validate creation/scope,
+   duplicate identities and capacity; return exact affected pairs in canonical relation-ID order.
+   Contact2/Engaged4 overlap or multiple counterparts charges maximum once; inactive/unrelated
+   pairs add zero. Last-counterpart and unbound-arrival cases preserve identity semantics.
+2. Add independently admitted terrain cost to maximum break-off cost and reuse existing cumulative
+   spending/DP rule. Literal Clear2 cases: spent5+4+2=11/DP1; spent9+4+2=15/DP5; spent10+6 rejects.
+   Cover ordinary floor(3*CPA/2), released-I CPA, released-II floor(CPA/2), CPA9, prior mandatory
+   overspend and arithmetic overflow. Synthetic Reserve ceiling probes do not prove release rights.
+3. Rejection leaves all inputs unchanged; result owns retained collections. No event emission,
+   World/location mutation, relationship ending receipt, Movement completion, proximity override,
+   repeat permission or public admission. Assessment alone never authorizes a move.
+
+This slice does not duplicate terrain legality, custody/guard checks, topology, ZOC or Weather
+admission. Callers must prove those before using the rule. Exact admission belongs to018B and
+subsequent actual-history adapters, with unsupported profiles rejected explicitly.
+
+## Verification and checkpoints
+
+Start with compiling failing tests for missing relation-aware assessment. Match independent
+literal expectations and frozen Python arithmetic/membership behavior; do not regenerate fixtures.
+Run focused rules and existing CombatWorld spending tests, full solution build/test, Boundary gate,
+format and independent review before accepting018A. Use repository native MTP commands and unique
+binlogs according to run-tests/binlog-generation skills when executing .NET checks.
+
+Planning checks: `git diff --check`; local links; existing
+`python3 -B docs/specs/verify-combat-ordinary-movement-v1.py`. No .NET test claim for docs-only plan.
+
+018B must receive its own exact <=5-primary-file manifest before code. Historical D2a isolated
+fixture derives C3c World; current accepted source is Result2/World7. Do not force old IDs into new
+history or claim direct parity without auditing that boundary. Prefer smallest compatible rule
+slice first; retain16 bases/20 events/16 final-state vectors as historical contract evidence only
+until native boundary compatibility is demonstrated.
+
+After018B and each019 child, require cumulative replay, original-byte retries, stale/foreign input,
+re-signed event/cache tampering, atomic World/resource preservation and exact successor checks.
+After actual repeat/Movement integration, reconcile all parent017–019 acceptance criteria before
+moving to public020–021. No blanket full-cycle completion from isolated probes.
+
+## Risks and open work
+
+- Circular coarse dependencies: resolved by explicit child order above; parent closure unchanged.
+- Cost drift: one relation assessment plus existing spending implementation shared by later callers.
+- Historic/current lineage mismatch:018B scope gate, not permission to change frozen contracts.
+- Reserve ceiling mistaken for authority: pure018A probe boundary explicit; actual history deferred.
+- Later children remain sizing work, not preapproved manifests or completed implementations.
+
+Planning validation passed: frozen ordinary-Movement oracle (8 cases/both sides,36 cuts,486
+mutations,120 raw rejections,630 arithmetic coordinates,14 atomic/overflow guards), new plan
+links and `git diff --check`. These are existing contract checks, not018 runtime test evidence.
+
+## Task018A implementation
+
+`CampaignCombatCycleMovementRules.Assess` returns owned immutable affected memberships, terrain,
+break-off and total cost. Full UnitKey equality selects active pairs; canonical relation-ID ordering
+and maximum-cost precedence retain original receipt/endpoints. It accepts a separately admitted
+current-stage ledger only: foreign creation, wrong scope, duplicate IDs, nulls and >512 records
+reject, including unrelated invalid records. Historical ledger filtering/admission remains a caller
+obligation; no old relationship is silently charged as current.
+
+`AssessAndCharge` re-derives assessment from operational ledger scope and delegates to existing
+`CampaignCombatSpending.ChargeOrdinary`. Result is provisional immutable state and Cause history;
+caller supplies receipt identity and independently authenticated original unit/operational state.
+No move, ending receipt or World mutation occurs. Pure `Assess` needs no receipt and supports later
+continuation checks without generating hypothetical events. Both terrain1 research probes and
+terrain2 actual Clear cost accepted; terrain legality remains external.
+
+Initial RED: one compiled test failed at missing assessment. Expanded RED:19 compiled cases failed
+against stubs after fixing public-test/internal-enum signature accessibility. GREEN:48 new/existing
+World tests passed. Added final full-key opposite-side identity test; final focused49/full2,397/Boundary81 passed, with clean build/format and frozen oracle.
+
+Independent review1 of3: Ready with non-blocking follow-ups, no actionable findings; full-suite
+condition satisfied. Reviewed source/test hashes unchanged. [Evidence](../../.planning/combat-cycle-movement/evidence.md)
+and [review](../../.planning/combat-cycle-movement/review-report.md) retain exact checks and limits.
+Next018B requires its own bounded native-event/provenance manifest; parent018 remains open.

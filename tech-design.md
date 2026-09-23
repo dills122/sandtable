@@ -1299,3 +1299,10 @@ changes in projected World. Base/Control readers and caches compare against full
 and duplicate retries return retained event bytes. Two frozen examples pin2 bases,6 native events,
 8 wrapper Control frames and2 terminal literals. Completion remains ordinal1 at Reserve Release.
 Later-II/consumed campaign lineage and public activation remain open.
+
+Task018A adds pure `CampaignCombatCycleMovementRules`: separately admitted current-stage
+relationships yield original-key affected membership and terrain plus maximum Contact2/Engaged4
+cost. Optional provisional charging reuses `CampaignCombatSpending`, preserving cumulative ceilings
+and incremental excess-CPA DP. This internal assessment owns its result collections, emits no event
+and grants no movement or Reserve exception authority. Atomic Movement and actual repeat-dependent
+admission remain later children in the Movement delivery plan.

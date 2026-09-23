@@ -1710,3 +1710,21 @@ frames and2 terminal literals. Full2,377 and Boundary81 pass, build/format clean
 review1 of3 Ready with no actionable findings. Full run restarted after user interruption and
 passed unchanged source. Positive and fallback projection alter only Reserve status. Parent017,
 Tasks018–019, public activation and HOST-PUB-001 remain open.
+
+
+Task018 planning checkpoint, 2026-09-23 (merged PR141 `54029a5`): user approved dependency
+reconciliation and smallest Movement slice. [Delivery plan](combat-cycle-movement-delivery-plan.md)
+separates018A relation-aware assessment,018B atomic trusted-boundary Movement,019 continuation and
+repeat authority, then actual018 repeat-dependent Movement and remaining017 lineage. Coarse parent
+arrows do not require full later-history closure before implementing their own prerequisites.
+Parent017–019 acceptance criteria remain unchanged. Next exact four-primary-file slice is018A;
+existing spending/relationship types reused, no native move or public admission claimed.
+
+Task018A implementation dispatch, 2026-09-23: user approved coding from retained plan. New pure
+`CampaignCombatCycleMovementRules` assesses original relationship membership and maximum break-off
+cost, then delegates optional provisional charging to existing spending kernel. Exact source/test
+manifest retained. Current-stage trusted boundary only; no movement event, World projection,
+exception expiry, repeat or public admission. Accepted locally after focused49/full2,397/Boundary81,
+clean build/format, frozen oracle and fresh independent review1 with no actionable findings.
+[Evidence](../../.planning/combat-cycle-movement/evidence.md) retains checks. Next018B manifest
+remains separate; parent017–019 and public activation stay open.
