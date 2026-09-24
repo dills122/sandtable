@@ -1016,3 +1016,8 @@ boundary. An assessment is not a move receipt, World update or continuation auth
 authenticated Result2 history supplies an explicit synthetic next-Movement boundary for atomic
 ordinary moves and canonical replay. Move receipts record actual projected movement within this
 isolated mechanism; they do not prove campaign repeat or grant Reserve exception authority.
+
+**Continuation assessment** names `CampaignCombatContinuation` (Task019A): a pure check over
+independently admitted projections, returning movement witnesses for the exhausted-ammunition
+profile. A witness predicts a legal move and its costs; it does not spend resources, authenticate
+history, count material progress or authorize repeat. Armed support needs its own adapter.

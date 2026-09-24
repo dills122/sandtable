@@ -1315,3 +1315,12 @@ Movement readback reconstructs from authenticated history; generic World/Snapsho
 their existing strict settlement rules. Historical Result1 Movement fixtures stay unchanged; no
 historical golden-byte parity or actual release/repeat authority is claimed. Guarded019 continuation
 and actual repeat-dependent admission remain open, as does public activation.
+
+Task019A adds pure `CampaignCombatContinuation.AssessTrustedBoundary`. Independently admitted
+completed Release, World and retained Movement-end projections supply full-unit scope and
+proximity/exclusion history. The selected exhausted-ammunition infantry profile enumerates
+adjacent free Clear2 destinations using shared break-off/spending rules and cumulative Reserve
+ceilings. Same-scope pending next-Movement exceptions waive only proximity. No input is mutated;
+owned witnesses are not event receipts or repeat authority. Armed/unsupported profiles reject
+before an empty witness result can be used. Native history/progress and armed support adapters
+and guarded control lifecycle remain separate019 children.

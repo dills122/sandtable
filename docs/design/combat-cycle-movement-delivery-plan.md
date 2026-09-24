@@ -144,3 +144,30 @@ Next dependency is019 guarded continuation/finish/repeat, followed by018 integra
 then remaining017 later-II/consumed lineage. All parent acceptance criteria remain open.
 
 Validation and independent review: [Task018B evidence](../../.planning/combat-cycle-movement/task018b-evidence.md).
+
+## Task019A continuation assessment
+
+Implemented pure `CampaignCombatContinuation.AssessTrustedBoundary` for the frozen
+exhausted-ammunition profile. Input projections must already be independently admitted:
+Content7, cycle, completed Release/World7 and prior Movement-end evidence. This helper checks
+coverage/scope and computes witnesses; it does not authenticate receipts or event history.
+
+All original own units must be represented in completed Release, and Movement-end evidence
+covers both original units canonically. Ordinary eligibility retains end-distance and prior
+exclusions even when current positions change. Pending same-scope next-ordinal release exceptions
+waive proximity only; Reserve-I/II ceilings and occupied/guarded destinations still apply.
+Adjacent free Clear2 witnesses reuse018A maximum relationship cost and provisional spending,
+preserving cumulative CP and incremental DP. Assessment owns output and mutates no input.
+
+Armed own units, unsupported Weather/terrain/composition, incomplete Release/settlement, malformed
+proof/history/ledger and arithmetic/capacity faults reject. Empty witness lists represent only
+supported cases without eligible/affordable/free moves. No repeat/finish or progress decision
+is made. Released-I/II tests are isolated ledger probes, not new campaign lineage acceptance.
+
+Exact four-primary-file manifest: continuation engine/models, focused tests, canonical plan and
+this delivery plan. Native source/progress adapters, armed3j support, guarded3k lifecycle and
+actual repeated Movement remain following children; parent017–019 and public activation open.
+Validation/review: [Task019A evidence](../../.planning/combat-cycle-movement/task019a-evidence.md).
+
+Task019A locally accepted:62 focused/2,429 full/81 Boundary tests,0 skipped; clean build/format,
+frozen cycle-control oracle and fresh Ready review1of3. Source/test hashes unchanged at closeout.

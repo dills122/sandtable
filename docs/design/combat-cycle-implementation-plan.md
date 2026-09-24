@@ -1751,3 +1751,30 @@ no actionable issues; full-suite condition satisfied with reviewed source/test h
 [Evidence](../../.planning/combat-cycle-movement/task018b-evidence.md) and
 [review](../../.planning/combat-cycle-movement/task018b-review-report.md) retain results and limits.
 Next019 guarded continuation/repeat; actual018 Movement admission and remaining017 lineage open.
+
+### Task019A dispatch — trusted-boundary continuation assessment
+
+User authorized next bounded continuation-check slice on2026-09-23, basec9ca2e3.
+Implement pure exhausted-ammunition Movement assessment from independently admitted Content7,
+cycle, completed Release projection, World7, Normal Weather and retained Movement-end evidence.
+Validate full original-unit coverage/scope, persistent proximity exclusions, pending next-ordinal
+Reserve exceptions, status and cumulative CP binding. Enumerate canonical adjacent free Clear2
+witnesses using018A max break-off and existing spending; only genuine ceiling exhaustion omits
+a witness. Armed/unsupported/malformed/overflow inputs reject, including when exclusions or CP
+would otherwise hide unsupported capability. Assessment owns results and changes no World/RNG.
+This is a trusted-boundary mechanism, not an event-history authenticator or repeat authorization.
+Native source/progress admission, armed3j adapter and guarded3k control remain following019 children.
+Exact four-primary-file manifest: new CampaignCombatContinuation.cs and
+CombatContinuationTests.cs in Core/Core.Tests Campaigns; this canonical plan and
+combat-cycle-movement-delivery-plan.md. Administrative status/review evidence separate.
+Tests: both owners/slots;32 settled Result2 contexts; literal Contact9/Engaged11+DP1,spent9→15
+and rejected16, incremental DP/no refunds; end-distance and old exclusions; pending exception
+scope/expiry; I/II ceilings and retained-II; canonical ownership; occupancy/guards; no mutation;
+incomplete Release, armed/non-Normal/profile/proof/ledger/overflow faults. No schema/fixture churn.
+
+Task019A locally accepted:62 focused,2,429 full and81 Boundary tests passed,0 skipped;
+build0 warnings/errors,format and frozen cycle-control oracle passed. Fresh review1of3 Ready
+with no actionable findings; reviewed hashes unchanged.
+[Evidence](../../.planning/combat-cycle-movement/task019a-evidence.md) and
+[review](../../.planning/combat-cycle-movement/task019a-review-report.md) retain exact checks.
+Next019 source/progress and armed adapters, then guarded repeat/finish; parents remain open.
