@@ -1343,3 +1343,12 @@ regression, expiry and controller unavailability finish deterministically. Every
 rederives events from separately admitted inputs; caches and persisted base/state are compared
 against replay. Exact retries return original bytes. World/resources/RNG/history remain retained;
 no Movement execution, housekeeping, settled-profile admission or public activation is added.
+
+Task018C adds `CampaignCombatInheritedReserveMovement` for one frozen3l released-I ordinal2 move.
+An owned control suffix replays019C and binds exact both-owner repeat terminals before admission.
+It reuses Movement commands, receipt/prefix domains and018A charge rules with the released-I ceiling.
+Element/representation location and World/member CP update atomically (0→2 under ceiling10), while
+all other World facts and full Release history remain unchanged. Existing World7 construction
+validates the no-settlement successor; isolated settled-Movement admission is not widened.
+Source-bound base/state readback, independent-input replay and exact retry bytes preserve authority.
+Pending exception remains pending: actual Movement completion and expiry are the following3m gate.

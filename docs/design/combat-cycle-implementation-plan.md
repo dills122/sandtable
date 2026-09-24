@@ -1830,3 +1830,28 @@ build zero warnings/errors, format and all four direct frozen oracles passed. Fr
 [Evidence](../../.planning/combat-cycle-movement/task019c-evidence.md) and
 [review](../../.planning/combat-cycle-movement/task019c-review-report.md) retain exact results.
 Next actual repeated Movement admission; settled source/progress and parent017–019 remain open.
+
+### Task018C dispatch — actual released-I ordinal-2 Movement
+
+User authorized next slice on the same branch after local019C commit4f1b51c. Consume full
+creation-to-Release and guarded-repeat history, restricted to both exact frozen3k repeat terminals.
+Implement frozen3l one-event Clear move: authority27→28, assault→own rear, World/member CP0→2 under
+released-I ceiling10. Reuse018A costs and existing Movement command/event/receipt semantics.
+Keep exception pending and preserve ammunition/TOE/Cohesion/RNG/history; completion/expiry is next3m.
+
+Exact five-primary-file manifest: new CampaignCombatInheritedReserveMovement.cs (owned source,
+typed projections and engine), CampaignCombatInheritedReserveMovementCodec.cs,
+CombatInheritedReserveMovementTests.cs, Core.Tests.csproj fixture link and this canonical plan.
+Administrative docs/evidence separate. No existing World constructor or isolated Movement API changes.
+Acceptance: both exact frozen3l base/state/event lengths/hashes, all cuts and original-byte retries;
+independent full World/member retention comparison; wrong/stale/foreign/altered/re-signed commands,
+source/proof/history/cache and malformed bounds reject. Full/focused/Boundary/build/format, direct
+oracles and fresh review. Parent017–019, settled source/progress, later-II/consumed lineage,
+Snapshot/public activation remain open.
+
+Task018C locally accepted: 50 focused, 2,457 full and 81 Boundary tests passed, zero failures/skips;
+build zero warnings/errors, format and all four direct frozen oracles passed. Fresh review instance
+1 of 3 found no actionable issues; final gate conditions fulfilled with reviewed hashes unchanged.
+[Evidence](../../.planning/combat-cycle-movement/task018c-evidence.md) and
+[review](../../.planning/combat-cycle-movement/task018c-review-report.md) retain exact results.
+Next released-I Movement completion and exception expiry (3m); parent017–019 remains open.

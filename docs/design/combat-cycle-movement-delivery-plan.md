@@ -217,3 +217,25 @@ build zero warnings/errors, format and all four direct frozen oracles passed. Fr
 [Evidence](../../.planning/combat-cycle-movement/task019c-evidence.md) and
 [review](../../.planning/combat-cycle-movement/task019c-review-report.md) retain exact results.
 Next actual repeated Movement admission; settled source/progress and parent017–019 remain open.
+
+## Task018C actual released-I ordinal2 Movement
+
+The exact frozen3k both-owner repeat terminals now admit one native frozen3l Clear move from
+assault to own rear, authority27→28 and cumulative World/member CP0→2 under released-I ceiling10.
+Full019C replay precedes terminal hash checks; separately retained control and Movement inputs
+prevent persisted events or self-consistent hashes from supplying authority. New source/codec owns
+bytes and readback, shares018A cost rules and original Movement command/event/receipt semantics.
+No existing settled-Movement API or World constructor is widened. One move only, exact retries.
+
+Both element and representation move atomically; all resources, Release metadata, pending ordinal2
+exception, RNG and history remain retained. Completion/expiry still needs3m. Five primary files:
+engine/models, codec, tests, fixture-link project file and canonical plan. Parent017–019, settled
+source/progress, later-II/consumed lineage, Snapshot and public activation remain open.
+[Task018C evidence](../../.planning/combat-cycle-movement/task018c-evidence.md) retains checks.
+
+Task018C locally accepted: 50 focused, 2,457 full and 81 Boundary tests passed, zero failures/skips;
+build zero warnings/errors, format and all four direct frozen oracles passed. Fresh review instance
+1 of 3 found no actionable issues; final gate conditions fulfilled with reviewed hashes unchanged.
+[Evidence](../../.planning/combat-cycle-movement/task018c-evidence.md) and
+[review](../../.planning/combat-cycle-movement/task018c-review-report.md) retain exact results.
+Next released-I Movement completion and exception expiry (3m); parent017–019 remains open.

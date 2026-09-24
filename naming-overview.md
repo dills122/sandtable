@@ -1030,3 +1030,7 @@ and names next ordinal2 without opening it. Repeat/finish needs a separate contr
 released-I history and armed proof authorize one repeat/finish decision. Repeat opens ordinal2
 Movement; finish enters Truck Convoy. Closure receipts bind the old cycle and exception expiry.
 Opening a Movement occurrence does not execute a move or activate public gameplay.
+
+**Inherited Reserve Movement** names `CampaignCombatInheritedReserveMovement` (Task018C): one
+actual released-I ordinal2 move from authenticated repeat history. The Movement receipt binds
+atomic location/World-CP/member-CP updates; it is not a completion or exception-expiry receipt.
