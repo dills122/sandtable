@@ -1333,3 +1333,22 @@ Canonical proof bytes match historical3j; support fixture identities remain comp
 not current Snapshot/public admission. Exact terminal hashes restrict this child to frozen timing
 and resource profiles after replay. Readback regenerates proof from retained source and inputs;
 caller proof fields never authorize continuation. No cycle advancement or Combat execution occurs.
+
+Task019C adds `CampaignCombatInheritedCycleControl` and its canonical codec. An owned source
+captures independent Release inputs/events and replays through019B before deriving the proof-bound
+control base. System opening admits one owner decision with fixed deadline. Owner repeat atomically
+closes ordinal1 and opens same-slot ordinal2 Movement using pre-event prefix and resulting version;
+finish enters Truck Convoy and expires pending exception with the closure receipt. Clock loss,
+regression, expiry and controller unavailability finish deterministically. Every control replay
+rederives events from separately admitted inputs; caches and persisted base/state are compared
+against replay. Exact retries return original bytes. World/resources/RNG/history remain retained;
+no Movement execution, housekeeping, settled-profile admission or public activation is added.
+
+Task018C adds `CampaignCombatInheritedReserveMovement` for one frozen3l released-I ordinal2 move.
+An owned control suffix replays019C and binds exact both-owner repeat terminals before admission.
+It reuses Movement commands, receipt/prefix domains and018A charge rules with the released-I ceiling.
+Element/representation location and World/member CP update atomically (0→2 under ceiling10), while
+all other World facts and full Release history remain unchanged. Existing World7 construction
+validates the no-settlement successor; isolated settled-Movement admission is not widened.
+Source-bound base/state readback, independent-input replay and exact retry bytes preserve authority.
+Pending exception remains pending: actual Movement completion and expiry are the following3m gate.

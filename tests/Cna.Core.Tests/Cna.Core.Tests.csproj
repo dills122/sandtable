@@ -114,6 +114,8 @@
     <None Include="../../docs/specs/fixtures/combat-sealed-round-v1.json" Link="Campaigns/Fixtures/combat-sealed-round-v1.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="../../docs/specs/fixtures/combat-result-settlement-v1.json" Link="Campaigns/Fixtures/combat-result-settlement-v1.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="../../docs/specs/fixtures/combat-snapshot-composition-v1.json" Link="Campaigns/Fixtures/combat-snapshot-composition-v1.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../../docs/specs/fixtures/combat-inherited-reserve-movement-v1.json" Link="Campaigns/Fixtures/combat-inherited-reserve-movement-v1.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../../docs/specs/fixtures/combat-inherited-cycle-control-v1.json" Link="Campaigns/Fixtures/combat-inherited-cycle-control-v1.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="../../docs/specs/fixtures/combat-inherited-armed-continuation-v1.json" Link="Campaigns/Fixtures/combat-inherited-armed-continuation-v1.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="../../docs/specs/fixtures/combat-inherited-reserve-release-v1.json" Link="Campaigns/Fixtures/combat-inherited-reserve-release-v1.json" CopyToOutputDirectory="PreserveNewest" />
     <Using Include="Xunit" />
