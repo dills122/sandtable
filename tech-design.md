@@ -632,6 +632,9 @@ plausible approximation.
 The physical game's hierarchical sequence must remain visible in the model. A weekly Game Turn
 contains Operation Stages, player phases, and repeatable movement/combat segments. The engine
 therefore uses versioned phase/segment identifiers instead of a monolithic `AdvanceTurn` operation.
+The immutable Land sequence catalog retains its most recently requested turn to avoid rebuilding
+positions during replay. This single-entry cache contains only rules data; campaign state, actor
+resolution, and replay validation remain outside it. Concurrent misses may rebuild the catalog.
 
 The initial `Cna.Core` implementation makes that boundary executable. `Cna.Core.Rules` defines
 source-cited normalized artifacts, complete adopted-ruling metadata, a canonical `cna-1979.1`
