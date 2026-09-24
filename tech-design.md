@@ -1324,3 +1324,12 @@ ceilings. Same-scope pending next-Movement exceptions waive only proximity. No i
 owned witnesses are not event receipts or repeat authority. Armed/unsupported profiles reject
 before an empty witness result can be used. Native history/progress and armed support adapters
 and guarded control lifecycle remain separate019 children.
+
+Task019B adds `CampaignCombatArmedContinuation` and its source-bound proof codec for the two
+frozen3j inherited released-I terminals. Full017C source replay authenticates creation through
+Release, including actual progress and Movement completion. Native initial-profile certification
+proves one supported prospective candidate while preserving CP/ammunition/TOE/RNG/World/history.
+Canonical proof bytes match historical3j; support fixture identities remain compatibility metadata,
+not current Snapshot/public admission. Exact terminal hashes restrict this child to frozen timing
+and resource profiles after replay. Readback regenerates proof from retained source and inputs;
+caller proof fields never authorize continuation. No cycle advancement or Combat execution occurs.

@@ -1021,3 +1021,7 @@ isolated mechanism; they do not prove campaign repeat or grant Reserve exception
 independently admitted projections, returning movement witnesses for the exhausted-ammunition
 profile. A witness predicts a legal move and its costs; it does not spend resources, authenticate
 history, count material progress or authorize repeat. Armed support needs its own adapter.
+
+**Armed continuation proof** names `CampaignCombatArmedContinuation` (Task019B): replay-derived
+released-I progress and a supported prospective Combat candidate. Proof retains current cycle1
+and names next ordinal2 without opening it. Repeat/finish needs a separate control event.

@@ -171,3 +171,27 @@ Validation/review: [Task019A evidence](../../.planning/combat-cycle-movement/tas
 
 Task019A locally accepted:62 focused/2,429 full/81 Boundary tests,0 skipped; clean build/format,
 frozen cycle-control oracle and fresh Ready review1of3. Source/test hashes unchanged at closeout.
+
+## Task019B inherited armed continuation
+
+`CampaignCombatArmedContinuation` now replays actual creation/held-I/no-move Combat/Release
+history through017C and admits exactly the two frozen3j owner-selected release-I terminals.
+It binds actual release progress and prior Movement completion, validates unused released-I
+rights with pending ordinal2 exception, and calls native initial-profile certification against
+unchanged CP0/ammo10/TOE10 World. No resources, RNG, history or authority are advanced.
+
+Canonical proof/readback matches frozen3j fields and both literal hashes. Four historical support
+contract pins retain compatibility evidence; native certification also proves existing result
+support. Exact terminal hashes supplement full replay rather than replace it. Other valid Release
+timings, fallback conversion, released-II and changed profiles reject. No runtime fixture reads.
+
+Five primary files: armed engine, codec, tests, fixture-link project file and canonical plan.
+Next guarded repeat/finish can consume this authenticated armed witness and material progress.
+Settled source/progress integration, actual repeated Movement and parent017–019 remain open.
+Public actions/Snapshot activation remain gated.
+[Task019B evidence](../../.planning/combat-cycle-movement/task019b-evidence.md) retains validation.
+
+Task019B locally accepted: 46 focused, 2,437 full and 81 Boundary tests passed, zero skipped;
+build zero warnings/errors, format and all six frozen contract oracles passed. Fresh review
+instance 1 of 3 found no actionable issues; full-suite condition fulfilled and four reviewed
+source/project hashes unchanged. Guarded repeat/finish remains next; parent 017–019 stays open.

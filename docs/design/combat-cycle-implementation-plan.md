@@ -1778,3 +1778,30 @@ with no actionable findings; reviewed hashes unchanged.
 [Evidence](../../.planning/combat-cycle-movement/task019a-evidence.md) and
 [review](../../.planning/combat-cycle-movement/task019a-review-report.md) retain exact checks.
 Next019 source/progress and armed adapters, then guarded repeat/finish; parents remain open.
+
+### Task019B dispatch — inherited released-I armed continuation
+
+User authorized next slice on2026-09-23, base5bdecbf. Consume actual held-I creation-to-Release
+history through existing017C replay, restricted to both frozen3j owner-selected release-I
+terminals. Require completed Release, pending same-scope ordinal2 exception, unused offensive
+commitment, unchanged CP0/ammo10/TOE10/locations and no immediate/future work. Reuse native
+initial-profile certification for supported candidate; bind actual release progress and prior
+Movement completion. Derive exact frozen3j canonical proof and source-bound readback. Historical
+four-contract support pins are compatibility evidence; production certification also executes
+existing native support checks. No inferred support from ammunition alone.
+
+Exact five-primary-file manifest: new CampaignCombatArmedContinuation.cs and
+CampaignCombatArmedContinuationCodec.cs; new CombatArmedContinuationTests.cs; Core.Tests.csproj
+fixture links; this canonical plan. Administrative navigation/evidence separate. Frozen fixtures
+and predecessor APIs unchanged. Strict two terminal hashes follow3j scope, so other valid release
+timings remain unsupported rather than silently widening admission.
+Acceptance: both frozen proof byte lengths/hashes/fields, actual source/progress receipts and
+candidate identity; pure resource/RNG/history retention; reject incomplete/fallback/foreign/
+altered/re-signed histories, changed timing and forged proof fields/support digest; raw bounds,
+canonical bytes and owned outputs. Full checks and fresh review. Following slice remains guarded
+control; settled source/progress integration and parent017–019/public activation still open.
+
+Task019B locally accepted: 46 focused, 2,437 full and 81 Boundary tests passed, zero skipped;
+build zero warnings/errors, format and all six frozen contract oracles passed. Fresh review
+instance 1 of 3 found no actionable issues; full-suite condition fulfilled and four reviewed
+source/project hashes unchanged. Guarded repeat/finish remains next; parent 017–019 stays open.
