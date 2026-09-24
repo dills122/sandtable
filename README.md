@@ -67,8 +67,14 @@ dormant Core tests; they are not yet exposed as playable actions.
 
 Next delivery sequence:
 
-1. Complete later-II/consumed Reserve lineage and implement relation-aware Movement and
-   guarded repeat/finish (remaining Tasks017–019).
+1. Implement relation-aware Movement rules and guarded repeat/finish, then use actual repeated
+   cycles to complete later-II/consumed Reserve lineage (remaining Tasks017–019).
+   [Movement delivery plan](docs/design/combat-cycle-movement-delivery-plan.md) defines first slice;
+   Task018A provides relationship-aware costs; Task018B adds dormant atomic Movement/replay at
+   an explicit isolated boundary. Task019A computes pure movement-continuation witnesses from
+   admitted projections. Task019B authenticates released-I history/progress and armed support.
+   Next: guarded repeat/finish for that path, then actual Movement admission; settled source/progress
+   integration remains open.
 2. Activate certified, side-safe public Combat actions (Tasks020–021), then prove Exercise/Runner
    replay and repeatability (Tasks022–024).
 3. Reconcile all 72 acceptance criteria and demonstrate the authentic continual cycle (Task025).

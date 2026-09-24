@@ -1299,3 +1299,37 @@ changes in projected World. Base/Control readers and caches compare against full
 and duplicate retries return retained event bytes. Two frozen examples pin2 bases,6 native events,
 8 wrapper Control frames and2 terminal literals. Completion remains ordinal1 at Reserve Release.
 Later-II/consumed campaign lineage and public activation remain open.
+
+Task018A adds pure `CampaignCombatCycleMovementRules`: separately admitted current-stage
+relationships yield original-key affected membership and terrain plus maximum Contact2/Engaged4
+cost. Optional provisional charging reuses `CampaignCombatSpending`, preserving cumulative ceilings
+and incremental excess-CPA DP. This internal assessment owns its result collections, emits no event
+and grants no movement or Reserve exception authority.
+
+Task018B adds internal `CampaignCombatCycleMovement` and its canonical codec. Authenticated
+Result2 source replay supplies an explicit isolated ordinal2 Movement boundary. Adjacent Clear2
+moves atomically update location/representation, cumulative CP/DP, relationship ends and causes;
+full input/event replay regenerates exact bytes and retries return original receipts. A narrow
+computed World7 successor retains resources, guards, future duties, RNG and attack history.
+Movement readback reconstructs from authenticated history; generic World/Snapshot readers retain
+their existing strict settlement rules. Historical Result1 Movement fixtures stay unchanged; no
+historical golden-byte parity or actual release/repeat authority is claimed. Guarded019 continuation
+and actual repeat-dependent admission remain open, as does public activation.
+
+Task019A adds pure `CampaignCombatContinuation.AssessTrustedBoundary`. Independently admitted
+completed Release, World and retained Movement-end projections supply full-unit scope and
+proximity/exclusion history. The selected exhausted-ammunition infantry profile enumerates
+adjacent free Clear2 destinations using shared break-off/spending rules and cumulative Reserve
+ceilings. Same-scope pending next-Movement exceptions waive only proximity. No input is mutated;
+owned witnesses are not event receipts or repeat authority. Armed/unsupported profiles reject
+before an empty witness result can be used. Native history/progress and armed support adapters
+and guarded control lifecycle remain separate019 children.
+
+Task019B adds `CampaignCombatArmedContinuation` and its source-bound proof codec for the two
+frozen3j inherited released-I terminals. Full017C source replay authenticates creation through
+Release, including actual progress and Movement completion. Native initial-profile certification
+proves one supported prospective candidate while preserving CP/ammunition/TOE/RNG/World/history.
+Canonical proof bytes match historical3j; support fixture identities remain compatibility metadata,
+not current Snapshot/public admission. Exact terminal hashes restrict this child to frozen timing
+and resource profiles after replay. Readback regenerates proof from retained source and inputs;
+caller proof fields never authorize continuation. No cycle advancement or Combat execution occurs.

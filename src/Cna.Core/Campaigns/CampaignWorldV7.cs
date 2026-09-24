@@ -141,6 +141,49 @@ internal sealed record CampaignWorldSnapshotV7
         }
     }
 
+    /// <summary>Computed trusted-boundary successor; receipt, topology and phase admission belong to replay.</summary>
+    internal CampaignWorldSnapshotV7 ProjectOrdinaryMove(CampaignCombatUnitKey unit, string destination, string receiptId) =>
+        new(this, unit, destination, receiptId);
+
+    private CampaignWorldSnapshotV7(CampaignWorldSnapshotV7 prior, CampaignCombatUnitKey unit,
+        string destination, string receiptId)
+    {
+        ArgumentNullException.ThrowIfNull(unit);
+        ContentContractGuards.RequireStableId(destination, nameof(destination));
+        ContentContractGuards.RequireStableId(receiptId, nameof(receiptId));
+        var settlement = prior.Settlements.SingleOrDefault();
+        if (settlement?.Relationships is null || settlement.Losses is null || settlement.Retreat is null ||
+            (unit != settlement.Attacker && unit != settlement.Defender))
+            throw new ArgumentException("Ordinary Movement requires a completed settlement and its original unit.");
+        var element = prior.Elements.Single(e => e.ElementId == unit.ElementId);
+        var representation = prior.Representations.Single(r => r.BoundElementIds.SequenceEqual([unit.ElementId]));
+        if (!receiptId.StartsWith("mov.", StringComparison.Ordinal) ||
+            element.ReserveStatus != CampaignElementReserveStatus.None || element.Ammunition.Points != 0 ||
+            element.Components.Count != 1 || element.Components[0].CurrentToe <= 0 ||
+            element.OperationalState.VehicleBreakdownState is not null || element.OperationalState.MovementEnded is not null ||
+            destination == element.CurrentLocationId || prior.Elements.Any(e => e.CurrentLocationId == destination) ||
+            prior.Guards.Any(g => g.CurrentLocationId == destination))
+            throw new ArgumentException("Unsupported or occupied ordinary Movement projection.");
+        var charge = CampaignCombatCycleMovementRules.AssessAndCharge(unit, element.OperationalState, 10,
+            CampaignCombatSpendCeiling.Ordinary, 2, prior.Relationships, receiptId, prior.CohesionCauses);
+        if (charge.Spending.Causes.Count > 512) throw new ArgumentException("Movement Cause capacity exceeded.");
+        var moved = new CampaignElementStateV6(element.ElementId, destination, element.ReserveStatus,
+            charge.Spending.State, element.Components, element.SourceParentFormationId, element.CurrentParentFormationId,
+            element.Ammunition, element.Readiness);
+        var affected = charge.Assessment.Affected.Select(r => r.RelationId).ToHashSet(StringComparer.Ordinal);
+        ContractVersion = prior.ContractVersion; CreationBinding = prior.CreationBinding;
+        Elements = Array.AsReadOnly(prior.Elements.Select(e => e.ElementId == unit.ElementId ? moved : e).ToArray());
+        Representations = Array.AsReadOnly(prior.Representations.Select(r => r == representation
+            ? new CampaignMapRepresentationState(r.RepresentationId, destination, r.BindingKind, r.BoundElementIds) : r).ToArray());
+        Relationships = Array.AsReadOnly(prior.Relationships.Select(r => affected.Contains(r.RelationId)
+            ? new CampaignCombatRelationship(r.RelationId, r.CreationReceiptId, r.Kind, r.Attacker, r.Defender,
+                r.GameTurn, r.OperationStage, false, receiptId, "ordinary-break-off") : r).ToArray());
+        CohesionCauses = charge.Spending.Causes;
+        BrokenVehicleLots = prior.BrokenVehicleLots; CustodyLots = prior.CustodyLots; Guards = prior.Guards;
+        ReplacementEntitlements = prior.ReplacementEntitlements; FutureObligations = prior.FutureObligations;
+        Settlements = prior.Settlements;
+    }
+
     public int ContractVersion { get; }
     public string CreationBinding { get; }
     public IReadOnlyList<CampaignElementStateV6> Elements { get; }

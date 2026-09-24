@@ -1007,3 +1007,21 @@ dormant3h adapter is separate from ordinary moved-unit traversal and positive3i 
 actual held-I predecessor history authorizes first owner release-I or deterministic conversion
 fallback. Its progress receipt means a Reserve disposition, not cycle advancement. Pending
 next-Movement history is recorded for future ordinal2 consumption; public play remains inactive.
+
+**Cycle Movement assessment** names `CampaignCombatCycleMovementRules` (Task018A): pure
+relationship membership/cost assessment and provisional spending at a trusted current-stage
+boundary. An assessment is not a move receipt, World update or continuation authorization.
+
+**Isolated cycle Movement** names `CampaignCombatCycleMovement` and its codec (Task018B):
+authenticated Result2 history supplies an explicit synthetic next-Movement boundary for atomic
+ordinary moves and canonical replay. Move receipts record actual projected movement within this
+isolated mechanism; they do not prove campaign repeat or grant Reserve exception authority.
+
+**Continuation assessment** names `CampaignCombatContinuation` (Task019A): a pure check over
+independently admitted projections, returning movement witnesses for the exhausted-ammunition
+profile. A witness predicts a legal move and its costs; it does not spend resources, authenticate
+history, count material progress or authorize repeat. Armed support needs its own adapter.
+
+**Armed continuation proof** names `CampaignCombatArmedContinuation` (Task019B): replay-derived
+released-I progress and a supported prospective Combat candidate. Proof retains current cycle1
+and names next ordinal2 without opening it. Repeat/finish needs a separate control event.

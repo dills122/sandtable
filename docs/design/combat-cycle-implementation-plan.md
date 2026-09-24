@@ -1710,3 +1710,98 @@ frames and2 terminal literals. Full2,377 and Boundary81 pass, build/format clean
 review1 of3 Ready with no actionable findings. Full run restarted after user interruption and
 passed unchanged source. Positive and fallback projection alter only Reserve status. Parent017,
 Tasks018–019, public activation and HOST-PUB-001 remain open.
+
+
+Task018 planning checkpoint, 2026-09-23 (merged PR141 `54029a5`): user approved dependency
+reconciliation and smallest Movement slice. [Delivery plan](combat-cycle-movement-delivery-plan.md)
+separates018A relation-aware assessment,018B atomic trusted-boundary Movement,019 continuation and
+repeat authority, then actual018 repeat-dependent Movement and remaining017 lineage. Coarse parent
+arrows do not require full later-history closure before implementing their own prerequisites.
+Parent017–019 acceptance criteria remain unchanged. Next exact four-primary-file slice is018A;
+existing spending/relationship types reused, no native move or public admission claimed.
+
+Task018A implementation dispatch, 2026-09-23: user approved coding from retained plan. New pure
+`CampaignCombatCycleMovementRules` assesses original relationship membership and maximum break-off
+cost, then delegates optional provisional charging to existing spending kernel. Exact source/test
+manifest retained. Current-stage trusted boundary only; no movement event, World projection,
+exception expiry, repeat or public admission. Accepted locally after focused49/full2,397/Boundary81,
+clean build/format, frozen oracle and fresh independent review1 with no actionable findings.
+[Evidence](../../.planning/combat-cycle-movement/evidence.md) retains checks. Next018B manifest
+remains separate; parent017–019 and public activation stay open.
+
+Task018B dispatch, 2026-09-23, base0dfea4d: user authorized next atomic Movement/replay slice.
+Audit: D2a Movement schema inherits unchanged World/settlement value shapes through Result1;
+Result2 changes upstream command/clocks/receipt identity, so native source hashes differ and no
+historical D2a golden-parity claim is made. Reuse authenticated32-context ResultRelease source
+replay to derive current settled World. Retain explicit isolated-next-movement synthetic ordinal2
+gap; no actual release/repeat admission. Existing World7 constructor requires published relation
+active, so add a narrow computed successor factory; keep constructor/readers strict.
+Exact five-primary-file manifest: CampaignWorldV7.cs, new CampaignCombatCycleMovement.cs,
+new CampaignCombatCycleMovementCodec.cs (Core Campaigns); new CombatCycleMovementTests.cs
+(Core.Tests Campaigns); this canonical plan. Models remain with engine. Frozen schemas/fixtures
+and existing movement/spending APIs unchanged. Acceptance: both owners; Contact/Engaged and
+second move after break-off; CP/DP/resource/relationship atomicity; actual source replay and every
+suffix cut/retry; changed/re-signed event, cache/base, stale/foreign/missing history rejection;
+no renewed allowance, unsupported lineage rejects. Clear2/no positive ZOC/current-stage singleton
+infantry only; preserve guards/future duties. Full gates and independent review before acceptance.
+
+Task018B locally accepted:66 focused,2,407 full and81 Boundary tests passed with0 skips;
+build0 warnings/errors,format/frozen Movement oracle/diff checks passed. Fresh review1of3 found
+no actionable issues; full-suite condition satisfied with reviewed source/test hashes unchanged.
+[Evidence](../../.planning/combat-cycle-movement/task018b-evidence.md) and
+[review](../../.planning/combat-cycle-movement/task018b-review-report.md) retain results and limits.
+Next019 guarded continuation/repeat; actual018 Movement admission and remaining017 lineage open.
+
+### Task019A dispatch — trusted-boundary continuation assessment
+
+User authorized next bounded continuation-check slice on2026-09-23, basec9ca2e3.
+Implement pure exhausted-ammunition Movement assessment from independently admitted Content7,
+cycle, completed Release projection, World7, Normal Weather and retained Movement-end evidence.
+Validate full original-unit coverage/scope, persistent proximity exclusions, pending next-ordinal
+Reserve exceptions, status and cumulative CP binding. Enumerate canonical adjacent free Clear2
+witnesses using018A max break-off and existing spending; only genuine ceiling exhaustion omits
+a witness. Armed/unsupported/malformed/overflow inputs reject, including when exclusions or CP
+would otherwise hide unsupported capability. Assessment owns results and changes no World/RNG.
+This is a trusted-boundary mechanism, not an event-history authenticator or repeat authorization.
+Native source/progress admission, armed3j adapter and guarded3k control remain following019 children.
+Exact four-primary-file manifest: new CampaignCombatContinuation.cs and
+CombatContinuationTests.cs in Core/Core.Tests Campaigns; this canonical plan and
+combat-cycle-movement-delivery-plan.md. Administrative status/review evidence separate.
+Tests: both owners/slots;32 settled Result2 contexts; literal Contact9/Engaged11+DP1,spent9→15
+and rejected16, incremental DP/no refunds; end-distance and old exclusions; pending exception
+scope/expiry; I/II ceilings and retained-II; canonical ownership; occupancy/guards; no mutation;
+incomplete Release, armed/non-Normal/profile/proof/ledger/overflow faults. No schema/fixture churn.
+
+Task019A locally accepted:62 focused,2,429 full and81 Boundary tests passed,0 skipped;
+build0 warnings/errors,format and frozen cycle-control oracle passed. Fresh review1of3 Ready
+with no actionable findings; reviewed hashes unchanged.
+[Evidence](../../.planning/combat-cycle-movement/task019a-evidence.md) and
+[review](../../.planning/combat-cycle-movement/task019a-review-report.md) retain exact checks.
+Next019 source/progress and armed adapters, then guarded repeat/finish; parents remain open.
+
+### Task019B dispatch — inherited released-I armed continuation
+
+User authorized next slice on2026-09-23, base5bdecbf. Consume actual held-I creation-to-Release
+history through existing017C replay, restricted to both frozen3j owner-selected release-I
+terminals. Require completed Release, pending same-scope ordinal2 exception, unused offensive
+commitment, unchanged CP0/ammo10/TOE10/locations and no immediate/future work. Reuse native
+initial-profile certification for supported candidate; bind actual release progress and prior
+Movement completion. Derive exact frozen3j canonical proof and source-bound readback. Historical
+four-contract support pins are compatibility evidence; production certification also executes
+existing native support checks. No inferred support from ammunition alone.
+
+Exact five-primary-file manifest: new CampaignCombatArmedContinuation.cs and
+CampaignCombatArmedContinuationCodec.cs; new CombatArmedContinuationTests.cs; Core.Tests.csproj
+fixture links; this canonical plan. Administrative navigation/evidence separate. Frozen fixtures
+and predecessor APIs unchanged. Strict two terminal hashes follow3j scope, so other valid release
+timings remain unsupported rather than silently widening admission.
+Acceptance: both frozen proof byte lengths/hashes/fields, actual source/progress receipts and
+candidate identity; pure resource/RNG/history retention; reject incomplete/fallback/foreign/
+altered/re-signed histories, changed timing and forged proof fields/support digest; raw bounds,
+canonical bytes and owned outputs. Full checks and fresh review. Following slice remains guarded
+control; settled source/progress integration and parent017–019/public activation still open.
+
+Task019B locally accepted: 46 focused, 2,437 full and 81 Boundary tests passed, zero skipped;
+build zero warnings/errors, format and all six frozen contract oracles passed. Fresh review
+instance 1 of 3 found no actionable issues; full-suite condition fulfilled and four reviewed
+source/project hashes unchanged. Guarded repeat/finish remains next; parent 017–019 stays open.
