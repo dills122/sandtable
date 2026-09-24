@@ -1333,3 +1333,13 @@ Canonical proof bytes match historical3j; support fixture identities remain comp
 not current Snapshot/public admission. Exact terminal hashes restrict this child to frozen timing
 and resource profiles after replay. Readback regenerates proof from retained source and inputs;
 caller proof fields never authorize continuation. No cycle advancement or Combat execution occurs.
+
+Task019C adds `CampaignCombatInheritedCycleControl` and its canonical codec. An owned source
+captures independent Release inputs/events and replays through019B before deriving the proof-bound
+control base. System opening admits one owner decision with fixed deadline. Owner repeat atomically
+closes ordinal1 and opens same-slot ordinal2 Movement using pre-event prefix and resulting version;
+finish enters Truck Convoy and expires pending exception with the closure receipt. Clock loss,
+regression, expiry and controller unavailability finish deterministically. Every control replay
+rederives events from separately admitted inputs; caches and persisted base/state are compared
+against replay. Exact retries return original bytes. World/resources/RNG/history remain retained;
+no Movement execution, housekeeping, settled-profile admission or public activation is added.

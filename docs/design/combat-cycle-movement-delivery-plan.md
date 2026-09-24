@@ -195,3 +195,25 @@ Task019B locally accepted: 46 focused, 2,437 full and 81 Boundary tests passed, 
 build zero warnings/errors, format and all six frozen contract oracles passed. Fresh review
 instance 1 of 3 found no actionable issues; full-suite condition fulfilled and four reviewed
 source/project hashes unchanged. Guarded repeat/finish remains next; parent 017–019 stays open.
+
+## Task019C inherited guarded repeat/finish
+
+Native control now composes the exact both-owner frozen3k source through full019B authentication.
+An owned Release input/event suffix supplies the canonical proof-bound base and supported Combat
+witness. System opening, owner repeat/finish and clock/controller fallbacks preserve fixed timing,
+independent-input replay and exact original-byte retries. Repeat closes ordinal1 and opens ordinal2
+Movement; finish enters same-slot Truck Convoy and expires pending exception with closure receipt.
+World/resources/RNG/attack and Release history persist. No fixture/schema changes or runtime wiring.
+
+Five primary files: engine/models, codec, tests, fixture-link project file and canonical plan.
+Next actual repeated Movement admission can consume the authenticated successor; settled
+source/progress integration, later-II/consumed lineage and parent017–019 remain open. Public actions
+and full Snapshot activation remain gated. Verification and review retained in
+[Task019C evidence](../../.planning/combat-cycle-movement/task019c-evidence.md).
+
+Task019C locally accepted: 36 focused, 2,449 full and 81 Boundary tests passed, zero failures/skips;
+build zero warnings/errors, format and all four direct frozen oracles passed. Fresh review instance
+1 of 3 found no actionable issues; required final gates passed with reviewed hashes unchanged.
+[Evidence](../../.planning/combat-cycle-movement/task019c-evidence.md) and
+[review](../../.planning/combat-cycle-movement/task019c-review-report.md) retain exact results.
+Next actual repeated Movement admission; settled source/progress and parent017–019 remain open.

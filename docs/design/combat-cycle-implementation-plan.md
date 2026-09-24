@@ -1805,3 +1805,28 @@ Task019B locally accepted: 46 focused, 2,437 full and 81 Boundary tests passed, 
 build zero warnings/errors, format and all six frozen contract oracles passed. Fresh review
 instance 1 of 3 found no actionable issues; full-suite condition fulfilled and four reviewed
 source/project hashes unchanged. Guarded repeat/finish remains next; parent 017–019 stays open.
+
+### Task019C dispatch — inherited guarded repeat/finish
+
+User authorized native guarded control after PR142 merged at 5a8bc41. Start from exact both-owner
+released-I terminals admitted by 019B; derive proof-bound base and Combat witness from full retained
+history. Implement System open, owner repeat/finish and deterministic clock/controller fallbacks,
+with exact retries, independent-input replay and source-bound base/state readback. Repeat opens
+same-slot ordinal2 Movement and retains pending exception; finish enters Truck Convoy and expires
+exception with closure receipt. Preserve World/resources/RNG/attack and Release history.
+
+Exact five-primary-file manifest: new CampaignCombatInheritedCycleControl.cs (owned source, typed
+models and engine), CampaignCombatInheritedCycleControlCodec.cs, CombatInheritedCycleControlTests.cs,
+Core.Tests.csproj fixture link, and this plan. Administrative navigation/evidence separate.
+Acceptance: all four frozen3k base/state/event golden lengths and hashes; all replay cuts and retry
+bytes; timing equality/loss/regression, actor/stale/foreign/history/proof/event/cache faults and
+canonical bounds; immutable resources and successor/closure identity. TDD, focused/full/Boundary,
+format/build, direct contract oracles and fresh review. No frozen schema changes, settled source
+admission, actual repeated Movement, Snapshot or public activation; parent017–019 remains open.
+
+Task019C locally accepted: 36 focused, 2,449 full and 81 Boundary tests passed, zero failures/skips;
+build zero warnings/errors, format and all four direct frozen oracles passed. Fresh review instance
+1 of 3 found no actionable issues; required final gates passed with reviewed hashes unchanged.
+[Evidence](../../.planning/combat-cycle-movement/task019c-evidence.md) and
+[review](../../.planning/combat-cycle-movement/task019c-review-report.md) retain exact results.
+Next actual repeated Movement admission; settled source/progress and parent017–019 remain open.

@@ -1025,3 +1025,8 @@ history, count material progress or authorize repeat. Armed support needs its ow
 **Armed continuation proof** names `CampaignCombatArmedContinuation` (Task019B): replay-derived
 released-I progress and a supported prospective Combat candidate. Proof retains current cycle1
 and names next ordinal2 without opening it. Repeat/finish needs a separate control event.
+
+**Inherited cycle control** names `CampaignCombatInheritedCycleControl` (Task019C): authenticated
+released-I history and armed proof authorize one repeat/finish decision. Repeat opens ordinal2
+Movement; finish enters Truck Convoy. Closure receipts bind the old cycle and exception expiry.
+Opening a Movement occurrence does not execute a move or activate public gameplay.
