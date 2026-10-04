@@ -1,6 +1,6 @@
 # CMB-018D released-I Movement completion
 
-Status: implementation, local gates and independent review complete; publication pending. Parent017–019 open.
+Status: implementation, local gates, independent review and draft PR publication complete. Parent017–019 open.
 Coordinator: `01a0c9dc-00bc-78a3-800d-3cb36859e422` (local).
 
 ## Scope and repository
@@ -64,7 +64,7 @@ state and excluded from commit.
 
 ## Next action
 
-Publish the reviewed branch and report to coordinator. Then bound settled-source/progress
+Coordinator: accept this scoped handoff and reconcile draft PR148 with planning PR147. Then bound settled-source/progress
 integration before later-II/consumed provenance and parent017–019 reconciliation. Public020–021,
 Runner022–024, closeout025 and durable HOST-PUB-001 remain separate.
 
@@ -91,3 +91,21 @@ was subsequently refreshed. No second review instance required.
 
 No blocking unresolved contract question. Full gates prove this bounded slice; parent milestones
 and future profile admission remain open. No merge authorized or performed.
+
+## Delivery metadata
+
+Implementation head: `8974fc17d9a51af77c6cda987a99f4c79b93cce2` (all executable changes and local gates).
+Draft PR: [148 — Complete released-I Movement and expire its exception](https://github.com/dills122/sandtable/pull/148),
+base `main`, branch `codex/combat-movement-completion`. A following documentation-only metadata
+commit records this PR/head; resolve final branch head with `git rev-parse HEAD` or the PR.
+Publication used the explicitly requested
+[github-keychain-auth skill](/Users/dsteele/.ai-central/templates/skills/first-party/github-keychain-auth/SKILL.md),
+credential-dependent Git/gh outside sandbox and `env -u GH_TOKEN -u GITHUB_TOKEN` for gh.
+No credentials extracted and no PR merged. CI starts asynchronously; local gates above are final.
+Only untracked `.serena/` tooling remains outside the committed boundary; primary checkout and
+other task worktrees were not edited. No instruction/config file or frozen fixture changes.
+
+User authorization for coordinator handoff confirmed by reading the original October4 user turn
+in chat `01a0c9dc-00bc-78a3-800d-3cb36859e422`: separate child tasks, GPT-6.1 medium, TDD,
+independent final review, this publication skill and sending a handoff back for core sync.
+The initiating task will send this committed path and final PR/head/evidence to that coordinator.
