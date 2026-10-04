@@ -1887,3 +1887,30 @@ Fresh independent review1 of3 returned Ready with no actionable findings; final 
 fulfilled with executable hashes unchanged. [Handoff](../work/handoffs/2026-10-04-combat-movement-completion.md)
 and [review](../work/reviews/2026-10-04-combat-movement-completion-review.md) retain exact evidence.
 Parent017–019 remains open.
+
+
+### Task019D0 — native Result2 settled-continuation executable contract
+
+Dispatched on2026-10-04 after merged018D/3m and planning PR147, base
+`ec0db5319d9598313372ab239253ac1bde351594`. Coordinator grants this slice canonical-plan ownership.
+The [019D0 packet](combat-cycle-post-movement-dispatch.md#frozen-next-dispatch-cmb-019d0-result2-settled-continuation-contract-bridge)
+is implemented by the [contract](../specs/combat-settled-continuation-v1.md), ordered schema,
+retained fixture and Python oracle, plus this plan: exactly five primary files, no C# or old fixture edits.
+Administrative review/handoff evidence is separate.
+
+The bridge replays complete Request/Created11, selection/RBA, Round2/Result2 and untimed System
+empty Release1 before exporting immutable canonical proof. Every one of32 owner/seal contexts
+retains its own World/RNG/obligations and has an explicit supported witness outcome. Commitment
+progress binds the actual accepted event receipt/hash, not commitment ID; empty Release adds none.
+Original Movement distance/exclusions remain independently pinned synthetic-pre-combat evidence.
+Historical Result1 settled-control bytes remain frozen and cannot substitute native source identity.
+The proof grants no repeat authority, spend, release exception, catalogue advance or public activation.
+
+Semantic RED/GREEN, final gates and fresh independent review are recorded in the
+[019D0 handoff](../work/handoffs/2026-10-04-settled-continuation-contract.md).
+Status: executable contract locally verified; fresh independent review1 of3 Ready with no findings.
+Full2,475/Boundary81 and seven direct oracles pass. Draft publication metadata is retained in the
+handoff. No .NET consumer
+is claimed. Parent017–019, Snapshot/publication and public020–021 remain open. After this contract's
+acceptance, separately freeze native proof and settled-control adapters; genuine positive campaign
+entry and ordinary repeat histories, then later-II/consumed provenance require their own gates.
