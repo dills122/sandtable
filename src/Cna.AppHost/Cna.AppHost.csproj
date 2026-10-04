@@ -6,6 +6,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Grpc.AspNetCore" />
+    <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" />
+    <PackageReference Include="OpenTelemetry.Extensions.Hosting" />
     <ProjectReference Include="../Cna.DecisionWorker/Cna.DecisionWorker.csproj" />
     <ProjectReference Include="../Cna.Intelligence.Gateway/Cna.Intelligence.Gateway.csproj" />
     <ProjectReference Include="../Cna.OrleansHost/Cna.OrleansHost.csproj" />
