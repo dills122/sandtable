@@ -19,10 +19,12 @@ not new product truth. [Review](../reviews/2026-10-04-native-settled-continuatio
 ## Current repository state
 
 Worktree:/Users/dsteele/.codex/worktrees/native-settled-continuation/sandtable.
-Branch:codex/native-settled-continuation. Base/HEAD:f33c78cdb4aa44c694e0baf3aeb963d98819ce7b.
-PR149 independently verified MERGED at this exact base. No commit/publication yet.
-Dirty five primary paths plus administrative README/tech-design/naming/roadmap/movement plan/
-contract implementation-status prose and durable review/handoff. Untracked .serena tooling excluded.
+Branch:codex/native-settled-continuation. Base:f33c78cdb4aa44c694e0baf3aeb963d98819ce7b.
+Implementation commit:e8fbaefd9c73edb198103ef1b4e9423ec89befe1. This metadata-only followup
+records publication; obtain its final HEAD with git rev-parse HEAD. PR149 independently verified
+MERGED at this exact base. [Draft PR150](https://github.com/dills122/sandtable/pull/150)
+published and attached; no merge. Five primary paths plus administrative status and durable
+review/handoff committed. Untracked .serena tooling excluded.
 Primary checkout and other tasks untouched.
 
 ## Completed work and evidence
@@ -116,13 +118,12 @@ Replay retrieval verified; reviewer separately verified exact new-symbol retriev
 
 ## Immediate next actions
 
-Publish the scoped reviewed branch as a draft PR, attach it and send this handoff to
-coordinator. Next product slice: separately freeze settled control using this native proof; actual
+Coordinator receives published PR/head and this handoff. Next product slice: separately freeze settled control using this native proof; actual
 positive campaign-history/ordinary repeat/later-II/consumed admission stays separately gated.
 
 ## Delivery metadata and authorization
 
-Publication pending. Human authorization directly verified in coordinator
+Draft PR150 published using configured Keychain credential. Human authorization directly verified in coordinator
 turn01a108e4-42ed-7720-90a7-bb8406e1a2f5: GPT-6.1 medium child chats, TDD, independent review,
 PR using Keychain skill and handoff back. Latest turn01a10930 confirms merged and ready.
 Use [github-keychain-auth](/Users/dsteele/.ai-central/templates/skills/first-party/github-keychain-auth/SKILL.md)
