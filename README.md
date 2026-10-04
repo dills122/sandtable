@@ -879,3 +879,7 @@ The current Umpire foundation is intentionally pure and in-process:
 ## License
 
 No license has been selected yet. All rights are reserved until a license file is added.
+
+Task019D1 adds private native [settled-continuation evidence](docs/specs/combat-settled-continuation-v1.md):
+complete Result2/empty Release replay and pure Movement witnesses for32 owner/seal contexts.
+Earlier Movement remains synthetic; the proof grants no repeat or public action.

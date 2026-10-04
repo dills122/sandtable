@@ -5,7 +5,7 @@ native Round2/Result2/empty Release1 suffix and exports immutable continuation e
 Movement and pre-Combat admission remain **synthetic-pre-combat**. Created11 proves the creation
 identity/configuration, not a causal history from creation to this settled boundary. Parents017–019,
 actual positive campaign-history admission, repeat authority, Snapshot/publication and public
-activation remain open. This contract has no C# implementation or transport registration.
+activation remain open. Task019D1 supplies a private C# proof adapter and codec; transport registration remains absent.
 
 Canonical requirements: [dispatch packet](../design/combat-cycle-post-movement-dispatch.md#frozen-next-dispatch-cmb-019d0-result2-settled-continuation-contract-bridge)
 and [Checkpoint H](../design/combat-cycle-implementation-plan.md#checkpoint-h--reserve-release-and-real-continuation).
@@ -138,11 +138,10 @@ Run `python3 -B docs/specs/verify-combat-settled-continuation-v1.py`. Semantic R
 an importable missing bridge failed literal costs and receipt/hash progress assertions. GREEN requires
 all semantic groups, literal32-row checks, new frozen byte readback/pins and preservation/rejection
 checks. Existing Result2, sealed-round2, Reserve Release, ordinary Movement, cycle-control and3m
-oracles must remain unchanged and pass. Repository `just check` is regression evidence; .NET success
-does not implement this Python contract. Exact executed evidence belongs in the
+oracles must remain unchanged and pass. Repository `just check` is regression evidence; Task019D1 native tests separately establish C# proof parity; repository gates remain regression evidence. Exact executed evidence belongs in the
 [handoff](../work/handoffs/2026-10-04-settled-continuation-contract.md).
 
-Following acceptance, freeze a bounded native settled-proof adapter using017B source replay and019A
+Task019D1 implements the bounded native settled-proof adapter using017B source replay and019A
 assessment, retaining this synthetic trust label. Settled control and genuine creation-to-positive
 Combat/ordinary repeat admission remain separate contracts. Converted-II/consumed offensive and
 public gameplay remain gated; no parent017–019 closure is asserted here.

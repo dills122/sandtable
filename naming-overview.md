@@ -1039,3 +1039,9 @@ atomic location/World-CP/member-CP updates; it is not a completion or exception-
 (Task018D): the owner stops the actual ordinal2 track, System resolves its empty Breakdown-stop
 interrupt, and the owner completes Movement. Its completion receipt binds both the current-location
 Movement-end proof and exception expiry. Arrival at Breakdown Determination does not execute Breakdown.
+
+**Settled continuation proof** names `CampaignCombatSettledContinuation` (Task019D1):
+owned evidence from the native Result2/empty Release suffix and pure Movement assessment.
+Its `sct.` identity names canonical bytes, not an admission receipt or repeat permission.
+Earlier Movement remains explicitly `synthetic-pre-combat`; actual commitment receipt and
+event hash are distinct from the combat commitment ID.
