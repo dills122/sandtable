@@ -5,8 +5,10 @@ in-progress dependency. Coordinator: `01a0c9dc-00bc-78a3-800d-3cb36859e422`, hos
 
 Worktree: `/Users/dsteele/.codex/worktrees/combat-post-movement-plan/sandtable`.
 Branch: `codex/combat-post-movement-plan`; base: `2e17f60767cceff6db950db532d9432f5b81a9cd`
-(fetched origin/main). Commit/head and draft PR will be recorded after review/publication; the
-publication commit containing this handoff is discoverable with `git log --all -- <this path>`.
+(fetched origin/main). Reviewed publication commit: `3a840d5` (full head obtainable with `git rev-parse 3a840d5`).
+Draft PR: [#147 — Plan settled Combat continuation and provenance gates](https://github.com/dills122/sandtable/pull/147),
+base `main`. The final metadata-only commit containing this handoff is discoverable with
+`git log --all -- docs/work/handoffs/2026-10-04-combat-continuation-planning.md`.
 No merge is authorized.
 
 Owned files: this handoff and [dispatch assessment](../../design/combat-cycle-post-movement-dispatch.md).
@@ -86,6 +88,12 @@ Git scope and whitespace checks with the same results above. No new .NET claims.
 
 Residual risk: proposed bridge must establish supported witness outcomes for its 32 retained sources;
 actual created-to-positive-settled, converted-II and consumed admission remain future work. Accept
-the report without changes to design scope. Only final evidence/publication metadata is appended
-after review. Reviewed dispatch SHA-256:
+the report without changes to design scope. Only final evidence/publication metadata and one Markdown list-marker correction are applied
+after review; no design criterion changed. Reviewed dispatch SHA-256:
 `7e25734ed80ae3ab225c5aec8c8767212463085a27058cf37d63390c150b5f0f`.
+
+Publication: branch pushed and draft PR147 created using github-keychain-auth outside the sandbox;
+GH_TOKEN/GITHUB_TOKEN removed for gh. PR attached to this chat. Two files / 267 added lines in the
+initial publication commit. No other worktree or primary file published. The final metadata commit
+records this URL and has no runtime/design change. CI is not a claimed local gate; coordinator can
+inspect PR checks separately. Required next action remains accepted3m evidence then019D0 scheduling.
