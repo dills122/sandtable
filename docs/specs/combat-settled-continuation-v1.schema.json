@@ -1,0 +1,27 @@
+{
+  "contract": "combat-settled-continuation-v1",
+  "objects": {
+    "SyntheticMovementDescriptor": "trustLabel:id descriptorId:id receiptSource:id proof:MovementEndProof",
+    "SettledSource": "contractVersion:int sourceId:id trustLabel:id requestCanonicalUtf8:utf8 createdCanonicalUtf8:utf8 baseCanonicalUtf8:utf8 predecessorCanonicalUtf8:utf8 roundInputsCanonicalUtf8:utf8 roundEventCanonicalUtf8:utf8[] committedCanonicalUtf8:utf8 resultInputsCanonicalUtf8:utf8 resultEventCanonicalUtf8:utf8[] resultStateCanonicalUtf8:utf8 movementEnd:SyntheticMovementDescriptor",
+    "SettledPacket": "contractVersion:int source:SettledSource releaseBaseCanonicalUtf8:utf8 releaseInputs:ReleaseInput[] releaseEventCanonicalUtf8:utf8[]",
+    "SourceIdentity": "sourceId:id sourceHash:hash requestHash:hash createdHash:hash boundaryHash:hash selectionHash:hash baseHash:hash committedHash:hash resultHash:hash releaseBaseHash:hash releaseStateHash:hash movementDescriptorHash:hash roundClockConfigurationHash:hash resultClockPolicyId:id",
+    "SettledContinuationProof": "contractVersion:int profile:id trustLabel:id sourceIdentity:SourceIdentity cycle:Authority stateVersion:long prefix:hash positionId:id releaseCompletionReceiptId:id movementEnd:SyntheticMovementDescriptor world:World randomState:Random attackHistory:AttackHistory[] targetUses:TargetUse[] members:ReserveMember[] progress:ProgressRef[] witnessOutcome:id unsupportedReason:id? witnesses:ContinuationWitness[]"
+  },
+  "domains": {
+    "proof": "sandtable.combat.settled-continuation.v1"
+  },
+  "externalContracts": [
+    "combat-result-settlement-v2.schema.json",
+    "combat-reserve-release-v1.schema.json",
+    "combat-cycle-control-v1.schema.json"
+  ],
+  "limits": {
+    "bytes": 1048576,
+    "depth": 32,
+    "arrayItems": 512,
+    "resultEvents": 16,
+    "roundEvents": 16,
+    "releaseEvents": 2
+  },
+  "scope": "Synthetic pre-Combat trust; full native Result2 suffix; immutable evidence only, no runtime registration."
+}
