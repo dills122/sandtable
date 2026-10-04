@@ -1855,3 +1855,35 @@ build zero warnings/errors, format and all four direct frozen oracles passed. Fr
 [Evidence](../../.planning/combat-cycle-movement/task018c-evidence.md) and
 [review](../../.planning/combat-cycle-movement/task018c-review-report.md) retain exact results.
 Next released-I Movement completion and exception expiry (3m); parent017–019 remains open.
+
+### Task018D dispatch — released-I Movement completion and exception expiry
+
+October 4, 2026: bounded five-primary-path manifest frozen before implementation:
+`CampaignCombatInheritedReserveMovementCompletion.cs`, its `Codec.cs`,
+`CombatInheritedReserveMovementCompletionTests.cs`, Core test fixture-link project file, and this plan.
+Administrative project-map/status and handoff evidence changes accompany the slice. Baseline main
+`2e17f60` includes018C/019C and merged performance PR146.
+
+Consume both exact frozen3l creation-rooted terminals at authority28. Bind owner stop to actual
+Movement track and move receipt; advance29 to Breakdown-stop interrupt. System resolves the empty
+cohort at30 without RNG draw and resumes captured Movement. Owner completes at31 into Breakdown
+Determination. Derive ordinal2 end proof from current World with prior original-unit coverage and
+monotone proximity exclusions; atomically expire only the matching pending exception from that
+accepted completion receipt through a bounded port of unchanged D2b.2 semantics. Retain
+World/CP2/ammunition10/TOE10/Cohesion/RNG/history/track and exact retries.
+
+Acceptance covers both frozen bases, all frames/events/prefixes, every cut and prior retry,
+source ownership/authentication, stale/foreign/malformed/re-signed input rejection and unsupported
+fourth-event rejection. Gates: frozen3m/3l/lifecycle/control oracles, focused/full/Boundary tests,
+build/format, and fresh-context independent code-and-plan review (maximum three passes).
+No Breakdown execution, Runner/Orleans behavior, Snapshot routing or public activation.
+Parents017–019 remain open; settled source/progress and later-II/consumed lineage remain subsequent.
+Evidence and reviewer report will be retained in
+[Task018D handoff](../work/handoffs/2026-10-04-combat-movement-completion.md).
+
+Task018D locally accepted:18 focused,2,475 full and81 Boundary cases passed with zero failures/skips;
+build zero warnings/errors, whole-solution format and four unchanged frozen oracles passed.
+Fresh independent review1 of3 returned Ready with no actionable findings; final gate conditions
+fulfilled with executable hashes unchanged. [Handoff](../work/handoffs/2026-10-04-combat-movement-completion.md)
+and [review](../work/reviews/2026-10-04-combat-movement-completion-review.md) retain exact evidence.
+Parent017–019 remains open.

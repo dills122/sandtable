@@ -1354,4 +1354,14 @@ Element/representation location and World/member CP update atomically (0→2 und
 all other World facts and full Release history remain unchanged. Existing World7 construction
 validates the no-settlement successor; isolated settled-Movement admission is not widened.
 Source-bound base/state readback, independent-input replay and exact retry bytes preserve authority.
-Pending exception remains pending: actual Movement completion and expiry are the following3m gate.
+The move retains a pending exception until the following3m completion receipt is accepted.
+
+Task018D adds `CampaignCombatInheritedReserveMovementCompletion` for both exact frozen3l terminals.
+Full retained-source replay authenticates authority28 and the actual track/move receipt; owner stop
+interrupts Movement at29, empty System resolution resumes Movement at30, and owner completion
+reaches Breakdown Determination at31. Current World locations derive ordinal2 proof with retained
+unit coverage and monotone proximity exclusions. A bounded port of D2b.2 expiry binds the pending
+exception and proof atomically to the accepted completion receipt. World, CP2, ammunition/TOE10,
+Cohesion, RNG, attack history and track remain unchanged. Profile-specific v1 envelopes remain
+dormant; Breakdown execution, settled source/progress, later-II/consumed lineage and public activation
+are subsequent work.
