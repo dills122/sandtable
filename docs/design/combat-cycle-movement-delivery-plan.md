@@ -239,3 +239,24 @@ build zero warnings/errors, format and all four direct frozen oracles passed. Fr
 [Evidence](../../.planning/combat-cycle-movement/task018c-evidence.md) and
 [review](../../.planning/combat-cycle-movement/task018c-review-report.md) retain exact results.
 Next released-I Movement completion and exception expiry (3m); parent017–019 remains open.
+
+## Task018D released-I Movement completion
+
+`CampaignCombatInheritedReserveMovementCompletion` consumes each exact frozen3l terminal through
+full independent replay. Owner stop at29 binds actual track/move receipt and suspends Movement;
+empty System resolution at30 resumes it; owner completion at31 derives current World locations
+and atomically binds ordinal2 proof/exception expiry to the accepted receipt. All material
+resources, RNG, history and track persist. Canonical bytes, all cuts/retries, source ownership,
+forged readback and malformed/foreign/stale inputs have focused coverage.
+
+The five-path manifest is engine/models, codec, tests, fixture-link project and canonical plan.
+[Task018D handoff](../work/handoffs/2026-10-04-combat-movement-completion.md) retains exact verification
+and independent review. Settled source/progress integration, later-II/consumed lineage and
+parent017–019 closure remain open, followed by public020–021 and Runner022–024.
+
+Task018D locally accepted:18 focused,2,475 full and81 Boundary cases passed with zero failures/skips;
+build zero warnings/errors, whole-solution format and four unchanged frozen oracles passed.
+Fresh independent review1 of3 returned Ready with no actionable findings; final gate conditions
+fulfilled with executable hashes unchanged. [Handoff](../work/handoffs/2026-10-04-combat-movement-completion.md)
+and [review](../work/reviews/2026-10-04-combat-movement-completion-review.md) retain exact evidence.
+Parent017–019 remains open.

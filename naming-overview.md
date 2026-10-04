@@ -1034,3 +1034,8 @@ Opening a Movement occurrence does not execute a move or activate public gamepla
 **Inherited Reserve Movement** names `CampaignCombatInheritedReserveMovement` (Task018C): one
 actual released-I ordinal2 move from authenticated repeat history. The Movement receipt binds
 atomic location/World-CP/member-CP updates; it is not a completion or exception-expiry receipt.
+
+**Inherited Reserve Movement completion** names `CampaignCombatInheritedReserveMovementCompletion`
+(Task018D): the owner stops the actual ordinal2 track, System resolves its empty Breakdown-stop
+interrupt, and the owner completes Movement. Its completion receipt binds both the current-location
+Movement-end proof and exception expiry. Arrival at Breakdown Determination does not execute Breakdown.

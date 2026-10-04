@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="../../docs/specs/fixtures/combat-inherited-reserve-movement-completion-v1.json" Link="Campaigns/Fixtures/combat-inherited-reserve-movement-completion-v1.json" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
     <Content
       Include="Content/Fixtures/rules-lab.content.movement-contact.v1.golden.json"
