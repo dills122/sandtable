@@ -2,6 +2,10 @@ namespace Cna.Core.Rules;
 
 public static class Cna1979LandSequence
 {
+    // Catalog values (including source lists) are immutable. Retain only the last turn;
+    // concurrent misses may rebuild it, but cannot mix positions from different turns.
+    private static IReadOnlyList<LandSequencePosition>? lastTurn;
+
     public const int ContractVersion = 3;
     public const int CatalogSchemaVersion = 3;
 
@@ -20,6 +24,10 @@ public static class Cna1979LandSequence
     public static IReadOnlyList<LandSequencePosition> CreateTurn(int gameTurn)
     {
         ArgumentOutOfRangeException.ThrowIfLessThan(gameTurn, 1);
+        var cached = Volatile.Read(ref lastTurn);
+        if (cached is not null && cached[0].GameTurn == gameTurn)
+            return cached;
+
         var positions = new List<LandSequencePosition>();
 
         AddPhase(positions, gameTurn, 0, "initiative-determination", LandStageIds.InitiativeDetermination, LandPhaseIds.InitiativeDetermination);
@@ -34,7 +42,9 @@ public static class Cna1979LandSequence
         }
 
         AddPhase(positions, gameTurn, 0, "end-of-turn", LandStageIds.EndOfTurn, LandPhaseIds.EndOfTurn);
-        return Array.AsReadOnly(positions.ToArray());
+        IReadOnlyList<LandSequencePosition> result = Array.AsReadOnly(positions.ToArray());
+        Volatile.Write(ref lastTurn, result);
+        return result;
     }
 
     public static LandSequencePosition GetNext(LandSequencePosition current)

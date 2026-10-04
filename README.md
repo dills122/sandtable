@@ -815,6 +815,9 @@ The current Umpire foundation is intentionally pure and in-process:
 - Shared C# and analyzer settings are in `Directory.Build.props` and `.editorconfig`.
 - Build output is isolated under `artifacts/`.
 - CI runs restore, formatting verification, a Release build, and all MTP tests.
+  Each run retains xUnit XML results with per-test timings in the `test-results` artifact for
+  14 days. To collect the same reports locally, append `--report-xunit-xml --results-directory
+  artifacts/test-results` to the test command. See [test runtime measurements](docs/research/test-runtime-optimization.md).
 - Protobuf changes must preserve field numbers and reserve removed fields.
 - Warnings are errors; do not suppress diagnostics without a documented reason.
 
