@@ -3,7 +3,7 @@
 ## Objective and boundary
 
 CMB-019D0 executable contract implemented and locally verified; independent review1 of3 **Ready**,
-no actionable findings. Draft publication metadata follows below. Parents017–019 stay open;
+no actionable findings. Draft PR149 is published; metadata follows below. Parents017–019 stay open;
 actual positive entry/repeat, later-II/consumed, Snapshot/publication and public activation are separate.
 Coordinator: `01a0c9dc-00bc-78a3-800d-3cb36859e422` (local).
 
@@ -110,8 +110,12 @@ from this packet alone.
 
 Worktree `/Users/dsteele/.codex/worktrees/settled-continuation-contract/sandtable`.
 Branch `codex/settled-continuation-contract`; base `ec0db5319d9598313372ab239253ac1bde351594`.
-Implementation head/PR will be recorded in the publication metadata commit; resolve final branch
-head through `git rev-parse HEAD` or the PR. Only excluded untracked `.serena/` tooling remains.
+Implementation head: `34498122330429be823a771fe0e0a99421505fa7`.
+Draft PR: [149 — Freeze native Result2 settled continuation contract](https://github.com/dills122/sandtable/pull/149),
+base `main`, branch `codex/settled-continuation-contract`. A following metadata-only commit records
+this PR/head; resolve final branch head through `git rev-parse HEAD` or the PR. Both commits are
+retained on this PR. Only excluded untracked `.serena/` tooling remains. PR is attached to this chat;
+no merge was performed. Hosted CI starts asynchronously and is not claimed passed by local gates.
 
 Human authorization directly verified in coordinator turn `01a108e4-42ed-7720-90a7-bb8406e1a2f5`:
 sub-chats, GPT-6.1 medium, TDD, independent review before PR, Keychain skill and handoff back for
