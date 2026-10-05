@@ -1,0 +1,67 @@
+{
+  "contract": "combat-actual-selection-v1",
+  "objects": {
+    "Participant": "unit:UnitKey representationId:id locationId:id componentIds:id[]",
+    "Candidate": "attacker:Participant defender:Participant targetLocationId:id basis:id",
+    "Window": "decisionId:id owner:side timing:Timing",
+    "Command": "contractVersion:int kind:id segmentId:id decisionId:id? fromPositionId:id? expectedPriorVersion:long? choice:id? candidate:Candidate? participant:UnitKey?",
+    "Input": "command:Command actor:actor admittedAt:utc? clockAvailable:bool",
+    "Event": "contractVersion:int eventType:id campaignId:id rulesetHash:rawHash configurationHash:hash positiveEntrySourceHash:hash cycleId:hash segmentId:id priorVersion:long stateVersion:long priorPrefix:hash input:Input effect:Effect receiptId:id",
+    "OpenEffect": "kind:id boundaryHash:hash window:Window?",
+    "SelectionEffect": "kind:id outcome:id candidate:Candidate? timing:Timing?",
+    "RbaOpenEffect": "kind:id selectionReceiptId:id window:Window",
+    "DeclineEffect": "kind:id selectionReceiptId:id participant:UnitKey timing:Timing",
+    "CancelEffect": "kind:id selectionReceiptId:id timing:Timing?",
+    "StepEffect": "kind:id fromPositionId:id toPositionId:id previousStepReceiptId:id dispositionReceiptId:id proofKind:id",
+    "Receipt": "commandHash:hash eventHash:hash receiptId:id actor:actor stateVersion:long",
+    "Control": "contractVersion:int boundaryHash:hash segmentId:id stateVersion:long prefix:hash stepIndex:int selectionOutcome:id selection:Candidate? selectionReceiptId:id? declineReceiptId:id? cancellationReceiptId:id? selectionWindow:Window? rbaWindow:Window? stepReceipts:id[] receipts:Receipt[] closed:bool",
+    "ActualSelectionSource": "contractVersion:int positiveEntrySourceCanonicalUtf8:utf8 selectionEventCanonicalUtf8:utf8[]",
+    "ActualSelectionBoundary": "contractVersion:int positiveEntrySourceId:id positiveEntrySourceHash:hash creationBinding:id creationEventHash:hash cycle:Authority cycleId:hash firstActingSide:side priorVersion:long priorPrefix:hash reserveCompletionReceiptId:id movementCompletionReceiptId:id breakdownCompletionReceiptId:id breakdownCompletionEventHash:hash position:Position world:World randomState:Random weather:ActualApplicableWeather breakdownFlow:Idle reactionWindow:null movementEnd:MovementEndProof candidate:Candidate",
+    "ActualApplicableWeather": "gameTurn:int operationStage:int attackerKind:id defenderKind:id weatherReceiptId:id weatherEventHash:hash",
+    "ActualSelectionProof": "contractVersion:int sourceId:id sourceHash:hash positiveEntryProof:PositiveEntryProof boundary:ActualSelectionBoundary control:Control"
+  },
+  "effectTags": {
+    "segment-opened": "OpenEffect",
+    "selection-closed": "SelectionEffect",
+    "rba-opened": "RbaOpenEffect",
+    "rba-declined": "DeclineEffect",
+    "selection-cancelled": "CancelEffect",
+    "step-completed": "StepEffect"
+  },
+  "externalContracts": [
+    "combat-positive-entry-v1.schema.json",
+    "combat-selection-steps-v1.schema.json"
+  ],
+  "domains": {
+    "source": "sandtable.combat.actual-selection.source.v1",
+    "segment": "sandtable.combat.actual-selection.segment.v1",
+    "receipt": "sandtable.combat.actual-selection.receipt.v1"
+  },
+  "limits": {
+    "bytes": 1048576,
+    "depth": 32,
+    "arrays": 512,
+    "events": 16,
+    "inputs": 16,
+    "receipts": 16
+  },
+  "sourceHashes": {
+    "docs/specs/combat-positive-entry-v1.schema.json": "73724384ba3cf61b462ef7b47ae70e5108281a6bbaf0b80878c55247e4e6fa36",
+    "docs/specs/fixtures/combat-positive-entry-v1.json": "eb59146f34bfdc47753b9f0aff7f40709eba4266aff522655ac6886be15b951e",
+    "docs/specs/verify-combat-positive-entry-v1.py": "b461a8bc6a194def5f03767783b49b5797a5630b6a7c26a986f7bfe2ee97c172",
+    "docs/specs/combat-reserve-designation-v1.schema.json": "f324fb22e53ff6d9e084c2f65532e5af89277f632087549756b7df1dcb1710d9",
+    "docs/specs/fixtures/combat-reserve-designation-v1.json": "6c8abb2038bb61c739e3bd3cab5c8adf00689c265ec3c6bc6ea29bebe66b12c2",
+    "docs/specs/verify-combat-reserve-designation-v1.py": "fa40ec6b10d0d5ecc113aefba47ff4df44ae616851acdc827e9f676f2412e465",
+    "docs/specs/verify-combat-stage-entry-v1.py": "85cd2b32f9ad104ec29034180775e1ac1905e5aa7f78caa3c1a26e6675901435",
+    "docs/specs/verify-combat-inherited-movement-lifecycle-v1.py": "f2ee2292df3fe370ace289dcd01747153dac6d78b82c924b2f3da27df1d81920",
+    "docs/specs/combat-inherited-movement-lifecycle-v1.schema.json": "aac4e07f9546d457defd9042ae701434683e7c22fab2071fe88f872d8d6bc072",
+    "docs/specs/verify-combat-inherited-breakdown-completion-v1.py": "db903e019bb457c02930876e42a70b9204387494012419b0b97572c3c9e12eba",
+    "docs/specs/combat-inherited-breakdown-completion-v1.schema.json": "1ff841c704e1aa46e71513ead562a0ca1c54c05b35bdf97018d6854d8773fec3",
+    "docs/specs/verify-combat-inherited-selection-v1.py": "99e0cdb1cc78089e4af93b8e995ba04483f6bdab86edaf7c6e2e251442cd0bb7",
+    "docs/specs/verify-combat-selection-steps-v1.py": "dc037282f74c34246d350faebeea55e81677d27dd181de858b8270e4eaa73c86",
+    "docs/specs/combat-selection-steps-v1.schema.json": "ef24e125012ab390bb0c932a09472b8220d7e8c95c1b19c29bdb611be532162d",
+    "docs/specs/verify-combat-sealed-round-v2.py": "d1091b5d1d6fb1d9ac88da45313c88fcbc922f763e62d01af44311abc8656bf9",
+    "docs/specs/verify-combat-result-settlement-v2.py": "a6a781976f26b78a9dc098ebfbb3b516284aa1d5873744d96d8fa23aa50d83a2"
+  },
+  "scope": "Private dormant actual selection. Two seed1 Normal/NONE original owner sources. Positive stops at Force Assignment; seven fallback variants reach Reserve Release. Trusted ledger supplied separately; no seat/clock/store authentication claim."
+}

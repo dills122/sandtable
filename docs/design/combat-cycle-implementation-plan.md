@@ -2110,3 +2110,48 @@ contexts are not promoted and all32 are not claimed reachable. Parents017–019 
 Original Breakdown pin oracle remains FAILED; separate reviewed pin maintenance is
 coordinator-owned. [Final session handoff](../work/handoffs/2026-10-05-overnight-session.md)
 records the integrated evidence and safe next actions.
+
+### Task019F0 — actual-selection executable contract (session2 S3)
+
+Authorized at merged baseline96596dde after S1a/S2 independent set1/pass1 Ready and
+PR158/159 exact-head green CI. Binding coordinator dependency disposition at b86c062
+admits S1a's16 exact actual-entry dependencies and defers S1b's20-file maintenance closure.
+Five primary files only: [actual-selection specification](../specs/combat-actual-selection-v1.md),
+ordered inventory, literal fixture, Python oracle, and this plan; dated administrative
+review/handoff evidence is separate. No existing reader/pin/runtime/host/transport/Snapshot/
+Exercise/UI edit or native consumer is included.
+
+Implemented two complete seed1 Normal/NONE owner sources through seven actual-selection
+records: pending14, selected15, actual defender decline19, positive Force Assignment20
+without completion. All seven no-selection/cancellation variants per owner traverse to
+Reserve Release. New domain-separated source/segment/receipt family retains original
+source, twelve entry receipts, actual catalog position, Weather/event hashes, cycle,
+MovementEndProof, candidate and unchanged World/RNG. Trusted input ledger is a separate
+independently supplied argument: consistency precondition only; production seat/clock/store
+authentication remains a later activation gate. C3a/Round2/Result2 stay incompatible;
+no synthetic promotion or all32 reachability claim.
+
+Semantic RED preceded implementation and literal freeze; new oracle covers full cuts/
+suffixes/retries, re-signed event/proof and original-entry leaf mutations, ledger forgeries,
+actor/clock/error order, canonical raw spelling, ownership/capacity/privacy and16 dependency
+checks before cache access. Cold replay proves separation from historical Breakdown fixture
+gates, recursive Snapshot and outward admission. Original Breakdown/cycle/Snapshot/outward
+failures remain individually recorded, never waived; historical S1a timeouts remain honest.
+Exact executed evidence and review-ready freeze belong in the dated S3 handoff. Independent
+S3 review counter starts0of9; only coordinator dispatches/reconciles reviewers. No self-issued
+independent readiness verdict, full-suite lease, new native test pass or CI is claimed here.
+
+Next: fresh independent S3 review and exact-head CI/merge; reassess session reserve before
+separately dispatching S4 private native adapter. Actual round/result admission, later-II/
+consumed/repeat, public/host/Snapshot/Runner activation and parents017–019 remain open.
+
+Task019F0 local evidence at the review handoff: new oracle main PASS16 semantic/literal
+traces,152cuts,1,962retries,1,512original-entry leaf mutations,4,456event mutations,
+8,266proof mutations,2,760raw rejects,320ledger rejects,50clock/48error-order probes,
+64ownership checks,128pin-before-cache rejects and2cold admission-separation checks.
+Timed final main execution207.469s. Original positive-entry/C3a/Round2/Result2 commands
+PASS; Breakdown/cycle-sequence/Snapshot/outward commands each FAIL separately at their
+unchanged pin gates. Supplemental Round2/Result2 family and locally re-signed original
+entry checks PASS. No .NET/full-suite lease or current build/native/Boundary/format/CI
+pass is claimed for this contract-only slice. See the dated S3 handoff for exact commands,
+log hashes, retained RED and review/CI obligations.
