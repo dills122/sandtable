@@ -7,6 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="../../docs/specs/fixtures/combat-positive-entry-v1.json" Link="Campaigns/Fixtures/combat-positive-entry-v1.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="../../docs/specs/fixtures/combat-settled-control-v1.json" Link="Campaigns/Fixtures/combat-settled-control-v1.json" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="../../docs/specs/fixtures/combat-settled-continuation-v1.json" Link="Campaigns/Fixtures/combat-settled-continuation-v1.json" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="../../docs/specs/fixtures/combat-inherited-reserve-movement-completion-v1.json" Link="Campaigns/Fixtures/combat-inherited-reserve-movement-completion-v1.json" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />

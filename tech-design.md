@@ -1373,10 +1373,23 @@ seam before evidence extraction.019A supplies pure source-specific witnesses. Th
 its bytes and readback replays the full packet. Synthetic original Movement locations/exclusions,
 World/RNG/offensive history and future duties remain explicit. There is no new cache, resource
 charge, repeat/control authority, transport or Snapshot registration. Actual positive campaign
-history, settled control, later-II/consumed lineage and parents017–019 remain open.
+history, later-II/consumed lineage and parents017–019 remain open.
 
 Task019D2 freezes private Result2 settled-control bytes and replay policy in the
 [executable contract](docs/specs/combat-settled-control-v1.md). It consumes the complete019D0
 packet and regenerated proof, uses separate control/receipt identity domains, and preserves
 World/resources/RNG/history/duties while entering same-slot Movement or Truck Convoy.
-This contract grants no native/public capability; the native adapter remains a separate acceptance gate.
+Task019D3 implements private `CampaignCombatSettledControl` and its closed codec. Admission calls
+native019D1 with the complete packet and compares its regenerated proof before deriving assessment.
+Owned canonical bytes retain source identity and original retry evidence; replay reconstructs every
+state, and readback rejects caller caches that differ. Repeat resets only target uses/new-cycle progress
+and advances authority to Movement; finish enters Truck Convoy. Neither executes the successor.
+The adapter preserves synthetic earlier trust and has no public, transport or Snapshot registration.
+
+
+Task019E1 adds private native actual positive-entry replay for the two seed1 Normal ordinary NONE
+openings in [positive-entry v1](docs/specs/combat-positive-entry-v1.md): owner idle Movement11→12
+and System empty Breakdown12→13, preserving World/resources/RNG and deriving a supported
+candidate before selection. Full source, receipts and Movement-end proof authenticate entry;
+initial synthetic content-origin labels remain unchanged. C3a/Result2 consumption, repeat,
+public activation and parent017–019 completion remain separate gates.

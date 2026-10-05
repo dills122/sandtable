@@ -1968,3 +1968,125 @@ Semantic RED1 preceded implementation;10semantic groups then80frozen control tra
 Task019D2 published [stacked draft PR151](https://github.com/dills122/sandtable/pull/151) after independent Ready review; dependency PR150 verified OPEN at d919749, so target is codex/native-settled-continuation. Implementation8b9eff4; publication metadata followup changes no reviewed executable bytes. No merge or parent/native/public closure.
 
 Task019D2 dependency reconciliation: PR150 merged b908465; PR151 rebased onto main at that exact commit after user-requested conflict repair. Complete implementation tree and binary019D2 patch were identical before/after rebase; only ancestry and delivery metadata changed. Frozen contract bytes and prior Ready/gate evidence remain unchanged. Original stacked publication note above is historical.
+
+
+### Task019D3 — native settled-control adapter
+
+Manifest frozen 2026-10-04 before behavior on merged907f414. Five primary paths:
+`src/Cna.Core/Campaigns/CampaignCombatSettledControl.cs`,
+`src/Cna.Core/Campaigns/CampaignCombatSettledControlCodec.cs`,
+`tests/Cna.Core.Tests/Campaigns/CombatSettledControlTests.cs`,
+`tests/Cna.Core.Tests/Cna.Core.Tests.csproj`, and this plan.
+Administrative status, review and handoff documentation allowed.
+
+Consume complete019D0 packet through native019D1 admission; reproduce32+4 sources,
+80control traces, receipt/hash/source scope, owner/forced/deadline/clock/fallback,
+original bytes on retry and all replay cuts. Preserve immutable World/resources/RNG,
+members/Reserve/stage histories/future duties; reset only repeat fields. No Movement
+or Convoy execution, public/Snapshot/transport activation, old frozen artifact edits
+or parent017–019 closure. Earlier trust stays synthetic-pre-combat. Semantic RED then
+GREEN, unchanged oracles, full local gate and coordinator-managed fresh review required.
+
+
+### Task019D3 local evidence and review boundary
+
+Semantic RED1 preceded native behavior; final focused16cases pass0fail/skips, with
+32+4sources,80exact traces,236restart cuts and464original-byte retries including
+changed/unavailable retry clocks.1067control state/event leaf forgeries, every proof
+leaf, explicit re-signed upstream histories, source/actor/clock/canonical/capacity and
+ownership attacks reject. Literal receipt/hash and eight CP/DP theories cover32contexts.
+New control oracle and seven unchanged predecessor/policy oracles pass.204old spec
+files are byte-identical. Earlier full gates passed2504then2512tests/Boundary81;
+final exact-byte `just check` passed2512solution tests/Boundary81,0fail/skips and
+0build warnings/errors. Fresh GPT-6.1medium independent review set1/pass1 (total1of9,
+max3per set) is Ready with no findings. Draft publication/final-head CI remain pending. No parent/public/actual-history closure. See the
+[N1 handoff](../work/handoffs/2026-10-05-native-settled-control.md).
+
+
+### Task019E0 — actual positive-entry executable contract
+
+Manifest frozen2026-10-05 on18e8f99 before behavior. Sole five-primary ownership:
+`docs/specs/combat-positive-entry-v1.md`, matching schema, fixture and oracle, and this plan.
+Administrative dated review/handoff prose allowed. Accepted R1 entry-only prerequisite:
+actual seed1/Normal/NONE creation-rooted opening11, owner idle Movement completion3 to12,
+System empty Breakdown completion2 to13. Preserve World/RNG/resources/Weather/order/cycle;
+retain real original-unit Movement-end proof and derive supported candidate only at Position
+Determination, before selection. Both owners, full ordered source capture, literal bytes,
+all suffix cuts/original-byte retries, canonical/scope/forgery negatives required.
+Old readers/oracles and native/public/Snapshot/transport remain untouched; no C3a/Result2
+consumption, repeat or parent017–019 closure. Any outside prerequisite returns scope gate.
+Semantic RED/GREEN, predecessor oracles, proportionate regression gate and fresh coordinator
+review precede publication. Native adapter requires separate accepted manifest after merge.
+
+### Task019E0 local evidence and review boundary
+
+Both actual owner histories reproduce full source bytes and two completions11→12→13;
+four literal events/six cut proofs retain World/RNG/resources, real Movement-end receipt
+and supported candidate before selection. Semantic RED/GREEN,3966rejection probes,6cuts/6exact
+retries pass. Seven of eight unchanged required predecessor oracles pass. Original Breakdown
+oracle fails native sequence-source pin; exact18e8f99archive reproduces pre-existing drift
+from immutable catalog caching PR146 (expected pre146c5426245, current/base d019a3bc).
+Old pins/readers remain untouched; no bypass or eight-oracle pass claimed. Coordinator/fresh
+review must dispose baseline gate failure before acceptance/dependent native work.
+Serialized binlogged just-check-equivalent restore/format/build passes0warnings/errors,
+Boundary81/81 and2512solution tests0fail/skips.204old spec files byte-identical.
+Fresh review/publication/final-head CI pending; native/public/C3a/Result2 and parents017–019
+remain open. See [019E0 handoff](../work/handoffs/2026-10-05-positive-entry-contract.md).
+
+Task019E0 review reconciliation: same fresh N2set1/pass1,total1of9 returns **Ready with
+non-blocking follow-up** for unchanged5ba58040. No implementation findings. Coordinator
+explicitly accepts independently reproduced pre-existing Breakdown source-pin limitation;
+original oracle remains FAILED. Reviewer separately passes eight retained semantic/golden
+traces; these do not convert original command to pass. Separate reviewed pin maintenance
+is coordinator-tracked follow-up. Reviewed contract artifacts unchanged; acceptance-gate
+disposition is complete. Publication/final-head CI/merge remain pending before native work.
+[Full report and reconciliation](../work/reviews/2026-10-05-positive-entry-review.md).
+
+
+### Task019E1 — native actual positive-entry adapter
+
+Manifest frozen2026-10-05 at84f1fac861cef7c8ffaf8f36dd75b1b7f4dedc83 (merged155).
+Five primary paths: `CampaignCombatPositiveEntry.cs`, `CampaignCombatPositiveEntryCodec.cs`
+in Core/Campaigns, `CombatPositiveEntryTests.cs`, test project fixture link and this plan.
+Implements accepted019E0 exact seed1/Normal/NONE openings, both owners; full Request/Created11
+and4+1+4+1 original history; owner idle Movement11→12, System empty Breakdown12→13.
+Preserve all World/resources/RNG/Weather/order/cycle and synthetic content-origin labels.
+Actual Movement-end proof and supported candidate only at13 before selection; owned immutable
+source/proof/event bytes, full canonical parity, all cuts/retries/adversarial error ordering.
+No predecessor/source/fixture/oracle changes, C3a/Result2 bridge, public/Snapshot/host/Runner,
+later-II/consumed/repeat or parent017–019 closure. Semantic RED before GREEN; focused/oracle/
+full serialized binlogged gate and coordinator-owned fresh independent review required.
+Original Breakdown oracle's pre-existing sequence-source pin remains FAILED, separately tracked;
+no pin weakening or pass claim. Status: bounded native implementation independently Ready with non-blocking follow-ups; publication/final-head CI/merge pending.
+
+
+Task019E1 initial checkpoint a1c8ef2 evidence (superseded below):18focused tests pass, both owner openings independently constructed
+and all source/command/event/full27-field state/six proof bytes match019E0. All cuts and original-byte
+retries include Movement retry after13; full source/event/re-signed/input/proof/canonical/clock/count/
+size/ownership matrix passes. Actual binlogged `just check` passes2530solution tests and Boundary81,
+0fail/skips, clean restore/format/build with0warnings/errors. All208 specs and686 existing source/test
+paths remain byte-identical to84f1fac. Final oracle/review reconciliation belongs in
+[019E1 handoff](../work/handoffs/2026-10-05-native-positive-entry.md). Fresh review/final-head CI/merge
+remain pending; no parent/public/selection/result closure.
+
+
+Task019E1 final corrected freeze: pre-review reconciliation found retained receipt validation
+ordered after authorization. Semantic RED expected004/actual006; narrow reader correction verifies
+receipt first and revalidates input variant, preserving accepted bytes. Literal raw/re-signed event
+error-code vectors from unchanged019E0 now enforce exact ordering.19focused pass; refreshed sole
+binlogged actual `just check` passes2531solution/Boundary81,0fail/skips and0build warnings/errors,
+clean restore/format. New oracle plus seven required predecessor oracles PASS; original Breakdown
+command remains FAILED on unchanged pre-existing source pin, separate8trace/golden supplement PASS.
+No protected path/pin change or eight-predecessor-pass claim. Final native source remains frozen;
+fresh coordinator review/final-head CI/merge pending, all parent/public/result exclusions unchanged.
+
+N3 independent set1/pass1 at67712bf returned Not ready for one P2 ordered-route canonical/error
+parity defect. The codec correction preserves OrderedLocations traversal order/revisits while
+retaining identity sorting. Both-owner regression RED expected006/actual008, then focused21 GREEN.
+Final actual `just check` PASS:2533 solution tests, Boundary81,0fail/skips,0build warnings/errors; restore/build/format clean. Core8m09s943ms, solution8m10s116ms. Evidence `/private/tmp/n3-gates/route-just-check.log` and unique route-gate binlogs. All four frozen source/project hashes match final bytes. Pass2 remains coordinator-owned; no parent017–019 closure or publication claim.
+
+Task019E1 N3set1/pass2,total2of9 at5c847895 returned **Ready with non-blocking follow-ups**,
+no actionable findings. Full report and author acceptance retained in019E1 handoff. Coordinator
+accepts separately tracked baseline-pin maintenance and frozen grammar/two-source limits. Final
+administrative reconciliation preserves reviewed runtime/test/project bytes and2533/Boundary81
+gate evidence. Publication and exact-head CI/merge remain coordinator-owned; no parent closure.
