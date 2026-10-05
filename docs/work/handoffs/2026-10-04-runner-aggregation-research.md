@@ -13,7 +13,7 @@ Investigate `CertifiedMovementCostPairRetainsRepeatableRouteDivergence` returnin
 ## Current Repository State
 
 Worktree `/Users/dsteele/.codex/worktrees/runner-aggregation-research/sandtable`; branch `codex/runner-aggregation-research`; base/prepublication head `907f41403ed159d65024f193f3e1f730a23b9bbb`.
-Four reviewed scoped Markdown files plus the returned independent review are ready for publication. Excluded generated `.serena/` tooling stays untracked. No source/test/fixture/config changes. Review Ready, set1/pass1,total1, author Accept. Retained commits/PR metadata follows publication. Obtain final publication HEAD from Git after commit.
+Five scoped Markdown files committed and pushed as `8caf32b` (research/review/handoff); this metadata follow-up records publication. Excluded generated `.serena/` tooling stays untracked. No source/test/fixture/config changes. Review Ready, set1/pass1,total1, author Accept. [Draft PR153](https://github.com/dills122/sandtable/pull/153) targets main and is attached to the originating chat. Obtain final publication HEAD with `git rev-parse HEAD`; coordinator owns final-head CI/merge. Main at publication `868126d65f35d18a2713e82d2427516f1ce4de5b` adds only unrelated accepted R1 docs relative to research base; PR merge-base scope verified.
 
 ## Completed Work And Evidence
 
@@ -29,7 +29,7 @@ Historical assertion suppresses private stdout/stderr; Dispose deletes all artif
 
 ## Immediate Next Actions
 
-Fresh high [review](../reviews/2026-10-04-runner-aggregation-review.md) returned Ready with no findings, author Accept. Commit/push scoped docs and create draft main PR via requested Keychain skill; coordinator owns final-head CI/merge. Do not self-dispatch fix or another review pass. If diagnosed later, require meaningful RED/GREEN and new fresh review on assigned exact scope.
+Fresh high [review](../reviews/2026-10-04-runner-aggregation-review.md) returned Ready with no findings, author Accept. Publication complete as draft PR153; coordinator verifies required CI against final branch HEAD and owns merge. No further experiment or executable task is dispatched. Do not self-dispatch fix or another review pass. If diagnosed later, require meaningful RED/GREEN and new fresh review on assigned exact scope.
 
 ## Verification Commands
 
@@ -39,4 +39,4 @@ Source-equivalence diff, `git diff --check`, source/log/hash/link/scope checks. 
 
 Coordinator `01a0c9dc-00bc-78a3-800d-3cb36859e422`; R2 chat `01a10a16-9b18-7952-bc4b-7b67102a6c4d`. User authorized child coordination, review-gated publication/merge and all retained work committed/pushed before2026-10-05T09:47:28Z. No new behavior after08:47:28Z.
 
-Use [github-keychain-auth](/Users/dsteele/.ai-central/templates/skills/first-party/github-keychain-auth/SKILL.md) outside sandbox for authorized GitHub operations; unset GH_TOKEN/GITHUB_TOKEN for each gh command, use configured Keychain helper, never extract credentials. PR title proposal: `Document unresolved Runner aggregation failure and diagnostic next step`. Exact final test evidence: retained historical failure and passing reruns, plus any explicitly labeled present-environment control; no production fix or new suite pass.
+Use [github-keychain-auth](/Users/dsteele/.ai-central/templates/skills/first-party/github-keychain-auth/SKILL.md) outside sandbox for authorized GitHub operations; unset GH_TOKEN/GITHUB_TOKEN for each gh command, use configured Keychain helper, never extract credentials. PR title proposal: `Document unresolved Runner aggregation failure and diagnostic next step`. PR title: `Document unresolved Runner aggregation failure and diagnostic next step`. Exact final test evidence: retained historical failure and passing reruns, plus any explicitly labeled present-environment control; no production fix or new suite pass.
