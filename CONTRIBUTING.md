@@ -18,7 +18,14 @@ dotnet test --solution Sandtable.slnx --no-build
 ```
 
 `just setup` performs the version check and restore. `just check` runs the normal local quality
-gates.
+gates. Native Microsoft.Testing.Platform requires `--solution` for solution tests and `--project`
+for individual test projects; a bare positional path is not supported.
+
+`just check` does not run the retained Python Combat contract oracles. Their known source-pin and
+recursive-admission failures remain open, with maintenance deferred; remaining bounded oracle
+timeouts are unverified. Read the [verification inventory](docs/research/combat-verification-pin-maintenance.md)
+when working on Combat contracts and report each original command's outcome separately from
+supplemental semantic probes.
 
 ## Development Rules
 

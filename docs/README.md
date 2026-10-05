@@ -20,12 +20,23 @@ current capability status and cross-package sequencing.
 - [Combat delivery review and owner disposition](reviews/combat-delivery-plan-author-review.md#owner-disposition)
 
 Current checkpoint: public Rules9 authority and checked Runner evidence reach first-side Combat
-entry. Dormant Combat creation and inherited-history restore are implemented; identity, decisions,
-costs, results, and loss/retreat settlement are accepted through Task014. Task015 custody is merged
-and tested, with independent review acceptance still pending. Public Combat activation, the full
-continual cycle, and actual host publication evidence remain open. See the
+entry. Reviewed private Core work covers settlement, custody, round closure, Reserve Release,
+bounded released-I Movement and guarded repeat/finish. Native settled control preserves synthetic
+earlier Movement; two actual opening histories separately reach a supported candidate before
+selection. They do not yet consume actual selection or settled results. The reviewed
+[selection-bridge research](research/combat-actual-selection-bridge-feasibility.md) defines the next
+private contract direction, not a merged implementation. Public Combat activation, the authentic
+full cycle, Maproom, durable save/resume, hosted publication and model-backed play remain open.
+See the
 [status table](roadmap/pre-alpha-roadmap.md#current-delivery-status) and
 [next gates](roadmap/pre-alpha-roadmap.md#current-checkpoint-and-next-gates) for details.
+
+Retained contract evidence has known current failures: Breakdown/cycle-sequence source pins,
+recursive Snapshot admission and a separate outward Content pin. Maintenance is deferred; remaining
+bounded oracle timeouts are unverified. The [pin inventory](research/combat-verification-pin-maintenance.md)
+records the repair scope. These failures are separate from the .NET `just check` gate and from
+supplemental semantic probes. Research/review status statements below describe their checkpoints;
+use the roadmap for current capability status.
 
 ## Implemented capability packages
 
