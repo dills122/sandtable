@@ -1196,6 +1196,7 @@ Task019E1 implements private native [actual positive entry](../specs/combat-posi
 through Position Determination with a supported candidate before selection, both exact owners.
 N3 independent pass2 returned Ready with non-blocking follow-ups; all required CI passed at
 final head `1fbc4ced8377155f327b4ab27b36bc1a88e7abbe`. [PR156](https://github.com/dills122/sandtable/pull/156)
-merged at `e90eef556bde6bbde4fd6b3e17064ba613868ee6`. N4 integrated handoff review/publication
-remains pending. This does not close parent017–019;
+merged at `e90eef556bde6bbde4fd6b3e17064ba613868ee6`. N4 integrated handoff passed fresh
+set1/pass1 review at36df75b, Ready with non-blocking follow-ups accepted by author/coordinator;
+publication/CI/merge remain pending. This does not close parent017–019;
 C3a/Result2 consumption, later-II/consumed lineage, repeat and public activation remain open.

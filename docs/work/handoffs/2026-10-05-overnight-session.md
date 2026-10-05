@@ -4,8 +4,10 @@
 
 Session started2026-10-05T02:47:28Z (Oct4 22:47:28 Toronto); closeout08:47:28Z,
 hard end09:47:28Z (Oct5 05:47:28 Toronto). Product work is frozen. N0/R1/R2/N1/N2/N3
-are accepted and delivered; N4 integrated documentation is frozen for independent review,
-with publication/CI/merge still coordinator-owned. This is not a final N4 Ready claim.
+are accepted and delivered. N4 fresh set1/pass1,total1of9 reviewed
+`36df75b1fe55f66f71b576077c6391ada8f9dbe4` and returned Ready with non-blocking follow-ups,
+accepted by author/coordinator. Publication/CI/merge remain pending and coordinator-owned;
+the overnight session is not declared complete.
 Private actual entry stops at supported candidate before selection. No C3a/Result2 consumption,
 repeat execution, later-II/consumed lineage, public/Snapshot/transport/host activation, parent017–019
 closure or all32actual reachable claim. Initial synthetic content-origin labels remain explicit.
@@ -29,8 +31,10 @@ Worktree `/Users/dsteele/.codex/worktrees/overnight-core-sync/sandtable`, branch
 Retained coordinator history: initial published checkpoint `ea86b4127a3cb381d49f4d23d147db45b1dd1816`,
 checkpoint `477744308791ceb1347427ae79f627a2c3bfdae7`, published checkpoint
 `a9a51f9d21c497b4e1935941a910f27571cd7cad`, then main merge
-`4660093ebad34b3e8b806fe62a71f34f9c24fcf7`. N4 commit/head is the exact coordinator
-review dispatch; resolve with `git rev-parse HEAD`, then inspect any subsequent commits.
+`4660093ebad34b3e8b806fe62a71f34f9c24fcf7`. Frozen reviewed N4 head is
+`36df75b1fe55f66f71b576077c6391ada8f9dbe4`; subsequent administrative report/status
+retention changes no executable/evidence bytes. Resolve final metadata head with
+`git rev-parse HEAD`, then inspect any subsequent commits.
 At preparation, coordinator remote ref was a9a51f9; the merge and N4 still need preservation push.
 Generated `.serena/` is untracked and excluded. No retained runtime/spec/test edits in N4.
 
@@ -84,7 +88,7 @@ suite was reused, not rerun, with explicit complete runtime/test/spec/build-inpu
 | N1 | set1/pass1,total1of9; Ready | No findings; [report](../reviews/2026-10-05-native-settled-control-review.md) |
 | N2 | set1/pass1,total1of9; initially Not ready, same instance reconciled Ready with non-blocking follow-up | At reviewed `5ba58040bc225a96b9cd30e537002f86c9c941e9`, administrative baseline-gate disposition accepted; no material code change/new pass; [report](../reviews/2026-10-05-positive-entry-review.md) |
 | N3 | set1/pass1 Not ready, fresh pass2 Ready with non-blocking follow-ups,total2of9 | P2 fixed at `423bf4b818d5380250fd9f9509a5846b117b5b10`; pass2 reviewed `5c847895bc269d06e9d4e8d86bf90f9acd473f31`; [full reports](2026-10-05-native-positive-entry.md#full-independent-report-n3-set1pass2) |
-| N4 | set1/pass1,total1of9 reserved; pending | Fresh coordinator-dispatched review required; author makes no readiness verdict |
+| N4 | set1/pass1,total1of9; Ready with non-blocking follow-ups | Reviewed `36df75b1fe55f66f71b576077c6391ada8f9dbe4`; author/coordinator Accept tracked baseline pin, Runner unknown and temporary-evidence limitations; [full report](../reviews/2026-10-05-overnight-integration-review.md) |
 
 No recovery research spikes. Each milestone allows at most3passes per set,9total and2bounded
 recovery spikes; no count reset. N4 reviewer must not self-dispatch another reviewer or implementation.
@@ -114,8 +118,8 @@ content identity and documentation, not a new structural graph claim.
 
 ## Immediate Next Actions
 
-1. Coordinator dispatches N4 fresh independent review using the neutral bootstrap and exact committed
-   HEAD, then supplies the author packet after preliminary inspection. Accept/reconcile findings.
+1. Coordinator verifies the final administrative delta against reviewed36df75b; runtime/evidence
+   bytes stay unchanged. N4 independent review and author/coordinator acceptance are complete.
 2. Preserve/push all retained coordinator commits even if review or CI cannot complete by deadline;
    record WIP/unverified status. After Ready, publish the scoped docs PR, require all CI success at
    its exact final head and merge. Record N4 verdict/head/PR/merge in final closeout metadata.
@@ -139,5 +143,6 @@ N4 branch `codex/overnight-core-sync`; suggested PR title:
 `Reconcile overnight Combat acceptance and durable handoff`.
 Body `/private/tmp/n4-pr-body.md`; neutral [bootstrap](../reviews/2026-10-05-overnight-integration-bootstrap.md),
 separate [author packet](../reviews/2026-10-05-overnight-integration-author.md).
-No N4 PR/push/Ready/merge claim at preparation. Coordinator resolves final publication and may add
+N4 review Ready with non-blocking follow-ups is retained and accepted; no N4 PR/push/CI/merge
+claim yet. Coordinator resolves final publication and may add
 administrative verdict metadata after review; any material scope/content change needs review reconciliation.

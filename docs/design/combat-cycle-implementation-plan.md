@@ -2101,8 +2101,9 @@ Historical pending-publication statements in019D3/019E0/019E1 above are supersed
 `84f1fac861cef7c8ffaf8f36dd75b1b7f4dedc83`;019E1 merged
 [PR156](https://github.com/dills122/sandtable/pull/156) at
 `e90eef556bde6bbde4fd6b3e17064ba613868ee6`. Coordinator recorded independent
-Ready verdicts and all required CI success at each exact final head. N4 is documentation
-and combined-state verification, pending its own fresh review/publication.
+Ready verdicts and all required CI success at each exact final head. N4 documentation
+and combined-state verification passed fresh set1/pass1,total1of9 review at36df75b, Ready
+with non-blocking follow-ups accepted by author/coordinator; publication/CI/merge remain pending.
 Actual entry reaches a candidate before selection only. C3a/Result2 request, seed,
 receipt and position provenance require a separate contract-first gate; synthetic Result2
 contexts are not promoted and all32 are not claimed reachable. Parents017–019 remain open.

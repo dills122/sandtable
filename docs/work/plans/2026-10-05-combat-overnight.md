@@ -1,6 +1,6 @@
 # Seven-hour orchestrated Combat session
 
-Status: approved plan retained as history; N0, R1, R2, N1, N2 and N3 accepted. N4 documentation and integrated evidence await fresh independent review and publication. Prepared 2026-10-04 America/Toronto.
+Status: approved plan retained as history; N0, R1, R2, N1, N2 and N3 accepted. N4 documentation and integrated evidence passed fresh independent review with non-blocking follow-ups; coordinator publication/CI/merge remain pending. Prepared 2026-10-04 America/Toronto.
 Coordinator: 01a0c9dc-00bc-78a3-800d-3cb36859e422 (local).
 User authorizes orchestrator-managed child chats, GPT-6.1 medium (high for research/high-effort),
 TDD, fresh independent review at every milestone, bounded research/review recovery, and merging
@@ -18,7 +18,9 @@ narrowed execution to actual Movement/Breakdown and a supported candidate **befo
 R2 found no proven cause and made no runtime fix. N2 retains the failed original Breakdown
 source-pin oracle, accepted as a pre-existing limitation with separate reviewed maintenance.
 N3 pass1 returned Not ready for route ordering; corrected code passed fresh pass2 with
-non-blocking follow-ups. No recovery research spikes occurred. N4 may claim completion only
+non-blocking follow-ups. N4 set1/pass1,total1of9 reviewed36df75b and returned Ready with
+non-blocking follow-ups, accepted by author/coordinator. No recovery research spikes occurred.
+Publication gates remain pending; the overnight session is not declared complete. N4 may claim completion only
 after its own independent Ready verdict and final publication gates. Parent017–019 remain open.
 
 ## Verified baseline and evidence

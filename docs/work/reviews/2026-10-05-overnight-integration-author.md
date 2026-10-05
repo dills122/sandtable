@@ -91,3 +91,14 @@ supports gate reuse and no prose promotes synthetic Result2 contexts. Inspect N2
 verdict reconciliation, N3 corrected final gate, stale status supersession and safe first action.
 Check explicit protected primary files and remaining coordinator preservation/heartbeat obligations.
 No author readiness verdict is offered; independent review must assess both docs and plan.
+
+## Independent Acceptance And Administrative Retention
+
+N4 set1/pass1,total1of9 reviewed exact `36df75b1fe55f66f71b576077c6391ada8f9dbe4`
+and returned **Ready with non-blocking follow-ups**, no actionable findings. **Accept.**
+Coordinator accepts tracked Breakdown pin maintenance, unknown Runner causality and
+temporary-evidence availability limitations. Full report retained in
+[dated independent review](2026-10-05-overnight-integration-review.md). Earlier pending-review
+statements in this frozen author packet are historical. Only report/status metadata changes
+after review; executable inputs and evidence bytes remain unchanged. No gates rerun.
+Coordinator owns preservation push, publication, required exact-head CI/merge and heartbeat pause.
