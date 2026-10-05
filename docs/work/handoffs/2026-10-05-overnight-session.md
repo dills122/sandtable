@@ -146,3 +146,23 @@ separate [author packet](../reviews/2026-10-05-overnight-integration-author.md).
 N4 review Ready with non-blocking follow-ups is retained and accepted; no N4 PR/push/CI/merge
 claim yet. Coordinator resolves final publication and may add
 administrative verdict metadata after review; any material scope/content change needs review reconciliation.
+
+## Final coordinator closeout — 2026-10-05 08:52 UTC
+
+This section supersedes the preparation-time pending publication statements above.
+N4 [PR157](https://github.com/dills122/sandtable/pull/157) merged at
+`afa396ad5094fae7b8f054c60a9df9e03f83dfd5` after independent Ready with non-blocking
+follow-ups and all required hosted checks succeeded at exact final head
+`c431a093b08b24f73e46282ca4c93bbe79060d6e`. All six session PRs152–157 are merged.
+The bounded overnight delivery is complete; larger Combat parents remain open.
+
+All retained implementation and coordinator work is committed/pushed. This final
+administrative closeout record is preserved on `codex/overnight-core-sync` after PR157;
+it changes no reviewed implementation or evidence and is not separately merged.
+The merged main handoff and PR157 provide the accepted restart baseline. All children
+have stopped product work; no further gameplay task is dispatched. The coordinator
+will pause the heartbeat immediately after confirming this preservation push.
+
+Next work remains separately reviewed Breakdown pin maintenance, then a contract-first
+actual C3a/Result2 provenance bridge. The original Breakdown oracle still fails, Runner
+causality remains unknown, and no actual selection/result/public activation is claimed.
