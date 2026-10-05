@@ -22,7 +22,9 @@ again for reviewer evidence. Author does not certify graph completeness.
 ## Base, head, branch and dirty state
 
 Base: `84f1fac861cef7c8ffaf8f36dd75b1b7f4dedc83`, merged PR155.
-Final retained head and hashes will be recorded in durable handoff and coordinator dispatch.
+Corrected implementation checkpoint: `b0a7308f6b440507436f152d8bea4e325100f833`.
+Final administrative review head is supplied in coordinator dispatch; source/project and gate hashes
+are recorded in `docs/work/handoffs/2026-10-05-native-positive-entry.md`.
 No review begins against an unspecified head. Only local generated `.serena/` may remain untracked;
 exclude it from review scope. Reconstruct actual Git diff; report any unverifiable discrepancy.
 
