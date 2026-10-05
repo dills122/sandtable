@@ -270,3 +270,14 @@ exclusions, actual commitment receipt/hash, full settled state and future duties
 This establishes bounded native evidence only. Settled control, actual ordinary repetition and
 creation-to-positive Combat history remain separate; parent017–019 acceptance is unchanged.
 See the [native manifest](combat-cycle-implementation-plan.md#task019d1--bounded-native-settled-continuation-proof).
+
+
+## Task019D3 native settled control
+
+The private adapter consumes native019D1 admission and implements the019D2 byte inventory,
+owner repeat/finish and deterministic forced/fallback finish. Exact source receipts, original
+Movement exclusions, World/RNG/members/Reserve and attack histories/future duties persist.
+Repeat establishes the next ordinal at Movement without execution; finish enters Truck Convoy
+without execution. Actual positive-history entry, ordinary repeated Movement, later-II/consumed,
+public activation and parent017–019 acceptance remain open. See the
+[native manifest](combat-cycle-implementation-plan.md#task019d3--native-settled-control-adapter).

@@ -886,4 +886,6 @@ Earlier Movement remains synthetic; the proof grants no repeat or public action.
 
 Task019D2 adds a private [settled-control executable contract](docs/specs/combat-settled-control-v1.md):
 full Result2 proof admission, owner repeat/finish and deterministic forced/fallback finish.
-The Python contract preserves synthetic earlier trust; native control and actual repeated Movement remain separate gates.
+The Python contract preserves synthetic earlier trust. Task019D3 implements private native control with
+full packet admission, exact replay/retry bytes and immutable source preservation; actual positive-history
+entry and repeated Movement execution remain separate gates.
