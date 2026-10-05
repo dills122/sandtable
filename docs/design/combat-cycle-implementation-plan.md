@@ -2110,3 +2110,98 @@ contexts are not promoted and all32 are not claimed reachable. Parents017–019 
 Original Breakdown pin oracle remains FAILED; separate reviewed pin maintenance is
 coordinator-owned. [Final session handoff](../work/handoffs/2026-10-05-overnight-session.md)
 records the integrated evidence and safe next actions.
+
+### Task019F0 — actual-selection executable contract (session2 S3)
+
+Authorized at merged baseline96596dde after S1a/S2 independent set1/pass1 Ready and
+PR158/159 exact-head green CI. Binding coordinator dependency disposition at b86c062
+admits S1a's16 exact actual-entry dependencies and defers S1b's20-file maintenance closure.
+Five primary files only: [actual-selection specification](../specs/combat-actual-selection-v1.md),
+ordered inventory, literal fixture, Python oracle, and this plan; dated administrative
+review/handoff evidence is separate. No existing reader/pin/runtime/host/transport/Snapshot/
+Exercise/UI edit or native consumer is included.
+
+Implemented two complete seed1 Normal/NONE owner sources through seven actual-selection
+records: pending14, selected15, actual defender decline19, positive Force Assignment20
+without completion. All seven no-selection/cancellation variants per owner traverse to
+Reserve Release. New domain-separated source/segment/receipt family retains original
+source, twelve entry receipts, actual catalog position, Weather/event hashes, cycle,
+MovementEndProof, candidate and unchanged World/RNG. Trusted input ledger is a separate
+independently supplied argument: consistency precondition only; production seat/clock/store
+authentication remains a later activation gate. C3a/Round2/Result2 stay incompatible;
+no synthetic promotion or all32 reachability claim.
+
+Semantic RED preceded implementation and literal freeze; new oracle covers full cuts/
+suffixes/retries, re-signed event/proof and original-entry leaf mutations, ledger forgeries,
+actor/clock/error order, canonical raw spelling, ownership/capacity/privacy and16 dependency
+checks before cache access. Cold replay proves separation from historical Breakdown fixture
+gates, recursive Snapshot and outward admission. Original Breakdown/cycle/Snapshot/outward
+failures remain individually recorded, never waived; historical S1a timeouts remain honest.
+Exact executed evidence and review-ready freeze belong in the dated S3 handoff. Independent
+S3 review counter starts0of9; only coordinator dispatches/reconciles reviewers. No self-issued
+independent readiness verdict, full-suite lease, new native test pass or CI is claimed here.
+
+Next: fresh independent S3 review and exact-head CI/merge; reassess session reserve before
+separately dispatching S4 private native adapter. Actual round/result admission, later-II/
+consumed/repeat, public/host/Snapshot/Runner activation and parents017–019 remain open.
+
+Task019F0 local evidence at the review handoff: new oracle main PASS16 semantic/literal
+traces,152cuts,1,962retries,1,512original-entry leaf mutations,4,456event mutations,
+8,266proof mutations,2,760raw rejects,320ledger rejects,50clock/48error-order probes,
+64ownership checks,128pin-before-cache rejects and2cold admission-separation checks.
+Timed final main execution207.469s. Original positive-entry/C3a/Round2/Result2 commands
+PASS; Breakdown/cycle-sequence/Snapshot/outward commands each FAIL separately at their
+unchanged pin gates. Supplemental Round2/Result2 family and locally re-signed original
+entry checks PASS. No .NET/full-suite lease or current build/native/Boundary/format/CI
+pass is claimed for this contract-only slice. See the dated S3 handoff for exact commands,
+log hashes, retained RED and review/CI obligations.
+
+Task019F0 set1/pass1,total1of9 at02bb6fc returned Not ready with one P2:
+closed command-arm003 must precede segment identity004. Coordinator/author Accept.
+Bounded correction moves the existing segment check after the allowed-arm loop, without
+spec weakening/refactor or successful literal regeneration. RED reproduced both actual
+owners returning004; GREEN original vector returns003 for both. New328 combined-error
+probes cover all8 command kinds/both owners (210arm,70primitive,32version/kind,16segment/
+clock); focused affected clock/order/capacity checks PASS. Direct full new oracle command
+PASS exit0,209.977s, preserving all prior counts plus these328 probes; stdout SHA256
+803f9ad4d393d146176fd5c921a40635910b0c401c312f68e31dc47895bba6f1.
+Specification/schema/fixture remain byte-identical to02bb6fc. Unchanged expensive predecessor
+checks were not repeated per coordinator instruction; historical separate pin failures and
+unverified timeouts remain honest. No count reset, recovery spike, PR/merge, full-suite lease
+or S4. Next fresh coordinator-dispatched review is set1/pass2,total2of9. Corrected author/
+handoff retains RED/GREEN/current manifest; canonical plan ownership returns at review handoff.
+
+Task019F0 set1/pass2,total2of9 at5e2ef795 returned Not ready with one new P2:
+active-state006 and required defender decline006 must precede untimed clock005 for
+complete-step/close-empty-selection. Coordinator/author Accept. Bounded correction moves
+those clock guards into the branches after state/decline checks; positive FA completion007
+still follows clock005. No spec weakening, wider refactor or successful literal regeneration.
+Retained RED reports728 matrix and182 public mismatches (910 total). GREEN adds15,510
+checks:6,080 all-kind/state/clock combinations over16 traces/152cuts,276 public complete/close
+probes, and9,154 adjacent-gate probes. Expected outcomes use an independent documented gate
+model; coverage includes primitive/arm/segment/actor/version/decision/stale/duplicate/candidate/
+choice/participant precedence. Direct full oracle PASS exit0,233.099s; stdout SHA256
+0ec2ecc01734e319a6abd590a7bf1484cf5569d657874981e893a6c93d8cc874. Prior counts preserved,
+including328 pass1 probes. Spec/schema/fixture remain byte-identical to5e2ef795. Expensive
+unchanged predecessor evidence is reused honestly; separate original pin failures and historical
+unverified timeouts remain. Counter2of9 consumed; next coordinator-dispatched set1/pass3,total3of9.
+A third Not ready requires coordinator-owned high research recovery before set2; max2 recovery
+spikes/max9 reviews, no count reset. No PR/merge/S4 or full-suite lease. Canonical plan ownership
+returns to coordinator at the corrected review handoff; dated packets retain RED/GREEN and manifests.
+
+Task019F0 set1/pass3,total3of9 independently Ready at e5645c4. Exact-head CodeQL alert2/
+check111848049126 remained a CI blocker. Coordinator accepted high research recoveryR1:
+fixed-input trusted-name heuristic, no real secret identified; no suppression/dismissal or CI
+bypass authorized. Minimal oracle follow-up removes raw mismatch groups/rows from print and
+assertion, retaining count/fixed message and all comparisons/collection/nonempty rejection.
+Sentinel RED exposed payload in output/assertion; GREEN remains a detectable failure without
+sentinel in stdout/stderr/assertion. Independent in-memory arm/segment mutation rejected in
+0.440s; state/clock mutation rejected in17.137s with910 count-only mismatches. Direct full oracle
+PASS exit0,221.945s; stdout SHA2560ec2ecc01734e319a6abd590a7bf1484cf5569d657874981e893a6c93d8cc874
+is byte-identical to the previous full run, preserving every successful count. Static16pins
+match; spec/schema/fixture unchanged; exact diff only recommended diagnostics. Dated author/
+handoff retain complete scripts/results/current manifests. Next coordinator-dispatched fresh
+review set2/pass1,total4of9; R1ofmax2 used, max9 reviews/no reset. Corrected-head CodeQL/CI
+remain unverified pending publication/review; no merge/S4/full-suite lease. Original separate
+pin failures and historical unverified timeouts remain honest; canonical plan ownership returns
+to coordinator with this corrected freeze.

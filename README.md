@@ -53,7 +53,7 @@ play a side; it will never decide the rules or secretly change the campaign stat
 | --- | --- | --- |
 | Deterministic Umpire | Working | Versioned rules, seeded randomness, canonical commands/events, replay, checkpoints, and side-safe action boundaries are implemented. |
 | Playable rule path | Working through Combat entry | Runner can execute Initiative, stage preamble, Reserve Designation, Movement, bounded ZOC/Reaction, and Breakdown, then stops before Combat adjudication. |
-| Combat and continual cycle | Dormant Core through first positive Reserve Release | Creation and inherited-history restore, identity, decisions, costs, results, loss/retreat settlement, custody, relationships and round closure are implemented and reviewed through Task016. Isolated Release bases and lifecycle (017A1/A2) are also reviewed, including timed choices, deterministic fallback and completion. Task017B also connects verified settled Combat to empty Release opening/completion across32 reviewed contexts. Held-I no-move predecessor replays genuine first-opening history through empty Combat to Reserve Release. Task017C connects that history to owner release-I or deterministic I→II fallback, preserving other World state. Public Combat play and full cycle closure remain future gates. |
+| Combat and continual cycle | Private Core adapters; public activation pending | Reviewed internals cover settlement, Reserve Release, bounded released-I Movement and guarded repeat/finish. Native settled control retains synthetic earlier Movement. Two actual opening histories now reach a supported candidate before selection; they do not yet enter selection or results. Full-cycle proof and public Combat remain open. |
 | Exercise and Maneuver tools | Working | Deterministic single runs, multi-run matrices, paired comparisons, strict readback, and evidence bundles are available from CLI. |
 | User interface | Not started | `site/` is project website only. Maproom hot-seat client is future work. |
 | Published scenario | Not started | First target is six-turn, Land-only *Graziani's Offensive* after working Combat loop. |
@@ -67,15 +67,12 @@ dormant Core tests; they are not yet exposed as playable actions.
 
 Next delivery sequence:
 
-1. Integrate settled source/progress, then use repeated cycles to complete
-   later-II/consumed Reserve lineage (remaining Tasks017–019).
-   [Movement delivery plan](docs/design/combat-cycle-movement-delivery-plan.md) defines first slice;
-   Task018A provides relationship-aware costs; Task018B adds dormant atomic Movement/replay at
-   an explicit isolated boundary. Task019A computes pure movement-continuation witnesses from
-   admitted projections. Task019B authenticates released-I history/progress and armed support.
-   Task019C adds native guarded repeat/finish for that path, opening ordinal2 Movement or entering
-   Truck Convoy. Task018C admits one actual released-I ordinal2 move; Task018D closes its
-   Movement and expires the exception at authority31. Settled source/progress integration remains open.
+1. Freeze and implement the private bridge from actual positive entry to selection, then join
+   actual round/result settlement and complete later-II/consumed Reserve lineage (remaining
+   Tasks017–019). The reviewed [bridge research](docs/research/combat-actual-selection-bridge-feasibility.md)
+   proposes a positive endpoint at Force Assignment after defender decline. That direction is
+   future contract/implementation work, not merged selection support. Existing synthetic settled
+   contexts do not prove that those paths are reachable from actual opening history.
 2. Activate certified, side-safe public Combat actions (Tasks020–021), then prove Exercise/Runner
    replay and repeatability (Tasks022–024).
 3. Reconcile all 72 acceptance criteria and demonstrate the authentic continual cycle (Task025).
@@ -98,7 +95,8 @@ task graph.
 - Docker only for future container-backed Aspire resources; current stack does not require it
 
 `global.json` selects .NET 10 and Microsoft.Testing.Platform. Check installed SDK with
-`dotnet --version`.
+`dotnet --version`. Use `dotnet test --solution` for the solution and `--project` for a test project;
+do not pass a bare positional test path.
 
 ### First checkout
 
@@ -178,6 +176,14 @@ I/O outside authoritative turns, then run `just check` before PR.
 | `just run` | Launch Aspire development stack |
 | `just docs-links` | Check tracked Markdown links; requires Lychee 0.24.2 |
 
+`just check` runs the .NET gates; it does not run the retained Python Combat contract oracles.
+Some of those oracles currently fail: Breakdown and cycle-sequence source pins have drifted,
+recursive Snapshot admission rejects that drift, and outward composition has a separate Content
+pin failure. Pin maintenance is deferred; other bounded oracle timeouts remain unverified. See the
+[verification inventory](docs/research/combat-verification-pin-maintenance.md) before interpreting
+historical passing checks as current evidence. Record failures separately from any supplemental
+semantic checks.
+
 Build artifacts live under `artifacts/`. Do not commit generated `artifacts/bin` or `artifacts/obj`
 content. See [security policy](SECURITY.md) for vulnerability reports.
 
@@ -192,7 +198,8 @@ content. See [security policy](SECURITY.md) for vulnerability reports.
 Executable product and forward contract work are intentionally different. Today, public Rules9
 authority and checked Runner evidence stop at first-side Combat **entry**. Parent003 frozen contract
 evidence composes 28 selected future Combat/cycle histories and exact Task004 handoff, but no Combat
-or Reserve Release runtime is registered. The
+or Reserve Release runtime is registered on the public Rules9 path. Private Core adapters are
+implemented at the bounded checkpoints summarized above. The
 [pre-alpha roadmap](docs/roadmap/pre-alpha-roadmap.md#current-delivery-status) is the canonical
 delivery ledger and defines the status vocabulary used below.
 
@@ -393,19 +400,37 @@ Task004 and checkpoint B are accepted through the [outward integration index](do
 The [latest smoke check](docs/research/simulator-post-merge-checkin.md#combat-contract-branch-smoke-check)
 verifies the existing Rules9 path; prospective Combat contracts are not executable game support.
 
+Task019D1 adds private native [settled-continuation evidence](docs/specs/combat-settled-continuation-v1.md):
+complete Result2/empty Release replay and pure Movement witnesses for32 owner/seal contexts.
+Earlier Movement remains synthetic; the proof grants no repeat or public action.
+
+Task019D2 adds a private [settled-control executable contract](docs/specs/combat-settled-control-v1.md):
+full Result2 proof admission, owner repeat/finish and deterministic forced/fallback finish.
+The Python contract preserves synthetic earlier trust. Task019D3 implements private native control with
+full packet admission, exact replay/retry bytes and immutable source preservation; actual positive-history
+selection/result consumption and repeated Movement execution remain separate gates.
+
+Task019E1 adds private native actual positive-entry replay for the two seed1 Normal ordinary NONE
+openings in [positive-entry v1](docs/specs/combat-positive-entry-v1.md): owner idle Movement11→12
+and System empty Breakdown12→13, preserving World/resources/RNG and deriving a supported
+candidate before selection. Full source, receipts and Movement-end proof authenticate entry;
+initial synthetic content-origin labels remain unchanged. C3a/Result2 consumption, repeat,
+public activation and parent017–019 completion remain separate gates.
+
 | Area | Executable today | Forward evidence / next gate |
 | --- | --- | --- |
 | Authority foundation | Versioned provenance, synthetic content, commands/events, deterministic randomness, replay, side-safe observations, and exact-audience legal actions for the admitted profile | Extend the same compatibility, recovery, and fog boundaries with each mechanic |
 | Preamble and Movement boundary | Initiative through Reserve Designation, bounded Movement, ZOC/Reaction, and Breakdown through first-side Combat entry | Positive scenario-specific obligations and broader vehicle/ZOC profiles remain gated |
-| Combat and continual cycle | Dormant Core through first positive Reserve Release | Creation and inherited-history restore, identity, decisions, costs, results, loss/retreat settlement, custody, relationships and round closure are implemented and reviewed through Task016. Isolated Release bases and lifecycle (017A1/A2) are also reviewed, including timed choices, deterministic fallback and completion. Task017B also connects verified settled Combat to empty Release opening/completion across32 reviewed contexts. Held-I no-move predecessor replays genuine first-opening history through empty Combat to Reserve Release. Task017C connects that history to owner release-I or deterministic I→II fallback, preserving other World state. Public Combat play and full cycle closure remain future gates. |
+| Combat and continual cycle | Private Core adapters; public activation pending | Reviewed internals cover settlement, Reserve Release, bounded released-I Movement and guarded repeat/finish. Native settled control retains synthetic earlier Movement. Two actual opening histories now reach a supported candidate before selection; they do not yet enter selection or results. Full-cycle proof and public Combat remain open. |
 | Working skeleton | Not reached | One authentic movement/contact/combat/release repeat-or-finish loop plus identical replay |
 | Playable MVP | Not started | Source-verified six-turn content/rules/victory, durable save/resume, hot-seat privacy, and minimal no-model Maproom |
 | Exercise Harness | Current bounded Exercise/Maneuver and paired descriptive comparisons | Add Combat actions and terminals only after public Core activation |
 
 The approved high-level path to a playable game is:
 
-1. Finish the Combat contract freeze, then implement dormant authority, public side-safe actions,
-   strict Runner evidence, and one authentic repeat-or-finish loop.
+1. Join actual positive entry to selection and settled results through bounded contracts and
+   private adapters, then activate public side-safe actions, retain strict Runner evidence, and
+   prove one authentic repeat-or-finish loop.
 2. Freeze the exact six-turn scenario surface—rules, tables, content, sources, rights, termination,
    victory, and remaining decisions—before splitting later implementation tasks.
 3. Implement only that measured Land surface and source-verified `Graziani's Offensive` content.
@@ -879,21 +904,3 @@ The current Umpire foundation is intentionally pure and in-process:
 ## License
 
 No license has been selected yet. All rights are reserved until a license file is added.
-
-Task019D1 adds private native [settled-continuation evidence](docs/specs/combat-settled-continuation-v1.md):
-complete Result2/empty Release replay and pure Movement witnesses for32 owner/seal contexts.
-Earlier Movement remains synthetic; the proof grants no repeat or public action.
-
-Task019D2 adds a private [settled-control executable contract](docs/specs/combat-settled-control-v1.md):
-full Result2 proof admission, owner repeat/finish and deterministic forced/fallback finish.
-The Python contract preserves synthetic earlier trust. Task019D3 implements private native control with
-full packet admission, exact replay/retry bytes and immutable source preservation; actual positive-history
-entry and repeated Movement execution remain separate gates.
-
-
-Task019E1 adds private native actual positive-entry replay for the two seed1 Normal ordinary NONE
-openings in [positive-entry v1](docs/specs/combat-positive-entry-v1.md): owner idle Movement11→12
-and System empty Breakdown12→13, preserving World/resources/RNG and deriving a supported
-candidate before selection. Full source, receipts and Movement-end proof authenticate entry;
-initial synthetic content-origin labels remain unchanged. C3a/Result2 consumption, repeat,
-public activation and parent017–019 completion remain separate gates.
