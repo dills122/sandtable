@@ -630,3 +630,8 @@ continual cycle. The [roadmap](docs/roadmap/pre-alpha-roadmap.md) owns detailed 
 [first-release audit](docs/research/2026-10-05-first-release-audit.md) owns release gap measurements.
 The [historical ledger](docs/research/2026-10-05-project-documentation-snapshot.md) preserves former
 checkpoint evidence without making it current runtime truth.
+
+[1]: https://learn.microsoft.com/en-us/dotnet/orleans/grains/external-tasks-and-grains "External tasks and grains - .NET | Microsoft Learn"
+[2]: https://learn.microsoft.com/en-us/aspnet/core/grpc/performance?view=aspnetcore-10.0 "Performance best practices with gRPC | Microsoft Learn"
+[3]: https://learn.microsoft.com/en-us/aspnet/core/grpc/deadlines-cancellation?view=aspnetcore-10.0 "Reliable gRPC services with deadlines and cancellation | Microsoft Learn"
+[4]: https://learn.microsoft.com/en-us/aspnet/core/grpc/json-transcoding?view=aspnetcore-10.0 "gRPC JSON transcoding in ASP.NET Core gRPC apps | Microsoft Learn"
