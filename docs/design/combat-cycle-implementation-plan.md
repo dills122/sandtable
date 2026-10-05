@@ -2001,3 +2001,34 @@ final exact-byte `just check` passed2512solution tests/Boundary81,0fail/skips an
 0build warnings/errors. Fresh GPT-6.1medium independent review set1/pass1 (total1of9,
 max3per set) is Ready with no findings. Draft publication/final-head CI remain pending. No parent/public/actual-history closure. See the
 [N1 handoff](../work/handoffs/2026-10-05-native-settled-control.md).
+
+
+### Task019E0 — actual positive-entry executable contract
+
+Manifest frozen2026-10-05 on18e8f99 before behavior. Sole five-primary ownership:
+`docs/specs/combat-positive-entry-v1.md`, matching schema, fixture and oracle, and this plan.
+Administrative dated review/handoff prose allowed. Accepted R1 entry-only prerequisite:
+actual seed1/Normal/NONE creation-rooted opening11, owner idle Movement completion3 to12,
+System empty Breakdown completion2 to13. Preserve World/RNG/resources/Weather/order/cycle;
+retain real original-unit Movement-end proof and derive supported candidate only at Position
+Determination, before selection. Both owners, full ordered source capture, literal bytes,
+all suffix cuts/original-byte retries, canonical/scope/forgery negatives required.
+Old readers/oracles and native/public/Snapshot/transport remain untouched; no C3a/Result2
+consumption, repeat or parent017–019 closure. Any outside prerequisite returns scope gate.
+Semantic RED/GREEN, predecessor oracles, proportionate regression gate and fresh coordinator
+review precede publication. Native adapter requires separate accepted manifest after merge.
+
+### Task019E0 local evidence and review boundary
+
+Both actual owner histories reproduce full source bytes and two completions11→12→13;
+four literal events/six cut proofs retain World/RNG/resources, real Movement-end receipt
+and supported candidate before selection. Semantic RED/GREEN,3966rejection probes,6cuts/6exact
+retries pass. Seven of eight unchanged required predecessor oracles pass. Original Breakdown
+oracle fails native sequence-source pin; exact18e8f99archive reproduces pre-existing drift
+from immutable catalog caching PR146 (expected pre146c5426245, current/base d019a3bc).
+Old pins/readers remain untouched; no bypass or eight-oracle pass claimed. Coordinator/fresh
+review must dispose baseline gate failure before acceptance/dependent native work.
+Serialized binlogged just-check-equivalent restore/format/build passes0warnings/errors,
+Boundary81/81 and2512solution tests0fail/skips.204old spec files byte-identical.
+Fresh review/publication/final-head CI pending; native/public/C3a/Result2 and parents017–019
+remain open. See [019E0 handoff](../work/handoffs/2026-10-05-positive-entry-contract.md).
