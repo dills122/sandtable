@@ -2,21 +2,21 @@ Static mapping only; no oracle runs. `H` = historical result/round lineage. `P` 
 
 Evidence aliases resolve spec, oracle, and same-stem fixture:
 
-- `R1`: [combat-result-settlement-v1](/Users/dsteele/.codex/worktrees/0b59/sandtable/docs/specs/verify-combat-result-settlement-v1.py)
-- `Q1`: [combat-sealed-round-v1](/Users/dsteele/.codex/worktrees/0b59/sandtable/docs/specs/verify-combat-sealed-round-v1.py)
-- `Q2`: [combat-sealed-round-v2](/Users/dsteele/.codex/worktrees/0b59/sandtable/docs/specs/verify-combat-sealed-round-v2.py)
-- `W`: [combat-world-settlement-v1](/Users/dsteele/.codex/worktrees/0b59/sandtable/docs/specs/verify-combat-world-settlement-v1.py)
-- `I`: [combat-rules-inputs-v1](/Users/dsteele/.codex/worktrees/0b59/sandtable/docs/specs/verify-combat-rules-inputs-v1.py)
-- `S`: [combat-selection-steps-v1](/Users/dsteele/.codex/worktrees/0b59/sandtable/docs/specs/verify-combat-selection-steps-v1.py)
-- `N`: [combat-snapshot-composition-v1](/Users/dsteele/.codex/worktrees/0b59/sandtable/docs/specs/verify-combat-snapshot-composition-v1.py)
-- `L`: [combat-reserve-release-v1](/Users/dsteele/.codex/worktrees/0b59/sandtable/docs/specs/verify-combat-reserve-release-v1.py)
-- `C`: [combat-cycle-control-v1](/Users/dsteele/.codex/worktrees/0b59/sandtable/docs/specs/verify-combat-cycle-control-v1.py)
-- `IC`: [combat-inherited-cycle-control-v1](/Users/dsteele/.codex/worktrees/0b59/sandtable/docs/specs/verify-combat-inherited-cycle-control-v1.py)
-- `IM`: [combat-inherited-reserve-movement-completion-v1](/Users/dsteele/.codex/worktrees/0b59/sandtable/docs/specs/verify-combat-inherited-reserve-movement-completion-v1.py)
-- `SEQ`: [combat-cycle-sequence-v1](/Users/dsteele/.codex/worktrees/0b59/sandtable/docs/specs/verify-combat-cycle-sequence-v1.py)
-- `COMP`: [combat-authority-composition-v1](/Users/dsteele/.codex/worktrees/0b59/sandtable/docs/specs/verify-combat-authority-composition-v1.py)
-- `SRC`: [source normalization](/Users/dsteele/.codex/worktrees/0b59/sandtable/docs/research/verify-combat-source-freeze.py)
-- `RNG`: [research RNG vectors](/Users/dsteele/.codex/worktrees/0b59/sandtable/docs/research/verify-combat-rng.py)
+- `R1`: [combat-result-settlement-v1](../../../docs/specs/verify-combat-result-settlement-v1.py)
+- `Q1`: [combat-sealed-round-v1](../../../docs/specs/verify-combat-sealed-round-v1.py)
+- `Q2`: [combat-sealed-round-v2](../../../docs/specs/verify-combat-sealed-round-v2.py)
+- `W`: [combat-world-settlement-v1](../../../docs/specs/verify-combat-world-settlement-v1.py)
+- `I`: [combat-rules-inputs-v1](../../../docs/specs/verify-combat-rules-inputs-v1.py)
+- `S`: [combat-selection-steps-v1](../../../docs/specs/verify-combat-selection-steps-v1.py)
+- `N`: [combat-snapshot-composition-v1](../../../docs/specs/verify-combat-snapshot-composition-v1.py)
+- `L`: [combat-reserve-release-v1](../../../docs/specs/verify-combat-reserve-release-v1.py)
+- `C`: [combat-cycle-control-v1](../../../docs/specs/verify-combat-cycle-control-v1.py)
+- `IC`: [combat-inherited-cycle-control-v1](../../../docs/specs/verify-combat-inherited-cycle-control-v1.py)
+- `IM`: [combat-inherited-reserve-movement-completion-v1](../../../docs/specs/verify-combat-inherited-reserve-movement-completion-v1.py)
+- `SEQ`: [combat-cycle-sequence-v1](../../../docs/specs/verify-combat-cycle-sequence-v1.py)
+- `COMP`: [combat-authority-composition-v1](../../../docs/specs/verify-combat-authority-composition-v1.py)
+- `SRC`: [source normalization](../../../docs/research/verify-combat-source-freeze.py)
+- `RNG`: [research RNG vectors](../../../docs/research/verify-combat-rng.py)
 
 ```tsv
 id	evidence_function_or_trace	contract_status_and_pending	runtime_owners

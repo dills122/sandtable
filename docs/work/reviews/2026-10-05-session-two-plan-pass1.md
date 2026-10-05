@@ -5,7 +5,7 @@ Review instance: **S0 set1/pass1, total1of9**, maximum3 passes per set.
 ## Findings
 
 **P2 — S1’s three-file repair allowance misses transitive fixture pins.**  
-The [plan](/Users/dsteele/repos/sandtable/.planning/combat-session-2/session-plan.md:28) anticipates updating the Breakdown fixture and possibly its verifier. However, the [inherited-selection fixture](/Users/dsteele/repos/sandtable/docs/specs/fixtures/combat-inherited-selection-v1.json:87) pins that fixture’s exact bytes, and its [verifier](/Users/dsteele/repos/sandtable/docs/specs/verify-combat-inherited-selection-v1.py:378) rejects any mismatch. Snapshot independently enforces the same dependency.
+The plan (historical local artifact: `/Users/dsteele/repos/sandtable/.planning/combat-session-2/session-plan.md:28`) anticipates updating the Breakdown fixture and possibly its verifier. However, the [inherited-selection fixture](../../specs/fixtures/combat-inherited-selection-v1.json) pins that fixture’s exact bytes, and its [verifier](../../specs/verify-combat-inherited-selection-v1.py) rejects any mismatch. Snapshot independently enforces the same dependency.
 
 A read-only inventory found **11 fixture paths, including Breakdown itself**, in the recursive hash-reference closure. This is a reference inventory; I did not execute every affected oracle. Updating only the proposed Breakdown pin would introduce downstream failures and undermine S3’s unchanged-predecessor gate.
 

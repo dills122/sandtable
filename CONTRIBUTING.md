@@ -2,7 +2,7 @@
 
 ## Before You Start
 
-1. Create a feature branch; do not work directly on `main`.
+1. Create a feature branch (for example, `codex/my-change`); do not work directly on `main`.
 2. Read `AGENTS.md`, `tech-design.md`, and `naming-overview.md`.
 3. Keep changes inside the owning project boundary.
 4. Update contracts and design documentation before dependent implementations.
@@ -16,6 +16,9 @@ dotnet restore Sandtable.slnx
 dotnet build Sandtable.slnx --no-restore
 dotnet test --solution Sandtable.slnx --no-build
 ```
+
+[Project setup](README.md#start-run-and-develop) and the
+[Exercise Runner runbook](docs/runbooks/exercise-runner.md) cover local commands.
 
 `just setup` performs the version check and restore. `just check` runs the normal local quality
 gates. Native Microsoft.Testing.Platform requires `--solution` for solution tests and `--project`
@@ -49,3 +52,21 @@ dotnet test --solution Sandtable.slnx --configuration Release --no-build
 
 Include the motivation, affected boundaries, contract or persistence impact, test evidence, and any
 remaining risk. Generated protobuf output belongs under `artifacts/obj` and must not be committed.
+
+## Documentation ownership
+
+Update README for setup/product changes, technical design for architecture, naming for vocabulary,
+and the roadmap for delivery status. Keep dated evidence in research/reviews and link it from the
+[documentation index](docs/README.md); avoid copying a task ledger into each overview.
+The [first-release audit](docs/research/2026-10-05-first-release-audit.md) distinguishes the current
+engine boundary from the planned playable release.
+
+Codex-managed worktrees seed Git-ignored AI Central context through
+`.codex/environments/environment.toml`. The default shared checkout is `$HOME/.ai-central`;
+set `AI_CENTRAL_HOME` for another location. The allowlisted seeder preserves worktree-owned files.
+
+CI retains xUnit XML timing reports for 14 days. To collect locally, append
+`--report-xunit-xml --results-directory artifacts/test-results` to the test command. See
+[test runtime measurements](docs/research/test-runtime-optimization.md). Package versions are
+centralized in `Directory.Packages.props`; build/analyzer settings are in `Directory.Build.props`
+and `.editorconfig`. Warnings are errors. Keep generated `artifacts/bin` and `artifacts/obj` out of Git.

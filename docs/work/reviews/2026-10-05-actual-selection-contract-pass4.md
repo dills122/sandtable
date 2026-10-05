@@ -9,7 +9,7 @@ Behavior checkpoint: `970fa4184b6aed787b545a6c3c7b751010add1fc`
 
 **Findings and plan review.** The five primary paths and three administrative packets match authorized scope. Both owners reach defender decline19 and positive FA20 without completion; seven fallbacks per owner reach Reserve Release. Full original provenance, separate trusted ledger, canonical framing, retries, ownership, bounded caches and dependency admission remain intact.
 
-The correction in [state_clock_precedence_checks](/Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/docs/specs/verify-combat-actual-selection-v1.py:820) changes only the final diagnostic block. Comparisons, mismatch collection and nonempty rejection remain unchanged. Print and assertion now contain count/fixed text. Reduced diagnostic detail is a reasonable bounded tradeoff. No trust rename, suppression, CI change, schema change or fixture regeneration occurred. No heavy pivot is needed.
+The correction in [state_clock_precedence_checks](../../specs/verify-combat-actual-selection-v1.py) changes only the final diagnostic block. Comparisons, mismatch collection and nonempty rejection remain unchanged. Print and assertion now contain count/fixed text. Reduced diagnostic detail is a reasonable bounded tradeoff. No trust rename, suppression, CI change, schema change or fixture regeneration occurred. No heavy pivot is needed.
 
 Preliminary concerns were recorded before reading the author packet and prior reports.
 

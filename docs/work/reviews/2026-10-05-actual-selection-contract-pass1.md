@@ -6,7 +6,7 @@ Review instance: **S3 set1/pass1, total1of9**. Reviewed branch `codex/combat-act
 
 **[P2] Validate forbidden command arms before segment identity.**
 
-[Transition line174](/Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/docs/specs/verify-combat-actual-selection-v1.py:174) checks segment identity before allowed-arm validation. The [specification](/Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/docs/specs/combat-actual-selection-v1.md:135) explicitly requires arm error `003` before segment error `004`.
+[Transition line174](../../specs/verify-combat-actual-selection-v1.py) checks segment identity before allowed-arm validation. The [specification](../../specs/combat-actual-selection-v1.md) explicitly requires arm error `003` before segment error `004`.
 
 Reproduced for both owners: take the valid opening input, set `segmentId="foreign"` and forbidden `choice="finish-without-attack"`, then call `apply(source, [], input)`. Actual result: **CMB-ASE-004**. Required result: **CMB-ASE-003**.
 
@@ -48,7 +48,7 @@ From the exact worktree:
 - In-memory sensitivity probes — existing tests detected removal of the FA stop and substitution of event-derived inputs for the independent ledger.
 - `git diff --check` — **exit0**.
 
-[New oracle log](/private/tmp/s3-review-pass1-oracle.log) · [Predecessor results](/private/tmp/s3-review-pass1-originals/results.json)
+New oracle log (historical local artifact: `/private/tmp/s3-review-pass1-oracle.log`) · Predecessor results (historical local artifact: `/private/tmp/s3-review-pass1-originals/results.json`)
 
 The initial FA sensitivity mutation hit a harness bounds error; the corrected temporary mutation produced the intended unexpected-acceptance failure. Repository files were unchanged.
 

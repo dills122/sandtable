@@ -1,46 +1,28 @@
 # Sandtable Documentation Index
 
-This index separates current governing documents from active decision gates and retained historical
-evidence. `README.md` is the user-facing project map; `tech-design.md` owns architecture;
-`naming-overview.md` owns vocabulary; the
-[pre-alpha roadmap](roadmap/pre-alpha-roadmap.md#status-model-and-document-ownership) alone owns
-current capability status and cross-package sequencing.
+[README](../README.md) owns the project overview and setup, [technical design](../tech-design.md)
+owns architecture, and [naming](../naming-overview.md) owns vocabulary. The
+[pre-alpha roadmap](roadmap/pre-alpha-roadmap.md) is the canonical current delivery ledger.
+Research and reviews record their dated checkpoints; they are not competing status ledgers.
 
 ## Start here
 
-- [Project overview and setup](../README.md)
-- [Contributor workflow](../CONTRIBUTING.md)
-- [Security policy](../SECURITY.md)
-- [Technical design](../tech-design.md)
-- [Checked ZOC/Reaction Maneuver evidence](research/simulator-reaction-trajectories.md)
-- [Post-merge simulator check-in (Rules 9)](research/simulator-post-merge-checkin.md)
-- [Naming and domain vocabulary](../naming-overview.md)
-- [Pre-alpha roadmap](roadmap/pre-alpha-roadmap.md)
-- [Current checkpoint, simulation and Orleans planning gates](roadmap/pre-alpha-roadmap.md#current-checkpoint-and-next-gates)
-- [Combat delivery review and owner disposition](reviews/combat-delivery-plan-author-review.md#owner-disposition)
+- [First-release audit](research/2026-10-05-first-release-audit.md): current gaps and release exit gates
+- [Roadmap checkpoint and next gates](roadmap/pre-alpha-roadmap.md#current-checkpoint-and-next-gates)
+- [Contributor workflow](../CONTRIBUTING.md) and [security policy](../SECURITY.md)
+- [Exercise Runner runbook](runbooks/exercise-runner.md)
+- [Checked Reaction Maneuver evidence](research/simulator-reaction-trajectories.md)
+- [Rules9 simulator check-in](research/simulator-post-merge-checkin.md)
+- [Combat verifier pin maintenance inventory](research/combat-verification-pin-maintenance.md)
 
-Current checkpoint: public Rules9 authority and checked Runner evidence reach first-side Combat
-entry. Reviewed private Core work covers settlement, custody, round closure, Reserve Release,
-bounded released-I Movement and guarded repeat/finish. Native settled control preserves synthetic
-earlier Movement; two native actual opening histories separately reach a supported candidate before
-selection. The merged private [actual-selection executable contract](specs/combat-actual-selection-v1.md)
-consumes those histories to Force Assignment after defender decline, with seven fallback variants
-per owner to no-attack Reserve Release. It requires an independently supplied trusted input ledger;
-the native consumer and production actor/clock/store authentication remain gated. Actual round/result
-and repeat remain open. Public Combat activation, the authentic
-full cycle, Maproom, durable save/resume, hosted publication and model-backed play remain open.
-See the
-[status table](roadmap/pre-alpha-roadmap.md#current-delivery-status) and
-[next gates](roadmap/pre-alpha-roadmap.md#current-checkpoint-and-next-gates) for details.
+Public Rules9 authority and Runner evidence stop at first-side Combat entry. Private Combat Core
+adapters and contracts remain separate. Task019F0's actual-selection contract merged in PR #161;
+its native consumer, trusted production input authentication, actual round/result completion,
+public activation and authentic continual-cycle proof remain pending. The first six-turn Land-only
+scenario, Maproom hot-seat play and durable save/resume are not started. Host/worker/provider
+integration remains scaffolded; AI is optional future work.
 
-Retained contract evidence has known current failures: Breakdown/cycle-sequence source pins,
-recursive Snapshot admission and a separate outward Content pin. Maintenance is deferred; remaining
-bounded oracle timeouts are unverified. The [pin inventory](research/combat-verification-pin-maintenance.md)
-records the repair scope. These failures are separate from the .NET `just check` gate and from
-supplemental semantic probes. Research/review status statements below describe their checkpoints;
-use the roadmap for current capability status.
-
-## Implemented capability packages
+## Governing capability packages
 
 | Capability | Specification | Technical design | Supporting research |
 | --- | --- | --- | --- |
@@ -54,144 +36,36 @@ use the roadmap for current capability status.
 | Reserve Designation | [Spec](specs/reserve-designation-v1.md) | [Design](design/reserve-designation-v1.md) | [Spike](research/reserve-designation-spike.md) |
 | Exercise Harness | [Spec](specs/exercise-harness-v1.md) | [Design](design/exercise-harness-v1.md) | [Capability](research/exercise-capability-and-replay-spike.md), [artifacts](research/exercise-evidence-artifact-spike.md), [reproducibility](research/exercise-reproducibility-and-pairing-spike.md) |
 
-## Active engine package and decision gates
+## Combat and continual-cycle work
 
-- Movement Foundation: [specification](specs/movement-foundation-v1.md),
-  [technical design](design/movement-foundation-v1.md), and
-  [source/contract research](research/movement-foundation-spike.md). Tasks 001-010 are implemented;
-  PR #79 completed the checked Maneuver exercise evidence and the complete authoritative Movement
-  vertical is available.
-- Breakdown continuity: [decision packet](research/breakdown-continuity-spike.md). The approved
-  continuity seam is implemented through Task 004B and projected side-safely by Task 005.
-- Breakdown adjudication: [source/decision packet](research/breakdown-adjudication-spike.md) and
-  [design/task plan](design/breakdown-adjudication-v1.md), [governing specification](specs/breakdown-adjudication-v1.md),
-  [wire freeze](specs/breakdown-wire-contract-v1.md) and [fixture migration](specs/breakdown-fixture-migration.v1.json).
-  Decisions `004`–`007` accepted; Task 001 complete; [Task 002 outcomes](research/breakdown-outcome-rules.md)
-  implemented with full gate passing and independent review Ready. [Task 003 campaign contracts](research/breakdown-campaign-contracts.md)
-  and certified Truck fixture implemented. [Task 004 move accounting](research/breakdown-move-accounting.md)
-  implemented. [Task 005 stop/check authority](research/breakdown-stop-adjudication.md) implemented;
-  [Task 006 public activation and privacy](research/breakdown-public-activation.md) activates current
-  authority through first-side Combat entry. [Task 007 Runner closeout](research/breakdown-runner-closeout.md)
-  records checked successors and verification; [review 5](reviews/brk-followup-review-5.md) accepts the AC-009 transcript follow-up and completes bounded Tasks 006–007.
-- ZOC and Reaction: approved [specification](specs/zoc-reaction-v1.md),
-  [technical design](design/zoc-reaction-v1.md), and
-  [research packet](research/contact-reaction-zoc-spike.md), with the accepted
-  [user-space boundary decision](research/user-space-declassification-boundary-enforcement.md) and
-  [disclosure manifest](specs/user-space-disclosure-manifest.v1.json). Movement and Breakdown continuity
-  prerequisites are complete; `ZOR-TASK-002A`-`006C` implement and activate Rules/Content/fixture,
-  Campaign World/creation/Snapshot/event-replay, side-safe Observation 6/policy/history,
-  topology-local Movement/Reaction, participant episodes, and exact closure/resumption.
-  `007A`-`007B` complete bounded Runner adoption, strict checked evidence, matching clean runs,
-  and [Ready independent review](reviews/zor-task-007-review-1.md).
-- Combat: [source inventory](research/combat-cycle-source-inventory.md) and completed
-  [rules/result-surface spike](research/combat-rules-result-surface-spike.md), with decision-ready
-  [static Content](research/combat-content-static-schema-spike.md) and
-  [mutable-state research](research/combat-mutable-state-spike.md), and
-  [RNG/golden research](research/combat-rng-golden-spike.md), plus
-  [Reserve release/history](research/reserve-release-history-spike.md).
-  [Independent review 2](reviews/combat-reserve-research-review-2.md) is Ready for owner decisions;
-  [CMB-DES-001 identity design](design/combat-opportunity-identity-v1.md) is complete for review,
-  covering the bounded infantry opportunity, target, participant and Contact/Engaged identity
-  handoffs. [CMB-DES-002 sealed protocol](design/combat-sealed-decision-protocol-v1.md) is independently
-  reviewed, defining frozen choices, persisted lifecycle, cancellation fallback and strict
-  readback. [CMB-DES-003 Combat-step transitions](design/combat-step-transitions-v1.md) is complete
-  for review: explicit selection/decline, six closure proofs and prepared/cancelled/settled paths.
-  [CMB-DES-004 cost/resolution ordering](design/combat-cost-resolution-order-v1.md) defines atomic
-  costs, role-ordered result publication and simultaneous-stage extension boundaries.
-  [CMB-DES-005 settlement/disclosure](design/combat-settlement-disclosure-v1.md) defines mandatory
-  choice fallback, loss/retreat/custody conservation and side projections. `CYCLE-DES-001`
-  [cycle/Reserve composition](design/continual-cycle-reserve-composition-v1.md) now defines
-  release windows, repeat/finish and occurrence-aware evidence. The
-  [policy register](design/combat-cycle-policy-reconciliation.md) consolidates eight owner choices;
-  the [combined contract/implementation plan](design/combat-cycle-implementation-plan.md) defines
-  25 staged tasks and their evidence. Owner accepted all eight policies and the review4 correction
-  on2026-09-06. TASK-001 source research, TASK-002 Content and TASK-003A Setup/initial ledger
-  packets are complete. [TASK-003B World/settlement](specs/combat-world-settlement-v1.md) is complete
-  as a contract slice;003C/D/004 contract packets are complete, while production runtime activation
-  gates stay closed.
-  [Independent design review 2](reviews/combat-design-review-2.md) returned Ready for
-  DES-001/DES-002/DES-003. [Independent design review 3](reviews/combat-settlement-review-3.md)
-  returned Ready for DES-004/DES-005, with no actionable findings; subsequent cycle design is outside
-  that review. [Review4](reviews/combat-cycle-plan-review-4.md) assessed cycle/combined planning at
-  9f683d1: Not ready with one ordinary break-off handoff gap. Author correction assigns the missing
-  work. That checkpoint exhausted its then-authorized4of4 budget. Owner subsequently authorized
-  up to three more passes. [Progress review5](reviews/combat-progress-review-5.md) covers the
-  unmerged branch through003B: Ready with non-blocking follow-ups; its status correction is applied.
-  [003C1 rules inputs/timing](specs/combat-rules-inputs-v1.md) is complete as a contract slice;
-  [review6](reviews/combat-inputs-review-6.md) returned Ready, no actionable findings (6of7 used).
-  [003D1 sequence/cycle contracts](specs/combat-cycle-sequence-v1.md) are complete;
-  [review7](reviews/combat-sequence-review-7.md) returned Ready, no actionable findings (7of7 used).
-  [003C2 Rules10/creation envelopes](specs/combat-authority-envelope-v1.md) are complete for the creation
-  cut. [003C3a selection/step control](specs/combat-selection-steps-v1.md) is complete with author checks;
-  [003C3b sealed round/commitment](specs/combat-sealed-round-v1.md) is also complete as a bounded
-  authority fragment. [HOST-RSH-001](research/orleans-publication-feasibility.md) research is complete;
-  003C3c/D2a/D2b and [D2c.1 successor/opening contracts](specs/combat-inherited-successors-v1.md)
-  are complete within their private boundaries. [D2c.2a opening provenance](specs/combat-opening-preamble-v1.md)
-  reaches Weather entry from Created11. [D2c.2b Weather](specs/combat-weather-v1.md) reaches Organization
-  entry with34 traces/68 cuts and strict RNG/history checks. [D2c.2c stage entry](specs/combat-stage-entry-v1.md)
-  reaches Reserve entry with12 traces/60 cuts. [D2c.2d Reserve designation/completion](specs/combat-reserve-designation-v1.md)
-  closes bounded creation-to-first-opening contracts. [Inherited Movement preparation](design/combat-inherited-movement-preparation.md)
-  maps D2c.3 fields and replay obligations. [D2c.3a inherited Movement](specs/combat-inherited-movement-v1.md)
-  supplies actual Move4 provenance, cumulative CP/DP, route and progress receipts.
-  [D2c.3b route lifecycle](specs/combat-inherited-movement-lifecycle-v1.md) closes deliberate stop,
-  empty resolution and Movement completion/end proof for that profile:8 traces/24 events.
-  [D2c.3c Breakdown completion](specs/combat-inherited-breakdown-completion-v1.md) adds8 one-event
-  traces to actual Combat entry. [D2c.3d actual-entry selection](specs/combat-inherited-selection-v1.md)
-  adds4 traces/8 events and closes zero-candidate selection without advancing structural steps.
-  [D2c.3e no-attack traversal](specs/combat-inherited-no-attack-v1.md) adds4 traces/24 events and
-  reaches same-slot Reserve Release. [D2c.3f Reaction trigger](specs/combat-inherited-reaction-trigger-v1.md)
-  adds2 actual owner traces through one frozen-opportunity interrupt.
-  [D2c.3g Reaction lifecycle](specs/combat-inherited-reaction-lifecycle-v1.md) adds2 traces/8 events
-  through one participant episode and exact phasing resumption; broader Reaction and remaining .3
-  capabilities/.4 composition stay open. [D2c.3n direct Reaction closure](specs/combat-inherited-reaction-closure-v1.md)
-  adds6 direct decline/unavailable/timeout forks from the exact triggers with no material effects.
-  [D2c.3o active Reaction fallback](specs/combat-inherited-reaction-active-fallback-v1.md) adds4
-  post-first-move System fallback forks through a reason-specific mandatory stop and exact phasing
-  resumption. [D2c.3p active Reaction second move](specs/combat-inherited-reaction-second-move-v1.md)
-  adds2 owner traces that advance the same active participant rear→supply at CP2→4 while retaining
-  route identity and active opportunity. [D2c.3q Reaction movement completion](specs/combat-inherited-reaction-movement-completion-v1.md)
-  adds2 three-event traces through explicit completion, mandatory empty-stop resolution, and exact
-  phasing resumption; multiple-opportunity/vehicle profiles stay open.
-  [D2c.3h Reserve cycle entry](specs/combat-inherited-reserve-cycle-v1.md)
-  adds2 traces/20 events from actual Reserve-I history through same-slot Reserve Release.
-  [D2c.3i inherited Reserve Release](specs/combat-inherited-reserve-release-v1.md) adds2 traces/6
-  events through owner release-I and completion; guarded repeat and positive Reserve movement stay open.
-  [D2c.3j armed continuation](specs/combat-inherited-armed-continuation-v1.md) adds2 pure proofs for
-  one actual ammunition10 candidate per owner and pins full selection-to-Snapshot result support;
-  [D2c.3k guarded cycle control](specs/combat-inherited-cycle-control-v1.md) adds4 exact repeat/finish
-  traces for those proofs. [D2c.3l released-I Movement](specs/combat-inherited-reserve-movement-v1.md)
-  adds2 exact Clear moves under ceiling10.
-  [D2c.3m released-I Movement completion](specs/combat-inherited-reserve-movement-completion-v1.md)
-  adds2 exact stop/resolution/completion traces and expires each pending exception from its accepted
-  completion receipt; multiple-opportunity Reaction and vehicle profiles stay open.
-  [D2c.4 authority composition](specs/combat-authority-composition-v1.md) reconciles CON-002–004
-  across28 traces, proves capacity and freezes the exact Task004 handoff.
-  [Review15](reviews/combat-inherited-reserve-release-review-15.md) returned Ready with one
-  non-blocking retained-coverage finding, corrected before `719ea0d`.
-  See [result/settlement](specs/combat-result-settlement-v1.md) and
-  [snapshot composition/audit](specs/combat-snapshot-composition-v1.md). See
-  [ordinary movement](specs/combat-ordinary-movement-v1.md) for D2a evidence and source correction.
-  [Reserve Release](specs/combat-reserve-release-v1.md) freezes the private control/history arm.
-  [Cycle control](specs/combat-cycle-control-v1.md) freezes guarded repeat/finish and Movement expiry
-  with19 literal cases/64 traces. Historical reviews remain under `docs/reviews`; review15 assessed
-  `003D2c.3i` as Ready with one non-blocking retained-coverage finding, corrected before `719ea0d`.
-  That historical 15-review sequence is complete. Parent003, Task004 and checkpoint B are now
-  complete; production hosting remains gated. See the current checkpoint above for runtime progress.
-- Sprint 4-5 dependencies: [research-gate audit](research/sprint-4-5-research-gates.md).
+- [Combined implementation plan](design/combat-cycle-implementation-plan.md): private tasks, evidence and activation gates
+- [Source inventory](research/combat-cycle-source-inventory.md) and [rules/result-surface spike](research/combat-rules-result-surface-spike.md)
+- [Policy reconciliation](design/combat-cycle-policy-reconciliation.md): accepted owner decisions
+- [Actual-selection contract](specs/combat-actual-selection-v1.md): merged private executable boundary
+- [Author delivery review and owner disposition](reviews/combat-delivery-plan-author-review.md#owner-disposition)
+- [Orleans publication feasibility](research/orleans-publication-feasibility.md): publication obligations distinct from Core
 
-## Reviewed future product work
+Movement and Breakdown governing packages: [Movement spec](specs/movement-foundation-v1.md),
+[Movement design](design/movement-foundation-v1.md), [Breakdown spec](specs/breakdown-adjudication-v1.md),
+[Breakdown design](design/breakdown-adjudication-v1.md), [ZOC/Reaction spec](specs/zoc-reaction-v1.md),
+and [ZOC/Reaction design](design/zoc-reaction-v1.md).
 
-- Player Intent Composer: [specification](specs/player-intent-composer-v1.md),
-  [technical design](design/player-intent-composer-v1.md), and
-  [input/parser research](research/player-intent-input-and-needle-feasibility.md). This package is
-  reviewed but not authorized for implementation.
-- Web play and persona research is retained under [`docs/research`](research/); Maproom, hosted
-  lifecycle, model-backed commanders, and parser adoption remain later roadmap work.
+## Future product work and retained evidence
 
-## Historical evidence
+[Player Intent Composer](specs/player-intent-composer-v1.md) and its
+[design](design/player-intent-composer-v1.md) are reviewed future work. Parser adoption, hosted
+lifecycle and model-backed play remain roadmap gates.
 
-- [`docs/research`](research/) contains source investigations, bounded spikes, simulator studies,
-  and decision packets. A research document records evidence at its stated date; it is not current
-  implementation truth unless its status says so.
-- [`docs/reviews`](reviews/) contains independent review and reconciliation records. These are audit
-  history, not active task lists.
+- [Research directory](research/): source investigations, spikes, simulator studies and decision packets
+- [Review directory](reviews/): independent assessments and reconciliation history
+- [Historical project ledger](research/2026-10-05-project-documentation-snapshot.md): former detailed README checkpoint record
+- [Contract directory](specs/): exact versions, frozen schemas and executable contract evidence
+- [Design directory](design/): domain rationale and delivery plans
+
+Retained Python Combat oracles are outside `just check`. The pin inventory records known failures
+and unverified timeouts; historical passing results do not certify a new checkout. Report original
+oracle outcomes separately from supplemental semantic probes.
+
+Versioned specifications describe their frozen boundary. In particular, the Content Pack v1
+current-evolution note predates implemented Movement/contact work; use the roadmap for current
+capability status. Historical spec bytes remain unchanged so provenance pins stay valid.

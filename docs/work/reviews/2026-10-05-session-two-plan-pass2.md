@@ -2,7 +2,7 @@
 
 Review instance: **S0 set1/pass2, total2of9**, maximum3 passes per set.
 
-The complete [review report](/Users/dsteele/repos/sandtable/.planning/combat-session-2/s0-review-pass2.md) and [preliminary assessment](/Users/dsteele/repos/sandtable/.planning/combat-session-2/s0-review-pass2-preliminary.md) are retained.
+The complete review report (historical local artifact: `/Users/dsteele/repos/sandtable/.planning/combat-session-2/s0-review-pass2.md`) and preliminary assessment (historical local artifact: `/Users/dsteele/repos/sandtable/.planning/combat-session-2/s0-review-pass2-preliminary.md`) are retained.
 
 ## Findings
 

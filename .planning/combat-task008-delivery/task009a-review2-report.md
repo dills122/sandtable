@@ -4,13 +4,13 @@
 
 **P2 — AdmissionBoundary validates shape/canonical spelling after trusted-history access.**
 
-[CampaignCombatIdentityCodec.cs:95](/Users/dsteele/repos/sandtable/src/Cna.Core/Campaigns/CampaignCombatIdentityCodec.cs:95) calls generic `ValidateBounds`, then `Admit`, then compares canonical bytes. `ValidateBounds` accepts JSON values such as `null`, `{}`, duplicate-field objects, and whitespace-suffixed valid objects within size limits.
+[CampaignCombatIdentityCodec.cs:95](../../src/Cna.Core/Campaigns/CampaignCombatIdentityCodec.cs) calls generic `ValidateBounds`, then `Admit`, then compares canonical bytes. `ValidateBounds` accepts JSON values such as `null`, `{}`, duplicate-field objects, and whitespace-suffixed valid objects within size limits.
 
 Consequently, malformed Boundary bytes reach retained-history access and replay. With inaccessible history, history exceptions escape before malformed-value rejection. With valid history, unnecessary replay precedes rejection.
 
-This differs from inherited contract oracle’s [read_boundary:124](/Users/dsteele/repos/sandtable/docs/specs/verify-combat-inherited-selection-v1.py:124), which parses typed canonical Boundary before admission. Original [selection contract:77](/Users/dsteele/repos/sandtable/docs/specs/combat-selection-steps-v1.md:77) also explicitly orders shape/bounds, canonical spelling, then trusted-state semantics.
+This differs from inherited contract oracle’s [read_boundary:124](../../docs/specs/verify-combat-inherited-selection-v1.py), which parses typed canonical Boundary before admission. Original [selection contract:77](../../docs/specs/combat-selection-steps-v1.md) also explicitly orders shape/bounds, canonical spelling, then trusted-state semantics.
 
-[CombatIdentityTests.cs:252](/Users/dsteele/repos/sandtable/tests/Cna.Core.Tests/Campaigns/CombatIdentityTests.cs:252) currently expects history access for a malformed partial Boundary containing512 entries, preserving this mismatch.
+[CombatIdentityTests.cs:252](../../tests/Cna.Core.Tests/Campaigns/CombatIdentityTests.cs) currently expects history access for a malformed partial Boundary containing512 entries, preserving this mismatch.
 
 Smallest correction: validate closed Boundary shape, primitive types, and canonical spelling before `Admit`; retain whole-byte replay comparison afterward. Add inaccessible-history regressions for malformed/noncanonical Boundary inputs. Preserve512/513 boundary testing independently of malformed-object acceptance.
 
@@ -18,7 +18,7 @@ No malformed-input acceptance or authoritative-state corruption found; defect co
 
 **Plan review**
 
-Implementation fits [canonical009 refinement](/Users/dsteele/repos/sandtable/docs/design/combat-cycle-implementation-plan.md:862):
+Implementation fits [canonical009 refinement](../../docs/design/combat-cycle-implementation-plan.md):
 
 - Admission requires retained creation plus actual completedG2 replay, exact position, supported cycle, and six/seven moves.
 - Weather, adjacency, currentCP, and voluntary ceilings derive from replayed state. Unsupported histories reject before returning empty candidates.

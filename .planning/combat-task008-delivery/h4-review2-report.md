@@ -9,17 +9,17 @@ Blind-first ordering preserved: inspected requirements, schema, implementation, 
 
 Key evidence:
 
-- [Restore](/Users/dsteele/repos/sandtable/src/Cna.Core/Campaigns/CampaignCombatInheritedSnapshotV12Codec.cs:13) requires retained Created11, invokes actual admission decision, rejects publication, replays retained history, and compares complete canonical bytes.
-- [Composition](/Users/dsteele/repos/sandtable/src/Cna.Core/Campaigns/CampaignCombatInheritedSnapshotV12Codec.cs:28) derives authority exclusively from creation and typed replay writers. Checks bind configuration, creation, identity, complete receipt ledger, event hashes, versions, and prefix.
-- [State mapping](/Users/dsteele/repos/sandtable/src/Cna.Core/Campaigns/CampaignCombatInheritedSnapshotV12Codec.cs:56) preserves Reaction positions, suspended Movement, resolved windows, closed flows, and inherited evidence. Defaults require causal absence checks.
-- [Bounds](/Users/dsteele/repos/sandtable/src/Cna.Core/Campaigns/CampaignCombatInheritedSnapshotV12Codec.cs:107) enforce structural limits before history access. Larger array allowance follows actual root `world.cohesionCauses` structure; dotted names cannot impersonate that path.
-- [Tests](/Users/dsteele/repos/sandtable/tests/Cna.Core.Tests/Campaigns/CombatInheritedSnapshotTests.cs:11) compare exact frozen bytes and exercise disabled-admission restore across every selected history, plus canonical tampering, lawful foreign forks, forged causal RNG, missing evidence, bounds, and defensive ownership.
+- [Restore](../../src/Cna.Core/Campaigns/CampaignCombatInheritedSnapshotV12Codec.cs) requires retained Created11, invokes actual admission decision, rejects publication, replays retained history, and compares complete canonical bytes.
+- [Composition](../../src/Cna.Core/Campaigns/CampaignCombatInheritedSnapshotV12Codec.cs) derives authority exclusively from creation and typed replay writers. Checks bind configuration, creation, identity, complete receipt ledger, event hashes, versions, and prefix.
+- [State mapping](../../src/Cna.Core/Campaigns/CampaignCombatInheritedSnapshotV12Codec.cs) preserves Reaction positions, suspended Movement, resolved windows, closed flows, and inherited evidence. Defaults require causal absence checks.
+- [Bounds](../../src/Cna.Core/Campaigns/CampaignCombatInheritedSnapshotV12Codec.cs) enforce structural limits before history access. Larger array allowance follows actual root `world.cohesionCauses` structure; dotted names cannot impersonate that path.
+- [Tests](../../tests/Cna.Core.Tests/Campaigns/CombatInheritedSnapshotTests.cs) compare exact frozen bytes and exercise disabled-admission restore across every selected history, plus canonical tampering, lawful foreign forks, forged causal RNG, missing evidence, bounds, and defensive ownership.
 
 ## Plan Review
 
 **No blocking plan findings.**
 
-Implementation satisfies bounded H4 responsibilities in [canonical plan](/Users/dsteele/repos/sandtable/docs/design/combat-cycle-implementation-plan.md:834): literal nineteen-field roots and retained-history restore across implemented Initial H cuts.
+Implementation satisfies bounded H4 responsibilities in [canonical plan](../../docs/design/combat-cycle-implementation-plan.md): literal nineteen-field roots and retained-history restore across implemented Initial H cuts.
 
 Dependency order remains sound: H1–H3 supply causal routing; H4 supplies root composition and restore. Existing creation-only reader remains separate. No schema migration, public endpoint, new service, or gameplay activation introduced.
 

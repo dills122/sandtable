@@ -14,7 +14,7 @@ A preliminary ledger was recorded before reading the separate author explanation
 
 ## Plan Review
 
-The [maintenance inventory](/Users/dsteele/.codex/worktrees/combat-pin-inventory/sandtable/docs/research/combat-verification-pin-maintenance.md:53) fulfills S1a’s research boundary:
+The [maintenance inventory](../../research/combat-verification-pin-maintenance.md) fulfills S1a’s research boundary:
 
 - Independent traversal confirmed **20 live files:15fixtures,3schemas,2Python readers**.
 - Fixture-only closure is **14 Breakdown-rooted /15sequence-source-rooted**.
@@ -22,7 +22,7 @@ The [maintenance inventory](/Users/dsteele/.codex/worktrees/combat-pin-inventory
 - The proposed order violates no documented hash dependency.
 - Schema-to-fixture and reader-to-fixture generation relationships explain the additional ordering constraints.
 
-The causal maintenance assessment is sound. [B2’s build descriptor](/Users/dsteele/.codex/worktrees/combat-pin-inventory/sandtable/docs/specs/verify-combat-exercise-child-evidence-v1.py:54) includes its schema hash and predecessor pins. Their refresh changes build identity, manifest/child evidence, B3 materialization and aggregate evidence, then outward readbacks and capacities. Replacing visible pin fields alone cannot certify the resulting evidence.
+The causal maintenance assessment is sound. [B2’s build descriptor](../../specs/verify-combat-exercise-child-evidence-v1.py) includes its schema hash and predecessor pins. Their refresh changes build identity, manifest/child evidence, B3 materialization and aggregate evidence, then outward readbacks and capacities. Replacing visible pin fields alone cannot certify the resulting evidence.
 
 The independent Content-document drift is confirmed. PR116 changes status/follow-up prose; those bytes are nevertheless enforced by outward pin checks. Sequence maintenance alone would leave that limitation unresolved.
 
