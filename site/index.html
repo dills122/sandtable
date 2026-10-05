@@ -296,19 +296,22 @@
               <li>Byte-identical replay, inherited-history restore, and checked Exercise/Maneuver evidence</li>
               <li>Combat internals reviewed through orders, costs, results, losses, retreat, custody, and round closure</li>
               <li>Private Reserve Release, bounded released-I Movement, and guarded repeat/finish</li>
-              <li>Two actual opening histories reach a supported candidate before selection</li>
+              <li>Two native opening histories reach a supported candidate before selection</li>
+              <li>Private executable actual-selection contract through Force Assignment or no-attack Reserve Release</li>
             </ul>
             <p>
-              Combat internals run in engine tests. Settled-control proofs retain synthetic earlier
-              Movement; actual entry does not yet reach selection or results. Public Combat play
-              and the authentic full cycle remain open.
+              Settled-control proofs retain synthetic earlier Movement. The
+              <a href="https://github.com/dills122/sandtable/blob/main/docs/specs/combat-actual-selection-v1.md">actual-selection contract</a>
+              requires a separately trusted input ledger; its native consumer and production input
+              authentication remain gated. Actual round/results, repeat, public Combat play and the
+              authentic full cycle remain open.
             </p>
           </article>
 
           <article class="frontier-grid__next">
             <h3>On the road to Maproom</h3>
             <ol>
-              <li>Connect actual entry to selection and settled results; complete Reserve lineage</li>
+              <li>Implement native actual selection, then round/results; complete Reserve lineage</li>
               <li>Activate side-safe Combat actions and prove the complete loop through Runner</li>
               <li>Add source-verified first-scenario content and victory rules</li>
               <li>Build local hot-seat Maproom, saves, fog, and replay</li>
