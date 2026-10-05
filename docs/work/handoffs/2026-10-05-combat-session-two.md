@@ -37,7 +37,7 @@ never reset or stage them. Prior overnight sync branch15f98c7 remains preserved 
 | S2 | Actual-selection bridge decision, Ready pass1 | PR159, merge96596dde066b0d8c9a0110eba50fcfcb01d99a46 |
 | D1 | README/site refreshed, Ready pass1 | PR160, mergeff677502aa1dc84e2a85b4868bfaf21fcf53dc68; Pages37324394940 success |
 | S3 | Executable contract, Ready total review4 | PR161, merge2143e25a553bc927b0fe4bd504379df54828babb |
-| D2 | Docs reconcile S3, Ready pass1 | PR162 pending exact-head CI/merge at this checkpoint |
+| D2 | Docs reconcile S3, Ready pass1 | PR162 merged fb6b2451a4a4fa539629772ea51337734c61d459; Pages pending |
 | S4 | Native consumer deferred for time | no retained implementation/WIP |
 | S5 | Integration/handoff underway | this branch, final review/PR pending |
 
@@ -81,8 +81,8 @@ Full Markdown51 baseline errors remain deferred. No public gameplay expansion oc
 
 ## Immediate Next Actions
 
-1. Finish PR162 exact-head CI/merge, verify Pages, integrate it into coordinator branch.
-2. Complete branch/worktree preservation audit and update this handoff with actual final state.
+1. PR162 merged after all exact-head checks passed; integrated into this branch. Verify Pages deployment.
+2. Preservation audit completed below; keep final metadata current through delivery.
 3. Fresh independent final review, coordinator docs PR and exact-head CI/merge; pause heartbeat.
 4. Next session implement the accepted five-primary-file S4 native manifest with TDD and
    parity/error-ordering tests, then independent review and full required gates. Do not skip
@@ -117,3 +117,8 @@ Primary user-owned dirty files are `.claude/settings.json`, `.github/copilot-ins
 Final PR identifiers will be reconciled before session completion. Coordinator review records
 are under `docs/work/reviews/2026-10-05-*`. Execution ledger is ignored `.planning/combat-session-2/`;
 this tracked handoff and canonical documents are the durable continuation entry point.
+
+PR162 merged17:11:29UTC on2026-10-05 after reviewed23fbc692 and all exact-head checks passed.
+The integrated contract oracle inputs/runtime/build/test files remain byte-identical to1677822
+and main2143e25; subsequent integration only changes docs/site/admin. Final review and
+coordinator PR CI remain delivery gates, not claimed complete by this handoff.
