@@ -1,0 +1,123 @@
+# Handoff: actual-selection executable contract
+
+## Objective And Boundary
+
+Session2 S3 / Task019F0 implementation is REVIEW_READY for coordinator-dispatched fresh review;
+this is an author status, not independent Ready. Two original seed1 Normal/NONE actual sources,
+seven-record selected→defender decline→FA20 without completion; seven fallback variants per owner
+reach Reserve Release. Five primary files only. Trusted ledger is independently supplied and
+replay consistency is the precondition; no production seat/clock/store authentication claim.
+
+## Canonical Sources
+
+New combat-actual-selection-v1 specification/inventory/fixture/oracle; canonical Combat plan and
+roadmap; S1a combat-verification-pin-maintenance and S2 combat-actual-selection-bridge-feasibility.
+Binding coordinator disposition b86c062 is in combat-session-two-sync/sandtable/docs/work/plans/
+2026-10-05-actual-selection-dependency-disposition.md. S1a Readycb16f676/PR158 and S2
+Ready80cc969/PR159 independently accepted; exact merged baseline `96596dde066b0d8c9a0110eba50fcfcb01d99a46`.
+Old20-file closure maintenance deferred, not waived. All16 admitted dependency bytes verified
+against this merged baseline before implementation and checked on every authority/cache path.
+
+## Current Repository State
+
+Worktree `/Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable`; branch `codex/combat-actual-selection-contract`.
+Base `96596dde066b0d8c9a0110eba50fcfcb01d99a46`; implementation checkpoint `3f1dfc967a14dddb98bbe02d4e9b692fd535cb6d`. Three dated administrative packets are
+committed afterward; coordinator receives exact final head on dispatch. Only `.serena/` generated
+tooling remains untracked. No runtime WIP or old file/pin changes. Attachment tool reported
+worktree owned by another chat; explicit-workdir reuse was authorized and succeeded. No duplicate
+checkout or primary-checkout edit. Serena exact path activated/manual read. Codebase Memory
+sandtable-actual-selection-contract fast generation14:03:21Z; docs excluded, focused source fallback.
+CCE unavailable. Canonical plan ownership returns to coordinator with this review handoff.
+
+## Completed Work And Evidence
+
+Spec/inventory encode closed grammar and new domain-separated identities. Fixture retains16
+literal traces/all full sources/inputs/events and152 Control/proof cuts. Oracle authenticates
+actual entry, checks independent ledger, preserves exact retries, rejects forgeries/canonical/
+capacity/privacy/ownership violations, and proves cold separation from blocked admissions.
+Semantic RED16 before implementation/freeze and second candidate-clock RED retained in author.
+Semantic GREEN then one literal freeze. Final main PASS207.469s, via exact timed import/main
+wrapper retained in author; direct script __main__ calls that same main.
+
+```text
+PASS: 16 semantic actual-owner traces; selected FA20 and seven Reserve Release fallbacks per owner
+PASS: 16 literal traces; {"capacity": 23, "clock": 50, "clock-accepted": 8, "cuts": 152, "entry": 36, "entry-cuts": 6, "entry-leaf": 1512, "event": 4456, "family": 17, "history": 140, "ledger": 320, "legacy-reject": 6, "no-op": 30, "order": 48, "ownership": 64, "pins": 128, "positive": 2, "privacy": 30, "proof": 8266, "raw": 2760, "retries": 1962, "retry-primitive": 654, "separation": 2, "trust": 2}; full original actual entry retained; separate trusted ledger; private FA stop only
+```
+
+Supplement PASS4 historical Round2/Result2 reader rejects and4 correctly re-signed original
+entry forgeries. Whitespace checks PASS. All8 unchanged original commands completed:
+
+| Exact command | Outcome | Seconds | stdout/stderr SHA256 |
+| --- | --- | --- | --- |
+| `python3 -B docs/specs/verify-combat-positive-entry-v1.py` | PASS exit0 | 120.095 | `37988e248972aed56c4b2f9112a3cb8b55e94c023add34a1635e4e31b4359199` |
+| `python3 -B docs/specs/verify-combat-selection-steps-v1.py` | PASS exit0 | 3.628 | `a6d1fb28ec2d5487bfd23e5cd0c4dc208c4bda1147d027ad9ded9c0639777691` |
+| `python3 -B docs/specs/verify-combat-sealed-round-v2.py` | PASS exit0 | 17.487 | `7497cdcac2a85a116e5b2eaaf43be2313d90522fddc1da852312b388eedd527c` |
+| `python3 -B docs/specs/verify-combat-result-settlement-v2.py` | PASS exit0 | 91.325 | `2a034604581df3937100289a18e23f5b3270ba57d6ff345cb0f5c2e9f3b400bb` |
+| `python3 -B docs/specs/verify-combat-inherited-breakdown-completion-v1.py` | FAIL exit1 | 0.373 | `53763fd8940f5a72d343f67ae7ef1c41175d0df64abfa414ecd532309674f748` |
+| `python3 -B docs/specs/verify-combat-cycle-sequence-v1.py` | FAIL exit1 | 0.049 | `2b37c9479b23cf9201a18ce0fae319c542b09c20f23e85a7105be3cc474dbdcf` |
+| `python3 -B docs/specs/verify-combat-inherited-snapshot-v1.py` | FAIL exit1 | 1.533 | `3dbdcdc29d0a06b51cb07e39075f7934ea519e393f4f301bf4293905c27c8952` |
+| `python3 -B docs/specs/verify-combat-outward-composition-v1.py` | FAIL exit1 | 5.017 | `e5685d6e457510e7a77feaafe834a601d3b3d2248d3cc54005a6204c21576c3d` |
+
+
+## Decisions And Rationale
+
+New family stores both actual receipt IDs and full event hashes, retains original cycle opening
+and current prefix separately, and never materializes catalog owner or rewrites seed/World/RNG.
+Private mechanism duplicates frozen C3a with actual framing and required candidate-before-clock
+order. Immutable byte caches own captured proof values; proof cache keys complete source plus
+independently supplied ledger and is bounded128. No digest-only authority or event-self-authentication.
+Coherent replacement ledger experiment makes the authentication limit explicit.
+
+## Blockers And Limitations
+
+Original Breakdown/cycle-sequence fail Cna1979LandSequence.cs pin. Snapshot independently fails
+recursive same pin. Outward independently rejects its pin gate; S1a established Content drift.
+They remain separate failures. S1a historical12/60s timeouts stay unverified; no implied waiver.
+No native adapter, .NET/full/Boundary/format/CI pass, public privacy/authentication, actual Round/
+result/repeat or all32 reachability. S1b20-file refresh deferred. Current earlier oracle/test wiring
+failures were fixed or test expectations corrected before final GREEN; author documents them.
+No independent reviewer/PR/merge was self-dispatched. S3 review count0of9, max3sets×3;
+max2 authorized research-recovery spikes. Coordinator owns fresh medium review and reconciliation.
+
+## Immediate Next Actions
+
+1. Verify coordinator-dispatched exact final head and neutral bootstrap; fresh read-only review
+   before author explanation. Execute selected original/new checks and record independent verdict.
+2. Reconcile findings within counted limits. Publish/require exact-head CI and merge only after
+   independent Ready and gates. Commit/push authorized; no permission to merge granted to author.
+3. Reassess reserve before S4; do not start S4 from this author status. S4 must independently
+   reproduce byte parity and remain private. Closeout18:29:14UTC/hardstop19:29:14UTC2026-10-05.
+
+## Verification Commands
+
+Standard reproduction: `python3 -B docs/specs/verify-combat-actual-selection-v1.py`.
+Performed passing check: exact timed import/main wrapper in author packet. Original commands
+listed above executed directly; no output-free timeout counted passing. Supplemental script
+retained in author Markdown. Future .NET tests require run-tests/binlog guidance and nativeMTP
+explicit --project/--solution. Full suite requires coordinator lease.
+
+Temporary logs: /private/tmp/s3-semantic-red.log, s3-semantic-green.log, s3-freeze.log,
+s3-oracle.log (superseded failed initial full run), s3-final-oracle.log and s3-original-checks/.
+RED source and supplemental probe are durably embedded in author; final stdout and original
+result/digests retained here. Temporary-file survival is not needed for normal verification.
+Final main log SHA256 `0a015bd67749b35da65e2d15a300c756f4eeaafc048c966c715d7249cbc129f6`.
+
+## Delivery Metadata
+
+Branch `codex/combat-actual-selection-contract`; implementation commit `3f1dfc967a14dddb98bbe02d4e9b692fd535cb6d`.
+Suggested PR title: Freeze private actual Combat selection executable contract.
+Summary: admit the two complete actual entry sources under new private framing and separate
+trusted input ledger; selected path stopsFA20, fallbacks reach Reserve Release; preserve historical
+incompatibilities/pin failures. Independent review and exact-head CI pending, no merge claim.
+Use github-keychain-auth for authorized dills122/sandtable GitHub operations outside sandbox;
+unset GH_TOKEN/GITHUB_TOKEN per command, do not extract or pass credentials.
+
+## Primary Freeze Manifest
+
+| Primary path | Bytes | SHA256 |
+| --- | --- | --- |
+| `docs/specs/combat-actual-selection-v1.md` | 11255 | `a81394f4e58c582a7beabccd1aeb4ba1bdb3475ebdc14378c95ac3fbc97fda82` |
+| `docs/specs/combat-actual-selection-v1.schema.json` | 5689 | `da6256deb94bb6061e8e98e2448f915c4474373b7f0de6bb76eded2ae88c39b1` |
+| `docs/specs/fixtures/combat-actual-selection-v1.json` | 5640101 | `019d1a3ff0f121d83f377ddfb19d274b4a8aa89172bad8aeb289c3b98228e604` |
+| `docs/specs/verify-combat-actual-selection-v1.py` | 50109 | `7e24af8a8479d40ae71bd00ec224bb213d2bd3aa63d85421bc2d293e81e25164` |
+| `docs/design/combat-cycle-implementation-plan.md` | 211045 | `f78556948abb95b2820ca7e9bd46fc08c7b09ead2d0eedb910feb0e2a8bc2096` |
