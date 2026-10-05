@@ -46,8 +46,8 @@ early Breakdown and new terminal commands reject. No deadline or clock belongs t
 - Engine/models: immutable owned source/state/proof/event bytes, replay, two commands/transitions,
   initial-profile candidate and causal receipts/prefix/proof.
 - Codec: closed transitive frozen inventory, primitive/depth/count/size checks, sorted canonical
-  arrays, explicit Python-compatible ASCII carrier escapes and CMB-PEN error mapping.
-- Tests:19 focused tests, two owners/six cuts/full literal byte parity, independent native source
+  identity arrays and preserved ordered routes, explicit Python-compatible ASCII carrier escapes and CMB-PEN error mapping.
+- Tests:21 focused tests, two owners/six cuts/full literal byte parity, independent native source
   construction, retry/ownership invariants, source/input/event/proof leaf mutations and re-signing,
   alternative actual openings, old route/public/Snapshot closure, clock/canonical/capacity errors.
 - Project file: output fixture link only. Canonical plan/project docs describe bounded private status.
@@ -98,3 +98,24 @@ Independent verdict/publication/final-head CI/merge remain coordinator gates. Au
 Verify complete source pins/replay before transition/candidate, canonical/error-order compatibility,
 old-reader closure, full27-field proof authentication, immutable capture and earlier-command retry
 at13. Reconstruct scope and review canonical plan; do not rely solely on the author's explanations.
+
+## Response to independent review pass1
+
+N3 set1/pass1 (total1of9) returned **Not ready** for one P2: the codec sorted
+`OrderedLocations` along with identity arrays, contradicting inherited route order and revisits.
+Accepted the finding. Both-owner TDD regression reproduced expected `CMB-PEN-006` versus actual
+`CMB-PEN-008` in `/private/tmp/n3-gates/route-red.log`. The minimal correction excludes only
+`OrderedLocations` from sorting. The regression covers `[z,a,z]`, `[z,a]`, `[a,z,a]`, exact route
+canonical bytes and continued `id[]` sorting. Forged tracks remain rejected by full authority
+comparison with006; accepted idle histories and their successful golden bytes remain unchanged.
+
+Focused GREEN:21 passed,0failed/skipped (`route-focused.log`). Final actual `just check` PASS:2533 solution tests, Boundary81,0fail/skips,0build warnings/errors; restore/build/format clean. Core8m09s943ms, solution8m10s116ms. Evidence `/private/tmp/n3-gates/route-just-check.log` and unique route-gate binlogs. All four frozen source/project hashes match final bytes.
+Unchanged oracle evidence is retained because all specs/oracles and their source-pin dependencies
+remain byte-equivalent; the codec/test edits are outside those scripts' dependency pins. The full
+pass1 report is retained with wording unchanged and trailing whitespace normalized in the handoff. Pass2 is N3set1/pass2,total2of9; author does not
+claim independent Ready or dispatch a reviewer.
+
+Unchanged executable oracle additionally confirmed all six new both-owner ordered/revisited route
+probes: canonical syntax accepted, full proof comparison rejected006. Evidence:
+`/private/tmp/n3-gates/route-oracle-probes.log`. This is supplementary targeted evidence; retained
+full oracle command outcomes above keep their original PASS/FAILED status.

@@ -1,6 +1,6 @@
 # Fresh review bootstrap: native actual positive entry
 
-Review instance: N3 set1/pass1, total1 of9, maximum3 per set. Coordinator dispatches reviewer.
+Review instance: N3 set1/pass2, total2 of9, maximum3 per set. Coordinator dispatches reviewer.
 
 ## Review objective
 
@@ -14,15 +14,18 @@ Exact worktree: `/Users/dsteele/.codex/worktrees/native-positive-entry/sandtable
 Branch: `codex/native-positive-entry`. Coordinator: `01a0c9dc-00bc-78a3-800d-3cb36859e422`.
 Activate Serena on exact worktree and use codebase-memory skill with exact project
 `sandtable-native-positive-entry`, coverage/source fallback and relevant result pagination.
-Final graph generation2026-10-05T06:19:01Z, fast mode,16474nodes/112644edges. Exact new
+Prior graph generation2026-10-05T06:19:01Z, fast mode,16474nodes/112644edges. Exact new
 source/test path coverage reports metadata_match/no_recorded_issue; docs excluded and read directly.
-Initial new untracked-file coverage used source fallback before final reindex. Verify freshness
-again for reviewer evidence. Author does not certify graph completeness.
+Initial new untracked-file coverage used source fallback before final reindex. The route correction postdates that generation; source fallback was used for changed codec/test
+lines. Verify freshness again for reviewer evidence. Author does not certify graph completeness.
 
 ## Base, head, branch and dirty state
 
 Base: `84f1fac861cef7c8ffaf8f36dd75b1b7f4dedc83`, merged PR155.
-Corrected implementation checkpoint: `b0a7308f6b440507436f152d8bea4e325100f833`.
+Prior receipt-order checkpoint: `b0a7308f6b440507436f152d8bea4e325100f833`.
+Pass1 reviewed `67712bfff0ca2e73d1ac26dc12979fa0b057592f` and returned Not ready for one P2: preserving ordered routes.
+Pass2 final exact head is supplied in coordinator dispatch. Full pass1 report is retained verbatim
+in the durable handoff; inspect the final diff and regression independently.
 Final administrative review head is supplied in coordinator dispatch; source/project and gate hashes
 are recorded in `docs/work/handoffs/2026-10-05-native-positive-entry.md`.
 No review begins against an unspecified head. Only local generated `.serena/` may remain untracked;
@@ -76,8 +79,11 @@ heavy suites merely for reassurance. SDK10 native MTP/xUnit v3: `--project`/`--s
 After recording preliminary findings, separately read
 `docs/work/reviews/2026-10-05-native-positive-entry-author.md` and reconcile material claims.
 
-Use $independent-review in reviewer mode. This is review instance N3set1/pass1,total1of9,
+Use $independent-review in reviewer mode. This is review instance N3set1/pass2,total1of9,
 maximum3per set. Work from Fresh Review Bootstrap first and record a preliminary review before
 reading Author Explanation. Then verify explanation against repository, review implementation
 and plan, run proportionate non-mutating checks, and return evidence-backed verdict. Do not
 implement fixes, create further review instances, or split work into new workstreams.
+
+Route-order correction implementation checkpoint: `423bf4b818d5380250fd9f9509a5846b117b5b10`.
+Final administrative head follows in dispatch after all evidence is committed.

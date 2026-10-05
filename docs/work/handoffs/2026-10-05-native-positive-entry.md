@@ -92,7 +92,7 @@ coordinator granted one refreshed sole full-suite lease. No scope/review-budget 
 
 Independent review not dispatched by author; no Ready verdict claimed. Coordinator owns fresh
 GPT-6.1medium review, publication, exact-head CI and merge. Review budget maximum3sets×3passes,
-max2high recovery spikes; no reset, heavy pivot requires user gate. No pass consumed at author handoff.
+max2high recovery spikes; no reset, heavy pivot requires user gate. Pass1 consumed (set1/pass1,total1of9) and returned Not ready; next is set1/pass2,total2of9.
 Original Breakdown pin failure is accepted bounded pre-existing limitation from N2 and separately
 coordinator-owned follow-up; unchanged dependency evidence and supplementary checks do not repair it.
 Downstream actual positive selection/round/result compatibility remains separately required.
@@ -124,7 +124,7 @@ PR title: `Add private native creation-rooted positive Combat entry`.
 PR body: `/private/tmp/n3-pr-body.md` (prepared after final gate).
 Neutral bootstrap: `docs/work/reviews/2026-10-05-native-positive-entry-bootstrap.md`.
 Separate author explanation: `docs/work/reviews/2026-10-05-native-positive-entry-author.md`.
-Final source/project and gate log/binlog hashes follow. Final corrected HEAD is coordinator dispatch
+Historical pass1 source/project and gate log/binlog hashes follow; final pass2 inventory is appended below. Final corrected HEAD is coordinator dispatch
 and Git truth; administrative follow-up contains no behavior beyond its named corrected checkpoint.
 
 ```text
@@ -144,3 +144,167 @@ aca26dfc28961f26259201617066370f17f4da0b57701294302e8871c24b1d7c  /private/tmp/n
 00e4e041d67d908264a9324a71a48a90ad509f30a2e57e55cc28bb5f173dd784  /private/tmp/n3-gates/corrected-gate-20261005-061748--39056--yPah0i-dotnet-test.binlog
 1ca58937cda8e4c21751622950da11632f21f06b7da51d6acfcb7601f9ef7be6  /private/tmp/n3-gates/corrected-just-check.log
 ```
+
+## Pass1 correction and pass2 handoff
+
+Accepted the independent P2 finding. `OrderedLocations` now preserves traversal order and revisits
+while identity arrays remain sorted. Exact both-owner RED expected006/actual008 is retained in
+`/private/tmp/n3-gates/route-red.log`; regression covers three ordered/revisited routes, authority
+comparison006, exact canonical route bytes and sorted identity arrays. Focused21 GREEN is in
+`route-focused.log`. Final actual `just check` PASS:2533 solution tests, Boundary81,0fail/skips,0build warnings/errors; restore/build/format clean. Core8m09s943ms, solution8m10s116ms. Evidence `/private/tmp/n3-gates/route-just-check.log` and unique route-gate binlogs. All four frozen source/project hashes match final bytes.
+
+Prior19/2531 evidence and hashes above are historical, superseded by this correction's gate.
+Final source/project freeze: `/private/tmp/n3-gates/route-freeze-hashes.json`. Specs/oracles and
+all protected dependencies remain byte-equivalent, so unchanged oracle outcomes are reused with
+original Breakdown FAILED distinguished from the passing supplement. Graph generation06:19:01Z
+predates this correction; changed source/test lines were read directly and reviewers must check
+freshness or use source fallback. The sole full-suite lease is released after gate completion.
+
+## Full independent report: N3 set1/pass1
+
+The following report is retained with wording unchanged and trailing whitespace normalized; its Not ready verdict applies to prior HEAD67712bf.
+
+## Findings
+
+**P2 — Preserve ordered routes when canonicalizing proof projections.**
+[CampaignCombatPositiveEntryCodec.cs:103](/Users/dsteele/.codex/worktrees/native-positive-entry/sandtable/src/Cna.Core/Campaigns/CampaignCombatPositiveEntryCodec.cs:103) sorts every array whose child type is `id`, including `OrderedLocations`. The inherited contract explicitly preserves route order and revisits.
+
+Reproduced against the pinned, already-built assemblies:
+
+- Start with an authentic terminal proof.
+- Add an `InheritedTrack` using the authentic attacker’s UnitKey and route `["z","a","z"]`.
+- The unchanged oracle accepts its canonical syntax, then rejects full proof comparison with **`CMB-PEN-006`**.
+- Native `ReadProof` rejects it with **`CMB-PEN-008`**, because canonicalization sorts the route.
+
+Accepted idle histories retain empty tracks, so this does not admit forged authority or change successful completion bytes. It does violate required canonical/error parity for adversarial proof readback.
+
+Smallest correction: preserve `OrderedLocations` sequence while continuing to sort `id[]` identity arrays. Add a regression proving ordered routes retain revisits and this forged proof reaches error006.
+
+No other actionable findings identified.
+
+## Plan Review
+
+Review instance: **N3 set1/pass1, total1 of9; maximum3 per set**.
+
+Reviewed branch `codex/native-positive-entry`, base `84f1fac861cef7c8ffaf8f36dd75b1b7f4dedc83`, HEAD `67712bfff0ca2e73d1ac26dc12979fa0b057592f`. HEAD remained stable; only `.serena/` was untracked.
+
+Independently reconstructed the exact 12-path diff:
+
+- `src/Cna.Core/Campaigns/CampaignCombatPositiveEntry.cs`
+- `src/Cna.Core/Campaigns/CampaignCombatPositiveEntryCodec.cs`
+- `tests/Cna.Core.Tests/Campaigns/CombatPositiveEntryTests.cs`
+- `tests/Cna.Core.Tests/Cna.Core.Tests.csproj`
+- `docs/design/combat-cycle-implementation-plan.md`
+- `README.md`
+- `tech-design.md`
+- `naming-overview.md`
+- `docs/roadmap/pre-alpha-roadmap.md`
+- `docs/work/reviews/2026-10-05-native-positive-entry-bootstrap.md`
+- `docs/work/reviews/2026-10-05-native-positive-entry-author.md`
+- `docs/work/handoffs/2026-10-05-native-positive-entry.md`
+
+The implementation follows task019E1’s bounded architecture: full original opening replay and exact source pins precede two causal completions. Movement completion derives original-unit locations, exclusions, receipt and Movement-end proof. Breakdown completion advances to Position Determination; candidate certification receives actual Request, Created11, replayed World, cycle, owner and Weather.
+
+Scope exclusions remain intact. No heavy pivot or decision gate is needed. The identified correction fits the existing manifest.
+
+## Author-Claim Reconciliation
+
+The preliminary ledger was recorded before reading the separate author explanation: no actionable defect then identified, with verification and canonical parity still pending.
+
+| Author claim | Evidence inspected | Status / consequence |
+|---|---|---|
+| Full creation-rooted source authentication | `ReplayAuthority`, predecessor replay, exact opening pins, independent construction tests | Confirmed |
+| Exact successful bytes, cuts and retries | Literal proof/state/event/input comparisons; focused19 pass | Confirmed |
+| Exact adversarial canonical/error parity | Codec, oracle, scratch ordered-route probe | **Contradicted for OrderedLocations** |
+| Owned immutable projections | Source/state/event copies, cloned JSON projections, ownership tests | Confirmed |
+| Actual Movement-end proof and candidate only at13 | `Emit`, `Replay`, existing certification implementation | Confirmed |
+| Corrected full gate passes2531/Boundary81 | Retained logs and matching hashes | Confirmed as retained evidence |
+| Original Breakdown oracle remains FAILED | Status inventory and traceback; unchanged protected files | Confirmed; no new N3 source-pin impact |
+
+## Verification Performed
+
+Executed from the exact worktree:
+
+```sh
+python3 -B docs/specs/verify-combat-positive-entry-v1.py
+```
+
+**PASS:** two actual owners, four completion events, six literal proofs, six cuts/retries and 3,966 rejection probes.
+
+```sh
+dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --no-build \
+  --filter-class '*CombatPositiveEntryTests' \
+  '/bl:/private/tmp/n3-review-{}.binlog'
+```
+
+**PASS:19 tests, zero failures/skips.** Initial sandbox execution terminated on MTP named-pipe permission; the authorized retry passed.
+
+Reviewer evidence:
+
+- [Focused log](/private/tmp/n3-review-focused.log), SHA256 `3dab43be7c21018daba44ac351ad28c85e862a19bff14b441b46a91c85f4de4d`
+- [Focused binlog](/private/tmp/n3-review-20261005-063915--64427--SjV1uz-dotnet-test.binlog), SHA256 `9418823d6418037d554e55cfa81b63c2cfa646009af3940c953c278e83929849`
+
+Additional checks:
+
+- `git diff --check <base> HEAD`: PASS.
+- All **208 spec files** and **686 protected source/test files** match base bytes.
+- Source/test bytes match corrected checkpoint `b0a7308`.
+- All four source/project hashes and nine retained log/binlog hashes match the handoff.
+- Retained corrected `just check` records **2531 solution tests, Boundary81, zero failures/skips and zero build warnings/errors**, with clean restore/format.
+- Ordered-route scratch probe independently reproduced native008 versus oracle006. [Probe](/private/tmp/n3-review-probe/probe.cs), [proof input](/private/tmp/n3-review-probe/proof.json). Initial file-mode probe lacked its context fixture; the isolated project invocation supplied it and succeeded.
+
+The full suite was not rerun. Seven predecessor passes and the separate eight-trace Breakdown supplement were inspected as retained evidence. The original Breakdown command remains **FAILED** on its pre-existing sequence-source pin; supplementary semantics do not turn it green.
+
+Serena activated the exact worktree. Codebase-memory generation `2026-10-05T06:19:01Z` matched HEAD; relevant searches were fully paginated and cited paths reported metadata-match/no-recorded-issue. Six unrelated partial source/test ranges were read directly. Graph results remain best-effort evidence.
+
+## Open Questions And Residual Risks
+
+The frozen transitive grammar is duplicated in the native codec; successful goldens and leaf mutations do not exhaust all shape-only canonical cases. The ordered-route defect illustrates that limit.
+
+Two-source admission, repeated bounded replay, and downstream selection/result incompatibility are intentional constraints. No current C3a/Result2 consumption, public activation, or parent017–019 closure is established.
+
+## Verdict
+
+**Not ready**, due to the reproducible P2 canonical/error-parity defect. All other inspected implementation and plan evidence supports the bounded adapter.
+
+## Recommended Next Actions
+
+Correct `OrderedLocations` ordering and add the focused regression. Reconcile the finding through the coordinator, then run affected verification and any required counted review. Publication, final CI and merge remain coordinator-owned.
+
+No repository edits, commits, subreviewers or additional review instances were created.
+
+Unchanged executable oracle additionally confirmed all six new both-owner ordered/revisited route
+probes: canonical syntax accepted, full proof comparison rejected006. Evidence:
+`/private/tmp/n3-gates/route-oracle-probes.log`. This is supplementary targeted evidence; retained
+full oracle command outcomes above keep their original PASS/FAILED status.
+
+Route-order correction implementation checkpoint: `423bf4b818d5380250fd9f9509a5846b117b5b10`.
+Final administrative head follows in dispatch after all evidence is committed.
+
+## Final pass2 source/project and evidence hash inventory
+
+```text
+{
+  "src/Cna.Core/Campaigns/CampaignCombatPositiveEntry.cs": "6637c77c1f9986bb7f9912ba0f3a028f997a2a00704e96e14f12cc88a9787106",
+  "src/Cna.Core/Campaigns/CampaignCombatPositiveEntryCodec.cs": "ee0ea68aed557b358f2624ccf12fe9da2b88a8fc7a12fab0e0a40c28a3969e54",
+  "tests/Cna.Core.Tests/Campaigns/CombatPositiveEntryTests.cs": "d5bb19cb9fc2410daf0a81c19ed9231ec92f590cde8052553cd6062c05af8c58",
+  "tests/Cna.Core.Tests/Cna.Core.Tests.csproj": "d1641cea314043ee63d3fb3bec3b4ffdfd69c49b713fbf5ed54756ee011f6f88"
+}
+812b5d7966ec5f290490e0fef1ea6028d75675863a16d486952c216ac117bfb0  /private/tmp/n3-gates/route-focused-20261005-065314--83146--gePgCb.binlog
+465e020a9ce65c1b0eb8f3540cf74486cdcc92a8c77311bd7ab9e9862667b021  /private/tmp/n3-gates/route-focused-20261005-065319--83146--48rRx1-dotnet-test.binlog
+79761e42de57dcec4578e69c2aad2ea167c80ead3a620f8e3d0be6f40517a602  /private/tmp/n3-gates/route-focused.log
+d72ec95091556dfbfda1880686d7e51138265453b318e1cce583c4178e9abfa6  /private/tmp/n3-gates/route-gate-20261005-065350--83826--TsJHKh.binlog
+bfcaf5dc0b1a7c874ebb94e88f3fd93f9003e21fd84add52eeea926fbee50cae  /private/tmp/n3-gates/route-gate-20261005-065415--84410--zaG2nd.binlog
+2d846eb20ed7c3bab0a7a721657b1b4c858899c20e0f3851ab2b901f2e8e7c1e  /private/tmp/n3-gates/route-gate-20261005-065420--84442--r98wyr-dotnet-test.binlog
+707ec7b5ae59629a90221c9449755d50f1e19bb85c75e2bbbecdfa65faffc7b2  /private/tmp/n3-gates/route-gate-20261005-065427--84646--xG2XTz-dotnet-test.binlog
+9dfe0348c08dbffc69c10dfae789a1c0c41d4646917d7be5ba7e2ff37c0e5b9c  /private/tmp/n3-gates/route-just-check.log
+5a71c948e9055ce53798928ca699785d1f61453ac1d7f9d907712361ade29aba  /private/tmp/n3-gates/route-oracle-probes.log
+c17aab9e4ed946f3c131d5491e3643d6ba644f0288a746f07d7240f02833292c  /private/tmp/n3-gates/route-protected.log
+49bd1301e242c43c47b5cc47a7c6ddf27f3f026211b64077b41016d9e3e3d8f3  /private/tmp/n3-gates/route-red-20261005-065249--82670--Ol2s7q.binlog
+cadab285dcb971c24e8e0138849059b8eab18269007b81460a4e21a9f6c60f7e  /private/tmp/n3-gates/route-red-20261005-065258--82670--fJCza_-dotnet-test.binlog
+c2f251d88ace12fa15a4913a9923d6ed7f3521aaf13e61c1fc63a4f311424a43  /private/tmp/n3-gates/route-red.log
+```
+
+Full-suite lease RELEASED after successful gate. No further behavior edits or gate reruns planned.
+Automatic approval review rejected coordinator status messaging for lack of verified direct user
+authorization. A request for user authorization is pending; review-ready packet is complete locally.

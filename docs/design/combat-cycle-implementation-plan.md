@@ -2079,3 +2079,8 @@ clean restore/format. New oracle plus seven required predecessor oracles PASS; o
 command remains FAILED on unchanged pre-existing source pin, separate8trace/golden supplement PASS.
 No protected path/pin change or eight-predecessor-pass claim. Final native source remains frozen;
 fresh coordinator review/final-head CI/merge pending, all parent/public/result exclusions unchanged.
+
+N3 independent set1/pass1 at67712bf returned Not ready for one P2 ordered-route canonical/error
+parity defect. The codec correction preserves OrderedLocations traversal order/revisits while
+retaining identity sorting. Both-owner regression RED expected006/actual008, then focused21 GREEN.
+Final actual `just check` PASS:2533 solution tests, Boundary81,0fail/skips,0build warnings/errors; restore/build/format clean. Core8m09s943ms, solution8m10s116ms. Evidence `/private/tmp/n3-gates/route-just-check.log` and unique route-gate binlogs. All four frozen source/project hashes match final bytes. Pass2 remains coordinator-owned; no parent017–019 closure or publication claim.
