@@ -21,7 +21,9 @@ public/Snapshot/transport activation or parent017–019 closure is claimed.
 Managed worktree `/Users/dsteele/.codex/worktrees/native-settled-control/sandtable`.
 Branch `codex/native-settled-control`, base/head
 `907f41403ed159d65024f193f3e1f730a23b9bbb` (merged150/151).
-Explicit dirty working-tree review boundary; no in-scope commits or PR yet.
+Review used an explicit dirty boundary at907f414. Implementation/evidence are now
+committed as `a95b21166aaef18c754c60cee2ac6bb8eee89a17`; publication-status metadata follows.
+PR none, remote push blocked by automatic approval review.
 Five primary files: new engine/models, codec, focused tests, one fixture-link project
 change and canonical implementation plan. README, tech design, naming, roadmap and
 Movement delivery plan have administrative capability updates. Review packets and
@@ -76,7 +78,7 @@ configuration was empty, so no Serena-diagnostic verification is claimed.
 
 Fresh GPT-6.1-sol medium independent review is Ready, set1/pass1,total1of9 (max3per set),
 no findings; author Accept. Report retained in
-`docs/work/reviews/2026-10-05-native-settled-control-review.md`. No publication/merge yet.
+`docs/work/reviews/2026-10-05-native-settled-control-review.md`. Publication was attempted and blocked before execution; no PR or merge.
 Earlier Runner aggregation failure did not recur in the first full gate; cause remains
 unconfirmed. Retain any recurrence, do not weaken tests.
 
@@ -110,8 +112,9 @@ no repository tooling/config changed. Native MTP uses explicit --solution/--proj
 
 ## Delivery Metadata
 
-Status: local gates and independent review passed; scoped commit/publication pending.
-Branch/base/head above; PR none; dirty paths explicitly described. Retained commits none.
+Status: local gates and independent review passed; retained local commit exists, push/PR blocked.
+Branch/base/head above; PR none; dirty paths explicitly described. Retained implementation commit `a95b21166aaef18c754c60cee2ac6bb8eee89a17`; publication-status
+metadata commit follows. Latest local tip is the branch ref, returned in final status.
 Full-suite lease RELEASED after complete final gate; coordinator may grant R2 its probe.
 Use github-keychain-auth for each authorized Git/gh operation outside sandbox; unset
 GH_TOKEN/GITHUB_TOKEN for gh; never extract credentials.
@@ -136,3 +139,24 @@ FULLSUITE LEASE RELEASED. No more full gates or scope/test changes absent a mate
 change/new unresolved failure. Messaging-tool rejection is handled by ordinary
 commentary/final status that coordinator retrieves; do not retry the denied tool.
 Main868126d is docs-only PR152; no rebase or unrelated import into reviewed scope.
+
+## Publication Blocker And Exact Next Action
+
+Push and draft PR creation were rejected by automatic approval review BEFORE execution:
+
+> This pushes the repository’s private code and documentation to an external GitHub remote and creates a draft PR; the destination ownership/trust and explicit authorization for this specific sensitive egress are not established by trusted evidence.
+
+No workaround or unauthorized GitHub write occurred. Subsequent safe read-only checks
+verified the existing Keychain account login `dills122` (id15662762), repository
+`dills122/sandtable` is PUBLIC, and viewerPermission ADMIN. A direct permission question
+for push and draft PR is pending in this chat. Do not treat elapsed time as approval.
+
+All retained implementation and review/handoff work is committed locally. Publication
+remains incomplete due to the automatic approval block, not a failing product gate.
+After explicit approval, use Keychain outside sandbox to push
+`codex/native-settled-control` to the existing origin and create draft PR main with title
+**Add native Result2 settled combat control**. Prepared body is
+`/private/tmp/cmb019d3-pr.md`; reconstruct from this handoff/review if the temporary file
+is unavailable. Attach any created PR. No rebase or behavior/test changes; final-head
+CI/merge remains coordinator-owned. Branch ancestry907f414 and main868126d docs-only
+were independently verified; triple-dot publication scope contains exactly14 owned files.
