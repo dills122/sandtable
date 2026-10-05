@@ -1,0 +1,32 @@
+{
+  "contract": "combat-positive-entry-v1",
+  "task": "CMB-TASK-019E0",
+  "objects": {
+    "PositiveSource": "contractVersion:int requestCanonicalUtf8:utf8 createdCanonicalUtf8:utf8 preambleEventCanonicalUtf8:utf8[] weatherEventCanonicalUtf8:utf8[] stageEventCanonicalUtf8:utf8[] reserveEventCanonicalUtf8:utf8[] entryEventCanonicalUtf8:utf8[]",
+    "PositiveEntryProof": "contractVersion:int sourceId:id sourceHash:hash entry:CombatEntryState candidate:Candidate?",
+    "Participant": "unit:UnitKey representationId:id locationId:id componentIds:id[]",
+    "Candidate": "attacker:Participant defender:Participant targetLocationId:id basis:id"
+  },
+  "externalContracts": [
+    "combat-inherited-breakdown-completion-v1.schema.json",
+    "combat-selection-steps-v1.schema.json"
+  ],
+  "domains": {
+    "source": "sandtable.combat.positive-entry-source.v1"
+  },
+  "openingHashes": {
+    "axis": "sha256:07c0ca15a7daa89b39128da9c21a71d4e22608ab2cf0475c61bfae869ad35d8b",
+    "commonwealth": "sha256:15e8ec05da47a61a146dee177491393f426d233b331f0d66d695ff3b781fa6e8"
+  },
+  "limits": {
+    "bytes": 1048576,
+    "depth": 32,
+    "arrayItems": 512,
+    "preambleEvents": 4,
+    "weatherEvents": 1,
+    "stageEvents": 4,
+    "reserveEvents": 1,
+    "entryEvents": 2
+  },
+  "scope": "Actual seed1 Normal NONE first opening, both owners. Idle Movement11->12 and empty System Breakdown12->13, candidate before selection only."
+}
