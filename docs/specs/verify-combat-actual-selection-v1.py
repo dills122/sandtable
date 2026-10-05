@@ -171,13 +171,13 @@ def transition(b, prior, inp):
     """Immutable contract transition from independently trusted boundary + authenticated input."""
     typed(inp, 'Input'); cmd = inp['command']; kind = cmd['kind']; actor = inp['actor']
     require(cmd['contractVersion'] == 1 and kind in KINDS, 3)
-    require(cmd['segmentId'] == prior['segmentId'], 4)
     allowed = {'open-segment': {'expectedPriorVersion'}, 'close-empty-selection': {'expectedPriorVersion'},
         'choose-selection': {'decisionId', 'choice', 'candidate'}, 'decline-rba': {'decisionId', 'participant'},
         'complete-step': {'fromPositionId', 'expectedPriorVersion'}, 'open-rba': {'fromPositionId', 'expectedPriorVersion'},
         'expire-window': {'decisionId'}, 'controller-unavailable': {'decisionId'}}[kind]
     for k in ('decisionId', 'fromPositionId', 'expectedPriorVersion', 'choice', 'candidate', 'participant'):
         require(k in allowed or cmd[k] is None, 3, '/command/'+k)
+    require(cmd['segmentId'] == prior['segmentId'], 4)
     system = kind not in ('choose-selection', 'decline-rba')
     require(actor == 'system' if system else actor in ('axis', 'commonwealth'), 4, '/actor')
     ch = sha(encode(canonical(cmd, 'Command')))
@@ -714,6 +714,46 @@ def trust_and_family_checks(counts):
     reject('capacity/one-byte-over',lambda:parse(data+b' ','utf8'),counts,1)
 
 
+def arm_segment_order_checks(counts):
+    # Closed command arms precede segment/actor/status/clock gates for every kind.
+    for side in ('axis','commonwealth'):
+        sources,controls,ledger,events=trace(side);b=boundary(sources[0])
+        empty_sources,empty_controls,empty_ledger,_=trace(side,'opening-unavailable')
+        expiry=trusted(command(controls[1],'expire-window',decisionId=controls[1]['segmentId']+'.selection'),now=31000)
+        unavailable=trusted(command(controls[1],'controller-unavailable',decisionId=controls[1]['segmentId']+'.selection'),available=False)
+        contexts=[
+            (sources[0],[],ledger[0],('decisionId','fromPositionId','choice','candidate','participant')),
+            (sources[1],ledger[:1],ledger[1],('fromPositionId','expectedPriorVersion','participant')),
+            (sources[2],ledger[:2],ledger[2],('decisionId','choice','candidate','participant')),
+            (sources[4],ledger[:4],ledger[4],('decisionId','choice','candidate','participant')),
+            (sources[5],ledger[:5],ledger[5],('fromPositionId','expectedPriorVersion','choice','candidate')),
+            (empty_sources[1],empty_ledger[:1],empty_ledger[1],('decisionId','fromPositionId','choice','candidate','participant')),
+            (sources[1],ledger[:1],expiry,('fromPositionId','expectedPriorVersion','choice','candidate','participant')),
+            (sources[1],ledger[:1],unavailable,('fromPositionId','expectedPriorVersion','choice','candidate','participant'))]
+        values=dict(decisionId='foreign.selection',fromPositionId='foreign.position',expectedPriorVersion=999,
+                    choice='finish-without-attack',candidate=b['candidate'],participant=b['candidate']['defender']['unit'])
+        for source,history,original,forbidden_fields in contexts:
+            for field in forbidden_fields:
+                for foreign_segment,wrong_actor in ((True,False),(True,True),(False,True)):
+                    bad=copy.deepcopy(original);bad['command'][field]=copy.deepcopy(values[field])
+                    if foreign_segment:bad['command']['segmentId']='foreign'
+                    if wrong_actor:bad['actor']='axis' if bad['actor']!='axis' else 'commonwealth'
+                    bad.update(admittedAt=None,clockAvailable=False)
+                    reject('order-arm/'+side+'/'+original['command']['kind']+'/'+field,
+                           lambda:apply(source,history,bad),counts,3)
+                # Primitive validation still precedes both closed-arm and segment errors.
+                bad=copy.deepcopy(original);bad['command'][field]=copy.deepcopy(values[field])
+                bad['command']['segmentId']='foreign';bad['admittedAt']=True
+                reject('order-primitive-arm/'+side+'/'+field,lambda:apply(source,history,bad),counts,1)
+            for field,value in (('contractVersion',2),('kind','foreign-kind')):
+                bad=copy.deepcopy(original);bad['command'].update(segmentId='foreign');bad['command'][field]=value
+                reject('order-version-segment/'+side+'/'+field,lambda:apply(source,history,bad),counts,3)
+            # With legal arms, segment identity still precedes any clock-driven behavior.
+            bad=copy.deepcopy(original);bad['command']['segmentId']='foreign'
+            bad.update(admittedAt=None,clockAvailable=False)
+            reject('order-segment-clock/'+side+'/'+original['command']['kind'],lambda:apply(source,history,bad),counts,4)
+
+
 def main():
     counts={};verify_dependencies();semantic_red()
     frozen=json.loads(FIXTURE.read_text())
@@ -726,7 +766,7 @@ def main():
             assert fixture_case(side,variant,result)==expected,(side,variant,'literal mismatch')
             verify_case(side,variant,result,counts)
     admission_checks(counts);separation_checks(counts);clock_order_capacity_checks(counts);trust_and_family_checks(counts)
-    dependency_checks(counts)
+    dependency_checks(counts);arm_segment_order_checks(counts)
     print('PASS: 16 literal traces; '+json.dumps(counts,sort_keys=True)+'; full original actual entry retained; separate trusted ledger; private FA stop only')
 
 

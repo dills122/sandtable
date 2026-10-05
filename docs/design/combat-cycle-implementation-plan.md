@@ -2155,3 +2155,18 @@ unchanged pin gates. Supplemental Round2/Result2 family and locally re-signed or
 entry checks PASS. No .NET/full-suite lease or current build/native/Boundary/format/CI
 pass is claimed for this contract-only slice. See the dated S3 handoff for exact commands,
 log hashes, retained RED and review/CI obligations.
+
+Task019F0 set1/pass1,total1of9 at02bb6fc returned Not ready with one P2:
+closed command-arm003 must precede segment identity004. Coordinator/author Accept.
+Bounded correction moves the existing segment check after the allowed-arm loop, without
+spec weakening/refactor or successful literal regeneration. RED reproduced both actual
+owners returning004; GREEN original vector returns003 for both. New328 combined-error
+probes cover all8 command kinds/both owners (210arm,70primitive,32version/kind,16segment/
+clock); focused affected clock/order/capacity checks PASS. Direct full new oracle command
+PASS exit0,209.977s, preserving all prior counts plus these328 probes; stdout SHA256
+803f9ad4d393d146176fd5c921a40635910b0c401c312f68e31dc47895bba6f1.
+Specification/schema/fixture remain byte-identical to02bb6fc. Unchanged expensive predecessor
+checks were not repeated per coordinator instruction; historical separate pin failures and
+unverified timeouts remain honest. No count reset, recovery spike, PR/merge, full-suite lease
+or S4. Next fresh coordinator-dispatched review is set1/pass2,total2of9. Corrected author/
+handoff retains RED/GREEN/current manifest; canonical plan ownership returns at review handoff.
