@@ -3,7 +3,108 @@
 Author testimony only; no independent readiness verdict. Date2026-10-05 America/Toronto.
 Initial base `96596dde066b0d8c9a0110eba50fcfcb01d99a46`, initial implementation checkpoint `3f1dfc967a14dddb98bbe02d4e9b692fd535cb6d`, branch `codex/combat-actual-selection-contract`.
 
-## Pass1 Reconciliation And Corrected Review Freeze
+## Pass2 Reconciliation And Current Review Freeze
+
+S3 set1/pass2,total2of9 at5e2ef795f89335988d424c37d2648acddd992681 returned **Not ready**
+with one P2: active-state006 and required defender decline006 must precede clock005 for
+complete-step/close-empty-selection. Coordinator/author **Accept**. Behavior checkpoint
+`ce367d0ae4199b6adba1d2d0631e39a5f4b4ec1e` moves the existing untimed guards after those checks. Positive FA completion007
+still follows clock005. Specification/schema/fixture are byte-identical to5e2ef795; no regeneration.
+The prior pass1 correction remains included. No wider refactor or spec weakening.
+
+Independent documented expected-gate model exercises all8 command kinds over16 traces/152cuts
+and five clock inputs:6,080 private transition checks,276 public nonclosed complete/close probes,
+and9,154 adjacent-gate checks (15,510 additions). Covers primitive/arm/segment/actor/version/
+decision/stale/duplicate/candidate/choice/participant precedence. Expected outcomes do not call
+transition or its clock gate. Retained RED:728 matrix+182 public mismatches,910 total; no other
+adjacent mismatches. Focused GREEN and direct full oracle pass. Existing counts remain preserved.
+
+Direct command: `python3 -B docs/specs/verify-combat-actual-selection-v1.py`.
+Exit0,233.099s; stdout SHA256 `0ec2ecc01734e319a6abd590a7bf1484cf5569d657874981e893a6c93d8cc874`.
+This direct result supersedes historical pass1/initial timing for the current freeze.
+
+```text
+PASS: 16 semantic actual-owner traces; selected FA20 and seven Reserve Release fallbacks per owner
+PASS: 16 literal traces; {"capacity": 23, "clock": 50, "clock-accepted": 8, "cuts": 152, "entry": 36, "entry-cuts": 6, "entry-leaf": 1512, "event": 4456, "family": 17, "gate-actor-state": 1216, "gate-arm-state": 1216, "gate-candidate-clock": 14, "gate-choice-candidate": 14, "gate-decision-clock": 304, "gate-owner-clock": 304, "gate-participant-clock": 6, "gate-position-clock": 304, "gate-primitive-state": 2432, "gate-segment-state": 1216, "gate-stale-clock": 304, "gate-version-clock": 608, "gate-version-state": 1216, "history": 140, "ledger": 320, "legacy-reject": 6, "no-op": 30, "order": 48, "order-arm": 210, "order-primitive-arm": 70, "order-segment-clock": 16, "order-version-segment": 32, "ownership": 64, "pins": 128, "positive": 2, "privacy": 30, "proof": 8266, "raw": 2760, "retries": 1962, "retry-primitive": 654, "separation": 2, "state-clock-matrix": 6080, "state-clock-public": 276, "trust": 2}; full original actual entry retained; separate trusted ledger; private FA stop only
+```
+
+Unchanged expensive predecessor checks were reused per coordinator instruction; original separate
+Breakdown/cycle/Snapshot/outward pin failures and S1a historical unverified timeouts remain honest.
+No new .NET/full-suite/Boundary/format/CI claim. Counter2of9 consumed; next fresh coordinator-owned
+review is set1/pass3,total3of9. Third Not ready requires coordinator-owned high research recovery
+before set2; max2 authorized recovery spikes/max9 reviews, no count reset. No self-dispatched
+review, PR/merge or S4. Canonical plan ownership returns to coordinator at this corrected handoff.
+
+## Durable Pass2 RED And Focused GREEN
+
+`s3-state-clock-red.log`: 2676 bytes; SHA256 `e8646916e3341dfe3886584d6fe6bae787b3e5abe5fd8fe548f8d6a0f6b137cb`.
+
+```text
+RED: axis 1 complete-step expected CMB-ASE-006, observed CMB-ASE-005
+RED: axis 1 close-empty-selection expected CMB-ASE-006, observed CMB-ASE-005
+RED: axis 4 complete-step expected CMB-ASE-006, observed CMB-ASE-005
+RED: axis 5 complete-step expected CMB-ASE-006, observed CMB-ASE-005
+RED: commonwealth 1 complete-step expected CMB-ASE-006, observed CMB-ASE-005
+RED: commonwealth 1 close-empty-selection expected CMB-ASE-006, observed CMB-ASE-005
+RED: commonwealth 4 complete-step expected CMB-ASE-006, observed CMB-ASE-005
+RED: commonwealth 5 complete-step expected CMB-ASE-006, observed CMB-ASE-005
+STATE/CLOCK MISMATCH: ('state-clock-matrix/axis/selected/0/close-empty-selection', ('error', 6), ('error', 5))
+STATE/CLOCK MISMATCH: ('state-clock-matrix/axis/selected/0/close-empty-selection', ('error', 6), ('error', 5))
+STATE/CLOCK MISMATCH: ('state-clock-matrix/axis/selected/0/close-empty-selection', ('error', 6), ('error', 5))
+STATE/CLOCK MISMATCH: ('state-clock-matrix/axis/selected/0/close-empty-selection', ('error', 6), ('error', 5))
+STATE/CLOCK MISMATCH: ('state-clock-public/axis/selected/0/close-empty-selection', ('error', 6), ('error', 5))
+STATE/CLOCK MISMATCH: ('state-clock-matrix/axis/selected/0/complete-step', ('error', 6), ('error', 5))
+STATE/CLOCK MISMATCH: ('state-clock-matrix/axis/selected/0/complete-step', ('error', 6), ('error', 5))
+STATE/CLOCK MISMATCH: ('state-clock-matrix/axis/selected/0/complete-step', ('error', 6), ('error', 5))
+STATE/CLOCK MISMATCH: ('state-clock-matrix/axis/selected/0/complete-step', ('error', 6), ('error', 5))
+STATE/CLOCK MISMATCH: ('state-clock-public/axis/selected/0/complete-step', ('error', 6), ('error', 5))
+STATE/CLOCK MISMATCH: ('state-clock-matrix/axis/selected/1/close-empty-selection', ('error', 6), ('error', 5))
+STATE/CLOCK MISMATCH: ('state-clock-matrix/axis/selected/1/close-empty-selection', ('error', 6), ('error', 5))
+Traceback (most recent call last):
+  File "<stdin>", line 11, in <module>
+  File "/Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/docs/specs/verify-combat-actual-selection-v1.py", line 871, in state_clock_precedence_checks
+    assert not failures,(len(failures),'state/clock precedence mismatches',failures[:4])
+           ^^^^^^^^^^^^
+AssertionError: (910, 'state/clock precedence mismatches', [('state-clock-matrix/axis/selected/0/close-empty-selection', ('error', 6), ('error', 5)), ('state-clock-matrix/axis/selected/0/close-empty-selection', ('error', 6), ('error', 5)), ('state-clock-matrix/axis/selected/0/close-empty-selection', ('error', 6), ('error', 5)), ('state-clock-matrix/axis/selected/0/close-empty-selection', ('error', 6), ('error', 5))])
+```
+
+`s3-state-clock-matrix-red.log`: 2159 bytes; SHA256 `31c3209336f9b48b45bdfd15f32ad930e1bc315ba97ae2ddc86e4b6d0364001a`.
+
+```text
+STATE/CLOCK MISMATCH GROUPS: {'state-clock-matrix': 728, 'state-clock-public': 182}
+STATE/CLOCK MISMATCH: ('state-clock-matrix/axis/selected/0/close-empty-selection', ('error', 6), ('error', 5))
+STATE/CLOCK MISMATCH: ('state-clock-matrix/axis/selected/0/close-empty-selection', ('error', 6), ('error', 5))
+STATE/CLOCK MISMATCH: ('state-clock-matrix/axis/selected/0/close-empty-selection', ('error', 6), ('error', 5))
+STATE/CLOCK MISMATCH: ('state-clock-matrix/axis/selected/0/close-empty-selection', ('error', 6), ('error', 5))
+STATE/CLOCK MISMATCH: ('state-clock-public/axis/selected/0/close-empty-selection', ('error', 6), ('error', 5))
+STATE/CLOCK MISMATCH: ('state-clock-matrix/axis/selected/0/complete-step', ('error', 6), ('error', 5))
+STATE/CLOCK MISMATCH: ('state-clock-matrix/axis/selected/0/complete-step', ('error', 6), ('error', 5))
+STATE/CLOCK MISMATCH: ('state-clock-matrix/axis/selected/0/complete-step', ('error', 6), ('error', 5))
+STATE/CLOCK MISMATCH: ('state-clock-matrix/axis/selected/0/complete-step', ('error', 6), ('error', 5))
+STATE/CLOCK MISMATCH: ('state-clock-public/axis/selected/0/complete-step', ('error', 6), ('error', 5))
+STATE/CLOCK MISMATCH: ('state-clock-matrix/axis/selected/1/close-empty-selection', ('error', 6), ('error', 5))
+STATE/CLOCK MISMATCH: ('state-clock-matrix/axis/selected/1/close-empty-selection', ('error', 6), ('error', 5))
+Traceback (most recent call last):
+  File "<stdin>", line 3, in <module>
+  File "/Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/docs/specs/verify-combat-actual-selection-v1.py", line 891, in state_clock_precedence_checks
+    assert not failures,(len(failures),'state/clock precedence mismatches',failures[:4])
+           ^^^^^^^^^^^^
+AssertionError: (910, 'state/clock precedence mismatches', [('state-clock-matrix/axis/selected/0/close-empty-selection', ('error', 6), ('error', 5)), ('state-clock-matrix/axis/selected/0/close-empty-selection', ('error', 6), ('error', 5)), ('state-clock-matrix/axis/selected/0/close-empty-selection', ('error', 6), ('error', 5)), ('state-clock-matrix/axis/selected/0/close-empty-selection', ('error', 6), ('error', 5))])
+```
+
+`s3-state-clock-green.log`: 631 bytes; SHA256 `5e6c4f7e78b786f8bf12dd01f5e45540fc6fb9ade30f29f68a054d3202acdec6`.
+
+```text
+PASS focused: {'state-clock-matrix': 6080, 'gate-segment-state': 1216, 'gate-arm-state': 1216, 'gate-primitive-state': 2432, 'gate-version-state': 1216, 'gate-actor-state': 1216, 'gate-version-clock': 608, 'state-clock-public': 276, 'gate-decision-clock': 304, 'gate-owner-clock': 304, 'gate-position-clock': 304, 'gate-stale-clock': 304, 'gate-candidate-clock': 14, 'gate-choice-candidate': 14, 'gate-participant-clock': 6, 'order-arm': 210, 'order-primitive-arm': 70, 'order-version-segment': 32, 'order-segment-clock': 16, 'clock': 50, 'order': 48, 'clock-accepted': 8, 'positive': 2, 'no-op': 30, 'capacity': 22, 'history': 4}
+```
+
+Focused reproduction: import the corrected verifier and call
+`state_clock_precedence_checks(collections.Counter())`; complete expected model and vectors
+are committed in that function and its helpers. RED above was collected against prior behavior
+before moving guards. Both-owner named probes cover pending14, pre-RBA and open-RBA states;
+all require006 despite an unavailable clock.
+
+## Historical Pass1 Reconciliation And Review Freeze
 
 S3 set1/pass1,total1of9 at02bb6fc1100370f1757a75da45042d1f69b978c8 returned **Not ready**
 with one P2: segment identity004 preceded forbidden command-arm003. **Accept**, as reconciled
@@ -207,8 +308,8 @@ so scoped Python checks were used without consuming coordinator full-suite lease
 | `docs/specs/combat-actual-selection-v1.md` | 11255 | `a81394f4e58c582a7beabccd1aeb4ba1bdb3475ebdc14378c95ac3fbc97fda82` |
 | `docs/specs/combat-actual-selection-v1.schema.json` | 5689 | `da6256deb94bb6061e8e98e2448f915c4474373b7f0de6bb76eded2ae88c39b1` |
 | `docs/specs/fixtures/combat-actual-selection-v1.json` | 5640101 | `019d1a3ff0f121d83f377ddfb19d274b4a8aa89172bad8aeb289c3b98228e604` |
-| `docs/specs/verify-combat-actual-selection-v1.py` | 53593 | `a8a5a68215dad88343c97bc98ab14204c3a040534724379ca43c2120e737515a` |
-| `docs/design/combat-cycle-implementation-plan.md` | 212260 | `6e06b5e454827335ea1ca9cb1008b48d41e6db6dced1412971017f785e88845e` |
+| `docs/specs/verify-combat-actual-selection-v1.py` | 65311 | `63031bcbc89acc422436f0c4ca1691aa46e9d85e3bc28f19cc3a07c1ba1a9e1a` |
+| `docs/design/combat-cycle-implementation-plan.md` | 213824 | `90581384b4041c5de9241468eac42d171fb026dadf0dc59999c89af73417fc2b` |
 
 
 ## Retained RED Reproduction
