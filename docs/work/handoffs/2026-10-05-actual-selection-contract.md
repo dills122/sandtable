@@ -1,5 +1,15 @@
 # Handoff: actual-selection executable contract
 
+## Publication Handoff
+
+The one scoped push attempt for R1 corrected freeze was rejected by automatic approval review:
+public GitHub content publication lacked trusted direct-user authorization for that destination;
+coordinator instruction and verified ADMIN access were insufficient. No retry/workaround taken.
+Local correction checkpoint970fa41 and review-packet checkpointa66a32a are committed; final
+local administrative head is supplied to coordinator. Remote PR161 remains at e5645c4 pending
+coordinator publication handling or explicit direct-user approval. All unaffected work is complete.
+This block records publication state only; no merge or clean corrected-head CI claim.
+
 ## Objective And Boundary
 
 Session2 S3 / Task019F0 implementation is REVIEW_READY for coordinator-dispatched fresh review;
