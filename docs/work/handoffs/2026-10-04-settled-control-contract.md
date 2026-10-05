@@ -79,3 +79,19 @@ Consume full packet through019D1, derive source-specific assessment, match all32
 ## Delivery metadata and authorization
 
 Date2026-10-04 America/Toronto. Human original coordinator turn01a108e4-42ed-7720-90a7-bb8406e1a2f5 directly verified: GPT-6.1 medium child chats, TDD, independent review, Keychain PR and handoff back. Latest human requested next slice. Scoped publication/message authorized; no merge. Use [github-keychain-auth](/Users/dsteele/.ai-central/templates/skills/first-party/github-keychain-auth/SKILL.md) outside sandbox, env -u GH_TOKEN -u GITHUB_TOKEN for gh; never extract credentials. Implementation commit `8b9eff448c553ee2ce4971616d040fd6631a56c2`; [draft PR151](https://github.com/dills122/sandtable/pull/151) published and attached, targeting `codex/native-settled-continuation`. This metadata-only followup records publication; obtain final task HEAD with `git rev-parse HEAD`. Exact source baseline remains `d919749b9969fd3c86e6a6ba72243d992d3cda5a`; dependency PR150 was still OPEN at immediate pre-publication verification. No merge. Only untracked .serena tooling remains outside commits.
+
+## Dependency merge reconciliation
+
+User requested PR151 conflict repair after merging150. PR150 verified MERGED at
+`b9084656efe1e1584dda3b85e6f28272f23f99a1`; PR151 already targets main. Dependency
+final tree is byte-identical to original d919749 baseline. Replayed only the two019D2
+commits onto this merged main. Before metadata closeout, complete rebased tree matched
+original9637137 exactly, and binary PR patch compared identical before/after rebase.
+Reviewed contract/spec/schema/oracle/fixture and native code remain unchanged; prior
+local gates and independent Ready review remain applicable. No redundant test rerun
+is claimed. This reconciliation changes ancestry and delivery metadata only.
+Current PR base is main at b908465; original baseline/review/publication records above
+remain historical evidence. Obtain current rebased task head via git rev-parse HEAD.
+Original published history retained locally on codex/settled-control-contract-before-main-20261004.
+Force-with-lease is pinned to original remote96371371e81bbd4a32206ee06eaff8dfd40c0175.
+No PR merge performed here; new hosted checks remain separate acceptance evidence.
