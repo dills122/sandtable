@@ -2041,3 +2041,52 @@ traces; these do not convert original command to pass. Separate reviewed pin mai
 is coordinator-tracked follow-up. Reviewed contract artifacts unchanged; acceptance-gate
 disposition is complete. Publication/final-head CI/merge remain pending before native work.
 [Full report and reconciliation](../work/reviews/2026-10-05-positive-entry-review.md).
+
+
+### Task019E1 — native actual positive-entry adapter
+
+Manifest frozen2026-10-05 at84f1fac861cef7c8ffaf8f36dd75b1b7f4dedc83 (merged155).
+Five primary paths: `CampaignCombatPositiveEntry.cs`, `CampaignCombatPositiveEntryCodec.cs`
+in Core/Campaigns, `CombatPositiveEntryTests.cs`, test project fixture link and this plan.
+Implements accepted019E0 exact seed1/Normal/NONE openings, both owners; full Request/Created11
+and4+1+4+1 original history; owner idle Movement11→12, System empty Breakdown12→13.
+Preserve all World/resources/RNG/Weather/order/cycle and synthetic content-origin labels.
+Actual Movement-end proof and supported candidate only at13 before selection; owned immutable
+source/proof/event bytes, full canonical parity, all cuts/retries/adversarial error ordering.
+No predecessor/source/fixture/oracle changes, C3a/Result2 bridge, public/Snapshot/host/Runner,
+later-II/consumed/repeat or parent017–019 closure. Semantic RED before GREEN; focused/oracle/
+full serialized binlogged gate and coordinator-owned fresh independent review required.
+Original Breakdown oracle's pre-existing sequence-source pin remains FAILED, separately tracked;
+no pin weakening or pass claim. Status: bounded native implementation independently Ready with non-blocking follow-ups; publication/final-head CI/merge pending.
+
+
+Task019E1 initial checkpoint a1c8ef2 evidence (superseded below):18focused tests pass, both owner openings independently constructed
+and all source/command/event/full27-field state/six proof bytes match019E0. All cuts and original-byte
+retries include Movement retry after13; full source/event/re-signed/input/proof/canonical/clock/count/
+size/ownership matrix passes. Actual binlogged `just check` passes2530solution tests and Boundary81,
+0fail/skips, clean restore/format/build with0warnings/errors. All208 specs and686 existing source/test
+paths remain byte-identical to84f1fac. Final oracle/review reconciliation belongs in
+[019E1 handoff](../work/handoffs/2026-10-05-native-positive-entry.md). Fresh review/final-head CI/merge
+remain pending; no parent/public/selection/result closure.
+
+
+Task019E1 final corrected freeze: pre-review reconciliation found retained receipt validation
+ordered after authorization. Semantic RED expected004/actual006; narrow reader correction verifies
+receipt first and revalidates input variant, preserving accepted bytes. Literal raw/re-signed event
+error-code vectors from unchanged019E0 now enforce exact ordering.19focused pass; refreshed sole
+binlogged actual `just check` passes2531solution/Boundary81,0fail/skips and0build warnings/errors,
+clean restore/format. New oracle plus seven required predecessor oracles PASS; original Breakdown
+command remains FAILED on unchanged pre-existing source pin, separate8trace/golden supplement PASS.
+No protected path/pin change or eight-predecessor-pass claim. Final native source remains frozen;
+fresh coordinator review/final-head CI/merge pending, all parent/public/result exclusions unchanged.
+
+N3 independent set1/pass1 at67712bf returned Not ready for one P2 ordered-route canonical/error
+parity defect. The codec correction preserves OrderedLocations traversal order/revisits while
+retaining identity sorting. Both-owner regression RED expected006/actual008, then focused21 GREEN.
+Final actual `just check` PASS:2533 solution tests, Boundary81,0fail/skips,0build warnings/errors; restore/build/format clean. Core8m09s943ms, solution8m10s116ms. Evidence `/private/tmp/n3-gates/route-just-check.log` and unique route-gate binlogs. All four frozen source/project hashes match final bytes. Pass2 remains coordinator-owned; no parent017–019 closure or publication claim.
+
+Task019E1 N3set1/pass2,total2of9 at5c847895 returned **Ready with non-blocking follow-ups**,
+no actionable findings. Full report and author acceptance retained in019E1 handoff. Coordinator
+accepts separately tracked baseline-pin maintenance and frozen grammar/two-source limits. Final
+administrative reconciliation preserves reviewed runtime/test/project bytes and2533/Boundary81
+gate evidence. Publication and exact-head CI/merge remain coordinator-owned; no parent closure.

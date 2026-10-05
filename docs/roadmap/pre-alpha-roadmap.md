@@ -1190,3 +1190,9 @@ contract freeze complete; Task 002 dormant outcome rules implemented with a pass
 Ready. Tasks 003–005 dormant campaign contracts, certified Truck fixture, shared move accounting/replay,
 stop/check authority and exact RNG replay are implemented. [Task 006 public activation](../research/breakdown-public-activation.md)
 activates certified authority, privacy and strict readback through first-side Combat entry. [Task 007 closeout](../research/breakdown-runner-closeout.md) records checked Runner migration and verification; [review 5](../reviews/brk-followup-review-5.md) accepts AC-009 transcript evidence and completes bounded Tasks 006–007.
+
+
+Task019E1 implements private native [actual positive entry](../specs/combat-positive-entry-v1.md)
+through Position Determination with a supported candidate before selection, both exact owners.
+Independent review and final-head CI/merge remain pending. This does not close parent017–019;
+C3a/Result2 consumption, later-II/consumed lineage, repeat and public activation remain open.

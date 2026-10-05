@@ -1385,3 +1385,11 @@ Owned canonical bytes retain source identity and original retry evidence; replay
 state, and readback rejects caller caches that differ. Repeat resets only target uses/new-cycle progress
 and advances authority to Movement; finish enters Truck Convoy. Neither executes the successor.
 The adapter preserves synthetic earlier trust and has no public, transport or Snapshot registration.
+
+
+Task019E1 adds private native actual positive-entry replay for the two seed1 Normal ordinary NONE
+openings in [positive-entry v1](docs/specs/combat-positive-entry-v1.md): owner idle Movement11→12
+and System empty Breakdown12→13, preserving World/resources/RNG and deriving a supported
+candidate before selection. Full source, receipts and Movement-end proof authenticate entry;
+initial synthetic content-origin labels remain unchanged. C3a/Result2 consumption, repeat,
+public activation and parent017–019 completion remain separate gates.
