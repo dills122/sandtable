@@ -1049,4 +1049,6 @@ event hash are distinct from the combat commitment ID.
 **Settled control contract** (Task019D2) names the private Result2 control experiment.
 Its `sctl.` control and `scc.` receipt identities use new domains and bind the full admitted
 settled packet/proof; historical `ctl.`/`cc.` Result1 identities remain frozen.
-It defines repeat/finish entry without executing the successor phase. Native control is subsequent work.
+It defines repeat/finish entry without executing the successor phase. **Settled control adapter**
+(Task019D3) names private `CampaignCombatSettledControl` and `CampaignCombatSettledControlCodec`,
+which consume native019D1 admission and reproduce those identities without public activation.

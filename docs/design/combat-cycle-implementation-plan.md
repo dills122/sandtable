@@ -1968,3 +1968,36 @@ Semantic RED1 preceded implementation;10semantic groups then80frozen control tra
 Task019D2 published [stacked draft PR151](https://github.com/dills122/sandtable/pull/151) after independent Ready review; dependency PR150 verified OPEN at d919749, so target is codex/native-settled-continuation. Implementation8b9eff4; publication metadata followup changes no reviewed executable bytes. No merge or parent/native/public closure.
 
 Task019D2 dependency reconciliation: PR150 merged b908465; PR151 rebased onto main at that exact commit after user-requested conflict repair. Complete implementation tree and binary019D2 patch were identical before/after rebase; only ancestry and delivery metadata changed. Frozen contract bytes and prior Ready/gate evidence remain unchanged. Original stacked publication note above is historical.
+
+
+### Task019D3 — native settled-control adapter
+
+Manifest frozen 2026-10-04 before behavior on merged907f414. Five primary paths:
+`src/Cna.Core/Campaigns/CampaignCombatSettledControl.cs`,
+`src/Cna.Core/Campaigns/CampaignCombatSettledControlCodec.cs`,
+`tests/Cna.Core.Tests/Campaigns/CombatSettledControlTests.cs`,
+`tests/Cna.Core.Tests/Cna.Core.Tests.csproj`, and this plan.
+Administrative status, review and handoff documentation allowed.
+
+Consume complete019D0 packet through native019D1 admission; reproduce32+4 sources,
+80control traces, receipt/hash/source scope, owner/forced/deadline/clock/fallback,
+original bytes on retry and all replay cuts. Preserve immutable World/resources/RNG,
+members/Reserve/stage histories/future duties; reset only repeat fields. No Movement
+or Convoy execution, public/Snapshot/transport activation, old frozen artifact edits
+or parent017–019 closure. Earlier trust stays synthetic-pre-combat. Semantic RED then
+GREEN, unchanged oracles, full local gate and coordinator-managed fresh review required.
+
+
+### Task019D3 local evidence and review boundary
+
+Semantic RED1 preceded native behavior; final focused16cases pass0fail/skips, with
+32+4sources,80exact traces,236restart cuts and464original-byte retries including
+changed/unavailable retry clocks.1067control state/event leaf forgeries, every proof
+leaf, explicit re-signed upstream histories, source/actor/clock/canonical/capacity and
+ownership attacks reject. Literal receipt/hash and eight CP/DP theories cover32contexts.
+New control oracle and seven unchanged predecessor/policy oracles pass.204old spec
+files are byte-identical. Earlier full gates passed2504then2512tests/Boundary81;
+final exact-byte `just check` passed2512solution tests/Boundary81,0fail/skips and
+0build warnings/errors. Fresh GPT-6.1medium independent review set1/pass1 (total1of9,
+max3per set) is Ready with no findings. Draft publication/final-head CI remain pending. No parent/public/actual-history closure. See the
+[N1 handoff](../work/handoffs/2026-10-05-native-settled-control.md).
