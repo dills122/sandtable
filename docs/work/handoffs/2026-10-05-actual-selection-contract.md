@@ -21,7 +21,7 @@ against this merged baseline before implementation and checked on every authorit
 ## Current Repository State
 
 Worktree `/Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable`; branch `codex/combat-actual-selection-contract`.
-Base `96596dde066b0d8c9a0110eba50fcfcb01d99a46`; corrected implementation checkpoint `ce367d0ae4199b6adba1d2d0631e39a5f4b4ec1e`. Three dated administrative packets are
+Base `96596dde066b0d8c9a0110eba50fcfcb01d99a46`; corrected implementation checkpoint `970fa4184b6aed787b545a6c3c7b751010add1fc`. Three dated administrative packets are
 committed afterward; coordinator receives exact final head on dispatch. Only `.serena/` generated
 tooling remains untracked. No runtime WIP or old file/pin changes. Attachment tool reported
 worktree owned by another chat; explicit-workdir reuse was authorized and succeeded. No duplicate
@@ -29,7 +29,48 @@ checkout or primary-checkout edit. Serena exact path activated/manual read. Code
 sandtable-actual-selection-contract fast generation14:03:21Z; docs excluded, focused source fallback.
 CCE unavailable. Canonical plan ownership returns to coordinator with this review handoff.
 
-## Pass2 Reconciliation And Current Review Freeze
+## Research R1 Diagnostic Correction And Current Freeze
+
+Coordinator accepted high research R1 after set1/pass3 Ready at e5645c4. Total3of9 engineering
+reviews consumed; recoveryR1ofmax2 used. Alert2 / check111848049126 at that exact head was
+triaged as a trusted-name heuristic on fixed oracle inputs; no real secret was identified.
+The CI failure remained a delivery blocker. Research did not authorize suppression or merge.
+Recovery decision packet: `/private/tmp/s3-codeql-recovery-r1.md`; its substantive decision and
+recommended repair are retained here. PR161 remains pending corrected-head review and CI.
+
+Corrected behavior checkpoint `970fa4184b6aed787b545a6c3c7b751010add1fc` changes only the final state_clock_precedence_checks
+diagnostic block: output mismatch count only; assertion carries count and fixed message only.
+All mismatch comparisons/collection, test loops/counts and nonempty rejection remain unchanged.
+No trust-helper rename, payload encoding, suppression/dismissal, CI alteration or successful literal
+regeneration. Fixed-input heuristic diagnosis is limited to this private oracle, not future telemetry.
+
+Sentinel-bearing forced mismatch RED exposed the harmless sentinel in stdout/stderr/assertion;
+GREEN still asserts failure with count1 and excludes the sentinel from all three channels. AST
+extraction executes the actual committed final diagnostic block with a sentinel in label/receipt.
+Independent in-memory restoration of the arm/segment defect fails its focused probe (0.440s);
+restoration of the state/clock defect fails with910 mismatches (17.137s), count-only stdout and
+assertion. Each mutation restores the original transition afterward; disposable tests do not edit
+repository behavior. Complete scripts and captured results are retained in the author packet.
+
+Direct `python3 -B docs/specs/verify-combat-actual-selection-v1.py`: PASS exit0,
+221.945s; stdout SHA256 `0ec2ecc01734e319a6abd590a7bf1484cf5569d657874981e893a6c93d8cc874`. Successful output/counts exactly match
+the prior full run; spec/schema/fixture byte-identical to e5645c4. Static16 admitted pins match,
+and exact diff equivalence proves only the recommended diagnostic block changed in the oracle.
+Both current primary manifests match file bytes; whitespace checks pass.
+
+```text
+PASS: 16 semantic actual-owner traces; selected FA20 and seven Reserve Release fallbacks per owner
+PASS: 16 literal traces; {"capacity": 23, "clock": 50, "clock-accepted": 8, "cuts": 152, "entry": 36, "entry-cuts": 6, "entry-leaf": 1512, "event": 4456, "family": 17, "gate-actor-state": 1216, "gate-arm-state": 1216, "gate-candidate-clock": 14, "gate-choice-candidate": 14, "gate-decision-clock": 304, "gate-owner-clock": 304, "gate-participant-clock": 6, "gate-position-clock": 304, "gate-primitive-state": 2432, "gate-segment-state": 1216, "gate-stale-clock": 304, "gate-version-clock": 608, "gate-version-state": 1216, "history": 140, "ledger": 320, "legacy-reject": 6, "no-op": 30, "order": 48, "order-arm": 210, "order-primitive-arm": 70, "order-segment-clock": 16, "order-version-segment": 32, "ownership": 64, "pins": 128, "positive": 2, "privacy": 30, "proof": 8266, "raw": 2760, "retries": 1962, "retry-primitive": 654, "separation": 2, "state-clock-matrix": 6080, "state-clock-public": 276, "trust": 2}; full original actual entry retained; separate trusted ledger; private FA stop only
+```
+
+Next fresh review is coordinator-dispatched set2/pass1,total4of9; no count reset. Max9 engineering
+reviews/max2 authorized recovery spikes; R1 used. Canonical plan ownership returns to coordinator.
+Original predecessor evidence remains reused honestly: separate Breakdown/cycle/Snapshot/outward
+pin failures retained and historical timeouts unverified. No new full-suite lease/.NET/Boundary/
+format/CI or clean-CodeQL claim. No self-dispatched reviewer, merge or S4. Exact final administrative
+head supplied by coordinator dispatch; verify implementation and administrative commits together.
+
+## Historical Pass2 Reconciliation And Review Freeze
 
 S3 set1/pass2,total2of9 at5e2ef795f89335988d424c37d2648acddd992681 returned **Not ready**
 with one P2: active-state006 and required defender decline006 must precede clock005 for
@@ -132,7 +173,7 @@ They remain separate failures. S1a historical12/60s timeouts stay unverified; no
 No native adapter, .NET/full/Boundary/format/CI pass, public privacy/authentication, actual Round/
 result/repeat or all32 reachability. S1b20-file refresh deferred. Current earlier oracle/test wiring
 failures were fixed or test expectations corrected before final GREEN; author documents them.
-No independent reviewer/PR/merge was self-dispatched. S3 review count2of9 after set1/pass2 Not ready; next coordinator-owned pass3,total3of9, max3sets×3;
+No independent reviewer/PR/merge was self-dispatched. S3 review count3of9 after set1/pass3 Ready; next coordinator-owned set2/pass1,total4of9, max3sets×3;
 max2 authorized research-recovery spikes. Coordinator owns fresh medium review and reconciliation.
 
 ## Immediate Next Actions
@@ -160,7 +201,7 @@ Initial main log SHA256 `0a015bd67749b35da65e2d15a300c756f4eeaafc048c966c715d724
 
 ## Delivery Metadata
 
-Branch `codex/combat-actual-selection-contract`; corrected implementation commit `ce367d0ae4199b6adba1d2d0631e39a5f4b4ec1e`.
+Branch `codex/combat-actual-selection-contract`; corrected implementation commit `970fa4184b6aed787b545a6c3c7b751010add1fc`.
 Suggested PR title: Freeze private actual Combat selection executable contract.
 Summary: admit the two complete actual entry sources under new private framing and separate
 trusted input ledger; selected path stopsFA20, fallbacks reach Reserve Release; preserve historical
@@ -175,5 +216,5 @@ unset GH_TOKEN/GITHUB_TOKEN per command, do not extract or pass credentials.
 | `docs/specs/combat-actual-selection-v1.md` | 11255 | `a81394f4e58c582a7beabccd1aeb4ba1bdb3475ebdc14378c95ac3fbc97fda82` |
 | `docs/specs/combat-actual-selection-v1.schema.json` | 5689 | `da6256deb94bb6061e8e98e2448f915c4474373b7f0de6bb76eded2ae88c39b1` |
 | `docs/specs/fixtures/combat-actual-selection-v1.json` | 5640101 | `019d1a3ff0f121d83f377ddfb19d274b4a8aa89172bad8aeb289c3b98228e604` |
-| `docs/specs/verify-combat-actual-selection-v1.py` | 65311 | `63031bcbc89acc422436f0c4ca1691aa46e9d85e3bc28f19cc3a07c1ba1a9e1a` |
-| `docs/design/combat-cycle-implementation-plan.md` | 213824 | `90581384b4041c5de9241468eac42d171fb026dadf0dc59999c89af73417fc2b` |
+| `docs/specs/verify-combat-actual-selection-v1.py` | 65112 | `f37a7cfa26b60469168d9f4424465b14f1fe45666f4222d69c840c2527d2e66f` |
+| `docs/design/combat-cycle-implementation-plan.md` | 215265 | `2fccd02eb8a4e37598e7bd7eded2860f917f9cbadc8310c6bc98f496f33d5255` |

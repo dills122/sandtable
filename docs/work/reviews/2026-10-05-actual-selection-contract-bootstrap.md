@@ -2,12 +2,13 @@
 
 ## Review Objective
 
-Independent read-only review of session2 S3 / Task019F0. Counter2of9 after set1/pass2 Not ready; next coordinator-dispatched set1/pass3,total3of9;
-max3sets×3, max2 coordinator-authorized research recovery spikes. Coordinator alone
-dispatches a fresh medium reviewer and reconciles findings. No review is self-dispatched. Latest review reported one P2 active-state/required-decline006 before clock005 defect;
-coordinator accepted bounded correction. Prior arm003/segment004 correction remains included.
-Spec unchanged; assess correction, independent expected-gate matrix, tests and scope.
-Third Not ready requires coordinator-owned high research recovery before set2; no count reset.
+Independent read-only review of session2 S3 / Task019F0. Counter3of9 after set1/pass3 Ready;
+next coordinator-dispatched set2/pass1,total4of9. Recovery R1ofmax2 consumed for exact-head
+CodeQL CI blocker. Max3sets×3/max9 engineering reviews, no reset. Coordinator alone dispatches
+fresh medium reviewers and reconciles findings. Current source follow-up narrows mismatch print
+and assertion diagnostics to count/fixed text; assess failure sensitivity, output channels and scope.
+Previous arm/segment and state/clock corrections remain included. No trust rename, suppression,
+CI alteration, schema/spec/fixture change or literal regeneration is authorized.
 Review code/plan/canonical requirements first, record preliminary concerns, then read
 separate author explanation. Do not inherit the author chat or treat REVIEW_READY as
 an independent Ready verdict. No permission to merge or start S4 is conveyed here.
@@ -21,7 +22,7 @@ fast generation2026-10-05T14:03:21Z. docs/specs excluded; source fallback requir
 
 ## Base, Head, Branch And Dirt
 
-Base `96596dde066b0d8c9a0110eba50fcfcb01d99a46`. Corrected implementation checkpoint `ce367d0ae4199b6adba1d2d0631e39a5f4b4ec1e`; prior review target5e2ef795.
+Base `96596dde066b0d8c9a0110eba50fcfcb01d99a46`. Corrected implementation checkpoint `970fa4184b6aed787b545a6c3c7b751010add1fc`; prior review targete5645c4.
 Dated packets follow in an administrative commit. Exact final review head is supplied by
 coordinator dispatch; verify it and inspect both implementation/admin commits. Only generated
 untracked `.serena/` remains outside the review target; no implementation WIP is hidden.
@@ -41,6 +42,8 @@ at this handoff; S4 remains separately gated.
 
 ## Canonical Sources And Constraints
 
+Read coordinator R1 decision packet /private/tmp/s3-codeql-recovery-r1.md and prior pass3 review
+in combat-session-two-sync/sandtable/docs/work/reviews/2026-10-05-actual-selection-contract-pass3.md.
 Read AGENTS, independent-review and verification guidance; canonical roadmap/Combat plan,
 new specification/inventory/fixture/oracle, S1a pin-maintenance report and S2 bridge research.
 Coordinator freeze is docs/work/plans/2026-10-05-actual-selection-dependency-disposition.md
@@ -53,8 +56,9 @@ historical reader incompatibility and all separate failures/timeouts.
 
 ## Verification Already Executed
 
-Corrected new oracle ran directly and passed exit0 in233.099s; stdout/digests retained
-in author/handoff. Initial wrapper result remains historical. Successful literal bytes unchanged. Standard reproduction: python3 -B docs/specs/verify-combat-actual-selection-v1.py.
+Corrected new oracle ran directly and passed exit0 in221.945s; stdout/digests retained
+in author/handoff. Sentinel RED/GREEN and both independent ordering mutations retained in author/handoff.
+Initial wrapper result remains historical. Successful literal bytes unchanged. Standard reproduction: python3 -B docs/specs/verify-combat-actual-selection-v1.py.
 Original positive-entry/C3a/Round2/Result2 passed. Original Breakdown/cycle-sequence/Snapshot/
 outward each failed separately at unchanged pin gates. No current .NET/full-suite/Boundary/
 format/CI pass claimed. Whitespace checks passed. Inspect source and run selected checks yourself.

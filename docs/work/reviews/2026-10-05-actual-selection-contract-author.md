@@ -3,7 +3,119 @@
 Author testimony only; no independent readiness verdict. Date2026-10-05 America/Toronto.
 Initial base `96596dde066b0d8c9a0110eba50fcfcb01d99a46`, initial implementation checkpoint `3f1dfc967a14dddb98bbe02d4e9b692fd535cb6d`, branch `codex/combat-actual-selection-contract`.
 
-## Pass2 Reconciliation And Current Review Freeze
+## Research R1 Diagnostic Correction And Current Freeze
+
+Coordinator accepted high research R1 after set1/pass3 Ready at e5645c4. Total3of9 engineering
+reviews consumed; recoveryR1ofmax2 used. Alert2 / check111848049126 at that exact head was
+triaged as a trusted-name heuristic on fixed oracle inputs; no real secret was identified.
+The CI failure remained a delivery blocker. Research did not authorize suppression or merge.
+Recovery decision packet: `/private/tmp/s3-codeql-recovery-r1.md`; its substantive decision and
+recommended repair are retained here. PR161 remains pending corrected-head review and CI.
+
+Corrected behavior checkpoint `970fa4184b6aed787b545a6c3c7b751010add1fc` changes only the final state_clock_precedence_checks
+diagnostic block: output mismatch count only; assertion carries count and fixed message only.
+All mismatch comparisons/collection, test loops/counts and nonempty rejection remain unchanged.
+No trust-helper rename, payload encoding, suppression/dismissal, CI alteration or successful literal
+regeneration. Fixed-input heuristic diagnosis is limited to this private oracle, not future telemetry.
+
+Sentinel-bearing forced mismatch RED exposed the harmless sentinel in stdout/stderr/assertion;
+GREEN still asserts failure with count1 and excludes the sentinel from all three channels. AST
+extraction executes the actual committed final diagnostic block with a sentinel in label/receipt.
+Independent in-memory restoration of the arm/segment defect fails its focused probe (0.440s);
+restoration of the state/clock defect fails with910 mismatches (17.137s), count-only stdout and
+assertion. Each mutation restores the original transition afterward; disposable tests do not edit
+repository behavior. Complete scripts and captured results are retained in the author packet.
+
+Direct `python3 -B docs/specs/verify-combat-actual-selection-v1.py`: PASS exit0,
+221.945s; stdout SHA256 `0ec2ecc01734e319a6abd590a7bf1484cf5569d657874981e893a6c93d8cc874`. Successful output/counts exactly match
+the prior full run; spec/schema/fixture byte-identical to e5645c4. Static16 admitted pins match,
+and exact diff equivalence proves only the recommended diagnostic block changed in the oracle.
+Both current primary manifests match file bytes; whitespace checks pass.
+
+```text
+PASS: 16 semantic actual-owner traces; selected FA20 and seven Reserve Release fallbacks per owner
+PASS: 16 literal traces; {"capacity": 23, "clock": 50, "clock-accepted": 8, "cuts": 152, "entry": 36, "entry-cuts": 6, "entry-leaf": 1512, "event": 4456, "family": 17, "gate-actor-state": 1216, "gate-arm-state": 1216, "gate-candidate-clock": 14, "gate-choice-candidate": 14, "gate-decision-clock": 304, "gate-owner-clock": 304, "gate-participant-clock": 6, "gate-position-clock": 304, "gate-primitive-state": 2432, "gate-segment-state": 1216, "gate-stale-clock": 304, "gate-version-clock": 608, "gate-version-state": 1216, "history": 140, "ledger": 320, "legacy-reject": 6, "no-op": 30, "order": 48, "order-arm": 210, "order-primitive-arm": 70, "order-segment-clock": 16, "order-version-segment": 32, "ownership": 64, "pins": 128, "positive": 2, "privacy": 30, "proof": 8266, "raw": 2760, "retries": 1962, "retry-primitive": 654, "separation": 2, "state-clock-matrix": 6080, "state-clock-public": 276, "trust": 2}; full original actual entry retained; separate trusted ledger; private FA stop only
+```
+
+Next fresh review is coordinator-dispatched set2/pass1,total4of9; no count reset. Max9 engineering
+reviews/max2 authorized recovery spikes; R1 used. Canonical plan ownership returns to coordinator.
+Original predecessor evidence remains reused honestly: separate Breakdown/cycle/Snapshot/outward
+pin failures retained and historical timeouts unverified. No new full-suite lease/.NET/Boundary/
+format/CI or clean-CodeQL claim. No self-dispatched reviewer, merge or S4. Exact final administrative
+head supplied by coordinator dispatch; verify implementation and administrative commits together.
+
+## Durable R1 Tests And Captured Evidence
+
+`s3-r1-sentinel.py`: 1060 bytes; SHA256 `f819951af0ae2f0aa4d7fa3800d74015406150d46159709561c6fa22dc05d457`.
+
+```python
+import ast,contextlib,io,json,traceback
+from pathlib import Path
+p=Path('docs/specs/verify-combat-actual-selection-v1.py')
+f=next(n for n in ast.parse(p.read_text()).body if isinstance(n,ast.FunctionDef) and n.name=='state_clock_precedence_checks')
+start=next(i for i,n in enumerate(f.body) if isinstance(n,ast.If) and isinstance(n.test,ast.Name) and n.test.id=='failures')
+code=compile(ast.fix_missing_locations(ast.Module(body=f.body[start:],type_ignores=[])),str(p),'exec')
+sentinel='HARMLESS_S3_SENTINEL_627';out=io.StringIO();err=io.StringIO();message='';failed=False
+with contextlib.redirect_stdout(out),contextlib.redirect_stderr(err):
+    try:exec(code,{'failures':[(sentinel,('duplicate',sentinel),('error',5))]})
+    except AssertionError as e:
+        failed=True;message=str(e);traceback.print_exc()
+result={'failureDetectable':failed,'stdout':out.getvalue(),'stderr':err.getvalue(),'assertion':message,'sentinelAbsent':all(sentinel not in v for v in [out.getvalue(),err.getvalue(),message])}
+print(json.dumps(result,sort_keys=True));assert failed
+```
+
+`s3-r1-sensitivity.py`: 1740 bytes; SHA256 `d193bab53e665f22583adce938dd8cd5a24ffeccb95a32b7ca6321a44dfee754`.
+
+```python
+import ast,contextlib,importlib.util,io,json,time
+from pathlib import Path
+p=Path('docs/specs/verify-combat-actual-selection-v1.py').resolve();s=p.read_text()
+sp=importlib.util.spec_from_file_location('s3_recovery',p);a=importlib.util.module_from_spec(sp);sp.loader.exec_module(a)
+node=next(n for n in ast.parse(s).body if isinstance(n,ast.FunctionDef) and n.name=='transition')
+original=ast.get_source_segment(s,node)
+segment="    require(cmd['segmentId'] == prior['segmentId'], 4)\n"
+arm=original.replace(segment,'');anchor="    for k in ('decisionId', 'fromPositionId', 'expectedPriorVersion', 'choice', 'candidate', 'participant'):"
+assert arm.count(anchor)==1;arm=arm.replace(anchor,segment+anchor)
+clock=original.replace("        require(inp['admittedAt'] is None and inp['clockAvailable'], 5)\n",'')
+anchor="    if kind == 'open-segment':";assert clock.count(anchor)==1
+clock=clock.replace(anchor,"    if kind in ('complete-step', 'close-empty-selection'): require(inp['admittedAt'] is None and inp['clockAvailable'], 5)\n"+anchor)
+results=[]
+for name,source,check in [('arm-before-segment',arm,a.arm_segment_order_checks),('state-before-clock',clock,a.state_clock_precedence_checks)]:
+    exec(compile(source,str(p),'exec'),vars(a));counts={};out=io.StringIO();start=time.monotonic();failed=False;message=''
+    with contextlib.redirect_stdout(out):
+        try:check(counts)
+        except AssertionError as e:failed=True;message=str(e)
+    results.append({'mutation':name,'rejected':failed,'seconds':round(time.monotonic()-start,3),'stdout':out.getvalue(),'assertion':message,'passedChecksBeforeRejection':counts})
+    assert failed,name
+    exec(compile(original,str(p),'exec'),vars(a))
+print(json.dumps(results,sort_keys=True))
+```
+
+`s3-r1-sentinel-red.json`: 1005 bytes; SHA256 `cffef7b1c70e5695ecf18a87270f8bb75e368da3b1b6c802f1df5c0227ed58c2`.
+
+```json
+{"assertion": "(1, 'state/clock precedence mismatches', [('HARMLESS_S3_SENTINEL_627', ('duplicate', 'HARMLESS_S3_SENTINEL_627'), ('error', 5))])", "failureDetectable": true, "sentinelAbsent": false, "stderr": "Traceback (most recent call last):\n  File \"/private/tmp/s3-r1-sentinel.py\", line 9, in <module>\n    try:exec(code,{'failures':[(sentinel,('duplicate',sentinel),('error',5))]})\n        ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"docs/specs/verify-combat-actual-selection-v1.py\", line 891, in <module>\n    assert not failures,(len(failures),'state/clock precedence mismatches',failures[:4])\n           ^^^^^^^^^^^^\nAssertionError: (1, 'state/clock precedence mismatches', [('HARMLESS_S3_SENTINEL_627', ('duplicate', 'HARMLESS_S3_SENTINEL_627'), ('error', 5))])\n", "stdout": "STATE/CLOCK MISMATCH GROUPS: {'HARMLESS_S3_SENTINEL_627': 1}\nSTATE/CLOCK MISMATCH: ('HARMLESS_S3_SENTINEL_627', ('duplicate', 'HARMLESS_S3_SENTINEL_627'), ('error', 5))\n"}
+```
+
+`s3-r1-sentinel-green.json`: 673 bytes; SHA256 `5e9d3d9b57f49ec95811dba8d5932d1c755a009656821b5963817e6b2e085ec0`.
+
+```json
+{"assertion": "(1, 'state/clock precedence mismatches')", "failureDetectable": true, "sentinelAbsent": true, "stderr": "Traceback (most recent call last):\n  File \"/private/tmp/s3-r1-sentinel.py\", line 9, in <module>\n    try:exec(code,{'failures':[(sentinel,('duplicate',sentinel),('error',5))]})\n        ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"docs/specs/verify-combat-actual-selection-v1.py\", line 888, in <module>\n    assert not failures,(len(failures),'state/clock precedence mismatches')\n           ^^^^^^^^^^^^\nAssertionError: (1, 'state/clock precedence mismatches')\n", "stdout": "STATE/CLOCK MISMATCH COUNT: 1\n"}
+```
+
+`s3-r1-sensitivity.json`: 823 bytes; SHA256 `bd5245996e466c4eb1422b5996b0007a5fe25c8cbbfaf9cbe36b70f50dd31ad7`.
+
+```json
+[{"assertion": "('order-arm/axis/open-segment/decisionId', 'CMB-ASE-004', 3, '')", "mutation": "arm-before-segment", "passedChecksBeforeRejection": {}, "rejected": true, "seconds": 0.44, "stdout": ""}, {"assertion": "(910, 'state/clock precedence mismatches')", "mutation": "state-before-clock", "passedChecksBeforeRejection": {"gate-actor-state": 1216, "gate-arm-state": 1216, "gate-candidate-clock": 14, "gate-choice-candidate": 14, "gate-decision-clock": 304, "gate-owner-clock": 304, "gate-participant-clock": 6, "gate-position-clock": 304, "gate-primitive-state": 2432, "gate-segment-state": 1216, "gate-stale-clock": 304, "gate-version-clock": 608, "gate-version-state": 1216, "state-clock-matrix": 5352, "state-clock-public": 94}, "rejected": true, "seconds": 17.137, "stdout": "STATE/CLOCK MISMATCH COUNT: 910\n"}]
+```
+
+`s3-r1-static.json`: 112 bytes; SHA256 `77c338c7b40a77caf6d9e7582aeb33c1ed6d46bd0cdb321be282f1464685ae3f`.
+
+```json
+{"dependencyPinsMatched": 16, "specSchemaFixtureUnchanged": true, "onlyRecommendedDiagnosticBlockChanged": true}
+```
+
+## Historical Pass2 Reconciliation And Review Freeze
 
 S3 set1/pass2,total2of9 at5e2ef795f89335988d424c37d2648acddd992681 returned **Not ready**
 with one P2: active-state006 and required defender decline006 must precede clock005 for
@@ -308,8 +420,8 @@ so scoped Python checks were used without consuming coordinator full-suite lease
 | `docs/specs/combat-actual-selection-v1.md` | 11255 | `a81394f4e58c582a7beabccd1aeb4ba1bdb3475ebdc14378c95ac3fbc97fda82` |
 | `docs/specs/combat-actual-selection-v1.schema.json` | 5689 | `da6256deb94bb6061e8e98e2448f915c4474373b7f0de6bb76eded2ae88c39b1` |
 | `docs/specs/fixtures/combat-actual-selection-v1.json` | 5640101 | `019d1a3ff0f121d83f377ddfb19d274b4a8aa89172bad8aeb289c3b98228e604` |
-| `docs/specs/verify-combat-actual-selection-v1.py` | 65311 | `63031bcbc89acc422436f0c4ca1691aa46e9d85e3bc28f19cc3a07c1ba1a9e1a` |
-| `docs/design/combat-cycle-implementation-plan.md` | 213824 | `90581384b4041c5de9241468eac42d171fb026dadf0dc59999c89af73417fc2b` |
+| `docs/specs/verify-combat-actual-selection-v1.py` | 65112 | `f37a7cfa26b60469168d9f4424465b14f1fe45666f4222d69c840c2527d2e66f` |
+| `docs/design/combat-cycle-implementation-plan.md` | 215265 | `2fccd02eb8a4e37598e7bd7eded2860f917f9cbadc8310c6bc98f496f33d5255` |
 
 
 ## Retained RED Reproduction
