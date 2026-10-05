@@ -2090,3 +2090,23 @@ no actionable findings. Full report and author acceptance retained in019E1 hando
 accepts separately tracked baseline-pin maintenance and frozen grammar/two-source limits. Final
 administrative reconciliation preserves reviewed runtime/test/project bytes and2533/Boundary81
 gate evidence. Publication and exact-head CI/merge remain coordinator-owned; no parent closure.
+
+
+### Overnight delivery reconciliation — N4, 2026-10-05
+
+Historical pending-publication statements in019D3/019E0/019E1 above are superseded:
+019D3 merged [PR154](https://github.com/dills122/sandtable/pull/154) at
+`18e8f99f81aed8bb76afb97c86117584b788fa62`;019E0 merged
+[PR155](https://github.com/dills122/sandtable/pull/155) at
+`84f1fac861cef7c8ffaf8f36dd75b1b7f4dedc83`;019E1 merged
+[PR156](https://github.com/dills122/sandtable/pull/156) at
+`e90eef556bde6bbde4fd6b3e17064ba613868ee6`. Coordinator recorded independent
+Ready verdicts and all required CI success at each exact final head. N4 documentation
+and combined-state verification passed fresh set1/pass1,total1of9 review at36df75b, Ready
+with non-blocking follow-ups accepted by author/coordinator; publication/CI/merge remain pending.
+Actual entry reaches a candidate before selection only. C3a/Result2 request, seed,
+receipt and position provenance require a separate contract-first gate; synthetic Result2
+contexts are not promoted and all32 are not claimed reachable. Parents017–019 remain open.
+Original Breakdown pin oracle remains FAILED; separate reviewed pin maintenance is
+coordinator-owned. [Final session handoff](../work/handoffs/2026-10-05-overnight-session.md)
+records the integrated evidence and safe next actions.
