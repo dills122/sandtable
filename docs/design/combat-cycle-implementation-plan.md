@@ -2041,3 +2041,30 @@ traces; these do not convert original command to pass. Separate reviewed pin mai
 is coordinator-tracked follow-up. Reviewed contract artifacts unchanged; acceptance-gate
 disposition is complete. Publication/final-head CI/merge remain pending before native work.
 [Full report and reconciliation](../work/reviews/2026-10-05-positive-entry-review.md).
+
+
+### Task019E1 — native actual positive-entry adapter
+
+Manifest frozen2026-10-05 at84f1fac861cef7c8ffaf8f36dd75b1b7f4dedc83 (merged155).
+Five primary paths: `CampaignCombatPositiveEntry.cs`, `CampaignCombatPositiveEntryCodec.cs`
+in Core/Campaigns, `CombatPositiveEntryTests.cs`, test project fixture link and this plan.
+Implements accepted019E0 exact seed1/Normal/NONE openings, both owners; full Request/Created11
+and4+1+4+1 original history; owner idle Movement11→12, System empty Breakdown12→13.
+Preserve all World/resources/RNG/Weather/order/cycle and synthetic content-origin labels.
+Actual Movement-end proof and supported candidate only at13 before selection; owned immutable
+source/proof/event bytes, full canonical parity, all cuts/retries/adversarial error ordering.
+No predecessor/source/fixture/oracle changes, C3a/Result2 bridge, public/Snapshot/host/Runner,
+later-II/consumed/repeat or parent017–019 closure. Semantic RED before GREEN; focused/oracle/
+full serialized binlogged gate and coordinator-owned fresh independent review required.
+Original Breakdown oracle's pre-existing sequence-source pin remains FAILED, separately tracked;
+no pin weakening or pass claim. Status: implementation underway; publication held.
+
+
+Task019E1 frozen native evidence:18focused tests pass, both owner openings independently constructed
+and all source/command/event/full27-field state/six proof bytes match019E0. All cuts and original-byte
+retries include Movement retry after13; full source/event/re-signed/input/proof/canonical/clock/count/
+size/ownership matrix passes. Actual binlogged `just check` passes2530solution tests and Boundary81,
+0fail/skips, clean restore/format/build with0warnings/errors. All208 specs and686 existing source/test
+paths remain byte-identical to84f1fac. Final oracle/review reconciliation belongs in
+[019E1 handoff](../work/handoffs/2026-10-05-native-positive-entry.md). Fresh review/final-head CI/merge
+remain pending; no parent/public/selection/result closure.
