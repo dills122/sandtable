@@ -2170,3 +2170,21 @@ checks were not repeated per coordinator instruction; historical separate pin fa
 unverified timeouts remain honest. No count reset, recovery spike, PR/merge, full-suite lease
 or S4. Next fresh coordinator-dispatched review is set1/pass2,total2of9. Corrected author/
 handoff retains RED/GREEN/current manifest; canonical plan ownership returns at review handoff.
+
+Task019F0 set1/pass2,total2of9 at5e2ef795 returned Not ready with one new P2:
+active-state006 and required defender decline006 must precede untimed clock005 for
+complete-step/close-empty-selection. Coordinator/author Accept. Bounded correction moves
+those clock guards into the branches after state/decline checks; positive FA completion007
+still follows clock005. No spec weakening, wider refactor or successful literal regeneration.
+Retained RED reports728 matrix and182 public mismatches (910 total). GREEN adds15,510
+checks:6,080 all-kind/state/clock combinations over16 traces/152cuts,276 public complete/close
+probes, and9,154 adjacent-gate probes. Expected outcomes use an independent documented gate
+model; coverage includes primitive/arm/segment/actor/version/decision/stale/duplicate/candidate/
+choice/participant precedence. Direct full oracle PASS exit0,233.099s; stdout SHA256
+0ec2ecc01734e319a6abd590a7bf1484cf5569d657874981e893a6c93d8cc874. Prior counts preserved,
+including328 pass1 probes. Spec/schema/fixture remain byte-identical to5e2ef795. Expensive
+unchanged predecessor evidence is reused honestly; separate original pin failures and historical
+unverified timeouts remain. Counter2of9 consumed; next coordinator-dispatched set1/pass3,total3of9.
+A third Not ready requires coordinator-owned high research recovery before set2; max2 recovery
+spikes/max9 reviews, no count reset. No PR/merge/S4 or full-suite lease. Canonical plan ownership
+returns to coordinator at the corrected review handoff; dated packets retain RED/GREEN and manifests.

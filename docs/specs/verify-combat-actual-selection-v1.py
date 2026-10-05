@@ -196,8 +196,6 @@ def transition(b, prior, inp):
     if kind in ('open-segment', 'close-empty-selection', 'complete-step', 'open-rba'):
         require(cmd['expectedPriorVersion'] == prior['stateVersion'], 6)
     if kind in ('complete-step', 'open-rba'): require(cmd['fromPositionId'] == positions[step], 6)
-    if kind in ('complete-step', 'close-empty-selection'):
-        require(inp['admittedAt'] is None and inp['clockAvailable'], 5)
     if kind == 'open-segment':
         require(s['selectionOutcome'] == 'unopened' and not s['receipts'], 6)
         require(inp['admittedAt'] is not None if choices and inp['clockAvailable'] else True, 5)
@@ -208,6 +206,7 @@ def transition(b, prior, inp):
         effect = dict(kind='segment-opened', boundaryHash=s['boundaryHash'], window=s['selectionWindow'])
     elif kind == 'close-empty-selection':
         require(s['selectionOutcome'] == 'system-no-selection' and s['selectionWindow'] is None, 6)
+        require(inp['admittedAt'] is None and inp['clockAvailable'], 5)
         effect = dict(kind='selection-closed', outcome='no-selection', candidate=None, timing=None)
     elif kind == 'choose-selection':
         require(s['selectionOutcome'] == 'pending' and w is not None and cmd['decisionId'] == w['decisionId'], 6)
@@ -242,8 +241,9 @@ def transition(b, prior, inp):
     else:
         require(s['selectionOutcome'] in ('selected', 'no-selection', 'cancelled'), 6)
         no_attack = s['selectionOutcome'] != 'selected'
-        require(no_attack or step < 3, 7)  # Prepared/committed gates belong to C3b/c.
         if not no_attack and step == 2: require(s['declineReceiptId'] is not None, 6)
+        require(inp['admittedAt'] is None and inp['clockAvailable'], 5)
+        require(no_attack or step < 3, 7)  # Prepared/committed gates belong to C3b/c.
         disposition = s['cancellationReceiptId'] or (s['declineReceiptId'] if step >= 2 else None) or s['selectionReceiptId']
         effect = dict(kind='step-completed', fromPositionId=positions[step],
             toPositionId=positions[step+1] if step < 5 else edge(b)['releasePositionId'],
@@ -754,6 +754,143 @@ def arm_segment_order_checks(counts):
             reject('order-segment-clock/'+side+'/'+original['command']['kind'],lambda:apply(source,history,bad),counts,4)
 
 
+def state_clock_expected(state, inp):
+    """Independent documented gate table for already typed, legal-arm test commands."""
+    cmd=inp['command'];kind=cmd['kind'];now=inp['admittedAt'];available=inp['clockAvailable']
+    command_hash=sha(raw(cmd,'Command'))
+    duplicate=next((r for r in state['receipts'] if r['commandHash']==command_hash),None)
+    if duplicate is not None:return ('duplicate',duplicate['receiptId'])
+    selection_pending=state['selectionOutcome']=='pending'
+    rba_pending=(state['selectionOutcome']=='selected' and state['rbaWindow'] is not None and state['declineReceiptId'] is None)
+    active=state['selectionWindow'] if selection_pending else state['rbaWindow'] if rba_pending else None
+    before_rba=(kind=='controller-unavailable' and state['selectionOutcome']=='selected' and state['stepIndex']==2
+                and state['rbaWindow'] is None and cmd['decisionId']==state['segmentId']+'.rba')
+    if kind in ('expire-window','controller-unavailable') and not before_rba and (active is None or cmd['decisionId']!=active['decisionId']):
+        return ('no-op',None)
+    if state['closed'] or len(state['receipts'])>=16 or state['stateVersion']==2**63-1:return ('error',6)
+    selected=state['selectionOutcome']=='selected'
+    state_ok={
+        'open-segment':state['selectionOutcome']=='unopened' and not state['receipts'],
+        'close-empty-selection':state['selectionOutcome']=='system-no-selection' and state['selectionWindow'] is None,
+        'choose-selection':selection_pending,
+        'complete-step':state['selectionOutcome'] in ('selected','no-selection','cancelled')
+                        and (not selected or state['stepIndex']!=2 or state['declineReceiptId'] is not None),
+        'open-rba':state['stepIndex']==2 and selected and state['rbaWindow'] is None,
+        'decline-rba':state['stepIndex']==2 and rba_pending,
+        'expire-window':active is not None,
+        'controller-unavailable':before_rba or active is not None}[kind]
+    if not state_ok:return ('error',6)
+    if kind in ('complete-step','close-empty-selection'):
+        if now is not None or not available:return ('error',5)
+        if kind=='complete-step' and selected and state['stepIndex']>=3:return ('error',7)
+    elif kind=='open-segment':
+        if available and (now is None or now>253402300769999):return ('error',5)
+    elif kind=='open-rba':
+        if not available or now is None or now<state['selectionWindow']['timing']['highWaterUnixMilliseconds'] or now>253402300769999:
+            return ('error',5)
+    elif kind in ('choose-selection','decline-rba'):
+        timing=active['timing']
+        if not available or now is None or now<timing['highWaterUnixMilliseconds'] or now>=timing['deadlineUnixMilliseconds']:
+            return ('error',5)
+    elif kind=='expire-window':
+        timing=active['timing']
+        if available and now is not None and timing['highWaterUnixMilliseconds']<=now<timing['deadlineUnixMilliseconds']:
+            return ('no-op',None)
+    return ('accepted',None)
+
+
+def state_clock_commands(b,state):
+    position=edge(b)['combatPositionIds'][min(state['stepIndex'],5)]
+    active=state['selectionWindow'] if state['selectionOutcome']=='pending' else state['rbaWindow'] if (
+        state['selectionOutcome']=='selected' and state['rbaWindow'] is not None and state['declineReceiptId'] is None) else None
+    timer_decision=active['decisionId'] if active is not None else state['segmentId']+'.selection'
+    unavailable_decision=(state['segmentId']+'.rba' if state['selectionOutcome']=='selected' and state['stepIndex']==2 and state['rbaWindow'] is None else timer_decision)
+    rows=[
+        ('open-segment',dict(expectedPriorVersion=state['stateVersion']),'system','choice'),
+        ('close-empty-selection',dict(expectedPriorVersion=state['stateVersion']),'system','choice'),
+        ('choose-selection',dict(decisionId=state['segmentId']+'.selection',choice='select-close-assault',candidate=b['candidate']),b['cycle']['actingSide'],'participant'),
+        ('complete-step',dict(expectedPriorVersion=state['stateVersion'],fromPositionId=position),'system','choice'),
+        ('open-rba',dict(expectedPriorVersion=state['stateVersion'],fromPositionId=position),'system','choice'),
+        ('decline-rba',dict(decisionId=state['segmentId']+'.rba',participant=b['candidate']['defender']['unit']),b['candidate']['defender']['unit']['originalSide'],'choice'),
+        ('expire-window',dict(decisionId=timer_decision),'system','choice'),
+        ('controller-unavailable',dict(decisionId=unavailable_decision),'system','choice')]
+    return [(trusted(command(state,kind,**fields),actor),forbidden_field) for kind,fields,actor,forbidden_field in rows]
+
+
+def state_clock_precedence_checks(counts):
+    failures=[]
+    def check(label,call,expected,state):
+        try:
+            after,event,receipt=call();actual=('duplicate',receipt) if receipt is not None and after==state else ('no-op',None) if event is None else ('accepted',None)
+        except Invalid as error:actual=('error',int(error.code[-3:]))
+        if actual!=expected:failures.append((label,expected,actual))
+        else:
+            counts[label.split('/')[0]]=counts.get(label.split('/')[0],0)+1
+            if expected[0] in ('duplicate','no-op'):assert after==state
+            if expected[0]=='accepted':assert after['stateVersion']==state['stateVersion']+1 and event is not None
+    for side in ('axis','commonwealth'):
+        for variant in VARIANTS:
+            sources,controls,ledger,events=trace(side,variant);b=boundary(sources[0])
+            for cut,state in enumerate(controls):
+                for original,forbidden_field in state_clock_commands(b,state):
+                    kind=original['command']['kind'];prefix=side+'/'+variant+'/'+str(cut)+'/'+kind
+                    for now,available in ((None,True),(None,False),(2300,True),(2300,False),(253402300799999,True)):
+                        inp=copy.deepcopy(original);inp.update(admittedAt=now,clockAvailable=available)
+                        expected=state_clock_expected(state,inp)
+                        check('state-clock-matrix/'+prefix,lambda:transition(b,state,inp),expected,state)
+                    # Exact reviewer public matrix: two untimed commands at every nonclosed cut.
+                    if not state['closed'] and kind in ('complete-step','close-empty-selection'):
+                        inp=copy.deepcopy(original);inp.update(admittedAt=None,clockAvailable=False)
+                        check('state-clock-public/'+prefix,lambda:apply(sources[cut],ledger[:cut],inp),state_clock_expected(state,inp),state)
+                    # Adjacent documented gates must beat state, clock, duplicate and stale no-op.
+                    inp=copy.deepcopy(original);inp.update(admittedAt=None,clockAvailable=False);inp['command']['segmentId']='foreign'
+                    check('gate-segment-state/'+prefix,lambda:transition(b,state,inp),('error',4),state)
+                    arm=copy.deepcopy(inp);arm['command'][forbidden_field]=copy.deepcopy(b['candidate']['defender']['unit']) if forbidden_field=='participant' else 'finish-without-attack'
+                    check('gate-arm-state/'+prefix,lambda:transition(b,state,arm),('error',3),state)
+                    for now,code in ((True,1),(-1,2)):
+                        primitive=copy.deepcopy(arm);primitive['admittedAt']=now
+                        check('gate-primitive-state/'+prefix,lambda:transition(b,state,primitive),('error',code),state)
+                    version=copy.deepcopy(inp);version['command']['contractVersion']=2
+                    check('gate-version-state/'+prefix,lambda:transition(b,state,version),('error',3),state)
+                    actor=copy.deepcopy(original);actor.update(admittedAt=None,clockAvailable=False)
+                    actor['actor']='system' if kind in ('choose-selection','decline-rba') else side
+                    check('gate-actor-state/'+prefix,lambda:transition(b,state,actor),('error',4),state)
+                    if kind in ('open-segment','close-empty-selection','complete-step','open-rba'):
+                        structural=copy.deepcopy(original);structural.update(admittedAt=None,clockAvailable=False);structural['command']['expectedPriorVersion']=-1
+                        check('gate-version-clock/'+prefix,lambda:transition(b,state,structural),('error',6),state)
+                    if kind in ('complete-step','open-rba'):
+                        positional=copy.deepcopy(original);positional.update(admittedAt=None,clockAvailable=False);positional['command']['fromPositionId']='foreign.position'
+                        check('gate-position-clock/'+prefix,lambda:transition(b,state,positional),('error',6),state)
+                    if kind in ('choose-selection','decline-rba'):
+                        decision=copy.deepcopy(original);decision.update(admittedAt=None,clockAvailable=False);decision['command']['decisionId']='foreign.decision'
+                        check('gate-decision-clock/'+prefix,lambda:transition(b,state,decision),('error',6),state)
+                    if kind in ('expire-window','controller-unavailable'):
+                        stale=copy.deepcopy(original);stale.update(admittedAt=None,clockAvailable=False);stale['command']['decisionId']='foreign.decision'
+                        check('gate-stale-clock/'+prefix,lambda:transition(b,state,stale),('no-op',None),state)
+                    if kind in ('choose-selection','decline-rba'):
+                        original_bad_clock=copy.deepcopy(original);original_bad_clock.update(admittedAt=None,clockAvailable=False)
+                        expected=state_clock_expected(state,original_bad_clock)
+                        wrong_seat=copy.deepcopy(original_bad_clock);wrong_seat['actor']='commonwealth' if original['actor']=='axis' else 'axis'
+                        seat_code=4 if expected[0]=='duplicate' or expected==('error',5) else 6
+                        check('gate-owner-clock/'+prefix,lambda:transition(b,state,wrong_seat),('error',seat_code),state)
+                    if kind=='choose-selection' and state['selectionOutcome']=='pending':
+                        candidate_input=copy.deepcopy(original);candidate_input.update(admittedAt=None,clockAvailable=False)
+                        candidate_input['command']['candidate']['targetLocationId']='foreign.location'
+                        check('gate-candidate-clock/'+prefix,lambda:transition(b,state,candidate_input),('error',4),state)
+                        choice_input=copy.deepcopy(candidate_input);choice_input['command']['choice']='foreign-choice'
+                        check('gate-choice-candidate/'+prefix,lambda:transition(b,state,choice_input),('error',3),state)
+                    if kind=='decline-rba' and state['stepIndex']==2 and state['selectionOutcome']=='selected' and state['rbaWindow'] is not None and state['declineReceiptId'] is None:
+                        participant_input=copy.deepcopy(original);participant_input.update(admittedAt=None,clockAvailable=False)
+                        participant_input['command']['participant']['elementId']='foreign.element'
+                        check('gate-participant-clock/'+prefix,lambda:transition(b,state,participant_input),('error',4),state)
+    if failures:
+        groups={}
+        for label,expected,actual in failures:groups[label.split('/')[0]]=groups.get(label.split('/')[0],0)+1
+        print('STATE/CLOCK MISMATCH GROUPS:',groups)
+    for row in failures[:12]:print('STATE/CLOCK MISMATCH:',row)
+    assert not failures,(len(failures),'state/clock precedence mismatches',failures[:4])
+
+
 def main():
     counts={};verify_dependencies();semantic_red()
     frozen=json.loads(FIXTURE.read_text())
@@ -766,7 +903,7 @@ def main():
             assert fixture_case(side,variant,result)==expected,(side,variant,'literal mismatch')
             verify_case(side,variant,result,counts)
     admission_checks(counts);separation_checks(counts);clock_order_capacity_checks(counts);trust_and_family_checks(counts)
-    dependency_checks(counts);arm_segment_order_checks(counts)
+    dependency_checks(counts);arm_segment_order_checks(counts);state_clock_precedence_checks(counts)
     print('PASS: 16 literal traces; '+json.dumps(counts,sort_keys=True)+'; full original actual entry retained; separate trusted ledger; private FA stop only')
 
 
