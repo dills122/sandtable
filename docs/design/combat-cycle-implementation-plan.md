@@ -1914,3 +1914,43 @@ handoff. No .NET consumer
 is claimed. Parent017–019, Snapshot/publication and public020–021 remain open. After this contract's
 acceptance, separately freeze native proof and settled-control adapters; genuine positive campaign
 entry and ordinary repeat histories, then later-II/consumed provenance require their own gates.
+
+### Task019D1 — bounded native settled-continuation proof
+
+Manifest frozen 2026-10-04 before behavior. Base f33c78c (merged019D0).
+Sole five-primary ownership: `CampaignCombatSettledContinuation.cs` (private engine/owned
+proof), `CampaignCombatSettledContinuationCodec.cs` (closed bytes),
+`CombatSettledContinuationTests.cs`, test project fixture link, and this plan.
+Administrative status/review/handoff prose is allowed. No upstream engine refactor, frozen
+contract/vector rewrite, new gameplay predecessor, transport, Snapshot or public registration.
+
+The byte entry point takes an existing creation context, parses complete Request/Created11,
+selection predecessor and Round2/Result2, and uses017B native replay before independent exact
+source admission. Admission data comes from unchanged Result2 sources, never the new settled
+fixture or a caller proof. Pinned synthetic descriptors preserve original locations/exclusions.
+Use019A pure assessment; bind actual commitment event receipt plus canonical hash. Preserve
+full World/RNG/member/offensive history/duties and exactly untimed System open/complete,
+null Release audit high-water. Serialize exact019D0 proof field order, bounds and CMB-SCT
+errors; readback rederives from the full packet. Owned byte results protect caller/output state.
+No authority increment beyond two existing Release events, spend, exception, repeat or catalogue
+advance. Synthetic earlier trust and parent017–019 remain open.
+
+Acceptance: semantic RED on Engaged11/DP1 and Contact9 plus actual receipt/hash; then all32
+owner/seal vectors and four descriptor vectors match literal canonical proofs. Adversarial
+source/input/event/World/proof/descriptor mutations, valid re-signed clock variants, incomplete/
+reordered/extra Release, scope/canonical/bounds rejection and ownership must pass. Independent
+arithmetic probes stay distinct from admitted histories. Focused, build, Boundary, full solution,
+format and seven unchanged/new oracles required; unique binlogs and fresh independent review
+(max3 instances) precede authorized draft publication. Next control/actual-history slices remain
+separate. Any contract discrepancy or sixth primary/new gameplay type returns a scope gate.
+
+### Task019D1 executed evidence
+
+Native settled-continuation implementation retains the five-path manifest above. Semantic RED2,
+additional Unicode RED1, then final21focused tests pass;32owner/seal and4descriptor vectors
+match exact canonical bytes. All seven required oracles pass and140frozen executable contract
+files remain byte-identical to base. Full unchanged `just check` passes restore,format,build
+(0warnings/errors),Boundary81/81 and2496solution tests (0failed/skipped,7m33.826s).
+First complete gate had one existing Runner aggregation failure; isolated and unchanged full
+reruns passed, with no confirmed root cause. Evidence and independent review are retained in
+[handoff](../work/handoffs/2026-10-04-native-settled-continuation.md). Parents017–019 remain open.

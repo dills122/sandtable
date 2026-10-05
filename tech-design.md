@@ -1365,3 +1365,12 @@ exception and proof atomically to the accepted completion receipt. World, CP2, a
 Cohesion, RNG, attack history and track remain unchanged. Profile-specific v1 envelopes remain
 dormant; Breakdown execution, settled source/progress, later-II/consumed lineage and public activation
 are subsequent work.
+
+Task019D1 adds private `CampaignCombatSettledContinuation` and its closed proof codec.
+Native017B replays Request/Created11, selection, Round2/Result2 and empty Release; exact
+canonical envelope comparisons plus independently retained catalogue clocks close the retiming
+seam before evidence extraction.019A supplies pure source-specific witnesses. The proof owns
+its bytes and readback replays the full packet. Synthetic original Movement locations/exclusions,
+World/RNG/offensive history and future duties remain explicit. There is no new cache, resource
+charge, repeat/control authority, transport or Snapshot registration. Actual positive campaign
+history, settled control, later-II/consumed lineage and parents017–019 remain open.

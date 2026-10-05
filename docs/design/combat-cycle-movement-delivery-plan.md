@@ -260,3 +260,13 @@ Fresh independent review1 of3 returned Ready with no actionable findings; final 
 fulfilled with executable hashes unchanged. [Handoff](../work/handoffs/2026-10-04-combat-movement-completion.md)
 and [review](../work/reviews/2026-10-04-combat-movement-completion-review.md) retain exact evidence.
 Parent017–019 remains open.
+
+## Task019D1 native settled proof
+
+The private native adapter now consumes the [019D0 packet](../specs/combat-settled-continuation-v1.md),
+replays017B before exact source/catalogue admission, and assesses019A witnesses. All32 retained
+contexts and4 synthetic descriptor probes have exact canonical proof parity. Original locations/
+exclusions, actual commitment receipt/hash, full settled state and future duties are retained.
+This establishes bounded native evidence only. Settled control, actual ordinary repetition and
+creation-to-positive Combat history remain separate; parent017–019 acceptance is unchanged.
+See the [native manifest](combat-cycle-implementation-plan.md#task019d1--bounded-native-settled-continuation-proof).
