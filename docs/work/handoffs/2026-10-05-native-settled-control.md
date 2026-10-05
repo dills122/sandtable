@@ -19,11 +19,13 @@ public/Snapshot/transport activation or parent017–019 closure is claimed.
 ## Current Repository State
 
 Managed worktree `/Users/dsteele/.codex/worktrees/native-settled-control/sandtable`.
-Branch `codex/native-settled-control`, base/head
+Branch `codex/native-settled-control`, review base
 `907f41403ed159d65024f193f3e1f730a23b9bbb` (merged150/151).
 Review used an explicit dirty boundary at907f414. Implementation/evidence are now
 committed as `a95b21166aaef18c754c60cee2ac6bb8eee89a17`; publication-status metadata follows.
-PR none, remote push blocked by automatic approval review.
+Coordinator pushed `ac00bed4d98046243b10cfb04e63c6a0401793fd` and opened
+[draft PR154](https://github.com/dills122/sandtable/pull/154), targeting main.
+Publication blocker is resolved; this metadata correction follows that published head.
 Five primary files: new engine/models, codec, focused tests, one fixture-link project
 change and canonical implementation plan. README, tech design, naming, roadmap and
 Movement delivery plan have administrative capability updates. Review packets and
@@ -34,7 +36,7 @@ untracked and excluded from review/publication. Primary checkout was not edited.
 
 Semantic RED1 failed for missing owner control opening after valid native proof
 admission. GREEN1 passed, expanded focused8 passed, final focused16 passed0fail/skips
-in21.377s (`/private/tmp/cmb019d3-final-focused.log`).
+in22.165s (`/private/tmp/cmb019d3-final-focused.log`).
 
 Native parity covers32+4 sources,80 traces,236 cuts and464 retained-command retries;
 full original event/state bytes, pure World/RNG/members/attack-history preservation,
@@ -78,13 +80,15 @@ configuration was empty, so no Serena-diagnostic verification is claimed.
 
 Fresh GPT-6.1-sol medium independent review is Ready, set1/pass1,total1of9 (max3per set),
 no findings; author Accept. Report retained in
-`docs/work/reviews/2026-10-05-native-settled-control-review.md`. Publication was attempted and blocked before execution; no PR or merge.
+`docs/work/reviews/2026-10-05-native-settled-control-review.md`. Draft PR154 is published;
+exact-final-head CI and merge remain coordinator gates.
 Earlier Runner aggregation failure did not recur in the first full gate; cause remains
 unconfirmed. Retain any recurrence, do not weaken tests.
 
 Coordinator milestone messaging was rejected by automatic approval review because it
 would not accept delegated/transcript permission as trusted. A direct permission
-question in this chat remains pending; no workaround or unauthorized message was sent.
+question was superseded by the coordinator's authorized publication. No workaround or
+unauthorized message was sent; status is returned through commentary/final retrieval.
 
 Failures retained: CA1869 serializer-option allocation fixed with cached options;
 strict canonical input mismatch fixed by ordered fixture-input encoding; descriptor
@@ -94,8 +98,8 @@ No test skip or assertion weakening.
 ## Immediate Next Actions
 
 1. Local gate and independent review completed; no further tests or behavior changes.
-2. Scoped commit and Keychain-backed push,
-   draft PR targeting main, attach PR, then return final handoff. Coordinator owns CI/merge.
+2. Attach existing draft PR154 and push only administrative publication corrections.
+3. Coordinator verifies exact-final-head CI and merges after required checks pass.
 
 No new behavior after2026-10-05T08:47:28Z; hard end09:47:28Z. If closing out on time,
 commit/push ALL retained work as explicit WIP with missing gates; no Ready/merge claim.
@@ -112,14 +116,15 @@ no repository tooling/config changed. Native MTP uses explicit --solution/--proj
 
 ## Delivery Metadata
 
-Status: local gates and independent review passed; retained local commit exists, push/PR blocked.
-Branch/base/head above; PR none; dirty paths explicitly described. Retained implementation commit `a95b21166aaef18c754c60cee2ac6bb8eee89a17`; publication-status
+Status: local gates and independent review passed; draft PR154 published, CI/merge pending.
+Branch/review base above; latest tip is returned in final status and resolved by the PR head.
+Only tool-generated `.serena/` remains untracked and excluded. Retained implementation commit `a95b21166aaef18c754c60cee2ac6bb8eee89a17`; publication-status
 metadata commit follows. Latest local tip is the branch ref, returned in final status.
 Full-suite lease RELEASED after complete final gate; coordinator may grant R2 its probe.
 Use github-keychain-auth for each authorized Git/gh operation outside sandbox; unset
 GH_TOKEN/GITHUB_TOKEN for gh; never extract credentials.
 
-## REVIEW_READY snapshot
+## Historical REVIEW_READY snapshot
 
 Source/test bytes frozen after focused16cases/464retries pass22.165s. Current final
 full suite is already running; lease remains held until completion. Earlier pre-retry
@@ -140,23 +145,32 @@ change/new unresolved failure. Messaging-tool rejection is handled by ordinary
 commentary/final status that coordinator retrieves; do not retry the denied tool.
 Main868126d is docs-only PR152; no rebase or unrelated import into reviewed scope.
 
-## Publication Blocker And Exact Next Action
+## Resolved Publication Blocker And Final Delivery
 
-Push and draft PR creation were rejected by automatic approval review BEFORE execution:
+The original child push/PR attempt was rejected by automatic approval review before
+execution because trusted destination/egress authorization was not established. Safe
+read-only checks verified Keychain login `dills122` (id15662762), PUBLIC
+`dills122/sandtable`, and ADMIN permission. The coordinator used direct human
+authorization plus that live ownership evidence; automatic approval review then
+approved its push of `ac00bed4d98046243b10cfb04e63c6a0401793fd` and creation of
+[draft PR154](https://github.com/dills122/sandtable/pull/154). No further permission
+is required; the pending child prompt is superseded. No rejected action was bypassed.
 
-> This pushes the repository’s private code and documentation to an external GitHub remote and creates a draft PR; the destination ownership/trust and explicit authorization for this specific sensitive egress are not established by trusted evidence.
+PR title: **Add native Result2 settled combat control**. Branch
+`codex/native-settled-control`, target main, reviewed ancestry907f414 unchanged.
+The PR is attached to this chat. Final publication-status correction changes only
+this handoff and the author explanation; no source/test/project bytes, behavior,
+review verdict or executed gate result change. No rebase, test rerun or additional
+workstream. Coordinator waits exact-final-head CI and owns merge.
 
-No workaround or unauthorized GitHub write occurred. Subsequent safe read-only checks
-verified the existing Keychain account login `dills122` (id15662762), repository
-`dills122/sandtable` is PUBLIC, and viewerPermission ADMIN. A direct permission question
-for push and draft PR is pending in this chat. Do not treat elapsed time as approval.
+Reviewed hashes remain:
 
-All retained implementation and review/handoff work is committed locally. Publication
-remains incomplete due to the automatic approval block, not a failing product gate.
-After explicit approval, use Keychain outside sandbox to push
-`codex/native-settled-control` to the existing origin and create draft PR main with title
-**Add native Result2 settled combat control**. Prepared body is
-`/private/tmp/cmb019d3-pr.md`; reconstruct from this handoff/review if the temporary file
-is unavailable. Attach any created PR. No rebase or behavior/test changes; final-head
-CI/merge remains coordinator-owned. Branch ancestry907f414 and main868126d docs-only
-were independently verified; triple-dot publication scope contains exactly14 owned files.
+- Engine/models:8b167d88c07c8506e0b43e571c81117209747e0c2d7721b5135e0c91265793d1
+- Codec:792707d1bf72214d209ab8a609e384ec02e123e9aeceaeae907246c9df827832
+- Tests:799c02435c69c760b20d42243a31f54d33363b56ce2e6de6e481c45b4a5827e6
+- Test project:37fa69bd8e923e356b27d5024c1c3769e185f086ea52aae1de71b95f1d6e926b
+
+Gates remain16focused,2512solution and81Boundary tests passed0fail/skips; all eight
+oracles pass; build0warnings/errors, format pass. Fresh independent Ready set1/pass1,
+no findings; full-suite lease released. All retained work is committed/pushed; latest
+metadata tip is returned in final status rather than embedding a self-referential hash.
