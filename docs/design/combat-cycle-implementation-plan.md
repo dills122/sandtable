@@ -2188,3 +2188,20 @@ unverified timeouts remain. Counter2of9 consumed; next coordinator-dispatched se
 A third Not ready requires coordinator-owned high research recovery before set2; max2 recovery
 spikes/max9 reviews, no count reset. No PR/merge/S4 or full-suite lease. Canonical plan ownership
 returns to coordinator at the corrected review handoff; dated packets retain RED/GREEN and manifests.
+
+Task019F0 set1/pass3,total3of9 independently Ready at e5645c4. Exact-head CodeQL alert2/
+check111848049126 remained a CI blocker. Coordinator accepted high research recoveryR1:
+fixed-input trusted-name heuristic, no real secret identified; no suppression/dismissal or CI
+bypass authorized. Minimal oracle follow-up removes raw mismatch groups/rows from print and
+assertion, retaining count/fixed message and all comparisons/collection/nonempty rejection.
+Sentinel RED exposed payload in output/assertion; GREEN remains a detectable failure without
+sentinel in stdout/stderr/assertion. Independent in-memory arm/segment mutation rejected in
+0.440s; state/clock mutation rejected in17.137s with910 count-only mismatches. Direct full oracle
+PASS exit0,221.945s; stdout SHA2560ec2ecc01734e319a6abd590a7bf1484cf5569d657874981e893a6c93d8cc874
+is byte-identical to the previous full run, preserving every successful count. Static16pins
+match; spec/schema/fixture unchanged; exact diff only recommended diagnostics. Dated author/
+handoff retain complete scripts/results/current manifests. Next coordinator-dispatched fresh
+review set2/pass1,total4of9; R1ofmax2 used, max9 reviews/no reset. Corrected-head CodeQL/CI
+remain unverified pending publication/review; no merge/S4/full-suite lease. Original separate
+pin failures and historical unverified timeouts remain honest; canonical plan ownership returns
+to coordinator with this corrected freeze.

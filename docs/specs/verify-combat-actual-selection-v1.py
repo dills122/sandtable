@@ -884,11 +884,8 @@ def state_clock_precedence_checks(counts):
                         participant_input['command']['participant']['elementId']='foreign.element'
                         check('gate-participant-clock/'+prefix,lambda:transition(b,state,participant_input),('error',4),state)
     if failures:
-        groups={}
-        for label,expected,actual in failures:groups[label.split('/')[0]]=groups.get(label.split('/')[0],0)+1
-        print('STATE/CLOCK MISMATCH GROUPS:',groups)
-    for row in failures[:12]:print('STATE/CLOCK MISMATCH:',row)
-    assert not failures,(len(failures),'state/clock precedence mismatches',failures[:4])
+        print('STATE/CLOCK MISMATCH COUNT:',len(failures))
+    assert not failures,(len(failures),'state/clock precedence mismatches')
 
 
 def main():
