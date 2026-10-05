@@ -100,7 +100,8 @@ internal static class CampaignCombatPositiveEntryCodec
             var items = value.EnumerateArray().ToArray();
             // Validate children before comparing keys, preserving malformed-before-canonical errors.
             foreach (var item in items) _ = Canonical(item, child);
-            if (child is "UnitKey" or "EndLocation" || child == "id" || Keys.ContainsKey(child))
+            // Routes preserve traversal order and revisits; identity collections remain sorted.
+            if (kind != "OrderedLocations" && (child is "UnitKey" or "EndLocation" || child == "id" || Keys.ContainsKey(child)))
                 Array.Sort(items, (a, b) => Compare(a, b, child));
             writer.WriteStartArray(); foreach (var item in items) Write(writer, item, child); writer.WriteEndArray(); return;
         }

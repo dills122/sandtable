@@ -295,6 +295,33 @@ public sealed class CombatPositiveEntryTests
         Assert.ThrowsAny<JsonException>(() => CampaignEventSerializer.Deserialize(Ascii(row.GetProperty("eventCanonicalUtf8")[0])));
         Assert.ThrowsAny<JsonException>(() => CampaignCreationSnapshotV12Codec.Deserialize(CampaignCombatPositiveEntry.Replay(source).CanonicalBytes, created, request));
     }
+    [Theory]
+    [InlineData("axis")]
+    [InlineData("commonwealth")]
+    public void ProofReadbackPreservesRouteOrderAndRevisitsBeforeAuthorityComparison(string side)
+    {
+        using var fixture = Fixture();
+        var row = Row(fixture, side);
+        var source = CampaignCombatPositiveEntryCodec.ReadSource(Ascii(row.GetProperty("sourceCanonicalUtf8")), Context());
+        foreach (var locations in new[] { new[] { "z", "a", "z" }, new[] { "z", "a" }, new[] { "a", "z", "a" } })
+        {
+            var proof = JsonNode.Parse(row.GetProperty("proofCanonicalUtf8")[2].GetString()!)!;
+            var route = new JsonArray(locations.Select(x => (JsonNode?)JsonValue.Create(x)).ToArray());
+            proof["entry"]!["tracks"] = new JsonArray(new JsonObject
+            {
+                ["unit"] = proof["candidate"]!["attacker"]!["unit"]!.DeepClone(),
+                ["route"] = route.DeepClone(),
+            });
+            // These routes have valid canonical syntax, but contradict the authentic idle history.
+            Reject(() => CampaignCombatPositiveEntryCodec.ReadProof(Encode(proof), source), 6);
+            using var routeDocument = JsonDocument.Parse(Encode(route));
+            Assert.Equal(Encode(route), CampaignCombatPositiveEntryCodec.Canonical(routeDocument.RootElement, "OrderedLocations"));
+        }
+        using var identities = JsonDocument.Parse("[\"z\",\"a\",\"z\"]");
+        Assert.Equal(Encoding.ASCII.GetBytes("[\"a\",\"z\",\"z\"]"),
+            CampaignCombatPositiveEntryCodec.Canonical(identities.RootElement, "id[]"));
+    }
+
     private static JsonObject ActualOpening(CampaignCombatCreationContext context, ulong seed, InitiativeOrderChoice choice, bool designated)
     {
         var request = CampaignCombatCreationRequest.Create("rules-lab.combat-creation.1", seed, context);
