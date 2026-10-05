@@ -22,10 +22,12 @@ current capability status and cross-package sequencing.
 Current checkpoint: public Rules9 authority and checked Runner evidence reach first-side Combat
 entry. Reviewed private Core work covers settlement, custody, round closure, Reserve Release,
 bounded released-I Movement and guarded repeat/finish. Native settled control preserves synthetic
-earlier Movement; two actual opening histories separately reach a supported candidate before
-selection. They do not yet consume actual selection or settled results. The reviewed
-[selection-bridge research](research/combat-actual-selection-bridge-feasibility.md) defines the next
-private contract direction, not a merged implementation. Public Combat activation, the authentic
+earlier Movement; two native actual opening histories separately reach a supported candidate before
+selection. The merged private [actual-selection executable contract](specs/combat-actual-selection-v1.md)
+consumes those histories to Force Assignment after defender decline, with seven fallback variants
+per owner to no-attack Reserve Release. It requires an independently supplied trusted input ledger;
+the native consumer and production actor/clock/store authentication remain gated. Actual round/result
+and repeat remain open. Public Combat activation, the authentic
 full cycle, Maproom, durable save/resume, hosted publication and model-backed play remain open.
 See the
 [status table](roadmap/pre-alpha-roadmap.md#current-delivery-status) and

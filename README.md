@@ -53,7 +53,7 @@ play a side; it will never decide the rules or secretly change the campaign stat
 | --- | --- | --- |
 | Deterministic Umpire | Working | Versioned rules, seeded randomness, canonical commands/events, replay, checkpoints, and side-safe action boundaries are implemented. |
 | Playable rule path | Working through Combat entry | Runner can execute Initiative, stage preamble, Reserve Designation, Movement, bounded ZOC/Reaction, and Breakdown, then stops before Combat adjudication. |
-| Combat and continual cycle | Private Core adapters; public activation pending | Reviewed internals cover settlement, Reserve Release, bounded released-I Movement and guarded repeat/finish. Native settled control retains synthetic earlier Movement. Two actual opening histories now reach a supported candidate before selection; they do not yet enter selection or results. Full-cycle proof and public Combat remain open. |
+| Combat and continual cycle | Private Core adapters; public activation pending | Reviewed internals cover settlement, Reserve Release, bounded released-I Movement and guarded repeat/finish. Native settled control retains synthetic earlier Movement. Two native opening histories reach a supported candidate before selection. A separate private actual-selection contract is executable through Force Assignment or no-attack Reserve Release; its native consumer and production input authentication remain gated. Actual round/result, full-cycle proof and public Combat remain open. |
 | Exercise and Maneuver tools | Working | Deterministic single runs, multi-run matrices, paired comparisons, strict readback, and evidence bundles are available from CLI. |
 | User interface | Not started | `site/` is project website only. Maproom hot-seat client is future work. |
 | Published scenario | Not started | First target is six-turn, Land-only *Graziani's Offensive* after working Combat loop. |
@@ -67,12 +67,12 @@ dormant Core tests; they are not yet exposed as playable actions.
 
 Next delivery sequence:
 
-1. Freeze and implement the private bridge from actual positive entry to selection, then join
-   actual round/result settlement and complete later-II/consumed Reserve lineage (remaining
-   Tasks017–019). The reviewed [bridge research](docs/research/combat-actual-selection-bridge-feasibility.md)
-   proposes a positive endpoint at Force Assignment after defender decline. That direction is
-   future contract/implementation work, not merged selection support. Existing synthetic settled
-   contexts do not prove that those paths are reachable from actual opening history.
+1. Implement the native consumer of the frozen private
+   [actual-selection contract](docs/specs/combat-actual-selection-v1.md), then join actual round/result
+   settlement and complete later-II/consumed Reserve lineage (remaining Tasks017–019). The contract
+   stops at Force Assignment after defender decline; it does not complete Force Assignment or
+   activate gameplay. Existing synthetic settled contexts do not prove that those paths are
+   reachable from actual opening history.
 2. Activate certified, side-safe public Combat actions (Tasks020–021), then prove Exercise/Runner
    replay and repeatability (Tasks022–024).
 3. Reconcile all 72 acceptance criteria and demonstrate the authentic continual cycle (Task025).
@@ -417,20 +417,26 @@ candidate before selection. Full source, receipts and Movement-end proof authent
 initial synthetic content-origin labels remain unchanged. C3a/Result2 consumption, repeat,
 public activation and parent017–019 completion remain separate gates.
 
+Task019F0 freezes the private [actual-selection executable contract](docs/specs/combat-actual-selection-v1.md)
+for those two original entry histories. Its positive path reaches Force Assignment after defender
+decline; seven fallback variants per owner reach Reserve Release without an attack. Replay requires
+an independently supplied trusted input ledger. Native execution and production actor/clock/store
+authentication remain open, as do actual round/result/repeat and public Combat activation.
+
 | Area | Executable today | Forward evidence / next gate |
 | --- | --- | --- |
 | Authority foundation | Versioned provenance, synthetic content, commands/events, deterministic randomness, replay, side-safe observations, and exact-audience legal actions for the admitted profile | Extend the same compatibility, recovery, and fog boundaries with each mechanic |
 | Preamble and Movement boundary | Initiative through Reserve Designation, bounded Movement, ZOC/Reaction, and Breakdown through first-side Combat entry | Positive scenario-specific obligations and broader vehicle/ZOC profiles remain gated |
-| Combat and continual cycle | Private Core adapters; public activation pending | Reviewed internals cover settlement, Reserve Release, bounded released-I Movement and guarded repeat/finish. Native settled control retains synthetic earlier Movement. Two actual opening histories now reach a supported candidate before selection; they do not yet enter selection or results. Full-cycle proof and public Combat remain open. |
+| Combat and continual cycle | Private Core adapters; public activation pending | Reviewed internals cover settlement, Reserve Release, bounded released-I Movement and guarded repeat/finish. Native settled control retains synthetic earlier Movement. Two native opening histories reach a supported candidate before selection. A separate private actual-selection contract is executable through Force Assignment or no-attack Reserve Release; its native consumer and production input authentication remain gated. Actual round/result, full-cycle proof and public Combat remain open. |
 | Working skeleton | Not reached | One authentic movement/contact/combat/release repeat-or-finish loop plus identical replay |
 | Playable MVP | Not started | Source-verified six-turn content/rules/victory, durable save/resume, hot-seat privacy, and minimal no-model Maproom |
 | Exercise Harness | Current bounded Exercise/Maneuver and paired descriptive comparisons | Add Combat actions and terminals only after public Core activation |
 
 The approved high-level path to a playable game is:
 
-1. Join actual positive entry to selection and settled results through bounded contracts and
-   private adapters, then activate public side-safe actions, retain strict Runner evidence, and
-   prove one authentic repeat-or-finish loop.
+1. Implement native actual selection from its frozen contract, then join actual round/result
+   settlement through bounded contracts and private adapters. Activate public side-safe actions,
+   retain strict Runner evidence, and prove one authentic repeat-or-finish loop.
 2. Freeze the exact six-turn scenario surface—rules, tables, content, sources, rights, termination,
    victory, and remaining decisions—before splitting later implementation tasks.
 3. Implement only that measured Land surface and source-verified `Graziani's Offensive` content.
