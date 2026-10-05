@@ -167,7 +167,7 @@ The following report is retained with wording unchanged and trailing whitespace 
 ## Findings
 
 **P2 — Preserve ordered routes when canonicalizing proof projections.**
-[CampaignCombatPositiveEntryCodec.cs:103](/Users/dsteele/.codex/worktrees/native-positive-entry/sandtable/src/Cna.Core/Campaigns/CampaignCombatPositiveEntryCodec.cs:103) sorts every array whose child type is `id`, including `OrderedLocations`. The inherited contract explicitly preserves route order and revisits.
+[CampaignCombatPositiveEntryCodec.cs:103](../../../src/Cna.Core/Campaigns/CampaignCombatPositiveEntryCodec.cs) sorts every array whose child type is `id`, including `OrderedLocations`. The inherited contract explicitly preserves route order and revisits.
 
 Reproduced against the pinned, already-built assemblies:
 
@@ -241,8 +241,8 @@ dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --no-build \
 
 Reviewer evidence:
 
-- [Focused log](/private/tmp/n3-review-focused.log), SHA256 `3dab43be7c21018daba44ac351ad28c85e862a19bff14b441b46a91c85f4de4d`
-- [Focused binlog](/private/tmp/n3-review-20261005-063915--64427--SjV1uz-dotnet-test.binlog), SHA256 `9418823d6418037d554e55cfa81b63c2cfa646009af3940c953c278e83929849`
+- Focused log (historical local artifact: `/private/tmp/n3-review-focused.log`), SHA256 `3dab43be7c21018daba44ac351ad28c85e862a19bff14b441b46a91c85f4de4d`
+- Focused binlog (historical local artifact: `/private/tmp/n3-review-20261005-063915--64427--SjV1uz-dotnet-test.binlog`), SHA256 `9418823d6418037d554e55cfa81b63c2cfa646009af3940c953c278e83929849`
 
 Additional checks:
 
@@ -251,7 +251,7 @@ Additional checks:
 - Source/test bytes match corrected checkpoint `b0a7308`.
 - All four source/project hashes and nine retained log/binlog hashes match the handoff.
 - Retained corrected `just check` records **2531 solution tests, Boundary81, zero failures/skips and zero build warnings/errors**, with clean restore/format.
-- Ordered-route scratch probe independently reproduced native008 versus oracle006. [Probe](/private/tmp/n3-review-probe/probe.cs), [proof input](/private/tmp/n3-review-probe/proof.json). Initial file-mode probe lacked its context fixture; the isolated project invocation supplied it and succeeded.
+- Ordered-route scratch probe independently reproduced native008 versus oracle006. Probe (historical local artifact: `/private/tmp/n3-review-probe/probe.cs`), proof input (historical local artifact: `/private/tmp/n3-review-probe/proof.json`). Initial file-mode probe lacked its context fixture; the isolated project invocation supplied it and succeeded.
 
 The full suite was not rerun. Seven predecessor passes and the separate eight-trace Breakdown supplement were inspected as retained evidence. The original Breakdown command remains **FAILED** on its pre-existing sequence-source pin; supplementary semantics do not turn it green.
 
@@ -334,7 +334,7 @@ Reviewed branch `codex/native-positive-entry`, base `84f1fac861cef7c8ffaf8f36dd7
 
 The five primary paths and minimal documentation changes match task019E1’s manifest. Full Request/Created11 and opening history authentication precede owner Movement completion `11→12`, System Breakdown completion `12→13`, and candidate certification. Actual Movement-end evidence, distinct receipts, prefixes, ownership, retries and unchanged World/resources/RNG are supported by source inspection and verification.
 
-The [codec correction](/Users/dsteele/.codex/worktrees/native-positive-entry/sandtable/src/Cna.Core/Campaigns/CampaignCombatPositiveEntryCodec.cs:103) preserves ordered routes and revisits while retaining identity sorting. Both-owner regressions now reach proof-mismatch error `006`, matching the unchanged oracle.
+The [codec correction](../../../src/Cna.Core/Campaigns/CampaignCombatPositiveEntryCodec.cs) preserves ordered routes and revisits while retaining identity sorting. Both-owner regressions now reach proof-mismatch error `006`, matching the unchanged oracle.
 
 No heavy pivot or scope expansion is warranted. Selection/result consumption, repeat, public activation and parent017–019 closure remain outside this implementation.
 
@@ -363,7 +363,7 @@ Preliminary ledger was recorded before reading the separate author packet. Dispa
 - Final retained source/project and evidence inventory: **17 hashes matched**.
 - Retained final `just check`: **2533 solution tests,81 Boundary tests, zero failures/skips, clean format and zero build warnings/errors**. Full suite was not rerun.
 
-Reviewer evidence: [focused log](/private/tmp/n3-pass2-focused-approved.log), [binlog](/private/tmp/n3-pass2-review-20261005-071544--11865--tOUQWp-dotnet-test.binlog).
+Reviewer evidence: focused log (historical local artifact: `/private/tmp/n3-pass2-focused-approved.log`), binlog (historical local artifact: `/private/tmp/n3-pass2-review-20261005-071544--11865--tOUQWp-dotnet-test.binlog`).
 
 **Residual risks and next actions**
 

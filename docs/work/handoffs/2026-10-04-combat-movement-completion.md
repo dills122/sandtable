@@ -99,7 +99,7 @@ Draft PR: [148 — Complete released-I Movement and expire its exception](https:
 base `main`, branch `codex/combat-movement-completion`. A following documentation-only metadata
 commit records this PR/head; resolve final branch head with `git rev-parse HEAD` or the PR.
 Publication used the explicitly requested
-[github-keychain-auth skill](/Users/dsteele/.ai-central/templates/skills/first-party/github-keychain-auth/SKILL.md),
+`github-keychain-auth` skill (installed locally),
 credential-dependent Git/gh outside sandbox and `env -u GH_TOKEN -u GITHUB_TOKEN` for gh.
 No credentials extracted and no PR merged. CI starts asynchronously; local gates above are final.
 Only untracked `.serena/` tooling remains outside the committed boundary; primary checkout and

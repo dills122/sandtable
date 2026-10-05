@@ -20,7 +20,7 @@ Verified target:
 
 The complete diff contains the expected eight Markdown paths. The retained coordinator checkpoints and main merge are present.
 
-The [session handoff](/Users/dsteele/.codex/worktrees/overnight-core-sync/sandtable/docs/work/handoffs/2026-10-05-overnight-session.md) reconciles the approved plan correctly:
+The [session handoff](../handoffs/2026-10-05-overnight-session.md) reconciles the approved plan correctly:
 
 - R1 narrowed conditional N2/N3 delivery to two actual seed1/Normal/ordinary NONE owner openings, ending at a supported candidate **before selection**.
 - N1 settled control preserves its synthetic earlier-history trust boundary.

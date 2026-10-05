@@ -121,5 +121,5 @@ Human authorization directly verified in coordinator turn `01a108e4-42ed-7720-90
 sub-chats, GPT-6.1 medium, TDD, independent review before PR, Keychain skill and handoff back for
 core sync. Latest human continuation `01a1090d-3b68-7e43-bb42-02f36acd9cf3` confirms merged work
 and continuing the workflow. Publication uses the explicitly requested
-[github-keychain-auth skill](/Users/dsteele/.ai-central/templates/skills/first-party/github-keychain-auth/SKILL.md)
+`github-keychain-auth` skill (installed locally)
 outside sandbox, unsetting GH_TOKEN/GITHUB_TOKEN for gh, without extracting credentials. No merge.

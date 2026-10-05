@@ -53,6 +53,15 @@ review and simulator reports apply only to their stated commits and capabilities
 | Skeleton closeout,025 | Reconcile all Combat ACs and remaining Contact/Engaged gaps, run the full gate, and demonstrate one authentic start-to-repeat-or-finish loop before declaring the working skeleton reached. |
 | MVP expansion | Inventory the exact six-turn scenario surface, then deliver source-verified content, remaining Land rules/victory, durable save/resume, hot-seat privacy, and minimal Maproom. Each milestone has an exit gate below; detailed task estimates wait for the measured inventory. |
 
+The [first-release audit](../research/2026-10-05-first-release-audit.md) checks this entire route
+against current runtime, tests, services, content and build configuration. It separates researched,
+contract-frozen, private native and public capabilities, and defines dependency packets
+`REL-AUD-01` through `12`. Those packets do not replace Combat task contracts. Complete scenario
+size and effort remain unknown until `MVP-GATE-01`; the audit uses observed session history for
+bounded estimates and makes no calendar or percentage-complete promise. Distribution additionally
+requires the proposed local packaging/support/rights gate `MVP-GATE-07` below. This delivery hygiene
+addition does not expand gameplay scope.
+
 The [current simulator checkpoint](../research/simulator-post-merge-checkin.md#combat-contract-branch-smoke-check)
 repeats the existing Truck study. Broader Combat seed/branch coverage belongs after022–024; dormant
 Core integration evidence is required earlier at E/G/H. Balance
@@ -188,7 +197,7 @@ Optional parser evidence gate
 | Foundations | Versioned provenance, content, world, commands/events, deterministic RNG, replay, observation, and action contracts | Implemented and activated for the admitted Rules9 synthetic profile | Extend compatibility, replay, and fog tests with each admitted mechanic |
 | Mandatory preamble | Current runtime contracts through Reserve Designation | Implemented and publicly exercised for the admitted no-obligation profile | Add only scenario-required positive obligation families |
 | Movement, Reaction, Breakdown | Frozen and implemented for the certified battalion/Truck profiles | Public actions and checked Runner evidence reach first-side Combat entry | Preserve regressions; broaden positive ZOC/vehicle cases only with an admitted profile |
-| Combat and continual cycle | Checkpoint B accepted; Initial H Core restore and dormant Tasks009–016 accepted; Task008 publication open | **Gameplay not activated**; settled empty Release, held-I predecessor and first positive Release implemented | Dormant017–019 → public020–021 → evidence022–024 → closeout025 |
+| Combat and continual cycle | Checkpoint B accepted; Initial H Core restore and dormant Tasks009–016 accepted; private actual-selection contract019F0 frozen; Task008 publication open | **Gameplay not activated**; bounded Release/Movement/repeat adapters, native settled control with synthetic earlier Movement, and two actual opening histories before selection | Native actual-selection consumption and remaining017–019 → public020–021 → evidence022–024 → closeout025 |
 | Working pre-alpha skeleton | Acceptance boundary defined | Not reached | One authentic movement/contact/combat/release repeat-or-finish loop with identical replay and Chronicle evidence |
 | Six-turn scenario and remaining Land rules | Milestone outcomes defined; exact exercised-rule/data inventory intentionally pending | Not started | Measure after the skeleton, freeze source/content scope, then split implementation-sized tasks |
 | Campaign lifecycle and Maproom | Architecture and no-model interaction direction reviewed | Not started | Stable playable authority, durable save/resume contracts, hot-seat isolation, and deterministic UI path |
@@ -213,7 +222,7 @@ future work.
 | 2 — Rules laboratory and legal-action boundary | Complete for the admitted synthetic path | Keep outward actions observation-derived and revalidate exact membership at submission |
 | 3 — Mandatory turn preamble | Complete for the admitted synthetic no-obligation path | Positive Organization/convoy/fleet cases remain explicit later-scenario work; subsequent bounded mechanics now reach first-side Combat entry |
 | 4 — Movement, Breakdown, and Reaction boundary | Complete within the certified synthetic profile | Movement and ZOC/Reaction are implemented; Breakdown Tasks006–007 public activation, Runner adoption and transcript/privacy follow-up are complete. Positive ZOC and broader Breakdown categories remain extensions |
-| 5 — Combat and continual-cycle loop | Dormant Core through Task016, isolated017A1/A2, empty settled017B Release and first positive017C Release; public Combat inactive | Complete017–024; close025 only after an authentic loop passes |
+| 5 — Combat and continual-cycle loop | Bounded private017–019 adapters through native positive entry019E1; actual-selection contract019F0 frozen; public Combat inactive | Consume actual selection, join authentic rounds/results and later lineage; complete017–024; close025 only after an authentic loop passes |
 | 6 — Scenario Group One content | Milestone-level; not started | Produce the exact exercised-rule/data/source/rights inventory after the skeleton, then split bounded content packets |
 | 7 — Remaining required Land systems | Milestone-level; not started | Implement only the measured six-turn surface, including termination/victory, with the same authority/replay/fog gates |
 | 8 — Minimal Maproom and campaign lifecycle | Milestone-level; not started | Add durable local save/resume and recovery before UI completion; prove hot-seat privacy and a complete no-model action path |
@@ -603,9 +612,9 @@ Continue the synthetic campaign from Naval Convoy, make the available preamble d
 Weather, Organization/stage-entry obligations, and Reserve in their separately gated capabilities,
 then stop at Movement with a replay-identical Chronicle. Task 3.3 independently stops at
 Organization; the implemented Task 3.4 explicit-empty checkpoint independently stops at Reserve;
-Task 3.5 reaches Movement. Sprint 4 is active: Movement Foundation is complete through merged
-`MOV-TASK-010` / PR #79, and ZOC/Reaction Core authority is activated through
-`ZOR-TASK-006C`.
+Task 3.5 reaches Movement. Sprint 4 subsequently completed the certified synthetic path through
+Movement, ZOC/Reaction and Breakdown to first-side Combat entry, with public Runner and transcript
+evidence. Sprint 5 remains active; later source-required preamble obligations remain scenario work.
 
 ## Sprint 4: Movement, Breakdown, and Reaction boundary
 
@@ -613,7 +622,7 @@ Task 3.5 reaches Movement. Sprint 4 is active: Movement Foundation is complete t
 boundaries without inventing the later Movement-Segment-start Contact or Close-Assault-result
 Engaged state.
 
-Sprint 4 is the active delivery sprint. Its first bounded package has an approved source inventory,
+Sprint 4 is complete for the certified synthetic profile. Its first bounded package has an approved source inventory,
 exact command/event/state contracts, and task-sized implementation plan in the Movement Foundation
 [research](../research/movement-foundation-spike.md),
 [specification](../specs/movement-foundation-v1.md), and
@@ -999,7 +1008,8 @@ ammunition, and Cohesion obligation before claiming the repeating skeleton is co
 The bounded designs specify Contact-derived opportunity identity, trusted-Umpire sealed choices,
 resolution and settlement ordering, and Reserve Release repeat/finish authority. The combined plan
 implements the accepted policy direction through staged tasks; task completion does not itself
-register production schema versions. Source work is complete and exact contract freeze remains open.
+register production schema versions. Initial contract checkpoint B is complete; later bounded
+contracts/native consumers and authentic full-cycle/public evidence retain separate open gates.
 Bounded simulator evidence ends at Truck Convoy entry with future obligations retained; full
 repeating-skeleton acceptance must still account for every required continuation dependency.
 
@@ -1019,10 +1029,13 @@ or model work.
 
 ## Post-skeleton milestones toward the first playable MVP
 
-The post-skeleton route is outcome-complete but intentionally not pre-split into speculative coding
-tasks. The first gate measures the actual six-turn surface; each later gate must then be decomposed
-into bounded tasks with owners, dependencies, source inputs, compatibility impact, and focused tests
-before implementation begins.
+The post-skeleton route defines complete release outcomes. The
+[first-release audit](../research/2026-10-05-first-release-audit.md#dependency-ordered-release-work)
+organizes them into dependency packets with acceptance, verification and qualified effort ranges.
+The first gate measures the actual six-turn surface; each later packet must then be decomposed
+into bounded implementation tasks with owners, source inputs, compatibility impact and focused
+tests before coding begins. Source/rights and packaging research may begin independently; that
+preparation does not complete the scenario inventory or activate gameplay.
 
 | Gate | Required output | Exit evidence | Blocks |
 | --- | --- | --- | --- |
@@ -1032,6 +1045,7 @@ before implementation begins.
 | `MVP-GATE-04` durable local lifecycle | Create, checkpoint, stop, resume, and recover without holding authoritative turns over remote/model I/O; new admission can be disabled without losing recovery | Process-restart recovery, atomic publication/failure tests, schema/version readback, operational diagnostics and documented recovery procedure | Playtest release |
 | `MVP-GATE-05` Maproom/hot-seat path | Two local seats can inspect side-safe state, compose/confirm a legal action without a model, submit it, hand off privately, and inspect Chronicle explanations | End-to-end accessibility path, stale-action rejection, storage/DOM/log privacy negatives, offline/no-model run | Complete MVP playthrough |
 | `MVP-GATE-06` playable MVP | Two complete six-turn games from clean setup, including save/resume, finish with correct victory and reproduce from seed/events | Independent setup/result cross-check, identical replay, fog/privacy gate, zero reachable unsupported mechanics, retained test/build/content hashes | MVP declaration |
+| `MVP-GATE-07` local release delivery | Approved distribution/rights/license posture, supported platform/runtime/browser matrix, versioned local package and launch/recovery instructions | CI-built package with exact hashes and notices; fresh-machine create/play/save/quit/resume smoke; documented save location, backup, historical compatibility and known limitations | First distributed playable release |
 
 Rollback before a public release means disabling new campaign admission while preserving read/replay
 and recovery for already-admitted versions. Any migration that changes historical bytes, source

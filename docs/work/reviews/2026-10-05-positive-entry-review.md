@@ -6,7 +6,7 @@ Review instance: **N2 set1/pass1, total1 of9; maximum3 per set.**
 
 No implementation findings. One unresolved acceptance gate:
 
-The unchanged Breakdown oracle fails at [check_fixture](/Users/dsteele/.codex/worktrees/66db/sandtable/docs/specs/verify-combat-inherited-breakdown-completion-v1.py:290), before running semantic checks. I independently reproduced the identical failure at reviewed HEAD and in a freshly extracted exact baseline archive.
+The unchanged Breakdown oracle fails at [check_fixture](../../specs/verify-combat-inherited-breakdown-completion-v1.py), before running semantic checks. I independently reproduced the identical failure at reviewed HEAD and in a freshly extracted exact baseline archive.
 
 Evidence supports stale verification metadata:
 
@@ -17,7 +17,7 @@ Evidence supports stale verification metadata:
 
 Those supplementary checks establish useful behavioral evidence. They **do not turn the original oracle into a pass**. No pins were changed or checks patched.
 
-Smallest next action: coordinator explicitly records disposition of this baseline failure, as required by the [plan](/Users/dsteele/.codex/worktrees/66db/sandtable/docs/design/combat-cycle-implementation-plan.md:2029). Evidence supports accepting it as a pre-existing limitation for this bounded contract change.
+Smallest next action: coordinator explicitly records disposition of this baseline failure, as required by the [plan](../../design/combat-cycle-implementation-plan.md). Evidence supports accepting it as a pre-existing limitation for this bounded contract change.
 
 ### Plan Review
 

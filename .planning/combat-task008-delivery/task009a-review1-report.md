@@ -2,7 +2,7 @@ Review instance: **1 of 3**. **Verdict: Ready with non-blocking follow-ups.**
 
 **Findings**
 
-**P2 — Participant reader reverses required validation order.** [CampaignCombatIdentityCodec.cs:28](/Users/dsteele/repos/sandtable/src/Cna.Core/Campaigns/CampaignCombatIdentityCodec.cs:28) checks JSON syntax and bounds, then binds trusted World before checking Participant shape and canonical spelling. [Selection-v1 contract:77](/Users/dsteele/repos/sandtable/docs/specs/combat-selection-steps-v1.md:77) explicitly requires shape/bounds → canonical spelling → trusted-state semantics.
+**P2 — Participant reader reverses required validation order.** [CampaignCombatIdentityCodec.cs:28](../../src/Cna.Core/Campaigns/CampaignCombatIdentityCodec.cs) checks JSON syntax and bounds, then binds trusted World before checking Participant shape and canonical spelling. [Selection-v1 contract:77](../../docs/specs/combat-selection-steps-v1.md) explicitly requires shape/bounds → canonical spelling → trusted-state semantics.
 
 For `null`, missing fields, duplicate properties, or trailing whitespace, binding runs before malformed Participant bytes reject. With foreign unit context, provenance failure masks malformed-input failure. Invalid bytes still cannot be accepted; impact is validation-order conformance and unnecessary trusted-state work.
 
@@ -12,7 +12,7 @@ No P0/P1 findings. No authority bypass, unsupported-history-to-empty conversion,
 
 **Plan review**
 
-Implementation matches [canonical009 refinement](/Users/dsteele/repos/sandtable/docs/design/combat-cycle-implementation-plan.md:862):
+Implementation matches [canonical009 refinement](../../docs/design/combat-cycle-implementation-plan.md):
 
 - Admission starts with retained Created11 and complete replay, then requires completed G2, exact cycle/position, six/seven moves, and supported CP12/14 predicates.
 - Assessment derives Weather, adjacency, locations, CP and ceilings from replayed state and certified Content.

@@ -28,16 +28,16 @@ Independence limitation: bootstrap-designated `execution.md` and canonical plan 
 
 No actionable defects found.
 
-- **Trust boundary:** [Restore](/Users/dsteele/repos/sandtable/src/Cna.Core/Campaigns/CampaignCombatInheritedSnapshotV12Codec.cs:13) checks root bounds, requires independently retained creation, captures owned history, invokes `CampaignCombatCreationCut.Decide`, rejects publication, replays history, then compares entire canonical root. This enforces commitment to supplied trusted history rather than merely self-consistent snapshot hashes.
-- **Root composition:** [Compose](/Users/dsteele/repos/sandtable/src/Cna.Core/Campaigns/CampaignCombatInheritedSnapshotV12Codec.cs:28) starts with C2 creation root, verifies configuration/creation bindings, identity, receipt versions/event hashes and Chronicle prefix, then updates fields without changing root order.
+- **Trust boundary:** [Restore](../../src/Cna.Core/Campaigns/CampaignCombatInheritedSnapshotV12Codec.cs) checks root bounds, requires independently retained creation, captures owned history, invokes `CampaignCombatCreationCut.Decide`, rejects publication, replays history, then compares entire canonical root. This enforces commitment to supplied trusted history rather than merely self-consistent snapshot hashes.
+- **Root composition:** [Compose](../../src/Cna.Core/Campaigns/CampaignCombatInheritedSnapshotV12Codec.cs) starts with C2 creation root, verifies configuration/creation bindings, identity, receipt versions/event hashes and Chronicle prefix, then updates fields without changing root order.
 - **Causal state:** Mapping preserves Reserve membership, inherited cycle evidence, actual versus suspended positions, closed-stop continuation and resolved inactive Reaction windows. Idle/default handling carries explicit absence checks.
 - **Compatibility:** Creation-only codec and inspected predecessor/router files remain unchanged. New tests require exact C2 creation bytes and rejection of noninitial roots by creation-only reader.
-- **Bounds:** [ValidateBounds](/Users/dsteele/repos/sandtable/src/Cna.Core/Campaigns/CampaignCombatInheritedSnapshotV12Codec.cs:107) applies one-MiB, depth32 and ordinary-array512 limits. Array4096 exception follows actual root `world.cohesionCauses` structure; dotted or empty property names cannot acquire exception.
-- **Tests:** [CombatInheritedSnapshotTests](/Users/dsteele/repos/sandtable/tests/Cna.Core.Tests/Campaigns/CombatInheritedSnapshotTests.cs:12) exercises actual retained transcripts, exact frozen bytes, disabled admission at every selected cut, lawful foreign forks, shorter heads, malformed histories, recomputed Weather forgery, causal-field loss and defensive ownership. Expected root bytes come from frozen fixtures rather than implementation-generated expectations.
+- **Bounds:** [ValidateBounds](../../src/Cna.Core/Campaigns/CampaignCombatInheritedSnapshotV12Codec.cs) applies one-MiB, depth32 and ordinary-array512 limits. Array4096 exception follows actual root `world.cohesionCauses` structure; dotted or empty property names cannot acquire exception.
+- **Tests:** [CombatInheritedSnapshotTests](../../tests/Cna.Core.Tests/Campaigns/CombatInheritedSnapshotTests.cs) exercises actual retained transcripts, exact frozen bytes, disabled admission at every selected cut, lawful foreign forks, shorter heads, malformed histories, recomputed Weather forgery, causal-field loss and defensive ownership. Expected root bytes come from frozen fixtures rather than implementation-generated expectations.
 
 **Plan review**
 
-[H4 and Initial H requirements](/Users/dsteele/repos/sandtable/docs/design/combat-cycle-implementation-plan.md:822) align with implementation:
+[H4 and Initial H requirements](../../docs/design/combat-cycle-implementation-plan.md) align with implementation:
 
 - H1–H3 causal routing precedes H4 composition and restore.
 - Five primary-file boundary maintained.

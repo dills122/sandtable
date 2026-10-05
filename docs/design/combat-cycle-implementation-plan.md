@@ -315,7 +315,7 @@ equal waiting-side observations before/after an opposing private seal, but the s
 trusted time3500 accepts with high-water3000 and cancels/rejects with high-water4000. Both seal
 orders reproduce this against frozen authority. Accepted POL-004 requires regression fallback;
 POL-006 and PRO-AC-010 require equal semantic outcomes. No explicit regression exception exists.
-The [blocked candidate](../specs/combat-side-projection-v1.md#known-blocker-private-seal-changes-clock-regression-outcome)
+The [blocked candidate](../specs/combat-side-projection-v1.md#clock-correction-and-preserved-historical-counterexample)
 and [failing diagnostic](../../.planning/2026-09-14-overnight-combat-wave-01/evidence/clock-high-water-counterexample.py)
 retain the conflict. A1 is not accepted;004A/004/checkpoint B remain open and005 has not begun.
 Focused candidate vectors and repository gate pass, but cannot override this failing privacy

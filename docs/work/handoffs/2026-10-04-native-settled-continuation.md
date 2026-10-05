@@ -126,5 +126,5 @@ positive campaign-history/ordinary repeat/later-II/consumed admission stays sepa
 Draft PR150 published using configured Keychain credential. Human authorization directly verified in coordinator
 turn01a108e4-42ed-7720-90a7-bb8406e1a2f5: GPT-6.1 medium child chats, TDD, independent review,
 PR using Keychain skill and handoff back. Latest turn01a10930 confirms merged and ready.
-Use [github-keychain-auth](/Users/dsteele/.ai-central/templates/skills/first-party/github-keychain-auth/SKILL.md)
+Use `github-keychain-auth` skill (installed locally)
 outside sandbox, env -u GH_TOKEN -u GITHUB_TOKEN for gh; no credential extraction. No merge authorized.

@@ -6,9 +6,9 @@ Review instance: **S3 set1/pass2, total2of9**, maximum3sets×3. Reviewed branch 
 
 **[P2] Validate active state before the clock for completion commands.**
 
-[Transition line199](/Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/docs/specs/verify-combat-actual-selection-v1.py:199) validates the clock for `complete-step` and `close-empty-selection` before their active-state checks at lines210/243, including the required defender-decline check at line246.
+[Transition line199](../../specs/verify-combat-actual-selection-v1.py) validates the clock for `complete-step` and `close-empty-selection` before their active-state checks at lines210/243, including the required defender-decline check at line246.
 
-The [frozen specification](/Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/docs/specs/combat-actual-selection-v1.md:135) requires active-state error `006` before clock error `005`.
+The [frozen specification](../../specs/combat-actual-selection-v1.md) requires active-state error `006` before clock error `005`.
 
 Reproduced through `apply`, using fully replayed histories for **both owners**:
 

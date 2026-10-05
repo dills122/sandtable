@@ -31,66 +31,27 @@ contract. Any tactical map, Chronicle feed, or legal-action surface shown by the
 clearly labeled as a concept or current rules-laboratory example. Maproom must later consume typed,
 side-safe application contracts and remain subordinate to the Umpire.
 
-## Current local simulation harness
+## Local simulation harness
 
-The repository now includes an in-process `Cna.ExerciseRunner` that is separate from the
-intelligence/services plane. Each checked-in **Exercise** creates a fresh opaque
-`Cna.Core.Exercises` session, queries and submits through the shared legal-action execution path,
-stops at its exact declared boundary, and verifies both Core reconstruction and a second
-fresh-session re-adjudication. The certified Organization successor stops at Operation Stage 1 Organization;
-the Stage Entry profile accepts nine actions and reaches Reserve, and the Reserve Designation
-profile accepts 12 actions and reaches first-side Movement. The runner records normalized
-inputs, Git/build identity,
-seed ledger, accepted actions, canonical events, snapshots, checks, proofs, summaries, and optional
-diagnostics in a manifest-last `trusted-authority` bundle. Compact, forensic, and debug detail tiers
-are operational: forensic adds correlated query/controller/submission/check/proof evidence,
-including progressively assembled failed-decision context, and payload sizing; debug retains every
-available noncanonical operation/phase timing on failure plus a structured artifact-finalization
-trace after mandatory reader validation. Separate checked exploratory and clean-baseline fixtures
-exercise the two build-identity policies.
+`Cna.ExerciseRunner` is an in-process developer harness, separate from AppHost and Intelligence.
+An Exercise creates a fresh opaque Core session, queries and submits legal actions, stops at its
+manifest boundary, and checks reconstruction plus fresh-session re-adjudication. Maneuvers run an
+ordered serial collection of Exercises; paired profiles compare two isolated controller runs.
 
-The checked Exercise and serial-unpaired Maneuver profiles use manifest v2, with unpaired report
-scheme `sandtable.maneuver-report.v1`; the optional paired path uses
-`sandtable.paired-maneuver-manifest.v1` and
-`sandtable.paired-maneuver-report.v1`. Current successors use controller-configuration v2,
-Ruleset 9, Snapshot 11, World 6 and strict `trusted-authority` evidence admission. Fourteen checked
-`.breakdown.v1` successors preserve the admitted Organization/Reserve, controller matrix and paired
-comparison roles. Their original fixture bytes remain historical and fail current admission.
+Bundles retain normalized inputs, build/Git identity, seed ledger, accepted actions, canonical
+history, checkpoints and proofs. They are trusted local authority artifacts, not side-safe player
+exports. Manifest-last finalization and strict readback must succeed before the CLI claims success.
+Deterministic fingerprints exclude timings and local paths. Compact, forensic and debug tiers add
+increasing diagnostic detail without changing replay equality.
 
-The checked two-child **Maneuver** fixtures define strict canonical `serial-unpaired` parent manifests.
-The Stage Entry fixture runs both admitted setups to Reserve; the Reserve Designation fixture runs
-both through Movement. A checked six-child controller matrix crosses `act-first`/`act-last` with
-Reserve `none`/`one`/`all` with two independent non-cohort battalions per side. The Movement
-successor preserves these distinct Reserve choices and includes route stops and zero-roll System
-resolutions. A separate thirteen-child Reaction successor uses separated battalion reactors for
-ordered episodes, two-step movement, subset closure, active System closure and recurrence. The two
-historical positive-ZOC children remain outside the public profile. Only the
-parent supplies the root seed; each ordered child receives an explicit Maneuver
-ID and ordinal identity and runs synchronously through the same no-console post-admission
-coordinator. The aggregate path opens each completed child bundle once, semantically validates its
-retained evidence and re-adjudication proof, and checks the seed-ledger identity before counting it.
-One canonical report reconciles every child state and hashes only deterministic material; elapsed
-time, throughput, local paths, and artifact-manifest hashes remain separate diagnostics. Report
-creation is transactional and a strict readback must succeed before the CLI claims completion.
+Paired evidence describes divergence and count/outcome deltas. It does not establish causality,
+statistical significance, balance or synchronized trajectories after divergence. Baseline identity
+fails closed on an unclean checkout; exploratory profiles record that limitation explicitly.
 
-Optional `serial-paired` fixtures run baseline then candidate in separate fresh Exercise sessions.
-The Reserve-policy pair exercises descriptive divergence at Reserve; the Movement-cost pair
-compares stable-route and lowest-public-cost selection on admitted unladen Trucks, retaining exact
-CP costs, BP accounting and stop-resolution evidence.
-Pair admission and aggregation require identical declared initial conditions, campaign
-creation inputs, complete initial role/domain seed ledgers, build cohort, and canonical initial
-snapshot while keeping controller configuration identities separate. The parent report recomputes
-the first accepted-action divergence and descriptive count/outcome deltas during strict readback.
-It makes no causal, statistical-significance, gameplay-balance, recommendation, or
-synchronized-post-divergence claim; trajectories and random consumption may diverge after the
-first differing choice.
-
-This harness is local developer instrumentation only. It is not registered in AppHost, performs no
-model or remote I/O, cannot attach to a production campaign, and does not implement side-safe
-exports, model controllers, parallel/distributed scheduling, or War College orchestration. The
-governing contracts and closed v1 delivery plan are in
-[Exercise Harness v1](docs/specs/exercise-harness-v1.md) and its
-[technical design](docs/design/exercise-harness-v1.md).
+See the [runbook](docs/runbooks/exercise-runner.md),
+[specification](docs/specs/exercise-harness-v1.md), and
+[design](docs/design/exercise-harness-v1.md) for exact contracts and retained profiles. Public Rules9
+still stops at first-side Combat entry. Private Combat tests/contracts do not activate that path.
 
 ## Proposed intelligence/services architecture
 
@@ -385,7 +346,7 @@ It may receive a fog-of-war-safe view. It should never have access to the opposi
 
 The game should treat the intelligence backend as an **untrusted strategic adviser**.
 
-## gRPC behavior I would standardize immediately
+## gRPC integration rules
 
 ### Reuse channels
 
@@ -490,7 +451,7 @@ Model workers / external providers
 
 The same protobuf contract works in all three modes.
 
-## “Other backend stuff” should be divided into modules
+## Backend module boundaries
 
 I would avoid turning the intelligence gateway into a general dumping ground. Think in terms of three service areas:
 
@@ -536,7 +497,7 @@ You do not need five separately deployed microservices initially. Split them onl
 
 The model process probably should remain a separate process from the start because it has very different memory, lifecycle, and hardware requirements.
 
-## I would expose different protocols in different directions
+## Protocol boundaries
 
 ```text
 Browser / desktop UI
@@ -556,7 +517,7 @@ ASP.NET Core can expose gRPC-Web or JSON-transcoded gRPC endpoints when browser 
 
 ## The practical initial version
 
-I would start with:
+The target initial integration uses:
 
 ```text
 Cna.Core
@@ -598,7 +559,7 @@ The scripted implementation is not merely an emergency hack. It is:
 - The comparison point for model evaluations
 - The mode used when a player disables AI services
 
-So yes: **gRPC to a shared backend is exactly the right direction**, provided the shared backend selects and explains strategy rather than owning or resolving the game. The cleanest description is:
+The shared backend selects and explains strategy while Core resolves the game:
 
 > Orleans hosts authoritative campaigns. The deterministic core resolves the game. A gRPC intelligence gateway provides optional strategic judgment, persona, narration, memory, and model abstraction. Every response returns as a versioned proposal that the game validates before execution.
 
@@ -636,760 +597,41 @@ The immutable Land sequence catalog retains its most recently requested turn to 
 positions during replay. This single-entry cache contains only rules data; campaign state, actor
 resolution, and replay validation remain outside it. Concurrent misses may rebuild the catalog.
 
-The initial `Cna.Core` implementation makes that boundary executable. `Cna.Core.Rules` defines
-source-cited normalized artifacts, complete adopted-ruling metadata, a canonical `cna-1979.1`
-manifest derived from the Land sequence, Initiative Ratings, and deterministic-random artifacts,
-and the Land-only sequence hierarchy from the original rules. Sequence positions expose actor roles
-rather than a fixed first player: the initiative holder remains distinct from the side that later
-chooses to act first or last in each Operation Stage. `Cna.Core.Setups` binds campaign creation to
-recognized, provenance-bearing fixtures, while `Cna.Core.Randomness` owns the versioned SHA-256
-counter stream consumed by authoritative rules. `Cna.Core.Campaigns` uses pure command decisions
-and immutable events to create a campaign against the canonical manifest, resolve predetermined or
-contested Initiative Determination, explicitly resolve the two admitted no-obligation Naval Convoy
-checkpoints, record the pair-keyed Operation Stage 1 first/second actor order, resolve deterministic
-Weather, resolve the four admitted empty Organization/Naval Convoy Arrival/Fleet obligations through
-distinct commands and events, designate zero or more first-side Reserve I elements, complete the
-Reserve decision, execute zero or more supported first-side non-contact moves, and complete
-Movement to the Breakdown Determination checkpoint. It validates
-internal snapshots before adjudication and recomputes events during projection rather than trusting
-caller-supplied outcomes or provenance. Canonical snapshot and event serialization plus the
-internal replay harness prove reconstruction of accepted campaign history without ambient
-timestamps or generated identifiers.
+## Project responsibilities and current boundaries
 
-The current projector is a trusted-history contract, not an untrusted ingestion boundary. Before
-Chronicle events can arrive from persistence, transport, or another process, that boundary must
-authenticate event provenance. The projector already validates the complete contiguous creation
-and every implemented preamble transition; persistence and transport remain outside this slice.
+| Project | Responsibility and current boundary |
+| --- | --- |
+| `Cna.Core` | Pure deterministic rules, authority, content/setup validation, RNG, events, replay, observations and legal actions |
+| `Cna.ExerciseRunner` | Fresh local Exercises, serial Maneuvers, controller policies and trusted evidence |
+| `Cna.OrleansHost` | Orleans development host scaffold; no live campaign grain or production clustering provider |
+| `Cna.DecisionWorker` | Discovered gRPC client scaffold; no live campaign dispatcher or fallback executor |
+| `Cna.Intelligence.Contracts` | Versioned protobuf and generated transport contracts |
+| `Cna.Intelligence.Gateway` | Provider-status and gRPC scaffold; decision/narrative return `Unavailable` |
+| `Cna.ServiceDefaults` | Discovery, resilience, health and telemetry defaults |
+| `Cna.AppHost` | Local Aspire orchestration of the three service scaffolds |
+| `site/` | Project website; future Maproom remains a separate player application |
 
-Copyrighted source scans and original component art remain outside the repository unless explicit
-permission is recorded. Sandtable uses normalized, provenance-bearing rule data and original
-visuals. See the [source-material spike](docs/research/cna-source-material-spike.md) and
-[pre-alpha roadmap](docs/roadmap/pre-alpha-roadmap.md) for evidence, scope, and decision gates.
+The canonical intelligence wire contract is
+[`intelligence.proto`](src/Cna.Intelligence.Contracts/Protos/intelligence.proto). Example interfaces
+and deployment diagrams above describe the target integration, not registered live implementations.
 
-The implemented Initiative Determination slice resolves the first random authoritative mechanic
-through a versioned repository-owned stream and stops at Naval Convoy. Its
-[specification](docs/specs/initiative-determination.md),
-[technical design](docs/design/initiative-determination.md), and
-[research packet](docs/research/initiative-determination-spike.md) define the source correction,
-contracts, replay invariants, implementation checkpoints, and verification boundary.
+Core keeps immutable Rules, Setups and Content separate from mutable Campaign World. Campaigns own
+command decisions/events and reconstruction; Observations own audience-specific projection and
+strict readback; Actions own current typed candidates, submission revalidation and receipts;
+Exercises own fresh local capabilities and retained evidence. Raw authority and replay are not
+player mutation seams. A public campaign handle is opaque; opposing state is disclosed only through
+versioned allowlists, never by serializing full snapshots.
 
-The implemented static-data boundary is Content Pack v1. `Cna.Core.Content` owns immutable
-versioned topology, formation/element structure, scenario deployment declarations, per-datum
-origins, validation, and an independent canonical content hash. Rules remain the authority for
-side, terrain, edge, organization, and derived table meanings; campaigns own exact content binding
-and mutable world state; player observations remain a separate redacted contract.
-Printed coordinates are audit metadata and explicit edges are adjacency authority. The first pack
-is an original nine-hex nonhistorical rules laboratory using the same path intended for future
-source-derived content. Exact catalog lookup requires both pack ID and hash and never substitutes a
-default; presentation labels remain outside authoritative equality and bytes.
-
-The current Campaign World capability uses world snapshot contract 6 and records exact
-ruleset, setup, content, and scenario identities; resolves immutable content before an authoritative
-grain turn; and projects mutable element locations, per-element Reserve status, exact
-Operation-Stage expenditure/Cohesion/Movement-ended state, exact component TOE provenance, and
-opaque map-representation bindings into campaign history. The Umpire performs no network or
-persistence I/O, and replay requires the same exact content plus the matching executable rules
-manifest. The [Campaign World specification](docs/specs/campaign-world-v1.md) and
-[technical design](docs/design/campaign-world-v1.md) retain the original version-3 campaign /
-world-v1 and schema-2 setup delivery as historical context; their current-evolution notes point to
-the later Reserve and Movement clean cuts. Weather Determination v1 established explicit opening-preamble and
-Weather policies plus pair-keyed actor-order/Weather history. Reserve Designation's coordinated
-identity lane first advanced authority to snapshot contract 7, creation contract 6, ruleset
-manifest contract 5, world snapshot contract 2, setup schema 5, and Content Pack schema 2 while
-preserving resident exact-content context internally. Operation-Stage Entry still admits only the
-four exact empty obligations; Reserve Designation accepts only current owner candidates and advances
-through one exact completion event to Movement. The Movement foundation plus approved
-Breakdown-continuity clean cut first advanced the ruleset to contract 7, snapshot to contract 9,
-Campaign World to contract 4, creation event to contract 8, and Content Pack to schema 4 / canonical
-format v3. ZOC/Reaction activation established Ruleset 8, Snapshot 10, Campaign World 5,
-creation event 9 and Content Pack schema 5 / canonical format v4. Breakdown activation advances
-the complete active set to Ruleset 9, Snapshot 11, World 6, creation event 10, Setup/Content 6
-and sequence/catalog 4; old readers remain explicit historical contracts. Dormant Combat Content7
-adds strict schema7 / `sandtable.content-json.v6` admission for one certified six-hex infantry
-scenario. Its internal catalog validates exact component, Morale, Ammo/readiness, provenance and
-retreat-supply facts without changing active Content6 lookup or advertising Combat actions.
-No generic sequence bypass exists.
-See the Content Pack v1
-[research](docs/research/content-pack-v1-spike.md),
-[specification](docs/specs/content-pack-v1.md), and
-[technical design](docs/design/content-pack-v1.md).
-
-The implemented Campaign Observation boundary lives in `Cna.Core.Observations`. Contract 7 accepts only
-a fully admitted Campaign World snapshot, its already-resolved exact content context, and a defined
-viewer side. A pure projector then copies a closed allowlist of public campaign/turn/topology facts,
-the current source-free Weather summary, exact own mobility/operational ledger/Reserve status and
-approved vehicle-risk continuity into dedicated source-free values. Opponents appear only as
-opaque representation ID, apparent location, and side-safe apparent ZOC state;
-real bindings and force facts remain absent. Canonical output has an exact compact UTF-8 writer and
-strict non-authoritative reader. It remains derived query data, never trusted history or command
-authority. The Umpire still adjudicates from complete authoritative truth. Future adapters must
-authorize the viewer and preserve the same allowlist rather than map authority into the current
-free-form Intelligence observation strings. See the Campaign Observation
-v1 [research](docs/research/observation-and-fog-boundary-spike.md),
-[specification](docs/specs/campaign-observation-v1.md), and
-[technical design](docs/design/campaign-observation-v1.md).
-
-Legal Actions v1 lives in `Cna.Core.Actions` and is the only public campaign-mutation path after
-creation. System actions resolve Initiative, each admitted empty convoy checkpoint, Weather, and
-each of the four admitted empty stage-entry obligations separately.
-At Operation Stage 1 Initiative Declaration, an observation-only generator gives the holder exactly
-`act-first` and `act-last`; the opponent and system receive empty sets. Submission binds campaign,
-state version, position, audience, and deterministic action ID, then re-derives exact-audience
-membership before translating to an internal mechanic command. Success returns a scalar receipt and
-successor opaque `CampaignAuthorityHandle`, never authority state. Fleet Repair completion reaches
-Reserve with authoritative `ActiveSide` unset; observation and legal-action projection derive the
-audience from the recorded actor order. The resolved first side now receives one subject-bound
-candidate for each own `None` element plus explicit completion; opaque submissions map to closed
-Reserve commands, and accepted mutations emit exact replayable designation/completion events.
-`Cna.DecisionWorker` has no Core reference.
-`Cna.OrleansHost` owns campaign hosting, while `Cna.ExerciseRunner` is the separate trusted local
-instrumentation consumer; neither receives a public raw replay or projection mutation seam. See the
-[research](docs/research/turn-preamble-action-boundary-spike.md),
-[specification](docs/specs/legal-actions-v1.md), and
-[technical design](docs/design/legal-actions-v1.md).
-
-The isolated [HOST-RSH-001 probe](docs/research/orleans-publication-feasibility.md) exercised Rules9
-publication and same-process Orleans reactivation using the trusted Exercise seam. It recommends
-an atomic event/receipt/journal-head batch with derived checkpoints; production contracts, provider
-choice and a trusted event-history restore adapter remain unapproved and unimplemented.
-
-The proposed, not-yet-implemented Player Intent Composer keeps future complex Maproom decisions
-prompt-forward without making them prompt-only. Contextual suggested approaches, short language,
-map/list interaction, and structured controls edit one private typed draft; deterministic validation
-may surface at most two automatic clarification questions before explicit intent confirmation.
-Deterministic Staff planning and a separate final legal-action confirmation preserve the existing
-Command → Staff → Umpire hierarchy. An optional local parser such as Needle can only populate draft
-fields and remains gated behind a no-model prototype and corpus evaluation. See the retained
-[research](docs/research/player-intent-input-and-needle-feasibility.md), proposed
-[specification](docs/specs/player-intent-composer-v1.md), and
-[technical design](docs/design/player-intent-composer-v1.md).
-Roadmap placement is explicit: select the representative decision after the Sprint 5 combat
-skeleton, run the no-model interaction prototype before Sprint 8, integrate the deterministic slice
-with Minimal Maproom, and evaluate any parser only after the deterministic MVP path works.
-
-The implemented Exercise Harness v1 is trusted local developer
-instrumentation for deterministic, freshly created campaign runs. Its Exercise path keeps the
-Umpire authoritative through an opaque Exercise-only Core capability that shares the existing
-creation and legal-action execution primitives; the runner owns orchestration, transactional
-artifacts, diagnostics, and reports but no rules or state mutation. The checked Exercises retain
-the original Organization and Reserve checkpoints and now exercise Reserve Designation through
-first-side Movement, prove event-history reconstruction and
-fresh-session re-adjudication separately, and fail closed for replay, invariant, build-identity, or
-artifact faults. Trusted bundle readback extracts snapshot coordinates only after the Core-owned
-complete snapshot/world decoder accepts the canonical bytes, including for expected replay-failure
-profiles. A Maneuver adds strict parent admission, explicit child identity, synchronous
-coordination, one-read semantic aggregation, and a deterministic fingerprinted report without
-changing that authority boundary. The separate optional serial-paired contract adds isolated,
-sequential baseline/candidate arms with strict equal-initial-evidence validation and a descriptive
-first-divergence report. V1 bundles and reports are `trusted-authority`; side-safe exports, full
-victory runs, model controllers, and parallel/distributed execution remain explicitly deferred.
-See the retained
-[controller-matrix evidence](docs/research/simulator-controller-matrix.md),
-[Movement trajectory evidence](docs/research/simulator-movement-trajectories.md),
-[Movement cost-sensitivity evidence](docs/research/simulator-movement-cost-sensitivity.md),
-[capability/replay research](docs/research/exercise-capability-and-replay-spike.md),
-[artifact research](docs/research/exercise-evidence-artifact-spike.md),
-[reproducibility research](docs/research/exercise-reproducibility-and-pairing-spike.md), governing
-[specification](docs/specs/exercise-harness-v1.md), and
-[technical design](docs/design/exercise-harness-v1.md). The implemented Operation-Stage Entry
-package retains its [research](docs/research/operation-stage-entry-spike.md),
-[specification](docs/specs/operation-stage-entry-v1.md), and
-[technical design](docs/design/operation-stage-entry-v1.md). Reserve Designation is now an
-implemented authoritative-engine package. Its [research](docs/research/reserve-designation-spike.md),
-[specification](docs/specs/reserve-designation-v1.md), and
-[technical design](docs/design/reserve-designation-v1.md) define an incremental, subject-bearing
-legal-action flow, per-element Reserve I authority, owner-only projection, replay events, bounded
-multi-event checkpoint validation, and checked harness proof through Movement. Implementation
-includes the rules artifact, world/snapshot and owner-observation contracts, subject-bearing
-candidates, command mapping, exact designation/completion events, strict finite Reserve/Movement
-validation, and standalone plus two-setup replay evidence. Public observation-derived non-contact
-Movement membership, exact submission mapping, adjudication, completion to Breakdown
-Determination, replay, and checked Harness adoption are complete through merged `MOV-TASK-010` / PR
-#79. The next authority package is the approved ZOC/Reaction
-[specification](docs/specs/zoc-reaction-v1.md) and
-[technical design](docs/design/zoc-reaction-v1.md). `ZOR-TASK-002A`-`005` complete the dormant
-Rules/Content/fixture and Campaign state/replay gates: direct-only World 5/creation 9, Snapshot 10,
-and `ElementMoved` v2 now retain current-TOE provenance, scoped Movement-ended truth, the nullable
-Reaction window, strict canonical readback, and reconstruction-before-projection replay. The
-direct-only Observation 6 successor additionally freezes the new side-safe policy, a canonical
-source-unmapped apparent enemy-controlled-location aggregate, a closed normal/phasing/reacting
-decision state, exact owner-visible Movement-ended membership, and a separate redacted projected-
-history shape. Reacting output now publishes closed move-option/cost capabilities instead of raw
-element Movement/ledger/stacking fingerprints; semantic admission rejects identity-bearing owner
-rows, forged capability/state opportunity handles, edge-incoherent route/hexside costs, and
-observer/active-side decision relabeling. The versioned disclosure manifest plus mandatory boundary
-gate registers the exact outward
-surface. The action seam adds topology-local ordinary Movement and Reaction candidate membership,
-strict current readback, canonical identities, and typed mappings. `ZOR-TASK-006C` activates
-Ruleset 8, Land sequence contract/catalog 3, Content schema 5, World 5, Snapshot 10,
-CampaignCreated 9, `ElementMoved` 2, Observation 6, and its side-safe policy together. Successor
-authority reconstructs atomic
-move/window truth, frozen local opportunities, topology-local Movement-ended state, and exact
-reason-specific window closure/resumption with unchanged committed World/random truth.
-`ZOR-TASK-006B` adds replay-complete participant selection, one-or-more-step active movement using
-shared CP/provenance authority, and explicit completion. Public creation, observation, submission,
-checkpoint, serialization, and replay now use successor authority. `ZOR-TASK-007A` adds explicit
-bounded Runner policies using only public action IDs/kinds and accepted episode/window counts.
-Movement completion reconstructs directly from Snapshot 10, preserving both sides' accepted
-Reaction costs instead of invoking predecessor validation that forbids non-phasing movement.
-The historical Rules 8 fifteen-child Reaction Maneuver covered ordering, bounded episodes, closure, repeat triggers,
-adjacent/remote selection, ZOC variants, and exact final costs. Runner strict event readers admit
-all Reaction events; bundle readback independently re-adjudicates the retained submissions.
-Package closeout verification and independent review are tracked in
-[Reaction evidence](docs/research/simulator-reaction-trajectories.md).
-The completed owner-approved engine package is the Movement Foundation
-[research](docs/research/movement-foundation-spike.md),
-[specification](docs/specs/movement-foundation-v1.md), and
-[technical design](docs/design/movement-foundation-v1.md). It keeps representation truth inside
-the Umpire, adds a minimum side-safe apparent-presence contract before outward Movement legality,
-normalizes exact CP/terrain/stacking rules, accepts repeatable non-contact moves, and stops at the
-existing Breakdown Determination boundary. Its source/ruling lock and `MOV-TASK-002` exact
-Capability Point, mobility-vocabulary, normalized-table, canonical-artifact, and ruleset-identity
-work are complete. Content schema 4 / canonical format v3 now assigns and validates one
-rules-owned mobility ID plus the supported optional vehicle cohort per element. Snapshot v9/world
-v4 and creation event v8 now record exact
-Operation-Stage Cohesion/expenditure plus opaque one-to-one internal representation bindings.
-Task 006 adds dormant typed `MoveElementAction` and `CompleteMovementSegmentAction` output values,
-deterministic SHA-256 identities, pure observation-only derivation, and strict non-authoritative
-readback for canonical legal-action sets, submissions, and receipts. Its move cost is an exact
-explanatory value: destination terrain ID/cost; a nullable route adjustment with route ID,
-`override` or `scale-underlying` behavior, and exact amount; ordered hexside additions with
-feature ID, `either`, `up`, or `down` direction, and exact added cost; and one coherent exact total.
-Candidate, submission, and receipt contracts remain version 1 and the action-set envelope remains
-version 2. Task 007 adds the internal `MoveElement` command and canonical `ElementMoved` event,
-authoritative cost/provenance recalculation, single-event engine dispatch, atomic element,
-representation, and ledger projection, strict event readback, and deterministic multi-event
-replay. Task 008 adds the `CompleteMovementSegment` command and canonical
-`MovementSegmentCompleted` event, strict codec/projection/replay support, exact completion to the
-first-side Breakdown Determination checkpoint, and atomic public move-plus-completion membership.
-Submission revalidates exact current observation-derived membership before either command executes;
-no Breakdown campaign action was public at that historical milestone. The
-[Sprint 4-5 research-gate audit](docs/research/sprint-4-5-research-gates.md) makes
-`BREAKDOWN-001` explicit: minimum Breakdown Point continuity is recorded now, sequential d6 form
-the `11`-`66` coordinate, and Sandstorm eligibility uses Table 21.38's share of accumulated BP.
-`MOV-TASK-004B` implements the exact Rules/Content/World seam and passed the repository gate plus
-two fresh-context review instances. `MOV-TASK-005` projects the approved own mobility, ledger,
-Cohesion, and BP/cohort-risk facts plus the minimum opaque apparent-opponent shape.
-`MOV-TASK-006` freezes the dormant action-contract cut. `MOV-TASK-007` implements the internal
-non-contact command/event/adjudication vertical while keeping public membership dormant;
-`MOV-TASK-008` exposes the complete observation-derived move-and-completion vertical through the
-public boundary. `MOV-TASK-009` is merged in PR #78 and adopts that path in checked
-Exercise/Maneuver evidence. A post-adoption paired instrument demonstrates deterministic route-cost
-sensitivity without adding Umpire rules or making a gameplay recommendation.
-
-The [ZOC/Reaction spike](docs/research/contact-reaction-zoc-spike.md) and accepted
-[CONTACT-001 ruling lock](docs/research/contact-reaction-zoc-source-ruling-lock.md) separate
-immediate enemy-ZOC entry and the interrupting Reaction window from Contact and Engaged. Immediate
-entry creates neither relationship: Contact is derived from enemy-ZOC presence at the beginning of
-a Movement Segment, while Engaged is a Close Assault result; both remain Sprint 5 contract work. The
-[Combat-cycle inventory](docs/research/combat-cycle-source-inventory.md) permits source/table
-normalization and contract work after the completed bounded Breakdown and ZOC/Reaction boundaries. The
-first bounded follow-up, [Combat rules and result surface](docs/research/combat-rules-result-surface-spike.md),
-completed `CMB-RSH-001` by normalizing the admitted combat-table/result surface; it is research
-evidence, not an implemented combat contract. Current proposals use trusted-Umpire sealed choices,
-the same pre-state for simultaneous combat, and structural sequence positions plus cycle identity;
-dormant selected Rules and explicit-dice arithmetic are implemented in
-[CombatSelectedRules](src/Cna.Core/Rules/CombatSelectedRules.cs) and
-[Cna1979CombatAdjudication](src/Cna.Core/Rules/Cna1979CombatAdjudication.cs). They preserve exact
-source metadata, immutable collections and role-specific loss/capture rounding. Campaign state,
-RNG consumption and public registration remain later work. The
-[Content7 codec](src/Cna.Core/Content/ContentPackV7Serializer.cs) admits only the certified
-synthetic Combat profile, preserves canonical construction identity, and rejects all frozen
-shape/identity/provenance/profile/seed mutations before any future world creation. Its catalog is
-internal; Task007 owns copying validated seeds into authoritative state. The
-[RulesInput1 codec](src/Cna.Core/Rules/CombatRulesInputArtifactCodec.cs) normalizes typed set arrays
-and accepts only exact approved canonical bytes on readback. It reproduces the existing30,395-byte
-artifact and frozen hash, including all source/amendment/policy metadata. Artifact creation leaves
-Rules9 registration unchanged. The [policy register](docs/design/combat-cycle-policy-reconciliation.md)
-now records owner-approved policies, and the [combined plan](docs/design/combat-cycle-implementation-plan.md)
-records parent003 completion and accepted004A1/A2/A3a/A3b side contracts. The
-[round-v2 clock contract](docs/specs/combat-sealed-round-v2.md) uses an immutable public opening
-floor: private seal timestamps remain audit evidence and cannot alter opposing admission.
-[Side projections](docs/specs/combat-side-projection-v1.md) authenticate corrected profiles and
-retain exact historical vectors. The [settlement-v2 contract](docs/specs/combat-result-settlement-v2.md)
-opens mandatory windows independently; prior accepted times remain audit evidence. Settlement
-projection and the [native cycle-finish bridge](docs/specs/combat-result-cycle-finish-v1.md) are
-accepted. The bridge retains World, RNG and future obligations through empty Reserve Release to
-same-slot Truck Convoy. Version3 side profiles now expose authenticated own Reserve facts and
-bounded inherited release/control choices with binary cycle action identities. All 28 historical terminal
-projections and continuous corrected bridge histories now complete bounded CON-005 evidence.
-The [private Exercise occurrence contract](docs/specs/combat-exercise-occurrence-v1.md) authenticates
-134 source histories and 2576 checkpoint cuts, retaining full World, RNG and typed control state.
-Source occurrence and active occurrence remain separate across repeat/finish. The
-[private child-evidence contract](docs/specs/combat-exercise-child-evidence-v1.md) now binds native
-provenance, current build identity, actual transitions, separate reconstruction/re-adjudication
-and explicit failure observations. The [parent-evidence contract](docs/specs/combat-exercise-parent-evidence-v1.md)
-validates each child before deriving counts or comparing authenticated action streams. Missing and
-invalid children provide no derived results; valid failed children retain failed status. The [integrated outward index](docs/specs/combat-outward-composition-v1.md) closes
-contract checkpoint B with all72 AC mappings and bounded readback evidence. The [cycle-control contract](docs/specs/combat-cycle-control-v1.md)
-binds release completion, semantic progress, current-cost witnesses and exact repeat/finish successors.
-Its Movement-expiry projection retains exclusions and release history. The
-[armed-continuation proof](docs/specs/combat-inherited-armed-continuation-v1.md) now admits both
-actual released-I ammunition10 profiles against the existing full-result contract stack without
-emitting authority. Guarded repeat and inherited authority composition are now retained in the
-[28-trace Task003 handoff](docs/specs/combat-authority-composition-v1.md); outward contracts and
-Exercise evidence now close004/checkpoint B. Dormant Task005 supplies selected arithmetic and strict artifact integration.
-Dormant Task006 admits the certified Content7 scenario; Task007 constructs typed Combat World7
-initial elements with exact component, ammunition, readiness and ledger provenance. World7 retains
-distinct custody/guard/replacement obligations and checked infantry spending/guard-transfer values
-without registering gameplay transitions. Task008 owns canonical snapshot/history codec and strict
-restore, so these typed values alone are not replay authority.
-Task008 A1c adds dormant creation request and Created11 binding: trusted Rules10, Setup7,
-Content7 and configuration determine canonical request bytes; domain-separated request digest
-seeds World7 creation before event serialization. Created11 readback requires a separately retained
-request. Pure retry selection validates retained bytes before checking fresh admission; atomic
-publication and Snapshot12 recovery remain separate gates.
-Task008 A2 adds creation-only Snapshot12 projection/readback from separately trusted request and
-exact validated Created11 bytes. A private evidence copy binds receipt/event hash and the framed
-Chronicle creation prefix; every current field is reconstructed and compared with canonical bytes.
-Noninitial values reject instead of resetting state. Recovery is independent of fresh-admission
-selection, and later causal readers remain required.
-Task008 B1 reconstructs four opening transitions from trusted creation and retained canonical events.
-Private PreambleState1 carries derived receipts, order and Chronicle prefix through Weather entry;
-exact retries retain original event bytes while returning current replay state. Fixed first-turn
-Axis context remains dormant. Weather C precedes stage-entry B2; neither is synthesized by B1.
-Task008 C extends accepted opening history with one Weather event. Existing Rules and seeded RNG
-derive the outcome; exact replay retains all weather kinds, five receipts and the advanced cursor.
-Axis remains determining side under either initiative order. Explicit absence of immediate-effect
-subjects permits zero effect counts; World stays unchanged through Organization entry.
-Task008 B2 reconstructs four explicit-none stage-entry events from accepted Weather history.
-All four policy gates are checked before predecessor replay. Weather, World, holder, order and RNG
-remain unchanged; nine chronological receipts reach Reserve entry. Fleet positions retain Commonwealth
-ActiveSide while final first-acting-side Reserve position remains null until its later owner resolves it.
-Task008 D1 derives first-side Reserve ownership from accepted stage history, permits one own original
-infantry designation from none to I, and binds its actual receipt into member history. A bounded
-World writer validates the typed history-derived mutation; the initial-only World reader stays strict.
-Task008 D2 reconstructs that full history before deriving canonical completion2 bytes and ordinal-1
-cycle identity. Its evidence retains the actual predecessor; it does not publish a terminal state.
-Task019A applies that same event atomically to private terminal ReserveState1, extending prefix and
-receipt ledger once. Full retained history reconstitutes each cut; exact retries return original event
-with current state, including designation retries after completion.
-Task008 E1 consumes that completed history for Normal-Weather ordinary infantry Move4. Existing pure
-terrain/spending kernels derive Clear2 costs, ordinary CPA10/ceiling15 and immediate excess-CP Cohesion
-causes bound to actual move receipts. Each move updates typed World, own spent CP, ordered route and
-actual progress together; legacy route identity persists across revisits. Bounded World serialization
-replays causal moves before accepting current fields. E2/G1 now consumes that actual moving route through owner stop, System empty-cohort resolution and
-owner Movement completion. Stop captures exact cycle/position, resolution restores it, and completion
-records every original unit's location plus own distance-based exclusions in an actual receipt-bound
-Movement-end proof. World, spending, causal DP and material-progress references stay unchanged.
-G2 consumes all three actual lifecycle records before System completion enters Combat Position
-Determination. It preserves World, RNG and Movement-end proof, carries predecessor Breakdown sources,
-and appends a distinct Breakdown receipt without material progress. Combat actions remain dormant.
-Task008 F1 branches from actual first ordinary Move4, then commits the return move opening one
-opposing Reaction opportunity. It derives adjacency before eligibility, retains persisted window/
-opportunity identities and the suspended symbolic Movement position, and carries the same phasing
-route through Reacting/ResumeRoute flow. New bounded types support Move4 without weakening legacy
-materialized-position guards; current World serialization rederives and checks actual history.
-F2 continues actual trigger history through reactor movement, participant completion, explicit empty
-stop resolution and no-eligible closure. Commands bind public handles derived from complete current
-move options; those handles differ from persisted authority IDs. Only reactor movement adds material
-progress. Closure resumes the exact suspended phasing route after resolution, preserving RNG.
-F3 adds direct owner decline and reason-specific System unavailable/timeout from the actual inactive
-F1 window. One close resumes the phasing route without a reactor stop or changes to World/resources;
-F4 active-participant fallback closes the window into a reason-specific `ReactorStopClosed`,
-then requires System empty-stop resolution before resuming that same phasing route. No fallback
-event changes World resources or material progress; Core introduces no clock or scheduler.
-F5 derives the second reactor move from actual F2 first-move history. It rotates the public
-opportunity handle over the sole rear-to-supply option, charges CP2→4, extends the existing track,
-and preserves reactor route identity and suspended phasing continuation. Its own history-derived
-World guard rejects unsupported typed fields before bounded serialization. The Reaction window
-remains active; F6 owns subsequent completion, mandatory stop resolution and closure.
-F6 implements those three distinct events from actual second-move authority. Completion binds an
-empty move inventory and records the retained route; System resolution returns inactive Reaction,
-then System closure resumes the phasing route. All three preserve World, tracks, progress and RNG.
-Retries authenticate against each command's owner/System role before returning retained effects.
-The accepted [H0 inherited Snapshot12 contract](docs/specs/combat-inherited-snapshot-v1.md) defines368selected retained cuts.
-It preserves the nineteen-field root and creation bytes while adding typed Reserve/inherited-cycle
-state slots. Full roots derive from trusted creation and complete causal history; identical histories
-must yield identical bytes across family interfaces. H1–H4 now provide runtime routing and disabled-admission restore for these selected cuts;
-contract vectors alone were not treated as proof of those behaviors.
-H1 pre-cycle routing is implemented and reviewed. `CampaignCombatRetainedHistory` captures one bounded
-owned Created11/event transcript; `CampaignCombatHistoryReplay` derives fixed causal partitions and
-invokes accepted readers through atomic first opening. Reserve membership is materialized already at
-stage-entry's terminal cut. Typed projections and exact retained buffers remain distinct from a
-persisted full-root snapshot. H2 extends the same retained stream through ordinary Movement,
-mandatory stop/resolution/completion and Breakdown completion. H3 extends routing through
-Reaction trigger, participant, direct closure, fallback and second-move forks using existing strict
-readers. Accepted H4 adds a separate inherited Snapshot12 codec that derives the nineteen-field root
-from this replay and verifies supplied bytes against retained history. Its restore path uses the
-existing creation-admission policy; creation-only readback remains strict. Exact368root vectors
-and disabled-admission restore pass for all286selected histories. Initial H Core codec/replay gate
-is complete; later authority families must extend this evidence.
-Task009A adds dormant inherited admission assessment over actual completed G2 history. It
-binds original unit/component identity separately from current representation and location, and
-writes the existing inherited AdmissionBoundary for the four supported empty-candidate histories.
-Positive certification and opportunity-v2 mechanics remain009B; selection and sealed-round
-admission remain010–011. These internal values create no public actions or new events.
-Creation publication evaluation now targets an expected-head per-campaign commit batch. The
-[HOST-PUB-001 evidence allocation](docs/specs/combat-authority-envelope-v1.md#runtime-evidence-ownership)
-keeps actual atomic uniqueness, commit ambiguity and process-recovery proof open until provider
-tests run at the production-host gate; Core creation codecs do not provide those guarantees.
-The [inherited successor packet](docs/specs/combat-inherited-successors-v1.md) declares20 exact
-event successors and freezes isolated Reserve completion with atomic cycle1 opening. Actual
-creation-to-first-opening provenance is now composed within the closed initial-infantry profile;
-008A–H/019A keep first opening ahead of composed restore.
-The [opening preamble contract](docs/specs/combat-opening-preamble-v1.md) now derives versions2–5
-and the Weather-entry prefix from validated Created11 and four accepted events. It preserves
-World/RNG and separates Initiative holder from declared first side. The
-[Weather contract](docs/specs/combat-weather-v1.md) consumes that chain and preserves the accepted
-Weather table, conditional location die and rejection-sampled cursor through Organization entry.
-Its explicit no-subject policy keeps World unchanged. The [stage-entry contract](docs/specs/combat-stage-entry-v1.md)
-consumes that complete history and four explicit Setup7 no-obligation gates through Reserve entry,
-preserving Weather, RNG, World and nine receipts. The terminal position retains null activeSide and
-first-acting-side role; the accepted order supplies the next actor. The
-[Reserve designation contract](docs/specs/combat-reserve-designation-v1.md) derives actual designation
-receipts and atomically opens ordinal1 through the unchanged completion2 wire shape. Empty/I
-selection reaches state11/12 with10/11 receipts; the Movement position retains null activeSide,
-while cycle authority resolves the acting side. [Movement preparation](docs/design/combat-inherited-movement-preparation.md)
-maps inherited fields and remaining replay obligations. The
-[inherited Movement contract](docs/specs/combat-inherited-movement-v1.md) now derives `element-moved`4
-from that opening in the normal-Weather ordinary-infantry profile. It preserves all26 inherited
-fields while binding actual input/cycle/receipt/prefix evidence; cumulative CP and excess-CPA DP
-update with element/representation locations, an active route and accepted progress references.
-No stop occurs at CPA10 under the successor ordinary15 ceiling. Reaction adjacency, positive
-Reserve and vehicle behavior remain separate capability gates. The
-[inherited route lifecycle](docs/specs/combat-inherited-movement-lifecycle-v1.md) now derives owner
-stop2, System empty-cohort resolution2 and owner Movement-completion3 from that actual history.
-The generic Breakdown interrupt carries exact suspended cycle/Movement context; resolution restores
-Movement before completion reaches Breakdown Determination. First ordinal1 end proof binds final
-locations, distance-based exclusions and the new completion receipt without a synthetic prior proof.
-World, RNG, members and material progress persist.
-[Inherited Breakdown completion](docs/specs/combat-inherited-breakdown-completion-v1.md) now derives
-one System event2 into first Combat Position Determination with predecessor position sources,
-exact stage1 action identity and retained Movement-end proof/progress. Existing synthetic C3a
-boundary assumptions cannot admit this moved World or CP12/14 state unchanged. The
-[inherited selection packet](docs/specs/combat-inherited-selection-v1.md) now admits that exact state,
-derives zero candidates from explicit adjacency/CP/Weather facts, and records System segment opening
-plus no-selection closure without a decision or structural advance. The
-[inherited no-attack packet](docs/specs/combat-inherited-no-attack-v1.md) then records six exact
-System step completions to same-slot Reserve Release. It preserves nested selection/World/RNG bytes,
-performs no release or state reset, and infers no armed capability.
-The [inherited Reaction trigger](docs/specs/combat-inherited-reaction-trigger-v1.md) follows the
-separate actual one-move prefix, returns to the assault origin, freezes one eligible opponent and
-enters Reaction while suspending the same phasing route.
-The [inherited Reaction lifecycle](docs/specs/combat-inherited-reaction-lifecycle-v1.md) consumes that
-exact window, retains the still-legal post-move capability in the rotated participant handle, then
-chooses completion. Empty-cohort stop resolution remains a required event before no-eligible closure
-removes the window and resumes the suspended phasing route. Wider participant/closure profiles remain separate.
-The [inherited direct Reaction closure](docs/specs/combat-inherited-reaction-closure-v1.md) instead
-forks each exact trigger into owner decline or System unavailable/timeout. All three close the sole
-unresolved opportunity and resume the same route without World/RNG/progress effects; host timing is
-still outside Core authority.
-The [inherited active Reaction fallback](docs/specs/combat-inherited-reaction-active-fallback-v1.md)
-starts from each exact post-first-move participant state. System unavailable/timeout closes the
-window into a reason-specific `ReactorStopClosed`; mandatory empty-stop resolution then resumes the
-retained phasing route without World/RNG/progress effects. Core still owns no fallback scheduler.
-The [inherited active Reaction second move](docs/specs/combat-inherited-reaction-second-move-v1.md)
-forks from that same active state and reuses `ReactingElementMovedV2` semantics: current reactor
-route advances in place, cumulative CP and derived track advance once, while frozen opportunity,
-active authority and suspended phasing continuation remain exact for later completion.
-The [inherited Reaction movement completion](docs/specs/combat-inherited-reaction-movement-completion-v1.md)
-consumes each exact second-move terminal. Reacting owner explicitly completes the now-optionless
-participant; System resolves its empty `reaction-completed` stop and closes the exhausted window
-before restoring the byte-identical suspended phasing route. CP4 World/track/progress and RNG remain
-unchanged across this three-event tail.
-[Inherited Reserve cycle entry](docs/specs/combat-inherited-reserve-cycle-v1.md) retains a real
-Reserve-I designation through an idle first cycle to same-slot Reserve Release. The
-[inherited Reserve Release contract](docs/specs/combat-inherited-reserve-release-v1.md) then records
-owner release-I, completion, material progress, and the pending ordinal-2 Movement exception from
-that creation-rooted history. The
-[inherited armed-continuation contract](docs/specs/combat-inherited-armed-continuation-v1.md) proves
-one exact next-cycle candidate for either owner while retaining ammunition10, TOE10, CP0, release
-history and full-result support pins. The
-[inherited guarded cycle-control contract](docs/specs/combat-inherited-cycle-control-v1.md) composes
-that candidate with exact Release state: owner repeat enters ordinal-2 Movement in the same slot,
-while owner or deterministic fallback finish enters Truck Convoy and expires the pending exception.
-The [inherited released-I Movement contract](docs/specs/combat-inherited-reserve-movement-v1.md)
-then records one ordinal-2 Clear move at CP0→2 under ceiling10, retaining armed resources and the
-pending exception. The
-[inherited released-I Movement-completion contract](docs/specs/combat-inherited-reserve-movement-completion-v1.md)
-then closes that exact route through deliberate stop, empty resolution and accepted completion,
-derives its ordinal-2 proof, and expires the exception with the completion receipt. Broader
-multiple-opportunity Reaction and vehicle families, full Snapshot composition, and all runtime/public activation remain
-later gates.
-These private projections are not Snapshot12 readers.
-All five `CONTACT-001` rulings and the governing specification/design package are approved.
-`ZOR-TASK-002A`-`006C` implement and activate Rules/Content/fixture, Campaign
-World/creation/snapshot/event-replay, Observation 6/policy/history, topology-local
-action/readback/mapping seams, the user-space declassification manifest/transcript gate, internal
-trigger/ZOC adjudication, window closure/resumption, and participant episodes. `007A` adds bounded
-Runner adoption and checked fixtures; `007B` completes strict Reaction evidence, matching clean-run
-fingerprints, full repository verification, and independent review.
-The accepted [Breakdown specification](docs/specs/breakdown-adjudication-v1.md) and
-[wire freeze](docs/specs/breakdown-wire-contract-v1.md) define shared BP accounting, finite stop
-continuations, deterministic checks and persistent lots. Owner accepted `BRK-DEC-004`–`007`;
-`BRK-TASK-001` is complete and [Task 002 dormant outcome Rules](docs/research/breakdown-outcome-rules.md)
-are implemented with a passing full gate; independent review is Ready.
-[Task 003 campaign contracts and the certified Truck fixture](docs/research/breakdown-campaign-contracts.md)
-established Content 6, Setup 6, World 6, Snapshot 11, Created 10 and sequence/catalog 4
-under Ruleset 9. [Task 004](docs/research/breakdown-move-accounting.md) adds shared
-BP accounting and rederived ordinary/Reaction move events. [Task 005](docs/research/breakdown-stop-adjudication.md) adds
-stop/check authority, explicit Reaction continuation and exact RNG replay through first-side Combat entry.
-[Task 006](docs/research/breakdown-public-activation.md) activates these contracts together with
-Observation 7, projected history 2, legal-action policy 3 and disclosure manifest 2. Public pending
-stops admit one System action; both players receive generic waiting. Current checkpoint admission
-recomputes retained Initiative/Weather/preamble evidence; full replay separately verifies historical
-transitions. Runner event admission shares Core's strict decoder, and bounded move controllers stop
-an open route before selecting another element. Current queries end at unsupported first-side Combat.
-The certified Truck/battalion profile defers public positive ZOC and motorized-infantry losses;
-original checked Runner fixture bytes stay historical. Task 007 implements ten additional certified
-Content packs and eleven setups: non-cohort battalion matrices with predetermined/contested initiative,
-separated Reaction paths, a last-CP trigger, Truck-only costs, a single-working-point Truck and
-Truck-mover adjacency to an opposing combat battalion.
-The exact capability set includes `land.breakdown-cohorts` if and only if a static cohort exists;
-zero-cohort packs retain the same profile, formation and stacking restrictions.
-
-The additional `act-first-reserve-all-move-each-once-by-lowest-cost-then-complete` policy supports
-the Truck cost pair. `act-first-reserve-all-repeat-highest-cost-stops-then-complete` repeatedly
-selects a highest-cost legal move and explicitly stops each route, allowing the single current
-System resolution before selecting another move. Each remains bounded by the admitted step limit
-and Core's CP/survivor membership. Neither policy computes losses or bypasses authority.
-[Task 007 closeout](docs/research/breakdown-runner-closeout.md) tracks checked successor and strict
-bundle evidence, a passing full gate and two matching clean runs. [Review 5](docs/reviews/brk-followup-review-5.md) accepts BRK-AC-009
-current-version audience transcript/progress evidence, completing bounded Tasks 006–007.
-Follow-up verification passes 1,670 tests and 81 boundary cases; status-only review follow-up is corrected.
-The implemented paired comparison does not block that engine work.
+Task019F0's private actual-selection executable contract merged in PR #161. It requires a separately
+trusted input ledger and reaches Force Assignment after defender decline, or no-attack Reserve
+Release. Its native consumer and production input authentication remain pending. Private settled
+controls still retain synthetic earlier Movement; none of this proves public Combat or the authentic
+continual cycle. The [roadmap](docs/roadmap/pre-alpha-roadmap.md) owns detailed sequencing, and the
+[first-release audit](docs/research/2026-10-05-first-release-audit.md) owns release gap measurements.
+The [historical ledger](docs/research/2026-10-05-project-documentation-snapshot.md) preserves former
+checkpoint evidence without making it current runtime truth.
 
 [1]: https://learn.microsoft.com/en-us/dotnet/orleans/grains/external-tasks-and-grains "External tasks and grains - .NET | Microsoft Learn"
 [2]: https://learn.microsoft.com/en-us/aspnet/core/grpc/performance?view=aspnetcore-10.0 "Performance best practices with gRPC | Microsoft Learn"
 [3]: https://learn.microsoft.com/en-us/aspnet/core/grpc/deadlines-cancellation?view=aspnetcore-10.0 "Reliable gRPC services with deadlines and cancellation | Microsoft Learn"
 [4]: https://learn.microsoft.com/en-us/aspnet/core/grpc/json-transcoding?view=aspnetcore-10.0 "gRPC JSON transcoding in ASP.NET Core gRPC apps | Microsoft Learn"
-
-Task009B implements a separate trusted-facts predicate for the frozen initial C3a infantry
-profile. It checks every reachable selected result and retreat/custody support before producing
-a provisional Candidate. The actual inherited G2 admission remains empty. Candidate serialization
-and the pure opportunity-v2 digest bind values;010/011 retain responsibility for authenticated
-selection/decline/Base2 and final opportunity admission. No costs, RNG or events publish here.
-
-Task010A extends actual retained G2 histories with empty selection and six no-attack steps.
-Selection and traversal each reconstruct complete predecessor evidence; cached Controls cannot
-authorize events. Arrival at same-slot Reserve Release preserves World/RNG and releases nothing.
-Timed C3a controls and generic routing are separate010B/010C gates; new Snapshot12 persistence
-is not implied by fragment readback.
-
-Task010B implements the dormant C3a timed selection and RBA mechanism over an independently
-trusted Boundary and separately authenticated input history. Replay compares every event with
-that trusted tuple; event payloads cannot supply their own actor or clock authority. The exact
-retained C2 creation profile remains pinned. Selection and RBA deadlines retain the historical
-high-water policy, while later Round2 uses its separately versioned public opening floor.
-Exact Command retries check actor separately and recover original bytes; stale timer callbacks
-are no-ops, and cancelled paths perform no attack or resource mutation. Positive continuation
-stops at Force Assignment pending Task011. This verified dormant mechanism supplies
-no actual positive-history adapter, public action, durable publication or extended Snapshot12.
-
-Task010C extends generic retained-history replay through actual empty selection and no-attack
-traversal. Successor admission receives an exact completed G2 prefix, so recursive predecessor
-validation terminates before the successor tail. Closed typed projections expose cumulative owned
-receipts without changing local Control bytes. Every trailing event is consumed or rejected;
-synthetic timed C3a events remain outside this actual-history route. Snapshot12 explicitly rejects
-new projections until a separately specified root extension exists.
-
-Task011 implements dormant Round2 private seals over a separately authenticated C3a predecessor
-and separately trusted round inputs. Supplemental configuration binds the public opening-floor
-clock policy without rewriting original Config1. Both slots retain role order; an opponent seal
-cannot raise the opening floor or alter the waiting owner's admission outcome. Exact retries
-recover retained bytes before clock/status gates, while malformed own proposals reject before
-cancellation. Prepared continues through Force Assignment and empty Anti-Armor; cancellation
-closes without costs or RNG. Atomic commitment remains Task012. This mechanism does not supply
-positive campaign provenance, public observation, host publication or a new Snapshot12 family.
-
-Task012 adds dormant atomic Round2 commitment at Prepared Close Assault entry. Both role costs
-(CP5/3 and ammunition10 each), directional attack history and segment target use enter one
-immutable result with one event/head update; RNG and structural position remain unchanged.
-Original Base2 retains pre-use eligibility, while current typed World records paid balances.
-Exact retries recover original bytes after ammunition reaches zero without recharging. Core
-candidate discard/replay demonstrates local atomicity; durable host publication remains separate.
-Result, mandatory settlement and Close Assault completion remain later gates.
-
-Task013 adds dormant Result2 resolution over an independently replayed paid Round2 commitment.
-The result retains every consumed RNG byte, including rejected values, and eight ordered dice
-plus a capture die only when required. One immutable candidate carries result, final cursor,
-pending settlement World and event/head update. Both roles use paid pre-loss facts; resolution
-applies no further resource debit or consequence. A named Result2 settlement factory derives
-hashed identities while preserving legacy constructor checks. Its named grammar profile allows
-semantic Route arrays without changing C3a syntax. Exact retries recover the original result;
-overflow or discarded publication leaves retained authority unchanged. This is Core candidate
-atomicity; host durability, actual positive campaign history and settlement remain later gates.
-
-Task014 extends dormant Result2 through mandatory retreat disposition, simultaneous losses and
-retreat settlement. Required retreat opens an independent owner window under original Config1;
-local deadline and high-water govern that window while a separate maximum records audit time.
-Losses and captures use both original paid participants, then project typed World consequences
-and pending custody lots at their pre-loss origin. Actual evacuation updates element and
-representation together, permits mandatory CP beyond ten with incremental cohesion cost, and
-grants capped attacker victory relief. Immutable settlement appends validate identity and stage;
-serialization checks status/window/receipt agreement and the full allowed World projection.
-Tasks015/016 add custody decisions and relationship/round closure after this frontier.
-
-Task015 extends dormant Result2 through guarded custody or immediate escape entitlement. Positive
-captured lots open an independent Config1 window owned by their actual captor. Accepted retreat
-timestamps cannot constrain its local clock. Guard creation transfers one TOE and inherits current
-post-retreat donor resources; escape retains original identity and quantity with a twelve-stage
-training-gated entitlement, without restoring TOE. Typed projection and canonical serialization
-retain guard provenance and future upkeep/training obligations. No future duty executes here;
-Task016 supplies relationships, round closure and Close Assault completion.
-
-Task015 custody acceptance completed three fresh independent reviews on2026-09-20;
-[retained evidence](.planning/combat-task008-delivery/task015-evidence.md) distinguishes historical full
-gates, exact-candidate CI and independently rebuilt focused/boundary checks. Public behavior and
-future-duty execution remain unchanged.
-
-Task016 extends dormant Result2 through original-participant relationships, round closure and Close
-Assault completion to Reserve Release. Current original locations and authenticated Content edges
-determine adjacency; raw required retreat suppresses Engaged even when refused. Null relationships
-still retain a receipt. Complete typed World comparison remains required after relationships;
-World7's later-movement allowance does not authorize changed Result2 resources. Ordered immediate
-settlement receipts bind round closure, then CA binds that actual event and original fifth step.
-Immutable internal pre-event facts let serialization recompute terminal event identities and prefix
-links; canonical wire fields remain unchanged and full trusted history replay remains authoritative.
-Retry survives closure, while fresh actions reject and stale callbacks remain NoOp. Future duties
-remain stored and unexecuted. Task016 acceptance includes full2,331/Boundary81, three fresh Ready reviews and exact-candidate CI; [evidence](.planning/combat-task008-delivery/task016-evidence.md) retains checks. Actual campaign Release integration,
-positive campaign history, extended Snapshot and durable publication remain later gates.
-
-Task017A1 adds an accepted dormant isolated ReleaseBase model/codec foundation. Caller
-retains both creation context and independently expected typed base; raw canonical bytes must match
-that complete expected value. Immutable Release history records preserve designation/conversion,
-release ceilings and expired next-Movement exception facts. This isolated probe boundary does not
-authenticate actual campaign World from a hash. Native Release lifecycle belongs to A2 below; positive predecessor
-admission remains a separate Task017 child; historical Result1 fixture rows are not adapted here.
-
-Task017A1 acceptance:44isolated base hashes, full2,337/Boundary81, clean build/format, three fresh
-Ready reviews and exact-candidate CI. [Evidence](.planning/combat-task008-delivery/task017a1-evidence.md)
-distinguishes base validation from later Release lifecycle and actual campaign provenance.
-
-
-Task017A2 adds a dormant isolated Release lifecycle over independently retained base/request and
-separately admitted input/event history. Apply reconstructs prior state by replay; no imported
-state object authorizes a transition. Opening fixes one queue and Config budget. First-I fallback
-converts unresolved members; later-II fallback retains them in one completion. Receipt hashes are
-computed before projecting receipt-linked conversion/release history. Completion stays at Release.
-State readback validates raw shape before context and compares the complete replay-derived bytes.
-Initial-base validation remains distinct from converted-II and pending-exception lifecycle states.
-The implementation matches44isolated traces/132event hashes/176state cuts/two terminal literals;
-acceptance includes full2,347/Boundary81, clean build/format, three fresh Ready reviews (third full
-Release solution rebuild) and exact-candidate CI. [A2 evidence](.planning/combat-task008-delivery/task017a2-evidence.md) records the bounded proof. Actual positive lineage, general World projection, Movement execution, public admission and parent017 completion remain separate gates.
-
-Task017B adds `CampaignCombatResultRelease`, a bounded native Result2-to-empty-Release adapter.
-Owned typed source history is replayed through Selection, Round2 and Result2. A32-case compatibility
-catalog pins canonical upstream lineage and command/choice/actor signatures; valid Result2 fallback
-history remains excluded even when its final World equals an owner-selected result. Reliable owner
-retiming remains admissible. The adapter derives the complete native ReleaseBase from settled state,
-starts an independent null Release clock, and emits only System open/complete through the existing
-Release kernel. Full settled World, RNG, resources, custody, guards, entitlements and future duties
-remain unchanged. Raw base/state readers compare against replay-derived authority; no imported
-state authorizes progress. The32 base literals and64 native event literals are reused without fixture
-regeneration;96 native replay cuts are independent recovery checks, not wrapper-state hash claims.
-Upstream boundaries remain synthetic and exact canonical lineage pins do not establish authentic
-positive Reserve history. Completion stays at Reserve Release; no cycle advance or public API.
-Task017B acceptance: full2,354/Boundary81, clean build/format, three fresh Ready reviews (third
-independent full Release rebuild) and exact-candidate CI at `3c9aad3`.
-[B evidence](.planning/combat-task008-delivery/task017b-evidence.md) retains exact checks and limits.
-
-Task017 positive predecessor adds `CampaignCombatInheritedReserveCycle` and its canonical codec.
-The dormant adapter replays actual creation, preamble, Weather, stage entry, Reserve designation and
-first opening before accepting the held-I no-move profile. Ten frozen events carry authority12→22
-through direct Movement completion, idle Breakdown, empty selection and six no-attack steps.
-World, designation history, CP, resources, Weather and RNG remain unchanged. Cache and event bytes
-must equal full-history reconstruction; exact retries return original bytes. Both-owner fixtures
-match20 event hashes and22 Control hashes. Ordinary Movement admission is unchanged. This supplies
-the3h prerequisite; HistoryReplay/Snapshot integration and public activation remain separate gates. Evidence lives in `.planning/combat-positive-reserve-release/`.
-
-Task017C adds `CampaignCombatInheritedReserveRelease`, a dormant bridge from fully replayed3h
-history to native Release. Its owned source copies every predecessor record; replay derives the
-first-cycle single held-I base and a new null clock. Owner release-I records pending ordinal2
-Movement allowance with ceiling10; deterministic fallback converts I→II. Only Reserve status
-changes in projected World. Base/Control readers and caches compare against full reconstruction,
-and duplicate retries return retained event bytes. Two frozen examples pin2 bases,6 native events,
-8 wrapper Control frames and2 terminal literals. Completion remains ordinal1 at Reserve Release.
-Later-II/consumed campaign lineage and public activation remain open.
-
-Task018A adds pure `CampaignCombatCycleMovementRules`: separately admitted current-stage
-relationships yield original-key affected membership and terrain plus maximum Contact2/Engaged4
-cost. Optional provisional charging reuses `CampaignCombatSpending`, preserving cumulative ceilings
-and incremental excess-CPA DP. This internal assessment owns its result collections, emits no event
-and grants no movement or Reserve exception authority.
-
-Task018B adds internal `CampaignCombatCycleMovement` and its canonical codec. Authenticated
-Result2 source replay supplies an explicit isolated ordinal2 Movement boundary. Adjacent Clear2
-moves atomically update location/representation, cumulative CP/DP, relationship ends and causes;
-full input/event replay regenerates exact bytes and retries return original receipts. A narrow
-computed World7 successor retains resources, guards, future duties, RNG and attack history.
-Movement readback reconstructs from authenticated history; generic World/Snapshot readers retain
-their existing strict settlement rules. Historical Result1 Movement fixtures stay unchanged; no
-historical golden-byte parity or actual release/repeat authority is claimed. Guarded019 continuation
-and actual repeat-dependent admission remain open, as does public activation.
-
-Task019A adds pure `CampaignCombatContinuation.AssessTrustedBoundary`. Independently admitted
-completed Release, World and retained Movement-end projections supply full-unit scope and
-proximity/exclusion history. The selected exhausted-ammunition infantry profile enumerates
-adjacent free Clear2 destinations using shared break-off/spending rules and cumulative Reserve
-ceilings. Same-scope pending next-Movement exceptions waive only proximity. No input is mutated;
-owned witnesses are not event receipts or repeat authority. Armed/unsupported profiles reject
-before an empty witness result can be used. Native history/progress and armed support adapters
-and guarded control lifecycle remain separate019 children.
-
-Task019B adds `CampaignCombatArmedContinuation` and its source-bound proof codec for the two
-frozen3j inherited released-I terminals. Full017C source replay authenticates creation through
-Release, including actual progress and Movement completion. Native initial-profile certification
-proves one supported prospective candidate while preserving CP/ammunition/TOE/RNG/World/history.
-Canonical proof bytes match historical3j; support fixture identities remain compatibility metadata,
-not current Snapshot/public admission. Exact terminal hashes restrict this child to frozen timing
-and resource profiles after replay. Readback regenerates proof from retained source and inputs;
-caller proof fields never authorize continuation. No cycle advancement or Combat execution occurs.
-
-Task019C adds `CampaignCombatInheritedCycleControl` and its canonical codec. An owned source
-captures independent Release inputs/events and replays through019B before deriving the proof-bound
-control base. System opening admits one owner decision with fixed deadline. Owner repeat atomically
-closes ordinal1 and opens same-slot ordinal2 Movement using pre-event prefix and resulting version;
-finish enters Truck Convoy and expires pending exception with the closure receipt. Clock loss,
-regression, expiry and controller unavailability finish deterministically. Every control replay
-rederives events from separately admitted inputs; caches and persisted base/state are compared
-against replay. Exact retries return original bytes. World/resources/RNG/history remain retained;
-no Movement execution, housekeeping, settled-profile admission or public activation is added.
-
-Task018C adds `CampaignCombatInheritedReserveMovement` for one frozen3l released-I ordinal2 move.
-An owned control suffix replays019C and binds exact both-owner repeat terminals before admission.
-It reuses Movement commands, receipt/prefix domains and018A charge rules with the released-I ceiling.
-Element/representation location and World/member CP update atomically (0→2 under ceiling10), while
-all other World facts and full Release history remain unchanged. Existing World7 construction
-validates the no-settlement successor; isolated settled-Movement admission is not widened.
-Source-bound base/state readback, independent-input replay and exact retry bytes preserve authority.
-The move retains a pending exception until the following3m completion receipt is accepted.
-
-Task018D adds `CampaignCombatInheritedReserveMovementCompletion` for both exact frozen3l terminals.
-Full retained-source replay authenticates authority28 and the actual track/move receipt; owner stop
-interrupts Movement at29, empty System resolution resumes Movement at30, and owner completion
-reaches Breakdown Determination at31. Current World locations derive ordinal2 proof with retained
-unit coverage and monotone proximity exclusions. A bounded port of D2b.2 expiry binds the pending
-exception and proof atomically to the accepted completion receipt. World, CP2, ammunition/TOE10,
-Cohesion, RNG, attack history and track remain unchanged. Profile-specific v1 envelopes remain
-dormant; Breakdown execution, settled source/progress, later-II/consumed lineage and public activation
-are subsequent work.
-
-Task019D1 adds private `CampaignCombatSettledContinuation` and its closed proof codec.
-Native017B replays Request/Created11, selection, Round2/Result2 and empty Release; exact
-canonical envelope comparisons plus independently retained catalogue clocks close the retiming
-seam before evidence extraction.019A supplies pure source-specific witnesses. The proof owns
-its bytes and readback replays the full packet. Synthetic original Movement locations/exclusions,
-World/RNG/offensive history and future duties remain explicit. There is no new cache, resource
-charge, repeat/control authority, transport or Snapshot registration. Actual positive campaign
-history, later-II/consumed lineage and parents017–019 remain open.
-
-Task019D2 freezes private Result2 settled-control bytes and replay policy in the
-[executable contract](docs/specs/combat-settled-control-v1.md). It consumes the complete019D0
-packet and regenerated proof, uses separate control/receipt identity domains, and preserves
-World/resources/RNG/history/duties while entering same-slot Movement or Truck Convoy.
-Task019D3 implements private `CampaignCombatSettledControl` and its closed codec. Admission calls
-native019D1 with the complete packet and compares its regenerated proof before deriving assessment.
-Owned canonical bytes retain source identity and original retry evidence; replay reconstructs every
-state, and readback rejects caller caches that differ. Repeat resets only target uses/new-cycle progress
-and advances authority to Movement; finish enters Truck Convoy. Neither executes the successor.
-The adapter preserves synthetic earlier trust and has no public, transport or Snapshot registration.
-
-
-Task019E1 adds private native actual positive-entry replay for the two seed1 Normal ordinary NONE
-openings in [positive-entry v1](docs/specs/combat-positive-entry-v1.md): owner idle Movement11→12
-and System empty Breakdown12→13, preserving World/resources/RNG and deriving a supported
-candidate before selection. Full source, receipts and Movement-end proof authenticate entry;
-initial synthetic content-origin labels remain unchanged. C3a/Result2 consumption, repeat,
-public activation and parent017–019 completion remain separate gates.
