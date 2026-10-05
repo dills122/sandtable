@@ -179,15 +179,18 @@ public sealed class CombatPositiveEntryTests
         for (var index = 0; index < 2; index++)
         {
             var original = JsonNode.Parse(row.GetProperty("eventCanonicalUtf8")[index].GetString()!)!;
+            var mutation = 0;
             foreach (var bad in Mutations(original).Concat(new[] { WithExtra(original, "completedHistory") }))
             {
                 var packet = Cut(terminal, index + 1); packet["entryEventCanonicalUtf8"]![index] = Encoding.ASCII.GetString(Encode(bad));
-                Reject(() => CampaignCombatPositiveEntryCodec.ReadSource(Encode(packet), context));
+                Reject(() => CampaignCombatPositiveEntryCodec.ReadSource(Encode(packet), context), EventLeafCodes[index][mutation] - '0');
+                var signedCode = SignedEventLeafCodes[index][mutation++] - '0';
                 bad["receiptId"] = Receipt(bad, index);
                 if (Encode(bad).AsSpan().SequenceEqual(Encode(original))) continue; // Receipt-only mutation restored genuine event.
                 packet["entryEventCanonicalUtf8"]![index] = Encoding.ASCII.GetString(Encode(bad));
-                Reject(() => CampaignCombatPositiveEntryCodec.ReadSource(Encode(packet), context));
+                Reject(() => CampaignCombatPositiveEntryCodec.ReadSource(Encode(packet), context), signedCode);
             }
+            Assert.Equal(EventLeafCodes[index].Length, mutation);
             var clock = original.DeepClone(); clock["input"]!["admittedAt"] = "2000-01-01T00:00:00.000Z"; clock["receiptId"] = Receipt(clock, index);
             var clockPacket = Cut(terminal, index + 1); clockPacket["entryEventCanonicalUtf8"]![index] = Encoding.ASCII.GetString(Encode(clock));
             Reject(() => CampaignCombatPositiveEntryCodec.ReadSource(Encode(clockPacket), context), 4);
@@ -342,6 +345,28 @@ public sealed class CombatPositiveEntryTests
         Reject(() => CampaignCombatPositiveEntryCodec.Parse("\"\\u007F\""u8, "utf8"), 8);
     }
 
+    [Fact]
+    public void RetainedReceiptValidationPrecedesActorAndOccurrenceAuthorization()
+    {
+        using var fixture = Fixture(); var row = Row(fixture, "axis"); var context = Context();
+        foreach (var field in new[] { "receiptId", "actor", "expectedPriorVersion" })
+        {
+            var packet = Cut(Packet(row), 1); var e = JsonNode.Parse(row.GetProperty("eventCanonicalUtf8")[0].GetString()!)!;
+            if (field == "receiptId") e[field] = "forged";
+            else if (field == "actor") e["input"]![field] = "system";
+            else e["input"]!["command"]![field] = 12;
+            packet["entryEventCanonicalUtf8"]![0] = Encoding.ASCII.GetString(Encode(e));
+            Reject(() => CampaignCombatPositiveEntryCodec.ReadSource(Encode(packet), context), 4);
+        }
+        var crossed = Cut(Packet(row), 2); var bd = JsonNode.Parse(row.GetProperty("eventCanonicalUtf8")[1].GetString()!)!;
+        bd["input"]!["command"]!["kind"] = "complete-movement-segment"; bd["receiptId"] = Receipt(bd, 1);
+        crossed["entryEventCanonicalUtf8"]![1] = Encoding.ASCII.GetString(Encode(bd));
+        Reject(() => CampaignCombatPositiveEntryCodec.ReadSource(Encode(crossed), context), 1);
+    }
+
+    // Literal error codes independently computed from unchanged 019E0 oracle.
+    private static readonly string[] EventLeafCodes = ["43444444444444444444444444444444444444444444444444444444", "434444444444444444444444444444444444444444444444444"];
+    private static readonly string[] SignedEventLeafCodes = ["43666666466666666666444464666666663464446644446664664404", "436664666666666666644446664444666666666336644466404"];
     private static readonly string[] Actors = ["axis", "commonwealth", "system"];
     private static readonly string[] SourceKeys = ["requestCanonicalUtf8", "createdCanonicalUtf8", "preambleEventCanonicalUtf8", "weatherEventCanonicalUtf8", "stageEventCanonicalUtf8", "reserveEventCanonicalUtf8"];
     private static readonly JsonSerializerOptions Options = new() { Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping };

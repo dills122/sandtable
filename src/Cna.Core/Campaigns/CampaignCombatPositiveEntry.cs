@@ -114,7 +114,8 @@ internal static class CampaignCombatPositiveEntry
         foreach (var text in packet.GetProperty("entryEventCanonicalUtf8").EnumerateArray())
         {
             var bytes = Ascii(text);
-            var (after, expected) = Emit(state, ReadEvent(bytes).GetProperty("input"));
+            var retained = ReadEvent(bytes);
+            var (after, expected) = Emit(state, ReadInput(Bytes(retained.GetProperty("input"))));
             Require(bytes.AsSpan().SequenceEqual(expected), 6);
             state = after;
         }
@@ -151,6 +152,11 @@ internal static class CampaignCombatPositiveEntry
             };
             var result = Parse(bytes, kind);
             Require(result.GetProperty("contractVersion").GetInt32() == (kind == "CompleteEvent" ? 3 : 2), 4);
+            if (kind == "CompleteEvent") Require(result.GetProperty("input").GetProperty("command").GetProperty("kind").GetString() == MovementKind, 4);
+            var unsigned = JsonNode.Parse(bytes)!.AsObject(); unsigned.Remove("receiptId");
+            var domain = kind == "CompleteEvent" ? "sandtable.combat.inherited-movement-completion-receipt.v3" : "sandtable.combat.inherited-breakdown-completion-receipt.v2";
+            var receipt = (kind == "CompleteEvent" ? "iml." : "ibc.") + CampaignOpeningPreambleCodec.HashWithDomain(domain, Encode(unsigned))[7..];
+            Require(result.GetProperty("receiptId").GetString() == receipt, 4);
             return result;
         }
         catch (Exception error) when (error is JsonException or InvalidOperationException)

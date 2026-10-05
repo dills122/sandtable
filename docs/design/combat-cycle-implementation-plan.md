@@ -2060,7 +2060,7 @@ Original Breakdown oracle's pre-existing sequence-source pin remains FAILED, sep
 no pin weakening or pass claim. Status: implementation underway; publication held.
 
 
-Task019E1 frozen native evidence:18focused tests pass, both owner openings independently constructed
+Task019E1 initial checkpoint a1c8ef2 evidence (superseded below):18focused tests pass, both owner openings independently constructed
 and all source/command/event/full27-field state/six proof bytes match019E0. All cuts and original-byte
 retries include Movement retry after13; full source/event/re-signed/input/proof/canonical/clock/count/
 size/ownership matrix passes. Actual binlogged `just check` passes2530solution tests and Boundary81,
@@ -2068,3 +2068,14 @@ size/ownership matrix passes. Actual binlogged `just check` passes2530solution t
 paths remain byte-identical to84f1fac. Final oracle/review reconciliation belongs in
 [019E1 handoff](../work/handoffs/2026-10-05-native-positive-entry.md). Fresh review/final-head CI/merge
 remain pending; no parent/public/selection/result closure.
+
+
+Task019E1 final corrected freeze: pre-review reconciliation found retained receipt validation
+ordered after authorization. Semantic RED expected004/actual006; narrow reader correction verifies
+receipt first and revalidates input variant, preserving accepted bytes. Literal raw/re-signed event
+error-code vectors from unchanged019E0 now enforce exact ordering.19focused pass; refreshed sole
+binlogged actual `just check` passes2531solution/Boundary81,0fail/skips and0build warnings/errors,
+clean restore/format. New oracle plus seven required predecessor oracles PASS; original Breakdown
+command remains FAILED on unchanged pre-existing source pin, separate8trace/golden supplement PASS.
+No protected path/pin change or eight-predecessor-pass claim. Final native source remains frozen;
+fresh coordinator review/final-head CI/merge pending, all parent/public/result exclusions unchanged.

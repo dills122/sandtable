@@ -14,7 +14,7 @@ Exact worktree: `/Users/dsteele/.codex/worktrees/native-positive-entry/sandtable
 Branch: `codex/native-positive-entry`. Coordinator: `01a0c9dc-00bc-78a3-800d-3cb36859e422`.
 Activate Serena on exact worktree and use codebase-memory skill with exact project
 `sandtable-native-positive-entry`, coverage/source fallback and relevant result pagination.
-Final graph generation2026-10-05T06:04:12Z, fast mode,16469nodes/112616edges. Exact new
+Final graph generation2026-10-05T06:19:01Z, fast mode,16474nodes/112644edges. Exact new
 source/test path coverage reports metadata_match/no_recorded_issue; docs excluded and read directly.
 Initial new untracked-file coverage used source fallback before final reindex. Verify freshness
 again for reviewer evidence. Author does not certify graph completeness.

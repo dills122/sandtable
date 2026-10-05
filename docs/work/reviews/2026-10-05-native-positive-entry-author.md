@@ -34,6 +34,9 @@ World/cycle/owner/applicable Weather. Facts certification follows source authent
 domain-separated identity/hash of the entire accepted source suffix, full27-field entry and candidate.
 ReadProof validates closed canonical syntax then compares full replay-derived bytes.
 
+Retained event readers verify canonical grammar, version/tag and causal receipt before input
+authorization; replay revalidates each variant input before transition. Exact raw/re-signed event
+error vectors come independently from unchanged019E0 and are retained as literal test data.
 Apply replays and authenticates kind/version/actor/scope before original-byte retry lookup. Consumed
 commands return current state and original event, including Movement retry at terminal13. Conflicts,
 early Breakdown and new terminal commands reject. No deadline or clock belongs to these commands.
@@ -44,7 +47,7 @@ early Breakdown and new terminal commands reject. No deadline or clock belongs t
   initial-profile candidate and causal receipts/prefix/proof.
 - Codec: closed transitive frozen inventory, primitive/depth/count/size checks, sorted canonical
   arrays, explicit Python-compatible ASCII carrier escapes and CMB-PEN error mapping.
-- Tests:18 focused tests, two owners/six cuts/full literal byte parity, independent native source
+- Tests:19 focused tests, two owners/six cuts/full literal byte parity, independent native source
   construction, retry/ownership invariants, source/input/event/proof leaf mutations and re-signing,
   alternative actual openings, old route/public/Snapshot closure, clock/canonical/capacity errors.
 - Project file: output fixture link only. Canonical plan/project docs describe bounded private status.
@@ -68,9 +71,11 @@ history authorization in executable-contract order. No intelligence-plane or ext
 ## Verification performed and results
 
 Evidence inventory and exact outcomes are in the separate durable handoff. Semantic RED demonstrated
-both owners retaining11 when13 was required; GREEN established actual completion. Two additional
-focused RED regressions demonstrated suffix tag error ordering and lowercase ASCII control escapes;
-both corrected before final18-test GREEN. Early test-source compile errors are retained in logs,
+both owners retaining11 when13 was required; GREEN established actual completion. Three additional
+focused RED regressions demonstrated suffix tag ordering, lowercase ASCII control escapes and
+retained receipt-before-authorization ordering. These were corrected before final19-test GREEN.
+The last ordering defect was found after the first freeze; prior2530-suite checkpoint remains
+separate evidence, and the corrected source receives one fresh full gate before review dispatch. Early test-source compile errors are retained in logs,
 not presented as semantic RED. Frozen literal fixture and all208 specs remain unchanged.
 
 ## Risks, tradeoffs and maintenance costs
