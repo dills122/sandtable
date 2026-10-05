@@ -401,6 +401,3 @@ Snapshot integration evidence. Later dormant World7 and codec work is summarized
 
 See the [pre-alpha roadmap](../../docs/roadmap/pre-alpha-roadmap.md) for the capability-level plan and
 completion criteria.
-
-
-
