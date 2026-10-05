@@ -1,3 +1,5 @@
+Historical N0 plan review, retained unchanged below. Its launch-baseline P3 was corrected before dispatch; later milestone acceptance belongs to the session handoff and N4 review.
+
 N0 independent plan review — Review instance: set 1, pass 1 of 3; total 1 of 9. Verdict: Ready with non-blocking follow-ups.
 
 ## Findings

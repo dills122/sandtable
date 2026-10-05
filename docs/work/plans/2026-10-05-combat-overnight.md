@@ -1,10 +1,25 @@
 # Seven-hour orchestrated Combat session
 
-Status: user-approved, launched; N0 independent plan review passed with non-blocking follow-up corrected. Prepared 2026-10-04 America/Toronto.
+Status: approved plan retained as history; N0, R1, R2, N1, N2 and N3 accepted. N4 documentation and integrated evidence await fresh independent review and publication. Prepared 2026-10-04 America/Toronto.
 Coordinator: 01a0c9dc-00bc-78a3-800d-3cb36859e422 (local).
 User authorizes orchestrator-managed child chats, GPT-6.1 medium (high for research/high-effort),
 TDD, fresh independent review at every milestone, bounded research/review recovery, and merging
-after independent review plus required CI pass. Start/end timestamps are set at launch, not now.
+after independent review plus required CI pass. The allocation below is the approved launch plan, not current execution status.
+
+## Execution reconciliation — 2026-10-05
+
+Product work is frozen at merged `e90eef556bde6bbde4fd6b3e17064ba613868ee6`.
+R1/PR152 and R2/PR153 delivered reviewed research; N1/PR154 delivered019D3;
+N2/PR155 delivered019E0; N3/PR156 delivered019E1. Exact heads, merge commits,
+review counts and evidence are in the [session handoff](../handoffs/2026-10-05-overnight-session.md).
+The original conditional N2 wording below anticipated selection predecessor replay. Accepted R1
+narrowed execution to actual Movement/Breakdown and a supported candidate **before selection**;
+019E0/019E1 implement that bounded prerequisite. No C3a/Result2 bridge was delivered.
+R2 found no proven cause and made no runtime fix. N2 retains the failed original Breakdown
+source-pin oracle, accepted as a pre-existing limitation with separate reviewed maintenance.
+N3 pass1 returned Not ready for route ordering; corrected code passed fresh pass2 with
+non-blocking follow-ups. No recovery research spikes occurred. N4 may claim completion only
+after its own independent Ready verdict and final publication gates. Parent017–019 remain open.
 
 ## Verified baseline and evidence
 
