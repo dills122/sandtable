@@ -1,7 +1,76 @@
 # Author explanation: actual-selection executable contract
 
 Author testimony only; no independent readiness verdict. Date2026-10-05 America/Toronto.
-Base `96596dde066b0d8c9a0110eba50fcfcb01d99a46`, implementation checkpoint `3f1dfc967a14dddb98bbe02d4e9b692fd535cb6d`, branch `codex/combat-actual-selection-contract`.
+Initial base `96596dde066b0d8c9a0110eba50fcfcb01d99a46`, initial implementation checkpoint `3f1dfc967a14dddb98bbe02d4e9b692fd535cb6d`, branch `codex/combat-actual-selection-contract`.
+
+## Pass1 Reconciliation And Corrected Review Freeze
+
+S3 set1/pass1,total1of9 at02bb6fc1100370f1757a75da45042d1f69b978c8 returned **Not ready**
+with one P2: segment identity004 preceded forbidden command-arm003. **Accept**, as reconciled
+by coordinator. Initial48 ordering probes missed the combined failure. No heavy pivot,
+spec weakening, count reset or research recovery spike. Next review is coordinator-dispatched
+set1/pass2,total2of9, max3sets×3/max2 authorized recovery spikes.
+
+Corrected implementation checkpoint `3e340332a42d64432f2f21f7e4bd0fa5267cd446`. The only behavior edit moves the existing
+segment require after the complete allowed-arm loop. New arm_segment_order_checks adds328
+combined-error vectors across both owners/all8 command kinds:210 arm-before-segment/actor/clock,
+70 primitive-before-arm,32 version/kind-before-segment,16 valid-arm segment-before-clock.
+Original reviewer vector uses1000 opening time and now returns003 for both owners. Successful
+specification, schema and5.64MB literal fixture bytes remain exactly equal to02bb6fc; no regeneration.
+
+Durable minimal regression reproduction from either frozen checkout (read-only; original
+02bb6fc fails, corrected checkpoint passes):
+
+```python
+import importlib.util
+s=importlib.util.spec_from_file_location('a','docs/specs/verify-combat-actual-selection-v1.py')
+a=importlib.util.module_from_spec(s);s.loader.exec_module(a)
+failures=[]
+for side in ('axis','commonwealth'):
+    source=a.original_source(side);state=a.replay(source,[])
+    inp=a.trusted(a.command(state,'open-segment',expectedPriorVersion=13),now=1000)
+    inp['command'].update(segmentId='foreign',choice='finish-without-attack')
+    try: a.apply(source,[],inp)
+    except a.Invalid as error:
+        print(side,error.code)
+        if error.code!='CMB-ASE-003': failures.append(side)
+    else: failures.append(side)
+assert not failures,failures
+```
+
+Semantic RED before moving the check (log SHA256
+779e4cbeb354a8f1fff60652e79421b40a5955740dc4033c82cb844c85fe9e28):
+
+```text
+RED: axis forbidden choice + foreign segment expected CMB-ASE-003, observed CMB-ASE-004
+RED: commonwealth forbidden choice + foreign segment expected CMB-ASE-003, observed CMB-ASE-004
+Traceback (most recent call last):
+  File "<stdin>", line 13, in <module>
+AssertionError: ['axis', 'commonwealth']
+```
+
+Focused GREEN plus affected adjacent clock/order/capacity checks:
+
+```text
+PASS focused: {'order-arm': 210, 'order-primitive-arm': 70, 'order-version-segment': 32, 'order-segment-clock': 16, 'clock': 50, 'order': 48, 'clock-accepted': 8, 'positive': 2, 'no-op': 30, 'capacity': 22, 'history': 4}
+```
+
+New full direct command `python3 -B docs/specs/verify-combat-actual-selection-v1.py` PASS exit0,209.977s;
+stdout SHA256 `803f9ad4d393d146176fd5c921a40635910b0c401c312f68e31dc47895bba6f1`. This supersedes initial wrapper-only main evidence as the
+current full-oracle result. Exact output:
+
+```text
+PASS: 16 semantic actual-owner traces; selected FA20 and seven Reserve Release fallbacks per owner
+PASS: 16 literal traces; {"capacity": 23, "clock": 50, "clock-accepted": 8, "cuts": 152, "entry": 36, "entry-cuts": 6, "entry-leaf": 1512, "event": 4456, "family": 17, "history": 140, "ledger": 320, "legacy-reject": 6, "no-op": 30, "order": 48, "order-arm": 210, "order-primitive-arm": 70, "order-segment-clock": 16, "order-version-segment": 32, "ownership": 64, "pins": 128, "positive": 2, "privacy": 30, "proof": 8266, "raw": 2760, "retries": 1962, "retry-primitive": 654, "separation": 2, "trust": 2}; full original actual entry retained; separate trusted ledger; private FA stop only
+```
+
+Unchanged expensive predecessor commands were not rerun in this bounded correction: no
+predecessor source/schema/fixture/runtime byte changed, and coordinator explicitly requested
+no repetition without reason. Their prior separate pass/fail evidence remains historical and
+unchanged; Breakdown/cycle/Snapshot/outward remain failures, S1a timeouts remain unverified.
+No current .NET/full/Boundary/format/CI or independent Ready claim. The five-primary manifest
+below is refreshed to this corrected checkpoint; initial chronology/probe passages below remain
+historical evidence of3f1dfc9/02bb6fc rather than assertions of complete pre-fix error ordering.
 
 ## Intent, Plan And Flow
 
@@ -138,8 +207,8 @@ so scoped Python checks were used without consuming coordinator full-suite lease
 | `docs/specs/combat-actual-selection-v1.md` | 11255 | `a81394f4e58c582a7beabccd1aeb4ba1bdb3475ebdc14378c95ac3fbc97fda82` |
 | `docs/specs/combat-actual-selection-v1.schema.json` | 5689 | `da6256deb94bb6061e8e98e2448f915c4474373b7f0de6bb76eded2ae88c39b1` |
 | `docs/specs/fixtures/combat-actual-selection-v1.json` | 5640101 | `019d1a3ff0f121d83f377ddfb19d274b4a8aa89172bad8aeb289c3b98228e604` |
-| `docs/specs/verify-combat-actual-selection-v1.py` | 50109 | `7e24af8a8479d40ae71bd00ec224bb213d2bd3aa63d85421bc2d293e81e25164` |
-| `docs/design/combat-cycle-implementation-plan.md` | 211045 | `f78556948abb95b2820ca7e9bd46fc08c7b09ead2d0eedb910feb0e2a8bc2096` |
+| `docs/specs/verify-combat-actual-selection-v1.py` | 53593 | `a8a5a68215dad88343c97bc98ab14204c3a040534724379ca43c2120e737515a` |
+| `docs/design/combat-cycle-implementation-plan.md` | 212260 | `6e06b5e454827335ea1ca9cb1008b48d41e6db6dced1412971017f785e88845e` |
 
 
 ## Retained RED Reproduction

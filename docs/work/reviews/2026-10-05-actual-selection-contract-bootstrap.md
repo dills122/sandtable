@@ -2,9 +2,10 @@
 
 ## Review Objective
 
-Independent read-only review of session2 S3 / Task019F0. Counter starts0of9;
+Independent read-only review of session2 S3 / Task019F0. Counter1of9 after set1/pass1 Not ready; next coordinator-dispatched set1/pass2,total2of9;
 max3sets×3, max2 coordinator-authorized research recovery spikes. Coordinator alone
-dispatches a fresh medium reviewer and reconciles findings. No review is self-dispatched.
+dispatches a fresh medium reviewer and reconciles findings. No review is self-dispatched. Prior review reported one P2 command-arm/segment error-order
+defect; coordinator accepted bounded correction. Spec unchanged; assess correction/tests and scope.
 Review code/plan/canonical requirements first, record preliminary concerns, then read
 separate author explanation. Do not inherit the author chat or treat REVIEW_READY as
 an independent Ready verdict. No permission to merge or start S4 is conveyed here.
@@ -18,7 +19,7 @@ fast generation2026-10-05T14:03:21Z. docs/specs excluded; source fallback requir
 
 ## Base, Head, Branch And Dirt
 
-Base `96596dde066b0d8c9a0110eba50fcfcb01d99a46`. Implementation checkpoint `3f1dfc967a14dddb98bbe02d4e9b692fd535cb6d`.
+Base `96596dde066b0d8c9a0110eba50fcfcb01d99a46`. Corrected implementation checkpoint `3e340332a42d64432f2f21f7e4bd0fa5267cd446`; prior review target02bb6fc.
 Dated packets follow in an administrative commit. Exact final review head is supplied by
 coordinator dispatch; verify it and inspect both implementation/admin commits. Only generated
 untracked `.serena/` remains outside the review target; no implementation WIP is hidden.
@@ -50,8 +51,8 @@ historical reader incompatibility and all separate failures/timeouts.
 
 ## Verification Already Executed
 
-New final oracle main passed via timed import/main wrapper207.469s; exact wrapper and stdout
-are retained in author/handoff. Standard reproduction: python3 -B docs/specs/verify-combat-actual-selection-v1.py.
+Corrected new oracle ran directly and passed exit0 in209.977s; stdout/digests retained
+in author/handoff. Initial wrapper result remains historical. Successful literal bytes unchanged. Standard reproduction: python3 -B docs/specs/verify-combat-actual-selection-v1.py.
 Original positive-entry/C3a/Round2/Result2 passed. Original Breakdown/cycle-sequence/Snapshot/
 outward each failed separately at unchanged pin gates. No current .NET/full-suite/Boundary/
 format/CI pass claimed. Whitespace checks passed. Inspect source and run selected checks yourself.

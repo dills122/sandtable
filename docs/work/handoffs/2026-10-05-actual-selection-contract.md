@@ -21,13 +21,37 @@ against this merged baseline before implementation and checked on every authorit
 ## Current Repository State
 
 Worktree `/Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable`; branch `codex/combat-actual-selection-contract`.
-Base `96596dde066b0d8c9a0110eba50fcfcb01d99a46`; implementation checkpoint `3f1dfc967a14dddb98bbe02d4e9b692fd535cb6d`. Three dated administrative packets are
+Base `96596dde066b0d8c9a0110eba50fcfcb01d99a46`; corrected implementation checkpoint `3e340332a42d64432f2f21f7e4bd0fa5267cd446`. Three dated administrative packets are
 committed afterward; coordinator receives exact final head on dispatch. Only `.serena/` generated
 tooling remains untracked. No runtime WIP or old file/pin changes. Attachment tool reported
 worktree owned by another chat; explicit-workdir reuse was authorized and succeeded. No duplicate
 checkout or primary-checkout edit. Serena exact path activated/manual read. Codebase Memory
 sandtable-actual-selection-contract fast generation14:03:21Z; docs excluded, focused source fallback.
 CCE unavailable. Canonical plan ownership returns to coordinator with this review handoff.
+
+## Accepted Review Correction And Current Freeze
+
+S3 set1/pass1,total1of9 returned Not ready with one P2 at02bb6fc; coordinator/author Accept.
+Forbidden closed command arms003 must precede segment identity004. Move exactly that existing
+check after the arm loop; no wider refactor or specification weakening. Successful spec/schema/
+fixture bytes remain baseline-equal, with no literal regeneration. Corrected behavior checkpoint
+`3e340332a42d64432f2f21f7e4bd0fa5267cd446`; administrative refresh follows. Exact final frozen head supplied to coordinator.
+
+RED retained both owners returning004 instead of003. GREEN original reviewer vector returns003
+for both owners. New328 adjacent precedence probes cover all8 command kinds and both owners;
+focused affected clock/order/capacity probes also pass. New direct full command
+`python3 -B docs/specs/verify-combat-actual-selection-v1.py` PASS exit0,209.977s, output SHA256 `803f9ad4d393d146176fd5c921a40635910b0c401c312f68e31dc47895bba6f1`.
+Current direct output supersedes initial passing timed-wrapper evidence:
+
+```text
+PASS: 16 semantic actual-owner traces; selected FA20 and seven Reserve Release fallbacks per owner
+PASS: 16 literal traces; {"capacity": 23, "clock": 50, "clock-accepted": 8, "cuts": 152, "entry": 36, "entry-cuts": 6, "entry-leaf": 1512, "event": 4456, "family": 17, "history": 140, "ledger": 320, "legacy-reject": 6, "no-op": 30, "order": 48, "order-arm": 210, "order-primitive-arm": 70, "order-segment-clock": 16, "order-version-segment": 32, "ownership": 64, "pins": 128, "positive": 2, "privacy": 30, "proof": 8266, "raw": 2760, "retries": 1962, "retry-primitive": 654, "separation": 2, "trust": 2}; full original actual entry retained; separate trusted ledger; private FA stop only
+```
+
+Predecessor expensive checks not repeated: unchanged bytes/no affected predecessor behavior,
+per coordinator instruction. Original outcomes and S1a historical timeouts below remain honest.
+Fresh set1/pass2,total2of9 remains coordinator-dispatched; no count reset/spike/PR/merge/S4.
+Canonical plan ownership returns to coordinator with this corrected review handoff.
 
 ## Completed Work And Evidence
 
@@ -36,7 +60,7 @@ literal traces/all full sources/inputs/events and152 Control/proof cuts. Oracle 
 actual entry, checks independent ledger, preserves exact retries, rejects forgeries/canonical/
 capacity/privacy/ownership violations, and proves cold separation from blocked admissions.
 Semantic RED16 before implementation/freeze and second candidate-clock RED retained in author.
-Semantic GREEN then one literal freeze. Final main PASS207.469s, via exact timed import/main
+Semantic GREEN then one literal freeze. Initial main PASS207.469s, via exact timed import/main
 wrapper retained in author; direct script __main__ calls that same main.
 
 ```text
@@ -76,7 +100,7 @@ They remain separate failures. S1a historical12/60s timeouts stay unverified; no
 No native adapter, .NET/full/Boundary/format/CI pass, public privacy/authentication, actual Round/
 result/repeat or all32 reachability. S1b20-file refresh deferred. Current earlier oracle/test wiring
 failures were fixed or test expectations corrected before final GREEN; author documents them.
-No independent reviewer/PR/merge was self-dispatched. S3 review count0of9, max3sets×3;
+No independent reviewer/PR/merge was self-dispatched. S3 review count1of9 after set1/pass1 Not ready; next coordinator-owned pass2,total2of9, max3sets×3;
 max2 authorized research-recovery spikes. Coordinator owns fresh medium review and reconciliation.
 
 ## Immediate Next Actions
@@ -100,11 +124,11 @@ Temporary logs: /private/tmp/s3-semantic-red.log, s3-semantic-green.log, s3-free
 s3-oracle.log (superseded failed initial full run), s3-final-oracle.log and s3-original-checks/.
 RED source and supplemental probe are durably embedded in author; final stdout and original
 result/digests retained here. Temporary-file survival is not needed for normal verification.
-Final main log SHA256 `0a015bd67749b35da65e2d15a300c756f4eeaafc048c966c715d7249cbc129f6`.
+Initial main log SHA256 `0a015bd67749b35da65e2d15a300c756f4eeaafc048c966c715d7249cbc129f6`; corrected direct main SHA256 `803f9ad4d393d146176fd5c921a40635910b0c401c312f68e31dc47895bba6f1`.
 
 ## Delivery Metadata
 
-Branch `codex/combat-actual-selection-contract`; implementation commit `3f1dfc967a14dddb98bbe02d4e9b692fd535cb6d`.
+Branch `codex/combat-actual-selection-contract`; corrected implementation commit `3e340332a42d64432f2f21f7e4bd0fa5267cd446`.
 Suggested PR title: Freeze private actual Combat selection executable contract.
 Summary: admit the two complete actual entry sources under new private framing and separate
 trusted input ledger; selected path stopsFA20, fallbacks reach Reserve Release; preserve historical
@@ -119,5 +143,5 @@ unset GH_TOKEN/GITHUB_TOKEN per command, do not extract or pass credentials.
 | `docs/specs/combat-actual-selection-v1.md` | 11255 | `a81394f4e58c582a7beabccd1aeb4ba1bdb3475ebdc14378c95ac3fbc97fda82` |
 | `docs/specs/combat-actual-selection-v1.schema.json` | 5689 | `da6256deb94bb6061e8e98e2448f915c4474373b7f0de6bb76eded2ae88c39b1` |
 | `docs/specs/fixtures/combat-actual-selection-v1.json` | 5640101 | `019d1a3ff0f121d83f377ddfb19d274b4a8aa89172bad8aeb289c3b98228e604` |
-| `docs/specs/verify-combat-actual-selection-v1.py` | 50109 | `7e24af8a8479d40ae71bd00ec224bb213d2bd3aa63d85421bc2d293e81e25164` |
-| `docs/design/combat-cycle-implementation-plan.md` | 211045 | `f78556948abb95b2820ca7e9bd46fc08c7b09ead2d0eedb910feb0e2a8bc2096` |
+| `docs/specs/verify-combat-actual-selection-v1.py` | 53593 | `a8a5a68215dad88343c97bc98ab14204c3a040534724379ca43c2120e737515a` |
+| `docs/design/combat-cycle-implementation-plan.md` | 212260 | `6e06b5e454827335ea1ca9cb1008b48d41e6db6dced1412971017f785e88845e` |
