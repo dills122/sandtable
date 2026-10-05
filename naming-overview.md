@@ -1045,3 +1045,8 @@ owned evidence from the native Result2/empty Release suffix and pure Movement as
 Its `sct.` identity names canonical bytes, not an admission receipt or repeat permission.
 Earlier Movement remains explicitly `synthetic-pre-combat`; actual commitment receipt and
 event hash are distinct from the combat commitment ID.
+
+**Settled control contract** (Task019D2) names the private Result2 control experiment.
+Its `sctl.` control and `scc.` receipt identities use new domains and bind the full admitted
+settled packet/proof; historical `ctl.`/`cc.` Result1 identities remain frozen.
+It defines repeat/finish entry without executing the successor phase. Native control is subsequent work.

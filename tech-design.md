@@ -1374,3 +1374,9 @@ its bytes and readback replays the full packet. Synthetic original Movement loca
 World/RNG/offensive history and future duties remain explicit. There is no new cache, resource
 charge, repeat/control authority, transport or Snapshot registration. Actual positive campaign
 history, settled control, later-II/consumed lineage and parents017–019 remain open.
+
+Task019D2 freezes private Result2 settled-control bytes and replay policy in the
+[executable contract](docs/specs/combat-settled-control-v1.md). It consumes the complete019D0
+packet and regenerated proof, uses separate control/receipt identity domains, and preserves
+World/resources/RNG/history/duties while entering same-slot Movement or Truck Convoy.
+This contract grants no native/public capability; the native adapter remains a separate acceptance gate.

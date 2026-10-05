@@ -1,0 +1,29 @@
+{
+  "contract": "combat-settled-control-v1",
+  "objects": {
+    "SettledControlBase": "contractVersion:int packetCanonicalUtf8:utf8 proofCanonicalUtf8:utf8",
+    "SettledAssessment": "releaseCompletionReceiptId:id movementCompletionReceiptId:id progress:ProgressRef[] witnesses:ContinuationWitness[] combatAssessment:id witnessOutcome:id unsupportedReason:id? sourceProofId:id",
+    "SettledControlCommand": "contractVersion:int kind:id controlId:id cycleId:hash expectedPriorVersion:long? decisionId:id?",
+    "SettledControlInput": "command:SettledControlCommand actor:actor admittedAt:utc? clockAvailable:bool",
+    "SettledControlEffect": "kind:id reason:id assessment:SettledAssessment timing:Timing? openingClockFailure:bool successorPositionId:id nextCycle:Authority? expiredUnits:UnitKey[]",
+    "SettledControlEvent": "contractVersion:int sourceProofId:id eventType:id author:actor campaignId:id rulesetHash:rawHash configurationHash:hash cycleId:hash positionId:id baseHash:hash controlId:id priorVersion:long stateVersion:long priorPrefix:hash input:SettledControlInput effect:SettledControlEffect receiptId:id",
+    "SettledClosure": "cycleId:hash ordinal:int outcome:id receiptId:id",
+    "SettledControlState": "contractVersion:int sourceProofId:id baseHash:hash controlId:id stateVersion:long prefix:hash status:id positionId:id activeCycle:Authority? closure:SettledClosure? decisionId:id? timing:Timing? openingClockFailure:bool acceptedHighWater:utc? assessment:SettledAssessment? members:ReserveMember[] world:World randomState:Random attackHistory:AttackHistory[] targetUses:TargetUse[] nextCycleProgress:ProgressRef[] receipts:Receipt[]"
+  },
+  "domains": {
+    "control": "sandtable.combat.settled-control.v1",
+    "receipt": "sandtable.combat.settled-control-receipt.v1"
+  },
+  "externalContracts": [
+    "combat-settled-continuation-v1.schema.json",
+    "combat-cycle-control-v1.schema.json"
+  ],
+  "limits": {
+    "bytes": 1048576,
+    "depth": 32,
+    "arrayItems": 512,
+    "members": 32,
+    "events": 2
+  },
+  "scope": "Private Result2 control; synthetic-pre-combat earlier trust; no native/public registration."
+}

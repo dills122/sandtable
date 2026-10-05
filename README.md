@@ -883,3 +883,7 @@ No license has been selected yet. All rights are reserved until a license file i
 Task019D1 adds private native [settled-continuation evidence](docs/specs/combat-settled-continuation-v1.md):
 complete Result2/empty Release replay and pure Movement witnesses for32 owner/seal contexts.
 Earlier Movement remains synthetic; the proof grants no repeat or public action.
+
+Task019D2 adds a private [settled-control executable contract](docs/specs/combat-settled-control-v1.md):
+full Result2 proof admission, owner repeat/finish and deterministic forced/fallback finish.
+The Python contract preserves synthetic earlier trust; native control and actual repeated Movement remain separate gates.
