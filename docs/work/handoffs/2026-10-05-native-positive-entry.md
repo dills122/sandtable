@@ -1,6 +1,6 @@
 # Handoff: native actual positive entry
 
-Date:2026-10-05 America/Toronto. Task019E1/N3; author checkpoint, independent verdict pending.
+Date:2026-10-05 America/Toronto. Task019E1/N3; administrative closeout after independent pass2 Ready with non-blocking follow-ups.
 
 ## Objective and boundary
 
@@ -308,3 +308,71 @@ c2f251d88ace12fa15a4913a9923d6ed7f3521aaf13e61c1fc63a4f311424a43  /private/tmp/n
 Full-suite lease RELEASED after successful gate. No further behavior edits or gate reruns planned.
 Automatic approval review rejected coordinator status messaging for lack of verified direct user
 authorization. A request for user authorization is pending; review-ready packet is complete locally.
+
+## Final independent acceptance and administrative closeout
+
+N3 set1/pass2,total2of9 reviewed exact `5c847895bc269d06e9d4e8d86bf90f9acd473f31` and returned
+**Ready with non-blocking follow-ups**, with no actionable findings. Author accepts the report.
+Coordinator accepts the original Breakdown source-pin maintenance follow-up and frozen grammar/
+two-source limits; these remain separate work with no scope expansion or parent017–019 closure.
+All four runtime/test/project freeze hashes and reviewed bytes remain unchanged. Gate evidence
+is retained without reruns. Prior pending-review statements above are historical checkpoints.
+Coordinator owns publication and required final-head CI/merge. No outbound message or publication
+is needed from this author. After this administrative commit, hold all files stable.
+
+## Full independent report: N3 set1/pass2
+
+Report wording follows unchanged (trailing whitespace normalized).
+
+**Ready with non-blocking follow-ups.** No actionable findings remain in the bounded native positive-entry implementation or plan. The prior P2 route-order defect is corrected.
+
+Review instance: **N3 set1/pass2, total2 of9; maximum3 per set**.
+
+Reviewed branch `codex/native-positive-entry`, base `84f1fac861cef7c8ffaf8f36dd75b1b7f4dedc83`, final HEAD `5c847895bc269d06e9d4e8d86bf90f9acd473f31`. HEAD remained stable; only generated `.serena/` was untracked.
+
+**Findings and plan review**
+
+The five primary paths and minimal documentation changes match task019E1’s manifest. Full Request/Created11 and opening history authentication precede owner Movement completion `11→12`, System Breakdown completion `12→13`, and candidate certification. Actual Movement-end evidence, distinct receipts, prefixes, ownership, retries and unchanged World/resources/RNG are supported by source inspection and verification.
+
+The [codec correction](/Users/dsteele/.codex/worktrees/native-positive-entry/sandtable/src/Cna.Core/Campaigns/CampaignCombatPositiveEntryCodec.cs:103) preserves ordered routes and revisits while retaining identity sorting. Both-owner regressions now reach proof-mismatch error `006`, matching the unchanged oracle.
+
+No heavy pivot or scope expansion is warranted. Selection/result consumption, repeat, public activation and parent017–019 closure remain outside this implementation.
+
+**Author-claim reconciliation**
+
+Preliminary ledger was recorded before reading the separate author packet. Dispatch had already disclosed the prior finding and baseline limitation.
+
+| Claim | Assessment |
+|---|---|
+| Full creation-rooted source authentication | Confirmed by predecessor replay, exact opening pins and independently constructed openings |
+| Successful byte parity, all cuts and original-byte retries | Confirmed by literal comparisons and focused tests |
+| Route-order correction preserves canonical/error parity | Confirmed by both-owner regressions and six independent oracle probes |
+| Owned source/state/proof/event bytes | Confirmed by copy boundaries, cloned projections and ownership tests |
+| Actual Movement-end proof; candidate only at13 | Confirmed by transition and certification inspection |
+| Final full gate:2533 solution /81 Boundary | Confirmed as retained evidence through logs and matching hashes |
+| Original Breakdown oracle remains FAILED | Confirmed; unchanged baseline limitation, with no new source-pin impact |
+
+**Executed verification**
+
+- Focused native MTP tests: **21 passed, zero failures/skips**. Initial sandbox invocation failed on named-pipe permission; approved retry passed.
+- `python3 -B docs/specs/verify-combat-positive-entry-v1.py`: **PASS**, two owners, four events, six literal proofs, six cuts/retries and3,966 rejection probes.
+- Independent oracle route probes: **all six matched `CMB-PEN-006`**.
+- Native codec inventory: **all61 object shapes matched transitive oracle schemas**.
+- `git diff --check <base> HEAD`: **PASS**.
+- All208 spec files and686 protected existing source/test files: **byte-identical to base**.
+- Final retained source/project and evidence inventory: **17 hashes matched**.
+- Retained final `just check`: **2533 solution tests,81 Boundary tests, zero failures/skips, clean format and zero build warnings/errors**. Full suite was not rerun.
+
+Reviewer evidence: [focused log](/private/tmp/n3-pass2-focused-approved.log), [binlog](/private/tmp/n3-pass2-review-20261005-071544--11865--tOUQWp-dotnet-test.binlog).
+
+**Residual risks and next actions**
+
+The accepted original Breakdown source-pin failure remains a separate maintenance follow-up; supplementary checks do not convert that command into a pass. Frozen grammar duplication and two-source admission require explicit review when extended.
+
+Serena was unavailable. Exact-worktree graph coverage was checked; stale codec/test coverage used direct source fallback. Graph evidence remains best-effort.
+
+Coordinator may proceed to publication and required exact-head CI/merge gates. No repository edits, commits, subreviewers or outbound messages were created.
+
+Reviewer report SHA256: `786e95c1ba03f779266af81e1e05618b62a27c8cc79e9e52464577a04d8139a9`.
+Reviewer evidence SHA256: `30b09ec3c893468af234a61f2bfcd9a977de016446aed18a4a13b71f1a8143d3` — `/private/tmp/n3-pass2-focused-approved.log`.
+Reviewer evidence SHA256: `af8ef6ba7a8f2261858d9833e8e25f0e6313adba56e782c10bbfba06eb1ef37a` — `/private/tmp/n3-pass2-review-20261005-071544--11865--tOUQWp-dotnet-test.binlog`.

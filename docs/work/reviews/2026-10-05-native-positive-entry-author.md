@@ -119,3 +119,12 @@ Unchanged executable oracle additionally confirmed all six new both-owner ordere
 probes: canonical syntax accepted, full proof comparison rejected006. Evidence:
 `/private/tmp/n3-gates/route-oracle-probes.log`. This is supplementary targeted evidence; retained
 full oracle command outcomes above keep their original PASS/FAILED status.
+
+## Author acceptance of independent pass2
+
+N3 set1/pass2,total2of9 returned **Ready with non-blocking follow-ups**, no actionable findings,
+at exact reviewed HEAD `5c847895bc269d06e9d4e8d86bf90f9acd473f31`. Author accepts this verdict
+and the separately tracked baseline-pin maintenance and frozen grammar/two-source limitations.
+Full report and reviewer evidence hashes are retained in the handoff. This follow-up edits only
+administrative documentation; reviewed runtime/test/project bytes and all gate evidence match.
+Publication and final-head CI/merge remain coordinator-owned; no rerun or scope expansion.
