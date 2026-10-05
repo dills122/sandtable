@@ -97,7 +97,23 @@ Known predecessor failures remain expected until separately scoped repair is app
 
 ## Delivery Metadata
 
-All research/contract/doc author branches are committed and pushed; exact branch preservation
-and final PR identifiers will be reconciled before session completion. Coordinator review records
+Preservation audit at17:01UTC: the five current worktrees below have no tracked edits and
+match their origin tracking branches. Author worktrees only contain generated untracked
+`.serena/`; coordinator is clean. No unverified product WIP remains.
+
+| Branch | Preserved head |
+| --- | --- |
+| codex/combat-pin-inventory | cb16f676f09d81e124fcdcc7d7533cf2ad9a199c |
+| codex/combat-actual-bridge-research | 80cc969efd347ee7390c2dea511cc50fc6592a0d |
+| codex/combat-actual-selection-contract | 3cc2bcc298e19df3f9075bc2e5f29a22d873ea05 |
+| codex/sandtable-selection-docs-reconciliation | 23fbc69207165bd8c68582db727aeadfc17bbae4 |
+| codex/combat-session-two-sync | f2729b0 (this handoff update follows) |
+
+The merged D1 branch is also preserved at c7d434e1691c329cbfb9f5ee5f229bd59c2661c2.
+Prior overnight sync is preserved at15f98c775dc34747345573cdf6a470a91bb08e5b.
+Primary user-owned dirty files are `.claude/settings.json`, `.github/copilot-instructions.md`,
+`AGENTS.md`, `CLAUDE.md`, untracked `.serena/` and
+`docs/work/handoffs/2026-09-20-combat-delivery-stop.md`; none were modified or staged by closeout.
+Final PR identifiers will be reconciled before session completion. Coordinator review records
 are under `docs/work/reviews/2026-10-05-*`. Execution ledger is ignored `.planning/combat-session-2/`;
 this tracked handoff and canonical documents are the durable continuation entry point.
