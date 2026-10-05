@@ -20,8 +20,8 @@ review; unchanged Reserve/stage/Movement/Breakdown/C3a/Round2/Result2 contracts.
 Exact worktree /Users/dsteele/.codex/worktrees/66db/sandtable.
 Branch codex/combat-positive-entry-contract.
 Base18e8f99f81aed8bb76afb97c86117584b788fa62 (merged154).
-Review boundary: five primary files plus three administrative packets, committed after this
-handoff finalization; resolve exact checkpoint with `git rev-parse HEAD` on named branch.
+Reviewed implementation boundary5ba58040: five primary files plus three administrative packets.
+Final delivery adds full review report and metadata reconciliation only; resolve exact checkpoint with `git rev-parse HEAD` on named branch.
 Final author response pins resulting commit. Primary hashes below independently freeze content;
 bootstrap also pins final plan hash. No other retained files. Generated .serena/ and
  docs/specs/__pycache__/ remain explicitly excluded untracked tooling. artifacts/TestResults ignored.
@@ -65,8 +65,9 @@ potential, not selected attack authority. CCE unavailable; exact graph/coverage/
 
 ## Blockers And Limitations
 
-Fresh independent review pending; author has issued no readiness verdict. Coordinator must
-explicitly dispose pre-existing old oracle failure before acceptance or dependent native work.
+Fresh independent review finalized Ready with non-blocking follow-up, same set1/pass1,total1of9.
+Coordinator accepted pre-existing old oracle limitation and tracks separate reviewed maintenance.
+Original failure remains accurately reported; final-head CI/merge still gate dependent native work.
 Old Breakdown fixture pins `src/Cna.Core/Rules/Cna1979LandSequence.cs` at SHA256
 c5426245a156367eac85fc5e61792ece1ae124651a0416793fde00213641b938. Current/base SHA256 is
 d019a3bc2941ad788b69550f5d7fc01e33fa586a0bad6a374c08550b3cb6a79a. Expected pin equals exact
@@ -84,15 +85,16 @@ Snapshot/public/transport/host/Runner and parents017–019 remain open; no all32
 
 ## Immediate Next Actions
 
-Coordinator reads [neutral bootstrap](../reviews/2026-10-05-positive-entry-bootstrap.md), resolves
-exact committed head, and starts fresh GPT-6.1medium reviewer set1/pass1,total1of9,max3per set.
-Reviewer records preliminary ledger before [separate author explanation](../reviews/2026-10-05-positive-entry-author.md).
-Return full review and baseline-gate disposition to coordinator. No reviewer/author self-dispatch.
-After accepted fresh verdict and gate disposition, coordinator pushes own branch, opens draft PR,
-attaches to child/coordinator, verifies required CI at exact final head, then merges only if all
-required acceptance gates pass. Proposed title: `Freeze actual positive-entry contract before selection`.
-Prepared body `/private/tmp/n2-pr-body.md`; include final review outcome before publishing.
-Separate native manifest is in specification and R1; do not begin before accepted/merged N2.
+Coordinator publishes final metadata checkpoint after same-instance Ready with non-blocking
+follow-up and explicit baseline disposition. Reviewed implementation boundary is5ba58040;
+four contract artifact hashes remain exact. [Neutral bootstrap](../reviews/2026-10-05-positive-entry-bootstrap.md),
+[author response](../reviews/2026-10-05-positive-entry-author.md), and
+[full report/reconciliation](../reviews/2026-10-05-positive-entry-review.md) retained.
+Coordinator pushes branch, opens/attaches draft PR to child/coordinator, verifies required CI
+at exact final head, then merges only if required gates pass. Proposed title:
+`Freeze actual positive-entry contract before selection`. Prepared body `/private/tmp/n2-pr-body.md`
+contains final verdict and failed baseline limitation. Separate native manifest remains gated
+on accepted/merged N2. No child push/PR/outbound retry or repeated behavior/gate work.
 
 ## Verification Commands
 
@@ -146,10 +148,11 @@ SHA256 to frozen expected pin and `git diff 2e17f60^ 2e17f60 -- src/Cna.Core/Rul
 
 Prepared2026-10-05 America/Toronto. Coordinator01a0c9dc-00bc-78a3-800d-3cb36859e422;
 child01a10a55-eb8b-7da3-bd6a-8bcb591bc037. Session closeout08:47:28UTC, hard end09:47:28UTC.
-Review instances consumed0; pending coordinator set1/pass1,total1of9 (max3per set,2research recoveries).
+Review instances consumed1: final same-instance set1/pass1,total1of9 Ready with non-blocking
+follow-up (max3per set,2research recoveries); no additional review instance.
 No publication/CI/merge or dependent implementation claimed. Sole full-suite lease released after
-successful final gate. Retained change ready for independent assessment, with failed baseline gate
-explicitly unresolved. Resolve exact committed head from final author response/branch; content
+successful final gate. Retained implementation independently reviewed; coordinator accepted failed baseline gate
+limitation and tracks non-blocking maintenance. Publication/CI/merge still pending. Resolve exact committed head from final author response/branch; content
 pins below and bootstrap's plan hash identify scope independently.
 
 Frozen SHA256:
@@ -186,3 +189,26 @@ direct source/parity checks remain evidence. Serena exact worktree activated/man
 - /private/tmp/n2-gates/build-20261005-044836--18541--8DqyLZ.binlog: b8c46e8c67983977bd6ec8f27e1a0bb8dfdbe8fdf8850535d89f9f53c98c081b
 - /private/tmp/n2-gates/restore-20261005-044810--18125--xYk+Z+.binlog: c77fdc82c83494fe2adf86a03686c2f03e75f895cfc8c6d6807d1c9d33d0ffe0
 - /private/tmp/n2-gates/test-20261005-044900--18984--1Urv9A-dotnet-test.binlog: e56bb4a90ef76fe4a138298ae5b1445774b9e3287895caaab069f8fb8ef67720
+
+## Preliminary Review And Accepted Baseline Disposition
+
+Fresh GPT-6.1medium independent reviewer set1/pass1,total1of9 returned no implementation
+findings; sole acceptance gate was coordinator disposition of pre-existing Breakdown pin.
+[Retained preliminary report](../reviews/2026-10-05-positive-entry-review.md). Reviewer independently
+reproduced baseline/HEAD failure and passed separate eight-trace semantic/golden checks.
+Original oracle stays FAILED; seven requested predecessor passes remain distinct.
+Coordinator explicitly ACCEPTED baseline limitation and deferred separate reviewed pin
+maintenance. Same reviewer is reconciling final Ready verdict; publication remains held
+until delivered. No author Ready claim, new behavior, rerun, push/PR or outbound messaging.
+Reviewed executable boundary5ba58040bc225a96b9cd30e537002f86c9c941e9 remains untouched;
+only admin report/response/handoff change. Return final checkpoint/body after verdict arrives.
+
+## Final Administrative Reconciliation
+
+Final same-instance verdict **Ready with non-blocking follow-up**, N2set1/pass1,total1of9.
+Coordinator accepted baseline limitation; author Accept. Preliminary/pending notes retained
+above are historical and superseded by this section. Original Breakdown oracle stays FAILED;
+separate reviewed pin maintenance remains coordinator-owned. Full report/reconciliation
+retained; no code changes, reruns, push/PR, native/public/consumer work or parent closure.
+Metadata-only follow-up commits report/response/handoff/plan status. Final author response
+pins checkpoint head; coordinator owns publication and exact-head CI/merge.
