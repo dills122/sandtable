@@ -1954,3 +1954,13 @@ files remain byte-identical to base. Full unchanged `just check` passes restore,
 First complete gate had one existing Runner aggregation failure; isolated and unchanged full
 reruns passed, with no confirmed root cause. Evidence and independent review are retained in
 [handoff](../work/handoffs/2026-10-04-native-settled-continuation.md). Parents017–019 remain open.
+
+### Task019D2 — settled-control executable contract
+
+Manifest frozen2026-10-04, exact baseline d919749b9969fd3c86e6a6ba72243d992d3cda5a (PR150 OPEN at dispatch). Five primary paths: new settled-control spec/schema/fixture/oracle and this plan. Complete019D0 packet+proof admission, receipt/hash progress, explicit supported witnesses, owner and forced repeat/finish, deadlines/fallback/retries/restart, pure preservation and new identity domains are required. No historical Result1 identity reuse. No-progress truth-table rows remain independent policy probes; pinned descriptor empty-witness outcomes are supported synthetic probes.
+
+[Contract](../specs/combat-settled-control-v1.md#frozen-manifest-and-acceptance) contains exact acceptance and next five-path native manifest. Semantic RED/GREEN precedes byte freeze; seven unchanged oracles and `just check`, fresh independent review up to3 instances precede draft publication. Any sixth primary/new gameplay/incompatible revision returns a bounded gate. Parents017–019, actual positive entry/ordinary repeated Movement/later-II/consumed and public activation remain open. Sole canonical-plan ownership belongs to019D2 until handoff.
+
+### Task019D2 executed evidence
+
+Semantic RED1 preceded implementation;10semantic groups then80frozen control traces/readback pass.32admitted contexts,64owner outcomes,4forced synthetic descriptors,236cuts/464retries,3676replay forgeries,341source attacks,valid re-signed lineage rejection and93capacity/canonical cases preserve literal policy/authority/resources. Seven unchanged oracles pass;140prior frozen JSON/oracle files remain byte-identical. Repository `just check` passes0warnings/errors,Boundary81/81 and2496solution tests0failed/skipped. Fresh GPT-6.1medium review1of3 is Ready with no actionable findings; independent new oracle and9supplementary malformed probes pass. Exact evidence/limits and proposed next native manifest live in [019D2 handoff](../work/handoffs/2026-10-04-settled-control-contract.md). No native settled-control/public capability or parent closure is claimed.
