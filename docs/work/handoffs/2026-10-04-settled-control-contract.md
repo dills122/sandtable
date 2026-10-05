@@ -66,7 +66,7 @@ Fresh GPT-6.1-sol medium /root/independent_review, fork_turns none, instance1 of
 
 ## Immediate next actions
 
-Independent review is complete. Commit scoped files and publish authorized stacked draft PR without merge. Coordinator reconciles dependency and contract acceptance. Next native manifest, separately accepted before implementation:
+Independent review and publication are complete. Coordinator reviews [draft PR151](https://github.com/dills122/sandtable/pull/151), reconciles PR150 dependency and separately accepts the native control manifest. No merge performed. Coordinator reconciles dependency and contract acceptance. Next native manifest, separately accepted before implementation:
 
 1. src/Cna.Core/Campaigns/CampaignCombatSettledControl.cs (private engine/models).
 2. src/Cna.Core/Campaigns/CampaignCombatSettledControlCodec.cs.
@@ -78,4 +78,4 @@ Consume full packet through019D1, derive source-specific assessment, match all32
 
 ## Delivery metadata and authorization
 
-Date2026-10-04 America/Toronto. Human original coordinator turn01a108e4-42ed-7720-90a7-bb8406e1a2f5 directly verified: GPT-6.1 medium child chats, TDD, independent review, Keychain PR and handoff back. Latest human requested next slice. Scoped publication/message authorized; no merge. Use [github-keychain-auth](/Users/dsteele/.ai-central/templates/skills/first-party/github-keychain-auth/SKILL.md) outside sandbox, env -u GH_TOKEN -u GITHUB_TOKEN for gh; never extract credentials. Implementation commit/head/PR recorded at publication closeout below.
+Date2026-10-04 America/Toronto. Human original coordinator turn01a108e4-42ed-7720-90a7-bb8406e1a2f5 directly verified: GPT-6.1 medium child chats, TDD, independent review, Keychain PR and handoff back. Latest human requested next slice. Scoped publication/message authorized; no merge. Use [github-keychain-auth](/Users/dsteele/.ai-central/templates/skills/first-party/github-keychain-auth/SKILL.md) outside sandbox, env -u GH_TOKEN -u GITHUB_TOKEN for gh; never extract credentials. Implementation commit `8b9eff448c553ee2ce4971616d040fd6631a56c2`; [draft PR151](https://github.com/dills122/sandtable/pull/151) published and attached, targeting `codex/native-settled-continuation`. This metadata-only followup records publication; obtain final task HEAD with `git rev-parse HEAD`. Exact source baseline remains `d919749b9969fd3c86e6a6ba72243d992d3cda5a`; dependency PR150 was still OPEN at immediate pre-publication verification. No merge. Only untracked .serena tooling remains outside commits.
