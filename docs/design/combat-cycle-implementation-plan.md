@@ -2221,3 +2221,51 @@ the next bounded task; TDD, immutable ownership, byte parity, combined-error pre
 full/Boundary/build/format checks and fresh review remain mandatory. Separate production
 trust, actual round/result/repeat and public activation gates are unchanged. Existing failed
 predecessor evidence is explicitly retained; none was counted as a pass.
+
+### Task019F1 — private native actual selection (S4 / REL-AUD-01 continuation)
+
+User-approved continuation, 2026-10-07 America/Toronto, from merged PR164/base
+`1dcbb5e6f27437ad17a98a732e31748d2b493fd7`, in the existing prepared checkout on
+`codex/native-actual-selection`. This is new bounded implementation work; no automation
+or resumed timed session was created. Five primary paths remain the accepted S4 manifest:
+CampaignCombatActualSelection, its codec, CombatActualSelectionTests, the Core test-project
+fixture link, and this plan. Dated administrative packets are separate.
+
+The dormant Core adapter fully replays the unchanged positive-entry source for both original
+seed1 Normal/NONE owners and owns the separate caller-trusted selection ledger. It verifies
+all16 frozen dependency bytes before replay, apply, retries and readbacks, with no proof cache.
+Its new actual source/segment/receipt framing matches the frozen S3 bytes at all152 cuts.
+The positive path accepts actual defender decline at19 and reaches Force Assignment20,
+stepIndex3, without allowing FA completion. Seven fallback variants per owner reach the
+same Reserve Release successor with six ordered step receipts and closed=true. Original
+entry history, twelve receipts, actual catalog activeSide=null, full MovementEndProof,
+Weather receipt/full-event hashes, World and seed1/cursor2 persist unchanged.
+
+Actor/time in events remain consistency evidence against the independently supplied ledger,
+not production authentication. The dependency lookup is a caller boundary for already retained
+bytes; future activation must acquire any I/O outside authoritative grain turns. No host,
+public/observation/intelligence/transport, full Snapshot, Archives restart, actual round/result,
+later-II/consumed/repeat or Runner admission is implemented. Old C3a/Round2/Result2 readers,
+fixtures and pins remain unchanged and incompatible. No parent017–019 completion is claimed.
+
+Semantic opening RED ran before native behavior: both owners remained13 where pending14 was
+required; opening GREEN passed2. Retained parity21 and combined-error matrix16 runs passed.
+Every-kind/state/clock table covers6,080 mechanics and276 complete/close public probes plus
+adjacent primitive, arm, segment, actor, structural version/position, decision, stale timer,
+choice/candidate and participant gates. Exhaustive native mutations cover4,456 re-signed
+selection-event leaves,8,266 proof leaves and1,512 original Request/Created/history leaves.
+An additional RED reproduced out-of-Int64 UTC001 versus required002 and a missing-dependency
+lookup exception versus009; bounded corrections produced GREEN3. Final retry coverage includes1,962 frozen variants plus654 availability-only inversions; final focused60 pass;
+exact required build/Boundary/full/format results are recorded in the dated S4 handoff.
+
+The unchanged actual-selection, positive-entry, C3a, Round2 and Result2 oracles pass.
+Breakdown, cycle-sequence and inherited Snapshot still fail the original land-sequence source
+pin; outward composition still fails its original gate. Separate synthetic Snapshot composition
+passes and does not waive inherited Snapshot failure. Historical S1a timeouts remain unverified
+observations. All16 admitted physical bytes and the embedded manifest match the frozen inventory.
+
+Status: locally committed REVIEW_READY for coordinator-owned fresh independent review,
+not an independent Ready verdict. No reviewer was spawned, no publication/CI/merge was attempted,
+and no review counter was reset. Coordinator retains the bounded3sets×3 review process and
+research recovery between failed sets. Review bootstrap and author explanation are separate;
+next gates are coordinator review/reconciliation, requested publication and exact-head CI/merge.
