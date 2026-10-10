@@ -2346,3 +2346,17 @@ bounded3sets×3 and high research recovery maximum2. No native/public/host/UI/AI
 seat/clock/store authentication, full Snapshot/Archives restart/Runner, paid/result/settlement,
 repeat/later-II/consumed or parent017–019 closure. REL-AUD-02C native follows only after contract
 review and coordinator reconciliation. Research PR166 remains separate from this contract.
+
+
+REL-AUD-02B review instance1of9/set1pass1 at75b308d returned **Not ready**, one bounded P2.
+Coordinator accepted the RoundEffect error-order defect: malformed dictionary or missing/non-string
+kind must reject001 before unknown string-tag003. The correction is limited to new grammar;
+inherited Effect behavior and frozen successful fixture remain byte-identical. Retained public
+RED reproduced null effect003 instead of001; GREEN covers54 source/control/proof readbacks,
+including version/receipt conflicts. The amended full normal verifier passed exit0 in1897.769s
+with identical before/after verifier SHA256 `2596531cb50ddbae7f1e606284f3d845b224d4f1fc10f478b717843d1062990c`. Existing acceptance coverage
+remains passing; this normal run adds54 RoundEffect checks. Four original predecessor failures
+remain separately recorded without new redundant sweeps. Draft PR167 is stacked on researchPR166.
+Correction is author REVIEW_READY for fresh review instance2of9/set1pass2; review count is1of9,
+research recoveries0of2, no heavy pivot or reset. No native work or merge. See the dated
+[review reconciliation](../work/reviews/2026-10-10-actual-round-entry-contract-review-1-response.md).

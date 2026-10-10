@@ -46,7 +46,8 @@ def typed(value, kind, path='', depth=0):
     if kind.endswith('?'):
         if value is not None: typed(value,kind[:-1],path,depth)
     elif kind == 'RoundEffect':
-        require(type(value) is dict and type(value.get('kind')) is str and value['kind'] in INVENTORY['effectTags'],3,path)
+        require(type(value) is dict and type(value.get('kind')) is str,1,path)
+        require(value['kind'] in INVENTORY['effectTags'],3,path)
         typed(value,INVENTORY['effectTags'][value['kind']],path,depth)
     elif kind == 'Effect':
         require(type(value) is dict and type(value.get('kind')) is str and value['kind'] in selection.TAGS,3,path)
@@ -821,6 +822,28 @@ def consumption_checks(counts):
         finally:dependency_bytes=original
         assert calls[0]==3
 
+def round_effect_checks(counts):
+    # Public readbacks of the frozen original source use its independently supplied ledgers.
+    row=json.loads(FIXTURE.read_text())['cases'][0]
+    source=json.loads(row['source']['canonicalUtf8'])
+    old=[json.loads(item['canonicalUtf8']) for item in row['trustedSelectionInputs']]
+    ledger=[json.loads(item['canonicalUtf8']) for item in row['trustedRoundInputs']]
+    control=row['controls'][-1]['canonicalUtf8'].encode('ascii')
+    certificate=row['proofs'][-1]['canonicalUtf8'].encode('ascii')
+    cases=((None,1),([],1),({},1),({'kind':True},1),({'kind':1},1),({'kind':'unknown-effect'},3))
+    for effect,expected in cases:
+        for conflict in ('none','version','receipt'):
+            forged=copy.deepcopy(source);event=json.loads(forged['roundEventCanonicalUtf8'][0])
+            event['effect']=copy.deepcopy(effect)
+            if conflict=='version':event['contractVersion']=99
+            elif conflict=='receipt':event['receiptId']='arc.'+'0'*64
+            forged['roundEventCanonicalUtf8'][0]=encode(event).decode('ascii')
+            readers=(lambda:read_source(encode(forged),old,ledger),
+                     lambda:read_control(control,forged,old,ledger),
+                     lambda:read_proof(certificate,forged,old,ledger))
+            for index,reader in enumerate(readers):
+                reject(f'round-effect/{expected}/{conflict}/{index}',reader,counts,expected)
+
 def adversarial_tests(results,mutations=True):
     counts={}
     for side,first,cancel,result in results:
@@ -828,7 +851,7 @@ def adversarial_tests(results,mutations=True):
         print('PASS trace:',side,first,cancel,flush=True)
     print('PASS cuts/retries/ownership:',json.dumps(counts,sort_keys=True),flush=True)
     predecessor_checks(counts);print('PASS predecessor:',json.dumps(counts,sort_keys=True),flush=True)
-    privacy_checks(counts);boundary_checks(counts);precedence_checks(counts);lifecycle_matrix(counts);closure_checks(counts);dependency_checks(counts);consumption_checks(counts)
+    privacy_checks(counts);boundary_checks(counts);precedence_checks(counts);lifecycle_matrix(counts);closure_checks(counts);dependency_checks(counts);consumption_checks(counts);round_effect_checks(counts)
     print('PASS adversarial:',json.dumps(counts,sort_keys=True),flush=True)
     return counts
 
