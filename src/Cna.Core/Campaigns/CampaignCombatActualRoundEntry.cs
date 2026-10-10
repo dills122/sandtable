@@ -132,7 +132,10 @@ internal static class CampaignCombatActualRoundEntry
 
     internal static CombatActualRoundEntryResult ReplayTrustedSource(ReadOnlySpan<byte> source, CampaignCombatCreationContext context,
         IReadOnlyList<byte[]> trustedSelectionInputs, IReadOnlyList<byte[]> trustedRoundInputs, Func<string, byte[]> dependencyBytes, ReplayMemo memo)
-    { var frame = Replay(source, context, trustedSelectionInputs, trustedRoundInputs, dependencyBytes, memo); return Result(frame, frame.Control); }
+    {
+        var frame = Replay(source, context, trustedSelectionInputs, trustedRoundInputs, dependencyBytes, memo, true, out var retained);
+        return retained ?? Result(frame!, frame!.Control);
+    }
 
     public static CombatActualRoundEntryResult ApplyTrustedSource(ReadOnlySpan<byte> source, CampaignCombatCreationContext context,
         IReadOnlyList<byte[]> trustedSelectionInputs, IReadOnlyList<byte[]> trustedRoundInputs, ReadOnlySpan<byte> currentInput,
@@ -178,9 +181,14 @@ internal static class CampaignCombatActualRoundEntry
 
     private static Frame Replay(ReadOnlySpan<byte> source, CampaignCombatCreationContext context, IReadOnlyList<byte[]> selectionInputs,
         IReadOnlyList<byte[]> roundInputs, Func<string, byte[]> dependencyBytes, ReplayMemo? memo = null)
+        => Replay(source, context, selectionInputs, roundInputs, dependencyBytes, memo ?? Memo, false, out _)!;
+
+    private static Frame? Replay(ReadOnlySpan<byte> source, CampaignCombatCreationContext context, IReadOnlyList<byte[]> selectionInputs,
+        IReadOnlyList<byte[]> roundInputs, Func<string, byte[]> dependencyBytes, ReplayMemo memo, bool readOnly,
+        out CombatActualRoundEntryResult? retained)
     {
+        retained = null;
         VerifyDependencies(dependencyBytes);
-        memo ??= Memo;
         var ownedSource = source.Length <= 1_048_576 ? source.ToArray() : null;
         ReadOnlySpan<byte> retainedSource = ownedSource is null ? source : ownedSource;
         var packet = Object(retainedSource, "ActualRoundSource"); Require(Number(packet, "contractVersion") == 1, 3);
@@ -197,6 +205,13 @@ internal static class CampaignCombatActualRoundEntry
         if (evidence is not null && memo.Find(evidence.Bytes) is { } hit)
         {
             if (hit.ConsumedAa) _ = PinnedBytes(ContentPath, dependencyBytes);
+            // All source/input guards and fresh physical checks precede this read-only shortcut.
+            // Apply still reconstructs its frame and validates the current command independently.
+            if (readOnly && memo.ReadResult(hit) is { } result)
+            {
+                retained = new(result.ControlBytes, result.ProofBytes);
+                return null;
+            }
             var retainedBase = JsonNode.Parse(hit.BaseBytes)!.AsObject();
             var retainedFacts = new ReplayFacts(retainedBase, hit.BaseHash, hit.ClockHash, hit.Route.ToArray());
             return new(packet, retainedBase, JsonNode.Parse(hit.ControlBytes)!.AsObject(), hit.Events.Select(x => x.ToArray()).ToArray(), retainedFacts, hit, memo);

@@ -2378,15 +2378,18 @@ values in one test. These checkpoints precede the final full acceptance run. Ori
 null handling and canonical ASCII spelling each have retained failing and passing tests.
 The expanded exhaustive mutation and lifecycle cases are implemented; complete native
 acceptance passed171 tests with0failed/0skipped in17m12.877s(Debugnet10arm64) after
-the bounded replay optimization below. Corrected solution build
-and full format verification passed, but full solution tests, author engineering self-review,
-fresh independent review and exact-head CI remain pending. This is unverified draft work, not an
+the bounded replay optimization below. That checkpoint also passed the full Debug solution:
+2,764 tests, zero failures or skips, in 29m56.179s. Solution build and full format verification
+passed. Its exact-head Release CI cancelled at the unchanged 15-minute job limit; passing
+local tests do not waive that required gate. Author engineering self-review, fresh independent
+implementation review and passing exact-head CI remain pending. This is draft work, not an
 independent Ready verdict or DAY-A acceptance. Independent review counter0of9, recovery0of2.
 
 Performance follow-up retained the initial15-minute hosted CI cancellation and incomplete
 45-minute local Core run. That local run also reported one ExerciseRunner aggregation failure;
 the exact isolated test and full469-test ExerciseRunner module later passed. Its original
-failure remains unexplained and unwaived until corrected solution validation is reconciled.
+failure remains unexplained and retained; the later corrected full solution passed that test
+in 8.392s while Core was active. This does not establish the original failure's cause.
 
 The authorized correction stays in this new family: per-call authenticated Base/clock/route
 facts and one successful history-frame memo. Keys own the complete raw canonical source,
@@ -2400,6 +2403,21 @@ budgets; oversize valid candidates authenticate cold. Small isolated policies ex
 ownership, cold/warm physical pins, context/ledger isolation, concurrent insertion/eviction,
 reentrant acquisition, resource bounds and disabled-admission recovery. Complete native acceptance passed, including the memo regressions;
 corrected full solution tests and required Release CI still determine readiness.
+
+A second scoped correction returns the same-entry retained read-only Result after the existing
+source/version/count and round-input canonical guards, complete evidence lookup and historical
+AA Content check, before mutable Base/Control/event frame reconstruction. Apply keeps its frame
+and fresh-input path; readers still parse and compare each supplied claim. A result-absent hit
+continues through frame recovery and original Result construction. Six additional regression
+rows cover both owners, prepared seal orders and cancellations, result-absent/present literals,
+owned return buffers, malformed/version/count guards and fresh exact Apply retries. Their
+pre-optimization baseline passed 6/6; focused memo tests passed 27/27 after the correction.
+All original 171 tests remain; complete acceptance passed 177/177 with zero failures/skips
+in 14m18.036s (Debug/net10.0/arm64). Corrected full solution validation is in progress;
+author self-review, independent implementation review and passing exact-head Release CI
+remain mandatory. Unchanged local mutation cases 0/17/2 passed in 17.039/18.450/16.300s versus
+28.507/25.768/21.714s at the prior memo checkpoint. These are local Debug measurements, not
+an aggregate component attribution or a forecast of hosted CI completion.
 
 The existing four predecessor failures remain separately recorded without waiver or pin
 refresh. Paid commitment/result/settlement, full Snapshot/Archives restart, repeated Movement,

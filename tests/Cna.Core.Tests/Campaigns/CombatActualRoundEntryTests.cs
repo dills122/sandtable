@@ -235,6 +235,44 @@ public sealed class CombatActualRoundEntryTests
     [InlineData(17)]
     [InlineData(18)]
     [InlineData(19)]
+    public void MemoReadOnlyResultAbsentThenPresentPreservesLiteralsGuardsAndFreshApply(int index)
+    {
+        using var fixture = Fixture(); var row = fixture.RootElement.GetProperty("cases")[index]; var context = Context(); var dependencies = DependencyLookup();
+        var source = Artifact(row.GetProperty("source")); var old = Ledger(row, "trustedSelectionInputs"); var round = Ledger(row, "trustedRoundInputs");
+        var expectedProof = Artifact(row.GetProperty("proofs").EnumerateArray().Last()); var expectedControl = Artifact(row.GetProperty("controls").EnumerateArray().Last());
+        var memo = new CampaignCombatActualRoundEntry.ReplayMemo(8, 4 * 1024 * 1024, 1024 * 1024);
+        // Apply retains the authenticated frame, but its accepted duplicate receipt cannot populate a read-only Result.
+        var duplicate = CampaignCombatActualRoundEntry.ApplyTrustedSource(source, context, old, round, round[0], dependencies, false, memo);
+        Assert.True(duplicate.Duplicate); Assert.NotNull(duplicate.EventBytes); Assert.Equal(expectedProof, duplicate.ProofBytes);
+        Assert.Equal(1, memo.Usage.Count); var frameBytes = memo.Usage.Bytes;
+        var first = CampaignCombatActualRoundEntry.ReplayTrustedSource(source, context, old, round, dependencies, memo);
+        Assert.True(memo.Usage.Bytes > frameBytes);
+        var resultBytes = memo.Usage.Bytes;
+        for (var repeat = 0; repeat < 3; repeat++)
+        {
+            var result = CampaignCombatActualRoundEntry.ReplayTrustedSource(source, context, old, round, dependencies, memo);
+            Assert.Equal(expectedProof, result.ProofBytes); Assert.Equal(expectedControl, result.ControlBytes);
+            Assert.Null(result.EventBytes); Assert.Null(result.ReceiptId); Assert.False(result.Duplicate);
+            Array.Fill(result.ProofBytes, (byte)0); Array.Fill(result.ControlBytes, (byte)0);
+            Assert.Equal(expectedProof, first.ProofBytes); Assert.Equal(resultBytes, memo.Usage.Bytes);
+        }
+        var badVersion = JsonNode.Parse(source)!.AsObject(); badVersion["contractVersion"] = 2;
+        Reject(() => CampaignCombatActualRoundEntry.ReplayTrustedSource(Encode(badVersion), context, old, round, dependencies, memo), 3);
+        Reject(() => CampaignCombatActualRoundEntry.ReplayTrustedSource(source, context, old, round[..^1], dependencies, memo), 1);
+        var badInput = round.Select(x => x.ToArray()).ToArray(); badInput[0] = [.. badInput[0], (byte)' '];
+        Reject(() => CampaignCombatActualRoundEntry.ReplayTrustedSource(source, context, old, badInput, dependencies, memo), 8);
+        duplicate = CampaignCombatActualRoundEntry.ApplyTrustedSource(source, context, old, round, round[0], dependencies, false, memo);
+        Assert.True(duplicate.Duplicate); Assert.Equal(Artifact(row.GetProperty("events")[0]), duplicate.EventBytes);
+        Assert.Equal(expectedProof, duplicate.ProofBytes);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(17)]
+    [InlineData(18)]
+    [InlineData(19)]
     public void MemoColdAndWarmStillCheckEveryPhysicalPin(int index)
     {
         using var fixture = Fixture(); var row = fixture.RootElement.GetProperty("cases")[index]; var context = Context(); var dependencies = DependencyLookup();
