@@ -52,7 +52,7 @@ jobs:
           RUN_ATTEMPT: ${{ github.run_attempt }}
       - name: Retain inventory and discovery evidence
         if: ${{ always() }}
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: ci-inventory-${{ github.sha }}-${{ github.run_attempt }}
           path: artifacts/ci
@@ -96,7 +96,7 @@ jobs:
           TEST_SHARD: ${{ matrix.shard }}
       - name: Retain results, process status and timings
         if: ${{ always() }}
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: ci-${{ matrix.shard }}-${{ github.sha }}-${{ github.run_attempt }}
           path: artifacts/ci
@@ -136,7 +136,7 @@ jobs:
           NEEDS_JSON: ${{ toJSON(needs) }}
       - name: Retain aggregate evidence
         if: ${{ always() }}
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: coverage-aggregate-${{ github.sha }}-${{ github.run_attempt }}
           path: artifacts/ci
