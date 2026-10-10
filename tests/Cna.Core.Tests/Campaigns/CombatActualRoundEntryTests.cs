@@ -127,6 +127,7 @@ public sealed class CombatActualRoundEntryTests
         using var fixture = Fixture(); var row = fixture.RootElement.GetProperty("cases")[0]; var context = Context();
         var source = Cut(JsonNode.Parse(Artifact(row.GetProperty("source")))!.AsObject(), 4); var old = Ledger(row, "trustedSelectionInputs"); var round = Ledger(row, "trustedRoundInputs");
         var original = DependencyLookup(); var calls = 0;
+        _ = CampaignCombatActualRoundEntry.ReplayTrustedSource(source, context, old, round[..4], original);
         byte[] Lookup(string path)
         {
             if (path != "docs/specs/fixtures/combat-content-v7.canonical.json" || ++calls <= 2) return original(path);
@@ -135,6 +136,191 @@ public sealed class CombatActualRoundEntryTests
         }
         Reject(() => CampaignCombatActualRoundEntry.ApplyTrustedSource(source, context, old, round[..4], round[4], Lookup), 9);
         Assert.Equal(3, calls);
+    }
+
+    [Fact]
+    public void WarmReplayOwnsBytesAndCannotBorrowEitherLedgerOrTrustedContext()
+    {
+        using var fixture = Fixture(); var row = fixture.RootElement.GetProperty("cases")[0]; var context = Context(); var original = DependencyLookup();
+        var source = Artifact(row.GetProperty("source")); var old = Ledger(row, "trustedSelectionInputs"); var round = Ledger(row, "trustedRoundInputs");
+        var expected = CampaignCombatActualRoundEntry.ReplayTrustedSource(source, context, old, round, original).ProofBytes;
+        var calls = new List<string>();
+        byte[] Lookup(string path) { calls.Add(path); return original(path); }
+        var warm = CampaignCombatActualRoundEntry.ReplayTrustedSource(source, context, old, round, Lookup);
+        Assert.Equal(expected, warm.ProofBytes);
+        // Deterministic work bound: one full57-pin check and Content recheck, without redundant predecessor replay.
+        Assert.Equal(58, calls.Count);
+        Assert.Equal("docs/specs/fixtures/combat-content-v7.canonical.json", calls[^1]);
+        Assert.Equal(57, calls.Take(57).Distinct(StringComparer.Ordinal).Count());
+        Array.Fill(warm.ProofBytes, (byte)0); Array.Fill(warm.ControlBytes, (byte)0);
+        Assert.Equal(expected, CampaignCombatActualRoundEntry.ReplayTrustedSource(source, context, old, round, original).ProofBytes);
+        var changedOld = old.Select(x => x.ToArray()).ToArray(); var input = JsonNode.Parse(changedOld[0])!; input["actor"] = "axis"; changedOld[0] = Encode(input);
+        Reject(() => CampaignCombatActualRoundEntry.ReplayTrustedSource(source, context, changedOld, round, original), 4);
+        var changedRound = round.Select(x => x.ToArray()).ToArray(); input = JsonNode.Parse(changedRound[0])!; input["admittedAt"] = 3001; changedRound[0] = Encode(input);
+        Reject(() => CampaignCombatActualRoundEntry.ReplayTrustedSource(source, context, old, changedRound, original), 6);
+        var changedSource = JsonNode.Parse(source)!; changedSource["actualSelectionSourceCanonicalUtf8"] = changedSource["actualSelectionSourceCanonicalUtf8"]!.GetValue<string>() + " ";
+        Reject(() => CampaignCombatActualRoundEntry.ReplayTrustedSource(Encode(changedSource), context, old, round, original), 4);
+        var artifact = Cna1979CombatContentCatalog.Artifact; var scenario = Assert.Single(artifact.Definition.Scenarios);
+        var priorSetup = context.Setup;
+        var setup = CampaignSetupSnapshotV7.Create("round-cache-foreign-setup", priorSetup.InitialGameTurn,
+            priorSetup.InitialInitiative, priorSetup.OpeningPreamble, priorSetup.Weather, priorSetup.StageEntry,
+            priorSetup.CombatInitialization, artifact, scenario, priorSetup.Sources);
+        var other = new CampaignCombatCreationContext(Cna1979CombatRuleset.Manifest, setup, artifact, scenario, context.Configuration);
+        Reject(() => CampaignCombatActualRoundEntry.ReplayTrustedSource(source, other, old, round, original), 4);
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void WarmPreparedReplayRechecksContentAfterItsPassingPreflight(bool missing)
+    {
+        using var fixture = Fixture(); var row = fixture.RootElement.GetProperty("cases")[0]; var context = Context(); var original = DependencyLookup();
+        var source = Artifact(row.GetProperty("source")); var old = Ledger(row, "trustedSelectionInputs"); var round = Ledger(row, "trustedRoundInputs");
+        _ = CampaignCombatActualRoundEntry.ReplayTrustedSource(source, context, old, round, original);
+        var calls = 0;
+        byte[] Lookup(string path)
+        {
+            if (path != "docs/specs/fixtures/combat-content-v7.canonical.json" || ++calls == 1) return original(path);
+            if (missing) throw new KeyNotFoundException(path);
+            return [.. original(path), (byte)' '];
+        }
+        Reject(() => CampaignCombatActualRoundEntry.ReplayTrustedSource(source, context, old, round, Lookup), 9);
+        Assert.Equal(2, calls);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(17)]
+    [InlineData(18)]
+    [InlineData(19)]
+    public void MemoWarmAuthorityRequiresBothCompleteRawLedgersAndOwnedCallerBytes(int index)
+    {
+        using var fixture = Fixture(); var row = fixture.RootElement.GetProperty("cases")[index]; var context = Context(); var dependencies = DependencyLookup();
+        var source = Artifact(row.GetProperty("source")); var old = Ledger(row, "trustedSelectionInputs"); var round = Ledger(row, "trustedRoundInputs");
+        var memo = new CampaignCombatActualRoundEntry.ReplayMemo(8, 4 * 1024 * 1024, 1024 * 1024);
+        CombatActualRoundEntryResult Replay(byte[] s, byte[][] o, byte[][] r) => CampaignCombatActualRoundEntry.ReplayTrustedSource(s, context, o, r, dependencies, memo);
+        var expected = Artifact(row.GetProperty("proofs").EnumerateArray().Last());
+        Assert.Equal(expected, Replay(source, old, round).ProofBytes);
+        Assert.Equal(expected, Replay(source, old, round).ProofBytes);
+        var originalSource = source.ToArray(); var originalOld = old.Select(x => x.ToArray()).ToArray(); var originalRound = round.Select(x => x.ToArray()).ToArray();
+        Array.Fill(source, (byte)0); foreach (var bytes in old.Concat(round)) Array.Fill(bytes, (byte)0);
+        Assert.Equal(expected, Replay(originalSource, originalOld, originalRound).ProofBytes);
+        Reject(() => Replay(originalSource, [], originalRound), 4);
+        Reject(() => Replay(originalSource, originalOld[..^1], originalRound), 4);
+        var nullOld = originalOld.ToArray(); nullOld[0] = null!; Reject(() => Replay(originalSource, nullOld, originalRound), 4);
+        Reject(() => Replay(originalSource, originalOld, originalRound[..^1]), 1);
+        var nullRound = originalRound.ToArray(); nullRound[0] = null!; Reject(() => Replay(originalSource, originalOld, nullRound), 1);
+        Reject(() => Replay(originalSource, originalOld, originalRound.Reverse().ToArray()), 4);
+        var otherOwner = fixture.RootElement.GetProperty("cases")[index < 17 ? 17 : 0];
+        Reject(() => Replay(originalSource, Ledger(otherOwner, "trustedSelectionInputs"), originalRound), 4);
+        foreach (var config in new[]
+        {
+            new CombatDecisionConfiguration("round-cache-other-config", context.Configuration.RulesInputHash, context.Configuration.Windows),
+            new CombatDecisionConfiguration(context.Configuration.ConfigId, context.Configuration.RulesInputHash,
+                context.Configuration.Windows.Select(x => x.Kind == "force-assignment" ? x with { DecisionBudgetMilliseconds = x.DecisionBudgetMilliseconds + 1 } : x)),
+        })
+        {
+            var other = new CampaignCombatCreationContext(Cna1979CombatRuleset.Manifest, context.Setup, context.Setup.Artifact, context.Setup.Scenario, config);
+            Reject(() => CampaignCombatActualRoundEntry.ReplayTrustedSource(originalSource, other, originalOld, originalRound, dependencies, memo), 4);
+        }
+        Assert.Equal(expected, Replay(originalSource, originalOld, originalRound).ProofBytes);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(17)]
+    [InlineData(18)]
+    [InlineData(19)]
+    public void MemoColdAndWarmStillCheckEveryPhysicalPin(int index)
+    {
+        using var fixture = Fixture(); var row = fixture.RootElement.GetProperty("cases")[index]; var context = Context(); var dependencies = DependencyLookup();
+        var source = Artifact(row.GetProperty("source")); var old = Ledger(row, "trustedSelectionInputs"); var round = Ledger(row, "trustedRoundInputs");
+        var pins = fixture.RootElement.GetProperty("originalSourceHashes").EnumerateObject().Concat(fixture.RootElement.GetProperty("additionalSourceHashes").EnumerateObject()).ToArray();
+        foreach (var warm in new[] { false, true })
+        {
+            var memo = new CampaignCombatActualRoundEntry.ReplayMemo(8, 4 * 1024 * 1024, 1024 * 1024);
+            if (warm) _ = CampaignCombatActualRoundEntry.ReplayTrustedSource(source, context, old, round, dependencies, memo);
+            foreach (var pin in pins) foreach (var missing in new[] { false, true })
+            {
+                byte[] Lookup(string path)
+                {
+                    if (path != pin.Name) return dependencies(path);
+                    if (missing) throw new KeyNotFoundException(path);
+                    return [.. dependencies(path), (byte)' '];
+                }
+                Reject(() => CampaignCombatActualRoundEntry.ReplayTrustedSource(source, context, old, round, Lookup, memo), 9);
+            }
+        }
+    }
+
+    [Fact]
+    public void MemoEvictionAndOversizeValidEntriesOnlyChangeReplayWork()
+    {
+        using var fixture = Fixture(); var rows = fixture.RootElement.GetProperty("cases"); var context = Context(); var dependencies = DependencyLookup();
+        var memo = new CampaignCombatActualRoundEntry.ReplayMemo(1, 1024 * 1024, 1024 * 1024);
+        foreach (var index in new[] { 0, 2, 17, 19 })
+        {
+            var row = rows[index]; var packet = JsonNode.Parse(Artifact(row.GetProperty("source")))!.AsObject(); var old = Ledger(row, "trustedSelectionInputs"); var round = Ledger(row, "trustedRoundInputs"); var proofs = Ledger(row, "proofs");
+            for (var cut = 0; cut <= round.Length; cut++)
+            {
+                var source = Cut(packet, cut); var retained = round[..cut];
+                Assert.Equal(proofs[cut], CampaignCombatActualRoundEntry.ReplayTrustedSource(source, context, old, retained, dependencies, memo).ProofBytes);
+                Assert.Equal(proofs[cut], CampaignCombatActualRoundEntry.ReplayTrustedSource(source, context, old, retained, dependencies, memo).ProofBytes);
+                var usage = memo.Usage; Assert.InRange(usage.Count, 0, 1); Assert.InRange(usage.Bytes, 0, memo.MaximumBytes);
+                // Force eviction with the other owner, then cold-recover this cut with fresh admission disabled.
+                var other = rows[index < 17 ? 17 : 0];
+                _ = CampaignCombatActualRoundEntry.ReplayTrustedSource(Artifact(other.GetProperty("source")), context, Ledger(other, "trustedSelectionInputs"), Ledger(other, "trustedRoundInputs"), dependencies, memo);
+                Assert.Equal(proofs[cut], CampaignCombatActualRoundEntry.ReplayTrustedSource(source, context, old, retained, dependencies, memo).ProofBytes);
+                if (cut > 0)
+                    Assert.True(CampaignCombatActualRoundEntry.ApplyTrustedSource(source, context, old, retained, retained[0], dependencies, false, memo).Duplicate);
+            }
+            foreach (var small in new[]
+            {
+                new CampaignCombatActualRoundEntry.ReplayMemo(0, 1024 * 1024, 1024 * 1024),
+                new CampaignCombatActualRoundEntry.ReplayMemo(8, 1, 1024 * 1024),
+                new CampaignCombatActualRoundEntry.ReplayMemo(8, 1024 * 1024, 1),
+            })
+            {
+                for (var repeat = 0; repeat < 2; repeat++)
+                    Assert.Equal(proofs[^1], CampaignCombatActualRoundEntry.ReplayTrustedSource(Artifact(row.GetProperty("source")), context, old, round, dependencies, small).ProofBytes);
+                Assert.Equal((0, 0L), small.Usage);
+            }
+        }
+    }
+
+    [Fact]
+    public void MemoConcurrentMissesHitsEvictionAndReentrantCallbacksKeepOwnedLiteralResults()
+    {
+        using var fixture = Fixture(); var rows = fixture.RootElement.GetProperty("cases"); var context = Context(); var dependencies = DependencyLookup();
+        var memo = new CampaignCombatActualRoundEntry.ReplayMemo(2, 1024 * 1024, 1024 * 1024);
+        var indices = new[] { 0, 2, 17, 19 };
+        Parallel.For(0, 12, run =>
+        {
+            var row = rows[indices[run % indices.Length]]; var source = Artifact(row.GetProperty("source")); var old = Ledger(row, "trustedSelectionInputs"); var round = Ledger(row, "trustedRoundInputs");
+            var proof = Artifact(row.GetProperty("proofs").EnumerateArray().Last());
+            for (var repeat = 0; repeat < 2; repeat++)
+            {
+                var result = CampaignCombatActualRoundEntry.ReplayTrustedSource(source, context, old, round, dependencies, memo);
+                Assert.Equal(proof, result.ProofBytes); Array.Fill(result.ProofBytes, (byte)0); Array.Fill(result.ControlBytes, (byte)0);
+            }
+        });
+        var target = rows[0]; var reentered = false;
+        byte[] Lookup(string path)
+        {
+            if (!reentered)
+            {
+                reentered = true; var other = rows[17];
+                _ = CampaignCombatActualRoundEntry.ReplayTrustedSource(Artifact(other.GetProperty("source")), context, Ledger(other, "trustedSelectionInputs"), Ledger(other, "trustedRoundInputs"), dependencies, memo);
+            }
+            return dependencies(path);
+        }
+        Assert.Equal(Artifact(target.GetProperty("proofs").EnumerateArray().Last()), CampaignCombatActualRoundEntry.ReplayTrustedSource(Artifact(target.GetProperty("source")), context,
+            Ledger(target, "trustedSelectionInputs"), Ledger(target, "trustedRoundInputs"), Lookup, memo).ProofBytes);
+        Assert.True(reentered); var usage = memo.Usage; Assert.InRange(usage.Count, 0, 2); Assert.InRange(usage.Bytes, 0, memo.MaximumBytes);
     }
 
     [Fact]
@@ -282,6 +468,31 @@ public sealed class CombatActualRoundEntryTests
             }
         foreach (var replacement in new[] { old[..^1], old.Concat([old[0]]).ToArray(), old.Reverse().ToArray() })
             Reject(() => CampaignCombatActualRoundEntry.ReplayTrustedSource(Encode(source), context, replacement, [], dependencies), 4);
+    }
+
+    [Fact]
+    public void AllOriginalFallbackVariantsRemainInvalidRoundEntryPredecessors()
+    {
+        using var fixture = Fixture();
+        using var selectionFixture = JsonDocument.Parse(File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory,
+            "Campaigns", "Fixtures", "combat-actual-selection-v1.json")));
+        var context = Context(); var dependencies = DependencyLookup(); var checkedVariants = 0;
+        foreach (var fallback in selectionFixture.RootElement.GetProperty("cases").EnumerateArray().Where(x => x.GetProperty("variant").GetString() != "selected"))
+        {
+            var selectionSource = Artifact(fallback.GetProperty("source")); var old = Ledger(fallback, "trustedInputs");
+            var authenticated = CampaignCombatActualSelection.ReplayTrustedSource(selectionSource, context, old, dependencies);
+            Assert.True(authenticated.Control.GetProperty("closed").GetBoolean());
+            var row = fixture.RootElement.GetProperty("cases").EnumerateArray().First(x => x.GetProperty("owner").GetString() == fallback.GetProperty("owner").GetString());
+            var packet = JsonNode.Parse(Cut(JsonNode.Parse(Artifact(row.GetProperty("source")))!.AsObject(), 0))!;
+            packet["actualSelectionSourceCanonicalUtf8"] = Encoding.ASCII.GetString(selectionSource); var source = Encode(packet);
+            Reject(() => CampaignCombatActualRoundEntry.ReplayTrustedSource(source, context, old, [], dependencies), 4);
+            Reject(() => CampaignCombatActualRoundEntry.ApplyTrustedSource(source, context, old, [], Artifact(row.GetProperty("trustedRoundInputs")[0]), dependencies), 4);
+            Reject(() => CampaignCombatActualRoundEntryCodec.ReadSource(source, context, old, [], dependencies), 4);
+            Reject(() => CampaignCombatActualRoundEntryCodec.ReadControl(Artifact(row.GetProperty("controls")[0]), source, context, old, [], dependencies), 4);
+            Reject(() => CampaignCombatActualRoundEntryCodec.ReadProof(Artifact(row.GetProperty("proofs")[0]), source, context, old, [], dependencies), 4);
+            checkedVariants++;
+        }
+        Assert.Equal(14, checkedVariants);
     }
 
     [Theory]

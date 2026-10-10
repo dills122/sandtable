@@ -29,23 +29,124 @@ internal sealed class CombatActualRoundEntryResult
 /// </summary>
 internal static class CampaignCombatActualRoundEntry
 {
-    private sealed record Frame(JsonObject Packet, JsonObject Base, JsonObject Control, byte[][] Events);
+    internal sealed record ReplayFacts(JsonObject Base, string BaseHash, string ClockHash, string[] Route);
+    private sealed record Frame(JsonObject Packet, JsonObject Base, JsonObject Control, byte[][] Events, ReplayFacts Facts, ReplayMemo.Entry? MemoEntry = null, ReplayMemo? Memo = null);
+    // Cache only successful authenticated history; fresh command outcomes never enter this memo.
+    private static readonly ReplayMemo Memo = new(128, 16 * 1024 * 1024, 1024 * 1024);
+    internal sealed class ReplayMemo
+    {
+        internal const int MaximumKeyBytes = 2 * 1024 * 1024;
+        private readonly object gate = new();
+        private readonly Dictionary<string, LinkedListNode<Entry>> entries = new(StringComparer.Ordinal);
+        private readonly LinkedList<Entry> order = new();
+        private long retainedBytes;
+        internal ReplayMemo(int maximumEntries, long maximumBytes, long maximumEntryBytes)
+        {
+            ArgumentOutOfRangeException.ThrowIfNegative(maximumEntries);
+            ArgumentOutOfRangeException.ThrowIfNegative(maximumBytes);
+            ArgumentOutOfRangeException.ThrowIfNegative(maximumEntryBytes);
+            MaximumEntries = maximumEntries; MaximumBytes = maximumBytes; MaximumEntryBytes = maximumEntryBytes;
+        }
+        internal int MaximumEntries { get; }
+        internal long MaximumBytes { get; }
+        internal long MaximumEntryBytes { get; }
+        internal (int Count, long Bytes) Usage { get { lock (gate) return (entries.Count, retainedBytes); } }
+        internal sealed class Entry(byte[] evidence, byte[] baseBytes, byte[] control, byte[][] events, ReplayFacts facts, bool consumedAa)
+        {
+            internal readonly byte[] Evidence = evidence;
+            internal readonly byte[] BaseBytes = baseBytes;
+            internal readonly byte[] ControlBytes = control;
+            internal readonly byte[][] Events = events;
+            internal readonly string BaseHash = facts.BaseHash;
+            internal readonly string ClockHash = facts.ClockHash;
+            internal readonly string[] Route = facts.Route.ToArray();
+            internal readonly bool ConsumedAa = consumedAa;
+            internal readonly string Key = Hash(evidence);
+            internal long Bytes = evidence.LongLength + baseBytes.LongLength + control.LongLength + events.Sum(x => x.LongLength) + 512 + facts.Route.Sum(x => x.Length * 2L);
+            internal CombatActualRoundEntryResult? Result;
+        }
+        internal Entry? Find(byte[] evidence)
+        {
+            var key = Hash(evidence);
+            lock (gate)
+            {
+                if (!entries.TryGetValue(key, out var node) || !evidence.AsSpan().SequenceEqual(node.Value.Evidence)) return null;
+                order.Remove(node); order.AddLast(node); return node.Value;
+            }
+        }
+        internal Entry? Retain(Entry entry)
+        {
+            if (MaximumEntries == 0 || entry.Bytes > MaximumEntryBytes || entry.Bytes > MaximumBytes) return null;
+            lock (gate)
+            {
+                if (entries.TryGetValue(entry.Key, out var existing)) return entry.Evidence.AsSpan().SequenceEqual(existing.Value.Evidence) ? existing.Value : null;
+                while (entries.Count >= MaximumEntries || retainedBytes + entry.Bytes > MaximumBytes)
+                {
+                    var oldest = order.First!; order.RemoveFirst(); entries.Remove(oldest.Value.Key); retainedBytes -= oldest.Value.Bytes;
+                }
+                entries.Add(entry.Key, order.AddLast(entry)); retainedBytes += entry.Bytes; return entry;
+            }
+        }
+        internal CombatActualRoundEntryResult? ReadResult(Entry entry) { lock (gate) return entry.Result; }
+        internal void RetainResult(Entry entry, CombatActualRoundEntryResult result)
+        {
+            var extra = result.ControlBytes.LongLength + result.ProofBytes.LongLength + 128;
+            lock (gate)
+            {
+                if (entry.Result is not null || !entries.TryGetValue(entry.Key, out var node) || !ReferenceEquals(node.Value, entry) ||
+                    entry.Bytes + extra > MaximumEntryBytes || retainedBytes + extra > MaximumBytes) return;
+                entry.Result = result; entry.Bytes += extra; retainedBytes += extra;
+            }
+        }
+    }
+    private sealed record MemoEvidence(byte[] Bytes, byte[][] SelectionInputs);
+    private static MemoEvidence? SnapshotEvidence(byte[] source, CampaignCombatCreationContext context, IReadOnlyList<byte[]> selectionInputs, byte[][] roundInputs)
+    {
+        // Ineligible or oversize keys follow the unchanged cold validation path.
+        if (context is null || selectionInputs is null || selectionInputs.Count > 512 || selectionInputs.Any(x => x is null)) return null;
+        long size = source.LongLength + roundInputs.Sum(x => x.LongLength) + 192;
+        foreach (var item in selectionInputs) { size += item.LongLength + 4; if (size > ReplayMemo.MaximumKeyBytes) return null; }
+        var setup = CampaignSetupV7Codec.Serialize(context.Setup);
+        var configuration = CombatDecisionConfigurationCodec.Serialize(context.Configuration);
+        size += setup.LongLength + configuration.LongLength + roundInputs.Length * 4L;
+        if (size > ReplayMemo.MaximumKeyBytes) return null;
+        var originals = selectionInputs.Select(x => x.ToArray()).ToArray();
+        using var stream = new MemoryStream((int)size);
+        using (var writer = new BinaryWriter(stream, Encoding.UTF8, true))
+        {
+            writer.Write("sandtable.actual-round-entry.memo.v1");
+            void Bytes(byte[] value) { writer.Write(value.Length); writer.Write(value); }
+            Bytes(source); Bytes(setup); Bytes(configuration); writer.Write(context.RulesetHash);
+            writer.Write(originals.Length); foreach (var item in originals) Bytes(item);
+            writer.Write(roundInputs.Length); foreach (var item in roundInputs) Bytes(item);
+        }
+        return stream.Length <= ReplayMemo.MaximumKeyBytes ? new(stream.ToArray(), originals) : null;
+    }
     private const long MaximumUtc = 253402300799999;
     private const string ContentPath = "docs/specs/fixtures/combat-content-v7.canonical.json";
     private static readonly string[] Unsupported = ["commit-attack", "resolve-attack", "release-reserves", "repeat-cycle", "finish-cycle", "open-later-stage", "consume-lineage", "refund", "reseed"];
 
     public static CombatActualRoundEntryResult ReplayTrustedSource(ReadOnlySpan<byte> source, CampaignCombatCreationContext context,
         IReadOnlyList<byte[]> trustedSelectionInputs, IReadOnlyList<byte[]> trustedRoundInputs, Func<string, byte[]> dependencyBytes)
-    { var frame = Replay(source, context, trustedSelectionInputs, trustedRoundInputs, dependencyBytes); return Result(frame, frame.Control); }
+    { return ReplayTrustedSource(source, context, trustedSelectionInputs, trustedRoundInputs, dependencyBytes, Memo); }
+
+    internal static CombatActualRoundEntryResult ReplayTrustedSource(ReadOnlySpan<byte> source, CampaignCombatCreationContext context,
+        IReadOnlyList<byte[]> trustedSelectionInputs, IReadOnlyList<byte[]> trustedRoundInputs, Func<string, byte[]> dependencyBytes, ReplayMemo memo)
+    { var frame = Replay(source, context, trustedSelectionInputs, trustedRoundInputs, dependencyBytes, memo); return Result(frame, frame.Control); }
 
     public static CombatActualRoundEntryResult ApplyTrustedSource(ReadOnlySpan<byte> source, CampaignCombatCreationContext context,
         IReadOnlyList<byte[]> trustedSelectionInputs, IReadOnlyList<byte[]> trustedRoundInputs, ReadOnlySpan<byte> currentInput,
         Func<string, byte[]> dependencyBytes, bool admissionEnabled = true)
+        => ApplyTrustedSource(source, context, trustedSelectionInputs, trustedRoundInputs, currentInput, dependencyBytes, admissionEnabled, Memo);
+
+    internal static CombatActualRoundEntryResult ApplyTrustedSource(ReadOnlySpan<byte> source, CampaignCombatCreationContext context,
+        IReadOnlyList<byte[]> trustedSelectionInputs, IReadOnlyList<byte[]> trustedRoundInputs, ReadOnlySpan<byte> currentInput,
+        Func<string, byte[]> dependencyBytes, bool admissionEnabled, ReplayMemo memo)
     {
         VerifyDependencies(dependencyBytes);
         var input = Object(currentInput, "RoundInput");
-        var frame = Replay(source, context, trustedSelectionInputs, trustedRoundInputs, dependencyBytes);
-        var (state, accepted, receipt, duplicate) = Transition(frame.Base, frame.Control, input, dependencyBytes, admissionEnabled);
+        var frame = Replay(source, context, trustedSelectionInputs, trustedRoundInputs, dependencyBytes, memo);
+        var (state, accepted, receipt, duplicate) = Transition(frame.Facts, frame.Control, input, dependencyBytes, admissionEnabled);
         if (duplicate) accepted = frame.Events.Single(e => Parse(e, "RoundEvent").GetProperty("receiptId").GetString() == receipt).ToArray();
         if (accepted is not null && !duplicate)
         {
@@ -58,6 +159,9 @@ internal static class CampaignCombatActualRoundEntry
 
     private static CombatActualRoundEntryResult Result(Frame frame, JsonObject state, byte[]? accepted = null, string? receipt = null, bool duplicate = false)
     {
+        var reusable = ReferenceEquals(state, frame.Control) && accepted is null;
+        if (reusable && frame.MemoEntry is not null && frame.Memo!.ReadResult(frame.MemoEntry) is { } retained)
+            return new(retained.ControlBytes, retained.ProofBytes);
         var sourceHash = Domain("source", Canonical(frame.Packet, "ActualRoundSource"));
         var proof = new JsonObject
         {
@@ -67,27 +171,49 @@ internal static class CampaignCombatActualRoundEntry
             ["base"] = frame.Base.DeepClone(),
             ["control"] = state.DeepClone(),
         };
-        return new(Canonical(state, "RoundControl"), Canonical(proof, "ActualRoundProof"), accepted, receipt, duplicate);
+        var result = new CombatActualRoundEntryResult(Canonical(state, "RoundControl"), Canonical(proof, "ActualRoundProof"), accepted, receipt, duplicate);
+        if (reusable && frame.MemoEntry is not null) frame.Memo!.RetainResult(frame.MemoEntry, result);
+        return result;
     }
 
     private static Frame Replay(ReadOnlySpan<byte> source, CampaignCombatCreationContext context, IReadOnlyList<byte[]> selectionInputs,
-        IReadOnlyList<byte[]> roundInputs, Func<string, byte[]> dependencyBytes)
+        IReadOnlyList<byte[]> roundInputs, Func<string, byte[]> dependencyBytes, ReplayMemo? memo = null)
     {
         VerifyDependencies(dependencyBytes);
-        var packet = Object(source, "ActualRoundSource"); Require(Number(packet, "contractVersion") == 1, 3);
+        memo ??= Memo;
+        var ownedSource = source.Length <= 1_048_576 ? source.ToArray() : null;
+        ReadOnlySpan<byte> retainedSource = ownedSource is null ? source : ownedSource;
+        var packet = Object(retainedSource, "ActualRoundSource"); Require(Number(packet, "contractVersion") == 1, 3);
         var texts = packet["roundEventCanonicalUtf8"]!.AsArray();
         Require(texts.Count <= 16 && roundInputs is not null && roundInputs.Count == texts.Count, 1);
-        var inputs = roundInputs!.Select(i => { Require(i is not null, 1); return Object(i!.ToArray(), "RoundInput"); }).ToArray();
+        var retainedInputs = roundInputs!.Select(i =>
+        {
+            Require(i is not null, 1);
+            if (i!.Length > 1_048_576) _ = Object(i, "RoundInput");
+            var bytes = i.ToArray(); return (Bytes: bytes, Input: Object(bytes, "RoundInput"));
+        }).ToArray();
+        var inputs = retainedInputs.Select(x => x.Input).ToArray();
+        var evidence = SnapshotEvidence(ownedSource!, context, selectionInputs, retainedInputs.Select(x => x.Bytes).ToArray());
+        if (evidence is not null && memo.Find(evidence.Bytes) is { } hit)
+        {
+            if (hit.ConsumedAa) _ = PinnedBytes(ContentPath, dependencyBytes);
+            var retainedBase = JsonNode.Parse(hit.BaseBytes)!.AsObject();
+            var retainedFacts = new ReplayFacts(retainedBase, hit.BaseHash, hit.ClockHash, hit.Route.ToArray());
+            return new(packet, retainedBase, JsonNode.Parse(hit.ControlBytes)!.AsObject(), hit.Events.Select(x => x.ToArray()).ToArray(), retainedFacts, hit, memo);
+        }
         var events = texts.Select(t => Encoding.ASCII.GetBytes(t!.GetValue<string>())).ToArray();
-        var derived = DeriveBase(packet, context, selectionInputs, dependencyBytes);
-        var state = Initial(derived);
+        var derived = DeriveBase(packet, context, evidence?.SelectionInputs ?? selectionInputs, dependencyBytes);
+        var facts = new ReplayFacts(derived, BaseHash(derived), ClockHash(derived), Route(derived));
+        var state = Initial(facts);
         for (var i = 0; i < events.Length; i++)
         {
             _ = Parse(events[i], "RoundEvent");
-            var (after, expected, _, duplicate) = Transition(derived, state, inputs[i], dependencyBytes);
+            var (after, expected, _, duplicate) = Transition(facts, state, inputs[i], dependencyBytes);
             Require(!duplicate && expected is not null && events[i].AsSpan().SequenceEqual(expected), 6); state = after;
         }
-        return new(packet, derived, state, events);
+        var entry = evidence is null ? null : memo.Retain(new ReplayMemo.Entry(evidence.Bytes, Encode(derived), Encode(state),
+            events.Select(x => x.ToArray()).ToArray(), facts, Text(state, "status") == "prepared" && Number(state, "stepIndex") >= 5));
+        return new(packet, derived, state, events, facts, entry, memo);
     }
 
     private static JsonObject DeriveBase(JsonObject packet, CampaignCombatCreationContext context, IReadOnlyList<byte[]> selectionInputs, Func<string, byte[]> dependencyBytes)
@@ -116,14 +242,15 @@ internal static class CampaignCombatActualRoundEntry
         return Object(Canonical(new JsonObject { ["contractVersion"] = 1, ["actualSelectionProof"] = selectionProof, ["clockConfiguration"] = configuration }, "Base"), "Base");
     }
 
-    private static JsonObject Initial(JsonObject derived)
+    private static JsonObject Initial(ReplayFacts facts)
     {
+        var derived = facts.Base;
         var prior = Selection(derived); var boundary = Boundary(derived);
         return new()
         {
             ["contractVersion"] = 1,
-            ["baseHash"] = BaseHash(derived),
-            ["clockConfigurationHash"] = ClockHash(derived),
+            ["baseHash"] = facts.BaseHash,
+            ["clockConfigurationHash"] = facts.ClockHash,
             ["segmentId"] = prior["segmentId"]!.DeepClone(),
             ["opportunityId"] = null,
             ["roundId"] = null,
@@ -147,9 +274,10 @@ internal static class CampaignCombatActualRoundEntry
     }
 
     /// <summary>Private mechanics over derived facts. Public APIs always replay the original source and both ledgers first.</summary>
-    private static (JsonObject State, byte[]? Event, string? Receipt, bool Duplicate) Transition(JsonObject derived, JsonObject prior,
+    private static (JsonObject State, byte[]? Event, string? Receipt, bool Duplicate) Transition(ReplayFacts facts, JsonObject prior,
         JsonObject input, Func<string, byte[]> dependencyBytes, bool admissionEnabled = true)
     {
+        var derived = facts.Base;
         input = Object(Canonical(input, "RoundInput"), "RoundInput");
         var cmd = input["command"]!; var actor = Text(input, "actor"); var kind = Text(cmd, "kind");
         Require(Number(cmd, "contractVersion") == 1 && (kind is "open-round" or "seal-choice" or "expire-round" or "controller-unavailable" or "complete-step" || Unsupported.Contains(kind, StringComparer.Ordinal)), 3);
@@ -158,7 +286,7 @@ internal static class CampaignCombatActualRoundEntry
         Require((cmd["fromPositionId"] is not null) == (kind == "complete-step"), 3);
         Require(kind == "seal-choice" ? cmd["slotId"] is not null && cmd["allocation"] is not null : cmd["slotId"] is null && cmd["allocation"] is null, 3);
         Require((cmd["roundId"] is null) == (kind == "open-round"), 3);
-        Require(Text(cmd, "segmentId") == Text(prior, "segmentId") && Text(cmd, "clockConfigurationHash") == ClockHash(derived), 4);
+        Require(Text(cmd, "segmentId") == Text(prior, "segmentId") && Text(cmd, "clockConfigurationHash") == facts.ClockHash, 4);
         Require(kind == "seal-choice" ? actor is "axis" or "commonwealth" : actor == "system", 4);
         var commandHash = Hash(Canonical(cmd, "RoundCommand"));
         var duplicate = prior["receipts"]!.AsArray().FirstOrDefault(x => Text(x!, "commandHash") == commandHash);
@@ -167,7 +295,7 @@ internal static class CampaignCombatActualRoundEntry
         Require(!prior["closed"]!.GetValue<bool>() && Number(prior, "stateVersion") < long.MaxValue && prior["receipts"]!.AsArray().Count < 16, 6);
         if (kind != "open-round") Require(TextOrNull(cmd, "roundId") == TextOrNull(prior, "roundId"), 4);
         if (structural) Require(Number(cmd, "expectedPriorVersion") == Number(prior, "stateVersion"), 6);
-        var route = Route(derived); var index = (int)Number(prior, "stepIndex");
+        var route = facts.Route; var index = (int)Number(prior, "stepIndex");
         if (kind == "complete-step") Require(index < 6 && Text(cmd, "fromPositionId") == route[index], 6);
         var state = prior.DeepClone().AsObject(); var now = input["admittedAt"]?.GetValue<long>(); var available = input["clockAvailable"]!.GetValue<bool>(); var author = actor;
         JsonObject effect;
@@ -179,7 +307,7 @@ internal static class CampaignCombatActualRoundEntry
                 var timing = new JsonObject
                 {
                     ["contractVersion"] = 1,
-                    ["clockConfigurationHash"] = ClockHash(derived),
+                    ["clockConfigurationHash"] = facts.ClockHash,
                     ["kind"] = "force-assignment",
                     ["decisionBudgetMilliseconds"] = 30000,
                     ["openedAtUnixMilliseconds"] = now,
@@ -188,7 +316,7 @@ internal static class CampaignCombatActualRoundEntry
                 };
                 var identity = new JsonObject
                 {
-                    ["baseHash"] = BaseHash(derived),
+                    ["baseHash"] = facts.BaseHash,
                     ["actualSelectionSourceHash"] = derived["actualSelectionProof"]!["sourceHash"]!.DeepClone(),
                     ["segmentId"] = state["segmentId"]!.DeepClone(),
                     ["cycleId"] = Boundary(derived)["cycleId"]!.DeepClone(),
@@ -199,7 +327,7 @@ internal static class CampaignCombatActualRoundEntry
                 state["opportunityId"] = "aopp." + Domain("opportunity", Encode(identity))[7..];
                 state["roundId"] = "arnd." + Domain("round", Encode(new JsonObject
                 {
-                    ["baseHash"] = BaseHash(derived),
+                    ["baseHash"] = facts.BaseHash,
                     ["opportunityId"] = state["opportunityId"]!.DeepClone(),
                     ["openingAuthorityVersion"] = state["stateVersion"]!.DeepClone(),
                     ["openingHistoryPrefix"] = state["prefix"]!.DeepClone(),
@@ -260,10 +388,10 @@ internal static class CampaignCombatActualRoundEntry
             ["author"] = author,
             ["campaignId"] = Boundary(derived)["cycle"]!["campaignId"]!.DeepClone(),
             ["rulesetHash"] = Boundary(derived)["cycle"]!["rulesetHash"]!.DeepClone(),
-            ["configurationHash"] = ClockHash(derived),
+            ["configurationHash"] = facts.ClockHash,
             ["predecessorConfigurationHash"] = derived["clockConfiguration"]!["parentConfigurationHash"]!.DeepClone(),
             ["actualSelectionSourceHash"] = derived["actualSelectionProof"]!["sourceHash"]!.DeepClone(),
-            ["baseHash"] = BaseHash(derived),
+            ["baseHash"] = facts.BaseHash,
             ["cycleId"] = Boundary(derived)["cycleId"]!.DeepClone(),
             ["segmentId"] = state["segmentId"]!.DeepClone(),
             ["roundId"] = state["roundId"]!.DeepClone(),
