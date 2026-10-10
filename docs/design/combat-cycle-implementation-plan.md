@@ -2360,3 +2360,28 @@ remain separately recorded without new redundant sweeps. Draft PR167 is stacked 
 Correction is author REVIEW_READY for fresh review instance2of9/set1pass2; review count is1of9,
 research recoveries0of2, no heavy pivot or reset. No native work or merge. See the dated
 [review reconciliation](../work/reviews/2026-10-10-actual-round-entry-contract-review-1-response.md).
+
+
+### Task019F3 — private native actual round entry (REL-AUD-02C / DAY-A)
+
+Implementation branch `codex/native-actual-round-entry` starts from merged PR167 at
+`34a494c46ab7b8665e381f9e531c7b8365cb3efe`. The private native engine and closed codec
+consume the unchanged `combat-actual-round-entry-v1` literal fixture through a test-project
+content link. Both independently trusted ledgers are required on replay and readback; embedded
+inputs are consistency evidence. All57 dependency digests remain frozen, with Content checked
+again at empty-AA certificate consumption. Prepared entry stops before paid Close Assault;
+cancelled entry retains the no-attack route to Release. No public activation is introduced.
+
+Draft publication checkpoint: terminal parity passed34 cases; the retained adversarial
+checkpoint passed74 tests, and the subsequent ASCII carrier regression passed all128 ASCII
+values in one test. These checkpoints precede the final full acceptance run. Original ledger
+null handling and canonical ASCII spelling each have retained failing and passing tests.
+The expanded exhaustive mutation and lifecycle cases are implemented but remain unverified
+at this checkpoint. Final solution build/test/format, author engineering self-review, fresh
+independent review and exact-head CI are pending. This is unverified draft work, not an
+independent Ready verdict or DAY-A acceptance. Independent review counter0of9, recovery0of2.
+
+The existing four predecessor failures remain separately recorded without waiver or pin
+refresh. Paid commitment/result/settlement, full Snapshot/Archives restart, repeated Movement,
+later-II/consumed lineage, Exercise/Runner and parent017–019 completion remain outside this
+private entry slice. The coordinator retains ownership of independent review and merge.
