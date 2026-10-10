@@ -142,3 +142,19 @@ source/ledger ownership; canonical inherited versus new semantic arrays; FA/empt
 positive CA stop after clock; mutation sensitivity and fixed fixture independence; complete error
 matrices; truthful plan/research and historical-failure reconciliation. Start code/plan before this
 explanation and verify every author claim against the frozen file manifest and retained execution.
+
+
+## Review 1 correction supersedes the author freeze
+
+Independent review1of9 at75b308d returned Not ready with one bounded P2; coordinator Accept.
+New RoundEffect shape/non-string kind now rejects001 before unknown tag003. Retained RED/GREEN
+and54 conflicting public readback cases prove the correction; inherited Effect and the literal
+fixture stay byte-identical. Corrected implementation `6ac709bcdca1f01e4f894bc372bb1f85ec5e81c6` supersedes historical
+working-tree/base/manifest claims above. Exact amended normal gate passed exit0 in1897.769s,
+verifier before/after `2596531cb50ddbae7f1e606284f3d845b224d4f1fc10f478b717843d1062990c`, stdout `8e584c8ef48b7284e5385f6e0fe82462cae724235fa45d82df9cc3f11b8f2b60`.
+The complete finding, reconciliation and current five-path manifest are in
+`docs/work/reviews/2026-10-10-actual-round-entry-contract-review-1-response.md`.
+Original predecessor observations remain unchanged; no redundant sweeps or .NET gates.
+DraftPR167 publication follows user authorization; correction is author REVIEW_READY pending
+fresh review2of9,set1pass2 by Brain. Review count1of9, recovery0of2; no heavy pivot or reset.
+No native work or merge. Subsequent commit changes administrative packets only.
