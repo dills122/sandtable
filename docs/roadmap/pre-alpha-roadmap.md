@@ -197,7 +197,7 @@ Optional parser evidence gate
 | Foundations | Versioned provenance, content, world, commands/events, deterministic RNG, replay, observation, and action contracts | Implemented and activated for the admitted Rules9 synthetic profile | Extend compatibility, replay, and fog tests with each admitted mechanic |
 | Mandatory preamble | Current runtime contracts through Reserve Designation | Implemented and publicly exercised for the admitted no-obligation profile | Add only scenario-required positive obligation families |
 | Movement, Reaction, Breakdown | Frozen and implemented for the certified battalion/Truck profiles | Public actions and checked Runner evidence reach first-side Combat entry | Preserve regressions; broaden positive ZOC/vehicle cases only with an admitted profile |
-| Combat and continual cycle | Checkpoint B accepted; Initial H Core restore and dormant Tasks009–016 accepted; private actual-selection contract019F0 frozen; Task008 publication open | **Gameplay not activated**; bounded Release/Movement/repeat adapters, native settled control with synthetic earlier Movement, and two actual opening histories before selection | Native actual-selection consumption and remaining017–019 → public020–021 → evidence022–024 → closeout025 |
+| Combat and continual cycle | Checkpoint B accepted; Initial H Core restore and dormant Tasks009–016 accepted; private actual-selection contract019F0 and native adapter019F1 complete; Task008 publication open | **Gameplay not activated**; bounded Release/Movement/repeat adapters, native settled control with synthetic earlier Movement, and two actual selection histories through incomplete Force Assignment or no-attack Reserve Release | Actual assignment/round/result integration and remaining017–019 → public020–021 → evidence022–024 → closeout025 |
 | Working pre-alpha skeleton | Acceptance boundary defined | Not reached | One authentic movement/contact/combat/release repeat-or-finish loop with identical replay and Chronicle evidence |
 | Six-turn scenario and remaining Land rules | Milestone outcomes defined; exact exercised-rule/data inventory intentionally pending | Not started | Measure after the skeleton, freeze source/content scope, then split implementation-sized tasks |
 | Campaign lifecycle and Maproom | Architecture and no-model interaction direction reviewed | Not started | Stable playable authority, durable save/resume contracts, hot-seat isolation, and deterministic UI path |
@@ -222,7 +222,7 @@ future work.
 | 2 — Rules laboratory and legal-action boundary | Complete for the admitted synthetic path | Keep outward actions observation-derived and revalidate exact membership at submission |
 | 3 — Mandatory turn preamble | Complete for the admitted synthetic no-obligation path | Positive Organization/convoy/fleet cases remain explicit later-scenario work; subsequent bounded mechanics now reach first-side Combat entry |
 | 4 — Movement, Breakdown, and Reaction boundary | Complete within the certified synthetic profile | Movement and ZOC/Reaction are implemented; Breakdown Tasks006–007 public activation, Runner adoption and transcript/privacy follow-up are complete. Positive ZOC and broader Breakdown categories remain extensions |
-| 5 — Combat and continual-cycle loop | Bounded private017–019 adapters through native positive entry019E1; actual-selection contract019F0 frozen; public Combat inactive | Consume actual selection, join authentic rounds/results and later lineage; complete017–024; close025 only after an authentic loop passes |
+| 5 — Combat and continual-cycle loop | Bounded private017–019 adapters through native actual selection019F1; public Combat inactive | Complete actual Force Assignment, join authentic rounds/results and later lineage; complete017–024; close025 only after an authentic loop passes |
 | 6 — Scenario Group One content | Milestone-level; not started | Produce the exact exercised-rule/data/source/rights inventory after the skeleton, then split bounded content packets |
 | 7 — Remaining required Land systems | Milestone-level; not started | Implement only the measured six-turn surface, including termination/victory, with the same authority/replay/fog gates |
 | 8 — Minimal Maproom and campaign lifecycle | Milestone-level; not started | Add durable local save/resume and recovery before UI completion; prove hot-seat privacy and a complete no-model action path |
@@ -1227,3 +1227,14 @@ consumed lineage and public/full-cycle activation remain open. The separately re
 [pin-maintenance inventory](../research/combat-verification-pin-maintenance.md) records a
 20-file repair closure; original pin/admission failures and historical unverified timeouts remain
 limitations, not repaired or waived by this contract.
+
+
+Task019F1 / REL-AUD-01 merged in [PR165](https://github.com/dills122/sandtable/pull/165)
+at `2326df419e2f7e60e5c02e59164aa16797fa6d69`. Fresh independent review returned Ready;
+PR checks and post-merge CI, CodeQL and documentation checks passed. Retained author gates
+record 60 focused, 81 Boundary and 2,593 full-solution tests passing. Positive selection stops
+at Force Assignment20 after defender decline19; seven fallback variants per owner reach
+Reserve Release. This supersedes the earlier native-consumption-next status above.
+REL-AUD-02 begins with bounded research for actual Force Assignment completion and first-round
+entry before contract/native implementation. Production authentication, actual rounds/results,
+later lineage and public activation remain open; predecessor pin failures are unchanged.

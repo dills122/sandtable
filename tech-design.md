@@ -624,7 +624,8 @@ versioned allowlists, never by serializing full snapshots.
 
 Task019F0's private actual-selection executable contract merged in PR #161. It requires a separately
 trusted input ledger and reaches Force Assignment after defender decline, or no-attack Reserve
-Release. Its native consumer and production input authentication remain pending. Private settled
+Release. Task019F1 implements its private native consumer in PR #165; Force Assignment completion
+and production input authentication remain pending. Private settled
 controls still retain synthetic earlier Movement; none of this proves public Combat or the authentic
 continual cycle. The [roadmap](docs/roadmap/pre-alpha-roadmap.md) owns detailed sequencing, and the
 [first-release audit](docs/research/2026-10-05-first-release-audit.md) owns release gap measurements.
