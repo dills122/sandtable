@@ -1,0 +1,23 @@
+# Handoff: CI partition research review and control disposition
+
+Date: 2026-10-10 America/Toronto. This separate administrative record preserves Brain's reconciliation after the frozen [partition follow-up](../../research/2026-10-10-actual-round-entry-ci-partition-follow-up.md), SHA256 `ce73663bd0934fd9ef2ea68aefa02f85067ba139cecbb1677d2d0fae2a58761e`, and [investigation boundary](2026-10-10-actual-round-entry-ci-partition-investigation.md), SHA256 `da4571db562511f7b1c2a6257b1eb87db76c6502d8333019fd3abd242677428e`. Both remain unchanged; their review-pending status records the earlier checkpoint.
+
+## Review and author response
+
+The [verbatim independent review4](../reviews/2026-10-10-actual-round-entry-ci-partition-independent-review-4.md) is preserved from `/private/tmp/actual-round-entry-ci-partition-follow-up/independent-review-4.md`, SHA256 `68a8e75059285f6959d6532a983bed1afd2a178b8718e6f6f63a83182959a9ad`. Verdict: **Ready for the research recommendation and Brain's conditional next-evidence decision only; no actionable findings**. This sentence is an attributed summary; the linked file is the full original report. Author response: **Accept**. No remediation or recovery iteration is required.
+
+The reviewer independently verified all93 manifest references, the two frozen hashes, three immutable source snapshots,77 hosted artifacts, B2212 rows/1182 method groups, A's missing status/XML/case timing, recorded setup and source process boundaries. Official documentation supports candidate flags but does not establish retained lifecycle telemetry. The reviewer performed no .NET/CI/profiler/helper test or SDK process. Direct lookup of the tested merge source failed locally, so source-byte equivalence to that merge was not independently established; retained tested-event identity remains recorded. Local Debug figures were not fully recomputed. These explicit limitations remain in the verbatim report.
+
+Brain chat `01a0c9dc-00bc-78a3-800d-3cb36859e422` reconciles this result. Counters now **research4/9; native implementation1/9; recovery0/2**. Research readiness does not certify the separate retry correction, implementation, exact-head CI, logging adoption or merge readiness.
+
+## Authorized next gate and ownership
+
+Brain authorizes DAY-A's **bounded20-minute local supported-runner interruption control only**. Its purpose is to prove supported options on the pinned.NET10/MTP2/xUnit application retain timestamped case identities and useful state transitions through interruption. No hosted run or logging adoption is authorized until Brain examines the evidence. Completion-only output cannot establish a started-to-canceled lower bound for unfinished cases; a logging gap returns to Brain before any custom observer, dependency, runner upgrade or process architecture expansion.
+
+The exact current whole-method predicates, complete generated/theory-row proof, unfiltered modules, actual tested SHA/run/attempt binding, fail-closed required verify, full preparation/build/format obligations and15-minute leaf caps remain intact. Partial progress is diagnostic evidence only and cannot replace final passing reports/status. No automatic third shard, method transfer, timeout increase, product/cache change or coverage reduction is authorized. DAY-A owns implementation/control files and any runtime lease; this research lane runs no control or experiment. First next owner/action is Brain's evaluation of author control evidence and any subsequent scoped CI authorization/review.
+
+## Preservation boundary
+
+Brain authorizes commit/push on existing branch `codex/actual-round-entry-performance-research` of exactly the two frozen new notes, this separate disposition and the verbatim review4. Worktree `/Users/dsteele/.codex/worktrees/combat-actual-bridge-research/sandtable`; pre-preservation checkpoint `1adc2b34e5d3ca6cdd86b5ddd650f602759f67a6`. No PR is authorized. Preexisting `.serena/` stays excluded; all nine prior frozen research/review/disposition records remain byte-identical.
+
+Neutral review manifest `/private/tmp/actual-round-entry-ci-partition-follow-up/review-manifest.json`, SHA256 `73b27abd8474d7ac72108a8fbf8d5185a296007e93d426411fa673622007ad26`, retains exact source/artifact identities. Preservation checks are frozen SHA256 equality, verbatim review equality, relative links/whitespace, branch/base identity, four-file staging/commit boundary and pushed remote identity. Use configured GitHub Keychain authentication without exposing credentials; report the resulting head/push outcome separately, then idle. No new research or code is authorized by this preservation step.
