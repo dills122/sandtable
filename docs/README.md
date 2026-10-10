@@ -16,8 +16,9 @@ Research and reviews record their dated checkpoints; they are not competing stat
 - [Combat verifier pin maintenance inventory](research/combat-verification-pin-maintenance.md)
 
 Public Rules9 authority and Runner evidence stop at first-side Combat entry. Private Combat Core
-adapters and contracts remain separate. Task019F0's actual-selection contract merged in PR #161;
-its native consumer, trusted production input authentication, actual round/result completion,
+adapters and contracts remain separate. Task019F1's native actual-selection adapter merged in
+PR #165, reaching Force Assignment without completion or no-attack Reserve Release for both
+supported owners. Trusted production input authentication, actual round/result completion,
 public activation and authentic continual-cycle proof remain pending. The first six-turn Land-only
 scenario, Maproom hot-seat play and durable save/resume are not started. Host/worker/provider
 integration remains scaffolded; AI is optional future work.

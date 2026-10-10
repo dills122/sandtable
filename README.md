@@ -53,7 +53,7 @@ play a side; it will never decide the rules or secretly change the campaign stat
 | --- | --- | --- |
 | Deterministic Umpire | Working | Versioned rules, seeded randomness, canonical commands/events, replay, checkpoints, and side-safe action boundaries are implemented. |
 | Playable rule path | Working through Combat entry | Runner can execute Initiative, stage preamble, Reserve Designation, Movement, bounded ZOC/Reaction, and Breakdown, then stops before Combat adjudication. |
-| Combat and continual cycle | Private Core adapters; public activation pending | Reviewed internals cover settlement, Reserve Release, bounded released-I Movement and guarded repeat/finish. Native settled control retains synthetic earlier Movement. Two native opening histories reach a supported candidate before selection. Task019F0 (merged in PR #161) freezes a separate private actual-selection contract executable through Force Assignment or no-attack Reserve Release; its native consumer and production input authentication remain gated. Actual round/result, full-cycle proof and public Combat remain open. |
+| Combat and continual cycle | Private Core adapters; public activation pending | Reviewed internals cover settlement, Reserve Release, bounded released-I Movement and guarded repeat/finish. Native settled control retains synthetic earlier Movement. Task019F1 (merged in PR #165) implements the private actual-selection contract for both supported opening histories through Force Assignment after defender decline, or seven no-attack Reserve Release fallbacks per owner. Force Assignment completion and production input authentication remain gated. Actual round/result, full-cycle proof and public Combat remain open. |
 | Exercise and Maneuver tools | Working | Deterministic single runs, multi-run matrices, paired comparisons, strict readback, and evidence bundles are available from CLI. |
 | User interface | Not started | `site/` is project website only. Maproom hot-seat client is future work. |
 | Published scenario | Not started | First target is six-turn, Land-only *Graziani's Offensive* after working Combat loop. |
@@ -67,10 +67,9 @@ dormant Core tests; they are not yet exposed as playable actions.
 
 Next delivery sequence:
 
-1. Implement the native consumer of the frozen private
-   [actual-selection contract](docs/specs/combat-actual-selection-v1.md), then join actual round/result
-   settlement and complete later-II/consumed Reserve lineage (remaining Tasks017–019). The contract
-   stops at Force Assignment after defender decline; it does not complete Force Assignment or
+1. Define the actual Force Assignment completion and first-round entry contract, then join actual
+   round/result settlement and complete later-II/consumed Reserve lineage (remaining Tasks017–019).
+   The existing actual-selection contract stops at Force Assignment after defender decline; it does not complete Force Assignment or
    activate gameplay. Existing synthetic settled contexts do not prove that those paths are
    reachable from actual opening history.
 2. Activate certified, side-safe public Combat actions (Tasks020–021), then prove Exercise/Runner

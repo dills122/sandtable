@@ -2269,3 +2269,36 @@ not an independent Ready verdict. No reviewer was spawned, no publication/CI/mer
 and no review counter was reset. Coordinator retains the bounded3sets×3 review process and
 research recovery between failed sets. Review bootstrap and author explanation are separate;
 next gates are coordinator review/reconciliation, requested publication and exact-head CI/merge.
+
+
+### Task019F1 coordinator merge reconciliation and REL-AUD-02 entry
+
+[PR165](https://github.com/dills122/sandtable/pull/165) merged at
+`2326df419e2f7e60e5c02e59164aa16797fa6d69`. Independent review instance2of9, set1/pass2,
+returned Ready with no actionable findings; instance1 was interrupted before verdict.
+Implementation reviewed at `458e49229e29315ff13e52035d2a1b168b79a752`; final administrative
+head `eb82d51703c58bc7fc685c04c93c102a0a33f0a7` passed all reported PR checks.
+Post-merge main CI, CodeQL and offline documentation checks also passed. This reconciliation
+supersedes the REVIEW_READY/pending-publication status above; retained author evidence is historical.
+No new local suite was run for this status reconciliation. Task019F1 / REL-AUD-01 is complete
+within its two-owner private boundary; parents017–019 remain open.
+
+REL-AUD-02A now investigates actual Force Assignment completion through first authentic round
+entry. Its output is a reviewed provenance/compatibility inventory and bounded contract/native
+manifest. Runtime activation, frozen contract changes, synthetic-history relabeling and the
+separate predecessor pin repair are outside this research slice. Independent review must pass
+before advancing to contract implementation.
+
+The [actual round-entry feasibility report](../research/combat-actual-round-entry-feasibility.md)
+proposes a separate private Prepared boundary: actual selection20, assignment opening21,
+two seals22/23, Force Assignment completion24 and certified empty Anti-Armor completion25
+at Close Assault. No cost commitment or result draw is admitted. Its contract/native manifests
+and cancellation, clock, conservation and provenance gates await fresh independent review.
+
+REL-AUD-02A fresh independent review instance1of9 returned **Ready** with no actionable
+findings. Coordinator accepts the research recommendation; see the
+[review record](../work/reviews/2026-10-09-actual-round-entry-review-1.md) and
+[handoff](../work/handoffs/2026-10-09-actual-round-entry-research.md).
+This closes research only. REL-AUD-02B is the next executable-contract milestone; proposed
+bytes, added dependency closure and native behavior remain unimplemented and require their
+own TDD evidence and fresh review before advancement.
