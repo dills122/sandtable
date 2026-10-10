@@ -253,3 +253,10 @@ Original predecessor observations remain unchanged; no redundant sweeps or .NET 
 DraftPR167 publication follows user authorization; correction is author REVIEW_READY pending
 fresh review2of9,set1pass2 by Brain. Review count1of9, recovery0of2; no heavy pivot or reset.
 No native work or merge. Subsequent commit changes administrative packets only.
+
+
+Publication reconciliation: live GitHub verification after correction push found researchPR166
+merged atd0cc7344399e38c6d1a89992199bf629307f8f51, mergedAt2026-10-10T15:17:24Z.
+PR167 is open againstmain and no longer draft; earlier stacked/draft statements are historical.
+Corrected implementation6ac709b remains the frozen primary target; administrative commit836f4a7
+packaged evidence, followed by this live-status reconciliation only. Fresh review2 remains pending.

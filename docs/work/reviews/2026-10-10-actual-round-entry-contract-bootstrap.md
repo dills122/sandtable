@@ -13,8 +13,8 @@ and the correction author's rationale are not a readiness verdict.
 ## Repository And Worktree
 
 `/Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable`. Branch `codex/actual-round-entry-contract`.
-Draft PR https://github.com/dills122/sandtable/pull/167 targets `codex/actual-round-entry-research`;
-research PR166 remains separate. Preserve local `.serena`, outside review/publication scope.
+PR https://github.com/dills122/sandtable/pull/167 is open, targets `main`, and is no longer draft.
+Research PR166 merged atd0cc7344399e38c6d1a89992199bf629307f8f51 during the correction run. Preserve local `.serena`, outside review/publication scope.
 Read applicable AGENTS.md; structural graph docs are excluded, use focused source reads.
 
 ## Base, Head, Branch, And Dirty State

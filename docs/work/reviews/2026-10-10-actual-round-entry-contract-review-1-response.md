@@ -119,3 +119,10 @@ Five-primary-file manifest:
 Status: correction author REVIEW_READY, fresh independent review instance2of9/set1pass2 pending.
 Brain owns dispatch/reconciliation. No reviewer was dispatched here; no budget reset.
 User publication authorization persists for draftPR167. Keep review read-only; no native/merge.
+
+
+Publication reconciliation: live GitHub verification after correction push found researchPR166
+merged atd0cc7344399e38c6d1a89992199bf629307f8f51, mergedAt2026-10-10T15:17:24Z.
+PR167 is open againstmain and no longer draft; earlier stacked/draft statements are historical.
+Corrected implementation6ac709b remains the frozen primary target; administrative commit836f4a7
+packaged evidence, followed by this live-status reconciliation only. Fresh review2 remains pending.
