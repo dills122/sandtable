@@ -1,4 +1,6 @@
 import copy
+import fnmatch
+import re
 import importlib.util
 import json
 from pathlib import Path
@@ -19,19 +21,32 @@ class CoverageTests(unittest.TestCase):
         self.root = Path(self.temp.name)
         self.needs = {'prepare': {'result': 'success'}, 'tests': {'result': 'success'}}
         modules = {'core-a': 'Cna.Core.Tests', 'core-b': 'Cna.Core.Tests', 'exercise': 'Cna.ExerciseRunner.Tests', 'contracts': 'Cna.Intelligence.Contracts.Tests'}
-        self.inventory = {'schema_version': 1, 'tested_sha': SHA, 'sdk': '10.0.400', 'configuration': 'Release', 'shards': {}}
+        self.inventory = {'schema_version': 1, 'tested_sha': SHA, 'sdk': '10.0.400', 'configuration': 'Release', 'run_attempt': 'local', 'shards': {}}
         for shard, module in modules.items():
             method = module + '.Cases.' + ('Alpha' if shard == 'core-a' else 'Beta')
             name = method + '(value: "a\\b")'
             self.inventory['shards'][shard] = {'module': module, 'rows': [[module, method, name]]}
             d = self.root / shard
             (d / 'results').mkdir(parents=True)
-            (d / 'status.json').write_text(json.dumps({'shard': shard, 'module': module, 'tested_sha': SHA, 'sdk': '10.0.400', 'configuration': 'Release', 'exit_code': 0}))
+            (d / 'status.json').write_text(json.dumps({'shard': shard, 'module': module, 'tested_sha': SHA, 'sdk': '10.0.400', 'configuration': 'Release', 'run_attempt': 'local', 'exit_code': 0}))
             root = ET.Element('assemblies')
             assembly = ET.SubElement(root, 'assembly', name='/bin/' + module + '.dll', total='1', passed='1', failed='0', skipped='0', errors='0', **{'not-run': '0', 'target-framework': '.NETCoreApp,Version=v10.0'})
             collection = ET.SubElement(assembly, 'collection')
             ET.SubElement(collection, 'test', name=json.dumps(name)[1:-1], type=method.rsplit('.', 1)[0], method=method.rsplit('.', 1)[1], result='Pass')
             ET.ElementTree(root).write(d / 'results' / 'report.xunit.xml', encoding='utf-8')
+
+    def test_inventory_attempt_mismatch_fails(self):
+        self.inventory['run_attempt'] = '1'
+        with self.assertRaises(ValueError): self.check()
+
+    def test_stale_aggregate_copy_cannot_replace_missing_current_leaf(self):
+        status_path = self.root / 'core-a' / 'status.json'
+        stale_status = json.loads(status_path.read_text())
+        status_path.unlink()
+        stale_status['run_attempt'] = '1'
+        # An old aggregate contains the same SHA, report and passing rows, but an older attempt.
+        status_path.write_text(json.dumps(stale_status))
+        with self.assertRaises(ValueError): self.check()
 
     def check(self):
         return partition.verify_coverage(self.inventory, self.root, self.needs, SHA)
@@ -126,7 +141,7 @@ def bad_status(field, value):
         with self.assertRaises(ValueError): self.check()
     return test
 
-for field, values in {'exit_code': [1, 2, 8, 130, True, None], 'tested_sha': ['b' * 40, None], 'sdk': ['11.0.100', '10.0.401', None], 'configuration': ['Debug'], 'shard': ['core-b'], 'module': ['Unknown']}.items():
+for field, values in {'exit_code': [1, 2, 8, 130, True, None], 'tested_sha': ['b' * 40, None], 'sdk': ['11.0.100', '10.0.401', None], 'configuration': ['Debug'], 'run_attempt': ['1', None], 'shard': ['core-b'], 'module': ['Unknown']}.items():
     for i, value in enumerate(values): setattr(CoverageTests, f'test_bad_status_{field}_{i}_fails', bad_status(field, value))
 
 def bad_dependency(dependency, value):
@@ -223,5 +238,13 @@ class DiscoveryTests(unittest.TestCase):
     def test_unknown_display_semantics_fail(self):
         self.texts['exercise'] = self.text(['Custom name'])
         with self.assertRaises(ValueError): self.check()
+
+class ArtifactProtocolTests(unittest.TestCase):
+    def test_aggregate_cannot_be_reimported_as_leaf_evidence(self):
+        workflow = Path(__file__).parents[1] / 'workflows' / 'ci.yml'
+        text = workflow.read_text()
+        pattern = re.search(r'pattern: (.+)', text).group(1)
+        aggregate = re.search(r'name: (.+)', text.split('      - name: Retain aggregate evidence', 1)[1]).group(1)
+        self.assertFalse(fnmatch.fnmatchcase(aggregate, pattern), 'A prior aggregate could hide missing leaf artifacts on retry')
 
 if __name__ == '__main__': unittest.main()

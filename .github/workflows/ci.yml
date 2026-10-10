@@ -46,14 +46,15 @@ jobs:
       - name: Build Release row discovery helper
         run: dotnet build .github/scripts/ReleaseTestRows/ReleaseTestRows.csproj --configuration Release '/bl:artifacts/ci/row-helper-{}.binlog'
       - name: Discover actual Release rows and prove complementary filters
-        run: python3 .github/scripts/test_partition.py discover --sha "$TESTED_SHA"
+        run: python3 .github/scripts/test_partition.py discover --sha "$TESTED_SHA" --attempt "$RUN_ATTEMPT"
         env:
           TESTED_SHA: ${{ github.sha }}
+          RUN_ATTEMPT: ${{ github.run_attempt }}
       - name: Retain inventory and discovery evidence
         if: ${{ always() }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
-          name: ci-inventory-${{ github.sha }}
+          name: ci-inventory-${{ github.sha }}-${{ github.run_attempt }}
           path: artifacts/ci
           if-no-files-found: error
           retention-days: 14
@@ -83,15 +84,16 @@ jobs:
       - name: Build
         run: dotnet build Sandtable.slnx --configuration Release --no-restore '/bl:artifacts/ci/${{ matrix.shard }}-build-{}.binlog'
       - name: Run whole-method partition
-        run: python3 .github/scripts/test_partition.py execute --sha "$TESTED_SHA" --shard "$TEST_SHARD"
+        run: python3 .github/scripts/test_partition.py execute --sha "$TESTED_SHA" --attempt "$RUN_ATTEMPT" --shard "$TEST_SHARD"
         env:
           TESTED_SHA: ${{ github.sha }}
+          RUN_ATTEMPT: ${{ github.run_attempt }}
           TEST_SHARD: ${{ matrix.shard }}
       - name: Retain results, process status and timings
         if: ${{ always() }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
-          name: ci-${{ matrix.shard }}-${{ github.sha }}
+          name: ci-${{ matrix.shard }}-${{ github.sha }}-${{ github.run_attempt }}
           path: artifacts/ci
           if-no-files-found: error
           retention-days: 14
@@ -117,20 +119,21 @@ jobs:
         if: ${{ always() }}
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
         with:
-          pattern: ci-*-${{ github.sha }}
+          pattern: ci-*-${{ github.sha }}-${{ github.run_attempt }}
           path: artifacts/ci
           merge-multiple: true
       - name: Require successful processes and complete exact-head coverage
         if: ${{ always() }}
-        run: python3 .github/scripts/test_partition.py verify --sha "$TESTED_SHA"
+        run: python3 .github/scripts/test_partition.py verify --sha "$TESTED_SHA" --attempt "$RUN_ATTEMPT"
         env:
           TESTED_SHA: ${{ github.sha }}
+          RUN_ATTEMPT: ${{ github.run_attempt }}
           NEEDS_JSON: ${{ toJSON(needs) }}
       - name: Retain aggregate evidence
         if: ${{ always() }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
-          name: ci-aggregate-${{ github.sha }}
+          name: coverage-aggregate-${{ github.sha }}-${{ github.run_attempt }}
           path: artifacts/ci
           if-no-files-found: error
           retention-days: 14

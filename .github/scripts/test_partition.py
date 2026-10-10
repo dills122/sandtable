@@ -71,7 +71,7 @@ def discovery_rows(text, module, deferred):
     return unique(rows, module + ' discovery')
 
 
-def build_inventory(texts, payload, sha, sdk):
+def build_inventory(texts, payload, sha, sdk, attempt='local'):
     require(re.fullmatch(r'[a-f0-9]{40}', sha) and sdk.startswith('10.'), 'Unsupported discovery SHA/SDK')
     require(payload.get('schema_version') == 1 and payload.get('runner_version') == '4.0.1', 'Unsupported provider proof')
     providers = payload.get('providers', [])
@@ -97,17 +97,18 @@ def build_inventory(texts, payload, sha, sdk):
     require(all(any(row[1].casefold() == s for row in core) for s in selected), 'Unknown/empty method selector')
     require(a == {r for r in core if r[1].casefold() in selected}, 'Include filter differs from predicate')
     require(not a & b and a | b == core, 'Filters are not disjoint/exhaustive')
-    inventory = {'schema_version': 1, 'tested_sha': sha, 'sdk': sdk, 'configuration': 'Release', 'shards': {}}
+    inventory = {'schema_version': 1, 'tested_sha': sha, 'sdk': sdk, 'configuration': 'Release', 'run_attempt': attempt, 'shards': {}}
     rows = {'core-a': a, 'core-b': b, 'exercise': discovery_rows(texts['exercise'], MODULES['exercise'], {}), 'contracts': discovery_rows(texts['contracts'], MODULES['contracts'], {})}
     for shard, values in rows.items():
         inventory['shards'][shard] = {'module': MODULES[shard], 'rows': sorted(values)}
     return inventory
 
 
-def verify_coverage(inventory, directory, needs, expected_sha):
+def verify_coverage(inventory, directory, needs, expected_sha, expected_attempt='local'):
     try:
         require(set(needs) == {'prepare', 'tests'} and all(needs[k]['result'] == 'success' for k in needs), 'Failed/cancelled/skipped/missing dependency')
         require(inventory['schema_version'] == 1 and inventory['tested_sha'] == expected_sha and re.fullmatch(r'[a-f0-9]{40}', expected_sha), 'Mismatched tested SHA/schema')
+        require(inventory['run_attempt'] == expected_attempt and (expected_attempt == 'local' or expected_attempt.isdecimal()), 'Inventory attempt mismatch')
         require(inventory['configuration'] == 'Release' and isinstance(inventory['sdk'], str) and inventory['sdk'].startswith('10.'), 'Unsupported configuration/SDK')
         require(set(inventory['shards']) == set(MODULES), 'Missing/unexpected shard')
         all_expected = set()
@@ -121,6 +122,7 @@ def verify_coverage(inventory, directory, needs, expected_sha):
             status = json.loads((root / 'status.json').read_text())
             require(type(status['exit_code']) is int and status['exit_code'] == 0, 'Nonzero/invalid process exit')
             require(status['shard'] == shard and status['module'] == module and status['tested_sha'] == expected_sha, 'Status identity mismatch')
+            require(status['run_attempt'] == expected_attempt, 'Stale/mismatched leaf attempt')
             require(status['sdk'] == inventory['sdk'] and status['configuration'] == 'Release', 'Status SDK/configuration mismatch')
             reports = list((root / 'results').glob('*.xml'))
             require(len(reports) == 1, 'Missing/duplicate report')
@@ -168,12 +170,13 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('mode', choices=['discover', 'execute', 'verify'])
     parser.add_argument('--sha', required=True)
+    parser.add_argument('--attempt', default='local')
     parser.add_argument('--directory', default='artifacts/ci')
     parser.add_argument('--shard', choices=MODULES)
     args = parser.parse_args()
     root = Path(args.directory)
     if args.mode == 'verify':
-        verify_coverage(json.loads((root / 'inventory.json').read_text()), root, json.loads(os.environ['NEEDS_JSON']), args.sha)
+        verify_coverage(json.loads((root / 'inventory.json').read_text()), root, json.loads(os.environ['NEEDS_JSON']), args.sha, args.attempt)
         print('Complete exact-head Release coverage verified.')
         return
     sdk = identity(args.sha)
@@ -188,7 +191,7 @@ def main():
             run_logged(command, path)
             texts[label] = path.read_text()
         run_logged(['dotnet', 'run', '--project', '.github/scripts/ReleaseTestRows/ReleaseTestRows.csproj', '--configuration', 'Release', '--no-build', '--', str(Path('artifacts/bin/Cna.Core.Tests/release').resolve()), str((root / 'core-discovery.log').resolve()), str((root / 'deferred.json').resolve())], root / 'provider-discovery.log')
-        inventory = build_inventory(texts, json.loads((root / 'deferred.json').read_text()), args.sha, sdk)
+        inventory = build_inventory(texts, json.loads((root / 'deferred.json').read_text()), args.sha, sdk, args.attempt)
         (root / 'inventory.json').write_text(json.dumps(inventory, indent=2) + '\n')
         print({key: len(value['rows']) for key, value in inventory['shards'].items()})
     else:
@@ -202,7 +205,7 @@ def main():
             command.extend(['--filter-method' if args.shard == 'core-a' else '--filter-not-method', *SELECTORS])
         with (shard / 'execution.log').open('w') as output:
             result = subprocess.run(command, stdout=output, stderr=subprocess.STDOUT)
-        (shard / 'status.json').write_text(json.dumps({'shard': args.shard, 'module': module, 'tested_sha': args.sha, 'sdk': sdk, 'configuration': 'Release', 'exit_code': result.returncode}) + '\n')
+        (shard / 'status.json').write_text(json.dumps({'shard': args.shard, 'module': module, 'tested_sha': args.sha, 'sdk': sdk, 'configuration': 'Release', 'run_attempt': args.attempt, 'exit_code': result.returncode}) + '\n')
         print((shard / 'execution.log').read_text())
         raise SystemExit(result.returncode)
 
