@@ -7,6 +7,7 @@ from pathlib import Path
 import tempfile
 import unittest
 import xml.etree.ElementTree as ET
+from unittest import mock
 
 spec = importlib.util.spec_from_file_location('partition', Path(__file__).with_name('test_partition.py'))
 partition = importlib.util.module_from_spec(spec)
@@ -174,8 +175,10 @@ class DiscoveryTests(unittest.TestCase):
         self.control_methods = ['Cna.Core.Tests.Campaigns.CombatActualRoundEntryTests.NativeActualEntryRetainsExactPreparedAndCancelledTerminalProofs', 'Cna.Core.Tests.Campaigns.BreakdownRecordTests.InvalidFiniteShapesAndNoncanonicalBytesReject']
         self.controls = [method + '(value: "quoted")' for method in self.control_methods]
         self.payload = {'schema_version': 1, 'runner_version': '4.0.1', 'providers': [{'method': method, 'provider': 'Reviewed', 'names': [method + '(value: "deferred")']} for method in sorted(partition.DEFERRED)], 'controls': [{'method': method, 'names': [name]} for method, name in zip(self.control_methods, self.controls)]}
-        a = [method + '(index: 0)' for method in partition.SELECTORS]
-        b = sorted(partition.DEFERRED) + self.controls
+        mutation = partition.SELECTORS[0]
+        indices = {0, 1, 2, 3, 17, 18, 19, 20}
+        a = [method + '(index: 0)' for method in partition.SELECTORS[1:]] + [mutation + f'(index: {i})' for i in range(34) if i not in indices]
+        b = sorted(partition.DEFERRED) + self.controls + [mutation + f'(index: {i})' for i in sorted(indices)]
         self.texts = {'core': self.text(a + b), 'core-a': self.text(a), 'core-b': self.text(b), 'exercise': self.text(['Cna.ExerciseRunner.Tests.Example.Fact']), 'contracts': self.text(['Cna.Intelligence.Contracts.Tests.Example.Fact'])}
 
     @staticmethod
@@ -187,8 +190,8 @@ class DiscoveryTests(unittest.TestCase):
 
     def test_complete_discovery(self):
         inventory = self.check()
-        self.assertEqual(len(inventory['shards']['core-a']['rows']), 12)
-        self.assertEqual(len(inventory['shards']['core-b']['rows']), 7)
+        self.assertEqual(len(inventory['shards']['core-a']['rows']), 37)
+        self.assertEqual(len(inventory['shards']['core-b']['rows']), 15)
 
     def test_duplicate_formatter_controls_fail(self):
         self.payload['controls'][1] = self.payload['controls'][0]
@@ -255,10 +258,14 @@ class ArtifactProtocolTests(unittest.TestCase):
         self.assertFalse(fnmatch.fnmatchcase(aggregate, pattern), 'A prior aggregate could hide missing leaf artifacts on retry')
 
 class DiagnosticCommandTests(unittest.TestCase):
+    def setUp(self):
+        fixture = CoreRowPartitionTests(); fixture.setUp()
+        self.plan = fixture.check()
+
     def test_supported_trace_and_synchronous_write(self):
         for shard in partition.MODULES:
             with self.subTest(shard=shard):
-                command = partition.execution_command(shard, Path('/tmp/control') / shard)
+                command = partition.execution_command(shard, Path('/tmp/control') / shard, self.plan)
                 self.assertIn('--diagnostic', command)
                 self.assertIn('--diagnostic-synchronous-write', command)
                 self.assertEqual(command[command.index('--diagnostic-verbosity') + 1], 'Trace')
@@ -268,7 +275,7 @@ class DiagnosticCommandTests(unittest.TestCase):
         for shard in partition.MODULES:
             with self.subTest(shard=shard):
                 directory = Path('/tmp/artifacts/ci') / shard
-                command = partition.execution_command(shard, directory)
+                command = partition.execution_command(shard, directory, self.plan)
                 path = Path(command[command.index('--diagnostic-output-directory') + 1])
                 self.assertEqual(path, (directory / 'diagnostics').resolve())
                 workflow = (Path(__file__).parents[1] / 'workflows' / 'ci.yml').read_text()
@@ -279,17 +286,153 @@ class DiagnosticCommandTests(unittest.TestCase):
     def test_whole_method_filters_and_acceptance_reports_preserved(self):
         for shard, module in partition.MODULES.items():
             with self.subTest(shard=shard):
-                command = partition.execution_command(shard, Path('/tmp/control') / shard)
+                command = partition.execution_command(shard, Path('/tmp/control') / shard, self.plan)
                 self.assertEqual(command[:2], ['dotnet', 'test'])
                 self.assertEqual(command[command.index('--project') + 1], partition.project(module))
                 self.assertIn('--report-xunit-xml', command)
                 if shard.startswith('core-'):
                     key = '--filter-method' if shard == 'core-a' else '--filter-not-method'
-                    self.assertEqual(command[command.index(key) + 1:], list(partition.SELECTORS))
+                    methods = list(partition.SELECTORS if shard == 'core-a' else partition.SELECTORS[1:])
+                    self.assertEqual(command[command.index(key) + 1:command.index('--filter-not-display-name')], methods)
                 else:
                     self.assertNotIn('--filter-method', command)
                     self.assertNotIn('--filter-not-method', command)
                 self.assertNotIn('--max-threads', command)
                 self.assertNotIn('--timeout', command)
+
+class CoreRowPartitionTests(unittest.TestCase):
+    def setUp(self):
+        self.method = partition.SELECTORS[0]
+        self.transfer = {self.method + f'(index: {i})' for i in [0, 1, 2, 3, 17, 18, 19, 20]}
+        self.rows = [('Cna.Core.Tests', self.method, self.method + f'(index: {i})') for i in range(34)]
+        self.rows += [('Cna.Core.Tests', method, method + '(index: 0)') for method in partition.SELECTORS[1:]]
+        method = 'Cna.Core.Tests.Future.NewMethod'
+        self.rows += [('Cna.Core.Tests', method, method)]
+
+    def check(self): return partition.core_partition(self.rows)
+
+    def test_exact_eight_complete_rows_move(self):
+        plan = self.check()
+        self.assertEqual({row[2] for row in plan['core-b'] if row[1] == self.method}, self.transfer)
+        self.assertFalse({row[2] for row in plan['core-a']} & self.transfer)
+        self.assertEqual(plan['core-a'] | plan['core-b'], set(self.rows))
+        self.assertFalse(plan['core-a'] & plan['core-b'])
+
+    def test_missing_transfer_fails(self):
+        self.rows = [row for row in self.rows if row[2] != self.method + '(index: 0)']
+        with self.assertRaises(ValueError): self.check()
+
+    def test_missing_selected_method_fails(self):
+        self.rows = [row for row in self.rows if row[1] != partition.SELECTORS[1]]
+        with self.assertRaises(ValueError): self.check()
+
+    def test_duplicate_row_fails(self):
+        self.rows.append(self.rows[0])
+        with self.assertRaises(ValueError): self.check()
+
+    def test_casefold_collision_fails(self):
+        module, method, name = self.rows[0]
+        self.rows.append((module, method.lower(), name.lower()))
+        with self.assertRaises(ValueError): self.check()
+
+    def test_unknown_custom_name_fails(self):
+        self.rows[4] = ('Cna.Core.Tests', self.method, 'Custom row')
+        with self.assertRaises(ValueError): self.check()
+
+    def test_wildcard_name_fails(self):
+        self.rows[4] = ('Cna.Core.Tests', self.method, self.method + '(index: *)')
+        with self.assertRaises(ValueError): self.check()
+
+    def test_unrelated_wildcard_name_fails(self):
+        self.rows.append(('Cna.Core.Tests', 'Cna.Core.Tests.Future.Wildcard', 'Cna.Core.Tests.Future.Wildcard(value: "*")'))
+        with self.assertRaises(ValueError): self.check()
+
+    def test_new_mutation_row_enters_a_and_fresh_q(self):
+        row = ('Cna.Core.Tests', self.method, self.method + '(index: 34)')
+        self.rows.append(row); plan = self.check()
+        self.assertIn(row, plan['core-a']); self.assertNotIn(row, plan['core-b'])
+        self.assertIn(row[2], plan['retained_mutation'])
+
+    def test_new_unrelated_method_enters_b(self):
+        row = ('Cna.Core.Tests', 'Cna.Core.Tests.Future.Extra', 'Cna.Core.Tests.Future.Extra')
+        self.rows.append(row); plan = self.check()
+        self.assertIn(row, plan['core-b']); self.assertNotIn(row, plan['core-a'])
+
+    def test_literal_display_filters_complement_predicate(self):
+        plan = self.check(); a = partition.partition_filters('core-a', plan); b = partition.partition_filters('core-b', plan)
+        self.assertEqual(a[1:13], list(partition.SELECTORS))
+        self.assertEqual(set(a[a.index('--filter-not-display-name') + 1:]), self.transfer)
+        self.assertEqual(b[1:12], list(partition.SELECTORS[1:]))
+        self.assertEqual(set(b[b.index('--filter-not-display-name') + 1:]), set(plan['retained_mutation']))
+
+    def test_execution_uses_same_row_filters(self):
+        plan = self.check()
+        for shard in ['core-a', 'core-b']:
+            command = partition.execution_command(shard, Path('/tmp/control') / shard, plan)
+            self.assertEqual(command[-len(partition.partition_filters(shard, plan)):], partition.partition_filters(shard, plan))
+            self.assertIn('--filter-not-display-name', command)
+
+    def test_discovery_process_has_structured_argv_and_shell_false(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            command = ['dotnet', 'test', '--filter-not-display-name', *sorted(self.transfer)]
+            with mock.patch.object(partition.subprocess, 'run', return_value=partition.subprocess.CompletedProcess(command, 0)) as run:
+                partition.run_logged(command, Path(tmp) / 'log')
+                self.assertEqual(run.call_args.args[0], command)
+                self.assertIs(run.call_args.kwargs.get('shell'), False)
+
+class PreparedPartitionTests(unittest.TestCase):
+    def setUp(self):
+        fixture = DiscoveryTests(); fixture.setUp()
+        self.inventory = fixture.check()
+
+    def check(self):
+        return partition.load_partition(self.inventory, SHA, '10.0.400', 'local')
+
+    def test_prepared_complete_partition(self): self.check()
+
+    def test_wrong_partition_same_union_fails(self):
+        entry = self.inventory['shards']
+        row = next(row for row in entry['core-b']['rows'] if row[1] == partition.SELECTORS[0])
+        entry['core-b']['rows'].remove(row); entry['core-a']['rows'].append(row)
+        with self.assertRaises(ValueError): self.check()
+
+    def test_stale_prepared_sha_fails(self):
+        self.inventory['tested_sha'] = 'b' * 40
+        with self.assertRaises(ValueError): self.check()
+
+    def test_stale_prepared_attempt_fails(self):
+        self.inventory['run_attempt'] = '1'
+        with self.assertRaises(ValueError): self.check()
+
+    def test_wrong_prepared_sdk_fails(self):
+        self.inventory['sdk'] = '10.0.401'
+        with self.assertRaises(ValueError): self.check()
+
+    def test_future_mutation_row_actual_filter_mismatch_fails(self):
+        fixture = DiscoveryTests(); fixture.setUp()
+        name = partition.SELECTORS[0] + '(index: 34)'
+        fixture.texts['core'] = fixture.text([line[2:] for line in fixture.texts['core'].splitlines() if line.startswith('  ')] + [name])
+        # Runner omitted the new row from A: stale filter realization cannot pass.
+        with self.assertRaises(ValueError): fixture.check()
+
+    def test_future_mutation_row_actual_filter_conservation(self):
+        fixture = DiscoveryTests(); fixture.setUp()
+        name = partition.SELECTORS[0] + '(index: 34)'
+        for label in ['core', 'core-a']:
+            fixture.texts[label] = fixture.text([line[2:] for line in fixture.texts[label].splitlines() if line.startswith('  ')] + [name])
+        inventory = fixture.check()
+        self.assertIn(name, {row[2] for row in inventory['shards']['core-a']['rows']})
+        self.assertNotIn(name, {row[2] for row in inventory['shards']['core-b']['rows']})
+
+    def test_prepared_proof_bound_download(self):
+        text = (Path(__file__).parents[1] / 'workflows' / 'ci.yml').read_text()
+        leaf = text.split('  tests:', 1)[1].split('  verify:', 1)[0]
+        self.assertIn('name: ci-inventory-${{ github.sha }}-${{ github.run_attempt }}', leaf)
+        self.assertIn('path: artifacts/partition-proof', leaf)
+
+    def test_failed_discovery_process_fails(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            with mock.patch.object(partition.subprocess, 'run', return_value=partition.subprocess.CompletedProcess([], 17)):
+                with self.assertRaises(ValueError): partition.run_logged(['dotnet', 'test'], Path(tmp) / 'log')
 
 if __name__ == '__main__': unittest.main()

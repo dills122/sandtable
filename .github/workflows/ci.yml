@@ -83,7 +83,12 @@ jobs:
         run: dotnet restore Sandtable.slnx '/bl:artifacts/ci/${{ matrix.shard }}-restore-{}.binlog'
       - name: Build
         run: dotnet build Sandtable.slnx --configuration Release --no-restore '/bl:artifacts/ci/${{ matrix.shard }}-build-{}.binlog'
-      - name: Run whole-method partition
+      - name: Download current attempt Release row proof
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+        with:
+          name: ci-inventory-${{ github.sha }}-${{ github.run_attempt }}
+          path: artifacts/partition-proof
+      - name: Run complete-row partition
         run: python3 .github/scripts/test_partition.py execute --sha "$TESTED_SHA" --attempt "$RUN_ATTEMPT" --shard "$TEST_SHARD"
         env:
           TESTED_SHA: ${{ github.sha }}

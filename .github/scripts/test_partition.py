@@ -71,8 +71,55 @@ def discovery_rows(text, module, deferred):
     return unique(rows, module + ' discovery')
 
 
-def build_inventory(texts, payload, sha, sdk, attempt='local'):
-    require(re.fullmatch(r'[a-f0-9]{40}', sha) and sdk.startswith('10.'), 'Unsupported discovery SHA/SDK')
+MUTATION_METHOD = SELECTORS[0]
+TRANSFER_INDICES = (0, 1, 2, 3, 17, 18, 19, 20)
+
+
+def core_partition(rows):
+    core = unique(list(rows), 'complete Core inventory')
+    names = [row[2] for row in core]
+    require(len(names) == len({name.casefold() for name in names}), 'Casefold identity collision')
+    require(all('*' not in name for name in names), 'Wildcard display identity is unsupported')
+    for module, method, name in core:
+        require(module == 'Cna.Core.Tests' and row_identity(module, name)[1] == method, 'Unknown/custom Core identity')
+    selected = {method.casefold() for method in SELECTORS}
+    require(all(any(row[1].casefold() == method for row in core) for method in selected), 'Missing selected method')
+    mutation = {row for row in core if row[1].casefold() == MUTATION_METHOD.casefold()}
+    require(all(re.fullmatch(re.escape(MUTATION_METHOD) + r'\(index: (0|[1-9][0-9]*)\)', row[2]) for row in mutation), 'Wildcard/custom mutation display name')
+    transferred = {MUTATION_METHOD + f'(index: {index})' for index in TRANSFER_INDICES}
+    require(transferred <= {row[2] for row in mutation}, 'Missing transferred mutation row')
+    retained = {row[2] for row in mutation} - transferred
+    a = {row for row in core if row[1].casefold() in selected and row[2] not in transferred}
+    b = core - a
+    return {'core-a': a, 'core-b': b, 'transferred': sorted(transferred), 'retained_mutation': sorted(retained)}
+
+
+def partition_filters(shard, partition):
+    if shard == 'core-a':
+        return ['--filter-method', *SELECTORS, '--filter-not-display-name', *partition['transferred']]
+    if shard == 'core-b':
+        result = ['--filter-not-method', *SELECTORS[1:]]
+        if partition['retained_mutation']:
+            result.extend(['--filter-not-display-name', *partition['retained_mutation']])
+        return result
+    return []
+
+
+def load_partition(inventory, sha, sdk, attempt):
+    require(inventory['schema_version'] == 1 and inventory['tested_sha'] == sha, 'Inventory source mismatch')
+    require(inventory['sdk'] == sdk and inventory['configuration'] == 'Release' and inventory['run_attempt'] == attempt, 'Inventory SDK/configuration/attempt mismatch')
+    require(set(inventory['shards']) == set(MODULES), 'Missing/unexpected prepared shard')
+    rows = []
+    for shard in ['core-a', 'core-b']:
+        require(inventory['shards'][shard]['module'] == MODULES[shard], 'Prepared Core module mismatch')
+        rows.extend(inventory['shards'][shard]['rows'])
+    partition = core_partition(rows)
+    for shard in ['core-a', 'core-b']:
+        require(unique(inventory['shards'][shard]['rows'], shard) == partition[shard], 'Prepared row partition mismatch')
+    return partition
+
+
+def expand_core(text, payload):
     require(payload.get('schema_version') == 1 and payload.get('runner_version') == '4.0.1', 'Unsupported provider proof')
     providers = payload.get('providers', [])
     require(len(providers) == len(DEFERRED) and {x['method'] for x in providers} == DEFERRED, 'Missing/unknown provider')
@@ -82,7 +129,7 @@ def build_inventory(texts, payload, sha, sdk, attempt='local'):
         unique([row_identity('Cna.Core.Tests', name) for name in names], 'deferred provider')
         require(all(name.startswith(provider['method'] + '(') for name in names), 'Deferred method mismatch')
         deferred[provider['method']] = names
-    actual_names = {line[2:] for line in texts['core'].splitlines() if line.startswith('  ')}
+    actual_names = {line[2:] for line in text.splitlines() if line.startswith('  ')}
     controls = payload.get('controls', [])
     control_methods = {'Cna.Core.Tests.Campaigns.CombatActualRoundEntryTests.NativeActualEntryRetainsExactPreparedAndCancelledTerminalProofs', 'Cna.Core.Tests.Campaigns.BreakdownRecordTests.InvalidFiniteShapesAndNoncanonicalBytesReject'}
     require(len(controls) == 2 and {control['method'] for control in controls} == control_methods, 'Missing/unknown/duplicate formatter control')
@@ -90,12 +137,16 @@ def build_inventory(texts, payload, sha, sdk, attempt='local'):
         require(all(name.startswith(control['method'] + '(') for name in control['names']), 'Control method mismatch')
         require(control['names'] and len(control['names']) == len(set(control['names'])) and set(control['names']) <= actual_names, 'Runner formatter control mismatch')
     require(len(payload.get('controls', [])) == 2, 'Missing formatter controls')
-    core = discovery_rows(texts['core'], 'Cna.Core.Tests', deferred)
+    return discovery_rows(text, 'Cna.Core.Tests', deferred), deferred
+
+
+def build_inventory(texts, payload, sha, sdk, attempt='local'):
+    require(re.fullmatch(r'[a-f0-9]{40}', sha) and sdk.startswith('10.'), 'Unsupported discovery SHA/SDK')
+    core, deferred = expand_core(texts['core'], payload)
+    partition = core_partition(core)
     a = discovery_rows(texts['core-a'], 'Cna.Core.Tests', deferred)
     b = discovery_rows(texts['core-b'], 'Cna.Core.Tests', deferred)
-    selected = {s.casefold() for s in SELECTORS}
-    require(all(any(row[1].casefold() == s for row in core) for s in selected), 'Unknown/empty method selector')
-    require(a == {r for r in core if r[1].casefold() in selected}, 'Include filter differs from predicate')
+    require(a == partition['core-a'] and b == partition['core-b'], 'Actual filters differ from complete-row predicate')
     require(not a & b and a | b == core, 'Filters are not disjoint/exhaustive')
     inventory = {'schema_version': 1, 'tested_sha': sha, 'sdk': sdk, 'configuration': 'Release', 'run_attempt': attempt, 'shards': {}}
     rows = {'core-a': a, 'core-b': b, 'exercise': discovery_rows(texts['exercise'], MODULES['exercise'], {}), 'contracts': discovery_rows(texts['contracts'], MODULES['contracts'], {})}
@@ -154,7 +205,7 @@ def project(module):
 
 def run_logged(args, log):
     with Path(log).open('w') as output:
-        result = subprocess.run(args, stdout=output, stderr=subprocess.STDOUT)
+        result = subprocess.run(args, stdout=output, stderr=subprocess.STDOUT, shell=False)
     require(result.returncode == 0, 'Process failed (' + str(result.returncode) + '): ' + str(log))
 
 
@@ -166,11 +217,12 @@ def identity(expected_sha):
     return sdk
 
 
-def execution_command(shard_name, directory):
+def execution_command(shard_name, directory, partition=None):
     # Progress is retained for diagnosis; only final reports/status satisfy coverage.
     command = ['dotnet', 'test', '--project', project(MODULES[shard_name]), '--configuration', 'Release', '--no-build', '--no-ansi', '--output', 'Detailed', '--diagnostic', '--diagnostic-verbosity', 'Trace', '--diagnostic-synchronous-write', '--diagnostic-output-directory', str((directory / 'diagnostics').resolve()), '--report-xunit-xml', '--results-directory', str((directory / 'results').resolve()), '/bl:' + str((directory / 'test-{}.binlog').resolve())]
     if shard_name in ['core-a', 'core-b']:
-        command.extend(['--filter-method' if shard_name == 'core-a' else '--filter-not-method', *SELECTORS])
+        require(partition is not None, 'Fresh complete Core partition required')
+        command.extend(partition_filters(shard_name, partition))
     return command
 
 
@@ -181,6 +233,7 @@ def main():
     parser.add_argument('--attempt', default='local')
     parser.add_argument('--directory', default='artifacts/ci')
     parser.add_argument('--shard', choices=MODULES)
+    parser.add_argument('--inventory', default='artifacts/partition-proof/inventory.json')
     args = parser.parse_args()
     root = Path(args.directory)
     if args.mode == 'verify':
@@ -191,15 +244,21 @@ def main():
     if args.mode == 'discover':
         root.mkdir(parents=True, exist_ok=True)
         texts = {}
-        for label, module in [('core', 'Cna.Core.Tests'), *MODULES.items()]:
+        core_path = root / 'core-discovery.log'
+        command = ['dotnet', 'test', '--project', project('Cna.Core.Tests'), '--configuration', 'Release', '--no-build', '--list-tests', '--pre-enumerate-theories', 'on', '--no-ansi', '/bl:' + str((root / 'core-{}.binlog').resolve())]
+        run_logged(command, core_path)
+        texts['core'] = core_path.read_text()
+        run_logged(['dotnet', 'run', '--project', '.github/scripts/ReleaseTestRows/ReleaseTestRows.csproj', '--configuration', 'Release', '--no-build', '--', str(Path('artifacts/bin/Cna.Core.Tests/release').resolve()), str(core_path.resolve()), str((root / 'deferred.json').resolve())], root / 'provider-discovery.log')
+        payload = json.loads((root / 'deferred.json').read_text())
+        core, _ = expand_core(texts['core'], payload)
+        partition = core_partition(core)
+        for label, module in MODULES.items():
             path = root / (label + '-discovery.log')
             command = ['dotnet', 'test', '--project', project(module), '--configuration', 'Release', '--no-build', '--list-tests', '--pre-enumerate-theories', 'on', '--no-ansi', '/bl:' + str((root / (label + '-{}.binlog')).resolve())]
-            if label in ['core-a', 'core-b']:
-                command.extend(['--filter-method' if label == 'core-a' else '--filter-not-method', *SELECTORS])
+            command.extend(partition_filters(label, partition))
             run_logged(command, path)
             texts[label] = path.read_text()
-        run_logged(['dotnet', 'run', '--project', '.github/scripts/ReleaseTestRows/ReleaseTestRows.csproj', '--configuration', 'Release', '--no-build', '--', str(Path('artifacts/bin/Cna.Core.Tests/release').resolve()), str((root / 'core-discovery.log').resolve()), str((root / 'deferred.json').resolve())], root / 'provider-discovery.log')
-        inventory = build_inventory(texts, json.loads((root / 'deferred.json').read_text()), args.sha, sdk, args.attempt)
+        inventory = build_inventory(texts, payload, args.sha, sdk, args.attempt)
         (root / 'inventory.json').write_text(json.dumps(inventory, indent=2) + '\n')
         print({key: len(value['rows']) for key, value in inventory['shards'].items()})
     else:
@@ -208,9 +267,10 @@ def main():
         require(not shard.exists(), 'Stale shard output directory')
         (shard / 'results').mkdir(parents=True)
         module = MODULES[args.shard]
-        command = execution_command(args.shard, shard)
+        partition = load_partition(json.loads(Path(args.inventory).read_text()), args.sha, sdk, args.attempt)
+        command = execution_command(args.shard, shard, partition)
         with (shard / 'execution.log').open('w') as output:
-            result = subprocess.run(command, stdout=output, stderr=subprocess.STDOUT)
+            result = subprocess.run(command, stdout=output, stderr=subprocess.STDOUT, shell=False)
         (shard / 'status.json').write_text(json.dumps({'shard': args.shard, 'module': module, 'tested_sha': args.sha, 'sdk': sdk, 'configuration': 'Release', 'run_attempt': args.attempt, 'exit_code': result.returncode}) + '\n')
         print((shard / 'execution.log').read_text())
         raise SystemExit(result.returncode)
