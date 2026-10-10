@@ -2360,3 +2360,66 @@ remain separately recorded without new redundant sweeps. Draft PR167 is stacked 
 Correction is author REVIEW_READY for fresh review instance2of9/set1pass2; review count is1of9,
 research recoveries0of2, no heavy pivot or reset. No native work or merge. See the dated
 [review reconciliation](../work/reviews/2026-10-10-actual-round-entry-contract-review-1-response.md).
+
+
+### Task019F3 — private native actual round entry (REL-AUD-02C / DAY-A)
+
+Implementation branch `codex/native-actual-round-entry` starts from merged PR167 at
+`34a494c46ab7b8665e381f9e531c7b8365cb3efe`. The private native engine and closed codec
+consume the unchanged `combat-actual-round-entry-v1` literal fixture through a test-project
+content link. Both independently trusted ledgers are required on replay and readback; embedded
+inputs are consistency evidence. All57 dependency digests remain frozen, with Content checked
+again at empty-AA certificate consumption. Prepared entry stops before paid Close Assault;
+cancelled entry retains the no-attack route to Release. No public activation is introduced.
+
+Draft publication checkpoint: terminal parity passed34 cases; the retained adversarial
+checkpoint passed74 tests, and the subsequent ASCII carrier regression passed all128 ASCII
+values in one test. These checkpoints precede the final full acceptance run. Original ledger
+null handling and canonical ASCII spelling each have retained failing and passing tests.
+The expanded exhaustive mutation and lifecycle cases are implemented; complete native
+acceptance passed171 tests with0failed/0skipped in17m12.877s(Debugnet10arm64) after
+the bounded replay optimization below. That checkpoint also passed the full Debug solution:
+2,764 tests, zero failures or skips, in 29m56.179s. Solution build and full format verification
+passed. Its exact-head Release CI cancelled at the unchanged 15-minute job limit; passing
+local tests do not waive that required gate. Author engineering self-review, fresh independent
+implementation review and passing exact-head CI remain pending. This is draft work, not an
+independent Ready verdict or DAY-A acceptance. Independent review counter0of9, recovery0of2.
+
+Performance follow-up retained the initial15-minute hosted CI cancellation and incomplete
+45-minute local Core run. That local run also reported one ExerciseRunner aggregation failure;
+the exact isolated test and full469-test ExerciseRunner module later passed. Its original
+failure remains unexplained and retained; the later corrected full solution passed that test
+in 8.392s while Core was active. This does not establish the original failure's cause.
+
+The authorized correction stays in this new family: per-call authenticated Base/clock/route
+facts and one successful history-frame memo. Keys own the complete raw canonical source,
+both complete ordered raw ledgers, typed Setup/configuration serialization and RulesetHash;
+full framed evidence is compared after SHA lookup. All57 physical pins run before lookup,
+and previously consumed AA Content is rechecked on hits. Every current Apply transition,
+clock, actor, admission flag and supplied readback claim is validated afresh. There is no
+separate derived-original Base memo, cached Apply outcome or predecessor/pin/timeout change.
+Private owned frames/results have128-entry,16MiB retained-byte,1MiB per-entry and2MiB key
+budgets; oversize valid candidates authenticate cold. Small isolated policies exercise
+ownership, cold/warm physical pins, context/ledger isolation, concurrent insertion/eviction,
+reentrant acquisition, resource bounds and disabled-admission recovery. Complete native acceptance passed, including the memo regressions;
+corrected full solution tests and required Release CI still determine readiness.
+
+A second scoped correction returns the same-entry retained read-only Result after the existing
+source/version/count and round-input canonical guards, complete evidence lookup and historical
+AA Content check, before mutable Base/Control/event frame reconstruction. Apply keeps its frame
+and fresh-input path; readers still parse and compare each supplied claim. A result-absent hit
+continues through frame recovery and original Result construction. Six additional regression
+rows cover both owners, prepared seal orders and cancellations, result-absent/present literals,
+owned return buffers, malformed/version/count guards and fresh exact Apply retries. Their
+pre-optimization baseline passed 6/6; focused memo tests passed 27/27 after the correction.
+All original 171 tests remain; complete acceptance passed 177/177 with zero failures/skips
+in 14m18.036s (Debug/net10.0/arm64). Corrected full solution validation is in progress;
+author self-review, independent implementation review and passing exact-head Release CI
+remain mandatory. Unchanged local mutation cases 0/17/2 passed in 17.039/18.450/16.300s versus
+28.507/25.768/21.714s at the prior memo checkpoint. These are local Debug measurements, not
+an aggregate component attribution or a forecast of hosted CI completion.
+
+The existing four predecessor failures remain separately recorded without waiver or pin
+refresh. Paid commitment/result/settlement, full Snapshot/Archives restart, repeated Movement,
+later-II/consumed lineage, Exercise/Runner and parent017–019 completion remain outside this
+private entry slice. The coordinator retains ownership of independent review and merge.
