@@ -1,0 +1,12 @@
+{
+  "primaryCodeHead": "64439f79356fd6303408e6a9b3579e530235b9d6",
+  "base": "34a494c46ab7b8665e381f9e531c7b8365cb3efe",
+  "branch": "codex/native-actual-round-entry",
+  "sha256": {
+    "src/Cna.Core/Campaigns/CampaignCombatActualRoundEntry.cs": "00f30d4abd24598ebea9e12319aef6ba7c7285e64565ed9eff76ac37f4d04fcf",
+    "src/Cna.Core/Campaigns/CampaignCombatActualRoundEntryCodec.cs": "e224bb57183b1b0febf9b90a297744e9ce99cf3b4124ce5d320eb3fb60e48065",
+    "tests/Cna.Core.Tests/Campaigns/CombatActualRoundEntryTests.cs": "bd353386516b9c6456f2b014aaa2c88382d9ece4242d656bb8019ae951461c2c",
+    "tests/Cna.Core.Tests/Cna.Core.Tests.csproj": "1efe76cc11e66d5074a40025e73279570775104697ef93e89b7cd3ca88ae9aeb",
+    "docs/design/combat-cycle-implementation-plan.md": "5dc84b46efcd8b95bf7dcbb9a5d048bf2ade056a408bd10d31d9e86b205c62a3"
+  }
+}
