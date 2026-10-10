@@ -1,0 +1,7 @@
+# Independent review bootstrap: CI scheduling experiment
+
+Review the bounded CI-only experiment on draft PR169 independently of the author rationale. Product primary files and their five frozen hashes are unchanged from checkpoint64439f79356fd6303408e6a9b3579e530235b9d6; the manifest is in the prior dated review packet. Implementation review1 returned Not ready for delivery because hosted Core exceeded the15-minute CI cap. Counters:1/9 implementation,0/2 recovery. This experiment needs review2 after hosted measurement; this packet does not supply a verdict.
+
+Scope: .github/workflows/ci.yml; .github/scripts/test_partition.py; .github/scripts/test_partition_test.py; .github/scripts/ReleaseTestRows/{ReleaseTestRows.csproj,Program.cs}; dated experiment handoff/review documents. Inspect same-host same-head SDK10 Release discovery, five deferred provider bindings, actual formatter controls, whole-method include/exclude predicates, stable argument-bearing identity, exact coverage and process/dependency failures. Verify required verify identity, always-run aggregation, original restore/build/format and other workflows, four leaves, fail-fast false,15-minute limits and default collection concurrency.
+
+Evidence and remaining gates are in docs/work/handoffs/2026-10-10-native-actual-round-entry-ci-experiment.md. Read actual hosted evidence before judging the budget. Simulated report reconciliation validates parsing only. The author rationale is separate in the corresponding ci-author.md.
