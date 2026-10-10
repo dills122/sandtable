@@ -35,6 +35,13 @@ class CoverageTests(unittest.TestCase):
             ET.SubElement(collection, 'test', name=json.dumps(name)[1:-1], type=method.rsplit('.', 1)[0], method=method.rsplit('.', 1)[1], result='Pass')
             ET.ElementTree(root).write(d / 'results' / 'report.xunit.xml', encoding='utf-8')
 
+    def test_progress_cannot_replace_missing_final_report(self):
+        leaf = self.root / 'core-a'
+        (leaf / 'results' / 'report.xunit.xml').unlink()
+        (leaf / 'diagnostics').mkdir()
+        (leaf / 'diagnostics' / 'progress.diag').write_text('Timestamped diagnostic progress is not acceptance evidence')
+        with self.assertRaises(ValueError): self.check()
+
     def test_inventory_attempt_mismatch_fails(self):
         self.inventory['run_attempt'] = '1'
         with self.assertRaises(ValueError): self.check()
@@ -246,5 +253,43 @@ class ArtifactProtocolTests(unittest.TestCase):
         pattern = re.search(r'pattern: (.+)', text).group(1)
         aggregate = re.search(r'name: (.+)', text.split('      - name: Retain aggregate evidence', 1)[1]).group(1)
         self.assertFalse(fnmatch.fnmatchcase(aggregate, pattern), 'A prior aggregate could hide missing leaf artifacts on retry')
+
+class DiagnosticCommandTests(unittest.TestCase):
+    def test_supported_trace_and_synchronous_write(self):
+        for shard in partition.MODULES:
+            with self.subTest(shard=shard):
+                command = partition.execution_command(shard, Path('/tmp/control') / shard)
+                self.assertIn('--diagnostic', command)
+                self.assertIn('--diagnostic-synchronous-write', command)
+                self.assertEqual(command[command.index('--diagnostic-verbosity') + 1], 'Trace')
+                self.assertEqual(command[command.index('--output') + 1], 'Detailed')
+
+    def test_diagnostics_stay_inside_uploaded_leaf_directory(self):
+        for shard in partition.MODULES:
+            with self.subTest(shard=shard):
+                directory = Path('/tmp/artifacts/ci') / shard
+                command = partition.execution_command(shard, directory)
+                path = Path(command[command.index('--diagnostic-output-directory') + 1])
+                self.assertEqual(path, (directory / 'diagnostics').resolve())
+                workflow = (Path(__file__).parents[1] / 'workflows' / 'ci.yml').read_text()
+                leaf = workflow.split('  tests:', 1)[1].split('  verify:', 1)[0]
+                self.assertIn('if: ${{ always() }}', leaf)
+                self.assertIn('path: artifacts/ci', leaf)
+
+    def test_whole_method_filters_and_acceptance_reports_preserved(self):
+        for shard, module in partition.MODULES.items():
+            with self.subTest(shard=shard):
+                command = partition.execution_command(shard, Path('/tmp/control') / shard)
+                self.assertEqual(command[:2], ['dotnet', 'test'])
+                self.assertEqual(command[command.index('--project') + 1], partition.project(module))
+                self.assertIn('--report-xunit-xml', command)
+                if shard.startswith('core-'):
+                    key = '--filter-method' if shard == 'core-a' else '--filter-not-method'
+                    self.assertEqual(command[command.index(key) + 1:], list(partition.SELECTORS))
+                else:
+                    self.assertNotIn('--filter-method', command)
+                    self.assertNotIn('--filter-not-method', command)
+                self.assertNotIn('--max-threads', command)
+                self.assertNotIn('--timeout', command)
 
 if __name__ == '__main__': unittest.main()

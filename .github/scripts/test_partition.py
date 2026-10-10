@@ -166,6 +166,14 @@ def identity(expected_sha):
     return sdk
 
 
+def execution_command(shard_name, directory):
+    # Progress is retained for diagnosis; only final reports/status satisfy coverage.
+    command = ['dotnet', 'test', '--project', project(MODULES[shard_name]), '--configuration', 'Release', '--no-build', '--no-ansi', '--output', 'Detailed', '--diagnostic', '--diagnostic-verbosity', 'Trace', '--diagnostic-synchronous-write', '--diagnostic-output-directory', str((directory / 'diagnostics').resolve()), '--report-xunit-xml', '--results-directory', str((directory / 'results').resolve()), '/bl:' + str((directory / 'test-{}.binlog').resolve())]
+    if shard_name in ['core-a', 'core-b']:
+        command.extend(['--filter-method' if shard_name == 'core-a' else '--filter-not-method', *SELECTORS])
+    return command
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('mode', choices=['discover', 'execute', 'verify'])
@@ -200,9 +208,7 @@ def main():
         require(not shard.exists(), 'Stale shard output directory')
         (shard / 'results').mkdir(parents=True)
         module = MODULES[args.shard]
-        command = ['dotnet', 'test', '--project', project(module), '--configuration', 'Release', '--no-build', '--no-ansi', '--report-xunit-xml', '--results-directory', str((shard / 'results').resolve()), '/bl:' + str((shard / 'test-{}.binlog').resolve())]
-        if args.shard in ['core-a', 'core-b']:
-            command.extend(['--filter-method' if args.shard == 'core-a' else '--filter-not-method', *SELECTORS])
+        command = execution_command(args.shard, shard)
         with (shard / 'execution.log').open('w') as output:
             result = subprocess.run(command, stdout=output, stderr=subprocess.STDOUT)
         (shard / 'status.json').write_text(json.dumps({'shard': args.shard, 'module': module, 'tested_sha': args.sha, 'sdk': sdk, 'configuration': 'Release', 'run_attempt': args.attempt, 'exit_code': result.returncode}) + '\n')
