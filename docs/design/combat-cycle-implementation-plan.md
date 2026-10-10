@@ -2302,3 +2302,47 @@ findings. Coordinator accepts the research recommendation; see the
 This closes research only. REL-AUD-02B is the next executable-contract milestone; proposed
 bytes, added dependency closure and native behavior remain unimplemented and require their
 own TDD evidence and fresh review before advancement.
+
+
+### Task019F2 — actual prepared-round entry executable contract (REL-AUD-02B)
+
+Author continuation completed2026-10-10 in the existing prepared checkout on
+`codex/actual-round-entry-contract`, exact accepted research base
+`0db4745a5ec631269c7751a244e1f49d84a81d6f`. The preserved2026-10-09 WIP and two-owner semantic RED/minimal GREEN
+were continued; no branch reset, new worktree or discarded artifacts. Accepted research's eight
+acceptance groups govern the five primary paths: new actual-round-entry-v1 spec/schema/literal
+fixture/oracle plus this plan. Dated administrative packets are separate.
+
+The private reference fully joins original selected/declined source20 and its independent
+selection ledger to a separate round ledger: opening21, both owned full-infantry seals22/23,
+FA24 and certified empty AA25 at Prepared CA. Both actual owners and seal orders are retained.
+Thirty cancellation traces preserve zero attack and partial seal audit, then complete FA/AA/CA
+to same-cycle Reserve Release at25/26. World/RNG, CP0/1, ammo10, TOE10 and original12 entry plus7
+selection events stay exact; no costs/draws/commitment/result/positive CA closure. Clock supplement
+binds original Config1/budget30000 to independent opening-policyv2; no private seal raises floor.
+
+Literal fixture contains34 cases and1100 artifacts, generated once after pre-literal acceptance
+and57-path consumption closure. Normal verification never writes goldens. Final normal command
+passed exit0 in1865.639s: 224cuts, 630suffixes,
+2520original retries, 8016new event,
+2510input, 23522proof/Base and 5604control leaf
+mutations; 1512full original Request/Created/history and
+516selection leaves; 5904lifecycle/clock cases and
+328public probes; 192private clock comparisons,
+768malformed/foreign proposals, combined-error/ownership/capacity/future
+and all57 warm dependency tamper/missing gates. Exact commands, hashes and RED/GREEN details are in
+the dated handoff. A late post-preflight Content consumption RED was fixed and rechecked; the
+original literal fixture was retained unchanged. All original16 pins and additional41 hashes match.
+
+Original actual-selection, positive-entry, C3a, Round2 and Result2 oracles pass with measured
+600-second budgets; separate synthetic Snapshot composition passes. Breakdown, cycle-sequence,
+inherited Snapshot and outward remain four independent failures; historical12/60s timeout
+observations remain unverified. No old spec/fixture/pin/native reader was changed or waived.
+No unrelated .NET gate was run.
+
+Status: author REVIEW_READY, not an independent Ready verdict; no staging/commit/push/PR/merge or
+review dispatch. Coordinator owns fresh GPT-6.1 medium review, counter0of9 before dispatch,
+bounded3sets×3 and high research recovery maximum2. No native/public/host/UI/AI/transport,
+seat/clock/store authentication, full Snapshot/Archives restart/Runner, paid/result/settlement,
+repeat/later-II/consumed or parent017–019 closure. REL-AUD-02C native follows only after contract
+review and coordinator reconciliation. Research PR166 remains separate from this contract.
