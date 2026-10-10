@@ -1,0 +1,17 @@
+# Handoff: CI lifecycle scheduling investigation
+
+Date: 2026-10-10 America/Toronto. Status: bounded recommendation for Brain decision, fresh research review pending. Opened18:38:40Toronto, maximum20minutes. Research4/9; native implementation1/9; recovery0/2; no counters reset.
+
+Brain reopens this lane using hosted run38090888897 lifecycle records, branchfc80df1a57689d88c4d6af4b68e1030a617b9992, actual event31d9d3bd9b2d9874f2166ac779d1d94d7e84897a, SDK10.0.401 attempt1. This lane owns only the new [CI lifecycle decision](../../research/2026-10-10-actual-round-entry-ci-lifecycle-decision.md), SHA256 6032a4451045df88a782f17b6e810422b22fc6039c6ce35770cfd674a63c55e7, and this administrative record. All13 earlier frozen research/review/disposition files remain unchanged. Worktree /Users/dsteele/.codex/worktrees/combat-actual-bridge-research/sandtable; branch codex/actual-round-entry-performance-research; checkpoint1e1eacc19d630c4e8030459e0207b9c53dd26119.
+
+## Recommendation and evidence boundary
+
+Recommend a CI-only two-leaf experiment transferring native mutation rows0,1,2,3,17,18,19,20 fromA toB, contingent on supported filter and exact same-head Release discovery proof. A71/B2220 form a disjoint complete Core2291-row union; all other selected11 methods, complete mutation-row assertions, concurrency, unfiltered modules, exact identity/attempt binding, full gates and15minute caps remain. Official xUnit4.0 release documents individual theory display-name filters; retained pinned4.0.1 help confirms options. Actual combined runtime filter behavior remains an experiment gate.
+
+Raw A155 producer records independently match the supplied sequence.32 completed native paired publication intervals sum826.529seconds; latest other11method publication occurs354.952seconds after native first, followed by471.645seconds of native publication tail. No full method/body duration, CPU cost or unfinished-case duration is inferred. Transferred eight observed intervals sum189.220, remaining24 sum637.309. Conditional planning scenarios and unbounded unknown residual/order/cache terms are explicit in the note; no guaranteed fit or optimal split is claimed. Whole-method isolation cannot be certified to fit, and removing peers may still help; adding a host or changing tests is deferred.
+
+## Scope, preservation and next owner
+
+No .NET/CI/profiler/helper test/SDK process, product/workflow/helper/test edit, agent delegation, commit/push or experiment was performed by this lane. Retained control/run artifacts were read only. Temporary source/evidence/rehearsal manifests live under /private/tmp/actual-round-entry-ci-lifecycle-decision/; neutral review-manifest.json binds the packet. Source graph is stale/untracked for current changes; immutable branch git snapshots cover those paths. Actual tested merge identity comes from retained artifacts, not a claimed local merge-source lookup.
+
+Brain owns scope authorization and fresh review; DAY-A owns any helper/discovery/CI implementation and runtime lease. Stop at recommendation. No scheduling, test restructuring, product/cache change, third leaf, timeout increase or hosted run is authorized by this packet. After review, preserve these two frozen notes with any separate verdict/disposition record only under Brain direction; do not rewrite earlier checkpoints. First next action belongs to Brain's review/reconciliation, with counters unchanged.
