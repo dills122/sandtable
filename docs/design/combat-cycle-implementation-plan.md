@@ -2565,3 +2565,41 @@ root causes remain unwaived; successful PR CI does not establish their remediati
 Next: separately freeze and implement the private native paid consumer, then certify remaining
 settlement/repeat/finish lineage, side-safe public actions and full-loop evidence. Documentation
 reconciliation has its own review/CI gate; it changes no product or frozen dependency bytes.
+
+
+### Task019F6 — private native actual paid-assault consumer
+
+Candidate implementation, 2026-10-11, on `codex/native-paid-assault-consumer` from
+`6334a7c87446ef5c7694ac325f7650819d891413`. The
+[author plan](../work/plans/2026-10-11-native-paid-assault-consumer.md) owns NP01–NP10;
+the unchanged [paid contract](../specs/combat-actual-paid-assault-v1.md) governs wire behavior.
+Fresh independent review and exact-head GitHub CI remain publication gates; this is not a merge verdict.
+
+Four genuine native Prepared25 roots first failed at the defined unsupported boundary in retained
+semantic RED `9c41b89`, after independent CP/ammunition/RNG preconditions passed. The additive C#
+consumer now derives the admission-only AAD proof using native actual-round replay and the complete
+16616-record selected arithmetic catalogue. The AAD capability flags remain false. Full paid ingress
+requires the original authentic creation context, independent selection/round/paid byte ledgers and
+verified dependency bytes. Readbacks replay ingress before comparing any supplied proof or control.
+
+The native implementation owns paired debit, support certification, ordered RNG with conditional
+capture draw, compatible inner result/settlement identities, original World projection, independent
+mandatory windows, immediate settlement, round closure and one CA completion into same-cycle
+Reserve Release. All four genuine histories retain exact PR175 event/source/final-proof parity,
+nine-cut recovery, retries and disabled-fresh completion. Separate native mechanics tests exercise
+9728 settlement variants per owner, every projected cut, predebit failure sensitivity, both custody
+roles, clock fallback, local-window versus audit high-water, pinned RNG vectors and atomic exhaustion.
+Isolated branch controls remain mechanical tests and never become authentic ingress or campaign proof.
+
+Measured physical acquisition is 64 paths: all unchanged reference62 runtime pins plus separately
+pinned paid schema/oracle delivery bytes. The paid wire manifest remains the reference62 preimage;
+the predecessor AAD59 manifest remains unchanged. Cold/warm and after-first-read dependency failure
+checks remain mandatory, as do closed grammar and owned-return checks. No Python process, new
+package, host API, generated-client change or historical fixture regeneration is part of the consumer.
+
+This completes only the private immediate native slice subject to its remaining review/CI gates.
+Production ingress authentication, Release execution, repeated/repeat/finish/later-II and consumed
+Reserve lineage, public/player/host activation, Snapshot/Archives, Exercise/Runner and authentic
+continual-cycle evidence remain parent obligations. Tasks017–025 and all72 acceptance criteria are
+not closed by this checkpoint. The four historical owning failures and unresolved ExerciseRunner
+aggregation/CoreB139 remain unwaived and are not claimed fixed by native paid-assault validation.

@@ -1,0 +1,39 @@
+Running tests from /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/artifacts/bin/Cna.Core.Tests/release/Cna.Core.Tests.dll (net10.0|arm64)
+failed Cna.Core.Tests.Campaigns.CombatActualPaidAssaultTests.GenuinePreparedCommitPaysBothUnits(index: 2) (255ms)
+  from /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/artifacts/bin/Cna.Core.Tests/release/Cna.Core.Tests.dll (net10.0|arm64)
+  Xunit.MicrosoftTestingPlatform.XunitException: System.Text.Json.JsonException : CMB-APA-007
+    at Cna.Core.Campaigns.CampaignCombatActualPaidAssault.ApplyTrustedSource(ReadOnlySpan`1 source, CampaignCombatCreationContext context, IReadOnlyList`1 trustedSelectionInputs, IReadOnlyList`1 trustedRoundInputs, IReadOnlyList`1 trustedPaidInputs, ReadOnlySpan`1 newInput, Func`2 dependencyBytes, Boolean admissionEnabled) in /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/src/Cna.Core/Campaigns/CampaignCombatActualPaidAssault.cs:58
+    at Cna.Core.Tests.Campaigns.CombatActualPaidAssaultTests.GenuinePreparedCommitPaysBothUnits(Int32 index) in /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/tests/Cna.Core.Tests/Campaigns/CombatActualPaidAssaultTests.cs:46
+    at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+    at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+failed Cna.Core.Tests.Campaigns.CombatActualPaidAssaultTests.GenuinePreparedCommitPaysBothUnits(index: 3) (85ms)
+  from /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/artifacts/bin/Cna.Core.Tests/release/Cna.Core.Tests.dll (net10.0|arm64)
+  Xunit.MicrosoftTestingPlatform.XunitException: System.Text.Json.JsonException : CMB-APA-007
+    at Cna.Core.Campaigns.CampaignCombatActualPaidAssault.ApplyTrustedSource(ReadOnlySpan`1 source, CampaignCombatCreationContext context, IReadOnlyList`1 trustedSelectionInputs, IReadOnlyList`1 trustedRoundInputs, IReadOnlyList`1 trustedPaidInputs, ReadOnlySpan`1 newInput, Func`2 dependencyBytes, Boolean admissionEnabled) in /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/src/Cna.Core/Campaigns/CampaignCombatActualPaidAssault.cs:58
+    at Cna.Core.Tests.Campaigns.CombatActualPaidAssaultTests.GenuinePreparedCommitPaysBothUnits(Int32 index) in /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/tests/Cna.Core.Tests/Campaigns/CombatActualPaidAssaultTests.cs:46
+    at InvokeStub_CombatActualPaidAssaultTests.GenuinePreparedCommitPaysBothUnits(Object, Span`1)
+    at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+failed Cna.Core.Tests.Campaigns.CombatActualPaidAssaultTests.GenuinePreparedCommitPaysBothUnits(index: 1) (77ms)
+  from /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/artifacts/bin/Cna.Core.Tests/release/Cna.Core.Tests.dll (net10.0|arm64)
+  Xunit.MicrosoftTestingPlatform.XunitException: System.Text.Json.JsonException : CMB-APA-007
+    at Cna.Core.Campaigns.CampaignCombatActualPaidAssault.ApplyTrustedSource(ReadOnlySpan`1 source, CampaignCombatCreationContext context, IReadOnlyList`1 trustedSelectionInputs, IReadOnlyList`1 trustedRoundInputs, IReadOnlyList`1 trustedPaidInputs, ReadOnlySpan`1 newInput, Func`2 dependencyBytes, Boolean admissionEnabled) in /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/src/Cna.Core/Campaigns/CampaignCombatActualPaidAssault.cs:58
+    at Cna.Core.Tests.Campaigns.CombatActualPaidAssaultTests.GenuinePreparedCommitPaysBothUnits(Int32 index) in /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/tests/Cna.Core.Tests/Campaigns/CombatActualPaidAssaultTests.cs:46
+    at InvokeStub_CombatActualPaidAssaultTests.GenuinePreparedCommitPaysBothUnits(Object, Span`1)
+    at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+failed Cna.Core.Tests.Campaigns.CombatActualPaidAssaultTests.GenuinePreparedCommitPaysBothUnits(index: 0) (86ms)
+  from /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/artifacts/bin/Cna.Core.Tests/release/Cna.Core.Tests.dll (net10.0|arm64)
+  Xunit.MicrosoftTestingPlatform.XunitException: System.Text.Json.JsonException : CMB-APA-007
+    at Cna.Core.Campaigns.CampaignCombatActualPaidAssault.ApplyTrustedSource(ReadOnlySpan`1 source, CampaignCombatCreationContext context, IReadOnlyList`1 trustedSelectionInputs, IReadOnlyList`1 trustedRoundInputs, IReadOnlyList`1 trustedPaidInputs, ReadOnlySpan`1 newInput, Func`2 dependencyBytes, Boolean admissionEnabled) in /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/src/Cna.Core/Campaigns/CampaignCombatActualPaidAssault.cs:58
+    at Cna.Core.Tests.Campaigns.CombatActualPaidAssaultTests.GenuinePreparedCommitPaysBothUnits(Int32 index) in /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/tests/Cna.Core.Tests/Campaigns/CombatActualPaidAssaultTests.cs:46
+    at InvokeStub_CombatActualPaidAssaultTests.GenuinePreparedCommitPaysBothUnits(Object, Span`1)
+    at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+/Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/artifacts/bin/Cna.Core.Tests/release/Cna.Core.Tests.dll (net10.0|arm64) failed with 4 error(s) (1s 191ms)
+Exit code: 2
+
+Test run summary: Failed!
+  total: 4
+  failed: 4
+  succeeded: 0
+  skipped: 0
+  duration: 1s 615ms
+Test run completed with non-success exit code: 2 (see: https://aka.ms/testingplatform/exitcodes)

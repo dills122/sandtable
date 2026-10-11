@@ -632,8 +632,13 @@ Task019F5 (PR #175) adds a separate private actual paid-assault executable refer
 lineage and three independent ledgers authenticate paired debit, ordered RNG/result identity,
 owned World projection, immediate settlement and one CA completion into same-cycle Reserve Release.
 Four genuine ordinary histories remain distinct from isolated complete selected-outcome support.
-Production ingress authentication, native paid assault, later-II/consumed Reserve lineage and
-public activation remain gated. Private settled controls
+Task019F6 adds the private native C# consumer, including native admission-only proof derivation,
+complete arithmetic support before paired debit, original World projection and reference byte
+parity through immediate CA completion. It accepts authentic creation context and three independently
+retained ledgers; imported proof claims confer no authority. Its 64 physical dependency checks retain
+the unchanged 62-path paid wire manifest, with two separate delivery pins. Focused native gates,
+fresh review and exact-head CI govern this private implementation. Production ingress authentication,
+later-II/consumed Reserve lineage and public activation remain gated. Private settled controls
 still retain synthetic earlier Movement; these checkpoints do not prove the authentic continual
 cycle. The [roadmap](docs/roadmap/pre-alpha-roadmap.md) owns detailed sequencing, and the
 [first-release audit](docs/research/2026-10-05-first-release-audit.md) owns release gap measurements.
