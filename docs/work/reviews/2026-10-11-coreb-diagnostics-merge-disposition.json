@@ -1,0 +1,28 @@
+{
+  "headRefOid": "3a0cfde5a9fce8646eff5143210dc4ed7453cee4",
+  "mergeCommit": {
+    "oid": "3040fbd81aa84e07644b05216912235fe32e4359"
+  },
+  "mergedAt": "2026-10-11T03:46:43Z",
+  "state": "MERGED",
+  "url": "https://github.com/dills122/sandtable/pull/174",
+  "tested_merge": "26575b55a353438af08116e207224d5923195f13",
+  "actual_merge": "3040fbd81aa84e07644b05216912235fe32e4359",
+  "actual_merge_parents": [
+    "df831a42293cde3a105cc778ca2a762eab043400"
+  ],
+  "tested_merge_parents": [
+    "df831a42293cde3a105cc778ca2a762eab043400",
+    "3a0cfde5a9fce8646eff5143210dc4ed7453cee4"
+  ],
+  "merge_method": "squash (single main parent)",
+  "tree": "21ecb4a6c955d448b0743652ca71b137a478280f",
+  "actual_merge_tree_equals_tested": true,
+  "underlying_crash_status": "Unresolved/intermittent; unchanged-source Linux control passed; actual fatal-path capture unverified.",
+  "coordinator_docs": {
+    "pr_url": "https://github.com/dills122/sandtable/pull/173",
+    "head_reported_by_brain": "c5e78fe780d07f5a4093b71345d5c59ac6ed11f6",
+    "status_reported_by_brain": "pending CI after main integration",
+    "owner": "Brain; author does not wait on this PR"
+  }
+}
