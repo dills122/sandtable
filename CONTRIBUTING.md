@@ -65,6 +65,12 @@ Codex-managed worktrees seed Git-ignored AI Central context through
 `.codex/environments/environment.toml`. The default shared checkout is `$HOME/.ai-central`;
 set `AI_CENTRAL_HOME` for another location. The allowlisted seeder preserves worktree-owned files.
 
+CI row discovery validates the compiled xUnit `4.0.2` formatter and the reviewed data
+providers before preparing complementary Core shards. The C# helper and Python proof reader
+both accept only this reviewed version. For a future runner upgrade, compare actual discovery,
+provider rows and formatter controls before changing both guards; unknown versions fail closed.
+See the [xUnit release notes](https://xunit.net/releases/v3/4.0.2).
+
 CI retains xUnit XML timing reports for 14 days. Executed CI shards also enable .NET triage
 crash dumps and JSON crash reports under `artifacts/ci/<shard>/diagnostics/`, with process ID
 and timestamp in each dump filename. Dump creation diagnostics stay in `execution.log`.
