@@ -1,0 +1,281 @@
+{
+  "boundary": "Five-primary immutable working-tree delivery on codex/actual-assault-contract. Publication head is supplied in the Brain dispatch/PR; no self-referential Git hash.",
+  "base": "94cf23883978f7fd9726f4bdd4f63677c6af6a9f",
+  "planning_head": "38b223eff9ff0adcaa6e095e12bf0f6aa2405dff",
+  "created_utc": "2026-10-11T01:11:18.857492+00:00",
+  "primary_sha256": {
+    "docs/specs/combat-actual-assault-v1.md": "4bfc819397b58fcde17499ac196de64bfb6a642e56add93174cfb79fd813db3a",
+    "docs/specs/combat-actual-assault-v1.schema.json": "fd508c57a6a1ce3bb03b60bbe434b90e2bc7b2ec1538c4d60fd56cb3adfe8335",
+    "docs/specs/fixtures/combat-actual-assault-v1.json": "9a486f77d0463c071c55af9196511ec2f1214763ed2278ba89962b30746aba09",
+    "docs/specs/verify-combat-actual-assault-v1.py": "9918d44079ece5174c7a9dd9b9cbb5284e984e6f72bc1895e0d57a5d2b91691a",
+    "docs/design/combat-cycle-implementation-plan.md": "d7c83687967580fd2c03af67e2ae3bd1e7e5955a71a6682a341cc2edcda20b6b"
+  },
+  "gates": {
+    "original-are": {
+      "exit_code": 0,
+      "timed_out": false,
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-B",
+        "docs/specs/verify-combat-actual-round-entry-v1.py"
+      ],
+      "budget_seconds": 2100.0,
+      "wall_seconds": 1960.2965693340084,
+      "log_path": "/private/tmp/actual-assault-c1-gates/original-are.log",
+      "log_sha256": "8e584c8ef48b7284e5385f6e0fe82462cae724235fa45d82df9cc3f11b8f2b60"
+    },
+    "final-normal": {
+      "exit_code": 0,
+      "timed_out": false,
+      "source_sha256_before": "9918d44079ece5174c7a9dd9b9cbb5284e984e6f72bc1895e0d57a5d2b91691a",
+      "source_sha256_after": "9918d44079ece5174c7a9dd9b9cbb5284e984e6f72bc1895e0d57a5d2b91691a",
+      "log_sha256": "382aa5345b6880218b0bc61a79cbb67d78b95c405b915c17064f5d7774cb8eca",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-B",
+        "docs/specs/verify-combat-actual-assault-v1.py"
+      ],
+      "budget_seconds": 600.0,
+      "wall_seconds": 374.59284370800015,
+      "log_path": "/private/tmp/actual-assault-c1-gates/final-normal.log"
+    },
+    "rules-inputs": {
+      "exit_code": 0,
+      "timed_out": false,
+      "source_sha256_before": "ffb6daf98db7097d307ac7c185bf7d68a2ff1d0ac9a357ea063a746aab42081d",
+      "source_sha256_after": "ffb6daf98db7097d307ac7c185bf7d68a2ff1d0ac9a357ea063a746aab42081d",
+      "log_sha256": "7ba59afa5aaf23662f5720f5568c5e58572a913dd01a69198a974da07a8a4129",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-B",
+        "docs/specs/verify-combat-rules-inputs-v1.py"
+      ],
+      "budget_seconds": 60.0,
+      "wall_seconds": 0.528014916999382,
+      "log_path": "/private/tmp/actual-assault-c1-gates/rules-inputs.log"
+    },
+    "source-freeze": {
+      "exit_code": 0,
+      "timed_out": false,
+      "source_sha256_before": "f21a97150e344337f6ee4c2c1a1752ac7d41b8b8c8bf6a61a06a1fe5a0483e7e",
+      "source_sha256_after": "f21a97150e344337f6ee4c2c1a1752ac7d41b8b8c8bf6a61a06a1fe5a0483e7e",
+      "log_sha256": "092225e2703b3efc4a6cf955e578937993070ee4d99f40fb3186caf4f9285a2b",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-B",
+        "docs/research/verify-combat-source-freeze.py"
+      ],
+      "budget_seconds": 60.0,
+      "wall_seconds": 0.07221904100151733,
+      "log_path": "/private/tmp/actual-assault-c1-gates/source-freeze.log"
+    },
+    "rng": {
+      "exit_code": 0,
+      "timed_out": false,
+      "source_sha256_before": "f3c7c468f2be0efa583e44c4d04b8fe6d20eef51aae01554bfa535b0ecc0ea30",
+      "source_sha256_after": "f3c7c468f2be0efa583e44c4d04b8fe6d20eef51aae01554bfa535b0ecc0ea30",
+      "log_sha256": "8b7c211244587886dc766ffeea42f573d732de56687ade71eb72a73ae30e79b2",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-B",
+        "docs/research/verify-combat-rng.py"
+      ],
+      "budget_seconds": 60.0,
+      "wall_seconds": 0.03876841699820943,
+      "log_path": "/private/tmp/actual-assault-c1-gates/rng.log"
+    },
+    "actual-selection": {
+      "exit_code": 0,
+      "timed_out": false,
+      "source_sha256_before": "f37a7cfa26b60469168d9f4424465b14f1fe45666f4222d69c840c2527d2e66f",
+      "source_sha256_after": "f37a7cfa26b60469168d9f4424465b14f1fe45666f4222d69c840c2527d2e66f",
+      "log_sha256": "0ec2ecc01734e319a6abd590a7bf1484cf5569d657874981e893a6c93d8cc874",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-B",
+        "docs/specs/verify-combat-actual-selection-v1.py"
+      ],
+      "budget_seconds": 300.0,
+      "wall_seconds": 232.63318083400372,
+      "log_path": "/private/tmp/actual-assault-c1-gates/actual-selection.log"
+    },
+    "positive-entry": {
+      "exit_code": 0,
+      "timed_out": false,
+      "source_sha256_before": "b461a8bc6a194def5f03767783b49b5797a5630b6a7c26a986f7bfe2ee97c172",
+      "source_sha256_after": "b461a8bc6a194def5f03767783b49b5797a5630b6a7c26a986f7bfe2ee97c172",
+      "log_sha256": "37988e248972aed56c4b2f9112a3cb8b55e94c023add34a1635e4e31b4359199",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-B",
+        "docs/specs/verify-combat-positive-entry-v1.py"
+      ],
+      "budget_seconds": 120.0,
+      "wall_seconds": 117.41069937500288,
+      "log_path": "/private/tmp/actual-assault-c1-gates/positive-entry.log"
+    },
+    "world-settlement": {
+      "exit_code": 0,
+      "timed_out": false,
+      "source_sha256_before": "d5f49e5a4165ec568f0a8896ea491341a639da256bcfd573998f529e80ef9f25",
+      "source_sha256_after": "d5f49e5a4165ec568f0a8896ea491341a639da256bcfd573998f529e80ef9f25",
+      "log_sha256": "ca87697f50017a8efe54863ee407df227970a6650bdf5df43727762be4c0ca41",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-B",
+        "docs/specs/verify-combat-world-settlement-v1.py"
+      ],
+      "budget_seconds": 60.0,
+      "wall_seconds": 0.35783920899848454,
+      "log_path": "/private/tmp/actual-assault-c1-gates/world-settlement.log"
+    }
+  },
+  "consumption_trace": {
+    "path": "/private/tmp/actual-assault-c1-gates/actual-consumption-final-candidate.json",
+    "sha256": "c271838225b27295b0b84c522a20dce29f9ea93d56112820c79027af81a99024",
+    "log_path": "/private/tmp/actual-assault-c1-gates/final-trace.log",
+    "log_sha256": "958c51eb12315738cc0dde98ac8b650c1e9683a0d0a75435b8c89ebbe23c95eb",
+    "runtime_paths": 59,
+    "test_only_paths": 1,
+    "owned_paths": 3,
+    "wall_seconds": 15.435872667003423
+  },
+  "historical_evidence": {
+    "semantic-red.log": {
+      "path": "/private/tmp/actual-assault-c1-gates/semantic-red.log",
+      "sha256": "4ec87d8e14213b7ba6bac2f09f4e810b1878c7cab32a072c7dd3e6f9645dae02"
+    },
+    "rejecting-stub.py": {
+      "path": "/private/tmp/actual-assault-c1-gates/rejecting-stub.py",
+      "sha256": "c1403b6ffbd7ed5bc05277e7834e865971f39ef00d6f41e3275e54644cc8c046"
+    },
+    "minimal-green.log": {
+      "path": "/private/tmp/actual-assault-c1-gates/minimal-green.log",
+      "sha256": "98abfe989652ba22c9764c70c05911d4261e949a6d4835fdd30b1e5c9206e732"
+    },
+    "mechanics.log": {
+      "path": "/private/tmp/actual-assault-c1-gates/mechanics.log",
+      "sha256": "084a73cf868f8743bc62f69fce7809f583bf60d9b9e8f76e5bc88cda9dd425c5"
+    },
+    "recovery.log": {
+      "path": "/private/tmp/actual-assault-c1-gates/recovery.log",
+      "sha256": "9563f998d5dcb22d2dc253ea1f6de32644c0d9d983e60a1ec737526911eb4261"
+    },
+    "recovery-corrected.log": {
+      "path": "/private/tmp/actual-assault-c1-gates/recovery-corrected.log",
+      "sha256": "2427e859119a37419ab5a9018f529656816d4dbe3fcc6bb25cfc04ed1e9d8ebf"
+    },
+    "recovery-final.log": {
+      "path": "/private/tmp/actual-assault-c1-gates/recovery-final.log",
+      "sha256": "93fc67b9d6a10f7a57ee99fc39f246e1af4e54d37a2fc45b21a4e7da70888d9b"
+    },
+    "ledger-shape-red.log": {
+      "path": "/private/tmp/actual-assault-c1-gates/ledger-shape-red.log",
+      "sha256": "72c3f631b7af58fe4f337801e1876126824e165c8a1c280ae42811936a8cd00f"
+    },
+    "ledger-shape-green.log": {
+      "path": "/private/tmp/actual-assault-c1-gates/ledger-shape-green.log",
+      "sha256": "a603b0d0aa195411b25412a328d73968ba93fa0016244b7e734595be5c7ad091"
+    },
+    "normal-oracle.log": {
+      "path": "/private/tmp/actual-assault-c1-gates/normal-oracle.log",
+      "sha256": "cb6da7378e7982d7a74a39139378cb606a7d96ed28cd7d8b8820236d52b96b84"
+    },
+    "normal-pass-source-hashes.json": {
+      "path": "/private/tmp/actual-assault-c1-gates/normal-pass-source-hashes.json",
+      "sha256": "1b14b780c6724dc621d5739f45ff48c0a09d8e53ccf7107c353964b22aa27733"
+    },
+    "at-use-error-red.log": {
+      "path": "/private/tmp/actual-assault-c1-gates/at-use-error-red.log",
+      "sha256": "6ffb96f45bf617c0949543e6166e9841ee080ade1b7b95f6cd4ee247bded9240"
+    },
+    "at-use-error-green.log": {
+      "path": "/private/tmp/actual-assault-c1-gates/at-use-error-green.log",
+      "sha256": "29958b551b71ad98ccb6c11ffb2a2dbeb5442e2c6d984fb33413e11a9840d56b"
+    },
+    "material-io-red.log": {
+      "path": "/private/tmp/actual-assault-c1-gates/material-io-red.log",
+      "sha256": "179dcbdacaffc513127a3d47c2f9f1c26e3a9e08e61de2402b0ac8cc291f0412"
+    },
+    "material-io-green.log": {
+      "path": "/private/tmp/actual-assault-c1-gates/material-io-green.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "catalogue-tag-red.log": {
+      "path": "/private/tmp/actual-assault-c1-gates/catalogue-tag-red.log",
+      "sha256": "248a9fd9b245d1b997d910792166780969648bb6adf0fa3020804c94c7c4f98d"
+    },
+    "mechanics-final-focused.log": {
+      "path": "/private/tmp/actual-assault-c1-gates/mechanics-final-focused.log",
+      "sha256": "084a73cf868f8743bc62f69fce7809f583bf60d9b9e8f76e5bc88cda9dd425c5"
+    },
+    "extra-null-red.log": {
+      "path": "/private/tmp/actual-assault-c1-gates/extra-null-red.log",
+      "sha256": "94a11fef4f83bc164569c5c35547a4a7165355119556e55232d444bccfc13d16"
+    },
+    "extra-null-green.log": {
+      "path": "/private/tmp/actual-assault-c1-gates/extra-null-green.log",
+      "sha256": "1893e2e6faa9c7baea5ff07d0c2c36d3eaf06699c221d2ff28845aaf57fc38ee"
+    },
+    "admission-final.log": {
+      "path": "/private/tmp/actual-assault-c1-gates/admission-final.log",
+      "sha256": "ac92e0ff3c05fb0efeaead9df56e2d3805c6b01060e9a3db4d1cb2e68c23933e"
+    },
+    "admission-final-status.json": {
+      "path": "/private/tmp/actual-assault-c1-gates/admission-final-status.json",
+      "sha256": "880095c5b47f199db20f7bd848ad7df7647f6a1cbd3d1aec024ced7f85b3942e"
+    },
+    "actual-consumption.json": {
+      "path": "/private/tmp/actual-assault-c1-gates/actual-consumption.json",
+      "sha256": "b7df4cb41706b79f619d0b7f24e7a1dcbf36564ec9781875c6d4db807c3d0f1e"
+    },
+    "actual-consumption-final.log": {
+      "path": "/private/tmp/actual-assault-c1-gates/actual-consumption-final.log",
+      "sha256": "9c85cba64168c20189b06156f02e4f612f024cd4eab6b89fd7237494cb03e971"
+    },
+    "new-fixture-generation.log": {
+      "path": "/private/tmp/actual-assault-c1-gates/new-fixture-generation.log",
+      "sha256": "f22209d11a5535d1d90c5c254b4bae88f735bb833bffc8908a709d74572dba87"
+    }
+  },
+  "unchanged_planning_inputs": {
+    "docs/work/plans/2026-10-10-actual-assault-contract-freeze.md": "270c23d1f218d80b2e2f21ae5bc2a53f9205412c173a6ff2b6c3b18c24f95e3d",
+    "docs/work/plans/2026-10-10-actual-assault-contract-consumption.json": "40b99259791bed5f28af4cf98cffb5578dc5599bed76bc38af53cc7bcbcf3d10"
+  },
+  "unchanged_predecessor_sha256": {
+    "src/Cna.Core/Campaigns/CampaignCombatActualRoundEntry.cs": "00f30d4abd24598ebea9e12319aef6ba7c7285e64565ed9eff76ac37f4d04fcf",
+    "src/Cna.Core/Campaigns/CampaignCombatActualRoundEntryCodec.cs": "e224bb57183b1b0febf9b90a297744e9ce99cf3b4124ce5d320eb3fb60e48065",
+    "tests/Cna.Core.Tests/Campaigns/CombatActualRoundEntryTests.cs": "bd353386516b9c6456f2b014aaa2c88382d9ece4242d656bb8019ae951461c2c",
+    "tests/Cna.Core.Tests/Cna.Core.Tests.csproj": "1efe76cc11e66d5074a40025e73279570775104697ef93e89b7cd3ca88ae9aeb",
+    "docs/specs/combat-actual-round-entry-v1.md": "ed4fd69b4f599acae7c4850270557363a546df36d0b984107c50c08c29304548",
+    "docs/specs/combat-actual-round-entry-v1.schema.json": "677b1c671bebe5f23cf4b80f03078c55000c60e45416701757e2552cbd05edb8",
+    "docs/specs/fixtures/combat-actual-round-entry-v1.json": "fc17cda07618bdd539a56b8c296037bbf36f37c6eb2ce6258c2b789b765f640b",
+    "docs/specs/verify-combat-actual-round-entry-v1.py": "2596531cb50ddbae7f1e606284f3d845b224d4f1fc10f478b717843d1062990c"
+  },
+  "scope_research": {
+    "note_path": "/Users/dsteele/.codex/worktrees/combat-actual-bridge-research/sandtable/docs/research/2026-10-10-actual-assault-no-cost-scope-decision.md",
+    "note_sha256": "bf250892e3cd2a6a8b381d12e2b58d3af3ad18ae12df1169c70cb6a47e25eed1",
+    "review_path": "/private/tmp/actual-assault-no-cost-scope-decision/independent-review-1.md",
+    "review_sha256": "ab276bfe5edcbc8f4171a3ad7af1dcfaeda905ef5a72128ffb2bb7e9e915877b"
+  },
+  "counters": {
+    "scope_research_review": "1/9 Ready (separate)",
+    "implementation_review_completed": 0,
+    "implementation_review_limit": 9,
+    "recovery_used": 0,
+    "recovery_limit": 2
+  },
+  "pending": [
+    "Brain-dispatched fresh implementation review1/9",
+    "exact-head required CI",
+    "Brain merge disposition"
+  ],
+  "unwaived": [
+    "Breakdown LandSequence pin failure",
+    "cycle-sequence LandSequence pin failure",
+    "inherited Snapshot LandSequence pin failure",
+    "outward composition rejection/accepted Content drift",
+    "original native ExerciseRunner aggregation failure cause unexplained"
+  ],
+  "no_new_dotnet_run": true
+}
