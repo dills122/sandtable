@@ -73,3 +73,10 @@ implementation plan. No terminology change required naming-overview edits. Produ
 Release execution, later/repeat/finish/consumed Reserve lineage, host/player/Exercise activation,
 Snapshot/Archives and authentic continual-cycle/parent closure remain open. Four historical owning
 failures and aggregation/CoreB139 are retained without remediation claims or waivers.
+
+
+Complete Release inventory discovery at implementation freeze faab04e passed in7.56s:
+CoreA71/CoreB2245/Exercise469/Contracts10, total2795. All25new native rows are in CoreB under
+the unchanged partition policy. No new deferred factory or workflow edit. Inventory is retained
+under reviews; it is not a full-suite execution receipt or relabelled as final publication-head CI.
+Docs-only ac20312 corrects README remaining-work language per Brain; source/test blobs remain faab04e.
