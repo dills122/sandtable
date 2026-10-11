@@ -1,0 +1,33 @@
+{
+  "command": [
+    "dotnet",
+    "test",
+    "--project",
+    "tests/Cna.Core.Tests/Cna.Core.Tests.csproj",
+    "--configuration",
+    "Release",
+    "--no-build",
+    "--no-restore",
+    "--filter-class",
+    "*CombatActualPaidAssaultTests",
+    "--no-ansi",
+    "/bl:/private/tmp/native-paid-semantic-red-{}.binlog"
+  ],
+  "budgetSeconds": 120,
+  "sdk": "10.0.400",
+  "scope": "four genuine native Prepared25 commit requests; defined007 unsupported checkpoint",
+  "exitCode": 2,
+  "timedOut": false,
+  "elapsedSeconds": 2.174,
+  "logSha256": "633e3e11dead8bc7b110e343a5177a270c51d475744862bf1bf7bab1a388fa11",
+  "classification": "genuine semantic RED: native actual Prepared25 preconditions passed, paid API defined007 unsupported; four independent expected cost/event assertions retained",
+  "tests": 4,
+  "failed": 4,
+  "sourceSha256": "3e0dde31ec14c589c53989210dc87923d787ca43beb5418eeecc4e151a3d29a5",
+  "testSha256": "2c5d48d2d30d91807d5773f59a8ef116ef0e2f8ad14e7e15945480dbeb840a22",
+  "harnessHistory": [
+    "CA1861 build errors corrected before test",
+    "first filter selected zero tests, not semantic RED",
+    "wrong setup fixture KeyNotFound corrected before genuine RED"
+  ]
+}
