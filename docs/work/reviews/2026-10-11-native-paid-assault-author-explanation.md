@@ -105,3 +105,6 @@ whether canonical Task019F6 scope accurately preserves all parent obligations. R
 and plan, not just these suggestions. Author self-review addressed numeric JsonNode conversion, missing
 d6 primitive handling, null provider/ledger errors and import ordering; these are not external review
 findings or evidence of independent approval.
+
+Review1 returned one accepted P2; this packet remains the historical review1 input.
+The review2 bootstrap and author explanation contain the correction freeze and current evidence.

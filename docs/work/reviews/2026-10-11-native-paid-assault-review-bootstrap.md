@@ -62,3 +62,6 @@ Bootstrap first and record a preliminary review before reading the Author Explan
 the explanation against the repository, review both implementation and plan, run proportionate
 non-mutating checks, and return an evidence-backed verdict. Do not implement fixes, create further
 review instances, or split the work into new workstreams.
+
+Review1 returned one accepted P2; this packet remains the historical review1 input.
+The review2 bootstrap and author explanation contain the correction freeze and current evidence.

@@ -92,3 +92,7 @@ Two added coherent mismatch controls retain004 through all four APIs. Release fo
 0warnings/errors in14.39s. Shared predecessor sources, frozen spec/schema/oracle/fixtures and64
 physical pins remain unchanged. New inventory delta is8 InlineData rows; discovery receipt follows
 at correction freeze. Brain owns next review2/9, exact-head CI and merge; no counter reset.
+
+Correction freeze31f445c988d404d07b07041874d04beeda69303b: complete Release discovery passed7.998s,
+CoreA71/CoreB2253/Exercise469/Contracts10,total2803, delta8CoreB rows. Full format passed29.633s.
+Review2 bootstrap and separate author explanation retain current evidence and unchanged gates.
