@@ -1,0 +1,124 @@
+{
+  "pr": 177,
+  "head": "ec0c6d813eea23866bba73ad882d801d4af41348",
+  "ciRunId": 38174571457,
+  "ciAttempt": 1,
+  "ciUrl": "https://github.com/dills122/sandtable/actions/runs/38174571457",
+  "testedMerge": {
+    "parents": [
+      "6334a7c87446ef5c7694ac325f7650819d891413",
+      "ec0c6d813eea23866bba73ad882d801d4af41348"
+    ],
+    "sha": "8677d05b8d8f6ca9248a911cc1d14b41b9fdd2d9",
+    "tree": "48dc1db708d91f2ada31018f6015d3d478a435fa"
+  },
+  "all13ChecksPassedOrNeutral": true,
+  "verifiedCoverage": true,
+  "sdk": "10.0.401",
+  "configuration": "Release",
+  "total": 2803,
+  "shards": {
+    "core-a": {
+      "counts": {
+        "total": 71,
+        "passed": 71,
+        "failed": 0,
+        "skipped": 0,
+        "not-run": 0,
+        "errors": 0
+      },
+      "rowIdentitySha256": "4ba33ee68436e7ec262af49508f3ed9e3ae1fd6333539ac8f0e9c3ab320442c9",
+      "status": {
+        "shard": "core-a",
+        "module": "Cna.Core.Tests",
+        "tested_sha": "8677d05b8d8f6ca9248a911cc1d14b41b9fdd2d9",
+        "sdk": "10.0.401",
+        "configuration": "Release",
+        "run_attempt": "1",
+        "exit_code": 0
+      }
+    },
+    "core-b": {
+      "counts": {
+        "total": 2253,
+        "passed": 2253,
+        "failed": 0,
+        "skipped": 0,
+        "not-run": 0,
+        "errors": 0
+      },
+      "rowIdentitySha256": "cf57c8fe2819d5fea5d665a80c17cf38eb1f0251aa57dcdf94f3f7e637ad067e",
+      "status": {
+        "shard": "core-b",
+        "module": "Cna.Core.Tests",
+        "tested_sha": "8677d05b8d8f6ca9248a911cc1d14b41b9fdd2d9",
+        "sdk": "10.0.401",
+        "configuration": "Release",
+        "run_attempt": "1",
+        "exit_code": 0
+      }
+    },
+    "exercise": {
+      "counts": {
+        "total": 469,
+        "passed": 469,
+        "failed": 0,
+        "skipped": 0,
+        "not-run": 0,
+        "errors": 0
+      },
+      "rowIdentitySha256": "100690316728b80f15162dbc6024499dc1adb31797846adf4e9543e13a3a2a01",
+      "status": {
+        "shard": "exercise",
+        "module": "Cna.ExerciseRunner.Tests",
+        "tested_sha": "8677d05b8d8f6ca9248a911cc1d14b41b9fdd2d9",
+        "sdk": "10.0.401",
+        "configuration": "Release",
+        "run_attempt": "1",
+        "exit_code": 0
+      }
+    },
+    "contracts": {
+      "counts": {
+        "total": 10,
+        "passed": 10,
+        "failed": 0,
+        "skipped": 0,
+        "not-run": 0,
+        "errors": 0
+      },
+      "rowIdentitySha256": "f7adb7312bf63feec5c20f09316b03e6734b333104c7c028f1b89c8672ffa63e",
+      "status": {
+        "shard": "contracts",
+        "module": "Cna.Intelligence.Contracts.Tests",
+        "tested_sha": "8677d05b8d8f6ca9248a911cc1d14b41b9fdd2d9",
+        "sdk": "10.0.401",
+        "configuration": "Release",
+        "run_attempt": "1",
+        "exit_code": 0
+      }
+    }
+  },
+  "baselineRun": 38162075200,
+  "baselineTestedMerge": "270fd6b4785488104df859633892f771ed69d9ad",
+  "allBaselineRowsPreserved": true,
+  "newNativeRows": 33,
+  "artifactRoot": "/private/tmp/native-paid-ci-final/coverage-aggregate-8677d05b8d8f6ca9248a911cc1d14b41b9fdd2d9-1",
+  "artifactHashes": {
+    "core-a/status.json": "59a78daadde61d6914e46e0076711c57136bdaa58f87e475dba99b719d6194c4",
+    "core-a/results/runner_runnervmmprz5_2026-10-11_21_03_50.033525.xunit.xml": "19866342dd1d6e6f225ed32f2c852fcc2a627d3577b4309c8e8674faa67d37f8",
+    "core-b/status.json": "5b0cb3ebe381a197f41c034bb7ac557111817dc32e208d3946b4d4782c31a720",
+    "core-b/results/runner_runnervmmprz5_2026-10-11_21_03_29.645634.xunit.xml": "060d7aca2e54c6a5cd2c169c0a9aee8983899ebe25454fb66712a3e0c89d856e",
+    "exercise/status.json": "7a792c6f421fdcb8cf83f4d07b0367c826d26393f589c6052e2ba9059ba108a1",
+    "exercise/results/runner_runnervmmprz5_2026-10-11_21_03_20.418258.xunit.xml": "a23a74429222609d87d26d1540fc81384a1a403e00af40c62a0502cd097d9f3c",
+    "contracts/status.json": "b2aa4afb9df7f7701e30c7b0fc2193f2fec6981391e009cc5922595a4cb97d6a",
+    "contracts/results/runner_runnervmmprz5_2026-10-11_21_03_54.942871.xunit.xml": "51465c2fe21d76867db6d42cf3729841b94c6e016133d03521430c7370e400b0",
+    "inventory.json": "eaf794a97b6c5bd5affdefd455ad74ecf80601addadbc717e4c54ff12a46868a",
+    "dependencies.json": "e352fb75dd0111784e1e959f3f494810ee05c5497fdb499b4a84941c2395a0d5"
+  },
+  "limits": [
+    "33 native paid tests included in CI; frozen Python reference verified in prior milestone",
+    "independent review and Brain merge remain separate",
+    "four owning failures, aggregation and CoreB139 root causes unwaived"
+  ]
+}
