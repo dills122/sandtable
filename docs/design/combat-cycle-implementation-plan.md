@@ -2523,3 +2523,45 @@ and merge trees are identical (`git diff d4ce0c1..80f633f` empty verified). Caus
 no infrastructure/runtime/implementation root cause or concurrent-test attribution established.
 Bounded main CI diagnosis is next action; no speculative fix/retry or failure waiver.
 See session handoff for retained evidence hashes. No downstream product completion follows.
+
+
+### Task019F5 — private actual paid-assault executable reference (DAY-C contract)
+
+Final disposition, 2026-10-11: **MERGED private executable reference** in
+[PR175](https://github.com/dills122/sandtable/pull/175), merge
+`f7030d220a4a8881d4c43b52de7e683dc07711c2`, reviewed head
+`a1b4462ae48c7349176927c5166762672e4ce6a9`, base
+`a7c9fcbd44568c88dc5f61a7a10a35c2328dc2e0`. The
+[contract](../specs/combat-actual-paid-assault-v1.md) and
+[author plan](../work/plans/2026-10-11-actual-paid-assault-contract.md) govern PA01–PA10.
+This supersedes the preceding next-contract/pending statements for this slice only.
+
+The separate successor authenticates complete actual prepared lineage, independent selection,
+round and paid ledgers, and empty predecessor assault admission. It implements atomic CP5/3
+and Ammo10 each debit without commit RNG, complete selected-outcome precommit support,
+ordered eight draws plus conditional capture ninth, compatible result.v2/settlement.v2 identity,
+owned actual World projection, immediate disposition/loss/retreat/custody/relationship settlement,
+independent mandatory windows, round closure and one CA completion into same-cycle Reserve Release.
+Four genuine ordinary histories (both owners and seal orders) retain nine-cut recovery evidence.
+Isolated 16616 support facts and 9728 settlement cases per owner are mechanical coverage,
+not alternative actual campaign histories. Actual RNG authority remains seed1/cursor2.
+
+Fresh [implementation review](../work/reviews/2026-10-11-paid-assault-independent-implementation-review-1.md)
+returned Ready with no actionable findings: instance1/9, round1 pass1, recovery0/2.
+Local author full normal passed exit0 in267.82s under900s; the fresh reviewer reproduced focused
+checks. [Normal receipt](../work/reviews/2026-10-11-paid-assault-normal-gate.json) and its log
+retain this Python evidence. The GitHub CI workflow does not run the new Python oracle.
+Separate exact-head [CI receipt](../work/reviews/2026-10-11-paid-assault-ci-38162075200.json)
+records run38162075200, attempt1, all13 checks SUCCESS and2770/2770 Release rows:
+Core A71, Core B2220, Exercise469, Contracts10, zero failures/skips/errors; SDK10.0.401.
+Tested merge270fd6b4785488104df859633892f771ed69d9ad has the recorded base/head parents.
+This is PR validation, not a fresh merged-main CI claim.
+
+No native paid consumer, player-facing action, production ingress, Release execution, repeated
+Movement/Engaged campaign proof, later-II/consumed Reserve lineage, full branch campaign,
+Snapshot/Archives or Exercise/Runner completion follows. Tasks017–025 and all72 ACs remain
+parent obligations. Four historical owning failures, ExerciseRunner aggregation and CoreB139
+root causes remain unwaived; successful PR CI does not establish their remediation.
+Next: separately freeze and implement the private native paid consumer, then certify remaining
+settlement/repeat/finish lineage, side-safe public actions and full-loop evidence. Documentation
+reconciliation has its own review/CI gate; it changes no product or frozen dependency bytes.
