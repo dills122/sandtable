@@ -1,0 +1,29 @@
+{
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "-u",
+    "-B",
+    "-X",
+    "pycache_prefix=/private/tmp/paid-assault-cold-pycache",
+    "docs/specs/verify-combat-actual-paid-assault-v1.py"
+  ],
+  "cwd": "/Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable",
+  "budgetSeconds": 900,
+  "sourceHashesBefore": {
+    "docs/specs/combat-actual-paid-assault-v1.md": "220edd6f5cf85855458bf00d784156e499af1b31e43de527821ae32c6407a0c0",
+    "docs/specs/combat-actual-paid-assault-v1.schema.json": "be1c5fcc36641ae1ee9f58b4b1c73baca098e7a8cde43d8dc568197f59399324",
+    "docs/specs/verify-combat-actual-paid-assault-v1.py": "744dc23429b6d343743f1a4c42adcba22502f9a21d9dc433dd3ee6e49a8e4dd1",
+    "docs/specs/fixtures/combat-actual-paid-assault-v1.json": "80dfa0157542d70660f78d0e2326564fcb9095a71f84ecab2deaf061c5e7b203"
+  },
+  "status": "passed",
+  "exitCode": 0,
+  "elapsedSeconds": 267.82,
+  "sourceHashesAfter": {
+    "docs/specs/combat-actual-paid-assault-v1.md": "220edd6f5cf85855458bf00d784156e499af1b31e43de527821ae32c6407a0c0",
+    "docs/specs/combat-actual-paid-assault-v1.schema.json": "be1c5fcc36641ae1ee9f58b4b1c73baca098e7a8cde43d8dc568197f59399324",
+    "docs/specs/verify-combat-actual-paid-assault-v1.py": "744dc23429b6d343743f1a4c42adcba22502f9a21d9dc433dd3ee6e49a8e4dd1",
+    "docs/specs/fixtures/combat-actual-paid-assault-v1.json": "80dfa0157542d70660f78d0e2326564fcb9095a71f84ecab2deaf061c5e7b203"
+  },
+  "unchanged": true,
+  "logSha256": "06f44425dacb3f5414baa6b1fa6339c0f8934d18b08097387d5ac9c7c8329e6d"
+}

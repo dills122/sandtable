@@ -1,0 +1,35 @@
+{
+  "stage": "genuine four-root internal paid-path GREEN; public proof still closure-gated",
+  "runs": [
+    {
+      "owner": "axis",
+      "firstSeal": "attacker",
+      "exitCode": 0,
+      "elapsedSeconds": 9.126,
+      "output": "PASS: genuine complete internal paid path axis attacker 184750\n"
+    },
+    {
+      "owner": "axis",
+      "firstSeal": "defender",
+      "exitCode": 0,
+      "elapsedSeconds": 8.554,
+      "output": "PASS: genuine complete internal paid path axis defender 184750\n"
+    },
+    {
+      "owner": "commonwealth",
+      "firstSeal": "attacker",
+      "exitCode": 0,
+      "elapsedSeconds": 8.501,
+      "output": "PASS: genuine complete internal paid path commonwealth attacker 184749\n"
+    },
+    {
+      "owner": "commonwealth",
+      "firstSeal": "defender",
+      "exitCode": 0,
+      "elapsedSeconds": 8.773,
+      "output": "PASS: genuine complete internal paid path commonwealth defender 184749\n"
+    }
+  ],
+  "elapsedSeconds": 34.954,
+  "oracleSha256": "8655c10ed54732caf409c40df151161a3c956974392bdb8dbb470abd4e407ff5"
+}

@@ -1,0 +1,27 @@
+{
+  "stage": "remaining genuine recovery mirrors; bounded sequential commands",
+  "runs": [
+    {
+      "owner": "axis",
+      "firstSeal": "defender",
+      "exitCode": 0,
+      "elapsedSeconds": 35.185,
+      "output": "PASS: genuine prefix/retry/forgery/ownership and disabled-fresh recovery axis defender 9\n"
+    },
+    {
+      "owner": "commonwealth",
+      "firstSeal": "attacker",
+      "exitCode": 0,
+      "elapsedSeconds": 32.976,
+      "output": "PASS: genuine prefix/retry/forgery/ownership and disabled-fresh recovery commonwealth attacker 9\n"
+    },
+    {
+      "owner": "commonwealth",
+      "firstSeal": "defender",
+      "exitCode": 0,
+      "elapsedSeconds": 33.42,
+      "output": "PASS: genuine prefix/retry/forgery/ownership and disabled-fresh recovery commonwealth defender 9\n"
+    }
+  ],
+  "oracleSha256": "db5f80cb18ab18716911124cda1468bee20cdc70e28bf096837aa01c6792e715"
+}

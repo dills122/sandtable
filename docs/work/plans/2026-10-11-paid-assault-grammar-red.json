@@ -1,0 +1,19 @@
+{
+  "stage": "exact-diagnostic semantic RED",
+  "command": [
+    "python3",
+    "-B",
+    "-X",
+    "pycache_prefix=/private/tmp/paid-assault-cold-pycache",
+    "docs/specs/verify-combat-actual-paid-assault-v1.py",
+    "--check-grammar",
+    "--owner",
+    "axis"
+  ],
+  "exitCode": 1,
+  "sourceSha256": "411ff152608fa174789b249734b5cea355c186407fe7352835b4098c8ee5ac80",
+  "probe": "embedded admission source contractVersion=true",
+  "expected": "CMB-APA-001",
+  "observed": "CMB-APA-004 /contractVersion",
+  "rootCause": "declared admission carrier grammar error mapped inside trusted-history exception boundary"
+}

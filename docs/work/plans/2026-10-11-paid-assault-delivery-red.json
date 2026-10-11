@@ -1,0 +1,9 @@
+{
+  "stage": "owned delivery semantic RED",
+  "exitCode": 1,
+  "observed": "AssertionError: rejection required 9",
+  "injection": "post-load own oracle bytes changed while schema/external62 remained valid",
+  "expected": "CMB-APA-009 before readback",
+  "sourceSha256": "a59debfe73f11dfc0e272a0fbf2ce56a7214968d7700d950e0c5cd623545cdda",
+  "externalColdWarmMatrix": "all62 reached prior to failing owned-oracle assertion"
+}

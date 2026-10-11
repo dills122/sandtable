@@ -17,7 +17,7 @@ for retreat in (False,True):
     paths[str((retreat,custody,ropen,copen))]=phases
 maxevents=max(map(len,paths.values()))
 arrays={'CommitEffect.allocations':2,'CommitEffect.costs':2,'AssaultResult.draws':9,'Draw.consumed':512,'CloseEffect.proofReceipts':5,'PaidControl.attackHistory':1,'PaidControl.targetUses':1,'PaidControl.receipts':maxevents,'World.elements':2,'World.representations':2,'World.brokenVehicleLots':0,'World.cohesionCauses':4,'World.relationships':1,'World.custodyLots':1,'World.guards':1,'World.replacementEntitlements':1,'World.futureObligations':1,'World.settlements':1,'Settlement.preLossElements':2,'Losses.roles':2,'Element.components':1,'Origin.references':16,'Representation.boundElementIds':1}
-primitives={'byte':3,'id':130,'hash':73,'rawHash':66,'locator':130,'string':1538,'text':1538,'side':14,'actor':14,'role':10,'bool':5,'null':4,'int':11,'long':20,'ulong':20,'utc':15,'futureTurn':3,'adjustment':2,'differential':2,'die':1,'Route':9*131+1,'LegacyBrokenVehicleLot':0,'empty':2}
+primitives={'signedInt':11,'byte':3,'id':130,'hash':73,'rawHash':66,'locator':130,'string':1538,'text':1538,'side':14,'actor':14,'role':10,'bool':5,'null':4,'int':11,'long':20,'ulong':20,'utc':15,'futureTurn':3,'adjustment':2,'differential':2,'die':1,'Route':9*131+1,'LegacyBrokenVehicleLot':0,'empty':2}
 # Preserve upstream parser byte bounds for entire authenticated predecessor proof.
 cache={}
 def size(kind,parent='',field=''):

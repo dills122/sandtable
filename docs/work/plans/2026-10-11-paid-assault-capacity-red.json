@@ -1,0 +1,19 @@
+{
+  "stage": "semantic RED for missing pre-debit carrier capacity certification",
+  "command": [
+    "python3",
+    "-B",
+    "-X",
+    "pycache_prefix=/private/tmp/paid-assault-cold-pycache",
+    "docs/specs/verify-combat-actual-paid-assault-v1.py",
+    "--check-support",
+    "--owner",
+    "axis"
+  ],
+  "exitCode": 1,
+  "observedFailure": "AssertionError: rejection required 7",
+  "expectedCode": "CMB-APA-007",
+  "sourceSha256": "86ec4ed25c69f8467431077e717e46b51e70d57cb831ae9783b7b84ba7fdf5fc",
+  "injection": "PaidSource capacity one byte below complete structural bound; no complete preflight rejection",
+  "noImportSyntaxFailure": true
+}

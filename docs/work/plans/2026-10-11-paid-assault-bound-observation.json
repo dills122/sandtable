@@ -131,6 +131,7 @@
     "Representation.boundElementIds": 1
   },
   "primitiveEncodedUpperBounds": {
+    "signedInt": 11,
     "byte": 3,
     "id": 130,
     "hash": 73,
@@ -159,7 +160,7 @@
     "PaidInput": 956,
     "PaidEvent": 26552,
     "PaidControl": 224827,
-    "PaidProof": 1273884,
+    "PaidProof": 1273983,
     "AssaultResult": 23656,
     "World": 192965,
     "PaidSource": 2681411,

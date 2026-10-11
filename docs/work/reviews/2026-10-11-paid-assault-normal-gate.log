@@ -1,0 +1,33 @@
+{
+  "check": "genuine-commitment-semantic-expectations",
+  "cases": 4,
+  "failures": []
+}
+PASS: raw depth and generic array guards precede JSON allocation
+PASS: derived successor manifest, omitted/wrong/coherently resigned claims and 009 precedence sha256:7eae608b089adaae50c2771d4c9b98fc12e51bcad4d25982a4d5113dec4c2a00
+PASS: isolated pinned RNG vectors, both conditional capture roles, rejection/block/U64 boundaries 12
+PASS: all runtime cold/warm/change/missing/unreadable/at-use dependencies and owned delivery 62
+PASS: isolated retreat/custody mandatory window matrix axis
+PASS: missing handler/carrier capacity and poisoned/duplicate support reject before mutation axis
+PASS: closed grammar, signed Cohesion, ownership and exact codes axis
+PASS: isolated exhaustive selected settlement mechanics axis 9728 {'attacker': 480, 'defender': 1296} 498 36
+PASS: isolated same-owner audit versus live-window independence axis
+PASS: genuine complete internal paid path axis attacker 184750
+PASS: genuine prefix/retry/forgery/ownership and disabled-fresh recovery axis attacker 9
+PASS: genuine complete internal paid path axis defender 184750
+PASS: genuine prefix/retry/forgery/ownership and disabled-fresh recovery axis defender 9
+PASS: isolated retreat/custody mandatory window matrix commonwealth
+PASS: missing handler/carrier capacity and poisoned/duplicate support reject before mutation commonwealth
+PASS: closed grammar, signed Cohesion, ownership and exact codes commonwealth
+PASS: isolated exhaustive selected settlement mechanics commonwealth 9728 {'attacker': 480, 'defender': 1296} 498 36
+PASS: isolated same-owner audit versus live-window independence commonwealth
+PASS: genuine complete internal paid path commonwealth attacker 184749
+PASS: genuine prefix/retry/forgery/ownership and disabled-fresh recovery commonwealth attacker 9
+PASS: genuine complete internal paid path commonwealth defender 184749
+PASS: genuine prefix/retry/forgery/ownership and disabled-fresh recovery commonwealth defender 9
+PASS: every retained carrier/control/proof/event typed field rejects wrong shape 2466
+PASS: retained actual paid literal and public readback axis attacker sha256:18bd5f248c3d17ce3a8352ea467216be6b4b3d3bd1fa1bca109765eac9f69803
+PASS: retained actual paid literal and public readback axis defender sha256:cacbcd0bf95c67d330dfb20e30b6706fccee25d3b04b35b20851ad73d44834ea
+PASS: retained actual paid literal and public readback commonwealth attacker sha256:6c64090a308d7747d7aadafaa27bcefdbc81fefef867ee864c3e8cd94c9bbe55
+PASS: retained actual paid literal and public readback commonwealth defender sha256:7d96851d2e43257a14a679cec7fa9ee5f37c0e38e85fc5cb76a8230aca567760
+PASS: complete actual paid assault normal gate; retained literals were verified without regeneration
