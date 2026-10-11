@@ -1,0 +1,8 @@
+{
+  "stage": "independent indexed support fact semantic RED",
+  "exitCode": 1,
+  "observed": "AssertionError: rejection required 7",
+  "injection": "ordinal0 Morale attacker adjustment changed1\u21920 while counts and later effects unchanged",
+  "expected": "CMB-APA-007 before debit",
+  "sourceSha256": "b5e60aa1e113ba652507dc00085d85168731e35b7973171ce3735a8a5ee4d15b"
+}

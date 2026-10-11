@@ -1,0 +1,7 @@
+{
+  "stage": "preparse allocation guard RED",
+  "sourceSha256": "063a0e1ae51410129f9b4d223bd887e482ef657f08cbeb9e9960d341544eee77",
+  "exitCode": 1,
+  "observed": "depth guard ran after JSON allocation",
+  "expected": "reject oversized depth/array before json.loads"
+}
