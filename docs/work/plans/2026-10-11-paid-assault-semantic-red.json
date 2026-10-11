@@ -1,0 +1,45 @@
+{
+  "stage": "semantic RED, no GREEN implemented",
+  "freezeCommit": "e0268fa",
+  "command": [
+    "python3",
+    "-B",
+    "-X",
+    "pycache_prefix=/private/tmp/paid-assault-cold-pycache",
+    "docs/specs/verify-combat-actual-paid-assault-v1.py",
+    "--check-commit"
+  ],
+  "exitCode": 1,
+  "elapsedSeconds": 5.308,
+  "genuineCases": 4,
+  "semanticUnsupportedFailures": 4,
+  "costExpectation": {
+    "beforeCp": [
+      0,
+      0
+    ],
+    "afterCp": [
+      5,
+      3
+    ],
+    "beforeAmmo": [
+      10,
+      10
+    ],
+    "afterAmmo": [
+      0,
+      0
+    ]
+  },
+  "noRngCommitCursor": 2,
+  "expectedVersion": 26,
+  "sourceHashes": {
+    "docs/specs/combat-actual-paid-assault-v1.md": "bbe112ac7f3c39d8ed2dcd7ff6b507b118ba4853096a7c8b4c5c544c95b5443a",
+    "docs/specs/combat-actual-paid-assault-v1.schema.json": "07b678b09ca4e88725dc2e29858c9af01e565fcb324781b786c2431afe50c0e1",
+    "docs/specs/verify-combat-actual-paid-assault-v1.py": "2814c22fa200d73aa552f83bf020100b84a245bb6fd0b1dcb404da92f29eb8ec"
+  },
+  "logPath": "docs/work/plans/2026-10-11-paid-assault-semantic-red.log",
+  "logSha256": "333cd10571bc5ed9c6ea298649d36c3a38f7d2f2263bd7b35d235d8992310979",
+  "syntaxImportFailures": false,
+  "runtimeClosure": "provisional; finalize before literals/public paid proof acceptance"
+}

@@ -1,0 +1,40 @@
+{
+  "check": "genuine-commitment-semantic-expectations",
+  "cases": 4,
+  "failures": [
+    {
+      "owner": "axis",
+      "firstSeal": "attacker",
+      "error": "CMB-APA-007 /paidCommitmentUnsupported"
+    },
+    {
+      "owner": "axis",
+      "firstSeal": "defender",
+      "error": "CMB-APA-007 /paidCommitmentUnsupported"
+    },
+    {
+      "owner": "commonwealth",
+      "firstSeal": "attacker",
+      "error": "CMB-APA-007 /paidCommitmentUnsupported"
+    },
+    {
+      "owner": "commonwealth",
+      "firstSeal": "defender",
+      "error": "CMB-APA-007 /paidCommitmentUnsupported"
+    }
+  ]
+}
+Traceback (most recent call last):
+  File "/Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/docs/specs/verify-combat-actual-paid-assault-v1.py", line 122, in <module>
+    if __name__=='__main__':main()
+                            ~~~~^^
+  File "/Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/docs/specs/verify-combat-actual-paid-assault-v1.py", line 120, in main
+    commit_tests()
+    ~~~~~~~~~~~~^^
+  File "/Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/docs/specs/verify-combat-actual-paid-assault-v1.py", line 116, in commit_tests
+    require(not failures,7,'/semanticCommitExpectations')
+    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/docs/specs/verify-combat-actual-paid-assault-v1.py", line 21, in require
+    if not ok: raise Invalid(code,path)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+Invalid: CMB-APA-007 /semanticCommitExpectations
