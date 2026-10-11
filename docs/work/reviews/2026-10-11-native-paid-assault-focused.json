@@ -1,0 +1,58 @@
+{
+  "command": [
+    "dotnet",
+    "test",
+    "--project",
+    "tests/Cna.Core.Tests/Cna.Core.Tests.csproj",
+    "--configuration",
+    "Release",
+    "--no-build",
+    "--no-restore",
+    "--filter-class",
+    "*CombatActualPaidAssault*",
+    "--no-ansi",
+    "/bl:/private/tmp/native-paid-final-{}.binlog"
+  ],
+  "budgetSeconds": 120,
+  "sdk": "10.0.400",
+  "scope": "final complete native paid-assault matrix after self-review",
+  "exitCode": 0,
+  "timedOut": false,
+  "elapsedSeconds": 78.964,
+  "logSha256": "b2b03e6d0fe91946c166e97422f6c1463fe0c7d2be852211fdad787e62d7a1ea",
+  "total": 25,
+  "passed": 25,
+  "failed": 0,
+  "skipped": 0,
+  "sourceSha256": {
+    "src/Cna.Core/Campaigns/CampaignCombatActualAssaultAdmission.cs": "2331210120d42319540bd94a4ebea64b6adb8d8f628f19237051931614db2a12",
+    "src/Cna.Core/Campaigns/CampaignCombatActualPaidAssault.cs": "a0abacdf699c439ad0310636679314c65594ede76b2dde05d02b40f1311e278a",
+    "src/Cna.Core/Campaigns/CampaignCombatActualPaidAssaultCodec.cs": "df12a232328284ff1ca735eb76f0e749561024de9a66ea081b43e6341f932ada",
+    "src/Cna.Core/Campaigns/CampaignCombatActualPaidAssaultSupport.cs": "b73a62ed471118bf3470145621bb72190918ed56704d9c460b3ef5c9b927457d",
+    "tests/Cna.Core.Tests/Campaigns/CombatActualPaidAssaultTests.cs": "c004c7134d9b6a32e1d285416b8995c80c680494c93d17e19dad31cf73d83003",
+    "tests/Cna.Core.Tests/Campaigns/CombatActualPaidAssaultContractTests.cs": "278c9ae473f64d8fab75257c84ae45aa06ad865c429a32c269d34b4e1532b946"
+  },
+  "releaseBuild": {
+    "command": "dotnet build Sandtable.slnx --configuration Release --no-restore '/bl:/private/tmp/native-paid-release-build-{}.binlog'",
+    "exitCode": 0,
+    "warnings": 0,
+    "errors": 0,
+    "elapsedSeconds": 19.13,
+    "binlogPath": "/private/tmp/native-paid-release-build-20261011-203046--90865--Ju536i.binlog"
+  },
+  "supplementalBuild": {
+    "command": "dotnet build tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-restore '/bl:/private/tmp/native-paid-boundary-build-{}.binlog'",
+    "exitCode": 0,
+    "warnings": 0,
+    "errors": 0,
+    "elapsedSeconds": 5.65,
+    "binlogPath": "/private/tmp/native-paid-boundary-build-20261011-203538--96755--S405_t.binlog",
+    "reason": "added explicit BOM and all owned byte-limit assertions; no runtime changes"
+  },
+  "formatGate": {
+    "command": "dotnet format Sandtable.slnx --verify-no-changes --no-restore",
+    "exitCode": 0,
+    "note": "passed after one import-order correction; supplemental boundary assertions follow existing formatting"
+  },
+  "fullSuite": "Not rerun locally; Brain accepted exact-head GitHub CI as the full .NET gate. Historical owning failures remain unwaived."
+}

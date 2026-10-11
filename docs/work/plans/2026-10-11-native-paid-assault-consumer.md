@@ -42,3 +42,34 @@ Serena manual read and author project active. Graph project sandtable-actual-sel
 ## Accepted scope and semantic RED checkpoint
 
 Brain accepted additive scope, private native AAD prerequisite and provisional64 physical inputs distinct from exact62 wire manifest. Corrected class filter selects allfour tests. Semantic RED exit2,4/4failed CMB-APA-007 after native Prepared25/CP0/ammo10/RNG2 preconditions, 2.174s/120s. Log SHA256`633e3e11dead8bc7b110e343a5177a270c51d475744862bf1bf7bab1a388fa11`. Earlier build/analyzer, zero-selection and wrong context-fixture failures were harness issues, never semantic RED. Corrected Release build passed0warnings/errors with unique binlog. SDK10.0.400/nativeMTP/xUnit4.0.2. No fullsuite lease or broad gate; next native GREEN implementation under acceptedscope.
+
+
+## Native implementation checkpoint and author verification
+
+Additive native implementation and self-review complete; fresh independent review and exact-head
+GitHub CI remain gates. No merge or parent completion is asserted. Neutral bootstrap and author
+explanation remain separate for Brain's blind first review (instance1/9, round1, recovery0/2).
+
+| Acceptance | Evidence |
+| --- | --- |
+| NP01–NP03 | Native AAD derivation; all4genuine histories exact reference event/source/final-proof bytes, all9cuts, paired CP5/3 and Ammo10 debit, no commit RNG, versions26–33/cursor10. Semantic RED remains9c41b89 with4genuine007failures. |
+| NP04 | Complete16616indexed facts/catalogue digest; all19handler omissions, added handler, every undersized capacity, missing/duplicate/changed catalogue and resource failures reject before owned-state mutation. Sensitivity parameters stay in the private support helper; production capabilities are fixed with no mutable global flags. |
+| NP05 | Both isolated9728native settlement matrices pass at every projected cut; independent loss/refusal/capture/conservation assertions, custody duties, retreat CP/DP and capped RP. |
+| NP06–NP07 | All12literal pinned RNG vectors, conditional capture roles, rejection/block crossing and atomic U64 exhaustion; both owners/choices/captors, fallback/deadlines/retries/closure and independent local-window versus audit high-water. |
+| NP08–NP09 | Coherent re-signed events/proof claims, omitted/reordered/wrong-actor/null ledgers, malformed retry, stale timer/closed new command, disabled-fresh recovery and owned bytes; closed nullable/version/union/primitive grammar, duplicate/BOM/noncanonical/depth/array/byte/scalar and PythonASCII escapes. |
+| NP10 | Callback acquisition exactly64external paths; unchanged reference62 plus paid schema/oracle2 delivery pins, unchanged predecessor59/wire62 identities. All64changed/missing/null/unreadable and after-first-read failures remain visible before claims/publication. Paid fixture stays test-only and unchanged. |
+
+Final focused Release gate passed25/25, zero failures/skips, exit0 in78.964s under120s on
+SDK10.0.400. [Receipt](../reviews/2026-10-11-native-paid-assault-focused.json), primary log and
+[physical closure](../reviews/2026-10-11-native-paid-assault-physical-closure.json) are retained.
+Release solution build passed0warnings/errors in19.13s; supplemental focused project build passed
+in5.65s after adding explicit BOM/byte-bound assertions. Full format verification passed after one
+import-order correction. Brain requested focused local verification plus exact-head GitHub CI as the
+full .NET gate, avoiding a duplicate broad local run. Immutable Python owning evidence remains
+historical; no package, workflow, predecessor or historical fixture pin changed.
+
+Canonical reconciliation joins this same native PR as Task019F6 in README, tech-design and the
+implementation plan. No terminology change required naming-overview edits. Production ingress,
+Release execution, later/repeat/finish/consumed Reserve lineage, host/player/Exercise activation,
+Snapshot/Archives and authentic continual-cycle/parent closure remain open. Four historical owning
+failures and aggregation/CoreB139 are retained without remediation claims or waivers.

@@ -63,6 +63,43 @@ public sealed class CombatActualPaidAssaultTests
         Assert.Equal(prepared.Control.GetProperty("randomState").GetRawText(), effect.GetProperty("preResultRandomState").GetRawText());
     }
 
+    [Theory]
+    [InlineData(0)]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(3)]
+    public void AllGenuineCutsMatchReferenceAndRecoverWhenFreshAdmissionDisabled(int index)
+    {
+        using var fixture = Fixture(); var row = fixture.RootElement.GetProperty("cases")[index];
+        var finalSource = JsonNode.Parse(row.GetProperty("sourceCanonicalUtf8").GetString()!)!.AsObject();
+        var events = finalSource["paidEventCanonicalUtf8"]!.AsArray().Select(x => x!.GetValue<string>()).ToArray();
+        var packet = finalSource.DeepClone().AsObject(); packet["paidEventCanonicalUtf8"] = new JsonArray();
+        var selection = Ledger(row, "selectionLedger"); var rounds = Ledger(row, "roundLedger"); var ledger = Ledger(row, "paidLedger"); var context = Context();
+        var source = Encode(packet); var owned = new List<byte[]>();
+        var restored = CampaignCombatActualPaidAssault.ReplayTrustedSource(source, context, selection, rounds, owned, Dependency);
+        var disabled = Assert.Throws<JsonException>(() => CampaignCombatActualPaidAssault.ApplyTrustedSource(source, context, selection, rounds, owned, ledger[0], Dependency, false));
+        Assert.Equal("CMB-APA-007", disabled.Message);
+        for (var i = 0; i < ledger.Length; i++)
+        {
+            var applied = CampaignCombatActualPaidAssault.ApplyTrustedSource(source, context, selection, rounds, owned, ledger[i], Dependency, i == 0);
+            Assert.Equal(Encoding.ASCII.GetBytes(events[i]), applied.EventBytes);
+            packet["paidEventCanonicalUtf8"]!.AsArray().Add(events[i]); owned.Add(ledger[i]); source = Encode(packet);
+            Assert.Equal(source, applied.SourceBytes);
+            restored = CampaignCombatActualPaidAssault.ReplayTrustedSource(source, context, selection, rounds, owned, Dependency);
+            Assert.Equal(applied.ControlBytes, restored.ControlBytes); Assert.Equal(applied.ProofBytes, restored.ProofBytes);
+            Assert.Equal(26 + i, restored.Control.GetProperty("stateVersion").GetInt64());
+            var retry = CampaignCombatActualPaidAssault.ApplyTrustedSource(source, context, selection, rounds, owned, ledger[i], Dependency, false);
+            Assert.True(retry.Duplicate); Assert.Null(retry.EventBytes); Assert.Equal(applied.ReceiptId, retry.ReceiptId); Assert.Equal(source, retry.SourceBytes);
+            var clone = restored.SourceBytes; Array.Fill(clone, (byte)0); var inputClone = restored.PaidInputs[0]; Array.Fill(inputClone, (byte)0);
+            Assert.Equal(source, restored.SourceBytes); Assert.Equal(ledger[0], restored.PaidInputs[0]);
+        }
+        Assert.Equal(Encoding.ASCII.GetBytes(row.GetProperty("proofCanonicalUtf8").GetString()!), restored.ProofBytes);
+        Assert.True(restored.Control.GetProperty("closed").GetBoolean());
+        Assert.Equal(10UL, restored.Control.GetProperty("randomState").GetProperty("nextByteCursor").GetUInt64());
+        Assert.Equal(restored.ProofBytes, CampaignCombatActualPaidAssault.ReadProof(restored.ProofBytes, source, context, selection, rounds, owned, Dependency).ProofBytes);
+        Assert.Equal(restored.ControlBytes, CampaignCombatActualPaidAssault.ReadControl(restored.ControlBytes, source, context, selection, rounds, owned, Dependency).ControlBytes);
+    }
+
     internal static JsonDocument Fixture() => JsonDocument.Parse(File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory,
         "Campaigns", "Fixtures", "combat-actual-paid-assault-v1.json")));
     internal static byte[] Encode(JsonNode value) => JsonSerializer.SerializeToUtf8Bytes(value, Options);
