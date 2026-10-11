@@ -627,9 +627,13 @@ private native consumer merged in PR #165. Task019F2 defines actual prepared-rou
 Task019F3 implements its private native consumer in PR #169, requiring two independently
 trusted ledgers and reaching prepared entry or cancelled no-attack Release. Task019F4 (PR #172)
 authenticates full prepared entry with an empty assault ledger and derives pure arithmetic
-assessment. It performs no paid assault, cost debit, RNG advancement or settlement. Production
-ingress authentication, paid actual result/settlement identity and World lineage, native assault,
-later-II/consumed Reserve lineage and public activation remain gated. Private settled controls
+assessment. That predecessor performs no paid assault, cost debit, RNG advancement or settlement.
+Task019F5 (PR #175) adds a separate private actual paid-assault executable reference: full actual
+lineage and three independent ledgers authenticate paired debit, ordered RNG/result identity,
+owned World projection, immediate settlement and one CA completion into same-cycle Reserve Release.
+Four genuine ordinary histories remain distinct from isolated complete selected-outcome support.
+Production ingress authentication, native paid assault, later-II/consumed Reserve lineage and
+public activation remain gated. Private settled controls
 still retain synthetic earlier Movement; these checkpoints do not prove the authentic continual
 cycle. The [roadmap](docs/roadmap/pre-alpha-roadmap.md) owns detailed sequencing, and the
 [first-release audit](docs/research/2026-10-05-first-release-audit.md) owns release gap measurements.

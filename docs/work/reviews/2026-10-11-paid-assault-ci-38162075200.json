@@ -1,0 +1,125 @@
+{
+  "pr": 175,
+  "head": "a1b4462ae48c7349176927c5166762672e4ce6a9",
+  "ciRunId": 38162075200,
+  "ciAttempt": 1,
+  "ciUrl": "https://github.com/dills122/sandtable/actions/runs/38162075200",
+  "testedMerge": {
+    "parents": [
+      "a7c9fcbd44568c88dc5f61a7a10a35c2328dc2e0",
+      "a1b4462ae48c7349176927c5166762672e4ce6a9"
+    ],
+    "sha": "270fd6b4785488104df859633892f771ed69d9ad",
+    "tree": "0f02ab377f950f90d6ce0b078e3af87ca80cf7c0"
+  },
+  "all13ChecksSuccess": true,
+  "verifiedCoverage": true,
+  "sdk": "10.0.401",
+  "configuration": "Release",
+  "total": 2770,
+  "shards": {
+    "core-a": {
+      "counts": {
+        "total": 71,
+        "passed": 71,
+        "failed": 0,
+        "skipped": 0,
+        "not-run": 0,
+        "errors": 0
+      },
+      "rowIdentitySha256": "4ba33ee68436e7ec262af49508f3ed9e3ae1fd6333539ac8f0e9c3ab320442c9",
+      "status": {
+        "shard": "core-a",
+        "module": "Cna.Core.Tests",
+        "tested_sha": "270fd6b4785488104df859633892f771ed69d9ad",
+        "sdk": "10.0.401",
+        "configuration": "Release",
+        "run_attempt": "1",
+        "exit_code": 0
+      }
+    },
+    "core-b": {
+      "counts": {
+        "total": 2220,
+        "passed": 2220,
+        "failed": 0,
+        "skipped": 0,
+        "not-run": 0,
+        "errors": 0
+      },
+      "rowIdentitySha256": "3625fda3c417d5e46ab8e8e87341713326dbca9c2bc845b7d3745dd8ea1735cc",
+      "status": {
+        "shard": "core-b",
+        "module": "Cna.Core.Tests",
+        "tested_sha": "270fd6b4785488104df859633892f771ed69d9ad",
+        "sdk": "10.0.401",
+        "configuration": "Release",
+        "run_attempt": "1",
+        "exit_code": 0
+      }
+    },
+    "exercise": {
+      "counts": {
+        "total": 469,
+        "passed": 469,
+        "failed": 0,
+        "skipped": 0,
+        "not-run": 0,
+        "errors": 0
+      },
+      "rowIdentitySha256": "100690316728b80f15162dbc6024499dc1adb31797846adf4e9543e13a3a2a01",
+      "status": {
+        "shard": "exercise",
+        "module": "Cna.ExerciseRunner.Tests",
+        "tested_sha": "270fd6b4785488104df859633892f771ed69d9ad",
+        "sdk": "10.0.401",
+        "configuration": "Release",
+        "run_attempt": "1",
+        "exit_code": 0
+      }
+    },
+    "contracts": {
+      "counts": {
+        "total": 10,
+        "passed": 10,
+        "failed": 0,
+        "skipped": 0,
+        "not-run": 0,
+        "errors": 0
+      },
+      "rowIdentitySha256": "f7adb7312bf63feec5c20f09316b03e6734b333104c7c028f1b89c8672ffa63e",
+      "status": {
+        "shard": "contracts",
+        "module": "Cna.Intelligence.Contracts.Tests",
+        "tested_sha": "270fd6b4785488104df859633892f771ed69d9ad",
+        "sdk": "10.0.401",
+        "configuration": "Release",
+        "run_attempt": "1",
+        "exit_code": 0
+      }
+    }
+  },
+  "baselineRun": 38108441743,
+  "baselineTestedMerge": "26575b55a353438af08116e207224d5923195f13",
+  "exactBaselineRowIdentityEquality": true,
+  "artifactRoot": "/private/tmp/paid-assault-ci-final",
+  "artifactHashes": {
+    "core-a/status.json": "a9af1408f83e6839aeceb0e0630bc5ea435d5cf5500615c08cf05d0f4a42bf21",
+    "core-a/results/runner_runnervmmprz5_2026-10-11_18_05_41.440699.xunit.xml": "d23e2f455d1d85a912414664f084cebdfaa4916e3027178527eb582aaea7c4fb",
+    "core-b/status.json": "10eaa6afd152d811fd1bcfbe54a4a0f339f151177df64bb1288fd15ed6b2cef8",
+    "core-b/results/runner_runnervmmprz5_2026-10-11_18_05_38.740654.xunit.xml": "e37e77c3143eae5d785e3c9c138aa3c3cd87010106413c2401f77b4b330f2574",
+    "exercise/status.json": "5717b65bb1dd0ffb5dc8da10a35b3112ff039ebc231753df6ad5f84828430585",
+    "exercise/results/runner_runnervmmprz5_2026-10-11_18_05_38.192804.xunit.xml": "c2488e0b94c5da6b3b7c63fec831edc4c694d4c7c336a3d8b084e75a63030558",
+    "contracts/status.json": "1fd75c2de6e03dc4d6d442681205d28782bb56b390afb663a1193c576578ed76",
+    "contracts/results/runner_runnervmmprz5_2026-10-11_18_05_34.020690.xunit.xml": "fd2d40b2619df9e075e8a38a25dc2138c99a538380c9d9cfba653857380157d6",
+    "inventory.json": "c40ada3c383547938e05bba1fab443ef1fa44cf96aa0ddd6da5353dfc83b3d1b",
+    "dependencies.json": "e352fb75dd0111784e1e959f3f494810ee05c5497fdb499b4a84941c2395a0d5"
+  },
+  "normalGateReceiptSha256": "24ebdaf65f110f415f33e47f741aafbe9e250fafc8d92d58c5e1b390ec2b1a25",
+  "normalGateLogSha256": "06f44425dacb3f5414baa6b1fa6339c0f8934d18b08097387d5ac9c7c8329e6d",
+  "limits": [
+    "new paid Python behavior verified separately by retained normal gate, not CI",
+    "independent review and Brain merge remain separate",
+    "four owning failures, aggregation and CoreB139 root causes unwaived"
+  ]
+}

@@ -73,3 +73,19 @@ PA01–PA10 map respectively to full admission/independent ledgers; semantic RED
 Brain granted one serial final normal gate with900-second budget after source/closure/literal freeze, no automatic extension/retry. No new.NET or blanket35minARE run is authorized. Unchanged mature owning results are carried only after exact59+AADoracle/schema/Result2schema physical hashes and original fixture bytes match; new paid behavior requires the new normal gate. Author self-review and separate neutral bootstrap/author explanation precede Brain fresh review0/9→1/9, exact-head CI and Brain merge. Documentation map synchronization stays Brain-owned as in the predecessor milestone.
 
 Final author normal gate: exit0, 267.82s/900s, immutable four-primary before/after hashes, log SHA256 `06f44425dacb3f5414baa6b1fa6339c0f8934d18b08097387d5ac9c7c8329e6d`. All groups and literal readbacks passed; evidence in docs/work/reviews/2026-10-11-paid-assault-normal-gate.json/log. New primary bytes are frozen; author self-review covers correctness, architecture, input integrity, bounded performance and tests with residual costs in separate author packet. No self-issued readiness, fresh independent review or exact-head CI verdict.
+
+
+## Coordinator merge reconciliation — 2026-10-11
+
+Private executable reference PA01–PA10 merged in [PR175](https://github.com/dills122/sandtable/pull/175)
+at `f7030d220a4a8881d4c43b52de7e683dc07711c2`, reviewed head
+`a1b4462ae48c7349176927c5166762672e4ce6a9`. This final disposition supersedes chronological
+preparation and pending review/CI statements above. Fresh implementation review1/9, round1
+pass1, recovery0/2 returned Ready without actionable findings. The
+[verbatim report](../reviews/2026-10-11-paid-assault-independent-implementation-review-1.md)
+and [immutable CI receipt](../reviews/2026-10-11-paid-assault-ci-38162075200.json) are retained.
+CI38162075200 passed all13 checks and2770/2770 Release rows (71/2220/469/10).
+The local Python normal267.82s and reviewer focused checks are separate from GitHub CI,
+which does not execute the paid oracle. Native/public/whole-loop scope and historical owning
+failures/CoreB139 remain open and unwaived. Canonical status is reconciled in Task019F5 of the
+[Combat plan](../../design/combat-cycle-implementation-plan.md); no product bytes changed here.
