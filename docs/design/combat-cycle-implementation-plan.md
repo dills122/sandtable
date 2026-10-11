@@ -2364,6 +2364,16 @@ research recoveries0of2, no heavy pivot or reset. No native work or merge. See t
 
 ### Task019F3 — private native actual round entry (REL-AUD-02C / DAY-A)
 
+Current disposition (October10 Toronto closeout): **MERGED bounded private entry** in
+[PR169](https://github.com/dills122/sandtable/pull/169), merge
+`94cf23883978f7fd9726f4bdd4f63677c6af6a9f`, reviewed head
+`0fac88f625dad8d25a6e5d62e619db683be1871a`. Fresh implementation review2/9 Ready,
+round1 pass2, recovery0/2; exact-head Release CI38094052388 passed2770/2770.
+The [retained final review](../work/reviews/2026-10-10-native-actual-round-entry-final-review.md)
+and [session handoff](../work/handoffs/2026-10-10-combat-loop-day.md) supersede the draft
+readiness statements below. Historical failures/timings remain retained evidence.
+Public activation and parent017–019 completion remain open.
+
 Implementation branch `codex/native-actual-round-entry` starts from merged PR167 at
 `34a494c46ab7b8665e381f9e531c7b8365cb3efe`. The private native engine and closed codec
 consume the unchanged `combat-actual-round-entry-v1` literal fixture through a test-project
@@ -2372,7 +2382,8 @@ inputs are consistency evidence. All57 dependency digests remain frozen, with Co
 again at empty-AA certificate consumption. Prepared entry stops before paid Close Assault;
 cancelled entry retains the no-attack route to Release. No public activation is introduced.
 
-Draft publication checkpoint: terminal parity passed34 cases; the retained adversarial
+Historical draft publication checkpoint (superseded above): terminal parity passed34 cases;
+the retained adversarial
 checkpoint passed74 tests, and the subsequent ASCII carrier regression passed all128 ASCII
 values in one test. These checkpoints precede the final full acceptance run. Original ledger
 null handling and canonical ASCII spelling each have retained failing and passing tests.
@@ -2452,8 +2463,9 @@ confirmed59runtime+1test+owned code/schema with no unknown physical path before 
 Corrected normal oracle, original ARE/affected owning gates, author engineering review,
 immutable packet, Brain-dispatched fresh implementation review and exact-head CI are mandatory.
 Exact execution boundaries and results are retained in the dated review evidence; historical
-failures remain distinct from final verification. Task status is IN PROGRESS pending independent
-review and CI. This is not Ready, full paid C1, Task017–019 closure or loop completion.
+failures remain distinct from final verification. At initial publication Task019F4 was IN PROGRESS
+pending independent review and CI; final disposition below supersedes that status. This is not
+full paid C1, Task017–019 closure or loop completion.
 Parent costs, result/settlement, mandatory windows, future duties, Reserve/continuation,
 public/Exercise and later-II/consumed lineage remain separately gated.
 
@@ -2475,3 +2487,39 @@ passed13 checks and2770/2770 exact Release rows, SDK10.0.401 attempt1 on merge84
 that receipt is historical for a later correction head. Fresh correction gates and Brain review3/9
 (round1 pass3, recovery0/2) are mandatory. If pass3 is Not ready, stop downstream for Brain
 recovery; do not reset counts. No full paid/native/public/loop closure follows.
+
+
+Final Task019F4 disposition (2026-10-11 02:47:12 UTC / October10 Toronto): **MERGED private
+no-cost admission and arithmetic checkpoint** in
+[PR172](https://github.com/dills122/sandtable/pull/172), merge
+`80f633f11271e8a0d4470459fee41bac7a014e61`, reviewed head
+`d4ce0c1695579f21cb81a2bc7ef7a5a83c73ab72`. Fresh implementation review3/9 Ready,
+round1 pass3, recovery0/2; no recovery spike required. The
+[verbatim final review](../work/reviews/2026-10-10-actual-assault-final-review-3.md) and
+[immutable CI receipt](../work/reviews/2026-10-10-actual-assault-ci-38105360059.json)
+retain separate evidence. Run38105360059 completed all13 checks SUCCESS, 2770/2770 Release
+rows with zero failures/skips/errors. Receipt `fresh_review_pending: true` records creation
+before the later Ready disposition; it is intentionally unchanged. Corrected normal379.819s,
+focused64.325s, mechanics3.863s and consumption90.440s passed. Seven unchanged owning gates
+are carried evidence, not correction-head executions. Prior reviews/CI are historical;
+this final disposition supersedes prior pending/Not ready statements for this slice.
+
+No full paid C1 or parent017–019 completion follows. Next: research-backed paid assault
+identity/actual World lineage contract, native consumer, settlement/repeat/finish, side-safe
+public actions, then two clean Exercise retained runs/replay and all72 ACs. Four owning oracle
+failures and unexplained earlier ExerciseRunner aggregation remain unwaived. Coordinator
+closeout documentation remains pending fresh review/publication separately.
+
+
+Post-merge validation update:
+
+Main CI38106271573 FAILED at merged80f633f11271e8a0d4470459fee41bac7a014e61.
+Core B exited139 after2103 passed / zero failed assertions in5m03s, leaving117 of2220
+expected rows incomplete; harness reports one process error. No final Core B XML/crashdump
+present in retained artifact. Aggregate verify failed consequentially as designed. Prepare/
+build/format, Core A, Exercise, Contracts, CodeQL and links succeeded. Prior PR38105360059
+all2770 passing remains historical evidence; no blanket main-green claim. Reviewed head
+and merge trees are identical (`git diff d4ce0c1..80f633f` empty verified). Cause is unconfirmed;
+no infrastructure/runtime/implementation root cause or concurrent-test attribution established.
+Bounded main CI diagnosis is next action; no speculative fix/retry or failure waiver.
+See session handoff for retained evidence hashes. No downstream product completion follows.

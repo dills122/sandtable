@@ -622,12 +622,16 @@ Exercises own fresh local capabilities and retained evidence. Raw authority and 
 player mutation seams. A public campaign handle is opaque; opposing state is disclosed only through
 versioned allowlists, never by serializing full snapshots.
 
-Task019F0's private actual-selection executable contract merged in PR #161. It requires a separately
-trusted input ledger and reaches Force Assignment after defender decline, or no-attack Reserve
-Release. Task019F1 implements its private native consumer in PR #165; Force Assignment completion
-and production input authentication remain pending. Private settled
-controls still retain synthetic earlier Movement; none of this proves public Combat or the authentic
-continual cycle. The [roadmap](docs/roadmap/pre-alpha-roadmap.md) owns detailed sequencing, and the
+Task019F0's private actual-selection executable contract merged in PR #161; Task019F1's
+private native consumer merged in PR #165. Task019F2 defines actual prepared-round entry;
+Task019F3 implements its private native consumer in PR #169, requiring two independently
+trusted ledgers and reaching prepared entry or cancelled no-attack Release. Task019F4 (PR #172)
+authenticates full prepared entry with an empty assault ledger and derives pure arithmetic
+assessment. It performs no paid assault, cost debit, RNG advancement or settlement. Production
+ingress authentication, paid actual result/settlement identity and World lineage, native assault,
+later-II/consumed Reserve lineage and public activation remain gated. Private settled controls
+still retain synthetic earlier Movement; these checkpoints do not prove the authentic continual
+cycle. The [roadmap](docs/roadmap/pre-alpha-roadmap.md) owns detailed sequencing, and the
 [first-release audit](docs/research/2026-10-05-first-release-audit.md) owns release gap measurements.
 The [historical ledger](docs/research/2026-10-05-project-documentation-snapshot.md) preserves former
 checkpoint evidence without making it current runtime truth.
