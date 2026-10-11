@@ -18,45 +18,129 @@ env:
   TESTINGPLATFORM_TELEMETRY_OPTOUT: "1"
 
 jobs:
-  verify:
+  prepare:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
-
     steps:
-      - name: Check out repository
+      - name: Check out tested event SHA
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          ref: ${{ github.sha }}
           persist-credentials: false
-
       - name: Set up .NET
         uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
         with:
           global-json-file: global.json
-
       - name: Report selected SDK
         run: dotnet --version
-
+      - name: Create evidence directory
+        run: mkdir -p artifacts/ci
       - name: Restore
-        run: dotnet restore Sandtable.slnx
-
+        run: dotnet restore Sandtable.slnx '/bl:artifacts/ci/restore-{}.binlog'
       - name: Verify formatting
         run: dotnet format Sandtable.slnx --verify-no-changes --no-restore
-
       - name: Build
-        run: dotnet build Sandtable.slnx --configuration Release --no-restore
-
-      - name: Test
-        run: >-
-          dotnet test --solution Sandtable.slnx --configuration Release --no-build
-          --report-xunit-xml --results-directory artifacts/test-results
-
-      - name: Retain test results and per-test timings
-        if: ${{ !cancelled() }}
+        run: dotnet build Sandtable.slnx --configuration Release --no-restore '/bl:artifacts/ci/build-{}.binlog'
+      - name: Check fail-closed coverage helper
+        run: python3 .github/scripts/test_partition_test.py
+      - name: Build Release row discovery helper
+        run: dotnet build .github/scripts/ReleaseTestRows/ReleaseTestRows.csproj --configuration Release '/bl:artifacts/ci/row-helper-{}.binlog'
+      - name: Discover actual Release rows and prove complementary filters
+        run: python3 .github/scripts/test_partition.py discover --sha "$TESTED_SHA" --attempt "$RUN_ATTEMPT"
+        env:
+          TESTED_SHA: ${{ github.sha }}
+          RUN_ATTEMPT: ${{ github.run_attempt }}
+      - name: Retain inventory and discovery evidence
+        if: ${{ always() }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
-          name: test-results
-          path: artifacts/test-results/*.xml
-          if-no-files-found: warn
+          name: ci-inventory-${{ github.sha }}-${{ github.run_attempt }}
+          path: artifacts/ci
+          if-no-files-found: error
+          retention-days: 14
+
+  tests:
+    needs: prepare
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [core-a, core-b, exercise, contracts]
+    steps:
+      - name: Check out tested event SHA
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Set up .NET
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          global-json-file: global.json
+      - name: Create evidence directory
+        run: mkdir -p artifacts/ci
+      - name: Restore
+        run: dotnet restore Sandtable.slnx '/bl:artifacts/ci/${{ matrix.shard }}-restore-{}.binlog'
+      - name: Build
+        run: dotnet build Sandtable.slnx --configuration Release --no-restore '/bl:artifacts/ci/${{ matrix.shard }}-build-{}.binlog'
+      - name: Download current attempt Release row proof
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+        with:
+          name: ci-inventory-${{ github.sha }}-${{ github.run_attempt }}
+          path: artifacts/partition-proof
+      - name: Run complete-row partition
+        run: python3 .github/scripts/test_partition.py execute --sha "$TESTED_SHA" --attempt "$RUN_ATTEMPT" --shard "$TEST_SHARD"
+        env:
+          TESTED_SHA: ${{ github.sha }}
+          RUN_ATTEMPT: ${{ github.run_attempt }}
+          TEST_SHARD: ${{ matrix.shard }}
+      - name: Retain results, process status and timings
+        if: ${{ always() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: ci-${{ matrix.shard }}-${{ github.sha }}-${{ github.run_attempt }}
+          path: artifacts/ci
+          if-no-files-found: error
+          retention-days: 14
+
+  verify:
+    needs: [prepare, tests]
+    if: ${{ always() }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out tested event SHA
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Retain exact dependency outcomes
+        run: |
+          mkdir -p artifacts/ci
+          printf '%s\n' "$NEEDS_JSON" > artifacts/ci/dependencies.json
+        env:
+          NEEDS_JSON: ${{ toJSON(needs) }}
+      - name: Download inventory and all leaf reports
+        if: ${{ always() }}
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+        with:
+          pattern: ci-*-${{ github.sha }}-${{ github.run_attempt }}
+          path: artifacts/ci
+          merge-multiple: true
+      - name: Require successful processes and complete exact-head coverage
+        if: ${{ always() }}
+        run: python3 .github/scripts/test_partition.py verify --sha "$TESTED_SHA" --attempt "$RUN_ATTEMPT"
+        env:
+          TESTED_SHA: ${{ github.sha }}
+          RUN_ATTEMPT: ${{ github.run_attempt }}
+          NEEDS_JSON: ${{ toJSON(needs) }}
+      - name: Retain aggregate evidence
+        if: ${{ always() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: coverage-aggregate-${{ github.sha }}-${{ github.run_attempt }}
+          path: artifacts/ci
+          if-no-files-found: error
           retention-days: 14
 
   dependency-review:
