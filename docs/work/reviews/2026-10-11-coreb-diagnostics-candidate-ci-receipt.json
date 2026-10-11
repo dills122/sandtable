@@ -1,0 +1,816 @@
+{
+  "run": {
+    "attempt": 1,
+    "conclusion": "success",
+    "databaseId": 38108441743,
+    "headSha": "3a0cfde5a9fce8646eff5143210dc4ed7453cee4",
+    "jobs": [
+      {
+        "completedAt": "2026-10-11T03:27:40Z",
+        "conclusion": "success",
+        "databaseId": 114378796072,
+        "name": "dependency-review",
+        "startedAt": "2026-10-11T03:27:34Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-10-11T03:27:35Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-11T03:27:35Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:27:37Z",
+            "conclusion": "success",
+            "name": "Check out repository",
+            "number": 2,
+            "startedAt": "2026-10-11T03:27:35Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:27:38Z",
+            "conclusion": "success",
+            "name": "Review dependency changes",
+            "number": 3,
+            "startedAt": "2026-10-11T03:27:38Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:27:39Z",
+            "conclusion": "success",
+            "name": "Post Check out repository",
+            "number": 6,
+            "startedAt": "2026-10-11T03:27:38Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:27:39Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 7,
+            "startedAt": "2026-10-11T03:27:39Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/dills122/sandtable/actions/runs/38108441743/job/114378796072"
+      },
+      {
+        "completedAt": "2026-10-11T03:30:24Z",
+        "conclusion": "success",
+        "databaseId": 114378796290,
+        "name": "prepare",
+        "startedAt": "2026-10-11T03:27:35Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-10-11T03:27:38Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-11T03:27:36Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:27:41Z",
+            "conclusion": "success",
+            "name": "Check out tested event SHA",
+            "number": 2,
+            "startedAt": "2026-10-11T03:27:38Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:27:41Z",
+            "conclusion": "success",
+            "name": "Set up .NET",
+            "number": 3,
+            "startedAt": "2026-10-11T03:27:41Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:27:44Z",
+            "conclusion": "success",
+            "name": "Report selected SDK",
+            "number": 4,
+            "startedAt": "2026-10-11T03:27:41Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:27:44Z",
+            "conclusion": "success",
+            "name": "Create evidence directory",
+            "number": 5,
+            "startedAt": "2026-10-11T03:27:44Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:27:57Z",
+            "conclusion": "success",
+            "name": "Restore",
+            "number": 6,
+            "startedAt": "2026-10-11T03:27:44Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:29:15Z",
+            "conclusion": "success",
+            "name": "Verify formatting",
+            "number": 7,
+            "startedAt": "2026-10-11T03:27:57Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:30:08Z",
+            "conclusion": "success",
+            "name": "Build",
+            "number": 8,
+            "startedAt": "2026-10-11T03:29:15Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:30:08Z",
+            "conclusion": "success",
+            "name": "Check fail-closed coverage helper",
+            "number": 9,
+            "startedAt": "2026-10-11T03:30:08Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:30:10Z",
+            "conclusion": "success",
+            "name": "Build Release row discovery helper",
+            "number": 10,
+            "startedAt": "2026-10-11T03:30:08Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:30:19Z",
+            "conclusion": "success",
+            "name": "Discover actual Release rows and prove complementary filters",
+            "number": 11,
+            "startedAt": "2026-10-11T03:30:10Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:30:21Z",
+            "conclusion": "success",
+            "name": "Retain inventory and discovery evidence",
+            "number": 12,
+            "startedAt": "2026-10-11T03:30:19Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:30:21Z",
+            "conclusion": "success",
+            "name": "Post Set up .NET",
+            "number": 23,
+            "startedAt": "2026-10-11T03:30:21Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:30:22Z",
+            "conclusion": "success",
+            "name": "Post Check out tested event SHA",
+            "number": 24,
+            "startedAt": "2026-10-11T03:30:21Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:30:22Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 25,
+            "startedAt": "2026-10-11T03:30:22Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/dills122/sandtable/actions/runs/38108441743/job/114378796290"
+      },
+      {
+        "completedAt": "2026-10-11T03:44:02Z",
+        "conclusion": "success",
+        "databaseId": 114379258575,
+        "name": "tests (core-a)",
+        "startedAt": "2026-10-11T03:30:27Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-10-11T03:30:30Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-11T03:30:28Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:30:32Z",
+            "conclusion": "success",
+            "name": "Check out tested event SHA",
+            "number": 2,
+            "startedAt": "2026-10-11T03:30:30Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:30:33Z",
+            "conclusion": "success",
+            "name": "Set up .NET",
+            "number": 3,
+            "startedAt": "2026-10-11T03:30:32Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:30:33Z",
+            "conclusion": "success",
+            "name": "Create evidence directory",
+            "number": 4,
+            "startedAt": "2026-10-11T03:30:33Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:30:43Z",
+            "conclusion": "success",
+            "name": "Restore",
+            "number": 5,
+            "startedAt": "2026-10-11T03:30:33Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:31:48Z",
+            "conclusion": "success",
+            "name": "Build",
+            "number": 6,
+            "startedAt": "2026-10-11T03:30:43Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:31:50Z",
+            "conclusion": "success",
+            "name": "Download current attempt Release row proof",
+            "number": 7,
+            "startedAt": "2026-10-11T03:31:48Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:43:57Z",
+            "conclusion": "success",
+            "name": "Run complete-row partition",
+            "number": 8,
+            "startedAt": "2026-10-11T03:31:50Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:43:59Z",
+            "conclusion": "success",
+            "name": "Retain results, process status and timings",
+            "number": 9,
+            "startedAt": "2026-10-11T03:43:57Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:43:59Z",
+            "conclusion": "success",
+            "name": "Post Set up .NET",
+            "number": 17,
+            "startedAt": "2026-10-11T03:43:59Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:43:59Z",
+            "conclusion": "success",
+            "name": "Post Check out tested event SHA",
+            "number": 18,
+            "startedAt": "2026-10-11T03:43:59Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:43:59Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 19,
+            "startedAt": "2026-10-11T03:43:59Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/dills122/sandtable/actions/runs/38108441743/job/114379258575"
+      },
+      {
+        "completedAt": "2026-10-11T03:34:20Z",
+        "conclusion": "success",
+        "databaseId": 114379258611,
+        "name": "tests (exercise)",
+        "startedAt": "2026-10-11T03:30:27Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-10-11T03:30:30Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-11T03:30:28Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:30:32Z",
+            "conclusion": "success",
+            "name": "Check out tested event SHA",
+            "number": 2,
+            "startedAt": "2026-10-11T03:30:30Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:30:33Z",
+            "conclusion": "success",
+            "name": "Set up .NET",
+            "number": 3,
+            "startedAt": "2026-10-11T03:30:32Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:30:33Z",
+            "conclusion": "success",
+            "name": "Create evidence directory",
+            "number": 4,
+            "startedAt": "2026-10-11T03:30:33Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:30:45Z",
+            "conclusion": "success",
+            "name": "Restore",
+            "number": 5,
+            "startedAt": "2026-10-11T03:30:33Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:31:42Z",
+            "conclusion": "success",
+            "name": "Build",
+            "number": 6,
+            "startedAt": "2026-10-11T03:30:45Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:31:44Z",
+            "conclusion": "success",
+            "name": "Download current attempt Release row proof",
+            "number": 7,
+            "startedAt": "2026-10-11T03:31:42Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:34:15Z",
+            "conclusion": "success",
+            "name": "Run complete-row partition",
+            "number": 8,
+            "startedAt": "2026-10-11T03:31:44Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:34:17Z",
+            "conclusion": "success",
+            "name": "Retain results, process status and timings",
+            "number": 9,
+            "startedAt": "2026-10-11T03:34:15Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:34:17Z",
+            "conclusion": "success",
+            "name": "Post Set up .NET",
+            "number": 17,
+            "startedAt": "2026-10-11T03:34:17Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:34:17Z",
+            "conclusion": "success",
+            "name": "Post Check out tested event SHA",
+            "number": 18,
+            "startedAt": "2026-10-11T03:34:17Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:34:17Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 19,
+            "startedAt": "2026-10-11T03:34:17Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/dills122/sandtable/actions/runs/38108441743/job/114379258611"
+      },
+      {
+        "completedAt": "2026-10-11T03:31:33Z",
+        "conclusion": "success",
+        "databaseId": 114379258627,
+        "name": "tests (contracts)",
+        "startedAt": "2026-10-11T03:30:27Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-10-11T03:30:30Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-11T03:30:28Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:30:32Z",
+            "conclusion": "success",
+            "name": "Check out tested event SHA",
+            "number": 2,
+            "startedAt": "2026-10-11T03:30:30Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:30:32Z",
+            "conclusion": "success",
+            "name": "Set up .NET",
+            "number": 3,
+            "startedAt": "2026-10-11T03:30:32Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:30:33Z",
+            "conclusion": "success",
+            "name": "Create evidence directory",
+            "number": 4,
+            "startedAt": "2026-10-11T03:30:32Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:30:46Z",
+            "conclusion": "success",
+            "name": "Restore",
+            "number": 5,
+            "startedAt": "2026-10-11T03:30:33Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:31:25Z",
+            "conclusion": "success",
+            "name": "Build",
+            "number": 6,
+            "startedAt": "2026-10-11T03:30:46Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:31:27Z",
+            "conclusion": "success",
+            "name": "Download current attempt Release row proof",
+            "number": 7,
+            "startedAt": "2026-10-11T03:31:25Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:31:28Z",
+            "conclusion": "success",
+            "name": "Run complete-row partition",
+            "number": 8,
+            "startedAt": "2026-10-11T03:31:27Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:31:30Z",
+            "conclusion": "success",
+            "name": "Retain results, process status and timings",
+            "number": 9,
+            "startedAt": "2026-10-11T03:31:28Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:31:30Z",
+            "conclusion": "success",
+            "name": "Post Set up .NET",
+            "number": 17,
+            "startedAt": "2026-10-11T03:31:30Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:31:30Z",
+            "conclusion": "success",
+            "name": "Post Check out tested event SHA",
+            "number": 18,
+            "startedAt": "2026-10-11T03:31:30Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:31:30Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 19,
+            "startedAt": "2026-10-11T03:31:30Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/dills122/sandtable/actions/runs/38108441743/job/114379258627"
+      },
+      {
+        "completedAt": "2026-10-11T03:42:45Z",
+        "conclusion": "success",
+        "databaseId": 114379258719,
+        "name": "tests (core-b)",
+        "startedAt": "2026-10-11T03:30:27Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-10-11T03:30:28Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-11T03:30:27Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:30:31Z",
+            "conclusion": "success",
+            "name": "Check out tested event SHA",
+            "number": 2,
+            "startedAt": "2026-10-11T03:30:28Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:30:31Z",
+            "conclusion": "success",
+            "name": "Set up .NET",
+            "number": 3,
+            "startedAt": "2026-10-11T03:30:31Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:30:31Z",
+            "conclusion": "success",
+            "name": "Create evidence directory",
+            "number": 4,
+            "startedAt": "2026-10-11T03:30:31Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:30:45Z",
+            "conclusion": "success",
+            "name": "Restore",
+            "number": 5,
+            "startedAt": "2026-10-11T03:30:31Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:31:46Z",
+            "conclusion": "success",
+            "name": "Build",
+            "number": 6,
+            "startedAt": "2026-10-11T03:30:45Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:31:46Z",
+            "conclusion": "success",
+            "name": "Download current attempt Release row proof",
+            "number": 7,
+            "startedAt": "2026-10-11T03:31:46Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:42:43Z",
+            "conclusion": "success",
+            "name": "Run complete-row partition",
+            "number": 8,
+            "startedAt": "2026-10-11T03:31:46Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:42:44Z",
+            "conclusion": "success",
+            "name": "Retain results, process status and timings",
+            "number": 9,
+            "startedAt": "2026-10-11T03:42:43Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:42:44Z",
+            "conclusion": "success",
+            "name": "Post Set up .NET",
+            "number": 17,
+            "startedAt": "2026-10-11T03:42:44Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:42:44Z",
+            "conclusion": "success",
+            "name": "Post Check out tested event SHA",
+            "number": 18,
+            "startedAt": "2026-10-11T03:42:44Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:42:44Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 19,
+            "startedAt": "2026-10-11T03:42:44Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/dills122/sandtable/actions/runs/38108441743/job/114379258719"
+      },
+      {
+        "completedAt": "2026-10-11T03:44:12Z",
+        "conclusion": "success",
+        "databaseId": 114381423670,
+        "name": "verify",
+        "startedAt": "2026-10-11T03:44:05Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-10-11T03:44:06Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-11T03:44:05Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:44:08Z",
+            "conclusion": "success",
+            "name": "Check out tested event SHA",
+            "number": 2,
+            "startedAt": "2026-10-11T03:44:06Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:44:08Z",
+            "conclusion": "success",
+            "name": "Retain exact dependency outcomes",
+            "number": 3,
+            "startedAt": "2026-10-11T03:44:08Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:44:09Z",
+            "conclusion": "success",
+            "name": "Download inventory and all leaf reports",
+            "number": 4,
+            "startedAt": "2026-10-11T03:44:08Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:44:09Z",
+            "conclusion": "success",
+            "name": "Require successful processes and complete exact-head coverage",
+            "number": 5,
+            "startedAt": "2026-10-11T03:44:09Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:44:11Z",
+            "conclusion": "success",
+            "name": "Retain aggregate evidence",
+            "number": 6,
+            "startedAt": "2026-10-11T03:44:09Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:44:11Z",
+            "conclusion": "success",
+            "name": "Post Check out tested event SHA",
+            "number": 12,
+            "startedAt": "2026-10-11T03:44:11Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-11T03:44:11Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 13,
+            "startedAt": "2026-10-11T03:44:11Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/dills122/sandtable/actions/runs/38108441743/job/114381423670"
+      }
+    ],
+    "status": "completed",
+    "url": "https://github.com/dills122/sandtable/actions/runs/38108441743"
+  },
+  "tested_sha": "26575b55a353438af08116e207224d5923195f13",
+  "attempt": "1",
+  "sdk": "10.0.401",
+  "configuration": "Release",
+  "all_exact_baseline_identities_equal": true,
+  "total_passed": 2770,
+  "shards": {
+    "core-a": {
+      "expected_rows": 71,
+      "passed": 71,
+      "exit_code": 0,
+      "report": "core-a/results/runner_runnervmmprz5_2026-10-11_03_31_51.760131.xunit.xml"
+    },
+    "core-b": {
+      "expected_rows": 2220,
+      "passed": 2220,
+      "exit_code": 0,
+      "report": "core-b/results/runner_runnervmmprz5_2026-10-11_03_31_47.940346.xunit.xml"
+    },
+    "exercise": {
+      "expected_rows": 469,
+      "passed": 469,
+      "exit_code": 0,
+      "report": "exercise/results/runner_runnervmmprz5_2026-10-11_03_31_45.808891.xunit.xml"
+    },
+    "contracts": {
+      "expected_rows": 10,
+      "passed": 10,
+      "exit_code": 0,
+      "report": "contracts/results/runner_runnervmmprz5_2026-10-11_03_31_28.126771.xunit.xml"
+    }
+  },
+  "sha256": {
+    "core-a/status.json": "b235354b5e8e6456a33aad802ca562de0e67afdc1476df2539090c0cb3400b5b",
+    "core-a/results/runner_runnervmmprz5_2026-10-11_03_31_51.760131.xunit.xml": "d7bf636ae8a5a51dfb4a410a2190aaa97228e8da0fdf4fd41656e5cce0b181f0",
+    "core-b/status.json": "bc5110070a041cc14bcdfbabc7e010d0d538496ea445cd3a91f57bbbc245ac3e",
+    "core-b/results/runner_runnervmmprz5_2026-10-11_03_31_47.940346.xunit.xml": "200a1ebae070e7e4356956c7f74d9a275d69dfa786b808f3ffe889ec7a6858ee",
+    "exercise/status.json": "24d532a5cdb36225d8f1558f10246ad7b1fb3a9da3ce93cf0b7c31d71fdc95ee",
+    "exercise/results/runner_runnervmmprz5_2026-10-11_03_31_45.808891.xunit.xml": "592089bf6c6d34c4149afe484afd64800dbb022126385ecb78f78aa78a1833d7",
+    "contracts/status.json": "69568a5d5d64b53ed390e2338dcddb920b512b32d69ae9c16b6ad436a5324bba",
+    "contracts/results/runner_runnervmmprz5_2026-10-11_03_31_28.126771.xunit.xml": "579a730a45dbc71e160a0ea420f518736f6b2c098a4152b123e85cb77ebdd371",
+    "inventory.json": "47b1af40f3804449c856790a5ca0dbc854c30d77ee1bb1fd6501595d36bfc9f6"
+  },
+  "limits": "Ordinary passing coverage does not establish intermittent-crash remediation or native dump capture.",
+  "candidate_head": "3a0cfde5a9fce8646eff5143210dc4ed7453cee4",
+  "tested_merge_parents": [
+    "df831a42293cde3a105cc778ca2a762eab043400",
+    "3a0cfde5a9fce8646eff5143210dc4ed7453cee4"
+  ],
+  "pr_url": "https://github.com/dills122/sandtable/pull/174",
+  "pr_state": "OPEN",
+  "is_draft": true,
+  "checks": [
+    {
+      "name": "prepare",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS"
+    },
+    {
+      "name": "Analyze (actions)",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS"
+    },
+    {
+      "name": "Offline links (observational)",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS"
+    },
+    {
+      "name": "Analyze (csharp)",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS"
+    },
+    {
+      "name": "Analyze (javascript-typescript)",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS"
+    },
+    {
+      "name": "Analyze (python)",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS"
+    },
+    {
+      "name": "dependency-review",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS"
+    },
+    {
+      "name": "tests (core-a)",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS"
+    },
+    {
+      "name": "tests (core-b)",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS"
+    },
+    {
+      "name": "tests (exercise)",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS"
+    },
+    {
+      "name": "tests (contracts)",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS"
+    },
+    {
+      "name": "verify",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS"
+    },
+    {
+      "name": "CodeQL",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS"
+    }
+  ]
+}
