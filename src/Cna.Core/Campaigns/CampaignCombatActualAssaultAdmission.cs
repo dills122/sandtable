@@ -14,7 +14,8 @@ internal static class CampaignCombatActualAssaultAdmission
     internal static PaidAssaultFrame Admit(byte[] data, CampaignCombatCreationContext context,
         IReadOnlyList<byte[]> selection, IReadOnlyList<byte[]> rounds, Func<string, byte[]> dependencies)
     {
-        Require(selection.Count <= 16 && rounds.Count <= 16, 1); var source = Object(data, "AdmissionSource");
+        (selection, rounds) = OwnLedgers(selection, rounds);
+        var source = Object(data, "AdmissionSource");
         var original = Encoding.ASCII.GetBytes(T(source, "actualRoundSourceCanonicalUtf8")); CombatActualRoundEntryResult result;
         try { result = CampaignCombatActualRoundEntry.ReplayTrustedSource(original, context, selection, rounds, dependencies); }
         catch (JsonException e) { throw new JsonException(e.Message.StartsWith("CMB-ARE-009", StringComparison.Ordinal) ? "CMB-APA-009" : "CMB-APA-004", e); }
@@ -35,6 +36,22 @@ internal static class CampaignCombatActualAssaultAdmission
         var actualSelection = prior["base"]!["actualSelectionProof"]!;
         return new(basis, control, actualSelection["control"]!["selection"]!.AsObject(), actualSelection["boundary"]!.AsObject(), actualSelection["boundary"]!["cycle"]!.AsObject(),
             context.Configuration, JsonNode.Parse(Consume("docs/specs/fixtures/combat-content-v7.canonical.json", dependencies))!.AsObject());
+    }
+    // Authenticate syntax independently so replay mismatches retain their distinct APA004 meaning.
+    internal static (byte[][] Selection, byte[][] Rounds) OwnLedgers(IReadOnlyList<byte[]> selection, IReadOnlyList<byte[]> rounds)
+    {
+        byte[][] Own(IReadOnlyList<byte[]> ledger, string kind)
+        {
+            Require(ledger is not null && ledger.Count <= 16, 1);
+            var owned = ledger.Select(input =>
+            {
+                Require(input is not null, 1);
+                var copy = input.ToArray(); _ = Parse(copy, kind); return copy;
+            }).ToArray();
+            Require(Encode(A(owned.Select(input => JsonNode.Parse(input)))).Length <= 1_048_576, 1);
+            return owned;
+        }
+        return (Own(selection, "Input"), Own(rounds, "RoundInput"));
     }
     internal static string CatalogueHash()
     {

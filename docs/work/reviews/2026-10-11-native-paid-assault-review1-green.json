@@ -1,0 +1,44 @@
+{
+  "command": [
+    "dotnet",
+    "test",
+    "--project",
+    "tests/Cna.Core.Tests/Cna.Core.Tests.csproj",
+    "--configuration",
+    "Release",
+    "--no-build",
+    "--no-restore",
+    "--filter-class",
+    "*CombatActualPaidAssault*",
+    "--no-ansi",
+    "/bl:/private/tmp/native-paid-review1-green-{}.binlog"
+  ],
+  "budgetSeconds": 120,
+  "sdk": "10.0.400",
+  "scope": "review1 P2 correction: all 33 native paid-assault rows",
+  "exitCode": 0,
+  "timedOut": false,
+  "elapsedSeconds": 78.04,
+  "logSha256": "e87787fb0e0aa23393097de8571fab7ed21848159034de0fd37b9ed19f7e3d3a",
+  "sourceSha256": {
+    "src/Cna.Core/Campaigns/CampaignCombatActualPaidAssault.cs": "1ef9b054c461d4a2e35514d699bbcfaff86da12278015869454f9424e3590004",
+    "src/Cna.Core/Campaigns/CampaignCombatActualPaidAssaultCodec.cs": "3fda57595e4991d4635fa6f6c68316cb66277321c2ae87abe25ec84f20256539",
+    "src/Cna.Core/Campaigns/CampaignCombatActualAssaultAdmission.cs": "6340f181e3bd2c922fc611d91c68d5378ad3781fc2fcd57469723db40bcee197",
+    "src/Cna.Core/Campaigns/CampaignCombatActualPaidAssaultSupport.cs": "b73a62ed471118bf3470145621bb72190918ed56704d9c460b3ef5c9b927457d",
+    "tests/Cna.Core.Tests/Campaigns/CombatActualPaidAssaultTests.cs": "c004c7134d9b6a32e1d285416b8995c80c680494c93d17e19dad31cf73d83003",
+    "tests/Cna.Core.Tests/Campaigns/CombatActualPaidAssaultContractTests.cs": "bb44d92ee2a3d215812315a25c8034662b49f3f091f680c8353693ab48c03fcd"
+  },
+  "tests": {
+    "total": 33,
+    "passed": 33,
+    "failed": 0,
+    "skipped": 0
+  },
+  "build": {
+    "exitCode": 0,
+    "warnings": 0,
+    "errors": 0,
+    "elapsedSeconds": 14.39,
+    "binlog": "/private/tmp/native-paid-ledger-green-build-20261011-205647--21902--PZ2ENN.binlog"
+  }
+}

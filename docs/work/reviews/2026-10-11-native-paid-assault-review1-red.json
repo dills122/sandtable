@@ -1,0 +1,25 @@
+{
+  "command": [
+    "dotnet",
+    "test",
+    "--project",
+    "tests/Cna.Core.Tests/Cna.Core.Tests.csproj",
+    "--configuration",
+    "Release",
+    "--no-build",
+    "--no-restore",
+    "--filter-class",
+    "*CombatActualPaidAssaultContractTests",
+    "--filter-method",
+    "*MalformedIndependentPredecessorInputsRetainSyntaxDiagnosticsBeforeReplay",
+    "--no-ansi",
+    "/bl:/private/tmp/native-paid-ledger-red-{}.binlog"
+  ],
+  "budgetSeconds": 120,
+  "sdk": "10.0.400",
+  "scope": "review1 P2 semantic RED six predecessor diagnostic rows through paid read/apply",
+  "exitCode": 2,
+  "timedOut": false,
+  "elapsedSeconds": 2.129,
+  "logSha256": "51255c75a75b1749248453e478749946ed9dc041a333a215c5b74ea8ca97c255"
+}

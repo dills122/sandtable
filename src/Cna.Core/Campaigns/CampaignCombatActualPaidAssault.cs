@@ -88,11 +88,12 @@ internal static class CampaignCombatActualPaidAssault
         Require(context is not null && selection is not null && rounds is not null && paid is not null, 1);
         Require(selection!.All(x => x is not null) && rounds!.All(x => x is not null) && paid!.All(x => x is not null), 1);
         var packet = Object(source, "PaidSource"); Require(paid!.Count <= 11, 1);
+        var owned = CampaignCombatActualAssaultAdmission.OwnLedgers(selection, rounds);
         var inputs = paid.Select(x => { var copy = x.ToArray(); _ = Parse(copy, "PaidInput"); return copy; }).ToList();
         Require(Encode(A(inputs.Select(x => JsonNode.Parse(x)))).Length <= 16_384, 1);
         var events = packet["paidEventCanonicalUtf8"]!.AsArray(); Require(inputs.Count == events.Count, 4);
         var frame = CampaignCombatActualAssaultAdmission.Admit(Encoding.ASCII.GetBytes(T(packet, "admissionSourceCanonicalUtf8")), context,
-            selection.Select(x => x.ToArray()).ToArray(), rounds.Select(x => x.ToArray()).ToArray(), dependencies);
+            owned.Selection, owned.Rounds, dependencies);
         var state = Initial(frame);
         for (var i = 0; i < inputs.Count; i++)
         {

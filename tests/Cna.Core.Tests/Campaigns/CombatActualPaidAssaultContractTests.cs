@@ -308,6 +308,52 @@ public sealed class CombatActualPaidAssaultContractTests
         Assert.Equal(33, result.Control.GetProperty("stateVersion").GetInt64());
     }
 
+    [Theory]
+    [InlineData(false, 1)]
+    [InlineData(false, 2)]
+    [InlineData(false, 3)]
+    [InlineData(true, 1)]
+    [InlineData(true, 2)]
+    [InlineData(true, 3)]
+    public void MalformedIndependentPredecessorInputsRetainSyntaxDiagnosticsBeforeReplay(bool roundLedger, int code)
+    {
+        using var fixture = Fixture(); var row = fixture.RootElement.GetProperty("cases")[0]; var context = Context();
+        var source = Encoding.ASCII.GetBytes(row.GetProperty("sourceCanonicalUtf8").GetString()!);
+        var proof = Encoding.ASCII.GetBytes(row.GetProperty("proofCanonicalUtf8").GetString()!); var control = Canonical(Object(proof, "PaidProof")["control"]!, "PaidControl");
+        var selection = Ledger(row, "selectionLedger"); var rounds = Ledger(row, "roundLedger"); var paid = Ledger(row, "paidLedger");
+        var inputs = roundLedger ? rounds : selection; var mutated = JsonNode.Parse(inputs[0])!.AsObject();
+        if (code == 1) mutated["admittedAt"] = true;
+        else if (code == 2) mutated["admittedAt"] = -1;
+        else mutated["command"]!["contractVersion"] = 2;
+        inputs[0] = CampaignCombatActualPaidAssaultCodec.Encode(mutated);
+        byte[] Changed(string path) => path == "docs/specs/combat-actual-paid-assault-v1.schema.json" ? [0] : Dependency(path);
+        AssertEntryPoints(9, Changed);
+        AssertEntryPoints(code, Dependency);
+        void AssertEntryPoints(int expected, Func<string, byte[]> dependencies)
+        {
+            Reject(expected, () => CampaignCombatActualPaidAssault.ReadSource(source, context, selection, rounds, paid, dependencies));
+            Reject(expected, () => CampaignCombatActualPaidAssault.ReadProof(proof, source, context, selection, rounds, paid, dependencies));
+            Reject(expected, () => CampaignCombatActualPaidAssault.ReadControl(control, source, context, selection, rounds, paid, dependencies));
+            Reject(expected, () => CampaignCombatActualPaidAssault.ApplyTrustedSource(source, context, selection, rounds, paid, paid[0], dependencies, false));
+        }
+    }
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void CoherentIndependentPredecessorInputMismatchRemainsAuthenticationFailure(bool roundLedger)
+    {
+        using var fixture = Fixture(); var row = fixture.RootElement.GetProperty("cases")[0]; var context = Context();
+        var source = Encoding.ASCII.GetBytes(row.GetProperty("sourceCanonicalUtf8").GetString()!); var proof = Encoding.ASCII.GetBytes(row.GetProperty("proofCanonicalUtf8").GetString()!);
+        var control = Canonical(Object(proof, "PaidProof")["control"]!, "PaidControl");
+        var selection = Ledger(row, "selectionLedger"); var rounds = Ledger(row, "roundLedger"); var paid = Ledger(row, "paidLedger");
+        var inputs = roundLedger ? rounds : selection; var mutated = JsonNode.Parse(inputs[0])!.AsObject(); mutated["admittedAt"] = 123456789;
+        inputs[0] = CampaignCombatActualPaidAssaultCodec.Encode(mutated);
+        Reject(4, () => CampaignCombatActualPaidAssault.ReadSource(source, context, selection, rounds, paid, Dependency));
+        Reject(4, () => CampaignCombatActualPaidAssault.ReadProof(proof, source, context, selection, rounds, paid, Dependency));
+        Reject(4, () => CampaignCombatActualPaidAssault.ReadControl(control, source, context, selection, rounds, paid, Dependency));
+        Reject(4, () => CampaignCombatActualPaidAssault.ApplyTrustedSource(source, context, selection, rounds, paid, paid[0], Dependency, false));
+    }
+
     internal static PaidAssaultFrame Frame(int index)
     {
         using var fixture = Fixture(); var row = fixture.RootElement.GetProperty("cases")[index]; var packet = Object(Encoding.ASCII.GetBytes(row.GetProperty("sourceCanonicalUtf8").GetString()!), "PaidSource");

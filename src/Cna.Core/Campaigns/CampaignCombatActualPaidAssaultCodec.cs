@@ -19,19 +19,20 @@ internal static class CampaignCombatActualPaidAssaultCodec
         "PaidControl" or "World" => 262_144,
         "PaidEvent" or "AssaultResult" => 32_768,
         "PaidInput" or "PaidCommand" => 1_024,
-        "AdmissionSource" or "AdmissionProof" => 1_048_576,
+        "Input" or "RoundInput" or "AdmissionSource" or "AdmissionProof" => 1_048_576,
         _ => 2_097_152,
     };
+    private static int DepthLimit(string kind) => kind is "Input" or "RoundInput" ? 32 : 34;
     internal static JsonObject Object(ReadOnlySpan<byte> bytes, string kind)
         => JsonNode.Parse(Parse(bytes, kind).GetRawText())!.AsObject();
     internal static JsonElement Parse(ReadOnlySpan<byte> bytes, string kind)
     {
         Require(bytes.Length > 0 && bytes.Length <= ByteLimit(kind) && bytes.IndexOfAnyInRange((byte)128, byte.MaxValue) < 0, 1);
-        Preparse(bytes);
+        Preparse(bytes, DepthLimit(kind));
         try
         {
-            using var doc = JsonDocument.Parse(bytes.ToArray(), new JsonDocumentOptions { MaxDepth = 35 });
-            Bounds(doc.RootElement, 0);
+            using var doc = JsonDocument.Parse(bytes.ToArray(), new JsonDocumentOptions { MaxDepth = DepthLimit(kind) + 1 });
+            Bounds(doc.RootElement, 0, DepthLimit(kind));
             Require(bytes.SequenceEqual(Canonical(doc.RootElement, kind)), 8);
             return doc.RootElement.Clone();
         }
@@ -43,7 +44,7 @@ internal static class CampaignCombatActualPaidAssaultCodec
     internal static byte[] Canonical(JsonNode value, string kind) => Canonical(JsonSerializer.SerializeToElement(value), kind);
     internal static byte[] Canonical(JsonElement value, string kind)
     {
-        Bounds(value, 0);
+        Bounds(value, 0, DepthLimit(kind));
         using var stream = new MemoryStream();
         using (var writer = new Utf8JsonWriter(stream, new JsonWriterOptions { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping })) Write(writer, value, kind);
         var bytes = AsciiEscapes(stream.ToArray());
@@ -76,7 +77,7 @@ internal static class CampaignCombatActualPaidAssaultCodec
         return Encoding.ASCII.GetBytes(output.ToString());
     }
     // Enforce allocation bounds before JsonDocument allocates a nested document.
-    private static void Preparse(ReadOnlySpan<byte> data)
+    private static void Preparse(ReadOnlySpan<byte> data, int maxDepth)
     {
         Span<byte> starts = stackalloc byte[35]; Span<int> commas = stackalloc int[35]; Span<bool> occupied = stackalloc bool[35];
         var depth = 0; var quoted = false; var escaped = false;
@@ -87,7 +88,7 @@ internal static class CampaignCombatActualPaidAssaultCodec
             if (c == 34) { if (depth > 0) occupied[depth - 1] = true; quoted = true; continue; }
             if (c is 123 or 91)
             {
-                if (depth > 0) occupied[depth - 1] = true; Require(depth < 35, 1);
+                if (depth > 0) occupied[depth - 1] = true; Require(depth < maxDepth + 1, 1);
                 starts[depth] = c; commas[depth] = 0; occupied[depth] = false; depth++; continue;
             }
             if (c is 125 or 93)
@@ -100,11 +101,11 @@ internal static class CampaignCombatActualPaidAssaultCodec
         }
         Require(!quoted && depth == 0, 1);
     }
-    private static void Bounds(JsonElement value, int depth)
+    private static void Bounds(JsonElement value, int depth, int maxDepth)
     {
-        Require(depth <= 34, 1);
+        Require(depth <= maxDepth, 1);
         if (value.ValueKind == JsonValueKind.Array)
-        { Require(value.GetArrayLength() <= 512, 1); foreach (var x in value.EnumerateArray()) Bounds(x, depth + 1); }
+        { Require(value.GetArrayLength() <= 512, 1); foreach (var x in value.EnumerateArray()) Bounds(x, depth + 1, maxDepth); }
         if (value.ValueKind == JsonValueKind.Object)
         {
             var names = new HashSet<string>(StringComparer.Ordinal);
@@ -113,7 +114,7 @@ internal static class CampaignCombatActualPaidAssaultCodec
                 Require(names.Add(x.Name) && names.Count <= 128, 1);
                 if (x.Value.ValueKind == JsonValueKind.Array && x.Name is "components" or "boundElementIds" or "references")
                     Require(x.Value.GetArrayLength() <= (x.Name == "references" ? 16 : 1), 1);
-                Bounds(x.Value, depth + 1);
+                Bounds(x.Value, depth + 1, maxDepth);
             }
         }
     }
@@ -131,11 +132,11 @@ internal static class CampaignCombatActualPaidAssaultCodec
             Require(value.ValueKind == JsonValueKind.Object, 1);
             var fields = shape.Split(' ').Select(x => x.Split(':')).ToArray();
             Require(value.EnumerateObject().Select(x => x.Name).ToHashSet(StringComparer.Ordinal).SetEquals(fields.Select(x => x[0])), 1);
-            if (Versions.TryGetValue(kind, out var version)) Require(value.GetProperty(version.Field).GetInt64() == version.Value, 3);
             if (kind == "ArithmeticAssessment") Require(value.GetProperty("scopeKind").GetString() == "pure-selected-arithmetic-v1" &&
                 !value.GetProperty("paidAdmissionEnabled").GetBoolean() && !value.GetProperty("nativeSettlementCertified").GetBoolean() && !value.GetProperty("authenticSettlementCertified").GetBoolean(), 2);
             writer.WriteStartObject();
             foreach (var f in fields) { writer.WritePropertyName(f[0]); Write(writer, value.GetProperty(f[0]), f[1], kind, f[0]); }
+            if (Versions.TryGetValue(kind, out var version)) Require(value.GetProperty(version.Field).GetInt64() == version.Value, 3);
             writer.WriteEndObject(); return;
         }
         if (kind.EndsWith("[]", StringComparison.Ordinal) || kind == "Route")
@@ -225,6 +226,10 @@ internal static class CampaignCombatActualPaidAssaultCodec
     }
     private static readonly Dictionary<string, string> Shapes = new(StringComparer.Ordinal)
     {
+        ["Input"] = "command:Command actor:actor admittedAt:utc? clockAvailable:bool",
+        ["Command"] = "contractVersion:int kind:id segmentId:id decisionId:id? fromPositionId:id? expectedPriorVersion:long? choice:id? candidate:Candidate? participant:UnitKey?",
+        ["RoundInput"] = "command:RoundCommand actor:actor admittedAt:utc? clockAvailable:bool",
+        ["RoundCommand"] = "contractVersion:int kind:id clockConfigurationHash:hash segmentId:id roundId:id? slotId:id? expectedPriorVersion:long? fromPositionId:id? allocation:Allocation?",
         ["PaidSource"] = "contractVersion:int admissionSourceCanonicalUtf8:utf8 paidEventCanonicalUtf8:utf8[]",
         ["PaidBase"] = "contractVersion:int dependencyManifestHash:hash admissionProof:AdmissionProof resultClockPolicyId:id",
         ["PaidCommand"] = "contractVersion:int kind:id baseHash:hash roundId:id expectedPriorVersion:long? commitmentId:id? decisionId:id? choice:id?",
@@ -316,6 +321,8 @@ internal static class CampaignCombatActualPaidAssaultCodec
     };
     private static readonly Dictionary<string, (string Field, int Value)> Versions = new(StringComparer.Ordinal)
     {
+        ["Command"] = ("contractVersion", 1),
+        ["RoundCommand"] = ("contractVersion", 1),
         ["PaidSource"] = ("contractVersion", 1),
         ["PaidBase"] = ("contractVersion", 1),
         ["PaidCommand"] = ("contractVersion", 1),

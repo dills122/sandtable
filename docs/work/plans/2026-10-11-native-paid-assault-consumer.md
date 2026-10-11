@@ -80,3 +80,15 @@ CoreA71/CoreB2245/Exercise469/Contracts10, total2795. All25new native rows are i
 the unchanged partition policy. No new deferred factory or workflow edit. Inventory is retained
 under reviews; it is not a full-suite execution receipt or relabelled as final publication-head CI.
 Docs-only ac20312 corrects README remaining-work language per Brain; source/test blobs remain faab04e.
+
+## Review1 accepted correction
+
+Review1/9 (round1 pass1, research recovery0/2) returned one confirmed P2: independently supplied
+predecessor ledger syntax was hidden asAPA004. Accepted; NP01/NP09 now own and validate both
+predecessor ledgers before inherited replay. Retained verbatim review and explicit disposition are
+under reviews. Semantic RED:6failed/0passed,2.129s, actual004 versus required001/002/003;
+009 precedence assertions passed. GREEN:all33native rows passed,78.040s/120,0failed/skipped.
+Two added coherent mismatch controls retain004 through all four APIs. Release focused build passed
+0warnings/errors in14.39s. Shared predecessor sources, frozen spec/schema/oracle/fixtures and64
+physical pins remain unchanged. New inventory delta is8 InlineData rows; discovery receipt follows
+at correction freeze. Brain owns next review2/9, exact-head CI and merge; no counter reset.

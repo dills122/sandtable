@@ -1,0 +1,83 @@
+Running tests from /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/artifacts/bin/Cna.Core.Tests/release/Cna.Core.Tests.dll (net10.0|arm64)
+failed Cna.Core.Tests.Campaigns.CombatActualPaidAssaultContractTests.MalformedIndependentPredecessorInputsRetainSyntaxDiagnosticsBeforeReplay(roundLedger: True, code: 1) (150ms)
+  from /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/artifacts/bin/Cna.Core.Tests/release/Cna.Core.Tests.dll (net10.0|arm64)
+  Assert.Equal() Failure: Strings differ
+                       ↓ (pos 10)
+  Expected: "CMB-APA-001"
+  Actual:   "CMB-APA-004"
+                       ↑ (pos 10)
+    at Cna.Core.Tests.Campaigns.CombatActualPaidAssaultContractTests.Reject(Int32 code, Action action) in /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/tests/Cna.Core.Tests/Campaigns/CombatActualPaidAssaultContractTests.cs:362
+    at Cna.Core.Tests.Campaigns.CombatActualPaidAssaultContractTests.<>c__DisplayClass17_0.<MalformedIndependentPredecessorInputsRetainSyntaxDiagnosticsBeforeReplay>g__AssertEntryPoints|1(Int32 expected, Func`2 dependencies) in /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/tests/Cna.Core.Tests/Campaigns/CombatActualPaidAssaultContractTests.cs:334
+    at Cna.Core.Tests.Campaigns.CombatActualPaidAssaultContractTests.MalformedIndependentPredecessorInputsRetainSyntaxDiagnosticsBeforeReplay(Boolean roundLedger, Int32 code) in /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/tests/Cna.Core.Tests/Campaigns/CombatActualPaidAssaultContractTests.cs:331
+    at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+    at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+failed Cna.Core.Tests.Campaigns.CombatActualPaidAssaultContractTests.MalformedIndependentPredecessorInputsRetainSyntaxDiagnosticsBeforeReplay(roundLedger: True, code: 2) (53ms)
+  from /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/artifacts/bin/Cna.Core.Tests/release/Cna.Core.Tests.dll (net10.0|arm64)
+  Assert.Equal() Failure: Strings differ
+                       ↓ (pos 10)
+  Expected: "CMB-APA-002"
+  Actual:   "CMB-APA-004"
+                       ↑ (pos 10)
+    at Cna.Core.Tests.Campaigns.CombatActualPaidAssaultContractTests.Reject(Int32 code, Action action) in /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/tests/Cna.Core.Tests/Campaigns/CombatActualPaidAssaultContractTests.cs:362
+    at Cna.Core.Tests.Campaigns.CombatActualPaidAssaultContractTests.<>c__DisplayClass17_0.<MalformedIndependentPredecessorInputsRetainSyntaxDiagnosticsBeforeReplay>g__AssertEntryPoints|1(Int32 expected, Func`2 dependencies) in /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/tests/Cna.Core.Tests/Campaigns/CombatActualPaidAssaultContractTests.cs:334
+    at Cna.Core.Tests.Campaigns.CombatActualPaidAssaultContractTests.MalformedIndependentPredecessorInputsRetainSyntaxDiagnosticsBeforeReplay(Boolean roundLedger, Int32 code) in /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/tests/Cna.Core.Tests/Campaigns/CombatActualPaidAssaultContractTests.cs:331
+    at InvokeStub_CombatActualPaidAssaultContractTests.MalformedIndependentPredecessorInputsRetainSyntaxDiagnosticsBeforeReplay(Object, Span`1)
+    at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+failed Cna.Core.Tests.Campaigns.CombatActualPaidAssaultContractTests.MalformedIndependentPredecessorInputsRetainSyntaxDiagnosticsBeforeReplay(roundLedger: False, code: 1) (60ms)
+  from /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/artifacts/bin/Cna.Core.Tests/release/Cna.Core.Tests.dll (net10.0|arm64)
+  Assert.Equal() Failure: Strings differ
+                       ↓ (pos 10)
+  Expected: "CMB-APA-001"
+  Actual:   "CMB-APA-004"
+                       ↑ (pos 10)
+    at Cna.Core.Tests.Campaigns.CombatActualPaidAssaultContractTests.Reject(Int32 code, Action action) in /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/tests/Cna.Core.Tests/Campaigns/CombatActualPaidAssaultContractTests.cs:362
+    at Cna.Core.Tests.Campaigns.CombatActualPaidAssaultContractTests.<>c__DisplayClass17_0.<MalformedIndependentPredecessorInputsRetainSyntaxDiagnosticsBeforeReplay>g__AssertEntryPoints|1(Int32 expected, Func`2 dependencies) in /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/tests/Cna.Core.Tests/Campaigns/CombatActualPaidAssaultContractTests.cs:334
+    at Cna.Core.Tests.Campaigns.CombatActualPaidAssaultContractTests.MalformedIndependentPredecessorInputsRetainSyntaxDiagnosticsBeforeReplay(Boolean roundLedger, Int32 code) in /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/tests/Cna.Core.Tests/Campaigns/CombatActualPaidAssaultContractTests.cs:331
+    at InvokeStub_CombatActualPaidAssaultContractTests.MalformedIndependentPredecessorInputsRetainSyntaxDiagnosticsBeforeReplay(Object, Span`1)
+    at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+failed Cna.Core.Tests.Campaigns.CombatActualPaidAssaultContractTests.MalformedIndependentPredecessorInputsRetainSyntaxDiagnosticsBeforeReplay(roundLedger: False, code: 2) (54ms)
+  from /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/artifacts/bin/Cna.Core.Tests/release/Cna.Core.Tests.dll (net10.0|arm64)
+  Assert.Equal() Failure: Strings differ
+                       ↓ (pos 10)
+  Expected: "CMB-APA-002"
+  Actual:   "CMB-APA-004"
+                       ↑ (pos 10)
+    at Cna.Core.Tests.Campaigns.CombatActualPaidAssaultContractTests.Reject(Int32 code, Action action) in /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/tests/Cna.Core.Tests/Campaigns/CombatActualPaidAssaultContractTests.cs:362
+    at Cna.Core.Tests.Campaigns.CombatActualPaidAssaultContractTests.<>c__DisplayClass17_0.<MalformedIndependentPredecessorInputsRetainSyntaxDiagnosticsBeforeReplay>g__AssertEntryPoints|1(Int32 expected, Func`2 dependencies) in /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/tests/Cna.Core.Tests/Campaigns/CombatActualPaidAssaultContractTests.cs:334
+    at Cna.Core.Tests.Campaigns.CombatActualPaidAssaultContractTests.MalformedIndependentPredecessorInputsRetainSyntaxDiagnosticsBeforeReplay(Boolean roundLedger, Int32 code) in /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/tests/Cna.Core.Tests/Campaigns/CombatActualPaidAssaultContractTests.cs:331
+    at InvokeStub_CombatActualPaidAssaultContractTests.MalformedIndependentPredecessorInputsRetainSyntaxDiagnosticsBeforeReplay(Object, Span`1)
+    at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+failed Cna.Core.Tests.Campaigns.CombatActualPaidAssaultContractTests.MalformedIndependentPredecessorInputsRetainSyntaxDiagnosticsBeforeReplay(roundLedger: True, code: 3) (164ms)
+  from /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/artifacts/bin/Cna.Core.Tests/release/Cna.Core.Tests.dll (net10.0|arm64)
+  Assert.Equal() Failure: Strings differ
+                       ↓ (pos 10)
+  Expected: "CMB-APA-003"
+  Actual:   "CMB-APA-004"
+                       ↑ (pos 10)
+    at Cna.Core.Tests.Campaigns.CombatActualPaidAssaultContractTests.Reject(Int32 code, Action action) in /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/tests/Cna.Core.Tests/Campaigns/CombatActualPaidAssaultContractTests.cs:362
+    at Cna.Core.Tests.Campaigns.CombatActualPaidAssaultContractTests.<>c__DisplayClass17_0.<MalformedIndependentPredecessorInputsRetainSyntaxDiagnosticsBeforeReplay>g__AssertEntryPoints|1(Int32 expected, Func`2 dependencies) in /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/tests/Cna.Core.Tests/Campaigns/CombatActualPaidAssaultContractTests.cs:334
+    at Cna.Core.Tests.Campaigns.CombatActualPaidAssaultContractTests.MalformedIndependentPredecessorInputsRetainSyntaxDiagnosticsBeforeReplay(Boolean roundLedger, Int32 code) in /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/tests/Cna.Core.Tests/Campaigns/CombatActualPaidAssaultContractTests.cs:331
+    at InvokeStub_CombatActualPaidAssaultContractTests.MalformedIndependentPredecessorInputsRetainSyntaxDiagnosticsBeforeReplay(Object, Span`1)
+    at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+failed Cna.Core.Tests.Campaigns.CombatActualPaidAssaultContractTests.MalformedIndependentPredecessorInputsRetainSyntaxDiagnosticsBeforeReplay(roundLedger: False, code: 3) (82ms)
+  from /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/artifacts/bin/Cna.Core.Tests/release/Cna.Core.Tests.dll (net10.0|arm64)
+  Assert.Equal() Failure: Strings differ
+                       ↓ (pos 10)
+  Expected: "CMB-APA-003"
+  Actual:   "CMB-APA-004"
+                       ↑ (pos 10)
+    at Cna.Core.Tests.Campaigns.CombatActualPaidAssaultContractTests.Reject(Int32 code, Action action) in /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/tests/Cna.Core.Tests/Campaigns/CombatActualPaidAssaultContractTests.cs:362
+    at Cna.Core.Tests.Campaigns.CombatActualPaidAssaultContractTests.<>c__DisplayClass17_0.<MalformedIndependentPredecessorInputsRetainSyntaxDiagnosticsBeforeReplay>g__AssertEntryPoints|1(Int32 expected, Func`2 dependencies) in /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/tests/Cna.Core.Tests/Campaigns/CombatActualPaidAssaultContractTests.cs:334
+    at Cna.Core.Tests.Campaigns.CombatActualPaidAssaultContractTests.MalformedIndependentPredecessorInputsRetainSyntaxDiagnosticsBeforeReplay(Boolean roundLedger, Int32 code) in /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/tests/Cna.Core.Tests/Campaigns/CombatActualPaidAssaultContractTests.cs:331
+    at InvokeStub_CombatActualPaidAssaultContractTests.MalformedIndependentPredecessorInputsRetainSyntaxDiagnosticsBeforeReplay(Object, Span`1)
+    at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+/Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/artifacts/bin/Cna.Core.Tests/release/Cna.Core.Tests.dll (net10.0|arm64) failed with 6 error(s) (1s 200ms)
+Exit code: 2
+
+Test run summary: Failed!
+  total: 6
+  failed: 6
+  succeeded: 0
+  skipped: 0
+  duration: 1s 648ms
+Test run completed with non-success exit code: 2 (see: https://aka.ms/testingplatform/exitcodes)
