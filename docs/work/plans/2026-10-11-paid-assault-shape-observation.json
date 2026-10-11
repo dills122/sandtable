@@ -1,0 +1,44 @@
+{
+  "scope": "unchanged historical mechanical World shape sizing only; not actual paid proofs",
+  "cases": [
+    {
+      "owner": "axis",
+      "firstSeal": "attacker",
+      "distinctSizeSummaries": 261,
+      "isolatedWorldShapes": 2215,
+      "elapsedSeconds": 1.208
+    },
+    {
+      "owner": "axis",
+      "firstSeal": "defender",
+      "distinctSizeSummaries": 261,
+      "isolatedWorldShapes": 2215,
+      "elapsedSeconds": 1.236
+    },
+    {
+      "owner": "commonwealth",
+      "firstSeal": "attacker",
+      "distinctSizeSummaries": 261,
+      "isolatedWorldShapes": 2215,
+      "elapsedSeconds": 1.237
+    },
+    {
+      "owner": "commonwealth",
+      "firstSeal": "defender",
+      "distinctSizeSummaries": 261,
+      "isolatedWorldShapes": 2215,
+      "elapsedSeconds": 1.225
+    }
+  ],
+  "largestOriginReferences": 1,
+  "largestRetainedWorldString": 80,
+  "admissionProofDepth": 14,
+  "isolatedWorldByteMaxima": {
+    "resolved": 6976,
+    "disposition": 7295,
+    "losses": 9344,
+    "retreat": 10080,
+    "custody": 12675,
+    "relationships": 13245
+  }
+}

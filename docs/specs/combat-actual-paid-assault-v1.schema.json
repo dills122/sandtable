@@ -1,0 +1,174 @@
+{
+  "contract": "combat-actual-paid-assault-v1",
+  "status": "author grammar and capacity freeze; external closure provisional until measured GREEN paths",
+  "objects": {
+    "PaidSource": "contractVersion:int admissionSourceCanonicalUtf8:utf8 paidEventCanonicalUtf8:utf8[]",
+    "PaidBase": "contractVersion:int admissionProof:AdmissionProof resultClockPolicyId:id",
+    "PaidCommand": "contractVersion:int kind:id baseHash:hash roundId:id expectedPriorVersion:long? commitmentId:id? decisionId:id? choice:id?",
+    "PaidInput": "command:PaidCommand actor:actor admittedAt:utc? clockAvailable:bool",
+    "PaidEvent": "contractVersion:int eventType:id author:actor campaignId:id rulesetHash:rawHash configurationHash:hash roundClockConfigurationHash:hash resultClockPolicyId:id admissionSourceHash:hash baseHash:hash cycleId:hash segmentId:id roundId:id priorVersion:long stateVersion:long priorPrefix:hash input:PaidInput effect:PaidEffect receiptId:id",
+    "PaidControl": "contractVersion:int baseHash:hash roundClockConfigurationHash:hash resultClockPolicyId:id stateVersion:long prefix:hash status:id commitmentId:id? result:AssaultResult? settlementId:id? window:ChoiceWindow? acceptedHighWater:utc world:World randomState:Random attackHistory:AttackHistory[] targetUses:TargetUse[] roundClosureReceiptId:id? caCompletionReceiptId:id? receipts:PaidReceipt[] closed:bool",
+    "PaidReceipt": "commandHash:hash eventHash:hash receiptId:id actor:actor stateVersion:long",
+    "PaidProof": "contractVersion:int sourceId:id sourceHash:hash base:PaidBase control:PaidControl",
+    "CommitEffect": "kind:id commitmentId:id allocations:Allocation[] costs:Cost[] preResultRandomState:Random",
+    "Cost": "unit:UnitKey beforeCp:int afterCp:int beforeAmmo:int afterAmmo:int",
+    "AttackHistory": "commitmentId:id cycleId:hash segmentId:id attacker:UnitKey defender:UnitKey targetLocationId:id gameTurn:int operationStage:int",
+    "TargetUse": "commitmentId:id segmentId:id targetLocationId:id",
+    "Draw": "purpose:id beforeCursor:ulong afterCursor:ulong die:int consumed:byte[]",
+    "AssaultResult": "resultId:id commitmentId:id rulesInputHash:hash procedureId:id beforeRandomState:Random afterRandomState:Random draws:Draw[] attackerMoraleCoordinate:int defenderMoraleCoordinate:int attackerMorale:adjustment defenderMorale:adjustment basicDifferential:int facts:Result",
+    "ChoiceWindow": "decisionId:id kind:id owner:side timing:Timing",
+    "ResolveEffect": "kind:id result:AssaultResult settlementId:id",
+    "WindowEffect": "kind:id window:ChoiceWindow",
+    "DispositionEffect": "kind:id reason:id timing:Timing? payload:Disposition",
+    "LossEffect": "kind:id payload:Losses",
+    "RetreatEffect": "kind:id payload:Retreat",
+    "CustodyEffect": "kind:id reason:id timing:Timing? payload:Custody",
+    "RelationsEffect": "kind:id payload:RelationsReceipt",
+    "CloseEffect": "kind:id settlementId:id proofReceipts:id[]",
+    "CaEffect": "kind:id fromPositionId:id toPositionId:id previousStepReceiptId:id roundClosureReceiptId:id",
+    "World": "contractVersion:int creationBinding:id elements:Element[] representations:Representation[] brokenVehicleLots:LegacyBrokenVehicleLot[] cohesionCauses:Cause[] relationships:Relationship[] custodyLots:Lot[] guards:Guard[] replacementEntitlements:Entitlement[] futureObligations:Obligation[] settlements:Settlement[]",
+    "Cause": "causeId:id ordinal:int receiptId:id elementId:id gameTurn:int operationStage:int kind:string points:int before:int after:int",
+    "Relationship": "relationId:id creationReceiptId:id kind:string attacker:UnitKey defender:UnitKey gameTurn:int operationStage:int active:bool endedByReceiptId:id? endingCause:string?",
+    "Lot": "lotId:id lossReceiptId:id originalComponent:ComponentKey captor:UnitKey quantity:int originLocationId:id currentLocationId:id? status:string guardId:id? escapeReceiptId:id?",
+    "Guard": "guardId:id formationReceiptId:id lotId:id originComponent:ComponentKey currentLocationId:id toe:int baseCapabilityPointAllowance:int offensiveCloseAssaultRating:int defensiveCloseAssaultRating:int operationalState:Operational ammunition:Ammunition readiness:Readiness",
+    "Entitlement": "entitlementId:id escapeReceiptId:id lotId:id originalComponent:ComponentKey quantity:int reunionLocationId:id earnedScope:Scope delayOperationStages:int eligibleScope:FutureScope status:string",
+    "Obligation": "obligationId:id receiptId:id kind:string subjectId:id earnedScope:Scope eligibleScope:FutureScope? activationGate:string status:string",
+    "Result": "differential:differential attackerCoordinate:int defenderCoordinate:int captureDie:int? attackerPercent:int defenderPercent:int rawEngaged:bool requiredRetreat:int capturedRole:string? captureShare:int",
+    "Disposition": "receiptId:id predecessorReceiptId:id kind:string requiredDistance:int plannedDistance:int unfulfilledDistance:int route:Route",
+    "RoleLoss": "role:string component:ComponentKey committedToe:int tablePercent:int refusalPercent:int lossToe:int capturedToe:int otherLossToe:int remainingToe:int lossDp:int",
+    "Losses": "receiptId:id predecessorReceiptId:id roles:RoleLoss[]",
+    "Retreat": "receiptId:id predecessorReceiptId:id kind:string route:Route completedDistance:int beforeCp:Cp afterCp:Cp excessCpDp:int attackerVictoryRp:int",
+    "Custody": "receiptId:id predecessorReceiptId:id lotId:id kind:string route:Route guardId:id? entitlementId:id? donorToeBefore:int donorToeAfter:int",
+    "RelationsReceipt": "receiptId:id predecessorReceiptId:id relationshipId:id? kind:string?",
+    "Settlement": "settlementId:id commitmentId:id resultId:id gameTurn:int operationStage:int attacker:UnitKey defender:UnitKey preLossElements:Element[] result:Result disposition:Disposition? losses:Losses? retreat:Retreat? custody:Custody? relationships:RelationsReceipt?",
+    "CommitmentPreimage": "baseHash:hash priorVersion:long priorPrefix:hash roundId:id allocations:Allocation[] costs:Cost[] preResultRandomState:Random"
+  },
+  "effectTags": {
+    "attack-committed": "CommitEffect",
+    "assault-resolved": "ResolveEffect",
+    "choice-opened": "WindowEffect",
+    "disposition-recorded": "DispositionEffect",
+    "losses-settled": "LossEffect",
+    "retreat-settled": "RetreatEffect",
+    "custody-settled": "CustodyEffect",
+    "relationships-settled": "RelationsEffect",
+    "round-closed": "CloseEffect",
+    "ca-completed": "CaEffect"
+  },
+  "domains": {
+    "source": "sandtable.combat.actual-paid-assault.source.v1",
+    "base": "sandtable.combat.actual-paid-assault.base.v1",
+    "commitment": "sandtable.combat.actual-paid-assault.commitment.v1",
+    "receipt": "sandtable.combat.actual-paid-assault.receipt.v1"
+  },
+  "embeddedDomains": {
+    "result": "sandtable.combat.assault-result.v2",
+    "settlement": "sandtable.combat.settlement.v2"
+  },
+  "commands": [
+    "commit",
+    "resolve",
+    "advance",
+    "choose",
+    "expire",
+    "unavailable"
+  ],
+  "externalAcquisition": {
+    "admission": "verify-combat-actual-assault-v1.py",
+    "resultGrammar": "combat-result-settlement-v2.schema.json"
+  },
+  "boundsStatus": "structural dominating bounds from complete immediate handler graph; confirm implementation sensitivity before literals",
+  "runtimeSourceHashes": {},
+  "testSourceHashes": {},
+  "resultClockPolicyId": "sandtable.combat.mandatory-window-clock.v2",
+  "limits": {
+    "sourceBytes": 4194304,
+    "proofBytes": 2097152,
+    "controlBytes": 262144,
+    "eventBytes": 32768,
+    "inputBytes": 1024,
+    "paidLedgerBytes": 16384,
+    "depth": 34,
+    "inheritedDepth": 32,
+    "acceptedEvents": 11,
+    "acceptedReceipts": 11,
+    "draws": 9,
+    "consumedBytesPerDraw": 512,
+    "routes": 9,
+    "stringCharacters": 256,
+    "idCharacters": 128,
+    "ordinaryArrayItems": 512
+  },
+  "arrayBounds": {
+    "CommitEffect.allocations": 2,
+    "CommitEffect.costs": 2,
+    "AssaultResult.draws": 9,
+    "Draw.consumed": 512,
+    "CloseEffect.proofReceipts": 5,
+    "PaidControl.attackHistory": 1,
+    "PaidControl.targetUses": 1,
+    "PaidControl.receipts": 11,
+    "World.elements": 2,
+    "World.representations": 2,
+    "World.brokenVehicleLots": 0,
+    "World.cohesionCauses": 4,
+    "World.relationships": 1,
+    "World.custodyLots": 1,
+    "World.guards": 1,
+    "World.replacementEntitlements": 1,
+    "World.futureObligations": 1,
+    "World.settlements": 1,
+    "Settlement.preLossElements": 2,
+    "Losses.roles": 2,
+    "Element.components": 1,
+    "Origin.references": 16,
+    "Representation.boundElementIds": 1,
+    "CommitmentPreimage.allocations": 2,
+    "CommitmentPreimage.costs": 2
+  },
+  "versionRules": {
+    "PaidSource": {
+      "contractVersion": 1
+    },
+    "PaidBase": {
+      "contractVersion": 1
+    },
+    "PaidCommand": {
+      "contractVersion": 1
+    },
+    "PaidEvent": {
+      "contractVersion": 1
+    },
+    "PaidControl": {
+      "contractVersion": 1
+    },
+    "PaidProof": {
+      "contractVersion": 1
+    },
+    "World": {
+      "contractVersion": 7
+    }
+  },
+  "supportHandlers": [
+    "commit",
+    "resolve",
+    "disposition",
+    "losses",
+    "retreat",
+    "custody-guard",
+    "custody-escape",
+    "relationships",
+    "round-close",
+    "ca-complete",
+    "retreat-window",
+    "custody-window",
+    "owner-choice",
+    "expiry",
+    "controller-unavailable",
+    "opening-fallback",
+    "choice-clock-fallback",
+    "retry",
+    "stale-timer"
+  ],
+  "closureStatus": "candidate62 runtime plus test-onlyAADfixture; final cold/warm/all-path trace mandatory before literals or public paid proof acceptance"
+}
