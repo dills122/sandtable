@@ -2465,3 +2465,13 @@ supplement generic leaf rejection. No pinned predecessor,59/1 closure or golden 
 Prior head0f6becc passed all13 CI checks and2770 exact Release rows; that result supports
 the prior head. Corrected target verification and fresh review2/9 (round1 pass2) remain
 required. Recovery0/2 and all broader exclusions/unwaived failures remain unchanged.
+
+Implementation review2/9 atddddbb57 returned Not ready for a remaining bounded P2 in inherited
+LifecycleFlow union diagnostics. Brain accepted the correction: owned recursive dispatch and
+exhaustive declared-alternative/public-readback/precedence coverage, with an audit of every
+reachable special delegate. Original PE namespace, signed domains, closed/null/empty shapes,
+all60 physical pins and four fixture literals remain unchanged. Reviewed headddddbb57 CI
+passed13 checks and2770/2770 exact Release rows, SDK10.0.401 attempt1 on merge84a52342;
+that receipt is historical for a later correction head. Fresh correction gates and Brain review3/9
+(round1 pass3, recovery0/2) are mandatory. If pass3 is Not ready, stop downstream for Brain
+recovery; do not reset counts. No full paid/native/public/loop closure follows.

@@ -1,6 +1,6 @@
 # Fresh Review Bootstrap
 
-Review instance: 2 of 9, round1 pass2. Research scope review is a separate completed1/9; implementation review1 returned Not ready and its verbatim report/disposition are retained. Recovery counter0/2. Brain dispatches the clean reviewer and owns merge.
+Review instance: 3 of 9, round1 pass3. Research scope review is a separate completed1/9; implementation reviews1 and2 returned Not ready and its verbatim report/disposition are retained. Recovery counter0/2. Brain dispatches the clean reviewer and owns merge.
 
 ## Review Objective
 
@@ -12,7 +12,7 @@ Repository dills122/sandtable. Author checkout /Users/dsteele/.codex/worktrees/c
 
 ## Base, Head, Branch, And Dirty State
 
-Base94cf23883978f7fd9726f4bdd4f63677c6af6a9f, merged PR169. Branch codex/actual-assault-contract. Draft PR172 https://github.com/dills122/sandtable/pull/172. Earlier planning checkpoint38b223eff9ff0adcaa6e095e12bf0f6aa2405dff and reviewed head0f6becc712b592b988dae1891eb963820d86b9bb are historical. The correction delta starts at0f6becc; overall PR base remains94cf238. Inspect the refreshed five-primary hash boundary before review. Exact review boundary is the five-primary SHA256 map in 2026-10-10-actual-assault-admission-evidence.json. The publication commit mapping that boundary is supplied in the Brain dispatch and PR. Verify all five hashes; the earlier planning head is not the implementation target. Preserve the pre-existing excluded untracked .serena/ directory; no other dirty or untracked path is implicitly included.
+Base94cf23883978f7fd9726f4bdd4f63677c6af6a9f, merged PR169. Branch codex/actual-assault-contract. Draft PR172 https://github.com/dills122/sandtable/pull/172. Earlier planning checkpoint38b223eff9ff0adcaa6e095e12bf0f6aa2405dff and reviewed head0f6becc712b592b988dae1891eb963820d86b9bb are historical. The current correction delta starts atddddbb57; review2 targetddddbb57 is historical; overall PR base remains94cf238. Inspect the refreshed five-primary hash boundary before review. Exact review boundary is the five-primary SHA256 map in 2026-10-10-actual-assault-admission-evidence.json. The publication commit mapping that boundary is supplied in the Brain dispatch and PR. Verify all five hashes; the earlier planning head is not the implementation target. Preserve the pre-existing excluded untracked .serena/ directory; no other dirty or untracked path is implicitly included.
 
 ## In-Scope Commits And Paths
 
@@ -34,6 +34,8 @@ The refreshed manifest distinguishes current correction boundary/mechanics/full-
 
 After recording the blind preliminary ledger, read docs/work/reviews/2026-10-10-actual-assault-admission-author.md and reconcile its claims against inspected code, plan and test evidence. The evidence manifest is neutral verification data; the author packet contains intent and rationale.
 
-Use $independent-review in reviewer mode. This is review instance2 of9. Work from the Fresh Review Bootstrap first and record a preliminary review before reading the Author Explanation. Then verify the explanation against the repository, review both the implementation and its plan, run proportionate non-mutating checks, and return an evidence-backed verdict. Do not implement fixes, create further review instances, or split the work into new workstreams.
+Use $independent-review in reviewer mode. This is review instance3 of9. Work from the Fresh Review Bootstrap first and record a preliminary review before reading the Author Explanation. Then verify the explanation against the repository, review both the implementation and its plan, run proportionate non-mutating checks, and return an evidence-backed verdict. Do not implement fixes, create further review instances, or split the work into new workstreams.
 
 Retained independent review1 is docs/work/reviews/2026-10-10-actual-assault-admission-review-1.md (verbatim). Its author response is separate in review-1-response.md; defer that author testimony until the blind preliminary ledger. Inspect current diagnostics against the full declared inherited grammar, original per-type versions and integer domains. No other requirement is waived.
+
+Review2 is retained verbatim in docs/work/reviews/2026-10-10-actual-assault-admission-review-2.md; separate review-2-response.md is author testimony to defer until blind preliminary findings. Counter2/9 completed; recovery0/2. This is pass3; a further Not ready stops downstream for Brain high recovery before rework. Assess full declared reachable alternatives/special delegates, including descendants absent from the baseline. New correction CI is pending; prior ddddbb CI is historical.

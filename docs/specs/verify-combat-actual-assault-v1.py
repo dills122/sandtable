@@ -52,6 +52,11 @@ SCHEMA={k:[tuple(x.split(':')) for x in v.split()] for k,v in INVENTORY['objects
 RECORD_SCHEMA={k:[tuple(x.split(':')) for x in v.split()] for k,v in INVENTORY['catalogue'].items()}
 GRAMMAR=are.SCHEMA|SCHEMA|RECORD_SCHEMA
 VERSION_RULES=INVENTORY['versions']
+UNIONS={'RoundEffect':are.INVENTORY['effectTags'],'Effect':are.selection.TAGS,
+        **are.selection.pe.lc.INVENTORY['unions']}
+ATOMIC={'id','hash','rawHash','locator','text','string','side','bool','int','long','ulong',
+        'utc','futureTurn','adjustment','differential','die','role','actor','utf8','null','empty',
+        'OrderedLocations','Route','LegacyBrokenVehicleLot'}
 FLAGS=('paidAdmissionEnabled','nativeSettlementCertified','authenticSettlementCertified')
 KINDS={'morale':'MoraleRow','assault-cell':'AssaultCell','capture-refusal':'VariantRow'}
 
@@ -62,11 +67,11 @@ def typed(value,kind,path='',depth=0,legacy=False):
     grammar=are.selection.pe.SCHEMA if legacy else GRAMMAR
     if kind.endswith('?'):
         if value is not None: typed(value,kind[:-1],path,depth,legacy)
-    elif kind in ('RoundEffect','Effect'):
-        tags=are.INVENTORY['effectTags'] if kind=='RoundEffect' else are.selection.TAGS
+    elif kind in UNIONS:
+        tags=UNIONS[kind]
         require(type(value) is dict and type(value.get('kind')) is str,1,path)
         require(value['kind'] in tags,3,path)
-        typed(value,tags[value['kind']],path,depth)
+        typed(value,tags[value['kind']],path,depth,legacy or kind in are.selection.pe.lc.INVENTORY['unions'])
     elif kind in grammar:
         fields=grammar[kind]
         require(type(value) is dict and set(value)=={k for k,_ in fields},1,path)
@@ -80,6 +85,15 @@ def typed(value,kind,path='',depth=0,legacy=False):
     elif kind.endswith('[]'):
         require(type(value) is list and len(value)<=512,1,path)
         for index,child in enumerate(value):typed(child,kind[:-2],f'{path}/{index}',depth+1,legacy)
+    elif kind=='OrderedLocations':
+        require(type(value) is list and 2<=len(value)<=33,1,path)
+        for index,child in enumerate(value):typed(child,'id',f'{path}/{index}',depth+1,legacy)
+    elif kind in ('LegacyBrokenVehicleLot','Route'):
+        require(False,1,path)
+    elif kind in ('null','empty'):
+        require(value is None if kind=='null' else type(value) is list and not value,1,path)
+    elif kind=='actor':
+        require(type(value) is str,1,path);require(value in ('axis','commonwealth','system'),2,path)
     elif kind in ('int','long','ulong','utc','futureTurn'):
         bounds={'int':(-2**31 if legacy else 0,2**31-1),
                 'long':(-2**63 if legacy else 0,2**63-1),'ulong':(0,2**64-1),
@@ -92,7 +106,9 @@ def typed(value,kind,path='',depth=0,legacy=False):
         try:
             if legacy and kind in ('id','hash','rawHash','locator','text','string','side','bool'):
                 are.selection.env.typed(value,kind,path,depth)
-            elif legacy:are.selection.pe.typed(value,kind,depth)
+            elif legacy:
+                require(kind=='utf8',1,path)
+                require(type(value) is str and 0<len(value)<=MAX_BYTES and value.isascii(),1,path)
             else:are.typed(value,kind,path,depth)
         except ValueError as error:
             code=int(error.code[-3:]) if hasattr(error,'code') else 1
@@ -325,11 +341,14 @@ def grammar_nodes(value,kind,path=(),legacy=False):
     if value is None:return
     if kind.endswith('[]'):
         for index,child in enumerate(value):yield from grammar_nodes(child,kind[:-2],path+(index,),legacy)
+    elif kind in UNIONS:
+        yield from grammar_nodes(value,UNIONS[kind][value['kind']],path,legacy or kind in are.selection.pe.lc.INVENTORY['unions'])
     elif kind in grammar:
         for key,child in grammar[kind]:yield from grammar_nodes(value[key],child,path+(key,),legacy)
 
 
 def claim_boundary_tests():
+    union_boundary_tests()
     global dependency_bytes
     counts=dict(version=0,integer=0,public=0,overlays=0,dependency=0);types=set()
     bounds={'int':(0,2**31-1),'long':(0,2**63-1),'signed-int':(-2**31,2**31-1),
@@ -380,6 +399,121 @@ def claim_boundary_tests():
             assert rejected(lambda:read_proof(data,*args),9).path==target;counts['dependency']+=1
         finally:dependency_bytes=original_reader
     print('PASS: systematic exact-code inherited/owned claim and ledger boundaries;',counts,'version types=',sorted(types),flush=True)
+
+
+
+def declared_grammar():
+    """Audit all declared alternatives, even absent/null/empty baseline descendants."""
+    seen=set();unions=set();leaves=set()
+    def walk(kind,legacy=False):
+        kind=kind.rstrip('?')
+        if kind.endswith('[]'):kind=kind[:-2]
+        legacy=legacy or (kind in are.selection.pe.SCHEMA and kind not in are.OWN_SCHEMA
+                         and kind not in are.selection.OWN_SCHEMA and kind not in SCHEMA and kind not in RECORD_SCHEMA)
+        if (kind,legacy) in seen:return
+        seen.add((kind,legacy));grammar=are.selection.pe.SCHEMA if legacy else GRAMMAR
+        if kind in UNIONS:
+            unions.add(kind)
+            for child in UNIONS[kind].values():walk(child,legacy or kind in are.selection.pe.lc.INVENTORY['unions'])
+        elif kind in grammar:
+            for _,child in grammar[kind]:walk(child,legacy)
+        else:leaves.add(kind)
+    for kind in ('AdmissionProof','AdmissionSource','Input','RoundInput',*RECORD_SCHEMA):walk(kind)
+    assert leaves<=ATOMIC,('Unhandled declared grammar delegate',leaves-ATOMIC)
+    assert unions=={'LifecycleFlow'},unions
+    return unions,leaves
+
+
+def union_boundary_tests():
+    global dependency_bytes
+    unions,leaves=declared_grammar();counts=dict(arms=0,numeric=0,endpoints=0,primitive=0,public=0,tags=0,overlays=0,dependency=0)
+    for valid in (['x','y'],['x']*33):typed(valid,'OrderedLocations',legacy=True)
+    for invalid,code in ((None,1),(['x'],1),(['x']*34,1),(['x',''],2),(['x',0],1)):
+        rejected(lambda invalid=invalid:typed(invalid,'OrderedLocations',legacy=True),code)
+    for kind,valid,invalid in (('null',None,False),('empty',[],[None]),('utf8','x','é')):
+        typed(valid,kind,legacy=True)
+        rejected(lambda kind=kind,invalid=invalid:typed(invalid,kind,legacy=True),1)
+    for kind in ('Route','LegacyBrokenVehicleLot'):
+        for invalid in (None,[],{},'x'):
+            rejected(lambda kind=kind,invalid=invalid:typed(invalid,kind,legacy=True),1)
+    for actor in ('axis','commonwealth','system'):typed(actor,'actor',legacy=True)
+    rejected(lambda:typed('foreign','actor',legacy=True),2)
+    rejected(lambda:typed(True,'actor',legacy=True),1)
+
+    samples={'id':'x','hash':'sha256:'+'0'*64,'rawHash':'0'*64,'side':'axis','actor':'axis',
+             'role':'attacker','string':'x','text':'x','locator':'x','bool':False,'utf8':'x',
+             'int':1,'long':1,'ulong':1,'utc':1,'futureTurn':1,'adjustment':0,'differential':0,'die':1,
+             'null':None,'empty':[],'OrderedLocations':['x','y']}
+    def sample(kind,legacy=False):
+        if kind.endswith('?'):return None
+        if kind.endswith('[]'):return []
+        legacy=legacy or (kind in are.selection.pe.SCHEMA and kind not in are.OWN_SCHEMA
+                         and kind not in are.selection.OWN_SCHEMA and kind not in SCHEMA and kind not in RECORD_SCHEMA)
+        grammar=are.selection.pe.SCHEMA if legacy else GRAMMAR
+        if kind in UNIONS:
+            tag,arm=next(iter(UNIONS[kind].items()));value=sample(arm,legacy or kind in are.selection.pe.lc.INVENTORY['unions']);value['kind']=tag;return value
+        if kind in grammar:
+            value={key:sample(child,legacy) for key,child in grammar[kind]}
+            value.update(VERSION_RULES.get(kind,{}));return value
+        return copy.deepcopy(samples[kind])
+    bounds={'int':(0,2**31-1),'long':(0,2**63-1),'signed-int':(-2**31,2**31-1),
+            'signed-long':(-2**63,2**63-1),'ulong':(0,2**64-1),'utc':(0,are.MAX_UTC),'futureTurn':(1,115)}
+    args=case_args(original_cases()[0]);baseline=proof(*args);covered=set()
+    for kind,path,value in list(grammar_nodes(baseline,'AdmissionProof')):
+        if kind not in unions:continue
+        legacy=kind in are.selection.pe.lc.INVENTORY['unions']
+        for tag,arm in UNIONS[kind].items():
+            alternative=sample(arm,legacy);alternative['kind']=tag
+            changed=replace_leaf(baseline,path,alternative);data=raw(changed,'AdmissionProof')
+            assert parse(data,'AdmissionProof')==changed
+            if changed==baseline:assert read_proof(data,*args)==baseline
+            else:rejected(lambda data=data:read_proof(data,*args),6)
+            rejected(lambda data=data:read_proof(b' '+data,*args),8);counts['overlays']+=1
+            counts['arms']+=1;covered.add((kind,tag))
+            for child,subpath,number in grammar_nodes(alternative,arm,legacy=legacy):
+                if child not in bounds:
+                    if not subpath or subpath[-1]=='kind':continue
+                    if child.endswith('[]'):replacement=None;code=1
+                    elif child in ('id','hash','rawHash','side','string','locator'):replacement='';code=2
+                    elif child=='empty':replacement=[None];code=1
+                    elif child=='null':replacement=False;code=1
+                    elif child=='bool':replacement=0;code=1
+                    else:continue
+                    malformed=replace_leaf(changed,path+subpath,replacement);encoded=encode(malformed)
+                    rejected(lambda encoded=encoded:parse(encoded,'AdmissionProof'),code)
+                    rejected(lambda encoded=encoded:read_proof(b' '+encoded,*args),code);counts['primitive']+=1
+                    continue
+                lo,hi=bounds[child]
+                for endpoint in (lo,hi):
+                    shaped=replace_leaf(changed,path+subpath,endpoint);encoded=raw(shaped,'AdmissionProof')
+                    assert parse(encoded,'AdmissionProof')==shaped
+                    rejected(lambda encoded=encoded:read_proof(encoded,*args),6);counts['endpoints']+=1
+                for replacement,code in ((lo-1,2),(hi+1,2),(True,1),(1.0,1)):
+                    malformed=replace_leaf(changed,path+subpath,replacement);encoded=encode(malformed)
+                    rejected(lambda encoded=encoded:parse(encoded,'AdmissionProof'),code)
+                    rejected(lambda encoded=encoded:read_proof(b' '+encoded,*args),code)
+                    counts['numeric']+=1;counts['public']+=1
+                malformed=replace_leaf(changed,path+subpath,hi+1);malformed['unknown']=None
+                rejected(lambda malformed=malformed:read_proof(encode(malformed),*args),1);counts['overlays']+=1
+                rejected(lambda encoded=encoded:read_proof(encoded,args[0],[],args[2],[]),4);counts['overlays']+=1
+                original_reader=dependency_bytes;target=next(iter(DEPENDENCIES))
+                def missing(dependency):
+                    if dependency==target:raise FileNotFoundError(dependency)
+                    return original_reader(dependency)
+                try:
+                    dependency_bytes=missing
+                    rejected(lambda encoded=encoded:read_proof(b' '+encoded,*args),9);counts['dependency']+=1
+                finally:dependency_bytes=original_reader
+            for replacement,code in (('bogus',3),(True,1),(None,1)):
+                malformed=replace_leaf(changed,path+('kind',),replacement);encoded=encode(malformed)
+                rejected(lambda encoded=encoded:parse(encoded,'AdmissionProof'),code)
+                rejected(lambda encoded=encoded:read_proof(b' '+encoded,*args),code);counts['tags']+=1
+            malformed=copy.deepcopy(changed);node=malformed
+            for key in path:node=node[key]
+            node['unknown']=None
+            rejected(lambda malformed=malformed:read_proof(encode(malformed),*args),1);counts['overlays']+=1
+    assert covered=={(kind,tag) for kind in unions for tag in UNIONS[kind]},(covered,unions)
+    print('PASS: exhaustive declared union alternatives and special-delegate audit;',counts,'leaves=',sorted(leaves),flush=True)
 
 
 def admission_tests():

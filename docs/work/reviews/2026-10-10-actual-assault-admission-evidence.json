@@ -1,36 +1,69 @@
 {
-  "boundary": "Immutable five-primary correction working-tree map; exact publication head supplied in Brain dispatch. No self-referential commit hash.",
   "base": "94cf23883978f7fd9726f4bdd4f63677c6af6a9f",
-  "prior_reviewed_head": "0f6becc712b592b988dae1891eb963820d86b9bb",
+  "unchanged_predecessor_sha256": {
+    "src/Cna.Core/Campaigns/CampaignCombatActualRoundEntry.cs": "00f30d4abd24598ebea9e12319aef6ba7c7285e64565ed9eff76ac37f4d04fcf",
+    "src/Cna.Core/Campaigns/CampaignCombatActualRoundEntryCodec.cs": "e224bb57183b1b0febf9b90a297744e9ce99cf3b4124ce5d320eb3fb60e48065",
+    "tests/Cna.Core.Tests/Campaigns/CombatActualRoundEntryTests.cs": "bd353386516b9c6456f2b014aaa2c88382d9ece4242d656bb8019ae951461c2c",
+    "tests/Cna.Core.Tests/Cna.Core.Tests.csproj": "1efe76cc11e66d5074a40025e73279570775104697ef93e89b7cd3ca88ae9aeb",
+    "docs/specs/combat-actual-round-entry-v1.md": "ed4fd69b4f599acae7c4850270557363a546df36d0b984107c50c08c29304548",
+    "docs/specs/combat-actual-round-entry-v1.schema.json": "677b1c671bebe5f23cf4b80f03078c55000c60e45416701757e2552cbd05edb8",
+    "docs/specs/fixtures/combat-actual-round-entry-v1.json": "fc17cda07618bdd539a56b8c296037bbf36f37c6eb2ce6258c2b789b765f640b",
+    "docs/specs/verify-combat-actual-round-entry-v1.py": "2596531cb50ddbae7f1e606284f3d845b224d4f1fc10f478b717843d1062990c"
+  },
+  "unchanged_planning_inputs": {
+    "docs/work/plans/2026-10-10-actual-assault-contract-freeze.md": "270c23d1f218d80b2e2f21ae5bc2a53f9205412c173a6ff2b6c3b18c24f95e3d",
+    "docs/work/plans/2026-10-10-actual-assault-contract-consumption.json": "40b99259791bed5f28af4cf98cffb5578dc5599bed76bc38af53cc7bcbcf3d10"
+  },
+  "scope_research": {
+    "note_path": "/Users/dsteele/.codex/worktrees/combat-actual-bridge-research/sandtable/docs/research/2026-10-10-actual-assault-no-cost-scope-decision.md",
+    "note_sha256": "bf250892e3cd2a6a8b381d12e2b58d3af3ad18ae12df1169c70cb6a47e25eed1",
+    "review_path": "/private/tmp/actual-assault-no-cost-scope-decision/independent-review-1.md",
+    "review_sha256": "ab276bfe5edcbc8f4171a3ad7af1dcfaeda905ef5a72128ffb2bb7e9e915877b"
+  },
+  "unwaived": [
+    "Breakdown LandSequence pin failure",
+    "cycle-sequence LandSequence pin failure",
+    "inherited Snapshot LandSequence pin failure",
+    "outward composition rejection/accepted Content drift",
+    "original native ExerciseRunner aggregation failure cause unexplained"
+  ],
+  "independent_review_1": {
+    "path": "/Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/docs/work/reviews/2026-10-10-actual-assault-admission-review-1.md",
+    "sha256": "d594be4885b6c9dcbcf75a27bb0fa49c67c555ccb4b4acfded1cd8cf06026b17",
+    "verdict": "Not ready",
+    "disposition": "Accept bounded P2; corrected diagnostics; fresh reviewer2 required"
+  },
+  "boundary": "Immutable five-primary correction map; exact publication head in Brain dispatch; no self-referential commit hash.",
+  "prior_reviewed_head": "ddddbb57c2926e0b38e528ae5a43a604ccf73957",
   "primary_sha256": {
-    "docs/specs/combat-actual-assault-v1.md": "6f1a486644bb4257f4932272a43ca562d631e280a94fd6600630696efc40ba6e",
+    "docs/specs/combat-actual-assault-v1.md": "9dfc058303e583daa5c7c0d33457ab5826ca39f18a79e63cc612de46964c42c1",
     "docs/specs/combat-actual-assault-v1.schema.json": "a16d852d5a4463a295e315c824e5298f4ff22b979a7c307187c2a8d926136f0d",
     "docs/specs/fixtures/combat-actual-assault-v1.json": "9a486f77d0463c071c55af9196511ec2f1214763ed2278ba89962b30746aba09",
-    "docs/specs/verify-combat-actual-assault-v1.py": "41b1d3ea40ebd8dde4c031ec74434c0177d204ef698b6a92b000d5ca940f759e",
-    "docs/design/combat-cycle-implementation-plan.md": "bbf5b5a6646e7620504879d4639c0e7becd5b9d9779d9b27a5982d3b05c0543b"
+    "docs/specs/verify-combat-actual-assault-v1.py": "1ab27601eb209f48febc440ad0f1cfebd08155b9a747e06c003f11a1a16e64a9",
+    "docs/design/combat-cycle-implementation-plan.md": "aa2f7159969384afbe860ea536fe2ba9c63601640952562d3b819c3e25ae8eb8"
   },
   "current_target_gates": {
-    "review1-boundary-final": {
+    "review2-boundary-comprehensive": {
       "exit_code": 0,
       "timed_out": false,
-      "source_sha256_before": "41b1d3ea40ebd8dde4c031ec74434c0177d204ef698b6a92b000d5ca940f759e",
-      "source_sha256_after": "41b1d3ea40ebd8dde4c031ec74434c0177d204ef698b6a92b000d5ca940f759e",
-      "log_sha256": "4bc58f0d0dd24aa2d20736700ea28e5c36c5a8c010ce15e62f0ff2cc0f27f5e1",
+      "source_sha256_before": "1ab27601eb209f48febc440ad0f1cfebd08155b9a747e06c003f11a1a16e64a9",
+      "source_sha256_after": "1ab27601eb209f48febc440ad0f1cfebd08155b9a747e06c003f11a1a16e64a9",
+      "log_sha256": "84bc196b40b7da346ee2d51bc5c44f5c4dab0cf0f083c8f026db7c3f9ea9ebd3",
       "command": [
         "/opt/homebrew/opt/python@3.14/bin/python3.14",
         "-B",
         "docs/specs/verify-combat-actual-assault-v1.py",
         "--check-admission"
       ],
-      "budget_seconds": 120.0,
-      "wall_seconds": 56.16912945799413,
-      "log_path": "/private/tmp/actual-assault-c1-gates/review1-boundary-final.log"
+      "budget_seconds": 150.0,
+      "wall_seconds": 64.3245706250018,
+      "log_path": "/private/tmp/actual-assault-c1-gates/review2-boundary-comprehensive.log"
     },
-    "review1-mechanics": {
+    "review2-mechanics": {
       "exit_code": 0,
       "timed_out": false,
-      "source_sha256_before": "41b1d3ea40ebd8dde4c031ec74434c0177d204ef698b6a92b000d5ca940f759e",
-      "source_sha256_after": "41b1d3ea40ebd8dde4c031ec74434c0177d204ef698b6a92b000d5ca940f759e",
+      "source_sha256_before": "1ab27601eb209f48febc440ad0f1cfebd08155b9a747e06c003f11a1a16e64a9",
+      "source_sha256_after": "1ab27601eb209f48febc440ad0f1cfebd08155b9a747e06c003f11a1a16e64a9",
       "log_sha256": "084a73cf868f8743bc62f69fce7809f583bf60d9b9e8f76e5bc88cda9dd425c5",
       "command": [
         "/opt/homebrew/opt/python@3.14/bin/python3.14",
@@ -39,23 +72,23 @@
         "--check-mechanics"
       ],
       "budget_seconds": 60.0,
-      "wall_seconds": 3.9559520829934627,
-      "log_path": "/private/tmp/actual-assault-c1-gates/review1-mechanics.log"
+      "wall_seconds": 3.862669249996543,
+      "log_path": "/private/tmp/actual-assault-c1-gates/review2-mechanics.log"
     },
-    "review1-corrected-normal": {
+    "review2-corrected-normal": {
       "exit_code": 0,
       "timed_out": false,
-      "source_sha256_before": "41b1d3ea40ebd8dde4c031ec74434c0177d204ef698b6a92b000d5ca940f759e",
-      "source_sha256_after": "41b1d3ea40ebd8dde4c031ec74434c0177d204ef698b6a92b000d5ca940f759e",
-      "log_sha256": "5012d44bbaa45483d2679826abe7dfc4fbd6f59d9c3720b1cf6fc090e236fba8",
+      "source_sha256_before": "1ab27601eb209f48febc440ad0f1cfebd08155b9a747e06c003f11a1a16e64a9",
+      "source_sha256_after": "1ab27601eb209f48febc440ad0f1cfebd08155b9a747e06c003f11a1a16e64a9",
+      "log_sha256": "15ff4f85fcecd4cd61940c9eac5ade85e81a22cd77cceebff2381e76cb4ae850",
       "command": [
         "/opt/homebrew/opt/python@3.14/bin/python3.14",
         "-B",
         "docs/specs/verify-combat-actual-assault-v1.py"
       ],
       "budget_seconds": 600.0,
-      "wall_seconds": 370.07817808300024,
-      "log_path": "/private/tmp/actual-assault-c1-gates/review1-corrected-normal.log"
+      "wall_seconds": 379.81924220800283,
+      "log_path": "/private/tmp/actual-assault-c1-gates/review2-corrected-normal.log"
     }
   },
   "carried_unchanged_owning_gates": {
@@ -163,16 +196,16 @@
       "log_path": "/private/tmp/actual-assault-c1-gates/world-settlement.log"
     }
   },
-  "carry_disposition": "Brain explicitly allowed unchanged ARE/owning gate carry-forward absent material consumer change; all relevant physical hashes/maps remain unchanged. Current complete normal and focused boundary/mechanics rerun.",
-  "prior_packet_commit": "0f6becc712b592b988dae1891eb963820d86b9bb",
-  "prior_evidence_sha256": "2794efa6c13f65083b424f0c472b404ea8fda9612831f35061e4c838f1b657e8",
-  "independent_review_1": {
-    "path": "/Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/docs/work/reviews/2026-10-10-actual-assault-admission-review-1.md",
-    "sha256": "d594be4885b6c9dcbcf75a27bb0fa49c67c555ccb4b4acfded1cd8cf06026b17",
+  "carry_disposition": "Brain authorized unchanged ARE/owning carry absent consumer change; exact physical sources/maps verified. New focused boundary/mechanics/full normal rerun.",
+  "prior_packet_commit": "ddddbb57c2926e0b38e528ae5a43a604ccf73957",
+  "prior_evidence_sha256": "28450003da51f13e4f05f0ec5bb33ce34382552f63b8c3b159e593693d112d4d",
+  "independent_review_2": {
+    "path": "/Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/docs/work/reviews/2026-10-10-actual-assault-admission-review-2.md",
+    "sha256": "09837fe2976068edc3b85ea417c0f4007b3d9319ee43f1ae7aaf2dafa1bfb39d",
     "verdict": "Not ready",
-    "disposition": "Accept bounded P2; corrected diagnostics; fresh reviewer2 required"
+    "disposition": "Accept bounded P2; recursive union diagnostics/exhaustive alternatives and special-leaf audit; fresh review3 required"
   },
-  "correction_attempt_history": {
+  "prior_correction_attempt_history": {
     "review1-boundary-red.log": {
       "path": "/private/tmp/actual-assault-c1-gates/review1-boundary-red.log",
       "sha256": "e0bec86b9a7c0f285aaecf682274af26aad39c2717433fb98f288b6bcf037a61"
@@ -214,7 +247,41 @@
       "sha256": "be9ab3ce199c369d0aa74bf9a30a67abecd67681405e73e7645f5709c0754640"
     }
   },
-  "prior_head_ci": {
+  "correction_attempt_history": {
+    "review2-union-red.log": {
+      "path": "/private/tmp/actual-assault-c1-gates/review2-union-red.log",
+      "sha256": "e369acfb87ca8b1f4b7cae5d0b855ecbb2e4ec982593d6de7b12c65ca2f75cbf"
+    },
+    "review2-union-red-status.json": {
+      "path": "/private/tmp/actual-assault-c1-gates/review2-union-red-status.json",
+      "sha256": "491b1224ef2f5e0ad00538fbe13f559a37d68d6f7417984c08d20513605c3667"
+    },
+    "review2-union-semantic-red.log": {
+      "path": "/private/tmp/actual-assault-c1-gates/review2-union-semantic-red.log",
+      "sha256": "6f54e8a83a746371724a82acfb84f5c8e82e0890ec705d71aad86847f5422732"
+    },
+    "review2-union-semantic-red-status.json": {
+      "path": "/private/tmp/actual-assault-c1-gates/review2-union-semantic-red-status.json",
+      "sha256": "6753da20adb5e8068781db63d026f05eaa803a3d9045d68d09603b42da7c0ba5"
+    },
+    "review2-union-green.log": {
+      "path": "/private/tmp/actual-assault-c1-gates/review2-union-green.log",
+      "sha256": "7699464fcb43c2430b9c38c608f0a8646890d6a59a2f7578d6c8888a183bd969"
+    },
+    "review2-union-green-status.json": {
+      "path": "/private/tmp/actual-assault-c1-gates/review2-union-green-status.json",
+      "sha256": "62b529941e0b1915cd9f0ff07284bf3d1ac1b8161c58b31be1b25b6524c5e628"
+    },
+    "review2-boundary-final.log": {
+      "path": "/private/tmp/actual-assault-c1-gates/review2-boundary-final.log",
+      "sha256": "84bc196b40b7da346ee2d51bc5c44f5c4dab0cf0f083c8f026db7c3f9ea9ebd3"
+    },
+    "review2-boundary-final-status.json": {
+      "path": "/private/tmp/actual-assault-c1-gates/review2-boundary-final-status.json",
+      "sha256": "5b7df26350245441b1dca1ddf4467bc6a8bff7a5053b3e63cefadd405101af47"
+    }
+  },
+  "earlier_head_ci": {
     "receipt_path": "/private/tmp/actual-assault-ci-38101027022/final-receipt.json",
     "receipt_sha256": "b0c3a73820dbcd075a2b4c1392fc9929724ecb6b3b30e9cf0d528c124e00cfe4",
     "source_head": "0f6becc712b592b988dae1891eb963820d86b9bb",
@@ -225,59 +292,45 @@
     "passed": 2770,
     "note": "Prior head only; corrected target exact-head CI pending."
   },
+  "prior_head_ci": {
+    "receipt_path": "/private/tmp/actual-assault-ci-38103537916/final-receipt.json",
+    "receipt_sha256": "61958135b331029ae559c8655d5a7c096a5e23097141922b12d4567749619ea7",
+    "source_head": "ddddbb57c2926e0b38e528ae5a43a604ccf73957",
+    "tested_merge": "84a523421071f14a4304869514a534a8de1da5b1",
+    "run": 38103537916,
+    "attempt": 1,
+    "sdk": "10.0.401",
+    "checks_success": 13,
+    "passed": 2770,
+    "note": "Review2 head only; new correction exact-head CI pending."
+  },
   "consumption_trace": {
-    "path": "/private/tmp/actual-assault-c1-gates/review1-consumption.json",
-    "sha256": "f37d4cf9fe2675a6d5df7a951a1558704961227e503a32d526d9f40df05832f2",
-    "log_path": "/private/tmp/actual-assault-c1-gates/review1-trace.log",
-    "log_sha256": "fc53933844d1f648a2a2b2d5b0e264169df128d7484c4cdfa07871297bfc3c1a",
+    "path": "/private/tmp/actual-assault-c1-gates/review2-consumption.json",
+    "sha256": "15c877126d133d5ea0017c730655c466c7824e04cd208c2dfdb8d92c5904f4aa",
+    "log_path": "/private/tmp/actual-assault-c1-gates/review2-trace.log",
+    "log_sha256": "7b8c781c30592af10dc1b214dc559a002b6135728595640c7ac76975ca11f1a7",
     "runtime_paths": 59,
     "test_only_paths": 1,
     "owned_paths": 3,
-    "wall_seconds": 77.71216987499793
-  },
-  "unchanged_predecessor_sha256": {
-    "src/Cna.Core/Campaigns/CampaignCombatActualRoundEntry.cs": "00f30d4abd24598ebea9e12319aef6ba7c7285e64565ed9eff76ac37f4d04fcf",
-    "src/Cna.Core/Campaigns/CampaignCombatActualRoundEntryCodec.cs": "e224bb57183b1b0febf9b90a297744e9ce99cf3b4124ce5d320eb3fb60e48065",
-    "tests/Cna.Core.Tests/Campaigns/CombatActualRoundEntryTests.cs": "bd353386516b9c6456f2b014aaa2c88382d9ece4242d656bb8019ae951461c2c",
-    "tests/Cna.Core.Tests/Cna.Core.Tests.csproj": "1efe76cc11e66d5074a40025e73279570775104697ef93e89b7cd3ca88ae9aeb",
-    "docs/specs/combat-actual-round-entry-v1.md": "ed4fd69b4f599acae7c4850270557363a546df36d0b984107c50c08c29304548",
-    "docs/specs/combat-actual-round-entry-v1.schema.json": "677b1c671bebe5f23cf4b80f03078c55000c60e45416701757e2552cbd05edb8",
-    "docs/specs/fixtures/combat-actual-round-entry-v1.json": "fc17cda07618bdd539a56b8c296037bbf36f37c6eb2ce6258c2b789b765f640b",
-    "docs/specs/verify-combat-actual-round-entry-v1.py": "2596531cb50ddbae7f1e606284f3d845b224d4f1fc10f478b717843d1062990c"
-  },
-  "unchanged_planning_inputs": {
-    "docs/work/plans/2026-10-10-actual-assault-contract-freeze.md": "270c23d1f218d80b2e2f21ae5bc2a53f9205412c173a6ff2b6c3b18c24f95e3d",
-    "docs/work/plans/2026-10-10-actual-assault-contract-consumption.json": "40b99259791bed5f28af4cf98cffb5578dc5599bed76bc38af53cc7bcbcf3d10"
-  },
-  "scope_research": {
-    "note_path": "/Users/dsteele/.codex/worktrees/combat-actual-bridge-research/sandtable/docs/research/2026-10-10-actual-assault-no-cost-scope-decision.md",
-    "note_sha256": "bf250892e3cd2a6a8b381d12e2b58d3af3ad18ae12df1169c70cb6a47e25eed1",
-    "review_path": "/private/tmp/actual-assault-no-cost-scope-decision/independent-review-1.md",
-    "review_sha256": "ab276bfe5edcbc8f4171a3ad7af1dcfaeda905ef5a72128ffb2bb7e9e915877b"
+    "wall_seconds": 90.43960595800309
   },
   "counters": {
     "research_scope": "Ready1/9 separate",
-    "implementation_completed": 1,
+    "implementation_completed": 2,
     "last_verdict": "Not ready P2",
-    "next_review": 2,
+    "next_review": 3,
     "limit": 9,
     "round": 1,
-    "next_pass": 2,
+    "next_pass": 3,
     "recovery_used": 0,
-    "recovery_limit": 2
+    "recovery_limit": 2,
+    "pass3_not_ready_action": "STOP downstream; Brain high recovery before rework; no counter reset"
   },
-  "unwaived": [
-    "Breakdown LandSequence pin failure",
-    "cycle-sequence LandSequence pin failure",
-    "inherited Snapshot LandSequence pin failure",
-    "outward composition rejection/accepted Content drift",
-    "original native ExerciseRunner aggregation failure cause unexplained"
-  ],
   "pending": [
-    "Brain fresh implementation review2/9",
-    "corrected exact-head required CI",
+    "Brain fresh implementation review3/9",
+    "corrected exact-head CI",
     "Brain merge disposition"
   ],
-  "created_utc": "2026-10-11T01:54:52.754137+00:00",
+  "created_utc": "2026-10-11T02:29:41.931196+00:00",
   "no_new_dotnet_run": true
 }

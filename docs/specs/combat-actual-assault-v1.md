@@ -171,3 +171,14 @@ CreateResolvedResultV2 enforces settlement.v2, not arbitrary new actual domains.
 set prefixes cannot solve that constraint. Existing historical World projector reconstructs
 INITIAL; matching arithmetic does not authenticate actual World projection. No shared type,
 constructor, predecessor grammar, profile, seed, rule pin or old golden changes here.
+
+### Declared union diagnostics after implementation review2
+
+Closed inherited claim validation includes every declared LifecycleFlow alternative, including
+`moving`, `phasing-stop` and `idle`, in the original PE/lifecycle grammar namespace. Signed
+integer limits apply inside alternate arms before canonical spelling008 or coherent-claim
+equality006; unknown string tags are family003 and malformed tag types are shape001. Empty
+arrays and nullable records retain their original accepted shapes. The declared-grammar audit
+includes records hidden by baseline nulls/empty arrays and checks every terminal special delegate.
+Alternate-arm tests use authentic ingress with independent ledgers and complete shaped claims;
+accepting their grammar does not authenticate their semantics or enable an assault.
