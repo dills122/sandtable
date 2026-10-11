@@ -51,7 +51,11 @@ full actualRoundProof,arithmeticAssessment. ArithmeticAssessment retains exact o
 from the inventory; scopeKind is `pure-selected-arithmetic-v1` and paidAdmissionEnabled,
 nativeSettlementCertified,authenticSettlementCertified are invariant false. Missing/changed
 capability fields reject; no switch can enable payment. Inherited ActualRoundProof/World/Result
-records retain their exact grammars and original identities.
+records retain their exact grammars and original identities. The inventory lists each reachable
+record version: inherited Position is5, World is7, other admitted record versions are1.
+Inherited PE records keep their signed int/long domains and original grammar namespace;
+ARE records retain nonnegative int/long domains. UTC, unsigned and future-turn primitives
+retain their original bounds. The candidate checks these fields before claim equality.
 
 Reject duplicate/missing/unknown keys, wrong primitives, booleans as integers, floats/exponents,
 non-ASCII/BOM, whitespace, alternate escapes, reordered raw keys, trailing documents and

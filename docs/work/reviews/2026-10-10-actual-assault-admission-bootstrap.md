@@ -1,6 +1,6 @@
 # Fresh Review Bootstrap
 
-Review instance: 1 of 9. Research scope review is a separate completed1/9; this is the first C1 implementation review. Recovery counter0/2. Brain dispatches the clean reviewer and owns merge.
+Review instance: 2 of 9, round1 pass2. Research scope review is a separate completed1/9; implementation review1 returned Not ready and its verbatim report/disposition are retained. Recovery counter0/2. Brain dispatches the clean reviewer and owns merge.
 
 ## Review Objective
 
@@ -12,7 +12,7 @@ Repository dills122/sandtable. Author checkout /Users/dsteele/.codex/worktrees/c
 
 ## Base, Head, Branch, And Dirty State
 
-Base94cf23883978f7fd9726f4bdd4f63677c6af6a9f, merged PR169. Branch codex/actual-assault-contract. Draft PR172 https://github.com/dills122/sandtable/pull/172. Earlier planning checkpoint38b223eff9ff0adcaa6e095e12bf0f6aa2405dff is not the final implementation. Exact review boundary is the five-primary SHA256 map in 2026-10-10-actual-assault-admission-evidence.json. The publication commit mapping that boundary is supplied in the Brain dispatch and PR. Verify all five hashes; the earlier planning head is not the implementation target. Preserve the pre-existing excluded untracked .serena/ directory; no other dirty or untracked path is implicitly included.
+Base94cf23883978f7fd9726f4bdd4f63677c6af6a9f, merged PR169. Branch codex/actual-assault-contract. Draft PR172 https://github.com/dills122/sandtable/pull/172. Earlier planning checkpoint38b223eff9ff0adcaa6e095e12bf0f6aa2405dff and reviewed head0f6becc712b592b988dae1891eb963820d86b9bb are historical. The correction delta starts at0f6becc; overall PR base remains94cf238. Inspect the refreshed five-primary hash boundary before review. Exact review boundary is the five-primary SHA256 map in 2026-10-10-actual-assault-admission-evidence.json. The publication commit mapping that boundary is supplied in the Brain dispatch and PR. Verify all five hashes; the earlier planning head is not the implementation target. Preserve the pre-existing excluded untracked .serena/ directory; no other dirty or untracked path is implicitly included.
 
 ## In-Scope Commits And Paths
 
@@ -28,10 +28,12 @@ No predecessor/pin/old-fixture/shared/native/test-project/workflow changes. No p
 
 ## Verification Commands Available To Reviewer
 
-The final evidence manifest identifies executed commands, exit/timeout state, wall times, tested Python SHA and log digests. Retained logs are under /private/tmp/actual-assault-c1-gates. Focused commands use --check-admission, --check-mechanics or --check-recovery; normal python3 -B docs/specs/verify-combat-actual-assault-v1.py includes all plus frozen literal readback. Original ARE normal is expensive and remains separate. Do not rerun a heavy sweep without coordinating serial ownership/budgets; proportionate non-mutating checks suffice to challenge evidence. The historical failures are retained in the author packet/evidence and must not be silently converted into passes.
+The refreshed manifest distinguishes current correction boundary/mechanics/full-normal runs from unchanged owning gates carried forward under Brain disposition. Prior review/packets and old-head CI are historical, not corrected-target CI evidence. Retained logs are under /private/tmp/actual-assault-c1-gates. Focused commands use --check-admission, --check-mechanics or --check-recovery; normal python3 -B docs/specs/verify-combat-actual-assault-v1.py includes all plus frozen literal readback. Original ARE normal is expensive and remains separate. Do not rerun a heavy sweep without coordinating serial ownership/budgets; proportionate non-mutating checks suffice to challenge evidence. The historical failures are retained in the author packet/evidence and must not be silently converted into passes.
 
 ## Author Explanation Location Or Delivery Step
 
 After recording the blind preliminary ledger, read docs/work/reviews/2026-10-10-actual-assault-admission-author.md and reconcile its claims against inspected code, plan and test evidence. The evidence manifest is neutral verification data; the author packet contains intent and rationale.
 
-Use $independent-review in reviewer mode. This is review instance1 of9. Work from the Fresh Review Bootstrap first and record a preliminary review before reading the Author Explanation. Then verify the explanation against the repository, review both the implementation and its plan, run proportionate non-mutating checks, and return an evidence-backed verdict. Do not implement fixes, create further review instances, or split the work into new workstreams.
+Use $independent-review in reviewer mode. This is review instance2 of9. Work from the Fresh Review Bootstrap first and record a preliminary review before reading the Author Explanation. Then verify the explanation against the repository, review both the implementation and its plan, run proportionate non-mutating checks, and return an evidence-backed verdict. Do not implement fixes, create further review instances, or split the work into new workstreams.
+
+Retained independent review1 is docs/work/reviews/2026-10-10-actual-assault-admission-review-1.md (verbatim). Its author response is separate in review-1-response.md; defer that author testimony until the blind preliminary ledger. Inspect current diagnostics against the full declared inherited grammar, original per-type versions and integer domains. No other requirement is waived.

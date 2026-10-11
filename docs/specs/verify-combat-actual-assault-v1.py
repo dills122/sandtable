@@ -50,26 +50,50 @@ are=importlib.util.module_from_spec(spec);spec.loader.exec_module(are)
 require(all(DEPENDENCIES.get(p)==h for p,h in are.DEPENDENCIES.items()),9,'/inheritedPins')
 SCHEMA={k:[tuple(x.split(':')) for x in v.split()] for k,v in INVENTORY['objects'].items()}
 RECORD_SCHEMA={k:[tuple(x.split(':')) for x in v.split()] for k,v in INVENTORY['catalogue'].items()}
+GRAMMAR=are.SCHEMA|SCHEMA|RECORD_SCHEMA
+VERSION_RULES=INVENTORY['versions']
 FLAGS=('paidAdmissionEnabled','nativeSettlementCertified','authenticSettlementCertified')
 KINDS={'morale':'MoraleRow','assault-cell':'AssaultCell','capture-refusal':'VariantRow'}
 
-def typed(value,kind,path='',depth=0):
+def typed(value,kind,path='',depth=0,legacy=False):
     require(depth<=32,1,path)
+    legacy=legacy or (kind in are.selection.pe.SCHEMA and kind not in are.OWN_SCHEMA
+                     and kind not in are.selection.OWN_SCHEMA and kind not in SCHEMA and kind not in RECORD_SCHEMA)
+    grammar=are.selection.pe.SCHEMA if legacy else GRAMMAR
     if kind.endswith('?'):
-        if value is not None: typed(value,kind[:-1],path,depth)
-    elif kind in SCHEMA or kind in RECORD_SCHEMA:
-        fields=(SCHEMA|RECORD_SCHEMA)[kind]
+        if value is not None: typed(value,kind[:-1],path,depth,legacy)
+    elif kind in ('RoundEffect','Effect'):
+        tags=are.INVENTORY['effectTags'] if kind=='RoundEffect' else are.selection.TAGS
+        require(type(value) is dict and type(value.get('kind')) is str,1,path)
+        require(value['kind'] in tags,3,path)
+        typed(value,tags[value['kind']],path,depth)
+    elif kind in grammar:
+        fields=grammar[kind]
         require(type(value) is dict and set(value)=={k for k,_ in fields},1,path)
-        for key,child in fields: typed(value[key],child,path+'/'+key,depth+1)
-        if kind in SCHEMA:
-            require(value['contractVersion']==1,3,path+'/contractVersion')
+        for key,child in fields: typed(value[key],child,path+'/'+key,depth+1,legacy)
+        version_keys={key for key,child in fields if key in ('contractVersion','schemaVersion','catalogueVersion')}
+        require(version_keys==set(VERSION_RULES.get(kind,{})),1,path+'/versionGrammar')
+        for key,expected in VERSION_RULES.get(kind,{}).items():
+            require(value[key]==expected,3,path+'/'+key)
         if kind=='ArithmeticAssessment':
             require(value['scopeKind']==INVENTORY['scopeKind'] and all(value[x] is False for x in FLAGS),2,path)
+    elif kind.endswith('[]'):
+        require(type(value) is list and len(value)<=512,1,path)
+        for index,child in enumerate(value):typed(child,kind[:-2],f'{path}/{index}',depth+1,legacy)
+    elif kind in ('int','long','ulong','utc','futureTurn'):
+        bounds={'int':(-2**31 if legacy else 0,2**31-1),
+                'long':(-2**63 if legacy else 0,2**63-1),'ulong':(0,2**64-1),
+                'utc':(0,are.MAX_UTC),'futureTurn':(1,115)}
+        lo,hi=bounds[kind];require(type(value) is int,1,path);require(lo<=value<=hi,2,path)
     elif kind in ('adjustment','differential','die'):
         lo,hi={'adjustment':(-1,1),'differential':(-2,2),'die':(1,6)}[kind]
         require(type(value) is int,1,path);require(lo<=value<=hi,2,path)
     else:
-        try: are.typed(value,kind,path,depth)
+        try:
+            if legacy and kind in ('id','hash','rawHash','locator','text','string','side','bool'):
+                are.selection.env.typed(value,kind,path,depth)
+            elif legacy:are.selection.pe.typed(value,kind,depth)
+            else:are.typed(value,kind,path,depth)
         except ValueError as error:
             code=int(error.code[-3:]) if hasattr(error,'code') else 1
             raise Invalid(code if code in (1,2,3) else 1,path) from error
@@ -290,6 +314,73 @@ def ledger_shape_tests():
         rejected(lambda supplied=supplied:read_source(*supplied),1)
     rejected(lambda:read_source(b'x'*(MAX_BYTES+1),*args[1:]),1)
     print('PASS: ledger primitive/record shape rejects001 before trusted-source validation; carrier cap.')
+
+def grammar_nodes(value,kind,path=(),legacy=False):
+    """Walk the declared inherited grammar, not a handpicked list of failing paths."""
+    kind=kind.rstrip('?')
+    legacy=legacy or (kind in are.selection.pe.SCHEMA and kind not in are.OWN_SCHEMA
+                     and kind not in are.selection.OWN_SCHEMA and kind not in SCHEMA and kind not in RECORD_SCHEMA)
+    yield ('signed-'+kind if legacy and kind in ('int','long') else kind),path,value
+    grammar=are.selection.pe.SCHEMA if legacy else GRAMMAR
+    if value is None:return
+    if kind.endswith('[]'):
+        for index,child in enumerate(value):yield from grammar_nodes(child,kind[:-2],path+(index,),legacy)
+    elif kind in grammar:
+        for key,child in grammar[kind]:yield from grammar_nodes(value[key],child,path+(key,),legacy)
+
+
+def claim_boundary_tests():
+    global dependency_bytes
+    counts=dict(version=0,integer=0,public=0,overlays=0,dependency=0);types=set()
+    bounds={'int':(0,2**31-1),'long':(0,2**63-1),'signed-int':(-2**31,2**31-1),
+            'signed-long':(-2**63,2**63-1),'ulong':(0,2**64-1),'utc':(0,are.MAX_UTC),'futureTurn':(1,115)}
+    for case in original_cases():
+        args=case_args(case);baseline=proof(*args);public_types=set()
+        for kind,path,value in grammar_nodes(baseline,'AdmissionProof'):
+            if path and path[-1] in ('contractVersion','schemaVersion'):
+                changed=replace_leaf(baseline,path,value+1);data=encode(changed)
+                rejected(lambda data=data:parse(data,'AdmissionProof'),3);counts['version']+=1
+                owner=next(k for k,p,v in grammar_nodes(baseline,'AdmissionProof') if p==path[:-1]);types.add(owner)
+                if owner not in public_types:
+                    rejected(lambda data=data:read_proof(data,*args),3);counts['public']+=1;public_types.add(owner)
+                    rejected(lambda data=data:read_proof(b' '+data,*args),3);counts['overlays']+=1
+                    overlay=copy.deepcopy(changed);overlay['unknown']=None
+                    rejected(lambda overlay=overlay:read_proof(encode(overlay),*args),1);counts['overlays']+=1
+                    rejected(lambda data=data:read_proof(data,args[0],[],args[2],[]),4);counts['overlays']+=1
+            if kind in bounds:
+                minimum,maximum=bounds[kind]
+                for replacement,code in ((minimum-1,2),(maximum+1,2),(True,1),(1.0,1)):
+                    changed=replace_leaf(baseline,path,replacement);data=encode(changed)
+                    rejected(lambda data=data:parse(data,'AdmissionProof'),code);counts['integer']+=1
+                # Every numeric field also exercises the authenticated public reader's bound path.
+                changed=replace_leaf(baseline,path,maximum+1);data=encode(changed)
+                rejected(lambda data=data:read_proof(b' '+data,*args),2);counts['public']+=1
+        for index,kind in ((1,'Input'),(2,'RoundInput')):
+            for row_index,row in enumerate(args[index]):
+                for child,path,value in grammar_nodes(row,kind):
+                    if child in bounds:
+                        minimum,maximum=bounds[child]
+                        supplied=list(args);supplied[index]=copy.deepcopy(args[index])
+                        supplied[index][row_index]=replace_leaf(row,path,maximum+1)
+                        rejected(lambda supplied=supplied:read_source(*supplied),2);counts['integer']+=1
+                    if path and path[-1] in ('contractVersion','schemaVersion'):
+                        supplied=list(args);supplied[index]=copy.deepcopy(args[index])
+                        supplied[index][row_index]=replace_leaf(row,path,value+1)
+                        rejected(lambda supplied=supplied:read_source(*supplied),3);counts['version']+=1
+        # Physical preflight outranks an invalid version plus canonical spelling on the claim.
+        version_path=next(path for kind,path,value in grammar_nodes(baseline,'AdmissionProof')
+                          if path and path[-1]=='contractVersion')
+        changed=replace_leaf(baseline,version_path,2);data=b' '+encode(changed)
+        original_reader=dependency_bytes;target=next(iter(DEPENDENCIES))
+        def missing(path):
+            if path==target:raise FileNotFoundError(path)
+            return original_reader(path)
+        try:
+            dependency_bytes=missing
+            assert rejected(lambda:read_proof(data,*args),9).path==target;counts['dependency']+=1
+        finally:dependency_bytes=original_reader
+    print('PASS: systematic exact-code inherited/owned claim and ledger boundaries;',counts,'version types=',sorted(types),flush=True)
+
 
 def admission_tests():
     cases=original_cases()
@@ -538,7 +629,7 @@ def main():
     for name,check in [('admission',admission_tests),('mechanics',mechanics_tests),('recovery',recovery_tests)]:
         if not selected or getattr(args,'check_'+name):
             if name=='admission':
-                ledger_shape_tests();at_use_error_tests()
+                ledger_shape_tests();at_use_error_tests();claim_boundary_tests()
             check()
     if not selected:verify_literals()
 

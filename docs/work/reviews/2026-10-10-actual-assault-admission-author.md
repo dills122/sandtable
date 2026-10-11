@@ -40,37 +40,6 @@ Final commands/results and exact tested source identities are recorded in the se
 
 Historical failures are retained: the genuine stub semantic RED; ledger-shape RED; two recovery-harness failures (canonicalizing an invalid mutation before typing, and re-signing a mutated receipt back to its original value). The harness corrections validate grammar before canonicalization and assert mutation bytes differ. Four real self-review defects were corrected with focused RED/GREEN: inherited009 mapped to004, missing material source I/O escaped, unhashable catalogue kind raised TypeError, and an extra null stream record was confused with exhaustion. Additional verification explicitly populates inherited cache before warm corruption probes and measures typed carrier/ledger/array/depth bounds on all four genuine proofs.
 
-
-
-Final serial local evidence (all exit0; no timeouts):
-
-| Gate | Seconds | Budget |
-| --- | ---: | ---: |
-| original-are | 1960.297 | 2100 |
-| final-normal | 374.593 | 600 |
-| rules-inputs | 0.528 | 60 |
-| source-freeze | 0.072 | 60 |
-| rng | 0.039 | 60 |
-| actual-selection | 232.633 | 300 |
-| positive-entry | 117.411 | 120 |
-| world-settlement | 0.358 | 60 |
-
-Corrected normal output:
-
-```text
-PASS: ledger primitive/record shape rejects001 before trusted-source validation; carrier cap.
-PASS: inherited at-use dependency009 and material I/O009 stay distinct from trust004.
-PASS: 4 original owner/seal admission/readback proofs, exact immutable ARE25; typed bounds= {'sourceBytes': 109334, 'proofBytes': 32853, 'selectionBytes': 3544, 'roundBytes': 3051, 'containerDepth': 14}
-PASS: independently checked 16616 indexed arithmetic records, coverage forgeries; maxima={'morale': 157, 'assault-cell': 235, 'capture-refusal': 581}, JSONL bytes=6813827.
-PASS: 200 full-proof mutation probes.
-PASS: 400 full-proof mutation probes.
-PASS: 600 full-proof mutation probes.
-PASS: recovery/grammar/ledger/claim ownership; 703 proof leaves; 229 re-signed event leaves; 120 dependency probes.
-PASS: four frozen literal source/ledger/proof records; no golden regeneration.
-```
-
-Actual final import/read/literal/mechanics trace confirmed59runtime+1test+3owned paths with no unknown acquisition. Exact hashes and historical log identities are in the evidence manifest.
-
 ## Risks, Tradeoffs, And Maintenance Costs
 
 This is a tightly coupled private reference oracle over unchanged predecessor module grammar/functions; future predecessor changes must deliberately reconcile pins and contracts. Inline test organization and compact style follow neighboring oracles but demand careful review of error precedence and independent arithmetic. Roughly half the Python source is verification; large retained fixture artifacts dominate the diff. Repeated proof derivation is deliberate; no new optimization/cache is introduced. Hash checks establish current physical bytes, not the historical validity or passing status of every owning oracle. Filesystem checks at boundaries do not provide a transactional filesystem snapshot or public ingress authentication.
@@ -86,3 +55,32 @@ Reviewed all five primary components and relevant predecessor readers/grammar ac
 ## Challenge Points For The Reviewer
 
 Reconstruct the exact scope and pins first. Inspect whether complete independently supplied ledger/history evidence authenticates every predecessor claim; whether dependency009 survives warm and material-use paths; whether canonical grammar/type precedence agrees with prose; whether stream index/order/coverage checks and independent Fraction/result-fact comparisons could share a mistaken assumption; and whether the five-primary delivery identities truly match tested bytes. Inspect plan incompleteness and the planned paid consumer prerequisite without treating arithmetic as actual settlement support. These are suggested challenge points, not a restriction on review.
+
+## Accepted Independent Review1 And Correction
+
+The verbatim review1 and separate Accept response retain the required bounded P2. The reviewed old head rejected malformed claims but misclassified inherited versions/ranges. The owned inventory now declares23 reachable type-version rules (Position5, World7, other records/header1), with explicit coverage guards. Candidate validation retains PE signed integer domains and original schema/special-arm namespace versus nonnegative ARE domains. Canonicalization, dependency pins, admission history, arithmetic and fixture bytes are unchanged. The systematic matrix covers all numeric/version fields in four genuine proofs plus both original ledgers and competing closed-shape/canonical/ingress/dependency errors, rather than only three reported paths. Three intermediate correction failures are retained; no pin refresh or golden regeneration. Prior author self-review missed this diagnostic gap; the fresh reviewer found it.
+
+The prior frozen review packet remains at commit0f6becc. Old-head CI passed13 checks/2770 exact rows on merge081516df attempt1; corrected-target CI remains pending. Brain owns fresh review2/9 (round1 pass2), recovery0/2 and merge.
+
+## Current Correction Verification
+
+| Current gate | Seconds | Budget |
+| --- | ---: | ---: |
+| review1-boundary-final | 56.169 | 120 |
+| review1-mechanics | 3.956 | 60 |
+| review1-corrected-normal | 370.078 | 600 |
+
+```text
+PASS: ledger primitive/record shape rejects001 before trusted-source validation; carrier cap.
+PASS: inherited at-use dependency009 and material I/O009 stay distinct from trust004.
+PASS: systematic exact-code inherited/owned claim and ledger boundaries; {'version': 152, 'integer': 2936, 'public': 772, 'overlays': 228, 'dependency': 4} version types= ['ActualRoundProof', 'ActualSelectionBoundary', 'ActualSelectionProof', 'AdmissionProof', 'ArithmeticAssessment', 'Authority', 'Base', 'ClockConfiguration', 'ClockTiming', 'CombatEntryState', 'Control', 'Position', 'PositiveEntryProof', 'PreambleOrder', 'Random', 'RoundControl', 'Timing', 'WeatherValue', 'World']
+PASS: 4 original owner/seal admission/readback proofs, exact immutable ARE25; typed bounds= {'sourceBytes': 109334, 'proofBytes': 32853, 'selectionBytes': 3544, 'roundBytes': 3051, 'containerDepth': 14}
+PASS: independently checked 16616 indexed arithmetic records, coverage forgeries; maxima={'morale': 157, 'assault-cell': 235, 'capture-refusal': 581}, JSONL bytes=6813827.
+PASS: 200 full-proof mutation probes.
+PASS: 400 full-proof mutation probes.
+PASS: 600 full-proof mutation probes.
+PASS: recovery/grammar/ledger/claim ownership; 703 proof leaves; 229 re-signed event leaves; 120 dependency probes.
+PASS: four frozen literal source/ledger/proof records; no golden regeneration.
+```
+
+Unchanged ARE and six owning gates are explicitly carried forward from the prior execution, with current physical source/map equality checked. No blanket repeats or new.NET tests were run. Final candidate import/readback/full exact-code matrix/literal/mechanics consumption trace confirms59runtime+1test+3owned paths without unknown acquisition. Author correction self-review covers correctness, grammar/version-domain fidelity, test sensitivity, architecture/authority, owned data and bounded performance; no further author-identified actionable defect remains at this frozen correction boundary. This is author SELF_REVIEW_COMPLETE and review-ready testimony, not an independent Ready verdict.

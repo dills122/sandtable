@@ -6,6 +6,77 @@
     "ArithmeticAssessment": "contractVersion:int scopeKind:id actualRoundSourceHash:hash dependencyManifestHash:hash rulesInputHash:hash moralePairs:int assaultPairs:int captureRefusalVariants:int arithmeticCatalogueHash:hash paidAdmissionEnabled:bool nativeSettlementCertified:bool authenticSettlementCertified:bool",
     "AdmissionProof": "contractVersion:int sourceId:id sourceHash:hash actualRoundProof:ActualRoundProof arithmeticAssessment:ArithmeticAssessment"
   },
+  "versions": {
+    "AdmissionSource": {
+      "contractVersion": 1
+    },
+    "AdmissionProof": {
+      "contractVersion": 1
+    },
+    "ArithmeticAssessment": {
+      "contractVersion": 1
+    },
+    "ActualRoundProof": {
+      "contractVersion": 1
+    },
+    "Base": {
+      "contractVersion": 1
+    },
+    "ActualSelectionProof": {
+      "contractVersion": 1
+    },
+    "PositiveEntryProof": {
+      "contractVersion": 1
+    },
+    "CombatEntryState": {
+      "contractVersion": 1
+    },
+    "Position": {
+      "contractVersion": 5
+    },
+    "PreambleOrder": {
+      "contractVersion": 1
+    },
+    "WeatherValue": {
+      "contractVersion": 1
+    },
+    "Random": {
+      "contractVersion": 1
+    },
+    "Authority": {
+      "contractVersion": 1
+    },
+    "ActualSelectionBoundary": {
+      "contractVersion": 1
+    },
+    "Control": {
+      "contractVersion": 1
+    },
+    "Timing": {
+      "contractVersion": 1
+    },
+    "ClockConfiguration": {
+      "contractVersion": 1
+    },
+    "RoundControl": {
+      "contractVersion": 1
+    },
+    "ClockTiming": {
+      "contractVersion": 1
+    },
+    "Command": {
+      "contractVersion": 1
+    },
+    "RoundCommand": {
+      "contractVersion": 1
+    },
+    "World": {
+      "contractVersion": 7
+    },
+    "header": {
+      "catalogueVersion": 1
+    }
+  },
   "domains": {
     "source": "sandtable.combat.actual-assault.admission-source.v1",
     "catalogue": "sandtable.combat.actual-assault.catalogue.v1"

@@ -2456,3 +2456,12 @@ failures remain distinct from final verification. Task status is IN PROGRESS pen
 review and CI. This is not Ready, full paid C1, Task017–019 closure or loop completion.
 Parent costs, result/settlement, mandatory windows, future duties, Reserve/continuation,
 public/Exercise and later-II/consumed lineage remain separately gated.
+
+Implementation review1/9 returned Not ready for one bounded P2: inherited proof versions
+and some primitive integer overflows had incorrect diagnostic codes. The accepted correction
+keeps exact inherited version identities (Position5, World7), PE signed versus ARE nonnegative
+integer domains, and original special-arm grammar namespaces. Systematic exact-code tests
+supplement generic leaf rejection. No pinned predecessor,59/1 closure or golden changes.
+Prior head0f6becc passed all13 CI checks and2770 exact Release rows; that result supports
+the prior head. Corrected target verification and fresh review2/9 (round1 pass2) remain
+required. Recovery0/2 and all broader exclusions/unwaived failures remain unchanged.
