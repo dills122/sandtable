@@ -59,6 +59,8 @@ lifecycle and model-backed play remain roadmap gates.
 
 - [Research directory](research/): source investigations, spikes, simulator studies and decision packets
 - [Review directory](reviews/): independent assessments and reconciliation history
+- [CoreB CI diagnostic handoff](work/handoffs/2026-10-11-coreb-crash-diagnosis.md): unresolved crash investigation and exact runner proof
+- [CoreB diagnostic review](work/reviews/2026-10-11-coreb-diagnostics-review-2.md): reviewed diagnostic/compatibility scope; CI is a separate gate
 - [Historical project ledger](research/2026-10-05-project-documentation-snapshot.md): former detailed README checkpoint record
 - [Contract directory](specs/): exact versions, frozen schemas and executable contract evidence
 - [Design directory](design/): domain rationale and delivery plans
