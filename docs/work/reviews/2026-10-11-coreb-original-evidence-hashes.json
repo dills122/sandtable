@@ -1,0 +1,30 @@
+{
+  "/private/tmp/sandtable-main-38106271573-failed.log": {
+    "bytes": 882050,
+    "sha256": "3087350a05fef792c6cfbff117e66aa92944bdb50eaa3ee3a661cd3ceaad536b"
+  },
+  "/private/tmp/sandtable-main-38106271573-core-b/core-b-build-20261011-025022--2697--gvNeG3.binlog": {
+    "bytes": 1286055,
+    "sha256": "8fe99499be9142b329e3310b50edae2dc426a219f6a5880723b49fda952680e0"
+  },
+  "/private/tmp/sandtable-main-38106271573-core-b/core-b-restore-20261011-025012--2569--8u6SwJ.binlog": {
+    "bytes": 902689,
+    "sha256": "b1399d0b0379ed45332e0cfc03119700d09fc6942f927d48c9339f03994d6e44"
+  },
+  "/private/tmp/sandtable-main-38106271573-core-b/core-b/test-20261011-025122--2896--DWok7O-dotnet-test.binlog": {
+    "bytes": 657147,
+    "sha256": "8ef6d46c372dc97c42c7cc2e8494d229aff20ea64fba7c0dca07bcca5542ac64"
+  },
+  "/private/tmp/sandtable-main-38106271573-core-b/core-b/execution.log": {
+    "bytes": 578366,
+    "sha256": "4f0f7393e6360eb6373d8bd33cc62131c867438d1f30b5a39cf7885592849611"
+  },
+  "/private/tmp/sandtable-main-38106271573-core-b/core-b/status.json": {
+    "bytes": 191,
+    "sha256": "3143c61c61a4441e73de80312ce9a2baffc9f1c7955cdaecb45e15cd502da845"
+  },
+  "/private/tmp/sandtable-main-38106271573-core-b/core-b/diagnostics/Cna.Core.Tests_net10.0_x64_261011025123317.diag": {
+    "bytes": 5824740,
+    "sha256": "06758dd7aa74daff26cd747a4e6adf97ebdffaf088908e7efef9245bc56c0ca6"
+  }
+}

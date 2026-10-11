@@ -1,0 +1,23 @@
+{
+  "active_at_crash": [
+    {
+      "name": "Cna.Core.Tests.Campaigns.CombatActualSelectionTests.EveryResignedEventAndProofLeafRejectsAgainstIndependentLedger(owner: \"axis\", variant: \"rba-before-open-unavailable\")",
+      "line": 11977
+    },
+    {
+      "name": "Cna.Core.Tests.Campaigns.CombatActualRoundEntryTests.CanonicalGrammarCapacitiesAndOrderedHistoriesRejectIndependentForgeries(index: 25)",
+      "line": 12511
+    },
+    {
+      "name": "Cna.Core.Tests.Campaigns.CombatInheritedReserveCycleTests.ForgedControlCannotReplaceHistoryAndReturnedBytesAreDetached(choice: \"act-first\")",
+      "line": 12658
+    }
+  ],
+  "max_reported_in_progress": 4,
+  "exit_code": 139,
+  "passed": 2103,
+  "unfinished_expected": 117,
+  "runtime": "linux-x64 .NET10.0.12",
+  "source_head": "80f633f11271e8a0d4470459fee41bac7a014e61",
+  "warning": "Active rows establish temporal overlap, not crash attribution. No stack or native signal capture retained."
+}

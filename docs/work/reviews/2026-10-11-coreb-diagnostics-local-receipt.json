@@ -1,0 +1,24 @@
+{
+  "head": "3a0cfde5a9fce8646eff5143210dc4ed7453cee4",
+  "sdk": "10.0.400",
+  "configuration": "Release",
+  "total_rows": 2770,
+  "shard_counts": {
+    "core-a": 71,
+    "core-b": 2220,
+    "exercise": 469,
+    "contracts": 10
+  },
+  "exact_baseline_row_identity_equal": true,
+  "runner_version": "4.0.2",
+  "existing_python_functions_changed": [
+    "expand_core",
+    "main"
+  ],
+  "added_python_functions": [
+    "execution_environment"
+  ],
+  "inventory_sha256": "5b88ec1a8769a2d2445a81a0436ecf9855a8a9d7d49b1c16f7534a5d429f5a6b",
+  "deferred_sha256": "86f96fc7c647624934359ddbaaaa5cf80d481879245128de0f1227e81b797ec8",
+  "limits": "Discovery proof only, not executed test coverage; Linux fatal-path crash capture/rootcause unresolved."
+}

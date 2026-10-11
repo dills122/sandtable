@@ -1,0 +1,15 @@
+{
+  "run_id": 38108441743,
+  "attempt": "1",
+  "tested_merge": "26575b55a353438af08116e207224d5923195f13",
+  "parents": [
+    "df831a42293cde3a105cc778ca2a762eab043400",
+    "3a0cfde5a9fce8646eff5143210dc4ed7453cee4"
+  ],
+  "candidate_head": "3a0cfde5a9fce8646eff5143210dc4ed7453cee4",
+  "sdk": "10.0.401",
+  "runner_version": "4.0.2",
+  "total_rows": 2770,
+  "all_exact_identities_equal_frozen_local": true,
+  "limitation": "Linux discovery/build proof; test shards still pending; no executed coverage or native crash-capture proof yet."
+}
