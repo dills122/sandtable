@@ -2423,3 +2423,55 @@ The existing four predecessor failures remain separately recorded without waiver
 refresh. Paid commitment/result/settlement, full Snapshot/Archives restart, repeated Movement,
 later-II/consumed lineage, Exercise/Runner and parent017–019 completion remain outside this
 private entry slice. The coordinator retains ownership of independent review and merge.
+
+
+### Task019F4 — private actual assault admission assessment (DAY-C1 checkpoint)
+
+DAY-A PR169 merged at94cf238 after fresh implementation review2/9 Ready and required
+Release CI2770/2770 exact-row PASS; original four owning failures remain unwaived. DAY-B
+complete paid assault research remains the parent direction, not completed behavior.
+
+This new admission-only checkpoint owns actual-assault-v1 spec/schema/fixture/oracle plus
+this canonical plan. It authenticates full prepared ARE25 for both original roots and both
+seal orders with independent selection/round ledgers and a mandatory empty assault ledger,
+and derives separately labelled pure arithmetic evidence. A later paid actual-assault reader
+is the intended consumer; it must separately certify complete actual result/settlement before
+debit. No paid/native/public capability or new event/RNG/cost/settlement is admitted.
+
+The [contract](../specs/combat-actual-assault-v1.md) and ordered inventory freeze closed proof
+grammar, exact byte identities,59 runtime physical dependencies plus one test-only ARE
+fixture, and a streamed16616-record catalogue. All57 ARE pins stay unchanged. Pure1296
+Morale/6480 assault/8840 capture-refusal combinations are arithmetic evidence, not actual
+campaigns or native settlement support. Old result/settlement typed identity compatibility
+and owned actual World projection are deferred; no synthetic old context is constructed.
+
+Semantic RED4 genuine proof requests returned defined stub007; minimal GREEN4/4 then
+independent mechanics/coverage and recovery probes passed. A separate ledger shape/precedence
+RED/GREEN correction preserves001 before trusted-source004. Actual import/read observation
+confirmed59runtime+1test+owned code/schema with no unknown physical path before new literals.
+Corrected normal oracle, original ARE/affected owning gates, author engineering review,
+immutable packet, Brain-dispatched fresh implementation review and exact-head CI are mandatory.
+Exact execution boundaries and results are retained in the dated review evidence; historical
+failures remain distinct from final verification. Task status is IN PROGRESS pending independent
+review and CI. This is not Ready, full paid C1, Task017–019 closure or loop completion.
+Parent costs, result/settlement, mandatory windows, future duties, Reserve/continuation,
+public/Exercise and later-II/consumed lineage remain separately gated.
+
+Implementation review1/9 returned Not ready for one bounded P2: inherited proof versions
+and some primitive integer overflows had incorrect diagnostic codes. The accepted correction
+keeps exact inherited version identities (Position5, World7), PE signed versus ARE nonnegative
+integer domains, and original special-arm grammar namespaces. Systematic exact-code tests
+supplement generic leaf rejection. No pinned predecessor,59/1 closure or golden changes.
+Prior head0f6becc passed all13 CI checks and2770 exact Release rows; that result supports
+the prior head. Corrected target verification and fresh review2/9 (round1 pass2) remain
+required. Recovery0/2 and all broader exclusions/unwaived failures remain unchanged.
+
+Implementation review2/9 atddddbb57 returned Not ready for a remaining bounded P2 in inherited
+LifecycleFlow union diagnostics. Brain accepted the correction: owned recursive dispatch and
+exhaustive declared-alternative/public-readback/precedence coverage, with an audit of every
+reachable special delegate. Original PE namespace, signed domains, closed/null/empty shapes,
+all60 physical pins and four fixture literals remain unchanged. Reviewed headddddbb57 CI
+passed13 checks and2770/2770 exact Release rows, SDK10.0.401 attempt1 on merge84a52342;
+that receipt is historical for a later correction head. Fresh correction gates and Brain review3/9
+(round1 pass3, recovery0/2) are mandatory. If pass3 is Not ready, stop downstream for Brain
+recovery; do not reset counts. No full paid/native/public/loop closure follows.
