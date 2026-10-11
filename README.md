@@ -53,7 +53,7 @@ play a side; it will never decide the rules or secretly change the campaign stat
 | --- | --- | --- |
 | Deterministic Umpire | Working | Versioned rules, seeded randomness, canonical commands/events, replay, checkpoints, and side-safe action boundaries are implemented. |
 | Playable rule path | Working through Combat entry | Runner can execute Initiative, stage preamble, Reserve Designation, Movement, bounded ZOC/Reaction, and Breakdown, then stops before Combat adjudication. |
-| Combat and continual cycle | Private Core adapters; public activation pending | Reviewed internals cover settlement, Reserve Release, bounded released-I Movement and guarded repeat/finish. Native settled control retains synthetic earlier Movement. Task019F1 (merged in PR #165) implements the private actual-selection contract for both supported opening histories through Force Assignment after defender decline, or seven no-attack Reserve Release fallbacks per owner. Force Assignment completion and production input authentication remain gated. Actual round/result, full-cycle proof and public Combat remain open. |
+| Combat and continual cycle | Private Core entry; public activation pending | Task019F3 (PR #169) implements private native actual prepared-round entry and cancelled no-attack Release for both supported opening histories with two independently trusted ledgers. Task019F4 (PR #172) adds private no-cost actual assault admission and pure arithmetic assessment. Paid actual assault/result/settlement, production ingress authentication, later-II/consumed Reserve lineage, full-cycle proof and public Combat remain open. |
 | Exercise and Maneuver tools | Working | Deterministic single runs, multi-run matrices, paired comparisons, strict readback, and evidence bundles are available from CLI. |
 | User interface | Not started | `site/` is project website only. Maproom hot-seat client is future work. |
 | Published scenario | Not started | First target is six-turn, Land-only *Graziani's Offensive* after working Combat loop. |
@@ -67,11 +67,12 @@ dormant Core tests; they are not yet exposed as playable actions.
 
 Next delivery sequence:
 
-1. Define the actual Force Assignment completion and first-round entry contract, then join actual
-   round/result settlement and complete later-II/consumed Reserve lineage (remaining Tasks017–019).
-   The existing actual-selection contract stops at Force Assignment after defender decline; it does not complete Force Assignment or
-   activate gameplay. Existing synthetic settled contexts do not prove that those paths are
-   reachable from actual opening history.
+1. Define and implement the research-backed paid actual assault contract, including result/settlement
+   identity and actual World lineage, then its native consumer and settlement/repeat/finish
+   (remaining Tasks017–019). Private native prepared-round entry is merged; the subsequent
+   no-cost admission assessment performs no debit, RNG advancement or settlement. Complete
+   later-II/consumed Reserve lineage and production ingress authentication before activation.
+   Existing synthetic settled contexts do not prove reachability from actual opening history.
 2. Activate certified, side-safe public Combat actions (Tasks020–021), then prove Exercise/Runner
    replay and repeatability (Tasks022–024).
 3. Reconcile all 72 acceptance criteria and demonstrate the authentic continual cycle (Task025).

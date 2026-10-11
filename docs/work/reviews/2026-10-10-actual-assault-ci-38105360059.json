@@ -1,0 +1,230 @@
+{
+  "source_head": "d4ce0c1695579f21cb81a2bc7ef7a5a83c73ab72",
+  "base": "94cf23883978f7fd9726f4bdd4f63677c6af6a9f",
+  "tested_merge": "47c510031233250311a100056875928f8b5e2b1a",
+  "run_id": 38105360059,
+  "run_url": "https://github.com/dills122/sandtable/actions/runs/38105360059",
+  "attempt": 1,
+  "sdk": "10.0.401",
+  "configuration": "Release",
+  "coverage_verified": true,
+  "passed": 2770,
+  "shards": {
+    "core-a": {
+      "counts": {
+        "total": 71,
+        "passed": 71,
+        "failed": 0,
+        "skipped": 0,
+        "not-run": 0,
+        "errors": 0
+      },
+      "xml_seconds": "652.813",
+      "exit_code": 0,
+      "xml_sha256": "a0556777f0588b652f218aa7b54812bbd28f506bcc38b5af0862f61d648e381e"
+    },
+    "core-b": {
+      "counts": {
+        "total": 2220,
+        "passed": 2220,
+        "failed": 0,
+        "skipped": 0,
+        "not-run": 0,
+        "errors": 0
+      },
+      "xml_seconds": "638.942",
+      "exit_code": 0,
+      "xml_sha256": "84d27dda6b29bb9faed804731ed56f7b8b1e14b069afac2f1c5f520529d27cf3"
+    },
+    "exercise": {
+      "counts": {
+        "total": 469,
+        "passed": 469,
+        "failed": 0,
+        "skipped": 0,
+        "not-run": 0,
+        "errors": 0
+      },
+      "xml_seconds": "155.240",
+      "exit_code": 0,
+      "xml_sha256": "76282ef8ae43f3faba2e44c7eddc14e82beda011c9737a5122fc4d5914a0e6bd"
+    },
+    "contracts": {
+      "counts": {
+        "total": 10,
+        "passed": 10,
+        "failed": 0,
+        "skipped": 0,
+        "not-run": 0,
+        "errors": 0
+      },
+      "xml_seconds": "0.290",
+      "exit_code": 0,
+      "xml_sha256": "eae77a1087486086c0e6625ae679de50d46b5fd59eeafbbbabad1fb5e17f27a1"
+    }
+  },
+  "jobs": [
+    {
+      "name": "dependency-review",
+      "id": 114369623911,
+      "status": "completed",
+      "conclusion": "success",
+      "wall_seconds": 7.0
+    },
+    {
+      "name": "prepare",
+      "id": 114369624101,
+      "status": "completed",
+      "conclusion": "success",
+      "wall_seconds": 145.0
+    },
+    {
+      "name": "tests (core-b)",
+      "id": 114370050116,
+      "status": "completed",
+      "conclusion": "success",
+      "wall_seconds": 720.0
+    },
+    {
+      "name": "tests (exercise)",
+      "id": 114370050132,
+      "status": "completed",
+      "conclusion": "success",
+      "wall_seconds": 239.0
+    },
+    {
+      "name": "tests (contracts)",
+      "id": 114370050137,
+      "status": "completed",
+      "conclusion": "success",
+      "wall_seconds": 90.0
+    },
+    {
+      "name": "tests (core-a)",
+      "id": 114370050139,
+      "status": "completed",
+      "conclusion": "success",
+      "wall_seconds": 724.0
+    },
+    {
+      "name": "verify",
+      "id": 114371970321,
+      "status": "completed",
+      "conclusion": "success",
+      "wall_seconds": 11.0
+    }
+  ],
+  "checks": [
+    {
+      "name": "prepare",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS"
+    },
+    {
+      "name": "Analyze (actions)",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS"
+    },
+    {
+      "name": "Offline links (observational)",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS"
+    },
+    {
+      "name": "Analyze (csharp)",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS"
+    },
+    {
+      "name": "Analyze (javascript-typescript)",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS"
+    },
+    {
+      "name": "Analyze (python)",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS"
+    },
+    {
+      "name": "dependency-review",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS"
+    },
+    {
+      "name": "tests (core-a)",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS"
+    },
+    {
+      "name": "tests (core-b)",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS"
+    },
+    {
+      "name": "tests (exercise)",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS"
+    },
+    {
+      "name": "tests (contracts)",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS"
+    },
+    {
+      "name": "verify",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS"
+    },
+    {
+      "name": "CodeQL",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS"
+    }
+  ],
+  "published_head_unchanged": true,
+  "fresh_review_pending": true,
+  "merge_parents_verified": true,
+  "inventory_receipt_path": "/private/tmp/actual-assault-ci-38105360059/inventory-receipt.json",
+  "inventory_receipt_sha256": "c92d43719be187925bedfd539b1e216207b23f30c37a3672ec0d6b101e8fc8cb",
+  "actual_round_mutation_indices": {
+    "core-a": [
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33
+    ],
+    "core-b": [
+      0,
+      1,
+      2,
+      3,
+      17,
+      18,
+      19,
+      20
+    ]
+  },
+  "no_local_dotnet_run": true
+}
