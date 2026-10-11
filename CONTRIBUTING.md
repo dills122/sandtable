@@ -65,7 +65,13 @@ Codex-managed worktrees seed Git-ignored AI Central context through
 `.codex/environments/environment.toml`. The default shared checkout is `$HOME/.ai-central`;
 set `AI_CENTRAL_HOME` for another location. The allowlisted seeder preserves worktree-owned files.
 
-CI retains xUnit XML timing reports for 14 days. To collect locally, append
+CI retains xUnit XML timing reports for 14 days. Executed CI shards also enable .NET triage
+crash dumps and JSON crash reports under `artifacts/ci/<shard>/diagnostics/`, with process ID
+and timestamp in each dump filename. Dump creation diagnostics stay in `execution.log`.
+These files are retained by the shard artifact upload, including on failure. A nonzero process
+exit or missing final XML report still fails coverage; progress and crash files cannot satisfy it.
+See [the runtime crash capture settings](https://learn.microsoft.com/en-us/dotnet/core/diagnostics/collect-dumps-crash).
+To collect XML locally, append
 `--report-xunit-xml --results-directory artifacts/test-results` to the test command. See
 [test runtime measurements](docs/research/test-runtime-optimization.md). Package versions are
 centralized in `Directory.Packages.props`; build/analyzer settings are in `Directory.Build.props`

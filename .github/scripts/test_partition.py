@@ -226,6 +226,21 @@ def execution_command(shard_name, directory, partition=None):
     return command
 
 
+def execution_environment(directory):
+    # Keep each runtime's crash evidence in the shard artifact; retain real exit codes.
+    diagnostics = (directory / 'diagnostics').resolve()
+    diagnostics.mkdir(parents=True, exist_ok=True)
+    environment = os.environ.copy()
+    environment.update({
+        'DOTNET_DbgEnableMiniDump': '1',
+        'DOTNET_DbgMiniDumpType': '3',
+        'DOTNET_EnableCrashReport': '1',
+        'DOTNET_CreateDumpDiagnostics': '1',
+        'DOTNET_DbgMiniDumpName': str(diagnostics / 'crash-%e-%p-%t.dmp'),
+    })
+    return environment
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('mode', choices=['discover', 'execute', 'verify'])
@@ -269,8 +284,9 @@ def main():
         module = MODULES[args.shard]
         partition = load_partition(json.loads(Path(args.inventory).read_text()), args.sha, sdk, args.attempt)
         command = execution_command(args.shard, shard, partition)
+        environment = execution_environment(shard)
         with (shard / 'execution.log').open('w') as output:
-            result = subprocess.run(command, stdout=output, stderr=subprocess.STDOUT, shell=False)
+            result = subprocess.run(command, stdout=output, stderr=subprocess.STDOUT, shell=False, env=environment)
         (shard / 'status.json').write_text(json.dumps({'shard': args.shard, 'module': module, 'tested_sha': args.sha, 'sdk': sdk, 'configuration': 'Release', 'run_attempt': args.attempt, 'exit_code': result.returncode}) + '\n')
         print((shard / 'execution.log').read_text())
         raise SystemExit(result.returncode)

@@ -3,6 +3,9 @@ import fnmatch
 import re
 import importlib.util
 import json
+import os
+import shutil
+import sys
 from pathlib import Path
 import tempfile
 import unittest
@@ -299,6 +302,85 @@ class DiagnosticCommandTests(unittest.TestCase):
                     self.assertNotIn('--filter-not-method', command)
                 self.assertNotIn('--max-threads', command)
                 self.assertNotIn('--timeout', command)
+
+class CrashCaptureExecutionTests(unittest.TestCase):
+    crash_keys = (
+        'DOTNET_DbgEnableMiniDump',
+        'DOTNET_DbgMiniDumpType',
+        'DOTNET_EnableCrashReport',
+        'DOTNET_DbgMiniDumpName',
+        'DOTNET_CreateDumpDiagnostics',
+    )
+
+    def setUp(self):
+        self.fixture = CoverageTests()
+        self.fixture.setUp()
+        self.addCleanup(self.fixture.doCleanups)
+        self.root = self.fixture.root
+        shutil.rmtree(self.root / 'core-b')
+        self.inventory_path = self.root / 'inventory.json'
+        self.inventory_path.write_text(json.dumps(self.fixture.inventory))
+
+    def execute_child(self, exit_code):
+        # Read only triage settings; never emit the inherited process environment.
+        child = (
+            'import json, os, sys; '
+            'print(json.dumps({key: os.environ.get(key) for key in ' + repr(self.crash_keys) + '}), flush=True); '
+            'print("child progress retained", file=sys.stderr, flush=True); '
+            'sys.exit(' + str(exit_code) + ')'
+        )
+        argv = ['test_partition.py', 'execute', '--sha', SHA,
+                '--directory', str(self.root), '--shard', 'core-b',
+                '--inventory', str(self.inventory_path)]
+        inherited = {key: 'parent-value-' + key for key in self.crash_keys}
+        with mock.patch.dict(os.environ, inherited):
+            parent_environment = dict(os.environ)
+            with mock.patch.object(sys, 'argv', argv), \
+                    mock.patch.object(partition, 'identity', return_value='10.0.400'), \
+                    mock.patch.object(partition, 'load_partition', return_value={}), \
+                    mock.patch.object(partition, 'execution_command', return_value=[sys.executable, '-c', child]):
+                with self.assertRaises(SystemExit) as stopped:
+                    partition.main()
+            self.assertEqual(stopped.exception.code, exit_code)
+            self.assertEqual(dict(os.environ), parent_environment, 'Crash capture must not mutate parent environment')
+        leaf = self.root / 'core-b'
+        status = json.loads((leaf / 'status.json').read_text())
+        self.assertEqual(status['exit_code'], exit_code)
+        self.assertEqual(status['shard'], 'core-b')
+        output = (leaf / 'execution.log').read_text()
+        self.assertIn('child progress retained', output)
+        settings = json.loads(output.splitlines()[0])
+        return leaf, settings
+
+    def assert_crash_capture_enabled(self, settings):
+        expected = {'DOTNET_DbgEnableMiniDump': '1', 'DOTNET_DbgMiniDumpType': '3',
+                    'DOTNET_EnableCrashReport': '1', 'DOTNET_CreateDumpDiagnostics': '1'}
+        actual = {key: settings[key] for key in expected}
+        self.assertEqual(actual, expected, 'Executed child is missing required .NET crash triage settings')
+
+    def test_exit139_retains_failure_evidence_and_enables_crash_capture(self):
+        leaf, settings = self.execute_child(139)
+        self.assertFalse(list((leaf / 'results').glob('*.xml')))
+        with self.assertRaises(ValueError):
+            self.fixture.check()
+        self.assert_crash_capture_enabled(settings)
+
+    def test_success_without_final_xml_is_not_coverage_and_enables_crash_capture(self):
+        leaf, settings = self.execute_child(0)
+        self.assertFalse(list((leaf / 'results').glob('*.xml')))
+        with self.assertRaisesRegex(ValueError, 'Missing/duplicate report'):
+            self.fixture.check()
+        self.assert_crash_capture_enabled(settings)
+
+    def test_dump_pattern_uses_pid_and_time_inside_uploaded_shard_diagnostics(self):
+        leaf, settings = self.execute_child(139)
+        dump_name = settings['DOTNET_DbgMiniDumpName']
+        self.assertIn('%p', dump_name, 'Dump filename needs runtime PID to distinguish child processes')
+        self.assertIn('%t', dump_name, 'Dump filename needs runtime time to distinguish repeated crashes')
+        diagnostics = (leaf / 'diagnostics').resolve()
+        self.assertEqual(Path(dump_name).parent, diagnostics)
+        self.assertTrue(diagnostics.is_dir(), 'Crash diagnostics directory must exist before child executes')
+
 
 class CoreRowPartitionTests(unittest.TestCase):
     def setUp(self):
