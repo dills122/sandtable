@@ -5,6 +5,8 @@ using System.Runtime.Loader;
 using System.Security.Cryptography;
 using System.Text.Json;
 
+const string SupportedRunnerVersion = "4.0.2";
+
 // Read only the five reviewed data factories and two formatter controls. Never invoke test bodies
 // or delegates contained in rows. Names come from this host's compiled Release xUnit formatter.
 if (args.Length != 3) throw new ArgumentException("Expected Release bin, discovery log, output JSON");
@@ -20,7 +22,7 @@ var framework = Load("xunit.v3.core");
 foreach (var component in new[] { common, framework })
 {
     var version = component.GetCustomAttribute<AssemblyInformationalVersionAttribute>()!.InformationalVersion;
-    Require(version.Split('+')[0] == "4.0.1", "Unsupported runner version: " + version);
+    Require(version.Split('+')[0] == SupportedRunnerVersion, "Unsupported runner version: " + version);
 }
 using (var configuration = JsonDocument.Parse(File.ReadAllText(Path.Combine(bin, "xunit.runner.json"))))
 {
@@ -87,7 +89,7 @@ var fingerprints = binaries.ToDictionary(name => name, name => Convert.ToHexStri
 File.WriteAllText(args[2], JsonSerializer.Serialize(new
 {
     schema_version = 1,
-    runner_version = "4.0.1",
+    runner_version = SupportedRunnerVersion,
     providers = proof.Select(row => new { row.method, row.provider, row.names }),
     controls = controls.Select(row => new { row.method, row.provider, row.names }),
     display_calls = calls,
