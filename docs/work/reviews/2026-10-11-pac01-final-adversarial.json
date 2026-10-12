@@ -1,0 +1,13 @@
+{
+  "command": [
+    "python3",
+    "-B",
+    "-u",
+    "/private/tmp/pac01-acquire-adversarial.py"
+  ],
+  "budgetSeconds": 120,
+  "exitCode": 0,
+  "timedOut": false,
+  "elapsedSeconds": 4.506,
+  "logSha256": "34a2a809205a7c69706823d077683f61de22d26c8131e05dfc4a6fd97caa1933"
+}

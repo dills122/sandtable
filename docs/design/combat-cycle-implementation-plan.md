@@ -2569,11 +2569,17 @@ reconciliation has its own review/CI gate; it changes no product or frozen depen
 
 ### Task019F6 — private native actual paid-assault consumer
 
-Candidate implementation, 2026-10-11, on `codex/native-paid-assault-consumer` from
+Merged private native slice, 2026-10-11, in [PR177](https://github.com/dills122/sandtable/pull/177),
+merge `4a6cc395acc6c2e3795cf1b01edca9c75b436816`; reviewed head
+`ec0c6d813eea23866bba73ad882d801d4af41348`, correction freeze
+`31f445c988d404d07b07041874d04beeda69303b`, on `codex/native-paid-assault-consumer` from
 `6334a7c87446ef5c7694ac325f7650819d891413`. The
 [author plan](../work/plans/2026-10-11-native-paid-assault-consumer.md) owns NP01–NP10;
 the unchanged [paid contract](../specs/combat-actual-paid-assault-v1.md) governs wire behavior.
-Fresh independent review and exact-head GitHub CI remain publication gates; this is not a merge verdict.
+Fresh review1/9 returned Not ready with one accepted independent-ledger diagnostic P2;
+review2/9 returned Ready after correction, round1pass2/recovery0/2. Exact-head CI38174571457
+passed2803/2803 Release rows,71/2253/469/10,SDK10.0.401; all2770 baseline rows +33new native
+CoreB preserved. This is private-slice completion, not parent or public activation.
 
 Four genuine native Prepared25 roots first failed at the defined unsupported boundary in retained
 semantic RED `9c41b89`, after independent CP/ammunition/RNG preconditions passed. The additive C#
@@ -2597,9 +2603,43 @@ the predecessor AAD59 manifest remains unchanged. Cold/warm and after-first-read
 checks remain mandatory, as do closed grammar and owned-return checks. No Python process, new
 package, host API, generated-client change or historical fixture regeneration is part of the consumer.
 
-This completes only the private immediate native slice subject to its remaining review/CI gates.
+This completes only the merged private immediate native slice. Final review/CI and completion
+evidence are preserved separately on origin/codex/native-paid-assault-handoff atda2ea82; its
+three evidence files are not merged-main product files.
 Production ingress authentication, Release execution, repeated/repeat/finish/later-II and consumed
 Reserve lineage, public/player/host activation, Snapshot/Archives, Exercise/Runner and authentic
 continual-cycle evidence remain parent obligations. Tasks017–025 and all72 acceptance criteria are
 not closed by this checkpoint. The four historical owning failures and unresolved ExerciseRunner
 aggregation/CoreB139 remain unwaived and are not claimed fixed by native paid-assault validation.
+
+
+### PAC01 — actual post-assault continuation executable contract
+
+Brain accepted one additive private successor on2026-10-11, baseline4a6cc395acc6c2e3795cf1b01edca9c75b436816.
+[Contract](../specs/combat-actual-post-assault-continuation-v1.md),
+[author plan](../work/plans/2026-10-11-actual-post-assault-continuation-contract.md) and
+[research](../research/2026-10-11-actual-post-assault-continuation-recon.md) govern the four accepted
+suffix events. Full actual paid replay and four independent ledgers derive original actual iml
+Movement proof, complete entry members/history updated to paid spentCP, and actual paid commitment
+receipt/hash progress. Same-cycle empty Release publishes34/35; System control opening36 and owner
+repeat/finish37 preserve World/resources/RNG. Repeat establishes ordinal2Movement, finish same-slot
+TruckConvoy; neither executes its successor. CP9 is a prospective Contact witness, never new spend.
+
+All four owner/seal roots are mandatory vectors; valid inherited timing variations in the bounded
+turn1/stage1/first-slot/ordinal1 ordinary profile are admitted by replay, with no successor-fixture
+allowlist. Old synthetic SCT/SCC/Release admission and historical progress-tag rewriting are excluded.
+Candidate64external pins measured cold/core and adversarial with no material unknown/unobserved
+reads; new own delivery artifacts remain distinct from immutable paid62/AAD59 identities.
+Semantic RED053c552 retains4genuine unsupported007 failures after authentic preconditions; initial
+harness failure is separate. Final normal passed431.075s/900,exit0,fixturehashunchanged;8literaltraces/40frames/32events,
+20recoverycuts/40retries,96forgeries,87grammar checks and258physicalfailure probes.
+Author engineering self-review and predecessor-byte checks complete; fresh independent review
+and exact-headCI remain publication gates.
+Five primary paths are new spec/schema/oracle/fixture and this plan; README/tech-design/author plan
+and dated administrative research/evidence synchronized. No native runtime or old frozen artifact edit.
+
+PAC01 delivers a contract only. Native successor, production ingress, full selected-branch/Engaged
+campaign lineage, repeat/finish lifecycle execution, Release/public/host/Exercise activation,
+later-II/consumed Reserve, persistence and parent continual-cycle closure remain separate gates.
+Four historical owning failures and aggregation/CoreB139 remain unwaived. New review counters0/9;
+Brain owns dispatch/exact-headCI/merge and single normal-oracle lease, up to3passes/round and2recoveries.

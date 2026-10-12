@@ -1,0 +1,38 @@
+{
+  "status": "executed focused field accounting and byte rejection",
+  "dominating": {
+    "Source": 8651264,
+    "Control": 258501,
+    "Event": 16384,
+    "Input": 1024,
+    "Proof": 1598020,
+    "ContinuationLedger": 4101
+  },
+  "limits": {
+    "Source": 16777216,
+    "Control": 262144,
+    "Event": 32768,
+    "Input": 1024,
+    "Proof": 2097152,
+    "ContinuationLedger": 8192
+  },
+  "fieldAccounting": {
+    "ControlMetadata": 15660,
+    "ProofMetadata": 16370,
+    "Event": 7392,
+    "Input": 854
+  },
+  "genuineMeasured": {
+    "Source": 308188,
+    "Control": 16707,
+    "Proof": 65709,
+    "Event": 3401,
+    "Input": 394,
+    "ContinuationLedger": 1378
+  },
+  "inheritedValidProofBound": 1273983,
+  "inheritedValidWorldBound": 192965,
+  "suffixAcceptedEvents": 4,
+  "depth": 36,
+  "fieldMethod": "Own valid metadata template carries maximal count4receipts, one member/progress/witness, two original end locations, original+successor Authority, Timing and closure. Every non-World/non-paidProof string padded128 ASCII and each int19 digits; actual admitted IDs are fixed labels/generated hex, no user free text. World and paidProof use unchanged independent dominating models, not fixture lengths."
+}

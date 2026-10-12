@@ -1,0 +1,13 @@
+{
+  "command": [
+    "python3",
+    "-B",
+    "-u",
+    "/private/tmp/pac01-acquire.py"
+  ],
+  "budgetSeconds": 120,
+  "exitCode": 0,
+  "timedOut": false,
+  "elapsedSeconds": 88.121,
+  "logSha256": "0e0d547523e0e24f0b6e4a696486db7ea83e7f88ccf853227ec0f0594ef6a866"
+}

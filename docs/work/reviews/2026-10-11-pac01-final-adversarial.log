@@ -1,0 +1,3 @@
+PASS physical warm/change/missing/unreadable/afterfirstread and own delivery 64 258
+PASS isolated forced finish/proximity/guards/future versus immediate work, CP/DP ceilings and overflow
+{"mode": "cold/adversarial dependency and isolated policy paths", "elapsedSeconds": 3.822, "runtimeCount": 64, "ownedDelivery": ["docs/specs/combat-actual-post-assault-continuation-v1.schema.json", "docs/specs/verify-combat-actual-post-assault-continuation-v1.py"], "testOnly": ["docs/specs/fixtures/combat-actual-paid-assault-v1.json"], "unknown": [], "unobserved": []}
