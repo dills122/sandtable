@@ -1,6 +1,6 @@
 {
   "contract": "combat-actual-post-assault-continuation-v1",
-  "status": "measured64 runtime closure; semantic implementation; literal freeze pending",
+  "status": "complete private executable reference; measured closure and literals frozen; final normal/review pending",
   "objects": {
     "Source": "contractVersion:int paidSourceCanonicalUtf8:carrier continuationEventCanonicalUtf8:eventCarrier[]",
     "Base": "contractVersion:int dependencyManifestHash:hash paidProof:PaidProof controlClockPolicyId:id",
@@ -167,5 +167,9 @@
     "Input": 1024,
     "Proof": 1598020,
     "ContinuationLedger": 4101
+  },
+  "testArtifactHashes": {
+    "docs/specs/fixtures/combat-actual-paid-assault-v1.json": "80dfa0157542d70660f78d0e2326564fcb9095a71f84ecab2deaf061c5e7b203",
+    "docs/specs/fixtures/combat-actual-post-assault-continuation-v1.json": "9cd49e98ea011228bc63a296aede917b8b517926b3d50df244df139e7d9f2679"
   }
 }

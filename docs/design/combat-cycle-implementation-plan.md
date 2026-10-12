@@ -2631,8 +2631,10 @@ allowlist. Old synthetic SCT/SCC/Release admission and historical progress-tag r
 Candidate64external pins measured cold/core and adversarial with no material unknown/unobserved
 reads; new own delivery artifacts remain distinct from immutable paid62/AAD59 identities.
 Semantic RED053c552 retains4genuine unsupported007 failures after authentic preconditions; initial
-harness failure is separate. Focused GREEN preservation/timing/grammar/capacity tests are underway;
-final normal, self-review, fresh independent review and exact-headCI remain publication gates.
+harness failure is separate. Final normal passed431.075s/900,exit0,fixturehashunchanged;8literaltraces/40frames/32events,
+20recoverycuts/40retries,96forgeries,87grammar checks and258physicalfailure probes.
+Author engineering self-review and predecessor-byte checks complete; fresh independent review
+and exact-headCI remain publication gates.
 Five primary paths are new spec/schema/oracle/fixture and this plan; README/tech-design/author plan
 and dated administrative research/evidence synchronized. No native runtime or old frozen artifact edit.
 

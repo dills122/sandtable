@@ -1,0 +1,16 @@
+{
+  "command": [
+    "python3",
+    "-B",
+    "-u",
+    "docs/specs/verify-combat-actual-post-assault-continuation-v1.py",
+    "--write-fixture"
+  ],
+  "budgetSeconds": 120,
+  "exitCode": 0,
+  "timedOut": false,
+  "elapsedSeconds": 55.903,
+  "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "fixtureSha256": "9cd49e98ea011228bc63a296aede917b8b517926b3d50df244df139e7d9f2679",
+  "fixtureBytes": 5560092
+}

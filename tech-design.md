@@ -644,7 +644,8 @@ complete member history and actual commitment receipt/hash progress. Original Wo
 unchanged; CP9 is a prospective witness only. Repeat opens ordinal2Movement and finish enters
 same-slotTruckConvoy; neither executes its successor. Valid inherited timing variants preserve
 this bounded ordinary source profile; synthetic settled readers remain excluded authority.
-PAC01 normal/review/CI gates remain pending, and native continuation is a separate milestone.
+PAC01 normal passed431.075s/900 with unchanged frozen bytes; fresh review/CI remain pending,
+and native continuation is a separate milestone.
 Production ingress authentication,
 later-II/consumed Reserve lineage and public activation remain gated. Private settled controls
 still retain synthetic earlier Movement; these checkpoints do not prove the authentic continual

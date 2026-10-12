@@ -289,7 +289,12 @@ def semantic_tests():
     assert not failures, str(len(failures))+' genuine successor publications failed: '+','.join(failures)
 
 
-def cases():return json.loads((ROOT/'fixtures/combat-actual-paid-assault-v1.json').read_bytes())['cases']
+def test_bytes(path):
+    require(path in INVENTORY['testArtifactHashes'],9,'/testArtifact')
+    try:data=(REPOSITORY/path).read_bytes()
+    except OSError as error:raise Invalid(9,path) from error
+    require(hashlib.sha256(data).hexdigest()==INVENTORY['testArtifactHashes'][path],9,path);return data
+def cases():return json.loads(test_bytes('docs/specs/fixtures/combat-actual-paid-assault-v1.json'))['cases']
 def rejected(call,code=None):
     try:call()
     except Invalid as error:
@@ -530,7 +535,7 @@ def fixture_artifacts():
     return dict(contractVersion=1,dependencyManifestHash='sha256:'+identity('dependency-manifest',dict(sorted(DEPENDENCIES.items()))),traces=traces)
 FIXTURE=ROOT/'fixtures/combat-actual-post-assault-continuation-v1.json'
 def fixture_tests():
-    expected=json.loads(FIXTURE.read_bytes());derived=fixture_artifacts();assert expected==derived;print('PASS retained literal8owner/seal/outcome traces,40cuts,32events; no regeneration')
+    expected=json.loads(test_bytes('docs/specs/fixtures/combat-actual-post-assault-continuation-v1.json'));derived=fixture_artifacts();assert expected==derived;print('PASS retained literal8owner/seal/outcome traces,40cuts,32events; no regeneration')
 def normal_gate():
     semantic_tests();timestamp_variant_tests();policy_probe_tests();grammar_tests();capacity_tests();dependency_tests()
     for owner in ('axis','commonwealth'):preservation_tests(owner);recovery_tests(owner);timing_tests(owner);adversarial_tests(owner)

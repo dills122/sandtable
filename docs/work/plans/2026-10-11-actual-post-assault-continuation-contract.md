@@ -178,3 +178,29 @@ or unobserved path in either. Final core logSHA0e0d547523e0e24f0b6e4a696486db7ea
 adversarial34a2a809205a7c69706823d077683f61de22d26c8131e05dfc4a6fd97caa1933.
 Both observers/receipts retained; closureFrozen true precedes explicit new fixture generation.
 Source/runtime maps/grammars unchanged by later own delivery measurement metadata.
+
+## Final normal and author engineering self-review
+
+Explicit fixture generation passed55.903s/120;5560092bytes,SHA9cd49e98ea011228bc63a296aede917b8b517926b3d50df244df139e7d9f2679.
+Full normal command python3 -B -u docs/specs/verify-combat-actual-post-assault-continuation-v1.py
+passedexit0 in431.075s/900 with terminating wrapper, no timeout. PrimarylogSHA
+ce1f69410fc52a88e1fc48e21b5fddff890bcff352d70268f52ca18d7e8c73e0;fixturebefore/afteridentical.
+All8literalowner/seal/outcome traces,40frames/32events;20publicrecoverycuts/40lostreply retries;
+96coherent/source/claim attacks;87grammar checks;bothowner clocks/fallbacks;258physicalfailure
+probes;actualseal-timevariant and isolatedpolicy/future-duty/guard/overflow controls pass.
+Normal source/schema/spec/fixture hashes retained exactly; inventory status text is its pre-normal
+freeze checkpoint, while this receipt records completednormal. No new Python oracle runs in.NET CI.
+
+Author self-review: correctness/source authority traced through fullpaid replay, originalmember/
+Movement/history and actualreceipt/hash; private helpers confer no standalone authority. Primitive,
+family/context/actor validation precedes retry/fallback, reliable clocks use independent nullfloor,
+oldreceipt retries/no-op timers appendnothing, repeat's newAuthority uses pre-eventprefix/resultversion.
+Complete World/resources/RNG remainequal;CP9 never spent. Unsupported profiles reject; isolated
+Engaged/guard/empty/no-progress probes remainnon-source. Readability follows compacttyped-oracle
+style with separate admission/grammar/assessment/transition/public/test functions. One private family
+fits accepted architecture;legacyadmissionhelper calls absent, old.NET/transport/workflow untouched.
+Security checks closedpreparse/primitive/canonical/manifest/claim boundaries,64physicalrechecks and
+ownedreturns. Performance boundedfour suffixevents/bytecaps; fullnormal431.075s measured, no cache
+or broadlocalduplicate gate introduced. Tradeoff:5.56MB regressionfixture and repeated fullpaid replay
+are retained maintenance/CPUcosts. No additional authorfinding identified; freshindependentreview
+andexactheadCIremain required, withBrainowningdispatchandmerge. No self-issued readiness verdict.

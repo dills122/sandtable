@@ -1,0 +1,17 @@
+{
+  "baseline": "4a6cc395acc6c2e3795cf1b01edca9c75b436816",
+  "unchangedPredecessorSpecFiles": 224,
+  "changedPredecessorSpecFiles": [],
+  "normalFileHashesMatch": true,
+  "newNormalExit": 0,
+  "fixtureUnchanged": true,
+  "excludedHistoricalAdmissionCallsAbsent": [
+    "policy.assess",
+    "policy.progress_refs",
+    "rel.validate_base",
+    "rel.read_base",
+    "policy.base_for",
+    "policy.source"
+  ],
+  "sourceTestsWorkflowsChanged": []
+}
