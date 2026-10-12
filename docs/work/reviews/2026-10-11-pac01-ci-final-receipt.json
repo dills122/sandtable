@@ -1,0 +1,124 @@
+{
+  "pr": 178,
+  "head": "949d8b0da9ecfab2a954cd90fca37b18a49c3193",
+  "ciRunId": 38189033953,
+  "ciAttempt": 1,
+  "ciUrl": "https://github.com/dills122/sandtable/actions/runs/38189033953",
+  "testedMerge": {
+    "parents": [
+      "4a6cc395acc6c2e3795cf1b01edca9c75b436816",
+      "949d8b0da9ecfab2a954cd90fca37b18a49c3193"
+    ],
+    "sha": "13eb5e5dc136d69a6cd57b343c0458eacd0fff6d",
+    "tree": "4515156da08198876d6bcf76e1c7c2f9a4f06889"
+  },
+  "all13ChecksPassedOrNeutral": true,
+  "verifiedCoverage": true,
+  "sdk": "10.0.401",
+  "configuration": "Release",
+  "total": 2803,
+  "shards": {
+    "core-a": {
+      "counts": {
+        "total": 71,
+        "passed": 71,
+        "failed": 0,
+        "skipped": 0,
+        "not-run": 0,
+        "errors": 0
+      },
+      "rowIdentitySha256": "4ba33ee68436e7ec262af49508f3ed9e3ae1fd6333539ac8f0e9c3ab320442c9",
+      "status": {
+        "shard": "core-a",
+        "module": "Cna.Core.Tests",
+        "tested_sha": "13eb5e5dc136d69a6cd57b343c0458eacd0fff6d",
+        "sdk": "10.0.401",
+        "configuration": "Release",
+        "run_attempt": "1",
+        "exit_code": 0
+      }
+    },
+    "core-b": {
+      "counts": {
+        "total": 2253,
+        "passed": 2253,
+        "failed": 0,
+        "skipped": 0,
+        "not-run": 0,
+        "errors": 0
+      },
+      "rowIdentitySha256": "cf57c8fe2819d5fea5d665a80c17cf38eb1f0251aa57dcdf94f3f7e637ad067e",
+      "status": {
+        "shard": "core-b",
+        "module": "Cna.Core.Tests",
+        "tested_sha": "13eb5e5dc136d69a6cd57b343c0458eacd0fff6d",
+        "sdk": "10.0.401",
+        "configuration": "Release",
+        "run_attempt": "1",
+        "exit_code": 0
+      }
+    },
+    "exercise": {
+      "counts": {
+        "total": 469,
+        "passed": 469,
+        "failed": 0,
+        "skipped": 0,
+        "not-run": 0,
+        "errors": 0
+      },
+      "rowIdentitySha256": "100690316728b80f15162dbc6024499dc1adb31797846adf4e9543e13a3a2a01",
+      "status": {
+        "shard": "exercise",
+        "module": "Cna.ExerciseRunner.Tests",
+        "tested_sha": "13eb5e5dc136d69a6cd57b343c0458eacd0fff6d",
+        "sdk": "10.0.401",
+        "configuration": "Release",
+        "run_attempt": "1",
+        "exit_code": 0
+      }
+    },
+    "contracts": {
+      "counts": {
+        "total": 10,
+        "passed": 10,
+        "failed": 0,
+        "skipped": 0,
+        "not-run": 0,
+        "errors": 0
+      },
+      "rowIdentitySha256": "f7adb7312bf63feec5c20f09316b03e6734b333104c7c028f1b89c8672ffa63e",
+      "status": {
+        "shard": "contracts",
+        "module": "Cna.Intelligence.Contracts.Tests",
+        "tested_sha": "13eb5e5dc136d69a6cd57b343c0458eacd0fff6d",
+        "sdk": "10.0.401",
+        "configuration": "Release",
+        "run_attempt": "1",
+        "exit_code": 0
+      }
+    }
+  },
+  "baselineRun": 38174571457,
+  "baselineTestedMerge": "8677d05b8d8f6ca9248a911cc1d14b41b9fdd2d9",
+  "allBaselineRowsPreserved": true,
+  "newNativeRows": 0,
+  "artifactRoot": "/private/tmp/pac-ci-final/coverage-aggregate-13eb5e5dc136d69a6cd57b343c0458eacd0fff6d-1",
+  "artifactHashes": {
+    "core-a/status.json": "0f92a76921e6a8e0eac7fb2dc52e74fea98ebb6c8915ca0f784d98caeaebd441",
+    "core-a/results/runner_runnervmmprz5_2026-10-12_00_46_48.399326.xunit.xml": "5bf9a5d84a60366d57bc3b6731badb5dcb8c2e2d748b9cb445138f21d748612e",
+    "core-b/status.json": "bf57ae6a98e7b2a1214bffffafe7a99311b8ac312ef0cbc7386ae28502c04f38",
+    "core-b/results/runner_runnervmmprz5_2026-10-12_00_46_28.062530.xunit.xml": "63ff1f026746f1bac5ff2e070128999d68460c39ebda6f3698bb09120becd7ef",
+    "exercise/status.json": "8df8defcfcbb85bb63230451c792ca78d1772a6ea9697b261a4759fc720da068",
+    "exercise/results/runner_runnervmmprz5_2026-10-12_00_46_47.916282.xunit.xml": "b7c34aadc75c7e9492b12e91d9e42d1e66a07c0be10f4b88e6db1e39f5e3c146",
+    "contracts/status.json": "d96be3168848d9e8adb08f8c60f3084fd5577212e45b8808a45ad5bc28e304be",
+    "contracts/results/runner_runnervmmprz5_2026-10-12_00_46_09.530575.xunit.xml": "882227a84bda54ab031f3277a99607f721e087ec228a74636e0b38af1404e097",
+    "inventory.json": "a5a851b19592a3411e874a1adfb8fa12e80a99d662a86601cace6b0347439625",
+    "dependencies.json": "e352fb75dd0111784e1e959f3f494810ee05c5497fdb499b4a84941c2395a0d5"
+  },
+  "limits": [
+    "PAC Python normal passed separately in431.075s; CI does not execute new Python oracle",
+    "independent review and Brain merge remain separate",
+    "four owning failures, aggregation and CoreB139 root causes unwaived"
+  ]
+}
