@@ -53,7 +53,7 @@ play a side; it will never decide the rules or secretly change the campaign stat
 | --- | --- | --- |
 | Deterministic Umpire | Working | Versioned rules, seeded randomness, canonical commands/events, replay, checkpoints, and side-safe action boundaries are implemented. |
 | Playable rule path | Working through Combat entry | Runner can execute Initiative, stage preamble, Reserve Designation, Movement, bounded ZOC/Reaction, and Breakdown, then stops before Combat adjudication. |
-| Combat and continual cycle | Private Core entry; public activation pending | Task019F3 (PR #169) implements private native actual prepared-round entry and cancelled no-attack Release for both supported opening histories with two independently trusted ledgers. Task019F4 (PR #172) adds private no-cost actual assault admission and pure arithmetic assessment. Task019F5 (PR #175) adds the private actual paid-assault executable reference through immediate settlement and CA completion into same-cycle Reserve Release. Task019F6 implements the private native paid-assault consumer with exact reference byte parity and focused native validation. Production ingress authentication, later-II/consumed Reserve lineage, full-cycle proof and public Combat remain open. |
+| Combat and continual cycle | Private Core entry; public activation pending | Task019F3 (PR #169) implements private native actual prepared-round entry and cancelled no-attack Release for both supported opening histories with two independently trusted ledgers. Task019F4 (PR #172) adds private no-cost actual assault admission and pure arithmetic assessment. Task019F5 (PR #175) adds the private actual paid-assault executable reference through immediate settlement and CA completion into same-cycle Reserve Release. Task019F6 (PR #177) implements the merged private native paid-assault consumer with exact reference byte parity and focused native validation. PAC01 defines an actual-source private Release and guarded repeat/finish contract; native continuation, production ingress, later-II/consumed Reserve lineage, full-cycle proof and public Combat remain open. |
 | Exercise and Maneuver tools | Working | Deterministic single runs, multi-run matrices, paired comparisons, strict readback, and evidence bundles are available from CLI. |
 | User interface | Not started | `site/` is project website only. Maproom hot-seat client is future work. |
 | Published scenario | Not started | First target is six-turn, Land-only *Graziani's Offensive* after working Combat loop. |
@@ -67,11 +67,11 @@ dormant Core tests; they are not yet exposed as playable actions.
 
 Next delivery sequence:
 
-1. Build on Task019F6’s private native consumer of PR #175 to complete remaining
-   settlement/repeat/finish lineage (Tasks017–019). The consumer authenticates
-   full actual World history and three independent ledgers through immediate settlement and
-   one CA completion into same-cycle Reserve Release. Complete
-   later-II/consumed Reserve lineage and production ingress authentication before activation.
+1. Complete PAC01's [actual post-assault continuation contract](docs/specs/combat-actual-post-assault-continuation-v1.md),
+   then implement its private native successor from merged Task019F6 (PR #177). The contract
+   authenticates complete paid history through empty Release and guarded repeat/finish; repeat
+   stops at ordinal2 Movement opening. Certify full selected-branch campaign lineage, repeated
+   Movement, later-II/consumed Reserve and production ingress authentication before activation.
    Existing synthetic settled contexts do not prove reachability from actual opening history.
 2. Activate certified, side-safe public Combat actions (Tasks020–021), then prove Exercise/Runner
    replay and repeatability (Tasks022–024).

@@ -147,3 +147,34 @@ Semantic RED checkpoint:4 genuine successor publications failed at definedCMB-PA
 full paid replay and original resources/RNG/actualMovement preconditions. Exit1,11.336s/120,
 logSHAff6130254c4038a48d7eb3a842f0e858f977647b3aa691560ffa6d046a33d31a.
 Initial Random metadata precondition harness failure retained separately, not credited as RED.
+
+## Implementation checkpoint before literal freeze
+
+One successor family implemented with own empty-Release framing, matching policy without calling
+legacy publicvalidator or rebinding globals. Four original release-open tests GREEN; Axis bothseals
+repeat/finish pure-preservation4traces passed. Axis timing/fallback/context44.324s; grammar87checks
+9.106s; capacity7.646s; forgery48rejections35.609s; recovery10cuts/20retries62.611s, all<=120s.
+Original seal-time variation regenerates ARE and paid history and is admitted, no fixture allowlist.
+Initial GREEN unused-alias AttributeError and accidentally retained shadowing RED stub were corrected;
+no pass credit before genuine tests ran. Initial acquisition observer counted nonexistent Python
+bytecode-cache open attempts; all unknown paths were nonexistent, not material buffers. Corrected
+cold/core measured64external+2owndelivery+1testpaidfixture in60.473s, no unknown/unobserved; corrected
+cold/adversarial3.851s verified258physical-failure/owned-delivery probes and isolated policy. Current
+final all-root core/adversarial receipts follow before literals. New own source/proof publication
+requires closureFrozen; external64 map unchanged and own delivery distinct.
+
+Capacity accounts control metadata15660/proof metadata16370/event7392/input854 from padded fixed
+own fields, versus reserved65536/131072/16384/1024. Conservative validSource8651264<16MiB,
+Control258501<256KiB,Proof1598020<2MiB,newledger4101<8KiB. Independent inherited valid models
+1273983PaidProof/192965World unchanged. Raw gates/depth36/collection bounds run before allocation.
+Genuine measurements and field-model method retained in dated capacity evidence; no capacity claim
+rests only on fixture size. Isolated forced finish/proximity/guards/future-vs-immediate duties,
+Contact/Engaged/CP15-vs16 and checked overflow pass without a Source or admission claim.
+
+Final preliteral acquisition: all8genuine repeat/finish traces +4semantic roots +actual inherited
+seal-time variant passed; cold/core87.471s (wrapper88.121s/120), adversarial3.822s
+(wrapper4.506s/120). Exact64external +2owned schema/oracle +1testpaidfixture, no material unknown
+or unobserved path in either. Final core logSHA0e0d547523e0e24f0b6e4a696486db7ea83e7f88ccf853227ec0f0594ef6a866;
+adversarial34a2a809205a7c69706823d077683f61de22d26c8131e05dfc4a6fd97caa1933.
+Both observers/receipts retained; closureFrozen true precedes explicit new fixture generation.
+Source/runtime maps/grammars unchanged by later own delivery measurement metadata.
