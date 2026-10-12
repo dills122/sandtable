@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/docs/specs/verify-combat-actual-post-assault-continuation-v1.py", line 43, in <module>
+    if __name__=='__main__':semantic_tests()
+                            ~~~~~~~~~~~~~~^^
+  File "/Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/docs/specs/verify-combat-actual-post-assault-continuation-v1.py", line 30, in semantic_tests
+    assert state['randomState']==dict(seed=1,nextByteCursor=10)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

@@ -1,0 +1,12 @@
+{
+  "command": [
+    "python3",
+    "-B",
+    "docs/specs/verify-combat-actual-post-assault-continuation-v1.py"
+  ],
+  "budgetSeconds": 120,
+  "exitCode": 1,
+  "timedOut": false,
+  "elapsedSeconds": 1.375,
+  "logSha256": "23ecffce38776375d13252326f6bf4d2885738ecbf19b1778cf149f9ab5987e8"
+}
