@@ -1,0 +1,371 @@
+{
+  "baseline": "44cf98656350b29e2f1074f2a9a1b1e634234faa",
+  "snapshot": "/private/tmp/cs02-44cf986-baseline",
+  "candidateRuntimePaths": 66,
+  "observations": [
+    {
+      "owner": "axis",
+      "firstSeal": "attacker",
+      "sourceBytes": 308188,
+      "proofBytes": 65709,
+      "repeatPrefix": "sha256:0e78768438867ec7ba5d5a0e5ad5d5a335f73f21ffae6408ea19c9abe894cc21",
+      "originalMovementReceipt": "iml.324a120e81afe965207f88a13afffbf15d89c8c46374c57fbfeab8faa80772f7",
+      "memberCpRemainsFiveInKernel": true,
+      "moves": [
+        {
+          "version": 38,
+          "destination": "axis-rear",
+          "costs": {
+            "terrainCost": 2,
+            "breakOffCost": 2,
+            "totalCost": 4,
+            "baseCpa": 10,
+            "voluntaryCeiling": 15,
+            "beforeCp": 5,
+            "afterCp": 9,
+            "excessCpDp": 0,
+            "beforeCohesion": 0,
+            "afterCohesion": 0
+          },
+          "endedCount": 1,
+          "sourceWorldFitsPaidGrammar": true,
+          "cohesion": 0
+        },
+        {
+          "version": 39,
+          "destination": "axis-supply",
+          "costs": {
+            "terrainCost": 2,
+            "breakOffCost": 0,
+            "totalCost": 2,
+            "baseCpa": 10,
+            "voluntaryCeiling": 15,
+            "beforeCp": 9,
+            "afterCp": 11,
+            "excessCpDp": 1,
+            "beforeCohesion": 0,
+            "afterCohesion": -1
+          },
+          "endedCount": 0,
+          "sourceWorldFitsPaidGrammar": true,
+          "cohesion": -1
+        },
+        {
+          "version": 40,
+          "destination": "axis-rear",
+          "costs": {
+            "terrainCost": 2,
+            "breakOffCost": 0,
+            "totalCost": 2,
+            "baseCpa": 10,
+            "voluntaryCeiling": 15,
+            "beforeCp": 11,
+            "afterCp": 13,
+            "excessCpDp": 2,
+            "beforeCohesion": -1,
+            "afterCohesion": -3
+          },
+          "endedCount": 0,
+          "sourceWorldFitsPaidGrammar": true,
+          "cohesion": -3
+        },
+        {
+          "version": 41,
+          "destination": "axis-supply",
+          "costs": {
+            "terrainCost": 2,
+            "breakOffCost": 0,
+            "totalCost": 2,
+            "baseCpa": 10,
+            "voluntaryCeiling": 15,
+            "beforeCp": 13,
+            "afterCp": 15,
+            "excessCpDp": 2,
+            "beforeCohesion": -3,
+            "afterCohesion": -5
+          },
+          "endedCount": 0,
+          "sourceWorldFitsPaidGrammar": true,
+          "cohesion": -5
+        }
+      ],
+      "fifthMoveRejected": "CMB-MOV-005",
+      "unsafeAssaultReturnRequiresReactionDiscovery": true,
+      "safeRouteHasNoAdjacentOpposingRepresentation": true,
+      "finalCauseCount": 3
+    },
+    {
+      "owner": "axis",
+      "firstSeal": "defender",
+      "sourceBytes": 308188,
+      "proofBytes": 65709,
+      "repeatPrefix": "sha256:a30e67cc954ed3098dfa20e799128d4d174f4a23da1c0044905f5b510db1646b",
+      "originalMovementReceipt": "iml.324a120e81afe965207f88a13afffbf15d89c8c46374c57fbfeab8faa80772f7",
+      "memberCpRemainsFiveInKernel": true,
+      "moves": [
+        {
+          "version": 38,
+          "destination": "axis-rear",
+          "costs": {
+            "terrainCost": 2,
+            "breakOffCost": 2,
+            "totalCost": 4,
+            "baseCpa": 10,
+            "voluntaryCeiling": 15,
+            "beforeCp": 5,
+            "afterCp": 9,
+            "excessCpDp": 0,
+            "beforeCohesion": 0,
+            "afterCohesion": 0
+          },
+          "endedCount": 1,
+          "sourceWorldFitsPaidGrammar": true,
+          "cohesion": 0
+        },
+        {
+          "version": 39,
+          "destination": "axis-supply",
+          "costs": {
+            "terrainCost": 2,
+            "breakOffCost": 0,
+            "totalCost": 2,
+            "baseCpa": 10,
+            "voluntaryCeiling": 15,
+            "beforeCp": 9,
+            "afterCp": 11,
+            "excessCpDp": 1,
+            "beforeCohesion": 0,
+            "afterCohesion": -1
+          },
+          "endedCount": 0,
+          "sourceWorldFitsPaidGrammar": true,
+          "cohesion": -1
+        },
+        {
+          "version": 40,
+          "destination": "axis-rear",
+          "costs": {
+            "terrainCost": 2,
+            "breakOffCost": 0,
+            "totalCost": 2,
+            "baseCpa": 10,
+            "voluntaryCeiling": 15,
+            "beforeCp": 11,
+            "afterCp": 13,
+            "excessCpDp": 2,
+            "beforeCohesion": -1,
+            "afterCohesion": -3
+          },
+          "endedCount": 0,
+          "sourceWorldFitsPaidGrammar": true,
+          "cohesion": -3
+        },
+        {
+          "version": 41,
+          "destination": "axis-supply",
+          "costs": {
+            "terrainCost": 2,
+            "breakOffCost": 0,
+            "totalCost": 2,
+            "baseCpa": 10,
+            "voluntaryCeiling": 15,
+            "beforeCp": 13,
+            "afterCp": 15,
+            "excessCpDp": 2,
+            "beforeCohesion": -3,
+            "afterCohesion": -5
+          },
+          "endedCount": 0,
+          "sourceWorldFitsPaidGrammar": true,
+          "cohesion": -5
+        }
+      ],
+      "fifthMoveRejected": "CMB-MOV-005",
+      "unsafeAssaultReturnRequiresReactionDiscovery": true,
+      "safeRouteHasNoAdjacentOpposingRepresentation": true,
+      "finalCauseCount": 3
+    },
+    {
+      "owner": "commonwealth",
+      "firstSeal": "attacker",
+      "sourceBytes": 308259,
+      "proofBytes": 65877,
+      "repeatPrefix": "sha256:49ce6ebd47b03cd8e75580e0c4a15275dce0821cf2879cb979d5df3999d9aaf5",
+      "originalMovementReceipt": "iml.935bbc44075d71b89754fcf664d23586fc6a12660e806f0df4d712adca3d790a",
+      "memberCpRemainsFiveInKernel": true,
+      "moves": [
+        {
+          "version": 38,
+          "destination": "commonwealth-rear",
+          "costs": {
+            "terrainCost": 2,
+            "breakOffCost": 2,
+            "totalCost": 4,
+            "baseCpa": 10,
+            "voluntaryCeiling": 15,
+            "beforeCp": 5,
+            "afterCp": 9,
+            "excessCpDp": 0,
+            "beforeCohesion": 0,
+            "afterCohesion": 0
+          },
+          "endedCount": 1,
+          "sourceWorldFitsPaidGrammar": true,
+          "cohesion": 0
+        },
+        {
+          "version": 39,
+          "destination": "commonwealth-supply",
+          "costs": {
+            "terrainCost": 2,
+            "breakOffCost": 0,
+            "totalCost": 2,
+            "baseCpa": 10,
+            "voluntaryCeiling": 15,
+            "beforeCp": 9,
+            "afterCp": 11,
+            "excessCpDp": 1,
+            "beforeCohesion": 0,
+            "afterCohesion": -1
+          },
+          "endedCount": 0,
+          "sourceWorldFitsPaidGrammar": true,
+          "cohesion": -1
+        },
+        {
+          "version": 40,
+          "destination": "commonwealth-rear",
+          "costs": {
+            "terrainCost": 2,
+            "breakOffCost": 0,
+            "totalCost": 2,
+            "baseCpa": 10,
+            "voluntaryCeiling": 15,
+            "beforeCp": 11,
+            "afterCp": 13,
+            "excessCpDp": 2,
+            "beforeCohesion": -1,
+            "afterCohesion": -3
+          },
+          "endedCount": 0,
+          "sourceWorldFitsPaidGrammar": true,
+          "cohesion": -3
+        },
+        {
+          "version": 41,
+          "destination": "commonwealth-supply",
+          "costs": {
+            "terrainCost": 2,
+            "breakOffCost": 0,
+            "totalCost": 2,
+            "baseCpa": 10,
+            "voluntaryCeiling": 15,
+            "beforeCp": 13,
+            "afterCp": 15,
+            "excessCpDp": 2,
+            "beforeCohesion": -3,
+            "afterCohesion": -5
+          },
+          "endedCount": 0,
+          "sourceWorldFitsPaidGrammar": true,
+          "cohesion": -5
+        }
+      ],
+      "fifthMoveRejected": "CMB-MOV-005",
+      "unsafeAssaultReturnRequiresReactionDiscovery": true,
+      "safeRouteHasNoAdjacentOpposingRepresentation": true,
+      "finalCauseCount": 3
+    },
+    {
+      "owner": "commonwealth",
+      "firstSeal": "defender",
+      "sourceBytes": 308259,
+      "proofBytes": 65877,
+      "repeatPrefix": "sha256:225af1ae45cdcc7d468d07361abeead4ed49ba4a3dbfa798bfd51993fd06b0ab",
+      "originalMovementReceipt": "iml.935bbc44075d71b89754fcf664d23586fc6a12660e806f0df4d712adca3d790a",
+      "memberCpRemainsFiveInKernel": true,
+      "moves": [
+        {
+          "version": 38,
+          "destination": "commonwealth-rear",
+          "costs": {
+            "terrainCost": 2,
+            "breakOffCost": 2,
+            "totalCost": 4,
+            "baseCpa": 10,
+            "voluntaryCeiling": 15,
+            "beforeCp": 5,
+            "afterCp": 9,
+            "excessCpDp": 0,
+            "beforeCohesion": 0,
+            "afterCohesion": 0
+          },
+          "endedCount": 1,
+          "sourceWorldFitsPaidGrammar": true,
+          "cohesion": 0
+        },
+        {
+          "version": 39,
+          "destination": "commonwealth-supply",
+          "costs": {
+            "terrainCost": 2,
+            "breakOffCost": 0,
+            "totalCost": 2,
+            "baseCpa": 10,
+            "voluntaryCeiling": 15,
+            "beforeCp": 9,
+            "afterCp": 11,
+            "excessCpDp": 1,
+            "beforeCohesion": 0,
+            "afterCohesion": -1
+          },
+          "endedCount": 0,
+          "sourceWorldFitsPaidGrammar": true,
+          "cohesion": -1
+        },
+        {
+          "version": 40,
+          "destination": "commonwealth-rear",
+          "costs": {
+            "terrainCost": 2,
+            "breakOffCost": 0,
+            "totalCost": 2,
+            "baseCpa": 10,
+            "voluntaryCeiling": 15,
+            "beforeCp": 11,
+            "afterCp": 13,
+            "excessCpDp": 2,
+            "beforeCohesion": -1,
+            "afterCohesion": -3
+          },
+          "endedCount": 0,
+          "sourceWorldFitsPaidGrammar": true,
+          "cohesion": -3
+        },
+        {
+          "version": 41,
+          "destination": "commonwealth-supply",
+          "costs": {
+            "terrainCost": 2,
+            "breakOffCost": 0,
+            "totalCost": 2,
+            "baseCpa": 10,
+            "voluntaryCeiling": 15,
+            "beforeCp": 13,
+            "afterCp": 15,
+            "excessCpDp": 2,
+            "beforeCohesion": -3,
+            "afterCohesion": -5
+          },
+          "endedCount": 0,
+          "sourceWorldFitsPaidGrammar": true,
+          "cohesion": -5
+        }
+      ],
+      "fifthMoveRejected": "CMB-MOV-005",
+      "unsafeAssaultReturnRequiresReactionDiscovery": true,
+      "safeRouteHasNoAdjacentOpposingRepresentation": true,
+      "finalCauseCount": 3
+    }
+  ]
+}

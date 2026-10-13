@@ -648,8 +648,14 @@ PAC01 (PR #178) merged after independent Ready review and exact-head CI; its sep
 normal passed431.075s/900. CS01 now implements the private native continuation consumer with
 full native paid replay, four independent ledgers, original members/Movement/progress, owned
 outputs and exact reference byte parity. Native physical acquisition verifies the unchanged
-64-path wire manifest plus two PAC01 schema/oracle delivery files. Native review/CI remain
-pending; authentic repeated Movement and full selected-branch campaign are subsequent gates.
+64-path wire manifest plus two PAC01 schema/oracle delivery files. CS01 merged in PR #179 after independent Ready review and exact-head CI2843/2843.
+The additive [actual repeated Movement contract](docs/specs/combat-actual-repeated-movement-v1.md)
+replays that repeat37 ancestry with five independent ledgers and owns up to four safe ordinary
+moves. Cumulative CP5→9→11→13→15, incremental DP0/1/2/2, one Contact break-off, member spending
+and actual ordinal2 move progress preserve original Movement/closure/World provenance and RNG.
+Reaction-adjacent destinations reject before mutation even with empty enemy ammunition. This is a
+private Python reference, with final normal344.251s/900 and unchanged frozen literals; native consumption, stop/resolution/completion and full selected-branch
+campaign remain subsequent gates.
 Production ingress authentication,
 later-II/consumed Reserve lineage and public activation remain gated. Private settled controls
 still retain synthetic earlier Movement; these checkpoints do not prove the authentic continual

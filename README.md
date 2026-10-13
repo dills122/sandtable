@@ -68,9 +68,11 @@ dormant Core tests; they are not yet exposed as playable actions.
 Next delivery sequence:
 
 1. Build on CS01's private native [actual post-assault continuation](docs/specs/combat-actual-post-assault-continuation-v1.md)
-   to join authentic repeated Movement and remaining selected-branch campaign lineage. Its full
+   and the private [actual repeated Movement reference](docs/specs/combat-actual-repeated-movement-v1.md)
+   to implement native repeated Movement and its stop/completion lifecycle, then remaining selected-branch lineage. CS01's full
    paid history and four independent ledgers reach empty Release and guarded repeat/finish;
-   repeat stops at ordinal2 Movement opening. Complete later-II/consumed Reserve and production
+   native repeat stops at ordinal2 Movement opening; the new Python contract admits up to four safe
+   ordinary moves with cumulative CP/DP and original provenance. Complete later-II/consumed Reserve and production
    ingress authentication before activation. Existing synthetic settled contexts do not prove
    reachability from actual opening history.
 2. Activate certified, side-safe public Combat actions (Tasks020–021), then prove Exercise/Runner
