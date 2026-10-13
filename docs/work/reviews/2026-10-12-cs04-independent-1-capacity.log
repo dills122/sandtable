@@ -1,0 +1,1 @@
+PASS structural byte/depth/field domination {'Source': 17565184, 'Control': 258501, 'Proof': 1922057, 'Event': 16384, 'Input': 1024, 'MovementLedger': 4101} {'ControlMetadata': 15913, 'ProofMetadata': 16479, 'Event': 6178} {'Input': 582, 'InputStructural': 746} {'Source': 546368, 'Control': 17230, 'Proof': 83292, 'Event': 2547, 'Input': 572, 'MovementLedger': 2290}

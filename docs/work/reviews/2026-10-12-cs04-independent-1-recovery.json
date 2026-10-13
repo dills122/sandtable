@@ -1,0 +1,19 @@
+{
+  "command": [
+    "python3",
+    "-B",
+    "-u",
+    "docs/specs/verify-combat-actual-repeated-movement-v1.py",
+    "--group",
+    "recovery",
+    "--owner",
+    "commonwealth",
+    "--seal",
+    "defender"
+  ],
+  "budgetSeconds": 120,
+  "exitCode": 0,
+  "timedOut": false,
+  "elapsedSeconds": 33.41,
+  "logSha256": "e10ae7c3aecdf8779babc14f0c74058bb71e9567c6977ad2695748003fd4f8c4"
+}

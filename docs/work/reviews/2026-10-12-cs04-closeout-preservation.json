@@ -1,0 +1,72 @@
+{
+  "docs/work/reviews/2026-10-12-cs04-independent-review1.md": {
+    "bytes": 9542,
+    "sha256": "183677f753b4b2e5de2b409e51738a30cf0a266937d862c5b18221429295d713",
+    "source": "/private/tmp/cs04-independent-review-1.md"
+  },
+  "docs/work/reviews/2026-10-12-cs04-ci-final-receipt.json": {
+    "bytes": 1358,
+    "sha256": "ea8cb7923ce8f342533e99333776d98f3fd05d6b8fe57e7180c54c9f37c83394",
+    "source": "/private/tmp/cs04-ci-final-receipt.json"
+  },
+  "docs/work/reviews/2026-10-12-cs04-independent-1-grammar.json": {
+    "bytes": 323,
+    "sha256": "2d4ea653a208e83d941bb9b06163b57f686cdea7e490fd6ca2c36f492e660331",
+    "source": "/private/tmp/cs04-independent-1-grammar.json"
+  },
+  "docs/work/reviews/2026-10-12-cs04-independent-1-grammar.log": {
+    "bytes": 91,
+    "sha256": "a47823e3f850dd0314181eabdc5c665b5ac5680df2dc45df59be893d3cdcaf87",
+    "source": "/private/tmp/cs04-independent-1-grammar.log"
+  },
+  "docs/work/reviews/2026-10-12-cs04-independent-1-recovery.json": {
+    "bytes": 388,
+    "sha256": "760d79eb1af1895acf6f006ec082e29f96363896bd3714995977ff5ee948dafe",
+    "source": "/private/tmp/cs04-independent-1-recovery.json"
+  },
+  "docs/work/reviews/2026-10-12-cs04-independent-1-recovery.log": {
+    "bytes": 61,
+    "sha256": "e10ae7c3aecdf8779babc14f0c74058bb71e9567c6977ad2695748003fd4f8c4",
+    "source": "/private/tmp/cs04-independent-1-recovery.log"
+  },
+  "docs/work/reviews/2026-10-12-cs04-independent-1-adversarial.json": {
+    "bytes": 383,
+    "sha256": "e5c855e78867703d6133a986e283ada5bd517559408d53688da896fa31853a44",
+    "source": "/private/tmp/cs04-independent-1-adversarial.json"
+  },
+  "docs/work/reviews/2026-10-12-cs04-independent-1-adversarial.log": {
+    "bytes": 66,
+    "sha256": "a1add11103cbd943ee0af421839907f555cda14300c3a717c09356bc80a95627",
+    "source": "/private/tmp/cs04-independent-1-adversarial.log"
+  },
+  "docs/work/reviews/2026-10-12-cs04-independent-1-capacity.json": {
+    "bytes": 323,
+    "sha256": "d2a9ae225ba2129e642dca7a289aab300882a91daa13b1ff522e7abdeda59319",
+    "source": "/private/tmp/cs04-independent-1-capacity.json"
+  },
+  "docs/work/reviews/2026-10-12-cs04-independent-1-capacity.log": {
+    "bytes": 368,
+    "sha256": "8259b00fa3c9c3cbf565d2873360a41cfc4a5713be356fe47d9d3f5dde00773a",
+    "source": "/private/tmp/cs04-independent-1-capacity.log"
+  },
+  "docs/work/reviews/2026-10-12-cs04-independent-1-dependencies.json": {
+    "bytes": 327,
+    "sha256": "9b553a60662d2b983b215238ca2b4e51dcf4581ff16b39d1f39921e6a2db6707",
+    "source": "/private/tmp/cs04-independent-1-dependencies.json"
+  },
+  "docs/work/reviews/2026-10-12-cs04-independent-1-dependencies.log": {
+    "bytes": 73,
+    "sha256": "831b87a9adff056f03f9b0bc95d403a171ff8228a8d464a91a078f078ed9f63c",
+    "source": "/private/tmp/cs04-independent-1-dependencies.log"
+  },
+  "docs/work/reviews/2026-10-12-cs04-independent-1-preservation.json": {
+    "bytes": 392,
+    "sha256": "d0e64e2d353963410a23cc5e38117e45f25a03f1380ef513002be5bf4ca3dd7e",
+    "source": "/private/tmp/cs04-independent-1-preservation.json"
+  },
+  "docs/work/reviews/2026-10-12-cs04-independent-1-preservation.log": {
+    "bytes": 78,
+    "sha256": "85b9c7495399c5a3f1233a285a8bd338c1de5db332aa3b93aab5c72a5bbd48d1",
+    "source": "/private/tmp/cs04-independent-1-preservation.log"
+  }
+}
