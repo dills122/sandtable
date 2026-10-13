@@ -1,0 +1,16 @@
+{
+  "command": [
+    "dotnet",
+    "build",
+    "Sandtable.slnx",
+    "-c",
+    "Release",
+    "--no-restore",
+    "/bl:/private/tmp/nrm-release-build-{}.binlog"
+  ],
+  "budgetSeconds": 120,
+  "exitCode": 0,
+  "timedOut": false,
+  "elapsedSeconds": 7.009,
+  "logSha256": "41dffe10fee0773c0885366d249e49a71765396b732c9acb793403bc9fc6d1e1"
+}

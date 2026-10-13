@@ -1,0 +1,19 @@
+{
+  "command": [
+    "dotnet",
+    "test",
+    "--project",
+    "tests/Cna.Core.Tests/Cna.Core.Tests.csproj",
+    "-c",
+    "Release",
+    "--no-build",
+    "--filter-class",
+    "*CombatActualRepeatedMovementTests",
+    "/bl:/private/tmp/nrm-final-movement-{}.binlog"
+  ],
+  "budgetSeconds": 120,
+  "exitCode": 0,
+  "timedOut": false,
+  "elapsedSeconds": 58.755,
+  "logSha256": "e121b93f3cba0c55f0d33bc6fa23f72c719eb3ce59eb9e1a1b484d877d2575e6"
+}

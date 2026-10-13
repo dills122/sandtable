@@ -1,0 +1,19 @@
+{
+  "command": [
+    "dotnet",
+    "test",
+    "--project",
+    "tests/Cna.Core.Tests/Cna.Core.Tests.csproj",
+    "-c",
+    "Release",
+    "--no-build",
+    "--filter-method",
+    "*AuthenticForeignContextFinishAndOriginalEligibilityCapacityReject",
+    "/bl:/private/tmp/nrm-bounds-green-{}.binlog"
+  ],
+  "budgetSeconds": 120,
+  "exitCode": 0,
+  "timedOut": false,
+  "elapsedSeconds": 3.799,
+  "logSha256": "d957f8539471309a0b2c6e53471d27916531b3991ddb99e0137f9d0a2748fcb5"
+}

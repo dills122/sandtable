@@ -2727,3 +2727,49 @@ ingress/public/host/Exercise/persistence and parent017–025/all72 remain open. 
 command native retry coverage belongs to the next native test slice. Historical four owning failures
 and aggregation/CoreB139 remain unwaived. Brain owns roadmap/normal lease/fresh review/CI/merge;
 new milestone review0/9 recovery0/2, max3passes/round. Session deadline is unchanged.
+
+
+### NRM01 — private native actual repeated Movement
+
+New October13 delivery, baseline1ef2d038125eb03ed39b6e08aeea5e3ada75983c,
+branchcodex/native-actual-repeated-movement. [Dated native plan](../work/plans/2026-10-13-native-actual-repeated-movement.md)
+implements NM01–NM08 against unchanged frozen CS04 spec/schema/oracle/fixture. The prior
+session's native continuation PR179 and reference PR180 are merged; prior deadline does not apply.
+
+Two additive native source/codec files and two focused Movement test classes consume full native
+PAC/actual-paid ancestry with authentic CampaignCombatCreationContext and five independent ledgers.
+A dedicated third test class closes deferred CS01P3 all-older-command retry coverage at later/terminal
+repeat/finish cuts, valid changed/unavailable clocks, original receipts and unchanged outputs/ledger
+without new events. Existing continuation runtime remains unchanged. Frozen fixture copy link and
+this plan complete the seven-path primary manifest; README/tech-design/roadmap/admin evidence accompany.
+
+Compile-valid REDfea1162 has4genuine CMB-RMV-007 failures after nativePAC37/proof/CP/RNG preconditions
+and explicit fifth-ledger null001/count-mismatch004 checks before the missing consumer. Release
+build0warnings/errors10.935s; RED8.911s/120, logSHA
+cec9b153ddfc7212edd67abc83cf5f658e930874b90da42358d0317fbe564bb7. No retrospective fifth-ledger
+TDD reconstruction is used. Initial four-move opening GREEN matches actual version38/CP9/Contact.
+All4owner/seal traces reproduce16events/20controls and full Source/Proof bytes; every cut independently
+assembles expected Proof bytes from frozen Base/Control/source identity and verifies owned readback.
+Every prior accepted move retries against later cuts with its original receipt and no new event.
+
+Cumulative CP5→9→11→13→15, incremental DP0/1/2/2 and signed cohesion0→0→−1→−3→−5 update original
+World/representation/member/track and actual new ordinal2 progress; Contact ends once. Preserve
+original ordinal1 Movement proof, active Authority/closure, opponent/resources/history/settlements,
+future duties/RNG/attack history. Reaction adjacency rejects before mutation despite ammo0; fifth
+safe move costs17 and rejects before capacity publication. Genuine inherited round-time variation
+regenerates native round/paid/PAC history before the new move; fixture roots are not an allowlist.
+Source-first claims, causal re-signing, actor/Base/primitive-before-retry, foreign context, finish,
+original exclusions/occupancy/overflow and strict grammar/byte/depth bounds are covered.
+
+Measured native68physical paths retain unchanged66wire hashes plus CS04schema/oracle2delivery;
+three test fixtures excluded runtime. All changed/missing/unreadable/null/after-first-read faults
+reject009; no arbitrary pins or reference rewrites. Final focused/build/format/inventory evidence
+and documented author self-review precede frozen draftPR/fresh independent review. Brain owns
+review0/9/recovery0/2, max3passes/round, exact-head CI and merge; author does not dispatch reviewers.
+No broad local suite or unchanged Python normal is justified. Monotonic bounded process receipts
+are elapsed evidence where MTP console summaries differ from wall/app durations.
+
+Private move-only boundary. Actual stop/resolve/complete/new MovementEndProof, native Reaction,
+Breakdown/Convoy/later Combat, broader/consumed Reserve, production/public/host/Runner/Exercise,
+persistence and parent017–025/all72 remain separate gates. Historical owning failures and
+aggregation/CoreB139 remain unwaived. No new product scope follows automatically from this slice.

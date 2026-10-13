@@ -1,0 +1,26 @@
+{
+  "src/Cna.Core/Campaigns/CampaignCombatActualRepeatedMovement.cs": {
+    "bytes": 23539,
+    "sha256": "bb316ab6d0832ad470af51f4f180702fe28433668d7f6c05b2c78014b921dd9e"
+  },
+  "src/Cna.Core/Campaigns/CampaignCombatActualRepeatedMovementCodec.cs": {
+    "bytes": 24267,
+    "sha256": "f45edae3faf6f8c40fd1aee8926e0616b696482785663a2df6ddde6e1624a996"
+  },
+  "tests/Cna.Core.Tests/Campaigns/CombatActualRepeatedMovementTests.cs": {
+    "bytes": 13352,
+    "sha256": "1aceed7999a31c4d16a29ed678af87c53e26d45cfe513a0c44233bfec68bdf6c"
+  },
+  "tests/Cna.Core.Tests/Campaigns/CombatActualRepeatedMovementContractTests.cs": {
+    "bytes": 18806,
+    "sha256": "887c0d4d80d0832f2faa04d25d2cca1e03fd0e0376d4bc9c33e64c1280cf5639"
+  },
+  "tests/Cna.Core.Tests/Campaigns/CombatActualPostAssaultContinuationRetryTests.cs": {
+    "bytes": 2441,
+    "sha256": "726c4dd121ae04c745eb6bd8dc386eba9b1aedb90333c21cbae5dd150e72bd54"
+  },
+  "tests/Cna.Core.Tests/Cna.Core.Tests.csproj": {
+    "bytes": 10878,
+    "sha256": "f222f7695a912d5cd839460b4e0eba6f83f2b85ce496bbb55b088b0b88611280"
+  }
+}

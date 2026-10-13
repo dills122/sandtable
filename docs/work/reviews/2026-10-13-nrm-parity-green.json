@@ -1,0 +1,19 @@
+{
+  "command": [
+    "dotnet",
+    "test",
+    "--project",
+    "tests/Cna.Core.Tests/Cna.Core.Tests.csproj",
+    "-c",
+    "Release",
+    "--no-build",
+    "--filter-method",
+    "*EveryNativeEventControlAndFinalProofSourceMatchesLiteral",
+    "/bl:/private/tmp/nrm-parity-green-{}.binlog"
+  ],
+  "budgetSeconds": 120,
+  "exitCode": 0,
+  "timedOut": false,
+  "elapsedSeconds": 15.161,
+  "logSha256": "0e63ce6054e9385dfde944f5f3f12628eaff05cdf3c0baf691323d252e7a8ddd"
+}

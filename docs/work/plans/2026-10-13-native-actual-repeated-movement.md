@@ -30,3 +30,14 @@ receipts or renewed allowance. No synthetic Movement base/reader becomes authori
 Codebase Memory Verify tier: exact checkout sandtable-actual-selection-contract generation
 2026-10-05T14:03:21Z lacks continuation files and excludes docs; primary index also predates them.
 Graph/coverage queried; source/Serena fallback for gaps, no absence inference. CCE tools unavailable.
+
+## Author final gate evidence
+
+REDfea1162 four genuine007, allfive explicit prerequisites,8.911s/120, build0warnings/errors.
+Final focused36rows pass: movement16/58.755s, contract12/58.302s, P3eight/63.502s, each<=120s.
+Release solution build0warnings/errors7.009s; fullformatverify23.283s. Measured68physical paths,
+340faultassertions;232baseline specs and continuation runtime unchanged. Exact discovery pending;
+expected total2879 (base2843+36), CoreA71/CoreB2329/Exercise469/Contracts10, not an execution claim.
+Self-review documented; no unresolved finding. Product identity snapshots and complete final logs/
+receipts retained. No broad local suite or old Python normal. Native stop/lifecycle/public/parent
+boundaries remain open; review0/9 recovery0/2. Brain owns independent review/CI/merge.
