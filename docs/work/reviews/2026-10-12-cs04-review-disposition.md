@@ -19,8 +19,10 @@ c69ca1bcbff25bb87509fb39976faada87f9417f, parents6ed3846/c3057035,
 treeed59dd1b54d7eddcfa1d4a7350ec9ca98fb9efdb. PR180 merged at
 1ef2d038125eb03ed39b6e08aeea5e3ada75983c,2026-10-13T03:15:33Z (October12Toronto).
 Verbatim review/receipt and six reviewer receipt/log pairs are retained on the session handoff
-branch after merge, without changing the reviewed candidate. Main postmerge CI remains a
-separate Brain check; no passing claim is made here while it is pending.
+branch after merge, without changing the reviewed candidate. Brain subsequently verified main
+1ef2d03 CI38340851418 completed SUCCESS, four shards/verify successful, expected dependency-review
+skip on push. CodeQL38340851503 and links38340851420 SUCCESS. Author rechecked live GitHub
+metadata; compact final-main check snapshot is retained separately from exact PR inventory evidence.
 
 Private Python reference only. Native consumer and stop/resolution/completion, Reaction/
 Breakdown/Convoy/later Combat, later-II/consumed Reserve, production/public/Exercise/persistence,

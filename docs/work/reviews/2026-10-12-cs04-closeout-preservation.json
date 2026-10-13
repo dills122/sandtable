@@ -68,5 +68,10 @@
     "bytes": 78,
     "sha256": "85b9c7495399c5a3f1233a285a8bd338c1de5db332aa3b93aab5c72a5bbd48d1",
     "source": "/private/tmp/cs04-independent-1-preservation.log"
+  },
+  "docs/work/reviews/2026-10-12-cs04-main-postmerge-checks.json": {
+    "bytes": 1367,
+    "sha256": "683e6ed016160d9df0cd39c897daf4cb40dfcb9eefe2c43f6373c185f66bc165",
+    "source": "/private/tmp/cs04-main-postmerge-checks.json"
   }
 }

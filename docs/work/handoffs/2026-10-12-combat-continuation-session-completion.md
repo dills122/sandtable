@@ -91,9 +91,13 @@ Wrong route-label and nonexistent-cache observer failures were harness issues, n
 
 ## Blockers And Limitations
 
-No product defect blocks either merged scoped milestone. Main1ef2d03 postmerge checks are pending
-Brain verification here; do not infer success from PR CI. Brain will provide a final check update
-before closeout is marked complete and the session heartbeat paused.
+No product defect blocks either merged scoped milestone. Brain verified main
+1ef2d038125eb03ed39b6e08aeea5e3ada75983c postmerge CI38340851418 completed SUCCESS,
+with all four test shards and verify successful; dependency-review was expected skipped on push.
+CodeQL38340851503 and links38340851420 completed SUCCESS. Author independently rechecked live
+GitHub metadata and retained [final main checks](../reviews/2026-10-12-cs04-main-postmerge-checks.json).
+These checks are separate from the PR's exact2843-row reconciliation. Administrative preservation
+is complete after the final branch push; Brain owns its final verification and heartbeat pause.
 
 CS01 optionalP3 remains deferred to the next native slice: retry every prior accepted command at
 later/terminal Sources for both outcomes, original receipt and unchanged Source/Control/ledger/no
@@ -108,8 +112,9 @@ Maproom/first-release gates remain distinct. These private milestones do not mak
 
 ## Immediate Next Actions
 
-1. Brain verifies postmerge main1ef2d03 checks, records the final update, then completes early session
-   closeout and pauses its existing heartbeat. Author integrates that update into this handoff branch.
+1. Brain verifies the final pushed preservation commit/remote identity, completes early session
+   closeout and pauses its existing heartbeat. Main postmerge checks are confirmed; this session
+   has no further product work or test lease.
 2. Under a new explicit scope, plan the private native repeated-Movement consumer from the frozen
    CS04 contract and include CS01P3 native retry hardening. Independently gate stop/completion and
    broader lifecycle/public work; do not widen this finished session.
