@@ -644,8 +644,12 @@ complete member history and actual commitment receipt/hash progress. Original Wo
 unchanged; CP9 is a prospective witness only. Repeat opens ordinal2Movement and finish enters
 same-slotTruckConvoy; neither executes its successor. Valid inherited timing variants preserve
 this bounded ordinary source profile; synthetic settled readers remain excluded authority.
-PAC01 normal passed431.075s/900 with unchanged frozen bytes; fresh review/CI remain pending,
-and native continuation is a separate milestone.
+PAC01 (PR #178) merged after independent Ready review and exact-head CI; its separate Python
+normal passed431.075s/900. CS01 now implements the private native continuation consumer with
+full native paid replay, four independent ledgers, original members/Movement/progress, owned
+outputs and exact reference byte parity. Native physical acquisition verifies the unchanged
+64-path wire manifest plus two PAC01 schema/oracle delivery files. Native review/CI remain
+pending; authentic repeated Movement and full selected-branch campaign are subsequent gates.
 Production ingress authentication,
 later-II/consumed Reserve lineage and public activation remain gated. Private settled controls
 still retain synthetic earlier Movement; these checkpoints do not prove the authentic continual

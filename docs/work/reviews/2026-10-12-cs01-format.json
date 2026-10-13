@@ -1,0 +1,14 @@
+{
+  "command": [
+    "dotnet",
+    "format",
+    "Sandtable.slnx",
+    "--verify-no-changes",
+    "--no-restore"
+  ],
+  "budgetSeconds": 120,
+  "exitCode": 0,
+  "timedOut": false,
+  "elapsedSeconds": 24.581,
+  "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

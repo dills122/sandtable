@@ -1,107 +1,121 @@
-# CS01 native post-assault continuation plan
+# CS01: native actual post-assault continuation
 
-Brain approved exact scope on Oct12; semantic RED begins before native behavior.
-Baseline44cf98656350b29e2f1074f2a9a1b1e634234faa, branchcodex/native-post-assault-continuation,
-authorcheckout/Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable.
-Remotehandoffff679076 retained; only unrelated.serena/untracked preserved. No user primary dirt touched.
-Sessionplan/run-state under primary.planning/combat-continuation-session read; newreview0/9,
-round1pass1,recovery0/2,max3passes/round,2spikes,Brainowns review/CI/merge/heavylease.
-Closeout07:36:35UTC/productstop08:36:35UTC Oct13; estimates do not waive quality.
+Brain approved this exact scope before behavior. Baseline is
+44cf98656350b29e2f1074f2a9a1b1e634234faa, branch codex/native-post-assault-continuation,
+checkout /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable.
+Session plan and run state were read from the primary .planning/combat-continuation-session.
+The ff679076 remote handoff and unrelated untracked .serena/ are preserved. No primary user dirt,
+blocked research payload or frozen predecessor artifact is part of this work.
 
-## Authority and minimal exact manifest
+## Accepted manifest and ownership
 
-Frozen PAC01 spec/schema/oracle/fixture and merged native paid consumer govern parity.
-Full original CampaignCombatCreationContext plus independently retained selection/round/paid/
-continuation byte ledgers. Native paid replay supplies complete authenticated PaidProof; successor
-owns source/profile/member/history/Movement/progress/assessment/Release/control. No Python process,
-synthetic admission, oldSCT/SCC/Release source reader, host/public/Movement/Convoy/persistence gate.
-Pure deterministic geometry/cost/Timing/prefix helpers only, with completeWorld/resource/RNG equality.
+Six primary files:
 
-Six primary paths proposed:
-1.src/Cna.Core/Campaigns/CampaignCombatActualPostAssaultContinuation.cs
-2.src/Cna.Core/Campaigns/CampaignCombatActualPostAssaultContinuationCodec.cs
-3.tests/Cna.Core.Tests/Campaigns/CombatActualPostAssaultContinuationTests.cs
-4.tests/Cna.Core.Tests/Campaigns/CombatActualPostAssaultContinuationContractTests.cs
-5.tests/Cna.Core.Tests/Cna.Core.Tests.csproj (one unchanged PAC01fixture copy link)
-6.docs/design/combat-cycle-implementation-plan.md
+- src/Cna.Core/Campaigns/CampaignCombatActualPostAssaultContinuation.cs
+- src/Cna.Core/Campaigns/CampaignCombatActualPostAssaultContinuationCodec.cs
+- tests/Cna.Core.Tests/Campaigns/CombatActualPostAssaultContinuationTests.cs
+- tests/Cna.Core.Tests/Campaigns/CombatActualPostAssaultContinuationContractTests.cs
+- tests/Cna.Core.Tests/Cna.Core.Tests.csproj: one unchanged PAC01 fixture copy link
+- docs/design/combat-cycle-implementation-plan.md
 
-Source1 owns result copies, full ingress/replay, native actual derivation/assessment and four-event
-transition; source2 owns closed syntax, bounds/canonical/domain/preparse and fixedphysical manifests.
-No separate admission consumer needed: existing native paid consumer already supplies prerequisite.
-README.md,tech-design.md and thisauthorplan synchronized. Datedreview/evidence/handoff administrative.
-Brain ALONE owns docs/roadmap/pre-alpha-roadmap.md; receive/integrate Brain patch beforefreeze.
-No frozen predecessor/source/test other than fixture-link, spec/oracle/fixture/pin rewrite.
+README.md, tech-design.md, this plan and dated review/evidence/handoff documents accompany them.
+Brain alone owns docs/roadmap/pre-alpha-roadmap.md; both supplied patches were integrated exactly.
+The first patch was already applied when a duplicate attempt failed; reverse-check confirmed it.
+The final native-status patch avoids premature independent-review/CI claims. No author roadmap edit.
 
-## NC01–NC08 ordered tasks
+## Tasks and acceptance
 
-| Task | Acceptance / verification | Depends |
+| Task | Dependency | Acceptance and status |
 | --- | --- | --- |
-| NC01 Scope | Brain accepts exact6primary manifest; record graph limits and66physical acquisition candidate. | none |
-| NC02 SemanticRED | Importable native missing-boundary007stub;8InlineData fixturetraces authenticate paid33, CP5/3,ammo0,seed1/cursor10/iml beforeapply, then require realRelease34event/receipt/World equality. Build succeeds; actualassertion failures recorded beforeGREEN. | NC01 |
-| NC03 Native ingress/codec | Clone fourledgers; source-first/claim-after-fullreplay; PACprimitives001–009, exactclosedshapes/nulls/unions/version/depth/canonical; callback pinsbefore/after; nativeauthcontext required. | NC02 |
-| NC04 Literal core | All8owner/seal/repeatfinish traces reproduce32events,40controlframes andsource/proofexactbytes. Release34/35,control36/37; CP9prospective, pureWorld/RNG/history/future preservation; repeatpre-eventprefix/resultversion andfinishcatalogueedge. | NC03 |
-| NC05 Recovery/negative | Everyprefixcut/oldreceiptretry/ownedreadback, bothownerdeadline/fallback/localclocks, actor/contextbeforefallback,staletimers/no-op, malformedretry/independentledgers,coherentsource/proof/claimforgeries, source-firstdiagnostics. Valid inheritedtimevariant via native ARE/paid regeneration. | NC04 |
-| NC06 Bounds/physical | Same source16MiB/proof2MiB/control256KiB/event32KiB/input1KiB/newledger8KiB/depth36/4events. Copycompatible paidgrammar without predecessor edits.66observedphysical paths; everychanged/missing/unreadable/null/afterfirstread; nativeManifest64 matcheswire; testfixtureexcludedruntime. | NC03 |
-| NC07 Verification/selfreview | Focused<=120s sequential; buildunique.binlog andformat; completeRelease discoveryrequired atcodefreeze, no newdeferredfactory; actual rowdelta recorded. Full.NET CI separate, no duplicatebroadlocalgate. Engineering correctness/readability/architecture/security/performance review; canonical/nav andBrainroadmappatch integrated beforefreeze. | NC05/06 |
-| NC08 Publish/review | Commit/push exactcandidate, separate neutralbootstrap/authorrationale,draftPR; Braindispatchfreshreview/CI/merge. PreserveallWIPcommitted/pushed/handoffbycloseout ifnotcomplete; no readinessclaim forunfinishedWIP. | NC07 |
+| NC01 Scope | none | Approved exact manifest; graph limitations and 64-wire/66-physical distinction recorded. Complete. |
+| NC02 Semantic RED | NC01 | Eight real paid33 roots assert resources/RNG/iml before the compile-valid missing-consumer007 stub. Retained actual failures before GREEN. Complete. |
+| NC03 Native ingress/codec | NC02 | Authentic creation context and four independent byte ledgers; complete native paid replay; closed own syntax and borrowed paid grammar; claim ordering, owned values and primitive/version/actor diagnostics. Complete. |
+| NC04 Literal core | NC03 | All eight owner/seal/repeat-or-finish traces reproduce 32 events, 40 frames and complete source/proof bytes. CP9 stays prospective; World/RNG/history remain equal. Complete. |
+| NC05 Recovery/negative | NC04 | Every cut, original-receipt retries, owned results, clocks/fallback/stale timers, coherent claims/events/ledgers, foreign context and genuine native-regenerated seal-time variant. Complete. |
+| NC06 Bounds/physical | NC03 | Frozen raw/depth/array/four-event caps; 66 observed callback paths; every changed/missing/unreadable/null/after-first-read failure; wire64 identity matches. Complete. |
+| NC07 Verify/self-review | NC05/06 | Release build, final 40 focused rows, format and frozen-file checks passed. Exact row discovery follows at committed code freeze. Engineering self-review below; Brain roadmap patch integrated. |
+| NC08 Publish/review | NC07 | Separate neutral bootstrap and author rationale, frozen draft PR; Brain dispatches fresh review/exact-head CI/merge. Pending. |
 
-## Detailed RED and API design
+## Authority and implementation decisions
 
-Match existing private native naming/API: ReplayTrustedSource,ApplyTrustedSource,ReadSource,
-ReadControl,ReadProof with explicitcreationcontext andfourindependentIReadOnlyList<byte[]> ledgers
-plusFunc<string,byte[]> dependencies. Resultbytearrays/inputitems cloned; JsonElements immutableowned.
-RED requests firstrelease-open input fromeachgoldentrace; first authentic nativepaid terminalchecked
-independently. DefinedCMB-PAC-007 beforeany successorpublication demonstrates real missingconsumer,
-notmissingmethod/type/build/harness. Retain primarylog/receipt; compile/passprerequisites don't count
-as RED. EightInlineData rows yield fixeddiscoverable evidence, noMemberData/deferredfactory.
-Then complete typed derivative native assessment/control and broad property-negatives.
+ReplayTrustedSource, ApplyTrustedSource, ReadSource, ReadControl and ReadProof require original
+CampaignCombatCreationContext, independent selection/round/paid/continuation byte ledgers and a
+physical dependency-byte callback. Native paid replay authenticates full actual ancestry. Copy
+original entry members/history and actual Movement proof, derive current spent CP from paid World,
+and retain actual commitment event type/receipt/hash. Content facts supply unit sides; no name-based
+side inference, default history construction or synthetic proof supplies trust.
 
-## Pin/bounds/primitive decisions
+One engine owns result copies, source/profile/member/progress derivation, pure native assessment,
+empty Release and guarded control. Codec owns exact frozen shape/version/union/array literals,
+preparse/raw/depth/canonical rules and manifest identities. Compatible paid grammar is delegated
+without edits. Direct derivation also checks its own dependencies. Scalar type/range checks precede
+version comparison. No Python process, shared source change, transport/host registration or cache.
 
-PAC01wire map64 equals paid62 plus paid schema/oracle2. Native physical closure adds PAC01schema/
-oracle2 delivery pins: candidate66unique paths. The predecessor native paid reader already verifies
-its64; ownclosedstatic manifestliterals/domain sorted64preimage copied mechanically from frozenPAC01,
-not schema parsing for authority. Observe allat-use paths and verifybefore/afterpublicingress and
-publication, evenwarm/retries. Newfixture remains test-only. Own runtime .cs hashes freeze inGit/review/CI,
-no selfcode/schema hash cycle. No arbitrary oldpin refresh.
+Native physical acquisition is 66 paths: PAC01's unchanged external64 plus its schema/oracle2
+owned delivery pins. The predecessor paid wire62 and AAD59 remain unchanged. Runtime .cs files are
+frozen separately by Git/review/CI; test fixture is excluded runtime authority. New source16MiB,
+proof2MiB, control256KiB, event32KiB, input1KiB, ledger8KiB, depth36 and four-event caps remain intact.
+Original Config1 cycle-control budget uses an independent null clock floor. Primitive/family/context/
+actor validation precedes retry/fallback; reliable deadline equality rejects, lost clocks finish
+as System, and stale timers append nothing. Repeat binds pre-event prefix/result version and resets
+only cycle-local targets/progress. Movement/Convoy are not executed; prospective CP9 is not spent.
 
-Codec delegates inherited PaidProof/World/scalars to unchanged paid native canonical grammar,
-mapsAPA suffixes toPAC at syntax boundary, and owns all PAC01 shapes/commands/input/primitive
-version checks. Globaldepth36 andrawbyte/object/array guards coverown+borrowed trees; predecessor
-parse retains lower34/32 limits. Validate primitive type/range beforeversion comparison. Use PythonASCII
-compatible escaping already supported by paid codec; source strings are ASCIIcarriers. No generated
-artifact churn. Native configcycle-control budget/highwater uses originalcreationcontext configuration.
+## Executed TDD and verification
 
-## Verification and source coverage
+RED commit8888a1e: build passed zero warnings/errors in11.41s; eight InlineData rows passed original
+native paid33/resource/RNG/iml preconditions and failed at CMB-PAC-007. Exit2,8failed/0passed/skipped,
+10.157s/120; primary logSHA84933c425ad15455c70a0fe577590fed37cc558e0a8371909e96a2d373bbec7d.
+Stub is replaced in GREEN. Initial GREEN build found two CA1861 constant-array analyzer errors,
+then a test helper overload error; both were fixed, without semantic pass credit for build failures.
 
-SDK-style net10.0/nativeMTP fromglobal.json; xunit.v3.mtp-v2 4.0.2. Tests use --project, direct
---filter-class/--filter-method, no barepath/-- separator, unique/bl:/private/tmp/cs01-...-{}.binlog.
-Focused commandproposal: dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj
+Opening GREEN8/8 passed8.767s; full parity/recovery24/24 passed51.138s; extended contract15/15
+passed33.295s. Final combined gate40/40 passed71.771s/120, zero failures/skips, SDK10.0.400.
+Primary logSHA617302d57756f9e4af633e845d74a8a18c6c11474fd009b37c1eafeccc0ee27f; receipt retains
+four exact source/test hashes. Release solution build passed zero warnings/errors17.22s with
+/private/tmp/cs01-final-build-20261013-013017--66838--DmPa+u.binlog. Full format verification passed
+24.581s/120. Static comparison confirms 20 own shapes, exact64 wire pins and two delivery hashes;
+all228 baseline docs/specs files byte-identical. No workflow, package or predecessor source edit.
+Complete Release row discovery at code freeze will record the exact new40-row delta, not execution.
+
+Commands use native MTP/xUnit4.0.2: dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj
 --configuration Release --no-build --no-restore --filter-class '*CombatActualPostAssaultContinuation*'
---no-ansi '/bl:/private/tmp/cs01-focused-{}.binlog', terminating120s wrapper. Splitgroupsifneeded;
-nozero-selection passcredit. Buildtestproject beforeRED; appropriate Release solutionbuild/format
-and complete rowdiscovery beforefreeze; fullsuitelease onlyviaBrain, no duplicatedbroadtests.
+--no-ansi '/bl:/private/tmp/cs01-final-focused-{}.binlog', terminating120s wrapper. Every MSBuild
+invocation has a unique binlog. No zero-selection credit. No duplicate broad local .NET or unchanged
+Python owning chain; exact-head GitHub CI is Brain's full-suite gate. The Python oracle is not run
+by CI and supplies only the already frozen contract, not native execution evidence.
 
-CodebaseMemory project sandtable-actual-selection-contract generation2026-10-05T14:03:21Z stale:
-native paid files nottracked, docs excluded; knownSettledControl metadata matches. Scopedgraphquery
-returnedoldcontrol/continuation symbols; page12/66 is positiveprovisionalonly, noabsence/completeness
-claims. Directpaidcodec/support/publicreader/test source andfrozenPAC01reads groundthismanifest;
-no stalegraphresult substitutesforactualauthority. No reindex/.serena changes proposed.
+## Engineering self-review
 
-## Risks and deferrals
+Correctness: traced full native paid authority, actual members/Movement/receipt-hash progress,
+source-before-claim and primitive-before-version ordering. All literal cuts and native time variants
+pass; CP and RNG stay unchanged. Reversed ledger faults are causal006 rather than count004.
+Private isolated forced-finish, exclusion, guard, future/immediate-work, Engaged, CP15-vs16 and
+overflow probes cannot be supplied as a Source; no widened actual profile is claimed.
 
-Largest implementation risk is closedgrammar/primitive precedence and accurate fullproof identity,
-then originalmembership/progress binding, clock/retry sequencing andencodedcaps. Keeppurehelpers
-separateinsideengine andcodec; iftwofiles become incoherent, return concrete scopechange toBrain
-ratherthanrefactorsharedpredecessor. No outcome/profilewidening or Pythonexecution.
-Private ordinaryactual profile only; fullselectedbranch/Engaged/capture campaign, positive/laterII/
-consumedReserve, repeatedMovement/Convoyexecution, productioningress/public/host/Exercise/persistence
-andparent017–025/all72 gatesremainopen. Fourhistoricalowningfailures/aggregation/CoreB139unwaived.
+Readability/architecture: two cohesive additive files separate engine and syntax/dependency concerns,
+matching the compact neighboring private native style. No separate admission service or shared
+refactor is needed. Old synthetic SCT/SCC/Release admission is excluded. Native effects remain
+inside Core, with no public action/host/Exercise/persistence activation.
 
-NC02 semantic RED: focused Release build passed0warnings/errors11.41s, binlog
-/private/tmp/cs01-red-build-20261013-004220--30668--KNOr5s.binlog. Eight genuine InlineData rows
-passed original native paid33/resources/RNG/iml preconditions and failed at definedCMB-PAC-007
-in compile-valid missing-consumer stub. Testexit2,8failed/0passed/0skipped,10.157s/120; primary
-logSHA84933c425ad15455c70a0fe577590fed37cc558e0a8371909e96a2d373bbec7d.
-Brain-owned roadmap patch is applied; reverse-check confirms exact patch. A duplicate application
-failed harmlessly after an earlier successful application; no manual roadmap edits or reset.
+Security/ownership: bounded ASCII preparse precedes parsing, closed primitive/union/version checks,
+immutable verified callback byte copies and 66-path rechecks guard ingress/publication/retries.
+All returned arrays/items and JsonElements are owned. Context and actor cannot borrow retry or
+fallback authority. No hidden state is sent to intelligence, no credentials or remote I/O in runtime.
+
+Performance: acyclic four-event suffix and fixed capacities bound replay; measured focused40 rows
+71.771s under120s. Existing paid catalogue replay and repeated physical validation cost CPU/I/O;
+no new cache or production performance claim. Frozen literal fixture is5.56MB and remains test-only.
+No additional author finding identified; independent review and CI are required, not self-issued.
+
+## Coverage limitations and remaining scope
+
+Codebase Memory generation2026-10-05T14:03:21Z predates paid work: paid native files not tracked,
+docs excluded. Positive scoped graph lookup was provisional; focused source reads supplied missing
+coverage. No absence/completeness claim or .serena reindex/edit.
+
+New milestone counters0/9, recovery0/2, up to3 fresh passes per round. Brain owns review/merge and
+sole heavy-suite lease. Session closeout07:36:35UTC/productstop08:36:35UTC Oct13; estimates are not
+quality waivers. All retained WIP must be committed/pushed and handed off by closeout if unfinished.
+Authentic repeated Movement/full selected-branch/Engaged campaign, positive/later-II/consumed Reserve,
+production/public/host/Exercise, persistence and parent017–025/all72 gates remain open. Historical
+four owning failures and aggregation/CoreB139 remain unwaived. No blocked research payload used.

@@ -1,0 +1,41 @@
+{
+  "command": [
+    "dotnet",
+    "test",
+    "--project",
+    "tests/Cna.Core.Tests/Cna.Core.Tests.csproj",
+    "--configuration",
+    "Release",
+    "--no-build",
+    "--no-restore",
+    "--filter-class",
+    "*CombatActualPostAssaultContinuation*",
+    "--no-ansi",
+    "/bl:/private/tmp/cs01-final-focused-{}.binlog"
+  ],
+  "budgetSeconds": 120,
+  "exitCode": 0,
+  "timedOut": false,
+  "elapsedSeconds": 71.771,
+  "sdk": "10.0.400",
+  "logSha256": "617302d57756f9e4af633e845d74a8a18c6c11474fd009b37c1eafeccc0ee27f",
+  "sourceSha256": {
+    "src/Cna.Core/Campaigns/CampaignCombatActualPostAssaultContinuation.cs": "25a01c667976ba05b1c2242910c08eccb83615c2fe39be4f93b44702cd9a69da",
+    "src/Cna.Core/Campaigns/CampaignCombatActualPostAssaultContinuationCodec.cs": "790775b6df49aa11451778bd52a9fd41a61af40009018ee87e27f4e22bdd73ba",
+    "tests/Cna.Core.Tests/Campaigns/CombatActualPostAssaultContinuationTests.cs": "2df132591905fb5315e87e8462995e0f0f93723ea33c60cc69c40545ecb4734a",
+    "tests/Cna.Core.Tests/Campaigns/CombatActualPostAssaultContinuationContractTests.cs": "af77d87139b47c331da9b9342c6a40398de007060aa2b02c20613692b22f9f42"
+  },
+  "tests": {
+    "total": 40,
+    "passed": 40,
+    "failed": 0,
+    "skipped": 0
+  },
+  "build": {
+    "configuration": "Release",
+    "warnings": 0,
+    "errors": 0,
+    "elapsedSeconds": 17.22,
+    "binlog": "/private/tmp/cs01-final-build-20261013-013017--66838--DmPa+u.binlog"
+  }
+}
