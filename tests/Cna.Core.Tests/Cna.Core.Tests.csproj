@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="../../docs/specs/fixtures/combat-actual-repeated-movement-v1.json" Link="Campaigns/Fixtures/combat-actual-repeated-movement-v1.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="../../docs/specs/fixtures/combat-actual-post-assault-continuation-v1.json" Link="Campaigns/Fixtures/combat-actual-post-assault-continuation-v1.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="../../docs/specs/fixtures/combat-actual-paid-assault-v1.json" Link="Campaigns/Fixtures/combat-actual-paid-assault-v1.json" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="../../docs/specs/fixtures/combat-actual-round-entry-v1.json" Link="Campaigns/Fixtures/combat-actual-round-entry-v1.json" CopyToOutputDirectory="PreserveNewest" />

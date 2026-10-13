@@ -1,0 +1,19 @@
+{
+  "command": [
+    "python3",
+    "-B",
+    ".github/scripts/test_partition.py",
+    "discover",
+    "--sha",
+    "bca68dd8da7d486627de94cf986e442dc5172770",
+    "--attempt",
+    "nrm-author",
+    "--directory",
+    "/private/tmp/nrm-exact-inventory"
+  ],
+  "budgetSeconds": 120,
+  "exitCode": 0,
+  "timedOut": false,
+  "elapsedSeconds": 7.455,
+  "logSha256": "6d892a4e9eaec4382c927fa251185e6c1fe6bcdf743dc39fb39f4b80d0b0403f"
+}

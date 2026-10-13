@@ -1,0 +1,19 @@
+{
+  "command": [
+    "dotnet",
+    "test",
+    "--project",
+    "tests/Cna.Core.Tests/Cna.Core.Tests.csproj",
+    "-c",
+    "Release",
+    "--no-build",
+    "--filter-method",
+    "*CumulativeCostsContactProgressAndOriginalFieldsArePreserved",
+    "/bl:/private/tmp/nrm-preservation-green-{}.binlog"
+  ],
+  "budgetSeconds": 120,
+  "exitCode": 0,
+  "timedOut": false,
+  "elapsedSeconds": 12.784,
+  "logSha256": "059de8d2fa6870701144255622b4efdfee6ecbabfe56b4f249cb0b9e6150211a"
+}

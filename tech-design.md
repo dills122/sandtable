@@ -654,8 +654,12 @@ replays that repeat37 ancestry with five independent ledgers and owns up to four
 moves. Cumulative CP5→9→11→13→15, incremental DP0/1/2/2, one Contact break-off, member spending
 and actual ordinal2 move progress preserve original Movement/closure/World provenance and RNG.
 Reaction-adjacent destinations reject before mutation even with empty enemy ammunition. This is a
-private Python reference, with final normal344.251s/900 and unchanged frozen literals; native consumption, stop/resolution/completion and full selected-branch
-campaign remain subsequent gates.
+private Python reference, with final normal344.251s/900 and unchanged frozen literals; NRM01 now implements the private native move-only consumer. Full native continuation/context replay and five
+independent ledgers derive original provenance and all four safe moves with exact Source/Control/Proof/event
+parity. Native physical delivery checks68 paths while preserving the wire66 manifest and two separate
+reference deliveries. Deferred CS01 all-prior continuation retries are now covered for repeat/finish,
+with valid changed/unavailable clocks and predecessor runtime unchanged. Actual stop/resolution/completion
+and full selected-branch campaign remain subsequent gates. Independent review/CI for NRM01 are pending.
 Production ingress authentication,
 later-II/consumed Reserve lineage and public activation remain gated. Private settled controls
 still retain synthetic earlier Movement; these checkpoints do not prove the authentic continual

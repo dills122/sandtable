@@ -1,0 +1,43 @@
+Running tests from /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/artifacts/bin/Cna.Core.Tests/release/Cna.Core.Tests.dll (net10.0|arm64)
+failed Cna.Core.Tests.Campaigns.CombatActualRepeatedMovementTests.GenuineRepeatedSourcePublishesActualOrdinaryMove(index: 2) (2s 892ms)
+  from /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/artifacts/bin/Cna.Core.Tests/release/Cna.Core.Tests.dll (net10.0|arm64)
+  Xunit.MicrosoftTestingPlatform.XunitException: System.Text.Json.JsonException : CMB-RMV-007
+    at Cna.Core.Campaigns.CampaignCombatActualRepeatedMovement.ApplyTrustedSource(ReadOnlySpan`1 source, CampaignCombatCreationContext context, IReadOnlyList`1 selection, IReadOnlyList`1 rounds, IReadOnlyList`1 paid, IReadOnlyList`1 continuation, IReadOnlyList`1 movement, ReadOnlySpan`1 newInput, Func`2 dependencies) in /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/src/Cna.Core/Campaigns/CampaignCombatActualRepeatedMovement.cs:63
+    at Cna.Core.Tests.Campaigns.CombatActualRepeatedMovementTests.Apply(Byte[] source, Inputs a, IReadOnlyList`1 movement, Byte[] input) in /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/tests/Cna.Core.Tests/Campaigns/CombatActualRepeatedMovementTests.cs:44
+    at Cna.Core.Tests.Campaigns.CombatActualRepeatedMovementTests.GenuineRepeatedSourcePublishesActualOrdinaryMove(Int32 index) in /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/tests/Cna.Core.Tests/Campaigns/CombatActualRepeatedMovementTests.cs:27
+    at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+    at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+failed Cna.Core.Tests.Campaigns.CombatActualRepeatedMovementTests.GenuineRepeatedSourcePublishesActualOrdinaryMove(index: 1) (1s 540ms)
+  from /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/artifacts/bin/Cna.Core.Tests/release/Cna.Core.Tests.dll (net10.0|arm64)
+  Xunit.MicrosoftTestingPlatform.XunitException: System.Text.Json.JsonException : CMB-RMV-007
+    at Cna.Core.Campaigns.CampaignCombatActualRepeatedMovement.ApplyTrustedSource(ReadOnlySpan`1 source, CampaignCombatCreationContext context, IReadOnlyList`1 selection, IReadOnlyList`1 rounds, IReadOnlyList`1 paid, IReadOnlyList`1 continuation, IReadOnlyList`1 movement, ReadOnlySpan`1 newInput, Func`2 dependencies) in /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/src/Cna.Core/Campaigns/CampaignCombatActualRepeatedMovement.cs:63
+    at Cna.Core.Tests.Campaigns.CombatActualRepeatedMovementTests.Apply(Byte[] source, Inputs a, IReadOnlyList`1 movement, Byte[] input) in /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/tests/Cna.Core.Tests/Campaigns/CombatActualRepeatedMovementTests.cs:44
+    at Cna.Core.Tests.Campaigns.CombatActualRepeatedMovementTests.GenuineRepeatedSourcePublishesActualOrdinaryMove(Int32 index) in /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/tests/Cna.Core.Tests/Campaigns/CombatActualRepeatedMovementTests.cs:27
+    at InvokeStub_CombatActualRepeatedMovementTests.GenuineRepeatedSourcePublishesActualOrdinaryMove(Object, Span`1)
+    at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+failed Cna.Core.Tests.Campaigns.CombatActualRepeatedMovementTests.GenuineRepeatedSourcePublishesActualOrdinaryMove(index: 0) (1s 377ms)
+  from /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/artifacts/bin/Cna.Core.Tests/release/Cna.Core.Tests.dll (net10.0|arm64)
+  Xunit.MicrosoftTestingPlatform.XunitException: System.Text.Json.JsonException : CMB-RMV-007
+    at Cna.Core.Campaigns.CampaignCombatActualRepeatedMovement.ApplyTrustedSource(ReadOnlySpan`1 source, CampaignCombatCreationContext context, IReadOnlyList`1 selection, IReadOnlyList`1 rounds, IReadOnlyList`1 paid, IReadOnlyList`1 continuation, IReadOnlyList`1 movement, ReadOnlySpan`1 newInput, Func`2 dependencies) in /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/src/Cna.Core/Campaigns/CampaignCombatActualRepeatedMovement.cs:63
+    at Cna.Core.Tests.Campaigns.CombatActualRepeatedMovementTests.Apply(Byte[] source, Inputs a, IReadOnlyList`1 movement, Byte[] input) in /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/tests/Cna.Core.Tests/Campaigns/CombatActualRepeatedMovementTests.cs:44
+    at Cna.Core.Tests.Campaigns.CombatActualRepeatedMovementTests.GenuineRepeatedSourcePublishesActualOrdinaryMove(Int32 index) in /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/tests/Cna.Core.Tests/Campaigns/CombatActualRepeatedMovementTests.cs:27
+    at InvokeStub_CombatActualRepeatedMovementTests.GenuineRepeatedSourcePublishesActualOrdinaryMove(Object, Span`1)
+    at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+failed Cna.Core.Tests.Campaigns.CombatActualRepeatedMovementTests.GenuineRepeatedSourcePublishesActualOrdinaryMove(index: 3) (1s 337ms)
+  from /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/artifacts/bin/Cna.Core.Tests/release/Cna.Core.Tests.dll (net10.0|arm64)
+  Xunit.MicrosoftTestingPlatform.XunitException: System.Text.Json.JsonException : CMB-RMV-007
+    at Cna.Core.Campaigns.CampaignCombatActualRepeatedMovement.ApplyTrustedSource(ReadOnlySpan`1 source, CampaignCombatCreationContext context, IReadOnlyList`1 selection, IReadOnlyList`1 rounds, IReadOnlyList`1 paid, IReadOnlyList`1 continuation, IReadOnlyList`1 movement, ReadOnlySpan`1 newInput, Func`2 dependencies) in /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/src/Cna.Core/Campaigns/CampaignCombatActualRepeatedMovement.cs:63
+    at Cna.Core.Tests.Campaigns.CombatActualRepeatedMovementTests.Apply(Byte[] source, Inputs a, IReadOnlyList`1 movement, Byte[] input) in /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/tests/Cna.Core.Tests/Campaigns/CombatActualRepeatedMovementTests.cs:44
+    at Cna.Core.Tests.Campaigns.CombatActualRepeatedMovementTests.GenuineRepeatedSourcePublishesActualOrdinaryMove(Int32 index) in /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/tests/Cna.Core.Tests/Campaigns/CombatActualRepeatedMovementTests.cs:27
+    at InvokeStub_CombatActualRepeatedMovementTests.GenuineRepeatedSourcePublishesActualOrdinaryMove(Object, Span`1)
+    at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+/Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/artifacts/bin/Cna.Core.Tests/release/Cna.Core.Tests.dll (net10.0|arm64) failed with 4 error(s) (7s 839ms)
+Exit code: 2
+
+Test run summary: Failed!
+  total: 4
+  failed: 4
+  succeeded: 0
+  skipped: 0
+  duration: 8s 418ms
+Test run completed with non-success exit code: 2 (see: https://aka.ms/testingplatform/exitcodes)

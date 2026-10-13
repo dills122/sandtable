@@ -1,0 +1,19 @@
+  Cna.Intelligence.Contracts -> /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/artifacts/bin/Cna.Intelligence.Contracts/release/Cna.Intelligence.Contracts.dll
+  Cna.ServiceDefaults -> /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/artifacts/bin/Cna.ServiceDefaults/release/Cna.ServiceDefaults.dll
+  Cna.Intelligence.Contracts.Tests -> /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/artifacts/bin/Cna.Intelligence.Contracts.Tests/release/Cna.Intelligence.Contracts.Tests.dll
+  Cna.DecisionWorker -> /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/artifacts/bin/Cna.DecisionWorker/release/Cna.DecisionWorker.dll
+  Cna.Core -> /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/artifacts/bin/Cna.Core/release/Cna.Core.dll
+  Cna.Intelligence.Gateway -> /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/artifacts/bin/Cna.Intelligence.Gateway/release/Cna.Intelligence.Gateway.dll
+  Cna.ExerciseRunner -> /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/artifacts/bin/Cna.ExerciseRunner/release/Cna.ExerciseRunner.dll
+  Cna.OrleansHost -> /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/artifacts/bin/Cna.OrleansHost/release/Cna.OrleansHost.dll
+  Cna.AppHost -> /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/artifacts/bin/Cna.AppHost/release/Cna.AppHost.dll
+  Cna.Core.Tests -> /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/artifacts/bin/Cna.Core.Tests/release/Cna.Core.Tests.dll
+  Cna.ExerciseRunner.Tests -> /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/artifacts/bin/Cna.ExerciseRunner.Tests/release/Cna.ExerciseRunner.Tests.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+BinaryLogger wrote to: /private/tmp/nrm-release-build-20261013-131125--63788--EkwWAw.binlog
+
+Time Elapsed 00:00:06.82
