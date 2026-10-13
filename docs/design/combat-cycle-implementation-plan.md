@@ -2643,3 +2643,43 @@ campaign lineage, repeat/finish lifecycle execution, Release/public/host/Exercis
 later-II/consumed Reserve, persistence and parent continual-cycle closure remain separate gates.
 Four historical owning failures and aggregation/CoreB139 remain unwaived. New review counters0/9;
 Brain owns dispatch/exact-headCI/merge and single normal-oracle lease, up to3passes/round and2recoveries.
+
+
+### CS01 — private native actual post-assault continuation
+
+Candidate implementation, October12 Toronto, baseline44cf98656350b29e2f1074f2a9a1b1e634234faa,
+branchcodex/native-post-assault-continuation. PAC01 merged inPR178 at44cf986 after fresh review1/9
+Ready/Accept and exact-head CI38189033953 passed all2803 existing Release rows. Its full Python
+normal431.075s is separate from CI, which does not execute the reference oracle.
+[Native author plan](../work/plans/2026-10-12-native-post-assault-continuation.md) owns NC01–NC08.
+
+The additive native engine/codec require authentic CampaignCombatCreationContext plus independent
+selection, round, paid and continuation ledgers. Full native paid replay supplies actual ancestry;
+source-aware member/history/Movement/progress extraction precedes empty Release34/35 and guarded
+control36/37. All8owner/seal/repeatfinish traces reproduce40controlframes/32events and complete
+source/proof bytes. World/resources/RNG are preserved; prospectiveCP9 is not spent. Repeat opens
+ordinal2Movement with pre-eventprefix/resultversion; finish enters same-slotTruckConvoy without
+executing either. Valid inherited seal-time variation regenerates round/paid/continuation natively.
+No Python process, synthetic source reader, host/public registration or shared predecessor change.
+
+Compile-valid missing-consumer RED8888a1e has8genuine007failures after nativepaid33/resource/RNG/
+iml preconditions; build passed0warnings/errors. Initial GREEN24parity/recovery rows passed51.138s,
+15extended contract rows33.295s; final40/40 passed71.771s/120,0failed/skipped. Release solution
+build0warnings/errors17.22s and fullformat24.581s pass. Exact row discovery is retained separately.
+Primitives/context/actor precede retry/fallback; source-first claims, originalreceipt retries and
+owned results retain scope. Native callback observes66physical paths: frozenwire64 +PAC01schema/
+oracle2delivery. All changed/missing/unreadable/null/after-first-read faults remain visible; testfixture
+is excluded runtime. Same source16MiB/proof2MiB/control256KiB/event32KiB/input1KiB/ledger8KiB,
+depth36/four-event bounds apply without frozen spec/fixture/oracle/pin edits.
+
+Brain alone owns the roadmap reconciliation patch, integrated before freeze. Six primary paths:
+two native source files, two focused test files, unchanged fixture link in Core.Tests.csproj and this
+plan; README/tech-design/author plan and administrative evidence accompany it. Full .NET validation
+belongs to exact-head GitHub CI; no duplicate broad local suite. New milestone counters0/9,
+recovery0/2; Brain dispatches fresh independent review and owns merge. Session closeout07:36:35UTC
+and productstop08:36:35UTC Oct13 protect durable committed/pushed evidence without quality waivers.
+
+Private native boundary only. Authentic repeated Movement/full selected-branch/Engaged campaign,
+positive/later-II/consumed Reserve, production ingress/public/host/Exercise, persistence and parent
+017–025/all72 acceptance closure remain open. Historical four owning failures and aggregation/
+CoreB139 remain unwaived. No synthetic mechanical probe becomes an actual source or reachability claim.

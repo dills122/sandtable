@@ -1,0 +1,21 @@
+{
+  "command": [
+    "dotnet",
+    "test",
+    "--project",
+    "tests/Cna.Core.Tests/Cna.Core.Tests.csproj",
+    "--configuration",
+    "Release",
+    "--no-build",
+    "--no-restore",
+    "--filter-class",
+    "*CombatActualPostAssaultContinuationTests",
+    "--no-ansi",
+    "/bl:/private/tmp/cs01-semantic-red-{}.binlog"
+  ],
+  "budgetSeconds": 120,
+  "exitCode": 2,
+  "timedOut": false,
+  "elapsedSeconds": 10.157,
+  "logSha256": "84933c425ad15455c70a0fe577590fed37cc558e0a8371909e96a2d373bbec7d"
+}

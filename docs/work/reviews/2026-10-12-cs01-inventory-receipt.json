@@ -1,0 +1,18 @@
+{
+  "command": [
+    "python3",
+    ".github/scripts/test_partition.py",
+    "discover",
+    "--sha",
+    "c7f2622a5e1ccdafa52f14ccee2238d28edfbe42",
+    "--attempt",
+    "cs01-local",
+    "--directory",
+    "/private/tmp/cs01-inventory"
+  ],
+  "budgetSeconds": 120,
+  "exitCode": 0,
+  "timedOut": false,
+  "elapsedSeconds": 10.445,
+  "logSha256": "94956076cfe847120d6c58f6d46a8af0f6f9ae7d5b96d88cccbbdbf29b15b075"
+}

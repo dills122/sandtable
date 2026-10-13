@@ -53,7 +53,7 @@ play a side; it will never decide the rules or secretly change the campaign stat
 | --- | --- | --- |
 | Deterministic Umpire | Working | Versioned rules, seeded randomness, canonical commands/events, replay, checkpoints, and side-safe action boundaries are implemented. |
 | Playable rule path | Working through Combat entry | Runner can execute Initiative, stage preamble, Reserve Designation, Movement, bounded ZOC/Reaction, and Breakdown, then stops before Combat adjudication. |
-| Combat and continual cycle | Private Core entry; public activation pending | Task019F3 (PR #169) implements private native actual prepared-round entry and cancelled no-attack Release for both supported opening histories with two independently trusted ledgers. Task019F4 (PR #172) adds private no-cost actual assault admission and pure arithmetic assessment. Task019F5 (PR #175) adds the private actual paid-assault executable reference through immediate settlement and CA completion into same-cycle Reserve Release. Task019F6 (PR #177) implements the merged private native paid-assault consumer with exact reference byte parity and focused native validation. PAC01 defines an actual-source private Release and guarded repeat/finish contract; native continuation, production ingress, later-II/consumed Reserve lineage, full-cycle proof and public Combat remain open. |
+| Combat and continual cycle | Private Core entry; public activation pending | Task019F3 (PR #169) implements private native actual prepared-round entry and cancelled no-attack Release for both supported opening histories with two independently trusted ledgers. Task019F4 (PR #172) adds private no-cost actual assault admission and pure arithmetic assessment. Task019F5 (PR #175) adds the private actual paid-assault executable reference through immediate settlement and CA completion into same-cycle Reserve Release. Task019F6 (PR #177) implements the merged private native paid-assault consumer with exact reference byte parity and focused native validation. PAC01 (PR #178) freezes the actual-source Release and guarded repeat/finish contract. CS01 implements its private native consumer through the Movement/Convoy boundary. Authentic repeated Movement, production ingress, later-II/consumed Reserve lineage, full-cycle proof and public Combat remain open. |
 | Exercise and Maneuver tools | Working | Deterministic single runs, multi-run matrices, paired comparisons, strict readback, and evidence bundles are available from CLI. |
 | User interface | Not started | `site/` is project website only. Maproom hot-seat client is future work. |
 | Published scenario | Not started | First target is six-turn, Land-only *Graziani's Offensive* after working Combat loop. |
@@ -67,12 +67,12 @@ dormant Core tests; they are not yet exposed as playable actions.
 
 Next delivery sequence:
 
-1. Complete PAC01's [actual post-assault continuation contract](docs/specs/combat-actual-post-assault-continuation-v1.md),
-   then implement its private native successor from merged Task019F6 (PR #177). The contract
-   authenticates complete paid history through empty Release and guarded repeat/finish; repeat
-   stops at ordinal2 Movement opening. Certify full selected-branch campaign lineage, repeated
-   Movement, later-II/consumed Reserve and production ingress authentication before activation.
-   Existing synthetic settled contexts do not prove reachability from actual opening history.
+1. Build on CS01's private native [actual post-assault continuation](docs/specs/combat-actual-post-assault-continuation-v1.md)
+   to join authentic repeated Movement and remaining selected-branch campaign lineage. Its full
+   paid history and four independent ledgers reach empty Release and guarded repeat/finish;
+   repeat stops at ordinal2 Movement opening. Complete later-II/consumed Reserve and production
+   ingress authentication before activation. Existing synthetic settled contexts do not prove
+   reachability from actual opening history.
 2. Activate certified, side-safe public Combat actions (Tasks020–021), then prove Exercise/Runner
    replay and repeatability (Tasks022–024).
 3. Reconcile all 72 acceptance criteria and demonstrate the authentic continual cycle (Task025).
