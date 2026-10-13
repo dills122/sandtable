@@ -119,3 +119,7 @@ quality waivers. All retained WIP must be committed/pushed and handed off by clo
 Authentic repeated Movement/full selected-branch/Engaged campaign, positive/later-II/consumed Reserve,
 production/public/host/Exercise, persistence and parent017–025/all72 gates remain open. Historical
 four owning failures and aggregation/CoreB139 remain unwaived. No blocked research payload used.
+
+Exact Release discovery at code freezec7f2622a5e1ccdafa52f14ccee2238d28edfbe42 passed10.445s/120:
+CoreA71/CoreB2293/Exercise469/Contracts10,total2843. All40new rows are CoreB; no new factory,
+partition or workflow change. This is discovery only. Separate review packets accompany publication.
