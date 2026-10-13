@@ -1,0 +1,1817 @@
+{
+  "commit": "c43b9caec452c152a086412c779bb6495ef1a0ad",
+  "python": "3.14.6 (main, Jun 10 2026, 10:03:53) [Clang 21.0.0 (clang-2100.0.123.102)]",
+  "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "snapshot": "/private/tmp/movement-completion-c43b9ca-baseline",
+  "exportedFiles": 71,
+  "externalPins": 66,
+  "method": "Immutable retained sources, independent five ledgers, existing public ARMV replay; pure expiry kernel only. No successor ingress or lifecycle authority claimed.",
+  "observations": [
+    {
+      "owner": "axis",
+      "firstSeal": "attacker",
+      "moves": 0,
+      "stateVersion": 37,
+      "positionId": "land.position.operation-1.first-player.movement-and-combat.movement",
+      "location": "assault-west",
+      "cp": {
+        "numerator": 5,
+        "denominator": 1
+      },
+      "cohesion": 0,
+      "tracks": [],
+      "receiptCount": 0,
+      "progressCount": 0,
+      "oldProof": {
+        "scope": {
+          "gameTurn": 1,
+          "operationStage": 1,
+          "playerPhaseSlot": "first-acting-side",
+          "actingSide": "axis"
+        },
+        "ordinal": 1,
+        "completionReceiptId": "iml.324a120e81afe965207f88a13afffbf15d89c8c46374c57fbfeab8faa80772f7",
+        "endLocations": [
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "axis",
+              "elementId": "axis-assault-battalion"
+            },
+            "locationId": "assault-west"
+          },
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "commonwealth",
+              "elementId": "commonwealth-assault-battalion"
+            },
+            "locationId": "assault-east"
+          }
+        ],
+        "excludedBefore": []
+      },
+      "previewProof": {
+        "scope": {
+          "gameTurn": 1,
+          "operationStage": 1,
+          "playerPhaseSlot": "first-acting-side",
+          "actingSide": "axis"
+        },
+        "ordinal": 2,
+        "completionReceiptId": "probe.actual-completion",
+        "endLocations": [
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "axis",
+              "elementId": "axis-assault-battalion"
+            },
+            "locationId": "assault-west"
+          },
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "commonwealth",
+              "elementId": "commonwealth-assault-battalion"
+            },
+            "locationId": "assault-east"
+          }
+        ],
+        "excludedBefore": []
+      },
+      "membersUnchanged": true,
+      "sourceBytes": 537294,
+      "controlBytes": 13867
+    },
+    {
+      "owner": "axis",
+      "firstSeal": "attacker",
+      "moves": 1,
+      "stateVersion": 38,
+      "positionId": "land.position.operation-1.first-player.movement-and-combat.movement",
+      "location": "axis-rear",
+      "cp": {
+        "numerator": 9,
+        "denominator": 1
+      },
+      "cohesion": 0,
+      "tracks": [
+        {
+          "unit": {
+            "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+            "originalSide": "axis",
+            "elementId": "axis-assault-battalion"
+          },
+          "route": [
+            "assault-west",
+            "axis-rear"
+          ]
+        }
+      ],
+      "receiptCount": 1,
+      "progressCount": 1,
+      "oldProof": {
+        "scope": {
+          "gameTurn": 1,
+          "operationStage": 1,
+          "playerPhaseSlot": "first-acting-side",
+          "actingSide": "axis"
+        },
+        "ordinal": 1,
+        "completionReceiptId": "iml.324a120e81afe965207f88a13afffbf15d89c8c46374c57fbfeab8faa80772f7",
+        "endLocations": [
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "axis",
+              "elementId": "axis-assault-battalion"
+            },
+            "locationId": "assault-west"
+          },
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "commonwealth",
+              "elementId": "commonwealth-assault-battalion"
+            },
+            "locationId": "assault-east"
+          }
+        ],
+        "excludedBefore": []
+      },
+      "previewProof": {
+        "scope": {
+          "gameTurn": 1,
+          "operationStage": 1,
+          "playerPhaseSlot": "first-acting-side",
+          "actingSide": "axis"
+        },
+        "ordinal": 2,
+        "completionReceiptId": "probe.actual-completion",
+        "endLocations": [
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "axis",
+              "elementId": "axis-assault-battalion"
+            },
+            "locationId": "axis-rear"
+          },
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "commonwealth",
+              "elementId": "commonwealth-assault-battalion"
+            },
+            "locationId": "assault-east"
+          }
+        ],
+        "excludedBefore": []
+      },
+      "membersUnchanged": true,
+      "sourceBytes": 540043,
+      "controlBytes": 14659
+    },
+    {
+      "owner": "axis",
+      "firstSeal": "attacker",
+      "moves": 2,
+      "stateVersion": 39,
+      "positionId": "land.position.operation-1.first-player.movement-and-combat.movement",
+      "location": "axis-supply",
+      "cp": {
+        "numerator": 11,
+        "denominator": 1
+      },
+      "cohesion": -1,
+      "tracks": [
+        {
+          "unit": {
+            "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+            "originalSide": "axis",
+            "elementId": "axis-assault-battalion"
+          },
+          "route": [
+            "assault-west",
+            "axis-rear",
+            "axis-supply"
+          ]
+        }
+      ],
+      "receiptCount": 2,
+      "progressCount": 2,
+      "oldProof": {
+        "scope": {
+          "gameTurn": 1,
+          "operationStage": 1,
+          "playerPhaseSlot": "first-acting-side",
+          "actingSide": "axis"
+        },
+        "ordinal": 1,
+        "completionReceiptId": "iml.324a120e81afe965207f88a13afffbf15d89c8c46374c57fbfeab8faa80772f7",
+        "endLocations": [
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "axis",
+              "elementId": "axis-assault-battalion"
+            },
+            "locationId": "assault-west"
+          },
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "commonwealth",
+              "elementId": "commonwealth-assault-battalion"
+            },
+            "locationId": "assault-east"
+          }
+        ],
+        "excludedBefore": []
+      },
+      "previewProof": {
+        "scope": {
+          "gameTurn": 1,
+          "operationStage": 1,
+          "playerPhaseSlot": "first-acting-side",
+          "actingSide": "axis"
+        },
+        "ordinal": 2,
+        "completionReceiptId": "probe.actual-completion",
+        "endLocations": [
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "axis",
+              "elementId": "axis-assault-battalion"
+            },
+            "locationId": "axis-supply"
+          },
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "commonwealth",
+              "elementId": "commonwealth-assault-battalion"
+            },
+            "locationId": "assault-east"
+          }
+        ],
+        "excludedBefore": [
+          {
+            "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+            "originalSide": "axis",
+            "elementId": "axis-assault-battalion"
+          }
+        ]
+      },
+      "membersUnchanged": true,
+      "sourceBytes": 542150,
+      "controlBytes": 15520
+    },
+    {
+      "owner": "axis",
+      "firstSeal": "attacker",
+      "moves": 3,
+      "stateVersion": 40,
+      "positionId": "land.position.operation-1.first-player.movement-and-combat.movement",
+      "location": "axis-rear",
+      "cp": {
+        "numerator": 13,
+        "denominator": 1
+      },
+      "cohesion": -3,
+      "tracks": [
+        {
+          "unit": {
+            "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+            "originalSide": "axis",
+            "elementId": "axis-assault-battalion"
+          },
+          "route": [
+            "assault-west",
+            "axis-rear",
+            "axis-supply",
+            "axis-rear"
+          ]
+        }
+      ],
+      "receiptCount": 3,
+      "progressCount": 3,
+      "oldProof": {
+        "scope": {
+          "gameTurn": 1,
+          "operationStage": 1,
+          "playerPhaseSlot": "first-acting-side",
+          "actingSide": "axis"
+        },
+        "ordinal": 1,
+        "completionReceiptId": "iml.324a120e81afe965207f88a13afffbf15d89c8c46374c57fbfeab8faa80772f7",
+        "endLocations": [
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "axis",
+              "elementId": "axis-assault-battalion"
+            },
+            "locationId": "assault-west"
+          },
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "commonwealth",
+              "elementId": "commonwealth-assault-battalion"
+            },
+            "locationId": "assault-east"
+          }
+        ],
+        "excludedBefore": []
+      },
+      "previewProof": {
+        "scope": {
+          "gameTurn": 1,
+          "operationStage": 1,
+          "playerPhaseSlot": "first-acting-side",
+          "actingSide": "axis"
+        },
+        "ordinal": 2,
+        "completionReceiptId": "probe.actual-completion",
+        "endLocations": [
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "axis",
+              "elementId": "axis-assault-battalion"
+            },
+            "locationId": "axis-rear"
+          },
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "commonwealth",
+              "elementId": "commonwealth-assault-battalion"
+            },
+            "locationId": "assault-east"
+          }
+        ],
+        "excludedBefore": []
+      },
+      "membersUnchanged": true,
+      "sourceBytes": 544259,
+      "controlBytes": 16370
+    },
+    {
+      "owner": "axis",
+      "firstSeal": "attacker",
+      "moves": 4,
+      "stateVersion": 41,
+      "positionId": "land.position.operation-1.first-player.movement-and-combat.movement",
+      "location": "axis-supply",
+      "cp": {
+        "numerator": 15,
+        "denominator": 1
+      },
+      "cohesion": -5,
+      "tracks": [
+        {
+          "unit": {
+            "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+            "originalSide": "axis",
+            "elementId": "axis-assault-battalion"
+          },
+          "route": [
+            "assault-west",
+            "axis-rear",
+            "axis-supply",
+            "axis-rear",
+            "axis-supply"
+          ]
+        }
+      ],
+      "receiptCount": 4,
+      "progressCount": 4,
+      "oldProof": {
+        "scope": {
+          "gameTurn": 1,
+          "operationStage": 1,
+          "playerPhaseSlot": "first-acting-side",
+          "actingSide": "axis"
+        },
+        "ordinal": 1,
+        "completionReceiptId": "iml.324a120e81afe965207f88a13afffbf15d89c8c46374c57fbfeab8faa80772f7",
+        "endLocations": [
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "axis",
+              "elementId": "axis-assault-battalion"
+            },
+            "locationId": "assault-west"
+          },
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "commonwealth",
+              "elementId": "commonwealth-assault-battalion"
+            },
+            "locationId": "assault-east"
+          }
+        ],
+        "excludedBefore": []
+      },
+      "previewProof": {
+        "scope": {
+          "gameTurn": 1,
+          "operationStage": 1,
+          "playerPhaseSlot": "first-acting-side",
+          "actingSide": "axis"
+        },
+        "ordinal": 2,
+        "completionReceiptId": "probe.actual-completion",
+        "endLocations": [
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "axis",
+              "elementId": "axis-assault-battalion"
+            },
+            "locationId": "axis-supply"
+          },
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "commonwealth",
+              "elementId": "commonwealth-assault-battalion"
+            },
+            "locationId": "assault-east"
+          }
+        ],
+        "excludedBefore": [
+          {
+            "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+            "originalSide": "axis",
+            "elementId": "axis-assault-battalion"
+          }
+        ]
+      },
+      "membersUnchanged": true,
+      "sourceBytes": 546368,
+      "controlBytes": 17230
+    },
+    {
+      "owner": "axis",
+      "firstSeal": "defender",
+      "moves": 0,
+      "stateVersion": 37,
+      "positionId": "land.position.operation-1.first-player.movement-and-combat.movement",
+      "location": "assault-west",
+      "cp": {
+        "numerator": 5,
+        "denominator": 1
+      },
+      "cohesion": 0,
+      "tracks": [],
+      "receiptCount": 0,
+      "progressCount": 0,
+      "oldProof": {
+        "scope": {
+          "gameTurn": 1,
+          "operationStage": 1,
+          "playerPhaseSlot": "first-acting-side",
+          "actingSide": "axis"
+        },
+        "ordinal": 1,
+        "completionReceiptId": "iml.324a120e81afe965207f88a13afffbf15d89c8c46374c57fbfeab8faa80772f7",
+        "endLocations": [
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "axis",
+              "elementId": "axis-assault-battalion"
+            },
+            "locationId": "assault-west"
+          },
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "commonwealth",
+              "elementId": "commonwealth-assault-battalion"
+            },
+            "locationId": "assault-east"
+          }
+        ],
+        "excludedBefore": []
+      },
+      "previewProof": {
+        "scope": {
+          "gameTurn": 1,
+          "operationStage": 1,
+          "playerPhaseSlot": "first-acting-side",
+          "actingSide": "axis"
+        },
+        "ordinal": 2,
+        "completionReceiptId": "probe.actual-completion",
+        "endLocations": [
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "axis",
+              "elementId": "axis-assault-battalion"
+            },
+            "locationId": "assault-west"
+          },
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "commonwealth",
+              "elementId": "commonwealth-assault-battalion"
+            },
+            "locationId": "assault-east"
+          }
+        ],
+        "excludedBefore": []
+      },
+      "membersUnchanged": true,
+      "sourceBytes": 537294,
+      "controlBytes": 13867
+    },
+    {
+      "owner": "axis",
+      "firstSeal": "defender",
+      "moves": 1,
+      "stateVersion": 38,
+      "positionId": "land.position.operation-1.first-player.movement-and-combat.movement",
+      "location": "axis-rear",
+      "cp": {
+        "numerator": 9,
+        "denominator": 1
+      },
+      "cohesion": 0,
+      "tracks": [
+        {
+          "unit": {
+            "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+            "originalSide": "axis",
+            "elementId": "axis-assault-battalion"
+          },
+          "route": [
+            "assault-west",
+            "axis-rear"
+          ]
+        }
+      ],
+      "receiptCount": 1,
+      "progressCount": 1,
+      "oldProof": {
+        "scope": {
+          "gameTurn": 1,
+          "operationStage": 1,
+          "playerPhaseSlot": "first-acting-side",
+          "actingSide": "axis"
+        },
+        "ordinal": 1,
+        "completionReceiptId": "iml.324a120e81afe965207f88a13afffbf15d89c8c46374c57fbfeab8faa80772f7",
+        "endLocations": [
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "axis",
+              "elementId": "axis-assault-battalion"
+            },
+            "locationId": "assault-west"
+          },
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "commonwealth",
+              "elementId": "commonwealth-assault-battalion"
+            },
+            "locationId": "assault-east"
+          }
+        ],
+        "excludedBefore": []
+      },
+      "previewProof": {
+        "scope": {
+          "gameTurn": 1,
+          "operationStage": 1,
+          "playerPhaseSlot": "first-acting-side",
+          "actingSide": "axis"
+        },
+        "ordinal": 2,
+        "completionReceiptId": "probe.actual-completion",
+        "endLocations": [
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "axis",
+              "elementId": "axis-assault-battalion"
+            },
+            "locationId": "axis-rear"
+          },
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "commonwealth",
+              "elementId": "commonwealth-assault-battalion"
+            },
+            "locationId": "assault-east"
+          }
+        ],
+        "excludedBefore": []
+      },
+      "membersUnchanged": true,
+      "sourceBytes": 540043,
+      "controlBytes": 14659
+    },
+    {
+      "owner": "axis",
+      "firstSeal": "defender",
+      "moves": 2,
+      "stateVersion": 39,
+      "positionId": "land.position.operation-1.first-player.movement-and-combat.movement",
+      "location": "axis-supply",
+      "cp": {
+        "numerator": 11,
+        "denominator": 1
+      },
+      "cohesion": -1,
+      "tracks": [
+        {
+          "unit": {
+            "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+            "originalSide": "axis",
+            "elementId": "axis-assault-battalion"
+          },
+          "route": [
+            "assault-west",
+            "axis-rear",
+            "axis-supply"
+          ]
+        }
+      ],
+      "receiptCount": 2,
+      "progressCount": 2,
+      "oldProof": {
+        "scope": {
+          "gameTurn": 1,
+          "operationStage": 1,
+          "playerPhaseSlot": "first-acting-side",
+          "actingSide": "axis"
+        },
+        "ordinal": 1,
+        "completionReceiptId": "iml.324a120e81afe965207f88a13afffbf15d89c8c46374c57fbfeab8faa80772f7",
+        "endLocations": [
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "axis",
+              "elementId": "axis-assault-battalion"
+            },
+            "locationId": "assault-west"
+          },
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "commonwealth",
+              "elementId": "commonwealth-assault-battalion"
+            },
+            "locationId": "assault-east"
+          }
+        ],
+        "excludedBefore": []
+      },
+      "previewProof": {
+        "scope": {
+          "gameTurn": 1,
+          "operationStage": 1,
+          "playerPhaseSlot": "first-acting-side",
+          "actingSide": "axis"
+        },
+        "ordinal": 2,
+        "completionReceiptId": "probe.actual-completion",
+        "endLocations": [
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "axis",
+              "elementId": "axis-assault-battalion"
+            },
+            "locationId": "axis-supply"
+          },
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "commonwealth",
+              "elementId": "commonwealth-assault-battalion"
+            },
+            "locationId": "assault-east"
+          }
+        ],
+        "excludedBefore": [
+          {
+            "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+            "originalSide": "axis",
+            "elementId": "axis-assault-battalion"
+          }
+        ]
+      },
+      "membersUnchanged": true,
+      "sourceBytes": 542150,
+      "controlBytes": 15520
+    },
+    {
+      "owner": "axis",
+      "firstSeal": "defender",
+      "moves": 3,
+      "stateVersion": 40,
+      "positionId": "land.position.operation-1.first-player.movement-and-combat.movement",
+      "location": "axis-rear",
+      "cp": {
+        "numerator": 13,
+        "denominator": 1
+      },
+      "cohesion": -3,
+      "tracks": [
+        {
+          "unit": {
+            "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+            "originalSide": "axis",
+            "elementId": "axis-assault-battalion"
+          },
+          "route": [
+            "assault-west",
+            "axis-rear",
+            "axis-supply",
+            "axis-rear"
+          ]
+        }
+      ],
+      "receiptCount": 3,
+      "progressCount": 3,
+      "oldProof": {
+        "scope": {
+          "gameTurn": 1,
+          "operationStage": 1,
+          "playerPhaseSlot": "first-acting-side",
+          "actingSide": "axis"
+        },
+        "ordinal": 1,
+        "completionReceiptId": "iml.324a120e81afe965207f88a13afffbf15d89c8c46374c57fbfeab8faa80772f7",
+        "endLocations": [
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "axis",
+              "elementId": "axis-assault-battalion"
+            },
+            "locationId": "assault-west"
+          },
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "commonwealth",
+              "elementId": "commonwealth-assault-battalion"
+            },
+            "locationId": "assault-east"
+          }
+        ],
+        "excludedBefore": []
+      },
+      "previewProof": {
+        "scope": {
+          "gameTurn": 1,
+          "operationStage": 1,
+          "playerPhaseSlot": "first-acting-side",
+          "actingSide": "axis"
+        },
+        "ordinal": 2,
+        "completionReceiptId": "probe.actual-completion",
+        "endLocations": [
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "axis",
+              "elementId": "axis-assault-battalion"
+            },
+            "locationId": "axis-rear"
+          },
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "commonwealth",
+              "elementId": "commonwealth-assault-battalion"
+            },
+            "locationId": "assault-east"
+          }
+        ],
+        "excludedBefore": []
+      },
+      "membersUnchanged": true,
+      "sourceBytes": 544259,
+      "controlBytes": 16370
+    },
+    {
+      "owner": "axis",
+      "firstSeal": "defender",
+      "moves": 4,
+      "stateVersion": 41,
+      "positionId": "land.position.operation-1.first-player.movement-and-combat.movement",
+      "location": "axis-supply",
+      "cp": {
+        "numerator": 15,
+        "denominator": 1
+      },
+      "cohesion": -5,
+      "tracks": [
+        {
+          "unit": {
+            "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+            "originalSide": "axis",
+            "elementId": "axis-assault-battalion"
+          },
+          "route": [
+            "assault-west",
+            "axis-rear",
+            "axis-supply",
+            "axis-rear",
+            "axis-supply"
+          ]
+        }
+      ],
+      "receiptCount": 4,
+      "progressCount": 4,
+      "oldProof": {
+        "scope": {
+          "gameTurn": 1,
+          "operationStage": 1,
+          "playerPhaseSlot": "first-acting-side",
+          "actingSide": "axis"
+        },
+        "ordinal": 1,
+        "completionReceiptId": "iml.324a120e81afe965207f88a13afffbf15d89c8c46374c57fbfeab8faa80772f7",
+        "endLocations": [
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "axis",
+              "elementId": "axis-assault-battalion"
+            },
+            "locationId": "assault-west"
+          },
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "commonwealth",
+              "elementId": "commonwealth-assault-battalion"
+            },
+            "locationId": "assault-east"
+          }
+        ],
+        "excludedBefore": []
+      },
+      "previewProof": {
+        "scope": {
+          "gameTurn": 1,
+          "operationStage": 1,
+          "playerPhaseSlot": "first-acting-side",
+          "actingSide": "axis"
+        },
+        "ordinal": 2,
+        "completionReceiptId": "probe.actual-completion",
+        "endLocations": [
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "axis",
+              "elementId": "axis-assault-battalion"
+            },
+            "locationId": "axis-supply"
+          },
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "commonwealth",
+              "elementId": "commonwealth-assault-battalion"
+            },
+            "locationId": "assault-east"
+          }
+        ],
+        "excludedBefore": [
+          {
+            "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+            "originalSide": "axis",
+            "elementId": "axis-assault-battalion"
+          }
+        ]
+      },
+      "membersUnchanged": true,
+      "sourceBytes": 546368,
+      "controlBytes": 17230
+    },
+    {
+      "owner": "commonwealth",
+      "firstSeal": "attacker",
+      "moves": 0,
+      "stateVersion": 37,
+      "positionId": "land.position.operation-1.first-player.movement-and-combat.movement",
+      "location": "assault-east",
+      "cp": {
+        "numerator": 5,
+        "denominator": 1
+      },
+      "cohesion": 0,
+      "tracks": [],
+      "receiptCount": 0,
+      "progressCount": 0,
+      "oldProof": {
+        "scope": {
+          "gameTurn": 1,
+          "operationStage": 1,
+          "playerPhaseSlot": "first-acting-side",
+          "actingSide": "commonwealth"
+        },
+        "ordinal": 1,
+        "completionReceiptId": "iml.935bbc44075d71b89754fcf664d23586fc6a12660e806f0df4d712adca3d790a",
+        "endLocations": [
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "axis",
+              "elementId": "axis-assault-battalion"
+            },
+            "locationId": "assault-west"
+          },
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "commonwealth",
+              "elementId": "commonwealth-assault-battalion"
+            },
+            "locationId": "assault-east"
+          }
+        ],
+        "excludedBefore": []
+      },
+      "previewProof": {
+        "scope": {
+          "gameTurn": 1,
+          "operationStage": 1,
+          "playerPhaseSlot": "first-acting-side",
+          "actingSide": "commonwealth"
+        },
+        "ordinal": 2,
+        "completionReceiptId": "probe.actual-completion",
+        "endLocations": [
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "axis",
+              "elementId": "axis-assault-battalion"
+            },
+            "locationId": "assault-west"
+          },
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "commonwealth",
+              "elementId": "commonwealth-assault-battalion"
+            },
+            "locationId": "assault-east"
+          }
+        ],
+        "excludedBefore": []
+      },
+      "membersUnchanged": true,
+      "sourceBytes": 537365,
+      "controlBytes": 13915
+    },
+    {
+      "owner": "commonwealth",
+      "firstSeal": "attacker",
+      "moves": 1,
+      "stateVersion": 38,
+      "positionId": "land.position.operation-1.first-player.movement-and-combat.movement",
+      "location": "commonwealth-rear",
+      "cp": {
+        "numerator": 9,
+        "denominator": 1
+      },
+      "cohesion": 0,
+      "tracks": [
+        {
+          "unit": {
+            "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+            "originalSide": "commonwealth",
+            "elementId": "commonwealth-assault-battalion"
+          },
+          "route": [
+            "assault-east",
+            "commonwealth-rear"
+          ]
+        }
+      ],
+      "receiptCount": 1,
+      "progressCount": 1,
+      "oldProof": {
+        "scope": {
+          "gameTurn": 1,
+          "operationStage": 1,
+          "playerPhaseSlot": "first-acting-side",
+          "actingSide": "commonwealth"
+        },
+        "ordinal": 1,
+        "completionReceiptId": "iml.935bbc44075d71b89754fcf664d23586fc6a12660e806f0df4d712adca3d790a",
+        "endLocations": [
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "axis",
+              "elementId": "axis-assault-battalion"
+            },
+            "locationId": "assault-west"
+          },
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "commonwealth",
+              "elementId": "commonwealth-assault-battalion"
+            },
+            "locationId": "assault-east"
+          }
+        ],
+        "excludedBefore": []
+      },
+      "previewProof": {
+        "scope": {
+          "gameTurn": 1,
+          "operationStage": 1,
+          "playerPhaseSlot": "first-acting-side",
+          "actingSide": "commonwealth"
+        },
+        "ordinal": 2,
+        "completionReceiptId": "probe.actual-completion",
+        "endLocations": [
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "axis",
+              "elementId": "axis-assault-battalion"
+            },
+            "locationId": "assault-west"
+          },
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "commonwealth",
+              "elementId": "commonwealth-assault-battalion"
+            },
+            "locationId": "commonwealth-rear"
+          }
+        ],
+        "excludedBefore": []
+      },
+      "membersUnchanged": true,
+      "sourceBytes": 540178,
+      "controlBytes": 14755
+    },
+    {
+      "owner": "commonwealth",
+      "firstSeal": "attacker",
+      "moves": 2,
+      "stateVersion": 39,
+      "positionId": "land.position.operation-1.first-player.movement-and-combat.movement",
+      "location": "commonwealth-supply",
+      "cp": {
+        "numerator": 11,
+        "denominator": 1
+      },
+      "cohesion": -1,
+      "tracks": [
+        {
+          "unit": {
+            "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+            "originalSide": "commonwealth",
+            "elementId": "commonwealth-assault-battalion"
+          },
+          "route": [
+            "assault-east",
+            "commonwealth-rear",
+            "commonwealth-supply"
+          ]
+        }
+      ],
+      "receiptCount": 2,
+      "progressCount": 2,
+      "oldProof": {
+        "scope": {
+          "gameTurn": 1,
+          "operationStage": 1,
+          "playerPhaseSlot": "first-acting-side",
+          "actingSide": "commonwealth"
+        },
+        "ordinal": 1,
+        "completionReceiptId": "iml.935bbc44075d71b89754fcf664d23586fc6a12660e806f0df4d712adca3d790a",
+        "endLocations": [
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "axis",
+              "elementId": "axis-assault-battalion"
+            },
+            "locationId": "assault-west"
+          },
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "commonwealth",
+              "elementId": "commonwealth-assault-battalion"
+            },
+            "locationId": "assault-east"
+          }
+        ],
+        "excludedBefore": []
+      },
+      "previewProof": {
+        "scope": {
+          "gameTurn": 1,
+          "operationStage": 1,
+          "playerPhaseSlot": "first-acting-side",
+          "actingSide": "commonwealth"
+        },
+        "ordinal": 2,
+        "completionReceiptId": "probe.actual-completion",
+        "endLocations": [
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "axis",
+              "elementId": "axis-assault-battalion"
+            },
+            "locationId": "assault-west"
+          },
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "commonwealth",
+              "elementId": "commonwealth-assault-battalion"
+            },
+            "locationId": "commonwealth-supply"
+          }
+        ],
+        "excludedBefore": [
+          {
+            "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+            "originalSide": "commonwealth",
+            "elementId": "commonwealth-assault-battalion"
+          }
+        ]
+      },
+      "membersUnchanged": true,
+      "sourceBytes": 542365,
+      "controlBytes": 15640
+    },
+    {
+      "owner": "commonwealth",
+      "firstSeal": "attacker",
+      "moves": 3,
+      "stateVersion": 40,
+      "positionId": "land.position.operation-1.first-player.movement-and-combat.movement",
+      "location": "commonwealth-rear",
+      "cp": {
+        "numerator": 13,
+        "denominator": 1
+      },
+      "cohesion": -3,
+      "tracks": [
+        {
+          "unit": {
+            "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+            "originalSide": "commonwealth",
+            "elementId": "commonwealth-assault-battalion"
+          },
+          "route": [
+            "assault-east",
+            "commonwealth-rear",
+            "commonwealth-supply",
+            "commonwealth-rear"
+          ]
+        }
+      ],
+      "receiptCount": 3,
+      "progressCount": 3,
+      "oldProof": {
+        "scope": {
+          "gameTurn": 1,
+          "operationStage": 1,
+          "playerPhaseSlot": "first-acting-side",
+          "actingSide": "commonwealth"
+        },
+        "ordinal": 1,
+        "completionReceiptId": "iml.935bbc44075d71b89754fcf664d23586fc6a12660e806f0df4d712adca3d790a",
+        "endLocations": [
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "axis",
+              "elementId": "axis-assault-battalion"
+            },
+            "locationId": "assault-west"
+          },
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "commonwealth",
+              "elementId": "commonwealth-assault-battalion"
+            },
+            "locationId": "assault-east"
+          }
+        ],
+        "excludedBefore": []
+      },
+      "previewProof": {
+        "scope": {
+          "gameTurn": 1,
+          "operationStage": 1,
+          "playerPhaseSlot": "first-acting-side",
+          "actingSide": "commonwealth"
+        },
+        "ordinal": 2,
+        "completionReceiptId": "probe.actual-completion",
+        "endLocations": [
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "axis",
+              "elementId": "axis-assault-battalion"
+            },
+            "locationId": "assault-west"
+          },
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "commonwealth",
+              "elementId": "commonwealth-assault-battalion"
+            },
+            "locationId": "commonwealth-rear"
+          }
+        ],
+        "excludedBefore": []
+      },
+      "membersUnchanged": true,
+      "sourceBytes": 544554,
+      "controlBytes": 16514
+    },
+    {
+      "owner": "commonwealth",
+      "firstSeal": "attacker",
+      "moves": 4,
+      "stateVersion": 41,
+      "positionId": "land.position.operation-1.first-player.movement-and-combat.movement",
+      "location": "commonwealth-supply",
+      "cp": {
+        "numerator": 15,
+        "denominator": 1
+      },
+      "cohesion": -5,
+      "tracks": [
+        {
+          "unit": {
+            "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+            "originalSide": "commonwealth",
+            "elementId": "commonwealth-assault-battalion"
+          },
+          "route": [
+            "assault-east",
+            "commonwealth-rear",
+            "commonwealth-supply",
+            "commonwealth-rear",
+            "commonwealth-supply"
+          ]
+        }
+      ],
+      "receiptCount": 4,
+      "progressCount": 4,
+      "oldProof": {
+        "scope": {
+          "gameTurn": 1,
+          "operationStage": 1,
+          "playerPhaseSlot": "first-acting-side",
+          "actingSide": "commonwealth"
+        },
+        "ordinal": 1,
+        "completionReceiptId": "iml.935bbc44075d71b89754fcf664d23586fc6a12660e806f0df4d712adca3d790a",
+        "endLocations": [
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "axis",
+              "elementId": "axis-assault-battalion"
+            },
+            "locationId": "assault-west"
+          },
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "commonwealth",
+              "elementId": "commonwealth-assault-battalion"
+            },
+            "locationId": "assault-east"
+          }
+        ],
+        "excludedBefore": []
+      },
+      "previewProof": {
+        "scope": {
+          "gameTurn": 1,
+          "operationStage": 1,
+          "playerPhaseSlot": "first-acting-side",
+          "actingSide": "commonwealth"
+        },
+        "ordinal": 2,
+        "completionReceiptId": "probe.actual-completion",
+        "endLocations": [
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "axis",
+              "elementId": "axis-assault-battalion"
+            },
+            "locationId": "assault-west"
+          },
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "commonwealth",
+              "elementId": "commonwealth-assault-battalion"
+            },
+            "locationId": "commonwealth-supply"
+          }
+        ],
+        "excludedBefore": [
+          {
+            "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+            "originalSide": "commonwealth",
+            "elementId": "commonwealth-assault-battalion"
+          }
+        ]
+      },
+      "membersUnchanged": true,
+      "sourceBytes": 546743,
+      "controlBytes": 17398
+    },
+    {
+      "owner": "commonwealth",
+      "firstSeal": "defender",
+      "moves": 0,
+      "stateVersion": 37,
+      "positionId": "land.position.operation-1.first-player.movement-and-combat.movement",
+      "location": "assault-east",
+      "cp": {
+        "numerator": 5,
+        "denominator": 1
+      },
+      "cohesion": 0,
+      "tracks": [],
+      "receiptCount": 0,
+      "progressCount": 0,
+      "oldProof": {
+        "scope": {
+          "gameTurn": 1,
+          "operationStage": 1,
+          "playerPhaseSlot": "first-acting-side",
+          "actingSide": "commonwealth"
+        },
+        "ordinal": 1,
+        "completionReceiptId": "iml.935bbc44075d71b89754fcf664d23586fc6a12660e806f0df4d712adca3d790a",
+        "endLocations": [
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "axis",
+              "elementId": "axis-assault-battalion"
+            },
+            "locationId": "assault-west"
+          },
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "commonwealth",
+              "elementId": "commonwealth-assault-battalion"
+            },
+            "locationId": "assault-east"
+          }
+        ],
+        "excludedBefore": []
+      },
+      "previewProof": {
+        "scope": {
+          "gameTurn": 1,
+          "operationStage": 1,
+          "playerPhaseSlot": "first-acting-side",
+          "actingSide": "commonwealth"
+        },
+        "ordinal": 2,
+        "completionReceiptId": "probe.actual-completion",
+        "endLocations": [
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "axis",
+              "elementId": "axis-assault-battalion"
+            },
+            "locationId": "assault-west"
+          },
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "commonwealth",
+              "elementId": "commonwealth-assault-battalion"
+            },
+            "locationId": "assault-east"
+          }
+        ],
+        "excludedBefore": []
+      },
+      "membersUnchanged": true,
+      "sourceBytes": 537365,
+      "controlBytes": 13915
+    },
+    {
+      "owner": "commonwealth",
+      "firstSeal": "defender",
+      "moves": 1,
+      "stateVersion": 38,
+      "positionId": "land.position.operation-1.first-player.movement-and-combat.movement",
+      "location": "commonwealth-rear",
+      "cp": {
+        "numerator": 9,
+        "denominator": 1
+      },
+      "cohesion": 0,
+      "tracks": [
+        {
+          "unit": {
+            "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+            "originalSide": "commonwealth",
+            "elementId": "commonwealth-assault-battalion"
+          },
+          "route": [
+            "assault-east",
+            "commonwealth-rear"
+          ]
+        }
+      ],
+      "receiptCount": 1,
+      "progressCount": 1,
+      "oldProof": {
+        "scope": {
+          "gameTurn": 1,
+          "operationStage": 1,
+          "playerPhaseSlot": "first-acting-side",
+          "actingSide": "commonwealth"
+        },
+        "ordinal": 1,
+        "completionReceiptId": "iml.935bbc44075d71b89754fcf664d23586fc6a12660e806f0df4d712adca3d790a",
+        "endLocations": [
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "axis",
+              "elementId": "axis-assault-battalion"
+            },
+            "locationId": "assault-west"
+          },
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "commonwealth",
+              "elementId": "commonwealth-assault-battalion"
+            },
+            "locationId": "assault-east"
+          }
+        ],
+        "excludedBefore": []
+      },
+      "previewProof": {
+        "scope": {
+          "gameTurn": 1,
+          "operationStage": 1,
+          "playerPhaseSlot": "first-acting-side",
+          "actingSide": "commonwealth"
+        },
+        "ordinal": 2,
+        "completionReceiptId": "probe.actual-completion",
+        "endLocations": [
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "axis",
+              "elementId": "axis-assault-battalion"
+            },
+            "locationId": "assault-west"
+          },
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "commonwealth",
+              "elementId": "commonwealth-assault-battalion"
+            },
+            "locationId": "commonwealth-rear"
+          }
+        ],
+        "excludedBefore": []
+      },
+      "membersUnchanged": true,
+      "sourceBytes": 540178,
+      "controlBytes": 14755
+    },
+    {
+      "owner": "commonwealth",
+      "firstSeal": "defender",
+      "moves": 2,
+      "stateVersion": 39,
+      "positionId": "land.position.operation-1.first-player.movement-and-combat.movement",
+      "location": "commonwealth-supply",
+      "cp": {
+        "numerator": 11,
+        "denominator": 1
+      },
+      "cohesion": -1,
+      "tracks": [
+        {
+          "unit": {
+            "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+            "originalSide": "commonwealth",
+            "elementId": "commonwealth-assault-battalion"
+          },
+          "route": [
+            "assault-east",
+            "commonwealth-rear",
+            "commonwealth-supply"
+          ]
+        }
+      ],
+      "receiptCount": 2,
+      "progressCount": 2,
+      "oldProof": {
+        "scope": {
+          "gameTurn": 1,
+          "operationStage": 1,
+          "playerPhaseSlot": "first-acting-side",
+          "actingSide": "commonwealth"
+        },
+        "ordinal": 1,
+        "completionReceiptId": "iml.935bbc44075d71b89754fcf664d23586fc6a12660e806f0df4d712adca3d790a",
+        "endLocations": [
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "axis",
+              "elementId": "axis-assault-battalion"
+            },
+            "locationId": "assault-west"
+          },
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "commonwealth",
+              "elementId": "commonwealth-assault-battalion"
+            },
+            "locationId": "assault-east"
+          }
+        ],
+        "excludedBefore": []
+      },
+      "previewProof": {
+        "scope": {
+          "gameTurn": 1,
+          "operationStage": 1,
+          "playerPhaseSlot": "first-acting-side",
+          "actingSide": "commonwealth"
+        },
+        "ordinal": 2,
+        "completionReceiptId": "probe.actual-completion",
+        "endLocations": [
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "axis",
+              "elementId": "axis-assault-battalion"
+            },
+            "locationId": "assault-west"
+          },
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "commonwealth",
+              "elementId": "commonwealth-assault-battalion"
+            },
+            "locationId": "commonwealth-supply"
+          }
+        ],
+        "excludedBefore": [
+          {
+            "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+            "originalSide": "commonwealth",
+            "elementId": "commonwealth-assault-battalion"
+          }
+        ]
+      },
+      "membersUnchanged": true,
+      "sourceBytes": 542365,
+      "controlBytes": 15640
+    },
+    {
+      "owner": "commonwealth",
+      "firstSeal": "defender",
+      "moves": 3,
+      "stateVersion": 40,
+      "positionId": "land.position.operation-1.first-player.movement-and-combat.movement",
+      "location": "commonwealth-rear",
+      "cp": {
+        "numerator": 13,
+        "denominator": 1
+      },
+      "cohesion": -3,
+      "tracks": [
+        {
+          "unit": {
+            "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+            "originalSide": "commonwealth",
+            "elementId": "commonwealth-assault-battalion"
+          },
+          "route": [
+            "assault-east",
+            "commonwealth-rear",
+            "commonwealth-supply",
+            "commonwealth-rear"
+          ]
+        }
+      ],
+      "receiptCount": 3,
+      "progressCount": 3,
+      "oldProof": {
+        "scope": {
+          "gameTurn": 1,
+          "operationStage": 1,
+          "playerPhaseSlot": "first-acting-side",
+          "actingSide": "commonwealth"
+        },
+        "ordinal": 1,
+        "completionReceiptId": "iml.935bbc44075d71b89754fcf664d23586fc6a12660e806f0df4d712adca3d790a",
+        "endLocations": [
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "axis",
+              "elementId": "axis-assault-battalion"
+            },
+            "locationId": "assault-west"
+          },
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "commonwealth",
+              "elementId": "commonwealth-assault-battalion"
+            },
+            "locationId": "assault-east"
+          }
+        ],
+        "excludedBefore": []
+      },
+      "previewProof": {
+        "scope": {
+          "gameTurn": 1,
+          "operationStage": 1,
+          "playerPhaseSlot": "first-acting-side",
+          "actingSide": "commonwealth"
+        },
+        "ordinal": 2,
+        "completionReceiptId": "probe.actual-completion",
+        "endLocations": [
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "axis",
+              "elementId": "axis-assault-battalion"
+            },
+            "locationId": "assault-west"
+          },
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "commonwealth",
+              "elementId": "commonwealth-assault-battalion"
+            },
+            "locationId": "commonwealth-rear"
+          }
+        ],
+        "excludedBefore": []
+      },
+      "membersUnchanged": true,
+      "sourceBytes": 544554,
+      "controlBytes": 16514
+    },
+    {
+      "owner": "commonwealth",
+      "firstSeal": "defender",
+      "moves": 4,
+      "stateVersion": 41,
+      "positionId": "land.position.operation-1.first-player.movement-and-combat.movement",
+      "location": "commonwealth-supply",
+      "cp": {
+        "numerator": 15,
+        "denominator": 1
+      },
+      "cohesion": -5,
+      "tracks": [
+        {
+          "unit": {
+            "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+            "originalSide": "commonwealth",
+            "elementId": "commonwealth-assault-battalion"
+          },
+          "route": [
+            "assault-east",
+            "commonwealth-rear",
+            "commonwealth-supply",
+            "commonwealth-rear",
+            "commonwealth-supply"
+          ]
+        }
+      ],
+      "receiptCount": 4,
+      "progressCount": 4,
+      "oldProof": {
+        "scope": {
+          "gameTurn": 1,
+          "operationStage": 1,
+          "playerPhaseSlot": "first-acting-side",
+          "actingSide": "commonwealth"
+        },
+        "ordinal": 1,
+        "completionReceiptId": "iml.935bbc44075d71b89754fcf664d23586fc6a12660e806f0df4d712adca3d790a",
+        "endLocations": [
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "axis",
+              "elementId": "axis-assault-battalion"
+            },
+            "locationId": "assault-west"
+          },
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "commonwealth",
+              "elementId": "commonwealth-assault-battalion"
+            },
+            "locationId": "assault-east"
+          }
+        ],
+        "excludedBefore": []
+      },
+      "previewProof": {
+        "scope": {
+          "gameTurn": 1,
+          "operationStage": 1,
+          "playerPhaseSlot": "first-acting-side",
+          "actingSide": "commonwealth"
+        },
+        "ordinal": 2,
+        "completionReceiptId": "probe.actual-completion",
+        "endLocations": [
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "axis",
+              "elementId": "axis-assault-battalion"
+            },
+            "locationId": "assault-west"
+          },
+          {
+            "unit": {
+              "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+              "originalSide": "commonwealth",
+              "elementId": "commonwealth-assault-battalion"
+            },
+            "locationId": "commonwealth-supply"
+          }
+        ],
+        "excludedBefore": [
+          {
+            "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+            "originalSide": "commonwealth",
+            "elementId": "commonwealth-assault-battalion"
+          }
+        ]
+      },
+      "membersUnchanged": true,
+      "sourceBytes": 546743,
+      "controlBytes": 17398
+    }
+  ],
+  "wallSeconds": 15.493,
+  "note": "probe.actual-completion is an explicit pure-kernel marker, never an accepted completion receipt; lifecycle transitions are not implemented or asserted."
+}
