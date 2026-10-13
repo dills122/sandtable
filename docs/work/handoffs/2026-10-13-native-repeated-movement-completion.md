@@ -88,9 +88,13 @@ authenticates the fifth ledger explicitly and does not rewrite prior history.
 
 ## Blockers And Limitations
 
-No product defect blocks this merged scope. Mainc43b9ca postmerge CI/CodeQL/links remain pending
-Brain's final confirmation here; PR CI does not substitute. A final administrative update follows
-Brain's result before final heartbeat pause. Initial compile-only repairs and an accidental stale
+No product defect blocks this merged scope. Brain verified main
+c43b9caec452c152a086412c779bb6495ef1a0ad postmerge CI38408833396 completed SUCCESS,
+prepare/all four shards/verify successful, dependency-review expected skipped on push.
+CodeQL38408834331 and links38408833486 completed SUCCESS. Author rechecked live GitHub
+metadata and retained [final main checks](../reviews/2026-10-13-nrm-main-postmerge-checks.json).
+These checks are separate from the PR's exact2879-row reconciliation. Final administrative
+preservation is complete after push; Brain owns remote verification and heartbeat pause. Initial compile-only repairs and an accidental stale
 RED-binary run after failed GREEN build are not credited as GREEN. Earlier MTP summary timing
 mismatch is retained; monotonic bounded process wall is elapsed evidence, final summaries align.
 
@@ -101,8 +105,9 @@ and first-release remain open. Historical four owning failures/aggregation/CoreB
 
 ## Immediate Next Actions
 
-1. Brain checks mainc43b9ca postmerge jobs and sends result; author finalizes admin preservation,
-   verifies pushed remote identity, then Brain pauses the existing completion-driven heartbeat.
+1. Brain verifies the final pushed preservation commit/remote identity, then pauses its existing
+   completion-driven heartbeat. Main postmerge checks are confirmed; no further product work,
+   review or test lease remains in this delivery.
 2. With a new explicit scope, freeze the actual repeated-Movement stop/resolution/completion join
    from these authentic cuts, covering required interrupt/lifecycle/proof without skipping it.
    Do not broaden the merged move-only profile or infer a playable campaign.

@@ -68,5 +68,10 @@
     "source": "/private/tmp/nrm-independent-1-source-identities.json",
     "bytes": 467,
     "sha256": "2f3c18f688076a0c537dc50bd2f736e045c570078da5db5b659e4a0434f124ca"
+  },
+  "docs/work/reviews/2026-10-13-nrm-main-postmerge-checks.json": {
+    "source": "/private/tmp/nrm-main-postmerge-checks.json",
+    "bytes": 1366,
+    "sha256": "b42671b8a13d549125cbf2acb9e5592956630e90d8fbe57c38dec01b8bdc9ccd"
   }
 }

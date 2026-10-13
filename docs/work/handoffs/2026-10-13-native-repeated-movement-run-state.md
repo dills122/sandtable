@@ -17,8 +17,11 @@ Verbatim execution plan retained separately. No prior eight-hour deadline applie
   failures/skips/notrun. Tested merge d2e3716/tree0c2693a verified; final receipt/verifier preserved.
 - Postmerge evidence branch codex/native-repeated-movement-handoff from c43b9ca. Final review,
   four receipt/log pairs, preliminary/static/source identities, ACCEPT,CIreceipt/verifier and
-  completion handoff preserved. Main postmerge CI remains pending Brain's final update; heartbeat
-  pause follows final administrative preservation. No additional product work/PR/suites/lease.
+  completion handoff preserved. Mainc43b9ca CI38408833396 completed SUCCESS, prepare/all four
+  shards/verify successful, dependency-review expected skipped on push. CodeQL38408834331 and
+  links38408833486 SUCCESS. Brain update and author live GitHub check agree; compact snapshot
+  retained. Final administrative preservation pushed; Brain verifies remote and pauses heartbeat.
+  No additional product work/PR/suites/lease.
 - CS01P3 RESOLVED, predecessor runtime unchanged. Actual stop/resolution/completion contract,
   new MovementEndProof, native Reaction/Breakdown/Convoy/later Combat, broader Reserve/lineage,
   production/public/host/Runner/Exercise/persistence and parent/first-release gaps remain open.

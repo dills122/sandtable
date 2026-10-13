@@ -16,7 +16,10 @@ Brain verified all2879actual argument-bearing rows against CI+local inventory on
 71/2329/469/10,0fail/errors/skips/notrun. Tested merged2e37160120ccbf6b2a9ea467fc2bc59727d1abb,
 parents1ef2d03/854d23e, tree0c2693a3fc39f53557baad32607753c52e94256c. PR181 merged at
 c43b9caec452c152a086412c779bb6495ef1a0ad,2026-10-13T13:54:28Z (October13 09:54Toronto).
-Main postmerge checks remain pending Brain confirmation; PR CI success does not substitute.
+Brain subsequently confirmed mainc43b9ca CI38408833396 completed SUCCESS, prepare/all four
+shards/verify successful, expected dependency-review skip on push. CodeQL38408834331 and
+links38408833486 SUCCESS. Author rechecked live GitHub metadata and retained compact main-check
+snapshot separately from the exact PR inventory receipt.
 
 CS01P3 deferred older-command continuation retry coverage is now RESOLVED by the dedicated
 8trace/32later-cut test class, original receipt/unchanged Source-Control-Proof-ledger/no event,

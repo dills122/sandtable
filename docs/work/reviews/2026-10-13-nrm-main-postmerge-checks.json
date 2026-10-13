@@ -1,0 +1,58 @@
+{
+  "ci": {
+    "databaseId": 38408833396,
+    "headSha": "c43b9caec452c152a086412c779bb6495ef1a0ad",
+    "status": "completed",
+    "conclusion": "success",
+    "jobs": [
+      {
+        "name": "prepare",
+        "conclusion": "success"
+      },
+      {
+        "name": "dependency-review",
+        "conclusion": "skipped"
+      },
+      {
+        "name": "tests (core-b)",
+        "conclusion": "success"
+      },
+      {
+        "name": "tests (contracts)",
+        "conclusion": "success"
+      },
+      {
+        "name": "tests (core-a)",
+        "conclusion": "success"
+      },
+      {
+        "name": "tests (exercise)",
+        "conclusion": "success"
+      },
+      {
+        "name": "verify",
+        "conclusion": "success"
+      }
+    ]
+  },
+  "codeql": {
+    "databaseId": 38408834331,
+    "headSha": "c43b9caec452c152a086412c779bb6495ef1a0ad",
+    "status": "completed",
+    "conclusion": "success"
+  },
+  "links": {
+    "databaseId": 38408833486,
+    "headSha": "c43b9caec452c152a086412c779bb6495ef1a0ad",
+    "status": "completed",
+    "conclusion": "success"
+  },
+  "verification": {
+    "brainFinalUpdateConfirmed": true,
+    "authorLiveGitHubMetadataConfirmed": true,
+    "dependencyReviewSkipExpectedOnPush": true,
+    "prExactInventoryReceipt": "2026-10-13-nrm-ci-final-receipt.json",
+    "newProductWork": false,
+    "newSuites": false
+  }
+}
