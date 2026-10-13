@@ -93,3 +93,28 @@ physical before/warm/after-first-read checks and explicit fixture generation rem
 Historical four owning failures and aggregation/CoreB139 remain unwaived. Broader native/lifecycle/
 Reaction/full selected-branch/public/persistence and parent017–025/all72 remain open. Old blocked
 research payloads are not included or sent. CS01 P3 is tracked separately on its evidence branch.
+
+
+## Author completion checkpoint
+
+RM01–RM06 are complete for the private reference. RM07 publication/fresh independent review and
+exact-head CI/merge remain next. Original RED e9ff5db/log6cdba83 is retained; the later RED correction
+is explicitly post-GREEN strengthening, documented under reviews, and not retroactive TDD proof.
+Focused GREEN fifth-ledger rejection and full normal establish the authentic new-ledger behavior.
+
+Final normal PASS344.251s/900, exit0/no timeout, logSHA
+ df8b70c14b83ff95919eb4f35a25cdd53c7f1289a0e72ba693d4880eb3167d66.
+4traces/20frames/16events,20cuts/40prior-command retries,62rejections per root and332physical
+fault assertions. Literal fixture4,740,034bytes SHA
+ d77c4b1e0a3e3750df79ad351dd1cef3c8966834eb0984a77b62938e57b87501 before/afterequal.
+OracleSHA821f860e7c9fb0702c7d04e8c996fc6e77a850eb50a5b371f8e3ff5aae995c60 and
+schemaSHAa3ebd21e0fd1b1d85b7335ceb2afd304511a2efd5e84bf59710a786526dfd900 unchanged.
+All228 baseline spec artifacts unchanged. Brain sole normal lease released on completion.
+Measured66 external paths/2owned delivery/3test fixtures; no unknown actual physical acquisitions.
+Limits/field domination and final cold/core/adversarial/all-path fault receipts are retained.
+
+Author engineering self-review found no unresolved implementation issue. Brain roadmap patch
+applied exactly before freeze; canonical README/tech-design/implementation plan synchronized.
+No extra .NET or full predecessor Python rerun. DraftPR and separate neutral/rationale handoff
+will pin exact freeze; review0/9/recovery0/2 unchanged until Brain dispatch. Native/lifecycle/
+Reaction/public/parent and CS01 P3 boundaries remain explicitly open.

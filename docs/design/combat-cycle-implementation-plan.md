@@ -2683,3 +2683,47 @@ Private native boundary only. Authentic repeated Movement/full selected-branch/E
 positive/later-II/consumed Reserve, production ingress/public/host/Exercise, persistence and parent
 017–025/all72 acceptance closure remain open. Historical four owning failures and aggregation/
 CoreB139 remain unwaived. No synthetic mechanical probe becomes an actual source or reachability claim.
+
+
+### CS04 — private actual repeated ordinary Movement reference
+
+[Contract](../specs/combat-actual-repeated-movement-v1.md),
+[author plan](../work/plans/2026-10-12-actual-repeated-movement-contract.md), and
+[accepted research](../research/2026-10-12-actual-repeated-movement-recon.md) define RM01–RM07.
+Baseline6ed3846387fd787692971c9926a76663bf9368da is merged native CS01/PR179; its independent
+Ready review and exact-head CI2843/2843 are retained on the native continuation handoff branch.
+
+CS04 supplies five primary paths: contract/schema/Python/fixture and this plan. Full PAC replay
+with selection/round/paid/continuation/Movement ledgers authenticates real repeat37 and derives
+active ordinal2 Authority, original ordinal1 Movement proof, complete member/World/RNG/history,
+CA/repeat/closure provenance. The old PAC.closed flag closes the prior fragment. No synthetic
+Movement base or public claim becomes authority. Valid inherited clock variation is accepted.
+
+Only safe ordinary owner moves are admitted, with new event/Source/Base/Proof/receipt identities.
+The observed four-move route updates CP5→9→11→13→15, DP0/1/2/2 and cohesion0→0→−1→−3→−5;
+Contact ends exactly once. Owned projection updates World/representation/member spending/track
+and new accepted move receipt/hash progress atomically. Original endpoints/exclusions, opponent,
+resources/origins/components/history/future duties/settlements, RNG and attack history remain.
+Reaction discovery rejects adjacency to opposing combat representations before mutation even
+when ammunition is empty. No renewed allowance; a fifth safe move costs17 and rejects.
+
+Compile-valid semantic RED is e9ff5db, with verbatim log retained in6cdba83: four genuine007
+missing-consumer failures after authentic prior replay,6.8s/120, logSHA
+9d20b0d5e8ab56e5fac53846c97901b0cc9122d86619f482cc89a605c058e170. GREEN verifies routes, every
+cut/every prior command retry, original receipts, owned readback, source-first diagnostics,
+causal re-signed effects/claims, actor/Base/version/retry validation and signed/canonical grammar.
+Measured cold/core/adversarial acquisition covers66external paths, no unknown physical paths;
+all changed/missing/unreadable/null/after-first-read faults reject009. Preserve PAC64/paid62/
+admission59 manifests; own schema/oracle delivery is separate, and three fixtures are test-only.
+Candidate capacity Source32MiB/Proof2MiB/Control256KiB/Event32KiB/Input1KiB/ledger8KiB/depth38
+is structurally dominated by valid priorSource8651264/priorProof1598020 and exact own fields.
+Final frozen literals4traces/20frames/16events and normal gate344.251s/900 passed with
+fixture/runtime/schema unchanged. Full log/receipt and engineering self-review are retained;
+fresh independent review remains pending. GitHub .NET CI remains separate from the Python author oracle.
+
+Private reference only. Native repeated-Movement consumption, actual stop/resolution/completion,
+new MovementEndProof, Breakdown/Reaction/Convoy/later Combat, later-II/consumed Reserve, production
+ingress/public/host/Exercise/persistence and parent017–025/all72 remain open. CS01 P3 every-prior-
+command native retry coverage belongs to the next native test slice. Historical four owning failures
+and aggregation/CoreB139 remain unwaived. Brain owns roadmap/normal lease/fresh review/CI/merge;
+new milestone review0/9 recovery0/2, max3passes/round. Session deadline is unchanged.

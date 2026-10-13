@@ -1,0 +1,14 @@
+{
+  "command": [
+    "python3",
+    "-B",
+    "-u",
+    "docs/work/reviews/2026-10-12-cs04-closure-probe.py",
+    "core"
+  ],
+  "budgetSeconds": 120,
+  "exitCode": 0,
+  "timedOut": false,
+  "elapsedSeconds": 14.091,
+  "logSha256": "87a1837fcea1219ae827ab654c8e17d293a5d1beabdaa7da13ce40e6d6841bbb"
+}

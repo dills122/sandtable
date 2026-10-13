@@ -1,0 +1,14 @@
+{
+  "docs/specs/verify-combat-actual-repeated-movement-v1.py": {
+    "bytes": 41837,
+    "sha256": "821f860e7c9fb0702c7d04e8c996fc6e77a850eb50a5b371f8e3ff5aae995c60"
+  },
+  "docs/specs/combat-actual-repeated-movement-v1.schema.json": {
+    "bytes": 12573,
+    "sha256": "a3ebd21e0fd1b1d85b7335ceb2afd304511a2efd5e84bf59710a786526dfd900"
+  },
+  "docs/specs/fixtures/combat-actual-repeated-movement-v1.json": {
+    "bytes": 4740034,
+    "sha256": "d77c4b1e0a3e3750df79ad351dd1cef3c8966834eb0984a77b62938e57b87501"
+  }
+}

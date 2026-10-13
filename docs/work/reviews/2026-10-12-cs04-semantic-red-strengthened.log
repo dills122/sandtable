@@ -1,0 +1,12 @@
+FAIL actual move38/rear/CP9/member/progress/event/receipt expected; actual CMB-RMV-007 axis attacker
+FAIL actual move38/rear/CP9/member/progress/event/receipt expected; actual CMB-RMV-007 axis defender
+FAIL actual move38/rear/CP9/member/progress/event/receipt expected; actual CMB-RMV-007 commonwealth attacker
+FAIL actual move38/rear/CP9/member/progress/event/receipt expected; actual CMB-RMV-007 commonwealth defender
+Traceback (most recent call last):
+  File "/Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/docs/specs/verify-combat-actual-repeated-movement-v1.py", line 40, in <module>
+    if __name__=='__main__':semantic_tests()
+                            ~~~~~~~~~~~~~~^^
+  File "/Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/docs/specs/verify-combat-actual-repeated-movement-v1.py", line 39, in semantic_tests
+    assert not failures,str(len(failures))+' genuine move publications failed'
+           ^^^^^^^^^^^^
+AssertionError: 4 genuine move publications failed
