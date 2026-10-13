@@ -41,3 +41,6 @@ expected total2879 (base2843+36), CoreA71/CoreB2329/Exercise469/Contracts10, not
 Self-review documented; no unresolved finding. Product identity snapshots and complete final logs/
 receipts retained. No broad local suite or old Python normal. Native stop/lifecycle/public/parent
 boundaries remain open; review0/9 recovery0/2. Brain owns independent review/CI/merge.
+
+Exact discovery at product freezebca68dd8da7d486627de94cf986e442dc5172770 passed7.455s/120:
+2879rows,71/2329/469/10, all36newrows CoreB; inventory retained, discovery is not execution.

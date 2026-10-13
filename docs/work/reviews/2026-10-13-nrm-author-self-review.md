@@ -7,8 +7,9 @@ fresh review/exact-head CI/merge, review0/9/recovery0/2. Author does not issue i
 
 ## Plan fidelity and authority
 
-NM01–NM07 implementation and focused validation complete; exact row inventory and NM08 publication
-follow this review. Full native PAC replay authenticates authentic creation context and all four
+NM01–NM07 implementation and focused validation complete; exact row inventory is now2879 at product freezebca68dd8da7d486627de94cf986e442dc5172770
+(CoreA71/CoreB2329/Exercise469/Contracts10), all36newrows CoreB. Discovery7.455s/120 is not
+execution; inventory and receipt retained. NM08 publication follows this review. Full native PAC replay authenticates authentic creation context and all four
 ancestor input ledgers. Independently owned fifth Movement ledger is parsed/count-bound after that
 ancestry, before transition or any caller Control/Proof claim. New Base embeds native reconstructed
 PAC Proof. No fixture/synthetic initializer/reader or Python process is runtime authority. Prior
