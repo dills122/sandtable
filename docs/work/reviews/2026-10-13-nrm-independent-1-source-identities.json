@@ -1,0 +1,8 @@
+{
+  "src/Cna.Core/Campaigns/CampaignCombatActualRepeatedMovement.cs": true,
+  "src/Cna.Core/Campaigns/CampaignCombatActualRepeatedMovementCodec.cs": true,
+  "tests/Cna.Core.Tests/Campaigns/CombatActualRepeatedMovementTests.cs": true,
+  "tests/Cna.Core.Tests/Campaigns/CombatActualRepeatedMovementContractTests.cs": true,
+  "tests/Cna.Core.Tests/Campaigns/CombatActualPostAssaultContinuationRetryTests.cs": true,
+  "tests/Cna.Core.Tests/Cna.Core.Tests.csproj": true
+}

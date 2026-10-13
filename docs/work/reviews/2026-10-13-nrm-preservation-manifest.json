@@ -1,0 +1,72 @@
+{
+  "docs/work/reviews/2026-10-13-nrm-independent-review1.md": {
+    "source": "/private/tmp/nrm-independent-review-1.md",
+    "bytes": 9539,
+    "sha256": "2f242235365c8bac57c13f37f592bc801a82338cbef968d908fd94c84c763d6b"
+  },
+  "docs/work/reviews/2026-10-13-nrm-independent-review1-preliminary.md": {
+    "source": "/private/tmp/nrm-independent-review-1-preliminary.md",
+    "bytes": 1250,
+    "sha256": "918e99c6c4b5b581ad8ec33832b239765527bc99d3319c0ac90ce2b6e27bd5f3"
+  },
+  "docs/work/reviews/2026-10-13-nrm-ci-final-receipt.json": {
+    "source": "/private/tmp/nrm-ci-final-receipt.json",
+    "bytes": 1358,
+    "sha256": "e194c068d419817cd75c70a00cd165c3cf668f165889bc488a555c28a74313ad"
+  },
+  "docs/work/reviews/2026-10-13-nrm-verify-ci.py": {
+    "source": "/private/tmp/nrm-verify-ci.py",
+    "bytes": 1909,
+    "sha256": "695fb41b2dc78708561a6c0612cdc083e4eb75b2c98052e7af017db12cd82263"
+  },
+  "docs/work/reviews/2026-10-13-nrm-independent-1-movement.json": {
+    "source": "/private/tmp/nrm-independent-1-movement.json",
+    "bytes": 455,
+    "sha256": "cdafb94ba4c3577cb9cbab0f091252df8442ffc0991b68b0e054c5f80b09e9c3"
+  },
+  "docs/work/reviews/2026-10-13-nrm-independent-1-movement.log": {
+    "source": "/private/tmp/nrm-independent-1-movement.log",
+    "bytes": 3837,
+    "sha256": "4d9dc1ba12270ab22ba3c4b962be22c34ba61dc9ec33d9014a88e82eb04174bf"
+  },
+  "docs/work/reviews/2026-10-13-nrm-independent-1-movement-escalated.json": {
+    "source": "/private/tmp/nrm-independent-1-movement-escalated.json",
+    "bytes": 466,
+    "sha256": "c2f0b55ea7901da71287b8d9edf8b72a541655155555fefe8e08c83e521b69f2"
+  },
+  "docs/work/reviews/2026-10-13-nrm-independent-1-movement-escalated.log": {
+    "source": "/private/tmp/nrm-independent-1-movement-escalated.log",
+    "bytes": 434,
+    "sha256": "d9ab0efcbfb200eaefe15483639e24ebc587702dfc74a4885aa99f3a57e6589c"
+  },
+  "docs/work/reviews/2026-10-13-nrm-independent-1-contract.json": {
+    "source": "/private/tmp/nrm-independent-1-contract.json",
+    "bytes": 464,
+    "sha256": "7ce159feac351a8de8b8bd32178059ea3335122f0e0031876bf486e5bc5551a4"
+  },
+  "docs/work/reviews/2026-10-13-nrm-independent-1-contract.log": {
+    "source": "/private/tmp/nrm-independent-1-contract.log",
+    "bytes": 434,
+    "sha256": "a856aceff22f899b594a54b400870f240596f61ae8188516c78255db99fea24f"
+  },
+  "docs/work/reviews/2026-10-13-nrm-independent-1-p3.json": {
+    "source": "/private/tmp/nrm-independent-1-p3.json",
+    "bytes": 462,
+    "sha256": "2945bf181d1b217d8bdc7436df6f9dc03090aec95a37af6701263f76689a029b"
+  },
+  "docs/work/reviews/2026-10-13-nrm-independent-1-p3.log": {
+    "source": "/private/tmp/nrm-independent-1-p3.log",
+    "bytes": 438,
+    "sha256": "86209834d98301298d6e1457f5c34882f8f3a98e05bba163e09e4007661778c9"
+  },
+  "docs/work/reviews/2026-10-13-nrm-independent-1-static.json": {
+    "source": "/private/tmp/nrm-independent-1-static.json",
+    "bytes": 406,
+    "sha256": "82191cac55d949c8c2da5282473d3293da404098323cb0e24f64021d71a25659"
+  },
+  "docs/work/reviews/2026-10-13-nrm-independent-1-source-identities.json": {
+    "source": "/private/tmp/nrm-independent-1-source-identities.json",
+    "bytes": 467,
+    "sha256": "2f3c18f688076a0c537dc50bd2f736e045c570078da5db5b659e4a0434f124ca"
+  }
+}

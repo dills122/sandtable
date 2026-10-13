@@ -1,0 +1,12 @@
+{
+  "pins": 68,
+  "wirePins": 66,
+  "invalidPins": [],
+  "manifestMismatch": [],
+  "baselineSpecs": 232,
+  "changedBaselineSpecs": [],
+  "compiled": {
+    "artifacts/bin/Cna.Core/release/Cna.Core.dll": "bb7e04c485713d3e3836c407e5d35df3c380dbd999c941b364b9a26555728553",
+    "artifacts/bin/Cna.Core.Tests/release/Cna.Core.Tests.dll": "77e304384e94e1a5d8383ddeb07bc64fa174e927a73ab75598442492f2508b8a"
+  }
+}

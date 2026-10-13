@@ -1,0 +1,6 @@
+# Preliminary independent review
+Review instance: 1 of 9; round 1/pass 1; recovery 0/2.
+Exact head: 854d23eda197ca8e46590583114e89d173019fcf. Base: 1ef2d038125eb03ed39b6e08aeea5e3ada75983c. Branch verified; only untracked .serena/. No author rationale/self-review read.
+Read neutral bootstrap, plan NM01–NM08, frozen v1 requirements, all three new test files and both new runtime files. Graph generation 2026-10-05 predates changed paths, docs excluded; exact-source fallback used. CCE unavailable.
+Provisional concerns (not established findings): cost rules hardcoded instead of calling native policy helpers; verify exact frozen port semantics and legitimate profile closure. Codec delegates inherited kinds; verify own caps versus inherited bounds and source-first ordering. Extensive fixture parity may conceal shared fixture assumptions; authentic clock variant reduces that concern. Need run independent focused tests and inspect RED provenance, immutable-reference equality and author explanation. Ownership copies appear sound; retry context checks precede receipt return; every event is regenerated from fifth ledger after full PAC replay.
+No actionable defect established in blind first pass. No scope expansion or heavy pivot indicated.
