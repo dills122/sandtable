@@ -1,0 +1,13 @@
+{
+  "command": [
+    "python3",
+    "-B",
+    "-u",
+    "docs/specs/verify-combat-actual-repeated-movement-v1.py"
+  ],
+  "budgetSeconds": 120,
+  "exitCode": 1,
+  "timedOut": false,
+  "elapsedSeconds": 6.8,
+  "logSha256": "9d20b0d5e8ab56e5fac53846c97901b0cc9122d86619f482cc89a605c058e170"
+}
