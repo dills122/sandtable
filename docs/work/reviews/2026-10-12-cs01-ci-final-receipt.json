@@ -1,0 +1,44 @@
+{
+  "pr": 179,
+  "head": "b8a2a2eb9aee6f3d89c2bd1be25d4f6fd41bf7fc",
+  "base": "44cf98656350b29e2f1074f2a9a1b1e634234faa",
+  "tested_merge": "18ede4c262a3d7aa7aacc100c5effaf0e9a943c5",
+  "tested_tree": "fd2fb895dcc03bfa0c19564490eda27cda7bca62",
+  "run": 38333303094,
+  "total_passed": 2843,
+  "exact_inventory_and_execution_match": true,
+  "shards": {
+    "core-a": {
+      "passed": 71,
+      "failed": 0,
+      "skipped": 0,
+      "xml_sha256": {
+        "runner_runnervmmprz5_2026-10-13_01_45_06.056962.xunit.xml": "845855db6df64db9fa84fb366727e641d9829eea8ab80cb081458f4c04e59ef2"
+      }
+    },
+    "core-b": {
+      "passed": 2293,
+      "failed": 0,
+      "skipped": 0,
+      "xml_sha256": {
+        "runner_runnervmmprz5_2026-10-13_01_45_16.554029.xunit.xml": "6cf7f23600655b230c0ae97912d876d83aae615890725304c465b63f208c800e"
+      }
+    },
+    "exercise": {
+      "passed": 469,
+      "failed": 0,
+      "skipped": 0,
+      "xml_sha256": {
+        "runner_runnervmmprz5_2026-10-13_01_45_05.270302.xunit.xml": "a9c59c3104420048963199de2ce708d9b1f2a4e551b84aed4747f6eaed33744b"
+      }
+    },
+    "contracts": {
+      "passed": 10,
+      "failed": 0,
+      "skipped": 0,
+      "xml_sha256": {
+        "runner_runnervmmprz5_2026-10-13_01_44_57.051757.xunit.xml": "b8c1414c8853a937cefea84aa5afd18621b17e0da38e15190026692d312463cf"
+      }
+    }
+  }
+}
