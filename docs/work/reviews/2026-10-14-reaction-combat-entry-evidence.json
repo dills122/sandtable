@@ -1,0 +1,51 @@
+{
+  "base": "42503c570294e5e4823ff1995bbfdcadc298bf07",
+  "productHead": "d3332dbf89bfa378872330ccdd84beebb45b89af",
+  "branch": "codex/actual-reaction-combat-entry",
+  "reviewCount": 0,
+  "recoveryCount": 0,
+  "files": {
+    "README.md": "0a5fa8ffc8e8ddd3e78b5f084508b3fa6ff63e3332200d3fa3bf3998f12938ff",
+    "docs/specs/combat-actual-reaction-combat-entry-v1.md": "d2d18776b17d80e8cf746e4301a15338e39b68104962d2046a3540fa31474af7",
+    "docs/specs/combat-actual-reaction-combat-entry-v1.schema.json": "06d586006d8dc08f5c2cd2e07ac123cda60c357a00d4d6ec69b692a24be69d84",
+    "docs/specs/fixtures/combat-actual-reaction-combat-entry-v1.json": "e8c8eab6476c2f438fcd71df58f69ffd10c3e96f1b8e8270d01b003e7d5e02da",
+    "docs/specs/verify-combat-actual-reaction-combat-entry-v1.py": "6e32849af9d9c230f5e464ea8a8dec0fffe1a369c0c455f6edbe454e960da1fc",
+    "docs/work/plans/2026-10-14-actual-reaction-combat-entry-implementation.md": "901fe48695ba808393d2de0062088c61f29def3b65b0138ec07bd328185d708c",
+    "naming-overview.md": "58d8160ff34a63c537bf1e9ded83c135cfe9db854d3cf48a5a26bf5835c5c94f",
+    "src/Cna.Core/Campaigns/CampaignCombatActualReactionCombatEntry.cs": "d803ef06c1ebb993444f20b6b93123bd56991c714a32de24f602a257842c8d81",
+    "src/Cna.Core/Campaigns/CampaignCombatActualReactionCombatEntryCodec.cs": "4d31a43d90d85b5a8196e16be3aed899af055bb301241ab26430149ded886ab4",
+    "tech-design.md": "5023717bacba9f9566b432c604cb8f8bf4d29e417fbc2aa89cbd8d3a0d18dbcb",
+    "tests/Cna.Core.Tests/Campaigns/CombatActualReactionCombatEntryContractTests.cs": "d26d1c7fac7226e2e1edc2cf4335ba4c34fd9e7dac03470b2492d859e93eff81",
+    "tests/Cna.Core.Tests/Campaigns/CombatActualReactionCombatEntryTests.cs": "20084c4544605e70c64207530be3108b7147bb1c4ea778fee86dddb8bf492be9",
+    "tests/Cna.Core.Tests/Cna.Core.Tests.csproj": "7ebe1ea546f28c8764eea740fb35e6c4e77dd1903b15cc50eb2cbd0be91b7f38"
+  },
+  "nativeRed": {
+    "head": "1508764",
+    "total": 4,
+    "failed": 2,
+    "passed": 2,
+    "reason": "Missing actual reader; analyzer/zero-filter/reference-placeholder attempts excluded"
+  },
+  "nativeGreen": {
+    "total": 14,
+    "failed": 0,
+    "passed": 14,
+    "durationSeconds": 7.987,
+    "command": "dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --filter-class 'Cna.Core.Tests.Campaigns.CombatActualReactionCombatEntry*' /bl:/private/tmp/reaction-entry-native-final-focused-{}.binlog"
+  },
+  "reference": {
+    "traces": 6,
+    "cuts": 30,
+    "events": 24,
+    "rejects": 150,
+    "command": "python3 docs/specs/verify-combat-actual-reaction-combat-entry-v1.py"
+  },
+  "format": "Scoped dotnet format --verify-no-changes --no-restore passed for four owned C# files",
+  "predecessorHashes": "All12 schema declared frozen predecessors matched",
+  "broadTests": "Not run; focused lease only",
+  "hostedCI": "Pending",
+  "independentReview": "Pending",
+  "untracked": [
+    ".serena/ preserved unrelated"
+  ]
+}
