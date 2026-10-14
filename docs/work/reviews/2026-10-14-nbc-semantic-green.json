@@ -1,0 +1,27 @@
+{
+  "command": [
+    "dotnet",
+    "test",
+    "--project",
+    "tests/Cna.Core.Tests/Cna.Core.Tests.csproj",
+    "-c",
+    "Release",
+    "--no-build",
+    "--no-ansi",
+    "--filter-class",
+    "*CombatActualRepeatedBreakdownCompletionTests",
+    "--output",
+    "Detailed",
+    "--report-xunit-xml",
+    "--results-directory",
+    "/private/tmp/b03-green-results",
+    "/bl:/private/tmp/b03-semantic-green-{}.binlog"
+  ],
+  "budgetSeconds": 180,
+  "exitCode": 0,
+  "timedOut": false,
+  "elapsedSeconds": 22.92,
+  "logSha256": "001e05a23fd3cd7915ff39cee2139d9d08a3835e4ff8f662d6b6fef6f613ca1b",
+  "logArtifact": "2026-10-14-nbc-semantic-green.log.gz",
+  "logEncoding": "gzip; logSha256 hashes decoded bytes"
+}

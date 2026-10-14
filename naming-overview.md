@@ -48,7 +48,8 @@ names inside Umpire, with public activation governed separately.
 The private [actual ordinal2 Breakdown completion reference](docs/specs/combat-actual-repeated-breakdown-completion-v1.md)
 uses `complete-breakdown-segment`, authorized by System even though the catalog retains symbolic
 first-side actor metadata. It enters Combat Position Determination without executing a Combat step
-or introducing another product name. Native consumption remains a separate implementation gate.
+or introducing another product name. B03 uses the plain technical names `CampaignCombatActualRepeatedBreakdownCompletion` and its codec
+inside Umpire; reviewed acceptance and public activation remain separate gates.
 
 **Command** chooses strategic objectives, whether supplied by a person, scripted policy or optional
 model. **Staff** converts intent into concrete deterministic plans. The Umpire validates and executes

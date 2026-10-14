@@ -321,3 +321,15 @@ Canonical Combat Position Determination entry is the stop boundary, with active 
 The measured runtime manifest70 plus2own deliveries preserves every predecessor pin and bound.
 Final normal/literal/self-review/fresh review/exact-head CI acceptance is separately recorded;
 nativeB03 is conditional on reviewedmergedreference/time/explicitGO. No downstream/public gate closes.
+
+
+## B03 native actual Breakdown completion
+
+The frozen B02reference (PR185) is consumed by private native consumer/codec with full trusted
+creation context and seven independent ledgers. Authentic terminalRMC states38/41..44 enter39/42..45
+at canonical Combat Position Determination, preserving both proofs and all cumulative state.
+Native66exactrows/20literals40cuts20retries/72physical360faults pass the217.248s/900scopedgate;
+reference/pins/limits remain unchanged. Captured cumulative allocation observations are not peak or
+near-limit evidence. Accepted capacity policy moves both full NBCclasses into existingCoreC with
+disjoint/exhaustive actual3009discovery and unchangedcaps/gates. Freshreview/hostedCI/merge are distinct
+Brain gates; no downstream/public/profile/parentcompletion follows.

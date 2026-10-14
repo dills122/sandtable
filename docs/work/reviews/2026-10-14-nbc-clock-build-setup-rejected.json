@@ -1,0 +1,18 @@
+{
+  "command": [
+    "dotnet",
+    "build",
+    "tests/Cna.Core.Tests/Cna.Core.Tests.csproj",
+    "-c",
+    "Release",
+    "--no-restore",
+    "/bl:/private/tmp/b03-clock-build-{}.binlog"
+  ],
+  "budgetSeconds": 180,
+  "exitCode": 1,
+  "timedOut": false,
+  "elapsedSeconds": 1.795,
+  "logSha256": "ac97fedb122d8eca113d137dff998929526cff61c29b3796eb8a3e340127206f",
+  "logArtifact": "2026-10-14-nbc-clock-build-setup-rejected.log.gz",
+  "logEncoding": "gzip; logSha256 hashes decoded bytes"
+}

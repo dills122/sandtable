@@ -1,0 +1,16 @@
+{
+  "command": [
+    "dotnet",
+    "format",
+    "Sandtable.slnx",
+    "--verify-no-changes",
+    "--no-restore"
+  ],
+  "budgetSeconds": 180,
+  "exitCode": 0,
+  "timedOut": false,
+  "elapsedSeconds": 22.952,
+  "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "logArtifact": "2026-10-14-nbc-format-verify.log.gz",
+  "logEncoding": "gzip; logSha256 hashes decoded bytes"
+}
