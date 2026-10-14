@@ -1,0 +1,14 @@
+{
+  "command": [
+    "python3",
+    "-B",
+    ".github/scripts/test_partition_test.py"
+  ],
+  "budgetSeconds": 120,
+  "exitCode": 0,
+  "timedOut": false,
+  "elapsedSeconds": 0.439,
+  "logSha256": "d7e48c858f41c141f17ddaa8f45a623f3e7c1112858e80914c47d641fff2b46f",
+  "logEncoding": "gzip",
+  "logArtifact": "2026-10-14-b00-helper-final.log.gz"
+}

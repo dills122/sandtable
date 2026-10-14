@@ -1,0 +1,14 @@
+{
+  "command": [
+    "python3",
+    "-B",
+    ".github/scripts/test_partition_test.py",
+    "CoreThirdShardTests",
+    "-v"
+  ],
+  "budgetSeconds": 120,
+  "exitCode": 0,
+  "timedOut": false,
+  "elapsedSeconds": 0.123,
+  "logSha256": "8d635750bf8c7e5def70ffcd58c16e62ef087010428a76657374f504588265db"
+}
