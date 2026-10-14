@@ -332,7 +332,7 @@ class WorkflowDeadlineTests(unittest.TestCase):
             self.assertIsNotNone(branch, 'Unrecognized shard deadline policy')
             selected, longer, default = branch.groups()
             actual = {shard: int(longer if shard.casefold() == selected.casefold() else default) for shard in shards}
-        self.assertEqual(actual, {'core-a': 15, 'core-b': 20, 'core-c': 15, 'core-d': 15, 'exercise': 15, 'contracts': 15})
+        self.assertEqual(actual, {'core-a': 15, 'core-b': 25, 'core-c': 15, 'core-d': 15, 'exercise': 15, 'contracts': 15})
 
     def test_other_job_deadlines_remain_bounded(self):
         text = (Path(__file__).parents[1] / 'workflows' / 'ci.yml').read_text()
@@ -824,5 +824,16 @@ class CoreFourthCoverageFailureTests(unittest.TestCase):
             document.write(path)
             with self.assertRaises(ValueError): self.fixture.check()
             path.write_bytes(original)
+
+class MeasuredCoreBFinalizationBudgetTests(unittest.TestCase):
+    def test_finite_b_workload_has_bounded_setup_execution_and_report_margin(self):
+        workflow = (Path(__file__).parents[1] / 'workflows' / 'ci.yml').read_text()
+        leaf = workflow.split('  tests:', 1)[1].split('  verify:', 1)[0]
+        expression = re.search(r'^    timeout-minutes: (.+)$', leaf, re.MULTILINE).group(1)
+        match = re.fullmatch(r"\$\{\{ matrix\.shard == 'core-b' && ([0-9]+) \|\| ([0-9]+) \}\}", expression)
+        self.assertIsNotNone(match)
+        self.assertEqual(tuple(map(int, match.groups())), (25, 15))
+        self.assertGreaterEqual(int(match[1]) * 60, 1204 * 1.15 + 60)
+        self.assertEqual(set(partition.MODULES), {'core-a', 'core-b', 'core-c', 'core-d', 'exercise', 'contracts'})
 
 if __name__ == '__main__': unittest.main()

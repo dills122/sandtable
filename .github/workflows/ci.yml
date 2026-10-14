@@ -62,7 +62,7 @@ jobs:
   tests:
     needs: prepare
     runs-on: ubuntu-24.04
-    timeout-minutes: ${{ matrix.shard == 'core-b' && 20 || 15 }}
+    timeout-minutes: ${{ matrix.shard == 'core-b' && 25 || 15 }}
     strategy:
       fail-fast: false
       matrix:

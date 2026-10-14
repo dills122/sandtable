@@ -3019,3 +3019,17 @@ failedrun evidence; no reviewcounterreset. Pre-edit plan and genuine4Pythonpolic
 implementation; full132fastregressions pass aftercorrectingduplicate syntheticfixture. Actualmetadata
 discovery pending atimplementation checkpoint; correctedhead freshreview/hostedCI/merge/mainrequired.
 No actualRepeat/public/full72/downstreamGO. Rawdiagnostics remainlocal,27archiveexportblocked.
+
+## N3 measured CoreB whole-job deadline correction (2026-10-14)
+
+Correctedrun38652809605 hadall2511exactCoreBXMLrowsPass/process0/SDK10.0.402/Release/attempt1,
+but18m32teststep+89ssetup crossed20mwholejobdeadline duringfinalization. Job/needs/aggregatefailed
+andcannotbeaccepteddespitegoodleafXML. AllotherleavesincludingDpassed. BrainauthorizedB25only,
+measured1204swholejob*1.15+60sfinalizationreserve=1444.6s<1500. Otherleafbudgets15,prepare/verify15,
+dependency5,requiredsixleaves/fourCorepolicyandallactualrow/SHA/attempt/SDK/Release/process/XML/
+dependency-successgatesunchanged. No helper/native/protocol/fixture/partitionchange.
+
+BudgetregressiongenuineRED precedesworkflowedit; fastPython/actionlint/diff/byteexacthelper before
+authorselfreview/freshreview3of9(pass3of3,recovery0of2),newheadCI/merge/testedtree/mainverification.
+No automaticfourthreview/fix orcounterresetifnewfailure. Mainforecast00:40–00:55 verification-only
+after00:37:35closeout;no newfeatures,hardstop01:37:35 unchanged,handoffrecordsactualpendingstate.

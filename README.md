@@ -210,7 +210,7 @@ content. See [security policy](SECURITY.md) for vulnerability reports.
 GitHub CI retains six exact-row shards. Core-C owns the four complete native actual Movement and Breakdown completion
 test classes; Core-D owns both complete actual moved cycle-control test classes. Core-A keeps its
 existing heavy-method policy and eight transferred-row split; Core-B runs the remaining Core rows.
-Core-B retains its bounded20-minute deadline; Core-A, Core-C, Core-D, Exercise and Contracts keep15minutes.
+Core-B uses a measured bounded25-minute whole-job deadline for setup, execution and report finalization; Core-A, Core-C, Core-D, Exercise and Contracts keep15minutes.
 Row filters, exhaustive coverage and exact-head/
 attempt/process checks remain unchanged. The [Core-B investigation](docs/research/2026-10-13-rmc-core-b-investigation.md)
 records why the prior15-minute budget expired. The [measured capacity split](docs/research/2026-10-14-ci-core-capacity-proposal.md)
