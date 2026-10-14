@@ -123,8 +123,15 @@ def admission(data,selection,rounds,paid,continuation,movement,lifecycle,breakdo
 def capability(ctx,s):return 'sha256:'+identity('capability',dict(baseHash=ctx['baseHash'],cycleId=ctx['cycleId'],kind=KIND,stateVersion=s['stateVersion'],positionId=s['positionId'],movementCompletionReceiptId=s['movementEnd']['completionReceiptId']))
 def command(ctx,s):return dict(command=dict(contractVersion=1,kind=KIND,operationStage=1,actionId=ACTION,baseHash=ctx['baseHash'],cycleId=ctx['cycleId'],expectedPositionId=ctx['boundary']['positionId'],expectedPriorVersion=s['stateVersion'],capabilityId=capability(ctx,s)),actor='system')
 def transition(ctx,prior,inp):
-    raw(prior,'Control');raw(inp,'Input')
-    require(False,7,'/unsupportedBreakdownPublication')
+    raw(prior,'Control');raw(inp,'Input');cmd=inp['command'];require(cmd['kind']==KIND and cmd['operationStage']==1,3,'/kindOrStage')
+    require(cmd['baseHash']==prior['baseHash']==ctx['baseHash'] and cmd['cycleId']==ctx['cycleId'] and cmd['expectedPositionId']==ctx['boundary']['positionId'] and prior['activeCycle']==ctx['cycle'],4,'/context')
+    require(inp['actor']=='system',4,'/actor');require(cmd['actionId']==ACTION,5,'/action');ch=sha(raw(cmd,'Command'));old=next((r for r in prior['receipts'] if r['commandHash']==ch and r['actor']=='system'),None)
+    if old:return copy.deepcopy(prior),None,old['receiptId']
+    require(cmd['expectedPriorVersion']==prior['stateVersion'],6,'/version');require(not prior['closed'] and len(prior['receipts'])<1 and prior['stateVersion']<2**63-1,7,'/closedOrCapacity')
+    require(prior['positionId']==ctx['boundary']['positionId'] and prior['flow']==dict(kind='idle') and prior['interruptContext'] is None and prior['breakdownCompletionReceiptId'] is None,6,'/completionFlow');require(cmd['capabilityId']==capability(ctx,prior),5,'/capability')
+    effect=dict(kind='breakdown-completed',movementCompletionReceiptId=prior['movementEnd']['completionReceiptId'],sources=copy.deepcopy(ctx['boundary']['sources']),successorPositionId=ctx['terminal']['positionId']);c=ctx['cycle']
+    event=dict(contractVersion=1,eventType='combat-actual-repeated-breakdown-completed',author='system',campaignId=c['campaignId'],rulesetHash=c['rulesetHash'],configurationHash=c['admittedPolicyBundleDigest'],repeatedMovementCompletionSourceHash=prior['repeatedMovementCompletionSourceHash'],baseHash=ctx['baseHash'],cycleId=ctx['cycleId'],positionId=prior['positionId'],priorVersion=prior['stateVersion'],stateVersion=prior['stateVersion']+1,priorPrefix=prior['prefix'],input=canonical(inp,'Input'),effect=canonical(effect,'Effect'));rid='arbc.'+identity('receipt',event);event['receiptId']=rid;data=raw(event,'Event')
+    after=copy.deepcopy(prior);after.update(stateVersion=event['stateVersion'],prefix=steps.seq.prefix_event(prior['prefix'],data),positionId=ctx['terminal']['positionId'],breakdownCompletionReceiptId=rid,closed=True);after['receipts'].append(dict(commandHash=ch,eventHash=sha(data),receiptId=rid,actor='system',stateVersion=after['stateVersion']));raw(after,'Control');return after,data,rid
 def replay(data,selection,rounds,paid,continuation,movement,lifecycle,breakdown):
     source,ctx,owned=admission(data,selection,rounds,paid,continuation,movement,lifecycle,breakdown);s=initial(ctx)
     for n,(text,inp) in enumerate(zip(source['breakdownEventCanonicalUtf8'],owned)):

@@ -1,0 +1,14 @@
+{
+  "command": [
+    "python3",
+    "-B",
+    "docs/specs/verify-combat-actual-repeated-breakdown-completion-v1.py",
+    "--group",
+    "semantic"
+  ],
+  "budgetSeconds": 180,
+  "exitCode": 0,
+  "timedOut": false,
+  "elapsedSeconds": 75.669,
+  "logSha256": "d0a0716f9b7c7ef4d5efa5240d548d0e5381b665761e841756074501fdf24ee5"
+}
