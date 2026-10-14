@@ -2910,3 +2910,44 @@ All77input SHA256 unchanged before/after and match immutable producttree02f4ed9.
 Receipt/log docs/work/reviews/2026-10-14-abc-final.json/.log.gz retained.
 Ownoracle34a8e782, schemadf4ad5e5, fixture97937286 frozen. Only metadata follows product/testfreeze.
 Authorcheck complete; Brainfreshreview/exactheadhostedCI/merge remain separate gates.
+
+
+### B03 — private native actual ordinal2 Breakdown completion
+
+Brain GO after reviewedmergedB02 PR185/b2acab891dc894988a42bb4e59d534c79dbc6c01 with237minutes remaining.
+[Accepted native plan](../work/plans/2026-10-14-native-actual-breakdown-completion.md) owns consumer,
+codec/twofocusedclasses/explicitfixturecopy only, plus accepted bounded related CI policy amendment.
+Full nativeRMC/trustedcreationcontext/six independent ledgers precede seventhSystem input and owned
+Source/Control/Proof claims. One complete-breakdown-segment enters canonical adjacent Combat Position
+Determination, preserving both proofs/resources/World/RNG/progress/activeordinal2/ancestral receipts.
+No expiry recomputation, loss/check/BP reset/Combatstep/profile/public/host/Runner/persistence expansion.
+
+Genuine nativeRED65c7b8f:8zero/max-root rows pass actualterminal/version/currentproof/RNG/seventhshape
+preconditions then fail only007publication,23.565s/180. MinimalGREEN92af040:8PASS22.920s/180.
+All20literalparity/independently assembled Base-Proof-Control PASS40.756s/180; focusedcontract18PASS
+162.046s/300 incl all52nonterminal predecessors/clock/forgeries/72physical360faults/limits. Final
+nativeproductbfc4cfe357529b4bdfe5d997b09d70367824edd4:66exactdiscovered rowsPASS217.248s/900,
+no failure/skip/notrun/error/timeout; all88source/reference/test/compiledfingerprints unchanged,86
+nonbinary inputs matchproducttree. Unchanged RMC8publication regressionPASS19.999s/120. Fullformat
+verify22.952s/build3.474s0warnings/errors. No broad.NET or duplicate reference normal suite.
+
+Native raw caps/borrowed depth preserve reference; observe~1.06–1.10GB cumulative current-thread
+allocation at606–622ms/warm1.916–1.936MBsupportedsource. This is not live/peak heap or near-limit safety.
+All reference/predecessor bytes/pins/limits/literals remain frozen. Final XML/log/fingerprints and
+small B02report/disposition/actual2943CIreceipt/mainchecks plusB00mainchecks retained underdatednbc.
+
+Brainaccepted [bounded capacity proposal](../research/2026-10-14-native-breakdown-ci-capacity.md)
+before policychange:four-worker measuredclass model reproducesparentB within-0.0344%; moving newfull
+NBCclasses to existing C has better modeled margin than B (currentorder projections18min versus
+otherorder20m16). Cfourcollection estimate7m20/sensitivity2x13m06 is not hosted/peak-memory proof.
+PolicygenuineRED5dd3ed0:4FAIL0.136s; minimalGREEN14fd3b7:4PASS0.138s/all121helpers0.420s/actionlint0.183s.
+Final compiledactualdiscovery9.606s/120:71A/2329B/130C/469Exercise/10Contracts=3009, disjoint/exhaustive,
+exact66NBCrows moved B→C, A/other identities unchanged. All88nativefingerprints remainunchanged.
+Fiveleafmatrix/deadlines/attemptSHAconfigSDKprocessdependency/actualXML gates unchanged; future methods
+in four exact classnames follow C, unrelated classes B. No blindcap/coverage weakening.
+
+Five-axis authorcheck/separate neutralbootstrap precede Brainfreshreview1/9/actualhosted3009CI/merge.
+B03review0/9 recovery0/2 until dispatch; max3passes/round thenBrainrecovery/max9/2,noreset/heavypivot
+requiresuser. Closeout09:10:17UTC/productstop09:55:17UTC; no newfeature scope after this slice. Later
+Combat/Convoy, broaderReserve/Reaction/vehicles/profiles, production/public and parent017–025/all72
+remain separate/unwaived, as do historicalBreakdown sourcepin failures/CoreB139.

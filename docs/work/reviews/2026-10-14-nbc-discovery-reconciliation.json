@@ -1,0 +1,347 @@
+{
+  "productCommit": "bfc4cfe357529b4bdfe5d997b09d70367824edd4",
+  "policyCommit": "14fd3b7312849935a28bddad807a7e6c26680691",
+  "total": 3009,
+  "shardCounts": {
+    "core-a": 71,
+    "core-b": 2329,
+    "core-c": 130,
+    "exercise": 469,
+    "contracts": 10
+  },
+  "movedRows": [
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionContractTests.All52AuthenticNonterminalMovementCompletionCutsRejectBeforeSeventhSyntax",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionContractTests.All52AuthenticNonterminalMovementCompletionCutsRejectBeforeSeventhSyntax"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionContractTests.ClosedShapesCanonicalNumbersAndPreparseCapsReject",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionContractTests.ClosedShapesCanonicalNumbersAndPreparseCapsReject"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionContractTests.Exactly72PhysicalDeliveriesAndAll360ColdWarmFaultsReject",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionContractTests.Exactly72PhysicalDeliveriesAndAll360ColdWarmFaultsReject"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionContractTests.GenuineInheritedClockVariantRebuildsSevenLedgersThroughBreakdown",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionContractTests.GenuineInheritedClockVariantRebuildsSevenLedgersThroughBreakdown"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionContractTests.SevenLedgersAndResignedEffectsCannotForgeOwnedClaims",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionContractTests.SevenLedgersAndResignedEffectsCannotForgeOwnedClaims(index: 14)"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionContractTests.SevenLedgersAndResignedEffectsCannotForgeOwnedClaims",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionContractTests.SevenLedgersAndResignedEffectsCannotForgeOwnedClaims(index: 19)"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionContractTests.SevenLedgersAndResignedEffectsCannotForgeOwnedClaims",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionContractTests.SevenLedgersAndResignedEffectsCannotForgeOwnedClaims(index: 4)"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionContractTests.SevenLedgersAndResignedEffectsCannotForgeOwnedClaims",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionContractTests.SevenLedgersAndResignedEffectsCannotForgeOwnedClaims(index: 9)"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionContractTests.SupportedFixtureNativeAllocationAndLatencyAreMeasuredWithoutNearLimitClaim",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionContractTests.SupportedFixtureNativeAllocationAndLatencyAreMeasuredWithoutNearLimitClaim(index: 0)"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionContractTests.SupportedFixtureNativeAllocationAndLatencyAreMeasuredWithoutNearLimitClaim",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionContractTests.SupportedFixtureNativeAllocationAndLatencyAreMeasuredWithoutNearLimitClaim(index: 4)"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionContractTests.SystemActionContextCapabilityAndRetryStayBound",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionContractTests.SystemActionContextCapabilityAndRetryStayBound(index: 0)"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionContractTests.SystemActionContextCapabilityAndRetryStayBound",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionContractTests.SystemActionContextCapabilityAndRetryStayBound(index: 10)"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionContractTests.SystemActionContextCapabilityAndRetryStayBound",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionContractTests.SystemActionContextCapabilityAndRetryStayBound(index: 14)"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionContractTests.SystemActionContextCapabilityAndRetryStayBound",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionContractTests.SystemActionContextCapabilityAndRetryStayBound(index: 15)"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionContractTests.SystemActionContextCapabilityAndRetryStayBound",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionContractTests.SystemActionContextCapabilityAndRetryStayBound(index: 19)"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionContractTests.SystemActionContextCapabilityAndRetryStayBound",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionContractTests.SystemActionContextCapabilityAndRetryStayBound(index: 4)"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionContractTests.SystemActionContextCapabilityAndRetryStayBound",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionContractTests.SystemActionContextCapabilityAndRetryStayBound(index: 5)"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionContractTests.SystemActionContextCapabilityAndRetryStayBound",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionContractTests.SystemActionContextCapabilityAndRetryStayBound(index: 9)"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.AuthenticTerminalRmcPublishesOneSystemBreakdownAfterSeventhLedgerChecks",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.AuthenticTerminalRmcPublishesOneSystemBreakdownAfterSeventhLedgerChecks(index: 0)"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.AuthenticTerminalRmcPublishesOneSystemBreakdownAfterSeventhLedgerChecks",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.AuthenticTerminalRmcPublishesOneSystemBreakdownAfterSeventhLedgerChecks(index: 10)"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.AuthenticTerminalRmcPublishesOneSystemBreakdownAfterSeventhLedgerChecks",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.AuthenticTerminalRmcPublishesOneSystemBreakdownAfterSeventhLedgerChecks(index: 14)"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.AuthenticTerminalRmcPublishesOneSystemBreakdownAfterSeventhLedgerChecks",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.AuthenticTerminalRmcPublishesOneSystemBreakdownAfterSeventhLedgerChecks(index: 15)"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.AuthenticTerminalRmcPublishesOneSystemBreakdownAfterSeventhLedgerChecks",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.AuthenticTerminalRmcPublishesOneSystemBreakdownAfterSeventhLedgerChecks(index: 19)"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.AuthenticTerminalRmcPublishesOneSystemBreakdownAfterSeventhLedgerChecks",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.AuthenticTerminalRmcPublishesOneSystemBreakdownAfterSeventhLedgerChecks(index: 4)"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.AuthenticTerminalRmcPublishesOneSystemBreakdownAfterSeventhLedgerChecks",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.AuthenticTerminalRmcPublishesOneSystemBreakdownAfterSeventhLedgerChecks(index: 5)"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.AuthenticTerminalRmcPublishesOneSystemBreakdownAfterSeventhLedgerChecks",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.AuthenticTerminalRmcPublishesOneSystemBreakdownAfterSeventhLedgerChecks(index: 9)"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.EveryNativeBreakdownLiteralAndInheritedStateIsPreserved",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.EveryNativeBreakdownLiteralAndInheritedStateIsPreserved(index: 0)"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.EveryNativeBreakdownLiteralAndInheritedStateIsPreserved",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.EveryNativeBreakdownLiteralAndInheritedStateIsPreserved(index: 1)"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.EveryNativeBreakdownLiteralAndInheritedStateIsPreserved",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.EveryNativeBreakdownLiteralAndInheritedStateIsPreserved(index: 10)"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.EveryNativeBreakdownLiteralAndInheritedStateIsPreserved",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.EveryNativeBreakdownLiteralAndInheritedStateIsPreserved(index: 11)"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.EveryNativeBreakdownLiteralAndInheritedStateIsPreserved",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.EveryNativeBreakdownLiteralAndInheritedStateIsPreserved(index: 12)"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.EveryNativeBreakdownLiteralAndInheritedStateIsPreserved",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.EveryNativeBreakdownLiteralAndInheritedStateIsPreserved(index: 13)"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.EveryNativeBreakdownLiteralAndInheritedStateIsPreserved",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.EveryNativeBreakdownLiteralAndInheritedStateIsPreserved(index: 14)"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.EveryNativeBreakdownLiteralAndInheritedStateIsPreserved",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.EveryNativeBreakdownLiteralAndInheritedStateIsPreserved(index: 15)"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.EveryNativeBreakdownLiteralAndInheritedStateIsPreserved",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.EveryNativeBreakdownLiteralAndInheritedStateIsPreserved(index: 16)"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.EveryNativeBreakdownLiteralAndInheritedStateIsPreserved",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.EveryNativeBreakdownLiteralAndInheritedStateIsPreserved(index: 17)"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.EveryNativeBreakdownLiteralAndInheritedStateIsPreserved",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.EveryNativeBreakdownLiteralAndInheritedStateIsPreserved(index: 18)"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.EveryNativeBreakdownLiteralAndInheritedStateIsPreserved",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.EveryNativeBreakdownLiteralAndInheritedStateIsPreserved(index: 19)"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.EveryNativeBreakdownLiteralAndInheritedStateIsPreserved",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.EveryNativeBreakdownLiteralAndInheritedStateIsPreserved(index: 2)"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.EveryNativeBreakdownLiteralAndInheritedStateIsPreserved",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.EveryNativeBreakdownLiteralAndInheritedStateIsPreserved(index: 3)"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.EveryNativeBreakdownLiteralAndInheritedStateIsPreserved",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.EveryNativeBreakdownLiteralAndInheritedStateIsPreserved(index: 4)"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.EveryNativeBreakdownLiteralAndInheritedStateIsPreserved",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.EveryNativeBreakdownLiteralAndInheritedStateIsPreserved(index: 5)"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.EveryNativeBreakdownLiteralAndInheritedStateIsPreserved",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.EveryNativeBreakdownLiteralAndInheritedStateIsPreserved(index: 6)"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.EveryNativeBreakdownLiteralAndInheritedStateIsPreserved",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.EveryNativeBreakdownLiteralAndInheritedStateIsPreserved(index: 7)"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.EveryNativeBreakdownLiteralAndInheritedStateIsPreserved",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.EveryNativeBreakdownLiteralAndInheritedStateIsPreserved(index: 8)"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.EveryNativeBreakdownLiteralAndInheritedStateIsPreserved",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.EveryNativeBreakdownLiteralAndInheritedStateIsPreserved(index: 9)"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.FourMovesBothCutsAndExactRetryRecoverOwnedReadback",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.FourMovesBothCutsAndExactRetryRecoverOwnedReadback(index: 14)"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.FourMovesBothCutsAndExactRetryRecoverOwnedReadback",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.FourMovesBothCutsAndExactRetryRecoverOwnedReadback(index: 19)"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.FourMovesBothCutsAndExactRetryRecoverOwnedReadback",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.FourMovesBothCutsAndExactRetryRecoverOwnedReadback(index: 4)"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.FourMovesBothCutsAndExactRetryRecoverOwnedReadback",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.FourMovesBothCutsAndExactRetryRecoverOwnedReadback(index: 9)"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.OneMoveBothCutsAndExactRetryRecoverOwnedReadback",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.OneMoveBothCutsAndExactRetryRecoverOwnedReadback(index: 1)"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.OneMoveBothCutsAndExactRetryRecoverOwnedReadback",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.OneMoveBothCutsAndExactRetryRecoverOwnedReadback(index: 11)"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.OneMoveBothCutsAndExactRetryRecoverOwnedReadback",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.OneMoveBothCutsAndExactRetryRecoverOwnedReadback(index: 16)"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.OneMoveBothCutsAndExactRetryRecoverOwnedReadback",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.OneMoveBothCutsAndExactRetryRecoverOwnedReadback(index: 6)"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.ThreeMovesBothCutsAndExactRetryRecoverOwnedReadback",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.ThreeMovesBothCutsAndExactRetryRecoverOwnedReadback(index: 13)"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.ThreeMovesBothCutsAndExactRetryRecoverOwnedReadback",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.ThreeMovesBothCutsAndExactRetryRecoverOwnedReadback(index: 18)"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.ThreeMovesBothCutsAndExactRetryRecoverOwnedReadback",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.ThreeMovesBothCutsAndExactRetryRecoverOwnedReadback(index: 3)"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.ThreeMovesBothCutsAndExactRetryRecoverOwnedReadback",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.ThreeMovesBothCutsAndExactRetryRecoverOwnedReadback(index: 8)"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.TwoMovesBothCutsAndExactRetryRecoverOwnedReadback",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.TwoMovesBothCutsAndExactRetryRecoverOwnedReadback(index: 12)"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.TwoMovesBothCutsAndExactRetryRecoverOwnedReadback",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.TwoMovesBothCutsAndExactRetryRecoverOwnedReadback(index: 17)"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.TwoMovesBothCutsAndExactRetryRecoverOwnedReadback",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.TwoMovesBothCutsAndExactRetryRecoverOwnedReadback(index: 2)"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.TwoMovesBothCutsAndExactRetryRecoverOwnedReadback",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.TwoMovesBothCutsAndExactRetryRecoverOwnedReadback(index: 7)"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.ZeroMovesBothCutsAndExactRetryRecoverOwnedReadback",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.ZeroMovesBothCutsAndExactRetryRecoverOwnedReadback(index: 0)"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.ZeroMovesBothCutsAndExactRetryRecoverOwnedReadback",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.ZeroMovesBothCutsAndExactRetryRecoverOwnedReadback(index: 10)"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.ZeroMovesBothCutsAndExactRetryRecoverOwnedReadback",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.ZeroMovesBothCutsAndExactRetryRecoverOwnedReadback(index: 15)"
+    ],
+    [
+      "Cna.Core.Tests",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.ZeroMovesBothCutsAndExactRetryRecoverOwnedReadback",
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests.ZeroMovesBothCutsAndExactRetryRecoverOwnedReadback(index: 5)"
+    ]
+  ],
+  "oldInventoryHash": "4119241ca8071b976842de74e65031843d64987ada686abfddb63d801dae8702",
+  "newInventoryHash": "23da0bb70edd2b3ac19fef0244843392c956b6f6e6fad06dd434c12eab1514ca",
+  "native88FingerprintsUnchanged": true
+}

@@ -1,0 +1,21 @@
+{
+  "command": [
+    "python3",
+    "-B",
+    ".github/scripts/test_partition.py",
+    "discover",
+    "--sha",
+    "bfc4cfe357529b4bdfe5d997b09d70367824edd4",
+    "--attempt",
+    "b03-local",
+    "--directory",
+    "/private/tmp/b03-discovery"
+  ],
+  "budgetSeconds": 120,
+  "exitCode": 0,
+  "timedOut": false,
+  "elapsedSeconds": 8.681,
+  "logSha256": "75d5d18925deaa35192476651a62ca46a1c835b97e34964945dc63aeb95c6b33",
+  "logArtifact": "2026-10-14-nbc-discovery-before.log.gz",
+  "logEncoding": "gzip; logSha256 hashes decoded bytes"
+}

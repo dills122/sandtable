@@ -1,0 +1,18 @@
+{
+  "command": [
+    "dotnet",
+    "build",
+    "tests/Cna.Core.Tests/Cna.Core.Tests.csproj",
+    "-c",
+    "Release",
+    "--no-restore",
+    "/bl:/private/tmp/b03-expanded-build-{}.binlog"
+  ],
+  "budgetSeconds": 180,
+  "exitCode": 1,
+  "timedOut": false,
+  "elapsedSeconds": 3.632,
+  "logSha256": "b07fac2a4cd91ffc206b97c5c1b5eba461f78cecce8a354b24836236c22fdaf3",
+  "logArtifact": "2026-10-14-nbc-build-setup-rejected.log.gz",
+  "logEncoding": "gzip; logSha256 hashes decoded bytes"
+}

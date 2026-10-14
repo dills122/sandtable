@@ -1,0 +1,18 @@
+{
+  "command": [
+    "dotnet",
+    "build",
+    "tests/Cna.Core.Tests/Cna.Core.Tests.csproj",
+    "-c",
+    "Release",
+    "--no-restore",
+    "/bl:/private/tmp/b03-formatted-build-{}.binlog"
+  ],
+  "budgetSeconds": 180,
+  "exitCode": 0,
+  "timedOut": false,
+  "elapsedSeconds": 2.195,
+  "logSha256": "827c2b90e43f381d26e9c9ac45a722580dbb0a76096b12b953930fdb606a92b5",
+  "logArtifact": "2026-10-14-nbc-build-formatted.log.gz",
+  "logEncoding": "gzip; logSha256 hashes decoded bytes"
+}

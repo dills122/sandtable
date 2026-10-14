@@ -692,4 +692,10 @@ One trusted System completion advances38/41..44 to39/42..45 at canonical Combat 
 Both Movement proofs, exclusions, World/resources/RNG/progress and active ordinal2 are preserved;
 local fragment closure does not close that Combat cycle. Measured70external+2own physical acquisition
 and dominating128MiB own Source/depth42 envelope preserve RMC64MiB/depth40 and earlier limits.
-This reference executes no Combat step; native consumption/public activation remain separate gates.
+This reference executes no Combat step. B03 now consumes it through a private native consumer/codec:
+full trusted creation context and six native ancestor ledgers precede the independent seventh ledger
+and owned claims. All20 literal histories/40cuts/20exactretries preserve reference bytes. Own raw128MiB/
+depth42 preparse retains inherited64MiB/depth40; physical72delivery checks preserve the70wire manifest
+and two separate reference files. Warm fixture replay observed~1.06–1.10GB cumulative thread allocations
+at~606–622ms, not peak/live memory or near-limit/public capacity proof. Independent review/exact-head
+hostedCI/public activation remain separate gates.
