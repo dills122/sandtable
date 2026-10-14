@@ -45,6 +45,10 @@ then completes Movement. Breakdown Determination entry reserves the next phase w
 that phase has executed or introducing another product name. C04's private native consumer uses
 `CampaignCombatActualRepeatedMovementCompletion` and its codec; these remain technical module
 names inside Umpire, with public activation governed separately.
+The private [actual ordinal2 Breakdown completion reference](docs/specs/combat-actual-repeated-breakdown-completion-v1.md)
+uses `complete-breakdown-segment`, authorized by System even though the catalog retains symbolic
+first-side actor metadata. It enters Combat Position Determination without executing a Combat step
+or introducing another product name. Native consumption remains a separate implementation gate.
 
 **Command** chooses strategic objectives, whether supplied by a person, scripted policy or optional
 model. **Staff** converts intent into concrete deterministic plans. The Umpire validates and executes

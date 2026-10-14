@@ -1,0 +1,16 @@
+{
+  "command": [
+    "python3",
+    "-B",
+    "docs/specs/verify-combat-actual-repeated-breakdown-completion-v1.py",
+    "--group",
+    "capacity"
+  ],
+  "budgetSeconds": 120,
+  "exitCode": 0,
+  "timedOut": false,
+  "elapsedSeconds": 3.999,
+  "logSha256": "ecdf52358b6c2a438c5c34e9e507e0504596f0a094bd3ed87c19369e7f4460bf",
+  "logArtifact": "2026-10-14-abc-capacity.log.gz",
+  "logEncoding": "gzip; logSha256 hashes decoded bytes"
+}

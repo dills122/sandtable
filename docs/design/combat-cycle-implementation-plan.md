@@ -2875,3 +2875,38 @@ skips/notrun/errors. All20literal traces/52events/72cuts/100priorretries and70ph
 verified,13source/reference/compiledfingerprints unchanged. Exactreceipt/log/XML/binlogmanifest
 retained underdatednrc reviews. Authorfive-axis self-review complete; freshreview andactualhosted
 CI2943coverage/merge remain Brain-owned separate gates. Onlymetadata edits followtestfreeze.
+
+
+### B02 — authentic actual ordinal2 Breakdown completion reference
+
+User-approved six-hour extension; Brain GO after B00 PR184 merged4191d5e. Accepted
+[research](../research/2026-10-14-actual-breakdown-completion-research.md) and
+[plan](../work/plans/2026-10-14-actual-breakdown-completion.md) govern additive private reference.
+[Specification](../specs/combat-actual-repeated-breakdown-completion-v1.md), schema/oracle/literals
+admit full terminal RMC Source and six independent ancestor ledgers before seventh Breakdown ledger.
+All20owner/seal/ordinary0..4move histories require one trustedSystem complete-breakdown-segment;
+terminal38/41..44 advances39/42..45 to canonical adjacent CombatPositionDetermination only.
+Base owns independently reconstructed full RMC Proof; own receipts/prefix/domains bind source,
+authenticated actor/action/capability and replay. Exact retries are idempotent; re-signed claims
+cannot substitute for authentic seven-input ancestry. Both Movement proofs/resources/World/RNG/
+progress/activeordinal2/historicalclosure and RMC receipts persist; no new loss/BP/RNG/progress.
+
+Genuine semantic RED572549b:20missing007publications after exact authentic terminal preconditions,
+66.308s/180. Minimal GREEN836f0ec:20publications75.669s/180. Measured closure70external+2own in
+cold/core/warm/adversarial,360physical fault checks; own structuralSource70721024/Proof2570131/
+Control324037/Event16384/Input1024/ledger1026 fit unchanged proposedowncaps. Source128MiB/depth42
+preserve RMC64MiB/depth40; no predecessor refresh/widening. Metadata field accounting retained;
+actual~1.94MBsource does not certify maximumvalid capacity or native allocation/latency.
+
+Focused negatives/retained20events40cuts/finalboundednormal/selfreview/freshreview/exactheadCI
+remain separately recorded gates; no readiness inferred from semanticGREEN alone. NativeB03 only
+after reviewedmergedreference and explicitBrainGO with155minremaining; latest07:20:17UTC.
+No broaderReserve/Reaction/vehicles/cohorts/laterCombat/Convoy/public/Runner/host/persistence or
+parent017–025/all72completion. Review0/9 recovery0/2; closeout09:10:17UTC/stop09:55:17UTC.
+
+B02 author Final normal PASS788.140s/1200, exit0/no timeout:20traces20events40cuts20terminalretries,
+52nonterminalrejections/348adversarialassertions/360physicalfaults, unchanged retainedliteral equality.
+All77input SHA256 unchanged before/after and match immutable producttree02f4ed9.
+Receipt/log docs/work/reviews/2026-10-14-abc-final.json/.log.gz retained.
+Ownoracle34a8e782, schemadf4ad5e5, fixture97937286 frozen. Only metadata follows product/testfreeze.
+Authorcheck complete; Brainfreshreview/exactheadhostedCI/merge remain separate gates.
