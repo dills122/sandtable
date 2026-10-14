@@ -65,6 +65,12 @@ stack, and simulate checked rules-lab Movement/Reaction/Breakdown paths. You can
 campaign or resolve Combat through public Runner actions. Combat internals are exercised through
 dormant Core tests; they are not yet exposed as playable actions.
 
+The private [actual Reaction-to-Combat entry contract](docs/specs/combat-actual-reaction-combat-entry-v1.md)
+and native reader authenticate ordinary outward/return Movement and all three direct Reaction closure
+reasons through stop, System resolution, Movement completion and Breakdown into positive Combat entry.
+They preserve CP4 and original RNG with separate trusted ledgers. Independent review and hosted CI
+remain pending; public activation and downstream paid/finish joins remain separate gates.
+
 Next delivery sequence:
 
 1. Build on CS01's private native [actual post-assault continuation](docs/specs/combat-actual-post-assault-continuation-v1.md)

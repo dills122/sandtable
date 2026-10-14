@@ -699,3 +699,10 @@ depth42 preparse retains inherited64MiB/depth40; physical72delivery checks prese
 and two separate reference files. Warm fixture replay observed~1.06–1.10GB cumulative thread allocations
 at~606–622ms, not peak/live memory or near-limit/public capacity proof. Independent review/exact-head
 hostedCI/public activation remain separate gates.
+
+The additive [actual Reaction-to-Combat entry](docs/specs/combat-actual-reaction-combat-entry-v1.md)
+authenticates complete direct Reaction closure with separate prefix/lifecycle/Breakdown caller ledgers.
+Both owner routes and decline/unavailable/timeout reach certified positive entry18 with CP4/seed1cursor2.
+Owned Control composition uses strict Reaction World plus typed suffix; frozen ordinary World writer
+remains unchanged. Final Breakdown event/hash/receipt are structural. No public/host/Exercise/paid
+activation; fixed-version/CP0 downstream contracts need explicit successors. Review/hosted CI pending.

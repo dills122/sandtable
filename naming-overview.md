@@ -96,3 +96,8 @@ See [technical design](tech-design.md) for project mappings and authority ration
 [Exercise Runner runbook](docs/runbooks/exercise-runner.md) for local commands. Historical implementation
 checkpoints remain in the [dated ledger](docs/research/2026-10-05-project-documentation-snapshot.md)
 and the linked domain research/reviews.
+
+CampaignCombatActualReactionCombatEntry and its codec are private technical modules within Umpire.
+The [Reaction-to-Combat entry contract](docs/specs/combat-actual-reaction-combat-entry-v1.md) uses existing
+Movement stop/resolution/completion and System Breakdown names. A certified positive candidate at entry
+is distinct from accepting a selection, paid attack or public action.
