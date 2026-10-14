@@ -2,6 +2,8 @@ using System.Text.Json;
 namespace Cna.Core.Campaigns;
 internal sealed class CombatActualMovedCycleControlResult
 {
+    public byte[]? EventBytes => throw new NotSupportedException();
+    public byte[] SourceBytes => throw new NotSupportedException();
     public JsonElement Control => throw new NotSupportedException("N3 control reader not implemented");
 }
 internal static class CampaignCombatActualMovedCycleControl
@@ -11,4 +13,9 @@ internal static class CampaignCombatActualMovedCycleControl
         IReadOnlyList<byte[]> selection, IReadOnlyList<byte[]> round, IReadOnlyList<byte[]> paid, IReadOnlyList<byte[]> release,
         IReadOnlyList<byte[]> control, Func<string,byte[]> dependencies)
         => throw new NotSupportedException("N3 control reader not implemented");
+    public static CombatActualMovedCycleControlResult ApplyTrustedSource(ReadOnlySpan<byte> source, CampaignCombatCreationRequest request,
+        IReadOnlyList<byte[]> prefix, IReadOnlyList<byte[]> lifecycle, IReadOnlyList<byte[]> breakdown,
+        IReadOnlyList<byte[]> selection, IReadOnlyList<byte[]> round, IReadOnlyList<byte[]> paid, IReadOnlyList<byte[]> release,
+        IReadOnlyList<byte[]> control, ReadOnlySpan<byte> input, Func<string,byte[]> dependencies, bool admissionEnabled=true)
+        => throw new NotSupportedException("N3 disposition not implemented");
 }

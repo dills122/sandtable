@@ -23,6 +23,51 @@ public sealed class CombatActualMovedCycleControlTests
             Assert.Equal(parent.Control.GetProperty(field).GetRawText(),result.Control.GetProperty(field).GetRawText());
         Assert.Equal(parent.Control.GetProperty("cycle").GetRawText(),result.Control.GetProperty("activeCycle").GetRawText());
     }
+    [Theory]
+    [InlineData("paid", "axis-player-decline-attacker-selected", "finish")]
+    [InlineData("paid", "axis-player-decline-attacker-selected", "repeat-intent")]
+    [InlineData("armed", "commonwealth-scripted-unavailable-attacker-finish", "finish")]
+    [InlineData("armed", "commonwealth-scripted-unavailable-attacker-finish", "repeat-intent")]
+    public void FinishClosesRealCycleWhilePendingRepeatRetainsOccurrenceAndAllHistory(string profile,string name,string choice)
+    {
+        var c=new Context(profile,name);var parent=c.Parent();var current=c.Replay();
+        foreach(var kind in new[]{"control-open",choice})
+        {
+            var input=Input(current.Control,kind);
+            current=Apply(c,input);Assert.NotNull(current.EventBytes);c.Source=current.SourceBytes;c.ControlInputs.Add(input);
+        }
+        Assert.Equal(parent.Control.GetProperty("stateVersion").GetInt64()+2,current.Control.GetProperty("stateVersion").GetInt64());
+        foreach(var field in new[]{"world","randomState","movementEnd","actualProgressRefs","members","attackHistory","targetUses"})
+            Assert.Equal(parent.Control.GetProperty(field).GetRawText(),current.Control.GetProperty(field).GetRawText());
+        if(choice=="finish")
+        {
+            Assert.Equal("finished",current.Control.GetProperty("phase").GetString());
+            Assert.Equal(JsonValueKind.Null,current.Control.GetProperty("activeCycle").ValueKind);
+            Assert.Equal(1,current.Control.GetProperty("closure").GetProperty("ordinal").GetInt32());
+            Assert.Equal("land.position.operation-1.first-player.truck-convoy-movement",current.Control.GetProperty("sequencePosition").GetProperty("positionId").GetString());
+        }
+        else
+        {
+            Assert.Equal("repeat-intent-pending",current.Control.GetProperty("phase").GetString());
+            Assert.Equal(parent.Control.GetProperty("cycle").GetRawText(),current.Control.GetProperty("activeCycle").GetRawText());
+            Assert.Equal(parent.Control.GetProperty("sequencePosition").GetRawText(),current.Control.GetProperty("sequencePosition").GetRawText());
+            Assert.False(current.Control.GetProperty("pendingRepeatIntent").GetProperty("executionAvailable").GetBoolean());
+            Assert.Equal(JsonValueKind.Null,current.Control.GetProperty("closure").ValueKind);
+        }
+    }
+    internal static byte[] Input(JsonElement s,string kind,long? now=1000,bool clock=true)
+    {
+        var timer=kind is "expire" or "unavailable";
+        return JsonSerializer.SerializeToUtf8Bytes(new JsonObject
+        {
+            ["command"]=new JsonObject { ["contractVersion"]=1,["kind"]=kind,["parentSourceHash"]=s.GetProperty("parentSourceHash").GetString(),
+                ["controlId"]=s.GetProperty("controlId").GetString(),["cycleId"]=s.GetProperty("cycleId").GetString(),["configurationHash"]=s.GetProperty("cycle").GetProperty("admittedPolicyBundleDigest").GetString(),
+                ["expectedPriorVersion"]=timer ? null : s.GetProperty("stateVersion").GetInt64(),["decisionId"]=kind=="control-open" ? null : s.GetProperty("decisionId").GetString() },
+            ["actor"]=kind is "finish" or "repeat-intent" ? s.GetProperty("cycle").GetProperty("actingSide").GetString() : "system",["admittedAt"]=now,["clockAvailable"]=clock
+        },Options);
+    }
+    internal static CombatActualMovedCycleControlResult Apply(Context c,byte[] input,Func<string,byte[]>? dependency=null,bool fresh=true)
+        => CampaignCombatActualMovedCycleControl.ApplyTrustedSource(c.Source,c.Request,c.Prefix,c.Lifecycle,c.Breakdown,c.Selection,c.Round,c.Paid,c.Release,c.ControlInputs,input,dependency??Dependency,fresh);
     internal sealed class Context
     {
         public CampaignCombatCreationRequest Request { get; }
