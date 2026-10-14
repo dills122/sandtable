@@ -24,10 +24,10 @@ class CoverageTests(unittest.TestCase):
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
         self.needs = {'prepare': {'result': 'success'}, 'tests': {'result': 'success'}}
-        modules = {'core-a': 'Cna.Core.Tests', 'core-b': 'Cna.Core.Tests', 'core-c': 'Cna.Core.Tests', 'exercise': 'Cna.ExerciseRunner.Tests', 'contracts': 'Cna.Intelligence.Contracts.Tests'}
+        modules = {'core-a': 'Cna.Core.Tests', 'core-b': 'Cna.Core.Tests', 'core-c': 'Cna.Core.Tests', 'core-d': 'Cna.Core.Tests', 'exercise': 'Cna.ExerciseRunner.Tests', 'contracts': 'Cna.Intelligence.Contracts.Tests'}
         self.inventory = {'schema_version': 1, 'tested_sha': SHA, 'sdk': '10.0.400', 'configuration': 'Release', 'run_attempt': 'local', 'shards': {}}
         for shard, module in modules.items():
-            method = module + '.Cases.' + ({'core-a': 'Alpha', 'core-b': 'Beta', 'core-c': 'Gamma'}.get(shard, 'Beta'))
+            method = module + '.Cases.' + ({'core-a': 'Alpha', 'core-b': 'Beta', 'core-c': 'Gamma', 'core-d': 'Delta'}.get(shard, 'Beta'))
             name = method + '(value: "a\\b")'
             self.inventory['shards'][shard] = {'module': module, 'rows': [[module, method, name]]}
             d = self.root / shard
@@ -178,7 +178,7 @@ class FifthLeafCoverageTests(unittest.TestCase):
         self.fixture = CoverageTests(); self.fixture.setUp()
         self.addCleanup(self.fixture.temp.cleanup)
         self.leaf = self.fixture.root / 'core-c'
-        self.assertEqual(set(self.fixture.inventory['shards']), {'core-a', 'core-b', 'core-c', 'exercise', 'contracts'})
+        self.assertEqual(set(self.fixture.inventory['shards']), {'core-a', 'core-b', 'core-c', 'core-d', 'exercise', 'contracts'})
 
     def status(self, **values):
         p = self.leaf / 'status.json'; data = json.loads(p.read_text()); data.update(values); p.write_text(json.dumps(data))
@@ -223,7 +223,8 @@ class DiscoveryTests(unittest.TestCase):
         a = [method + '(index: 0)' for method in partition.SELECTORS[1:]] + [mutation + f'(index: {i})' for i in range(34) if i not in indices]
         b = sorted(partition.DEFERRED) + self.controls + [mutation + f'(index: {i})' for i in sorted(indices)]
         c = [cls + '.Initial(index: 0)' for cls in partition.CORE_C_CLASSES]
-        self.texts = {'core': self.text(a + b + c), 'core-a': self.text(a), 'core-b': self.text(b), 'core-c': self.text(c), 'exercise': self.text(['Cna.ExerciseRunner.Tests.Example.Fact']), 'contracts': self.text(['Cna.Intelligence.Contracts.Tests.Example.Fact'])}
+        d = [cls + '.Initial(index: 0)' for cls in partition.CORE_D_CLASSES]
+        self.texts = {'core': self.text(a + b + c + d), 'core-a': self.text(a), 'core-b': self.text(b), 'core-c': self.text(c), 'core-d': self.text(d), 'exercise': self.text(['Cna.ExerciseRunner.Tests.Example.Fact']), 'contracts': self.text(['Cna.Intelligence.Contracts.Tests.Example.Fact'])}
 
     @staticmethod
     def text(names):
@@ -331,7 +332,7 @@ class WorkflowDeadlineTests(unittest.TestCase):
             self.assertIsNotNone(branch, 'Unrecognized shard deadline policy')
             selected, longer, default = branch.groups()
             actual = {shard: int(longer if shard.casefold() == selected.casefold() else default) for shard in shards}
-        self.assertEqual(actual, {'core-a': 15, 'core-b': 20, 'core-c': 15, 'exercise': 15, 'contracts': 15})
+        self.assertEqual(actual, {'core-a': 15, 'core-b': 20, 'core-c': 15, 'core-d': 15, 'exercise': 15, 'contracts': 15})
 
     def test_other_job_deadlines_remain_bounded(self):
         text = (Path(__file__).parents[1] / 'workflows' / 'ci.yml').read_text()
@@ -377,8 +378,9 @@ class DiagnosticCommandTests(unittest.TestCase):
                     key = '--filter-method' if shard == 'core-a' else '--filter-not-method'
                     methods = list(partition.SELECTORS if shard == 'core-a' else partition.SELECTORS[1:])
                     self.assertEqual(command[command.index(key) + 1:command.index('--filter-not-display-name')], methods)
-                elif shard == 'core-c':
-                    self.assertEqual(command[command.index('--filter-class') + 1:], list(partition.CORE_C_CLASSES))
+                elif shard in ['core-c', 'core-d']:
+                    classes = partition.CORE_C_CLASSES if shard == 'core-c' else partition.CORE_D_CLASSES
+                    self.assertEqual(command[command.index('--filter-class') + 1:], list(classes))
                     self.assertNotIn('--filter-method', command)
                     self.assertNotIn('--filter-not-method', command)
                 else:
@@ -474,7 +476,7 @@ class CoreRowPartitionTests(unittest.TestCase):
         self.rows += [('Cna.Core.Tests', method, method + '(index: 0)') for method in partition.SELECTORS[1:]]
         method = 'Cna.Core.Tests.Future.NewMethod'
         self.rows += [('Cna.Core.Tests', method, method)]
-        self.rows += [('Cna.Core.Tests', cls + '.Initial', cls + '.Initial(index: 0)') for cls in partition.CORE_C_CLASSES]
+        self.rows += [('Cna.Core.Tests', cls + '.Initial', cls + '.Initial(index: 0)') for cls in (*partition.CORE_C_CLASSES, *partition.CORE_D_CLASSES)]
 
     def check(self): return partition.core_partition(self.rows)
 
@@ -482,7 +484,7 @@ class CoreRowPartitionTests(unittest.TestCase):
         plan = self.check()
         self.assertEqual({row[2] for row in plan['core-b'] if row[1] == self.method}, self.transfer)
         self.assertFalse({row[2] for row in plan['core-a']} & self.transfer)
-        self.assertEqual(plan['core-a'] | plan['core-b'] | plan['core-c'], set(self.rows))
+        self.assertEqual(plan['core-a'] | plan['core-b'] | plan['core-c'] | plan['core-d'], set(self.rows))
         self.assertFalse(plan['core-a'] & plan['core-b'])
 
     def test_missing_selected_completion_class_fails(self):
@@ -577,7 +579,7 @@ class CoreThirdShardTests(unittest.TestCase):
         plan = self.plan()
         self.assertEqual(plan['core-c'], self.completion)
         a, b, c = [plan[s] for s in ['core-a', 'core-b', 'core-c']]
-        self.assertEqual(a | b | c, set(self.rows))
+        self.assertEqual(a | b | c | plan['core-d'], set(self.rows))
         self.assertFalse(a & b or a & c or b & c)
         self.assertEqual({r[2] for r in b if r[1] == partition.SELECTORS[0]}, self.transfer)
 
@@ -606,7 +608,7 @@ class CoreThirdShardTests(unittest.TestCase):
         self.assertEqual(a[:13], ['--filter-method', *partition.SELECTORS])
         self.assertEqual(set(a[14:]), self.transfer)
         self.assertEqual(c, ['--filter-class', *self.classes])
-        self.assertEqual(b[-(len(self.classes) + 1):], ['--filter-not-class', *self.classes])
+        self.assertEqual(b[-(len(self.classes) + len(partition.CORE_D_CLASSES) + 1):], ['--filter-not-class', *self.classes, *partition.CORE_D_CLASSES])
         for shard in ['core-a', 'core-b', 'core-c']:
             filters = partition.partition_filters(shard, plan)
             command = partition.execution_command(shard, Path('/tmp/control') / shard, plan)
@@ -703,7 +705,7 @@ class NativeCompletionCapacityTests(unittest.TestCase):
         for cls in self.native:
             rows = {r for r in self.rows if r[1].rsplit('.', 1)[0] == cls}
             self.assertTrue(rows); self.assertTrue(rows <= plan['core-c']); self.assertFalse(rows & plan['core-b'])
-        self.assertEqual(plan['core-a'] | plan['core-b'] | plan['core-c'], set(self.rows))
+        self.assertEqual(plan['core-a'] | plan['core-b'] | plan['core-c'] | plan['core-d'], set(self.rows))
         self.assertFalse(plan['core-a'] & plan['core-b'] or plan['core-a'] & plan['core-c'] or plan['core-b'] & plan['core-c'])
 
     def test_future_native_methods_follow_full_class_policy(self):
@@ -722,5 +724,105 @@ class NativeCompletionCapacityTests(unittest.TestCase):
         self.assertEqual(filters, ['--filter-class', *CoreThirdShardTests.classes])
         for cls in self.native:self.assertIn(cls, partition.partition_filters('core-b', plan))
         self.assertEqual(partition.execution_command('core-c', Path('/tmp/control/core-c'), plan)[-len(filters):], filters)
+
+class CoreFourthShardTests(unittest.TestCase):
+    classes = (
+        'Cna.Core.Tests.Campaigns.CombatActualMovedCycleControlTests',
+        'Cna.Core.Tests.Campaigns.CombatActualMovedCycleControlContractTests',
+    )
+
+    def setUp(self):
+        fixture = CoreRowPartitionTests(); fixture.setUp()
+        self.rows = fixture.rows
+        self.native = {('Cna.Core.Tests', cls + '.Initial', cls + '.Initial(index: 0)') for cls in self.classes}
+        self.rows += sorted(self.native - set(self.rows))
+        self.expected_a = {r for r in self.rows if r[1] in partition.SELECTORS and r[2] not in fixture.transfer}
+        self.expected_c = {r for r in self.rows if r[1].rsplit('.', 1)[0] in CoreThirdShardTests.classes}
+
+    def test_complete_n3_classes_move_to_required_d_without_changing_a_c_or_transfer(self):
+        plan = partition.core_partition(self.rows)
+        self.assertIsNotNone(plan.get('core-d'), 'Measured N3 needs a required complete-row shard')
+        self.assertEqual(plan['core-d'], self.native)
+        self.assertEqual(plan['core-a'], self.expected_a); self.assertEqual(plan['core-c'], self.expected_c)
+        shards = [plan[k] for k in ['core-a', 'core-b', 'core-c', 'core-d']]
+        self.assertEqual(set.union(*shards), set(self.rows))
+        for i, rows in enumerate(shards):
+            for other in shards[i + 1:]: self.assertFalse(rows & other)
+
+    def test_missing_n3_selected_class_fails_closed(self):
+        for cls in self.classes:
+            with self.assertRaises(ValueError): partition.core_partition([r for r in self.rows if r[1].rsplit('.', 1)[0] != cls])
+
+    def test_future_methods_follow_exact_class_and_similar_class_remains_b(self):
+        for cls in self.classes:
+            method = cls + '.Future'; row = ('Cna.Core.Tests', method, method + '(index: 7)')
+            plan = partition.core_partition(self.rows + [row]); self.assertIn(row, plan.get('core-d', set()))
+            similar = cls + 'Extra.Future'; extra = ('Cna.Core.Tests', similar, similar)
+            plan = partition.core_partition(self.rows + [extra]); self.assertIn(extra, plan['core-b'])
+
+    def test_d_is_required_module_and_filters_bind_same_exact_class_policy(self):
+        plan = partition.core_partition(self.rows)
+        self.assertEqual(partition.MODULES.get('core-d'), 'Cna.Core.Tests')
+        self.assertEqual(partition.partition_filters('core-d', plan), ['--filter-class', *self.classes])
+        b = partition.partition_filters('core-b', plan)
+        for cls in self.classes: self.assertIn(cls, b)
+
+class CoreFourthPreparedProofTests(unittest.TestCase):
+    def setUp(self):
+        fixture = DiscoveryTests(); fixture.setUp()
+        self.inventory = fixture.check()
+
+    def test_exact_prepared_four_core_partition_is_accepted(self):
+        partition.load_partition(self.inventory, SHA, '10.0.400', 'local')
+
+    def test_missing_or_wrong_d_assignment_fails_even_when_union_is_unchanged(self):
+        bad = copy.deepcopy(self.inventory); del bad['shards']['core-d']
+        with self.assertRaises(ValueError): partition.load_partition(bad, SHA, '10.0.400', 'local')
+        bad = copy.deepcopy(self.inventory); row = bad['shards']['core-d']['rows'].pop(); bad['shards']['core-b']['rows'].append(row)
+        with self.assertRaises(ValueError): partition.load_partition(bad, SHA, '10.0.400', 'local')
+
+    def test_actual_discovery_missing_overlap_or_swapped_d_rows_fails(self):
+        for kind in ['missing', 'overlap', 'swap']:
+            fixture = DiscoveryTests(); fixture.setUp()
+            if kind == 'missing': del fixture.texts['core-d']
+            elif kind == 'overlap': fixture.texts['core-d'] = fixture.texts['core-b']
+            else: fixture.texts['core-d'], fixture.texts['core-b'] = fixture.texts['core-b'], fixture.texts['core-d']
+            with self.assertRaises((ValueError, KeyError)): fixture.check()
+
+    def test_d_execution_requires_current_partition_and_exact_classes(self):
+        plan = partition.load_partition(self.inventory, SHA, '10.0.400', 'local')
+        with self.assertRaises(ValueError): partition.execution_command('core-d', Path('/tmp/control/core-d'))
+        command = partition.execution_command('core-d', Path('/tmp/control/core-d'), plan)
+        self.assertEqual(command[-3:], ['--filter-class', *CoreFourthShardTests.classes])
+
+class CoreFourthCoverageFailureTests(unittest.TestCase):
+    def setUp(self):
+        self.fixture = CoverageTests(); self.fixture.setUp(); self.addCleanup(self.fixture.doCleanups)
+        self.leaf = self.fixture.root / 'core-d'
+
+    def test_required_d_missing_leaf_process_or_xml_is_not_coverage(self):
+        for relative in ['status.json', 'results/report.xunit.xml']:
+            path = self.leaf / relative; data = path.read_bytes(); path.unlink()
+            with self.assertRaises(ValueError): self.fixture.check()
+            path.write_bytes(data)
+
+    def test_d_nonzero_stale_sha_attempt_and_debug_never_satisfy_coverage(self):
+        path = self.leaf / 'status.json'; original = json.loads(path.read_text())
+        for key, value in [('exit_code', 1), ('tested_sha', 'b' * 40), ('run_attempt', '1'), ('configuration', 'Debug')]:
+            changed = copy.deepcopy(original); changed[key] = value; path.write_text(json.dumps(changed))
+            with self.assertRaises(ValueError): self.fixture.check()
+        path.write_text(json.dumps(original)); self.fixture.check()
+
+    def test_d_skipped_failed_duplicate_or_foreign_report_fails_closed(self):
+        path = self.leaf / 'results/report.xunit.xml'; original = path.read_bytes()
+        for kind in ['skip', 'fail', 'duplicate', 'foreign']:
+            document = ET.parse(path); assembly = document.getroot().find('assembly'); test = assembly.find('.//test')
+            if kind == 'skip': test.set('result', 'Skip'); assembly.set('passed', '0'); assembly.set('skipped', '1')
+            elif kind == 'fail': test.set('result', 'Fail'); assembly.set('passed', '0'); assembly.set('failed', '1')
+            elif kind == 'duplicate': assembly.find('collection').append(copy.deepcopy(test)); assembly.set('total', '2'); assembly.set('passed', '2')
+            else: test.set('method', 'Foreign')
+            document.write(path)
+            with self.assertRaises(ValueError): self.fixture.check()
+            path.write_bytes(original)
 
 if __name__ == '__main__': unittest.main()

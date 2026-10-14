@@ -3003,3 +3003,19 @@ process/XML/disjoint actual-row reconciliation and Brain merge/verifiedmain rema
 N3 budget0/9reviews,0/2recovery,max3passes/round. Sole focused lease author; no full local suite.
 Session closeout00:37:35UTC/hardstop01:37:35UTC Oct15 (Oct14 20:37:35/21:37:35 Toronto); labelled
 WIP preservation risk accepted. No feature after closeout/product work after hardstop.
+
+## N3 measured CI capacity correction (2026-10-14)
+
+Reviewed N3head972e0c5 remains native/product baseline. CoreB CI38646785953 timed out20m while
+continuously passing N3parity;2608consolecompletions do not replace final XML/process evidence.
+N2's successful2511-row CoreBjob19m18 left42s headroom; N3 adds129rows. CurrentCoreCjob10m14
+under15m makes a simple Ctransfer risky. Brain authorized dedicatedrequiredCoreD exacttwoN3classes
+with no timeout change, test drop, native/schema/pin/fixture edits or gate weakening. Full fourCore
+actualpredicate/filter conservation and sixleaf exactSHA/attempt/SDK/Release/process0/singleXML
+coverage remain mandatory. CoreA/eightoldtransfers/Cpolicyunchanged;BcomplementexcludesD.
+
+CI correction budget review2of9/pass2of3/recovery0of2 retains originalN3review1Ready/Accept and
+failedrun evidence; no reviewcounterreset. Pre-edit plan and genuine4PythonpolicyRED precedehelper
+implementation; full132fastregressions pass aftercorrectingduplicate syntheticfixture. Actualmetadata
+discovery pending atimplementation checkpoint; correctedhead freshreview/hostedCI/merge/mainrequired.
+No actualRepeat/public/full72/downstreamGO. Rawdiagnostics remainlocal,27archiveexportblocked.
