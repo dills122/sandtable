@@ -106,3 +106,8 @@ CampaignCombatActualMovedAssault and its codec are private Umpire modules for th
 [actual moved-assault contract](docs/specs/combat-actual-moved-assault-v1.md). They join authenticated
 Reaction-to-Combat entry to Selection, sealed Round, paid assault and mandatory settlement.
 Reserve Release entry is their endpoint; the name does not imply public campaign activation.
+
+CampaignCombatActualMovedContinuation and its codec are private Umpire technical modules for
+[paid and armed continuation assessment](docs/specs/combat-actual-moved-continuation-v1.md). They
+complete empty Reserve Release and retain prospective witness facts. The module name does not imply
+a cycle-control offer, executable repeat, phase finish or public campaign activation.

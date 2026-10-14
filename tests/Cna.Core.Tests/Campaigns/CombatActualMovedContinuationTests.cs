@@ -7,6 +7,7 @@ using Cna.Core.Content;
 using Cna.Core.Rules;
 using Cna.Core.Setups;
 namespace Cna.Core.Tests.Campaigns;
+
 public sealed class CombatActualMovedContinuationTests
 {
     [Theory]
@@ -30,10 +31,18 @@ public sealed class CombatActualMovedContinuationTests
         var context = new Context(profile, name); var parent = context.Parent(); var current = context.Replay();
         foreach (var kind in new[] { "open-empty-release", "complete-empty-release" })
         {
-            var input = JsonSerializer.SerializeToUtf8Bytes(new JsonObject { ["command"] = new JsonObject { ["contractVersion"] = 1,
-                ["kind"] = kind, ["parentSourceHash"] = "sha256:" + Convert.ToHexStringLower(SHA256.HashData(context.ParentSource)),
-                ["releaseId"] = current.Control.GetProperty("releaseId").GetString(),
-                ["expectedPriorVersion"] = current.Control.GetProperty("stateVersion").GetInt64() }, ["actor"] = "system" }, Options);
+            var input = JsonSerializer.SerializeToUtf8Bytes(new JsonObject
+            {
+                ["command"] = new JsonObject
+                {
+                    ["contractVersion"] = 1,
+                    ["kind"] = kind,
+                    ["parentSourceHash"] = "sha256:" + Convert.ToHexStringLower(SHA256.HashData(context.ParentSource)),
+                    ["releaseId"] = current.Control.GetProperty("releaseId").GetString(),
+                    ["expectedPriorVersion"] = current.Control.GetProperty("stateVersion").GetInt64()
+                },
+                ["actor"] = "system"
+            }, Options);
             current = CampaignCombatActualMovedContinuation.ApplyTrustedSource(context.Source, context.Request, context.Prefix, context.Lifecycle,
                 context.Breakdown, context.Selection, context.Round, context.Paid, context.Release, input, Dependency);
             Assert.NotNull(current.EventBytes); context.Source = current.SourceBytes; context.Release.Add(input);
@@ -89,8 +98,13 @@ public sealed class CombatActualMovedContinuationTests
             }
             ParentSource = CampaignCombatActualMovedAssaultCodec.Canonical(packet, "Source");
             Assert.Equal(item.GetProperty("cuts")[inputs.Length].GetProperty("source").GetProperty("sha256").GetString(), "sha256:" + Convert.ToHexStringLower(SHA256.HashData(ParentSource)));
-            Source = JsonSerializer.SerializeToUtf8Bytes(new JsonObject { ["contractVersion"] = 1, ["profile"] = profile,
-                ["movedAssaultSourceCanonicalUtf8"] = Encoding.ASCII.GetString(ParentSource), ["releaseEventCanonicalUtf8"] = new JsonArray() }, Options);
+            Source = JsonSerializer.SerializeToUtf8Bytes(new JsonObject
+            {
+                ["contractVersion"] = 1,
+                ["profile"] = profile,
+                ["movedAssaultSourceCanonicalUtf8"] = Encoding.ASCII.GetString(ParentSource),
+                ["releaseEventCanonicalUtf8"] = new JsonArray()
+            }, Options);
         }
         public CombatActualMovedAssaultResult Parent() => CampaignCombatActualMovedAssault.ReplayTrustedSource(ParentSource, Request, Prefix, Lifecycle, Breakdown, Selection, Round, Paid, Dependency);
         public CombatActualMovedContinuationResult Replay() => CampaignCombatActualMovedContinuation.ReplayTrustedSource(Source, Request, Prefix, Lifecycle, Breakdown, Selection, Round, Paid, Release, Dependency);

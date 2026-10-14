@@ -714,4 +714,12 @@ attacker's four and three CP to the defender, consumes ammunition once, and draw
 Mandatory settlement reaches Reserve Release entry; no-attack and cancelled branches preserve prior
 costs. Before fresh debit, all 16,616 selected catalogue records and handler/window/projection capacities
 are certified against the same cumulative World. Catalogue projections are isolated support checks.
-This successor remains private and awaits independent review and exact-head hosted CI.
+This successor remains private and merged in PR #188 after review and hosted CI.
+
+The additive [actual moved continuation](docs/specs/combat-actual-moved-continuation-v1.md) authenticates
+paid and armed N1 terminals through seven independent ledgers, completes empty Reserve Release with
+two System publications, and derives immutable assessment. Original NONE membership, current spent
+CP, original MovementEnd, real progress and future duties survive. Safe prospective witnesses remain
+separate from Reaction-dependent unsupported witnesses; unsupported capability is never noLegal.
+The prospective nextOrdinal2 certificate has executionAvailable=false and no control window. This
+private boundary does not accept Repeat/finish or execute another occurrence. Its review/CI remain pending.

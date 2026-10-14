@@ -71,8 +71,10 @@ reasons through stop, System resolution, Movement completion and Breakdown into 
 They preserve CP4 and original RNG with separate trusted ledgers and were merged in PR #187.
 The private [moved-assault successor](docs/specs/combat-actual-moved-assault-v1.md) carries that actual
 entry through Selection, a sealed Round, cumulative paid costs and settlement into same-cycle Reserve
-Release entry. It authenticates six independent ledgers; review and hosted CI remain pending for this
-successor. Public activation, Reserve Release continuation and campaign finish remain separate gates.
+Release entry. It authenticates six independent ledgers and merged in PR #188.
+The private [moved continuation](docs/specs/combat-actual-moved-continuation-v1.md)
+completes empty Reserve Release for paid and armed parents and derives immutable prospective assessment.
+It opens no cycle-control window. Public activation, repeat execution and campaign finish remain separate gates.
 
 Next delivery sequence:
 
