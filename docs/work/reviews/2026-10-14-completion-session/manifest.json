@@ -1,0 +1,62 @@
+{
+  "rmc-author-disposition-review-1.md": {
+    "bytes": 1658,
+    "sha256": "aa03d451b677214400b5f0fdedbd38e1e45de47a15c77edb938ed49b51637fd9"
+  },
+  "rmc-author-disposition-review-2.md": {
+    "bytes": 2087,
+    "sha256": "ebf8b5d70878297b308414ef5048bbfea6f780bd35f7c2f2fb932f8d1f134c9c"
+  },
+  "rmc-ci-final-receipt.json": {
+    "bytes": 1358,
+    "sha256": "d6d7b05a238904d88f5ca04108661da26315263483bf20b2edc15425c0ada330"
+  },
+  "rmc-ci-final.tar.gz": {
+    "bytes": 797082,
+    "sha256": "7eb283aa995ba2b80d6af7a421d5146c846933153bbb3ceded50e025afdfdf3a"
+  },
+  "rmc-core-b-attempt1.log": {
+    "bytes": 44847,
+    "sha256": "ff4890a5e332f93b74ad169b424959918f5b3593290627a21886c716c7b7e399"
+  },
+  "rmc-core-b-attempt2.log": {
+    "bytes": 44845,
+    "sha256": "fe77a753307fb9ff69a28869d8e752254d912062da8183967a23d1dad9638ef4"
+  },
+  "rmc-core-b-attempt2.tar.gz": {
+    "bytes": 318266,
+    "sha256": "3e03a3e361a148a687020ed4c5d70870eb457a70ab3f432c5bae171ed6299a5d"
+  },
+  "rmc-independent-review-1-checks.json": {
+    "bytes": 2267,
+    "sha256": "d3a704709b6f3ab8b14142405fabf5fb5fb46d634e7dbbbcd1fc748c43d56968"
+  },
+  "rmc-independent-review-1.md": {
+    "bytes": 14155,
+    "sha256": "b0e3ca586fdf09510158b84cc3fede07809debe75ef63d1ebc570f4f4f61e545"
+  },
+  "rmc-independent-review-2.md": {
+    "bytes": 10779,
+    "sha256": "dc39f331add8e4d2e842e9ee2f030ea861093940278b855cfe7d146a9449dae7"
+  },
+  "rmc-main-checks.json": {
+    "bytes": 658,
+    "sha256": "01493f845765db12ee676c9e35a8a2c2ca3e475c77cd95af834d12e7eb58aa99"
+  },
+  "rmc-prior-main-ci.tar.gz": {
+    "bytes": 667242,
+    "sha256": "6d464d2f698eb878213553e04d5e1df76d6dbc39dd2f8f4d013ee4509262c14d"
+  },
+  "rmc-verify-ci.py": {
+    "bytes": 1909,
+    "sha256": "7be486adf4379646c200c7276b9d697c4612c5fb454809c52f7115061ef57a4a"
+  },
+  "run-state.md": {
+    "bytes": 20131,
+    "sha256": "00916a225ab1c7c9eb4dc66f2842ab0f3e510300bf47a5060919cd7aa8b71c93"
+  },
+  "session-plan.md": {
+    "bytes": 6201,
+    "sha256": "b390440c1372f6e31a6e09d989141be78976c18b6f3f571d735b210af7b674a1"
+  }
+}

@@ -1,0 +1,84 @@
+[
+  {
+    "command": [
+      "python3",
+      "-B",
+      "docs/specs/verify-combat-actual-repeated-movement-completion-v1.py",
+      "--group",
+      "grammar"
+    ],
+    "exitCode": 0,
+    "timedOut": false,
+    "elapsedSeconds": 6.896,
+    "stdout": "PASS closed primitives/versions/arms/canonical/preparse/ancestor-before-sixth-claims\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "python3",
+      "-B",
+      "docs/specs/verify-combat-actual-repeated-movement-completion-v1.py",
+      "--group",
+      "preservation",
+      "--owner",
+      "commonwealth",
+      "--seal",
+      "attacker",
+      "--moves",
+      "0"
+    ],
+    "exitCode": 0,
+    "timedOut": false,
+    "elapsedSeconds": 3.391,
+    "stdout": "PASS complete genuine lifecycle/preservation/proof/proximity 1 1 2\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "python3",
+      "-B",
+      "docs/specs/verify-combat-actual-repeated-movement-completion-v1.py",
+      "--group",
+      "recovery",
+      "--owner",
+      "axis",
+      "--seal",
+      "defender",
+      "--moves",
+      "4"
+    ],
+    "exitCode": 0,
+    "timedOut": false,
+    "elapsedSeconds": 29.448,
+    "stdout": "PASS all suffix cuts/all prior retries/owned readback 4 6\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "python3",
+      "-B",
+      "docs/specs/verify-combat-actual-repeated-movement-completion-v1.py",
+      "--group",
+      "context"
+    ],
+    "exitCode": 0,
+    "timedOut": false,
+    "elapsedSeconds": 7.656,
+    "stdout": "PASS captured context/track/lastreceipt/recordedversion and coherent own-event forgery\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "python3",
+      "-B",
+      "docs/specs/verify-combat-actual-repeated-movement-completion-v1.py",
+      "--group",
+      "capacity"
+    ],
+    "exitCode": 0,
+    "timedOut": false,
+    "elapsedSeconds": 6.627,
+    "stdout": "PASS own field/carrier/wrapper/array/depth domination {'Source': 35327488, 'Proof': 2246094, 'Control': 324037, 'Event': 16384, 'Input': 1024, 'LifecycleLedger': 3076} {'ControlMetadata': 20620, 'ProofMetadata': 21182, 'EventMetadata': 6856, 'InputStructural': 544} {'Source': 1014043, 'Proof': 102663, 'Control': 19082, 'Event': 2973, 'Input': 458, 'LifecycleLedger': 1334}\n",
+    "stderr": ""
+  }
+]
