@@ -45,6 +45,7 @@ integration remains scaffolded; AI is optional future work.
 - [Policy reconciliation](design/combat-cycle-policy-reconciliation.md): accepted owner decisions
 - [Actual-selection contract](specs/combat-actual-selection-v1.md): merged private executable boundary
 - [Actual repeated Movement completion](specs/combat-actual-repeated-movement-completion-v1.md): private stop/System-resolution/owner-completion contract through ordinal2 Breakdown entry, now consumed by C04 private native code; review/CI/public activation remain separate gates
+- [Actual repeated Breakdown completion](specs/combat-actual-repeated-breakdown-completion-v1.md): private authentic terminal RMC/six-ledger ingress plus independent seventh ledger; one System completion into Combat Position Determination; native/public/acceptance gates remain separate
 - [Author delivery review and owner disposition](reviews/combat-delivery-plan-author-review.md#owner-disposition)
 - [Orleans publication feasibility](research/orleans-publication-feasibility.md): publication obligations distinct from Core
 

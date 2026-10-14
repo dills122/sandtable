@@ -310,3 +310,14 @@ cumulativeexclusions, World/NONEhistory/RNG/resources andactualmoveprogress pers
 preserve68wire hashes plus2frozenreference files. Testfixtures remaintestonly.
 Authorfinal64row scopedgate/freshreview/exact-headCI are separatelyrecorded; public/native
 downstreamBreakdown/Combat/Convoy andremaininglineage/parent017–025/all72 gates stayopen.
+
+
+## B02 actual ordinal2 Breakdown completion
+
+[Private reference](../specs/combat-actual-repeated-breakdown-completion-v1.md) completes the
+accepted authentic20terminal RMC root family with one trusted System event. Seventh independent
+inputs follow full six-ledger replay, preserving both proofs and cumulative resources/progress/RNG.
+Canonical Combat Position Determination entry is the stop boundary, with active ordinal2 unchanged.
+The measured runtime manifest70 plus2own deliveries preserves every predecessor pin and bound.
+Final normal/literal/self-review/fresh review/exact-head CI acceptance is separately recorded;
+nativeB03 is conditional on reviewedmergedreference/time/explicitGO. No downstream/public gate closes.

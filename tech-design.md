@@ -684,3 +684,12 @@ checkpoint evidence without making it current runtime truth.
 [2]: https://learn.microsoft.com/en-us/aspnet/core/grpc/performance?view=aspnetcore-10.0 "Performance best practices with gRPC | Microsoft Learn"
 [3]: https://learn.microsoft.com/en-us/aspnet/core/grpc/deadlines-cancellation?view=aspnetcore-10.0 "Reliable gRPC services with deadlines and cancellation | Microsoft Learn"
 [4]: https://learn.microsoft.com/en-us/aspnet/core/grpc/json-transcoding?view=aspnetcore-10.0 "gRPC JSON transcoding in ASP.NET Core gRPC apps | Microsoft Learn"
+
+
+The additive [actual ordinal2 Breakdown completion reference](docs/specs/combat-actual-repeated-breakdown-completion-v1.md)
+authenticates complete RMC source and six independent inputs before its seventh Breakdown ledger.
+One trusted System completion advances38/41..44 to39/42..45 at canonical Combat Position Determination.
+Both Movement proofs, exclusions, World/resources/RNG/progress and active ordinal2 are preserved;
+local fragment closure does not close that Combat cycle. Measured70external+2own physical acquisition
+and dominating128MiB own Source/depth42 envelope preserve RMC64MiB/depth40 and earlier limits.
+This reference executes no Combat step; native consumption/public activation remain separate gates.

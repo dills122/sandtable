@@ -81,3 +81,27 @@ clock variant, primitives/limits, physical missing/changed/unreadable/null/drift
 retained literals. One bounded normal gate plus frozen input hashes, five-axis author self-review,
 fresh neutral-first independent review and exact-head CI are required. Fixture generation is explicit
 after semantic GREEN and measured closure; normal acceptance never rewrites retained literals.
+
+## Measured closure and structural capacity certificate
+
+Measured cold/core/warm/adversarial acquisition is exactly70external+2own, with no unknown material
+paths. Every path was challenged as missing, changed, unreadable, null and changed-after-first-read:
+360rejections. Own schema/oracle deliveries are separate from the sorted70-entry wire manifest;
+no predecessor map changes, fixture authority or missing-hash refresh. Test-only authentic RMC
+literals and independent ledgers are outside runtime acquisition authority.
+
+Valid-state domination uses frozen RMC bounds, not its looser raw carrier cap or fixture size:
+Source=2×35327488+2×32768+512=70721024 <134217728; Proof=2246094+192965+131072=2570131 <4194304;
+Control=192965+131072=324037 <524288; Event16384 <32768; Input1024; seventh ledger1026 <2048.
+RMC Proof/World are independently bounded borrowed contributions. Own structural metadata inflates
+all IDs/strings to128, numbers to signed Int64 width, both exclusions to2 and the authentic maximal
+route/progress/receipt counts. Control21587/Proof22167/Event4193 bytes fit reserved metadata131072/
+131072/16384; fixed hash/action/kind fields plus128position/Int64version bound Input at649bytes.
+The fixed canonical Source key/list framing is below512; ASCII carrier escaping is at most factor2.
+Borrowed depth40 plus two own Proof/Base wrappers is42; all raw collections remain512/128fields
+and typed own arrays tighten event/receipt1, RMCreceipt3/movereceipt4/progress4, member/track1.
+
+Measured maximal-cut Source1936033/Proof122596/Control19565/Event1913/Input580/ledger582bytes are
+observations, not the structural certificate. Raw oversize, oversized inherited carrier and depth/
+collection/type/numeric rejection run before recursive replay; predecessor caps never increase.
+Near-limit native allocation/latency and public capacity remain unmeasured separate gates.

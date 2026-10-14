@@ -168,6 +168,194 @@ def semantic_tests():
             after,ledger,rid=apply(data,*args,[],inp);_,_,current,_=replay(after,*args,ledger);ev=json.loads(json.loads(after)['breakdownEventCanonicalUtf8'][0]);assert ev['stateVersion']==s['stateVersion']+1 and rid==ev['receiptId'] and rid.startswith('arbc.') and len(ledger)==1;assert current['positionId']==newctx['terminal']['positionId'] and current['closed'] and current['activeCycle']['ordinal']==2;assert ev['effect']['sources']==newctx['boundary']['sources'] and current['movementEnd']==s['movementEnd'] and current['priorMovementEnd']==s['priorMovementEnd'];print('PASS authentic Breakdown publication',row['owner'],row['firstSeal'],row['moves'])
         except Invalid as error:failures.append((row['owner'],row['firstSeal'],row['moves']));print('FAIL authentic terminal version',s['stateVersion'],'requires Breakdown publication; actual',error.code,error.path,row['owner'],row['firstSeal'],row['moves'])
     assert not failures,str(len(failures))+' genuine Breakdown publications failed'
+def selected(owner=None,seal=None,moves=None):return [(r,a) for r,a in roots() if (owner is None or r['owner']==owner) and (seal is None or r['firstSeal']==seal) and (moves is None or r['moves']==moves)]
+TRACE_CACHE={}
+def trace(row,args):
+    key=(row['owner'],row['firstSeal'],row['moves'])
+    if key in TRACE_CACHE:return copy.deepcopy(TRACE_CACHE[key])
+    parent=row['sourceCanonicalUtf8'].encode('ascii');data=source_for(parent);_,ctx,s,_=replay(data,*args,[]);before=raw(s,'Control');inp=command(ctx,s);after,ledger,rid=apply(data,*args,[],inp);_,_,current,_=replay(after,*args,ledger);event=json.loads(after)['breakdownEventCanonicalUtf8'][0].encode('ascii');out=dict(source=after,sources=[data,after],args=args,ctx=ctx,state=current,frames=[before,raw(current,'Control')],ledger=ledger,inputs=[inp],events=[event],rid=rid,parent=parent);TRACE_CACHE[key]=copy.deepcopy(out);return out
+
+def changed_leaf(value,path,new):
+    result=copy.deepcopy(value);v=result
+    for k in path[:-1]:v=v[k]
+    v[path[-1]]=new;return result
+
+def rejected(call,code=None):
+    try:call()
+    except Invalid as error:
+        if code is not None:assert error.code==f'CMB-ABC-{code:03}',(error.code,code,error.path)
+        return error.code
+    raise AssertionError('Expected rejection')
+
+def preservation_tests(owner=None,seal=None,moves=None):
+    for row,args in selected(owner,seal,moves):
+        t=trace(row,args);prior=json.loads(row['controlCanonicalUtf8'][-1]);before=parse(t['frames'][0],'Control');after=t['state'];expected=copy.deepcopy(before);event=json.loads(t['events'][0]);unsigned={k:v for k,v in event.items() if k!='receiptId'};rid='arbc.'+identity('receipt',unsigned);assert rid==t['rid'];assert event['input']==t['inputs'][0] and event['effect']==dict(kind='breakdown-completed',movementCompletionReceiptId=prior['movementEnd']['completionReceiptId'],sources=t['ctx']['boundary']['sources'],successorPositionId=t['ctx']['terminal']['positionId']);assert event['positionId']==prior['positionId'] and event['priorVersion']==prior['stateVersion']
+        expected.update(stateVersion=prior['stateVersion']+1,prefix=steps.seq.prefix_event(prior['prefix'],t['events'][0]),positionId=t['ctx']['terminal']['positionId'],closed=True,breakdownCompletionReceiptId=rid);expected['receipts']=[dict(commandHash=sha(raw(t['inputs'][0]['command'],'Command')),eventHash=sha(t['events'][0]),receiptId=rid,actor='system',stateVersion=expected['stateVersion'])];assert raw(expected,'Control')==t['frames'][1]
+        for field in prior:
+            if field not in ('baseHash','stateVersion','prefix','positionId','receipts','closed'):assert after[field]==prior[field],field
+        assert after['priorLifecycleReceipts']==prior['receipts'] and len(after['receipts'])==1 and after['randomState']==prior['randomState'] and after['nextCycleProgress']==prior['nextCycleProgress'];assert after['breakdownCompletionReceiptId']!=after['movementEnd']['completionReceiptId']!=after['priorMovementEnd']['completionReceiptId'];assert after['activeCycle']==prior['activeCycle'] and after['closure']==prior['closure'];print('PASS preservation',row['owner'],row['firstSeal'],row['moves'])
+
+def recovery_tests(owner=None,seal=None,moves=None):
+    cuts=retries=0
+    for row,args in selected(owner,seal,moves):
+        t=trace(row,args)
+        for n in range(2):
+            source,ctx,s,owned=replay(t['sources'][n],*args,t['ledger'][:n]);assert raw(s,'Control')==t['frames'][n];cuts+=1
+            claim=proof(t['sources'][n],*args,t['ledger'][:n]);h=identity('source',canonical(source,'Source'));expected=dict(contractVersion=1,sourceId='arbcomp.'+h,sourceHash='sha256:'+h,base=ctx['base'],control=parse(t['frames'][n],'Control'));assert raw(claim,'Proof')==raw(expected,'Proof');assert read_proof(raw(expected,'Proof'),t['sources'][n],*args,t['ledger'][:n])==expected and read_control(t['frames'][n],t['sources'][n],*args,t['ledger'][:n])==s;assert read_source(t['sources'][n],*args,t['ledger'][:n])==source
+            claim['control']['world']['elements'].clear();source['breakdownEventCanonicalUtf8'].clear()
+
+            if n==0:after,ledger,rid=apply(t['sources'][0],*args,[],t['inputs'][0]);assert after==t['source'] and ledger==t['ledger'] and rid==t['rid']
+        after,ledger,rid=apply(t['source'],*args,t['ledger'],t['inputs'][0]);assert after==t['source'] and ledger==t['ledger'] and rid==t['rid'];retries+=1
+        # Returned buffers are owned; caller mutation cannot affect future reconstruction.
+        s['world']['relationships'].clear();owned.clear();assert replay(t['source'],*args,t['ledger'])[2]==t['state']
+    print('PASS restart cuts/lostreply/exact terminal retry/owned return',cuts,retries)
+
+def adversarial_tests(owner='axis',seal='attacker',moves=0):
+    row,args=selected(owner,seal,moves)[0];t=trace(row,args);initialstate=parse(t['frames'][0],'Control');inp=t['inputs'][0];checks=0
+    for actor in ['axis','commonwealth']:
+        bad=changed_leaf(inp,('actor',),actor)
+        for source,ledger in [(t['sources'][0],[]),(t['source'],t['ledger'])]:rejected(lambda:apply(source,*args,ledger,bad),4);checks+=1
+    for path,value,code in [(('command','operationStage'),2,3),(('command','kind'),'finish-cycle',3),(('command','actionId'),'sha256:'+'0'*64,5),(('command','baseHash'),'sha256:'+'0'*64,4),(('command','cycleId'),'sha256:'+'0'*64,4),(('command','expectedPositionId'),'land.position.breakdown-stop',4),(('command','expectedPriorVersion'),0,6),(('command','capabilityId'),'sha256:'+'0'*64,5)]:
+        bad=changed_leaf(inp,path,value);rejected(lambda:apply(t['sources'][0],*args,[],bad),code);checks+=1
+        rejected(lambda:apply(t['source'],*args,t['ledger'],bad),6 if code==5 and path[-1]=='capabilityId' else code);checks+=1
+    # Every own effect leaf is re-signed; claimed prefix/receipt cannot create authority.
+    event=json.loads(t['events'][0]);changes=[(('effect','kind'),'invented'),(('effect','movementCompletionReceiptId'),'forged'),(('effect','sources',0,'sourceId'),'forged'),(('effect','sources',0,'locator'),'21.24-21.26'),(('effect','successorPositionId'),t['ctx']['boundary']['positionId']), (('priorPrefix',),'sha256:'+'0'*64),(('stateVersion',),event['stateVersion']+1)]
+    for path,value in changes:
+        e=changed_leaf(event,path,value);e['receiptId']='arbc.'+identity('receipt',{k:v for k,v in e.items() if k!='receiptId'});source=parse(t['source'],'Source');source['breakdownEventCanonicalUtf8']=[raw(e,'Event').decode('ascii')];rejected(lambda:replay(raw(source,'Source'),*args,t['ledger']),6);checks+=1
+    claims=[(('movementEnd','completionReceiptId'),'forged'),(('priorMovementEnd','completionReceiptId'),'forged'),(('world','elements',0,'currentLocationId'),'forged'),(('randomState','nextByteCursor'),11),(('members',0,'spentCp'),world.cp(0)),(('breakdownCompletionReceiptId',),'forged'),(('activeCycle','ordinal'),3),(('closed',),False)]
+    if moves:claims.append((('nextCycleProgress',0,'receiptId'),'forged'))
+    for path,value in claims:
+        bad=changed_leaf(t['state'],path,value);rejected(lambda:read_control(raw(bad,'Control'),t['source'],*args,t['ledger']),6);checks+=1
+    p=proof(t['source'],*args,t['ledger']);p['base']['repeatedMovementCompletionProof']['control']['movementEnd']['completionReceiptId']='forged';rejected(lambda:read_proof(raw(p,'Proof'),t['source'],*args,t['ledger']),6);checks+=1
+    for ledger,code in [(None,1),([None],1),([],4),([inp,inp],1)]:rejected(lambda:replay(t['source'],*args,ledger),code);checks+=1
+    bad=changed_leaf(inp,('command','actionId'),'sha256:'+'1'*64);rejected(lambda:replay(t['source'],*args,[bad]),5);checks+=1
+    duplicate=parse(t['source'],'Source');duplicate['breakdownEventCanonicalUtf8']*=2;rejected(lambda:raw(duplicate,'Source'),1);checks+=1
+    rejected(lambda:apply(t['source'],*args,t['ledger'],command(t['ctx'],t['state'])));checks+=1
+    print('PASS adversarial',row['owner'],row['firstSeal'],row['moves'],checks)
+
+def nonterminal_tests():
+    checks=0
+    for row,args in roots():
+        terminal=json.loads(row['sourceCanonicalUtf8']);count=len(row['lifecycleLedger'])
+        for n in range(count):
+            parent=copy.deepcopy(terminal);parent['lifecycleEventCanonicalUtf8']=parent['lifecycleEventCanonicalUtf8'][:n];data=source_for(rmc.raw(parent,'Source'));ledgers=args[:-1]+[args[-1][:n]];rejected(lambda:replay(data,*ledgers,None),3);checks+=1
+    assert checks==52;print('PASS all authentic nonterminal RMC cuts rejected before seventh syntax',checks)
+
+def grammar_tests():
+    row,args=roots()[0];data=source_for(row['sourceCanonicalUtf8'].encode('ascii'));_,ctx,state,_=replay(data,*args,[]);inp=command(ctx,state)
+    for value,code in [(True,1),(-1,2),(1.5,1),(2**63,2)]:bad=changed_leaf(inp,('command','expectedPriorVersion'),value);rejected(lambda:apply(data,*args,[],bad),code)
+    for value,code in [(True,1),(-1,2),(2,3)]:bad=changed_leaf(inp,('command','contractVersion'),value);rejected(lambda:raw(bad,'Input'),code)
+    for kind,v in [('Source',parse(data,'Source')),('Control',state),('Input',inp)]:
+        for field in v:bad=copy.deepcopy(v);bad.pop(field);rejected(lambda:parse(encode(bad),kind),1)
+        good=raw(v,kind)
+        for malformed in [good+b'\n',b' '+good,b'\xef\xbb\xbf'+good,good.replace(b'{',b'{"unknown":null,',1)]:rejected(lambda:parse(malformed,kind))
+    for malformed in [b'{"contractVersion":1,"contractVersion":1}',b'['*44+b'0'+b']'*44,b'['+b','.join([b'0']*513)+b']',b'{'+b','.join(('"k'+str(i)+'":0').encode() for i in range(129))+b'}']:rejected(lambda:parse(malformed,'Source'),1)
+    bad=parse(data,'Source');bad['repeatedMovementCompletionSourceCanonicalUtf8']='{}';rejected(lambda:read_control(b'{}',raw(bad,'Source'),*args,None),1)
+    for which in range(6):
+        ledgers=copy.deepcopy(args);ledgers[which]=None;rejected(lambda:read_proof(b'{}',data,*ledgers,None),1)
+    rejected(lambda:replay(data,*args,None),1);rejected(lambda:replay(data,*args,[None]),1);rejected(lambda:replay(data,*args,[inp]),4)
+    overflow=copy.deepcopy(state);overflow['stateVersion']=2**63-1;rejected(lambda:transition(ctx,overflow,command(ctx,overflow)),7)
+    wrong=copy.deepcopy(state);wrong['activeCycle']['ordinal']=3;rejected(lambda:transition(ctx,wrong,command(ctx,wrong)),4)
+    for key in ['clock','deadline','rng','fallback','checks']:bad=copy.deepcopy(inp);bad[key]=None;rejected(lambda:raw(bad,'Input'),1)
+    bad=parse(data,'Source');ancestor=json.loads(bad['repeatedMovementCompletionSourceCanonicalUtf8']);ancestor['contractVersion']=-1;bad['repeatedMovementCompletionSourceCanonicalUtf8']=encode(ancestor).decode('ascii');rejected(lambda:read_proof(b'{}',raw(bad,'Source'),*args,None),2)
+    malformed=copy.deepcopy(bad);malformed.pop('contractVersion');rejected(lambda:read_proof(b'{}',encode(malformed),*args,None),1)
+    rejected(lambda:read_proof(b'{"contractVersion":-1}',data,*args,None),1)
+    for change in ['actor','actionId','capabilityId']:
+        bad=copy.deepcopy(inp)
+        if change=='actor':bad['actor']='axis'
+        else:bad['command'][change]='sha256:'+'0'*64
+        rejected(lambda:replay(data,*args,[bad]),4)
+    original=dict(DEPENDENCIES)
+    try:
+        DEPENDENCIES['../unknown']='0'*64;rejected(verify_dependencies,9)
+    finally:DEPENDENCIES.clear();DEPENDENCIES.update(original)
+    print('PASS closed primitives/canonical/preparse/numeric/unsupported inputs/ancestor-before-seventh-and-claims')
+
+def timestamp_tests():
+    row,p,u=rmc.roots()[0];parent=rmc.arm.pac.trace(u,'repeat',2000,2001);four=list(parent['args'])+[parent['ledger']];base=rmc.arm.derive(parent['source'],*four);s=rmc.arm.initial(base);data=rmc.arm.raw(dict(contractVersion=1,continuationSourceCanonicalUtf8=parent['source'].decode('ascii'),movementEventCanonicalUtf8=[]),'Source');move=[]
+    data,move,_=rmc.arm.apply(data,*four,move,rmc.arm.command(base,s,row['owner']+'-rear'));five=four+[move];source=rmc.source_for(data);_,ctx,s,_=rmc.replay(source,*five,[]);ledger=[]
+    for kind in rmc.INVENTORY['commands']:source,ledger,_=rmc.apply(source,*five,ledger,rmc.command(ctx,s,kind));s=rmc.replay(source,*five,ledger)[2]
+    own=source_for(source);_,ctx,before,_=replay(own,*five,ledger,[]);after,inputs,rid=apply(own,*five,ledger,[],command(ctx,before));s=replay(after,*five,ledger,inputs)[2];assert s['stateVersion']==42 and s['movementEnd']==before['movementEnd'] and s['randomState']==before['randomState'] and s['members'][0]['spentCp']==world.cp(9);assert rid==s['breakdownCompletionReceiptId'];print('PASS genuine inherited clock variant through full six-ledger ancestry and seventh completion')
+
+def capacity_tests():
+    model=dict(Source=2*rmc.INVENTORY['encodedUpperBounds']['Source']+2*LIMITS['eventBytes']+512,Proof=rmc.INVENTORY['encodedUpperBounds']['Proof']+rmc.INVENTORY['capacityAccounting']['world']+131072,Control=rmc.INVENTORY['capacityAccounting']['world']+131072,Event=16384,Input=1024,BreakdownLedger=1026)
+    caps=dict(Source=LIMITS['sourceBytes'],Proof=LIMITS['proofBytes'],Control=LIMITS['controlBytes'],Event=LIMITS['eventBytes'],Input=LIMITS['inputBytes'],BreakdownLedger=LIMITS['breakdownLedgerBytes'])
+    for k,n in model.items():assert n<=caps[k],(k,n,caps[k])
+    if INVENTORY['closureFrozen']:assert model==INVENTORY['encodedUpperBounds']
+    row,args=selected('axis','attacker',4)[0];t=trace(row,args);fields={}
+    def upper(v):
+        if type(v) is dict:return {k:(None if k in ('world','repeatedMovementCompletionProof') else upper(x)) for k,x in v.items()}
+        if type(v) is list:return [upper(x) for x in v]
+        if type(v) is str:return 'x'*128
+        if type(v) is bool:return False
+        if type(v) is int:return -2**63
+        return v
+    controls=[parse(x,'Control') for x in t['frames']];unit=controls[0]['members'][0]['unit'];padded=[]
+    for c in controls:
+        c=copy.deepcopy(c)
+        for field in ['priorMovementEnd','movementEnd']:c[field]['excludedBefore']=[copy.deepcopy(unit)]*2
+        padded.append(c)
+    fields['ControlMetadata']=max(len(encode(upper(c))) for c in padded);prototype=dict(contractVersion=1,sourceId='arbcomp.'+'0'*64,sourceHash='sha256:'+'0'*64,base=t['ctx']['base'],control=t['state']);fields['ProofMetadata']=max(len(encode(upper(prototype|dict(control=c)))) for c in padded);fields['EventMetadata']=max(len(encode(upper(json.loads(e)))) for e in t['events']);inflated=copy.deepcopy(t['inputs'][0]);inflated['command']['expectedPositionId']='x'*128;inflated['command']['expectedPriorVersion']=2**63-1;inflated['actor']='commonwealth';fields['InputStructural']=len(encode(inflated))
+    assert fields['ControlMetadata']<=131072 and fields['ProofMetadata']<=131072 and fields['EventMetadata']<=16384 and fields['InputStructural']<=1024
+    measurements=dict(Source=len(t['source']),Proof=len(raw(prototype,'Proof')),Control=max(len(x) for x in t['frames']),Event=max(len(x) for x in t['events']),Input=len(raw(t['inputs'][0],'Input')),BreakdownLedger=len(encode(t['ledger'])))
+    for k,n in measurements.items():assert n<=model[k],(k,n,model[k])
+    for kind in ['Source','Proof','Control','Event','Input']:rejected(lambda:parse(b' '*(byte_limit(kind)+1),kind),1)
+    carrier=parse(t['sources'][0],'Source');carrier['repeatedMovementCompletionSourceCanonicalUtf8']='x'*(rmc.LIMITS['sourceBytes']+1);rejected(lambda:raw(carrier,'Source'),1)
+    assert LIMITS['depth']==rmc.LIMITS['depth']+2 and LIMITS['acceptedEvents']==1 and LIMITS['arrayItems']==rmc.LIMITS['arrayItems'] and LIMITS['objectFields']==rmc.LIMITS['objectFields'];assert len(DEPENDENCIES)==70
+    print('PASS own field/carrier/wrapper/array/depth domination',model,fields,measurements);return dict(dominating=model,limits=caps,fieldAccounting=fields,measured=measurements)
+
+def dependency_tests():
+    row,args=roots()[0];data=source_for(row['sourceCanonicalUtf8'].encode('ascii'));real=Path.read_bytes;checks=0;paths=list(REPOSITORY/p for p in DEPENDENCIES)+list(OWN_DELIVERY)
+    for physical in paths:
+        for outcome in ['changed','missing','unreadable','null','drift']:
+            hits=[0]
+            def altered(p):
+                if p.resolve()==physical.resolve():
+                    hits[0]+=1
+                    if outcome=='drift' and hits[0]==1:return real(p)
+                    if outcome=='missing':raise FileNotFoundError(str(p))
+                    if outcome=='unreadable':raise PermissionError(str(p))
+                    return None if outcome=='null' else b'changed'
+                return real(p)
+            try:Path.read_bytes=altered;rejected(lambda:replay(data,*args,[]),9);checks+=1
+            finally:Path.read_bytes=real
+    assert checks==360;print('PASS all72 physical paths missing/changed/unreadable/null/drift',checks);return checks
+
+def closure_tests():
+    real=Path.read_bytes;reads=set();runtime=set((REPOSITORY/p).resolve() for p in DEPENDENCIES)|set(p.resolve() for p in OWN_DELIVERY)
+    def track(p):reads.add(p.resolve());return real(p)
+    try:
+        Path.read_bytes=track;spec=importlib.util.spec_from_file_location('abc_cold_measurement',Path(__file__).resolve());fresh=importlib.util.module_from_spec(spec);spec.loader.exec_module(fresh)
+    finally:Path.read_bytes=real
+    assert reads==runtime,(reads-runtime,runtime-reads);phases={'cold':len(reads)}
+    row,args=roots()[0];data=source_for(row['sourceCanonicalUtf8'].encode('ascii'))
+    for name,call in [('core',lambda:replay(data,*args,[])),('warm',lambda:replay(data,*args,[])),('adversarial',lambda:replay(data,*args,None))]:
+        reads=set()
+        try:
+            Path.read_bytes=track
+            if name=='adversarial':rejected(call,1)
+            else:call()
+        finally:Path.read_bytes=real
+        assert reads==runtime,(name,reads-runtime,runtime-reads);phases[name]=len(reads)
+    print('PASS measured cold/core/warm/adversarial runtime70+own2 with zero unknown material paths',phases);return phases
+
+def fixture_artifacts():
+    traces=[]
+    for row,args in roots():
+        t=trace(row,args);p=proof(t['source'],*args,t['ledger']);traces.append(dict(owner=row['owner'],firstSeal=row['firstSeal'],moves=row['moves'],sourceCanonicalUtf8=t['source'].decode('ascii'),breakdownLedger=t['ledger'],controlCanonicalUtf8=[x.decode('ascii') for x in t['frames']],proofCanonicalUtf8=raw(p,'Proof').decode('ascii'),sourceHash=sha(t['source']),proofHash=sha(raw(p,'Proof')),eventHashes=[sha(e) for e in t['events']]))
+    return dict(contractVersion=1,dependencyManifestHash='sha256:'+identity('dependency-manifest',dict(sorted(DEPENDENCIES.items()))),traces=traces)
+FIXTURE=ROOT/'fixtures/combat-actual-repeated-breakdown-completion-v1.json'
+def fixture_tests():assert json.loads(test_bytes('docs/specs/fixtures/combat-actual-repeated-breakdown-completion-v1.json'))==fixture_artifacts();print('PASS retained20traces/20events/40frames literals without regeneration')
+def normal_gate():
+    semantic_tests();grammar_tests();nonterminal_tests();timestamp_tests();capacity_tests();closure_tests();dependency_tests()
+    for owner in ['axis','commonwealth']:
+        for seal in ['attacker','defender']:preservation_tests(owner,seal);recovery_tests(owner,seal);adversarial_tests(owner,seal,0);adversarial_tests(owner,seal,4)
+    fixture_tests();print('PASS private actual Breakdown contract; no downstream/native/public/parent execution')
 def main():
-    parser=argparse.ArgumentParser();parser.add_argument('--group',choices=['semantic']);args=parser.parse_args();semantic_tests()
+    parser=argparse.ArgumentParser();parser.add_argument('--group',choices=['semantic','preservation','recovery','adversarial','grammar','nonterminal','timestamp','capacity','dependencies','closure','fixture']);parser.add_argument('--owner',choices=['axis','commonwealth']);parser.add_argument('--seal',choices=['attacker','defender']);parser.add_argument('--moves',type=int,choices=range(5));parser.add_argument('--write-fixture',action='store_true');args=parser.parse_args()
+    if args.write_fixture:require(INVENTORY['closureFrozen'],7,'/provisionalClosure');FIXTURE.write_text(json.dumps(fixture_artifacts(),indent=2)+'\n')
+    elif args.group in ['preservation','recovery']:globals()[args.group+'_tests'](args.owner,args.seal,args.moves)
+    elif args.group=='adversarial':adversarial_tests(args.owner or 'axis',args.seal or 'attacker',0 if args.moves is None else args.moves)
+    elif args.group:globals()[args.group+'_tests']()
+    else:normal_gate()
 if __name__=='__main__':main()

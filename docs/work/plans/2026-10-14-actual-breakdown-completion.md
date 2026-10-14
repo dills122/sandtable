@@ -26,3 +26,11 @@ Executed genuine semantic RED: all20 authentic terminal38/41..44 histories passe
 Control/currentordinal2armcProof/RNG preconditions, then failed only CMB-ABC-007 unsupported own
 Breakdown publication. 66.308s/180, exit1/no timeout. Earlier RNG-shape and phase-slot precondition
 mistakes failed before publication and receive no RED credit. Retained dated semantic-red receipt/log.
+
+Minimal semantic GREEN836f0ec14f47c581137c906ba2a1f06c1da0db10:20publications75.669s/180,
+exit0/no timeout. Physical/structural measurement16.995s/240:70external+2own all four acquisition
+phases, zero unknown paths,360fault checks; dominating/field/actual measurements retained.
+Focused max-cut adversarial44 assertions PASS45.152s/180. Added discriminating primitive ancestor002
+versus malformedseventh001/claim001 and own Source001 precedence checks.
+Fixture generation attempted during author test-code editing correctly failed009own-delivery drift;
+no fixture/acceptance credit. Executable files are held fixed during subsequent test processes.
