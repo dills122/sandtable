@@ -27,10 +27,10 @@ CoreB twice exceeded the old15minute budget during reference CI. Investigation f
 Next product gate is authentic ordinal2 Breakdown execution and remaining lineage, requiring separate scoped planning/research. Full Combat, parent017–025/all72, broader profiles, public/host/Runner, campaign persistence and first release remain open. No completion claim for these.
 
 ## Immediate next actions
-Main CI38506203076 and CodeQL38506202842 on ed443bd are pending at this checkpoint; links38506203071 passed. Verify completion and update this handoff before declaring session complete. All new feature work is stopped. Finalize evidence hashes/branch publication, record roadmap correction commit, then pause sandtable-continuation-session. If main fails, investigate and report honestly within remaining window; never relabel pending/failed as green.
+Main CI38506203076 (including Core-B and aggregate verify), CodeQL38506202842 and links38506203071 all passed for ed443bd at final verification. Both planned slices are complete. Roadmap correction and evidence are pushed in767fc37 on the preservation branch; the correction is not yet merged to main. Resume by reviewing this documentation-only branch if main should receive the correction, then scope the next authentic Breakdown gate and CI capacity work. No extension has been approved or started.
 
 ## Verification and resumption
 Read session plan/run-state snapshots; verify branch/head and main before resuming. Retained nrc-verify-ci.py has explicit artifact/local paths; inspect and adjust paths before reuse, preserving exact row/SHA/attempt checks. No duplicate full native/reference suites are needed. GitHub operations use github-keychain-auth outside sandbox with GH_TOKEN/GITHUB_TOKEN unset; no credentials in artifacts.
 
 ## Closeout status
-Interim closeout checkpoint after both merges. Main postmerge verification and final publication confirmation are still outstanding. Author idle with no retained product WIP. Review counts: reference2/9, native1/9; recovery0/2 each. No heavy test lease held.
+Final closeout: both merges and main verification complete. All intentional session work and evidence are committed/pushed on product and preservation branches. No product WIP or held test lease. Author idle; unrelated .serena/user changes preserved. Reference review2/9, native1/9, recovery0/2 each. Session heartbeat is being paused after final publication; no further product work is authorized by this completed session.

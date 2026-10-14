@@ -3,6 +3,10 @@
     "bytes": 1564,
     "sha256": "3942148381585c77bc722208c1bdc4b133477b3454382dd84f6859bd9997186b"
   },
+  "run-state.md": {
+    "bytes": 27959,
+    "sha256": "7b07ea9e341b8b5705071c4c5198cf8f3da6ce9f74d46c8ebce76c470e16a68b"
+  },
   "nrc-ci-final.tar.gz": {
     "bytes": 811655,
     "sha256": "ec8d78c2b3c9385faf7907dab63b9245da254cf2caa9f6587ccca34f284b9477"
@@ -18,6 +22,14 @@
   "nrc-ci-final-receipt.json": {
     "bytes": 1358,
     "sha256": "4319e524463758a585c7dbf36e57f47283c236f7c1f2825bb969620f5ddabe8e"
+  },
+  "session-plan.md": {
+    "bytes": 6240,
+    "sha256": "4a54f9538e0ae245d6533dadda03b61e3a8e798185bfabd0f2e50c986616ead9"
+  },
+  "nrc-main-checks.json": {
+    "bytes": 658,
+    "sha256": "cf7386d68f29742f54cd6393c1ae81b8fb9074bf02f1f3e2749275872e18a19d"
   },
   "nrc-local-reconciliation-inventory.json": {
     "bytes": 980535,
