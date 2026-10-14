@@ -14,11 +14,11 @@ public sealed class CombatActualMovedAssaultContractTests
     public static IEnumerable<object[]> Cases()
     {
         using var fixture = JsonDocument.Parse(Dependency("docs/specs/fixtures/combat-actual-moved-assault-v1.json"));
-        return fixture.RootElement.GetProperty("cases").EnumerateArray().Select(c => new object[] { c.GetProperty("name").GetString()! }).ToArray();
+        return fixture.RootElement.GetProperty("cases").EnumerateArray().Select((c, ordinal) => new object[] { ordinal, c.GetProperty("name").GetString()! }).ToArray();
     }
     [Theory]
     [MemberData(nameof(Cases))]
-    public void EveryRetainedCutHasExactSourceControlProofAndEventParity(string name)
+    public void EveryRetainedCutHasExactSourceControlProofAndEventParity(int _, string name)
     {
         var context = new Context(name);
         var current = context.Replay();
