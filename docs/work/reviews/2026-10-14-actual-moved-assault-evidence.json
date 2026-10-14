@@ -1,0 +1,94 @@
+{
+  "base": "f59ffcdbcbcadfbdb20b7e7f8796d477533b792f",
+  "productHead": "c0b6a6345e9946bf69ee4215815792c1f902df46",
+  "branch": "codex/actual-moved-assault",
+  "status": "author self-review complete; independent review/hosted CI/merge pending",
+  "native": {
+    "command": "dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --filter-class 'Cna.Core.Tests.Campaigns.CombatActualMovedAssault*' /bl:/private/tmp/n1-publish-focused-{}.binlog",
+    "total": 98,
+    "passed": 98,
+    "failed": 0,
+    "skipped": 0,
+    "duration": "2m27.852s",
+    "consoleSha256": "d9c2c79d8fbba643dabc2aa4505edf770690493864092e37369191245493c943",
+    "consolePath": "/private/tmp/n1-publish-focused.log"
+  },
+  "reference": {
+    "command": "python3 docs/specs/verify-combat-actual-moved-assault-v1.py",
+    "cases": 56,
+    "positive": 12,
+    "fallback": 44,
+    "cuts": 798,
+    "checks": [
+      "source",
+      "control",
+      "proof",
+      "events",
+      "literal-costs",
+      "reserve-entry"
+    ],
+    "consoleSha256": "a0b2c1a541b0b66f1e876731193efc69cc4e4e4fba68db190cf1cb3aeb4c1f73"
+  },
+  "format": {
+    "status": "pass",
+    "scope": "two native and four test files",
+    "command": "dotnet format Sandtable.slnx --verify-no-changes --no-restore --include <six scoped files>"
+  },
+  "capacityRegression": {
+    "red": {
+      "total": 1,
+      "failed": 1,
+      "skipped": 0,
+      "duration": "5.560s",
+      "reason": "valid Prepared30 support accepted declared PaidInput4095 below owned required4096",
+      "consoleSha256": "9ea11d94e0f1d9481c30ab8e0981ccf1e96a833f630b135af834c720773256af"
+    },
+    "green": {
+      "total": 1,
+      "passed": 1,
+      "skipped": 0,
+      "duration": "6.965s",
+      "consoleSha256": "d5c40f37a64bf283a39eb861743bb26f9f3b6f15294f34194a94f1e54b95b2d4"
+    },
+    "editScriptNoOp": "formatted initializer made first replacement a no-op; failed98 run not final GREEN"
+  },
+  "scope": {
+    "runtimePins": 83,
+    "ownedDeliveryPins": 2,
+    "isolatedOptionalCases": 9,
+    "predecessorsUnmodified": true,
+    "rawArchivesExported": false,
+    "fullLocalSuiteRun": false
+  },
+  "materialHashes": {
+    "docs/specs/combat-actual-moved-assault-v1.md": {
+      "bytes": 7665,
+      "sha256": "391e42559ef782adf65d6ae1ecc83ddf86cfde6a8649db7a2364b00fcd3ac25b"
+    },
+    "docs/specs/combat-actual-moved-assault-v1.schema.json": {
+      "bytes": 28647,
+      "sha256": "21097270c395bd1a3937d6787db2a992b8c145e42e06aec080652800b9e19e4b"
+    },
+    "docs/specs/verify-combat-actual-moved-assault-v1.py": {
+      "bytes": 66674,
+      "sha256": "ab2901ac6aef75f7f5f074cce7d8d16b0fa14d0802e0b3f56ff88dd3b7542094"
+    },
+    "docs/specs/fixtures/combat-actual-moved-assault-v1.json": {
+      "bytes": 7425308,
+      "sha256": "603dd2d31f3ef384955130b5125dde6341bffdbb643400592aaa0df388aa14a0"
+    },
+    "src/Cna.Core/Campaigns/CampaignCombatActualMovedAssault.cs": {
+      "bytes": 70120,
+      "sha256": "d2ce7b17a832e8fa8691d5c39935cecd3056be61f86769b98648eaeefc061e35"
+    },
+    "src/Cna.Core/Campaigns/CampaignCombatActualMovedAssaultCodec.cs": {
+      "bytes": 36361,
+      "sha256": "d73751bf1caadb0a643954ad8127b0bddc29d3323d59b7d45507b0ae5150f8c4"
+    }
+  },
+  "packetHashes": {
+    "docs/work/reviews/2026-10-14-actual-moved-assault-bootstrap.md": "c5ff3847daae4686c135b96dfc446619db8e20b43077c7ab5c2abf83ff23c017",
+    "docs/work/reviews/2026-10-14-actual-moved-assault-author.md": "904d8141768ae4115f60c291c228599670afd19e4df535cbf34435936ea119d3",
+    "docs/work/reviews/2026-10-14-actual-moved-assault-self-review.md": "6075faf494ff0a2839d9d09a09eb13f49bb7014ab4bc30a518b42d0df9dffeb7"
+  }
+}
