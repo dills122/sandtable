@@ -1,0 +1,60 @@
+{
+  "kind": "text-only N1 handoff evidence",
+  "base": "4521148a1d2faabf3b3e24ecc21f8b8ef3502761",
+  "pr": 188,
+  "reviewedHead": "33120fe9cecb15449f7dfe443721f165cc02e736",
+  "reviewState": {
+    "consumed": 2,
+    "maxTotal": 9,
+    "currentRoundPass": 2,
+    "maxRound": 3,
+    "recovery": 0
+  },
+  "mainVerification": "pending at preservation snapshot",
+  "nextUnit": "conditional accepted empty Release completion + immutable paid/armed continuation assessment; no product GO",
+  "rawArchivesIncluded": false,
+  "files": [
+    {
+      "path": "docs/work/evidence/2026-10-14-integration-n1/n1-independent-review-2.md",
+      "source": "/private/tmp/n1-independent-review-2.md",
+      "bytes": 12030,
+      "sha256": "6e19e88f23c76454def7a492a308b7335dd69b917dee1506a1d4f1ddbcf25914"
+    },
+    {
+      "path": "docs/work/evidence/2026-10-14-integration-n1/n1-review2-disposition.md",
+      "source": "/private/tmp/n1-review2-disposition.md",
+      "bytes": 1741,
+      "sha256": "ab11ea23a3100139f7594dfb391d4f191198141ab03dd6f0607f978712d4bad8"
+    },
+    {
+      "path": "docs/work/evidence/2026-10-14-integration-n1/n1-ci-final-receipt.json",
+      "source": "/private/tmp/n1-ci-final-receipt.json",
+      "bytes": 1607,
+      "sha256": "c3809b1be3300a0aea5c170aa89ba851ecc6cdf1def1f14d22c8dae7921aab3a"
+    },
+    {
+      "path": "docs/work/evidence/2026-10-14-integration-n1/n1-verify-ci.py",
+      "source": "/private/tmp/n1-verify-ci.py",
+      "bytes": 1835,
+      "sha256": "227e2095f758f3d3636f1763a4d59131b20e93c65ad6a3ea3438a6d75397487d"
+    },
+    {
+      "path": "docs/work/evidence/2026-10-14-integration-n1/n1-next-continuation-plan.md",
+      "source": "/private/tmp/n1-next-continuation-plan.md",
+      "bytes": 13863,
+      "sha256": "09efacaea3b2d8a24bd6a20b45cb4be865195a365ad6d0bd8dc99d449e6a9ebd"
+    },
+    {
+      "path": "docs/work/evidence/2026-10-14-integration-n1/brain-session-plan-snapshot.md",
+      "source": "/Users/dsteele/repos/sandtable/.planning/combat-integration-first/session-plan.md",
+      "bytes": 5036,
+      "sha256": "19d38d13dd942d3ead37d15a6e9a6dfeef73f152c96c630292feb0508657fc9b"
+    },
+    {
+      "path": "docs/work/evidence/2026-10-14-integration-n1/brain-run-state-snapshot.md",
+      "source": "/Users/dsteele/repos/sandtable/.planning/combat-integration-first/run-state.md",
+      "bytes": 27296,
+      "sha256": "339774b3472a95f2e031a2e64080e336a75663c4ee5579d72fa43ff31a3caa6f"
+    }
+  ]
+}

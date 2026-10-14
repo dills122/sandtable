@@ -1,0 +1,17 @@
+# Integration session N1 handoff
+
+Text-only preservation on codex/integration-session-n1-handoff, based on merged main4521148a1d2faabf3b3e24ecc21f8b8ef3502761. This branch preserves evidence and is not a product or main-verification change.
+
+N1 [PR #188](https://github.com/dills122/sandtable/pull/188) merged squash4521148 at18:35:37UTC14October (14:35:37Toronto). Reviewed exacthead33120fe9cecb15449f7dfe443721f165cc02e736; product3bcaedc74a184a2adc28ad6e722787304c04e214; priorbasef59ffcdbcbcadfbdb20b7e7f8796d477533b792f. Merged tree6d1175501abffe25b979dd3c8a50264a5f9cb00a equals testedmerged77e097cf6e094d3620591622ade01c7d0316d9a tree. Product and earlier I01/audit/handoff branches remain preserved.
+
+Private endpoint:authentic moved entry ->Selection/Round/cumulative paid settlement or armed no-attack/cancellation/fallback ->samecycle Reserve Release ENTRY. No completed Release/control/finish/public/Runner/full72 claim. Twelve paid and44fallback source cases,798cuts,98focused native cases and complete16616support remain in merged product. Review1 soleP1 truncated display identities accepted/fixed without body/fixture/CIgate changes; review2Ready,no findings. N1 counter2/9,pass2/3currentround,recovery0/2.
+
+Hosted CI38612754520 attempt1 Release:3121actual rows,71CoreA/2441CoreB/130CoreC/469Exercise/10Contracts,zero failures/skips/errors,allprocess0. Inventory and execution XML counts/identities were reconciled by Brain against exacttestedmerge and parents. Receipt records XML hashes; verifier is preserved as text and references local raw inputs. CodeQL/offline links passed. Raw archives/XML/logs/binlogs remain local and are absent from this preservation diff.
+
+Main CI38616471943 and CodeQL38616472160 were pending at this snapshot; main links passed. Main verification remains required before downstream product GO. This handoff does not infer success from PR CI. Brain owns main reconciliation and the integration session.
+
+Brain accepted the next minimum N2 plan conditionally:both paid and armed sources through completed empty Reserve Release plus immutable continuation assessment,before an active cycle-control window. Exact8newprimaryfiles plus serialized fixture/docs/work paths are listed in the preserved plan. No executable repeat,forcedFinish,firstfinish/public expansion,ancestor cap change,synthetic source or unsupported-as-noLegal policy was accepted. N2 reviewbudget starts0/9,recovery0/2 only at explicitGO,distinct from N1. Re-estimate atAPI/capacityfreeze or60min. No product edits/tests/newbranch for N2 before acceptedplan plus merged/verifiedmain and explicitGO.
+
+Session start09:37:35Toronto14October; closeout20:37:35Toronto; hardstop21:37:35Toronto. Current snapshots retain objective and remaining public/Exercise/Runner/parent72/firstrelease gates; full public loop remains incomplete. Preserve scopedWIP honestly atdeadline; do not infer acceptance from a partial private milestone.
+
+Evidence folder:../evidence/2026-10-14-integration-n1/. manifest.json lists byte-exact sources,sizes and SHA256 for review2/report/disposition,CItextreceipt/verifier,nextplan and two current Brain snapshots. Do not export prior rawarchive27d8293 or its ancestry; separate raw-publication approval remains unresolved. No product files were edited and unrelated .serena/ is preserved. Use github-keychain-auth for authorized GitHub operations outside sandbox,unset stale GH_TOKEN/GITHUB_TOKEN; never extract credentials.
