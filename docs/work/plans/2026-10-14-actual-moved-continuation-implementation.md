@@ -1,0 +1,35 @@
+# N2 actual moved continuation implementation plan
+
+Pre-edit plan. Brain implementationGO19:04UTC14October (15:04Toronto); main4521148a1d2faabf3b3e24ecc21f8b8ef3502761 verified by CI38616471943,CodeQL38616472160,links38616472305 success. Branch codex/actual-moved-continuation starts exactly there, not metadata557cd62. I01/N1/audit/handoff branches and unrelated .serena/ preserved; dirty primary checkout is Brain-owned.
+
+## Accepted scope and ownership
+
+Sole author owns exact eight primary new paths:docs/specs/combat-actual-moved-continuation-v1.md/.schema.json/verify-combat-actual-moved-continuation-v1.py/fixtures/combat-actual-moved-continuation-v1.json; src/Cna.Core/Campaigns/CampaignCombatActualMovedContinuation.cs/Codec.cs; tests/Cna.Core.Tests/Campaigns/CombatActualMovedContinuationContractTests.cs/Tests.cs. One exact fixture-copy entry in Cna.Core.Tests.csproj; serialized README/tech-design/naming-overview/docs/design/combat-cycle-implementation-plan; this plan and warranted work/review text. No other existing implementation/test/harness/workflow/schema/pin edits. Report material deviation before any manifest expansion.
+
+Both authentic paid and armed N1 closures ->two empty Reserve Release System publications ->immutable continuation assessment only. No active cycle-control window,Repeat intent/execution,forcedFinish,firstfinish/public/host/Exercise/Runner or generic seed/Weather/later-Reserve support. Unsupported remains distinct from noLegal. Preserve trusted original request,seven independent ledgers,World/resources/RNG,current cumulative history,originalMovementEnd/membership and full progress(two moves,plus paid commitment). No future fabricated events or ancestor cap relaxation.
+
+## Exact reuse/ports before consumer edits
+
+N1 ReplayTrustedSource/Result/codec are the strict parent reader: six owned independent ledgers,full I01 replay,current closedControl with movementEnd/progress/world/cycle/selection/round/paid. Call the real reader; do not use an old PAC registeredproof or caller Control. N1 leaf syntax/rules/pure catalogue/projection support may be reused under explicit dependency/delivery closure.
+
+CampaignCombatActualPostAssaultContinuation.Derive117-162 is source-specific closed33/CP5/TOE10/Contact/emptyassets and must not be reused as authority. Its internal Initial163-171 and release-only Transition207+ can be bounded local ports with owned N1 context and own source/base/events; remove no functionality from frozen predecessor. Its Assessment172-200 arithmetic/Neighbors/Distance/DestinationBlocked need bounded local reuse/port over authenticated current World/members/end. PaidAssessment already adds currentCP+terrain2+Contact2/Engaged4; new mode must filter Reaction-dependent destinations honestly. Whole selected catalogue support requires the same new cumulative frame,not four favorable real roots.
+
+CampaignCombatContinuation.AssessTrustedBoundary31-118 remains an exhausted-ammo policy cross-check,not the armed ingress. CampaignCombatArmedContinuation.Derive20+ requires released-I/CP0 hashes/rights and is not the NONE/CP4 source. Own armed assessment derives original ordinaryNONE/currentCP4/ammo10 and prospective next-occurrence support; no fabricated future Movement/Breakdown/assault certificate. Preserve original representation/components/history,exclude guards from original members,carry all future duties without executing upkeep/training/refund.
+
+No helper visibility/reflection/shared refactor planned. If a private coupled helper cannot be ported within these two new modules, report before adding paths. Physical dependency/codec/size bounds and selected support details freeze before native consumer.
+
+## Evidence/graph limitation
+
+Reuse existing integration-continuation-support.md and integration-next-joins.md,retained separately on metadata branch. 16616records/261keys/391supportcombinations perowner/96mechanicalWorldclasses/782projections are isolated support,not authentic source/capacity/native admission. Actual N1 now proves56parents=12paid+44fallback and798cuts. Do not repeat experiment or narrow support to seed1.
+
+Graph generation2026-10-11T20:08:51Z. list_projects/index_status/search_graph/coverage checked: new N1 and PAC paths missing; ArmedContinuation/Continuation metadata_match. Focused exact452 source reads supply missing scopes; no graph absence/completeness claim. Source symbols above were inspected directly. Further material source paths require coverage/focused read as appropriate.
+
+## Ordered work and quality gates
+
+1. Genuine missing-reader RED and literal paid/armed resource/progress preservation from authentic N1 sources. Executable NotSupported stub acceptable; compilation/empty discovery/research are not behavioral RED.
+2. Freeze Source/Control/Proof/input/event/result/seven-ledger API and reference; derive full current contexts and original member/end bindings. Measure actual fixtures and prove dominating counts/quoting/depth/byte bounds from N1/I01 before consumer. Ancestor caps remain exact. Publish freeze to Brain for any explicitly allocated independent new-file prep.
+3. Implement own strict codec/replay/claims,copy before callbacks,dependency/delivery validation,two release effects,source-derived paid/armed assessment and complete bounded isolated support. Replay candidate source before return; malformed/current inputs validated before duplicate/live gates. No clock/control offer exists.
+4. All56real parents/everycut/source/control/proof/events; literal no costs/no draw/progress preservation; full16616 isolated result/support/guards/escape/future obligations; original proof/member/source-tag/occurrence/actor/ledger/claim/capacity/ownership negatives. Stable ordinal-first test identities from outset. Preserve source versus prospective witness execution distinction.
+5. Focused native/reference/format plus actual Releasepreenumerated unique identities accepted by unchanged gate. Engineering self-review,neutral separatebootstrap/explanation,fresh review,immutable-head CI/fullactual-row SHA/attempt/process/XML reconciliation; Brainmerge/verifiedmain. No duplicate full local suite under focusedlease.
+
+N2 counter0/9,recovery0/2,max3passes/currentround/9total/2spikes. Completed N1 2/9 is separate,not a reset. Sole focusedlease author; heavy suite idle and requires Brain. Estimate2-4h author+1-2hgates medium-low,not a promise. Re-estimate atAPI/capacityfreeze or20:04UTC (16:04Toronto),whichever first. Closeout00:37:35UTC15October (20:37:35Toronto14October),hardstop01:37:35UTC (21:37:35Toronto); no new features aftercloseout. Preserve labelledWIP if incomplete. Priorraw27d8293 remains excluded.
