@@ -55,3 +55,9 @@ must reconcile one fresh exact-head hosted run, all owning jobs and final exhaus
 No partial pass/discovery acceptance. If20minute cap still expires or an active row becomes stationary,
 stop for targeted CPU/I/O/allocation/hang diagnostics instead of another blind deadline increase.
 No native implementation; accepted predecessor merge and>=155min remain prerequisites.
+
+
+The coverage-helper's verbatim output includes trailing blank lines, so it is retained as
+2026-10-13-rmc-ci-partition-helper.log.gz. Decode with Python gzip.decompress; the resulting
+bytes match logSha256 in its receipt (logArtifact/logEncoding explicit). No output normalization
+or test rerun; workflow/test/reference identities unchanged. Diff whitespace check passes.

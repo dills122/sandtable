@@ -40,3 +40,9 @@ Assess accepted policy, cause/evidence limits, preservation of fail-closed cover
 expression/context semantics and future scaling risk. Return evidence-backed verdict to Brain;
 do not edit, dispatch another reviewer or expand streams. Heavy pivot returns human decision gate.
 No native extension follows from this review; sessioncloseout04:02:40UTC/stop04:32:40UTC unchanged.
+
+
+The coverage-helper's verbatim output includes trailing blank lines, so it is retained as
+2026-10-13-rmc-ci-partition-helper.log.gz. Decode with Python gzip.decompress; the resulting
+bytes match logSha256 in its receipt (logArtifact/logEncoding explicit). No output normalization
+or test rerun; workflow/test/reference identities unchanged. Diff whitespace check passes.

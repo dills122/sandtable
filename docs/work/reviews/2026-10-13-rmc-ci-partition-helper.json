@@ -8,5 +8,7 @@
   "exitCode": 0,
   "timedOut": false,
   "elapsedSeconds": 0.384,
-  "logSha256": "59a26c5d2f6eaf4b6d3e9b4e03a3153be77d158a7ab6ee972dca01097714175f"
+  "logSha256": "59a26c5d2f6eaf4b6d3e9b4e03a3153be77d158a7ab6ee972dca01097714175f",
+  "logArtifact": "2026-10-13-rmc-ci-partition-helper.log.gz",
+  "logEncoding": "gzip"
 }
