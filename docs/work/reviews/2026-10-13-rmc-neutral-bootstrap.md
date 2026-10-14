@@ -17,7 +17,9 @@ absence/completeness from the graph. CCE unavailable in author session.
 ## Base, Head, Branch, And Dirty State
 
 Basec43b9caec452c152a086412c779bb6495ef1a0ad; branchcodex/actual-repeated-movement-completion.
-Product checkpoint and exact final published PR head are provided in Brain dispatch. Review the
+Product checkpoint700fa887f08fe35b39dd5905851b95a10ea111db.
+PR https://github.com/dills122/sandtable/pull/182; exact final published head is in Brain dispatch.
+Later administrative commit changes handoff/bootstrap/PR metadata only; executable hashes stay fixed. Review the
 complete base-to-published-head diff, including retained prep/RED and administrative handoff.
 Only unrelated.serena untracked is excluded; no hidden executable WIP is allowed at publication.
 
