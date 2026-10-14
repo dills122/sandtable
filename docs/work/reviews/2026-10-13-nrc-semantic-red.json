@@ -1,0 +1,19 @@
+{
+  "command": [
+    "dotnet",
+    "test",
+    "--project",
+    "tests/Cna.Core.Tests/Cna.Core.Tests.csproj",
+    "-c",
+    "Release",
+    "--no-build",
+    "--filter-class",
+    "*CombatActualRepeatedMovementCompletionTests",
+    "/bl:/private/tmp/nrc-semantic-red-{}.binlog"
+  ],
+  "budgetSeconds": 120,
+  "exitCode": 2,
+  "timedOut": false,
+  "elapsedSeconds": 19.72,
+  "logSha256": "5b39c409c0c84b74962bff74a2871831bf218cd193b270728fe1f391907dd4f0"
+}

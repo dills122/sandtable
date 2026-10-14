@@ -1,0 +1,102 @@
+[
+  {
+    "path": "/private/tmp/nrc-clock-20261014-023052--47680--u04GyM-dotnet-test.binlog",
+    "bytes": 661086,
+    "sha256": "742ec10eed7cb4b2a240939a5b2c6c4b7ed3eeb4d7de6d780512c87e8c8ba148"
+  },
+  {
+    "path": "/private/tmp/nrc-clock-build-20261014-023041--47473--mfKzEC.binlog",
+    "bytes": 465806,
+    "sha256": "2b3669dc801ea74bfed83294e4f7834fa11fa9080276f929d0edd9b55bdab50c"
+  },
+  {
+    "path": "/private/tmp/nrc-contract-build-20261014-022357--38294--m+uMyt.binlog",
+    "bytes": 457671,
+    "sha256": "8c0223bc6d77933b910919f14a3a7ab8a87bcb069821523a1d4d8184b44329f0"
+  },
+  {
+    "path": "/private/tmp/nrc-contract-build-fixed-20261014-022520--39979--HV8Bm5.binlog",
+    "bytes": 465858,
+    "sha256": "f7649c035894a7418253d735b0c8db149d2f61256e970e48366a905bbda51ee8"
+  },
+  {
+    "path": "/private/tmp/nrc-core-discovery-20261014-023610--54550--1pFjIj-dotnet-test.binlog",
+    "bytes": 661076,
+    "sha256": "6922b9b64b5d2f54fbcf4b034cea8f97c7f0d350d447c55cdcd4b3e88bd3aba2"
+  },
+  {
+    "path": "/private/tmp/nrc-final-20261014-024403--64355--DaBAZ6-dotnet-test.binlog",
+    "bytes": 662049,
+    "sha256": "dfcc4bbb288228b4e5c2b0e41943b05a8a44a66f0baf8dfb248c18242be109d6"
+  },
+  {
+    "path": "/private/tmp/nrc-final-build-20261014-023606--54369--IMkgHR.binlog",
+    "bytes": 465639,
+    "sha256": "b5ff29ce83978137eb7768a2eb507ca47cd88dad9d80f8ebf75e43bbccba6cf2"
+  },
+  {
+    "path": "/private/tmp/nrc-four-move-recovery-20261014-022611--41261--P5nihz-dotnet-test.binlog",
+    "bytes": 661266,
+    "sha256": "4f89bcdac838feee25fb8741a6ed8becddbb3699fbbae703bfac126efdc3e3f4"
+  },
+  {
+    "path": "/private/tmp/nrc-grammar-20261014-023043--47490--dnqtKR-dotnet-test.binlog",
+    "bytes": 661123,
+    "sha256": "d1f2cd38dc38121155ba0f26da7599d0d0b2d92d0544dac68c8dd9a18896eddf"
+  },
+  {
+    "path": "/private/tmp/nrc-green-build-20261014-021228--23272--7t0NEp.binlog",
+    "bytes": 477606,
+    "sha256": "33e27501dc41114449e5706de7a32647874d49d3662b77405030f2e1a2c9af23"
+  },
+  {
+    "path": "/private/tmp/nrc-literal-parity-20261014-022522--40017--DOCMD1-dotnet-test.binlog",
+    "bytes": 661192,
+    "sha256": "4e17cc44da777aa4bdd7b062fb92e978e75b57fb7615c72da2d3bb4f16f73503"
+  },
+  {
+    "path": "/private/tmp/nrc-parity-build-20261014-021847--31325--9oPi3U.binlog",
+    "bytes": 466070,
+    "sha256": "5047d9e90763900f3d252a2b8f1406021b82c18de6bad7ee842efb03c24c0fb0"
+  },
+  {
+    "path": "/private/tmp/nrc-pending-context-20261014-023542--53796--+p4yJU-dotnet-test.binlog",
+    "bytes": 661325,
+    "sha256": "3f98e5f089bd2ef5f4e6bed2f566cf269837ce71f986e99696f7f1d36e25c71e"
+  },
+  {
+    "path": "/private/tmp/nrc-physical-20261014-023045--47510--hDDVz+-dotnet-test.binlog",
+    "bytes": 661016,
+    "sha256": "144109b495529d182bbe569010862db943598b9c010b47247255fdc6424c221e"
+  },
+  {
+    "path": "/private/tmp/nrc-red-build-20261014-020529--13794--Cbsg9K.binlog",
+    "bytes": 432726,
+    "sha256": "0c2485d03aba573104557c5f5d3e7624d760edc64112f2df7a84e07047268dc6"
+  },
+  {
+    "path": "/private/tmp/nrc-red-build-fixed-20261014-020707--15961--oLU5Ts.binlog",
+    "bytes": 478523,
+    "sha256": "003a475290ccb5e87f46c38b74d664292fd312542f2f62f62769e830e03b2019"
+  },
+  {
+    "path": "/private/tmp/nrc-row-helper-build-20261014-024010--59295--CAoDos.binlog",
+    "bytes": 370660,
+    "sha256": "013676552d6ae471a76cf91f15a0a018564073f967a13f3f7adbb17986c4b04a"
+  },
+  {
+    "path": "/private/tmp/nrc-scoped-discovery-20261014-023609--54399--8usDh8-dotnet-test.binlog",
+    "bytes": 661783,
+    "sha256": "5377ff5eec3544f2b8bdc934e037d3473ac954ea9f0ea7b466c16b65162f75dc"
+  },
+  {
+    "path": "/private/tmp/nrc-semantic-green-20261014-021234--23294--SweZ3W-dotnet-test.binlog",
+    "bytes": 659656,
+    "sha256": "7011fdc58ef2c80dc3f65be73602c9cc091d081d4787caec2e07283c16bdb13b"
+  },
+  {
+    "path": "/private/tmp/nrc-semantic-red-20261014-020716--16140--waxx0M-dotnet-test.binlog",
+    "bytes": 658848,
+    "sha256": "36a1923de63e1a30641ff6b51d8e0364861a94da441b3da0e4b3173732979ec8"
+  }
+]
