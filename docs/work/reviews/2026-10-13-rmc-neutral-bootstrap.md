@@ -52,11 +52,13 @@ completion. Historical owning failures/CoreB139 remain unwaived. No broad suite 
 
 ## Verification Commands Available To Reviewer
 
-Python3 -B docs/specs/verify-combat-actual-repeated-movement-completion-v1.py --group <group>
-with --owner axis/commonwealth --seal attacker/defender --moves0..4 for focused lifecycle groups.
+python3 -B docs/specs/verify-combat-actual-repeated-movement-completion-v1.py --group <group>
+with --owner axis/commonwealth --seal attacker/defender and --moves 0 through --moves 4
+for individually selected lifecycle cases.
 Groups semantic/preservation/recovery/adversarial/grammar/policy/dependencies/fixture/capacity/
-timestamp/context. Focused cases<=120s; combined frozen5branch-root recovery exceeded120s, so use
---moves0or4 for bounded checks. Retained fullnormal is author evidence; a new fullnormal needs
+timestamp/context. Individually selected cases<=120s; combined frozen5branch-root recovery exceeded120s, so use
+--moves 0 or --moves 4 for bounded checks. The fixture group rebuilds all20traces and may exceed
+120s; obtain a Brain lease for a new combined fixture/full check. Retained fullnormal is author evidence; a new fullnormal needs
 Brain's sole heavy-suite lease. Never pass --write-fixture in review. No broad.NET/old normal.
 Bounded final runner docs/work/reviews/2026-10-13-rmc-final-run.py has1200s limit and pre/post hashes.
 Its retained finalnormal JSON/log give exact command/exit/elapsed and fixture equality log.
