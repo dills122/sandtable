@@ -59,12 +59,13 @@ public sealed class CombatActualReactionCombatEntryTests
     }
     private static byte[] InputBytes(byte[] ev)
     { using var d = JsonDocument.Parse(ev); return Encoding.UTF8.GetBytes(d.RootElement.GetProperty("input").GetRawText()); }
+    private static readonly JsonSerializerOptions SourceOptions = new() { Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping };
     private static byte[] Source(byte[] created, byte[][] events)
     {
         var obj = new System.Text.Json.Nodes.JsonObject { ["contractVersion"] = 1, ["createdCanonicalUtf8"] = Encoding.ASCII.GetString(created),
             ["prefixEventCanonicalUtf8"] = new System.Text.Json.Nodes.JsonArray(events.Select(e => (System.Text.Json.Nodes.JsonNode?)System.Text.Json.Nodes.JsonValue.Create(Encoding.ASCII.GetString(e))).ToArray()),
             ["entryEventCanonicalUtf8"] = new System.Text.Json.Nodes.JsonArray() };
-        return System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(obj, new JsonSerializerOptions { Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping });
+        return System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(obj, SourceOptions);
     }
     private sealed record Pack(CampaignCombatCreationRequest Request, byte[] Created, byte[][] Opening, byte[] Weather, byte[][] Stage, byte[][] Reserve);
     private static byte[][] FirstMove(Pack p, string choice = "act-first")
