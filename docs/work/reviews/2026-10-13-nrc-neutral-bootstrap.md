@@ -5,7 +5,8 @@ CI/merge. Neutral-first: recordpreliminarysource/plan findings before readingaut
 
 Checkout /Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable; branch
 codex/native-actual-repeated-movement-completion. Basea2a21cdfa8511f55efdde56eb11d9bad09537c4a
-(mergedPR182); RED8faaf94da773e88cb98185f7150ddf966647886c. Finalproduct/adminhead inBraindispatch.
+(mergedPR182); RED8faaf94da773e88cb98185f7150ddf966647886c. Product770a85826464b3e3e26a832d8fe48500b061ee84. Finalmetadata adminhead andPR URL
+inBraindispatch; executable13fingerprints unchanged afterproductfreeze.
 Only unrelated.serena untracked expected; no hidden executableWIP. Fullbase-to-publishedhead scope.
 ReadAGENTS andindependent-review. Graphgen2026-10-05 predatesactualnativefiles, docs excluded;
 checkcoverage andusefocusedsource fallback; no graphabsence/completeness assumption. CCEunavailable.
