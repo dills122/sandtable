@@ -17,6 +17,6 @@ internal static class CampaignCombatActualMovedContinuation
     public static CombatActualMovedContinuationResult ApplyTrustedSource(ReadOnlySpan<byte> source, CampaignCombatCreationRequest request,
         IReadOnlyList<byte[]> prefix, IReadOnlyList<byte[]> lifecycle, IReadOnlyList<byte[]> breakdown,
         IReadOnlyList<byte[]> selection, IReadOnlyList<byte[]> round, IReadOnlyList<byte[]> paid, IReadOnlyList<byte[]> release,
-        ReadOnlySpan<byte> currentInput, Func<string, byte[]> dependencies)
+        ReadOnlySpan<byte> currentInput, Func<string, byte[]> dependencies, bool admissionEnabled = true)
         => throw new NotSupportedException("Authentic empty Release/assessment transition missing");
 }
