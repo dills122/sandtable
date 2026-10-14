@@ -501,6 +501,68 @@ class CoreRowPartitionTests(unittest.TestCase):
                 self.assertEqual(run.call_args.args[0], command)
                 self.assertIs(run.call_args.kwargs.get('shell'), False)
 
+class CoreThirdShardTests(unittest.TestCase):
+    classes = (
+        'Cna.Core.Tests.Campaigns.CombatActualRepeatedMovementCompletionTests',
+        'Cna.Core.Tests.Campaigns.CombatActualRepeatedMovementCompletionContractTests',
+    )
+
+    def setUp(self):
+        fixture = CoreRowPartitionTests(); fixture.setUp()
+        self.transfer = fixture.transfer
+        self.rows = [r for r in fixture.rows if r[1].rsplit('.', 1)[0] not in self.classes]
+        self.completion = {('Cna.Core.Tests', cls + '.Initial', cls + '.Initial(index: 0)') for cls in self.classes}
+        self.rows += sorted(self.completion)
+        self.expected_a = {r for r in self.rows if r[1] in partition.SELECTORS and r[2] not in self.transfer}
+
+    def plan(self):
+        plan = partition.core_partition(self.rows)
+        self.assertEqual(plan['core-a'], self.expected_a, 'Existing A policy must stay unchanged')
+        self.assertIsNotNone(plan.get('core-c'), 'Measured completion workload needs its own complete-row shard')
+        return plan
+
+    def test_third_partition_conserves_exact_rows_and_old_transfer(self):
+        plan = self.plan()
+        self.assertEqual(plan['core-c'], self.completion)
+        a, b, c = [plan[s] for s in ['core-a', 'core-b', 'core-c']]
+        self.assertEqual(a | b | c, set(self.rows))
+        self.assertFalse(a & b or a & c or b & c)
+        self.assertEqual({r[2] for r in b if r[1] == partition.SELECTORS[0]}, self.transfer)
+
+    def test_new_method_in_completion_class_enters_c(self):
+        method = self.classes[0] + '.FutureMethod'
+        row = ('Cna.Core.Tests', method, method + '(index: 7)')
+        self.rows.append(row); plan = self.plan()
+        self.assertIn(row, plan['core-c']); self.assertNotIn(row, plan['core-b'])
+
+    def test_unrelated_future_case_remains_in_b(self):
+        row = ('Cna.Core.Tests', 'Cna.Core.Tests.Future.Extra', 'Cna.Core.Tests.Future.Extra(index: 0)')
+        self.rows.append(row); plan = self.plan()
+        self.assertIn(row, plan['core-b']); self.assertNotIn(row, plan['core-c'])
+
+    def test_similar_class_name_does_not_widen_c(self):
+        method = self.classes[0] + 'Extra.Initial'
+        row = ('Cna.Core.Tests', method, method)
+        self.rows.append(row); plan = self.plan()
+        self.assertIn(row, plan['core-b']); self.assertNotIn(row, plan['core-c'])
+
+    def test_filters_keep_a_and_bind_exact_c_class_membership(self):
+        plan = self.plan()
+        a = partition.partition_filters('core-a', plan)
+        b = partition.partition_filters('core-b', plan)
+        c = partition.partition_filters('core-c', plan)
+        self.assertEqual(a[:13], ['--filter-method', *partition.SELECTORS])
+        self.assertEqual(set(a[14:]), self.transfer)
+        self.assertEqual(c, ['--filter-class', *self.classes])
+        self.assertEqual(b[-3:], ['--filter-not-class', *self.classes])
+        for shard in ['core-a', 'core-b', 'core-c']:
+            filters = partition.partition_filters(shard, plan)
+            command = partition.execution_command(shard, Path('/tmp/control') / shard, plan)
+            self.assertEqual(command[-len(filters):], filters)
+
+    def test_third_required_core_leaf_is_part_of_module_map(self):
+        self.assertEqual(partition.MODULES.get('core-c'), 'Cna.Core.Tests')
+
 class PreparedPartitionTests(unittest.TestCase):
     def setUp(self):
         fixture = DiscoveryTests(); fixture.setUp()
