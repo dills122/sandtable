@@ -216,4 +216,3 @@ if __name__=='__main__':
  if '--draft-freeze' in sys.argv:
   fixture,maxima=generate();(ROOT/'fixtures'/(NAME+'.json')).write_bytes(encode(fixture)+b'\n');print(json.dumps(dict(status='draft reference measurement; native not accepted',cases=56,cuts=168,events=112,maxima=maxima)))
  else:verify()
-
