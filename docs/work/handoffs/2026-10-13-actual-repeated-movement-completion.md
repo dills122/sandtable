@@ -54,3 +54,19 @@ Combat/Convoy, Reserve/Reaction/cohorts, production/public/Runner/Exercise/persi
 User authorized scoped GitHub publication and Brain coordination. Use github-keychain-auth:
 every credential-dependent Git/gh operation outside sandbox, unset GH_TOKEN/GITHUB_TOKEN per
 gh command, never inspect credential bytes. Author does not dispatch review or merge.
+
+
+## CI-only recovery after independent review1
+
+Review1 Ready/no findings atc20a84c, explicitly accepted by author. Hosted Core-B attempts1/2
+then reached existing15minute jobcap without assertion failures; partial2290/2329 is not success.
+Read accepted final investigation before editing (retained reportSHA
+4f828fbbe9511a3b166e8331848ed088a144d5de1fc6155431d045fbf04d8726).
+Scope extended only to CI deadline/policy tests and incident docs/evidence. RED864c381 genuinely
+fails Core-B15vs20 while other-jobcaps pass. One-line tests-job expression now Core-B20/others15;
+all workload/partition/native/reference artifacts unchanged. GREEN2checks0.134s, whole helper98
+tests0.384s and actionlint0.069s pass, each bounded120. No broad local.NET/old Python rerun.
+Original source/regression/public gates remain as above; new exacthead requires independent
+review2of9 and successful hosted exact-SHA/attempt/process/complete2879coverage before merge.
+Neutral delta packet2026-10-13-rmc-ci-neutral-bootstrap.md and separate ci-author-self-review.md
+under reviews. Brain owns counters/CI/artifact preservation; native remains conditional and unstarted.

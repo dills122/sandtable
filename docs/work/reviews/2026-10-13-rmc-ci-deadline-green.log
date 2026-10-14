@@ -1,0 +1,7 @@
+test_core_b_alone_has_twenty_minute_budget (__main__.WorkflowDeadlineTests.test_core_b_alone_has_twenty_minute_budget) ... ok
+test_other_job_deadlines_remain_bounded (__main__.WorkflowDeadlineTests.test_other_job_deadlines_remain_bounded) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.001s
+
+OK

@@ -1,0 +1,14 @@
+..................................................................................................
+----------------------------------------------------------------------
+Ran 98 tests in 0.260s
+
+OK
+{"DOTNET_DbgEnableMiniDump": "1", "DOTNET_DbgMiniDumpType": "3", "DOTNET_EnableCrashReport": "1", "DOTNET_DbgMiniDumpName": "/private/var/folders/lg/j56llg991d1gpjvtjh8l9gbh0000gn/T/tmpgrvq28je/core-b/diagnostics/crash-%e-%p-%t.dmp", "DOTNET_CreateDumpDiagnostics": "1"}
+child progress retained
+
+{"DOTNET_DbgEnableMiniDump": "1", "DOTNET_DbgMiniDumpType": "3", "DOTNET_EnableCrashReport": "1", "DOTNET_DbgMiniDumpName": "/private/var/folders/lg/j56llg991d1gpjvtjh8l9gbh0000gn/T/tmpvby8ngnp/core-b/diagnostics/crash-%e-%p-%t.dmp", "DOTNET_CreateDumpDiagnostics": "1"}
+child progress retained
+
+{"DOTNET_DbgEnableMiniDump": "1", "DOTNET_DbgMiniDumpType": "3", "DOTNET_EnableCrashReport": "1", "DOTNET_DbgMiniDumpName": "/private/var/folders/lg/j56llg991d1gpjvtjh8l9gbh0000gn/T/tmp1nvncm5j/core-b/diagnostics/crash-%e-%p-%t.dmp", "DOTNET_CreateDumpDiagnostics": "1"}
+child progress retained
+

@@ -191,6 +191,11 @@ semantic checks.
 Build artifacts live under `artifacts/`. Do not commit generated `artifacts/bin` or `artifacts/obj`
 content. See [security policy](SECURITY.md) for vulnerability reports.
 
+GitHub CI retains four exact-row shards. Core-B has a bounded20-minute job deadline;
+Core-A, Exercise and Contracts keep15minutes. Row filters, exhaustive coverage and exact-head/
+attempt/process checks remain unchanged. The [Core-B investigation](docs/research/2026-10-13-rmc-core-b-investigation.md)
+records why the prior15-minute budget expired and the limits of this capacity mitigation.
+
 ## Architecture and documentation
 
 > Command decides. Staff plans. Dispatch carries. Umpire adjudicates. Chronicle remembers.

@@ -2817,3 +2817,22 @@ pre/post hashes identical. All342faults/capacity/grammar/clock/context/rejection
 author five-axis self-review completed, separate neutral/rationale prepared. Independent review,
 exact-reviewed-head CI and merge remain Brain-owned; review0/9 at handoff. No local.NET suite
 or native completion consumer was added.
+
+
+## C02 CI deadline recovery
+
+Independent review1/9 accepted c20a84c, with no actionable findings. Two Core-B attempts then
+expired at the existing15-minute job cap while continuing successful execution; attempt2 had
+2290/2329passed and no assertion failures. Accepted investigation attributes the immediate
+failure to cumulative runtime/budget exhaustion, with18.915%matched-row summed slowdown and
+a16–17minute whole-job estimate; effective host slowdown cause remains unmeasured.
+
+Authorized CI-only delta gives Core-B20minutes and keeps other tests/prepare/verify15minutes
+and dependency-review5. Partition execution/filters, exact-sha/attempt/process/disjoint/exhaustive
+coverage gates, native/tests/project inputs and three frozen reference artifacts stay unchanged.
+Genuine configuration RED864c381:1failure/1pass against old15minute value,0.129s/120.
+GREEN2checks0.134s/120, complete coverage-helper98tests0.384s/120 and actionlint0.069s/120 pass.
+No broad local.NET/Python normal or unchanged-head hosted retry. Research/report/analyzer/result
+and dated CI receipts retained. New exacthead requires fresh review2/9 and hosted validation;
+review1 remains evidence, not approval of the delta. No native work until accepted merge and
+sufficient remaining time; session deadlines unchanged.
