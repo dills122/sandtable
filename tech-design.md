@@ -705,4 +705,13 @@ authenticates complete direct Reaction closure with separate prefix/lifecycle/Br
 Both owner routes and decline/unavailable/timeout reach certified positive entry18 with CP4/seed1cursor2.
 Owned Control composition uses strict Reaction World plus typed suffix; frozen ordinary World writer
 remains unchanged. Final Breakdown event/hash/receipt are structural. No public/host/Exercise/paid
-activation; fixed-version/CP0 downstream contracts need explicit successors. Review/hosted CI pending.
+activation; fixed-version/CP0 downstream contracts need explicit successors. This entry merged in PR #187.
+
+The private [actual moved-assault successor](docs/specs/combat-actual-moved-assault-v1.md) independently
+replays the original creation request and six caller ledgers. Its own Selection/Round/Paid source family
+retains the two actual moves, MovementEnd, cycle, receipts and RNG. Commit adds five CP to the moved
+attacker's four and three CP to the defender, consumes ammunition once, and draws no random bytes.
+Mandatory settlement reaches Reserve Release entry; no-attack and cancelled branches preserve prior
+costs. Before fresh debit, all 16,616 selected catalogue records and handler/window/projection capacities
+are certified against the same cumulative World. Catalogue projections are isolated support checks.
+This successor remains private and awaits independent review and exact-head hosted CI.

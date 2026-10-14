@@ -68,8 +68,11 @@ dormant Core tests; they are not yet exposed as playable actions.
 The private [actual Reaction-to-Combat entry contract](docs/specs/combat-actual-reaction-combat-entry-v1.md)
 and native reader authenticate ordinary outward/return Movement and all three direct Reaction closure
 reasons through stop, System resolution, Movement completion and Breakdown into positive Combat entry.
-They preserve CP4 and original RNG with separate trusted ledgers. Independent review and hosted CI
-remain pending; public activation and downstream paid/finish joins remain separate gates.
+They preserve CP4 and original RNG with separate trusted ledgers and were merged in PR #187.
+The private [moved-assault successor](docs/specs/combat-actual-moved-assault-v1.md) carries that actual
+entry through Selection, a sealed Round, cumulative paid costs and settlement into same-cycle Reserve
+Release entry. It authenticates six independent ledgers; review and hosted CI remain pending for this
+successor. Public activation, Reserve Release continuation and campaign finish remain separate gates.
 
 Next delivery sequence:
 
