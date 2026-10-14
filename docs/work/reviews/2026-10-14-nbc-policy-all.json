@@ -1,0 +1,14 @@
+{
+  "command": [
+    "python3",
+    "-B",
+    ".github/scripts/test_partition_test.py"
+  ],
+  "budgetSeconds": 120,
+  "exitCode": 0,
+  "timedOut": false,
+  "elapsedSeconds": 0.42,
+  "logSha256": "cab765ba0551ab06914c91882877714e52ab6cae0f6ca18e4133896d800dae60",
+  "logArtifact": "2026-10-14-nbc-policy-all.log.gz",
+  "logEncoding": "gzip; logSha256 hashes decoded bytes"
+}

@@ -25,6 +25,8 @@ SELECTORS = (
 CORE_C_CLASSES = (
     'Cna.Core.Tests.Campaigns.CombatActualRepeatedMovementCompletionTests',
     'Cna.Core.Tests.Campaigns.CombatActualRepeatedMovementCompletionContractTests',
+    'Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests',
+    'Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionContractTests',
 )
 MODULES = {'core-a': 'Cna.Core.Tests', 'core-b': 'Cna.Core.Tests', 'core-c': 'Cna.Core.Tests', 'exercise': 'Cna.ExerciseRunner.Tests', 'contracts': 'Cna.Intelligence.Contracts.Tests'}
 DEFERRED = {
