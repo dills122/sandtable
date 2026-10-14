@@ -1,0 +1,39 @@
+{
+  "contract": "combat-actual-reaction-combat-entry-v1",
+  "contractVersion": 1,
+  "byteLimit": 1048576,
+  "depthLimit": 32,
+  "sourceFields": [
+    "contractVersion",
+    "createdCanonicalUtf8",
+    "prefixEventCanonicalUtf8",
+    "lifecycleEventCanonicalUtf8",
+    "breakdownEventCanonicalUtf8"
+  ],
+  "counts": {
+    "prefix": 13,
+    "lifecycle": 3,
+    "breakdown": 1
+  },
+  "closureReasons": [
+    "player-decline",
+    "scripted-unavailable",
+    "timeout"
+  ],
+  "seed": 1,
+  "terminalVersion": 18,
+  "dependencies": {
+    "src/Cna.Core/Campaigns/CampaignCombatReactionClosure.cs": "fad532a53a58918ced14f7e38898aeb8dc8161e68e79a9c327de55000ee86360",
+    "src/Cna.Core/Campaigns/CampaignCombatReactionClosureCodec.cs": "3db05ef3a20b2f3cd0527ec4c4ba11c3d515a6731ec99305bb1399b3c9768e36",
+    "src/Cna.Core/Campaigns/CampaignCombatReactionTrigger.cs": "f85f23507429d8dcbddc23d9ae2d835571d64844b71d712083cf633a72f60218",
+    "src/Cna.Core/Campaigns/CampaignCombatMovementLifecycle.cs": "e63a4d0225f5347ce6a70a855c34272110ce75a3b258591b50115c3ca5fb07aa",
+    "src/Cna.Core/Campaigns/CampaignCombatMovementLifecycleCodec.cs": "d0f5d587c7ce9fe33e20acc670d65ac525f1c6214ef9db959a36c642621c9171",
+    "src/Cna.Core/Campaigns/CampaignCombatBreakdownCompletion.cs": "fe24d5a524383c1e5137b3d9e8a0050fc21fd381c4dc7e59812d68dc3a24dc42",
+    "src/Cna.Core/Campaigns/CampaignCombatBreakdownCompletionCodec.cs": "e1160fcf932f938ba43aabbc2bc52b97b973228145a30b15ac6b747f00e359c4",
+    "src/Cna.Core/Campaigns/CampaignCombatCertification.cs": "2d3859c248783d07772753b5105848c4555cd7b7e146ea7cd9d740316cb705da",
+    "docs/specs/verify-combat-inherited-reaction-closure-v1.py": "9f07f00f8b749c2b3d86f6d3a2e40edbe0eee6af0a147e25d4d87b1ad287355c",
+    "docs/specs/verify-combat-inherited-movement-lifecycle-v1.py": "f2ee2292df3fe370ace289dcd01747153dac6d78b82c924b2f3da27df1d81920",
+    "docs/specs/verify-combat-inherited-breakdown-completion-v1.py": "db903e019bb457c02930876e42a70b9204387494012419b0b97572c3c9e12eba",
+    "docs/specs/fixtures/combat-content-v7.canonical.json": "ee4fde9638ceb61ec08612fe32f9ac81db05572aac5ca20941e402d2fed25847"
+  }
+}
