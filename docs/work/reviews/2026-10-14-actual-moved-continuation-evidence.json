@@ -1,0 +1,102 @@
+{
+  "base": "4521148a1d2faabf3b3e24ecc21f8b8ef3502761",
+  "productHead": "7c8f496b2829196fd16ecfda4194f2c69596b8a5",
+  "branch": "codex/actual-moved-continuation",
+  "status": "author self-review complete;independentreview/hostedCI pending",
+  "native": {
+    "command": "dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --filter-class 'Cna.Core.Tests.Campaigns.CombatActualMovedContinuation*' /bl:/private/tmp/n2-expanded-focused-{}.binlog",
+    "passed": 70,
+    "failed": 0,
+    "skipped": 0,
+    "duration": "2m36.697s",
+    "consolePath": "/private/tmp/n2-expanded-focused.log",
+    "consoleSha256": "b60f9eed98fdfefb5b86d3c354a25751c297ef84796890919e881e59369239c5"
+  },
+  "reference": {
+    "command": "python3 docs/specs/verify-combat-actual-moved-continuation-v1.py",
+    "parents": 56,
+    "paid": 12,
+    "armed": 44,
+    "cuts": 168,
+    "events": 112,
+    "consoleSha256": "e5d27cf21e1251afa0dd1855448417c9061430eb1be9b161ad2d22dc85ac53d4"
+  },
+  "discovery": {
+    "records": 70,
+    "unique": 70,
+    "parityRows": 56,
+    "unchangedDiscoveryGate": "accepted",
+    "consoleSha256": "fcef93cfbc94590c594043e186ba7a5e2013d5e647769e9d010c43769332f73c"
+  },
+  "format": {
+    "status": "pass",
+    "scope": "four new source/testfiles",
+    "consoleSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "red": {
+    "commit": "8e8d6a94c1965be7df960322fec39fe4a47eb3e1",
+    "missingReader": {
+      "failed": 4,
+      "skipped": 0,
+      "duration": "1.871s",
+      "consoleSha256": "e286243be50b785837c6c454f0af6c9f110f4369bcf823010d88425639c0ff59"
+    },
+    "freshSupport": {
+      "passed": 2,
+      "failed": 2,
+      "skipped": 0,
+      "duration": "2.885s",
+      "consoleSha256": "13e4fa6e93c431772b7b47e49cbfe506f8afaf5af5df9cf220bb1208624f9a83"
+    },
+    "carrierOrderFailureExcluded": true
+  },
+  "scope": {
+    "objectShapes": 55,
+    "runtimePins": 93,
+    "ownDeliveryPins": 2,
+    "ancestorPinsUnchanged": true,
+    "fullLocalSuiteRun": false,
+    "rawArchivesExported": false,
+    "activeControl": false,
+    "execution": false
+  },
+  "materialHashes": {
+    "docs/specs/combat-actual-moved-continuation-v1.md": {
+      "bytes": 9383,
+      "sha256": "9e91987ba214f0d2fe8adb5ac91af63c8cc018138b51702a9b5348ea293a9956"
+    },
+    "docs/specs/combat-actual-moved-continuation-v1.schema.json": {
+      "bytes": 22637,
+      "sha256": "0a2a0d8089398246b38c84d043ea343a0e3d72d84378b90f0d6da155c2fe3986"
+    },
+    "docs/specs/verify-combat-actual-moved-continuation-v1.py": {
+      "bytes": 21602,
+      "sha256": "07f9c81d3c804769881068b55a4948b0565812bbccb966c671692deee77d035c"
+    },
+    "docs/specs/fixtures/combat-actual-moved-continuation-v1.json": {
+      "bytes": 9986548,
+      "sha256": "2eff230735c50acd87651a298eb0293bbed0498e4b5c2fde43325287c3595c9a"
+    },
+    "src/Cna.Core/Campaigns/CampaignCombatActualMovedContinuation.cs": {
+      "bytes": 29525,
+      "sha256": "26363b3d4949bfc502a0c0e8c6093fd1599c4b2e8827b3af7829b3f2012b53a7"
+    },
+    "src/Cna.Core/Campaigns/CampaignCombatActualMovedContinuationCodec.cs": {
+      "bytes": 30574,
+      "sha256": "067660bfab0eef4790e8e4fc94b0fdcaf2f7d13424dcd403612745cb37d74d9d"
+    },
+    "tests/Cna.Core.Tests/Campaigns/CombatActualMovedContinuationTests.cs": {
+      "bytes": 8622,
+      "sha256": "5527e2110224727ca0ea99240911041b635d39f4d54b5b19f7e46c5365942751"
+    },
+    "tests/Cna.Core.Tests/Campaigns/CombatActualMovedContinuationContractTests.cs": {
+      "bytes": 18930,
+      "sha256": "387b0f1d741ff8f4a03d59a692acaaa98785bbd249667f7a2386e157a0521d0c"
+    }
+  },
+  "packetHashes": {
+    "docs/work/reviews/2026-10-14-actual-moved-continuation-bootstrap.md": "896b58dbe3e70c75c9d3b4aecdc097021d077b606042453c589c874b3f232cba",
+    "docs/work/reviews/2026-10-14-actual-moved-continuation-author.md": "1a33acc4fbc06137e39f87843e4462fcc9d486a72e6cbf345eb087f0c9a364fc",
+    "docs/work/reviews/2026-10-14-actual-moved-continuation-self-review.md": "3c74a2efc2f051bf6a4d54f0144c094e271a4bbfee7d765240c3854a2796a7b4"
+  }
+}

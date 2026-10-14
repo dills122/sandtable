@@ -2965,3 +2965,16 @@ before fresh costs is isolated support, not additional authentic source admissio
 Author tests/reference, self-review, fresh independent review and exact-head hosted CI must settle
 before Brain merges. PAC/armed NONE/Release/finish/public/Runner and general seed expansion remain
 separate. The author plan records focused test lease, RED provenance and session deadline.
+
+## N2 moved paid and armed Release/assessment (2026-10-14)
+
+N1 merged PR #188/main4521148 with Ready review2 and3121 actual hosted rows reconciled. After
+main CI/CodeQL/links verification, N2 GO targets the [moved continuation contract](../specs/combat-actual-moved-continuation-v1.md):
+both12 paid and44 armed fallback parents, seven caller ledgers, two empty Release System publications
+and immutable prospective assessment. Source/native/reference/tests retain original member history,
+MovementEnd, resources/RNG, material progress and obligations. Complete16616 selected support and
+finite continuation outcomes remain isolated certification rather than fabricated authentic history.
+
+No active cycle-control decision, Repeat intent/execution, forcedFinish or public/firstfinish gate is
+included. Author self-review/fresh neutral review/actual Release identity/exact-head CI and Brain
+merge/verified main remain required. The pre-edit plan records ownership, RED provenance and deadlines.
