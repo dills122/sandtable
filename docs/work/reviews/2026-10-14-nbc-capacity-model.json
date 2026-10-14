@@ -1,0 +1,1391 @@
+{
+  "parentHead": "be149cb5c2fd0226c1ca90a5c630af0e3aa10b73",
+  "parentRun": 38517061509,
+  "nativeProduct": "bfc4cfe357529b4bdfe5d997b09d70367824edd4",
+  "parentB": {
+    "job": 958,
+    "assembly": 865.184,
+    "overhead": 92.81600000000003,
+    "modelAssembly": 864.8866059999998,
+    "errorPercent": -0.03437349742946294,
+    "classes": {
+      "Cna.Core.Tests.Rules.BreakdownRulesTests": {
+        "rows": 32,
+        "summedSeconds": 0.023000000000000003,
+        "spanSeconds": 0.032084,
+        "cost": 0.032084,
+        "start": "2026-10-14T05:42:12.692677+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CombatWeatherTests": {
+        "rows": 42,
+        "summedSeconds": 2.7520000000000007,
+        "spanSeconds": 2.783019,
+        "cost": 2.783019,
+        "start": "2026-10-14T05:39:42.250607+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CombatReserveReleaseTests": {
+        "rows": 10,
+        "summedSeconds": 2.305,
+        "spanSeconds": 2.316169,
+        "cost": 2.316169,
+        "start": "2026-10-14T05:40:13.816690+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CampaignSuccessorActivationTests": {
+        "rows": 28,
+        "summedSeconds": 0.7270000000000002,
+        "spanSeconds": 0.749636,
+        "cost": 0.749636,
+        "start": "2026-10-14T05:40:16.590612+00:00"
+      },
+      "Cna.Core.Tests.Content.ReactionRunnerContentTests": {
+        "rows": 7,
+        "summedSeconds": 0.06599999999999999,
+        "spanSeconds": 0.069305,
+        "cost": 0.069305,
+        "start": "2026-10-14T05:47:06.019942+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CampaignMovementCalculatorTests": {
+        "rows": 3,
+        "summedSeconds": 0.01,
+        "spanSeconds": 0.01167,
+        "cost": 0.01167,
+        "start": "2026-10-14T05:40:17.356548+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.BreakdownRecordTests": {
+        "rows": 8,
+        "summedSeconds": 0.002,
+        "spanSeconds": 0.005394,
+        "cost": 0.005394,
+        "start": "2026-10-14T05:41:54.646264+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CombatReserveDesignationTests": {
+        "rows": 23,
+        "summedSeconds": 1.6119999999999994,
+        "spanSeconds": 1.629993,
+        "cost": 1.629993,
+        "start": "2026-10-14T05:40:08.904895+00:00"
+      },
+      "Cna.Core.Tests.Content.BreakdownContentTests": {
+        "rows": 38,
+        "summedSeconds": 0.07900000000000001,
+        "spanSeconds": 0.102847,
+        "cost": 0.102847,
+        "start": "2026-10-14T05:38:59.767670+00:00"
+      },
+      "Cna.Core.Tests.Actions.CampaignStageEntryActionContractTests": {
+        "rows": 3,
+        "summedSeconds": 0.001,
+        "spanSeconds": 0.002906,
+        "cost": 0.002906,
+        "start": "2026-10-14T05:44:30.245037+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedMovementTests": {
+        "rows": 16,
+        "summedSeconds": 178.30600000000004,
+        "spanSeconds": 178.320766,
+        "cost": 178.320766,
+        "start": "2026-10-14T05:44:14.946273+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.BreakdownLifecycleTests": {
+        "rows": 19,
+        "summedSeconds": 1.4050000000000002,
+        "spanSeconds": 1.42428,
+        "cost": 1.42428,
+        "start": "2026-10-14T05:39:45.783438+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CampaignReserveCompletionTests": {
+        "rows": 4,
+        "summedSeconds": 0.032,
+        "spanSeconds": 0.035531,
+        "cost": 0.035531,
+        "start": "2026-10-14T05:44:14.557299+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CombatCreationBindingTests": {
+        "rows": 52,
+        "summedSeconds": 0.08800000000000005,
+        "spanSeconds": 0.115042,
+        "cost": 0.115042,
+        "start": "2026-10-14T05:41:19.910474+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CampaignReactionParticipantReplayTests": {
+        "rows": 8,
+        "summedSeconds": 0.07100000000000001,
+        "spanSeconds": 0.077501,
+        "cost": 0.077501,
+        "start": "2026-10-14T05:41:20.030547+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CombatSealsTests": {
+        "rows": 8,
+        "summedSeconds": 12.498999999999999,
+        "spanSeconds": 12.510066,
+        "cost": 12.510066,
+        "start": "2026-10-14T05:45:26.136150+00:00"
+      },
+      "Cna.Core.Tests.Content.ContentCanonicalTests": {
+        "rows": 7,
+        "summedSeconds": 0.007,
+        "spanSeconds": 0.011192,
+        "cost": 0.011192,
+        "start": "2026-10-14T05:39:45.769227+00:00"
+      },
+      "Cna.Core.Tests.Rules.StageEntryRulingTests": {
+        "rows": 2,
+        "summedSeconds": 0.0,
+        "spanSeconds": 0.001696,
+        "cost": 0.001696,
+        "start": "2026-10-14T05:43:12.511904+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.BreakdownFlowTests": {
+        "rows": 8,
+        "summedSeconds": 0.175,
+        "spanSeconds": 0.184618,
+        "cost": 0.184618,
+        "start": "2026-10-14T05:44:14.594336+00:00"
+      },
+      "Cna.Core.Tests.Observations.CampaignMovementObservationContractTests": {
+        "rows": 11,
+        "summedSeconds": 0.005,
+        "spanSeconds": 0.013283,
+        "cost": 0.013283,
+        "start": "2026-10-14T05:46:25.843919+00:00"
+      },
+      "Cna.Core.Tests.Actions.CampaignMovementActionCodecTests": {
+        "rows": 7,
+        "summedSeconds": 0.01,
+        "spanSeconds": 0.01435,
+        "cost": 0.01435,
+        "start": "2026-10-14T05:41:19.716263+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CombatActualPostAssaultContinuationContractTests": {
+        "rows": 16,
+        "summedSeconds": 98.42999999999999,
+        "spanSeconds": 98.445227,
+        "cost": 98.445227,
+        "start": "2026-10-14T05:39:53.574105+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CampaignReplayPreparationTests": {
+        "rows": 12,
+        "summedSeconds": 0.115,
+        "spanSeconds": 0.125539,
+        "cost": 0.125539,
+        "start": "2026-10-14T05:43:12.385433+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedMovementContractTests": {
+        "rows": 12,
+        "summedSeconds": 183.319,
+        "spanSeconds": 183.331868,
+        "cost": 183.331868,
+        "start": "2026-10-14T05:43:22.510208+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.BreakdownCheckResolutionTests": {
+        "rows": 16,
+        "summedSeconds": 0.033,
+        "spanSeconds": 0.0448,
+        "cost": 0.0448,
+        "start": "2026-10-14T05:39:09.029737+00:00"
+      },
+      "Cna.Core.Tests.Actions.CampaignMovementActionContractTests": {
+        "rows": 4,
+        "summedSeconds": 0.006,
+        "spanSeconds": 0.008904,
+        "cost": 0.008904,
+        "start": "2026-10-14T05:40:17.368773+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CampaignCreationV9Tests": {
+        "rows": 4,
+        "summedSeconds": 0.002,
+        "spanSeconds": 0.004328,
+        "cost": 0.004328,
+        "start": "2026-10-14T05:41:54.720637+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CampaignReserveDesignationTests": {
+        "rows": 5,
+        "summedSeconds": 0.028,
+        "spanSeconds": 0.033155,
+        "cost": 0.033155,
+        "start": "2026-10-14T05:41:54.651983+00:00"
+      },
+      "Cna.Core.Tests.Rules.MovementRulesTests": {
+        "rows": 19,
+        "summedSeconds": 0.023,
+        "spanSeconds": 0.03202,
+        "cost": 0.03202,
+        "start": "2026-10-14T05:39:52.914880+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CombatReactionCompletionTests": {
+        "rows": 9,
+        "summedSeconds": 16.309,
+        "spanSeconds": 16.320822,
+        "cost": 16.320822,
+        "start": "2026-10-14T05:42:56.049496+00:00"
+      },
+      "Cna.Core.Tests.Rules.LandSequenceTests": {
+        "rows": 13,
+        "summedSeconds": 0.048,
+        "spanSeconds": 0.057854,
+        "cost": 0.057854,
+        "start": "2026-10-14T05:42:37.651200+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CombatInheritedReserveMovementCompletionTests": {
+        "rows": 8,
+        "summedSeconds": 15.881,
+        "spanSeconds": 15.889822,
+        "cost": 15.889822,
+        "start": "2026-10-14T05:39:30.370153+00:00"
+      },
+      "Cna.Core.Tests.Rules.CombatRulesInputArtifactTests": {
+        "rows": 52,
+        "summedSeconds": 0.021000000000000005,
+        "spanSeconds": 0.047557,
+        "cost": 0.047557,
+        "start": "2026-10-14T05:42:37.781307+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CombatArmedContinuationTests": {
+        "rows": 8,
+        "summedSeconds": 9.852999999999998,
+        "spanSeconds": 9.861194,
+        "cost": 9.861194,
+        "start": "2026-10-14T05:43:12.632117+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CampaignMovementAdjudicationTests": {
+        "rows": 13,
+        "summedSeconds": 0.14,
+        "spanSeconds": 0.151954,
+        "cost": 0.151954,
+        "start": "2026-10-14T05:44:14.782147+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.AuthorityBoundaryTests": {
+        "rows": 4,
+        "summedSeconds": 0.008,
+        "spanSeconds": 0.010584,
+        "cost": 0.010584,
+        "start": "2026-10-14T05:41:58.304852+00:00"
+      },
+      "Cna.Core.Tests.Actions.CampaignObservationV6ActionDerivationTests": {
+        "rows": 11,
+        "summedSeconds": 0.058,
+        "spanSeconds": 0.066963,
+        "cost": 0.066963,
+        "start": "2026-10-14T05:40:13.566818+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CampaignCreationAdmissionTests": {
+        "rows": 17,
+        "summedSeconds": 0.17200000000000001,
+        "spanSeconds": 0.185622,
+        "cost": 0.185622,
+        "start": "2026-10-14T05:36:07.551162+00:00"
+      },
+      "Cna.Core.Tests.Observations.CampaignObservationSerializationTests": {
+        "rows": 4,
+        "summedSeconds": 0.003,
+        "spanSeconds": 0.005147,
+        "cost": 0.005147,
+        "start": "2026-10-14T05:39:09.284400+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CampaignOperationStageWeatherTests": {
+        "rows": 5,
+        "summedSeconds": 0.001,
+        "spanSeconds": 0.003742,
+        "cost": 0.003742,
+        "start": "2026-10-14T05:41:20.026533+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CampaignVehicleBreakdownStateTests": {
+        "rows": 10,
+        "summedSeconds": 0.006,
+        "spanSeconds": 0.011326,
+        "cost": 0.011326,
+        "start": "2026-10-14T05:43:12.373482+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CombatInheritedMovementTests": {
+        "rows": 8,
+        "summedSeconds": 3.926,
+        "spanSeconds": 3.934287,
+        "cost": 3.934287,
+        "start": "2026-10-14T05:46:58.243620+00:00"
+      },
+      "Cna.Core.Tests.Rules.BreakdownOutcomeRulesTests": {
+        "rows": 52,
+        "summedSeconds": 0.010000000000000002,
+        "spanSeconds": 0.021955,
+        "cost": 0.021955,
+        "start": "2026-10-14T05:40:31.829328+00:00"
+      },
+      "Cna.Core.Tests.Exercises.CampaignExercisesTests": {
+        "rows": 10,
+        "summedSeconds": 1.865,
+        "spanSeconds": 1.874003,
+        "cost": 1.874003,
+        "start": "2026-10-14T05:47:03.800763+00:00"
+      },
+      "Cna.Core.Tests.Setups.CampaignStageEntryPolicyTests": {
+        "rows": 6,
+        "summedSeconds": 0.004,
+        "spanSeconds": 0.00745,
+        "cost": 0.00745,
+        "start": "2026-10-14T05:39:54.470440+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CombatClosureTests": {
+        "rows": 6,
+        "summedSeconds": 42.321999999999996,
+        "spanSeconds": 42.330848,
+        "cost": 42.330848,
+        "start": "2026-10-14T05:35:38.160227+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CombatOpeningPreambleTests": {
+        "rows": 12,
+        "summedSeconds": 0.8450000000000001,
+        "spanSeconds": 0.856004,
+        "cost": 0.856004,
+        "start": "2026-10-14T05:40:30.916165+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CombatReserveOpeningTests": {
+        "rows": 23,
+        "summedSeconds": 2.9629999999999996,
+        "spanSeconds": 2.980158,
+        "cost": 2.980158,
+        "start": "2026-10-14T05:40:10.563521+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.StageEntryOrganizationTests": {
+        "rows": 4,
+        "summedSeconds": 0.014,
+        "spanSeconds": 0.016803,
+        "cost": 0.016803,
+        "start": "2026-10-14T05:42:12.675349+00:00"
+      },
+      "Cna.Core.Tests.Rules.BreakdownOutcomeArtifactTests": {
+        "rows": 20,
+        "summedSeconds": 0.07100000000000002,
+        "spanSeconds": 0.088374,
+        "cost": 0.088374,
+        "start": "2026-10-14T05:42:55.486943+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.Version3AuthorityTests": {
+        "rows": 9,
+        "summedSeconds": 0.005,
+        "spanSeconds": 0.010718,
+        "cost": 0.010718,
+        "start": "2026-10-14T05:44:30.188786+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CombatReserveReleaseBaseTests": {
+        "rows": 6,
+        "summedSeconds": 0.681,
+        "spanSeconds": 0.684454,
+        "cost": 0.684454,
+        "start": "2026-10-14T05:39:45.052658+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CombatSettledControlTests": {
+        "rows": 15,
+        "summedSeconds": 16.514,
+        "spanSeconds": 16.526717,
+        "cost": 16.526717,
+        "start": "2026-10-14T05:40:17.378225+00:00"
+      },
+      "Cna.Core.Tests.Observations.CampaignReserveAudienceTests": {
+        "rows": 2,
+        "summedSeconds": 0.01,
+        "spanSeconds": 0.011534,
+        "cost": 0.011534,
+        "start": "2026-10-14T05:46:52.137671+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CombatBreakdownCompletionTests": {
+        "rows": 12,
+        "summedSeconds": 6.067000000000001,
+        "spanSeconds": 6.077354,
+        "cost": 6.077354,
+        "start": "2026-10-14T05:46:52.163550+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CombatIdentityTests": {
+        "rows": 14,
+        "summedSeconds": 17.201999999999998,
+        "spanSeconds": 17.217691,
+        "cost": 17.217691,
+        "start": "2026-10-14T05:43:53.269936+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CampaignTests": {
+        "rows": 18,
+        "summedSeconds": 0.001,
+        "spanSeconds": 0.009151,
+        "cost": 0.009151,
+        "start": "2026-10-14T05:42:37.829770+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CampaignReactionIdentityTests": {
+        "rows": 4,
+        "summedSeconds": 0.003,
+        "spanSeconds": 0.006446,
+        "cost": 0.006446,
+        "start": "2026-10-14T05:44:30.199986+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CampaignElementMovedV2ReplayTests": {
+        "rows": 19,
+        "summedSeconds": 0.04400000000000001,
+        "spanSeconds": 0.057735,
+        "cost": 0.057735,
+        "start": "2026-10-14T05:42:37.709635+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.BreakdownPublicActivationTests": {
+        "rows": 19,
+        "summedSeconds": 1.259,
+        "spanSeconds": 1.272422,
+        "cost": 1.272422,
+        "start": "2026-10-14T05:40:31.852063+00:00"
+      },
+      "Cna.Core.Tests.Setups.CampaignSetupTests": {
+        "rows": 7,
+        "summedSeconds": 0.031,
+        "spanSeconds": 0.036301,
+        "cost": 0.036301,
+        "start": "2026-10-14T05:41:19.731017+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CombatInheritedReserveMovementTests": {
+        "rows": 6,
+        "summedSeconds": 9.005999999999998,
+        "spanSeconds": 9.010979,
+        "cost": 9.010979,
+        "start": "2026-10-14T05:39:00.016691+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CombatCycleMovementTests": {
+        "rows": 10,
+        "summedSeconds": 29.370000000000005,
+        "spanSeconds": 29.381727,
+        "cost": 29.381727,
+        "start": "2026-10-14T05:35:38.060610+00:00"
+      },
+      "Cna.Core.Tests.Content.ContentPackV5Tests": {
+        "rows": 30,
+        "summedSeconds": 0.025,
+        "spanSeconds": 0.052814,
+        "cost": 0.052814,
+        "start": "2026-10-14T05:43:22.961791+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CombatReactionClosureTests": {
+        "rows": 9,
+        "summedSeconds": 38.476000000000006,
+        "spanSeconds": 38.485,
+        "cost": 38.485,
+        "start": "2026-10-14T05:44:47.647760+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CombatReactionLifecycleTests": {
+        "rows": 9,
+        "summedSeconds": 31.950000000000003,
+        "spanSeconds": 31.961761,
+        "cost": 31.961761,
+        "start": "2026-10-14T05:42:37.855274+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.BreakdownWorldTests": {
+        "rows": 3,
+        "summedSeconds": 0.013000000000000001,
+        "spanSeconds": 0.013862,
+        "cost": 0.013862,
+        "start": "2026-10-14T05:41:54.686124+00:00"
+      },
+      "Cna.Core.Tests.Observations.CampaignReserveFogOfWarTests": {
+        "rows": 2,
+        "summedSeconds": 0.049,
+        "spanSeconds": 0.050136,
+        "cost": 0.050136,
+        "start": "2026-10-14T05:38:59.716024+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CampaignWorldTests": {
+        "rows": 9,
+        "summedSeconds": 0.012999999999999998,
+        "spanSeconds": 0.019315,
+        "cost": 0.019315,
+        "start": "2026-10-14T05:40:13.546542+00:00"
+      },
+      "Cna.Core.Tests.Content.ContentContractsTests": {
+        "rows": 12,
+        "summedSeconds": 0.016,
+        "spanSeconds": 0.022313,
+        "cost": 0.022313,
+        "start": "2026-10-14T05:38:25.142690+00:00"
+      },
+      "Cna.Core.Tests.Rules.WeatherRulesTests": {
+        "rows": 41,
+        "summedSeconds": 0.028999999999999998,
+        "spanSeconds": 0.03924,
+        "cost": 0.03924,
+        "start": "2026-10-14T05:41:58.263166+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CampaignSnapshotV10ContractTests": {
+        "rows": 13,
+        "summedSeconds": 0.025000000000000005,
+        "spanSeconds": 0.033816,
+        "cost": 0.033816,
+        "start": "2026-10-14T05:41:19.826054+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CombatReactionHistoryReplayTests": {
+        "rows": 45,
+        "summedSeconds": 20.939999999999998,
+        "spanSeconds": 20.977876,
+        "cost": 20.977876,
+        "start": "2026-10-14T05:39:09.390235+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CombatLossRetreatTests": {
+        "rows": 7,
+        "summedSeconds": 36.275999999999996,
+        "spanSeconds": 36.281844,
+        "cost": 36.281844,
+        "start": "2026-10-14T05:39:54.632362+00:00"
+      },
+      "Cna.Core.Tests.Content.BreakdownRunnerCatalogTests": {
+        "rows": 20,
+        "summedSeconds": 1.5369999999999995,
+        "spanSeconds": 1.554413,
+        "cost": 1.554413,
+        "start": "2026-10-14T05:47:02.215357+00:00"
+      },
+      "Cna.Core.Tests.Observations.CampaignObservationReadbackTests": {
+        "rows": 4,
+        "summedSeconds": 0.001,
+        "spanSeconds": 0.00303,
+        "cost": 0.00303,
+        "start": "2026-10-14T05:41:54.710899+00:00"
+      },
+      "Cna.Core.Tests.Observations.CampaignObservationV7ContractTests": {
+        "rows": 14,
+        "summedSeconds": 0.44400000000000006,
+        "spanSeconds": 0.45482,
+        "cost": 0.45482,
+        "start": "2026-10-14T05:40:16.134484+00:00"
+      },
+      "Cna.Core.Tests.Observations.CampaignObservationProjectionTests": {
+        "rows": 6,
+        "summedSeconds": 0.013000000000000001,
+        "spanSeconds": 0.01667,
+        "cost": 0.01667,
+        "start": "2026-10-14T05:43:09.818792+00:00"
+      },
+      "Cna.Core.Tests.Decisions.DecisionProposalValidatorTests": {
+        "rows": 20,
+        "summedSeconds": 0.012000000000000002,
+        "spanSeconds": 0.019366,
+        "cost": 0.019366,
+        "start": "2026-10-14T05:47:05.983168+00:00"
+      },
+      "Cna.Core.Tests.Actions.BreakdownActionMembershipTests": {
+        "rows": 10,
+        "summedSeconds": 0.29500000000000004,
+        "spanSeconds": 0.303852,
+        "cost": 0.303852,
+        "start": "2026-10-14T05:47:05.677725+00:00"
+      },
+      "Cna.Core.Tests.Content.ContentValidationTests": {
+        "rows": 9,
+        "summedSeconds": 0.010000000000000002,
+        "spanSeconds": 0.015391,
+        "cost": 0.015391,
+        "start": "2026-10-14T05:42:37.839433+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CombatPositiveEntryTests": {
+        "rows": 21,
+        "summedSeconds": 23.803000000000004,
+        "spanSeconds": 23.829481,
+        "cost": 23.829481,
+        "start": "2026-10-14T05:43:29.436976+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CampaignReplayTests": {
+        "rows": 14,
+        "summedSeconds": 0.003,
+        "spanSeconds": 0.014304,
+        "cost": 0.014304,
+        "start": "2026-10-14T05:40:17.341715+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.StageEntryFleetAssignmentTests": {
+        "rows": 4,
+        "summedSeconds": 0.02,
+        "spanSeconds": 0.021962,
+        "cost": 0.021962,
+        "start": "2026-10-14T05:44:47.624608+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CampaignOperationStageOrderTests": {
+        "rows": 5,
+        "summedSeconds": 0.003,
+        "spanSeconds": 0.004678,
+        "cost": 0.004678,
+        "start": "2026-10-14T05:41:54.725211+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CombatWorldInitialCodecTests": {
+        "rows": 3,
+        "summedSeconds": 0.004,
+        "spanSeconds": 0.005996,
+        "cost": 0.005996,
+        "start": "2026-10-14T05:41:54.714270+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CampaignReserveCheckpointValidationTests": {
+        "rows": 3,
+        "summedSeconds": 0.025,
+        "spanSeconds": 0.028707,
+        "cost": 0.028707,
+        "start": "2026-10-14T05:47:03.770803+00:00"
+      },
+      "Cna.Core.Tests.Actions.CampaignMovementAtomicPublicationTests": {
+        "rows": 2,
+        "summedSeconds": 0.018000000000000002,
+        "spanSeconds": 0.018508,
+        "cost": 0.018508,
+        "start": "2026-10-14T05:47:06.290459+00:00"
+      },
+      "Cna.Core.Tests.Observations.CampaignObservationPrivacyTests": {
+        "rows": 6,
+        "summedSeconds": 0.066,
+        "spanSeconds": 0.075207,
+        "cost": 0.075207,
+        "start": "2026-10-14T05:39:09.313457+00:00"
+      },
+      "Cna.Core.Tests.Content.ContentBreakdownCohortTests": {
+        "rows": 10,
+        "summedSeconds": 0.003,
+        "spanSeconds": 0.009688,
+        "cost": 0.009688,
+        "start": "2026-10-14T05:39:45.751471+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CampaignWorldV5Tests": {
+        "rows": 6,
+        "summedSeconds": 0.012,
+        "spanSeconds": 0.016398,
+        "cost": 0.016398,
+        "start": "2026-10-14T05:39:45.035168+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.StageEntryEventContractTests": {
+        "rows": 10,
+        "summedSeconds": 0.01,
+        "spanSeconds": 0.015748,
+        "cost": 0.015748,
+        "start": "2026-10-14T05:39:52.897475+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CombatHistoryReplayTests": {
+        "rows": 53,
+        "summedSeconds": 6.307,
+        "spanSeconds": 6.354373,
+        "cost": 6.354373,
+        "start": "2026-10-14T05:43:23.081294+00:00"
+      },
+      "Cna.Core.Tests.Actions.CampaignMovementPublicationTests": {
+        "rows": 10,
+        "summedSeconds": 0.043000000000000003,
+        "spanSeconds": 0.049271,
+        "cost": 0.049271,
+        "start": "2026-10-14T05:41:19.860570+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.StageEntryFleetRepairTests": {
+        "rows": 4,
+        "summedSeconds": 0.16800000000000004,
+        "spanSeconds": 0.181379,
+        "cost": 0.181379,
+        "start": "2026-10-14T05:35:37.611317+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CombatActualPostAssaultContinuationTests": {
+        "rows": 24,
+        "summedSeconds": 160.71799999999996,
+        "spanSeconds": 160.734516,
+        "cost": 160.734516,
+        "start": "2026-10-14T05:40:42.225521+00:00"
+      },
+      "Cna.Core.Tests.Rules.CombatSelectedRulesTests": {
+        "rows": 19,
+        "summedSeconds": 0.165,
+        "spanSeconds": 0.173746,
+        "cost": 0.173746,
+        "start": "2026-10-14T05:41:32.033490+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CombatInheritedSnapshotTests": {
+        "rows": 11,
+        "summedSeconds": 17.337999999999997,
+        "spanSeconds": 17.350077,
+        "cost": 17.350077,
+        "start": "2026-10-14T05:44:30.272976+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CombatActualPostAssaultContinuationRetryTests": {
+        "rows": 8,
+        "summedSeconds": 213.96900000000002,
+        "spanSeconds": 213.973707,
+        "cost": 213.973707,
+        "start": "2026-10-14T05:36:20.495035+00:00"
+      },
+      "Cna.Core.Tests.Observations.UserSpaceDisclosureManifestV2Tests": {
+        "rows": 4,
+        "summedSeconds": 0.15100000000000002,
+        "spanSeconds": 0.154789,
+        "cost": 0.154789,
+        "start": "2026-10-14T05:40:47.391783+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.BreakdownSnapshotTests": {
+        "rows": 10,
+        "summedSeconds": 0.5300000000000001,
+        "spanSeconds": 0.547386,
+        "cost": 0.547386,
+        "start": "2026-10-14T05:35:37.611340+00:00"
+      },
+      "Cna.Core.Tests.Actions.CampaignReserveSubmissionTests": {
+        "rows": 2,
+        "summedSeconds": 0.006,
+        "spanSeconds": 0.007613,
+        "cost": 0.007613,
+        "start": "2026-10-14T05:43:09.836473+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CombatMovementHistoryReplayTests": {
+        "rows": 17,
+        "summedSeconds": 32.123,
+        "spanSeconds": 32.137522,
+        "cost": 32.137522,
+        "start": "2026-10-14T05:40:47.547654+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.WeatherCampaignTests": {
+        "rows": 9,
+        "summedSeconds": 0.023000000000000003,
+        "spanSeconds": 0.02953,
+        "cost": 0.02953,
+        "start": "2026-10-14T05:45:38.648157+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CombatInheritedStepsTests": {
+        "rows": 7,
+        "summedSeconds": 76.22400000000002,
+        "spanSeconds": 76.23272,
+        "cost": 76.23272,
+        "start": "2026-10-14T05:38:25.166143+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.BreakdownPreambleReplayTests": {
+        "rows": 7,
+        "summedSeconds": 0.8400000000000001,
+        "spanSeconds": 0.848086,
+        "cost": 0.848086,
+        "start": "2026-10-14T05:39:41.400898+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CombatSettledContinuationTests": {
+        "rows": 21,
+        "summedSeconds": 40.443999999999996,
+        "spanSeconds": 40.464516,
+        "cost": 40.464516,
+        "start": "2026-10-14T05:41:32.208150+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CombatReserveCompletionTests": {
+        "rows": 21,
+        "summedSeconds": 0.9780000000000002,
+        "spanSeconds": 0.993754,
+        "cost": 0.993754,
+        "start": "2026-10-14T05:44:29.193471+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.InitiativeCampaignTests": {
+        "rows": 11,
+        "summedSeconds": 0.008,
+        "spanSeconds": 0.01481,
+        "cost": 0.01481,
+        "start": "2026-10-14T05:43:22.494877+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CombatActualRoundEntryTests": {
+        "rows": 151,
+        "summedSeconds": 722.6720000000003,
+        "spanSeconds": 722.790378,
+        "cost": 722.790378,
+        "start": "2026-10-14T05:36:08.067335+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CampaignMovementEventContractTests": {
+        "rows": 4,
+        "summedSeconds": 0.041999999999999996,
+        "spanSeconds": 0.045584,
+        "cost": 0.045584,
+        "start": "2026-10-14T05:38:59.968307+00:00"
+      },
+      "Cna.Core.Tests.Rules.ZocRulesTests": {
+        "rows": 22,
+        "summedSeconds": 0.08700000000000001,
+        "spanSeconds": 0.103023,
+        "cost": 0.103023,
+        "start": "2026-10-14T05:36:07.446837+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CampaignMovementCheckpointValidationTests": {
+        "rows": 4,
+        "summedSeconds": 0.018,
+        "spanSeconds": 0.021752,
+        "cost": 0.021752,
+        "start": "2026-10-14T05:39:09.290256+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.OpeningPreambleCampaignTests": {
+        "rows": 5,
+        "summedSeconds": 0.015,
+        "spanSeconds": 0.018457,
+        "cost": 0.018457,
+        "start": "2026-10-14T05:39:09.214856+00:00"
+      },
+      "Cna.Core.Tests.Observations.CampaignObservationWeatherTests": {
+        "rows": 5,
+        "summedSeconds": 0.038,
+        "spanSeconds": 0.040495,
+        "cost": 0.040495,
+        "start": "2026-10-14T05:38:59.674119+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CombatResolutionTests": {
+        "rows": 10,
+        "summedSeconds": 14.251000000000001,
+        "spanSeconds": 14.264103,
+        "cost": 14.264103,
+        "start": "2026-10-14T05:40:33.126078+00:00"
+      },
+      "Cna.Core.Tests.Actions.CampaignStageEntryMembershipTests": {
+        "rows": 3,
+        "summedSeconds": 0.062,
+        "spanSeconds": 0.064497,
+        "cost": 0.064497,
+        "start": "2026-10-14T05:35:37.780974+00:00"
+      },
+      "Cna.Core.Tests.Rules.BreakdownSequenceTests": {
+        "rows": 6,
+        "summedSeconds": 0.029,
+        "spanSeconds": 0.033788,
+        "cost": 0.033788,
+        "start": "2026-10-14T05:44:30.207207+00:00"
+      },
+      "Cna.Core.Tests.Content.BreakdownCurrentCatalogTests": {
+        "rows": 4,
+        "summedSeconds": 0.185,
+        "spanSeconds": 0.18841,
+        "cost": 0.18841,
+        "start": "2026-10-14T05:46:25.858010+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CombatActualPaidAssaultContractTests": {
+        "rows": 25,
+        "summedSeconds": 174.296,
+        "spanSeconds": 174.325946,
+        "cost": 174.325946,
+        "start": "2026-10-14T05:36:02.074237+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CombatCustodyTests": {
+        "rows": 6,
+        "summedSeconds": 39.324000000000005,
+        "spanSeconds": 39.331858,
+        "cost": 39.331858,
+        "start": "2026-10-14T05:41:58.317893+00:00"
+      },
+      "Cna.Core.Tests.Actions.CampaignMovementActionDerivationTests": {
+        "rows": 6,
+        "summedSeconds": 0.041,
+        "spanSeconds": 0.047305,
+        "cost": 0.047305,
+        "start": "2026-10-14T05:39:09.234255+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CombatActualPaidAssaultTests": {
+        "rows": 8,
+        "summedSeconds": 155.541,
+        "spanSeconds": 155.547614,
+        "cost": 155.547614,
+        "start": "2026-10-14T05:35:49.592835+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CampaignReactionWindowClosedReplayTests": {
+        "rows": 9,
+        "summedSeconds": 0.10000000000000002,
+        "spanSeconds": 0.106185,
+        "cost": 0.106185,
+        "start": "2026-10-14T05:39:09.107521+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.BreakdownResolutionReplayTests": {
+        "rows": 12,
+        "summedSeconds": 0.61,
+        "spanSeconds": 0.624371,
+        "cost": 0.624371,
+        "start": "2026-10-14T05:39:52.947867+00:00"
+      },
+      "Cna.Core.Tests.Rules.CapabilityPointAmountTests": {
+        "rows": 10,
+        "summedSeconds": 0.002,
+        "spanSeconds": 0.00503,
+        "cost": 0.00503,
+        "start": "2026-10-14T05:39:52.891816+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CombatActualSelectionTests": {
+        "rows": 44,
+        "summedSeconds": 263.91200000000003,
+        "spanSeconds": 263.948681,
+        "cost": 263.948681,
+        "start": "2026-10-14T05:45:38.678544+00:00"
+      },
+      "Cna.Core.Tests.Rules.ZocStaticFixtureTests": {
+        "rows": 9,
+        "summedSeconds": 0.003,
+        "spanSeconds": 0.012817,
+        "cost": 0.012817,
+        "start": "2026-10-14T05:38:56.402300+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.BreakdownWorldBoundaryTests": {
+        "rows": 13,
+        "summedSeconds": 0.257,
+        "spanSeconds": 0.26588,
+        "cost": 0.26588,
+        "start": "2026-10-14T05:35:37.793419+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.InitiativeResolverTests": {
+        "rows": 6,
+        "summedSeconds": 0.021,
+        "spanSeconds": 0.029007,
+        "cost": 0.029007,
+        "start": "2026-10-14T05:39:09.077296+00:00"
+      },
+      "Cna.Core.Tests.Observations.CampaignObservationReserveStatusTests": {
+        "rows": 7,
+        "summedSeconds": 0.006,
+        "spanSeconds": 0.010105,
+        "cost": 0.010105,
+        "start": "2026-10-14T05:44:14.935820+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CombatResultReleaseTests": {
+        "rows": 7,
+        "summedSeconds": 42.717,
+        "spanSeconds": 42.724335,
+        "cost": 42.724335,
+        "start": "2026-10-14T05:42:12.727908+00:00"
+      },
+      "Cna.Core.Tests.Rules.ContentVocabularyTests": {
+        "rows": 4,
+        "summedSeconds": 0.016,
+        "spanSeconds": 0.019138,
+        "cost": 0.019138,
+        "start": "2026-10-14T05:47:02.180173+00:00"
+      },
+      "Cna.Core.Tests.Content.ContentMobilityTests": {
+        "rows": 7,
+        "summedSeconds": 0.007,
+        "spanSeconds": 0.01416,
+        "cost": 0.01416,
+        "start": "2026-10-14T05:47:02.200365+00:00"
+      },
+      "Cna.Core.Tests.Content.SyntheticContentCatalogTests": {
+        "rows": 5,
+        "summedSeconds": 0.034,
+        "spanSeconds": 0.038336,
+        "cost": 0.038336,
+        "start": "2026-10-14T05:38:59.929296+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CampaignMovementWorldStateTests": {
+        "rows": 5,
+        "summedSeconds": 0.076,
+        "spanSeconds": 0.086261,
+        "cost": 0.086261,
+        "start": "2026-10-14T05:35:49.505082+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CombatInheritedCycleControlTests": {
+        "rows": 10,
+        "summedSeconds": 8.307,
+        "spanSeconds": 8.31774,
+        "cost": 8.31774,
+        "start": "2026-10-14T05:40:33.906154+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CombatInheritedReserveCycleTests": {
+        "rows": 7,
+        "summedSeconds": 26.08,
+        "spanSeconds": 26.08703,
+        "cost": 26.08703,
+        "start": "2026-10-14T05:46:26.048792+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CampaignMovementCompletionContractTests": {
+        "rows": 3,
+        "summedSeconds": 0.008,
+        "spanSeconds": 0.009632,
+        "cost": 0.009632,
+        "start": "2026-10-14T05:41:54.700474+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.StageEntryCampaignTests": {
+        "rows": 2,
+        "summedSeconds": 0.019999999999999997,
+        "spanSeconds": 0.020865,
+        "cost": 0.020865,
+        "start": "2026-10-14T05:44:30.250309+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CombatInheritedReserveReleaseTests": {
+        "rows": 16,
+        "summedSeconds": 24.298,
+        "spanSeconds": 24.318627,
+        "cost": 24.318627,
+        "start": "2026-10-14T05:35:37.752952+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.BreakdownMoveReplayTests": {
+        "rows": 19,
+        "summedSeconds": 0.45,
+        "spanSeconds": 0.469547,
+        "cost": 0.469547,
+        "start": "2026-10-14T05:42:55.578744+00:00"
+      },
+      "Cna.Core.Tests.Observations.CampaignObservationContractTests": {
+        "rows": 9,
+        "summedSeconds": 0.005,
+        "spanSeconds": 0.011603,
+        "cost": 0.011603,
+        "start": "2026-10-14T05:39:45.738845+00:00"
+      },
+      "Cna.Core.Tests.Randomness.RandomStreamTests": {
+        "rows": 9,
+        "summedSeconds": 0.018,
+        "spanSeconds": 0.025329,
+        "cost": 0.025329,
+        "start": "2026-10-14T05:41:19.689968+00:00"
+      },
+      "Cna.Core.Tests.Actions.CampaignLegalActionsTests": {
+        "rows": 16,
+        "summedSeconds": 0.04300000000000001,
+        "spanSeconds": 0.054366,
+        "cost": 0.054366,
+        "start": "2026-10-14T05:40:31.773626+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.BreakdownAccountingTests": {
+        "rows": 25,
+        "summedSeconds": 0.022,
+        "spanSeconds": 0.030223,
+        "cost": 0.030223,
+        "start": "2026-10-14T05:42:55.454708+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CombatCreationInputsCodecTests": {
+        "rows": 5,
+        "summedSeconds": 0.005,
+        "spanSeconds": 0.00867,
+        "cost": 0.00867,
+        "start": "2026-10-14T05:43:12.622783+00:00"
+      },
+      "Cna.Core.Tests.Rules.CombatRulesetManifestTests": {
+        "rows": 2,
+        "summedSeconds": 0.001,
+        "spanSeconds": 0.002488,
+        "cost": 0.002488,
+        "start": "2026-10-14T05:44:30.242189+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CombatCreationSnapshotTests": {
+        "rows": 34,
+        "summedSeconds": 0.08600000000000003,
+        "spanSeconds": 0.107622,
+        "cost": 0.107622,
+        "start": "2026-10-14T05:43:12.514060+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CampaignMovementCompletionTests": {
+        "rows": 5,
+        "summedSeconds": 0.05399999999999999,
+        "spanSeconds": 0.056405,
+        "cost": 0.056405,
+        "start": "2026-10-14T05:41:19.767929+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CombatReactionFallbackTests": {
+        "rows": 9,
+        "summedSeconds": 8.357000000000001,
+        "spanSeconds": 8.368097,
+        "cost": 8.368097,
+        "start": "2026-10-14T05:39:46.261488+00:00"
+      },
+      "Cna.Core.Tests.Actions.CampaignReserveMembershipTests": {
+        "rows": 6,
+        "summedSeconds": 0.15300000000000002,
+        "spanSeconds": 0.168733,
+        "cost": 0.168733,
+        "start": "2026-10-14T05:35:37.611413+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CombatStageEntryTests": {
+        "rows": 17,
+        "summedSeconds": 3.2380000000000004,
+        "spanSeconds": 3.253676,
+        "cost": 3.253676,
+        "start": "2026-10-14T05:38:56.415669+00:00"
+      },
+      "Cna.Core.Tests.Rules.ReserveRulesTests": {
+        "rows": 3,
+        "summedSeconds": 0.013999999999999999,
+        "spanSeconds": 0.016121,
+        "cost": 0.016121,
+        "start": "2026-10-14T05:47:06.003157+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.BreakdownMovementTests": {
+        "rows": 12,
+        "summedSeconds": 0.16700000000000004,
+        "spanSeconds": 0.180324,
+        "cost": 0.180324,
+        "start": "2026-10-14T05:40:13.634840+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.BreakdownSetupTests": {
+        "rows": 14,
+        "summedSeconds": 0.04000000000000001,
+        "spanSeconds": 0.050485,
+        "cost": 0.050485,
+        "start": "2026-10-14T05:40:08.851978+00:00"
+      },
+      "Cna.Core.Tests.Rules.LandSequenceCacheTests": {
+        "rows": 8,
+        "summedSeconds": 0.013999999999999999,
+        "spanSeconds": 0.019627,
+        "cost": 0.019627,
+        "start": "2026-10-14T05:50:02.630458+00:00"
+      },
+      "Cna.Core.Tests.Observations.CampaignObservationV7TranscriptTests": {
+        "rows": 15,
+        "summedSeconds": 14.359,
+        "spanSeconds": 14.371626,
+        "cost": 14.371626,
+        "start": "2026-10-14T05:39:54.478634+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CampaignReserveEndToEndTests": {
+        "rows": 4,
+        "summedSeconds": 0.043,
+        "spanSeconds": 0.046249,
+        "cost": 0.046249,
+        "start": "2026-10-14T05:43:23.032793+00:00"
+      },
+      "Cna.Core.Tests.Observations.CampaignObservationV6ContractTests": {
+        "rows": 24,
+        "summedSeconds": 0.2510000000000001,
+        "spanSeconds": 0.272521,
+        "cost": 0.272521,
+        "start": "2026-10-14T05:36:07.738014+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CombatMovementLifecycleTests": {
+        "rows": 12,
+        "summedSeconds": 30.886,
+        "spanSeconds": 30.897838,
+        "cost": 30.897838,
+        "start": "2026-10-14T05:41:23.746880+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.BreakdownCreationTests": {
+        "rows": 18,
+        "summedSeconds": 0.18100000000000005,
+        "spanSeconds": 0.198068,
+        "cost": 0.198068,
+        "start": "2026-10-14T05:47:06.091169+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.StageEntryArrivalTests": {
+        "rows": 4,
+        "summedSeconds": 0.008,
+        "spanSeconds": 0.011691,
+        "cost": 0.011691,
+        "start": "2026-10-14T05:46:52.151070+00:00"
+      },
+      "Cna.Core.Tests.Rules.BreakdownPointAmountTests": {
+        "rows": 10,
+        "summedSeconds": 0.002,
+        "spanSeconds": 0.006261,
+        "cost": 0.006261,
+        "start": "2026-10-14T05:39:45.761929+00:00"
+      },
+      "Cna.Core.Tests.Observations.UserSpaceDisclosureManifestTests": {
+        "rows": 3,
+        "summedSeconds": 0.053,
+        "spanSeconds": 0.055907,
+        "cost": 0.055907,
+        "start": "2026-10-14T05:38:59.872023+00:00"
+      },
+      "Cna.Core.Tests.Content.CombatContentTests": {
+        "rows": 8,
+        "summedSeconds": 0.236,
+        "spanSeconds": 0.241503,
+        "cost": 0.241503,
+        "start": "2026-10-14T05:35:37.846277+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CombatWorldTests": {
+        "rows": 29,
+        "summedSeconds": 0.031000000000000007,
+        "spanSeconds": 0.05404,
+        "cost": 0.05404,
+        "start": "2026-10-14T05:36:08.011948+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CombatReactionSecondMoveTests": {
+        "rows": 11,
+        "summedSeconds": 3.52,
+        "spanSeconds": 3.529657,
+        "cost": 3.529657,
+        "start": "2026-10-14T05:41:54.730354+00:00"
+      },
+      "Cna.Core.Tests.Rules.RulesetManifestTests": {
+        "rows": 9,
+        "summedSeconds": 0.005,
+        "spanSeconds": 0.010767,
+        "cost": 0.010767,
+        "start": "2026-10-14T05:41:32.022227+00:00"
+      },
+      "Cna.Core.Tests.Rules.InitiativeRatingTests": {
+        "rows": 21,
+        "summedSeconds": 0.003,
+        "spanSeconds": 0.01156,
+        "cost": 0.01156,
+        "start": "2026-10-14T05:42:37.769238+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CombatStepsTests": {
+        "rows": 12,
+        "summedSeconds": 11.389000000000001,
+        "spanSeconds": 11.413894,
+        "cost": 11.413894,
+        "start": "2026-10-14T05:35:38.088903+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CombatCommitTests": {
+        "rows": 9,
+        "summedSeconds": 4.058,
+        "spanSeconds": 4.066807,
+        "cost": 4.066807,
+        "start": "2026-10-14T05:44:10.488768+00:00"
+      },
+      "Cna.Core.Tests.Actions.CampaignReserveActionContractTests": {
+        "rows": 5,
+        "summedSeconds": 0.078,
+        "spanSeconds": 0.120906,
+        "cost": 0.120906,
+        "start": "2026-10-14T05:35:37.611356+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CombatContinuationTests": {
+        "rows": 22,
+        "summedSeconds": 5.658000000000002,
+        "spanSeconds": 5.680646,
+        "cost": 5.680646,
+        "start": "2026-10-14T05:39:47.209440+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CampaignEventSerializationTests": {
+        "rows": 7,
+        "summedSeconds": 0.019,
+        "spanSeconds": 0.023721,
+        "cost": 0.023721,
+        "start": "2026-10-14T05:40:10.538814+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CombatStepsHistoryReplayTests": {
+        "rows": 6,
+        "summedSeconds": 79.34,
+        "spanSeconds": 79.346978,
+        "cost": 79.346978,
+        "start": "2026-10-14T05:43:09.844603+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CombatCycleMovementRulesTests": {
+        "rows": 20,
+        "summedSeconds": 0.01,
+        "spanSeconds": 0.016497,
+        "cost": 0.016497,
+        "start": "2026-10-14T05:43:23.015484+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CombatReactionTriggerTests": {
+        "rows": 7,
+        "summedSeconds": 3.6270000000000002,
+        "spanSeconds": 3.63413,
+        "cost": 3.63413,
+        "start": "2026-10-14T05:41:20.110214+00:00"
+      }
+    }
+  },
+  "parentC": {
+    "job": 440,
+    "assembly": 346.396,
+    "overhead": 93.60399999999998,
+    "classes": {
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedMovementCompletionContractTests": {
+        "rows": 16,
+        "summedSeconds": 164.96699999999998,
+        "spanSeconds": 165.018549,
+        "cost": 165.018549,
+        "start": "2026-10-14T05:35:38.175665+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedMovementCompletionTests": {
+        "rows": 48,
+        "summedSeconds": 346.1940000000001,
+        "spanSeconds": 346.263659,
+        "cost": 346.263659,
+        "start": "2026-10-14T05:35:38.175676+00:00"
+      }
+    }
+  },
+  "oldLocalRMC": {
+    "assembly": 251.718,
+    "classes": {
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedMovementCompletionTests": {
+        "rows": 48,
+        "summedSeconds": 251.60900000000004,
+        "spanSeconds": 251.649698,
+        "cost": 251.649698,
+        "start": "2026-10-14T02:44:04.569551+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedMovementCompletionContractTests": {
+        "rows": 16,
+        "summedSeconds": 133.57200000000003,
+        "spanSeconds": 133.601428,
+        "cost": 133.601428,
+        "start": "2026-10-14T02:44:04.569551+00:00"
+      }
+    }
+  },
+  "newLocalNBC": {
+    "assembly": 215.813,
+    "classes": {
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests": {
+        "rows": 48,
+        "summedSeconds": 215.703,
+        "spanSeconds": 215.750426,
+        "cost": 215.750426,
+        "start": "2026-10-14T06:29:39.754583+00:00"
+      },
+      "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionContractTests": {
+        "rows": 18,
+        "summedSeconds": 212.51100000000002,
+        "spanSeconds": 212.540517,
+        "cost": 212.540517,
+        "start": "2026-10-14T06:29:39.754572+00:00"
+      }
+    }
+  },
+  "observedClassHostLocalRatios": {
+    "Cna.Core.Tests.Campaigns.CombatActualRepeatedMovementCompletionContractTests": 1.2351555778281054,
+    "Cna.Core.Tests.Campaigns.CombatActualRepeatedMovementCompletionTests": 1.3759748640747427
+  },
+  "projectedNativeClassCosts": {
+    "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests": 296.86716308941783,
+    "Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionContractTests": 262.52060508701925
+  },
+  "retainB": {
+    "append": {
+      "projectedAssembly": 985.4955200894178,
+      "projectedJob": 1078.3115200894179,
+      "headroomTo1200": 121.68847991058215,
+      "workers": [
+        753.2345700000001,
+        958.1239430870194,
+        864.8866059999998,
+        985.4955200894178
+      ]
+    },
+    "prepend": {
+      "projectedAssembly": 993.051845087019,
+      "projectedJob": 1085.867845087019,
+      "headroomTo1200": 114.13215491298092,
+      "workers": [
+        820.0771120894179,
+        993.051845087019,
+        915.2429980000001,
+        833.368684
+      ]
+    },
+    "alphabetical": {
+      "projectedAssembly": 1122.898504,
+      "projectedJob": 1215.714504,
+      "headroomTo1200": -15.714504000000034,
+      "workers": [
+        789.510111089418,
+        847.5707189999999,
+        801.761305087019,
+        1122.898504
+      ]
+    }
+  },
+  "moveFullClassesToC": {
+    "fourCollectionCriticalCost": 346.263659,
+    "projectedJob": 439.867659,
+    "sensitivity": {
+      "1": {
+        "projectedJob": 439.867659,
+        "headroomTo900": 460.13234100000005
+      },
+      "1.25": {
+        "projectedJob": 526.43357375,
+        "headroomTo900": 373.56642625
+      },
+      "1.5": {
+        "projectedJob": 612.9994885000001,
+        "headroomTo900": 287.00051149999996
+      },
+      "2": {
+        "projectedJob": 786.131318,
+        "headroomTo900": 113.86868199999998
+      }
+    }
+  },
+  "sourceHashes": {
+    "/private/tmp/b02-ci-final/core-b/results/runner_runnervmmprz5_2026-10-14_05_35_36.606846.xunit.xml": "d552c80b64f7d5038c72b647630827c8ced05dfbe2382b05e80856091bfd2f1b",
+    "/private/tmp/b02-ci-final/core-c/results/runner_runnervmmprz5_2026-10-14_05_35_37.246344.xunit.xml": "0b8e1e66ab4c43ab8e5b6eb2defec98fd6b90acbcffc93c36c1f853d03f44597",
+    "docs/work/reviews/2026-10-13-nrc-final.xunit.xml": "d930c79505752db9c80c99be4c917c70d276d5c8398ef2dbfd2c4940651698e4",
+    "/private/tmp/b03-final-results/dsteele_Dylans-MacBook-Pro_2026-10-14_06_29_39.245988.xunit.xml": "da33f6314754525acd1b417bcf5d549ac379c3e1ccc5ffef7bdc3dea2e909f5c"
+  },
+  "note": "Read-only observed-class schedule/sensitivity; not actual hosted NBC execution, no future latency guarantee or host resource cause established."
+}

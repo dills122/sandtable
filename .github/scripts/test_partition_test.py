@@ -555,6 +555,8 @@ class CoreThirdShardTests(unittest.TestCase):
     classes = (
         'Cna.Core.Tests.Campaigns.CombatActualRepeatedMovementCompletionTests',
         'Cna.Core.Tests.Campaigns.CombatActualRepeatedMovementCompletionContractTests',
+        'Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests',
+        'Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionContractTests',
     )
 
     def setUp(self):
@@ -604,7 +606,7 @@ class CoreThirdShardTests(unittest.TestCase):
         self.assertEqual(a[:13], ['--filter-method', *partition.SELECTORS])
         self.assertEqual(set(a[14:]), self.transfer)
         self.assertEqual(c, ['--filter-class', *self.classes])
-        self.assertEqual(b[-3:], ['--filter-not-class', *self.classes])
+        self.assertEqual(b[-(len(self.classes) + 1):], ['--filter-not-class', *self.classes])
         for shard in ['core-a', 'core-b', 'core-c']:
             filters = partition.partition_filters(shard, plan)
             command = partition.execution_command(shard, Path('/tmp/control') / shard, plan)
@@ -686,5 +688,39 @@ class PreparedPartitionTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             with mock.patch.object(partition.subprocess, 'run', return_value=partition.subprocess.CompletedProcess([], 17)):
                 with self.assertRaises(ValueError): partition.run_logged(['dotnet', 'test'], Path(tmp) / 'log')
+
+
+class NativeCompletionCapacityTests(unittest.TestCase):
+    native = ('Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests', 'Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionContractTests')
+
+    def setUp(self):
+        fixture = CoreThirdShardTests(); fixture.setUp()
+        self.rows = list(fixture.rows); self.expected_a = fixture.expected_a
+
+    def test_both_full_native_classes_enter_c_and_leave_b(self):
+        plan = partition.core_partition(self.rows)
+        self.assertEqual(plan['core-a'], self.expected_a)
+        for cls in self.native:
+            rows = {r for r in self.rows if r[1].rsplit('.', 1)[0] == cls}
+            self.assertTrue(rows); self.assertTrue(rows <= plan['core-c']); self.assertFalse(rows & plan['core-b'])
+        self.assertEqual(plan['core-a'] | plan['core-b'] | plan['core-c'], set(self.rows))
+        self.assertFalse(plan['core-a'] & plan['core-b'] or plan['core-a'] & plan['core-c'] or plan['core-b'] & plan['core-c'])
+
+    def test_future_native_methods_follow_full_class_policy(self):
+        for cls in self.native:
+            method = cls + '.Future'; row = ('Cna.Core.Tests', method, method + '(index: 7)')
+            plan = partition.core_partition(self.rows + [row]); self.assertIn(row, plan['core-c']); self.assertNotIn(row, plan['core-b'])
+            similar = cls + 'Extra.Future'; extra = ('Cna.Core.Tests', similar, similar)
+            plan = partition.core_partition(self.rows + [extra]); self.assertIn(extra, plan['core-b']); self.assertNotIn(extra, plan['core-c'])
+
+    def test_missing_native_selected_class_fails_closed(self):
+        for cls in self.native:
+            with self.assertRaises(ValueError): partition.core_partition([r for r in self.rows if r[1].rsplit('.', 1)[0] != cls])
+
+    def test_exact_native_classes_bind_execution_filters(self):
+        plan = partition.core_partition(self.rows); filters = partition.partition_filters('core-c', plan)
+        self.assertEqual(filters, ['--filter-class', *CoreThirdShardTests.classes])
+        for cls in self.native:self.assertIn(cls, partition.partition_filters('core-b', plan))
+        self.assertEqual(partition.execution_command('core-c', Path('/tmp/control/core-c'), plan)[-len(filters):], filters)
 
 if __name__ == '__main__': unittest.main()

@@ -26,3 +26,8 @@ Closeout09:10:17UTC no newfeatures; productstop09:55:17UTC, retainpushedlabelled
 Genuine nativeRED:8actual executed rows failed only007 at publication after full nativeRMC/trustedcontext/
 sixledgers/seventhshape preconditions,23.565s/180 exit2,no timeout/skips. Build9.485s0warnings/errors.
 Retained XML/log/receipt. No import/build/harness failure credited asRED.
+
+Brain accepted boundedcapacityproposal (SHA4e5cb20d45f7ceccee5b886d3238316bc1a1aa47d295d5ac0864559ae2d828f8)
+before CI policyimplementation. Nativefiveprimaryfiles heldfrozen; boundedrelatedCIhelper/test amendment
+is explicitcombinedscope, not nativefeature expansion. GenuinepolicyRED4failures0.136s/120, nativeclass
+membership/futureclass/missingclass/filter assertions only. Expected71/2329/130/469/10=3009, capsunchanged.

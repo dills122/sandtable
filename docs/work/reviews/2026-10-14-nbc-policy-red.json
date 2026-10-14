@@ -1,0 +1,16 @@
+{
+  "command": [
+    "python3",
+    "-B",
+    ".github/scripts/test_partition_test.py",
+    "NativeCompletionCapacityTests",
+    "-v"
+  ],
+  "budgetSeconds": 120,
+  "exitCode": 1,
+  "timedOut": false,
+  "elapsedSeconds": 0.136,
+  "logSha256": "73b73fe5266be495eed62e1ee7efe06c6208ee90e8b1f244a3769bc13f19723e",
+  "logArtifact": "2026-10-14-nbc-policy-red.log.gz",
+  "logEncoding": "gzip; logSha256 hashes decoded bytes"
+}
