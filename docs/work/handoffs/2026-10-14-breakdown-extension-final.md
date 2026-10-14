@@ -10,8 +10,8 @@ change product files or grant a further implementation scope.
 
 Session start2026-10-14 03:55:17UTC (Oct13 23:55:17EDT Toronto). No new features after09:10:17UTC
 (Oct14 05:10:17EDT); product stop09:55:17UTC (05:55:17EDT). B03 merged07:28:35UTC (03:28:35EDT),
-before both deadlines. Brain owns main verification and automation pause. **Post-B03 main checks
-are pending at this handoff checkpoint; do not claim main green until Brain supplies the outcome.**
+before both deadlines. Brain owns main verification and automation pause. **Post-B03 main42503c5 is VERIFIED GREEN: CI38528562657, CodeQL38528562876 and links38528562651
+completed successfully. Dependency review was expected skipped on push.**
 
 ## Canonical Sources
 
@@ -40,7 +40,7 @@ Final preservation commit is supplied in dispatch; no PR/merge requested for thi
 | --- | --- | --- | --- |
 | B00 [PR184](https://github.com/dills122/sandtable/pull/184) | codex/ci-core-partition-capacity,0973e404f526ed2f0b985560f40c057aaeca0a7e |4191d5efd86622b181a7c1f309a36e41206b5668 | Genuine helper RED/GREEN,117helpers/actionlint/compileddiscovery,review1Ready/disposition,actual2943CI38512285211; main green |
 | B02 [PR185](https://github.com/dills122/sandtable/pull/185) | codex/actual-repeated-breakdown-completion,be149cb5c2fd0226c1ca90a5c630af0e3aa10b73 |b2acab891dc894988a42bb4e59d534c79dbc6c01 | Genuine20semanticRED/GREEN,normal788.140s/1200,77fixedinputhashes/literals,review1Ready/disposition,actual2943CI38517061509; main green |
-| B03 [PR186](https://github.com/dills122/sandtable/pull/186) | codex/native-actual-repeated-breakdown-completion,f2590be72419b921f7774a52106389c4d5a29312 |42503c570294e5e4823ff1995bbfdcadc298bf07 | Genuine8nativeRED/GREEN,66exactnative217.248s/900,88unchangedfingerprints,8predecessorregression,acceptedpolicyRED/GREEN121helpers,actual3009CI38526253465,review1Ready/disposition; latestmain pending |
+| B03 [PR186](https://github.com/dills122/sandtable/pull/186) | codex/native-actual-repeated-breakdown-completion,f2590be72419b921f7774a52106389c4d5a29312 |42503c570294e5e4823ff1995bbfdcadc298bf07 | Genuine8nativeRED/GREEN,66exactnative217.248s/900,88unchangedfingerprints,8predecessorregression,acceptedpolicyRED/GREEN121helpers,actual3009CI38526253465,review1Ready/disposition; latestmain green |
 
 B00 operationalGREENa475386e6ccc814a78450f11f4a242c80ac3bc48/REDb348aabc1c0908fc345bc228af7f32fb317516bc.
 B02 RED572549b662a79a8f2425eaa863fe76cb20790025/GREEN836f0ec14f47c581137c906ba2a1f06c1da0db10;
@@ -66,7 +66,8 @@ verifiers. Current-extension raw PR aggregates B00/B02/B03 are preserved separat
 [Archive index](../reviews/2026-10-14-breakdown-extension-ci-archives.json). Thirty-three local/reviewer
 current-session binlogs are also archived byte-identically with [manifest](../reviews/2026-10-14-breakdown-extension-binlogs.json).
 No unrelated prior-session binary archives were imported. These diagnostics are evidence, not authority.
-B00/B02 main receipts are retained; latest B03 main receipt must follow after actual completion.
+B00/B02 main receipts are retained; latest B03 main [checks](../reviews/2026-10-14-b03-main-checks.json) and
+[compact summary](../reviews/2026-10-14-b03-main-summary.json) are retained.
 
 ## Decisions And Rationale
 
@@ -86,7 +87,7 @@ for this exact tested scope/attempt, not future growth or memory guarantees.
 
 ## Blockers And Limitations
 
-No unresolved engineering finding in merged scoped work. Latest main verification remains pending.
+No unresolved engineering finding in merged scoped work. Latest main verification is green; raw diagnostic export approval remains outstanding.
 Warm supported~1.9MB native source observed~1.06–1.10GB cumulative current-thread allocations at
 606–622ms. Not peak/live heap, near-limit/public resource safety or general latency bound; allocation
 sources not separately profiled. Four C collections can alter future GC/host/order costs. Existing
@@ -105,10 +106,10 @@ released; no duplicate66/fullreference/fullsolution suite needed absent a change
 
 ## Immediate Next Actions
 
-1. Brain finish exact42503c5 main CI/CodeQL/link verification; retain its outcome and run IDs. If failed,
-   diagnose exact evidence under existing bounded controls; never claim success or rerun blindly.
-2. Update this preservation handoff/main receipt after confirmed outcome, commit/push metadata only;
-   Brain controls heartbeat pause/session completion. Preserve code/reference hashes and prior branches.
+1. Main42503c5 verification is complete and green. Keep raw archive export held for the existing
+   human approval response; do not retry or publish rejected archive ancestry without authorization.
+2. Preserve this updated metadata branch and verified main receipt. Brain controls heartbeat pause/
+   session completion; preserve code/reference hashes and prior branches.
 3. No implementation is authorized beyond this boundary. A future separately authorized bounded
    research decision can assess authentic ordinal2 Combat Position Determination/next actual source
    join. Do not infer a no-attack/downstream route from ammo0, old attack history or missing API.
@@ -129,9 +130,8 @@ Date2026-10-14 Toronto. Evidence branch codex/breakdown-extension-final-handoff,
 all product branches/reviewed heads/merge commits above remain preserved/pushed. Final evidence head
 is in author dispatch; evidence-only branch needs no PR/merge. User authorized scoped commit/push.
 Use github-keychain-auth outside sandbox/loginfalse, unset GH_TOKEN/GITHUB_TOKEN for each credential
-operation, never inspect/extract tokens. Main checkout/automation remain Brain-owned. Missing artifacts
-at checkpoint: only latest-main completion receipt/outcome, genuinely still pending; no known missing
-required local/native/reference/PR review/gate evidence.
+operation, never inspect/extract tokens. Main checkout/automation remain Brain-owned. No known missing required local/native/reference/PR/main review/gate evidence. Raw archive files
+are retained locally but publication remains held pending the existing human approval.
 
 
 ## Publication boundary: raw export pending approval
@@ -146,5 +146,20 @@ manifest names/hash records refer to those local archives, absent from this meta
 Safe sibling branch codex/breakdown-extension-handoff-metadata starts42503c5 independently and
 retains only text review/disposition/CIreceipt/verifiers/manifests/handoff, with no raw archive commit
 ancestry. This is a partial publication until raw export approval; do not claim all raw evidence pushed.
-Main verification is separately still pending at this checkpoint. All product work was already pushed/
+Main verification was pending at the initial metadata checkpoint and is now confirmed green. All product work was already pushed/
 reviewed/merged; diagnostic export does not block or undo those product gates.
+
+
+## Verified main and session snapshots
+
+Main42503c570294e5e4823ff1995bbfdcadc298bf07 completed green: CI38528562657/all five leaves+prepare+
+verify; CodeQL38528562876 and links38528562651 success; dependency expected skipped on push.
+Main job durations A13m45/B15m54/C9m17/Exercise4m16/Contracts1m33/verify11s. Checkmetadata independently
+validated thirteen completed checks at exacthead, twelve success plus the one expected skip. This
+records main check outcomes, distinct from PR186's independently reconciled actual3009 XML proof.
+
+Brain session-plan and run-state text snapshots are retained under dated reviews; source .planning
+files remain Brain-owned and can evolve after snapshots. They are operational history, not new
+product authority. The only outstanding publication limitation is the raw archive export approval;
+all product work and safe review/receipt/handoff metadata are pushed. Fullraw27d8293/local copies
+remain unchanged and unpublished. No product edits, PR or evidence-branch merge is requested.

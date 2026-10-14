@@ -1,0 +1,127 @@
+{
+  "head": "42503c570294e5e4823ff1995bbfdcadc298bf07",
+  "verifiedGreen": true,
+  "ciRun": 38528562657,
+  "codeqlRun": 38528562876,
+  "linksRun": 38528562651,
+  "sourceSha256": "0f9e888a1c845467080fa38cef51a93e7861603ecbac62525d45fdbf0e35cb90",
+  "checks": [
+    {
+      "name": "verify",
+      "head_sha": "42503c570294e5e4823ff1995bbfdcadc298bf07",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-14T07:47:34Z",
+      "completed_at": "2026-10-14T07:47:45Z",
+      "html_url": "https://github.com/dills122/sandtable/actions/runs/38528562657/job/115741464110"
+    },
+    {
+      "name": "tests (core-c)",
+      "head_sha": "42503c570294e5e4823ff1995bbfdcadc298bf07",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-14T07:31:38Z",
+      "completed_at": "2026-10-14T07:40:55Z",
+      "html_url": "https://github.com/dills122/sandtable/actions/runs/38528562657/job/115735706067"
+    },
+    {
+      "name": "tests (contracts)",
+      "head_sha": "42503c570294e5e4823ff1995bbfdcadc298bf07",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-14T07:31:38Z",
+      "completed_at": "2026-10-14T07:33:11Z",
+      "html_url": "https://github.com/dills122/sandtable/actions/runs/38528562657/job/115735706062"
+    },
+    {
+      "name": "tests (core-b)",
+      "head_sha": "42503c570294e5e4823ff1995bbfdcadc298bf07",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-14T07:31:37Z",
+      "completed_at": "2026-10-14T07:47:31Z",
+      "html_url": "https://github.com/dills122/sandtable/actions/runs/38528562657/job/115735705945"
+    },
+    {
+      "name": "tests (exercise)",
+      "head_sha": "42503c570294e5e4823ff1995bbfdcadc298bf07",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-14T07:31:37Z",
+      "completed_at": "2026-10-14T07:35:53Z",
+      "html_url": "https://github.com/dills122/sandtable/actions/runs/38528562657/job/115735705925"
+    },
+    {
+      "name": "tests (core-a)",
+      "head_sha": "42503c570294e5e4823ff1995bbfdcadc298bf07",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-14T07:31:37Z",
+      "completed_at": "2026-10-14T07:45:22Z",
+      "html_url": "https://github.com/dills122/sandtable/actions/runs/38528562657/job/115735705922"
+    },
+    {
+      "name": "Analyze (csharp)",
+      "head_sha": "42503c570294e5e4823ff1995bbfdcadc298bf07",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-14T07:28:42Z",
+      "completed_at": "2026-10-14T07:31:51Z",
+      "html_url": "https://github.com/dills122/sandtable/actions/runs/38528562876/job/115734663597"
+    },
+    {
+      "name": "Analyze (actions)",
+      "head_sha": "42503c570294e5e4823ff1995bbfdcadc298bf07",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-14T07:28:42Z",
+      "completed_at": "2026-10-14T07:29:26Z",
+      "html_url": "https://github.com/dills122/sandtable/actions/runs/38528562876/job/115734663595"
+    },
+    {
+      "name": "Analyze (python)",
+      "head_sha": "42503c570294e5e4823ff1995bbfdcadc298bf07",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-14T07:28:42Z",
+      "completed_at": "2026-10-14T07:30:38Z",
+      "html_url": "https://github.com/dills122/sandtable/actions/runs/38528562876/job/115734663506"
+    },
+    {
+      "name": "Analyze (javascript-typescript)",
+      "head_sha": "42503c570294e5e4823ff1995bbfdcadc298bf07",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-14T07:28:42Z",
+      "completed_at": "2026-10-14T07:30:02Z",
+      "html_url": "https://github.com/dills122/sandtable/actions/runs/38528562876/job/115734663340"
+    },
+    {
+      "name": "dependency-review",
+      "head_sha": "42503c570294e5e4823ff1995bbfdcadc298bf07",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-10-14T07:28:38Z",
+      "completed_at": "2026-10-14T07:28:38Z",
+      "html_url": "https://github.com/dills122/sandtable/actions/runs/38528562657/job/115734659693"
+    },
+    {
+      "name": "prepare",
+      "head_sha": "42503c570294e5e4823ff1995bbfdcadc298bf07",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-14T07:28:41Z",
+      "completed_at": "2026-10-14T07:31:34Z",
+      "html_url": "https://github.com/dills122/sandtable/actions/runs/38528562657/job/115734657832"
+    },
+    {
+      "name": "Offline links (observational)",
+      "head_sha": "42503c570294e5e4823ff1995bbfdcadc298bf07",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-14T07:28:41Z",
+      "completed_at": "2026-10-14T07:28:53Z",
+      "html_url": "https://github.com/dills122/sandtable/actions/runs/38528562651/job/115734657258"
+    }
+  ]
+}
