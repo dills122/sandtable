@@ -1,0 +1,31 @@
+FAIL authentic terminal version 38 requires Breakdown publication; actual CMB-ABC-007 /unsupportedBreakdownPublication axis attacker 0
+FAIL authentic terminal version 41 requires Breakdown publication; actual CMB-ABC-007 /unsupportedBreakdownPublication axis attacker 1
+FAIL authentic terminal version 42 requires Breakdown publication; actual CMB-ABC-007 /unsupportedBreakdownPublication axis attacker 2
+FAIL authentic terminal version 43 requires Breakdown publication; actual CMB-ABC-007 /unsupportedBreakdownPublication axis attacker 3
+FAIL authentic terminal version 44 requires Breakdown publication; actual CMB-ABC-007 /unsupportedBreakdownPublication axis attacker 4
+FAIL authentic terminal version 38 requires Breakdown publication; actual CMB-ABC-007 /unsupportedBreakdownPublication axis defender 0
+FAIL authentic terminal version 41 requires Breakdown publication; actual CMB-ABC-007 /unsupportedBreakdownPublication axis defender 1
+FAIL authentic terminal version 42 requires Breakdown publication; actual CMB-ABC-007 /unsupportedBreakdownPublication axis defender 2
+FAIL authentic terminal version 43 requires Breakdown publication; actual CMB-ABC-007 /unsupportedBreakdownPublication axis defender 3
+FAIL authentic terminal version 44 requires Breakdown publication; actual CMB-ABC-007 /unsupportedBreakdownPublication axis defender 4
+FAIL authentic terminal version 38 requires Breakdown publication; actual CMB-ABC-007 /unsupportedBreakdownPublication commonwealth attacker 0
+FAIL authentic terminal version 41 requires Breakdown publication; actual CMB-ABC-007 /unsupportedBreakdownPublication commonwealth attacker 1
+FAIL authentic terminal version 42 requires Breakdown publication; actual CMB-ABC-007 /unsupportedBreakdownPublication commonwealth attacker 2
+FAIL authentic terminal version 43 requires Breakdown publication; actual CMB-ABC-007 /unsupportedBreakdownPublication commonwealth attacker 3
+FAIL authentic terminal version 44 requires Breakdown publication; actual CMB-ABC-007 /unsupportedBreakdownPublication commonwealth attacker 4
+FAIL authentic terminal version 38 requires Breakdown publication; actual CMB-ABC-007 /unsupportedBreakdownPublication commonwealth defender 0
+FAIL authentic terminal version 41 requires Breakdown publication; actual CMB-ABC-007 /unsupportedBreakdownPublication commonwealth defender 1
+FAIL authentic terminal version 42 requires Breakdown publication; actual CMB-ABC-007 /unsupportedBreakdownPublication commonwealth defender 2
+FAIL authentic terminal version 43 requires Breakdown publication; actual CMB-ABC-007 /unsupportedBreakdownPublication commonwealth defender 3
+FAIL authentic terminal version 44 requires Breakdown publication; actual CMB-ABC-007 /unsupportedBreakdownPublication commonwealth defender 4
+Traceback (most recent call last):
+  File "/Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/docs/specs/verify-combat-actual-repeated-breakdown-completion-v1.py", line 166, in <module>
+    if __name__=='__main__':main()
+                            ~~~~^^
+  File "/Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/docs/specs/verify-combat-actual-repeated-breakdown-completion-v1.py", line 165, in main
+    parser=argparse.ArgumentParser();parser.add_argument('--group',choices=['semantic']);args=parser.parse_args();semantic_tests()
+                                                                                                                  ~~~~~~~~~~~~~~^^
+  File "/Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/docs/specs/verify-combat-actual-repeated-breakdown-completion-v1.py", line 163, in semantic_tests
+    assert not failures,str(len(failures))+' genuine Breakdown publications failed'
+           ^^^^^^^^^^^^
+AssertionError: 20 genuine Breakdown publications failed
