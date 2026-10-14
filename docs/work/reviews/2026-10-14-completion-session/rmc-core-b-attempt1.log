@@ -1,0 +1,346 @@
+tests (core-b)	Set up job	﻿2026-10-14T00:36:18.6932518Z Current runner version: '2.337.0'
+tests (core-b)	Set up job	2026-10-14T00:36:18.6958084Z ##[group]Runner Image Provisioner
+tests (core-b)	Set up job	2026-10-14T00:36:18.6959261Z Hosted Compute Agent
+tests (core-b)	Set up job	2026-10-14T00:36:18.6959993Z Version: 20261002.596
+tests (core-b)	Set up job	2026-10-14T00:36:18.6960682Z Commit: c3d12f3313a95f25162a1503be624f3b0617f8c0
+tests (core-b)	Set up job	2026-10-14T00:36:18.6961473Z Build Date: 2026-10-02T22:28:27Z
+tests (core-b)	Set up job	2026-10-14T00:36:18.6962217Z Worker ID: {9f7c994d-8332-4027-9480-e1227947b2dc}
+tests (core-b)	Set up job	2026-10-14T00:36:18.6962904Z Region: westus3
+tests (core-b)	Set up job	2026-10-14T00:36:18.6963478Z Cloud: Azure
+tests (core-b)	Set up job	2026-10-14T00:36:18.6964077Z ##[endgroup]
+tests (core-b)	Set up job	2026-10-14T00:36:18.6965594Z ##[group]Operating System
+tests (core-b)	Set up job	2026-10-14T00:36:18.6966324Z Ubuntu
+tests (core-b)	Set up job	2026-10-14T00:36:18.6966843Z 24.04.5
+tests (core-b)	Set up job	2026-10-14T00:36:18.6967378Z LTS
+tests (core-b)	Set up job	2026-10-14T00:36:18.6967901Z ##[endgroup]
+tests (core-b)	Set up job	2026-10-14T00:36:18.6968469Z ##[group]Runner Image
+tests (core-b)	Set up job	2026-10-14T00:36:18.6969490Z Image: ubuntu-24.04
+tests (core-b)	Set up job	2026-10-14T00:36:18.6970058Z Version: 20261004.327.1
+tests (core-b)	Set up job	2026-10-14T00:36:18.6971111Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261004.327/images/ubuntu/Ubuntu2404-Readme.md
+tests (core-b)	Set up job	2026-10-14T00:36:18.6972977Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261004.327
+tests (core-b)	Set up job	2026-10-14T00:36:18.6974004Z ##[endgroup]
+tests (core-b)	Set up job	2026-10-14T00:36:18.6975102Z ##[group]GITHUB_TOKEN Permissions
+tests (core-b)	Set up job	2026-10-14T00:36:18.6976961Z Contents: read
+tests (core-b)	Set up job	2026-10-14T00:36:18.6977593Z Metadata: read
+tests (core-b)	Set up job	2026-10-14T00:36:18.6978297Z ##[endgroup]
+tests (core-b)	Set up job	2026-10-14T00:36:18.6980605Z Secret source: Actions
+tests (core-b)	Set up job	2026-10-14T00:36:18.6981537Z Cache mode: write
+tests (core-b)	Set up job	2026-10-14T00:36:18.6982332Z Prepare workflow directory
+tests (core-b)	Set up job	2026-10-14T00:36:18.7381470Z Prepare all required actions
+tests (core-b)	Set up job	2026-10-14T00:36:18.7428656Z Getting action download info
+tests (core-b)	Set up job	2026-10-14T00:36:19.1026235Z Download action repository 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1' (SHA:3d3c42e5aac5ba805825da76410c181273ba90b1)
+tests (core-b)	Set up job	2026-10-14T00:36:19.1902840Z Download action repository 'actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68' (SHA:a98b56852c35b8e3190ac28c8c2271da59106c68)
+tests (core-b)	Set up job	2026-10-14T00:36:20.0203766Z Download action repository 'actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333' (SHA:9000827ccba6bdab643e8b6fd33ac0654aef8333)
+tests (core-b)	Set up job	2026-10-14T00:36:20.7556084Z Download action repository 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9' (SHA:cf430e030ddbb5b0abf93d22962f4752f3646cd9)
+tests (core-b)	Set up job	2026-10-14T00:36:21.5860699Z Complete job name: tests (core-b)
+tests (core-b)	Check out tested event SHA	﻿2026-10-14T00:36:21.6612479Z ##[group]Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.6613299Z with:
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.6613638Z   ref: e0d67dcb054d4dc7490e433cccd91b18fd54d487
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.6614018Z   persist-credentials: false
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.6614337Z   repository: dills122/sandtable
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.6617203Z   token: ***
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.6617465Z   ssh-strict: true
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.6617724Z   ssh-user: git
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.6617972Z   clean: true
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.6618244Z   sparse-checkout-cone-mode: true
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.6618558Z   fetch-depth: 1
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.6619056Z   fetch-tags: false
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.6619364Z   show-progress: true
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.6619731Z   lfs: false
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.6620247Z   submodules: false
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.6620826Z   set-safe-directory: true
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.6621165Z   allow-unsafe-pr-checkout: false
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.6621809Z env:
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.6622128Z   DOTNET_CLI_TELEMETRY_OPTOUT: 1
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.6622479Z   DOTNET_NOLOGO: 1
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.6622767Z   TESTINGPLATFORM_TELEMETRY_OPTOUT: 1
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.6623086Z ##[endgroup]
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.7714448Z Syncing repository: dills122/sandtable
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.7716498Z ##[group]Getting Git version info
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.7717243Z Working directory is '/home/runner/work/sandtable/sandtable'
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.7718302Z [command]/usr/bin/git version
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.7814925Z git version 2.55.0
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.7861932Z ##[endgroup]
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.7884517Z Temporarily overriding HOME='/home/runner/work/_temp/e41dd9bc-eebe-4a84-8fb1-bba9ef7dc35c' before making global git config changes
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.7886849Z Adding repository directory to the temporary git global config as a safe directory
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.7888481Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/sandtable/sandtable
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.7965058Z Deleting the contents of '/home/runner/work/sandtable/sandtable'
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.7966505Z ##[group]Determining repository object format
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.7975390Z ##[endgroup]
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.7976661Z ##[group]Initializing the repository
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.7977685Z [command]/usr/bin/git init /home/runner/work/sandtable/sandtable
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.8098352Z hint: Using 'master' as the name for the initial branch. This default branch name
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.8099971Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.8102962Z hint: to use in all of your new repositories, which will suppress this warning,
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.8104294Z hint: call:
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.8105176Z hint:
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.8106103Z hint: 	git config --global init.defaultBranch <name>
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.8107323Z hint:
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.8108512Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.8110124Z hint: 'development'. The just-created branch can be renamed via this command:
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.8111328Z hint:
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.8112325Z hint: 	git branch -m <name>
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.8113443Z hint:
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.8114472Z hint: Disable this message with "git config set advice.defaultBranchName false"
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.8118219Z Initialized empty Git repository in /home/runner/work/sandtable/sandtable/.git/
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.8126240Z [command]/usr/bin/git remote add origin https://github.com/dills122/sandtable
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.8190919Z ##[endgroup]
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.8191788Z ##[group]Disabling automatic garbage collection
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.8192698Z [command]/usr/bin/git config --local gc.auto 0
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.8245507Z ##[endgroup]
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.8246507Z ##[group]Setting up auth
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.8247136Z Removing SSH command configuration
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.8261069Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.8295803Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.8642294Z Removing HTTP extra header
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.8647990Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.8684032Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.8909227Z Removing includeIf entries pointing to credentials config files
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.8914445Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.8949064Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.9173536Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-b5e69f29-b314-453b-aae2-d4311671025d.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.9212477Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/sandtable/sandtable/.git.path /home/runner/work/_temp/git-credentials-b5e69f29-b314-453b-aae2-d4311671025d.config
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.9247148Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/sandtable/sandtable/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-b5e69f29-b314-453b-aae2-d4311671025d.config
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.9283484Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-b5e69f29-b314-453b-aae2-d4311671025d.config
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.9317970Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-b5e69f29-b314-453b-aae2-d4311671025d.config
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.9349275Z ##[endgroup]
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.9349906Z ##[group]Fetching the repository
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:21.9355785Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin e0d67dcb054d4dc7490e433cccd91b18fd54d487
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:24.6329148Z From https://github.com/dills122/sandtable
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:24.6330088Z  * branch            e0d67dcb054d4dc7490e433cccd91b18fd54d487 -> FETCH_HEAD
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:24.6337930Z [command]/usr/bin/git rev-parse --verify --quiet e0d67dcb054d4dc7490e433cccd91b18fd54d487^{object}
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:24.6366438Z e0d67dcb054d4dc7490e433cccd91b18fd54d487
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:24.6399649Z ##[endgroup]
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:24.6400560Z ##[group]Determining the checkout info
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:24.6409872Z ##[endgroup]
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:24.6410507Z [command]/usr/bin/git sparse-checkout disable
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:24.6431135Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:24.6464590Z ##[group]Checking out the ref
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:24.6468652Z [command]/usr/bin/git checkout --progress --force e0d67dcb054d4dc7490e433cccd91b18fd54d487
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:25.0180122Z Note: switching to 'e0d67dcb054d4dc7490e433cccd91b18fd54d487'.
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:25.0180795Z 
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:25.0181801Z You are in 'detached HEAD' state. You can look around, make experimental
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:25.0182738Z changes and commit them, and you can discard any commits you make in this
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:25.0183605Z state without impacting any branches by switching back to a branch.
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:25.0184098Z 
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:25.0184414Z If you want to create a new branch to retain commits you create, you may
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:25.0185199Z do so (now or later) by using -c with the switch command. Example:
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:25.0185699Z 
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:25.0185888Z   git switch -c <new-branch-name>
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:25.0186217Z 
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:25.0186407Z Or undo this operation with:
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:25.0186699Z 
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:25.0186853Z   git switch -
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:25.0187071Z 
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:25.0187447Z Turn off this advice by setting config variable advice.detachedHead to false
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:25.0188261Z 
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:25.0189207Z HEAD is now at e0d67dc Merge c20a84c5d84ca96852ba2bb9d7e1f88b6b668c4e into c43b9caec452c152a086412c779bb6495ef1a0ad
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:25.0210040Z ##[endgroup]
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:25.0266630Z [command]/usr/bin/git log -1 --format=%H
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:25.0299789Z e0d67dcb054d4dc7490e433cccd91b18fd54d487
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:25.0311089Z ##[group]Removing auth
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:25.0311679Z Removing SSH command configuration
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:25.0316861Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:25.0360786Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:25.0605424Z Removing HTTP extra header
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:25.0609834Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:25.0647798Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:25.0888101Z Removing includeIf entries pointing to credentials config files
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:25.0910118Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:25.0924534Z includeif.gitdir:/home/runner/work/sandtable/sandtable/.git.path
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:25.0925726Z includeif.gitdir:/home/runner/work/sandtable/sandtable/.git/worktrees/*.path
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:25.0927313Z includeif.gitdir:/github/workspace/.git.path
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:25.0928295Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:25.0934897Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/sandtable/sandtable/.git.path
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:25.0963965Z /home/runner/work/_temp/git-credentials-b5e69f29-b314-453b-aae2-d4311671025d.config
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:25.0975368Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/sandtable/sandtable/.git.path \/home\/runner\/work\/_temp\/git\-credentials\-b5e69f29\-b314\-453b\-aae2\-d4311671025d\.config
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:25.1017224Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/sandtable/sandtable/.git/worktrees/*.path
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:25.1043963Z /home/runner/work/_temp/git-credentials-b5e69f29-b314-453b-aae2-d4311671025d.config
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:25.1053580Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/sandtable/sandtable/.git/worktrees/*.path \/home\/runner\/work\/_temp\/git\-credentials\-b5e69f29\-b314\-453b\-aae2\-d4311671025d\.config
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:25.1091418Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:25.1116519Z /github/runner_temp/git-credentials-b5e69f29-b314-453b-aae2-d4311671025d.config
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:25.1126840Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path \/github\/runner_temp\/git\-credentials\-b5e69f29\-b314\-453b\-aae2\-d4311671025d\.config
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:25.1174140Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:25.1252271Z /github/runner_temp/git-credentials-b5e69f29-b314-453b-aae2-d4311671025d.config
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:25.1255839Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path \/github\/runner_temp\/git\-credentials\-b5e69f29\-b314\-453b\-aae2\-d4311671025d\.config
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:25.1292901Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:25.1523318Z Removing credentials config '/home/runner/work/_temp/git-credentials-b5e69f29-b314-453b-aae2-d4311671025d.config'
+tests (core-b)	Check out tested event SHA	2026-10-14T00:36:25.1524484Z ##[endgroup]
+tests (core-b)	Set up .NET	﻿2026-10-14T00:36:25.1750455Z ##[group]Run actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68
+tests (core-b)	Set up .NET	2026-10-14T00:36:25.1750887Z with:
+tests (core-b)	Set up .NET	2026-10-14T00:36:25.1751102Z   global-json-file: global.json
+tests (core-b)	Set up .NET	2026-10-14T00:36:25.1751370Z   cache: false
+tests (core-b)	Set up .NET	2026-10-14T00:36:25.1751566Z env:
+tests (core-b)	Set up .NET	2026-10-14T00:36:25.1751764Z   DOTNET_CLI_TELEMETRY_OPTOUT: 1
+tests (core-b)	Set up .NET	2026-10-14T00:36:25.1752016Z   DOTNET_NOLOGO: 1
+tests (core-b)	Set up .NET	2026-10-14T00:36:25.1752254Z   TESTINGPLATFORM_TELEMETRY_OPTOUT: 1
+tests (core-b)	Set up .NET	2026-10-14T00:36:25.1752522Z ##[endgroup]
+tests (core-b)	Set up .NET	2026-10-14T00:36:25.3109671Z [command]/home/runner/work/_actions/actions/setup-dotnet/a98b56852c35b8e3190ac28c8c2271da59106c68/externals/install-dotnet.sh --skip-non-versioned-files --runtime dotnet --channel LTS
+tests (core-b)	Set up .NET	2026-10-14T00:36:25.5411681Z dotnet-install: Attempting to download using aka.ms link https://builds.dotnet.microsoft.com/dotnet/Runtime/10.0.13/dotnet-runtime-10.0.13-linux-x64.tar.gz
+tests (core-b)	Set up .NET	2026-10-14T00:36:25.7871757Z dotnet-install: Remote file https://builds.dotnet.microsoft.com/dotnet/Runtime/10.0.13/dotnet-runtime-10.0.13-linux-x64.tar.gz size is 36648012 bytes.
+tests (core-b)	Set up .NET	2026-10-14T00:36:25.7874456Z dotnet-install: Extracting archive from https://builds.dotnet.microsoft.com/dotnet/Runtime/10.0.13/dotnet-runtime-10.0.13-linux-x64.tar.gz
+tests (core-b)	Set up .NET	2026-10-14T00:36:26.4212680Z dotnet-install: Downloaded file size is 36648012 bytes.
+tests (core-b)	Set up .NET	2026-10-14T00:36:26.4214030Z dotnet-install: The remote and local file sizes are equal.
+tests (core-b)	Set up .NET	2026-10-14T00:36:26.4499642Z dotnet-install: Installed version is 10.0.13
+tests (core-b)	Set up .NET	2026-10-14T00:36:26.4554877Z dotnet-install: Adding to current process PATH: `/usr/share/dotnet`. Note: This change will be visible only when sourcing script.
+tests (core-b)	Set up .NET	2026-10-14T00:36:26.4556909Z dotnet-install: Note that the script does not resolve dependencies during installation.
+tests (core-b)	Set up .NET	2026-10-14T00:36:26.4558912Z dotnet-install: To check the list of dependencies, go to https://learn.microsoft.com/dotnet/core/install, select your operating system and check the "Dependencies" section.
+tests (core-b)	Set up .NET	2026-10-14T00:36:26.4559712Z dotnet-install: Installation finished successfully.
+tests (core-b)	Set up .NET	2026-10-14T00:36:26.4581642Z [command]/home/runner/work/_actions/actions/setup-dotnet/a98b56852c35b8e3190ac28c8c2271da59106c68/externals/install-dotnet.sh --skip-non-versioned-files --channel 10.0
+tests (core-b)	Set up .NET	2026-10-14T00:36:26.6661009Z dotnet-install: Attempting to download using aka.ms link https://builds.dotnet.microsoft.com/dotnet/Sdk/10.0.402/dotnet-sdk-10.0.402-linux-x64.tar.gz
+tests (core-b)	Set up .NET	2026-10-14T00:36:28.5053430Z dotnet-install: Remote file https://builds.dotnet.microsoft.com/dotnet/Sdk/10.0.402/dotnet-sdk-10.0.402-linux-x64.tar.gz size is 240279509 bytes.
+tests (core-b)	Set up .NET	2026-10-14T00:36:28.5060986Z dotnet-install: Extracting archive from https://builds.dotnet.microsoft.com/dotnet/Sdk/10.0.402/dotnet-sdk-10.0.402-linux-x64.tar.gz
+tests (core-b)	Set up .NET	2026-10-14T00:36:33.1173381Z dotnet-install: Downloaded file size is 240279509 bytes.
+tests (core-b)	Set up .NET	2026-10-14T00:36:33.1174466Z dotnet-install: The remote and local file sizes are equal.
+tests (core-b)	Set up .NET	2026-10-14T00:36:33.3682044Z dotnet-install: Installed version is 10.0.402
+tests (core-b)	Set up .NET	2026-10-14T00:36:33.3741271Z dotnet-install: Adding to current process PATH: `/usr/share/dotnet`. Note: This change will be visible only when sourcing script.
+tests (core-b)	Set up .NET	2026-10-14T00:36:33.3742620Z dotnet-install: Note that the script does not resolve dependencies during installation.
+tests (core-b)	Set up .NET	2026-10-14T00:36:33.3744239Z dotnet-install: To check the list of dependencies, go to https://learn.microsoft.com/dotnet/core/install, select your operating system and check the "Dependencies" section.
+tests (core-b)	Set up .NET	2026-10-14T00:36:33.3745544Z dotnet-install: Installation finished successfully.
+tests (core-b)	Create evidence directory	﻿2026-10-14T00:36:33.3890572Z ##[group]Run mkdir -p artifacts/ci
+tests (core-b)	Create evidence directory	2026-10-14T00:36:33.3890962Z [36;1mmkdir -p artifacts/ci[0m
+tests (core-b)	Create evidence directory	2026-10-14T00:36:33.4130969Z shell: /usr/bin/bash -e {0}
+tests (core-b)	Create evidence directory	2026-10-14T00:36:33.4131282Z env:
+tests (core-b)	Create evidence directory	2026-10-14T00:36:33.4131504Z   DOTNET_CLI_TELEMETRY_OPTOUT: 1
+tests (core-b)	Create evidence directory	2026-10-14T00:36:33.4131785Z   DOTNET_NOLOGO: 1
+tests (core-b)	Create evidence directory	2026-10-14T00:36:33.4132028Z   TESTINGPLATFORM_TELEMETRY_OPTOUT: 1
+tests (core-b)	Create evidence directory	2026-10-14T00:36:33.4132325Z   DOTNET_ROOT: /usr/share/dotnet
+tests (core-b)	Create evidence directory	2026-10-14T00:36:33.4132583Z ##[endgroup]
+tests (core-b)	Restore	﻿2026-10-14T00:36:33.4325992Z ##[group]Run dotnet restore Sandtable.slnx '/bl:artifacts/ci/core-b-restore-{}.binlog'
+tests (core-b)	Restore	2026-10-14T00:36:33.4326666Z [36;1mdotnet restore Sandtable.slnx '/bl:artifacts/ci/core-b-restore-{}.binlog'[0m
+tests (core-b)	Restore	2026-10-14T00:36:33.4386854Z shell: /usr/bin/bash -e {0}
+tests (core-b)	Restore	2026-10-14T00:36:33.4387110Z env:
+tests (core-b)	Restore	2026-10-14T00:36:33.4387321Z   DOTNET_CLI_TELEMETRY_OPTOUT: 1
+tests (core-b)	Restore	2026-10-14T00:36:33.4387589Z   DOTNET_NOLOGO: 1
+tests (core-b)	Restore	2026-10-14T00:36:33.4387823Z   TESTINGPLATFORM_TELEMETRY_OPTOUT: 1
+tests (core-b)	Restore	2026-10-14T00:36:33.4388113Z   DOTNET_ROOT: /usr/share/dotnet
+tests (core-b)	Restore	2026-10-14T00:36:33.4388357Z ##[endgroup]
+tests (core-b)	Restore	2026-10-14T00:36:36.0880355Z   Determining projects to restore...
+tests (core-b)	Restore	2026-10-14T00:36:40.1249296Z   Restored /home/runner/work/sandtable/sandtable/tests/Cna.Intelligence.Contracts.Tests/Cna.Intelligence.Contracts.Tests.csproj (in 2.91 sec).
+tests (core-b)	Restore	2026-10-14T00:36:40.1260200Z   Restored /home/runner/work/sandtable/sandtable/src/Cna.OrleansHost/Cna.OrleansHost.csproj (in 2.92 sec).
+tests (core-b)	Restore	2026-10-14T00:36:40.1407617Z   Restored /home/runner/work/sandtable/sandtable/src/Cna.DecisionWorker/Cna.DecisionWorker.csproj (in 2.94 sec).
+tests (core-b)	Restore	2026-10-14T00:36:40.1427629Z   Restored /home/runner/work/sandtable/sandtable/tests/Cna.ExerciseRunner.Tests/Cna.ExerciseRunner.Tests.csproj (in 6 ms).
+tests (core-b)	Restore	2026-10-14T00:36:40.1461545Z   Restored /home/runner/work/sandtable/sandtable/tests/Cna.Core.Tests/Cna.Core.Tests.csproj (in 6 ms).
+tests (core-b)	Restore	2026-10-14T00:36:40.1515613Z   Restored /home/runner/work/sandtable/sandtable/src/Cna.ExerciseRunner/Cna.ExerciseRunner.csproj (in 3 ms).
+tests (core-b)	Restore	2026-10-14T00:36:40.1565577Z   Restored /home/runner/work/sandtable/sandtable/src/Cna.Core/Cna.Core.csproj (in 2 ms).
+tests (core-b)	Restore	2026-10-14T00:36:40.1567459Z   Restored /home/runner/work/sandtable/sandtable/src/Cna.ServiceDefaults/Cna.ServiceDefaults.csproj (in 10 ms).
+tests (core-b)	Restore	2026-10-14T00:36:40.2860533Z   Restored /home/runner/work/sandtable/sandtable/src/Cna.Intelligence.Contracts/Cna.Intelligence.Contracts.csproj (in 3.07 sec).
+tests (core-b)	Restore	2026-10-14T00:36:40.3851598Z   Restored /home/runner/work/sandtable/sandtable/src/Cna.Intelligence.Gateway/Cna.Intelligence.Gateway.csproj (in 231 ms).
+tests (core-b)	Restore	2026-10-14T00:36:42.2579852Z   Restored /home/runner/work/sandtable/sandtable/src/Cna.AppHost/Cna.AppHost.csproj (in 2.09 sec).
+tests (core-b)	Build	﻿2026-10-14T00:36:42.3336032Z ##[group]Run dotnet build Sandtable.slnx --configuration Release --no-restore '/bl:artifacts/ci/core-b-build-{}.binlog'
+tests (core-b)	Build	2026-10-14T00:36:42.3336946Z [36;1mdotnet build Sandtable.slnx --configuration Release --no-restore '/bl:artifacts/ci/core-b-build-{}.binlog'[0m
+tests (core-b)	Build	2026-10-14T00:36:42.3402321Z shell: /usr/bin/bash -e {0}
+tests (core-b)	Build	2026-10-14T00:36:42.3402585Z env:
+tests (core-b)	Build	2026-10-14T00:36:42.3402793Z   DOTNET_CLI_TELEMETRY_OPTOUT: 1
+tests (core-b)	Build	2026-10-14T00:36:42.3403053Z   DOTNET_NOLOGO: 1
+tests (core-b)	Build	2026-10-14T00:36:42.3403299Z   TESTINGPLATFORM_TELEMETRY_OPTOUT: 1
+tests (core-b)	Build	2026-10-14T00:36:42.3403579Z   DOTNET_ROOT: /usr/share/dotnet
+tests (core-b)	Build	2026-10-14T00:36:42.3403830Z ##[endgroup]
+tests (core-b)	Build	2026-10-14T00:36:49.9430927Z   Cna.ServiceDefaults -> /home/runner/work/sandtable/sandtable/artifacts/bin/Cna.ServiceDefaults/release/Cna.ServiceDefaults.dll
+tests (core-b)	Build	2026-10-14T00:36:56.5099329Z   Cna.Intelligence.Contracts -> /home/runner/work/sandtable/sandtable/artifacts/bin/Cna.Intelligence.Contracts/release/Cna.Intelligence.Contracts.dll
+tests (core-b)	Build	2026-10-14T00:36:58.5231059Z   Cna.Intelligence.Contracts.Tests -> /home/runner/work/sandtable/sandtable/artifacts/bin/Cna.Intelligence.Contracts.Tests/release/Cna.Intelligence.Contracts.Tests.dll
+tests (core-b)	Build	2026-10-14T00:36:58.9230710Z   Cna.Intelligence.Gateway -> /home/runner/work/sandtable/sandtable/artifacts/bin/Cna.Intelligence.Gateway/release/Cna.Intelligence.Gateway.dll
+tests (core-b)	Build	2026-10-14T00:36:59.1266107Z   Cna.DecisionWorker -> /home/runner/work/sandtable/sandtable/artifacts/bin/Cna.DecisionWorker/release/Cna.DecisionWorker.dll
+tests (core-b)	Build	2026-10-14T00:37:12.5160376Z   Cna.Core -> /home/runner/work/sandtable/sandtable/artifacts/bin/Cna.Core/release/Cna.Core.dll
+tests (core-b)	Build	2026-10-14T00:37:18.7634205Z   Cna.ExerciseRunner -> /home/runner/work/sandtable/sandtable/artifacts/bin/Cna.ExerciseRunner/release/Cna.ExerciseRunner.dll
+tests (core-b)	Build	2026-10-14T00:37:39.2202188Z   Cna.Core.Tests -> /home/runner/work/sandtable/sandtable/artifacts/bin/Cna.Core.Tests/release/Cna.Core.Tests.dll
+tests (core-b)	Build	2026-10-14T00:37:39.3350449Z   Cna.OrleansHost -> /home/runner/work/sandtable/sandtable/artifacts/bin/Cna.OrleansHost/release/Cna.OrleansHost.dll
+tests (core-b)	Build	2026-10-14T00:37:42.4879292Z   Cna.ExerciseRunner.Tests -> /home/runner/work/sandtable/sandtable/artifacts/bin/Cna.ExerciseRunner.Tests/release/Cna.ExerciseRunner.Tests.dll
+tests (core-b)	Build	2026-10-14T00:37:42.9428909Z   Cna.AppHost -> /home/runner/work/sandtable/sandtable/artifacts/bin/Cna.AppHost/release/Cna.AppHost.dll
+tests (core-b)	Build	2026-10-14T00:37:42.9661022Z 
+tests (core-b)	Build	2026-10-14T00:37:42.9666676Z Build succeeded.
+tests (core-b)	Build	2026-10-14T00:37:42.9667219Z     0 Warning(s)
+tests (core-b)	Build	2026-10-14T00:37:42.9667600Z     0 Error(s)
+tests (core-b)	Build	2026-10-14T00:37:42.9669370Z 
+tests (core-b)	Build	2026-10-14T00:37:42.9670302Z BinaryLogger wrote to: /home/runner/work/sandtable/sandtable/artifacts/ci/core-b-build-20261014-003642--3001--FHL30q.binlog
+tests (core-b)	Build	2026-10-14T00:37:42.9671207Z 
+tests (core-b)	Build	2026-10-14T00:37:42.9671402Z Time Elapsed 00:01:00.35
+tests (core-b)	Download current attempt Release row proof	﻿2026-10-14T00:37:43.0121874Z ##[group]Run actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
+tests (core-b)	Download current attempt Release row proof	2026-10-14T00:37:43.0122328Z with:
+tests (core-b)	Download current attempt Release row proof	2026-10-14T00:37:43.0122619Z   name: ci-inventory-e0d67dcb054d4dc7490e433cccd91b18fd54d487-1
+tests (core-b)	Download current attempt Release row proof	2026-10-14T00:37:43.0122995Z   path: artifacts/partition-proof
+tests (core-b)	Download current attempt Release row proof	2026-10-14T00:37:43.0123262Z   merge-multiple: false
+tests (core-b)	Download current attempt Release row proof	2026-10-14T00:37:43.0123500Z   repository: dills122/sandtable
+tests (core-b)	Download current attempt Release row proof	2026-10-14T00:37:43.0123741Z   run-id: 38490841757
+tests (core-b)	Download current attempt Release row proof	2026-10-14T00:37:43.0123960Z   skip-decompress: false
+tests (core-b)	Download current attempt Release row proof	2026-10-14T00:37:43.0124188Z   digest-mismatch: error
+tests (core-b)	Download current attempt Release row proof	2026-10-14T00:37:43.0124404Z env:
+tests (core-b)	Download current attempt Release row proof	2026-10-14T00:37:43.0124598Z   DOTNET_CLI_TELEMETRY_OPTOUT: 1
+tests (core-b)	Download current attempt Release row proof	2026-10-14T00:37:43.0124848Z   DOTNET_NOLOGO: 1
+tests (core-b)	Download current attempt Release row proof	2026-10-14T00:37:43.0125248Z   TESTINGPLATFORM_TELEMETRY_OPTOUT: 1
+tests (core-b)	Download current attempt Release row proof	2026-10-14T00:37:43.0125522Z   DOTNET_ROOT: /usr/share/dotnet
+tests (core-b)	Download current attempt Release row proof	2026-10-14T00:37:43.0125762Z ##[endgroup]
+tests (core-b)	Download current attempt Release row proof	2026-10-14T00:37:43.1639737Z Downloading single artifact
+tests (core-b)	Download current attempt Release row proof	2026-10-14T00:37:43.3994676Z Preparing to download the following artifacts:
+tests (core-b)	Download current attempt Release row proof	2026-10-14T00:37:43.3996811Z - ci-inventory-e0d67dcb054d4dc7490e433cccd91b18fd54d487-1 (ID: 11862305596, Size: 6019147, Expected Digest: sha256:585b99d8760d7e0124d23c5027661e1c316ea0dfccb7281db3c8cf2ccdba0c5a)
+tests (core-b)	Download current attempt Release row proof	2026-10-14T00:37:43.8257433Z Redirecting to blob download url: https://productionresultssa16.blob.core.windows.net/actions-results/753b676e-b135-894b-8e84-d48a295a0ba0/workflow-job-run-abb3758a-8b56-53d9-898a-dcc581e56ddb/artifacts/1c5254067a68041b9e8bb5a875b60677ae76a03027cc7bc17c69af870b540acf.zip
+tests (core-b)	Download current attempt Release row proof	2026-10-14T00:37:43.8260945Z Starting download of artifact to: /home/runner/work/sandtable/sandtable/artifacts/partition-proof
+tests (core-b)	Download current attempt Release row proof	2026-10-14T00:37:44.1243165Z (node:3177) [DEP0005] DeprecationWarning: Buffer() is deprecated due to security and usability issues. Please use the Buffer.alloc(), Buffer.allocUnsafe(), or Buffer.from() methods instead.
+tests (core-b)	Download current attempt Release row proof	2026-10-14T00:37:44.1245244Z (Use `node --trace-deprecation ...` to show where the warning was created)
+tests (core-b)	Download current attempt Release row proof	2026-10-14T00:37:44.8505906Z SHA256 digest of downloaded artifact is 585b99d8760d7e0124d23c5027661e1c316ea0dfccb7281db3c8cf2ccdba0c5a
+tests (core-b)	Download current attempt Release row proof	2026-10-14T00:37:44.8507348Z Artifact download completed successfully.
+tests (core-b)	Download current attempt Release row proof	2026-10-14T00:37:44.8508113Z Total of 1 artifact(s) downloaded
+tests (core-b)	Download current attempt Release row proof	2026-10-14T00:37:44.8510680Z Download artifact has finished successfully
+tests (core-b)	Run complete-row partition	﻿2026-10-14T00:37:44.8648509Z ##[group]Run python3 .github/scripts/test_partition.py execute --sha "$TESTED_SHA" --attempt "$RUN_ATTEMPT" --shard "$TEST_SHARD"
+tests (core-b)	Run complete-row partition	2026-10-14T00:37:44.8650476Z [36;1mpython3 .github/scripts/test_partition.py execute --sha "$TESTED_SHA" --attempt "$RUN_ATTEMPT" --shard "$TEST_SHARD"[0m
+tests (core-b)	Run complete-row partition	2026-10-14T00:37:44.8741354Z shell: /usr/bin/bash -e {0}
+tests (core-b)	Run complete-row partition	2026-10-14T00:37:44.8741788Z env:
+tests (core-b)	Run complete-row partition	2026-10-14T00:37:44.8742133Z   DOTNET_CLI_TELEMETRY_OPTOUT: 1
+tests (core-b)	Run complete-row partition	2026-10-14T00:37:44.8742661Z   DOTNET_NOLOGO: 1
+tests (core-b)	Run complete-row partition	2026-10-14T00:37:44.8743100Z   TESTINGPLATFORM_TELEMETRY_OPTOUT: 1
+tests (core-b)	Run complete-row partition	2026-10-14T00:37:44.8743644Z   DOTNET_ROOT: /usr/share/dotnet
+tests (core-b)	Run complete-row partition	2026-10-14T00:37:44.8744247Z   TESTED_SHA: e0d67dcb054d4dc7490e433cccd91b18fd54d487
+tests (core-b)	Run complete-row partition	2026-10-14T00:37:44.8744867Z   RUN_ATTEMPT: 1
+tests (core-b)	Run complete-row partition	2026-10-14T00:37:44.8745258Z   TEST_SHARD: core-b
+tests (core-b)	Run complete-row partition	2026-10-14T00:37:44.8745650Z ##[endgroup]
+tests (core-b)	Run complete-row partition	2026-10-14T00:51:32.6110832Z ##[error]The operation was canceled.
+tests (core-b)	Retain results, process status and timings	﻿2026-10-14T00:51:32.6176746Z ##[group]Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+tests (core-b)	Retain results, process status and timings	2026-10-14T00:51:32.6177186Z with:
+tests (core-b)	Retain results, process status and timings	2026-10-14T00:51:32.6177462Z   name: ci-core-b-e0d67dcb054d4dc7490e433cccd91b18fd54d487-1
+tests (core-b)	Retain results, process status and timings	2026-10-14T00:51:32.6177815Z   path: artifacts/ci
+tests (core-b)	Retain results, process status and timings	2026-10-14T00:51:32.6178046Z   if-no-files-found: error
+tests (core-b)	Retain results, process status and timings	2026-10-14T00:51:32.6178284Z   retention-days: 14
+tests (core-b)	Retain results, process status and timings	2026-10-14T00:51:32.6178502Z   compression-level: 6
+tests (core-b)	Retain results, process status and timings	2026-10-14T00:51:32.6178904Z   overwrite: false
+tests (core-b)	Retain results, process status and timings	2026-10-14T00:51:32.6179138Z   include-hidden-files: false
+tests (core-b)	Retain results, process status and timings	2026-10-14T00:51:32.6179394Z   archive: true
+tests (core-b)	Retain results, process status and timings	2026-10-14T00:51:32.6179591Z env:
+tests (core-b)	Retain results, process status and timings	2026-10-14T00:51:32.6179794Z   DOTNET_CLI_TELEMETRY_OPTOUT: 1
+tests (core-b)	Retain results, process status and timings	2026-10-14T00:51:32.6180057Z   DOTNET_NOLOGO: 1
+tests (core-b)	Retain results, process status and timings	2026-10-14T00:51:32.6180287Z   TESTINGPLATFORM_TELEMETRY_OPTOUT: 1
+tests (core-b)	Retain results, process status and timings	2026-10-14T00:51:32.6180576Z   DOTNET_ROOT: /usr/share/dotnet
+tests (core-b)	Retain results, process status and timings	2026-10-14T00:51:32.6180822Z ##[endgroup]
+tests (core-b)	Retain results, process status and timings	2026-10-14T00:51:32.7871552Z With the provided path, there will be 5 files uploaded
+tests (core-b)	Retain results, process status and timings	2026-10-14T00:51:32.7873064Z Artifact name is valid!
+tests (core-b)	Retain results, process status and timings	2026-10-14T00:51:32.7876943Z Root directory input is valid!
+tests (core-b)	Retain results, process status and timings	2026-10-14T00:51:33.1268078Z Uploading artifact: ci-core-b-e0d67dcb054d4dc7490e433cccd91b18fd54d487-1.zip
+tests (core-b)	Retain results, process status and timings	2026-10-14T00:51:33.1319650Z Beginning upload of artifact content to blob storage
+tests (core-b)	Retain results, process status and timings	2026-10-14T00:51:33.9249697Z Uploaded bytes 3160795
+tests (core-b)	Retain results, process status and timings	2026-10-14T00:51:33.9807525Z Finished uploading artifact content to blob storage!
+tests (core-b)	Retain results, process status and timings	2026-10-14T00:51:33.9820080Z SHA256 digest of uploaded artifact is 59fba7c722cf5fabdd8d7eb4a247ed9cc5c65ff4de2fd6350680cf0e9e88fa73
+tests (core-b)	Retain results, process status and timings	2026-10-14T00:51:33.9821195Z Finalizing artifact upload
+tests (core-b)	Retain results, process status and timings	2026-10-14T00:51:34.3372844Z Artifact ci-core-b-e0d67dcb054d4dc7490e433cccd91b18fd54d487-1 successfully finalized. Artifact ID 11862313265
+tests (core-b)	Retain results, process status and timings	2026-10-14T00:51:34.3375166Z Artifact ci-core-b-e0d67dcb054d4dc7490e433cccd91b18fd54d487-1 has been successfully uploaded! Final size is 3160795 bytes. Artifact ID is 11862313265
+tests (core-b)	Retain results, process status and timings	2026-10-14T00:51:34.3377389Z Artifact download URL: https://github.com/dills122/sandtable/actions/runs/38490841757/artifacts/11862313265
+tests (core-b)	Post Check out tested event SHA	﻿2026-10-14T00:51:34.3570845Z Post job cleanup.
+tests (core-b)	Post Check out tested event SHA	2026-10-14T00:51:34.4519714Z [command]/usr/bin/git version
+tests (core-b)	Post Check out tested event SHA	2026-10-14T00:51:34.4559593Z git version 2.55.0
+tests (core-b)	Post Check out tested event SHA	2026-10-14T00:51:34.4598079Z Temporarily overriding HOME='/home/runner/work/_temp/1c4f65f0-047c-4337-85b4-5ff3c1a01b2f' before making global git config changes
+tests (core-b)	Post Check out tested event SHA	2026-10-14T00:51:34.4601919Z Adding repository directory to the temporary git global config as a safe directory
+tests (core-b)	Post Check out tested event SHA	2026-10-14T00:51:34.4604648Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/sandtable/sandtable
+tests (core-b)	Post Check out tested event SHA	2026-10-14T00:51:34.4652048Z Removing SSH command configuration
+tests (core-b)	Post Check out tested event SHA	2026-10-14T00:51:34.4659744Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+tests (core-b)	Post Check out tested event SHA	2026-10-14T00:51:34.4704893Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+tests (core-b)	Post Check out tested event SHA	2026-10-14T00:51:34.5014425Z Removing HTTP extra header
+tests (core-b)	Post Check out tested event SHA	2026-10-14T00:51:34.5015599Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+tests (core-b)	Post Check out tested event SHA	2026-10-14T00:51:34.5066616Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+tests (core-b)	Post Check out tested event SHA	2026-10-14T00:51:34.5411082Z Removing includeIf entries pointing to credentials config files
+tests (core-b)	Post Check out tested event SHA	2026-10-14T00:51:34.5412157Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+tests (core-b)	Post Check out tested event SHA	2026-10-14T00:51:34.5880513Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+tests (core-b)	Complete job	﻿2026-10-14T00:51:34.6051420Z Cleaning up orphan processes
+tests (core-b)	Complete job	2026-10-14T00:51:34.6290295Z Terminate orphan process: pid (2910) (dotnet)
+tests (core-b)	Complete job	2026-10-14T00:51:34.6314671Z Terminate orphan process: pid (2911) (dotnet)
+tests (core-b)	Complete job	2026-10-14T00:51:34.6337599Z Terminate orphan process: pid (2912) (dotnet)
+tests (core-b)	Complete job	2026-10-14T00:51:34.6411622Z Terminate orphan process: pid (3191) (python3)
+tests (core-b)	Complete job	2026-10-14T00:51:34.6451012Z Terminate orphan process: pid (3201) (dotnet)
+tests (core-b)	Complete job	2026-10-14T00:51:34.6489088Z Terminate orphan process: pid (3219) (Cna.Core.Tests)
