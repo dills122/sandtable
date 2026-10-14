@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/docs/specs/verify-combat-actual-repeated-movement-completion-v1.py", line 148, in <module>
+    if __name__=='__main__':semantic_tests()
+                            ~~~~~~~~~~~~~~^^
+  File "/Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/docs/specs/verify-combat-actual-repeated-movement-completion-v1.py", line 135, in semantic_tests
+    assert state['members'][0]['spentCp']==world.cp([5,9,11,13,15][count]) and state['randomState']==dict(seed=1,nextByteCursor=10) and len(state['tracks'])==int(count>0) and len(state['receipts'])==len(state['nextCycleProgress'])==count
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

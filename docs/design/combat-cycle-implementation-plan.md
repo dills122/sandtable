@@ -2773,3 +2773,66 @@ Private move-only boundary. Actual stop/resolve/complete/new MovementEndProof, n
 Breakdown/Convoy/later Combat, broader/consumed Reserve, production/public/host/Runner/Exercise,
 persistence and parent017–025/all72 remain separate gates. Historical owning failures and
 aggregation/CoreB139 remain unwaived. No new product scope follows automatically from this slice.
+
+
+### C02 — authentic actual repeated Movement completion reference
+
+Accepted October13 research at baselinec43b9caec452c152a086412c779bb6495ef1a0ad; branch
+`codex/actual-repeated-movement-completion`. The [accepted plan](../work/plans/2026-10-13-actual-repeated-movement-completion.md)
+tracks MC01–MC07. Five primary paths are the new spec/schema/oracle/fixture and this canonical plan;
+README/tech-design/roadmap/delivery-plan and dated evidence accompany. Frozen predecessors and
+native code remain unchanged.
+
+Full ARMV public replay authenticates five independent ancestor ledgers before the sixth lifecycle
+ledger and claims. Base retains the complete reconstructed ARMV Proof. Four owner/seal roots times
+five actual move cuts yield20branches. Zero begins derived idle and accepts owner completion37→38.
+Positive actual tracks require owner stop, mandatory trusted System empty resolution and owner
+completion; terminals41–44 enter active ordinal2 Breakdown Determination. Own capability binds
+Base/cycle/current version/position/full flow and captured context. Actor/context004 and closed
+shape/family validation precede all-prior retry deduplication; retries retain original receipts
+and unchanged outputs without new events.
+
+Stop captures actual track/last move receipt and ordinal2 occurrence; resolution restores Movement
+and preserves RNG with empty checks/lots. Completion computes current locations/exclusion union
+through the pinned pure kernel, derives the event receipt, then derives the separate current
+MovementEndProof using that receipt. Original proof, World/resources/NONE members/history/
+relationships/RNG and actual ordinal2 move progress remain; structural lifecycle receipts do not
+become progress. No movementEnded flag, CP charge, allowance reset or downstream phase execution.
+
+Genuine semantic RED6edaa01 failed all20first publications with missingconsumer007 after authentic
+prerequisites and sixth-ledger null/shape/count/ancestor-precedence checks. GREEN first publications
+passed100.547s/120. Full finalnormal, measured closure/capacity, retained literal integrity, author
+self-review and independent review evidence are separate gates; focused passes do not replace them.
+
+Private contract boundary. Native consumption is conditional on accepted merge and enough session
+time; Breakdown execution, later Combat/Convoy, broader Reserve/Reaction/cohorts, production/public/
+Runner/Exercise/persistence and parent017–025/all72 remain open. Historical owning failures and
+CoreB139 are unwaived. Brain owns fresh review, exact-reviewed-head CI reconciliation and merge.
+
+
+C02 author finalnormal PASS824.354s/1200, exit0/no timeout:20traces/52events/72owncuts/100prior
+retries, all4root recovery/owned readbacks and retained literal equality. Oracle/schema/fixture
+pre/post hashes identical. All342faults/capacity/grammar/clock/context/rejections passed.
+[Exact receipt](../work/reviews/2026-10-13-rmc-final-normal.json) retains command/identities/logSHA;
+author five-axis self-review completed, separate neutral/rationale prepared. Independent review,
+exact-reviewed-head CI and merge remain Brain-owned; review0/9 at handoff. No local.NET suite
+or native completion consumer was added.
+
+
+## C02 CI deadline recovery
+
+Independent review1/9 accepted c20a84c, with no actionable findings. Two Core-B attempts then
+expired at the existing15-minute job cap while continuing successful execution; attempt2 had
+2290/2329passed and no assertion failures. Accepted investigation attributes the immediate
+failure to cumulative runtime/budget exhaustion, with18.915%matched-row summed slowdown and
+a16–17minute whole-job estimate; effective host slowdown cause remains unmeasured.
+
+Authorized CI-only delta gives Core-B20minutes and keeps other tests/prepare/verify15minutes
+and dependency-review5. Partition execution/filters, exact-sha/attempt/process/disjoint/exhaustive
+coverage gates, native/tests/project inputs and three frozen reference artifacts stay unchanged.
+Genuine configuration RED864c381:1failure/1pass against old15minute value,0.129s/120.
+GREEN2checks0.134s/120, complete coverage-helper98tests0.384s/120 and actionlint0.069s/120 pass.
+No broad local.NET/Python normal or unchanged-head hosted retry. Research/report/analyzer/result
+and dated CI receipts retained. New exacthead requires fresh review2/9 and hosted validation;
+review1 remains evidence, not approval of the delta. No native work until accepted merge and
+sufficient remaining time; session deadlines unchanged.

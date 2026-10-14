@@ -1,0 +1,8 @@
+{
+  "mode": "dependencies",
+  "budgetSeconds": 120,
+  "exitCode": 0,
+  "timedOut": false,
+  "elapsedSeconds": 5.581,
+  "logSha256": "eb9e3e688b6906c2c0630836bec914040daeeba8c1bc39ae28fe8b0b7050cbfa"
+}

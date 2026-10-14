@@ -281,3 +281,20 @@ Repeat establishes the next ordinal at Movement without execution; finish enters
 without execution. Actual positive-history entry, ordinary repeated Movement, later-II/consumed,
 public activation and parent017–019 acceptance remain open. See the
 [native manifest](combat-cycle-implementation-plan.md#task019d3--native-settled-control-adapter).
+
+
+## C02 actual repeated Movement completion
+
+The [actual completion contract](../specs/combat-actual-repeated-movement-completion-v1.md)
+adds the authentic ordinary repeated-Movement stop/System-resolution/owner-completion join.
+Its accepted [plan](../work/plans/2026-10-13-actual-repeated-movement-completion.md) covers all
+four owner/seal roots and actual move cuts0..4. Zero derives idle and completes37→38; positive
+tracks require real stop and empty System resolution before completion41..44. Preserve the old
+ordinal1 proof and derive a separate current ordinal2 MovementEndProof with actual receipt, current
+endpoints and cumulative exclusions. World/resources/NONE members/history/RNG and actual move
+progress remain unchanged. Terminal Breakdown Determination is a boundary, not phase execution.
+
+This is a private Python executable contract. Native completion consumption, later Breakdown/
+Combat/Convoy, broader Reserve/Reaction/cohorts, production ingress, public activation and parent
+017–025/all72 remain separate gates. Author verification and independent review are recorded
+against the frozen branch; exact-head CI and merge remain Brain-owned.

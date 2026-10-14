@@ -1,0 +1,14 @@
+{
+  "command": [
+    "python3",
+    "-B",
+    ".github/scripts/test_partition_test.py",
+    "WorkflowDeadlineTests",
+    "-v"
+  ],
+  "budgetSeconds": 120,
+  "exitCode": 0,
+  "timedOut": false,
+  "elapsedSeconds": 0.134,
+  "logSha256": "4a93a54b9ba51eda39998b508c62eca1a5100cc2ebf10c742aa4d08f69590c85"
+}

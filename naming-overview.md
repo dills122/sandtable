@@ -38,6 +38,11 @@ responsibility; it does not imply a deployed service or implemented mechanic.
 checks orders, resolves uncertainty and reports only what each side may know. Command, Staff,
 Intelligence and Maproom cannot invent outcomes or mutate authority. Internally, use names such as
 `CampaignEngine`, `MovementValidator` and `CombatResolver`, not a second layer of product branding.
+The private [actual repeated Movement completion contract](docs/specs/combat-actual-repeated-movement-completion-v1.md)
+uses plain command names: `stop-element-movement`, `resolve-breakdown-stop` and
+`complete-movement-segment`. Its trusted System actor resolves the pending empty stop; the owner
+then completes Movement. Breakdown Determination entry reserves the next phase without claiming
+that phase has executed or introducing another product name.
 
 **Command** chooses strategic objectives, whether supplied by a person, scripted policy or optional
 model. **Staff** converts intent into concrete deterministic plans. The Umpire validates and executes

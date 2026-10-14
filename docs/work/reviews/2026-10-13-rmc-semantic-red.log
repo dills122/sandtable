@@ -1,0 +1,28 @@
+FAIL actual stop/zero completion publication required; actual CMB-RMC-007 axis attacker 0
+FAIL actual stop/zero completion publication required; actual CMB-RMC-007 axis attacker 1
+FAIL actual stop/zero completion publication required; actual CMB-RMC-007 axis attacker 2
+FAIL actual stop/zero completion publication required; actual CMB-RMC-007 axis attacker 3
+FAIL actual stop/zero completion publication required; actual CMB-RMC-007 axis attacker 4
+FAIL actual stop/zero completion publication required; actual CMB-RMC-007 axis defender 0
+FAIL actual stop/zero completion publication required; actual CMB-RMC-007 axis defender 1
+FAIL actual stop/zero completion publication required; actual CMB-RMC-007 axis defender 2
+FAIL actual stop/zero completion publication required; actual CMB-RMC-007 axis defender 3
+FAIL actual stop/zero completion publication required; actual CMB-RMC-007 axis defender 4
+FAIL actual stop/zero completion publication required; actual CMB-RMC-007 commonwealth attacker 0
+FAIL actual stop/zero completion publication required; actual CMB-RMC-007 commonwealth attacker 1
+FAIL actual stop/zero completion publication required; actual CMB-RMC-007 commonwealth attacker 2
+FAIL actual stop/zero completion publication required; actual CMB-RMC-007 commonwealth attacker 3
+FAIL actual stop/zero completion publication required; actual CMB-RMC-007 commonwealth attacker 4
+FAIL actual stop/zero completion publication required; actual CMB-RMC-007 commonwealth defender 0
+FAIL actual stop/zero completion publication required; actual CMB-RMC-007 commonwealth defender 1
+FAIL actual stop/zero completion publication required; actual CMB-RMC-007 commonwealth defender 2
+FAIL actual stop/zero completion publication required; actual CMB-RMC-007 commonwealth defender 3
+FAIL actual stop/zero completion publication required; actual CMB-RMC-007 commonwealth defender 4
+Traceback (most recent call last):
+  File "/Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/docs/specs/verify-combat-actual-repeated-movement-completion-v1.py", line 149, in <module>
+    if __name__=='__main__':semantic_tests()
+                            ~~~~~~~~~~~~~~^^
+  File "/Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/docs/specs/verify-combat-actual-repeated-movement-completion-v1.py", line 148, in semantic_tests
+    assert not failures,str(len(failures))+' genuine completion publications failed'
+           ^^^^^^^^^^^^
+AssertionError: 20 genuine completion publications failed

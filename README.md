@@ -53,7 +53,7 @@ play a side; it will never decide the rules or secretly change the campaign stat
 | --- | --- | --- |
 | Deterministic Umpire | Working | Versioned rules, seeded randomness, canonical commands/events, replay, checkpoints, and side-safe action boundaries are implemented. |
 | Playable rule path | Working through Combat entry | Runner can execute Initiative, stage preamble, Reserve Designation, Movement, bounded ZOC/Reaction, and Breakdown, then stops before Combat adjudication. |
-| Combat and continual cycle | Private Core entry; public activation pending | Task019F3 (PR #169) implements private native actual prepared-round entry and cancelled no-attack Release for both supported opening histories with two independently trusted ledgers. Task019F4 (PR #172) adds private no-cost actual assault admission and pure arithmetic assessment. Task019F5 (PR #175) adds the private actual paid-assault executable reference through immediate settlement and CA completion into same-cycle Reserve Release. Task019F6 (PR #177) implements the merged private native paid-assault consumer with exact reference byte parity and focused native validation. PAC01 (PR #178) freezes the actual-source Release and guarded repeat/finish contract. CS01 implements its private native consumer through the Movement/Convoy boundary. NRM01 adds private native actual repeated Movement with cumulative costs and original provenance. Movement stop/completion, production ingress, later-II/consumed Reserve lineage, full-cycle proof and public Combat remain open. |
+| Combat and continual cycle | Private Core entry; public activation pending | Task019F3 (PR #169) implements private native actual prepared-round entry and cancelled no-attack Release for both supported opening histories with two independently trusted ledgers. Task019F4 (PR #172) adds private no-cost actual assault admission and pure arithmetic assessment. Task019F5 (PR #175) adds the private actual paid-assault executable reference through immediate settlement and CA completion into same-cycle Reserve Release. Task019F6 (PR #177) implements the merged private native paid-assault consumer with exact reference byte parity and focused native validation. PAC01 (PR #178) freezes the actual-source Release and guarded repeat/finish contract. CS01 implements its private native consumer through the Movement/Convoy boundary. NRM01 adds private native actual repeated Movement with cumulative costs and original provenance. C02 adds the private actual repeated Movement completion executable contract through mandatory empty System resolution and ordinal2 Breakdown Determination. Native completion, production ingress, later-II/consumed Reserve lineage, full-cycle proof and public Combat remain open. |
 | Exercise and Maneuver tools | Working | Deterministic single runs, multi-run matrices, paired comparisons, strict readback, and evidence bundles are available from CLI. |
 | User interface | Not started | `site/` is project website only. Maproom hot-seat client is future work. |
 | Published scenario | Not started | First target is six-turn, Land-only *Graziani's Offensive* after working Combat loop. |
@@ -69,7 +69,8 @@ Next delivery sequence:
 
 1. Build on CS01's private native [actual post-assault continuation](docs/specs/combat-actual-post-assault-continuation-v1.md)
    and the private [actual repeated Movement reference](docs/specs/combat-actual-repeated-movement-v1.md)
-   to implement the actual Movement stop/completion lifecycle after NRM01's private native repeated moves, then remaining selected-branch lineage. CS01's full
+   and [actual completion contract](docs/specs/combat-actual-repeated-movement-completion-v1.md)
+   to implement native completion consumption, then remaining selected-branch lineage. CS01's full
    paid history and four independent ledgers reach empty Release and guarded repeat/finish;
    native continuation stops at ordinal2 Movement opening; NRM01 consumes the Python contract for up to four safe
    native ordinary moves with cumulative CP/DP and original provenance. Complete later-II/consumed Reserve and production
@@ -189,6 +190,11 @@ semantic checks.
 
 Build artifacts live under `artifacts/`. Do not commit generated `artifacts/bin` or `artifacts/obj`
 content. See [security policy](SECURITY.md) for vulnerability reports.
+
+GitHub CI retains four exact-row shards. Core-B has a bounded20-minute job deadline;
+Core-A, Exercise and Contracts keep15minutes. Row filters, exhaustive coverage and exact-head/
+attempt/process checks remain unchanged. The [Core-B investigation](docs/research/2026-10-13-rmc-core-b-investigation.md)
+records why the prior15-minute budget expired and the limits of this capacity mitigation.
 
 ## Architecture and documentation
 
