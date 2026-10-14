@@ -87,17 +87,31 @@ opponent/origins/components/TOE/ammo/readiness/parents/settlements/future duties
 
 ## Delivery, capacities and verification
 
-Provisional candidates:68external=ARMV66+its schema/oracle,2separate own deliveries; input fixtures
-remain test-only. Preserve ARMV66/PAC64/paid62/admission59 maps. Measure actual cold/core/adversarial/
-at-use/warm acquisition and every changed/missing/unreadable/null/after-first-read fault before freeze;
-unknown material paths require reconciliation rather than arbitrary pin refresh.
+Measured closure:68external=ARMV66+its schema/oracle,2separate own deliveries; fixtures
+remain test-only. The fourth own fixture is registered after explicit generation; its separate
+[acquisition observation](../work/reviews/2026-10-13-rmc-closure-fixture.json) sees all74files
+(68external+2own+4test), with unknown0 and no runtime promotion. Cold/core/adversarial acquisition observed every pinned material path with no
+unknown reads. All340external missing/changed/unreadable/null/after-first-read faults plus2own
+warm drift faults reject009. Preserve unchanged ARMV66/PAC64/paid62/admission59 maps.
+[Physical receipts](../work/reviews/2026-10-13-rmc-closure-core.json) retain the acquisition inventory;
+[adversarial](../work/reviews/2026-10-13-rmc-closure-adversarial.json) and
+[fault](../work/reviews/2026-10-13-rmc-closure-dependencies.json) observations corroborate it.
 
-Proposed caps Source64MiB/Proof4MiB/Control512KiB/Event32KiB/Input1KiB/lifecycle ledger8KiB/depth40.
-Independently parse inherited carriers under their caps. Exact own field/array/wrapper/escaped-carrier
-accounting must dominate valid states before public claims/literals are frozen. Starting Source
-35,327,488,Proof2,246,094,Control324,037,ledger3,076 accounts use valid predecessor bounds rather
-than loose syntax limits; these are candidate arithmetic, not a final grammar certificate.
-`closureFrozen:false` rejects public claim acceptance until measurement is complete.
+Frozen caps are Source64MiB/Proof4MiB/Control512KiB/Event32KiB/Input1KiB/lifecycle ledger8KiB/depth40.
+Inherited Source is still independently parsed under ARMV's32MiB cap. Domination uses valid
+predecessor Source17,565,184 and Proof1,922,057 bounds plus World192,965, not loose syntax caps.
+An ASCII carrier needs at most2escaped bytes per byte. Source ≤2×17,565,184 +3×2×32,768 +512
+=35,327,488. Proof ≤1,922,057 +192,965 +131,072=2,246,094; Control ≤192,965+131,072=324,037.
+Own field accounting replaces bounded strings with128bytes, signed numbers with20bytes and
+bools with5bytes, fills both historical/current exclusion arrays to2, retains4move progress/
+receipts and all3own receipts, and measures every positive4move frame. Control metadata20,620
+and Proof metadata21,182 fit the131,072allowance; largest event metadata6,856 fits16,384.
+Input structural maximum544 fits1,024; ledger ≤3×1,024+4=3,076. Own proof wrappers add2 to
+borrowed depth38, giving40. The closed grammar lists each own array cap.
+[Capacity receipt](../work/reviews/2026-10-13-rmc-capacity-first.json) and schema retain these accounts.
+Measured positive4move payloads were Source1,014,043/Proof102,663/Control19,082/Event2,973/
+Input458/ledger1,334. These samples corroborate rather than replace the structural bounds.
+`closureFrozen:true` enables public proof/control/source claim publication only after full replay.
 
 Reference testing covers20authentic branches, both first publications after sixth-ledger validation,
 52events/72own Control cuts, independent current-proof derivation and exclusion union, every suffix

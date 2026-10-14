@@ -41,3 +41,27 @@ closeout04:02:40/productstop04:32:40UTC Oct14. Accepted estimate110–160min mor
 80min schedule; drop conditional native if primary gates/review reserve do not leave155min.
 Carrier escaping and borrowed proof wrappers are material capacity risks; do not silently reuse loose
 predecessor syntax caps or refresh pins. Stop and send evidence if unexpected acquisition/profile needed.
+
+## Author progress and retained evidence
+
+MC01–MC03 implemented: genuine semantic RED6edaa01 (84.117s/120, all20missingconsumer007)
+and first-publication GREEN100.547s/120. Initial RED harness RNG-shape error and timestamp
+harness tuple/list error are retained as harness failures, never behavior RED credit. Corrected
+genuine-clock focused check14.753s/120 passed; captured-context check7.714s/120 passed.
+MC04 firstroot preservation27.065s and provisional recovery63s passed; frozen public readbacks/
+allroot finalnormal remain required. MC05 measured cold/core/adversarial closure68external+2own,
+unknown0 and342faults. Capacity accounts frozen; explicit fixture generation124.377s/180 yielded
+20traces/52events/72frames,42,033,078bytes, SHA1cba27ef5f08e4fa72695d4fc10676aadc3bb172179664c9d758d5f861b8e86a.
+Fourth artifact hash is test-only and does not change the Base runtime manifest. Brain granted
+one1200s finalnormal lease after registration/frozen focused checks. No unchanged predecessor
+normal/broad.NET/native lane. MC06 finalnormal/self-review/publication/review and MC07 closeout
+are not implied by focused success; exact receipt/disposition must follow.
+
+
+C02 author finalnormal PASS824.354s/1200, exit0/no timeout:20traces/52events/72owncuts/100prior
+retries, all4root recovery/owned readbacks and retained literal equality. Oracle/schema/fixture
+pre/post hashes identical. All342faults/capacity/grammar/clock/context/rejections passed.
+[Exact receipt](../reviews/2026-10-13-rmc-final-normal.json) retains command/identities/logSHA;
+author five-axis self-review completed, separate neutral/rationale prepared. Independent review,
+exact-reviewed-head CI and merge remain Brain-owned; review0/9 at handoff. No local.NET suite
+or native completion consumer was added.

@@ -1,6 +1,6 @@
 {
   "contract": "combat-actual-repeated-movement-completion-v1",
-  "status": "provisional authenticated semantic RED boundary",
+  "status": "private authenticated executable contract; measured closure and capacities",
   "objects": {
     "Source": "contractVersion:int movementSourceCanonicalUtf8:carrier lifecycleEventCanonicalUtf8:eventCarrier[]",
     "Base": "contractVersion:int dependencyManifestHash:hash movementProof:MovementProof",
@@ -155,8 +155,43 @@
   "testArtifactHashes": {
     "docs/specs/fixtures/combat-actual-paid-assault-v1.json": "80dfa0157542d70660f78d0e2326564fcb9095a71f84ecab2deaf061c5e7b203",
     "docs/specs/fixtures/combat-actual-post-assault-continuation-v1.json": "9cd49e98ea011228bc63a296aede917b8b517926b3d50df244df139e7d9f2679",
-    "docs/specs/fixtures/combat-actual-repeated-movement-v1.json": "d77c4b1e0a3e3750df79ad351dd1cef3c8966834eb0984a77b62938e57b87501"
+    "docs/specs/fixtures/combat-actual-repeated-movement-v1.json": "d77c4b1e0a3e3750df79ad351dd1cef3c8966834eb0984a77b62938e57b87501",
+    "docs/specs/fixtures/combat-actual-repeated-movement-completion-v1.json": "1cba27ef5f08e4fa72695d4fc10676aadc3bb172179664c9d758d5f861b8e86a"
   },
-  "closureFrozen": false,
-  "scope": "Private authentic ordinary ARMV0..4cuts, derived zero idle or positive stop/System/complete; ordinal2 Breakdown boundary only."
+  "closureFrozen": true,
+  "scope": "Private authentic ordinary ARMV0..4cuts, derived zero idle or positive stop/System/complete; ordinal2 Breakdown boundary only.",
+  "encodedUpperBounds": {
+    "Source": 35327488,
+    "Proof": 2246094,
+    "Control": 324037,
+    "Event": 16384,
+    "Input": 1024,
+    "LifecycleLedger": 3076
+  },
+  "capacityAccounting": {
+    "predecessorSource": 17565184,
+    "predecessorProof": 1922057,
+    "world": 192965,
+    "ownMetadataAllowance": 131072,
+    "sourceFramingAllowance": 512,
+    "escapedCarrierFactor": 2,
+    "positiveEvents": 3,
+    "fieldMeasured": {
+      "ControlMetadata": 20620,
+      "ProofMetadata": 21182,
+      "EventMetadata": 6856,
+      "InputStructural": 544
+    },
+    "borrowedDepth": 38,
+    "ownDepth": 40
+  },
+  "physicalClosure": {
+    "externalRuntime": 68,
+    "ownDelivery": 2,
+    "observedCold": true,
+    "observedCore": true,
+    "observedAdversarial": true,
+    "observedFaults": 342,
+    "unknownMaterialPaths": []
+  }
 }

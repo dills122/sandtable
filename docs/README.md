@@ -43,6 +43,7 @@ integration remains scaffolded; AI is optional future work.
 - [Source inventory](research/combat-cycle-source-inventory.md) and [rules/result-surface spike](research/combat-rules-result-surface-spike.md)
 - [Policy reconciliation](design/combat-cycle-policy-reconciliation.md): accepted owner decisions
 - [Actual-selection contract](specs/combat-actual-selection-v1.md): merged private executable boundary
+- [Actual repeated Movement completion](specs/combat-actual-repeated-movement-completion-v1.md): private stop/System-resolution/owner-completion contract through ordinal2 Breakdown entry; native completion remains a separate gate
 - [Author delivery review and owner disposition](reviews/combat-delivery-plan-author-review.md#owner-disposition)
 - [Orleans publication feasibility](research/orleans-publication-feasibility.md): publication obligations distinct from Core
 

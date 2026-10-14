@@ -1,0 +1,8 @@
+{
+  "mode": "core",
+  "budgetSeconds": 120,
+  "exitCode": 0,
+  "timedOut": false,
+  "elapsedSeconds": 38.04,
+  "logSha256": "f352e5256a17411eeb3ae94c550d436fe937277fe53990e901d3595ba4422bc7"
+}

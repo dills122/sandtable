@@ -659,7 +659,13 @@ independent ledgers derive original provenance and all four safe moves with exac
 parity. Native physical delivery checks68 paths while preserving the wire66 manifest and two separate
 reference deliveries. Deferred CS01 all-prior continuation retries are now covered for repeat/finish,
 with valid changed/unavailable clocks and predecessor runtime unchanged. Actual stop/resolution/completion
-and full selected-branch campaign remain subsequent gates. Independent review/CI for NRM01 are pending.
+now have a private [actual completion executable contract](docs/specs/combat-actual-repeated-movement-completion-v1.md).
+It authenticates all five ancestor ledgers before a sixth lifecycle ledger: zero derived idle
+completes37→38; positive actual tracks require owner stop/System empty resolution/owner completion
+through41–44 at ordinal2 Breakdown Determination. Full parent Proof, old/current Movement proofs,
+World/resources/NONE members/RNG and actual move progress persist. No downstream execution or
+native completion follows from the reference. NRM01 merged in PR #181 after independent Ready
+review and exact-head CI2879/2879; native completion and full selected-branch campaign remain subsequent gates.
 Production ingress authentication,
 later-II/consumed Reserve lineage and public activation remain gated. Private settled controls
 still retain synthetic earlier Movement; these checkpoints do not prove the authentic continual

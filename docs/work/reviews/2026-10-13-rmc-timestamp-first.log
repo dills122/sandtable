@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/docs/specs/verify-combat-actual-repeated-movement-completion-v1.py", line 397, in <module>
+    if __name__=='__main__':main()
+                            ~~~~^^
+  File "/Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/docs/specs/verify-combat-actual-repeated-movement-completion-v1.py", line 394, in main
+    elif args.group in ['grammar','fixture','capacity','timestamp','context']:globals()[args.group+'_tests']()
+                                                                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/docs/specs/verify-combat-actual-repeated-movement-completion-v1.py", line 362, in timestamp_tests
+    row,p,u=roots()[0];parent=arm.pac.trace(u,'repeat',2000,2001);four=parent['args']+[parent['ledger']];base=arm.derive(parent['source'],*four);s=arm.initial(base);data=arm.raw(dict(contractVersion=1,continuationSourceCanonicalUtf8=parent['source'].decode('ascii'),movementEventCanonicalUtf8=[]),'Source');move=[]
+                                                                       ~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~
+TypeError: can only concatenate tuple (not "list") to tuple

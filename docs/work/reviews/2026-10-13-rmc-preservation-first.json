@@ -1,0 +1,19 @@
+{
+  "command": [
+    "python3",
+    "-B",
+    "-u",
+    "docs/specs/verify-combat-actual-repeated-movement-completion-v1.py",
+    "--group",
+    "preservation",
+    "--owner",
+    "axis",
+    "--seal",
+    "attacker"
+  ],
+  "budgetSeconds": 120,
+  "exitCode": 0,
+  "timedOut": false,
+  "elapsedSeconds": 27.065,
+  "logSha256": "b35d2b47ae2feb72e1c949224ab8b28e11fa7ec3cd2cb81aaff7ebfedd48ce99"
+}
