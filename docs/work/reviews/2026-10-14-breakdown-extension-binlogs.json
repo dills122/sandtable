@@ -1,0 +1,208 @@
+{
+  "archive": "2026-10-14-breakdown-extension-binlogs.zip",
+  "archiveSha256": "00a7db38ecdd2699326fe351dd8ff84327f02a8fcb02b5f6b2e4b4a1bb6c3119",
+  "entryCount": 33,
+  "totalOriginalBytes": 20438354,
+  "purpose": "Current extension B00 discovery and B03 native build/test/discovery plus independent reviewer named-pipe failure/success; immutable raw binlogs, no unrelated prior-session binaries.",
+  "limits": "Binary logs are diagnostic evidence, not passing-test or product authority. Original paths survive locally; archive entries verified byte-identical.",
+  "entries": [
+    {
+      "originalPath": "/private/tmp/b03-clock-build-20261014-061641--24110--Lis5Le.binlog",
+      "archivePath": "b03-clock-build-20261014-061641--24110--Lis5Le.binlog",
+      "bytes": 457645,
+      "sha256": "61c4ff4164e4fc078d5bd3882ad26f19131cb5530218d00fcb64f071e2ec846f"
+    },
+    {
+      "originalPath": "/private/tmp/b03-contract-focused-20261014-061850--28484--B11kov-dotnet-test.binlog",
+      "archivePath": "b03-contract-focused-20261014-061850--28484--B11kov-dotnet-test.binlog",
+      "bytes": 660335,
+      "sha256": "446a96c2b612ed4b48263df132771b0d798f3a9751b63dd1c7d6f678671f8713"
+    },
+    {
+      "originalPath": "/private/tmp/b03-expanded-build-20261014-061550--22475--eOV3O3.binlog",
+      "archivePath": "b03-expanded-build-20261014-061550--22475--eOV3O3.binlog",
+      "bytes": 469095,
+      "sha256": "a06739c5f6f51bc722b512dc9a59faf4148152d4d4321b4ffd632aad48d6bc13"
+    },
+    {
+      "originalPath": "/private/tmp/b03-expanded-build-fixed-20261014-061703--24945--nXCAY_.binlog",
+      "archivePath": "b03-expanded-build-fixed-20261014-061703--24945--nXCAY_.binlog",
+      "bytes": 466119,
+      "sha256": "a9d62f31c593263896934f1a900cbbcfae39101790ba04c932a184388efa5ec4"
+    },
+    {
+      "originalPath": "/private/tmp/b03-final-20261014-062938--49397--hZWxXj-dotnet-test.binlog",
+      "archivePath": "b03-final-20261014-062938--49397--hZWxXj-dotnet-test.binlog",
+      "bytes": 661774,
+      "sha256": "e3de1a59a933e03ddf6304f4710f1d4bd032c27ac02439d7042f5435e7d6870a"
+    },
+    {
+      "originalPath": "/private/tmp/b03-final-build-20261014-062505--40672--f6Tn9L.binlog",
+      "archivePath": "b03-final-build-20261014-062505--40672--f6Tn9L.binlog",
+      "bytes": 477721,
+      "sha256": "913c45b06b3271e22adcf8367bbb5b12dba69472182cd3e306333e8b9226d828"
+    },
+    {
+      "originalPath": "/private/tmp/b03-formatted-build-20261014-062242--36109--fGEBjL.binlog",
+      "archivePath": "b03-formatted-build-20261014-062242--36109--fGEBjL.binlog",
+      "bytes": 466059,
+      "sha256": "ae03c7a701cf6ee1558ee300a4df62b75c480a9301fcaa1998594cf572d104ac"
+    },
+    {
+      "originalPath": "/private/tmp/b03-green-build-20261014-060728--6477--7gzhO5.binlog",
+      "archivePath": "b03-green-build-20261014-060728--6477--7gzhO5.binlog",
+      "bytes": 477727,
+      "sha256": "38c7f0d92a62065fccf4fda069f05c4d2db4053035afdd6690a0f7fa82999694"
+    },
+    {
+      "originalPath": "/private/tmp/b03-parity-20261014-061744--26401--xxRu9W-dotnet-test.binlog",
+      "archivePath": "b03-parity-20261014-061744--26401--xxRu9W-dotnet-test.binlog",
+      "bytes": 660299,
+      "sha256": "bcdb06ef7bc3169722f42e50d3c0f8689e63b8d330c791d96559f3d3c286de2d"
+    },
+    {
+      "originalPath": "/private/tmp/b03-red-build-20261014-060356--97952--OaNL2G.binlog",
+      "archivePath": "b03-red-build-20261014-060356--97952--OaNL2G.binlog",
+      "bytes": 478932,
+      "sha256": "16fc762ab837c94d91534ea4a886376806df17494264dd566126ec71f74d6ef6"
+    },
+    {
+      "originalPath": "/private/tmp/b03-rmc-regression-20261014-063706--63625--OC1J2A-dotnet-test.binlog",
+      "archivePath": "b03-rmc-regression-20261014-063706--63625--OC1J2A-dotnet-test.binlog",
+      "bytes": 662074,
+      "sha256": "da3397fd52b900985ed2cbaa5968e2387c9e4fbb7ca9b7aab15966cfd77f5eec"
+    },
+    {
+      "originalPath": "/private/tmp/b03-semantic-green-20261014-060801--7538--2WfZPd-dotnet-test.binlog",
+      "archivePath": "b03-semantic-green-20261014-060801--7538--2WfZPd-dotnet-test.binlog",
+      "bytes": 657647,
+      "sha256": "df312ac4196049f01d8f2e66a4d0151026f3eae295d2e0b02a16fb7294e5e132"
+    },
+    {
+      "originalPath": "/private/tmp/b03-semantic-red-20261014-060442--99333--nVViKA-dotnet-test.binlog",
+      "archivePath": "b03-semantic-red-20261014-060442--99333--nVViKA-dotnet-test.binlog",
+      "bytes": 662198,
+      "sha256": "e683b861b347e4e8725caa9f4e1ba640851f9b35a3f0108fe95a0e9bafae9aae"
+    },
+    {
+      "originalPath": "/private/tmp/nbc-review-1-20261014-071204--33594--MOrb6l-dotnet-test.binlog",
+      "archivePath": "nbc-review-1-20261014-071204--33594--MOrb6l-dotnet-test.binlog",
+      "bytes": 661037,
+      "sha256": "f6681434e46ca5ecc896ffebc5ac94350f7d877e6ff8736d7a3b8fcec57eaaef"
+    },
+    {
+      "originalPath": "/private/tmp/nbc-review-1-20261014-071228--34412--5xWwWu-dotnet-test.binlog",
+      "archivePath": "nbc-review-1-20261014-071228--34412--5xWwWu-dotnet-test.binlog",
+      "bytes": 660244,
+      "sha256": "1c4e266c30d5d425bf99b0c7c9aa9f7da704feb2f67cd6fff660c41f681ded7e"
+    },
+    {
+      "originalPath": "/private/tmp/b00-discovery/contracts-20261014-042405--85988--VkbYCW-dotnet-test.binlog",
+      "archivePath": "b00-discovery/contracts-20261014-042405--85988--VkbYCW-dotnet-test.binlog",
+      "bytes": 652577,
+      "sha256": "ae91c63ac1d12604a7b2cb4ff944fd7bdfc80080828fa48521f1ceee96bc3a92"
+    },
+    {
+      "originalPath": "/private/tmp/b00-discovery/core-20261014-042353--85445--LOKRws-dotnet-test.binlog",
+      "archivePath": "b00-discovery/core-20261014-042353--85445--LOKRws-dotnet-test.binlog",
+      "bytes": 662877,
+      "sha256": "2746a04bec4d48883b8017e5e54f702f5d7c2b3dae55bf761456ae3bde64cb08"
+    },
+    {
+      "originalPath": "/private/tmp/b00-discovery/core-a-20261014-042357--85817--d0Fi96-dotnet-test.binlog",
+      "archivePath": "b00-discovery/core-a-20261014-042357--85817--d0Fi96-dotnet-test.binlog",
+      "bytes": 663036,
+      "sha256": "9308183047f48e887203a61f69ad9f3b87c67cae4ad939d4900ac5af92589962"
+    },
+    {
+      "originalPath": "/private/tmp/b00-discovery/core-b-20261014-042359--85834--jX2NhZ-dotnet-test.binlog",
+      "archivePath": "b00-discovery/core-b-20261014-042359--85834--jX2NhZ-dotnet-test.binlog",
+      "bytes": 663012,
+      "sha256": "ce9d33486d9f2014131fdbee8fc7408718e8d72610c90205e40ac5d15151ab2a"
+    },
+    {
+      "originalPath": "/private/tmp/b00-discovery/core-c-20261014-042401--85943--OyKULF-dotnet-test.binlog",
+      "archivePath": "b00-discovery/core-c-20261014-042401--85943--OyKULF-dotnet-test.binlog",
+      "bytes": 663816,
+      "sha256": "d0a7ac766dea69b0c7fdf843b73768e09be8242902d511319754210b78220f35"
+    },
+    {
+      "originalPath": "/private/tmp/b00-discovery/exercise-20261014-042403--85971--P13CMg-dotnet-test.binlog",
+      "archivePath": "b00-discovery/exercise-20261014-042403--85971--P13CMg-dotnet-test.binlog",
+      "bytes": 652952,
+      "sha256": "50362f68e1647358a0a6863e5041f6a7cf335c5fe0ce89a862d829ea1dc59936"
+    },
+    {
+      "originalPath": "/private/tmp/b03-discovery/contracts-20261014-062641--43456--UcmApc-dotnet-test.binlog",
+      "archivePath": "b03-discovery/contracts-20261014-062641--43456--UcmApc-dotnet-test.binlog",
+      "bytes": 650638,
+      "sha256": "2dbb1b6879690563db46c5af3cb8c6ae906fd5055bdd4f26e2dd4177bbaa9a35"
+    },
+    {
+      "originalPath": "/private/tmp/b03-discovery/core-20261014-062634--43348--b5V3mq-dotnet-test.binlog",
+      "archivePath": "b03-discovery/core-20261014-062634--43348--b5V3mq-dotnet-test.binlog",
+      "bytes": 661204,
+      "sha256": "5239c620a1ce31fee7a7f6d9540f7de9ec4d06dc20430455da2d387064ecf906"
+    },
+    {
+      "originalPath": "/private/tmp/b03-discovery/core-a-20261014-062636--43401--0AxT5W-dotnet-test.binlog",
+      "archivePath": "b03-discovery/core-a-20261014-062636--43401--0AxT5W-dotnet-test.binlog",
+      "bytes": 661655,
+      "sha256": "bb6f8519561e80df5de6cc8a4478e46e48f51ff606b19df7989c2d3552214213"
+    },
+    {
+      "originalPath": "/private/tmp/b03-discovery/core-b-20261014-062638--43442--OHfRIN-dotnet-test.binlog",
+      "archivePath": "b03-discovery/core-b-20261014-062638--43442--OHfRIN-dotnet-test.binlog",
+      "bytes": 660995,
+      "sha256": "205038b3f8d45f19867b846a8bfacb35c8028d4b081342df29cfc36975585934"
+    },
+    {
+      "originalPath": "/private/tmp/b03-discovery/core-c-20261014-062639--43444--9W2xGc-dotnet-test.binlog",
+      "archivePath": "b03-discovery/core-c-20261014-062639--43444--9W2xGc-dotnet-test.binlog",
+      "bytes": 661535,
+      "sha256": "c9bca11f37beccf36850095532d9d748b8351dfebe06189054dadee75309cc69"
+    },
+    {
+      "originalPath": "/private/tmp/b03-discovery/exercise-20261014-062640--43454--IP3z9v-dotnet-test.binlog",
+      "archivePath": "b03-discovery/exercise-20261014-062640--43454--IP3z9v-dotnet-test.binlog",
+      "bytes": 651089,
+      "sha256": "7abe1adb0ddaed50c4ef36376856c94c7d5391bcdcfa7410083cd6e171f0c4ba"
+    },
+    {
+      "originalPath": "/private/tmp/b03-final-discovery/contracts-20261014-064714--83827--wqJMSD-dotnet-test.binlog",
+      "archivePath": "b03-final-discovery/contracts-20261014-064714--83827--wqJMSD-dotnet-test.binlog",
+      "bytes": 651320,
+      "sha256": "9df4720faf9d162091610f4218cb3f5da6332260d754c6f8dccc1b8c5a660aee"
+    },
+    {
+      "originalPath": "/private/tmp/b03-final-discovery/core-20261014-064705--83200--yUbGZZ-dotnet-test.binlog",
+      "archivePath": "b03-final-discovery/core-20261014-064705--83200--yUbGZZ-dotnet-test.binlog",
+      "bytes": 662291,
+      "sha256": "1d211423b6e654b87c6be778fbe310fd4161407da13740544a14a05c53d99e6a"
+    },
+    {
+      "originalPath": "/private/tmp/b03-final-discovery/core-a-20261014-064708--83391--WQKqES-dotnet-test.binlog",
+      "archivePath": "b03-final-discovery/core-a-20261014-064708--83391--WQKqES-dotnet-test.binlog",
+      "bytes": 662943,
+      "sha256": "ed831595ca79a1463e8ad8b41c7831ed515096dc5a2c4f25cd3c0a75cb05f2aa"
+    },
+    {
+      "originalPath": "/private/tmp/b03-final-discovery/core-b-20261014-064710--83438--eQ7+sj-dotnet-test.binlog",
+      "archivePath": "b03-final-discovery/core-b-20261014-064710--83438--eQ7+sj-dotnet-test.binlog",
+      "bytes": 663104,
+      "sha256": "35c02e42f4a122967cd2eff77fb34636ac6a771de02c968528ec7ceae1861457"
+    },
+    {
+      "originalPath": "/private/tmp/b03-final-discovery/core-c-20261014-064711--83567--esRpM3-dotnet-test.binlog",
+      "archivePath": "b03-final-discovery/core-c-20261014-064711--83567--esRpM3-dotnet-test.binlog",
+      "bytes": 662092,
+      "sha256": "67ae4343c100a2a2ed83d04a29cef561140e0e7e7937a42a3055dd92ce03dad6"
+    },
+    {
+      "originalPath": "/private/tmp/b03-final-discovery/exercise-20261014-064713--83715--WGWSI2-dotnet-test.binlog",
+      "archivePath": "b03-final-discovery/exercise-20261014-064713--83715--WGWSI2-dotnet-test.binlog",
+      "bytes": 652312,
+      "sha256": "5eb41d3f39d5a5aeceaacf45727c3c11c0a15a11c0bc29e7aa554b439319ec21"
+    }
+  ]
+}

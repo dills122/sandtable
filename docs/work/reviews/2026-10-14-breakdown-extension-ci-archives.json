@@ -1,0 +1,839 @@
+{
+  "purpose": "Raw current-extension final PR aggregate evidence for B00/B02/B03; 54files each including five final XML/statuses/inventory, process/diagnostic/binlogs. Historical to subsequent main checks, not new product authority.",
+  "archives": [
+    {
+      "directory": "b00-ci-final",
+      "archive": "2026-10-14-b00-ci-final-raw.zip",
+      "archiveSha256": "19de705146a53563dc9f598b8510bfaeb6416dd9a053ff7813a1485e7114cc84",
+      "archiveBytes": 21473464,
+      "entries": [
+        {
+          "path": "build-20261014-043751--3122--gf3wdX.binlog",
+          "bytes": 1289242,
+          "sha256": "423815e19871dda2555348eac6d967d3bd0a561396da2910fa96f2b84aacc3b8"
+        },
+        {
+          "path": "contracts/diagnostics/Cna.Intelligence.Contracts.Tests_net10.0_x64_261014043949373.diag",
+          "bytes": 33621,
+          "sha256": "452875d9f8e223b4bc58ee15f498ea4acae20ee5518f7fb34b2148e20750bd0a"
+        },
+        {
+          "path": "contracts/execution.log",
+          "bytes": 3394,
+          "sha256": "dea76599a355f0e6e07c451a105acb8fd005cb272bfece73a33e2269e9522ca1"
+        },
+        {
+          "path": "contracts/results/runner_runnervmmprz5_2026-10-14_04_39_49.415815.xunit.xml",
+          "bytes": 9684,
+          "sha256": "a15cb03cc4672a9343557320a9a12bf8f0195a3417e7ddedb707fdb97892d79d"
+        },
+        {
+          "path": "contracts/status.json",
+          "bytes": 210,
+          "sha256": "63eacc175fcc93365b2ff265556c59079c7f31cb96ff4842c8e9bbab4dc35a81"
+        },
+        {
+          "path": "contracts/test-20261014-043948--3122--Z1w8jm-dotnet-test.binlog",
+          "bytes": 649790,
+          "sha256": "56460d0674b4d24393b028db0583f96e41a5a93ca8ac31913d4b69537ecaafa5"
+        },
+        {
+          "path": "contracts-20261014-043830--3523--nHLP1L-dotnet-test.binlog",
+          "bytes": 648257,
+          "sha256": "f0bf4d3324b52afb68bffaf412432a8fa82bed81466c3eb69445bd4602721659"
+        },
+        {
+          "path": "contracts-build-20261014-043904--2881--sw4OZI.binlog",
+          "bytes": 1283619,
+          "sha256": "41900fa5afe3eb0a6becf1bd8a9ee7b8a3e65f70f5ac5632c5a9d33d4dd1f733"
+        },
+        {
+          "path": "contracts-discovery.log",
+          "bytes": 1547,
+          "sha256": "67e6dea890100dc711329d4971c78d6a8ca8b10cf1b293e27fd4c5bd89377f0e"
+        },
+        {
+          "path": "contracts-restore-20261014-043857--2746--bn5m3U.binlog",
+          "bytes": 900788,
+          "sha256": "e4f654bdbbf7255a904e1730784c248c089f5bd2863e8f16f3a64e97afdfb8dd"
+        },
+        {
+          "path": "core-20261014-043824--3308--K1iYrS-dotnet-test.binlog",
+          "bytes": 656285,
+          "sha256": "dfd2e8fc366fcb3680c20fde565bb50eb369e75a87195bb0521bbb84214590bc"
+        },
+        {
+          "path": "core-a/diagnostics/Cna.Core.Tests_net10.0_x64_261014044001631.diag",
+          "bytes": 204874,
+          "sha256": "71ed4df0e2ee87a01a1f1c91647e995310c7197eecc76e3ea7be4b95993ca86a"
+        },
+        {
+          "path": "core-a/execution.log",
+          "bytes": 19814,
+          "sha256": "89b5a32363cf1fbfe8625d6a3afe5391e23368551ed7e770fc624c27f1958a46"
+        },
+        {
+          "path": "core-a/results/runner_runnervmmprz5_2026-10-14_04_40_01.680965.xunit.xml",
+          "bytes": 45948,
+          "sha256": "5eb1a8a343f68bcc90572604d5be8df5427aee53db511dd2a45a258304fcd370"
+        },
+        {
+          "path": "core-a/status.json",
+          "bytes": 189,
+          "sha256": "4a077898bc936ba87179ffb46b8741e2d30e3be5ce2b9e16a59fa5abf00311e1"
+        },
+        {
+          "path": "core-a/test-20261014-044000--3248--syWeMA-dotnet-test.binlog",
+          "bytes": 659442,
+          "sha256": "dbfb4c0cc85820ef4b0137a28c2cc3804acd40e23d2842777bd504872ef5d3bb"
+        },
+        {
+          "path": "core-a-20261014-043826--3371--r_F+IZ-dotnet-test.binlog",
+          "bytes": 656235,
+          "sha256": "b61a394b911ba7ce48de177140f9c09953ef9dffa05a1ca7f4a8b1b5ec09ba49"
+        },
+        {
+          "path": "core-a-build-20261014-043901--3068--mO7Rfn.binlog",
+          "bytes": 1286855,
+          "sha256": "84407e3766e12b3773df2b17112f4e7f640a7834be5622fc1b8ca8145761238d"
+        },
+        {
+          "path": "core-a-discovery.log",
+          "bytes": 10215,
+          "sha256": "a0f96522829b797e443328148455091031d146a6dbb52c4f302772e472b9f257"
+        },
+        {
+          "path": "core-a-restore-20261014-043852--2874--2f7V+Z.binlog",
+          "bytes": 902395,
+          "sha256": "3293aafa652cdbc4af9800be4974ac5b5bbb3dbda91e00ddd4f91bf6a56af945"
+        },
+        {
+          "path": "core-b/diagnostics/Cna.Core.Tests_net10.0_x64_261014044010568.diag",
+          "bytes": 6450300,
+          "sha256": "ed6a0102b9c9fac16a690a8c1501d7505625ef1d3e871c0217b615d4d813f9cb"
+        },
+        {
+          "path": "core-b/execution.log",
+          "bytes": 639022,
+          "sha256": "549a3934bfa25fde3aa1551d3731b678cb7fc85b6d065c06286651e703efe9ea"
+        },
+        {
+          "path": "core-b/results/runner_runnervmmprz5_2026-10-14_04_40_10.626148.xunit.xml",
+          "bytes": 1400338,
+          "sha256": "5fe92ea7e43a245f6e05c74532fb17be0f2b1993aadc55ce506f02bc0c7ab6fc"
+        },
+        {
+          "path": "core-b/status.json",
+          "bytes": 189,
+          "sha256": "83493a9a721e3c3693539abf342afafa25c60f4dd76d955589ca883044ea6195"
+        },
+        {
+          "path": "core-b/test-20261014-044009--3466--ygStaP-dotnet-test.binlog",
+          "bytes": 659535,
+          "sha256": "3390642bfdf6b292e1ddf9936d37da9ca2092d056c2c6f13062cd70ef805b130"
+        },
+        {
+          "path": "core-b-20261014-043827--3408--7+gnHC-dotnet-test.binlog",
+          "bytes": 656276,
+          "sha256": "c0297f8232f0c4acec4504db674f8b8ed29554419c63265b87ce860fdfc69a81"
+        },
+        {
+          "path": "core-b-build-20261014-043905--3282--D25bXB.binlog",
+          "bytes": 1282300,
+          "sha256": "7c23f55bdf4379d6732018de8e7f4d664c31d8a7477a1d3aebe8284b6a22816c"
+        },
+        {
+          "path": "core-b-discovery.log",
+          "bytes": 300281,
+          "sha256": "3d7d117c8268c3ea4b444395a1a0c59d2c97b5304cc0ada55e20b3a4734977ed"
+        },
+        {
+          "path": "core-b-restore-20261014-043856--3095--sF01_O.binlog",
+          "bytes": 896950,
+          "sha256": "bb887a4ed3c8a621a8ef2324215ab06adde26ad2ee03e580eaaa2876b358c8d7"
+        },
+        {
+          "path": "core-c/diagnostics/Cna.Core.Tests_net10.0_x64_261014044007319.diag",
+          "bytes": 186016,
+          "sha256": "b169a035e4a69687f177194406bda8b8caaeed48e6389acdf145e157acc08757"
+        },
+        {
+          "path": "core-c/execution.log",
+          "bytes": 17768,
+          "sha256": "c288dff8c65e1804507a34137799b98e6e98a11333b1b20c9badfada2d3b2624"
+        },
+        {
+          "path": "core-c/results/runner_runnervmmprz5_2026-10-14_04_40_07.370960.xunit.xml",
+          "bytes": 39752,
+          "sha256": "5552478a276ca63baff9c9da08102e8f1d18bccf59a3c661d093f009a86c814b"
+        },
+        {
+          "path": "core-c/status.json",
+          "bytes": 189,
+          "sha256": "a7578e18be8d5d1afcd6deb6784ce6e87b4ded2ba52f137b835b7b40e7d9691a"
+        },
+        {
+          "path": "core-c/test-20261014-044006--3244--XkuuDC-dotnet-test.binlog",
+          "bytes": 659331,
+          "sha256": "1738fca2bd950a316c9be56f6b4b842b066052865858b0ff1f9b23f252a1b620"
+        },
+        {
+          "path": "core-c-20261014-043829--3447--ofnLk1-dotnet-test.binlog",
+          "bytes": 656135,
+          "sha256": "8359b17249279540d13684136f77529e0dd245766064631888741db72b83f96a"
+        },
+        {
+          "path": "core-c-build-20261014-043902--3030--mKyl2G.binlog",
+          "bytes": 1285795,
+          "sha256": "5a3f4d38e0bef65ff4372b56c8393d710b89dc1e9911620e83191d40a7d3fd14"
+        },
+        {
+          "path": "core-c-discovery.log",
+          "bytes": 9132,
+          "sha256": "7cfd8bf74bcaf8d9f0f04947597bf80bef23c753b941d88d5829ca61193d7cb3"
+        },
+        {
+          "path": "core-c-restore-20261014-043853--2842--QZI97Z.binlog",
+          "bytes": 899400,
+          "sha256": "cbf8a468726467fd1d07b95fcd97da4faa672a88fe0a85efcd40334d2c051d94"
+        },
+        {
+          "path": "core-discovery.log",
+          "bytes": 319034,
+          "sha256": "ddd4d3540bd5699fb1f6db57639b3bbecb94817f771321c424f9b4b3394f5bb2"
+        },
+        {
+          "path": "deferred.json",
+          "bytes": 51029,
+          "sha256": "64d79c358cccb5381485bfadf7430bd2a18c7fd2e492ee2449dd6578497c3cc4"
+        },
+        {
+          "path": "dependencies.json",
+          "bytes": 127,
+          "sha256": "e352fb75dd0111784e1e959f3f494810ee05c5497fdb499b4a84941c2395a0d5"
+        },
+        {
+          "path": "exercise/diagnostics/Cna.ExerciseRunner.Tests_net10.0_x64_261014043943176.diag",
+          "bytes": 1344930,
+          "sha256": "2bd3a7c477c8ab9dbf7517b70641f1867aa147a55fa2adcbfb7ec00d50789828"
+        },
+        {
+          "path": "exercise/execution.log",
+          "bytes": 142615,
+          "sha256": "f4aad33f4341e633c34eb3f3a2067ab9bec3d61b26ca5c862826d625a424b8a8"
+        },
+        {
+          "path": "exercise/results/runner_runnervmmprz5_2026-10-14_04_39_43.219805.xunit.xml",
+          "bytes": 297785,
+          "sha256": "e88a815ddbad394da2201f3aec9bc0097b9ba3a88f2a9712523a280820447c3d"
+        },
+        {
+          "path": "exercise/status.json",
+          "bytes": 201,
+          "sha256": "1658be1e8701ef1a6afbd06780a08844205473107f2dd87839fa0ef53e1acd99"
+        },
+        {
+          "path": "exercise/test-20261014-043942--3006--gQDuEX-dotnet-test.binlog",
+          "bytes": 650422,
+          "sha256": "aeda1eb4ec6113c1c098e5820a6881c17feb68f921e85a6667a0a101bc256661"
+        },
+        {
+          "path": "exercise-20261014-043830--3484--1eh88n-dotnet-test.binlog",
+          "bytes": 648971,
+          "sha256": "136f5dea09ea7a6ba7707270d30f095bb44512a240f0ea2ffb068b6e6eac1f0d"
+        },
+        {
+          "path": "exercise-build-20261014-043859--2791--qllagz.binlog",
+          "bytes": 1277019,
+          "sha256": "82a8624376af14174e48a0ebcbefd7e148bf7670e3f26b746c2ae1db8a6074aa"
+        },
+        {
+          "path": "exercise-discovery.log",
+          "bytes": 73516,
+          "sha256": "3529c1539aebf0addbc5eec66fe8042261167bc4f01eafa49d76923e6a4cda04"
+        },
+        {
+          "path": "exercise-restore-20261014-043852--2662--Ubm0rW.binlog",
+          "bytes": 898801,
+          "sha256": "810801ee4746f50204499440d169b58c94562d577489f1f1413e9d1c38439dd6"
+        },
+        {
+          "path": "inventory.json",
+          "bytes": 980606,
+          "sha256": "fd6dfd6545053654f272a4c2823efe7b572cf37419c37d84d11790ada2590ec8"
+        },
+        {
+          "path": "provider-discovery.log",
+          "bytes": 75,
+          "sha256": "26ab2656d60281f7e1bb8a14e4a605fcf351cb8be1093d598e82d83c9a0c17a2"
+        },
+        {
+          "path": "restore-20261014-043702--2912--Wxk0eY.binlog",
+          "bytes": 902313,
+          "sha256": "db16f07050fafc05b2295cd541012e5b2c99a8e40cdd415fde070bc83d60ec60"
+        },
+        {
+          "path": "row-helper-20261014-043823--3273--xHDn+0.binlog",
+          "bytes": 411977,
+          "sha256": "5c9c4277300e82c9120ea1415d05daf81484a1312f2616b9321776bff6f4d168"
+        }
+      ]
+    },
+    {
+      "directory": "b02-ci-final",
+      "archive": "2026-10-14-b02-ci-final-raw.zip",
+      "archiveSha256": "579e598a02ebe82cdc10182a8970f5f94bd5e0e2df34123ec1a9133c227b9d28",
+      "archiveBytes": 21527298,
+      "entries": [
+        {
+          "path": "build-20261014-053246--3089--IVUQhL.binlog",
+          "bytes": 1285754,
+          "sha256": "a77079cc7bae15270bc44fb99191110194bbf060e08d7f09f244702f084e3053"
+        },
+        {
+          "path": "contracts/diagnostics/Cna.Intelligence.Contracts.Tests_net10.0_x64_261014053540992.diag",
+          "bytes": 33613,
+          "sha256": "795d811fc693006a6f0f093a221dd76faf32d4ed837c5c4ea146499bcaf56eba"
+        },
+        {
+          "path": "contracts/execution.log",
+          "bytes": 3396,
+          "sha256": "4d4bc7938c18336e36d05d8d22a0d077cce87e4ddaec775f083b63433b1478b6"
+        },
+        {
+          "path": "contracts/results/runner_runnervmmprz5_2026-10-14_05_35_41.042776.xunit.xml",
+          "bytes": 9671,
+          "sha256": "c95e5a9617c05c7c5ffbabb1a5cc3cb1e40fd3238876249ccf33dca7b45ca387"
+        },
+        {
+          "path": "contracts/status.json",
+          "bytes": 210,
+          "sha256": "d87086ff2e07a8488298b577221071adc7d63974ea9447d38a7701d6fc9e5815"
+        },
+        {
+          "path": "contracts/test-20261014-053540--3193--lbuP2A-dotnet-test.binlog",
+          "bytes": 651103,
+          "sha256": "83e6c5fac57e6e52cee0d3dfb883772abec634b162fb63b8b341344ea4105d1e"
+        },
+        {
+          "path": "contracts-20261014-053401--3579--6S+x2Q-dotnet-test.binlog",
+          "bytes": 651194,
+          "sha256": "afda41df067b348d73c691418d100c579b9ebd180a2260a915f2835cb4feea92"
+        },
+        {
+          "path": "contracts-build-20261014-053434--3003--0eYv5h.binlog",
+          "bytes": 1294548,
+          "sha256": "d6acce309193e74ae403247b0efc711433bc7d22d166a68a06054aed04661ba0"
+        },
+        {
+          "path": "contracts-discovery.log",
+          "bytes": 1547,
+          "sha256": "67e6dea890100dc711329d4971c78d6a8ca8b10cf1b293e27fd4c5bd89377f0e"
+        },
+        {
+          "path": "contracts-restore-20261014-053425--2868--uW3Fya.binlog",
+          "bytes": 903164,
+          "sha256": "00b9b4da006dc5e00b131e4096900825c4cb6f554692d4b3be88d3007f252fec"
+        },
+        {
+          "path": "core-20261014-053350--3340--A83QZk-dotnet-test.binlog",
+          "bytes": 659633,
+          "sha256": "c84c6044d62b9a82af350d219271529c4840d0f552afaed17c770cd79ed00cd4"
+        },
+        {
+          "path": "core-a/diagnostics/Cna.Core.Tests_net10.0_x64_261014053538137.diag",
+          "bytes": 204874,
+          "sha256": "519f89426090e255da636e5b7e89c4a2c46242a072c64596a9f8fe69750454c3"
+        },
+        {
+          "path": "core-a/execution.log",
+          "bytes": 19814,
+          "sha256": "bcc2b95e28368bdd0313c055475890a14e7ccb793f0fe8c4c398c4714c19de41"
+        },
+        {
+          "path": "core-a/results/runner_runnervmmprz5_2026-10-14_05_35_38.184871.xunit.xml",
+          "bytes": 45950,
+          "sha256": "f5af03c1d39acd6ebec9a4a2f20171e98de9740c6dd022b667b92e27b656e29a"
+        },
+        {
+          "path": "core-a/status.json",
+          "bytes": 189,
+          "sha256": "ce7d2372b966d7d63872fbaa37baad97a00b7e481583dd65a486a4bae458af96"
+        },
+        {
+          "path": "core-a/test-20261014-053537--3187--saJs_9-dotnet-test.binlog",
+          "bytes": 659381,
+          "sha256": "188e16dafc49e1b4db8ec1b9e416de518b72a79e28a010fd73fdd7aa2977a514"
+        },
+        {
+          "path": "core-a-20261014-053354--3407--fZDhHL-dotnet-test.binlog",
+          "bytes": 659622,
+          "sha256": "c33ee2e9dd08bd98ac18b93eab8d3836aeb90c3d6ebf337c3ec471598c3192bc"
+        },
+        {
+          "path": "core-a-build-20261014-053434--3008--nAsY5b.binlog",
+          "bytes": 1284636,
+          "sha256": "57d8337c925425220d9d1d7895d15ac4c1aced69f47429d8e4fcb212d6b5263a"
+        },
+        {
+          "path": "core-a-discovery.log",
+          "bytes": 10215,
+          "sha256": "a0f96522829b797e443328148455091031d146a6dbb52c4f302772e472b9f257"
+        },
+        {
+          "path": "core-a-restore-20261014-053425--2887--VnifRf.binlog",
+          "bytes": 905719,
+          "sha256": "b1fb8c6cf1f90f1205b3bebd4cd5c8e187a06c97f9af289a1703d75d6ab8ae40"
+        },
+        {
+          "path": "core-b/diagnostics/Cna.Core.Tests_net10.0_x64_261014053536558.diag",
+          "bytes": 6450140,
+          "sha256": "a39aa4172f1d46cdda5e23574c3d9e6a6eb323ed73c4fcf9fdf1335f6e42fa3c"
+        },
+        {
+          "path": "core-b/execution.log",
+          "bytes": 638994,
+          "sha256": "a15c796c0aa1c5627814c24de4c704598896e56ddc8619d0deba34acf9b2a117"
+        },
+        {
+          "path": "core-b/results/runner_runnervmmprz5_2026-10-14_05_35_36.606846.xunit.xml",
+          "bytes": 1400246,
+          "sha256": "d552c80b64f7d5038c72b647630827c8ced05dfbe2382b05e80856091bfd2f1b"
+        },
+        {
+          "path": "core-b/status.json",
+          "bytes": 189,
+          "sha256": "e3dc902caedc60c483e8fd8b41688eb473d4b38d4deeb6db93bf4aebe76fa782"
+        },
+        {
+          "path": "core-b/test-20261014-053535--3177--QtMwvt-dotnet-test.binlog",
+          "bytes": 659064,
+          "sha256": "a0ec147501eec907ac11e472694421dd96ba74884472921135e7870e7e76919e"
+        },
+        {
+          "path": "core-b-20261014-053356--3444--0Duzkk-dotnet-test.binlog",
+          "bytes": 659404,
+          "sha256": "de7cf7f5bb217010d6578eb3dfc5672c3bb80527a41dbd063aa85180d3dde37a"
+        },
+        {
+          "path": "core-b-build-20261014-053433--3002--bdOTfy.binlog",
+          "bytes": 1288825,
+          "sha256": "153c054f3a3c58d875272a0f84f9f662d64d9e66cc61af40a26903d8ffd0c7f6"
+        },
+        {
+          "path": "core-b-discovery.log",
+          "bytes": 300281,
+          "sha256": "3d7d117c8268c3ea4b444395a1a0c59d2c97b5304cc0ada55e20b3a4734977ed"
+        },
+        {
+          "path": "core-b-restore-20261014-053424--2875--8ulAW3.binlog",
+          "bytes": 902415,
+          "sha256": "ea2bd235bfd7773a779e7f1224174d2289fb3718373646f5269ef5552c642f16"
+        },
+        {
+          "path": "core-c/diagnostics/Cna.Core.Tests_net10.0_x64_261014053537201.diag",
+          "bytes": 186016,
+          "sha256": "aa8c7ae30b13a9c45f6ba1d844e099d4eda2069ddbfa6aecb40fb3a9df8c87e5"
+        },
+        {
+          "path": "core-c/execution.log",
+          "bytes": 17767,
+          "sha256": "6ce006eec1b84a29f3aba1be28877a64a7a72ce77e9186bf8af572bae58d1c75"
+        },
+        {
+          "path": "core-c/results/runner_runnervmmprz5_2026-10-14_05_35_37.246344.xunit.xml",
+          "bytes": 39755,
+          "sha256": "0b8e1e66ab4c43ab8e5b6eb2defec98fd6b90acbcffc93c36c1f853d03f44597"
+        },
+        {
+          "path": "core-c/status.json",
+          "bytes": 189,
+          "sha256": "b0983e38cf120fa9f4f3ccdc55e36d5df5344dae02f427b1aea13d80ab53b396"
+        },
+        {
+          "path": "core-c/test-20261014-053536--3160--BBUIUo-dotnet-test.binlog",
+          "bytes": 659720,
+          "sha256": "190598634bd0d3386523b3c9d16e8ee41ec8b718e930db2df40401a981a3f3cc"
+        },
+        {
+          "path": "core-c-20261014-053358--3487--fuS2U4-dotnet-test.binlog",
+          "bytes": 659541,
+          "sha256": "444be67d83bb1f48f7acb53fb04410ebfbd928b7cf0b520a86955e590d57954c"
+        },
+        {
+          "path": "core-c-build-20261014-053439--3000--mQy0R_.binlog",
+          "bytes": 1295926,
+          "sha256": "332b917320a32945076c8becf744507e32afc04fe2ac19d40bd9e811e1aa11fa"
+        },
+        {
+          "path": "core-c-discovery.log",
+          "bytes": 9132,
+          "sha256": "7cfd8bf74bcaf8d9f0f04947597bf80bef23c753b941d88d5829ca61193d7cb3"
+        },
+        {
+          "path": "core-c-restore-20261014-053427--2867--eX16qW.binlog",
+          "bytes": 890708,
+          "sha256": "6961c71bf89ae0ba769925877c4088c9a69103e1ff65e22019c36984982a7984"
+        },
+        {
+          "path": "core-discovery.log",
+          "bytes": 319034,
+          "sha256": "ddd4d3540bd5699fb1f6db57639b3bbecb94817f771321c424f9b4b3394f5bb2"
+        },
+        {
+          "path": "deferred.json",
+          "bytes": 51029,
+          "sha256": "7fadab1efea2281db27c1320741946ad6d5d1e85578ee0156f2381846f7584c6"
+        },
+        {
+          "path": "dependencies.json",
+          "bytes": 127,
+          "sha256": "e352fb75dd0111784e1e959f3f494810ee05c5497fdb499b4a84941c2395a0d5"
+        },
+        {
+          "path": "exercise/diagnostics/Cna.ExerciseRunner.Tests_net10.0_x64_261014053537313.diag",
+          "bytes": 1345026,
+          "sha256": "dc835bbbf6e2bfb50c0d2d5f585e1a85db32b32ce7dbe86fa773ec2b303c7947"
+        },
+        {
+          "path": "exercise/execution.log",
+          "bytes": 142646,
+          "sha256": "db62efa98991baca358e6965b9d350c8e769d2548a5cdc700442bc87e2c79cf0"
+        },
+        {
+          "path": "exercise/results/runner_runnervmmprz5_2026-10-14_05_35_37.375423.xunit.xml",
+          "bytes": 297842,
+          "sha256": "699ee821ee5cf61f5c9e642abac8a649ee5c1a0ea5eccff2c020a88ae58694c1"
+        },
+        {
+          "path": "exercise/status.json",
+          "bytes": 201,
+          "sha256": "f3eecc7c4c9d8aad3548484f1374f4eca3aabab0fefe69dbebb2af50c2cf7050"
+        },
+        {
+          "path": "exercise/test-20261014-053536--3173--6a+0af-dotnet-test.binlog",
+          "bytes": 651666,
+          "sha256": "9b53148a12ab3d314a949056faa098d91133dd3dc4b84632d40d84fd79a17b6f"
+        },
+        {
+          "path": "exercise-20261014-053400--3542--XHws0U-dotnet-test.binlog",
+          "bytes": 651885,
+          "sha256": "9001c25c57bf1b235adab71dd14f8adddfc1ab29b9a066dc304f15375b353924"
+        },
+        {
+          "path": "exercise-build-20261014-053433--3006--6QN+fr.binlog",
+          "bytes": 1276026,
+          "sha256": "15676526f802a41eb7e7328c72a89bab1a484487a43fddf542f39f9a8ba0ca9a"
+        },
+        {
+          "path": "exercise-discovery.log",
+          "bytes": 73516,
+          "sha256": "3529c1539aebf0addbc5eec66fe8042261167bc4f01eafa49d76923e6a4cda04"
+        },
+        {
+          "path": "exercise-restore-20261014-053424--2886--iMLH00.binlog",
+          "bytes": 904301,
+          "sha256": "dfe1628613374fc17a78ac6ce71d30891a150338a4e8c348f76a96d5c84edfce"
+        },
+        {
+          "path": "inventory.json",
+          "bytes": 980606,
+          "sha256": "30e54117fe2b0ec04447145bc22096a648f2da9e0447a00d2980892ef2b31fdc"
+        },
+        {
+          "path": "provider-discovery.log",
+          "bytes": 75,
+          "sha256": "26ab2656d60281f7e1bb8a14e4a605fcf351cb8be1093d598e82d83c9a0c17a2"
+        },
+        {
+          "path": "restore-20261014-053124--2882--cPtBTX.binlog",
+          "bytes": 902408,
+          "sha256": "6f18b37099c5212270a24a7f91f9ac1ffcdd2a0e7dadb4688e1c87cd05e55d7e"
+        },
+        {
+          "path": "row-helper-20261014-053348--3304--9Mlsz0.binlog",
+          "bytes": 412806,
+          "sha256": "bb5d84cdbc4619caa71a81f57269ebea71923dd94f5e7aec0f7b10878bab20c6"
+        }
+      ]
+    },
+    {
+      "directory": "b03-ci-final",
+      "archive": "2026-10-14-b03-ci-final-raw.zip",
+      "archiveSha256": "e88282091f834169447f6d3ec9da41d141e0fb8276166eac88b30adf20a76b3e",
+      "archiveBytes": 21542292,
+      "entries": [
+        {
+          "path": "build-20261014-070817--3063--ZWuZLp.binlog",
+          "bytes": 1284662,
+          "sha256": "692c55339d774a08597e559301fde036b95250bc7df25bee8a2170cee284d3a3"
+        },
+        {
+          "path": "contracts/diagnostics/Cna.Intelligence.Contracts.Tests_net10.0_x64_261014071106705.diag",
+          "bytes": 33613,
+          "sha256": "44faae0dda31c323345cecca858e197d703d19a007eec1f21a9b81d837caca40"
+        },
+        {
+          "path": "contracts/execution.log",
+          "bytes": 3397,
+          "sha256": "7469aed218b6b12377e58717b6562aba38e74e191f45534b921193532eb8759e"
+        },
+        {
+          "path": "contracts/results/runner_runnervmmprz5_2026-10-14_07_11_06.756647.xunit.xml",
+          "bytes": 9671,
+          "sha256": "66eb2a1b50f00f916388f2058a69a41372573acc4a1cba66def0fde558ae762a"
+        },
+        {
+          "path": "contracts/status.json",
+          "bytes": 210,
+          "sha256": "660635698ca6eabf91d741cd93020b68f4994cf2b2106f8668e9ea4bb6532849"
+        },
+        {
+          "path": "contracts/test-20261014-071106--3265--gadM1u-dotnet-test.binlog",
+          "bytes": 651133,
+          "sha256": "f6a39217ca0b4621a040145457bd2f9d7798478ca2da027ecdac13cbe51593f9"
+        },
+        {
+          "path": "contracts-20261014-070928--3548--FVR046-dotnet-test.binlog",
+          "bytes": 650625,
+          "sha256": "fd5f4737287c645a06cb6b991ed3527a9f1be7efcc2343d70eb3cb978dcb388e"
+        },
+        {
+          "path": "contracts-build-20261014-071002--3092--rhAUv0.binlog",
+          "bytes": 1289774,
+          "sha256": "4ee7d51e6ca87181fb42e0d851f7ed1c2f8a9cfac064fadf7379d4ee233ec75f"
+        },
+        {
+          "path": "contracts-discovery.log",
+          "bytes": 1547,
+          "sha256": "67e6dea890100dc711329d4971c78d6a8ca8b10cf1b293e27fd4c5bd89377f0e"
+        },
+        {
+          "path": "contracts-restore-20261014-070953--2962--IRMSJw.binlog",
+          "bytes": 897393,
+          "sha256": "3e012d27d6c881aaf49d75a9c76b9fbc1856712bd9cca5d1789085c9a3c47cbc"
+        },
+        {
+          "path": "core-20261014-070918--3338--18nsYA-dotnet-test.binlog",
+          "bytes": 658805,
+          "sha256": "f3fff7e0f77c614894c36c95da6a0c65c6153f6d38692272f17e80e589c9a20b"
+        },
+        {
+          "path": "core-a/diagnostics/Cna.Core.Tests_net10.0_x64_261014071104314.diag",
+          "bytes": 204874,
+          "sha256": "78ba847d8c9d64a909c96dad9819112f03e1148fb098d5e6e8e9a99f50dc4caf"
+        },
+        {
+          "path": "core-a/execution.log",
+          "bytes": 19815,
+          "sha256": "c61e955bec0abfd857df2c2136197f4e9904a0504fcafeaac39e3e1fae1caffe"
+        },
+        {
+          "path": "core-a/results/runner_runnervmmprz5_2026-10-14_07_11_04.362996.xunit.xml",
+          "bytes": 45954,
+          "sha256": "d3d305d898a0cf2ba22143e52e333690f113b0c77c242c5b1a8a78d57d7ee8e4"
+        },
+        {
+          "path": "core-a/status.json",
+          "bytes": 189,
+          "sha256": "9cd163621f1b3e5f1943dc3f42da391e0448185390b5fb19581522b52d9d1947"
+        },
+        {
+          "path": "core-a/test-20261014-071103--3267--A6d5al-dotnet-test.binlog",
+          "bytes": 659428,
+          "sha256": "ddbe5bc236551ac3c94d6645937d6930ac2a83c59680eb2672f4f2070b05e669"
+        },
+        {
+          "path": "core-a-20261014-070921--3403--uVDswb-dotnet-test.binlog",
+          "bytes": 658845,
+          "sha256": "2f4cdd50f67456f6cbf0c41025e6d199f043551cb76151659ac3300ac347c631"
+        },
+        {
+          "path": "core-a-build-20261014-070959--3082--DyFqVD.binlog",
+          "bytes": 1291576,
+          "sha256": "a446deda7d619f7244ee09a4cc99f3b1050c2a9dfa8e70d3f347668dbcd4ac92"
+        },
+        {
+          "path": "core-a-discovery.log",
+          "bytes": 10215,
+          "sha256": "a0f96522829b797e443328148455091031d146a6dbb52c4f302772e472b9f257"
+        },
+        {
+          "path": "core-a-restore-20261014-070951--2952--QWiB5Q.binlog",
+          "bytes": 905593,
+          "sha256": "c221cebdc4e3b5d73d93d03d69a4ffa5c381ae22acd4e8aea7ad69c4bd4bed22"
+        },
+        {
+          "path": "core-b/diagnostics/Cna.Core.Tests_net10.0_x64_261014071050292.diag",
+          "bytes": 6449808,
+          "sha256": "9d0a0801814ce0e6257b4947fe2ab3882d2328c53e0daee5bf44fe3dbe629f8a"
+        },
+        {
+          "path": "core-b/execution.log",
+          "bytes": 638805,
+          "sha256": "e25512d3f3a1bc89f043ebd2b79f89cb00db9e23014345012c98b338f35d2486"
+        },
+        {
+          "path": "core-b/results/runner_runnervmmprz5_2026-10-14_07_10_50.330024.xunit.xml",
+          "bytes": 1400000,
+          "sha256": "56fcb7b633e5e54a0a5e4b35fa229af2410de43a9939035ab1f7f9b21d1fd21b"
+        },
+        {
+          "path": "core-b/status.json",
+          "bytes": 189,
+          "sha256": "e1802fed04c9e75ca4bff09876ff600500b23f93629a6cc5bf44ccd178e0aebc"
+        },
+        {
+          "path": "core-b/test-20261014-071049--3066--YwDO3A-dotnet-test.binlog",
+          "bytes": 657901,
+          "sha256": "909eee388bd639953bcd0387aad3beba5b208c48ba77eaf64fdb0fb72157d873"
+        },
+        {
+          "path": "core-b-20261014-070923--3438--PTelsv-dotnet-test.binlog",
+          "bytes": 658880,
+          "sha256": "d1eb088650cd684300db59d791967e11faf15077f70decce747c5d7a4376b88c"
+        },
+        {
+          "path": "core-b-build-20261014-071004--2895--V3bC_+.binlog",
+          "bytes": 1288223,
+          "sha256": "5f4799bc2bbbf7962a9e3d4872f1171790d1923095aa7e505163078b90aa69e8"
+        },
+        {
+          "path": "core-b-discovery.log",
+          "bytes": 300281,
+          "sha256": "3d7d117c8268c3ea4b444395a1a0c59d2c97b5304cc0ada55e20b3a4734977ed"
+        },
+        {
+          "path": "core-b-restore-20261014-070953--2769--ilLrmG.binlog",
+          "bytes": 900302,
+          "sha256": "2951f10ea487a4e13219a0d683f568f7a47b85457b371a28b3242fbda972d3e2"
+        },
+        {
+          "path": "core-c/diagnostics/Cna.Core.Tests_net10.0_x64_261014071107301.diag",
+          "bytes": 372691,
+          "sha256": "c892c62d45ac858c8c0752c8fdb01e580462a706f33cb5ff29ca7447008698ee"
+        },
+        {
+          "path": "core-c/execution.log",
+          "bytes": 36131,
+          "sha256": "f9bf80e4698dc9c48c67f934726b5d479d9d31fc1dc5cca37fe1f086aee660ed"
+        },
+        {
+          "path": "core-c/results/runner_runnervmmprz5_2026-10-14_07_11_07.348963.xunit.xml",
+          "bytes": 80620,
+          "sha256": "25dc40cd30223b9b769f16fbb05992af95c2f0bb21034ca1a6e16ed4b85bde80"
+        },
+        {
+          "path": "core-c/status.json",
+          "bytes": 189,
+          "sha256": "04e3017a938c118600f08d531940aac0c70581451080ed958a54beeeb00bacf6"
+        },
+        {
+          "path": "core-c/test-20261014-071106--3411--Xon5Rv-dotnet-test.binlog",
+          "bytes": 659694,
+          "sha256": "d5b1bd73989ce35f86afbbefa0490b58ecdb89b51b7aaf3b334813be90f2ddbb"
+        },
+        {
+          "path": "core-c-20261014-070925--3476--rpjeEr-dotnet-test.binlog",
+          "bytes": 659037,
+          "sha256": "3efa9b920b42beb3af8e6e118890dc4769ffdd14417e18c0cef429b1e37da4c0"
+        },
+        {
+          "path": "core-c-build-20261014-071002--3229--oM+0++.binlog",
+          "bytes": 1287236,
+          "sha256": "f338af783f2dac580d00a3e1f2f6eea80c7d2bf86351615612564dea825a36b9"
+        },
+        {
+          "path": "core-c-discovery.log",
+          "bytes": 18371,
+          "sha256": "9031d88161d8b3cb05c70935d95e47ed00e9f55dce75650e7073f0c46d1ec0e6"
+        },
+        {
+          "path": "core-c-restore-20261014-070953--3101--+8Pzmp.binlog",
+          "bytes": 902330,
+          "sha256": "577351abaaa12750b4535f040357d251e35376247363ef2eba1f0e40f4cdf8b6"
+        },
+        {
+          "path": "core-discovery.log",
+          "bytes": 328271,
+          "sha256": "717172355719131c65467acfeba476387a6b903722255527663ae9cf83197b6d"
+        },
+        {
+          "path": "deferred.json",
+          "bytes": 51029,
+          "sha256": "e9d7b2e99296c701bd38f8a26f0d42e12646b8b2bb4771deaef9f9ccd6edeeba"
+        },
+        {
+          "path": "dependencies.json",
+          "bytes": 127,
+          "sha256": "e352fb75dd0111784e1e959f3f494810ee05c5497fdb499b4a84941c2395a0d5"
+        },
+        {
+          "path": "exercise/diagnostics/Cna.ExerciseRunner.Tests_net10.0_x64_261014071047163.diag",
+          "bytes": 1344961,
+          "sha256": "9ce3d1308b5f8497ddc00d83de5c3c1630eb75ea3fafae49f64df91c30fb9d33"
+        },
+        {
+          "path": "exercise/execution.log",
+          "bytes": 142572,
+          "sha256": "8a6bcd7a32afe214efb489ebc93500ca155ea572080ff3e2ba637802893c2537"
+        },
+        {
+          "path": "exercise/results/runner_runnervmmprz5_2026-10-14_07_10_47.196052.xunit.xml",
+          "bytes": 297790,
+          "sha256": "3f569959a7d7c19681283a6e67ac48a9515ea71169ebbf9a8a999e001913a90d"
+        },
+        {
+          "path": "exercise/status.json",
+          "bytes": 201,
+          "sha256": "b7e905ed932a4575f4bbc80622e659122a34b95a8632c8629c073e4887deb107"
+        },
+        {
+          "path": "exercise/test-20261014-071046--2962--1t0cvn-dotnet-test.binlog",
+          "bytes": 650552,
+          "sha256": "aafab46575c665f6707c06faaf94fcc58bef8e3e8e5ead69b7680072e10cdcd7"
+        },
+        {
+          "path": "exercise-20261014-070926--3512--DDMkKH-dotnet-test.binlog",
+          "bytes": 651207,
+          "sha256": "096caccccd33c5fb73cf069f39285c2b6fda1546a9feb1cf773adc4e31e4ec80"
+        },
+        {
+          "path": "exercise-build-20261014-071003--2798--3q5LYu.binlog",
+          "bytes": 1295638,
+          "sha256": "ad22ff7c1d06b253fb1c9b25e07758e89bde7830201eec3b13a1e2a765c33f3e"
+        },
+        {
+          "path": "exercise-discovery.log",
+          "bytes": 73516,
+          "sha256": "3529c1539aebf0addbc5eec66fe8042261167bc4f01eafa49d76923e6a4cda04"
+        },
+        {
+          "path": "exercise-restore-20261014-070954--2652--ASWMTG.binlog",
+          "bytes": 903331,
+          "sha256": "055b4464ef4137ff429a8b55113079d3761bb238da47b2c961fead0bda2ba677"
+        },
+        {
+          "path": "inventory.json",
+          "bytes": 1003050,
+          "sha256": "be236dba96e0612c37ee84b2cfb81a07458f9e9772018befbbc772a5606279ca"
+        },
+        {
+          "path": "provider-discovery.log",
+          "bytes": 75,
+          "sha256": "26ab2656d60281f7e1bb8a14e4a605fcf351cb8be1093d598e82d83c9a0c17a2"
+        },
+        {
+          "path": "restore-20261014-070706--2865--AyLESR.binlog",
+          "bytes": 898994,
+          "sha256": "3ed14e81416542475e68b2d25eaf08bb7d03a646ac0d32d64cd7606b63db32d6"
+        },
+        {
+          "path": "row-helper-20261014-070916--3304--0LgQzO.binlog",
+          "bytes": 412447,
+          "sha256": "02db127e960cf0e2214a1ffffa96e8eee0ea65106d97de3a303cf85702ee3ed1"
+        }
+      ]
+    }
+  ]
+}
