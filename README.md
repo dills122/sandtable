@@ -191,10 +191,12 @@ semantic checks.
 Build artifacts live under `artifacts/`. Do not commit generated `artifacts/bin` or `artifacts/obj`
 content. See [security policy](SECURITY.md) for vulnerability reports.
 
-GitHub CI retains four exact-row shards. Core-B has a bounded20-minute job deadline;
-Core-A, Exercise and Contracts keep15minutes. Row filters, exhaustive coverage and exact-head/
+GitHub CI retains five exact-row shards. Core-C owns the two native actual Movement completion
+test classes; Core-A keeps its existing heavy-method policy and Core-B runs the remaining Core
+rows. Core-B retains its bounded20-minute deadline; Core-A, Core-C, Exercise and Contracts keep15minutes. Row filters, exhaustive coverage and exact-head/
 attempt/process checks remain unchanged. The [Core-B investigation](docs/research/2026-10-13-rmc-core-b-investigation.md)
-records why the prior15-minute budget expired and the limits of this capacity mitigation.
+records why the prior15-minute budget expired. The [measured capacity split](docs/research/2026-10-14-ci-core-capacity-proposal.md)
+adds headroom while preserving all2,943 current rows; hosted execution remains the validating gate.
 
 ## Architecture and documentation
 

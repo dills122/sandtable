@@ -14,6 +14,7 @@ Research and reviews record their dated checkpoints; they are not competing stat
 - [Checked Reaction Maneuver evidence](research/simulator-reaction-trajectories.md)
 - [Rules9 simulator check-in](research/simulator-post-merge-checkin.md)
 - [Combat verifier pin maintenance inventory](research/combat-verification-pin-maintenance.md)
+- [Measured CI Core capacity split](research/2026-10-14-ci-core-capacity-proposal.md): five exact-row leaves, unchanged budgets and exhaustive coverage
 
 Public Rules9 authority and Runner evidence stop at first-side Combat entry. Private Combat Core
 adapters and contracts remain separate. Task019F1's native actual-selection adapter merged in

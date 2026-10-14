@@ -26,3 +26,11 @@ leaseidle; no localfullCore/fullsolution/Python normal. ScopeCIworkflow/partitio
 no native/runtime/test behavior/profile/public/Runner expansion orskippedcases. Existingversioned
 coverageartifactshardsmap staysgeneric exact-SHA-bound; schema changes onlyifneeded/evidenced.
 NarrowroadmapP3 patch767fc37 carryonlyifrelevantroadmap touched, neveroldbinaryarchivechurn.
+
+
+BC02 genuineREDb348aab6policyfailures0.128s/120; BC03GREENa4753866/6 0.123s.
+BC04all117helpertests0.439s/120 andactionlint0.184s PASS. ActualcompiledRelease discovery
+14.085s/120 atGREENSHAa475386/b00-local:71A/2329B/64C/469Exercise/10Contracts=2943.
+A identities exactlyunchanged, B∪C equalsprior2393B andB∩C empty, compiledfingerprints unchanged.
+No nativeCoretest executed/no heavy lease. NarrowP3 roadmaptext onlyfrom767fc37 applied; noarchives.
+Authorfive-axis/freshreview/exacthead5leafactualCI/merge pending; projections/discovery notacceptance.

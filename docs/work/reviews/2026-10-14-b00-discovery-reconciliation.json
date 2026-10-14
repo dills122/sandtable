@@ -1,0 +1,22 @@
+{
+  "sha": "a475386e6ccc814a78450f11f4a242c80ac3bc48",
+  "attempt": "b00-local",
+  "sdk": "10.0.400",
+  "counts": {
+    "core-a": 71,
+    "core-b": 2329,
+    "core-c": 64,
+    "exercise": 469,
+    "contracts": 10
+  },
+  "total": 2943,
+  "AUnchanged": true,
+  "BCUnionEqualsPriorB": true,
+  "BCDisjoint": true,
+  "compiledFingerprints": {
+    "Cna.Core.Tests.dll": "6cb7552893eef7399f8876af415130f9a55590c0c8a89c83ce5faf3cb6878adb",
+    "Cna.Core.dll": "dff5e552993b8222c251eff05edb747fb3e5b13e6ca2ce12154426cd08966b1f",
+    "xunit.v3.common.dll": "9cf3cd23eefabd397c0eb86e705a8e620f459715e2b3e0428db07ff68e53bf39",
+    "xunit.v3.core.dll": "ac165a05487a95a1d5c163bb08e81ae15b4f51c7d7fbb23f1c5fd55254b7e056"
+  }
+}
