@@ -1,0 +1,190 @@
+{
+  "sourceHashes": {
+    "docs/specs/verify-combat-positive-entry-v1.py": "b461a8bc6a194def5f03767783b49b5797a5630b6a7c26a986f7bfe2ee97c172",
+    "docs/specs/verify-combat-inherited-reaction-closure-v1.py": "9f07f00f8b749c2b3d86f6d3a2e40edbe0eee6af0a147e25d4d87b1ad287355c",
+    "docs/specs/verify-combat-inherited-reaction-trigger-v1.py": "551df0d22256a9a8e8601dc9c3c2e9a236e1c0dd76a649ab922bf706706bf0c4",
+    "docs/specs/verify-combat-inherited-movement-v1.py": "c10c51cd97fca3f3f04fc0983e90d474a35a6b58f4a2cce396272916910579e1",
+    "docs/specs/verify-combat-inherited-movement-lifecycle-v1.py": "f2ee2292df3fe370ace289dcd01747153dac6d78b82c924b2f3da27df1d81920",
+    "docs/specs/verify-combat-inherited-breakdown-completion-v1.py": "db903e019bb457c02930876e42a70b9204387494012419b0b97572c3c9e12eba",
+    "docs/specs/fixtures/combat-inherited-reaction-closure-v1.json": "5653f154f841b6afb64fd149175676e8dd0d12fe5f7246e2b14dae557c1d8945",
+    "docs/specs/fixtures/combat-positive-entry-v1.json": "eb59146f34bfdc47753b9f0aff7f40709eba4266aff522655ac6886be15b951e"
+  },
+  "status": "research-only-not-RED-credit",
+  "head": "c9970c5d5762fa29351686a3d59142538b47ec99",
+  "environment": {
+    "python": "3.14.6 (main, Jun 10 2026, 10:03:53) [Clang 21.0.0 (clang-2100.0.123.102)]",
+    "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O"
+  },
+  "elapsedSeconds": 4.5999250411987305,
+  "rows": [
+    {
+      "side": "axis",
+      "sourceCase": "axis-player-decline",
+      "authenticatedThrough": "reaction-closure",
+      "stateVersion": 14,
+      "originalRandom": {
+        "contractVersion": 1,
+        "algorithmId": "sandtable.sha256-counter.v1",
+        "seed": 1,
+        "nextByteCursor": 0
+      },
+      "afterRandom": {
+        "contractVersion": 1,
+        "algorithmId": "sandtable.sha256-counter.v1",
+        "seed": 1,
+        "nextByteCursor": 2
+      },
+      "world": [
+        {
+          "element": "axis-assault-battalion",
+          "location": "assault-west",
+          "cp": {
+            "numerator": 4,
+            "denominator": 1
+          }
+        },
+        {
+          "element": "commonwealth-assault-battalion",
+          "location": "assault-east",
+          "cp": {
+            "numerator": 0,
+            "denominator": 1
+          }
+        }
+      ],
+      "candidate": {
+        "attacker": {
+          "unit": {
+            "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+            "originalSide": "axis",
+            "elementId": "axis-assault-battalion"
+          },
+          "representationId": "map-representation.0001",
+          "locationId": "assault-west",
+          "componentIds": [
+            "axis-assault-battalion.toe.infantry"
+          ]
+        },
+        "defender": {
+          "unit": {
+            "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+            "originalSide": "commonwealth",
+            "elementId": "commonwealth-assault-battalion"
+          },
+          "representationId": "map-representation.0002",
+          "locationId": "assault-east",
+          "componentIds": [
+            "commonwealth-assault-battalion.toe.infantry"
+          ]
+        },
+        "targetLocationId": "assault-east",
+        "basis": "voluntary-adjacent"
+      },
+      "flow": "moving",
+      "historyEventCount": 13,
+      "moveReceiptIds": [
+        "imv.8f828083b9b5be65d80e75403da84dd7bcf17793f10d47db51d994db7cdb0714",
+        "irt.9dbb901e1da016b742cefa67b602f90e9fe66c459658ffc8554133d25041f057"
+      ],
+      "closureReceipt": "irl.53d7601f017e6bdbe177389986e232924d2aa9441ca56c76a54fb7cd8a1e4dbf",
+      "openingHash": "sha256:07c0ca15a7daa89b39128da9c21a71d4e22608ab2cf0475c61bfae869ad35d8b",
+      "pinnedOpeningHash": "sha256:07c0ca15a7daa89b39128da9c21a71d4e22608ab2cf0475c61bfae869ad35d8b",
+      "unchangedOpeningAdmission": "accepted",
+      "withMovementFields": "Invalid:CMB-PEN-001",
+      "movementEventsInEntry": "Invalid:CMB-PEN-007",
+      "ordinaryLifecycleReaderWithTrigger": "Invalid:CMB-IML-004",
+      "pureKernelOnly": {
+        "authenticated": false,
+        "error": null,
+        "endVersion": 18,
+        "position": "land.position.operation-1.first-player.movement-and-combat.combat.position-determination",
+        "futureEvents": 4
+      }
+    },
+    {
+      "side": "commonwealth",
+      "sourceCase": "commonwealth-player-decline",
+      "authenticatedThrough": "reaction-closure",
+      "stateVersion": 14,
+      "originalRandom": {
+        "contractVersion": 1,
+        "algorithmId": "sandtable.sha256-counter.v1",
+        "seed": 1,
+        "nextByteCursor": 0
+      },
+      "afterRandom": {
+        "contractVersion": 1,
+        "algorithmId": "sandtable.sha256-counter.v1",
+        "seed": 1,
+        "nextByteCursor": 2
+      },
+      "world": [
+        {
+          "element": "axis-assault-battalion",
+          "location": "assault-west",
+          "cp": {
+            "numerator": 0,
+            "denominator": 1
+          }
+        },
+        {
+          "element": "commonwealth-assault-battalion",
+          "location": "assault-east",
+          "cp": {
+            "numerator": 4,
+            "denominator": 1
+          }
+        }
+      ],
+      "candidate": {
+        "attacker": {
+          "unit": {
+            "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+            "originalSide": "commonwealth",
+            "elementId": "commonwealth-assault-battalion"
+          },
+          "representationId": "map-representation.0002",
+          "locationId": "assault-east",
+          "componentIds": [
+            "commonwealth-assault-battalion.toe.infantry"
+          ]
+        },
+        "defender": {
+          "unit": {
+            "creationBinding": "creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9",
+            "originalSide": "axis",
+            "elementId": "axis-assault-battalion"
+          },
+          "representationId": "map-representation.0001",
+          "locationId": "assault-west",
+          "componentIds": [
+            "axis-assault-battalion.toe.infantry"
+          ]
+        },
+        "targetLocationId": "assault-west",
+        "basis": "voluntary-adjacent"
+      },
+      "flow": "moving",
+      "historyEventCount": 13,
+      "moveReceiptIds": [
+        "imv.9e5755425bd5a297a7d24d2e4ccfb61bc1c42a1fc6dbd97abacc1c67d5cf9210",
+        "irt.f250b96eb595476c613d866df287f13e2ecc7d813a2cefbaa43f2c750dbbcc83"
+      ],
+      "closureReceipt": "irl.a9ca50d99bfeeb98a72ea3a7ab58e4993d726508d710a7ced0268a23d2f625fa",
+      "openingHash": "sha256:15e8ec05da47a61a146dee177491393f426d233b331f0d66d695ff3b781fa6e8",
+      "pinnedOpeningHash": "sha256:15e8ec05da47a61a146dee177491393f426d233b331f0d66d695ff3b781fa6e8",
+      "unchangedOpeningAdmission": "accepted",
+      "withMovementFields": "Invalid:CMB-PEN-001",
+      "movementEventsInEntry": "Invalid:CMB-PEN-007",
+      "ordinaryLifecycleReaderWithTrigger": "Invalid:CMB-IML-004",
+      "pureKernelOnly": {
+        "authenticated": false,
+        "error": null,
+        "endVersion": 18,
+        "position": "land.position.operation-1.first-player.movement-and-combat.combat.position-determination",
+        "futureEvents": 4
+      }
+    }
+  ],
+  "scriptSha256": "e4023218176eeed8298b0b178861b41a048d3fb589c07fc2e379bc07a9398989"
+}
