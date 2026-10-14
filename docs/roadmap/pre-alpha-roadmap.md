@@ -1278,9 +1278,10 @@ C02 now defines the private authentic completion lifecycle for20actual move cuts
 old/current Movement proofs and requiring System resolution for positive tracks. Its final
 author verifier, independent review and exact-head CI remain separately recorded gates;
 C04 implements private native completion with fresh review/CI gates; later phases remain open.
-The actual stop/resolution/completion lifecycle remains the next gate. The contract does not emit a new MovementEndProof or
-execute Breakdown, later Combat or Convoy. Existing isolated Movement or synthetic earlier-history
-adapters do not close those gaps.
+The next gate is actual ordinal2 Breakdown Determination execution and remaining lineage.
+C02 and C04 emit a new receipt-bound ordinal2 MovementEndProof while retaining the original
+proof; they enter Breakdown without executing it, later Combat or Convoy. Existing isolated
+Movement or synthetic earlier-history adapters do not establish those remaining paths.
 Public Combat actions, Exercise/Runner adoption, remaining lineage and the skeleton closeout
 remain open. These private milestones do not close the six-turn scenario, durable campaign
 lifecycle, hot-seat UI or first-release gates.
