@@ -1,0 +1,66 @@
+{
+  "base": "972e0c513132afd5a92fcbbb5afdfe85f11732d0",
+  "productHead": "d5c1cba0423fa2ba0f4f9bee75f1ad75289f6372",
+  "nativeBaseline": "972e0c513132afd5a92fcbbb5afdfe85f11732d0",
+  "reviewInstance": 2,
+  "maxReviews": 9,
+  "passInRound": 2,
+  "roundMax": 3,
+  "recoveryUsed": 0,
+  "recoveryMax": 2,
+  "status": "authorcheckscomplete;review2/newheadhostedCIpending",
+  "red": {
+    "tests": 4,
+    "failures": 4,
+    "durationSeconds": 0.003
+  },
+  "green": {
+    "tests": 132,
+    "failures": 0,
+    "durationSeconds": 0.401,
+    "consoleSha256": "401428d4654939c68b4c0d9b4d232707bbea37ae751484fb4c8bfc121d43bfb9"
+  },
+  "metadataDiscovery": {
+    "sourceSha": "d5c1cba0423fa2ba0f4f9bee75f1ad75289f6372",
+    "sdk": "10.0.400",
+    "configuration": "Release",
+    "runAttempt": "local",
+    "actualRows": {
+      "core-a": 71,
+      "core-b": 2511,
+      "core-c": 130,
+      "core-d": 129,
+      "exercise": 469,
+      "contracts": 10
+    },
+    "total": 3320,
+    "exactOldN2AssignmentsPreserved": true,
+    "coreDExactN3ClassRows": 129,
+    "disjointExhaustive": true,
+    "inventorySha256": "6236e68ffe5e01381658666a1fc7baff69fa277e6776b93ffa93b531f0ceb1cd",
+    "discoveryConsoleSha256": "59d99bd44284677bbb5b438f9bd019698ccfb49072de04a2456cc93b55994a5f",
+    "executionPerformed": false
+  },
+  "nativeExecutionPerformed": false,
+  "unchangedBudgets": {
+    "core-b": 20,
+    "others": 15
+  },
+  "materialHashes": {
+    ".github/scripts/test_partition.py": "dd57b51fa91c0a84e209093e757eed781d086a7254cacfd870a305a5db8954cf",
+    ".github/scripts/test_partition_test.py": "09f2dd3c197885416b74b80a51187d0604bb27ea0ee017271fea3c5d48cc79cc",
+    ".github/workflows/ci.yml": "f4afebbc67f48b5ce63ac7725666bf1f74fe5056fe2b5afc3adc09b266cbf32b",
+    "README.md": "2c33e1a9ced24cb7a5ad0b3524d6e8cd8e577783cc126ea74d189bd62d7de8e2",
+    "docs/design/combat-cycle-implementation-plan.md": "631d80043b9700b1693b8478cd9585959bb480c255adcca9e782259ada731456",
+    "docs/research/2026-10-14-n3-ci-capacity-diagnosis.md": "46ad7ecfcd0dce291e406e43cb2786bc2de5ff6a2f99cbfa90dd6c74c5b38867",
+    "docs/work/plans/2026-10-14-n3-ci-capacity-implementation.md": "6970890159db7045915a43003a154295c01becf0a05e1a6f4a01df19670a6ad4"
+  },
+  "failedOriginalCI": 38646785953,
+  "gatesRemaining": [
+    "review2",
+    "exactheadactual3320XML/process/attempt/ReleaseCI",
+    "Brainmerge/testedtreematch",
+    "verifiedmain"
+  ],
+  "rawEvidenceExported": false
+}
