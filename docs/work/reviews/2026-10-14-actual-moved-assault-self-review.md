@@ -1,6 +1,6 @@
 # N1 engineering self-review
 
-Status: author engineering self-review complete; final corrected focused98/98 passed,0failed/0skipped,2m27.852s. This is author engineering review; it does not consume a fresh independent review instance or give the independent readiness verdict.
+Status: corrective author engineering self-review complete at product3bcaedc74a184a2adc28ad6e722787304c04e214; Release98/98 passed,0failed/0skipped,1m56.776s; Release discovery98/98unique accepted by unchanged gate. Review1 sole P1 accepted/fixed; freshreview2/full hostedCI pending. This is author engineering review; it does not consume a fresh independent review instance or give the independent readiness verdict.
 
 ## Scope and requirements
 
@@ -44,3 +44,7 @@ No remaining required author finding is identified within the frozen private sco
 Original missing-reader RED is retained in commits4819927 and a33c944; contract/API/reference freeze is5a4482e. The later fresh-support NotSupported RED is distinct from compile/helper/fixture failures. Capacity RED selected1 genuine test:1failed,0skipped,5.560s, Assert.Throws failure because no exception was thrown. Corrected targeted GREEN:1passed,0skipped,6.965s. Earlier combined98/98 was pre-capacity-fix evidence only.
 
 Normal reference acceptance passed56 cases,12 paid,44 fallback,798cuts with source/control/proof/events/literal costs and Reserve-entry checks. Scoped dotnet format --verify-no-changes --no-restore passed. Final corrected native combined gate passed98/98,0failed/0skipped,2m27.852s; source diff contains all seven corrected minima. The targeted corrected capacity gate passed1/1,0skipped,6.965s. Full local suite was not run under the focused lease. Fresh independent review, immutable-head hosted CI with actual row reconciliation and Brain merge/verified main remain required.
+
+## Review1 correction self-review
+
+Accept sole P1: focused behavior passed but xUnit string truncation caused98discovered/89unique names; CI correctly failed prepare before inventory/tests. Corrective product changes only the Cases provider and parity-test signature. Leading integer ordinal0..55 survives display truncation; a documented discard argument keeps it identity-only without analyzer suppression or body changes. Compared old/new parity method bodies byte-for-byte; all existing assertions and all56fixture cases remain. Actual Release discovery98/98unique passed the unchanged discovery_rows gate, Release98/98 native tests passed1m56.776s and scoped format/diff checks passed. No fixture/runtime/schema/reference/source pin change; prior reference56/798 remains valid. Prose96 corrected to97 grammar shapes. Report and explicit Accept disposition retained separately. Five-axis review found no further corrective defect: behavior/authority unchanged, two-line readable harness fix, no shared CI or public boundary change, no new external flow, same bounded runtime cost. Old failedCI has no completed inventory; new exact-head hosted coverage and freshreview2 remain required.

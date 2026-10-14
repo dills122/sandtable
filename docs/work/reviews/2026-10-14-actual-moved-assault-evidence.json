@@ -1,17 +1,18 @@
 {
   "base": "f59ffcdbcbcadfbdb20b7e7f8796d477533b792f",
-  "productHead": "c0b6a6345e9946bf69ee4215815792c1f902df46",
+  "productHead": "3bcaedc74a184a2adc28ad6e722787304c04e214",
   "branch": "codex/actual-moved-assault",
-  "status": "author self-review complete; independent review/hosted CI/merge pending",
+  "status": "corrective self-review complete; review2/newhead hosted CI/merge pending",
   "native": {
-    "command": "dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --filter-class 'Cna.Core.Tests.Campaigns.CombatActualMovedAssault*' /bl:/private/tmp/n1-publish-focused-{}.binlog",
+    "command": "dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-build --filter-class 'Cna.Core.Tests.Campaigns.CombatActualMovedAssault*' /bl:/private/tmp/n1-review1-fix-focused-{}.binlog",
+    "configuration": "Release",
     "total": 98,
     "passed": 98,
     "failed": 0,
     "skipped": 0,
-    "duration": "2m27.852s",
-    "consoleSha256": "d9c2c79d8fbba643dabc2aa4505edf770690493864092e37369191245493c943",
-    "consolePath": "/private/tmp/n1-publish-focused.log"
+    "duration": "1m56.776s",
+    "consolePath": "/private/tmp/n1-review1-fix-focused.log",
+    "consoleSha256": "fd9de34e54511df64466242521169dcc5f68ef4c73d968e464ab5d6217514cfb"
   },
   "reference": {
     "command": "python3 docs/specs/verify-combat-actual-moved-assault-v1.py",
@@ -31,8 +32,8 @@
   },
   "format": {
     "status": "pass",
-    "scope": "two native and four test files",
-    "command": "dotnet format Sandtable.slnx --verify-no-changes --no-restore --include <six scoped files>"
+    "scope": "sole changed ContractTests file; other five files unchanged from independently verified formatting",
+    "command": "dotnet format Sandtable.slnx --verify-no-changes --no-restore --include tests/Cna.Core.Tests/Campaigns/CombatActualMovedAssaultContractTests.cs"
   },
   "capacityRegression": {
     "red": {
@@ -84,11 +85,127 @@
     "src/Cna.Core/Campaigns/CampaignCombatActualMovedAssaultCodec.cs": {
       "bytes": 36361,
       "sha256": "d73751bf1caadb0a643954ad8127b0bddc29d3323d59b7d45507b0ae5150f8c4"
+    },
+    "tests/Cna.Core.Tests/Campaigns/CombatActualMovedAssaultContractTests.cs": {
+      "bytes": 26805,
+      "sha256": "b4586538adfc75186343e757b3fbed188669f3e9f225e23b70b9bfa722e17752"
     }
   },
   "packetHashes": {
-    "docs/work/reviews/2026-10-14-actual-moved-assault-bootstrap.md": "c5ff3847daae4686c135b96dfc446619db8e20b43077c7ab5c2abf83ff23c017",
-    "docs/work/reviews/2026-10-14-actual-moved-assault-author.md": "904d8141768ae4115f60c291c228599670afd19e4df535cbf34435936ea119d3",
-    "docs/work/reviews/2026-10-14-actual-moved-assault-self-review.md": "6075faf494ff0a2839d9d09a09eb13f49bb7014ab4bc30a518b42d0df9dffeb7"
+    "docs/work/reviews/2026-10-14-actual-moved-assault-bootstrap.md": "3b343d923f9db2b43e03151cc76271e2e6188f4919c4e07f91c054e36eacafef",
+    "docs/work/reviews/2026-10-14-actual-moved-assault-author.md": "db0117f8a6067e2d12ac0a849c09138dee8954e1d675a7ea461e3bf381616283",
+    "docs/work/reviews/2026-10-14-actual-moved-assault-self-review.md": "f9436ba9ff119b019d07bd3d2d73b20e8c4360b720e5e91347a58cbeac828dcd",
+    "docs/work/reviews/2026-10-14-actual-moved-assault-review1.md": "e5462bad83f7e3b335e999c7db906733883e375c46ea06fd6b5fe359ed4078a4",
+    "docs/work/reviews/2026-10-14-actual-moved-assault-review1-disposition.md": "b1fc30514bb9615a6208eab961b70ffc53d198362bf8e95df0a7ca6ab2cc3bf5"
+  },
+  "originalProductHead": "c0b6a6345e9946bf69ee4215815792c1f902df46",
+  "priorNative": {
+    "command": "dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --filter-class 'Cna.Core.Tests.Campaigns.CombatActualMovedAssault*' /bl:/private/tmp/n1-publish-focused-{}.binlog",
+    "total": 98,
+    "passed": 98,
+    "failed": 0,
+    "skipped": 0,
+    "duration": "2m27.852s",
+    "consoleSha256": "d9c2c79d8fbba643dabc2aa4505edf770690493864092e37369191245493c943",
+    "consolePath": "/private/tmp/n1-publish-focused.log"
+  },
+  "discoveryCorrection": {
+    "red": {
+      "status": "genuine discovery RED",
+      "head": "5a0dbc82e7046cd9dc4a8f42a2fc48913099fc75",
+      "records": 98,
+      "unique": 89,
+      "error": "Empty/duplicate discovery",
+      "logSha256": "2e4f9230f0bb2a56450c0053411c23d1f48eeaa9a94cb50da68fd3072890bd8b"
+    },
+    "green": {
+      "status": "pass",
+      "configuration": "Release",
+      "records": 98,
+      "uniqueIdentities": 98,
+      "retainedFixtureTheoryRows": 56,
+      "ordinals": [
+        40,
+        50,
+        13,
+        34,
+        24,
+        16,
+        4,
+        17,
+        35,
+        47,
+        26,
+        39,
+        42,
+        10,
+        3,
+        20,
+        11,
+        30,
+        18,
+        8,
+        32,
+        1,
+        41,
+        0,
+        6,
+        9,
+        28,
+        27,
+        23,
+        37,
+        44,
+        54,
+        14,
+        21,
+        15,
+        31,
+        5,
+        2,
+        12,
+        36,
+        7,
+        33,
+        51,
+        49,
+        29,
+        38,
+        52,
+        43,
+        46,
+        53,
+        48,
+        22,
+        45,
+        19,
+        25,
+        55
+      ],
+      "existingDiscoveryGate": "accepted unchanged",
+      "existingTheoryBodyByteIdentical": true,
+      "logSha256": "855aad65029f7df6052e76bbdc2f3f00e3d7603aee7b5cf8b38dc4e99a00af10"
+    },
+    "initialNamedOrdinal": "xUnit1026 compilation failure; resolved with documented discard, no rule suppression",
+    "fixtureAndTheoryAssertionsUnchanged": true
+  },
+  "reviewState": {
+    "consumed": 1,
+    "nextInstance": 2,
+    "maxTotal": 9,
+    "roundInstance": 2,
+    "maxRound": 3,
+    "recovery": 0,
+    "maxRecovery": 2,
+    "priorVerdict": "Not ready",
+    "disposition": "Accept sole P1, bounded correction complete",
+    "reportSha256": "e5462bad83f7e3b335e999c7db906733883e375c46ea06fd6b5fe359ed4078a4",
+    "failedCi": {
+      "run": 38609798518,
+      "attempt": 1,
+      "testedMerge": "f635981bef9b33e94005f5b01cf10a6d907c5833",
+      "testsExecuted": false,
+      "completedInventory": false
+    }
   }
 }
