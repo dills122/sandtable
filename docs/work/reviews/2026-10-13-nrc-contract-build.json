@@ -1,0 +1,16 @@
+{
+  "command": [
+    "dotnet",
+    "build",
+    "tests/Cna.Core.Tests/Cna.Core.Tests.csproj",
+    "-c",
+    "Release",
+    "--no-restore",
+    "/bl:/private/tmp/nrc-contract-build-{}.binlog"
+  ],
+  "budgetSeconds": 120,
+  "exitCode": 1,
+  "timedOut": false,
+  "elapsedSeconds": 2.098,
+  "logSha256": "c389f846f483ffb02d0d4d16a3a3960269777ffbaad6d5ff2fe8c9a1cec3619c"
+}

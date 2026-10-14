@@ -298,3 +298,15 @@ This is a private Python executable contract. Native completion consumption, lat
 Combat/Convoy, broader Reserve/Reaction/cohorts, production ingress, public activation and parent
 017–025/all72 remain separate gates. Author verification and independent review are recorded
 against the frozen branch; exact-head CI and merge remain Brain-owned.
+
+
+## C04 native actual completion
+
+The frozenC02 contract (PR182) is consumed by private nativeconsumer/codec withfullnativeARMV
+ancestry andsixindependentledgers. Zero completes37→38;positive realstop/Systememptyresolution/
+ownercompletion41–44 reachesordinal2Breakdown entry. Original/currentproofs, exact endpoints/
+cumulativeexclusions, World/NONEhistory/RNG/resources andactualmoveprogress persist.
+20literaltraces/52events/72cuts and100priorretries governverification;70physical deliveries
+preserve68wire hashes plus2frozenreference files. Testfixtures remaintestonly.
+Authorfinal64row scopedgate/freshreview/exact-headCI are separatelyrecorded; public/native
+downstreamBreakdown/Combat/Convoy andremaininglineage/parent017–025/all72 gates stayopen.

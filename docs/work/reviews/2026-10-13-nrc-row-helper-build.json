@@ -1,0 +1,16 @@
+{
+  "command": [
+    "dotnet",
+    "build",
+    ".github/scripts/ReleaseTestRows/ReleaseTestRows.csproj",
+    "-c",
+    "Release",
+    "--no-restore",
+    "/bl:/private/tmp/nrc-row-helper-build-{}.binlog"
+  ],
+  "budgetSeconds": 120,
+  "exitCode": 0,
+  "timedOut": false,
+  "elapsedSeconds": 0.644,
+  "logSha256": "5f346ce9d9faec2b49cf76d2ca85414b6be47f9a7137541dfe25dcb1c89ed73b"
+}

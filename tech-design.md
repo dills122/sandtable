@@ -663,9 +663,15 @@ now have a private [actual completion executable contract](docs/specs/combat-act
 It authenticates all five ancestor ledgers before a sixth lifecycle ledger: zero derived idle
 completes37→38; positive actual tracks require owner stop/System empty resolution/owner completion
 through41–44 at ordinal2 Breakdown Determination. Full parent Proof, old/current Movement proofs,
-World/resources/NONE members/RNG and actual move progress persist. No downstream execution or
-native completion follows from the reference. NRM01 merged in PR #181 after independent Ready
-review and exact-head CI2879/2879; native completion and full selected-branch campaign remain subsequent gates.
+World/resources/NONE members/RNG and actual move progress persist. The reference itself executes no downstream phase. C04 now consumes it with a private native
+consumer/codec: six independent ledgers authenticate the full native lineage before claims,
+20traces/52events/72cuts preserve exact reference bytes and all-prior retries. The stop interrupt
+requires trusted System resolution even with an empty cohort; completion derives current endpoints
+and historical/current exclusion union with the actual event receipt while retaining ordinal1 proof.
+70physical deliveries retain unchanged68wire pins plus2frozen reference files; native outputs are
+owned bytes. Native completion still has separate fresh review/CI gates, and public/downstream
+activation remains open. NRM01 merged in PR #181 after independent Ready
+review and exact-head CI2879/2879; full selected-branch campaign remains a subsequent gate.
 Production ingress authentication,
 later-II/consumed Reserve lineage and public activation remain gated. Private settled controls
 still retain synthetic earlier Movement; these checkpoints do not prove the authentic continual
