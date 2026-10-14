@@ -1,0 +1,16 @@
+{
+  "command": [
+    "dotnet",
+    "build",
+    "tests/Cna.Core.Tests/Cna.Core.Tests.csproj",
+    "-c",
+    "Release",
+    "--no-restore",
+    "/bl:/private/tmp/nrc-parity-build-{}.binlog"
+  ],
+  "budgetSeconds": 120,
+  "exitCode": 0,
+  "timedOut": false,
+  "elapsedSeconds": 3.022,
+  "logSha256": "243601e4d1467a3732a50ec6d7e08c2d76e60e68d3bbe0725dbc4d2bdccc2e50"
+}

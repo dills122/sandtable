@@ -2836,3 +2836,42 @@ No broad local.NET/Python normal or unchanged-head hosted retry. Research/report
 and dated CI receipts retained. New exacthead requires fresh review2/9 and hosted validation;
 review1 remains evidence, not approval of the delta. No native work until accepted merge and
 sufficient remaining time; session deadlines unchanged.
+
+
+### C04 — private native actual repeated Movement completion
+
+Merged basea2a21cdfa8511f55efdde56eb11d9bad09537c4a (PR182), branch
+codex/native-actual-repeated-movement-completion. Actualstart01:56:40UTC left156minutes, satisfying
+conditionalgate. [Accepted plan](../work/plans/2026-10-13-native-actual-repeated-movement-completion.md)
+NC01–NC07. Additiveconsumer/result+codec,2focusedtestclasses,fixtureprojectcopylink andcanonicalplan;
+README/design/naming/roadmap/delivery/index anddatedevidence accompany. Allfrozenpredecessor files
+and oldnative/runtime/CI partition remain unchanged.
+
+FullnativeARMV/trustedcreationcontext/fiveancestor ledgers authenticate before sixth own lifecycle
+and claims. Zero derivesidle and acceptsownercompletion37→38. Positiveactualtrack requiresowner
+stop/capturedordinal2 interrupt, mandatorySystem emptyresolution/resumeMovement, ownercompletion
+41–44 intoBreakdown Determination only. ExactSource/Control/Proof/events/receipts matchfrozenC02;
+oldordinal1proof retained besidecurrent2, derivedcurrentlocations/historical-currentexclusionunion
+usesactualunsigned-event receipt. PreserveWorld/resources/NONEhistory/RNG and actualmoveprogress;
+no movementEnded/resource charge/allowance reset/cohort/profile widening ordownstream phaseexecution.
+
+Genuine nativeRED8faaf94,8actualsource firstpublications failonly007afterrealancestor/sixthledger
+prerequisites,19.720s/120; release0warn/error. FirstGREEN8rows20.324s, all20literalparity48.833s,
+max4move recoveryall4roots41.477s; allbounded120. Closedgrammar/context/clock and70physical350faults
+pass. Compileambiguities are separatelyretainedbuild failures,notREDcredit. Finalformatverify23.946s,
+finalbuild2.331s0warn/error. Native64scopedrows discovered, exactReleaseCore2464/71A/2393B; expected
+CI2943 (71/2393/469/10) remainsdiscovery untilactual execution. ONE900s scopedrun freezes sources/
+reference/compiledfingerprints andrequires exact64executedrows/no skips/failures; receiptfollowsoncompletion.
+Authorfive-axis check andseparate neutral/rationale precedeBrainfreshreview/CI/merge.
+
+Private nativecompletionboundary. Breakdownexecution/laterCombat/Convoy, broaderReserve/Reaction/
+vehicles/cohorts, production/public/host/Runner/Exercise/persistence andparent017–025/all72 remain
+open. Historicalowning failures/CoreB139 unwaived. Closeout04:02:40UTC/productstop04:32:40UTC;
+preservecommitted/pushedlabelledWIP ifgates unfinished. No automaticnewphase follows fromthisslice.
+
+
+C04 frozenauthorfinal scopedgate PASS253.160s/900, exact64rows, exit0/no timeout;zero failures/
+skips/notrun/errors. All20literal traces/52events/72cuts/100priorretries and70physical350faults
+verified,13source/reference/compiledfingerprints unchanged. Exactreceipt/log/XML/binlogmanifest
+retained underdatednrc reviews. Authorfive-axis self-review complete; freshreview andactualhosted
+CI2943coverage/merge remain Brain-owned separate gates. Onlymetadata edits followtestfreeze.

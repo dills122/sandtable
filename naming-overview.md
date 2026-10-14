@@ -42,7 +42,9 @@ The private [actual repeated Movement completion contract](docs/specs/combat-act
 uses plain command names: `stop-element-movement`, `resolve-breakdown-stop` and
 `complete-movement-segment`. Its trusted System actor resolves the pending empty stop; the owner
 then completes Movement. Breakdown Determination entry reserves the next phase without claiming
-that phase has executed or introducing another product name.
+that phase has executed or introducing another product name. C04's private native consumer uses
+`CampaignCombatActualRepeatedMovementCompletion` and its codec; these remain technical module
+names inside Umpire, with public activation governed separately.
 
 **Command** chooses strategic objectives, whether supplied by a person, scripted policy or optional
 model. **Staff** converts intent into concrete deterministic plans. The Umpire validates and executes

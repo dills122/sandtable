@@ -1,0 +1,20 @@
+{
+  "command": [
+    "dotnet",
+    "run",
+    "--project",
+    ".github/scripts/ReleaseTestRows/ReleaseTestRows.csproj",
+    "-c",
+    "Release",
+    "--no-build",
+    "--",
+    "/Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/artifacts/bin/Cna.Core.Tests/release",
+    "/private/tmp/nrc-core-discovery.log",
+    "/private/tmp/nrc-deferred.json"
+  ],
+  "budgetSeconds": 120,
+  "exitCode": 0,
+  "timedOut": false,
+  "elapsedSeconds": 1.092,
+  "logSha256": "26ab2656d60281f7e1bb8a14e4a605fcf351cb8be1093d598e82d83c9a0c17a2"
+}
