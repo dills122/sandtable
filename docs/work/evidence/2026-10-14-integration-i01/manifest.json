@@ -1,0 +1,111 @@
+{
+  "snapshotUtc": "2026-10-14 15:07:41 UTC",
+  "base": "f59ffcdbcbcadfbdb20b7e7f8796d477533b792f",
+  "files": [
+    {
+      "path": "docs/work/evidence/2026-10-14-integration-i01/integration-first-private-audit.md",
+      "classification": "audit",
+      "source": "/private/tmp/integration-first-private-audit.md",
+      "bytes": 15082,
+      "sha256": "dc8e01f3900d0585ae6a9429b34cf002cd949eb6e73bff80bbcae9cda67e9a18"
+    },
+    {
+      "path": "docs/work/evidence/2026-10-14-integration-i01/integration-ingress-feasibility.md",
+      "classification": "research-only",
+      "source": "/private/tmp/integration-ingress-feasibility.md",
+      "bytes": 8817,
+      "sha256": "feac0ec5d737c3a44b723ff8942d35921c51e4928952204442796c6307053d04"
+    },
+    {
+      "path": "docs/work/evidence/2026-10-14-integration-i01/integration-ingress-probe.py",
+      "classification": "research-only executable; not RED",
+      "source": "/private/tmp/integration-ingress-probe.py",
+      "bytes": 5393,
+      "sha256": "e4023218176eeed8298b0b178861b41a048d3fb589c07fc2e379bc07a9398989"
+    },
+    {
+      "path": "docs/work/evidence/2026-10-14-integration-i01/integration-ingress-probe-receipt.json",
+      "classification": "research-only receipt; not RED",
+      "source": "/private/tmp/integration-ingress-probe-receipt.json",
+      "bytes": 7392,
+      "sha256": "010d2ea4ac83cefeb6485bb7c4ea32bfd4e284217605993614931c07eefba115"
+    },
+    {
+      "path": "docs/work/evidence/2026-10-14-integration-i01/integration-first-public-audit.md",
+      "classification": "research-only",
+      "source": "/private/tmp/integration-first-public-audit.md",
+      "bytes": 62552,
+      "sha256": "fa3db99479fd03d8f5473a7f8dfd9cf12dddec9ba9e1898258e540839258b59c"
+    },
+    {
+      "path": "docs/work/evidence/2026-10-14-integration-i01/integration-next-joins.md",
+      "classification": "research-only",
+      "source": "/private/tmp/integration-next-joins.md",
+      "bytes": 33049,
+      "sha256": "3d01d14f8df99f3021fcf76b350d6e5310a86aaa683f624dbe11cb4628b75d66"
+    },
+    {
+      "path": "docs/work/evidence/2026-10-14-integration-i01/integration-continuation-support.md",
+      "classification": "isolated support research only; not authentic source or native acceptance",
+      "source": "/private/tmp/integration-continuation-support.md",
+      "bytes": 108064,
+      "sha256": "0e5fcff469daa510feea1be266547056f6acfee12195acc07a31b1a45da8925e"
+    },
+    {
+      "path": "docs/work/evidence/2026-10-14-integration-i01/integration-n1-test-vectors.md",
+      "classification": "independent preparation only; not tests/TDD/acceptance",
+      "source": "/private/tmp/integration-n1-test-vectors.md",
+      "bytes": 20404,
+      "sha256": "442406c4ffa13a840166d98338e12bab9a39fc04c42ed0ba89e4f619afe70038"
+    },
+    {
+      "path": "docs/work/evidence/2026-10-14-integration-i01/i01-next-author-plan.md",
+      "classification": "N1 proposal accepted conditionally; no product GO",
+      "source": "/private/tmp/i01-next-author-plan.md",
+      "bytes": 15328,
+      "sha256": "ab2b386faa87de0e3be1254c2138c380de98e437eb3b5a5f73863caedb07154a"
+    },
+    {
+      "path": "docs/work/evidence/2026-10-14-integration-i01/i01-independent-review-1.md",
+      "classification": "fresh independent scoped review1/9 Ready",
+      "source": "/private/tmp/i01-independent-review-1.md",
+      "bytes": 8884,
+      "sha256": "1894d77aef188cd0494df2236e534fdcdff2bae7e4eadb008fad4c73cf104ad1"
+    },
+    {
+      "path": "docs/work/evidence/2026-10-14-integration-i01/i01-review-disposition.md",
+      "classification": "author accepts no-findings and scoped limits",
+      "source": "/private/tmp/i01-review-disposition.md",
+      "bytes": 2750,
+      "sha256": "c89c576fdaa85780de87b651167be8b9bf1468446964ecde8313d35dafc82890"
+    },
+    {
+      "path": "docs/work/evidence/2026-10-14-integration-i01/i01-ci-final-receipt.json",
+      "classification": "exact-head hosted CI actual-row reconciliation metadata",
+      "source": "/private/tmp/i01-ci-final-receipt.json",
+      "bytes": 1607,
+      "sha256": "e016a116dc9cc196ae7cdb5b4b85703e69d6928b78f8103529483901bdb196d2"
+    },
+    {
+      "path": "docs/work/evidence/2026-10-14-integration-i01/i01-verify-ci.py",
+      "classification": "reconciliation verifier requires locally retained XML/inventories not exported",
+      "source": "/private/tmp/i01-verify-ci.py",
+      "bytes": 1838,
+      "sha256": "048547fe529015ba98015b25649fd486a6059c573d2ef46dda32eb16f572e2bc"
+    },
+    {
+      "path": "docs/work/evidence/2026-10-14-integration-i01/session-plan-snapshot.md",
+      "classification": "Brain session plan snapshot; source remains live",
+      "source": "/Users/dsteele/repos/sandtable/.planning/combat-integration-first/session-plan.md",
+      "bytes": 5036,
+      "sha256": "19d38d13dd942d3ead37d15a6e9a6dfeef73f152c96c630292feb0508657fc9b"
+    },
+    {
+      "path": "docs/work/evidence/2026-10-14-integration-i01/run-state-snapshot.md",
+      "classification": "Brain run-state snapshot; historical entries not all current",
+      "source": "/Users/dsteele/repos/sandtable/.planning/combat-integration-first/run-state.md",
+      "bytes": 12924,
+      "sha256": "9a37c14f7c99f0083918951486aba0cbb9373a899417d2a4ca6cb20dae79a2fc"
+    }
+  ]
+}
