@@ -1,0 +1,41 @@
+{
+  "capacity": {
+    "dominating": {
+      "Source": 70721024,
+      "Proof": 2570131,
+      "Control": 324037,
+      "Event": 16384,
+      "Input": 1024,
+      "BreakdownLedger": 1026
+    },
+    "limits": {
+      "Source": 134217728,
+      "Proof": 4194304,
+      "Control": 524288,
+      "Event": 32768,
+      "Input": 1024,
+      "BreakdownLedger": 2048
+    },
+    "fieldAccounting": {
+      "ControlMetadata": 21587,
+      "ProofMetadata": 22167,
+      "EventMetadata": 4193,
+      "InputStructural": 649
+    },
+    "measured": {
+      "Source": 1936033,
+      "Proof": 122596,
+      "Control": 19565,
+      "Event": 1913,
+      "Input": 580,
+      "BreakdownLedger": 582
+    }
+  },
+  "closure": {
+    "cold": 72,
+    "core": 72,
+    "warm": 72,
+    "adversarial": 72
+  },
+  "faults": 360
+}

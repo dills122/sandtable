@@ -1,0 +1,18 @@
+{
+  "command": [
+    "python3",
+    "-B",
+    "docs/specs/verify-combat-actual-repeated-breakdown-completion-v1.py",
+    "--group",
+    "adversarial",
+    "--moves",
+    "4"
+  ],
+  "budgetSeconds": 180,
+  "exitCode": 0,
+  "timedOut": false,
+  "elapsedSeconds": 45.152,
+  "logSha256": "242a256a2a7a743d2adf7f639860e7d2e91b7b98e9a4b8341f60895e8630bf1d",
+  "logArtifact": "2026-10-14-abc-adversarial-focused.log.gz",
+  "logEncoding": "gzip; logSha256 hashes decoded bytes"
+}

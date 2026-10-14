@@ -1,0 +1,14 @@
+{
+  "command": [
+    "python3",
+    "-B",
+    "/private/tmp/b02-measure.py"
+  ],
+  "budgetSeconds": 240,
+  "exitCode": 0,
+  "timedOut": false,
+  "elapsedSeconds": 16.995,
+  "logSha256": "3504f476f4319055f4b9fd27dc892f70ecb9eb6008e40a4f3414c4d57caafbca",
+  "logArtifact": "2026-10-14-abc-closure-measure.log.gz",
+  "logEncoding": "gzip; logSha256 hashes decoded bytes"
+}

@@ -1,0 +1,16 @@
+{
+  "command": [
+    "python3",
+    "-B",
+    "docs/specs/verify-combat-actual-repeated-breakdown-completion-v1.py",
+    "--group",
+    "grammar"
+  ],
+  "budgetSeconds": 180,
+  "exitCode": 0,
+  "timedOut": false,
+  "elapsedSeconds": 14.708,
+  "logSha256": "27d375c417f44205aa6a1b0b550629059be2c979dc551263c1001a7f5bab4e6e",
+  "logArtifact": "2026-10-14-abc-grammar-focused.log.gz",
+  "logEncoding": "gzip; logSha256 hashes decoded bytes"
+}
