@@ -2978,3 +2978,28 @@ finite continuation outcomes remain isolated certification rather than fabricate
 No active cycle-control decision, Repeat intent/execution, forcedFinish or public/firstfinish gate is
 included. Author self-review/fresh neutral review/actual Release identity/exact-head CI and Brain
 merge/verified main remain required. The pre-edit plan records ownership, RED provenance and deadlines.
+
+## N3 actual moved private cycle control (2026-10-14)
+
+N2 merged PR #189/main2e18cfebf33a69ea9204fccd96cf7df86a9aa26e with Ready review1 and3191actual
+hosted rows reconciled; main CI/CodeQL/links passed21:16UTC. Brain dispatched the exact private
+[moved cycle-control contract](../specs/combat-actual-moved-cycle-control-v1.md): both12paid/44armed
+parents, eight independent ledgers, System window open then real phase finish or distinctly typed
+non-executable pending repeat intent. Finish closes ordinal1 and reaches same-slot Truck Convoy;
+intent retains the original occurrence, progress/targets/membership/assets/RNG/duties and never
+publishes ordinal2 or an executable Repeat. Unsupported capability is not noLegal.
+
+Documented21:24UTC API/capacity freeze preceded native implementation, but its separate immutable
+commit07a5153563248b1b7940603b804e7932a181d1f0 followed the first six-row GREEN. Preserve this
+chronology in review; that commit is not a pre-implementation checkpoint. Genuine six-row RED
+preceded native implementation; reader2/finish2/intent2 all failed at missing reader, with no isolated
+disposition-only RED claim. Reference112traces/336cuts/224events generated and normal comparison passed; final rebuilt native129/129
+passed7m03.730s after documented finish/hash dependency ownership corrections. Final unique Release
+discovery/format verification and author freeze followed; independent review/CI/main remain gates.
+No public loop completion claim.
+
+Author self-review, fresh neutral review, actual unique Release discovery, exact-head hosted CI
+process/XML/disjoint actual-row reconciliation and Brain merge/verifiedmain remain required.
+N3 budget0/9reviews,0/2recovery,max3passes/round. Sole focused lease author; no full local suite.
+Session closeout00:37:35UTC/hardstop01:37:35UTC Oct15 (Oct14 20:37:35/21:37:35 Toronto); labelled
+WIP preservation risk accepted. No feature after closeout/product work after hardstop.

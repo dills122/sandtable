@@ -111,3 +111,9 @@ CampaignCombatActualMovedContinuation and its codec are private Umpire technical
 [paid and armed continuation assessment](docs/specs/combat-actual-moved-continuation-v1.md). They
 complete empty Reserve Release and retain prospective witness facts. The module name does not imply
 a cycle-control offer, executable repeat, phase finish or public campaign activation.
+
+CampaignCombatActualMovedCycleControl and its codec are private Umpire technical modules for
+[actual moved cycle control](docs/specs/combat-actual-moved-cycle-control-v1.md). Finish denotes actual
+closure of the current Movement and Combat phase with same-slot Truck Convoy entry. Pending repeat
+intent denotes a source-bound non-executable request; it does not imply ordinal2 publication or
+progress reset. The module name does not imply public campaign activation or executable Repeat.

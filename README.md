@@ -74,7 +74,11 @@ entry through Selection, a sealed Round, cumulative paid costs and settlement in
 Release entry. It authenticates six independent ledgers and merged in PR #188.
 The private [moved continuation](docs/specs/combat-actual-moved-continuation-v1.md)
 completes empty Reserve Release for paid and armed parents and derives immutable prospective assessment.
-It opens no cycle-control window. Public activation, repeat execution and campaign finish remain separate gates.
+It merged in PR #189 and opens no cycle-control window.
+The additive private [moved cycle control](docs/specs/combat-actual-moved-cycle-control-v1.md)
+adds eight-ledger control for both modes: real same-slot phase finish or a distinctly typed pending
+repeat intent with execution unavailable. Repeat intent retains the current occurrence and history.
+N3 review and CI remain pending; public activation, actual repeat execution and campaign finish remain separate gates.
 
 Next delivery sequence:
 
