@@ -1,0 +1,132 @@
+{
+  "base": "2e18cfebf33a69ea9204fccd96cf7df86a9aa26e",
+  "productHead": "7e9d1600ff88680ce585d6b800e255c69e977e9e",
+  "branch": "codex/actual-moved-cycle-control",
+  "status": "authorchecks/selfreviewcomplete;independentreview/hostedCIpending",
+  "native": {
+    "command": "dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --filter-class 'Cna.Core.Tests.Campaigns.CombatActualMovedCycleControl*' /bl:/private/tmp/n3-final-closed-focused-{}.binlog",
+    "passed": 129,
+    "failed": 0,
+    "skipped": 0,
+    "duration": "7m 03s 730ms",
+    "consolePath": "/private/tmp/n3-final-closed-focused.log",
+    "consoleSha256": "1c5bd66dda9aabfef395042f2cbf30571dfefe1a78382074de6f0499b4fc1033"
+  },
+  "reference": {
+    "parents": 56,
+    "paid": 12,
+    "armed": 44,
+    "cases": 112,
+    "cuts": 336,
+    "events": 224,
+    "consoleSha256": "609387176c7bc27036babfe88e2b41e459290f2c8662c4219b824df9e4cc75fd"
+  },
+  "discovery": {
+    "records": 129,
+    "unique": 129,
+    "parityRows": 112,
+    "unchangedDiscoveryGate": "accepted",
+    "consoleSha256": "101ef61542b558e3c2179fd88aef0fca405eef5a80666e01851377b6aaacc815",
+    "finalReleaseRebuiltAfterImportOrdering": true
+  },
+  "freeze": {
+    "checkpoint": "07a5153563248b1b7940603b804e7932a181d1f0",
+    "documentedAtUtc": "2026-10-14T21:24:00Z",
+    "commitAfterFirstGreen": true,
+    "isolatedDispositionOnlyRed": false
+  },
+  "initialParityFailure": {
+    "total": 129,
+    "failed": 56,
+    "passed": 73,
+    "skipped": 0,
+    "duration": "7m01.196s",
+    "rootCause": "Only finish sequencePosition.contractVersion native3/private reference5",
+    "goldenChanged": false
+  },
+  "limits": {
+    "sourceBytes": 33554432,
+    "parentSourceBytes": 16777216,
+    "controlBytes": 1048576,
+    "proofBytes": 2097152,
+    "eventBytes": 65536,
+    "inputBytes": 4096,
+    "depth": 40,
+    "events": 2
+  },
+  "pins": {
+    "runtime": 98,
+    "unchangedPredecessor": 93
+  },
+  "materialHashes": {
+    "README.md": {
+      "bytes": 14632,
+      "sha256": "840ec501cce6b3c38865568aaa17fa2e3988bd2796114092bcfc447e983b56a4"
+    },
+    "docs/design/combat-cycle-implementation-plan.md": {
+      "bytes": 276105,
+      "sha256": "0622693ff3af6b1c65a5fa17204a83fad8cdbdcd0b43ce61d351484d4ef84a6c"
+    },
+    "docs/specs/combat-actual-moved-cycle-control-v1.md": {
+      "bytes": 4659,
+      "sha256": "8d8761d98750c52a26fffa471f66622cc588ca56d6d71840988d512cd8f4da4d"
+    },
+    "docs/specs/combat-actual-moved-cycle-control-v1.schema.json": {
+      "bytes": 24052,
+      "sha256": "91f235388faa66ef397a9f466f503075da8443148489aef1e7ac27f2dd1751e8"
+    },
+    "docs/specs/fixtures/combat-actual-moved-cycle-control-v1.json": {
+      "bytes": 28168986,
+      "sha256": "be7832bbcdecb7517d9e3cd85f07ec3b0978222a2c1485561e6f5627336d38f9"
+    },
+    "docs/specs/verify-combat-actual-moved-cycle-control-v1.py": {
+      "bytes": 13548,
+      "sha256": "0ab89db7e88b0df7256751c7287efe451cc19176cf7422cbcd062813f1856665"
+    },
+    "docs/work/plans/2026-10-14-actual-moved-cycle-control-implementation.md": {
+      "bytes": 10574,
+      "sha256": "a1ec1f4db5adf92ad302d5cf9d6cc9bb2f2554141cdee85bec1af8e06a492f7c"
+    },
+    "naming-overview.md": {
+      "bytes": 10028,
+      "sha256": "eff7c77fe145bf3fe9d797179dae5335d06f153901c7d9ac19d8350f9dc4d4ae"
+    },
+    "src/Cna.Core/Campaigns/CampaignCombatActualMovedCycleControl.cs": {
+      "bytes": 23037,
+      "sha256": "1e2c30db4fc86cd949d56a7582ed38ddbcde4c0494152889afccb95723d4b413"
+    },
+    "src/Cna.Core/Campaigns/CampaignCombatActualMovedCycleControlCodec.cs": {
+      "bytes": 33874,
+      "sha256": "a0198c1cd8a0113d19677ad700d47603f550d6c619f39d5e8bdb0ed992d0f629"
+    },
+    "tech-design.md": {
+      "bytes": 33633,
+      "sha256": "8d0b7388bbda06973aa7bb49a751d46af24ce307007447cd8e764a2e24d267d8"
+    },
+    "tests/Cna.Core.Tests/Campaigns/CombatActualMovedCycleControlContractTests.cs": {
+      "bytes": 17031,
+      "sha256": "ecbc80a04fae8326b40d26c8f48e0512a26dee8fec46d6635aa24c0143881a24"
+    },
+    "tests/Cna.Core.Tests/Campaigns/CombatActualMovedCycleControlTests.cs": {
+      "bytes": 9461,
+      "sha256": "85d0a1c762f72243d2cbc2bc9e4950fa5a0a0ccecc0911c7d0bc315f2f91a32a"
+    },
+    "tests/Cna.Core.Tests/Cna.Core.Tests.csproj": {
+      "bytes": 12094,
+      "sha256": "bb70987df9d0eab1c297a2895dbb3c699d6956b620caffaf9e29c984211efcda"
+    }
+  },
+  "gatesRemaining": [
+    "independentreview",
+    "exactheadhostedCIactualrowprocessXML",
+    "Brainmerge",
+    "verifiedmain"
+  ],
+  "reviewBudget": {
+    "used": 0,
+    "max": 9,
+    "currentRoundMax": 3,
+    "recoveryUsed": 0,
+    "recoveryMax": 2
+  }
+}
