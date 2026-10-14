@@ -1,0 +1,22 @@
+test_core_b_alone_has_twenty_minute_budget (__main__.WorkflowDeadlineTests.test_core_b_alone_has_twenty_minute_budget) ... FAIL
+test_other_job_deadlines_remain_bounded (__main__.WorkflowDeadlineTests.test_other_job_deadlines_remain_bounded) ... ok
+
+======================================================================
+FAIL: test_core_b_alone_has_twenty_minute_budget (__main__.WorkflowDeadlineTests.test_core_b_alone_has_twenty_minute_budget)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/dsteele/.codex/worktrees/combat-actual-selection-contract/sandtable/.github/scripts/test_partition_test.py", line 293, in test_core_b_alone_has_twenty_minute_budget
+    self.assertEqual(actual, {'core-a': 15, 'core-b': 20, 'exercise': 15, 'contracts': 15})
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: {'core-a': 15, 'core-b': 15, 'exercise': 15, 'contracts': 15} != {'core-a': 15, 'core-b': 20, 'exercise': 15, 'contracts': 15}
+- {'contracts': 15, 'core-a': 15, 'core-b': 15, 'exercise': 15}
+?                                           ^^
+
++ {'contracts': 15, 'core-a': 15, 'core-b': 20, 'exercise': 15}
+?                                           ^^
+
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.001s
+
+FAILED (failures=1)
