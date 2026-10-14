@@ -1,0 +1,19 @@
+{
+  "command": [
+    "python3",
+    "-B",
+    ".github/scripts/test_partition.py",
+    "discover",
+    "--sha",
+    "a475386e6ccc814a78450f11f4a242c80ac3bc48",
+    "--attempt",
+    "b00-local",
+    "--directory",
+    "/private/tmp/b00-discovery"
+  ],
+  "budgetSeconds": 120,
+  "exitCode": 0,
+  "timedOut": false,
+  "elapsedSeconds": 14.085,
+  "logSha256": "7c0dca92918cafde5b3a309868bfb63eb86525ab0860834cb3058e02a0b8770d"
+}

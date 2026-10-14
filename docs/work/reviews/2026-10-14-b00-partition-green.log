@@ -1,0 +1,11 @@
+test_filters_keep_a_and_bind_exact_c_class_membership (__main__.CoreThirdShardTests.test_filters_keep_a_and_bind_exact_c_class_membership) ... ok
+test_new_method_in_completion_class_enters_c (__main__.CoreThirdShardTests.test_new_method_in_completion_class_enters_c) ... ok
+test_similar_class_name_does_not_widen_c (__main__.CoreThirdShardTests.test_similar_class_name_does_not_widen_c) ... ok
+test_third_partition_conserves_exact_rows_and_old_transfer (__main__.CoreThirdShardTests.test_third_partition_conserves_exact_rows_and_old_transfer) ... ok
+test_third_required_core_leaf_is_part_of_module_map (__main__.CoreThirdShardTests.test_third_required_core_leaf_is_part_of_module_map) ... ok
+test_unrelated_future_case_remains_in_b (__main__.CoreThirdShardTests.test_unrelated_future_case_remains_in_b) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.002s
+
+OK
