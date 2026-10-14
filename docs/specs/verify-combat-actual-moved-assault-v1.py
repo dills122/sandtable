@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Additive moved assault reference. Draft until bounds/interface freeze; no bypassed admission."""
+"""Additive moved assault reference. Independent retained fixture verifier; no bypassed admission."""
 import copy,hashlib,importlib.util,itertools,json,re,sys
 from pathlib import Path
 sys.dont_write_bytecode=True
@@ -661,7 +661,9 @@ def control(frame):
 def apply(frame,current,admission_enabled=True):
  phase,inp=parse_envelope(bytes(current));prior=frame[phase];require(prior is not None,4,'phase')
  if phase=='selection':
-  if inp['command']['kind']=='open-segment':require(admission_enabled,7,'fresh-open')
+  if inp['command']['kind']=='open-segment':
+   existing=any(r['commandHash']==sha(raw(inp['command'],'SelectionCommand')) and r['actor']==inp['actor'] for r in prior['receipts'])
+   if not existing:require(admission_enabled,7,'fresh-open')
   state,event,rid=selection_transition(frame['boundary'],prior,inp)
  elif phase=='round':state,event,rid=round_transition(frame['roundBase'],prior,inp,admission_enabled)
  else:
@@ -765,10 +767,46 @@ def measurements(fixture):
   for event in case['eventCanonicalUtf8']:maxima['eventBytes']=max(maxima['eventBytes'],len(event))
   for input in case['inputCanonicalUtf8']:maxima['inputBytes']=max(maxima['inputBytes'],len(input))
  return maxima
+def proof_for(packet,value):
+ source_hash=sha(source_bytes(packet))
+ latest=next((packet[p+'EventCanonicalUtf8'][-1] for p in ('paid','round','selection') if packet[p+'EventCanonicalUtf8']),None)
+ return dict(contractVersion=1,sourceId='mvas.'+source_hash[7:],sourceHash=source_hash,
+ parentSourceHash=sha(packet['reactionEntrySourceCanonicalUtf8'].encode('ascii')),dependencyManifestHash=dependency_manifest_hash(),
+ control=value,lastEventHash=None if latest is None else sha(latest.encode('ascii')),
+ terminalReceiptId=value['receipts'][-1]['receiptId'] if value['closed'] else None,resultSupport=None)
+def verify_fixture():
+ verify_dependencies();verify_delivery()
+ fixture=json.loads((ROOT/'fixtures'/ (NAME+'.json')).read_bytes())
+ require(fixture['contract']==NAME and fixture['contractVersion']==1 and len(fixture['cases'])==56,6,'fixture-inventory')
+ cuts=0;positive=0
+ for case in fixture['cases']:
+  request=json.loads(case['requestCanonicalUtf8']);prefix=[x.encode() for x in case['prefixInputCanonicalUtf8']]
+  lifecycle=[x.encode() for x in case['lifecycleInputCanonicalUtf8']];breakdown=[x.encode() for x in case['breakdownInputCanonicalUtf8']]
+  packet=parse(case['initialSourceCanonicalUtf8'].encode(),'Source');ledgers=dict(selection=[],round=[],paid=[])
+  for index,cut in enumerate(case['cuts']):
+   frame=replay(packet,request,prefix,lifecycle,breakdown,ledgers['selection'],ledgers['round'],ledgers['paid'])
+   value=control(frame)
+   for kind,data in [('source',source_bytes(packet)),('control',raw(value,'FamilyControl')),('proof',raw(proof_for(packet,value),'FamilyProof'))]:
+    require(cut[kind]==dict(bytes=len(data),sha256=sha(data)),6,case['name']+'/'+str(index)+'/'+kind)
+   cuts+=1
+   if index<len(case['inputCanonicalUtf8']):
+    current=case['inputCanonicalUtf8'][index].encode();phase,_=parse_envelope(current)
+    packet,event,rid=apply(frame,current)
+    require(event==case['eventCanonicalUtf8'][index].encode(),6,case['name']+'/event/'+str(index))
+    ledgers[phase].append(current)
+  require(value['closed'] and value['phase']=='reserve-entry',6,case['name']+'/terminal')
+  if value['paid'] is not None:
+   positive+=1;require(value['stateVersion']==38,6,case['name']+'/paid-terminal')
+   for role,cost in [('attacker',9),('defender',3)]:
+    element=next(x for x in value['world']['elements'] if x['elementId']==value['selection']['selection'][role]['unit']['elementId'])
+    require(element['operationalState']['capabilityPointsExpended']==dict(numerator=cost,denominator=1) and element['ammunition']['points']==0,6,case['name']+'/literal-cost')
+  else:
+   owner=value['cycle']['actingSide'];element=next(x for x in value['world']['elements'] if x['elementId']==owner+'-assault-battalion')
+   require(element['operationalState']['capabilityPointsExpended']==dict(numerator=4,denominator=1) and element['ammunition']['points']==10,6,case['name']+'/noattack-cost')
+ require(positive==12 and cuts==798,6,'acceptance-counts')
+ print(json.dumps(dict(status='pass',cases=56,positive=positive,fallback=44,cuts=cuts,claims=['source','control','proof','events','literal-costs','reserve-entry'])))
 if __name__=='__main__':
  if '--measure' in sys.argv:
-  fixture=generate();report=dict(status='draft reference capacity/fullbranch measurement, not native acceptance',cases=len(fixture['cases']),maxima=measurements(fixture))
-  Path('/private/tmp/n1-maximum-capacity-receipt.json').write_text(json.dumps(report,indent=2))
-  Path('/private/tmp/n1-draft-fixture.json').write_bytes(encode(fixture)+b'\n')
+  fixture=generate();report=dict(status='reference capacity measurement',cases=len(fixture['cases']),maxima=measurements(fixture))
   print(json.dumps(report))
- else:raise NotImplementedError('Contract freeze/retained fixture verification pending')
+ else:verify_fixture()

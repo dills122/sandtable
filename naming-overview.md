@@ -101,3 +101,8 @@ CampaignCombatActualReactionCombatEntry and its codec are private technical modu
 The [Reaction-to-Combat entry contract](docs/specs/combat-actual-reaction-combat-entry-v1.md) uses existing
 Movement stop/resolution/completion and System Breakdown names. A certified positive candidate at entry
 is distinct from accepting a selection, paid attack or public action.
+
+CampaignCombatActualMovedAssault and its codec are private Umpire modules for the
+[actual moved-assault contract](docs/specs/combat-actual-moved-assault-v1.md). They join authenticated
+Reaction-to-Combat entry to Selection, sealed Round, paid assault and mandatory settlement.
+Reserve Release entry is their endpoint; the name does not imply public campaign activation.

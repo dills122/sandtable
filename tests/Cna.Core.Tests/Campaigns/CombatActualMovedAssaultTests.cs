@@ -1,12 +1,13 @@
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Security.Cryptography;
 using Cna.Core.Campaigns;
 using Cna.Core.Content;
 using Cna.Core.Rules;
 using Cna.Core.Setups;
 namespace Cna.Core.Tests.Campaigns;
+
 public sealed class CombatActualMovedAssaultTests
 {
     [Theory]
@@ -22,9 +23,14 @@ public sealed class CombatActualMovedAssaultTests
         var prefix = Inputs(item.GetProperty("prefixInputCanonicalUtf8")); var suffix = Inputs(item.GetProperty("inputCanonicalUtf8"));
         var authenticated = CampaignCombatActualReactionCombatEntry.ReplayTrustedSource(parent, p.Request, prefix, suffix[..3], suffix[3..], Dependency);
         Assert.NotNull(authenticated.Candidate);
-        var source = JsonSerializer.SerializeToUtf8Bytes(new JsonObject { ["contractVersion"] = 1,
+        var source = JsonSerializer.SerializeToUtf8Bytes(new JsonObject
+        {
+            ["contractVersion"] = 1,
             ["reactionEntrySourceCanonicalUtf8"] = Encoding.ASCII.GetString(authenticated.SourceBytes),
-            ["selectionEventCanonicalUtf8"] = new JsonArray(), ["roundEventCanonicalUtf8"] = new JsonArray(), ["paidEventCanonicalUtf8"] = new JsonArray() }, Options);
+            ["selectionEventCanonicalUtf8"] = new JsonArray(),
+            ["roundEventCanonicalUtf8"] = new JsonArray(),
+            ["paidEventCanonicalUtf8"] = new JsonArray()
+        }, Options);
         var result = CampaignCombatActualMovedAssault.ReplayTrustedSource(source, p.Request, prefix, suffix[..3], suffix[3..], [], [], [], Dependency);
         Assert.Equal(18, result.Control.GetProperty("stateVersion").GetInt64());
         Assert.Equal("selection", result.Control.GetProperty("phase").GetString());
@@ -43,8 +49,14 @@ public sealed class CombatActualMovedAssaultTests
         static byte[][] Inputs(JsonElement array) => array.EnumerateArray().Select(e => Encoding.ASCII.GetBytes(e.GetString()!)).ToArray();
         var parent = item.GetProperty("cuts")[4].GetProperty("sourceCanonicalUtf8").GetString()!;
         var prefix = Inputs(item.GetProperty("prefixInputCanonicalUtf8")); var ancestor = Inputs(item.GetProperty("inputCanonicalUtf8"));
-        var source = JsonSerializer.SerializeToUtf8Bytes(new JsonObject { ["contractVersion"] = 1, ["reactionEntrySourceCanonicalUtf8"] = parent,
-            ["selectionEventCanonicalUtf8"] = new JsonArray(), ["roundEventCanonicalUtf8"] = new JsonArray(), ["paidEventCanonicalUtf8"] = new JsonArray() }, Options);
+        var source = JsonSerializer.SerializeToUtf8Bytes(new JsonObject
+        {
+            ["contractVersion"] = 1,
+            ["reactionEntrySourceCanonicalUtf8"] = parent,
+            ["selectionEventCanonicalUtf8"] = new JsonArray(),
+            ["roundEventCanonicalUtf8"] = new JsonArray(),
+            ["paidEventCanonicalUtf8"] = new JsonArray()
+        }, Options);
         var selection = new List<byte[]>(); var round = new List<byte[]>(); var paid = new List<byte[]>();
         var current = CampaignCombatActualMovedAssault.ReplayTrustedSource(source, p.Request, prefix, ancestor[..3], ancestor[3..], selection, round, paid, Dependency);
         var committed = false;
@@ -85,8 +97,18 @@ public sealed class CombatActualMovedAssaultTests
             var outcome = state["selectionOutcome"]!.GetValue<string>(); var step = state["stepIndex"]!.GetValue<int>();
             var kind = outcome == "unopened" ? "open-segment" : outcome == "pending" ? "choose-selection" :
                 step == 2 && state["rbaWindow"] is null ? "open-rba" : step == 2 && state["declineReceiptId"] is null ? "decline-rba" : "complete-step";
-            cmd = new JsonObject { ["contractVersion"] = 1, ["kind"] = kind, ["segmentId"] = state["segmentId"]!.DeepClone(), ["decisionId"] = null,
-                ["fromPositionId"] = null, ["expectedPriorVersion"] = null, ["choice"] = null, ["candidate"] = null, ["participant"] = null };
+            cmd = new JsonObject
+            {
+                ["contractVersion"] = 1,
+                ["kind"] = kind,
+                ["segmentId"] = state["segmentId"]!.DeepClone(),
+                ["decisionId"] = null,
+                ["fromPositionId"] = null,
+                ["expectedPriorVersion"] = null,
+                ["choice"] = null,
+                ["candidate"] = null,
+                ["participant"] = null
+            };
             if (kind == "open-segment") { cmd["expectedPriorVersion"] = version; time = 1000; }
             if (kind == "choose-selection") { cmd["decisionId"] = state["selectionWindow"]!["decisionId"]!.DeepClone(); cmd["choice"] = "select-close-assault"; cmd["candidate"] = root["candidate"]!.DeepClone(); actor = owner; time = 1001; }
             if (kind is "complete-step" or "open-rba") { cmd["expectedPriorVersion"] = version; cmd["fromPositionId"] = route[step].PositionId; if (kind == "open-rba") time = 2000; }
@@ -95,10 +117,18 @@ public sealed class CombatActualMovedAssaultTests
         else if (phase == "round")
         {
             var status = state["status"]!.GetValue<string>(); var kind = status == "unopened" ? "open-round" : status == "collecting" ? "seal-choice" : "complete-step";
-            cmd = new JsonObject { ["contractVersion"] = 1, ["kind"] = kind, ["segmentId"] = state["segmentId"]!.DeepClone(),
-                ["roundId"] = kind == "open-round" ? null : state["roundId"]!.DeepClone(), ["clockConfigurationHash"] = state["clockConfigurationHash"]!.DeepClone(),
-                ["expectedPriorVersion"] = kind == "seal-choice" ? null : version, ["fromPositionId"] = kind == "complete-step" ? route[state["stepIndex"]!.GetValue<int>()].PositionId : null,
-                ["slotId"] = null, ["allocation"] = null };
+            cmd = new JsonObject
+            {
+                ["contractVersion"] = 1,
+                ["kind"] = kind,
+                ["segmentId"] = state["segmentId"]!.DeepClone(),
+                ["roundId"] = kind == "open-round" ? null : state["roundId"]!.DeepClone(),
+                ["clockConfigurationHash"] = state["clockConfigurationHash"]!.DeepClone(),
+                ["expectedPriorVersion"] = kind == "seal-choice" ? null : version,
+                ["fromPositionId"] = kind == "complete-step" ? route[state["stepIndex"]!.GetValue<int>()].PositionId : null,
+                ["slotId"] = null,
+                ["allocation"] = null
+            };
             if (kind == "open-round") time = 3000;
             if (kind == "seal-choice")
             { var slot = state["slots"]!.AsArray().First(x => x!["sealedReceiptId"] is null)!; cmd["slotId"] = slot["slotId"]!.DeepClone(); cmd["allocation"] = slot["allocation"]!.DeepClone(); actor = slot["owner"]!.GetValue<string>(); time = state["slots"]!.AsArray().Any(x => x!["sealedReceiptId"] is not null) ? 3500 : 4000; }
@@ -106,12 +136,21 @@ public sealed class CombatActualMovedAssaultTests
         else
         {
             var status = state["status"]!.GetValue<string>(); var kind = status == "prepared" ? "commit" : status == "committed" ? "resolve" : state["window"] is not null ? "choose" : "advance";
-            cmd = new JsonObject { ["contractVersion"] = 1, ["kind"] = kind, ["baseHash"] = state["baseHash"]!.DeepClone(), ["roundId"] = root["round"]!["roundId"]!.DeepClone(),
-                ["commitmentId"] = state["commitmentId"]?.DeepClone(), ["expectedPriorVersion"] = kind == "choose" ? null : version, ["decisionId"] = null, ["choice"] = null };
+            cmd = new JsonObject
+            {
+                ["contractVersion"] = 1,
+                ["kind"] = kind,
+                ["baseHash"] = state["baseHash"]!.DeepClone(),
+                ["roundId"] = root["round"]!["roundId"]!.DeepClone(),
+                ["commitmentId"] = state["commitmentId"]?.DeepClone(),
+                ["expectedPriorVersion"] = kind == "choose" ? null : version,
+                ["decisionId"] = null,
+                ["choice"] = null
+            };
             if (kind == "choose") { cmd["decisionId"] = state["window"]!["decisionId"]!.DeepClone(); cmd["choice"] = state["window"]!["kind"]!.GetValue<string>() == "retreat" ? "refuse-retreat" : "leave-unguarded"; actor = state["window"]!["owner"]!.GetValue<string>(); time = 10001; }
             if (kind == "advance" && status == "resolved" && state["result"]!["facts"]!["requiredRetreat"]!.GetValue<int>() > 0) time = 10000;
         }
-        return JsonSerializer.SerializeToUtf8Bytes(new JsonObject { ["phase"] = phase, ["input"] = new JsonObject { ["command"] = cmd, ["actor"] = actor, ["admittedAt"] = time, ["clockAvailable"] = true } }, Options);
+        return CampaignCombatActualMovedAssaultCodec.Canonical(new JsonObject { ["phase"] = phase, ["input"] = new JsonObject { ["command"] = cmd, ["actor"] = actor, ["admittedAt"] = time, ["clockAvailable"] = true } }, "Envelope");
     }
     private static readonly JsonSerializerOptions Options = new() { Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping };
     private sealed record Pack(CampaignCombatCreationRequest Request, byte[] Created, byte[][] Opening, byte[] Weather, byte[][] Stage, byte[][] Reserve);
@@ -186,7 +225,7 @@ public sealed class CombatActualMovedAssaultTests
         return (request, created, opening.ToArray(), weather);
     }
 
-    private static string Digest(byte[] bytes) => "sha256:" + Convert.ToHexString(SHA256.HashData(bytes)).ToLowerInvariant();    private static byte[] Dependency(string path)
+    private static string Digest(byte[] bytes) => "sha256:" + Convert.ToHexString(SHA256.HashData(bytes)).ToLowerInvariant(); private static byte[] Dependency(string path)
     {
         var root = new DirectoryInfo(AppContext.BaseDirectory);
         while (root is not null && !File.Exists(Path.Combine(root.FullName, "Sandtable.slnx"))) root = root.Parent;

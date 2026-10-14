@@ -83,7 +83,7 @@ at mostdouble plus512 framing =7733760 <8MiB. This is a wire-bound proof distinc
 fixtures. Root Control/Proof budgets dominate bounded phase controls/receipts and finite selected-world
 shapes, requiring support-gate size verification and max-valid/just-over tests before native GREEN.
 Depth40 own compound envelopes never enlarges parent's independently parsed32.
-Compact fixture retains original root, every command/event and798 Source/Control byte hashes, avoiding
+Compact fixture retains original root, every command/event and798 Source/Control/Proof byte hashes, avoiding
 97MiB repeated ancestry while preserving independently regenerated per-cut bytes and literal invariants.
 
 ## Exclusions and remaining gates

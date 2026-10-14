@@ -2951,3 +2951,17 @@ B03review0/9 recovery0/2 until dispatch; max3passes/round thenBrainrecovery/max9
 requiresuser. Closeout09:10:17UTC/productstop09:55:17UTC; no newfeature scope after this slice. Later
 Combat/Convoy, broaderReserve/Reaction/vehicles/profiles, production/public and parent017–025/all72
 remain separate/unwaived, as do historicalBreakdown sourcepin failures/CoreB139.
+
+## N1 actual moved assault successor (2026-10-14)
+
+I01 merged as PR #187 at main f59ffcdbcbcadfbdb20b7e7f8796d477533b792f. N1 implements the private
+[actual moved-assault contract](../specs/combat-actual-moved-assault-v1.md): authentic entry18,
+Selection/RBA, prepared Round30, cumulative CP4+5/0+3 commit31 and mandatory settlement into
+same-cycle Reserve Release entry. Six independent caller ledgers authenticate every replay and claim.
+The retained catalogue contains 12 owner/closure/seal paid contexts and 44 no-attack/cancel/fallback
+branches, with 798 independently reference-hashed cuts. Full 16,616-result catalogue certification
+before fresh costs is isolated support, not additional authentic source admission.
+
+Author tests/reference, self-review, fresh independent review and exact-head hosted CI must settle
+before Brain merges. PAC/armed NONE/Release/finish/public/Runner and general seed expansion remain
+separate. The author plan records focused test lease, RED provenance and session deadline.
