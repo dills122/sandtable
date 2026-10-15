@@ -247,7 +247,7 @@
     "claims-full-replay",
     "capacity-closure"
   ],
-  "closureFrozen": false,
+  "closureFrozen": true,
   "arrayAliases": {
     "Route": {
       "elementType": "id",
