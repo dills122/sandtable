@@ -260,6 +260,15 @@ public sealed class CombatActualMovedRepeatMovementCompletionContractTests
         var packet = new JsonObject { ["contractVersion"] = 1, ["movementSourceCanonicalUtf8"] = new string('"', 64231936), ["lifecycleEventCanonicalUtf8"] = new JsonArray(Enumerable.Range(0, 3).Select(_ => (JsonNode?)JsonValue.Create(new string('"', 65536))).ToArray()) };
         var bytes = Codec.Canonical(packet, "Source"); Codec.SourceBounds(packet); Assert.Equal(128857183, bytes.Length); Assert.InRange(bytes.Length, 1, 128857600); return bytes;
     }
+    private static void SourceReaderAllocation(byte[] framed)
+    {
+        var before = GC.GetAllocatedBytesForCurrentThread(); var parsed = Codec.Object(framed, "Source");
+        var allocated = GC.GetAllocatedBytesForCurrentThread() - before;
+        // Allocation traffic is a regression probe, separate from the kernel RSS process gate.
+        Assert.InRange(allocated, 0, 6L * framed.Length + 1048576);
+        Assert.Equal(64231936, parsed["movementSourceCanonicalUtf8"]!.GetValue<string>().Length);
+        Assert.Equal(3, parsed["lifecycleEventCanonicalUtf8"]!.AsArray().Count);
+    }
     [Fact]
     public void FullSourceFramingCannotForgeParent()
     {
@@ -267,7 +276,8 @@ public sealed class CombatActualMovedRepeatMovementCompletionContractTests
         var vector = new JsonObject { ["contractVersion"] = 1, ["movementSourceCanonicalUtf8"] = ascii, ["lifecycleEventCanonicalUtf8"] = new JsonArray(ascii) };
         var expected = Convert.FromBase64String("eyJjb250cmFjdFZlcnNpb24iOjEsIm1vdmVtZW50U291cmNlQ2Fub25pY2FsVXRmOCI6Ilx1MDAwMFx1MDAwMVx1MDAwMlx1MDAwM1x1MDAwNFx1MDAwNVx1MDAwNlx1MDAwN1xiXHRcblx1MDAwYlxmXHJcdTAwMGVcdTAwMGZcdTAwMTBcdTAwMTFcdTAwMTJcdTAwMTNcdTAwMTRcdTAwMTVcdTAwMTZcdTAwMTdcdTAwMThcdTAwMTlcdTAwMWFcdTAwMWJcdTAwMWNcdTAwMWRcdTAwMWVcdTAwMWYgIVwiIyQlJicoKSorLC0uLzAxMjM0NTY3ODk6Ozw9Pj9AQUJDREVGR0hJSktMTU5PUFFSU1RVVldYWVpbXFxdXl9gYWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXp7fH1+XHUwMDdmIiwibGlmZWN5Y2xlRXZlbnRDYW5vbmljYWxVdGY4IjpbIlx1MDAwMFx1MDAwMVx1MDAwMlx1MDAwM1x1MDAwNFx1MDAwNVx1MDAwNlx1MDAwN1xiXHRcblx1MDAwYlxmXHJcdTAwMGVcdTAwMGZcdTAwMTBcdTAwMTFcdTAwMTJcdTAwMTNcdTAwMTRcdTAwMTVcdTAwMTZcdTAwMTdcdTAwMThcdTAwMTlcdTAwMWFcdTAwMWJcdTAwMWNcdTAwMWRcdTAwMWVcdTAwMWYgIVwiIyQlJicoKSorLC0uLzAxMjM0NTY3ODk6Ozw9Pj9AQUJDREVGR0hJSktMTU5PUFFSU1RVVldYWVpbXFxdXl9gYWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXp7fH1+XHUwMDdmIl19"); Assert.Equal(expected, Codec.Canonical(vector, "Source")); Assert.Equal(expected, Codec.Canonical(Codec.Object(expected, "Source"), "Source"));
         vector["movementSourceCanonicalUtf8"] = new string((char)128, 1); Code(1, () => Codec.Canonical(vector, "Source"));
-        var c = new CompletionContext(12, 6, "armed"); c.Source = SourceFraming(); c.Completion.AddRange(c.Inputs.Select(b => b.ToArray())); Code(1, () => c.Replay());
+        var framed = SourceFraming(); SourceReaderAllocation(framed);
+        var c = new CompletionContext(12, 6, "armed"); c.Source = framed; c.Completion.AddRange(c.Inputs.Select(b => b.ToArray())); Code(1, () => c.Replay());
         var packet = new JsonObject { ["contractVersion"] = 1, ["movementSourceCanonicalUtf8"] = "{}", ["lifecycleEventCanonicalUtf8"] = new JsonArray("{}", "{}", "{}", "{}") }; Code(1, () => Codec.SourceBounds(packet));
         Code(1, () => Codec.Copy(new byte[134217729], "Source")); Code(1, () => Codec.Copy(new byte[4097], "Input")); Code(1, () => Codec.Copy(new byte[65537], "Event"));
     }
