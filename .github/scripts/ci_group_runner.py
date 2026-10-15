@@ -107,7 +107,7 @@ def run_child(command, directory, template, deadline, cancellation=None):
 
 def run_job(groups, allocation, job, root, binding, binary, timeout_seconds=720, command_builder=execution_command):
     from concurrent.futures import ThreadPoolExecutor
-    from r02_partition import MODULE, require, validate_allocation
+    from r02_partition import MODULE, candidate_allocation, require, validate_allocation
     validate_allocation(allocation, {'groups': groups})
     require(job in ('r02-1', 'r02-2', 'r02-3'), 'Unknown R02 job')
     require(type(timeout_seconds) in (int, float) and 0 < timeout_seconds <= 720, 'Invalid job execution deadline')
@@ -124,7 +124,7 @@ def run_job(groups, allocation, job, root, binding, binary, timeout_seconds=720,
 
     def lane(number):
         statuses = {}
-        for group in allocation:
+        for group in candidate_allocation():
             entry = allocation[group]
             if entry['job'] != job or entry['lane'] != number:
                 continue

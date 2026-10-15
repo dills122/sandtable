@@ -92,6 +92,15 @@ class LaneSupervisorTests(unittest.TestCase):
             self.assertTrue(all(status['exit_code'] == 0 for status in results.values()))
             self.assertEqual({path.name for path in (Path(root) / 'groups').iterdir()}, expected)
 
+    def test_manifest_object_order_cannot_reverse_frozen_lane_sequence(self):
+        allocation = dict(reversed(list(r02_partition.candidate_allocation().items())))
+        groups = {name: {'class': 'Cna.Core.Tests.Cases.One'} for name in allocation}
+        with tempfile.TemporaryDirectory() as root:
+            results = runner.run_job(groups, allocation, 'r02-2', Path(root) / 'groups', {}, '/bin/not-used.dll', 5,
+                command_builder=lambda binary, directory, class_name: [sys.executable, '-c', 'pass'])
+            self.assertLess(results['armed-axis-m1']['started_utc'], results['paid-axis-m0']['started_utc'])
+            self.assertLess(results['armed-axis-m2']['started_utc'], results['paid-commonwealth-m0']['started_utc'])
+
     def test_failed_group_does_not_silently_skip_other_expected_groups(self):
         allocation = r02_partition.candidate_allocation()
         groups = {name: {'class': 'Cna.Core.Tests.Cases.One'} for name in allocation}
