@@ -72,5 +72,17 @@
     "expected": "CMB-MRM-005",
     "observed": "CMB-MRM-007",
     "cause": "Global six-receipt capacity guard ran before legal CP ceiling evaluation. Rejection was atomic, but wrong diagnostic misclassified a rules ceiling as unavailable capacity. Fix will defer receipt capacity until after legal effect derivation."
+  },
+  "closureScalarErrorRed": {
+    "command": "python3 docs/work/reviews/2026-10-15-actual-moved-repeat-movement-closure.py",
+    "exitCode": 1,
+    "observedCompleteUtc": "2026-10-15T16:31:16Z",
+    "completedParents": 56,
+    "ceilingsAndResignedForgeriesPassed": 56,
+    "failure": "Boolean in integer field rejects via TypeError rather than a contract validation error. The inherited n3\u2192n2\u2192n1 scalar forwarding passes integer depth in the n1 string path argument.",
+    "scriptCheckpoint": "e523a5a (before added scalar-closure assertions)",
+    "schemaSha256": "eb1cf39788cc78376b6d798a13a4a3272906217c51ff02b90310843654122468",
+    "oracleSha256": "91c27379252dbd4f53d310dd787a445f321d226ac506ad33da08a0fe6e021a3a",
+    "plannedFix": "Delegate supported scalar syntax directly to unchanged n1 validator with proper string path; own profile enum and signedInt primitive explicitly. No predecessor edits."
   }
 }

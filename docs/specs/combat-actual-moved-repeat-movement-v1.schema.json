@@ -225,5 +225,14 @@
     "claims-full-replay",
     "capacity-closure"
   ],
-  "closureFrozen": true
+  "closureFrozen": true,
+  "arrayAliases": {
+    "Route": {
+      "elementType": "id",
+      "maxItems": 9
+    }
+  },
+  "unsupportedTypes": [
+    "LegacyBrokenVehicleLot"
+  ]
 }

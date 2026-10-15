@@ -17,7 +17,11 @@ def limit(k):return L['sourceBytes'] if k=='Source' else L['proofBytes'] if k=='
 ENUM={'movementKind':('repeat-publish','move'),'movementPhase':('repeat-pending','movement')}
 def typed(v,k,depth=0):
  require(depth<=40,1)
- if k.endswith('?'):
+ if k in I['unsupportedTypes']:require(False,1)
+ elif k in I['arrayAliases']:
+  a=I['arrayAliases'][k];require(type(v) is list and len(v)<=a['maxItems'],1)
+  for x in v:typed(x,a['elementType'],depth+1)
+ elif k.endswith('?'):
   if v is not None:typed(v,k[:-1],depth)
  elif k.endswith('[]'):
   require(type(v) is list and len(v)<=512,1)
@@ -31,6 +35,7 @@ def typed(v,k,depth=0):
  elif k in ('parentCarrier','eventCarrier'):require(type(v) is str and v.isascii() and 0<len(v)<=(L['parentSourceBytes'] if k=='parentCarrier' else L['eventBytes']),1)
  else:n3.typed(v,k,depth)
 def canonical(v,k):
+ if k in I['arrayAliases']:return [canonical(x,I['arrayAliases'][k]['elementType']) for x in v]
  if k.endswith('?'):return None if v is None else canonical(v,k[:-1])
  if k.endswith('[]'):return [canonical(x,k[:-2]) for x in v]
  if k in I['effectTags']:return canonical(v,I['effectTags'][k][v['kind']])
@@ -82,7 +87,7 @@ def transition(f,prior,inp,fresh=True,admission=True):
  require((cmd['unit'] is None and cmd['originLocationId'] is None and cmd['destinationLocationId'] is None) if publish else cmd['unit']==unit and cmd['originLocationId'] is not None and cmd['destinationLocationId'] is not None,4)
  ch=sha(raw(cmd,'Command'));duplicate=next((r for r in prior['movementReceipts'] if r['commandHash']==ch and r['actor']==actor),None)
  if duplicate:return copy.deepcopy(prior),None,duplicate['receiptId']
- require(prior['stateVersion']<2**63-1 and len(prior['movementReceipts'])<6,7);require(cmd['expectedPriorVersion']==prior['stateVersion'],6)
+ require(prior['stateVersion']<2**63-1,7);require(cmd['expectedPriorVersion']==prior['stateVersion'],6)
  if fresh:require(admission and I['closureFrozen'],7)
  s=copy.deepcopy(prior)
  if publish:
@@ -104,6 +109,7 @@ def transition(f,prior,inp,fresh=True,admission=True):
   ends=[{k:copy.deepcopy(r[k]) for k in ['relationId','creationReceiptId','kind','attacker','defender']}|dict(endingCause='ordinary-break-off') for r in affected]
   costs=dict(terrainCost=2,breakOffCost=wit['breakOffCost'],totalCost=after-before,baseCpa=10,voluntaryCeiling=15,beforeCp=before,afterCp=after,excessCpDp=dp,beforeCohesion=cohesion,afterCohesion=cohesion-dp)
   effect=dict(kind='ordinary-move',unit=unit,representationId=reps[0]['representationId'],originLocationId=origin,destinationLocationId=dest,costs=costs,endedMemberships=ends)
+ require(len(prior['movementReceipts'])<6,7)
  event=dict(contractVersion=1,eventType='combat-actual-moved-'+effect['kind'],author=actor,campaignId=nc['campaignId'],rulesetHash=nc['rulesetHash'],configurationHash=nc['admittedPolicyBundleDigest'],profile=p['profile'],parentSourceHash=basis['parentSourceHash'],baseHash=f['baseHash'],cycleId=cmd['cycleId'],priorVersion=prior['stateVersion'],stateVersion=prior['stateVersion']+1,priorPrefix=prior['prefix'],input=inp,effect=effect)
  rid='mrm.'+domain('receipt',encode(event));event['receiptId']=rid;ev=raw(event,'Event');s['stateVersion']=event['stateVersion'];s['prefix']=n3.n2.n1.seq.prefix_event(prior['prefix'],ev)
  record=dict(commandHash=ch,eventHash=sha(ev),receiptId=rid,actor=actor,stateVersion=s['stateVersion']);s['receipts'].append(copy.deepcopy(record));s['movementReceipts'].append(record)

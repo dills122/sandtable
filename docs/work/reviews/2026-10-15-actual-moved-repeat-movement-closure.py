@@ -16,6 +16,8 @@ def verify():
  parent=json.loads((ROOT/'combat-actual-moved-cycle-control-v1.schema.json').read_bytes())
  inherited=set(m.S)&set(parent['objects'])-{'Source','Base','Command','Input','Event','Control','Proof'}
  assert all(m.I['objects'][k]==parent['objects'][k] for k in inherited)
+ referenced={f.split(':')[1].removesuffix('?').removesuffix('[]') for shape in m.I['objects'].values() for f in shape.split()};remaining=referenced-set(m.S)-set(m.I['effectTags'])-set(m.I['arrayAliases'])-set(m.I['unsupportedTypes'])-set(m.ENUM);assert remaining<=set('actor bool differential eventCarrier futureTurn hash id int locator long null parentCarrier profile rawHash side signedInt string ulong'.split())
+ reject(lambda:m.raw({},'LegacyBrokenVehicleLot'),'CMB-MRM-001');reject(lambda:m.raw(['a']*10,'Route'),'CMB-MRM-001')
  assert all(m.I['runtimeSourceHashes'][p]==h for p,h in parent['runtimeSourceHashes'].items())
  m.dependencies();checks.update(inheritedCompoundShapes=len(inherited),unchangedParentPins=len(parent['runtimeSourceHashes']),externalPins=len(m.I['runtimeSourceHashes']))
  # Framing only: adversarial carriers are not authenticated N3 roots.
