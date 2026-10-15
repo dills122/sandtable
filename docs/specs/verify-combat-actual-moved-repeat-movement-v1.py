@@ -14,7 +14,7 @@ def encode(v):return json.dumps(v,ensure_ascii=True,separators=(',',':')).encode
 def sha(b):return 'sha256:'+hashlib.sha256(b).hexdigest()
 def domain(k,b):return hashlib.sha256(I['domains'][k].encode()+b'\0'+b).hexdigest()
 def limit(k):return L['sourceBytes'] if k=='Source' else L['proofBytes'] if k=='Proof' else L['eventBytes'] if k=='Event' else L['inputBytes'] if k in ('Input','Command') else L['controlBytes']
-ENUM={'movementKind':('repeat-publish','move'),'movementPhase':('repeat-pending','movement')}
+ENUM={'movementKind':('repeat-publish','move'),'movementPhase':('repeat-pending','movement'),'profile':('paid','armed')}
 def typed(v,k,depth=0):
  require(depth<=40,1)
  if k in I['unsupportedTypes']:require(False,1)
@@ -33,7 +33,8 @@ def typed(v,k,depth=0):
   for f,t in S[k]:typed(v[f],t,depth+1)
  elif k in ENUM:require(type(v) is str and v in ENUM[k],3)
  elif k in ('parentCarrier','eventCarrier'):require(type(v) is str and v.isascii() and 0<len(v)<=(L['parentSourceBytes'] if k=='parentCarrier' else L['eventBytes']),1)
- else:n3.typed(v,k,depth)
+ elif k=='signedInt':require(type(v) is int and -2**31<=v<2**31,2)
+ else:n3.n2.n1.typed(v,k,'/')
 def canonical(v,k):
  if k in I['arrayAliases']:return [canonical(x,I['arrayAliases'][k]['elementType']) for x in v]
  if k.endswith('?'):return None if v is None else canonical(v,k[:-1])

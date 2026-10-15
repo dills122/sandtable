@@ -21,8 +21,9 @@
   "nativeRed": null,
   "green": null,
   "limitations": [
-    "No heavy test/build lease used; bounded two-parent replay only.",
-    "Fresh support certification and all56 parent verification not executed."
+    "Reference contract frozen after corrected full normal and closure PASS; native TDD, implementation and native checks pending.",
+    "Native implementation, native TDD and physical callback fault tests have not begun.",
+    "Framing vectors are not authenticated maximum roots; production latency/peak memory/general-seed/public/Runner/full72 assurance absent."
   ],
   "referenceCandidatePublicationGreen": {
     "command": "python3 docs/specs/verify-combat-actual-moved-repeat-movement-v1.py --red-gate",
@@ -84,5 +85,56 @@
     "schemaSha256": "eb1cf39788cc78376b6d798a13a4a3272906217c51ff02b90310843654122468",
     "oracleSha256": "91c27379252dbd4f53d310dd787a445f321d226ac506ad33da08a0fe6e021a3a",
     "plannedFix": "Delegate supported scalar syntax directly to unchanged n1 validator with proper string path; own profile enum and signedInt primitive explicitly. No predecessor edits."
+  },
+  "correctedClosureGreen": {
+    "command": "python3 docs/work/reviews/2026-10-15-actual-moved-repeat-movement-closure.py",
+    "exitCode": 0,
+    "observedCompleteUtc": "2026-10-15T16:36:21Z",
+    "checks": {
+      "inheritedCompoundShapes": 48,
+      "unchangedParentPins": 98,
+      "externalPins": 101,
+      "framingBytes": 64231526,
+      "oversizeRejections": 2,
+      "worldFramingBytes": 593548,
+      "isolatedSupportRoutes": 391,
+      "isolatedMovementSteps": 780,
+      "maxIsolatedWorldCauseCount": 5,
+      "ceilingFailures": 56,
+      "resignedEffectForgeries": 56,
+      "independentLedgerFaults": 18,
+      "modeBoundaryNegatives": 8,
+      "recoveryAfterEveryTerminalCut": 56,
+      "grammarNegatives": 3
+    },
+    "schemaSha256": "eb1cf39788cc78376b6d798a13a4a3272906217c51ff02b90310843654122468",
+    "oracleSha256": "e07f66f8037d9cc6d44ec40b2fb3df915bbef9e2be87a7576f25a5846e32d97a",
+    "scriptSha256": "9f4a2869e0c6d62fef90dfb26d204bd343c5f56b71b2dd038ac96b8ee0f6656c"
+  },
+  "capacityDerivation": {
+    "command": "python3 docs/work/reviews/2026-10-15-actual-moved-repeat-movement-capacity.py",
+    "exitCode": 0,
+    "sourceEnvelopeBytes": 102,
+    "sourceEnvelopeReserve": 512,
+    "sourceUpper": 64231936,
+    "worldReachableUpper": 534528,
+    "worldGrammarFramingBytes": 593548,
+    "worldGrowthAllocated": 9376,
+    "worldGrowthReserve": 10240,
+    "worldCauseSerializationExtreme": 1116,
+    "worldEndingGrowth": 83,
+    "distinction": "World framing outside reachable immutable-origin profile; source quote carrier framing outside authenticated root. Derivation in dated capacity artifact."
+  },
+  "correctedReferenceNormal": {
+    "command": "python3 docs/specs/verify-combat-actual-moved-repeat-movement-v1.py",
+    "exitCode": 0,
+    "startedAtUtc": "2026-10-15T16:36:57Z",
+    "observedCompleteUtc": "2026-10-15T16:54:20Z",
+    "parents": 56,
+    "cuts": 356,
+    "events": 300,
+    "schemaSha256": "eb1cf39788cc78376b6d798a13a4a3272906217c51ff02b90310843654122468",
+    "oracleSha256": "e07f66f8037d9cc6d44ec40b2fb3df915bbef9e2be87a7576f25a5846e32d97a",
+    "fixtureSha256": "481f93d483d15dd7425f2d025c8d823cfe680ebc36acd3b408ae32bb64e20b8d"
   }
 }
