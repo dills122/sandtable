@@ -87,6 +87,7 @@ def inherited(call):
 def source_bytes(packet):
  b=raw(packet,'Source');require(len(packet['lifecycleEventCanonicalUtf8'])<=3,1);return b
 REPLAY_COUNT=0
+VERBOSE=False
 def replay(source,request,prefix,lifecycle,breakdown,selection,round,paid,release,control,movement,completion):
  global REPLAY_COUNT
  packet=parse(bytes(source),'Source');source_bytes(packet);request=copy.deepcopy(request);ledgers=copy.deepcopy([prefix,lifecycle,breakdown,selection,round,paid,release,control,movement,completion])
@@ -114,7 +115,7 @@ def initial(f):
 def position(f,kind):
  if kind=='movement':return copy.deepcopy(f['parent']['sequencePosition'])
  id='land.position.breakdown-stop' if kind=='stop' else 'land.position.operation-1.first-player.movement-and-combat.breakdown-determination'
- return copy.deepcopy(next(p for p in mrm.n3.n2.n1.seq.expected_catalog()['positions'] if p['positionId']==id))
+ return copy.deepcopy(next(p for p in mrm.n3.n2.n1.seq.expected_catalog()['positions']+mrm.n3.n2.n1.seq.expected_catalog()['interruptPositions'] if p['positionId']==id))
 def capability(f,s,kind):return 'sha256:'+domain('capability',encode(dict(baseHash=f['baseHash'],cycleId=s['cycleId'],kind=kind,stateVersion=s['stateVersion'],sequencePosition=canonical(s['sequencePosition'],'Position'),flow=canonical(s['flow'],'Flow'),interruptContext=canonical(s['interruptContext'],'Context?'))))
 def command(f,s,kind):return dict(command=dict(contractVersion=1,kind=kind,baseHash=f['baseHash'],cycleId=f['parent']['cycleId'],expectedPositionId=position(f,'stop' if kind=='resolve-breakdown-stop' else 'movement')['positionId'],expectedPriorVersion=s['stateVersion'],capabilityId=capability(f,s,kind)),actor='system' if kind=='resolve-breakdown-stop' else f['parent']['activeCycle']['actingSide'])
 def scope(c):return {k:c[k] for k in ['gameTurn','operationStage','playerPhaseSlot','actingSide']}
@@ -133,8 +134,30 @@ def expiry(f,s,rid):
 def certify(f,handlers=None,capacities=None):
  require(set(handlers if handlers is not None else I['supportHandlers'])>=set(I['supportHandlers']) and all((capacities if capacities is not None else L).get(k,-1)>=v for k,v in L.items()),7)
 def transition(f,prior,inp,fresh=True,handlers=None,capacities=None):
- # Genuine preimplementation RED: authentic parent ingress succeeds, lifecycle does not exist yet.
- require(False,7)
+ raw(prior,'Control');raw(inp,'Input');cmd=inp['command'];kind=cmd['kind'];c=f['parent']['activeCycle'];actor=inp['actor'];movement=position(f,'movement');expected=position(f,'stop' if kind=='resolve-breakdown-stop' else 'movement')
+ require(cmd['baseHash']==prior['baseHash']==f['baseHash'] and cmd['cycleId']==prior['cycleId']==f['parent']['cycleId'] and prior['activeCycle']==c and prior['movementSourceHash']==f['base']['movementSourceHash'] and cmd['expectedPositionId']==expected['positionId'],4)
+ require(actor==('system' if kind=='resolve-breakdown-stop' else c['actingSide']),4);ch=sha(raw(cmd,'Command'));old=next((r for r in prior['lifecycleReceipts'] if r['commandHash']==ch and r['actor']==actor),None)
+ if old:return copy.deepcopy(prior),None,old['receiptId']
+ require(not prior['closed'] and len(prior['lifecycleReceipts'])<f['eventCap'] and prior['stateVersion']<2**63-1,7)
+ require(cmd['expectedPriorVersion']==prior['stateVersion'] and cmd['expectedPositionId']==prior['sequencePosition']['positionId'],6);require(cmd['capabilityId']==capability(f,prior,kind),5)
+ s=copy.deepcopy(prior);flow=prior['flow'];context=dict(cycle=copy.deepcopy(c),cycleId=prior['cycleId'],suspendedPosition=movement)
+ if kind=='stop-element-movement':
+  require(flow['kind']=='moving' and prior['interruptContext'] is None and prior['movementEnd'] is None and prior['sequencePosition']==movement,6)
+  require(flow==f['initialFlow'] and flow['track']==prior['tracks'][0] and flow['lastMoveReceiptId']==prior['movementReceipts'][-1]['receiptId'],4)
+  descriptor=dict(recordedStateVersion=prior['stateVersion']+1,track=copy.deepcopy(flow['track']),lastMoveReceiptId=flow['lastMoveReceiptId'],reason='deliberate',weatherKind='normal',cohortInputs=[])
+  stop=dict(stopId='mrmstop.'+domain('stop',encode(dict(baseHash=f['baseHash'],cycleId=prior['cycleId'],descriptor=descriptor))),**descriptor)
+  s['flow']=dict(kind='phasing-stop',stop=stop);s['interruptContext']=context;s['sequencePosition']=position(f,'stop');effect=dict(kind='movement-stopped',stop=copy.deepcopy(stop),interruptContext=copy.deepcopy(context),successorPosition=copy.deepcopy(s['sequencePosition']))
+ elif kind=='resolve-breakdown-stop':
+  # Resolution is deliberately unimplemented for the next genuine RED checkpoint.
+  require(False,7)
+ else:
+  # Completion is deliberately unimplemented for the next genuine RED checkpoint.
+  require(False,7)
+ if fresh:certify(f,handlers,capacities)
+ event=dict(contractVersion=1,eventType='combat-actual-moved-repeat-'+effect['kind'],author=actor,campaignId=c['campaignId'],rulesetHash=c['rulesetHash'],configurationHash=c['admittedPolicyBundleDigest'],profile=prior['profile'],movementSourceHash=prior['movementSourceHash'],baseHash=f['baseHash'],cycleId=prior['cycleId'],positionId=prior['sequencePosition']['positionId'],priorVersion=prior['stateVersion'],stateVersion=prior['stateVersion']+1,priorPrefix=prior['prefix'],input=canonical(inp,'Input'),effect=canonical(effect,'Effect'))
+ rid='mrmc.'+domain('receipt',encode(event));event['receiptId']=rid;ev=raw(event,'Event')
+ if kind=='complete-movement-segment':s['movementEnd']=expiry(f,prior,rid)
+ s['stateVersion']=event['stateVersion'];s['prefix']=mrm.n3.n2.n1.seq.prefix_event(prior['prefix'],ev);receipt=dict(commandHash=ch,eventHash=sha(ev),receiptId=rid,actor=actor,stateVersion=s['stateVersion']);s['receipts'].append(copy.deepcopy(receipt));s['lifecycleReceipts'].append(receipt);raw(s,'Control');return s,ev,rid
 def proof(packet,f,s):return dict(contractVersion=1,sourceId='mrmcomp.'+sha(source_bytes(packet))[7:],sourceHash=sha(source_bytes(packet)),base=copy.deepcopy(f['base']),control=copy.deepcopy(s))
 def apply(source,args,completion,inp,fresh=True,handlers=None,capacities=None):
  owned=bytes(inp);f,s=replay(bytes(source),*copy.deepcopy(args),copy.deepcopy(completion));after,event,rid=transition(f,s,parse(owned,'Input'),fresh,handlers,capacities)
@@ -153,6 +176,7 @@ def trace(row,retries=True):
  retain()
  for kind in (I['commands'] if row['movementCut']>1 else ['complete-movement-segment']):
   b=raw(command(f,s,kind),'Input');source,s,event,rid=apply(source,args,ledger,b);require(event is not None,6);ledger.append(b);inputs.append(b.decode());events.append(event.decode());retain()
+  if VERBOSE:print('ACCEPTED',kind,rid,'position',s['sequencePosition']['positionId'],flush=True)
   if retries:
    for old in ledger:
     retry=apply(source,args,ledger,old,False);require(retry[0]==source and retry[1]==s and retry[2] is None,6)
@@ -161,6 +185,8 @@ def trace(row,retries=True):
   require(s[field]==parent[field],6)
  return dict(**row,inputCanonicalUtf8=inputs,eventCanonicalUtf8=events,cuts=cuts)
 def behavior(profile,moves):
+ global VERBOSE
+ VERBOSE=True
  row=next(r for r in semantic_rows() if r['profile']==profile and r['movementCut']==moves+1);packet,args=root(row);f,s=replay(source_bytes(packet),*args,[]);print('AUTHENTIC R01 ingress',profile,'moves',moves,'ordinal',s['activeCycle']['ordinal'],flush=True);return trace(row)
 def main():
  import argparse
