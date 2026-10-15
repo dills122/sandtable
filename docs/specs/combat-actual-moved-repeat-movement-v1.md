@@ -1,6 +1,6 @@
 # Authentic moved repeat Movement v1
 
-R01 additive private contract consumes N3 pending repeat intent from both authentic paid and armed lineages. Executable reference frozen2026-10-15T16:54:20Z after genuine RED, full56-parent parity and closure checks. Native implementation and fresh review remain required.
+R01 additive private contract consumes N3 pending repeat intent from both authentic paid and armed lineages. Executable reference frozen2026-10-15T16:54:20Z after genuine RED, full56-parent parity and closure checks. Focused native implementation passes71 local tests; author/fresh review and delivery gates remain. Frozen schema status text is historical metadata; the dated evidence/report records the current phase without changing frozen runtime bytes.
 
 ## Authority
 Source carries canonical N3 Source once and up to six new Movement event strings. CreationRequest plus independent prefix/lifecycle/Breakdown/Selection/Round/paid/Release/control ledgers authenticate every ancestor. A ninth independent Movement ledger authenticates new events. No projection, re-signed effect, fixture row or source hash alone grants authority. Replay all ancestor ledgers before interpreting successor inputs or claims. Own Source, all input/claim bytes, all ledger arrays and dependency acquisitions before callbacks.

@@ -38,11 +38,21 @@
     },
     "build": "dotnet build tests/Cna.Core.Tests/Cna.Core.Tests.csproj -c Release --no-restore -bl:/private/tmp/r01-native-red-build-{}.binlog; exit0"
   },
-  "green": null,
+  "green": {
+    "scope": "local reference and focused native only",
+    "referenceParents": 56,
+    "referenceCuts": 356,
+    "referenceEvents": 300,
+    "nativeRows": 71,
+    "nativeUniqueDiscoveredRows": 71,
+    "independentReview": false,
+    "hostedAcceptance": false,
+    "merged": false
+  },
   "limitations": [
-    "Reference contract frozen after corrected full normal and closure PASS; native TDD, implementation and native checks pending.",
-    "Native genuine two-profile publication RED captured; implementation and native GREEN/physical fault checks pending.",
-    "Framing vectors are not authenticated maximum roots; production latency/peak memory/general-seed/public/Runner/full72 assurance absent."
+    "Reference and focused native gates pass locally; author self-review/fresh independent review and exact-head hosted/full-repository/main gates remain.",
+    "Framing vectors are not authenticated maximum roots; production latency/peak memory/general-seed/public/Runner/full72 assurance absent.",
+    "Raw discovery, diagnostic logs and binlogs retained locally only."
   ],
   "referenceCandidatePublicationGreen": {
     "command": "python3 docs/specs/verify-combat-actual-moved-repeat-movement-v1.py --red-gate",
@@ -171,5 +181,51 @@
       "CA1859 LiveWitnesses return made concrete List"
     ],
     "build": "Release build exit0,0warnings/0errors"
+  },
+  "nativeScopedDiscovery": {
+    "command": "dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj -c Release --no-build --no-restore --filter-class '*CombatActualMovedRepeatMovement*' --list-tests -bl:/private/tmp/r01-discovery-{}.binlog",
+    "exitCode": 0,
+    "records": 71,
+    "uniqueRecords": 71,
+    "duplicateRecords": 0,
+    "parityOrdinals": 56,
+    "paidParity": 12,
+    "armedParity": 44,
+    "classCounts": {
+      "Cna.Core.Tests.Campaigns.CombatActualMovedRepeatMovementContractTests": 69,
+      "Cna.Core.Tests.Campaigns.CombatActualMovedRepeatMovementTests": 2
+    },
+    "sortedNameSha256": "d0a704011817d49c942784f621d380d7d8c4a0423323eea7a5c8b30def4fa787",
+    "verification": "Actual scoped native discovery; compare 56 ordinal/profile pairs exactly to fixture. No deduplication or row narrowing. Full-repository gate remains Brain owned."
+  },
+  "nativeFirstParityGreen": {
+    "command": "dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj -c Release --no-build --no-restore --filter-class '*CombatActualMovedRepeatMovement*' -bl:/private/tmp/r01-parity-test-{}.binlog",
+    "exitCode": 0,
+    "observedCompleteUtc": "2026-10-15T17:10:06Z",
+    "total": 60,
+    "passed": 60,
+    "failed": 0,
+    "skipped": 0,
+    "durationSeconds": 272.808,
+    "scope": "Initial expanded compiled parity suite, before additional fault tests were compiled; runtime source unchanged."
+  },
+  "nativeFocusedGreen": {
+    "command": "dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj -c Release --no-build --no-restore --filter-class '*CombatActualMovedRepeatMovement*' -bl:/private/tmp/r01-focused-test-{}.binlog",
+    "exitCode": 0,
+    "observedCompleteUtc": "2026-10-15T17:16:51Z",
+    "total": 71,
+    "passed": 71,
+    "failed": 0,
+    "skipped": 0,
+    "durationSeconds": 271.817,
+    "build": "Release targeted build exit0/0warnings/0errors",
+    "runtimeCheckpoint": "9fe0a3a",
+    "runtimeSourceSha256": "3ecfb989a68676101bf37af07211c4cb3c7faf96e3e1e41330dc3bc647da6a10",
+    "codecSourceSha256": "31b0da6b5228c760a3652b35cb4f6e40f6d091719d9af0bf395cc852889b218e"
+  },
+  "nativeWhitespace": {
+    "command": "dotnet format whitespace tests/Cna.Core.Tests/Cna.Core.Tests.csproj --no-restore --verify-no-changes --include src/Cna.Core/Campaigns/CampaignCombatActualMovedRepeatMovement.cs src/Cna.Core/Campaigns/CampaignCombatActualMovedRepeatMovementCodec.cs tests/Cna.Core.Tests/Campaigns/CombatActualMovedRepeatMovementTests.cs tests/Cna.Core.Tests/Campaigns/CombatActualMovedRepeatMovementContractTests.cs",
+    "exitCode": 0,
+    "changes": 0
   }
 }
