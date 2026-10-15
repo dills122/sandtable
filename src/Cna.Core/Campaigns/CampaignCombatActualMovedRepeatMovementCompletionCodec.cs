@@ -92,15 +92,6 @@ internal static class CampaignCombatActualMovedRepeatMovementCompletionCodec
         Require(value["lifecycleEventCanonicalUtf8"] is JsonArray && value["lifecycleEventCanonicalUtf8"]!.AsArray().Count <= 3, 1);
         return SourceBytes(Carrier(value["movementSourceCanonicalUtf8"]), value["lifecycleEventCanonicalUtf8"]!.AsArray().Select(Carrier).ToArray());
     }
-    private static byte[] CanonicalSource(JsonElement value)
-    {
-        Require(value.ValueKind == JsonValueKind.Object, 1); var fields = value.EnumerateObject().Select(p => p.Name).ToArray();
-        Require(fields.Length == 3 && fields.Distinct(StringComparer.Ordinal).Count() == 3 && fields.ToHashSet(StringComparer.Ordinal).SetEquals(SourceFields), 1);
-        SourceVersion(value.GetProperty("contractVersion")); var events = value.GetProperty("lifecycleEventCanonicalUtf8");
-        Require(value.GetProperty("movementSourceCanonicalUtf8").ValueKind == JsonValueKind.String && events.ValueKind == JsonValueKind.Array && events.GetArrayLength() <= 3, 1);
-        var carriers = events.EnumerateArray().Select(e => { Require(e.ValueKind == JsonValueKind.String, 1); return e.GetString()!; }).ToArray();
-        return SourceBytes(value.GetProperty("movementSourceCanonicalUtf8").GetString()!, carriers);
-    }
     private static string Carrier(JsonNode? value)
     {
         Require(value is JsonValue, 1); var valid = value.AsValue().TryGetValue<string>(out var text); Require(valid && text is not null, 1); return text;
