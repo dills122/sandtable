@@ -148,8 +148,9 @@ def transition(f,prior,inp,fresh=True,handlers=None,capacities=None):
   stop=dict(stopId='mrmstop.'+domain('stop',encode(dict(baseHash=f['baseHash'],cycleId=prior['cycleId'],descriptor=descriptor))),**descriptor)
   s['flow']=dict(kind='phasing-stop',stop=stop);s['interruptContext']=context;s['sequencePosition']=position(f,'stop');effect=dict(kind='movement-stopped',stop=copy.deepcopy(stop),interruptContext=copy.deepcopy(context),successorPosition=copy.deepcopy(s['sequencePosition']))
  elif kind=='resolve-breakdown-stop':
-  # Resolution is deliberately unimplemented for the next genuine RED checkpoint.
-  require(False,7)
+  require(flow['kind']=='phasing-stop' and prior['interruptContext']==context and prior['sequencePosition']==position(f,'stop') and prior['movementEnd'] is None and f['initialFlow']['kind']=='moving',6)
+  stop=flow['stop'];require(stop['track']==f['initialFlow']['track'] and stop['lastMoveReceiptId']==f['initialFlow']['lastMoveReceiptId'] and not stop['cohortInputs'] and stop['recordedStateVersion']==prior['stateVersion'],4)
+  s['flow']=dict(kind='idle');s['interruptContext']=None;s['sequencePosition']=movement;effect=dict(kind='stop-resolved',stopId=stop['stopId'],beforeRandomState=copy.deepcopy(prior['randomState']),afterRandomState=copy.deepcopy(prior['randomState']),checks=[],createdLots=[],sources=['spi-1979-land-rules:21.24-21.26'],successorPosition=copy.deepcopy(movement))
  else:
   # Completion is deliberately unimplemented for the next genuine RED checkpoint.
   require(False,7)
