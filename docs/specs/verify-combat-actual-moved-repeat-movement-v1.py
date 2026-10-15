@@ -69,9 +69,80 @@ def replay(source,request,prefix,lifecycle,breakdown,selection,round,paid,releas
  return f,s
 def initial(f):
  p=f['parent'];return dict(contractVersion=1,profile=p['profile'],parentSourceHash=f['basis']['parentSourceHash'],baseHash=f['baseHash'],phase='repeat-pending',stateVersion=p['stateVersion'],prefix=p['prefix'],sequencePosition=copy.deepcopy(p['sequencePosition']),originalCycle=copy.deepcopy(p['cycle']),activeCycle=copy.deepcopy(p['activeCycle']),cycleId=p['cycleId'],world=copy.deepcopy(p['world']),randomState=copy.deepcopy(p['randomState']),originalMovementEnd=copy.deepcopy(p['movementEnd']),priorCycleProgress=copy.deepcopy(p['actualProgressRefs']),actualProgressRefs=copy.deepcopy(p['actualProgressRefs']),members=copy.deepcopy(p['members']),attackHistory=copy.deepcopy(p['attackHistory']),priorCycleTargetUses=copy.deepcopy(p['targetUses']),targetUses=copy.deepcopy(p['targetUses']),assessment=copy.deepcopy(p['assessment']),pendingRepeatIntent=copy.deepcopy(p['pendingRepeatIntent']),pendingIntentReceiptId=p['pendingIntentReceiptId'],publicationReceiptId=None,closure=None,tracks=[],receipts=copy.deepcopy(p['receipts']),movementReceipts=[])
+def next_cycle(f):
+ c=copy.deepcopy(f['parent']['cycle']);c.update(ordinal=2,openedAuthorityVersion=f['parent']['stateVersion']+1,openingPrefix=f['parent']['prefix']);return c
+def cycle_id(c):return sha(n3.n2.n1.seq.identity(c,'Authority',c['actingSide']))
+def movement_position(f):
+ p=copy.deepcopy(f['parent']['sequencePosition']);require(p['contractVersion']==5 and p['positionId']=='land.position.operation-1.first-player.movement-and-combat.reserve-release' and p['segmentId']=='land.segment.reserve-release' and p['stepId'] is None,4)
+ p.update(positionId='land.position.operation-1.first-player.movement-and-combat.movement',segmentId='land.segment.movement');return p
 def transition(f,prior,inp,fresh=True,admission=True):
- # RED checkpoint: authentic pending input currently has no executable consumer.
- raise Invalid(7)
+ raw(inp,'Input');cmd=inp['command'];publish=cmd['kind']=='repeat-publish';actor=inp['actor'];basis=f['basis'];nc=next_cycle(f);nid=cycle_id(nc);p=f['parent'];unit=p['members'][0]['unit']
+ require(cmd['contractVersion']==1 and all(cmd[k]==basis[k] for k in ['parentSourceHash','sourceOccurrence','intentReceiptId','configurationHash','decisionId']) and cmd['baseHash']==f['baseHash'],4)
+ require(actor==('system' if publish else nc['actingSide']) and cmd['cycleId']==(p['cycleId'] if publish else nid) and cmd['positionId']==(p['sequencePosition']['positionId'] if publish else movement_position(f)['positionId']),4)
+ require((cmd['unit'] is None and cmd['originLocationId'] is None and cmd['destinationLocationId'] is None) if publish else cmd['unit']==unit and cmd['originLocationId'] is not None and cmd['destinationLocationId'] is not None,4)
+ ch=sha(raw(cmd,'Command'));duplicate=next((r for r in prior['movementReceipts'] if r['commandHash']==ch and r['actor']==actor),None)
+ if duplicate:return copy.deepcopy(prior),None,duplicate['receiptId']
+ require(prior['stateVersion']<2**63-1 and len(prior['movementReceipts'])<6,7);require(cmd['expectedPriorVersion']==prior['stateVersion'],6)
+ if fresh:require(admission and I['closureFrozen'],7)
+ s=copy.deepcopy(prior)
+ if publish:
+  require(prior['phase']=='repeat-pending' and prior['publicationReceiptId'] is None and prior['activeCycle']==p['cycle'] and prior['world']==p['world'],6)
+  if fresh:certify(f)
+  effect=dict(kind='repeat-published',intentReceiptId=basis['intentReceiptId'],priorCycleId=p['cycleId'],nextCycleId=nid,nextCycle=nc,successorPositionId=movement_position(f)['positionId'],worldHash=basis['worldHash'],assessmentHash=basis['assessmentHash'],witnessesHash=basis['witnessesHash'])
+  s.update(phase='movement',activeCycle=nc,cycleId=nid,sequencePosition=movement_position(f),targetUses=[],actualProgressRefs=[])
+ else:
+  require(prior['phase']=='movement' and prior['activeCycle']==nc and prior['publicationReceiptId'] is not None,6)
+  w=s['world'];e=next(x for x in w['elements'] if x['elementId']==unit['elementId']);op=e['operationalState'];m=s['members'][0];origin=cmd['originLocationId'];dest=cmd['destinationLocationId'];nf=f['parentFrame']['parentFrame']
+  require(e['currentLocationId']==origin and dest in n3.n2.neighbors(nf,origin),5)
+  require(m['status']=='none' and e['reserveStatus']=='none' and m['baseCpa']==10 and m['history']==p['members'][0]['history'] and m['spentCp']==op['capabilityPointsExpended'] and m['spentCp']['denominator']==1,3)
+  facts=next(x for x in f['content']['elements'] if x['elementId']==unit['elementId']);require(facts['baseCapabilityPointAllowance']==10 and facts['breakdownVehicleCohort'] is None and op['vehicleBreakdownState'] is None and op['movementEnded'] is None and (op['ledgerGameTurn'],op['ledgerOperationStage'])==(nc['gameTurn'],nc['operationStage']),3)
+  require(all(r['currentLocationId'] not in n3.n2.neighbors(nf,dest) for r in w['representations'] if any(next(x for x in f['content']['elements'] if x['elementId']==id)['sideId']!=actor for id in r['boundElementIds'])),3)
+  edge=next(x for x in f['content']['edges'] if {x['firstLocationId'],x['secondLocationId']}=={origin,dest});require(not edge['features'] and next(x for x in f['content']['locations'] if x['locationId']==dest)['terrainId']=='land.terrain.clear',3)
+  witnesses=live_witnesses(f,prior)['witnesses'];wit=next((x for x in witnesses if x['unit']==unit and x['destinationLocationId']==dest),None);require(wit is not None,5)
+  reps=[r for r in w['representations'] if r['bindingKind']=='independent-element' and r['boundElementIds']==[unit['elementId']]];require(len(reps)==1 and reps[0]['currentLocationId']==origin,4)
+  affected=sorted([r for r in w['relationships'] if r['active'] and (r['attacker']==unit or r['defender']==unit)],key=lambda r:r['relationId']);before=op['capabilityPointsExpended']['numerator'];after=wit['afterCp'];dp=wit['excessCpDp'];cohesion=op['cohesionLevel'];require(len(prior['actualProgressRefs'])<5 and cohesion-dp>=-2**31,7)
+  ends=[{k:copy.deepcopy(r[k]) for k in ['relationId','creationReceiptId','kind','attacker','defender']}|dict(endingCause='ordinary-break-off') for r in affected]
+  costs=dict(terrainCost=2,breakOffCost=wit['breakOffCost'],totalCost=after-before,baseCpa=10,voluntaryCeiling=15,beforeCp=before,afterCp=after,excessCpDp=dp,beforeCohesion=cohesion,afterCohesion=cohesion-dp)
+  effect=dict(kind='ordinary-move',unit=unit,representationId=reps[0]['representationId'],originLocationId=origin,destinationLocationId=dest,costs=costs,endedMemberships=ends)
+ event=dict(contractVersion=1,eventType='combat-actual-moved-'+effect['kind'],author=actor,campaignId=nc['campaignId'],rulesetHash=nc['rulesetHash'],configurationHash=nc['admittedPolicyBundleDigest'],profile=p['profile'],parentSourceHash=basis['parentSourceHash'],baseHash=f['baseHash'],cycleId=cmd['cycleId'],priorVersion=prior['stateVersion'],stateVersion=prior['stateVersion']+1,priorPrefix=prior['prefix'],input=inp,effect=effect)
+ rid='mrm.'+domain('receipt',encode(event));event['receiptId']=rid;ev=raw(event,'Event');s['stateVersion']=event['stateVersion'];s['prefix']=n3.n2.n1.seq.prefix_event(prior['prefix'],ev)
+ record=dict(commandHash=ch,eventHash=sha(ev),receiptId=rid,actor=actor,stateVersion=s['stateVersion']);s['receipts'].append(copy.deepcopy(record));s['movementReceipts'].append(record)
+ if publish:s['publicationReceiptId']=rid;s['closure']=dict(cycleId=p['cycleId'],ordinal=1,outcome='repeated',receiptId=rid)
+ else:
+  e['currentLocationId']=dest;op['capabilityPointsExpended']=dict(numerator=after,denominator=1);op['cohesionLevel']=cohesion-dp;m['spentCp']=dict(numerator=after,denominator=1);reps[0]['currentLocationId']=dest
+  for r in affected:r.update(active=False,endedByReceiptId=rid,endingCause='ordinary-break-off')
+  if dp:
+   causes=w['cohesionCauses'];require(len(causes)<512 and len(rid+'.dp')<=128,7);causes.append(dict(causeId=rid+'.dp',ordinal=len(causes)+1,receiptId=rid,elementId=unit['elementId'],gameTurn=nc['gameTurn'],operationStage=nc['operationStage'],kind='ordinary-movement-excess-cp-dp',points=dp,before=cohesion,after=cohesion-dp))
+  if s['tracks']:require(s['tracks'][0]['route'][-1]==origin and len(s['tracks'][0]['route'])<6,7);s['tracks'][0]['route'].append(dest)
+  else:s['tracks'].append(dict(unit=copy.deepcopy(unit),route=[origin,dest]))
+  s['actualProgressRefs'].append(dict(eventType=event['eventType'],receiptId=rid,eventHash=sha(ev)))
+ raw(s,'Control');return s,ev,rid
+def certify(f,handlers=None,capacities=None):
+ require(set(I['supportHandlers'])==set(I['supportHandlers'] if handlers is None else handlers),7)
+ caps=L if capacities is None else capacities
+ require(all(type(caps.get(k)) is int and caps[k]>=v for k,v in L.items()),7)
+ nf=f['parentFrame']['parentFrame'];n3.n2.certify(nf)
+ ctx=n3.n2.support_context(nf);paid,_=n3.n2.n1.paid_paid_world(ctx);summaries={}
+ for row in n3.n2.CATALOGUE:
+  if row['kind']=='capture-refusal':
+   fact=row['facts'];key=tuple(fact[k] for k in ('attackerPercent','defenderPercent','rawEngaged','requiredRetreat','capturedRole','captureShare'))+(row['refusalHexes'],);summaries[key]=row
+ observed=set()
+ for row in summaries.values():
+  fact=row['facts'];retreat='not-required' if fact['requiredRetreat']==0 else 'refuse-retreat' if row['refusalHexes'] else 'retreat'
+  for custody in ('relocate-and-guard','leave-unguarded') if row['attackerCapturedToe']+row['defenderCapturedToe']>0 else (None,):
+   result=dict(resultId='res.'+'f'*64,commitmentId='cmt.'+'f'*64,facts=fact);w=n3.n2.n1.project(ctx,paid,result,'relationships',retreat,custody)
+   # Independent policy facts: never an admitted Source/event/Proof or invented RNG ancestry.
+   isolated=dict(f,parent=dict(f['parent'],profile='paid'),parentFrame=dict(f['parentFrame'],parentFrame=dict(nf,profile='paid')))
+   state=initial(isolated);state.update(world=copy.deepcopy(w),phase='movement',activeCycle=next_cycle(f),cycleId=cycle_id(next_cycle(f)),sequencePosition=movement_position(f),actualProgressRefs=[],targetUses=[],publicationReceiptId='mrm.'+'f'*64)
+   for m in state['members']:m['spentCp']=copy.deepcopy(next(e for e in w['elements'] if e['elementId']==m['unit']['elementId'])['operationalState']['capabilityPointsExpended'])
+   witnesses=live_witnesses(isolated,state)['witnesses'];require(witnesses,7)
+   for witness in witnesses:
+    after,event,_=transition(isolated,state,command(state,'move',witness['destinationLocationId']),False)
+    require(event is not None and len(after['actualProgressRefs'])==1,7)
+    for field in ['settlements','custodyLots','guards','replacementEntitlements','futureObligations','brokenVehicleLots']:require(after['world'][field]==state['world'][field],7)
+    for field in ['randomState','originalMovementEnd','priorCycleProgress','priorCycleTargetUses','attackHistory','assessment','pendingRepeatIntent','pendingIntentReceiptId']:require(after[field]==state[field],7)
+   observed.add((len(w['guards']),len(w['replacementEntitlements']),tuple(x['kind'] for x in w['relationships']),fact['capturedRole']))
+ require(observed,7)
 def command(s,kind,destination=None):
  publish=kind=='repeat-publish';u=None if publish else s['members'][0]['unit'];e=None if publish else next(x for x in s['world']['elements'] if x['elementId']==u['elementId'])
  return dict(command=dict(contractVersion=1,kind=kind,parentSourceHash=s['parentSourceHash'],baseHash=s['baseHash'],sourceOccurrence=s['pendingRepeatIntent']['sourceOccurrence'],intentReceiptId=s['pendingIntentReceiptId'],configurationHash=s['pendingRepeatIntent']['configurationHash'],decisionId=s['pendingRepeatIntent']['decisionId'],expectedPriorVersion=s['stateVersion'],cycleId=s['cycleId'],positionId=s['sequencePosition']['positionId'],unit=copy.deepcopy(u),originLocationId=None if publish else e['currentLocationId'],destinationLocationId=destination),actor='system' if publish else s['activeCycle']['actingSide'])
@@ -132,11 +203,14 @@ def trace(c,negatives=False):
    changed=parse(source,'Source');ev=json.loads(changed['movementEventCanonicalUtf8'][-1]);ev['stateVersion']+=1;changed['movementEventCanonicalUtf8'][-1]=raw(ev,'Event').decode();rejected(lambda:replay(source_bytes(changed),*args,movement))
    rejected(lambda:replay(source,*args,movement[:-1]))
  require(len(movement)==(3 if c['profile']=='paid' else 6),6)
- require(len(s['actualProgressRefs'])==len(movement)-1 and s['world']['elements'][0]['operationalState']['capabilityPointsExpended']!=parent['world']['elements'][0]['operationalState']['capabilityPointsExpended'],6)
+ require(len(s['actualProgressRefs'])==len(movement)-1 and next(e for e in s['world']['elements'] if e['elementId']==s['members'][0]['unit']['elementId'])['operationalState']['capabilityPointsExpended']!=next(e for e in parent['world']['elements'] if e['elementId']==s['members'][0]['unit']['elementId'])['operationalState']['capabilityPointsExpended'],6)
  require(all(s['world'][field]==parent['world'][field] for field in ['settlements','custodyLots','guards','replacementEntitlements','futureObligations','brokenVehicleLots']),6)
  return dict(name=c['name'],parentName=c['name'],profile=c['profile'],initialSourceCanonicalUtf8=initial_source,inputCanonicalUtf8=inputs,eventCanonicalUtf8=events,cuts=cuts)
 def generate(negatives=False):
- cases=[c for c in json.loads((ROOT/'fixtures/combat-actual-moved-cycle-control-v1.json').read_bytes())['cases'] if c['choice']=='repeat-intent'];return dict(contract=NAME,contractVersion=1,cases=[trace(c,negatives) for c in cases])
+ cases=[c for c in json.loads((ROOT/'fixtures/combat-actual-moved-cycle-control-v1.json').read_bytes())['cases'] if c['choice']=='repeat-intent'];result=[]
+ for index,c in enumerate(cases,1):
+  result.append(trace(c,negatives));print(f'reference parent {index}/{len(cases)}: {c["name"]}',file=sys.stderr,flush=True)
+ return dict(contract=NAME,contractVersion=1,cases=result)
 def verify():
  rebuilt=generate(True);require(json.loads((ROOT/'fixtures'/(NAME+'.json')).read_bytes())==rebuilt,6);print(json.dumps(dict(status='pass',parents=len(rebuilt['cases']),cuts=sum(len(c['cuts']) for c in rebuilt['cases']),events=sum(len(c['eventCanonicalUtf8']) for c in rebuilt['cases']))))
 if __name__=='__main__':

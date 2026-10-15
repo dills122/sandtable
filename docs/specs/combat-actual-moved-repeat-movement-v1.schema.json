@@ -1,6 +1,6 @@
 {
   "contract": "combat-actual-moved-repeat-movement-v1",
-  "status": "draft contract before RED and native implementation",
+  "status": "executable reference candidate; certification and native pending",
   "objects": {
     "Source": "contractVersion:int controlSourceCanonicalUtf8:parentCarrier movementEventCanonicalUtf8:eventCarrier[]",
     "Base": "contractVersion:int parentSourceHash:hash sourceOccurrence:hash intentReceiptId:id worldHash:hash assessmentHash:hash configurationHash:hash decisionId:id witnessesHash:hash dependencyManifestHash:hash",
@@ -13,7 +13,55 @@
     "Event": "contractVersion:int eventType:id author:actor campaignId:id rulesetHash:rawHash configurationHash:hash profile:profile parentSourceHash:hash baseHash:hash cycleId:hash priorVersion:long stateVersion:long priorPrefix:hash input:Input effect:Effect receiptId:id",
     "Track": "unit:UnitKey route:id[]",
     "Control": "contractVersion:int profile:profile parentSourceHash:hash baseHash:hash phase:movementPhase stateVersion:long prefix:hash sequencePosition:Position originalCycle:Authority activeCycle:Authority cycleId:hash world:World randomState:Random originalMovementEnd:MovementEndProof priorCycleProgress:ActualProgressRef[] actualProgressRefs:ActualProgressRef[] members:ReserveMember[] attackHistory:AttackHistory[] priorCycleTargetUses:TargetUse[] targetUses:TargetUse[] assessment:Assessment pendingRepeatIntent:Intent pendingIntentReceiptId:id publicationReceiptId:id? closure:Closure? tracks:Track[] receipts:PreambleReceipt[] movementReceipts:Receipt[]",
-    "Proof": "contractVersion:int sourceId:id sourceHash:hash parentSourceHash:hash dependencyManifestHash:hash control:Control lastEventHash:hash? publicationReceiptId:id?"
+    "Proof": "contractVersion:int sourceId:id sourceHash:hash parentSourceHash:hash dependencyManifestHash:hash control:Control lastEventHash:hash? publicationReceiptId:id?",
+    "Position": "contractVersion:int positionId:id gameTurn:int operationStage:int stageId:id phaseId:id segmentId:id? stepId:id? actorRole:id activeSide:id? sources:Reference[]",
+    "Authority": "contractVersion:int campaignId:id rulesetHash:rawHash setupId:id setupHash:hash contentPackId:id contentHash:hash scenarioId:id gameTurn:int operationStage:int playerPhaseSlot:id actingSide:id ordinal:int openedAuthorityVersion:long openingPrefix:hash admittedPolicyBundleDigest:hash",
+    "World": "contractVersion:int creationBinding:id elements:Element[] representations:Representation[] brokenVehicleLots:LegacyBrokenVehicleLot[] cohesionCauses:Cause[] relationships:Relationship[] custodyLots:Lot[] guards:Guard[] replacementEntitlements:Entitlement[] futureObligations:Obligation[] settlements:Settlement[]",
+    "Random": "contractVersion:int algorithmId:id seed:ulong nextByteCursor:ulong",
+    "MovementEndProof": "scope:ReleaseScope ordinal:int completionReceiptId:id endLocations:EndLocation[] excludedBefore:UnitKey[]",
+    "ActualProgressRef": "eventType:id receiptId:id eventHash:hash",
+    "ReserveMember": "unit:UnitKey status:id baseCpa:int spentCp:Cp history:ReleaseHistory",
+    "AttackHistory": "commitmentId:id cycleId:hash segmentId:id attacker:UnitKey defender:UnitKey targetLocationId:id gameTurn:int operationStage:int",
+    "TargetUse": "commitmentId:id segmentId:id targetLocationId:id",
+    "Assessment": "contractVersion:int mode:profile sourceOccurrence:hash sourceOrdinal:int nextOrdinal:int releaseCompletionReceiptId:id movementCompletionReceiptId:id worldHash:hash membersHash:hash progress:ActualProgressRef[] witnesses:ContinuationWitness[] unsupportedWitnesses:UnsupportedWitness[] combatAssessment:id witnessOutcome:id unsupportedReason:id? executionAvailable:bool supportCertificate:ProspectiveCertificate",
+    "Intent": "contractVersion:int kind:id sourceOccurrence:hash sourceOrdinal:int expectedNextOrdinal:int parentSourceHash:hash worldHash:hash assessmentHash:hash configurationHash:hash decisionId:id witnessesHash:hash executionAvailable:bool",
+    "Closure": "cycleId:hash ordinal:int outcome:id receiptId:id",
+    "PreambleReceipt": "commandHash:hash eventHash:hash receiptId:id actor:actor stateVersion:long",
+    "Receipt": "commandHash:hash eventHash:hash receiptId:id actor:actor stateVersion:long",
+    "ContinuationWitness": "kind:id unit:UnitKey destinationLocationId:id terrainCost:int breakOffCost:int afterCp:int excessCpDp:int usesReleaseException:bool",
+    "UnsupportedWitness": "witness:ContinuationWitness reason:id",
+    "ProspectiveCertificate": "contractVersion:int profile:profile sourceOccurrence:hash sourceOrdinal:int nextOrdinal:int worldHash:hash configurationHash:hash selectedRulesHash:hash catalogueHash:hash moralePairs:int assaultPairs:int captureRefusalVariants:int supportHandlersHash:hash capacitiesHash:hash",
+    "UnitKey": "creationBinding:id originalSide:side elementId:id",
+    "Cp": "numerator:long denominator:int",
+    "ReleaseHistory": "scope:ReleaseScope designationReceiptId:id? conversionReceiptId:id? releasedType:id? releaseReceiptId:id? releaseCycle:int? cpaBasis:int? voluntaryCeiling:int? offensiveCommitmentId:id? nextMovement:MovementException?",
+    "ReleaseScope": "gameTurn:int operationStage:int playerPhaseSlot:id actingSide:side",
+    "MovementException": "scope:ReleaseScope ordinal:int status:id completionReceiptId:id?",
+    "EndLocation": "unit:UnitKey locationId:id",
+    "Element": "elementId:id currentLocationId:id reserveStatus:string operationalState:Operational components:Component[] sourceParentFormationId:id currentParentFormationId:id ammunition:Ammunition readiness:Readiness",
+    "Representation": "representationId:id currentLocationId:id bindingKind:string boundElementIds:id[]",
+    "Cause": "causeId:id ordinal:int receiptId:id elementId:id gameTurn:int operationStage:int kind:string points:int before:signedInt after:signedInt",
+    "Relationship": "relationId:id creationReceiptId:id kind:string attacker:UnitKey defender:UnitKey gameTurn:int operationStage:int active:bool endedByReceiptId:id? endingCause:string?",
+    "Lot": "lotId:id lossReceiptId:id originalComponent:ComponentKey captor:UnitKey quantity:int originLocationId:id currentLocationId:id? status:string guardId:id? escapeReceiptId:id?",
+    "Guard": "guardId:id formationReceiptId:id lotId:id originComponent:ComponentKey currentLocationId:id toe:int baseCapabilityPointAllowance:int offensiveCloseAssaultRating:int defensiveCloseAssaultRating:int operationalState:Operational ammunition:Ammunition readiness:Readiness",
+    "Entitlement": "entitlementId:id escapeReceiptId:id lotId:id originalComponent:ComponentKey quantity:int reunionLocationId:id earnedScope:Scope delayOperationStages:int eligibleScope:FutureScope status:string",
+    "Obligation": "obligationId:id receiptId:id kind:string subjectId:id earnedScope:Scope eligibleScope:FutureScope? activationGate:string status:string",
+    "Settlement": "settlementId:id commitmentId:id resultId:id gameTurn:int operationStage:int attacker:UnitKey defender:UnitKey preLossElements:Element[] result:Result disposition:Disposition? losses:Losses? retreat:Retreat? custody:Custody? relationships:RelationsReceipt?",
+    "Result": "differential:differential attackerCoordinate:int defenderCoordinate:int captureDie:int? attackerPercent:int defenderPercent:int rawEngaged:bool requiredRetreat:int capturedRole:string? captureShare:int",
+    "Disposition": "receiptId:id predecessorReceiptId:id kind:string requiredDistance:int plannedDistance:int unfulfilledDistance:int route:Route",
+    "Losses": "receiptId:id predecessorReceiptId:id roles:RoleLoss[]",
+    "Retreat": "receiptId:id predecessorReceiptId:id kind:string route:Route completedDistance:int beforeCp:Cp afterCp:Cp excessCpDp:int attackerVictoryRp:int",
+    "Custody": "receiptId:id predecessorReceiptId:id lotId:id kind:string route:Route guardId:id? entitlementId:id? donorToeBefore:int donorToeAfter:int",
+    "RelationsReceipt": "receiptId:id predecessorReceiptId:id relationshipId:id? kind:string?",
+    "RoleLoss": "role:string component:ComponentKey committedToe:int tablePercent:int refusalPercent:int lossToe:int capturedToe:int otherLossToe:int remainingToe:int lossDp:int",
+    "ComponentKey": "unit:UnitKey componentId:id",
+    "Scope": "gameTurn:int operationStage:int",
+    "FutureScope": "gameTurn:futureTurn operationStage:int",
+    "Operational": "ledgerGameTurn:int ledgerOperationStage:int capabilityPointsExpended:Cp cohesionLevel:signedInt vehicleBreakdownState:null movementEnded:null initialLedgerOrigin:Origin",
+    "Ammunition": "points:int initialAmmunitionOrigin:Origin",
+    "Readiness": "gameTurn:int operationStage:int waterStatus:string storesStatus:string pinned:bool initialReadinessOrigin:Origin",
+    "Origin": "kind:string references:Reference[]",
+    "Reference": "sourceId:id locator:locator",
+    "Component": "componentId:id currentToe:int initialToeOrigin:Origin"
   },
   "effectTags": {
     "Effect": {
@@ -46,14 +94,17 @@
     "newProgress": 5,
     "priorProgress": 3,
     "witnesses": 2,
-    "unsupportedWitnesses": 2
+    "unsupportedWitnesses": 2,
+    "worldBytes": 1048576,
+    "newDpCauses": 5
   },
   "encodedUpperBounds": {
     "Source": 64231936,
     "Control": 720896,
     "Proof": 722944,
     "Event": 65536,
-    "Input": 4096
+    "Input": 4096,
+    "World": 534528
   },
   "runtimeSourceHashes": {
     "docs/research/fixtures/combat-selected-source-v1.json": "e225bc650c4bb942e41245a33da20c21c576ab117807a06805e2558a2c6468df",
@@ -174,5 +225,5 @@
     "claims-full-replay",
     "capacity-closure"
   ],
-  "closureFrozen": false
+  "closureFrozen": true
 }

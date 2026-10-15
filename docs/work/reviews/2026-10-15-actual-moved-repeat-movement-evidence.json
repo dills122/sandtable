@@ -3,7 +3,6 @@
   "referenceRed": {
     "command": "python3 docs/specs/verify-combat-actual-moved-repeat-movement-v1.py --red-gate",
     "exitCode": 1,
-    "timestampUtc": "2026-10-15T15:47:00Z",
     "cases": [
       {
         "profile": "paid",
@@ -16,12 +15,62 @@
         "diagnostic": "CMB-MRM-007"
       }
     ],
-    "meaning": "Authentic eight-ledger N3 replay succeeds; repeat-publish handler explicitly unavailable before implementation. Positive publication assertion fails. This is new-family transition RED, not a claim that legacy N3 behavior must change."
+    "meaning": "Authentic eight-ledger N3 replay succeeds; repeat-publish handler explicitly unavailable before implementation. Positive publication assertion fails. This is new-family transition RED, not a claim that legacy N3 behavior must change.",
+    "recordedAtUtc": "2026-10-15T15:48:16Z"
   },
   "nativeRed": null,
   "green": null,
   "limitations": [
     "No heavy test/build lease used; bounded two-parent replay only.",
     "Fresh support certification and all56 parent verification not executed."
-  ]
+  ],
+  "referenceCandidatePublicationGreen": {
+    "command": "python3 docs/specs/verify-combat-actual-moved-repeat-movement-v1.py --red-gate",
+    "exitCode": 0,
+    "profiles": [
+      "paid",
+      "armed"
+    ],
+    "completeInheritedAndIsolatedMovementSupport": true
+  },
+  "referenceFixtureGeneration": {
+    "command": "python3 docs/specs/verify-combat-actual-moved-repeat-movement-v1.py --write-fixture",
+    "exitCode": 0,
+    "observedCompleteUtc": "2026-10-15T16:01:24Z",
+    "parents": 56,
+    "paid": 12,
+    "armed": 44,
+    "events": 300,
+    "cuts": 356,
+    "fixtureBytes": 24880568,
+    "sha256": "481f93d483d15dd7425f2d025c8d823cfe680ebc36acd3b408ae32bb64e20b8d"
+  },
+  "interruptedNormalVerification": {
+    "command": "python3 docs/specs/verify-combat-actual-moved-repeat-movement-v1.py",
+    "startedObservedUtc": "2026-10-15T16:02:27Z",
+    "interruptedObservedUtc": "2026-10-15T16:06:38Z",
+    "exitCode": 130,
+    "completedParents": 15,
+    "reason": "Deliberate interruption before freeze to own compound grammar and avoid inherited World serializer cap after appended DP causes. No assertion failure. Same full normal coverage will restart."
+  },
+  "referenceNormal": {
+    "command": "python3 docs/specs/verify-combat-actual-moved-repeat-movement-v1.py",
+    "exitCode": 0,
+    "observedCompleteUtc": "2026-10-15T16:25:00Z",
+    "parents": 56,
+    "cuts": 356,
+    "events": 300,
+    "schemaSha256": "019145c39f1aa2b086fba7fc41f562a69adfa54de53bd2c11ab0314794c4a734",
+    "oracleSha256": "2529c4184487fe58bdd8c7d1ae2c9fc5b19a84e4d8f723135cb387ca95d95b96"
+  },
+  "closureCeilingRed": {
+    "command": "python3 docs/work/reviews/2026-10-15-actual-moved-repeat-movement-closure.py",
+    "exitCode": 1,
+    "observedCompleteUtc": "2026-10-15T16:26:14Z",
+    "completedParents": 12,
+    "profile": "armed",
+    "expected": "CMB-MRM-005",
+    "observed": "CMB-MRM-007",
+    "cause": "Global six-receipt capacity guard ran before legal CP ceiling evaluation. Rejection was atomic, but wrong diagnostic misclassified a rules ceiling as unavailable capacity. Fix will defer receipt capacity until after legal effect derivation."
+  }
 }
