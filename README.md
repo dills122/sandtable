@@ -78,7 +78,15 @@ It merged in PR #189 and opens no cycle-control window.
 The additive private [moved cycle control](docs/specs/combat-actual-moved-cycle-control-v1.md)
 adds eight-ledger control for both modes: real same-slot phase finish or a distinctly typed pending
 repeat intent with execution unavailable. Repeat intent retains the current occurrence and history.
-N3 review and CI remain pending; public activation, actual repeat execution and campaign finish remain separate gates.
+N3 merged in PR #190. Its pending intent remains non-executable by itself.
+The private [moved repeat Movement successor](docs/specs/combat-actual-moved-repeat-movement-v1.md)
+consumes authentic paid and armed pending intents through eight ancestor ledgers and a ninth Movement
+ledger. One System publication opens ordinal2; ordinary owner moves retain cumulative CP, apply
+breakoff and incremental DP once, and preserve original history and RNG. The original MovementEnd
+remains ordinal1 evidence. PR #192 merged at `3a7b626` after independent review and all 3,391 hosted test rows passed.
+Post-merge main verification remains pending.
+Stop, System resolution, owner completion and Breakdown for this new lineage remain separate gates,
+as do public Combat, Runner adoption, full-cycle acceptance and the first release candidate.
 
 Next delivery sequence:
 

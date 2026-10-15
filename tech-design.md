@@ -732,4 +732,18 @@ reaches same-slot Truck Convoy entry; owner repeat-intent retains that occurrenc
 a source-qualified non-executable pending intent. World/RNG, member history, actual progress, target
 use and future duties remain intact. N2 complete support and N3 uniform terminal retention laws
 are isolated certification; they never manufacture future source ancestry. Actual repeat consumption,
-ordinal2 publication/reset and public activation remain separate. N3 review/CI are pending.
+ordinal2 publication/reset and public activation remain separate. N3 merged in PR #190.
+
+The private [actual moved repeat Movement successor](docs/specs/combat-actual-moved-repeat-movement-v1.md)
+authenticates the original creation request and eight N3 ancestor ledgers before reading its ninth
+Movement ledger. `CampaignCombatActualMovedRepeatMovement` and its codec publish ordinal2 exactly
+once from a real pending intent, retaining the old occurrence, target uses and progress as history.
+Only current target uses and progress reset at publication; World, CP and RNG do not. Ordinary owner
+moves use current geometry and cumulative CP15, with breakoff and incremental excess-CP DP applied
+atomically. Accepted-command recovery precedes fresh movement legality checks after grammar/context
+validation. The original MovementEnd remains ordinal1; no ordinal2 completion proof is manufactured.
+Both paid and armed native paths have reference byte parity across 56 parents, 300 events and 356 cuts.
+PR #192 merged at `3a7b626` after independent review and all 3,391 hosted test rows passed.
+Post-merge main verification remains pending. New-lineage stop,
+System resolution, owner completion, Breakdown, public ingress and Runner adoption are not supplied
+by this move-only family. Older isolated or differently rooted contracts cannot substitute for these joins.
