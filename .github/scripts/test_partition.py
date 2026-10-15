@@ -118,7 +118,7 @@ def partition_filters(shard, partition):
         result = ['--filter-not-method', *SELECTORS[1:]]
         if partition['retained_mutation']:
             result.extend(['--filter-not-display-name', *partition['retained_mutation']])
-        result.extend(['--filter-not-class', *CORE_C_CLASSES, *CORE_D_CLASSES])
+        result.extend(['--filter-not-class', *CORE_C_CLASSES, *CORE_D_CLASSES, *partition.get('excluded_classes', [])])
         return result
     if shard == 'core-c':
         return ['--filter-class', *CORE_C_CLASSES]
@@ -138,6 +138,10 @@ def load_partition(inventory, sha, sdk, attempt):
     partition = core_partition(rows)
     for shard in CORE_SHARDS:
         require(unique(inventory['shards'][shard]['rows'], shard) == partition[shard], 'Prepared row partition mismatch')
+    if 'excluded_classes' in inventory:
+        from r02_partition import registered_classes
+        require(inventory['excluded_classes'] == registered_classes(), 'Unknown/incomplete R02 class exclusion')
+        partition['excluded_classes'] = inventory['excluded_classes']
     return partition
 
 
@@ -162,9 +166,17 @@ def expand_core(text, payload):
     return discovery_rows(text, 'Cna.Core.Tests', deferred), deferred
 
 
-def build_inventory(texts, payload, sha, sdk, attempt='local'):
+def build_inventory(texts, payload, sha, sdk, attempt='local', excluded_rows=None):
     require(re.fullmatch(r'[a-f0-9]{40}', sha) and sdk.startswith('10.'), 'Unsupported discovery SHA/SDK')
     core, deferred = expand_core(texts['core'], payload)
+    excluded_classes = []
+    if excluded_rows is not None:
+        from r02_partition import registered_classes
+        excluded = unique(list(excluded_rows), 'R02 complete exclusion rows')
+        excluded_classes = registered_classes()
+        require(excluded <= core and {row[1].rsplit('.', 1)[0] for row in excluded} == set(excluded_classes), 'Invalid/missing R02 exclusion rows')
+        core -= excluded
+        require(not any(row[1].rsplit('.', 1)[0] in excluded_classes for row in core), 'Partial R02 class exclusion')
     partition = core_partition(core)
     a = discovery_rows(texts['core-a'], 'Cna.Core.Tests', deferred)
     b = discovery_rows(texts['core-b'], 'Cna.Core.Tests', deferred)
@@ -175,9 +187,34 @@ def build_inventory(texts, payload, sha, sdk, attempt='local'):
     require(all(not actual[key] & actual[other] for i, key in enumerate(CORE_SHARDS) for other in CORE_SHARDS[i + 1:]) and set.union(*actual.values()) == core, 'Filters are not disjoint/exhaustive')
     inventory = {'schema_version': 1, 'tested_sha': sha, 'sdk': sdk, 'configuration': 'Release', 'run_attempt': attempt, 'shards': {}}
     rows = {'core-a': a, 'core-b': b, 'core-c': c, 'core-d': d, 'exercise': discovery_rows(texts['exercise'], MODULES['exercise'], {}), 'contracts': discovery_rows(texts['contracts'], MODULES['contracts'], {})}
+    if excluded_classes:
+        inventory['excluded_classes'] = excluded_classes
     for shard, values in rows.items():
         inventory['shards'][shard] = {'module': MODULES[shard], 'rows': sorted(values)}
     return inventory
+
+
+def report_rows(root, module):
+    reports = list((root / 'results').glob('*.xml'))
+    require(len(reports) == 1, 'Missing/duplicate report')
+    document = ET.parse(reports[0]).getroot()
+    assemblies = document.findall('assembly')
+    require(document.tag == 'assemblies' and len(assemblies) == 1, 'Unexpected report assemblies')
+    assembly = assemblies[0]
+    require(Path(assembly.attrib['name'].replace('\\', '/')).stem == module and assembly.attrib['target-framework'] == '.NETCoreApp,Version=v10.0', 'Report module/framework mismatch')
+    counts = {key: int(assembly.attrib[key]) for key in ['total', 'passed', 'failed', 'skipped', 'not-run', 'errors']}
+    require(counts['failed'] == counts['skipped'] == counts['not-run'] == counts['errors'] == 0 and not document.findall('.//error'), 'Report failures/skips/NotRun/errors')
+    tests = assembly.findall('.//test')
+    require(document.findall('.//test') == tests, 'Unattributed report rows')
+    require(counts['total'] == counts['passed'] == len(tests), 'Report counter mismatch')
+    actual = []
+    for test in tests:
+        require(test.attrib['result'] == 'Pass', 'Non-passing row')
+        # The installed xUnit XML writer escapes display text once, beyond XML encoding.
+        name = json.loads('"' + test.attrib['name'] + '"')
+        method = test.attrib['type'] + '.' + test.attrib['method']
+        actual.append((module, method, name))
+    return unique(actual, module + ' report')
 
 
 def verify_coverage(inventory, directory, needs, expected_sha, expected_attempt='local'):
@@ -200,25 +237,7 @@ def verify_coverage(inventory, directory, needs, expected_sha, expected_attempt=
             require(status['shard'] == shard and status['module'] == module and status['tested_sha'] == expected_sha, 'Status identity mismatch')
             require(status['run_attempt'] == expected_attempt, 'Stale/mismatched leaf attempt')
             require(status['sdk'] == inventory['sdk'] and status['configuration'] == 'Release', 'Status SDK/configuration mismatch')
-            reports = list((root / 'results').glob('*.xml'))
-            require(len(reports) == 1, 'Missing/duplicate report')
-            document = ET.parse(reports[0]).getroot()
-            assemblies = document.findall('assembly')
-            require(document.tag == 'assemblies' and len(assemblies) == 1, 'Unexpected report assemblies')
-            assembly = assemblies[0]
-            require(Path(assembly.attrib['name'].replace('\\', '/')).stem == module and assembly.attrib['target-framework'] == '.NETCoreApp,Version=v10.0', 'Report module/framework mismatch')
-            counts = {key: int(assembly.attrib[key]) for key in ['total', 'passed', 'failed', 'skipped', 'not-run', 'errors']}
-            require(counts['failed'] == counts['skipped'] == counts['not-run'] == counts['errors'] == 0 and not document.findall('.//error'), 'Report failures/skips/NotRun/errors')
-            tests = assembly.findall('.//test')
-            require(counts['total'] == counts['passed'] == len(tests), 'Report counter mismatch')
-            actual = []
-            for test in tests:
-                require(test.attrib['result'] == 'Pass', 'Non-passing row')
-                # The installed xUnit XML writer escapes display text once, beyond XML encoding.
-                name = json.loads('"' + test.attrib['name'] + '"')
-                method = test.attrib['type'] + '.' + test.attrib['method']
-                actual.append((module, method, name))
-            require(unique(actual, shard + ' report') == expected, 'Missing/unexpected argument-bearing rows')
+            require(report_rows(root, module) == expected, 'Missing/unexpected argument-bearing rows')
         return True
     except (KeyError, TypeError, OSError, ET.ParseError, json.JSONDecodeError) as error:
         raise ValueError('Missing/malformed coverage evidence: ' + str(error)) from error
