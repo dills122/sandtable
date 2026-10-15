@@ -1,5 +1,5 @@
 {
-  "status": "reference implementation freeze; native, installed MTP, measured allocation and independent delivery acceptance pending",
+  "status": "local native implementation validated; combined tooling/head, measured allocation, independent review and hosted approval pending",
   "counts": {
     "roots": 300,
     "events": 788,
@@ -167,7 +167,7 @@
   },
   "freezeUtc": "2026-10-15T21:08:31.549278+00:00",
   "generationToFinalOracle": "Generation used934414a013d502257fb7ef26fe6d8efd9debe86fb5d331af27d97fe831f44aa2. Final705445d1b061ef2ba6d905382e7a26220e49be643ee0fe0444cfbf12b0989c62 only extracts the existing supportObligations literal into a function and requires exact metadata equality during normal verification. Transition/canonical/schema/fixture bytes are unchanged; complete final-hash normal verification matched every generated row/event/cut.",
-  "nativeInProgress": {
+  "native": {
     "genuineRed": {
       "head": "a27cf87e07c1c5f7cf292f985498dd4e7db8af11",
       "exitCode": 2,
@@ -211,6 +211,338 @@
       "correctCodecSha256": "7ebd867d4f035856a7f669852087d6cdf08d0ff8f155eb5f2864343d59339a35",
       "localDirectory": "/private/tmp/r02-ascii-sensitivity-red"
     },
-    "framingTestGap": "Old three-event maximal framing vector had empty completion ledger and rejected early. Strengthened existing vectors supply three independent inputs and require invalid-parent001; contract hashes unchanged; focused/full validation pending."
+    "framingTestGap": "Corrected matching three actual own inputs and invalid-parent001; final focused/full gates pass; frozen contract unchanged.",
+    "finalTestedSourceHead": "2c53a0c65741a5f1bb59c880bec8d2d272327fe2",
+    "sourceHashes": {
+      "src/Cna.Core/Campaigns/CampaignCombatActualMovedRepeatMovementCompletionCodec.cs": "9e01201889af451da7d7a9e57510f0f60d5d8eb56044e05ba59b75b892f2df89",
+      "src/Cna.Core/Campaigns/CampaignCombatActualMovedRepeatMovementCompletion.cs": "5765421daeb3c70b260afaf358433dabed679735ee4acd04c7c40c9b4922f543",
+      "tests/Cna.Core.Tests/Campaigns/CombatActualMovedRepeatMovementCompletionTests.cs": "6c8e1190a55ad63eb15171dcef068c01cf2d18c57dc358ad81b2bd6e70bf35fb",
+      "tests/Cna.Core.Tests/Campaigns/CombatActualMovedRepeatMovementCompletionContractTests.cs": "d393adae951af40f3d9ee630a45fa0cdc78c30bce037354d3134f88c4286e138"
+    },
+    "host": {
+      "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+      "machine": "arm64",
+      "memoryBytes": 68719476736,
+      "logicalCpu": 10
+    },
+    "sdk": "10.0.400",
+    "binaryFingerprints": {
+      "Cna.Core.Tests.dll": "de9529c77c263a446597414c438ef13598cc506cb64ce20e6a66be4b0b262f6d",
+      "Cna.Core.dll": "cbcc96b3555fd48ba642e7ab26b390a616a9513af25ebfc9010ba724658e075c",
+      "xunit.v3.common.dll": "9cf3cd23eefabd397c0eb86e705a8e620f459715e2b3e0428db07ff68e53bf39",
+      "xunit.v3.core.dll": "ac165a05487a95a1d5c163bb08e81ae15b4f51c7d7fbb23f1c5fd55254b7e056"
+    },
+    "moduleSha256": "1e19fe7d338e0732b2c3146a57d61324df11d0a1f64bfac075df692249e0db29",
+    "binaryDirectory": "/Users/dsteele/.codex/worktrees/combat-repeat-delivery/sandtable/artifacts/bin/Cna.Core.Tests/release",
+    "preCleanupFullPass": {
+      "head": "229c071bd869668d52108ecfaa0e35c51b50c990",
+      "startUtc": "2026-10-15T21:53:08.417961+00:00",
+      "endUtc": "2026-10-15T21:56:00.445591+00:00",
+      "elapsedSeconds": 172.03129554100087,
+      "result": "PASS full325 actual rows/20 fresh classes; all12 support obligations asserted",
+      "failure": null,
+      "peakSampledOwnedRssBytes": 5366153216,
+      "ownedSurvivors": [],
+      "cleanupSignalErrors": [],
+      "localSummary": "/private/tmp/r02-native-full-3/summary.json",
+      "maximumKernelRssBytes": 4241440768,
+      "actualRows": 325
+    },
+    "focusedFinal": {
+      "head": "2c53a0c65741a5f1bb59c880bec8d2d272327fe2",
+      "startUtc": "2026-10-15T21:56:54.518209+00:00",
+      "endUtc": "2026-10-15T21:58:12.363655+00:00",
+      "elapsedSeconds": 77.84711783399689,
+      "result": "PASS focused21actual rows/1fresh support class; all12 obligations asserted",
+      "failure": null,
+      "peakSampledOwnedRssBytes": 3855843328,
+      "ownedSurvivors": [],
+      "cleanupSignalErrors": [],
+      "localSummary": "/private/tmp/r02-native-full-4/summary.json",
+      "maximumKernelRssBytes": 4244684800,
+      "actualRows": 21
+    },
+    "fullFinal": {
+      "head": "2c53a0c65741a5f1bb59c880bec8d2d272327fe2",
+      "startUtc": "2026-10-15T21:58:33.663480+00:00",
+      "endUtc": "2026-10-15T22:01:28.893450+00:00",
+      "elapsedSeconds": 175.23371791700265,
+      "result": "PASS full325 actual rows/20 fresh classes; all12 support obligations asserted",
+      "failure": null,
+      "peakSampledOwnedRssBytes": 4880809984,
+      "ownedSurvivors": [],
+      "cleanupSignalErrors": [],
+      "localSummary": "/private/tmp/r02-native-full-5/summary.json",
+      "maximumKernelRssBytes": 3860316160,
+      "actualRows": 325,
+      "classes": [
+        {
+          "key": "Cna.Core.Tests.Campaigns.CombatActualMovedRepeatMovementCompletionArmedAxisMove0ContractTests",
+          "actualRows": 22,
+          "exitCode": 0,
+          "wallSeconds": 22.31374924999909,
+          "testSeconds": 20.511,
+          "kernelPeakRssBytes": 673464320,
+          "kernelUserSeconds": 21.497312,
+          "kernelSystemSeconds": 1.531949,
+          "peakSampledGroupRssBytes": 608845824
+        },
+        {
+          "key": "Cna.Core.Tests.Campaigns.CombatActualMovedRepeatMovementCompletionArmedAxisMove1ContractTests",
+          "actualRows": 22,
+          "exitCode": 0,
+          "wallSeconds": 48.87736125000083,
+          "testSeconds": 47.148,
+          "kernelPeakRssBytes": 710574080,
+          "kernelUserSeconds": 47.128538,
+          "kernelSystemSeconds": 3.656191,
+          "peakSampledGroupRssBytes": 682819584
+        },
+        {
+          "key": "Cna.Core.Tests.Campaigns.CombatActualMovedRepeatMovementCompletionArmedAxisMove2ContractTests",
+          "actualRows": 22,
+          "exitCode": 0,
+          "wallSeconds": 48.87179420800021,
+          "testSeconds": 47.532,
+          "kernelPeakRssBytes": 755564544,
+          "kernelUserSeconds": 47.467646,
+          "kernelSystemSeconds": 3.408852,
+          "peakSampledGroupRssBytes": 578011136
+        },
+        {
+          "key": "Cna.Core.Tests.Campaigns.CombatActualMovedRepeatMovementCompletionArmedAxisMove3ContractTests",
+          "actualRows": 22,
+          "exitCode": 0,
+          "wallSeconds": 44.13631895800063,
+          "testSeconds": 43.15,
+          "kernelPeakRssBytes": 730988544,
+          "kernelUserSeconds": 45.322197,
+          "kernelSystemSeconds": 3.300579,
+          "peakSampledGroupRssBytes": 634421248
+        },
+        {
+          "key": "Cna.Core.Tests.Campaigns.CombatActualMovedRepeatMovementCompletionContractTests",
+          "actualRows": 21,
+          "exitCode": 0,
+          "wallSeconds": 68.04602987500039,
+          "testSeconds": 66.382,
+          "kernelPeakRssBytes": 3860316160,
+          "kernelUserSeconds": 65.315226,
+          "kernelSystemSeconds": 5.707732,
+          "peakSampledGroupRssBytes": 3538190336
+        },
+        {
+          "key": "Cna.Core.Tests.Campaigns.CombatActualMovedRepeatMovementCompletionArmedCommonwealthMove0ContractTests",
+          "actualRows": 22,
+          "exitCode": 0,
+          "wallSeconds": 17.574471125000855,
+          "testSeconds": 16.039,
+          "kernelPeakRssBytes": 875347968,
+          "kernelUserSeconds": 19.909938,
+          "kernelSystemSeconds": 1.257551,
+          "peakSampledGroupRssBytes": 682180608
+        },
+        {
+          "key": "Cna.Core.Tests.Campaigns.CombatActualMovedRepeatMovementCompletionArmedAxisMove5ContractTests",
+          "actualRows": 22,
+          "exitCode": 0,
+          "wallSeconds": 46.33371570800227,
+          "testSeconds": 45.245,
+          "kernelPeakRssBytes": 706527232,
+          "kernelUserSeconds": 47.182781,
+          "kernelSystemSeconds": 3.479823,
+          "peakSampledGroupRssBytes": 617005056
+        },
+        {
+          "key": "Cna.Core.Tests.Campaigns.CombatActualMovedRepeatMovementCompletionArmedAxisMove4ContractTests",
+          "actualRows": 22,
+          "exitCode": 0,
+          "wallSeconds": 46.86823362499854,
+          "testSeconds": 45.417,
+          "kernelPeakRssBytes": 739721216,
+          "kernelUserSeconds": 47.278372,
+          "kernelSystemSeconds": 3.505132,
+          "peakSampledGroupRssBytes": 693305344
+        },
+        {
+          "key": "Cna.Core.Tests.Campaigns.CombatActualMovedRepeatMovementCompletionArmedCommonwealthMove1ContractTests",
+          "actualRows": 22,
+          "exitCode": 0,
+          "wallSeconds": 44.22060583300117,
+          "testSeconds": 43.252,
+          "kernelPeakRssBytes": 742850560,
+          "kernelUserSeconds": 45.266326,
+          "kernelSystemSeconds": 3.257743,
+          "peakSampledGroupRssBytes": 562921472
+        },
+        {
+          "key": "Cna.Core.Tests.Campaigns.CombatActualMovedRepeatMovementCompletionArmedCommonwealthMove2ContractTests",
+          "actualRows": 22,
+          "exitCode": 0,
+          "wallSeconds": 45.52672700000039,
+          "testSeconds": 44.498,
+          "kernelPeakRssBytes": 739655680,
+          "kernelUserSeconds": 45.574086,
+          "kernelSystemSeconds": 3.00027,
+          "peakSampledGroupRssBytes": 611975168
+        },
+        {
+          "key": "Cna.Core.Tests.Campaigns.CombatActualMovedRepeatMovementCompletionPaidAxisMove0ContractTests",
+          "actualRows": 6,
+          "exitCode": 0,
+          "wallSeconds": 9.053390667002532,
+          "testSeconds": 7.583,
+          "kernelPeakRssBytes": 659374080,
+          "kernelUserSeconds": 10.298223,
+          "kernelSystemSeconds": 0.481425,
+          "peakSampledGroupRssBytes": 609615872
+        },
+        {
+          "key": "Cna.Core.Tests.Campaigns.CombatActualMovedRepeatMovementCompletionArmedCommonwealthMove3ContractTests",
+          "actualRows": 22,
+          "exitCode": 0,
+          "wallSeconds": 47.12226658399959,
+          "testSeconds": 45.865,
+          "kernelPeakRssBytes": 829636608,
+          "kernelUserSeconds": 46.459087,
+          "kernelSystemSeconds": 3.297155,
+          "peakSampledGroupRssBytes": 829112320
+        },
+        {
+          "key": "Cna.Core.Tests.Campaigns.CombatActualMovedRepeatMovementCompletionArmedCommonwealthMove4ContractTests",
+          "actualRows": 22,
+          "exitCode": 0,
+          "wallSeconds": 48.73207675000231,
+          "testSeconds": 47.286,
+          "kernelPeakRssBytes": 722337792,
+          "kernelUserSeconds": 48.034872,
+          "kernelSystemSeconds": 3.389304,
+          "peakSampledGroupRssBytes": 615366656
+        },
+        {
+          "key": "Cna.Core.Tests.Campaigns.CombatActualMovedRepeatMovementCompletionPaidCommonwealthMove0ContractTests",
+          "actualRows": 6,
+          "exitCode": 0,
+          "wallSeconds": 9.055022207998263,
+          "testSeconds": 7.79,
+          "kernelPeakRssBytes": 677380096,
+          "kernelUserSeconds": 10.568275,
+          "kernelSystemSeconds": 0.54969,
+          "peakSampledGroupRssBytes": 605143040
+        },
+        {
+          "key": "Cna.Core.Tests.Campaigns.CombatActualMovedRepeatMovementCompletionPaidAxisMove1ContractTests",
+          "actualRows": 6,
+          "exitCode": 0,
+          "wallSeconds": 18.125096291001682,
+          "testSeconds": 16.943,
+          "kernelPeakRssBytes": 657588224,
+          "kernelUserSeconds": 20.987478,
+          "kernelSystemSeconds": 1.168667,
+          "peakSampledGroupRssBytes": 545996800
+        },
+        {
+          "key": "Cna.Core.Tests.Campaigns.CombatActualMovedRepeatMovementCompletionArmedCommonwealthMove5ContractTests",
+          "actualRows": 22,
+          "exitCode": 0,
+          "wallSeconds": 48.19285662499897,
+          "testSeconds": 45.977,
+          "kernelPeakRssBytes": 915062784,
+          "kernelUserSeconds": 47.858534,
+          "kernelSystemSeconds": 3.213947,
+          "peakSampledGroupRssBytes": 780779520
+        },
+        {
+          "key": "Cna.Core.Tests.Campaigns.CombatActualMovedRepeatMovementCompletionPaidAxisMove2ContractTests",
+          "actualRows": 6,
+          "exitCode": 0,
+          "wallSeconds": 18.120338040997012,
+          "testSeconds": 16.961,
+          "kernelPeakRssBytes": 655933440,
+          "kernelUserSeconds": 21.031422,
+          "kernelSystemSeconds": 1.229854,
+          "peakSampledGroupRssBytes": 597114880
+        },
+        {
+          "key": "Cna.Core.Tests.Campaigns.CombatActualMovedRepeatMovementCompletionTests",
+          "actualRows": 4,
+          "exitCode": 0,
+          "wallSeconds": 7.455207999999402,
+          "testSeconds": 5.992,
+          "kernelPeakRssBytes": 820707328,
+          "kernelUserSeconds": 8.418576,
+          "kernelSystemSeconds": 0.41007,
+          "peakSampledGroupRssBytes": 781221888
+        },
+        {
+          "key": "Cna.Core.Tests.Campaigns.CombatActualMovedRepeatMovementCompletionPaidCommonwealthMove1ContractTests",
+          "actualRows": 6,
+          "exitCode": 0,
+          "wallSeconds": 17.568732375002583,
+          "testSeconds": 16.1,
+          "kernelPeakRssBytes": 770162688,
+          "kernelUserSeconds": 20.223759,
+          "kernelSystemSeconds": 1.038339,
+          "peakSampledGroupRssBytes": 594870272
+        },
+        {
+          "key": "Cna.Core.Tests.Campaigns.CombatActualMovedRepeatMovementCompletionPaidCommonwealthMove2ContractTests",
+          "actualRows": 6,
+          "exitCode": 0,
+          "wallSeconds": 17.56199104099869,
+          "testSeconds": 16.417,
+          "kernelPeakRssBytes": 659439616,
+          "kernelUserSeconds": 20.524707,
+          "kernelSystemSeconds": 1.1405,
+          "peakSampledGroupRssBytes": 569196544
+        }
+      ],
+      "supervisorSha256": "d080b89bac557c01f445ffcd01741c04ef141585f5672cd9b31ef9c3edad7227",
+      "cpuSeconds": 734.372128
+    },
+    "workCountQualification": "3396 source-derived R02 Replay/internal-parent invocations:300 initial+2*788 accepted Apply+1520 duplicate Apply. Excludes additional authentic context setup and recursively nested ancestor calls. Complete measured class costs include all setup/support work.",
+    "cleanupOnlyCommit": "2c53a0c removes one unused private9line JsonElement Source overload; generic Object(Source) reader behavior preserved. Final focused build and full325 revalidated exact clean source head.",
+    "localResourceLimits": {
+      "maxChildren": 4,
+      "hardStageSeconds": 1200,
+      "cleanupReserveSeconds": 30,
+      "perClassSeconds": 900,
+      "aggregateRssAbortBytes": 12884901888,
+      "perGroupRssAbortBytes": 4294967296
+    },
+    "formatting": {
+      "initialExitCode": 2,
+      "initialLocalSummary": "/private/tmp/r02-owned-format-check/summary.json",
+      "diagnosis": "14 leading-indentation diagnostics in two nested test loops; no semantic source change",
+      "normalizedContentProof": {
+        "head": "2c53a0c65741a5f1bb59c880bec8d2d272327fe2",
+        "path": "tests/Cna.Core.Tests/Campaigns/CombatActualMovedRepeatMovementCompletionContractTests.cs",
+        "lines": [
+          86,
+          87,
+          88,
+          89,
+          90,
+          91,
+          188,
+          189,
+          190,
+          191,
+          192,
+          193,
+          194,
+          195
+        ],
+        "beforeSha256": "d393adae951af40f3d9ee630a45fa0cdc78c30bce037354d3134f88c4286e138",
+        "afterSha256": "c37b263486c22d8fc431352e2f1542d74a0dbf6955fb1f98a6f536d926630359",
+        "allLineContentsAfterLeadingWhitespaceIdentical": true,
+        "normalizedSha256": "b5c867ee4350e0c6c9a48d9e27d8443fc2011d1576251abc69155c9fbd67d87f"
+      },
+      "finalLocalSummary": "/private/tmp/r02-owned-format-check-green/summary.json",
+      "finalResult": "PASS required formatting verification of four owned C# files",
+      "qualification": "Scoped four owned C# files; generic workspace-load warning retained; full combined solution gate remains pending"
+    },
+    "combinedRowsProvisional": 3716,
+    "noHostedCapacityClaim": true
   }
 }
