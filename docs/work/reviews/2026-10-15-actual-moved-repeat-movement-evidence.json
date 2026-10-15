@@ -155,5 +155,21 @@
     "schemaSha256": "eb1cf39788cc78376b6d798a13a4a3272906217c51ff02b90310843654122468",
     "oracleSha256": "e07f66f8037d9cc6d44ec40b2fb3df915bbef9e2be87a7576f25a5846e32d97a",
     "fixtureSha256": "481f93d483d15dd7425f2d025c8d823cfe680ebc36acd3b408ae32bb64e20b8d"
+  },
+  "nativeInitialGreen": {
+    "command": "dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj -c Release --no-build --no-restore --filter-class '*CombatActualMovedRepeatMovementTests' -bl:/private/tmp/r01-native-green-test-{}.binlog",
+    "exitCode": 0,
+    "observedCompleteUtc": "2026-10-15T17:02:00Z",
+    "total": 2,
+    "passed": 2,
+    "failed": 0,
+    "skipped": 0,
+    "durationSeconds": 10.67,
+    "scope": "Initial two-profile publication behavior only; full byte parity and fault suite pending.",
+    "preparatoryBuildFailures": [
+      "CS0019 IReadOnlySet/string[] null-coalescing fixed by concrete set conversion",
+      "CA1859 LiveWitnesses return made concrete List"
+    ],
+    "build": "Release build exit0,0warnings/0errors"
   }
 }
