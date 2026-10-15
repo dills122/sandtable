@@ -1,0 +1,231 @@
+{
+  "base": "c24266a5d7dd12c05568c1788e472ad85a20c73e",
+  "referenceRed": {
+    "command": "python3 docs/specs/verify-combat-actual-moved-repeat-movement-v1.py --red-gate",
+    "exitCode": 1,
+    "cases": [
+      {
+        "profile": "paid",
+        "parent": "axis-player-decline-attacker-selected-repeat-intent",
+        "diagnostic": "CMB-MRM-007"
+      },
+      {
+        "profile": "armed",
+        "parent": "axis-player-decline-attacker-opening-unavailable-repeat-intent",
+        "diagnostic": "CMB-MRM-007"
+      }
+    ],
+    "meaning": "Authentic eight-ledger N3 replay succeeds; repeat-publish handler explicitly unavailable before implementation. Positive publication assertion fails. This is new-family transition RED, not a claim that legacy N3 behavior must change.",
+    "recordedAtUtc": "2026-10-15T15:48:16Z"
+  },
+  "nativeRed": {
+    "command": "dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj -c Release --no-build --no-restore --filter-class '*CombatActualMovedRepeatMovementTests' -bl:/private/tmp/r01-native-red-test-{}.binlog",
+    "exitCode": 2,
+    "observedCompleteUtc": "2026-10-15T16:56:28Z",
+    "total": 2,
+    "failed": 2,
+    "passed": 0,
+    "skipped": 0,
+    "diagnostic": "CMB-MRM-007",
+    "profiles": [
+      "paid",
+      "armed"
+    ],
+    "meaning": "Both authentic N3 parent replays succeed; explicit unavailable actual-publication handler throws before positive ordinal2/Movement assertions. Transition implementation absent.",
+    "preparatoryBuildFailure": {
+      "diagnostic": "CA1822: stub Control getter did not access instance data",
+      "disposition": "Replaced stub with instance auto-property; build then passed zero warnings/errors. Not behavior RED."
+    },
+    "build": "dotnet build tests/Cna.Core.Tests/Cna.Core.Tests.csproj -c Release --no-restore -bl:/private/tmp/r01-native-red-build-{}.binlog; exit0"
+  },
+  "green": {
+    "scope": "local reference and focused native only",
+    "referenceParents": 56,
+    "referenceCuts": 356,
+    "referenceEvents": 300,
+    "nativeRows": 71,
+    "nativeUniqueDiscoveredRows": 71,
+    "independentReview": false,
+    "hostedAcceptance": false,
+    "merged": false
+  },
+  "limitations": [
+    "Reference and focused native gates pass locally; author self-review/fresh independent review and exact-head hosted/full-repository/main gates remain.",
+    "Framing vectors are not authenticated maximum roots; production latency/peak memory/general-seed/public/Runner/full72 assurance absent.",
+    "Raw discovery, diagnostic logs and binlogs retained locally only."
+  ],
+  "referenceCandidatePublicationGreen": {
+    "command": "python3 docs/specs/verify-combat-actual-moved-repeat-movement-v1.py --red-gate",
+    "exitCode": 0,
+    "profiles": [
+      "paid",
+      "armed"
+    ],
+    "completeInheritedAndIsolatedMovementSupport": true
+  },
+  "referenceFixtureGeneration": {
+    "command": "python3 docs/specs/verify-combat-actual-moved-repeat-movement-v1.py --write-fixture",
+    "exitCode": 0,
+    "observedCompleteUtc": "2026-10-15T16:01:24Z",
+    "parents": 56,
+    "paid": 12,
+    "armed": 44,
+    "events": 300,
+    "cuts": 356,
+    "fixtureBytes": 24880568,
+    "sha256": "481f93d483d15dd7425f2d025c8d823cfe680ebc36acd3b408ae32bb64e20b8d"
+  },
+  "interruptedNormalVerification": {
+    "command": "python3 docs/specs/verify-combat-actual-moved-repeat-movement-v1.py",
+    "startedObservedUtc": "2026-10-15T16:02:27Z",
+    "interruptedObservedUtc": "2026-10-15T16:06:38Z",
+    "exitCode": 130,
+    "completedParents": 15,
+    "reason": "Deliberate interruption before freeze to own compound grammar and avoid inherited World serializer cap after appended DP causes. No assertion failure. Same full normal coverage will restart."
+  },
+  "referenceNormal": {
+    "command": "python3 docs/specs/verify-combat-actual-moved-repeat-movement-v1.py",
+    "exitCode": 0,
+    "observedCompleteUtc": "2026-10-15T16:25:00Z",
+    "parents": 56,
+    "cuts": 356,
+    "events": 300,
+    "schemaSha256": "019145c39f1aa2b086fba7fc41f562a69adfa54de53bd2c11ab0314794c4a734",
+    "oracleSha256": "2529c4184487fe58bdd8c7d1ae2c9fc5b19a84e4d8f723135cb387ca95d95b96"
+  },
+  "closureCeilingRed": {
+    "command": "python3 docs/work/reviews/2026-10-15-actual-moved-repeat-movement-closure.py",
+    "exitCode": 1,
+    "observedCompleteUtc": "2026-10-15T16:26:14Z",
+    "completedParents": 12,
+    "profile": "armed",
+    "expected": "CMB-MRM-005",
+    "observed": "CMB-MRM-007",
+    "cause": "Global six-receipt capacity guard ran before legal CP ceiling evaluation. Rejection was atomic, but wrong diagnostic misclassified a rules ceiling as unavailable capacity. Fix will defer receipt capacity until after legal effect derivation."
+  },
+  "closureScalarErrorRed": {
+    "command": "python3 docs/work/reviews/2026-10-15-actual-moved-repeat-movement-closure.py",
+    "exitCode": 1,
+    "observedCompleteUtc": "2026-10-15T16:31:16Z",
+    "completedParents": 56,
+    "ceilingsAndResignedForgeriesPassed": 56,
+    "failure": "Boolean in integer field rejects via TypeError rather than a contract validation error. The inherited n3\u2192n2\u2192n1 scalar forwarding passes integer depth in the n1 string path argument.",
+    "scriptCheckpoint": "e523a5a (before added scalar-closure assertions)",
+    "schemaSha256": "eb1cf39788cc78376b6d798a13a4a3272906217c51ff02b90310843654122468",
+    "oracleSha256": "91c27379252dbd4f53d310dd787a445f321d226ac506ad33da08a0fe6e021a3a",
+    "plannedFix": "Delegate supported scalar syntax directly to unchanged n1 validator with proper string path; own profile enum and signedInt primitive explicitly. No predecessor edits."
+  },
+  "correctedClosureGreen": {
+    "command": "python3 docs/work/reviews/2026-10-15-actual-moved-repeat-movement-closure.py",
+    "exitCode": 0,
+    "observedCompleteUtc": "2026-10-15T16:36:21Z",
+    "checks": {
+      "inheritedCompoundShapes": 48,
+      "unchangedParentPins": 98,
+      "externalPins": 101,
+      "framingBytes": 64231526,
+      "oversizeRejections": 2,
+      "worldFramingBytes": 593548,
+      "isolatedSupportRoutes": 391,
+      "isolatedMovementSteps": 780,
+      "maxIsolatedWorldCauseCount": 5,
+      "ceilingFailures": 56,
+      "resignedEffectForgeries": 56,
+      "independentLedgerFaults": 18,
+      "modeBoundaryNegatives": 8,
+      "recoveryAfterEveryTerminalCut": 56,
+      "grammarNegatives": 3
+    },
+    "schemaSha256": "eb1cf39788cc78376b6d798a13a4a3272906217c51ff02b90310843654122468",
+    "oracleSha256": "e07f66f8037d9cc6d44ec40b2fb3df915bbef9e2be87a7576f25a5846e32d97a",
+    "scriptSha256": "9f4a2869e0c6d62fef90dfb26d204bd343c5f56b71b2dd038ac96b8ee0f6656c"
+  },
+  "capacityDerivation": {
+    "command": "python3 docs/work/reviews/2026-10-15-actual-moved-repeat-movement-capacity.py",
+    "exitCode": 0,
+    "sourceEnvelopeBytes": 102,
+    "sourceEnvelopeReserve": 512,
+    "sourceUpper": 64231936,
+    "worldReachableUpper": 534528,
+    "worldGrammarFramingBytes": 593548,
+    "worldGrowthAllocated": 9376,
+    "worldGrowthReserve": 10240,
+    "worldCauseSerializationExtreme": 1116,
+    "worldEndingGrowth": 83,
+    "distinction": "World framing outside reachable immutable-origin profile; source quote carrier framing outside authenticated root. Derivation in dated capacity artifact."
+  },
+  "correctedReferenceNormal": {
+    "command": "python3 docs/specs/verify-combat-actual-moved-repeat-movement-v1.py",
+    "exitCode": 0,
+    "startedAtUtc": "2026-10-15T16:36:57Z",
+    "observedCompleteUtc": "2026-10-15T16:54:20Z",
+    "parents": 56,
+    "cuts": 356,
+    "events": 300,
+    "schemaSha256": "eb1cf39788cc78376b6d798a13a4a3272906217c51ff02b90310843654122468",
+    "oracleSha256": "e07f66f8037d9cc6d44ec40b2fb3df915bbef9e2be87a7576f25a5846e32d97a",
+    "fixtureSha256": "481f93d483d15dd7425f2d025c8d823cfe680ebc36acd3b408ae32bb64e20b8d"
+  },
+  "nativeInitialGreen": {
+    "command": "dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj -c Release --no-build --no-restore --filter-class '*CombatActualMovedRepeatMovementTests' -bl:/private/tmp/r01-native-green-test-{}.binlog",
+    "exitCode": 0,
+    "observedCompleteUtc": "2026-10-15T17:02:00Z",
+    "total": 2,
+    "passed": 2,
+    "failed": 0,
+    "skipped": 0,
+    "durationSeconds": 10.67,
+    "scope": "Initial two-profile publication behavior only; full byte parity and fault suite pending.",
+    "preparatoryBuildFailures": [
+      "CS0019 IReadOnlySet/string[] null-coalescing fixed by concrete set conversion",
+      "CA1859 LiveWitnesses return made concrete List"
+    ],
+    "build": "Release build exit0,0warnings/0errors"
+  },
+  "nativeScopedDiscovery": {
+    "command": "dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj -c Release --no-build --no-restore --filter-class '*CombatActualMovedRepeatMovement*' --list-tests -bl:/private/tmp/r01-discovery-{}.binlog",
+    "exitCode": 0,
+    "records": 71,
+    "uniqueRecords": 71,
+    "duplicateRecords": 0,
+    "parityOrdinals": 56,
+    "paidParity": 12,
+    "armedParity": 44,
+    "classCounts": {
+      "Cna.Core.Tests.Campaigns.CombatActualMovedRepeatMovementContractTests": 69,
+      "Cna.Core.Tests.Campaigns.CombatActualMovedRepeatMovementTests": 2
+    },
+    "sortedNameSha256": "d0a704011817d49c942784f621d380d7d8c4a0423323eea7a5c8b30def4fa787",
+    "verification": "Actual scoped native discovery; compare 56 ordinal/profile pairs exactly to fixture. No deduplication or row narrowing. Full-repository gate remains Brain owned."
+  },
+  "nativeFirstParityGreen": {
+    "command": "dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj -c Release --no-build --no-restore --filter-class '*CombatActualMovedRepeatMovement*' -bl:/private/tmp/r01-parity-test-{}.binlog",
+    "exitCode": 0,
+    "observedCompleteUtc": "2026-10-15T17:10:06Z",
+    "total": 60,
+    "passed": 60,
+    "failed": 0,
+    "skipped": 0,
+    "durationSeconds": 272.808,
+    "scope": "Initial expanded compiled parity suite, before additional fault tests were compiled; runtime source unchanged."
+  },
+  "nativeFocusedGreen": {
+    "command": "dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj -c Release --no-build --no-restore --filter-class '*CombatActualMovedRepeatMovement*' -bl:/private/tmp/r01-focused-test-{}.binlog",
+    "exitCode": 0,
+    "observedCompleteUtc": "2026-10-15T17:16:51Z",
+    "total": 71,
+    "passed": 71,
+    "failed": 0,
+    "skipped": 0,
+    "durationSeconds": 271.817,
+    "build": "Release targeted build exit0/0warnings/0errors",
+    "runtimeCheckpoint": "9fe0a3a",
+    "runtimeSourceSha256": "3ecfb989a68676101bf37af07211c4cb3c7faf96e3e1e41330dc3bc647da6a10",
+    "codecSourceSha256": "31b0da6b5228c760a3652b35cb4f6e40f6d091719d9af0bf395cc852889b218e"
+  },
+  "nativeWhitespace": {
+    "command": "dotnet format whitespace tests/Cna.Core.Tests/Cna.Core.Tests.csproj --no-restore --verify-no-changes --include src/Cna.Core/Campaigns/CampaignCombatActualMovedRepeatMovement.cs src/Cna.Core/Campaigns/CampaignCombatActualMovedRepeatMovementCodec.cs tests/Cna.Core.Tests/Campaigns/CombatActualMovedRepeatMovementTests.cs tests/Cna.Core.Tests/Campaigns/CombatActualMovedRepeatMovementContractTests.cs",
+    "exitCode": 0,
+    "changes": 0
+  }
+}
