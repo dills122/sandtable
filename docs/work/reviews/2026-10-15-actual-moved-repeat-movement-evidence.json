@@ -1,0 +1,27 @@
+{
+  "base": "c24266a5d7dd12c05568c1788e472ad85a20c73e",
+  "referenceRed": {
+    "command": "python3 docs/specs/verify-combat-actual-moved-repeat-movement-v1.py --red-gate",
+    "exitCode": 1,
+    "timestampUtc": "2026-10-15T15:47:00Z",
+    "cases": [
+      {
+        "profile": "paid",
+        "parent": "axis-player-decline-attacker-selected-repeat-intent",
+        "diagnostic": "CMB-MRM-007"
+      },
+      {
+        "profile": "armed",
+        "parent": "axis-player-decline-attacker-opening-unavailable-repeat-intent",
+        "diagnostic": "CMB-MRM-007"
+      }
+    ],
+    "meaning": "Authentic eight-ledger N3 replay succeeds; repeat-publish handler explicitly unavailable before implementation. Positive publication assertion fails. This is new-family transition RED, not a claim that legacy N3 behavior must change."
+  },
+  "nativeRed": null,
+  "green": null,
+  "limitations": [
+    "No heavy test/build lease used; bounded two-parent replay only.",
+    "Fresh support certification and all56 parent verification not executed."
+  ]
+}

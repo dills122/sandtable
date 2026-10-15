@@ -1,0 +1,37 @@
+# Authentic moved repeat Movement v1
+
+R01 additive private contract consumes N3 pending repeat intent from both authentic paid and armed lineages. Draft: RED, executable closure, native implementation and fresh review remain required.
+
+## Authority
+Source carries canonical N3 Source once and up to six new Movement event strings. CreationRequest plus independent prefix/lifecycle/Breakdown/Selection/Round/paid/Release/control ledgers authenticate every ancestor. A ninth independent Movement ledger authenticates new events. No projection, re-signed effect, fixture row or source hash alone grants authority. Replay all ancestor ledgers before interpreting successor inputs or claims. Own Source, all input/claim bytes, all ledger arrays and dependency acquisitions before callbacks.
+
+Only supported real ordinal1 pending repeat intent is accepted. Independently bind source occurrence, original N2 source, current World hash, assessment hash, configuration, decision and safe-witness hash. Closed finish/unopened/control-open/unsupported/synthetic legacy sources are rejected. Original pending intent remains historical and executionAvailable:false; this family supplies separately authenticated executable transitions.
+
+## Exactly-once real publication
+A System repeat-publish command consumes the authenticated accepted owner intent. Bind parent Source hash, Base hash, original occurrence, intent receipt, configuration, decision, expected version and original Release position. Unit/origin/destination are null. Fresh publication requires complete inherited support and this family's published handlers/capacities; disabling fresh admission does not prevent recovering accepted transitions.
+
+Publish ordinal2 authority with prior ordinal+1, openedAuthorityVersion equal to publication event version, and openingPrefix equal to publication priorPrefix, following existing canonical cycle-authority identity. Change private v5 position from same-slot Release to Movement. Close original occurrence with outcome repeated, publication receipt and ordinal1. Publication increments state version and prefix exactly once. World, cumulative CP, cohesion, ammunition, TOE, readiness, origins, reserve membership/history, opponent, assets, future duties, settlements, RNG and stage attack history remain identical.
+
+Reset targetUses and actualProgressRefs only at publication. priorCycleTargetUses and priorCycleProgress retain original values, while full ancestor Source retains all earlier events and receipts. Publication and old Release/control receipts do not count as ordinal2 Movement progress. OriginalMovementEnd remains authenticated ordinal1 evidence; there is no ordinal2 Movement completion proof.
+
+## Ordinary owner Movement
+Move binds current ordinal2 identity, Movement position, original owning side and member UnitKey, creation binding, Base and publication ancestry. Validate grammar, context and actor before duplicate recovery. An accepted command retry returns its original event/receipt against every later valid cut, even with fresh admission disabled; Source, all ledgers and current Control/Proof remain unchanged. A malformed/conflicting retry cannot recover.
+
+New commands require current version and origin, original ordinary NONE membership and history, original end-proof eligibility/proximity/exclusions, positive surviving TOE, actual paid ammo0 or armed ammo10 profile, non-vehicle original member, one current independent representation and correct stage CP ledger. Destination must be adjacent Clear over a feature-free edge and have no element or guard occupancy. Current opposing representation adjacency is an unsupported Reaction boundary, including ammo0 opponents, and rejects before mutation. No destination-name route allowlist.
+
+Use current active Contact/Engaged relationships for break-off: engaged4CP, contact2CP, otherwise0; terrain2CP and cumulative ordinary ceiling15. Incremental excess-CP DP is max(0,afterCP-baseCPA)-max(0,beforeCP-baseCPA), applied once with checked cohesion/ID/ordinal bounds. Move original element and its representation, member spentCp, CP/cohesion, membership ending receipts, DP causes, route and actual progress atomically. Preserve all unrelated state and histories. Paid CP9 with Contact permits13 then15; armed CP4 permits6,8,10,12,14. No CP renewal or RNG draw.
+
+## Replay, physical delivery and bounds
+Closed canonical ASCII grammar rejects duplicate/extra/missing fields, unknown primitives/enums, noncanonical bytes, excessive depth/arrays/objects and oversized carriers. Each event is regenerated from its independent input and compared byte-for-byte; Control/Proof claims compare only after full replay. Append then full replay precede publication. Every rejection returns no mutated Source or ledger.
+
+The external dependency closure is N3's98 paths plus its spec/schema/oracle:101 paths, sorted for the family manifest hash. Own schema/oracle delivery hashes are validated separately, avoiding self-hash cycles. Parent pins remain byte-identical. Fixture files of N2/N3/R01 serve tests and are never new authority.
+
+Source64MiB, unchanged parent32MiB, Control1MiB, Proof2MiB, Event64KiB, Input4KiB, ninth ledger24KiB, depth40, arrays512 and fields128. At most one publication/five moves/six receipts, one member/route, six route locations and five new progress references. Valid inherited N3 Source bound31,722,496 yields 2*31,722,496 +6*2*65,536 +512 =64,231,936 <67,108,864. Inherited Control655,360 plus65,536 for new metadata/receipts/route/causes/history fields yields720,896 <1MiB; Proof adds2,048 =>722,944 <2MiB. This structural budget requires concrete field/count measurements and valid grammar framing checks before closureFrozen:true. It is not proof of maximum authenticated roots or peak-memory/latency guarantees.
+
+## Diagnostics and scope
+CMB-MRM-001 shape/size/depth;002 numeric;003 family/profile/Reaction boundary;004 ancestry/context/actor;005 legality/CP;006 stale/event/claim mismatch;007 capability/capacity;008 noncanonical bytes;009 physical delivery. Inherited reader diagnostics remain attributable to their unchanged families.
+
+Stop interrupts, Reaction/System resolution, owner Movement completion, Breakdown joins, later Combat/Release/control, public actions/privacy projection, persistence adoption, Runner and full72 closure remain separate gates. They need new lineage-aware profiles and independently authenticated ledger joins; this contract cannot be composed into them by inventing a completion proof or treating unsupported as empty.
+
+## Required evidence
+Both-mode genuine publication RED then GREEN; all56 authentic pending parents and their publication/movement cuts; native/reference parity, retries/recovery with disabled admission, stale/forged independent-ledger/effect/claim/context/actor negatives, current-world cost/DP/history retention, ownership/callback mutation and physical dependency failures. Author engineering self-review precedes fresh neutral-first independent review. Exact-head hosted CI/actual-row reconciliation and verified main are Brain-owned final gates.
