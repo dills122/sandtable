@@ -64,6 +64,24 @@ class ChildProcessTests(unittest.TestCase):
             self.assertNotEqual(status['exit_code'], 0)
             self.assertTrue(status['cancelled'])
 
+    def test_live_child_is_killed_when_cleanup_inspection_fails(self):
+        created = []
+        original = subprocess.Popen
+        def launch(*args, **kwargs):
+            process = original(*args, **kwargs); created.append(process); return process
+        def cleanup():
+            for process in created:
+                if process.poll() is None:
+                    os.killpg(process.pid, signal.SIGKILL); process.wait(timeout=2)
+        self.addCleanup(cleanup)
+        with mock.patch.object(runner.subprocess, 'Popen', side_effect=launch), mock.patch.object(runner, 'owned_session_members', side_effect=OSError('inspection failed')):
+            status = runner.run_child([sys.executable, '-c', 'import time; time.sleep(30)'], self.root, self.template, time.monotonic() + 0.15)
+        self.assertTrue(status['cancelled'])
+        self.assertNotEqual(status['exit_code'], 0)
+        self.assertIsNotNone(created[0].poll())
+        self.assertIn('cleanup_error', status)
+        self.assertTrue((self.root / 'status.json').exists())
+
     def test_stale_output_directory_rejects_before_launch(self):
         self.root.mkdir()
         with self.assertRaises(ValueError): runner.run_child([sys.executable, '-c', 'pass'], self.root, self.template, time.monotonic() + 5)
@@ -79,7 +97,58 @@ class ChildProcessTests(unittest.TestCase):
         self.assertFalse(any(arg.startswith('/bl:') for arg in command))
 
 
+class ResourcePolicyTests(unittest.TestCase):
+    def snapshot(self):
+        return {'platform': 'Linux', 'effective_memory_limit_bytes': 16 * 2**30, 'memory_available_bytes': 12 * 2**30, 'effective_cpu_count': 4}
+
+    def test_preflight_rejects_effective_limit_available_memory_or_cpu_shortage(self):
+        self.assertTrue(runner.validate_preflight(self.snapshot()))
+        for field, value in [('effective_memory_limit_bytes', 8 * 2**30), ('memory_available_bytes', 7 * 2**30), ('effective_cpu_count', 2), ('effective_cpu_count', float('inf')), ('effective_memory_limit_bytes', float('inf'))]:
+            data = self.snapshot(); data[field] = value
+            with self.subTest(field=field), self.assertRaises(ValueError): runner.validate_preflight(data)
+
+    def test_runtime_group_aggregate_and_host_reserve_are_fail_closed(self):
+        self.assertTrue(runner.validate_sample(self.snapshot(), {'a': 2**30}))
+        for snapshot, groups in [(self.snapshot(), {'a': 4 * 2**30 + 1}), (self.snapshot(), {'a': 3 * 2**30, 'b': 3 * 2**30, 'c': 3 * 2**30}), (dict(self.snapshot(), memory_available_bytes=3 * 2**30), {'a': 1})]:
+            with self.assertRaises(ValueError): runner.validate_sample(snapshot, groups)
+
+    def test_linux_uses_tightest_ancestor_cgroup_limit_and_remaining_memory(self):
+        with tempfile.TemporaryDirectory() as root:
+            root = Path(root); proc = root / 'proc'; cg = root / 'cgroup'; (proc / 'self').mkdir(parents=True); (cg / 'job').mkdir(parents=True)
+            (proc / 'meminfo').write_text('MemTotal: 16777216 kB\nMemAvailable: 12582912 kB\n')
+            (proc / 'self' / 'cgroup').write_text('0::/job\n')
+            for directory, limit, used in [(cg, 12 * 2**30, 2**30), (cg / 'job', 10 * 2**30, 4 * 2**30)]:
+                (directory / 'memory.max').write_text(str(limit)); (directory / 'memory.current').write_text(str(used)); (directory / 'cpu.max').write_text('400000 100000')
+            result = runner.linux_resources(proc, cg)
+            self.assertEqual(result['effective_memory_limit_bytes'], 10 * 2**30)
+            self.assertEqual(result['memory_available_bytes'], 6 * 2**30)
+
+    def test_kernel_peak_units_are_explicit_and_overshoot_fails(self):
+        self.assertEqual(runner.kernel_peak_bytes(1024, 'Linux'), 2**20)
+        self.assertEqual(runner.kernel_peak_bytes(1024, 'Darwin'), 1024)
+        with self.assertRaises(ValueError): runner.validate_kernel_peak(4 * 2**30 + 1)
+
+
+class ResourceMonitorTests(unittest.TestCase):
+    def test_group_overshoot_cancels_and_preserves_resource_failure(self):
+        cancellation = threading.Event()
+        snapshot = ResourcePolicyTests().snapshot()
+        with mock.patch.object(runner, 'resource_snapshot', return_value=snapshot):
+            guard = runner.ResourceGuard(cancellation, 'r02-1', {})
+            guard.preflight()
+            guard.register('support-contract', 123)
+            with mock.patch.object(runner, 'session_rss', return_value={'support-contract': 4 * 2**30 + 1}): guard.sample_once()
+        self.assertTrue(cancellation.is_set())
+        self.assertIn('4GiB', guard.evidence['abort_reason'])
+        self.assertGreater(guard.evidence['peak_group_rss_bytes']['support-contract'], 4 * 2**30)
+
+
 class LaneSupervisorTests(unittest.TestCase):
+    def setUp(self):
+        snapshot = dict(ResourcePolicyTests().snapshot(), platform='Darwin')
+        patch = mock.patch.object(runner, 'resource_snapshot', return_value=snapshot)
+        patch.start(); self.addCleanup(patch.stop)
+
     def test_static_four_lane_job_runs_each_group_once(self):
         allocation = r02_partition.candidate_allocation()
         groups = {name: {'class': 'Cna.Core.Tests.Cases.' + name.replace('-', '_')} for name in allocation}
@@ -88,7 +157,7 @@ class LaneSupervisorTests(unittest.TestCase):
                 command_builder=lambda binary, directory, class_name: [sys.executable, '-c', 'pass'])
             expected = {name for name, entry in allocation.items() if entry['job'] == 'r02-1'}
             self.assertEqual(set(results), expected)
-            self.assertEqual(len({status['process_id'] for status in results.values()}), 4)
+            self.assertEqual(len({status['process_id'] for status in results.values()}), 5)
             self.assertTrue(all(status['exit_code'] == 0 for status in results.values()))
             self.assertEqual({path.name for path in (Path(root) / 'groups').iterdir()}, expected)
 
@@ -101,13 +170,23 @@ class LaneSupervisorTests(unittest.TestCase):
             self.assertLess(results['armed-axis-m1']['started_utc'], results['paid-axis-m0']['started_utc'])
             self.assertLess(results['armed-axis-m2']['started_utc'], results['paid-commonwealth-m0']['started_utc'])
 
+    def test_heavy_support_starts_after_every_parallel_child_drains(self):
+        allocation = r02_partition.candidate_allocation()
+        groups = {name: {'class': 'Cna.Core.Tests.Cases.One'} for name in allocation}
+        with tempfile.TemporaryDirectory() as root:
+            results = runner.run_job(groups, allocation, 'r02-1', Path(root) / 'groups', {}, '/bin/not-used.dll', 5,
+                command_builder=lambda binary, directory, class_name: [sys.executable, '-c', 'pass'])
+            self.assertIn('support-contract', results)
+            latest = max(status['completed_utc'] for group, status in results.items() if group != 'support-contract')
+            self.assertGreaterEqual(results['support-contract']['started_utc'], latest)
+
     def test_failed_group_does_not_silently_skip_other_expected_groups(self):
         allocation = r02_partition.candidate_allocation()
         groups = {name: {'class': 'Cna.Core.Tests.Cases.One'} for name in allocation}
         with tempfile.TemporaryDirectory() as root:
             results = runner.run_job(groups, allocation, 'r02-1', Path(root) / 'groups', {}, '/bin/not-used.dll', 5,
                 command_builder=lambda binary, directory, class_name: [sys.executable, '-c', 'raise SystemExit(3)'])
-            self.assertEqual(len(results), 4)
+            self.assertEqual(len(results), 5)
             self.assertTrue(all(status['exit_code'] == 3 for status in results.values()))
 
 

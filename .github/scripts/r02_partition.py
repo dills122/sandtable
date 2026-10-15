@@ -160,6 +160,7 @@ def verify_child(group, entry, directory, binding):
         validate_binding(binding)
         status = json.loads((Path(directory) / 'status.json').read_text())
         require(all(status[key] == value for key, value in binding.items()), 'Stale/foreign child binding')
+        if 'phase' in entry: require(status['phase'] == entry['phase'], 'Wrong child phase')
         require(status['group'] == group and status['module'] == MODULE and status['class_name'] == entry['class'], 'Wrong child group/module/class')
         require(type(status['exit_code']) is int and status['exit_code'] == 0, 'Failed/invalid child exit')
         from datetime import datetime, timezone
@@ -186,16 +187,20 @@ def candidate_allocation():
     lanes = [
         ['armed-commonwealth-m1'], ['armed-commonwealth-m2'], ['armed-commonwealth-m3'], ['armed-commonwealth-m4'],
         ['armed-commonwealth-m5'], ['armed-axis-m1', 'paid-axis-m0'], ['armed-axis-m2', 'paid-commonwealth-m0'], ['armed-axis-m3'],
-        ['armed-axis-m4', 'support-behavior'], ['armed-axis-m5', 'support-contract'], ['paid-axis-m1', 'paid-commonwealth-m1', 'armed-commonwealth-m0'], ['paid-axis-m2', 'paid-commonwealth-m2', 'armed-axis-m0'],
+        ['armed-axis-m4', 'support-behavior'], ['armed-axis-m5'], ['paid-axis-m1', 'paid-commonwealth-m1', 'armed-commonwealth-m0'], ['paid-axis-m2', 'paid-commonwealth-m2', 'armed-axis-m0'],
     ]
-    return {group: {'job': f'r02-{i // 4 + 1}', 'lane': i % 4 + 1} for i, groups in enumerate(lanes) for group in groups}
+    allocation = {group: {'job': f'r02-{i // 4 + 1}', 'lane': i % 4 + 1, 'phase': 'parallel'} for i, groups in enumerate(lanes) for group in groups}
+    allocation['support-contract'] = {'job': 'r02-1', 'lane': 1, 'phase': 'exclusive'}
+    return allocation
 
 
 def validate_allocation(allocation, semantic):
     require(isinstance(allocation, dict) and set(allocation) == set(semantic['groups']), 'Missing/extra allocation group')
     for entry in allocation.values():
-        require(isinstance(entry, dict) and set(entry) == {'job', 'lane'}, 'Invalid allocation entry')
+        require(isinstance(entry, dict) and set(entry) == {'job', 'lane', 'phase'}, 'Invalid allocation entry')
         require(entry['job'] in ('r02-1', 'r02-2', 'r02-3') and type(entry['lane']) is int and 1 <= entry['lane'] <= 4, 'Invalid job/lane')
+        require(entry['phase'] in ('parallel', 'exclusive'), 'Invalid phase')
+    require({group for group, entry in allocation.items() if entry['phase'] == 'exclusive'} == {'support-contract'} and allocation['support-contract'] == {'job': 'r02-1', 'lane': 1, 'phase': 'exclusive'}, 'Heavy support requires exclusive job1 phase')
     require({entry['job'] for entry in allocation.values()} == {'r02-1', 'r02-2', 'r02-3'}, 'Missing candidate job')
     return allocation
 
@@ -235,6 +240,25 @@ def load_proof(proof, fixture, binding):
         raise ValueError('Malformed prepared R02 proof') from error
 
 
+def verify_job_resources(proof, directory, binding, job):
+    from datetime import datetime
+    import os
+    from pathlib import Path
+    from ci_group_runner import validate_resource_evidence
+    try:
+        selected = {group: entry for group, entry in proof['groups'].items() if entry['job'] == job}
+        evidence = json.loads((Path(directory) / (job + '-resource.json')).read_text())
+        validate_resource_evidence(evidence, job, binding, selected)
+        if os.environ.get('GITHUB_ACTIONS') == 'true': require(all(item['platform'] == 'Linux' for item in evidence['phase_preflights']), 'Hosted Linux resource proof required')
+        statuses = {group: json.loads((Path(directory) / 'r02-groups' / group / 'status.json').read_text()) for group in selected}
+        parallel_ends = [datetime.fromisoformat(statuses[group]['completed_utc']) for group, entry in selected.items() if entry['phase'] == 'parallel']
+        for group, entry in selected.items():
+            if entry['phase'] == 'exclusive': require(datetime.fromisoformat(statuses[group]['started_utc']) >= max(parallel_ends), 'Exclusive support overlapped parallel children')
+        return evidence
+    except (OSError, KeyError, TypeError, json.JSONDecodeError) as error:
+        raise ValueError('Missing/malformed job resource proof: ' + str(error)) from error
+
+
 def verify_combined(proof, fixture, inventory, directory, needs, binding):
     from pathlib import Path
     from test_partition import CORE_SHARDS, load_partition, unique, verify_coverage
@@ -257,6 +281,7 @@ def verify_combined(proof, fixture, inventory, directory, needs, binding):
         process_key = (entry['job'], status['process_id'], status['started_utc'])
         require(process_key not in processes, 'Duplicate attributed child process')
         processes.add(process_key)
+    for job in ('r02-1', 'r02-2', 'r02-3'): verify_job_resources(proof, directory, binding, job)
     require(old_core | new_rows == unique(proof['full_core_rows'], 'full prepared Core rows'), 'Incomplete full Core execution union')
     all_rows = unique([row for entry in inventory['shards'].values() for row in entry['rows']], 'all legacy rows') | new_rows
     return {'total_rows': len(all_rows), 'r02_rows': len(new_rows), 'child_processes': len(processes), 'row_identity_sha256': fingerprint(sorted(all_rows)), 'semantic_counts': semantic['counts']}
@@ -326,7 +351,7 @@ def execute_groups(proof, fixture, directory, binding, job, binary):
     from ci_group_runner import run_job
     load_proof(proof, fixture, binding)
     require(job in ('r02-1', 'r02-2', 'r02-3'), 'Unknown R02 job')
-    allocation = {group: {'job': entry['job'], 'lane': entry['lane']} for group, entry in proof['groups'].items()}
+    allocation = {group: {'job': entry['job'], 'lane': entry['lane'], 'phase': entry['phase']} for group, entry in proof['groups'].items()}
     statuses = run_job(proof['groups'], allocation, job, Path(directory) / 'r02-groups', binding, binary)
     selected = {group for group, entry in allocation.items() if entry['job'] == job}
     require(set(statuses) == selected, 'Missing/extra job child process')
@@ -337,6 +362,7 @@ def execute_groups(proof, fixture, directory, binding, job, binary):
         require(statuses[group] == json.loads((Path(directory) / 'r02-groups' / group / 'status.json').read_text()), 'Retained/observed child status differs')
         require(not rows & actual, 'Job child overlap')
         rows |= actual
+    verify_job_resources(proof, directory, binding, job)
     return {'job': job, 'groups': len(selected), 'rows': len(rows)}
 
 

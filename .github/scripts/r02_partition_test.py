@@ -137,7 +137,7 @@ class ChildEvidenceTests(unittest.TestCase):
     def good_status(self):
         from ci_group_runner import execution_command
         return dict(self.binding, group=self.group, module='Cna.Core.Tests', class_name=self.entry['class'], exit_code=0,
-            evidence_version=1, process_id=123, cancelled=False, elapsed_seconds=1.0,
+            evidence_version=1, phase=r02.candidate_allocation()[self.group]['phase'], process_id=123, cancelled=False, elapsed_seconds=1.0,
             started_utc='2026-10-15T20:00:00+00:00', completed_utc='2026-10-15T20:00:01+00:00',
             module_path='/bin/Cna.Core.Tests.dll', output_directory=str(self.directory.resolve()),
             command=execution_command('/bin/Cna.Core.Tests.dll', self.directory, self.entry['class']))
@@ -186,7 +186,8 @@ class ProcessAllocationTests(unittest.TestCase):
         self.assertEqual(set(allocation), set(self.semantic['groups']))
         self.assertEqual({entry['job'] for entry in allocation.values()}, {'r02-1', 'r02-2', 'r02-3'})
         self.assertTrue(all(type(entry['lane']) is int and 1 <= entry['lane'] <= 4 for entry in allocation.values()))
-        self.assertEqual(allocation['armed-axis-m1'], {'job': 'r02-2', 'lane': 2})
+        self.assertEqual(allocation['armed-axis-m1'], {'job': 'r02-2', 'lane': 2, 'phase': 'parallel'})
+        self.assertEqual(allocation['support-contract'], {'job': 'r02-1', 'lane': 1, 'phase': 'exclusive'})
 
     def test_missing_extra_or_invalid_allocation_fails(self):
         for kind in ['missing', 'extra', 'job', 'lane', 'boolean']:
@@ -278,7 +279,15 @@ class CombinedConservationTests(unittest.TestCase):
             self.report(directory, 'Cna.Core.Tests', entry['rows'])
             child = ChildEvidenceTests(); child.binding = self.binding; child.group = group; child.entry = entry; child.directory = directory
             status = child.good_status(); status['process_id'] += index
+            if group == 'support-contract': status.update(started_utc='2026-10-15T20:00:02+00:00', completed_utc='2026-10-15T20:00:03+00:00')
             (directory / 'status.json').write_text(json.dumps(status))
+
+        from ci_group_runner import RESOURCE_POLICY
+        for job in ('r02-1', 'r02-2', 'r02-3'):
+            snapshot = {'platform': 'Linux', 'effective_memory_limit_bytes': 16 * 2**30, 'memory_available_bytes': 12 * 2**30, 'effective_cpu_count': 4}
+            groups = {group: 1024 for group, entry in self.proof['groups'].items() if entry['job'] == job}
+            resource = {'schema_version': 1, 'job': job, 'binding': self.binding, 'policy': dict(RESOURCE_POLICY), 'phase_preflights': [snapshot] * (2 if job == 'r02-1' else 1), 'peak_group_rss_bytes': groups, 'peak_aggregate_rss_bytes': 4096, 'min_available_bytes': 12 * 2**30, 'sample_count': 10, 'abort_reason': None, 'kernel_children_peak_rss_bytes': 2048, 'kernel_peak_kind': 'job-wide completed-children maximum; not per-child attribution', 'complete': True, 'elapsed_seconds': 3}
+            (self.root / (job + '-resource.json')).write_text(json.dumps(resource))
 
     @staticmethod
     def report(directory, module, rows):
@@ -301,6 +310,20 @@ class CombinedConservationTests(unittest.TestCase):
         path.write_bytes(original)
         (self.root / 'core-b' / 'status.json').unlink()
         with self.assertRaises(ValueError): self.check()
+
+    def test_missing_aborted_stale_resource_or_overlapped_exclusive_phase_fails(self):
+        path = self.root / 'r02-1-resource.json'; original = path.read_bytes()
+        for kind in ['missing', 'aborted', 'over-limit', 'stale', 'barrier']:
+            path.write_bytes(original)
+            data = json.loads(original)
+            if kind == 'missing': path.unlink()
+            elif kind == 'aborted': data['abort_reason'] = '4GiB exceeded'
+            elif kind == 'over-limit': data['kernel_children_peak_rss_bytes'] = 4 * 2**30 + 1
+            elif kind == 'stale': data['binding'] = dict(data['binding'], run_id='999')
+            else:
+                status_path = self.root / 'r02-groups' / 'support-contract' / 'status.json'; status = json.loads(status_path.read_text()); status['started_utc'] = '2026-10-15T20:00:00+00:00'; status_path.write_text(json.dumps(status))
+            if kind not in ('missing', 'barrier'): path.write_text(json.dumps(data))
+            with self.subTest(kind=kind), self.assertRaises(ValueError): self.check()
 
     def test_changed_legacy_mapping_or_failed_dependencies_fail(self):
         self.needs['tests']['result'] = 'failure'
@@ -355,13 +378,14 @@ class ExecuteGroupProofTests(unittest.TestCase):
             directory = self.output / 'r02-groups' / group
             shutil.copytree(self.data.root / 'r02-groups' / group, directory)
             self.statuses[group] = json.loads((directory / 'status.json').read_text())
+        shutil.copyfile(self.data.root / 'r02-1-resource.json', self.output / 'r02-1-resource.json')
 
     def test_execute_accepts_only_expected_processes_and_complete_xml(self):
         import ci_group_runner
         with mock.patch.object(ci_group_runner, 'run_job', return_value=self.statuses):
             result = r02.execute_groups(self.data.proof, self.data.fixture, self.output, self.data.binding, 'r02-1', '/bin/Cna.Core.Tests.dll')
-        self.assertEqual(result['groups'], 4)
-        self.assertEqual(result['rows'], 88)
+        self.assertEqual(result['groups'], 5)
+        self.assertEqual(result['rows'], 109)
 
     def test_zero_exits_cannot_replace_missing_or_foreign_job_evidence(self):
         import ci_group_runner
