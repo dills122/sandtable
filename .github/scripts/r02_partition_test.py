@@ -164,6 +164,30 @@ class ChildEvidenceTests(unittest.TestCase):
         document = ET.parse(path); ET.SubElement(document.getroot(), 'test', name='unattributed', result='Pass'); document.write(path)
         with self.assertRaises(ValueError): self.check()
 
+    def test_only_one_immediate_regular_lowercase_xml_report_is_supported(self):
+        results = self.directory / 'results'; report = results / 'report.xml'; original = report.read_bytes()
+        for kind in ['nested-failed', 'nested-duplicate', 'uppercase-extra', 'uppercase-only', 'nested-only', 'non-xml-extra', 'empty-directory', 'symlink-report', 'symlink-results']:
+            with self.subTest(kind=kind):
+                if results.is_symlink(): results.unlink()
+                elif results.exists(): shutil.rmtree(results)
+                results.mkdir(); report.write_bytes(original)
+                if kind.startswith('nested'):
+                    nested = results / 'unexpected'; nested.mkdir()
+                    extra = nested / 'extra.xml'; extra.write_bytes(original)
+                    if kind == 'nested-failed':
+                        document = ET.parse(extra); document.getroot().find('assembly').set('name', '/bin/Foreign.dll'); document.getroot().find('.//test').set('result', 'Fail'); document.write(extra)
+                    if kind == 'nested-only': report.unlink()
+                elif kind.startswith('uppercase'):
+                    (results / 'extra.XML').write_bytes(original)
+                    if kind == 'uppercase-only': report.unlink()
+                elif kind == 'non-xml-extra': (results / 'extra.txt').write_text('unexpected')
+                elif kind == 'empty-directory': (results / 'unexpected').mkdir()
+                elif kind == 'symlink-report':
+                    source = self.root / 'external.xml'; source.write_bytes(original); report.unlink(); report.symlink_to(source)
+                else:
+                    external = self.root / 'external-results'; external.mkdir(); (external / 'report.xml').write_bytes(original); shutil.rmtree(results); results.symlink_to(external, target_is_directory=True)
+                with self.assertRaises(ValueError): self.check()
+
     def test_missing_duplicate_or_failed_xml_fails(self):
         path = self.directory / 'results' / 'report.xml'; original = path.read_bytes()
         for kind in ['missing', 'duplicate', 'failure', 'wrong-row']:
@@ -302,6 +326,12 @@ class CombinedConservationTests(unittest.TestCase):
 
     def test_complete_old_and_new_processes_are_required_together(self):
         self.assertEqual(self.check()['r02_rows'], 325)
+
+    def test_nested_foreign_failed_report_cannot_pass_combined_gate(self):
+        nested = self.root / 'r02-groups' / 'support-contract' / 'results' / 'unexpected'
+        nested.mkdir()
+        (nested / 'foreign.xml').write_text('<assemblies><assembly name="Foreign.dll" failed="1"><collection><test result="Fail" /></collection></assembly></assemblies>')
+        with self.assertRaises(ValueError): self.check()
 
     def test_missing_support_xml_or_old_process_fails_combined_gate(self):
         path = self.root / 'r02-groups' / 'support-contract' / 'results' / 'report.xml'

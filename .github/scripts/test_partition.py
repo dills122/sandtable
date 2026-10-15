@@ -195,8 +195,12 @@ def build_inventory(texts, payload, sha, sdk, attempt='local', excluded_rows=Non
 
 
 def report_rows(root, module):
-    reports = list((root / 'results').glob('*.xml'))
-    require(len(reports) == 1, 'Missing/duplicate report')
+    # Supported MTP layout: one immediate regular lowercase .xml file and no
+    # other entries. Reject nested/uppercase/linked reports rather than omit them.
+    results = root / 'results'
+    require(results.is_dir() and not results.is_symlink(), 'Missing/linked results directory')
+    reports = list(results.iterdir())
+    require(len(reports) == 1 and reports[0].is_file() and not reports[0].is_symlink() and reports[0].suffix == '.xml', 'Missing/duplicate report or unsupported layout')
     document = ET.parse(reports[0]).getroot()
     assemblies = document.findall('assembly')
     require(document.tag == 'assemblies' and len(assemblies) == 1, 'Unexpected report assemblies')
