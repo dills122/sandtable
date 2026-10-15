@@ -1,0 +1,161 @@
+{
+  "status": "reference implementation freeze; native, installed MTP, measured allocation and independent delivery acceptance pending",
+  "counts": {
+    "roots": 300,
+    "events": 788,
+    "cuts": 1088,
+    "priorRetries": 1520,
+    "parentReplays": 3396
+  },
+  "groups": {
+    "armed-axis-m0": 22,
+    "armed-axis-m1": 22,
+    "armed-axis-m2": 22,
+    "armed-axis-m3": 22,
+    "armed-axis-m4": 22,
+    "armed-axis-m5": 22,
+    "armed-commonwealth-m0": 22,
+    "armed-commonwealth-m1": 22,
+    "armed-commonwealth-m2": 22,
+    "armed-commonwealth-m3": 22,
+    "armed-commonwealth-m4": 22,
+    "armed-commonwealth-m5": 22,
+    "paid-axis-m0": 6,
+    "paid-axis-m1": 6,
+    "paid-axis-m2": 6,
+    "paid-commonwealth-m0": 6,
+    "paid-commonwealth-m1": 6,
+    "paid-commonwealth-m2": 6
+  },
+  "supportRows": 25,
+  "supportObligations": {
+    "physicalPins": 106,
+    "physicalFaultModes": 5,
+    "physicalPinFaults": 530,
+    "handlers": 14,
+    "limitEntries": 25,
+    "handlerCapacityOmissions": 156,
+    "ledgerFaults": 60,
+    "resignedEvents": 6,
+    "claimFaults": 24,
+    "contextFaults": 72,
+    "isolatedBoundaries": 8,
+    "grammarFramingOwnershipChecks": 88
+  },
+  "hashes": {
+    "docs/specs/combat-actual-moved-repeat-movement-completion-v1.schema.json": {
+      "bytes": 26738,
+      "sha256": "3a80a1cd94b41e8a88590d8eadddcc4c821bfefa7b0021489ad4e7cfe50af8ef"
+    },
+    "docs/specs/verify-combat-actual-moved-repeat-movement-completion-v1.py": {
+      "bytes": 29263,
+      "sha256": "705445d1b061ef2ba6d905382e7a26220e49be643ee0fe0444cfbf12b0989c62"
+    },
+    "docs/specs/fixtures/combat-actual-moved-repeat-movement-completion-v1.json": {
+      "bytes": 3586039,
+      "sha256": "7c887ebbfe8889279fcf5d9269cef2538af6fb38cacf0279a420f2e3496f2258"
+    }
+  },
+  "pins": {
+    "external": 104,
+    "ownDelivery": 2,
+    "physical": 106,
+    "inherited101Unchanged": true,
+    "external104BytesEqualVerifiedMain": true,
+    "verifiedMain": "3a7b62645b377326ed2318dfa81cfe66107f4445"
+  },
+  "evidence": {
+    "generation": {
+      "command": "python3 -u docs/specs/verify-combat-actual-moved-repeat-movement-completion-v1.py --generate",
+      "exitCode": 0,
+      "localLog": "/private/tmp/r02-fixture-generation.log",
+      "generationOracleSha256": "934414a013d502257fb7ef26fe6d8efd9debe86fb5d331af27d97fe831f44aa2"
+    },
+    "ownershipRed": {
+      "exitCode": 1,
+      "localLog": "/private/tmp/r02-ownership-regression-red.log",
+      "retainedVersion": "fae1086",
+      "diagnostic": "trusted-input on post-append reread of mutated original ledgers"
+    },
+    "ownershipGreen": {
+      "exitCode": 0,
+      "profiles": [
+        "paid",
+        "armed"
+      ],
+      "localLog": "/private/tmp/r02-ownership-regression-green.log"
+    },
+    "normal": {
+      "command": "python3 -u docs/specs/verify-combat-actual-moved-repeat-movement-completion-v1.py",
+      "exitCode": 0,
+      "localLog": "/private/tmp/r02-reference-normal.log",
+      "counts": {
+        "roots": 300,
+        "events": 788,
+        "cuts": 1088,
+        "priorRetries": 1520,
+        "parentReplays": 3396
+      }
+    },
+    "focusedClosure": {
+      "exitCode": 0,
+      "localLog": "/private/tmp/r02-reference-closure-final.log",
+      "counters": {
+        "claimFaults": 24,
+        "contextFaults": 72,
+        "handlerCeilings": 156,
+        "isolatedBoundaries": 8,
+        "ledgerFaults": 60,
+        "physicalPinFaults": 530,
+        "resignedEvents": 6
+      }
+    },
+    "framingClosure": {
+      "exitCode": 0,
+      "localLog": "/private/tmp/r02-own-framing-closure-final.log",
+      "checks": 88,
+      "sourceFramingBytes": 128857183,
+      "worldFramingBytes": 587212,
+      "actualArmedMoves": 5
+    },
+    "capacity": {
+      "exitCode": 0,
+      "localReport": "/private/tmp/r02-capacity-arithmetic-final.json",
+      "report": {
+        "scope": "reachable profile arithmetic; arbitrary framing not authority",
+        "model": {
+          "Source": 128857600,
+          "Control": 786432,
+          "Proof": 794624,
+          "World": 534528,
+          "Event": 65536,
+          "Input": 4096
+        },
+        "sourceEnvelope": 95,
+        "components": {
+          "unit": 1634,
+          "track": 6382,
+          "flow": 8343,
+          "authority": 12832,
+          "position": 509,
+          "context": 14183,
+          "newEndProof": 10401,
+          "receiptCopies": 3072,
+          "headerAllowance": 4096,
+          "allocatedMetadata": 64512,
+          "event": 52480
+        }
+      }
+    },
+    "ownershipGreenFinal": {
+      "exitCode": 0,
+      "profiles": [
+        "paid",
+        "armed"
+      ],
+      "localLog": "/private/tmp/r02-ownership-regression-green-final.log"
+    }
+  },
+  "freezeUtc": "2026-10-15T21:08:31.549278+00:00",
+  "generationToFinalOracle": "Generation used934414a013d502257fb7ef26fe6d8efd9debe86fb5d331af27d97fe831f44aa2. Final705445d1b061ef2ba6d905382e7a26220e49be643ee0fe0444cfbf12b0989c62 only extracts the existing supportObligations literal into a function and requires exact metadata equality during normal verification. Transition/canonical/schema/fixture bytes are unchanged; complete final-hash normal verification matched every generated row/event/cut."
+}

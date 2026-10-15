@@ -208,6 +208,7 @@ def support_rows():
   for args in two:add('ContractTests',method,args)
  for method in ['AllPhysicalPinsRemainRequiredAfterWarmReplay','EveryHandlerAndCapacityRequired','ClosedGrammarAndSizeFraming','WholeTraceCapacityAndHistoricalExclusionAreBounded','FullSourceFramingCannotForgeParent']:add('ContractTests',method,[])
  require(len(out)==25,6);return out
+def support_obligations():return dict(physicalPins=106,physicalFaultModes=5,physicalPinFaults=530,handlers=14,limitEntries=25,handlerCapacityOmissions=156,ledgerFaults=60,resignedEvents=6,claimFaults=24,contextFaults=72,isolatedBoundaries=8,grammarFramingOwnershipChecks=88)
 FIXTURE=ROOT/'fixtures'/('combat-actual-moved-repeat-movement-completion-v1.json')
 def generate():
  global REPLAY_COUNT
@@ -215,11 +216,11 @@ def generate():
  for i,row in enumerate(rows):
   cases.append(trace(row));print('GENERATED',i+1,'/300',row['rowKey'],'parentReplays',REPLAY_COUNT,flush=True)
  require(len(cases)==300 and sum(len(c['inputCanonicalUtf8']) for c in cases)==788 and sum(len(c['cuts']) for c in cases)==1088 and REPLAY_COUNT==3396,6)
- return dict(contractVersion=1,dependencyManifestHash=manifest_hash(),semanticRows=rows,supportRows=support_rows(),supportObligations=dict(physicalPins=106,physicalFaultModes=5,physicalPinFaults=530,handlers=14,limitEntries=25,handlerCapacityOmissions=156,ledgerFaults=60,resignedEvents=6,claimFaults=24,contextFaults=72,isolatedBoundaries=8,grammarFramingOwnershipChecks=88),cases=cases)
+ return dict(contractVersion=1,dependencyManifestHash=manifest_hash(),semanticRows=rows,supportRows=support_rows(),supportObligations=support_obligations(),cases=cases)
 def verify(group=None):
  global REPLAY_COUNT
  require(group is None or group in {r['group'] for r in semantic_rows()},3)
- fixture=json.loads(FIXTURE.read_bytes());require(fixture['contractVersion']==1 and fixture['dependencyManifestHash']==manifest_hash() and fixture['semanticRows']==semantic_rows() and fixture['supportRows']==support_rows(),6);REPLAY_COUNT=0;count=events=cuts=0
+ fixture=json.loads(FIXTURE.read_bytes());require(fixture['contractVersion']==1 and fixture['dependencyManifestHash']==manifest_hash() and fixture['semanticRows']==semantic_rows() and fixture['supportRows']==support_rows() and fixture['supportObligations']==support_obligations(),6);REPLAY_COUNT=0;count=events=cuts=0
  for expected,row in zip(fixture['cases'],fixture['semanticRows']):
   if group is not None and row['group']!=group:continue
   actual=trace(row);require(actual==expected,6);count+=1;events+=len(actual['inputCanonicalUtf8']);cuts+=len(actual['cuts']);print('VERIFIED',count,row['rowKey'],'parentReplays',REPLAY_COUNT,flush=True)
