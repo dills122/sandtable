@@ -2,8 +2,8 @@
   "base": "c24266a5d7dd12c05568c1788e472ad85a20c73e",
   "baseTree": "6f485236021b0fb91dc7bb122b5114708f804ff7",
   "branch": "codex/integration-session-final-handoff",
-  "capturedAtUtc": "2026-10-15T00:11:31.435636+00:00",
-  "status": "N3 merged/exactPRCI accepted;main CI/CodeQL/links pending",
+  "capturedAtUtc": "2026-10-15T00:39:31.691800+00:00",
+  "status": "N3 merged/exactPRCI accepted;exactmergedmain CI/CodeQL/links allverifiedSUCCESS",
   "mainRuns": {
     "CI": 38658363876,
     "CodeQL": 38658363635,
@@ -109,14 +109,14 @@
     {
       "source": "/Users/dsteele/repos/sandtable/.planning/combat-integration-first/session-plan.md",
       "path": "docs/work/evidence/2026-10-14-integration-final/brain-session-plan.md",
-      "bytes": 5036,
-      "sha256": "19d38d13dd942d3ead37d15a6e9a6dfeef73f152c96c630292feb0508657fc9b"
+      "bytes": 5136,
+      "sha256": "4bcc4220e1410a60786a9cfc3b9bd9e493fa26ea332eb63373d32c3287f7a37d"
     },
     {
       "source": "/Users/dsteele/repos/sandtable/.planning/combat-integration-first/run-state.md",
       "path": "docs/work/evidence/2026-10-14-integration-final/brain-run-state.md",
-      "bytes": 52487,
-      "sha256": "6b25826395dde240607e4211f7facaeb06b8c50db0fa584958a7ea54a70a4de1"
+      "bytes": 53373,
+      "sha256": "acd049300d7abe0a234e6fca35a4d6eaffbf9d0ee0a62d3ac519e62975d05412"
     },
     {
       "source": "/private/tmp/n3-budget-ci-final-receipt.json",
@@ -126,5 +126,26 @@
     }
   ],
   "scope": "Authorized byte-exact UTF8 text only;rawlogs/XML/binlogs/binaries/archives/27d8293 ancestry/.serena excluded",
-  "credentialScan": "Limited known token/private-key patterns;not general secrets audit"
+  "credentialScan": "Limited known token/private-key patterns;not general secrets audit",
+  "mainVerification": {
+    "head": "c24266a5d7dd12c05568c1788e472ad85a20c73e",
+    "reportedAtUtc": "2026-10-15T00:38:00Z",
+    "reportedAtToronto": "2026-10-14 20:38",
+    "verifiedBy": "Brain authenticated API check",
+    "runs": {
+      "CI": {
+        "id": 38658363876,
+        "conclusion": "SUCCESS"
+      },
+      "CodeQL": {
+        "id": 38658363635,
+        "conclusion": "SUCCESS"
+      },
+      "links": {
+        "id": 38658363923,
+        "conclusion": "SUCCESS"
+      }
+    }
+  },
+  "historicalPendingCheckpoint": "bb14ab05aac487e29312893906560d995ca86042 retains honest earlier mainpending snapshots inGit"
 }

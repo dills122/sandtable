@@ -1,6 +1,6 @@
 # Twelve-hour integration-first Combat session
 
-ACTIVE; user approved 2026-10-14. Start13:37:35UTC (09:37:35 Toronto).
+CLOSEOUT; all four scoped private milestones merged and main verified; final handoff refresh/pause pending. User approved 2026-10-14. Start13:37:35UTC (09:37:35 Toronto).
 Mandatory re-estimate15:07:35UTC (11:07:35 Toronto), closeout00:37:35UTC October15 (20:37:35 October14 Toronto), product stop01:37:35UTC October15 (21:37:35 October14 Toronto).
 
 ## Objective
