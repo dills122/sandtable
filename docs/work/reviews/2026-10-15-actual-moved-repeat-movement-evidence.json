@@ -18,11 +18,30 @@
     "meaning": "Authentic eight-ledger N3 replay succeeds; repeat-publish handler explicitly unavailable before implementation. Positive publication assertion fails. This is new-family transition RED, not a claim that legacy N3 behavior must change.",
     "recordedAtUtc": "2026-10-15T15:48:16Z"
   },
-  "nativeRed": null,
+  "nativeRed": {
+    "command": "dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj -c Release --no-build --no-restore --filter-class '*CombatActualMovedRepeatMovementTests' -bl:/private/tmp/r01-native-red-test-{}.binlog",
+    "exitCode": 2,
+    "observedCompleteUtc": "2026-10-15T16:56:28Z",
+    "total": 2,
+    "failed": 2,
+    "passed": 0,
+    "skipped": 0,
+    "diagnostic": "CMB-MRM-007",
+    "profiles": [
+      "paid",
+      "armed"
+    ],
+    "meaning": "Both authentic N3 parent replays succeed; explicit unavailable actual-publication handler throws before positive ordinal2/Movement assertions. Transition implementation absent.",
+    "preparatoryBuildFailure": {
+      "diagnostic": "CA1822: stub Control getter did not access instance data",
+      "disposition": "Replaced stub with instance auto-property; build then passed zero warnings/errors. Not behavior RED."
+    },
+    "build": "dotnet build tests/Cna.Core.Tests/Cna.Core.Tests.csproj -c Release --no-restore -bl:/private/tmp/r01-native-red-build-{}.binlog; exit0"
+  },
   "green": null,
   "limitations": [
     "Reference contract frozen after corrected full normal and closure PASS; native TDD, implementation and native checks pending.",
-    "Native implementation, native TDD and physical callback fault tests have not begun.",
+    "Native genuine two-profile publication RED captured; implementation and native GREEN/physical fault checks pending.",
     "Framing vectors are not authenticated maximum roots; production latency/peak memory/general-seed/public/Runner/full72 assurance absent."
   ],
   "referenceCandidatePublicationGreen": {
