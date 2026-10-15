@@ -18,7 +18,7 @@ bad=copy.deepcopy(packet);bad['movementSourceCanonicalUtf8']='{}';m.reject(lambd
 for index in range(9):
  bad=copy.deepcopy(args);bad[index+1]=None;m.reject(lambda:m.replay(m.source_bytes(packet),*bad,[]));checks+=1
 claim=m.proof(f['packet'],f,s);returned=m.read_proof(m.raw(claim,'Proof'),source,args,inputs);returned['control']['world']['elements'].clear();m.require(m.read_proof(m.raw(claim,'Proof'),source,args,inputs)==claim,6);checks+=1
-framing=dict(contractVersion=1,movementSourceCanonicalUtf8='"'*64231936,lifecycleEventCanonicalUtf8=['"'*65536]*3);encoded=m.source_bytes(framing);m.require(len(encoded)==128857183 and len(encoded)<m.I['encodedUpperBounds']['Source'],6);m.reject(lambda:m.replay(encoded,*args,[]));checks+=1
+framing=dict(contractVersion=1,movementSourceCanonicalUtf8='"'*64231936,lifecycleEventCanonicalUtf8=['"'*65536]*3);encoded=m.source_bytes(framing);m.require(len(encoded)==128857183 and len(encoded)<m.I['encodedUpperBounds']['Source'],6);m.reject(lambda:m.replay(encoded,*args,inputs),1);checks+=1
 world=copy.deepcopy(s['world']);e=world['elements'][0];refs=[dict(sourceId='x'*128,locator='x'*128)]*512
 for origin in [e['readiness']['initialReadinessOrigin'],e['ammunition']['initialAmmunitionOrigin'],e['operationalState']['initialLedgerOrigin'],e['components'][0]['initialToeOrigin']]:origin['references']=copy.deepcopy(refs)
 w=m.raw(world,'World');m.require(524288<len(w)<1048576,6);forged=copy.deepcopy(s);forged['world']=world;m.reject(lambda:m.read_control(m.raw(forged,'Control'),source,args,inputs),6);checks+=1

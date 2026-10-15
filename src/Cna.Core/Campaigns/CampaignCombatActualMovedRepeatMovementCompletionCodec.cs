@@ -74,7 +74,7 @@ internal static class CampaignCombatActualMovedRepeatMovementCompletionCodec
         }
         Require(!quoted && depth == 0, 1);
     }
-    internal static byte[] Canonical(JsonNode value, string kind) => Canonical(JsonSerializer.SerializeToElement(value), kind);
+    internal static byte[] Canonical(JsonNode value, string kind) => kind == "Source" ? CanonicalSource(value) : Canonical(JsonSerializer.SerializeToElement(value), kind);
     private static byte[] Canonical(JsonElement value, string kind)
     {
         using var stream = new MemoryStream();
@@ -82,6 +82,66 @@ internal static class CampaignCombatActualMovedRepeatMovementCompletionCodec
             Write(writer, value, kind, 0);
         var bytes = stream.ToArray(); Require(bytes.Length <= ByteLimit(kind), 1);
         return CampaignCombatActualPaidAssaultCodec.Encode(JsonNode.Parse(bytes)!);
+    }
+    private static readonly string[] SourceFields = ["contractVersion", "movementSourceCanonicalUtf8", "lifecycleEventCanonicalUtf8"];
+    private static byte[] CanonicalSource(JsonNode value)
+    {
+        Require(value is JsonObject, 1); var fields = value.AsObject().Select(p => p.Key).ToArray();
+        Require(fields.Length == 3 && fields.ToHashSet(StringComparer.Ordinal).SetEquals(SourceFields), 1);
+        SourceVersion(JsonSerializer.SerializeToElement(value["contractVersion"]));
+        Require(value["lifecycleEventCanonicalUtf8"] is JsonArray && value["lifecycleEventCanonicalUtf8"]!.AsArray().Count <= 3, 1);
+        return SourceBytes(Carrier(value["movementSourceCanonicalUtf8"]), value["lifecycleEventCanonicalUtf8"]!.AsArray().Select(Carrier).ToArray());
+    }
+    private static byte[] CanonicalSource(JsonElement value)
+    {
+        Require(value.ValueKind == JsonValueKind.Object, 1); var fields = value.EnumerateObject().Select(p => p.Name).ToArray();
+        Require(fields.Length == 3 && fields.Distinct(StringComparer.Ordinal).Count() == 3 && fields.ToHashSet(StringComparer.Ordinal).SetEquals(SourceFields), 1);
+        SourceVersion(value.GetProperty("contractVersion")); var events = value.GetProperty("lifecycleEventCanonicalUtf8");
+        Require(value.GetProperty("movementSourceCanonicalUtf8").ValueKind == JsonValueKind.String && events.ValueKind == JsonValueKind.Array && events.GetArrayLength() <= 3, 1);
+        var carriers = events.EnumerateArray().Select(e => { Require(e.ValueKind == JsonValueKind.String, 1); return e.GetString()!; }).ToArray();
+        return SourceBytes(value.GetProperty("movementSourceCanonicalUtf8").GetString()!, carriers);
+    }
+    private static string Carrier(JsonNode? value)
+    {
+        Require(value is JsonValue, 1); var valid = value.AsValue().TryGetValue<string>(out var text); Require(valid && text is not null, 1); return text;
+    }
+    private static void SourceVersion(JsonElement value)
+    {
+        _ = Inherited(() => CampaignCombatActualMovedAssaultCodec.Canonical(JsonNode.Parse(value.GetRawText())!, "int"));
+        Require(value.GetInt32() == 1, 3);
+    }
+    private static byte[] SourceBytes(string parent, string[] events)
+    {
+        Require(parent.Length is > 0 and <= 67108864 && events.Length <= 3 && events.All(e => e.Length is > 0 and <= 65536), 1);
+        // Source carriers are ASCII. Emit Python-compatible escaping directly, without serializing
+        // a 128MiB envelope through multiple JsonElement/JsonNode/UTF-16 copies.
+        long Cost(string text)
+        {
+            long count = 2;
+            foreach (var c in text) { Require(c < 128, 1); count += c is '"' or '\\' or '\b' or '\t' or '\n' or '\f' or '\r' ? 2 : c < 32 || c == 127 ? 6 : 1; }
+            return count;
+        }
+        const string begin = "{\"contractVersion\":1,\"movementSourceCanonicalUtf8\":";
+        const string middle = ",\"lifecycleEventCanonicalUtf8\":[";
+        var size = begin.Length + Cost(parent) + middle.Length + 2 + events.Sum(Cost) + Math.Max(0, events.Length - 1);
+        Require(size <= ByteLimit("Source"), 1); var bytes = new byte[(int)size]; var offset = 0;
+        void Literal(string text) { offset += Encoding.ASCII.GetBytes(text.AsSpan(), bytes.AsSpan(offset)); }
+        void Text(string text)
+        {
+            bytes[offset++] = 34;
+            foreach (var c in text)
+            {
+                if (c is '"' or '\\') { bytes[offset++] = 92; bytes[offset++] = (byte)c; }
+                else if (c is '\b' or '\t' or '\n' or '\f' or '\r')
+                { bytes[offset++] = 92; bytes[offset++] = (byte)(c switch { '\b' => 'b', '\t' => 't', '\n' => 'n', '\f' => 'f', _ => 'r' }); }
+                else if (c < 32 || c == 127) { Literal("\\u00"); bytes[offset++] = (byte)"0123456789abcdef"[c >> 4]; bytes[offset++] = (byte)"0123456789abcdef"[c & 15]; }
+                else bytes[offset++] = (byte)c;
+            }
+            bytes[offset++] = 34;
+        }
+        Literal(begin); Text(parent); Literal(middle);
+        for (var i = 0; i < events.Length; i++) { if (i > 0) bytes[offset++] = 44; Text(events[i]); }
+        Literal("]}"); Require(offset == bytes.Length, 1); return bytes;
     }
     private static void Write(Utf8JsonWriter writer, JsonElement value, string kind, int depth, string fieldPath = "")
     {

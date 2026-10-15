@@ -154,8 +154,63 @@
         "armed"
       ],
       "localLog": "/private/tmp/r02-ownership-regression-green-final.log"
+    },
+    "strengthenedFramingClosure": {
+      "exitCode": 0,
+      "checks": 88,
+      "sourceBytes": 128857183,
+      "worldBytes": 587212,
+      "matchingOwnInputs": 3,
+      "invalidParentDiagnostic": "CMB-MRC-001",
+      "localLog": "/private/tmp/r02-own-framing-closure-strengthened.log"
     }
   },
   "freezeUtc": "2026-10-15T21:08:31.549278+00:00",
-  "generationToFinalOracle": "Generation used934414a013d502257fb7ef26fe6d8efd9debe86fb5d331af27d97fe831f44aa2. Final705445d1b061ef2ba6d905382e7a26220e49be643ee0fe0444cfbf12b0989c62 only extracts the existing supportObligations literal into a function and requires exact metadata equality during normal verification. Transition/canonical/schema/fixture bytes are unchanged; complete final-hash normal verification matched every generated row/event/cut."
+  "generationToFinalOracle": "Generation used934414a013d502257fb7ef26fe6d8efd9debe86fb5d331af27d97fe831f44aa2. Final705445d1b061ef2ba6d905382e7a26220e49be643ee0fe0444cfbf12b0989c62 only extracts the existing supportObligations literal into a function and requires exact metadata equality during normal verification. Transition/canonical/schema/fixture bytes are unchanged; complete final-hash normal verification matched every generated row/event/cut.",
+  "nativeInProgress": {
+    "genuineRed": {
+      "head": "a27cf87e07c1c5f7cf292f985498dd4e7db8af11",
+      "exitCode": 2,
+      "actualRows": 4,
+      "failed": 4,
+      "diagnostic": "CMB-MRC-007 after authentic R01 ingress",
+      "localDirectory": "/private/tmp/r02-native-red-results"
+    },
+    "initialGreen": {
+      "exitCode": 0,
+      "actualRows": 4,
+      "passed": 4,
+      "localDirectory": "/private/tmp/r02-native-green-results"
+    },
+    "actualDiscovery": {
+      "rows": 325,
+      "uniqueUids": 325,
+      "uniqueDisplayNames": 325,
+      "exactFixtureIdentityMatch": true,
+      "localJson": "/private/tmp/r02-native-discovery.json"
+    },
+    "firstCompleteStage": {
+      "head": "9a74daf18b55634151f140e182e719f81bf43ec4",
+      "result": "aborted/incomplete",
+      "actualPassedRows": 66,
+      "completedParityClasses": 3,
+      "reason": "4GiB support process RSS guard",
+      "supportRssBytes": 4310122496,
+      "aggregateRssBytes": 5541445632,
+      "localDirectory": "/private/tmp/r02-native-full-1",
+      "cleanup": "PermissionError before internal verification; separate exact-PGID audit confirmed zero survivors",
+      "separateCleanupAudit": "/private/tmp/r02-native-full-1/cleanup-audit.json"
+    },
+    "asciiMutationSensitivity": {
+      "label": "controlled wrong-case streaming mutant; not original production defect",
+      "exitCode": 2,
+      "actualRows": 1,
+      "failed": 1,
+      "assertion": "Assert.Equal byte111 expected98(b),actual66(B)",
+      "mutantCodecSha256": "ac8a5e56ba8d4f412224913e1f2a2413a5f1b139debffe98c4989b33d6ef7261",
+      "correctCodecSha256": "7ebd867d4f035856a7f669852087d6cdf08d0ff8f155eb5f2864343d59339a35",
+      "localDirectory": "/private/tmp/r02-ascii-sensitivity-red"
+    },
+    "framingTestGap": "Old three-event maximal framing vector had empty completion ledger and rejected early. Strengthened existing vectors supply three independent inputs and require invalid-parent001; contract hashes unchanged; focused/full validation pending."
+  }
 }

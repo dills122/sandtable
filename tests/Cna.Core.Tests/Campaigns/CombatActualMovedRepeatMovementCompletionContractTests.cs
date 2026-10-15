@@ -136,14 +136,15 @@ public sealed class CombatActualMovedRepeatMovementCompletionContractTests
                 Assert.ThrowsAny<JsonException>(() => ReplayLedgers(c, bad)); faults++;
             }
         }
-        Assert.Equal(30, faults); var source = c.Source.ToArray();
+        Assert.Equal(30, faults); var source = c.Source.ToArray(); var resigned = 0;
         for (var index = 0; index < 3; index++)
         {
             var packet = JsonNode.Parse(source)!; var ev = JsonNode.Parse(packet["lifecycleEventCanonicalUtf8"]![index]!.GetValue<string>())!;
             ev["stateVersion"] = ev["stateVersion"]!.GetValue<long>() + 1; ev.AsObject().Remove("receiptId");
             ev["receiptId"] = "mrmc." + Codec.HashWithDomain("sandtable.combat.actual-moved-repeat-movement-completion.receipt.v1", Codec.Encode(ev))[7..];
-            packet["lifecycleEventCanonicalUtf8"]![index] = Encoding.ASCII.GetString(Codec.Canonical(ev, "Event")); c.Source = Codec.Canonical(packet, "Source"); Code(6, () => c.Replay());
+            packet["lifecycleEventCanonicalUtf8"]![index] = Encoding.ASCII.GetString(Codec.Canonical(ev, "Event")); c.Source = Codec.Canonical(packet, "Source"); Code(6, () => c.Replay()); resigned++;
         }
+        Assert.Equal(3, resigned);
     }
     [Theory]
     [InlineData(0, 3, "paid")]
@@ -182,8 +183,9 @@ public sealed class CombatActualMovedRepeatMovementCompletionContractTests
         var c = new CompletionContext(0, 1, "paid"); _ = c.Replay();
         using var schema = JsonDocument.Parse(Dependency("docs/specs/combat-actual-moved-repeat-movement-completion-v1.schema.json"));
         var paths = schema.RootElement.GetProperty("runtimeSourceHashes").EnumerateObject().Select(p => p.Name).Concat(["docs/specs/combat-actual-moved-repeat-movement-completion-v1.schema.json", "docs/specs/verify-combat-actual-moved-repeat-movement-completion-v1.py"]).ToArray(); Assert.Equal(106, paths.Length); var faults = 0;
+        var modes = new[] { "missing", "corrupt", "null", "oversize", "suffix" }; Assert.Equal(5, modes.Length);
         foreach (var target in paths)
-        foreach (var fault in new[] { "missing", "corrupt", "null", "oversize", "suffix" })
+        foreach (var fault in modes)
         {
             Code(9, () => c.Replay(path =>
             {
@@ -242,7 +244,7 @@ public sealed class CombatActualMovedRepeatMovementCompletionContractTests
         Assert.ThrowsAny<JsonException>(() => Claim(forged, Encoding.ASCII.GetBytes("{}"), false)); checks++;
         for (var index = 0; index < 9; index++) { var bad = Ledgers(c); bad[index] = null!; Assert.ThrowsAny<JsonException>(() => ReplayLedgers(c, bad)); checks++; }
         var returned = Claim(c, current.ProofBytes, true).ProofBytes; Array.Clear(returned); Assert.Equal(current.ProofBytes, Claim(c, current.ProofBytes, true).ProofBytes); checks++;
-        var framedSource = SourceFraming(); forged.Source = framedSource; Assert.ThrowsAny<JsonException>(() => forged.Replay()); checks++;
+        var framedSource = SourceFraming(); forged.Source = framedSource; forged.Completion.AddRange(forged.Inputs.Select(b => b.ToArray())); Code(1, () => forged.Replay()); checks++;
         var world = JsonNode.Parse(current.Control.GetProperty("world").GetRawText())!; var e = world["elements"]![0]!;
         var references = new JsonArray(Enumerable.Range(0, 512).Select(_ => (JsonNode?)new JsonObject { ["sourceId"] = new string('x', 128), ["locator"] = new string('x', 128) }).ToArray());
         foreach (var origin in new[] { e["readiness"]!["initialReadinessOrigin"]!, e["ammunition"]!["initialAmmunitionOrigin"]!, e["operationalState"]!["initialLedgerOrigin"]!, e["components"]![0]!["initialToeOrigin"]! }) origin["references"] = references.DeepClone();
@@ -261,7 +263,11 @@ public sealed class CombatActualMovedRepeatMovementCompletionContractTests
     [Fact]
     public void FullSourceFramingCannotForgeParent()
     {
-        var c = new CompletionContext(12, 6, "armed"); c.Source = SourceFraming(); Assert.ThrowsAny<JsonException>(() => c.Replay());
+        var ascii = new string(Enumerable.Range(0, 128).Select(i => (char)i).ToArray());
+        var vector = new JsonObject { ["contractVersion"] = 1, ["movementSourceCanonicalUtf8"] = ascii, ["lifecycleEventCanonicalUtf8"] = new JsonArray(ascii) };
+        var expected = Convert.FromBase64String("eyJjb250cmFjdFZlcnNpb24iOjEsIm1vdmVtZW50U291cmNlQ2Fub25pY2FsVXRmOCI6Ilx1MDAwMFx1MDAwMVx1MDAwMlx1MDAwM1x1MDAwNFx1MDAwNVx1MDAwNlx1MDAwN1xiXHRcblx1MDAwYlxmXHJcdTAwMGVcdTAwMGZcdTAwMTBcdTAwMTFcdTAwMTJcdTAwMTNcdTAwMTRcdTAwMTVcdTAwMTZcdTAwMTdcdTAwMThcdTAwMTlcdTAwMWFcdTAwMWJcdTAwMWNcdTAwMWRcdTAwMWVcdTAwMWYgIVwiIyQlJicoKSorLC0uLzAxMjM0NTY3ODk6Ozw9Pj9AQUJDREVGR0hJSktMTU5PUFFSU1RVVldYWVpbXFxdXl9gYWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXp7fH1+XHUwMDdmIiwibGlmZWN5Y2xlRXZlbnRDYW5vbmljYWxVdGY4IjpbIlx1MDAwMFx1MDAwMVx1MDAwMlx1MDAwM1x1MDAwNFx1MDAwNVx1MDAwNlx1MDAwN1xiXHRcblx1MDAwYlxmXHJcdTAwMGVcdTAwMGZcdTAwMTBcdTAwMTFcdTAwMTJcdTAwMTNcdTAwMTRcdTAwMTVcdTAwMTZcdTAwMTdcdTAwMThcdTAwMTlcdTAwMWFcdTAwMWJcdTAwMWNcdTAwMWRcdTAwMWVcdTAwMWYgIVwiIyQlJicoKSorLC0uLzAxMjM0NTY3ODk6Ozw9Pj9AQUJDREVGR0hJSktMTU5PUFFSU1RVVldYWVpbXFxdXl9gYWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXp7fH1+XHUwMDdmIl19"); Assert.Equal(expected, Codec.Canonical(vector, "Source")); Assert.Equal(expected, Codec.Canonical(Codec.Object(expected, "Source"), "Source"));
+        vector["movementSourceCanonicalUtf8"] = new string((char)128, 1); Code(1, () => Codec.Canonical(vector, "Source"));
+        var c = new CompletionContext(12, 6, "armed"); c.Source = SourceFraming(); c.Completion.AddRange(c.Inputs.Select(b => b.ToArray())); Code(1, () => c.Replay());
         var packet = new JsonObject { ["contractVersion"] = 1, ["movementSourceCanonicalUtf8"] = "{}", ["lifecycleEventCanonicalUtf8"] = new JsonArray("{}", "{}", "{}", "{}") }; Code(1, () => Codec.SourceBounds(packet));
         Code(1, () => Codec.Copy(new byte[134217729], "Source")); Code(1, () => Codec.Copy(new byte[4097], "Input")); Code(1, () => Codec.Copy(new byte[65537], "Event"));
     }
