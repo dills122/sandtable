@@ -124,3 +124,14 @@ Repeat publication means consuming the real pending intent once and opening ordi
 it does not rename or upgrade the historical pending intent into executable authority.
 Movement here covers ordinary owner moves only. Stop, resolution, completion, later phases and
 public campaign actions require separate lineage-aware integrations.
+
+`CampaignCombatActualMovedRepeatMovementCompletion` and its codec name the separate private
+[actual moved repeat Movement completion contract](docs/specs/combat-actual-moved-repeat-movement-completion-v1.md)
+(R02); the R01 family above remains move-only. R02 authenticates 10 independent ledgers. True-zero
+completion denotes one owner event; positive completion denotes owner stop, empty System
+resolution and owner completion, three events. Historical ordinal1 and receipt-bound ordinal2
+proofs remain distinct. Entry to Breakdown Determination does not imply Breakdown execution.
+Local 325-row validation and independent implementation review at `07fac9f` are complete; R02
+hosted validation, merge and post-merge main verification remain pending. These technical module
+names do not imply public activation, Runner adoption, acceptance of all 72 criteria or a first
+release candidate.
