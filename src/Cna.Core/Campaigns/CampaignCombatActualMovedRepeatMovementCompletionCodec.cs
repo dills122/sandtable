@@ -45,6 +45,7 @@ internal static class CampaignCombatActualMovedRepeatMovementCompletionCodec
         try
         {
             using var doc = JsonDocument.Parse(owned, new JsonDocumentOptions { MaxDepth = 41 });
+            if (kind == "Source") return SourceObject(doc.RootElement, owned);
             Require(owned.AsSpan().SequenceEqual(Canonical(doc.RootElement, kind)), 8);
             return JsonNode.Parse(owned)!.AsObject();
         }
@@ -91,6 +92,21 @@ internal static class CampaignCombatActualMovedRepeatMovementCompletionCodec
         SourceVersion(JsonSerializer.SerializeToElement(value["contractVersion"]));
         Require(value["lifecycleEventCanonicalUtf8"] is JsonArray && value["lifecycleEventCanonicalUtf8"]!.AsArray().Count <= 3, 1);
         return SourceBytes(Carrier(value["movementSourceCanonicalUtf8"]), value["lifecycleEventCanonicalUtf8"]!.AsArray().Select(Carrier).ToArray());
+    }
+    private static JsonObject SourceObject(JsonElement value, ReadOnlySpan<byte> owned)
+    {
+        Require(value.ValueKind == JsonValueKind.Object, 1); var fields = value.EnumerateObject().Select(p => p.Name).ToArray();
+        Require(fields.Length == 3 && fields.Distinct(StringComparer.Ordinal).Count() == 3 && fields.ToHashSet(StringComparer.Ordinal).SetEquals(SourceFields), 1);
+        // Preserve the reader's primary-version check before carrier validation.
+        Require(value.GetProperty("contractVersion").GetInt32() == 1, 3);
+        var parent = value.GetProperty("movementSourceCanonicalUtf8"); var events = value.GetProperty("lifecycleEventCanonicalUtf8");
+        Require(parent.ValueKind == JsonValueKind.String && events.ValueKind == JsonValueKind.Array && events.GetArrayLength() <= 3, 1);
+        var text = parent.GetString()!;
+        var carriers = events.EnumerateArray().Select(e => { Require(e.ValueKind == JsonValueKind.String, 1); return e.GetString()!; }).ToArray();
+        Require(owned.SequenceEqual(SourceBytes(text, carriers)), 8);
+        // Decoded strings are immutable and independent of the caller's byte buffer. Reuse them
+        // in the owned packet instead of reparsing the large escaped envelope into another DOM.
+        return new JsonObject { ["contractVersion"] = 1, ["movementSourceCanonicalUtf8"] = text, ["lifecycleEventCanonicalUtf8"] = new JsonArray(carriers.Select(e => (JsonNode?)JsonValue.Create(e)).ToArray()) };
     }
     private static string Carrier(JsonNode? value)
     {
