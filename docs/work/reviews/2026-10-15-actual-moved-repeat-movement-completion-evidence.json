@@ -1,5 +1,5 @@
 {
-  "status": "local native implementation validated; combined tooling/head, measured allocation, independent review and hosted approval pending",
+  "status": "Source reader allocation correction focused RED/GREEN/support21 validated; full combined workload, resource allocation, independent review and hosted approval pending",
   "counts": {
     "roots": 300,
     "events": 788,
@@ -543,6 +543,130 @@
       "qualification": "Scoped four owned C# files; generic workspace-load warning retained; full combined solution gate remains pending"
     },
     "combinedRowsProvisional": 3716,
-    "noHostedCapacityClaim": true
+    "noHostedCapacityClaim": true,
+    "sourceReaderCorrection": {
+      "sourceHead": "d9cf29339cab2544692fde72e8e3c863ea7d3da9",
+      "regressionHead": "2d42fd8ee1d64f2382bb18810eebc38af293ffd2",
+      "combinedFailure": {
+        "tested_sha": "965ebdb3107fe03484a484b9d7efdbd981ac8586",
+        "binding": {
+          "tested_sha": "965ebdb3107fe03484a484b9d7efdbd981ac8586",
+          "run_attempt": "local",
+          "run_id": "local",
+          "sdk": "10.0.400",
+          "configuration": "Release",
+          "module_sha256": "70247d7488eafb5ec87ee21aa5db70b4992f9d5731fb250218652ae6930e2dd4",
+          "fixture_sha256": "7c887ebbfe8889279fcf5d9269cef2538af6fb38cacf0279a420f2e3496f2258"
+        },
+        "discovery": {
+          "legacy_rows": 3391,
+          "r02_rows": 325,
+          "total_rows": 3716
+        },
+        "job_result": "FAIL resource gate; test processes and exact XML rows PASS",
+        "actual_pass_rows": 109,
+        "actual_pass_processes": 5,
+        "children": {
+          "armed-commonwealth-m1": {
+            "rows": 22,
+            "exit_code": 0,
+            "pid": 93222,
+            "elapsed_seconds": 48.0392103339982,
+            "started_utc": "2026-10-15T22:25:01.332592+00:00",
+            "completed_utc": "2026-10-15T22:25:49.371613+00:00"
+          },
+          "armed-commonwealth-m2": {
+            "rows": 22,
+            "exit_code": 0,
+            "pid": 93223,
+            "elapsed_seconds": 48.96062658400115,
+            "started_utc": "2026-10-15T22:25:01.333055+00:00",
+            "completed_utc": "2026-10-15T22:25:50.293614+00:00"
+          },
+          "armed-commonwealth-m3": {
+            "rows": 22,
+            "exit_code": 0,
+            "pid": 93225,
+            "elapsed_seconds": 49.31505266699969,
+            "started_utc": "2026-10-15T22:25:01.339124+00:00",
+            "completed_utc": "2026-10-15T22:25:50.652899+00:00"
+          },
+          "armed-commonwealth-m4": {
+            "rows": 22,
+            "exit_code": 0,
+            "pid": 93226,
+            "elapsed_seconds": 50.01286204099961,
+            "started_utc": "2026-10-15T22:25:01.339254+00:00",
+            "completed_utc": "2026-10-15T22:25:51.348026+00:00"
+          },
+          "support-contract": {
+            "rows": 21,
+            "exit_code": 0,
+            "pid": 94614,
+            "elapsed_seconds": 62.47889970799952,
+            "started_utc": "2026-10-15T22:25:51.357337+00:00",
+            "completed_utc": "2026-10-15T22:26:53.836222+00:00"
+          }
+        },
+        "cleanup_owned_session_survivors": {
+          "armed-commonwealth-m1": [],
+          "armed-commonwealth-m2": [],
+          "armed-commonwealth-m3": [],
+          "armed-commonwealth-m4": [],
+          "support-contract": []
+        },
+        "kernel_peak_bytes": 4348264448,
+        "limit_bytes": 4294967296,
+        "overage_bytes": 53297152,
+        "overage_percent": 1.2409210205078125,
+        "peak_sampled_owned_rss_bytes": 3982180352,
+        "kernel_attribution": "job-wide completed-children maximum; not per-child attribution",
+        "jobs_not_started": [
+          "r02-2",
+          "r02-3"
+        ],
+        "final_allocation_ready": false,
+        "heavy_lease": "idle; no automatic retry",
+        "limits": "No full325 execution through combined helper, Linux resource measurement or independent-job rebuild proof; no assertion flake established"
+      },
+      "rootCause": "Object(Source) retained generic JsonElement->MemoryStream/ToArray->JsonNode->Encode serialization/UTF16 StringBuilder chain plus a second parse. Source-specific decoded carriers now validate through existing SourceBytes exact comparison and directly construct the owned immutable-string packet.",
+      "contractHashesChanged": false,
+      "allOtherKindsUnchanged": true,
+      "forcedGc": false,
+      "vectorBytes": 128857183,
+      "oldMeasuredAllocationBytes": 4070155176,
+      "allocationCeilingBytes": 774191674,
+      "greenAllocationQualification": "Actual value not logged; passing runtime assertion proves <= ceiling; allocation traffic is not RSS.",
+      "sourceHashes": {
+        "src/Cna.Core/Campaigns/CampaignCombatActualMovedRepeatMovementCompletionCodec.cs": "6bf179d5b21bdc0223f2892db1091bd6636515b8c788b96b91e2a6cf55d3b7b6",
+        "src/Cna.Core/Campaigns/CampaignCombatActualMovedRepeatMovementCompletion.cs": "5765421daeb3c70b260afaf358433dabed679735ee4acd04c7c40c9b4922f543",
+        "tests/Cna.Core.Tests/Campaigns/CombatActualMovedRepeatMovementCompletionTests.cs": "6c8e1190a55ad63eb15171dcef068c01cf2d18c57dc358ad81b2bd6e70bf35fb",
+        "tests/Cna.Core.Tests/Campaigns/CombatActualMovedRepeatMovementCompletionContractTests.cs": "7d0a14609769403e303d18799bb2108e4eb0f28e24637b9004156e26a7e4142d"
+      },
+      "binaryFingerprints": {
+        "Cna.Core.Tests.dll": "c552d3a3a0e1c121195731ab054021088a8408f807aa301495f62ca975c02312",
+        "Cna.Core.dll": "503d6ecee228a26d971fca3b26483d06f36638bfad7d176977b6a3b618e128de",
+        "xunit.v3.common.dll": "9cf3cd23eefabd397c0eb86e705a8e620f459715e2b3e0428db07ff68e53bf39",
+        "xunit.v3.core.dll": "ac165a05487a95a1d5c163bb08e81ae15b4f51c7d7fbb23f1c5fd55254b7e056"
+      },
+      "moduleSha256": "365f2e6a20c46af220412aad573f84b003e4faf4a6ba5b0f3987c253a0b4763a",
+      "focusedRedSummary": "/private/tmp/r02-source-reader-red/summary.json",
+      "focusedGreenSummary": "/private/tmp/r02-source-reader-green/summary.json",
+      "supportSummary": "/private/tmp/r02-source-reader-support-green/summary.json",
+      "oldSingleFactKernelPeakBytes": 2827812864,
+      "newSingleFactKernelPeakBytes": 930840576,
+      "supportKernelPeakBytes": 1552138240,
+      "supportWallSeconds": 61.6716264170027,
+      "supportCpuSeconds": 65.957986,
+      "supportExactRows": 21,
+      "supportAll12ObligationsAsserted": true,
+      "cleanupSurvivors": [],
+      "cleanupSignalErrors": [],
+      "diagnostics": "exact real-helper --no-ansi --output Detailed --diagnostic --diagnostic-verbosity Trace --diagnostic-synchronous-write",
+      "formattingResult": "PASS required formatting verification of four owned C# files",
+      "formattingLocalSummary": "/private/tmp/r02-source-reader-format-check/summary.json",
+      "newFull325Status": "NOT RUN; prior2c53 full325 is predecessor evidence only; Brain must authorize and validate final combined head."
+    },
+    "checkpointQualification": "All prior finalFull/source/binary fields describe the retained pre-correction checkpoint. sourceReaderCorrection contains the current source/focused evidence; current full325 and combined-head proof remain pending."
   }
 }
