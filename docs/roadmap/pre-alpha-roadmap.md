@@ -1285,3 +1285,18 @@ Movement or synthetic earlier-history adapters do not establish those remaining 
 Public Combat actions, Exercise/Runner adoption, remaining lineage and the skeleton closeout
 remain open. These private milestones do not close the six-turn scenario, durable campaign
 lifecycle, hot-seat UI or first-release gates.
+
+### Authentic moved repeat follow-on (R01, October 15)
+
+[PR #192](https://github.com/dills122/sandtable/pull/192) adds the private
+[actual moved repeat Movement contract and native consumer](../specs/combat-actual-moved-repeat-movement-v1.md)
+after the N3 cycle-control boundary merged in PR #190. It merged at `3a7b626` after independent review and exact SHA/attempt/process reconciliation
+of all 3,391 passing hosted rows. Post-merge main verification remains pending. Genuine reference/native RED preceded
+implementation; focused native evidence covers 71 cases, including 56 authentic paid/armed parents,
+300 events and 356 reconstruction cuts. These focused checks do not replace the full hosted gate.
+
+The bounded behavior is System ordinal2 publication followed by ordinary owner Movement with
+cumulative costs, original history and exactly-once recovery. It does not supply the new lineage's
+stop/System-resolution/owner-completion lifecycle or Breakdown join. Those successors precede later
+Combat and public integration. Public Tasks020–021, Runner022–024 and full72 closeout025 remain open;
+this milestone does not establish the six-turn scenario or first release candidate.

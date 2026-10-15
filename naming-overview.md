@@ -117,3 +117,10 @@ CampaignCombatActualMovedCycleControl and its codec are private Umpire technical
 closure of the current Movement and Combat phase with same-slot Truck Convoy entry. Pending repeat
 intent denotes a source-bound non-executable request; it does not imply ordinal2 publication or
 progress reset. The module name does not imply public campaign activation or executable Repeat.
+
+`CampaignCombatActualMovedRepeatMovement` and its codec are private Umpire modules for
+[authentic moved repeat Movement](docs/specs/combat-actual-moved-repeat-movement-v1.md).
+Repeat publication means consuming the real pending intent once and opening ordinal2 Movement;
+it does not rename or upgrade the historical pending intent into executable authority.
+Movement here covers ordinary owner moves only. Stop, resolution, completion, later phases and
+public campaign actions require separate lineage-aware integrations.
