@@ -1,0 +1,49 @@
+# R02 exhaustive partition investigation — sanitized handoff
+
+2026-10-15 20:05 UTC. CI lane: `/root/ci_runtime_delivery`; semantic owner: `/root/combat_repeat_delivery`; decision/integration owner: Brain. This note preserves investigation evidence and pending decisions. No Git publication or production edit was performed for this follow-on.
+
+## Authorization and current decision
+
+Human approved investigation of exhaustive R02 partitioning; implementation waits for a measured reviewed plan. Brain explicitly authorized bounded parent measurements, including corrected native attempt2 after preserving attempt1 failure. No more parent pilots. This does not authorize production R02 implementation, final allocation, hosted experiment/spend, or merge.
+
+Fresh independent allocation review2 completed: Not ready for implementation under the existing prerequisite. Brain accepted its missing own-work and focused-test inventory findings. Gate A implementation readiness is **not established** under the existing requirement for complete measured allocation before implementation. Own R02 processing and focused-negative identity/cost manifest are not frozen/measured; parent pilot/group allocation does not fill this gap. Recommend technical HOLD/defer under that condition. A staged implementation to obtain missing evidence requires an explicit human change/clarification to the ordering condition before reviewer/Brain implementation approval. Review alone cannot waive it. Final allocation and hosted approval remain held regardless.
+
+Exact operative plan: `/Users/dsteele/repos/sandtable/.planning/combat-repeat-ci-session/r02-partition-proposal.md`, SHA256 `1d44f2447edf224f4b961ea993e4be99172d77dafa6030ffdacc79c92206f82a`. Superseded snapshots898da and02041 are retained in `/private/tmp`; the former misread01:36, the latter overstated Gate A readiness. Correct rule:01:36 forbids new features; already-started required completion gates may continue within03:36 hard stop.02:38 estimate alone is not a deferral reason.
+
+## Exact source and verified main
+
+Semantic author branch `codex/combat-repeat-movement-completion`, clean source `3a7b62645b377326ed2318dfa81cfe66107f4445`. CI handoff branch `codex/ci-runtime-investigation-handoff`, clean head `cc81810c47250be8ab25716cf01d08867f31b2b1`. Rejected candidate `codex/ci-runtime-optimization`/PR191 remains unmerged at `214d33b70f90b5a2686bc8078d147219846aa1e3`; no rejected five-class mapping adopted.
+
+Docs PR193 was merged by Brain, main `e79146ceecc74d9d6578270d9f988a780a2e08d9`, full tree `a16af647797be0c341ae01f3db6a6f682d1ddd5b`, equal to tested PR merge `e108d539d8e1941c7f99242548e16bce00551a83`. Main CI38788851398 attempt1 SUCCESS, CodeQL38788851325 and links38788851303 SUCCESS exact main SHA. Independent exact-main helper reconciled3391 rows (A71/B2582/C130/D129/Exercise469/Contracts10), six exit0/status/XML processes, SDK10.0.402 Release, identity SHA256 `acd6052c99118bf16dd1440a9e9806a0c973b44536ecfb9dca4dcc25ed570197`. Aggregate11998919783. Workflow1541s,66.333 runner-min; B1365s under1500 cap. Sanitized evidence: `/Users/dsteele/repos/sandtable/.planning/combat-repeat-ci-session/pr193-main-ci-evidence.md`.
+
+## Exhaustive workload and measured grouping
+
+Freeze300 root/movement-cut rows,788 events,1088 cuts,1520 prior retries. Each row owns full one/three-event trace, every actual replay cut and all prior retries at every cut. Stable primitive ordinal/cut/profile row identities; authenticated runtime metadata must equal grouping metadata.18 proposed groups: paid×two sides×moves0..2, armed×two sides×moves0..5. No same-process collection concurrency approved; fresh-process grouping is the candidate. Parent main-parity work accounting3396 authentic R01 invocations; all focused reader/forgery/actor/pin/capacity negatives are additional, not hidden in that count.
+
+First measurement:36 serial fresh Python workers,18 groups forward/reverse,600 real R01 ancestry replays,252.596s; all300 canonical maps equal; no schema changes. Parent-calibrated R01 hosted cost2525.055s total,205.136s largest group; native R02 runtime not measured. Manifest `/private/tmp/r02-isolation-baseline/manifest.json` SHA256 `5a6bbb37e8b2750f1aaea0e106facdc416bcbc7231429673d10dc66aaaf6cfba`; partition-analysis.json retains group costs/calibration. Semantic ledger candidate SHA256 `2758969c1462f53d820c737a272fa11a121541417019cfa04c243ffc87a9ddc3`:3696 unique IDs =300 row+788 event+1088 cut+1520 retry;18 explicit classes, actual R02 discovery/execution absent.
+
+## Native parent pilot outcomes — both retained
+
+Attempt1 `/private/tmp/r02-native-pilot`: failed18.531s, build/help passed; first authentic replay rejected missing pinned physical source path in disposable root (`CampaignCombatActualMovedAssault.cs`). Successful replays0; concurrent phase not started. Fail-closed physical dependency behavior, not established assertion flake. No automatic retry. Failure record immutable.
+
+Brain separately authorized one corrected attempt2, same1348 calls/max4/20-minute guard, no attempt3. `/private/tmp/r02-native-pilot-attempt2`: complete142.358s19:41:10–19:43:32, exit0. Four frozen groups armed-axis-m1, armed-commonwealth-m5, paid-axis-m0, paid-commonwealth-m2;286/286/24/78 authentic calls per phase.674 serial +674 concurrent =1348;56 unique parent root/cuts; serial/concurrent/Python Source/Control/Proof maps equal and runtime metadata authenticated. Complete107-file physical shadow,103 pins; all exact3a7b626 blobs and all shadow/source/binary/fixtures unchanged afterward.
+
+Local SDK10.0.400 Release/net10, macOS10 logical CPUs/64GiB. Serial87.732s/concurrent34.906s; sampled RSS457.3MB serial/1.378GB concurrent aggregate/2.382GB stage including build. Minimum observed free+spec8.927GB, swapouts unchanged, no abort, zero survivors. One-second RSS sampling may miss peaks; PeakWorkingSet64=0 means unavailable. Reflection console, not actual MTP entrypoint: selectors, reports, deferred discovery, full R02 transitions/serialization and negatives NOT proved. No hosted Linux quota/contention bound or speedup claim.
+
+Pilot2 handoff and summary: `/private/tmp/r02-native-pilot-attempt2/handoff.md`, `sanitized-summary.json` SHA256 `629490a9c4871253f281b197b0d276c7aec2c6a53a5f5375ef2ead541cc665a7`. Preflight SHA256 `5cc686fe1c147be6ab78508a8d54b621bbd5b5f6d9fe1e1fbf1b3df67ac29f96`; group manifest `cb70ea52e023d1d749334670bd1eb2d889244c406f0576e3adcb10a3d6903562`. No raw logs, code fixtures or diagnostic archive included here.
+
+## Staged holds, budget proposal, counters
+
+A: explicit human staging-condition decision (if changing measured-before-implementation ordering), fresh plan review, then implementation-only approval. B: reference/native RED/GREEN; complete actual R02+all negatives; native MTP discovery/exact filters and semantic+actual-row proof; measured every-group cost/resource behavior; final static allocation review. C: documented self-review and fresh independent exact-SHA implementation review, then explicit publication/hosted-spend approval. D: bounded hosted execution, complete per-child/process/XML and semantic/row union reconciliation, exact final-main gates after Brain merge decision.
+
+Provisional candidate: three new15-minute jobs, at most4 fresh children/job; all test matrix concurrency at most6. OldB25 minutes and other old15-minute limits unchanged; no cache, retries, quarantine, skipping, timeout expansion or paid service change. Final allocation must include every focused negative and all existing3391 rows exactly once. Proposed local admission targets before hosted: predicted new jobs<=780s with120s timeout margin; whole required-CI<=110 runner-min. These are proposed reviewed targets, not measured guarantees. Native R02 costs and hosted conversion remain open.
+
+Proposed absolute hosted envelope, **unapproved/unconsumed**: at most2 complete candidate required-CI runs total inclusive automatic triggers,350 runner-min ceiling; one final-main required-CI run175;525 CI total plus75 aggregate ancillary reserve =600 all-workflow runner-min. No hidden CI01 speedup target; no automatic third run or main retry. First candidate result reviewed before any reserve run; failed cost/provenance/capacity stops dispatch pending decision. Ancillary live trigger demand must fit reserve before publication; no implicit budget exemptions.
+
+Counters: R02 hosted candidate runs0; R02 production changes0; native parent attempts2 (attempt1 failed/0replays, attempt2 completed1348); Python parent measurement600replays; no attempt3/no more parent pilots. CI01 prior candidate observations2 of3 allowed; unused third was not launched and is not borrowed for R02. Required PR193/main gates were documentation/final verification, not new performance experiments. Initial session recovery counters were0/9 and spikes0/2; this lane opened no recovery spike for partition research, but Brain owns authoritative session-wide counters.
+
+## Timing and closeout
+
+Full remaining estimate4.25–6.8h after approval; at19:50 that is00:05–02:38, shifted by later authorization.22:40 author-ready checkpoint triggers re-estimation, not automatic cancellation.01:36 freezes new feature scope; complete already-started approved gates only while enough hard-stop margin remains. Hard stop03:36. If cost/review/budget gates fail or final verification cannot finish, preserve exact branch/head, unmerged changes, evidence, spent/remaining budget and incomplete gates; do not label partial coverage or unverified main delivered. Brain owns final integration/merge.
+
+Brain disposition20:11UTC: allocation reviews2/9, round1pass2/3, recovery0/2; product reviews0/9. Review2 verified proposal02041; subsequent1d44 clarifies the hold without supplying missing capacity proof. Human decision on changing implementation ordering is pending. No response is not approval.
