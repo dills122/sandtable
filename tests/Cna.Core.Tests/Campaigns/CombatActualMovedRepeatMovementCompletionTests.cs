@@ -42,11 +42,25 @@ public sealed class CombatActualMovedRepeatMovementCompletionTests
             Source = CampaignCombatActualMovedRepeatMovementCompletionCodec.Canonical(new JsonObject { ["contractVersion"] = 1, ["movementSourceCanonicalUtf8"] = Encoding.ASCII.GetString(Parent.Source), ["lifecycleEventCanonicalUtf8"] = new JsonArray() }, "Source");
             Inputs = Bytes(Case.GetProperty("inputCanonicalUtf8"));
         }
-        public CombatActualMovedRepeatMovementResult Replay(Func<string, byte[]>? dependencies = null) => ReplayLedgers(this, Ledgers(this), dependencies);
+        public CombatActualMovedRepeatMovementCompletionResult Replay(Func<string, byte[]>? dependencies = null) => ReplayLedgers(this, Ledgers(this), dependencies);
     }
     internal static byte[][][] Ledgers(CompletionContext c) => [c.Parent.Ancestor.Prefix, c.Parent.Ancestor.Lifecycle, c.Parent.Ancestor.Breakdown, c.Parent.Ancestor.Selection.ToArray(), c.Parent.Ancestor.Round.ToArray(), c.Parent.Ancestor.Paid.ToArray(), c.Parent.Ancestor.Release.ToArray(), c.Parent.Control, c.Parent.Movement.ToArray(), c.Completion.ToArray()];
-    internal static CombatActualMovedRepeatMovementResult ReplayLedgers(CompletionContext c, byte[][][] l, Func<string, byte[]>? dependency = null) => CampaignCombatActualMovedRepeatMovementCompletion.ReplayTrustedSource(c.Source, c.Parent.Ancestor.Request, l[0], l[1], l[2], l[3], l[4], l[5], l[6], l[7], l[8], l[9], dependency ?? Dependency);
-    internal static CombatActualMovedRepeatMovementResult Apply(CompletionContext c, byte[] input, Func<string, byte[]>? dependency = null, bool admission = true)
+    internal static CombatActualMovedRepeatMovementCompletionResult ReplayLedgers(CompletionContext c, byte[][][] l, Func<string, byte[]>? dependency = null) => CampaignCombatActualMovedRepeatMovementCompletion.ReplayTrustedSource(c.Source, c.Parent.Ancestor.Request, l[0], l[1], l[2], l[3], l[4], l[5], l[6], l[7], l[8], l[9], dependency ?? Dependency);
+    internal static CombatActualMovedRepeatMovementCompletionResult Apply(CompletionContext c, byte[] input, Func<string, byte[]>? dependency = null, bool admission = true)
     { var l = Ledgers(c); return CampaignCombatActualMovedRepeatMovementCompletion.ApplyTrustedSource(c.Source, c.Parent.Ancestor.Request, l[0], l[1], l[2], l[3], l[4], l[5], l[6], l[7], l[8], l[9], input, dependency ?? Dependency, admission); }
-    internal static void Retain(CompletionContext c, CombatActualMovedRepeatMovementResult result, byte[] input) { c.Source = result.SourceBytes; c.Completion.Add(input.ToArray()); }
+    internal static void Retain(CompletionContext c, CombatActualMovedRepeatMovementCompletionResult result, byte[] input) { c.Source = result.SourceBytes; c.Completion.Add(input.ToArray()); }
+    internal static void AtCut(CompletionContext c, int cut)
+    {
+        var packet = JsonNode.Parse(c.Source)!; packet["lifecycleEventCanonicalUtf8"] = new JsonArray(c.Case.GetProperty("eventCanonicalUtf8").EnumerateArray().Take(cut).Select(e => (JsonNode?)JsonValue.Create(e.GetString())).ToArray());
+        c.Source = CampaignCombatActualMovedRepeatMovementCompletionCodec.Canonical(packet, "Source"); c.Completion.Clear(); c.Completion.AddRange(c.Inputs.Take(cut).Select(b => b.ToArray()));
+    }
+    internal static byte[] Wire(JsonNode input) => CampaignCombatActualMovedRepeatMovementCompletionCodec.Canonical(input, "Input");
+    internal static byte[] Command(JsonElement state, string kind) => Wire(CampaignCombatActualMovedRepeatMovementCompletion.Command(JsonNode.Parse(state.GetRawText())!.AsObject(), kind));
+    internal static void Code(int code, Action action) => Assert.Equal($"CMB-MRC-{code:000}", Assert.Throws<JsonException>(action).Message);
+    internal static CombatActualMovedRepeatMovementCompletionResult Claim(CompletionContext c, byte[] claim, bool proof, Func<string, byte[]>? dependency = null)
+    {
+        var l = Ledgers(c); return proof ? CampaignCombatActualMovedRepeatMovementCompletion.ReadProof(claim, c.Source, c.Parent.Ancestor.Request, l[0], l[1], l[2], l[3], l[4], l[5], l[6], l[7], l[8], l[9], dependency ?? Dependency) : CampaignCombatActualMovedRepeatMovementCompletion.ReadControl(claim, c.Source, c.Parent.Ancestor.Request, l[0], l[1], l[2], l[3], l[4], l[5], l[6], l[7], l[8], l[9], dependency ?? Dependency);
+    }
+    internal static void Certify(CompletionContext c, IReadOnlySet<string> handlers, IReadOnlyDictionary<string, int> capacities)
+    { var l = Ledgers(c); CampaignCombatActualMovedRepeatMovementCompletion.CertifyTrustedSource(c.Source, c.Parent.Ancestor.Request, l[0], l[1], l[2], l[3], l[4], l[5], l[6], l[7], l[8], l[9], Dependency, handlers, capacities); }
 }
