@@ -1,0 +1,11 @@
+# R02 local implementation plan
+
+Approved20:15UTC: staged local implementation; hosted/publication/merge remain separate gates. Existing feature branch from verified3a7b626. Own additive lifecycle family, oracle/schema/compact fixture/native/two test files and dated evidence only. No predecessor, CI, shared design/README/roadmap changes.
+
+Checkpoints: genuine paid/armed zero/positive referenceRED; actual stop then resolve then owner completionGREEN; explicit compact fixture generation and normal all300/788/1088/1520 plus focused closure/capacity; freeze exact contract hashes before native; genuine nativeRED and fullGREEN/parity; installedMTP actual discovery/process/row timing; author self-review; fresh combined review with separately owned CI tooling before hosted approval.22:40UTC reestimate. Preserve labelled unverified WIP rather than weaken gates.
+
+The semantic interface is compact fixture docs/specs/fixtures/combat-actual-moved-repeat-movement-completion-v1.json. `semanticRows` entries have integer rootOrdinal, integer movementCut, string profile, string group, string rowKey. `supportRows` entries have string className, string methodName and ordered arguments array of {name:string,value:JSON primitive}. Cases repeat semantic keys and carry only new inputs/events and cut byte/hash assertions. Parent root/cut references reconstruct complete original request+nine ledgers per row; no authenticated cache/fixture authority.
+
+All18 concrete parity classes are CombatActualMovedRepeatMovementCompletion{Paid|Armed}{Axis|Commonwealth}Move{0..2|0..5}ContractTests with CompleteTraceEveryCutAndAllPriorRetry(int rootOrdinal,int movementCut,string profile). Support classes are CombatActualMovedRepeatMovementCompletionTests and CombatActualMovedRepeatMovementCompletionContractTests. Exact support methods/argument multiplicities freeze with contract and precede CI integration. CI independently owns inventory/partition/process proof; no product file writes by CI.
+
+Expected semantic conservation300rows,788events,1088cuts,1520prior retries; main parity3396 full parent invocations plus explicit focused negatives. Complete remaining delivery estimate4.25–6.8hours atapproval; closeout01:36stops newfeatures, ongoinggates maycontinueuntil03:36hardstop.
