@@ -1,0 +1,130 @@
+{
+  "base": "c24266a5d7dd12c05568c1788e472ad85a20c73e",
+  "baseTree": "6f485236021b0fb91dc7bb122b5114708f804ff7",
+  "branch": "codex/integration-session-final-handoff",
+  "capturedAtUtc": "2026-10-15T00:11:31.435636+00:00",
+  "status": "N3 merged/exactPRCI accepted;main CI/CodeQL/links pending",
+  "mainRuns": {
+    "CI": 38658363876,
+    "CodeQL": 38658363635,
+    "links": 38658363923
+  },
+  "packets": [
+    {
+      "source": "/private/tmp/n3-independent-review-1.md",
+      "path": "docs/work/evidence/2026-10-14-integration-final/review-1.md",
+      "bytes": 10800,
+      "sha256": "ef67f7174e1bf794bc63f1791b3ef0105796252b2d37d707abeeb99c6bebbb0c"
+    },
+    {
+      "source": "/private/tmp/n3-independent-review-1-preliminary.md",
+      "path": "docs/work/evidence/2026-10-14-integration-final/review-1-preliminary.md",
+      "bytes": 1196,
+      "sha256": "b1f66fbc38419560d6b6feeff04507b47ba2db0238da96ee925778849bd5fa41"
+    },
+    {
+      "source": "/private/tmp/n3-review-disposition.md",
+      "path": "docs/work/evidence/2026-10-14-integration-final/review-1-disposition.md",
+      "bytes": 2796,
+      "sha256": "c1107dc21abaa3ec32ce04362be79ae79ada7690cd3f8361366b6060c0a56279"
+    },
+    {
+      "source": "/private/tmp/n3-ci-independent-review-2.md",
+      "path": "docs/work/evidence/2026-10-14-integration-final/review-2.md",
+      "bytes": 10056,
+      "sha256": "461cddecd905fffb680709c8820231c75ba25bf7ae4b570c57969f1036865714"
+    },
+    {
+      "source": "/private/tmp/n3-ci-independent-review-2-preliminary.md",
+      "path": "docs/work/evidence/2026-10-14-integration-final/review-2-preliminary.md",
+      "bytes": 1495,
+      "sha256": "4413351f44a7f5d5088f610e541b157fdc0614104335f054023209b0c5567b20"
+    },
+    {
+      "source": "/private/tmp/n3-ci-review-2-disposition.md",
+      "path": "docs/work/evidence/2026-10-14-integration-final/review-2-disposition.md",
+      "bytes": 2600,
+      "sha256": "622c8b3750fa2ddcc65d28093af51afd11a9c10bd789badb176d72bf74c5eb4b"
+    },
+    {
+      "source": "/private/tmp/n3-budget-independent-review-3.md",
+      "path": "docs/work/evidence/2026-10-14-integration-final/review-3.md",
+      "bytes": 9613,
+      "sha256": "1d161c3feb045dc399ea6d288376dc16a6c25c61f28e8962c56e99165640cdce"
+    },
+    {
+      "source": "/private/tmp/n3-budget-independent-review-3-preliminary.md",
+      "path": "docs/work/evidence/2026-10-14-integration-final/review-3-preliminary.md",
+      "bytes": 1613,
+      "sha256": "9fd7019b870a471314c1ede89f76a9264485eedf67f46c0573fe6c8cb36a9a4a"
+    },
+    {
+      "source": "/private/tmp/n3-budget-review-3-disposition.md",
+      "path": "docs/work/evidence/2026-10-14-integration-final/review-3-disposition.md",
+      "bytes": 2408,
+      "sha256": "177817335801f4df561653d6d295c43a2f523739bf446b4aa28108c8cdcb569a"
+    },
+    {
+      "source": "/private/tmp/n3-discovery-receipt.json",
+      "path": "docs/work/evidence/2026-10-14-integration-final/native-discovery-receipt.json",
+      "bytes": 236,
+      "sha256": "2e5d490236c510d468e0775af880589fd0bf5d26b5c7da5c2ed2f33ff774d0c3"
+    },
+    {
+      "source": "/private/tmp/n3-ci-capacity-discovery-receipt.json",
+      "path": "docs/work/evidence/2026-10-14-integration-final/capacity-discovery-receipt.json",
+      "bytes": 615,
+      "sha256": "c2a622d093964f1c48baeff61efa42f6ff3b68303faf7f480c13929802892ac5"
+    },
+    {
+      "source": "/private/tmp/n3-verify-ci.py",
+      "path": "docs/work/evidence/2026-10-14-integration-final/verify-original-ci.py",
+      "bytes": 1835,
+      "sha256": "e29af67db9f5bce4f08ba482529bafd0fae514c4d44309188d836567faa165f0"
+    },
+    {
+      "source": "/private/tmp/n3-capacity-verify-ci.py",
+      "path": "docs/work/evidence/2026-10-14-integration-final/verify-capacity-ci.py",
+      "bytes": 1875,
+      "sha256": "0f3bd5beed477ab9dc1623417982f98e1e60805db4a142c930ca0556a3f31feb"
+    },
+    {
+      "source": "/private/tmp/n3-budget-verify-ci.py",
+      "path": "docs/work/evidence/2026-10-14-integration-final/verify-final-ci.py",
+      "bytes": 2110,
+      "sha256": "5365c7d0cb5b46eed159e02652e4e96f39a7cc6703b5af02515624ba129b87fe"
+    },
+    {
+      "source": "/private/tmp/n3-ci-capacity-proposal.md",
+      "path": "docs/work/evidence/2026-10-14-integration-final/capacity-proposal.md",
+      "bytes": 7411,
+      "sha256": "46ad7ecfcd0dce291e406e43cb2786bc2de5ff6a2f99cbfa90dd6c74c5b38867"
+    },
+    {
+      "source": "/private/tmp/n3-ci-finalization-budget-proposal.md",
+      "path": "docs/work/evidence/2026-10-14-integration-final/finalization-budget-proposal.md",
+      "bytes": 4377,
+      "sha256": "b7ef588530d31c220d270eff33e00529831050f2eae09fda957e5e165598110f"
+    },
+    {
+      "source": "/Users/dsteele/repos/sandtable/.planning/combat-integration-first/session-plan.md",
+      "path": "docs/work/evidence/2026-10-14-integration-final/brain-session-plan.md",
+      "bytes": 5036,
+      "sha256": "19d38d13dd942d3ead37d15a6e9a6dfeef73f152c96c630292feb0508657fc9b"
+    },
+    {
+      "source": "/Users/dsteele/repos/sandtable/.planning/combat-integration-first/run-state.md",
+      "path": "docs/work/evidence/2026-10-14-integration-final/brain-run-state.md",
+      "bytes": 52487,
+      "sha256": "6b25826395dde240607e4211f7facaeb06b8c50db0fa584958a7ea54a70a4de1"
+    },
+    {
+      "source": "/private/tmp/n3-budget-ci-final-receipt.json",
+      "path": "docs/work/evidence/2026-10-14-integration-final/ci-final-receipt.json",
+      "bytes": 1856,
+      "sha256": "f683661878d3431238b5aa9a34fe74bb85bc477910983318fcd99bb2856f8733"
+    }
+  ],
+  "scope": "Authorized byte-exact UTF8 text only;rawlogs/XML/binlogs/binaries/archives/27d8293 ancestry/.serena excluded",
+  "credentialScan": "Limited known token/private-key patterns;not general secrets audit"
+}

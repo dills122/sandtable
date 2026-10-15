@@ -1,0 +1,21 @@
+{
+  "sourceSha": "d5c1cba0423fa2ba0f4f9bee75f1ad75289f6372",
+  "sdk": "10.0.400",
+  "configuration": "Release",
+  "runAttempt": "local",
+  "actualRows": {
+    "core-a": 71,
+    "core-b": 2511,
+    "core-c": 130,
+    "core-d": 129,
+    "exercise": 469,
+    "contracts": 10
+  },
+  "total": 3320,
+  "exactOldN2AssignmentsPreserved": true,
+  "coreDExactN3ClassRows": 129,
+  "disjointExhaustive": true,
+  "inventorySha256": "6236e68ffe5e01381658666a1fc7baff69fa277e6776b93ffa93b531f0ceb1cd",
+  "discoveryConsoleSha256": "59d99bd44284677bbb5b438f9bd019698ccfb49072de04a2456cc93b55994a5f",
+  "executionPerformed": false
+}

@@ -1,0 +1,8 @@
+{
+  "records": 129,
+  "unique": 129,
+  "parityRows": 112,
+  "unchangedDiscoveryGate": "accepted",
+  "consoleSha256": "101ef61542b558e3c2179fd88aef0fca405eef5a80666e01851377b6aaacc815",
+  "finalReleaseRebuiltAfterImportOrdering": true
+}
