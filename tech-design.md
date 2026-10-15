@@ -722,4 +722,14 @@ two System publications, and derives immutable assessment. Original NONE members
 CP, original MovementEnd, real progress and future duties survive. Safe prospective witnesses remain
 separate from Reaction-dependent unsupported witnesses; unsupported capability is never noLegal.
 The prospective nextOrdinal2 certificate has executionAvailable=false and no control window. This
-private boundary does not accept Repeat/finish or execute another occurrence. Its review/CI remain pending.
+private boundary does not accept Repeat/finish or execute another occurrence. It merged as PR #189
+and main CI, CodeQL and links passed at 2e18cfebf33a69ea9204fccd96cf7df86a9aa26e.
+
+The additive [actual moved cycle control](docs/specs/combat-actual-moved-cycle-control-v1.md)
+uses eight independent ledgers and a current-cycle decision with configuration-bound window-local
+clock recovery. Owner finish or admitted System fallback closes the actual ordinal1 occurrence and
+reaches same-slot Truck Convoy entry; owner repeat-intent retains that occurrence and creates only
+a source-qualified non-executable pending intent. World/RNG, member history, actual progress, target
+use and future duties remain intact. N2 complete support and N3 uniform terminal retention laws
+are isolated certification; they never manufacture future source ancestry. Actual repeat consumption,
+ordinal2 publication/reset and public activation remain separate. N3 review/CI are pending.

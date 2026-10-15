@@ -74,7 +74,11 @@ entry through Selection, a sealed Round, cumulative paid costs and settlement in
 Release entry. It authenticates six independent ledgers and merged in PR #188.
 The private [moved continuation](docs/specs/combat-actual-moved-continuation-v1.md)
 completes empty Reserve Release for paid and armed parents and derives immutable prospective assessment.
-It opens no cycle-control window. Public activation, repeat execution and campaign finish remain separate gates.
+It merged in PR #189 and opens no cycle-control window.
+The additive private [moved cycle control](docs/specs/combat-actual-moved-cycle-control-v1.md)
+adds eight-ledger control for both modes: real same-slot phase finish or a distinctly typed pending
+repeat intent with execution unavailable. Repeat intent retains the current occurrence and history.
+N3 review and CI remain pending; public activation, actual repeat execution and campaign finish remain separate gates.
 
 Next delivery sequence:
 
@@ -203,9 +207,11 @@ semantic checks.
 Build artifacts live under `artifacts/`. Do not commit generated `artifacts/bin` or `artifacts/obj`
 content. See [security policy](SECURITY.md) for vulnerability reports.
 
-GitHub CI retains five exact-row shards. Core-C owns the four complete native actual Movement and Breakdown completion
-test classes; Core-A keeps its existing heavy-method policy and Core-B runs the remaining Core
-rows. Core-B retains its bounded20-minute deadline; Core-A, Core-C, Exercise and Contracts keep15minutes. Row filters, exhaustive coverage and exact-head/
+GitHub CI retains six exact-row shards. Core-C owns the four complete native actual Movement and Breakdown completion
+test classes; Core-D owns both complete actual moved cycle-control test classes. Core-A keeps its
+existing heavy-method policy and eight transferred-row split; Core-B runs the remaining Core rows.
+Core-B uses a measured bounded25-minute whole-job deadline for setup, execution and report finalization; Core-A, Core-C, Core-D, Exercise and Contracts keep15minutes.
+Row filters, exhaustive coverage and exact-head/
 attempt/process checks remain unchanged. The [Core-B investigation](docs/research/2026-10-13-rmc-core-b-investigation.md)
 records why the prior15-minute budget expired. The [measured capacity split](docs/research/2026-10-14-ci-core-capacity-proposal.md)
 adds headroom while preserving all2,943 current rows; hosted execution remains the validating gate.

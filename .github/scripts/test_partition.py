@@ -28,7 +28,12 @@ CORE_C_CLASSES = (
     'Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests',
     'Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionContractTests',
 )
-MODULES = {'core-a': 'Cna.Core.Tests', 'core-b': 'Cna.Core.Tests', 'core-c': 'Cna.Core.Tests', 'exercise': 'Cna.ExerciseRunner.Tests', 'contracts': 'Cna.Intelligence.Contracts.Tests'}
+CORE_D_CLASSES = (
+    'Cna.Core.Tests.Campaigns.CombatActualMovedCycleControlTests',
+    'Cna.Core.Tests.Campaigns.CombatActualMovedCycleControlContractTests',
+)
+CORE_SHARDS = ('core-a', 'core-b', 'core-c', 'core-d')
+MODULES = {'core-a': 'Cna.Core.Tests', 'core-b': 'Cna.Core.Tests', 'core-c': 'Cna.Core.Tests', 'core-d': 'Cna.Core.Tests', 'exercise': 'Cna.ExerciseRunner.Tests', 'contracts': 'Cna.Intelligence.Contracts.Tests'}
 DEFERRED = {
     'Cna.Core.Tests.Rules.InitiativeRatingTests.AxisPresenceIsDerivedFromTypedLocationFacts',
     'Cna.Core.Tests.Campaigns.CampaignTests.InvalidAuthoritativeSnapshotCannotProduceAnEvent',
@@ -99,8 +104,11 @@ def core_partition(rows):
     c_classes = {name.casefold() for name in CORE_C_CLASSES}
     require(all(any(row[1].rsplit('.', 1)[0].casefold() == name for row in core) for name in c_classes), 'Missing selected completion class')
     c = {row for row in core - a if row[1].rsplit('.', 1)[0].casefold() in c_classes}
-    b = core - a - c
-    return {'core-a': a, 'core-b': b, 'core-c': c, 'transferred': sorted(transferred), 'retained_mutation': sorted(retained)}
+    d_classes = {name.casefold() for name in CORE_D_CLASSES}
+    require(all(any(row[1].rsplit('.', 1)[0].casefold() == name for row in core) for name in d_classes), 'Missing selected N3 class')
+    d = {row for row in core - a - c if row[1].rsplit('.', 1)[0].casefold() in d_classes}
+    b = core - a - c - d
+    return {'core-a': a, 'core-b': b, 'core-c': c, 'core-d': d, 'transferred': sorted(transferred), 'retained_mutation': sorted(retained)}
 
 
 def partition_filters(shard, partition):
@@ -110,10 +118,12 @@ def partition_filters(shard, partition):
         result = ['--filter-not-method', *SELECTORS[1:]]
         if partition['retained_mutation']:
             result.extend(['--filter-not-display-name', *partition['retained_mutation']])
-        result.extend(['--filter-not-class', *CORE_C_CLASSES])
+        result.extend(['--filter-not-class', *CORE_C_CLASSES, *CORE_D_CLASSES])
         return result
     if shard == 'core-c':
         return ['--filter-class', *CORE_C_CLASSES]
+    if shard == 'core-d':
+        return ['--filter-class', *CORE_D_CLASSES]
     return []
 
 
@@ -122,11 +132,11 @@ def load_partition(inventory, sha, sdk, attempt):
     require(inventory['sdk'] == sdk and inventory['configuration'] == 'Release' and inventory['run_attempt'] == attempt, 'Inventory SDK/configuration/attempt mismatch')
     require(set(inventory['shards']) == set(MODULES), 'Missing/unexpected prepared shard')
     rows = []
-    for shard in ['core-a', 'core-b', 'core-c']:
+    for shard in CORE_SHARDS:
         require(inventory['shards'][shard]['module'] == MODULES[shard], 'Prepared Core module mismatch')
         rows.extend(inventory['shards'][shard]['rows'])
     partition = core_partition(rows)
-    for shard in ['core-a', 'core-b', 'core-c']:
+    for shard in CORE_SHARDS:
         require(unique(inventory['shards'][shard]['rows'], shard) == partition[shard], 'Prepared row partition mismatch')
     return partition
 
@@ -159,10 +169,12 @@ def build_inventory(texts, payload, sha, sdk, attempt='local'):
     a = discovery_rows(texts['core-a'], 'Cna.Core.Tests', deferred)
     b = discovery_rows(texts['core-b'], 'Cna.Core.Tests', deferred)
     c = discovery_rows(texts['core-c'], 'Cna.Core.Tests', deferred)
-    require(a == partition['core-a'] and b == partition['core-b'] and c == partition['core-c'], 'Actual filters differ from complete-row predicate')
-    require(not (a & b or a & c or b & c) and a | b | c == core, 'Filters are not disjoint/exhaustive')
+    d = discovery_rows(texts['core-d'], 'Cna.Core.Tests', deferred)
+    actual = {'core-a': a, 'core-b': b, 'core-c': c, 'core-d': d}
+    require(all(actual[key] == partition[key] for key in CORE_SHARDS), 'Actual filters differ from complete-row predicate')
+    require(all(not actual[key] & actual[other] for i, key in enumerate(CORE_SHARDS) for other in CORE_SHARDS[i + 1:]) and set.union(*actual.values()) == core, 'Filters are not disjoint/exhaustive')
     inventory = {'schema_version': 1, 'tested_sha': sha, 'sdk': sdk, 'configuration': 'Release', 'run_attempt': attempt, 'shards': {}}
-    rows = {'core-a': a, 'core-b': b, 'core-c': c, 'exercise': discovery_rows(texts['exercise'], MODULES['exercise'], {}), 'contracts': discovery_rows(texts['contracts'], MODULES['contracts'], {})}
+    rows = {'core-a': a, 'core-b': b, 'core-c': c, 'core-d': d, 'exercise': discovery_rows(texts['exercise'], MODULES['exercise'], {}), 'contracts': discovery_rows(texts['contracts'], MODULES['contracts'], {})}
     for shard, values in rows.items():
         inventory['shards'][shard] = {'module': MODULES[shard], 'rows': sorted(values)}
     return inventory
@@ -233,7 +245,7 @@ def identity(expected_sha):
 def execution_command(shard_name, directory, partition=None):
     # Progress is retained for diagnosis; only final reports/status satisfy coverage.
     command = ['dotnet', 'test', '--project', project(MODULES[shard_name]), '--configuration', 'Release', '--no-build', '--no-ansi', '--output', 'Detailed', '--diagnostic', '--diagnostic-verbosity', 'Trace', '--diagnostic-synchronous-write', '--diagnostic-output-directory', str((directory / 'diagnostics').resolve()), '--report-xunit-xml', '--results-directory', str((directory / 'results').resolve()), '/bl:' + str((directory / 'test-{}.binlog').resolve())]
-    if shard_name in ['core-a', 'core-b', 'core-c']:
+    if shard_name in CORE_SHARDS:
         require(partition is not None, 'Fresh complete Core partition required')
         command.extend(partition_filters(shard_name, partition))
     return command

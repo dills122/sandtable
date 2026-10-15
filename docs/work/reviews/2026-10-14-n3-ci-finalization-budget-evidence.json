@@ -1,0 +1,58 @@
+{
+  "base": "29636b9a5bcdd14219b4fc936a9c687f147efa3c",
+  "productHead": "911e5eb44b6fae3aa70e58c677bdebf6885ed0fd",
+  "reviewInstance": 3,
+  "maxReviews": 9,
+  "passInRound": 3,
+  "roundMax": 3,
+  "recoveryUsed": 0,
+  "recoveryMax": 2,
+  "status": "authorcheckscomplete;freshreview3/newheadCI/mainpending",
+  "red": {
+    "tests": 1,
+    "failures": 1,
+    "durationSeconds": 0.001
+  },
+  "green": {
+    "tests": 133,
+    "failed": 0,
+    "durationSeconds": 0.414,
+    "consoleSha256": "5d3c7047766b7a5d558bb215b6567216b335203dd9b7755b30a87c395b7a39e5"
+  },
+  "actionlint": "exit0-emptylog",
+  "newNativeOrMetadataExecution": false,
+  "wholeJobBudgetMinutes": {
+    "core-b": 25,
+    "otherLeaves": 15,
+    "prepare": 15,
+    "verify": 15,
+    "dependencyReview": 5
+  },
+  "unchangedActualMetadataTotal": 3320,
+  "oldFailedRun": 38652809605,
+  "oldLeafDiagnostic": {
+    "actualRows": 2511,
+    "passed": 2511,
+    "processExit": 0,
+    "hostSdk": "10.0.402",
+    "runAttempt": "1",
+    "testedMerge": "94736dd5530b1a4ae52f7ac17133a7abc580c96a",
+    "xmlSha256": "c91bc3eb4d214af2d21e23e34d1a7a29daacb3780f7228af2264d6229b86888a",
+    "acceptedAsJobSuccess": false
+  },
+  "materialHashes": {
+    ".github/scripts/test_partition_test.py": "f0a5a063100d085c511ee16ae66fed0494e55f27e1acd2e9db0c38e16923bc16",
+    ".github/workflows/ci.yml": "cee05aa8bb0e8f468ce3c6cff32d4a9946b82fa6453dd01dfd7ca07067f4f72b",
+    "README.md": "c6fcdb0eaf3fb0d5874a26e2b6573ad63c4081d70b8dee770734ae901320ca68",
+    "docs/design/combat-cycle-implementation-plan.md": "dadabced887f86cd727567addd5a2338e610439b788f81727bfe2e300b79b929",
+    "docs/research/2026-10-14-n3-ci-finalization-budget-diagnosis.md": "b7ef588530d31c220d270eff33e00529831050f2eae09fda957e5e165598110f",
+    "docs/work/plans/2026-10-14-n3-ci-finalization-budget-implementation.md": "af62ad894f98a9204d3e17df0ac4e1c085d0fdeae323dd60629c93957fc6a215"
+  },
+  "gatesRemaining": [
+    "review3",
+    "newexacthead3320actualXML/sixprocess/attempt/SDK/Release/dependencyCI",
+    "Brainmerge/testedtreematch",
+    "verifiedmain"
+  ],
+  "rawEvidenceExported": false
+}

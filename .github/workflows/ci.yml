@@ -62,11 +62,11 @@ jobs:
   tests:
     needs: prepare
     runs-on: ubuntu-24.04
-    timeout-minutes: ${{ matrix.shard == 'core-b' && 20 || 15 }}
+    timeout-minutes: ${{ matrix.shard == 'core-b' && 25 || 15 }}
     strategy:
       fail-fast: false
       matrix:
-        shard: [core-a, core-b, core-c, exercise, contracts]
+        shard: [core-a, core-b, core-c, core-d, exercise, contracts]
     steps:
       - name: Check out tested event SHA
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
