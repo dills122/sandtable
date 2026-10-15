@@ -83,12 +83,12 @@ public sealed class CombatActualMovedRepeatMovementCompletionContractTests
         Assert.Equal(current.ControlBytes, Claim(c, current.ControlBytes, false).ControlBytes); Assert.Equal(current.ProofBytes, Claim(c, current.ProofBytes, true).ProofBytes);
         var faults = 0;
         foreach (var proof in new[] { false, true })
-        foreach (var field in new[] { "baseHash", "movementEnd", "originalMovementEnd" })
-        {
-            var bad = JsonNode.Parse(proof ? current.ProofBytes : current.ControlBytes)!; var control = proof ? bad["control"]! : bad;
-            if (field == "baseHash") control[field] = "sha256:" + new string('0', 64); else control[field]!["ordinal"] = field == "movementEnd" ? 1 : 2;
-            Code(6, () => Claim(c, Codec.Canonical(bad, proof ? "Proof" : "Control"), proof)); faults++;
-        }
+            foreach (var field in new[] { "baseHash", "movementEnd", "originalMovementEnd" })
+            {
+                var bad = JsonNode.Parse(proof ? current.ProofBytes : current.ControlBytes)!; var control = proof ? bad["control"]! : bad;
+                if (field == "baseHash") control[field] = "sha256:" + new string('0', 64); else control[field]!["ordinal"] = field == "movementEnd" ? 1 : 2;
+                Code(6, () => Claim(c, Codec.Canonical(bad, proof ? "Proof" : "Control"), proof)); faults++;
+            }
         Assert.Equal(6, faults);
     }
     [Theory]
@@ -185,14 +185,14 @@ public sealed class CombatActualMovedRepeatMovementCompletionContractTests
         var paths = schema.RootElement.GetProperty("runtimeSourceHashes").EnumerateObject().Select(p => p.Name).Concat(["docs/specs/combat-actual-moved-repeat-movement-completion-v1.schema.json", "docs/specs/verify-combat-actual-moved-repeat-movement-completion-v1.py"]).ToArray(); Assert.Equal(106, paths.Length); var faults = 0;
         var modes = new[] { "missing", "corrupt", "null", "oversize", "suffix" }; Assert.Equal(5, modes.Length);
         foreach (var target in paths)
-        foreach (var fault in modes)
-        {
-            Code(9, () => c.Replay(path =>
+            foreach (var fault in modes)
             {
-                if (path != target) return Dependency(path);
-                return fault switch { "missing" => throw new IOException("missing retained pin"), "corrupt" => Encoding.ASCII.GetBytes("changed"), "null" => null!, "oversize" => new byte[8388609], _ => [.. Dependency(path), 10] };
-            })); faults++;
-        }
+                Code(9, () => c.Replay(path =>
+                {
+                    if (path != target) return Dependency(path);
+                    return fault switch { "missing" => throw new IOException("missing retained pin"), "corrupt" => Encoding.ASCII.GetBytes("changed"), "null" => null!, "oversize" => new byte[8388609], _ => [.. Dependency(path), 10] };
+                })); faults++;
+            }
         Assert.Equal(530, faults);
     }
     [Fact]
