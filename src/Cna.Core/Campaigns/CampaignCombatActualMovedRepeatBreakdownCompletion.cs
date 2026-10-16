@@ -93,10 +93,10 @@ internal static class CampaignCombatActualMovedRepeatBreakdownCompletion
     }
     private static JsonNode? Order(JsonNode? node, string kind)
     {
-        if (node is null) return null;
+        Require(node is not null, 1);
         if (kind.EndsWith("[]", StringComparison.Ordinal))
         {
-            Require(node is JsonArray, 1); var array = node.AsArray();
+            Require(node is JsonArray, 1); var array = node!.AsArray();
             Require(array.Count <= (kind == "EventCarrier[]" || kind == "Receipt[]" ? 1 : 512), 1);
             return new JsonArray(array.Select(item => Order(item, kind[..^2])).ToArray());
         }
@@ -134,18 +134,27 @@ internal static class CampaignCombatActualMovedRepeatBreakdownCompletion
             else if (kind is "Int" or "Long")
             {
                 Require(scalar.ValueKind == JsonValueKind.Number && scalar.TryGetInt64(out var n) && n >= 0 &&
-                    (kind == "Long" || n < int.MaxValue), 2);
+                    scalar.GetRawText().All(char.IsAsciiDigit) && (kind == "Long" || n <= int.MaxValue), 2);
             }
-            return node.DeepClone();
+            return node!.DeepClone();
         }
-        Require(node is JsonObject, 1); var obj = node.AsObject();
+        Require(node is JsonObject, 1); var obj = node!.AsObject();
         Require(obj.Count == fields.Length && fields.All(obj.ContainsKey), 1);
         if (kind is "Source" or "Base" or "Command" or "Event" or "Control" or "Proof")
-            Require(N(obj, "contractVersion") == 1, 3);
+        {
+            var version = JsonSerializer.SerializeToElement(obj["contractVersion"]);
+            var n = 0;
+            Require(version.ValueKind == JsonValueKind.Number && version.TryGetInt32(out n) &&
+                version.GetRawText().All(char.IsAsciiDigit), 2);
+            Require(n == 1, 3);
+        }
         var result = new JsonObject();
         foreach (var field in fields)
         {
             var member = obj[field];
+            var optional = (kind == "Control" && field == "breakdownCompletionReceiptId") ||
+                (kind == "Position" && field is "segmentId" or "stepId" or "activeSide");
+            Require(member is not null || optional, kind == "Command" && field == "expectedPriorVersion" ? 2 : 1);
             var nested = kind switch
             {
                 "Source" when field == "breakdownEventCanonicalUtf8" => "EventCarrier[]",
@@ -203,13 +212,14 @@ internal static class CampaignCombatActualMovedRepeatBreakdownCompletion
         IReadOnlyList<byte[]> completion, IReadOnlyList<byte[]> own, Func<string, byte[]> dependencies)
     {
         var ownedSource = source.ToArray();
-        IReadOnlyList<byte[]>[] supplied = [prefix, lifecycle, breakdown, selection, round, paid, release, control, movement, completion, own];
+        IReadOnlyList<byte[]>[] supplied = [prefix, lifecycle, breakdown, selection, round, paid, release, control, movement, completion];
         Require(supplied.All(x => x is not null), 1);
-        var ledgers = supplied.Select(x => x.Select(b => b?.ToArray() ?? throw Error(1)).ToArray()).ToArray();
-        Require(ledgers[10].Length <= 1 && ledgers[10].Sum(x => x.Length) <= 8192, 1);
+        var ancestors = supplied.Select(x => x.Select(b => b?.ToArray() ?? throw Error(1)).ToArray()).ToArray();
+        var ownValid = own is not null && own.All(b => b is not null);
+        var ownSnapshot = own is null ? [] : own.Select(b => b?.ToArray() ?? []).ToArray();
+        var ledgers = ancestors.Append(ownSnapshot).ToArray();
         var retained = Snapshot(dependencies, out var verify);
         var packet = ParseObject(ownedSource, "Source");
-        Require(N(packet, "contractVersion") == 1 && packet["breakdownEventCanonicalUtf8"] is JsonArray && packet["breakdownEventCanonicalUtf8"]!.AsArray().Count == ledgers[10].Length, 4);
         var parentBytes = Encoding.ASCII.GetBytes(T(packet, "movementCompletionSourceCanonicalUtf8"));
         Require(parentBytes.Length is > 0 and <= 134217728, 1);
         CombatActualMovedRepeatMovementCompletionResult parent;
@@ -218,7 +228,11 @@ internal static class CampaignCombatActualMovedRepeatBreakdownCompletion
             parent = CampaignCombatActualMovedRepeatMovementCompletion.ReplayTrustedSource(parentBytes, request,
             ledgers[0], ledgers[1], ledgers[2], ledgers[3], ledgers[4], ledgers[5], ledgers[6], ledgers[7], ledgers[8], ledgers[9], retained);
         }
-        catch (JsonException e) { throw new JsonException("CMB-MRB-004", e); }
+        catch (JsonException e)
+        {
+            var match = System.Text.RegularExpressions.Regex.Match(e.Message, @"CMB-[A-Z]+-(\d{3})");
+            throw new JsonException(match.Success ? $"CMB-MRB-{match.Groups[1].Value}" : "CMB-MRB-004", e);
+        }
         var prior = JsonNode.Parse(parent.ControlBytes)!.AsObject(); var cycle = prior["activeCycle"]!.AsObject();
         Require(N(cycle, "gameTurn") == 1 && N(cycle, "operationStage") == 1 && T(cycle, "playerPhaseSlot") == "first-acting-side" && N(cycle, "ordinal") == 2 && T(prior, "phase") == "breakdown" && B(prior, "closed"), 3);
         Require(T(prior["flow"]!, "kind") == "idle" && prior["interruptContext"] is null && prior["movementEnd"] is not null && N(prior["movementEnd"]!, "ordinal") == 2 && N(prior["originalMovementEnd"]!, "ordinal") == 1 && prior["closure"] is not null && N(prior["closure"]!, "ordinal") == 1 && T(prior["closure"]!, "outcome") == "repeated", 4);
@@ -241,13 +255,17 @@ internal static class CampaignCombatActualMovedRepeatBreakdownCompletion
             ("cycleId", prior["cycleId"]), ("configurationHash", cycle["admittedPolicyBundleDigest"]));
         var baseHash = "sha256:" + Domain("base", Canonical(basis, "Base"));
         Require(N(prior, "stateVersion") < long.MaxValue, 7);
+        Require(ownValid && ownSnapshot.Length <= 1 && ownSnapshot.Sum(x => x.Length) <= 8192, 1);
+        Require(packet["breakdownEventCanonicalUtf8"]!.AsArray().Count == ownSnapshot.Length, 4);
         var frame = new Frame(packet, basis, baseHash, prior, cycle.DeepClone().AsObject(), boundary, successor, ledgers, retained, verify);
         var state = Initial(frame);
         foreach (var (inputBytes, ordinal) in ledgers[10].Select((x, i) => (x, i)))
         {
             var input = ParseObject(inputBytes, "Input");
+            var recordedBytes = Encoding.ASCII.GetBytes(packet["breakdownEventCanonicalUtf8"]![ordinal]!.GetValue<string>());
+            _ = ParseObject(recordedBytes, "Event");
             var (after, ev, _) = Transition(frame, state, input, true);
-            Require(ev is not null && Encoding.ASCII.GetString(ev) == packet["breakdownEventCanonicalUtf8"]![ordinal]!.GetValue<string>(), 6);
+            Require(ev is not null && ev.AsSpan().SequenceEqual(recordedBytes), 6);
             state = after;
         }
         frame.VerifyDependencies();

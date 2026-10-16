@@ -191,6 +191,99 @@ public sealed class CombatActualMovedRepeatBreakdownCompletionTests
         Assert.Throws<JsonException>(() => Replay(parent, CampaignCombatActualPaidAssaultCodec.Encode(tampered), [input]));
     }
 
+    [Fact]
+    public void MalformedOwnPrimitiveValuesUseFrozenErrorFamilies()
+    {
+        var parent = new CompletionContext(0, 1, "paid");
+        AtCut(parent, parent.Inputs.Length);
+        using var fixture = JsonDocument.Parse(Dependency(FixturePath));
+        var expected = fixture.RootElement.GetProperty("cases").EnumerateArray().Single(item =>
+            item.GetProperty("rootOrdinal").GetInt32() == 0 && item.GetProperty("movementCut").GetInt32() == 1 &&
+            item.GetProperty("profile").GetString() == "paid").Clone();
+        var source = CampaignCombatActualPaidAssaultCodec.Encode(new JsonObject
+        {
+            ["contractVersion"] = 1,
+            ["movementCompletionSourceCanonicalUtf8"] = Encoding.ASCII.GetString(parent.Source),
+            ["breakdownEventCanonicalUtf8"] = new JsonArray()
+        });
+        var valid = JsonNode.Parse(expected.GetProperty("inputCanonicalUtf8")[0].GetString()!)!.AsObject();
+        var nullActor = valid.DeepClone().AsObject(); nullActor["actor"] = null;
+        AssertCode(1, () => Apply(parent, source, [], CampaignCombatActualPaidAssaultCodec.Encode(nullActor)));
+        var validBytes = CampaignCombatActualPaidAssaultCodec.Encode(valid);
+        var oldVersion = valid["command"]!["expectedPriorVersion"]!.GetValue<long>();
+        foreach (var bad in new[] { "\"1\"", "1.0", "null", "9223372036854775808" })
+        {
+            var altered = Encoding.ASCII.GetString(validBytes).Replace($"\"expectedPriorVersion\":{oldVersion}", $"\"expectedPriorVersion\":{bad}", StringComparison.Ordinal);
+            AssertCode(2, () => Apply(parent, source, [], Encoding.ASCII.GetBytes(altered)));
+        }
+        var stringVersion = valid.DeepClone().AsObject(); stringVersion["command"]!["contractVersion"] = "1";
+        AssertCode(2, () => Apply(parent, source, [], CampaignCombatActualPaidAssaultCodec.Encode(stringVersion)));
+        var wrongSourceVersion = JsonNode.Parse(source)!.AsObject(); wrongSourceVersion["contractVersion"] = "1";
+        AssertCode(2, () => Replay(parent, CampaignCombatActualPaidAssaultCodec.Encode(wrongSourceVersion), []));
+    }
+
+    [Fact]
+    public void RecordedEventAndAncestorPreserveFrozenErrorFamilies()
+    {
+        var parent = new CompletionContext(0, 1, "paid");
+        AtCut(parent, parent.Inputs.Length);
+        using var fixture = JsonDocument.Parse(Dependency(FixturePath));
+        var expected = fixture.RootElement.GetProperty("cases").EnumerateArray().Single(item =>
+            item.GetProperty("rootOrdinal").GetInt32() == 0 && item.GetProperty("movementCut").GetInt32() == 1 &&
+            item.GetProperty("profile").GetString() == "paid").Clone();
+        var source = CampaignCombatActualPaidAssaultCodec.Encode(new JsonObject
+        {
+            ["contractVersion"] = 1,
+            ["movementCompletionSourceCanonicalUtf8"] = Encoding.ASCII.GetString(parent.Source),
+            ["breakdownEventCanonicalUtf8"] = new JsonArray()
+        });
+        var input = Encoding.ASCII.GetBytes(expected.GetProperty("inputCanonicalUtf8")[0].GetString()!);
+        var completed = Apply(parent, source, [], input);
+        foreach (var recorded in new[] { "{}", "null", " " + Encoding.ASCII.GetString(completed.EventBytes!) })
+        {
+            var altered = JsonNode.Parse(completed.SourceBytes)!.AsObject();
+            altered["breakdownEventCanonicalUtf8"]![0] = recorded;
+            AssertCode(recorded.StartsWith(' ') ? 8 : 1,
+                () => Replay(parent, CampaignCombatActualPaidAssaultCodec.Encode(altered), [input]));
+        }
+        var invalidParent = JsonNode.Parse(source)!.AsObject(); invalidParent["movementCompletionSourceCanonicalUtf8"] = "{}";
+        AssertCode(1, () => Replay(parent, CampaignCombatActualPaidAssaultCodec.Encode(invalidParent), []));
+    }
+
+    [Fact]
+    public void PhysicalAndAncestorFailuresPrecedeMalformedOwnLedger()
+    {
+        var parent = new CompletionContext(0, 1, "paid");
+        AtCut(parent, parent.Inputs.Length);
+        var source = CampaignCombatActualPaidAssaultCodec.Encode(new JsonObject
+        {
+            ["contractVersion"] = 1,
+            ["movementCompletionSourceCanonicalUtf8"] = Encoding.ASCII.GetString(parent.Source),
+            ["breakdownEventCanonicalUtf8"] = new JsonArray()
+        });
+        var ledgers = Ledgers(parent);
+        var calls = 0;
+        AssertCode(9, () => CampaignCombatActualMovedRepeatBreakdownCompletion.ReplayTrustedSource(source,
+            parent.Parent.Ancestor.Request, ledgers[0], ledgers[1], ledgers[2], ledgers[3], ledgers[4],
+            ledgers[5], ledgers[6], ledgers[7], ledgers[8], ledgers[9], new byte[][] { null! }, path =>
+            { calls++; return path.EndsWith(".schema.json", StringComparison.Ordinal) ? [] : Dependency(path); }));
+        Assert.True(calls > 0);
+        var invalidParent = JsonNode.Parse(source)!.AsObject(); invalidParent["movementCompletionSourceCanonicalUtf8"] = "{}";
+        var invalidSource = CampaignCombatActualPaidAssaultCodec.Encode(invalidParent);
+        AssertCode(1, () => CampaignCombatActualMovedRepeatBreakdownCompletion.ReplayTrustedSource(invalidSource,
+            parent.Parent.Ancestor.Request, ledgers[0], ledgers[1], ledgers[2], ledgers[3], ledgers[4],
+            ledgers[5], ledgers[6], ledgers[7], ledgers[8], ledgers[9], new byte[][] { null! }, Dependency));
+        AssertCode(1, () => CampaignCombatActualMovedRepeatBreakdownCompletion.ReplayTrustedSource(invalidSource,
+            parent.Parent.Ancestor.Request, ledgers[0], ledgers[1], ledgers[2], ledgers[3], ledgers[4],
+            ledgers[5], ledgers[6], ledgers[7], ledgers[8], ledgers[9], [Encoding.ASCII.GetBytes("{}")], Dependency));
+    }
+
+    private static void AssertCode(int code, Action action)
+    {
+        var error = Assert.Throws<JsonException>(action);
+        Assert.StartsWith($"CMB-MRB-{code:000}", error.Message, StringComparison.Ordinal);
+    }
+
     [Theory]
     [InlineData(0, 1, "paid")]
     [InlineData(0, 3, "paid")]
