@@ -1,0 +1,14 @@
+/* Utilities only: Material and Field Atlas own resets and component presentation. */
+@layer theme, utilities;
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities);
+@source '../../../maproom-alpha/src';
+@source '../lib';
+@source '../../stories';
+@theme inline {
+  --color-atlas-paper: var(--color-paper);
+  --color-atlas-ink: var(--color-ink);
+  --color-atlas-selection: var(--color-selection);
+  --font-atlas-body: var(--font-body);
+  --font-atlas-display: var(--font-display);
+}

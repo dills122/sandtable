@@ -1,0 +1,54 @@
+@use '@angular/material' as mat;
+html {
+  @include mat.theme(
+    (
+      color: (
+        theme-type: light,
+        primary: mat.$green-palette,
+      ),
+      typography: (
+        plain-family: var(--font-body),
+        brand-family: var(--font-display),
+      ),
+      density: 0,
+    )
+  );
+  @include mat.theme-overrides(
+    (
+      primary: var(--color-accent),
+      on-primary: var(--color-accent-ink),
+      primary-container: var(--color-selection),
+      on-primary-container: var(--color-ink),
+      secondary: var(--color-accent),
+      on-secondary: var(--color-accent-ink),
+      surface: var(--color-panel),
+      surface-container: var(--color-panel),
+      surface-container-low: var(--color-paper),
+      surface-container-high: var(--color-paper),
+      on-surface: var(--color-ink),
+      on-surface-variant: var(--color-muted),
+      outline: var(--color-rule-strong),
+      outline-variant: var(--color-rule),
+      error: var(--color-error),
+      on-error: var(--color-panel),
+    )
+  );
+  @include mat.button-overrides(
+    (
+      filled-container-shape: var(--radius-control),
+      outlined-container-shape: var(--radius-control),
+      text-container-shape: var(--radius-control),
+      filled-container-height: 44px,
+      outlined-container-height: 44px,
+      text-container-height: 44px,
+      filled-label-text-size: var(--text-base),
+      outlined-label-text-size: var(--text-base),
+      text-label-text-size: var(--text-base),
+    )
+  );
+  @include mat.form-field-overrides(
+    (
+      outlined-container-shape: var(--radius-control),
+    )
+  );
+}

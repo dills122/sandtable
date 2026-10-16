@@ -261,3 +261,15 @@ Seventeen representative text, boundary and focus pairs passed 4.5:1 or 3:1 thre
 the new command frame; lowest tested normal-text contrast was 4.97:1. No JavaScript page errors or
 external requests were observed. This is a scoped prototype check, not an Angular, screen-reader
 or cross-browser certification; those checks belong to MAP-02 onward.
+
+## Implemented Angular reference
+
+[Field Atlas](../../src/Cna.Maproom/projects/field-atlas/README.md) now owns the live tokens,
+Material theme and reusable presentation API. [Storybook](../../src/Cna.Maproom/README.md) is the
+living design-system reference: overview, foundations, Material controls, panel/status/counter
+states, app-owned Formly pattern and operations shell. Run `just field-atlas` locally.
+
+The HTML style study remains historical design intent. Evolve shared styles in the Angular
+library and document them in Storybook; do not maintain a second active token implementation in
+the prototype. App-specific patterns stay in `maproom-alpha`; extract further components only
+when real reuse emerges. MAP-03's complete workflows and campaign integration are pending.

@@ -113,7 +113,10 @@ probe. Model-backed dispatch requires its own durable pending-decision/off-turn 
 **Status:** Stack and local-first direction accepted on 2026-10-16; delivery plan and standalone
 Field Atlas operations preview recorded. The accepted design review refines MAP-02 to a minimal
 theme/control foundation and splits MAP-03 into operational map, order workflow, and ledger/diary
-fixtures. Angular application and connected campaign host are pending.
+fixtures. MAP-01 Angular workspace and MAP-02 foundation are implemented in
+[src/Cna.Maproom](../../src/Cna.Maproom/README.md), with Field Atlas components and Storybook.
+The synthetic shell is a composition specimen; complete MAP-03 workflows and the connected
+campaign host remain pending.
 The [implementation plan](../design/local-game-server-maproom-plan.md) owns slice dependencies
 and acceptance checks; the [design system](../design/maproom-design-system-v0.md) owns visual rules.
 
@@ -219,7 +222,7 @@ Optional parser evidence gate
 | Combat and continual cycle | Checkpoint B accepted; Initial H Core restore and dormant Tasks009–016 accepted; actual paid-assault contract019F5 and native consumer019F6 complete; PAC01 continuation contract and private native consumer implemented; actual repeated-Movement reference contract and private native consumer implemented; Task008 publication open | **Gameplay not activated**; bounded Release/Movement/repeat adapters, native settled control with synthetic earlier Movement, and native actual paid assault through empty Reserve Release and guarded repeat/finish | Actual ordinal2 Breakdown and remaining017–019 → public020–021 → evidence022–024 → closeout025 |
 | Working pre-alpha skeleton | Acceptance boundary defined | Not reached | One authentic movement/contact/combat/release repeat-or-finish loop with identical replay and Chronicle evidence |
 | Six-turn scenario and remaining Land rules | Milestone outcomes defined; exact exercised-rule/data inventory intentionally pending | Not started | Measure after the skeleton, freeze source/content scope, then split implementation-sized tasks |
-| Campaign lifecycle and Maproom | Angular stack/local developer slices accepted; Field Atlas map/order/ledger preview available | Connected client and campaign host pending | MAP developer lane is bounded to current public rules; product acceptance still requires durable save/resume, hot-seat isolation and complete scenario path |
+| Campaign lifecycle and Maproom | Angular workspace, Field Atlas library and Storybook available; synthetic shell and HTML workflow preview | Connected client and campaign host pending | MAP developer lane is bounded to current public rules; product acceptance still requires durable save/resume, hot-seat isolation and complete scenario path |
 | Exercise Harness | Evidence contracts and current Movement/Reaction/Breakdown profiles established | Single Exercise, serial-unpaired Maneuver, controller matrices, and bounded paired comparisons | Add Combat public actions/terminals only after Task021 |
 
 The roadmap deliberately distinguishes foundation maturity from playable breadth. The architecture

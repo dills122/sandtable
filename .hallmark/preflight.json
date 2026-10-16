@@ -1,16 +1,21 @@
 {
   "date": "2026-10-16",
-  "scope": "docs/design/maproom-style-study; Angular implementation planned separately",
-  "framework": "No Maproom app exists; portable HTML/CSS/JS study selected",
-  "font_stack": "Existing website Space Grotesk/Inter/JetBrains Mono retained; Maproom proposes Newsreader/IBM Plex Sans, preview uses local fallbacks",
+  "scope": "src/Cna.Maproom; approved Field Atlas visual language",
+  "framework": "Angular 22 CLI multi-project workspace; maproom-alpha and @sandtable/field-atlas",
+  "font_stack": "Newsreader and IBM Plex Sans locally packaged with licenses",
   "palette": "Existing website Cobalt retained; owner selected Field Atlas paper/ink/military symbols for Maproom",
   "motion": "Functional background-color transitions only, reduced-motion override",
   "spacing": "Named 4px scale in scoped tokens.css",
-  "preserved": ["site/ and its Pages workflow", "C# Umpire authority", "existing domain names"],
+  "preserved": [
+    "site/ and its Pages workflow",
+    "C# Umpire authority",
+    "existing domain names"
+  ],
   "accepted_refinement": "Field Atlas tokens retained for operations workspace; map/order/ledger views now drive component extraction",
   "introduced": [
     "Field Atlas semantic tokens and component language",
     "Component Playground with selectable original map counters and example order states",
     "Small-slice local-server and Angular delivery plan"
-  ]
+  ],
+  "implementation_reference": "src/Cna.Maproom/projects/field-atlas/src/styles and Storybook"
 }

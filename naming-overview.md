@@ -64,12 +64,15 @@ is a transport responsibility, while order legality stays in Core.
 account. **Archives** is campaign storage, snapshots and saves. A replay checkpoint does not by itself
 constitute a durable player save/resume product.
 
-**Maproom** is the future player application: map, orders, legal actions and audience-safe reports.
+**Maproom** is the player application: map, orders, legal actions and audience-safe reports.
 `site/` is the existing project website, with labeled concept illustrations. The first Maproom target
 is local hot-seat play; it must use the same typed, side-safe action boundary as every other client.
 The accepted [local-server plan](docs/design/local-game-server-maproom-plan.md) starts with a
 bounded Angular developer client before complete scenario play. **Field Atlas** names its
-[visual direction](docs/design/maproom-design-system-v0.md), not a new service or domain.
+[visual direction](docs/design/maproom-design-system-v0.md) and internal Angular design library
+`@sandtable/field-atlas`, not a new service or authority domain. The Angular CLI workspace is
+`src/Cna.Maproom`, its first application is `maproom-alpha`, and Storybook is the living component
+and pattern reference. The current application is a synthetic scaffold; connected play is pending.
 **Operations workspace** describes Maproom's map, order inspector and linked formation records;
 it adds no authority layer. The formation ledger is a player-view table, distinct from Chronicle's
 authoritative event journal. War Diary entries may locate permitted formations without exposing

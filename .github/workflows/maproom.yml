@@ -1,0 +1,45 @@
+name: Maproom
+on:
+  pull_request:
+    paths:
+      - 'src/Cna.Maproom/**'
+      - '.github/workflows/maproom.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'src/Cna.Maproom/**'
+      - '.github/workflows/maproom.yml'
+permissions:
+  contents: read
+concurrency:
+  group: maproom-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+jobs:
+  frontend:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: src/Cna.Maproom
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version-file: src/Cna.Maproom/.nvmrc
+          cache: npm
+          cache-dependency-path: src/Cna.Maproom/package-lock.json
+      - run: npm ci
+      - run: npm run check
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
+      - name: Retain browser evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: maproom-browser-evidence
+          path: |
+            src/Cna.Maproom/playwright-report
+            src/Cna.Maproom/test-results
+          retention-days: 7
