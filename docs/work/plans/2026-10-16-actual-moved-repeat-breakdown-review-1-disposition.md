@@ -1,0 +1,11 @@
+# Independent review 1 disposition: moved-repeat Breakdown
+
+Review instance 1 of 3 inspected WIP commit `c6978725b14e0261127a1a822b84c8678ffe5924` against base `5d0417b150a7b022bf79ea3ecfc3dfe3fa2d1c5d` and returned **Not ready**. The review chat is `01a14657-c585-7c82-bd62-80dde4ad849f`. This disposition records author actions, not a new independent verdict.
+
+| Finding | Disposition | Change and evidence |
+| --- | --- | --- |
+| P2: eleventh-ledger shape validation precedes ancestor authentication | Accept | Added a combined-fault test using an unsupported R02 contract version with two-entry, null-entry and null-container own ledgers. It failed RED with CMB-MRB-001 instead of the ancestor's CMB-MRB-003. The verifier now snapshots exact byte entries before physical callbacks, fully replays R02, derives the terminal context, and only then checks the own-ledger shape. A second RED caught caller-defined `__deepcopy__` execution before ancestor authentication; the snapshot represents invalid entries inertly. The focused suite passed GREEN. |
+| P2: wire freeze and native capacity form a dependency cycle | Accept | The plan and spec now separate independently reviewed wire-layout freeze from `closureFrozen`/public readback certification. A native private consumer may use the frozen layout while closure remains false. Near-limit native memory, latency, semantics, follow-on independent review and exact-head hosted CI remain gates before publication or merge. |
+| Parser-boundary coverage gap | Accept as a plan gap | Added focused duplicate-key, non-ASCII, depth, array-size, object-field-count, noncanonical-byte, own-event-count and numeric-bound checks. Numeric tests exposed inherited error remapping to framing code 001; local typed numeric validation now emits documented code 002. The parser and focused suite pass locally. |
+
+No native implementation, fixture freeze, `closureFrozen=true`, PR or merge follows from this disposition. After the final inert snapshot refinement, the revised verifier passed the focused suite, all 18 semantic groups (300 disjoint rows, 300 unique event hashes, 696.749 seconds), 540 physical faults and the provisional capacity check. The reviewer did not independently repeat either complete 300-row run; a fresh review of the revised exact head remains required.

@@ -93,6 +93,9 @@ def typed(value, kind, depth=0, owner="", field=""):
         require(type(value) is str and value in ("breakdown", "combat"), 3)
     elif kind == "profile":
         require(type(value) is str and value in ("paid", "armed"), 3)
+    elif kind in ("int", "long"):
+        ceiling = 2**31 if kind == "int" else 2**63
+        require(type(value) is int and 0 <= value < ceiling, 2)
     else:
         inherited(lambda: parent.typed(value, kind))
 
@@ -287,17 +290,23 @@ def transition(context, before, action, admission=True, handlers=None, capacitie
     return after, event_bytes, receipt_id
 
 
+def own_ledger_snapshot(value):
+    if type(value) is not list:
+        return None
+    return [bytes(item) if type(item) is bytes else None for item in value]
+
+
 def replay(source, arguments, breakdown):
     require(type(source) is bytes and type(arguments) is list and len(arguments) == 11, 1)
-    require(type(breakdown) is list and len(breakdown) <= 1 and all(type(item) is bytes for item in breakdown), 1)
     owned_source = bytes(source)
     owned_arguments = copy.deepcopy(arguments)
-    owned_breakdown = [bytes(item) for item in breakdown]
+    owned_breakdown = own_ledger_snapshot(breakdown)
     dependencies()
     packet = parse(owned_source, "Source")
     predecessor_source = packet["movementCompletionSourceCanonicalUtf8"].encode("ascii")
     frame, prior = inherited(lambda: parent.replay(predecessor_source, *owned_arguments))
     context = derive(predecessor_source, frame, prior)
+    require(type(owned_breakdown) is list and len(owned_breakdown) <= 1 and all(type(item) is bytes for item in owned_breakdown), 1)
     ledger = [parse(item, "Input") for item in owned_breakdown]
     require(len(encode(ledger)) <= LIMITS["breakdownLedgerBytes"] and len(ledger) == len(packet["breakdownEventCanonicalUtf8"]), 4)
     state = initial(context)
@@ -310,10 +319,10 @@ def replay(source, arguments, breakdown):
 
 
 def apply(source, arguments, breakdown, action, admission=True, handlers=None, capacities=None):
-    require(type(source) is bytes and type(arguments) is list and type(breakdown) is list, 1)
+    require(type(source) is bytes and type(arguments) is list, 1)
     owned_source = bytes(source)
     owned_arguments = copy.deepcopy(arguments)
-    owned_breakdown = copy.deepcopy(breakdown)
+    owned_breakdown = own_ledger_snapshot(breakdown)
     owned_action = copy.deepcopy(action)
     owned_handlers = copy.deepcopy(handlers)
     owned_capacities = copy.deepcopy(capacities)

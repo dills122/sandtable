@@ -75,6 +75,20 @@ def rejects(number, action):
     raise AssertionError(f"expected CMB-MRB-{number:03}")
 
 
+rejects(1, lambda: child.parse(b'{"contractVersion":1,"contractVersion":1}', "Source"))
+rejects(1, lambda: child.parse(b"\xff", "Source"))
+rejects(1, lambda: child.parse(b"[" * 44 + b"0" + b"]" * 44, "Source"))
+rejects(1, lambda: child.parse(b"[" + b",".join([b"0"] * 513) + b"]", "Source"))
+rejects(1, lambda: child.parse(b"{" + b",".join(f'"x{index}":0'.encode("ascii") for index in range(129)) + b"}", "Source"))
+rejects(2, lambda: child.typed(2**31, "int"))
+rejects(2, lambda: child.typed(2**63, "long"))
+rejects(2, lambda: child.typed(True, "long"))
+rejects(8, lambda: child.parse(b" " + child.raw(child.parse(child.source_for(authentic[0][1]), "Source"), "Source"), "Source"))
+oversized_event_array = child.parse(child.source_for(authentic[0][1]), "Source")
+oversized_event_array["breakdownEventCanonicalUtf8"] = ["{}", "{}"]
+rejects(1, lambda: child.raw(oversized_event_array, "Source"))
+
+
 row, predecessor_source, arguments, prior = authentic[0]
 start = child.source_for(predecessor_source)
 context, initial, _ = child.replay(start, arguments, [])
@@ -107,10 +121,28 @@ missing_parent["movementCompletionSourceCanonicalUtf8"] = "{}"
 rejects(1, lambda: child.replay(child.raw(missing_parent, "Source"), arguments, []))
 rejects(1, lambda: child.replay(start, [*arguments[:-1], None], []))
 rejects(4, lambda: child.replay(completed, arguments, []))
+rejects(1, lambda: child.replay(start, arguments, [None]))
+rejects(1, lambda: child.replay(start, arguments, [b"{}", b"{}"]))
 
 nonterminal_packet, nonterminal_arguments = parent.root(row)
 nonterminal_source = child.source_for(parent.source_bytes(nonterminal_packet))
 rejects(3, lambda: child.replay(nonterminal_source, [*nonterminal_arguments, []], []))
+
+unsupported_packet = copy.deepcopy(nonterminal_packet)
+unsupported_packet["contractVersion"] = 2
+unsupported_source = child.source_for(parent.encode(unsupported_packet))
+for malformed_own_ledger in ([b"{}", b"{}"], [None], None):
+    rejects(3, lambda ledger=malformed_own_ledger: child.replay(
+        unsupported_source, [*nonterminal_arguments, []], ledger
+    ))
+
+class RejectCopy:
+    def __deepcopy__(self, memo):
+        raise AssertionError("caller object copied before ancestor authentication")
+
+rejects(3, lambda: child.replay(
+    unsupported_source, [*nonterminal_arguments, []], [RejectCopy()]
+))
 
 resigned = child.parse(completed, "Source")
 event = json.loads(resigned["breakdownEventCanonicalUtf8"][0])
@@ -144,6 +176,21 @@ try:
 finally:
     Path.read_bytes = actual_read
 assert touched[0] and owned_result == (completed, accepted_ledger, receipt)
+mutable_breakdown = copy.deepcopy(accepted_ledger)
+touched = [False]
+
+def mutate_breakdown_during_first_acquisition(path):
+    if not touched[0]:
+        touched[0] = True
+        mutable_breakdown.clear()
+    return actual_read(path)
+
+try:
+    Path.read_bytes = mutate_breakdown_during_first_acquisition
+    _, owned_state, owned_ledger = child.replay(completed, arguments, mutable_breakdown)
+finally:
+    Path.read_bytes = actual_read
+assert touched[0] and owned_ledger == accepted_ledger and owned_state == candidate_state
 print("PASS context, actor, capacity, ancestor, own ledger and re-signed effect negatives", flush=True)
 pin = (ROOT.parent.parent / next(iter(child.DEPENDENCIES))).resolve()
 
