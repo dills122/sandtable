@@ -744,6 +744,17 @@ atomically. Accepted-command recovery precedes fresh movement legality checks af
 validation. The original MovementEnd remains ordinal1; no ordinal2 completion proof is manufactured.
 Both paid and armed native paths have reference byte parity across 56 parents, 300 events and 356 cuts.
 PR #192 merged at `3a7b626` after independent review and all 3,391 hosted test rows passed.
-Post-merge main verification remains pending. New-lineage stop,
-System resolution, owner completion, Breakdown, public ingress and Runner adoption are not supplied
-by this move-only family. Older isolated or differently rooted contracts cannot substitute for these joins.
+Post-merge [main CI run 38783352632](https://github.com/dills122/sandtable/actions/runs/38783352632)
+verified all 3,391 rows at `3a7b626`, attempt 1. Stop, resolution and completion are not supplied by this
+R01 move-only family. Older isolated or differently rooted contracts cannot substitute for these joins.
+
+The separate private [actual moved repeat Movement completion contract](docs/specs/combat-actual-moved-repeat-movement-completion-v1.md)
+(R02), implemented by `CampaignCombatActualMovedRepeatMovementCompletion` and its codec,
+authenticates all 10 independent ledgers. A genuine zero-move occurrence completes with one owner
+event. A positive occurrence requires owner stop, empty System resolution and owner completion,
+three events, while preserving World, resources, RNG and history. The historical ordinal1 proof and
+receipt-bound ordinal2 proof remain distinct. The terminal enters Breakdown Determination; it does
+not execute Breakdown. Local validation passed 325 rows across 20 fresh class processes, and
+independent implementation review is complete at `07fac9f`. R02 hosted validation, merge and
+post-merge main verification remain pending. Public ingress, Runner adoption, acceptance of all 72 criteria and
+the first release candidate remain open.

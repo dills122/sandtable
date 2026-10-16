@@ -1,0 +1,672 @@
+{
+  "status": "Source reader allocation correction focused RED/GREEN/support21 validated; full combined workload, resource allocation, independent review and hosted approval pending",
+  "counts": {
+    "roots": 300,
+    "events": 788,
+    "cuts": 1088,
+    "priorRetries": 1520,
+    "parentReplays": 3396
+  },
+  "groups": {
+    "armed-axis-m0": 22,
+    "armed-axis-m1": 22,
+    "armed-axis-m2": 22,
+    "armed-axis-m3": 22,
+    "armed-axis-m4": 22,
+    "armed-axis-m5": 22,
+    "armed-commonwealth-m0": 22,
+    "armed-commonwealth-m1": 22,
+    "armed-commonwealth-m2": 22,
+    "armed-commonwealth-m3": 22,
+    "armed-commonwealth-m4": 22,
+    "armed-commonwealth-m5": 22,
+    "paid-axis-m0": 6,
+    "paid-axis-m1": 6,
+    "paid-axis-m2": 6,
+    "paid-commonwealth-m0": 6,
+    "paid-commonwealth-m1": 6,
+    "paid-commonwealth-m2": 6
+  },
+  "supportRows": 25,
+  "supportObligations": {
+    "physicalPins": 106,
+    "physicalFaultModes": 5,
+    "physicalPinFaults": 530,
+    "handlers": 14,
+    "limitEntries": 25,
+    "handlerCapacityOmissions": 156,
+    "ledgerFaults": 60,
+    "resignedEvents": 6,
+    "claimFaults": 24,
+    "contextFaults": 72,
+    "isolatedBoundaries": 8,
+    "grammarFramingOwnershipChecks": 88
+  },
+  "hashes": {
+    "docs/specs/combat-actual-moved-repeat-movement-completion-v1.schema.json": {
+      "bytes": 26738,
+      "sha256": "3a80a1cd94b41e8a88590d8eadddcc4c821bfefa7b0021489ad4e7cfe50af8ef"
+    },
+    "docs/specs/verify-combat-actual-moved-repeat-movement-completion-v1.py": {
+      "bytes": 29263,
+      "sha256": "705445d1b061ef2ba6d905382e7a26220e49be643ee0fe0444cfbf12b0989c62"
+    },
+    "docs/specs/fixtures/combat-actual-moved-repeat-movement-completion-v1.json": {
+      "bytes": 3586039,
+      "sha256": "7c887ebbfe8889279fcf5d9269cef2538af6fb38cacf0279a420f2e3496f2258"
+    }
+  },
+  "pins": {
+    "external": 104,
+    "ownDelivery": 2,
+    "physical": 106,
+    "inherited101Unchanged": true,
+    "external104BytesEqualVerifiedMain": true,
+    "verifiedMain": "3a7b62645b377326ed2318dfa81cfe66107f4445"
+  },
+  "evidence": {
+    "generation": {
+      "command": "python3 -u docs/specs/verify-combat-actual-moved-repeat-movement-completion-v1.py --generate",
+      "exitCode": 0,
+      "localLog": "/private/tmp/r02-fixture-generation.log",
+      "generationOracleSha256": "934414a013d502257fb7ef26fe6d8efd9debe86fb5d331af27d97fe831f44aa2"
+    },
+    "ownershipRed": {
+      "exitCode": 1,
+      "localLog": "/private/tmp/r02-ownership-regression-red.log",
+      "retainedVersion": "fae1086",
+      "diagnostic": "trusted-input on post-append reread of mutated original ledgers"
+    },
+    "ownershipGreen": {
+      "exitCode": 0,
+      "profiles": [
+        "paid",
+        "armed"
+      ],
+      "localLog": "/private/tmp/r02-ownership-regression-green.log"
+    },
+    "normal": {
+      "command": "python3 -u docs/specs/verify-combat-actual-moved-repeat-movement-completion-v1.py",
+      "exitCode": 0,
+      "localLog": "/private/tmp/r02-reference-normal.log",
+      "counts": {
+        "roots": 300,
+        "events": 788,
+        "cuts": 1088,
+        "priorRetries": 1520,
+        "parentReplays": 3396
+      }
+    },
+    "focusedClosure": {
+      "exitCode": 0,
+      "localLog": "/private/tmp/r02-reference-closure-final.log",
+      "counters": {
+        "claimFaults": 24,
+        "contextFaults": 72,
+        "handlerCeilings": 156,
+        "isolatedBoundaries": 8,
+        "ledgerFaults": 60,
+        "physicalPinFaults": 530,
+        "resignedEvents": 6
+      }
+    },
+    "framingClosure": {
+      "exitCode": 0,
+      "localLog": "/private/tmp/r02-own-framing-closure-final.log",
+      "checks": 88,
+      "sourceFramingBytes": 128857183,
+      "worldFramingBytes": 587212,
+      "actualArmedMoves": 5
+    },
+    "capacity": {
+      "exitCode": 0,
+      "localReport": "/private/tmp/r02-capacity-arithmetic-final.json",
+      "report": {
+        "scope": "reachable profile arithmetic; arbitrary framing not authority",
+        "model": {
+          "Source": 128857600,
+          "Control": 786432,
+          "Proof": 794624,
+          "World": 534528,
+          "Event": 65536,
+          "Input": 4096
+        },
+        "sourceEnvelope": 95,
+        "components": {
+          "unit": 1634,
+          "track": 6382,
+          "flow": 8343,
+          "authority": 12832,
+          "position": 509,
+          "context": 14183,
+          "newEndProof": 10401,
+          "receiptCopies": 3072,
+          "headerAllowance": 4096,
+          "allocatedMetadata": 64512,
+          "event": 52480
+        }
+      }
+    },
+    "ownershipGreenFinal": {
+      "exitCode": 0,
+      "profiles": [
+        "paid",
+        "armed"
+      ],
+      "localLog": "/private/tmp/r02-ownership-regression-green-final.log"
+    },
+    "strengthenedFramingClosure": {
+      "exitCode": 0,
+      "checks": 88,
+      "sourceBytes": 128857183,
+      "worldBytes": 587212,
+      "matchingOwnInputs": 3,
+      "invalidParentDiagnostic": "CMB-MRC-001",
+      "localLog": "/private/tmp/r02-own-framing-closure-strengthened.log"
+    }
+  },
+  "freezeUtc": "2026-10-15T21:08:31.549278+00:00",
+  "generationToFinalOracle": "Generation used934414a013d502257fb7ef26fe6d8efd9debe86fb5d331af27d97fe831f44aa2. Final705445d1b061ef2ba6d905382e7a26220e49be643ee0fe0444cfbf12b0989c62 only extracts the existing supportObligations literal into a function and requires exact metadata equality during normal verification. Transition/canonical/schema/fixture bytes are unchanged; complete final-hash normal verification matched every generated row/event/cut.",
+  "native": {
+    "genuineRed": {
+      "head": "a27cf87e07c1c5f7cf292f985498dd4e7db8af11",
+      "exitCode": 2,
+      "actualRows": 4,
+      "failed": 4,
+      "diagnostic": "CMB-MRC-007 after authentic R01 ingress",
+      "localDirectory": "/private/tmp/r02-native-red-results"
+    },
+    "initialGreen": {
+      "exitCode": 0,
+      "actualRows": 4,
+      "passed": 4,
+      "localDirectory": "/private/tmp/r02-native-green-results"
+    },
+    "actualDiscovery": {
+      "rows": 325,
+      "uniqueUids": 325,
+      "uniqueDisplayNames": 325,
+      "exactFixtureIdentityMatch": true,
+      "localJson": "/private/tmp/r02-native-discovery.json"
+    },
+    "firstCompleteStage": {
+      "head": "9a74daf18b55634151f140e182e719f81bf43ec4",
+      "result": "aborted/incomplete",
+      "actualPassedRows": 66,
+      "completedParityClasses": 3,
+      "reason": "4GiB support process RSS guard",
+      "supportRssBytes": 4310122496,
+      "aggregateRssBytes": 5541445632,
+      "localDirectory": "/private/tmp/r02-native-full-1",
+      "cleanup": "PermissionError before internal verification; separate exact-PGID audit confirmed zero survivors",
+      "separateCleanupAudit": "/private/tmp/r02-native-full-1/cleanup-audit.json"
+    },
+    "asciiMutationSensitivity": {
+      "label": "controlled wrong-case streaming mutant; not original production defect",
+      "exitCode": 2,
+      "actualRows": 1,
+      "failed": 1,
+      "assertion": "Assert.Equal byte111 expected98(b),actual66(B)",
+      "mutantCodecSha256": "ac8a5e56ba8d4f412224913e1f2a2413a5f1b139debffe98c4989b33d6ef7261",
+      "correctCodecSha256": "7ebd867d4f035856a7f669852087d6cdf08d0ff8f155eb5f2864343d59339a35",
+      "localDirectory": "/private/tmp/r02-ascii-sensitivity-red"
+    },
+    "framingTestGap": "Corrected matching three actual own inputs and invalid-parent001; final focused/full gates pass; frozen contract unchanged.",
+    "finalTestedSourceHead": "2c53a0c65741a5f1bb59c880bec8d2d272327fe2",
+    "sourceHashes": {
+      "src/Cna.Core/Campaigns/CampaignCombatActualMovedRepeatMovementCompletionCodec.cs": "9e01201889af451da7d7a9e57510f0f60d5d8eb56044e05ba59b75b892f2df89",
+      "src/Cna.Core/Campaigns/CampaignCombatActualMovedRepeatMovementCompletion.cs": "5765421daeb3c70b260afaf358433dabed679735ee4acd04c7c40c9b4922f543",
+      "tests/Cna.Core.Tests/Campaigns/CombatActualMovedRepeatMovementCompletionTests.cs": "6c8e1190a55ad63eb15171dcef068c01cf2d18c57dc358ad81b2bd6e70bf35fb",
+      "tests/Cna.Core.Tests/Campaigns/CombatActualMovedRepeatMovementCompletionContractTests.cs": "d393adae951af40f3d9ee630a45fa0cdc78c30bce037354d3134f88c4286e138"
+    },
+    "host": {
+      "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+      "machine": "arm64",
+      "memoryBytes": 68719476736,
+      "logicalCpu": 10
+    },
+    "sdk": "10.0.400",
+    "binaryFingerprints": {
+      "Cna.Core.Tests.dll": "de9529c77c263a446597414c438ef13598cc506cb64ce20e6a66be4b0b262f6d",
+      "Cna.Core.dll": "cbcc96b3555fd48ba642e7ab26b390a616a9513af25ebfc9010ba724658e075c",
+      "xunit.v3.common.dll": "9cf3cd23eefabd397c0eb86e705a8e620f459715e2b3e0428db07ff68e53bf39",
+      "xunit.v3.core.dll": "ac165a05487a95a1d5c163bb08e81ae15b4f51c7d7fbb23f1c5fd55254b7e056"
+    },
+    "moduleSha256": "1e19fe7d338e0732b2c3146a57d61324df11d0a1f64bfac075df692249e0db29",
+    "binaryDirectory": "/Users/dsteele/.codex/worktrees/combat-repeat-delivery/sandtable/artifacts/bin/Cna.Core.Tests/release",
+    "preCleanupFullPass": {
+      "head": "229c071bd869668d52108ecfaa0e35c51b50c990",
+      "startUtc": "2026-10-15T21:53:08.417961+00:00",
+      "endUtc": "2026-10-15T21:56:00.445591+00:00",
+      "elapsedSeconds": 172.03129554100087,
+      "result": "PASS full325 actual rows/20 fresh classes; all12 support obligations asserted",
+      "failure": null,
+      "peakSampledOwnedRssBytes": 5366153216,
+      "ownedSurvivors": [],
+      "cleanupSignalErrors": [],
+      "localSummary": "/private/tmp/r02-native-full-3/summary.json",
+      "maximumKernelRssBytes": 4241440768,
+      "actualRows": 325
+    },
+    "focusedFinal": {
+      "head": "2c53a0c65741a5f1bb59c880bec8d2d272327fe2",
+      "startUtc": "2026-10-15T21:56:54.518209+00:00",
+      "endUtc": "2026-10-15T21:58:12.363655+00:00",
+      "elapsedSeconds": 77.84711783399689,
+      "result": "PASS focused21actual rows/1fresh support class; all12 obligations asserted",
+      "failure": null,
+      "peakSampledOwnedRssBytes": 3855843328,
+      "ownedSurvivors": [],
+      "cleanupSignalErrors": [],
+      "localSummary": "/private/tmp/r02-native-full-4/summary.json",
+      "maximumKernelRssBytes": 4244684800,
+      "actualRows": 21
+    },
+    "fullFinal": {
+      "head": "2c53a0c65741a5f1bb59c880bec8d2d272327fe2",
+      "startUtc": "2026-10-15T21:58:33.663480+00:00",
+      "endUtc": "2026-10-15T22:01:28.893450+00:00",
+      "elapsedSeconds": 175.23371791700265,
+      "result": "PASS full325 actual rows/20 fresh classes; all12 support obligations asserted",
+      "failure": null,
+      "peakSampledOwnedRssBytes": 4880809984,
+      "ownedSurvivors": [],
+      "cleanupSignalErrors": [],
+      "localSummary": "/private/tmp/r02-native-full-5/summary.json",
+      "maximumKernelRssBytes": 3860316160,
+      "actualRows": 325,
+      "classes": [
+        {
+          "key": "Cna.Core.Tests.Campaigns.CombatActualMovedRepeatMovementCompletionArmedAxisMove0ContractTests",
+          "actualRows": 22,
+          "exitCode": 0,
+          "wallSeconds": 22.31374924999909,
+          "testSeconds": 20.511,
+          "kernelPeakRssBytes": 673464320,
+          "kernelUserSeconds": 21.497312,
+          "kernelSystemSeconds": 1.531949,
+          "peakSampledGroupRssBytes": 608845824
+        },
+        {
+          "key": "Cna.Core.Tests.Campaigns.CombatActualMovedRepeatMovementCompletionArmedAxisMove1ContractTests",
+          "actualRows": 22,
+          "exitCode": 0,
+          "wallSeconds": 48.87736125000083,
+          "testSeconds": 47.148,
+          "kernelPeakRssBytes": 710574080,
+          "kernelUserSeconds": 47.128538,
+          "kernelSystemSeconds": 3.656191,
+          "peakSampledGroupRssBytes": 682819584
+        },
+        {
+          "key": "Cna.Core.Tests.Campaigns.CombatActualMovedRepeatMovementCompletionArmedAxisMove2ContractTests",
+          "actualRows": 22,
+          "exitCode": 0,
+          "wallSeconds": 48.87179420800021,
+          "testSeconds": 47.532,
+          "kernelPeakRssBytes": 755564544,
+          "kernelUserSeconds": 47.467646,
+          "kernelSystemSeconds": 3.408852,
+          "peakSampledGroupRssBytes": 578011136
+        },
+        {
+          "key": "Cna.Core.Tests.Campaigns.CombatActualMovedRepeatMovementCompletionArmedAxisMove3ContractTests",
+          "actualRows": 22,
+          "exitCode": 0,
+          "wallSeconds": 44.13631895800063,
+          "testSeconds": 43.15,
+          "kernelPeakRssBytes": 730988544,
+          "kernelUserSeconds": 45.322197,
+          "kernelSystemSeconds": 3.300579,
+          "peakSampledGroupRssBytes": 634421248
+        },
+        {
+          "key": "Cna.Core.Tests.Campaigns.CombatActualMovedRepeatMovementCompletionContractTests",
+          "actualRows": 21,
+          "exitCode": 0,
+          "wallSeconds": 68.04602987500039,
+          "testSeconds": 66.382,
+          "kernelPeakRssBytes": 3860316160,
+          "kernelUserSeconds": 65.315226,
+          "kernelSystemSeconds": 5.707732,
+          "peakSampledGroupRssBytes": 3538190336
+        },
+        {
+          "key": "Cna.Core.Tests.Campaigns.CombatActualMovedRepeatMovementCompletionArmedCommonwealthMove0ContractTests",
+          "actualRows": 22,
+          "exitCode": 0,
+          "wallSeconds": 17.574471125000855,
+          "testSeconds": 16.039,
+          "kernelPeakRssBytes": 875347968,
+          "kernelUserSeconds": 19.909938,
+          "kernelSystemSeconds": 1.257551,
+          "peakSampledGroupRssBytes": 682180608
+        },
+        {
+          "key": "Cna.Core.Tests.Campaigns.CombatActualMovedRepeatMovementCompletionArmedAxisMove5ContractTests",
+          "actualRows": 22,
+          "exitCode": 0,
+          "wallSeconds": 46.33371570800227,
+          "testSeconds": 45.245,
+          "kernelPeakRssBytes": 706527232,
+          "kernelUserSeconds": 47.182781,
+          "kernelSystemSeconds": 3.479823,
+          "peakSampledGroupRssBytes": 617005056
+        },
+        {
+          "key": "Cna.Core.Tests.Campaigns.CombatActualMovedRepeatMovementCompletionArmedAxisMove4ContractTests",
+          "actualRows": 22,
+          "exitCode": 0,
+          "wallSeconds": 46.86823362499854,
+          "testSeconds": 45.417,
+          "kernelPeakRssBytes": 739721216,
+          "kernelUserSeconds": 47.278372,
+          "kernelSystemSeconds": 3.505132,
+          "peakSampledGroupRssBytes": 693305344
+        },
+        {
+          "key": "Cna.Core.Tests.Campaigns.CombatActualMovedRepeatMovementCompletionArmedCommonwealthMove1ContractTests",
+          "actualRows": 22,
+          "exitCode": 0,
+          "wallSeconds": 44.22060583300117,
+          "testSeconds": 43.252,
+          "kernelPeakRssBytes": 742850560,
+          "kernelUserSeconds": 45.266326,
+          "kernelSystemSeconds": 3.257743,
+          "peakSampledGroupRssBytes": 562921472
+        },
+        {
+          "key": "Cna.Core.Tests.Campaigns.CombatActualMovedRepeatMovementCompletionArmedCommonwealthMove2ContractTests",
+          "actualRows": 22,
+          "exitCode": 0,
+          "wallSeconds": 45.52672700000039,
+          "testSeconds": 44.498,
+          "kernelPeakRssBytes": 739655680,
+          "kernelUserSeconds": 45.574086,
+          "kernelSystemSeconds": 3.00027,
+          "peakSampledGroupRssBytes": 611975168
+        },
+        {
+          "key": "Cna.Core.Tests.Campaigns.CombatActualMovedRepeatMovementCompletionPaidAxisMove0ContractTests",
+          "actualRows": 6,
+          "exitCode": 0,
+          "wallSeconds": 9.053390667002532,
+          "testSeconds": 7.583,
+          "kernelPeakRssBytes": 659374080,
+          "kernelUserSeconds": 10.298223,
+          "kernelSystemSeconds": 0.481425,
+          "peakSampledGroupRssBytes": 609615872
+        },
+        {
+          "key": "Cna.Core.Tests.Campaigns.CombatActualMovedRepeatMovementCompletionArmedCommonwealthMove3ContractTests",
+          "actualRows": 22,
+          "exitCode": 0,
+          "wallSeconds": 47.12226658399959,
+          "testSeconds": 45.865,
+          "kernelPeakRssBytes": 829636608,
+          "kernelUserSeconds": 46.459087,
+          "kernelSystemSeconds": 3.297155,
+          "peakSampledGroupRssBytes": 829112320
+        },
+        {
+          "key": "Cna.Core.Tests.Campaigns.CombatActualMovedRepeatMovementCompletionArmedCommonwealthMove4ContractTests",
+          "actualRows": 22,
+          "exitCode": 0,
+          "wallSeconds": 48.73207675000231,
+          "testSeconds": 47.286,
+          "kernelPeakRssBytes": 722337792,
+          "kernelUserSeconds": 48.034872,
+          "kernelSystemSeconds": 3.389304,
+          "peakSampledGroupRssBytes": 615366656
+        },
+        {
+          "key": "Cna.Core.Tests.Campaigns.CombatActualMovedRepeatMovementCompletionPaidCommonwealthMove0ContractTests",
+          "actualRows": 6,
+          "exitCode": 0,
+          "wallSeconds": 9.055022207998263,
+          "testSeconds": 7.79,
+          "kernelPeakRssBytes": 677380096,
+          "kernelUserSeconds": 10.568275,
+          "kernelSystemSeconds": 0.54969,
+          "peakSampledGroupRssBytes": 605143040
+        },
+        {
+          "key": "Cna.Core.Tests.Campaigns.CombatActualMovedRepeatMovementCompletionPaidAxisMove1ContractTests",
+          "actualRows": 6,
+          "exitCode": 0,
+          "wallSeconds": 18.125096291001682,
+          "testSeconds": 16.943,
+          "kernelPeakRssBytes": 657588224,
+          "kernelUserSeconds": 20.987478,
+          "kernelSystemSeconds": 1.168667,
+          "peakSampledGroupRssBytes": 545996800
+        },
+        {
+          "key": "Cna.Core.Tests.Campaigns.CombatActualMovedRepeatMovementCompletionArmedCommonwealthMove5ContractTests",
+          "actualRows": 22,
+          "exitCode": 0,
+          "wallSeconds": 48.19285662499897,
+          "testSeconds": 45.977,
+          "kernelPeakRssBytes": 915062784,
+          "kernelUserSeconds": 47.858534,
+          "kernelSystemSeconds": 3.213947,
+          "peakSampledGroupRssBytes": 780779520
+        },
+        {
+          "key": "Cna.Core.Tests.Campaigns.CombatActualMovedRepeatMovementCompletionPaidAxisMove2ContractTests",
+          "actualRows": 6,
+          "exitCode": 0,
+          "wallSeconds": 18.120338040997012,
+          "testSeconds": 16.961,
+          "kernelPeakRssBytes": 655933440,
+          "kernelUserSeconds": 21.031422,
+          "kernelSystemSeconds": 1.229854,
+          "peakSampledGroupRssBytes": 597114880
+        },
+        {
+          "key": "Cna.Core.Tests.Campaigns.CombatActualMovedRepeatMovementCompletionTests",
+          "actualRows": 4,
+          "exitCode": 0,
+          "wallSeconds": 7.455207999999402,
+          "testSeconds": 5.992,
+          "kernelPeakRssBytes": 820707328,
+          "kernelUserSeconds": 8.418576,
+          "kernelSystemSeconds": 0.41007,
+          "peakSampledGroupRssBytes": 781221888
+        },
+        {
+          "key": "Cna.Core.Tests.Campaigns.CombatActualMovedRepeatMovementCompletionPaidCommonwealthMove1ContractTests",
+          "actualRows": 6,
+          "exitCode": 0,
+          "wallSeconds": 17.568732375002583,
+          "testSeconds": 16.1,
+          "kernelPeakRssBytes": 770162688,
+          "kernelUserSeconds": 20.223759,
+          "kernelSystemSeconds": 1.038339,
+          "peakSampledGroupRssBytes": 594870272
+        },
+        {
+          "key": "Cna.Core.Tests.Campaigns.CombatActualMovedRepeatMovementCompletionPaidCommonwealthMove2ContractTests",
+          "actualRows": 6,
+          "exitCode": 0,
+          "wallSeconds": 17.56199104099869,
+          "testSeconds": 16.417,
+          "kernelPeakRssBytes": 659439616,
+          "kernelUserSeconds": 20.524707,
+          "kernelSystemSeconds": 1.1405,
+          "peakSampledGroupRssBytes": 569196544
+        }
+      ],
+      "supervisorSha256": "d080b89bac557c01f445ffcd01741c04ef141585f5672cd9b31ef9c3edad7227",
+      "cpuSeconds": 734.372128
+    },
+    "workCountQualification": "3396 source-derived R02 Replay/internal-parent invocations:300 initial+2*788 accepted Apply+1520 duplicate Apply. Excludes additional authentic context setup and recursively nested ancestor calls. Complete measured class costs include all setup/support work.",
+    "cleanupOnlyCommit": "2c53a0c removes one unused private9line JsonElement Source overload; generic Object(Source) reader behavior preserved. Final focused build and full325 revalidated exact clean source head.",
+    "localResourceLimits": {
+      "maxChildren": 4,
+      "hardStageSeconds": 1200,
+      "cleanupReserveSeconds": 30,
+      "perClassSeconds": 900,
+      "aggregateRssAbortBytes": 12884901888,
+      "perGroupRssAbortBytes": 4294967296
+    },
+    "formatting": {
+      "initialExitCode": 2,
+      "initialLocalSummary": "/private/tmp/r02-owned-format-check/summary.json",
+      "diagnosis": "14 leading-indentation diagnostics in two nested test loops; no semantic source change",
+      "normalizedContentProof": {
+        "head": "2c53a0c65741a5f1bb59c880bec8d2d272327fe2",
+        "path": "tests/Cna.Core.Tests/Campaigns/CombatActualMovedRepeatMovementCompletionContractTests.cs",
+        "lines": [
+          86,
+          87,
+          88,
+          89,
+          90,
+          91,
+          188,
+          189,
+          190,
+          191,
+          192,
+          193,
+          194,
+          195
+        ],
+        "beforeSha256": "d393adae951af40f3d9ee630a45fa0cdc78c30bce037354d3134f88c4286e138",
+        "afterSha256": "c37b263486c22d8fc431352e2f1542d74a0dbf6955fb1f98a6f536d926630359",
+        "allLineContentsAfterLeadingWhitespaceIdentical": true,
+        "normalizedSha256": "b5c867ee4350e0c6c9a48d9e27d8443fc2011d1576251abc69155c9fbd67d87f"
+      },
+      "finalLocalSummary": "/private/tmp/r02-owned-format-check-green/summary.json",
+      "finalResult": "PASS required formatting verification of four owned C# files",
+      "qualification": "Scoped four owned C# files; generic workspace-load warning retained; full combined solution gate remains pending"
+    },
+    "combinedRowsProvisional": 3716,
+    "noHostedCapacityClaim": true,
+    "sourceReaderCorrection": {
+      "sourceHead": "d9cf29339cab2544692fde72e8e3c863ea7d3da9",
+      "regressionHead": "2d42fd8ee1d64f2382bb18810eebc38af293ffd2",
+      "combinedFailure": {
+        "tested_sha": "965ebdb3107fe03484a484b9d7efdbd981ac8586",
+        "binding": {
+          "tested_sha": "965ebdb3107fe03484a484b9d7efdbd981ac8586",
+          "run_attempt": "local",
+          "run_id": "local",
+          "sdk": "10.0.400",
+          "configuration": "Release",
+          "module_sha256": "70247d7488eafb5ec87ee21aa5db70b4992f9d5731fb250218652ae6930e2dd4",
+          "fixture_sha256": "7c887ebbfe8889279fcf5d9269cef2538af6fb38cacf0279a420f2e3496f2258"
+        },
+        "discovery": {
+          "legacy_rows": 3391,
+          "r02_rows": 325,
+          "total_rows": 3716
+        },
+        "job_result": "FAIL resource gate; test processes and exact XML rows PASS",
+        "actual_pass_rows": 109,
+        "actual_pass_processes": 5,
+        "children": {
+          "armed-commonwealth-m1": {
+            "rows": 22,
+            "exit_code": 0,
+            "pid": 93222,
+            "elapsed_seconds": 48.0392103339982,
+            "started_utc": "2026-10-15T22:25:01.332592+00:00",
+            "completed_utc": "2026-10-15T22:25:49.371613+00:00"
+          },
+          "armed-commonwealth-m2": {
+            "rows": 22,
+            "exit_code": 0,
+            "pid": 93223,
+            "elapsed_seconds": 48.96062658400115,
+            "started_utc": "2026-10-15T22:25:01.333055+00:00",
+            "completed_utc": "2026-10-15T22:25:50.293614+00:00"
+          },
+          "armed-commonwealth-m3": {
+            "rows": 22,
+            "exit_code": 0,
+            "pid": 93225,
+            "elapsed_seconds": 49.31505266699969,
+            "started_utc": "2026-10-15T22:25:01.339124+00:00",
+            "completed_utc": "2026-10-15T22:25:50.652899+00:00"
+          },
+          "armed-commonwealth-m4": {
+            "rows": 22,
+            "exit_code": 0,
+            "pid": 93226,
+            "elapsed_seconds": 50.01286204099961,
+            "started_utc": "2026-10-15T22:25:01.339254+00:00",
+            "completed_utc": "2026-10-15T22:25:51.348026+00:00"
+          },
+          "support-contract": {
+            "rows": 21,
+            "exit_code": 0,
+            "pid": 94614,
+            "elapsed_seconds": 62.47889970799952,
+            "started_utc": "2026-10-15T22:25:51.357337+00:00",
+            "completed_utc": "2026-10-15T22:26:53.836222+00:00"
+          }
+        },
+        "cleanup_owned_session_survivors": {
+          "armed-commonwealth-m1": [],
+          "armed-commonwealth-m2": [],
+          "armed-commonwealth-m3": [],
+          "armed-commonwealth-m4": [],
+          "support-contract": []
+        },
+        "kernel_peak_bytes": 4348264448,
+        "limit_bytes": 4294967296,
+        "overage_bytes": 53297152,
+        "overage_percent": 1.2409210205078125,
+        "peak_sampled_owned_rss_bytes": 3982180352,
+        "kernel_attribution": "job-wide completed-children maximum; not per-child attribution",
+        "jobs_not_started": [
+          "r02-2",
+          "r02-3"
+        ],
+        "final_allocation_ready": false,
+        "heavy_lease": "idle; no automatic retry",
+        "limits": "No full325 execution through combined helper, Linux resource measurement or independent-job rebuild proof; no assertion flake established"
+      },
+      "rootCause": "Object(Source) retained generic JsonElement->MemoryStream/ToArray->JsonNode->Encode serialization/UTF16 StringBuilder chain plus a second parse. Source-specific decoded carriers now validate through existing SourceBytes exact comparison and directly construct the owned immutable-string packet.",
+      "contractHashesChanged": false,
+      "allOtherKindsUnchanged": true,
+      "forcedGc": false,
+      "vectorBytes": 128857183,
+      "oldMeasuredAllocationBytes": 4070155176,
+      "allocationCeilingBytes": 774191674,
+      "greenAllocationQualification": "Actual value not logged; passing runtime assertion proves <= ceiling; allocation traffic is not RSS.",
+      "sourceHashes": {
+        "src/Cna.Core/Campaigns/CampaignCombatActualMovedRepeatMovementCompletionCodec.cs": "6bf179d5b21bdc0223f2892db1091bd6636515b8c788b96b91e2a6cf55d3b7b6",
+        "src/Cna.Core/Campaigns/CampaignCombatActualMovedRepeatMovementCompletion.cs": "5765421daeb3c70b260afaf358433dabed679735ee4acd04c7c40c9b4922f543",
+        "tests/Cna.Core.Tests/Campaigns/CombatActualMovedRepeatMovementCompletionTests.cs": "6c8e1190a55ad63eb15171dcef068c01cf2d18c57dc358ad81b2bd6e70bf35fb",
+        "tests/Cna.Core.Tests/Campaigns/CombatActualMovedRepeatMovementCompletionContractTests.cs": "7d0a14609769403e303d18799bb2108e4eb0f28e24637b9004156e26a7e4142d"
+      },
+      "binaryFingerprints": {
+        "Cna.Core.Tests.dll": "c552d3a3a0e1c121195731ab054021088a8408f807aa301495f62ca975c02312",
+        "Cna.Core.dll": "503d6ecee228a26d971fca3b26483d06f36638bfad7d176977b6a3b618e128de",
+        "xunit.v3.common.dll": "9cf3cd23eefabd397c0eb86e705a8e620f459715e2b3e0428db07ff68e53bf39",
+        "xunit.v3.core.dll": "ac165a05487a95a1d5c163bb08e81ae15b4f51c7d7fbb23f1c5fd55254b7e056"
+      },
+      "moduleSha256": "365f2e6a20c46af220412aad573f84b003e4faf4a6ba5b0f3987c253a0b4763a",
+      "focusedRedSummary": "/private/tmp/r02-source-reader-red/summary.json",
+      "focusedGreenSummary": "/private/tmp/r02-source-reader-green/summary.json",
+      "supportSummary": "/private/tmp/r02-source-reader-support-green/summary.json",
+      "oldSingleFactKernelPeakBytes": 2827812864,
+      "newSingleFactKernelPeakBytes": 930840576,
+      "supportKernelPeakBytes": 1552138240,
+      "supportWallSeconds": 61.6716264170027,
+      "supportCpuSeconds": 65.957986,
+      "supportExactRows": 21,
+      "supportAll12ObligationsAsserted": true,
+      "cleanupSurvivors": [],
+      "cleanupSignalErrors": [],
+      "diagnostics": "exact real-helper --no-ansi --output Detailed --diagnostic --diagnostic-verbosity Trace --diagnostic-synchronous-write",
+      "formattingResult": "PASS required formatting verification of four owned C# files",
+      "formattingLocalSummary": "/private/tmp/r02-source-reader-format-check/summary.json",
+      "newFull325Status": "NOT RUN; prior2c53 full325 is predecessor evidence only; Brain must authorize and validate final combined head."
+    },
+    "checkpointQualification": "All prior finalFull/source/binary fields describe the retained pre-correction checkpoint. sourceReaderCorrection contains the current source/focused evidence; current full325 and combined-head proof remain pending."
+  }
+}

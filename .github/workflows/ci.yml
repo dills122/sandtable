@@ -43,10 +43,14 @@ jobs:
         run: dotnet build Sandtable.slnx --configuration Release --no-restore '/bl:artifacts/ci/build-{}.binlog'
       - name: Check fail-closed coverage helper
         run: python3 .github/scripts/test_partition_test.py
+      - name: Check exhaustive R02 allocation and process supervision
+        run: |
+          python3 .github/scripts/r02_partition_test.py
+          python3 .github/scripts/ci_group_runner_test.py
       - name: Build Release row discovery helper
         run: dotnet build .github/scripts/ReleaseTestRows/ReleaseTestRows.csproj --configuration Release '/bl:artifacts/ci/row-helper-{}.binlog'
       - name: Discover actual Release rows and prove complementary filters
-        run: python3 .github/scripts/test_partition.py discover --sha "$TESTED_SHA" --attempt "$RUN_ATTEMPT"
+        run: python3 .github/scripts/r02_partition.py discover --sha "$TESTED_SHA" --attempt "$RUN_ATTEMPT"
         env:
           TESTED_SHA: ${{ github.sha }}
           RUN_ATTEMPT: ${{ github.run_attempt }}
@@ -65,8 +69,9 @@ jobs:
     timeout-minutes: ${{ matrix.shard == 'core-b' && 25 || 15 }}
     strategy:
       fail-fast: false
+      max-parallel: 6
       matrix:
-        shard: [core-a, core-b, core-c, core-d, exercise, contracts]
+        shard: [core-a, core-b, core-c, core-d, exercise, contracts, r02-1, r02-2, r02-3]
     steps:
       - name: Check out tested event SHA
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -89,7 +94,7 @@ jobs:
           name: ci-inventory-${{ github.sha }}-${{ github.run_attempt }}
           path: artifacts/partition-proof
       - name: Run complete-row partition
-        run: python3 .github/scripts/test_partition.py execute --sha "$TESTED_SHA" --attempt "$RUN_ATTEMPT" --shard "$TEST_SHARD"
+        run: python3 .github/scripts/r02_partition.py execute --sha "$TESTED_SHA" --attempt "$RUN_ATTEMPT" --shard "$TEST_SHARD"
         env:
           TESTED_SHA: ${{ github.sha }}
           RUN_ATTEMPT: ${{ github.run_attempt }}
@@ -129,7 +134,7 @@ jobs:
           merge-multiple: true
       - name: Require successful processes and complete exact-head coverage
         if: ${{ always() }}
-        run: python3 .github/scripts/test_partition.py verify --sha "$TESTED_SHA" --attempt "$RUN_ATTEMPT"
+        run: python3 .github/scripts/r02_partition.py verify --sha "$TESTED_SHA" --attempt "$RUN_ATTEMPT"
         env:
           TESTED_SHA: ${{ github.sha }}
           RUN_ATTEMPT: ${{ github.run_attempt }}
