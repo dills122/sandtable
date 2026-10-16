@@ -341,6 +341,58 @@ public sealed class CombatActualMovedRepeatBreakdownCompletionTests
         AssertCode(1, () => Replay(parent, source, [Encoding.ASCII.GetBytes("{}")]));
     }
 
+    [Fact]
+    public void FrozenScalarAndVersionPrecedenceMatchesAuthenticReplay()
+    {
+        var parent = new CompletionContext(0, 1, "paid");
+        AtCut(parent, parent.Inputs.Length);
+        using var fixture = JsonDocument.Parse(Dependency(FixturePath));
+        var expected = fixture.RootElement.GetProperty("cases").EnumerateArray().Single(item =>
+            item.GetProperty("rootOrdinal").GetInt32() == 0 && item.GetProperty("movementCut").GetInt32() == 1 &&
+            item.GetProperty("profile").GetString() == "paid").Clone();
+        var source = CampaignCombatActualPaidAssaultCodec.Encode(new JsonObject
+        {
+            ["contractVersion"] = 1,
+            ["movementCompletionSourceCanonicalUtf8"] = Encoding.ASCII.GetString(parent.Source),
+            ["breakdownEventCanonicalUtf8"] = new JsonArray()
+        });
+        var valid = expected.GetProperty("inputCanonicalUtf8")[0].GetString()!;
+        var nullKind = JsonNode.Parse(valid)!.AsObject(); nullKind["command"]!["kind"] = null;
+        AssertCode(3, () => Apply(parent, source, [], CampaignCombatActualPaidAssaultCodec.Encode(nullKind)));
+        var versionAndNull = JsonNode.Parse(valid)!.AsObject();
+        versionAndNull["command"]!["contractVersion"] = 2;
+        versionAndNull["command"]!["expectedPriorVersion"] = null;
+        AssertCode(2, () => Apply(parent, source, [], CampaignCombatActualPaidAssaultCodec.Encode(versionAndNull)));
+        var version = expected.GetProperty("inputCanonicalUtf8")[0].GetString()!;
+        var expectedVersion = JsonNode.Parse(valid)!["command"]!["expectedPriorVersion"]!.GetValue<long>();
+        var negativeZero = version.Replace($"\"expectedPriorVersion\":{expectedVersion}", "\"expectedPriorVersion\":-0", StringComparison.Ordinal);
+        AssertCode(8, () => Apply(parent, source, [], Encoding.ASCII.GetBytes(negativeZero)));
+        var surrogate = valid.Replace("\"actor\":\"system\"", "\"actor\":\"\\ud800\"", StringComparison.Ordinal);
+        AssertCode(1, () => Apply(parent, source, [], Encoding.ASCII.GetBytes(surrogate)));
+        var surrogateKind = valid.Replace("\"kind\":\"complete-breakdown-segment\"", "\"kind\":\"\\ud800\"", StringComparison.Ordinal);
+        AssertCode(3, () => Apply(parent, source, [], Encoding.ASCII.GetBytes(surrogateKind)));
+        var completed = Apply(parent, source, [], Encoding.ASCII.GetBytes(valid));
+        var recorded = JsonNode.Parse(completed.EventBytes!)!.AsObject(); recorded["profile"] = null;
+        var alteredSource = JsonNode.Parse(completed.SourceBytes)!.AsObject();
+        alteredSource["breakdownEventCanonicalUtf8"]![0] = Encoding.ASCII.GetString(CampaignCombatActualPaidAssaultCodec.Encode(recorded));
+        AssertCode(3, () => Replay(parent, CampaignCombatActualPaidAssaultCodec.Encode(alteredSource), [Encoding.ASCII.GetBytes(valid)]));
+    }
+
+    [Fact]
+    public void InvalidAncestorSnapshotWaitsForChildSourceValidation()
+    {
+        var parent = new CompletionContext(0, 1, "paid");
+        AtCut(parent, parent.Inputs.Length);
+        parent.Completion[0] = null!;
+        var source = CampaignCombatActualPaidAssaultCodec.Encode(new JsonObject
+        {
+            ["contractVersion"] = 2,
+            ["movementCompletionSourceCanonicalUtf8"] = Encoding.ASCII.GetString(parent.Source),
+            ["breakdownEventCanonicalUtf8"] = new JsonArray()
+        });
+        AssertCode(3, () => Replay(parent, source, []));
+    }
+
     [Theory]
     [InlineData(0, 1, "paid")]
     [InlineData(0, 3, "paid")]

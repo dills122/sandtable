@@ -54,6 +54,9 @@ internal static class CampaignCombatActualMovedRepeatBreakdownCompletion
     private static long N(JsonNode node, string name) => JsonSerializer.SerializeToElement(node[name]).GetInt64();
     private static bool B(JsonNode node, string name) => node[name]!.GetValue<bool>();
     private static byte[] Encode(JsonNode node) => CampaignCombatActualPaidAssaultCodec.Encode(node);
+    private static JsonElement ScalarElement(JsonNode node) =>
+        node is JsonValue value && value.TryGetValue<JsonElement>(out var parsed)
+            ? parsed : JsonSerializer.SerializeToElement(node);
     private static JsonObject ParseObject(byte[] bytes, string kind)
     {
         Require(bytes.Length > 0 && bytes.Length <= Limit(kind) && bytes.All(x => x < 128), 1);
@@ -64,10 +67,17 @@ internal static class CampaignCombatActualMovedRepeatBreakdownCompletion
         {
             CheckShape(document.RootElement, 0);
             Require(document.RootElement.ValueKind == JsonValueKind.Object, 1);
-            var node = JsonNode.Parse(bytes)!.AsObject();
-            var canonical = Canonical(node, kind);
-            Require(bytes.AsSpan().SequenceEqual(canonical), 8);
-            return node;
+            try
+            {
+                var node = JsonNode.Parse(bytes)!.AsObject();
+                var canonical = Canonical(node, kind);
+                Require(bytes.AsSpan().SequenceEqual(canonical), 8);
+                return node;
+            }
+            catch (JsonException error) when (!error.Message.StartsWith("CMB-MRB-", StringComparison.Ordinal))
+            { throw new JsonException("CMB-MRB-001", error); }
+            catch (Exception error) when (error is ArgumentException or InvalidOperationException or FormatException)
+            { throw new JsonException("CMB-MRB-001", error); }
         }
     }
     private static void CheckShape(JsonElement value, int depth)
@@ -150,7 +160,7 @@ internal static class CampaignCombatActualMovedRepeatBreakdownCompletion
         };
         if (fields is null)
         {
-            var scalar = JsonSerializer.SerializeToElement(node);
+            var scalar = ScalarElement(node!);
             if (kind is "ParentCarrier" or "ControlCarrier" or "EventCarrier")
             {
                 Require(scalar.ValueKind == JsonValueKind.String, 1);
@@ -166,14 +176,20 @@ internal static class CampaignCombatActualMovedRepeatBreakdownCompletion
             }
             else if (kind is "Int" or "Long")
             {
-                Require(scalar.ValueKind == JsonValueKind.Number && scalar.TryGetInt64(out var n) && n >= 0 &&
-                    scalar.GetRawText().All(char.IsAsciiDigit) && (kind == "Long" || n <= int.MaxValue), 2);
+                var n = 0L;
+                Require(scalar.ValueKind == JsonValueKind.Number && scalar.TryGetInt64(out n) && n >= 0 &&
+                    (scalar.GetRawText().All(char.IsAsciiDigit) || scalar.GetRawText() == "-0") &&
+                    (kind == "Long" || n <= int.MaxValue), 2);
+                return JsonValue.Create(n);
             }
             else if (kind == "Bool") Require(scalar.ValueKind is JsonValueKind.True or JsonValueKind.False, 1);
             else
             {
                 Require(scalar.ValueKind == JsonValueKind.String, kind is "Profile" or "Phase" or "Kind" ? 3 : 1);
-                var value = scalar.GetString()!;
+                string value;
+                try { value = scalar.GetString()!; }
+                catch (Exception error) when (error is JsonException or ArgumentException or InvalidOperationException)
+                { throw new JsonException(kind is "Profile" or "Phase" or "Kind" ? "CMB-MRB-003" : "CMB-MRB-001", error); }
                 var valid = kind switch
                 {
                     "Kind" => value == Kind,
@@ -192,14 +208,6 @@ internal static class CampaignCombatActualMovedRepeatBreakdownCompletion
         }
         Require(node is JsonObject, 1); var obj = node!.AsObject();
         Require(obj.Count == fields.Length && fields.All(obj.ContainsKey), 1);
-        if (kind is "Source" or "Base" or "Command" or "Event" or "Control" or "Proof")
-        {
-            var version = JsonSerializer.SerializeToElement(obj["contractVersion"]);
-            var n = 0;
-            Require(version.ValueKind == JsonValueKind.Number && version.TryGetInt32(out n) &&
-                version.GetRawText().All(char.IsAsciiDigit), 2);
-            Require(n == 1, 3);
-        }
         var result = new JsonObject();
         foreach (var field in fields)
         {
@@ -207,9 +215,11 @@ internal static class CampaignCombatActualMovedRepeatBreakdownCompletion
             var nested = FieldKind(kind, field);
             var optional = (kind == "Control" && field == "breakdownCompletionReceiptId") ||
                 (kind == "Position" && field is "segmentId" or "stepId" or "activeSide");
-            Require(member is not null || optional, nested is "Int" or "Long" ? 2 : 1);
+            Require(member is not null || optional, nested is "Int" or "Long" ? 2 : nested is "Kind" or "Profile" or "Phase" ? 3 : 1);
             result[field] = member is null ? null : Order(member, nested);
         }
+        if (kind is "Source" or "Base" or "Command" or "Event" or "Control" or "Proof")
+            Require(JsonSerializer.SerializeToElement(result["contractVersion"]).GetInt32() == 1, 3);
         return result;
     }
     private static Func<string, byte[]> Snapshot(Func<string, byte[]> callback, out Action verify)
@@ -248,13 +258,14 @@ internal static class CampaignCombatActualMovedRepeatBreakdownCompletion
     {
         var ownedSource = source.ToArray();
         IReadOnlyList<byte[]>[] supplied = [prefix, lifecycle, breakdown, selection, round, paid, release, control, movement, completion];
-        Require(supplied.All(x => x is not null), 1);
-        var ancestors = supplied.Select(x => x.Select(b => b?.ToArray() ?? throw Error(1)).ToArray()).ToArray();
+        var ancestorsValid = supplied.All(x => x is not null && x.All(b => b is not null));
+        var ancestors = supplied.Select(x => x is null ? [] : x.Select(b => b?.ToArray()!).ToArray()).ToArray();
         var ownValid = own is not null && own.All(b => b is not null);
         var ownSnapshot = own is null ? [] : own.Select(b => b?.ToArray() ?? []).ToArray();
         var ledgers = ancestors.Append(ownSnapshot).ToArray();
         var retained = Snapshot(dependencies, out var verify);
         var packet = ParseObject(ownedSource, "Source");
+        Require(ancestorsValid, 1);
         var parentBytes = Encoding.ASCII.GetBytes(T(packet, "movementCompletionSourceCanonicalUtf8"));
         Require(parentBytes.Length is > 0 and <= 134217728, 1);
         CombatActualMovedRepeatMovementCompletionResult parent;
