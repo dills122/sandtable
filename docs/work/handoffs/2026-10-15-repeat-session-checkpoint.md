@@ -1,6 +1,25 @@
 # Handoff: Combat repeat session checkpoint
 
-Checkpoint 2026-10-15 20:11 UTC; session remains active. This is not final closeout.
+Final update 2026-10-16 01:12 UTC. Session work complete; main verified. This handoff is preserved on a separate text-only branch, not merged into main. The update below supersedes all historical holds and stale author-branch states in the original checkpoint retained beneath it.
+
+## Current Update
+
+R02 PR194 merged at121baa56820fffce42316b48ac551cb24c012a6c on October16 00:40:47UTC. Main tree0b3fd7efc7b810a7cc93224c1e1462c060392cf7 equals reviewedf75e8de9d5650fea417cf97d7d633f51d14d984a and tested PR merge6566216394c4f997a571613a3b228c5c6cbef921. R01 and PR193 remain main-verified as documented below. This text-only preservation branch remains based on e791 and does not itself include PR194 product code.
+
+R02 supplies private authentic ordinal2 zero-move completion or positive stop/System empty resolution/owner completion, ending at Breakdown determination. All300 roots,788events,1088cuts,1520 retries and ten independent ledgers are preserved. Actual Breakdown, public activation/Runner, full72 acceptance and first release candidate remain separate gates.
+
+Candidate CI38828182329 attempt1 passed3716 actual rows/26 processes/26 XML reports, including325 new rows/20 children. Aggregate identity1ad5c7e0c8a306b7df99091c3d09f214103a40e970214e6f205e7867931e3e49; SDK10.0.402 Release; fixture7c887ebbfe8889279fcf5d9269cef2538af6fb38cacf0279a420f2e3496f2258. Exact source/attempt/four-DLL/fixture/resource proof passed. New jobs290/230/182seconds below780; requiredCI70.833runner-min below110. This is bounded capacity admission, not a general speedup claim.
+
+Main CI38830848442 attempt1 PASSED:3716 actual rows/26 successful processes/26 strict XML reports, full identity hash equal to candidate; source/attempt/SDK/four-DLL/fixture/resource/cleanup gates independently reconciled. Main required78.333 raw runner-min; new job walls324/184/261s. Final conservative budget193/600 total, ancillary28/75; no run slots remain. CoreA821s left79s under900 timeout, so legacy capacity remains a follow-up risk. Prepared discovery3716 and exact main tree verified; main owns distinct binary fingerprints. CodeQL38830848198 passed. Links38830848456 job succeeds but underlying checker exit2 has five inherited absolute-worktree links identical to baseline; prior references to links passing mean job status, not a clean scan.
+
+User explicitly approved staged local implementation and later publication plus600 monitored runner-minutes. Both candidate slots consumed, authorized main1/1 running. Candidate settlement conservatively99 minutes incl18 ancillary; main costs additional, live ledger tracks them. No automatic retry remains authorized. Initial CI38825785127 failed before native discovery on literal /bin expectation; one-file portable fixture/alias regression corrected it after fresh review. Original failure retained. Memory failures above4GiB were retained and diagnosed before Source-only allocation fixes; no resource/coverage relaxation. Cross-host reconciliation uses exact Linux POSIX command strings because macOS aliases /home; hosted verifier independently resolves Linux paths.
+
+Product review4/9 round2pass1; allocation3/9; recovery2/2 consumed, no resets. Heavy pivot/exhaustion requires user sync. Raw archive27d8293 still blocked. Candidatef75 pushed and merged; Combat finalbddc894 product incorporated. Primary unrelated changes untouched. No new feature work planned; closeout01:36:07UTC/hardstop03:36:07UTC unchanged.
+
+Immediate next session action: verify remote main121baa and read the canonical remaining Breakdown/public/Runner/RC gates before proposing a new bounded unit. Session heartbeat is to be paused after this preservation push. Main verification evidence is summarized in 2026-10-16-repeat-main-verification.md beside this file. No additional execution is authorized by unused budget. Historical staged decision below is superseded, not an active approval request.
+
+## Historical Checkpoint (20:11 UTC)
+
 
 ## Objective And Boundary
 Continue the user-approved twelve-hour session: authentic paid/armed repeat, measured CI investigation, and explicit remaining release gates. Start15:36:07UTC; closeout2026-10-16 01:36:07UTC; hard product stop03:36:07UTC. No new features after closeout. Preserve authorized work and final handoff, then pause the heartbeat at completion/deadline.
