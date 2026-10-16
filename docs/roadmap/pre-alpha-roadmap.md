@@ -1285,3 +1285,35 @@ Movement or synthetic earlier-history adapters do not establish those remaining 
 Public Combat actions, Exercise/Runner adoption, remaining lineage and the skeleton closeout
 remain open. These private milestones do not close the six-turn scenario, durable campaign
 lifecycle, hot-seat UI or first-release gates.
+
+### Authentic moved repeat follow-on (R01, October 15)
+
+[PR #192](https://github.com/dills122/sandtable/pull/192) adds the private
+[actual moved repeat Movement contract and native consumer](../specs/combat-actual-moved-repeat-movement-v1.md)
+after the N3 cycle-control boundary merged in PR #190. It merged at `3a7b626` after independent review and exact SHA/attempt/process reconciliation
+of all 3,391 passing hosted rows. Post-merge [main CI run 38783352632](https://github.com/dills122/sandtable/actions/runs/38783352632)
+verified the same 3,391 rows at `3a7b626`, attempt 1. Genuine reference/native RED preceded
+implementation; focused native evidence covers 71 cases, including 56 authentic paid/armed parents,
+300 events and 356 reconstruction cuts. These focused checks do not replace the full hosted gate.
+
+The bounded behavior is System ordinal2 publication followed by ordinary owner Movement with
+cumulative costs, original history and exactly-once recovery. It does not supply the new lineage's
+stop/System-resolution/owner-completion lifecycle or Breakdown join. Those successors precede later
+Combat and public integration. Public Tasks020–021, Runner022–024 and full72 closeout025 remain open;
+this milestone does not establish the six-turn scenario or first release candidate.
+
+### Private moved repeat Movement completion (R02, October 15)
+
+The separate [R02 contract and native implementation](../specs/combat-actual-moved-repeat-movement-completion-v1.md)
+authenticate 10 independent ledgers from real R01 ancestry. R01 remains move-only. R02 closes
+true-zero Movement with one owner event, or positive Movement with owner stop, empty System
+resolution and owner completion, three events. It preserves both historical ordinal1 and
+receipt-bound ordinal2 proofs and stops at Breakdown Determination entry. Breakdown execution
+for this lineage remains a successor gate.
+
+Local validation passed 325 rows in 20 fresh class processes: 300 exhaustive parity rows covering
+788 events, 1,088 cuts and 1,520 prior retries, plus 25 focused/behavior rows. Independent implementation
+review is complete at `07fac9f`; parser-only corrections revalidated the retained native evidence
+from `a78a8c1`. R02 hosted full 3,716-row validation, merge and post-merge main verification remain
+pending. Public Tasks020–021, Runner022–024, full72 closeout025, the six-turn scenario and the first
+release candidate remain open. Local evidence does not establish hosted Linux capacity.

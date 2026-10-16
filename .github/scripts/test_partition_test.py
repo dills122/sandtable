@@ -322,7 +322,7 @@ class WorkflowDeadlineTests(unittest.TestCase):
         text = (Path(__file__).parents[1] / 'workflows' / 'ci.yml').read_text()
         leaf = text.split('  tests:', 1)[1].split('  verify:', 1)[0]
         shards = [s.strip() for s in re.search(r'shard: \[(.+)\]', leaf).group(1).split(',')]
-        self.assertEqual(set(shards), set(partition.MODULES))
+        self.assertEqual(set(shards), {*partition.MODULES, 'r02-1', 'r02-2', 'r02-3'})
         value = re.search(r'^    timeout-minutes: (.+)$', leaf, re.MULTILINE).group(1)
         if value.isdecimal():
             actual = {shard: int(value) for shard in shards}
@@ -332,7 +332,7 @@ class WorkflowDeadlineTests(unittest.TestCase):
             self.assertIsNotNone(branch, 'Unrecognized shard deadline policy')
             selected, longer, default = branch.groups()
             actual = {shard: int(longer if shard.casefold() == selected.casefold() else default) for shard in shards}
-        self.assertEqual(actual, {'core-a': 15, 'core-b': 25, 'core-c': 15, 'core-d': 15, 'exercise': 15, 'contracts': 15})
+        self.assertEqual(actual, {'core-a': 15, 'core-b': 25, 'core-c': 15, 'core-d': 15, 'exercise': 15, 'contracts': 15, 'r02-1': 15, 'r02-2': 15, 'r02-3': 15})
 
     def test_other_job_deadlines_remain_bounded(self):
         text = (Path(__file__).parents[1] / 'workflows' / 'ci.yml').read_text()

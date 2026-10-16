@@ -78,7 +78,23 @@ It merged in PR #189 and opens no cycle-control window.
 The additive private [moved cycle control](docs/specs/combat-actual-moved-cycle-control-v1.md)
 adds eight-ledger control for both modes: real same-slot phase finish or a distinctly typed pending
 repeat intent with execution unavailable. Repeat intent retains the current occurrence and history.
-N3 review and CI remain pending; public activation, actual repeat execution and campaign finish remain separate gates.
+N3 merged in PR #190. Its pending intent remains non-executable by itself.
+The private [moved repeat Movement successor](docs/specs/combat-actual-moved-repeat-movement-v1.md)
+consumes authentic paid and armed pending intents through eight ancestor ledgers and a ninth Movement
+ledger. One System publication opens ordinal2; ordinary owner moves retain cumulative CP, apply
+breakoff and incremental DP once, and preserve original history and RNG. The original MovementEnd
+remains ordinal1 evidence. PR #192 merged at `3a7b626` after independent review and all 3,391 hosted test rows passed.
+Post-merge [main CI run 38783352632](https://github.com/dills122/sandtable/actions/runs/38783352632)
+verified all 3,391 rows at `3a7b626`, attempt 1. This R01 family remains move-only.
+
+The separate private [repeat Movement completion successor](docs/specs/combat-actual-moved-repeat-movement-completion-v1.md)
+(R02) authenticates all 10 independent ledgers. True-zero Movement completes with one owner event;
+positive Movement requires owner stop, empty System resolution and owner completion, three events.
+It retains both the historical ordinal1 proof and the receipt-bound ordinal2 proof, then enters
+Breakdown Determination without executing Breakdown. Local validation passed all 325 rows across 20
+fresh class processes; independent implementation review is complete at `07fac9f`.
+R02 hosted validation, merge and post-merge main verification remain pending. Public Combat,
+Runner adoption, acceptance of all 72 criteria and the first release candidate remain open.
 
 Next delivery sequence:
 
@@ -207,14 +223,16 @@ semantic checks.
 Build artifacts live under `artifacts/`. Do not commit generated `artifacts/bin` or `artifacts/obj`
 content. See [security policy](SECURITY.md) for vulnerability reports.
 
-GitHub CI retains six exact-row shards. Core-C owns the four complete native actual Movement and Breakdown completion
-test classes; Core-D owns both complete actual moved cycle-control test classes. Core-A keeps its
+The CI candidate retains six existing exact-row shards and adds three isolated R02 process jobs.
+Core-C owns the four complete native actual Movement and Breakdown completion test classes; Core-D owns both complete actual moved cycle-control test classes. Core-A keeps its
 existing heavy-method policy and eight transferred-row split; Core-B runs the remaining Core rows.
 Core-B uses a measured bounded25-minute whole-job deadline for setup, execution and report finalization; Core-A, Core-C, Core-D, Exercise and Contracts keep15minutes.
 Row filters, exhaustive coverage and exact-head/
 attempt/process checks remain unchanged. The [Core-B investigation](docs/research/2026-10-13-rmc-core-b-investigation.md)
 records why the prior15-minute budget expired. The [measured capacity split](docs/research/2026-10-14-ci-core-capacity-proposal.md)
-adds headroom while preserving all2,943 current rows; hosted execution remains the validating gate.
+records the earlier 2,943-row baseline. The candidate preserves all 3,391 legacy rows and adds 325 R02 rows;
+the full 3,716-row hosted gate remains pending. At most six test jobs run concurrently; each R02 job
+permits four fresh class processes. The focused support class runs alone after job1's parallel children drain.
 
 ## Architecture and documentation
 
