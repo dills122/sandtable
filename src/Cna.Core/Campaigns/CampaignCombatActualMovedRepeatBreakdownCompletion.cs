@@ -41,6 +41,7 @@ internal static class CampaignCombatActualMovedRepeatBreakdownCompletion
     private static readonly string[] ProofFields = ["contractVersion", "sourceId", "sourceHash", "base", "control"];
     private static readonly string[] PositionFields = ["contractVersion", "positionId", "gameTurn", "operationStage", "stageId", "phaseId", "segmentId", "stepId", "actorRole", "activeSide", "sources"];
     private static readonly string[] AuthorityFields = ["contractVersion", "campaignId", "rulesetHash", "setupId", "setupHash", "contentPackId", "contentHash", "scenarioId", "gameTurn", "operationStage", "playerPhaseSlot", "actingSide", "ordinal", "openedAuthorityVersion", "openingPrefix", "admittedPolicyBundleDigest"];
+    private static readonly string[] ReferenceFields = ["sourceId", "locator"];
     private sealed record Frame(JsonObject Packet, JsonObject Base, string BaseHash, JsonObject Prior, JsonObject Cycle,
         JsonObject Boundary, JsonObject Successor, byte[][][] Ledgers, Func<string, byte[]> Dependencies, Action VerifyDependencies);
 
@@ -91,13 +92,44 @@ internal static class CampaignCombatActualMovedRepeatBreakdownCompletion
         Require(bytes.Length <= Limit(kind), 1);
         return bytes;
     }
+    private static string FieldKind(string owner, string field)
+    {
+        if (owner == "Source" && field == "movementCompletionSourceCanonicalUtf8") return "ParentCarrier";
+        if (owner == "Source" && field == "breakdownEventCanonicalUtf8") return "EventCarrier[]";
+        if (owner == "Input" && field == "command") return "Command";
+        if (owner == "Command" && field == "kind") return "Kind";
+        if (owner == "Event" && field == "input") return "Input";
+        if (owner == "Event" && field == "effect") return "Effect";
+        if (owner == "Effect" && field == "successorPosition") return "Position";
+        if (owner == "Control" && field == "sequencePosition") return "Position";
+        if (owner == "Control" && field == "activeCycle") return "Authority";
+        if (owner == "Control" && field == "predecessorControlCanonicalUtf8") return "ControlCarrier";
+        if (owner == "Control" && field == "receipts") return "Receipt[]";
+        if (owner == "Proof" && field == "base") return "Base";
+        if (owner == "Proof" && field == "control") return "Control";
+        if (field == "sources") return "Reference[]";
+        if (field is "contractVersion" or "gameTurn" or "operationStage" or "ordinal") return "Int";
+        if (field is "expectedPriorVersion" or "priorVersion" or "stateVersion" or "openedAuthorityVersion") return "Long";
+        if (field is "actor" or "author") return "Actor";
+        if (field == "profile") return "Profile";
+        if (field == "phase") return "Phase";
+        if (field == "closed") return "Bool";
+        if (field == "rulesetHash") return "RawHash";
+        if (field is "actionId" or "baseHash" or "cycleId" or "capabilityId" or
+            "movementCompletionSourceHash" or "movementCompletionControlHash" or "movementCompletionProofHash" or
+            "dependencyManifestHash" or "configurationHash" or "parentSourceHash" or "prefix" or "priorPrefix" or
+            "openingPrefix" or "admittedPolicyBundleDigest" or "setupHash" or "contentHash" or "commandHash" or
+            "eventHash" or "sourceHash") return "Hash";
+        if (field == "locator") return "Locator";
+        return "Id";
+    }
     private static JsonNode? Order(JsonNode? node, string kind)
     {
         Require(node is not null, 1);
         if (kind.EndsWith("[]", StringComparison.Ordinal))
         {
             Require(node is JsonArray, 1); var array = node!.AsArray();
-            Require(array.Count <= (kind == "EventCarrier[]" || kind == "Receipt[]" ? 1 : 512), 1);
+            Require(array.Count <= (kind is "EventCarrier[]" or "Receipt[]" ? 1 : kind == "Reference[]" ? 3 : 512), 1);
             return new JsonArray(array.Select(item => Order(item, kind[..^2])).ToArray());
         }
         var fields = kind switch
@@ -113,16 +145,17 @@ internal static class CampaignCombatActualMovedRepeatBreakdownCompletion
             "Receipt" => ReceiptFields,
             "Position" => PositionFields,
             "Authority" => AuthorityFields,
+            "Reference" => ReferenceFields,
             _ => null
         };
         if (fields is null)
         {
             var scalar = JsonSerializer.SerializeToElement(node);
-            if (kind is "ParentCarrier" or "ControlCarrier" or "EventCarrier" or "String")
+            if (kind is "ParentCarrier" or "ControlCarrier" or "EventCarrier")
             {
                 Require(scalar.ValueKind == JsonValueKind.String, 1);
                 var value = scalar.GetString()!;
-                Require(value.All(x => x < 128) && (kind == "String" || value.Length > 0), 1);
+                Require(value.All(x => x < 128) && value.Length > 0, 1);
                 Require(value.Length <= kind switch
                 {
                     "ParentCarrier" => 134217728,
@@ -135,6 +168,25 @@ internal static class CampaignCombatActualMovedRepeatBreakdownCompletion
             {
                 Require(scalar.ValueKind == JsonValueKind.Number && scalar.TryGetInt64(out var n) && n >= 0 &&
                     scalar.GetRawText().All(char.IsAsciiDigit) && (kind == "Long" || n <= int.MaxValue), 2);
+            }
+            else if (kind == "Bool") Require(scalar.ValueKind is JsonValueKind.True or JsonValueKind.False, 1);
+            else
+            {
+                Require(scalar.ValueKind == JsonValueKind.String, kind is "Profile" or "Phase" or "Kind" ? 3 : 1);
+                var value = scalar.GetString()!;
+                var valid = kind switch
+                {
+                    "Kind" => value == Kind,
+                    "Profile" => value is "paid" or "armed",
+                    "Phase" => value is "breakdown" or "combat",
+                    "Actor" => value is "axis" or "commonwealth" or "system",
+                    "Hash" => System.Text.RegularExpressions.Regex.IsMatch(value, @"\Asha256:[0-9a-f]{64}\z"),
+                    "RawHash" => System.Text.RegularExpressions.Regex.IsMatch(value, @"\A[0-9a-f]{64}\z"),
+                    "Id" => System.Text.RegularExpressions.Regex.IsMatch(value, @"\A[A-Za-z0-9][A-Za-z0-9._:-]{0,127}\z"),
+                    "Locator" => value.Length is >= 1 and <= 512 && value.All(c => c is >= ' ' and <= '~'),
+                    _ => false
+                };
+                Require(valid, kind is "Profile" or "Phase" or "Kind" ? 3 : 1);
             }
             return node!.DeepClone();
         }
@@ -152,28 +204,11 @@ internal static class CampaignCombatActualMovedRepeatBreakdownCompletion
         foreach (var field in fields)
         {
             var member = obj[field];
+            var nested = FieldKind(kind, field);
             var optional = (kind == "Control" && field == "breakdownCompletionReceiptId") ||
                 (kind == "Position" && field is "segmentId" or "stepId" or "activeSide");
-            Require(member is not null || optional, kind == "Command" && field == "expectedPriorVersion" ? 2 : 1);
-            var nested = kind switch
-            {
-                "Source" when field == "breakdownEventCanonicalUtf8" => "EventCarrier[]",
-                "Source" when field == "movementCompletionSourceCanonicalUtf8" => "ParentCarrier",
-                "Input" when field == "command" => "Command",
-                "Input" when field == "actor" => "String",
-                "Command" when field is "kind" or "actionId" or "baseHash" or "cycleId" or "expectedPositionId" or "capabilityId" => "String",
-                "Command" when field == "expectedPriorVersion" => "Long",
-                "Event" when field == "input" => "Input",
-                "Event" when field == "effect" => "Effect",
-                "Effect" when field == "successorPosition" => "Position",
-                "Control" when field == "sequencePosition" => "Position",
-                "Control" when field == "activeCycle" => "Authority",
-                "Control" when field == "receipts" => "Receipt[]",
-                "Proof" when field == "base" => "Base",
-                "Proof" when field == "control" => "Control",
-                _ => ""
-            };
-            result[field] = nested.Length > 0 ? Order(member, nested) : member?.DeepClone();
+            Require(member is not null || optional, nested is "Int" or "Long" ? 2 : 1);
+            result[field] = member is null ? null : Order(member, nested);
         }
         return result;
     }
@@ -256,12 +291,12 @@ internal static class CampaignCombatActualMovedRepeatBreakdownCompletion
         var baseHash = "sha256:" + Domain("base", Canonical(basis, "Base"));
         Require(N(prior, "stateVersion") < long.MaxValue, 7);
         Require(ownValid && ownSnapshot.Length <= 1 && ownSnapshot.Sum(x => x.Length) <= 8192, 1);
-        Require(packet["breakdownEventCanonicalUtf8"]!.AsArray().Count == ownSnapshot.Length, 4);
+        var ownInputs = ownSnapshot.Select(input => ParseObject(input, "Input")).ToArray();
+        Require(packet["breakdownEventCanonicalUtf8"]!.AsArray().Count == ownInputs.Length, 4);
         var frame = new Frame(packet, basis, baseHash, prior, cycle.DeepClone().AsObject(), boundary, successor, ledgers, retained, verify);
         var state = Initial(frame);
-        foreach (var (inputBytes, ordinal) in ledgers[10].Select((x, i) => (x, i)))
+        foreach (var (input, ordinal) in ownInputs.Select((x, i) => (x, i)))
         {
-            var input = ParseObject(inputBytes, "Input");
             var recordedBytes = Encoding.ASCII.GetBytes(packet["breakdownEventCanonicalUtf8"]![ordinal]!.GetValue<string>());
             _ = ParseObject(recordedBytes, "Event");
             var (after, ev, _) = Transition(frame, state, input, true);

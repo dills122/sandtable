@@ -284,6 +284,63 @@ public sealed class CombatActualMovedRepeatBreakdownCompletionTests
         Assert.StartsWith($"CMB-MRB-{code:000}", error.Message, StringComparison.Ordinal);
     }
 
+    [Fact]
+    public void CompleteOwnGrammarUsesFrozenErrorFamilies()
+    {
+        var parent = new CompletionContext(0, 1, "paid");
+        AtCut(parent, parent.Inputs.Length);
+        using var fixture = JsonDocument.Parse(Dependency(FixturePath));
+        var expected = fixture.RootElement.GetProperty("cases").EnumerateArray().Single(item =>
+            item.GetProperty("rootOrdinal").GetInt32() == 0 && item.GetProperty("movementCut").GetInt32() == 1 &&
+            item.GetProperty("profile").GetString() == "paid").Clone();
+        var source = CampaignCombatActualPaidAssaultCodec.Encode(new JsonObject
+        {
+            ["contractVersion"] = 1,
+            ["movementCompletionSourceCanonicalUtf8"] = Encoding.ASCII.GetString(parent.Source),
+            ["breakdownEventCanonicalUtf8"] = new JsonArray()
+        });
+        var input = JsonNode.Parse(expected.GetProperty("inputCanonicalUtf8")[0].GetString()!)!.AsObject();
+        foreach (var (field, bad, code) in new (string, JsonNode, int)[]
+        {
+            ("kind", JsonValue.Create("other")!, 3),
+            ("actionId", JsonValue.Create("x")!, 1),
+            ("expectedPositionId", JsonValue.Create("x x")!, 1)
+        })
+        {
+            var altered = input.DeepClone().AsObject(); altered["command"]![field] = bad.DeepClone();
+            AssertCode(code, () => Apply(parent, source, [], CampaignCombatActualPaidAssaultCodec.Encode(altered)));
+        }
+        var completed = Apply(parent, source, [], CampaignCombatActualPaidAssaultCodec.Encode(input));
+        var eventNode = JsonNode.Parse(completed.EventBytes!)!.AsObject();
+        foreach (var (mutate, code) in new (Action<JsonObject>, int)[]
+        {
+            (item => item["stateVersion"] = "1", 2),
+            (item => item["effect"]!["sources"] = new JsonObject(), 1),
+            (item => item["effect"]!["sources"]![0]!["extra"] = 1, 1),
+            (item => item["profile"] = "other", 3)
+        })
+        {
+            var alteredEvent = eventNode.DeepClone().AsObject(); mutate(alteredEvent);
+            var alteredSource = JsonNode.Parse(completed.SourceBytes)!.AsObject();
+            alteredSource["breakdownEventCanonicalUtf8"]![0] = Encoding.ASCII.GetString(CampaignCombatActualPaidAssaultCodec.Encode(alteredEvent));
+            AssertCode(code, () => Replay(parent, CampaignCombatActualPaidAssaultCodec.Encode(alteredSource), [CampaignCombatActualPaidAssaultCodec.Encode(input)]));
+        }
+    }
+
+    [Fact]
+    public void MalformedOwnLedgerEntryPrecedesRecordedEventCount()
+    {
+        var parent = new CompletionContext(0, 1, "paid");
+        AtCut(parent, parent.Inputs.Length);
+        var source = CampaignCombatActualPaidAssaultCodec.Encode(new JsonObject
+        {
+            ["contractVersion"] = 1,
+            ["movementCompletionSourceCanonicalUtf8"] = Encoding.ASCII.GetString(parent.Source),
+            ["breakdownEventCanonicalUtf8"] = new JsonArray()
+        });
+        AssertCode(1, () => Replay(parent, source, [Encoding.ASCII.GetBytes("{}")]));
+    }
+
     [Theory]
     [InlineData(0, 1, "paid")]
     [InlineData(0, 3, "paid")]
