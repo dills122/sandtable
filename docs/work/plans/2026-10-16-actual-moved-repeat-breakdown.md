@@ -38,6 +38,8 @@ At the allocation commit `d4797f6e23476e9f5388bb38d3640c87a724ab17`, local full 
 
 Independent review 9 of 9 examined `2a39f6d7adf255501244466c70df2e7e2b5f54e9` and found no P0–P2 defect in the private checkpoint. It independently reconciled 300 fixture cases, 56 roots, 18 disjoint groups, 38 passing class rows, all 2,912 unchanged prior Core weights, the 2,950-row discovery plan, and the eight-process/86-row `long-03` evidence. Its single P3 finding was an outdated self-review sentence describing the old one-row sweep; the adjacent self-review now records the implemented 18-row layout. This documentation correction is newer than the independently reviewed head, so it does not create an exact-reviewed-head publication claim. The configured nine-review limit is exhausted. Native near-limit authentic full-replay capacity, closure review, hosted whole-DAG validation, publication and merge remain blocked pending a user-synchronized capacity decision and new reviewed work.
 
+The user selected keeping the 256 MiB Source cap and proving bounded authentic replay. The [capacity evidence packet](2026-10-16-actual-moved-repeat-breakdown-capacity-evidence.md) records the first measured ancestry waterfall, native local resource data and the remaining valid-state proof obligation. It does not change the frozen contract or clear `closureFrozen`.
+
 ## Open decisions and stop conditions
 
 - Review the selected own Control shape: it embeds the authenticated canonical R02 Control unchanged, beside the own position and receipt. No implicit conversion to the B02 control shape.
