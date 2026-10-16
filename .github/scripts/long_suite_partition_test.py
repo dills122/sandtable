@@ -112,7 +112,7 @@ class LongProcessEvidenceTests(prior_tests.ChildEvidenceTests):
     def good_status(self):
         status = super().good_status()
         entry = dict(self.entry, selector_kind='display')
-        status.update(suite_plan_sha256='d' * 64, class_names=[self.entry['class']], command=suites.execution_command('/bin/Cna.Core.Tests.dll', self.directory, entry))
+        status.update(module_path=str(Path(status['module_path']).resolve()), suite_plan_sha256='d' * 64, class_names=[self.entry['class']], command=suites.execution_command(status['module_path'], self.directory, entry))
         return status
 
     def check(self):
@@ -181,7 +181,7 @@ class CombinedSuiteTests(prior_tests.CombinedConservationTests):
             directory = self.root / 'long-groups' / group; directory.mkdir(parents=True)
             self.report(directory, 'Cna.Core.Tests', entry['rows'])
             names = sorted({row[1].rsplit('.', 1)[0] for row in entry['rows']})
-            status = dict(self.binding, group=group, module='Cna.Core.Tests', class_name=names[0] if len(names) == 1 else None, class_names=names, suite_plan_sha256=suites.plan_digest(plan), evidence_version=1, phase='parallel', process_id=1000 + index, exit_code=0, cancelled=False, elapsed_seconds=1., started_utc='2026-10-15T20:00:00+00:00', completed_utc='2026-10-15T20:00:01+00:00', module_path='/bin/Cna.Core.Tests.dll', output_directory=str(directory.resolve()), command=suites.execution_command('/bin/Cna.Core.Tests.dll', directory, entry))
+            status = dict(self.binding, group=group, module='Cna.Core.Tests', class_name=names[0] if len(names) == 1 else None, class_names=names, suite_plan_sha256=suites.plan_digest(plan), evidence_version=1, phase='parallel', process_id=1000 + index, exit_code=0, cancelled=False, elapsed_seconds=1., started_utc='2026-10-15T20:00:00+00:00', completed_utc='2026-10-15T20:00:01+00:00', module_path=str(Path('/bin/Cna.Core.Tests.dll').resolve()), output_directory=str(directory.resolve()), command=suites.execution_command('/bin/Cna.Core.Tests.dll', directory, entry))
             (directory / 'status.json').write_text(json.dumps(status))
         for job in {entry['job'] for entry in plan['groups'].values()}:
             groups = {group: 1024 for group, entry in plan['groups'].items() if entry['job'] == job}
@@ -214,6 +214,55 @@ class CombinedSuiteTests(prior_tests.CombinedConservationTests):
         (self.root / 'foreign.xml').write_text('<assemblies/>')
         with self.assertRaises(ValueError): self.check()
 
+
+
+class FixturePathAliasTests(unittest.TestCase):
+    def test_positive_process_fixtures_record_canonical_producer_binary_under_alias(self):
+        # Linux /bin is an alias; use a controlled real symlink on every host.
+        from unittest import mock
+        original_resolve = Path.resolve
+        with tempfile.TemporaryDirectory() as temporary:
+            target_directory = original_resolve(Path(temporary)) / 'canonical-bin'
+            target_directory.mkdir()
+            expected_binary = target_directory / 'Cna.Core.Tests.dll'
+            expected_binary.write_bytes(b'fixture marker, never executed')
+            alias = Path(temporary) / 'bin-alias'
+            alias.symlink_to(target_directory, target_is_directory=True)
+
+            def resolve_with_bin_alias(path, *args, **kwargs):
+                if str(path) == '/bin/Cna.Core.Tests.dll':
+                    path = alias / 'Cna.Core.Tests.dll'
+                return original_resolve(path, *args, **kwargs)
+
+            for fixture_class in (LongProcessEvidenceTests, CombinedSuiteTests):
+                with self.subTest(fixture=fixture_class.__name__), mock.patch.object(Path, 'resolve', resolve_with_bin_alias):
+                    case = fixture_class()
+                    try:
+                        case.setUp()
+                        if fixture_class is LongProcessEvidenceTests:
+                            statuses = [case.directory / 'status.json']
+                        else:
+                            statuses = sorted((case.root / 'long-groups').glob('*/status.json'))
+                        case.check()
+                        # Expected target is independently constructed above,
+                        # not the same resolve() expression used by the fixture.
+                        for status_path in statuses:
+                            status = json.loads(status_path.read_text())
+                            self.assertEqual(str(expected_binary), status['module_path'])
+                            self.assertEqual(str(expected_binary), status['command'][2])
+                        # Keep canonical verification strict: an aliased status
+                        # cannot match a command that recorded the actual target.
+                        status_path = statuses[0]
+                        original = status_path.read_bytes()
+                        status = json.loads(original)
+                        status['module_path'] = '/bin/Cna.Core.Tests.dll'
+                        status_path.write_text(json.dumps(status))
+                        with self.assertRaisesRegex(ValueError, 'Process command/filter differs'):
+                            case.check()
+                        status_path.write_bytes(original)
+                        case.check()
+                    finally:
+                        case.doCleanups()
 
 
 class WorkflowTests(unittest.TestCase):
