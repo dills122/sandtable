@@ -88,13 +88,31 @@ class ChildProcessTests(unittest.TestCase):
         self.assertFalse((self.root / 'status.json').exists())
 
     def test_exact_class_command_has_no_build_or_shared_results(self):
-        command = runner.execution_command('/bin/Cna.Core.Tests.dll', self.root, 'Cna.Core.Tests.Cases.One')
-        self.assertEqual(command[:3], ['dotnet', 'exec', '/bin/Cna.Core.Tests.dll'])
+        binary = Path(self.tmp.name).resolve() / 'Cna.Core.Tests.dll'
+        binary.write_bytes(b'command-only fixture')
+        command = runner.execution_command(binary, self.root, 'Cna.Core.Tests.Cases.One')
+        self.assertEqual(command[:3], ['dotnet', 'exec', str(binary)])
         self.assertEqual(command[-2:], ['--filter-class', 'Cna.Core.Tests.Cases.One'])
         self.assertIn(str((self.root / 'results').resolve()), command)
         self.assertNotIn('--project', command)
         self.assertNotIn('--no-build', command)
         self.assertFalse(any(arg.startswith('/bl:') for arg in command))
+
+    def test_command_uses_real_fixture_targets_through_directory_aliases(self):
+        # The expected targets exist independently before aliases are created.
+        real_root = Path(self.tmp.name).resolve()
+        binary_directory = real_root / 'real-bin'; binary_directory.mkdir()
+        binary = binary_directory / 'Cna.Core.Tests.dll'; binary.write_bytes(b'command-only fixture')
+        output = real_root / 'real-output'; output.mkdir()
+        binary_alias = real_root / 'binary-alias'; binary_alias.symlink_to(binary_directory, target_is_directory=True)
+        output_alias = real_root / 'output-alias'; output_alias.symlink_to(output, target_is_directory=True)
+        command = runner.execution_command(binary_alias / binary.name, output_alias, 'Cna.Core.Tests.Cases.One')
+        self.assertEqual(command[:3], ['dotnet', 'exec', str(binary)])
+        self.assertEqual(command[command.index('--results-directory') + 1], str(output / 'results'))
+        self.assertEqual(command[command.index('--diagnostic-output-directory') + 1], str(output / 'diagnostics'))
+        self.assertNotIn(str(binary_alias / binary.name), command)
+        self.assertNotIn(str(output_alias / 'results'), command)
+        self.assertEqual(command[-2:], ['--filter-class', 'Cna.Core.Tests.Cases.One'])
 
 
 class ResourcePolicyTests(unittest.TestCase):
