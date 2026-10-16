@@ -65,10 +65,10 @@ internal static class CampaignCombatActualMovedRepeatBreakdownCompletion
         catch (JsonException e) { throw new JsonException("CMB-MRB-001", e); }
         using (document)
         {
-            CheckShape(document.RootElement, 0);
-            Require(document.RootElement.ValueKind == JsonValueKind.Object, 1);
             try
             {
+                CheckShape(document.RootElement, 0);
+                Require(document.RootElement.ValueKind == JsonValueKind.Object, 1);
                 var node = JsonNode.Parse(bytes)!.AsObject();
                 var canonical = Canonical(node, kind);
                 Require(bytes.AsSpan().SequenceEqual(canonical), 8);
@@ -258,14 +258,12 @@ internal static class CampaignCombatActualMovedRepeatBreakdownCompletion
     {
         var ownedSource = source.ToArray();
         IReadOnlyList<byte[]>[] supplied = [prefix, lifecycle, breakdown, selection, round, paid, release, control, movement, completion];
-        var ancestorsValid = supplied.All(x => x is not null && x.All(b => b is not null));
-        var ancestors = supplied.Select(x => x is null ? [] : x.Select(b => b?.ToArray()!).ToArray()).ToArray();
+        var ancestors = supplied.Select(x => x is null ? null! : x.Select(b => b?.ToArray()!).ToArray()).ToArray();
         var ownValid = own is not null && own.All(b => b is not null);
         var ownSnapshot = own is null ? [] : own.Select(b => b?.ToArray() ?? []).ToArray();
         var ledgers = ancestors.Append(ownSnapshot).ToArray();
         var retained = Snapshot(dependencies, out var verify);
         var packet = ParseObject(ownedSource, "Source");
-        Require(ancestorsValid, 1);
         var parentBytes = Encoding.ASCII.GetBytes(T(packet, "movementCompletionSourceCanonicalUtf8"));
         Require(parentBytes.Length is > 0 and <= 134217728, 1);
         CombatActualMovedRepeatMovementCompletionResult parent;

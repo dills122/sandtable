@@ -391,6 +391,20 @@ public sealed class CombatActualMovedRepeatBreakdownCompletionTests
             ["breakdownEventCanonicalUtf8"] = new JsonArray()
         });
         AssertCode(3, () => Replay(parent, source, []));
+        var parentVersion = JsonNode.Parse(parent.Source)!.AsObject(); parentVersion["contractVersion"] = 2;
+        var child = JsonNode.Parse(source)!.AsObject(); child["contractVersion"] = 1;
+        child["movementCompletionSourceCanonicalUtf8"] = Encoding.ASCII.GetString(CampaignCombatActualPaidAssaultCodec.Encode(parentVersion));
+        AssertCode(3, () => Replay(parent, CampaignCombatActualPaidAssaultCodec.Encode(child), []));
+        child["movementCompletionSourceCanonicalUtf8"] = " " + Encoding.ASCII.GetString(parent.Source);
+        AssertCode(8, () => Replay(parent, CampaignCombatActualPaidAssaultCodec.Encode(child), []));
+    }
+
+    [Fact]
+    public void MalformedPropertyNameUsesFrozenParsingError()
+    {
+        var parent = new CompletionContext(0, 1, "paid");
+        AtCut(parent, parent.Inputs.Length);
+        AssertCode(1, () => Replay(parent, Encoding.ASCII.GetBytes("{\"\\ud800\":1}"), []));
     }
 
     [Theory]
