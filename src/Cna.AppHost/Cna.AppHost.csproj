@@ -7,6 +7,8 @@
 
   <ItemGroup>
     <PackageReference Include="Grpc.AspNetCore" />
+    <!-- Patch Aspire's transitive MessagePack (GHSA-qhrr-8q5h-9q3h). -->
+    <PackageReference Include="MessagePack" />
     <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" />
     <PackageReference Include="OpenTelemetry.Extensions.Hosting" />
     <ProjectReference Include="../Cna.DecisionWorker/Cna.DecisionWorker.csproj" />
