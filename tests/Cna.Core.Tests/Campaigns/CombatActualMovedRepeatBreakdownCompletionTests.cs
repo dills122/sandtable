@@ -13,13 +13,47 @@ public sealed class CombatActualMovedRepeatBreakdownCompletionTests
     private const string FixturePath = "docs/specs/fixtures/combat-actual-moved-repeat-breakdown-completion-v1.json";
 
     [Fact]
-    public void ReplaysAllAuthenticTerminalCasesWithoutChangingPredecessorControl()
+    public void AuthenticTerminalFixtureHasCompleteDisjointGroupInventory()
     {
         using var fixture = JsonDocument.Parse(Dependency(FixturePath));
         var cases = fixture.RootElement.GetProperty("cases").EnumerateArray().ToArray();
         Assert.Equal(300, cases.Length);
+        Assert.Equal(56, cases.Select(c => c.GetProperty("rootOrdinal").GetInt32()).Distinct().Count());
+        Assert.Equal(18, cases.Select(c => c.GetProperty("group").GetString()).Distinct().Count());
+        Assert.Equal(300, cases.Select(c => c.GetProperty("rowKey").GetString()).Distinct().Count());
+        Assert.Equal(300, cases.Select(c => c.GetProperty("eventCanonicalUtf8")[0].GetString()).Distinct().Count());
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(3)]
+    [InlineData(4)]
+    [InlineData(5)]
+    [InlineData(6)]
+    [InlineData(7)]
+    [InlineData(8)]
+    [InlineData(9)]
+    [InlineData(10)]
+    [InlineData(11)]
+    [InlineData(12)]
+    [InlineData(13)]
+    [InlineData(14)]
+    [InlineData(15)]
+    [InlineData(16)]
+    [InlineData(17)]
+    public void ReplaysAuthenticTerminalGroupWithoutChangingPredecessorControl(int groupIndex)
+    {
+        using var fixture = JsonDocument.Parse(Dependency(FixturePath));
+        var cases = fixture.RootElement.GetProperty("cases").EnumerateArray().ToArray();
+        var groups = cases.Select(c => c.GetProperty("group").GetString()!)
+            .Distinct(StringComparer.Ordinal).Order(StringComparer.Ordinal).ToArray();
+        Assert.Equal(18, groups.Length);
+        var selected = cases.Where(c => c.GetProperty("group").GetString() == groups[groupIndex]).ToArray();
+        Assert.NotEmpty(selected);
         var eventHashes = new HashSet<string>(StringComparer.Ordinal);
-        foreach (var expected in cases)
+        foreach (var expected in selected)
         {
             var root = expected.GetProperty("rootOrdinal").GetInt32();
             var cut = expected.GetProperty("movementCut").GetInt32();
@@ -42,7 +76,7 @@ public sealed class CombatActualMovedRepeatBreakdownCompletionTests
             AssertCut(expected.GetProperty("cuts")[1], completed);
             eventHashes.Add("sha256:" + Convert.ToHexStringLower(SHA256.HashData(completed.EventBytes!)));
         }
-        Assert.Equal(300, eventHashes.Count);
+        Assert.Equal(selected.Length, eventHashes.Count);
     }
 
     [Fact]
