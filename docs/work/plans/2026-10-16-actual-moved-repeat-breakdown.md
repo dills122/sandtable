@@ -1,6 +1,6 @@
 # Actual moved-repeat Breakdown continuation
 
-Status: provisional executable contract spike; not frozen or native. Base `5d0417b150a7b022bf79ea3ecfc3dfe3fa2d1c5d` (merged PRs 194–196); branch `codex/combat-moved-repeat-breakdown`. This plan does not certify a new profile or activate public Combat.
+Status: private wire layout frozen for native implementation after independent review 2 at `099c397084c1a5603293fd45f5e1c91006d3fc3d`; a native private consumer is under test, but `closureFrozen=false` and there is no public certification. Base `5d0417b150a7b022bf79ea3ecfc3dfe3fa2d1c5d` (merged PRs 194–196); branch `codex/combat-moved-repeat-breakdown`. This plan does not certify a new profile or activate public Combat.
 
 ## Objective and exact boundary
 
@@ -25,6 +25,12 @@ R02 already accepts 300 terminal cases from 56 R01 roots across 18 paid/armed, s
 The first RED was a missing new transition after four full R02 terminal replays. Provisional GREEN covers those four paid/armed zero/maximum paths, exact retry, context/actor/capacity/ancestor/own-ledger/re-signed-effect negatives, caller ownership during material acquisition and one warm missing-pin rejection. After review-1 corrections and the inert ownership snapshot, the separate group verifier again passed all 300 disjoint terminal rows from 56 roots across 18 groups, including both event cuts and original-byte retry, in 696.749 seconds of sequential local execution. It observed 300 unique event hashes. This is not a hosted or parallel CI timing claim. R02 predecessor examples measured Source 380,608–496,239 bytes, Control 21,824–36,775 bytes, Proof 22,714–37,665 bytes and single full replay 0.196–0.531 seconds. Those are examples, not maxima.
 
 The physical gate rejected missing, changed, unreadable, null and drifted material for all 108 declared dependencies (540 cases). The provisional capacity check acquired exactly those 108 paths during a complete replay. Its structural model stays below the current caps: Source 257,781,248 < 268,435,456; Control 1,703,936 < 2,097,152; Proof 1,835,008 < 4,194,304; Event 16,384 < 32,768; Input 2,048 < 4,096; Breakdown ledger 2,050 < 8,192 bytes. Four sampled completed traces were far smaller. The parent valid-state upper bound is inherited from R02; native near-limit memory/latency and independent review are still missing. `closureFrozen` remains false and public readback fails closed.
+
+## Private native checkpoint, 2026-10-16
+
+The explicit fixture generator wrote 300 genuine R02-terminal cases to `docs/specs/fixtures/combat-actual-moved-repeat-breakdown-completion-v1.json` (1,212,494 bytes, SHA-256 `4125311a1bd5779082762e89ee44990129df72881af0d3b9b6d730709fd911ee`). The native test was RED because its consumer did not exist. The private consumer now fully replays R02 from the original CreationRequest and ten independent ledgers before replaying its own eleventh ledger. The first four paid/armed boundary cases matched the reference Source, Control, Proof and Event byte-for-byte. The full 300-case native sweep passed locally in 4m23s, and after the dependency-drift and primitive-parser changes the complete focused class passed 11 tests in 4m58s. The native physical test rejects changed bytes at all 108 pins; separate tests cover malformed ancestry/own ledger, tampered event, disabled fresh admission, exact retry, malformed primitive input, dependency drift and closed public readback. The second-acquisition drift test first failed RED and then passed GREEN.
+
+These are local measurements on small authentic fixtures. Two resident-memory samples in the final run were 525,648 and 569,648 KiB; neither is a process peak or near-limit result. The 300-case check is currently one long-running test method, so its hosted collection/shard placement and complete actual-row reconciliation remain open. The [native author self-review](2026-10-16-actual-moved-repeat-breakdown-native-self-review.md) records the code risks and pending gates. No closure flag, public source reader, hosted CI, PR or merge is authorized by this checkpoint.
 
 ## Open decisions and stop conditions
 
