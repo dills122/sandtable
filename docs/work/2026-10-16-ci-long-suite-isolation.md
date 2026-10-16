@@ -54,4 +54,3 @@ No general zero-flakiness guarantee follows from a passing run. Deterministic fa
 Installed-runner selector pilots passed six actual rows covering numeric, quoted-string and escaped-JSON arguments with exact prepared/XML identity equality. The focused allocation regression failed before the callback change and passed afterward. All 34 mutation rows passed both timing observations. These checks do not replace the full 3,716-row gate.
 
 The complete candidate still requires full local workload reconciliation, final author self-review, fresh independent review and complete hosted measurements. This checkpoint is not merge acceptance. The [timing-manifest maintenance instructions](../../.github/scripts/long-suite-weights.md) describe how future test additions update the exhaustive allocation.
-
