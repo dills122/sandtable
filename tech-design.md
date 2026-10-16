@@ -755,6 +755,8 @@ event. A positive occurrence requires owner stop, empty System resolution and ow
 three events, while preserving World, resources, RNG and history. The historical ordinal1 proof and
 receipt-bound ordinal2 proof remain distinct. The terminal enters Breakdown Determination; it does
 not execute Breakdown. Local validation passed 325 rows across 20 fresh class processes, and
-independent implementation review is complete at `07fac9f`. R02 hosted validation, merge and
-post-merge main verification remain pending. Public ingress, Runner adoption, acceptance of all 72 criteria and
+independent implementation review is complete at `07fac9f`.
+[PR #194](https://github.com/dills122/sandtable/pull/194) merged at `121baa5`;
+[main CI run 38830848442](https://github.com/dills122/sandtable/actions/runs/38830848442), attempt 1,
+verified all 3,716 rows across 26 execution processes. Public ingress, Runner adoption, acceptance of all 72 criteria and
 the first release candidate remain open.

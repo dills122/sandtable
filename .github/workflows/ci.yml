@@ -18,6 +18,34 @@ env:
   TESTINGPLATFORM_TELEMETRY_OPTOUT: "1"
 
 jobs:
+  format:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out tested event SHA
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Set up .NET
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          global-json-file: global.json
+      - name: Create formatting evidence directory
+        run: mkdir -p artifacts/format
+      - name: Restore for required formatting
+        run: dotnet restore Sandtable.slnx '/bl:artifacts/format/restore-{}.binlog'
+      - name: Verify formatting
+        run: dotnet format Sandtable.slnx --verify-no-changes --no-restore
+      - name: Retain formatting evidence
+        if: ${{ always() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: format-evidence-${{ github.sha }}-${{ github.run_attempt }}
+          path: artifacts/format
+          if-no-files-found: error
+          retention-days: 14
+
   prepare:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
@@ -37,8 +65,6 @@ jobs:
         run: mkdir -p artifacts/ci
       - name: Restore
         run: dotnet restore Sandtable.slnx '/bl:artifacts/ci/restore-{}.binlog'
-      - name: Verify formatting
-        run: dotnet format Sandtable.slnx --verify-no-changes --no-restore
       - name: Build
         run: dotnet build Sandtable.slnx --configuration Release --no-restore '/bl:artifacts/ci/build-{}.binlog'
       - name: Check fail-closed coverage helper
@@ -47,10 +73,11 @@ jobs:
         run: |
           python3 .github/scripts/r02_partition_test.py
           python3 .github/scripts/ci_group_runner_test.py
+          python3 .github/scripts/long_suite_partition_test.py
       - name: Build Release row discovery helper
         run: dotnet build .github/scripts/ReleaseTestRows/ReleaseTestRows.csproj --configuration Release '/bl:artifacts/ci/row-helper-{}.binlog'
       - name: Discover actual Release rows and prove complementary filters
-        run: python3 .github/scripts/r02_partition.py discover --sha "$TESTED_SHA" --attempt "$RUN_ATTEMPT"
+        run: python3 .github/scripts/long_suite_partition.py discover --sha "$TESTED_SHA" --attempt "$RUN_ATTEMPT"
         env:
           TESTED_SHA: ${{ github.sha }}
           RUN_ATTEMPT: ${{ github.run_attempt }}
@@ -66,12 +93,12 @@ jobs:
   tests:
     needs: prepare
     runs-on: ubuntu-24.04
-    timeout-minutes: ${{ matrix.shard == 'core-b' && 25 || 15 }}
+    timeout-minutes: 15
     strategy:
       fail-fast: false
-      max-parallel: 6
+      max-parallel: 17
       matrix:
-        shard: [core-a, core-b, core-c, core-d, exercise, contracts, r02-1, r02-2, r02-3]
+        shard: [long-01, long-02, long-03, long-04, long-05, long-06, long-07, long-08, r02-1, r02-2, r02-3, fast-01, fast-02, fast-03, fast-04, exercise, contracts]
     steps:
       - name: Check out tested event SHA
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -94,7 +121,7 @@ jobs:
           name: ci-inventory-${{ github.sha }}-${{ github.run_attempt }}
           path: artifacts/partition-proof
       - name: Run complete-row partition
-        run: python3 .github/scripts/r02_partition.py execute --sha "$TESTED_SHA" --attempt "$RUN_ATTEMPT" --shard "$TEST_SHARD"
+        run: python3 .github/scripts/long_suite_partition.py execute --sha "$TESTED_SHA" --attempt "$RUN_ATTEMPT" --shard "$TEST_SHARD"
         env:
           TESTED_SHA: ${{ github.sha }}
           RUN_ATTEMPT: ${{ github.run_attempt }}
@@ -109,7 +136,7 @@ jobs:
           retention-days: 14
 
   verify:
-    needs: [prepare, tests]
+    needs: [prepare, tests, format]
     if: ${{ always() }}
     runs-on: ubuntu-24.04
     timeout-minutes: 15
@@ -134,7 +161,7 @@ jobs:
           merge-multiple: true
       - name: Require successful processes and complete exact-head coverage
         if: ${{ always() }}
-        run: python3 .github/scripts/r02_partition.py verify --sha "$TESTED_SHA" --attempt "$RUN_ATTEMPT"
+        run: python3 .github/scripts/long_suite_partition.py verify --sha "$TESTED_SHA" --attempt "$RUN_ATTEMPT"
         env:
           TESTED_SHA: ${{ github.sha }}
           RUN_ATTEMPT: ${{ github.run_attempt }}

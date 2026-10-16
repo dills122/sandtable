@@ -318,25 +318,17 @@ class ArtifactProtocolTests(unittest.TestCase):
         self.assertFalse(fnmatch.fnmatchcase(aggregate, pattern), 'A prior aggregate could hide missing leaf artifacts on retry')
 
 class WorkflowDeadlineTests(unittest.TestCase):
-    def test_core_b_alone_has_twenty_minute_budget(self):
+    def test_dedicated_suites_keep_fifteen_minute_deadlines(self):
         text = (Path(__file__).parents[1] / 'workflows' / 'ci.yml').read_text()
         leaf = text.split('  tests:', 1)[1].split('  verify:', 1)[0]
-        shards = [s.strip() for s in re.search(r'shard: \[(.+)\]', leaf).group(1).split(',')]
-        self.assertEqual(set(shards), {*partition.MODULES, 'r02-1', 'r02-2', 'r02-3'})
-        value = re.search(r'^    timeout-minutes: (.+)$', leaf, re.MULTILINE).group(1)
-        if value.isdecimal():
-            actual = {shard: int(value) for shard in shards}
-        else:
-            # Recognize this workflow's numeric conditional; actionlint validates GitHub syntax.
-            branch = re.fullmatch(r"\$\{\{ matrix\.shard == '([^']+)' && ([1-9][0-9]*) \|\| ([1-9][0-9]*) \}\}", value)
-            self.assertIsNotNone(branch, 'Unrecognized shard deadline policy')
-            selected, longer, default = branch.groups()
-            actual = {shard: int(longer if shard.casefold() == selected.casefold() else default) for shard in shards}
-        self.assertEqual(actual, {'core-a': 15, 'core-b': 25, 'core-c': 15, 'core-d': 15, 'exercise': 15, 'contracts': 15, 'r02-1': 15, 'r02-2': 15, 'r02-3': 15})
+        shards = {value.strip() for value in re.search(r'shard: \[(.+)\]', leaf).group(1).split(',')}
+        expected = {f'long-{index:02}' for index in range(1, 9)} | {f'fast-{index:02}' for index in range(1, 5)} | {'r02-1', 'r02-2', 'r02-3', 'exercise', 'contracts'}
+        self.assertEqual(shards, expected)
+        self.assertEqual(re.search(r'^    timeout-minutes: (.+)$', leaf, re.MULTILINE).group(1), '15')
 
     def test_other_job_deadlines_remain_bounded(self):
         text = (Path(__file__).parents[1] / 'workflows' / 'ci.yml').read_text()
-        for job, minutes in [('prepare', 15), ('verify', 15), ('dependency-review', 5)]:
+        for job, minutes in [('format', 15), ('prepare', 15), ('verify', 15), ('dependency-review', 5)]:
             # Job body lines have four spaces; delimit on a subsequent two-space job header.
             block = re.split(r'\n  [^ ]', text.split('  ' + job + ':', 1)[1], maxsplit=1)[0]
             self.assertEqual(int(re.search(r'^    timeout-minutes: ([0-9]+)$', block, re.MULTILINE).group(1)), minutes)
@@ -825,15 +817,17 @@ class CoreFourthCoverageFailureTests(unittest.TestCase):
             with self.assertRaises(ValueError): self.fixture.check()
             path.write_bytes(original)
 
-class MeasuredCoreBFinalizationBudgetTests(unittest.TestCase):
-    def test_finite_b_workload_has_bounded_setup_execution_and_report_margin(self):
+class SuiteFinalizationBudgetTests(unittest.TestCase):
+    def test_bounded_execution_leaves_setup_and_report_margin(self):
+        import inspect
+        import long_suite_partition as suites
         workflow = (Path(__file__).parents[1] / 'workflows' / 'ci.yml').read_text()
         leaf = workflow.split('  tests:', 1)[1].split('  verify:', 1)[0]
-        expression = re.search(r'^    timeout-minutes: (.+)$', leaf, re.MULTILINE).group(1)
-        match = re.fullmatch(r"\$\{\{ matrix\.shard == 'core-b' && ([0-9]+) \|\| ([0-9]+) \}\}", expression)
-        self.assertIsNotNone(match)
-        self.assertEqual(tuple(map(int, match.groups())), (25, 15))
-        self.assertGreaterEqual(int(match[1]) * 60, 1204 * 1.15 + 60)
-        self.assertEqual(set(partition.MODULES), {'core-a', 'core-b', 'core-c', 'core-d', 'exercise', 'contracts'})
+        minutes = int(re.search(r'^    timeout-minutes: (.+)$', leaf, re.MULTILINE).group(1))
+        deadline = inspect.signature(suites.run_suite_job).parameters['timeout_seconds'].default
+        self.assertEqual(deadline, 720)
+        self.assertEqual(minutes, 15)
+        self.assertGreaterEqual(minutes * 60, deadline + 120 + 60)
+        self.assertNotIn('core-b', suites.JOBS)
 
 if __name__ == '__main__': unittest.main()
