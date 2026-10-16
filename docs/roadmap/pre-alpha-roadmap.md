@@ -108,6 +108,25 @@ for hosting design. Sprint8 still owns complete scenario lifecycle and Maproom; 
 host does not claim those product milestones. Exact host implementation scheduling follows the
 probe. Model-backed dispatch requires its own durable pending-decision/off-turn I/O contracts.
 
+### Local Maproom developer lane — MAP-00–17
+
+**Status:** Stack and local-first direction accepted on 2026-10-16; delivery plan and standalone
+Field Atlas operations preview recorded. The accepted design review refines MAP-02 to a minimal
+theme/control foundation and splits MAP-03 into operational map, order workflow, and ledger/diary
+fixtures. Angular application and connected campaign host are pending.
+The [implementation plan](../design/local-game-server-maproom-plan.md) owns slice dependencies
+and acceptance checks; the [design system](../design/maproom-design-system-v0.md) owns visual rules.
+
+Bring forward Angular scaffolding, tokens and representative workspace fixtures, browser/host
+contracts and a temporary in-memory Rules9 test host. This explicitly labeled developer lane can
+exercise current public actions before full Combat activation. It must stop at unsupported phases
+and cannot claim persistence, complete scenario play or a passed MVP gate. Design work precedes
+live screens so forms, map/list selection and order states share one baseline.
+
+Durable production integration still requires020–021, one verified023 trace, accepted host/storage
+contracts and real provider restart/failure evidence. Sprint8 retains complete scenario lifecycle,
+save/resume and product hot-seat acceptance. MAP-17's temporary launcher does not close those gates.
+
 ## Product boundaries
 
 ### Working pre-alpha skeleton
@@ -200,7 +219,7 @@ Optional parser evidence gate
 | Combat and continual cycle | Checkpoint B accepted; Initial H Core restore and dormant Tasks009–016 accepted; actual paid-assault contract019F5 and native consumer019F6 complete; PAC01 continuation contract and private native consumer implemented; actual repeated-Movement reference contract and private native consumer implemented; Task008 publication open | **Gameplay not activated**; bounded Release/Movement/repeat adapters, native settled control with synthetic earlier Movement, and native actual paid assault through empty Reserve Release and guarded repeat/finish | Actual ordinal2 Breakdown and remaining017–019 → public020–021 → evidence022–024 → closeout025 |
 | Working pre-alpha skeleton | Acceptance boundary defined | Not reached | One authentic movement/contact/combat/release repeat-or-finish loop with identical replay and Chronicle evidence |
 | Six-turn scenario and remaining Land rules | Milestone outcomes defined; exact exercised-rule/data inventory intentionally pending | Not started | Measure after the skeleton, freeze source/content scope, then split implementation-sized tasks |
-| Campaign lifecycle and Maproom | Architecture and no-model interaction direction reviewed | Not started | Stable playable authority, durable save/resume contracts, hot-seat isolation, and deterministic UI path |
+| Campaign lifecycle and Maproom | Angular stack/local developer slices accepted; Field Atlas map/order/ledger preview available | Connected client and campaign host pending | MAP developer lane is bounded to current public rules; product acceptance still requires durable save/resume, hot-seat isolation and complete scenario path |
 | Exercise Harness | Evidence contracts and current Movement/Reaction/Breakdown profiles established | Single Exercise, serial-unpaired Maneuver, controller matrices, and bounded paired comparisons | Add Combat public actions/terminals only after Task021 |
 
 The roadmap deliberately distinguishes foundation maturity from playable breadth. The architecture
@@ -808,9 +827,9 @@ research below remains evidence; it is not an instruction to restart those inves
 | Orleans feasibility / `HOST-RSH-001` | Research/probe complete; atomic commit-batch and derived-checkpoint proposal awaits owner acceptance. Production work waits for public Core activation, one verified Runner trace, and an approved storage contract. |
 | Completed foundations | Movement/ZOC/Breakdown and Combat research remain regression/source evidence. Reopen only for a concrete failure, new source evidence, or approved capability expansion. |
 
-Maproom and model-backed dispatch remain behind their roadmap triggers. Local hosting feasibility
-can be investigated separately from those product features; starting a development silo does not
-establish campaign persistence or reliable dispatch.
+Complete Maproom product acceptance and model-backed dispatch retain their roadmap triggers.
+The bounded MAP developer lane above brings forward visual design and temporary rules-lab
+integration; starting a development silo does not establish campaign persistence or reliable dispatch.
 
 Movement Tasks 005-010 are complete. The owner approved the bounded Rules/Content/World BP
 continuity lane as Task 004B before Task 005 and subsequently approved the ZOC/Reaction governing
@@ -1074,6 +1093,10 @@ commitment to force every subsystem into one oversized change.
 
 ### Sprint 8 - Minimal Maproom and campaign lifecycle
 
+The early [MAP developer slices](../design/local-game-server-maproom-plan.md) establish the client,
+design system and bounded local integration. They are inputs to this sprint, not evidence that its
+complete-scenario and persistence requirements have passed.
+
 - Start or resume the first scenario through the authoritative host.
 - Render an original schematic map, selectable formations, legal actions, phase status, and
   Chronicle explanations.
@@ -1154,7 +1177,7 @@ delegation, and notification implementation without evidence.
 | Premature generic architecture | Complexity without product value | Build for CNA; extract reuse only from demonstrated duplication |
 | Large mutable campaign state | Replay and concurrency defects | Events as authority, snapshots as checkpoints, state-version validation |
 | Hidden-state leakage | Invalid game and security failure | Side-specific observations, negative tests, no provider access to hidden state |
-| UI arrives before rules stabilize | Polished but incorrect demo | Developer harness first, Maproom after the complete combat skeleton |
+| UI arrives before rules stabilize | Polished but incorrect demo | Early MAP client uses labeled synthetic fixtures/current public actions and explicit unsupported stops; complete Maproom acceptance follows the combat skeleton and durable-host gates |
 | Parser work starts before the interaction is proven | Provider-driven UI, rework, and MVP delay | No-model prototype after Sprint 5; deterministic MVP first; `INTENT-PARSER-EVAL-001` afterward |
 
 ## Decision checkpoints

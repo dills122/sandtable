@@ -67,6 +67,16 @@ constitute a durable player save/resume product.
 **Maproom** is the future player application: map, orders, legal actions and audience-safe reports.
 `site/` is the existing project website, with labeled concept illustrations. The first Maproom target
 is local hot-seat play; it must use the same typed, side-safe action boundary as every other client.
+The accepted [local-server plan](docs/design/local-game-server-maproom-plan.md) starts with a
+bounded Angular developer client before complete scenario play. **Field Atlas** names its
+[visual direction](docs/design/maproom-design-system-v0.md), not a new service or domain.
+**Operations workspace** describes Maproom's map, order inspector and linked formation records;
+it adds no authority layer. The formation ledger is a player-view table, distinct from Chronicle's
+authoritative event journal. War Diary entries may locate permitted formations without exposing
+raw journal records or hidden causes.
+`Cna.Game.Contracts` is the planned outward browser contract module; it is separate from
+`Cna.Intelligence.Contracts`. Archives remains a host storage module, and War Diary remains an
+audience-safe derived display rather than a raw Chronicle stream.
 
 ## Domain modules and reserved names
 

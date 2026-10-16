@@ -55,7 +55,7 @@ play a side; it will never decide the rules or secretly change the campaign stat
 | Playable rule path | Working through Combat entry | Runner can execute Initiative, stage preamble, Reserve Designation, Movement, bounded ZOC/Reaction, and Breakdown, then stops before Combat adjudication. |
 | Combat and continual cycle | Private Core entry; public activation pending | Task019F3 (PR #169) implements private native actual prepared-round entry and cancelled no-attack Release for both supported opening histories with two independently trusted ledgers. Task019F4 (PR #172) adds private no-cost actual assault admission and pure arithmetic assessment. Task019F5 (PR #175) adds the private actual paid-assault executable reference through immediate settlement and CA completion into same-cycle Reserve Release. Task019F6 (PR #177) implements the merged private native paid-assault consumer with exact reference byte parity and focused native validation. PAC01 (PR #178) freezes the actual-source Release and guarded repeat/finish contract. CS01 implements its private native consumer through the Movement/Convoy boundary. NRM01 adds private native actual repeated Movement with cumulative costs and original provenance. C02 (PR #182) freezes the private actual repeated Movement completion executable contract. C04 adds its private native consumer through mandatory empty System resolution and ordinal2 Breakdown Determination. B02 (PR #185) adds the private actual ordinal2 Breakdown completion reference through one System event into Combat Position Determination. B03 provides its private native seven-ledger consumer and codec; independent review, hosted CI and public activation remain separate gates. Production ingress, later-II/consumed Reserve lineage, full-cycle proof and public Combat remain open. |
 | Exercise and Maneuver tools | Working | Deterministic single runs, multi-run matrices, paired comparisons, strict readback, and evidence bundles are available from CLI. |
-| User interface | Not started | `site/` is project website only. Maproom hot-seat client is future work. |
+| User interface | Stack planned; Field Atlas operations preview available | Synthetic map, order workflow, formation ledger and linked War Diary are interactive. Angular Maproom and connected hot-seat client remain unimplemented. `site/` is project website only. |
 | Published scenario | Not started | First target is six-turn, Land-only *Graziani's Offensive* after working Combat loop. |
 | Durable save/resume | Not started | Replay/checkpoint contracts exist; user-facing campaign persistence comes later. |
 | Model-backed commanders | Scaffold only | Gateway and worker exist, but no provider is configured and AI never owns authority. |
@@ -122,6 +122,16 @@ See the [first-release audit](docs/research/2026-10-05-first-release-audit.md) f
 and [current roadmap](docs/roadmap/pre-alpha-roadmap.md#current-checkpoint-and-next-gates) for
 authoritative status and [Combat plan](docs/design/combat-cycle-implementation-plan.md) for detailed
 task graph.
+
+The [local-server and Angular Maproom plan](docs/design/local-game-server-maproom-plan.md) brings
+forward a bounded developer playtest lane: Angular/Material/CDK, Tailwind, typed Reactive Forms
+and Formly, SignalStore, HTTP and SignalR, with an initial SVG map. The
+[Field Atlas design system](docs/design/maproom-design-system-v0.md) and
+[operations workspace preview](docs/design/maproom-style-study/index.html) establish warm paper,
+ink and restrained unit symbols through a compact map, order workflow and linked formation ledger.
+MAP-02 starts a minimal theme; MAP-03A/B/C prove these views before expanding shared components.
+Temporary rules-lab sessions stop at supported
+public boundaries; durable hosting and complete scenario play retain their existing gates.
 
 ## Start, run, and develop
 

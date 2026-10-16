@@ -53,6 +53,33 @@ See the [runbook](docs/runbooks/exercise-runner.md),
 [design](docs/design/exercise-harness-v1.md) for exact contracts and retained profiles. Public Rules9
 still stops at first-side Combat entry. Private Combat tests/contracts do not activate that path.
 
+## Accepted local-server and Maproom direction
+
+The [implementation plan](docs/design/local-game-server-maproom-plan.md) defines small,
+contract-first slices for a local developer client. The stack is Angular with Material/CDK,
+Tailwind, typed Reactive Forms/Formly, NgRx SignalStore, generated Angular HttpClient contracts,
+SignalR notifications and an initial SVG map. Browser rendering does not require a Rust/WASM
+simulation port: the existing C# Umpire remains authoritative.
+
+One ASP.NET Core/Orleans host owns campaign lifecycle and browser ingress; Aspire launches the
+local host and client. Versioned, audience-safe HTTP contracts live separately from intelligence
+protobuf. SignalR carries audience-safe change hints; HTTP readback recovers after reconnect.
+The server grants seats and revalidates every submitted legal action. Browser caches, drafts and
+late responses are isolated by seat generation.
+
+The first connected test uses an explicitly temporary synthetic rules-lab session. Durable
+publication and restore are later contract/provider gates, with external I/O coordinated outside
+authoritative grain turns. PostgreSQL is an evaluation candidate, not a selected production store.
+This lane does not activate private Combat or satisfy six-turn MVP acceptance.
+
+The [Field Atlas design system](docs/design/maproom-design-system-v0.md) starts with minimal semantic
+tokens and controls, then evolves through an operational map, order workflow and dense formation
+ledger in MAP-03A/B/C. Its [portable operations preview](docs/design/maproom-style-study/index.html)
+links selection and accepted example results across map, inspector, ledger and War Diary. Submitted
+order identity is independent of selection; real completion must update the originating formation.
+The preview remains synthetic; Angular, browser contracts and campaign host are not implemented
+by this plan. Broad logistics workspaces and semantic zoom await their own contracts and checks.
+
 ## Proposed intelligence/services architecture
 
 The following diagram is the target integrated architecture. The current repository contains the
