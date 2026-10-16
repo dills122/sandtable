@@ -117,6 +117,17 @@ public sealed class CombatActualRoundEntryTests
                 Reject(() => CampaignCombatActualRoundEntryCodec.ReadControl(Artifact(row.GetProperty("controls").EnumerateArray().Last()), source, context, old, round, Lookup), 9);
                 Reject(() => CampaignCombatActualRoundEntryCodec.ReadProof(Artifact(row.GetProperty("proofs").EnumerateArray().Last()), source, context, old, round, Lookup), 9);
             }
+
+        // The mutation-only callback may lend immutable pin buffers: consumers
+        // still copy/hash every call. Other ownership tests retain fresh copies.
+        var mutationDependencies = MutationDependencyLookup();
+        var pinPaths = pins.Select(pin => pin.Name).ToArray();
+        foreach (var path in pinPaths) Assert.Equal(original(path), mutationDependencies(path));
+        Assert.NotSame(original(pinPaths[0]), original(pinPaths[0]));
+        var allocatedBefore = GC.GetAllocatedBytesForCurrentThread();
+        foreach (var path in pinPaths) _ = mutationDependencies(path);
+        var allocated = GC.GetAllocatedBytesForCurrentThread() - allocatedBefore;
+        Assert.True(allocated <= pinPaths.Length * 32L, $"Mutation callback allocated {allocated} bytes for {pinPaths.Length} immutable pins.");
     }
 
     [Theory]
@@ -393,11 +404,13 @@ public sealed class CombatActualRoundEntryTests
             }
     }
 
-    private static Func<string, byte[]> DependencyLookup()
+    private static Func<string, byte[]> MutationDependencyLookup() => DependencyLookup(readOnlyBorrowedBuffers: true);
+
+    private static Func<string, byte[]> DependencyLookup(bool readOnlyBorrowedBuffers = false)
     {
         using var fixture = Fixture();
         var pins = fixture.RootElement.GetProperty("originalSourceHashes").EnumerateObject().Concat(fixture.RootElement.GetProperty("additionalSourceHashes").EnumerateObject());
-        var retained = pins.ToDictionary(x => x.Name, x => Dependency(x.Name), StringComparer.Ordinal); return path => retained[path].ToArray();
+        var retained = pins.ToDictionary(x => x.Name, x => Dependency(x.Name), StringComparer.Ordinal); return path => readOnlyBorrowedBuffers ? retained[path] : retained[path].ToArray();
     }
     private static byte[] Encode(JsonNode value) => CampaignCombatPositiveEntryCodec.Encode(value);
     private static byte[] Cut(JsonObject source, int count)
@@ -426,7 +439,7 @@ public sealed class CombatActualRoundEntryTests
     [MemberData(nameof(Cases))]
     public void EveryResignedEventInputProofBaseAndControlLeafRejects(int index)
     {
-        using var fixture = Fixture(); var row = fixture.RootElement.GetProperty("cases")[index]; var context = Context(); var dependencies = DependencyLookup();
+        using var fixture = Fixture(); var row = fixture.RootElement.GetProperty("cases")[index]; var context = Context(); var dependencies = MutationDependencyLookup();
         var source = JsonNode.Parse(Artifact(row.GetProperty("source")))!.AsObject(); var old = Ledger(row, "trustedSelectionInputs"); var round = Ledger(row, "trustedRoundInputs");
         var events = Ledger(row, "events");
         for (var position = 0; position < events.Length; position++)

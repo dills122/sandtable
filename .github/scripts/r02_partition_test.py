@@ -432,9 +432,9 @@ class ExecuteGroupProofTests(unittest.TestCase):
 class WorkflowCandidateTests(unittest.TestCase):
     def test_candidate_keeps_bounded_concurrency_and_required_combined_gate(self):
         text = (Path(__file__).parents[1] / 'workflows' / 'ci.yml').read_text()
-        self.assertIn('max-parallel: 6', text)
+        self.assertIn('max-parallel: 17', text)
         for mode in ('discover', 'execute', 'verify'):
-            self.assertIn('python3 .github/scripts/r02_partition.py ' + mode, text)
+            self.assertIn('python3 .github/scripts/long_suite_partition.py ' + mode, text)
         for script in ('r02_partition_test.py', 'ci_group_runner_test.py'):
             self.assertIn('python3 .github/scripts/' + script, text)
         self.assertIn("if: ${{ always() }}", text.split('  verify:', 1)[1])

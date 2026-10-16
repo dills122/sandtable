@@ -1314,6 +1314,7 @@ for this lineage remains a successor gate.
 Local validation passed 325 rows in 20 fresh class processes: 300 exhaustive parity rows covering
 788 events, 1,088 cuts and 1,520 prior retries, plus 25 focused/behavior rows. Independent implementation
 review is complete at `07fac9f`; parser-only corrections revalidated the retained native evidence
-from `a78a8c1`. R02 hosted full 3,716-row validation, merge and post-merge main verification remain
-pending. Public Tasks020–021, Runner022–024, full72 closeout025, the six-turn scenario and the first
-release candidate remain open. Local evidence does not establish hosted Linux capacity.
+from `a78a8c1`. [PR #194](https://github.com/dills122/sandtable/pull/194) merged at `121baa5`.
+[Main CI run 38830848442](https://github.com/dills122/sandtable/actions/runs/38830848442), attempt 1,
+verified all 3,716 rows across 26 execution processes on hosted Linux. Public Tasks020–021,
+Runner022–024, full72 closeout025, the six-turn scenario and the first release candidate remain open.

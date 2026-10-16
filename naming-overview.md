@@ -131,7 +131,9 @@ public campaign actions require separate lineage-aware integrations.
 completion denotes one owner event; positive completion denotes owner stop, empty System
 resolution and owner completion, three events. Historical ordinal1 and receipt-bound ordinal2
 proofs remain distinct. Entry to Breakdown Determination does not imply Breakdown execution.
-Local 325-row validation and independent implementation review at `07fac9f` are complete; R02
-hosted validation, merge and post-merge main verification remain pending. These technical module
+Local 325-row validation and independent implementation review at `07fac9f` are complete.
+[PR #194](https://github.com/dills122/sandtable/pull/194) merged at `121baa5`;
+[main CI run 38830848442](https://github.com/dills122/sandtable/actions/runs/38830848442), attempt 1,
+verified all 3,716 rows across 26 execution processes. These technical module
 names do not imply public activation, Runner adoption, acceptance of all 72 criteria or a first
 release candidate.

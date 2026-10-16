@@ -93,7 +93,9 @@ positive Movement requires owner stop, empty System resolution and owner complet
 It retains both the historical ordinal1 proof and the receipt-bound ordinal2 proof, then enters
 Breakdown Determination without executing Breakdown. Local validation passed all 325 rows across 20
 fresh class processes; independent implementation review is complete at `07fac9f`.
-R02 hosted validation, merge and post-merge main verification remain pending. Public Combat,
+[PR #194](https://github.com/dills122/sandtable/pull/194) merged at `121baa5`.
+[Main CI run 38830848442](https://github.com/dills122/sandtable/actions/runs/38830848442), attempt 1,
+verified all 3,716 rows across 26 execution processes. Public Combat,
 Runner adoption, acceptance of all 72 criteria and the first release candidate remain open.
 
 Next delivery sequence:
@@ -223,16 +225,27 @@ semantic checks.
 Build artifacts live under `artifacts/`. Do not commit generated `artifacts/bin` or `artifacts/obj`
 content. See [security policy](SECURITY.md) for vulnerability reports.
 
-The CI candidate retains six existing exact-row shards and adds three isolated R02 process jobs.
-Core-C owns the four complete native actual Movement and Breakdown completion test classes; Core-D owns both complete actual moved cycle-control test classes. Core-A keeps its
-existing heavy-method policy and eight transferred-row split; Core-B runs the remaining Core rows.
-Core-B uses a measured bounded25-minute whole-job deadline for setup, execution and report finalization; Core-A, Core-C, Core-D, Exercise and Contracts keep15minutes.
-Row filters, exhaustive coverage and exact-head/
-attempt/process checks remain unchanged. The [Core-B investigation](docs/research/2026-10-13-rmc-core-b-investigation.md)
-records why the prior15-minute budget expired. The [measured capacity split](docs/research/2026-10-14-ci-core-capacity-proposal.md)
-records the earlier 2,943-row baseline. The candidate preserves all 3,391 legacy rows and adds 325 R02 rows;
-the full 3,716-row hosted gate remains pending. At most six test jobs run concurrently; each R02 job
-permits four fresh class processes. The focused support class runs alone after job1's parallel children drain.
+CI separates expensive tests into eight required long-running suites, alongside four ordinary Core
+suites, the three R02 suites, Exercise and Contracts. The matrix permits all 17 suites to run in
+parallel, subject to shared GitHub runner availability. Formatting is a separate required job that
+runs alongside preparation; aggregate verification requires both formatting and every test suite.
+All test jobs retain a 15-minute deadline. The delivery target is a complete required pipeline under
+ten minutes, with five to six minutes as a stretch; hosted performance validation is still pending.
+
+The prepared inventory assigns every actual test row exactly once. Fifty-two groups split costly
+legacy classes across fresh processes, while ordinary Core classes remain whole in four processes.
+Together with 20 R02 processes and Exercise/Contracts, the baseline has 78 execution processes and
+3,716 test rows. Long suites permit at most four concurrent child processes. R02 retains its existing
+resource limits and the focused support class runs alone after job1's parallel children drain.
+Source revision, attempt, SDK, binary and fixture fingerprints, actual selectors, process exits and
+XML identities remain part of the required proof. Missing, duplicate or unexpected rows fail the gate.
+
+The historical [Core-B investigation](docs/research/2026-10-13-rmc-core-b-investigation.md) and
+[earlier capacity split](docs/research/2026-10-14-ci-core-capacity-proposal.md) explain the preceding
+layout; their timings do not establish this layout's performance. The
+[implementation checkpoint](docs/work/2026-10-16-ci-long-suite-isolation.md) records the new design
+and focused local measurements; [manifest maintenance](.github/scripts/long-suite-weights.md)
+explains how test additions update the exhaustive allocation.
 
 ## Architecture and documentation
 
