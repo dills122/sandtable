@@ -46,6 +46,14 @@ The first fresh review after recovery returned **Not ready** with two P2 finding
 
 On the repaired assembly, the complete native class passed **19/19 in 5m02s**, the reviewer's 40-case matrix matched **40/40**, and the unchanged 1,910 grammar cases matched **1,910/1,910**. The matrix and grammar output files are local scratch evidence under `/private/tmp/mrb-review6-probe/` and `/private/tmp/mrb-review5-probe/`; they are not published test fixtures. A fresh independent review, near-limit capacity proof, CI row allocation and exact-head hosted checks remain open.
 
+## Independent review instance 7 disposition
+
+The next fresh reviewer returned **Not ready** with one P2 parity defect. I accept it. The reviewer verified the candidate assembly against the exact source, reproduced 1,910/1,910 grammar and 40/40 original matrix agreement, then found that an entirely null R02 completion ledger collection returned inherited `004` where the frozen MRB verifier and its explicit reference test require `001`. Its additional null-collection matrix matched 38/40; both failures were that one defect, with and without a malformed own ledger.
+
+`NullAncestorCollectionUsesFrozenParsingError` failed RED with `004`. The adapter now retains null ancestor collections through the physical and child Source checks, lets R02 validate its own Source first, then maps only R02 `004` from a null collection to MRB `001`. Other inherited errors retain their numeric families. The regression passes GREEN for each of the ten independent predecessor collections, a malformed own ledger combination, and a malformed R02 parent Source that must still return `003`. This is a bounded adapter correction; the R02 contract and the frozen MRB schema/verifier/fixture remain unchanged.
+
+After repair, the complete native class passed **20/20 in 4m51s**. The reviewer's null-collection variant matched **40/40**, the original combined-fault matrix matched **40/40**, and the unchanged grammar corpus matched **1,910/1,910** against the frozen reference. These are local checks, not hosted CI or near-limit capacity proof. A new exact-head independent review remains required.
+
 ## Self-review findings and limits
 
 Correctness: the happy path is tied to the original R02 authority, not a transformed B02 ancestor. Event equality is checked on replay; a recorded effect cannot be re-signed independently. Input and ledger buffers are copied before material acquisition. The duplicate path validates command context and actor before returning the original receipt, and a new event requires admission. Claim readers stay closed.

@@ -258,6 +258,7 @@ internal static class CampaignCombatActualMovedRepeatBreakdownCompletion
     {
         var ownedSource = source.ToArray();
         IReadOnlyList<byte[]>[] supplied = [prefix, lifecycle, breakdown, selection, round, paid, release, control, movement, completion];
+        var nullAncestorCollection = supplied.Any(x => x is null);
         var ancestors = supplied.Select(x => x is null ? null! : x.Select(b => b?.ToArray()!).ToArray()).ToArray();
         var ownValid = own is not null && own.All(b => b is not null);
         var ownSnapshot = own is null ? [] : own.Select(b => b?.ToArray() ?? []).ToArray();
@@ -275,6 +276,8 @@ internal static class CampaignCombatActualMovedRepeatBreakdownCompletion
         catch (JsonException e)
         {
             var match = System.Text.RegularExpressions.Regex.Match(e.Message, @"CMB-[A-Z]+-(\d{3})");
+            // R02 reports a null ledger collection as 004 after Source validation; the frozen MRB contract requires 001.
+            if (nullAncestorCollection && match.Success && match.Groups[1].Value == "004") throw new JsonException("CMB-MRB-001", e);
             throw new JsonException(match.Success ? $"CMB-MRB-{match.Groups[1].Value}" : "CMB-MRB-004", e);
         }
         var prior = JsonNode.Parse(parent.ControlBytes)!.AsObject(); var cycle = prior["activeCycle"]!.AsObject();

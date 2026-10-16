@@ -407,6 +407,38 @@ public sealed class CombatActualMovedRepeatBreakdownCompletionTests
         AssertCode(1, () => Replay(parent, Encoding.ASCII.GetBytes("{\"\\ud800\":1}"), []));
     }
 
+    [Fact]
+    public void NullAncestorCollectionUsesFrozenParsingError()
+    {
+        var parent = new CompletionContext(0, 1, "paid");
+        AtCut(parent, parent.Inputs.Length);
+        var source = CampaignCombatActualPaidAssaultCodec.Encode(new JsonObject
+        {
+            ["contractVersion"] = 1,
+            ["movementCompletionSourceCanonicalUtf8"] = Encoding.ASCII.GetString(parent.Source),
+            ["breakdownEventCanonicalUtf8"] = new JsonArray()
+        });
+        var ledgers = Ledgers(parent);
+        for (var index = 0; index < ledgers.Length; index++)
+        {
+            var original = ledgers[index]; ledgers[index] = null!;
+            AssertCode(1, () => CampaignCombatActualMovedRepeatBreakdownCompletion.ReplayTrustedSource(source,
+                parent.Parent.Ancestor.Request, ledgers[0], ledgers[1], ledgers[2], ledgers[3], ledgers[4],
+                ledgers[5], ledgers[6], ledgers[7], ledgers[8], ledgers[9], [], Dependency));
+            ledgers[index] = original;
+        }
+        ledgers[9] = null!;
+        AssertCode(1, () => CampaignCombatActualMovedRepeatBreakdownCompletion.ReplayTrustedSource(source,
+            parent.Parent.Ancestor.Request, ledgers[0], ledgers[1], ledgers[2], ledgers[3], ledgers[4],
+            ledgers[5], ledgers[6], ledgers[7], ledgers[8], ledgers[9], new byte[][] { null! }, Dependency));
+        var invalidParent = JsonNode.Parse(parent.Source)!.AsObject(); invalidParent["contractVersion"] = 2;
+        var child = JsonNode.Parse(source)!.AsObject();
+        child["movementCompletionSourceCanonicalUtf8"] = Encoding.ASCII.GetString(CampaignCombatActualPaidAssaultCodec.Encode(invalidParent));
+        AssertCode(3, () => CampaignCombatActualMovedRepeatBreakdownCompletion.ReplayTrustedSource(CampaignCombatActualPaidAssaultCodec.Encode(child),
+            parent.Parent.Ancestor.Request, ledgers[0], ledgers[1], ledgers[2], ledgers[3], ledgers[4],
+            ledgers[5], ledgers[6], ledgers[7], ledgers[8], ledgers[9], [], Dependency));
+    }
+
     [Theory]
     [InlineData(0, 1, "paid")]
     [InlineData(0, 3, "paid")]
