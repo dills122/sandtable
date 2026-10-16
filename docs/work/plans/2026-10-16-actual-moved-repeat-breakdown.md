@@ -1,0 +1,33 @@
+# Actual moved-repeat Breakdown continuation
+
+Status: provisional executable contract spike; not frozen or native. Base `5d0417b150a7b022bf79ea3ecfc3dfe3fa2d1c5d` (merged PRs 194–196); branch `codex/combat-moved-repeat-breakdown`. This plan does not certify a new profile or activate public Combat.
+
+## Objective and exact boundary
+
+Advance an authentic R02 terminal paid or armed ordinal-two Movement state by one trusted System Breakdown Determination completion into the adjacent Combat Position Determination position. Keep active ordinal two open. The R02 source, original CreationRequest and all ten predecessor ledgers remain independent authority inputs; the new Breakdown input is an eleventh ledger. No fixture row, caller claim, matching digest, or transformed B02/RMC ancestor substitutes for those inputs.
+
+R02 already accepts 300 terminal cases from 56 R01 roots across 18 paid/armed, side and move-count groups. Its one-event zero-move and three-event positive-move traces stop at Breakdown entry. The new contract must state its supported subset explicitly. The intended acceptance set is all 300 terminal cases; any narrower set requires an explicit profile decision and rejection of every other case, never treating unsupported cases as empty Breakdown.
+
+## Frozen predecessors and candidate semantics
+
+- Consume [R02's contract](../../specs/combat-actual-moved-repeat-movement-completion-v1.md), schema and canonical verifier without rewriting its events, source, proofs or ledgers. The separate [B02 contract](../../specs/combat-actual-repeated-breakdown-completion-v1.md) supplies the semantic precedent, not ancestry for this path.
+- Admit only a fully replayed R02 terminal: `phase=breakdown`, `closed=true`, idle flow, null interrupt context, canonical full Breakdown position, active ordinal two and a receipt-bound current MovementEndProof. Preserve the original ordinal-one MovementEndProof and prior closure. Reject incomplete R02 cuts, unrecognized cohorts and foreign position/cycle identities.
+- Accept one closed `complete-breakdown-segment` input from actor `system`, bound to the real R02 completion receipt and full current position/version. Emit exactly one canonical event and receipt; advance one checked version and prefix to the catalogue-adjacent Combat Position Determination. Retain the R02 world, resources, members, histories, actual progress, RNG, both Movement proofs and all ten ledgers byte-for-byte in authority. No die roll, check, loss, cost, new repeat, or public action occurs.
+- Validate physical pins and source framing before replay. Authenticate the complete predecessor before interpreting the eleventh ledger or caller Control/Proof claims. Validate actor, command shape and context before duplicate lookup; exact retry returns the original receipt and bytes even when fresh admission is disabled. Re-signed forged effects and altered ancestor/proof claims must fail.
+
+## Execution order and evidence
+
+1. Measure parent source/proof/control sizes, cold replay cost and candidate wrapper capacity for zero and maximum-move paid/armed rows. R02's structural Source upper bound is 128,857,600 bytes; a nested canonical carrier can double escaping. Do not freeze a new cap or claim native memory headroom from fixture size alone.
+2. Write an executable reference RED test against real R02 terminal input and independent ledgers. The first failure must be the missing Breakdown transition after successful ancestor replay. Freeze the new schema and event bytes only after actual behavior, framing, capacity, rejection and physical dependency gates pass. Explicit fixture generation follows semantic GREEN; ordinary verification never rewrites fixtures.
+3. Implement native private consumer/codec against the frozen contract. Test real paid/armed zero and positive paths, all supported terminal rows, every event cut, original-byte retry, missing/changed/null dependency, malformed own ledger, re-signed event, and unchanged inherited state. Measure process memory and full test allocation before hosted admission.
+4. Record author engineering self-review, obtain a fresh independent plan-and-implementation review, dispose findings, then run exact-reviewed-head CI with actual row/SHA/attempt/process reconciliation. Merge to main only after those gates and verify main. Public020–021, Runner022–024, full72 and release candidate remain separate.
+
+The first RED was a missing new transition after four full R02 terminal replays. Provisional GREEN covers those four paid/armed zero/maximum paths, exact retry, context/actor/capacity/ancestor/own-ledger/re-signed-effect negatives, caller ownership during material acquisition and one warm missing-pin rejection. The separate group verifier passed all 300 disjoint terminal rows from 56 roots across 18 groups, including both event cuts and original-byte retry, in 711.221 seconds of sequential local execution. It observed 300 unique event hashes. This is not a hosted or parallel CI timing claim. R02 predecessor examples measured Source 380,608–496,239 bytes, Control 21,824–36,775 bytes, Proof 22,714–37,665 bytes and single full replay 0.196–0.531 seconds. Those are examples, not maxima.
+
+The physical gate rejected missing, changed, unreadable, null and drifted material for all 108 declared dependencies (540 cases). The provisional capacity check acquired exactly those 108 paths during a complete replay. Its structural model stays below the current caps: Source 257,781,248 < 268,435,456; Control 1,703,936 < 2,097,152; Proof 1,835,008 < 4,194,304; Event 16,384 < 32,768; Input 2,048 < 4,096; Breakdown ledger 2,050 < 8,192 bytes. Four sampled completed traces were far smaller. The parent valid-state upper bound is inherited from R02; native near-limit memory/latency and independent review are still missing. `closureFrozen` remains false and public readback fails closed.
+
+## Open decisions and stop conditions
+
+- Review the selected own Control shape: it embeds the authenticated canonical R02 Control unchanged, beside the own position and receipt. No implicit conversion to the B02 control shape.
+- Independently review the structural cap argument and all 300-row coverage. Measure near-limit native memory and latency before freezing the contract or claiming hosted capacity. If either margin cannot be demonstrated under existing gates, retain a labelled unverified contract spike and stop before publication or merge.
+- Do not add public admission, Combat execution, alternate lineage, scenario content or CI timeout changes in this milestone.
