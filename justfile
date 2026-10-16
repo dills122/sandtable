@@ -46,3 +46,19 @@ docs-links:
 
 run:
     dotnet run --project src/Cna.AppHost/Cna.AppHost.csproj
+
+# Angular workspace and Field Atlas (Node version pinned in src/Cna.Maproom/.nvmrc).
+maproom-setup:
+    npm --prefix src/Cna.Maproom ci
+
+maproom:
+    npm --prefix src/Cna.Maproom start
+
+field-atlas:
+    npm --prefix src/Cna.Maproom run storybook
+
+maproom-check:
+    npm --prefix src/Cna.Maproom run check
+
+maproom-browser-check:
+    npm --prefix src/Cna.Maproom run test:e2e

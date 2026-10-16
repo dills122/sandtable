@@ -9,6 +9,7 @@ Research and reviews record their dated checkpoints; they are not competing stat
 
 - [First-release audit](research/2026-10-05-first-release-audit.md): current gaps and release exit gates
 - [Roadmap checkpoint and next gates](roadmap/pre-alpha-roadmap.md#current-checkpoint-and-next-gates)
+- [Angular workspace and Storybook](../src/Cna.Maproom/README.md): implementation setup, components, patterns and checks
 - [Local server and Angular Maproom plan](design/local-game-server-maproom-plan.md): accepted stack, small slices and temporary/durable hosting gates
 - [Field Atlas design system v0](design/maproom-design-system-v0.md) and [operations workspace preview](design/maproom-style-study/index.html): linked synthetic map, order workflow, formation ledger and War Diary
 - [Contributor workflow](../CONTRIBUTING.md) and [security policy](../SECURITY.md)
@@ -24,7 +25,7 @@ PR #165, reaching Force Assignment without completion or no-attack Reserve Relea
 supported owners. Trusted production input authentication, actual round/result completion,
 public activation and authentic continual-cycle proof remain pending. The first six-turn Land-only
 scenario, connected Maproom hot-seat play and durable save/resume are not implemented. Maproom's
-stack/delivery plan and Field Atlas operations preview are available. Host/worker/provider
+Angular workspace, Field Atlas library, Storybook and standalone operations preview are available. Host/worker/provider
 integration remains scaffolded; AI is optional future work.
 
 ## Governing capability packages

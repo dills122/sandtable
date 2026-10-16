@@ -77,8 +77,11 @@ tokens and controls, then evolves through an operational map, order workflow and
 ledger in MAP-03A/B/C. Its [portable operations preview](docs/design/maproom-style-study/index.html)
 links selection and accepted example results across map, inspector, ledger and War Diary. Submitted
 order identity is independent of selection; real completion must update the originating formation.
-The preview remains synthetic; Angular, browser contracts and campaign host are not implemented
-by this plan. Broad logistics workspaces and semantic zoom await their own contracts and checks.
+The preview remains synthetic. The [Angular workspace](src/Cna.Maproom/README.md) now provides
+`projects/maproom-alpha` and the internal `@sandtable/field-atlas` library. Storybook uses the same
+public component API, tokens and Material theme; feature patterns stay in the app. No shared
+core/utils library exists until concrete reuse calls for it. Browser contracts and campaign host
+remain pending. Broad logistics workspaces and semantic zoom await their own contracts and checks.
 
 ## Proposed intelligence/services architecture
 

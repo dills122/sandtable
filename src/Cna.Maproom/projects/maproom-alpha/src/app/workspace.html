@@ -1,0 +1,146 @@
+<a class="skip-link" href="#operations">Skip to operations</a>
+<header class="command-bar">
+  <a class="brand" href="/" aria-label="Maproom home"
+    ><span class="brand-mark" aria-hidden="true">M</span
+    ><span>Maproom <small>Field Atlas</small></span></a
+  ><span class="edition">ALPHA / WORKSPACE STUDY</span
+  ><span class="local-status">○ Local fixture</span>
+</header>
+<main id="operations" tabindex="-1">
+  <div class="briefing">
+    <div>
+      <p class="fa-eyebrow">Operations workspace · 001</p>
+      <h1>The coastal exercise</h1>
+      <p class="fa-muted">Inspect a formation. Prepare a draft. Keep the situation in view.</p>
+    </div>
+    <div class="briefing-note">
+      <fa-status tone="warning">Synthetic exercise</fa-status>
+      <p>No campaign server connected.<br />Selection and draft review are local.</p>
+    </div>
+  </div>
+  <div class="workspace-grid">
+    <aside class="roster" aria-labelledby="formations-title">
+      <div class="roster-heading">
+        <h2 id="formations-title">Formations</h2>
+        <span class="fa-muted">{{ formations.length }} own-side</span>
+      </div>
+      <div class="roster-list">
+        @for (unit of formations; track unit.id) {
+          <button
+            class="roster-item"
+            [attr.aria-pressed]="store.selectedId() === unit.id"
+            (click)="store.select(unit.id)"
+          >
+            <span
+              >{{ unit.name }}<small>{{ unit.kind }}</small></span
+            ><span>{{ unit.position }}</span>
+          </button>
+        }
+      </div>
+    </aside>
+    <section class="map-panel" aria-labelledby="map-title">
+      <div class="map-heading">
+        <h2 id="map-title">Situation map</h2>
+        <span class="fa-muted">Schematic · no scale</span>
+      </div>
+      <div class="map-canvas">
+        <svg
+          class="terrain"
+          viewBox="0 0 800 560"
+          preserveAspectRatio="none"
+          role="img"
+          aria-label="Illustrated coastal terrain, synthetic geography"
+        >
+          <defs>
+            <pattern id="atlas-grid" width="90" height="52" patternUnits="userSpaceOnUse">
+              <path d="M15 0H45L60 26 45 52H15L0 26Z M60 26H90" />
+            </pattern>
+          </defs>
+          <rect width="800" height="560" class="land" />
+          <rect width="800" height="560" fill="url(#atlas-grid)" />
+          <path class="sea" d="M0 0H800V75Q710 120 610 72T390 76 180 46 0 100Z" />
+          <path class="road" d="M0 270Q200 195 360 265T620 210 800 190" />
+          <g class="contours">
+            <path d="M0 420Q130 280 280 385T530 390 800 320" />
+            <path d="M0 434Q130 294 280 399T530 404 800 334" />
+            <path d="M0 448Q130 308 280 413T530 418 800 348" />
+            <path d="M0 462Q130 322 280 427T530 432 800 362" />
+          </g>
+        </svg>
+        <span class="map-label coast">The coast road</span
+        ><span class="map-label ridge">The inland ridge</span>
+        <div class="map-markers">
+          @for (unit of formations; track unit.id) {
+            <fa-unit-counter
+              class="map-unit"
+              [style.left.%]="unit.x"
+              [style.top.%]="unit.y"
+              [code]="unit.id"
+              [label]="unit.name + ', ' + unit.kind + ', ' + unit.position"
+              [kind]="unit.kind"
+              [selected]="store.selectedId() === unit.id"
+              (chosen)="store.select(unit.id)"
+            />
+          }
+        </div>
+        <span class="north" aria-label="North">N<br />↑</span>
+      </div>
+      <div class="map-caption">
+        <span>Selected: {{ store.selected().name }} · {{ store.selected().position }}</span
+        ><span>Original fixture</span>
+      </div>
+    </section>
+    <fa-panel [heading]="store.selected().name" eyebrow="Order inspector"
+      ><div class="flex flex-wrap gap-4 mb-6">
+        <span>{{ store.selected().kind }}</span
+        ><span>{{ store.selected().position }}</span
+        ><fa-status>Own side</fa-status>
+      </div>
+      <h3>Prepare a draft</h3>
+      <mr-draft-form [formation]="store.selected().name"
+    /></fa-panel>
+  </div>
+  <div class="records-grid">
+    <fa-panel heading="Formation ledger" eyebrow="Situation record"
+      ><div class="ledger" role="table" aria-label="Formation ledger">
+        <div class="ledger-row ledger-head" role="row">
+          <span role="columnheader">Formation</span><span role="columnheader">Kind</span
+          ><span role="columnheader">Position</span>
+        </div>
+        @for (unit of formations; track unit.id) {
+          <div class="ledger-row" role="row" [class.is-selected]="store.selectedId() === unit.id">
+            <span role="cell"
+              ><button
+                class="fa-text-action"
+                (click)="store.select(unit.id)"
+                [attr.aria-pressed]="store.selectedId() === unit.id"
+              >
+                {{ unit.name }}
+              </button></span
+            ><span role="cell">{{ unit.kind }}</span
+            ><span role="cell">{{ unit.position }}</span>
+          </div>
+        }
+      </div></fa-panel
+    ><fa-panel heading="War Diary" eyebrow="Presentation record"
+      ><fa-status>Initial view</fa-status>
+      <p class="diary-text">
+        {{ store.selected().name }} observed at {{ store.selected().position }} in the synthetic
+        exercise.
+      </p>
+      <p class="fa-muted">
+        No order issued. This entry demonstrates the reading pattern; it is not an authoritative
+        event.
+      </p>
+      <hr class="fa-rule" />
+      <p class="fa-eyebrow">Field Atlas · v0</p>
+      <p class="fa-muted">
+        Shared components, warm paper and ink. Built from the same foundations as the component
+        workshop.
+      </p></fa-panel
+    >
+  </div>
+</main>
+<footer class="session-footer">
+  <span>Maproom alpha · Development fixture</span><span>Campaign connection comes next</span>
+</footer>

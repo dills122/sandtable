@@ -1,6 +1,6 @@
 # Local game server and Angular Maproom implementation plan
 
-Date: 2026-10-16. Status: stack and local-first direction accepted; implementation slices pending.
+Date: 2026-10-16. Status: MAP-01 workspace and MAP-02 foundation implemented; connected gameplay slices pending.
 Audience: contributors implementing the local rules-lab host and browser client.
 
 Build a browser client around the existing deterministic C# Umpire. First delivery launches one
@@ -151,6 +151,17 @@ cancels work, disconnects subscriptions, destroys overlays/embedded components, 
 view stores, and removes prior-seat DOM before granting the next seat. Late responses cannot
 repopulate the screen. Avoid persistent player-state browser caching. Local hot-seat isolation
 protects normal application use; it is not protection from another operator controlling the same OS.
+
+## Implemented frontend foundation
+
+`src/Cna.Maproom` is an Angular CLI workspace. `maproom-alpha` consumes the private
+`@sandtable/field-atlas` library. Storybook documents live foundations, Material controls, custom
+components and app-owned patterns from that same source. Core/utils are deferred until needed.
+See the [workspace guide](../../src/Cna.Maproom/README.md) for pinned versions, local commands and CI.
+
+MAP-01 and the MAP-02 foundation are implemented. The shell selects synthetic formations and
+reviews a local Formly draft. MAP-03A/B/C remain open: camera controls, complete order lifecycle,
+filter/sort and their acceptance matrices are not supplied by this scaffold.
 
 ## Small implementation slices
 

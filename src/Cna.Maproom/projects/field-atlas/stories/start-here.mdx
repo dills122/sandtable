@@ -1,0 +1,78 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Start here" />
+
+# Field Atlas
+
+The living design reference for Maproom. Warm paper, dark ink, restrained military symbols.
+Use this workshop to decide how the application looks, behaves and fits together.
+
+## One implementation, two consumers
+
+`@sandtable/field-atlas` owns semantic tokens, supported Material theming and reusable presentation components.
+Both `maproom-alpha` and this Storybook consume that source. Do not copy a story's CSS into the app.
+The original HTML study records design intent; this workspace is the implementation reference.
+
+## Find the right layer
+
+<table>
+  <thead>
+    <tr>
+      <th>Layer</th>
+      <th>Owns</th>
+      <th>Examples</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Foundations</td>
+      <td>Visual and interaction rules</td>
+      <td>Tokens, typography, spacing, focus, motion</td>
+    </tr>
+    <tr>
+      <td>Material</td>
+      <td>Supported Angular controls</td>
+      <td>Buttons, fields, selects, validation</td>
+    </tr>
+    <tr>
+      <td>Components</td>
+      <td>Shared presentation</td>
+      <td>Panel, status label, unit counter</td>
+    </tr>
+    <tr>
+      <td>Patterns</td>
+      <td>App-owned compositions</td>
+      <td>Draft form, responsive workspace</td>
+    </tr>
+    <tr>
+      <td>Maproom app</td>
+      <td>Routes, selection, drafts, future adapters</td>
+      <td>Feature-local SignalStore and Formly definitions</td>
+    </tr>
+  </tbody>
+</table>
+
+## Working agreements
+
+- Use Material/CDK controls directly. Add a shared wrapper only when it owns a repeated behavior.
+- Use semantic tokens; Tailwind utilities handle layout without a second reset.
+- Pair color and symbols with text. Preserve visible focus, readable contrast and 44px actions.
+- Keep status factual: a draft is not an accepted order, and local selection is not server state.
+- Prefer quiet borders to shadows, modest corners and upright display typography.
+- Use Newsreader for titles and IBM Plex Sans for controls/data. Font files are served locally.
+- Verify narrow layouts, large text, keyboard interaction and reduced motion before promoting a pattern.
+
+## Adding a component or pattern
+
+Export reusable components from the library public API. Add colocated behavioral tests and a story for
+normal, selected, disabled and error states where meaningful. Keep feature forms and state in the app;
+show them under Patterns without making the library depend on the app.
+
+No shared `core` or `utils` library exists yet. Extract one only after a real second consumer needs it.
+Do not place rules, pathfinding, fog-of-war logic or authoritative state in this workspace.
+
+## Current scope
+
+MAP-01 workspace and MAP-02 design foundation. The operations shell uses synthetic formations and a
+local draft-review specimen. Full camera controls, per-formation order lifecycle, ledger filtering,
+server contracts, persistence and campaign integration are later slices.

@@ -1,0 +1,135 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "cli": {
+    "packageManager": "npm",
+    "analytics": false
+  },
+  "newProjectRoot": "projects",
+  "projects": {
+    "maproom-alpha": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "projects/maproom-alpha",
+      "sourceRoot": "projects/maproom-alpha/src",
+      "prefix": "mr",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "browser": "projects/maproom-alpha/src/main.ts",
+            "tsConfig": "projects/maproom-alpha/tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "projects/maproom-alpha/public"
+              }
+            ],
+            "styles": [
+              "projects/field-atlas/src/styles/styles.scss",
+              "projects/field-atlas/src/styles/utilities.css"
+            ],
+            "outputPath": "dist/maproom-alpha"
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kB",
+                  "maximumError": "1MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kB",
+                  "maximumError": "8kB"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "maproom-alpha:build:production"
+            },
+            "development": {
+              "buildTarget": "maproom-alpha:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test"
+        }
+      }
+    },
+    "field-atlas": {
+      "projectType": "library",
+      "root": "projects/field-atlas",
+      "sourceRoot": "projects/field-atlas/src",
+      "prefix": "fa",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/field-atlas/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/field-atlas/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "tsConfig": "projects/field-atlas/tsconfig.spec.json"
+          }
+        },
+        "storybook": {
+          "builder": "@storybook/angular-vite:start-storybook",
+          "options": {
+            "configDir": ".storybook",
+            "tsConfig": ".storybook/tsconfig.json",
+            "styles": [
+              "projects/field-atlas/src/styles/styles.scss",
+              "projects/field-atlas/src/styles/utilities.css"
+            ],
+            "zoneless": true,
+            "port": 6006,
+            "host": "127.0.0.1",
+            "open": false
+          }
+        },
+        "build-storybook": {
+          "builder": "@storybook/angular-vite:build-storybook",
+          "options": {
+            "configDir": ".storybook",
+            "tsConfig": ".storybook/tsconfig.json",
+            "styles": [
+              "projects/field-atlas/src/styles/styles.scss",
+              "projects/field-atlas/src/styles/utilities.css"
+            ],
+            "zoneless": true,
+            "outputDir": "dist/storybook"
+          }
+        }
+      }
+    }
+  }
+}
