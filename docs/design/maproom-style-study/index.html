@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Maproom — Field Atlas operations workspace</title>
+  <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="styles.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#theater-title">Skip to theater</a>
+  <div class="app-shell">
+    <header class="command-bar">
+      <div class="identity"><span class="atlas-mark" aria-hidden="true">S</span><span class="wordmark">Maproom</span><span class="edition">Field Atlas</span></div>
+      <nav aria-label="Workspace controls">
+        <button id="toggle-roster" aria-expanded="true" aria-controls="roster">Formations</button>
+        <button id="open-ledger">Ledger</button>
+        <button id="preview-settings">Preview controls</button>
+      </nav>
+    </header>
+    <section class="phase-bar" aria-label="Current situation">
+      <div><h1>Coastal approach</h1><p>Synthetic exercise · Own-side view</p></div>
+      <dl class="phase-facts"><div><dt>Phase</dt><dd id="phase-label">Movement</dd></div><div><dt>Decision</dt><dd id="decision-label">Awaiting your order</dd></div></dl>
+      <div class="session-state"><span class="status-dot" aria-hidden="true"></span><span id="session-label">Local preview · No server</span></div>
+    </section>
+    <main class="workspace" aria-label="Operations workspace">
+      <section class="roster" id="roster" aria-labelledby="roster-title">
+        <header class="pane-heading"><h2 id="roster-title">Formations</h2><span id="roster-count" class="supporting"></span></header>
+        <p class="pane-note">Own formations · fixture set</p>
+        <div id="formation-list" class="formation-list"></div>
+        <div class="contact-note"><span class="contact-symbol" aria-hidden="true">?</span><div><strong>Uncertain contact</strong><p>Reported area only.<br>Composition unknown.</p></div></div>
+      </section>
+      <section class="theater" aria-labelledby="theater-title">
+        <header class="map-toolbar"><h2 id="theater-title" tabindex="-1">Theater</h2><div class="toolbar-controls">
+          <label class="sr-only" for="map-layer">Map layer</label><span class="select-control"><select id="map-layer"><option value="orders">Orders</option><option value="terrain">Terrain</option></select></span>
+          <button id="fit-map" title="Restore full map view">Fit map</button>
+        </div></header>
+        <div id="map" class="map" role="group" aria-label="Schematic map. Use formation controls or ledger to select units.">
+          <div class="map-plane" id="map-plane">
+            <svg class="terrain" viewBox="0 0 1000 640" preserveAspectRatio="none" aria-hidden="true">
+              <path class="sea" d="M0 0H1000V110C907 91 863 155 785 140S657 91 552 133 394 189 291 147 102 102 0 173Z"/>
+              <path class="coast" d="M0 173C102 102 188 105 291 147S447 175 552 133 707 125 785 140 907 91 1000 110"/>
+              <g class="contours"><path d="M-30 409Q112 308 286 400T597 406 1040 312"/><path d="M-30 425Q112 324 286 416T597 422 1040 328"/><path d="M-30 441Q112 340 286 432T597 438 1040 344"/><path d="M-30 457Q112 356 286 448T597 454 1040 360"/><path d="M-30 473Q112 372 286 464T597 470 1040 376"/><path d="M75 660Q280 514 441 548T840 525 1050 541"/><path d="M75 644Q280 498 441 532T840 509 1050 525"/></g>
+              <path class="road" d="M-10 271Q205 220 360 271T660 237 1020 205"/>
+            </svg>
+            <svg class="hex-grid" aria-hidden="true"><defs><pattern id="hex-grid-pattern" width="90" height="52" patternUnits="userSpaceOnUse"><path d="M15 0H45L60 26 45 52H15L0 26Z M60 26H90" class="grid-line"/></pattern></defs><rect width="100%" height="100%" fill="url(#hex-grid-pattern)"/></svg>
+            <div class="map-labels" aria-hidden="true"><span class="sea-label">Northern waters</span><span class="west-label">West crossing</span><span class="station-label">Coast station</span><span class="ridge-label">The inland ridge</span></div>
+            <svg id="route-layer" class="route-layer" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path id="draft-route"/></svg>
+            <span id="route-end" class="route-end" aria-hidden="true"></span>
+            <div id="map-counters"></div>
+            <div class="map-contact"><span aria-hidden="true">?</span><small>Contact</small></div>
+          </div>
+          <span class="north-mark" aria-label="North">N<br><span aria-hidden="true">↑</span></span>
+          <div class="camera-controls" aria-label="Map zoom"><button id="zoom-out" aria-label="Zoom out">−</button><output id="zoom-level" aria-live="polite">100%</output><button id="zoom-in" aria-label="Zoom in">+</button></div>
+        </div>
+        <div class="map-caption"><span id="map-context">Select a formation to inspect its order.</span><span>Schematic · no scale</span></div>
+      </section>
+      <section class="inspector" aria-labelledby="unit-title">
+        <header class="pane-heading"><p class="supporting">Selected formation</p><button id="locate-unit">Locate</button></header>
+        <h2 id="unit-title"></h2>
+        <dl class="unit-facts"><div><dt>Kind</dt><dd id="unit-kind"></dd></div><div><dt>Position</dt><dd id="unit-position"></dd></div><div><dt>Audience</dt><dd>Own side</dd></div></dl>
+        <ol class="order-steps" aria-label="Order workflow"><li id="step-draft">Draft</li><li id="step-review">Review</li><li id="step-result">Result</li></ol>
+        <form id="order-form">
+          <label for="destination">Move to</label><span class="select-control"><select id="destination" aria-describedby="destination-detail destination-help"></select></span>
+          <p id="destination-detail" class="supporting destination-detail"></p>
+          <p class="field-help supporting" id="destination-help">Fixture destinations. Costs and legality are not calculated.</p>
+          <button class="primary" id="review-order" type="submit">Review order</button>
+        </form>
+        <section class="order-review" id="order-review" aria-labelledby="review-title" hidden>
+          <h3 id="review-title">Review movement</h3><p id="review-copy"></p>
+          <p class="supporting">The marker stays put until this example is accepted.</p>
+          <div class="order-actions"><button class="primary" id="issue-order">Issue example</button><button id="edit-order">Edit draft</button></div>
+        </section>
+        <div class="outcome" id="outcome"><strong id="outcome-title"></strong><p id="outcome-copy"></p></div>
+        <button id="recover-order" hidden></button>
+        <p id="order-hint" class="supporting order-hint"></p>
+      </section>
+    </main>
+    <section class="records" aria-label="Formation records">
+      <section class="ledger" aria-labelledby="ledger-title">
+        <header class="records-heading"><h2 id="ledger-title">Formation ledger</h2><button id="expand-ledger" aria-expanded="false" aria-controls="ledger-scroll">Expand</button></header>
+        <div class="ledger-tools"><label class="sr-only" for="ledger-search">Find formation</label><input id="ledger-search" type="search" placeholder="Find formation or position" autocomplete="off">
+          <label class="sr-only" for="ledger-sort">Sort formations</label><span class="select-control"><select id="ledger-sort"><option value="name">Name A–Z</option><option value="position">Position</option></select></span><span id="ledger-count" class="supporting" role="status"></span>
+        </div>
+        <div id="ledger-scroll" class="table-scroll" role="region" aria-label="Formation ledger rows" tabindex="0">
+          <table role="table"><caption class="sr-only">Synthetic own formations. Select a name to link map, inspector and War Diary.</caption><thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Formation</th><th scope="col" role="columnheader">Kind</th><th scope="col" role="columnheader">Position</th><th scope="col" role="columnheader">Order state</th></tr></thead><tbody id="ledger-body" role="rowgroup"></tbody></table>
+          <p id="ledger-empty" class="empty-state" hidden>No matching formations. Clear the search to see the full fixture.</p>
+        </div>
+      </section>
+      <section class="diary" aria-labelledby="diary-title">
+        <header class="records-heading"><h2 id="diary-title">War Diary</h2><label class="sr-only" for="diary-scope">War Diary scope</label><span class="select-control"><select id="diary-scope"><option value="selected">Selected formation</option><option value="all">All formations</option></select></span></header>
+        <p class="pane-note">Presentation records · audience-safe examples</p>
+        <ol id="diary-list"></ol>
+      </section>
+    </section>
+    <footer><span>Synthetic units, geography and results · Unsaved preview</span><span id="selection-summary"></span></footer>
+  </div>
+  <p id="announcement" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></p>
+  <dialog id="settings-dialog" aria-labelledby="settings-title">
+    <form method="dialog"><header class="records-heading"><h2 id="settings-title">Preview controls</h2><button aria-label="Close preview controls">Close</button></header></form>
+    <p>These controls stage UI examples. They do not run campaign rules or contact a server.</p>
+    <label for="reply-example">Next simulated reply</label><span class="select-control"><select id="reply-example"><option value="accepted">Accepted</option><option value="stale">Stale order</option><option value="rejected">Rejected</option><option value="disconnected">Reply lost</option></select></span>
+    <label for="phase-example">Phase example</label><span class="select-control"><select id="phase-example"><option value="movement">Movement</option><option value="unsupported">Combat entry</option></select></span>
+    <label for="density">Control spacing</label><span class="select-control"><select id="density"><option value="comfortable">Comfortable</option><option value="compact">Compact</option></select></span>
+    <label for="inspector-width">Desktop inspector width</label><input id="inspector-width" type="range" min="280" max="400" step="20" value="300">
+    <p class="supporting">At narrow widths, panels stack and use the available width. Pending examples lock phase and reply settings.</p>
+    <button id="reset-fixture">Reset fixture</button>
+  </dialog>
+</body>
+</html>

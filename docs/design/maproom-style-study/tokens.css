@@ -1,0 +1,54 @@
+/* Hallmark · genre: editorial · tone: Field Atlas · anchor: warm sand / olive
+   macrostructure: Operations workspace · nav: compact command bar · footer: session status
+   pre-emit critique: P5 H4 E4 S5 R4 V4 */
+:root {
+  --color-paper: oklch(96% 0.021 85);
+  --color-panel: oklch(98% 0.014 85);
+  --color-map: oklch(91% 0.038 85);
+  --color-ink: oklch(28% 0.025 75);
+  --color-muted: oklch(44% 0.025 75);
+  --color-rule: oklch(79% 0.035 85);
+  --color-rule-strong: oklch(53% 0.035 85);
+  --color-accent: oklch(38% 0.065 125);
+  --color-accent-ink: oklch(98% 0.014 85);
+  --color-selection: oklch(90% 0.048 125);
+  --color-focus: oklch(39% 0.11 250);
+  --color-own: oklch(83% 0.065 115);
+  --color-own-ink: oklch(28% 0.04 115);
+  --color-contact: oklch(84% 0.055 42);
+  --color-contact-ink: oklch(34% 0.075 42);
+  --color-error: oklch(41% 0.13 30);
+  --color-warning: oklch(43% 0.08 65);
+  --color-success: oklch(38% 0.065 125);
+  --color-sea: oklch(85% 0.032 205);
+  --color-contour: oklch(74% 0.06 80);
+  --color-road: oklch(52% 0.055 65);
+  --color-frame: oklch(30% 0.025 125);
+  --color-frame-ink: oklch(96% 0.021 85);
+  --color-frame-hover: oklch(40% 0.03 125);
+  --color-focus-on-frame: oklch(88% 0.08 85);
+  --color-backdrop: oklch(28% 0.025 75 / 0.5);
+  --font-display: "Newsreader", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --font-body: "IBM Plex Sans", "Avenir Next", "Segoe UI", sans-serif;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.75rem;
+  --text-display: clamp(2.5rem, 5vw, 4rem);
+  --space-2xs: 4px;
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --radius-control: 3px;
+  --control-height: 44px;
+  --select-icon-inset: 1rem;
+  --select-icon-size: 0.5rem;
+  --select-padding-end: 2.5rem;
+  --inspector-width: 18.75rem;
+  --roster-width: 13.125rem;
+  --duration-short: 150ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+}

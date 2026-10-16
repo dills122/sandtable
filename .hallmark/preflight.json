@@ -1,15 +1,16 @@
 {
-  "date": "2026-08-30",
-  "framework": "none detected; dependency-free static HTML selected",
-  "font_stack": "none detected before build",
-  "palette": "none detected before build",
-  "motion": "no motion library detected",
-  "spacing": "no existing web spacing scale detected",
-  "preserved": [],
+  "date": "2026-10-16",
+  "scope": "docs/design/maproom-style-study; Angular implementation planned separately",
+  "framework": "No Maproom app exists; portable HTML/CSS/JS study selected",
+  "font_stack": "Existing website Space Grotesk/Inter/JetBrains Mono retained; Maproom proposes Newsreader/IBM Plex Sans, preview uses local fallbacks",
+  "palette": "Existing website Cobalt retained; owner selected Field Atlas paper/ink/military symbols for Maproom",
+  "motion": "Functional background-color transitions only, reduced-motion override",
+  "spacing": "Named 4px scale in scoped tokens.css",
+  "preserved": ["site/ and its Pages workflow", "C# Umpire authority", "existing domain names"],
+  "accepted_refinement": "Field Atlas tokens retained for operations workspace; map/order/ledger views now drive component extraction",
   "introduced": [
-    "Cobalt design tokens",
-    "Workbench macrostructure",
-    "responsive and interaction discipline",
-    "Hallmark slop-test gates"
+    "Field Atlas semantic tokens and component language",
+    "Component Playground with selectable original map counters and example order states",
+    "Small-slice local-server and Angular delivery plan"
   ]
 }

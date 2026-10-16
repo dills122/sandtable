@@ -1,5 +1,42 @@
 [
   {
+    "date": "2026-10-16",
+    "theme": "Field Atlas",
+    "brief": "Screenshot follow-up: balanced text-action padding and inset dropdown indicators",
+    "artifact": "docs/design/maproom-style-study/index.html",
+    "scope": "44px actions with 8px/12px padding; native selects with token-based decorative chevrons"
+  },
+  {
+    "date": "2026-10-16",
+    "macrostructure": "Operations workspace",
+    "theme": "Field Atlas",
+    "brief": "Three polish passes: panel sizing and narrow ledger, text-size reflow, keyboard and order-state fit",
+    "artifact": "docs/design/maproom-style-study/index.html",
+    "design_system": "docs/design/maproom-design-system-v0.md",
+    "scope": "Spacing, container-based responsiveness, readable field labels and fixed-aspect route marker; synthetic fixtures retained"
+  },
+  {
+    "date": "2026-10-16",
+    "macrostructure": "Operations workspace",
+    "theme": "Field Atlas",
+    "nav": "Compact command bar with collapsible formation pane",
+    "footer": "Session and selection status",
+    "brief": "Accepted review refinement: persistent map, individual order workflow, formation ledger and linked War Diary",
+    "artifact": "docs/design/maproom-style-study/index.html",
+    "design_system": "docs/design/maproom-design-system-v0.md",
+    "scope": "in-place preview redesign; synthetic fixtures only"
+  },
+  {
+    "date": "2026-10-16",
+    "macrostructure": "Component Playground",
+    "theme": "Field Atlas (Almanac)",
+    "enrichment": "Original schematic SVG map; synthetic presentation fixtures",
+    "nav": "N3 side rail, inline at intermediate widths",
+    "footer": "Ft2 inline rule",
+    "brief": "Maproom local playtest UI: inspect situation and issue a clear order",
+    "artifact": "docs/design/maproom-style-study/index.html"
+  },
+  {
     "date": "2026-08-30",
     "macrostructure": "Workbench",
     "theme": "Cobalt",
