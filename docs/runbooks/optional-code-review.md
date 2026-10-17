@@ -49,11 +49,13 @@ policy would block this workflow, arrange a narrowly applicable policy only afte
 privileged-event safety; do not weaken the workflow's trust boundary to make it run.
 
 The repository owner should apply the label only after focused CI is green and the PR head is
-stable. A later push or draft/ready toggle does not run OCR. To request another paid review of a
+stable. A later push or draft/ready toggle does not run OCR. To request review of a
 **new head**, the owner must remove and re-add the label to the ready PR; each re-application is a
 new cost decision. Rerunning an existing Actions run is blocked. Re-applying the label to the
-**same head** reaches OCR's checkpoint and is a no-op, not a second paid review. A fresh review of
-an unchanged head needs a separately reviewed checkpoint reset procedure; this pilot has none.
+**same head** is a no-op only when a valid checkpoint already records that head. An incomplete
+review, failed comment publication, missing marker, or changed configuration can instead cause
+another full paid review. Treat every label re-application as a potential provider charge; check
+the previous `checkpoint_after` and the new run's `range_reason` before using its result.
 Before using a result, verify the reviewed head SHA, range mode, selected/completed/failed file
 counts and summary. A partial review or stale head is evidence only for the files actually
 completed. Remove the label when the pilot is finished.
