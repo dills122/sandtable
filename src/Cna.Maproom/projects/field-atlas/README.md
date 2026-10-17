@@ -6,6 +6,9 @@ Internal Angular design-system library for Maproom. Its public API exports `Atla
 - `src/styles/_tokens.scss`: canonical implemented semantic colors, typography, spacing and motion.
 - `src/styles/_material.scss`: Angular Material public theme APIs only.
 - `src/styles/styles.scss`: local fonts, baseline typography, focus and text actions.
+- `fa-select`: token-backed native select for compact choices outside Material forms; keep an
+  associated label and use the class on the select itself. Its indicator and reserved text space
+  follow the shared select tokens. See **Foundations / Native select** in Storybook.
 - `src/styles/utilities.css`: Tailwind utilities and semantic bridge, without preflight.
 - `stories`: foundations, upstream Material usage, custom component states and design guidance.
 - `licenses`: bundled font licenses; actual font assets come from pinned Fontsource packages.
