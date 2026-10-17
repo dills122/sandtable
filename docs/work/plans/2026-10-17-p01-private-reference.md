@@ -15,8 +15,9 @@ support certificate.
    authenticated authority and participant bindings. Return `unsupported` admission for positive
    shapes until complete result, geometry and privacy proof exists; return no executable action.
 3. Check representative genuine roots, physical negatives, ledger corruption, deterministic
-   identity and state/RNG equality. Publish exact tests and unclosed gates. Full 300-row replay,
-   exhaustive result/geometry/privacy proof and P02/P03 remain follow-ups.
+   identity and state/RNG equality. Publish exact tests and unclosed gates. Full 300-row replay
+   completed in follow-up evidence audit; exhaustive result/geometry/privacy proof and P02/P03
+   remain follow-ups.
 
 Stop if R03 replay cannot authenticate original ledgers on this base, selected content shape cannot
 be derived from trusted source, or a test would need caller-supplied World/hash as authority.
@@ -25,9 +26,13 @@ be derived from trusted source, or a test would need caller-supplied World/hash 
 
 - RED: direct focused test failed with `FileNotFoundError` for the absent P01 verifier before
   implementation.
-- GREEN: `python3 docs/specs/test-combat-actual-moved-repeat-position-v1.py` passes six focused
-  tests on genuine R03 paid/armed roots, both acting sides, deterministic identity, ledger/source/
-  nonterminal rejections and physical fail-closed variants.
+- GREEN: initial `python3 docs/specs/test-combat-actual-moved-repeat-position-v1.py` passed seven
+  focused tests on genuine R03 paid/armed roots, both acting sides, deterministic identity,
+  ledger/source/nonterminal rejections and physical fail-closed variants. This ancestry follow-up
+  passes 12 tests, adding all nonempty parent-ledger cuts, mutation of each of the 11 independent
+  parent inputs, missing/reordered/substituted ledgers, canonical event-field and dependency-pin
+  rejection before classification, plus retry and exact private assessment hashes for both acting
+  sides.
 - The additive offline evidence verifier hashes the pinned summary, manifest, predicate audit,
   both physical PDFs and all eleven compressed chunks, then calls this P01 reference for each
   retained row with its original CreationRequest and eleven independent ledgers. Full 300-row

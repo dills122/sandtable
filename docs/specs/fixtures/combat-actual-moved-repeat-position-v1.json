@@ -20,6 +20,10 @@
     "preimageCanonicalUtf8": "{\"contractVersion\":1,\"creationBinding\":\"creation.c228f73a59deeb83e45d94e240f42b8fd1d24020d4a90c5fe29e9666216f90d9\",\"cycleId\":\"sha256:7f840f9248884e88905cc95152353a8b502754d7e58ebcb63259c205555b7a7e\",\"positionId\":\"land.position.operation-1.first-player.movement-and-combat.combat.position-determination\",\"stateVersion\":33,\"prefix\":\"sha256:d48e0c8f337c96f04b950cc026b1968c87e65cc9c91d6e7c902bab67021910f4\",\"basis\":\"voluntary-adjacent\",\"targetLocationId\":\"assault-east\",\"attackerOriginalSide\":\"axis\",\"attackerElementId\":\"axis-assault-battalion\",\"attackerComponentId\":\"axis-assault-battalion.toe.infantry\",\"attackerRepresentationId\":\"map-representation.0001\",\"attackerLocationId\":\"assault-west\",\"defenderOriginalSide\":\"commonwealth\",\"defenderElementId\":\"commonwealth-assault-battalion\",\"defenderComponentId\":\"commonwealth-assault-battalion.toe.infantry\",\"defenderRepresentationId\":\"map-representation.0002\",\"defenderLocationId\":\"assault-east\"}",
     "candidateId": "p01.4ecb5de6eed520c3b3333274914de916ad5f2c25d91d3d2b643af64ec018b1a6"
   },
+  "assessmentGoldenSha256": {
+    "36": "4c6c133bcf1d0c4c5b517e570d405a5d357bcbc6bb86e17a15a49a620c264a53",
+    "168": "b98879d4196009b4defbe701743a8dec6eeb31f353c1f79132743beb02de10e8"
+  },
   "genuineSamples": [
     {"index": 0, "rowKey": "r000-c01", "physicalShape": "provisional-empty", "actingSide": "axis"},
     {"index": 36, "rowKey": "r012-c01", "physicalShape": "provisional-positive", "actingSide": "axis"},
