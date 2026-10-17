@@ -64,6 +64,12 @@ public sealed class BrowserContractTests
             .Select(response => response.Name).ToArray());
         AssertApiErrors(bootstrapResponses, "403", "503");
 
+        var creationResponses = paths.GetProperty("/api/v1/campaigns")
+            .GetProperty("post").GetProperty("responses");
+        Assert.Equal(["201", "400", "401", "403", "409", "503"], creationResponses
+            .EnumerateObject().Select(response => response.Name).ToArray());
+        AssertApiErrors(creationResponses, "400", "401", "403", "409", "503");
+
         var seatResponses = paths.GetProperty("/api/v1/campaigns/{campaignId}/seat")
             .GetProperty("post").GetProperty("responses");
         Assert.Equal(["200", "400", "401", "403", "409"], seatResponses
@@ -91,6 +97,28 @@ public sealed class BrowserContractTests
             "Fixtures", "campaign-created.v1.json"));
         using var created = JsonDocument.Parse(bytes);
         AssertSchema(created.RootElement, "CampaignCreated");
+        var withoutConfiguration = JsonNode.Parse(bytes)!;
+        withoutConfiguration.AsObject().Remove("configurationHash");
+        AssertSchema(JsonDocument.Parse(withoutConfiguration.ToJsonString()).RootElement,
+            "CampaignCreated");
+        var fixtureSchema = Contract.RootElement.GetProperty("components").GetProperty("schemas")
+            .GetProperty("FixtureDescriptor");
+        Assert.DoesNotContain("configurationHash", fixtureSchema.GetProperty("required")
+            .EnumerateArray().Select(value => value.GetString()));
+        var fixture = new JsonObject
+        {
+            ["fixtureId"] = "host-rsh-001",
+            ["displayName"] = "Breakdown truck lab",
+            ["scenarioId"] = "breakdown-truck-lab",
+            ["rulesetHash"] = new string('a', 64),
+            ["setupHash"] = new string('b', 64),
+            ["contentHash"] = new string('c', 64),
+        };
+        using (var parsedFixture = JsonDocument.Parse(fixture.ToJsonString()))
+            AssertSchema(parsedFixture.RootElement, "FixtureDescriptor");
+        fixture["configurationHash"] = new string('d', 64);
+        using (var parsedFixture = JsonDocument.Parse(fixture.ToJsonString()))
+            AssertSchema(parsedFixture.RootElement, "FixtureDescriptor");
         var grantSchema = Contract.RootElement.GetProperty("components").GetProperty("schemas")
             .GetProperty("SeatGrantSet");
         Assert.Equal(["axis", "commonwealth"], grantSchema.GetProperty("required")

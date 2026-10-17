@@ -16,7 +16,7 @@ export interface CampaignCreated {
   rulesetHash: string;
   setupHash: string;
   contentHash: string;
-  configurationHash: string;
+  configurationHash?: string;
   seatGrants: SeatGrantSet;
 }
 export namespace CampaignCreated {
