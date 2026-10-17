@@ -1,7 +1,7 @@
 # R03 reference checkpoint evidence
 
-**Status:** freeze candidate (`closureFrozen=true`); candidate-schema exact-head replay, vector and
-cut audits, fresh review and hosted CI remain open. Native consumption is gated.
+**Status:** freeze candidate (`closureFrozen=true`); candidate-schema replay and audits pass.
+Fresh independent review and hosted CI remain open. Native consumption is gated.
 
 ## Superseded catalogue
 
@@ -73,12 +73,31 @@ The complete nonterminal-cut audit passed on both the corrected checkpoint vecto
 vectors using the final verifier: all 788 authentic R02 nonterminal cuts across 300 rows rejected.
 The representative fixture matched all retained canonical cases in six of six tests.
 
-## Open gates
+## Freeze-candidate exact-head evidence
 
 The candidate schema sets `closureFrozen=true` and has SHA-256
 `26909e67501f59a0d0892181b9c9499099552c721585369983c3dbde5784c955`; the verifier remains
-`f79ca3b29c2a61c3aa8957f0e2873fc4968c8db85cd0e71183960e4489928bd3`. This schema-byte
-change supersedes the prior full replay as exact-head evidence. Rerun all 300 authentic terminals,
-the vector audit, all 788 nonterminal cuts and focused gates on this candidate head. Obtain fresh
-independent review and pass hosted CI before declaring the reference frozen or writing a native R03
-consumer. Public Combat activation remains a separate gate.
+`f79ca3b29c2a61c3aa8957f0e2873fc4968c8db85cd0e71183960e4489928bd3`. At source head
+`c1c8b36`, the candidate-schema replay passed all 300 authentic rows. The vector audit passed 56
+roots, 300 ordered unique rows, 36 paid and 264 armed, with transcript SHA-256
+`c5403e56b1bb2829509a0f83024bf36d3548bc6a3b2564c46baeb043eb1f4dcc`. Retained vectors
+are `/tmp/r03-frozen-full-vectors.jsonl.gz`, gzip SHA-256
+`e3274b3f9b23dee08bf7a68bf585f440d772855ce1ee631db6577fbc10eda378` (25,954,466 bytes).
+The exact-head cut audit passed 300 rows and rejected all 788 authentic R02 nonterminal cuts.
+The schema's `status` string records the gates pending when the candidate bytes were sealed;
+this evidence records their later outcomes without changing those validated bytes.
+
+Focused checks on this candidate schema also passed: `python3 -m unittest
+docs.specs.test_combat_actual_moved_repeat_breakdown_completion_v1` (6 tests including fixture
+equality); `2026-10-16-actual-moved-repeat-breakdown-negatives.py` (15 rejection cases and exact
+retry preserving both receipt ledgers); `2026-10-16-actual-moved-repeat-breakdown-framing.py`
+(32 rejection cases); `2026-10-16-actual-moved-repeat-breakdown-manifest.py` (pin-map deletion and
+substitution); `2026-10-16-actual-moved-repeat-breakdown-physical.py` (550/550 faults); and
+`2026-10-16-actual-moved-repeat-breakdown-capacity.py` (structural bounds). The latter scripts
+live in `docs/work/reviews`; negatives and framing used the frozen-head gzip above.
+
+## Open gates
+
+Obtain fresh independent review of the candidate contract and evidence, then pass hosted CI on
+the final commit. Until those results are recorded, this remains a freeze candidate and no native
+R03 consumer should be written. Public Combat activation remains a separate gate.

@@ -736,8 +736,8 @@ Breakdown input. One trusted System completion enters ordinal-two Combat Positio
 without executing Combat or closing the active cycle. It preserves both Movement proofs and adds
 one receipt to the cumulative and local Breakdown ledgers. All 300 authentic terminal replays and
 the final vector audit pass, covering 36 paid and 264 armed rows. All 788 authentic nonterminal
-cuts reject. The schema is a freeze candidate; exact-head replay, vector/cut audit, independent
-review and hosted CI remain open. No native R03 consumer is claimed.
+cuts reject. The freeze-candidate schema passed exact-head replay and vector/cut audit; fresh
+independent review and hosted CI remain open. No native R03 consumer is claimed.
 
 The additive [actual Reaction-to-Combat entry](docs/specs/combat-actual-reaction-combat-entry-v1.md)
 authenticates complete direct Reaction closure with separate prefix/lifecycle/Breakdown caller ledgers.
