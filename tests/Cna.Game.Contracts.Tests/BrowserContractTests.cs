@@ -53,6 +53,33 @@ public sealed class BrowserContractTests
     }
 
     [Fact]
+    public void LocalBootstrapAndSeatErrorResponsesAreTyped()
+    {
+        var paths = Contract.RootElement.GetProperty("paths");
+        var bootstrap = paths.GetProperty("/api/v1/bootstrap").GetProperty("get");
+        Assert.Contains("positive same-origin Fetch Metadata",
+            bootstrap.GetProperty("description").GetString());
+        var bootstrapResponses = bootstrap.GetProperty("responses");
+        Assert.Equal(["200", "403", "503"], bootstrapResponses.EnumerateObject()
+            .Select(response => response.Name).ToArray());
+        AssertApiErrors(bootstrapResponses, "403", "503");
+
+        var seatResponses = paths.GetProperty("/api/v1/campaigns/{campaignId}/seat")
+            .GetProperty("post").GetProperty("responses");
+        Assert.Equal(["200", "400", "401", "403", "409"], seatResponses
+            .EnumerateObject().Select(response => response.Name).ToArray());
+        AssertApiErrors(seatResponses, "400", "401", "403", "409");
+    }
+
+    private static void AssertApiErrors(JsonElement responses, params string[] statuses)
+    {
+        foreach (var status in statuses)
+            Assert.Equal("#/components/schemas/ApiError", responses.GetProperty(status)
+                .GetProperty("content").GetProperty("application/json")
+                .GetProperty("schema").GetProperty("$ref").GetString());
+    }
+
+    [Fact]
     public void CreationRequiresPinnedHashesAndExactlyTwoDistinctSeatGrants()
     {
         var bytes = File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory,

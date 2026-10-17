@@ -49,7 +49,7 @@ export class SessionsService extends BaseService implements SessionsServiceInter
   }
 
   /**
-   * Loopback-only bootstrap sets HttpOnly SameSite&#x3D;Strict operator cookie and returns CSRF token for mutation headers.
+   * Loopback-only bootstrap sets HttpOnly SameSite&#x3D;Strict operator cookie and returns CSRF token for mutation headers. Browser requests require positive same-origin Fetch Metadata or a matching Origin header; absent both is forbidden. Local admission is bounded and may return unavailable.
    * @endpoint get /api/v1/bootstrap
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
