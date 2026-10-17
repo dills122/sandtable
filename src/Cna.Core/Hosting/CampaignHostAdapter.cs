@@ -37,6 +37,68 @@ public static class CampaignHostAdapter
         return CampaignHostAudienceCut.Projected(view, actions);
     }
 
+    /// <summary>One typed, trusted side cut. The representation keys and Core action IDs
+    /// remain private inputs to the host's continuity and action trackers.</summary>
+    public static CampaignHostPrivateSideCut? QueryPrivateSideCut(
+        ExerciseSession session, CampaignActionAudience audience)
+    {
+        var cut = QueryAudience(session, audience);
+        if (!cut.IsProjected) return null;
+        var view = cut.Observation!;
+        var actions = cut.LegalActions!;
+        var decisionKind = view.DecisionState switch
+        {
+            CampaignObservationV7NormalDecisionState => "normal",
+            CampaignObservationV7BreakdownWaitingDecisionState => "breakdown-waiting",
+            CampaignObservationV7PhasingWaitingDecisionState => "phasing-waiting",
+            CampaignObservationV7ReactingDecisionState => "reacting",
+            _ => null,
+        };
+        if (decisionKind is null) return null;
+        return new CampaignHostPrivateSideCut(
+            view.CampaignId, view.StateVersion, view.RulesetHash, view.ScenarioId,
+            view.Position.PositionId, view.Position.GameTurn, view.Position.PhaseId,
+            view.Position.StageId, audience,
+            view.Locations.Select(location => new CampaignHostPrivateLocation(
+                location.LocationId, location.TerrainId)).ToArray(),
+            view.OwnElements.Select(element => new CampaignHostPrivateOwnElement(
+                element.ElementId, element.ParentFormationId, element.CurrentLocationId,
+                element.ReserveStatus.ToString())).ToArray(),
+            view.ApparentOpposingPresences.Select(presence => new CampaignHostPrivateContact(
+                presence.RepresentationId, presence.CurrentLocationId, presence.ExertsZoc)).ToArray(),
+            actions.Candidates.Select(candidate => ProjectPrivateAction(view, candidate)).ToArray(),
+            decisionKind);
+    }
+
+    private static CampaignHostPrivateAction ProjectPrivateAction(
+        CampaignObservationV7 view, CampaignActionCandidate candidate)
+    {
+        var elementId = candidate switch
+        {
+            DesignateReserveAction reserve => reserve.ElementId,
+            MoveElementAction move => move.ElementId,
+            StopElementMovementAction stop
+                when view.DecisionState is CampaignObservationV7NormalDecisionState
+                { ActiveMovement: { } active }
+                    && active.RouteId == stop.RouteId => active.ElementId,
+            _ => null,
+        };
+        var targetLocationId = candidate switch
+        {
+            MoveElementAction move => move.DestinationLocationId,
+            MoveReactingElementAction move => move.DestinationLocationId,
+            _ => null,
+        };
+        var opportunityId = candidate switch
+        {
+            MoveReactingElementAction move => move.OpportunityId,
+            CompleteReactionParticipantAction complete => complete.OpportunityId,
+            _ => null,
+        };
+        return new CampaignHostPrivateAction(candidate.ActionId, candidate.Kind,
+            elementId, targetLocationId, opportunityId);
+    }
+
     public static CampaignLegalActionQueryResult QuerySystem(ExerciseSession session)
     {
         ArgumentNullException.ThrowIfNull(session);
@@ -93,6 +155,25 @@ public static class CampaignHostAdapter
 }
 
 public enum CampaignHostQueryRejectionReason { None, InvalidAudience, InvalidState }
+
+// Host-private source data. These records must never be returned from an HTTP endpoint.
+public sealed record CampaignHostPrivateSideCut(
+    string CampaignId, long StateVersion, string RulesetHash, string ScenarioId,
+    string PositionId, int GameTurn, string PhaseId, string StageId,
+    CampaignActionAudience Audience,
+    IReadOnlyList<CampaignHostPrivateLocation> Locations,
+    IReadOnlyList<CampaignHostPrivateOwnElement> OwnElements,
+    IReadOnlyList<CampaignHostPrivateContact> Contacts,
+    IReadOnlyList<CampaignHostPrivateAction> Actions,
+    string DecisionStateKind);
+public sealed record CampaignHostPrivateLocation(string LocationId, string TerrainId);
+public sealed record CampaignHostPrivateOwnElement(string ElementId, string FormationId,
+    string LocationId, string ReserveStatus);
+public sealed record CampaignHostPrivateContact(string RepresentationId, string LocationId,
+    bool ExertsZoc);
+public sealed record CampaignHostPrivateAction(string CoreActionId, string Kind,
+    string? ElementId = null, string? TargetLocationId = null,
+    string? OpportunityId = null);
 
 public sealed class CampaignHostAudienceCut
 {

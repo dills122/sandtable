@@ -102,6 +102,8 @@ It does not create a campaign or render a Maproom view; MAP-08B must supply the 
 audience-safe projection before `/view` can answer successfully.
 MAP-08B1 names the host-side prerequisite: typed permitted data and pinned presentation facts
 between Umpire's side cut and Maproom's outward DTO. It grants no new authority to Maproom.
+MAP-08B2 calls the process-local contact/action continuity record the **audience tracker**.
+Its private side cut remains host data; Maproom receives only a later validated player view.
 
 **Proving Ground** names the local development test environment and
 [runbook](docs/runbooks/proving-ground.md), not a game authority or separate service. Its first

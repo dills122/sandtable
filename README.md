@@ -169,6 +169,10 @@ Maproom play.
 The [MAP-08B1 side projection prerequisite](docs/specs/maproom-side-projection-prerequisites-v1.md)
 records missing typed fields, pinned presentation data, audience-safe diary and opaque action
 mapping that must precede the browser view.
+MAP-08B2 adds a typed, host-private side cut and process-local visibility tracker. Both sides
+advance on creation and every accepted or System step; an unread disappearance retires its
+contact handle. Handles are scoped to seat-session generation. The browser route stays unavailable
+until the public presentation catalog, diary policy, and complete MAP-04 projection are supplied.
 Run `just maproom-setup`, then `just maproom` (port 4200) and `just field-atlas` (port 6006) in separate
 terminals. Storybook owns the live component/pattern reference; both surfaces consume
 `@sandtable/field-atlas`. MAP-03B stages local delayed results and receipt readback only;
