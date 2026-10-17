@@ -1,0 +1,22 @@
+{
+  "include": [
+    "tests/**/*.cs",
+    "src/Cna.Maproom/**/*.spec.ts",
+    "src/Cna.Maproom/e2e/**/*.ts",
+    ".github/scripts/**/*_test.py",
+    "docs/specs/test-*.py",
+    "docs/specs/**/*.schema.json",
+    "docs/specs/**/*.md"
+  ],
+  "exclude": [
+    "src/Cna.Maproom/projects/maproom-alpha/src/app/api/generated/**",
+    "docs/work/**",
+    "docs/reviews/**",
+    "docs/research/**",
+    "docs/specs/fixtures/**",
+    "**/*.golden.json",
+    "**/package-lock.json",
+    "**/pnpm-lock.yaml"
+  ],
+  "rules": []
+}

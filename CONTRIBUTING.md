@@ -52,6 +52,9 @@ dotnet test --solution Sandtable.slnx --configuration Release --no-build
 
 Include the motivation, affected boundaries, contract or persistence impact, test evidence, and any
 remaining risk. Generated protobuf output belongs under `artifacts/obj` and must not be committed.
+The [optional OCR scrutiny pilot](docs/runbooks/optional-code-review.md) runs only on labeled,
+ready PRs after its repository secret is configured; it cannot replace focused tests or
+independent review.
 
 ## Documentation ownership
 
