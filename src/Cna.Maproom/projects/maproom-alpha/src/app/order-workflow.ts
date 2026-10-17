@@ -136,6 +136,7 @@ export class OrderWorkflow {
   protected readonly store = inject(WorkspaceStore);
   protected readonly form = new FormGroup({ destination: new FormControl<string | null>(null) });
   protected model = { destination: '' };
+  private readonly fieldLocked = computed(() => this.locked());
   protected readonly fields = computed<FormlyFieldConfig[]>(() => [
     {
       key: 'destination',
@@ -143,7 +144,7 @@ export class OrderWorkflow {
       props: {
         label: 'Move to',
         required: true,
-        disabled: this.locked(),
+        disabled: this.fieldLocked(),
         options: [...destinations],
         appearance: 'outline',
       },
