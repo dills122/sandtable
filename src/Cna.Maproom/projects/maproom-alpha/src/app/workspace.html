@@ -94,6 +94,16 @@
           <span class="fa-muted">Schematic · no scale</span>
         </div>
         <div class="map-controls" role="group" aria-label="Map camera controls">
+          <button
+            #shortcutToggle
+            type="button"
+            class="fa-text-action"
+            aria-controls="map-shortcuts"
+            [attr.aria-expanded]="shortcutsOpen()"
+            (click)="toggleShortcuts()"
+          >
+            Keyboard help <span aria-hidden="true">?</span>
+          </button>
           <button type="button" class="fa-text-action" (click)="store.fitMap()">Fit map</button>
           <button
             type="button"
@@ -118,7 +128,26 @@
           </button>
         </div>
       </div>
-      <div class="map-canvas">
+      <div id="map-shortcuts" class="shortcut-help" [hidden]="!shortcutsOpen()">
+        <strong>Move around the exercise</strong>
+        <span><kbd>[</kbd> / <kbd>]</kbd> choose a formation</span>
+        <span><kbd>L</kbd> locate selection · <kbd>0</kbd> fit map</span>
+        <span><kbd>+</kbd> / <kbd>−</kbd> zoom · arrow keys pan when map is focused</span>
+        <span><kbd>?</kbd> show or hide help · <kbd>Esc</kbd> close</span>
+      </div>
+      <div
+        class="map-canvas"
+        role="region"
+        tabindex="0"
+        aria-label="Situation map, arrow keys pan when zoomed"
+        [class.is-dragging]="dragging()"
+        (keydown)="onMapKeydown($event)"
+        (pointerdown)="onMapPointerDown($event)"
+        (pointermove)="onMapPointerMove($event)"
+        (pointerup)="onMapPointerEnd($event)"
+        (pointercancel)="onMapPointerEnd($event)"
+        (lostpointercapture)="onMapPointerEnd($event)"
+      >
         <div class="map-scene" [style.transform]="store.cameraTransform()">
           <svg
             class="terrain"

@@ -30,6 +30,8 @@ const destinations = {
   'H-8': { x: 40, y: 73 },
 } as const;
 type Destination = keyof typeof destinations;
+const clampCameraFocus = (focus: number, zoom: number) =>
+  Math.min(100 - 50 / zoom, Math.max(50 / zoom, focus));
 interface PendingFixture {
   readonly requestId: number;
   readonly formationId: string;
@@ -205,24 +207,41 @@ export const WorkspaceStore = signalStore(
     },
     locateSelected() {
       const formation = store.visibleFormations().find((f) => f.id === store.selectedId());
-      if (formation)
+      if (formation) {
+        const zoom = Math.max(store.zoom(), 1.5);
         patchState(store, {
-          zoom: Math.max(store.zoom(), 1.5),
-          focusX: formation.x,
-          focusY: formation.y,
+          zoom,
+          focusX: clampCameraFocus(formation.x, zoom),
+          focusY: clampCameraFocus(formation.y, zoom),
         });
+      }
     },
     focusFormation(id: string) {
       if (store.zoom() <= 1) return;
       const formation = store.visibleFormations().find((f) => f.id === id);
-      if (formation) patchState(store, { focusX: formation.x, focusY: formation.y });
+      if (formation)
+        patchState(store, {
+          focusX: clampCameraFocus(formation.x, store.zoom()),
+          focusY: clampCameraFocus(formation.y, store.zoom()),
+        });
     },
     fitMap() {
       patchState(store, { zoom: 1, focusX: 50, focusY: 50 });
     },
     zoomBy(step: number) {
+      const zoom = Math.min(2, Math.max(1, Math.round((store.zoom() + step) * 4) / 4));
       patchState(store, {
-        zoom: Math.min(2, Math.max(1, Math.round((store.zoom() + step) * 4) / 4)),
+        zoom,
+        focusX: clampCameraFocus(store.focusX(), zoom),
+        focusY: clampCameraFocus(store.focusY(), zoom),
+      });
+    },
+    panByPixels(deltaX: number, deltaY: number, width: number, height: number) {
+      if (store.zoom() <= 1 || width <= 0 || height <= 0) return;
+      const zoom = store.zoom();
+      patchState(store, {
+        focusX: clampCameraFocus(store.focusX() - ((deltaX / width) * 100) / zoom, zoom),
+        focusY: clampCameraFocus(store.focusY() - ((deltaY / height) * 100) / zoom, zoom),
       });
     },
     toggleRoster() {

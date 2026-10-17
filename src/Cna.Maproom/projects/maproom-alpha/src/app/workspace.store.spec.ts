@@ -14,9 +14,13 @@ describe('Workspace presentation state', () => {
     const store = TestBed.inject(WorkspaceStore);
     store.select('OSP');
     store.locateSelected();
-    expect([store.zoom(), store.focusX(), store.focusY()]).toEqual([1.5, 73, 78]);
+    expect(store.zoom()).toBe(1.5);
+    expect(store.focusX()).toBeCloseTo(100 - 50 / 1.5);
+    expect(store.focusY()).toBeCloseTo(100 - 50 / 1.5);
     for (let index = 0; index < 10; index++) store.zoomBy(0.25);
     expect(store.zoom()).toBe(2);
+    store.zoomBy(-0.75);
+    expect([store.zoom(), store.focusX(), store.focusY()]).toEqual([1.25, 60, 60]);
     store.fitMap();
     expect([store.zoom(), store.focusX(), store.focusY()]).toEqual([1, 50, 50]);
     store.zoomBy(-0.25);
@@ -29,7 +33,7 @@ describe('Workspace presentation state', () => {
     store.focusFormation('TER');
     expect([store.zoom(), store.focusX(), store.focusY(), store.selectedId()]).toEqual([
       2,
-      88,
+      75,
       49,
       'FOX',
     ]);
