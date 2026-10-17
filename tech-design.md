@@ -114,6 +114,9 @@ play. A process restart discards this state. MAP-08A adds Development-only loopb
 trusted-host grant storage and rotating seat sessions with same-origin and CSRF checks. Its grant
 issuer has no browser creation path yet, and an authorized `/view` returns `503 unavailable` until
 MAP-08B maps the full MAP-04 player view and outward legal-action identities from a coherent cut.
+The [MAP-08B1 projection prerequisite](docs/specs/maproom-side-projection-prerequisites-v1.md)
+first defines typed side fields, public presentation sources, diary visibility and stable opaque
+action mapping; no browser view is returned until these sources are coherent.
 No canonical legal-action bytes or authority versions are serialized to HTTP. The
 [Angular workspace](src/Cna.Maproom/README.md) provides
 `projects/maproom-alpha` and the internal `@sandtable/field-atlas` library. Storybook uses the same

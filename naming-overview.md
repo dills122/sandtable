@@ -100,6 +100,8 @@ browser contract or a new authority source.
 MAP-08A's `Cna.OrleansHost/Api` is a local ingress seam for operator bootstrap and seat sessions.
 It does not create a campaign or render a Maproom view; MAP-08B must supply the complete
 audience-safe projection before `/view` can answer successfully.
+MAP-08B1 names the host-side prerequisite: typed permitted data and pinned presentation facts
+between Umpire's side cut and Maproom's outward DTO. It grants no new authority to Maproom.
 
 **Proving Ground** names the local development test environment and
 [runbook](docs/runbooks/proving-ground.md), not a game authority or separate service. Its first
