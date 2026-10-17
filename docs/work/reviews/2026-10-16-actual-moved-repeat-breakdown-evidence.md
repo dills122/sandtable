@@ -52,6 +52,12 @@ Changing either while this run is active invalidates its source check. Query sta
 
 ## Open gates
 
+The added `2026-10-16-actual-moved-repeat-breakdown-framing.py` test is RED on
+`contractVersion=-1`: current R03 returns `CMB-MRB-001` while its numeric-error contract requires
+`CMB-MRB-002`. The deepest inherited cause is `CMB-AAD-002`; intermediate wrappers turn it into
+001. Fix this mapping only after the active 300-row run finishes, then rerun on the new exact
+verifier hash. This RED is another reason the current run cannot freeze R03.
+
 After corrected catalogue PASS and vector audit, run
 `2026-10-16-actual-moved-repeat-breakdown-all-cuts.py` on the completed vectors for all 788 R02
 nonterminal cuts, update representative fixture hashes, finish raw-framing partitions, obtain
