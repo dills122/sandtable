@@ -30,13 +30,16 @@ test('first drag explores fitted map without changing selection or uncovering bl
   expect(terrain!.x + terrain!.width).toBeGreaterThanOrEqual(frame!.x + frame!.width - 1);
   expect(terrain!.y + terrain!.height).toBeGreaterThanOrEqual(frame!.y + frame!.height - 1);
   await expect(page.getByRole('heading', { name: 'Fox group' })).toBeVisible();
+  await page.getByRole('button', { name: 'Harrier group, armour, G-5' }).click();
+  await expect(page.getByRole('heading', { name: 'Harrier group' })).toBeVisible();
   await page.getByRole('button', { name: 'Fit map' }).click();
   await expect(page.getByLabel('Map zoom')).toHaveText('100%');
+  await expect(page.getByRole('heading', { name: 'Harrier group' })).toBeVisible();
 });
 
 test('expanded map traps focus, keeps controls and selection, and returns to orders', async ({
   page,
-}) => {
+}, testInfo) => {
   await page.goto('/');
   await page.getByRole('combobox', { name: 'Move to' }).click();
   await page.getByRole('option', { name: 'East crossing · M-6' }).click();
@@ -46,6 +49,7 @@ test('expanded map traps focus, keeps controls and selection, and returns to ord
   await expect(dialog).toBeVisible();
   await expect(page.locator('html')).toHaveCSS('overflow', 'hidden');
   await expect(page.getByRole('button', { name: 'Close expanded map' })).toBeFocused();
+  await page.screenshot({ path: testInfo.outputPath('expanded-map-desktop.png') });
   await page.keyboard.press('Shift+Tab');
   await expect(dialog.getByRole('button', { name: 'Open orders for Fox group' })).toBeFocused();
   await page.keyboard.press('Tab');
@@ -68,6 +72,52 @@ test('expanded map traps focus, keeps controls and selection, and returns to ord
   await expect(expand).toBeFocused();
   await expect(page.locator('html')).not.toHaveCSS('overflow', 'hidden');
   await expect(page.getByLabel('Map zoom')).toHaveText('125%');
+});
+
+test('War Diary and fixture result selects use shared Field Atlas indicator and spacing', async ({
+  page,
+}, testInfo) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/');
+  const diary = page.getByLabel('Show entries for');
+  await expect(diary).toHaveClass(/fa-select/);
+  const appearance = await diary.evaluate((element) => {
+    const style = getComputedStyle(element);
+    return {
+      appearance: style.appearance,
+      backgroundImage: style.backgroundImage,
+      paddingRight: parseFloat(style.paddingRight),
+    };
+  });
+  expect(appearance.appearance).toBe('none');
+  expect(appearance.backgroundImage).toContain('linear-gradient');
+  expect(appearance.paddingRight).toBeGreaterThanOrEqual(36);
+  await diary.selectOption('all');
+  await expect(diary).toHaveValue('all');
+  await page.getByRole('combobox', { name: 'Move to' }).click();
+  await page.getByRole('option', { name: 'East crossing · M-6' }).click();
+  await page.getByRole('button', { name: 'Review draft' }).click();
+  const outcome = page.getByLabel('Fixture result');
+  await expect(outcome).toHaveClass(/fa-select/);
+  await expect(outcome).toHaveCSS('background-image', /linear-gradient/);
+  await page.screenshot({ path: testInfo.outputPath('war-diary-select.png'), fullPage: true });
+});
+
+test('Open orders restores focus in inspector when Combat fixture has no order action', async ({
+  page,
+}) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Show unsupported Combat phase' }).click();
+  await page.getByRole('button', { name: 'Hide orders' }).click();
+  await page.getByRole('button', { name: 'Expand map' }).click();
+  await page
+    .getByRole('dialog', { name: 'Situation map' })
+    .getByRole('button', { name: 'Open orders for Fox group' })
+    .click();
+  await expect(page.getByRole('dialog', { name: 'Situation map' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Show orders' })).toHaveCount(0);
+  await expect(page.getByText('Combat entry stops in this rules-lab fixture.')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Locate Fox group on map' })).toBeFocused();
 });
 
 test('touch drag pans map without scrolling page while outside-map touch still scrolls', async ({

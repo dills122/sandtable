@@ -107,11 +107,11 @@ export class Workspace {
     requestAnimationFrame(() => {
       const panel = this.inspectorPanel?.nativeElement;
       panel?.scrollIntoView({ block: 'nearest' });
-      (
-        panel?.querySelector('mr-order-workflow button:not([disabled])') as HTMLElement | null
-      )?.focus({
-        preventScroll: true,
-      });
+      const target =
+        panel?.querySelector<HTMLElement>('mr-order-workflow button:not([disabled])') ??
+        panel?.querySelector<HTMLElement>('.inspector-actions button:not([disabled])') ??
+        panel?.querySelector<HTMLElement>('.inspector-header-actions .pane-toggle');
+      target?.focus({ preventScroll: true });
     });
   }
 
