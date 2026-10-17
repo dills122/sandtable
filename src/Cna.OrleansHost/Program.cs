@@ -6,6 +6,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddSingleton<LocalSessionStore>();
+builder.Services.AddSingleton<LocalCampaignCreationStore>();
+builder.Services.AddSingleton<ITemporaryPrivateCutReader, TemporaryPrivateCutReader>();
+builder.Services.AddSingleton<ITemporaryCampaignCreator, TemporaryCampaignCreator>();
 builder.Services.AddSingleton<TemporaryPlayerViewProjection>();
 // https://learn.microsoft.com/en-us/dotnet/orleans/host/configuration-guide/server-configuration
 builder.Host.UseOrleans(siloBuilder =>

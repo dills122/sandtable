@@ -15,5 +15,5 @@ export interface FixtureDescriptor {
   rulesetHash: string;
   setupHash: string;
   contentHash: string;
-  configurationHash: string;
+  configurationHash?: string;
 }

@@ -40,6 +40,70 @@ internal static class LocalGameApi
             SetCookie(context, session.Token);
             return Results.Json(new { contractVersion = 1, csrfToken = session.CsrfToken });
         });
+        api.MapGet("/fixtures", () => Results.Json(new[]
+        {
+            new
+            {
+                fixtureId = TemporaryCampaignGrain.FixtureCampaignId,
+                displayName = "Breakdown truck lab",
+                scenarioId = TemporaryCampaignGrain.ScenarioId,
+                rulesetHash = TemporaryCampaignGrain.RulesetHash,
+                setupHash = TemporaryCampaignGrain.SetupHash[7..],
+                contentHash = TemporaryCampaignGrain.ContentHash[7..],
+            },
+        }));
+        api.MapPost("/campaigns", async (HttpContext context, LocalSessionStore sessions,
+            IServiceProvider services) =>
+        {
+            var session = sessions.Find(context.Request.Cookies[Cookie]);
+            if (session is null || session.Seat is not null)
+                return ApiError(StatusCodes.Status401Unauthorized, "unauthorized");
+            if (!ValidCsrf(context, session))
+                return ApiError(StatusCodes.Status403Forbidden, "forbidden");
+            string? fixtureId;
+            string? requestId;
+            try
+            {
+                using var document = await JsonDocument.ParseAsync(context.Request.Body,
+                    cancellationToken: context.RequestAborted);
+                var root = document.RootElement;
+                if (root.ValueKind != JsonValueKind.Object || root.EnumerateObject().Count() != 3
+                    || !root.TryGetProperty("contractVersion", out var version)
+                    || version.ValueKind != JsonValueKind.Number || !version.TryGetInt32(out var v)
+                    || v != 1 || !root.TryGetProperty("fixtureId", out var fixture)
+                    || fixture.ValueKind != JsonValueKind.String
+                    || !root.TryGetProperty("requestId", out var request)
+                    || request.ValueKind != JsonValueKind.String)
+                    return ApiError(StatusCodes.Status400BadRequest, "invalid-request");
+                fixtureId = fixture.GetString();
+                requestId = request.GetString();
+            }
+            catch (JsonException)
+            {
+                return ApiError(StatusCodes.Status400BadRequest, "invalid-request");
+            }
+            if (fixtureId != TemporaryCampaignGrain.FixtureCampaignId
+                || requestId is null || !Guid.TryParseExact(requestId, "D", out var parsed)
+                || parsed.ToString("D") != requestId)
+                return ApiError(StatusCodes.Status400BadRequest, "invalid-request");
+            var creations = services.GetService<LocalCampaignCreationStore>();
+            var creator = services.GetService<ITemporaryCampaignCreator>();
+            if (creations is null || creator is null)
+                return ApiError(StatusCodes.Status503ServiceUnavailable, "unavailable");
+            var result = await creations.CreateAsync(session, fixtureId, requestId,
+                sessions, creator, context.RequestAborted);
+            return result.Status switch
+            {
+                LocalCreationStatus.Created => Results.Json(result.Response,
+                    statusCode: StatusCodes.Status201Created),
+                LocalCreationStatus.Conflict => ApiError(StatusCodes.Status409Conflict, "conflict"),
+                LocalCreationStatus.Unauthorized => ApiError(StatusCodes.Status401Unauthorized,
+                    "unauthorized"),
+                LocalCreationStatus.Invalid => ApiError(StatusCodes.Status400BadRequest,
+                    "invalid-request"),
+                _ => ApiError(StatusCodes.Status503ServiceUnavailable, "unavailable"),
+            };
+        });
         api.MapPost("/campaigns/{campaignId}/seat", async (HttpContext context,
             LocalSessionStore store, string campaignId) =>
         {
@@ -101,14 +165,15 @@ internal static class LocalGameApi
                 "commonwealth" => CampaignActionAudience.Commonwealth,
                 _ => (CampaignActionAudience?)null,
             };
-            var grains = services.GetService<IGrainFactory>();
-            var access = services.GetService<TemporaryCampaignAccess>();
+            var reader = services.GetService<ITemporaryPrivateCutReader>();
             var projection = services.GetService<TemporaryPlayerViewProjection>();
-            if (side is null || grains is null || access is null || projection is null
+            if (side is null || reader is null || projection is null
                 || session.Generation is null)
                 return ApiError(StatusCodes.Status503ServiceUnavailable, "unavailable");
-            var reply = await grains.GetGrain<ITemporaryCampaignGrain>(campaignId)
-                .QueryPrivateSideAsync(access.Capability, side.Value, session.Generation);
+            var reply = await reader.ReadAsync(campaignId, side.Value, session.Generation);
+            // A seat switch can revoke this generation while the grain read is in flight.
+            if (store.Find(session.Token) != session)
+                return ApiError(StatusCodes.Status403Forbidden, "forbidden");
             if (reply.Status != TemporaryCampaignStatus.Current)
                 return ApiError(StatusCodes.Status503ServiceUnavailable, "unavailable");
             var view = projection.Map(reply.Cut, session);

@@ -44,16 +44,65 @@ internal sealed class LocalSessionStore(TimeProvider clock)
         lock (gate)
         {
             SweepExpired();
-            if (grants.Count > MaxGrants - 2)
-                throw new InvalidOperationException("Local grant capacity reached.");
-            var axis = Guid.NewGuid().ToString();
-            var commonwealth = Guid.NewGuid().ToString();
-            grants.Add(axis, new LocalGrant(operatorId, campaignId, "axis",
-                clock.GetUtcNow().AddMinutes(10)));
-            grants.Add(commonwealth, new LocalGrant(operatorId, campaignId, "commonwealth",
-                clock.GetUtcNow().AddMinutes(10)));
-            return (axis, commonwealth);
+            return IssueGrantsLocked(operatorId, campaignId, active: true);
         }
+    }
+
+    internal (string Axis, string Commonwealth)? ReserveCreationGrants(
+        LocalSession session, string campaignId)
+    {
+        lock (gate)
+        {
+            SweepExpired();
+            if (!sessions.TryGetValue(session.Token, out var entry)
+                || entry.Session != session || session.Seat is not null)
+                return null;
+            var pair = IssueGrantsLocked(session.OperatorId, campaignId, active: false);
+            sessions[session.Token] = entry with { ExpiresAt = clock.GetUtcNow().Add(OperatorLifetime) };
+            return pair;
+        }
+    }
+
+    internal bool ActivateCreationGrants(string operatorId, string campaignId,
+        (string Axis, string Commonwealth) pair)
+    {
+        lock (gate)
+        {
+            SweepExpired();
+            if (!grants.TryGetValue(pair.Axis, out var axis)
+                || !grants.TryGetValue(pair.Commonwealth, out var commonwealth)
+                || axis.OperatorId != operatorId || commonwealth.OperatorId != operatorId
+                || axis.CampaignId != campaignId || commonwealth.CampaignId != campaignId
+                || axis.Seat != "axis" || commonwealth.Seat != "commonwealth"
+                || axis.Active || commonwealth.Active)
+                return false;
+            grants[pair.Axis] = axis with { Active = true };
+            grants[pair.Commonwealth] = commonwealth with { Active = true };
+            return true;
+        }
+    }
+
+    internal void RevokeCreationGrants((string Axis, string Commonwealth) pair)
+    {
+        lock (gate)
+        {
+            grants.Remove(pair.Axis);
+            grants.Remove(pair.Commonwealth);
+        }
+    }
+
+    private (string Axis, string Commonwealth) IssueGrantsLocked(
+        string operatorId, string campaignId, bool active)
+    {
+        if (grants.Count > MaxGrants - 2)
+            throw new InvalidOperationException("Local grant capacity reached.");
+        var axis = Guid.NewGuid().ToString();
+        var commonwealth = Guid.NewGuid().ToString();
+        grants.Add(axis, new LocalGrant(operatorId, campaignId, "axis",
+            clock.GetUtcNow().AddMinutes(10), active));
+        grants.Add(commonwealth, new LocalGrant(operatorId, campaignId, "commonwealth",
+            clock.GetUtcNow().AddMinutes(10), active));
+        return (axis, commonwealth);
     }
 
     internal LocalSession? Redeem(LocalSession current, string campaignId, string grantId)
@@ -63,7 +112,7 @@ internal sealed class LocalSessionStore(TimeProvider clock)
             SweepExpired();
             if (!sessions.TryGetValue(current.Token, out var active) || active.Session != current
                 || !grants.TryGetValue(grantId, out var grant)
-                || grant.OperatorId != current.OperatorId || grant.CampaignId != campaignId
+                || !grant.Active || grant.OperatorId != current.OperatorId || grant.CampaignId != campaignId
                 || grant.ExpiresAt <= clock.GetUtcNow()) return null;
             grants.Remove(grantId);
             sessions.Remove(current.Token);
@@ -107,5 +156,5 @@ internal sealed class LocalSessionStore(TimeProvider clock)
 internal sealed record LocalSession(string Token, string CsrfToken, string OperatorId,
     string? Generation, string? CampaignId, string? Seat);
 internal sealed record LocalGrant(string OperatorId, string CampaignId, string Seat,
-    DateTimeOffset ExpiresAt);
+    DateTimeOffset ExpiresAt, bool Active);
 internal sealed record SessionEntry(LocalSession Session, DateTimeOffset ExpiresAt);

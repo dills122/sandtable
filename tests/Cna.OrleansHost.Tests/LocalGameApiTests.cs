@@ -19,6 +19,244 @@ namespace Cna.OrleansHost.Tests;
 public sealed class LocalGameApiTests
 {
     [Fact]
+    public async Task CreationCapacityIsReservedBeforeGrainCommit()
+    {
+        var clock = new ManualClock();
+        var sessions = new LocalSessionStore(clock);
+        var owner = sessions.Bootstrap(null)!;
+        for (var index = 0; index < LocalSessionStore.MaxGrants / 2; index++)
+            sessions.IssueGrants(owner.OperatorId, "host-rsh-001");
+        var creator = new CountingCreator();
+        using var creations = new LocalCampaignCreationStore();
+        var requestId = Guid.NewGuid().ToString("D");
+        Assert.Equal(LocalCreationStatus.Unavailable, (await creations.CreateAsync(owner,
+            "host-rsh-001", requestId, sessions, creator,
+            TestContext.Current.CancellationToken)).Status);
+        Assert.Equal(0, creator.Calls);
+        clock.Advance(TimeSpan.FromMinutes(11));
+        Assert.Equal(LocalCreationStatus.Created, (await creations.CreateAsync(owner,
+            "host-rsh-001", requestId, sessions, creator,
+            TestContext.Current.CancellationToken)).Status);
+        Assert.Equal(1, creator.Calls);
+    }
+
+    [Fact]
+    public async Task ExpiredReservationRetainsOriginalGrantsWithoutRenewal()
+    {
+        var clock = new ManualClock();
+        var sessions = new LocalSessionStore(clock);
+        var owner = sessions.Bootstrap(null)!;
+        var creator = new HeldCreator();
+        using var creations = new LocalCampaignCreationStore();
+        var requestId = Guid.NewGuid().ToString("D");
+        var first = creations.CreateAsync(owner, "host-rsh-001", requestId,
+            sessions, creator, TestContext.Current.CancellationToken);
+        await creator.Started.Task.WaitAsync(TestContext.Current.CancellationToken);
+        clock.Advance(TimeSpan.FromMinutes(11));
+        creator.Release.SetResult(new TemporaryCampaignReply
+        { Status = TemporaryCampaignStatus.Created });
+        var committed = await first;
+        Assert.Equal(LocalCreationStatus.Created, committed.Status);
+        var recovered = await creations.CreateAsync(owner, "host-rsh-001", requestId,
+            sessions, creator, TestContext.Current.CancellationToken);
+        Assert.Equal(LocalCreationStatus.Created, recovered.Status);
+        Assert.Equal(1, creator.Calls);
+        Assert.Equal(JsonSerializer.Serialize(committed.Response),
+            JsonSerializer.Serialize(recovered.Response));
+        var grants = JsonDocument.Parse(JsonSerializer.Serialize(recovered.Response))
+            .RootElement.GetProperty("seatGrants");
+        Assert.Null(sessions.Redeem(owner, "host-rsh-001",
+            grants.GetProperty("axis").GetString()!));
+    }
+
+    [Fact]
+    public async Task CancelledCreationWaitKeepsSameRequestRecoverable()
+    {
+        var sessions = new LocalSessionStore(TimeProvider.System);
+        var owner = sessions.Bootstrap(null)!;
+        var creator = new HeldCreator();
+        using var creations = new LocalCampaignCreationStore();
+        var requestId = Guid.NewGuid().ToString("D");
+        using var cancellation = new CancellationTokenSource();
+        var first = creations.CreateAsync(owner, "host-rsh-001", requestId,
+            sessions, creator, cancellation.Token);
+        await creator.Started.Task.WaitAsync(TestContext.Current.CancellationToken);
+        using var queuedCancellation = new CancellationTokenSource();
+        var queued = creations.CreateAsync(owner, "host-rsh-001", requestId,
+            sessions, creator, queuedCancellation.Token);
+        queuedCancellation.Cancel();
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => queued);
+        Assert.Equal(1, creator.Calls);
+        cancellation.Cancel();
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => first);
+        var recovered = await creations.CreateAsync(owner, "host-rsh-001", requestId,
+            sessions, creator, TestContext.Current.CancellationToken);
+        Assert.Equal(LocalCreationStatus.Created, recovered.Status);
+        Assert.Equal(2, creator.Calls);
+        creator.Release.SetResult(new TemporaryCampaignReply
+        { Status = TemporaryCampaignStatus.Created });
+    }
+
+    [Fact]
+    public async Task TimedOutCreationReconcilesOnExactRetry()
+    {
+        var sessions = new LocalSessionStore(TimeProvider.System);
+        var owner = sessions.Bootstrap(null)!;
+        var creator = new HeldCreator();
+        using var creations = new LocalCampaignCreationStore(TimeSpan.FromMilliseconds(10));
+        var requestId = Guid.NewGuid().ToString("D");
+        var first = await creations.CreateAsync(owner, "host-rsh-001", requestId,
+            sessions, creator, TestContext.Current.CancellationToken);
+        Assert.Equal(LocalCreationStatus.Unavailable, first.Status);
+        Assert.Equal(LocalCreationStatus.Conflict, (await creations.CreateAsync(owner,
+            "host-rsh-001", Guid.NewGuid().ToString("D"), sessions, creator,
+            TestContext.Current.CancellationToken)).Status);
+        var recovered = await creations.CreateAsync(owner, "host-rsh-001", requestId,
+            sessions, creator, TestContext.Current.CancellationToken);
+        Assert.Equal(LocalCreationStatus.Created, recovered.Status);
+        Assert.Equal(2, creator.Calls);
+        creator.Release.SetResult(new TemporaryCampaignReply
+        { Status = TemporaryCampaignStatus.Created });
+    }
+
+    [Fact]
+    public async Task ViewReadInFlightIsDeniedAfterSeatRotation()
+    {
+        var builder = WebApplication.CreateBuilder();
+        builder.Environment.EnvironmentName = "Development";
+        builder.WebHost.ConfigureKestrel(options => options.Listen(IPAddress.Loopback, 0));
+        builder.Services.AddSingleton(TimeProvider.System);
+        builder.Services.AddSingleton<LocalSessionStore>();
+        builder.Services.AddSingleton<TemporaryPlayerViewProjection>();
+        var reader = new HeldPrivateCutReader();
+        builder.Services.AddSingleton<ITemporaryPrivateCutReader>(reader);
+        await using var app = builder.Build();
+        app.MapLocalGameApi();
+        await app.StartAsync(TestContext.Current.CancellationToken);
+        try
+        {
+            var address = app.Services.GetRequiredService<IServer>().Features
+                .Get<IServerAddressesFeature>()!.Addresses.Single();
+            using var client = new HttpClient(new HttpClientHandler { UseCookies = false })
+            { BaseAddress = new Uri(address) };
+            var store = app.Services.GetRequiredService<LocalSessionStore>();
+            var operatorSession = store.Bootstrap(null)!;
+            var grants = store.IssueGrants(operatorSession.OperatorId, "host-rsh-001");
+            var axis = store.Redeem(operatorSession, "host-rsh-001", grants.Axis)!;
+            var pending = Send(client, Get("/api/v1/campaigns/host-rsh-001/view",
+                $"sandtable_session={axis.Token}"));
+            await reader.Started.Task.WaitAsync(TestContext.Current.CancellationToken);
+            Assert.NotNull(store.Redeem(axis, "host-rsh-001", grants.Commonwealth));
+            reader.Release.SetResult(new TemporaryPrivateCutReply
+            { Status = TemporaryCampaignStatus.Current });
+            Assert.Equal(HttpStatusCode.Forbidden, (await pending).StatusCode);
+        }
+        finally { await app.StopAsync(TestContext.Current.CancellationToken); }
+    }
+
+    [Fact]
+    public async Task LocalCreationIssuesOneGrantPairAndRetainsExactRetryResponse()
+    {
+        var builder = WebApplication.CreateBuilder();
+        builder.Environment.EnvironmentName = "Development";
+        builder.WebHost.ConfigureKestrel(options => options.Listen(IPAddress.Loopback, 0));
+        builder.Services.AddSingleton(TimeProvider.System);
+        builder.Services.AddSingleton<LocalSessionStore>();
+        builder.Services.AddSingleton<LocalCampaignCreationStore>();
+        builder.Services.AddSingleton<ITemporaryCampaignCreator, TemporaryCampaignCreator>();
+        builder.Services.AddSingleton<ITemporaryPrivateCutReader, TemporaryPrivateCutReader>();
+        builder.Services.AddSingleton<TemporaryPlayerViewProjection>();
+        builder.Host.UseOrleans(silo => silo.UseTemporaryCampaignDevelopmentSilo(FreePort()));
+        await using var app = builder.Build();
+        app.MapLocalGameApi();
+        await app.StartAsync(TestContext.Current.CancellationToken);
+        try
+        {
+            var address = app.Services.GetRequiredService<IServer>().Features
+                .Get<IServerAddressesFeature>()!.Addresses.Single();
+            using var client = new HttpClient(new HttpClientHandler { UseCookies = false })
+            { BaseAddress = new Uri(address) };
+            var fixtures = await Send(client, new HttpRequestMessage(HttpMethod.Get, "/api/v1/fixtures"));
+            Assert.Equal(HttpStatusCode.OK, fixtures.StatusCode);
+            var fixtureJson = await fixtures.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+            Assert.DoesNotContain("configurationHash", fixtureJson);
+            Assert.DoesNotContain("12345", fixtureJson);
+            var bootstrap = await Send(client, Bootstrap(client));
+            var cookie = bootstrap.Headers.GetValues("Set-Cookie").Single().Split(';')[0];
+            var csrf = JsonDocument.Parse(await bootstrap.Content.ReadAsStringAsync(
+                TestContext.Current.CancellationToken)).RootElement.GetProperty("csrfToken")
+                .GetString()!;
+            var id = Guid.NewGuid().ToString("D");
+            HttpRequestMessage Create(string fixture = "host-rsh-001", string? token = null,
+                string? requestId = null)
+            {
+                var request = new HttpRequestMessage(HttpMethod.Post, "/api/v1/campaigns")
+                {
+                    Content = JsonContent.Create(new
+                    {
+                        contractVersion = 1,
+                        fixtureId = fixture,
+                        requestId = requestId ?? id,
+                    }),
+                };
+                request.Headers.TryAddWithoutValidation("Cookie", token ?? cookie);
+                request.Headers.TryAddWithoutValidation("X-Sandtable-CSRF", csrf);
+                return request;
+            }
+            Assert.Equal(HttpStatusCode.BadRequest,
+                (await Send(client, Create("unknown"))).StatusCode);
+            var badCsrf = Create();
+            badCsrf.Headers.Remove("X-Sandtable-CSRF");
+            Assert.Equal(HttpStatusCode.Forbidden, (await Send(client, badCsrf)).StatusCode);
+            var badOrigin = Create();
+            badOrigin.Headers.TryAddWithoutValidation("Origin", "https://attacker.invalid");
+            Assert.Equal(HttpStatusCode.Forbidden, (await Send(client, badOrigin)).StatusCode);
+            var first = await Send(client, Create());
+            Assert.Equal(HttpStatusCode.Created, first.StatusCode);
+            var json = await first.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+            Assert.DoesNotContain("configurationHash", json);
+            Assert.DoesNotContain("stateVersion", json);
+            Assert.DoesNotContain("12345", json);
+            using var document = JsonDocument.Parse(json);
+            var grants = document.RootElement.GetProperty("seatGrants");
+            var axis = grants.GetProperty("axis").GetString()!;
+            var commonwealth = grants.GetProperty("commonwealth").GetString()!;
+            Assert.NotEqual(axis, commonwealth);
+            Assert.Equal(json, await (await Send(client, Create())).Content.ReadAsStringAsync(
+                TestContext.Current.CancellationToken));
+            Assert.Equal(HttpStatusCode.Conflict,
+                (await Send(client, Create(requestId: Guid.NewGuid().ToString("D")))).StatusCode);
+            Assert.Equal(HttpStatusCode.Forbidden,
+                (await Send(client, Seat("other", cookie, csrf, axis))).StatusCode);
+            var entered = await Send(client, Seat("host-rsh-001", cookie, csrf, axis));
+            Assert.Equal(HttpStatusCode.OK, entered.StatusCode);
+            var seatCookie = entered.Headers.GetValues("Set-Cookie").Single().Split(';')[0];
+            Assert.Equal(HttpStatusCode.Forbidden,
+                (await Send(client, Seat("host-rsh-001", seatCookie, csrf, axis))).StatusCode);
+            Assert.Equal(HttpStatusCode.OK,
+                (await Send(client, Get("/api/v1/campaigns/host-rsh-001/view", seatCookie)))
+                .StatusCode);
+            var seatedBootstrap = await Send(client, Bootstrap(client, seatCookie));
+            var seatCsrf = JsonDocument.Parse(await seatedBootstrap.Content.ReadAsStringAsync(
+                TestContext.Current.CancellationToken)).RootElement.GetProperty("csrfToken")
+                .GetString()!;
+            Assert.Equal(HttpStatusCode.Unauthorized,
+                (await Send(client, Create(token: seatCookie))).StatusCode);
+            var switched = await Send(client,
+                Seat("host-rsh-001", seatCookie, seatCsrf, commonwealth));
+            Assert.Equal(HttpStatusCode.OK, switched.StatusCode);
+            var commonwealthCookie = switched.Headers.GetValues("Set-Cookie").Single().Split(';')[0];
+            Assert.Equal(HttpStatusCode.Forbidden,
+                (await Send(client, Get("/api/v1/campaigns/host-rsh-001/view", seatCookie)))
+                .StatusCode);
+            Assert.Equal(HttpStatusCode.OK,
+                (await Send(client, Get("/api/v1/campaigns/host-rsh-001/view", commonwealthCookie)))
+                .StatusCode);
+        }
+        finally { await app.StopAsync(TestContext.Current.CancellationToken); }
+    }
+
+    [Fact]
     public async Task TrustedCreatedLabServesPinnedInitialViewsForEachAuthorizedSeat()
     {
         var builder = WebApplication.CreateBuilder();
@@ -27,6 +265,7 @@ public sealed class LocalGameApiTests
         builder.Services.AddSingleton(TimeProvider.System);
         builder.Services.AddSingleton<LocalSessionStore>();
         builder.Services.AddSingleton<TemporaryPlayerViewProjection>();
+        builder.Services.AddSingleton<ITemporaryPrivateCutReader, TemporaryPrivateCutReader>();
         builder.Host.UseOrleans(silo => silo.UseTemporaryCampaignDevelopmentSilo(FreePort()));
         await using var app = builder.Build();
         app.MapLocalGameApi();
@@ -322,6 +561,54 @@ public sealed class LocalGameApiTests
         private DateTimeOffset now = DateTimeOffset.UnixEpoch;
         public override DateTimeOffset GetUtcNow() => now;
         internal void Advance(TimeSpan by) => now += by;
+    }
+
+    private sealed class HeldPrivateCutReader : ITemporaryPrivateCutReader
+    {
+        internal TaskCompletionSource Started { get; } = new(
+            TaskCreationOptions.RunContinuationsAsynchronously);
+        internal TaskCompletionSource<TemporaryPrivateCutReply> Release { get; } = new(
+            TaskCreationOptions.RunContinuationsAsynchronously);
+
+        public Task<TemporaryPrivateCutReply> ReadAsync(string campaignId,
+            CampaignActionAudience audience, string sessionGeneration)
+        {
+            Started.SetResult();
+            return Release.Task;
+        }
+    }
+
+    private sealed class CountingCreator : ITemporaryCampaignCreator
+    {
+        internal int Calls { get; private set; }
+
+        public Task<TemporaryCampaignReply> CreateAsync(string campaignId,
+            string operatorId, string requestId)
+        {
+            Calls++;
+            return Task.FromResult(new TemporaryCampaignReply
+            { Status = TemporaryCampaignStatus.Created });
+        }
+    }
+
+    private sealed class HeldCreator : ITemporaryCampaignCreator
+    {
+        internal TaskCompletionSource Started { get; } = new(
+            TaskCreationOptions.RunContinuationsAsynchronously);
+        internal TaskCompletionSource<TemporaryCampaignReply> Release { get; } = new(
+            TaskCreationOptions.RunContinuationsAsynchronously);
+        internal int Calls { get; private set; }
+
+        public Task<TemporaryCampaignReply> CreateAsync(string campaignId,
+            string operatorId, string requestId)
+        {
+            Calls++;
+            if (Calls > 1)
+                return Task.FromResult(new TemporaryCampaignReply
+                { Status = TemporaryCampaignStatus.Created });
+            Started.SetResult();
+            return Release.Task;
+        }
     }
 
     private static int FreePort()
