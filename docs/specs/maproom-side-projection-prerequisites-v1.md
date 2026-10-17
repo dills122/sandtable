@@ -23,18 +23,30 @@ Complete this prerequisite before the MAP-08B HTTP projection. Add a typed, host
 
 MAP-08B1 must define the presentation catalog's owner and pinned version, and the exact public/side visibility policy for labels, coordinates, status, and diary. If those values do not yet exist, revise MAP-04 through a versioned contract change before building a handler; do not manufacture them in `Cna.OrleansHost`.
 
-The host keeps contact correlation private. Within one authorized session generation, a continuously
-visible apparent presence keeps its outward `contactId` across hidden-only commits and ordinary
-visible updates. Remove that mapping as soon as the presence is absent from the committed side
-cut; if a Core representation later reappears, issue a fresh unrelated `contactId`, even when the
-private `RepresentationId` is unchanged. Rotate the namespace on a new session generation and
-never reuse a contact ID across seats or campaigns. Do not derive outward IDs from Core IDs,
-global sequence numbers, location, or authority version. A visibility-loss cut and any later
-reappearance each count as a visible change for that side's audience revision. The diary cursor
-changes only for an approved diary entry, not merely because a contact disappeared.
+The host keeps contact correlation private and processes **both audiences' side cuts for every
+committed creation/accepted step**, including host System steps, in commit order. An HTTP read
+must consume the already advanced tracker for its exact committed head; it must not infer
+continuous visibility by comparing only the previous and current HTTP reads. The private
+tracker binds campaign/source pins, committed head and side to visible representation keys,
+opaque contact IDs, audience revision, action mapping and diary cursor. A verified persisted
+visibility epoch or replay of every intervening committed side cut may restore this tracker;
+an unverified gap after grain reactivation or process restart makes `/view` unavailable until
+continuity is proven. MAP-07's process-only campaigns and sessions disappear on process restart,
+so no stale tracker may be repurposed for a new campaign with the same ID.
+
+Within one authorized session generation, a continuously visible apparent presence keeps its
+outward `contactId` across hidden-only commits and ordinary visible updates, even when no HTTP
+read occurs between commits. Retire that mapping at the first committed side cut where the
+presence is absent. If a Core representation later reappears, issue a fresh unrelated
+`contactId`, even when its private `RepresentationId` is unchanged and no browser read observed
+the gap. Rotate the namespace on a new session generation and never reuse a contact ID across
+seats or campaigns. Do not derive outward IDs from Core IDs, global sequence numbers, location,
+or authority version. A visibility-loss cut and any later reappearance each count as a visible
+change for that side's audience revision. The diary cursor changes only for an approved diary
+entry, not merely because a contact disappeared.
 
 ## MAP-08B: projection and acceptance
 
 Authorize campaign and seat from the server session before querying the grain. Return one exact MAP-04 `CoherentPlayerView` cut, including the bound session generation. Return an audience-neutral unavailable response if any required source is missing or a cut is incoherent. Creation response/grants must be retained as one idempotent, private operator record; a retry cannot mint different grants for the same accepted request. Keep MAP-09 command submission, SignalR, durable recovery, and public Combat out of this slice.
 
-Focused gates: contract fixture/schema roundtrip; both seats against the same committed head; wrong-seat/campaign and System negatives; no private Core ID (including `RepresentationId`), version, event, snapshot, seed, or opposing element ID anywhere in response/log; catalog pin mismatch fails closed; hidden-only commit preserves outward revision/token/action handles/contact IDs and diary cursor; continuously visible contact retains its ID, disappearance removes it, reappearance receives a new unrelated ID, and seat/session changes cannot correlate IDs; visible commit updates all map, ledger, actions, and diary from one successor; creation retry returns original grants. Run real in-process HTTP tests with the development-only loopback and origin/CSRF boundary.
+Focused gates: contract fixture/schema roundtrip; both seats against the same committed head; wrong-seat/campaign and System negatives; no private Core ID (including `RepresentationId`), version, event, snapshot, seed, or opposing element ID anywhere in response/log; catalog pin mismatch fails closed; hidden-only commit preserves outward revision/token/action handles/contact IDs and diary cursor without an intervening HTTP read; continuously visible contact retains its ID, disappearance then reappearance across two committed cuts with **no HTTP read between them** receives a new unrelated ID, and seat/session changes cannot correlate IDs; skipped or unverified side cut after reactivation fails closed; visible commit updates all map, ledger, actions, and diary from one successor; creation retry returns original grants. Run real in-process HTTP tests with the development-only loopback and origin/CSRF boundary.
