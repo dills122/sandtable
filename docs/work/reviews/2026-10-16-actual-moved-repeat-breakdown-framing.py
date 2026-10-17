@@ -65,6 +65,9 @@ for kind, (minimum, maximum) in {
     reject(kind + "-boolean", 1, lambda kind=kind: r03.typed(True, kind))
     reject(kind + "-underflow", 2, lambda kind=kind, minimum=minimum: r03.typed(minimum - 1, kind))
     reject(kind + "-overflow", 2, lambda kind=kind, maximum=maximum: r03.typed(maximum + 1, kind))
+borrowed = r03.parse(vectors["afterProofCanonicalUtf8"].encode("ascii"), "Proof")
+borrowed["base"]["movedRepeatMovementCompletionProof"]["control"]["stateVersion"] = -1
+reject("borrowed-proof-numeric-underflow", 2, lambda: r03.raw(borrowed, "Proof"))
 reject("control-byte-cap", 1, lambda: r03.parse(b"x" * (r03.L["controlBytes"] + 1), "Control"))
 reject("proof-byte-cap", 1, lambda: r03.parse(b"x" * (r03.L["proofBytes"] + 1), "Proof"))
 print(json.dumps(dict(status="PASS", rejected=rejected)))
