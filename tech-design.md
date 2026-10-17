@@ -13,6 +13,10 @@ Worker are scaffolds and do not yet execute live campaign decisions. When that i
 implemented, a game must still run entirely through scripted policies when the backend—or the model
 behind it—is unavailable.
 
+The proposed [optional code-review pilot](docs/runbooks/optional-code-review.md) is developer
+tooling outside both planes. Its tracked rules select PR changes for additional scrutiny; no
+GitHub workflow, provider secret, gameplay integration or merge authority is active.
+
 ## Project website
 
 The repository root contains a dependency-free static project website under `site/`, with design

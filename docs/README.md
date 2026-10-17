@@ -16,6 +16,7 @@ Research and reviews record their dated checkpoints; they are not competing stat
 - [Contributor workflow](../CONTRIBUTING.md) and [security policy](../SECURITY.md)
 - [Exercise Runner runbook](runbooks/exercise-runner.md)
 - [Proving Ground runbook](runbooks/proving-ground.md): Docker Development preview, service matrix and seed/playtest gates
+- [Optional OCR scrutiny runbook](runbooks/optional-code-review.md): inactive, cost-gated PR-review proposal and prepared scope rules
 - [Checked Reaction Maneuver evidence](research/simulator-reaction-trajectories.md)
 - [Rules9 simulator check-in](research/simulator-post-merge-checkin.md)
 - [Combat verifier pin maintenance inventory](research/combat-verification-pin-maintenance.md)

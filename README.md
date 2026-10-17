@@ -284,6 +284,10 @@ Use feature branch; never commit directly to `main`. Read [contributor guide](CO
 Update contracts before consumers, add focused deterministic test before behavior, keep remote/model
 I/O outside authoritative turns, then run `just check` before PR.
 
+The [optional OCR scrutiny runbook](docs/runbooks/optional-code-review.md) describes a proposed,
+paid PR-review pilot for high-risk changes. Its scope rules are prepared, but no GitHub workflow or
+provider secret is installed; ordinary CI and independent review remain the merge gates.
+
 | Command | Purpose |
 | --- | --- |
 | `just --list` | Show repository recipes |

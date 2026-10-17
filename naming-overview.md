@@ -4,6 +4,10 @@ Sandtable draws on historical staff work, Kriegsspiel and campaign administratio
 for major products and domains, and plain technical names inside modules. A name reserves a
 responsibility; it does not imply a deployed service or implemented mechanic.
 
+**OpenCodeReview (OCR)** names optional external PR-review tooling, not a Sandtable product,
+Intelligence provider or authoritative game component. Its proposed
+[pilot](docs/runbooks/optional-code-review.md) has no active workflow or merge authority.
+
 > Command decides. Staff plans. Dispatch carries. Umpire adjudicates. Chronicle remembers.
 > Maproom shows.
 
