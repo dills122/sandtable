@@ -52,7 +52,7 @@ def audit(evidence=EVIDENCE):
     partitions = json.loads((evidence / "bounded-profile-audit.json").read_bytes())
     require(summary["count"] == len(summary["rows"]) == len(partitions["rows"]) == 300,
             "row catalogue")
-    require(len(manifest["chunks"]) == 11 and
+    require(len(manifest["chunks"]) == len({x["name"] for x in manifest["chunks"]}) == 11 and
             {x["name"] for x in manifest["chunks"]} == set(summary["chunkSha256"]) ==
             {p.name for p in evidence.glob("rows-*.jsonl.gz")}, "chunk catalogue")
     counts = {"provisional-positive": 0, "provisional-empty": 0}
