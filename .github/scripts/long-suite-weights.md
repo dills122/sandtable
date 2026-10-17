@@ -103,11 +103,12 @@ not hosted latency acceptance. R03 added no provisional rows; the four MAP-06 ro
 The exact installed discovery and allocation reconciliation are recorded in the R03 native review
 evidence; hosted CI remains a separate acceptance gate.
 
-The exact-head installed discovery at commit `2baccb6409781093b30c6bf8eb73f3d6a852ff92`
-found 3,219 ordinary Core rows plus 325 frozen R02 rows in 20 groups. All 307 new R03 rows
-were discovered (300 parity, seven focused); the manifest has no missing or extra row hashes.
-`make_plan` assigned every ordinary Core row exactly once into 61 groups across the unchanged
-12 CI jobs, including five R03 parity groups of 59/61/60/60/60 rows.
+The latest exact-head installed discovery at review-fix commit
+`fe814c71b6196ae918e25bac15e2f928e118d65d` found 3,223 ordinary Core rows plus 325
+frozen R02 rows in 20 groups. All 307 R03 rows were discovered (300 parity, seven focused);
+the merged manifest has no missing or extra row hashes, including the four labelled MAP-06
+provisional rows. `make_plan` assigned every ordinary Core row exactly once into 61 groups across
+the unchanged 12 CI jobs, including five R03 parity groups of 59/61/60/60/60 rows.
 
 After the independent review found numeric error-code drift, the native codec now classifies all
 six R03 numeric leaves directly and traverses borrowed R02 Proof numeric leaves before delegated
