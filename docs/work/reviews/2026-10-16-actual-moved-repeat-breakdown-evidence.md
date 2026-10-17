@@ -1,8 +1,7 @@
 # R03 reference checkpoint evidence
 
-**Status:** contract remains open (`closureFrozen=false`). Native consumption is gated. Full
-corrected catalogue, complete prior-cut partition, vector audit, review and exact-head CI remain
-open.
+**Status:** contract remains open (`closureFrozen=false`). Native consumption is gated. Final
+exact-hash catalogue, complete prior-cut partition, fresh review and exact-head CI remain open.
 
 ## Superseded catalogue
 
@@ -34,32 +33,42 @@ accepted in the RED test.
 - `python3 docs/work/reviews/2026-10-16-actual-moved-repeat-breakdown-negatives.py /tmp/r03-corrected-row0.jsonl.gz` passed: 15 framing, ledger, actor/action/context, signed-event, readback
   and clock-ceiling rejections; exact retry preserves both receipt ledgers.
 
-## Corrected catalogue in progress
+## Corrected catalogue and vector audit
 
-The corrected 300-row run started in detached `tmux` session `r03-corrected-full` on October 16,
-2026 (America/Toronto). It writes progress to `/tmp/r03-corrected-full-progress.log` and complete
-canonical vectors to `/tmp/r03-corrected-full-vectors.jsonl.gz`. After its final `PASS 300 authentic
-R03 traces`, run `2026-10-16-actual-moved-repeat-breakdown-vector-audit.py` on the gzip file. The
-audit checks 56 distinct pinned roots, 300 ordered unique rows, paid/armed partitions, both fixture
-identities, hashes, receipts and proof readbacks, and prints transcript and file digests.
+The corrected 300-row run ended `PASS 300 authentic R03 traces`. It retained all canonical vectors
+in `/tmp/r03-corrected-full-vectors.jsonl.gz`. The vector audit passed: 56 distinct pinned roots,
+300 ordered unique rows, 36 paid and 264 armed cases, both fixture identities, hashes, receipt
+ledgers and proof readbacks. Transcript SHA-256 is
+`c5403e56b1bb2829509a0f83024bf36d3548bc6a3b2564c46baeb043eb1f4dcc`; compressed file
+SHA-256 is `274f3b36723c968d128859e2a12111c70d4f3e6a39ffe208088e6d96165bab80` (25,955,366 bytes).
 
 The corrected verifier SHA-256 is
 `33028180e8ef852c7e710a8e2dd5f399d4fd78b04d617b5d15b5ebedccf1ee12`;
 schema SHA-256 is
 `6bb331f2768fec44d016f7941947cf1597fa42c7f886b0b5c2cc7ffa6b313be4`.
-Changing either while this run is active invalidates its source check. Query status with
-`tmux list-sessions` and `tail -5 /tmp/r03-corrected-full-progress.log`.
+This run is retained as a completed checkpoint, not freeze evidence, because the numeric framing
+fix changed the verifier afterward.
+
+## Numeric framing fix and final replay
+
+`2026-10-16-actual-moved-repeat-breakdown-framing.py` now passes all 32 rejection cases. Local
+R03 numeric leaf validation keeps wrong types under `CMB-MRB-001`, out-of-range integers under
+`CMB-MRB-002`, and foreign versions under `CMB-MRB-003`. It also checks borrowed R02 Proof numeric
+leaves before invoking the pinned R02 verifier. The R02 and ancestor files remain unchanged.
+
+The final verifier is committed as `33a5826`; its SHA-256 is
+`f79ca3b29c2a61c3aa8957f0e2873fc4968c8db85cd0e71183960e4489928bd3`. The schema SHA-256
+remains `6bb331f2768fec44d016f7941947cf1597fa42c7f886b0b5c2cc7ffa6b313be4`. Focused
+physical faults (550/550), manifest deletion/substitution, 15 admission negatives, four
+representative nonterminal cuts and structural capacity passed on this verifier. A final full
+300-row replay is running in detached `tmux` session `r03-final-full`, with progress at
+`/tmp/r03-final-full-progress.log` and complete vectors at
+`/tmp/r03-final-full-vectors.jsonl.gz`. Keep verifier and schema bytes fixed until it completes.
 
 ## Open gates
 
-The added `2026-10-16-actual-moved-repeat-breakdown-framing.py` test is RED on
-`contractVersion=-1`: current R03 returns `CMB-MRB-001` while its numeric-error contract requires
-`CMB-MRB-002`. The deepest inherited cause is `CMB-AAD-002`; intermediate wrappers turn it into
-001. Fix this mapping only after the active 300-row run finishes, then rerun on the new exact
-verifier hash. This RED is another reason the current run cannot freeze R03.
-
-After corrected catalogue PASS and vector audit, run
-`2026-10-16-actual-moved-repeat-breakdown-all-cuts.py` on the completed vectors for all 788 R02
-nonterminal cuts, update representative fixture hashes, finish raw-framing partitions, obtain
-fresh independent review, and pass exact-head hosted CI. Until those gates are recorded,
-`closureFrozen=false` is intentional and no native R03 consumer should be written.
+After final catalogue PASS, run `2026-10-16-actual-moved-repeat-breakdown-vector-audit.py` and
+`2026-10-16-actual-moved-repeat-breakdown-all-cuts.py` on its completed vectors for all 788 R02
+nonterminal cuts. Confirm representative fixture hashes, obtain fresh independent review, and pass
+exact-head hosted CI. Until those gates are recorded, `closureFrozen=false` is intentional and no
+native R03 consumer should be written.
