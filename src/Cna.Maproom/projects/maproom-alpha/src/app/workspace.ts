@@ -5,6 +5,7 @@ import {
   ElementRef,
   HostListener,
   ViewChild,
+  computed,
   inject,
   signal,
 } from '@angular/core';
@@ -25,6 +26,36 @@ export class Workspace {
   protected readonly formations = formations;
   protected readonly shortcutsOpen = signal(false);
   protected readonly dragging = signal(false);
+  protected readonly ledgerQuery = signal('');
+  protected readonly ledgerSort = signal<'name' | 'kind' | 'position' | 'order'>('name');
+  protected readonly ledgerDescending = signal(false);
+  protected readonly recordsExpanded = signal(false);
+  protected readonly diaryScope = signal<'selected' | 'all'>('selected');
+  protected readonly ledgerRows = computed(() => {
+    const query = this.ledgerQuery().trim().toLocaleLowerCase();
+    const sort = this.ledgerSort();
+    const rows = this.store
+      .visibleFormations()
+      .filter((unit) =>
+        [unit.name, unit.kind, unit.position, this.store.orderFor(unit.id).status].some((value) =>
+          value.toLocaleLowerCase().includes(query),
+        ),
+      );
+    rows.sort((left, right) => {
+      const value = (unit: (typeof rows)[number]) =>
+        sort === 'order' ? this.store.orderFor(unit.id).status : unit[sort];
+      const result = value(left).localeCompare(value(right), undefined, { numeric: true });
+      return (this.ledgerDescending() ? -1 : 1) * (result || left.name.localeCompare(right.name));
+    });
+    return rows;
+  });
+  protected readonly diaryEntries = computed(() =>
+    this.store
+      .diary()
+      .filter(
+        (entry) => this.diaryScope() === 'all' || entry.formationId === this.store.selectedId(),
+      ),
+  );
   @ViewChild('shortcutToggle') private shortcutToggle?: ElementRef<HTMLButtonElement>;
   private dragStart: { x: number; y: number; pointerId: number } | null = null;
 
@@ -39,6 +70,24 @@ export class Workspace {
 
   protected toggleShortcuts() {
     this.shortcutsOpen.update((open) => !open);
+  }
+
+  protected sortLedger(field: 'name' | 'kind' | 'position' | 'order') {
+    if (this.ledgerSort() === field) this.ledgerDescending.update((value) => !value);
+    else {
+      this.ledgerSort.set(field);
+      this.ledgerDescending.set(false);
+    }
+  }
+
+  protected locateDiary(formationId: string) {
+    this.store.select(formationId);
+    this.store.locateSelected();
+    document.getElementById('map-title')?.scrollIntoView({ block: 'nearest' });
+  }
+
+  protected formationName(id: string): string {
+    return this.formations.find((unit) => unit.id === id)?.name ?? 'Formation';
   }
 
   @HostListener('document:keydown', ['$event'])

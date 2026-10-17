@@ -113,10 +113,10 @@ probe. Model-backed dispatch requires its own durable pending-decision/off-turn 
 **Status:** Stack and local-first direction accepted on 2026-10-16; delivery plan and standalone
 Field Atlas operations preview recorded. The accepted design review refines MAP-02 to a minimal
 theme/control foundation and splits MAP-03 into operational map, order workflow, and ledger/diary
-fixtures. MAP-01 Angular workspace, MAP-02 foundation, MAP-03A operational map and MAP-03B local
-order workflow fixtures are implemented in [src/Cna.Maproom](../../src/Cna.Maproom/README.md), with
-Field Atlas components and Storybook. MAP-03C records workflow and the connected campaign host remain
-pending.
+fixtures. MAP-01 Angular workspace, MAP-02 foundation and MAP-03A/B/C operational map, order and
+records fixtures are implemented in [src/Cna.Maproom](../../src/Cna.Maproom/README.md), with Field
+Atlas components and Storybook. MAP-03C's searchable four-field ledger and War Diary show synthetic
+own-side accepted examples only. The connected campaign host remains pending.
 MAP-04 outward OpenAPI schema, safe fixture, focused tests and generated Angular client compilation
 are drafted; host mapping and audience verification remain before connected play.
 The [MAP-05 trusted host protocol](../specs/maproom-trusted-host-protocol-v1.md)

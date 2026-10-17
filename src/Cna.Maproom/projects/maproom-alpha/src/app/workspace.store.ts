@@ -18,6 +18,11 @@ export interface FormationOrder {
   readonly status: OrderStatus;
   readonly requestId: number | null;
 }
+export interface DiaryEntry {
+  readonly id: number;
+  readonly formationId: string;
+  readonly destination: string;
+}
 const emptyOrder: FormationOrder = {
   destination: null,
   reviewedDestination: null,
@@ -59,6 +64,7 @@ export const WorkspaceStore = signalStore(
     wideInspector: false,
     orders: {} as Record<string, FormationOrder>,
     confirmed: {} as Record<string, Destination>,
+    diary: [] as readonly DiaryEntry[],
     pending: null as PendingFixture | null,
     nextRequestId: 1,
     unsupportedPhase: false,
@@ -164,6 +170,17 @@ export const WorkspaceStore = signalStore(
             requestId: null,
           },
         },
+        diary:
+          pending.outcome === 'accepted'
+            ? [
+                ...store.diary(),
+                {
+                  id: requestId,
+                  formationId: pending.formationId,
+                  destination: pending.destination,
+                },
+              ]
+            : store.diary(),
       });
     },
     reconcile() {
@@ -178,6 +195,14 @@ export const WorkspaceStore = signalStore(
       patchState(store, {
         pending: null,
         confirmed: { ...store.confirmed(), [pending.formationId]: pending.destination },
+        diary: [
+          ...store.diary(),
+          {
+            id: pending.requestId,
+            formationId: pending.formationId,
+            destination: pending.destination,
+          },
+        ],
         orders: {
           ...store.orders(),
           [pending.formationId]: {

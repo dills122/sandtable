@@ -85,7 +85,8 @@ ledger in MAP-03A/B/C. Its [portable operations preview](docs/design/maproom-sty
 links selection and accepted example results across map, inspector, ledger and War Diary. Submitted
 order identity is independent of selection; real completion must update the originating formation.
 MAP-03B demonstrates this with local staged acceptance, rejection, stale and lost-reply states,
-without network or authoritative adjudication.
+without network or authoritative adjudication. MAP-03C projects accepted fixture results into a
+four-field ledger and selected/all-visible own-side War Diary, with shared selection and locate.
 The [MAP-04 outward contract](src/Cna.Game.Contracts/README.md) specifies development-only
 browser routes, a coherent audience view, opaque action capabilities and lossless audience
 revision strings. Private authority versions stay server-side. Its generated client compiles;
