@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Sockets;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using Cna.Core.Actions;
@@ -178,7 +179,16 @@ public sealed class TemporaryCampaignGrainTests
             var grain = GetTrustedGrain(host);
             await grain.CreateAsync("operator-1", "create-1");
             var direct = CampaignHostAdapter.Create(Request()).Session!;
-            for (var index = 0; index < 12; index++)
+            var expectedKinds = new[]
+            {
+                "resolve-initiative", "resolve-no-obligation-naval-convoy-schedule",
+                "resolve-no-obligation-tactical-shipping", "act-first", "resolve-weather",
+                "resolve-no-obligation-organization", "resolve-no-obligation-naval-convoy-arrival",
+                "resolve-no-obligation-fleet-assignment", "resolve-no-obligation-fleet-repair",
+                "complete-reserve-designation", "complete-movement-segment",
+                "complete-breakdown-segment",
+            };
+            for (var index = 0; index < expectedKinds.Length; index++)
             {
                 var set = Enum.GetValues<CampaignActionAudience>()
                     .Select(audience => CampaignExercises.Query(direct, audience).ActionSet!)
@@ -187,6 +197,7 @@ public sealed class TemporaryCampaignGrainTests
                     ?? set.Candidates.FirstOrDefault(value => value.Kind == "complete-reserve-designation")
                     ?? set.Candidates.FirstOrDefault(value => value.Kind == "complete-movement-segment")
                     ?? set.Candidates[0];
+                Assert.Equal(expectedKinds[index], candidate.Kind);
                 var command = new CampaignActionSubmission(1, set.CampaignId,
                     set.StateVersion, set.PositionId, set.Audience, candidate.ActionId);
                 var directStep = CampaignHostAdapter.Submit(direct, command);
@@ -219,6 +230,8 @@ public sealed class TemporaryCampaignGrainTests
             var stored = host.Services.GetRequiredService<TemporaryCampaignMemoryStore>()
                 .Get("host-rsh-001");
             var snapshotBefore = CampaignExercises.Reconstruct(stored.Committed!).ReconstructedSnapshotBytes!;
+            Assert.Equal("222b36760b250ab6ea8eb14a7913ffb56bab1b1786cb7a9d9b1f720360ca3c84",
+                Convert.ToHexStringLower(SHA256.HashData(snapshotBefore)));
             var randomBefore = RandomBytes(snapshotBefore);
             foreach (var audience in Enum.GetValues<CampaignActionAudience>())
             {
