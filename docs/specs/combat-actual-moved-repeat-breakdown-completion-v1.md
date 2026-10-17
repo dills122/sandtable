@@ -1,7 +1,8 @@
 # Actual moved repeat Breakdown completion v1
 
-**Status:** private reference freeze candidate. Exact-head replay and audits pass; fresh review and
-hosted CI remain open. Native, public and Runner activation are not claimed.
+**Status:** frozen private reference, merged in PR #211 after exact-head replay, audits,
+independent review and hosted CI. Its additive private native consumer is proposed in draft PR #216;
+native current-head CI and acceptance remain open. Public and Runner activation are not claimed.
 [R03 delivery packet](../work/plans/2026-10-16-actual-moved-repeat-breakdown.md) owns gates.
 
 ## Authenticated predecessor
@@ -45,9 +46,9 @@ source acquisition must fail closed on missing, changed, unreadable, null or dri
 
 Raw limits have structural field/carrier/depth/collection domination and physical fault evidence.
 A fitting sample fixture is not a capacity certificate. Reference RED/GREEN, all cuts/retries, fault
-injection and retention checks passed on the candidate schema, including its exact-head replay and
-all 788 nonterminal cuts. Fresh review and hosted CI remain before native implementation or
-publication.
+injection and retention checks passed on the frozen schema, including its exact-head replay and
+all 788 nonterminal cuts. Reference review and hosted CI passed for PR #211. The separate native
+consumer in draft PR #216 still requires current-head CI and acceptance before publication.
 
 The R02 300-case completion catalogue and its 56-root moved-repeat fixture are pinned physical
 dependencies. The catalogue must contain exactly 300 expected unique row keys, 36 paid and 264
