@@ -7,7 +7,8 @@ P01 evidence directory. The directory contains the 300 authentic R03 terminal ve
 from the frozen reference and original creation/eleven-ledger inputs. Its path is an argument so
 neither large row vectors nor primary PDFs enter Git.
 
-The checker verifies all 11 compressed chunks against the summary hashes; 300 contiguous unique
+The checker pins the summary, manifest, physical predicate audit, Land PDF and errata bytes before
+parsing rows. It verifies all 11 compressed chunks against the summary hashes; 300 contiguous unique
 keys; seven canonical vector hashes per row; 11 parent ledgers per row; ordinal-one original and
 ordinal-two active cycle; Combat Position Determination; unchanged R03 World and RNG; exactly two
 independent, co-located representation bindings to the expected opposing battalions; acting-side

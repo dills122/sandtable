@@ -27,6 +27,12 @@ parser = argparse.ArgumentParser()
 parser.add_argument("evidence", type=Path)
 args = parser.parse_args()
 root = args.evidence.resolve()
+require(sha((root / "summary.json").read_bytes()) ==
+        "sha256:847972f5eb9c12be2e7a1774d2acd61caa1dc603b43413f7fb9d30cbec80c45b", "summary pin")
+require(sha((root / "manifest.json").read_bytes()) ==
+        "sha256:39cae77c405b83a793b3d806fcf4a67860b9ff8514e59c9bfa83384d7dfc2b35", "manifest pin")
+require(sha((root / "bounded-profile-audit.json").read_bytes()) ==
+        "sha256:ba60a05a14ab907bb5be1e06509a5a24646a97759e564bcd525bdd7515bef429", "audit pin")
 summary = json.loads((root / "summary.json").read_text())
 audit = json.loads((root / "bounded-profile-audit.json").read_text())
 require(summary["count"] == 300, "summary count")
