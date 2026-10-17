@@ -39,8 +39,10 @@ both authentic parent catalogue fixtures; all five fault modes across those pins
 reject (550/550). A later framing review found that inherited numeric out-of-range errors were
 being reported as shape errors. R03 now classifies its own numeric leaves and numeric leaves in the
 borrowed R02 Proof locally; 32 framing negatives pass. The final exact-verifier-hash 300-row replay
-and complete 788-cut audit are underway. See the evidence checkpoint for hashes and commands.
-`closureFrozen=false` remains required until final audit, independent review and exact-head CI.
+and vector audit also passed, with all canonical vectors retained. A complete 788-cut audit passed
+against the corrected checkpoint vectors using the final verifier; the same audit against final
+vectors is underway. See the evidence checkpoint for hashes and commands. `closureFrozen=false`
+remains required until final audit, independent review, freeze decision and exact-head CI.
 
 ## Boundary
 

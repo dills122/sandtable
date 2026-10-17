@@ -1,7 +1,7 @@
 # R03 reference checkpoint evidence
 
 **Status:** contract remains open (`closureFrozen=false`). Native consumption is gated. Final
-exact-hash catalogue, complete prior-cut partition, fresh review and exact-head CI remain open.
+nonterminal-cut audit, fresh review, freeze decision and exact-head CI remain open.
 
 ## Superseded catalogue
 
@@ -61,14 +61,21 @@ The final verifier is committed as `33a5826`; its SHA-256 is
 remains `6bb331f2768fec44d016f7941947cf1597fa42c7f886b0b5c2cc7ffa6b313be4`. Focused
 physical faults (550/550), manifest deletion/substitution, 15 admission negatives, four
 representative nonterminal cuts and structural capacity passed on this verifier. A final full
-300-row replay is running in detached `tmux` session `r03-final-full`, with progress at
-`/tmp/r03-final-full-progress.log` and complete vectors at
-`/tmp/r03-final-full-vectors.jsonl.gz`. Keep verifier and schema bytes fixed until it completes.
+300-row replay completed with `PASS 300 authentic R03 traces` on those exact verifier and schema
+hashes. The final vector audit passed: 56 pinned roots, 300 ordered unique rows, 36 paid and 264
+armed, both fixture identities, hashes, receipt ledgers and proof readbacks. Retained vectors are
+`/tmp/r03-final-full-vectors.jsonl.gz`; their transcript SHA-256 is
+`c5403e56b1bb2829509a0f83024bf36d3548bc6a3b2564c46baeb043eb1f4dcc`; gzip SHA-256 is
+`c2d07098925c0e9c553523bc3f7d095a346eadbfb02115b58b58d665b2f0b52e` (25,954,166 bytes).
+
+The complete nonterminal-cut audit passed on the corrected checkpoint vectors using the final
+verifier: all 788 authentic cuts across 300 rows rejected. The same audit on final vectors is in
+progress and remains the evidence gate.
 
 ## Open gates
 
-After final catalogue PASS, run `2026-10-16-actual-moved-repeat-breakdown-vector-audit.py` and
-`2026-10-16-actual-moved-repeat-breakdown-all-cuts.py` on its completed vectors for all 788 R02
+Finish `2026-10-16-actual-moved-repeat-breakdown-all-cuts.py` on the final vectors for all 788 R02
 nonterminal cuts. Confirm representative fixture hashes, obtain fresh independent review, and pass
-exact-head hosted CI. Until those gates are recorded, `closureFrozen=false` is intentional and no
-native R03 consumer should be written.
+exact-head hosted CI. Changing `closureFrozen` to `true` changes the schema file hash, so a proposed
+freeze needs its own exact-head replay and audit. Until those gates are recorded,
+`closureFrozen=false` is intentional and no native R03 consumer should be written.
