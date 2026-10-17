@@ -7,6 +7,7 @@ export default tseslint.config(
       'dist/**',
       '.angular/**',
       'node_modules/**',
+      'projects/maproom-alpha/src/app/api/generated/**',
       'playwright-report/**',
       'test-results/**',
     ],

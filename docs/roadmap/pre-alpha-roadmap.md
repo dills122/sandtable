@@ -115,8 +115,9 @@ Field Atlas operations preview recorded. The accepted design review refines MAP-
 theme/control foundation and splits MAP-03 into operational map, order workflow, and ledger/diary
 fixtures. MAP-01 Angular workspace, MAP-02 foundation and MAP-03A operational map fixture are
 implemented in [src/Cna.Maproom](../../src/Cna.Maproom/README.md), with Field Atlas components and
-Storybook. MAP-03B/C order and records workflows and the connected
-campaign host remain pending.
+Storybook. MAP-03B/C order and records workflows and the connected campaign host remain pending.
+MAP-04 outward OpenAPI schema, safe fixture, focused tests and generated Angular client compilation
+are drafted; host mapping and audience verification remain before connected play.
 The [implementation plan](../design/local-game-server-maproom-plan.md) owns slice dependencies
 and acceptance checks; the [design system](../design/maproom-design-system-v0.md) owns visual rules.
 

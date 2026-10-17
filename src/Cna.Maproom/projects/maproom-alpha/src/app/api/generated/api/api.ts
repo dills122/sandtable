@@ -1,0 +1,13 @@
+export * from './actions.service';
+import { ActionsService } from './actions.service';
+export * from './actions.serviceInterface';
+export * from './campaigns.service';
+import { CampaignsService } from './campaigns.service';
+export * from './campaigns.serviceInterface';
+export * from './fixtures.service';
+import { FixturesService } from './fixtures.service';
+export * from './fixtures.serviceInterface';
+export * from './sessions.service';
+import { SessionsService } from './sessions.service';
+export * from './sessions.serviceInterface';
+export const APIS = [ActionsService, CampaignsService, FixturesService, SessionsService];

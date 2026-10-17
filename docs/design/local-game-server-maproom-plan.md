@@ -1,6 +1,7 @@
 # Local game server and Angular Maproom implementation plan
 
-Date: 2026-10-16. Status: MAP-01, MAP-02 foundation and MAP-03A fixture implemented; connected gameplay slices pending.
+Date: 2026-10-16. Status: MAP-01 workspace, MAP-02 foundation and MAP-03A fixture implemented;
+MAP-04 browser schema, fixtures and generated client drafted; connected gameplay pending.
 Audience: contributors implementing the local rules-lab host and browser client.
 
 Build a browser client around the existing deterministic C# Umpire. First delivery launches one
@@ -99,7 +100,8 @@ The existing site/ project website and Pages deployment remain independent.
 
 ### Browser contract
 
-MAP-04 freezes exact routes and schemas before handlers. Candidate operations: list admitted
+MAP-04 freezes exact routes and schemas before handlers. The drafted
+[browser contract v1](../../src/Cna.Game.Contracts/README.md) defines these operations: list admitted
 fixture/scenario descriptors; create a campaign; enter a granted seat; read player view and legal
 actions; submit one action; query a request receipt; relinquish a seat; subscribe to safe changes.
 
