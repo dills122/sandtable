@@ -144,6 +144,22 @@ test('large text and short viewport preserve controls', async ({ page }) => {
   await page.getByRole('button', { name: 'Review draft' }).scrollIntoViewIfNeeded();
   await expect(page.getByRole('button', { name: 'Review draft' })).toBeInViewport();
 });
+test('320px viewport at 200% text keeps every action reachable', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 568 });
+  await page.goto('/');
+  await page.addStyleTag({ content: 'html {font-size:200%}' });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  const clipped = await page.locator('main button').evaluateAll(
+    (buttons) =>
+      buttons.filter((button) => {
+        const rect = button.getBoundingClientRect();
+        return rect.left < 0 || rect.right > innerWidth + 1;
+      }).length,
+  );
+  expect(clipped).toBe(0);
+  await page.getByRole('button', { name: 'Review draft' }).scrollIntoViewIfNeeded();
+  await expect(page.getByRole('button', { name: 'Review draft' })).toBeInViewport();
+});
 test('workspace has no WCAG A or AA axe violations', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'The coastal exercise' })).toBeVisible();

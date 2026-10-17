@@ -70,7 +70,8 @@ main {
   background: var(--color-panel);
 }
 .phase-title {
-  min-width: 12rem;
+  min-width: 0;
+  max-width: 100%;
 }
 .phase-facts {
   display: flex;
