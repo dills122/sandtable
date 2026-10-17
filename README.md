@@ -142,6 +142,10 @@ fixture and compiling generated client; host handlers remain pending.
 The [MAP-05 trusted host protocol](docs/specs/maproom-trusted-host-protocol-v1.md) specifies
 private accepted-step evidence, pending publication, recovery and bounded System progression;
 it does not implement campaign hosting or durable save.
+The MAP-06 [Core host adapter](src/Cna.Core/Hosting/CampaignHostAdapter.cs) now offers admitted
+creation, coherent side cuts, System legal queries, accepted-step evidence and verified private
+transcript replay for the rules lab. Host authorization, journal fencing, outward mapping and
+durable publication remain separate work.
 Run `just maproom-setup`, then `just maproom` (port 4200) and `just field-atlas` (port 6006) in separate
 terminals. Storybook owns the live component/pattern reference; both surfaces consume
 `@sandtable/field-atlas`. MAP-03B stages local delayed results and receipt readback only;

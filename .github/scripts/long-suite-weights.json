@@ -473,6 +473,9 @@
     "Cna.Core.Tests.Exercises.CampaignExercisesTests": {
       "parts": 1
     },
+    "Cna.Core.Tests.Hosting.CampaignHostAdapterTests": {
+      "parts": 1
+    },
     "Cna.Core.Tests.Observations.CampaignMovementObservationContractTests": {
       "parts": 1
     },
@@ -635,6 +638,7 @@
     "03c30e89065a3680b0f059dcb02ebab826100927e8cbf7768408d2bde5ea7f0b": 7271,
     "03c796b4f7f0577c10f2be5329ab8f6fff4cf0006bab8ac6b88b8d447a427c19": 45,
     "03f6d7a21ea4b002b9534c13b0e1290a71ad75722ebed6eb9b360b3342985848": 2,
+    "04159b9654fcce88b5a4d1abfae1ddd4e6bf79ce92c4a6e94463ceae7c9e5311": 228,
     "041f581e648de1eb4a4285a22f17fef4a2d9e1c2eec07371c91433bb44cc8faf": 69,
     "042164c40d4112eb9c8bd9529ac0ad959bcaaaf88d7b83cc9b8d1e233d110b77": 1,
     "043e98d5763d6de4e988ccc6b6d97c568ab13ccee48d0527ca048859934dd7f3": 13971,
@@ -1062,6 +1066,7 @@
     "2806a69ed00000fca7a2268cfa595777a85763b85e59f68b0b5e95be04f27ba4": 1,
     "280bd779b33820ca9dc98aaa0824153bde4b761162c52b2f0829071f34cf2e6f": 132,
     "280df005ac37d1ba4c286081fbd930aac071e66819a2e72fa4cadb23c9364261": 1,
+    "284b0df70fd02a8e63dc5d13fb17bb4fc0b83d5552e069bbec1c12c4220e8b74": 87,
     "286b26d88f609ecc36af2a291647da722520bd687d5b778cf6350f4a9c8ebb4b": 1305,
     "28729b99f728ff23471c8a7b1e11e86441c9b078e6f06cfba62523518a78abf6": 13864,
     "28819cce3152f35fec55678bb2286a7bee29901025dcc7b304f3dc119f91788b": 548,
@@ -3291,6 +3296,7 @@
     "ecd62e4701d4e60be14a581473ab103c96aea915b6df6f7a96ef7eb1b3ad91c3": 4748,
     "ecd73f01da19053be23a61d4ff875cb305f204b3c96e1d3ee606a5040bc8104b": 1,
     "ece3c4617ecf5f643434035405883619cdfc27a7d409c76cece71b7f28f5af18": 1,
+    "ecef322572999390263f7ca9e6dee52a5ed6933ff043b6a46f1de0b751da3994": 77,
     "ecfb2af17f21af8481dc0f828fd86660b2ec4c26e4c06ef9cb0ea1453bd58f87": 13642,
     "ed2845632e204d0885e107dc4c34adeafdf847ecb956639746e3a7d38de2b010": 7909,
     "ed2998b9fe40dc71ef9619e454c3dc5ac4498ea5670061ef69eb03ae7c292e7b": 1,
@@ -3432,6 +3438,7 @@
     "f9c50f0c482a80f0f527977ccc5b33931ae96cb4efa5c9bfc816290996c1a6f1": 39,
     "f9f2692f6d2370ec1cca69bd939b044d295f43523ac3e4991a35040fb6dec2b7": 6509,
     "fa1c6134ede4b37a1414fdaf2044fda614c045e30608b2fe2ec8421f92225bc5": 3,
+    "fa28d0993dcbb3f3c316b9eac84005cde5a267381d4fc7680240701d15a784cc": 1487,
     "fa620bbca09dd45e26c05c446a0a78de006a1ddfb70f53fa29be042d84676f75": 191,
     "fa6325604caa337d3ae5230ee3fc384664d9a9a6804d402333b1f8cb8030effb": 42,
     "faa4f45961f6d6433c1bed637c04513d609cab1053934e36f4f45189124117de": 31390,
@@ -3501,5 +3508,11 @@
     "ffe07adf13e00e5ff1bfd1e184dbe3ad2a5f96f1e65f0f02c2d04095279cda84": 14881,
     "ffe165a7f93044738ca56a3e61ace74dac9257a8e67f944df29ee6a102ee64e4": 7257,
     "ffef624925d566ac14e5ae57e0ad2813ba02f005c4ff24e72fd1ee6fc06f33f7": 1
+  },
+  "provisional_rows": {
+    "04159b9654fcce88b5a4d1abfae1ddd4e6bf79ce92c4a6e94463ceae7c9e5311": "2026-10-17 macOS arm64 .NET 10 Debug focused MTP XML; measured under concurrent Core suite, pending Release CI calibration",
+    "284b0df70fd02a8e63dc5d13fb17bb4fc0b83d5552e069bbec1c12c4220e8b74": "2026-10-17 macOS arm64 .NET 10 Debug focused MTP XML; measured under concurrent Core suite, pending Release CI calibration",
+    "ecef322572999390263f7ca9e6dee52a5ed6933ff043b6a46f1de0b751da3994": "2026-10-17 macOS arm64 .NET 10 Debug focused MTP XML; measured under concurrent Core suite, pending Release CI calibration",
+    "fa28d0993dcbb3f3c316b9eac84005cde5a267381d4fc7680240701d15a784cc": "2026-10-17 macOS arm64 .NET 10 Debug focused MTP XML; measured under concurrent Core suite, pending Release CI calibration"
   }
 }
