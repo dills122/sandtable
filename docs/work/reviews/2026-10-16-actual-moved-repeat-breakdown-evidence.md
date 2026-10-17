@@ -52,7 +52,8 @@ Changing either while this run is active invalidates its source check. Query sta
 
 ## Open gates
 
-After corrected catalogue PASS and vector audit, update representative fixture hashes, finish
-prior-cut/retry and raw-framing partitions, obtain fresh independent review, and pass exact-head
-hosted CI. Until those gates are recorded, `closureFrozen=false` is intentional and no native R03
-consumer should be written.
+After corrected catalogue PASS and vector audit, run
+`2026-10-16-actual-moved-repeat-breakdown-all-cuts.py` on the completed vectors for all 788 R02
+nonterminal cuts, update representative fixture hashes, finish raw-framing partitions, obtain
+fresh independent review, and pass exact-head hosted CI. Until those gates are recorded,
+`closureFrozen=false` is intentional and no native R03 consumer should be written.
