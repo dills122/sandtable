@@ -1,8 +1,11 @@
 using Cna.OrleansHost;
+using Cna.OrleansHost.Api;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
+builder.Services.AddSingleton(TimeProvider.System);
+builder.Services.AddSingleton<LocalSessionStore>();
 // https://learn.microsoft.com/en-us/dotnet/orleans/host/configuration-guide/server-configuration
 builder.Host.UseOrleans(siloBuilder =>
 {
@@ -30,6 +33,7 @@ builder.Host.UseOrleans(siloBuilder =>
 var app = builder.Build();
 
 app.MapDefaultEndpoints();
+app.MapLocalGameApi();
 app.MapGet("/", () => Results.Ok(new
 {
     service = "Cna.OrleansHost",

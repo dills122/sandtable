@@ -154,6 +154,13 @@ and disabled Orleans client gateway protect its private API. Synchronous memory 
 no observable pending phase; provider-backed publication still needs fencing and pending recovery.
 It has no browser route, seat authorization, Core terminal classification, public Combat action,
 or durable save; MAP-08/09 must map and authorize outward requests before exposing it.
+MAP-08A adds development-only, loopback-guarded operator bootstrap and process-local seat-session
+plumbing to `Cna.OrleansHost`. Its grant issuer is trusted-host-only until creation commits a
+campaign and returns the MAP-04 response; no browser creation or grant path is enabled yet. The
+`/api/v1/campaigns/{campaignId}/view` route returns `503 unavailable` for an authorized seat until
+MAP-08B can project a complete, coherent MAP-04 audience view with outward legal-action IDs. The
+private MAP-07 legal-action bytes never cross HTTP. This is an ingress foundation, not connected
+Maproom play.
 Run `just maproom-setup`, then `just maproom` (port 4200) and `just field-atlas` (port 6006) in separate
 terminals. Storybook owns the live component/pattern reference; both surfaces consume
 `@sandtable/field-atlas`. MAP-03B stages local delayed results and receipt readback only;
