@@ -46,9 +46,10 @@ against the corrected checkpoint vectors using the final verifier; the same audi
 vectors passed. Six of six representative fixture tests matched retained canonical cases. The
 schema now marks a freeze candidate with `closureFrozen=true`. Its exact-head 300-row replay,
 vector audit and 788-cut audit passed on the changed schema, as did six fixture tests, focused
-negatives, physical fault matrix and structural capacity. The reference was frozen after independent review and hosted CI in PR #211. Its additive private
-native consumer follows in a separate branch; see the native review evidence for local parity,
-source-pin and scheduling measurements. Fresh native review and hosted CI remain open.
+negatives, physical fault matrix and structural capacity. The reference was frozen after independent review and hosted CI in PR #211. The additive private
+native consumer's review evidence records local parity, source-pin and scheduling measurements.
+The private consumer merged in PR #216 after independent
+review and exact-head hosted CI. Public Combat activation remains open.
 
 ## Boundary
 

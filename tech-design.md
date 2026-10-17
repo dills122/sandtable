@@ -787,7 +787,8 @@ consumer authenticates the original CreationRequest, ten independent R02 ledgers
 sources and the frozen schema/verifier before its own Breakdown input. All 300 frozen terminal
 vectors match native Source/Event/Control/Proof hashes before and after the one System event; seven
 focused acceptance/rejection tests pass. Release parity ran in 8m58s locally, with five measured
-CI process groups. Fresh native review and hosted CI remain open; no public activation follows.
+CI process groups. The private consumer merged in PR #216 after independent review and exact-head
+hosted CI; no public activation follows.
 
 The additive [actual Reaction-to-Combat entry](docs/specs/combat-actual-reaction-combat-entry-v1.md)
 authenticates complete direct Reaction closure with separate prefix/lifecycle/Breakdown caller ledgers.
