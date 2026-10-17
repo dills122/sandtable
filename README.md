@@ -168,6 +168,20 @@ dotnet build Sandtable.slnx --no-restore
 dotnet test --solution Sandtable.slnx --no-build
 ```
 
+### Optional Ruflo MCP for Codex
+
+Ruflo runs as a project-local stdio MCP server. After installing Ruflo, initialize its runtime
+in each checkout and add a project-scoped `.codex/config.toml` with a host-local command:
+
+```toml
+[mcp_servers.ruflo]
+command = "npx"
+args = ["-y", "ruflo@latest", "mcp", "start"]
+startup_timeout_sec = 30
+```
+
+Run `npx ruflo@latest init --minimal --skip-claude --no-mods --no-codex-detect --no-skills-sh --no-global --no-signup` once in that checkout, then restart Codex. Use `codex mcp get ruflo` to check registration. Local `.claude-flow/`, `.swarm/`, `ruvector.db*`, and `.codex/config.toml` stay out of Git because they can contain checkout-specific state and paths.
+
 ### Run service stack
 
 ```sh
