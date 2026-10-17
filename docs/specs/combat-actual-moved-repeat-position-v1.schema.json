@@ -6,6 +6,9 @@
   "sourceInputs": "original CreationRequest plus eleven independent R03 ledgers",
   "contentPath": "docs/specs/fixtures/combat-content-v7.canonical.json",
   "contentSha256": "ee4fde9638ceb61ec08612fe32f9ac81db05572aac5ca20941e402d2fed25847",
+  "weatherSourcePath": ["movementCompletionSourceCanonicalUtf8", "movementSourceCanonicalUtf8", "controlSourceCanonicalUtf8", "continuationSourceCanonicalUtf8", "movedAssaultSourceCanonicalUtf8", "reactionEntrySourceCanonicalUtf8"],
+  "weatherPrefixEventIndex": 4,
+  "currentWeatherFactFields": ["kind", "gameTurn", "operationStage", "receiptId", "eventHash"],
   "physicalSourceHashes": {
     "landRulesPdf": "b362870368b9fb8abe6918195fdcf878d4a8041c557b835b9a1bdde3c8b76e99",
     "septemberErrataPdf": "5db539e1fac4aea3ef152370fb732f1938307fe4b2d47ad93eb605db0a09f0fb"

@@ -47,7 +47,10 @@ pins are rechecked on cold, warm, retry, readback and rejected paths.
 The initial P01 output is an **assessment**, with exactly one of `bounded-positive`,
 `supported-empty`, or `unsupported`. Assessment is derived from authenticated current World,
 Content, Weather, prior history and current segment; it never consumes RNG or mutates World.
-`unsupported` is a hard stop, never an empty candidate list. Only `bounded-positive` permits a
+`unsupported` is a hard stop, never an empty candidate list. The private reference now carries a
+same-stage Normal Weather fact from the reauthenticated original positive-entry event, bound to
+its exact receipt and event hash before physical classification. This fact does not prove all
+source-legal actions or change provisional assessment bytes. Only `bounded-positive` permits a
 private selection opening by the later P02 contract. A P01 reference must not append a selection
 event, spend CP/ammo, roll dice, settle a result, or invoke native ordinal-two admission.
 
@@ -98,7 +101,7 @@ No particular RNG seed may reduce this matrix.
 | --- | --- | --- |
 | `P01-AC-001` | Recreate every original source from CreationRequest plus 11 independent ledgers; verify all parent bytes, R03 Source/Control/Proof, source pins and exact ordinal-two suffix before inspection. Tampered, missing, reordered or substituted ledger rejects. | Provisional assessor replays all 300 genuine ancestors through frozen R03; complete mutation/cut/retry proof remains open. |
 | `P01-AC-002` | Enumerate exactly 300 unique contiguous row keys and compare every output with authenticated R03 terminal vectors: 44 positive, 256 supported-empty only after all gates pass. | All 300 provisional shapes match 44/256; all assessments remain `unsupported`, never supported-empty or admitted. |
-| `P01-AC-003` | Prove complete original-unit and representation binding, acting side, target membership, current versus prior segment target use, ZOC/obligation absence, Weather and no alternate selected-content action. | Provisional assessor checks selected shape and some participant/segment facts; complete provenance and action proof remains open. |
+| `P01-AC-003` | Prove complete original-unit and representation binding, acting side, target membership, current versus prior segment target use, ZOC/obligation absence, Weather and no alternate selected-content action. | Provisional assessor checks selected shape and some participant/segment facts. Private Weather bridge binds the reauthenticated original Normal event/receipt to the active stage, but complete action exhaustiveness remains open. |
 | `P01-AC-004` | For all 44 positives, certify every adopted result coordinate, cost, loss, capture share, retreat/refusal and immediate settlement path, including source amendment, zero-loss effects and retained duties. | Merged bounded executable proof in PR #234: 44 authentic positives, 1,296 Morale pairs, 6,480 joint coordinates, 8,840 result cases and 9,728 settlement Worlds per side. It does not admit P01. |
 | `P01-AC-005` | Certify both one-hex retreat orientations and all eight custody/reunion placement cases from current post-move World and CP. Reject any new blocker, overlong path or donor/guard shortage. | Bounded executable proof in PR #236: all 300 authentic ancestors; 44 positive rows × four placement shapes, 16 source-reachable projected paths, bounded donor/lot quantities and fail-sensitive negatives. This does not admit P01. |
 | `P01-AC-006` | Enforce accepted `CMB-POL-009`: exclude voluntary surrender for the initial RC, distinguish automatic ammunitionless surrender, and fail closed on a state requiring surrender handling. Decline-only RBA and its cancellation fallback remain explicit. Never claim full source-legal action coverage. | Owner decision recorded; transition and source-condition proof pending. |
