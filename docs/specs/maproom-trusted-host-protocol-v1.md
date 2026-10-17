@@ -1,7 +1,7 @@
 # MAP-05 trusted host protocol v1
 
-Status: design contract for MAP-06/07 and MAP-14/15; no host adapter, campaign grain, durable
-provider or browser handler is implemented by this document. Source baseline: reviewed MAP-04
+Status: design contract for MAP-06/07 and MAP-14/15; this document itself supplies no host
+adapter, campaign grain, durable provider or browser handler. Source baseline: reviewed MAP-04
 `fc2bc21` and the existing Rules9 Core APIs. This protocol covers an admitted public rules-lab
 campaign only. Private Combat references are neither imported nor activated.
 
@@ -128,10 +128,15 @@ operator-visible retry/re-activation. It never clears a possibly committed pendi
 because a timer expired. A late completion from an earlier attempt is checked against fence,
 pending digest and head and ignored if stale.
 
-Temporary MAP-07 memory mode uses the same pending/final semantics and a bounded in-memory commit
-record, but loses campaigns and receipts on **process** restart. It must identify that lifetime in
-API/operator UI. The publication path above is the contract for MAP-14/15 durable evaluation;
-Orleans activation and its default storage are not proof of provider atomicity or process recovery.
+Temporary MAP-07 memory mode installs the successor and request/receipt record together in one
+serialized grain turn, with no provider I/O or await between prepare and final installation.
+There is no externally observable `pending` interval in that synchronous memory path; an exact
+retry returns the retained final receipt, and a fresh stale request cannot change the committed
+cut. The process-lifetime memory record survives grain deactivation but loses campaigns and
+receipts on **process** restart. The later API/operator UI must identify that lifetime. Any
+provider-backed asynchronous publication retains the pending/final, fencing and reconciliation
+requirements above; the memory shortcut is no evidence of durable commit semantics. Orleans
+activation and its default storage are not proof of provider atomicity or process recovery.
 
 ## Restore provenance
 
@@ -152,14 +157,19 @@ of dedupe/tombstones belong to MAP-14; deletion cannot make a retained retry exe
 ## Bounded System progression
 
 After each **committed** transition, the host may query `CampaignActionAudience.System` from the
-committed session. Advance one current legal System candidate through the same pending-publication
-path, using a host-owned deterministic request identity bound to prior head and candidate. Repeat
-at most a configured step budget per trigger; no wall-clock or browser timing decides outcomes.
+committed session. Advance one current legal System candidate through the applicable atomic
+publication path, using a host-owned deterministic request identity bound to prior head and
+candidate. Repeat at most a configured step budget per trigger; no wall-clock or browser timing
+decides outcomes.
 Stop when a human legal decision is required, Core reports an admitted terminal state, current
 phase is unsupported, or the budget is exhausted. A zero-length legal set alone is not victory.
 System work never originates from a browser actor, and a chain cannot silently skip publication
 or coalesce authority steps. The host reports an explicit `needsHuman`, `terminal`,
-`unsupportedPhase`, `stepLimit`, `pending` or `unavailable` reason. MAP-07 must test each stop.
+`unsupportedPhase`, `stepLimit`, `pending` or `unavailable` reason when that status applies.
+MAP-07 must test `needsHuman`, `unsupportedPhase` and `stepLimit`. Current public Core exposes no
+admitted terminal signal, so MAP-07 cannot classify an empty legal set as `terminal`; a Core
+terminal signal and its host test remain a gate before connected/product play. Observable
+`pending` and its recovery tests apply when asynchronous provider publication is introduced.
 
 ## Fixed direct-Core vectors for MAP-06/07
 

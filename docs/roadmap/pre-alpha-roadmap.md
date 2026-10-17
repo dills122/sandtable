@@ -127,8 +127,10 @@ private transcript replay. MAP-07 now has a temporary single-fixture Orleans gra
 in-memory request dedupe, bounded System progression and in-process Core parity tests. It
 retains state across grain reactivation, disables remote Orleans client ingress, and requires an
 internal process capability. It has no browser ingress, authorized seat/action mapping,
-observable pending phase, Core terminal-state signal or process
-durability. MAP-08/09 ingress, MAP-14/15 durable provider proof and connected play remain open.
+observable pending phase, Core terminal-state signal or process durability. The synchronous
+memory path does not relax pending/fencing requirements for MAP-14/15; terminal classification
+stays a gate before connected play. MAP-08/09 ingress, MAP-14/15 durable provider proof and
+connected play remain open.
 The [implementation plan](../design/local-game-server-maproom-plan.md) owns slice dependencies
 and acceptance checks; the [design system](../design/maproom-design-system-v0.md) owns visual rules.
 

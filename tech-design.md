@@ -102,12 +102,14 @@ Rules9 fixture per local in-memory activation. Serialized grain calls install Co
 with a process-lifetime in-memory request/receipt record that survives grain deactivation but not
 host restart. The local Orleans client gateway is disabled, and an internal grain interface
 requires a process-only capability before any private data or System action. Its memory commit
-has no await or provider I/O, so pending is not externally observable in this slice. System
+has no await or provider I/O, so pending is not externally observable in this slice; provider-backed
+publication retains pending, fencing and reconciliation requirements. System
 progression has a 1–32 step budget and explicit
 human, unsupported-phase and step-limit outcomes. Its small typed side summary and canonical
 legal set come from one committed MAP-06 cut. This is trusted in-silo plumbing only: operator and
 seat authentication, outward action mapping, durable conditional publication and terminal-state
-classification remain later boundaries. A process restart discards this state. The
+classification remain later boundaries, with a Core terminal signal required before connected
+play. A process restart discards this state. The
 [Angular workspace](src/Cna.Maproom/README.md) provides
 `projects/maproom-alpha` and the internal `@sandtable/field-atlas` library. Storybook uses the same
 public component API, tokens and Material theme; feature patterns stay in the app. No shared

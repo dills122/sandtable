@@ -151,7 +151,8 @@ for the single admitted Rules9 lab fixture. Its trusted in-silo API retains requ
 identity and serialized Core transitions in memory, reports bounded System stops, and loses all
 campaigns on process restart. Grain deactivation retains live state; a process-only capability
 and disabled Orleans client gateway protect its private API. Synchronous memory publication has
-no observable pending phase. It has no browser route, seat authorization, public Combat action,
+no observable pending phase; provider-backed publication still needs fencing and pending recovery.
+It has no browser route, seat authorization, Core terminal classification, public Combat action,
 or durable save; MAP-08/09 must map and authorize outward requests before exposing it.
 Run `just maproom-setup`, then `just maproom` (port 4200) and `just field-atlas` (port 6006) in separate
 terminals. Storybook owns the live component/pattern reference; both surfaces consume
