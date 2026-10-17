@@ -49,6 +49,12 @@ workflow changed.
 focused rows measured 14,550 ms. A single Release parity process was sampled at 442–601 MiB RSS;
 this is not peak or hosted capacity proof.
 
-Exact installed discovery, merged-main pin revalidation, fresh independent engineering review and
-hosted CI are required before native acceptance. Public Combat, broader profiles, subsequent Combat
-execution and full-loop closure remain outside this boundary.
+Exact-head installed discovery on rebased commit `2baccb6409781093b30c6bf8eb73f3d6a852ff92`
+found 3,219 ordinary Core rows and the preserved 325 R02 rows in 20 groups. All 300 parity and
+seven focused R03 rows were present; the manifest had zero missing/extra row hashes. `make_plan`
+allocated every ordinary Core row once into 61 groups across the unchanged 12 jobs, including five
+R03 parity groups of 59/61/60/60/60 rows. After rebase onto merged PR #211, all 108 runtime file
+hashes still matched the schema and native codec; frozen schema/verifier SHA and delivery pins also
+matched. Fresh independent engineering review and hosted CI are required before native acceptance.
+Public Combat, broader profiles, subsequent Combat execution and full-loop closure remain outside
+this boundary.

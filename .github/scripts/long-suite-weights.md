@@ -97,8 +97,14 @@ hosted latency acceptance. No provisional rows were added.
 - Focused command: `dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-restore --filter 'FullyQualifiedName~CombatActualMovedRepeatBreakdownCompletionTests' --report-xunit-xml --results-directory /tmp/r03-native-focused-release-xml -v:q`. Result: 7/7 passed, 15.7s wall. XML SHA-256
   `eec23f4d489ee076a39d5ee93388d600245d4555871789413e2ee8c330ad7a77`.
 - Single Release parity process sampled about 442–601 MiB RSS while running. This is observed
-  process memory, not a peak or hosted capacity proof. Existing CI partition count and resource
-  limits remain unchanged.
+  process memory, not a peak or hosted capacity proof. Existing CI job count (12) and resource
+  limits remain unchanged; five new process groups increase the prepared group count to 61.
 
 The exact installed discovery and allocation reconciliation are recorded in the R03 native review
 evidence; hosted CI remains a separate acceptance gate.
+
+The exact-head installed discovery at commit `2baccb6409781093b30c6bf8eb73f3d6a852ff92`
+found 3,219 ordinary Core rows plus 325 frozen R02 rows in 20 groups. All 307 new R03 rows
+were discovered (300 parity, seven focused); the manifest has no missing or extra row hashes.
+`make_plan` assigned every ordinary Core row exactly once into 61 groups across the unchanged
+12 CI jobs, including five R03 parity groups of 59/61/60/60/60 rows.
