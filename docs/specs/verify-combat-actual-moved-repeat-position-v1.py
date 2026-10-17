@@ -3,6 +3,7 @@
 import hashlib
 import importlib.util
 import json
+from collections import deque
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
@@ -85,6 +86,8 @@ def physical_shape(state, content):
     pair = exact_selected_profile(state, content)
     if pair is None:
         return "unresolved", None
+    if any(edge["features"] for edge in content["edges"]):
+        return "unresolved", None
     actor, defender = pair
     edges = {frozenset((edge["firstLocationId"], edge["secondLocationId"]))
              for edge in content["edges"] if edge["features"] == []}
@@ -109,11 +112,82 @@ def physical_shape(state, content):
     if not all(locations[unit["currentLocationId"]]["terrainId"] == "land.terrain.clear"
                for unit in pair):
         return "unresolved", None
+    if not placement_shape(state, content, pair):
+        return "unresolved", None
     return "provisional-positive", pair
 
 
 def world_has_settlement(world):
     return bool(world["relationships"] or world["settlements"] or world["custodyLots"])
+
+
+def placement_shape(state, content, pair):
+    """Check fixed graph routes only; result, custody quantities and rules remain separate."""
+    actor, defender = pair
+    locations = {item["locationId"]: item for item in content["locations"]}
+    if len(locations) != 6 or any(item["terrainId"] != "land.terrain.clear"
+                                  for item in locations.values()):
+        return False
+    graph = {key: set() for key in locations}
+    for edge in content["edges"]:
+        left, right = edge["firstLocationId"], edge["secondLocationId"]
+        if edge["features"] or left not in graph or right not in graph or left == right:
+            return False
+        graph[left].add(right)
+        graph[right].add(left)
+    if len(content["edges"]) != 5:
+        return False
+
+    def distance(start, end, blocked=()):
+        if start not in graph or end not in graph:
+            return None
+        blocked = set(blocked) - {start}
+        todo = deque([(start, 0)])
+        seen = {start}
+        while todo:
+            node, count = todo.popleft()
+            if node == end:
+                return count
+            for other in graph[node] - seen - blocked:
+                seen.add(other)
+                todo.append((other, count + 1))
+        return None
+
+    actor_location = actor["currentLocationId"]
+    defender_location = defender["currentLocationId"]
+    if distance(actor_location, defender_location) != 1:
+        return False
+    actor_side = state["activeCycle"]["actingSide"]
+    defender_side = "commonwealth" if actor_side == "axis" else "axis"
+    anchors = {item["sideId"]: item["locationId"]
+               for item in content["scenarios"][0]["retreatSupplyAnchors"]
+               if item["kind"] == "friendly-supply-direction"}
+    if set(anchors) != {"axis", "commonwealth"}:
+        return False
+    prior_supply_distance = distance(defender_location, anchors[defender_side])
+    if prior_supply_distance is None:
+        return False
+    occupied = {actor_location, defender_location}
+    retreat = [node for node in graph[defender_location] - occupied
+               if distance(node, anchors[defender_side]) == prior_supply_distance - 1
+               and distance(node, actor_location) == 2]
+    if len(retreat) != 1:
+        return False
+    destination = retreat[0]
+    # Both capture roles and both defender dispositions. The selected clear graph gives
+    # at most two guard hexes and one reunion hex; exact settlement remains unadmitted.
+    for defender_moves in (False, True):
+        final = {actor["elementId"]: actor_location,
+                 defender["elementId"]: destination if defender_moves else defender_location}
+        for victim, captor in ((actor, defender), (defender, actor)):
+            origin = victim["currentLocationId"]
+            victim_final = final[victim["elementId"]]
+            captor_final = final[captor["elementId"]]
+            guard_hexes = distance(origin, captor_final, (victim_final,))
+            reunion_hexes = distance(origin, victim_final)
+            if guard_hexes is None or guard_hexes > 3 or reunion_hexes is None or reunion_hexes > 4:
+                return False
+    return True
 
 
 def private_candidate(state, pair):
@@ -150,6 +224,7 @@ def assess(source_bytes, parent_ledgers, r03_ledger):
     content = selected_content()
     shape, pair = physical_shape(state, content)
     result = dict(contractVersion=1, status="unsupported", physicalShape=shape,
+                  placementShapeVerified=pair is not None,
                   admitted=False, sourceHash=digest(r03.raw(source, "Source")),
                   worldHash=digest(canonical(state["world"])),
                   randomHash=digest(canonical(state["randomState"])),

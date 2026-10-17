@@ -46,6 +46,7 @@ class P01ReferenceTests(unittest.TestCase):
             result = p01.assess(source, ledgers, r03_ledger)
             _, _, after = r03.replay(source, ledgers, r03_ledger)
             self.assertEqual(expected, result["physicalShape"])
+            self.assertEqual(expected == "provisional-positive", result["placementShapeVerified"])
             self.assertFalse(result["admitted"])
             self.assertEqual(before, after)
             self.assertEqual(before["randomState"], after["randomState"])
@@ -95,6 +96,9 @@ class P01ReferenceTests(unittest.TestCase):
         surrender = copy.deepcopy(state)
         surrender["world"]["elements"][0]["operationalState"]["cohesionLevel"] = -17
         self.assertEqual("unresolved", p01.physical_shape(surrender, content)[0])
+        blocked = copy.deepcopy(content)
+        blocked["edges"][0]["features"] = ["impassable"]
+        self.assertEqual("unresolved", p01.physical_shape(state, blocked)[0])
 
 
 if __name__ == "__main__":

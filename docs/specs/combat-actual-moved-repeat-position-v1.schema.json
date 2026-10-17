@@ -15,6 +15,7 @@
     "contractVersion",
     "status",
     "physicalShape",
+    "placementShapeVerified",
     "admitted",
     "sourceHash",
     "worldHash",
