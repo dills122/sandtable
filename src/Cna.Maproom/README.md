@@ -1,7 +1,8 @@
 # Maproom Angular workspace
 
 Angular CLI multi-project workspace for the browser client and Field Atlas. This implements
-MAP-01 and the MAP-02 foundation: a synthetic operations shell, not a connected game.
+MAP-01, the MAP-02 foundation and the MAP-03A operational map fixture: a synthetic operations
+workspace, not a connected game.
 The original [HTML study](../../docs/design/maproom-style-study/index.html) remains a design reference.
 
 ## Run locally
@@ -85,7 +86,7 @@ The CI workflow installs pinned Playwright Chromium. Reports go to ignored `play
 and traces to `test-results/` on failure.
 
 Build outputs: `dist/maproom-alpha/browser`, `dist/field-atlas` and `dist/storybook`.
-App budgets: 500kB initial warning / 1MB error, 6kB component CSS warning / 8kB error.
+App budgets: 500kB initial warning / 1MB error, 7kB component CSS warning / 8kB error.
 Storybook may report large development-documentation chunks; those are not shipped with the app.
 
 ## Design and current limits
@@ -95,7 +96,8 @@ Newsreader and IBM Plex Sans ship locally through Fontsource; licenses live unde
 source. Both consumers load the same `styles.scss` and `utilities.css`; Tailwind's preflight is
 excluded so Material and Field Atlas own control styling. Use public Material Sass overrides.
 
-The shell has eight synthetic formations, coherent selection, a read-only ledger/diary pattern
-and a draft-review specimen. It does not implement camera controls, legal actions, per-formation
-order lifecycle, filtering, turn resolution, server communication or persistence. MAP-03A/B/C
-remain open for those complete workflows; do not treat this shell as their acceptance evidence.
+The shell has eight synthetic formations, coherent map/list/ledger selection, a collapsible roster,
+adjustable inspector, bounded zoom and locate/fit camera controls. The read-only ledger/diary and
+draft-review specimen remain presentation examples. It does not implement legal actions,
+per-formation order lifecycle, filtering, turn resolution, server communication or persistence.
+MAP-03B/C and connected play remain open.

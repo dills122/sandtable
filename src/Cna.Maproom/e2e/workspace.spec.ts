@@ -34,6 +34,45 @@ test('keyboard can select a unit and review a draft', async ({ page }) => {
   await page.keyboard.press('Enter');
   await expect(page.getByRole('status')).toContainText('Draft reviewed');
 });
+test('camera locates selection, fits extent and keeps roster selection available', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Osprey group, recon, M-8', exact: true }).click();
+  await page.getByRole('button', { name: 'Locate Osprey group on map' }).click();
+  await expect(page.getByLabel('Map zoom')).toHaveText('150%');
+  await expect
+    .poll(async () => {
+      const marker = await page
+        .getByRole('button', { name: 'Osprey group, recon, M-8', exact: true })
+        .boundingBox();
+      const canvas = await page.locator('.map-canvas').boundingBox();
+      if (!marker || !canvas) return Number.POSITIVE_INFINITY;
+      return Math.max(
+        Math.abs(marker.x + marker.width / 2 - canvas.x - canvas.width / 2),
+        Math.abs(marker.y + marker.height / 2 - canvas.y - canvas.height / 2),
+      );
+    })
+    .toBeLessThan(32);
+  await page.getByRole('button', { name: 'Zoom in' }).click();
+  await expect(page.getByLabel('Map zoom')).toHaveText('175%');
+  await page.getByRole('button', { name: 'Fit map' }).click();
+  await expect(page.getByLabel('Map zoom')).toHaveText('100%');
+  await page.getByRole('button', { name: 'Hide formations' }).click();
+  await expect(page.locator('#formations-pane')).toBeHidden();
+  await page.getByRole('button', { name: 'Show formations' }).click();
+  await expect(
+    page.getByRole('button', { name: 'Osprey group, recon, M-8', exact: true }),
+  ).toHaveAttribute('aria-pressed', 'true');
+});
+test('intermediate layout starts with a collapsed roster and can expand it', async ({ page }) => {
+  await page.setViewportSize({ width: 1024, height: 900 });
+  await page.goto('/');
+  await expect(page.locator('#formations-pane')).toBeHidden();
+  await page.getByRole('button', { name: 'Show formations' }).click();
+  await expect(page.locator('#formations-pane')).toBeVisible();
+});
 for (const width of [320, 375, 414, 768, 1440, 2560])
   test(`workspace fits ${width}px`, async ({ page }, testInfo) => {
     await page.setViewportSize({ width, height: 900 });
@@ -56,6 +95,7 @@ test('large text and short viewport preserve controls', async ({ page }) => {
   await page.setViewportSize({ width: 1024, height: 600 });
   await page.goto('/');
   await page.addStyleTag({ content: 'html {font-size:200%}' });
+  await page.getByRole('button', { name: 'Wide inspector' }).click();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   expect(
     await page.locator('main button').evaluateAll(

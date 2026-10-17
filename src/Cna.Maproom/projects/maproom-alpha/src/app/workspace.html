@@ -7,19 +7,59 @@
   ><span class="local-status">○ Local fixture</span>
 </header>
 <main id="operations" tabindex="-1">
-  <div class="briefing">
-    <div>
+  <section class="phase-bar" aria-label="Current fixture situation">
+    <div class="phase-title">
       <p class="fa-eyebrow">Operations workspace · 001</p>
       <h1>The coastal exercise</h1>
-      <p class="fa-muted">Inspect a formation. Prepare a draft. Keep the situation in view.</p>
     </div>
-    <div class="briefing-note">
-      <fa-status tone="warning">Synthetic exercise</fa-status>
-      <p>No campaign server connected.<br />Selection and draft review are local.</p>
+    <dl class="phase-facts">
+      <div>
+        <dt>Seat</dt>
+        <dd>Own side · synthetic</dd>
+      </div>
+      <div>
+        <dt>Phase</dt>
+        <dd>Movement fixture</dd>
+      </div>
+      <div>
+        <dt>Decision</dt>
+        <dd>Draft review only</dd>
+      </div>
+    </dl>
+    <div class="phase-status">
+      <fa-status tone="warning">Local fixture</fa-status><span>No campaign server connected</span>
     </div>
+  </section>
+  <div class="pane-actions">
+    <button
+      type="button"
+      class="fa-text-action"
+      aria-controls="formations-pane"
+      [attr.aria-expanded]="store.rosterOpen()"
+      (click)="store.toggleRoster()"
+    >
+      {{ store.rosterOpen() ? 'Hide' : 'Show' }} formations
+    </button>
+    <button
+      type="button"
+      class="fa-text-action"
+      [attr.aria-pressed]="store.wideInspector()"
+      (click)="store.toggleInspectorWidth()"
+    >
+      {{ store.wideInspector() ? 'Standard' : 'Wide' }} inspector
+    </button>
   </div>
-  <div class="workspace-grid">
-    <aside class="roster" aria-labelledby="formations-title">
+  <div
+    class="workspace-grid"
+    [class.roster-collapsed]="!store.rosterOpen()"
+    [class.wide-inspector]="store.wideInspector()"
+  >
+    <aside
+      class="roster"
+      id="formations-pane"
+      [hidden]="!store.rosterOpen()"
+      aria-labelledby="formations-title"
+    >
       <div class="roster-heading">
         <h2 id="formations-title">Formations</h2>
         <span class="fa-muted">{{ formations.length }} own-side</span>
@@ -40,48 +80,76 @@
     </aside>
     <section class="map-panel" aria-labelledby="map-title">
       <div class="map-heading">
-        <h2 id="map-title">Situation map</h2>
-        <span class="fa-muted">Schematic · no scale</span>
+        <div>
+          <h2 id="map-title">Situation map</h2>
+          <span class="fa-muted">Schematic · no scale</span>
+        </div>
+        <div class="map-controls" role="group" aria-label="Map camera controls">
+          <button type="button" class="fa-text-action" (click)="store.fitMap()">Fit map</button>
+          <button
+            type="button"
+            class="fa-text-action"
+            aria-label="Zoom out"
+            [disabled]="store.zoom() <= 1"
+            (click)="store.zoomBy(-0.25)"
+          >
+            −
+          </button>
+          <span class="zoom-level" aria-live="polite" aria-label="Map zoom"
+            >{{ store.zoom() * 100 }}%</span
+          >
+          <button
+            type="button"
+            class="fa-text-action"
+            aria-label="Zoom in"
+            [disabled]="store.zoom() >= 2"
+            (click)="store.zoomBy(0.25)"
+          >
+            +
+          </button>
+        </div>
       </div>
       <div class="map-canvas">
-        <svg
-          class="terrain"
-          viewBox="0 0 800 560"
-          preserveAspectRatio="none"
-          role="img"
-          aria-label="Illustrated coastal terrain, synthetic geography"
-        >
-          <defs>
-            <pattern id="atlas-grid" width="90" height="52" patternUnits="userSpaceOnUse">
-              <path d="M15 0H45L60 26 45 52H15L0 26Z M60 26H90" />
-            </pattern>
-          </defs>
-          <rect width="800" height="560" class="land" />
-          <rect width="800" height="560" fill="url(#atlas-grid)" />
-          <path class="sea" d="M0 0H800V75Q710 120 610 72T390 76 180 46 0 100Z" />
-          <path class="road" d="M0 270Q200 195 360 265T620 210 800 190" />
-          <g class="contours">
-            <path d="M0 420Q130 280 280 385T530 390 800 320" />
-            <path d="M0 434Q130 294 280 399T530 404 800 334" />
-            <path d="M0 448Q130 308 280 413T530 418 800 348" />
-            <path d="M0 462Q130 322 280 427T530 432 800 362" />
-          </g>
-        </svg>
-        <span class="map-label coast">The coast road</span
-        ><span class="map-label ridge">The inland ridge</span>
-        <div class="map-markers">
-          @for (unit of formations; track unit.id) {
-            <fa-unit-counter
-              class="map-unit"
-              [style.left.%]="unit.x"
-              [style.top.%]="unit.y"
-              [code]="unit.id"
-              [label]="unit.name + ', ' + unit.kind + ', ' + unit.position"
-              [kind]="unit.kind"
-              [selected]="store.selectedId() === unit.id"
-              (chosen)="store.select(unit.id)"
-            />
-          }
+        <div class="map-scene" [style.transform]="store.cameraTransform()">
+          <svg
+            class="terrain"
+            viewBox="0 0 800 560"
+            preserveAspectRatio="none"
+            role="img"
+            aria-label="Illustrated coastal terrain, synthetic geography"
+          >
+            <defs>
+              <pattern id="atlas-grid" width="90" height="52" patternUnits="userSpaceOnUse">
+                <path d="M15 0H45L60 26 45 52H15L0 26Z M60 26H90" />
+              </pattern>
+            </defs>
+            <rect width="800" height="560" class="land" />
+            <rect width="800" height="560" fill="url(#atlas-grid)" />
+            <path class="sea" d="M0 0H800V75Q710 120 610 72T390 76 180 46 0 100Z" />
+            <path class="road" d="M0 270Q200 195 360 265T620 210 800 190" />
+            <g class="contours">
+              <path d="M0 420Q130 280 280 385T530 390 800 320" />
+              <path d="M0 434Q130 294 280 399T530 404 800 334" />
+              <path d="M0 448Q130 308 280 413T530 418 800 348" />
+              <path d="M0 462Q130 322 280 427T530 432 800 362" />
+            </g>
+          </svg>
+          <span class="map-label coast">The coast road</span
+          ><span class="map-label ridge">The inland ridge</span>
+          <div class="map-markers">
+            @for (unit of formations; track unit.id) {
+              <fa-unit-counter
+                class="map-unit"
+                [style.left.%]="unit.x"
+                [style.top.%]="unit.y"
+                [code]="unit.id"
+                [label]="unit.name + ', ' + unit.kind + ', ' + unit.position"
+                [kind]="unit.kind"
+                [selected]="store.selectedId() === unit.id"
+                (chosen)="store.select(unit.id)"
+              />
+            }
+          </div>
         </div>
         <span class="north" aria-label="North">N<br />↑</span>
       </div>
@@ -90,8 +158,13 @@
         ><span>Original fixture</span>
       </div>
     </section>
-    <fa-panel [heading]="store.selected().name" eyebrow="Order inspector"
-      ><div class="flex flex-wrap gap-4 mb-6">
+    <fa-panel class="inspector" [heading]="store.selected().name" eyebrow="Order inspector"
+      ><div class="inspector-actions">
+        <button type="button" class="fa-text-action" (click)="store.locateSelected()">
+          Locate {{ store.selected().name }} on map
+        </button>
+      </div>
+      <div class="flex flex-wrap gap-4 mb-6">
         <span>{{ store.selected().kind }}</span
         ><span>{{ store.selected().position }}</span
         ><fa-status>Own side</fa-status>

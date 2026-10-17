@@ -21,13 +21,50 @@ export const formations: readonly Formation[] = [
 ];
 /** Local presentation state only; never a simulation reducer. */
 export const WorkspaceStore = signalStore(
-  withState({ selectedId: 'FOX' }),
+  withState({
+    selectedId: 'FOX',
+    zoom: 1,
+    focusX: 50,
+    focusY: 50,
+    rosterOpen: true,
+    wideInspector: false,
+  }),
   withComputed((store) => ({
     selected: computed(() => formations.find((f) => f.id === store.selectedId()) ?? formations[0]),
+    cameraTransform: computed(
+      () =>
+        `translate(${50 - store.focusX() * store.zoom()}%, ${50 - store.focusY() * store.zoom()}%) scale(${store.zoom()})`,
+    ),
   })),
   withMethods((store) => ({
     select(id: string) {
       if (formations.some((f) => f.id === id)) patchState(store, { selectedId: id });
+    },
+    locateSelected() {
+      const formation = formations.find((f) => f.id === store.selectedId());
+      if (formation)
+        patchState(store, {
+          zoom: Math.max(store.zoom(), 1.5),
+          focusX: formation.x,
+          focusY: formation.y,
+        });
+    },
+    fitMap() {
+      patchState(store, { zoom: 1, focusX: 50, focusY: 50 });
+    },
+    zoomBy(step: number) {
+      patchState(store, {
+        zoom: Math.min(2, Math.max(1, Math.round((store.zoom() + step) * 4) / 4)),
+      });
+    },
+    toggleRoster() {
+      patchState(store, { rosterOpen: !store.rosterOpen() });
+    },
+    setRosterOpen(open: boolean) {
+      patchState(store, { rosterOpen: open });
+    },
+    toggleInspectorWidth() {
+      patchState(store, { wideInspector: !store.wideInspector() });
     },
   })),
 );
