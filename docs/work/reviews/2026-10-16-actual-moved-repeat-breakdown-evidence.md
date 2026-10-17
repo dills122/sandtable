@@ -24,7 +24,8 @@ accepted in the RED test.
   revealed and fixed an unclassified `TypeError`; it now maps to `CMB-MRB-009`.
 - `python3 docs/work/reviews/2026-10-16-actual-moved-repeat-breakdown-cuts.py` passed:
   one authentic paid and three authentic armed nonterminal R02 lifecycle cuts rejected before
-  R03 admission. The complete 300-row nonterminal partition remains a separate gate.
+  R03 admission. At this checkpoint, the complete 300-row nonterminal partition remained open;
+  the later full 788-cut audit passed, as recorded below.
 - `python3 docs/work/reviews/2026-10-16-actual-moved-repeat-breakdown-manifest.py` passed:
   pin-map deletion and valid-file substitution both reject `CMB-MRB-009`. The 56-root moved-repeat
   fixture and 300-case R02 completion catalogue are now physical pins.

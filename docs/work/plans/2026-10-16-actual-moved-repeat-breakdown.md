@@ -4,13 +4,13 @@
 **Base:** `9aaeacd` (`origin/main`, October 16, 2026).
 **Branch:** `codex/combat-r03-breakdown-contract`.
 
-## Working checkpoint (October 16)
+## Initial working checkpoint (October 16; superseded)
 
-R02 verifier enumerates exactly 300 authentic terminal rows: 36 paid and 264 armed. Its complete
-replay takes the original CreationRequest and ten independent ledgers. The R03 schema currently
-initially pinned 106 runtime source paths: the 104 inherited R02 pins plus the R02 schema and verifier. New
-limits and physical closure remain provisional (`closureFrozen=false`); no native consumer is
-authorized by this checkpoint.
+R02 verifier enumerated exactly 300 authentic terminal rows: 36 paid and 264 armed. Its complete
+replay took the original CreationRequest and ten independent ledgers. At this initial checkpoint,
+R03 pinned 106 runtime source paths: the 104 inherited R02 pins plus the R02 schema and verifier.
+Limits and physical closure were provisional (`closureFrozen=false`); this checkpoint did not
+authorize a native consumer. Current candidate status and 108 pins are recorded below.
 
 The initial R03 reference replays the authentic parent before its own ledger and emits one System
 completion into the adjacent catalog Combat position. Four representative paid/armed zero/max
@@ -21,6 +21,8 @@ An uninstrumented all-300 normal run was stopped after about eight minutes witho
 its exit 130 is not a pass. The full catalogue, all prior-cut negatives, physical-fault matrix,
 structural capacity derivation and immutable reference freeze remain open. The representative
 fixture is deliberately labelled as a subset; it cannot certify the 300-row catalogue.
+
+## Later checkpoints and current freeze candidate
 
 The next checkpoint added per-row progress and retained full canonical vectors for the long
 catalogue run, structural size arithmetic, and the initial 540 physical dependency fault rejections. One paid

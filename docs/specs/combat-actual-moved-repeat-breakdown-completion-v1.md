@@ -35,7 +35,7 @@ checks, lots, losses, BP reset, progress charge, third ordinal or subsequent Com
 ## Canonical and failure boundary
 
 The companion schema owns closed Source, Base, Command, Input, Event, Control and Proof shapes, domain
-separation, and provisional raw caps. Canonical JSON is ASCII, compact, field ordered and rejects
+separation, and bounded raw caps. Canonical JSON is ASCII, compact, field ordered and rejects
 unknown or duplicate keys, malformed primitives, suffixes and over-depth structures. Validate own
 Source framing before ancestral replay, then authenticate the full R02 predecessor before the
 eleventh input, own event or readback claim. CMB-MRB-001 is shape/framing; 002 numeric; 003 unsupported
