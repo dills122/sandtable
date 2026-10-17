@@ -366,6 +366,10 @@ def check_settlement(case, projected, facts, custody_choice):
     for e in projected['elements']:
         rep = next(r for r in projected['representations'] if r['boundElementIds'] == [e['elementId']])
         require(rep['currentLocationId'] == e['currentLocationId'], 'representation follows survivor')
+    # The independent arithmetic above checks adopted result rules. Exact equality
+    # also binds every retained World7 field to the projection from the verified
+    # initial fixture, including identities and readiness that arithmetic preserves.
+    require(projected == world.world_at(case, 'relationships'), 'exact projected World')
 
 
 def verify_matrix(rules, rows):
@@ -459,7 +463,15 @@ def mutation_checks(rules, rows):
                 'predecessorReceiptId', 'wrong.result')),
             ('settlement attacker', lambda w: w['settlements'][0].__setitem__('attacker',
                 w['settlements'][0]['defender'])),
-            ('extra settlement', lambda w: w['settlements'].append(copy.deepcopy(w['settlements'][0])))):
+            ('extra settlement', lambda w: w['settlements'].append(copy.deepcopy(w['settlements'][0]))),
+            ('forged relationship ID', lambda w: (
+                w['settlements'][0]['relationships'].__setitem__('relationshipId', 'forged.relation'),
+                w['relationships'][0].__setitem__('relationId', 'forged.relation'))),
+            ('representation ID', lambda w: w['representations'][0].__setitem__(
+                'representationId', 'forged.representation')),
+            ('frozen readiness', lambda w: w['settlements'][0]['preLossElements'][0]['readiness'].__setitem__(
+                'pinned', True)),
+            ('final readiness', lambda w: w['elements'][0]['readiness'].__setitem__('pinned', True))):
         changed = copy.deepcopy(projected)
         change(changed)
         try:
@@ -510,7 +522,7 @@ def mutation_checks(rules, rows):
         checks += 1
     else:
         raise AssertionError('retreat settlement attacker mutation escaped settlement checks')
-    require(checks == 20, 'negative mutation coverage')
+    require(checks == 24, 'negative mutation coverage')
     return checks
 
 

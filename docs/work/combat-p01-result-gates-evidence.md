@@ -1,6 +1,6 @@
 # P01 AC-004 bounded result gate: executable evidence
 
-**Status:** bounded offline AC-004 arithmetic and immediate receipt matrix PASS on merged base `2c96c14`, with direct World/receipt regressions added after review of `226f33c` and `2a898e0`; P01 admission remains **unsupported**. This is a private read-only proof slice. It does not append Combat events, open selection, consume ordinal-two native Combat, or publish public candidate bytes.
+**Status:** bounded offline AC-004 arithmetic and immediate receipt matrix PASS on merged base `2c96c14`, with direct World/receipt regressions added after review of `226f33c`, `2a898e0`, and `a3a2b20`; P01 admission remains **unsupported**. This is a private read-only proof slice. It does not append Combat events, open selection, consume ordinal-two native Combat, or publish public candidate bytes.
 
 ## Reproduce
 
@@ -11,7 +11,7 @@ python3 docs/specs/verify-combat-rules-inputs-v1.py
 python3 docs/specs/verify-combat-world-settlement-v1.py
 ```
 
-Expected output: `authenticPositiveRows=44`, `moralePairs=1296`, `jointCoordinates=6480`, `resultCases.axis=resultCases.commonwealth=8840`, `settlementWorlds.axis=9728`, `settlementWorlds.commonwealth=9728`, `branchKindsPerOrientation=39`, `mutations=20`, and status `bounded AC-004 evidence only; no P01 admission`.
+Expected output: `authenticPositiveRows=44`, `moralePairs=1296`, `jointCoordinates=6480`, `resultCases.axis=resultCases.commonwealth=8840`, `settlementWorlds.axis=9728`, `settlementWorlds.commonwealth=9728`, `branchKindsPerOrientation=39`, `mutations=24`, and status `bounded AC-004 evidence only; no P01 admission`.
 
 Source freeze reports `diagnostics=passed`, accepted `CMB-SRC-RUL-001`, and no production admission. RulesInput reports three canonical goldens, 47 mutations and all 360 selected loss coordinates. World7 reports six canonical goldens, 57 rejection vectors, 112 receipt cuts and 8,840 source arithmetic cases. The source freeze verifier uses Python 3.14 because its `zip(..., strict=True)` call is unavailable in the machine's system Python 3.9.
 
@@ -27,7 +27,9 @@ For each side, the verifier covers all 36×36 Morale pairs to establish final di
 
 For every case, independently calculated chart percentages, sum flags, capture share and conditional die are compared with `verify-combat-world-settlement-v1.py` result facts. Every projected World is then checked for exact attacker CP4→9 and defender CP0→3→4 only on actual retreat, both ammo10→0, frozen pre-loss basis, asymmetric TOE rounding, refusal percentage before rounding, capture as a subset of loss, 0..3 loss and custody bound, survivor TOE≥7, 3 DP only for three TOE lost, ordered Cohesion cause identities, 3 RP only for completed target evacuation, exact settlement count and participant identities, disposition-to-result and later receipt predecessor chain, final TOE on both participants (including guard transfer), actual relationship object bound to its receipt, guarded donor transfer and priority-upkeep obligation, or unguarded escape with delayed replacement obligation. Custody lot, guard, entitlement and obligation identities, locations and receipt links are bound to actual participants. Final representation locations and Contact/Engaged/Retreat precedence are checked even when losses round to zero.
 
-Twenty built-in negative checks change current TOE, ammo, representation location, an amended result cell, attacker CP cost, loss receipt, retreat CP receipt, relation receipt, final projected TOE, actual relationship object, disposition predecessor, settlement attacker on both stationary and retreat paths, extra settlement, guard location, lot captor, future-obligation subject on both custody paths, and a self-consistently changed retained Control vector/hash. Each malformed World must fail through `check_settlement` while other receipts remain unchanged. These are mutation-sensitivity checks of this verifier, not an independent security review.
+Each terminal World must also equal a fresh World7 projection from the same case whose initial fixture was checked against every authenticated positive R03 World. This closes retained fields outside arithmetic, including relationship and representation IDs, readiness, and receipt object completeness. The equality is an exact private fixture comparison; independent source arithmetic and World7 rejection vectors remain separate checks, and no native transition is inferred from fixture equality.
+
+Twenty-four built-in negative checks change current TOE, ammo, representation location, an amended result cell, attacker CP cost, loss receipt, retreat CP receipt, relation receipt, final projected TOE, actual relationship object, disposition predecessor, settlement attacker on both stationary and retreat paths, extra settlement, guard location, lot captor, future-obligation subject on both custody paths, a self-consistently changed retained Control vector/hash, a relationship ID forged consistently in receipt and object, a representation ID, frozen pre-loss readiness, and final element readiness. Each malformed World fails through `check_settlement` while other receipts remain unchanged; the retained-vector mutation fails the authenticated replay comparison. These are mutation-sensitivity checks of this verifier, not an independent security review.
 
 ## Boundary and remaining gates
 
