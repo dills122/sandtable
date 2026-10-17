@@ -55,7 +55,8 @@ uses the same plain `complete-breakdown-segment` command after full R02 moved-re
 R03 is its delivery label, not a product name. Its frozen 300-row reference, vector audit and all
 788 nonterminal cuts pass. The private native consumer uses the plain technical names
 `CampaignCombatActualMovedRepeatBreakdownCompletion` and its codec inside Umpire. Native parity
-passes all 300 terminal rows; fresh native review, hosted CI and public activation remain gates.
+passes all 300 terminal rows. The private consumer merged in PR #216 after independent review and
+exact-head hosted CI; public activation remains a separate gate.
 
 **Command** chooses strategic objectives, whether supplied by a person, scripted policy or optional
 model. **Staff** converts intent into concrete deterministic plans. The Umpire validates and executes
