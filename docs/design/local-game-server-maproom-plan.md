@@ -146,7 +146,10 @@ While pending, reads expose the prior committed view or a defined unavailable re
 status is never described as accepted or saved. The
 [MAP-05 trusted host protocol](../specs/maproom-trusted-host-protocol-v1.md) specifies crash,
 reactivation, fencing, unknown-commit reconciliation, restore provenance and bounded System
-progression before this protocol is implemented.
+progression before this protocol is implemented. Creation dedupe retains the original operator,
+request payload, campaign ID and seat grants atomically; action dedupe retains the authenticated
+outward request separately from Core replay bytes. A live pending grain reconciles a lost
+coordinator/callback under a bounded fence before accepting another mutation.
 
 Advance only server-owned legal System actions, one bounded committed transition at a time.
 Stop for a human decision, an admitted terminal state, an explicitly unsupported phase, or a

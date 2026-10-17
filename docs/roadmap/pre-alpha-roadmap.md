@@ -120,8 +120,9 @@ pending.
 MAP-04 outward OpenAPI schema, safe fixture, focused tests and generated Angular client compilation
 are drafted; host mapping and audience verification remain before connected play.
 The [MAP-05 trusted host protocol](../specs/maproom-trusted-host-protocol-v1.md)
-now records private byte ownership, pending/fenced publication, restore provenance, fixed
-direct-Core vectors and the failure matrix. MAP-06/07 adapter and grain implementation, MAP-14/15
+now records private byte ownership, creation/action retry identity, bounded fenced pending
+reconciliation, restore provenance, fixed direct-Core vectors and the failure matrix. MAP-06/07
+adapter and grain implementation, MAP-14/15
 durable provider proof and connected play remain open.
 The [implementation plan](../design/local-game-server-maproom-plan.md) owns slice dependencies
 and acceptance checks; the [design system](../design/maproom-design-system-v0.md) owns visual rules.
