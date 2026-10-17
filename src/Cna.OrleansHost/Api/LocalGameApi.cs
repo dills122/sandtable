@@ -1,5 +1,6 @@
 using System.Net;
 using System.Text.Json;
+using Cna.Core.Actions;
 
 namespace Cna.OrleansHost.Api;
 
@@ -88,15 +89,32 @@ internal static class LocalGameApi
             context.Response.Cookies.Delete(Cookie, CookieOptions(context));
             return Results.NoContent();
         });
-        api.MapGet("/campaigns/{campaignId}/view", (HttpContext context,
-            LocalSessionStore store, string campaignId) =>
+        api.MapGet("/campaigns/{campaignId}/view", async (HttpContext context,
+            LocalSessionStore store, IServiceProvider services, string campaignId) =>
         {
             var session = store.Find(context.Request.Cookies[Cookie]);
             if (session is null || session.CampaignId != campaignId || session.Seat is null)
                 return ApiError(StatusCodes.Status403Forbidden, "forbidden");
-            // MAP-07's legal-action bytes contain private Core IDs and stateVersion. A complete,
-            // audience-safe MAP-04 projection is a prerequisite for returning this endpoint.
-            return ApiError(StatusCodes.Status503ServiceUnavailable, "unavailable");
+            var side = session.Seat switch
+            {
+                "axis" => CampaignActionAudience.Axis,
+                "commonwealth" => CampaignActionAudience.Commonwealth,
+                _ => (CampaignActionAudience?)null,
+            };
+            var grains = services.GetService<IGrainFactory>();
+            var access = services.GetService<TemporaryCampaignAccess>();
+            var projection = services.GetService<TemporaryPlayerViewProjection>();
+            if (side is null || grains is null || access is null || projection is null
+                || session.Generation is null)
+                return ApiError(StatusCodes.Status503ServiceUnavailable, "unavailable");
+            var reply = await grains.GetGrain<ITemporaryCampaignGrain>(campaignId)
+                .QueryPrivateSideAsync(access.Capability, side.Value, session.Generation);
+            if (reply.Status != TemporaryCampaignStatus.Current)
+                return ApiError(StatusCodes.Status503ServiceUnavailable, "unavailable");
+            var view = projection.Map(reply.Cut, session);
+            return view is null
+                ? ApiError(StatusCodes.Status503ServiceUnavailable, "unavailable")
+                : Results.Json(view);
         });
     }
 

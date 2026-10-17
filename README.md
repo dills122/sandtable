@@ -162,17 +162,18 @@ after 15 minutes and seat sessions after two hours, and returns `503` when full.
 navigation cannot mint a replacement operator cookie; bootstrap requires matching `Origin` or
 positive same-origin Fetch Metadata. Trusted-host grants are capped at 512 live entries and swept
 after expiry. The
-`/api/v1/campaigns/{campaignId}/view` route returns `503 unavailable` for an authorized seat until
-MAP-08B can project a complete, coherent MAP-04 audience view with outward legal-action IDs. The
-private MAP-07 legal-action bytes never cross HTTP. This is an ingress foundation, not connected
-Maproom play.
+`/api/v1/campaigns/{campaignId}/view` now projects an authorized, pinned initial rules-lab cut
+after trusted in-process creation. It uses an admitted public layout and opaque formation,
+contact, and action handles; private MAP-07 legal-action bytes never cross HTTP. A later cut,
+missing catalog fact, or unsupported action returns `503 unavailable` while approved War Diary
+source is pending. Browser creation/grants and action submission are still absent.
 The [MAP-08B1 side projection prerequisite](docs/specs/maproom-side-projection-prerequisites-v1.md)
 records missing typed fields, pinned presentation data, audience-safe diary and opaque action
 mapping that must precede the browser view.
 MAP-08B2 adds a typed, host-private side cut and process-local visibility tracker. Both sides
 advance on creation and every accepted or System step; an unread disappearance retires its
-contact handle. Handles are scoped to seat-session generation. The browser route stays unavailable
-until the public presentation catalog, diary policy, and complete MAP-04 projection are supplied.
+contact handle. Handles are scoped to seat-session generation. The browser route serves only the
+initial pinned fixture cut; later cuts await audience-safe diary and complete MAP-08B projection.
 Run `just maproom-setup`, then `just maproom` (port 4200) and `just field-atlas` (port 6006) in separate
 terminals. Storybook owns the live component/pattern reference; both surfaces consume
 `@sandtable/field-atlas`. MAP-03B stages local delayed results and receipt readback only;

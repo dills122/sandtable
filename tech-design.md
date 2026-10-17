@@ -112,16 +112,19 @@ seat authentication, outward action mapping, durable conditional publication and
 classification remain later boundaries, with a Core terminal signal required before connected
 play. A process restart discards this state. MAP-08A adds Development-only loopback HTTP bootstrap,
 trusted-host grant storage and rotating seat sessions with same-origin and CSRF checks. Its grant
-issuer has no browser creation path yet, and an authorized `/view` returns `503 unavailable` until
-MAP-08B maps the full MAP-04 player view and outward legal-action identities from a coherent cut.
+issuer has no browser creation path yet. A trusted-created initial fixture may return one
+authorized `/view` mapped from a coherent typed cut; unsupported or successor cuts return
+`503 unavailable` until approved diary projection and full MAP-08B completion.
 The [MAP-08B1 projection prerequisite](docs/specs/maproom-side-projection-prerequisites-v1.md)
 first defines typed side fields, public presentation sources, diary visibility and stable opaque
 action mapping; no browser view is returned until these sources are coherent.
 MAP-08B2 implements a process-local private cut tracker over both committed side observations.
 It binds campaign/source pins and authority version, advances contact/action identity on each
 accepted transition, and fails closed on a skipped or incoherent cut. A private grain read scopes
-opaque handles to the authorized session generation; public presentation and diary projection
-remain MAP-08B work.
+opaque handles to the authorized session generation. Initial lab view uses a versioned,
+source-pinned public layout with generic contact labels, own formation labels and reserve status;
+no post-creation diary source is approved, so successor views fail closed. Browser creation and
+action ingress remain pending.
 No canonical legal-action bytes or authority versions are serialized to HTTP. The
 [Angular workspace](src/Cna.Maproom/README.md) provides
 `projects/maproom-alpha` and the internal `@sandtable/field-atlas` library. Storybook uses the same

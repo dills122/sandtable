@@ -2,6 +2,8 @@
 
 Date: 2026-10-16. Status: MAP-01 workspace, MAP-02 foundation and MAP-03A/B fixtures implemented;
 MAP-04 browser schema, fixtures and generated client drafted; connected gameplay pending.
+First MAP-08B view adapter serves only a trusted-created initial pinned fixture cut; browser
+creation, post-step diary projection and action ingress remain pending.
 Audience: contributors implementing the local rules-lab host and browser client.
 
 Build a browser client around the existing deterministic C# Umpire. First delivery launches one

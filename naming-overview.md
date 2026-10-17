@@ -98,12 +98,14 @@ session and an in-memory request record for the local rules lab. It is not Chron
 durability or a Maproom endpoint. The host-owned side summary is a private bridge, not a
 browser contract or a new authority source.
 MAP-08A's `Cna.OrleansHost/Api` is a local ingress seam for operator bootstrap and seat sessions.
-It does not create a campaign or render a Maproom view; MAP-08B must supply the complete
-audience-safe projection before `/view` can answer successfully.
+It does not create a browser campaign. A bounded MAP-08B `/view` adapter renders only the
+trusted-created initial rules-lab cut from an authorized seat; later cuts fail closed pending
+approved diary projection.
 MAP-08B1 names the host-side prerequisite: typed permitted data and pinned presentation facts
 between Umpire's side cut and Maproom's outward DTO. It grants no new authority to Maproom.
 MAP-08B2 calls the process-local contact/action continuity record the **audience tracker**.
-Its private side cut remains host data; Maproom receives only a later validated player view.
+Its private side cut remains host data; Maproom receives only a validated player view. The
+**presentation catalog** owns public fixture labels and layout, not Umpire authority.
 
 **Proving Ground** names the local development test environment and
 [runbook](docs/runbooks/proving-ground.md), not a game authority or separate service. Its first
