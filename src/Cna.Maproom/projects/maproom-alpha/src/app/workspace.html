@@ -216,45 +216,135 @@
       }
     </fa-panel>
   </div>
-  <div class="records-grid">
-    <fa-panel heading="Formation ledger" eyebrow="Situation record"
-      ><div class="ledger" role="table" aria-label="Formation ledger">
-        <div class="ledger-row ledger-head" role="row">
-          <span role="columnheader">Formation</span><span role="columnheader">Kind</span
-          ><span role="columnheader">Position</span>
-        </div>
-        @for (unit of store.visibleFormations(); track unit.id) {
-          <div class="ledger-row" role="row" [class.is-selected]="store.selectedId() === unit.id">
-            <span role="cell"
-              ><button
-                class="fa-text-action"
-                (click)="store.select(unit.id)"
-                [attr.aria-pressed]="store.selectedId() === unit.id"
+  <div class="records-grid" [class.records-expanded]="recordsExpanded()">
+    <fa-panel heading="Formation ledger" eyebrow="Situation record">
+      <div class="records-tools">
+        <label for="ledger-search">Find a formation</label>
+        <input
+          id="ledger-search"
+          type="search"
+          [value]="ledgerQuery()"
+          (input)="ledgerQuery.set($any($event.target).value)"
+        />
+        <button
+          type="button"
+          class="fa-text-action"
+          aria-controls="ledger-region"
+          [attr.aria-expanded]="recordsExpanded()"
+          (click)="recordsExpanded.update((value) => !value)"
+        >
+          {{ recordsExpanded() ? 'Compact records' : 'Expand records' }}
+        </button>
+      </div>
+      <div
+        id="ledger-region"
+        class="ledger"
+        role="region"
+        aria-label="Formation ledger rows"
+        tabindex="0"
+      >
+        <table aria-label="Formation ledger">
+          <thead>
+            <tr>
+              <th
+                scope="col"
+                [attr.aria-sort]="
+                  ledgerSort() === 'name' ? (ledgerDescending() ? 'descending' : 'ascending') : null
+                "
               >
-                {{ unit.name }}
-              </button></span
-            ><span role="cell">{{ unit.kind }}</span
-            ><span role="cell">{{ unit.position }}</span>
-          </div>
-        }
-      </div></fa-panel
-    ><fa-panel heading="War Diary" eyebrow="Presentation record"
-      ><fa-status>Initial view</fa-status>
-      <p class="diary-text">
-        {{ store.selected().name }} observed at {{ store.selected().position }} in the synthetic
-        exercise.
-      </p>
-      <p class="fa-muted">
-        No order issued. This entry demonstrates the reading pattern; it is not an authoritative
-        event.
-      </p>
-      <hr class="fa-rule" />
-      <p class="fa-eyebrow">Field Atlas · v0</p>
-      <p class="fa-muted">
-        Shared components, warm paper and ink. Built from the same foundations as the component
-        workshop.
-      </p></fa-panel
-    >
+                <button type="button" (click)="sortLedger('name')">Formation</button>
+              </th>
+              <th
+                scope="col"
+                [attr.aria-sort]="
+                  ledgerSort() === 'kind' ? (ledgerDescending() ? 'descending' : 'ascending') : null
+                "
+              >
+                <button type="button" (click)="sortLedger('kind')">Kind</button>
+              </th>
+              <th
+                scope="col"
+                [attr.aria-sort]="
+                  ledgerSort() === 'position'
+                    ? ledgerDescending()
+                      ? 'descending'
+                      : 'ascending'
+                    : null
+                "
+              >
+                <button type="button" (click)="sortLedger('position')">Position</button>
+              </th>
+              <th
+                scope="col"
+                [attr.aria-sort]="
+                  ledgerSort() === 'order'
+                    ? ledgerDescending()
+                      ? 'descending'
+                      : 'ascending'
+                    : null
+                "
+              >
+                <button type="button" (click)="sortLedger('order')">Order state</button>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (unit of ledgerRows(); track unit.id) {
+              <tr class="ledger-row" [class.is-selected]="store.selectedId() === unit.id">
+                <th scope="row" data-label="Formation">
+                  <button
+                    type="button"
+                    class="fa-text-action"
+                    (click)="store.select(unit.id)"
+                    [attr.aria-pressed]="store.selectedId() === unit.id"
+                  >
+                    {{ unit.name }}
+                  </button>
+                </th>
+                <td data-label="Kind">{{ unit.kind }}</td>
+                <td data-label="Position">{{ unit.position }}</td>
+                <td data-label="Order state">{{ store.orderFor(unit.id).status }}</td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="4">No visible formations match this search.</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </fa-panel>
+    <fa-panel heading="War Diary" eyebrow="Presentation record">
+      <div class="records-tools">
+        <label for="diary-scope">Show entries for</label>
+        <select
+          id="diary-scope"
+          [value]="diaryScope()"
+          (change)="diaryScope.set($any($event.target).value)"
+        >
+          <option value="selected">Selected formation</option>
+          <option value="all">All visible formations</option>
+        </select>
+      </div>
+      <p class="fa-muted">Synthetic own-side fixture entries. No campaign history is connected.</p>
+      @for (entry of diaryEntries(); track entry.id) {
+        <article class="diary-entry">
+          <p class="fa-eyebrow">Accepted example · {{ entry.id }}</p>
+          <p>
+            {{ formationName(entry.formationId) }} moved to {{ entry.destination }} in the local
+            fixture.
+          </p>
+          <button type="button" class="fa-text-action" (click)="locateDiary(entry.formationId)">
+            Locate formation on map
+          </button>
+        </article>
+      } @empty {
+        <p class="diary-text">
+          No accepted fixture moves for
+          {{ diaryScope() === 'selected' ? store.selected().name : 'visible formations' }} yet.
+        </p>
+      }
+    </fa-panel>
   </div>
 </main>
 <footer class="session-footer">

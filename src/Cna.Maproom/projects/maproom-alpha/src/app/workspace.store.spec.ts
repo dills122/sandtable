@@ -52,7 +52,9 @@ describe('Workspace presentation state', () => {
     expect(store.visibleFormations().find((f) => f.id === 'FOX')?.position).toBe('M-6');
     expect(store.selected().position).toBe('G-5');
     expect(store.orderFor('FOX').status).toBe('accepted');
+    expect(store.diary()).toEqual([{ id, formationId: 'FOX', destination: 'M-6' }]);
     store.settle(id!);
+    expect(store.diary()).toHaveLength(1);
     expect(store.visibleFormations().find((f) => f.id === 'FOX')?.position).toBe('M-6');
   });
   it('keeps separate formation drafts and invalidates review after an edit', () => {
@@ -78,6 +80,7 @@ describe('Workspace presentation state', () => {
       store.settle(id);
       expect(store.orderFor('FOX').status).toBe(outcome);
       expect(store.selected().position).toBe('K-7');
+      expect(store.diary()).toHaveLength(0);
       expect(store.issue('FOX', 'accepted')).toBeNull();
       store.refresh('FOX');
       expect(store.orderFor('FOX').status).toBe('draft');
@@ -97,7 +100,9 @@ describe('Workspace presentation state', () => {
     store.reconcile();
     expect(store.orderFor('FOX').status).toBe('accepted');
     expect(store.selected().position).toBe('H-8');
+    expect(store.diary()).toEqual([{ id, formationId: 'FOX', destination: 'H-8' }]);
     store.reconcile();
+    expect(store.diary()).toHaveLength(1);
     expect(store.selected().position).toBe('H-8');
     store.setUnsupportedPhase(true);
     store.stageDraft('HAR', 'M-6');

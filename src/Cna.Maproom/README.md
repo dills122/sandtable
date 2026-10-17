@@ -103,7 +103,9 @@ unsupported Combat-entry stop. Confirmed positions move only after a staged acce
 result remains tied to its submitted formation even if selection changes. Refresh after a stale or
 rejected result requires new review. One unresolved fixture result blocks another issue; its
 recovery control remains available when inspecting a different formation. The pending formation's
-destination is locked until the result is known. The read-only ledger/diary remain presentation examples.
+destination is locked until the result is known. MAP-03C adds searchable/sortable four-field ledger
+rows, an expanded records view and selected/all-visible fixture War Diary entries with map locate.
+Accepted examples update map, roster, inspector, ledger and diary from the same local result.
 Narrow widths stack panels; keyboard focus pans clipped counters into view when zoomed. No legal
 actions, authoritative turn resolution, network receipt, persistence or real reconnect exists.
-MAP-03C and connected play remain open.
+Connected play remains open.

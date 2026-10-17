@@ -176,16 +176,17 @@ protects normal application use; it is not protection from another operator cont
 components and app-owned patterns from that same source. Core/utils are deferred until needed.
 See the [workspace guide](../../src/Cna.Maproom/README.md) for pinned versions, local commands and CI.
 
-MAP-01, the MAP-02 foundation and MAP-03A/B are implemented. The shell selects eight synthetic
+MAP-01, the MAP-02 foundation and MAP-03A/B/C are implemented. The shell selects eight synthetic
 formations, locates and fits a bounded camera, collapses its roster and adjusts its inspector.
 Keyboard focus brings a clipped counter into view at zoom. Fixture keyboard help exposes
 formation cycling, locate, fit and zoom; a focused map accepts arrow-key pan, and mouse/pen
 drag pans while terrain covers the viewport, including after locating an edge formation.
-Shortcuts stand down in form fields and open overlays.
-MAP-03B's Formly draft stages a
+Shortcuts stand down in form fields and open overlays. MAP-03B's Formly draft stages a
 per-formation review and delayed fixture result; lost replies reconcile once from an in-memory
-receipt. No server action, legal-order validation or durable receipt exists. MAP-03C remains open
-for filter/sort and records.
+receipt. MAP-03C adds a searchable, sortable four-field ledger, linked selection, expanded records,
+and a selected/all-visible fixture War Diary with locate. Accepted example results update all views;
+the diary contains only synthetic own-side entries. No server action, legal-order validation,
+raw Chronicle feed or durable receipt exists.
 
 ## Small implementation slices
 
