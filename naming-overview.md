@@ -6,7 +6,7 @@ responsibility; it does not imply a deployed service or implemented mechanic.
 
 **OpenCodeReview (OCR)** names optional external PR-review tooling, not a Sandtable product,
 Intelligence provider or authoritative game component. Its proposed
-[pilot](docs/runbooks/optional-code-review.md) has no active workflow or merge authority.
+[pilot](docs/runbooks/optional-code-review.md) is opt-in and has no merge authority.
 
 > Command decides. Staff plans. Dispatch carries. Umpire adjudicates. Chronicle remembers.
 > Maproom shows.

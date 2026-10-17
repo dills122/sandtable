@@ -1,8 +1,8 @@
 # Optional OpenCodeReview scrutiny
 
-**Status:** scope rules prepared; GitHub review workflow is **not installed or active**. No
-repository secret has been configured for this pilot. This runbook records the proposed activation
-and operating limits for an explicit owner decision.
+**Status:** opt-in workflow and scope rules are prepared for review. This branch does not run OCR;
+the workflow must first merge to `main`, and the Sandtable Actions secret must be configured before
+any labeled PR can use it. The owner approved OpenRouter code egress for this gated pilot.
 
 ## Purpose and selection
 
@@ -19,11 +19,11 @@ otherwise skip. It excludes generated Angular API clients, large fixture/golden 
 notes, reviews, research, and lockfiles. Review contract documentation and source pin effects
 separately when a diff exceeds the OCR budget or its selection filter omits a relevant file.
 
-## Proposed GitHub activation
+## GitHub activation
 
-Adapt Reef's [pinned opt-in pilot](https://github.com/dills122/reef/blob/c2dc8358a52c80edf2ac0c09a2279119ab224915/.github/workflows/open-code-review-pilot.yml)
+The [trusted workflow](../../.github/workflows/open-code-review-pilot.yml) adapts Reef's [pinned opt-in pilot](https://github.com/dills122/reef/blob/c2dc8358a52c80edf2ac0c09a2279119ab224915/.github/workflows/open-code-review-pilot.yml)
 and [operating notes](https://github.com/dills122/reef/blob/c2dc8358a52c80edf2ac0c09a2279119ab224915/docs/CI_OPERATIONS.md#opt-in-opencodereview-pilot)
-only after approving third-party code egress and the repository secret. Proposed safeguards:
+with these safeguards:
 
 - `pull_request_target` uses the trusted `main` workflow and rule; restrict to same-repository,
   non-draft PRs carrying a maintainer-applied `ocr-scrutiny` label. Trigger on adding that label or
@@ -32,9 +32,10 @@ only after approving third-party code egress and the repository secret. Proposed
   `pull-requests: write` to the review job. Use the official action at the full Reef-tested
   `bccbc15f785269400735d5255540c231e6c02b6d` commit with OCR CLI `1.12.9` and
   `OCR_NO_UPDATE=1`. No separate checkout or shell step may execute PR files.
-- The model/provider would match Reef's pilot: `openai/gpt-5.4-mini` through OpenRouter, with a
-  new Sandtable Actions secret named `OCR_OPENROUTER_API_KEY`. The selected PR content and review
-  context would be sent to that provider. GitHub repository secrets are not copied from Reef.
+- The model/provider matches Reef's pilot: `openai/gpt-5.4-mini` through OpenRouter, with a
+  Sandtable Actions secret named `OCR_OPENROUTER_API_KEY`. Selected PR content and review context
+  are sent to that provider. Configure a Sandtable-specific secret through GitHub repository
+  settings before applying the label; GitHub repository secrets cannot be copied from Reef.
 - Begin with medium effort, one review group at a time, a 750,000-token *soft* run budget and a
   45-minute job timeout. OCR checks budget between rounds and may spend beyond the threshold in
   its last round. Keep artifacts off; use sticky summary, incremental comments and checkpoint

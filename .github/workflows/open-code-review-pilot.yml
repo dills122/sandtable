@@ -1,0 +1,56 @@
+name: OpenCodeReview scrutiny pilot
+
+# pull_request_target reads this workflow and project rules from trusted main.
+# The pinned action fetches PR head objects for review; never execute PR files here.
+on:
+  pull_request_target:
+    branches: [main]
+    types: [labeled, ready_for_review]
+
+permissions: {}
+
+concurrency:
+  group: sandtable-ocr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    # A maintainer opts in by labeling a same-repository, ready PR. Pushes and
+    # unrelated label changes cannot spend model tokens.
+    if: >-
+      ${{ !github.event.pull_request.draft &&
+          github.event.pull_request.head.repo.full_name == github.repository &&
+          contains(github.event.pull_request.labels.*.name, 'ocr-scrutiny') &&
+          (github.event.action != 'labeled' || github.event.label.name == 'ocr-scrutiny') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: alibaba/open-code-review@bccbc15f785269400735d5255540c231e6c02b6d # v1.12.9
+        env:
+          OCR_NO_UPDATE: '1'
+        with:
+          ocr_version: '1.12.9'
+          llm_url: https://openrouter.ai/api/v1
+          llm_auth_token: ${{ secrets.OCR_OPENROUTER_API_KEY }}
+          llm_model: openai/gpt-5.4-mini
+          llm_use_anthropic: 'false'
+          llm_protocol: openai
+          llm_extra_body: '{}'
+          effort: medium
+          review_concurrency: '1'
+          # Soft cap: OCR may spend a final round after crossing this threshold.
+          max_tokens_budget: '750000'
+          sticky_summary: 'true'
+          incremental: 'true'
+          checkpoint_range: 'true'
+          upload_artifacts: 'false'
+          background: >-
+            Sandtable's Umpire owns deterministic authoritative state, seeded RNG,
+            legal actions and fog boundaries. Check changed code for replay and source
+            pin drift, hidden-state disclosure, stale or duplicate requests, contract
+            compatibility, and cancellation or fallback failures. Maproom must not
+            infer authority from browser state. Report concrete, line-supported bugs;
+            this optional review does not approve a merge.
