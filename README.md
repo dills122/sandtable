@@ -137,6 +137,9 @@ public boundaries; durable hosting and complete scenario play retain their exist
 
 The [Angular workspace](src/Cna.Maproom/README.md) now implements MAP-01, the MAP-02 foundation
 and the MAP-03A operational map, MAP-03B order workflow and MAP-03C records fixtures. The
+synthetic map now supports bounded drag from its fitted view and a full-screen inspection panel;
+the larger order inspector and header controls keep order preparation prominent. These remain
+local presentation interactions, not connected campaign actions. The
 [MAP-04 browser contract](src/Cna.Game.Contracts/README.md) has an OpenAPI schema, audience-safe
 fixture and compiling generated client; host handlers remain pending.
 The [MAP-05 trusted host protocol](docs/specs/maproom-trusted-host-protocol-v1.md) specifies

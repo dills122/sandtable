@@ -93,44 +93,85 @@ button:disabled {
 .fa-text-action:hover {
   background: var(--color-selection);
 }
-.fa-select {
-  appearance: none;
-  min-height: var(--control-height);
+fa-choice-select {
+  display: block;
   min-width: 0;
   max-width: 100%;
-  padding: var(--space-xs) var(--select-padding-end) var(--space-xs) var(--space-sm);
+}
+.fa-choice-label {
+  display: block;
+  margin-bottom: var(--space-xs);
+  color: var(--color-ink);
+  font-size: var(--text-sm);
+  font-weight: 500;
+}
+.fa-choice-trigger.mat-mdc-select {
+  display: flex;
+  align-items: center;
+  min-height: var(--control-height);
+  min-width: 0;
+  width: 100%;
+  padding: var(--space-xs) var(--select-icon-inset) var(--space-xs) var(--space-sm);
   border: 1px solid var(--color-rule-strong);
   border-radius: var(--radius-control);
-  background-color: var(--color-panel);
-  background-image:
-    linear-gradient(45deg, transparent 50%, currentColor 50%),
-    linear-gradient(135deg, currentColor 50%, transparent 50%);
-  background-position:
-    right calc(var(--select-icon-inset) + var(--select-icon-size) / 2) center,
-    right var(--select-icon-inset) center;
-  background-size:
-    calc(var(--select-icon-size) / 2) calc(var(--select-icon-size) / 2),
-    calc(var(--select-icon-size) / 2) calc(var(--select-icon-size) / 2);
-  background-repeat: no-repeat;
+  background: var(--color-panel);
   color: var(--color-ink);
   cursor: pointer;
 }
-.fa-select:hover:not(:disabled) {
+.fa-choice-trigger.mat-mdc-select:hover:not([aria-disabled='true']) {
   border-color: var(--color-accent);
 }
-.fa-select:focus-visible {
-  border-color: var(--color-focus);
+.fa-choice-trigger.mat-mdc-select:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
 }
-.fa-select:disabled {
+.fa-choice-trigger.mat-mdc-select[aria-disabled='true'] {
   border-color: var(--color-rule);
-  background-color: var(--color-paper);
+  background: var(--color-paper);
   color: var(--color-muted);
   cursor: not-allowed;
 }
+.fa-choice-panel.mat-mdc-select-panel {
+  max-width: min(92vw, 26rem);
+  max-height: min(50vh, 20rem);
+  padding: var(--space-2xs);
+  border: 1px solid var(--color-rule-strong);
+  border-radius: var(--radius-control);
+  background: var(--color-panel);
+  box-shadow: 0 12px 28px var(--color-backdrop);
+}
+.fa-choice-panel .mat-mdc-option {
+  min-height: var(--control-height);
+  border-radius: var(--radius-control);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+}
+.fa-choice-panel .mat-mdc-option:hover,
+.fa-choice-panel .mat-mdc-option.mdc-list-item--selected,
+.fa-choice-panel .mat-mdc-option.mat-mdc-option-active {
+  background: var(--color-selection);
+  color: var(--color-ink);
+}
+.fa-choice-panel .mat-mdc-option[aria-disabled='true'] {
+  color: var(--color-muted);
+}
 @media (forced-colors: active) {
-  .fa-select {
-    appearance: auto;
-    background-image: none;
+  .fa-choice-trigger.mat-mdc-select,
+  .fa-choice-panel.mat-mdc-select-panel {
+    border: 1px solid CanvasText;
+    background: Canvas;
+    color: CanvasText;
+    box-shadow: none;
+  }
+  .fa-choice-trigger.mat-mdc-select:focus-visible {
+    outline-color: Highlight;
+  }
+  .fa-choice-panel .mat-mdc-option:hover,
+  .fa-choice-panel .mat-mdc-option.mdc-list-item--selected,
+  .fa-choice-panel .mat-mdc-option.mat-mdc-option-active {
+    background: Highlight;
+    color: HighlightText;
   }
 }
 .fa-stack {

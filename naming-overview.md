@@ -84,6 +84,8 @@ and pattern reference. The current application is a synthetic scaffold; connecte
 it adds no authority layer. The formation ledger is a player-view table, distinct from Chronicle's
 authoritative event journal. War Diary entries may locate permitted formations without exposing
 raw journal records or hidden causes.
+The full-screen situation map and expanded order inspector are presentation states of this same
+workspace; neither creates a separate command surface or campaign authority.
 `Cna.Game.Contracts` contains the drafted outward OpenAPI browser and SignalR contracts;
 private authority revisions remain server-side. This module is separate from
 `Cna.Intelligence.Contracts`. Archives remains a host storage module, and War Diary remains an

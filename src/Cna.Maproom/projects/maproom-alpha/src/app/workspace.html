@@ -1,5 +1,7 @@
-<a class="skip-link" href="#operations">Skip to operations</a>
-<header class="command-bar">
+<a class="skip-link" href="#operations" [attr.inert]="mapFullscreen() ? '' : null"
+  >Skip to operations</a
+>
+<header class="command-bar" [attr.inert]="mapFullscreen() ? '' : null">
   <a class="brand" href="/" aria-label="Maproom home"
     ><span class="brand-mark" aria-hidden="true">M</span
     ><span>Maproom <small>Field Atlas</small></span></a
@@ -7,7 +9,11 @@
   ><span class="local-status">○ Local fixture</span>
 </header>
 <main id="operations" tabindex="-1">
-  <section class="phase-bar" aria-label="Current fixture situation">
+  <section
+    class="phase-bar"
+    aria-label="Current fixture situation"
+    [attr.inert]="mapFullscreen() ? '' : null"
+  >
     <div class="phase-title">
       <p class="fa-eyebrow">Operations workspace · 001</p>
       <h1>The coastal exercise</h1>
@@ -39,41 +45,35 @@
       </button>
     </div>
   </section>
-  <div class="pane-actions">
-    <button
-      type="button"
-      class="fa-text-action"
-      aria-controls="formations-pane"
-      [attr.aria-expanded]="store.rosterOpen()"
-      (click)="store.toggleRoster()"
-    >
-      {{ store.rosterOpen() ? 'Hide' : 'Show' }} formations
-    </button>
-    <button
-      type="button"
-      class="fa-text-action"
-      [attr.aria-pressed]="store.wideInspector()"
-      (click)="store.toggleInspectorWidth()"
-    >
-      {{ store.wideInspector() ? 'Standard' : 'Wide' }} inspector
-    </button>
-  </div>
   <div
     class="workspace-grid"
     [class.roster-collapsed]="!store.rosterOpen()"
+    [class.inspector-collapsed]="!store.inspectorOpen()"
     [class.wide-inspector]="store.wideInspector()"
   >
     <aside
       class="roster"
       id="formations-pane"
-      [hidden]="!store.rosterOpen()"
+      [class.is-collapsed]="!store.rosterOpen()"
+      [attr.inert]="mapFullscreen() ? '' : null"
       aria-labelledby="formations-title"
     >
       <div class="roster-heading">
         <h2 id="formations-title">Formations</h2>
-        <span class="fa-muted">{{ formations.length }} own-side</span>
+        @if (store.rosterOpen()) {
+          <span class="fa-muted">{{ formations.length }} own-side</span>
+        }
+        <button
+          type="button"
+          class="fa-text-action pane-toggle"
+          aria-controls="formations-list"
+          [attr.aria-expanded]="store.rosterOpen()"
+          (click)="store.toggleRoster()"
+        >
+          {{ store.rosterOpen() ? 'Hide' : 'Show' }} formations
+        </button>
       </div>
-      <div class="roster-list">
+      <div class="roster-list" id="formations-list" [hidden]="!store.rosterOpen()">
         @for (unit of store.visibleFormations(); track unit.id) {
           <button
             class="roster-item"
@@ -87,13 +87,30 @@
         }
       </div>
     </aside>
-    <section class="map-panel" aria-labelledby="map-title">
+    <section
+      #mapPanel
+      class="map-panel"
+      aria-labelledby="map-title"
+      [class.is-fullscreen]="mapFullscreen()"
+      [attr.role]="mapFullscreen() ? 'dialog' : null"
+      [attr.aria-modal]="mapFullscreen() ? 'true' : null"
+    >
       <div class="map-heading">
         <div>
           <h2 id="map-title">Situation map</h2>
-          <span class="fa-muted">Schematic · no scale</span>
+          <span class="fa-muted">Schematic · no scale · drag to explore</span>
         </div>
         <div class="map-controls" role="group" aria-label="Map camera controls">
+          <button
+            #mapExpandToggle
+            type="button"
+            class="fa-text-action map-expand"
+            [attr.aria-label]="mapFullscreen() ? 'Close expanded map' : 'Expand map'"
+            [attr.aria-pressed]="mapFullscreen()"
+            (click)="toggleMapFullscreen()"
+          >
+            {{ mapFullscreen() ? 'Close map' : 'Expand map' }}
+          </button>
           <button
             #shortcutToggle
             type="button"
@@ -132,8 +149,8 @@
         <strong>Move around the exercise</strong>
         <span><kbd>[</kbd> / <kbd>]</kbd> choose a formation</span>
         <span><kbd>L</kbd> locate selection · <kbd>0</kbd> fit map</span>
-        <span><kbd>+</kbd> / <kbd>−</kbd> zoom · arrow keys pan when map is focused</span>
-        <span><kbd>?</kbd> show or hide help · <kbd>Esc</kbd> close</span>
+        <span>Drag to pan (first drag zooms from fit) · touch or arrow keys pan</span>
+        <span><kbd>+</kbd> / <kbd>−</kbd> zoom · <kbd>?</kbd> help · <kbd>Esc</kbd> close</span>
       </div>
       <div
         class="map-canvas"
@@ -195,28 +212,69 @@
       <div class="map-caption">
         <span>Selected: {{ store.selected().name }} · {{ store.selected().position }}</span
         ><span>Original fixture</span>
+        @if (mapFullscreen()) {
+          <button type="button" class="fa-text-action" (click)="openOrdersFromMap()">
+            Open orders for {{ store.selected().name }}
+          </button>
+        }
       </div>
     </section>
-    <fa-panel class="inspector" [heading]="store.selected().name" eyebrow="Order inspector"
-      ><div class="inspector-actions">
-        <button type="button" class="fa-text-action" (click)="store.locateSelected()">
-          Locate {{ store.selected().name }} on map
+    <fa-panel
+      #inspectorPanel
+      class="inspector"
+      [heading]="store.inspectorOpen() ? store.selected().name : 'Orders'"
+      eyebrow="Order inspector"
+      [attr.inert]="mapFullscreen() ? '' : null"
+    >
+      <div panel-actions class="inspector-header-actions">
+        @if (store.inspectorOpen()) {
+          <button
+            type="button"
+            class="fa-text-action"
+            [attr.aria-pressed]="store.wideInspector()"
+            (click)="store.toggleInspectorWidth()"
+          >
+            {{ store.wideInspector() ? 'Standard' : 'Wide' }} inspector
+          </button>
+        }
+        <button
+          type="button"
+          class="fa-text-action pane-toggle"
+          aria-controls="inspector-body"
+          [attr.aria-expanded]="store.inspectorOpen()"
+          (click)="store.toggleInspector()"
+        >
+          {{ store.inspectorOpen() ? 'Hide' : 'Show' }} orders
         </button>
       </div>
-      <div class="flex flex-wrap gap-4 mb-6">
-        <span>{{ store.selected().kind }}</span
-        ><span>{{ store.selected().position }}</span
-        ><fa-status>Own side</fa-status>
-      </div>
-      <h3>Prepare an order</h3>
-      @for (unit of formations; track unit.id) {
-        @if (store.selectedId() === unit.id) {
-          <mr-order-workflow [formationId]="unit.id" [formationName]="unit.name" />
+      <div id="inspector-body" [hidden]="!store.inspectorOpen()">
+        <p class="fa-muted inspector-context">
+          Local order fixture · last known {{ store.selected().position }}
+        </p>
+        <div class="inspector-actions">
+          <button type="button" class="fa-text-action" (click)="store.locateSelected()">
+            Locate {{ store.selected().name }} on map
+          </button>
+        </div>
+        <div class="flex flex-wrap gap-4 mb-6">
+          <span>{{ store.selected().kind }}</span
+          ><span>{{ store.selected().position }}</span
+          ><fa-status>Own side</fa-status>
+        </div>
+        <h3>Prepare an order</h3>
+        @for (unit of formations; track unit.id) {
+          @if (store.selectedId() === unit.id) {
+            <mr-order-workflow [formationId]="unit.id" [formationName]="unit.name" />
+          }
         }
-      }
+      </div>
     </fa-panel>
   </div>
-  <div class="records-grid" [class.records-expanded]="recordsExpanded()">
+  <div
+    class="records-grid"
+    [class.records-expanded]="recordsExpanded()"
+    [attr.inert]="mapFullscreen() ? '' : null"
+  >
     <fa-panel heading="Formation ledger" eyebrow="Situation record">
       <div class="records-tools">
         <label for="ledger-search">Find a formation</label>
@@ -316,15 +374,12 @@
     </fa-panel>
     <fa-panel heading="War Diary" eyebrow="Presentation record">
       <div class="records-tools">
-        <label for="diary-scope">Show entries for</label>
-        <select
-          id="diary-scope"
+        <fa-choice-select
+          label="Show entries for"
+          [options]="diaryScopeOptions"
           [value]="diaryScope()"
-          (change)="diaryScope.set($any($event.target).value)"
-        >
-          <option value="selected">Selected formation</option>
-          <option value="all">All visible formations</option>
-        </select>
+          (valueChange)="setDiaryScope($event)"
+        />
       </div>
       <p class="fa-muted">Synthetic own-side fixture entries. No campaign history is connected.</p>
       @for (entry of diaryEntries(); track entry.id) {
@@ -347,6 +402,6 @@
     </fa-panel>
   </div>
 </main>
-<footer class="session-footer">
+<footer class="session-footer" [attr.inert]="mapFullscreen() ? '' : null">
   <span>Maproom alpha · Development fixture</span><span>Campaign connection comes next</span>
 </footer>

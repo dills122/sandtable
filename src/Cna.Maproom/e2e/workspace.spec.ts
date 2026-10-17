@@ -53,7 +53,8 @@ test('lost reply reconciles once; stale refresh requires a new review', async ({
   await destination.click();
   await page.getByRole('option', { name: 'East crossing · M-6' }).click();
   await page.getByRole('button', { name: 'Review draft' }).click();
-  await page.getByLabel('Fixture result').selectOption('lost-reply');
+  await page.getByRole('combobox', { name: 'Fixture result' }).click();
+  await page.getByRole('option', { name: 'Lost reply' }).click();
   await page.getByRole('button', { name: 'Issue order' }).click();
   await expect(page.getByText('Reply lost. Outcome unknown until receipt readback.')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Fox group, infantry, K-7' })).toBeVisible();
@@ -66,7 +67,8 @@ test('lost reply reconciles once; stale refresh requires a new review', async ({
   await destination.click();
   await page.getByRole('option', { name: 'Coast road · J-5' }).click();
   await page.getByRole('button', { name: 'Review draft' }).click();
-  await page.getByLabel('Fixture result').selectOption('stale');
+  await page.getByRole('combobox', { name: 'Fixture result' }).click();
+  await page.getByRole('option', { name: 'Stale view' }).click();
   await page.getByRole('button', { name: 'Issue order' }).click();
   await expect(page.getByText('Stale view. Position unchanged.')).toBeVisible();
   await page.getByRole('button', { name: 'Refresh orders' }).click();
@@ -85,7 +87,8 @@ test('unresolved order blocks another issue and exposes recovery from a differen
   await page.getByRole('combobox', { name: 'Move to' }).click();
   await page.getByRole('option', { name: 'East crossing · M-6' }).click();
   await page.getByRole('button', { name: 'Review draft' }).click();
-  await page.getByLabel('Fixture result').selectOption('lost-reply');
+  await page.getByRole('combobox', { name: 'Fixture result' }).click();
+  await page.getByRole('option', { name: 'Lost reply' }).click();
   await page.getByRole('button', { name: 'Issue order' }).click();
   await expect(page.getByRole('combobox', { name: 'Move to' })).toBeDisabled();
   await page.getByRole('button', { name: 'Harrier group, armour, G-5' }).click();
@@ -102,7 +105,8 @@ test('rejected result preserves position and requires refreshed review', async (
   await page.getByRole('combobox', { name: 'Move to' }).click();
   await page.getByRole('option', { name: 'East crossing · M-6' }).click();
   await page.getByRole('button', { name: 'Review draft' }).click();
-  await page.getByLabel('Fixture result').selectOption('rejected');
+  await page.getByRole('combobox', { name: 'Fixture result' }).click();
+  await page.getByRole('option', { name: 'Rejected' }).click();
   await page.getByRole('button', { name: 'Issue order' }).click();
   await expect(page.getByText('Rejected fixture result. Position unchanged.')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Fox group, infantry, K-7' })).toBeVisible();
@@ -110,6 +114,12 @@ test('rejected result preserves position and requires refreshed review', async (
   await expect(page.getByRole('button', { name: 'Issue order' })).toHaveCount(0);
   await page.getByRole('button', { name: 'Review draft' }).click();
   await expect(page.getByRole('button', { name: 'Issue order' })).toBeVisible();
+  await expect(page.getByRole('combobox', { name: 'Fixture result' })).toContainText('Accepted');
+  await page.getByRole('button', { name: 'Issue order' }).click();
+  await expect(
+    page.getByText('Accepted fixture result. Confirmed position updated.'),
+  ).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Fox group, infantry, M-6' })).toBeVisible();
 });
 test('switching formations preserves each local draft and cannot redirect a delayed result', async ({
   page,
@@ -204,7 +214,7 @@ test('camera locates selection, fits extent and keeps roster selection available
   await page.getByRole('button', { name: 'Fit map' }).click();
   await expect(page.getByLabel('Map zoom')).toHaveText('100%');
   await page.getByRole('button', { name: 'Hide formations' }).click();
-  await expect(page.locator('#formations-pane')).toBeHidden();
+  await expect(page.locator('#formations-list')).toBeHidden();
   await page.getByRole('button', { name: 'Show formations' }).click();
   await expect(
     page.getByRole('button', { name: 'Osprey group, recon, M-8', exact: true }),
@@ -213,9 +223,9 @@ test('camera locates selection, fits extent and keeps roster selection available
 test('intermediate layout starts with a collapsed roster and can expand it', async ({ page }) => {
   await page.setViewportSize({ width: 1024, height: 900 });
   await page.goto('/');
-  await expect(page.locator('#formations-pane')).toBeHidden();
+  await expect(page.locator('#formations-list')).toBeHidden();
   await page.getByRole('button', { name: 'Show formations' }).click();
-  await expect(page.locator('#formations-pane')).toBeVisible();
+  await expect(page.locator('#formations-list')).toBeVisible();
 });
 test('keyboard focus brings a clipped counter into the zoomed map', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });

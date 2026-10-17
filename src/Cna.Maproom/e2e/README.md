@@ -2,14 +2,16 @@
 
 Run `npm run test:e2e` from `src/Cna.Maproom`. These tests use the local synthetic fixture and
 Storybook. They do not prove a connected campaign or server receipt.
+Set `MAPROOM_E2E_PORT=4210` to run the app server and tests on another port while leaving an
+existing Maproom playground on 4200 undisturbed.
 
-| Player path         | Browser proof                                                                                                                                                                                                                                                       |
-| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Navigate and select | Skip link; keyboard roster and ledger selection; map counter selection; map, roster, inspector, caption and ledger parity                                                                                                                                           |
-| Inspect map         | Eight labeled counters; minimum 44px counter targets at 320px; keyboard zoom from 100–200% with disabled bounds; locate and fit; focus pans a clipped counter into view; shortcut help, selection, zoom, fit and locate; focused arrow-key pan and pointer drag pan |
-| Prepare orders      | Required destination, review, changed-draft invalidation, keyboard issue, per-formation draft retention, pending lock and cross-formation recovery                                                                                                                  |
-| Read outcomes       | Accepted position parity; rejected and stale refresh/review; lost-reply readback; unsupported Combat phase; selected/all-visible diary scope and formation-specific locate actions                                                                                  |
-| Reflow and access   | 320–2560px widths, short mobile viewport, 200% text, reachable actions, WCAG A/AA axe scan, shared Storybook controls                                                                                                                                               |
+| Player path         | Browser proof                                                                                                                                                                                                                                                                                      |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Navigate and select | Skip link; keyboard roster and ledger selection; map counter selection; map, roster, inspector, caption and ledger parity                                                                                                                                                                          |
+| Inspect map         | Eight labeled counters; minimum 44px counter targets at 320px; keyboard zoom from 100–200% with disabled bounds; locate and fit; focus pans a clipped counter into view; first-drag zoom/pan from fit, bounded pointer and touch pan without page scroll, full-screen map focus/escape/orders path |
+| Prepare orders      | Required destination, review, changed-draft invalidation, keyboard issue, per-formation draft retention, pending lock and cross-formation recovery                                                                                                                                                 |
+| Read outcomes       | Accepted position parity; rejected and stale refresh/review; lost-reply readback; unsupported Combat phase; themed War Diary and Fixture result open lists with keyboard selection and narrow/forced-colors checks; formation-specific locate actions                                              |
+| Reflow and access   | 320–2560px widths, short mobile viewport, 200% text, reachable actions, WCAG A/AA axe scan, shared Storybook controls                                                                                                                                                                              |
 
 Add a pointer and keyboard browser case with each new Maproom control. Ledger search/sort,
 filtered empty state, keyboard selection, narrow labeled records and accepted fixture diary updates
