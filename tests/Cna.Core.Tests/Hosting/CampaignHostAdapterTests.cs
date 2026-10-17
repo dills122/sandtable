@@ -218,6 +218,12 @@ public sealed class CampaignHostAdapterTests
         Assert.Equal(CampaignObservationV7Serializer.SerializeCanonical(commonwealth.Observation!),
             CampaignObservationV7Serializer.SerializeCanonical(
                 CampaignHostAdapter.QueryAudience(session, CampaignActionAudience.Commonwealth).Observation!));
+        Assert.Equal(CampaignLegalActionSerializer.Serialize(axis.LegalActions!),
+            CampaignLegalActionSerializer.Serialize(
+                CampaignHostAdapter.QueryAudience(session, CampaignActionAudience.Axis).LegalActions!));
+        Assert.Equal(CampaignLegalActionSerializer.Serialize(commonwealth.LegalActions!),
+            CampaignLegalActionSerializer.Serialize(
+                CampaignHostAdapter.QueryAudience(session, CampaignActionAudience.Commonwealth).LegalActions!));
         Assert.Equal(CampaignLegalActionSerializer.Serialize(system),
             CampaignLegalActionSerializer.Serialize(CampaignHostAdapter.QuerySystem(session).ActionSet!));
     }
