@@ -126,7 +126,7 @@ for path in sorted(root.glob("rows-*.jsonl.gz")):
             seen += 1
 
 require(seen == 300 and len(keys) == 300, "complete inventory")
-require(counts == {"provisional-positive": 44, "provisional-empty": 256}, "physical partition")
+require(counts == {"provisional-positive": 44, "provisional-empty": 256}, "pinned audit labels")
 require(set(summary["chunkSha256"]) == {p.name for p in root.glob("rows-*.jsonl.gz")}, "chunk set")
 print("PASS retained P01 provenance: 300 rows; 11 ledgers/row; exact cycle, position, participant and R03 world/RNG invariants")
-print("Physical partition only: 44 provisional-positive, 256 provisional-empty; Combat support remains unresolved")
+print("Pinned audit labels: 44 provisional-positive, 256 provisional-empty; physical partition and Combat support are not independently proved here")

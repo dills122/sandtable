@@ -12,7 +12,8 @@ parsing rows. It verifies all 11 compressed chunks against the summary hashes; 3
 keys; seven canonical vector hashes per row; 11 parent ledgers per row; ordinal-one original and
 ordinal-two active cycle; Combat Position Determination; unchanged R03 World and RNG; exactly two
 independent, co-located representation bindings to the expected opposing battalions; acting-side
-participant selection; and agreement with the independent physical partition. It also checks the
+participant selection; and the pinned audit's 44/256 label counts. It does not derive those labels
+from each row's World or independently verify the physical partition. It also checks the
 retained Land rules and September errata PDF bytes against the adopted pins. On the retained
 2026-10-17 evidence it reports 44 provisional positive and 256 provisional empty rows.
 
