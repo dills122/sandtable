@@ -6,6 +6,7 @@ import importlib.util
 import json
 from pathlib import Path
 import unittest
+from unittest import mock
 
 ROOT = Path(__file__).resolve().parent
 
@@ -102,6 +103,92 @@ class P01ReferenceTests(unittest.TestCase):
             p01.assess(source, ledgers, [])
         with self.assertRaises(ValueError):
             p01.assess(source[:-1] + b" ", ledgers, r03_ledger)
+
+    def test_all_nonterminal_parent_cuts_reject_before_shape(self):
+        source, ledgers, r03_ledger = self.armed
+        with mock.patch.object(p01, "physical_shape", side_effect=AssertionError("classified")):
+            for ledger_index, ledger in enumerate(ledgers[1:], 1):
+                for cut in range(len(ledger)):
+                    with self.subTest(ledger=ledger_index, cut=cut):
+                        changed = copy.deepcopy(ledgers)
+                        changed[ledger_index] = changed[ledger_index][:cut]
+                        with self.assertRaises(ValueError):
+                            p01.assess(source, changed, r03_ledger)
+
+    def test_missing_reordered_and_substituted_parent_ledgers_reject(self):
+        source, ledgers, r03_ledger = self.armed
+        missing = copy.deepcopy(ledgers)
+        missing.pop(7)
+        reordered = copy.deepcopy(ledgers)
+        reordered[1][0], reordered[1][1] = reordered[1][1], reordered[1][0]
+        substituted = copy.deepcopy(ledgers)
+        substituted[10] = copy.deepcopy(self.other_side[1][10])
+        for name, changed in (("missing", missing), ("reordered", reordered),
+                              ("substituted", substituted)):
+            with self.subTest(name=name), mock.patch.object(
+                    p01, "physical_shape", side_effect=AssertionError("classified")):
+                with self.assertRaises(ValueError):
+                    p01.assess(source, changed, r03_ledger)
+
+    def test_swapped_nonempty_parent_ledger_arguments_reject_before_shape(self):
+        source, ledgers, r03_ledger = self.armed
+        first, second = 7, 8
+        self.assertTrue(ledgers[first] and ledgers[second])
+        self.assertNotEqual(ledgers[first], ledgers[second])
+        changed = copy.deepcopy(ledgers)
+        changed[first], changed[second] = changed[second], changed[first]
+        with mock.patch.object(p01, "physical_shape", side_effect=AssertionError("classified")):
+            with self.assertRaises(ValueError):
+                p01.assess(source, changed, r03_ledger)
+
+    def test_each_independent_parent_input_mutation_rejects(self):
+        source, ledgers, r03_ledger = self.armed
+        with mock.patch.object(p01, "physical_shape", side_effect=AssertionError("classified")):
+            for index in range(11):
+                with self.subTest(ledger=index):
+                    changed = copy.deepcopy(ledgers)
+                    if index == 0:
+                        changed[0]["campaignId"] += ".mutated"
+                    elif changed[index]:
+                        changed[index][0] = b"{}"
+                    else:
+                        changed[index] = [b"{}"]
+                    with self.assertRaises(ValueError):
+                        p01.assess(source, changed, r03_ledger)
+
+    def test_source_field_and_dependency_pin_mutations_reject_before_shape(self):
+        source, ledgers, r03_ledger = self.armed
+        changed = r03.parse(source, "Source")
+        event = json.loads(changed["breakdownEventCanonicalUtf8"][0])
+        event["stateVersion"] += 1
+        changed["breakdownEventCanonicalUtf8"][0] = r03.encode(event).decode("ascii")
+        field_mutation = r03.raw(changed, "Source")
+        with mock.patch.object(p01, "physical_shape", side_effect=AssertionError("classified")):
+            with self.assertRaises(ValueError):
+                p01.assess(field_mutation, ledgers, r03_ledger)
+            path = p01.SCHEMA["contentPath"]
+            with mock.patch.dict(p01.r03.PINS, {path: "0" * 64}):
+                with self.assertRaises(ValueError):
+                    p01.assess(source, ledgers, r03_ledger)
+
+    def test_retry_and_private_output_golden_hashes(self):
+        for index, source_data in ((36, self.armed), (168, self.other_side)):
+            source, ledgers, r03_ledger = source_data
+            before = r03.replay(source, ledgers, r03_ledger)[2]
+            originals = copy.deepcopy((source, ledgers, r03_ledger))
+            first = p01.assess(source, ledgers, r03_ledger)
+            retry = p01.assess(source, ledgers, r03_ledger)
+            with self.subTest(index=index):
+                self.assertEqual(first, retry)
+                self.assertEqual(originals, (source, ledgers, r03_ledger))
+                self.assertEqual(before, r03.replay(source, ledgers, r03_ledger)[2])
+                self.assertEqual("unsupported", first["status"])
+                self.assertIs(first["admitted"], False)
+                self.assertEqual([], first["publicActions"])
+                self.assertEqual(FIXTURE["assessmentGoldenSha256"][str(index)],
+                                 hashlib.sha256(p01.canonical(first)).hexdigest())
+        self.assertNotEqual(p01.assess(*self.armed)["privateCandidateId"],
+                            p01.assess(*self.other_side)["privateCandidateId"])
 
     def test_unsupported_physical_variants_do_not_become_empty(self):
         source, ledgers, r03_ledger = self.armed
