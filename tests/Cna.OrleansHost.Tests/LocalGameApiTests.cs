@@ -1,17 +1,114 @@
 using System.Net;
 using System.Net.Http.Json;
+using System.Net.Sockets;
 using System.Text.Json;
+using Cna.Core.Actions;
+using Cna.OrleansHost;
 using Cna.OrleansHost.Api;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Orleans;
+using Orleans.Hosting;
 
 namespace Cna.OrleansHost.Tests;
 
 public sealed class LocalGameApiTests
 {
+    [Fact]
+    public async Task TrustedCreatedLabServesPinnedInitialViewsForEachAuthorizedSeat()
+    {
+        var builder = WebApplication.CreateBuilder();
+        builder.Environment.EnvironmentName = "Development";
+        builder.WebHost.ConfigureKestrel(options => options.Listen(IPAddress.Loopback, 0));
+        builder.Services.AddSingleton(TimeProvider.System);
+        builder.Services.AddSingleton<LocalSessionStore>();
+        builder.Services.AddSingleton<TemporaryPlayerViewProjection>();
+        builder.Host.UseOrleans(silo => silo.UseTemporaryCampaignDevelopmentSilo(FreePort()));
+        await using var app = builder.Build();
+        app.MapLocalGameApi();
+        await app.StartAsync(TestContext.Current.CancellationToken);
+        try
+        {
+            var access = app.Services.GetRequiredService<TemporaryCampaignAccess>();
+            var grain = app.Services.GetRequiredService<IGrainFactory>()
+                .GetGrain<ITemporaryCampaignGrain>("host-rsh-001");
+            Assert.Equal(TemporaryCampaignStatus.Created,
+                (await grain.CreateAsync(access.Capability, "operator-test", "request-test")).Status);
+            var address = app.Services.GetRequiredService<IServer>().Features
+                .Get<IServerAddressesFeature>()!.Addresses.Single();
+            using var client = new HttpClient(new HttpClientHandler { UseCookies = false })
+            { BaseAddress = new Uri(address) };
+            var store = app.Services.GetRequiredService<LocalSessionStore>();
+            string? axisCookie = null;
+            string[]? axisContacts = null;
+            foreach (var side in new[] { "axis", "commonwealth" })
+            {
+                var bootstrap = await Send(client, Bootstrap(client));
+                var cookie = bootstrap.Headers.GetValues("Set-Cookie").Single().Split(';')[0];
+                var csrf = JsonDocument.Parse(await bootstrap.Content.ReadAsStringAsync(
+                    TestContext.Current.CancellationToken)).RootElement
+                    .GetProperty("csrfToken").GetString()!;
+                var operatorId = store.Find(cookie.Split('=')[1])!.OperatorId;
+                var grants = store.IssueGrants(operatorId, "host-rsh-001");
+                var grant = side == "axis" ? grants.Axis : grants.Commonwealth;
+                var entered = await Send(client, Seat("host-rsh-001", cookie, csrf, grant));
+                Assert.Equal(HttpStatusCode.OK, entered.StatusCode);
+                var seatCookie = entered.Headers.GetValues("Set-Cookie").Single().Split(';')[0];
+                if (side == "axis") axisCookie = seatCookie;
+                var response = await Send(client,
+                    Get("/api/v1/campaigns/host-rsh-001/view", seatCookie));
+                Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+                var json = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+                using var view = JsonDocument.Parse(json);
+                Assert.Equal(side, view.RootElement.GetProperty("seat").GetString());
+                Assert.Equal(15, view.RootElement.EnumerateObject().Count());
+                Assert.Equal(9, view.RootElement.GetProperty("locations").GetArrayLength());
+                var own = view.RootElement.GetProperty("ownFormations").EnumerateArray().ToArray();
+                Assert.Equal(2, own.Length);
+                Assert.All(own, formation =>
+                {
+                    var label = formation.GetProperty("label").GetString()!;
+                    Assert.StartsWith(side == "axis" ? "Axis " : "Commonwealth ", label);
+                    Assert.True(Guid.TryParse(formation.GetProperty("formationId").GetString(), out _));
+                });
+                var contacts = view.RootElement.GetProperty("apparentContacts").EnumerateArray()
+                    .ToArray();
+                Assert.Equal(2, contacts.Length);
+                Assert.All(contacts, contact =>
+                {
+                    Assert.Equal("Unidentified presence", contact.GetProperty("label").GetString());
+                    Assert.True(Guid.TryParse(contact.GetProperty("contactId").GetString(), out _));
+                });
+                var contactIds = contacts.Select(contact =>
+                    contact.GetProperty("contactId").GetString()!).ToArray();
+                if (side == "axis") axisContacts = contactIds;
+                else Assert.Empty(contactIds.Intersect(axisContacts!, StringComparer.Ordinal));
+                // Creation precedes trusted System progression. No human candidate is yet legal.
+                Assert.Empty(view.RootElement.GetProperty("legalActions").EnumerateArray());
+                Assert.Equal("unsupported-phase", view.RootElement.GetProperty("position")
+                    .GetProperty("decision").GetString());
+                Assert.DoesNotContain("stateVersion", json);
+                Assert.DoesNotContain("RepresentationId", json);
+                Assert.DoesNotContain("CoreActionId", json);
+                Assert.DoesNotContain("axis-infantry.formation", json);
+                Assert.DoesNotContain("commonwealth-infantry.formation", json);
+                Assert.Equal(HttpStatusCode.Forbidden,
+                    (await Send(client, Get("/api/v1/campaigns/other/view", seatCookie)))
+                    .StatusCode);
+            }
+            Assert.Equal(TemporaryCampaignStatus.StepLimit,
+                (await grain.AdvanceSystemAsync(access.Capability, 1)).Status);
+            Assert.Equal(HttpStatusCode.ServiceUnavailable,
+                (await Send(client, Get("/api/v1/campaigns/host-rsh-001/view", axisCookie!)))
+                .StatusCode);
+        }
+        finally { await app.StopAsync(TestContext.Current.CancellationToken); }
+    }
+
     [Fact]
     public async Task LoopbackSessionsEnforceOriginCsrfCampaignAndSeatRotation()
     {
@@ -225,5 +322,12 @@ public sealed class LocalGameApiTests
         private DateTimeOffset now = DateTimeOffset.UnixEpoch;
         public override DateTimeOffset GetUtcNow() => now;
         internal void Advance(TimeSpan by) => now += by;
+    }
+
+    private static int FreePort()
+    {
+        using var listener = new TcpListener(IPAddress.Loopback, 0);
+        listener.Start();
+        return ((IPEndPoint)listener.LocalEndpoint).Port;
     }
 }

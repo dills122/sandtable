@@ -1,9 +1,13 @@
 # MAP-08B side projection prerequisites
 
-Status: contract proposal. No player view, campaign creation endpoint, or playable campaign API is supplied by this document. The MAP-08A `/view` route remains unavailable until these gates pass.
+Status: contract proposal with a bounded initial-view implementation. A trusted-created,
+source-pinned initial fixture cut can now return `/view` for an authorized seat. Later cuts,
+browser campaign creation, and playable campaign API remain unavailable until the diary,
+creation, and action gates pass.
 
-MAP-08B2 implements the process-local private cut and continuity tracker described below. It
-does not provide the catalog, diary, or HTTP player projection and is not durable recovery.
+MAP-08B2 implements the process-local private cut and continuity tracker described below. A
+separate bounded MAP-08B adapter supplies an initial-only public catalog and HTTP projection;
+post-step diary projection and durable recovery remain absent.
 The private action descriptor carries the Core candidate identity plus side-permitted element,
 target-location, or reaction-opportunity semantics when present. A later HTTP mapper must reject
 unsupported candidate kinds rather than infer subjects from a Core hash.
