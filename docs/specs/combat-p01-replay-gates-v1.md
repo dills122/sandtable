@@ -43,7 +43,7 @@ The verifier expects the retained private evidence at
 `--evidence` is passed. Source pins are hard-coded in the merged P01 evidence
 verifier and rechecked on every run.
 
-Local verification on 2026-10-17: four focused tests passed in 129.520 seconds.
+Local verification on 2026-10-17: four focused tests passed on the final test source in 125.784 seconds.
 The complete private 300-row replay reported 44 provisional positives, 256 provisional
 empties, zero admitted, 100 bounded mutation/cut rejections on two positive
 actor-side samples, four exact retries, ordered output-hash root
