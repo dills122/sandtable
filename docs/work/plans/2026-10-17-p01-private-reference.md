@@ -29,10 +29,10 @@ be derived from trusted source, or a test would need caller-supplied World/hash 
 - GREEN: initial `python3 docs/specs/test-combat-actual-moved-repeat-position-v1.py` passed seven
   focused tests on genuine R03 paid/armed roots, both acting sides, deterministic identity,
   ledger/source/nonterminal rejections and physical fail-closed variants. This ancestry follow-up
-  passes 12 tests, adding all nonempty parent-ledger cuts, mutation of each of the 11 independent
-  parent inputs, missing/reordered/substituted ledgers, canonical event-field and dependency-pin
-  rejection before classification, plus retry and exact private assessment hashes for both acting
-  sides.
+  passes 13 tests, adding all nonempty parent-ledger cuts, mutation of each of the 11 independent
+  parent inputs, missing/substituted ledgers, reordered events within one ledger, and a swap of two
+  distinct nonempty ledger arguments. Canonical event-field and dependency-pin mutations reject
+  before classification; retries preserve exact private assessment hashes for both acting sides.
 - The additive offline evidence verifier hashes the pinned summary, manifest, predicate audit,
   both physical PDFs and all eleven compressed chunks, then calls this P01 reference for each
   retained row with its original CreationRequest and eleven independent ledgers. Full 300-row

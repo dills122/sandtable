@@ -130,6 +130,17 @@ class P01ReferenceTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     p01.assess(source, changed, r03_ledger)
 
+    def test_swapped_nonempty_parent_ledger_arguments_reject_before_shape(self):
+        source, ledgers, r03_ledger = self.armed
+        first, second = 7, 8
+        self.assertTrue(ledgers[first] and ledgers[second])
+        self.assertNotEqual(ledgers[first], ledgers[second])
+        changed = copy.deepcopy(ledgers)
+        changed[first], changed[second] = changed[second], changed[first]
+        with mock.patch.object(p01, "physical_shape", side_effect=AssertionError("classified")):
+            with self.assertRaises(ValueError):
+                p01.assess(source, changed, r03_ledger)
+
     def test_each_independent_parent_input_mutation_rejects(self):
         source, ledgers, r03_ledger = self.armed
         with mock.patch.object(p01, "physical_shape", side_effect=AssertionError("classified")):
