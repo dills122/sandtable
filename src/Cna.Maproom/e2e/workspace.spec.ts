@@ -190,13 +190,15 @@ test('camera locates selection, fits extent and keeps roster selection available
         .getByRole('button', { name: 'Osprey group, recon, M-8', exact: true })
         .boundingBox();
       const canvas = await page.locator('.map-canvas').boundingBox();
-      if (!marker || !canvas) return Number.POSITIVE_INFINITY;
-      return Math.max(
-        Math.abs(marker.x + marker.width / 2 - canvas.x - canvas.width / 2),
-        Math.abs(marker.y + marker.height / 2 - canvas.y - canvas.height / 2),
+      if (!marker || !canvas) return false;
+      return (
+        marker.x >= canvas.x &&
+        marker.y >= canvas.y &&
+        marker.x + marker.width <= canvas.x + canvas.width &&
+        marker.y + marker.height <= canvas.y + canvas.height
       );
     })
-    .toBeLessThan(32);
+    .toBe(true);
   await page.getByRole('button', { name: 'Zoom in' }).click();
   await expect(page.getByLabel('Map zoom')).toHaveText('175%');
   await page.getByRole('button', { name: 'Fit map' }).click();

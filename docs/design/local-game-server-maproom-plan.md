@@ -180,7 +180,8 @@ MAP-01, the MAP-02 foundation and MAP-03A/B are implemented. The shell selects e
 formations, locates and fits a bounded camera, collapses its roster and adjusts its inspector.
 Keyboard focus brings a clipped counter into view at zoom. Fixture keyboard help exposes
 formation cycling, locate, fit and zoom; a focused map accepts arrow-key pan, and mouse/pen
-drag pans within the visible extent. Shortcuts stand down in form fields and open overlays.
+drag pans while terrain covers the viewport, including after locating an edge formation.
+Shortcuts stand down in form fields and open overlays.
 MAP-03B's Formly draft stages a
 per-formation review and delayed fixture result; lost replies reconcile once from an in-memory
 receipt. No server action, legal-order validation or durable receipt exists. MAP-03C remains open

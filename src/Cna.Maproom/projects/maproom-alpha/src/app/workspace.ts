@@ -100,6 +100,14 @@ export class Workspace {
 
   protected onMapKeydown(event: KeyboardEvent) {
     if (event.target !== event.currentTarget) return;
+    if (
+      event.defaultPrevented ||
+      event.isComposing ||
+      event.altKey ||
+      event.ctrlKey ||
+      event.metaKey
+    )
+      return;
     if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key)) return;
     if (this.store.zoom() <= 1) return;
     const frame = event.currentTarget as HTMLElement;
