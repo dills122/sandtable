@@ -7,7 +7,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { SeatGrant } from './seatGrant';
+import { SeatGrantSet } from './seatGrantSet';
 import { CampaignDescriptor } from './campaignDescriptor';
 
 export interface CampaignCreated {
@@ -17,7 +17,7 @@ export interface CampaignCreated {
   setupHash: string;
   contentHash: string;
   configurationHash: string;
-  seatGrants: Array<SeatGrant>;
+  seatGrants: SeatGrantSet;
 }
 export namespace CampaignCreated {
   export const ContractVersionEnum = {

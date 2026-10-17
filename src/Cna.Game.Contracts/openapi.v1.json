@@ -655,22 +655,23 @@
             "$ref": "#/components/schemas/CampaignDescriptor"
           },
           "rulesetHash": {
-            "type": "string"
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
           },
           "setupHash": {
-            "type": "string"
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
           },
           "contentHash": {
-            "type": "string"
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
           },
           "configurationHash": {
-            "type": "string"
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
           },
           "seatGrants": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/SeatGrant"
-            }
+            "$ref": "#/components/schemas/SeatGrantSet"
           }
         },
         "required": [
@@ -681,28 +682,6 @@
           "contentHash",
           "configurationHash",
           "seatGrants"
-        ]
-      },
-      "SeatGrant": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "seat": {
-            "type": "string",
-            "enum": [
-              "axis",
-              "commonwealth"
-            ]
-          },
-          "grantId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
-          }
-        },
-        "required": [
-          "seat",
-          "grantId"
         ]
       },
       "Bootstrap": {
@@ -1362,6 +1341,29 @@
           "requestId",
           "status",
           "reason"
+        ]
+      },
+      "SeatGrantSet": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Exactly one opaque grant per human seat. Distinct grant values are a host-enforced semantic constraint.",
+        "properties": {
+          "axis": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "commonwealth": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "axis",
+          "commonwealth"
+        ],
+        "x-distinct-values": [
+          "axis",
+          "commonwealth"
         ]
       }
     },

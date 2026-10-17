@@ -53,6 +53,43 @@ public sealed class BrowserContractTests
     }
 
     [Fact]
+    public void CreationRequiresPinnedHashesAndExactlyTwoDistinctSeatGrants()
+    {
+        var bytes = File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory,
+            "Fixtures", "campaign-created.v1.json"));
+        using var created = JsonDocument.Parse(bytes);
+        AssertSchema(created.RootElement, "CampaignCreated");
+        var grantSchema = Contract.RootElement.GetProperty("components").GetProperty("schemas")
+            .GetProperty("SeatGrantSet");
+        Assert.Equal(["axis", "commonwealth"], grantSchema.GetProperty("required")
+            .EnumerateArray().Select(value => value.GetString()).ToArray());
+        Assert.Equal(["axis", "commonwealth"], grantSchema.GetProperty("x-distinct-values")
+            .EnumerateArray().Select(value => value.GetString()).ToArray());
+
+        var invalid = JsonNode.Parse(bytes)!;
+        invalid["seatGrants"] = new JsonObject();
+        AssertRejects(invalid, "CampaignCreated");
+        invalid = JsonNode.Parse(bytes)!;
+        invalid["seatGrants"]!.AsObject().Remove("axis");
+        AssertRejects(invalid, "CampaignCreated");
+        invalid = JsonNode.Parse(bytes)!;
+        invalid["seatGrants"]!["commonwealth"] = invalid["seatGrants"]!["axis"]!.GetValue<string>();
+        AssertRejects(invalid, "CampaignCreated");
+        invalid = JsonNode.Parse(bytes)!;
+        invalid["seatGrants"]!["system"] = "d2448ca5-07f2-4dfe-a8fd-06d78b9ff40d";
+        AssertRejects(invalid, "CampaignCreated");
+        foreach (var field in new[] { "rulesetHash", "setupHash", "contentHash", "configurationHash" })
+        {
+            invalid = JsonNode.Parse(bytes)!;
+            invalid[field] = "not-a-lowercase-sha256";
+            AssertRejects(invalid, "CampaignCreated");
+            invalid = JsonNode.Parse(bytes)!;
+            invalid[field] = new string('A', 64);
+            AssertRejects(invalid, "CampaignCreated");
+        }
+    }
+
+    [Fact]
     public void CoherentViewCarriesOnlyAudienceRevisionAndOpaqueActionCapability()
     {
         var bytes = File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory,
@@ -284,6 +321,14 @@ public sealed class BrowserContractTests
                     continue;
                 }
                 AssertNode(property.Value, field, schemas);
+            }
+            if (schema.TryGetProperty("x-distinct-values", out var distinctFields))
+            {
+                var values = distinctFields.EnumerateArray()
+                    .Select(field => value.GetProperty(field.GetString()!).GetString())
+                    .ToArray();
+                if (values.Distinct(StringComparer.Ordinal).Count() != values.Length)
+                    throw new InvalidDataException("Contract fields must be distinct.");
             }
         }
         else if (type == "array")

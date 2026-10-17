@@ -1,0 +1,18 @@
+{
+  "contractVersion": 1,
+  "campaign": {
+    "campaignId": "campaign-1",
+    "scenarioId": "rules-lab-1",
+    "displayName": "Rules Lab",
+    "lifetime": "temporary-memory",
+    "status": "awaiting-human"
+  },
+  "rulesetHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "setupHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "contentHash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+  "configurationHash": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+  "seatGrants": {
+    "axis": "d2448ca5-07f2-4dfe-a8fd-06d78b9ff40d",
+    "commonwealth": "14ab9500-c2aa-4116-91fd-c321615d9114"
+  }
+}

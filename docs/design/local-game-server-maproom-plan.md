@@ -107,7 +107,9 @@ actions; submit one action; query a request receipt; relinquish a seat; subscrib
 
 Bind submissions to campaign, session/seat, unique request ID, opaque audience action-set token,
 exact server-issued outward action identity and its current contract revision. Bind immutable
-rules/setup/content/configuration identities at creation. Preserve state_version and existing rules identity in trusted records. Never expose
+rules/setup/content/configuration identities at creation. The creation response pins four lowercase SHA-256 identities and returns one opaque
+seat grant per side; MAP-08 must enforce distinct grant IDs because OpenAPI 3.0 cannot compare
+object values. Preserve state_version and existing rules identity in trusted records. Never expose
 authority state_version or encode it in outward action tokens. Audience revision and diary cursor
 advance only on permitted visible changes and use lossless decimal strings. Outward action IDs
 remain stable across hidden-only commits; the host maps them to current Core candidates and

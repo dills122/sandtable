@@ -10,8 +10,10 @@ remain separate contracts.
 1. `GET /api/v1/bootstrap` on loopback establishes an operator cookie and returns a CSRF token.
 2. `GET /api/v1/fixtures` lists admitted public descriptors. `POST /api/v1/campaigns` uses one
    fixture ID and unique request ID; the server binds ruleset, setup, content and configuration
-   hashes and returns two short-lived seat grants. These grants are operator-only and never appear
-   in campaign listings.
+   hashes and returns `seatGrants.axis` and `seatGrants.commonwealth`, each a distinct short-lived,
+   CSPRNG-issued opaque grant ID. These grants are operator-only and never appear in campaign
+   listings. OpenAPI enforces exactly those two seat keys; the `x-distinct-values` constraint
+   requires the MAP-08 host to reject equal grant IDs because OpenAPI 3.0 cannot compare values.
 3. `POST /api/v1/campaigns/{campaignId}/seat` redeems one grant. Server rotates a separate
    HttpOnly SameSite=Strict seat cookie and `sessionGeneration`. Seat identity comes only from
    this server-owned session. A seat switch invalidates the prior generation before reply.
@@ -68,7 +70,8 @@ push is a hint, and missed/coalesced notifications are recovered by HTTP readbac
 invalidates the previous generation and its subscriptions.
 
 `tests/Cna.Game.Contracts.Tests` checks local references, protected operations, a representative
-coherent view fixture, receipt variants, combined cookie/CSRF policies, SignalR handshake,
+creation and coherent view fixtures, receipt variants, combined cookie/CSRF policies,
+SignalR handshake,
 wide audience revision strings, nested forbidden properties and lack of client actor input.
 The `typescript-angular` client is generated under
 `src/Cna.Maproom/projects/maproom-alpha/src/app/api/generated`. It compiles but is not wired to

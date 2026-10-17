@@ -17,6 +17,6 @@ export * from './ownFormation';
 export * from './pendingActionReceipt';
 export * from './position';
 export * from './rejectedActionReceipt';
-export * from './seatGrant';
+export * from './seatGrantSet';
 export * from './sessionInfo';
 export * from './submitActionRequest';
