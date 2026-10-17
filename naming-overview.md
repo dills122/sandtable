@@ -81,6 +81,11 @@ raw journal records or hidden causes.
 `Cna.Intelligence.Contracts`. Archives remains a host storage module, and War Diary remains an
 audience-safe derived display rather than a raw Chronicle stream.
 
+**Proving Ground** names the local development test environment and
+[runbook](docs/runbooks/proving-ground.md), not a game authority or separate service. Its first
+Docker profile packages the Maproom shell and Development Orleans host; the Exercise Runner stays
+a separate trusted CLI until browser campaign creation is implemented.
+
 ## Domain modules and reserved names
 
 **Theater** owns geographic concepts and topology. **ORBAT** names immutable force and formation

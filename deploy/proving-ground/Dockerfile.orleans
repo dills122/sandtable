@@ -1,0 +1,19 @@
+FROM mcr.microsoft.com/dotnet/sdk:10.0@sha256:0d99ebf1ccad15037b5c98c9fe8979d6b8dbac23812feae2277a0b277b5c5ffa AS build
+WORKDIR /src
+
+COPY global.json Directory.Build.props Directory.Packages.props ./
+COPY src/Cna.Core/ src/Cna.Core/
+COPY src/Cna.ServiceDefaults/ src/Cna.ServiceDefaults/
+COPY src/Cna.OrleansHost/ src/Cna.OrleansHost/
+COPY docs/specs/fixtures/combat-content-v7.canonical.json docs/specs/fixtures/
+RUN dotnet publish src/Cna.OrleansHost/Cna.OrleansHost.csproj \
+    --configuration Release --output /out /p:UseAppHost=false
+
+FROM mcr.microsoft.com/dotnet/aspnet:10.0@sha256:d5633778c754e89a386882eddf8dbee6942447a8a4b8267c19cf1e1158d0b0ac
+WORKDIR /app
+COPY --from=build /out ./
+ENV ASPNETCORE_URLS=http://+:8080 \
+    ASPNETCORE_ENVIRONMENT=Development \
+    DOTNET_ENVIRONMENT=Development
+EXPOSE 8080
+ENTRYPOINT ["dotnet", "Cna.OrleansHost.dll"]

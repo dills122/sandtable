@@ -198,6 +198,15 @@ Open Aspire dashboard URL printed in terminal. It shows Orleans host, Decision W
 Intelligence Gateway. This launches development services—not a playable Maproom. Stop with
 <kbd>Ctrl</kbd>+<kbd>C</kbd>.
 
+### Launch containerized Proving Ground preview
+
+With Docker Desktop running, `just proving-ground-up` builds and starts the current Angular
+Maproom shell at <http://127.0.0.1:4200> and Development Orleans host at
+<http://127.0.0.1:5180>. `just proving-ground-smoke` checks both HTTP probes;
+`just proving-ground-down` stops them. This preview has no campaign API or durable save yet.
+Use the [Proving Ground runbook](docs/runbooks/proving-ground.md) for service boundaries, current
+rules-lab seed/evidence commands, and the MAP slice path to a real playtest.
+
 ### Run deterministic simulation
 
 Run current bounded Reaction Maneuver and write validated artifacts under `artifacts/exercises`:
@@ -241,6 +250,10 @@ I/O outside authoritative turns, then run `just check` before PR.
 | `just format-check` | Verify formatting without edits |
 | `just check` | Full local gate: format, build, boundary tests, all tests |
 | `just run` | Launch Aspire development stack |
+| `just proving-ground-up` | Build and launch Docker Maproom shell plus Development Orleans host |
+| `just proving-ground-smoke` | Check both local HTTP probes |
+| `just proving-ground-down` | Stop the Docker preview |
+| `just rules-lab-evidence` | Run checked synthetic Reaction Maneuver through trusted CLI |
 | `just docs-links` | Check tracked Markdown links; requires Lychee 0.24.2 |
 
 `just check` runs the .NET gates; it does not run the retained Python Combat contract oracles.

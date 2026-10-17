@@ -1,0 +1,21 @@
+name: sandtable-proving-ground
+
+services:
+  orleans-host:
+    build:
+      context: .
+      dockerfile: deploy/proving-ground/Dockerfile.orleans
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      DOTNET_ENVIRONMENT: Development
+    ports:
+      - "127.0.0.1:5180:8080"
+    init: true
+
+  maproom:
+    build:
+      context: .
+      dockerfile: deploy/proving-ground/Dockerfile.maproom
+    ports:
+      - "127.0.0.1:4200:80"
+    init: true
