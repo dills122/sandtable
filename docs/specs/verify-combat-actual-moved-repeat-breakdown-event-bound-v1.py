@@ -66,8 +66,9 @@ def maximal_value(type_name, objects, effect_tags, parent="", field=""):
         # This safely overbounds even IDs and hashes pending leaf-grammar audit.
         return "\u0000" * SAFE_STRING_LENGTHS[type_name]
     if type_name == "string":
-        # Six-byte JSON escapes overbound even a permissive 256-character string.
-        return "\u0000" * 256
+        # The codec counts Unicode scalar values. A supplementary scalar is two
+        # UTF-16 code units, each emitted as a six-byte JSON escape.
+        return "\U0001f600" * 256
     if type_name in NUMERIC_TYPES:
         return -(2**63)
     if type_name == "byte":

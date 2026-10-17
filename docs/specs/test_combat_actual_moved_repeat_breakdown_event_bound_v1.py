@@ -23,8 +23,8 @@ class EventBoundTests(unittest.TestCase):
     def test_all_moved_assault_event_families_fit_frozen_source_cap(self):
         result = load().calculate(json.loads(SCHEMA.read_bytes()))
         self.assertEqual({"SelectionEvent", "RoundEvent", "PaidEvent"}, set(result["eventBounds"]))
-        self.assertEqual(47_377, result["eventBounds"]["PaidEvent"])
-        self.assertEqual(207_807_680, result["breakdownSourceBound"])
+        self.assertEqual(48_913, result["eventBounds"]["PaidEvent"])
+        self.assertEqual(212_034_752, result["breakdownSourceBound"])
         self.assertLess(result["breakdownSourceBound"], 268_435_456)
 
     def test_new_array_without_a_source_backed_cardinality_fails_closed(self):
@@ -47,6 +47,10 @@ class EventBoundTests(unittest.TestCase):
         model = load()
         self.assertEqual(1, model.ARRAY_COUNTS["Participant.componentIds"])
         self.assertEqual(770, len(model.encoded(model.maximal_value("id", {}, {}))))
+
+    def test_generic_string_prices_two_json_escapes_per_unicode_scalar(self):
+        model = load()
+        self.assertEqual(3074, len(model.encoded(model.maximal_value("string", {}, {}))))
 
 
 if __name__ == "__main__":
