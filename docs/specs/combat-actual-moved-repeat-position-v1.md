@@ -85,7 +85,7 @@ result/refusal/capture cases. Proof must cover both capture roles, zero-loss Eng
 priority, accepted and refused one-hex retreat, custody guard and escape, exact loss/CP/Cohesion/
 RP arithmetic, all receipts, conservation, and retained future obligations. The bounded chart
 branches exclude the expressly unsupported voluntary-surrender option. The sibling
-result/settlement and retreat/custody audits in draft PRs #227 and #226 are review inputs;
+result/settlement report in merged PR #227 and retreat/custody audit in draft PR #226 are review inputs;
 they are not substitutes for an executable same-head certificate. The geometry report establishes
 two actor orientations, both retreat dispositions, both capture roles and eight placement cases
 for the selected six-hex content graph. No particular RNG seed may reduce this matrix.

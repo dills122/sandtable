@@ -3046,7 +3046,7 @@ remains source-legal; accepted `CMB-POL-009` excludes it from the initial RC P01
 This precludes any full source-legal Combat claim.
 
 P01 executable reference, canonical schema/ID, all-row adversarial verification and independent
-same-head review remain open. The provenance and geometry reports in draft PRs #225–#226 and
-merged result report #227 are inputs, not an executable certificate. P02 selection and P03 native
+same-head review remain open. The provenance and result reports in merged PRs #225 and #227 and
+geometry report in draft PR #226 are inputs, not an executable certificate. P02 selection and P03 native
 consumer remain separate;
 no public or native ordinal-two action is activated by this design.
