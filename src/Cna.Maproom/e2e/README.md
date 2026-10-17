@@ -15,5 +15,6 @@ Add a pointer and keyboard browser case with each new Maproom control. Applicati
 shortcuts, drag/pan gestures, search/sort ledger, filtered empty state, live audience privacy,
 network receipt/reconnect and reduced-motion transitions have no fixture implementation yet. Their
 tests belong with those features; do not treat this fixture suite as their acceptance evidence.
-Field Atlas is the shared visual language; check wide and narrow screenshots when changing map,
-inspector, ledger or diary presentation.
+These assertions do not verify visual consistency across views. Field Atlas is the shared visual
+language; review wide and narrow screenshots when changing map, inspector, ledger or diary
+presentation.

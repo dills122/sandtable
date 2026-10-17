@@ -4,6 +4,7 @@ test('skip link reaches operations and roster, map, and ledger share selection',
   page,
 }) => {
   await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'The coastal exercise' })).toBeVisible();
   await page.keyboard.press('Tab');
   await expect(page.getByRole('link', { name: 'Skip to operations' })).toBeFocused();
   await page.keyboard.press('Enter');
@@ -37,7 +38,14 @@ test('zoom bounds, keyboard camera controls, and fit preserve selected formation
   page,
 }) => {
   await page.goto('/');
-  await page.getByRole('button', { name: 'Heron group, armour, L-4' }).click();
+  const counter = page.getByRole('button', { name: 'Heron group, armour, L-4' });
+  const frame = page.locator('.map-canvas');
+  const scene = page.locator('.map-scene');
+  await counter.click();
+  const originalCounter = await counter.boundingBox();
+  const originalFrame = await frame.boundingBox();
+  expect(originalCounter).not.toBeNull();
+  expect(originalFrame).not.toBeNull();
   const zoomIn = page.getByRole('button', { name: 'Zoom in' });
   const zoomOut = page.getByRole('button', { name: 'Zoom out' });
   await expect(zoomOut).toBeDisabled();
@@ -47,11 +55,48 @@ test('zoom bounds, keyboard camera controls, and fit preserve selected formation
     await expect(page.getByLabel('Map zoom')).toHaveText(level);
   }
   await expect(zoomIn).toBeDisabled();
+  await expect
+    .poll(async () => {
+      const map = await frame.boundingBox();
+      const terrain = await scene.boundingBox();
+      if (!map || !terrain) return 0;
+      return terrain.width / map.width;
+    })
+    .toBeGreaterThan(1.95);
   await page.getByRole('button', { name: 'Locate Heron group on map' }).click();
   await expect(page.getByLabel('Map zoom')).toHaveText('200%');
+  await expect
+    .poll(async () => {
+      const map = await frame.boundingBox();
+      const marker = await counter.boundingBox();
+      if (!map || !marker) return Number.POSITIVE_INFINITY;
+      return Math.max(
+        Math.abs(marker.x + marker.width / 2 - map.x - map.width / 2),
+        Math.abs(marker.y + marker.height / 2 - map.y - map.height / 2),
+      );
+    })
+    .toBeLessThan(40);
   await page.getByRole('button', { name: 'Fit map' }).focus();
   await page.keyboard.press('Space');
   await expect(page.getByLabel('Map zoom')).toHaveText('100%');
+  await expect
+    .poll(async () => {
+      const map = await frame.boundingBox();
+      const terrain = await scene.boundingBox();
+      const marker = await counter.boundingBox();
+      if (!map || !terrain || !marker || !originalCounter || !originalFrame)
+        return Number.POSITIVE_INFINITY;
+      return Math.max(
+        Math.abs(terrain.x - map.x),
+        Math.abs(terrain.y - map.y),
+        Math.abs(terrain.width - map.width),
+        Math.abs(terrain.height - map.height),
+        Math.abs(marker.x - originalCounter.x),
+        Math.abs(marker.y - originalCounter.y),
+        Math.abs(map.width - originalFrame.width),
+      );
+    })
+    .toBeLessThan(2);
   await expect(zoomOut).toBeDisabled();
   await expect(page.getByRole('button', { name: 'Heron group, armour, L-4' })).toHaveAttribute(
     'aria-pressed',
