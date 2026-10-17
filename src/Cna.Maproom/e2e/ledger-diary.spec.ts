@@ -52,6 +52,7 @@ test('accepted fixture updates diary, ledger, map and locate; rejected result ad
   await expect(page.getByRole('button', { name: 'Fox group, infantry, M-6' })).toBeVisible();
   await expect(page.getByRole('row', { name: /Fox group/ })).toContainText('accepted');
   await expect(page.locator('.diary-entry')).toContainText('Fox group moved to M-6');
+  await expect(page.locator('.diary-entry .fa-eyebrow')).toHaveText('Accepted example');
   await page.locator('.roster-item').filter({ hasText: 'Harrier group' }).click();
   await expect(page.locator('.diary-entry')).toHaveCount(0);
   await page.getByRole('combobox', { name: 'Show entries for' }).selectOption('all');
@@ -104,8 +105,21 @@ test('narrow records remain readable at 200% and pass WCAG A/AA axe', async ({ p
   await page.goto('/');
   await page.addStyleTag({ content: 'html {font-size:200%}' });
   const ledger = page.getByRole('table', { name: 'Formation ledger' });
-  await expect(ledger.getByRole('columnheader')).toHaveCount(4);
-  await expect(ledger.getByRole('row', { name: /Fox group/ }).getByRole('cell')).toHaveCount(3);
+  const labels = ['Formation', 'Kind', 'Position', 'Order state'];
+  for (const label of labels) {
+    const header = ledger.getByRole('columnheader', { name: label });
+    await header.scrollIntoViewIfNeeded();
+    await expect(header).toBeVisible();
+    await expect(header).toBeInViewport();
+  }
+  const row = ledger.getByRole('row', { name: /Fox group/ });
+  await expect(row.getByRole('cell')).toHaveCount(3);
+  const narrowLabels = await row
+    .locator('td')
+    .evaluateAll((cells) =>
+      cells.map((cell) => getComputedStyle(cell, '::before').content.replaceAll('"', '')),
+    );
+  expect(narrowLabels).toEqual(labels.slice(1));
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   const results = await new AxeBuilder({ page })
     .withTags(['wcag2a', 'wcag2aa', 'wcag21aa'])
