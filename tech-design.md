@@ -746,6 +746,15 @@ and two separate reference files. Warm fixture replay observed~1.06–1.10GB cum
 at~606–622ms, not peak/live memory or near-limit/public capacity proof. Independent review/exact-head
 hostedCI/public activation remain separate gates.
 
+The private [authentic moved-repeat Breakdown reference](docs/specs/combat-actual-moved-repeat-breakdown-completion-v1.md)
+replays the original CreationRequest and ten independent R02 ledgers before its own eleventh
+Breakdown input. One trusted System completion enters ordinal-two Combat Position Determination
+without executing Combat or closing the active cycle. It preserves both Movement proofs and adds
+one receipt to the cumulative and local Breakdown ledgers. All 300 authentic terminal replays and
+the final vector audit pass, covering 36 paid and 264 armed rows. All 788 authentic nonterminal
+cuts reject. The freeze-candidate schema passed exact-head replay and vector/cut audit; fresh
+independent review and hosted CI remain open. No native R03 consumer is claimed.
+
 The additive [actual Reaction-to-Combat entry](docs/specs/combat-actual-reaction-combat-entry-v1.md)
 authenticates complete direct Reaction closure with separate prefix/lifecycle/Breakdown caller ledgers.
 Both owner routes and decline/unavailable/timeout reach certified positive entry18 with CP4/seed1cursor2.

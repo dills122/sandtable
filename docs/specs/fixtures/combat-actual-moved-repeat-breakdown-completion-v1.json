@@ -1,0 +1,69 @@
+{
+  "contractVersion": 1,
+  "status": "representative corrected vectors; full catalogue audit pending",
+  "rowCount": 300,
+  "selectedOrdinals": [
+    0,
+    2,
+    36,
+    41
+  ],
+  "cases": [
+    {
+      "rowKey": "r000-c01",
+      "rootOrdinal": 0,
+      "movementCut": 1,
+      "profile": "paid",
+      "parentSourceHash": "sha256:69d78fc2c0863b4f09e9f5fac4bbb9cd49b450b4fc6ad5161980ee3d9aa17fb5",
+      "sourceHash": "sha256:6fff4970e5bfaa56d4d6f9692607c7f3144633116f9854295e24d0c954210751",
+      "eventHash": "sha256:9511ecbe2e4e76eee56f056fd2cfb6e95c1760d86255e88d3fc2c9e9340b3f86",
+      "beforeControlHash": "sha256:69a56f9be2d7440841013e0dbc3311c5f8aecee0d74ed0b735f17a327088b151",
+      "afterControlHash": "sha256:e9511dfce0b8ac3fc7831e7487b235905c5207390dc119f3babc874bb551965d",
+      "beforeProofHash": "sha256:a8168b98fbddf6e2042b82b2c46902bb36cdb13bcb9e1f8bfd28551f763f385b",
+      "afterProofHash": "sha256:cde76cfc6f8e6e4372436e4c328f28aa41eb2cec0faba72ebc9b2119941d39c6",
+      "receiptId": "mrbc.606c197847a9a84d8f3ffb767eb789fba9027883dff1151aa2dec498ab7303c7"
+    },
+    {
+      "rowKey": "r000-c03",
+      "rootOrdinal": 0,
+      "movementCut": 3,
+      "profile": "paid",
+      "parentSourceHash": "sha256:21cbcb4fc3a35236fee29890355bbcb26b9a459f1141329770bdbe51a8f1abad",
+      "sourceHash": "sha256:217b7d88ebaa412980a66c7ea0628e072416e5f33f7219668c47620c5aad1642",
+      "eventHash": "sha256:c3cfa821c238a51f3498cdcd97e91ef777e5772b7973a948ce04e6795f1a9c92",
+      "beforeControlHash": "sha256:336ce05a44b59aa1a389adce5b26cb0d304805555919ca15c16966eb912adc02",
+      "afterControlHash": "sha256:04f746b4ae535b1049e5b5ba8caea754157c6520bd7ccfd802a32aac9bdae5c2",
+      "beforeProofHash": "sha256:542c22a362065efaf420d645532e34c4941e74b5a44dd44ae0be3f1b6f4a063a",
+      "afterProofHash": "sha256:5a6a5dc4c22b41b5cba172545c5639f056e9bc96a58e67a514a2940fe8c8fbaa",
+      "receiptId": "mrbc.e2daeee57b31b3c8f6349da1039e621517cbfed402af8ff049786dc06c8826a8"
+    },
+    {
+      "rowKey": "r012-c01",
+      "rootOrdinal": 12,
+      "movementCut": 1,
+      "profile": "armed",
+      "parentSourceHash": "sha256:8ba3ca362e8f91bb6d0621da20fd2f8cd168deae20015a99f9e94ed153652289",
+      "sourceHash": "sha256:7dd4a0860b65d8bd1db51f65cd2eadc7b57110cf95c0bf5d32447f2937573638",
+      "eventHash": "sha256:3165ec2878d3f27235410aa4ae6a2827583fc6a27757f8e9fd2d99a492689e9d",
+      "beforeControlHash": "sha256:53f566f533d0ec30541776056bb3164e03c02cae023de7cef500d5070603837a",
+      "afterControlHash": "sha256:1ac7c737fd7f7fe38d13b741cdc92ef658d3e4e9e2b9d06d736207f24c50de7c",
+      "beforeProofHash": "sha256:766d07b0c703c16e8e32cb87946984f4da0ef23023a6b64676e2845f3ece7a2a",
+      "afterProofHash": "sha256:c084755d9e970cf3bb7b751748db47a9193d51e3d2281b4f1f3a00c68e96d93f",
+      "receiptId": "mrbc.af668a6a66dd890e432e4012f3690f10cfa8fb4e5a23c4ec4f228836a30f61d9"
+    },
+    {
+      "rowKey": "r012-c06",
+      "rootOrdinal": 12,
+      "movementCut": 6,
+      "profile": "armed",
+      "parentSourceHash": "sha256:0288871ed6b28c4873e742812b33b4a456ab8dad9654b0c40a9cdbb4c894512a",
+      "sourceHash": "sha256:faa325836d2dbefde72fd5c0b71864e28a125e31925dab8bc438f5e81425125e",
+      "eventHash": "sha256:3d6239108e4da7cbf3ce30d4417ace13f11c4baa0e5f3c65f7575ddaf71a3b12",
+      "beforeControlHash": "sha256:ada54bee08f70c9c279c3b670c05165680477e8927e40e6c63a6b4b72702b0e3",
+      "afterControlHash": "sha256:5725eca7faabea0334b8eae221320839676b3fb2944cfd4e46e335a58f98de13",
+      "beforeProofHash": "sha256:1fb64309d7d87d1ce0e69b9f4fdaceddee4d50b5c19ab87bea3d2dae933fce06",
+      "afterProofHash": "sha256:5ebbff9faf99c8233d43daad6fb58dbf5c31525c020af172ed7af43e77171b16",
+      "receiptId": "mrbc.bbc20d2b55812af898c66d8178520edbf594c56d1376d4c53dfb5349df5c41fc"
+    }
+  ]
+}
