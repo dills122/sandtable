@@ -1,0 +1,23 @@
+{
+  "contractVersion": 1,
+  "status": "provisional physical partition only; no action admission",
+  "evidenceSummarySha256": "847972f5eb9c12be2e7a1774d2acd61caa1dc603b43413f7fb9d30cbec80c45b",
+  "terminalRows": 300,
+  "provisionalPositive": {
+    "firstIndex": 36,
+    "stride": 6,
+    "count": 44,
+    "firstRowKey": "r012-c01",
+    "lastRowKey": "r055-c01"
+  },
+  "provisionalEmpty": {
+    "count": 256,
+    "nonadjacent": 244,
+    "adjacentPaidWithoutAmmo": 12
+  },
+  "genuineSamples": [
+    {"index": 0, "rowKey": "r000-c01", "physicalShape": "provisional-empty", "actingSide": "axis"},
+    {"index": 36, "rowKey": "r012-c01", "physicalShape": "provisional-positive", "actingSide": "axis"},
+    {"index": 168, "rowKey": "r034-c01", "physicalShape": "provisional-positive", "actingSide": "commonwealth"}
+  ]
+}
