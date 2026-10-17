@@ -801,9 +801,9 @@ hosted CI; no public activation follows.
 The [P01 ordinal-two Combat Position design](docs/specs/combat-actual-moved-repeat-position-v1.md)
 starts from that exact R03 suffix and requires CreationRequest plus all eleven independent input
 ledgers before private assessment. Its 44 positive and 256 empty shapes remain provisional until
-complete same-head result, geometry, identity and privacy proofs pass. P01 proposes excluding
-source-legal voluntary surrender under Land §15.88, pending explicit owner acceptance. If accepted,
-the bounded exercise cannot claim the full physical action surface. No P01 executable
+complete same-head result, geometry, identity and privacy proofs pass. Accepted `CMB-POL-009`
+excludes source-legal voluntary surrender under Land §15.88 from the initial RC, so the bounded
+exercise cannot claim the full physical action surface. No P01 executable
 reader, P02 selection, native consumer or public action is active.
 
 The additive [actual Reaction-to-Combat entry](docs/specs/combat-actual-reaction-combat-entry-v1.md)

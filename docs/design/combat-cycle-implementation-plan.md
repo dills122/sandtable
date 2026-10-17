@@ -3042,8 +3042,8 @@ partition provisionally into 44 adjacent armed candidates and 256 physically emp
 The design pins original CreationRequest plus 11-ledger replay, exact R03 suffix, complete bounded
 result/geometry proof, private identity and explicit policy exclusions. Accepted CMB-POL-001 and
 DES-005 authorize only the bounded singleton infantry exercise. Land §15.88 voluntary surrender
-remains source-legal; its proposed exclusion from P01 requires explicit owner acceptance before
-admission. An excluded choice precludes any full source-legal Combat claim.
+remains source-legal; accepted `CMB-POL-009` excludes it from the initial RC P01 exercise.
+This precludes any full source-legal Combat claim.
 
 P01 executable reference, canonical schema/ID, all-row adversarial verification and independent
 same-head review remain open. The provenance and geometry reports in draft PRs #225–#226 and

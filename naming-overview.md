@@ -61,8 +61,8 @@ exact-head hosted CI; public activation remains a separate gate.
 P01 names the private ordinal-two Combat Position contract design following R03; it is a delivery
 label, not a new product. Its [acceptance matrix](docs/specs/combat-actual-moved-repeat-position-v1.md)
 does not create an executable reader or public action. Any later implementation belongs inside
-Umpire under a plain technical name. Its proposed surrender exclusion needs explicit owner
-acceptance before the bounded exercise can be admitted.
+Umpire under a plain technical name. Accepted `CMB-POL-009` excludes voluntary surrender from
+the initial RC bounded exercise; the remaining contract and proof gates still control admission.
 
 **Command** chooses strategic objectives, whether supplied by a person, scripted policy or optional
 model. **Staff** converts intent into concrete deterministic plans. The Umpire validates and executes

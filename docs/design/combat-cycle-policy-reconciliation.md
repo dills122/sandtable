@@ -1,6 +1,7 @@
 # Combat and Cycle Policy Reconciliation
 
-**Status:** `CMB-POL-001`–`008` **accepted by project owner, 2026-09-06**.
+**Status:** `CMB-POL-001`–`008` **accepted by project owner, 2026-09-06**;
+`CMB-POL-009` accepted for the initial RC bounded P01 exercise, 2026-10-17.
 Corrected plan at `a10a588` accepted; exact contracts and production activation remain gated.
 **Original input:** `d2bc67c`. **Approval checkpoint:** `a10a588`.
 
@@ -27,6 +28,18 @@ review or bypass checkpoint B's exact-contract acceptance. Original alternatives
 | `CMB-POL-006` | Adopt DES-005's side disclosure allowlist, including its stated inferences: captor sees own prisoner/guard facts; original owner sees own escaped replacement entitlement; entering assignment in this profile implies RBA decline. Raw enemy strength/resources, dice/cursors, authority hashes and internal event counts remain private. | DES-001/002/005. Equal authorized histories must preserve bytes, candidate IDs and accept/reject behavior. Host timing/traffic privacy needs later evidence; approving this allowlist is not a constant-time claim. A narrower allowlist requires revising the affected decisions and projections. |
 | `CMB-POL-007` | Adopt `RESREL-DEC-001`–`004`: first release is friendly-phase-relative; unavailable first-release I converts to II, later II retains; voluntary ceilings use cumulative stage CP; committed offensive-use history and the immediate next-Movement exception survive status changes. | [Reserve research](../research/reserve-release-history-spike.md), [cycle composition](continual-cycle-reserve-composition-v1.md). One release-window budget, no renewed deadline per unit. Pre-release I movement and offensive Combat by released reserves remain excluded until their extension is designed. |
 | `CMB-POL-008` | Adopt CYCLE-DES-001's proposed event/codec composition and bounded evidence terminal: retain pre-event prefix, public/authority separation, Movement-end eligibility and semantic progress; repeat needs supported legal continuation; finish reaches same-slot Truck Convoy entry. Retain guard/upkeep/replacement obligations and reject unsupported requested terminals at admission. | [Cycle composition](continual-cycle-reserve-composition-v1.md). This implements, rather than reopens, accepted `CYCLE-DEC-001`–`014`. No seed-derived legality, guessed cycle history, silent stage reset or two-assault claim from one ammo load. Exact production schemas still require freeze. |
+
+## Initial RC surrender scope — owner decision 2026-10-17
+
+`CMB-POL-009`: the owner selected **“Exclude for initial RC”** for voluntary surrender under
+Land §15.88 in the bounded P01 Combat Position exercise. This is a digital scope decision, not a
+claim that the source rules forbid surrender. The P01 contract must disclose the exclusion and
+fail closed on any state requiring automatic surrender handling. That ammunitionless condition is
+separate from the voluntary choice; post-cost zero ammo alone does not establish it. An exercise with this
+exclusion cannot claim complete source-legal Combat action coverage. Adding voluntary surrender
+later requires a versioned decision, typed choice and settlement/fallback contract, source-backed
+proof, privacy review and native/public admission gates. This decision does not waive complete
+coverage of the adopted result chart, the 300 authentic R03 rows, or any other P01 acceptance gate.
 
 ## Clock privacy correction — owner decision 2026-09-15
 
