@@ -125,7 +125,9 @@ reconciliation, restore provenance, fixed direct-Core vectors and the failure ma
 Core adapter supplies admitted creation, coherent side cuts, accepted evidence and verified
 private transcript replay. MAP-07 now has a temporary single-fixture Orleans grain with
 in-memory request dedupe, bounded System progression and in-process Core parity tests. It
-has no browser ingress, authorized seat/action mapping, terminal-state signal or process
+retains state across grain reactivation, disables remote Orleans client ingress, and requires an
+internal process capability. It has no browser ingress, authorized seat/action mapping,
+observable pending phase, Core terminal-state signal or process
 durability. MAP-08/09 ingress, MAP-14/15 durable provider proof and connected play remain open.
 The [implementation plan](../design/local-game-server-maproom-plan.md) owns slice dependencies
 and acceptance checks; the [design system](../design/maproom-design-system-v0.md) owns visual rules.

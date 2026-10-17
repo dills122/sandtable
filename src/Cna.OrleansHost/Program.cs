@@ -1,3 +1,5 @@
+using Cna.OrleansHost;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
@@ -9,7 +11,7 @@ builder.Host.UseOrleans(siloBuilder =>
         // Single-machine, dev-only clustering provider. Fine for local development,
         // but silently using it in any other environment would produce a silo that
         // can never form a multi-instance cluster.
-        siloBuilder.UseLocalhostClustering();
+        siloBuilder.UseTemporaryCampaignDevelopmentSilo();
     }
     else
     {

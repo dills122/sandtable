@@ -3,6 +3,9 @@
     <TargetFramework>net10.0</TargetFramework>
     <Description>Authoritative Orleans host for Sandtable campaigns.</Description>
   </PropertyGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Cna.OrleansHost.Tests" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Orleans.Server" />

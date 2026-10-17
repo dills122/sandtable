@@ -99,7 +99,11 @@ and private transcript re-adjudication. It does not perform seat authorization, 
 publication or browser mapping. The
 [MAP-07 temporary grain](src/Cna.OrleansHost/TemporaryCampaignGrain.cs) now owns one admitted
 Rules9 fixture per local in-memory activation. Serialized grain calls install Core successors
-with an in-memory request/receipt record; System progression has a 1–32 step budget and explicit
+with a process-lifetime in-memory request/receipt record that survives grain deactivation but not
+host restart. The local Orleans client gateway is disabled, and an internal grain interface
+requires a process-only capability before any private data or System action. Its memory commit
+has no await or provider I/O, so pending is not externally observable in this slice. System
+progression has a 1–32 step budget and explicit
 human, unsupported-phase and step-limit outcomes. Its small typed side summary and canonical
 legal set come from one committed MAP-06 cut. This is trusted in-silo plumbing only: operator and
 seat authentication, outward action mapping, durable conditional publication and terminal-state
@@ -660,7 +664,7 @@ resolution, and replay validation remain outside it. Concurrent misses may rebui
 | --- | --- |
 | `Cna.Core` | Pure deterministic rules, authority, content/setup validation, RNG, events, replay, observations and legal actions |
 | `Cna.ExerciseRunner` | Fresh local Exercises, serial Maneuvers, controller policies and trusted evidence |
-| `Cna.OrleansHost` | Orleans development host scaffold; no live campaign grain or production clustering provider |
+| `Cna.OrleansHost` | Development-only single-fixture temporary campaign grain; in-memory state survives activation churn but not host restart; no client gateway or production clustering/storage provider |
 | `Cna.DecisionWorker` | Discovered gRPC client scaffold; no live campaign dispatcher or fallback executor |
 | `Cna.Intelligence.Contracts` | Versioned protobuf and generated transport contracts |
 | `Cna.Intelligence.Gateway` | Provider-status and gRPC scaffold; decision/narrative return `Unavailable` |

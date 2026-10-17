@@ -7,7 +7,9 @@ using Cna.Core.Hosting;
 using Cna.Core.Rules;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Orleans;
+using Orleans.Configuration;
 using Orleans.Hosting;
 
 namespace Cna.OrleansHost.Tests;
@@ -21,8 +23,9 @@ public sealed class TemporaryCampaignGrainTests
         await host.StartAsync(TestContext.Current.CancellationToken);
         try
         {
-            var grain = host.Services.GetRequiredService<IGrainFactory>()
-                .GetGrain<ITemporaryCampaignGrain>("host-rsh-001");
+            Assert.Equal(0, host.Services.GetRequiredService<IOptions<EndpointOptions>>()
+                .Value.GatewayPort);
+            var grain = GetTrustedGrain(host);
             var directStart = CampaignHostAdapter.Create(Request());
             var direct = directStart.Session!;
             var creation = await grain.CreateAsync("operator-1", "create-1");
@@ -32,6 +35,18 @@ public sealed class TemporaryCampaignGrainTests
             Assert.Equal(creation.Event, (await grain.CreateAsync("operator-1", "create-1")).Event);
             Assert.Equal(TemporaryCampaignStatus.Conflict,
                 (await grain.CreateAsync("operator-2", "create-1")).Status);
+            var forged = new byte[32];
+            Assert.Equal(TemporaryCampaignStatus.Rejected,
+                (await grain.Inner.CreateAsync(forged, "operator-1", "create-2")).Status);
+            var privateRead = await grain.Inner.QueryAsync(forged, CampaignActionAudience.Axis);
+            Assert.Equal(TemporaryCampaignStatus.Rejected, privateRead.Status);
+            Assert.Null(privateRead.View);
+            Assert.Null(privateRead.LegalActions);
+            Assert.Equal(TemporaryCampaignStatus.Rejected,
+                (await grain.Inner.AdvanceSystemAsync(forged, 1)).Status);
+            Assert.Equal(TemporaryCampaignStatus.Rejected,
+                (await grain.Inner.SubmitAsync(forged, "host-system", "forged",
+                    CampaignActionAudience.System, [])).Status);
 
             for (var index = 0; index < 4; index++)
             {
@@ -60,6 +75,10 @@ public sealed class TemporaryCampaignGrainTests
                 var command = new CampaignActionSubmission(1, chosen.CampaignId,
                     chosen.StateVersion, chosen.PositionId, chosen.Audience, candidate.ActionId);
                 var bytes = CampaignActionSubmissionSerializer.SerializeCanonical(command);
+                if (chosen.Audience == CampaignActionAudience.System)
+                    Assert.Equal(TemporaryCampaignStatus.Rejected,
+                        (await grain.SubmitAsync("seat-1", $"impersonate-{index}",
+                            CampaignActionAudience.System, bytes)).Status);
                 var directStep = CampaignHostAdapter.Submit(direct, command);
                 Assert.True(directStep.IsAccepted);
                 var actor = chosen.Audience == CampaignActionAudience.System
@@ -94,6 +113,16 @@ public sealed class TemporaryCampaignGrainTests
                 var afterStale = await grain.QueryAsync(CampaignActionAudience.Axis);
                 Assert.Equal(beforeStale.LegalActions, afterStale.LegalActions);
                 Assert.Equal(beforeStale.View, afterStale.View);
+                if (index == 0)
+                {
+                    var priorActivation = await grain.ActivationIdAsync();
+                    await grain.DeactivateAsync();
+                    Assert.NotEqual(priorActivation, await grain.ActivationIdAsync());
+                    Assert.Equal(replies[0].Receipt,
+                        (await grain.FindRequestAsync(actor, id, chosen.Audience)).Receipt);
+                    Assert.Equal(beforeStale.LegalActions,
+                        (await grain.QueryAsync(CampaignActionAudience.Axis)).LegalActions);
+                }
                 direct = directStep.SuccessorSession!;
             }
         }
@@ -109,8 +138,7 @@ public sealed class TemporaryCampaignGrainTests
             await firstHost.StartAsync(TestContext.Current.CancellationToken);
             try
             {
-                var grain = firstHost.Services.GetRequiredService<IGrainFactory>()
-                    .GetGrain<ITemporaryCampaignGrain>("host-rsh-001");
+                var grain = GetTrustedGrain(firstHost);
                 await grain.CreateAsync("operator-1", "create-1");
                 Assert.Equal(TemporaryCampaignStatus.Rejected,
                     (await grain.AdvanceSystemAsync(0)).Status);
@@ -128,8 +156,7 @@ public sealed class TemporaryCampaignGrainTests
         await secondHost.StartAsync(TestContext.Current.CancellationToken);
         try
         {
-            var grain = secondHost.Services.GetRequiredService<IGrainFactory>()
-                .GetGrain<ITemporaryCampaignGrain>("host-rsh-001");
+            var grain = GetTrustedGrain(secondHost);
             Assert.Equal(TemporaryCampaignStatus.Missing,
                 (await grain.QueryAsync(CampaignActionAudience.Axis)).Status);
             Assert.Equal(TemporaryCampaignStatus.Missing,
@@ -146,8 +173,7 @@ public sealed class TemporaryCampaignGrainTests
         await host.StartAsync(TestContext.Current.CancellationToken);
         try
         {
-            var grain = host.Services.GetRequiredService<IGrainFactory>()
-                .GetGrain<ITemporaryCampaignGrain>("host-rsh-001");
+            var grain = GetTrustedGrain(host);
             await grain.CreateAsync("operator-1", "create-1");
             var direct = CampaignHostAdapter.Create(Request()).Session!;
             for (var index = 0; index < 12; index++)
@@ -195,9 +221,32 @@ public sealed class TemporaryCampaignGrainTests
     private static IHost BuildHost(int? port = null)
     {
         var siloPort = port ?? FreePort();
-        return new HostBuilder().UseOrleans(silo => silo.UseLocalhostClustering(
-            siloPort: siloPort, gatewayPort: 0,
-            serviceId: "map07-temp", clusterId: "map07-temp")).Build();
+        return new HostBuilder().UseOrleans(silo => silo
+            .UseTemporaryCampaignDevelopmentSilo(siloPort)).Build();
+    }
+
+    private static TrustedGrain GetTrustedGrain(IHost host) => new(
+        host.Services.GetRequiredService<IGrainFactory>()
+            .GetGrain<ITemporaryCampaignGrain>("host-rsh-001"),
+        host.Services.GetRequiredService<TemporaryCampaignAccess>().Capability);
+
+    private sealed class TrustedGrain(ITemporaryCampaignGrain inner, byte[] capability)
+    {
+        internal ITemporaryCampaignGrain Inner => inner;
+        internal Task<TemporaryCampaignReply> CreateAsync(string actor, string id) =>
+            inner.CreateAsync(capability, actor, id);
+        internal Task<TemporaryCampaignReply> QueryAsync(CampaignActionAudience audience) =>
+            inner.QueryAsync(capability, audience);
+        internal Task<TemporaryCampaignReply> SubmitAsync(string actor, string id,
+            CampaignActionAudience audience, byte[] command) =>
+            inner.SubmitAsync(capability, actor, id, audience, command);
+        internal Task<TemporaryCampaignReply> FindRequestAsync(string actor, string id,
+            CampaignActionAudience audience) =>
+            inner.FindRequestAsync(capability, actor, id, audience);
+        internal Task<TemporaryCampaignReply> AdvanceSystemAsync(int budget) =>
+            inner.AdvanceSystemAsync(capability, budget);
+        internal Task<string> ActivationIdAsync() => inner.ActivationIdForTestAsync(capability);
+        internal Task DeactivateAsync() => inner.DeactivateForTestAsync(capability);
     }
 
     private static int FreePort()
