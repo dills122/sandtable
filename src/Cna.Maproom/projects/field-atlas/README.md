@@ -1,7 +1,8 @@
 # @sandtable/field-atlas
 
 Internal Angular design-system library for Maproom. Its public API exports `AtlasChoiceSelect`,
-`AtlasPanel`, `AtlasStatus`, `AtlasUnitCounter`, `AtlasStatusTone` and `UnitKind`.
+`AtlasPanel`, `AtlasStatus`, `AtlasUnitCounter`, `AtlasIconButton`, `AtlasStatusTone`, `UnitKind`,
+and 15 named Lucide icon aliases documented in [ICONOGRAPHY.md](ICONOGRAPHY.md).
 
 - `src/styles/_tokens.scss`: canonical implemented semantic colors, typography, spacing and motion.
 - `src/styles/_material.scss`: Angular Material public theme APIs only.
@@ -13,7 +14,8 @@ Internal Angular design-system library for Maproom. Its public API exports `Atla
   See **Foundations / Choice select** in Storybook.
 - `src/styles/utilities.css`: Tailwind utilities and semantic bridge, without preflight.
 - `stories`: foundations, upstream Material usage, custom component states and design guidance.
-- `licenses`: bundled font licenses; actual font assets come from pinned Fontsource packages.
+- `licenses`: bundled font notices and Lucide ISC/Feather MIT notices; font assets come from pinned
+  Fontsource packages.
 
 From the workspace root, run `npm run storybook` or `npm run build:lib`.
 See the [workspace guide](../../README.md) for setup and checks.
