@@ -85,11 +85,12 @@ cells (357 printed and three explicit `CMB-SRC-RUL-001` amendments), and 8,840 n
 result/refusal/capture cases. Proof must cover both capture roles, zero-loss Engaged, Retreat
 priority, accepted and refused one-hex retreat, custody guard and escape, exact loss/CP/Cohesion/
 RP arithmetic, all receipts, conservation, and retained future obligations. The bounded chart
-branches exclude the expressly unsupported voluntary-surrender option. The sibling
-result/settlement report in merged PR #227 and retreat/custody audit in draft PR #226 are review inputs;
-they are not substitutes for an executable same-head certificate. The geometry report establishes
-two actor orientations, both retreat dispositions, both capture roles and eight placement cases
-for the selected six-hex content graph. No particular RNG seed may reduce this matrix.
+branches exclude the expressly unsupported voluntary-surrender option. The bounded executable
+AC-004 result/settlement verifier merged in PR #234, and the AC-005 geometry verifier introduced
+in PR #236 checks authenticated R03 rows. They cover those slices, but neither grants a
+complete P01 support certificate. The geometry proof checks two actor orientations, both retreat
+dispositions, both capture roles and eight placement cases for the selected six-hex content graph.
+No particular RNG seed may reduce this matrix.
 
 ## Acceptance matrix
 
@@ -98,8 +99,8 @@ for the selected six-hex content graph. No particular RNG seed may reduce this m
 | `P01-AC-001` | Recreate every original source from CreationRequest plus 11 independent ledgers; verify all parent bytes, R03 Source/Control/Proof, source pins and exact ordinal-two suffix before inspection. Tampered, missing, reordered or substituted ledger rejects. | Provisional assessor replays all 300 genuine ancestors through frozen R03; complete mutation/cut/retry proof remains open. |
 | `P01-AC-002` | Enumerate exactly 300 unique contiguous row keys and compare every output with authenticated R03 terminal vectors: 44 positive, 256 supported-empty only after all gates pass. | All 300 provisional shapes match 44/256; all assessments remain `unsupported`, never supported-empty or admitted. |
 | `P01-AC-003` | Prove complete original-unit and representation binding, acting side, target membership, current versus prior segment target use, ZOC/obligation absence, Weather and no alternate selected-content action. | Provisional assessor checks selected shape and some participant/segment facts; complete provenance and action proof remains open. |
-| `P01-AC-004` | For all 44 positives, certify every adopted result coordinate, cost, loss, capture share, retreat/refusal and immediate settlement path, including source amendment, zero-loss effects and retained duties. | Sibling table audit available; same-head executable proof absent. |
-| `P01-AC-005` | Certify both one-hex retreat orientations and all eight custody/reunion placement cases from current post-move World and CP. Reject any new blocker, overlong path or donor/guard shortage. | Sibling geometry audit available; same-head executable proof absent. |
+| `P01-AC-004` | For all 44 positives, certify every adopted result coordinate, cost, loss, capture share, retreat/refusal and immediate settlement path, including source amendment, zero-loss effects and retained duties. | Merged bounded executable proof in PR #234: 44 authentic positives, 1,296 Morale pairs, 6,480 joint coordinates, 8,840 result cases and 9,728 settlement Worlds per side. It does not admit P01. |
+| `P01-AC-005` | Certify both one-hex retreat orientations and all eight custody/reunion placement cases from current post-move World and CP. Reject any new blocker, overlong path or donor/guard shortage. | Bounded executable proof in PR #236: all 300 authentic ancestors; 44 positive rows × four placement shapes, 16 source-reachable projected paths, bounded donor/lot quantities and fail-sensitive negatives. This does not admit P01. |
 | `P01-AC-006` | Enforce accepted `CMB-POL-009`: exclude voluntary surrender for the initial RC, distinguish automatic ammunitionless surrender, and fail closed on a state requiring surrender handling. Decline-only RBA and its cancellation fallback remain explicit. Never claim full source-legal action coverage. | Owner decision recorded; transition and source-condition proof pending. |
 | `P01-AC-007` | Freeze canonical private candidate ID and audience-visible mapping; equal authorized histories preserve visible bytes, IDs and accept/reject behavior under hidden changes. | Private preimage/order/hash fixed in provisional schema with a golden vector; outward mapping and privacy proof pending. |
 | `P01-AC-008` | Test 300 row classifications, all nonterminal cuts, retries, source/ledger/field mutations, both acting sides, physical negatives, dependency faults, and exact output hashes with a frozen schema and caps. | Provisional schema/fixture/verifier and focused tests exist; 300 genuine-row audit passes, but cuts, retries, full mutation matrix, caps and exact output proof remain open. |
@@ -107,9 +108,11 @@ for the selected six-hex content graph. No particular RNG seed may reduce this m
 
 ## Freeze decision
 
-Contract intent, acceptance matrix and provisional private assessor are reviewable. Executable
-P01 **freeze and admission** are not yet supported: sibling audits are independent reports on
-other heads; full nonterminal/transition proof, P01 input and event, capacity bounds, outward
-identity, and same-head all-result privacy tests are absent. No provisional reference may publish a supported action, open P02 selection, or enter
+Contract intent, acceptance matrix and provisional private assessor are reviewable. Bounded
+AC-004 result/settlement proof is merged, and bounded AC-005 geometry proof is included.
+Executable P01 **freeze and admission** remain unsupported:
+complete participant/action proof, automatic-surrender and decline-only RBA handling, full P01
+transition/input/event/capacity gates, outward identity and equal-authorized-history privacy tests
+are absent. No provisional reference may publish a supported action, open P02 selection, or enter
 native ordinal-two consumption before those gates close on one reviewed head. P02 and P03 remain
 separate even after P01 passes.
