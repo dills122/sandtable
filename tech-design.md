@@ -61,8 +61,9 @@ Tailwind, typed Reactive Forms/Formly, NgRx SignalStore, generated Angular HttpC
 SignalR notifications and an initial SVG map. Browser rendering does not require a Rust/WASM
 simulation port: the existing C# Umpire remains authoritative.
 
-One ASP.NET Core/Orleans host owns campaign lifecycle and browser ingress; Aspire launches the
-local host and client. Versioned, audience-safe HTTP contracts live separately from intelligence
+One ASP.NET Core/Orleans host will own campaign lifecycle and browser ingress. Aspire currently
+launches service scaffolds; the browser client runs separately until integration. Versioned,
+audience-safe HTTP contracts live separately from intelligence
 protobuf. SignalR carries audience-safe change hints; HTTP readback recovers after reconnect.
 The server grants seats and revalidates every submitted legal action. Browser caches, drafts and
 late responses are isolated by seat generation.
@@ -71,6 +72,12 @@ The first connected test uses an explicitly temporary synthetic rules-lab sessio
 publication and restore are later contract/provider gates, with external I/O coordinated outside
 authoritative grain turns. PostgreSQL is an evaluation candidate, not a selected production store.
 This lane does not activate private Combat or satisfy six-turn MVP acceptance.
+
+The [Proving Ground runbook](docs/runbooks/proving-ground.md) now defines a containerized
+Development preview: one built Angular shell and one single-silo Orleans host, both bound to host
+loopback. It deliberately omits database, gateway and worker from the minimal human-order path.
+No browser campaign seed, ingress or save exists yet. Production clustering and durable
+publication/restore remain gates before a Kubernetes deployment can replace this local profile.
 
 The [Field Atlas design system](docs/design/maproom-design-system-v0.md) starts with minimal semantic
 tokens and controls, then evolves through an operational map, order workflow and dense formation

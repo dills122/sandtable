@@ -49,6 +49,10 @@ consider a renderer/worker optimization only when measured browser work warrants
   campaign grain, browser ingress and durable campaign storage are not implemented.
 - [AppHost](../../src/Cna.AppHost/AppHost.cs) orchestrates three service scaffolds. Add a local
   Maproom profile which can launch the client and host without requiring Intelligence.
+- The [Proving Ground runbook](../runbooks/proving-ground.md) supplies a two-container Development
+  preview of the present Maproom shell and Orleans host, with loopback ports and HTTP smoke probes.
+  It does not implement MAP-07–17 or a browser campaign seed. Aspire client orchestration remains
+  an open integration option; do not infer it from the Docker preview.
 - [CampaignAuthority](../../src/Cna.Core/Campaigns/CampaignAuthority.cs),
   [CampaignObservations](../../src/Cna.Core/Observations/CampaignObservations.cs) and
   [CampaignLegalActions](../../src/Cna.Core/Actions/CampaignLegalActions.cs) supply current authority,

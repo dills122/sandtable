@@ -62,3 +62,34 @@ maproom-check:
 
 maproom-browser-check:
     npm --prefix src/Cna.Maproom run test:e2e
+
+# Containerized Development-only proving ground. No campaign API is connected yet.
+proving-ground-up:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    docker compose -f compose.proving-ground.yaml up --build -d
+    for attempt in {1..60}; do
+        if curl --silent --show-error --fail http://127.0.0.1:5180/health >/dev/null 2>&1 && \
+           curl --silent --show-error --fail http://127.0.0.1:4200/healthz >/dev/null 2>&1; then
+            echo "Proving Ground ready: Maproom http://127.0.0.1:4200; Orleans host http://127.0.0.1:5180"
+            exit 0
+        fi
+        sleep 1
+    done
+    docker compose -f compose.proving-ground.yaml ps
+    echo "Proving Ground did not become healthy within 60 seconds." >&2
+    exit 1
+
+proving-ground-smoke:
+    curl --fail --silent --show-error http://127.0.0.1:5180/health
+    curl --fail --silent --show-error http://127.0.0.1:4200/healthz
+
+proving-ground-logs:
+    docker compose -f compose.proving-ground.yaml logs --follow
+
+proving-ground-down:
+    docker compose -f compose.proving-ground.yaml down
+
+# Trusted CLI evidence, separate from browser campaign seeding.
+rules-lab-evidence:
+    dotnet run --project src/Cna.ExerciseRunner/Cna.ExerciseRunner.csproj -- maneuver run --manifest scenarios/maneuvers/rules-lab.reaction.serial.breakdown.v1.json --artifact-root artifacts/exercises
