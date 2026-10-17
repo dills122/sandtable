@@ -151,7 +151,7 @@ test('accepted result stays coherent across map, roster, inspector and ledger', 
   await expect(page.locator('.inspector')).toContainText('J-5');
   await expect(page.locator('.roster-item').filter({ hasText: 'Fox group' })).toContainText('J-5');
   await expect(page.locator('.ledger-row').filter({ hasText: 'Fox group' })).toContainText('J-5');
-  await page.getByRole('button', { name: 'Locate Fox group on map' }).focus();
+  await page.locator('.inspector').getByRole('button', { name: 'Locate Fox group on map' }).focus();
   await page.keyboard.press('Enter');
   await expect(page.getByLabel('Map zoom')).toHaveText('150%');
   await expect

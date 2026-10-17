@@ -335,7 +335,7 @@
             fixture.
           </p>
           <button type="button" class="fa-text-action" (click)="locateDiary(entry.formationId)">
-            Locate formation on map
+            Locate {{ formationName(entry.formationId) }} on map
           </button>
         </article>
       } @empty {

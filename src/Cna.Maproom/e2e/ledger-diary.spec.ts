@@ -56,7 +56,7 @@ test('accepted fixture updates diary, ledger, map and locate; rejected result ad
   await expect(page.locator('.diary-entry')).toHaveCount(0);
   await page.getByRole('combobox', { name: 'Show entries for' }).selectOption('all');
   await expect(page.locator('.diary-entry')).toHaveCount(1);
-  await page.getByRole('button', { name: 'Locate formation on map' }).click();
+  await page.getByRole('button', { name: 'Locate Fox group on map' }).click();
   await expect(page.getByRole('heading', { name: 'Fox group' })).toBeVisible();
   await expect(page.getByLabel('Map zoom')).toHaveText('150%');
   await page.locator('.roster-item').filter({ hasText: 'Harrier group' }).click();
@@ -67,6 +67,36 @@ test('accepted fixture updates diary, ledger, map and locate; rejected result ad
   await page.getByRole('button', { name: 'Issue order' }).click();
   await expect(page.getByRole('row', { name: /Harrier group/ })).toContainText('rejected');
   await expect(page.locator('.diary-entry')).toHaveCount(1);
+});
+
+test('all-visible diary distinguishes locate actions for two accepted formations', async ({
+  page,
+}) => {
+  await page.goto('/');
+  for (const [formation, destination] of [
+    ['Fox group', 'East crossing · M-6'],
+    ['Harrier group', 'Inland ridge · H-8'],
+  ]) {
+    await page.locator('.roster-item').filter({ hasText: formation }).click();
+    await page.getByRole('combobox', { name: 'Move to' }).click();
+    await page.getByRole('option', { name: destination }).click();
+    await page.getByRole('button', { name: 'Review draft' }).click();
+    await page.getByRole('button', { name: 'Issue order' }).click();
+    await expect(page.locator('.diary-entry')).toHaveCount(1);
+  }
+  await page.getByRole('combobox', { name: 'Show entries for' }).selectOption('all');
+  await expect(page.locator('.diary-entry')).toHaveCount(2);
+  const diary = page.locator('fa-panel').filter({
+    has: page.getByRole('heading', { name: 'War Diary' }),
+  });
+  const foxLocate = diary.getByRole('button', { name: 'Locate Fox group on map' });
+  const harrierLocate = diary.getByRole('button', { name: 'Locate Harrier group on map' });
+  await expect(foxLocate).toHaveCount(1);
+  await expect(harrierLocate).toHaveCount(1);
+  await foxLocate.click();
+  await expect(page.getByRole('heading', { name: 'Fox group' })).toBeVisible();
+  await harrierLocate.click();
+  await expect(page.getByRole('heading', { name: 'Harrier group' })).toBeVisible();
 });
 
 test('narrow records remain readable at 200% and pass WCAG A/AA axe', async ({ page }) => {
