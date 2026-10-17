@@ -36,6 +36,7 @@ public sealed class ManeuverRunCommandTests : IDisposable
         ".planning",
         "maneuver-command-tests",
         Guid.NewGuid().ToString("N"));
+    private bool preserveFailureArtifacts;
 
     [Fact]
     public void CertifiedInputRunsTwoUniqueExercisesAndPrintsOnlyValidatedPathsInOrder()
@@ -323,12 +324,14 @@ public sealed class ManeuverRunCommandTests : IDisposable
         {
             var standardOutput = new StringWriter();
             var standardError = new StringWriter();
+            var artifactRoot = Path.Combine(temp, directory);
             var exitCode = ManeuverRunCommand.Execute(
-                Arguments(CurrentFixture(MovementCostPairedFixturePath), Path.Combine(temp, directory)),
+                Arguments(CurrentFixture(MovementCostPairedFixturePath), artifactRoot),
                 standardOutput,
                 standardError,
                 TestContext.Current.CancellationToken);
-            Assert.Equal(ManeuverProcessExitCode.Succeeded, exitCode);
+            AssertPairedSucceededWithEvidence(
+                exitCode, artifactRoot, standardOutput.ToString(), standardError.ToString());
             Assert.Equal(
                 string.Empty,
                 NormalizeNewlines(standardError.ToString()));
@@ -373,6 +376,51 @@ public sealed class ManeuverRunCommandTests : IDisposable
         Assert.True(comparison.FailureCategoryEqual);
         Assert.Equal(firstOutput.ReportFingerprint, secondOutput.ReportFingerprint);
 
+    }
+
+    [Fact]
+    public void PairedFailureDiagnosticRetainsCategoryAndObservedChildPath()
+    {
+        var artifactRoot = Path.Combine(temp, "paired-diagnostic-failure");
+        var childPath = Path.Combine(artifactRoot, "corrupt-child");
+        Directory.CreateDirectory(childPath);
+        File.WriteAllText(Path.Combine(childPath, "retained-child-evidence.txt"), "corrupt fixture");
+        var dependencies = new ManeuverRunCommandDependencies(
+            ManeuverExecutor.Execute,
+            ManeuverReportWriter.Write,
+            (manifest, repositoryRoot, root, cancellationToken) =>
+                PairedManeuverExecutor.Execute(
+                    manifest,
+                    repositoryRoot,
+                    root,
+                    new ManeuverExecutionDependencies(
+                        _ => new ExerciseRunCoordinatorResult(
+                            ExerciseProcessExitCode.Succeeded, childPath, null, null),
+                        _ => throw new InvalidDataException("injected corrupt paired bundle")),
+                    cancellationToken));
+        var standardOutput = new StringWriter();
+        var standardError = new StringWriter();
+
+        var exitCode = ManeuverRunCommand.Execute(
+            Arguments(CurrentFixture(MovementCostPairedFixturePath), artifactRoot),
+            standardOutput,
+            standardError,
+            dependencies,
+            TestContext.Current.CancellationToken);
+        var failure = Record.Exception(() => AssertPairedSucceededWithEvidence(
+            exitCode, artifactRoot, standardOutput.ToString(), standardError.ToString()));
+
+        Assert.Equal(ManeuverProcessExitCode.AggregationFailed, exitCode);
+        Assert.NotNull(failure);
+        Assert.Contains("BundleInvalid", failure.Message, StringComparison.Ordinal);
+        Assert.Contains($"bundle={childPath}", failure.Message, StringComparison.Ordinal);
+        var output = ParseOutput(standardOutput.ToString(), expectedExerciseBundles: 0);
+        Assert.Contains($"report={output.ReportPath}", failure.Message, StringComparison.Ordinal);
+        Assert.True(File.Exists(Path.Combine(output.ReportPath, PairedReportReader.FileName)));
+        Assert.Contains("stderr=Maneuver aggregation failed", failure.Message,
+            StringComparison.Ordinal);
+        Assert.True(File.Exists(Path.Combine(childPath, "retained-child-evidence.txt")));
+        preserveFailureArtifacts = false;
     }
 
     [Fact]
@@ -666,13 +714,59 @@ public sealed class ManeuverRunCommandTests : IDisposable
 
     public void Dispose()
     {
-        if (Directory.Exists(temp)) Directory.Delete(temp, recursive: true);
+        if (!preserveFailureArtifacts && Directory.Exists(temp))
+            Directory.Delete(temp, recursive: true);
         var repositoryDirectory = Path.Combine(
             FindRepositoryRoot(AppContext.BaseDirectory),
             repositoryManifestDirectory);
-        if (Directory.Exists(repositoryDirectory))
+        if (!preserveFailureArtifacts && Directory.Exists(repositoryDirectory))
             Directory.Delete(repositoryDirectory, recursive: true);
         GC.SuppressFinalize(this);
+    }
+
+    private void AssertPairedSucceededWithEvidence(
+        ManeuverProcessExitCode exitCode,
+        string artifactRoot,
+        string standardOutput,
+        string standardError)
+    {
+        if (exitCode == ManeuverProcessExitCode.Succeeded) return;
+
+        preserveFailureArtifacts = true;
+        var details = new List<string>
+        {
+            $"Paired Maneuver exit={exitCode}; artifacts={artifactRoot}",
+            $"manifest={Path.Combine(FindRepositoryRoot(AppContext.BaseDirectory), repositoryManifestDirectory)}",
+            $"stdout={NormalizeNewlines(standardOutput)}",
+            $"stderr={NormalizeNewlines(standardError)}",
+        };
+        var reportPath = NormalizeNewlines(standardOutput).Split('\n')
+            .FirstOrDefault(line => line.StartsWith("report=", StringComparison.Ordinal))?[7..];
+        if (string.IsNullOrWhiteSpace(reportPath))
+        {
+            details.Add("report=<unavailable>");
+        }
+        else
+        {
+            details.Add($"report={reportPath}");
+            try
+            {
+                var report = PairedReportReader.Read(reportPath).Report;
+                for (var ordinal = 0; ordinal < report.Deterministic.Entries.Count; ordinal++)
+                {
+                    var entry = report.Deterministic.Entries[ordinal];
+                    var diagnostic = report.Diagnostics.Entries[ordinal];
+                    details.Add($"entry[{ordinal}] status={entry.Status} "
+                        + $"category={entry.AggregationFailureCategory?.ToString() ?? "<none>"} "
+                        + $"bundle={diagnostic.ObservedBundlePath ?? "<unavailable>"}");
+                }
+            }
+            catch (Exception exception)
+            {
+                details.Add($"reportReadback={exception.GetType().Name}: {exception.Message}");
+            }
+        }
+        Assert.Fail(string.Join(Environment.NewLine, details));
     }
 
     private static string EventType(byte[] canonicalEvent)
