@@ -91,16 +91,9 @@ main {
   gap: var(--space-xs);
   font-size: var(--text-sm);
 }
-.pane-actions {
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: var(--space-sm);
-  margin-bottom: var(--space-sm);
-}
-.pane-actions button,
 .map-controls button,
-.inspector-actions button {
+.inspector-actions button,
+.pane-toggle {
   min-height: 44px;
 }
 h1 {
@@ -108,18 +101,28 @@ h1 {
 }
 .workspace-grid {
   display: grid;
-  grid-template-columns: minmax(11rem, 12rem) minmax(0, 1fr) minmax(19.5rem, 20rem);
+  grid-template-columns: minmax(11rem, 12rem) minmax(0, 1fr) minmax(24rem, 27rem);
   gap: var(--space-md);
   align-items: stretch;
 }
 .workspace-grid.roster-collapsed {
-  grid-template-columns: minmax(0, 1fr) minmax(19.5rem, 20rem);
+  grid-template-columns: minmax(6.5rem, 7rem) minmax(0, 1fr) minmax(24rem, 27rem);
 }
 .workspace-grid.wide-inspector {
-  grid-template-columns: minmax(11rem, 12rem) minmax(0, 1fr) minmax(20rem, 25rem);
+  grid-template-columns: minmax(11rem, 12rem) minmax(0, 1fr) minmax(27rem, 32rem);
 }
 .workspace-grid.roster-collapsed.wide-inspector {
-  grid-template-columns: minmax(0, 1fr) minmax(20rem, 25rem);
+  grid-template-columns: minmax(6.5rem, 7rem) minmax(0, 1fr) minmax(27rem, 32rem);
+}
+.workspace-grid.inspector-collapsed,
+.workspace-grid.roster-collapsed.inspector-collapsed {
+  grid-template-columns: minmax(11rem, 12rem) minmax(0, 1fr);
+}
+.workspace-grid.roster-collapsed.inspector-collapsed {
+  grid-template-columns: minmax(6.5rem, 7rem) minmax(0, 1fr);
+}
+.workspace-grid.inspector-collapsed .inspector {
+  grid-column: 1 / -1;
 }
 .workspace-grid > * {
   min-width: 0;
@@ -141,6 +144,27 @@ h2 {
 .roster-heading span,
 .map-heading span {
   font-size: var(--text-sm);
+}
+.roster-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+.roster.is-collapsed .roster-heading {
+  padding: var(--space-sm);
+}
+.roster.is-collapsed h2 {
+  font-size: var(--text-sm);
+}
+.roster.is-collapsed .pane-toggle {
+  white-space: normal;
+  text-align: left;
+}
+.roster-list[hidden],
+#inspector-body[hidden] {
+  display: none;
 }
 .roster-item {
   display: flex;
@@ -176,6 +200,19 @@ h2 {
 .map-panel {
   display: flex;
   flex-direction: column;
+}
+.map-panel.is-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  width: 100vw;
+  height: 100dvh;
+  margin: 0;
+  border: 0;
+  box-shadow: 0 0 0 100vmax rgb(0 0 0 / 55%);
+}
+.map-panel.is-fullscreen .map-canvas {
+  min-height: 0;
 }
 .map-heading,
 .map-caption {
@@ -220,6 +257,7 @@ h2 {
   overflow: clip;
   background: var(--color-map);
   cursor: grab;
+  touch-action: none;
 }
 .map-canvas.is-dragging {
   cursor: grabbing;
@@ -230,6 +268,9 @@ h2 {
   isolation: isolate;
   transform-origin: 0 0;
   transition: transform 180ms ease-out;
+}
+.map-canvas.is-dragging .map-scene {
+  transition: none;
 }
 .terrain {
   position: absolute;
@@ -292,6 +333,15 @@ h2 {
 .inspector-actions {
   margin-bottom: var(--space-md);
 }
+.inspector-header-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+.inspector-context {
+  margin: 0 0 var(--space-md);
+}
 .records-grid {
   display: grid;
   grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
@@ -309,8 +359,7 @@ h2 {
   margin-bottom: var(--space-sm);
   font-size: var(--text-sm);
 }
-.records-tools input,
-.records-tools select {
+.records-tools input {
   min-height: 44px;
   max-width: 100%;
   padding: var(--space-xs);
@@ -365,10 +414,20 @@ h2 {
 }
 @media (max-width: 75rem) {
   .workspace-grid {
-    grid-template-columns: minmax(0, 1fr) 19rem;
+    grid-template-columns: minmax(0, 1fr) minmax(22rem, 25rem);
   }
   .workspace-grid.wide-inspector {
-    grid-template-columns: minmax(0, 1fr) minmax(20rem, 25rem);
+    grid-template-columns: minmax(0, 1fr) minmax(25rem, 29rem);
+  }
+  .workspace-grid.roster-collapsed {
+    grid-template-columns: minmax(0, 1fr) minmax(22rem, 25rem);
+  }
+  .workspace-grid.roster-collapsed.wide-inspector {
+    grid-template-columns: minmax(0, 1fr) minmax(25rem, 29rem);
+  }
+  .workspace-grid.inspector-collapsed,
+  .workspace-grid.roster-collapsed.inspector-collapsed {
+    grid-template-columns: minmax(0, 1fr);
   }
   .roster {
     grid-column: 1/-1;
@@ -378,8 +437,7 @@ h2 {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
   .roster-heading {
-    display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
   }
   .edition {
     display: none;
@@ -390,6 +448,8 @@ h2 {
   .workspace-grid.roster-collapsed,
   .workspace-grid.wide-inspector,
   .workspace-grid.roster-collapsed.wide-inspector,
+  .workspace-grid.inspector-collapsed,
+  .workspace-grid.roster-collapsed.inspector-collapsed,
   .records-grid {
     grid-template-columns: minmax(0, 1fr);
   }

@@ -39,7 +39,7 @@ import { FixtureOutcome, formations, WorkspaceStore } from './workspace.store';
             <fa-status tone="success">Ready to issue</fa-status>
             <p>{{ formationName() }}: move to {{ order().reviewedDestination }}.</p>
             <label for="fixture-outcome">Fixture result</label>
-            <select id="fixture-outcome" #outcome>
+            <select id="fixture-outcome" class="fa-select" #outcome>
               <option value="accepted">Accepted</option>
               <option value="rejected">Rejected</option>
               <option value="stale">Stale view</option>
@@ -113,17 +113,8 @@ import { FixtureOutcome, formations, WorkspaceStore } from './workspace.store';
       gap: var(--space-sm);
       min-width: 0;
     }
-    select {
-      min-height: 44px;
+    .fa-select {
       width: 100%;
-      color: var(--color-ink);
-      background: var(--color-panel);
-      border: 1px solid var(--color-rule);
-      padding: var(--space-sm);
-    }
-    select:focus-visible {
-      outline: 2px solid var(--color-accent);
-      outline-offset: 2px;
     }
     button {
       min-height: 44px;

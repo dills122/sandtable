@@ -61,6 +61,7 @@ export const WorkspaceStore = signalStore(
     focusX: 50,
     focusY: 50,
     rosterOpen: true,
+    inspectorOpen: true,
     wideInspector: false,
     orders: {} as Record<string, FormationOrder>,
     confirmed: {} as Record<string, Destination>,
@@ -277,6 +278,12 @@ export const WorkspaceStore = signalStore(
     },
     toggleInspectorWidth() {
       patchState(store, { wideInspector: !store.wideInspector() });
+    },
+    toggleInspector() {
+      patchState(store, { inspectorOpen: !store.inspectorOpen() });
+    },
+    setInspectorOpen(open: boolean) {
+      patchState(store, { inspectorOpen: open });
     },
   })),
 );

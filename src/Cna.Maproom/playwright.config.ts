@@ -1,4 +1,5 @@
 import { defineConfig, devices } from '@playwright/test';
+const appPort = process.env['MAPROOM_E2E_PORT'] ?? '4200';
 export default defineConfig({
   testDir: './e2e',
   fullyParallel: true,
@@ -9,14 +10,16 @@ export default defineConfig({
   reporter: [['list'], ['html', { open: 'never' }]],
   use: {
     ...devices['Desktop Chrome'],
-    baseURL: 'http://127.0.0.1:4200',
+    baseURL: `http://127.0.0.1:${appPort}`,
     trace: 'retain-on-failure',
     ...(process.env['PLAYWRIGHT_CHANNEL'] ? { channel: process.env['PLAYWRIGHT_CHANNEL'] } : {}),
   },
   webServer: [
     {
-      command: 'npm start',
-      url: 'http://127.0.0.1:4200',
+      command: process.env['MAPROOM_E2E_PORT']
+        ? `ng serve maproom-alpha --host 127.0.0.1 --port ${appPort}`
+        : 'npm start',
+      url: `http://127.0.0.1:${appPort}`,
       reuseExistingServer: !process.env['CI'],
       timeout: 120000,
     },

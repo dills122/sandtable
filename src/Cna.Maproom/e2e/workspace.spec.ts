@@ -204,7 +204,7 @@ test('camera locates selection, fits extent and keeps roster selection available
   await page.getByRole('button', { name: 'Fit map' }).click();
   await expect(page.getByLabel('Map zoom')).toHaveText('100%');
   await page.getByRole('button', { name: 'Hide formations' }).click();
-  await expect(page.locator('#formations-pane')).toBeHidden();
+  await expect(page.locator('#formations-list')).toBeHidden();
   await page.getByRole('button', { name: 'Show formations' }).click();
   await expect(
     page.getByRole('button', { name: 'Osprey group, recon, M-8', exact: true }),
@@ -213,9 +213,9 @@ test('camera locates selection, fits extent and keeps roster selection available
 test('intermediate layout starts with a collapsed roster and can expand it', async ({ page }) => {
   await page.setViewportSize({ width: 1024, height: 900 });
   await page.goto('/');
-  await expect(page.locator('#formations-pane')).toBeHidden();
+  await expect(page.locator('#formations-list')).toBeHidden();
   await page.getByRole('button', { name: 'Show formations' }).click();
-  await expect(page.locator('#formations-pane')).toBeVisible();
+  await expect(page.locator('#formations-list')).toBeVisible();
 });
 test('keyboard focus brings a clipped counter into the zoomed map', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });

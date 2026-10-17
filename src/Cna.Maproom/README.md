@@ -75,6 +75,8 @@ uses CSS and reduced-motion preferences.
 npm run check
 npx playwright install chromium
 npm run test:e2e
+# If another Maproom app already occupies 4200, use a separate app port:
+MAPROOM_E2E_PORT=4210 npm run test:e2e
 ```
 
 `check` runs formatting, ESLint (including Angular template accessibility rules), strict TypeScript,
@@ -86,7 +88,9 @@ The CI workflow installs pinned Playwright Chromium. Reports go to ignored `play
 and traces to `test-results/` on failure.
 
 Build outputs: `dist/maproom-alpha/browser`, `dist/field-atlas` and `dist/storybook`.
-App budgets: 500kB initial warning / 1MB error, 7kB component CSS warning / 8kB error.
+App budgets: 500kB initial warning / 1MB error, 9.5kB component CSS warning / 10kB error.
+The workspace component compiles to 9.06kB after adding its scoped map overlay and responsive
+panel rules; other components remain below the shared limit.
 Storybook may report large development-documentation chunks; those are not shipped with the app.
 
 ## Design and current limits
@@ -96,8 +100,13 @@ Newsreader and IBM Plex Sans ship locally through Fontsource; licenses live unde
 source. Both consumers load the same `styles.scss` and `utilities.css`; Tailwind's preflight is
 excluded so Material and Field Atlas own control styling. Use public Material Sass overrides.
 
-The shell has eight synthetic formations, coherent map/list/ledger selection, a collapsible roster,
-adjustable inspector, bounded zoom and locate/fit camera controls. MAP-03B stages per-formation
+The shell has eight synthetic formations and coherent map/list/ledger selection. Its map supports
+bounded mouse, pen and touch drag; a first drag from the fitted 100% view enters 125% exploration,
+while a click leaves the fit unchanged. Arrow keys pan a focused zoomed map, and locate/fit and
+zoom controls remain available. The full-screen map keeps selection and camera state, traps focus,
+closes with Escape, and links the selected formation back to its orders. Formations and Orders
+show/hide controls live in their panel headers. The order inspector has more space for the selected
+formation, its last known position, draft, review, issue and recovery controls. MAP-03B stages per-formation
 drafts, explicit review, delayed accepted/rejected/stale results, a lost-reply readback and an
 unsupported Combat-entry stop. Confirmed positions move only after a staged acceptance; a pending
 result remains tied to its submitted formation even if selection changes. Refresh after a stale or
