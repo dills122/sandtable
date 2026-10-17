@@ -55,7 +55,8 @@ test('accepted fixture updates diary, ledger, map and locate; rejected result ad
   await expect(page.locator('.diary-entry .fa-eyebrow')).toHaveText('Accepted example');
   await page.locator('.roster-item').filter({ hasText: 'Harrier group' }).click();
   await expect(page.locator('.diary-entry')).toHaveCount(0);
-  await page.getByRole('combobox', { name: 'Show entries for' }).selectOption('all');
+  await page.getByRole('combobox', { name: 'Show entries for' }).click();
+  await page.getByRole('option', { name: 'All visible formations' }).click();
   await expect(page.locator('.diary-entry')).toHaveCount(1);
   await page.getByRole('button', { name: 'Locate Fox group on map' }).click();
   await expect(page.getByRole('heading', { name: 'Fox group' })).toBeVisible();
@@ -64,7 +65,8 @@ test('accepted fixture updates diary, ledger, map and locate; rejected result ad
   await page.getByRole('combobox', { name: 'Move to' }).click();
   await page.getByRole('option', { name: 'Inland ridge · H-8' }).click();
   await page.getByRole('button', { name: 'Review draft' }).click();
-  await page.getByLabel('Fixture result').selectOption('rejected');
+  await page.getByRole('combobox', { name: 'Fixture result' }).click();
+  await page.getByRole('option', { name: 'Rejected' }).click();
   await page.getByRole('button', { name: 'Issue order' }).click();
   await expect(page.getByRole('row', { name: /Harrier group/ })).toContainText('rejected');
   await expect(page.locator('.diary-entry')).toHaveCount(1);
@@ -85,7 +87,8 @@ test('all-visible diary distinguishes locate actions for two accepted formations
     await page.getByRole('button', { name: 'Issue order' }).click();
     await expect(page.locator('.diary-entry')).toHaveCount(1);
   }
-  await page.getByRole('combobox', { name: 'Show entries for' }).selectOption('all');
+  await page.getByRole('combobox', { name: 'Show entries for' }).click();
+  await page.getByRole('option', { name: 'All visible formations' }).click();
   await expect(page.locator('.diary-entry')).toHaveCount(2);
   const diary = page.locator('fa-panel').filter({
     has: page.getByRole('heading', { name: 'War Diary' }),

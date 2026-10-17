@@ -114,6 +114,8 @@ rejected result requires new review. One unresolved fixture result blocks anothe
 recovery control remains available when inspecting a different formation. The pending formation's
 destination is locked until the result is known. MAP-03C adds searchable/sortable four-field ledger
 rows, an expanded records view and selected/all-visible fixture War Diary entries with map locate.
+War Diary scope and Fixture result use the Field Atlas choice control: its open option list is
+themed and keyboard accessible, including at narrow widths and in forced-colors mode.
 Accepted examples update map, roster, inspector, ledger and diary from the same local result.
 Narrow widths stack panels; keyboard focus pans clipped counters into view when zoomed. No legal
 actions, authoritative turn resolution, network receipt, persistence or real reconnect exists.

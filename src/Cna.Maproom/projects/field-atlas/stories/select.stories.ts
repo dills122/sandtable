@@ -1,35 +1,40 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { AtlasChoiceSelect } from '../src/public-api';
 import type { Meta, StoryObj } from '@storybook/angular-vite';
 
 @Component({
   selector: 'fa-select-example',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [AtlasChoiceSelect],
   template: `<main class="select-examples fa-stack">
-    <h1>Native select</h1>
+    <h1>Choice select</h1>
     <p>
-      Use <code>fa-select</code> for a small native choice control outside an Angular Material form.
-      The indicator sits one rem inside the edge, with room reserved for long labels. Tab to inspect
-      focus, then use arrow keys to choose an option.
+      Field Atlas controls both trigger and open menu. Tab to focus; Enter or Space opens; arrow
+      keys move; Enter selects; Escape closes. The same menu works with touch and small viewports.
     </p>
     <div class="field">
-      <label for="scope">Show entries for</label>
-      <select class="fa-select" id="scope">
-        <option value="selected">Selected formation</option>
-        <option value="all">All visible formations</option>
-      </select>
+      <fa-choice-select
+        label="Show entries for"
+        [options]="scopeOptions"
+        [value]="scope()"
+        (valueChange)="scope.set($event)"
+      />
     </div>
     <div class="field narrow">
-      <label for="narrow-scope">Narrow container</label>
-      <select class="fa-select" id="narrow-scope">
-        <option>All formations in the current operations area</option>
-        <option>Selected formation</option>
-      </select>
+      <fa-choice-select
+        label="Narrow container"
+        [options]="narrowOptions"
+        [value]="narrow()"
+        (valueChange)="narrow.set($event)"
+      />
     </div>
     <div class="field">
-      <label for="disabled-scope">Unavailable scope</label>
-      <select class="fa-select" id="disabled-scope" disabled>
-        <option>Pending campaign activation</option>
-      </select>
+      <fa-choice-select
+        label="Unavailable scope"
+        [options]="disabledOptions"
+        value="unavailable"
+        [disabled]="true"
+      />
     </div>
   </main>`,
   styles: `
@@ -39,10 +44,6 @@ import type { Meta, StoryObj } from '@storybook/angular-vite';
       padding: var(--space-md);
     }
     .field {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: var(--space-xs);
       min-width: 0;
       width: 100%;
     }
@@ -50,18 +51,24 @@ import type { Meta, StoryObj } from '@storybook/angular-vite';
       width: 16rem;
       max-width: 100%;
     }
-    .narrow .fa-select {
-      width: 100%;
-    }
-    code {
-      font-size: 0.9em;
-    }
   `,
 })
-class SelectExample {}
+class SelectExample {
+  readonly scope = signal('selected');
+  readonly narrow = signal('all');
+  readonly scopeOptions = [
+    { value: 'selected', label: 'Selected formation' },
+    { value: 'all', label: 'All visible formations' },
+  ];
+  readonly narrowOptions = [
+    { value: 'all', label: 'All formations in the current operations area' },
+    { value: 'selected', label: 'Selected formation' },
+  ];
+  readonly disabledOptions = [{ value: 'unavailable', label: 'Pending campaign activation' }];
+}
 
 export default {
-  title: 'Foundations/Native select',
+  title: 'Foundations/Choice select',
   component: SelectExample,
 } satisfies Meta<SelectExample>;
 

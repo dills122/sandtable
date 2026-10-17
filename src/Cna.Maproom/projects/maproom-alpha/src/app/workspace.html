@@ -374,16 +374,12 @@
     </fa-panel>
     <fa-panel heading="War Diary" eyebrow="Presentation record">
       <div class="records-tools">
-        <label for="diary-scope">Show entries for</label>
-        <select
-          id="diary-scope"
-          class="fa-select"
+        <fa-choice-select
+          label="Show entries for"
+          [options]="diaryScopeOptions"
           [value]="diaryScope()"
-          (change)="diaryScope.set($any($event.target).value)"
-        >
-          <option value="selected">Selected formation</option>
-          <option value="all">All visible formations</option>
-        </select>
+          (valueChange)="setDiaryScope($event)"
+        />
       </div>
       <p class="fa-muted">Synthetic own-side fixture entries. No campaign history is connected.</p>
       @for (entry of diaryEntries(); track entry.id) {

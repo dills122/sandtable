@@ -10,14 +10,14 @@ import {
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { FormlyFieldConfig, FormlyForm } from '@ngx-formly/core';
 import { MatButtonModule } from '@angular/material/button';
-import { AtlasStatus } from '@sandtable/field-atlas';
+import { AtlasChoiceSelect, AtlasStatus } from '@sandtable/field-atlas';
 import { destinations, readDestination } from './draft-form';
 import { FixtureOutcome, formations, WorkspaceStore } from './workspace.store';
 
 /** In-memory interaction specimen. No request leaves this browser. */
 @Component({
   selector: 'mr-order-workflow',
-  imports: [ReactiveFormsModule, FormlyForm, MatButtonModule, AtlasStatus],
+  imports: [ReactiveFormsModule, FormlyForm, MatButtonModule, AtlasChoiceSelect, AtlasStatus],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <section class="fa-stack" aria-label="Order workflow fixture">
@@ -38,18 +38,17 @@ import { FixtureOutcome, formations, WorkspaceStore } from './workspace.store';
           <div class="order-review" role="group" aria-label="Reviewed order">
             <fa-status tone="success">Ready to issue</fa-status>
             <p>{{ formationName() }}: move to {{ order().reviewedDestination }}.</p>
-            <label for="fixture-outcome">Fixture result</label>
-            <select id="fixture-outcome" class="fa-select" #outcome>
-              <option value="accepted">Accepted</option>
-              <option value="rejected">Rejected</option>
-              <option value="stale">Stale view</option>
-              <option value="lost-reply">Lost reply</option>
-            </select>
+            <fa-choice-select
+              label="Fixture result"
+              [options]="fixtureOutcomes"
+              [value]="fixtureOutcome"
+              (valueChange)="fixtureOutcome = $event"
+            />
             <button
               matButton="filled"
               type="button"
               [disabled]="!!store.pending()"
-              (click)="issue(outcome.value)"
+              (click)="issue(fixtureOutcome)"
             >
               Issue order
             </button>
@@ -113,15 +112,19 @@ import { FixtureOutcome, formations, WorkspaceStore } from './workspace.store';
       gap: var(--space-sm);
       min-width: 0;
     }
-    .fa-select {
-      width: 100%;
-    }
     button {
       min-height: 44px;
     }
   `,
 })
 export class OrderWorkflow {
+  protected fixtureOutcome = 'accepted';
+  protected readonly fixtureOutcomes = [
+    { value: 'accepted', label: 'Accepted' },
+    { value: 'rejected', label: 'Rejected' },
+    { value: 'stale', label: 'Stale view' },
+    { value: 'lost-reply', label: 'Lost reply' },
+  ] as const;
   readonly formationId = input.required<string>();
   readonly formationName = input.required<string>();
   protected readonly store = inject(WorkspaceStore);
@@ -177,6 +180,7 @@ export class OrderWorkflow {
     const destination = readDestination(this.form.controls.destination.value);
     if (!this.form.valid || !destination) return;
     this.store.stageDraft(this.formationId(), destination);
+    this.fixtureOutcome = 'accepted';
     this.store.review(this.formationId());
   }
   protected issue(value: string) {

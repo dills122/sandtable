@@ -9,13 +9,18 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { AtlasPanel, AtlasStatus, AtlasUnitCounter } from '@sandtable/field-atlas';
+import {
+  AtlasChoiceSelect,
+  AtlasPanel,
+  AtlasStatus,
+  AtlasUnitCounter,
+} from '@sandtable/field-atlas';
 import { OrderWorkflow } from './order-workflow';
 import { provideMaproomForms } from './forms';
 import { formations, WorkspaceStore } from './workspace.store';
 @Component({
   selector: 'mr-workspace',
-  imports: [AtlasPanel, AtlasStatus, AtlasUnitCounter, OrderWorkflow],
+  imports: [AtlasChoiceSelect, AtlasPanel, AtlasStatus, AtlasUnitCounter, OrderWorkflow],
   providers: [WorkspaceStore, provideMaproomForms()],
   templateUrl: './workspace.html',
   styleUrl: './workspace.scss',
@@ -33,6 +38,10 @@ export class Workspace {
   protected readonly ledgerDescending = signal(false);
   protected readonly recordsExpanded = signal(false);
   protected readonly diaryScope = signal<'selected' | 'all'>('selected');
+  protected readonly diaryScopeOptions = [
+    { value: 'selected', label: 'Selected formation' },
+    { value: 'all', label: 'All visible formations' },
+  ] as const;
   protected readonly ledgerRows = computed(() => {
     const query = this.ledgerQuery().trim().toLocaleLowerCase();
     const sort = this.ledgerSort();
@@ -58,6 +67,9 @@ export class Workspace {
         (entry) => this.diaryScope() === 'all' || entry.formationId === this.store.selectedId(),
       ),
   );
+  protected setDiaryScope(value: string) {
+    if (value === 'selected' || value === 'all') this.diaryScope.set(value);
+  }
   @ViewChild('shortcutToggle') private shortcutToggle?: ElementRef<HTMLButtonElement>;
   @ViewChild('mapExpandToggle') private mapExpandToggle?: ElementRef<HTMLButtonElement>;
   @ViewChild('mapPanel') private mapPanel?: ElementRef<HTMLElement>;

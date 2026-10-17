@@ -74,33 +74,130 @@ test('expanded map traps focus, keeps controls and selection, and returns to ord
   await expect(page.getByLabel('Map zoom')).toHaveText('125%');
 });
 
-test('War Diary and fixture result selects use shared Field Atlas indicator and spacing', async ({
+test('War Diary and fixture result open themed Field Atlas menus with keyboard support', async ({
   page,
 }, testInfo) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/');
-  const diary = page.getByLabel('Show entries for');
-  await expect(diary).toHaveClass(/fa-select/);
-  const appearance = await diary.evaluate((element) => {
-    const style = getComputedStyle(element);
-    return {
-      appearance: style.appearance,
-      backgroundImage: style.backgroundImage,
-      paddingRight: parseFloat(style.paddingRight),
-    };
+  const diary = page.getByRole('combobox', { name: 'Show entries for' });
+  await page.getByText('Show entries for', { exact: true }).click();
+  await expect(diary).toBeFocused();
+  const menu = page.locator('.fa-choice-panel');
+  await expect(menu).toBeVisible();
+  const usesPanelToken = await menu.evaluate((element) => {
+    const sample = document.createElement('div');
+    sample.style.background = 'var(--color-panel)';
+    document.body.append(sample);
+    const matches =
+      getComputedStyle(element).backgroundColor === getComputedStyle(sample).backgroundColor;
+    sample.remove();
+    return matches;
   });
-  expect(appearance.appearance).toBe('none');
-  expect(appearance.backgroundImage).toContain('linear-gradient');
-  expect(appearance.paddingRight).toBeGreaterThanOrEqual(36);
-  await diary.selectOption('all');
-  await expect(diary).toHaveValue('all');
+  expect(usesPanelToken).toBe(true);
+  await expect(menu.getByRole('option', { name: 'All visible formations' })).toBeVisible();
+  expect(
+    await menu
+      .getByRole('option', { name: 'All visible formations' })
+      .evaluate((element) => parseFloat(getComputedStyle(element).minHeight)),
+  ).toBeGreaterThanOrEqual(44);
+  await menu.evaluate(async (element) => {
+    await Promise.all(
+      element.getAnimations({ subtree: true }).map((animation) => animation.finished),
+    );
+  });
+  await page.screenshot({ path: testInfo.outputPath('war-diary-open-menu.png'), fullPage: true });
+  await page.keyboard.press('Escape');
+  await expect(diary).toBeFocused();
+  const diaryLabel = page.getByRole('button', { name: 'Show entries for' });
+  await diaryLabel.focus();
+  await page.keyboard.press('Enter');
+  await expect(menu).toBeVisible();
+  await expect(diary).toBeFocused();
+  await page.keyboard.press('Escape');
+  await page.keyboard.press('Enter');
+  await page.keyboard.press('End');
+  await page.keyboard.press('Enter');
+  await expect(diary).toContainText('All visible formations');
   await page.getByRole('combobox', { name: 'Move to' }).click();
   await page.getByRole('option', { name: 'East crossing · M-6' }).click();
   await page.getByRole('button', { name: 'Review draft' }).click();
-  const outcome = page.getByLabel('Fixture result');
-  await expect(outcome).toHaveClass(/fa-select/);
-  await expect(outcome).toHaveCSS('background-image', /linear-gradient/);
-  await page.screenshot({ path: testInfo.outputPath('war-diary-select.png'), fullPage: true });
+  const outcome = page.getByRole('combobox', { name: 'Fixture result' });
+  await page.getByText('Fixture result', { exact: true }).click();
+  await expect(outcome).toBeFocused();
+  await expect(menu.getByRole('option', { name: 'Lost reply' })).toBeVisible();
+  await menu.getByRole('option', { name: 'Rejected' }).click();
+  await expect(outcome).toContainText('Rejected');
+});
+
+test('choice menu stays in a narrow viewport and preserves forced-color contrast', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 320, height: 568 });
+  await page.goto('/');
+  const diary = page.getByRole('combobox', { name: 'Show entries for' });
+  await diary.click();
+  const menu = page.locator('.fa-choice-panel');
+  const bounds = await menu.boundingBox();
+  expect(bounds).not.toBeNull();
+  expect(bounds!.x).toBeGreaterThanOrEqual(0);
+  expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(320);
+  await menu.getByRole('option', { name: 'All visible formations' }).click();
+  await expect(diary).toContainText('All visible formations');
+  await expect(menu).toBeHidden();
+  await page.emulateMedia({ forcedColors: 'active' });
+  await diary.click();
+  await expect(menu).toBeVisible();
+  await expect(menu).toHaveCSS('box-shadow', 'none');
+  await expect(diary).toHaveAttribute('aria-expanded', 'true');
+  await expect(menu.getByRole('option', { name: 'All visible formations' })).toHaveAttribute(
+    'aria-selected',
+    'true',
+  );
+});
+
+test('touch opens and selects the War Diary choice list', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 700 });
+  await page.goto('/');
+  const client = await page.context().newCDPSession(page);
+  const tap = async (x: number, y: number) => {
+    await client.send('Input.dispatchTouchEvent', {
+      type: 'touchStart',
+      touchPoints: [{ x, y }],
+    });
+    await client.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+  };
+  const diary = page.getByRole('combobox', { name: 'Show entries for' });
+  await diary.scrollIntoViewIfNeeded();
+  const trigger = await diary.boundingBox();
+  expect(trigger).not.toBeNull();
+  await tap(trigger!.x + trigger!.width / 2, trigger!.y + trigger!.height / 2);
+  const all = page.locator('.fa-choice-panel').getByRole('option', {
+    name: 'All visible formations',
+  });
+  await expect(all).toBeVisible();
+  const option = await all.boundingBox();
+  expect(option).not.toBeNull();
+  await tap(option!.x + option!.width / 2, option!.y + option!.height / 2);
+  await expect(diary).toContainText('All visible formations');
+});
+
+test('disabled Field Atlas choice label is not a keyboard stop or an open action', async ({
+  page,
+}) => {
+  await page.goto(
+    'http://127.0.0.1:6006/iframe.html?id=foundations-choice-select--states&viewMode=story',
+  );
+  const disabled = page.locator('fa-choice-select').filter({ hasText: 'Unavailable scope' });
+  const label = disabled.getByRole('button', { name: 'Unavailable scope' });
+  await expect(label).toHaveAttribute('tabindex', '-1');
+  await expect(label).toHaveAttribute('aria-disabled', 'true');
+  await expect(disabled.getByRole('combobox')).toHaveAttribute('aria-disabled', 'true');
+  await label.dispatchEvent('click');
+  await expect(page.locator('.fa-choice-panel')).toHaveCount(0);
+  await page.getByRole('combobox', { name: 'Narrow container' }).focus();
+  await page.keyboard.press('Tab');
+  await expect(label).not.toBeFocused();
+  await expect(disabled.getByRole('combobox')).not.toBeFocused();
 });
 
 test('Open orders restores focus in inspector when Combat fixture has no order action', async ({
