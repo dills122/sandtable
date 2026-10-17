@@ -2,6 +2,17 @@
 
 `long-suite-weights.json` contains derived timing hints and hashes of actual runner row identities. It contains no authoritative replay results. The current measurements come from main121baa56820fffce42316b48ac551cb24c012a6c / run38830848442 attempt1. Row duration includes contention and is not CPU time or a capacity bound. Zero-resolution observations receive a1ms scheduling floor.
 
+MAP-06 adds four `CampaignHostAdapterTests` rows. Their provisional weights are measured from a passing macOS arm64 .NET 10 Debug MTP XML run on 2026-10-17 (`/private/tmp/map06-host-timing`), with a concurrent full Core run. The four row hashes appear in `provisional_rows`; they retain the original baseline metadata and require Release CI calibration before performance conclusions. The new class uses one ordinary suite part and does not add a matrix job.
+
+| MAP-06 row | Hash prefix | Measured ms |
+| --- | --- | ---: |
+| `TwelveStepHostTraceMatchesDirectCoreAtEveryCut` | `fa28d0993dcb` | 1487 |
+| `AcceptedStepAndImportMatchDirectExerciseAndRejectTampering` | `04159b9654fc` | 228 |
+| `RejectedStepLeavesAllCutsAndCheckpointUnchanged` | `284b0df70fd0` | 87 |
+| `CreationAndEachAudienceCutMatchDirectCore` | `ecef32257299` | 77 |
+
+Command: `/opt/homebrew/bin/dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --no-build --filter-class Cna.Core.Tests.Hosting.CampaignHostAdapterTests --report-xunit-xml --results-directory /private/tmp/map06-host-timing`. Result: 4 passed, 0 failed, 0 skipped; XML is retained in that local directory for review.
+
 Unknown, missing or renamed Core rows deliberately fail preparation with a clear error. Do not delete tests or guess a matching name to clear this gate. Adding a case requires an explicit manifest refresh; changing the runtime of an existing case may also justify new measurements.
 
 1. Commit the proposed source on a feature branch. Build Release and the ReleaseTestRows helper using the selected SDK and normal binlog flags. Obtain actual discovery with the retained `r02_partition.py discover` command, using a fresh output directory, exact HEAD and a fresh attempt. That command does not require the long-suite timing manifest; it still proves deferred providers and all R02 semantic rows. No hosted run is implied or authorized by this procedure.
