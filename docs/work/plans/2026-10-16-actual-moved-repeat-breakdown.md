@@ -22,6 +22,13 @@ its exit 130 is not a pass. The full catalogue, all prior-cut negatives, physica
 structural capacity derivation and immutable reference freeze remain open. The representative
 fixture is deliberately labelled as a subset; it cannot certify the 300-row catalogue.
 
+The next checkpoint added per-row progress and retained full canonical vectors for the long
+catalogue run, structural size arithmetic, and 540 physical dependency fault rejections. One paid
+and three armed authentic nonterminal R02 cuts reject. The full 300-row run is underway, so these
+checks do not freeze the contract. See the
+[R03 reference evidence checkpoint](../reviews/2026-10-16-actual-moved-repeat-breakdown-evidence.md)
+for exact commands, observed results and open gates.
+
 ## Boundary
 
 R02 ends at the canonical ordinal-two Breakdown Determination entry after authentic paid or armed

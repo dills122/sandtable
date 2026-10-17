@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Private R03 reference: authentic moved-repeat Breakdown completion."""
 import copy
+import gzip
 import hashlib
 import importlib.util
 import json
@@ -68,12 +69,14 @@ def verify_dependencies():
             data = (REPOSITORY / path).read_bytes()
         except OSError as error:
             raise Invalid(9) from error
+        require(type(data) is bytes, 9)
         require(hashlib.sha256(data).hexdigest() == expected, 9)
     for path, expected in OWN.items():
         try:
             data = path.read_bytes()
         except OSError as error:
             raise Invalid(9) from error
+        require(type(data) is bytes, 9)
         require(sha(data) == expected, 9)
 
 
@@ -395,7 +398,7 @@ def parent_terminal(row):
     return source, [*args, ledger]
 
 
-def trace(row):
+def trace(row, full=False):
     parent_source, parent_args = parent_terminal(row)
     source = source_for(parent_source)
     _, context, before = replay(source, parent_args, [])
@@ -413,7 +416,7 @@ def trace(row):
     require(all(after[key] == before[key] for key in retained), 6)
     retry = apply(after_source, parent_args, ledger, input_bytes, False)
     require(retry == (after_source, ledger, None, receipt), 6)
-    return dict(rowKey=row["rowKey"], rootOrdinal=row["rootOrdinal"], movementCut=row["movementCut"],
+    result = dict(rowKey=row["rowKey"], rootOrdinal=row["rootOrdinal"], movementCut=row["movementCut"],
                 profile=row["profile"], parentSourceHash=sha(parent_source),
                 sourceHash=sha(after_source), eventHash=sha(event),
                 beforeControlHash=sha(raw(before, "Control")),
@@ -421,20 +424,55 @@ def trace(row):
                 beforeProofHash=sha(raw(proof(source, parent_args, []), "Proof")),
                 afterProofHash=sha(raw(proof(after_source, parent_args, ledger), "Proof")),
                 receiptId=receipt)
+    if full:
+        def ascii_tree(value):
+            if type(value) is bytes:
+                return value.decode("ascii")
+            if type(value) is list:
+                return [ascii_tree(item) for item in value]
+            if type(value) is dict:
+                return {key: ascii_tree(item) for key, item in value.items()}
+            return value
+        result["vectors"] = dict(parentSourceCanonicalUtf8=parent_source.decode("ascii"),
+                                 parentInputLedgersCanonicalUtf8=ascii_tree(parent_args),
+                                 inputCanonicalUtf8=input_bytes.decode("ascii"),
+                                 eventCanonicalUtf8=event.decode("ascii"),
+                                 sourceCanonicalUtf8=after_source.decode("ascii"),
+                                 beforeControlCanonicalUtf8=raw(before, "Control").decode("ascii"),
+                                 afterControlCanonicalUtf8=raw(after, "Control").decode("ascii"),
+                                 beforeProofCanonicalUtf8=raw(proof(source, parent_args, []), "Proof").decode("ascii"),
+                                 afterProofCanonicalUtf8=raw(proof(after_source, parent_args, ledger), "Proof").decode("ascii"))
+    return result
 
 
-def verify(rows=None):
+def verify(rows=None, progress=None, full=False):
     all_rows = r02.semantic_rows()
     require(len(all_rows) == 300 and sum(x["profile"] == "paid" for x in all_rows) == 36
             and sum(x["profile"] == "armed" for x in all_rows) == 264, 6)
     chosen = all_rows if rows is None else [all_rows[index] for index in rows]
-    return [trace(row) for row in chosen]
+    results = []
+    for index, row in enumerate(chosen, 1):
+        result = trace(row, full)
+        results.append(result)
+        if progress is not None:
+            progress(index, len(chosen), result)
+    return results
 
 
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument("--rows", nargs="*", type=int)
+    parser.add_argument("--progress", action="store_true", help="print each completed authentic row")
+    parser.add_argument("--evidence-gzip", type=Path,
+                        help="append full canonical vectors as gzip JSONL, one member per completed row")
     options = parser.parse_args()
-    results = verify(options.rows)
+    def emit(count, total, row):
+        if options.evidence_gzip:
+            with gzip.open(options.evidence_gzip, "at", encoding="ascii") as stream:
+                stream.write(json.dumps(row, ensure_ascii=True, separators=(",", ":")) + "\n")
+        if options.progress:
+            print("VERIFIED", count, "/", total, row["rowKey"], flush=True)
+    results = verify(options.rows, emit if options.progress or options.evidence_gzip else None,
+                     full=bool(options.evidence_gzip))
     print("PASS", len(results), "authentic R03 traces")
