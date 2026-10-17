@@ -166,6 +166,9 @@ after expiry. The
 MAP-08B can project a complete, coherent MAP-04 audience view with outward legal-action IDs. The
 private MAP-07 legal-action bytes never cross HTTP. This is an ingress foundation, not connected
 Maproom play.
+The [MAP-08B1 side projection prerequisite](docs/specs/maproom-side-projection-prerequisites-v1.md)
+records missing typed fields, pinned presentation data, audience-safe diary and opaque action
+mapping that must precede the browser view.
 Run `just maproom-setup`, then `just maproom` (port 4200) and `just field-atlas` (port 6006) in separate
 terminals. Storybook owns the live component/pattern reference; both surfaces consume
 `@sandtable/field-atlas`. MAP-03B stages local delayed results and receipt readback only;
