@@ -18,3 +18,7 @@ tests belong with those features; do not treat this fixture suite as their accep
 These assertions do not verify visual consistency across views. Field Atlas is the shared visual
 language; review wide and narrow screenshots when changing map, inspector, ledger or diary
 presentation.
+
+The 1440px and 320px fixture screenshots from this slice were inspected: map, inspector, ledger
+and diary use consistent paper/ink surfaces, type hierarchy and selected-state treatment. This
+review covers those two default layouts, not hover, loading or connected-play states.
