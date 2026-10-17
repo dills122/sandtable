@@ -116,9 +116,87 @@ internal static class CampaignCombatActualMovedRepeatBreakdownCompletionCodec
     }
     private static void SourceVersion(JsonElement value)
     {
-        _ = Inherited(() => CampaignCombatActualMovedAssaultCodec.Canonical(JsonNode.Parse(value.GetRawText())!, "int"));
+        NumericLeaf(value, "int");
         Require(value.GetInt32() == 1, 3);
     }
+    private static bool IsNumeric(string kind) => kind is "int" or "long" or "ulong" or "signedInt" or "futureTurn" or "differential";
+    private static void NumericLeaf(JsonElement value, string kind)
+    {
+        Require(value.ValueKind == JsonValueKind.Number, 1);
+        var literal = value.GetRawText();
+        Require(literal.IndexOfAny(['.', 'e', 'E']) < 0, 1);
+        if (kind == "ulong")
+        {
+            // Python treats JSON -0 as integer zero. All other negatives are out of range.
+            if (literal == "-0") return;
+            Require(value.TryGetUInt64(out _), 2);
+            return;
+        }
+        Require(value.TryGetInt64(out var number), 2);
+        var (minimum, maximum) = kind switch
+        {
+            "int" => (0L, int.MaxValue),
+            "long" => (0L, long.MaxValue),
+            "signedInt" => (int.MinValue, int.MaxValue),
+            "futureTurn" => (1L, 115L),
+            "differential" => (-2L, 2L),
+            _ => throw new ArgumentOutOfRangeException(nameof(kind))
+        };
+        Require(number >= minimum && number <= maximum, 2);
+    }
+    private static void BorrowedNumeric(JsonElement value, string kind, int depth = 0)
+    {
+        if (depth > 40) return;
+        if (kind.EndsWith('?'))
+        {
+            if (value.ValueKind != JsonValueKind.Null) BorrowedNumeric(value, kind[..^1], depth);
+            return;
+        }
+        if (kind.EndsWith("[]", StringComparison.Ordinal))
+        {
+            if (value.ValueKind == JsonValueKind.Array)
+                foreach (var item in value.EnumerateArray()) BorrowedNumeric(item, kind[..^2], depth + 1);
+            return;
+        }
+        if (kind == "Route")
+        {
+            if (value.ValueKind == JsonValueKind.Array)
+                foreach (var item in value.EnumerateArray()) BorrowedNumeric(item, "id", depth + 1);
+            return;
+        }
+        var tags = kind == "Effect" ? BorrowedEffect : Unions.GetValueOrDefault(kind);
+        if (tags is not null)
+        {
+            if (value.ValueKind == JsonValueKind.Object && value.TryGetProperty("kind", out var tag) &&
+                tag.ValueKind == JsonValueKind.String && tags.TryGetValue(tag.GetString()!, out var variant))
+                BorrowedNumeric(value, variant, depth);
+            return;
+        }
+        var shape = kind switch
+        {
+            "Base" => BorrowedBase,
+            "Control" => BorrowedControl,
+            _ => Grammar.GetValueOrDefault(kind)
+        };
+        if (shape is not null)
+        {
+            if (value.ValueKind != JsonValueKind.Object) return;
+            var fields = shape.Split(' ').Select(field => field.Split(':')).ToArray();
+            var names = value.EnumerateObject().Select(property => property.Name).ToArray();
+            if (names.Length != fields.Length || !names.ToHashSet(StringComparer.Ordinal).SetEquals(fields.Select(field => field[0]))) return;
+            foreach (var field in fields) BorrowedNumeric(value.GetProperty(field[0]), field[1], depth + 1);
+            return;
+        }
+        if (IsNumeric(kind)) NumericLeaf(value, kind);
+    }
+    private const string BorrowedBase = "contractVersion:int movementSourceHash:hash movementControlHash:hash movementProofHash:hash dependencyManifestHash:hash publicationReceiptId:id cycleId:hash configurationHash:hash";
+    private const string BorrowedControl = "contractVersion:int profile:profile parentSourceHash:hash movementBaseHash:hash baseHash:hash movementSourceHash:hash phase:lifecyclePhase stateVersion:long prefix:hash sequencePosition:Position originalCycle:Authority activeCycle:Authority cycleId:hash world:World randomState:Random originalMovementEnd:MovementEndProof priorCycleProgress:ActualProgressRef[] actualProgressRefs:ActualProgressRef[] members:ReserveMember[] attackHistory:AttackHistory[] priorCycleTargetUses:TargetUse[] targetUses:TargetUse[] assessment:Assessment pendingRepeatIntent:Intent pendingIntentReceiptId:id publicationReceiptId:id? closure:Closure? tracks:Track[] receipts:PreambleReceipt[] movementReceipts:Receipt[] flow:Flow interruptContext:Context? movementEnd:MovementEndProof? lifecycleReceipts:Receipt[] closed:bool";
+    private static readonly Dictionary<string, string> BorrowedEffect = new(StringComparer.Ordinal)
+    {
+        ["movement-stopped"] = "StopEffect",
+        ["stop-resolved"] = "ResolutionEffect",
+        ["movement-completed"] = "CompletionEffect"
+    };
     private static byte[] SourceBytes(string parent, string[] events)
     {
         Require(parent.Length is > 0 and <= 134217728 && events.Length <= 1 && events.All(e => e.Length is > 0 and <= 65536), 1);
@@ -156,7 +234,12 @@ internal static class CampaignCombatActualMovedRepeatBreakdownCompletionCodec
     {
         Require(depth <= 42, 1);
         if (kind.EndsWith('?')) { if (value.ValueKind == JsonValueKind.Null) writer.WriteNullValue(); else Write(writer, value, kind[..^1], depth, fieldPath); return; }
-        if (kind == "R02Proof") { writer.WriteRawValue(Inherited(() => CampaignCombatActualMovedRepeatMovementCompletionCodec.Canonical(JsonNode.Parse(value.GetRawText())!, "Proof"))); return; }
+        if (kind == "R02Proof")
+        {
+            BorrowedNumeric(value, "Proof");
+            writer.WriteRawValue(Inherited(() => CampaignCombatActualMovedRepeatMovementCompletionCodec.Canonical(JsonNode.Parse(value.GetRawText())!, "Proof")));
+            return;
+        }
         if (kind == "LegacyBrokenVehicleLot") { Require(false, 1); return; }
         if (kind == "Route")
         { Require(value.ValueKind == JsonValueKind.Array && value.GetArrayLength() <= 9, 1); writer.WriteStartArray(); foreach (var item in value.EnumerateArray()) Write(writer, item, "id", depth + 1); writer.WriteEndArray(); return; }
@@ -186,7 +269,14 @@ internal static class CampaignCombatActualMovedRepeatBreakdownCompletionCodec
             }, 3); writer.WriteStringValue(text); return;
         }
         if (kind == "null") { Require(value.ValueKind == JsonValueKind.Null, 1); writer.WriteNullValue(); return; }
-        // Compatibility is leaf syntax only: no old Source/Base/Proof reader is invoked.
+        if (IsNumeric(kind))
+        {
+            NumericLeaf(value, kind);
+            if (kind == "ulong") writer.WriteNumberValue(value.GetRawText() == "-0" ? 0UL : value.GetUInt64());
+            else writer.WriteNumberValue(value.GetInt64());
+            return;
+        }
+        // Compatibility is nonnumeric leaf syntax only: no old Source/Base/Proof reader is invoked.
         writer.WriteRawValue(Inherited(() => CampaignCombatActualMovedAssaultCodec.Canonical(JsonNode.Parse(value.GetRawText())!, kind)));
     }
     internal static byte[][] Own(IReadOnlyList<byte[]> inputs, int count, string kind)

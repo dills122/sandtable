@@ -87,6 +87,9 @@ public sealed class CombatActualMovedRepeatBreakdownCompletionTests
         Assert.Equal("CMB-MRB-001", Assert.Throws<JsonException>(() => CampaignCombatActualMovedRepeatBreakdownCompletionCodec.Object(duplicate, "Source")).Message);
         var overflow = Encoding.ASCII.GetBytes("{\"contractVersion\":2147483648,\"movementCompletionSourceCanonicalUtf8\":\"x\",\"breakdownEventCanonicalUtf8\":[]}");
         Assert.Equal("CMB-MRB-002", Assert.Throws<JsonException>(() => CampaignCombatActualMovedRepeatBreakdownCompletionCodec.Object(overflow, "Source")).Message);
+        Assert.Equal("CMB-MRB-002", Assert.Throws<JsonException>(() => Codec.Canonical(JsonNode.Parse("116")!, "futureTurn")).Message);
+        Assert.Equal("CMB-MRB-001", Assert.Throws<JsonException>(() => Codec.Canonical(JsonNode.Parse("1.0")!, "futureTurn")).Message);
+        Assert.Equal("CMB-MRB-002", Assert.Throws<JsonException>(() => Codec.Canonical(JsonNode.Parse("18446744073709551616")!, "ulong")).Message);
         var c = new CompletionContext(0, 1, "paid");
         foreach (var input in c.Inputs) { var next = Apply(c, input); Retain(c, next, input); }
         var l = Ledgers(c); var source = Codec.Canonical(new JsonObject
@@ -127,6 +130,16 @@ public sealed class CombatActualMovedRepeatBreakdownCompletionTests
         Assert.Equal("CMB-MRB-006", Assert.Throws<JsonException>(() => CampaignCombatActualMovedRepeatBreakdownCompletion.ReadControl(Codec.Canonical(claim, "Control"), after.SourceBytes, c.Parent.Ancestor.Request, parents, [inputBytes], Dependency)).Message);
         var proof = JsonNode.Parse(after.ProofBytes)!; proof["control"]!["stateVersion"] = proof["control"]!["stateVersion"]!.GetValue<long>() + 1;
         Assert.Equal("CMB-MRB-006", Assert.Throws<JsonException>(() => CampaignCombatActualMovedRepeatBreakdownCompletion.ReadProof(Codec.Canonical(proof, "Proof"), after.SourceBytes, c.Parent.Ancestor.Request, parents, [inputBytes], Dependency)).Message);
+        var outOfRangeControl = JsonNode.Parse(after.ControlBytes)!;
+        outOfRangeControl["world"]!["futureObligations"]!.AsArray().Add(JsonNode.Parse("""
+            {"obligationId":"o1","receiptId":"r1","kind":"test","subjectId":"u1","earnedScope":{"gameTurn":1,"operationStage":1},"eligibleScope":{"gameTurn":116,"operationStage":1},"activationGate":"test","status":"pending"}
+            """));
+        Assert.Equal("CMB-MRB-002", Assert.Throws<JsonException>(() => CampaignCombatActualMovedRepeatBreakdownCompletion.ReadControl(
+            JsonSerializer.SerializeToUtf8Bytes(outOfRangeControl), after.SourceBytes, c.Parent.Ancestor.Request, parents, [inputBytes], Dependency)).Message);
+        var outOfRangeBorrowedProof = JsonNode.Parse(after.ProofBytes)!;
+        outOfRangeBorrowedProof["base"]!["movedRepeatMovementCompletionProof"]!["control"]!["sequencePosition"]!["gameTurn"] = 2_147_483_648L;
+        Assert.Equal("CMB-MRB-002", Assert.Throws<JsonException>(() => CampaignCombatActualMovedRepeatBreakdownCompletion.ReadProof(
+            JsonSerializer.SerializeToUtf8Bytes(outOfRangeBorrowedProof), after.SourceBytes, c.Parent.Ancestor.Request, parents, [inputBytes], Dependency)).Message);
     }
 
     private static CombatActualMovedRepeatBreakdownCompletionResult Replay(byte[] source, CompletionContext c, byte[][][] l, IReadOnlyList<byte[]> own)
