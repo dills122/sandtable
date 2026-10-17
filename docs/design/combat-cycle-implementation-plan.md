@@ -3033,3 +3033,18 @@ BudgetregressiongenuineRED precedesworkflowedit; fastPython/actionlint/diff/byte
 authorselfreview/freshreview3of9(pass3of3,recovery0of2),newheadCI/merge/testedtree/mainverification.
 No automaticfourthreview/fix orcounterresetifnewfailure. Mainforecast00:40–00:55 verification-only
 after00:37:35closeout;no newfeatures,hardstop01:37:35 unchanged,handoffrecordsactualpendingstate.
+
+## P01 — actual moved repeat Combat Position contract design (2026-10-17)
+
+[P01 contract and acceptance matrix](../specs/combat-actual-moved-repeat-position-v1.md)
+defines the private ordinal-two boundary after authentic R03. The retained 300 terminal rows
+partition provisionally into 44 adjacent armed candidates and 256 physically empty shapes.
+The design pins original CreationRequest plus 11-ledger replay, exact R03 suffix, complete bounded
+result/geometry proof, private identity and explicit policy exclusions. Accepted CMB-POL-001 and
+DES-005 authorize only the bounded singleton infantry exercise. Land §15.88 voluntary surrender
+remains source-legal but is outside it; do not describe this as full source-legal Combat.
+
+P01 executable reference, canonical schema/ID, all-row adversarial verification and independent
+same-head review remain open. The provenance, result and geometry reports in draft PRs #225–#227
+are inputs, not an executable certificate. P02 selection and P03 native consumer remain separate;
+no public or native ordinal-two action is activated by this design.
