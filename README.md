@@ -340,9 +340,12 @@ explains how test additions update the exhaustive allocation.
 ## Architecture and documentation
 
 The [P01 ordinal-two Combat Position contract design](docs/specs/combat-actual-moved-repeat-position-v1.md)
-records a provisional 44-candidate/256-empty R03 partition and its acceptance gates. It does not
-open an ordinal-two Combat choice; executable reference, native consumer and public activation remain
-pending. Accepted `CMB-POL-009` excludes Land §15.88 voluntary surrender from the initial RC
+records a provisional 44-candidate/256-empty R03 partition and its acceptance gates. The private
+reference and bounded proof slices are merged, but all 300 assessments remain unsupported with
+zero admitted actions. A [private owner projection draft](docs/specs/combat-p01-owner-projection-v0.md)
+models a separate visible alias and Umpire mapping; approved fields and authentic hidden-variant
+privacy proof remain open. No ordinal-two Combat choice or public activation is available.
+Accepted `CMB-POL-009` excludes Land §15.88 voluntary surrender from the initial RC
 bounded choice surface; this remains an explicit source-legal coverage limit.
 
 > Command decides. Staff plans. Dispatch carries. Umpire adjudicates. Chronicle remembers.

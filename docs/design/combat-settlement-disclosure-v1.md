@@ -215,6 +215,9 @@ rejects indistinguishable capabilities, and [action derivation](../../src/Cna.Co
 validates the submitted side-visible candidate and revision. These are reusable boundary patterns,
 not Combat projections. Combined freeze must define exact new unions/codecs, approved public
 fields, guard/custody/replacement representation, calendar semantics and migrations before runtime.
+The [P01 owner projection draft](../specs/combat-p01-owner-projection-v0.md) remains a disconnected
+private alias/map scaffold. It has no authenticated equal-visible hidden-world pair, accepted
+Combat owner fields, side-log projection or public submission path.
 
 ## Acceptance and verification plan
 

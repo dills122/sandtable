@@ -1,0 +1,17 @@
+{
+  "contract": "combat-p01-owner-projection-v0",
+  "status": "private design scaffold; no approved owner observation, public action, or admission",
+  "domain": "sandtable.combat.p01.owner-candidate-draft.v0",
+  "visibleFactFields": [
+    "audienceSide",
+    "visibleDecisionRevision",
+    "capabilityKind",
+    "apparentTargetRef"
+  ],
+  "capabilityKind": "close-assault-full",
+  "outwardIdPattern": "p01-owner-draft.[0-9a-f]{64}",
+  "privateCandidateIdPattern": "p01.[0-9a-f]{64}",
+  "outputStatus": "unsupported",
+  "admitted": false,
+  "publicActions": []
+}
