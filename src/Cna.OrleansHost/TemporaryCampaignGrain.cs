@@ -103,10 +103,11 @@ internal sealed record PendingStep(string Actor, string RequestId,
 public sealed class TemporaryCampaignGrain(
     TemporaryCampaignMemoryStore store, TemporaryCampaignAccess access) : Grain, ITemporaryCampaignGrain
 {
-    private const string FixtureCampaignId = "host-rsh-001";
-    private const string RulesetHash = "17f3e6047f34b5bf6f5f809055863b664a4bd82a8481db83ee83e0ae5cad3a2a";
-    private const string SetupHash = "sha256:e6631e81ad8f97e39fd9d7eec93bad7fe2b39db4d2d3059ed94a02dd4093e7a3";
-    private const string ContentHash = "sha256:646e76e69ecceb82216b37d84e950928099acd8a3cb04b51526d0fe631e512ee";
+    internal const string FixtureCampaignId = "host-rsh-001";
+    internal const string RulesetHash = "17f3e6047f34b5bf6f5f809055863b664a4bd82a8481db83ee83e0ae5cad3a2a";
+    internal const string SetupHash = "sha256:e6631e81ad8f97e39fd9d7eec93bad7fe2b39db4d2d3059ed94a02dd4093e7a3";
+    internal const string ContentHash = "sha256:646e76e69ecceb82216b37d84e950928099acd8a3cb04b51526d0fe631e512ee";
+    internal const string ScenarioId = "breakdown-truck-lab";
     private readonly string activationId = Guid.NewGuid().ToString("N");
     private TemporaryCampaignMemory memory = null!;
 
@@ -128,7 +129,7 @@ public sealed class TemporaryCampaignGrain(
 
         var request = new CampaignCreationRequest(1, FixtureCampaignId, RulesetHash, 12345,
             "rules-lab.breakdown.truck.v1", SetupHash,
-            "rules-lab.content.breakdown-truck.v1", ContentHash, "breakdown-truck-lab");
+            "rules-lab.content.breakdown-truck.v1", ContentHash, ScenarioId);
         var start = CampaignHostAdapter.Create(request);
         if (!start.IsStarted)
             return Task.FromResult(Reply(TemporaryCampaignStatus.Unavailable, "fixtureAdmissionFailed"));
@@ -136,7 +137,7 @@ public sealed class TemporaryCampaignGrain(
         var commonwealthCut = CampaignHostAdapter.QueryPrivateSideCut(start.Session!,
             CampaignActionAudience.Commonwealth);
         var tracker = TemporaryAudienceTracker.Create(FixtureCampaignId, RulesetHash,
-            "breakdown-truck-lab", SetupHash, ContentHash, axisCut, commonwealthCut);
+            ScenarioId, SetupHash, ContentHash, axisCut, commonwealthCut);
         if (tracker is null)
             return Task.FromResult(Reply(TemporaryCampaignStatus.Unavailable, "audienceCutUnavailable"));
         memory.AudienceTracker = tracker;
