@@ -1,6 +1,6 @@
 # R03: authentic moved repeat Breakdown completion
 
-**Status:** contract reference under final validation; no freeze or native runtime yet.
+**Status:** private reference freeze candidate; exact-head gates and native runtime open.
 **Base:** `9aaeacd` (`origin/main`, October 16, 2026).
 **Branch:** `codex/combat-r03-breakdown-contract`.
 
@@ -41,8 +41,11 @@ being reported as shape errors. R03 now classifies its own numeric leaves and nu
 borrowed R02 Proof locally; 32 framing negatives pass. The final exact-verifier-hash 300-row replay
 and vector audit also passed, with all canonical vectors retained. A complete 788-cut audit passed
 against the corrected checkpoint vectors using the final verifier; the same audit against final
-vectors is underway. See the evidence checkpoint for hashes and commands. `closureFrozen=false`
-remains required until final audit, independent review, freeze decision and exact-head CI.
+vectors passed. Six of six representative fixture tests matched retained canonical cases. The
+schema now marks a freeze candidate with `closureFrozen=true`; this byte change requires a new
+exact-head 300-row replay, vector and 788-cut audits, focused gates, fresh review and hosted CI
+before the reference can be declared frozen or native work can begin. See the evidence checkpoint
+for hashes and commands.
 
 ## Boundary
 

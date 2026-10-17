@@ -735,9 +735,9 @@ replays the original CreationRequest and ten independent R02 ledgers before its 
 Breakdown input. One trusted System completion enters ordinal-two Combat Position Determination
 without executing Combat or closing the active cycle. It preserves both Movement proofs and adds
 one receipt to the cumulative and local Breakdown ledgers. All 300 authentic terminal replays and
-the final vector audit pass, covering 36 paid and 264 armed rows. The final-vector nonterminal-cut
-audit, independent review, contract freeze and exact-head CI remain open; no native R03 consumer is
-claimed.
+the final vector audit pass, covering 36 paid and 264 armed rows. All 788 authentic nonterminal
+cuts reject. The schema is a freeze candidate; exact-head replay, vector/cut audit, independent
+review and hosted CI remain open. No native R03 consumer is claimed.
 
 The additive [actual Reaction-to-Combat entry](docs/specs/combat-actual-reaction-combat-entry-v1.md)
 authenticates complete direct Reaction closure with separate prefix/lifecycle/Breakdown caller ledgers.

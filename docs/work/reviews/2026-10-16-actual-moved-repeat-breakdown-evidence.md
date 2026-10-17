@@ -1,7 +1,7 @@
 # R03 reference checkpoint evidence
 
-**Status:** contract remains open (`closureFrozen=false`). Native consumption is gated. Final
-nonterminal-cut audit, fresh review, freeze decision and exact-head CI remain open.
+**Status:** freeze candidate (`closureFrozen=true`); candidate-schema exact-head replay, vector and
+cut audits, fresh review and hosted CI remain open. Native consumption is gated.
 
 ## Superseded catalogue
 
@@ -68,14 +68,16 @@ armed, both fixture identities, hashes, receipt ledgers and proof readbacks. Ret
 `c5403e56b1bb2829509a0f83024bf36d3548bc6a3b2564c46baeb043eb1f4dcc`; gzip SHA-256 is
 `c2d07098925c0e9c553523bc3f7d095a346eadbfb02115b58b58d665b2f0b52e` (25,954,166 bytes).
 
-The complete nonterminal-cut audit passed on the corrected checkpoint vectors using the final
-verifier: all 788 authentic cuts across 300 rows rejected. The same audit on final vectors is in
-progress and remains the evidence gate.
+The complete nonterminal-cut audit passed on both the corrected checkpoint vectors and final
+vectors using the final verifier: all 788 authentic R02 nonterminal cuts across 300 rows rejected.
+The representative fixture matched all retained canonical cases in six of six tests.
 
 ## Open gates
 
-Finish `2026-10-16-actual-moved-repeat-breakdown-all-cuts.py` on the final vectors for all 788 R02
-nonterminal cuts. Confirm representative fixture hashes, obtain fresh independent review, and pass
-exact-head hosted CI. Changing `closureFrozen` to `true` changes the schema file hash, so a proposed
-freeze needs its own exact-head replay and audit. Until those gates are recorded,
-`closureFrozen=false` is intentional and no native R03 consumer should be written.
+The candidate schema sets `closureFrozen=true` and has SHA-256
+`26909e67501f59a0d0892181b9c9499099552c721585369983c3dbde5784c955`; the verifier remains
+`f79ca3b29c2a61c3aa8957f0e2873fc4968c8db85cd0e71183960e4489928bd3`. This schema-byte
+change supersedes the prior full replay as exact-head evidence. Rerun all 300 authentic terminals,
+the vector audit, all 788 nonterminal cuts and focused gates on this candidate head. Obtain fresh
+independent review and pass hosted CI before declaring the reference frozen or writing a native R03
+consumer. Public Combat activation remains a separate gate.

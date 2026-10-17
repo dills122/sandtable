@@ -1,7 +1,7 @@
 {
   "contract": "combat-actual-moved-repeat-breakdown-completion-v1",
-  "status": "private reference contract; provisional limits and closure",
-  "closureFrozen": false,
+  "status": "private reference freeze candidate; exact-head replay, audit and hosted CI pending",
+  "closureFrozen": true,
   "objects": {
     "Source": "contractVersion:int movementCompletionSourceCanonicalUtf8:parentCarrier breakdownEventCanonicalUtf8:eventCarrier[]",
     "Base": "contractVersion:int dependencyManifestHash:hash movedRepeatMovementCompletionProof:R02Proof",

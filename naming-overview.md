@@ -52,8 +52,9 @@ or introducing another product name. B03 uses the plain technical names `Campaig
 inside Umpire; reviewed acceptance and public activation remain separate gates.
 The private [authentic moved-repeat Breakdown reference](docs/specs/combat-actual-moved-repeat-breakdown-completion-v1.md)
 uses the same plain `complete-breakdown-segment` command after full R02 moved-repeat completion.
-R03 is its delivery label, not a product name. Its 300-row reference and vector audit pass;
-final-cut audit, review, freeze, CI and native consumption remain separate gates.
+R03 is its delivery label, not a product name. Its 300-row reference, vector audit and all 788
+nonterminal cuts pass. The schema is a freeze candidate; exact-head replay/audit, review, hosted CI
+and native consumption remain separate gates.
 
 **Command** chooses strategic objectives, whether supplied by a person, scripted policy or optional
 model. **Staff** converts intent into concrete deterministic plans. The Umpire validates and executes

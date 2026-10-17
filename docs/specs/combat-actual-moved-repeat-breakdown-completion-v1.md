@@ -1,7 +1,8 @@
 # Actual moved repeat Breakdown completion v1
 
-**Status:** private reference contract in progress. Native, public and Runner activation are not
-claimed. [R03 delivery packet](../work/plans/2026-10-16-actual-moved-repeat-breakdown.md) owns gates.
+**Status:** private reference freeze candidate. Exact-head replay, audit, review and hosted CI
+remain open; native, public and Runner activation are not claimed.
+[R03 delivery packet](../work/plans/2026-10-16-actual-moved-repeat-breakdown.md) owns gates.
 
 ## Authenticated predecessor
 
@@ -42,10 +43,10 @@ profile or command; 004 ancestor, ledger, actor or context; 005 action/capabilit
 claim mismatch; 007 admission/capacity; 008 noncanonical bytes; 009 dependency delivery. Physical
 source acquisition must fail closed on missing, changed, unreadable, null or drifting dependencies.
 
-Raw limits remain provisional until field/carrier/depth/collection domination and measured physical
-closure are recorded. A fitting sample fixture is not a capacity certificate. Reference RED/GREEN,
-all cuts/retries, fault injection, retention checks, fresh review and exact-head CI are required
-before native implementation or publication.
+Raw limits have structural field/carrier/depth/collection domination and physical fault evidence.
+A fitting sample fixture is not a capacity certificate. Reference RED/GREEN, all cuts/retries, fault
+injection and retention checks passed on the pre-freeze schema; the changed schema requires its own
+exact-head replay, audit, fresh review and hosted CI before native implementation or publication.
 
 The R02 300-case completion catalogue and its 56-root moved-repeat fixture are pinned physical
 dependencies. The catalogue must contain exactly 300 expected unique row keys, 36 paid and 264
