@@ -1,6 +1,6 @@
 # R03: authentic moved repeat Breakdown completion
 
-**Status:** implementation packet; contract and runtime not yet frozen or implemented.
+**Status:** contract reference under final validation; no freeze or native runtime yet.
 **Base:** `9aaeacd` (`origin/main`, October 16, 2026).
 **Branch:** `codex/combat-r03-breakdown-contract`.
 
@@ -8,7 +8,7 @@
 
 R02 verifier enumerates exactly 300 authentic terminal rows: 36 paid and 264 armed. Its complete
 replay takes the original CreationRequest and ten independent ledgers. The R03 schema currently
-pins 106 runtime source paths: the 104 inherited R02 pins plus the R02 schema and verifier. New
+initially pinned 106 runtime source paths: the 104 inherited R02 pins plus the R02 schema and verifier. New
 limits and physical closure remain provisional (`closureFrozen=false`); no native consumer is
 authorized by this checkpoint.
 
@@ -23,7 +23,7 @@ structural capacity derivation and immutable reference freeze remain open. The r
 fixture is deliberately labelled as a subset; it cannot certify the 300-row catalogue.
 
 The next checkpoint added per-row progress and retained full canonical vectors for the long
-catalogue run, structural size arithmetic, and 540 physical dependency fault rejections. One paid
+catalogue run, structural size arithmetic, and the initial 540 physical dependency fault rejections. One paid
 and three armed authentic nonterminal R02 cuts reject. The first full 300-row run then completed,
 but these checks did not freeze the contract. See the
 [R03 reference evidence checkpoint](../reviews/2026-10-16-actual-moved-repeat-breakdown-evidence.md)
@@ -33,7 +33,14 @@ Independent review of that run found two contract defects: the R03 receipt was a
 inherited cumulative ledger, and the mutable pin map was not compared to its captured manifest.
 The initial 300-row PASS is therefore superseded. The corrected reference appends the same receipt
 to both ledgers, pins both authentic parent catalogue fixtures, and rejects pin-map mutation.
-Its 300-row rerun and vector audit are underway; `closureFrozen=false` remains required.
+Its corrected 300-row rerun passed, with a vector audit of all 56 distinct roots and 300 unique
+rows (36 paid, 264 armed). The physical pin set now contains 108 runtime source paths, including
+both authentic parent catalogue fixtures; all five fault modes across those pins and two own files
+reject (550/550). A later framing review found that inherited numeric out-of-range errors were
+being reported as shape errors. R03 now classifies its own numeric leaves and numeric leaves in the
+borrowed R02 Proof locally; 32 framing negatives pass. The final exact-verifier-hash 300-row replay
+and complete 788-cut audit are underway. See the evidence checkpoint for hashes and commands.
+`closureFrozen=false` remains required until final audit, independent review and exact-head CI.
 
 ## Boundary
 
