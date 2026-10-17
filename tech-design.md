@@ -117,6 +117,11 @@ MAP-08B maps the full MAP-04 player view and outward legal-action identities fro
 The [MAP-08B1 projection prerequisite](docs/specs/maproom-side-projection-prerequisites-v1.md)
 first defines typed side fields, public presentation sources, diary visibility and stable opaque
 action mapping; no browser view is returned until these sources are coherent.
+MAP-08B2 implements a process-local private cut tracker over both committed side observations.
+It binds campaign/source pins and authority version, advances contact/action identity on each
+accepted transition, and fails closed on a skipped or incoherent cut. A private grain read scopes
+opaque handles to the authorized session generation; public presentation and diary projection
+remain MAP-08B work.
 No canonical legal-action bytes or authority versions are serialized to HTTP. The
 [Angular workspace](src/Cna.Maproom/README.md) provides
 `projects/maproom-alpha` and the internal `@sandtable/field-atlas` library. Storybook uses the same

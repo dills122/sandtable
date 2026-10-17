@@ -2,6 +2,15 @@
 
 Status: contract proposal. No player view, campaign creation endpoint, or playable campaign API is supplied by this document. The MAP-08A `/view` route remains unavailable until these gates pass.
 
+MAP-08B2 implements the process-local private cut and continuity tracker described below. It
+does not provide the catalog, diary, or HTTP player projection and is not durable recovery.
+The private action descriptor carries the Core candidate identity plus side-permitted element,
+target-location, or reaction-opportunity semantics when present. A later HTTP mapper must reject
+unsupported candidate kinds rather than infer subjects from a Core hash.
+The cut also carries a typed decision-state kind; the later mapper combines it with supported
+action kinds and must not infer a terminal result from an empty legal set. Pair coherence checks
+campaign/source identity, version, position, turn, phase, and stage before publishing either side.
+
 ## Why the current boundary cannot serve MAP-04
 
 MAP-06 `CampaignHostAdapter.QueryAudience` returns a coherent, side-specific `CampaignObservationV7` and `CampaignLegalActionSet`. MAP-07 `TemporaryCampaignGrain.QueryAsync` reduces that cut to campaign, version, ruleset, position, observer, and two counts, then returns serialized Core legal actions. The serialized actions carry private candidate IDs and authority version. MAP-04 `CoherentPlayerView` instead requires typed position, map locations, formations, contacts, legal actions, ledger, diary, audience revision/cursor, and opaque action identities. Passing the Core bytes through HTTP or filling required fields with invented values would violate that contract.

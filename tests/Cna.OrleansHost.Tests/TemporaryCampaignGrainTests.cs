@@ -19,6 +19,90 @@ namespace Cna.OrleansHost.Tests;
 
 public sealed class TemporaryCampaignGrainTests
 {
+    private const string Generation = "11111111-1111-4111-8111-111111111111";
+    private const string OtherGeneration = "22222222-2222-4222-8222-222222222222";
+    [Fact]
+    public void PrivateTrackerAdvancesBothSeatsAcrossUnreadVisibilityLoss()
+    {
+        const string campaign = "test-campaign";
+        const string pin = "source-hash";
+        var tracker = TemporaryAudienceTracker.Create(campaign, pin,
+            "scenario", "setup-pin", "content-pin",
+            Side(CampaignActionAudience.Axis, 1, "private-axis-contact"),
+            Side(CampaignActionAudience.Commonwealth, 1, "private-commonwealth-contact"));
+        Assert.NotNull(tracker);
+        var firstAxis = tracker.Read(CampaignActionAudience.Axis, 1, Generation)!;
+        var firstCommonwealth = tracker.Read(CampaignActionAudience.Commonwealth, 1, Generation)!;
+        Assert.NotEqual(firstAxis.Contacts[0].ContactId,
+            firstCommonwealth.Contacts[0].ContactId);
+        Assert.DoesNotContain("private-axis-contact", firstAxis.Contacts[0].ContactId);
+
+        Assert.True(tracker.Advance(
+            Side(CampaignActionAudience.Axis, 2, "private-axis-contact"),
+            Side(CampaignActionAudience.Commonwealth, 2, "private-commonwealth-contact")));
+        var hiddenOnly = tracker.Read(CampaignActionAudience.Axis, 2, Generation)!;
+        Assert.Equal(firstAxis.AudienceRevision, hiddenOnly.AudienceRevision);
+        Assert.Equal(firstAxis.ActionSetToken, hiddenOnly.ActionSetToken);
+        Assert.Equal(firstAxis.Contacts[0].ContactId, hiddenOnly.Contacts[0].ContactId);
+
+        // No read between absence and reappearance; continuity follows committed cuts.
+        Assert.True(tracker.Advance(Side(CampaignActionAudience.Axis, 3),
+            Side(CampaignActionAudience.Commonwealth, 3, "private-commonwealth-contact")));
+        Assert.True(tracker.Advance(
+            Side(CampaignActionAudience.Axis, 4, "private-axis-contact"),
+            Side(CampaignActionAudience.Commonwealth, 4, "private-commonwealth-contact")));
+        var returned = tracker.Read(CampaignActionAudience.Axis, 4, Generation)!;
+        Assert.NotEqual(firstAxis.Contacts[0].ContactId, returned.Contacts[0].ContactId);
+        Assert.Equal(firstAxis.AudienceRevision + 2, returned.AudienceRevision);
+        Assert.Equal(firstCommonwealth.AudienceRevision,
+            tracker.Read(CampaignActionAudience.Commonwealth, 4, Generation)!.AudienceRevision);
+        Assert.NotEqual(returned.Contacts[0].ContactId,
+            tracker.Read(CampaignActionAudience.Axis, 4, OtherGeneration)!.Contacts[0].ContactId);
+        Assert.Null(tracker.Read(CampaignActionAudience.System, 4, Generation));
+        Assert.Null(tracker.Read(CampaignActionAudience.Axis, 3, Generation));
+        Assert.Null(tracker.Read(CampaignActionAudience.Axis, 4, "not-a-session-generation"));
+        Assert.False(tracker.Advance(Side(CampaignActionAudience.Axis, 6),
+            Side(CampaignActionAudience.Commonwealth, 6)));
+        Assert.Null(tracker.Read(CampaignActionAudience.Axis, 4, Generation));
+    }
+
+    [Fact]
+    public void PrivateTrackerRejectsIncoherentSourceWithoutPublishingEitherSide()
+    {
+        Assert.Null(TemporaryAudienceTracker.Create("test-campaign", "source-hash",
+            "wrong-scenario", "setup-pin", "content-pin",
+            Side(CampaignActionAudience.Axis, 1),
+            Side(CampaignActionAudience.Commonwealth, 1)));
+        var axis = Side(CampaignActionAudience.Axis, 1);
+        var commonwealth = Side(CampaignActionAudience.Commonwealth, 1);
+        foreach (var mismatched in new[]
+        {
+            commonwealth with { GameTurn = 2 },
+            commonwealth with { PhaseId = "other-phase" },
+            commonwealth with { StageId = "other-stage" },
+        })
+        {
+            Assert.Null(TemporaryAudienceTracker.Create("test-campaign", "source-hash",
+                "scenario", "setup-pin", "content-pin", axis, mismatched));
+        }
+        var tracker = TemporaryAudienceTracker.Create("test-campaign", "source-hash",
+            "scenario", "setup-pin", "content-pin",
+            Side(CampaignActionAudience.Axis, 1),
+            Side(CampaignActionAudience.Commonwealth, 1))!;
+        Assert.False(tracker.Advance(Side(CampaignActionAudience.Axis, 2),
+            Side(CampaignActionAudience.Axis, 2)));
+        Assert.Null(tracker.Read(CampaignActionAudience.Axis, 1, Generation));
+        Assert.Null(tracker.Read(CampaignActionAudience.Commonwealth, 1, Generation));
+    }
+
+    private static CampaignHostPrivateSideCut Side(CampaignActionAudience side, long version,
+        string? representation = null) => new("test-campaign", version, "source-hash",
+        "scenario", "position", 1, "phase", "stage", side,
+        [new CampaignHostPrivateLocation("location", "terrain")],
+        [new CampaignHostPrivateOwnElement($"own-{side}", $"formation-{side}", "location", "none")],
+        representation is null ? [] : [new CampaignHostPrivateContact(representation, "location", false)],
+        [new CampaignHostPrivateAction("core-action", "action")], "normal");
+
     [Fact]
     public async Task InProcessHostMatchesDirectCoreAndDeduplicatesConcurrentRequests()
     {
@@ -41,6 +125,21 @@ public sealed class TemporaryCampaignGrainTests
             var forged = new byte[32];
             Assert.Equal(TemporaryCampaignStatus.Rejected,
                 (await grain.Inner.CreateAsync(forged, "operator-1", "create-2")).Status);
+            Assert.Equal(TemporaryCampaignStatus.Rejected,
+                (await grain.Inner.QueryPrivateSideAsync(forged, CampaignActionAudience.Axis,
+                    Generation)).Status);
+            Assert.Equal(TemporaryCampaignStatus.Unavailable,
+                (await grain.Inner.QueryPrivateSideAsync(grain.Capability,
+                    CampaignActionAudience.System, Generation)).Status);
+            var axisPrivate = await grain.Inner.QueryPrivateSideAsync(grain.Capability,
+                CampaignActionAudience.Axis, Generation);
+            var commonwealthPrivate = await grain.Inner.QueryPrivateSideAsync(grain.Capability,
+                CampaignActionAudience.Commonwealth, Generation);
+            Assert.Equal(TemporaryCampaignStatus.Current, axisPrivate.Status);
+            Assert.Equal(TemporaryCampaignStatus.Current, commonwealthPrivate.Status);
+            Assert.Equal(axisPrivate.Cut!.StateVersion, commonwealthPrivate.Cut!.StateVersion);
+            Assert.Equal(axisPrivate.Cut.PositionId, commonwealthPrivate.Cut.PositionId);
+            Assert.Equal(axisPrivate.Cut.SourcePin, commonwealthPrivate.Cut.SourcePin);
             var privateRead = await grain.Inner.QueryAsync(forged, CampaignActionAudience.Axis);
             Assert.Equal(TemporaryCampaignStatus.Rejected, privateRead.Status);
             Assert.Null(privateRead.View);
@@ -67,6 +166,14 @@ public sealed class TemporaryCampaignGrainTests
                         hosted.View.ApparentOpposingPresenceCount);
                     Assert.Equal(CampaignLegalActionSerializer.Serialize(expected.LegalActions!),
                         hosted.LegalActions);
+                    var privateCut = (await grain.QueryPrivateSideAsync(side)).Cut!;
+                    Assert.Equal(expected.Observation.OwnElements.Select(e => e.ElementId),
+                        privateCut.OwnElements.Select(e => e.ElementId));
+                    Assert.Equal(expected.Observation.ApparentOpposingPresences
+                            .Select(p => p.RepresentationId),
+                        privateCut.Contacts.Select(c => c.RepresentationId));
+                    Assert.Equal(expected.LegalActions!.Candidates.Select(a => a.ActionId),
+                        privateCut.Actions.Select(a => a.CoreActionId));
                 }
                 var sets = Enum.GetValues<CampaignActionAudience>()
                     .Select(audience => CampaignExercises.Query(direct, audience).ActionSet!).ToArray();
@@ -118,9 +225,17 @@ public sealed class TemporaryCampaignGrainTests
                 Assert.Equal(beforeStale.View, afterStale.View);
                 if (index == 0)
                 {
+                    var beforePrivate = (await grain.QueryPrivateSideAsync(
+                        CampaignActionAudience.Axis)).Cut!;
                     var priorActivation = await grain.ActivationIdAsync();
                     await grain.DeactivateAsync();
                     Assert.NotEqual(priorActivation, await grain.ActivationIdAsync());
+                    var afterPrivate = (await grain.QueryPrivateSideAsync(
+                        CampaignActionAudience.Axis)).Cut!;
+                    Assert.Equal(beforePrivate.StateVersion, afterPrivate.StateVersion);
+                    Assert.Equal(beforePrivate.ActionSetToken, afterPrivate.ActionSetToken);
+                    Assert.Equal(beforePrivate.Contacts.Select(c => c.ContactId),
+                        afterPrivate.Contacts.Select(c => c.ContactId));
                     Assert.Equal(replies[0].Receipt,
                         (await grain.FindRequestAsync(actor, id, chosen.Audience)).Receipt);
                     Assert.Equal(beforeStale.LegalActions,
@@ -147,9 +262,14 @@ public sealed class TemporaryCampaignGrainTests
                     (await grain.AdvanceSystemAsync(0)).Status);
                 Assert.Equal(TemporaryCampaignStatus.StepLimit,
                     (await grain.AdvanceSystemAsync(1)).Status);
+                var afterSystem = await grain.QueryPrivateSideAsync(CampaignActionAudience.Axis);
+                Assert.Equal(TemporaryCampaignStatus.Current, afterSystem.Status);
+                Assert.Equal(2, afterSystem.Cut!.StateVersion);
                 var progress = await grain.AdvanceSystemAsync(8);
                 Assert.Equal(TemporaryCampaignStatus.NeedsHuman, progress.Status);
                 Assert.Equal(2, progress.Steps);
+                Assert.Equal(4, (await grain.QueryPrivateSideAsync(
+                    CampaignActionAudience.Commonwealth)).Cut!.StateVersion);
                 Assert.Equal(TemporaryCampaignStatus.Missing,
                     (await grain.FindRequestAsync("seat-1", "absent", CampaignActionAudience.Axis)).Status);
             }
@@ -162,6 +282,8 @@ public sealed class TemporaryCampaignGrainTests
             var grain = GetTrustedGrain(secondHost);
             Assert.Equal(TemporaryCampaignStatus.Missing,
                 (await grain.QueryAsync(CampaignActionAudience.Axis)).Status);
+            Assert.Equal(TemporaryCampaignStatus.Missing,
+                (await grain.QueryPrivateSideAsync(CampaignActionAudience.Axis)).Status);
             Assert.Equal(TemporaryCampaignStatus.Missing,
                 (await grain.FindRequestAsync("host-system", "system-1",
                     CampaignActionAudience.System)).Status);
@@ -188,6 +310,7 @@ public sealed class TemporaryCampaignGrainTests
                 "complete-reserve-designation", "complete-movement-segment",
                 "complete-breakdown-segment",
             };
+            var sawTypedSubject = false;
             for (var index = 0; index < expectedKinds.Length; index++)
             {
                 var set = Enum.GetValues<CampaignActionAudience>()
@@ -219,6 +342,14 @@ public sealed class TemporaryCampaignGrainTests
                     Assert.Equal(CampaignLegalActionSerializer.Serialize(expected.LegalActions!),
                         actual.LegalActions);
                     Assert.Equal(expected.Observation!.StateVersion, actual.View!.StateVersion);
+                    var expectedPrivate = CampaignHostAdapter.QueryPrivateSideCut(direct, side)!;
+                    var actualPrivate = (await grain.QueryPrivateSideAsync(side)).Cut!;
+                    Assert.Equal(expectedPrivate.Actions.Select(a =>
+                            (a.CoreActionId, a.ElementId, a.TargetLocationId, a.OpportunityId)),
+                        actualPrivate.Actions.Select(a =>
+                            (a.CoreActionId, a.ElementId, a.TargetLocationId, a.OpportunityId)));
+                    sawTypedSubject |= expectedPrivate.Actions.Any(a =>
+                        a.Kind is "move-element" or "designate-reserve" && a.ElementId is not null);
                 }
                 Assert.Equal(CampaignLegalActionSerializer.Serialize(
                         CampaignHostAdapter.QuerySystem(direct).ActionSet!),
@@ -256,6 +387,7 @@ public sealed class TemporaryCampaignGrainTests
                 Assert.Empty(CampaignLegalActionSerializer.DeserializeCanonical(
                     (await grain.QueryAsync(audience)).LegalActions!).Candidates);
             Assert.Equal(13, CampaignExercises.QueryCheckpoint(direct).StateVersion);
+            Assert.True(sawTypedSubject);
         }
         finally { await host.StopAsync(TestContext.Current.CancellationToken); }
     }
@@ -275,10 +407,14 @@ public sealed class TemporaryCampaignGrainTests
     private sealed class TrustedGrain(ITemporaryCampaignGrain inner, byte[] capability)
     {
         internal ITemporaryCampaignGrain Inner => inner;
+        internal byte[] Capability => capability.ToArray();
         internal Task<TemporaryCampaignReply> CreateAsync(string actor, string id) =>
             inner.CreateAsync(capability, actor, id);
         internal Task<TemporaryCampaignReply> QueryAsync(CampaignActionAudience audience) =>
             inner.QueryAsync(capability, audience);
+        internal Task<TemporaryPrivateCutReply> QueryPrivateSideAsync(
+            CampaignActionAudience audience) =>
+            inner.QueryPrivateSideAsync(capability, audience, Generation);
         internal Task<TemporaryCampaignReply> SubmitAsync(string actor, string id,
             CampaignActionAudience audience, byte[] command) =>
             inner.SubmitAsync(capability, actor, id, audience, command);

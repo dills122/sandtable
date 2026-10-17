@@ -16,6 +16,8 @@ internal interface ITemporaryCampaignGrain : IGrainWithStringKey
 {
     Task<TemporaryCampaignReply> CreateAsync(byte[] capability, string operatorId, string requestId);
     Task<TemporaryCampaignReply> QueryAsync(byte[] capability, CampaignActionAudience audience);
+    Task<TemporaryPrivateCutReply> QueryPrivateSideAsync(byte[] capability,
+        CampaignActionAudience audience, string sessionGeneration);
     Task<TemporaryCampaignReply> SubmitAsync(byte[] capability, string actorId, string requestId,
         CampaignActionAudience audience, byte[] canonicalCommand);
     Task<TemporaryCampaignReply> FindRequestAsync(byte[] capability, string actorId, string requestId,
@@ -56,6 +58,13 @@ public sealed record TemporaryCampaignReply
     [Id(7)] public int Steps { get; init; }
 }
 
+[GenerateSerializer]
+public sealed record TemporaryPrivateCutReply
+{
+    [Id(0)] public TemporaryCampaignStatus Status { get; init; }
+    [Id(1)] public TemporaryPrivateAudienceCut? Cut { get; init; }
+}
+
 /// <summary>Process-local only. Never supply the capability to a browser or remote client.</summary>
 public sealed class TemporaryCampaignAccess
 {
@@ -80,6 +89,8 @@ internal sealed class TemporaryCampaignMemory
     internal string? Creator { get; set; }
     internal string? CreationRequestId { get; set; }
     internal TemporaryCampaignReply? CreationReply { get; set; }
+    internal TemporaryAudienceTracker? AudienceTracker { get; set; }
+    internal long CommittedVersion { get; set; }
     internal PendingStep? Pending { get; set; }
 }
 
@@ -121,7 +132,16 @@ public sealed class TemporaryCampaignGrain(
         var start = CampaignHostAdapter.Create(request);
         if (!start.IsStarted)
             return Task.FromResult(Reply(TemporaryCampaignStatus.Unavailable, "fixtureAdmissionFailed"));
+        var axisCut = CampaignHostAdapter.QueryPrivateSideCut(start.Session!, CampaignActionAudience.Axis);
+        var commonwealthCut = CampaignHostAdapter.QueryPrivateSideCut(start.Session!,
+            CampaignActionAudience.Commonwealth);
+        var tracker = TemporaryAudienceTracker.Create(FixtureCampaignId, RulesetHash,
+            "breakdown-truck-lab", SetupHash, ContentHash, axisCut, commonwealthCut);
+        if (tracker is null)
+            return Task.FromResult(Reply(TemporaryCampaignStatus.Unavailable, "audienceCutUnavailable"));
+        memory.AudienceTracker = tracker;
         memory.Committed = start.Session;
+        memory.CommittedVersion = tracker.StateVersion;
         memory.Creator = operatorId;
         memory.CreationRequestId = requestId;
         memory.CreationReply = new TemporaryCampaignReply
@@ -170,6 +190,30 @@ public sealed class TemporaryCampaignGrain(
         });
     }
 
+    public Task<TemporaryPrivateCutReply> QueryPrivateSideAsync(byte[] capability,
+        CampaignActionAudience audience, string sessionGeneration)
+    {
+        if (!access.Allows(capability))
+            return Task.FromResult(new TemporaryPrivateCutReply { Status = TemporaryCampaignStatus.Rejected });
+        if (memory.Committed is null)
+            return Task.FromResult(new TemporaryPrivateCutReply { Status = TemporaryCampaignStatus.Missing });
+        var cut = memory.AudienceTracker?.Read(audience, memory.CommittedVersion,
+            sessionGeneration);
+        return Task.FromResult(cut is null
+            ? new TemporaryPrivateCutReply { Status = TemporaryCampaignStatus.Unavailable }
+            : new TemporaryPrivateCutReply
+            {
+                Status = TemporaryCampaignStatus.Current,
+                Cut = cut with
+                {
+                    Locations = cut.Locations.ToArray(),
+                    OwnElements = cut.OwnElements.ToArray(),
+                    Contacts = cut.Contacts.ToArray(),
+                    Actions = cut.Actions.ToArray(),
+                },
+            });
+    }
+
     public Task<TemporaryCampaignReply> SubmitAsync(byte[] capability, string actorId, string requestId,
         CampaignActionAudience audience, byte[] canonicalCommand)
     {
@@ -200,6 +244,13 @@ public sealed class TemporaryCampaignGrain(
         if (!result.IsAccepted)
             return Task.FromResult(Reply(TemporaryCampaignStatus.Rejected, result.RejectionReason.ToString()));
 
+        var successor = result.SuccessorSession!;
+        var axisCut = CampaignHostAdapter.QueryPrivateSideCut(successor, CampaignActionAudience.Axis);
+        var commonwealthCut = CampaignHostAdapter.QueryPrivateSideCut(successor,
+            CampaignActionAudience.Commonwealth);
+        if (memory.AudienceTracker?.Advance(axisCut, commonwealthCut) != true)
+            return Task.FromResult(Reply(TemporaryCampaignStatus.Unavailable, "audienceCutUnavailable"));
+
         // The memory commit has no await/provider call. Candidate and its request record become
         // visible together in this serialized grain turn; a process restart loses both.
         memory.Pending = new PendingStep(actorId, requestId, audience, canonicalCommand.ToArray(), result);
@@ -214,6 +265,7 @@ public sealed class TemporaryCampaignGrain(
         memory.Requests.Add(requestId, new RequestRecord(actorId, audience,
             memory.Pending.Command, Copy(reply)));
         memory.Committed = memory.Pending.Result.SuccessorSession;
+        memory.CommittedVersion = memory.AudienceTracker.StateVersion;
         memory.Pending = null;
         return Task.FromResult(Copy(reply));
     }
