@@ -36,11 +36,18 @@ public sealed class LocalGameApiTests
             crossSiteNavigation.Headers.TryAddWithoutValidation("Sec-Fetch-Site", "cross-site");
             Assert.Equal(HttpStatusCode.Forbidden,
                 (await Send(client, crossSiteNavigation)).StatusCode);
+            Assert.Equal(HttpStatusCode.Forbidden,
+                (await client.GetAsync("/api/v1/bootstrap", TestContext.Current.CancellationToken))
+                .StatusCode);
+            var browserFetch = new HttpRequestMessage(HttpMethod.Get, "/api/v1/bootstrap");
+            browserFetch.Headers.TryAddWithoutValidation("Sec-Fetch-Site", "same-origin");
+            Assert.Equal(HttpStatusCode.OK, (await Send(client, browserFetch)).StatusCode);
             var rebound = new HttpRequestMessage(HttpMethod.Get, "/api/v1/bootstrap");
             rebound.Headers.Host = "attacker.invalid";
+            rebound.Headers.TryAddWithoutValidation("Origin", client.BaseAddress!.GetLeftPart(UriPartial.Authority));
             Assert.Equal(HttpStatusCode.Forbidden, (await Send(client, rebound)).StatusCode);
 
-            var bootstrap = await client.GetAsync("/api/v1/bootstrap", TestContext.Current.CancellationToken);
+            var bootstrap = await Send(client, Bootstrap(client));
             Assert.Equal(HttpStatusCode.OK, bootstrap.StatusCode);
             var cookie = bootstrap.Headers.GetValues("Set-Cookie").Single();
             Assert.Contains("httponly", cookie, StringComparison.OrdinalIgnoreCase);
@@ -92,7 +99,7 @@ public sealed class LocalGameApiTests
             Assert.DoesNotContain("stateVersion", unavailableBody);
             Assert.DoesNotContain("LegalActions", unavailableBody);
 
-            var refresh = await Send(client, Get("/api/v1/bootstrap", seatCookie));
+            var refresh = await Send(client, Bootstrap(client, seatCookie));
             var seatCsrf = (await JsonDocument.ParseAsync(await refresh.Content.ReadAsStreamAsync(TestContext.Current.CancellationToken), cancellationToken: TestContext.Current.CancellationToken))
                 .RootElement.GetProperty("csrfToken").GetString()!;
             Assert.Equal(HttpStatusCode.Forbidden,
@@ -111,7 +118,7 @@ public sealed class LocalGameApiTests
             Assert.Equal(HttpStatusCode.OK, active.StatusCode);
             Assert.Contains("\"seat\":\"commonwealth\"",
                 await active.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
-            var secondBootstrap = await Send(client, Get("/api/v1/bootstrap", secondCookie));
+            var secondBootstrap = await Send(client, Bootstrap(client, secondCookie));
             var secondCsrf = (await JsonDocument.ParseAsync(
                 await secondBootstrap.Content.ReadAsStreamAsync(TestContext.Current.CancellationToken),
                 cancellationToken: TestContext.Current.CancellationToken)).RootElement
@@ -126,11 +133,10 @@ public sealed class LocalGameApiTests
                 .StatusCode);
 
             var store = app.Services.GetRequiredService<LocalSessionStore>();
-            for (var i = 0; i < LocalSessionStore.MaxSessions; i++)
+            for (var i = 1; i < LocalSessionStore.MaxSessions; i++)
                 Assert.NotNull(store.Bootstrap(null));
             Assert.Equal(HttpStatusCode.ServiceUnavailable,
-                (await client.GetAsync("/api/v1/bootstrap", TestContext.Current.CancellationToken))
-                .StatusCode);
+                (await Send(client, Bootstrap(client))).StatusCode);
         }
         finally { await app.StopAsync(TestContext.Current.CancellationToken); }
     }
@@ -163,8 +169,36 @@ public sealed class LocalGameApiTests
         Assert.NotNull(store.Bootstrap(null));
     }
 
+    [Fact]
+    public void SeatSessionsExpireAndExpiredGrantsAreSwept()
+    {
+        var clock = new ManualClock();
+        var store = new LocalSessionStore(clock);
+        var owner = store.Bootstrap(null)!;
+        var first = store.IssueGrants(owner.OperatorId, "host-rsh-001");
+        var seat = store.Redeem(owner, "host-rsh-001", first.Axis)!;
+        Assert.Equal("axis", seat.Seat);
+        for (var index = 1; index < LocalSessionStore.MaxGrants / 2; index++)
+            store.IssueGrants(owner.OperatorId, "host-rsh-001");
+        Assert.Throws<InvalidOperationException>(() =>
+            store.IssueGrants(owner.OperatorId, "host-rsh-001"));
+        clock.Advance(TimeSpan.FromMinutes(11));
+        var replacement = store.IssueGrants(owner.OperatorId, "host-rsh-001");
+        Assert.NotEqual(replacement.Axis, replacement.Commonwealth);
+        clock.Advance(TimeSpan.FromHours(2));
+        Assert.Null(store.Find(seat.Token));
+    }
+
     private static Task<HttpResponseMessage> Send(HttpClient client, HttpRequestMessage request) =>
         client.SendAsync(request, TestContext.Current.CancellationToken);
+
+    private static HttpRequestMessage Bootstrap(HttpClient client, string? cookie = null)
+    {
+        var request = new HttpRequestMessage(HttpMethod.Get, "/api/v1/bootstrap");
+        request.Headers.TryAddWithoutValidation("Origin", client.BaseAddress!.GetLeftPart(UriPartial.Authority));
+        if (cookie is not null) request.Headers.TryAddWithoutValidation("Cookie", cookie);
+        return request;
+    }
 
     private static HttpRequestMessage Seat(string campaignId, string cookie, string csrf, string grant)
     {

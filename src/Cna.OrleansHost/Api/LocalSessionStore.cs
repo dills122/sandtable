@@ -5,6 +5,7 @@ namespace Cna.OrleansHost.Api;
 internal sealed class LocalSessionStore(TimeProvider clock)
 {
     internal const int MaxSessions = 256;
+    internal const int MaxGrants = 512;
     private static readonly TimeSpan OperatorLifetime = TimeSpan.FromMinutes(15);
     private static readonly TimeSpan SeatLifetime = TimeSpan.FromHours(2);
     private readonly object gate = new();
@@ -42,6 +43,9 @@ internal sealed class LocalSessionStore(TimeProvider clock)
     {
         lock (gate)
         {
+            SweepExpired();
+            if (grants.Count > MaxGrants - 2)
+                throw new InvalidOperationException("Local grant capacity reached.");
             var axis = Guid.NewGuid().ToString();
             var commonwealth = Guid.NewGuid().ToString();
             grants.Add(axis, new LocalGrant(operatorId, campaignId, "axis",
@@ -94,6 +98,9 @@ internal sealed class LocalSessionStore(TimeProvider clock)
         foreach (var token in sessions.Where(pair => pair.Value.ExpiresAt <= now)
                      .Select(pair => pair.Key).ToArray())
             sessions.Remove(token);
+        foreach (var id in grants.Where(pair => pair.Value.ExpiresAt <= now)
+                     .Select(pair => pair.Key).ToArray())
+            grants.Remove(id);
     }
 }
 

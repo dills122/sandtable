@@ -29,6 +29,11 @@ internal static class LocalGameApi
         var api = app.MapGroup("/api/v1");
         api.MapGet("/bootstrap", (HttpContext context, LocalSessionStore store) =>
         {
+            // A browser navigation with no Origin is not proof of same-origin script intent.
+            // Modern same-origin fetches supply Sec-Fetch-Site; explicit Origin supports tools.
+            if (string.IsNullOrEmpty(context.Request.Headers["Sec-Fetch-Site"])
+                && string.IsNullOrEmpty(context.Request.Headers.Origin))
+                return ApiError(StatusCodes.Status403Forbidden, "forbidden");
             var session = store.Bootstrap(context.Request.Cookies[Cookie]);
             if (session is null) return ApiError(StatusCodes.Status503ServiceUnavailable, "unavailable");
             SetCookie(context, session.Token);

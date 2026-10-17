@@ -159,7 +159,9 @@ plumbing to `Cna.OrleansHost`. Its grant issuer is trusted-host-only until creat
 campaign and returns the MAP-04 response; no browser creation or grant path is enabled yet. The
 temporary session store caps admission at 256 live sessions, expires unredeemed operator sessions
 after 15 minutes and seat sessions after two hours, and returns `503` when full. Cross-site
-navigation cannot mint a replacement operator cookie. The
+navigation cannot mint a replacement operator cookie; bootstrap requires matching `Origin` or
+positive same-origin Fetch Metadata. Trusted-host grants are capped at 512 live entries and swept
+after expiry. The
 `/api/v1/campaigns/{campaignId}/view` route returns `503 unavailable` for an authorized seat until
 MAP-08B can project a complete, coherent MAP-04 audience view with outward legal-action IDs. The
 private MAP-07 legal-action bytes never cross HTTP. This is an ingress foundation, not connected
