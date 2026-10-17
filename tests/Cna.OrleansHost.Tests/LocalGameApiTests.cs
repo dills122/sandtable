@@ -44,6 +44,7 @@ public sealed class LocalGameApiTests
             { BaseAddress = new Uri(address) };
             var store = app.Services.GetRequiredService<LocalSessionStore>();
             string? axisCookie = null;
+            string[]? axisContacts = null;
             foreach (var side in new[] { "axis", "commonwealth" })
             {
                 var bootstrap = await Send(client, Bootstrap(client));
@@ -64,7 +65,28 @@ public sealed class LocalGameApiTests
                 var json = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
                 using var view = JsonDocument.Parse(json);
                 Assert.Equal(side, view.RootElement.GetProperty("seat").GetString());
+                Assert.Equal(15, view.RootElement.EnumerateObject().Count());
                 Assert.Equal(9, view.RootElement.GetProperty("locations").GetArrayLength());
+                var own = view.RootElement.GetProperty("ownFormations").EnumerateArray().ToArray();
+                Assert.Equal(2, own.Length);
+                Assert.All(own, formation =>
+                {
+                    var label = formation.GetProperty("label").GetString()!;
+                    Assert.StartsWith(side == "axis" ? "Axis " : "Commonwealth ", label);
+                    Assert.True(Guid.TryParse(formation.GetProperty("formationId").GetString(), out _));
+                });
+                var contacts = view.RootElement.GetProperty("apparentContacts").EnumerateArray()
+                    .ToArray();
+                Assert.Equal(2, contacts.Length);
+                Assert.All(contacts, contact =>
+                {
+                    Assert.Equal("Unidentified presence", contact.GetProperty("label").GetString());
+                    Assert.True(Guid.TryParse(contact.GetProperty("contactId").GetString(), out _));
+                });
+                var contactIds = contacts.Select(contact =>
+                    contact.GetProperty("contactId").GetString()!).ToArray();
+                if (side == "axis") axisContacts = contactIds;
+                else Assert.Empty(contactIds.Intersect(axisContacts!, StringComparer.Ordinal));
                 // Creation precedes trusted System progression. No human candidate is yet legal.
                 Assert.Empty(view.RootElement.GetProperty("legalActions").EnumerateArray());
                 Assert.Equal("unsupported-phase", view.RootElement.GetProperty("position")
