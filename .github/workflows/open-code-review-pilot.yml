@@ -16,9 +16,11 @@ concurrency:
 jobs:
   review:
     # Repository owner opts in for each paid run by applying this label to a
-    # same-repository, ready PR. Pushes and draft/ready toggles cannot spend tokens.
+    # same-repository, ready PR. Rerunning an existing Actions run cannot spend
+    # tokens without a fresh owner label event.
     if: >-
-      ${{ !github.event.pull_request.draft &&
+      ${{ github.run_attempt == 1 &&
+          !github.event.pull_request.draft &&
           github.event.pull_request.head.repo.full_name == github.repository &&
           github.event.label.name == 'ocr-scrutiny' &&
           github.actor == github.repository_owner }}
