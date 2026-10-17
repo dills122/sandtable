@@ -24,10 +24,16 @@ fixture is deliberately labelled as a subset; it cannot certify the 300-row cata
 
 The next checkpoint added per-row progress and retained full canonical vectors for the long
 catalogue run, structural size arithmetic, and 540 physical dependency fault rejections. One paid
-and three armed authentic nonterminal R02 cuts reject. The full 300-row run is underway, so these
-checks do not freeze the contract. See the
+and three armed authentic nonterminal R02 cuts reject. The first full 300-row run then completed,
+but these checks did not freeze the contract. See the
 [R03 reference evidence checkpoint](../reviews/2026-10-16-actual-moved-repeat-breakdown-evidence.md)
 for exact commands, observed results and open gates.
+
+Independent review of that run found two contract defects: the R03 receipt was absent from the
+inherited cumulative ledger, and the mutable pin map was not compared to its captured manifest.
+The initial 300-row PASS is therefore superseded. The corrected reference appends the same receipt
+to both ledgers, pins both authentic parent catalogue fixtures, and rejects pin-map mutation.
+Its 300-row rerun and vector audit are underway; `closureFrozen=false` remains required.
 
 ## Boundary
 

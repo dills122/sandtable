@@ -169,6 +169,8 @@
     "docs/specs/combat-weather-v1.schema.json": "44f2fa44af30bf723ecac88db08fc9efac85e9880624635fc73f4dc52bd9459f",
     "docs/specs/combat-world-settlement-v1.schema.json": "f892545f5dac693c55d1180ad771d95ffeec508176a0d6139b82752ed46bcf0e",
     "docs/specs/fixtures/combat-actual-assault-v1.json": "9a486f77d0463c071c55af9196511ec2f1214763ed2278ba89962b30746aba09",
+    "docs/specs/fixtures/combat-actual-moved-repeat-movement-completion-v1.json": "7c887ebbfe8889279fcf5d9269cef2538af6fb38cacf0279a420f2e3496f2258",
+    "docs/specs/fixtures/combat-actual-moved-repeat-movement-v1.json": "481f93d483d15dd7425f2d025c8d823cfe680ebc36acd3b408ae32bb64e20b8d",
     "docs/specs/fixtures/combat-actual-selection-v1.json": "019d1a3ff0f121d83f377ddfb19d274b4a8aa89172bad8aeb289c3b98228e604",
     "docs/specs/fixtures/combat-authority-envelope-v1.json": "adf7b05e15f863b08f366809adf91c97b39480e404ce2efff15e838fa4043eaa",
     "docs/specs/fixtures/combat-content-v7.canonical.json": "ee4fde9638ceb61ec08612fe32f9ac81db05572aac5ca20941e402d2fed25847",

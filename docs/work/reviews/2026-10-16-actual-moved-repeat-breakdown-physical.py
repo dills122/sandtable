@@ -11,7 +11,7 @@ r03 = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(r03)
 r03.verify_dependencies()
 targets = [r03.REPOSITORY / name for name in r03.PINS] + list(r03.OWN)
-assert len(r03.PINS) == 106 and len(targets) == 108
+assert len(r03.PINS) == 108 and len(targets) == 110
 original = Path.read_bytes
 checks = 0
 for target in targets:
@@ -39,6 +39,6 @@ for target in targets:
             else:
                 raise AssertionError((target, mode, "accepted"))
         checks += 1
-assert checks == 540
+assert checks == 550
 print(json.dumps(dict(status="PASS", pinnedPaths=len(r03.PINS), ownPaths=len(r03.OWN),
                       faultModes=5, rejectedFaults=checks)))

@@ -58,6 +58,7 @@ def inherited(call):
 
 
 def verify_dependencies():
+    require(encode(dict(sorted(PINS.items()))) == MANIFEST, 9)
     require(len(PINS) == len(set(PINS)) and all(
         type(path) is str and path.isascii() and not path.startswith("/")
         and "\\" not in path and all(part not in ("", ".", "..") for part in path.split("/"))
@@ -313,9 +314,10 @@ def transition(context, prior, input_value, admission=True):
     after["sequencePosition"] = copy.deepcopy(context["successor"])
     after["breakdownCompletionReceiptId"] = receipt_id
     after["closed"] = True
-    after["breakdownReceipts"].append(dict(commandHash=command_hash, eventHash=sha(event_bytes),
-                                            receiptId=receipt_id, actor="system",
-                                            stateVersion=after["stateVersion"]))
+    receipt = dict(commandHash=command_hash, eventHash=sha(event_bytes),
+                   receiptId=receipt_id, actor="system", stateVersion=after["stateVersion"])
+    after["receipts"].append(copy.deepcopy(receipt))
+    after["breakdownReceipts"].append(receipt)
     raw(after, "Control")
     return after, event_bytes, receipt_id
 
@@ -408,6 +410,8 @@ def trace(row, full=False):
     _, _, after = replay(after_source, parent_args, ledger)
     require(after["breakdownCompletionReceiptId"] == receipt and after["closed"]
             and after["activeCycle"]["ordinal"] == 2, 6)
+    require(len(after["receipts"]) == len(before["receipts"]) + 1
+            and after["receipts"][-1] == after["breakdownReceipts"][0], 6)
     retained = ("world", "randomState", "originalMovementEnd", "movementEnd",
                 "priorCycleProgress", "actualProgressRefs", "members", "attackHistory",
                 "priorCycleTargetUses", "targetUses", "assessment", "pendingRepeatIntent",

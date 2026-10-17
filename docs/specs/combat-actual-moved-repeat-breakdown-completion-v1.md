@@ -26,7 +26,9 @@ the signed canonical event. The active ordinal-two cycle stays open while the R0
 R03 preserves World, RNG, resources, both Movement proofs, all prior events/receipts, original and
 active cycles, member and release history, assessment, pending intent, targets, actual progress,
 tracks, movement receipts and interrupted-flow history. It adds only its Base/source binding,
-one System event, one receipt, updated version/prefix/position and local closure. No Breakdown
+one System event, one receipt in both the inherited cumulative `Control.receipts` ledger and local
+`Control.breakdownReceipts` ledger, updated version/prefix/position and local closure. An exact
+retry preserves both receipt arrays byte for byte. No Breakdown
 checks, lots, losses, BP reset, progress charge, third ordinal or subsequent Combat step occurs.
 
 ## Canonical and failure boundary
@@ -44,6 +46,11 @@ Raw limits remain provisional until field/carrier/depth/collection domination an
 closure are recorded. A fitting sample fixture is not a capacity certificate. Reference RED/GREEN,
 all cuts/retries, fault injection, retention checks, fresh review and exact-head CI are required
 before native implementation or publication.
+
+The R02 300-case completion catalogue and its 56-root moved-repeat fixture are pinned physical
+dependencies. The catalogue must contain exactly 300 expected unique row keys, 36 paid and 264
+armed, with every root ordinal represented. Pin-map deletion or substitution after manifest
+capture fails closed before reading dependency bytes.
 
 ## Scope
 
