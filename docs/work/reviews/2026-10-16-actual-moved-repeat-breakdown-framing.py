@@ -55,6 +55,16 @@ reject("long-overflow", 2, lambda: r03.raw(altered, "Input"))
 altered = copy.deepcopy(input_value)
 altered["unknown"] = None
 reject("unknown-field", 1, lambda: r03.raw(altered, "Input"))
+for kind, (minimum, maximum) in {
+    "int": (0, 2**31 - 1), "long": (0, 2**63 - 1),
+    "ulong": (0, 2**64 - 1), "signedInt": (-2**31, 2**31 - 1),
+    "futureTurn": (1, 115), "differential": (-2, 2),
+}.items():
+    r03.typed(minimum, kind)
+    r03.typed(maximum, kind)
+    reject(kind + "-boolean", 1, lambda kind=kind: r03.typed(True, kind))
+    reject(kind + "-underflow", 2, lambda kind=kind, minimum=minimum: r03.typed(minimum - 1, kind))
+    reject(kind + "-overflow", 2, lambda kind=kind, maximum=maximum: r03.typed(maximum + 1, kind))
 reject("control-byte-cap", 1, lambda: r03.parse(b"x" * (r03.L["controlBytes"] + 1), "Control"))
 reject("proof-byte-cap", 1, lambda: r03.parse(b"x" * (r03.L["proofBytes"] + 1), "Proof"))
 print(json.dumps(dict(status="PASS", rejected=rejected)))
