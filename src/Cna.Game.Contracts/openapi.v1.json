@@ -369,7 +369,7 @@
           "actions"
         ],
         "operationId": "submitAction",
-        "description": "Use current server-issued action identity and exact view revision. Actor is derived from session. No System actor input.",
+        "description": "Use opaque audience action-set token and exact view-issued action identity. Actor and private authority revision are server-owned. Hidden-only commits must not change outward token or action ID by themselves.",
         "parameters": [
           {
             "name": "campaignId",
@@ -414,7 +414,7 @@
             }
           },
           "409": {
-            "description": "Stale view or request conflict",
+            "description": "Same request ID with changed seat or canonical request",
             "content": {
               "application/json": {
                 "schema": {
@@ -909,7 +909,8 @@
         "properties": {
           "actionId": {
             "type": "string",
-            "pattern": "^[0-9a-f]{64}$"
+            "format": "uuid",
+            "description": "Opaque audience-issued action handle; not the Core candidate hash."
           },
           "actionContractVersion": {
             "type": "integer",
@@ -1036,11 +1037,6 @@
             "pattern": "^(0|[1-9][0-9]*)$",
             "description": "Unsigned decimal string; never a JSON number. Preserve all 64-bit revisions in JavaScript."
           },
-          "stateVersion": {
-            "type": "string",
-            "pattern": "^(0|[1-9][0-9]*)$",
-            "description": "Unsigned decimal string; never a JSON number. Preserve all 64-bit revisions in JavaScript."
-          },
           "rulesetHash": {
             "type": "string",
             "pattern": "^[0-9a-f]{64}$"
@@ -1089,6 +1085,11 @@
             "type": "string",
             "pattern": "^(0|[1-9][0-9]*)$",
             "description": "Unsigned decimal string; never a JSON number. Preserve all 64-bit revisions in JavaScript."
+          },
+          "actionSetToken": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Opaque, audience-safe action-set capability. Must not encode or track hidden-only authority revision."
           }
         },
         "required": [
@@ -1097,7 +1098,7 @@
           "sessionGeneration",
           "seat",
           "audienceRevision",
-          "stateVersion",
+          "actionSetToken",
           "rulesetHash",
           "position",
           "locations",
@@ -1127,11 +1128,6 @@
             "type": "string",
             "format": "uuid"
           },
-          "expectedStateVersion": {
-            "type": "string",
-            "pattern": "^(0|[1-9][0-9]*)$",
-            "description": "Unsigned decimal string; never a JSON number. Preserve all 64-bit revisions in JavaScript."
-          },
           "expectedPositionId": {
             "type": "string",
             "minLength": 1,
@@ -1139,110 +1135,49 @@
           },
           "actionId": {
             "type": "string",
-            "pattern": "^[0-9a-f]{64}$"
+            "format": "uuid",
+            "description": "Opaque audience-issued action handle; not the Core candidate hash."
           },
           "actionContractVersion": {
             "type": "integer",
             "minimum": 1
+          },
+          "actionSetToken": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Exact token from coherent view; server resolves private authority revision and revalidates current legal action."
           }
         },
         "required": [
           "contractVersion",
           "requestId",
           "sessionGeneration",
-          "expectedStateVersion",
+          "actionSetToken",
           "expectedPositionId",
           "actionId",
           "actionContractVersion"
         ]
       },
       "ActionReceipt": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "contractVersion": {
-            "type": "integer",
-            "enum": [
-              1
-            ]
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/PendingActionReceipt"
           },
-          "campaignId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
+          {
+            "$ref": "#/components/schemas/AcceptedActionReceipt"
           },
-          "requestId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "status": {
-            "type": "string",
-            "enum": [
-              "pending",
-              "accepted",
-              "rejected"
-            ]
-          },
-          "reason": {
-            "type": "string",
-            "enum": [
-              "none",
-              "invalid-action",
-              "stale-view",
-              "unsupported-phase",
-              "request-conflict"
-            ]
-          },
-          "acceptedStateVersion": {
-            "type": "string",
-            "pattern": "^(0|[1-9][0-9]*)$",
-            "description": "Unsigned decimal string; never a JSON number. Preserve all 64-bit revisions in JavaScript."
-          },
-          "audienceRevision": {
-            "type": "string",
-            "pattern": "^(0|[1-9][0-9]*)$",
-            "description": "Unsigned decimal string; never a JSON number. Preserve all 64-bit revisions in JavaScript."
+          {
+            "$ref": "#/components/schemas/RejectedActionReceipt"
           }
-        },
-        "required": [
-          "contractVersion",
-          "campaignId",
-          "requestId",
-          "status",
-          "reason"
-        ]
-      },
-      "SafeChangeHint": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "contractVersion": {
-            "type": "integer",
-            "enum": [
-              1
-            ]
-          },
-          "campaignId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128
-          },
-          "sessionGeneration": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "audienceRevision": {
-            "type": "string",
-            "pattern": "^(0|[1-9][0-9]*)$",
-            "description": "Unsigned decimal string; never a JSON number. Preserve all 64-bit revisions in JavaScript."
+        ],
+        "discriminator": {
+          "propertyName": "status",
+          "mapping": {
+            "pending": "#/components/schemas/PendingActionReceipt",
+            "accepted": "#/components/schemas/AcceptedActionReceipt",
+            "rejected": "#/components/schemas/RejectedActionReceipt"
           }
-        },
-        "required": [
-          "contractVersion",
-          "campaignId",
-          "sessionGeneration",
-          "audienceRevision"
-        ]
+        }
       },
       "ApiError": {
         "type": "object",
@@ -1292,6 +1227,134 @@
         "items": {
           "$ref": "#/components/schemas/CampaignDescriptor"
         }
+      },
+      "PendingActionReceipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "contractVersion": {
+            "type": "integer",
+            "enum": [
+              1
+            ]
+          },
+          "campaignId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "requestId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "enum": [
+              "none"
+            ]
+          }
+        },
+        "required": [
+          "contractVersion",
+          "campaignId",
+          "requestId",
+          "status",
+          "reason"
+        ]
+      },
+      "AcceptedActionReceipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "contractVersion": {
+            "type": "integer",
+            "enum": [
+              1
+            ]
+          },
+          "campaignId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "requestId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "accepted"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "enum": [
+              "none"
+            ]
+          },
+          "audienceRevision": {
+            "type": "string",
+            "pattern": "^(0|[1-9][0-9]*)$",
+            "description": "Unsigned decimal string; never a JSON number. Preserve all 64-bit revisions in JavaScript."
+          }
+        },
+        "required": [
+          "contractVersion",
+          "campaignId",
+          "requestId",
+          "status",
+          "reason",
+          "audienceRevision"
+        ]
+      },
+      "RejectedActionReceipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "contractVersion": {
+            "type": "integer",
+            "enum": [
+              1
+            ]
+          },
+          "campaignId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "requestId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "rejected"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "enum": [
+              "invalid-action",
+              "stale-view",
+              "unsupported-phase"
+            ]
+          }
+        },
+        "required": [
+          "contractVersion",
+          "campaignId",
+          "requestId",
+          "status",
+          "reason"
+        ]
       }
     },
     "securitySchemes": {
@@ -1312,5 +1375,6 @@
       }
     }
   },
-  "security": []
+  "security": [],
+  "x-signalr-contract": "signalr.v1.json"
 }

@@ -9,6 +9,9 @@
  */
 
 export interface LegalAction {
+  /**
+   * Opaque audience-issued action handle; not the Core candidate hash.
+   */
   actionId: string;
   actionContractVersion: number;
   kind: string;

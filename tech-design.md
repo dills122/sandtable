@@ -85,7 +85,8 @@ ledger in MAP-03A/B/C. Its [portable operations preview](docs/design/maproom-sty
 links selection and accepted example results across map, inspector, ledger and War Diary. Submitted
 order identity is independent of selection; real completion must update the originating formation.
 The [MAP-04 outward contract](src/Cna.Game.Contracts/README.md) specifies development-only
-browser routes, a coherent audience view and lossless revision strings. Its generated client compiles;
+browser routes, a coherent audience view, opaque action capabilities and lossless audience
+revision strings. Private authority versions stay server-side. Its generated client compiles;
 host handlers are pending. The preview remains synthetic. The
 [Angular workspace](src/Cna.Maproom/README.md) provides
 `projects/maproom-alpha` and the internal `@sandtable/field-atlas` library. Storybook uses the same

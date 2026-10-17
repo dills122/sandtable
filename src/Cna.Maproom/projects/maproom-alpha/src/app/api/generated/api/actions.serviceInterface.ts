@@ -36,7 +36,7 @@ export interface ActionsServiceInterface {
 
   /**
    *
-   * Use current server-issued action identity and exact view revision. Actor is derived from session. No System actor input.
+   * Use opaque audience action-set token and exact view-issued action identity. Actor and private authority revision are server-owned. Hidden-only commits must not change outward token or action ID by themselves.
    * @endpoint post /api/v1/campaigns/{campaignId}/actions
    * @param campaignId
    * @param submitActionRequest

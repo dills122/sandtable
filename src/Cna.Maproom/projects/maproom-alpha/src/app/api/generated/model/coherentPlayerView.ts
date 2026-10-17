@@ -24,10 +24,6 @@ export interface CoherentPlayerView {
    * Unsigned decimal string; never a JSON number. Preserve all 64-bit revisions in JavaScript.
    */
   audienceRevision: string;
-  /**
-   * Unsigned decimal string; never a JSON number. Preserve all 64-bit revisions in JavaScript.
-   */
-  stateVersion: string;
   rulesetHash: string;
   position: Position;
   locations: Array<MapLocation>;
@@ -40,6 +36,10 @@ export interface CoherentPlayerView {
    * Unsigned decimal string; never a JSON number. Preserve all 64-bit revisions in JavaScript.
    */
   nextDiaryCursor: string;
+  /**
+   * Opaque, audience-safe action-set capability. Must not encode or track hidden-only authority revision.
+   */
+  actionSetToken: string;
 }
 export namespace CoherentPlayerView {
   export const ContractVersionEnum = {

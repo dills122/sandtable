@@ -1,0 +1,113 @@
+{
+  "contractVersion": 1,
+  "transport": "signalr",
+  "hubPath": "/hubs/v1/campaigns",
+  "authentication": {
+    "cookie": "sandtable_session",
+    "origin": "same-origin loopback",
+    "authorizeOn": [
+      "connect",
+      "subscribe",
+      "before-group-join"
+    ],
+    "seatSource": "server-session",
+    "rejectClientSide": true,
+    "negotiate": {
+      "method": "POST",
+      "csrfHeader": "X-Sandtable-CSRF",
+      "skipNegotiation": false,
+      "rejectCrossOrigin": true
+    }
+  },
+  "subscription": {
+    "method": "Subscribe",
+    "argumentsSchema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contractVersion",
+        "campaignId",
+        "sessionGeneration"
+      ],
+      "properties": {
+        "contractVersion": {
+          "type": "integer",
+          "enum": [
+            1
+          ]
+        },
+        "campaignId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "sessionGeneration": {
+          "type": "string",
+          "format": "uuid"
+        }
+      }
+    },
+    "ackSchema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contractVersion",
+        "subscribed"
+      ],
+      "properties": {
+        "contractVersion": {
+          "type": "integer",
+          "enum": [
+            1
+          ]
+        },
+        "subscribed": {
+          "type": "boolean",
+          "enum": [
+            true
+          ]
+        }
+      }
+    },
+    "groupScope": "server-resolved campaign + seat + session generation",
+    "reconnect": "Reconnect authenticates and subscribes anew; subscribe first, then GET current player view; push is a hint and HTTP readback is truth."
+  },
+  "serverEvent": {
+    "method": "viewChanged",
+    "payloadSchema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contractVersion",
+        "campaignId",
+        "sessionGeneration",
+        "audienceRevision"
+      ],
+      "properties": {
+        "contractVersion": {
+          "type": "integer",
+          "enum": [
+            1
+          ]
+        },
+        "campaignId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "sessionGeneration": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "audienceRevision": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "description": "Unsigned decimal string; never a JSON number. Preserve all 64-bit revisions in JavaScript."
+        }
+      }
+    },
+    "emission": "Only after a committed change to this audience permitted view. Never emit for hidden-only changes or pending transitions.",
+    "coalescing": "Allowed; no sequence or delivery guarantee. Client refreshes over HTTP."
+  },
+  "handoff": "Invalidating seat generation removes old subscription; late old-generation hints are discarded."
+}

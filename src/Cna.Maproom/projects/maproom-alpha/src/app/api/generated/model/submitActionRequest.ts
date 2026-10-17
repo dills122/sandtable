@@ -12,13 +12,16 @@ export interface SubmitActionRequest {
   contractVersion: SubmitActionRequest.ContractVersionEnum;
   requestId: string;
   sessionGeneration: string;
-  /**
-   * Unsigned decimal string; never a JSON number. Preserve all 64-bit revisions in JavaScript.
-   */
-  expectedStateVersion: string;
   expectedPositionId: string;
+  /**
+   * Opaque audience-issued action handle; not the Core candidate hash.
+   */
   actionId: string;
   actionContractVersion: number;
+  /**
+   * Exact token from coherent view; server resolves private authority revision and revalidates current legal action.
+   */
+  actionSetToken: string;
 }
 export namespace SubmitActionRequest {
   export const ContractVersionEnum = {

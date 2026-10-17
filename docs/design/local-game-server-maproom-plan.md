@@ -105,11 +105,13 @@ MAP-04 freezes exact routes and schemas before handlers. The drafted
 fixture/scenario descriptors; create a campaign; enter a granted seat; read player view and legal
 actions; submit one action; query a request receipt; relinquish a seat; subscribe to safe changes.
 
-Bind submissions to campaign, session/seat, unique request ID, exact server-issued action identity
-and its current contract revision. Bind immutable rules/setup/content/configuration identities at
-creation. Preserve state_version and existing rules identity in trusted records; expose revision
-data only through the approved audience contract. Use lossless wire representations for wide
-integers. Browser receipt/status and journal sequence are distinct concepts.
+Bind submissions to campaign, session/seat, unique request ID, opaque audience action-set token,
+exact server-issued outward action identity and its current contract revision. Bind immutable
+rules/setup/content/configuration identities at creation. Preserve state_version and existing rules identity in trusted records. Never expose
+authority state_version or encode it in outward action tokens. Audience revision and diary cursor
+advance only on permitted visible changes and use lossless decimal strings. Outward action IDs
+remain stable across hidden-only commits; the host maps them to current Core candidates and
+revalidates legality. Browser receipt/status and journal sequence are distinct concepts.
 
 Derive actor/side from server-issued session ownership. Never trust a caller-supplied System actor.
 Authorize before looking up a retained receipt. Exact retries return the original outcome;
@@ -122,7 +124,8 @@ topology may be public content, but units, contacts and legal targets come only 
 projection. A legal-action list is also subject to fog boundaries. Keep raw Chronicle events,
 snapshots, seeds/RNG state, debug traces and hidden identifiers out of player payloads and logs.
 
-MAP-04 also defines formation-ledger fields and bounded, audience-safe War Diary readback.
+MAP-04 also defines receipt status variants, the SignalR hub handshake, formation-ledger fields
+and bounded, audience-safe War Diary readback.
 Ledger rows derive from the same permitted view as the map; diary excerpts carry only approved
 audience revision/cursor metadata. Neither surface becomes a raw journal export or a separate
 source of campaign truth.

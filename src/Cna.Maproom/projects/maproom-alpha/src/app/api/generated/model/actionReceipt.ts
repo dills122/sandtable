@@ -7,39 +7,12 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { RejectedActionReceipt } from './rejectedActionReceipt';
+import { PendingActionReceipt } from './pendingActionReceipt';
+import { AcceptedActionReceipt } from './acceptedActionReceipt';
 
-export interface ActionReceipt {
-  contractVersion: ActionReceipt.ContractVersionEnum;
-  campaignId: string;
-  requestId: string;
-  status: ActionReceipt.StatusEnum;
-  reason: ActionReceipt.ReasonEnum;
-  /**
-   * Unsigned decimal string; never a JSON number. Preserve all 64-bit revisions in JavaScript.
-   */
-  acceptedStateVersion?: string;
-  /**
-   * Unsigned decimal string; never a JSON number. Preserve all 64-bit revisions in JavaScript.
-   */
-  audienceRevision?: string;
-}
-export namespace ActionReceipt {
-  export const ContractVersionEnum = {
-    NUMBER_1: 1,
-  } as const;
-  export type ContractVersionEnum = (typeof ContractVersionEnum)[keyof typeof ContractVersionEnum];
-  export const StatusEnum = {
-    Pending: 'pending',
-    Accepted: 'accepted',
-    Rejected: 'rejected',
-  } as const;
-  export type StatusEnum = (typeof StatusEnum)[keyof typeof StatusEnum];
-  export const ReasonEnum = {
-    None: 'none',
-    InvalidAction: 'invalid-action',
-    StaleView: 'stale-view',
-    UnsupportedPhase: 'unsupported-phase',
-    RequestConflict: 'request-conflict',
-  } as const;
-  export type ReasonEnum = (typeof ReasonEnum)[keyof typeof ReasonEnum];
-}
+/**
+ * @type ActionReceipt
+ * @export
+ */
+export type ActionReceipt = AcceptedActionReceipt | PendingActionReceipt | RejectedActionReceipt;
