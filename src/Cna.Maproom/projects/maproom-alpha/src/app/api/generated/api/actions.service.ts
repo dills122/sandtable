@@ -47,7 +47,7 @@ export class ActionsService extends BaseService implements ActionsServiceInterfa
   }
 
   /**
-   * Authorize campaign and seat before retained receipt lookup. Exact retry returns original outcome.
+   * Authorize campaign and seat before retained receipt lookup. Return latest retained status; pending may later settle, final outcome is stable.
    * @endpoint get /api/v1/campaigns/{campaignId}/receipts/{requestId}
    * @param campaignId
    * @param requestId

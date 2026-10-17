@@ -114,8 +114,9 @@ remain stable across hidden-only commits; the host maps them to current Core can
 revalidates legality. Browser receipt/status and journal sequence are distinct concepts.
 
 Derive actor/side from server-issued session ownership. Never trust a caller-supplied System actor.
-Authorize before looking up a retained receipt. Exact retries return the original outcome;
-reuse of a request ID with changed actor or canonical payload conflicts. A fresh stale request
+Authorize before looking up a retained receipt. Exact retries return latest retained status;
+pending may later settle, and final outcomes are immutable. Reuse of a request ID with changed
+actor or canonical payload conflicts. A fresh stale request
 rejects without an event, RNG advance or resource charge. Transport cancellation cannot undo a
 commit; retry/status lookup reconciles an uncertain response.
 

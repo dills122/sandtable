@@ -384,17 +384,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ActionReceipt"
-                }
-              }
-            }
-          },
-          "202": {
-            "description": "Success",
+            "description": "Current retained pending, accepted or rejected receipt",
             "content": {
               "application/json": {
                 "schema": {
@@ -404,7 +394,7 @@
             }
           },
           "400": {
-            "description": "Invalid action",
+            "description": "Malformed request before admission",
             "content": {
               "application/json": {
                 "schema": {
@@ -449,7 +439,25 @@
             "seatCookie": [],
             "csrfHeader": []
           }
-        ]
+        ],
+        "x-retry-semantics": {
+          "identity": [
+            "campaignId",
+            "serverSeat",
+            "requestId"
+          ],
+          "canonicalPayload": "SubmitActionRequest",
+          "sameRequest": "latest-retained-status",
+          "changedSeatOrPayload": "409",
+          "allowedTransitions": [
+            "pending->accepted",
+            "pending->rejected"
+          ],
+          "terminalStatuses": [
+            "accepted",
+            "rejected"
+          ]
+        }
       }
     },
     "/api/v1/campaigns/{campaignId}/receipts/{requestId}": {
@@ -458,7 +466,7 @@
           "actions"
         ],
         "operationId": "getActionReceipt",
-        "description": "Authorize campaign and seat before retained receipt lookup. Exact retry returns original outcome.",
+        "description": "Authorize campaign and seat before retained receipt lookup. Return latest retained status; pending may later settle, final outcome is stable.",
         "parameters": [
           {
             "name": "campaignId",

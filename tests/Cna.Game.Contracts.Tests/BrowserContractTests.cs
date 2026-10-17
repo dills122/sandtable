@@ -115,6 +115,51 @@ public sealed class BrowserContractTests
     }
 
     [Fact]
+    public void SubmissionHttpSuccessCarriesDiscriminatedReceiptAndLatestStatusRetry()
+    {
+        var root = Contract.RootElement;
+        var schemas = root.GetProperty("components").GetProperty("schemas");
+        var post = root.GetProperty("paths")
+            .GetProperty("/api/v1/campaigns/{campaignId}/actions").GetProperty("post");
+        var responses = post.GetProperty("responses");
+        Assert.False(responses.TryGetProperty("202", out _));
+        Assert.Equal("#/components/schemas/ActionReceipt",
+            responses.GetProperty("200").GetProperty("content").GetProperty("application/json")
+                .GetProperty("schema").GetProperty("$ref").GetString());
+        Assert.Equal("#/components/schemas/ActionReceipt",
+            root.GetProperty("paths")
+                .GetProperty("/api/v1/campaigns/{campaignId}/receipts/{requestId}")
+                .GetProperty("get").GetProperty("responses").GetProperty("200")
+                .GetProperty("content").GetProperty("application/json").GetProperty("schema")
+                .GetProperty("$ref").GetString());
+
+        var retry = post.GetProperty("x-retry-semantics");
+        Assert.Equal(["campaignId", "serverSeat", "requestId"],
+            retry.GetProperty("identity").EnumerateArray()
+                .Select(value => value.GetString()).ToArray());
+        Assert.Equal("SubmitActionRequest", retry.GetProperty("canonicalPayload").GetString());
+        Assert.Equal("latest-retained-status", retry.GetProperty("sameRequest").GetString());
+        Assert.Equal("409", retry.GetProperty("changedSeatOrPayload").GetString());
+        Assert.Equal(["pending->accepted", "pending->rejected"],
+            retry.GetProperty("allowedTransitions").EnumerateArray()
+                .Select(value => value.GetString()).ToArray());
+        Assert.Equal(["accepted", "rejected"],
+            retry.GetProperty("terminalStatuses").EnumerateArray()
+                .Select(value => value.GetString()).ToArray());
+
+        const string prefix = "\"contractVersion\":1,\"campaignId\":\"campaign-1\",\"requestId\":\"8aa18f25-30c3-4c76-8f7b-576742b9a82f\"";
+        using var pending = JsonDocument.Parse($"{{{prefix},\"status\":\"pending\",\"reason\":\"none\"}}");
+        using var accepted = JsonDocument.Parse($"{{{prefix},\"status\":\"accepted\",\"reason\":\"none\",\"audienceRevision\":\"1\"}}");
+        using var rejected = JsonDocument.Parse($"{{{prefix},\"status\":\"rejected\",\"reason\":\"stale-view\"}}");
+        AssertNode(pending.RootElement, responses.GetProperty("200").GetProperty("content")
+            .GetProperty("application/json").GetProperty("schema"), schemas);
+        AssertNode(accepted.RootElement, responses.GetProperty("200").GetProperty("content")
+            .GetProperty("application/json").GetProperty("schema"), schemas);
+        AssertNode(rejected.RootElement, responses.GetProperty("200").GetProperty("content")
+            .GetProperty("application/json").GetProperty("schema"), schemas);
+    }
+
+    [Fact]
     public void SignalRContractBindsSubscriptionToServerSeatAndPermittedViewChanges()
     {
         var root = SignalR.RootElement;

@@ -26,12 +26,16 @@ remain separate contracts.
    action-set token, position ID, outward action ID and action contract version. It accepts no
    actor, generic payload or private authority revision. A stale token or action rejects with a
    static audience-safe reason and no event, RNG advance or charge.
-6. A submission returns `pending`, `accepted` or `rejected`. Pending exposes no successor and is
-   not a save. Accepted alone carries the current audience revision; pending and rejected carry
-   no revision. Exact retry with the same request ID and canonical request returns its original
-   outcome; changed seat or payload conflicts. `GET .../receipts/{requestId}` authorizes campaign
-   and seat before lookup. A lost or cancelled HTTP response does not undo a commit; receipt
-   lookup and current view reconcile it. Conflict errors use fixed, audience-safe text.
+6. A submission returns HTTP 200 with a discriminated `pending`, `accepted` or `rejected`
+   receipt. HTTP success means receipt lookup succeeded, not that action was accepted. Pending
+   exposes no successor and is not a save. Accepted alone carries the current audience revision.
+   Request ID binds the canonical request and server-owned seat for deduplication. An exact retry
+   returns the **latest retained status**: pending may later settle to accepted or rejected,
+   while a final outcome is immutable. Reusing the ID with a different seat or canonical payload
+   conflicts. `GET .../receipts/{requestId}` authorizes campaign and
+   seat before lookup and returns the same latest retained status. A lost or cancelled HTTP reply
+   does not undo a commit; receipt lookup and current view reconcile it. Conflict errors use
+   fixed, audience-safe text.
 7. `DELETE .../seat` invalidates generation and clears seat cookie. Clients must clear prior-seat
    DOM, drafts, overlays and subscriptions before entering the next seat.
 
