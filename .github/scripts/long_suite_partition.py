@@ -61,7 +61,7 @@ def validate_plan(plan, rows, weights):
 
 def validate_dependencies(needs):
     from test_partition import require
-    require(set(needs) == {'prepare', 'tests', 'format'} and all(needs[key]['result'] == 'success' for key in needs), 'Failed/cancelled/skipped/missing required dependency')
+    require(set(needs) == {'prepare', 'tests', 'format', 'orleans'} and all(needs[key]['result'] == 'success' for key in needs), 'Failed/cancelled/skipped/missing required dependency')
     return True
 
 

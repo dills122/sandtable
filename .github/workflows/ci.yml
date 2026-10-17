@@ -135,8 +135,39 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
+  orleans:
+    needs: prepare
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out tested event SHA
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Set up .NET
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          global-json-file: global.json
+      - name: Restore and build Orleans host tests
+        run: |
+          dotnet restore tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj
+          dotnet build tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj --configuration Release --no-restore
+      - name: Run and verify Orleans host rows
+        run: |
+          dotnet test --project tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj --configuration Release --no-build --no-restore --report-xunit-xml --results-directory artifacts/orleans-results
+          python3 .github/scripts/verify_orleans_results.py artifacts/orleans-results
+      - name: Retain Orleans test results
+        if: ${{ always() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: orleans-${{ github.sha }}-${{ github.run_attempt }}
+          path: artifacts/orleans-results
+          if-no-files-found: error
+          retention-days: 14
+
   verify:
-    needs: [prepare, tests, format]
+    needs: [prepare, tests, format, orleans]
     if: ${{ always() }}
     runs-on: ubuntu-24.04
     timeout-minutes: 15
