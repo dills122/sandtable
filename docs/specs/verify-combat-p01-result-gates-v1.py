@@ -77,6 +77,26 @@ def initial_case(state):
                 retreatChoice='not-required', custodyChoice=None)
 
 
+def authenticated_control(record):
+    """Reconstruct terminal Control from source and eleven parent input ledgers."""
+    vectors = record['vectors']
+    source_bytes = vectors['sourceCanonicalUtf8'].encode('ascii')
+    require('sha256:' + sha(source_bytes) == record['sourceHash'], 'replay source vector')
+    ledgers = ancestry.original_ledgers(vectors['parentInputLedgersCanonicalUtf8'])
+    own = [vectors['inputCanonicalUtf8'].encode('ascii')]
+    source_record, _, state = ancestry.p01.r03.replay(source_bytes, ledgers, own)
+    require(ancestry.p01.r03.raw(source_record, 'Source') == source_bytes, 'replayed source bytes')
+    return ancestry.p01.r03.raw(state, 'Control')
+
+
+def require_control_vector(record, replayed):
+    vector = record['vectors']['afterControlCanonicalUtf8'].encode('ascii')
+    require('sha256:' + sha(vector) == record['afterControlHash'], 'terminal control hash')
+    require(vector == replayed and 'sha256:' + sha(replayed) == record['afterControlHash'],
+            'terminal Control differs from authenticated replay')
+    return json.loads(replayed)
+
+
 def positive_worlds(evidence):
     """Authenticate 44 R03 ancestors, then extract their pinned terminal Worlds."""
     selected = {36 + 6 * n for n in range(44)}
@@ -93,15 +113,14 @@ def positive_worlds(evidence):
             if row['index'] not in selected:
                 continue
             r03 = row['r03']
-            control = r03['vectors']['afterControlCanonicalUtf8'].encode('ascii')
-            require('sha256:' + sha(control) == r03['afterControlHash'], 'terminal control hash')
-            state = json.loads(control)
+            replayed = authenticated_control(r03)
+            state = require_control_vector(r03, replayed)
             require(row['classification'] == 'unresolved' and r03['rowKey'] == f"r{row['index']//6+6:03}-c01",
                     'row identity')
-            rows.append((row['index'], state))
-    require({i for i, _ in rows} == selected and len(rows) == 44, 'positive row set')
+            rows.append((row['index'], state, r03, replayed))
+    require({row[0] for row in rows} == selected and len(rows) == 44, 'positive row set')
     counts = Counter()
-    for index, state in rows:
+    for index, state, _, _ in rows:
         side = state['activeCycle']['actingSide']
         require(side in ('axis', 'commonwealth') and state['world']['settlements'] == [], 'positive base shape')
         expected = world.world_at(initial_case(state), 'initial')
@@ -138,10 +157,21 @@ def independent_result(rules, differential, attacker_coordinate, defender_coordi
 
 
 def check_settlement(case, projected, facts, custody_choice):
+    require(projected['contractVersion'] == 7
+            and projected['creationBinding'] == case['creationBinding']
+            and not projected['brokenVehicleLots'], 'projected World envelope')
+    require(len(projected['settlements']) == 1, 'exactly one settlement')
     s = projected['settlements'][0]
+    sid = case['settlementId']
+    require((s['settlementId'], s['commitmentId'], s['resultId'], s['gameTurn'], s['operationStage']) ==
+            (sid, sid + '.commit', sid + '.result', 1, 1), 'settlement identity and scope')
     require(s['result'] == facts and len(s['preLossElements']) == 2, 'immutable result receipt')
     frozen = {world.SIDES[e['elementId']]: e for e in s['preLossElements']}
     defending_side = 'axis' if case['attackerSide'] == 'commonwealth' else 'commonwealth'
+    require(set(frozen) == {'axis', 'commonwealth'} and len(frozen) == 2
+            and s['attacker'] == world.unit(frozen[case['attackerSide']], case['creationBinding'])
+            and s['defender'] == world.unit(frozen[defending_side], case['creationBinding']),
+            'settlement participants')
     for side, paid_cp in ((case['attackerSide'], 9), (defending_side, 3)):
         element = frozen[side]
         require(element['operationalState']['capabilityPointsExpended'] == world.cp(paid_cp)
@@ -153,11 +183,16 @@ def check_settlement(case, projected, facts, custody_choice):
     moved = int(case['retreatChoice'] == 'retreat')
     require(d['requiredDistance'] == required and d['plannedDistance'] == moved
             and d['unfulfilledDistance'] == required - moved
-            and d['kind'] == case['retreatChoice'], 'retreat disposition')
+            and d['kind'] == case['retreatChoice']
+            and d['receiptId'] == sid + '.disposition', 'retreat disposition')
     losses = {r['role']: r for r in s['losses']['roles']}
-    require(set(losses) == {'attacker', 'defender'}, 'joint loss roles')
+    require(len(s['losses']['roles']) == 2 and set(losses) == {'attacker', 'defender'},
+            'joint loss roles')
     for role in ('attacker', 'defender'):
         r = losses[role]
+        side = case['attackerSide'] if role == 'attacker' else defending_side
+        require(r['component'] == world.component(frozen[side], case['creationBinding']),
+                'loss role component')
         percent = facts[role + 'Percent']
         refusal = 10 * (required - moved) if role == 'defender' else 0
         loss = (10 * percent + 99) // 100 if role == 'attacker' else 10 * (percent + refusal) // 100
@@ -169,6 +204,12 @@ def check_settlement(case, projected, facts, custody_choice):
                 'loss and capture conservation')
         require(0 <= captured <= loss <= 3 and r['remainingToe'] >= 7, 'bounded survivor')
     retreat = s['retreat']
+    require(s['losses']['receiptId'] == sid + '.losses'
+            and retreat['receiptId'] == sid + '.retreat'
+            and retreat['kind'] == case['retreatChoice']
+            and retreat['route'] == d['route']
+            and d['route'][0] == frozen[defending_side]['currentLocationId']
+            and len(d['route']) == moved + 1, 'retreat route receipt')
     require(retreat['beforeCp'] == world.cp(3) and retreat['afterCp'] == world.cp(3 + moved)
             and retreat['completedDistance'] == moved and retreat['excessCpDp'] == 0
             and retreat['attackerVictoryRp'] == 3 * moved, 'retreat ledger and victory')
@@ -176,9 +217,13 @@ def check_settlement(case, projected, facts, custody_choice):
             and s['losses']['predecessorReceiptId'] == d['receiptId']
             and retreat['predecessorReceiptId'] == s['losses']['receiptId'], 'causal receipt chain')
     elements = {world.SIDES[e['elementId']]: e for e in projected['elements']}
+    require(len(elements) == len(projected['elements']) == 2
+            and set(elements) == {'axis', 'commonwealth'}, 'final participants')
     attacker = elements[case['attackerSide']]
     defender_side = 'axis' if case['attackerSide'] == 'commonwealth' else 'commonwealth'
     defender = elements[defender_side]
+    require(attacker['currentLocationId'] == frozen[case['attackerSide']]['currentLocationId']
+            and defender['currentLocationId'] == d['route'][-1], 'final participant locations')
     require(attacker['operationalState']['capabilityPointsExpended'] == world.cp(9)
             and defender['operationalState']['capabilityPointsExpended'] == world.cp(3 + moved)
             and attacker['ammunition']['points'] == defender['ammunition']['points'] == 0,
@@ -186,34 +231,79 @@ def check_settlement(case, projected, facts, custody_choice):
     require(attacker['operationalState']['cohesionLevel'] == -losses['attacker']['lossDp'] + 3 * moved
             and defender['operationalState']['cohesionLevel'] == -losses['defender']['lossDp'],
             'Cohesion cause order')
-    require(len(projected['cohesionCauses']) == sum(int(losses[r]['lossDp'] > 0) for r in losses) + moved,
-            'cause count')
-    for ordinal, cause in enumerate(projected['cohesionCauses'], 1):
-        require(cause['ordinal'] == ordinal and cause['after'] ==
-                cause['before'] + cause['points'] * (1 if cause['kind'] == 'assault-victory-rp' else -1),
-                'ordered Cohesion cause')
+    expected_causes = []
+    for role, element in (('attacker', attacker), ('defender', defender)):
+        points = losses[role]['lossDp']
+        if points:
+            expected_causes.append((s['losses']['receiptId'], element['elementId'],
+                                    'loss-dp', points, 0, -points))
+    if moved:
+        before_victory = -losses['attacker']['lossDp']
+        expected_causes.append((retreat['receiptId'], attacker['elementId'],
+                                'assault-victory-rp', 3, before_victory, before_victory + 3))
+    require(len(projected['cohesionCauses']) == len(expected_causes), 'cause count')
+    for ordinal, (cause, expected) in enumerate(zip(projected['cohesionCauses'], expected_causes), 1):
+        receipt_id, element_id, kind, points, before, after = expected
+        require(cause == dict(causeId=sid + '.' + kind + '.' + world.SIDES[element_id],
+                              ordinal=ordinal, receiptId=receipt_id, elementId=element_id,
+                              gameTurn=s['gameTurn'], operationStage=s['operationStage'],
+                              kind=kind, points=points, before=before, after=after),
+                'ordered Cohesion cause and identity')
     lot_quantity = sum(r['capturedToe'] for r in losses.values())
     require(len(projected['custodyLots']) == int(lot_quantity > 0), 'custody lot count')
     if lot_quantity:
         lot = projected['custodyLots'][0]
         custody = s['custody']
+        victim_role = facts['capturedRole']
+        victim_side = case['attackerSide'] if victim_role == 'attacker' else defending_side
+        victim = attacker if victim_role == 'attacker' else defender
+        captor_role = 'defender' if victim_role == 'attacker' else 'attacker'
+        captor = defender if captor_role == 'defender' else attacker
+        require(lot['lotId'] == sid + '.captives'
+                and lot['lossReceiptId'] == s['losses']['receiptId']
+                and lot['originalComponent'] == world.component(frozen[victim_side], case['creationBinding'])
+                and lot['captor'] == world.unit(captor, case['creationBinding'])
+                and lot['originLocationId'] == frozen[victim_side]['currentLocationId']
+                and custody['receiptId'] == sid + '.custody'
+                and custody['lotId'] == lot['lotId']
+                and custody['route'][0] == lot['originLocationId'], 'custody identity and origin')
         require(lot['quantity'] == lot_quantity and custody['predecessorReceiptId'] == retreat['receiptId']
                 and custody['kind'] == custody_choice and len(custody['route']) - 1 <= 3,
                 'positive custody receipt')
-        captor_role = 'defender' if facts['capturedRole'] == 'attacker' else 'attacker'
-        captor = defender if captor_role == 'defender' else attacker
         require(custody['donorToeBefore'] == losses[captor_role]['remainingToe']
                 and custody['donorToeAfter'] == losses[captor_role]['remainingToe'] - int(custody_choice == 'relocate-and-guard'),
                 'guard donor conservation')
         if custody_choice == 'relocate-and-guard':
+            guard = projected['guards'][0]
+            obligation = projected['futureObligations'][0]
             require(lot['status'] == 'guarded' and len(projected['guards']) == 1
-                    and projected['guards'][0]['toe'] == 1 and projected['guards'][0]['lotId'] == lot['lotId']
+                    and guard['toe'] == 1 and guard['lotId'] == lot['lotId']
                     and len(projected['replacementEntitlements']) == 0
                     and len(projected['futureObligations']) == 1
-                    and projected['futureObligations'][0]['kind'] == 'guard-priority-upkeep'
-                    and projected['futureObligations'][0]['status'] == 'retained-unimplemented',
+                    and obligation['kind'] == 'guard-priority-upkeep'
+                    and obligation['status'] == 'retained-unimplemented',
                     'guard and upkeep')
+            require(lot['currentLocationId'] == custody['route'][-1] == captor['currentLocationId']
+                    and lot['guardId'] == custody['guardId'] == guard['guardId'] == sid + '.guard'
+                    and lot['escapeReceiptId'] is None
+                    and custody['entitlementId'] is None
+                    and guard['formationReceiptId'] == custody['receiptId']
+                    and guard['originComponent'] == world.component(captor, case['creationBinding'])
+                    and guard['currentLocationId'] == lot['currentLocationId']
+                    and guard['baseCapabilityPointAllowance'] == 10
+                    and guard['offensiveCloseAssaultRating'] == 0
+                    and guard['defensiveCloseAssaultRating'] == 1
+                    and guard['operationalState'] == captor['operationalState']
+                    and guard['ammunition'] == captor['ammunition']
+                    and guard['readiness'] == captor['readiness'], 'complete guard formation and lot')
+            require(obligation == dict(obligationId=sid + '.upkeep', receiptId=custody['receiptId'],
+                    kind='guard-priority-upkeep', subjectId=guard['guardId'],
+                    earnedScope=dict(gameTurn=s['gameTurn'], operationStage=s['operationStage']),
+                    eligibleScope=None, activationGate='before-prisoner-upkeep-or-guard-action',
+                    status='retained-unimplemented'), 'guard obligation binding')
         else:
+            entitlement = projected['replacementEntitlements'][0]
+            obligation = projected['futureObligations'][0]
             require(lot['status'] == 'escaped' and len(projected['guards']) == 0
                     and len(projected['replacementEntitlements']) == 1
                     and projected['replacementEntitlements'][0]['quantity'] == lot_quantity
@@ -222,6 +312,24 @@ def check_settlement(case, projected, facts, custody_choice):
                     and projected['futureObligations'][0]['kind'] == 'replacement-training-gate'
                     and projected['futureObligations'][0]['status'] == 'retained-unimplemented',
                     'escape and replacement')
+            require(lot['currentLocationId'] is None and lot['guardId'] is None
+                    and lot['escapeReceiptId'] == custody['receiptId']
+                    and custody['guardId'] is None
+                    and custody['entitlementId'] == entitlement['entitlementId'] == sid + '.replacement'
+                    and custody['route'][-1] == victim['currentLocationId']
+                    and entitlement['escapeReceiptId'] == custody['receiptId']
+                    and entitlement['lotId'] == lot['lotId']
+                    and entitlement['originalComponent'] == lot['originalComponent']
+                    and entitlement['reunionLocationId'] == victim['currentLocationId']
+                    and entitlement['earnedScope'] == dict(gameTurn=s['gameTurn'], operationStage=s['operationStage'])
+                    and entitlement['eligibleScope'] == world.eligible_scope(s['gameTurn'], s['operationStage'])
+                    and entitlement['status'] == 'awaiting-eligibility-and-training',
+                    'complete escape and entitlement binding')
+            require(obligation == dict(obligationId=sid + '.training', receiptId=custody['receiptId'],
+                    kind='replacement-training-gate', subjectId=entitlement['entitlementId'],
+                    earnedScope=entitlement['earnedScope'], eligibleScope=entitlement['eligibleScope'],
+                    activationGate='before-replacement-eligibility-training',
+                    status='retained-unimplemented'), 'replacement obligation binding')
         require(captor['components'][0]['currentToe'] == custody['donorToeAfter'], 'final donor TOE')
     else:
         require(s['custody'] is None and custody_choice is None and not projected['guards']
@@ -233,6 +341,7 @@ def check_settlement(case, projected, facts, custody_choice):
         require(element['components'][0]['currentToe'] == losses[role]['remainingToe'] - guard_transfer,
                 'final participant TOE matches loss and guard transfer')
     relation = s['relationships']
+    require(relation['receiptId'] == sid + '.relationships', 'relationship receipt identity')
     expected_kind = None if moved else 'engaged' if facts['rawEngaged'] and not required else 'contact'
     require(relation['kind'] == expected_kind
             and relation['predecessorReceiptId'] == (s['custody']['receiptId'] if lot_quantity else retreat['receiptId'])
@@ -251,6 +360,9 @@ def check_settlement(case, projected, facts, custody_choice):
                 and actual_relation['active'] is True
                 and actual_relation['endedByReceiptId'] is None
                 and actual_relation['endingCause'] is None, 'relationship object matches receipt')
+    require(len(projected['representations']) == 2
+            and {tuple(r['boundElementIds']) for r in projected['representations']} ==
+            {(e['elementId'],) for e in projected['elements']}, 'representation membership')
     for e in projected['elements']:
         rep = next(r for r in projected['representations'] if r['boundElementIds'] == [e['elementId']])
         require(rep['currentLocationId'] == e['currentLocationId'], 'representation follows survivor')
@@ -297,10 +409,21 @@ def verify_matrix(rules, rows):
 
 
 def mutation_checks(rules, rows):
-    state = rows[0][1]
+    state, record, replayed = rows[0][1:]
+    changed_vector = copy.deepcopy(record)
+    parsed = json.loads(changed_vector['vectors']['afterControlCanonicalUtf8'])
+    parsed['stateVersion'] = parsed['stateVersion'] + 1
+    changed_control = ancestry.p01.r03.raw(parsed, 'Control')
+    changed_vector['vectors']['afterControlCanonicalUtf8'] = changed_control.decode('ascii')
+    changed_vector['afterControlHash'] = 'sha256:' + sha(changed_control)
+    try:
+        require_control_vector(changed_vector, replayed)
+    except ValueError:
+        checks = 1
+    else:
+        raise AssertionError('self-consistent terminal vector mutation escaped authenticated replay')
     baseline = world.world_at(initial_case(state), 'initial')
     require(normalized_positive_world(state) == baseline, 'mutation baseline')
-    checks = 0
     for field, change in (
             ('TOE', lambda w: w['elements'][0]['components'][0].__setitem__('currentToe', 9)),
             ('ammo', lambda w: w['elements'][0]['ammunition'].__setitem__('points', 9)),
@@ -333,7 +456,10 @@ def mutation_checks(rules, rows):
             ('final TOE', lambda w: w['elements'][0]['components'][0].__setitem__('currentToe', 9)),
             ('relationship object', lambda w: w['relationships'][0].__setitem__('kind', 'contact')),
             ('disposition predecessor', lambda w: w['settlements'][0]['disposition'].__setitem__(
-                'predecessorReceiptId', 'wrong.result'))):
+                'predecessorReceiptId', 'wrong.result')),
+            ('settlement attacker', lambda w: w['settlements'][0].__setitem__('attacker',
+                w['settlements'][0]['defender'])),
+            ('extra settlement', lambda w: w['settlements'].append(copy.deepcopy(w['settlements'][0])))):
         changed = copy.deepcopy(projected)
         change(changed)
         try:
@@ -342,7 +468,49 @@ def mutation_checks(rules, rows):
             checks += 1
         else:
             raise AssertionError(field + ' mutation escaped settlement checks')
-    require(checks == 11, 'negative mutation coverage')
+    captured_case = copy.deepcopy(case)
+    captured_case['differential'] = -2
+    captured_case['attackerCoordinate'] = 11
+    captured_case['defenderCoordinate'] = 11
+    captured_case['captureDie'] = 1
+    capture_facts = independent_result(rules, -2, 11, 11, 1)
+    require(capture_facts['capturedRole'] is not None, 'capture mutation setup')
+    for custody_choice in ('relocate-and-guard', 'leave-unguarded'):
+        captured_case['custodyChoice'] = custody_choice
+        captured = world.world_at(captured_case, 'relationships')
+        check_settlement(captured_case, captured, capture_facts, custody_choice)
+        changes = (
+            [('guard location', lambda w: w['guards'][0].__setitem__('currentLocationId', 'wrong.location'))]
+            if custody_choice == 'relocate-and-guard' else []
+        ) + [
+            ('lot captor', lambda w: w['custodyLots'][0].__setitem__('captor', w['settlements'][0]['defender']
+                 if capture_facts['capturedRole'] == 'defender' else w['settlements'][0]['attacker'])),
+            ('obligation subject', lambda w: w['futureObligations'][0].__setitem__('subjectId', 'wrong.subject')),
+        ]
+        for field, change in changes:
+            changed = copy.deepcopy(captured)
+            change(changed)
+            try:
+                check_settlement(captured_case, changed, capture_facts, custody_choice)
+            except ValueError:
+                checks += 1
+            else:
+                raise AssertionError(field + ' mutation escaped settlement checks')
+    retreat_case = copy.deepcopy(case)
+    retreat_case.update(differential=-2, attackerCoordinate=12, defenderCoordinate=36,
+                        captureDie=None, retreatChoice='retreat')
+    retreat_facts = independent_result(rules, -2, 12, 36, None)
+    retreat_world = world.world_at(retreat_case, 'relationships')
+    check_settlement(retreat_case, retreat_world, retreat_facts, None)
+    changed = copy.deepcopy(retreat_world)
+    changed['settlements'][0]['attacker'] = changed['settlements'][0]['defender']
+    try:
+        check_settlement(retreat_case, changed, retreat_facts, None)
+    except ValueError:
+        checks += 1
+    else:
+        raise AssertionError('retreat settlement attacker mutation escaped settlement checks')
+    require(checks == 20, 'negative mutation coverage')
     return checks
 
 
