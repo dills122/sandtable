@@ -98,6 +98,15 @@ fresh class processes; independent implementation review is complete at `07fac9f
 verified all 3,716 rows across 26 execution processes. Public Combat,
 Runner adoption, acceptance of all 72 criteria and the first release candidate remain open.
 
+The next private [moved-repeat Breakdown successor](docs/specs/combat-actual-moved-repeat-breakdown-completion-v1.md)
+extends genuine R02 paid and armed ancestry by one System event into ordinal-two Combat Position
+Determination. Its contract and native consumer have a 300-case authentic replay checkpoint and a
+38-test focused local class pass. The frozen 256 MiB Source cap still lacks a proved maximum valid
+ancestry and native near-limit memory/latency evidence. The current event-size calculation is
+provisional; `closureFrozen=false`. This work is proposed for review as a draft and is not a
+certified or public Combat loop. The [capacity evidence and next gates](docs/work/plans/2026-10-16-actual-moved-repeat-breakdown-capacity-evidence.md)
+separate local fixture results from the missing capacity proof and exact-head hosted CI.
+
 Next delivery sequence:
 
 1. Build on CS01's private native [actual post-assault continuation](docs/specs/combat-actual-post-assault-continuation-v1.md)
