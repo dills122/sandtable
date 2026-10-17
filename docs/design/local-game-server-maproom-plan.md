@@ -1,6 +1,7 @@
 # Local game server and Angular Maproom implementation plan
 
-Date: 2026-10-16. Status: MAP-01, MAP-02 foundation and MAP-03A fixture implemented; connected gameplay slices pending.
+Date: 2026-10-16. Status: MAP-01 workspace, MAP-02 foundation and MAP-03A fixture implemented;
+MAP-04 browser schema, fixtures and generated client drafted; connected gameplay pending.
 Audience: contributors implementing the local rules-lab host and browser client.
 
 Build a browser client around the existing deterministic C# Umpire. First delivery launches one
@@ -99,19 +100,25 @@ The existing site/ project website and Pages deployment remain independent.
 
 ### Browser contract
 
-MAP-04 freezes exact routes and schemas before handlers. Candidate operations: list admitted
+MAP-04 freezes exact routes and schemas before handlers. The drafted
+[browser contract v1](../../src/Cna.Game.Contracts/README.md) defines these operations: list admitted
 fixture/scenario descriptors; create a campaign; enter a granted seat; read player view and legal
 actions; submit one action; query a request receipt; relinquish a seat; subscribe to safe changes.
 
-Bind submissions to campaign, session/seat, unique request ID, exact server-issued action identity
-and its current contract revision. Bind immutable rules/setup/content/configuration identities at
-creation. Preserve state_version and existing rules identity in trusted records; expose revision
-data only through the approved audience contract. Use lossless wire representations for wide
-integers. Browser receipt/status and journal sequence are distinct concepts.
+Bind submissions to campaign, session/seat, unique request ID, opaque audience action-set token,
+exact server-issued outward action identity and its current contract revision. Bind immutable
+rules/setup/content/configuration identities at creation. The creation response pins four lowercase SHA-256 identities and returns one opaque
+seat grant per side; MAP-08 must enforce distinct grant IDs because OpenAPI 3.0 cannot compare
+object values. Preserve state_version and existing rules identity in trusted records. Never expose
+authority state_version or encode it in outward action tokens. Audience revision and diary cursor
+advance only on permitted visible changes and use lossless decimal strings. Outward action IDs
+remain stable across hidden-only commits; the host maps them to current Core candidates and
+revalidates legality. Browser receipt/status and journal sequence are distinct concepts.
 
 Derive actor/side from server-issued session ownership. Never trust a caller-supplied System actor.
-Authorize before looking up a retained receipt. Exact retries return the original outcome;
-reuse of a request ID with changed actor or canonical payload conflicts. A fresh stale request
+Authorize before looking up a retained receipt. Exact retries return latest retained status;
+pending may later settle, and final outcomes are immutable. Reuse of a request ID with changed
+actor or canonical payload conflicts. A fresh stale request
 rejects without an event, RNG advance or resource charge. Transport cancellation cannot undo a
 commit; retry/status lookup reconciles an uncertain response.
 
@@ -120,7 +127,8 @@ topology may be public content, but units, contacts and legal targets come only 
 projection. A legal-action list is also subject to fog boundaries. Keep raw Chronicle events,
 snapshots, seeds/RNG state, debug traces and hidden identifiers out of player payloads and logs.
 
-MAP-04 also defines formation-ledger fields and bounded, audience-safe War Diary readback.
+MAP-04 also defines receipt status variants, the SignalR hub handshake, formation-ledger fields
+and bounded, audience-safe War Diary readback.
 Ledger rows derive from the same permitted view as the map; diary excerpts carry only approved
 audience revision/cursor metadata. Neither surface becomes a raw journal export or a separate
 source of campaign truth.

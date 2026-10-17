@@ -1,0 +1,1390 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Sandtable Maproom Browser API",
+    "version": "1.0.0",
+    "description": "MAP-04 outward contract. Schemas are audience-safe shapes, not Cna.Core snapshots. No host handlers exist in this slice."
+  },
+  "servers": [
+    {
+      "url": "/"
+    }
+  ],
+  "paths": {
+    "/api/v1/bootstrap": {
+      "get": {
+        "tags": [
+          "sessions"
+        ],
+        "operationId": "bootstrapLocalOperator",
+        "description": "Loopback-only bootstrap sets HttpOnly SameSite=Strict operator cookie and returns CSRF token for mutation headers.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Bootstrap"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/fixtures": {
+      "get": {
+        "tags": [
+          "fixtures"
+        ],
+        "operationId": "listFixtures",
+        "description": "Admitted local fixture descriptors only; no private content or seeds.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FixtureDescriptorList"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/campaigns": {
+      "get": {
+        "tags": [
+          "campaigns"
+        ],
+        "operationId": "listCampaigns",
+        "description": "List current-process temporary campaigns visible to granted session.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CampaignDescriptorList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No session",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "operatorCookie": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "campaigns"
+        ],
+        "operationId": "createCampaign",
+        "description": "Create one admitted temporary campaign; bind immutable source identities from the server fixture, not caller-provided hashes.",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CampaignCreated"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Request ID conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCampaignRequest"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "operatorCookie": [],
+            "csrfHeader": []
+          }
+        ]
+      }
+    },
+    "/api/v1/campaigns/{campaignId}/seat": {
+      "post": {
+        "tags": [
+          "sessions"
+        ],
+        "operationId": "enterSeat",
+        "description": "Redeem server-issued grant. Rotate HttpOnly SameSite=Strict session cookie and generation; invalidate prior seat before returning.",
+        "parameters": [
+          {
+            "name": "campaignId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionInfo"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Grant denied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Seat conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EnterSeatRequest"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "operatorCookie": [],
+            "csrfHeader": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "sessions"
+        ],
+        "operationId": "relinquishSeat",
+        "description": "Invalidate current seat generation and clear cookie.",
+        "parameters": [
+          {
+            "name": "campaignId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Seat relinquished"
+          },
+          "401": {
+            "description": "No session",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "seatCookie": [],
+            "csrfHeader": []
+          }
+        ]
+      }
+    },
+    "/api/v1/campaigns/{campaignId}/session": {
+      "get": {
+        "tags": [
+          "sessions"
+        ],
+        "operationId": "getSession",
+        "description": "Read current server-owned seat and generation.",
+        "parameters": [
+          {
+            "name": "campaignId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionInfo"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No session",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "seatCookie": []
+          }
+        ]
+      }
+    },
+    "/api/v1/campaigns/{campaignId}/view": {
+      "get": {
+        "tags": [
+          "campaigns"
+        ],
+        "operationId": "getPlayerView",
+        "description": "One committed, audience-safe cut: position, map, legal actions, ledger, diary. No independent legal-action fetch.",
+        "parameters": [
+          {
+            "name": "campaignId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CoherentPlayerView"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Wrong seat",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Committed view temporarily unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "seatCookie": []
+          }
+        ]
+      }
+    },
+    "/api/v1/campaigns/{campaignId}/actions": {
+      "post": {
+        "tags": [
+          "actions"
+        ],
+        "operationId": "submitAction",
+        "description": "Use opaque audience action-set token and exact view-issued action identity. Actor and private authority revision are server-owned. Hidden-only commits must not change outward token or action ID by themselves.",
+        "parameters": [
+          {
+            "name": "campaignId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Current retained pending, accepted or rejected receipt",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActionReceipt"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed request before admission",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Same request ID with changed seat or canonical request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Unavailable before commit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmitActionRequest"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "seatCookie": [],
+            "csrfHeader": []
+          }
+        ],
+        "x-retry-semantics": {
+          "identity": [
+            "campaignId",
+            "serverSeat",
+            "requestId"
+          ],
+          "canonicalPayload": "SubmitActionRequest",
+          "sameRequest": "latest-retained-status",
+          "changedSeatOrPayload": "409",
+          "allowedTransitions": [
+            "pending->accepted",
+            "pending->rejected"
+          ],
+          "terminalStatuses": [
+            "accepted",
+            "rejected"
+          ]
+        }
+      }
+    },
+    "/api/v1/campaigns/{campaignId}/receipts/{requestId}": {
+      "get": {
+        "tags": [
+          "actions"
+        ],
+        "operationId": "getActionReceipt",
+        "description": "Authorize campaign and seat before retained receipt lookup. Return latest retained status; pending may later settle, final outcome is stable.",
+        "parameters": [
+          {
+            "name": "campaignId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            }
+          },
+          {
+            "name": "requestId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActionReceipt"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Wrong seat",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No authorized receipt",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "seatCookie": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CampaignDescriptor": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "campaignId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "scenarioId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "displayName": {
+            "type": "string"
+          },
+          "lifetime": {
+            "type": "string",
+            "enum": [
+              "temporary-memory"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "awaiting-human",
+              "unsupported-phase",
+              "terminal"
+            ]
+          }
+        },
+        "required": [
+          "campaignId",
+          "scenarioId",
+          "displayName",
+          "lifetime",
+          "status"
+        ]
+      },
+      "FixtureDescriptor": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "fixtureId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "displayName": {
+            "type": "string"
+          },
+          "scenarioId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "rulesetHash": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "setupHash": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "contentHash": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "configurationHash": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        },
+        "required": [
+          "fixtureId",
+          "displayName",
+          "scenarioId",
+          "rulesetHash",
+          "setupHash",
+          "contentHash",
+          "configurationHash"
+        ]
+      },
+      "CreateCampaignRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "contractVersion": {
+            "type": "integer",
+            "enum": [
+              1
+            ]
+          },
+          "fixtureId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "requestId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "contractVersion",
+          "fixtureId",
+          "requestId"
+        ]
+      },
+      "CampaignCreated": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "contractVersion": {
+            "type": "integer",
+            "enum": [
+              1
+            ]
+          },
+          "campaign": {
+            "$ref": "#/components/schemas/CampaignDescriptor"
+          },
+          "rulesetHash": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "setupHash": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "contentHash": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "configurationHash": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "seatGrants": {
+            "$ref": "#/components/schemas/SeatGrantSet"
+          }
+        },
+        "required": [
+          "contractVersion",
+          "campaign",
+          "rulesetHash",
+          "setupHash",
+          "contentHash",
+          "configurationHash",
+          "seatGrants"
+        ]
+      },
+      "Bootstrap": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "contractVersion": {
+            "type": "integer",
+            "enum": [
+              1
+            ]
+          },
+          "csrfToken": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "contractVersion",
+          "csrfToken"
+        ]
+      },
+      "EnterSeatRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "contractVersion": {
+            "type": "integer",
+            "enum": [
+              1
+            ]
+          },
+          "grantId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "contractVersion",
+          "grantId"
+        ]
+      },
+      "SessionInfo": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "contractVersion": {
+            "type": "integer",
+            "enum": [
+              1
+            ]
+          },
+          "campaignId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "seat": {
+            "type": "string",
+            "enum": [
+              "axis",
+              "commonwealth"
+            ]
+          },
+          "sessionGeneration": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "lifetime": {
+            "type": "string",
+            "enum": [
+              "temporary-memory"
+            ]
+          }
+        },
+        "required": [
+          "contractVersion",
+          "campaignId",
+          "seat",
+          "sessionGeneration",
+          "lifetime"
+        ]
+      },
+      "Position": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "positionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "turn": {
+            "type": "string",
+            "pattern": "^(0|[1-9][0-9]*)$",
+            "description": "Unsigned decimal string; never a JSON number. Preserve all 64-bit revisions in JavaScript."
+          },
+          "phaseId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "stageId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "decision": {
+            "type": "string",
+            "enum": [
+              "human",
+              "unsupported-phase",
+              "terminal"
+            ]
+          }
+        },
+        "required": [
+          "positionId",
+          "turn",
+          "phaseId",
+          "stageId",
+          "decision"
+        ]
+      },
+      "MapLocation": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "locationId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "label": {
+            "type": "string"
+          },
+          "x": {
+            "type": "number"
+          },
+          "y": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "locationId",
+          "label",
+          "x",
+          "y"
+        ]
+      },
+      "OwnFormation": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "formationId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "label": {
+            "type": "string"
+          },
+          "kindLabel": {
+            "type": "string"
+          },
+          "locationId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "orderStatusLabel": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "formationId",
+          "label",
+          "kindLabel",
+          "locationId",
+          "orderStatusLabel"
+        ]
+      },
+      "ApparentContact": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "contactId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "label": {
+            "type": "string"
+          },
+          "locationId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "contactId",
+          "label",
+          "locationId"
+        ]
+      },
+      "LegalAction": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "actionId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Opaque audience-issued action handle; not the Core candidate hash."
+          },
+          "actionContractVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "kind": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "label": {
+            "type": "string"
+          },
+          "formationId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "targetLocationId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "actionId",
+          "actionContractVersion",
+          "kind",
+          "label"
+        ]
+      },
+      "FormationLedgerRow": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "formationId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "label": {
+            "type": "string"
+          },
+          "kindLabel": {
+            "type": "string"
+          },
+          "locationLabel": {
+            "type": "string"
+          },
+          "orderStatusLabel": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "formationId",
+          "label",
+          "kindLabel",
+          "locationLabel",
+          "orderStatusLabel"
+        ]
+      },
+      "DiaryExcerpt": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "entryId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "audienceCursor": {
+            "type": "string",
+            "pattern": "^(0|[1-9][0-9]*)$",
+            "description": "Unsigned decimal string; never a JSON number. Preserve all 64-bit revisions in JavaScript."
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string",
+            "maxLength": 1024
+          },
+          "formationId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "entryId",
+          "audienceCursor",
+          "title",
+          "body"
+        ]
+      },
+      "CoherentPlayerView": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "contractVersion": {
+            "type": "integer",
+            "enum": [
+              1
+            ]
+          },
+          "campaignId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "sessionGeneration": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "seat": {
+            "type": "string",
+            "enum": [
+              "axis",
+              "commonwealth"
+            ]
+          },
+          "audienceRevision": {
+            "type": "string",
+            "pattern": "^(0|[1-9][0-9]*)$",
+            "description": "Unsigned decimal string; never a JSON number. Preserve all 64-bit revisions in JavaScript."
+          },
+          "rulesetHash": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "position": {
+            "$ref": "#/components/schemas/Position"
+          },
+          "locations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MapLocation"
+            }
+          },
+          "ownFormations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OwnFormation"
+            }
+          },
+          "apparentContacts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ApparentContact"
+            }
+          },
+          "legalActions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LegalAction"
+            }
+          },
+          "formationLedger": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FormationLedgerRow"
+            }
+          },
+          "warDiary": {
+            "type": "array",
+            "maxItems": 50,
+            "items": {
+              "$ref": "#/components/schemas/DiaryExcerpt"
+            }
+          },
+          "nextDiaryCursor": {
+            "type": "string",
+            "pattern": "^(0|[1-9][0-9]*)$",
+            "description": "Unsigned decimal string; never a JSON number. Preserve all 64-bit revisions in JavaScript."
+          },
+          "actionSetToken": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Opaque, audience-safe action-set capability. Must not encode or track hidden-only authority revision."
+          }
+        },
+        "required": [
+          "contractVersion",
+          "campaignId",
+          "sessionGeneration",
+          "seat",
+          "audienceRevision",
+          "actionSetToken",
+          "rulesetHash",
+          "position",
+          "locations",
+          "ownFormations",
+          "apparentContacts",
+          "legalActions",
+          "formationLedger",
+          "warDiary",
+          "nextDiaryCursor"
+        ]
+      },
+      "SubmitActionRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "contractVersion": {
+            "type": "integer",
+            "enum": [
+              1
+            ]
+          },
+          "requestId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "sessionGeneration": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "expectedPositionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "actionId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Opaque audience-issued action handle; not the Core candidate hash."
+          },
+          "actionContractVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "actionSetToken": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Exact token from coherent view; server resolves private authority revision and revalidates current legal action."
+          }
+        },
+        "required": [
+          "contractVersion",
+          "requestId",
+          "sessionGeneration",
+          "actionSetToken",
+          "expectedPositionId",
+          "actionId",
+          "actionContractVersion"
+        ]
+      },
+      "ActionReceipt": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/PendingActionReceipt"
+          },
+          {
+            "$ref": "#/components/schemas/AcceptedActionReceipt"
+          },
+          {
+            "$ref": "#/components/schemas/RejectedActionReceipt"
+          }
+        ],
+        "discriminator": {
+          "propertyName": "status",
+          "mapping": {
+            "pending": "#/components/schemas/PendingActionReceipt",
+            "accepted": "#/components/schemas/AcceptedActionReceipt",
+            "rejected": "#/components/schemas/RejectedActionReceipt"
+          }
+        }
+      },
+      "ApiError": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "contractVersion": {
+            "type": "integer",
+            "enum": [
+              1
+            ]
+          },
+          "code": {
+            "type": "string",
+            "enum": [
+              "invalid-request",
+              "unauthorized",
+              "forbidden",
+              "not-found",
+              "conflict",
+              "stale-view",
+              "unavailable",
+              "unsupported-phase"
+            ]
+          },
+          "message": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "contractVersion",
+          "code",
+          "message"
+        ]
+      },
+      "FixtureDescriptorList": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/FixtureDescriptor"
+        }
+      },
+      "CampaignDescriptorList": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/CampaignDescriptor"
+        }
+      },
+      "PendingActionReceipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "contractVersion": {
+            "type": "integer",
+            "enum": [
+              1
+            ]
+          },
+          "campaignId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "requestId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "enum": [
+              "none"
+            ]
+          }
+        },
+        "required": [
+          "contractVersion",
+          "campaignId",
+          "requestId",
+          "status",
+          "reason"
+        ]
+      },
+      "AcceptedActionReceipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "contractVersion": {
+            "type": "integer",
+            "enum": [
+              1
+            ]
+          },
+          "campaignId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "requestId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "accepted"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "enum": [
+              "none"
+            ]
+          },
+          "audienceRevision": {
+            "type": "string",
+            "pattern": "^(0|[1-9][0-9]*)$",
+            "description": "Unsigned decimal string; never a JSON number. Preserve all 64-bit revisions in JavaScript."
+          }
+        },
+        "required": [
+          "contractVersion",
+          "campaignId",
+          "requestId",
+          "status",
+          "reason",
+          "audienceRevision"
+        ]
+      },
+      "RejectedActionReceipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "contractVersion": {
+            "type": "integer",
+            "enum": [
+              1
+            ]
+          },
+          "campaignId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "requestId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "rejected"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "enum": [
+              "invalid-action",
+              "stale-view",
+              "unsupported-phase"
+            ]
+          }
+        },
+        "required": [
+          "contractVersion",
+          "campaignId",
+          "requestId",
+          "status",
+          "reason"
+        ]
+      },
+      "SeatGrantSet": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Exactly one opaque grant per human seat. Distinct grant values are a host-enforced semantic constraint.",
+        "properties": {
+          "axis": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "commonwealth": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "axis",
+          "commonwealth"
+        ],
+        "x-distinct-values": [
+          "axis",
+          "commonwealth"
+        ]
+      }
+    },
+    "securitySchemes": {
+      "seatCookie": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "sandtable_session"
+      },
+      "operatorCookie": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "sandtable_operator"
+      },
+      "csrfHeader": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Sandtable-CSRF"
+      }
+    }
+  },
+  "security": [],
+  "x-signalr-contract": "signalr.v1.json"
+}

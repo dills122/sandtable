@@ -1,0 +1,63 @@
+{
+  "contractVersion": 1,
+  "campaignId": "ruleslab-01",
+  "sessionGeneration": "4db1f91e-3524-444c-8a59-7f84797229e8",
+  "seat": "axis",
+  "audienceRevision": "9007199254740993",
+  "rulesetHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "position": {
+    "positionId": "position-01",
+    "turn": "1",
+    "phaseId": "movement",
+    "stageId": "operation",
+    "decision": "human"
+  },
+  "locations": [
+    {
+      "locationId": "loc-1",
+      "label": "North Crossing",
+      "x": 0.25,
+      "y": 0.5
+    }
+  ],
+  "ownFormations": [
+    {
+      "formationId": "own-1",
+      "label": "1st Group",
+      "locationId": "loc-1",
+      "kindLabel": "Motorized",
+      "orderStatusLabel": "No order"
+    }
+  ],
+  "apparentContacts": [],
+  "legalActions": [
+    {
+      "actionId": "c223285a-7bb1-42d4-84b4-a8907701804a",
+      "actionContractVersion": 2,
+      "kind": "move",
+      "label": "Move 1st Group",
+      "formationId": "own-1",
+      "targetLocationId": "loc-1"
+    }
+  ],
+  "formationLedger": [
+    {
+      "formationId": "own-1",
+      "label": "1st Group",
+      "locationLabel": "North Crossing",
+      "kindLabel": "Motorized",
+      "orderStatusLabel": "No order"
+    }
+  ],
+  "warDiary": [
+    {
+      "entryId": "diary-1",
+      "audienceCursor": "9007199254740993",
+      "title": "Movement ordered",
+      "body": "1st Group moved to North Crossing.",
+      "formationId": "own-1"
+    }
+  ],
+  "nextDiaryCursor": "9007199254740993",
+  "actionSetToken": "9bf1a814-2e55-4f1e-8646-cf7219caa69a"
+}
