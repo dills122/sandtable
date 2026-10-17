@@ -22,4 +22,16 @@ describe('Workspace presentation state', () => {
     store.zoomBy(-0.25);
     expect(store.zoom()).toBe(1);
   });
+  it('pans a zoomed map to the keyboard-focused formation without changing selection', () => {
+    TestBed.configureTestingModule({ providers: [WorkspaceStore] });
+    const store = TestBed.inject(WorkspaceStore);
+    store.zoomBy(1);
+    store.focusFormation('TER');
+    expect([store.zoom(), store.focusX(), store.focusY(), store.selectedId()]).toEqual([
+      2,
+      88,
+      49,
+      'FOX',
+    ]);
+  });
 });

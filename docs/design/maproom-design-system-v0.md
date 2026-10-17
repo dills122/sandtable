@@ -272,4 +272,5 @@ states, app-owned Formly pattern and operations shell. Run `just field-atlas` lo
 The HTML style study remains historical design intent. Evolve shared styles in the Angular
 library and document them in Storybook; do not maintain a second active token implementation in
 the prototype. App-specific patterns stay in `maproom-alpha`; extract further components only
-when real reuse emerges. MAP-03's complete workflows and campaign integration are pending.
+when real reuse emerges. MAP-03A's operational map fixture is implemented; MAP-03B/C workflows
+and campaign integration are pending.

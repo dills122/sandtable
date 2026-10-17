@@ -98,6 +98,7 @@ excluded so Material and Field Atlas own control styling. Use public Material Sa
 
 The shell has eight synthetic formations, coherent map/list/ledger selection, a collapsible roster,
 adjustable inspector, bounded zoom and locate/fit camera controls. The read-only ledger/diary and
-draft-review specimen remain presentation examples. It does not implement legal actions,
+draft-review specimen remain presentation examples. Narrow available widths stack the panels;
+keyboard focus pans a clipped counter into view when zoomed. It does not implement legal actions,
 per-formation order lifecycle, filtering, turn resolution, server communication or persistence.
 MAP-03B/C and connected play remain open.

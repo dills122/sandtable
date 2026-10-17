@@ -147,6 +147,7 @@
                 [kind]="unit.kind"
                 [selected]="store.selectedId() === unit.id"
                 (chosen)="store.select(unit.id)"
+                (focusin)="store.focusFormation(unit.id)"
               />
             }
           </div>

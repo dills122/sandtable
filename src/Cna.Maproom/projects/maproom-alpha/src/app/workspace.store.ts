@@ -49,6 +49,11 @@ export const WorkspaceStore = signalStore(
           focusY: formation.y,
         });
     },
+    focusFormation(id: string) {
+      if (store.zoom() <= 1) return;
+      const formation = formations.find((f) => f.id === id);
+      if (formation) patchState(store, { focusX: formation.x, focusY: formation.y });
+    },
     fitMap() {
       patchState(store, { zoom: 1, focusX: 50, focusY: 50 });
     },

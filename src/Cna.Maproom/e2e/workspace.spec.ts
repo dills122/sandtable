@@ -73,6 +73,39 @@ test('intermediate layout starts with a collapsed roster and can expand it', asy
   await page.getByRole('button', { name: 'Show formations' }).click();
   await expect(page.locator('#formations-pane')).toBeVisible();
 });
+test('keyboard focus brings a clipped counter into the zoomed map', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/');
+  for (let step = 0; step < 4; step++) await page.getByRole('button', { name: 'Zoom in' }).click();
+  const counter = page.getByRole('button', { name: 'Tern group, infantry, O-6' });
+  const canvas = page.locator('.map-canvas');
+  await expect
+    .poll(async () => {
+      const before = await counter.boundingBox();
+      const frame = await canvas.boundingBox();
+      return !!before && !!frame && before.x > frame.x + frame.width;
+    })
+    .toBe(true);
+  await counter.focus();
+  await expect(counter).toBeFocused();
+  await expect
+    .poll(async () => {
+      const marker = await counter.boundingBox();
+      const map = await canvas.boundingBox();
+      if (!marker || !map) return false;
+      return (
+        marker.x >= map.x &&
+        marker.y >= map.y &&
+        marker.x + marker.width <= map.x + map.width &&
+        marker.y + marker.height <= map.y + map.height
+      );
+    })
+    .toBe(true);
+  await expect(page.getByRole('button', { name: 'Fox group, infantry, K-7' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+});
 for (const width of [320, 375, 414, 768, 1440, 2560])
   test(`workspace fits ${width}px`, async ({ page }, testInfo) => {
     await page.setViewportSize({ width, height: 900 });
@@ -96,6 +129,8 @@ test('large text and short viewport preserve controls', async ({ page }) => {
   await page.goto('/');
   await page.addStyleTag({ content: 'html {font-size:200%}' });
   await page.getByRole('button', { name: 'Wide inspector' }).click();
+  const map = await page.locator('.map-canvas').boundingBox();
+  expect(map && map.width).toBeGreaterThanOrEqual(320);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   expect(
     await page.locator('main button').evaluateAll(
