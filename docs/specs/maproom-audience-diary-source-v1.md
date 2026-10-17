@@ -94,9 +94,13 @@ the diary cursor.
   journal sequence, action ID, timestamp, or HTTP read count. A silent or hidden-only
   committed step leaves that side's cursor unchanged.
 - Assign an unpredictable, campaign/side/session-generation-scoped outward `entryId` to
-  each approved entry. `audienceCursor` is the entry's assigned decimal cursor.
-  Retries of an accepted request reuse the same decision, entry ID, cursor, and text;
-  they do not append a second entry. Opposing seats cannot correlate entry IDs.
+  each approved entry. `audienceCursor` is the entry's assigned decimal cursor. Retained
+  entries keep their private per-side cursor and approved content across an authorized
+  session-generation change, but receive fresh, unrelated outward `entryId` values when
+  read under the new generation. An old `entryId` never crosses a generation or seat.
+  Retries of an accepted request within one generation reuse the same decision, outward
+  entry ID, cursor, and text; they do not append a second entry. Opposing seats cannot
+  correlate entry IDs.
 - Keep the latest 50 approved entries per side in commit order. `warDiary` returns this
   window in ascending `audienceCursor` order; `nextDiaryCursor` is that side's latest
   cursor, including when the window is empty. The current MAP-04 view defines no
@@ -127,7 +131,11 @@ the diary cursor.
    silent lifecycle step and a hidden-only step preserve the untouched side's cursor,
    revision, token, action handles, and contact identities.
 4. Test 51 visible entries retain exactly the latest 50 with ordered cursors and a
-   monotonic high-water mark. Test decimal-string boundaries and overflow failure.
+   monotonic high-water mark. After handoff and authorized reentry to the same seat
+   under a new session generation, readback retains that side's cursor and approved
+   content but rotates every outward entry ID; no old-generation or other-seat ID
+   appears. Exact retry within one generation keeps its ID. Test decimal-string
+   boundaries and overflow failure.
 5. Test consecutive accepted commits with no HTTP read, both coherent side cuts at each
    head, and a later read that cannot mix successor map/ledger/actions with predecessor
    diary. Missing/unsupported source and reactivation gaps return the same neutral
