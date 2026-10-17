@@ -90,6 +90,8 @@ The [MAP-05 trusted host protocol](docs/specs/maproom-trusted-host-protocol-v1.m
 accepted-step evidence and publication heads in Chronicle/Archives private host records; Maproom
 receives only authorized projected views and outward receipt status. Protocol design does not
 instantiate a new service or a durable save path.
+The MAP-06 trusted Core adapter stays inside Umpire; it exposes private accepted evidence to
+the host while Chronicle/Archives still owns publication and recovery records.
 
 **Proving Ground** names the local development test environment and
 [runbook](docs/runbooks/proving-ground.md), not a game authority or separate service. Its first

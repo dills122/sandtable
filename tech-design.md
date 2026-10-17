@@ -93,6 +93,10 @@ host handlers are pending. The preview remains synthetic. The
 [MAP-05 trusted host protocol](docs/specs/maproom-trusted-host-protocol-v1.md) fixes private
 accepted-step/publication and restore boundaries for later host slices; no campaign grain or
 durable provider is implemented by that contract. The
+[MAP-06 Core adapter](src/Cna.Core/Hosting/CampaignHostAdapter.cs) now wraps admitted Rules9
+creation, coherent side observation/legal cuts, System legal queries, exact accepted evidence
+and private transcript re-adjudication. It does not perform seat authorization, conditional
+publication or browser mapping. The
 [Angular workspace](src/Cna.Maproom/README.md) provides
 `projects/maproom-alpha` and the internal `@sandtable/field-atlas` library. Storybook uses the same
 public component API, tokens and Material theme; feature patterns stay in the app. No shared
