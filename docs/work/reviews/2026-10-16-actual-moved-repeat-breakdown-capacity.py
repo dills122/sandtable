@@ -15,7 +15,8 @@ source = 2 * p["Source"] + 2 * l["eventBytes"] + 512
 assert source == 257_846_784 < l["sourceBytes"]
 assert p["Source"] < l["parentSourceBytes"]
 
-# R03 Control adds two preserved R02 hashes, one receipt and one completion ID.
+# R03 Control adds two preserved R02 hashes, one cumulative receipt copy,
+# one local receipt copy, and one completion ID.
 # Its Base embeds the full R02 Proof; the final Proof also embeds R03 Control.
 control = p["Control"] + 4_096
 proof = p["Proof"] + control + 4_096
