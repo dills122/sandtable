@@ -8,6 +8,8 @@ remain separate contracts.
 ## Lifecycle
 
 1. `GET /api/v1/bootstrap` on loopback establishes an operator cookie and returns a CSRF token.
+   MAP-08A requires positive same-origin Fetch Metadata or matching `Origin`; requests with
+   neither are denied. Bounded local session capacity returns typed `503 unavailable` when full.
 2. `GET /api/v1/fixtures` lists admitted public descriptors. `POST /api/v1/campaigns` uses one
    fixture ID and unique request ID; the server binds ruleset, setup, content and configuration
    hashes and returns `seatGrants.axis` and `seatGrants.commonwealth`, each a distinct short-lived,
@@ -17,6 +19,7 @@ remain separate contracts.
 3. `POST /api/v1/campaigns/{campaignId}/seat` redeems one grant. Server rotates a separate
    HttpOnly SameSite=Strict seat cookie and `sessionGeneration`. Seat identity comes only from
    this server-owned session. A seat switch invalidates the prior generation before reply.
+   Malformed requests and absent operator sessions return typed `400` and `401` errors.
 4. `GET /api/v1/campaigns/{campaignId}/view` returns one committed audience cut: map items,
    legal actions, formation ledger and bounded War Diary excerpts. Every field derives from the
    permitted observation. `audienceRevision` and diary cursor advance only for this audience's
@@ -39,7 +42,9 @@ remain separate contracts.
    does not undo a commit; receipt lookup and current view reconcile it. Conflict errors use
    fixed, audience-safe text.
 7. `DELETE .../seat` invalidates generation and clears seat cookie. Clients must clear prior-seat
-   DOM, drafts, overlays and subscriptions before entering the next seat.
+   DOM, drafts, overlays and subscriptions before entering the next seat. Session reads and seat
+   relinquish expose typed `403` errors for rejected loopback/origin checks; relinquish also
+   rejects invalid CSRF with `403`.
 
 Mutations use CSRF header and same-origin cookies. Local host must reject cross-origin mutation,
 validate Host/Origin against the loopback profile and never log cookies, grants, player payloads or

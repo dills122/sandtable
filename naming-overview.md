@@ -96,6 +96,9 @@ MAP-07's temporary campaign grain lives in `Cna.OrleansHost`; it holds an opaque
 session and an in-memory request record for the local rules lab. It is not Chronicle/Archives
 durability or a Maproom endpoint. The host-owned side summary is a private bridge, not a
 browser contract or a new authority source.
+MAP-08A's `Cna.OrleansHost/Api` is a local ingress seam for operator bootstrap and seat sessions.
+It does not create a campaign or render a Maproom view; MAP-08B must supply the complete
+audience-safe projection before `/view` can answer successfully.
 
 **Proving Ground** names the local development test environment and
 [runbook](docs/runbooks/proving-ground.md), not a game authority or separate service. Its first

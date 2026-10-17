@@ -110,7 +110,11 @@ human, unsupported-phase and step-limit outcomes. Its small typed side summary a
 legal set come from one committed MAP-06 cut. This is trusted in-silo plumbing only: operator and
 seat authentication, outward action mapping, durable conditional publication and terminal-state
 classification remain later boundaries, with a Core terminal signal required before connected
-play. A process restart discards this state. The
+play. A process restart discards this state. MAP-08A adds Development-only loopback HTTP bootstrap,
+trusted-host grant storage and rotating seat sessions with same-origin and CSRF checks. Its grant
+issuer has no browser creation path yet, and an authorized `/view` returns `503 unavailable` until
+MAP-08B maps the full MAP-04 player view and outward legal-action identities from a coherent cut.
+No canonical legal-action bytes or authority versions are serialized to HTTP. The
 [Angular workspace](src/Cna.Maproom/README.md) provides
 `projects/maproom-alpha` and the internal `@sandtable/field-atlas` library. Storybook uses the same
 public component API, tokens and Material theme; feature patterns stay in the app. No shared

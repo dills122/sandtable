@@ -3,7 +3,7 @@
   "info": {
     "title": "Sandtable Maproom Browser API",
     "version": "1.0.0",
-    "description": "MAP-04 outward contract. Schemas are audience-safe shapes, not Cna.Core snapshots. No host handlers exist in this slice."
+    "description": "MAP-04 outward contract. Schemas are audience-safe shapes, not Cna.Core snapshots. MAP-08A implements local bootstrap and seat-session plumbing; campaign creation and projected views remain pending."
   },
   "servers": [
     {
@@ -17,7 +17,7 @@
           "sessions"
         ],
         "operationId": "bootstrapLocalOperator",
-        "description": "Loopback-only bootstrap sets HttpOnly SameSite=Strict operator cookie and returns CSRF token for mutation headers.",
+        "description": "Loopback-only bootstrap sets HttpOnly SameSite=Strict operator cookie and returns CSRF token for mutation headers. Browser requests require positive same-origin Fetch Metadata or a matching Origin header; absent both is forbidden. Local admission is bounded and may return unavailable.",
         "parameters": [],
         "responses": {
           "200": {
@@ -26,6 +26,26 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Bootstrap"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Loopback or same-origin proof denied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Temporary local session capacity exhausted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
                 }
               }
             }
@@ -178,6 +198,26 @@
               }
             }
           },
+          "400": {
+            "description": "Malformed or unsupported seat request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No operator session",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
           "403": {
             "description": "Grant denied",
             "content": {
@@ -247,6 +287,16 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Loopback, origin or CSRF check denied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -289,6 +339,16 @@
           },
           "401": {
             "description": "No session",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Loopback or origin check denied",
             "content": {
               "application/json": {
                 "schema": {
