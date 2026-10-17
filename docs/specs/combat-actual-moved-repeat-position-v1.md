@@ -21,8 +21,10 @@ The common charts and adopted three-cell amendment remain pinned by
 contain the original common-chart scan.
 
 Accepted `CMB-POL-001` and DES-005 define a **bounded singleton infantry exercise**. Land §15.88
-permits voluntary surrender. P01 **excludes voluntary surrender as a policy choice** because no
-typed decision, full-TOE custody settlement, or fallback is defined for it. Exclusion must be
+permits voluntary surrender. P01 **proposes excluding voluntary surrender as a policy choice**
+because no typed decision, full-TOE custody settlement, or fallback is defined for it. The owner
+has not explicitly accepted this exclusion; P01 admission remains blocked until that decision is
+recorded or the contract covers the source-legal choice. Any accepted exclusion must be
 reported as a limit of this exercise; no result may be described as covering every source-legal
 Combat action. Automatic ammunitionless surrender is a distinct source condition and cannot be
 inferred from post-cost zero ammo. Any profile requiring surrender handling fails P01 admission.
@@ -97,16 +99,18 @@ for the selected six-hex content graph. No particular RNG seed may reduce this m
 | `P01-AC-003` | Prove complete original-unit and representation binding, acting side, target membership, current versus prior segment target use, ZOC/obligation absence, Weather and no alternate selected-content action. | Provenance audit provisional; no P01 replay. |
 | `P01-AC-004` | For all 44 positives, certify every adopted result coordinate, cost, loss, capture share, retreat/refusal and immediate settlement path, including source amendment, zero-loss effects and retained duties. | Sibling table audit available; same-head executable proof absent. |
 | `P01-AC-005` | Certify both one-hex retreat orientations and all eight custody/reunion placement cases from current post-move World and CP. Reject any new blocker, overlong path or donor/guard shortage. | Sibling geometry audit available; same-head executable proof absent. |
-| `P01-AC-006` | Enforce bounded-policy exclusions, including voluntary surrender and RBA movement; decline-only RBA and its cancellation fallback are explicit. Never claim full source-legal action coverage. | Policy stated here; transition proof pending. |
+| `P01-AC-006` | Obtain an explicit owner decision on the proposed voluntary-surrender exclusion or specify and certify that source-legal choice. Enforce only accepted bounded-policy exclusions; decline-only RBA and its cancellation fallback are explicit. Never claim full source-legal action coverage if surrender is excluded. | Surrender decision and transition proof pending. |
 | `P01-AC-007` | Freeze canonical private candidate ID and audience-visible mapping; equal authorized histories preserve visible bytes, IDs and accept/reject behavior under hidden changes. | Exact encoding and privacy proof pending. |
 | `P01-AC-008` | Test 300 row classifications, all nonterminal cuts, retries, source/ledger/field mutations, both acting sides, physical negatives, dependency faults, and exact output hashes with a frozen schema and caps. | No P01 schema, fixture or verifier yet. |
 | `P01-AC-009` | Separately review P01 reference, then define P02 selection transitions and P03 native consumer with exact-head tests and hosted CI before any activation. | Not started by this design. |
 
 ## Freeze decision
 
-Contract intent and acceptance matrix are reviewable. Executable P01 freeze is **not** yet
-supported: sibling audits are independent reports on other heads; retained-vector verification is
-not full ancestor replay; exact canonical ID/schema/capacity and same-head all-result privacy tests
-are absent. Implementing an executable reference now would turn provisional facts into an
-unearned support certificate. A follow-up may implement it only after these gates close on one
-reviewed head. P02 and P03 remain separate even after P01 passes.
+Contract intent and acceptance matrix are reviewable. A follow-up may implement the private
+reference against this proposed contract and use it to produce the missing evidence. Executable
+P01 **freeze and admission** are not yet supported: the voluntary-surrender decision is pending;
+sibling audits are independent reports on other heads; retained-vector verification is not full
+ancestor replay; exact canonical ID/schema/capacity and same-head all-result privacy tests are
+absent. No provisional reference may publish a supported action, open P02 selection, or enter
+native ordinal-two consumption before those gates close on one reviewed head. P02 and P03 remain
+separate even after P01 passes.

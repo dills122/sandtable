@@ -338,7 +338,8 @@ explains how test additions update the exhaustive allocation.
 The [P01 ordinal-two Combat Position contract design](docs/specs/combat-actual-moved-repeat-position-v1.md)
 records a provisional 44-candidate/256-empty R03 partition and its acceptance gates. It does not
 open an ordinal-two Combat choice; executable reference, native consumer and public activation remain
-pending. Its bounded exercise explicitly excludes Land §15.88 voluntary surrender.
+pending. Its proposed bounded choice surface excludes Land §15.88 voluntary surrender, subject
+to an explicit owner decision before admission.
 
 > Command decides. Staff plans. Dispatch carries. Umpire adjudicates. Chronicle remembers.
 > Maproom shows.
