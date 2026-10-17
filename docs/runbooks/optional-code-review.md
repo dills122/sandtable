@@ -1,8 +1,8 @@
 # Optional OpenCodeReview scrutiny
 
-**Status:** opt-in workflow and scope rules are prepared for review. This branch does not run OCR;
-the workflow must first merge to `main`, and the Sandtable Actions secret must be configured before
-any labeled PR can use it. The owner approved OpenRouter code egress for this gated pilot.
+**Status:** opt-in workflow is merged, and the owner has configured the Sandtable Actions secret.
+The owner approved OpenRouter code egress for this gated pilot. Use it only on selected PRs after
+the paid rerun guard is merged and checked.
 
 ## Purpose and selection
 
@@ -27,7 +27,8 @@ with these safeguards:
 
 - `pull_request_target` uses the trusted `main` workflow and rule; restrict to same-repository,
   non-draft PRs. Each paid run requires the repository owner to apply the `ocr-scrutiny` label to
-  a ready PR. No draft/ready toggle, push, reopen, comment, fork, or scheduled trigger can run it.
+  a ready PR. No draft/ready toggle, push, reopen, comment, fork, scheduled trigger, or Actions
+  rerun can spend tokens. The workflow requires first attempt of a fresh label event.
 - Job token starts with no permissions and grants only `contents: read` and
   `pull-requests: write` to the review job. Use the official action at the full Reef-tested
   `bccbc15f785269400735d5255540c231e6c02b6d` commit with OCR CLI `1.12.9` and
@@ -48,8 +49,13 @@ policy would block this workflow, arrange a narrowly applicable policy only afte
 privileged-event safety; do not weaken the workflow's trust boundary to make it run.
 
 The repository owner should apply the label only after focused CI is green and the PR head is
-stable. A later push or draft/ready toggle does not run OCR. To request another paid review, the
-owner must remove and re-add the label to the ready PR; each re-application is a new cost decision.
+stable. A later push or draft/ready toggle does not run OCR. To request review of a
+**new head**, the owner must remove and re-add the label to the ready PR; each re-application is a
+new cost decision. Rerunning an existing Actions run is blocked. Re-applying the label to the
+**same head** is a no-op only when a valid checkpoint already records that head. An incomplete
+review, failed comment publication, missing marker, or changed configuration can instead cause
+another full paid review. Treat every label re-application as a potential provider charge; check
+the previous `checkpoint_after` and the new run's `range_reason` before using its result.
 Before using a result, verify the reviewed head SHA, range mode, selected/completed/failed file
 counts and summary. A partial review or stale head is evidence only for the files actually
 completed. Remove the label when the pilot is finished.
