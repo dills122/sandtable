@@ -11,6 +11,7 @@ Research and reviews record their dated checkpoints; they are not competing stat
 - [Roadmap checkpoint and next gates](roadmap/pre-alpha-roadmap.md#current-checkpoint-and-next-gates)
 - [Angular workspace and Storybook](../src/Cna.Maproom/README.md): implementation setup, components, patterns and checks
 - [Local server and Angular Maproom plan](design/local-game-server-maproom-plan.md): accepted stack, small slices and temporary/durable hosting gates
+- [MAP-05 trusted host protocol](specs/maproom-trusted-host-protocol-v1.md): private accepted-step evidence, publication fencing, restore and bounded System progression
 - [Field Atlas design system v0](design/maproom-design-system-v0.md) and [operations workspace preview](design/maproom-style-study/index.html): linked synthetic map, order workflow, formation ledger and War Diary
 - [Contributor workflow](../CONTRIBUTING.md) and [security policy](../SECURITY.md)
 - [Exercise Runner runbook](runbooks/exercise-runner.md)

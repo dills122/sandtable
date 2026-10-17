@@ -143,8 +143,13 @@ host coordinator. A grain prepares an immutable pending transition against an ex
 head, admits no competing mutation, and receives a publication-completion message in a later
 turn. Only a confirmed commit installs/exposes the successor and returns an accepted receipt.
 While pending, reads expose the prior committed view or a defined unavailable response. Pending
-status is never described as accepted or saved. MAP-05 must specify crash, reactivation, fencing
-and unknown-commit reconciliation before this protocol is implemented.
+status is never described as accepted or saved. The
+[MAP-05 trusted host protocol](../specs/maproom-trusted-host-protocol-v1.md) specifies crash,
+reactivation, fencing, unknown-commit reconciliation, restore provenance and bounded System
+progression before this protocol is implemented. Creation dedupe retains the original operator,
+request payload, campaign ID and seat grants atomically; action dedupe retains the authenticated
+outward request separately from Core replay bytes. A live pending grain reconciles a lost
+coordinator/callback under a bounded fence before accepting another mutation.
 
 Advance only server-owned legal System actions, one bounded committed transition at a time.
 Stop for a human decision, an admitted terminal state, an explicitly unsupported phase, or a
@@ -193,7 +198,7 @@ are developed; no slice may silently absorb new game rules or activate private C
 | MAP-03B Order workflow fixture | 03A | Per-formation draft/review/result flow with staged acceptance, rejection, stale view, lost reply and unsupported phase | Pending keeps last confirmed position; switching selection cannot redirect a result; refresh requires review; simulated reconnect reconciles once |
 | MAP-03C Formation ledger and War Diary | 03B | Searchable/sortable ledger, shared selection, expandable records area and linked per-unit diary | Filter/empty/sort cases, keyboard table access, diary locate, coherent accepted updates across all views; narrow records expose all four labeled fields without sideways scrolling and preserve table semantics |
 | MAP-04 Browser contract v1 | 01 | DTO schemas, safe error/receipt/session semantics, coherent view cut and generated Angular client | Contract fixture roundtrip, lossless identities, forbidden-data assertions, generated client compilation |
-| MAP-05 Trusted host protocol | 04 | Accepted-step/export, pending publication/fencing, restore provenance and bounded System-step contracts | Fixed direct-Core vectors and failure matrix; exact ownership of private vs outward bytes; no implementation claims |
+| MAP-05 Trusted host protocol | 04 | [Design contract](../specs/maproom-trusted-host-protocol-v1.md) for accepted-step/export, pending publication/fencing, restore provenance and bounded System steps | Fixed direct-Core vectors and failure matrix; exact ownership of private vs outward bytes; no implementation claims |
 | MAP-06 Core host adapter | 05 | Narrow adapter for creation, current view, legal query and accepted-step evidence through existing public rules | Direct/existing Exercise parity; deterministic rejections; all exposed audiences checked; private Combat stays inaccessible |
 | MAP-07 Temporary campaign grain | 06 | In-memory lifecycle, bounded progression and request/receipt record; one admitted fixture | Isolated Orleans host matches direct Core; concurrent identical request accepted once; stopped/unsupported states explicit |
 | MAP-08 Local ingress and reads | 04, 07 | Loopback profile, bootstrap/seat grant, authorized creation/view/action endpoints, dev proxy | Wrong campaign/seat denied; cross-origin/CSRF protections tested; no secret/raw-state logging; coherent reads |

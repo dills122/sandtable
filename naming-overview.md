@@ -81,6 +81,10 @@ raw journal records or hidden causes.
 private authority revisions remain server-side. This module is separate from
 `Cna.Intelligence.Contracts`. Archives remains a host storage module, and War Diary remains an
 audience-safe derived display rather than a raw Chronicle stream.
+The [MAP-05 trusted host protocol](docs/specs/maproom-trusted-host-protocol-v1.md) keeps canonical
+accepted-step evidence and publication heads in Chronicle/Archives private host records; Maproom
+receives only authorized projected views and outward receipt status. Protocol design does not
+instantiate a new service or a durable save path.
 
 **Proving Ground** names the local development test environment and
 [runbook](docs/runbooks/proving-ground.md), not a game authority or separate service. Its first

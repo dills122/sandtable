@@ -90,6 +90,9 @@ The [MAP-04 outward contract](src/Cna.Game.Contracts/README.md) specifies develo
 browser routes, a coherent audience view, opaque action capabilities and lossless audience
 revision strings. Private authority versions stay server-side. Its generated client compiles;
 host handlers are pending. The preview remains synthetic. The
+[MAP-05 trusted host protocol](docs/specs/maproom-trusted-host-protocol-v1.md) fixes private
+accepted-step/publication and restore boundaries for later host slices; no campaign grain or
+durable provider is implemented by that contract. The
 [Angular workspace](src/Cna.Maproom/README.md) provides
 `projects/maproom-alpha` and the internal `@sandtable/field-atlas` library. Storybook uses the same
 public component API, tokens and Material theme; feature patterns stay in the app. No shared
