@@ -173,7 +173,10 @@ uncertain until receipt/readback reconciliation; never blindly reissue. The stan
 stages this flow with an in-memory delayed result and one accepted recovery example; it does not
 prove actual network, idempotency or durability behavior.
 
-Maproom is a public-facing campaign game. Keep a visible scenario title, terrain context and
+Maproom is a public-facing campaign game. Fixture map help makes formation cycling, locate,
+fit and zoom keys discoverable beside the camera controls. A focused map takes arrow keys for
+bounded pan; mouse/pen drag offers a pointer path. Form fields and overlays keep their keys.
+Keep a visible scenario title, terrain context and
 formation identity as players move from map to order review; use concise operational language and
 clear consequences instead of filling the workspace with generic dashboard metrics. Field Atlas
 type, color, spacing, focus and status treatments should read as one system across map, inspector,

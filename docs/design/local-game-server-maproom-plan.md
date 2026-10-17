@@ -178,7 +178,10 @@ See the [workspace guide](../../src/Cna.Maproom/README.md) for pinned versions, 
 
 MAP-01, the MAP-02 foundation and MAP-03A/B are implemented. The shell selects eight synthetic
 formations, locates and fits a bounded camera, collapses its roster and adjusts its inspector.
-Keyboard focus brings a clipped counter into view at zoom. MAP-03B's Formly draft stages a
+Keyboard focus brings a clipped counter into view at zoom. Fixture keyboard help exposes
+formation cycling, locate, fit and zoom; a focused map accepts arrow-key pan, and mouse/pen
+drag pans within the visible extent. Shortcuts stand down in form fields and open overlays.
+MAP-03B's Formly draft stages a
 per-formation review and delayed fixture result; lost replies reconcile once from an in-memory
 receipt. No server action, legal-order validation or durable receipt exists. MAP-03C remains open
 for filter/sort and records.
@@ -220,7 +223,7 @@ screen; axe, type checks and unit tests complement interaction checks but do not
 
 | Surface | Current MAP-03A/B browser proof | Next acceptance as slices land |
 | --- | --- | --- |
-| Map and camera | Eight counters; map/list/ledger selection; locate, fit, zoom bounds; keyboard focus pans a clipped counter into view; accepted position updates counter, inspector, roster and ledger | Test pan and zoom controls, selection retention, counter hit targets and responsive overlays with the connected audience view; avoid hidden-unit disclosure at every zoom |
+| Map and camera | Eight counters; map/list/ledger selection; locate, fit, zoom bounds; keyboard focus pans a clipped counter into view; discoverable shortcuts and bounded keyboard/pointer pan; accepted position updates counter, inspector, roster and ledger | Test pan and zoom controls, selection retention, counter hit targets and responsive overlays with the connected audience view; avoid hidden-unit disclosure at every zoom |
 | Order path | Keyboard selection, Formly destination, review and issue; pending holds confirmed position and locks submitted draft; origin survives selection switch; one unresolved order blocks another issue with visible recovery; accepted, rejected, stale, lost reply and unsupported fixtures | Add server-backed invalid/stale/rejected receipts, duplicate submit prevention, real readback/reconnect and explicit no-legal-action copy |
 | Layout and accessibility | 320–2560px, 200% text, short viewport, WCAG A/AA axe and reachable controls | Cover each new panel in default/focus/loading/error/success states; check tab order, essential shortcuts when introduced, map keyboard alternatives and reduced motion |
 | Design coherence | Field Atlas tokens/components and Material Formly controls appear in Storybook and the workspace | Compare map, inspector, ledger and diary using the same type, color, spacing, status and focus language; keep scenario/terrain context readable and inviting rather than a dense administrative dashboard |

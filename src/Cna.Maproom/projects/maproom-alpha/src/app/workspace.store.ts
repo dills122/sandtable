@@ -225,6 +225,25 @@ export const WorkspaceStore = signalStore(
         zoom: Math.min(2, Math.max(1, Math.round((store.zoom() + step) * 4) / 4)),
       });
     },
+    panByPixels(deltaX: number, deltaY: number, width: number, height: number) {
+      if (store.zoom() <= 1 || width <= 0 || height <= 0) return;
+      const zoom = store.zoom();
+      const visible = store.visibleFormations();
+      const minimumX = Math.min(50 / zoom, ...visible.map((unit) => unit.x));
+      const maximumX = Math.max(100 - 50 / zoom, ...visible.map((unit) => unit.x));
+      const minimumY = Math.min(50 / zoom, ...visible.map((unit) => unit.y));
+      const maximumY = Math.max(100 - 50 / zoom, ...visible.map((unit) => unit.y));
+      patchState(store, {
+        focusX: Math.min(
+          maximumX,
+          Math.max(minimumX, store.focusX() - ((deltaX / width) * 100) / zoom),
+        ),
+        focusY: Math.min(
+          maximumY,
+          Math.max(minimumY, store.focusY() - ((deltaY / height) * 100) / zoom),
+        ),
+      });
+    },
     toggleRoster() {
       patchState(store, { rosterOpen: !store.rosterOpen() });
     },
