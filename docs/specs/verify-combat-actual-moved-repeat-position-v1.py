@@ -36,6 +36,46 @@ def selected_content():
     return json.loads(data)
 
 
+def current_weather_fact(source, state):
+    """Carry authenticated initial Weather into this same-stage private P01 cut.
+
+    Call only after r03.replay has authenticated Source and all parent ledgers.
+    This fact is private evidence, not an outward observation or action gate.
+    """
+    packet = source
+    for key in SCHEMA["weatherSourcePath"]:
+        require(type(packet) is dict and type(packet.get(key)) is str)
+        packet = json.loads(packet[key])
+    events = packet.get("prefixEventCanonicalUtf8")
+    index = SCHEMA["weatherPrefixEventIndex"]
+    require(type(events) is list and len(events) > index
+            and type(events[index]) is str)
+    event_bytes = events[index].encode("ascii")
+    event = json.loads(event_bytes)
+    receipts = state["receipts"]
+    matches = [receipt for receipt in receipts
+               if receipt["receiptId"] == event.get("receiptId")]
+    cycle = state["activeCycle"]
+    position = state["sequencePosition"]
+    require(event.get("eventType") == "weather-determined"
+            and sum(json.loads(item).get("eventType") == "weather-determined"
+                    for item in events) == 1
+            and event.get("kind") == "normal" and event.get("scope") == "none"
+            and event.get("gameTurn") == cycle["gameTurn"] == position["gameTurn"] == 1
+            and event.get("operationStage") == cycle["operationStage"] == position["operationStage"] == 1
+            and event.get("creationBinding") == state["world"]["creationBinding"]
+            and event.get("rulesetHash") == cycle["rulesetHash"]
+            and event.get("configurationHash") == cycle["admittedPolicyBundleDigest"]
+            and event.get("stateVersion") == 6 and len(matches) == 1
+            and matches[0]["stateVersion"] == event["stateVersion"]
+            and matches[0]["eventHash"] == digest(event_bytes))
+    fact = dict(kind=event["kind"], gameTurn=event["gameTurn"],
+                operationStage=event["operationStage"],
+                receiptId=event["receiptId"], eventHash=digest(event_bytes))
+    require(list(fact) == SCHEMA["currentWeatherFactFields"])
+    return fact
+
+
 def exact_selected_profile(state, content):
     """Return trusted singleton pair or None; never assert complete action support."""
     world = state["world"]
@@ -229,6 +269,7 @@ def assess(source_bytes, parent_ledgers, r03_ledger):
             and state["movementEnd"]["ordinal"] == 2
             and state["sequencePosition"]["positionId"].endswith(".combat.position-determination")
             and state["breakdownCompletionReceiptId"] == state["breakdownReceipts"][0]["receiptId"])
+    current_weather_fact(source, state)
     content = selected_content()
     shape, pair = physical_shape(state, content)
     result = dict(contractVersion=1, status="unsupported", physicalShape=shape,
