@@ -1,0 +1,60 @@
+{
+  "contract": "combat-actual-moved-repeat-position-v1",
+  "status": "private provisional assessment; no supported action or admission",
+  "contractVersion": 1,
+  "predecessor": "combat-actual-moved-repeat-breakdown-completion-v1",
+  "sourceInputs": "original CreationRequest plus eleven independent R03 ledgers",
+  "contentPath": "docs/specs/fixtures/combat-content-v7.canonical.json",
+  "contentSha256": "ee4fde9638ceb61ec08612fe32f9ac81db05572aac5ca20941e402d2fed25847",
+  "physicalSourceHashes": {
+    "landRulesPdf": "b362870368b9fb8abe6918195fdcf878d4a8041c557b835b9a1bdde3c8b76e99",
+    "septemberErrataPdf": "5db539e1fac4aea3ef152370fb732f1938307fe4b2d47ad93eb605db0a09f0fb"
+  },
+  "candidateIdentityDomain": "sandtable.combat.actual-moved-repeat-position.private-candidate.v1",
+  "candidateIdentityEncoding": "SHA-256 of ASCII domain, one NUL byte, then compact ensure_ascii JSON object with fields in privateCandidatePreimageFields order; no trailing newline; lowercase hex prefixed p01.",
+  "privateCandidatePreimageFields": [
+    "contractVersion",
+    "creationBinding",
+    "cycleId",
+    "positionId",
+    "stateVersion",
+    "prefix",
+    "basis",
+    "targetLocationId",
+    "attackerOriginalSide",
+    "attackerElementId",
+    "attackerComponentId",
+    "attackerRepresentationId",
+    "attackerLocationId",
+    "defenderOriginalSide",
+    "defenderElementId",
+    "defenderComponentId",
+    "defenderRepresentationId",
+    "defenderLocationId"
+  ],
+  "assessmentFields": [
+    "contractVersion",
+    "status",
+    "physicalShape",
+    "placementShapeVerified",
+    "admitted",
+    "sourceHash",
+    "worldHash",
+    "randomHash",
+    "activeCycleId",
+    "positionId",
+    "privateCandidateId",
+    "publicActions"
+  ],
+  "statusValues": ["unsupported"],
+  "physicalShapeValues": ["provisional-positive", "provisional-empty", "unresolved"],
+  "admitted": false,
+  "publicActions": [],
+  "candidateIdPattern": "p01.[0-9a-f]{64}",
+  "bounds": {
+    "elements": 2,
+    "representations": 2,
+    "componentsPerElement": 1,
+    "candidates": 1
+  }
+}
