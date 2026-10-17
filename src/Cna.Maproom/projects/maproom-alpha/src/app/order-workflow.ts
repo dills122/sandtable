@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   effect,
   inject,
   input,
@@ -11,7 +12,7 @@ import { FormlyFieldConfig, FormlyForm } from '@ngx-formly/core';
 import { MatButtonModule } from '@angular/material/button';
 import { AtlasStatus } from '@sandtable/field-atlas';
 import { destinations, readDestination } from './draft-form';
-import { FixtureOutcome, WorkspaceStore } from './workspace.store';
+import { FixtureOutcome, formations, WorkspaceStore } from './workspace.store';
 
 /** In-memory interaction specimen. No request leaves this browser. */
 @Component({
@@ -27,7 +28,7 @@ import { FixtureOutcome, WorkspaceStore } from './workspace.store';
         <form [formGroup]="form" (ngSubmit)="review()" class="fa-stack">
           <formly-form
             [form]="form"
-            [fields]="fields"
+            [fields]="fields()"
             [model]="model"
             (modelChange)="draftChanged()"
           />
@@ -44,9 +45,28 @@ import { FixtureOutcome, WorkspaceStore } from './workspace.store';
               <option value="stale">Stale view</option>
               <option value="lost-reply">Lost reply</option>
             </select>
-            <button matButton="filled" type="button" (click)="issue(outcome.value)">
+            <button
+              matButton="filled"
+              type="button"
+              [disabled]="!!store.pending()"
+              (click)="issue(outcome.value)"
+            >
               Issue order
             </button>
+          </div>
+        }
+        @if (otherPending(); as pending) {
+          <div role="status" aria-live="polite">
+            <p>
+              {{ pending.name }} has an unresolved order. You can prepare this draft, but issue
+              another order only after its result is known.
+            </p>
+            @if (pending.uncertain) {
+              <p>Reply lost. Reconcile the submitted order before issuing another.</p>
+              <button matButton type="button" (click)="store.reconcile()">
+                Simulate reconnect and reconcile
+              </button>
+            }
           </div>
         }
         <div role="status" aria-live="polite">
@@ -116,18 +136,19 @@ export class OrderWorkflow {
   protected readonly store = inject(WorkspaceStore);
   protected readonly form = new FormGroup({ destination: new FormControl<string | null>(null) });
   protected model = { destination: '' };
-  protected readonly fields: FormlyFieldConfig[] = [
+  protected readonly fields = computed<FormlyFieldConfig[]>(() => [
     {
       key: 'destination',
       type: 'select',
       props: {
         label: 'Move to',
         required: true,
+        disabled: this.locked(),
         options: [...destinations],
         appearance: 'outline',
       },
     },
-  ];
+  ]);
 
   constructor() {
     effect(() => {
@@ -142,6 +163,16 @@ export class OrderWorkflow {
   }
   protected locked() {
     return this.store.unsupportedPhase() || ['pending', 'uncertain'].includes(this.order().status);
+  }
+  protected otherPending() {
+    const pending = this.store.pending();
+    if (!pending || pending.formationId === this.formationId()) return null;
+    return {
+      name:
+        formations.find((formation) => formation.id === pending.formationId)?.name ??
+        'Another formation',
+      uncertain: this.store.orderFor(pending.formationId).status === 'uncertain',
+    };
   }
   protected draftChanged() {
     this.store.stageDraft(

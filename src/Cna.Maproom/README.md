@@ -101,7 +101,9 @@ adjustable inspector, bounded zoom and locate/fit camera controls. MAP-03B stage
 drafts, explicit review, delayed accepted/rejected/stale results, a lost-reply readback and an
 unsupported Combat-entry stop. Confirmed positions move only after a staged acceptance; a pending
 result remains tied to its submitted formation even if selection changes. Refresh after a stale or
-rejected result requires new review. The read-only ledger/diary remain presentation examples.
+rejected result requires new review. One unresolved fixture result blocks another issue; its
+recovery control remains available when inspecting a different formation. The pending formation's
+destination is locked until the result is known. The read-only ledger/diary remain presentation examples.
 Narrow widths stack panels; keyboard focus pans clipped counters into view when zoomed. No legal
 actions, authoritative turn resolution, network receipt, persistence or real reconnect exists.
 MAP-03C and connected play remain open.
