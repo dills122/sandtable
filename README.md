@@ -135,12 +135,13 @@ Temporary rules-lab sessions stop at supported
 public boundaries; durable hosting and complete scenario play retain their existing gates.
 
 The [Angular workspace](src/Cna.Maproom/README.md) now implements MAP-01, the MAP-02 foundation
-and the MAP-03A operational map fixture. The [MAP-04 browser contract](src/Cna.Game.Contracts/README.md)
-has an OpenAPI schema, audience-safe fixture and compiling generated client; host handlers remain
-pending.
+and the MAP-03A operational map and MAP-03B order workflow fixtures. The
+[MAP-04 browser contract](src/Cna.Game.Contracts/README.md) has an OpenAPI schema, audience-safe
+fixture and compiling generated client; host handlers remain pending.
 Run `just maproom-setup`, then `just maproom` (port 4200) and `just field-atlas` (port 6006) in separate
 terminals. Storybook owns the live component/pattern reference; both surfaces consume
-`@sandtable/field-atlas`. MAP-03B/C and the campaign connection remain pending.
+`@sandtable/field-atlas`. MAP-03B stages local delayed results and receipt readback only;
+MAP-03C and the campaign connection remain pending.
 
 ## Start, run, and develop
 

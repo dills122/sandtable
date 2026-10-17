@@ -1,7 +1,7 @@
 # Maproom Angular workspace
 
 Angular CLI multi-project workspace for the browser client and Field Atlas. This implements
-MAP-01, the MAP-02 foundation and the MAP-03A operational map fixture: a synthetic operations
+MAP-01, the MAP-02 foundation and the MAP-03A/B operational map and order fixtures: a synthetic operations
 workspace, not a connected game.
 The original [HTML study](../../docs/design/maproom-style-study/index.html) remains a design reference.
 
@@ -97,8 +97,11 @@ source. Both consumers load the same `styles.scss` and `utilities.css`; Tailwind
 excluded so Material and Field Atlas own control styling. Use public Material Sass overrides.
 
 The shell has eight synthetic formations, coherent map/list/ledger selection, a collapsible roster,
-adjustable inspector, bounded zoom and locate/fit camera controls. The read-only ledger/diary and
-draft-review specimen remain presentation examples. Narrow available widths stack the panels;
-keyboard focus pans a clipped counter into view when zoomed. It does not implement legal actions,
-per-formation order lifecycle, filtering, turn resolution, server communication or persistence.
-MAP-03B/C and connected play remain open.
+adjustable inspector, bounded zoom and locate/fit camera controls. MAP-03B stages per-formation
+drafts, explicit review, delayed accepted/rejected/stale results, a lost-reply readback and an
+unsupported Combat-entry stop. Confirmed positions move only after a staged acceptance; a pending
+result remains tied to its submitted formation even if selection changes. Refresh after a stale or
+rejected result requires new review. The read-only ledger/diary remain presentation examples.
+Narrow widths stack panels; keyboard focus pans clipped counters into view when zoomed. No legal
+actions, authoritative turn resolution, network receipt, persistence or real reconnect exists.
+MAP-03C and connected play remain open.

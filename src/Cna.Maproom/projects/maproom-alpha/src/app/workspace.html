@@ -23,11 +23,20 @@
       </div>
       <div>
         <dt>Decision</dt>
-        <dd>Draft review only</dd>
+        <dd>Staged order workflow</dd>
       </div>
     </dl>
     <div class="phase-status">
       <fa-status tone="warning">Local fixture</fa-status><span>No campaign server connected</span>
+      <button
+        type="button"
+        class="fa-text-action"
+        (click)="store.setUnsupportedPhase(!store.unsupportedPhase())"
+      >
+        {{
+          store.unsupportedPhase() ? 'Return to movement fixture' : 'Show unsupported Combat phase'
+        }}
+      </button>
     </div>
   </section>
   <div class="pane-actions">
@@ -65,7 +74,7 @@
         <span class="fa-muted">{{ formations.length }} own-side</span>
       </div>
       <div class="roster-list">
-        @for (unit of formations; track unit.id) {
+        @for (unit of store.visibleFormations(); track unit.id) {
           <button
             class="roster-item"
             [attr.aria-pressed]="store.selectedId() === unit.id"
@@ -137,7 +146,7 @@
           <span class="map-label coast">The coast road</span
           ><span class="map-label ridge">The inland ridge</span>
           <div class="map-markers">
-            @for (unit of formations; track unit.id) {
+            @for (unit of store.visibleFormations(); track unit.id) {
               <fa-unit-counter
                 class="map-unit"
                 [style.left.%]="unit.x"
@@ -170,9 +179,13 @@
         ><span>{{ store.selected().position }}</span
         ><fa-status>Own side</fa-status>
       </div>
-      <h3>Prepare a draft</h3>
-      <mr-draft-form [formation]="store.selected().name"
-    /></fa-panel>
+      <h3>Prepare an order</h3>
+      @for (unit of formations; track unit.id) {
+        @if (store.selectedId() === unit.id) {
+          <mr-order-workflow [formationId]="unit.id" [formationName]="unit.name" />
+        }
+      }
+    </fa-panel>
   </div>
   <div class="records-grid">
     <fa-panel heading="Formation ledger" eyebrow="Situation record"
@@ -181,7 +194,7 @@
           <span role="columnheader">Formation</span><span role="columnheader">Kind</span
           ><span role="columnheader">Position</span>
         </div>
-        @for (unit of formations; track unit.id) {
+        @for (unit of store.visibleFormations(); track unit.id) {
           <div class="ledger-row" role="row" [class.is-selected]="store.selectedId() === unit.id">
             <span role="cell"
               ><button
