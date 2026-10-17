@@ -17,6 +17,11 @@ I = json.loads((ROOT / (NAME + ".schema.json")).read_bytes())
 S = {k: [tuple(part.split(":")) for part in value.split()] for k, value in I["objects"].items()}
 L = I["limits"]
 PINS = I["runtimeSourceHashes"]
+NUMERIC_BOUNDS = {
+    "int": (0, 2**31 - 1), "long": (0, 2**63 - 1),
+    "ulong": (0, 2**64 - 1), "signedInt": (-2**31, 2**31 - 1),
+    "futureTurn": (1, 115), "differential": (-2, 2),
+}
 spec = importlib.util.spec_from_file_location(
     "r03_parent_r02", ROOT / "verify-combat-actual-moved-repeat-movement-completion-v1.py"
 )
@@ -88,6 +93,42 @@ def limit(kind):
     }.get(kind, L["proofBytes"])
 
 
+def numeric_leaf(value, kind):
+    minimum, maximum = NUMERIC_BOUNDS[kind]
+    require(type(value) is int, 1)
+    require(minimum <= value <= maximum, 2)
+
+
+def borrowed_numeric(value, kind, depth=0):
+    """Classify numeric leaves in the borrowed R02 proof under R03 error codes."""
+    if depth > r02.L["depth"]:
+        return
+    if kind.endswith("?"):
+        if value is not None:
+            borrowed_numeric(value, kind[:-1], depth)
+    elif kind.endswith("[]"):
+        if type(value) is list:
+            for item in value:
+                borrowed_numeric(item, kind[:-2], depth + 1)
+    elif kind in r02.I["arrayAliases"]:
+        if type(value) is list:
+            element = r02.I["arrayAliases"][kind]["elementType"]
+            for item in value:
+                borrowed_numeric(item, element, depth + 1)
+    elif kind in r02.I["effectTags"]:
+        if type(value) is dict and type(value.get("kind")) is str:
+            variant = r02.I["effectTags"][kind].get(value["kind"])
+            if variant is not None:
+                borrowed_numeric(value, variant, depth)
+    elif kind in r02.S:
+        fields = r02.S[kind]
+        if type(value) is dict and set(value) == {name for name, _ in fields}:
+            for name, nested in fields:
+                borrowed_numeric(value[name], nested, depth + 1)
+    elif kind in NUMERIC_BOUNDS:
+        numeric_leaf(value, kind)
+
+
 def typed(value, kind, depth=0, parent="", field=""):
     require(depth <= L["depth"], 1)
     if kind.endswith("?"):
@@ -106,7 +147,10 @@ def typed(value, kind, depth=0, parent="", field=""):
         if kind in I["versionRules"]:
             require(value["contractVersion"] == I["versionRules"][kind], 3)
     elif kind == "R02Proof":
+        borrowed_numeric(value, "Proof")
         inherited(lambda: r02.typed(value, "Proof"))
+    elif kind in NUMERIC_BOUNDS:
+        numeric_leaf(value, kind)
     elif kind in ("parentCarrier", "eventCarrier"):
         cap = L["parentSourceBytes"] if kind == "parentCarrier" else L["eventBytes"]
         require(type(value) is str and value.isascii() and 0 < len(value) <= cap, 1)
