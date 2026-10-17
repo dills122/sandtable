@@ -123,8 +123,10 @@ The [MAP-05 trusted host protocol](../specs/maproom-trusted-host-protocol-v1.md)
 now records private byte ownership, creation/action retry identity, bounded fenced pending
 reconciliation, restore provenance, fixed direct-Core vectors and the failure matrix. The MAP-06
 Core adapter supplies admitted creation, coherent side cuts, accepted evidence and verified
-private transcript replay. MAP-07 grain implementation, MAP-14/15
-durable provider proof and connected play remain open.
+private transcript replay. MAP-07 now has a temporary single-fixture Orleans grain with
+in-memory request dedupe, bounded System progression and in-process Core parity tests. It
+has no browser ingress, authorized seat/action mapping, terminal-state signal or process
+durability. MAP-08/09 ingress, MAP-14/15 durable provider proof and connected play remain open.
 The [implementation plan](../design/local-game-server-maproom-plan.md) owns slice dependencies
 and acceptance checks; the [design system](../design/maproom-design-system-v0.md) owns visual rules.
 

@@ -14,5 +14,6 @@
     <Project Path="tests/Cna.ExerciseRunner.Tests/Cna.ExerciseRunner.Tests.csproj" />
     <Project Path="tests/Cna.Game.Contracts.Tests/Cna.Game.Contracts.Tests.csproj" />
     <Project Path="tests/Cna.Intelligence.Contracts.Tests/Cna.Intelligence.Contracts.Tests.csproj" />
+    <Project Path="tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj" />
   </Folder>
 </Solution>

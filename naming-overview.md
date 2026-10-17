@@ -92,6 +92,10 @@ receives only authorized projected views and outward receipt status. Protocol de
 instantiate a new service or a durable save path.
 The MAP-06 trusted Core adapter stays inside Umpire; it exposes private accepted evidence to
 the host while Chronicle/Archives still owns publication and recovery records.
+MAP-07's temporary campaign grain lives in `Cna.OrleansHost`; it holds an opaque Umpire
+session and an in-memory request record for the local rules lab. It is not Chronicle/Archives
+durability or a Maproom endpoint. The host-owned side summary is a private bridge, not a
+browser contract or a new authority source.
 
 **Proving Ground** names the local development test environment and
 [runbook](docs/runbooks/proving-ground.md), not a game authority or separate service. Its first

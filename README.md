@@ -146,6 +146,11 @@ The MAP-06 [Core host adapter](src/Cna.Core/Hosting/CampaignHostAdapter.cs) now 
 creation, coherent side cuts, System legal queries, accepted-step evidence and verified private
 transcript replay for the rules lab. Host authorization, journal fencing, outward mapping and
 durable publication remain separate work.
+MAP-07 adds a [temporary Orleans campaign grain](src/Cna.OrleansHost/TemporaryCampaignGrain.cs)
+for the single admitted Rules9 lab fixture. Its trusted in-silo API retains request/receipt
+identity and serialized Core transitions in memory, reports bounded System stops, and loses all
+campaigns on process restart. It has no browser route, seat authorization, public Combat action,
+or durable save; MAP-08/09 must map and authorize outward requests before exposing it.
 Run `just maproom-setup`, then `just maproom` (port 4200) and `just field-atlas` (port 6006) in separate
 terminals. Storybook owns the live component/pattern reference; both surfaces consume
 `@sandtable/field-atlas`. MAP-03B stages local delayed results and receipt readback only;
