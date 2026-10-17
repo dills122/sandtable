@@ -287,6 +287,16 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Loopback, origin or CSRF check denied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -329,6 +339,16 @@
           },
           "401": {
             "description": "No session",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Loopback or origin check denied",
             "content": {
               "application/json": {
                 "schema": {

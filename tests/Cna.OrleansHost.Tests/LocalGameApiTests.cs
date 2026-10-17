@@ -36,6 +36,10 @@ public sealed class LocalGameApiTests
             crossSiteNavigation.Headers.TryAddWithoutValidation("Sec-Fetch-Site", "cross-site");
             Assert.Equal(HttpStatusCode.Forbidden,
                 (await Send(client, crossSiteNavigation)).StatusCode);
+            var directNavigation = new HttpRequestMessage(HttpMethod.Get, "/api/v1/bootstrap");
+            directNavigation.Headers.TryAddWithoutValidation("Sec-Fetch-Site", "none");
+            Assert.Equal(HttpStatusCode.Forbidden,
+                (await Send(client, directNavigation)).StatusCode);
             Assert.Equal(HttpStatusCode.Forbidden,
                 (await client.GetAsync("/api/v1/bootstrap", TestContext.Current.CancellationToken))
                 .StatusCode);

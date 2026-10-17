@@ -112,7 +112,7 @@ internal static class LocalGameApi
     private static bool IsSameOrigin(HttpContext context)
     {
         var fetchSite = context.Request.Headers["Sec-Fetch-Site"].ToString();
-        if (fetchSite is not ("" or "same-origin" or "none")) return false;
+        if (fetchSite is not ("" or "same-origin")) return false;
         var origin = context.Request.Headers.Origin.ToString();
         if (string.IsNullOrEmpty(origin)) return true;
         return Uri.TryCreate(origin, UriKind.Absolute, out var value)

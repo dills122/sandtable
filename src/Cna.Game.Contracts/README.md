@@ -42,7 +42,9 @@ remain separate contracts.
    does not undo a commit; receipt lookup and current view reconcile it. Conflict errors use
    fixed, audience-safe text.
 7. `DELETE .../seat` invalidates generation and clears seat cookie. Clients must clear prior-seat
-   DOM, drafts, overlays and subscriptions before entering the next seat.
+   DOM, drafts, overlays and subscriptions before entering the next seat. Session reads and seat
+   relinquish expose typed `403` errors for rejected loopback/origin checks; relinquish also
+   rejects invalid CSRF with `403`.
 
 Mutations use CSRF header and same-origin cookies. Local host must reject cross-origin mutation,
 validate Host/Origin against the loopback profile and never log cookies, grants, player payloads or

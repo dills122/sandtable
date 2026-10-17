@@ -69,6 +69,11 @@ public sealed class BrowserContractTests
         Assert.Equal(["200", "400", "401", "403", "409"], seatResponses
             .EnumerateObject().Select(response => response.Name).ToArray());
         AssertApiErrors(seatResponses, "400", "401", "403", "409");
+
+        var seatPath = paths.GetProperty("/api/v1/campaigns/{campaignId}/seat");
+        AssertApiErrors(seatPath.GetProperty("delete").GetProperty("responses"), "401", "403");
+        AssertApiErrors(paths.GetProperty("/api/v1/campaigns/{campaignId}/session")
+            .GetProperty("get").GetProperty("responses"), "401", "403");
     }
 
     private static void AssertApiErrors(JsonElement responses, params string[] statuses)
