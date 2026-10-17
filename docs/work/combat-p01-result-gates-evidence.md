@@ -1,0 +1,31 @@
+# P01 AC-004 bounded result gate: executable evidence
+
+**Status:** bounded offline AC-004 arithmetic and immediate receipt matrix PASS on merged base `2c96c14`; P01 admission remains **unsupported**. This is a private read-only proof slice. It does not append Combat events, open selection, consume ordinal-two native Combat, or publish public candidate bytes.
+
+## Reproduce
+
+```sh
+python3 docs/specs/verify-combat-p01-result-gates-v1.py --evidence /Users/dsteele/.codex/worktrees/combat-p01-inventory/p01-evidence
+```
+
+Expected output: `authenticPositiveRows=44`, `moralePairs=1296`, `jointCoordinates=6480`, `resultCases.axis=resultCases.commonwealth=8840`, `settlementWorlds.axis=9728`, `settlementWorlds.commonwealth=9728`, `branchKindsPerOrientation=39`, `mutations=8`, and status `bounded AC-004 evidence only; no P01 admission`.
+
+The verifier replays all eleven original ledgers for each of 44 R03 rows through the frozen R03 and provisional P01 assessor via `verify-combat-actual-moved-repeat-position-evidence-v1.py`. It rechecks `summary.json`, `manifest.json`, all eleven chunk hashes, `bounded-profile-audit.json`, Land Rules and September errata hashes. It reads each positive row's own hashed terminal Control World. These inputs remain outside Git and read only. No sibling audit label or parsed World alone becomes a credential.
+
+Positive rows are indices `{36+6n | 0≤n<44}`, `r012-c01` through `r055-c01`, split 22 Axis and 22 Commonwealth actors. Each full terminal World equals the selected initial World after only its current CP entries are normalized for comparison; the verifier separately requires acting CP4, defending CP0. That equality includes both elements, one-component TOE10, ammo10, Cohesion0, independent representations, positions, empty causes, custody, guards, obligations, relationships, settlements, and creation binding. This permits result support to factor by actor orientation without treating 44 different source hashes as 44 independent rules surfaces.
+
+The retained [source freeze](../research/combat-source-freeze-v1.md) and exact [RulesInput](../specs/combat-rules-inputs-v1.md) supply selected Morale, §15.79 losses, §15.89 capture shares and effect rows. The verifier checks canonical RulesInput bytes/hash against independent source-range normalization, pins Land PDF `b362870368b9fb8abe6918195fdcf878d4a8041c557b835b9a1bdde3c8b76e99` and September errata `5db539e1fac4aea3ef152370fb732f1938307fe4b2d47ad93eb605db0a09f0fb`, and requires adopted `CMB-SRC-RUL-001` defender+2 rolls34/35/36=10%. Printed table has no value for those three cells; September §15.79 corrects +4, not +2. The common-chart scan is absent from the retained evidence folder, so this run validates the **adopted pinned normalization**, not a new independent image transcription or SPI designer intent.
+
+## Matrix and assertions
+
+For each side, the verifier covers all 36×36 Morale pairs to establish final differentials −2..+2. It enumerates all 5×36×36 assault-pair coordinates, every applicable retreat/refusal branch, every conditional capture die 1..6 and both positive-custody dispositions. This produces 8,840 selected result/refusal/capture cases and **9,728 terminal settlement Worlds per orientation**; the extra 888 Worlds are the alternate guard/escape custody paths. Both orientations reach the same 39 combinations of differential, retreat, refusal, raw Engaged and captured role. No seed or source row is filtered by outcome.
+
+For every case, independently calculated chart percentages, sum flags, capture share and conditional die are compared with `verify-combat-world-settlement-v1.py` result facts. Every projected World is then checked for exact attacker CP4→9 and defender CP0→3→4 only on actual retreat, both ammo10→0, frozen pre-loss basis, asymmetric TOE rounding, refusal percentage before rounding, capture as a subset of loss, 0..3 loss and custody bound, survivor TOE≥7, 3 DP only for three TOE lost, ordered Cohesion causes, 3 RP only for completed target evacuation, receipt predecessor chain, guarded donor transfer and priority-upkeep obligation, or unguarded escape with delayed replacement obligation. Final representation locations and Contact/Engaged/Retreat precedence are checked even when losses round to zero.
+
+Eight built-in negative checks change current TOE, ammo, representation location, an amended result cell, attacker CP cost, loss receipt, retreat CP receipt and final relation. Each differs from the pinned source or fails a required invariant. These are mutation-sensitivity checks of this verifier, not an independent security review.
+
+## Boundary and remaining gates
+
+`CMB-POL-009` explicitly excludes optional Land §15.88 voluntary surrender from this initial bounded exercise. Automatic ammunitionless/−17 Cohesion surrender remains a different source condition; current positive inputs are ammo10/Cohesion0, and their post-cost ammo0 is already-paid use. This matrix covers **all adopted chart and immediate settlement paths for that bounded profile**, not all source-legal Combat choices. Other profiles fail closed.
+
+The verifier projects standalone World7 settlement cases from Worlds proved equivalent in result-relevant fields; it does not execute an actual ordinal-two commitment or P01 output transition. `CampaignCombatCertification` still gates ordinal one. AC-001/002/003 ancestry and action completeness, AC-005 geometry, AC-006 surrender-condition enforcement and RBA policy, AC-007 outward privacy, AC-008 cuts/retries/caps/mutations, review and P02/P03 remain separate. Guard upkeep and replacement training are retained future obligations, not executed here. Keep the provisional assessor's `unsupported` outputs until every gate is proved on one reviewed head.
