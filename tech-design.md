@@ -790,3 +790,11 @@ independent implementation review is complete at `07fac9f`.
 [main CI run 38830848442](https://github.com/dills122/sandtable/actions/runs/38830848442), attempt 1,
 verified all 3,716 rows across 26 execution processes. Public ingress, Runner adoption, acceptance of all 72 criteria and
 the first release candidate remain open.
+
+The separate provisional [moved-repeat Breakdown completion contract](docs/specs/combat-actual-moved-repeat-breakdown-completion-v1.md)
+and `CampaignCombatActualMovedRepeatBreakdownCompletion` consume the authentic R02 terminal and
+eleven independent ledgers, then append one System event to reach ordinal-two Combat Position
+Determination. Local authentic replay covers 300 cases; the focused native class passed 38/38.
+The 256 MiB Source limit remains a capacity gate because the modeled reachable maximum has not
+been certified against every valid ancestry or measured through native near-limit replay.
+`closureFrozen=false`; public ingress, Runner proof, all 72 criteria and release readiness remain open.

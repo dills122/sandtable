@@ -150,3 +150,10 @@ Local 325-row validation and independent implementation review at `07fac9f` are 
 verified all 3,716 rows across 26 execution processes. These technical module
 names do not imply public activation, Runner adoption, acceptance of all 72 criteria or a first
 release candidate.
+
+`CampaignCombatActualMovedRepeatBreakdownCompletion` names the separate private native consumer
+of the [moved-repeat Breakdown completion contract](docs/specs/combat-actual-moved-repeat-breakdown-completion-v1.md).
+It authenticates R02 and an independent eleventh Breakdown ledger, and appends one System event
+to enter ordinal-two Combat Position Determination. The 300-case local replay checkpoint does
+not certify the frozen 256 MiB Source cap or activate public Combat. `closureFrozen=false` until
+valid-ancestry capacity, native resource, review and hosted-CI gates pass.

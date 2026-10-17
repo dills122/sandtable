@@ -1344,3 +1344,15 @@ from `a78a8c1`. [PR #194](https://github.com/dills122/sandtable/pull/194) merged
 [Main CI run 38830848442](https://github.com/dills122/sandtable/actions/runs/38830848442), attempt 1,
 verified all 3,716 rows across 26 execution processes on hosted Linux. Public Tasks020–021,
 Runner022–024, full72 closeout025, the six-turn scenario and the first release candidate remain open.
+
+### Private moved repeat Breakdown checkpoint (October 16)
+
+The provisional [moved-repeat Breakdown contract](../specs/combat-actual-moved-repeat-breakdown-completion-v1.md)
+and native consumer extend authentic R02 paid and armed ancestry through one System event into
+ordinal-two Combat Position Determination. The 300-case fixture covers 56 roots in 18 disjoint
+groups; a focused 38-test native class passed locally in 5m20s. The Source cap remains 256 MiB,
+`closureFrozen=false`, and [capacity work](../work/plans/2026-10-16-actual-moved-repeat-breakdown-capacity-evidence.md)
+has only a provisional 212,034,752-byte model. A valid maximal-ancestry replay and native
+memory/latency measurement, fresh review of the corrected model, and exact-head hosted CI are
+required before contract closure or merge. This private checkpoint does not activate public
+Combat or complete the selected loop, full 72-criterion closeout, or first-release scope.
