@@ -78,6 +78,10 @@ test('unresolved order blocks another issue and exposes recovery from a differen
   page,
 }) => {
   await page.goto('/');
+  await page.getByRole('button', { name: 'Harrier group, armour, G-5' }).click();
+  await page.getByRole('combobox', { name: 'Move to' }).click();
+  await page.getByRole('option', { name: 'Inland ridge · H-8' }).click();
+  await page.getByRole('button', { name: 'Fox group, infantry, K-7' }).click();
   await page.getByRole('combobox', { name: 'Move to' }).click();
   await page.getByRole('option', { name: 'East crossing · M-6' }).click();
   await page.getByRole('button', { name: 'Review draft' }).click();
@@ -85,8 +89,6 @@ test('unresolved order blocks another issue and exposes recovery from a differen
   await page.getByRole('button', { name: 'Issue order' }).click();
   await expect(page.getByRole('combobox', { name: 'Move to' })).toBeDisabled();
   await page.getByRole('button', { name: 'Harrier group, armour, G-5' }).click();
-  await page.getByRole('combobox', { name: 'Move to' }).click();
-  await page.getByRole('option', { name: 'Inland ridge · H-8' }).click();
   await page.getByRole('button', { name: 'Review draft' }).click();
   await expect(page.getByRole('button', { name: 'Issue order' })).toBeDisabled();
   await expect(page.getByText('Fox group has an unresolved order.')).toBeVisible();
