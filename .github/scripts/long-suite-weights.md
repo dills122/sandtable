@@ -13,6 +13,21 @@ MAP-06 adds four `CampaignHostAdapterTests` rows. Their provisional weights are 
 
 Command: `/opt/homebrew/bin/dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --no-build --filter-class Cna.Core.Tests.Hosting.CampaignHostAdapterTests --report-xunit-xml --results-directory /private/tmp/map06-host-timing`. Result: 4 passed, 0 failed, 0 skipped; XML is retained in that local directory for review.
 
+MAP-07's `Cna.OrleansHost.Tests` is outside this Core-only timing manifest and its fixed
+partition. CI runs it as a separate required `orleans` job and checks its MTP XML with
+`verify_orleans_results.py`; no Orleans row hashes are added to `long-suite-weights.json`.
+A passing macOS arm64 .NET 10 Release run on 2026-10-17 at
+`/private/tmp/map07-host-release-timing` measured these provisional elapsed times. These are
+local scheduling observations, not Release CI performance claims.
+
+| MAP-07 row (class `Cna.OrleansHost.Tests.TemporaryCampaignGrainTests`) | Measured ms |
+| --- | ---: |
+| `TwelveStepTraceStopsAtUnsupportedCombatWithoutGuessingTerminal` | 1344 |
+| `InProcessHostMatchesDirectCoreAndDeduplicatesConcurrentRequests` | 460 |
+| `SystemProgressionStopsForHumanAndRestartLosesTemporaryCampaign` | 172 |
+
+Command: `/opt/homebrew/bin/dotnet test --project tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj --configuration Release --no-build --no-restore --report-xunit-xml --results-directory /private/tmp/map07-host-release-timing`. Result: 3 passed, 0 failed, 0 skipped; exact row identities verified by `.github/scripts/verify_orleans_results.py`.
+
 Unknown, missing or renamed Core rows deliberately fail preparation with a clear error. Do not delete tests or guess a matching name to clear this gate. Adding a case requires an explicit manifest refresh; changing the runtime of an existing case may also justify new measurements.
 
 1. Commit the proposed source on a feature branch. Build Release and the ReleaseTestRows helper using the selected SDK and normal binlog flags. Obtain actual discovery with the retained `r02_partition.py discover` command, using a fresh output directory, exact HEAD and a fresh attempt. That command does not require the long-suite timing manifest; it still proves deferred providers and all R02 semantic rows. No hosted run is implied or authorized by this procedure.
