@@ -172,7 +172,8 @@ def check_settlement(case, projected, facts, custody_choice):
     require(retreat['beforeCp'] == world.cp(3) and retreat['afterCp'] == world.cp(3 + moved)
             and retreat['completedDistance'] == moved and retreat['excessCpDp'] == 0
             and retreat['attackerVictoryRp'] == 3 * moved, 'retreat ledger and victory')
-    require(s['losses']['predecessorReceiptId'] == d['receiptId']
+    require(d['predecessorReceiptId'] == s['resultId']
+            and s['losses']['predecessorReceiptId'] == d['receiptId']
             and retreat['predecessorReceiptId'] == s['losses']['receiptId'], 'causal receipt chain')
     elements = {world.SIDES[e['elementId']]: e for e in projected['elements']}
     attacker = elements[case['attackerSide']]
@@ -226,11 +227,30 @@ def check_settlement(case, projected, facts, custody_choice):
         require(s['custody'] is None and custody_choice is None and not projected['guards']
                 and not projected['replacementEntitlements'] and not projected['futureObligations'],
                 'no-custody path')
+    for role, element in (('attacker', attacker), ('defender', defender)):
+        guard_transfer = int(bool(lot_quantity) and custody_choice == 'relocate-and-guard'
+                             and role != facts['capturedRole'])
+        require(element['components'][0]['currentToe'] == losses[role]['remainingToe'] - guard_transfer,
+                'final participant TOE matches loss and guard transfer')
     relation = s['relationships']
     expected_kind = None if moved else 'engaged' if facts['rawEngaged'] and not required else 'contact'
     require(relation['kind'] == expected_kind
             and relation['predecessorReceiptId'] == (s['custody']['receiptId'] if lot_quantity else retreat['receiptId'])
             and len(projected['relationships']) == int(expected_kind is not None), 'final relation and closure')
+    if expected_kind is None:
+        require(relation['relationshipId'] is None, 'absent relation identity')
+    else:
+        actual_relation = projected['relationships'][0]
+        require(relation['relationshipId'] == actual_relation['relationId']
+                and actual_relation['creationReceiptId'] == relation['receiptId']
+                and actual_relation['kind'] == expected_kind
+                and actual_relation['attacker'] == s['attacker']
+                and actual_relation['defender'] == s['defender']
+                and actual_relation['gameTurn'] == s['gameTurn']
+                and actual_relation['operationStage'] == s['operationStage']
+                and actual_relation['active'] is True
+                and actual_relation['endedByReceiptId'] is None
+                and actual_relation['endingCause'] is None, 'relationship object matches receipt')
     for e in projected['elements']:
         rep = next(r for r in projected['representations'] if r['boundElementIds'] == [e['elementId']])
         require(rep['currentLocationId'] == e['currentLocationId'], 'representation follows survivor')
@@ -309,7 +329,11 @@ def mutation_checks(rules, rows):
     for field, change in (
             ('loss receipt', lambda w: w['settlements'][0]['losses']['roles'][0].__setitem__('lossToe', 1)),
             ('retreat ledger', lambda w: w['settlements'][0]['retreat'].__setitem__('afterCp', world.cp(4))),
-            ('relation', lambda w: w['settlements'][0]['relationships'].__setitem__('kind', 'contact'))):
+            ('relation receipt', lambda w: w['settlements'][0]['relationships'].__setitem__('kind', 'contact')),
+            ('final TOE', lambda w: w['elements'][0]['components'][0].__setitem__('currentToe', 9)),
+            ('relationship object', lambda w: w['relationships'][0].__setitem__('kind', 'contact')),
+            ('disposition predecessor', lambda w: w['settlements'][0]['disposition'].__setitem__(
+                'predecessorReceiptId', 'wrong.result'))):
         changed = copy.deepcopy(projected)
         change(changed)
         try:
@@ -318,6 +342,7 @@ def mutation_checks(rules, rows):
             checks += 1
         else:
             raise AssertionError(field + ' mutation escaped settlement checks')
+    require(checks == 11, 'negative mutation coverage')
     return checks
 
 
