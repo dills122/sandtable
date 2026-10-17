@@ -26,8 +26,8 @@ and [operating notes](https://github.com/dills122/reef/blob/c2dc8358a52c80edf2ac
 with these safeguards:
 
 - `pull_request_target` uses the trusted `main` workflow and rule; restrict to same-repository,
-  non-draft PRs carrying a maintainer-applied `ocr-scrutiny` label. Trigger on adding that label or
-  marking a labeled PR ready. No push, reopen, comment, fork, or scheduled trigger.
+  non-draft PRs. Each paid run requires the repository owner to apply the `ocr-scrutiny` label to
+  a ready PR. No draft/ready toggle, push, reopen, comment, fork, or scheduled trigger can run it.
 - Job token starts with no permissions and grants only `contents: read` and
   `pull-requests: write` to the review job. Use the official action at the full Reef-tested
   `bccbc15f785269400735d5255540c231e6c02b6d` commit with OCR CLI `1.12.9` and
@@ -41,12 +41,18 @@ with these safeguards:
   its last round. Keep artifacts off; use sticky summary, incremental comments and checkpoint
   ranges. A missing, invalid, or stale checkpoint must widen to a full review.
 
-Only add the label after focused CI is green and the PR head is stable. A later push does not run
-OCR; remove and re-add the label to request another paid review. Before using a result, verify
-the reviewed head SHA, range mode, selected/completed/failed file counts and summary. A partial
-review or stale head is evidence only for the files actually completed. For a full re-review,
-mark the labeled PR draft and ready again, which requests the full range. Remove the label when
-the pilot is finished.
+Before activation, inspect the repository's Actions event-policy insights and confirm that
+`pull_request_target` is permitted. [GitHub's public-repository default policy](https://docs.github.com/en/actions/reference/security/securely-using-pull_request_target#default-policy-for-pull_request_target)
+currently evaluates affected runs and is scheduled for enforcement on November 2, 2026. If the
+policy would block this workflow, arrange a narrowly applicable policy only after reviewing its
+privileged-event safety; do not weaken the workflow's trust boundary to make it run.
+
+The repository owner should apply the label only after focused CI is green and the PR head is
+stable. A later push or draft/ready toggle does not run OCR. To request another paid review, the
+owner must remove and re-add the label to the ready PR; each re-application is a new cost decision.
+Before using a result, verify the reviewed head SHA, range mode, selected/completed/failed file
+counts and summary. A partial review or stale head is evidence only for the files actually
+completed. Remove the label when the pilot is finished.
 
 ## Value check
 
