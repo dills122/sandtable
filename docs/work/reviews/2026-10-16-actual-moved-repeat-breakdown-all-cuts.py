@@ -10,6 +10,7 @@ from pathlib import Path
 parser = argparse.ArgumentParser()
 parser.add_argument("vectors", type=Path)
 parser.add_argument("--progress", action="store_true")
+parser.add_argument("--limit", type=int, help="smoke-test this many leading rows")
 args = parser.parse_args()
 script = Path(__file__).resolve().parents[2] / "specs/verify-combat-actual-moved-repeat-breakdown-completion-v1.py"
 spec = importlib.util.spec_from_file_location("r03_all_cuts", script)
@@ -50,5 +51,10 @@ with gzip.open(args.vectors, "rt", encoding="ascii") as stream:
         if args.progress:
             print("VERIFIED", counts["rows"], "/ 300", row["rowKey"],
                   "nonterminalCuts", counts["rejectedCuts"], flush=True)
-assert counts == dict(rows=300, paid=36, armed=264, rejectedCuts=788), counts
+        if args.limit is not None and counts["rows"] == args.limit:
+            break
+if args.limit is None:
+    assert counts == dict(rows=300, paid=36, armed=264, rejectedCuts=788), counts
+else:
+    assert counts["rows"] == args.limit and counts["rejectedCuts"] >= counts["rows"], counts
 print(json.dumps(dict(status="PASS", **counts)))
