@@ -129,14 +129,16 @@ and Formly, SignalStore, HTTP and SignalR, with an initial SVG map. The
 [Field Atlas design system](docs/design/maproom-design-system-v0.md) and
 [operations workspace preview](docs/design/maproom-style-study/index.html) establish warm paper,
 ink and restrained unit symbols through a compact map, order workflow and linked formation ledger.
-MAP-02 now supplies the theme and initial components; MAP-03A/B/C complete these workflows before expanding the library.
+MAP-02 supplies the theme and initial components; MAP-03A supplies the operational map fixture.
+MAP-03B/C complete the order and records workflows before expanding the library.
 Temporary rules-lab sessions stop at supported
 public boundaries; durable hosting and complete scenario play retain their existing gates.
 
-The [Angular workspace](src/Cna.Maproom/README.md) now implements MAP-01 and the MAP-02 foundation.
+The [Angular workspace](src/Cna.Maproom/README.md) now implements MAP-01, the MAP-02 foundation
+and the MAP-03A operational map fixture.
 Run `just maproom-setup`, then `just maproom` (port 4200) and `just field-atlas` (port 6006) in separate
 terminals. Storybook owns the live component/pattern reference; both surfaces consume
-`@sandtable/field-atlas`. Complete MAP-03 workflows and the campaign connection remain pending.
+`@sandtable/field-atlas`. MAP-03B/C and the campaign connection remain pending.
 
 ## Start, run, and develop
 

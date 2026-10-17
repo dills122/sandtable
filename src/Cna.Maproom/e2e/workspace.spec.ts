@@ -34,6 +34,78 @@ test('keyboard can select a unit and review a draft', async ({ page }) => {
   await page.keyboard.press('Enter');
   await expect(page.getByRole('status')).toContainText('Draft reviewed');
 });
+test('camera locates selection, fits extent and keeps roster selection available', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Osprey group, recon, M-8', exact: true }).click();
+  await page.getByRole('button', { name: 'Locate Osprey group on map' }).click();
+  await expect(page.getByLabel('Map zoom')).toHaveText('150%');
+  await expect
+    .poll(async () => {
+      const marker = await page
+        .getByRole('button', { name: 'Osprey group, recon, M-8', exact: true })
+        .boundingBox();
+      const canvas = await page.locator('.map-canvas').boundingBox();
+      if (!marker || !canvas) return Number.POSITIVE_INFINITY;
+      return Math.max(
+        Math.abs(marker.x + marker.width / 2 - canvas.x - canvas.width / 2),
+        Math.abs(marker.y + marker.height / 2 - canvas.y - canvas.height / 2),
+      );
+    })
+    .toBeLessThan(32);
+  await page.getByRole('button', { name: 'Zoom in' }).click();
+  await expect(page.getByLabel('Map zoom')).toHaveText('175%');
+  await page.getByRole('button', { name: 'Fit map' }).click();
+  await expect(page.getByLabel('Map zoom')).toHaveText('100%');
+  await page.getByRole('button', { name: 'Hide formations' }).click();
+  await expect(page.locator('#formations-pane')).toBeHidden();
+  await page.getByRole('button', { name: 'Show formations' }).click();
+  await expect(
+    page.getByRole('button', { name: 'Osprey group, recon, M-8', exact: true }),
+  ).toHaveAttribute('aria-pressed', 'true');
+});
+test('intermediate layout starts with a collapsed roster and can expand it', async ({ page }) => {
+  await page.setViewportSize({ width: 1024, height: 900 });
+  await page.goto('/');
+  await expect(page.locator('#formations-pane')).toBeHidden();
+  await page.getByRole('button', { name: 'Show formations' }).click();
+  await expect(page.locator('#formations-pane')).toBeVisible();
+});
+test('keyboard focus brings a clipped counter into the zoomed map', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/');
+  for (let step = 0; step < 4; step++) await page.getByRole('button', { name: 'Zoom in' }).click();
+  const counter = page.getByRole('button', { name: 'Tern group, infantry, O-6' });
+  const canvas = page.locator('.map-canvas');
+  await expect
+    .poll(async () => {
+      const before = await counter.boundingBox();
+      const frame = await canvas.boundingBox();
+      return !!before && !!frame && before.x > frame.x + frame.width;
+    })
+    .toBe(true);
+  await counter.focus();
+  await expect(counter).toBeFocused();
+  await expect
+    .poll(async () => {
+      const marker = await counter.boundingBox();
+      const map = await canvas.boundingBox();
+      if (!marker || !map) return false;
+      return (
+        marker.x >= map.x &&
+        marker.y >= map.y &&
+        marker.x + marker.width <= map.x + map.width &&
+        marker.y + marker.height <= map.y + map.height
+      );
+    })
+    .toBe(true);
+  await expect(page.getByRole('button', { name: 'Fox group, infantry, K-7' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+});
 for (const width of [320, 375, 414, 768, 1440, 2560])
   test(`workspace fits ${width}px`, async ({ page }, testInfo) => {
     await page.setViewportSize({ width, height: 900 });
@@ -56,6 +128,9 @@ test('large text and short viewport preserve controls', async ({ page }) => {
   await page.setViewportSize({ width: 1024, height: 600 });
   await page.goto('/');
   await page.addStyleTag({ content: 'html {font-size:200%}' });
+  await page.getByRole('button', { name: 'Wide inspector' }).click();
+  const map = await page.locator('.map-canvas').boundingBox();
+  expect(map && map.width).toBeGreaterThanOrEqual(320);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   expect(
     await page.locator('main button').evaluateAll(
@@ -66,6 +141,22 @@ test('large text and short viewport preserve controls', async ({ page }) => {
         }).length,
     ),
   ).toBe(0);
+  await page.getByRole('button', { name: 'Review draft' }).scrollIntoViewIfNeeded();
+  await expect(page.getByRole('button', { name: 'Review draft' })).toBeInViewport();
+});
+test('320px viewport at 200% text keeps every action reachable', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 568 });
+  await page.goto('/');
+  await page.addStyleTag({ content: 'html {font-size:200%}' });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  const clipped = await page.locator('main button').evaluateAll(
+    (buttons) =>
+      buttons.filter((button) => {
+        const rect = button.getBoundingClientRect();
+        return rect.left < 0 || rect.right > innerWidth + 1;
+      }).length,
+  );
+  expect(clipped).toBe(0);
   await page.getByRole('button', { name: 'Review draft' }).scrollIntoViewIfNeeded();
   await expect(page.getByRole('button', { name: 'Review draft' })).toBeInViewport();
 });
