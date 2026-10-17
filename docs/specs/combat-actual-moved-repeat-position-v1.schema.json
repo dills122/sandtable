@@ -11,6 +11,27 @@
     "septemberErrataPdf": "5db539e1fac4aea3ef152370fb732f1938307fe4b2d47ad93eb605db0a09f0fb"
   },
   "candidateIdentityDomain": "sandtable.combat.actual-moved-repeat-position.private-candidate.v1",
+  "candidateIdentityEncoding": "SHA-256 of ASCII domain, one NUL byte, then compact ensure_ascii JSON object with fields in privateCandidatePreimageFields order; no trailing newline; lowercase hex prefixed p01.",
+  "privateCandidatePreimageFields": [
+    "contractVersion",
+    "creationBinding",
+    "cycleId",
+    "positionId",
+    "stateVersion",
+    "prefix",
+    "basis",
+    "targetLocationId",
+    "attackerOriginalSide",
+    "attackerElementId",
+    "attackerComponentId",
+    "attackerRepresentationId",
+    "attackerLocationId",
+    "defenderOriginalSide",
+    "defenderElementId",
+    "defenderComponentId",
+    "defenderRepresentationId",
+    "defenderLocationId"
+  ],
   "assessmentFields": [
     "contractVersion",
     "status",

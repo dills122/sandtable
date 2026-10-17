@@ -1,7 +1,7 @@
 # Actual moved repeat Combat Position v1 (P01 contract design)
 
-**Status:** private ordinal-two contract design and acceptance matrix; executable reference and
-support certificate pending. This document grants no native admission, public action, or complete
+**Status:** private ordinal-two contract design, provisional read-only schema/reference/fixture,
+and acceptance matrix; executable support certificate pending. This document grants no native admission, public action, or complete
 source-legal Combat claim. R03 is the authenticated terminal predecessor; P01, P02 selection, and
 P03 native consumption are separate gates.
 
@@ -35,8 +35,8 @@ participant, and unsupported Weather profiles fail closed.
 
 ## Proposed reference boundary
 
-The executable P01 reference, when built, takes an original CreationRequest, **all eleven separate
-R03 input ledgers**, and the twelfth P01 input ledger. It reconstructs the entire R03 Source,
+The provisional read-only assessor takes an original CreationRequest and **all eleven separate
+R03 input ledgers**. A later executable P01 transition also needs a twelfth P01 input ledger. It reconstructs the entire R03 Source,
 Control and Proof with the frozen R03 verifier. An R03 row, canonical hash, caller-supplied parsed
 World, or sibling audit report is never an authority credential. Original ordinal-one MovementEnd
 proof and active ordinal-two MovementEnd proof stay distinct. The R03 suffix, including exact
@@ -58,9 +58,10 @@ candidate identity uses the existing `CMB-ID-001`–`007` domain-separated canon
 scope, authoritative cycle/position, current prefix/version, target and exact participant bindings.
 The eventual outward reference must derive solely from the owner's authorized visible facts and
 decision revision. No internal Source/Proof hash, hidden opponent identity, raw CP/TOE/ammo, RNG,
-event count, or blocker reason may salt or order it. A future schema must freeze exact field order,
-domain tag and caps before an executable reference can issue IDs; this design deliberately does
-not invent an incompatible hash encoding.
+event count, or blocker reason may salt or order it. The provisional schema fixes private ID field
+order, domain tag and hash encoding, with one golden preimage/hash vector. This private digest is
+neither an outward reference nor an admission credential. Outward mapping and complete caps remain
+open P01 gates.
 
 ## Terminal partition and complete bounded support
 
@@ -94,23 +95,21 @@ for the selected six-hex content graph. No particular RNG seed may reduce this m
 
 | ID | Required executable evidence | Current state |
 | --- | --- | --- |
-| `P01-AC-001` | Recreate every original source from CreationRequest plus 11 independent ledgers; verify all parent bytes, R03 Source/Control/Proof, source pins and exact ordinal-two suffix before inspection. Tampered, missing, reordered or substituted ledger rejects. | Pending P01 reference. |
-| `P01-AC-002` | Enumerate exactly 300 unique contiguous row keys and compare every output with authenticated R03 terminal vectors: 44 positive, 256 supported-empty only after all gates pass. | Predicate partition provisional. |
-| `P01-AC-003` | Prove complete original-unit and representation binding, acting side, target membership, current versus prior segment target use, ZOC/obligation absence, Weather and no alternate selected-content action. | Provenance audit provisional; no P01 replay. |
+| `P01-AC-001` | Recreate every original source from CreationRequest plus 11 independent ledgers; verify all parent bytes, R03 Source/Control/Proof, source pins and exact ordinal-two suffix before inspection. Tampered, missing, reordered or substituted ledger rejects. | Provisional assessor replays all 300 genuine ancestors through frozen R03; complete mutation/cut/retry proof remains open. |
+| `P01-AC-002` | Enumerate exactly 300 unique contiguous row keys and compare every output with authenticated R03 terminal vectors: 44 positive, 256 supported-empty only after all gates pass. | All 300 provisional shapes match 44/256; all assessments remain `unsupported`, never supported-empty or admitted. |
+| `P01-AC-003` | Prove complete original-unit and representation binding, acting side, target membership, current versus prior segment target use, ZOC/obligation absence, Weather and no alternate selected-content action. | Provisional assessor checks selected shape and some participant/segment facts; complete provenance and action proof remains open. |
 | `P01-AC-004` | For all 44 positives, certify every adopted result coordinate, cost, loss, capture share, retreat/refusal and immediate settlement path, including source amendment, zero-loss effects and retained duties. | Sibling table audit available; same-head executable proof absent. |
 | `P01-AC-005` | Certify both one-hex retreat orientations and all eight custody/reunion placement cases from current post-move World and CP. Reject any new blocker, overlong path or donor/guard shortage. | Sibling geometry audit available; same-head executable proof absent. |
 | `P01-AC-006` | Enforce accepted `CMB-POL-009`: exclude voluntary surrender for the initial RC, distinguish automatic ammunitionless surrender, and fail closed on a state requiring surrender handling. Decline-only RBA and its cancellation fallback remain explicit. Never claim full source-legal action coverage. | Owner decision recorded; transition and source-condition proof pending. |
-| `P01-AC-007` | Freeze canonical private candidate ID and audience-visible mapping; equal authorized histories preserve visible bytes, IDs and accept/reject behavior under hidden changes. | Exact encoding and privacy proof pending. |
-| `P01-AC-008` | Test 300 row classifications, all nonterminal cuts, retries, source/ledger/field mutations, both acting sides, physical negatives, dependency faults, and exact output hashes with a frozen schema and caps. | No P01 schema, fixture or verifier yet. |
+| `P01-AC-007` | Freeze canonical private candidate ID and audience-visible mapping; equal authorized histories preserve visible bytes, IDs and accept/reject behavior under hidden changes. | Private preimage/order/hash fixed in provisional schema with a golden vector; outward mapping and privacy proof pending. |
+| `P01-AC-008` | Test 300 row classifications, all nonterminal cuts, retries, source/ledger/field mutations, both acting sides, physical negatives, dependency faults, and exact output hashes with a frozen schema and caps. | Provisional schema/fixture/verifier and focused tests exist; 300 genuine-row audit passes, but cuts, retries, full mutation matrix, caps and exact output proof remain open. |
 | `P01-AC-009` | Separately review P01 reference, then define P02 selection transitions and P03 native consumer with exact-head tests and hosted CI before any activation. | Not started by this design. |
 
 ## Freeze decision
 
-Contract intent and acceptance matrix are reviewable. A follow-up may implement the private
-reference against this proposed contract and use it to produce the missing evidence. Executable
+Contract intent, acceptance matrix and provisional private assessor are reviewable. Executable
 P01 **freeze and admission** are not yet supported: sibling audits are independent reports on
-other heads; retained-vector verification is not full ancestor replay; exact canonical
-ID/schema/capacity and same-head all-result privacy tests are
-absent. No provisional reference may publish a supported action, open P02 selection, or enter
+other heads; full nonterminal/transition proof, P01 input and event, capacity bounds, outward
+identity, and same-head all-result privacy tests are absent. No provisional reference may publish a supported action, open P02 selection, or enter
 native ordinal-two consumption before those gates close on one reviewed head. P02 and P03 remain
 separate even after P01 passes.

@@ -190,23 +190,31 @@ def placement_shape(state, content, pair):
     return True
 
 
-def private_candidate(state, pair):
+def private_candidate_preimage(state, pair):
     actor, defender = pair
-    identity = dict(contractVersion=1, creationBinding=state["world"]["creationBinding"],
-                    cycle=state["activeCycle"], cycleId=state["cycleId"],
-                    position=state["sequencePosition"], stateVersion=state["stateVersion"],
-                    prefix=state["prefix"], basis="voluntary-adjacent",
-                    targetLocationId=defender["currentLocationId"],
-                    attackerOriginalSide=state["activeCycle"]["actingSide"],
-                    defenderOriginalSide=("commonwealth" if state["activeCycle"]["actingSide"] == "axis" else "axis"),
-                    attackerElementId=actor["elementId"], defenderElementId=defender["elementId"],
-                    attackerComponentId=actor["components"][0]["componentId"],
-                    defenderComponentId=defender["components"][0]["componentId"],
-                    attackerRepresentationId=next(x["representationId"] for x in state["world"]["representations"]
-                                                  if x["boundElementIds"] == [actor["elementId"]]),
-                    defenderRepresentationId=next(x["representationId"] for x in state["world"]["representations"]
-                                                  if x["boundElementIds"] == [defender["elementId"]]))
-    data = SCHEMA["candidateIdentityDomain"].encode("ascii") + b"\0" + canonical(identity)
+    side = state["activeCycle"]["actingSide"]
+    representations = {item["boundElementIds"][0]: item["representationId"]
+                       for item in state["world"]["representations"]}
+    values = dict(contractVersion=1, creationBinding=state["world"]["creationBinding"],
+                  cycleId=state["cycleId"], positionId=state["sequencePosition"]["positionId"],
+                  stateVersion=state["stateVersion"], prefix=state["prefix"],
+                  basis="voluntary-adjacent", targetLocationId=defender["currentLocationId"],
+                  attackerOriginalSide=side, attackerElementId=actor["elementId"],
+                  attackerComponentId=actor["components"][0]["componentId"],
+                  attackerRepresentationId=representations[actor["elementId"]],
+                  attackerLocationId=actor["currentLocationId"],
+                  defenderOriginalSide="commonwealth" if side == "axis" else "axis",
+                  defenderElementId=defender["elementId"],
+                  defenderComponentId=defender["components"][0]["componentId"],
+                  defenderRepresentationId=representations[defender["elementId"]],
+                  defenderLocationId=defender["currentLocationId"])
+    fields = SCHEMA["privateCandidatePreimageFields"]
+    require(len(fields) == len(set(fields)) and set(fields) == set(values))
+    return canonical({field: values[field] for field in fields})
+
+
+def private_candidate(state, pair):
+    data = SCHEMA["candidateIdentityDomain"].encode("ascii") + b"\0" + private_candidate_preimage(state, pair)
     return "p01." + hashlib.sha256(data).hexdigest()
 
 

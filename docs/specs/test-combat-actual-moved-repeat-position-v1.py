@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Focused genuine-source tests for the private P01 assessment reference."""
 import copy
+import hashlib
 import importlib.util
 import json
 from pathlib import Path
@@ -71,6 +72,22 @@ class P01ReferenceTests(unittest.TestCase):
         self.assertEqual(first, second)
         self.assertTrue(first["privateCandidateId"].startswith("p01."))
         self.assertNotIn(first["privateCandidateId"], str(first["publicActions"]))
+
+    def test_private_identity_matches_frozen_preimage_vector(self):
+        source, ledgers, r03_ledger = self.armed
+        state = r03.replay(source, ledgers, r03_ledger)[2]
+        pair = p01.physical_shape(state, p01.selected_content())[1]
+        golden = FIXTURE["privateCandidateGolden"]
+        self.assertEqual(36, golden["rowIndex"])
+        self.assertEqual(p01.SCHEMA["privateCandidatePreimageFields"],
+                         list(json.loads(golden["preimageCanonicalUtf8"])))
+        expected = "p01." + hashlib.sha256(
+            p01.SCHEMA["candidateIdentityDomain"].encode("ascii") + b"\0"
+            + golden["preimageCanonicalUtf8"].encode("ascii")).hexdigest()
+        self.assertEqual(golden["candidateId"], expected)
+        self.assertEqual(golden["preimageCanonicalUtf8"].encode("ascii"),
+                         p01.private_candidate_preimage(state, pair))
+        self.assertEqual(golden["candidateId"], p01.assess(source, ledgers, r03_ledger)["privateCandidateId"])
 
     def test_ledger_mutation_rejects_before_classification(self):
         source, ledgers, r03_ledger = self.armed
