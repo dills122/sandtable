@@ -551,6 +551,9 @@ class CoreThirdShardTests(unittest.TestCase):
         'Cna.Core.Tests.Campaigns.CombatActualRepeatedMovementCompletionContractTests',
         'Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionTests',
         'Cna.Core.Tests.Campaigns.CombatActualRepeatedBreakdownCompletionContractTests',
+        'Cna.Core.Tests.Campaigns.CombatActualMovedContinuationContractTests',
+        'Cna.Core.Tests.Campaigns.CombatActualRepeatedMovementContractTests',
+        'Cna.Core.Tests.Campaigns.CombatActualPaidAssaultContractTests',
     )
 
     def setUp(self):
@@ -721,6 +724,8 @@ class CoreFourthShardTests(unittest.TestCase):
     classes = (
         'Cna.Core.Tests.Campaigns.CombatActualMovedCycleControlTests',
         'Cna.Core.Tests.Campaigns.CombatActualMovedCycleControlContractTests',
+        'Cna.Core.Tests.Campaigns.CombatActualMovedAssaultContractTests',
+        'Cna.Core.Tests.Campaigns.CombatActualPostAssaultContinuationRetryTests',
     )
 
     def setUp(self):
@@ -785,7 +790,7 @@ class CoreFourthPreparedProofTests(unittest.TestCase):
         plan = partition.load_partition(self.inventory, SHA, '10.0.400', 'local')
         with self.assertRaises(ValueError): partition.execution_command('core-d', Path('/tmp/control/core-d'))
         command = partition.execution_command('core-d', Path('/tmp/control/core-d'), plan)
-        self.assertEqual(command[-3:], ['--filter-class', *CoreFourthShardTests.classes])
+        self.assertEqual(command[-(len(CoreFourthShardTests.classes) + 1):], ['--filter-class', *CoreFourthShardTests.classes])
 
 class CoreFourthCoverageFailureTests(unittest.TestCase):
     def setUp(self):
@@ -829,5 +834,71 @@ class SuiteFinalizationBudgetTests(unittest.TestCase):
         self.assertEqual(minutes, 15)
         self.assertGreaterEqual(minutes * 60, deadline + 120 + 60)
         self.assertNotIn('core-b', suites.JOBS)
+
+class MeasuredClassBalanceTests(unittest.TestCase):
+    moves = {
+        'core-c': (
+            'Cna.Core.Tests.Campaigns.CombatActualMovedContinuationContractTests',
+            'Cna.Core.Tests.Campaigns.CombatActualRepeatedMovementContractTests',
+            'Cna.Core.Tests.Campaigns.CombatActualPaidAssaultContractTests',
+        ),
+        'core-d': (
+            'Cna.Core.Tests.Campaigns.CombatActualMovedAssaultContractTests',
+            'Cna.Core.Tests.Campaigns.CombatActualPostAssaultContinuationRetryTests',
+        ),
+    }
+
+    def setUp(self):
+        fixture = CoreRowPartitionTests(); fixture.setUp()
+        self.rows = list(fixture.rows)
+        self.moved = {}
+        for shard, classes in self.moves.items():
+            for cls in classes:
+                methods = [cls + '.Initial', cls + '.Future']
+                rows = {('Cna.Core.Tests', method, method + '(index: ' + str(index) + ')')
+                        for method in methods for index in [0, 7]}
+                self.rows = [row for row in self.rows if row[1].rsplit('.', 1)[0] != cls]
+                self.rows.extend(sorted(rows)); self.moved[cls] = rows
+
+    def test_measured_classes_move_whole_without_changing_a_or_old_transfer(self):
+        plan = partition.core_partition(self.rows)
+        for shard, classes in self.moves.items():
+            for cls in classes:
+                with self.subTest(cls=cls):
+                    self.assertTrue(self.moved[cls] <= plan[shard])
+                    for other in partition.CORE_SHARDS:
+                        if other != shard: self.assertFalse(self.moved[cls] & plan[other])
+        self.assertEqual(plan['core-a'], {row for row in self.rows if row[1] in partition.SELECTORS and row[2] not in set(plan['transferred'])})
+        parts = [plan[shard] for shard in partition.CORE_SHARDS]
+        self.assertEqual(set.union(*parts), set(self.rows))
+        for i, rows in enumerate(parts):
+            for other in parts[i + 1:]: self.assertFalse(rows & other)
+        self.assertEqual(plan, partition.core_partition(list(reversed(self.rows))))
+
+    def test_measured_classes_bind_exact_include_and_complement_filters(self):
+        plan = partition.core_partition(self.rows)
+        excluded = partition.partition_filters('core-b', plan)
+        excluded = excluded[excluded.index('--filter-not-class') + 1:]
+        for shard, classes in self.moves.items():
+            included = partition.partition_filters(shard, plan)
+            self.assertEqual(included[0], '--filter-class')
+            for cls in classes:
+                self.assertIn(cls, included[1:]); self.assertIn(cls, excluded)
+            self.assertTrue(all('*' not in cls for cls in included[1:]))
+
+    def test_unknown_and_similarly_named_classes_still_enter_b(self):
+        for classes in self.moves.values():
+            for cls in classes:
+                method = cls + 'Extra.NewMethod'
+                row = ('Cna.Core.Tests', method, method + '(index: 9)')
+                plan = partition.core_partition(self.rows + [row])
+                self.assertIn(row, plan['core-b'])
+                self.assertEqual(sum(row in plan[s] for s in partition.CORE_SHARDS), 1)
+
+    def test_missing_measured_class_fails_closed(self):
+        for classes in self.moves.values():
+            for cls in classes:
+                with self.subTest(cls=cls), self.assertRaises(ValueError):
+                    partition.core_partition([r for r in self.rows if r[1].rsplit('.', 1)[0] != cls])
 
 if __name__ == '__main__': unittest.main()
