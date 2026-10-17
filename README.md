@@ -157,6 +157,9 @@ or durable save; MAP-08/09 must map and authorize outward requests before exposi
 MAP-08A adds development-only, loopback-guarded operator bootstrap and process-local seat-session
 plumbing to `Cna.OrleansHost`. Its grant issuer is trusted-host-only until creation commits a
 campaign and returns the MAP-04 response; no browser creation or grant path is enabled yet. The
+temporary session store caps admission at 256 live sessions, expires unredeemed operator sessions
+after 15 minutes and seat sessions after two hours, and returns `503` when full. Cross-site
+navigation cannot mint a replacement operator cookie. The
 `/api/v1/campaigns/{campaignId}/view` route returns `503 unavailable` for an authorized seat until
 MAP-08B can project a complete, coherent MAP-04 audience view with outward legal-action IDs. The
 private MAP-07 legal-action bytes never cross HTTP. This is an ingress foundation, not connected

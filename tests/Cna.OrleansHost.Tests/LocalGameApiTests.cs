@@ -32,6 +32,10 @@ public sealed class LocalGameApiTests
             var hostile = new HttpRequestMessage(HttpMethod.Get, "/api/v1/bootstrap");
             hostile.Headers.TryAddWithoutValidation("Origin", "https://attacker.invalid");
             Assert.Equal(HttpStatusCode.Forbidden, (await Send(client, hostile)).StatusCode);
+            var crossSiteNavigation = new HttpRequestMessage(HttpMethod.Get, "/api/v1/bootstrap");
+            crossSiteNavigation.Headers.TryAddWithoutValidation("Sec-Fetch-Site", "cross-site");
+            Assert.Equal(HttpStatusCode.Forbidden,
+                (await Send(client, crossSiteNavigation)).StatusCode);
             var rebound = new HttpRequestMessage(HttpMethod.Get, "/api/v1/bootstrap");
             rebound.Headers.Host = "attacker.invalid";
             Assert.Equal(HttpStatusCode.Forbidden, (await Send(client, rebound)).StatusCode);
@@ -102,6 +106,31 @@ public sealed class LocalGameApiTests
                 .GetProperty("sessionGeneration").GetString());
             Assert.Equal(HttpStatusCode.Unauthorized,
                 (await Send(client, Get("/api/v1/campaigns/host-rsh-001/session", seatCookie))).StatusCode);
+            var secondCookie = switched.Headers.GetValues("Set-Cookie").Single().Split(';')[0];
+            var active = await Send(client, Get("/api/v1/campaigns/host-rsh-001/session", secondCookie));
+            Assert.Equal(HttpStatusCode.OK, active.StatusCode);
+            Assert.Contains("\"seat\":\"commonwealth\"",
+                await active.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+            var secondBootstrap = await Send(client, Get("/api/v1/bootstrap", secondCookie));
+            var secondCsrf = (await JsonDocument.ParseAsync(
+                await secondBootstrap.Content.ReadAsStreamAsync(TestContext.Current.CancellationToken),
+                cancellationToken: TestContext.Current.CancellationToken)).RootElement
+                .GetProperty("csrfToken").GetString()!;
+            var leave = new HttpRequestMessage(HttpMethod.Delete,
+                "/api/v1/campaigns/host-rsh-001/seat");
+            leave.Headers.TryAddWithoutValidation("Cookie", secondCookie);
+            leave.Headers.TryAddWithoutValidation("X-Sandtable-CSRF", secondCsrf);
+            Assert.Equal(HttpStatusCode.NoContent, (await Send(client, leave)).StatusCode);
+            Assert.Equal(HttpStatusCode.Unauthorized,
+                (await Send(client, Get("/api/v1/campaigns/host-rsh-001/session", secondCookie)))
+                .StatusCode);
+
+            var store = app.Services.GetRequiredService<LocalSessionStore>();
+            for (var i = 0; i < LocalSessionStore.MaxSessions; i++)
+                Assert.NotNull(store.Bootstrap(null));
+            Assert.Equal(HttpStatusCode.ServiceUnavailable,
+                (await client.GetAsync("/api/v1/bootstrap", TestContext.Current.CancellationToken))
+                .StatusCode);
         }
         finally { await app.StopAsync(TestContext.Current.CancellationToken); }
     }
@@ -111,12 +140,27 @@ public sealed class LocalGameApiTests
     {
         var clock = new ManualClock();
         var store = new LocalSessionStore(clock);
-        var owner = store.Bootstrap(null);
-        var other = store.Bootstrap(null);
+        var owner = store.Bootstrap(null)!;
+        var other = store.Bootstrap(null)!;
         var grants = store.IssueGrants(owner.OperatorId, "host-rsh-001");
         Assert.Null(store.Redeem(other, "host-rsh-001", grants.Axis));
         clock.Advance(TimeSpan.FromMinutes(11));
         Assert.Null(store.Redeem(owner, "host-rsh-001", grants.Axis));
+    }
+
+    [Fact]
+    public void AnonymousSessionsHaveBoundedCapacityAndExpire()
+    {
+        var clock = new ManualClock();
+        var store = new LocalSessionStore(clock);
+        var first = store.Bootstrap(null)!;
+        for (var index = 1; index < LocalSessionStore.MaxSessions; index++)
+            Assert.NotNull(store.Bootstrap(null));
+        Assert.Null(store.Bootstrap(null));
+        Assert.Equal(first, store.Bootstrap(first.Token));
+        clock.Advance(TimeSpan.FromMinutes(16));
+        Assert.Null(store.Find(first.Token));
+        Assert.NotNull(store.Bootstrap(null));
     }
 
     private static Task<HttpResponseMessage> Send(HttpClient client, HttpRequestMessage request) =>

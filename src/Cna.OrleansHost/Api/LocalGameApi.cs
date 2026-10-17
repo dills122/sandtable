@@ -30,6 +30,7 @@ internal static class LocalGameApi
         api.MapGet("/bootstrap", (HttpContext context, LocalSessionStore store) =>
         {
             var session = store.Bootstrap(context.Request.Cookies[Cookie]);
+            if (session is null) return ApiError(StatusCodes.Status503ServiceUnavailable, "unavailable");
             SetCookie(context, session.Token);
             return Results.Json(new { contractVersion = 1, csrfToken = session.CsrfToken });
         });
@@ -105,6 +106,8 @@ internal static class LocalGameApi
 
     private static bool IsSameOrigin(HttpContext context)
     {
+        var fetchSite = context.Request.Headers["Sec-Fetch-Site"].ToString();
+        if (fetchSite is not ("" or "same-origin" or "none")) return false;
         var origin = context.Request.Headers.Origin.ToString();
         if (string.IsNullOrEmpty(origin)) return true;
         return Uri.TryCreate(origin, UriKind.Absolute, out var value)
