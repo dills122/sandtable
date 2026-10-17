@@ -43,10 +43,10 @@ workflow changed.
 
 ## Scheduling and outstanding gates
 
-307 new Release-measured row identities extend the scheduling manifest from 2,912 to 3,219 rows;
-194 existing classes stay byte-for-byte preserved and the two new classes bring it to 196. The
+307 new Release-measured R03 row identities extend the merged manifest from 2,916 to 3,223 rows;
+195 existing classes stay intact and the two R03 classes bring it to 197. The
 300-row class measured 536,031 ms summed row time and splits into five process groups. The seven
-focused rows measured 14,550 ms. A single Release parity process was sampled at 442–601 MiB RSS;
+focused rows most recently measured 12,854 ms. A single Release parity process was sampled at 442–601 MiB RSS;
 this is not peak or hosted capacity proof.
 
 Exact-head installed discovery on rebased commit `2baccb6409781093b30c6bf8eb73f3d6a852ff92`
@@ -58,3 +58,21 @@ hashes still matched the schema and native codec; frozen schema/verifier SHA and
 matched. Fresh independent engineering review and hosted CI are required before native acceptance.
 Public Combat, broader profiles, subsequent Combat execution and full-loop closure remain outside
 this boundary.
+
+## Independent review correction
+
+Fresh review of PR #216 found that out-of-range numeric leaves under borrowed R02 Proof and
+R03 Control could be remapped to shape error `CMB-MRB-001`; frozen verifier requires numeric
+`CMB-MRB-002`. The native-only correction classifies six primitive numeric kinds locally and
+walks borrowed Proof's R02 Base/Control grammar before invoking the predecessor reader. Regression
+checks now include `futureObligations[].eligibleScope.gameTurn=116`, a borrowed Proof nested
+`gameTurn` overflow, all six primitive overflows, a wrong-type float and JSON `-0`. The focused
+Release class passes 7/7 on the rebased branch; latest XML SHA-256 is
+`df8867becd7587b091fdf61fb29b5ee3dd46743965ab01febb5e35aee3e54e6b`.
+The 300-row Release parity was completed on the earlier native head. The review correction changes
+malformed numeric validation; representative valid terminal rows pass in the focused class after
+that correction. Hosted CI on the updated head remains the full parity gate.
+
+The later rebase onto main `f0266be` brought four MAP-06 provisional timing rows. The manifest
+retains them, all 2,912 original baseline weights and the 307 R03 measured row identities. Frozen
+R03 schema/verifier and all 108 physical runtime pins still match after this rebase.

@@ -87,9 +87,15 @@ public sealed class CombatActualMovedRepeatBreakdownCompletionTests
         Assert.Equal("CMB-MRB-001", Assert.Throws<JsonException>(() => CampaignCombatActualMovedRepeatBreakdownCompletionCodec.Object(duplicate, "Source")).Message);
         var overflow = Encoding.ASCII.GetBytes("{\"contractVersion\":2147483648,\"movementCompletionSourceCanonicalUtf8\":\"x\",\"breakdownEventCanonicalUtf8\":[]}");
         Assert.Equal("CMB-MRB-002", Assert.Throws<JsonException>(() => CampaignCombatActualMovedRepeatBreakdownCompletionCodec.Object(overflow, "Source")).Message);
-        Assert.Equal("CMB-MRB-002", Assert.Throws<JsonException>(() => Codec.Canonical(JsonNode.Parse("116")!, "futureTurn")).Message);
+        foreach (var (kind, literal) in new[]
+        {
+            ("int", "2147483648"), ("long", "9223372036854775808"),
+            ("signedInt", "-2147483649"), ("futureTurn", "116"),
+            ("differential", "3"), ("ulong", "18446744073709551616")
+        })
+            Assert.Equal("CMB-MRB-002", Assert.Throws<JsonException>(() => Codec.Canonical(JsonNode.Parse(literal)!, kind)).Message);
         Assert.Equal("CMB-MRB-001", Assert.Throws<JsonException>(() => Codec.Canonical(JsonNode.Parse("1.0")!, "futureTurn")).Message);
-        Assert.Equal("CMB-MRB-002", Assert.Throws<JsonException>(() => Codec.Canonical(JsonNode.Parse("18446744073709551616")!, "ulong")).Message);
+        Assert.Equal("0", Encoding.ASCII.GetString(Codec.Canonical(JsonNode.Parse("-0")!, "ulong")));
         var c = new CompletionContext(0, 1, "paid");
         foreach (var input in c.Inputs) { var next = Apply(c, input); Retain(c, next, input); }
         var l = Ledgers(c); var source = Codec.Canonical(new JsonObject

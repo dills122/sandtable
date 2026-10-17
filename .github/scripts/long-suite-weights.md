@@ -83,22 +83,22 @@ PY
 
 ## R03 native supplemental measurement (October 17, 2026)
 
-The R03 private Core branch adds 307 exact discovered row identities in two classes. The 2,912
-existing row weights and 194 class entries are byte-for-byte preserved. The 300-row native parity
+The R03 private Core branch adds 307 exact discovered row identities in two classes. The 2,912 original baseline rows plus four MAP-06 provisional rows and all 195 existing
+class entries are preserved. The 300-row native parity
 class measured 536,031 ms in a successful local Release xUnit XML report and is split into five
-process groups; seven focused acceptance/rejection cases measured 14,550 ms and remain one class.
-The manifest now has 3,219 rows and 196 classes. These measurements are local timing hints, not
-hosted latency acceptance. No provisional rows were added.
+process groups; seven focused acceptance/rejection cases most recently measured 12,854 ms and remain one class.
+The merged manifest now has 3,223 rows and 197 classes. These measurements are local timing hints,
+not hosted latency acceptance. R03 added no provisional rows; the four MAP-06 rows remain labelled.
 
 - Runner: .NET 10 Microsoft.Testing.Platform, Release Core DLL SHA-256
   `c307c80634f4682fdd9892d2aa40fbab7a071bd33fdc76fe42a06b24a1870e11`.
 - Parity command: `dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-restore --filter 'FullyQualifiedName~CombatActualMovedRepeatBreakdownParityTests' --report-xunit-xml --results-directory /tmp/r03-native-parity-xml -v:q`. Result: 300/300 passed, 8m58s wall. XML SHA-256
   `74e86dee0b6a44a33a67131c680ba61403fa1e580c47b8146483633b1781d7af`.
-- Focused command: `dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-restore --filter 'FullyQualifiedName~CombatActualMovedRepeatBreakdownCompletionTests' --report-xunit-xml --results-directory /tmp/r03-native-focused-release-xml -v:q`. Result: 7/7 passed, 15.7s wall. XML SHA-256
-  `eec23f4d489ee076a39d5ee93388d600245d4555871789413e2ee8c330ad7a77`.
+- Focused command: `dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-restore --filter 'FullyQualifiedName~CombatActualMovedRepeatBreakdownCompletionTests' --report-xunit-xml --results-directory /tmp/r03-native-focused-release-xml -v:q`. Result on the reviewed numeric-fix branch: 7/7 passed, 14.5s wall. XML SHA-256
+  `df8867becd7587b091fdf61fb29b5ee3dd46743965ab01febb5e35aee3e54e6b`.
 - Single Release parity process sampled about 442–601 MiB RSS while running. This is observed
   process memory, not a peak or hosted capacity proof. Existing CI job count (12) and resource
-  limits remain unchanged; five new process groups increase the prepared group count to 61.
+  limits remain unchanged; five R03 process groups are added.
 
 The exact installed discovery and allocation reconciliation are recorded in the R03 native review
 evidence; hosted CI remains a separate acceptance gate.
@@ -108,3 +108,9 @@ found 3,219 ordinary Core rows plus 325 frozen R02 rows in 20 groups. All 307 ne
 were discovered (300 parity, seven focused); the manifest has no missing or extra row hashes.
 `make_plan` assigned every ordinary Core row exactly once into 61 groups across the unchanged
 12 CI jobs, including five R03 parity groups of 59/61/60/60/60 rows.
+
+After the independent review found numeric error-code drift, the native codec now classifies all
+six R03 numeric leaves directly and traverses borrowed R02 Proof numeric leaves before delegated
+canonicalization. The seven focused rows were remeasured from the successful Release XML above;
+only those seven R03 weights changed. Four MAP-06 provisional rows and all unrelated weights were
+preserved through the rebase onto main `f0266be`.
