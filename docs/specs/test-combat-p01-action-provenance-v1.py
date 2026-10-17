@@ -95,6 +95,35 @@ class P01ActionProvenanceTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.check(changed, request)
 
+    def test_paid_target_history_is_prior_only_and_identity_bound(self):
+        state, request = self.rows[0]
+        self.assertEqual('provisional-empty', self.check(state, request)['physicalShape'])
+        changes = []
+        bad = copy.deepcopy(state)
+        bad['targetUses'].append(copy.deepcopy(bad['priorCycleTargetUses'][0]))
+        changes.append(bad)
+        bad = copy.deepcopy(state)
+        bad['priorCycleTargetUses'].clear()
+        changes.append(bad)
+        bad = copy.deepcopy(state)
+        bad['priorCycleTargetUses'][0]['targetLocationId'] = 'axis-rear'
+        changes.append(bad)
+        bad = copy.deepcopy(state)
+        bad['priorCycleTargetUses'][0]['segmentId'] = 'other-segment'
+        changes.append(bad)
+        bad = copy.deepcopy(state)
+        bad['attackHistory'][0]['cycleId'] = bad['cycleId']
+        changes.append(bad)
+        bad = copy.deepcopy(state)
+        bad['attackHistory'][0]['attacker']['originalSide'] = 'commonwealth'
+        changes.append(bad)
+        bad = copy.deepcopy(state)
+        bad['world']['settlements'][0]['commitmentId'] = 'other-commitment'
+        changes.append(bad)
+        for index, changed in enumerate(changes):
+            with self.subTest(case=index), self.assertRaisesRegex(ValueError, 'paid'):
+                self.check(changed, request)
+
     def test_alternate_selected_content_and_weather_area_mutations_reject(self):
         state, request = self.rows[36]
         alternatives = []

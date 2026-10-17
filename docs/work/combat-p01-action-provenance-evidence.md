@@ -26,8 +26,11 @@ independently computed provisional physical shape, never used as an authority in
 - The target hex contains exactly the selected opposing defender; the actor is
   elsewhere. A provisional positive also has an adjacent feature-free edge,
   no current or prior segment target use, no attack history, no carried future
-  obligation and no movement exclusion. A paid historical target use remains
-  historical and cannot be reinterpreted as a fresh loaded attack.
+  obligation and no movement exclusion. A paid row must have no current segment
+  target use and exactly one prior use, attack-history record and settlement.
+  Their target, segment, commitment, original-cycle ID, actors and stage must
+  agree with the authenticated current defender and original-unit identities.
+  That prior paid attack cannot be reinterpreted as a fresh loaded attack.
 - Pinned selected Content has only two infantry components, so no alternate
   **selected-content unit or weapon component** can enter this bounded pair.
   One battalion on each occupied hex is below the mandatory ZOC assault
@@ -55,9 +58,10 @@ partition, publish a supported-empty result, or activate P02/P03.
 
 ## Local result
 
-- `python3 docs/specs/test-combat-p01-action-provenance-v1.py`: five tests passed,
+- `python3 docs/specs/test-combat-p01-action-provenance-v1.py`: six tests passed,
   including mutated creation/cycle identity, movement membership, representation,
-  target/obligation history, alternate component and Weather-area negatives.
+  current/prior paid target and settlement history, alternate component and
+  Weather-area negatives.
 - `python3 docs/specs/verify-combat-p01-action-provenance-v1.py
   /Users/dsteele/.codex/worktrees/combat-p01-inventory/p01-evidence`:
   300 authenticated rows; 44 provisional positive, 256 provisional empty;

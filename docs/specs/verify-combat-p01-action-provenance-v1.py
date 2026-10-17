@@ -120,6 +120,27 @@ def check_selected_structure(state, content, request):
     edges = {frozenset((edge['firstLocationId'], edge['secondLocationId']))
              for edge in content['edges'] if edge['features'] == []}
     adjacent = frozenset((actor_hex, target)) in edges
+    if state['profile'] == 'paid':
+        # The previous ordinal's paid assault is history, not a use of this
+        # ordinal-two segment. Tie the preserved target to its authentic
+        # commitment, original-cycle history and settlement before declaring
+        # a physical empty shape for the ammunitionless actor.
+        prior = state['priorCycleTargetUses']
+        history = state['attackHistory']
+        settlements = world['settlements']
+        require(state['targetUses'] == [] and len(prior) == len(history) ==
+                len(settlements) == 1 and state['cycleId'] != state['closure']['cycleId'],
+                'paid current versus prior target history')
+        prior, history, settlement = prior[0], history[0], settlements[0]
+        require(prior['targetLocationId'] == history['targetLocationId'] == target and
+                prior['segmentId'] == history['segmentId'] and
+                prior['commitmentId'] == history['commitmentId'] == settlement['commitmentId'] and
+                history['cycleId'] == state['closure']['cycleId'] and
+                history['attacker'] == settlement['attacker'] == references[actor['elementId']] and
+                history['defender'] == settlement['defender'] == references[defender['elementId']] and
+                history['gameTurn'] == settlement['gameTurn'] == cycle['gameTurn'] and
+                history['operationStage'] == settlement['operationStage'] == cycle['operationStage'],
+                'paid prior assault identity and target')
     if state['profile'] == 'armed' and adjacent:
         require(state['targetUses'] == state['priorCycleTargetUses'] ==
                 state['attackHistory'] == [] and world['futureObligations'] == [] and
