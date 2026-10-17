@@ -1,6 +1,6 @@
 # R03: authentic moved repeat Breakdown completion
 
-**Status:** private reference freeze candidate; exact-head reference gates pass, review/CI open.
+**Status:** frozen private reference; additive native Core consumer implemented with 300/300 local Release parity and 7/7 focused checks. Native review and hosted CI open.
 **Base:** `9aaeacd` (`origin/main`, October 16, 2026).
 **Branch:** `codex/combat-r03-breakdown-contract`.
 
@@ -46,9 +46,9 @@ against the corrected checkpoint vectors using the final verifier; the same audi
 vectors passed. Six of six representative fixture tests matched retained canonical cases. The
 schema now marks a freeze candidate with `closureFrozen=true`. Its exact-head 300-row replay,
 vector audit and 788-cut audit passed on the changed schema, as did six fixture tests, focused
-negatives, physical fault matrix and structural capacity. Fresh independent review and hosted CI
-remain before the reference can be declared frozen or native work can begin. See the evidence
-checkpoint for hashes and commands.
+negatives, physical fault matrix and structural capacity. The reference was frozen after independent review and hosted CI in PR #211. Its additive private
+native consumer follows in a separate branch; see the native review evidence for local parity,
+source-pin and scheduling measurements. Fresh native review and hosted CI remain open.
 
 ## Boundary
 

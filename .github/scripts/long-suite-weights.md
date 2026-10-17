@@ -80,3 +80,25 @@ PY
 
 4. When only new cases were measured, preserve existing measured entries and merge only the exact new identity hashes and their class metadata. If temporary conservative estimates are necessary for local development, label every affected hash in `provisional_rows`, explain the estimate and source, and keep measured/provisional provenance separate. Such estimates require explicit review and do not establish the latency goal. Do not silently label estimates as run38830848442 measurements.
 5. Run the allocation/process regression suite, installed discovery and complete actual-row reconciliation. Inspect the generated plan: all rows exactly once, no empty matrix jobs, every long/ordinary suite bounded, R02 support isolation unchanged. A changed group/job count requires a matching reviewed workflow and cost model. The recipe is not permission to increase concurrency, memory or timeouts. Freeze the source/manifest together, perform author self-review and fresh review before a separately authorized hosted observation. Full required CI wall, in-DAG queue and runner-minute tradeoffs decide performance acceptance.
+
+## R03 native supplemental measurement (October 17, 2026)
+
+The R03 private Core branch adds 307 exact discovered row identities in two classes. The 2,912
+existing row weights and 194 class entries are byte-for-byte preserved. The 300-row native parity
+class measured 536,031 ms in a successful local Release xUnit XML report and is split into five
+process groups; seven focused acceptance/rejection cases measured 14,550 ms and remain one class.
+The manifest now has 3,219 rows and 196 classes. These measurements are local timing hints, not
+hosted latency acceptance. No provisional rows were added.
+
+- Runner: .NET 10 Microsoft.Testing.Platform, Release Core DLL SHA-256
+  `c307c80634f4682fdd9892d2aa40fbab7a071bd33fdc76fe42a06b24a1870e11`.
+- Parity command: `dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-restore --filter 'FullyQualifiedName~CombatActualMovedRepeatBreakdownParityTests' --report-xunit-xml --results-directory /tmp/r03-native-parity-xml -v:q`. Result: 300/300 passed, 8m58s wall. XML SHA-256
+  `74e86dee0b6a44a33a67131c680ba61403fa1e580c47b8146483633b1781d7af`.
+- Focused command: `dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-restore --filter 'FullyQualifiedName~CombatActualMovedRepeatBreakdownCompletionTests' --report-xunit-xml --results-directory /tmp/r03-native-focused-release-xml -v:q`. Result: 7/7 passed, 15.7s wall. XML SHA-256
+  `eec23f4d489ee076a39d5ee93388d600245d4555871789413e2ee8c330ad7a77`.
+- Single Release parity process sampled about 442–601 MiB RSS while running. This is observed
+  process memory, not a peak or hosted capacity proof. Existing CI partition count and resource
+  limits remain unchanged.
+
+The exact installed discovery and allocation reconciliation are recorded in the R03 native review
+evidence; hosted CI remains a separate acceptance gate.
