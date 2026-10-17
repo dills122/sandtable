@@ -1,5 +1,7 @@
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
+using System.Text.Json;
 using Cna.Core.Actions;
 using Cna.Core.Campaigns;
 using Cna.Core.Exercises;
@@ -211,8 +213,35 @@ public sealed class TemporaryCampaignGrainTests
                         CampaignHostAdapter.QuerySystem(direct).ActionSet!),
                     (await grain.QueryAsync(CampaignActionAudience.System)).LegalActions);
             }
+            var checkpoint = CampaignExercises.QueryCheckpoint(direct);
+            Assert.Equal("land.position.operation-1.first-player.movement-and-combat.combat.position-determination",
+                checkpoint.PositionId);
+            var stored = host.Services.GetRequiredService<TemporaryCampaignMemoryStore>()
+                .Get("host-rsh-001");
+            var snapshotBefore = CampaignExercises.Reconstruct(stored.Committed!).ReconstructedSnapshotBytes!;
+            var randomBefore = RandomBytes(snapshotBefore);
+            foreach (var audience in Enum.GetValues<CampaignActionAudience>())
+            {
+                var legal = CampaignLegalActionSerializer.DeserializeCanonical(
+                    (await grain.QueryAsync(audience)).LegalActions!);
+                Assert.Empty(legal.Candidates);
+            }
+            var forgedCombat = new CampaignActionSubmission(1, checkpoint.CampaignId,
+                checkpoint.StateVersion, checkpoint.PositionId, CampaignActionAudience.Axis,
+                "sha256:" + new string('0', 64));
+            Assert.False(CampaignHostAdapter.Submit(direct, forgedCombat).IsAccepted);
+            Assert.Equal(TemporaryCampaignStatus.Rejected,
+                (await grain.SubmitAsync("seat-1", "forged-combat", CampaignActionAudience.Axis,
+                    CampaignActionSubmissionSerializer.SerializeCanonical(forgedCombat))).Status);
             Assert.Equal(TemporaryCampaignStatus.UnsupportedPhase,
                 (await grain.AdvanceSystemAsync(4)).Status);
+            var snapshotAfter = CampaignExercises.Reconstruct(stored.Committed!).ReconstructedSnapshotBytes!;
+            Assert.Equal(randomBefore, RandomBytes(snapshotAfter));
+            Assert.Equal(snapshotBefore,
+                snapshotAfter);
+            foreach (var audience in Enum.GetValues<CampaignActionAudience>())
+                Assert.Empty(CampaignLegalActionSerializer.DeserializeCanonical(
+                    (await grain.QueryAsync(audience)).LegalActions!).Candidates);
             Assert.Equal(13, CampaignExercises.QueryCheckpoint(direct).StateVersion);
         }
         finally { await host.StopAsync(TestContext.Current.CancellationToken); }
@@ -262,4 +291,10 @@ public sealed class TemporaryCampaignGrainTests
         "rules-lab.content.breakdown-truck.v1",
         "sha256:646e76e69ecceb82216b37d84e950928099acd8a3cb04b51526d0fe631e512ee",
         "breakdown-truck-lab");
+
+    private static byte[] RandomBytes(byte[] snapshot)
+    {
+        using var document = JsonDocument.Parse(snapshot);
+        return Encoding.UTF8.GetBytes(document.RootElement.GetProperty("randomState").GetRawText());
+    }
 }
