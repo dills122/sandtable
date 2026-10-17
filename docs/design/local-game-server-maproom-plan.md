@@ -1,6 +1,6 @@
 # Local game server and Angular Maproom implementation plan
 
-Date: 2026-10-16. Status: MAP-01 workspace, MAP-02 foundation and MAP-03A fixture implemented;
+Date: 2026-10-16. Status: MAP-01 workspace, MAP-02 foundation and MAP-03A/B fixtures implemented;
 MAP-04 browser schema, fixtures and generated client drafted; connected gameplay pending.
 Audience: contributors implementing the local rules-lab host and browser client.
 
@@ -171,10 +171,12 @@ protects normal application use; it is not protection from another operator cont
 components and app-owned patterns from that same source. Core/utils are deferred until needed.
 See the [workspace guide](../../src/Cna.Maproom/README.md) for pinned versions, local commands and CI.
 
-MAP-01, the MAP-02 foundation and MAP-03A are implemented. The shell selects eight synthetic
+MAP-01, the MAP-02 foundation and MAP-03A/B are implemented. The shell selects eight synthetic
 formations, locates and fits a bounded camera, collapses its roster and adjusts its inspector.
-Keyboard focus brings a clipped counter into view at zoom. The local Formly draft remains a
-presentation specimen. MAP-03B/C remain open for complete order lifecycle, filter/sort and records.
+Keyboard focus brings a clipped counter into view at zoom. MAP-03B's Formly draft stages a
+per-formation review and delayed fixture result; lost replies reconcile once from an in-memory
+receipt. No server action, legal-order validation or durable receipt exists. MAP-03C remains open
+for filter/sort and records.
 
 ## Small implementation slices
 
@@ -204,6 +206,24 @@ are developed; no slice may silently absorb new game rules or activate private C
 | MAP-15 Durable provider proof | 14 | Bounded PostgreSQL candidate adapter and isolated process-restart harness | Real kill/restart before/after commit; stale-head fencing; unknown commit; checkpoint lag/corruption; request dedupe retention |
 | MAP-16 Durable host and resume | 13, 15, hosting gate | Integrate chosen provider/off-turn coordinator; saved campaign listing and resume UI | Committed state and receipts survive full process restart; no duplicate effects; failed recovery cannot expose partial truth |
 | MAP-17 Local playtest gate | 13; 16 for durable mode | One-command launch, runbook, focused CI/browser gates, retained supported-path playthrough | Clean setup; create/order/handoff/reconnect; exact replay; durable mode also quit/resume; clear unsupported-phase stop |
+
+### Browser and Field Atlas acceptance
+
+Playwright is the standing Maproom interaction gate. Add cases with each slice, keeping the
+fixture and connected suites distinct. Review screenshots at a desktop map scale and a narrow
+screen; axe, type checks and unit tests complement interaction checks but do not replace them.
+
+| Surface | Current MAP-03A/B browser proof | Next acceptance as slices land |
+| --- | --- | --- |
+| Map and camera | Eight counters; map/list/ledger selection; locate, fit, zoom bounds; keyboard focus pans a clipped counter into view; accepted position updates counter, inspector, roster and ledger | Test pan and zoom controls, selection retention, counter hit targets and responsive overlays with the connected audience view; avoid hidden-unit disclosure at every zoom |
+| Order path | Keyboard selection, Formly destination, review and issue; pending holds confirmed position and locks submitted draft; origin survives selection switch; one unresolved order blocks another issue with visible recovery; accepted, rejected, stale, lost reply and unsupported fixtures | Add server-backed invalid/stale/rejected receipts, duplicate submit prevention, real readback/reconnect and explicit no-legal-action copy |
+| Layout and accessibility | 320–2560px, 200% text, short viewport, WCAG A/AA axe and reachable controls | Cover each new panel in default/focus/loading/error/success states; check tab order, essential shortcuts when introduced, map keyboard alternatives and reduced motion |
+| Design coherence | Field Atlas tokens/components and Material Formly controls appear in Storybook and the workspace | Compare map, inspector, ledger and diary using the same type, color, spacing, status and focus language; keep scenario/terrain context readable and inviting rather than a dense administrative dashboard |
+| Privacy and sessions | Synthetic own-side fixture only | Check each audience, safe notifications, stale subscriptions, seat handoff DOM/storage clearance and reconnect without hidden-event or hidden-count leaks |
+
+Production map controls or shortcuts require a discoverable keyboard equivalent and a browser test
+for both the pointer and keyboard path. The staged MAP-03B reconnect is an in-memory demonstration,
+not evidence for MAP-12 network recovery.
 
 MAP-14 contract work and MAP-15 isolated provider research can proceed without a production
 hosting claim. MAP-16 requires accepted public Core activation020–021, one verified Combat Runner

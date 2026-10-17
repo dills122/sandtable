@@ -173,6 +173,13 @@ uncertain until receipt/readback reconciliation; never blindly reissue. The stan
 stages this flow with an in-memory delayed result and one accepted recovery example; it does not
 prove actual network, idempotency or durability behavior.
 
+Maproom is a public-facing campaign game. Keep a visible scenario title, terrain context and
+formation identity as players move from map to order review; use concise operational language and
+clear consequences instead of filling the workspace with generic dashboard metrics. Field Atlas
+type, color, spacing, focus and status treatments should read as one system across map, inspector,
+ledger and diary. Review both wide and narrow screenshots alongside browser keyboard, camera,
+order and accessibility checks in the [delivery plan](local-game-server-maproom-plan.md).
+
 Phase context expresses actual sequential decisions. Do not introduce a generic End Turn button,
 batch-order queue or simultaneous resolution without the governing contracts. Preview controls
 can stage an unsupported Combat-entry boundary, but this is not a phase transition in the engine.
@@ -272,5 +279,5 @@ states, app-owned Formly pattern and operations shell. Run `just field-atlas` lo
 The HTML style study remains historical design intent. Evolve shared styles in the Angular
 library and document them in Storybook; do not maintain a second active token implementation in
 the prototype. App-specific patterns stay in `maproom-alpha`; extract further components only
-when real reuse emerges. MAP-03A's operational map fixture is implemented; MAP-03B/C workflows
-and campaign integration are pending.
+when real reuse emerges. MAP-03A's operational map and MAP-03B's local order workflow fixtures
+are implemented; MAP-03C records and campaign integration are pending.
