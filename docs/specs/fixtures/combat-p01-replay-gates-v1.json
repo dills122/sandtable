@@ -1,0 +1,16 @@
+{
+  "admittedRows": 0,
+  "maximumCanonicalAssessmentBytes": 695,
+  "provisionalEmpty": 256,
+  "provisionalPositive": 44,
+  "rowHashRoot": "23480d1a1b90d587e43f1aaf8fd0555a58e5fe37b10a069ff449506d6c3e89b0",
+  "rows": 300,
+  "sampleHashes": {
+    "0": "f44fce0d020fad25491a61a857583e396b39bb39a9535196f69bf589a5223c64",
+    "168": "b98879d4196009b4defbe701743a8dec6eeb31f353c1f79132743beb02de10e8",
+    "299": "12dbe74014ed7911af714ccffe3c4e98fdcbbb25467f77eab60fcfa117a0ed03",
+    "36": "4c6c133bcf1d0c4c5b517e570d405a5d357bcbc6bb86e17a15a49a620c264a53"
+  },
+  "sampleMutationRejections": 100,
+  "sampleRetries": 4
+}
