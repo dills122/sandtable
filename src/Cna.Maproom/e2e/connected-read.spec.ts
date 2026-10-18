@@ -60,7 +60,17 @@ test('local read lane shows only the returned audience view and never submits an
             stageId: 'initial',
             decision: 'human',
           },
-          locations: [{ locationId: 'loc-1', label: 'North road', x: 35, y: 45 }],
+          locations: [
+            { locationId: 'loc-1', label: 'North road', x: -1, y: -1 },
+            { locationId: 'loc-2', label: 'North', x: 0, y: -1 },
+            { locationId: 'loc-3', label: 'North east', x: 1, y: -1 },
+            { locationId: 'loc-4', label: 'West', x: -1, y: 0 },
+            { locationId: 'loc-5', label: 'Center', x: 0, y: 0 },
+            { locationId: 'loc-6', label: 'East', x: 1, y: 0 },
+            { locationId: 'loc-7', label: 'South west', x: -1, y: 1 },
+            { locationId: 'loc-8', label: 'South', x: 0, y: 1 },
+            { locationId: 'loc-9', label: 'South road', x: 1, y: 1 },
+          ],
           ownFormations: [
             {
               formationId: 'own-1',
@@ -70,7 +80,9 @@ test('local read lane shows only the returned audience view and never submits an
               orderStatusLabel: 'Awaiting orders',
             },
           ],
-          apparentContacts: [],
+          apparentContacts: [
+            { contactId: 'contact-1', label: 'Unidentified presence', locationId: 'loc-9' },
+          ],
           legalActions: [],
           formationLedger: [
             {
@@ -103,6 +115,22 @@ test('local read lane shows only the returned audience view and never submits an
   await page.getByRole('button', { name: 'Create and enter Axis' }).click();
   await expect(page.getByRole('heading', { name: 'Situation map' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'First group' }).first()).toBeVisible();
+  await expect(page.locator('.connected-map-point')).toHaveCount(9);
+  const map = await page.getByRole('region', { name: 'Audience-safe campaign map' }).boundingBox();
+  const northwest = await page.locator('[data-location-id="loc-1"]').boundingBox();
+  const center = await page.locator('[data-location-id="loc-5"]').boundingBox();
+  const southeast = await page.locator('[data-location-id="loc-9"]').boundingBox();
+  expect(map && northwest && center && southeast).toBeTruthy();
+  expect(northwest!.x).toBeGreaterThan(map!.x);
+  expect(northwest!.y).toBeGreaterThan(map!.y);
+  expect(northwest!.x).toBeLessThan(center!.x);
+  expect(northwest!.y).toBeLessThan(center!.y);
+  expect(center!.x).toBeLessThan(southeast!.x);
+  expect(center!.y).toBeLessThan(southeast!.y);
+  expect(southeast!.x + southeast!.width).toBeLessThan(map!.x + map!.width);
+  expect(southeast!.y + southeast!.height).toBeLessThan(map!.y + map!.height);
+  await expect(page.locator('[data-location-id="loc-1"]')).toContainText('First group');
+  await expect(page.locator('[data-location-id="loc-9"]')).toContainText('Unidentified presence');
   await expect(page.getByRole('heading', { name: 'War Diary' })).toBeVisible();
   await expect(page.getByText('Own side briefing.')).toBeVisible();
   await expect(page.getByText('private-opposing-grant')).toHaveCount(0);
