@@ -115,6 +115,60 @@ class ExplicitRbaTests(unittest.TestCase):
         self.assertIsNone(cancelled["declineReceiptId"])
         self.assertIsNotNone(cancelled["cancellationReceiptId"])
 
+    def test_clock_unavailable_before_open_cancels_without_synthetic_decision(self):
+        root = self.axis
+        source = reference.source_for(root[0]); ledger = []; events = []
+        for kind in ("close-no-assault-selection", "complete-no-assault-step",
+                     "complete-no-assault-step"):
+            before = reference.replay(source, root[1], root[2], ledger)
+            raw = reference.input_bytes(reference.expected_input(before, kind))
+            source, ledger, event, _ = reference.apply(source, root[1], root[2], ledger, raw)
+            events.append(json.loads(event)["eventType"])
+        cut = reference.replay(source, root[1], root[2], ledger)
+        self.assertEqual(2, cut["stepIndex"])
+        self.assertIsNone(cut["rbaDecision"])
+        unavailable_open = reference.input_bytes(reference.expected_input(
+            cut, "open-rba-decision", now=None, available=False))
+        with self.assertRaises(ValueError):
+            reference.apply(source, root[1], root[2], ledger, unavailable_open)
+        premature_step = reference.input_bytes(reference.expected_input(
+            cut, "complete-no-assault-step"))
+        with self.assertRaises(ValueError):
+            reference.apply(source, root[1], root[2], ledger, premature_step)
+        claimed_expiry = reference.input_bytes(reference.expected_input(
+            cut, "cancel-rba", now=31000, available=True))
+        with self.assertRaises(ValueError):
+            reference.apply(source, root[1], root[2], ledger, claimed_expiry)
+        cancel = reference.input_bytes(reference.expected_input(
+            cut, "cancel-rba", now=None, available=False))
+        source, ledger, event, receipt = reference.apply(
+            source, root[1], root[2], ledger, cancel)
+        self.assertTrue(receipt.startswith("p01c."))
+        self.assertEqual("clock-unavailable-before-open", json.loads(event)["effect"]["proofKind"])
+        self.assertEqual((source, ledger, None, receipt), reference.apply(
+            source, root[1], root[2], ledger, cancel))
+        events.append(json.loads(event)["eventType"])
+        cancelled = reference.replay(source, root[1], root[2], ledger)
+        self.assertEqual("cancelled", cancelled["rbaOutcome"])
+        self.assertIsNone(cancelled["rbaDecision"])
+        self.assertIsNone(cancelled["rbaOpenReceiptId"])
+        self.assertIsNone(cancelled["declineReceiptId"])
+        self.assertEqual(receipt, cancelled["cancellationReceiptId"])
+        for _ in range(4):
+            before = reference.replay(source, root[1], root[2], ledger)
+            raw = reference.input_bytes(reference.expected_input(
+                before, "complete-no-assault-step", available=False))
+            source, ledger, event, _ = reference.apply(source, root[1], root[2], ledger, raw)
+            events.append(json.loads(event)["eventType"])
+        terminal = reference.replay(source, root[1], root[2], ledger)
+        self.assertEqual(reference.SCHEMA["eventOrders"]["preOpenCancelled"], events)
+        self.assertTrue(terminal["closed"])
+        self.assertTrue(terminal["position"]["positionId"].endswith(".reserve-release"))
+        self.assertFalse(terminal["admitted"])
+        self.assertEqual([], terminal["publicActions"])
+        self.assertEqual(cut["parent"]["world"], terminal["parent"]["world"])
+        self.assertEqual(cut["parent"]["randomState"], terminal["parent"]["randomState"])
+
     def test_pending_missing_wrong_actor_movement_and_stale_decline_fail_closed(self):
         root = self.axis
         source = reference.source_for(root[0]); ledger = []

@@ -100,7 +100,7 @@ def check_input(value):
             and re.fullmatch(r"land\.position\.[a-z0-9.-]{1,240}", value["fromPositionId"])
             and (value["previousReceiptId"] is None or any(
                 identifier(value["previousReceiptId"], prefix)
-                for prefix in ("mrbc.", "p01s.", "p01n.", "p01o.", "p01r.")))
+                for prefix in ("mrbc.", "p01s.", "p01n.", "p01o.", "p01r.", "p01c.")))
             and (value["decisionId"] is None or identifier(value["decisionId"], "p01d."))
             and (value["admittedAtUnixMilliseconds"] is None or
                  type(value["admittedAtUnixMilliseconds"]) is int and
@@ -305,7 +305,7 @@ def transition(prior, value):
     if kind == "close-no-assault-selection":
         require(s["stepIndex"] == -1 and not s["receipts"]
                 and value["actor"] == "system" and value["decisionId"] is None
-                and value["participant"] is None and now is None and value["clockAvailable"], "004")
+                and value["participant"] is None and now is None, "004")
         event_type, receipt_kind, proof = "combat-selection-closed", "selection", "zero-assault-only"
         to_position = s["position"]
         s["stepIndex"] = 0
@@ -313,7 +313,7 @@ def transition(prior, value):
         step = s["stepIndex"]
         require(0 <= step < 6 and value["actor"] == "system"
                 and value["decisionId"] is None and value["participant"] is None
-                and now is None and value["clockAvailable"], "004")
+                and now is None, "004")
         if step == 2:
             require(s["rbaOutcome"] in ("declined", "cancelled"), "005")
         elif step > 2:
@@ -354,15 +354,26 @@ def transition(prior, value):
         event_type, receipt_kind, proof = "combat-retreat-before-assault-declined", "decline", "accepted-decline"
         to_position = s["position"]
     elif kind == "cancel-rba":
-        require(s["stepIndex"] == 2 and decision is not None and s["rbaOutcome"] is None
-                and value["decisionId"] == decision["decisionId"]
-                and value["actor"] == "system" and value["participant"] is None
-                and ((not value["clockAvailable"] and now is None) or
-                     (value["clockAvailable"] and type(now) is int and
-                      steps.inputs.clock_gate(decision["timing"], now, True)
-                      in ("unavailable", "expired"))), "005")
+        require(s["stepIndex"] == 2 and s["rbaOutcome"] is None
+                and value["actor"] == "system" and value["participant"] is None, "005")
+        if decision is None:
+            require(s["barrageReceiptId"] == s["lastReceiptId"]
+                    and s["selectionReceiptId"] is not None
+                    and s["rbaOpenReceiptId"] is None
+                    and value["decisionId"] is None
+                    and not value["clockAvailable"] and now is None, "005")
+            event_type, receipt_kind, proof = (
+                "combat-retreat-decision-preopen-cancelled", "preOpenCancel",
+                "clock-unavailable-before-open")
+        else:
+            require(value["decisionId"] == decision["decisionId"]
+                    and ((not value["clockAvailable"] and now is None) or
+                         (value["clockAvailable"] and type(now) is int and
+                          steps.inputs.clock_gate(decision["timing"], now, True)
+                          in ("unavailable", "expired"))), "005")
+            event_type, receipt_kind, proof = (
+                "combat-retreat-decision-cancelled", "decline", "cancel-without-decline")
         s["rbaOutcome"] = "cancelled"
-        event_type, receipt_kind, proof = "combat-retreat-decision-cancelled", "decline", "cancel-without-decline"
         to_position = s["position"]
     else:
         raise Invalid("CMB-P01-RBA-002")
@@ -429,6 +440,8 @@ def replay(source_bytes, parent_ledgers, r03_ledger, own_ledger):
                 receipt("selection" if value["kind"] == "close-no-assault-selection"
                         else "step" if value["kind"] == "complete-no-assault-step"
                         else "rbaOpen" if value["kind"] == "open-rba-decision"
+                        else "preOpenCancel" if actual["eventType"] ==
+                        "combat-retreat-decision-preopen-cancelled"
                         else "decline", {k: actual[k] for k in SCHEMA["eventFields"][:-1]})
                 and expected == recorded.encode("ascii"), "006")
     return state

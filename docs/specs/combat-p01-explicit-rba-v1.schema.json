@@ -14,7 +14,8 @@
   "inputKinds": ["close-no-assault-selection", "complete-no-assault-step", "open-rba-decision", "decline-rba", "cancel-rba"],
   "eventOrders": {
     "acceptedDecline": ["combat-selection-closed", "combat-step-completed:position-determination", "combat-step-completed:barrage", "combat-retreat-decision-opened", "combat-retreat-before-assault-declined", "combat-step-completed:retreat-before-assault", "combat-step-completed:force-assignment", "combat-step-completed:anti-armor", "combat-step-completed:close-assault"],
-    "cancelledDecision": ["combat-selection-closed", "combat-step-completed:position-determination", "combat-step-completed:barrage", "combat-retreat-decision-opened", "combat-retreat-decision-cancelled", "combat-step-completed:retreat-before-assault", "combat-step-completed:force-assignment", "combat-step-completed:anti-armor", "combat-step-completed:close-assault"]
+    "cancelledDecision": ["combat-selection-closed", "combat-step-completed:position-determination", "combat-step-completed:barrage", "combat-retreat-decision-opened", "combat-retreat-decision-cancelled", "combat-step-completed:retreat-before-assault", "combat-step-completed:force-assignment", "combat-step-completed:anti-armor", "combat-step-completed:close-assault"],
+    "preOpenCancelled": ["combat-selection-closed", "combat-step-completed:position-determination", "combat-step-completed:barrage", "combat-retreat-decision-preopen-cancelled", "combat-step-completed:retreat-before-assault", "combat-step-completed:force-assignment", "combat-step-completed:anti-armor", "combat-step-completed:close-assault"]
   },
   "stepNames": ["position-determination", "barrage", "retreat-before-assault", "force-assignment", "anti-armor", "close-assault"],
   "receiptDomains": {
@@ -22,10 +23,11 @@
     "step": "sandtable.combat.p01.explicit-rba.step-receipt.v1",
     "rbaOpen": "sandtable.combat.p01.explicit-rba.open-receipt.v1",
     "decline": "sandtable.combat.p01.explicit-rba.decline-receipt.v1",
+    "preOpenCancel": "sandtable.combat.p01.explicit-rba.preopen-cancel-receipt.v1",
     "decision": "sandtable.combat.p01.explicit-rba.decision.v1",
     "zeroAssault": "sandtable.combat.p01.zero-assault-certificate.v1"
   },
-  "receiptPrefixes": {"selection": "p01s.", "step": "p01n.", "rbaOpen": "p01o.", "decline": "p01r.", "decision": "p01d.", "zeroAssault": "p01z."},
+  "receiptPrefixes": {"selection": "p01s.", "step": "p01n.", "rbaOpen": "p01o.", "decline": "p01r.", "preOpenCancel": "p01c.", "decision": "p01d.", "zeroAssault": "p01z."},
   "limits": {"inputBytes": 4096, "eventBytes": 8192, "sourceBytes": 2097152, "controlBytes": 2097152, "ledgerEvents": 9, "depth": 16},
   "admitted": false,
   "publicActions": []

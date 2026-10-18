@@ -48,7 +48,9 @@ alone is never authority.
 The input `actor` is a trusted admission record supplied by the authority layer, **not** an
 untrusted client's self-declared side. This private reference checks the defender original side
 and original UnitKey against the authenticated World. It supplies no hosted seat, transport or
-public action. The RBA deadline uses the pinned timing configuration whose hash equals the
+public action. Clock availability and timestamps are also trusted admission facts, never
+client-selected cancellation flags. The RBA deadline uses the pinned timing configuration whose
+hash equals the
 active cycle policy digest. It opens once at the actual RBA position, after the exact Barrage
 receipt. Accepted decline requires the exact decision ID, own participant, defender actor and a
 trusted monotonic time strictly before the deadline. A wrong-side, changed-participant, late,
@@ -57,27 +59,35 @@ after the deadline, or trusted clock unavailability or regression below the pers
 opening timestamp, creates a distinct cancellation receipt;
 there is no inferred decline. The deadline cannot be refreshed on replay or retry.
 
-The schema fixes two distinct nine-event orders: `acceptedDecline` has an explicit defender
-decline at event five, while `cancelledDecision` has a System cancellation at that position.
-Both share the other eight steps:
+The schema fixes three distinct event orders: nine-event `acceptedDecline` has an explicit
+defender decline at event five; nine-event `cancelledDecision` has a System cancellation there;
+eight-event `preOpenCancelled` cancels immediately after Barrage if the trusted clock is
+unavailable before the decision can open. No decision ID, deadline, or synthetic opening is
+created on the pre-opening path. The paths share these ordered steps:
 
 1. System closes zero-assault selection using the authenticated certificate.
 2. System completes Position Determination and Barrage as no-assault structural steps.
-3. System opens the defender-owned RBA decision at the RBA position.
-4. Defender explicitly declines RBA, or System cancels the decision on deadline/unavailability.
+3. System opens the defender-owned RBA decision at the RBA position when trusted clock is
+   available. If it is unavailable before opening, System records pre-opening cancellation.
+4. For an opened decision, defender explicitly declines RBA, or System cancels on
+   deadline/unavailability.
 5. System completes RBA, Force Assignment, Anti-Armor and Close Assault, arriving at the **same
    cycle and slot's Reserve Release**.
 
+Structural System step completions carry no timestamp and may proceed after clock unavailability;
+they cannot create a defender decline or renew a decision window.
+
 There is no second segment-completed event. Selection and each step have separate `p01s.` and
 `p01n.` receipts; RBA opening and decline/cancellation use `p01o.` and `p01r.`. Receipt hashes
-are domain-separated SHA-256 of the canonical unsigned event. One accepted event increments
+are domain-separated SHA-256 of the canonical unsigned event. Pre-opening cancellation has its
+own `p01c.` receipt. One accepted event increments
 the state version and exact prefix once. Every input binds cycle, prior version/prefix, current
 position and preceding receipt. Accepted identical input retry returns the original receipt and
 adds no event. Source and input replay must agree at every cut. World, RNG, CP, ammo, TOE,
 Weather, custody, attack history, target use, original R03 bytes, and all other resource facts
 remain identical. Arriving at Reserve Release does not release a unit or advance the cycle.
 
-The `cancel-rba` path reaches the same structural no-assault end with a cancellation receipt and
+Both `cancel-rba` paths reach the same structural no-assault end with a cancellation receipt and
 **no decline receipt**. A pending decision cannot complete RBA. Movement is never silently
 converted to decline. The reference output remains `admitted=false` and `publicActions=[]` for
 every state, including completed private traces.
@@ -98,7 +108,7 @@ python3 -B docs/specs/verify-combat-p01-explicit-rba-v1.py /Users/dsteele/.codex
 ```
 
 The first command exercises both authentic actor orientations, explicit decline, timeout
-cancellation, receipt retry, nonterminal replay, ancestry and event mutations, wrong actor,
+cancellation before and after decision opening, receipt retry, nonterminal replay, ancestry and event mutations, wrong actor,
 late decision, attempted RBA movement and adjacent positive rejection. The second replays the
 original pinned 300-row R03 catalogue with source PDF pins, then checks the narrower 244/56
 certificate partition. Neither command proves full P01 admission.
