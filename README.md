@@ -158,8 +158,12 @@ no observable pending phase; provider-backed publication still needs fencing and
 It has no browser route, seat authorization, Core terminal classification, public Combat action,
 or durable save; MAP-08/09 must map and authorize outward requests before exposing it.
 MAP-08A adds development-only, loopback-guarded operator bootstrap and process-local seat-session
-plumbing to `Cna.OrleansHost`. Its grant issuer is trusted-host-only until creation commits a
-campaign and returns the MAP-04 response; no browser creation or grant path is enabled yet. The
+plumbing to `Cna.OrleansHost`. A bounded MAP-08B route now creates the one admitted Rules9
+fixture through the trusted grain and returns one retained grant pair for exact operator/request
+retries. It reserves inactive grant capacity before creation, activates grants only after the
+committed reply, and reconciles an uncertain bounded grain call through the same request ID.
+The original grant IDs remain bound to that response; an exact retry never renews expired grants.
+It omits `configurationHash` because this fixture has no separate configuration pin. The
 temporary session store caps admission at 256 live sessions, expires unredeemed operator sessions
 after 15 minutes and seat sessions after two hours, and returns `503` when full. Cross-site
 navigation cannot mint a replacement operator cookie; bootstrap requires matching `Origin` or
@@ -169,7 +173,7 @@ after expiry. The
 after trusted in-process creation. It uses an admitted public layout and opaque formation,
 contact, and action handles; private MAP-07 legal-action bytes never cross HTTP. A later cut,
 missing catalog fact, or unsupported action returns `503 unavailable` while approved War Diary
-source is pending. Browser creation/grants and action submission are still absent.
+source is pending. Action submission and complete post-step reads are still absent.
 The [MAP-08B1 side projection prerequisite](docs/specs/maproom-side-projection-prerequisites-v1.md)
 records missing typed fields, pinned presentation data, audience-safe diary and opaque action
 mapping that must precede the browser view.

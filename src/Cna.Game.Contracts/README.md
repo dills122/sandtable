@@ -1,8 +1,8 @@
 # Maproom browser contract v1
 
 `openapi.v1.json` is the outward HTTP source for the development-only rules lab. It defines
-browser-visible shapes, routes and errors; MAP-08/09 will implement handlers. The current package
-contains no campaign host or save/resume implementation. Intelligence protobuf and Core snapshots
+browser-visible shapes, routes and errors. MAP-08B implements one Development-only fixture
+creation/grant path; MAP-09 action handling and durable save/resume remain pending. Intelligence protobuf and Core snapshots
 remain separate contracts.
 
 ## Lifecycle
@@ -11,8 +11,10 @@ remain separate contracts.
    MAP-08A requires positive same-origin Fetch Metadata or matching `Origin`; requests with
    neither are denied. Bounded local session capacity returns typed `503 unavailable` when full.
 2. `GET /api/v1/fixtures` lists admitted public descriptors. `POST /api/v1/campaigns` uses one
-   fixture ID and unique request ID; the server binds ruleset, setup, content and configuration
-   hashes and returns `seatGrants.axis` and `seatGrants.commonwealth`, each a distinct short-lived,
+   fixture ID and unique request ID; the server binds ruleset, setup and content hashes, plus a
+   configuration hash only when the admitted fixture has a distinct configuration identity. The
+   current Rules9 lab has none, so its response omits `configurationHash`. It returns
+   `seatGrants.axis` and `seatGrants.commonwealth`, each a distinct short-lived,
    CSPRNG-issued opaque grant ID. These grants are operator-only and never appear in campaign
    listings. OpenAPI enforces exactly those two seat keys; the `x-distinct-values` constraint
    requires the MAP-08 host to reject equal grant IDs because OpenAPI 3.0 cannot compare values.

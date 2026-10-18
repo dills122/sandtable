@@ -115,8 +115,9 @@ session and an in-memory request record for the local rules lab. It is not Chron
 durability or a Maproom endpoint. The host-owned side summary is a private bridge, not a
 browser contract or a new authority source.
 MAP-08A's `Cna.OrleansHost/Api` is a local ingress seam for operator bootstrap and seat sessions.
-It does not create a browser campaign. A bounded MAP-08B `/view` adapter renders only the
-trusted-created initial rules-lab cut from an authorized seat; later cuts fail closed pending
+MAP-08B creation now binds the admitted Rules9 fixture, operator/request identity and one
+short-lived grant pair; the campaign remains process-local. A bounded `/view` adapter renders
+only the initial rules-lab cut from an authorized seat; later cuts fail closed pending
 approved diary projection.
 MAP-08B1 names the host-side prerequisite: typed permitted data and pinned presentation facts
 between Umpire's side cut and Maproom's outward DTO. It grants no new authority to Maproom.

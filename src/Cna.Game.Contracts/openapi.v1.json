@@ -3,7 +3,7 @@
   "info": {
     "title": "Sandtable Maproom Browser API",
     "version": "1.0.0",
-    "description": "MAP-04 outward contract. Schemas are audience-safe shapes, not Cna.Core snapshots. MAP-08A implements local bootstrap and seat-session plumbing; campaign creation and projected views remain pending."
+    "description": "MAP-04 outward contract. Schemas are audience-safe shapes, not Cna.Core snapshots. MAP-08A implements local bootstrap and seat sessions; MAP-08B has one Development-only fixture creation/grant path and a bounded initial view. Complete post-step views and action ingress remain pending."
   },
   "servers": [
     {
@@ -139,8 +139,38 @@
               }
             }
           },
+          "401": {
+            "description": "No current operator session",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Loopback, origin or CSRF denied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
           "409": {
             "description": "Request ID conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Temporary host or grant capacity unavailable",
             "content": {
               "application/json": {
                 "schema": {
@@ -671,8 +701,7 @@
           "scenarioId",
           "rulesetHash",
           "setupHash",
-          "contentHash",
-          "configurationHash"
+          "contentHash"
         ]
       },
       "CreateCampaignRequest": {
@@ -740,7 +769,6 @@
           "rulesetHash",
           "setupHash",
           "contentHash",
-          "configurationHash",
           "seatGrants"
         ]
       },
