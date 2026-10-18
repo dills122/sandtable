@@ -4,6 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve maproom-alpha --host 127.0.0.1 --port 4200",
+    "start:connected": "ng serve maproom-alpha --host 127.0.0.1 --port 4300 --proxy-config proxy.connected.json",
     "build": "npm run build:lib && ng build maproom-alpha",
     "build:lib": "ng build field-atlas",
     "test": "ng test maproom-alpha --watch=false && ng test field-atlas --watch=false",
