@@ -1,0 +1,34 @@
+{
+  "contractVersion": "combat-p01-surrender-rba-boundary-v0",
+  "status": "private-diagnostic-only",
+  "inputPropertyOrder": [
+    "contractVersion",
+    "cycleOrdinal",
+    "sourceTrigger",
+    "targetCohesionBefore",
+    "targetAmmunitionBefore",
+    "targetAmmunitionAfter",
+    "rbaOutcome",
+    "declineReceiptId",
+    "cancellationReceiptId",
+    "surrenderSettlementReceiptId"
+  ],
+  "sourceTriggers": [
+    "combat-position",
+    "existing-adjacency",
+    "enemy-moved-adjacent",
+    "close-assault-against-unit",
+    "anti-armor-assault-against-unit",
+    "barrage-against-unit",
+    "post-cost-settlement"
+  ],
+  "rbaOutcomes": ["unopened", "declined", "cancelled"],
+  "outputPropertyOrder": [
+    "sourceCondition",
+    "rbaCondition",
+    "automaticSurrenderSettlementProved",
+    "ordinalTwoRbaProofProved",
+    "admitted",
+    "publicActions"
+  ]
+}
