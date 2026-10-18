@@ -92,8 +92,9 @@ order identity is independent of selection; real completion must update the orig
 MAP-03B demonstrates this with local staged acceptance, rejection, stale and lost-reply states,
 without network or authoritative adjudication. MAP-03C projects accepted fixture results into a
 four-field ledger and selected/all-visible own-side War Diary, with shared selection and locate.
-The synthetic operations workspace now lets a pointer or touch drag enter bounded map exploration
-from the fitted view and offers a full-screen map with keyboard focus containment, Escape return
+The synthetic operations workspace pans by pointer or touch at the selected zoom without changing
+the scale; its hex overlay uses fixed-ratio screen units across normal and full-screen layouts.
+It offers a full-screen map with keyboard focus containment, Escape return
 and a selected-formation path back to orders. Formations and Orders own their header toggles;
 the larger inspector keeps draft, review, issue and recovery controls next to selected context.
 These controls alter browser presentation only and preserve the fixture authority labels.

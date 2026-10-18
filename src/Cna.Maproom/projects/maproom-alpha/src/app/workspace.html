@@ -98,7 +98,7 @@
       <div class="map-heading">
         <div>
           <h2 id="map-title">Situation map</h2>
-          <span class="fa-muted">Schematic · no scale · drag to explore</span>
+          <span class="fa-muted">Schematic · no scale · zoom in to pan</span>
         </div>
         <div class="map-controls" role="group" aria-label="Map camera controls">
           <button
@@ -149,7 +149,7 @@
         <strong>Move around the exercise</strong>
         <span><kbd>[</kbd> / <kbd>]</kbd> choose a formation</span>
         <span><kbd>L</kbd> locate selection · <kbd>0</kbd> fit map</span>
-        <span>Drag to pan (first drag zooms from fit) · touch or arrow keys pan</span>
+        <span>Drag to pan when zoomed · touch or arrow keys pan</span>
         <span><kbd>+</kbd> / <kbd>−</kbd> zoom · <kbd>?</kbd> help · <kbd>Esc</kbd> close</span>
       </div>
       <div
@@ -166,6 +166,14 @@
         (lostpointercapture)="onMapPointerEnd($event)"
       >
         <div class="map-scene" [style.transform]="store.cameraTransform()">
+          <svg class="hex-grid" aria-hidden="true" focusable="false">
+            <defs>
+              <pattern id="atlas-grid" width="90" height="52" patternUnits="userSpaceOnUse">
+                <path d="M15 0H45L60 26 45 52H15L0 26Z M60 26H90" />
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#atlas-grid)" />
+          </svg>
           <svg
             class="terrain"
             viewBox="0 0 800 560"
@@ -173,13 +181,6 @@
             role="img"
             aria-label="Illustrated coastal terrain, synthetic geography"
           >
-            <defs>
-              <pattern id="atlas-grid" width="90" height="52" patternUnits="userSpaceOnUse">
-                <path d="M15 0H45L60 26 45 52H15L0 26Z M60 26H90" />
-              </pattern>
-            </defs>
-            <rect width="800" height="560" class="land" />
-            <rect width="800" height="560" fill="url(#atlas-grid)" />
             <path class="sea" d="M0 0H800V75Q710 120 610 72T390 76 180 46 0 100Z" />
             <path class="road" d="M0 270Q200 195 360 265T620 210 800 190" />
             <g class="contours">
