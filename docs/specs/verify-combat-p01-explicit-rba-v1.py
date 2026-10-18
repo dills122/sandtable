@@ -357,9 +357,10 @@ def transition(prior, value):
         require(s["stepIndex"] == 2 and decision is not None and s["rbaOutcome"] is None
                 and value["decisionId"] == decision["decisionId"]
                 and value["actor"] == "system" and value["participant"] is None
-                and (not value["clockAvailable"] and now is None or
-                     value["clockAvailable"] and type(now) is int and
-                     now >= decision["timing"]["deadlineUnixMilliseconds"]), "005")
+                and ((not value["clockAvailable"] and now is None) or
+                     (value["clockAvailable"] and type(now) is int and
+                      steps.inputs.clock_gate(decision["timing"], now, True)
+                      in ("unavailable", "expired"))), "005")
         s["rbaOutcome"] = "cancelled"
         event_type, receipt_kind, proof = "combat-retreat-decision-cancelled", "decline", "cancel-without-decline"
         to_position = s["position"]
@@ -499,8 +500,9 @@ def audit(evidence_path):
                 zero_assault += 1
             index += 1
     require(index == len(keys) == 300 and zero_assault == 244 and excluded == 56, "007")
-    return dict(authenticatedRows=300, zeroAssaultOnly=244, otherRows=56,
-                publicActions=0, admittedRows=0)
+    # This audit classifies predecessor roots only. Admission and public-action
+    # invariants belong to executable twelfth-ledger trace tests, not this count.
+    return dict(authenticatedRows=300, zeroAssaultOnly=244, otherRows=56)
 
 
 if __name__ == "__main__":

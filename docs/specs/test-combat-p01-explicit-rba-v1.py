@@ -62,10 +62,9 @@ class ExplicitRbaTests(unittest.TestCase):
         self.assertTrue(terminal["position"]["positionId"].endswith(".reserve-release"))
         self.assertEqual("cancelled" if cancel else "declined", terminal["rbaOutcome"])
         self.assertEqual(9, len(events))
-        self.assertEqual(reference.SCHEMA["eventOrder"][:4], [
-            event["eventType"] for event in events[:4]])
-        self.assertEqual(reference.SCHEMA["eventOrder"][5:], [
-            event["eventType"] for event in events[5:]])
+        expected_order = reference.SCHEMA["eventOrders"]["cancelledDecision" if cancel
+                                                          else "acceptedDecline"]
+        self.assertEqual(expected_order, [event["eventType"] for event in events])
         self.assertEqual(initial["parent"]["world"], terminal["parent"]["world"])
         self.assertEqual(initial["parent"]["randomState"], terminal["parent"]["randomState"])
         self.assertEqual([], terminal["publicActions"])
@@ -92,6 +91,29 @@ class ExplicitRbaTests(unittest.TestCase):
         self.assertEqual("cancel-without-decline", events[4]["effect"]["proofKind"])
         self.assertIsNone(reference.replay(cuts[-1][0], self.axis[1], self.axis[2],
                                            cuts[-1][1])["declineReceiptId"])
+
+    def test_clock_regression_cancels_without_decline(self):
+        root = self.axis
+        source = reference.source_for(root[0]); ledger = []
+        for kind, now in [("close-no-assault-selection", None),
+                          ("complete-no-assault-step", None),
+                          ("complete-no-assault-step", None),
+                          ("open-rba-decision", 1000)]:
+            state = reference.replay(source, root[1], root[2], ledger)
+            raw = reference.input_bytes(reference.expected_input(state, kind, now=now))
+            source, ledger, _, _ = reference.apply(source, root[1], root[2], ledger, raw)
+        pending = reference.replay(source, root[1], root[2], ledger)
+        self.assertEqual(1000, pending["rbaDecision"]["timing"]["highWaterUnixMilliseconds"])
+        self.assertEqual("unavailable", reference.steps.inputs.clock_gate(
+            pending["rbaDecision"]["timing"], 999, True))
+        raw = reference.input_bytes(reference.expected_input(
+            pending, "cancel-rba", now=999, available=True))
+        source, ledger, event, _ = reference.apply(source, root[1], root[2], ledger, raw)
+        self.assertEqual("combat-retreat-decision-cancelled", json.loads(event)["eventType"])
+        cancelled = reference.replay(source, root[1], root[2], ledger)
+        self.assertEqual("cancelled", cancelled["rbaOutcome"])
+        self.assertIsNone(cancelled["declineReceiptId"])
+        self.assertIsNotNone(cancelled["cancellationReceiptId"])
 
     def test_pending_missing_wrong_actor_movement_and_stale_decline_fail_closed(self):
         root = self.axis

@@ -12,7 +12,10 @@
   "eventFields": ["contractVersion", "eventType", "campaignId", "rulesetHash", "configurationHash", "cycleId", "priorVersion", "stateVersion", "priorPrefix", "input", "effect", "receiptId"],
   "effectFields": ["proofKind", "fromPositionId", "toPositionId", "selectionReceiptId", "previousReceiptId", "decisionId", "deadlineUnixMilliseconds", "acceptedAtUnixMilliseconds", "worldHash", "randomHash"],
   "inputKinds": ["close-no-assault-selection", "complete-no-assault-step", "open-rba-decision", "decline-rba", "cancel-rba"],
-  "eventOrder": ["combat-selection-closed", "combat-step-completed:position-determination", "combat-step-completed:barrage", "combat-retreat-decision-opened", "combat-retreat-before-assault-declined", "combat-step-completed:retreat-before-assault", "combat-step-completed:force-assignment", "combat-step-completed:anti-armor", "combat-step-completed:close-assault"],
+  "eventOrders": {
+    "acceptedDecline": ["combat-selection-closed", "combat-step-completed:position-determination", "combat-step-completed:barrage", "combat-retreat-decision-opened", "combat-retreat-before-assault-declined", "combat-step-completed:retreat-before-assault", "combat-step-completed:force-assignment", "combat-step-completed:anti-armor", "combat-step-completed:close-assault"],
+    "cancelledDecision": ["combat-selection-closed", "combat-step-completed:position-determination", "combat-step-completed:barrage", "combat-retreat-decision-opened", "combat-retreat-decision-cancelled", "combat-step-completed:retreat-before-assault", "combat-step-completed:force-assignment", "combat-step-completed:anti-armor", "combat-step-completed:close-assault"]
+  },
   "stepNames": ["position-determination", "barrage", "retreat-before-assault", "force-assignment", "anti-armor", "close-assault"],
   "receiptDomains": {
     "selection": "sandtable.combat.p01.explicit-rba.selection-receipt.v1",

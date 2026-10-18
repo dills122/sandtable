@@ -26,7 +26,8 @@ adjacent. The certificate also checks defender CP headroom and a clear unoccupie
 it does not perform movement. The defender must have a real choice. The 12 adjacent paid/ammunitionless rows are
 outside this certificate; no blanket conversion of all 256 provisional-empty rows occurs.
 The pinned original 300-root audit replays every ancestor and finds exactly 244 qualifying
-nonadjacent rows, 56 excluded rows (44 adjacent armed and 12 adjacent paid), and zero admitted.
+nonadjacent rows and 56 excluded rows (44 adjacent armed and 12 adjacent paid). This audit
+classifies predecessor roots; executable trace tests check no admission or public actions.
 
 `CMB-POL-001` limits this bounded exercise to an explicit RBA **decline**; actual RBA movement
 remains unsupported. `CMB-POL-004` makes a missing/expired/unavailable defender response cancel
@@ -52,10 +53,13 @@ active cycle policy digest. It opens once at the actual RBA position, after the 
 receipt. Accepted decline requires the exact decision ID, own participant, defender actor and a
 trusted monotonic time strictly before the deadline. A wrong-side, changed-participant, late,
 stale, duplicate-different or movement command cannot create a decline. A System expiry at or
-after the deadline, or trusted clock unavailability, creates a distinct cancellation receipt;
+after the deadline, or trusted clock unavailability or regression below the persisted RBA
+opening timestamp, creates a distinct cancellation receipt;
 there is no inferred decline. The deadline cannot be refreshed on replay or retry.
 
-The accepted-decline trace has nine ordered events:
+The schema fixes two distinct nine-event orders: `acceptedDecline` has an explicit defender
+decline at event five, while `cancelledDecision` has a System cancellation at that position.
+Both share the other eight steps:
 
 1. System closes zero-assault selection using the authenticated certificate.
 2. System completes Position Determination and Barrage as no-assault structural steps.
