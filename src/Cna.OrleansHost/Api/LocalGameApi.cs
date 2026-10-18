@@ -128,7 +128,7 @@ internal static class LocalGameApi
             catch (JsonException) { return ApiError(StatusCodes.Status400BadRequest, "invalid-request"); }
             if (!Guid.TryParse(grantId, out _))
                 return ApiError(StatusCodes.Status400BadRequest, "invalid-request");
-            var next = store.Redeem(session, campaignId, grantId);
+            var next = await store.RedeemAsync(session, campaignId, grantId);
             if (next is null) return ApiError(StatusCodes.Status403Forbidden, "forbidden");
             SetCookie(context, next.Token);
             return Results.Json(SessionInfo(next));
@@ -141,14 +141,14 @@ internal static class LocalGameApi
                 return ApiError(StatusCodes.Status401Unauthorized, "unauthorized");
             return Results.Json(SessionInfo(session));
         });
-        api.MapDelete("/campaigns/{campaignId}/seat", (HttpContext context,
+        api.MapDelete("/campaigns/{campaignId}/seat", async (HttpContext context,
             LocalSessionStore store, string campaignId) =>
         {
             var session = store.Find(context.Request.Cookies[Cookie]);
             if (session is null || session.CampaignId != campaignId || session.Seat is null)
                 return ApiError(StatusCodes.Status401Unauthorized, "unauthorized");
             if (!ValidCsrf(context, session)) return ApiError(StatusCodes.Status403Forbidden, "forbidden");
-            if (!store.Relinquish(session, campaignId))
+            if (!await store.RelinquishAsync(session, campaignId))
                 return ApiError(StatusCodes.Status401Unauthorized, "unauthorized");
             context.Response.Cookies.Delete(Cookie, CookieOptions(context));
             return Results.NoContent();

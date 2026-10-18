@@ -134,13 +134,13 @@ public sealed class TemporaryCampaignGrainTests
             var operatorSession = sessions.Bootstrap(null)!;
             var grants = sessions.IssueGrants(operatorSession.OperatorId,
                 TemporaryCampaignGrain.FixtureCampaignId);
-            var axis = sessions.Redeem(operatorSession,
-                TemporaryCampaignGrain.FixtureCampaignId, grants.Axis)!;
+            var axis = (await sessions.RedeemAsync(operatorSession,
+                TemporaryCampaignGrain.FixtureCampaignId, grants.Axis))!;
             var commonwealthOperator = sessions.Bootstrap(null)!;
             var otherGrants = sessions.IssueGrants(commonwealthOperator.OperatorId,
                 TemporaryCampaignGrain.FixtureCampaignId);
-            var commonwealth = sessions.Redeem(commonwealthOperator,
-                TemporaryCampaignGrain.FixtureCampaignId, otherGrants.Commonwealth)!;
+            var commonwealth = (await sessions.RedeemAsync(commonwealthOperator,
+                TemporaryCampaignGrain.FixtureCampaignId, otherGrants.Commonwealth))!;
             var ingress = new TemporaryOutwardActionIngress(sessions,
                 host.Services.GetRequiredService<IGrainFactory>(),
                 host.Services.GetRequiredService<TemporaryCampaignAccess>());
@@ -197,12 +197,102 @@ public sealed class TemporaryCampaignGrainTests
                 (await grain.QueryAsync(CampaignActionAudience.Axis)).View);
             Assert.Equal(beforeStale.LegalActions,
                 (await grain.QueryAsync(CampaignActionAudience.Axis)).LegalActions);
-            Assert.True(sessions.Relinquish(axis, cut.CampaignId));
+            Assert.True(await sessions.RelinquishAsync(axis, cut.CampaignId));
             Assert.Equal(TemporaryCampaignStatus.Rejected,
                 (await ingress.FindRequestAsync(axis.Token,
                     cut.CampaignId, request.RequestId)).Status);
         }
         finally { await host.StopAsync(TestContext.Current.CancellationToken); }
+    }
+
+    [Fact]
+    public async Task SeatRelinquishmentWaitsForAdmittedActionCommit()
+    {
+        using var host = BuildHost();
+        await host.StartAsync(TestContext.Current.CancellationToken);
+        try
+        {
+            var grain = GetTrustedGrain(host);
+            await grain.CreateAsync("operator-1", "create-1");
+            await grain.AdvanceSystemAsync(3);
+            var sessions = new LocalSessionStore(TimeProvider.System);
+            var operatorSession = sessions.Bootstrap(null)!;
+            var grants = sessions.IssueGrants(operatorSession.OperatorId,
+                TemporaryCampaignGrain.FixtureCampaignId);
+            var axis = (await sessions.RedeemAsync(operatorSession,
+                TemporaryCampaignGrain.FixtureCampaignId, grants.Axis))!;
+            var cut = (await grain.Inner.QueryPrivateSideAsync(grain.Capability,
+                CampaignActionAudience.Axis, axis.Generation!)).Cut!;
+            var request = new TemporaryOutwardActionRequest(1, cut.CampaignId,
+                Guid.NewGuid().ToString("D"), axis.Generation!, cut.PositionId,
+                cut.Actions.Single(action => action.Kind == "act-first").OutwardActionId,
+                1, cut.ActionSetToken);
+            var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+            var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+            var inFlight = sessions.WithAuthorizedSeatAsync(axis.Token, cut.CampaignId,
+                async session =>
+                {
+                    entered.SetResult();
+                    await release.Task;
+                    return await grain.Inner.SubmitOutwardAsync(grain.Capability,
+                        new TemporaryAuthenticatedSeat(session.OperatorId, cut.CampaignId,
+                            CampaignActionAudience.Axis, session.Generation!), request);
+                }, new TemporaryOutwardActionReply(TemporaryCampaignStatus.Rejected, "unauthorized"));
+            await entered.Task;
+            var relinquish = sessions.RelinquishAsync(axis, cut.CampaignId);
+            Assert.False(relinquish.IsCompleted);
+            var lateAdmission = sessions.WithAuthorizedSeatAsync(axis.Token,
+                cut.CampaignId, _ => Task.FromResult(true), false);
+            Assert.Equal(cut.StateVersion,
+                (await grain.QueryAsync(CampaignActionAudience.Axis)).View!.StateVersion);
+            release.SetResult();
+            Assert.Equal(TemporaryCampaignStatus.Accepted, (await inFlight).Status);
+            Assert.True(await relinquish);
+            Assert.False(await lateAdmission);
+            Assert.Equal(cut.StateVersion + 1,
+                (await grain.QueryAsync(CampaignActionAudience.Axis)).View!.StateVersion);
+            var ingress = new TemporaryOutwardActionIngress(sessions,
+                host.Services.GetRequiredService<IGrainFactory>(),
+                host.Services.GetRequiredService<TemporaryCampaignAccess>());
+            Assert.Equal(TemporaryCampaignStatus.Rejected,
+                (await ingress.FindRequestAsync(axis.Token, cut.CampaignId,
+                    request.RequestId)).Status);
+            Assert.Equal(TemporaryCampaignStatus.Rejected,
+                (await ingress.SubmitAsync(axis.Token, request with
+                {
+                    RequestId = Guid.NewGuid().ToString("D"),
+                })).Status);
+        }
+        finally { await host.StopAsync(TestContext.Current.CancellationToken); }
+    }
+
+    [Fact]
+    public async Task SeatHandoffWaitsForAdmittedAction()
+    {
+        var sessions = new LocalSessionStore(TimeProvider.System);
+        var operatorSession = sessions.Bootstrap(null)!;
+        var grants = sessions.IssueGrants(operatorSession.OperatorId,
+            TemporaryCampaignGrain.FixtureCampaignId);
+        var axis = (await sessions.RedeemAsync(operatorSession,
+            TemporaryCampaignGrain.FixtureCampaignId, grants.Axis))!;
+        var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var inFlight = sessions.WithAuthorizedSeatAsync(axis.Token, axis.CampaignId!,
+            async _ =>
+            {
+                entered.SetResult();
+                await release.Task;
+                return true;
+            }, false);
+        await entered.Task;
+        var handoff = sessions.RedeemAsync(axis, axis.CampaignId!, grants.Commonwealth);
+        Assert.False(handoff.IsCompleted);
+        release.SetResult();
+        Assert.True(await inFlight);
+        var next = await handoff;
+        Assert.Equal("commonwealth", next!.Seat);
+        Assert.Null(sessions.Find(axis.Token));
+        Assert.NotEqual(axis.Generation, next.Generation);
     }
 
     private static CampaignHostPrivateSideCut Side(CampaignActionAudience side, long version,

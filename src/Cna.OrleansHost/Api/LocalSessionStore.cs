@@ -34,6 +34,7 @@ internal sealed class LocalSessionStore(TimeProvider clock)
         {
             SweepExpired();
             return cookie is not null && sessions.TryGetValue(cookie, out var found)
+                && found.ExpiresAt > clock.GetUtcNow()
                 ? found.Session : null;
         }
     }
@@ -58,7 +59,7 @@ internal sealed class LocalSessionStore(TimeProvider clock)
                 || entry.Session != session || session.Seat is not null)
                 return null;
             var pair = IssueGrantsLocked(session.OperatorId, campaignId, active: false);
-            sessions[session.Token] = entry with { ExpiresAt = clock.GetUtcNow().Add(OperatorLifetime) };
+            entry.ExpiresAt = clock.GetUtcNow().Add(OperatorLifetime);
             return pair;
         }
     }
@@ -105,46 +106,123 @@ internal sealed class LocalSessionStore(TimeProvider clock)
         return (axis, commonwealth);
     }
 
-    internal LocalSession? Redeem(LocalSession current, string campaignId, string grantId)
+    internal async Task<LocalSession?> RedeemAsync(LocalSession current,
+        string campaignId, string grantId)
     {
+        SessionEntry? entry;
         lock (gate)
         {
             SweepExpired();
-            if (!sessions.TryGetValue(current.Token, out var active) || active.Session != current
+            sessions.TryGetValue(current.Token, out entry);
+            if (entry?.Session != current || entry.ExpiresAt <= clock.GetUtcNow()
                 || !grants.TryGetValue(grantId, out var grant)
-                || !grant.Active || grant.OperatorId != current.OperatorId || grant.CampaignId != campaignId
-                || grant.ExpiresAt <= clock.GetUtcNow()) return null;
-            grants.Remove(grantId);
-            sessions.Remove(current.Token);
-            var next = current with
-            {
-                Token = Guid.NewGuid().ToString(),
-                CsrfToken = Guid.NewGuid().ToString(),
-                Generation = Guid.NewGuid().ToString(),
-                CampaignId = campaignId,
-                Seat = grant.Seat,
-            };
-            sessions.Add(next.Token, new SessionEntry(next, clock.GetUtcNow().Add(SeatLifetime)));
-            return next;
+                || !grant.Active || grant.OperatorId != current.OperatorId
+                || grant.CampaignId != campaignId || grant.ExpiresAt <= clock.GetUtcNow())
+                return null;
+            entry.RevocationsRequested++;
         }
+        await entry.AdmissionGate.WaitAsync();
+        try
+        {
+            lock (gate)
+            {
+                SweepExpired();
+                if (!sessions.TryGetValue(current.Token, out var active)
+                    || active != entry || active.Session != current
+                    || active.ExpiresAt <= clock.GetUtcNow()
+                    || !grants.TryGetValue(grantId, out var grant)
+                    || !grant.Active || grant.OperatorId != current.OperatorId
+                    || grant.CampaignId != campaignId
+                    || grant.ExpiresAt <= clock.GetUtcNow())
+                {
+                    entry.RevocationsRequested--;
+                    return null;
+                }
+                grants.Remove(grantId);
+                sessions.Remove(current.Token);
+                var next = current with
+                {
+                    Token = Guid.NewGuid().ToString(),
+                    CsrfToken = Guid.NewGuid().ToString(),
+                    Generation = Guid.NewGuid().ToString(),
+                    CampaignId = campaignId,
+                    Seat = grant.Seat,
+                };
+                sessions.Add(next.Token, new SessionEntry(next,
+                    clock.GetUtcNow().Add(SeatLifetime)));
+                return next;
+            }
+        }
+        finally { entry.AdmissionGate.Release(); }
     }
 
-    internal bool Relinquish(LocalSession current, string campaignId)
+    // Action admission and explicit seat revocation share this per-generation gate.
+    // A dispatch admitted first finishes its serialized grain turn before relinquish
+    // completes; relinquish admitted first makes the later dispatch unauthorized.
+    internal async Task<T> WithAuthorizedSeatAsync<T>(string sessionToken,
+        string campaignId, Func<LocalSession, Task<T>> dispatch, T unauthorized)
     {
+        SessionEntry? entry;
         lock (gate)
         {
             SweepExpired();
-            if (!sessions.TryGetValue(current.Token, out var active) || active.Session != current
-                || current.CampaignId != campaignId || current.Seat is null) return false;
-            sessions.Remove(current.Token);
-            return true;
+            sessions.TryGetValue(sessionToken, out entry);
         }
+        if (entry is null) return unauthorized;
+        await entry.AdmissionGate.WaitAsync();
+        try
+        {
+            lock (gate)
+            {
+                if (!sessions.TryGetValue(sessionToken, out var active)
+                    || active != entry || entry.ExpiresAt <= clock.GetUtcNow()
+                    || entry.RevocationsRequested > 0
+                    || entry.Session.CampaignId != campaignId
+                    || entry.Session.Seat is null)
+                    return unauthorized;
+            }
+            return await dispatch(entry.Session);
+        }
+        finally { entry.AdmissionGate.Release(); }
+    }
+
+    internal async Task<bool> RelinquishAsync(LocalSession current, string campaignId)
+    {
+        SessionEntry? entry;
+        lock (gate)
+        {
+            SweepExpired();
+            sessions.TryGetValue(current.Token, out entry);
+            if (entry?.Session != current || current.CampaignId != campaignId
+                || current.Seat is null)
+                return false;
+            entry.RevocationsRequested++;
+        }
+        await entry.AdmissionGate.WaitAsync();
+        try
+        {
+            lock (gate)
+            {
+                if (!sessions.TryGetValue(current.Token, out var active)
+                    || active != entry || active.Session != current
+                    || current.CampaignId != campaignId || current.Seat is null)
+                {
+                    entry.RevocationsRequested--;
+                    return false;
+                }
+                sessions.Remove(current.Token);
+                return true;
+            }
+        }
+        finally { entry.AdmissionGate.Release(); }
     }
 
     private void SweepExpired()
     {
         var now = clock.GetUtcNow();
-        foreach (var token in sessions.Where(pair => pair.Value.ExpiresAt <= now)
+        foreach (var token in sessions.Where(pair => pair.Value.ExpiresAt <= now
+                     && pair.Value.AdmissionGate.CurrentCount > 0
+                     && pair.Value.RevocationsRequested == 0)
                      .Select(pair => pair.Key).ToArray())
             sessions.Remove(token);
         foreach (var id in grants.Where(pair => pair.Value.ExpiresAt <= now)
@@ -157,4 +235,10 @@ internal sealed record LocalSession(string Token, string CsrfToken, string Opera
     string? Generation, string? CampaignId, string? Seat);
 internal sealed record LocalGrant(string OperatorId, string CampaignId, string Seat,
     DateTimeOffset ExpiresAt, bool Active);
-internal sealed record SessionEntry(LocalSession Session, DateTimeOffset ExpiresAt);
+internal sealed class SessionEntry(LocalSession session, DateTimeOffset expiresAt)
+{
+    internal LocalSession Session { get; } = session;
+    internal DateTimeOffset ExpiresAt { get; set; } = expiresAt;
+    internal SemaphoreSlim AdmissionGate { get; } = new(1, 1);
+    internal int RevocationsRequested { get; set; }
+}

@@ -171,13 +171,19 @@ internal sealed class TemporaryAudienceTracker
     private static string ActionIdentity(CampaignHostPrivateAction action) =>
         System.Text.Json.JsonSerializer.Serialize(new
         {
-            action.Kind, action.ElementId, action.TargetLocationId, action.OpportunityId,
+            action.Kind,
+            action.ElementId,
+            action.TargetLocationId,
+            action.OpportunityId,
         });
 
     private static string ActionIdentity(TemporaryPrivateAction action) =>
         System.Text.Json.JsonSerializer.Serialize(new
         {
-            action.Kind, action.ElementId, action.TargetLocationId, action.OpportunityId,
+            action.Kind,
+            action.ElementId,
+            action.TargetLocationId,
+            action.OpportunityId,
         });
 
     private static bool ValidPair(string campaignId, string rulesetHash, string scenarioId,
