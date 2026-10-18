@@ -157,8 +157,9 @@ No canonical legal-action bytes or authority versions are serialized to HTTP. Th
 [Angular workspace](src/Cna.Maproom/README.md) provides
 `projects/maproom-alpha` and the internal `@sandtable/field-atlas` library. Storybook uses the same
 public component API, tokens and Material theme; feature patterns stay in the app. No shared
-core/utils library exists until concrete reuse calls for it. Campaign host
-remains pending. Broad logistics workspaces and semantic zoom await their own contracts and checks.
+core/utils library exists until concrete reuse calls for it. A temporary process-lifetime
+campaign host serves the admitted local fixture; durable hosting remains pending. Broad logistics
+workspaces and semantic zoom await their own contracts and checks.
 
 ## Proposed intelligence/services architecture
 

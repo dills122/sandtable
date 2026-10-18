@@ -49,14 +49,16 @@ consider a renderer/worker optimization only when measured browser work warrants
 
 ## Existing foundations and gaps
 
-- [OrleansHost](../../src/Cna.OrleansHost/Program.cs) starts a development silo and basic endpoints;
-  campaign grain, browser ingress and durable campaign storage are not implemented.
+- [OrleansHost](../../src/Cna.OrleansHost/Program.cs) starts a development silo. A temporary
+  process-lifetime campaign grain, local bootstrap/creation/initial-view routes and private MAP-09
+  action ingress exist; public action submission, successor reads and durable storage remain open.
 - [AppHost](../../src/Cna.AppHost/AppHost.cs) orchestrates three service scaffolds. Add a local
   Maproom profile which can launch the client and host without requiring Intelligence.
 - The [Proving Ground runbook](../runbooks/proving-ground.md) supplies a two-container Development
   preview of the present Maproom shell and Orleans host, with loopback ports and HTTP smoke probes.
-  It does not implement MAP-07–17 or a browser campaign seed. Aspire client orchestration remains
-  an open integration option; do not infer it from the Docker preview.
+  The separate connected development lane can create and read the one admitted temporary fixture;
+  the Docker fixture preview is synthetic. Neither lane provides a public command route or durable
+  save. Aspire client orchestration remains an open integration option; do not infer it from Docker.
 - [CampaignAuthority](../../src/Cna.Core/Campaigns/CampaignAuthority.cs),
   [CampaignObservations](../../src/Cna.Core/Observations/CampaignObservations.cs) and
   [CampaignLegalActions](../../src/Cna.Core/Actions/CampaignLegalActions.cs) supply current authority,
@@ -215,7 +217,7 @@ are developed; no slice may silently absorb new game rules or activate private C
 | MAP-08B1 Side projection prerequisites | 08A | [Trusted side cut and presentation-source contract](../specs/maproom-side-projection-prerequisites-v1.md): typed permitted fields, pinned public presentation catalog, audience-safe diary, opaque contact/action mapping over every committed side cut | No raw Core bytes or private identities on HTTP; missing source or unverifiable cut gap fails closed; hidden-only commits preserve outward identities; contact reappearance rotates ID even without an intervening read |
 | MAP-08B2 Host-private side continuity | 08B1, 07 | Core typed side cut and process-local grain tracker for both audiences at creation and each accepted/System step; session-scoped opaque contact/action handles | Two-seat privacy; hidden-only stability; unread disappearance/reappearance rotates contact ID; skipped cut fails closed; deactivation retains tracker and process restart loses it; no browser view claim |
 | MAP-08B Campaign creation and view projection | 08B1 | Development-only single-fixture creation/grants and initial coherent side view exist; Angular `/connected` reads it through a loopback-only dev proxy. Post-step reads and complete recovery remain | Exact contract response and retry identity; side privacy; two-seat initial HTTP reads; no browser command |
-| MAP-09 Command ingress and retries | 08 | Private process-lifetime seat-bound request identity, Core remap/revalidation and exact retry are implemented. Public HTTP submission, pending/accepted/rejected status and request lookup remain open | Private revocation/handoff race and changed-payload negatives pass; public duplicate, stale, lost-reply and cancellation reconciliation still need route-level tests |
+| MAP-09 Command ingress and retries | 08 | Private process-lifetime seat-bound request identity, Core remap/revalidation and exact retry are implemented. Public HTTP submission, pending/accepted/rejected status and request lookup remain open | Action-path revocation and separate authorized-callback handoff timing tests pass; changed-payload negatives pass; public duplicate, stale, lost-reply and cancellation reconciliation still need route-level tests |
 | MAP-10 Connected workspace reads | 03C, 08 | Integrate generated reads into the full operational workspace beyond the separate initial read lane; preserve renderer interface | Two audience sessions see only permitted units/actions/history; selection survives valid refresh and clears when no longer visible or access is revoked |
 | MAP-11 Real order forms | 09, 10 | One admitted move action with typed draft, Formly field adapter, review and explicit issue action | Keyboard path submits once; invalid/stale states explain recovery; draft never moves authoritative counter; server decides cost |
 | MAP-12 Live refresh and reconnect | 11 | SignalR subscription, safe view notification, missed-update recovery and connection UI | Subscribe/read race, initial failure, disconnect, missed push and stale response tests; no hidden-event notification leak |
