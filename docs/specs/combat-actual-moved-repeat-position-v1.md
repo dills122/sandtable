@@ -44,6 +44,11 @@ Combat Position Determination, active cycle, version, prefix, receipt and parent
 must match byte for byte before P01 classifies or opens a decision. Owned input bytes and dependency
 pins are rechecked on cold, warm, retry, readback and rejected paths.
 
+The [private no-attack v0 inventory](combat-p01-no-attack-v0.md) specifies proposed twelfth-ledger
+System input shapes and exact six-step order. Its disconnected reference rejects every event while
+all assessments are unsupported; it does not turn the 256 provisional-empty physical shapes into
+certified no-selection closures.
+
 The initial P01 output is an **assessment**, with exactly one of `bounded-positive`,
 `supported-empty`, or `unsupported`. Assessment is derived from authenticated current World,
 Content, Weather, prior history and current segment; it never consumes RNG or mutates World.

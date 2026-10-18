@@ -1,0 +1,133 @@
+{
+  "contract": "combat-p01-no-attack-v0",
+  "status": "private unissuable ordinal-two transition inventory; no supported-empty certificate",
+  "contractVersion": 0,
+  "predecessor": "combat-actual-moved-repeat-breakdown-completion-v1",
+  "ancestry": "original CreationRequest plus eleven independent parent input ledgers and one R03 breakdown input ledger",
+  "twelfthLedger": "ordered canonical P01 input bytes; maximum eight events; currently no event is authorized",
+  "zeroCandidateOpeningInputFields": [
+    "contractVersion",
+    "kind",
+    "actor",
+    "creationBinding",
+    "sourceHash",
+    "cycleId",
+    "positionId",
+    "expectedPriorVersion",
+    "expectedPriorPrefix",
+    "predecessorReceiptId",
+    "supportCertificateHash",
+    "candidateCount",
+    "decisionId",
+    "trustedTime",
+    "deadline"
+  ],
+  "zeroCandidateOpeningInputValues": {
+    "contractVersion": 0,
+    "kind": "open-zero-candidate-selection",
+    "actor": "system",
+    "candidateCount": 0,
+    "decisionId": null,
+    "trustedTime": null,
+    "deadline": null
+  },
+  "selectionCloseInputFields": [
+    "contractVersion",
+    "kind",
+    "actor",
+    "cycleId",
+    "positionId",
+    "expectedPriorVersion",
+    "expectedPriorPrefix",
+    "openingReceiptId",
+    "outcome",
+    "candidateId"
+  ],
+  "selectionCloseInputValues": {
+    "contractVersion": 0,
+    "kind": "close-zero-candidate-selection",
+    "actor": "system",
+    "outcome": "no-selection",
+    "candidateId": null
+  },
+  "stepInputFields": [
+    "contractVersion",
+    "kind",
+    "actor",
+    "cycleId",
+    "expectedPriorVersion",
+    "expectedPriorPrefix",
+    "fromPositionId",
+    "selectionReceiptId",
+    "previousStepReceiptId"
+  ],
+  "stepInputValues": {
+    "contractVersion": 0,
+    "kind": "complete-no-attack-step",
+    "actor": "system"
+  },
+  "eventFields": [
+    "contractVersion",
+    "eventType",
+    "campaignId",
+    "rulesetHash",
+    "configurationHash",
+    "cycleId",
+    "priorVersion",
+    "stateVersion",
+    "priorPrefix",
+    "input",
+    "effect",
+    "receiptId"
+  ],
+  "noAttackStepEffectFields": [
+    "proofKind",
+    "fromPositionId",
+    "toPositionId",
+    "selectionReceiptId",
+    "previousStepReceiptId",
+    "worldHash",
+    "randomHash"
+  ],
+  "noAttackStepEffectValues": {
+    "proofKind": "no-attack"
+  },
+  "futureEventOrder": [
+    "combat-segment-opened",
+    "combat-selection-closed",
+    "combat-step-completed:position-determination",
+    "combat-step-completed:barrage",
+    "combat-step-completed:retreat-before-assault",
+    "combat-step-completed:force-assignment",
+    "combat-step-completed:anti-armor",
+    "combat-step-completed:close-assault"
+  ],
+  "stepSuccessors": [
+    "barrage",
+    "retreat-before-assault",
+    "force-assignment",
+    "anti-armor",
+    "close-assault",
+    "reserve-release"
+  ],
+  "identifierPatterns": {
+    "creationBinding": "creation\\.[0-9a-f]{64}",
+    "positionId": "land\\.position\\.[a-z0-9.-]{1,240}",
+    "predecessorReceiptId": "mrbc\\.[0-9a-f]{64}",
+    "openingReceiptId": "p01o\\.[0-9a-f]{64}",
+    "selectionReceiptId": "p01s\\.[0-9a-f]{64}",
+    "stepReceiptId": "p01n\\.[0-9a-f]{64}"
+  },
+  "openingReceiptDomain": "sandtable.combat.p01.no-attack.opening-receipt.v0",
+  "selectionCloseReceiptDomain": "sandtable.combat.p01.no-attack.selection-close-receipt.v0",
+  "stepReceiptDomain": "sandtable.combat.p01.no-attack.step-receipt.v0",
+  "firstStepPreviousReceipt": "openingReceiptId; the selection-close receipt is separately bound by selectionReceiptId",
+  "limits": {
+    "inputBytes": 4096,
+    "inputDepth": 2,
+    "twelfthLedgerEvents": 8,
+    "stepCompletions": 6
+  },
+  "admitted": false,
+  "publicActions": []
+}

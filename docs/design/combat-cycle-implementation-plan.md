@@ -3053,3 +3053,7 @@ shapes. It remains diagnostic: actual ordinal-two automatic full-TOE/custody set
 RBA authority replay are unproved. Complete action coverage, outward privacy proof, adversarial
 transition cuts and the support certificate remain open. P02 selection and P03 native consumer
 remain separate; no public or native ordinal-two action is activated.
+The [private ordinal-two no-attack v0 inventory](../specs/combat-p01-no-attack-v0.md)
+defines proposed twelfth-ledger input fields and the six-step order, but its reference refuses
+every event because no authentic P01 supported-empty certificate or twelfth-ledger event/receipt
+exists. The 256 physical-empty rows are not a completed no-attack path; AC-003/008 remain open.
