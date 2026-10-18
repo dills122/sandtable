@@ -12,8 +12,8 @@ import { SessionInfo } from './api/generated/model/sessionInfo';
 import { Bootstrap } from './api/generated/model/bootstrap';
 
 export class SeatIdentityError extends Error {
-  constructor() {
-    super('Seat identity changed. The previous audience view was removed.');
+  constructor(message = 'Seat identity changed. The previous audience view was removed.') {
+    super(message);
   }
 }
 
@@ -110,8 +110,15 @@ export class ConnectedCampaignService {
     seat: 'axis' | 'commonwealth',
   ): Promise<CoherentPlayerView> {
     const session = await firstValueFrom(this.sessions.getSession(fixtureId));
-    if (session.contractVersion !== 1 || session.campaignId !== fixtureId || session.seat !== seat)
+    if (session.contractVersion !== 1 || session.campaignId !== fixtureId)
       throw new SeatIdentityError();
+    if (session.seat !== seat) {
+      if (session.seat !== 'axis' && session.seat !== 'commonwealth') throw new SeatIdentityError();
+      const current = session.seat === 'axis' ? 'Axis' : 'Commonwealth';
+      throw new SeatIdentityError(
+        `This browser is already seated as ${current}. Choose ${current} to reopen its view.`,
+      );
+    }
     this.creation = undefined;
     this.entered = session;
     return this.read(fixtureId, session.sessionGeneration, seat);
@@ -132,5 +139,28 @@ export class ConnectedCampaignService {
       throw new SeatIdentityError();
     }
     return view;
+  }
+
+  async refreshAuthorizedView(
+    campaignId: string,
+    generation: string,
+    seat: 'axis' | 'commonwealth',
+  ): Promise<CoherentPlayerView> {
+    try {
+      return await this.read(campaignId, generation, seat);
+    } catch (cause) {
+      if (!(cause instanceof SeatIdentityError)) throw cause;
+      // A second local tab can rotate the cookie for the same seat. Recheck
+      // server-owned identity before accepting the replacement view.
+      const session = await firstValueFrom(this.sessions.getSession(campaignId));
+      if (
+        session.contractVersion !== 1 ||
+        session.campaignId !== campaignId ||
+        session.seat !== seat
+      )
+        throw cause;
+      this.entered = session;
+      return this.read(campaignId, session.sessionGeneration, seat);
+    }
   }
 }

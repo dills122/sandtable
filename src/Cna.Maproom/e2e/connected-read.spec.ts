@@ -238,6 +238,15 @@ test('mismatched refresh generation removes prior audience view', async ({ page 
       await route.fulfill({
         json: { contractVersion: 1, campaignId: 'c-1', seat: 'axis', sessionGeneration: 'g-1' },
       });
+    else if (path === '/api/v1/campaigns/c-1/session')
+      await route.fulfill({
+        json: {
+          contractVersion: 1,
+          campaignId: 'c-1',
+          seat: 'commonwealth',
+          sessionGeneration: 'other-generation',
+        },
+      });
     else if (path === '/api/v1/campaigns/c-1/view') {
       reads++;
       await route.fulfill({
@@ -272,6 +281,62 @@ test('mismatched refresh generation removes prior audience view', async ({ page 
   await page.getByRole('button', { name: 'Refresh view' }).click();
   await expect(page.getByRole('alert')).toContainText('Seat identity changed');
   await expect(page.getByText('Private own unit')).toHaveCount(0);
+});
+
+test('refresh recovers a rotated generation only after rechecking the same seat', async ({
+  page,
+}) => {
+  let reads = 0;
+  await page.route('**/api/v1/**', async (route) => {
+    const path = new URL(route.request().url()).pathname;
+    if (path === '/api/v1/bootstrap')
+      await route.fulfill({ json: { contractVersion: 1, csrfToken: 'csrf' } });
+    else if (path === '/api/v1/fixtures')
+      await route.fulfill({ json: [{ fixtureId: 'rules9', displayName: 'Lab' }] });
+    else if (path === '/api/v1/campaigns')
+      await route.fulfill({
+        status: 201,
+        json: {
+          contractVersion: 1,
+          campaign: { campaignId: 'c-1' },
+          seatGrants: { axis: 'grant-a', commonwealth: 'grant-b' },
+        },
+      });
+    else if (path === '/api/v1/campaigns/c-1/seat')
+      await route.fulfill({
+        json: { contractVersion: 1, campaignId: 'c-1', seat: 'axis', sessionGeneration: 'g-1' },
+      });
+    else if (path === '/api/v1/campaigns/c-1/session')
+      await route.fulfill({
+        json: { contractVersion: 1, campaignId: 'c-1', seat: 'axis', sessionGeneration: 'g-2' },
+      });
+    else if (path === '/api/v1/campaigns/c-1/view') {
+      reads++;
+      await route.fulfill({
+        json: {
+          contractVersion: 1,
+          campaignId: 'c-1',
+          seat: 'axis',
+          sessionGeneration: reads === 1 ? 'g-1' : 'g-2',
+          position: { turn: '1', phaseId: 'movement', stageId: 'initial', decision: 'human' },
+          locations: [],
+          ownFormations: [],
+          apparentContacts: [],
+          legalActions: [],
+          formationLedger: [],
+          warDiary: [],
+        },
+      });
+    } else throw new Error(`Unexpected API call: ${path}`);
+  });
+  await page.goto('/connected');
+  await page.getByRole('button', { name: 'Check local fixtures' }).click();
+  await page.getByRole('button', { name: 'Create and enter Axis' }).click();
+  await expect(page.getByRole('heading', { name: 'Situation map' })).toBeVisible();
+  await page.getByRole('button', { name: 'Refresh view' }).click();
+  await expect.poll(() => reads).toBe(3);
+  await expect(page.getByRole('heading', { name: 'Situation map' })).toBeVisible();
+  await expect(page.getByRole('alert')).toHaveCount(0);
 });
 
 test('conflicting process-local creation explains restart boundary', async ({ page }) => {

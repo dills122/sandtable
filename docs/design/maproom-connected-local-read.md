@@ -35,6 +35,12 @@ is lost, that seat cannot be reconstructed. Restart the **development** host to
 discard its temporary campaign and begin again. There is no campaign listing or
 durable save in this lane.
 
+Browser cookies are shared by host across local ports. If another local tab
+rotates the session generation for the same seat, Refresh view rechecks the
+host-owned seat before accepting its new generation. Choosing the opposing seat
+with an existing seat cookie is rejected with the current seat named; it never
+opens the opposing view.
+
 The generated MAP-04 client supplies typed requests and responses. The lane checks
 campaign, seat, generation and contract version before rendering. Refresh errors,
 including revoked/expired seat responses and identity mismatch, remove the old
