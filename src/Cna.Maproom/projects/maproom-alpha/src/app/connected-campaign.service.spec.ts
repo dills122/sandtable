@@ -92,4 +92,45 @@ describe('ConnectedCampaignService', () => {
     });
     await expect(result).rejects.toThrow('Seat response did not match campaign');
   });
+
+  it('reuses the exact creation request ID after an unavailable reply', async () => {
+    const fixtures = service.availableFixtures();
+    http.expectOne('/api/v1/bootstrap').flush({ contractVersion: 1, csrfToken: 'csrf' });
+    await Promise.resolve();
+    http.expectOne('/api/v1/fixtures').flush([]);
+    await fixtures;
+
+    const first = service.createAndRead('rules9', 'axis');
+    const failed = http.expectOne('/api/v1/campaigns');
+    const requestId = failed.request.body.requestId;
+    failed.flush(
+      { contractVersion: 1, code: 'unavailable' },
+      { status: 503, statusText: 'Unavailable' },
+    );
+    await expect(first).rejects.toBeTruthy();
+
+    const retry = service.createAndRead('rules9', 'axis');
+    const next = http.expectOne('/api/v1/campaigns');
+    expect(next.request.body.requestId).toBe(requestId);
+    next.flush({
+      contractVersion: 1,
+      campaign: { campaignId: 'campaign-1' },
+      seatGrants: { axis: 'grant-a', commonwealth: 'grant-b' },
+    });
+    await Promise.resolve();
+    http.expectOne('/api/v1/campaigns/campaign-1/seat').flush({
+      contractVersion: 1,
+      campaignId: 'campaign-1',
+      seat: 'axis',
+      sessionGeneration: 'g-1',
+    });
+    await Promise.resolve();
+    http.expectOne('/api/v1/campaigns/campaign-1/view').flush({
+      contractVersion: 1,
+      campaignId: 'campaign-1',
+      seat: 'axis',
+      sessionGeneration: 'g-1',
+    });
+    expect((await retry).campaignId).toBe('campaign-1');
+  });
 });
