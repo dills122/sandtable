@@ -1,0 +1,125 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background: #f0eee8;
+  color: #202b2b;
+}
+main {
+  max-width: 94rem;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+.connected-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  background: #182b2a;
+  color: #fff;
+}
+.connected-header a {
+  color: inherit;
+  font-weight: 700;
+}
+.connected-title {
+  margin-bottom: 1.5rem;
+}
+.connected-title h1 {
+  font-family: Newsreader, Georgia, serif;
+  font-size: clamp(2rem, 4vw, 3.5rem);
+}
+.connected-start,
+.connected-facts,
+.connected-map,
+.connected-grid > section,
+main > section:not(.connected-map) {
+  padding: 1.25rem;
+  background: #fff;
+  border: 1px solid #b6b9af;
+  margin-bottom: 1rem;
+}
+.connected-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  align-items: center;
+}
+.connected-facts div {
+  display: grid;
+}
+.connected-facts span {
+  color: #536160;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+}
+.connected-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(17rem, 1fr);
+  gap: 1rem;
+}
+.connected-map-frame {
+  position: relative;
+  min-height: 28rem;
+  overflow: hidden;
+  background: repeating-linear-gradient(120deg, #e5e5d8, #e5e5d8 3rem, #d8ddcf 3rem, #d8ddcf 6rem);
+  border: 1px solid #a9b5a6;
+}
+.connected-location,
+.connected-unit,
+.connected-contact {
+  position: absolute;
+  transform: translate(-50%, -50%);
+}
+.connected-location {
+  color: #425656;
+  font-size: 0.8rem;
+}
+.connected-unit {
+  z-index: 2;
+  padding: 0.3rem;
+  border: 2px solid #263b45;
+  background: #eef4fa;
+}
+.connected-unit[aria-pressed='true'] {
+  outline: 3px solid #ba6d21;
+}
+.connected-contact {
+  z-index: 1;
+  padding: 0.2rem;
+  border: 1px dashed #6c513f;
+  background: #fff3e3;
+}
+.connected-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+.connected-list {
+  padding-left: 1.5rem;
+}
+button {
+  cursor: pointer;
+  min-height: 2.75rem;
+}
+.connected-error {
+  padding: 1rem;
+  border-left: 0.25rem solid #a23c2d;
+  background: #fff3ef;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+th,
+td {
+  text-align: left;
+  padding: 0.5rem;
+  border-bottom: 1px solid #c8cec4;
+}
+@media (max-width: 48rem) {
+  .connected-grid {
+    grid-template-columns: 1fr;
+  }
+  main {
+    padding: 0.75rem;
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "/api/v1": {
+    "target": "http://127.0.0.1:5087",
+    "changeOrigin": true,
+    "headers": {
+      "Origin": "http://127.0.0.1:5087"
+    }
+  }
+}

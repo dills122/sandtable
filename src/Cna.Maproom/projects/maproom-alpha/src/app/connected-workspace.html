@@ -1,0 +1,168 @@
+<a class="skip-link" href="#connected-main">Skip to campaign</a>
+<header class="connected-header">
+  <a href="/" aria-label="Maproom fixture home">Maproom</a>
+  <span>Local campaign read</span>
+</header>
+<main id="connected-main" tabindex="-1">
+  <header class="connected-title">
+    <p class="fa-eyebrow">Proving Ground · temporary memory</p>
+    <h1>Campaign situation</h1>
+    <p>Read-only initial view. Order submission and later phase views are still unsupported.</p>
+  </header>
+  @if (error()) {
+    <p class="connected-error" role="alert">{{ error() }}</p>
+  }
+  @if (!view()) {
+    <section class="connected-start" aria-label="Local campaign setup">
+      <h2>Connect to local host</h2>
+      <button type="button" [disabled]="busy()" (click)="connect()">Check local fixtures</button>
+      @for (fixture of fixtures(); track fixture.fixtureId) {
+        <article>
+          <h3>{{ fixture.displayName }}</h3>
+          <p>{{ fixture.scenarioId }} · temporary campaign</p>
+          <div class="connected-actions">
+            <button type="button" [disabled]="busy()" (click)="create(fixture.fixtureId, 'axis')">
+              Create and enter Axis
+            </button>
+            <button
+              type="button"
+              [disabled]="busy()"
+              (click)="create(fixture.fixtureId, 'commonwealth')"
+            >
+              Create and enter Commonwealth
+            </button>
+          </div>
+        </article>
+      }
+    </section>
+  } @else if (view(); as current) {
+    <section class="connected-facts" aria-label="Campaign status">
+      <div>
+        <span>Seat</span><strong>{{ current.seat }}</strong>
+      </div>
+      <div>
+        <span>Turn</span><strong>{{ current.position.turn }}</strong>
+      </div>
+      <div>
+        <span>Phase</span
+        ><strong>{{ current.position.phaseId }} / {{ current.position.stageId }}</strong>
+      </div>
+      <div>
+        <span>Decision</span><strong>{{ current.position.decision }}</strong>
+      </div>
+      <button type="button" [disabled]="busy()" (click)="refresh()">Refresh view</button>
+    </section>
+    @if (current.position.decision === 'unsupported-phase') {
+      <p class="connected-error" role="status">
+        This phase has no connected browser continuation. No order can be issued here.
+      </p>
+    }
+    <div class="connected-grid">
+      <section class="connected-map" aria-labelledby="connected-map-title">
+        <h2 id="connected-map-title">Situation map</h2>
+        <div class="connected-map-frame" role="img" aria-label="Audience-safe campaign map">
+          @for (location of current.locations; track location.locationId) {
+            <span
+              class="connected-location"
+              [style.left.%]="location.x"
+              [style.top.%]="location.y"
+              >{{ location.label }}</span
+            >
+          }
+          @for (formation of current.ownFormations; track formation.formationId) {
+            @if (location(formation.locationId); as location) {
+              <button
+                type="button"
+                class="connected-unit"
+                [style.left.%]="location.x"
+                [style.top.%]="location.y"
+                [attr.aria-pressed]="selectedId() === formation.formationId"
+                (click)="select(formation.formationId)"
+              >
+                {{ formation.label }}
+              </button>
+            }
+          }
+          @for (contact of current.apparentContacts; track contact.contactId) {
+            @if (location(contact.locationId); as location) {
+              <span
+                class="connected-contact"
+                [style.left.%]="location.x"
+                [style.top.%]="location.y"
+                >{{ contact.label }}</span
+              >
+            }
+          }
+        </div>
+      </section>
+      <section aria-labelledby="connected-formations-title">
+        <h2 id="connected-formations-title">Own formations</h2>
+        <ul class="connected-list">
+          @for (formation of current.ownFormations; track formation.formationId) {
+            <li>
+              <button
+                type="button"
+                [attr.aria-pressed]="selectedId() === formation.formationId"
+                (click)="select(formation.formationId)"
+              >
+                {{ formation.label }} · {{ locationLabel(formation.locationId) }}
+              </button>
+            </li>
+          } @empty {
+            <li>No own formations in this view.</li>
+          }
+        </ul>
+        <h2>Formation inspector</h2>
+        @if (selected(); as formation) {
+          <p>
+            <strong>{{ formation.label }}</strong> · {{ formation.kindLabel }}
+          </p>
+          <p>
+            {{ selectedLocation()?.label ?? 'Unknown location' }} · {{ formation.orderStatusLabel }}
+          </p>
+          <p>Orders unavailable in connected read mode.</p>
+        } @else {
+          <p>Select an own formation.</p>
+        }
+      </section>
+    </div>
+    <section aria-labelledby="connected-ledger-title">
+      <h2 id="connected-ledger-title">Formation ledger</h2>
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Formation</th>
+            <th scope="col">Kind</th>
+            <th scope="col">Location</th>
+            <th scope="col">Order</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of current.formationLedger; track row.formationId) {
+            <tr>
+              <th scope="row">{{ row.label }}</th>
+              <td>{{ row.kindLabel }}</td>
+              <td>{{ row.locationLabel }}</td>
+              <td>{{ row.orderStatusLabel }}</td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="4">No ledger rows for this seat.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </section>
+    <section aria-labelledby="connected-diary-title">
+      <h2 id="connected-diary-title">War Diary</h2>
+      @for (entry of current.warDiary; track entry.entryId) {
+        <article>
+          <h3>{{ entry.title }}</h3>
+          <p>{{ entry.body }}</p>
+        </article>
+      } @empty {
+        <p>No diary entries in this initial view.</p>
+      }
+    </section>
+  }
+</main>
