@@ -110,6 +110,9 @@ describe('ConnectedCampaignService', () => {
     await expect(first).rejects.toBeTruthy();
 
     const retry = service.createAndRead('rules9', 'axis');
+    http.expectOne('/api/v1/bootstrap').flush({ contractVersion: 1, csrfToken: 'csrf' });
+    await Promise.resolve();
+    await Promise.resolve();
     const next = http.expectOne('/api/v1/campaigns');
     expect(next.request.body.requestId).toBe(requestId);
     next.flush({
@@ -132,5 +135,201 @@ describe('ConnectedCampaignService', () => {
       sessionGeneration: 'g-1',
     });
     expect((await retry).campaignId).toBe('campaign-1');
+  });
+
+  it('resumes an already seated browser after reload without redeeming another grant', async () => {
+    const fixtures = service.availableFixtures();
+    http.expectOne('/api/v1/bootstrap').flush({ contractVersion: 1, csrfToken: 'seat-csrf' });
+    await Promise.resolve();
+    http.expectOne('/api/v1/fixtures').flush([{ fixtureId: 'rules9', displayName: 'Lab' }]);
+    await fixtures;
+
+    const resumed = service.createAndRead('rules9', 'axis');
+    http
+      .expectOne('/api/v1/campaigns')
+      .flush(
+        { contractVersion: 1, code: 'unauthorized' },
+        { status: 401, statusText: 'Unauthorized' },
+      );
+    await Promise.resolve();
+    http.expectOne('/api/v1/campaigns/rules9/session').flush({
+      contractVersion: 1,
+      campaignId: 'rules9',
+      seat: 'axis',
+      sessionGeneration: 'live-generation',
+    });
+    await Promise.resolve();
+    http.expectOne('/api/v1/campaigns/rules9/view').flush({
+      contractVersion: 1,
+      campaignId: 'rules9',
+      seat: 'axis',
+      sessionGeneration: 'live-generation',
+      ownFormations: [],
+      apparentContacts: [],
+      locations: [],
+      formationLedger: [],
+      warDiary: [],
+      legalActions: [],
+    });
+    expect((await resumed).sessionGeneration).toBe('live-generation');
+    http.expectNone('/api/v1/campaigns/rules9/seat');
+  });
+
+  it('drops cached creation and seat identity when bootstrap changes after host restart', async () => {
+    const fixtures = service.availableFixtures();
+    http.expectOne('/api/v1/bootstrap').flush({ contractVersion: 1, csrfToken: 'old-csrf' });
+    await Promise.resolve();
+    http.expectOne('/api/v1/fixtures').flush([{ fixtureId: 'rules9', displayName: 'Lab' }]);
+    await fixtures;
+
+    const first = service.createAndRead('rules9', 'axis');
+    const oldCreate = http.expectOne('/api/v1/campaigns');
+    const oldRequestId = oldCreate.request.body.requestId;
+    oldCreate.flush({
+      contractVersion: 1,
+      campaign: { campaignId: 'rules9' },
+      seatGrants: { axis: 'old-grant', commonwealth: 'old-opposing-grant' },
+    });
+    await Promise.resolve();
+    http.expectOne('/api/v1/campaigns/rules9/seat').flush({
+      contractVersion: 1,
+      campaignId: 'rules9',
+      seat: 'axis',
+      sessionGeneration: 'old-generation',
+    });
+    await Promise.resolve();
+    http.expectOne('/api/v1/campaigns/rules9/view').flush({
+      contractVersion: 1,
+      campaignId: 'rules9',
+      seat: 'axis',
+      sessionGeneration: 'old-generation',
+    });
+    await first;
+
+    const refreshed = service.availableFixtures();
+    http.expectOne('/api/v1/bootstrap').flush({ contractVersion: 1, csrfToken: 'new-csrf' });
+    await Promise.resolve();
+    http.expectOne('/api/v1/fixtures').flush([{ fixtureId: 'rules9', displayName: 'Lab' }]);
+    await refreshed;
+
+    const next = service.createAndRead('rules9', 'axis');
+    const newCreate = http.expectOne('/api/v1/campaigns');
+    expect(newCreate.request.body.requestId).not.toBe(oldRequestId);
+    expect(newCreate.request.headers.get('X-Sandtable-CSRF')).toBe('new-csrf');
+    newCreate.flush({
+      contractVersion: 1,
+      campaign: { campaignId: 'rules9' },
+      seatGrants: { axis: 'new-grant', commonwealth: 'new-opposing-grant' },
+    });
+    await Promise.resolve();
+    http.expectOne('/api/v1/campaigns/rules9/seat').flush({
+      contractVersion: 1,
+      campaignId: 'rules9',
+      seat: 'axis',
+      sessionGeneration: 'new-generation',
+    });
+    await Promise.resolve();
+    http.expectOne('/api/v1/campaigns/rules9/view').flush({
+      contractVersion: 1,
+      campaignId: 'rules9',
+      seat: 'axis',
+      sessionGeneration: 'new-generation',
+    });
+    expect((await next).sessionGeneration).toBe('new-generation');
+  });
+
+  it('explains an opposing seat choice without reading its view', async () => {
+    const fixtures = service.availableFixtures();
+    http.expectOne('/api/v1/bootstrap').flush({ contractVersion: 1, csrfToken: 'seat-csrf' });
+    await Promise.resolve();
+    http.expectOne('/api/v1/fixtures').flush([{ fixtureId: 'rules9', displayName: 'Lab' }]);
+    await fixtures;
+
+    const attempted = service.createAndRead('rules9', 'commonwealth');
+    http
+      .expectOne('/api/v1/campaigns')
+      .flush(
+        { contractVersion: 1, code: 'unauthorized' },
+        { status: 401, statusText: 'Unauthorized' },
+      );
+    await Promise.resolve();
+    http.expectOne('/api/v1/campaigns/rules9/session').flush({
+      contractVersion: 1,
+      campaignId: 'rules9',
+      seat: 'axis',
+      sessionGeneration: 'axis-generation',
+    });
+    await expect(attempted).rejects.toThrow('already seated as Axis');
+    http.expectNone('/api/v1/campaigns/rules9/view');
+  });
+
+  it('rechecks the host seat before explaining an opposing choice after a failed view', async () => {
+    const fixtures = service.availableFixtures();
+    http.expectOne('/api/v1/bootstrap').flush({ contractVersion: 1, csrfToken: 'seat-csrf' });
+    await Promise.resolve();
+    http.expectOne('/api/v1/fixtures').flush([{ fixtureId: 'rules9', displayName: 'Lab' }]);
+    await fixtures;
+
+    const first = service.createAndRead('rules9', 'axis');
+    http.expectOne('/api/v1/campaigns').flush({
+      contractVersion: 1,
+      campaign: { campaignId: 'rules9' },
+      seatGrants: { axis: 'axis-grant', commonwealth: 'opposing-grant' },
+    });
+    await Promise.resolve();
+    http.expectOne('/api/v1/campaigns/rules9/seat').flush({
+      contractVersion: 1,
+      campaignId: 'rules9',
+      seat: 'axis',
+      sessionGeneration: 'axis-generation',
+    });
+    await Promise.resolve();
+    http
+      .expectOne('/api/v1/campaigns/rules9/view')
+      .flush(
+        { contractVersion: 1, code: 'unavailable' },
+        { status: 503, statusText: 'Unavailable' },
+      );
+    await expect(first).rejects.toBeTruthy();
+
+    const attempted = service.createAndRead('rules9', 'commonwealth');
+    http.expectOne('/api/v1/bootstrap').flush({ contractVersion: 1, csrfToken: 'seat-csrf' });
+    await Promise.resolve();
+    await Promise.resolve();
+    http.expectOne('/api/v1/campaigns/rules9/session').flush({
+      contractVersion: 1,
+      campaignId: 'rules9',
+      seat: 'axis',
+      sessionGeneration: 'axis-generation',
+    });
+    await expect(attempted).rejects.toThrow('already seated as Axis');
+    http.expectNone('/api/v1/campaigns/rules9/seat');
+    http.expectNone('/api/v1/campaigns/rules9/view');
+  });
+
+  it('reauthorizes a rotated generation for the same seat before accepting a refreshed view', async () => {
+    const refreshed = service.refreshAuthorizedView('rules9', 'old-generation', 'axis');
+    http.expectOne('/api/v1/campaigns/rules9/view').flush({
+      contractVersion: 1,
+      campaignId: 'rules9',
+      seat: 'axis',
+      sessionGeneration: 'new-generation',
+    });
+    await Promise.resolve();
+    await Promise.resolve();
+    http.expectOne('/api/v1/campaigns/rules9/session').flush({
+      contractVersion: 1,
+      campaignId: 'rules9',
+      seat: 'axis',
+      sessionGeneration: 'new-generation',
+    });
+    await Promise.resolve();
+    http.expectOne('/api/v1/campaigns/rules9/view').flush({
+      contractVersion: 1,
+      campaignId: 'rules9',
+      seat: 'axis',
+      sessionGeneration: 'new-generation',
+    });
+    expect((await refreshed).sessionGeneration).toBe('new-generation');
   });
 });

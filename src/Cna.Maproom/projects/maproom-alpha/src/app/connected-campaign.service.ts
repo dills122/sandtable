@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { CampaignsService } from './api/generated/api/campaigns.service';
@@ -9,10 +9,11 @@ import { CoherentPlayerView } from './api/generated/model/coherentPlayerView';
 import { FixtureDescriptor } from './api/generated/model/fixtureDescriptor';
 import { CampaignCreated } from './api/generated/model/campaignCreated';
 import { SessionInfo } from './api/generated/model/sessionInfo';
+import { Bootstrap } from './api/generated/model/bootstrap';
 
 export class SeatIdentityError extends Error {
-  constructor() {
-    super('Seat identity changed. The previous audience view was removed.');
+  constructor(message = 'Seat identity changed. The previous audience view was removed.') {
+    super(message);
   }
 }
 
@@ -34,11 +35,23 @@ export class ConnectedCampaignService {
   private entered: SessionInfo | undefined;
 
   async availableFixtures(): Promise<FixtureDescriptor[]> {
-    const bootstrap = await firstValueFrom(this.sessions.bootstrapLocalOperator());
+    this.acceptBootstrap(await firstValueFrom(this.sessions.bootstrapLocalOperator()));
+    return firstValueFrom(this.fixtures.listFixtures());
+  }
+
+  private acceptBootstrap(bootstrap: Bootstrap): void {
     if (bootstrap.contractVersion !== 1 || !bootstrap.csrfToken)
       throw new Error('Unsupported bootstrap');
+    // A restarted host or replaced cookie cannot reuse the prior request/grant/seat identity.
+    if (this.csrfToken !== bootstrap.csrfToken) {
+      this.creation = undefined;
+      this.entered = undefined;
+    }
     this.csrfToken = bootstrap.csrfToken;
-    return firstValueFrom(this.fixtures.listFixtures());
+  }
+
+  private async refreshBootstrap(): Promise<void> {
+    this.acceptBootstrap(await firstValueFrom(this.sessions.bootstrapLocalOperator()));
   }
 
   async createAndRead(
@@ -46,19 +59,32 @@ export class ConnectedCampaignService {
     seat: 'axis' | 'commonwealth',
   ): Promise<CoherentPlayerView> {
     if (!this.csrfToken) throw new Error('Start the local connection first');
+    if (this.creation || this.entered) await this.refreshBootstrap();
+    if (this.entered?.campaignId === fixtureId) {
+      if (this.entered.seat !== seat) return this.resumeSeat(fixtureId, seat);
+      return this.read(fixtureId, this.entered.sessionGeneration, seat);
+    }
     if (this.creation?.fixtureId !== fixtureId) {
       this.creation = { fixtureId, requestId: crypto.randomUUID() };
       this.entered = undefined;
     }
-    const created =
-      this.creation.response ??
-      (await firstValueFrom(
-        this.campaigns.createCampaign({
-          contractVersion: 1,
-          fixtureId,
-          requestId: this.creation.requestId,
-        }),
-      ));
+    let created: CampaignCreated;
+    try {
+      created =
+        this.creation.response ??
+        (await firstValueFrom(
+          this.campaigns.createCampaign({
+            contractVersion: 1,
+            fixtureId,
+            requestId: this.creation.requestId,
+          }),
+        ));
+    } catch (cause) {
+      // A retained seat cookie cannot create another campaign. Read its authorized seat instead.
+      if (cause instanceof HttpErrorResponse && cause.status === 401)
+        return this.resumeSeat(fixtureId, seat);
+      throw cause;
+    }
     if (created.contractVersion !== 1 || !created.campaign.campaignId) {
       throw new Error('Unsupported campaign response');
     }
@@ -81,6 +107,25 @@ export class ConnectedCampaignService {
     return this.read(created.campaign.campaignId, session.sessionGeneration, seat);
   }
 
+  private async resumeSeat(
+    fixtureId: string,
+    seat: 'axis' | 'commonwealth',
+  ): Promise<CoherentPlayerView> {
+    const session = await firstValueFrom(this.sessions.getSession(fixtureId));
+    if (session.contractVersion !== 1 || session.campaignId !== fixtureId)
+      throw new SeatIdentityError();
+    if (session.seat !== seat) {
+      if (session.seat !== 'axis' && session.seat !== 'commonwealth') throw new SeatIdentityError();
+      const current = session.seat === 'axis' ? 'Axis' : 'Commonwealth';
+      throw new SeatIdentityError(
+        `This browser is already seated as ${current}. Choose ${current} to reopen its view.`,
+      );
+    }
+    this.creation = undefined;
+    this.entered = session;
+    return this.read(fixtureId, session.sessionGeneration, seat);
+  }
+
   async read(
     campaignId: string,
     generation: string,
@@ -96,5 +141,28 @@ export class ConnectedCampaignService {
       throw new SeatIdentityError();
     }
     return view;
+  }
+
+  async refreshAuthorizedView(
+    campaignId: string,
+    generation: string,
+    seat: 'axis' | 'commonwealth',
+  ): Promise<CoherentPlayerView> {
+    try {
+      return await this.read(campaignId, generation, seat);
+    } catch (cause) {
+      if (!(cause instanceof SeatIdentityError)) throw cause;
+      // A second local tab can rotate the cookie for the same seat. Recheck
+      // server-owned identity before accepting the replacement view.
+      const session = await firstValueFrom(this.sessions.getSession(campaignId));
+      if (
+        session.contractVersion !== 1 ||
+        session.campaignId !== campaignId ||
+        session.seat !== seat
+      )
+        throw cause;
+      this.entered = session;
+      return this.read(campaignId, session.sessionGeneration, seat);
+    }
   }
 }

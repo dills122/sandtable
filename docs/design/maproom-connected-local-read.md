@@ -27,12 +27,19 @@ interface or use this proxy in a deployed build.
 Creation retries reuse the same request ID while the original page and operator
 session remain active (at most 15 minutes). The host holds exactly one campaign
 per process and only that operator/request/fixture tuple can retrieve the retained
-creation reply. A different request, a new operator after reload, or an expired
-operator session gets `409 conflict` rather than a second campaign. One-use
-grants are not renewed. This browser lane does not recover a lost seat response
-or reload; when the original tab cannot recover, restart the **development** host
-to discard its temporary campaign and begin again. There is no campaign listing,
-resume endpoint, or durable save in this lane.
+creation reply. A different request or expired operator session gets `409 conflict`
+rather than a second campaign. One-use grants are not renewed. A page reload with
+the same valid seat cookie can read the existing seat through the scoped session
+endpoint; the browser does not redeem another grant. If the cookie or host process
+is lost, that seat cannot be reconstructed. Restart the **development** host to
+discard its temporary campaign and begin again. There is no campaign listing or
+durable save in this lane.
+
+Browser cookies are shared by host across local ports. If another local tab
+rotates the session generation for the same seat, Refresh view rechecks the
+host-owned seat before accepting its new generation. Choosing the opposing seat
+with an existing seat cookie is rejected with the current seat named; it never
+opens the opposing view.
 
 The generated MAP-04 client supplies typed requests and responses. The lane checks
 campaign, seat, generation and contract version before rendering. Refresh errors,

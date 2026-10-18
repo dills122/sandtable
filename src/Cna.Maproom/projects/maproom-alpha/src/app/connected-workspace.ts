@@ -41,7 +41,11 @@ export class ConnectedWorkspace {
     await this.run(async () => {
       try {
         this.setView(
-          await this.api.read(current.campaignId, current.sessionGeneration, current.seat),
+          await this.api.refreshAuthorizedView(
+            current.campaignId,
+            current.sessionGeneration,
+            current.seat,
+          ),
         );
       } catch (cause) {
         // A failed read cannot retain the old audience's map or selected formation.
