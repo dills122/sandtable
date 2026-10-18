@@ -263,6 +263,50 @@ describe('ConnectedCampaignService', () => {
     http.expectNone('/api/v1/campaigns/rules9/view');
   });
 
+  it('rechecks the host seat before explaining an opposing choice after a failed view', async () => {
+    const fixtures = service.availableFixtures();
+    http.expectOne('/api/v1/bootstrap').flush({ contractVersion: 1, csrfToken: 'seat-csrf' });
+    await Promise.resolve();
+    http.expectOne('/api/v1/fixtures').flush([{ fixtureId: 'rules9', displayName: 'Lab' }]);
+    await fixtures;
+
+    const first = service.createAndRead('rules9', 'axis');
+    http.expectOne('/api/v1/campaigns').flush({
+      contractVersion: 1,
+      campaign: { campaignId: 'rules9' },
+      seatGrants: { axis: 'axis-grant', commonwealth: 'opposing-grant' },
+    });
+    await Promise.resolve();
+    http.expectOne('/api/v1/campaigns/rules9/seat').flush({
+      contractVersion: 1,
+      campaignId: 'rules9',
+      seat: 'axis',
+      sessionGeneration: 'axis-generation',
+    });
+    await Promise.resolve();
+    http
+      .expectOne('/api/v1/campaigns/rules9/view')
+      .flush(
+        { contractVersion: 1, code: 'unavailable' },
+        { status: 503, statusText: 'Unavailable' },
+      );
+    await expect(first).rejects.toBeTruthy();
+
+    const attempted = service.createAndRead('rules9', 'commonwealth');
+    http.expectOne('/api/v1/bootstrap').flush({ contractVersion: 1, csrfToken: 'seat-csrf' });
+    await Promise.resolve();
+    await Promise.resolve();
+    http.expectOne('/api/v1/campaigns/rules9/session').flush({
+      contractVersion: 1,
+      campaignId: 'rules9',
+      seat: 'axis',
+      sessionGeneration: 'axis-generation',
+    });
+    await expect(attempted).rejects.toThrow('already seated as Axis');
+    http.expectNone('/api/v1/campaigns/rules9/seat');
+    http.expectNone('/api/v1/campaigns/rules9/view');
+  });
+
   it('reauthorizes a rotated generation for the same seat before accepting a refreshed view', async () => {
     const refreshed = service.refreshAuthorizedView('rules9', 'old-generation', 'axis');
     http.expectOne('/api/v1/campaigns/rules9/view').flush({

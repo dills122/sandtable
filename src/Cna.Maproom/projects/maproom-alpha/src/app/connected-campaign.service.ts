@@ -60,8 +60,10 @@ export class ConnectedCampaignService {
   ): Promise<CoherentPlayerView> {
     if (!this.csrfToken) throw new Error('Start the local connection first');
     if (this.creation || this.entered) await this.refreshBootstrap();
-    if (this.entered?.campaignId === fixtureId && this.entered.seat === seat)
+    if (this.entered?.campaignId === fixtureId) {
+      if (this.entered.seat !== seat) return this.resumeSeat(fixtureId, seat);
       return this.read(fixtureId, this.entered.sessionGeneration, seat);
+    }
     if (this.creation?.fixtureId !== fixtureId) {
       this.creation = { fixtureId, requestId: crypto.randomUUID() };
       this.entered = undefined;

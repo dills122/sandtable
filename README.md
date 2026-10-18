@@ -189,8 +189,9 @@ The searchable ledger and War Diary in the default workspace are synthetic own-s
 For the separate development-only initial campaign read, follow the
 [connected Maproom local recipe](docs/design/maproom-connected-local-read.md); it uses ports 4300
 and 5087 without changing the 4200 preview. A process holds only one fixture campaign: exact
-creation retries need the original operator/request within 15 minutes; reload or a different
-request conflicts until that development host restarts. Command submission and later views remain open.
+creation retries need the original operator/request within 15 minutes. A reload with the same
+valid seat cookie resumes its authorized view; a lost cookie or different request conflicts until
+that development host restarts. Command submission and later views remain open.
 
 ## Start, run, and develop
 
