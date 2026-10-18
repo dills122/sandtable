@@ -156,8 +156,10 @@ identity and serialized Core transitions in memory, reports bounded System stops
 campaigns on process restart. Grain deactivation retains live state; a process-only capability
 and disabled Orleans client gateway protect its private API. Synchronous memory publication has
 no observable pending phase; provider-backed publication still needs fencing and pending recovery.
-It has no browser route, seat authorization, Core terminal classification, public Combat action,
-or durable save; MAP-08/09 must map and authorize outward requests before exposing it.
+The later MAP-08 local routes authorize fixture creation, seat grants and an initial read;
+MAP-09 privately binds outward requests to an active seat generation and rechecks a current Core
+candidate before commit. There is no public action submission or receipt route, Core terminal
+classification, public Combat action, or durable save.
 MAP-08A adds development-only, loopback-guarded operator bootstrap and process-local seat-session
 plumbing to `Cna.OrleansHost`. A bounded MAP-08B route now creates the one admitted Rules9
 fixture through the trusted grain and returns one retained grant pair for exact operator/request
@@ -175,6 +177,12 @@ after trusted in-process creation. It uses an admitted public layout and opaque 
 contact, and action handles; private MAP-07 legal-action bytes never cross HTTP. A later cut,
 missing catalog fact, or unsupported action returns `503 unavailable` while approved War Diary
 source is pending. Action submission and complete post-step reads are still absent.
+MAP-09 now adds a private, process-lifetime action ingress. It retains the original outward
+request and seat binding before candidate remapping, returns the same retained receipt for an
+exact retry, rejects changed payloads and stale handles, and serializes admission with seat
+relinquishment or grant handoff. Its reply contains side-safe status and revision only. No HTTP
+submit/receipt handler is enabled; coherent successor views, approved diary source and durable
+receipts remain gates before connected orders can be exercised.
 The [MAP-08B1 side projection prerequisite](docs/specs/maproom-side-projection-prerequisites-v1.md)
 records missing typed fields, pinned presentation data, audience-safe diary and opaque action
 mapping that must precede the browser view.

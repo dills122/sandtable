@@ -129,6 +129,10 @@ between Umpire's side cut and Maproom's outward DTO. It grants no new authority 
 MAP-08B2 calls the process-local contact/action continuity record the **audience tracker**.
 Its private side cut remains host data; Maproom receives only a validated player view. The
 **presentation catalog** owns public fixture labels and layout, not Umpire authority.
+MAP-09's **private outward action ingress** binds a typed player request to the current seat
+generation, maps it to a current Umpire candidate, and retains an exact-retry receipt in host
+memory. It is host plumbing, not a Maproom command route or durable Chronicle receipt. Public
+submission and post-step views remain separate contract gates.
 
 **Proving Ground** names the local development test environment and
 [runbook](docs/runbooks/proving-ground.md), not a game authority or separate service. Its first

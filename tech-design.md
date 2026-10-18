@@ -118,10 +118,8 @@ has no await or provider I/O, so pending is not externally observable in this sl
 publication retains pending, fencing and reconciliation requirements. System
 progression has a 1–32 step budget and explicit
 human, unsupported-phase and step-limit outcomes. Its small typed side summary and canonical
-legal set come from one committed MAP-06 cut. This is trusted in-silo plumbing only: operator and
-seat authentication, outward action mapping, durable conditional publication and terminal-state
-classification remain later boundaries, with a Core terminal signal required before connected
-play. A process restart discards this state. MAP-08A adds Development-only loopback HTTP bootstrap,
+legal set come from one committed MAP-06 cut. This is trusted in-silo plumbing only; a process
+restart discards this state. MAP-08A adds Development-only loopback HTTP bootstrap,
 trusted-host grant storage and rotating seat sessions with same-origin and CSRF checks. Its grant
 issuer now serves one admitted fixture through a Development-only creation route. Its retained
 operator/request response has one grant pair; capacity is reserved before the grain commit,
@@ -145,8 +143,13 @@ It binds campaign/source pins and authority version, advances contact/action ide
 accepted transition, and fails closed on a skipped or incoherent cut. A private grain read scopes
 opaque handles to the authorized session generation. Initial lab view uses a versioned,
 source-pinned public layout with generic contact labels, own formation labels and reserve status;
-no post-creation diary source is approved, so successor views fail closed. Browser action ingress
-remains pending.
+no post-creation diary source is approved, so successor views fail closed. MAP-09 privately binds
+a typed outward request to the active seat generation, retains its original identity for exact
+retries, rechecks a current Core candidate inside a serialized grain turn, and coordinates
+admission with seat revocation and handoff. Only side-safe status and revision leave that private
+seam. The request/receipt record is process-lifetime; no public submit/receipt handler is enabled.
+Core terminal classification, coherent successor views, approved diary source and durable
+publication remain gates for connected play.
 No canonical legal-action bytes or authority versions are serialized to HTTP. The
 [Angular workspace](src/Cna.Maproom/README.md) provides
 `projects/maproom-alpha` and the internal `@sandtable/field-atlas` library. Storybook uses the same
