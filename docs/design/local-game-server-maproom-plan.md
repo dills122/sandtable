@@ -4,7 +4,7 @@ Date: 2026-10-16. Status: MAP-01 workspace, MAP-02 foundation and MAP-03A/B fixt
 MAP-04 browser schema, fixtures and generated client drafted; connected gameplay pending.
 MAP-08B creates the trusted initial pinned fixture cut and serves its side-safe view.
 The Angular `/connected` route now reads that one cut through a loopback dev proxy;
-post-step diary projection, command ingress and complete hot-seat recovery remain pending.
+post-step diary projection, public command ingress and complete hot-seat recovery remain pending.
 Audience: contributors implementing the local rules-lab host and browser client.
 
 Build a browser client around the existing deterministic C# Umpire. First delivery launches one

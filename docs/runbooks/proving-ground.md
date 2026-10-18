@@ -1,9 +1,10 @@
 # Proving Ground local runtime
 
-Status: Development-only infrastructure slice, 2026-10-16. This runbook launches the current
-Angular Maproom shell and Orleans host scaffold. It does **not** create a campaign, seed a browser
-session, submit a legal order, or prove game persistence. Those capabilities arrive through
-[MAP-04–17](../design/local-game-server-maproom-plan.md).
+Status: Development-only local runtime. This runbook launches the synthetic Angular Maproom shell
+and an Orleans host with bounded operator bootstrap, single-fixture creation, seat and initial-view
+routes. The separate connected Maproom development lane can read that one initial cut. Neither
+surface submits a legal order, reads a successor cut, or proves game persistence. Those capabilities
+remain in [MAP-09–17](../design/local-game-server-maproom-plan.md).
 
 ## One-command Docker launch
 
@@ -44,8 +45,8 @@ does not hot reload.
 
 | Component | Docker-now role | Local port | State and next boundary |
 | --- | --- | --- | --- |
-| Maproom (nginx + built Angular) | Static synthetic operations shell | `127.0.0.1:4200` | No server calls or player data yet. MAP-03A/B/C finish fixture workflows; MAP-10 connects reads. |
-| Orleans host (.NET 10) | One Development silo and health endpoints | `127.0.0.1:5180` | No campaign grain/API. MAP-04–09 add contracts, trusted adapter, temporary grain and ingress. |
+| Maproom (nginx + built Angular) | Static synthetic operations shell | `127.0.0.1:4200` | Fixture workflows only; the separate `/connected` development lane reads one initial authorized cut. MAP-10 adds full workspace reads. |
+| Orleans host (.NET 10) | One Development silo, temporary grain and bounded local API | `127.0.0.1:5180` | Operator bootstrap, fixture creation, seat and initial-view routes exist. MAP-09 private action ingress exists; public submit/receipt and successor views remain open. |
 | `Cna.Core` | Linked into Orleans host image | None | Only authority; current public supported path stops before Combat adjudication. |
 | Exercise Runner | Host CLI outside Compose | None | Checked synthetic manifests produce deterministic evidence; not a campaign seed API. |
 | Intelligence Gateway + Decision Worker | Optional Aspire `just run` scaffolds | Aspire assigned | Not needed for the intended human rules-lab path; no configured model provider or live dispatch. |
@@ -62,8 +63,8 @@ Orleans and Archives/Chronicle modules; no extra microservices for these domains
 
 ## Seed and prove current rules-lab path
 
-The present seed mechanism is a versioned synthetic manifest for `Cna.ExerciseRunner`. It creates
-a **fresh local exercise**, not a running browser campaign. Run from repository root:
+For CLI evidence, a versioned synthetic manifest feeds `Cna.ExerciseRunner`. It creates a
+**fresh local exercise**, not a running browser campaign. Run from repository root:
 
 ```sh
 just rules-lab-evidence
@@ -72,13 +73,14 @@ just rules-lab-evidence
 The runner prints a deterministic fingerprint and validated evidence paths. Use the
 [Exercise Runner runbook](exercise-runner.md) to inspect or replay bundles. Generated evidence
 stays under ignored `artifacts/`. Do not import a bundle into Orleans or expose its raw state to
-Maproom: no trusted browser session/bootstrap contract exists yet.
+Maproom: this CLI evidence is not a trusted browser seed; use the bounded Development fixture
+creation route and seat grant for the separate connected initial read.
 
-After MAP-04–09, add an explicit Development-only fixture catalog and seed endpoint. It must bind
-immutable rules/setup/content/configuration identities and a declared RNG seed at creation, return
-only a server-issued campaign/session identity, and grant a side through the trusted host. MAP-06
-must prove Core parity; MAP-07 must declare in-memory loss on restart. MAP-08–13 then establish
-authorized reads, retry-safe commands, reconnect and seat isolation. Do not use the existing
+The Development-only creation route now admits one pinned Rules9 fixture and returns a retained
+grant pair for an exact operator/request retry. MAP-06 proves the bounded Core adapter; MAP-07
+declares in-memory loss on restart. MAP-08 adds the initial authorized read; MAP-09 private
+request binding does not expose public commands. MAP-10–13 still need connected successor reads,
+orders, reconnect and hot-seat isolation. Do not use the existing
 Exercise bundle as an HTTP DTO. MAP-17 records the first end-to-end browser playthrough, including
 an explicit unsupported Combat stop.
 
@@ -104,8 +106,8 @@ Never change container-side ports without updating the corresponding image confi
 1. MAP-03A/B/C complete synthetic map, order lifecycle, ledger and diary behavior; MAP-04 freezes
    outward browser contracts in parallel.
 2. MAP-05–07 establish trusted Core adapter, temporary campaign grain and bounded System steps.
-3. MAP-08–09 expose loopback, seat-scoped reads and retry-safe command ingress; add dev proxy only
-   after routes exist.
+3. MAP-08 exposes local creation, seat-scoped initial reads and a separate loopback dev proxy;
+   MAP-09 has private retry-safe command ingress but no public submit or receipt route yet.
 4. MAP-10–13 connect Maproom, live refresh and private hot-seat handoff.
 5. MAP-14–16 prove atomic durable storage and process restart before save/resume is offered.
 6. MAP-17 captures exact local playtest commands, accepted receipts and replay fingerprints.
