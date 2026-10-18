@@ -345,6 +345,8 @@ reference and bounded proof slices are merged, but all 300 assessments remain un
 zero admitted actions. A [private owner projection draft](docs/specs/combat-p01-owner-projection-v0.md)
 models a separate visible alias and Umpire mapping; approved fields and authentic hidden-variant
 privacy proof remain open. No ordinal-two Combat choice or public activation is available.
+The [private no-attack v0 boundary](docs/specs/combat-p01-no-attack-v0.md) fixes a proposed
+twelfth-ledger input shape but issues no event: no authentic supported-empty certificate exists.
 Accepted `CMB-POL-009` excludes Land §15.88 voluntary surrender from the initial RC
 bounded choice surface; this remains an explicit source-legal coverage limit.
 

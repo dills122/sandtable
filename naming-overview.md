@@ -69,6 +69,8 @@ has a provisional private reference, bounded evidence and a disconnected
 The proposed alias is distinct from the Umpire-only `p01.` candidate identity. Any later native
 implementation belongs inside Umpire under a plain technical name. Accepted `CMB-POL-009` excludes voluntary surrender from
 the initial RC bounded exercise; the remaining contract and proof gates still control admission.
+The `combat-p01-no-attack-v0` name is a private ordinal-two contract inventory, not a new
+Umpire capability or a completed Combat step path.
 
 **Command** chooses strategic objectives, whether supplied by a person, scripted policy or optional
 model. **Staff** converts intent into concrete deterministic plans. The Umpire validates and executes
