@@ -72,6 +72,17 @@ internal sealed class TemporaryAudienceTracker
         };
     }
 
+    // A trusted grain turn resolves a session-scoped handle against the current committed cut.
+    // The Core ID is never part of the outward token or stable action identity.
+    internal string? Resolve(CampaignActionAudience audience, long committedVersion,
+        string sessionGeneration, string actionSetToken, string outwardActionId)
+    {
+        var cut = Read(audience, committedVersion, sessionGeneration);
+        if (cut is null || cut.ActionSetToken != actionSetToken) return null;
+        return cut.Actions.SingleOrDefault(action =>
+            action.OutwardActionId == outwardActionId)?.CoreActionId;
+    }
+
     internal void Invalidate() => IsAvailable = false;
 
     private string Scope(string domain, CampaignActionAudience side, string generation,
@@ -111,10 +122,10 @@ internal sealed class TemporaryAudienceTracker
             StringComparison.Ordinal);
         var revision = prior is null ? 1 : prior.Cut.AudienceRevision + (changed ? 1 : 0);
         var token = prior is not null && !changed ? prior.Cut.ActionSetToken : Guid.NewGuid().ToString("D");
-        var oldActions = prior?.Cut.Actions.ToDictionary(a => a.CoreActionId,
+        var oldActions = prior?.Cut.Actions.ToDictionary(ActionIdentity,
             a => a.OutwardActionId, StringComparer.Ordinal);
         var actions = source.Actions.Select(action => new TemporaryPrivateAction(
-            oldActions?.GetValueOrDefault(action.CoreActionId) ?? Guid.NewGuid().ToString("D"),
+            oldActions?.GetValueOrDefault(ActionIdentity(action)) ?? Guid.NewGuid().ToString("D"),
             action.CoreActionId, action.Kind, action.ElementId,
             action.TargetLocationId, action.OpportunityId)).ToArray();
         var cut = new TemporaryPrivateAudienceCut(source.CampaignId, source.StateVersion,
@@ -147,7 +158,6 @@ internal sealed class TemporaryAudienceTracker
                 Contacts = contacts.Select(c => new { c.ContactId, c.LocationId, c.ExertsZoc }),
                 Actions = cut.Actions.Select(a => new
                 {
-                    a.CoreActionId,
                     a.Kind,
                     a.ElementId,
                     a.TargetLocationId,
@@ -157,6 +167,24 @@ internal sealed class TemporaryAudienceTracker
         }
         return Convert.ToHexStringLower(SHA256.HashData(stream.ToArray()));
     }
+
+    private static string ActionIdentity(CampaignHostPrivateAction action) =>
+        System.Text.Json.JsonSerializer.Serialize(new
+        {
+            action.Kind,
+            action.ElementId,
+            action.TargetLocationId,
+            action.OpportunityId,
+        });
+
+    private static string ActionIdentity(TemporaryPrivateAction action) =>
+        System.Text.Json.JsonSerializer.Serialize(new
+        {
+            action.Kind,
+            action.ElementId,
+            action.TargetLocationId,
+            action.OpportunityId,
+        });
 
     private static bool ValidPair(string campaignId, string rulesetHash, string scenarioId,
         CampaignHostPrivateSideCut? axis, CampaignHostPrivateSideCut? commonwealth,
@@ -172,6 +200,9 @@ internal sealed class TemporaryAudienceTracker
         && axis.PhaseId == commonwealth.PhaseId
         && axis.StageId == commonwealth.StageId
         && axis.StateVersion == commonwealth.StateVersion
+        && axis.Actions.Select(ActionIdentity).Distinct(StringComparer.Ordinal).Count() == axis.Actions.Count
+        && commonwealth.Actions.Select(ActionIdentity).Distinct(StringComparer.Ordinal).Count()
+            == commonwealth.Actions.Count
         && axis.StateVersion == priorVersion + 1;
 
     private sealed record SideState(TemporaryPrivateAudienceCut Cut, string Fingerprint,

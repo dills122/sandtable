@@ -65,7 +65,7 @@ public sealed class LocalGameApiTests
             JsonSerializer.Serialize(recovered.Response));
         var grants = JsonDocument.Parse(JsonSerializer.Serialize(recovered.Response))
             .RootElement.GetProperty("seatGrants");
-        Assert.Null(sessions.Redeem(owner, "host-rsh-001",
+        Assert.Null(await sessions.RedeemAsync(owner, "host-rsh-001",
             grants.GetProperty("axis").GetString()!));
     }
 
@@ -142,11 +142,13 @@ public sealed class LocalGameApiTests
             var store = app.Services.GetRequiredService<LocalSessionStore>();
             var operatorSession = store.Bootstrap(null)!;
             var grants = store.IssueGrants(operatorSession.OperatorId, "host-rsh-001");
-            var axis = store.Redeem(operatorSession, "host-rsh-001", grants.Axis)!;
+            var axis = (await store.RedeemAsync(operatorSession,
+                "host-rsh-001", grants.Axis))!;
             var pending = Send(client, Get("/api/v1/campaigns/host-rsh-001/view",
                 $"sandtable_session={axis.Token}"));
             await reader.Started.Task.WaitAsync(TestContext.Current.CancellationToken);
-            Assert.NotNull(store.Redeem(axis, "host-rsh-001", grants.Commonwealth));
+            Assert.NotNull(await store.RedeemAsync(axis,
+                "host-rsh-001", grants.Commonwealth));
             reader.Release.SetResult(new TemporaryPrivateCutReply
             { Status = TemporaryCampaignStatus.Current });
             Assert.Equal(HttpStatusCode.Forbidden, (await pending).StatusCode);
@@ -482,16 +484,16 @@ public sealed class LocalGameApiTests
     }
 
     [Fact]
-    public void GrantsAreBoundToOperatorAndExpire()
+    public async Task GrantsAreBoundToOperatorAndExpire()
     {
         var clock = new ManualClock();
         var store = new LocalSessionStore(clock);
         var owner = store.Bootstrap(null)!;
         var other = store.Bootstrap(null)!;
         var grants = store.IssueGrants(owner.OperatorId, "host-rsh-001");
-        Assert.Null(store.Redeem(other, "host-rsh-001", grants.Axis));
+        Assert.Null(await store.RedeemAsync(other, "host-rsh-001", grants.Axis));
         clock.Advance(TimeSpan.FromMinutes(11));
-        Assert.Null(store.Redeem(owner, "host-rsh-001", grants.Axis));
+        Assert.Null(await store.RedeemAsync(owner, "host-rsh-001", grants.Axis));
     }
 
     [Fact]
@@ -510,13 +512,13 @@ public sealed class LocalGameApiTests
     }
 
     [Fact]
-    public void SeatSessionsExpireAndExpiredGrantsAreSwept()
+    public async Task SeatSessionsExpireAndExpiredGrantsAreSwept()
     {
         var clock = new ManualClock();
         var store = new LocalSessionStore(clock);
         var owner = store.Bootstrap(null)!;
         var first = store.IssueGrants(owner.OperatorId, "host-rsh-001");
-        var seat = store.Redeem(owner, "host-rsh-001", first.Axis)!;
+        var seat = (await store.RedeemAsync(owner, "host-rsh-001", first.Axis))!;
         Assert.Equal("axis", seat.Seat);
         for (var index = 1; index < LocalSessionStore.MaxGrants / 2; index++)
             store.IssueGrants(owner.OperatorId, "host-rsh-001");

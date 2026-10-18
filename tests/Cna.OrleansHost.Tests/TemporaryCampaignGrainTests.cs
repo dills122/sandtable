@@ -8,6 +8,7 @@ using Cna.Core.Campaigns;
 using Cna.Core.Exercises;
 using Cna.Core.Hosting;
 using Cna.Core.Rules;
+using Cna.OrleansHost.Api;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
@@ -93,6 +94,205 @@ public sealed class TemporaryCampaignGrainTests
             Side(CampaignActionAudience.Axis, 2)));
         Assert.Null(tracker.Read(CampaignActionAudience.Axis, 1, Generation));
         Assert.Null(tracker.Read(CampaignActionAudience.Commonwealth, 1, Generation));
+    }
+
+    [Fact]
+    public void PrivateActionHandleSurvivesHiddenOnlyCoreIdRemap()
+    {
+        var axis = Side(CampaignActionAudience.Axis, 1);
+        var commonwealth = Side(CampaignActionAudience.Commonwealth, 1);
+        var tracker = TemporaryAudienceTracker.Create("test-campaign", "source-hash",
+            "scenario", "setup-pin", "content-pin", axis, commonwealth)!;
+        var original = tracker.Read(CampaignActionAudience.Axis, 1, Generation)!;
+        Assert.True(tracker.Advance(axis with
+        {
+            StateVersion = 2,
+            Actions = [new CampaignHostPrivateAction("new-core-action", "action")],
+        }, commonwealth with { StateVersion = 2 }));
+        var next = tracker.Read(CampaignActionAudience.Axis, 2, Generation)!;
+        Assert.Equal(original.ActionSetToken, next.ActionSetToken);
+        Assert.Equal(original.Actions[0].OutwardActionId, next.Actions[0].OutwardActionId);
+        Assert.Equal("new-core-action", tracker.Resolve(CampaignActionAudience.Axis,
+            2, Generation, original.ActionSetToken, original.Actions[0].OutwardActionId));
+        Assert.Null(tracker.Resolve(CampaignActionAudience.Commonwealth,
+            2, Generation, original.ActionSetToken, original.Actions[0].OutwardActionId));
+    }
+
+    [Fact]
+    public async Task PrivateOutwardIngressDeduplicatesBeforeRemapAndAuthorizesRetainedGeneration()
+    {
+        using var host = BuildHost();
+        await host.StartAsync(TestContext.Current.CancellationToken);
+        try
+        {
+            var grain = GetTrustedGrain(host);
+            Assert.Equal(TemporaryCampaignStatus.Created,
+                (await grain.CreateAsync("operator-1", "create-1")).Status);
+            Assert.Equal(TemporaryCampaignStatus.StepLimit,
+                (await grain.AdvanceSystemAsync(3)).Status);
+            var sessions = new LocalSessionStore(TimeProvider.System);
+            var operatorSession = sessions.Bootstrap(null)!;
+            var grants = sessions.IssueGrants(operatorSession.OperatorId,
+                TemporaryCampaignGrain.FixtureCampaignId);
+            var axis = (await sessions.RedeemAsync(operatorSession,
+                TemporaryCampaignGrain.FixtureCampaignId, grants.Axis))!;
+            var commonwealthOperator = sessions.Bootstrap(null)!;
+            var otherGrants = sessions.IssueGrants(commonwealthOperator.OperatorId,
+                TemporaryCampaignGrain.FixtureCampaignId);
+            var commonwealth = (await sessions.RedeemAsync(commonwealthOperator,
+                TemporaryCampaignGrain.FixtureCampaignId, otherGrants.Commonwealth))!;
+            var ingress = new TemporaryOutwardActionIngress(sessions,
+                host.Services.GetRequiredService<IGrainFactory>(),
+                host.Services.GetRequiredService<TemporaryCampaignAccess>());
+            var cut = (await grain.Inner.QueryPrivateSideAsync(grain.Capability,
+                CampaignActionAudience.Axis, axis.Generation!)).Cut!;
+            var request = new TemporaryOutwardActionRequest(1, cut.CampaignId,
+                Guid.NewGuid().ToString("D"), axis.Generation!, cut.PositionId,
+                cut.Actions.Single(a => a.Kind == "act-first").OutwardActionId,
+                1, cut.ActionSetToken);
+
+            var replies = await Task.WhenAll(ingress.SubmitAsync(axis.Token, request),
+                ingress.SubmitAsync(axis.Token, request));
+            Assert.All(replies, reply => Assert.Equal(TemporaryCampaignStatus.Accepted,
+                reply.Status));
+            Assert.Equal(replies[0], replies[1]);
+            Assert.Equal(cut.StateVersion + 1,
+                (await grain.QueryAsync(CampaignActionAudience.Axis)).View!.StateVersion);
+            Assert.Equal(replies[0], await ingress.FindRequestAsync(axis.Token,
+                cut.CampaignId, request.RequestId));
+            Assert.Equal(replies[0], await ingress.SubmitAsync(axis.Token, request));
+            Assert.Equal(TemporaryCampaignStatus.Conflict,
+                (await ingress.SubmitAsync(axis.Token, request with
+                {
+                    ActionId = Guid.NewGuid().ToString("D"),
+                })).Status);
+            Assert.Equal(TemporaryCampaignStatus.Conflict,
+                (await ingress.SubmitAsync(commonwealth.Token, request with
+                {
+                    SessionGeneration = commonwealth.Generation!,
+                })).Status);
+            Assert.Equal(TemporaryCampaignStatus.Conflict,
+                (await ingress.FindRequestAsync(commonwealth.Token,
+                    cut.CampaignId, request.RequestId)).Status);
+
+            var beforeStale = await grain.QueryAsync(CampaignActionAudience.Axis);
+            var stale = request with { RequestId = Guid.NewGuid().ToString("D") };
+            var staleReply = await ingress.SubmitAsync(axis.Token, stale);
+            Assert.Equal(TemporaryCampaignStatus.Rejected, staleReply.Status);
+            Assert.Equal("stale-view", staleReply.Reason);
+            Assert.Equal(staleReply, await ingress.SubmitAsync(axis.Token, stale));
+            var current = (await grain.Inner.QueryPrivateSideAsync(grain.Capability,
+                CampaignActionAudience.Axis, axis.Generation!)).Cut!;
+            var forged = request with
+            {
+                RequestId = Guid.NewGuid().ToString("D"),
+                ExpectedPositionId = current.PositionId,
+                ActionSetToken = current.ActionSetToken,
+                ActionId = Guid.NewGuid().ToString("D"),
+            };
+            var forgedReply = await ingress.SubmitAsync(axis.Token, forged);
+            Assert.Equal(TemporaryCampaignStatus.Rejected, forgedReply.Status);
+            Assert.Equal("invalid-action", forgedReply.Reason);
+            Assert.Equal(beforeStale.View,
+                (await grain.QueryAsync(CampaignActionAudience.Axis)).View);
+            Assert.Equal(beforeStale.LegalActions,
+                (await grain.QueryAsync(CampaignActionAudience.Axis)).LegalActions);
+            Assert.True(await sessions.RelinquishAsync(axis, cut.CampaignId));
+            Assert.Equal(TemporaryCampaignStatus.Rejected,
+                (await ingress.FindRequestAsync(axis.Token,
+                    cut.CampaignId, request.RequestId)).Status);
+        }
+        finally { await host.StopAsync(TestContext.Current.CancellationToken); }
+    }
+
+    [Fact]
+    public async Task SeatRelinquishmentWaitsForAdmittedActionCommit()
+    {
+        using var host = BuildHost();
+        await host.StartAsync(TestContext.Current.CancellationToken);
+        try
+        {
+            var grain = GetTrustedGrain(host);
+            await grain.CreateAsync("operator-1", "create-1");
+            await grain.AdvanceSystemAsync(3);
+            var sessions = new LocalSessionStore(TimeProvider.System);
+            var operatorSession = sessions.Bootstrap(null)!;
+            var grants = sessions.IssueGrants(operatorSession.OperatorId,
+                TemporaryCampaignGrain.FixtureCampaignId);
+            var axis = (await sessions.RedeemAsync(operatorSession,
+                TemporaryCampaignGrain.FixtureCampaignId, grants.Axis))!;
+            var cut = (await grain.Inner.QueryPrivateSideAsync(grain.Capability,
+                CampaignActionAudience.Axis, axis.Generation!)).Cut!;
+            var request = new TemporaryOutwardActionRequest(1, cut.CampaignId,
+                Guid.NewGuid().ToString("D"), axis.Generation!, cut.PositionId,
+                cut.Actions.Single(action => action.Kind == "act-first").OutwardActionId,
+                1, cut.ActionSetToken);
+            var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+            var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+            var inFlight = sessions.WithAuthorizedSeatAsync(axis.Token, cut.CampaignId,
+                async session =>
+                {
+                    entered.SetResult();
+                    await release.Task;
+                    return await grain.Inner.SubmitOutwardAsync(grain.Capability,
+                        new TemporaryAuthenticatedSeat(session.OperatorId, cut.CampaignId,
+                            CampaignActionAudience.Axis, session.Generation!), request);
+                }, new TemporaryOutwardActionReply(TemporaryCampaignStatus.Rejected, "unauthorized"));
+            await entered.Task;
+            var relinquish = sessions.RelinquishAsync(axis, cut.CampaignId);
+            Assert.False(relinquish.IsCompleted);
+            var lateAdmission = sessions.WithAuthorizedSeatAsync(axis.Token,
+                cut.CampaignId, _ => Task.FromResult(true), false);
+            Assert.Equal(cut.StateVersion,
+                (await grain.QueryAsync(CampaignActionAudience.Axis)).View!.StateVersion);
+            release.SetResult();
+            Assert.Equal(TemporaryCampaignStatus.Accepted, (await inFlight).Status);
+            Assert.True(await relinquish);
+            Assert.False(await lateAdmission);
+            Assert.Equal(cut.StateVersion + 1,
+                (await grain.QueryAsync(CampaignActionAudience.Axis)).View!.StateVersion);
+            var ingress = new TemporaryOutwardActionIngress(sessions,
+                host.Services.GetRequiredService<IGrainFactory>(),
+                host.Services.GetRequiredService<TemporaryCampaignAccess>());
+            Assert.Equal(TemporaryCampaignStatus.Rejected,
+                (await ingress.FindRequestAsync(axis.Token, cut.CampaignId,
+                    request.RequestId)).Status);
+            Assert.Equal(TemporaryCampaignStatus.Rejected,
+                (await ingress.SubmitAsync(axis.Token, request with
+                {
+                    RequestId = Guid.NewGuid().ToString("D"),
+                })).Status);
+        }
+        finally { await host.StopAsync(TestContext.Current.CancellationToken); }
+    }
+
+    [Fact]
+    public async Task SeatHandoffWaitsForAdmittedAction()
+    {
+        var sessions = new LocalSessionStore(TimeProvider.System);
+        var operatorSession = sessions.Bootstrap(null)!;
+        var grants = sessions.IssueGrants(operatorSession.OperatorId,
+            TemporaryCampaignGrain.FixtureCampaignId);
+        var axis = (await sessions.RedeemAsync(operatorSession,
+            TemporaryCampaignGrain.FixtureCampaignId, grants.Axis))!;
+        var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var inFlight = sessions.WithAuthorizedSeatAsync(axis.Token, axis.CampaignId!,
+            async _ =>
+            {
+                entered.SetResult();
+                await release.Task;
+                return true;
+            }, false);
+        await entered.Task;
+        var handoff = sessions.RedeemAsync(axis, axis.CampaignId!, grants.Commonwealth);
+        Assert.False(handoff.IsCompleted);
+        release.SetResult();
+        Assert.True(await inFlight);
+        var next = await handoff;
+        Assert.Equal("commonwealth", next!.Seat);
+        Assert.Null(sessions.Find(axis.Token));
+        Assert.NotEqual(axis.Generation, next.Generation);
     }
 
     private static CampaignHostPrivateSideCut Side(CampaignActionAudience side, long version,
