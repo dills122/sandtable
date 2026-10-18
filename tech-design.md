@@ -813,6 +813,9 @@ proof are still missing. Accepted `CMB-POL-009`
 excludes source-legal voluntary surrender under Land §15.88 from the initial RC, so the bounded
 exercise cannot claim the full physical action surface. The private P01 reference and bounded
 proofs do not enable P02 selection, a native ordinal-two consumer or a public action.
+The [private P01 no-attack v0 boundary](docs/specs/combat-p01-no-attack-v0.md) keeps proposed
+ordinal-two System inputs disconnected until a source-backed supported-empty certificate and
+authentic twelfth-ledger event/receipt replay exist; provisional physical emptiness is insufficient.
 
 The additive [actual Reaction-to-Combat entry](docs/specs/combat-actual-reaction-combat-entry-v1.md)
 authenticates complete direct Reaction closure with separate prefix/lifecycle/Breakdown caller ledgers.
