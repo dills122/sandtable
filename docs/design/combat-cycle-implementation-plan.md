@@ -3045,8 +3045,11 @@ DES-005 authorize only the bounded singleton infantry exercise. Land §15.88 vol
 remains source-legal; accepted `CMB-POL-009` excludes it from the initial RC P01 exercise.
 This precludes any full source-legal Combat claim.
 
-P01 executable reference, canonical schema/ID, all-row adversarial verification and independent
-same-head review remain open. The provenance and result reports in merged PRs #225 and #227 and
-geometry report in draft PR #226 are inputs, not an executable certificate. P02 selection and P03 native
-consumer remain separate;
-no public or native ordinal-two action is activated by this design.
+The provisional private reference, canonical private ID, all-row replay and bounded result,
+geometry, source-condition and privacy diagnostics are merged. The
+[AC-006 typed boundary](../specs/combat-p01-surrender-rba-boundary-v0.md) now separates a
+pre-assault no-trigger fact, automatic-surrender trigger and mutually exclusive RBA receipt
+shapes. It remains diagnostic: actual ordinal-two automatic full-TOE/custody settlement and
+RBA authority replay are unproved. Complete action coverage, outward privacy proof, adversarial
+transition cuts and the support certificate remain open. P02 selection and P03 native consumer
+remain separate; no public or native ordinal-two action is activated.
