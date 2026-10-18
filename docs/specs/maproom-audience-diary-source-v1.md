@@ -78,8 +78,8 @@ not permission to invent text from event fields.
 | `NoObligationNavalConvoyArrivalResolved` | `ResolveNoObligationNavalConvoyArrivalAction`, `System` | Silent. |
 | `NoObligationFleetAssignmentResolved` | `ResolveNoObligationFleetAssignmentAction`, `System` | Silent. |
 | `NoObligationFleetRepairResolved` | `ResolveNoObligationFleetRepairAction`, `System` | Silent. |
-| `ReserveElementDesignated` | Human designation, same `ActingSide`; own element in side cut | Entry for acting seat; `diary.reserveDesignated`; map private element ID to permitted outward formation ID. |
-| `ReserveDesignationCompleted` | Human completion, same `ActingSide` | Entry for acting seat; `diary.reserveCompleted`. |
+| `ReserveElementDesignated` | `DesignateReserveAction`, same human `ActingSide`; own element in side cut | Entry for acting seat; `diary.reserveDesignated`; map private element ID to permitted outward formation ID. |
+| `ReserveDesignationCompleted` | `CompleteReserveDesignationAction`, same human `ActingSide` | Entry for acting seat; `diary.reserveCompleted`. |
 | `ElementMovedV3` (`element-moved` v3) | `MoveElementAction`, same human `ActingSide`; own element in side cut | Entry for acting seat; `diary.elementMoved`; omit cost, representation and unapproved route facts. Historical `ElementMoved` is not a current successor. |
 | `ElementMovementStopped` (`element-movement-stopped` v1) | `StopElementMovementAction`, same human `ActingSide` and route/action capability | Entry for acting seat; proposed `diary.movementStopped`; omit private route and stop IDs. |
 | `BreakdownStopResolved` (`breakdown-stop-resolved` v1) | `ResolveBreakdownStopAction`, `System`; stop capability and heads match | Silent. System resolution cannot inherit the prior player's audience. |
