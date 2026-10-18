@@ -23,8 +23,15 @@ Determination, exact state version/prefix and R03 Breakdown receipt. The `suppor
 must later name a separately reviewed, source-backed supported-empty certificate for this exact
 state. The field cannot certify itself. Zero-candidate opening has no player/model decision, trusted
 time, or deadline. The later `selectionCloseInputFields` closes no-selection using the opening
-receipt. `stepInputFields` binds each exact prior version/prefix, from-position, selection receipt
-and immediately preceding step receipt. All are System-authored. The inventory also fixes one
+receipt. Its future receipt has the distinct `p01s.` prefix and
+`selectionCloseReceiptDomain`; the opening receipt uses `p01o.` and
+`openingReceiptDomain`. `stepInputFields` binds each exact prior version/prefix, from-position,
+selection-close receipt and previous-step receipt. **At step index zero**,
+`previousStepReceiptId` is the segment-opening `p01o.` receipt, while the separate
+`selectionReceiptId` is the no-selection `p01s.` receipt. For steps one through five,
+`previousStepReceiptId` is the immediately preceding `p01n.` step receipt. A future replay
+must derive all three from authenticated events, never trust the caller's copies. All inputs are
+System-authored. The inventory also fixes one
 closed Event field order and no-attack step effect fields, but v0 issues **none** of these events.
 
 The proposed ordered event path has eight events: opening, no-selection closure, then six
@@ -33,7 +40,10 @@ are Barrage, Retreat Before Assault, Force Assignment, Anti-Armor, Close Assault
 cycle/slot's Reserve Release. Only the final step closes this Combat occurrence. Arriving at
 Reserve Release releases no unit and does not reset history or advance the cycle. Each future event
 must carry one adjacent authority version, the prior prefix, canonical input and effect, and a
-domain-separated receipt derived from the unsigned event. Accepted exact retries must read back
+domain-separated receipt derived from the unsigned event: lowercase prefix plus SHA-256 of ASCII
+domain, a NUL byte, and canonical Event without `receiptId`. Opening, selection-close and step
+receipts use separate domains and prefixes `p01o.`, `p01s.`, and `p01n.`. These are proposed
+codecs without an issued event or golden vector. Accepted exact retries must read back
 the original event bytes and receipt; stale/reordered/duplicate/cross-cycle inputs must not append
 an event. World, RNG, CP, ammo, TOE, attacked history, target use, Weather, and original R03
 predecessor bytes must remain identical throughout a no-attack path.
@@ -42,7 +52,12 @@ The frozen [step policy](../design/combat-step-transitions-v1.md) and
 [ordinal-one no-attack reference](combat-inherited-no-attack-v1.md) supply order and regression
 patterns, **not** authority for ordinal two. A defender decline cannot be synthesized from a
 no-selection or RBA timeout. The currently proposed private input parser checks exact key order,
-closed fixed values, integer/identifier/hash types, duplicate keys and canonical bytes. Syntactic
+closed fixed values, integer/identifier/hash types, duplicate keys and canonical bytes. The
+closed identifier grammar is `creation.` plus 64 lowercase hex digits for creation binding,
+`mrbc.` plus 64 lowercase hex digits for R03 predecessor receipt, and
+`land.position.` plus 1–240 lowercase letters, digits, dots or hyphens for position ID. Newline,
+control characters, whitespace and path separators reject. The selection-close and step syntax
+checks reject wrong receipt domains or first/later step chaining. Syntactic
 validity never bypasses P01 support or creates a receipt.
 
 ## Current fail-closed result

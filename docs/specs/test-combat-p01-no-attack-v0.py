@@ -89,6 +89,69 @@ class NoAttackBoundaryTests(unittest.TestCase):
             with self.subTest(candidate=candidate[:50]), self.assertRaises(boundary.Invalid):
                 boundary.parse_opening_input(candidate)
 
+    def test_identifier_grammar_rejects_control_characters(self):
+        source, parents, r03 = self.paid
+        _, _, state = boundary.p01.r03.replay(source, parents, r03)
+        fields = boundary.SCHEMA["zeroCandidateOpeningInputFields"]
+        value = dict.fromkeys(fields)
+        value.update(contractVersion=0, kind="open-zero-candidate-selection", actor="system",
+                     creationBinding=state["world"]["creationBinding"],
+                     sourceHash=boundary.p01.digest(source), cycleId=state["cycleId"],
+                     positionId=state["sequencePosition"]["positionId"],
+                     expectedPriorVersion=state["stateVersion"],
+                     expectedPriorPrefix=state["prefix"],
+                     predecessorReceiptId=state["breakdownCompletionReceiptId"],
+                     supportCertificateHash="sha256:" + "0" * 64,
+                     candidateCount=0, decisionId=None, trustedTime=None, deadline=None)
+        for field in ("creationBinding", "positionId", "predecessorReceiptId"):
+            for suffix in ("\n", "\r", "\t", "\x00", " ", "/extra"):
+                with self.subTest(field=field, suffix=repr(suffix)):
+                    changed = {**value, field: value[field] + suffix}
+                    with self.assertRaises(boundary.Invalid):
+                        boundary.opening_input_bytes(changed)
+
+    def test_selection_close_domain_and_first_step_receipt_chain(self):
+        source, parents, r03 = self.paid
+        _, _, state = boundary.p01.r03.replay(source, parents, r03)
+        opening = "p01o." + "a" * 64
+        selection = "p01s." + "b" * 64
+        prior_step = "p01n." + "c" * 64
+        close = dict(contractVersion=0, kind="close-zero-candidate-selection", actor="system",
+                     cycleId=state["cycleId"],
+                     positionId=state["sequencePosition"]["positionId"],
+                     expectedPriorVersion=state["stateVersion"] + 1,
+                     expectedPriorPrefix=state["prefix"], openingReceiptId=opening,
+                     outcome="no-selection", candidateId=None)
+        self.assertTrue(boundary.selection_close_input_bytes(close))
+        with self.assertRaises(boundary.Invalid):
+            boundary.selection_close_input_bytes({**close, "openingReceiptId": selection})
+        first = dict(contractVersion=0, kind="complete-no-attack-step", actor="system",
+                     cycleId=state["cycleId"],
+                     expectedPriorVersion=state["stateVersion"] + 2,
+                     expectedPriorPrefix=state["prefix"],
+                     fromPositionId=state["sequencePosition"]["positionId"],
+                     selectionReceiptId=selection, previousStepReceiptId=opening)
+        first_bytes = boundary.step_input_bytes(
+            first, step_index=0, opening_receipt_id=opening, selection_receipt_id=selection)
+        with self.assertRaisesRegex(boundary.Invalid, "CMB-P01-NA-004"):
+            boundary.inspect(source, parents, r03, [first_bytes])
+        for changed in ({**first, "previousStepReceiptId": selection},
+                        {**first, "selectionReceiptId": opening}):
+            with self.assertRaises(boundary.Invalid):
+                boundary.step_input_bytes(changed, step_index=0,
+                                          opening_receipt_id=opening,
+                                          selection_receipt_id=selection)
+        second = {**first, "expectedPriorVersion": state["stateVersion"] + 3,
+                  "previousStepReceiptId": prior_step}
+        self.assertTrue(boundary.step_input_bytes(
+            second, step_index=1, opening_receipt_id=opening,
+            selection_receipt_id=selection, prior_step_receipt_id=prior_step))
+        with self.assertRaises(boundary.Invalid):
+            boundary.step_input_bytes({**second, "previousStepReceiptId": opening},
+                                      step_index=1, opening_receipt_id=opening,
+                                      selection_receipt_id=selection,
+                                      prior_step_receipt_id=prior_step)
+
     def test_mutated_ancestry_rejects_before_any_transition(self):
         source, parents, r03 = self.armed
         damaged = copy.deepcopy(parents)

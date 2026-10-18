@@ -22,6 +22,10 @@ def require(condition, reason):
         raise Invalid("CMB-P01-NA-" + reason)
 
 
+def identifier(value, pattern):
+    return type(value) is str and re.fullmatch(SCHEMA["identifierPatterns"][pattern], value) is not None
+
+
 def opening_input_bytes(value):
     """Encode a proposed input only; syntactic validity grants no authority."""
     fields = SCHEMA["zeroCandidateOpeningInputFields"]
@@ -34,9 +38,50 @@ def opening_input_bytes(value):
     require(all(type(value[key]) is str and re.fullmatch(r"sha256:[0-9a-f]{64}", value[key])
                 for key in ("sourceHash", "cycleId", "expectedPriorPrefix",
                             "supportCertificateHash")), "002")
-    require(all(type(value[key]) is str and value[key].isascii()
-                and 0 < len(value[key]) <= 256
+    require(all(identifier(value[key], key)
                 for key in ("creationBinding", "positionId", "predecessorReceiptId")), "002")
+    data = json.dumps(value, ensure_ascii=True, separators=(",", ":")).encode("ascii")
+    require(len(data) <= SCHEMA["limits"]["inputBytes"], "001")
+    return data
+
+
+def selection_close_input_bytes(value):
+    """Validate proposed selection closure syntax without creating a receipt."""
+    require(type(value) is dict and list(value) == SCHEMA["selectionCloseInputFields"], "001")
+    fixed = SCHEMA["selectionCloseInputValues"]
+    require(all(value[key] == expected and type(value[key]) is type(expected)
+                for key, expected in fixed.items()), "002")
+    require(identifier(value["positionId"], "positionId")
+            and identifier(value["openingReceiptId"], "openingReceiptId")
+            and type(value["expectedPriorVersion"]) is int
+            and 0 <= value["expectedPriorVersion"] < 2**63
+            and all(type(value[key]) is str and re.fullmatch(r"sha256:[0-9a-f]{64}", value[key])
+                    for key in ("cycleId", "expectedPriorPrefix")), "002")
+    data = json.dumps(value, ensure_ascii=True, separators=(",", ":")).encode("ascii")
+    require(len(data) <= SCHEMA["limits"]["inputBytes"], "001")
+    return data
+
+
+def step_input_bytes(value, *, step_index, opening_receipt_id, selection_receipt_id,
+                     prior_step_receipt_id=None):
+    """Check proposed step receipt chain only; arguments are not authority."""
+    require(type(step_index) is int and 0 <= step_index < 6, "002")
+    require(identifier(opening_receipt_id, "openingReceiptId")
+            and identifier(selection_receipt_id, "selectionReceiptId"), "002")
+    require(type(value) is dict and list(value) == SCHEMA["stepInputFields"], "001")
+    fixed = SCHEMA["stepInputValues"]
+    require(all(value[key] == expected and type(value[key]) is type(expected)
+                for key, expected in fixed.items()), "002")
+    expected_previous = opening_receipt_id if step_index == 0 else prior_step_receipt_id
+    require((prior_step_receipt_id is None if step_index == 0
+             else identifier(prior_step_receipt_id, "stepReceiptId"))
+            and value["previousStepReceiptId"] == expected_previous
+            and value["selectionReceiptId"] == selection_receipt_id
+            and identifier(value["fromPositionId"], "positionId")
+            and type(value["expectedPriorVersion"]) is int
+            and 0 <= value["expectedPriorVersion"] < 2**63
+            and all(type(value[key]) is str and re.fullmatch(r"sha256:[0-9a-f]{64}", value[key])
+                    for key in ("cycleId", "expectedPriorPrefix")), "002")
     data = json.dumps(value, ensure_ascii=True, separators=(",", ":")).encode("ascii")
     require(len(data) <= SCHEMA["limits"]["inputBytes"], "001")
     return data

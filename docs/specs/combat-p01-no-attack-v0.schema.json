@@ -110,8 +110,18 @@
     "close-assault",
     "reserve-release"
   ],
+  "identifierPatterns": {
+    "creationBinding": "creation\\.[0-9a-f]{64}",
+    "positionId": "land\\.position\\.[a-z0-9.-]{1,240}",
+    "predecessorReceiptId": "mrbc\\.[0-9a-f]{64}",
+    "openingReceiptId": "p01o\\.[0-9a-f]{64}",
+    "selectionReceiptId": "p01s\\.[0-9a-f]{64}",
+    "stepReceiptId": "p01n\\.[0-9a-f]{64}"
+  },
   "openingReceiptDomain": "sandtable.combat.p01.no-attack.opening-receipt.v0",
+  "selectionCloseReceiptDomain": "sandtable.combat.p01.no-attack.selection-close-receipt.v0",
   "stepReceiptDomain": "sandtable.combat.p01.no-attack.step-receipt.v0",
+  "firstStepPreviousReceipt": "openingReceiptId; the selection-close receipt is separately bound by selectionReceiptId",
   "limits": {
     "inputBytes": 4096,
     "inputDepth": 2,
