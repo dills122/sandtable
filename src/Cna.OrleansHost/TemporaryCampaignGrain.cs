@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System.Security.Cryptography;
 using System.Text.Json;
+using System.Globalization;
 using Cna.Core.Actions;
 using Cna.Core.Campaigns;
 using Cna.Core.Exercises;
@@ -22,6 +23,10 @@ internal interface ITemporaryCampaignGrain : IGrainWithStringKey
         CampaignActionAudience audience, byte[] canonicalCommand);
     Task<TemporaryCampaignReply> FindRequestAsync(byte[] capability, string actorId, string requestId,
         CampaignActionAudience audience);
+    Task<TemporaryOutwardActionReply> SubmitOutwardAsync(byte[] capability,
+        TemporaryAuthenticatedSeat seat, TemporaryOutwardActionRequest request);
+    Task<TemporaryOutwardActionReply> FindOutwardRequestAsync(byte[] capability,
+        TemporaryAuthenticatedSeat seat, string requestId);
     Task<TemporaryCampaignReply> AdvanceSystemAsync(byte[] capability, int stepBudget);
     Task<string> ActivationIdForTestAsync(byte[] capability);
     Task DeactivateForTestAsync(byte[] capability);
@@ -85,6 +90,8 @@ public sealed class TemporaryCampaignMemoryStore
 internal sealed class TemporaryCampaignMemory
 {
     internal Dictionary<string, RequestRecord> Requests { get; } = new(StringComparer.Ordinal);
+    internal Dictionary<string, OutwardRequestRecord> OutwardRequests { get; } =
+        new(StringComparer.Ordinal);
     internal ExerciseSession? Committed { get; set; }
     internal string? Creator { get; set; }
     internal string? CreationRequestId { get; set; }
@@ -96,6 +103,8 @@ internal sealed class TemporaryCampaignMemory
 
 internal sealed record RequestRecord(string Actor, CampaignActionAudience Audience,
     byte[] Command, TemporaryCampaignReply Reply);
+internal sealed record OutwardRequestRecord(TemporaryAuthenticatedSeat Seat,
+    TemporaryOutwardActionRequest Request, TemporaryOutwardActionReply Reply);
 internal sealed record PendingStep(string Actor, string RequestId,
     CampaignActionAudience Audience, byte[] Command, ExerciseStepResult Result);
 
@@ -284,6 +293,86 @@ public sealed class TemporaryCampaignGrain(
             ? Copy(record.Reply) : Reply(TemporaryCampaignStatus.Conflict, "requestOwner"));
     }
 
+    public async Task<TemporaryOutwardActionReply> SubmitOutwardAsync(byte[] capability,
+        TemporaryAuthenticatedSeat seat, TemporaryOutwardActionRequest request)
+    {
+        if (!access.Allows(capability)) return Outward(TemporaryCampaignStatus.Rejected, "unauthorized");
+        if (memory.Committed is null) return Outward(TemporaryCampaignStatus.Missing, "missing");
+        if (!TemporaryOutwardActionBinding.Valid(seat, request)
+            || request.CampaignId != this.GetPrimaryKeyString())
+            return Outward(TemporaryCampaignStatus.Rejected, "invalid-request");
+
+        // This identity is the original outward request and seat generation, never the
+        // re-resolved Core command. Check it before current token or action staleness.
+        if (memory.OutwardRequests.TryGetValue(request.RequestId, out var prior))
+            return prior.Seat == seat && prior.Request == request
+                ? prior.Reply : Outward(TemporaryCampaignStatus.Conflict, "request-reuse");
+
+        TemporaryOutwardActionReply result;
+        var cut = memory.AudienceTracker?.Read(seat.Audience, memory.CommittedVersion,
+            seat.SessionGeneration);
+        if (cut is null)
+            return Outward(TemporaryCampaignStatus.Unavailable, "unavailable");
+        if (request.ExpectedPositionId != cut.PositionId
+            || request.ActionSetToken != cut.ActionSetToken)
+            result = Outward(TemporaryCampaignStatus.Rejected, "stale-view");
+        else
+        {
+            var coreId = memory.AudienceTracker!.Resolve(seat.Audience,
+                memory.CommittedVersion, seat.SessionGeneration, request.ActionSetToken,
+                request.ActionId);
+            if (coreId is null)
+                result = Outward(TemporaryCampaignStatus.Rejected, "invalid-action");
+            else
+            {
+                var current = CampaignHostAdapter.QueryPrivateSideCut(memory.Committed,
+                    seat.Audience);
+                if (current is null || current.StateVersion != cut.StateVersion
+                    || current.PositionId != cut.PositionId
+                    || !current.Actions.Any(action => action.CoreActionId == coreId))
+                    return Outward(TemporaryCampaignStatus.Unavailable, "unavailable");
+                var command = new CampaignActionSubmission(1, cut.CampaignId,
+                    cut.StateVersion, cut.PositionId, seat.Audience, coreId);
+                var submitted = await SubmitAsync(capability, seat.OperatorId,
+                    $"outward-{request.RequestId}", seat.Audience,
+                    CampaignActionSubmissionSerializer.SerializeCanonical(command));
+                result = submitted.Status switch
+                {
+                    TemporaryCampaignStatus.Accepted => Outward(TemporaryCampaignStatus.Accepted,
+                        "none", memory.AudienceTracker!.Read(seat.Audience,
+                            memory.CommittedVersion, seat.SessionGeneration)!
+                            .AudienceRevision.ToString(CultureInfo.InvariantCulture)),
+                    TemporaryCampaignStatus.Rejected => Outward(TemporaryCampaignStatus.Rejected,
+                        "invalid-action"),
+                    _ => Outward(TemporaryCampaignStatus.Unavailable, "unavailable"),
+                };
+            }
+        }
+        // Final rejected outcomes are retained too; changed reuse never gets a new attempt.
+        if (result.Status is TemporaryCampaignStatus.Accepted or TemporaryCampaignStatus.Rejected)
+            memory.OutwardRequests.Add(request.RequestId,
+                new OutwardRequestRecord(seat, request, result));
+        return result;
+    }
+
+    public Task<TemporaryOutwardActionReply> FindOutwardRequestAsync(byte[] capability,
+        TemporaryAuthenticatedSeat seat, string requestId)
+    {
+        if (!access.Allows(capability))
+            return Task.FromResult(Outward(TemporaryCampaignStatus.Rejected, "unauthorized"));
+        if (memory.Committed is null)
+            return Task.FromResult(Outward(TemporaryCampaignStatus.Missing, "missing"));
+        if (seat.CampaignId != this.GetPrimaryKeyString()
+            || seat.Audience is not (CampaignActionAudience.Axis or CampaignActionAudience.Commonwealth)
+            || !Guid.TryParseExact(seat.SessionGeneration, "D", out _)
+            || !Guid.TryParseExact(requestId, "D", out _))
+            return Task.FromResult(Outward(TemporaryCampaignStatus.Rejected, "invalid-request"));
+        if (!memory.OutwardRequests.TryGetValue(requestId, out var record))
+            return Task.FromResult(Outward(TemporaryCampaignStatus.Missing, "missing"));
+        return Task.FromResult(record.Seat == seat ? record.Reply
+            : Outward(TemporaryCampaignStatus.Conflict, "request-owner"));
+    }
+
     public async Task<TemporaryCampaignReply> AdvanceSystemAsync(byte[] capability, int stepBudget)
     {
         if (!access.Allows(capability)) return Reply(TemporaryCampaignStatus.Rejected, "unauthorized");
@@ -330,6 +419,9 @@ public sealed class TemporaryCampaignGrain(
         !string.IsNullOrWhiteSpace(value) && value.Length <= 128;
     private static TemporaryCampaignReply Reply(TemporaryCampaignStatus status,
         string? reason = null, int steps = 0) => new() { Status = status, Reason = reason, Steps = steps };
+    private static TemporaryOutwardActionReply Outward(TemporaryCampaignStatus status,
+        string reason, string? audienceRevision = null) =>
+        new(status, reason, audienceRevision);
     private static TemporaryCampaignReply Copy(TemporaryCampaignReply value) => value with
     {
         Event = value.Event?.ToArray(),
