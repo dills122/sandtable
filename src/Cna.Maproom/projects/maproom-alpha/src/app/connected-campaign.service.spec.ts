@@ -90,7 +90,7 @@ describe('ConnectedCampaignService', () => {
       seat: 'commonwealth',
       sessionGeneration: 'wrong',
     });
-    await expect(result).rejects.toThrow('Seat response did not match campaign');
+    await expect(result).rejects.toThrow('Seat identity changed');
   });
 
   it('reuses the exact creation request ID after an unavailable reply', async () => {

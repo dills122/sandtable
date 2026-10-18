@@ -129,6 +129,13 @@ under the same request ID without renewing expired grants. Missing configuration
 created initial fixture may return one
 authorized `/view` mapped from a coherent typed cut; unsupported or successor cuts return
 `503 unavailable` until approved diary projection and full MAP-08B completion.
+The separate Angular `/connected` route now uses that initial cut through a
+loopback-only 4300-to-5087 development proxy. It bootstraps, creates the one fixture,
+redeems one grant and renders only the authorized read. A failed refresh clears its
+prior audience view. The host retains one process-local creation for the exact
+operator/request; reload or a different request conflicts until host restart.
+No connected action submission, successor read, durable save or complete hot-seat
+recovery is provided by this browser lane.
 The [MAP-08B1 projection prerequisite](docs/specs/maproom-side-projection-prerequisites-v1.md)
 first defines typed side fields, public presentation sources, diary visibility and stable opaque
 action mapping; no browser view is returned until these sources are coherent.

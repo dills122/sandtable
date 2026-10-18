@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ConnectedCampaignService } from './connected-campaign.service';
+import { ConnectedCampaignService, SeatIdentityError } from './connected-campaign.service';
 import { CoherentPlayerView } from './api/generated/model/coherentPlayerView';
 import { FixtureDescriptor } from './api/generated/model/fixtureDescriptor';
 import { MapLocation } from './api/generated/model/mapLocation';
@@ -38,11 +38,18 @@ export class ConnectedWorkspace {
   protected async refresh(): Promise<void> {
     const current = this.view();
     if (!current) return;
-    await this.run(async () =>
-      this.setView(
-        await this.api.read(current.campaignId, current.sessionGeneration, current.seat),
-      ),
-    );
+    await this.run(async () => {
+      try {
+        this.setView(
+          await this.api.read(current.campaignId, current.sessionGeneration, current.seat),
+        );
+      } catch (cause) {
+        // A failed read cannot retain the old audience's map or selected formation.
+        this.view.set(null);
+        this.selectedId.set(null);
+        throw cause;
+      }
+    });
   }
 
   protected select(id: string): void {
@@ -93,9 +100,13 @@ export class ConnectedWorkspace {
           cause.status === 503
             ? 'The local campaign view is unavailable at this phase. No order was issued.'
             : cause.status === 401 || cause.status === 403
-              ? 'Seat access expired or was denied. Start a new local session.'
-              : 'The local campaign server did not complete this request.',
+              ? 'Seat access expired or was denied. The previous view was removed.'
+              : cause.status === 409
+                ? 'This host already holds a campaign for a different operator or request. Reuse the original tab while its operator session is active, or restart the local host to create a new campaign.'
+                : 'The local campaign server did not complete this request.',
         );
+      } else if (cause instanceof SeatIdentityError) {
+        this.error.set(cause.message);
       } else {
         this.error.set(cause instanceof Error ? cause.message : 'Unable to read campaign');
       }

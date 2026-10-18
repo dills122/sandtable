@@ -24,14 +24,21 @@ operator and seat cookies remain HttpOnly. CSRF and one-use grant values remain
 in Angular memory and never enter a URL. Never expose either port on a public
 interface or use this proxy in a deployed build.
 
-Creation retries reuse the same request ID while the page stays open; the host
-retains that reply only for the operator session lifetime (15 minutes). A lost
-seat response or browser reload can still require a fresh campaign because the
-grant is one-use and this lane does not yet provide full reconnect recovery.
+Creation retries reuse the same request ID while the original page and operator
+session remain active (at most 15 minutes). The host holds exactly one campaign
+per process and only that operator/request/fixture tuple can retrieve the retained
+creation reply. A different request, a new operator after reload, or an expired
+operator session gets `409 conflict` rather than a second campaign. One-use
+grants are not renewed. This browser lane does not recover a lost seat response
+or reload; when the original tab cannot recover, restart the **development** host
+to discard its temporary campaign and begin again. There is no campaign listing,
+resume endpoint, or durable save in this lane.
 
 The generated MAP-04 client supplies typed requests and responses. The lane checks
-campaign, seat, generation and contract version before rendering. It uses only the
-audience-safe `/view`; `503` stops with an unsupported-phase message. Map and
+campaign, seat, generation and contract version before rendering. Refresh errors,
+including revoked/expired seat responses and identity mismatch, remove the old
+view and selection immediately. It uses only the audience-safe `/view`; `503`
+stops with an unsupported-phase message. Map and
 inspector selections use outward formation IDs and public location coordinates.
 No independent legal-action fetch, action submission, opposing formation identity,
 or client-derived War Diary entry is present. MAP-09 command ingress, MAP-10 full

@@ -2,8 +2,9 @@
 
 Date: 2026-10-16. Status: MAP-01 workspace, MAP-02 foundation and MAP-03A/B fixtures implemented;
 MAP-04 browser schema, fixtures and generated client drafted; connected gameplay pending.
-First MAP-08B view adapter serves only a trusted-created initial pinned fixture cut; browser
-creation, post-step diary projection and action ingress remain pending.
+MAP-08B creates the trusted initial pinned fixture cut and serves its side-safe view.
+The Angular `/connected` route now reads that one cut through a loopback dev proxy;
+post-step diary projection, command ingress and complete hot-seat recovery remain pending.
 Audience: contributors implementing the local rules-lab host and browser client.
 
 Build a browser client around the existing deterministic C# Umpire. First delivery launches one
@@ -213,9 +214,9 @@ are developed; no slice may silently absorb new game rules or activate private C
 | MAP-08A Local session seam | 04, 07 | Development-only loopback/operator bootstrap with positive same-origin evidence, trusted-host one-use seat grants, bounded/expiring session and grant stores, cookie rotation, authorized session lookup; `/view` remains unavailable | Real HTTP wrong-host/origin/Fetch Metadata/campaign/grant/CSRF and capacity tests; no private MAP-07 bytes on HTTP |
 | MAP-08B1 Side projection prerequisites | 08A | [Trusted side cut and presentation-source contract](../specs/maproom-side-projection-prerequisites-v1.md): typed permitted fields, pinned public presentation catalog, audience-safe diary, opaque contact/action mapping over every committed side cut | No raw Core bytes or private identities on HTTP; missing source or unverifiable cut gap fails closed; hidden-only commits preserve outward identities; contact reappearance rotates ID even without an intervening read |
 | MAP-08B2 Host-private side continuity | 08B1, 07 | Core typed side cut and process-local grain tracker for both audiences at creation and each accepted/System step; session-scoped opaque contact/action handles | Two-seat privacy; hidden-only stability; unread disappearance/reappearance rotates contact ID; skipped cut fails closed; deactivation retains tracker and process restart loses it; no browser view claim |
-| MAP-08B Campaign creation and view projection | 08B1 | Development-only single-fixture creation/grant response is in progress; full coherent MAP-04 side projection, diary, post-step reads, and local dev proxy remain | Exact contract response and retry identity; side privacy; legal IDs stable across hidden-only commits; two-seat HTTP reads |
+| MAP-08B Campaign creation and view projection | 08B1 | Development-only single-fixture creation/grants and initial coherent side view exist; Angular `/connected` reads it through a loopback-only dev proxy. Post-step reads and complete recovery remain | Exact contract response and retry identity; side privacy; two-seat initial HTTP reads; no browser command |
 | MAP-09 Command ingress and retries | 08 | HTTP action submission, pending/accepted/rejected status and request lookup | Duplicate, changed-ID payload/actor, stale and lost-reply cases; no duplicate effects; cancellation reconciliation |
-| MAP-10 Connected workspace reads | 03C, 08 | Replace fixture adapter with generated reads for map, inspector, ledger and audience-safe diary; preserve renderer interface | Two audience sessions see only permitted units/actions/history; selection survives valid refresh and clears when no longer visible |
+| MAP-10 Connected workspace reads | 03C, 08 | Integrate generated reads into the full operational workspace beyond the separate initial read lane; preserve renderer interface | Two audience sessions see only permitted units/actions/history; selection survives valid refresh and clears when no longer visible or access is revoked |
 | MAP-11 Real order forms | 09, 10 | One admitted move action with typed draft, Formly field adapter, review and explicit issue action | Keyboard path submits once; invalid/stale states explain recovery; draft never moves authoritative counter; server decides cost |
 | MAP-12 Live refresh and reconnect | 11 | SignalR subscription, safe view notification, missed-update recovery and connection UI | Subscribe/read race, initial failure, disconnect, missed push and stale response tests; no hidden-event notification leak |
 | MAP-13 Private hot-seat handoff | 12 | Curtain screen, server seat-generation switch and full client teardown | DOM/storage/history/late-response negatives; overlays and any embedded React elements unmount; next seat starts with its own view |

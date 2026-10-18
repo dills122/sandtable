@@ -10,6 +10,12 @@ import { FixtureDescriptor } from './api/generated/model/fixtureDescriptor';
 import { CampaignCreated } from './api/generated/model/campaignCreated';
 import { SessionInfo } from './api/generated/model/sessionInfo';
 
+export class SeatIdentityError extends Error {
+  constructor() {
+    super('Seat identity changed. The previous audience view was removed.');
+  }
+}
+
 /** Same-origin local API only. The CSRF and one-use grants stay in memory, never in the URL. */
 @Injectable({ providedIn: 'root' })
 export class ConnectedCampaignService {
@@ -70,7 +76,7 @@ export class ConnectedCampaignService {
       session.campaignId !== created.campaign.campaignId ||
       session.seat !== seat
     )
-      throw new Error('Seat response did not match campaign');
+      throw new SeatIdentityError();
     this.entered = session;
     return this.read(created.campaign.campaignId, session.sessionGeneration, seat);
   }
@@ -87,7 +93,7 @@ export class ConnectedCampaignService {
       view.sessionGeneration !== generation ||
       view.seat !== seat
     ) {
-      throw new Error('View did not match the active seat');
+      throw new SeatIdentityError();
     }
     return view;
   }
