@@ -40,6 +40,65 @@ class P01ReferenceTests(unittest.TestCase):
         cls.armed = terminal(36)
         cls.other_side = terminal(168)
 
+    def test_ingress_byte_caps_reject_before_replay_without_mutation(self):
+        source, parents, own = self.armed
+        limits = p01.SCHEMA["byteLimits"]
+        cases = {
+            "source": (b"x" * (limits["sourceBytes"] + 1), parents, own),
+            "creation": (source, [{"padding": "x" * limits["parentAggregateBytes"]},
+                                  *parents[1:]], own),
+            "parent-ledger": (source, [parents[0], [b"x" * limits["parentAggregateBytes"]],
+                                       *parents[2:]], own),
+            "parent-aggregate": (source, [parents[0], [b"x" * 16000,
+                                               b"y" * 16000], *parents[2:]], own),
+            "own-input": (source, parents, [b"x" * (limits["ownInputBytes"] + 1)]),
+        }
+        for label, args in cases.items():
+            before = copy.deepcopy(args)
+            with self.subTest(label=label), \
+                    mock.patch.object(p01.r03, "replay", side_effect=AssertionError("R03 replay reached")), \
+                    mock.patch.object(p01, "physical_shape", side_effect=AssertionError("shape reached")):
+                with self.assertRaisesRegex(ValueError, "CMB-P01-001"):
+                    p01.assess(*args)
+                self.assertEqual(before, args)
+
+    def test_byte_caps_accept_exact_boundary_and_reject_next_byte(self):
+        limits = p01.SCHEMA["byteLimits"]
+        request = {"padding": "x" * (limits["parentAggregateBytes"] - len('{"padding":""}'))}
+        parents = [request, *([[]] * 10)]
+        source = b"x" * limits["sourceBytes"]
+        own = [b"x" * limits["ownInputBytes"]]
+        self.assertEqual(limits["parentAggregateBytes"], len(p01.canonical(request)))
+        p01.check_ingress_bytes(source, parents, own)
+        with self.assertRaisesRegex(ValueError, "CMB-P01-001"):
+            p01.check_ingress_bytes(source + b"x", parents, own)
+        with self.assertRaisesRegex(ValueError, "CMB-P01-001"):
+            p01.check_ingress_bytes(source, [dict(padding=request["padding"] + "x"),
+                                             *parents[1:]], own)
+        small_request = {"padding": ""}
+        ledger_bytes = b"x" * (limits["parentAggregateBytes"] - len(p01.canonical(small_request)))
+        ledger_parents = [small_request, [ledger_bytes], *([[]] * 9)]
+        p01.check_ingress_bytes(source, ledger_parents, own)
+        with self.assertRaisesRegex(ValueError, "CMB-P01-001"):
+            p01.check_ingress_bytes(source, [small_request, [ledger_bytes + b"x"],
+                                             *ledger_parents[2:]], own)
+        with self.assertRaisesRegex(ValueError, "CMB-P01-001"):
+            p01.check_ingress_bytes(source, parents, [own[0] + b"x"])
+        assessment = {"padding": "x" * (limits["assessmentBytes"] - len('{"padding":""}'))}
+        self.assertEqual(limits["assessmentBytes"], len(p01.canonical(assessment)))
+        p01.check_assessment_bytes(assessment)
+        with self.assertRaisesRegex(ValueError, "CMB-P01-001"):
+            p01.check_assessment_bytes({"padding": assessment["padding"] + "x"})
+
+    def test_oversized_assessment_rejects_without_partial_output(self):
+        source, parents, own = self.armed
+        before = copy.deepcopy((source, parents, own))
+        with mock.patch.object(p01, "private_candidate", return_value="p01." + "x" * 2048):
+            with self.assertRaisesRegex(ValueError, "CMB-P01-001"):
+                p01.assess(source, parents, own)
+        self.assertEqual(before, (source, parents, own))
+        self.assertEqual("unsupported", p01.assess(source, parents, own)["status"])
+
     def test_authentic_read_only_shapes(self):
         for source, ledgers, r03_ledger, expected in (
                 (*self.paid, "provisional-empty"), (*self.armed, "provisional-positive"),

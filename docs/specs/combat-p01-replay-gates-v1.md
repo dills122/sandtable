@@ -23,10 +23,24 @@ content pin. Classification is patched to fail if reached after an invalid repla
 Focused tests mutate outward fields to confirm the checker fails rather than
 merely reporting expected counts.
 
+Private P01 assessment now enforces schema-frozen byte limits before R03 replay:
+1,048,576 bytes for raw Source, 32,768 bytes for aggregate parent inputs,
+and 1,024 bytes for the single raw R03 input. Parent aggregate counts compact
+`ensure_ascii` JSON bytes of CreationRequest plus raw bytes of every input in
+the ten parent ledgers; it excludes list framing and does not reserialize
+ledger inputs. A canonical assessment over 1,024 bytes raises before any result
+is returned. Size checking streams JSON fragments and stops at the first byte
+past a limit. The retained 300-row inventory measured maxima of 885,181 Source
+bytes, 25,862 aggregate parent bytes (741 CreationRequest plus 25,121 ledger
+bytes), 580 R03 input bytes, and 695 canonical assessment bytes. Focused tests
+cover each oversized ingress class before replay, exact boundaries, oversized
+egress, unchanged inputs, both acting sides, and retries. Assessment fields,
+serialization, and frozen output hashes are unchanged.
+
 **Open AC-008 work:** The parent-cut and mutation matrix covers two positive
 rows, not every cut of every retained row. It does not prove restart/readback,
 R03 native versus reference equivalence for a P01 transition, all physical
-negative cases, schema-enforced input/output resource caps, or exact supported
+negative cases, or exact supported
 P01 event output. All current assessments remain `unsupported`, with
 `admitted=false` and no public actions. Full P01 certificate, P02 selection, and
 P03 native consumption remain closed.
@@ -52,3 +66,9 @@ actor-side samples, four exact retries, ordered output-hash root
 sample and mutation tests run from in-repository authentic source synthesis;
 the full corpus test reports an explicit skip when the private retained evidence
 is unavailable. Local private evidence is necessary for the full 300-row claim.
+
+Local verification on 2026-10-18 with the retained private archive: 16 P01
+reference tests and four replay-gate tests passed. Full 300-row CLI replay
+retained the same ordered output-hash root, 44/256 shape split, zero admitted
+rows, 100 bounded mutation/cut rejections, four exact retries, and 695 maximum
+canonical assessment bytes under the frozen caps.

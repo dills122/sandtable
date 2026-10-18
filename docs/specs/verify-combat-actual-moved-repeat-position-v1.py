@@ -24,6 +24,41 @@ def canonical(value):
     return json.dumps(value, ensure_ascii=True, separators=(",", ":")).encode("ascii")
 
 
+def bounded_canonical_size(value, limit):
+    """Count canonical ASCII JSON bytes, stopping as soon as limit is exceeded."""
+    size = 0
+    try:
+        encoder = json.JSONEncoder(ensure_ascii=True, separators=(",", ":"))
+        for fragment in encoder.iterencode(value):
+            size += len(fragment)
+            require(size <= limit)
+    except (TypeError, ValueError, OverflowError, RecursionError, UnicodeError):
+        require(False)
+    return size
+
+
+def check_ingress_bytes(source_bytes, parent_ledgers, r03_ledger):
+    """Reject oversized private inputs before R03 replay or physical classification."""
+    limits = SCHEMA["byteLimits"]
+    require(type(source_bytes) is bytes and 0 < len(source_bytes) <= limits["sourceBytes"])
+    require(type(parent_ledgers) is list and len(parent_ledgers) == 11
+            and type(parent_ledgers[0]) is dict)
+    parent_size = bounded_canonical_size(parent_ledgers[0], limits["parentAggregateBytes"])
+    for ledger in parent_ledgers[1:]:
+        require(type(ledger) is list)
+        for item in ledger:
+            require(type(item) is bytes)
+            parent_size += len(item)
+            require(parent_size <= limits["parentAggregateBytes"])
+    require(type(r03_ledger) is list and len(r03_ledger) == 1
+            and type(r03_ledger[0]) is bytes
+            and 0 < len(r03_ledger[0]) <= limits["ownInputBytes"])
+
+
+def check_assessment_bytes(result):
+    bounded_canonical_size(result, SCHEMA["byteLimits"]["assessmentBytes"])
+
+
 def digest(value):
     return "sha256:" + hashlib.sha256(value).hexdigest()
 
@@ -260,6 +295,7 @@ def private_candidate(state, pair):
 
 def assess(source_bytes, parent_ledgers, r03_ledger):
     """Authenticate exact R03 suffix and return no admitted action."""
+    check_ingress_bytes(source_bytes, parent_ledgers, r03_ledger)
     source, _, state = r03.replay(source_bytes, parent_ledgers, r03_ledger)
     require(len(parent_ledgers) == 11 and len(r03_ledger) == 1
             and len(source["breakdownEventCanonicalUtf8"]) == 1
@@ -281,4 +317,5 @@ def assess(source_bytes, parent_ledgers, r03_ledger):
                   privateCandidateId=private_candidate(state, pair) if pair is not None else None,
                   publicActions=[])
     require(list(result) == SCHEMA["assessmentFields"])
+    check_assessment_bytes(result)
     return result
