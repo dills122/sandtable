@@ -63,6 +63,41 @@ class P01ActionMatrixTests(unittest.TestCase):
         self.assertEqual('selected-content-absent', modes['mandatory-zoc-assault'])
         self.assertEqual('later-typed-choice-open', modes['close-assault'])
 
+    def test_authentic_nonadjacent_rba_is_not_erased_by_assault_absence(self):
+        # r012-c02: actor at axis-rear, non-phasing defender at assault-east.
+        # The defender has CP headroom and a vacant clear edge to its rear;
+        # source RBA is not ruled out by initial nonadjacency (Land 13.23-24).
+        state, request = self.rows[37]
+        self.assertEqual('no-adjacent-opposing-target', self.check(37)['assaultShape'])
+        actor_side = state['activeCycle']['actingSide']
+        static = {unit['elementId']: unit['sideId'] for unit in self.content['elements']}
+        defender = next(unit for unit in state['world']['elements']
+                        if static[unit['elementId']] != actor_side)
+        self.assertEqual('assault-east', defender['currentLocationId'])
+        self.assertEqual(0, defender['operationalState']['capabilityPointsExpended']['numerator'])
+        occupied = {unit['currentLocationId'] for unit in state['world']['elements']}
+        self.assertNotIn('commonwealth-rear', occupied)
+        self.assertTrue(any({edge['firstLocationId'], edge['secondLocationId']} ==
+                            {'assault-east', 'commonwealth-rear'} and edge['features'] == []
+                            for edge in self.content['edges']))
+        modes = self.check(37)['modeStatuses']
+        self.assertEqual('later-explicit-decision-open', modes['retreat-before-assault-decline'])
+        self.assertEqual('unsupported-in-bounded-profile', modes['retreat-before-assault-move'])
+        self.assertEqual('not-available-in-authenticated-row', modes['close-assault'])
+        self.assertNotEqual('not-available-in-authenticated-row',
+                            modes['retreat-before-assault-decline'])
+        self.assertNotEqual('not-available-in-authenticated-row',
+                            modes['retreat-before-assault-move'])
+
+        # Negative variant: a forged defender relocation cannot turn the
+        # source possibility into an authoritative move/decline receipt.
+        changed = copy.deepcopy(state)
+        changed_defender = next(unit for unit in changed['world']['elements']
+                                if unit['elementId'] == defender['elementId'])
+        changed_defender['currentLocationId'] = 'commonwealth-rear'
+        with self.assertRaises(ValueError):
+            matrix.classify(changed, self.content, request)
+
     def test_no_ammunition_after_prior_assault_is_not_automatic_surrender(self):
         state, _ = self.rows[0]
         self.assertEqual(0, next(unit for unit in state['world']['elements']
