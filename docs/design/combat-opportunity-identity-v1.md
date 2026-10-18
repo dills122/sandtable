@@ -66,6 +66,11 @@ encodings, domain/version tags, contract fields and migrations before implementa
 | `CMB-ID-007` | Outward opportunity/target references derive solely from approved audience-visible facts and visible decision revision. Umpire retains the mapping to exact authority. Hidden identities, versions, counts and hashes cannot salt or order those references. |
 | `CMB-ID-008` | The first admission is one independent infantry unit per side, one component each, one target hex and full Close Assault assignment. Multi-unit/partial assignments, attachments, Probe, Barrage and Anti-Armor identity/history admission remain explicitly closed. |
 
+The [P01 owner projection draft](../specs/combat-p01-owner-projection-v0.md) explores a
+separate visible alias and Umpire-retained private mapping under `CMB-ID-007`. Its proposed
+visible fields and synthetic equivalence tests do not freeze a Combat observation or admit an
+action; an approved field policy and authenticated hidden-variant twin proof remain required.
+
 ### Unit continuity and membership
 
 The creation scope includes the retained campaign creation binding and setup/Content provenance;

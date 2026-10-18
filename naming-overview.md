@@ -62,10 +62,12 @@ R03 is its delivery label, not a product name. Its frozen 300-row reference, vec
 passes all 300 terminal rows. The private consumer merged in PR #216 after independent review and
 exact-head hosted CI; public activation remains a separate gate.
 
-P01 names the private ordinal-two Combat Position contract design following R03; it is a delivery
-label, not a new product. Its [acceptance matrix](docs/specs/combat-actual-moved-repeat-position-v1.md)
-does not create an executable reader or public action. Any later implementation belongs inside
-Umpire under a plain technical name. Accepted `CMB-POL-009` excludes voluntary surrender from
+P01 names the private ordinal-two Combat Position contract following R03; it is a delivery label,
+not a new product. Its [acceptance matrix](docs/specs/combat-actual-moved-repeat-position-v1.md)
+has a provisional private reference, bounded evidence and a disconnected
+[owner alias draft](docs/specs/combat-p01-owner-projection-v0.md), but no supported public action.
+The proposed alias is distinct from the Umpire-only `p01.` candidate identity. Any later native
+implementation belongs inside Umpire under a plain technical name. Accepted `CMB-POL-009` excludes voluntary surrender from
 the initial RC bounded exercise; the remaining contract and proof gates still control admission.
 
 **Command** chooses strategic objectives, whether supplied by a person, scripted policy or optional
