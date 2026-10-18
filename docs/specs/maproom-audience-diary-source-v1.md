@@ -23,10 +23,12 @@ therefore admits only state version 1 and emits an empty diary with cursor `0`. 
 guard until this source contract, copy catalog, and tests are implemented and reviewed.
 
 `CampaignHostAcceptedStep.EventRecords` contains canonical private event bytes, not
-`DiaryExcerpt` values. The current
-[`CampaignEventSerializer.Serialize`](../../src/Cna.Core/Campaigns/CampaignEventSerializer.cs)
-admits 14 event classes. Only a trusted Core hosting adapter can validate an exact typed
-accepted event, its actor and source pins, and derive the proposed side-safe outcome below.
+`DiaryExcerpt` values. The active [`CampaignExercises.Submit`](../../src/Cna.Core/Exercises/CampaignExercises.cs)
+path writes through [`CampaignCurrentEventSerializer`](../../src/Cna.Core/Campaigns/CampaignCurrentEventRuntime.cs):
+current creation, 11 preamble event classes, and eight Breakdown successor event classes
+(20 typed classes total). The historical `CampaignEventSerializer` alone is not the
+current accepted-step inventory. Only a trusted Core hosting adapter can validate an exact
+typed accepted event, its actor and source pins, and derive the proposed side-safe outcome below.
 The Orleans tracker must not parse raw event JSON into presentation text.
 
 ## Proposed private source contract
@@ -54,29 +56,38 @@ explicit policy is approved. A silent lifecycle classification also requires an 
 known event/action/actor pairing and verified source pins; the event class alone cannot
 silence an unexpected accepted step.
 
-The table is an **allowlist proposal** for the currently serializable event classes. It
-does not establish that every event kind is reachable in the temporary fixture. `Entry`
-means one excerpt for the proven acting seat and `silent` for the other; `silent` means no
-excerpt for either seat. Exact `title`/`body` strings must be approved in a new pinned
-presentation catalog version before implementation. The keys below are identifiers for
-that review, not permission to invent text from event fields.
+The table is an **allowlist proposal** for the 20 classes serialized by the current path.
+It does not establish that every kind is reachable in the temporary fixture. `Entry` means
+one excerpt for the authenticated acting seat and `silent` for the other; `silent` means no
+excerpt for either seat. A row is eligible only when its exact event version, accepted
+action candidate, submitted audience, receipt, and predecessor/successor heads agree.
+The event's `ActingSide` is a cross-check, never an audience grant. `System` may use only
+the listed System variants. Exact `title`/`body` strings need approval in a new pinned
+presentation catalog version before implementation. Keys below identify proposed copy,
+not permission to invent text from event fields.
 
-| Typed accepted event | Proposed diary decision | Required proof / copy key |
+| Current typed accepted event | Accepted action/audience proof | Proposed diary decision / copy key |
 | --- | --- | --- |
-| `CampaignCreated` | Initial-only, no diary entry | Any appearance after creation is unavailable. Initial cursor is `0`. |
-| `InitiativeDetermined` | Silent | Trusted lifecycle kind; no event details enter diary. |
-| `NoObligationNavalConvoyScheduleResolved` | Silent | Trusted lifecycle kind. |
-| `NoObligationTacticalShippingResolved` | Silent | Trusted lifecycle kind. |
-| `InitiativeOrderDeclared` | Entry for declaring seat only | Accepted human initiative action matches `DeclaringHolder`; `diary.initiativeOrder` copy key. No opposing order value in entry. |
-| `WeatherDetermined` | Silent | Trusted lifecycle kind; weather details need a separate approved public presentation policy. |
-| `NoObligationOrganizationResolved` | Silent | Trusted lifecycle kind. |
-| `NoObligationNavalConvoyArrivalResolved` | Silent | Trusted lifecycle kind. |
-| `NoObligationFleetAssignmentResolved` | Silent | Trusted lifecycle kind. |
-| `NoObligationFleetRepairResolved` | Silent | Trusted lifecycle kind. |
-| `ReserveElementDesignated` | Entry for acting seat only | Accepted human designation; `ElementId` resolves to permitted own formation; `diary.reserveDesignated` copy key. Do not use private element ID as `formationId`. |
-| `ReserveDesignationCompleted` | Entry for acting seat only | Accepted human completion and matching acting side; `diary.reserveCompleted` copy key. |
-| `ElementMoved` | Entry for acting seat only | Accepted human move; `ElementId` resolves to permitted own formation; `diary.elementMoved` copy key. Omit cost, representation ID, and unapproved route facts. |
-| `MovementSegmentCompleted` | Entry for acting seat only | Accepted human completion and matching acting side; `diary.movementCompleted` copy key. |
+| `CampaignCreatedV10` | Creation only; no submitted action | Initial-only silent; later appearance unavailable; cursor `0`. |
+| `InitiativeDetermined` | `ResolveInitiativeAction`, `System` | Silent; no outcome details enter diary. |
+| `NoObligationNavalConvoyScheduleResolved` | `ResolveNoObligationNavalConvoyScheduleAction`, `System` | Silent. |
+| `NoObligationTacticalShippingResolved` | `ResolveNoObligationTacticalShippingAction`, `System` | Silent. |
+| `InitiativeOrderDeclared` | `ActFirstAction` or `ActLastAction`, same authenticated `DeclaringHolder`; declared first/last side agrees with candidate | Entry only for declaring seat; `diary.initiativeOrder`; omit opposing order value. |
+| `WeatherDetermined` | `ResolveWeatherAction`, `System` | Silent; weather presentation needs separate approval. |
+| `NoObligationOrganizationResolved` | `ResolveNoObligationOrganizationAction`, `System` | Silent. |
+| `NoObligationNavalConvoyArrivalResolved` | `ResolveNoObligationNavalConvoyArrivalAction`, `System` | Silent. |
+| `NoObligationFleetAssignmentResolved` | `ResolveNoObligationFleetAssignmentAction`, `System` | Silent. |
+| `NoObligationFleetRepairResolved` | `ResolveNoObligationFleetRepairAction`, `System` | Silent. |
+| `ReserveElementDesignated` | Human designation, same `ActingSide`; own element in side cut | Entry for acting seat; `diary.reserveDesignated`; map private element ID to permitted outward formation ID. |
+| `ReserveDesignationCompleted` | Human completion, same `ActingSide` | Entry for acting seat; `diary.reserveCompleted`. |
+| `ElementMovedV3` (`element-moved` v3) | `MoveElementAction`, same human `ActingSide`; own element in side cut | Entry for acting seat; `diary.elementMoved`; omit cost, representation and unapproved route facts. Historical `ElementMoved` is not a current successor. |
+| `ElementMovementStopped` (`element-movement-stopped` v1) | `StopElementMovementAction`, same human `ActingSide` and route/action capability | Entry for acting seat; proposed `diary.movementStopped`; omit private route and stop IDs. |
+| `BreakdownStopResolved` (`breakdown-stop-resolved` v1) | `ResolveBreakdownStopAction`, `System`; stop capability and heads match | Silent. System resolution cannot inherit the prior player's audience. |
+| `ReactingElementMovedV2` (`reacting-element-moved` v2) | `MoveReactingElementAction`, same human `ActingSide`; own reacting element and outward opportunity alias match | Entry for acting seat; proposed `diary.reactionMoved`; omit private opportunity/window IDs. |
+| `ReactionParticipantCompletedV2` (`reaction-participant-completed` v2) | `CompleteReactionParticipantAction`, same human `ActingSide`, opportunity and window capabilities match | Entry for acting seat; proposed `diary.reactionCompleted`; no opposing opportunity details. |
+| `ReactionWindowClosedV2` (`reaction-window-closed` v2) | `DeclineReactionWindowAction` by same human `ActingSide` and reason `PlayerDecline`; or matching `System` unavailable/timeout/no-eligible close action and reason | Human decline: entry only for acting seat, proposed `diary.reactionDeclined`. Three System close reasons: silent. Any other action/reason/audience pairing is unavailable. |
+| `MovementSegmentCompletedV2` (`movement-segment-completed` v2) | `CompleteMovementSegmentAction`, same human `ActingSide` | Entry for acting seat; `diary.movementCompleted`. Historical v1 completion is not current. |
+| `BreakdownSegmentCompleted` (`breakdown-segment-completed` v1) | `CompleteBreakdownSegmentAction`, `System`, idle Breakdown flow and heads match | Silent. |
 
 No title or body is copied from an event, command, receipt, model response, or element ID.
 The catalog owns fixed locale-specific text and any permitted substitutions. Formation
@@ -123,9 +134,13 @@ the diary cursor.
 1. Pin and review a new presentation catalog version with exact `title`/`body` for each
    approved key, length and localization rules, and source identity. No runtime fallback
    strings.
-2. Test every table row for both seats, including actor/action mismatch, private
-   element references, unknown event/version, missing copy key, and System submission.
-   Assert hidden opposing action/event details never enter either payload or logs.
+2. Enumerate the 20 current typed classes through `CampaignCurrentEventSerializer`,
+   including all eight Breakdown successor classes and both v3/v2 replacement versions.
+   Test each table row for both seats and each `ReactionWindowClosedV2` reason variant.
+   Test actor/action/reason mismatch, private element references, unknown event/version,
+   missing copy key, System submission of an entry kind, and a historical v1 movement
+   event substituted for its current version. Assert hidden opposing action/event
+   details never enter either payload or logs.
 3. Test initial cursor `0`; one own accepted order gives exactly one entry/cursor `1`;
    exact retry gives no duplicate; opposing seat remains at its prior cursor. Test a
    silent lifecycle step and a hidden-only step preserve the untouched side's cursor,
@@ -147,9 +162,10 @@ the diary cursor.
 
 ## Review decisions still required
 
-Approve the five entry kinds and nine silent/initial cases above; approve exact fixed
-catalog copy and whether movement completion belongs in a War Diary intended for own
-orders. Freeze a typed Core-hosting outcome API that proves each accepted event/action
-pair without exposing canonical evidence to the Orleans presenter. Until those decisions
-and tests pass, successor `/view` remains unavailable and this document is a proposal,
-not a claim of a playable API or durable history.
+Approve the proposed entries, including stop, reaction move/completion/decline, and
+movement completion, or explicitly classify any one of them silent. Approve exact fixed
+catalog copy for each approved key. Freeze a typed Core-hosting outcome API that proves
+each accepted event/action/reason pair and both committed heads without exposing canonical
+evidence to the Orleans presenter. Until those decisions and tests pass, successor `/view`
+remains unavailable and this document is a proposal, not a claim of a playable API or
+durable history.
