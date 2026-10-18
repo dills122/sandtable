@@ -1,10 +1,11 @@
 # Proving Ground local runtime
 
 Status: Development-only local runtime. This runbook launches the synthetic Angular Maproom shell
-and an Orleans host with bounded operator bootstrap, single-fixture creation, seat and initial-view
-routes. The separate connected Maproom development lane can read that one initial cut. Neither
-surface submits a legal order, reads a successor cut, or proves game persistence. Those capabilities
-remain in [MAP-09–17](../design/local-game-server-maproom-plan.md).
+and an Orleans host that maps bounded operator bootstrap, single-fixture creation, seat and
+initial-view routes. The host's loopback-caller guard rejects requests forwarded through Docker's
+published port 5180; the separate host-native connected development lane can read one initial
+authorized cut. Neither surface submits a legal order, reads a successor cut, or proves game
+persistence. Those capabilities remain in [MAP-09–17](../design/local-game-server-maproom-plan.md).
 
 ## One-command Docker launch
 
@@ -46,7 +47,7 @@ does not hot reload.
 | Component | Docker-now role | Local port | State and next boundary |
 | --- | --- | --- | --- |
 | Maproom (nginx + built Angular) | Static synthetic operations shell | `127.0.0.1:4200` | Fixture workflows only; the separate `/connected` development lane reads one initial authorized cut. MAP-10 adds full workspace reads. |
-| Orleans host (.NET 10) | One Development silo, temporary grain and bounded local API | `127.0.0.1:5180` | Operator bootstrap, fixture creation, seat and initial-view routes exist. MAP-09 private action ingress exists; public submit/receipt and successor views remain open. |
+| Orleans host (.NET 10) | One Development silo, temporary grain and mapped local API | `127.0.0.1:5180` | Health works; Docker forwarding fails the API's loopback-caller guard, so bootstrap/creation/seat/view return 403 through this port. The separate host-native connected lane exercises initial read. MAP-09 private ingress exists; public submit/receipt and successor views remain open. |
 | `Cna.Core` | Linked into Orleans host image | None | Only authority; current public supported path stops before Combat adjudication. |
 | Exercise Runner | Host CLI outside Compose | None | Checked synthetic manifests produce deterministic evidence; not a campaign seed API. |
 | Intelligence Gateway + Decision Worker | Optional Aspire `just run` scaffolds | Aspire assigned | Not needed for the intended human rules-lab path; no configured model provider or live dispatch. |

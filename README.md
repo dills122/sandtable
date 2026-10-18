@@ -267,9 +267,12 @@ Intelligence Gateway. This launches development services—not a playable Maproo
 With Docker Desktop running, `just proving-ground-up` builds and starts the current Angular
 Maproom shell at <http://127.0.0.1:4200> and Development Orleans host at
 <http://127.0.0.1:5180>. `just proving-ground-smoke` checks both HTTP probes;
-`just proving-ground-down` stops them. The Development host exposes bounded operator bootstrap,
-single-fixture creation, seat and initial-view routes; the port 4200 Maproom shell remains a
-synthetic fixture. There is no public action submit/receipt route or durable save.
+`just proving-ground-down` stops them. The port 4200 Maproom shell remains a synthetic fixture.
+The Development host maps bounded bootstrap, single-fixture creation, seat and initial-view
+routes, but its loopback-caller guard rejects requests forwarded to the Docker-published port
+5180. Use the separate host-native [connected local lane](docs/design/maproom-connected-local-read.md)
+for the initial authorized browser read. There is no public action submit/receipt route or durable
+save.
 Use the [Proving Ground runbook](docs/runbooks/proving-ground.md) for service boundaries, current
 rules-lab seed/evidence commands, and the MAP slice path to a real playtest.
 
