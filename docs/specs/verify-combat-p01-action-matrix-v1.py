@@ -99,8 +99,11 @@ def classify(state, content, request):
             'provisional-only source interpretation')
     statuses = {key: value[1] for key, value in MODES.items()}
     if assault_shape != 'provisional-adjacent':
-        for mode in ('close-assault', 'retreat-before-assault-decline',
-                     'retreat-before-assault-move', 'full-close-assault-assignment',
+        # No adjacent assault target does not remove the non-phasing defender's
+        # source RBA choice after Barrage (Land 13.0/13.1/13.21/13.23-24).
+        # Movement remains outside this bounded profile; a decline requires an
+        # explicit authenticated decision, never an inferred no-op.
+        for mode in ('close-assault', 'full-close-assault-assignment',
                      'alternate-assignment', 'probe-modifier'):
             statuses[mode] = 'not-available-in-authenticated-row'
     return dict(physicalShape=fact['physicalShape'], assaultShape=assault_shape,
