@@ -3057,3 +3057,8 @@ The [private ordinal-two no-attack v0 inventory](../specs/combat-p01-no-attack-v
 defines proposed twelfth-ledger input fields and the six-step order, but its reference refuses
 every event because no authentic P01 supported-empty certificate or twelfth-ledger event/receipt
 exists. The 256 physical-empty rows are not a completed no-attack path; AC-003/008 remain open.
+The [private explicit-RBA v1 successor](../specs/combat-p01-explicit-rba-v1.md) narrows this
+boundary to authenticated nonadjacent zero-**assault** states. It retains the source-legal
+defender RBA choice after Barrage and replays an explicit decline or cancellation plus the
+remaining structural no-assault steps. The v0 input inventory remains frozen and unissuable;
+the v1 trace is private only and does not close full P01 admission, privacy or replay gates.

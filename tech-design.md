@@ -820,6 +820,11 @@ proofs do not enable P02 selection, a native ordinal-two consumer or a public ac
 The [private P01 no-attack v0 boundary](docs/specs/combat-p01-no-attack-v0.md) keeps proposed
 ordinal-two System inputs disconnected until a source-backed supported-empty certificate and
 authentic twelfth-ledger event/receipt replay exist; provisional physical emptiness is insufficient.
+The [private explicit-RBA successor](docs/specs/combat-p01-explicit-rba-v1.md) handles a narrower
+nonadjacent case: source-backed absence of an **assault** target does not erase the defender's
+post-Barrage RBA decision. It retains trusted actor/deadline, explicit decline or cancellation,
+and ordered no-assault step receipts in a private replay. It does not admit a public/native choice
+or close the broader action, privacy, surrender and restart gates.
 
 The additive [actual Reaction-to-Combat entry](docs/specs/combat-actual-reaction-combat-entry-v1.md)
 authenticates complete direct Reaction closure with separate prefix/lifecycle/Breakdown caller ledgers.

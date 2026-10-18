@@ -1,0 +1,18 @@
+{
+  "rowKey": "r000-c02",
+  "acceptedDeclineOpenedAtUnixMilliseconds": 1000,
+  "acceptedDeclineAtUnixMilliseconds": 1001,
+  "zeroAssaultCertificateId": "p01z.c68d2a31a1aa302a80bfd48723fcf6a1826b3a55d6a8b18534cd431c27d0d985",
+  "receiptIds": [
+    "p01s.bdd4b0980e23cc26a92a9029bf123d90ef0266efb191c5e1404fe80e22cfc6c1",
+    "p01n.0cad6d6e5e9db327ee4f9396b7f406fbe8a49d65acbd95e8f016c704bd3b8e89",
+    "p01n.7003ed19eb99069e6aae67c19852d57b2e1dddc72f92cab4844fea7929ed4e3d",
+    "p01o.da5c79aff46ab49091ec86244361b1d2b316fef7086530b4f1cce1252f23548a",
+    "p01r.0ae1f69ab120dc4266d73c73b8107401720fee08bd89f3ea0267eaf1b5ffe1fb",
+    "p01n.483975b754c3767eac0977692c0c528fe3e02c58666edcfa6091fb4b85363d43",
+    "p01n.f3957dfa3dcff5c29fe8e3f6f1d22c60a53ce5bd6667309ddb11f0a52b7e305b",
+    "p01n.f8c2d15da70eca888ff6f8802598f66e8d02d8362737377b8a2c528ce1f1afa6",
+    "p01n.7c54a631670b4ac6a36b8a2eb7f1786a3f634fd7e19d41c31fd43ce97db82e2a"
+  ],
+  "finalPrefix": "sha256:d66921693fed557944d2a493c1fb054f80786e4c7e511ba7f85624600a35280b"
+}

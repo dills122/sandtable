@@ -351,6 +351,10 @@ models a separate visible alias and Umpire mapping; approved fields and authenti
 privacy proof remain open. No ordinal-two Combat choice or public activation is available.
 The [private no-attack v0 boundary](docs/specs/combat-p01-no-attack-v0.md) fixes a proposed
 twelfth-ledger input shape but issues no event: no authentic supported-empty certificate exists.
+The separate [private explicit-RBA successor](docs/specs/combat-p01-explicit-rba-v1.md) proves
+zero **assault** candidates for authenticated nonadjacent infantry while retaining the defender's
+RBA choice. Its decline/cancellation and six structural steps have no native or public consumer;
+the full P01 support certificate remains open.
 Accepted `CMB-POL-009` excludes Land §15.88 voluntary surrender from the initial RC
 bounded choice surface; this remains an explicit source-legal coverage limit.
 
