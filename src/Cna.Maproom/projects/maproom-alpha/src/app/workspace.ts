@@ -268,7 +268,6 @@ export class Workspace {
     if (!this.dragStart.moved && Math.hypot(deltaX, deltaY) < 6) return;
     if (!this.dragStart.moved) {
       this.dragStart.moved = true;
-      if (this.store.zoom() === 1) this.store.zoomBy(0.25);
       this.dragging.set(true);
     }
     this.store.panByPixels(deltaX, deltaY, frame.clientWidth, frame.clientHeight);

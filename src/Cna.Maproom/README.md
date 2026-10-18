@@ -101,9 +101,10 @@ source. Both consumers load the same `styles.scss` and `utilities.css`; Tailwind
 excluded so Material and Field Atlas own control styling. Use public Material Sass overrides.
 
 The shell has eight synthetic formations and coherent map/list/ledger selection. Its map supports
-bounded mouse, pen and touch drag; a first drag from the fitted 100% view enters 125% exploration,
-while a click leaves the fit unchanged. Arrow keys pan a focused zoomed map, and locate/fit and
-zoom controls remain available. The full-screen map keeps selection and camera state, traps focus,
+bounded mouse, pen and touch drag at the selected zoom; the fitted 100% view stays fixed during
+drag. Hex overlay geometry keeps its proportions across panel sizes. Arrow keys pan a focused
+zoomed map; locate/fit and zoom controls remain available. The full-screen map keeps selection
+and camera state, traps focus,
 closes with Escape, and links the selected formation back to its orders. Formations and Orders
 show/hide controls live in their panel headers. The order inspector has more space for the selected
 formation, its last known position, draft, review, issue and recovery controls. MAP-03B stages per-formation

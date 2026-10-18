@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
-test('first drag explores fitted map without changing selection or uncovering blank space', async ({
+test('drag keeps the selected zoom while panning without uncovering blank space', async ({
   page,
 }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
@@ -15,14 +15,17 @@ test('first drag explores fitted map without changing selection or uncovering bl
   const from = { x: frame!.x + frame!.width * 0.15, y: frame!.y + frame!.height * 0.5 };
   await page.mouse.click(from.x, from.y);
   await expect(page.getByLabel('Map zoom')).toHaveText('100%');
+  await page.getByRole('button', { name: 'Zoom in' }).click();
+  await page.getByRole('button', { name: 'Zoom in' }).click();
+  await expect(page.getByLabel('Map zoom')).toHaveText('150%');
   await page.mouse.move(from.x, from.y);
   await page.mouse.down();
   await page.mouse.move(from.x + 100, from.y - 60, { steps: 6 });
   await page.mouse.up();
-  await expect(page.getByLabel('Map zoom')).toHaveText('125%');
+  await expect(page.getByLabel('Map zoom')).toHaveText('150%');
   await expect
     .poll(async () => (await scene.boundingBox())?.x ?? 0)
-    .toBeGreaterThan(frame!.x - frame!.width * 0.125 + 20);
+    .toBeGreaterThan(frame!.x - frame!.width * 0.25 + 20);
   const terrain = await scene.boundingBox();
   expect(terrain).not.toBeNull();
   expect(terrain!.x).toBeLessThanOrEqual(frame!.x + 1);
@@ -33,6 +36,11 @@ test('first drag explores fitted map without changing selection or uncovering bl
   await page.getByRole('button', { name: 'Harrier group, armour, G-5' }).click();
   await expect(page.getByRole('heading', { name: 'Harrier group' })).toBeVisible();
   await page.getByRole('button', { name: 'Fit map' }).click();
+  await expect(page.getByLabel('Map zoom')).toHaveText('100%');
+  await page.mouse.move(from.x, from.y);
+  await page.mouse.down();
+  await page.mouse.move(from.x + 100, from.y - 60, { steps: 6 });
+  await page.mouse.up();
   await expect(page.getByLabel('Map zoom')).toHaveText('100%');
   await expect(page.getByRole('heading', { name: 'Harrier group' })).toBeVisible();
 });
@@ -72,6 +80,25 @@ test('expanded map traps focus, keeps controls and selection, and returns to ord
   await expect(expand).toBeFocused();
   await expect(page.locator('html')).not.toHaveCSS('overflow', 'hidden');
   await expect(page.getByLabel('Map zoom')).toHaveText('125%');
+});
+
+test('hex overlay keeps equal axes in normal and expanded map views', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/');
+  const grid = page.locator('.hex-grid');
+  const axisScales = () =>
+    grid.evaluate((element) => {
+      const transform = (element as SVGSVGElement).getScreenCTM();
+      return transform ? { x: transform.a, y: transform.d } : null;
+    });
+  const normal = await axisScales();
+  expect(normal).not.toBeNull();
+  expect(Math.abs(normal!.x - normal!.y)).toBeLessThan(0.01);
+
+  await page.getByRole('button', { name: 'Expand map' }).click();
+  const expanded = await axisScales();
+  expect(expanded).not.toBeNull();
+  expect(Math.abs(expanded!.x - expanded!.y)).toBeLessThan(0.01);
 });
 
 test('War Diary and fixture result open themed Field Atlas menus with keyboard support', async ({
@@ -225,6 +252,9 @@ test('touch drag pans map without scrolling page while outside-map touch still s
   await page.goto('/');
   const map = page.locator('.map-canvas');
   await map.scrollIntoViewIfNeeded();
+  await page.getByRole('button', { name: 'Zoom in' }).click();
+  await page.getByRole('button', { name: 'Zoom in' }).click();
+  await expect(page.getByLabel('Map zoom')).toHaveText('150%');
   const box = await map.boundingBox();
   expect(box).not.toBeNull();
   const client = await page.context().newCDPSession(page);
@@ -239,7 +269,7 @@ test('touch drag pans map without scrolling page while outside-map touch still s
     });
   }
   await client.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
-  await expect(page.getByLabel('Map zoom')).toHaveText('125%');
+  await expect(page.getByLabel('Map zoom')).toHaveText('150%');
   expect(await page.evaluate(() => scrollY)).toBe(initialScroll);
   await page.evaluate(() => scrollTo(0, 0));
   await client.send('Input.dispatchTouchEvent', {
