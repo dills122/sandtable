@@ -71,6 +71,8 @@ implementation belongs inside Umpire under a plain technical name. Accepted `CMB
 the initial RC bounded exercise; the remaining contract and proof gates still control admission.
 The `combat-p01-no-attack-v0` name is a private ordinal-two contract inventory, not a new
 Umpire capability or a completed Combat step path.
+`combat-p01-explicit-rba-v1` names a separate private successor for nonadjacent zero-assault
+states with a retained defender RBA choice; it is not a public action or native consumer.
 
 **Command** chooses strategic objectives, whether supplied by a person, scripted policy or optional
 model. **Staff** converts intent into concrete deterministic plans. The Umpire validates and executes

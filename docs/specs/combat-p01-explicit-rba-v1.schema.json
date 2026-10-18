@@ -1,0 +1,29 @@
+{
+  "contract": "combat-p01-explicit-rba-v1",
+  "contractVersion": 1,
+  "status": "private ordinal-two nonadjacent no-assault continuation; no public/native admission",
+  "predecessor": "combat-actual-moved-repeat-breakdown-completion-v1",
+  "physicalSourceHashes": {"landRulesPdf": "b362870368b9fb8abe6918195fdcf878d4a8041c557b835b9a1bdde3c8b76e99", "septemberErrataPdf": "5db539e1fac4aea3ef152370fb732f1938307fe4b2d47ad93eb605db0a09f0fb"},
+  "zeroAssaultRuleLocators": ["Land 10.11", "Land 10.31", "Land 11.0", "Land 13.0-13.24"],
+  "sourceFields": ["contractVersion", "predecessorSourceCanonicalUtf8", "eventCanonicalUtf8"],
+  "inputFields": ["contractVersion", "kind", "actor", "cycleId", "expectedPriorVersion", "expectedPriorPrefix", "fromPositionId", "previousReceiptId", "decisionId", "participant", "admittedAtUnixMilliseconds", "clockAvailable"],
+  "participantFields": ["creationBinding", "originalSide", "elementId"],
+  "controlFields": ["parent", "certificate", "certificateId", "positions", "stateVersion", "prefix", "position", "stepIndex", "selectionReceiptId", "barrageReceiptId", "rbaDecision", "rbaOpenReceiptId", "rbaOutcome", "declineReceiptId", "cancellationReceiptId", "lastReceiptId", "receipts", "closed", "admitted", "publicActions"],
+  "eventFields": ["contractVersion", "eventType", "campaignId", "rulesetHash", "configurationHash", "cycleId", "priorVersion", "stateVersion", "priorPrefix", "input", "effect", "receiptId"],
+  "effectFields": ["proofKind", "fromPositionId", "toPositionId", "selectionReceiptId", "previousReceiptId", "decisionId", "deadlineUnixMilliseconds", "acceptedAtUnixMilliseconds", "worldHash", "randomHash"],
+  "inputKinds": ["close-no-assault-selection", "complete-no-assault-step", "open-rba-decision", "decline-rba", "cancel-rba"],
+  "eventOrder": ["combat-selection-closed", "combat-step-completed:position-determination", "combat-step-completed:barrage", "combat-retreat-decision-opened", "combat-retreat-before-assault-declined", "combat-step-completed:retreat-before-assault", "combat-step-completed:force-assignment", "combat-step-completed:anti-armor", "combat-step-completed:close-assault"],
+  "stepNames": ["position-determination", "barrage", "retreat-before-assault", "force-assignment", "anti-armor", "close-assault"],
+  "receiptDomains": {
+    "selection": "sandtable.combat.p01.explicit-rba.selection-receipt.v1",
+    "step": "sandtable.combat.p01.explicit-rba.step-receipt.v1",
+    "rbaOpen": "sandtable.combat.p01.explicit-rba.open-receipt.v1",
+    "decline": "sandtable.combat.p01.explicit-rba.decline-receipt.v1",
+    "decision": "sandtable.combat.p01.explicit-rba.decision.v1",
+    "zeroAssault": "sandtable.combat.p01.zero-assault-certificate.v1"
+  },
+  "receiptPrefixes": {"selection": "p01s.", "step": "p01n.", "rbaOpen": "p01o.", "decline": "p01r.", "decision": "p01d.", "zeroAssault": "p01z."},
+  "limits": {"inputBytes": 4096, "eventBytes": 8192, "sourceBytes": 2097152, "controlBytes": 2097152, "ledgerEvents": 9, "depth": 16},
+  "admitted": false,
+  "publicActions": []
+}
