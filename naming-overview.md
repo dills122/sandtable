@@ -137,7 +137,7 @@ submission and post-step views remain separate contract gates.
 **Proving Ground** names the local development test environment and
 [runbook](docs/runbooks/proving-ground.md), not a game authority or separate service. Its first
 Docker profile packages the Maproom shell and Development Orleans host; the Exercise Runner stays
-a separate trusted CLI until browser campaign creation is implemented.
+a separate trusted CLI; browser creation currently serves only the one admitted temporary fixture.
 
 ## Domain modules and reserved names
 

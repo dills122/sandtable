@@ -142,7 +142,8 @@ its hex overlay keeps a consistent shape across panel sizes;
 the larger order inspector and header controls keep order preparation prominent. These remain
 local presentation interactions, not connected campaign actions. The
 [MAP-04 browser contract](src/Cna.Game.Contracts/README.md) has an OpenAPI schema, audience-safe
-fixture and compiling generated client; host handlers remain pending.
+fixture and compiling generated client. Local bootstrap, creation and initial-view handlers exist;
+public action submission and receipt lookup remain pending.
 The [MAP-05 trusted host protocol](docs/specs/maproom-trusted-host-protocol-v1.md) specifies
 private accepted-step evidence, pending publication, recovery and bounded System progression;
 it does not implement campaign hosting or durable save.
@@ -180,9 +181,10 @@ source is pending. Action submission and complete post-step reads are still abse
 MAP-09 now adds a private, process-lifetime action ingress. It retains the original outward
 request and seat binding before candidate remapping, returns the same retained receipt for an
 exact retry, rejects changed payloads and stale handles, and serializes admission with seat
-relinquishment or grant handoff. Its reply contains side-safe status and revision only. No HTTP
-submit/receipt handler is enabled; coherent successor views, approved diary source and durable
-receipts remain gates before connected orders can be exercised.
+relinquishment or grant handoff. Its reply contains side-safe status, reason and optional audience
+revision. No HTTP submit/receipt handler is enabled; coherent successor views, an approved diary
+source and a temporary receipt readback remain gates before local connected orders can be
+exercised. Durable receipt publication remains a separate saved-campaign gate.
 The [MAP-08B1 side projection prerequisite](docs/specs/maproom-side-projection-prerequisites-v1.md)
 records missing typed fields, pinned presentation data, audience-safe diary and opaque action
 mapping that must precede the browser view.

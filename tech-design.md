@@ -81,7 +81,8 @@ This lane does not activate private Combat or satisfy six-turn MVP acceptance.
 The [Proving Ground runbook](docs/runbooks/proving-ground.md) now defines a containerized
 Development preview: one built Angular shell and one single-silo Orleans host, both bound to host
 loopback. It deliberately omits database, gateway and worker from the minimal human-order path.
-No browser campaign seed, ingress or save exists yet. Production clustering and durable
+Local browser bootstrap, single-fixture creation and initial read exist; public action submission,
+receipt lookup and save do not. Production clustering and durable
 publication/restore remain gates before a Kubernetes deployment can replace this local profile.
 
 The [Field Atlas design system](docs/design/maproom-design-system-v0.md) starts with minimal semantic
@@ -101,7 +102,8 @@ These controls alter browser presentation only and preserve the fixture authorit
 The [MAP-04 outward contract](src/Cna.Game.Contracts/README.md) specifies development-only
 browser routes, a coherent audience view, opaque action capabilities and lossless audience
 revision strings. Private authority versions stay server-side. Its generated client compiles;
-host handlers are pending. The preview remains synthetic. The
+local bootstrap, creation and initial-view handlers exist; public action submit and receipt
+lookup handlers are pending. The preview remains synthetic. The
 [MAP-05 trusted host protocol](docs/specs/maproom-trusted-host-protocol-v1.md) fixes private
 accepted-step/publication and restore boundaries for later host slices; no campaign grain or
 durable provider is implemented by that contract. The
@@ -146,10 +148,11 @@ source-pinned public layout with generic contact labels, own formation labels an
 no post-creation diary source is approved, so successor views fail closed. MAP-09 privately binds
 a typed outward request to the active seat generation, retains its original identity for exact
 retries, rechecks a current Core candidate inside a serialized grain turn, and coordinates
-admission with seat revocation and handoff. Only side-safe status and revision leave that private
-seam. The request/receipt record is process-lifetime; no public submit/receipt handler is enabled.
-Core terminal classification, coherent successor views, approved diary source and durable
-publication remain gates for connected play.
+admission with seat revocation and handoff. Its private reply contains side-safe status, reason
+and optional audience revision. The request/receipt record is process-lifetime; no public
+submit/receipt handler is enabled. Core terminal classification, coherent successor views,
+approved diary source and temporary receipt readback remain gates for local connected play;
+durable publication is required for saved campaigns.
 No canonical legal-action bytes or authority versions are serialized to HTTP. The
 [Angular workspace](src/Cna.Maproom/README.md) provides
 `projects/maproom-alpha` and the internal `@sandtable/field-atlas` library. Storybook uses the same
