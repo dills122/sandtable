@@ -114,7 +114,7 @@ test('local read lane shows only the returned audience view and never submits an
   await page.getByRole('button', { name: 'Check local fixtures' }).click();
   await page.getByRole('button', { name: 'Create and enter Axis' }).click();
   await expect(page.getByRole('heading', { name: 'Situation map' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'First group' }).first()).toBeVisible();
+  await expect(page.locator('.connected-unit').filter({ hasText: 'First group' })).toBeVisible();
   await expect(page.locator('.connected-map-point')).toHaveCount(9);
   const map = await page.getByRole('region', { name: 'Audience-safe campaign map' }).boundingBox();
   const northwest = await page.locator('[data-location-id="loc-1"]').boundingBox();
@@ -384,3 +384,139 @@ test('conflicting process-local creation explains restart boundary', async ({ pa
   await expect(page.getByRole('alert')).toContainText('restart the local host');
   await expect(page.getByRole('heading', { name: 'Situation map' })).toHaveCount(0);
 });
+
+// Authorized reads use a fresh mocked session for each seat.
+for (const seat of ['axis', 'commonwealth'] as const) {
+  test(`${seat} operational read retains then clears outward selection`, async ({ page }) => {
+    const own = seat === 'axis' ? 'Axis' : 'Commonwealth';
+    const opposing = seat === 'axis' ? 'Commonwealth' : 'Axis';
+    let reads = 0;
+    const posts: string[] = [];
+    await page.route('**/api/v1/**', async (route) => {
+      const request = route.request();
+      const path = new URL(request.url()).pathname;
+      if (request.method() === 'POST') posts.push(path);
+      if (path === '/api/v1/bootstrap')
+        await route.fulfill({ json: { contractVersion: 1, csrfToken: 'csrf' } });
+      else if (path === '/api/v1/fixtures')
+        await route.fulfill({ json: [{ fixtureId: 'rules9', displayName: 'Truck lab' }] });
+      else if (path === '/api/v1/campaigns')
+        await route.fulfill({
+          status: 201,
+          json: {
+            contractVersion: 1,
+            campaign: { campaignId: 'c-1' },
+            seatGrants: { axis: 'grant-axis', commonwealth: 'grant-commonwealth' },
+          },
+        });
+      else if (path === '/api/v1/campaigns/c-1/seat') {
+        expect(request.postDataJSON()).toEqual({ contractVersion: 1, grantId: `grant-${seat}` });
+        await route.fulfill({
+          json: {
+            contractVersion: 1,
+            campaignId: 'c-1',
+            seat,
+            sessionGeneration: 'g-1',
+          },
+        });
+      } else if (path === '/api/v1/campaigns/c-1/view') {
+        reads++;
+        const infantry = {
+          formationId: 'outward-infantry',
+          label: `${own} infantry`,
+          kindLabel: 'Infantry',
+          locationId: 'west',
+          orderStatusLabel: 'No reserve designation',
+        };
+        const truck = {
+          formationId: 'outward-truck',
+          label: `${own} truck`,
+          kindLabel: 'Truck convoy',
+          locationId: 'east',
+          orderStatusLabel: 'Reserve I',
+        };
+        const ownFormations = reads === 3 ? [infantry] : [infantry, truck];
+        await route.fulfill({
+          json: {
+            contractVersion: 1,
+            campaignId: 'c-1',
+            seat,
+            sessionGeneration: 'g-1',
+            audienceRevision: String(reads),
+            rulesetHash: 'r',
+            position: {
+              positionId: 'p-1',
+              turn: '1',
+              phaseId: 'movement',
+              stageId: 'initial',
+              decision: reads === 3 ? 'unsupported-phase' : 'human',
+            },
+            locations: [
+              { locationId: 'west', label: 'West', x: -1, y: 0 },
+              { locationId: 'east', label: 'East', x: 1, y: 0 },
+            ],
+            ownFormations,
+            apparentContacts: [
+              { contactId: 'contact', label: 'Unidentified presence', locationId: 'east' },
+            ],
+            legalActions:
+              reads === 3
+                ? []
+                : [
+                    {
+                      actionId: 'move',
+                      actionContractVersion: 1,
+                      kind: 'move',
+                      label: 'Move truck',
+                      formationId: 'outward-truck',
+                    },
+                  ],
+            formationLedger: ownFormations.map((formation) => ({
+              formationId: formation.formationId,
+              label: formation.label,
+              kindLabel: formation.kindLabel,
+              locationLabel: formation.locationId === 'west' ? 'West' : 'East',
+              orderStatusLabel: formation.orderStatusLabel,
+            })),
+            warDiary: [],
+            nextDiaryCursor: '0',
+            actionSetToken: 'opaque',
+          },
+        });
+      } else throw new Error(`Unexpected API call: ${path}`);
+    });
+
+    await page.goto('/connected');
+    await page.getByRole('button', { name: 'Check local fixtures' }).click();
+    await page.getByRole('button', { name: `Create and enter ${own}` }).click();
+    await expect(page.getByRole('heading', { name: 'Situation map' })).toBeVisible();
+    await expect(page.locator('.connected-unit[data-kind="truck"]')).toContainText(`${own} truck`);
+    await expect(page.locator('.roster-item')).toHaveCount(2);
+    await expect(page.getByRole('table', { name: 'Formation ledger' })).toContainText(
+      'Truck convoy',
+    );
+    await expect(page.getByText('No diary entries in this view.')).toBeVisible();
+    await expect(page.getByText(`${opposing} infantry`)).toHaveCount(0);
+    await page
+      .locator('.roster-item')
+      .filter({ hasText: `${own} truck` })
+      .click();
+    await expect(page.locator('.connected-inspector')).toContainText('Move truck');
+    await expect(page.getByRole('button', { name: 'Move truck' })).toHaveCount(0);
+
+    await page.getByRole('button', { name: 'Refresh view' }).click();
+    await expect.poll(() => reads).toBe(2);
+    await expect(page.locator('.roster-item').filter({ hasText: `${own} truck` })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+
+    await page.getByRole('button', { name: 'Refresh view' }).click();
+    await expect.poll(() => reads).toBe(3);
+    await expect(page.locator('.roster-item')).toHaveCount(1);
+    await expect(page.locator('.roster-item')).toHaveAttribute('aria-pressed', 'false');
+    await expect(page.locator('.connected-inspector')).toContainText('No formation selected');
+    await expect(page.getByRole('status')).toContainText('no connected browser continuation');
+    expect(posts).toEqual(['/api/v1/campaigns', '/api/v1/campaigns/c-1/seat']);
+  });
+}

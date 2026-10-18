@@ -3,11 +3,20 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ConnectedCampaignService, SeatIdentityError } from './connected-campaign.service';
 import { CoherentPlayerView } from './api/generated/model/coherentPlayerView';
 import { FixtureDescriptor } from './api/generated/model/fixtureDescriptor';
+import { AtlasPanel, AtlasStatus } from '@sandtable/field-atlas';
+import {
+  connectedKind,
+  connectedSymbol,
+  formationActions,
+  operationalLocations,
+  selectedFormationId,
+} from './connected-read-model';
 
 type Seat = 'axis' | 'commonwealth';
 
 @Component({
   selector: 'mr-connected-workspace',
+  imports: [AtlasPanel, AtlasStatus],
   templateUrl: './connected-workspace.html',
   styleUrl: './connected-workspace.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -27,35 +36,24 @@ export class ConnectedWorkspace {
   );
   protected readonly mapLocations = computed(() => {
     const view = this.view();
-    if (!view?.locations.length) return [];
-    const xs = view.locations.map((location) => location.x);
-    const ys = view.locations.map((location) => location.y);
-    const minX = Math.min(...xs);
-    const maxX = Math.max(...xs);
-    const minY = Math.min(...ys);
-    const maxY = Math.max(...ys);
-    const position = (value: number, min: number, max: number) =>
-      min === max ? 50 : 16 + ((value - min) / (max - min)) * 68;
-
-    return view.locations.map((location) => ({
-      ...location,
-      left: position(location.x, minX, maxX),
-      top: position(location.y, minY, maxY),
-      formations: view.ownFormations.filter(
-        (formation) => formation.locationId === location.locationId,
-      ),
-      contacts: view.apparentContacts.filter(
-        (contact) => contact.locationId === location.locationId,
-      ),
-    }));
+    return view ? operationalLocations(view) : [];
   });
+  protected readonly selectedActions = computed(() => {
+    const view = this.view();
+    return view ? formationActions(view, this.selected()) : [];
+  });
+  protected readonly generalActions = computed(
+    () => this.view()?.legalActions.filter((action) => !action.formationId) ?? [],
+  );
+  protected readonly kind = connectedKind;
+  protected readonly symbol = connectedSymbol;
 
   protected async connect(): Promise<void> {
     await this.run(async () => this.fixtures.set(await this.api.availableFixtures()));
   }
 
   protected async create(fixtureId: string, seat: Seat): Promise<void> {
-    await this.run(async () => this.setView(await this.api.createAndRead(fixtureId, seat)));
+    await this.run(async () => this.setView(await this.api.createAndRead(fixtureId, seat), true));
   }
 
   protected async refresh(): Promise<void> {
@@ -92,7 +90,7 @@ export class ConnectedWorkspace {
     );
   }
 
-  private setView(view: CoherentPlayerView): void {
+  private setView(view: CoherentPlayerView, initial = false): void {
     if (
       !Array.isArray(view.ownFormations) ||
       !Array.isArray(view.locations) ||
@@ -103,11 +101,7 @@ export class ConnectedWorkspace {
     ) {
       throw new Error('Incomplete audience view');
     }
-    this.selectedId.set(
-      view.ownFormations.some((formation) => formation.formationId === this.selectedId())
-        ? this.selectedId()
-        : (view.ownFormations[0]?.formationId ?? null),
-    );
+    this.selectedId.set(selectedFormationId(view, this.selectedId(), initial));
     this.view.set(view);
   }
 
