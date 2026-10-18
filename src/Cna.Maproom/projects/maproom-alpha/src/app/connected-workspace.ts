@@ -3,7 +3,6 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ConnectedCampaignService, SeatIdentityError } from './connected-campaign.service';
 import { CoherentPlayerView } from './api/generated/model/coherentPlayerView';
 import { FixtureDescriptor } from './api/generated/model/fixtureDescriptor';
-import { MapLocation } from './api/generated/model/mapLocation';
 
 type Seat = 'axis' | 'commonwealth';
 
@@ -26,6 +25,30 @@ export class ConnectedWorkspace {
   protected readonly selectedLocation = computed(() =>
     this.view()?.locations.find((location) => location.locationId === this.selected()?.locationId),
   );
+  protected readonly mapLocations = computed(() => {
+    const view = this.view();
+    if (!view?.locations.length) return [];
+    const xs = view.locations.map((location) => location.x);
+    const ys = view.locations.map((location) => location.y);
+    const minX = Math.min(...xs);
+    const maxX = Math.max(...xs);
+    const minY = Math.min(...ys);
+    const maxY = Math.max(...ys);
+    const position = (value: number, min: number, max: number) =>
+      min === max ? 50 : 16 + ((value - min) / (max - min)) * 68;
+
+    return view.locations.map((location) => ({
+      ...location,
+      left: position(location.x, minX, maxX),
+      top: position(location.y, minY, maxY),
+      formations: view.ownFormations.filter(
+        (formation) => formation.locationId === location.locationId,
+      ),
+      contacts: view.apparentContacts.filter(
+        (contact) => contact.locationId === location.locationId,
+      ),
+    }));
+  });
 
   protected async connect(): Promise<void> {
     await this.run(async () => this.fixtures.set(await this.api.availableFixtures()));
@@ -67,10 +90,6 @@ export class ConnectedWorkspace {
       this.view()?.locations.find((location) => location.locationId === id)?.label ??
       'Unknown location'
     );
-  }
-
-  protected location(id: string): MapLocation | undefined {
-    return this.view()?.locations.find((location) => location.locationId === id);
   }
 
   private setView(view: CoherentPlayerView): void {

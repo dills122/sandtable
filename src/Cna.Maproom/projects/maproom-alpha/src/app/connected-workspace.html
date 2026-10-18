@@ -60,39 +60,35 @@
     <div class="connected-grid">
       <section class="connected-map" aria-labelledby="connected-map-title">
         <h2 id="connected-map-title">Situation map</h2>
-        <div class="connected-map-frame" role="region" aria-label="Audience-safe campaign map">
-          @for (location of current.locations; track location.locationId) {
-            <span
-              class="connected-location"
-              [style.left.%]="location.x"
-              [style.top.%]="location.y"
-              >{{ location.label }}</span
-            >
-          }
-          @for (formation of current.ownFormations; track formation.formationId) {
-            @if (location(formation.locationId); as location) {
-              <button
-                type="button"
-                class="connected-unit"
-                [style.left.%]="location.x"
-                [style.top.%]="location.y"
-                [attr.aria-pressed]="selectedId() === formation.formationId"
-                (click)="select(formation.formationId)"
+        <p class="connected-map-note">
+          Schematic fixture locations · own formations and apparent contacts
+        </p>
+        <div class="connected-map-scroll">
+          <div class="connected-map-frame" role="region" aria-label="Audience-safe campaign map">
+            @for (point of mapLocations(); track point.locationId) {
+              <div
+                class="connected-map-point"
+                [attr.data-location-id]="point.locationId"
+                [style.left.%]="point.left"
+                [style.top.%]="point.top"
               >
-                {{ formation.label }}
-              </button>
+                <span class="connected-location">{{ point.label }}</span>
+                @for (formation of point.formations; track formation.formationId) {
+                  <button
+                    type="button"
+                    class="connected-unit"
+                    [attr.aria-pressed]="selectedId() === formation.formationId"
+                    (click)="select(formation.formationId)"
+                  >
+                    {{ formation.label }}
+                  </button>
+                }
+                @for (contact of point.contacts; track contact.contactId) {
+                  <span class="connected-contact">{{ contact.label }}</span>
+                }
+              </div>
             }
-          }
-          @for (contact of current.apparentContacts; track contact.contactId) {
-            @if (location(contact.locationId); as location) {
-              <span
-                class="connected-contact"
-                [style.left.%]="location.x"
-                [style.top.%]="location.y"
-                >{{ contact.label }}</span
-              >
-            }
-          }
+          </div>
         </div>
       </section>
       <section aria-labelledby="connected-formations-title">
