@@ -78,6 +78,11 @@ main {
 }
 .phase-facts dd {
   margin: 0;
+  overflow-wrap: anywhere;
+}
+.phase-facts > div {
+  min-width: 0;
+  max-width: 100%;
 }
 .phase-status {
   display: grid;
@@ -147,6 +152,10 @@ h2 {
 }
 .roster-item[aria-pressed='true'] {
   box-shadow: inset 3px 0 var(--color-accent);
+}
+.roster-item > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 .map-panel {
   display: flex;
@@ -258,12 +267,19 @@ h2 {
   background: var(--color-panel);
 }
 .connected-map-scroll {
-  overflow-x: auto;
   flex: 1;
   display: flex;
+  min-width: 0;
+}
+.connected-map-scroll:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: -2px;
+}
+.connected-map-hint {
+  display: none;
 }
 .connected-map-frame {
-  min-width: 34rem;
+  min-width: 0;
   min-height: 35rem;
   width: 100%;
   cursor: default;
@@ -282,6 +298,7 @@ h2 {
   border: 1px solid var(--color-rule);
   background: var(--color-panel);
   box-shadow: 0 1px 4px rgb(0 0 0 / 12%);
+  overflow-wrap: anywhere;
 }
 .connected-location {
   color: var(--color-muted);
@@ -355,5 +372,24 @@ h2 {
   .connected-grid,
   .records-grid {
     grid-template-columns: minmax(0, 1fr);
+  }
+}
+@container (max-width: 35rem) {
+  .connected-grid .roster-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 25rem) {
+  .connected-map-hint {
+    display: block;
+    margin: 0;
+    padding: var(--space-xs) var(--space-md);
+    font-size: var(--text-sm);
+  }
+  .connected-map-scroll {
+    overflow-x: auto;
+  }
+  .connected-map-frame {
+    min-width: 30rem;
   }
 }

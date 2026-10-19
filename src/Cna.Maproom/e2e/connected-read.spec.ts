@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 
 test('local read lane shows only the returned audience view and never submits an order', async ({
   page,
-}) => {
+}, testInfo) => {
   const requests: string[] = [];
   await page.route('**/api/v1/**', async (route) => {
     const request = route.request();
@@ -129,6 +129,52 @@ test('local read lane shows only the returned audience view and never submits an
   expect(center!.y).toBeLessThan(southeast!.y);
   expect(southeast!.x + southeast!.width).toBeLessThan(map!.x + map!.width);
   expect(southeast!.y + southeast!.height).toBeLessThan(map!.y + map!.height);
+  for (const [width, height, largeText] of [
+    [502, 500, false],
+    [320, 568, false],
+    [320, 568, true],
+  ] as const) {
+    await page.setViewportSize({ width, height });
+    if (largeText) await page.addStyleTag({ content: 'html { font-size: 200%; }' });
+    const frame = await page
+      .getByRole('region', { name: 'Audience-safe campaign map' })
+      .boundingBox();
+    const scroll = page.getByRole('region', { name: 'Scrollable situation map' });
+    const points = await page.locator('.connected-map-point').all();
+    expect(frame).not.toBeNull();
+    for (const point of points) {
+      const card = await point.boundingBox();
+      expect(card).not.toBeNull();
+      expect(card!.x).toBeGreaterThanOrEqual(frame!.x);
+      expect(card!.x + card!.width).toBeLessThanOrEqual(frame!.x + frame!.width);
+      expect(card!.y).toBeGreaterThanOrEqual(frame!.y);
+      expect(card!.y + card!.height).toBeLessThanOrEqual(frame!.y + frame!.height);
+    }
+    const scrollSize = await scroll.evaluate((element) => ({
+      viewport: element.clientWidth,
+      content: element.scrollWidth,
+    }));
+    if (width === 502) {
+      expect(scrollSize.content).toBeLessThanOrEqual(scrollSize.viewport);
+      const east = await page.locator('[data-location-id="loc-9"]').boundingBox();
+      const viewport = await scroll.boundingBox();
+      expect(east!.x + east!.width).toBeLessThanOrEqual(viewport!.x + viewport!.width);
+      await page.screenshot({ path: testInfo.outputPath('connected-502.png'), fullPage: true });
+    } else {
+      expect(scrollSize.content).toBeGreaterThan(scrollSize.viewport);
+      await expect(page.getByText('Scroll sideways to inspect the full map.')).toBeVisible();
+      await scroll.focus();
+      await page.keyboard.press('ArrowRight');
+      await expect.poll(() => scroll.evaluate((element) => element.scrollLeft)).toBeGreaterThan(0);
+      await scroll.evaluate((element) => (element.scrollLeft = element.scrollWidth));
+      const east = await page.locator('[data-location-id="loc-9"]').boundingBox();
+      const viewport = await scroll.boundingBox();
+      expect(east!.x + east!.width).toBeLessThanOrEqual(viewport!.x + viewport!.width);
+      expect(east!.x).toBeGreaterThanOrEqual(viewport!.x - 3);
+    }
+    await expect(page.getByRole('button', { name: 'Refresh view' })).toBeVisible();
+    await expect(page.locator('.roster-item')).toHaveCount(1);
+  }
   await expect(page.locator('[data-location-id="loc-1"]')).toContainText('First group');
   await expect(page.locator('[data-location-id="loc-9"]')).toContainText('Unidentified presence');
   await expect(page.getByRole('heading', { name: 'War Diary' })).toBeVisible();
