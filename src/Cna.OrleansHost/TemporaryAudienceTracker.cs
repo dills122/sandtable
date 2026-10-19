@@ -1,6 +1,7 @@
 using System.Security.Cryptography;
 using Cna.Core.Actions;
 using Cna.Core.Hosting;
+using Cna.OrleansHost.Api;
 
 namespace Cna.OrleansHost;
 
@@ -87,6 +88,10 @@ internal sealed class TemporaryAudienceTracker
             {
                 OutwardActionId = Scope("action", audience, sessionGeneration, a.OutwardActionId),
             }).ToArray(),
+            Diary = cut.Diary.Select(entry => entry with
+            {
+                EntryId = Scope("diary", audience, sessionGeneration, entry.EntryId),
+            }).ToArray(),
         };
     }
 
@@ -116,8 +121,8 @@ internal sealed class TemporaryAudienceTracker
         string headHash, CampaignAudienceOutcomePair? outcome)
     {
         // Build both successor projections before publishing either side's committed head.
-        var nextAxis = AdvanceSide(axis);
-        var nextCommonwealth = AdvanceSide(commonwealth);
+        var nextAxis = AdvanceSide(axis, outcome?.Axis);
+        var nextCommonwealth = AdvanceSide(commonwealth, outcome?.Commonwealth);
         sides[CampaignActionAudience.Axis] = nextAxis;
         sides[CampaignActionAudience.Commonwealth] = nextCommonwealth;
         StateVersion = axis.StateVersion;
@@ -196,9 +201,11 @@ internal sealed class TemporaryAudienceTracker
         && value.AsSpan(7).ToArray().All(static character =>
             character is >= '0' and <= '9' or >= 'a' and <= 'f');
 
-    private SideState AdvanceSide(CampaignHostPrivateSideCut source)
+    private SideState AdvanceSide(CampaignHostPrivateSideCut source,
+        CampaignAudienceOutcomeDecision? decision)
     {
         sides.TryGetValue(source.Audience, out var prior);
+        var (diary, cursor, appended) = AdvanceDiary(source, decision, prior);
         var contacts = source.Contacts.Select(contact =>
         {
             var id = prior?.Contacts.GetValueOrDefault(contact.RepresentationId)
@@ -210,7 +217,7 @@ internal sealed class TemporaryAudienceTracker
             pair => pair.First.RepresentationId, pair => pair.Second.ContactId,
             StringComparer.Ordinal);
         var fingerprint = Fingerprint(source, contacts);
-        var changed = prior is null || !string.Equals(prior.Fingerprint, fingerprint,
+        var changed = prior is null || appended || !string.Equals(prior.Fingerprint, fingerprint,
             StringComparison.Ordinal);
         var revision = prior is null ? 1 : prior.Cut.AudienceRevision + (changed ? 1 : 0);
         var token = prior is not null && !changed ? prior.Cut.ActionSetToken : Guid.NewGuid().ToString("D");
@@ -228,8 +235,57 @@ internal sealed class TemporaryAudienceTracker
             source.OwnElements.Select(element => new TemporaryPrivateOwnElement(
                 element.ElementId, element.FormationId, element.LocationId,
                 element.ReserveStatus)).ToArray(), contacts, actions, SourcePin,
-            source.DecisionStateKind);
+            source.DecisionStateKind)
+        {
+            Diary = diary,
+            NextDiaryCursor = cursor,
+        };
         return new SideState(cut, fingerprint, contactMap);
+    }
+
+    private (TemporaryPrivateDiaryEntry[] Entries, ulong Cursor, bool Appended) AdvanceDiary(
+        CampaignHostPrivateSideCut source, CampaignAudienceOutcomeDecision? decision,
+        SideState? prior)
+    {
+        var entries = prior?.Cut.Diary ?? [];
+        var cursor = prior?.Cut.NextDiaryCursor ?? 0;
+        if (decision is null) return (entries, cursor, false);
+        if (decision.Audience != source.Audience
+            || decision.SuccessorStateVersion != source.StateVersion)
+            throw new InvalidOperationException("Diary proof does not match the side cut.");
+        if (decision.ProposedCopyKey is null)
+        {
+            if (decision.Disposition != CampaignAudienceOutcomeDisposition.Silent
+                || decision.ReasonCode != "known-silent"
+                || decision.OwnElementIndex is not null)
+                throw new InvalidOperationException("Unsupported silent diary decision.");
+            return (entries, cursor, false);
+        }
+        if (decision.ActingAudience != source.Audience
+            || decision.Disposition != CampaignAudienceOutcomeDisposition.Unavailable
+            || decision.ReasonCode != "copy-catalog-unapproved")
+            throw new InvalidOperationException("Unsupported diary entry decision.");
+        var copy = TemporaryPlayerViewProjection.LookupDiaryCopy(SourcePin,
+            TemporaryPlayerViewProjection.DiaryCatalogVersion, "en-CA",
+            decision.ProposedCopyKey)
+            ?? throw new InvalidOperationException("No approved diary copy.");
+        string? formation = null;
+        if (copy.OwnFormationLink)
+        {
+            var index = decision.OwnElementIndex
+                ?? throw new InvalidOperationException("Missing own formation proof.");
+            if (index < 0 || index >= source.OwnElements.Count)
+                throw new InvalidOperationException("Invalid own formation proof.");
+            formation = source.OwnElements[index].FormationId;
+            if (string.IsNullOrWhiteSpace(formation))
+                throw new InvalidOperationException("Invalid own formation proof.");
+        }
+        else if (decision.OwnElementIndex is not null)
+            throw new InvalidOperationException("Unapproved own formation link.");
+        var next = checked(cursor + 1);
+        var entry = new TemporaryPrivateDiaryEntry(Guid.NewGuid().ToString("D"), next,
+            copy.Title, copy.Body, formation);
+        return (entries.Append(entry).TakeLast(50).ToArray(), next, true);
     }
 
     private static string Fingerprint(CampaignHostPrivateSideCut cut,
@@ -316,7 +372,15 @@ public sealed record TemporaryPrivateAudienceCut(
     [property: Id(13)] TemporaryPrivateContact[] Contacts,
     [property: Id(14)] TemporaryPrivateAction[] Actions,
     [property: Id(15)] string SourcePin,
-    [property: Id(16)] string DecisionStateKind);
+    [property: Id(16)] string DecisionStateKind)
+{
+    [Id(17)] public TemporaryPrivateDiaryEntry[] Diary { get; init; } = [];
+    [Id(18)] public ulong NextDiaryCursor { get; init; }
+}
+[GenerateSerializer]
+public sealed record TemporaryPrivateDiaryEntry([property: Id(0)] string EntryId,
+    [property: Id(1)] ulong AudienceCursor, [property: Id(2)] string Title,
+    [property: Id(3)] string Body, [property: Id(4)] string? FormationId);
 [GenerateSerializer]
 public sealed record TemporaryPrivateLocation([property: Id(0)] string LocationId,
     [property: Id(1)] string TerrainId);

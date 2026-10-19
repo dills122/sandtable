@@ -1,12 +1,13 @@
 # MAP-08B audience diary source contract
 
-Status: **typed private source merged; exact entry/silent classifications and copy
-owner-approved on 2026-10-19; no post-step view or diary publication**. This
+Status: **typed private source and atomic per-seat tracker diary implemented; exact
+copy/classifications owner-approved on 2026-10-19; no post-step view or diary
+publication**. This
 document narrows the [MAP-08B side projection prerequisites](maproom-side-projection-prerequisites-v1.md)
 for the development-only `breakdown-truck-lab` fixture. Approval of fixed copy does not
 authorize decoding canonical events in the browser or HTTP handler.
 
-## Existing boundary and missing source
+## Public boundary and private source
 
 MAP-04 `CoherentPlayerView` requires `warDiary` (at most 50 `DiaryExcerpt` values) and
 `nextDiaryCursor`. Each excerpt requires `entryId`, unsigned-decimal `audienceCursor`,
@@ -14,14 +15,14 @@ MAP-04 `CoherentPlayerView` requires `warDiary` (at most 50 `DiaryExcerpt` value
 independent of authority `stateVersion` and `audienceRevision`. See
 [`openapi.v1.json`](../../src/Cna.Game.Contracts/openapi.v1.json).
 
-The current [private audience tracker](../../src/Cna.OrleansHost/TemporaryAudienceTracker.cs)
-receives two coherent successor side cuts and retains locations, own elements, contacts,
-actions, audience revision, and action handles. It has no committed-outcome diary source or
-cursor. [`TemporaryCampaignGrain.SubmitAsync`](../../src/Cna.OrleansHost/TemporaryCampaignGrain.cs)
-holds accepted canonical event/receipt/snapshot evidence privately, then advances the tracker
-with successor cuts alone. [`TemporaryPlayerViewProjection`](../../src/Cna.OrleansHost/Api/TemporaryPlayerViewProjection.cs)
-therefore admits only state version 1 and emits an empty diary with cursor `0`. Keep that
-guard until this source contract, copy catalog, and tests are implemented and reviewed.
+The [private audience tracker](../../src/Cna.OrleansHost/TemporaryAudienceTracker.cs)
+receives two coherent successor side cuts and the paired accepted-outcome proof. It
+retains locations, own elements, contacts, actions, audience revision, action handles,
+and a private per-seat diary cursor/window. [`TemporaryCampaignGrain.SubmitAsync`](../../src/Cna.OrleansHost/TemporaryCampaignGrain.cs)
+holds canonical event/receipt/snapshot evidence privately, then advances both side cuts
+and approved private diary entries together. [`TemporaryPlayerViewProjection.Map`](../../src/Cna.OrleansHost/Api/TemporaryPlayerViewProjection.cs)
+still admits only state version 1 and emits an empty browser diary with cursor `0`.
+Keep that guard until the coherent successor projection and two-seat publication tests pass.
 
 `CampaignHostAcceptedStep.EventRecords` contains canonical private event bytes, not
 `DiaryExcerpt` values. The active [`CampaignExercises.Submit`](../../src/Cna.Core/Exercises/CampaignExercises.cs)
@@ -42,16 +43,15 @@ and successor snapshot. It never commits a second turn or advances the supplied 
 Both predecessor and successor side cuts must be coherent before it emits a paired,
 versioned host-private proof with source and committed-head hashes. Unknown or mismatched
 input returns no typed proof for either side. The existing source still marks entry
-copy keys `copy-catalog-unapproved` and unavailable until its private proof is consumed
-through the approved versioned catalog; no diary cursor, text, HTTP response, or
-successor `/view` consumes this proof yet. This is the accepted-outcome decision
-source prerequisite, not the diary projection.
+copy keys `copy-catalog-unapproved` and unavailable at the Core boundary. The trusted
+tracker consumes that private proof through the approved catalog after validating the
+committed head; no HTTP response or successor `/view` consumes the diary yet.
 
-The temporary host now consumes the proof only for the
-[private outcome head binding](maproom-private-outcome-head-binding-v1.md). It checks the
-canonical accepted step and paired proof against the current tracker head and both successor
-cuts before installing the private successor. This retains one latest proof, not approved
-entry copy, a diary history/cursor, or permission to remove the public initial-only guard.
+The temporary host checks the canonical accepted step and paired proof against the
+current tracker head and both successor cuts before atomically installing the private
+successor and per-seat diary update. It retains the latest proof and up to 50 approved
+entries per seat with a monotonic private cursor. A trusted session-generation read
+rotates outward entry IDs. This does not remove the public initial-only guard.
 
 For each ordered event in an accepted step, the Core hosting adapter supplies one
 immutable, versioned `AudienceOutcomeDecision` per authorized side **in addition to**
@@ -186,9 +186,10 @@ the diary cursor.
 ## Remaining implementation gates
 
 The owner approved the exact entries, silent classes, and fixed catalog copy on
-2026-10-19. The typed Core-hosting outcome source and private committed-head binding
-exist, and the fixed-text catalog lookup is host-private. The remaining work must
-attach approved entries to the atomic tracker update, prove both seats and cursor
-retention, and render only a coherent successor view. Until those tests and review
+2026-10-19. The typed Core-hosting outcome source, private committed-head binding,
+catalog lookup, atomic tracker append, 50-entry retention and generation-scoped IDs
+exist. The remaining work must prove every supported outcome for both seats, expose
+only a coherent successor view, and complete the public privacy/HTTP tests. Until
+those tests and review
 pass, successor `/view` remains unavailable; this is no claim of a playable API or
 durable history.

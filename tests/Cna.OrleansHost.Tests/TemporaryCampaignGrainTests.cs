@@ -68,6 +68,87 @@ public sealed class TemporaryCampaignGrainTests
     }
 
     [Fact]
+    public void PrivateDiaryWindowRetainsLatestFiftyAndRotatesGenerationIds()
+    {
+        // Synthetic host-private proofs exercise window mechanics; the in-process host
+        // test below checks the genuine accepted-outcome source and seat classification.
+        const string rules =
+            "17f3e6047f34b5bf6f5f809055863b664a4bd82a8481db83ee83e0ae5cad3a2a";
+        const string setup =
+            "sha256:e6631e81ad8f97e39fd9d7eec93bad7fe2b39db4d2d3059ed94a02dd4093e7a3";
+        const string content =
+            "sha256:646e76e69ecceb82216b37d84e950928099acd8a3cb04b51526d0fe631e512ee";
+        CampaignHostPrivateSideCut Pinned(CampaignActionAudience audience, long version) =>
+            Side(audience, version) with
+            {
+                RulesetHash = rules,
+                ScenarioId = "breakdown-truck-lab",
+                OwnElements =
+                [new CampaignHostPrivateOwnElement($"own-{audience}",
+                    audience == CampaignActionAudience.Axis
+                        ? "axis-infantry.formation" : "commonwealth-infantry.formation",
+                    "location", "None")],
+            };
+        var tracker = TemporaryAudienceTracker.Create("test-campaign", rules,
+            "breakdown-truck-lab", setup, content, Hash("initial"),
+            Pinned(CampaignActionAudience.Axis, 1),
+            Pinned(CampaignActionAudience.Commonwealth, 1))!;
+        for (var version = 2; version <= 52; version++)
+            Assert.True(AdvanceSynthetic(tracker, Pinned(CampaignActionAudience.Axis, version),
+                Pinned(CampaignActionAudience.Commonwealth, version),
+                copyKey: "diary.initiativeOrder"));
+        var axis = tracker.Read(CampaignActionAudience.Axis, 52, Generation)!;
+        var commonwealth = tracker.Read(CampaignActionAudience.Commonwealth, 52, Generation)!;
+        Assert.Equal(51UL, axis.NextDiaryCursor);
+        Assert.Equal(50, axis.Diary.Length);
+        Assert.Equal(Enumerable.Range(2, 50).Select(value => (ulong)value),
+            axis.Diary.Select(entry => entry.AudienceCursor));
+        Assert.All(axis.Diary, entry =>
+        {
+            Assert.Equal("Initiative order recorded", entry.Title);
+            Assert.Equal("Your choice of acting order was recorded.", entry.Body);
+            Assert.Null(entry.FormationId);
+        });
+        Assert.Empty(commonwealth.Diary);
+        Assert.Equal(0UL, commonwealth.NextDiaryCursor);
+        var rotated = tracker.Read(CampaignActionAudience.Axis, 52, OtherGeneration)!;
+        Assert.Equal(axis.NextDiaryCursor, rotated.NextDiaryCursor);
+        Assert.Equal(axis.Diary.Select(entry => entry.Title),
+            rotated.Diary.Select(entry => entry.Title));
+        Assert.All(axis.Diary.Zip(rotated.Diary), pair =>
+            Assert.NotEqual(pair.First.EntryId, pair.Second.EntryId));
+
+        var unknown = TemporaryAudienceTracker.Create("test-campaign", rules,
+            "breakdown-truck-lab", setup, content, Hash("initial"),
+            Pinned(CampaignActionAudience.Axis, 1),
+            Pinned(CampaignActionAudience.Commonwealth, 1))!;
+        Assert.False(AdvanceSynthetic(unknown, Pinned(CampaignActionAudience.Axis, 2),
+            Pinned(CampaignActionAudience.Commonwealth, 2), copyKey: "diary.unknown"));
+        Assert.Null(unknown.Read(CampaignActionAudience.Axis, 1, Generation));
+        Assert.Null(unknown.Read(CampaignActionAudience.Commonwealth, 1, Generation));
+
+        var own = TemporaryAudienceTracker.Create("test-campaign", rules,
+            "breakdown-truck-lab", setup, content, Hash("initial"),
+            Pinned(CampaignActionAudience.Axis, 1),
+            Pinned(CampaignActionAudience.Commonwealth, 1))!;
+        Assert.True(AdvanceSynthetic(own, Pinned(CampaignActionAudience.Axis, 2),
+            Pinned(CampaignActionAudience.Commonwealth, 2),
+            copyKey: "diary.reserveDesignated", ownIndex: 0));
+        Assert.Equal("axis-infantry.formation",
+            own.Read(CampaignActionAudience.Axis, 2, Generation)!.Diary.Single().FormationId);
+        Assert.Empty(own.Read(CampaignActionAudience.Commonwealth, 2, Generation)!.Diary);
+
+        var missingOwn = TemporaryAudienceTracker.Create("test-campaign", rules,
+            "breakdown-truck-lab", setup, content, Hash("initial"),
+            Pinned(CampaignActionAudience.Axis, 1),
+            Pinned(CampaignActionAudience.Commonwealth, 1))!;
+        Assert.False(AdvanceSynthetic(missingOwn, Pinned(CampaignActionAudience.Axis, 2),
+            Pinned(CampaignActionAudience.Commonwealth, 2),
+            copyKey: "diary.reserveDesignated"));
+        Assert.Null(missingOwn.Read(CampaignActionAudience.Axis, 1, Generation));
+    }
+
+    [Fact]
     public void PrivateTrackerRejectsIncoherentSourceWithoutPublishingEitherSide()
     {
         Assert.Null(TemporaryAudienceTracker.Create("test-campaign", "source-hash",
@@ -329,7 +410,7 @@ public sealed class TemporaryCampaignGrainTests
 
     private static bool AdvanceSynthetic(TemporaryAudienceTracker tracker,
         CampaignHostPrivateSideCut axis, CampaignHostPrivateSideCut commonwealth,
-        string? failure = null)
+        string? failure = null, string? copyKey = null, int? ownIndex = null)
     {
         var nextVersion = tracker.StateVersion + 1;
         var actionId = "sha256:" + new string('a', 64);
@@ -352,13 +433,20 @@ public sealed class TemporaryCampaignGrainTests
         var step = new CampaignHostAcceptedStep(command,
             [failure == "event" ? Encoding.UTF8.GetBytes("forged-event") : eventBytes],
             receipt, snapshot);
+        var pins = tracker.SourcePin.Split('|');
         CampaignAudienceOutcomeDecision Decision(CampaignActionAudience audience) => new(
             1, audience, Hash("test-campaign"),
-            Hash("source-hash\nsetup-pin\ncontent-pin\nscenario"),
+            Hash(string.Join('\n', pins[0], pins[2], pins[3], pins[1])),
             tracker.CommittedHeadHash, Hash(snapshot), tracker.StateVersion,
             nextVersion, Hash(command), CampaignActionAudience.Axis, "action",
             Hash(eventBytes), 0, "synthetic-event", 1,
-            CampaignAudienceOutcomeDisposition.Silent, "known-silent", null, null);
+            copyKey is not null && audience == CampaignActionAudience.Axis
+                ? CampaignAudienceOutcomeDisposition.Unavailable
+                : CampaignAudienceOutcomeDisposition.Silent,
+            copyKey is not null && audience == CampaignActionAudience.Axis
+                ? "copy-catalog-unapproved" : "known-silent",
+            audience == CampaignActionAudience.Axis ? copyKey : null,
+            audience == CampaignActionAudience.Axis ? ownIndex : null);
         var outcomes = new CampaignAudienceOutcomePair(
             Decision(CampaignActionAudience.Axis),
             Decision(CampaignActionAudience.Commonwealth));
@@ -458,6 +546,7 @@ public sealed class TemporaryCampaignGrainTests
                 (await grain.Inner.SubmitAsync(forged, "host-system", "forged",
                     CampaignActionAudience.System, [])).Status);
 
+            var sawApprovedDiaryEntry = false;
             for (var index = 0; index < 4; index++)
             {
                 foreach (var side in new[] { CampaignActionAudience.Axis, CampaignActionAudience.Commonwealth })
@@ -503,6 +592,10 @@ public sealed class TemporaryCampaignGrainTests
                     ? "host-system" : "seat-1";
                 var id = $"request-{index}";
                 var priorHead = stored.AudienceTracker!.CommittedHeadHash;
+                var priorAxisDiary = stored.AudienceTracker.Read(
+                    CampaignActionAudience.Axis, stored.CommittedVersion, Generation)!;
+                var priorCommonwealthDiary = stored.AudienceTracker.Read(
+                    CampaignActionAudience.Commonwealth, stored.CommittedVersion, Generation)!;
                 var replies = await Task.WhenAll(
                     grain.SubmitAsync(actor, id, chosen.Audience, bytes),
                     grain.SubmitAsync(actor, id, chosen.Audience, bytes));
@@ -522,6 +615,36 @@ public sealed class TemporaryCampaignGrainTests
                 Assert.Equal(acceptedOutcome.Axis.SuccessorHeadHash,
                     stored.AudienceTracker.CommittedHeadHash);
                 Assert.Equal(stored.CommittedVersion, stored.AudienceTracker.StateVersion);
+                foreach (var (audience, priorCut, decision) in new[]
+                {
+                    (CampaignActionAudience.Axis, priorAxisDiary, acceptedOutcome.Axis),
+                    (CampaignActionAudience.Commonwealth, priorCommonwealthDiary,
+                        acceptedOutcome.Commonwealth!),
+                })
+                {
+                    var currentCut = stored.AudienceTracker.Read(
+                        audience, stored.CommittedVersion, Generation)!;
+                    var hasEntry = decision.ProposedCopyKey is not null;
+                    Assert.Equal(priorCut.NextDiaryCursor + (hasEntry ? 1UL : 0UL),
+                        currentCut.NextDiaryCursor);
+                    Assert.Equal(priorCut.Diary.Length + (hasEntry ? 1 : 0),
+                        currentCut.Diary.Length);
+                    if (!hasEntry) continue;
+                    sawApprovedDiaryEntry = true;
+                    var copy = TemporaryPlayerViewProjection.LookupDiaryCopy(
+                        currentCut.SourcePin,
+                        TemporaryPlayerViewProjection.DiaryCatalogVersion, "en-CA",
+                        decision.ProposedCopyKey!);
+                    Assert.NotNull(copy);
+                    var entry = currentCut.Diary[^1];
+                    Assert.Equal(copy.Title, entry.Title);
+                    Assert.Equal(copy.Body, entry.Body);
+                    Assert.Equal(currentCut.NextDiaryCursor, entry.AudienceCursor);
+                    Assert.True(Guid.TryParse(entry.EntryId, out _));
+                    Assert.NotEqual(entry.EntryId,
+                        stored.AudienceTracker.Read(audience, stored.CommittedVersion,
+                            OtherGeneration)!.Diary[^1].EntryId);
+                }
                 Assert.Equal(replies[0].Receipt,
                     (await grain.FindRequestAsync(actor, id, chosen.Audience)).Receipt);
                 Assert.Equal(TemporaryCampaignStatus.Conflict,
@@ -544,7 +667,7 @@ public sealed class TemporaryCampaignGrainTests
                 Assert.Equal(beforeStale.View, afterStale.View);
                 Assert.Same(acceptedOutcome, stored.AudienceTracker.LastAcceptedOutcome);
                 Assert.Equal(Hash(replies[0].Snapshot!), stored.AudienceTracker.CommittedHeadHash);
-                if (index == 0)
+                if (index is 0 or 3)
                 {
                     var beforePrivate = (await grain.QueryPrivateSideAsync(
                         CampaignActionAudience.Axis)).Cut!;
@@ -557,6 +680,8 @@ public sealed class TemporaryCampaignGrainTests
                     Assert.Equal(beforePrivate.ActionSetToken, afterPrivate.ActionSetToken);
                     Assert.Equal(beforePrivate.Contacts.Select(c => c.ContactId),
                         afterPrivate.Contacts.Select(c => c.ContactId));
+                    Assert.Equal(beforePrivate.NextDiaryCursor, afterPrivate.NextDiaryCursor);
+                    Assert.Equal(beforePrivate.Diary, afterPrivate.Diary);
                     Assert.Equal(replies[0].Receipt,
                         (await grain.FindRequestAsync(actor, id, chosen.Audience)).Receipt);
                     Assert.Equal(beforeStale.LegalActions,
@@ -564,6 +689,7 @@ public sealed class TemporaryCampaignGrainTests
                 }
                 direct = directStep.SuccessorSession!;
             }
+            Assert.True(sawApprovedDiaryEntry);
         }
         finally { await host.StopAsync(TestContext.Current.CancellationToken); }
     }
