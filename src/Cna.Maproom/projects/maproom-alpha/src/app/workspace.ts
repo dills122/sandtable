@@ -15,12 +15,20 @@ import {
   AtlasStatus,
   AtlasUnitCounter,
 } from '@sandtable/field-atlas';
+import { OperationsMap, MapPan } from './operations-map';
 import { OrderWorkflow } from './order-workflow';
 import { provideMaproomForms } from './forms';
 import { formations, WorkspaceStore } from './workspace.store';
 @Component({
   selector: 'mr-workspace',
-  imports: [AtlasChoiceSelect, AtlasPanel, AtlasStatus, AtlasUnitCounter, OrderWorkflow],
+  imports: [
+    AtlasChoiceSelect,
+    AtlasPanel,
+    AtlasStatus,
+    AtlasUnitCounter,
+    OperationsMap,
+    OrderWorkflow,
+  ],
   providers: [WorkspaceStore, provideMaproomForms()],
   templateUrl: './workspace.html',
   styleUrl: './workspace.scss',
@@ -30,8 +38,6 @@ export class Workspace {
   private readonly destroyRef = inject(DestroyRef);
   protected readonly store = inject(WorkspaceStore);
   protected readonly formations = formations;
-  protected readonly shortcutsOpen = signal(false);
-  protected readonly dragging = signal(false);
   protected readonly mapFullscreen = signal(false);
   protected readonly ledgerQuery = signal('');
   protected readonly ledgerSort = signal<'name' | 'kind' | 'position' | 'order'>('name');
@@ -70,12 +76,9 @@ export class Workspace {
   protected setDiaryScope(value: string) {
     if (value === 'selected' || value === 'all') this.diaryScope.set(value);
   }
-  @ViewChild('shortcutToggle') private shortcutToggle?: ElementRef<HTMLButtonElement>;
-  @ViewChild('mapExpandToggle') private mapExpandToggle?: ElementRef<HTMLButtonElement>;
-  @ViewChild('mapPanel') private mapPanel?: ElementRef<HTMLElement>;
+  @ViewChild(OperationsMap) private operationsMap?: OperationsMap;
   @ViewChild('inspectorPanel', { read: ElementRef })
   private inspectorPanel?: ElementRef<HTMLElement>;
-  private dragStart: { x: number; y: number; pointerId: number; moved: boolean } | null = null;
   private originalPageOverflow = '';
 
   constructor() {
@@ -90,10 +93,6 @@ export class Workspace {
     });
   }
 
-  protected toggleShortcuts() {
-    this.shortcutsOpen.update((open) => !open);
-  }
-
   protected toggleMapFullscreen() {
     if (this.mapFullscreen()) {
       this.closeMapFullscreen();
@@ -102,15 +101,13 @@ export class Workspace {
     this.originalPageOverflow = document.documentElement.style.overflow;
     document.documentElement.style.overflow = 'hidden';
     this.mapFullscreen.set(true);
-    this.mapExpandToggle?.nativeElement.focus({ preventScroll: true });
+    this.operationsMap?.focusExpand();
   }
 
   private closeMapFullscreen(returnFocus = true) {
     this.mapFullscreen.set(false);
     document.documentElement.style.overflow = this.originalPageOverflow;
-    this.dragStart = null;
-    this.dragging.set(false);
-    if (returnFocus) this.mapExpandToggle?.nativeElement.focus({ preventScroll: true });
+    if (returnFocus) this.operationsMap?.focusExpand();
   }
 
   protected openOrdersFromMap() {
@@ -147,29 +144,6 @@ export class Workspace {
 
   @HostListener('document:keydown', ['$event'])
   protected onShortcut(event: KeyboardEvent) {
-    if (event.key === 'Tab' && this.mapFullscreen()) {
-      const controls = Array.from(
-        this.mapPanel?.nativeElement.querySelectorAll<HTMLElement>(
-          'button:not([disabled]), [tabindex="0"]',
-        ) ?? [],
-      ).filter((control) => !control.closest('[hidden]'));
-      if (controls.length) {
-        const current = controls.indexOf(document.activeElement as HTMLElement);
-        if (event.shiftKey && current <= 0) {
-          controls[controls.length - 1].focus();
-          event.preventDefault();
-        } else if (!event.shiftKey && current === controls.length - 1) {
-          controls[0].focus();
-          event.preventDefault();
-        }
-      }
-      return;
-    }
-    if (event.key === 'Escape' && this.mapFullscreen()) {
-      this.closeMapFullscreen();
-      event.preventDefault();
-      return;
-    }
     if (
       event.defaultPrevented ||
       event.isComposing ||
@@ -187,18 +161,11 @@ export class Workspace {
       return;
     if (document.querySelector('.cdk-overlay-pane:not(:empty), [role="dialog"]:not(.map-panel)'))
       return;
-    if (event.key === 'Escape' && this.shortcutsOpen()) {
-      this.shortcutsOpen.set(false);
-      this.shortcutToggle?.nativeElement.focus();
-      event.preventDefault();
-      return;
-    }
-
     const units = this.store.visibleFormations();
     const selectedIndex = units.findIndex((unit) => unit.id === this.store.selectedId());
     switch (event.key.toLowerCase()) {
       case '?':
-        this.toggleShortcuts();
+        this.operationsMap?.toggleShortcuts();
         break;
       case '[':
         this.store.select(units[(selectedIndex - 1 + units.length) % units.length].id);
@@ -226,63 +193,7 @@ export class Workspace {
     event.preventDefault();
   }
 
-  protected onMapKeydown(event: KeyboardEvent) {
-    if (event.target !== event.currentTarget) return;
-    if (
-      event.defaultPrevented ||
-      event.isComposing ||
-      event.altKey ||
-      event.ctrlKey ||
-      event.metaKey
-    )
-      return;
-    if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key)) return;
-    if (this.store.zoom() <= 1) return;
-    const frame = event.currentTarget as HTMLElement;
-    const step = 40;
-    const x = event.key === 'ArrowLeft' ? step : event.key === 'ArrowRight' ? -step : 0;
-    const y = event.key === 'ArrowUp' ? step : event.key === 'ArrowDown' ? -step : 0;
-    this.store.panByPixels(x, y, frame.clientWidth, frame.clientHeight);
-    event.preventDefault();
-    event.stopPropagation();
-  }
-
-  protected onMapPointerDown(event: PointerEvent) {
-    if (event.button !== 0 || !['mouse', 'pen', 'touch'].includes(event.pointerType)) return;
-    if ((event.target as Element).closest('fa-unit-counter, button')) return;
-    const frame = event.currentTarget as HTMLElement;
-    this.dragStart = {
-      x: event.clientX,
-      y: event.clientY,
-      pointerId: event.pointerId,
-      moved: false,
-    };
-    frame.setPointerCapture(event.pointerId);
-  }
-
-  protected onMapPointerMove(event: PointerEvent) {
-    if (!this.dragStart || this.dragStart.pointerId !== event.pointerId) return;
-    const frame = event.currentTarget as HTMLElement;
-    const deltaX = event.clientX - this.dragStart.x;
-    const deltaY = event.clientY - this.dragStart.y;
-    if (!this.dragStart.moved && Math.hypot(deltaX, deltaY) < 6) return;
-    if (!this.dragStart.moved) {
-      this.dragStart.moved = true;
-      this.dragging.set(true);
-    }
-    this.store.panByPixels(deltaX, deltaY, frame.clientWidth, frame.clientHeight);
-    this.dragStart = {
-      x: event.clientX,
-      y: event.clientY,
-      pointerId: event.pointerId,
-      moved: true,
-    };
-    event.preventDefault();
-  }
-
-  protected onMapPointerEnd(event: PointerEvent) {
-    if (this.dragStart?.pointerId !== event.pointerId) return;
-    this.dragStart = null;
-    this.dragging.set(false);
+  protected panMap(event: MapPan) {
+    this.store.panByPixels(event.x, event.y, event.width, event.height);
   }
 }

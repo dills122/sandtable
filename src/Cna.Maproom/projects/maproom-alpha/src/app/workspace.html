@@ -6,6 +6,7 @@
     ><span class="brand-mark" aria-hidden="true">M</span
     ><span>Maproom <small>Field Atlas</small></span></a
   ><span class="edition">ALPHA / WORKSPACE STUDY</span
+  ><a class="fa-text-action" href="/connected">Connected read preview</a
   ><span class="local-status">○ Local fixture</span>
 </header>
 <main id="operations" tabindex="-1">
@@ -95,85 +96,21 @@
       [attr.role]="mapFullscreen() ? 'dialog' : null"
       [attr.aria-modal]="mapFullscreen() ? 'true' : null"
     >
-      <div class="map-heading">
-        <div>
-          <h2 id="map-title">Situation map</h2>
-          <span class="fa-muted">Schematic · no scale · zoom in to pan</span>
-        </div>
-        <div class="map-controls" role="group" aria-label="Map camera controls">
-          <button
-            #mapExpandToggle
-            type="button"
-            class="fa-text-action map-expand"
-            [attr.aria-label]="mapFullscreen() ? 'Close expanded map' : 'Expand map'"
-            [attr.aria-pressed]="mapFullscreen()"
-            (click)="toggleMapFullscreen()"
-          >
-            {{ mapFullscreen() ? 'Close map' : 'Expand map' }}
-          </button>
-          <button
-            #shortcutToggle
-            type="button"
-            class="fa-text-action"
-            aria-controls="map-shortcuts"
-            [attr.aria-expanded]="shortcutsOpen()"
-            (click)="toggleShortcuts()"
-          >
-            Keyboard help <span aria-hidden="true">?</span>
-          </button>
-          <button type="button" class="fa-text-action" (click)="store.fitMap()">Fit map</button>
-          <button
-            type="button"
-            class="fa-text-action"
-            aria-label="Zoom out"
-            [disabled]="store.zoom() <= 1"
-            (click)="store.zoomBy(-0.25)"
-          >
-            −
-          </button>
-          <span class="zoom-level" aria-live="polite" aria-label="Map zoom"
-            >{{ store.zoom() * 100 }}%</span
-          >
-          <button
-            type="button"
-            class="fa-text-action"
-            aria-label="Zoom in"
-            [disabled]="store.zoom() >= 2"
-            (click)="store.zoomBy(0.25)"
-          >
-            +
-          </button>
-        </div>
-      </div>
-      <div id="map-shortcuts" class="shortcut-help" [hidden]="!shortcutsOpen()">
-        <strong>Move around the exercise</strong>
-        <span><kbd>[</kbd> / <kbd>]</kbd> choose a formation</span>
-        <span><kbd>L</kbd> locate selection · <kbd>0</kbd> fit map</span>
-        <span>Drag to pan when zoomed · touch or arrow keys pan</span>
-        <span><kbd>+</kbd> / <kbd>−</kbd> zoom · <kbd>?</kbd> help · <kbd>Esc</kbd> close</span>
-      </div>
-      <div
-        class="map-canvas"
-        role="region"
-        tabindex="0"
-        aria-label="Situation map, arrow keys pan when zoomed"
-        [class.is-dragging]="dragging()"
-        (keydown)="onMapKeydown($event)"
-        (pointerdown)="onMapPointerDown($event)"
-        (pointermove)="onMapPointerMove($event)"
-        (pointerup)="onMapPointerEnd($event)"
-        (pointercancel)="onMapPointerEnd($event)"
-        (lostpointercapture)="onMapPointerEnd($event)"
+      <mr-operations-map
+        hint="Schematic · no scale · zoom in to pan"
+        [zoom]="store.zoom()"
+        [transform]="store.cameraTransform()"
+        [expanded]="mapFullscreen()"
+        [caption]="'Selected: ' + store.selected().name + ' · ' + store.selected().position"
+        scope="Original fixture"
+        [ordersLabel]="store.selected().name"
+        (expandedChange)="toggleMapFullscreen()"
+        (fit)="store.fitMap()"
+        (zoomBy)="store.zoomBy($event)"
+        (pan)="panMap($event)"
+        (openOrders)="openOrdersFromMap()"
       >
-        <div class="map-scene" [style.transform]="store.cameraTransform()">
-          <svg class="hex-grid" aria-hidden="true" focusable="false">
-            <defs>
-              <pattern id="atlas-grid" width="90" height="52" patternUnits="userSpaceOnUse">
-                <path d="M15 0H45L60 26 45 52H15L0 26Z M60 26H90" />
-              </pattern>
-            </defs>
-            <rect width="100%" height="100%" fill="url(#atlas-grid)" />
-          </svg>
+        <div map-scene-content class="fixture-map-layer">
           <svg
             class="terrain"
             viewBox="0 0 800 560"
@@ -208,17 +145,7 @@
             }
           </div>
         </div>
-        <span class="north" aria-label="North">N<br />↑</span>
-      </div>
-      <div class="map-caption">
-        <span>Selected: {{ store.selected().name }} · {{ store.selected().position }}</span
-        ><span>Original fixture</span>
-        @if (mapFullscreen()) {
-          <button type="button" class="fa-text-action" (click)="openOrdersFromMap()">
-            Open orders for {{ store.selected().name }}
-          </button>
-        }
-      </div>
+      </mr-operations-map>
     </section>
     <fa-panel
       #inspectorPanel

@@ -68,13 +68,17 @@ test('expanded map traps focus, keeps controls and selection, and returns to ord
   await expect(dialog.getByText('Selected: Harrier group · G-5')).toBeVisible();
   await dialog.getByRole('button', { name: 'Open orders for Harrier group' }).click();
   await expect(dialog).toHaveCount(0);
+  await expect(page.locator('html')).not.toHaveCSS('overflow', 'hidden');
   await expect(page.getByRole('heading', { name: 'Harrier group' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Review draft' })).toBeFocused();
   await page.getByRole('button', { name: 'Fox group, infantry, K-7' }).click();
   await expect(page.getByRole('combobox', { name: 'Move to' })).toContainText(
     'East crossing · M-6',
   );
+  await expect(page.getByLabel('Map zoom')).toHaveText('125%');
   await expand.click();
+  await expect(dialog).toBeVisible();
+  await expect(page.getByLabel('Map zoom')).toHaveText('125%');
   await page.keyboard.press('Escape');
   await expect(dialog).toHaveCount(0);
   await expect(expand).toBeFocused();

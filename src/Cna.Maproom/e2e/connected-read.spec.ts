@@ -129,6 +129,30 @@ test('local read lane shows only the returned audience view and never submits an
   expect(center!.y).toBeLessThan(southeast!.y);
   expect(southeast!.x + southeast!.width).toBeLessThan(map!.x + map!.width);
   expect(southeast!.y + southeast!.height).toBeLessThan(map!.y + map!.height);
+  const hexAxes = await page.locator('.hex-grid').evaluate((element) => {
+    const matrix = (element as SVGSVGElement).getScreenCTM();
+    return matrix ? { x: matrix.a, y: matrix.d } : null;
+  });
+  expect(hexAxes).not.toBeNull();
+  expect(Math.abs(hexAxes!.x - hexAxes!.y)).toBeLessThan(0.01);
+  await page.getByRole('button', { name: 'Zoom in' }).click();
+  await page.getByRole('button', { name: 'Zoom in' }).click();
+  await expect(page.getByLabel('Map zoom')).toHaveText('150%');
+  const beforeDrag = await page.locator('.map-scene').getAttribute('style');
+  const canvasFrame = await page.locator('.map-canvas').boundingBox();
+  expect(canvasFrame).not.toBeNull();
+  const dragFrom = {
+    x: canvasFrame!.x + canvasFrame!.width * 0.45,
+    y: canvasFrame!.y + canvasFrame!.height * 0.45,
+  };
+  await page.mouse.move(dragFrom.x, dragFrom.y);
+  await page.mouse.down();
+  await page.mouse.move(dragFrom.x + 90, dragFrom.y - 50, { steps: 6 });
+  await page.mouse.up();
+  await expect.poll(() => page.locator('.map-scene').getAttribute('style')).not.toBe(beforeDrag);
+  await expect(page.getByLabel('Map zoom')).toHaveText('150%');
+  await page.getByRole('button', { name: 'Fit map' }).click();
+  await expect(page.getByLabel('Map zoom')).toHaveText('100%');
   for (const [width, height, largeText] of [
     [502, 500, false],
     [320, 568, false],
@@ -139,7 +163,9 @@ test('local read lane shows only the returned audience view and never submits an
     const frame = await page
       .getByRole('region', { name: 'Audience-safe campaign map' })
       .boundingBox();
-    const scroll = page.getByRole('region', { name: 'Scrollable situation map' });
+    const canvas = page.getByRole('region', {
+      name: 'Situation map, arrow keys pan when zoomed',
+    });
     const points = await page.locator('.connected-map-point').all();
     expect(frame).not.toBeNull();
     for (const point of points) {
@@ -150,28 +176,30 @@ test('local read lane shows only the returned audience view and never submits an
       expect(card!.y).toBeGreaterThanOrEqual(frame!.y);
       expect(card!.y + card!.height).toBeLessThanOrEqual(frame!.y + frame!.height);
     }
-    const scrollSize = await scroll.evaluate((element) => ({
-      viewport: element.clientWidth,
-      content: element.scrollWidth,
-    }));
-    if (width === 502) {
-      expect(scrollSize.content).toBeLessThanOrEqual(scrollSize.viewport);
-      const east = await page.locator('[data-location-id="loc-9"]').boundingBox();
-      const viewport = await scroll.boundingBox();
-      expect(east!.x + east!.width).toBeLessThanOrEqual(viewport!.x + viewport!.width);
+    const scroll = page.getByRole('region', { name: 'Scrollable situation map' });
+    const viewport = await scroll.boundingBox();
+    expect(viewport).not.toBeNull();
+    expect(viewport!.x).toBeGreaterThanOrEqual(-1);
+    expect(viewport!.x + viewport!.width).toBeLessThanOrEqual(width + 1);
+    expect(await scroll.evaluate((element) => element.scrollWidth)).toBeGreaterThan(
+      await scroll.evaluate((element) => element.clientWidth),
+    );
+    await expect(page.getByLabel('Map zoom')).toHaveText('100%');
+    await page.getByRole('button', { name: 'Zoom in' }).click();
+    await expect(page.getByLabel('Map zoom')).toHaveText('125%');
+    const beforePan = await page.locator('.map-scene').getAttribute('style');
+    await canvas.focus();
+    await page.keyboard.press('ArrowRight');
+    await expect.poll(() => page.locator('.map-scene').getAttribute('style')).not.toBe(beforePan);
+    await expect(page.getByLabel('Map zoom')).toHaveText('125%');
+    await page.getByRole('button', { name: 'Fit map' }).click();
+    await expect(page.getByLabel('Map zoom')).toHaveText('100%');
+    await scroll.evaluate((element) => (element.scrollLeft = element.scrollWidth));
+    const east = await page.locator('[data-location-id="loc-9"]').boundingBox();
+    expect(east!.x + east!.width).toBeLessThanOrEqual(viewport!.x + viewport!.width + 1);
+    expect(east!.x).toBeGreaterThanOrEqual(viewport!.x - 1);
+    if (width === 502)
       await page.screenshot({ path: testInfo.outputPath('connected-502.png'), fullPage: true });
-    } else {
-      expect(scrollSize.content).toBeGreaterThan(scrollSize.viewport);
-      await expect(page.getByText('Scroll sideways to inspect the full map.')).toBeVisible();
-      await scroll.focus();
-      await page.keyboard.press('ArrowRight');
-      await expect.poll(() => scroll.evaluate((element) => element.scrollLeft)).toBeGreaterThan(0);
-      await scroll.evaluate((element) => (element.scrollLeft = element.scrollWidth));
-      const east = await page.locator('[data-location-id="loc-9"]').boundingBox();
-      const viewport = await scroll.boundingBox();
-      expect(east!.x + east!.width).toBeLessThanOrEqual(viewport!.x + viewport!.width);
-      expect(east!.x).toBeGreaterThanOrEqual(viewport!.x - 3);
-    }
     await expect(page.getByRole('button', { name: 'Refresh view' })).toBeVisible();
     await expect(page.locator('.roster-item')).toHaveCount(1);
   }
@@ -188,6 +216,13 @@ test('local read lane shows only the returned audience view and never submits an
     'POST /api/v1/campaigns/c-1/seat',
     'GET /api/v1/campaigns/c-1/view',
   ]);
+});
+
+test('main Maproom has a direct entry to the local connected campaign', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('link', { name: 'Connected read preview' }).click();
+  await expect(page).toHaveURL(/\/connected$/);
+  await expect(page.getByRole('heading', { name: 'Connect to local host' })).toBeVisible();
 });
 
 test('unavailable initial view stops without showing fixture orders', async ({ page }) => {

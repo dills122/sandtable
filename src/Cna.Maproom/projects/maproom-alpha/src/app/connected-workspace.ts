@@ -1,9 +1,18 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ConnectedCampaignService, SeatIdentityError } from './connected-campaign.service';
 import { CoherentPlayerView } from './api/generated/model/coherentPlayerView';
 import { FixtureDescriptor } from './api/generated/model/fixtureDescriptor';
 import { AtlasPanel, AtlasStatus } from '@sandtable/field-atlas';
+import { MapCameraState } from './map-camera';
+import { MapPan, OperationsMap } from './operations-map';
 import {
   connectedKind,
   connectedSymbol,
@@ -16,13 +25,17 @@ type Seat = 'axis' | 'commonwealth';
 
 @Component({
   selector: 'mr-connected-workspace',
-  imports: [AtlasPanel, AtlasStatus],
+  imports: [AtlasPanel, AtlasStatus, OperationsMap],
   templateUrl: './connected-workspace.html',
   styleUrl: './connected-workspace.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConnectedWorkspace {
   private readonly api = inject(ConnectedCampaignService);
+  private readonly destroyRef = inject(DestroyRef);
+  protected readonly camera = new MapCameraState();
+  protected readonly mapFullscreen = signal(false);
+  private originalPageOverflow = '';
   protected readonly busy = signal(false);
   protected readonly error = signal('');
   protected readonly fixtures = signal<FixtureDescriptor[]>([]);
@@ -48,6 +61,27 @@ export class ConnectedWorkspace {
   protected readonly kind = connectedKind;
   protected readonly symbol = connectedSymbol;
 
+  constructor() {
+    this.destroyRef.onDestroy(() => {
+      if (this.mapFullscreen()) document.documentElement.style.overflow = this.originalPageOverflow;
+    });
+  }
+
+  protected toggleMapFullscreen(): void {
+    if (this.mapFullscreen()) {
+      this.mapFullscreen.set(false);
+      document.documentElement.style.overflow = this.originalPageOverflow;
+    } else {
+      this.originalPageOverflow = document.documentElement.style.overflow;
+      document.documentElement.style.overflow = 'hidden';
+      this.mapFullscreen.set(true);
+    }
+  }
+
+  protected panMap(event: MapPan): void {
+    this.camera.panByPixels(event.x, event.y, event.width, event.height);
+  }
+
   protected async connect(): Promise<void> {
     await this.run(async () => this.fixtures.set(await this.api.availableFixtures()));
   }
@@ -72,6 +106,7 @@ export class ConnectedWorkspace {
         // A failed read cannot retain the old audience's map or selected formation.
         this.view.set(null);
         this.selectedId.set(null);
+        if (this.mapFullscreen()) this.toggleMapFullscreen();
         throw cause;
       }
     });

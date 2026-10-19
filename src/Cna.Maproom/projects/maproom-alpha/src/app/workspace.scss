@@ -21,6 +21,9 @@
   background: var(--color-frame);
   color: var(--color-frame-ink);
 }
+.command-bar > .fa-text-action {
+  color: inherit;
+}
 .brand {
   display: flex;
   align-items: center;
@@ -489,6 +492,10 @@ h2 {
 .map-markers {
   position: absolute;
   inset: 2rem;
+}
+.fixture-map-layer {
+  position: absolute;
+  inset: 0;
 }
 .ledger {
   container-type: inline-size;
