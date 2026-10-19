@@ -3067,12 +3067,14 @@ defender RBA choice after Barrage and replays an explicit decline or cancellatio
 remaining structural no-assault steps. The v0 input inventory remains frozen and unissuable;
 the v1 trace is private only and does not close full P01 admission, privacy or replay gates.
 The [selected-assault v1 successor](../specs/combat-p01-selected-assault-v1.md), merged in
-PR #272 (`962518a`), replays the 44 authenticated adjacent armed candidates through an
-owner-selected assault, no-gun/no-Barrage structural steps and defender-owned RBA. An accepted
-decline reaches same-slot Force Assignment; unavailable or expired RBA cancels to same-slot
-Reserve Release without inventing a decline. The [Force Assignment v1 successor](../specs/combat-p01-force-assignment-v1.md),
-merged in PR #273 (`f6c0c10`), replays those exact declined histories with two original-owner
-full-10-TOE seals in either order. Both seals reach Prepared at Close Assault after an empty
+PR #272 (`962518a`), authenticates the full 300-root catalogue and classifies 44 adjacent
+armed candidates and 256 candidate-absent rows. Bounded transition tests use two representative
+positive roots, one per acting side: owner selection, no-gun/no-Barrage structural steps and
+defender-owned RBA. An accepted decline reaches same-slot Force Assignment; unavailable or
+expired RBA cancels to same-slot Reserve Release without inventing a decline. The
+[Force Assignment v1 successor](../specs/combat-p01-force-assignment-v1.md), merged in PR #273
+(`f6c0c10`), continues those bounded declined test histories with two original-owner full-10-TOE
+seals in either order. Both seals reach Prepared at Close Assault after an empty
 Anti-Armor certificate, before debit, result or settlement; zero/one-seal unavailable or
 expired paths cancel to same-slot Reserve Release without a fabricated second seal. These
 references remain private, preserve World/RNG/resources and admit no action. Full selected
