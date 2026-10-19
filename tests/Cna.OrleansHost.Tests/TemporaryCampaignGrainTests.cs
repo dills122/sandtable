@@ -84,10 +84,18 @@ public sealed class TemporaryCampaignGrainTests
                 RulesetHash = rules,
                 ScenarioId = "breakdown-truck-lab",
                 OwnElements =
-                [new CampaignHostPrivateOwnElement($"own-{audience}",
+                [new CampaignHostPrivateOwnElement(
+                    audience == SyntheticProofFor("diary.reserveDesignated").Actor
+                        ? SyntheticProofFor("diary.reserveDesignated").ElementId!
+                        : $"own-{audience}",
                     audience == CampaignActionAudience.Axis
                         ? "axis-infantry.formation" : "commonwealth-infantry.formation",
                     "location", "None")],
+                Actions =
+                [new CampaignHostPrivateAction(SyntheticProofFor("diary.initiativeOrder").ActionId,
+                    SyntheticProofFor("diary.initiativeOrder").ActionKind),
+                    new CampaignHostPrivateAction(SyntheticProofFor("diary.reserveDesignated").ActionId,
+                        SyntheticProofFor("diary.reserveDesignated").ActionKind)],
             };
         var tracker = TemporaryAudienceTracker.Create("test-campaign", rules,
             "breakdown-truck-lab", setup, content, Hash("initial"),
@@ -97,8 +105,11 @@ public sealed class TemporaryCampaignGrainTests
             Assert.True(AdvanceSynthetic(tracker, Pinned(CampaignActionAudience.Axis, version),
                 Pinned(CampaignActionAudience.Commonwealth, version),
                 copyKey: "diary.initiativeOrder"));
-        var axis = tracker.Read(CampaignActionAudience.Axis, 52, Generation)!;
-        var commonwealth = tracker.Read(CampaignActionAudience.Commonwealth, 52, Generation)!;
+        var acting = SyntheticProofFor("diary.initiativeOrder").Actor;
+        var other = acting == CampaignActionAudience.Axis
+            ? CampaignActionAudience.Commonwealth : CampaignActionAudience.Axis;
+        var axis = tracker.Read(acting, 52, Generation)!;
+        var commonwealth = tracker.Read(other, 52, Generation)!;
         Assert.Equal(51UL, axis.NextDiaryCursor);
         Assert.Equal(50, axis.Diary.Length);
         Assert.Equal(Enumerable.Range(2, 50).Select(value => (ulong)value),
@@ -111,7 +122,7 @@ public sealed class TemporaryCampaignGrainTests
         });
         Assert.Empty(commonwealth.Diary);
         Assert.Equal(0UL, commonwealth.NextDiaryCursor);
-        var rotated = tracker.Read(CampaignActionAudience.Axis, 52, OtherGeneration)!;
+        var rotated = tracker.Read(acting, 52, OtherGeneration)!;
         Assert.Equal(axis.NextDiaryCursor, rotated.NextDiaryCursor);
         Assert.Equal(axis.Diary.Select(entry => entry.Title),
             rotated.Diary.Select(entry => entry.Title));
@@ -134,9 +145,13 @@ public sealed class TemporaryCampaignGrainTests
         Assert.True(AdvanceSynthetic(own, Pinned(CampaignActionAudience.Axis, 2),
             Pinned(CampaignActionAudience.Commonwealth, 2),
             copyKey: "diary.reserveDesignated", ownIndex: 0));
-        Assert.Equal("axis-infantry.formation",
-            own.Read(CampaignActionAudience.Axis, 2, Generation)!.Diary.Single().FormationId);
-        Assert.Empty(own.Read(CampaignActionAudience.Commonwealth, 2, Generation)!.Diary);
+        var reserveActor = SyntheticProofFor("diary.reserveDesignated").Actor;
+        Assert.Equal(reserveActor == CampaignActionAudience.Axis
+                ? "axis-infantry.formation" : "commonwealth-infantry.formation",
+            own.Read(reserveActor, 2, Generation)!.Diary.Single().FormationId);
+        Assert.Empty(own.Read(reserveActor == CampaignActionAudience.Axis
+            ? CampaignActionAudience.Commonwealth : CampaignActionAudience.Axis,
+            2, Generation)!.Diary);
 
         var missingOwn = TemporaryAudienceTracker.Create("test-campaign", rules,
             "breakdown-truck-lab", setup, content, Hash("initial"),
@@ -146,6 +161,23 @@ public sealed class TemporaryCampaignGrainTests
             Pinned(CampaignActionAudience.Commonwealth, 2),
             copyKey: "diary.reserveDesignated"));
         Assert.Null(missingOwn.Read(CampaignActionAudience.Axis, 1, Generation));
+
+        foreach (var (key, ownIndex, failure) in new[]
+        {
+            ("diary.reserveCompleted", (int?)null, (string?)null),
+            ("diary.initiativeOrder", (int?)null, "action-kind"),
+            ("diary.reserveDesignated", (int?)1, (string?)null),
+        })
+        {
+            var forged = TemporaryAudienceTracker.Create("test-campaign", rules,
+                "breakdown-truck-lab", setup, content, Hash("initial"),
+                Pinned(CampaignActionAudience.Axis, 1),
+                Pinned(CampaignActionAudience.Commonwealth, 1))!;
+            Assert.False(AdvanceSynthetic(forged, Pinned(CampaignActionAudience.Axis, 2),
+                Pinned(CampaignActionAudience.Commonwealth, 2), failure, key, ownIndex));
+            Assert.Null(forged.Read(CampaignActionAudience.Axis, 1, Generation));
+            Assert.Null(forged.Read(CampaignActionAudience.Commonwealth, 1, Generation));
+        }
     }
 
     [Fact]
@@ -213,7 +245,7 @@ public sealed class TemporaryCampaignGrainTests
                 Side(CampaignActionAudience.Axis, 1),
                 Side(CampaignActionAudience.Commonwealth, 1))!;
             Assert.False(AdvanceSynthetic(tracker, Side(CampaignActionAudience.Axis, 2),
-                Side(CampaignActionAudience.Commonwealth, 2), failure));
+                Side(CampaignActionAudience.Commonwealth, 2), failure), failure);
             Assert.False(tracker.IsAvailable);
             Assert.Equal(1, tracker.StateVersion);
             Assert.Equal(Hash("initial"), tracker.CommittedHeadHash);
@@ -408,15 +440,74 @@ public sealed class TemporaryCampaignGrainTests
         representation is null ? [] : [new CampaignHostPrivateContact(representation, "location", false)],
         [new CampaignHostPrivateAction("core-action", "action")], "normal");
 
+    private sealed record SyntheticProof(byte[] EventBytes, string EventKind, int EventVersion,
+        string ActionKind, string ActionId, CampaignActionAudience Actor, string? ElementId);
+
+    private static readonly Lazy<Dictionary<string, SyntheticProof>> SyntheticProofs =
+        new(BuildSyntheticProofs);
+
+    private static SyntheticProof SyntheticProofFor(string? copyKey) =>
+        SyntheticProofs.Value[copyKey is null ? "silent"
+            : copyKey == "diary.reserveDesignated" ? copyKey : "diary.initiativeOrder"];
+
+    private static Dictionary<string, SyntheticProof> BuildSyntheticProofs()
+    {
+        var found = new Dictionary<string, SyntheticProof>(StringComparer.Ordinal);
+        var session = CampaignHostAdapter.Create(Request()).Session!;
+        for (var index = 0; index < 40 && found.Count < 3; index++)
+        {
+            var chosen = Enum.GetValues<CampaignActionAudience>()
+                .Select(audience => CampaignExercises.Query(session, audience).ActionSet!)
+                .First(set => set.Candidates.Count > 0);
+            var candidate = chosen.Candidates.FirstOrDefault(value => value.Kind == "designate-reserve")
+                ?? chosen.Candidates.FirstOrDefault(value => value.Kind == "act-first")
+                ?? chosen.Candidates[0];
+            var command = new CampaignActionSubmission(1, chosen.CampaignId,
+                chosen.StateVersion, chosen.PositionId, chosen.Audience, candidate.ActionId);
+            var step = CampaignHostAdapter.Submit(session, command);
+            Assert.True(step.IsAccepted);
+            var evidence = step.Evidence!;
+            var accepted = new CampaignHostAcceptedStep(
+                CampaignActionSubmissionSerializer.SerializeCanonical(command),
+                evidence.EventRecords,
+                CampaignActionAcceptanceReceiptSerializer.Serialize(evidence.Receipt),
+                evidence.SnapshotCheckpoint);
+            var decision = CampaignHostAdapter.DecideAcceptedOutcomes(session, accepted);
+            Assert.True(decision.HasTypedProof);
+            var actorDecision = chosen.Audience == CampaignActionAudience.Axis
+                ? decision.Axis! : decision.Commonwealth!;
+            var key = actorDecision.ProposedCopyKey
+                ?? (chosen.Audience == CampaignActionAudience.System ? "silent" : null);
+            if (key is not null && !found.ContainsKey(key))
+            {
+                var successor = CampaignHostAdapter.QueryPrivateSideCut(step.SuccessorSession!,
+                    chosen.Audience);
+                var element = actorDecision.OwnElementIndex is { } ownIndex
+                    ? successor!.OwnElements[ownIndex].ElementId : null;
+                using var document = JsonDocument.Parse(evidence.EventRecords[0]);
+                found[key] = new SyntheticProof(evidence.EventRecords[0],
+                    document.RootElement.GetProperty("eventType").GetString()!,
+                    document.RootElement.GetProperty("contractVersion").GetInt32(),
+                    candidate.Kind, candidate.ActionId, chosen.Audience, element);
+            }
+            session = step.SuccessorSession!;
+        }
+        Assert.Contains("silent", found.Keys);
+        Assert.Contains("diary.initiativeOrder", found.Keys);
+        Assert.Contains("diary.reserveDesignated", found.Keys);
+        return found;
+    }
+
     private static bool AdvanceSynthetic(TemporaryAudienceTracker tracker,
         CampaignHostPrivateSideCut axis, CampaignHostPrivateSideCut commonwealth,
         string? failure = null, string? copyKey = null, int? ownIndex = null)
     {
         var nextVersion = tracker.StateVersion + 1;
-        var actionId = "sha256:" + new string('a', 64);
+        var proof = SyntheticProofFor(copyKey);
+        var actionId = proof.ActionId;
         var command = CampaignActionSubmissionSerializer.SerializeCanonical(
             new CampaignActionSubmission(1, "test-campaign", tracker.StateVersion,
-                "position", CampaignActionAudience.Axis, actionId));
+                "position", proof.Actor, actionId));
         var receipt = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(new
         {
             contractVersion = 1,
@@ -424,11 +515,11 @@ public sealed class TemporaryCampaignGrainTests
             priorStateVersion = tracker.StateVersion,
             committedStateVersion = nextVersion,
             resultingPositionId = "position",
-            audience = failure == "receipt-actor" ? "commonwealth" : "axis",
+            audience = failure == "receipt-actor" ? "commonwealth" :
+                proof.Actor.ToString().ToLowerInvariant(),
             actionId,
         }));
-        var eventBytes = Encoding.UTF8.GetBytes(
-            "{\"contractVersion\":1,\"eventType\":\"synthetic-event\"}");
+        var eventBytes = proof.EventBytes;
         var snapshot = Encoding.UTF8.GetBytes($"synthetic-snapshot-{nextVersion}");
         var step = new CampaignHostAcceptedStep(command,
             [failure == "event" ? Encoding.UTF8.GetBytes("forged-event") : eventBytes],
@@ -438,15 +529,15 @@ public sealed class TemporaryCampaignGrainTests
             1, audience, Hash("test-campaign"),
             Hash(string.Join('\n', pins[0], pins[2], pins[3], pins[1])),
             tracker.CommittedHeadHash, Hash(snapshot), tracker.StateVersion,
-            nextVersion, Hash(command), CampaignActionAudience.Axis, "action",
-            Hash(eventBytes), 0, "synthetic-event", 1,
-            copyKey is not null && audience == CampaignActionAudience.Axis
+            nextVersion, Hash(command), proof.Actor, proof.ActionKind,
+            Hash(eventBytes), 0, proof.EventKind, proof.EventVersion,
+            copyKey is not null && audience == proof.Actor
                 ? CampaignAudienceOutcomeDisposition.Unavailable
                 : CampaignAudienceOutcomeDisposition.Silent,
-            copyKey is not null && audience == CampaignActionAudience.Axis
+            copyKey is not null && audience == proof.Actor
                 ? "copy-catalog-unapproved" : "known-silent",
-            audience == CampaignActionAudience.Axis ? copyKey : null,
-            audience == CampaignActionAudience.Axis ? ownIndex : null);
+            audience == proof.Actor ? copyKey : null,
+            audience == proof.Actor ? ownIndex : null);
         var outcomes = new CampaignAudienceOutcomePair(
             Decision(CampaignActionAudience.Axis),
             Decision(CampaignActionAudience.Commonwealth));
@@ -484,8 +575,15 @@ public sealed class TemporaryCampaignGrainTests
         if (failure == "event-version")
             outcomes = outcomes with
             {
-                Axis = outcomes.Axis! with { EventContractVersion = 2 },
-                Commonwealth = outcomes.Commonwealth! with { EventContractVersion = 2 },
+                Axis = outcomes.Axis! with { EventContractVersion = proof.EventVersion + 1 },
+                Commonwealth = outcomes.Commonwealth! with { EventContractVersion = proof.EventVersion + 1 },
+            };
+        if (failure == "action-kind")
+            outcomes = outcomes with
+            {
+                Axis = outcomes.Axis! with { ActionKind = "complete-reserve-designation" },
+                Commonwealth = outcomes.Commonwealth! with
+                { ActionKind = "complete-reserve-designation" },
             };
         return tracker.AdvanceAccepted(axis, commonwealth, step,
             failure == "missing" ? null : outcomes);
@@ -608,6 +706,16 @@ public sealed class TemporaryCampaignGrainTests
                 var acceptedOutcome = stored.AudienceTracker.LastAcceptedOutcome;
                 Assert.NotNull(acceptedOutcome);
                 Assert.True(acceptedOutcome.HasTypedProof);
+                var expectedCopyKey = candidate.Kind switch
+                {
+                    "act-first" or "act-last" => "diary.initiativeOrder",
+                    "resolve-initiative" or "resolve-weather"
+                        or "resolve-no-obligation-naval-convoy-schedule"
+                        or "resolve-no-obligation-tactical-shipping"
+                        or "resolve-no-obligation-organization" => null,
+                    _ => throw new InvalidOperationException(
+                        $"Unexpected fixture action in four-step diary proof: {candidate.Kind}"),
+                };
                 Assert.Equal(priorHead, acceptedOutcome.Axis!.PriorHeadHash);
                 Assert.Equal(Hash(replies[0].Snapshot!), acceptedOutcome.Axis.SuccessorHeadHash);
                 Assert.Equal(acceptedOutcome.Axis.SuccessorHeadHash,
@@ -624,7 +732,10 @@ public sealed class TemporaryCampaignGrainTests
                 {
                     var currentCut = stored.AudienceTracker.Read(
                         audience, stored.CommittedVersion, Generation)!;
-                    var hasEntry = decision.ProposedCopyKey is not null;
+                    var hasEntry = audience == chosen.Audience && expectedCopyKey is not null;
+                    Assert.Equal(hasEntry ? expectedCopyKey : null, decision.ProposedCopyKey);
+                    Assert.Equal(hasEntry ? "copy-catalog-unapproved" : "known-silent",
+                        decision.ReasonCode);
                     Assert.Equal(priorCut.NextDiaryCursor + (hasEntry ? 1UL : 0UL),
                         currentCut.NextDiaryCursor);
                     Assert.Equal(priorCut.Diary.Length + (hasEntry ? 1 : 0),

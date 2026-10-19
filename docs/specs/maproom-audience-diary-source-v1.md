@@ -51,7 +51,10 @@ The temporary host checks the canonical accepted step and paired proof against t
 current tracker head and both successor cuts before atomically installing the private
 successor and per-seat diary update. It retains the latest proof and up to 50 approved
 entries per seat with a monotonic private cursor. A trusted session-generation read
-rotates outward entry IDs. This does not remove the public initial-only guard.
+rotates outward entry IDs. Before appending, the tracker reuses the Core typed
+event/action classifier to require the exact approved copy key and subject element,
+and binds a human action kind to the prior private action set. This does not remove
+the public initial-only guard.
 
 For each ordered event in an accepted step, the Core hosting adapter supplies one
 immutable, versioned `AudienceOutcomeDecision` per authorized side **in addition to**

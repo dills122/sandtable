@@ -52,7 +52,7 @@ internal sealed class TemporaryAudienceTracker
     {
         if (!IsAvailable || !ValidPair(CampaignId, RulesetHash, ScenarioId,
                 axis, commonwealth, StateVersion)
-            || !ValidAcceptedStep(axis!, acceptedStep, outcomes))
+            || !ValidAcceptedStep(axis!, commonwealth!, acceptedStep, outcomes))
         {
             IsAvailable = false;
             return false;
@@ -131,6 +131,7 @@ internal sealed class TemporaryAudienceTracker
     }
 
     private bool ValidAcceptedStep(CampaignHostPrivateSideCut axis,
+        CampaignHostPrivateSideCut commonwealth,
         CampaignHostAcceptedStep? step, CampaignAudienceOutcomePair? outcomes)
     {
         if (step is null || outcomes?.HasTypedProof != true
@@ -179,11 +180,35 @@ internal sealed class TemporaryAudienceTracker
                 && decision.EventContractVersion == eventVersion
                 && decision.EventKind == eventKind
                 && !string.IsNullOrWhiteSpace(decision.ActionKind);
+            var classification = CampaignAudienceOutcomeSource.ClassifyCanonicalAcceptedEvent(
+                step.EventRecords[0], first.ActionKind, command.Audience);
+            if (classification is null) return false;
+            if (command.Audience is CampaignActionAudience.Axis or CampaignActionAudience.Commonwealth
+                && (!sides.TryGetValue(command.Audience, out var actingSide)
+                    || !actingSide.Cut.Actions.Any(action =>
+                        action.CoreActionId == command.ActionId
+                        && action.Kind == first.ActionKind))) return false;
+            bool Classified(CampaignAudienceOutcomeDecision decision,
+                CampaignHostPrivateSideCut successor)
+            {
+                var isActor = decision.Audience == command.Audience;
+                var expectedKey = isActor ? classification.Value.CopyKey : null;
+                var expectedElement = isActor ? classification.Value.ElementId : null;
+                if (decision.ProposedCopyKey != expectedKey) return false;
+                if (expectedElement is null) return decision.OwnElementIndex is null;
+                if (!sides.TryGetValue(decision.Audience, out var before)
+                    || !before.Cut.OwnElements.Any(element =>
+                        element.ElementId == expectedElement)) return false;
+                var index = Array.FindIndex(successor.OwnElements.ToArray(), element =>
+                    element.ElementId == expectedElement);
+                return index >= 0 && decision.OwnElementIndex == index;
+            }
             return Matches(first, CampaignActionAudience.Axis)
                 && Matches(second, CampaignActionAudience.Commonwealth)
                 && first.EventKind == second.EventKind
                 && first.EventContractVersion == second.EventContractVersion
-                && first.ActionKind == second.ActionKind;
+                && first.ActionKind == second.ActionKind
+                && Classified(first, axis) && Classified(second, commonwealth);
         }
         catch (Exception error) when (error is System.Text.Json.JsonException
             or ArgumentException or InvalidOperationException or KeyNotFoundException
