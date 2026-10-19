@@ -37,7 +37,7 @@ resource payment, attack commitment, result draw or settlement.
 
 ## Authority and transition
 
-The only predecessor is original CreationRequest plus eleven **separate**, ordered R03 parent
+The only predecessor is original CreationRequest plus ten **separate**, ordered predecessor
 input ledgers and the R03 Breakdown ledger. The reference reconstructs them with the frozen R03
 verifier before issuing or reading any twelfth-ledger event. Its `Source` carries the exact R03
 source bytes and canonical own events. Its separate own input ledger is independently retained;
@@ -92,6 +92,22 @@ Both `cancel-rba` paths reach the same structural no-assault end with a cancella
 converted to decline. The reference output remains `admitted=false` and `publicActions=[]` for
 every state, including completed private traces.
 
+### Fresh-process cut readback boundary
+
+The `r000-c02` Axis accepted-decline trace serializes the exact private `Source`,
+twelfth-ledger inputs, original CreationRequest, ten separate parent input ledgers and R03
+Breakdown ledger at every cut from opening through terminal Reserve Release. Each cut is
+read in a new Python process using the same reference contract. The test compares canonical
+`Control`, version, prefix, position, preceding receipt, World and RNG to the original
+trace; an already issued input returns the same receipt with no event or byte change;
+the next trusted input produces byte-identical `Source`, event, ledger and `Control`.
+The terminal cut is read back separately and its last accepted input still retries without
+an event or mutation.
+Tampered predecessor Source, own event, own input, missing ledger entry and stale or
+noncanonical next input are rejected after fresh readback. This is one authentic
+accepted-decline trace, not a durable host restart, storage implementation, or an
+all-row cut certificate.
+
 ## Remaining gates
 
 This bounded path is not the complete P01 support certificate. In particular, source-legal
@@ -108,7 +124,8 @@ python3 -B docs/specs/verify-combat-p01-explicit-rba-v1.py /Users/dsteele/.codex
 ```
 
 The first command exercises both authentic actor orientations, explicit decline, timeout
-cancellation before and after decision opening, receipt retry, nonterminal replay, ancestry and event mutations, wrong actor,
+cancellation before and after decision opening, receipt retry, nonterminal replay,
+single-trace fresh-process cut readback and continuation, ancestry and event mutations, wrong actor,
 late decision, attempted RBA movement and adjacent positive rejection. The second replays the
 original pinned 300-row R03 catalogue with source PDF pins, then checks the narrower 244/56
 certificate partition. Neither command proves full P01 admission.
