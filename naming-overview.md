@@ -96,9 +96,9 @@ bounded Angular developer client before complete scenario play. **Field Atlas** 
 `@sandtable/field-atlas`, not a new service or authority domain. The Angular CLI workspace is
 `src/Cna.Maproom`, its first application is `maproom-alpha`, and Storybook is the living component
 and pattern reference. The default application route remains a synthetic order scaffold.
-Its separate `/connected` route is a development-only initial campaign read through
-the generated client and loopback proxy; it is not a command surface, a second
-authority, full hot-seat play or durable campaign resume.
+Its separate `/connected` route is a development-only, read-only operations view of
+one authorized initial campaign cut through the generated client and loopback proxy; it is
+not a command surface, a second authority, full hot-seat play or durable campaign resume.
 **Operations workspace** describes Maproom's map, order inspector and linked formation records;
 it adds no authority layer. The formation ledger is a player-view table, distinct from Chronicle's
 authoritative event journal. War Diary entries may locate permitted formations without exposing
@@ -122,23 +122,26 @@ browser contract or a new authority source.
 MAP-08A's `Cna.OrleansHost/Api` is a local ingress seam for operator bootstrap and seat sessions.
 MAP-08B creation now binds the admitted Rules9 fixture, operator/request identity and one
 short-lived grant pair; the campaign remains process-local. A bounded `/view` adapter renders
-only the initial rules-lab cut from an authorized seat; later cuts fail closed pending
-approved diary projection.
+only the initial rules-lab cut from an authorized seat; later cuts fail closed pending a
+coherent public successor projection. Approved private diary copy does not publish that view.
 MAP-08B1 names the host-side prerequisite: typed permitted data and pinned presentation facts
 between Umpire's side cut and Maproom's outward DTO. It grants no new authority to Maproom.
 MAP-08B2 calls the process-local contact/action continuity record the **audience tracker**.
 Its private side cut remains host data; Maproom receives only a validated player view. The
 **presentation catalog** owns public fixture labels and layout, not Umpire authority.
 The **audience outcome source** is a private Core hosting proof for one accepted transition.
-It can classify known silent outcomes and identify proposed entry keys, but unapproved copy
-stays unavailable; it is not a browser diary, receipt, or second adjudicator. The
+It classifies known silent outcomes and approved diary keys. The owner-approved nine-entry
+en-CA copy catalog and host-private audience tracker retain per-audience diary cursors and the
+latest 50 entries, with outward IDs scoped to the seat session. They are not a browser diary,
+public receipt or second adjudicator. MAP-09 names private seat-bound action ingress and exact
+retry; it is not an HTTP submit or receipt route. The
 **private outcome head binding** is the Orleans tracker's check that one paired proof and
 both side cuts belong to the same accepted committed head. It grants no publication right.
 
 **Proving Ground** names the local development test environment and
 [runbook](docs/runbooks/proving-ground.md), not a game authority or separate service. Its first
 Docker profile packages the Maproom shell and Development Orleans host; the Exercise Runner stays
-a separate trusted CLI until browser campaign creation is implemented.
+a separate trusted CLI. Browser creation is limited to one admitted temporary fixture.
 
 ## Domain modules and reserved names
 

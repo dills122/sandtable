@@ -81,8 +81,9 @@ This lane does not activate private Combat or satisfy six-turn MVP acceptance.
 The [Proving Ground runbook](docs/runbooks/proving-ground.md) now defines a containerized
 Development preview: one built Angular shell and one single-silo Orleans host, both bound to host
 loopback. It deliberately omits database, gateway and worker from the minimal human-order path.
-No browser campaign seed, ingress or save exists yet. Production clustering and durable
-publication/restore remain gates before a Kubernetes deployment can replace this local profile.
+Bounded local browser bootstrap, single-fixture creation, seat grants and initial read exist.
+Public action submission, receipt lookup and durable save do not. Production clustering and
+durable publication/restore remain gates before a Kubernetes deployment can replace this profile.
 
 The [Field Atlas design system](docs/design/maproom-design-system-v0.md) starts with minimal semantic
 tokens and controls, then evolves through an operational map, order workflow and dense formation
@@ -101,7 +102,8 @@ These controls alter browser presentation only and preserve the fixture authorit
 The [MAP-04 outward contract](src/Cna.Game.Contracts/README.md) specifies development-only
 browser routes, a coherent audience view, opaque action capabilities and lossless audience
 revision strings. Private authority versions stay server-side. Its generated client compiles;
-host handlers are pending. The preview remains synthetic. The
+local bootstrap, creation and initial-view handlers exist; public action submit and receipt
+lookup handlers remain pending. The Docker preview remains synthetic. The
 [MAP-05 trusted host protocol](docs/specs/maproom-trusted-host-protocol-v1.md) fixes private
 accepted-step/publication and restore boundaries for later host slices; no campaign grain or
 durable provider is implemented by that contract. The
@@ -118,10 +120,11 @@ has no await or provider I/O, so pending is not externally observable in this sl
 publication retains pending, fencing and reconciliation requirements. System
 progression has a 1–32 step budget and explicit
 human, unsupported-phase and step-limit outcomes. Its small typed side summary and canonical
-legal set come from one committed MAP-06 cut. This is trusted in-silo plumbing only: operator and
-seat authentication, outward action mapping, durable conditional publication and terminal-state
-classification remain later boundaries, with a Core terminal signal required before connected
-play. A process restart discards this state. MAP-08A adds Development-only loopback HTTP bootstrap,
+legal set come from one committed MAP-06 cut. MAP-08 adds local operator and seat authorization;
+MAP-09 privately binds a seat-scoped outward request to a current Core candidate and retains
+exact retries. Public submission and receipt readback, coherent successor views, Core terminal
+classification and durable conditional publication remain later gates. A process restart discards
+this state. MAP-08A adds Development-only loopback HTTP bootstrap,
 trusted-host grant storage and rotating seat sessions with same-origin and CSRF checks. Its grant
 issuer now serves one admitted fixture through a Development-only creation route. Its retained
 operator/request response has one grant pair; capacity is reserved before the grain commit,
@@ -129,11 +132,13 @@ inactive grants become redeemable only after committed creation, and an uncertai
 under the same request ID without renewing expired grants. Missing configuration identity is omitted. A
 created initial fixture may return one
 authorized `/view` mapped from a coherent typed cut; unsupported or successor cuts return
-`503 unavailable` until approved diary projection and full MAP-08B completion.
+`503 unavailable` until a coherent public successor projection is supported; private diary
+approval alone does not publish that view.
 The separate Angular `/connected` route now uses that initial cut through a
 loopback-only 4300-to-5087 development proxy. It bootstraps, creates the one fixture,
-redeems one grant and renders only the authorized read. A failed refresh clears its
-prior audience view. The host retains one process-local creation for the exact
+redeems one grant and renders an authorized initial operations read. MAP-10 extends the bounded
+read-only workspace without submitting an order or reading a later cut. A failed refresh clears
+its prior audience view. The host retains one process-local creation for the exact
 operator/request; a reload with the same valid seat cookie resumes through the
 scoped session read, while a lost cookie or different operator conflicts until host restart.
 No connected action submission, successor read, durable save or complete hot-seat
@@ -145,22 +150,25 @@ MAP-08B2 implements a process-local private cut tracker over both committed side
 It binds campaign/source pins and authority version, advances contact/action identity on each
 accepted transition, and fails closed on a skipped or incoherent cut. A private grain read scopes
 opaque handles to the authorized session generation. Initial lab view uses a versioned,
-source-pinned public layout with generic contact labels, own formation labels and reserve status;
-no post-creation diary source is approved, so successor views fail closed. Browser action ingress
-remains pending.
+source-pinned public layout with generic contact labels, own formation labels and reserve status.
+The nine-entry en-CA copy catalog is owner-approved and the private tracker retains accepted
+classified entries, but public post-step diary mapping and successor views still fail closed. MAP-09 private
+ingress exists; no HTTP action submit or receipt route is enabled.
 `CampaignAudienceOutcomeSource` is a private Core hosting decision proof: it recomputes an
 accepted step in memory against canonical evidence and both side cuts, without a second
 publication or state mutation. The temporary Orleans grain now asks for that proof before
 installing an accepted successor, and its private audience tracker checks the exact prior and
 successor head, canonical command/event/receipt and both side cuts in one serialized turn.
-It retains only the latest paired proof, not a diary cursor or approved copy. Proposed entry
-keys remain unavailable without approved copy; successor browser views remain guarded.
+It retains approved fixed copy in private per-audience diary records with monotonic cursors and
+the latest 50 entries; outward entry IDs are scoped to the seat-session generation. These private
+records do not enable successor browser views or durable diary publication.
 No canonical legal-action bytes or authority versions are serialized to HTTP. The
 [Angular workspace](src/Cna.Maproom/README.md) provides
 `projects/maproom-alpha` and the internal `@sandtable/field-atlas` library. Storybook uses the same
 public component API, tokens and Material theme; feature patterns stay in the app. No shared
-core/utils library exists until concrete reuse calls for it. Campaign host
-remains pending. Broad logistics workspaces and semantic zoom await their own contracts and checks.
+core/utils library exists until concrete reuse calls for it. A temporary process-lifetime campaign
+host serves the admitted local fixture; durable hosting remains pending. Broad logistics
+workspaces and semantic zoom await their own contracts and checks.
 
 ## Proposed intelligence/services architecture
 
