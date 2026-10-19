@@ -306,17 +306,14 @@ public sealed class CampaignAudienceOutcomeSourceTests
         Assert.Equal(CampaignAudienceOutcomeDisposition.Silent, resolved.Commonwealth!.Disposition);
         reacting = CampaignExercises.Query(session, reactor).ActionSet!;
         var noEligible = CampaignExercises.Query(session, CampaignActionAudience.System).ActionSet!;
-        var close = Assert.Single(noEligible.Candidates.OfType<CloseReactionWindowNoEligibleAction>());
+        Assert.Empty(reacting.Candidates);
+        var close = Assert.IsType<CloseReactionWindowNoEligibleAction>(Assert.Single(noEligible.Candidates));
         var closedProof = DecideAndAdvance(ref session, noEligible, close);
         Assert.Equal("reaction-window-closed", closedProof.Axis!.EventKind);
         Assert.Equal(CampaignAudienceOutcomeDisposition.Silent, closedProof.Axis.Disposition);
         Assert.Equal(CampaignAudienceOutcomeDisposition.Silent, closedProof.Commonwealth!.Disposition);
         Assert.Null(closedProof.Axis.ProposedCopyKey);
         Assert.Null(closedProof.Commonwealth.ProposedCopyKey);
-        if (reacting.Candidates.OfType<DeclineReactionWindowAction>().FirstOrDefault() is { } decline)
-        {
-            AssertDeclineAndMutationRejection(session, reacting, decline);
-        }
     }
 
     private static void AssertDeclineAndMutationRejection(ExerciseSession session,
