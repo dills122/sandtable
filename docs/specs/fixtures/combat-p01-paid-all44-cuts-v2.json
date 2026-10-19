@@ -1,0 +1,286 @@
+{
+  "contract": "combat-p01-paid-all44-cuts-v2",
+  "sourceEvidence": "pinned 300-row retained bounded profile",
+  "roots": [
+    {
+      "index": 36,
+      "rowKey": "r012-c01",
+      "actingSide": "axis",
+      "r03SourceHash": "sha256:7dd4a0860b65d8bd1db51f65cd2eadc7b57110cf95c0bf5d32447f2937573638"
+    },
+    {
+      "index": 42,
+      "rowKey": "r013-c01",
+      "actingSide": "axis",
+      "r03SourceHash": "sha256:897ed6133905ac8b1b62d532f0c8de329ee25319e86aa1d64a62798f329c686c"
+    },
+    {
+      "index": 48,
+      "rowKey": "r014-c01",
+      "actingSide": "axis",
+      "r03SourceHash": "sha256:c99a90baaaa535bf4115da4dca112f63147d18d9bc7d527c0768ca50970b8d22"
+    },
+    {
+      "index": 54,
+      "rowKey": "r015-c01",
+      "actingSide": "axis",
+      "r03SourceHash": "sha256:7eff7056a320c7930ca5552bf1bce31b51c1f6960cfc159dda65e7f72181e4d5"
+    },
+    {
+      "index": 60,
+      "rowKey": "r016-c01",
+      "actingSide": "axis",
+      "r03SourceHash": "sha256:3b02a3c724291047daf2cf3f676b4895036ac4e352ed45589bd762dbe7b9d0e6"
+    },
+    {
+      "index": 66,
+      "rowKey": "r017-c01",
+      "actingSide": "axis",
+      "r03SourceHash": "sha256:90ccab35d0e0f8c41526398ca902e65bad8ef5c8c32ee5cb01665599bc0fb90d"
+    },
+    {
+      "index": 72,
+      "rowKey": "r018-c01",
+      "actingSide": "axis",
+      "r03SourceHash": "sha256:32fc099482677c72d59d3cd7fd3b5696529e5ae0c90384c00fe4f21cd6f454f5"
+    },
+    {
+      "index": 78,
+      "rowKey": "r019-c01",
+      "actingSide": "axis",
+      "r03SourceHash": "sha256:f2bacc853ed7dbfa6c80bc22ce1ca4d5da5c0eaab6d1555b3f9eec790f1b4111"
+    },
+    {
+      "index": 84,
+      "rowKey": "r020-c01",
+      "actingSide": "axis",
+      "r03SourceHash": "sha256:64422f01ff245a4c8d9b1c4955c404e0aef442b123435fb6d0709b661efc9c98"
+    },
+    {
+      "index": 90,
+      "rowKey": "r021-c01",
+      "actingSide": "axis",
+      "r03SourceHash": "sha256:99c22c5833b8c526f1da5f294102dff6a7b3d389d309732581167216bb87b66e"
+    },
+    {
+      "index": 96,
+      "rowKey": "r022-c01",
+      "actingSide": "axis",
+      "r03SourceHash": "sha256:96104516696b3a78b5655e0800584dab2080d92a8028d6145176659316207fc3"
+    },
+    {
+      "index": 102,
+      "rowKey": "r023-c01",
+      "actingSide": "axis",
+      "r03SourceHash": "sha256:57de16468c0f979fdf40e56c95eb4557114602bb67841f4186ae6bc783639c72"
+    },
+    {
+      "index": 108,
+      "rowKey": "r024-c01",
+      "actingSide": "axis",
+      "r03SourceHash": "sha256:cb9bea76faebda4f50aa4b1d3cb59ecdb52571264bd00a878e1ff83ff3d36c0c"
+    },
+    {
+      "index": 114,
+      "rowKey": "r025-c01",
+      "actingSide": "axis",
+      "r03SourceHash": "sha256:34122db792a9f9398cd395451d39ceef2bee8d0b65a24e244b81ac7a10ea1b6b"
+    },
+    {
+      "index": 120,
+      "rowKey": "r026-c01",
+      "actingSide": "axis",
+      "r03SourceHash": "sha256:93ea3bf5469752c0fec64f97d9a13442d1a6fb8baaf28f171b19dd37862898b6"
+    },
+    {
+      "index": 126,
+      "rowKey": "r027-c01",
+      "actingSide": "axis",
+      "r03SourceHash": "sha256:f68f3ed35f9ecdd50b8564914da12b6263cc634add50a67eadf1d564563dc297"
+    },
+    {
+      "index": 132,
+      "rowKey": "r028-c01",
+      "actingSide": "axis",
+      "r03SourceHash": "sha256:198f6e31abbdffeaacdf8dcdcd6730494aa8e4662d77321164c96a761efda931"
+    },
+    {
+      "index": 138,
+      "rowKey": "r029-c01",
+      "actingSide": "axis",
+      "r03SourceHash": "sha256:d05ef1335e2ed6fc876623f683ea6f174b009663c846c65727b29909cbdb04aa"
+    },
+    {
+      "index": 144,
+      "rowKey": "r030-c01",
+      "actingSide": "axis",
+      "r03SourceHash": "sha256:c0330f05609378777020a3fbb80aca23ca6f968521287a3d9991fa3f62d1cce7"
+    },
+    {
+      "index": 150,
+      "rowKey": "r031-c01",
+      "actingSide": "axis",
+      "r03SourceHash": "sha256:98482f58060a6c60fe666d88ce7b866c6b30895e535e095df3d1587be529483d"
+    },
+    {
+      "index": 156,
+      "rowKey": "r032-c01",
+      "actingSide": "axis",
+      "r03SourceHash": "sha256:92764d7f230b4f6beed45109b728fef37faf1603c8728865a9ebca884c7c2e50"
+    },
+    {
+      "index": 162,
+      "rowKey": "r033-c01",
+      "actingSide": "axis",
+      "r03SourceHash": "sha256:55421d8cb05c7a355bbdecf1cc9adb9ae958636f39ec086dc091579a7a2b8eaf"
+    },
+    {
+      "index": 168,
+      "rowKey": "r034-c01",
+      "actingSide": "commonwealth",
+      "r03SourceHash": "sha256:ee78f974d6cf5b3bda43c929f21e6ac7ba9fa9c8fec47a8db185af0d80b6b7b7"
+    },
+    {
+      "index": 174,
+      "rowKey": "r035-c01",
+      "actingSide": "commonwealth",
+      "r03SourceHash": "sha256:2a64804b938854de5e9486399b4ab50455254082fe9422ca7af840e53f95421f"
+    },
+    {
+      "index": 180,
+      "rowKey": "r036-c01",
+      "actingSide": "commonwealth",
+      "r03SourceHash": "sha256:2982e115792139e6b76b785d6272d2a7d9ca712f0a1513981b6ac0a111ad3568"
+    },
+    {
+      "index": 186,
+      "rowKey": "r037-c01",
+      "actingSide": "commonwealth",
+      "r03SourceHash": "sha256:9f8147734f56c10e14107eb89649b0a78b2c5e5c4f53ec304ce8abff636b31e7"
+    },
+    {
+      "index": 192,
+      "rowKey": "r038-c01",
+      "actingSide": "commonwealth",
+      "r03SourceHash": "sha256:e1504f911ecae9a80690158473840788c8ba48e46115efc1d9cf6eeee9ccea4c"
+    },
+    {
+      "index": 198,
+      "rowKey": "r039-c01",
+      "actingSide": "commonwealth",
+      "r03SourceHash": "sha256:4ac370478cc91b443503bf70855a3e705953a9b6365bd44703f1c4d0413d9f3a"
+    },
+    {
+      "index": 204,
+      "rowKey": "r040-c01",
+      "actingSide": "commonwealth",
+      "r03SourceHash": "sha256:1b68ee157b94ff7492e59f52dfd1892264655a790362873a81349d044e999f97"
+    },
+    {
+      "index": 210,
+      "rowKey": "r041-c01",
+      "actingSide": "commonwealth",
+      "r03SourceHash": "sha256:10f9defee0d54f39387d39d6887708cf71a3ec5d400b53bdb13572a456441394"
+    },
+    {
+      "index": 216,
+      "rowKey": "r042-c01",
+      "actingSide": "commonwealth",
+      "r03SourceHash": "sha256:d55c1567c959113f5fb1d92bc754578308ef675a5fc6d4f45d0e71b2553d7fa8"
+    },
+    {
+      "index": 222,
+      "rowKey": "r043-c01",
+      "actingSide": "commonwealth",
+      "r03SourceHash": "sha256:81c198c455a912e625955c5dba9c2fd728b1111cf294f6a0bf42cc46470c1116"
+    },
+    {
+      "index": 228,
+      "rowKey": "r044-c01",
+      "actingSide": "commonwealth",
+      "r03SourceHash": "sha256:3022869f2c538a1666857dcee4e010171b53d43918bb5e891b0e5809915dc37a"
+    },
+    {
+      "index": 234,
+      "rowKey": "r045-c01",
+      "actingSide": "commonwealth",
+      "r03SourceHash": "sha256:b5a715fab12cca9efc9563c3e6599adeec4e95d7c4e9e186c9cab9369a6b51f9"
+    },
+    {
+      "index": 240,
+      "rowKey": "r046-c01",
+      "actingSide": "commonwealth",
+      "r03SourceHash": "sha256:a3bc9c5d063bb01fefd72d961a9357f88c8f3cb718d980f38251cb1a70ce7edd"
+    },
+    {
+      "index": 246,
+      "rowKey": "r047-c01",
+      "actingSide": "commonwealth",
+      "r03SourceHash": "sha256:83e6a499ab3dff8fca9abfe08c909c1cad937b3d579aebbd82cf5716634e621b"
+    },
+    {
+      "index": 252,
+      "rowKey": "r048-c01",
+      "actingSide": "commonwealth",
+      "r03SourceHash": "sha256:172a693672cbc7566358db94fa805cf4be1828f9d232b41ddcdb4b2060b5f684"
+    },
+    {
+      "index": 258,
+      "rowKey": "r049-c01",
+      "actingSide": "commonwealth",
+      "r03SourceHash": "sha256:c4524b529d33b03becccb3e22bd016d03c8309622e1eb2df0cfa88d63ecb45ea"
+    },
+    {
+      "index": 264,
+      "rowKey": "r050-c01",
+      "actingSide": "commonwealth",
+      "r03SourceHash": "sha256:b6e55a3d63736d078d2777090b09c4bbf71b6f8c431d82c4204727be05fd52f2"
+    },
+    {
+      "index": 270,
+      "rowKey": "r051-c01",
+      "actingSide": "commonwealth",
+      "r03SourceHash": "sha256:aa25933220acd8e5cac59383a06bb3f217bed56b816f15b18a15537ca2c33956"
+    },
+    {
+      "index": 276,
+      "rowKey": "r052-c01",
+      "actingSide": "commonwealth",
+      "r03SourceHash": "sha256:16fde0ff1a740ffb8e68ce72facf3bf88b9b65f2126c2217193911f7a9072896"
+    },
+    {
+      "index": 282,
+      "rowKey": "r053-c01",
+      "actingSide": "commonwealth",
+      "r03SourceHash": "sha256:a5a3b118fd631a0d6d7b52463d3a4f3d639fda0efda7b6f66ee9c213347d5053"
+    },
+    {
+      "index": 288,
+      "rowKey": "r054-c01",
+      "actingSide": "commonwealth",
+      "r03SourceHash": "sha256:83595f79e2b9b6be1c1e4832fa6656e2420e4400591ef8564785db1c0d88ca67"
+    },
+    {
+      "index": 294,
+      "rowKey": "r055-c01",
+      "actingSide": "commonwealth",
+      "r03SourceHash": "sha256:d32a945924712bc20cdca8d9635a482f324a0adebd8a63aad07774b5bd5f901f"
+    }
+  ],
+  "candidateAbsent": 256,
+  "admitted": false,
+  "publicActions": [],
+  "orderedOutputHash": "sha256:07dce9fe0ab8666bb580b6cb06d6eee0d13ec098e1679eb0d5badb07be32cd50",
+  "maxima": {
+    "controlBytes": 44589,
+    "eventBytes": 5978,
+    "inputBytes": 1004,
+    "sourceBytes": 5627669,
+    "worldBytes": 3326
+  },
+  "orderedOutputBytes": 35982,
+  "retainedPins": {
+    "manifestSha256": "39cae77c405b83a793b3d806fcf4a67860b9ff8514e59c9bfa83384d7dfc2b35",
+    "boundedProfileAuditSha256": "ba60a05a14ab907bb5be1e06509a5a24646a97759e564bcd525bdd7515bef429"
+  }
+}
