@@ -48,5 +48,6 @@ view and selection immediately. It uses only the audience-safe `/view`; `503`
 stops with an unsupported-phase message. Map and
 inspector selections use outward formation IDs and public location coordinates.
 No independent legal-action fetch, action submission, opposing formation identity,
-or client-derived War Diary entry is present. MAP-09 command ingress, MAP-10 full
-connected workspace integration, and MAP-11 real orders remain separate gates.
+or client-derived War Diary entry is present. MAP-10 now renders this initial cut in
+the operational workspace. MAP-09 has private request binding only; coherent
+successor reads/diary, public submit/receipt and MAP-11 real orders remain gates.
