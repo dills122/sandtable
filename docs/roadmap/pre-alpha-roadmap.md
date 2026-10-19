@@ -38,7 +38,7 @@ in the same change.
 ## Current checkpoint and next gates
 
 [Author doc/planning review](../reviews/combat-delivery-plan-author-review.md) records the accepted
-planning direction. Public actions and checked Runner evidence remain Rules9 through first-side Combat **entry**. Private native actual paid assault now reaches immediate closure into Reserve Release (019F6, PR177). PAC01 freezes the subsequent empty Release through guarded repeat or finish (PR178); its private native consumer now reproduces that boundary. Repeat opens ordinal2 Movement and finish opens Truck Convoy; neither executes that phase.
+planning direction. Public actions and checked Runner evidence remain Rules9 through first-side Combat **entry**. Private native actual paid assault reaches immediate closure into Reserve Release (019F6, PR177). PAC01 and its private consumer reach guarded repeat or finish; the actual repeated-Movement and Breakdown consumers reach the authenticated R03 ordinal-two Combat Position boundary. Private P01 work adds provisional assessment and a narrow zero-assault continuation with explicit defender RBA decline or cancellation. It admits no public or native ordinal-two action.
 Parent003 Combat authority contracts now compose 28 selected creation-rooted histories through
 released-I armed continuation, Movement completion, active-participant System fallback and guarded
 repeat/finish. They do not establish public Combat or Reserve Release activation in Core or simulator. Historical
@@ -51,7 +51,7 @@ review and simulator reports apply only to their stated commits and capabilities
 | Public Core,020–021 | Add audience-safe observations/actions and authenticated submission mapping, then activate only the certified profile. Unsupported profiles reject before a decision; disabling new admission must not disable recovery. |
 | Exercise and Runner,022–024 | Drive the same public actions through Exercise and Runner, prove reconstruction/readjudication, and retain clean repeated evidence for empty, settled-assault, and Movement-repeat paths. Existing Rules9 studies cannot substitute. |
 | Skeleton closeout,025 | Reconcile all Combat ACs and remaining Contact/Engaged gaps, run the full gate, and demonstrate one authentic start-to-repeat-or-finish loop before declaring the working skeleton reached. |
-| MVP expansion | Inventory the exact six-turn scenario surface, then deliver source-verified content, remaining Land rules/victory, durable save/resume, hot-seat privacy, and minimal Maproom. Each milestone has an exit gate below; detailed task estimates wait for the measured inventory. |
+| MVP expansion | The first [six-turn source-surface inventory](../research/2026-10-18-graziani-six-turn-surface-inventory.md) is retained; reconcile its gaps and measure exact exercised rules/data before freezing implementation slices. Source-verified content, remaining Land rules/victory, durable save/resume, hot-seat privacy, and minimal Maproom retain separate exit gates below. |
 
 The [first-release audit](../research/2026-10-05-first-release-audit.md) checks this entire route
 against current runtime, tests, services, content and build configuration. It separates researched,
@@ -67,7 +67,7 @@ repeats the existing Truck study. Broader Combat seed/branch coverage belongs af
 Core integration evidence is required earlier at E/G/H. Balance
 claims and model-backed commander evaluation remain separate future studies.
 
-OrleansHost currently supplies a development silo, not campaign grains or durable campaign storage.
+OrleansHost now supplies a development silo and one temporary, process-lifetime campaign grain for a pinned Rules9 fixture. Its loopback bootstrap, creation/seat and initial-view routes do not provide successor public reads, action submission or durable campaign storage.
 DecisionWorker registers its client but does not dispatch campaign decisions. The earlier planning
 direction after `b8be39a` has been executed through checkpoint B and the bounded Orleans probe;
 the inherited-path handoff and progressive Core evidence remain implementation gates.
@@ -116,24 +116,24 @@ theme/control foundation and splits MAP-03 into operational map, order workflow,
 fixtures. MAP-01 Angular workspace, MAP-02 foundation and MAP-03A/B/C operational map, order and
 records fixtures are implemented in [src/Cna.Maproom](../../src/Cna.Maproom/README.md), with Field
 Atlas components and Storybook. MAP-03C's searchable four-field ledger and War Diary show synthetic
-own-side accepted examples only. The connected campaign host remains pending.
-MAP-04 outward OpenAPI schema, safe fixture, focused tests and generated Angular client compilation
-are drafted; host mapping and audience verification remain before connected play.
+own-side accepted examples only. MAP-04 outward OpenAPI schema, fixture and generated client are
+implemented for the bounded local route; the connected MAP-10 workspace reads the initial
+authorized fixture cut. Its later-phase read and order controls still fail closed.
 The [MAP-05 trusted host protocol](../specs/maproom-trusted-host-protocol-v1.md)
 now records private byte ownership, creation/action retry identity, bounded fenced pending
 reconciliation, restore provenance, fixed direct-Core vectors and the failure matrix. The MAP-06
 Core adapter supplies admitted creation, coherent side cuts, accepted evidence and verified
-private transcript replay. MAP-07 now has a temporary single-fixture Orleans grain with
-in-memory request dedupe, bounded System progression and in-process Core parity tests. It
-retains state across grain reactivation, disables remote Orleans client ingress, and requires an
-internal process capability. It has no browser ingress, authorized seat/action mapping,
-observable pending phase, Core terminal-state signal or process durability. The synchronous
-memory path does not relax pending/fencing requirements for MAP-14/15; terminal classification
-stays a gate before connected play. The
-[MAP-08B1 projection prerequisite](../specs/maproom-side-projection-prerequisites-v1.md)
-must supply typed permitted fields, pinned presentation data, safe diary semantics and opaque
-action mapping before MAP-08B serves a coherent browser view. MAP-08/09 ingress, MAP-14/15
-durable provider proof and connected play remain open.
+private transcript replay. MAP-07 retains a temporary single-fixture Orleans grain across grain
+reactivation, with in-memory request dedupe, bounded System progression and in-process Core parity.
+MAP-08 adds guarded loopback bootstrap, creation/seat grants and a side-safe initial view. MAP-09
+privately binds outward requests to the active seat and retains process-lifetime retry identity;
+there is no public submit or receipt route. The [approved fixed diary copy](../specs/maproom-lab-presentation-catalog-v2.md)
+and [private paired tracker](../specs/maproom-audience-diary-source-v1.md) now follow committed
+accepted steps, including a narrow suppressed-own-row Reaction binding, but the browser projector
+still admits only state version 1 with an empty diary. In-process two-seat Reaction proof,
+coherent successor projection and public submit/receipt remain gates for connected orders.
+The synchronous memory path does not relax pending/fencing requirements for MAP-14/15 or prove
+process durability.
 The [implementation plan](../design/local-game-server-maproom-plan.md) owns slice dependencies
 and acceptance checks; the [design system](../design/maproom-design-system-v0.md) owns visual rules.
 
@@ -236,10 +236,10 @@ Optional parser evidence gate
 | Foundations | Versioned provenance, content, world, commands/events, deterministic RNG, replay, observation, and action contracts | Implemented and activated for the admitted Rules9 synthetic profile | Extend compatibility, replay, and fog tests with each admitted mechanic |
 | Mandatory preamble | Current runtime contracts through Reserve Designation | Implemented and publicly exercised for the admitted no-obligation profile | Add only scenario-required positive obligation families |
 | Movement, Reaction, Breakdown | Frozen and implemented for the certified battalion/Truck profiles | Public actions and checked Runner evidence reach first-side Combat entry | Preserve regressions; broaden positive ZOC/vehicle cases only with an admitted profile |
-| Combat and continual cycle | Checkpoint B accepted; Initial H Core restore and dormant Tasks009–016 accepted; actual paid-assault contract019F5 and native consumer019F6 complete; PAC01 continuation contract and private native consumer implemented; actual repeated-Movement reference contract and private native consumer implemented; Task008 publication open | **Gameplay not activated**; bounded Release/Movement/repeat adapters, native settled control with synthetic earlier Movement, and native actual paid assault through empty Reserve Release and guarded repeat/finish | Actual ordinal2 Breakdown and remaining017–019 → public020–021 → evidence022–024 → closeout025 |
+| Combat and continual cycle | Checkpoint B, Initial H Core restore and dormant Tasks009–016 accepted; private actual paid assault019F6, PAC01 continuation, repeated Movement/Breakdown and R03 ordinal-two Position implemented for bounded histories. P01 provisional reference and narrow private zero-assault/RBA continuation merged; Task008 publication open | **Gameplay not activated**; no supported/admitted P01 candidate or public/native ordinal-two action | Complete P01 action/source, automatic-surrender/RBA, outward privacy and replay/cap support certificate; then P02/P03 and remaining017–019 → public020–021 → evidence022–024 → closeout025 |
 | Working pre-alpha skeleton | Acceptance boundary defined | Not reached | One authentic movement/contact/combat/release repeat-or-finish loop with identical replay and Chronicle evidence |
-| Six-turn scenario and remaining Land rules | Milestone outcomes defined; exact exercised-rule/data inventory intentionally pending | Not started | Measure after the skeleton, freeze source/content scope, then split implementation-sized tasks |
-| Campaign lifecycle and Maproom | Angular workspace, Field Atlas library and Storybook available; synthetic shell and HTML workflow preview | Connected client and campaign host pending | MAP developer lane is bounded to current public rules; product acceptance still requires durable save/resume, hot-seat isolation and complete scenario path |
+| Six-turn scenario and remaining Land rules | Initial source-surface inventory merged in PR #254; exact exercised-rule/data reconciliation remains open | No complete six-turn scenario implementation | Measure and freeze source/content scope, then split implementation-sized tasks |
+| Campaign lifecycle and Maproom | Angular workspace, Field Atlas library/Storybook, MAP-04–08 initial host contracts and private MAP-09/diary tracker | Temporary Rules9 grain and initial authorized connected read; synthetic fixture workflow remains separate | Two-seat successor/diary projection, public submit/receipt and MAP-11 order flow; product acceptance additionally requires durable save/resume, hot-seat isolation and complete scenario path |
 | Exercise Harness | Evidence contracts and current Movement/Reaction/Breakdown profiles established | Single Exercise, serial-unpaired Maneuver, controller matrices, and bounded paired comparisons | Add Combat public actions/terminals only after Task021 |
 
 The roadmap deliberately distinguishes foundation maturity from playable breadth. The architecture
@@ -247,10 +247,10 @@ is substantially established. Bounded Movement, Reaction and Breakdown authority
 first-side Combat entry. [Breakdown closeout](../research/breakdown-runner-closeout.md) records two
 matching clean runs of47 campaigns; [transcript/privacy follow-up](../research/breakdown-transcript-privacy.md)
 records1,670 tests and81 boundary cases. Dormant Combat now has reviewed decisions, costs, results and loss/retreat settlement through
-Task016, including relationships and round closure after three fresh independent reviews. Native019F6 now also joins authentic paid-assault costs, results and immediate closure into Reserve Release. PAC01 and its private native consumer now supply reference and runtime evidence for subsequent empty Release and repeat/finish. The campaign
-is not yet playable: later Reserve lineage, public Combat actions, the full continual cycle,
-published scenario content, remaining Land rules, victory, campaign persistence and Maproom remain
-future work.
+Task016, including relationships and round closure after three fresh independent reviews. Native019F6 joins authentic paid-assault costs, results and immediate closure into Reserve Release. PAC01 and private consumers add empty Release, repeat/finish, repeated Movement and Breakdown through R03. P01 remains provisional and unadmitted. The campaign
+is not yet playable: full Combat support, public Combat actions, the complete continual cycle,
+published scenario content, remaining Land rules, victory, successor browser orders and campaign
+persistence remain future work.
 
 ### Sprint status summary
 
@@ -261,10 +261,10 @@ future work.
 | 2 — Rules laboratory and legal-action boundary | Complete for the admitted synthetic path | Keep outward actions observation-derived and revalidate exact membership at submission |
 | 3 — Mandatory turn preamble | Complete for the admitted synthetic no-obligation path | Positive Organization/convoy/fleet cases remain explicit later-scenario work; subsequent bounded mechanics now reach first-side Combat entry |
 | 4 — Movement, Breakdown, and Reaction boundary | Complete within the certified synthetic profile | Movement and ZOC/Reaction are implemented; Breakdown Tasks006–007 public activation, Runner adoption and transcript/privacy follow-up are complete. Positive ZOC and broader Breakdown categories remain extensions |
-| 5 — Combat and continual-cycle loop | Bounded private017–019 adapters through native actual paid assault019F6 and PAC01 continuation; repeated-Movement reference and private native consumer implemented; public Combat inactive | Continue from C04 native completion into ordinal2 Breakdown and remaining lineage; complete017–024; close025 only after an authentic loop passes |
-| 6 — Scenario Group One content | Milestone-level; not started | Produce the exact exercised-rule/data/source/rights inventory after the skeleton, then split bounded content packets |
+| 5 — Combat and continual-cycle loop | Bounded private017–019 adapters now reach R03 ordinal-two Combat Position; P01 reference and narrow zero-assault/RBA continuation remain unadmitted; public Combat inactive | Complete P01 support certificate, then P02/P03 and remaining017–019; activate020–021 and prove022–024 before closeout025 |
+| 6 — Scenario Group One content | Initial six-turn source-surface inventory retained in PR #254; content implementation not started | Reconcile exact exercised-rule/data/source/rights gaps, then freeze bounded scenario content packets |
 | 7 — Remaining required Land systems | Milestone-level; not started | Implement only the measured six-turn surface, including termination/victory, with the same authority/replay/fog gates |
-| 8 — Minimal Maproom and campaign lifecycle | Milestone-level; not started | Add durable local save/resume and recovery before UI completion; prove hot-seat privacy and a complete no-model action path |
+| 8 — Minimal Maproom and campaign lifecycle | Development-only Maproom fixtures, temporary Rules9 host and initial connected read are active; product milestone remains open | Prove successor views, public orders and local two-seat flow, then durable save/resume, hot-seat privacy and complete no-model scenario lifecycle |
 
 Sprint numbers describe dependency order, not equal effort or a project-completion percentage.
 

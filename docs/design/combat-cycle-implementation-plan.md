@@ -1,19 +1,19 @@
 # Combat and Cycle Combined Contract / Implementation Plan
 
-**Status:** Contract checkpoint B, dormant foundations, and Initial H Core codec/replay gate are complete. Dormant Tasks009–015 are accepted, including custody after three fresh independent reviews. PR136 is merged to main. Actual publication evidence remains open; public Combat gameplay remains inactive.
+**Status (2026-10-19):** Checkpoint B and Initial H Core codec/replay are complete. Private actual paid assault019F6, empty Release and guarded repeat/finish, repeated Movement/Breakdown and authenticated R03 ordinal-two Combat Position are implemented for bounded histories. P01 has a provisional private 300-row assessor and narrow zero-assault continuation; all 300 assessments remain unsupported/admitted=false. Its full support certificate, later P02/P03 native work, public Combat and publication evidence remain open.
 `CMB-PLAN-001` and POL-001–008 were accepted on 2026-09-06 at `a10a588`. Source and static Content
 work (`001`–`002`) is complete. Parent `003` is complete through the
 [authority-composition handoff](../specs/combat-authority-composition-v1.md). Checkpoint B closes through the
 [Task004C integration index](../specs/combat-outward-composition-v1.md). Task004A side contracts and Task004B occurrence, child and
-parent evidence are accepted with strict clock privacy and versioned round/settlement authority. Dormant Tasks005–007 and Task008 creation/inherited adapters are implemented for the selected profile. Initial H full restore and dormant Tasks009–015 are accepted in PR136; Tasks016–025 and HOST-PUB-001 remain open.
+parent evidence are accepted with strict clock privacy and versioned round/settlement authority. Dormant Tasks005–007 and Task008 creation/inherited adapters are implemented for the selected profile. Initial H full restore and Tasks009–016 are accepted. Bounded children of017–019 are merged; full parent reconciliation, Tasks020–025 and HOST-PUB-001 remain open.
 
 | Delivery layer | Current boundary | Next required outcome |
 | --- | --- | --- |
 | Research and policy | Complete for the selected bounded profile, including `HOST-RSH-001` | Reopen only for a new source, failed assumption, or approved profile expansion |
 | Authority contracts | CON-002–004 and all selected-profile inherited families are reconciled in 28 creation-rooted composition traces; parent003 complete | Preserve exact Task004 handoff while later runtime work derives boundaries from accepted history |
 | Outward contracts | Task004A/B/C accepted; all 72 ACs mapped with bounded evidence and explicit runtime deferrals | Preserve accepted bytes and source/privacy boundaries during dormant implementation |
-| Runtime | Dormant foundations and Initial H Core restore implemented; Task008 publication incomplete; Tasks009–015 accepted | Implement016–019, retaining actual positive-history, Snapshot successor and HOST-PUB-001 publication obligations |
-| Public and simulator | Tasks020–024 not started | Activate the certified side-safe profile, then prove strict Exercise/Runner reconstruction and repeatability |
+| Runtime | Dormant foundations through016 accepted; bounded017–019 actual and native consumers reach R03 ordinal-two Position. P01 reference and narrow zero-assault/RBA successor are private only; Task008 publication incomplete | Complete P01-AC-003 action/source exhaustiveness, AC-006 automatic-surrender/RBA, AC-007 outward privacy and AC-008 replay/caps support certificate; then P02/P03 native selection/consumption and parent017–019 reconciliation |
+| Public and simulator | Tasks020–024 have no certified ordinal-two Combat admission | Activate only a reviewed, certified side-safe profile through020–021, then prove strict Exercise/Runner reconstruction and repeatability through022–024 |
 | Closeout | Task025 not started | Full gate, evidence reconciliation, and authentic loop demonstration without overstating retained obligations |
 
 The [preparation matrix](combat-inherited-movement-preparation.md) remains the field/provenance
@@ -3046,12 +3046,15 @@ remains source-legal; accepted `CMB-POL-009` excludes it from the initial RC P01
 This precludes any full source-legal Combat claim.
 
 The provisional private reference, canonical private ID, all-row replay and bounded result,
-geometry, source-condition and privacy diagnostics are merged. The
+geometry, source-condition and denial-only privacy diagnostics are merged. The
 [AC-006 typed boundary](../specs/combat-p01-surrender-rba-boundary-v0.md) now separates a
 pre-assault no-trigger fact, automatic-surrender trigger and mutually exclusive RBA receipt
-shapes. It remains diagnostic: actual ordinal-two automatic full-TOE/custody settlement and
-RBA authority replay are unproved. Complete action coverage, outward privacy proof, adversarial
-transition cuts and the support certificate remain open. P02 selection and P03 native consumer
+shapes. The narrow private successor replays explicit defender RBA decline or fail-closed
+cancellation on authenticated zero-assault states, but actual ordinal-two automatic full-TOE/custody
+settlement and complete RBA/profile authority remain unproved. AC-003 complete source-legal action
+coverage, AC-007 approved outward fields and equal-authorized hidden-history proof, and AC-008
+full transition cuts, restart/readback, physical negatives and enforced caps remain open. The
+bounded cap and fresh-process readback slices do not close those whole gates. P02 selection and P03 native consumer
 remain separate; no public or native ordinal-two action is activated.
 The [private ordinal-two no-attack v0 inventory](../specs/combat-p01-no-attack-v0.md)
 defines proposed twelfth-ledger input fields and the six-step order, but its reference refuses
@@ -3062,3 +3065,7 @@ boundary to authenticated nonadjacent zero-**assault** states. It retains the so
 defender RBA choice after Barrage and replays an explicit decline or cancellation plus the
 remaining structural no-assault steps. The v0 input inventory remains frozen and unissuable;
 the v1 trace is private only and does not close full P01 admission, privacy or replay gates.
+The original CreationRequest plus 11 R03 ledgers still replay 300 rows: 44 provisional positive,
+256 provisional physical-empty and zero admitted. Preserve `CMB-POL-009`'s voluntary-surrender
+exclusion and fail-closed automatic-surrender boundary. No P01 freeze, public/native activation
+or complete source-legal Combat claim follows from these private slices.

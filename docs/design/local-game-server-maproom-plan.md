@@ -1,10 +1,11 @@
 # Local game server and Angular Maproom implementation plan
 
-Date: 2026-10-16. Status: MAP-01 workspace, MAP-02 foundation and MAP-03A/B fixtures implemented;
-MAP-04 browser schema, fixtures and generated client drafted; connected gameplay pending.
-MAP-08B creates the trusted initial pinned fixture cut and serves its side-safe view.
-The Angular `/connected` route now reads that one cut through a loopback dev proxy;
-post-step diary projection, command ingress and complete hot-seat recovery remain pending.
+Date: 2026-10-16. Status updated 2026-10-19: MAP-01–03C fixtures, MAP-04 browser
+contract, MAP-07 temporary grain, MAP-08 initial local ingress/read, and MAP-10 connected
+operations workspace are implemented for the bounded Rules9 fixture. MAP-09 has private
+seat-bound action/retry plumbing only. The Angular `/connected` route reads the initial
+authorized cut; successor `/view`, public submit/receipt, MAP-11 orders and durable save
+remain pending.
 Audience: contributors implementing the local rules-lab host and browser client.
 
 Build a browser client around the existing deterministic C# Umpire. First delivery launches one
@@ -49,14 +50,18 @@ consider a renderer/worker optimization only when measured browser work warrants
 
 ## Existing foundations and gaps
 
-- [OrleansHost](../../src/Cna.OrleansHost/Program.cs) starts a development silo and basic endpoints;
-  campaign grain, browser ingress and durable campaign storage are not implemented.
+- [OrleansHost](../../src/Cna.OrleansHost/Program.cs) starts a development silo with one
+  temporary process-lifetime campaign grain. Guarded loopback bootstrap, pinned fixture
+  creation/seat grants and initial audience view exist. Public action submission, successor
+  view and durable campaign storage remain unimplemented.
 - [AppHost](../../src/Cna.AppHost/AppHost.cs) orchestrates three service scaffolds. Add a local
   Maproom profile which can launch the client and host without requiring Intelligence.
 - The [Proving Ground runbook](../runbooks/proving-ground.md) supplies a two-container Development
-  preview of the present Maproom shell and Orleans host, with loopback ports and HTTP smoke probes.
-  It does not implement MAP-07–17 or a browser campaign seed. Aspire client orchestration remains
-  an open integration option; do not infer it from the Docker preview.
+  preview of the synthetic Maproom shell and Orleans host, with loopback ports and HTTP smoke
+  probes. The separate host-native [connected read lane](maproom-connected-local-read.md)
+  creates one pinned fixture and reads its initial authorized view. Docker-published port 5180
+  does not pass the API's container-side loopback caller guard for those routes. Aspire client
+  orchestration remains open; neither lane offers public orders or durable save.
 - [CampaignAuthority](../../src/Cna.Core/Campaigns/CampaignAuthority.cs),
   [CampaignObservations](../../src/Cna.Core/Observations/CampaignObservations.cs) and
   [CampaignLegalActions](../../src/Cna.Core/Actions/CampaignLegalActions.cs) supply current authority,
@@ -137,12 +142,15 @@ Ledger rows derive from the same permitted view as the map; diary excerpts carry
 audience revision/cursor metadata. Neither surface becomes a raw journal export or a separate
 source of campaign truth.
 
-The private Core hosting `CampaignAudienceOutcomeSource` can now verify a canonical accepted
+The private Core hosting `CampaignAudienceOutcomeSource` verifies a canonical accepted
 step against its predecessor and successor without publishing it. Its typed paired decisions
-are now bound to the temporary host's exact committed head and both private successor cuts.
-The host retains only the latest paired proof. Proposed entry keys remain unavailable until
-the pinned copy catalog, tracker cursor, and coherent successor view are reviewed. The
-initial-only browser guard stays.
+bind to the temporary host's exact committed head and both private successor cuts. The
+approved fixed copy catalog and process-local tracker now retain per-seat cursor/window
+and approved entries atomically, including a narrow Reaction case whose current own rows
+are suppressed. [Diary source contract](../specs/maproom-audience-diary-source-v1.md)
+records the boundary. In-process two-seat Reaction publication proof and coherent successor
+projection remain gates; the browser projector still admits only state version 1, empty diary
+and cursor `0`.
 
 ### Publication and automatic progression
 
@@ -216,15 +224,15 @@ are developed; no slice may silently absorb new game rules or activate private C
 | MAP-04 Browser contract v1 | 01 | DTO schemas, safe error/receipt/session semantics, coherent view cut and generated Angular client | Contract fixture roundtrip, lossless identities, forbidden-data assertions, generated client compilation |
 | MAP-05 Trusted host protocol | 04 | [Design contract](../specs/maproom-trusted-host-protocol-v1.md) for accepted-step/export, pending publication/fencing, restore provenance and bounded System steps | Fixed direct-Core vectors and failure matrix; exact ownership of private vs outward bytes; no implementation claims |
 | MAP-06 Core host adapter | 05 | [Core adapter](../../src/Cna.Core/Hosting/CampaignHostAdapter.cs) for creation, coherent side cuts, legal query, accepted-step evidence and private replay through existing public rules | Direct/existing Exercise parity; deterministic rejections; all exposed audiences checked; private Combat stays inaccessible; no host publication claim |
-| MAP-07 Temporary campaign grain | 06 | Synchronous process-lifetime memory commit, bounded progression and request/receipt record; one admitted fixture, no client gateway | Isolated Orleans host matches direct Core; concurrent identical request accepted once; grain reactivation preserves receipts, host restart loses them; `needsHuman`, `unsupportedPhase` and `stepLimit` tested; terminal classification awaits a Core signal before connected play |
+| MAP-07 Temporary campaign grain | 06 | Synchronous process-lifetime memory commit, bounded progression and request/receipt record for one admitted fixture; implemented as private in-silo host | Isolated Orleans host matches direct Core; concurrent identical request accepted once; grain reactivation preserves receipts, host restart loses them; `needsHuman`, `unsupportedPhase` and `stepLimit` tested; later public action/terminal publication remains gated |
 | MAP-08 Local ingress and reads | 04, 07 | Complete 08A identity seam and 08B committed creation/view projection; command submission stays in MAP-09 | Both sides get coherent authorized views; no private Core bytes or premature play claim |
-| MAP-08A Local session seam | 04, 07 | Development-only loopback/operator bootstrap with positive same-origin evidence, trusted-host one-use seat grants, bounded/expiring session and grant stores, cookie rotation, authorized session lookup; `/view` remains unavailable | Real HTTP wrong-host/origin/Fetch Metadata/campaign/grant/CSRF and capacity tests; no private MAP-07 bytes on HTTP |
+| MAP-08A Local session seam | 04, 07 | Development-only loopback/operator bootstrap with positive same-origin evidence, trusted-host one-use seat grants, bounded/expiring session and grant stores, cookie rotation and authorized session lookup; initial `/view` is separately delivered by MAP-08B | Real HTTP wrong-host/origin/Fetch Metadata/campaign/grant/CSRF and capacity tests; no private MAP-07 bytes on HTTP |
 | MAP-08B1 Side projection prerequisites | 08A | [Trusted side cut and presentation-source contract](../specs/maproom-side-projection-prerequisites-v1.md): typed permitted fields, pinned public presentation catalog, audience-safe diary, opaque contact/action mapping over every committed side cut | No raw Core bytes or private identities on HTTP; missing source or unverifiable cut gap fails closed; hidden-only commits preserve outward identities; contact reappearance rotates ID even without an intervening read |
 | MAP-08B2 Host-private side continuity | 08B1, 07 | Core typed side cut and process-local grain tracker for both audiences at creation and each accepted/System step; session-scoped opaque contact/action handles | Two-seat privacy; hidden-only stability; unread disappearance/reappearance rotates contact ID; skipped cut fails closed; deactivation retains tracker and process restart loses it; no browser view claim |
 | MAP-08B Campaign creation and view projection | 08B1 | Development-only single-fixture creation/grants and initial coherent side view exist; Angular `/connected` reads it through a loopback-only dev proxy. Post-step reads and complete recovery remain | Exact contract response and retry identity; side privacy; two-seat initial HTTP reads; no browser command |
-| MAP-09 Command ingress and retries | 08 | HTTP action submission, pending/accepted/rejected status and request lookup | Duplicate, changed-ID payload/actor, stale and lost-reply cases; no duplicate effects; cancellation reconciliation |
-| MAP-10 Connected workspace reads | 03C, 08 | Integrate generated reads into the full operational workspace beyond the separate initial read lane; preserve renderer interface | Two audience sessions see only permitted units/actions/history; selection survives valid refresh and clears when no longer visible or access is revoked |
-| MAP-11 Real order forms | 09, 10 | One admitted move action with typed draft, Formly field adapter, review and explicit issue action | Keyboard path submits once; invalid/stale states explain recovery; draft never moves authoritative counter; server decides cost |
+| MAP-09 Command ingress and retries | 08 | Private process-lifetime seat-bound request identity, current Core candidate remap/revalidation and exact retry implemented; public HTTP submit/status/receipt lookup pending | Private revocation/handoff, changed-payload, stale-handle and retry tests; route-level duplicate/lost-reply/cancellation reconciliation still required |
+| MAP-10 Connected workspace reads | 03C, 08 | Initial authorized `/view` now renders through the operational map/roster/inspector workspace; coherent successor view/diary remains pending | Both seats' initial privacy, selection and responsive map checks; later accepted-step cut, changed visibility, diary cursor and revoke tests before claiming full connected reads |
+| MAP-11 Real order forms | 09, 10 | Public submit/receipt plus coherent successor view precede one admitted move action with typed draft, Formly field adapter, review and explicit issue action | Keyboard path submits once; invalid/stale states explain recovery; draft never moves authoritative counter; server decides cost |
 | MAP-12 Live refresh and reconnect | 11 | SignalR subscription, safe view notification, missed-update recovery and connection UI | Subscribe/read race, initial failure, disconnect, missed push and stale response tests; no hidden-event notification leak |
 | MAP-13 Private hot-seat handoff | 12 | Curtain screen, server seat-generation switch and full client teardown | DOM/storage/history/late-response negatives; overlays and any embedded React elements unmount; next seat starts with its own view |
 | MAP-14 Durable storage contract | 05 | Versioned atomic commit/head/receipt/outbound-marker schemas, checkpoint binding, retention and upgrade rules | Crash matrix and trusted replay/import vectors; provider decision recorded; historical-version read/recovery policy |
