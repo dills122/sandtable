@@ -28,6 +28,18 @@ fail-closed at any later actual trigger. The prior ordinal-one
 [prepared-round entry](combat-actual-round-entry-v1.md) informs the two-seal
 mechanics but is not an ordinal-two admission authority.
 
+The owner-approved [clock privacy correction](../design/combat-cycle-policy-reconciliation.md)
+supersedes the accepted-seal shared high-water language in the older
+[sealed-decision protocol](../design/combat-sealed-decision-protocol-v1.md).
+This private successor uses the immutable published **opening** instant as
+the collecting-round regression floor. Accepted private seal timestamps are
+retained for replay but never raise a common floor; a 2,001 ms defender seal
+after a hidden 31,999 ms attacker seal is valid when opening is 2,000 ms and
+deadline is 32,000 ms. This also matches the historical
+[actual-round entry](combat-actual-round-entry-v1.md) privacy semantics;
+that older reader's available-confidence requirement on structural steps does
+not govern this corrected clock-free Prepared/cancelled continuation.
+
 The candidate is the exact adjacent armed 10-TOE pair selected by v1. The
 reference rechecks pinned Content at use and derives each slot from the
 original-side UnitKey, sole infantry component ID and current original World.
@@ -44,28 +56,36 @@ selected ledger and new ledger remain separate arguments. Domain-separated
 SHA-256 receipts bind full input, predecessor and effect; sequence prefix folds
 complete event bytes once. Source limit is 4 MiB because the already nested
 selected source expands to roughly 2.57 MiB when embedded; this does not raise
-the predecessor's separate caps.
+the predecessor's separate caps. The source carries an exact private
+ClockConfiguration supplement: parent configuration hash, policy
+`sandtable.combat.public-opening-clock.v2`, and Force Assignment budget read
+from the pinned parent configuration (currently 30,000 ms). Its separate
+domain hash binds the round and every new event. A changed budget, policy or
+parent config fails replay; the budget is not an implicit deployment default.
 
 1. System opens one Force Assignment round at an authenticated time no earlier
-   than the accepted defender decline. A fixed 30,000 ms deadline and the
+   than the accepted defender decline. The configured finite deadline and the
    opening version/prefix, source hash, candidate, selection and decline
    receipts bind its round ID. Two fixed full-10-TOE slots receive distinct
    IDs. The source remains private and unissuable.
 2. Each original owner seals only its own exact allocation at an available
-   trusted time in `[opening, deadline)`. Either order is accepted. The first
+   trusted time in `[opening, deadline)`. Either order is accepted, including
+   a later admitted seal whose private timestamp is lower than the opposing
+   accepted timestamp but still above opening. The first
    seal remains Collecting; the second makes Prepared. No allocation changes
    World, RNG, CP, ammunition, TOE, relationships or attack history.
-3. In Prepared, System completes Force Assignment and then derives an empty
-   Anti-Armor certificate from pinned Content bytes, current World, candidate,
+3. In Prepared, System completes Force Assignment **without requiring a live
+   clock** and then derives an empty Anti-Armor certificate from pinned Content
+   bytes, current World, candidate,
    both role-ordered full allocations, component IDs and the Force Assignment
    step receipt. It reaches Close Assault still Prepared and open. There is no
    positive Close Assault completion or result draw.
-4. While Collecting, System cancels at deadline equality/later or on an
-   unavailable trusted clock/controller. Zero or one accepted seal is retained
-   as audit evidence. Cancellation has its own receipt and no fabricated second
-   seal, payment or defender decision. Three no-attack structural completions
-   reach the same slot's Reserve Release. A Prepared round cannot be cancelled
-   by a late callback.
+4. While Collecting, System cancels at deadline equality/later, below-opening
+   clock regression, or an unavailable trusted clock/controller. Zero or one
+   accepted seal is retained as audit evidence. Cancellation has its own
+   receipt and no fabricated second seal, payment or defender decision. Three
+   clock-free no-attack structural completions reach the same slot's Reserve
+   Release. A Prepared round cannot be cancelled by a late callback.
 
 An identical canonical input retry returns the recorded receipt and no event.
 Changed actor/context does not borrow a receipt. Stale version, prefix,

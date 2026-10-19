@@ -111,7 +111,7 @@ class ForceAssignmentTests(unittest.TestCase):
                 for index in (3, 4):
                     source, ledger, state, event = self.append(
                         root, predecessor, source, ledger, state,
-                        "complete-step", cuts=True)
+                        "complete-step", available=False, cuts=True)
                     self.assertEqual(index + 1, state["stepIndex"])
                     self.assertEqual(2, len(event["effect"]["proofReceipts"]))
                 self.assertEqual("certified-empty-aa", event["effect"]["proofKind"])
@@ -156,7 +156,7 @@ class ForceAssignmentTests(unittest.TestCase):
                     for _ in range(3):
                         source, ledger, state, event = self.append(
                             root, predecessor, source, ledger, state,
-                            "complete-step", cuts=True)
+                            "complete-step", available=False, cuts=True)
                         self.assertEqual("cancelled-no-attack",
                                          event["effect"]["proofKind"])
                     self.assertTrue(state["closed"])
@@ -196,6 +196,24 @@ class ForceAssignmentTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             ref.transition(modified, correct)
         self.assertEqual("collecting", state["status"])
+
+    def test_private_seal_timestamps_do_not_raise_shared_opening_floor(self):
+        root = self.axis
+        source, ledger, state, predecessor = self.start(root, "axis")
+        source, ledger, state, _ = self.append(
+            root, predecessor, source, ledger, state,
+            "open-assignment", now=2000)
+        source, ledger, state, first = self.append(
+            root, predecessor, source, ledger, state,
+            "seal-assignment", actor="axis", role="attacker", now=31999)
+        source, ledger, state, second = self.append(
+            root, predecessor, source, ledger, state,
+            "seal-assignment", actor="commonwealth", role="defender",
+            now=2001, cuts=True)
+        self.assertEqual("prepared", state["status"])
+        self.assertEqual([31999, 2001],
+                         [x["sealedAtUnixMilliseconds"] for x in state["slots"]])
+        self.assertNotEqual(first["receiptId"], second["receiptId"])
 
     def test_zero_seal_expiry_and_prepared_timer_do_not_fabricate_a_seal(self):
         root = self.axis
@@ -238,6 +256,20 @@ class ForceAssignmentTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             ref.transition(state, ref.expected_input(
                 state, "cancel-assignment", now=32000))
+        source, ledger, state, _ = self.append(
+            root, predecessor, source, ledger, state,
+            "complete-step", available=False, cuts=True)
+        self.assertEqual(4, state["stepIndex"])
+
+        source, ledger, state, predecessor = self.start(root, "axis")
+        source, ledger, state, _ = self.append(
+            root, predecessor, source, ledger, state,
+            "open-assignment", now=2000)
+        source, ledger, state, cancel = self.append(
+            root, predecessor, source, ledger, state,
+            "cancel-assignment", now=1999, cuts=True)
+        self.assertEqual("clock-or-controller-unavailable",
+                         cancel["effect"]["proofKind"])
 
     def test_retry_and_tampered_event_ledger(self):
         root = self.axis
@@ -256,6 +288,11 @@ class ForceAssignmentTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 ref.replay(bad_source, root[1], root[2], predecessor,
                            bad_ledger)
+        wrong_config = ref.parse_source(updated)
+        wrong_config["clockConfiguration"]["decisionBudgetMilliseconds"] += 1
+        with self.assertRaises(ValueError):
+            ref.replay(ref.encode(wrong_config), root[1], root[2],
+                       predecessor, next_ledger)
 
     def test_selected_cancelled_and_missing_predecessor_rejected(self):
         root = self.axis

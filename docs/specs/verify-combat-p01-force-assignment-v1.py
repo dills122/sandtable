@@ -136,10 +136,25 @@ def parse_input(raw):
     return check_input(parse(raw, SCHEMA["inputFields"], SCHEMA["limits"]["inputBytes"]))
 
 
+def clock_configuration():
+    """Versioned opening-floor supplement over the pinned parent configuration."""
+    context = selected.steps.env.Context()
+    window = next((x for x in context.config["windows"]
+                   if x["kind"] == "force-assignment"), None)
+    require(window is not None and type(window["decisionBudgetMilliseconds"]) is int
+            and 0 < window["decisionBudgetMilliseconds"] <=
+            SCHEMA["limits"]["maximumUtcMilliseconds"], "003")
+    return dict(contractVersion=1,
+                parentConfigurationHash=context.config_hash,
+                timingPolicyId=SCHEMA["clockPolicyId"],
+                decisionBudgetMilliseconds=window["decisionBudgetMilliseconds"])
+
+
 def source_for(selected_source):
     require(type(selected_source) is bytes and selected_source.isascii(), "001")
     raw = encode(dict(contractVersion=1,
                       selectedSourceCanonicalUtf8=selected_source.decode("ascii"),
+                      clockConfiguration=clock_configuration(),
                       eventCanonicalUtf8=[]))
     require(len(raw) <= SCHEMA["limits"]["sourceBytes"], "001")
     return raw
@@ -149,6 +164,7 @@ def parse_source(raw):
     value = parse(raw, SCHEMA["sourceFields"], SCHEMA["limits"]["sourceBytes"])
     require(type(value["contractVersion"]) is int and value["contractVersion"] == 1
             and type(value["selectedSourceCanonicalUtf8"]) is str
+            and value["clockConfiguration"] == clock_configuration()
             and type(value["eventCanonicalUtf8"]) is list
             and len(value["eventCanonicalUtf8"]) <= SCHEMA["limits"]["ledgerEvents"]
             and all(type(item) is str and item.isascii()
@@ -210,7 +226,13 @@ def initial(selected_source, parent_ledgers, r03_ledger, selected_ledger):
     require(len(declines) == 1 and type(declines[0]["effect"]
                                        ["acceptedAtUnixMilliseconds"]) is int,
             "003")
+    config = clock_configuration()
+    require(config["parentConfigurationHash"] ==
+            parent["parent"]["activeCycle"]["admittedPolicyBundleDigest"],
+            "003")
     state = dict(parent=parent, selectedSourceHash=sha(selected_source),
+                 clockConfiguration=config,
+                 clockConfigurationHash=digest("clockConfiguration", config),
                  declineAcceptedAtUnixMilliseconds=declines[0]["effect"]
                  ["acceptedAtUnixMilliseconds"],
                  slots=exact_slots(parent),
@@ -230,7 +252,10 @@ def control_bytes(state):
             and len(state["receipts"]) <= SCHEMA["limits"]["ledgerEvents"]
             and state["status"] in ("unopened", "collecting", "prepared", "cancelled")
             and 3 <= state["stepIndex"] <= 6 and type(state["closed"]) is bool
-            and ident(state["prefix"], "sha256:"), "006")
+            and ident(state["prefix"], "sha256:")
+            and state["clockConfiguration"] == clock_configuration()
+            and state["clockConfigurationHash"] ==
+            digest("clockConfiguration", state["clockConfiguration"]), "006")
     raw = encode(state)
     require(len(raw) <= SCHEMA["limits"]["controlBytes"], "001")
     return raw
@@ -278,6 +303,9 @@ def transition(prior, value):
             all(actual["allocation"] == expected["allocation"]
                 for actual, expected in zip(s["slots"], exact_slots(s["parent"]))),
             "003")
+    require(s["clockConfiguration"] == clock_configuration()
+            and s["clockConfigurationHash"] ==
+            digest("clockConfiguration", s["clockConfiguration"]), "003")
     kind, now = value["kind"], value["admittedAtUnixMilliseconds"]
     require(not s["closed"] and len(s["receipts"]) < SCHEMA["limits"]["ledgerEvents"]
             and s["stateVersion"] < 2**63 - 1, "004")
@@ -297,13 +325,21 @@ def transition(prior, value):
                 and value["allocation"] is None and type(now) is int
                 and now >= s["declineAcceptedAtUnixMilliseconds"]
                 and value["clockAvailable"] and now +
-                SCHEMA["limits"]["budgetMilliseconds"] <=
+                s["clockConfiguration"]["decisionBudgetMilliseconds"] <=
                 SCHEMA["limits"]["maximumUtcMilliseconds"], "004")
-        timing = dict(openedAtUnixMilliseconds=now,
-                      deadlineUnixMilliseconds=now + SCHEMA["limits"]["budgetMilliseconds"])
+        timing = dict(contractVersion=1,
+                      clockConfigurationHash=s["clockConfigurationHash"],
+                      kind="force-assignment",
+                      decisionBudgetMilliseconds=s["clockConfiguration"]
+                      ["decisionBudgetMilliseconds"],
+                      openedAtUnixMilliseconds=now,
+                      deadlineUnixMilliseconds=now + s["clockConfiguration"]
+                      ["decisionBudgetMilliseconds"],
+                      openingFloorUnixMilliseconds=now)
         s["timing"] = timing
         s["roundId"] = digest("round", dict(
             selectedSourceHash=s["selectedSourceHash"],
+            clockConfigurationHash=s["clockConfigurationHash"],
             candidateId=s["parent"]["candidateId"],
             selectionReceiptId=s["parent"]["selectionReceiptId"],
             declineReceiptId=s["parent"]["declineReceiptId"],
@@ -321,7 +357,7 @@ def transition(prior, value):
                 and slot["sealedReceiptId"] is None
                 and value["allocation"] == slot["allocation"], "004")
         require(value["clockAvailable"] and type(now) is int
-                and s["timing"]["openedAtUnixMilliseconds"] <= now <
+                and s["timing"]["openingFloorUnixMilliseconds"] <= now <
                 s["timing"]["deadlineUnixMilliseconds"], "005")
         event_type, receipt_kind, proof = ("combat-force-assignment-sealed",
                                            "seal", "owner-full-ten-toe")
@@ -331,7 +367,9 @@ def transition(prior, value):
                 and value["allocation"] is None, "004")
         expired = (value["clockAvailable"] and type(now) is int
                    and now >= s["timing"]["deadlineUnixMilliseconds"])
-        unavailable = not value["clockAvailable"] and now is None
+        unavailable = ((not value["clockAvailable"] and now is None) or
+                       (value["clockAvailable"] and type(now) is int and
+                        now < s["timing"]["openingFloorUnixMilliseconds"]))
         require(expired or unavailable, "005")
         proof = "deadline" if expired else "clock-or-controller-unavailable"
         s["status"] = "cancelled"
@@ -341,7 +379,7 @@ def transition(prior, value):
     elif kind == "complete-step":
         require(value["actor"] == "system" and value["slotId"] is None
                 and value["allocation"] is None and now is None
-                and value["clockAvailable"] and 3 <= s["stepIndex"] <= 5
+                and 3 <= s["stepIndex"] <= 5
                 and s["status"] in ("prepared", "cancelled"), "004")
         index = s["stepIndex"]
         if s["status"] == "prepared":
@@ -382,6 +420,7 @@ def transition(prior, value):
     unsigned = dict(contractVersion=1, eventType=event_type,
                     campaignId=cycle["campaignId"], rulesetHash=cycle["rulesetHash"],
                     configurationHash=cycle["admittedPolicyBundleDigest"],
+                    clockConfigurationHash=s["clockConfigurationHash"],
                     cycleId=parent["cycleId"], priorVersion=prior["stateVersion"],
                     stateVersion=prior["stateVersion"] + 1,
                     priorPrefix=prior["prefix"], input=copy.deepcopy(value),
@@ -412,6 +451,8 @@ def transition(prior, value):
                                stateVersion=s["stateVersion"]))
     require(s["parent"] == prior["parent"]
             and s["selectedSourceHash"] == prior["selectedSourceHash"]
+            and s["clockConfiguration"] == prior["clockConfiguration"]
+            and s["clockConfigurationHash"] == prior["clockConfigurationHash"]
             and s["declineAcceptedAtUnixMilliseconds"] ==
             prior["declineAcceptedAtUnixMilliseconds"]
             and s["admitted"] is False and s["publicActions"] == []
