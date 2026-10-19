@@ -28,6 +28,18 @@ local scheduling observations, not Release CI performance claims.
 
 Command: `/opt/homebrew/bin/dotnet test --project tests/Cna.OrleansHost.Tests/Cna.OrleansHost.Tests.csproj --configuration Release --no-build --no-restore --report-xunit-xml --results-directory /private/tmp/map07-host-release-timing`. Result: 3 passed, 0 failed, 0 skipped; exact row identities verified by `.github/scripts/verify_orleans_results.py`.
 
+The private connected accepted-outcome source adds five `CampaignAudienceOutcomeSourceTests` rows. Their weights are observed from a passing local macOS arm64 .NET 10 Release MTP XML run on 2026-10-19 UTC. This is scheduling evidence only; hosted CI remains the acceptance gate. Existing row weights and baseline metadata remain unchanged; the new class uses one ordinary suite part.
+
+| New row | Hash prefix | Measured ms |
+| --- | --- | ---: |
+| `ChangedCommandReceiptEventOrHeadCannotProduceTypedProof` | `bd46817c4f3c` | 222 |
+| `CurrentBreakdownMoveStopAndSystemResolutionKeepBothCutsBound` | `810b6b4edfaa` | 545 |
+| `OwnEntryCandidateRemainsUnavailableAndNeverCarriesRawElement` | `3c1a35e6eb0b` | 323 |
+| `ReactionAcceptedEventsRequireExactActorAndReasonPairing` | `2733eed1f294` | 904 |
+| `TwelveCurrentStepsProveBothSidesWithoutMutatingPredecessor` | `ada23885f690` | 728 |
+
+Command: `dotnet test --project tests/Cna.Core.Tests/Cna.Core.Tests.csproj --configuration Release --no-build --no-restore --filter-class Cna.Core.Tests.Hosting.CampaignAudienceOutcomeSourceTests --report-xunit-xml --results-directory /private/tmp/sandtable-connected-outcome-release-timing`. Result: 5 passed, 0 failed, 0 skipped. Release Core DLL SHA-256 `dfd24b9bad11e24c018cf6de860b48ef29e99ecd91db0930c13cfbb57d0fbeb9`; XML SHA-256 `8723645b379af032988d1cb1a3fe0fcd6bc917bdae56f5e0ce1741967fbf11c7`. Exact Release discovery found 3,228 ordinary Core rows, including precisely these five new rows and no stale manifest rows.
+
 Unknown, missing or renamed Core rows deliberately fail preparation with a clear error. Do not delete tests or guess a matching name to clear this gate. Adding a case requires an explicit manifest refresh; changing the runtime of an existing case may also justify new measurements.
 
 1. Commit the proposed source on a feature branch. Build Release and the ReleaseTestRows helper using the selected SDK and normal binlog flags. Obtain actual discovery with the retained `r02_partition.py discover` command, using a fresh output directory, exact HEAD and a fresh attempt. That command does not require the long-suite timing manifest; it still proves deferred providers and all R02 semantic rows. No hosted run is implied or authorized by this procedure.
