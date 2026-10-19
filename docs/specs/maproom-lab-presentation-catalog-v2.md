@@ -49,7 +49,7 @@ event/action/audience/receipt/head proof in
 | `diary.reserveDesignated` | Reserve assigned | A formation you control was assigned to reserve. | Yes |
 | `diary.reserveCompleted` | Reserve choices complete | Your reserve choices were completed. | No |
 | `diary.elementMoved` | Formation moved | A formation you control moved. | Yes |
-| `diary.movementStopped` | Movement stopped | Movement for one of your formations stopped. | Yes |
+| `diary.movementStopped` | Movement stopped | Movement for one of your formations stopped. | No |
 | `diary.reactionMoved` | Reaction move recorded | A formation you control made a reaction move. | Yes |
 | `diary.reactionCompleted` | Reaction complete | Your reaction opportunity was completed. | No |
 | `diary.reactionDeclined` | Reaction declined | You declined the reaction opportunity. | No |
