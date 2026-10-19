@@ -51,6 +51,9 @@ class P01ReferenceTests(unittest.TestCase):
                                        *parents[2:]], own),
             "parent-aggregate": (source, [parents[0], [b"x" * 16000,
                                                b"y" * 16000], *parents[2:]], own),
+            "empty-parent-entry": (source, [parents[0], [b""], *parents[2:]], own),
+            "many-empty-parent-entries": (source, [parents[0], [b""] * 100_000,
+                                                   *parents[2:]], own),
             "own-input": (source, parents, [b"x" * (limits["ownInputBytes"] + 1)]),
         }
         for label, args in cases.items():
@@ -98,6 +101,13 @@ class P01ReferenceTests(unittest.TestCase):
                 p01.assess(source, parents, own)
         self.assertEqual(before, (source, parents, own))
         self.assertEqual("unsupported", p01.assess(source, parents, own)["status"])
+
+    def test_large_json_string_rejects_before_encoder_allocation(self):
+        oversized = {"privateCandidateId": "x" * 8_000_000}
+        with mock.patch.object(p01.json.JSONEncoder, "iterencode",
+                               side_effect=AssertionError("large fragment encoded")):
+            with self.assertRaisesRegex(ValueError, "CMB-P01-001"):
+                p01.check_assessment_bytes(oversized)
 
     def test_authentic_read_only_shapes(self):
         for source, ledgers, r03_ledger, expected in (

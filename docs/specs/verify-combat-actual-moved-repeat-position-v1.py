@@ -25,7 +25,24 @@ def canonical(value):
 
 
 def bounded_canonical_size(value, limit):
-    """Count canonical ASCII JSON bytes, stopping as soon as limit is exceeded."""
+    """Bound string fragments before counting canonical ASCII JSON bytes."""
+    pending = [value]
+    visited = 0
+    while pending:
+        current = pending.pop()
+        visited += 1
+        require(visited <= limit)
+        if type(current) is str:
+            require(len(current) <= limit)
+        elif type(current) is dict:
+            require(len(current) <= limit)
+            for key, nested in current.items():
+                if type(key) is str:
+                    require(len(key) <= limit)
+                pending.append(nested)
+        elif type(current) in (list, tuple):
+            require(len(current) <= limit)
+            pending.extend(current)
     size = 0
     try:
         encoder = json.JSONEncoder(ensure_ascii=True, separators=(",", ":"))
@@ -47,7 +64,7 @@ def check_ingress_bytes(source_bytes, parent_ledgers, r03_ledger):
     for ledger in parent_ledgers[1:]:
         require(type(ledger) is list)
         for item in ledger:
-            require(type(item) is bytes)
+            require(type(item) is bytes and len(item) > 0)
             parent_size += len(item)
             require(parent_size <= limits["parentAggregateBytes"])
     require(type(r03_ledger) is list and len(r03_ledger) == 1

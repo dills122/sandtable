@@ -29,8 +29,11 @@ and 1,024 bytes for the single raw R03 input. Parent aggregate counts compact
 `ensure_ascii` JSON bytes of CreationRequest plus raw bytes of every input in
 the ten parent ledgers; it excludes list framing and does not reserialize
 ledger inputs. A canonical assessment over 1,024 bytes raises before any result
-is returned. Size checking streams JSON fragments and stops at the first byte
-past a limit. The retained 300-row inventory measured maxima of 885,181 Source
+is returned. Size checking stops when the next JSON fragment exceeds a limit.
+String lengths and container work are bounded before JSON encoding,
+so one oversized string cannot allocate an unbounded encoded fragment. Empty
+parent input bytes reject before R03 replay, including a long ledger of empty
+entries. The retained 300-row inventory measured maxima of 885,181 Source
 bytes, 25,862 aggregate parent bytes (741 CreationRequest plus 25,121 ledger
 bytes), 580 R03 input bytes, and 695 canonical assessment bytes. Focused tests
 cover each oversized ingress class before replay, exact boundaries, oversized
@@ -44,6 +47,10 @@ negative cases, or exact supported
 P01 event output. All current assessments remain `unsupported`, with
 `admitted=false` and no public actions. Full P01 certificate, P02 selection, and
 P03 native consumption remain closed.
+
+These limits close the private assessment cap slice only. AC-008 remains open
+until the other replay, negative-case, and exact-output obligations above are
+proved on a reviewed head; no P01 admission follows from this diagnostic.
 
 Run from repository root:
 
@@ -67,7 +74,7 @@ sample and mutation tests run from in-repository authentic source synthesis;
 the full corpus test reports an explicit skip when the private retained evidence
 is unavailable. Local private evidence is necessary for the full 300-row claim.
 
-Local verification on 2026-10-18 with the retained private archive: 16 P01
+Local verification on 2026-10-18 with the retained private archive: 17 P01
 reference tests and four replay-gate tests passed. Full 300-row CLI replay
 retained the same ordered output-hash root, 44/256 shape split, zero admitted
 rows, 100 bounded mutation/cut rejections, four exact retries, and 695 maximum
