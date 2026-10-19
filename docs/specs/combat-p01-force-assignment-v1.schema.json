@@ -1,0 +1,27 @@
+{
+  "contract": "combat-p01-force-assignment-v1",
+  "contractVersion": 1,
+  "status": "private ordinal-two selected assault Force Assignment and empty Anti-Armor only",
+  "predecessor": "combat-p01-selected-assault-v1",
+  "sourceFields": ["contractVersion", "selectedSourceCanonicalUtf8", "clockConfiguration", "eventCanonicalUtf8"],
+  "inputFields": ["contractVersion", "kind", "actor", "cycleId", "expectedPriorVersion", "expectedPriorPrefix", "fromPositionId", "previousReceiptId", "roundId", "slotId", "allocation", "admittedAtUnixMilliseconds", "clockAvailable"],
+  "allocationFields": ["kind", "unit", "componentId", "committedToe"],
+  "eventFields": ["contractVersion", "eventType", "campaignId", "rulesetHash", "configurationHash", "clockConfigurationHash", "cycleId", "priorVersion", "stateVersion", "priorPrefix", "input", "effect", "receiptId"],
+  "effectFields": ["proofKind", "fromPositionId", "toPositionId", "previousReceiptId", "candidateId", "selectionReceiptId", "declineReceiptId", "roundId", "slotId", "openingReceiptId", "proofReceipts", "certificateHash", "worldHash", "randomHash"],
+  "inputKinds": ["open-assignment", "seal-assignment", "cancel-assignment", "complete-step"],
+  "receiptDomains": {
+    "clockConfiguration": "sandtable.combat.p01.force-assignment.clock-configuration.v1",
+    "round": "sandtable.combat.p01.force-assignment.round.v1",
+    "slot": "sandtable.combat.p01.force-assignment.slot.v1",
+    "opening": "sandtable.combat.p01.force-assignment.opening.v1",
+    "seal": "sandtable.combat.p01.force-assignment.seal.v1",
+    "cancel": "sandtable.combat.p01.force-assignment.cancel.v1",
+    "step": "sandtable.combat.p01.force-assignment.step.v1",
+    "emptyAa": "sandtable.combat.p01.force-assignment.empty-aa.v1"
+  },
+  "receiptPrefixes": {"clockConfiguration": "sha256:", "round": "p01f.", "slot": "p01t.", "opening": "p01u.", "seal": "p01v.", "cancel": "p01x.", "step": "p01y.", "emptyAa": "sha256:"},
+  "clockPolicyId": "sandtable.combat.public-opening-clock.v2",
+  "limits": {"inputBytes": 4096, "eventBytes": 8192, "sourceBytes": 4194304, "controlBytes": 4194304, "ledgerEvents": 6, "depth": 24, "maximumUtcMilliseconds": 253402300799999},
+  "admitted": false,
+  "publicActions": []
+}
