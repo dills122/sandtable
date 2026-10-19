@@ -74,9 +74,11 @@ one excerpt for the authenticated acting seat and `silent` for the other; `silen
 excerpt for either seat. A row is eligible only when its exact event version, accepted
 action candidate, submitted audience, receipt, and predecessor/successor heads agree.
 The event's `ActingSide` is a cross-check, never an audience grant. `System` may use only
-the listed System variants. Exact `title`/`body` strings need approval in a new pinned
-presentation catalog version before implementation. Keys below identify proposed copy,
-not permission to invent text from event fields.
+the listed System variants. Exact `title`/`body` strings and the entry/silent decisions
+need owner approval before implementation. The candidate strings and catalog boundary
+are in [presentation catalog v2](maproom-lab-presentation-catalog-v2.md), which remains
+a proposal. Keys below identify proposed copy, not permission to invent text from
+event fields.
 
 | Current typed accepted event | Accepted action/audience proof | Proposed diary decision / copy key |
 | --- | --- | --- |
