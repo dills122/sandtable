@@ -34,6 +34,8 @@ export class OperationsMap {
   @Input() scope = '';
   @Input() expanded = false;
   @Input() ordersLabel = '';
+  @Input() allowTouchScrollAtFit = false;
+  @Input() shortcutScope: 'fixture' | 'connected' = 'fixture';
   @Output() readonly fit = new EventEmitter<void>();
   @Output() readonly zoomBy = new EventEmitter<number>();
   @Output() readonly pan = new EventEmitter<MapPan>();
@@ -69,6 +71,7 @@ export class OperationsMap {
 
   protected toggleExpanded(): void {
     this.expanded = !this.expanded;
+    if (this.expanded) this.shortcutsOpen.set(false);
     this.expandedChange.emit(this.expanded);
   }
 
@@ -143,6 +146,7 @@ export class OperationsMap {
     if (
       event.button !== 0 ||
       !['mouse', 'pen', 'touch'].includes(event.pointerType) ||
+      (event.pointerType === 'touch' && this.allowTouchScrollAtFit && this.zoom <= 1) ||
       (event.target as Element).closest('fa-unit-counter, button')
     )
       return;

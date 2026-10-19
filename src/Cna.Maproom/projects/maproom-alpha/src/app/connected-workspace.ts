@@ -5,6 +5,7 @@ import {
   computed,
   inject,
   signal,
+  ViewChild,
 } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ConnectedCampaignService, SeatIdentityError } from './connected-campaign.service';
@@ -31,6 +32,7 @@ type Seat = 'axis' | 'commonwealth';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConnectedWorkspace {
+  @ViewChild(OperationsMap) private operationsMap?: OperationsMap;
   private readonly api = inject(ConnectedCampaignService);
   private readonly destroyRef = inject(DestroyRef);
   protected readonly camera = new MapCameraState();
@@ -71,6 +73,7 @@ export class ConnectedWorkspace {
     if (this.mapFullscreen()) {
       this.mapFullscreen.set(false);
       document.documentElement.style.overflow = this.originalPageOverflow;
+      this.operationsMap?.focusExpand();
     } else {
       this.originalPageOverflow = document.documentElement.style.overflow;
       document.documentElement.style.overflow = 'hidden';

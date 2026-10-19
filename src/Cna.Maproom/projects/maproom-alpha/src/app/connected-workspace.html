@@ -1,5 +1,7 @@
-<a class="skip-link" href="#connected-main">Skip to campaign</a>
-<header class="command-bar">
+<a class="skip-link" href="#connected-main" [attr.inert]="mapFullscreen() ? '' : null"
+  >Skip to campaign</a
+>
+<header class="command-bar" [attr.inert]="mapFullscreen() ? '' : null">
   <a class="brand" href="/" aria-label="Maproom fixture home"
     ><span class="brand-mark" aria-hidden="true">M</span
     ><span>Maproom <small>Field Atlas</small></span></a
@@ -39,7 +41,11 @@
       }
     </section>
   } @else if (view(); as current) {
-    <section class="phase-bar" aria-label="Campaign status">
+    <section
+      class="phase-bar"
+      aria-label="Campaign status"
+      [attr.inert]="mapFullscreen() ? '' : null"
+    >
       <div class="phase-title">
         <p class="fa-eyebrow">Operations workspace · audience view</p>
         <h1>Campaign situation</h1>
@@ -68,12 +74,16 @@
       </div>
     </section>
     @if (current.position.decision === 'unsupported-phase') {
-      <p class="connected-error" role="status">
+      <p class="connected-error" role="status" [attr.inert]="mapFullscreen() ? '' : null">
         This phase has no connected browser continuation. No order can be issued here.
       </p>
     }
     <div class="workspace-grid connected-grid">
-      <aside class="roster" aria-labelledby="connected-formations-title">
+      <aside
+        class="roster"
+        aria-labelledby="connected-formations-title"
+        [attr.inert]="mapFullscreen() ? '' : null"
+      >
         <div class="roster-heading">
           <h2 id="connected-formations-title">Own formations</h2>
           <span class="fa-muted">{{ current.ownFormations.length }} own-side</span>
@@ -106,7 +116,7 @@
         <div
           class="connected-map-scroll"
           role="region"
-          tabindex="0"
+          [attr.tabindex]="mapFullscreen() ? -1 : 0"
           aria-label="Scrollable situation map"
         >
           <mr-operations-map
@@ -114,6 +124,8 @@
             [zoom]="camera.zoom()"
             [transform]="camera.transform()"
             [expanded]="mapFullscreen()"
+            [allowTouchScrollAtFit]="true"
+            shortcutScope="connected"
             [caption]="
               selected()
                 ? 'Selected: ' +
@@ -168,6 +180,7 @@
       </section>
       <fa-panel
         class="inspector connected-inspector"
+        [attr.inert]="mapFullscreen() ? '' : null"
         [heading]="selected()?.label ?? 'No formation selected'"
         eyebrow="Formation inspector"
       >
@@ -195,7 +208,7 @@
         }
       </fa-panel>
     </div>
-    <div class="records-grid">
+    <div class="records-grid" [attr.inert]="mapFullscreen() ? '' : null">
       <fa-panel heading="Formation ledger" eyebrow="Audience record">
         <div class="ledger" role="region" aria-label="Formation ledger rows" tabindex="0">
           <table aria-label="Formation ledger">

@@ -47,11 +47,18 @@
   </div>
 </div>
 <div id="map-shortcuts" class="shortcut-help" [hidden]="!shortcutsOpen()">
-  <strong>Move around the exercise</strong>
-  <span><kbd>[</kbd> / <kbd>]</kbd> choose a formation</span>
-  <span><kbd>L</kbd> locate selection · <kbd>0</kbd> fit map</span>
-  <span>Drag to pan when zoomed · touch or arrow keys pan</span>
-  <span><kbd>+</kbd> / <kbd>−</kbd> zoom · <kbd>?</kbd> help · <kbd>Esc</kbd> close</span>
+  @if (shortcutScope === 'fixture') {
+    <strong>Move around the exercise</strong>
+    <span><kbd>[</kbd> / <kbd>]</kbd> choose a formation</span>
+    <span><kbd>L</kbd> locate selection · <kbd>0</kbd> fit map</span>
+    <span>Drag to pan when zoomed · touch or arrow keys pan</span>
+    <span><kbd>+</kbd> / <kbd>−</kbd> zoom · <kbd>?</kbd> help · <kbd>Esc</kbd> close</span>
+  } @else {
+    <strong>Move around the campaign map</strong>
+    <span>Use Fit map and Zoom controls; drag or use arrow keys to pan when zoomed</span>
+    <span>At fit zoom, swipe a narrow map sideways to see its full width</span>
+    <span><kbd>Esc</kbd> closes the expanded map</span>
+  }
 </div>
 <div
   class="map-canvas"
@@ -59,6 +66,7 @@
   tabindex="0"
   aria-label="Situation map, arrow keys pan when zoomed"
   [class.is-dragging]="dragging()"
+  [class.allow-touch-scroll-at-fit]="allowTouchScrollAtFit && zoom <= 1"
   (keydown)="onKeydown($event)"
   (pointerdown)="onPointerDown($event)"
   (pointermove)="onPointerMove($event)"

@@ -203,6 +203,59 @@ test('local read lane shows only the returned audience view and never submits an
     await expect(page.getByRole('button', { name: 'Refresh view' })).toBeVisible();
     await expect(page.locator('.roster-item')).toHaveCount(1);
   }
+  const scroll = page.getByRole('region', { name: 'Scrollable situation map' });
+  await scroll.evaluate((element) => (element.scrollLeft = 0));
+  await page.locator('.map-canvas').scrollIntoViewIfNeeded();
+  const touchCanvas = await page.locator('.map-canvas').boundingBox();
+  expect(touchCanvas).not.toBeNull();
+  expect(
+    await page.locator('.map-canvas').evaluate((element) => getComputedStyle(element).touchAction),
+  ).toBe('pan-x');
+  const touch = await page.context().newCDPSession(page);
+  const touchY = Math.round(touchCanvas!.y + touchCanvas!.height * 0.5);
+  const touchX = Math.round(Math.min(touchCanvas!.x + touchCanvas!.width * 0.8, 270));
+  await touch.send('Input.dispatchTouchEvent', {
+    type: 'touchStart',
+    touchPoints: [{ x: touchX, y: touchY }],
+  });
+  for (let step = 1; step <= 8; step++) {
+    await touch.send('Input.dispatchTouchEvent', {
+      type: 'touchMove',
+      touchPoints: [{ x: touchX - step * 18, y: touchY }],
+    });
+  }
+  await touch.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+  await expect.poll(() => scroll.evaluate((element) => element.scrollLeft)).toBeGreaterThan(0);
+  await expect(page.getByLabel('Map zoom')).toHaveText('100%');
+
+  await page.setViewportSize({ width: 375, height: 700 });
+  await page.getByRole('button', { name: 'Keyboard help' }).click();
+  await expect(page.getByText('swipe a narrow map sideways', { exact: false })).toBeVisible();
+  await expect(page.getByText('choose a formation', { exact: false })).toHaveCount(0);
+  await page.getByRole('button', { name: 'Expand map' }).click();
+  const dialog = page.getByRole('dialog', { name: 'Situation map' });
+  const expanded = await dialog.boundingBox();
+  expect(expanded).not.toBeNull();
+  expect(expanded!.x).toBe(0);
+  expect(expanded!.y).toBe(0);
+  expect(expanded!.width).toBe(375);
+  expect(expanded!.height).toBe(700);
+  const expandedCanvas = await dialog.locator('.map-canvas').boundingBox();
+  const expandedCaption = await dialog.locator('.map-caption').boundingBox();
+  expect(expandedCanvas).not.toBeNull();
+  expect(expandedCaption).not.toBeNull();
+  expect(expandedCanvas!.height).toBeGreaterThan(150);
+  expect(expandedCaption!.y + expandedCaption!.height).toBeLessThanOrEqual(700);
+  await expect(page.locator('.roster')).toHaveAttribute('inert', '');
+  await expect(page.locator('.records-grid')).toHaveAttribute('inert', '');
+  await expect(page.locator('.skip-link')).toHaveAttribute('inert', '');
+  await expect(dialog.getByRole('button', { name: 'Close expanded map' })).toBeFocused();
+  await page.keyboard.press('Tab');
+  await expect(dialog.getByRole('button', { name: 'Keyboard help' })).toBeFocused();
+  await page.keyboard.press('Escape');
+  await expect(dialog).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Expand map' })).toBeFocused();
+  await expect(page.locator('.roster')).not.toHaveAttribute('inert', '');
   await expect(page.locator('[data-location-id="loc-1"]')).toContainText('First group');
   await expect(page.locator('[data-location-id="loc-9"]')).toContainText('Unidentified presence');
   await expect(page.getByRole('heading', { name: 'War Diary' })).toBeVisible();

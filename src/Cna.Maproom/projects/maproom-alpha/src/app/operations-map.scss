@@ -63,6 +63,9 @@
 .map-canvas.is-dragging {
   cursor: grabbing;
 }
+.map-canvas.allow-touch-scroll-at-fit {
+  touch-action: pan-x;
+}
 :host-context(.is-fullscreen) .map-canvas {
   min-height: 0;
 }

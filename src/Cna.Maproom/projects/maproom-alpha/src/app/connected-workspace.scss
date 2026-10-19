@@ -164,10 +164,21 @@ h2 {
   display: flex;
   flex-direction: column;
 }
+.map-panel.is-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  width: 100vw;
+  height: 100dvh;
+  margin: 0;
+  border: 0;
+  box-shadow: 0 0 0 100vmax rgb(0 0 0 / 55%);
+}
 .connected-map-scroll {
   display: flex;
   flex: 1;
   min-width: 0;
+  min-height: 0;
   overflow-x: auto;
   overflow-y: hidden;
 }
