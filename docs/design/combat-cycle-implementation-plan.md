@@ -1,6 +1,6 @@
 # Combat and Cycle Combined Contract / Implementation Plan
 
-**Status (2026-10-19):** Checkpoint B and Initial H Core codec/replay are complete. Private actual paid assault019F6, empty Release and guarded repeat/finish, repeated Movement/Breakdown and authenticated R03 ordinal-two Combat Position are implemented for bounded histories. P01 has a provisional private 300-row assessor and narrow zero-assault continuation; all 300 assessments remain unsupported/admitted=false. Its full support certificate, later P02/P03 native work, public Combat and publication evidence remain open.
+**Status (2026-10-19):** Checkpoint B and Initial H Core codec/replay are complete. Private actual paid assault019F6, empty Release and guarded repeat/finish, repeated Movement/Breakdown and authenticated R03 ordinal-two Combat Position are implemented for bounded histories. P01 has a provisional private 300-row assessor, a narrow zero-assault continuation, and bounded selected-assault/RBA and Force Assignment continuations; all 300 assessments remain unsupported/admitted=false. Its full support certificate, later P02/P03 native work, public Combat and publication evidence remain open.
 `CMB-PLAN-001` and POL-001–008 were accepted on 2026-09-06 at `a10a588`. Source and static Content
 work (`001`–`002`) is complete. Parent `003` is complete through the
 [authority-composition handoff](../specs/combat-authority-composition-v1.md). Checkpoint B closes through the
@@ -12,7 +12,7 @@ parent evidence are accepted with strict clock privacy and versioned round/settl
 | Research and policy | Complete for the selected bounded profile, including `HOST-RSH-001` | Reopen only for a new source, failed assumption, or approved profile expansion |
 | Authority contracts | CON-002–004 and all selected-profile inherited families are reconciled in 28 creation-rooted composition traces; parent003 complete | Preserve exact Task004 handoff while later runtime work derives boundaries from accepted history |
 | Outward contracts | Task004A/B/C accepted; all 72 ACs mapped with bounded evidence and explicit runtime deferrals | Preserve accepted bytes and source/privacy boundaries during dormant implementation |
-| Runtime | Dormant foundations through016 accepted; bounded017–019 actual and native consumers reach R03 ordinal-two Position. P01 reference and narrow zero-assault/RBA successor are private only; Task008 publication incomplete | Complete P01-AC-003 action/source exhaustiveness, AC-006 automatic-surrender/RBA, AC-007 outward privacy and AC-008 replay/caps support certificate; then P02/P03 native selection/consumption and parent017–019 reconciliation |
+| Runtime | Dormant foundations through016 accepted; bounded017–019 actual and native consumers reach R03 ordinal-two Position. P01 zero-assault and selected-assault/RBA/Force Assignment successors are private only; Task008 publication incomplete | Complete P01-AC-003 action/source exhaustiveness, AC-006 automatic-surrender/RBA, AC-007 outward privacy and AC-008 replay/caps support certificate; then P02/P03 native selection/consumption and parent017–019 reconciliation |
 | Public and simulator | Tasks020–024 have no certified ordinal-two Combat admission | Activate only a reviewed, certified side-safe profile through020–021, then prove strict Exercise/Runner reconstruction and repeatability through022–024 |
 | Closeout | Task025 not started | Full gate, evidence reconciliation, and authentic loop demonstration without overstating retained obligations |
 
@@ -3058,13 +3058,28 @@ bounded cap and fresh-process readback slices do not close those whole gates. P0
 remain separate; no public or native ordinal-two action is activated.
 The [private ordinal-two no-attack v0 inventory](../specs/combat-p01-no-attack-v0.md)
 defines proposed twelfth-ledger input fields and the six-step order, but its reference refuses
-every event because no authentic P01 supported-empty certificate or twelfth-ledger event/receipt
-exists. The 256 physical-empty rows are not a completed no-attack path; AC-003/008 remain open.
+every event because it has no authentic supported-empty certificate. Later private successors
+do replay bounded twelfth-ledger events; the 256 physical-empty rows are not a completed
+supported-empty or no-attack proof, and AC-003/008 remain open.
 The [private explicit-RBA v1 successor](../specs/combat-p01-explicit-rba-v1.md) narrows this
 boundary to authenticated nonadjacent zero-**assault** states. It retains the source-legal
 defender RBA choice after Barrage and replays an explicit decline or cancellation plus the
 remaining structural no-assault steps. The v0 input inventory remains frozen and unissuable;
 the v1 trace is private only and does not close full P01 admission, privacy or replay gates.
+The [selected-assault v1 successor](../specs/combat-p01-selected-assault-v1.md), merged in
+PR #272 (`962518a`), authenticates the full 300-root catalogue and classifies 44 adjacent
+armed candidates and 256 candidate-absent rows. Bounded transition tests use two representative
+positive roots, one per acting side: owner selection, no-gun/no-Barrage structural steps and
+defender-owned RBA. An accepted decline reaches same-slot Force Assignment; unavailable or
+expired RBA cancels to same-slot Reserve Release without inventing a decline. The
+[Force Assignment v1 successor](../specs/combat-p01-force-assignment-v1.md), merged in PR #273
+(`f6c0c10`), continues those bounded declined test histories with two original-owner full-10-TOE
+seals in either order. Both seals reach Prepared at Close Assault after an empty
+Anti-Armor certificate, before debit, result or settlement; zero/one-seal unavailable or
+expired paths cancel to same-slot Reserve Release without a fabricated second seal. These
+references remain private, preserve World/RNG/resources and admit no action. Full selected
+Close Assault adjudication, automatic-surrender trigger/settlement, source-legal action
+exhaustiveness, outward privacy and all-row replay/caps remain open.
 The original CreationRequest plus 11 R03 ledgers still replay 300 rows: 44 provisional positive,
 256 provisional physical-empty and zero admitted. Preserve `CMB-POL-009`'s voluntary-surrender
 exclusion and fail-closed automatic-surrender boundary. No P01 freeze, public/native activation
