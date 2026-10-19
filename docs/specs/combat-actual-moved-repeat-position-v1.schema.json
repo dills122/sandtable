@@ -54,6 +54,12 @@
   "admitted": false,
   "publicActions": [],
   "candidateIdPattern": "p01.[0-9a-f]{64}",
+  "byteLimits": {
+    "sourceBytes": 1048576,
+    "parentAggregateBytes": 32768,
+    "ownInputBytes": 1024,
+    "assessmentBytes": 1024
+  },
   "bounds": {
     "elements": 2,
     "representations": 2,
