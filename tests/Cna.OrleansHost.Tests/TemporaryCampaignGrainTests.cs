@@ -901,6 +901,13 @@ public sealed class TemporaryCampaignGrainTests
                 diary.FormationId);
             Assert.Equal(priorOther.NextDiaryCursor, otherCut.NextDiaryCursor);
             Assert.Equal(priorOther.Diary.Length, otherCut.Diary.Length);
+            Assert.Equal(priorOther.Diary.Select(entry =>
+                    (entry.AudienceCursor, entry.Title, entry.Body, entry.FormationId)),
+                otherCut.Diary.Select(entry =>
+                    (entry.AudienceCursor, entry.Title, entry.Body, entry.FormationId)));
+            Assert.DoesNotContain(otherCut.Diary, entry =>
+                entry.Title == copy.Title && entry.Body == copy.Body
+                && entry.FormationId == diary.FormationId);
             Assert.DoesNotContain(otherCut.OwnElements,
                 element => element.ElementId == elementId);
 

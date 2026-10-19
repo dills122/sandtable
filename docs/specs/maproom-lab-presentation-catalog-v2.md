@@ -35,6 +35,8 @@ catalog. It does not change adjudication, grant an audience, or make a successor
   remains truck-only and state-version-one-only. Neither cross-mixed tuple nor
   other scenario/setup/content pin is admitted. Owner approval of this exact
   private source scope does not authorize public Reaction view or diary activation.
+  The in-process Reaction proof covers trusted grain submissions and both private
+  audience cuts; it does not authenticate a browser session or seat token.
 
   Each `SourcePin` is the ruleset hash, scenario ID, setup hash and
   content hash in that order, joined with `|`; the IDs are checked against
