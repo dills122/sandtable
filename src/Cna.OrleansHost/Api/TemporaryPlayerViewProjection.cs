@@ -5,8 +5,9 @@ using Cna.Core.Actions;
 
 namespace Cna.OrleansHost.Api;
 
-// Development fixture presentation data. This is a separately versioned public layout,
-// admitted only with the exact Core setup/content pins below; it is not authority state.
+// Development fixture presentation data. The public layout remains truck-only;
+// private fixed-copy lookup has a separately approved Reaction source pin.
+// Neither presentation path owns authority state.
 internal sealed class TemporaryPlayerViewProjection
 {
     internal const string CatalogVersion = "breakdown-truck-maproom.v1";
@@ -16,6 +17,13 @@ internal sealed class TemporaryPlayerViewProjection
         "breakdown-truck-lab|" +
         "sha256:e6631e81ad8f97e39fd9d7eec93bad7fe2b39db4d2d3059ed94a02dd4093e7a3|" +
         "sha256:646e76e69ecceb82216b37d84e950928099acd8a3cb04b51526d0fe631e512ee";
+    // Approved private diary-only source scope. This does not admit Map(...), which
+    // remains restricted to the truck fixture's initial read-only presentation.
+    private const string ReactionDiarySourcePin =
+        "17f3e6047f34b5bf6f5f809055863b664a4bd82a8481db83ee83e0ae5cad3a2a|" +
+        "breakdown-reaction-lab|" +
+        "sha256:ed4e33358ede11f3c25661798add9088f11d8853053dbf7c8992ba5f92d9a36e|" +
+        "sha256:1e10648bb65f7ec6d4ad3f33bbf612f51c11a927ebc2e8b110aa5544af3918dd";
 
     private readonly byte[] formationKey = RandomNumberGenerator.GetBytes(32);
 
@@ -24,7 +32,8 @@ internal sealed class TemporaryPlayerViewProjection
     internal static TemporaryDiaryCatalogCopy? LookupDiaryCopy(
         string sourcePin, string catalogVersion, string locale, string copyKey)
     {
-        if (sourcePin != SourcePin || catalogVersion != DiaryCatalogVersion
+        if ((sourcePin != SourcePin && sourcePin != ReactionDiarySourcePin)
+            || catalogVersion != DiaryCatalogVersion
             || locale != "en-CA") return null;
         return copyKey switch
         {

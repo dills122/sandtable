@@ -1,7 +1,7 @@
 # Rules-lab Maproom diary presentation catalog v2 — owner-approved copy
 
-Status: **exact copy and entry/silent classifications owner-approved on 2026-10-19;
-private fixed-text lookup and tracker diary window implemented, no browser activation**. This catalog
+Status: **exact copy, entry/silent classifications, and the private Reaction source
+tuple owner-approved on 2026-10-19; no browser activation**. This catalog
 extends the development-only `breakdown-truck-maproom.v1` initial-cut presentation
 catalog. It does not change adjudication, grant an audience, or make a successor
 `/view` available.
@@ -9,7 +9,8 @@ catalog. It does not change adjudication, grant an audience, or make a successor
 ## Boundary and version
 
 - Approved catalog ID: `breakdown-truck-maproom.diary.v2`; locale: `en-CA` only.
-  This version is limited to the same development fixture identity as catalog v1:
+  The original owner-approved source scope is the development fixture identity
+  from catalog v1:
 
   | Source component | Exact accepted value |
   | --- | --- |
@@ -18,7 +19,26 @@ catalog. It does not change adjudication, grant an audience, or make a successor
   | Setup ID and hash | `rules-lab.breakdown.truck.v1`; `sha256:e6631e81ad8f97e39fd9d7eec93bad7fe2b39db4d2d3059ed94a02dd4093e7a3` |
   | Content ID and hash | `rules-lab.content.breakdown-truck.v1`; `sha256:646e76e69ecceb82216b37d84e950928099acd8a3cb04b51526d0fe631e512ee` |
 
-  The current v1 `SourcePin` is the ruleset hash, scenario ID, setup hash and
+  **Second exact source tuple, owner-approved for private diary lookup only on
+  2026-10-19:**
+
+  | Source component | Exact approved value |
+  | --- | --- |
+  | Ruleset hash | `17f3e6047f34b5bf6f5f809055863b664a4bd82a8481db83ee83e0ae5cad3a2a` |
+  | Scenario ID | `breakdown-reaction-lab` |
+  | Setup ID and hash | `rules-lab.breakdown.reaction.v1`; `sha256:ed4e33358ede11f3c25661798add9088f11d8853053dbf7c8992ba5f92d9a36e` |
+  | Content ID and hash | `rules-lab.content.breakdown-reaction.v1`; `sha256:1e10648bb65f7ec6d4ad3f33bbf612f51c11a927ebc2e8b110aa5544af3918dd` |
+
+  This second tuple only widens the host-private fixed-copy lookup after the accepted
+  Core step, paired side cuts, receipt and committed head are authenticated. It
+  does not widen `TemporaryPlayerViewProjection.Map`: that public initial view
+  remains truck-only and state-version-one-only. Neither cross-mixed tuple nor
+  other scenario/setup/content pin is admitted. Owner approval of this exact
+  private source scope does not authorize public Reaction view or diary activation.
+  The in-process Reaction proof covers trusted grain submissions and both private
+  audience cuts; it does not authenticate a browser session or seat token.
+
+  Each `SourcePin` is the ruleset hash, scenario ID, setup hash and
   content hash in that order, joined with `|`; the IDs are checked against
   the pinned creation source. An unsupported locale, catalog ID,
   ruleset/scenario/setup/content pin, event version,
@@ -83,9 +103,11 @@ failed proof.
 
 ## Implementation gate
 
-The owner approved each entry/silent classification and exact `en-CA` string on
-2026-10-19. `TemporaryPlayerViewProjection.LookupDiaryCopy` now freezes those
-strings behind the exact fixture source pin, catalog version, locale, and key.
+The owner approved each entry/silent classification, exact `en-CA` string, and
+the second private Reaction source tuple on 2026-10-19.
+`TemporaryPlayerViewProjection.LookupDiaryCopy` freezes those strings behind
+exact source pins, catalog version, locale, and key. Public publication remains
+a separate gate.
 The host-private tracker consumes this lookup only after validating the paired
 accepted-step proof and committed head. It appends per-seat approved entries with
 a monotonic cursor and 50-entry retention, while silent outcomes append nothing.
