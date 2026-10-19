@@ -261,10 +261,10 @@ persistence remain future work.
 | 2 — Rules laboratory and legal-action boundary | Complete for the admitted synthetic path | Keep outward actions observation-derived and revalidate exact membership at submission |
 | 3 — Mandatory turn preamble | Complete for the admitted synthetic no-obligation path | Positive Organization/convoy/fleet cases remain explicit later-scenario work; subsequent bounded mechanics now reach first-side Combat entry |
 | 4 — Movement, Breakdown, and Reaction boundary | Complete within the certified synthetic profile | Movement and ZOC/Reaction are implemented; Breakdown Tasks006–007 public activation, Runner adoption and transcript/privacy follow-up are complete. Positive ZOC and broader Breakdown categories remain extensions |
-| 5 — Combat and continual-cycle loop | Bounded private017–019 adapters through native actual paid assault019F6 and PAC01 continuation; repeated-Movement reference and private native consumer implemented; public Combat inactive | Continue from C04 native completion into ordinal2 Breakdown and remaining lineage; complete017–024; close025 only after an authentic loop passes |
-| 6 — Scenario Group One content | Milestone-level; not started | Produce the exact exercised-rule/data/source/rights inventory after the skeleton, then split bounded content packets |
+| 5 — Combat and continual-cycle loop | Bounded private017–019 adapters now reach R03 ordinal-two Combat Position; P01 reference and narrow zero-assault/RBA continuation remain unadmitted; public Combat inactive | Complete P01 support certificate, then P02/P03 and remaining017–019; activate020–021 and prove022–024 before closeout025 |
+| 6 — Scenario Group One content | Initial six-turn source-surface inventory retained in PR #254; content implementation not started | Reconcile exact exercised-rule/data/source/rights gaps, then freeze bounded scenario content packets |
 | 7 — Remaining required Land systems | Milestone-level; not started | Implement only the measured six-turn surface, including termination/victory, with the same authority/replay/fog gates |
-| 8 — Minimal Maproom and campaign lifecycle | Milestone-level; not started | Add durable local save/resume and recovery before UI completion; prove hot-seat privacy and a complete no-model action path |
+| 8 — Minimal Maproom and campaign lifecycle | Development-only Maproom fixtures, temporary Rules9 host and initial connected read are active; product milestone remains open | Prove successor views, public orders and local two-seat flow, then durable save/resume, hot-seat privacy and complete no-model scenario lifecycle |
 
 Sprint numbers describe dependency order, not equal effort or a project-completion percentage.
 
