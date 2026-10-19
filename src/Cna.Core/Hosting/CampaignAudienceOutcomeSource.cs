@@ -77,7 +77,7 @@ public static class CampaignAudienceOutcomeSource
                 || currentEvent is CampaignCreatedV10)
                 return CampaignAudienceOutcomePair.Unavailable();
 
-            var classification = Classify(currentEvent, candidate, command.Audience);
+            var classification = Classify(currentEvent, candidate.Kind, command.Audience);
             if (classification is null) return CampaignAudienceOutcomePair.Unavailable();
 
             var source = prior.Setup;
@@ -145,8 +145,29 @@ public static class CampaignAudienceOutcomeSource
         return beforeIndex >= 0 && afterIndex >= 0 ? afterIndex : -1;
     }
 
+    // Reuse the Core source's exact typed event/action classifier at the host-private
+    // tracker boundary. This does not prove the step was accepted: callers must first
+    // bind the canonical command, event, receipt and committed successor head.
+    public static (string? CopyKey, string? ElementId)? ClassifyCanonicalAcceptedEvent(
+        byte[] canonicalEvent, string actionKind, CampaignActionAudience actor)
+    {
+        try
+        {
+            var value = CampaignCurrentEventSerializer.Deserialize(canonicalEvent);
+            if (!canonicalEvent.AsSpan().SequenceEqual(
+                CampaignCurrentEventSerializer.Serialize(value))) return null;
+            return Classify(value, actionKind, actor);
+        }
+        catch (Exception error) when (error is JsonException or ArgumentException
+            or InvalidOperationException or InvalidCampaignHistoryException
+            or OverflowException or KeyNotFoundException)
+        {
+            return null;
+        }
+    }
+
     private static (string? CopyKey, string? ElementId)? Classify(object value,
-        CampaignActionCandidate candidate, CampaignActionAudience actor)
+        string actionKind, CampaignActionAudience actor)
     {
         static bool Human(CampaignActionAudience actor, LandSide side) =>
             actor is CampaignActionAudience.Axis or CampaignActionAudience.Commonwealth
@@ -154,44 +175,44 @@ public static class CampaignAudienceOutcomeSource
         static bool System(CampaignActionAudience actor) => actor == CampaignActionAudience.System;
         // The replay above proves exact action/event bytes and immutable source. These typed
         // pairings additionally ensure a System action cannot acquire a human entry.
-        return (value, candidate) switch
+        return (value, actionKind) switch
         {
-            (InitiativeDetermined, ResolveInitiativeAction) when System(actor) => (null, null),
-            (NoObligationNavalConvoyScheduleResolved, ResolveNoObligationNavalConvoyScheduleAction) when System(actor) => (null, null),
-            (NoObligationTacticalShippingResolved, ResolveNoObligationTacticalShippingAction) when System(actor) => (null, null),
-            (InitiativeOrderDeclared e, ActFirstAction) when Human(actor, e.DeclaringHolder)
+            (InitiativeDetermined, "resolve-initiative") when System(actor) => (null, null),
+            (NoObligationNavalConvoyScheduleResolved, "resolve-no-obligation-naval-convoy-schedule") when System(actor) => (null, null),
+            (NoObligationTacticalShippingResolved, "resolve-no-obligation-tactical-shipping") when System(actor) => (null, null),
+            (InitiativeOrderDeclared e, "act-first") when Human(actor, e.DeclaringHolder)
                 && e.FirstSide == e.DeclaringHolder => ("diary.initiativeOrder", null),
-            (InitiativeOrderDeclared e, ActLastAction) when Human(actor, e.DeclaringHolder)
+            (InitiativeOrderDeclared e, "act-last") when Human(actor, e.DeclaringHolder)
                 && e.SecondSide == e.DeclaringHolder => ("diary.initiativeOrder", null),
-            (WeatherDetermined, ResolveWeatherAction) when System(actor) => (null, null),
-            (NoObligationOrganizationResolved, ResolveNoObligationOrganizationAction) when System(actor) => (null, null),
-            (NoObligationNavalConvoyArrivalResolved, ResolveNoObligationNavalConvoyArrivalAction) when System(actor) => (null, null),
-            (NoObligationFleetAssignmentResolved, ResolveNoObligationFleetAssignmentAction) when System(actor) => (null, null),
-            (NoObligationFleetRepairResolved, ResolveNoObligationFleetRepairAction) when System(actor) => (null, null),
-            (ReserveElementDesignated e, DesignateReserveAction) when Human(actor, e.ActingSide) =>
+            (WeatherDetermined, "resolve-weather") when System(actor) => (null, null),
+            (NoObligationOrganizationResolved, "resolve-no-obligation-organization") when System(actor) => (null, null),
+            (NoObligationNavalConvoyArrivalResolved, "resolve-no-obligation-naval-convoy-arrival") when System(actor) => (null, null),
+            (NoObligationFleetAssignmentResolved, "resolve-no-obligation-fleet-assignment") when System(actor) => (null, null),
+            (NoObligationFleetRepairResolved, "resolve-no-obligation-fleet-repair") when System(actor) => (null, null),
+            (ReserveElementDesignated e, "designate-reserve") when Human(actor, e.ActingSide) =>
                 ("diary.reserveDesignated", e.ElementId),
-            (ReserveDesignationCompleted e, CompleteReserveDesignationAction) when Human(actor, e.ActingSide) =>
+            (ReserveDesignationCompleted e, "complete-reserve-designation") when Human(actor, e.ActingSide) =>
                 ("diary.reserveCompleted", null),
-            (ElementMovedV3 e, MoveElementAction) when Human(actor, e.ActingSide) =>
+            (ElementMovedV3 e, "move-element") when Human(actor, e.ActingSide) =>
                 ("diary.elementMoved", e.ElementId),
-            (ElementMovementStopped e, StopElementMovementAction) when Human(actor, e.ActingSide) =>
+            (ElementMovementStopped e, "stop-element-movement") when Human(actor, e.ActingSide) =>
                 ("diary.movementStopped", null),
-            (BreakdownStopResolved, ResolveBreakdownStopAction) when System(actor) => (null, null),
-            (ReactingElementMovedV2 e, MoveReactingElementAction) when Human(actor, e.ActingSide) =>
+            (BreakdownStopResolved, "resolve-breakdown-stop") when System(actor) => (null, null),
+            (ReactingElementMovedV2 e, "move-reacting-element") when Human(actor, e.ActingSide) =>
                 ("diary.reactionMoved", e.ElementId),
-            (ReactionParticipantCompletedV2 e, CompleteReactionParticipantAction) when Human(actor, e.ActingSide) =>
+            (ReactionParticipantCompletedV2 e, "complete-reaction-participant") when Human(actor, e.ActingSide) =>
                 ("diary.reactionCompleted", null),
-            (ReactionWindowClosedV2 e, DeclineReactionWindowAction) when e.Reason == CampaignReactionWindowCloseReason.PlayerDecline
+            (ReactionWindowClosedV2 e, "decline-reaction-window") when e.Reason == CampaignReactionWindowCloseReason.PlayerDecline
                 && e.ActingSide is { } side && Human(actor, side) => ("diary.reactionDeclined", null),
-            (ReactionWindowClosedV2 e, CloseReactionWindowUnavailableAction) when System(actor)
+            (ReactionWindowClosedV2 e, "close-reaction-window-scripted-unavailable") when System(actor)
                 && e.ActingSide is null && e.Reason == CampaignReactionWindowCloseReason.ScriptedUnavailable => (null, null),
-            (ReactionWindowClosedV2 e, CloseReactionWindowTimeoutAction) when System(actor)
+            (ReactionWindowClosedV2 e, "close-reaction-window-timeout") when System(actor)
                 && e.ActingSide is null && e.Reason == CampaignReactionWindowCloseReason.Timeout => (null, null),
-            (ReactionWindowClosedV2 e, CloseReactionWindowNoEligibleAction) when System(actor)
+            (ReactionWindowClosedV2 e, "close-reaction-window-no-eligible-reactor") when System(actor)
                 && e.ActingSide is null && e.Reason == CampaignReactionWindowCloseReason.NoEligibleReactor => (null, null),
-            (MovementSegmentCompletedV2 e, CompleteMovementSegmentAction) when Human(actor, e.ActingSide) =>
+            (MovementSegmentCompletedV2 e, "complete-movement-segment") when Human(actor, e.ActingSide) =>
                 ("diary.movementCompleted", null),
-            (BreakdownSegmentCompleted, CompleteBreakdownSegmentAction) when System(actor) => (null, null),
+            (BreakdownSegmentCompleted, "complete-breakdown-segment") when System(actor) => (null, null),
             _ => null,
         };
     }

@@ -1,7 +1,7 @@
 # Rules-lab Maproom diary presentation catalog v2 — owner-approved copy
 
 Status: **exact copy and entry/silent classifications owner-approved on 2026-10-19;
-private fixed-text lookup only, no diary or browser activation**. This catalog
+private fixed-text lookup and tracker diary window implemented, no browser activation**. This catalog
 extends the development-only `breakdown-truck-maproom.v1` initial-cut presentation
 catalog. It does not change adjudication, grant an audience, or make a successor
 `/view` available.
@@ -86,9 +86,11 @@ failed proof.
 The owner approved each entry/silent classification and exact `en-CA` string on
 2026-10-19. `TemporaryPlayerViewProjection.LookupDiaryCopy` now freezes those
 strings behind the exact fixture source pin, catalog version, locale, and key.
-It is host-private and supplies presentation data only; no accepted-step proof,
-diary cursor, retention, tracker append, or public response consumes it yet.
-The connected browser remains on its initial read-only cut.
+The host-private tracker consumes this lookup only after validating the paired
+accepted-step proof and committed head. It appends per-seat approved entries with
+a monotonic cursor and 50-entry retention, while silent outcomes append nothing.
+No public response consumes this private diary yet; the connected browser remains
+on its initial read-only cut.
 
 Before diary publication, consume the approved catalog only after the paired
 accepted-step and committed-head proof, and test all current typed variants for both
