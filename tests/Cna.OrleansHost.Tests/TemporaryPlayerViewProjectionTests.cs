@@ -84,6 +84,78 @@ public sealed class TemporaryPlayerViewProjectionTests
     }
 
     [Fact]
+    public void PinnedEarlySuccessorProjectsOnlyCoherentOwnDiaryAndActionWindows()
+    {
+        var projector = new TemporaryPlayerViewProjection();
+        var seat = Seat("axis", Generation);
+        var initiativeEntry = new TemporaryPrivateDiaryEntry(Guid.NewGuid().ToString("D"), 1,
+            "Initiative order recorded", "Your choice of acting order was recorded.", null);
+        var initiative = Cut(CampaignActionAudience.Axis) with
+        {
+            StateVersion = 4,
+            PositionId = "land.position.operation-1.initiative-declaration",
+            PhaseId = "land.phase.initiative-declaration",
+            StageId = "land.stage.operation",
+            Actions =
+            [
+                new TemporaryPrivateAction(Guid.NewGuid().ToString("D"), "core-first",
+                    "act-first", null, null, null),
+                new TemporaryPrivateAction(Guid.NewGuid().ToString("D"), "core-last",
+                    "act-last", null, null, null),
+            ],
+        };
+        using var first = JsonDocument.Parse(JsonSerializer.Serialize(
+            projector.Map(initiative, seat)));
+        Assert.Equal(2, first.RootElement.GetProperty("legalActions").GetArrayLength());
+        Assert.Equal("human", first.RootElement.GetProperty("position")
+            .GetProperty("decision").GetString());
+        Assert.Empty(first.RootElement.GetProperty("warDiary").EnumerateArray());
+
+        var weather = initiative with
+        {
+            StateVersion = 5,
+            PositionId = "land.position.operation-1.weather-determination",
+            PhaseId = "land.phase.weather-determination",
+            Actions = [],
+            Diary = [initiativeEntry],
+            NextDiaryCursor = 1,
+        };
+        var json = JsonSerializer.Serialize(projector.Map(weather, seat));
+        using var view = JsonDocument.Parse(json);
+        Assert.Equal("1", view.RootElement.GetProperty("nextDiaryCursor").GetString());
+        Assert.Single(view.RootElement.GetProperty("warDiary").EnumerateArray());
+        Assert.Equal("Initiative order recorded", view.RootElement
+            .GetProperty("warDiary")[0].GetProperty("title").GetString());
+        Assert.Empty(view.RootElement.GetProperty("legalActions").EnumerateArray());
+        Assert.DoesNotContain("core-first", json);
+        Assert.DoesNotContain(Pin, json);
+        Assert.DoesNotContain("axis-infantry.formation", json);
+        Assert.DoesNotContain("private-representation", json);
+        Assert.Null(projector.Map(weather with { SourcePin = "other" }, seat));
+        Assert.Null(projector.Map(weather with { PositionId = "other" }, seat));
+        Assert.Null(projector.Map(weather with { PhaseId = "other" }, seat));
+        Assert.Null(projector.Map(weather with { StateVersion = 11 }, seat));
+        Assert.Null(projector.Map(weather with { NextDiaryCursor = 2 }, seat));
+        Assert.Null(projector.Map(weather with
+        {
+            Diary = [initiativeEntry with { Body = "private destination" }],
+        }, seat));
+        Assert.Null(projector.Map(weather with
+        {
+            Diary = [initiativeEntry with { FormationId = "axis-infantry.formation" }],
+        }, seat));
+        Assert.Null(projector.Map(weather with
+        {
+            Actions = initiative.Actions,
+        }, seat));
+        Assert.Null(projector.Map(weather with
+        {
+            Contacts = [weather.Contacts[0], weather.Contacts[0]],
+        }, seat));
+        Assert.Null(projector.Map(weather, Seat("commonwealth", Generation)));
+    }
+
+    [Fact]
     public void ApprovedDiaryCatalogFreezesExactTextAndFormationPolicy()
     {
         (string Key, string Title, string Body, bool OwnFormationLink)[] cases =

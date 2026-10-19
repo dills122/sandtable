@@ -85,13 +85,39 @@ internal sealed class TemporaryPlayerViewProjection
                 (CampaignActionAudience.Commonwealth, "Commonwealth truck", "Truck convoy"),
         };
 
+    // Proposed MAP-10a public read scope: exact early positions in the authenticated
+    // truck fixture; version 10 admits only its Axis-first reserve cut. The tracker/grain prove accepted
+    // steps and paired cuts; this table only admits their presentation shapes.
+    private static readonly Dictionary<long, (string Position, string Phase, string Stage)>
+        SuccessorPositions = new()
+        {
+            [2] = ("land.position.naval-convoy.schedule",
+                "land.phase.naval-convoy-schedule", "land.stage.naval-convoy"),
+            [3] = ("land.position.naval-convoy.tactical-shipping",
+                "land.phase.tactical-shipping", "land.stage.naval-convoy"),
+            [4] = ("land.position.operation-1.initiative-declaration",
+                "land.phase.initiative-declaration", "land.stage.operation"),
+            [5] = ("land.position.operation-1.weather-determination",
+                "land.phase.weather-determination", "land.stage.operation"),
+            [6] = ("land.position.operation-1.organization",
+                "land.phase.organization", "land.stage.operation"),
+            [7] = ("land.position.operation-1.naval-convoy-arrival",
+                "land.phase.naval-convoy-arrival", "land.stage.operation"),
+            [8] = ("land.position.operation-1.commonwealth-fleet.assignment",
+                "land.phase.commonwealth-fleet", "land.stage.operation"),
+            [9] = ("land.position.operation-1.commonwealth-fleet.repair",
+                "land.phase.commonwealth-fleet", "land.stage.operation"),
+            [10] = ("land.position.operation-1.first-player.reserve-designation",
+                "land.phase.reserve-designation", "land.stage.operation"),
+        };
+
     internal object? Map(TemporaryPrivateAudienceCut? cut, LocalSession session)
     {
         if (cut is null || session.CampaignId != cut.CampaignId
             || session.Generation is null || !Guid.TryParse(session.Generation, out _)
             || session.Seat != SideName(cut.Audience)
             || cut.SourcePin != SourcePin || cut.ScenarioId != "breakdown-truck-lab"
-            || cut.RulesetHash != SourcePin[..64] || cut.StateVersion != 1
+            || cut.RulesetHash != SourcePin[..64] || cut.StateVersion < 1
             || cut.AudienceRevision < 1 || cut.GameTurn < 0
             || cut.DecisionStateKind != "normal"
             || cut.Locations.Length != Locations.Count
@@ -103,7 +129,8 @@ internal sealed class TemporaryPlayerViewProjection
             || cut.Contacts.Any(c => !Locations.ContainsKey(c.LocationId)
                 || !Guid.TryParse(c.ContactId, out _))
             || cut.Actions.Any(a => !Guid.TryParse(a.OutwardActionId, out _))
-            || !Guid.TryParse(cut.ActionSetToken, out _))
+            || !Guid.TryParse(cut.ActionSetToken, out _)
+            || !SupportedSuccessor(cut))
             return null;
 
         var formations = cut.OwnElements.GroupBy(e => e.FormationId, StringComparer.Ordinal)
@@ -112,9 +139,13 @@ internal sealed class TemporaryPlayerViewProjection
             .Distinct(StringComparer.Ordinal).Skip(1).Any()
             || group.Select(e => e.ReserveStatus).Distinct(StringComparer.Ordinal).Skip(1).Any()))
             return null;
+        if (cut.OwnElements.Select(e => e.ElementId)
+                .Distinct(StringComparer.Ordinal).Count() != cut.OwnElements.Length
+            || cut.Contacts.Select(c => c.ContactId)
+                .Distinct(StringComparer.Ordinal).Count() != cut.Contacts.Length)
+            return null;
         var byElement = cut.OwnElements.ToDictionary(e => e.ElementId,
             e => e.FormationId, StringComparer.Ordinal);
-        if (byElement.Count != cut.OwnElements.Length) return null;
 
         var actions = new List<object>();
         foreach (var action in cut.Actions)
@@ -146,6 +177,8 @@ internal sealed class TemporaryPlayerViewProjection
             };
         }).ToArray();
         if (own.Any(f => f.orderStatusLabel is null)) return null;
+        var diary = ProjectDiary(cut);
+        if (diary is null) return null;
         var ledger = own.Select(f => new
         {
             f.formationId,
@@ -186,10 +219,64 @@ internal sealed class TemporaryPlayerViewProjection
             }).ToArray(),
             legalActions = actions,
             formationLedger = ledger,
-            warDiary = Array.Empty<object>(),
-            nextDiaryCursor = "0",
+            warDiary = diary,
+            nextDiaryCursor = cut.NextDiaryCursor.ToString(CultureInfo.InvariantCulture),
             actionSetToken = cut.ActionSetToken,
         };
+    }
+
+    private static bool SupportedSuccessor(TemporaryPrivateAudienceCut cut)
+    {
+        if (cut.StateVersion == 1)
+            return cut.Diary.Length == 0 && cut.NextDiaryCursor == 0;
+        if (!SuccessorPositions.TryGetValue(cut.StateVersion, out var expected)
+            || cut.GameTurn != 1 || cut.DecisionStateKind != "normal"
+            || cut.PositionId != expected.Position || cut.PhaseId != expected.Phase
+            || cut.StageId != expected.Stage)
+            return false;
+        var kinds = cut.Actions.Select(action => action.Kind).Order(StringComparer.Ordinal)
+            .ToArray();
+        var expectedKinds = cut.Audience == CampaignActionAudience.Axis
+            ? cut.StateVersion switch
+            {
+                4 => new[] { "act-first", "act-last" },
+                10 => new[] { "complete-reserve-designation", "designate-reserve" },
+                _ => [],
+            }
+            : [];
+        if (!kinds.SequenceEqual(expectedKinds.Order(StringComparer.Ordinal)))
+            return false;
+        // No reserve action has yet been accepted in this bounded trace.
+        // One owner-only initiative diary entry appears after the human step.
+        var expectedCursor = cut.Audience == CampaignActionAudience.Axis
+            && cut.StateVersion >= 5 ? 1UL : 0UL;
+        return cut.NextDiaryCursor == expectedCursor
+            && cut.Diary.Length == (int)expectedCursor;
+    }
+
+    private static object[]? ProjectDiary(TemporaryPrivateAudienceCut cut)
+    {
+        var entries = new List<object>();
+        ulong previous = 0;
+        foreach (var entry in cut.Diary)
+        {
+            if (!Guid.TryParseExact(entry.EntryId, "D", out _)
+                || entry.AudienceCursor != ++previous)
+                return null;
+            var approved = LookupDiaryCopy(cut.SourcePin, DiaryCatalogVersion, "en-CA",
+                "diary.initiativeOrder");
+            if (approved is null || entry.Title != approved.Title
+                || entry.Body != approved.Body || entry.FormationId is not null)
+                return null;
+            entries.Add(new
+            {
+                entryId = entry.EntryId,
+                audienceCursor = entry.AudienceCursor.ToString(CultureInfo.InvariantCulture),
+                title = entry.Title,
+                body = entry.Body,
+            });
+        }
+        return previous == cut.NextDiaryCursor ? entries.ToArray() : null;
     }
 
     private object? Action(TemporaryPrivateAction action,
