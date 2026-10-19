@@ -3071,7 +3071,10 @@ PR #272 (`962518a`), authenticates the full 300-root catalogue and classifies 44
 armed candidates and 256 candidate-absent rows. Bounded transition tests use two representative
 positive roots, one per acting side: owner selection, no-gun/no-Barrage structural steps and
 defender-owned RBA. An accepted decline reaches same-slot Force Assignment; unavailable or
-expired RBA cancels to same-slot Reserve Release without inventing a decline. The
+expired RBA cancels to same-slot Reserve Release without inventing a decline. A focused
+post-open unavailable-clock regression now replays every cut for both acting sides,
+checks identical-input retry, and requires a cancellation receipt with no decline receipt;
+this is still representative-root evidence, not the full AC-006/008 certificate. The
 [Force Assignment v1 successor](../specs/combat-p01-force-assignment-v1.md), merged in PR #273
 (`f6c0c10`), continues those bounded declined test histories with two original-owner full-10-TOE
 seals in either order. Both seals reach Prepared at Close Assault after an empty
