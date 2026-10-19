@@ -750,6 +750,184 @@ public sealed class TemporaryCampaignGrainTests
         $"sha256:{Convert.ToHexStringLower(SHA256.HashData(bytes))}";
 
     [Fact]
+    public async Task InProcessReactionMovePreservesApprovedDiaryAndOtherSeatPrivacy()
+    {
+        // The production CreateAsync fixture is the truck setup, so seed only a
+        // genuine Reaction Core creation. Every action traverses the real grain.
+        var request = new CampaignCreationRequest(1, TemporaryCampaignGrain.FixtureCampaignId,
+            Cna1979Ruleset.Manifest.Hash, 12345,
+            "rules-lab.breakdown.reaction.v1",
+            "sha256:ed4e33358ede11f3c25661798add9088f11d8853053dbf7c8992ba5f92d9a36e",
+            "rules-lab.content.breakdown-reaction.v1",
+            "sha256:1e10648bb65f7ec6d4ad3f33bbf612f51c11a927ebc2e8b110aa5544af3918dd",
+            "breakdown-reaction-lab");
+        var start = CampaignHostAdapter.Create(request);
+        Assert.True(start.IsStarted);
+        var session = start.Session!;
+        var initialAxis = CampaignHostAdapter.QueryPrivateSideCut(session,
+            CampaignActionAudience.Axis)!;
+        var initialCommonwealth = CampaignHostAdapter.QueryPrivateSideCut(session,
+            CampaignActionAudience.Commonwealth)!;
+        var tracker = TemporaryAudienceTracker.Create(request.CampaignId,
+            request.RulesetHash, request.ScenarioId, request.SetupHash,
+            request.ContentHash, Hash(start.InitialSnapshotBytes!),
+            initialAxis, initialCommonwealth);
+        Assert.NotNull(tracker);
+        Assert.NotNull(TemporaryPlayerViewProjection.LookupDiaryCopy(tracker.SourcePin,
+            TemporaryPlayerViewProjection.DiaryCatalogVersion, "en-CA",
+            "diary.initiativeOrder"));
+        var pins = tracker.SourcePin.Split('|');
+        Assert.Equal(4, pins.Length);
+        Assert.Null(TemporaryPlayerViewProjection.LookupDiaryCopy(
+            string.Join('|', pins[0], "breakdown-truck-lab", pins[2], pins[3]),
+            TemporaryPlayerViewProjection.DiaryCatalogVersion, "en-CA",
+            "diary.initiativeOrder"));
+        Assert.Null(TemporaryPlayerViewProjection.LookupDiaryCopy(
+            string.Join('|', pins[0], pins[1], TemporaryCampaignGrain.SetupHash, pins[3]),
+            TemporaryPlayerViewProjection.DiaryCatalogVersion, "en-CA",
+            "diary.initiativeOrder"));
+        Assert.Null(TemporaryPlayerViewProjection.LookupDiaryCopy(
+            string.Join('|', pins[0], pins[1], pins[2], TemporaryCampaignGrain.ContentHash),
+            TemporaryPlayerViewProjection.DiaryCatalogVersion, "en-CA",
+            "diary.initiativeOrder"));
+
+        using var host = BuildHost();
+        var memory = host.Services.GetRequiredService<TemporaryCampaignMemoryStore>()
+            .Get(TemporaryCampaignGrain.FixtureCampaignId);
+        memory.Committed = session;
+        memory.CommittedVersion = tracker.StateVersion;
+        memory.AudienceTracker = tracker;
+        await host.StartAsync(TestContext.Current.CancellationToken);
+        try
+        {
+            var grain = GetTrustedGrain(host);
+            for (var index = 0; index < 20; index++)
+            {
+                var set = Enum.GetValues<CampaignActionAudience>()
+                    .Select(audience => CampaignExercises.Query(session, audience).ActionSet!)
+                    .First(value => value.Candidates.Count > 0);
+                if (set.Candidates.OfType<MoveElementAction>().Any()) break;
+                var candidate = set.Candidates.FirstOrDefault(value => value is ActFirstAction)
+                    ?? set.Candidates.FirstOrDefault(value =>
+                        value is CompleteReserveDesignationAction)
+                    ?? set.Candidates[0];
+                var setupCommand = new CampaignActionSubmission(1, set.CampaignId,
+                    set.StateVersion, set.PositionId, set.Audience, candidate.ActionId);
+                var core = CampaignHostAdapter.Submit(session, setupCommand);
+                Assert.True(core.IsAccepted);
+                var setupReply = await grain.SubmitAsync(
+                    set.Audience == CampaignActionAudience.System ? "host-system" : "seat-1",
+                    $"reaction-setup-{index}", set.Audience,
+                    CampaignActionSubmissionSerializer.SerializeCanonical(setupCommand));
+                Assert.True(setupReply.Status == TemporaryCampaignStatus.Accepted,
+                    $"{candidate.Kind} at step {index}: {setupReply.Status} {setupReply.Reason}");
+                Assert.Equal(Assert.Single(core.Evidence!.EventRecords), setupReply.Event);
+                session = core.SuccessorSession!;
+            }
+            var owner = Enum.GetValues<CampaignActionAudience>()
+                .Select(audience => CampaignExercises.Query(session, audience).ActionSet!)
+                .First(value => value.Candidates.OfType<MoveElementAction>().Any());
+            var trigger = owner.Candidates.OfType<MoveElementAction>()
+                .First(candidate =>
+                {
+                    var attempted = CampaignHostAdapter.Submit(session,
+                        new CampaignActionSubmission(1, owner.CampaignId,
+                            owner.StateVersion, owner.PositionId, owner.Audience,
+                            candidate.ActionId));
+                    return attempted.IsAccepted && Enum.GetValues<CampaignActionAudience>()
+                        .Select(audience => CampaignExercises.Query(
+                            attempted.SuccessorSession!, audience).ActionSet!)
+                        .Any(value => value.Candidates.Any(action =>
+                            action.Kind == "move-reacting-element"));
+                });
+            var opening = new CampaignActionSubmission(1, owner.CampaignId,
+                owner.StateVersion, owner.PositionId, owner.Audience, trigger.ActionId);
+            var coreOpening = CampaignHostAdapter.Submit(session, opening);
+            Assert.True(coreOpening.IsAccepted);
+            var hostedOpening = await grain.SubmitAsync("phasing-seat", "reaction-opening",
+                owner.Audience, CampaignActionSubmissionSerializer.SerializeCanonical(opening));
+            Assert.Equal(TemporaryCampaignStatus.Accepted, hostedOpening.Status);
+            Assert.Equal(Assert.Single(coreOpening.Evidence!.EventRecords), hostedOpening.Event);
+            session = coreOpening.SuccessorSession!;
+
+            var reactor = owner.Audience == CampaignActionAudience.Axis
+                ? CampaignActionAudience.Commonwealth : CampaignActionAudience.Axis;
+            var reacting = CampaignExercises.Query(session, reactor).ActionSet!;
+            var move = reacting.Candidates.First(candidate =>
+                candidate.Kind == "move-reacting-element");
+            var command = new CampaignActionSubmission(1, reacting.CampaignId,
+                reacting.StateVersion, reacting.PositionId, reactor, move.ActionId);
+            var bytes = CampaignActionSubmissionSerializer.SerializeCanonical(command);
+            var coreMove = CampaignHostAdapter.Submit(session, command);
+            Assert.True(coreMove.IsAccepted);
+            var beforeOwn = CampaignHostAdapter.QueryPrivateSideCut(session, reactor)!;
+            var afterOwn = CampaignHostAdapter.QueryPrivateSideCut(coreMove.SuccessorSession!,
+                reactor)!;
+            Assert.Equal("reacting", beforeOwn.DecisionStateKind);
+            Assert.Equal("reacting", afterOwn.DecisionStateKind);
+            Assert.Empty(beforeOwn.OwnElements);
+            Assert.Empty(afterOwn.OwnElements);
+            var priorActor = (await grain.QueryPrivateSideAsync(reactor)).Cut!;
+            var priorOther = (await grain.QueryPrivateSideAsync(owner.Audience)).Cut!;
+            var reply = await grain.SubmitAsync("reacting-seat", "reaction-move", reactor,
+                bytes);
+            Assert.Equal(TemporaryCampaignStatus.Accepted, reply.Status);
+            Assert.Equal(Assert.Single(coreMove.Evidence!.EventRecords), reply.Event);
+            Assert.Equal(CampaignActionAcceptanceReceiptSerializer.Serialize(
+                coreMove.Evidence.Receipt), reply.Receipt);
+
+            var actorCut = (await grain.QueryPrivateSideAsync(reactor)).Cut!;
+            var otherCut = (await grain.QueryPrivateSideAsync(owner.Audience)).Cut!;
+            var decision = reactor == CampaignActionAudience.Axis
+                ? tracker.LastAcceptedOutcome!.Axis! : tracker.LastAcceptedOutcome!.Commonwealth!;
+            Assert.Equal("diary.reactionMoved", decision.ProposedCopyKey);
+            Assert.Equal("own-element-suppressed", decision.ReasonCode);
+            Assert.Null(decision.OwnElementIndex);
+            Assert.Empty(actorCut.OwnElements);
+            Assert.Equal(priorActor.NextDiaryCursor + 1, actorCut.NextDiaryCursor);
+            var diary = actorCut.Diary[^1];
+            var copy = TemporaryPlayerViewProjection.LookupDiaryCopy(actorCut.SourcePin,
+                TemporaryPlayerViewProjection.DiaryCatalogVersion, "en-CA",
+                "diary.reactionMoved");
+            Assert.NotNull(copy);
+            Assert.Equal(copy.Title, diary.Title);
+            Assert.Equal(copy.Body, diary.Body);
+            using var eventDocument = JsonDocument.Parse(reply.Event!);
+            var elementId = eventDocument.RootElement.GetProperty("elementId").GetString();
+            var initialOwn = reactor == CampaignActionAudience.Axis
+                ? initialAxis : initialCommonwealth;
+            Assert.Equal(Assert.Single(initialOwn.OwnElements,
+                element => element.ElementId == elementId).FormationId,
+                diary.FormationId);
+            Assert.Equal(priorOther.NextDiaryCursor, otherCut.NextDiaryCursor);
+            Assert.Equal(priorOther.Diary.Length, otherCut.Diary.Length);
+            Assert.DoesNotContain(otherCut.OwnElements,
+                element => element.ElementId == elementId);
+
+            var retried = await grain.SubmitAsync("reacting-seat", "reaction-move",
+                reactor, bytes);
+            Assert.Equal(TemporaryCampaignStatus.Accepted, retried.Status);
+            Assert.Equal(reply.Receipt, retried.Receipt);
+            Assert.Equal(actorCut.NextDiaryCursor,
+                (await grain.QueryPrivateSideAsync(reactor)).Cut!.NextDiaryCursor);
+            Assert.Equal(TemporaryCampaignStatus.Conflict,
+                (await grain.SubmitAsync("other-seat", "reaction-move", reactor,
+                    bytes)).Status);
+            Assert.Equal(TemporaryCampaignStatus.Rejected,
+                (await grain.SubmitAsync("other-seat", "wrong-seat-reaction",
+                    owner.Audience, bytes)).Status);
+            Assert.Equal(TemporaryCampaignStatus.Rejected,
+                (await grain.SubmitAsync("reacting-seat", "stale-reaction",
+                    reactor, bytes)).Status);
+            Assert.Equal(actorCut.NextDiaryCursor,
+                (await grain.QueryPrivateSideAsync(reactor)).Cut!.NextDiaryCursor);
+            Assert.Equal(otherCut.NextDiaryCursor,
+                (await grain.QueryPrivateSideAsync(owner.Audience)).Cut!.NextDiaryCursor);
+        }
+        finally { await host.StopAsync(TestContext.Current.CancellationToken); }
+    }
+
+    [Fact]
     public async Task InProcessHostMatchesDirectCoreAndDeduplicatesConcurrentRequests()
     {
         using var host = BuildHost();
