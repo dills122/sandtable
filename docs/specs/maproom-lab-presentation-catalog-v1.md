@@ -7,8 +7,10 @@ below from the same truck fixture. The implementation remains draft until that p
 scope is approved. This is
 public presentation data, not movement topology or adjudication authority. The layout below
 is an editorial coordinate arrangement for the nine published fixture locations; Core content
-has no source coordinates. The adapter requires the exact ruleset, `breakdown-truck-lab`
-scenario, setup hash `sha256:e6631e81ad8f97e39fd9d7eec93bad7fe2b39db4d2d3059ed94a02dd4093e7a3`,
+has no source coordinates. The adapter requires ruleset hash
+`17f3e6047f34b5bf6f5f809055863b664a4bd82a8481db83ee83e0ae5cad3a2a`,
+`breakdown-truck-lab` scenario, setup hash
+`sha256:e6631e81ad8f97e39fd9d7eec93bad7fe2b39db4d2d3059ed94a02dd4093e7a3`,
 and content hash `sha256:646e76e69ecceb82216b37d84e950928099acd8a3cb04b51526d0fe631e512ee`.
 Unknown pins or missing locations fail closed.
 
