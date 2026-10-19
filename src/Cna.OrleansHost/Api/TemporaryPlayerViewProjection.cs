@@ -128,7 +128,12 @@ internal sealed class TemporaryPlayerViewProjection
                 || known.Side != cut.Audience || !Locations.ContainsKey(e.LocationId))
             || cut.Contacts.Any(c => !Locations.ContainsKey(c.LocationId)
                 || !Guid.TryParse(c.ContactId, out _))
-            || cut.Actions.Any(a => !Guid.TryParse(a.OutwardActionId, out _))
+            || cut.Actions.Any(a => !Guid.TryParse(a.OutwardActionId, out _)
+                || string.IsNullOrWhiteSpace(a.CoreActionId))
+            || cut.Actions.Select(a => a.OutwardActionId)
+                .Distinct(StringComparer.Ordinal).Count() != cut.Actions.Length
+            || cut.Actions.Select(a => a.CoreActionId)
+                .Distinct(StringComparer.Ordinal).Count() != cut.Actions.Length
             || !Guid.TryParse(cut.ActionSetToken, out _)
             || !SupportedSuccessor(cut))
             return null;
@@ -287,18 +292,21 @@ internal sealed class TemporaryPlayerViewProjection
         string label;
         switch (action.Kind)
         {
-            case "act-first" when action.ElementId is null && action.TargetLocationId is null:
+            case "act-first" when action.ElementId is null && action.TargetLocationId is null
+                && action.OpportunityId is null:
                 label = "Act first";
                 break;
-            case "act-last" when action.ElementId is null && action.TargetLocationId is null:
+            case "act-last" when action.ElementId is null && action.TargetLocationId is null
+                && action.OpportunityId is null:
                 label = "Act last";
                 break;
             case "complete-reserve-designation"
-                when action.ElementId is null && action.TargetLocationId is null:
+                when action.ElementId is null && action.TargetLocationId is null
+                && action.OpportunityId is null:
                 label = "Complete reserve designation";
                 break;
             case "designate-reserve" when action.ElementId is not null
-                && action.TargetLocationId is null
+                && action.TargetLocationId is null && action.OpportunityId is null
                 && byElement.TryGetValue(action.ElementId, out var rawFormation):
                 formationId = FormationId(campaign, side, generation, rawFormation);
                 label = "Designate reserve";

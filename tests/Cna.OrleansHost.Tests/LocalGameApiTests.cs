@@ -375,6 +375,44 @@ public sealed class LocalGameApiTests
                 Assert.Equal("0", view.RootElement.GetProperty("nextDiaryCursor").GetString());
                 Assert.Empty(view.RootElement.GetProperty("warDiary").EnumerateArray());
             }
+            var legal = CampaignLegalActionSerializer.DeserializeCanonical(
+                (await grain.QueryAsync(access.Capability, CampaignActionAudience.Axis))
+                    .LegalActions!);
+            var actFirst = legal.Candidates.Single(candidate => candidate.Kind == "act-first");
+            var command = new CampaignActionSubmission(1, legal.CampaignId,
+                legal.StateVersion, legal.PositionId, legal.Audience, actFirst.ActionId);
+            Assert.Equal(TemporaryCampaignStatus.Accepted,
+                (await grain.SubmitAsync(access.Capability, "seat-1", "map10a-act-first",
+                    CampaignActionAudience.Axis,
+                    CampaignActionSubmissionSerializer.SerializeCanonical(command))).Status);
+            foreach (var (cookie, side, expectedCursor) in new[]
+            {
+                (axisCookie!, "axis", "1"), (commonwealthCookie!, "commonwealth", "0"),
+            })
+            {
+                var response = await Send(client,
+                    Get("/api/v1/campaigns/host-rsh-001/view", cookie));
+                Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+                var json = await response.Content.ReadAsStringAsync(
+                    TestContext.Current.CancellationToken);
+                using var view = JsonDocument.Parse(json);
+                Assert.Equal(side, view.RootElement.GetProperty("seat").GetString());
+                Assert.Equal(expectedCursor,
+                    view.RootElement.GetProperty("nextDiaryCursor").GetString());
+                var diary = view.RootElement.GetProperty("warDiary").EnumerateArray().ToArray();
+                if (side == "axis")
+                {
+                    Assert.Single(diary);
+                    Assert.Equal("Initiative order recorded",
+                        diary[0].GetProperty("title").GetString());
+                    Assert.Equal("Your choice of acting order was recorded.",
+                        diary[0].GetProperty("body").GetString());
+                }
+                else Assert.Empty(diary);
+                Assert.Empty(view.RootElement.GetProperty("legalActions").EnumerateArray());
+                Assert.DoesNotContain("sourcePin", json);
+                Assert.DoesNotContain("CoreActionId", json);
+            }
         }
         finally { await app.StopAsync(TestContext.Current.CancellationToken); }
     }

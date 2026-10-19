@@ -122,8 +122,9 @@ progression has a 1–32 step budget and explicit
 human, unsupported-phase and step-limit outcomes. Its small typed side summary and canonical
 legal set come from one committed MAP-06 cut. MAP-08 adds local operator and seat authorization;
 MAP-09 privately binds a seat-scoped outward request to a current Core candidate and retains
-exact retries. Public submission and receipt readback, coherent successor views, Core terminal
-classification and durable conditional publication remain later gates. A process restart discards
+exact retries. Public submission and receipt readback, complete successor views, Core terminal
+classification and durable conditional publication remain later gates. MAP-10a proposes only
+the source-pinned truck-fixture read-only states 2–10, pending public owner approval; a process restart discards
 this state. MAP-08A adds Development-only loopback HTTP bootstrap,
 trusted-host grant storage and rotating seat sessions with same-origin and CSRF checks. Its grant
 issuer now serves one admitted fixture through a Development-only creation route. Its retained
@@ -131,17 +132,19 @@ operator/request response has one grant pair; capacity is reserved before the gr
 inactive grants become redeemable only after committed creation, and an uncertain call retries
 under the same request ID without renewing expired grants. Missing configuration identity is omitted. A
 created initial fixture may return one
-authorized `/view` mapped from a coherent typed cut; unsupported or successor cuts return
-`503 unavailable` until a coherent public successor projection is supported; private diary
-approval alone does not publish that view.
+authorized `/view` mapped from a coherent typed cut. MAP-10a proposes a separately approved
+public presentation catalog for exact truck-fixture states 2–10. State 11 and later,
+unsupported cuts and missing facts return `503 unavailable`; private diary approval alone
+does not publish a successor view. Exact public scope approval is pending.
 The separate Angular `/connected` route now uses that initial cut through a
 loopback-only 4300-to-5087 development proxy. It bootstraps, creates the one fixture,
 redeems one grant and renders an authorized initial operations read. MAP-10 extends the bounded
-read-only workspace without submitting an order or reading a later cut. A failed refresh clears
+read-only workspace; MAP-10a proposes successor reads through state 10 pending public owner
+approval, without submitting an order. A failed refresh clears
 its prior audience view. The host retains one process-local creation for the exact
 operator/request; a reload with the same valid seat cookie resumes through the
 scoped session read, while a lost cookie or different operator conflicts until host restart.
-No connected action submission, successor read, durable save or complete hot-seat
+No connected action submission, state 11 onward, durable save or complete hot-seat
 recovery is provided by this browser lane.
 The [MAP-08B1 projection prerequisite](docs/specs/maproom-side-projection-prerequisites-v1.md)
 first defines typed side fields, public presentation sources, diary visibility and stable opaque
@@ -152,7 +155,9 @@ accepted transition, and fails closed on a skipped or incoherent cut. A private 
 opaque handles to the authorized session generation. Initial lab view uses a versioned,
 source-pinned public layout with generic contact labels, own formation labels and reserve status.
 The nine-entry en-CA copy catalog is owner-approved and the private tracker retains accepted
-classified entries, but public post-step diary mapping and successor views still fail closed. MAP-09 private
+classified entries. MAP-10a proposes a bounded public owner-only initiative diary and
+successor mapping for truck states 2–10, pending exact owner approval; all other post-step
+views fail closed. MAP-09 private
 ingress exists; no HTTP action submit or receipt route is enabled.
 `CampaignAudienceOutcomeSource` is a private Core hosting decision proof: it recomputes an
 accepted step in memory against canonical evidence and both side cuts, without a second
@@ -161,7 +166,7 @@ installing an accepted successor, and its private audience tracker checks the ex
 successor head, canonical command/event/receipt and both side cuts in one serialized turn.
 It retains approved fixed copy in private per-audience diary records with monotonic cursors and
 the latest 50 entries; outward entry IDs are scoped to the seat-session generation. These private
-records do not enable successor browser views or durable diary publication.
+records alone do not enable successor browser views or durable diary publication.
 No canonical legal-action bytes or authority versions are serialized to HTTP. The
 [Angular workspace](src/Cna.Maproom/README.md) provides
 `projects/maproom-alpha` and the internal `@sandtable/field-atlas` library. Storybook uses the same

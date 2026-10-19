@@ -54,6 +54,10 @@ public sealed class TemporaryPlayerViewProjectionTests
             projector.Map(cut, Seat("axis", "22222222-2222-4222-8222-222222222222"))))
             .RootElement.GetProperty("ownFormations")[0]
             .GetProperty("formationId").GetString());
+        Assert.Null(projector.Map(cut with
+        {
+            Actions = [cut.Actions[0] with { OpportunityId = "private-opportunity" }],
+        }, axis));
     }
 
     [Fact]
@@ -110,6 +114,26 @@ public sealed class TemporaryPlayerViewProjectionTests
         Assert.Equal("human", first.RootElement.GetProperty("position")
             .GetProperty("decision").GetString());
         Assert.Empty(first.RootElement.GetProperty("warDiary").EnumerateArray());
+        Assert.Null(projector.Map(initiative with
+        {
+            Actions = [initiative.Actions[0] with { OpportunityId = "hidden-opportunity" },
+                initiative.Actions[1]],
+        }, seat));
+        Assert.Null(projector.Map(initiative with
+        {
+            Actions = [initiative.Actions[0],
+                initiative.Actions[1] with
+                { OutwardActionId = initiative.Actions[0].OutwardActionId }],
+        }, seat));
+        Assert.Null(projector.Map(initiative with
+        {
+            Actions = [initiative.Actions[0],
+                initiative.Actions[1] with { CoreActionId = initiative.Actions[0].CoreActionId }],
+        }, seat));
+        Assert.Null(projector.Map(initiative with
+        {
+            Actions = [initiative.Actions[0] with { CoreActionId = "" }, initiative.Actions[1]],
+        }, seat));
 
         var weather = initiative with
         {
