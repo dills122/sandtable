@@ -111,6 +111,16 @@ accepted-decline actor orientations, with every cut checked only for the Axis tr
 they are not a durable host restart, storage implementation, or an
 all-row cut certificate.
 
+Both authentic actor orientations also exercise every cut of the post-open timeout and
+pre-open clock-unavailable cancellation paths in separate fresh processes. Each readback
+reauthenticates the original CreationRequest, ten parent ledgers, R03 ledger and private
+Source/own ledger. Canonical Control, receipt retry, and next-input Source/event/ledger/Control
+bytes must match the original trace. The unchanged parent contains World, RNG and resource
+facts; cancellation must preserve it, issue its own receipt without a synthetic decline, and
+finish at the same-slot Reserve Release with `admitted=false` and no public actions. Wrong
+actor, stale input and tampered Source, own ledger or R03 ancestry reject at the relevant cut.
+This is a bounded two-root proof, not an all-row or durable-host readback certificate.
+
 ## Remaining gates
 
 This bounded path is not the complete P01 support certificate. In particular, source-legal
@@ -129,6 +139,7 @@ python3 -B docs/specs/verify-combat-p01-explicit-rba-v1.py /Users/dsteele/.codex
 The first command exercises both authentic actor orientations, explicit decline, timeout
 cancellation before and after decision opening, receipt retry, nonterminal replay,
 Axis all-cut and Commonwealth selected-cut fresh-process readback and continuation,
+both actor orientations' every-cut fresh-process cancellation retry and continuation,
 ancestry and event mutations, wrong actor,
 late decision, attempted RBA movement and adjacent positive rejection. The second replays the
 original pinned 300-row R03 catalogue with source PDF pins, then checks the narrower 244/56

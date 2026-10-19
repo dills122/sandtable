@@ -54,7 +54,8 @@ class ExplicitRbaTests(unittest.TestCase):
         cls.commonwealth = fixture.terminal(169)
         cls.adjacent = fixture.terminal(36)
 
-    def run_path(self, root, cancel=False, expected_actor=None, capture_controls=False):
+    def run_path(self, root, cancel=False, expected_actor=None, capture_controls=False,
+                 cancel_before_open=False):
         original, parents, r03 = root
         source = reference.source_for(original)
         ledger = []
@@ -63,20 +64,25 @@ class ExplicitRbaTests(unittest.TestCase):
             self.assertEqual(expected_actor, initial["parent"]["activeCycle"]["actingSide"])
         defender = reference.defender_ref(initial)["originalSide"]
         self.assertIn(defender, ("axis", "commonwealth"))
-        path = [("close-no-assault-selection", "system", None),
-                ("complete-no-assault-step", "system", None),
-                ("complete-no-assault-step", "system", None),
-                ("open-rba-decision", "system", 1000),
-                ("cancel-rba" if cancel else "decline-rba",
-                 "system" if cancel else defender, 31000 if cancel else 1001),
-                *[("complete-no-assault-step", "system", None)] * 4]
+        path = [("close-no-assault-selection", "system", None, True),
+                ("complete-no-assault-step", "system", None, True),
+                ("complete-no-assault-step", "system", None, True)]
+        if cancel_before_open:
+            self.assertTrue(cancel)
+            path.append(("cancel-rba", "system", None, False))
+        else:
+            path.extend((("open-rba-decision", "system", 1000, True),
+                         ("cancel-rba" if cancel else "decline-rba",
+                          "system" if cancel else defender, 31000 if cancel else 1001, True)))
+        path.extend([("complete-no-assault-step", "system", None, True)] * 4)
         events = []
         cuts = [(source, ledger)]
         inputs = []
         controls = [reference.control_bytes(initial)] if capture_controls else []
-        for kind, actor, now in path:
+        for kind, actor, now, available in path:
             before = reference.replay(source, parents, r03, ledger)
-            raw = reference.input_bytes(reference.expected_input(before, kind, actor=actor, now=now))
+            raw = reference.input_bytes(reference.expected_input(
+                before, kind, actor=actor, now=now, available=available))
             updated, next_ledger, event, receipt = reference.apply(
                 source, parents, r03, ledger, raw)
             self.assertIsNotNone(event)
@@ -92,8 +98,9 @@ class ExplicitRbaTests(unittest.TestCase):
         self.assertTrue(terminal["closed"])
         self.assertTrue(terminal["position"]["positionId"].endswith(".reserve-release"))
         self.assertEqual("cancelled" if cancel else "declined", terminal["rbaOutcome"])
-        self.assertEqual(9, len(events))
-        expected_order = reference.SCHEMA["eventOrders"]["cancelledDecision" if cancel
+        self.assertEqual(8 if cancel_before_open else 9, len(events))
+        expected_order = reference.SCHEMA["eventOrders"]["preOpenCancelled" if cancel_before_open
+                                                          else "cancelledDecision" if cancel
                                                           else "acceptedDecline"]
         self.assertEqual(expected_order, [event["eventType"] for event in events])
         self.assertEqual(initial["parent"]["world"], terminal["parent"]["world"])
@@ -354,6 +361,92 @@ class ExplicitRbaTests(unittest.TestCase):
         self.assertFalse(terminal["admitted"])
         self.assertEqual([], terminal["publicActions"])
         self.assertTrue(json.loads(controls[-1])["closed"])
+
+    def test_both_cancellation_paths_every_cut_retry_and_continue_in_fresh_process(self):
+        for root, actor in ((self.axis, "axis"), (self.commonwealth, "commonwealth")):
+            for before_open in (False, True):
+                with self.subTest(actor=actor, before_open=before_open):
+                    cuts, events, inputs, controls = self.run_path(
+                        root, cancel=True, expected_actor=actor,
+                        capture_controls=True, cancel_before_open=before_open)
+                    opening = json.loads(controls[0])
+                    cancel_index = 3 if before_open else 4
+                    self.assertEqual(len(inputs) + 1, len(cuts))
+                    self.assertEqual(len(cuts), len(controls))
+                    self.assertEqual(
+                        "combat-retreat-decision-preopen-cancelled" if before_open
+                        else "combat-retreat-decision-cancelled",
+                        events[cancel_index]["eventType"])
+                    self.assertNotIn("combat-retreat-before-assault-declined",
+                                     [event["eventType"] for event in events])
+                    for index, (source, ledger) in enumerate(cuts):
+                        with self.subTest(actor=actor, before_open=before_open, cut=index):
+                            observed = fresh_readback(
+                                root, source, ledger,
+                                retry=None if index == 0 else inputs[index - 1],
+                                next_input=None if index == len(inputs) else inputs[index])
+                            self.assertNotIn("rejected", observed)
+                            control = json.loads(controls[index])
+                            self.assertEqual(b64(controls[index]), observed["control"])
+                            self.assertEqual(control["stateVersion"], observed["version"])
+                            self.assertEqual(control["prefix"], observed["prefix"])
+                            self.assertEqual(control["position"]["positionId"], observed["position"])
+                            self.assertEqual(control["lastReceiptId"], observed["lastReceiptId"])
+                            self.assertEqual(opening["parent"], control["parent"])
+                            self.assertEqual(b64(reference.encode(opening["parent"]["world"])),
+                                             observed["world"])
+                            self.assertEqual(b64(reference.encode(opening["parent"]["randomState"])),
+                                             observed["randomState"])
+                            self.assertIsNone(control["declineReceiptId"])
+                            self.assertFalse(observed["admitted"])
+                            self.assertEqual([], observed["publicActions"])
+                            if index:
+                                self.assertEqual(dict(
+                                    source=b64(source), ledger=[b64(item) for item in ledger],
+                                    event=None, receipt=events[index - 1]["receiptId"]),
+                                    observed["retry"])
+                            if index < len(inputs):
+                                next_source, next_ledger = cuts[index + 1]
+                                self.assertEqual(dict(
+                                    source=b64(next_source),
+                                    ledger=[b64(item) for item in next_ledger],
+                                    event=b64(reference.encode(events[index])),
+                                    receipt=events[index]["receiptId"],
+                                    control=b64(controls[index + 1])), observed["next"])
+                    terminal = json.loads(controls[-1])
+                    self.assertTrue(terminal["closed"])
+                    self.assertEqual(opening["positions"][-1], terminal["position"])
+                    self.assertTrue(terminal["position"]["positionId"].endswith(".reserve-release"))
+                    self.assertEqual("cancelled", terminal["rbaOutcome"])
+                    self.assertEqual(events[cancel_index]["receiptId"],
+                                     terminal["cancellationReceiptId"])
+                    self.assertIsNone(terminal["rbaOpenReceiptId"] if before_open
+                                      else terminal["declineReceiptId"])
+
+                    source, ledger = cuts[cancel_index]
+                    wrong_actor = json.loads(inputs[cancel_index])
+                    wrong_actor["actor"] = reference.defender_ref(
+                        reference.replay(source, root[1], root[2], ledger))["originalSide"]
+                    stale = json.loads(inputs[cancel_index])
+                    stale["expectedPriorVersion"] -= 1
+                    for bad in (wrong_actor, stale):
+                        self.assertEqual("next", fresh_readback(
+                            root, source, ledger,
+                            next_input=reference.encode(bad))["rejected"])
+                    next_source, next_ledger = cuts[cancel_index + 1]
+                    tampered_source = reference.parse_source(next_source)
+                    tampered_source["eventCanonicalUtf8"][cancel_index] += " "
+                    self.assertEqual("replay", fresh_readback(
+                        root, reference.encode(tampered_source), next_ledger)["rejected"])
+                    tampered_ledger = next_ledger.copy()
+                    tampered_ledger[cancel_index] += b" "
+                    self.assertEqual("replay", fresh_readback(
+                        root, next_source, tampered_ledger)["rejected"])
+                    tampered_r03 = root[2].copy()
+                    tampered_r03[-1] += b" "
+                    self.assertEqual("replay", fresh_readback(
+                        (root[0], root[1], tampered_r03),
+                        next_source, next_ledger)["rejected"])
 
     def test_fresh_readback_rejects_source_event_input_length_and_stale_next(self):
         root = self.axis
