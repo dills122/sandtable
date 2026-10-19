@@ -1,0 +1,12 @@
+{
+  "contract": "combat-p01-paid-fresh-readback-v1",
+  "authenticRoots": [
+    {"index": 36, "actingSide": "axis"},
+    {"index": 168, "actingSide": "commonwealth"}
+  ],
+  "parentLedgersIncludingR03": 11,
+  "committedEvents": 1,
+  "expectedPaidAmmo": [0, 0],
+  "admitted": false,
+  "publicActions": []
+}
