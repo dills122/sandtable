@@ -116,6 +116,7 @@
         [attr.aria-modal]="mapFullscreen() ? 'true' : null"
       >
         <div
+          #mapScroll
           class="connected-map-scroll"
           role="region"
           [attr.tabindex]="mapFullscreen() ? -1 : 0"
@@ -188,6 +189,9 @@
       >
         @if (selected(); as formation) {
           <p class="fa-muted">Own side · {{ formation.kindLabel }}</p>
+          <button type="button" [disabled]="!selectedPoint()" (click)="locateSelected()">
+            Locate on map
+          </button>
           <dl>
             <div>
               <dt>Location</dt>

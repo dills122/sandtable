@@ -624,7 +624,7 @@ for (const seat of ['axis', 'commonwealth'] as const) {
           formationId: 'outward-truck',
           label: `${own} truck`,
           kindLabel: 'Truck convoy',
-          locationId: 'east',
+          locationId: reads === 2 ? 'missing' : 'east',
           orderStatusLabel: 'Reserve I',
         };
         const ownFormations = reads === 3 ? [infantry] : [infantry, truck];
@@ -678,7 +678,7 @@ for (const seat of ['axis', 'commonwealth'] as const) {
       } else throw new Error(`Unexpected API call: ${path}`);
     });
 
-    await page.goto('/connected');
+    await page.goto('/?mode=campaign');
     await page.getByRole('button', { name: 'Check local fixtures' }).click();
     await page.getByRole('button', { name: `Create and enter ${own}` }).click();
     await expect(page.getByRole('heading', { name: 'Situation map' })).toBeVisible();
@@ -695,6 +695,25 @@ for (const seat of ['axis', 'commonwealth'] as const) {
       .click();
     await expect(page.locator('.connected-inspector')).toContainText('Move truck');
     await expect(page.getByRole('button', { name: 'Move truck' })).toHaveCount(0);
+    const scene = page.locator('.connected-map .map-scene');
+    const fitted = await scene.getAttribute('style');
+    const locate = page.getByRole('button', { name: 'Locate on map' });
+    await locate.focus();
+    await page.keyboard.press('Enter');
+    await expect(page.getByLabel('Map zoom')).toHaveText('150%');
+    await expect(scene).not.toHaveAttribute('style', fitted!);
+    await expect(page.locator('.connected-map .map-canvas')).toBeFocused();
+    await expect(page.locator('.roster-item').filter({ hasText: `${own} truck` })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+    await expect(page.getByText(`${opposing} infantry`)).toHaveCount(0);
+    await expect(page.getByRole('button', { name: /prepare an order|issue order/i })).toHaveCount(
+      0,
+    );
+    await page.getByRole('button', { name: 'Fit map' }).click();
+    await expect(page.getByLabel('Map zoom')).toHaveText('100%');
+    await expect(scene).toHaveAttribute('style', fitted!);
 
     await page.getByRole('button', { name: 'Refresh view' }).click();
     await expect.poll(() => reads).toBe(2);
@@ -702,6 +721,7 @@ for (const seat of ['axis', 'commonwealth'] as const) {
       'aria-pressed',
       'true',
     );
+    await expect(locate).toBeDisabled();
 
     await page.getByRole('button', { name: 'Refresh view' }).click();
     await expect.poll(() => reads).toBe(3);
