@@ -131,6 +131,70 @@ class SelectedAssaultTests(unittest.TestCase):
     def test_clock_unavailable_before_rba_open_cancels_without_decline(self):
         self.run_path(self.axis, cancel=True, preopen=True)
 
+    def test_post_open_unavailable_clock_cancels_at_every_cut_without_decline(self):
+        for root, attacker, defender in (
+                (self.axis, "axis", "commonwealth"),
+                (self.commonwealth, "commonwealth", "axis")):
+            with self.subTest(attacker=attacker):
+                source, ledger, state = self.begin(root)
+                original_world = copy.deepcopy(state["parent"]["world"])
+                original_random = copy.deepcopy(state["parent"]["randomState"])
+                steps = [
+                    ("open-selection", "system", 1000, True),
+                    ("select-assault", attacker, 1001, True),
+                    ("complete-step", "system", None, True),
+                    ("complete-step", "system", None, True),
+                    ("open-rba", "system", 1002, True),
+                    ("cancel-rba", "system", None, False),
+                    *(("complete-step", "system", None, True) for _ in range(4)),
+                ]
+                cuts = [(source, ledger, state)]
+                for kind, actor, now, available in steps:
+                    if kind == "cancel-rba":
+                        self.assertEqual(defender, state["rbaDecision"]["owner"])
+                        unavailable_decline = ref.expected_input(
+                            state, "decline-rba", actor=defender,
+                            now=None, available=False)
+                        with self.assertRaises(ValueError):
+                            ref.transition(state, unavailable_decline)
+                    source, ledger, state, event = self.admit(
+                        root, source, ledger, state, kind, actor=actor,
+                        now=now, available=available)
+                    if kind == "cancel-rba":
+                        self.assertEqual("combat-selected-assault-cancelled",
+                                         event["eventType"])
+                        self.assertEqual("cancel-selected-intent-without-decline",
+                                         event["effect"]["proofKind"])
+                        self.assertEqual("cancelled", state["rbaOutcome"])
+                        self.assertIsNotNone(state["rbaOpenReceiptId"])
+                        self.assertIsNone(state["declineReceiptId"])
+                        self.assertIsNotNone(state["cancellationReceiptId"])
+                    cuts.append((source, ledger, state))
+                for index, (cut_source, cut_ledger, control) in enumerate(cuts):
+                    with self.subTest(attacker=attacker, cut=index):
+                        self.assertEqual(ref.control_bytes(control),
+                                         ref.control_bytes(ref.replay(
+                                             cut_source, root[1], root[2],
+                                             cut_ledger)))
+                        self.assertEqual(original_world,
+                                         control["parent"]["world"])
+                        self.assertEqual(original_random,
+                                         control["parent"]["randomState"])
+                        self.assertIsNone(control["declineReceiptId"])
+                        self.assertFalse(control["admitted"])
+                        self.assertEqual([], control["publicActions"])
+                        if cut_ledger:
+                            self.assertEqual(
+                                (cut_source, cut_ledger, None,
+                                 control["lastReceiptId"]),
+                                ref.apply(cut_source, root[1], root[2],
+                                          cut_ledger, cut_ledger[-1]))
+                self.assertTrue(state["closed"])
+                self.assertTrue(state["position"]["positionId"].endswith(
+                    ".reserve-release"))
+                self.assertNotIn("decline-rba",
+                                 [entry["kind"] for entry in state["receipts"]])
+
     def test_wrong_actor_target_participant_and_stale_selection_fail(self):
         root = self.axis
         source, ledger, state = self.begin(root)
