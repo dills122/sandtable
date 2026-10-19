@@ -83,36 +83,42 @@ public sealed class TemporaryPlayerViewProjectionTests
         }, axis));
     }
 
-    [Theory]
-    [InlineData("diary.initiativeOrder", "Initiative order recorded",
-        "Your choice of acting order was recorded.", false)]
-    [InlineData("diary.reserveDesignated", "Reserve assigned",
-        "A formation you control was assigned to reserve.", true)]
-    [InlineData("diary.reserveCompleted", "Reserve choices complete",
-        "Your reserve choices were completed.", false)]
-    [InlineData("diary.elementMoved", "Formation moved",
-        "A formation you control moved.", true)]
-    [InlineData("diary.movementStopped", "Movement stopped",
-        "Movement for one of your formations stopped.", false)]
-    [InlineData("diary.reactionMoved", "Reaction move recorded",
-        "A formation you control made a reaction move.", true)]
-    [InlineData("diary.reactionCompleted", "Reaction complete",
-        "Your reaction opportunity was completed.", false)]
-    [InlineData("diary.reactionDeclined", "Reaction declined",
-        "You declined the reaction opportunity.", false)]
-    [InlineData("diary.movementCompleted", "Movement complete",
-        "Your movement segment was completed.", false)]
-    public void ApprovedDiaryCatalogFreezesExactTextAndFormationPolicy(
-        string key, string title, string body, bool ownFormationLink)
+    [Fact]
+    public void ApprovedDiaryCatalogFreezesExactTextAndFormationPolicy()
     {
-        var copy = TemporaryPlayerViewProjection.LookupDiaryCopy(Pin,
-            TemporaryPlayerViewProjection.DiaryCatalogVersion, "en-CA", key);
-        Assert.NotNull(copy);
-        Assert.Equal(title, copy.Title);
-        Assert.Equal(body, copy.Body);
-        Assert.Equal(ownFormationLink, copy.OwnFormationLink);
-        Assert.InRange(copy.Title.Length, 1, 80);
-        Assert.InRange(copy.Body.Length, 1, 160);
+        (string Key, string Title, string Body, bool OwnFormationLink)[] cases =
+        [
+            ("diary.initiativeOrder", "Initiative order recorded",
+                "Your choice of acting order was recorded.", false),
+            ("diary.reserveDesignated", "Reserve assigned",
+                "A formation you control was assigned to reserve.", true),
+            ("diary.reserveCompleted", "Reserve choices complete",
+                "Your reserve choices were completed.", false),
+            ("diary.elementMoved", "Formation moved",
+                "A formation you control moved.", true),
+            ("diary.movementStopped", "Movement stopped",
+                "Movement for one of your formations stopped.", false),
+            ("diary.reactionMoved", "Reaction move recorded",
+                "A formation you control made a reaction move.", true),
+            ("diary.reactionCompleted", "Reaction complete",
+                "Your reaction opportunity was completed.", false),
+            ("diary.reactionDeclined", "Reaction declined",
+                "You declined the reaction opportunity.", false),
+            ("diary.movementCompleted", "Movement complete",
+                "Your movement segment was completed.", false),
+        ];
+        Assert.Equal(9, cases.Length);
+        foreach (var item in cases)
+        {
+            var copy = TemporaryPlayerViewProjection.LookupDiaryCopy(Pin,
+                TemporaryPlayerViewProjection.DiaryCatalogVersion, "en-CA", item.Key);
+            Assert.NotNull(copy);
+            Assert.Equal(item.Title, copy.Title);
+            Assert.Equal(item.Body, copy.Body);
+            Assert.Equal(item.OwnFormationLink, copy.OwnFormationLink);
+            Assert.InRange(copy.Title.Length, 1, 80);
+            Assert.InRange(copy.Body.Length, 1, 160);
+        }
     }
 
     [Fact]
