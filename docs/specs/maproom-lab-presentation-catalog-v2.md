@@ -7,8 +7,20 @@ entry/silent decisions, or make a successor `/view` available.
 
 ## Boundary and version
 
-- Proposed catalog ID: `breakdown-truck-maproom.diary.v2`; locale: `en-CA` only. An
-  unsupported locale, catalog ID, ruleset/scenario/setup/content pin, event version,
+- Proposed catalog ID: `breakdown-truck-maproom.diary.v2`; locale: `en-CA` only.
+  This version is limited to the same development fixture identity as catalog v1:
+
+  | Source component | Exact accepted value |
+  | --- | --- |
+  | Ruleset hash | `17f3e6047f34b5bf6f5f809055863b664a4bd82a8481db83ee83e0ae5cad3a2a` |
+  | Scenario ID | `breakdown-truck-lab` |
+  | Setup ID and hash | `rules-lab.breakdown.truck.v1`; `sha256:e6631e81ad8f97e39fd9d7eec93bad7fe2b39db4d2d3059ed94a02dd4093e7a3` |
+  | Content ID and hash | `rules-lab.content.breakdown-truck.v1`; `sha256:646e76e69ecceb82216b37d84e950928099acd8a3cb04b51526d0fe631e512ee` |
+
+  The current v1 `SourcePin` is the ruleset hash, scenario ID, setup hash and
+  content hash in that order, joined with `|`; the IDs are checked against
+  the pinned creation source. An unsupported locale, catalog ID,
+  ruleset/scenario/setup/content pin, event version,
   action/reason pairing, or owner mapping makes the paired committed projection
   unavailable. There is no fallback to event text, a model response, or generic copy.
 - `CampaignAudienceOutcomeSource` must first prove the exact accepted step and both
@@ -71,9 +83,10 @@ failed proof.
 ## Approval and implementation gate
 
 Owner decision needed: approve or revise each entry/silent classification and
-the exact `en-CA` strings. Until that decision is recorded, the private source
-returns `copy-catalog-unapproved`, the tracker cannot publish diary entries,
-and the connected browser remains on its initial read-only cut.
+the exact `en-CA` strings. Until that decision is recorded and a runtime catalog
+is implemented, any proposed copy key must remain unavailable to the tracker;
+the connected browser remains on its initial read-only cut. This document does
+not define a currently implemented response code.
 
 After approval, implement a versioned catalog in
 `TemporaryPlayerViewProjection` and test all current typed variants for both
