@@ -1,13 +1,14 @@
-# Rules-lab Maproom diary presentation catalog v2 — owner proposal
+# Rules-lab Maproom diary presentation catalog v2 — owner-approved copy
 
-Status: **proposed for owner approval; no runtime or browser activation**. This catalog
-would extend the development-only `breakdown-truck-maproom.v1` initial-cut presentation
-catalog. It does not change adjudication, grant an audience, approve the proposed
-entry/silent decisions, or make a successor `/view` available.
+Status: **exact copy and entry/silent classifications owner-approved on 2026-10-19;
+private fixed-text lookup only, no diary or browser activation**. This catalog
+extends the development-only `breakdown-truck-maproom.v1` initial-cut presentation
+catalog. It does not change adjudication, grant an audience, or make a successor
+`/view` available.
 
 ## Boundary and version
 
-- Proposed catalog ID: `breakdown-truck-maproom.diary.v2`; locale: `en-CA` only.
+- Approved catalog ID: `breakdown-truck-maproom.diary.v2`; locale: `en-CA` only.
   This version is limited to the same development fixture identity as catalog v1:
 
   | Source component | Exact accepted value |
@@ -36,9 +37,9 @@ entry/silent decisions, or make a successor `/view` available.
   tracker-owned opaque audience values and are not derived from source event IDs.
   Hidden-only and silent accepted steps do not advance the diary cursor.
 
-## Proposed owner-visible entries
+## Approved owner-visible copy
 
-The exact fixed strings below are **candidates**, not approved copy. An entry is
+The exact fixed strings below are owner-approved. An entry may become
 visible only to the authenticated acting seat after the matching typed
 event/action/audience/receipt/head proof in
 `maproom-audience-diary-source-v1.md`. The other seat receives no excerpt.
@@ -57,12 +58,12 @@ event/action/audience/receipt/head proof in
 
 The strings intentionally omit destination, route, movement cost, weather, stop
 cause, opposing state, private opportunity IDs, and inferred success. An optional
-own `formationId` supplies selection/linking only; the text remains fixed. Approval
-of a key also requires the owner to approve the corresponding entry classification
-in the source proposal. Silence for the other seat is not evidence that its map,
+own `formationId` supplies selection/linking only; the text remains fixed. The
+owner's approval covers the corresponding entry classifications in the source
+contract. Silence for the other seat is not evidence that its map,
 ledger, action list, or ordinary audience revision stayed unchanged.
 
-## Proposed silent classifications
+## Approved silent classifications
 
 No excerpt for either seat from the following exact current typed events, after
 their matching source proof: initial `CampaignCreatedV10` only;
@@ -80,16 +81,17 @@ Any other action, reason, audience, or event-version pairing is unavailable.
 Silence cannot be used as a fallback for a missing copy key, unknown event, or
 failed proof.
 
-## Approval and implementation gate
+## Implementation gate
 
-Owner decision needed: approve or revise each entry/silent classification and
-the exact `en-CA` strings. Until that decision is recorded and a runtime catalog
-is implemented, any proposed copy key must remain unavailable to the tracker;
-the connected browser remains on its initial read-only cut. This document does
-not define a currently implemented response code.
+The owner approved each entry/silent classification and exact `en-CA` string on
+2026-10-19. `TemporaryPlayerViewProjection.LookupDiaryCopy` now freezes those
+strings behind the exact fixture source pin, catalog version, locale, and key.
+It is host-private and supplies presentation data only; no accepted-step proof,
+diary cursor, retention, tracker append, or public response consumes it yet.
+The connected browser remains on its initial read-only cut.
 
-After approval, implement a versioned catalog in
-`TemporaryPlayerViewProjection` and test all current typed variants for both
+Before diary publication, consume the approved catalog only after the paired
+accepted-step and committed-head proof, and test all current typed variants for both
 seats, including authentic no-eligible System reaction closure. Verify
 formation mapping, 51-to-50 retention and cursor overflow, hidden-only and
 silent cursor stability, exact retry without duplicate append, cross-seat

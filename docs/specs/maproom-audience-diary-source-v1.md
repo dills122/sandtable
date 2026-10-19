@@ -1,8 +1,9 @@
-# MAP-08B audience diary source proposal
+# MAP-08B audience diary source contract
 
-Status: **proposed contract for review; no post-step view or diary implementation**. This
+Status: **typed private source merged; exact entry/silent classifications and copy
+owner-approved on 2026-10-19; no post-step view or diary publication**. This
 document narrows the [MAP-08B side projection prerequisites](maproom-side-projection-prerequisites-v1.md)
-for the development-only `breakdown-truck-lab` fixture. It does not approve player copy or
+for the development-only `breakdown-truck-lab` fixture. Approval of fixed copy does not
 authorize decoding canonical events in the browser or HTTP handler.
 
 ## Existing boundary and missing source
@@ -28,10 +29,10 @@ path writes through [`CampaignCurrentEventSerializer`](../../src/Cna.Core/Campai
 current creation, 11 preamble event classes, and eight Breakdown successor event classes
 (20 typed classes total). The historical `CampaignEventSerializer` alone is not the
 current accepted-step inventory. Only a trusted Core hosting adapter can validate an exact
-typed accepted event, its actor and source pins, and derive the proposed side-safe outcome below.
+typed accepted event, its actor and source pins, and derive the host-private side-safe outcome below.
 The Orleans tracker must not parse raw event JSON into presentation text.
 
-## Proposed private source contract
+## Implemented private source contract
 
 The first contract-only implementation is
 [`CampaignAudienceOutcomeSource.Decide`](../../src/Cna.Core/Hosting/CampaignAudienceOutcomeSource.cs).
@@ -40,10 +41,11 @@ recomputes the step **in memory only** to compare its canonical command, event, 
 and successor snapshot. It never commits a second turn or advances the supplied session.
 Both predecessor and successor side cuts must be coherent before it emits a paired,
 versioned host-private proof with source and committed-head hashes. Unknown or mismatched
-input returns no typed proof for either side. The proposed entry copy keys remain
-`copy-catalog-unapproved` and unavailable; no diary cursor, text, HTTP response, or
-successor `/view` consumes this proof yet. This is only the accepted-outcome decision
-source prerequisite, not the presentation approval or diary projection.
+input returns no typed proof for either side. The existing source still marks entry
+copy keys `copy-catalog-unapproved` and unavailable until its private proof is consumed
+through the approved versioned catalog; no diary cursor, text, HTTP response, or
+successor `/view` consumes this proof yet. This is the accepted-outcome decision
+source prerequisite, not the diary projection.
 
 The temporary host now consumes the proof only for the
 [private outcome head binding](maproom-private-outcome-head-binding-v1.md). It checks the
@@ -74,19 +76,20 @@ explicit policy is approved. A silent lifecycle classification also requires an 
 known event/action/actor pairing and verified source pins; the event class alone cannot
 silence an unexpected accepted step.
 
-The table is an **allowlist proposal** for the 20 classes serialized by the current path.
+The owner approved the entry/silent classifications in this allowlist for the 20
+classes serialized by the current path on 2026-10-19.
 It does not establish that every kind is reachable in the temporary fixture. `Entry` means
 one excerpt for the authenticated acting seat and `silent` for the other; `silent` means no
 excerpt for either seat. A row is eligible only when its exact event version, accepted
 action candidate, submitted audience, receipt, and predecessor/successor heads agree.
 The event's `ActingSide` is a cross-check, never an audience grant. `System` may use only
 the listed System variants. Exact `title`/`body` strings and the entry/silent decisions
-need owner approval before implementation. The candidate strings and catalog boundary
-are in [presentation catalog v2](maproom-lab-presentation-catalog-v2.md), which remains
-a proposal. Keys below identify proposed copy, not permission to invent text from
+received owner approval on 2026-10-19. The exact strings and catalog boundary
+are in [presentation catalog v2](maproom-lab-presentation-catalog-v2.md). Keys below
+identify approved fixed copy, not permission to invent text from
 event fields.
 
-| Current typed accepted event | Accepted action/audience proof | Proposed diary decision / copy key |
+| Current typed accepted event | Accepted action/audience proof | Approved diary decision / copy key |
 | --- | --- | --- |
 | `CampaignCreatedV10` | Creation only; no submitted action | Initial-only silent; later appearance unavailable; cursor `0`. |
 | `InitiativeDetermined` | `ResolveInitiativeAction`, `System` | Silent; no outcome details enter diary. |
@@ -101,11 +104,11 @@ event fields.
 | `ReserveElementDesignated` | `DesignateReserveAction`, same human `ActingSide`; own element in side cut | Entry for acting seat; `diary.reserveDesignated`; map private element ID to permitted outward formation ID. |
 | `ReserveDesignationCompleted` | `CompleteReserveDesignationAction`, same human `ActingSide` | Entry for acting seat; `diary.reserveCompleted`. |
 | `ElementMovedV3` (`element-moved` v3) | `MoveElementAction`, same human `ActingSide`; own element in side cut | Entry for acting seat; `diary.elementMoved`; omit cost, representation and unapproved route facts. Historical `ElementMoved` is not a current successor. |
-| `ElementMovementStopped` (`element-movement-stopped` v1) | `StopElementMovementAction`, same human `ActingSide` and route/action capability | Entry for acting seat; proposed `diary.movementStopped`; omit private route and stop IDs. |
+| `ElementMovementStopped` (`element-movement-stopped` v1) | `StopElementMovementAction`, same human `ActingSide` and route/action capability | Entry for acting seat; `diary.movementStopped`; omit private route and stop IDs. |
 | `BreakdownStopResolved` (`breakdown-stop-resolved` v1) | `ResolveBreakdownStopAction`, `System`; stop capability and heads match | Silent. System resolution cannot inherit the prior player's audience. |
-| `ReactingElementMovedV2` (`reacting-element-moved` v2) | `MoveReactingElementAction`, same human `ActingSide`; own reacting element and outward opportunity alias match | Entry for acting seat; proposed `diary.reactionMoved`; omit private opportunity/window IDs. |
-| `ReactionParticipantCompletedV2` (`reaction-participant-completed` v2) | `CompleteReactionParticipantAction`, same human `ActingSide`, opportunity and window capabilities match | Entry for acting seat; proposed `diary.reactionCompleted`; no opposing opportunity details. |
-| `ReactionWindowClosedV2` (`reaction-window-closed` v2) | `DeclineReactionWindowAction` by same human `ActingSide` and reason `PlayerDecline`; or matching `System` unavailable/timeout/no-eligible close action and reason | Human decline: entry only for acting seat, proposed `diary.reactionDeclined`. Three System close reasons: silent. Any other action/reason/audience pairing is unavailable. |
+| `ReactingElementMovedV2` (`reacting-element-moved` v2) | `MoveReactingElementAction`, same human `ActingSide`; own reacting element and outward opportunity alias match | Entry for acting seat; `diary.reactionMoved`; omit private opportunity/window IDs. |
+| `ReactionParticipantCompletedV2` (`reaction-participant-completed` v2) | `CompleteReactionParticipantAction`, same human `ActingSide`, opportunity and window capabilities match | Entry for acting seat; `diary.reactionCompleted`; no opposing opportunity details. |
+| `ReactionWindowClosedV2` (`reaction-window-closed` v2) | `DeclineReactionWindowAction` by same human `ActingSide` and reason `PlayerDecline`; or matching `System` unavailable/timeout/no-eligible close action and reason | Human decline: entry only for acting seat, `diary.reactionDeclined`. Three System close reasons: silent. Any other action/reason/audience pairing is unavailable. |
 | `MovementSegmentCompletedV2` (`movement-segment-completed` v2) | `CompleteMovementSegmentAction`, same human `ActingSide` | Entry for acting seat; `diary.movementCompleted`. Historical v1 completion is not current. |
 | `BreakdownSegmentCompleted` (`breakdown-segment-completed` v1) | `CompleteBreakdownSegmentAction`, `System`, idle Breakdown flow and heads match | Silent. |
 
@@ -135,7 +138,7 @@ the diary cursor.
 - Keep the latest 50 approved entries per side in commit order. `warDiary` returns this
   window in ascending `audienceCursor` order; `nextDiaryCursor` is that side's latest
   cursor, including when the window is empty. The current MAP-04 view defines no
-  independent diary pagination route, so this proposal does not promise older entries.
+  independent diary pagination route, so this contract does not promise older entries.
 - Advance both side cuts and all ordered diary decisions as one private committed-head update,
   before publishing either side's view. Any mismatch, skipped cut, unsupported source,
   or failed projection makes reads audience-neutrally unavailable. A diary entry must
@@ -180,12 +183,12 @@ the diary cursor.
    errors, or logs. Run real in-process two-seat HTTP tests at the loopback/session
    boundary after the private source exists.
 
-## Review decisions still required
+## Remaining implementation gates
 
-Approve the proposed entries, including stop, reaction move/completion/decline, and
-movement completion, or explicitly classify any one of them silent. Approve exact fixed
-catalog copy for each approved key. Freeze a typed Core-hosting outcome API that proves
-each accepted event/action/reason pair and both committed heads without exposing canonical
-evidence to the Orleans presenter. Until those decisions and tests pass, successor `/view`
-remains unavailable and this document is a proposal, not a claim of a playable API or
+The owner approved the exact entries, silent classes, and fixed catalog copy on
+2026-10-19. The typed Core-hosting outcome source and private committed-head binding
+exist, and the fixed-text catalog lookup is host-private. The remaining work must
+attach approved entries to the atomic tracker update, prove both seats and cursor
+retention, and render only a coherent successor view. Until those tests and review
+pass, successor `/view` remains unavailable; this is no claim of a playable API or
 durable history.
