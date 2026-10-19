@@ -1,0 +1,20 @@
+{
+  "contract": "combat-p01-paid-commit-v1",
+  "contractVersion": 1,
+  "status": "private ordinal-two paid commitment only; unsupported and unissuable",
+  "predecessor": "combat-p01-force-assignment-v1",
+  "sourceFields": ["contractVersion", "forceAssignmentSourceCanonicalUtf8", "eventCanonicalUtf8"],
+  "inputFields": ["contractVersion", "kind", "actor", "cycleId", "expectedPriorVersion", "expectedPriorPrefix", "fromPositionId", "previousReceiptId", "roundId", "candidateId", "assignmentReceiptIds"],
+  "eventFields": ["contractVersion", "eventType", "campaignId", "rulesetHash", "configurationHash", "cycleId", "priorVersion", "stateVersion", "priorPrefix", "input", "effect", "receiptId"],
+  "effectFields": ["commitmentId", "selectionReceiptId", "declineReceiptId", "assignmentReceiptIds", "candidateId", "allocations", "preflight", "preflightHash", "costs", "attackHistoryEdge", "targetUse", "beforeWorldHash", "afterWorldHash", "randomHash", "previousReceiptId"],
+  "receiptDomains": {
+    "preflight": "sandtable.combat.p01.paid-commit.preflight.v1",
+    "segment": "sandtable.combat.p01.paid-commit.segment.v1",
+    "commitment": "sandtable.combat.p01.paid-commit.commitment.v1",
+    "event": "sandtable.combat.p01.paid-commit.event.v1"
+  },
+  "receiptPrefixes": {"preflight": "sha256:", "segment": "p01g.", "commitment": "p01c.", "event": "p01p."},
+  "limits": {"inputBytes": 4096, "eventBytes": 8192, "sourceBytes": 6291456, "controlBytes": 65536, "projectedWorldBytes": 16384, "ledgerEvents": 1, "depth": 32},
+  "admitted": false,
+  "publicActions": []
+}

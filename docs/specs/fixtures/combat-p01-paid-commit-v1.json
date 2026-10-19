@@ -1,0 +1,17 @@
+{
+  "kind": "private-p01-paid-commit-axis-attacker-first",
+  "candidateId": "p01a.d03e4c5e7dea6b44eb9ec00baffe0628b184040837aeb6c6b609987b26d9e8d2",
+  "assignmentReceiptIds": [
+    "p01u.07965bc73ebb1d11cea87483a0d9f920d0eb57b577a741d216af6f29312e1da5",
+    "p01v.54888d81942d050c554ad5aabdc005e1f893ada7590040ff333a543423f8f6c3",
+    "p01v.a5129ab345d7326649ba64bd26154a6f8df8f37804e02b73ff89eede83930e9a",
+    "p01y.26435333856078c64a2d3846e6c4be14a4ad196930cd5ecd430d84163658f14a",
+    "p01y.cd7b9d5c4c38cdbe8fdbca2e051e9b0d0c912b7d87a323eef5c24a19c1417863"
+  ],
+  "commitmentId": "p01c.4b03934b26ae1d10c8239c9b6cc84061e691f30b6486f071772d496e2ef4ca5a",
+  "eventReceiptId": "p01p.730197c99a424746fb9317b31faaf879ddeb1a34f5b9fe408342d1177854b5fb",
+  "preflightHash": "sha256:dd9f028c90d9a9da306b7bf22d16079a90ec59d6bace39c0bf5cb4fe4b2a8801",
+  "finalPrefix": "sha256:d69847451be6dd57593827a48263a5178199a9878e89b0878c69f3aa4ddaa03e",
+  "maximumProjectedWorldBytes": 11521,
+  "projectedCuts": 50416
+}
