@@ -45,6 +45,12 @@ input returns no typed proof for either side. The proposed entry copy keys remai
 successor `/view` consumes this proof yet. This is only the accepted-outcome decision
 source prerequisite, not the presentation approval or diary projection.
 
+The temporary host now consumes the proof only for the
+[private outcome head binding](maproom-private-outcome-head-binding-v1.md). It checks the
+canonical accepted step and paired proof against the current tracker head and both successor
+cuts before installing the private successor. This retains one latest proof, not approved
+entry copy, a diary history/cursor, or permission to remove the public initial-only guard.
+
 For each ordered event in an accepted step, the Core hosting adapter supplies one
 immutable, versioned `AudienceOutcomeDecision` per authorized side **in addition to**
 the canonical evidence and both successor cuts. Each decision carries the

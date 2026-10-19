@@ -139,8 +139,10 @@ source of campaign truth.
 
 The private Core hosting `CampaignAudienceOutcomeSource` can now verify a canonical accepted
 step against its predecessor and successor without publishing it. Its typed paired decisions
-remain unconsumed and proposed entry keys are unavailable until the pinned copy catalog,
-tracker cursor, and coherent successor view are reviewed. The initial-only browser guard stays.
+are now bound to the temporary host's exact committed head and both private successor cuts.
+The host retains only the latest paired proof. Proposed entry keys remain unavailable until
+the pinned copy catalog, tracker cursor, and coherent successor view are reviewed. The
+initial-only browser guard stays.
 
 ### Publication and automatic progression
 

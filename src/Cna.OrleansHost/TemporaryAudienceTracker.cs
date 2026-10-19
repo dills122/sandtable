@@ -13,7 +13,11 @@ internal sealed class TemporaryAudienceTracker
     internal string SourcePin { get; }
     private string RulesetHash { get; }
     private string ScenarioId { get; }
+    private string SetupHash { get; }
+    private string ContentHash { get; }
     internal long StateVersion { get; private set; }
+    internal string CommittedHeadHash { get; private set; } = string.Empty;
+    internal CampaignAudienceOutcomePair? LastAcceptedOutcome { get; private set; }
     internal bool IsAvailable { get; private set; } = true;
 
     private TemporaryAudienceTracker(string campaignId, string rulesetHash,
@@ -22,29 +26,43 @@ internal sealed class TemporaryAudienceTracker
         CampaignId = campaignId;
         RulesetHash = rulesetHash;
         ScenarioId = scenarioId;
+        SetupHash = setupHash;
+        ContentHash = contentHash;
         SourcePin = $"{rulesetHash}|{scenarioId}|{setupHash}|{contentHash}";
     }
 
     internal static TemporaryAudienceTracker? Create(string campaignId, string rulesetHash,
         string scenarioId, string setupHash, string contentHash,
-        CampaignHostPrivateSideCut? axis, CampaignHostPrivateSideCut? commonwealth)
+        string initialHeadHash, CampaignHostPrivateSideCut? axis,
+        CampaignHostPrivateSideCut? commonwealth)
     {
-        if (!ValidPair(campaignId, rulesetHash, scenarioId, axis, commonwealth, 0)) return null;
+        if (!ValidHash(initialHeadHash)
+            || !ValidPair(campaignId, rulesetHash, scenarioId, axis, commonwealth, 0))
+            return null;
         var tracker = new TemporaryAudienceTracker(campaignId, rulesetHash, scenarioId,
             setupHash, contentHash);
-        tracker.AdvancePair(axis!, commonwealth!);
+        tracker.AdvancePair(axis!, commonwealth!, initialHeadHash, null);
         return tracker;
     }
 
-    internal bool Advance(CampaignHostPrivateSideCut? axis, CampaignHostPrivateSideCut? commonwealth)
+    internal bool AdvanceAccepted(CampaignHostPrivateSideCut? axis,
+        CampaignHostPrivateSideCut? commonwealth, CampaignHostAcceptedStep? acceptedStep,
+        CampaignAudienceOutcomePair? outcomes)
     {
         if (!IsAvailable || !ValidPair(CampaignId, RulesetHash, ScenarioId,
-                axis, commonwealth, StateVersion))
+                axis, commonwealth, StateVersion)
+            || !ValidAcceptedStep(axis!, acceptedStep, outcomes))
         {
             IsAvailable = false;
             return false;
         }
-        AdvancePair(axis!, commonwealth!);
+        try { AdvancePair(axis!, commonwealth!, outcomes!.Axis!.SuccessorHeadHash, outcomes); }
+        catch (Exception error) when (error is ArgumentException or InvalidOperationException
+            or OverflowException)
+        {
+            IsAvailable = false;
+            return false;
+        }
         return true;
     }
 
@@ -94,7 +112,8 @@ internal sealed class TemporaryAudienceTracker
         return new Guid(hash.AsSpan(0, 16)).ToString("D");
     }
 
-    private void AdvancePair(CampaignHostPrivateSideCut axis, CampaignHostPrivateSideCut commonwealth)
+    private void AdvancePair(CampaignHostPrivateSideCut axis, CampaignHostPrivateSideCut commonwealth,
+        string headHash, CampaignAudienceOutcomePair? outcome)
     {
         // Build both successor projections before publishing either side's committed head.
         var nextAxis = AdvanceSide(axis);
@@ -102,7 +121,80 @@ internal sealed class TemporaryAudienceTracker
         sides[CampaignActionAudience.Axis] = nextAxis;
         sides[CampaignActionAudience.Commonwealth] = nextCommonwealth;
         StateVersion = axis.StateVersion;
+        CommittedHeadHash = headHash;
+        LastAcceptedOutcome = outcome;
     }
+
+    private bool ValidAcceptedStep(CampaignHostPrivateSideCut axis,
+        CampaignHostAcceptedStep? step, CampaignAudienceOutcomePair? outcomes)
+    {
+        if (step is null || outcomes?.HasTypedProof != true
+            || step.ContractVersion != CampaignHostAcceptedStep.CurrentContractVersion
+            || step.EventRecords.Count != 1)
+            return false;
+        try
+        {
+            var commandBytes = step.CanonicalCommand;
+            var command = CampaignActionSubmissionSerializer.DeserializeCanonical(commandBytes);
+            var receiptBytes = step.CanonicalReceipt;
+            var receipt = CampaignActionAcceptanceReceiptSerializer.DeserializeCanonical(receiptBytes);
+            var commandHash = Hash(commandBytes);
+            var eventHash = Hash(step.EventRecords[0]);
+            using var eventDocument = System.Text.Json.JsonDocument.Parse(step.EventRecords[0]);
+            var eventKind = eventDocument.RootElement.GetProperty("eventType").GetString();
+            var eventVersion = eventDocument.RootElement.GetProperty("contractVersion").GetInt32();
+            var successorHash = Hash(step.SnapshotCheckpoint);
+            var campaignHash = Hash(System.Text.Encoding.UTF8.GetBytes(CampaignId));
+            var sourceHash = Hash(System.Text.Encoding.UTF8.GetBytes(string.Join('\n',
+                RulesetHash, SetupHash, ContentHash, ScenarioId)));
+            if (command.CampaignId != CampaignId || receipt.CampaignId != CampaignId
+                || command.ExpectedStateVersion != StateVersion
+                || receipt.PriorStateVersion != StateVersion
+                || receipt.CommittedStateVersion != axis.StateVersion
+                || command.ExpectedPositionId != sides[CampaignActionAudience.Axis].Cut.PositionId
+                || receipt.ResultingPositionId != axis.PositionId
+                || receipt.Audience != command.Audience || receipt.ActionId != command.ActionId
+                || !commandBytes.AsSpan().SequenceEqual(
+                    CampaignActionSubmissionSerializer.SerializeCanonical(command)))
+                return false;
+            var first = outcomes.Axis!;
+            var second = outcomes.Commonwealth!;
+            bool Matches(CampaignAudienceOutcomeDecision decision,
+                CampaignActionAudience audience) =>
+                decision.ContractVersion == 1 && decision.Audience == audience
+                && decision.CampaignBindingHash == campaignHash
+                && decision.SourceBindingHash == sourceHash
+                && decision.PriorHeadHash == CommittedHeadHash
+                && decision.SuccessorHeadHash == successorHash
+                && decision.PriorStateVersion == StateVersion
+                && decision.SuccessorStateVersion == axis.StateVersion
+                && decision.CommandBindingHash == commandHash
+                && decision.EventHash == eventHash && decision.EventIndex == 0
+                && decision.ActingAudience == command.Audience
+                && decision.EventContractVersion == eventVersion
+                && decision.EventKind == eventKind
+                && !string.IsNullOrWhiteSpace(decision.ActionKind);
+            return Matches(first, CampaignActionAudience.Axis)
+                && Matches(second, CampaignActionAudience.Commonwealth)
+                && first.EventKind == second.EventKind
+                && first.EventContractVersion == second.EventContractVersion
+                && first.ActionKind == second.ActionKind;
+        }
+        catch (Exception error) when (error is System.Text.Json.JsonException
+            or ArgumentException or InvalidOperationException or KeyNotFoundException
+            or OverflowException)
+        {
+            return false;
+        }
+    }
+
+    private static string Hash(ReadOnlySpan<byte> bytes) =>
+        $"sha256:{Convert.ToHexStringLower(SHA256.HashData(bytes))}";
+
+    private static bool ValidHash(string? value) => value is { Length: 71 }
+        && value.StartsWith("sha256:", StringComparison.Ordinal)
+        && value.AsSpan(7).ToArray().All(static character =>
+            character is >= '0' and <= '9' or >= 'a' and <= 'f');
 
     private SideState AdvanceSide(CampaignHostPrivateSideCut source)
     {

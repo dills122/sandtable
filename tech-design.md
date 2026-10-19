@@ -150,8 +150,11 @@ no post-creation diary source is approved, so successor views fail closed. Brows
 remains pending.
 `CampaignAudienceOutcomeSource` is a private Core hosting decision proof: it recomputes an
 accepted step in memory against canonical evidence and both side cuts, without a second
-publication or state mutation. Proposed entry keys remain unavailable without approved copy;
-the Orleans diary tracker and successor browser view do not consume it yet.
+publication or state mutation. The temporary Orleans grain now asks for that proof before
+installing an accepted successor, and its private audience tracker checks the exact prior and
+successor head, canonical command/event/receipt and both side cuts in one serialized turn.
+It retains only the latest paired proof, not a diary cursor or approved copy. Proposed entry
+keys remain unavailable without approved copy; successor browser views remain guarded.
 No canonical legal-action bytes or authority versions are serialized to HTTP. The
 [Angular workspace](src/Cna.Maproom/README.md) provides
 `projects/maproom-alpha` and the internal `@sandtable/field-atlas` library. Storybook uses the same
