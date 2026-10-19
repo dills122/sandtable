@@ -12,6 +12,9 @@ export const nextZoom = (zoom: number, step: number) =>
 export const panFocus = (focus: number, pixels: number, size: number, zoom: number) =>
   clampCameraFocus(focus - ((pixels / size) * 100) / zoom, zoom);
 
+export const isCameraCoordinate = (value: number | undefined): value is number =>
+  value !== undefined && Number.isFinite(value) && value >= 0 && value <= 100;
+
 /** Connected presentation camera; no campaign authority or persisted state. */
 export class MapCameraState {
   readonly zoom = signal(1);
@@ -23,6 +26,15 @@ export class MapCameraState {
     this.zoom.set(1);
     this.focusX.set(50);
     this.focusY.set(50);
+  }
+
+  locate(left: number | undefined, top: number | undefined): boolean {
+    if (!isCameraCoordinate(left) || !isCameraCoordinate(top)) return false;
+    const zoom = Math.max(1.5, this.zoom());
+    this.focusX.set(clampCameraFocus(left, zoom));
+    this.focusY.set(clampCameraFocus(top, zoom));
+    this.zoom.set(zoom);
+    return true;
   }
 
   zoomBy(step: number): void {

@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
+  ElementRef,
   EventEmitter,
   computed,
   inject,
@@ -15,7 +16,7 @@ import { ConnectedCampaignService, SeatIdentityError } from './connected-campaig
 import { CoherentPlayerView } from './api/generated/model/coherentPlayerView';
 import { FixtureDescriptor } from './api/generated/model/fixtureDescriptor';
 import { AtlasPanel, AtlasStatus } from '@sandtable/field-atlas';
-import { MapCameraState } from './map-camera';
+import { isCameraCoordinate, MapCameraState } from './map-camera';
 import { MapPan, OperationsMap } from './operations-map';
 import {
   connectedKind,
@@ -38,6 +39,7 @@ export class ConnectedWorkspace {
   @Input() embedded = false;
   @Output() readonly fullscreenChange = new EventEmitter<boolean>();
   @ViewChild(OperationsMap) private operationsMap?: OperationsMap;
+  @ViewChild('mapScroll') private mapScroll?: ElementRef<HTMLElement>;
   private readonly api = inject(ConnectedCampaignService);
   private readonly destroyRef = inject(DestroyRef);
   protected readonly camera = new MapCameraState();
@@ -58,6 +60,14 @@ export class ConnectedWorkspace {
     const view = this.view();
     return view ? operationalLocations(view) : [];
   });
+  protected readonly selectedPoint = computed(() =>
+    this.mapLocations().find(
+      (point) =>
+        point.locationId === this.selected()?.locationId &&
+        isCameraCoordinate(point.left) &&
+        isCameraCoordinate(point.top),
+    ),
+  );
   protected readonly selectedActions = computed(() => {
     const view = this.view();
     return view ? formationActions(view, this.selected()) : [];
@@ -91,6 +101,21 @@ export class ConnectedWorkspace {
 
   protected panMap(event: MapPan): void {
     this.camera.panByPixels(event.x, event.y, event.width, event.height);
+  }
+
+  protected locateSelected(): void {
+    const point = this.selectedPoint();
+    if (!point || !this.camera.locate(point.left, point.top)) return;
+    const scroll = this.mapScroll?.nativeElement;
+    scroll?.scrollIntoView({ block: 'nearest' });
+    requestAnimationFrame(() => {
+      if (this.selectedPoint()?.locationId !== point.locationId) return;
+      const marker = Array.from(
+        scroll?.querySelectorAll<HTMLElement>('[data-location-id]') ?? [],
+      ).find((element) => element.dataset['locationId'] === point.locationId);
+      marker?.scrollIntoView({ block: 'nearest', inline: 'center' });
+      scroll?.querySelector<HTMLElement>('.map-canvas')?.focus({ preventScroll: true });
+    });
   }
 
   protected async connect(): Promise<void> {
