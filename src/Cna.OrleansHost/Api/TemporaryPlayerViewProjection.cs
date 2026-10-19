@@ -6,7 +6,7 @@ using Cna.Core.Actions;
 namespace Cna.OrleansHost.Api;
 
 // Development fixture presentation data. The public layout remains truck-only;
-// private fixed-copy lookup has a separately proposed Reaction source pin.
+// private fixed-copy lookup has a separately approved Reaction source pin.
 // Neither presentation path owns authority state.
 internal sealed class TemporaryPlayerViewProjection
 {
@@ -17,7 +17,7 @@ internal sealed class TemporaryPlayerViewProjection
         "breakdown-truck-lab|" +
         "sha256:e6631e81ad8f97e39fd9d7eec93bad7fe2b39db4d2d3059ed94a02dd4093e7a3|" +
         "sha256:646e76e69ecceb82216b37d84e950928099acd8a3cb04b51526d0fe631e512ee";
-    // Proposed private diary-only source scope. This does not admit Map(...), which
+    // Approved private diary-only source scope. This does not admit Map(...), which
     // remains restricted to the truck fixture's initial read-only presentation.
     private const string ReactionDiarySourcePin =
         "17f3e6047f34b5bf6f5f809055863b664a4bd82a8481db83ee83e0ae5cad3a2a|" +
