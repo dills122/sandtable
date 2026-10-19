@@ -298,19 +298,22 @@ public sealed class CampaignAudienceOutcomeSourceTests
         Assert.NotNull(complete);
         var completed = DecideAndAdvance(ref session, reacting, complete);
         Assert.Equal("reaction-participant-completed", completed.Axis!.EventKind);
+        var resolution = CampaignExercises.Query(session, CampaignActionAudience.System).ActionSet!;
+        var resolved = DecideAndAdvance(ref session, resolution,
+            Assert.Single(resolution.Candidates.OfType<ResolveBreakdownStopAction>()));
+        Assert.Equal("breakdown-stop-resolved", resolved.Axis!.EventKind);
+        Assert.Equal(CampaignAudienceOutcomeDisposition.Silent, resolved.Axis.Disposition);
+        Assert.Equal(CampaignAudienceOutcomeDisposition.Silent, resolved.Commonwealth!.Disposition);
         reacting = CampaignExercises.Query(session, reactor).ActionSet!;
         var noEligible = CampaignExercises.Query(session, CampaignActionAudience.System).ActionSet!;
-        if (noEligible.Candidates.OfType<CloseReactionWindowNoEligibleAction>().FirstOrDefault() is { } close)
-        {
-            var proof = DecideAndAdvance(ref session, noEligible, close);
-            Assert.Equal("reaction-window-closed", proof.Axis!.EventKind);
-            Assert.Equal(CampaignAudienceOutcomeDisposition.Silent, proof.Axis.Disposition);
-            Assert.Equal(CampaignAudienceOutcomeDisposition.Silent, proof.Commonwealth!.Disposition);
-        }
-        if (reacting.Candidates.OfType<DeclineReactionWindowAction>().FirstOrDefault() is { } decline)
-        {
-            AssertDeclineAndMutationRejection(session, reacting, decline);
-        }
+        Assert.Empty(reacting.Candidates);
+        var close = Assert.IsType<CloseReactionWindowNoEligibleAction>(Assert.Single(noEligible.Candidates));
+        var closedProof = DecideAndAdvance(ref session, noEligible, close);
+        Assert.Equal("reaction-window-closed", closedProof.Axis!.EventKind);
+        Assert.Equal(CampaignAudienceOutcomeDisposition.Silent, closedProof.Axis.Disposition);
+        Assert.Equal(CampaignAudienceOutcomeDisposition.Silent, closedProof.Commonwealth!.Disposition);
+        Assert.Null(closedProof.Axis.ProposedCopyKey);
+        Assert.Null(closedProof.Commonwealth.ProposedCopyKey);
     }
 
     private static void AssertDeclineAndMutationRejection(ExerciseSession session,
