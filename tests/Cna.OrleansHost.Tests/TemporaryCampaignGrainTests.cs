@@ -22,6 +22,53 @@ public sealed class TemporaryCampaignGrainTests
 {
     private const string Generation = "11111111-1111-4111-8111-111111111111";
     private const string OtherGeneration = "22222222-2222-4222-8222-222222222222";
+
+    [Fact]
+    public void VerifiedReactionMoveWithSuppressedOwnRowsAdvancesWithoutDiary()
+    {
+        var proof = SyntheticProofFor("diary.reactionMoved");
+        CampaignHostPrivateSideCut Cut(CampaignActionAudience audience, long version) =>
+            Side(audience, version) with
+            {
+                OwnElements = audience == proof.Actor ? [] : Side(audience, version).OwnElements,
+                DecisionStateKind = audience == proof.Actor ? "reacting" : "phasing-waiting",
+                Actions = audience == proof.Actor
+                    ? [new CampaignHostPrivateAction(proof.ActionId, proof.ActionKind)]
+                    : [],
+            };
+        TemporaryAudienceTracker NewTracker() => TemporaryAudienceTracker.Create(
+            "test-campaign", "source-hash", "scenario", "setup-pin", "content-pin",
+            Hash("initial"), Cut(CampaignActionAudience.Axis, 1),
+            Cut(CampaignActionAudience.Commonwealth, 1))!;
+
+        var tracker = NewTracker();
+        Assert.True(AdvanceSynthetic(tracker, Cut(CampaignActionAudience.Axis, 2),
+            Cut(CampaignActionAudience.Commonwealth, 2),
+            copyKey: "diary.reactionMoved", suppressedReaction: true));
+        var actor = tracker.Read(proof.Actor, 2, Generation)!;
+        Assert.Empty(actor.OwnElements);
+        Assert.Empty(actor.Diary);
+        Assert.Equal(0UL, actor.NextDiaryCursor);
+        Assert.Equal("own-element-unavailable",
+            (proof.Actor == CampaignActionAudience.Axis
+                ? tracker.LastAcceptedOutcome!.Axis : tracker.LastAcceptedOutcome!.Commonwealth)!
+            .ReasonCode);
+
+        var wrongReason = NewTracker();
+        Assert.False(AdvanceSynthetic(wrongReason, Cut(CampaignActionAudience.Axis, 2),
+            Cut(CampaignActionAudience.Commonwealth, 2), failure: "suppression-reason",
+            copyKey: "diary.reactionMoved", suppressedReaction: true));
+        var disclosed = NewTracker();
+        var axis = Cut(CampaignActionAudience.Axis, 2);
+        var commonwealth = Cut(CampaignActionAudience.Commonwealth, 2);
+        if (proof.Actor == CampaignActionAudience.Axis)
+            axis = axis with { OwnElements = Side(proof.Actor, 2).OwnElements };
+        else commonwealth = commonwealth with
+        { OwnElements = Side(proof.Actor, 2).OwnElements };
+        Assert.False(AdvanceSynthetic(disclosed, axis, commonwealth,
+            copyKey: "diary.reactionMoved", suppressedReaction: true));
+    }
+
     [Fact]
     public void PrivateTrackerAdvancesBothSeatsAcrossUnreadVisibilityLoss()
     {
@@ -448,7 +495,8 @@ public sealed class TemporaryCampaignGrainTests
 
     private static SyntheticProof SyntheticProofFor(string? copyKey) =>
         SyntheticProofs.Value[copyKey is null ? "silent"
-            : copyKey == "diary.reserveDesignated" ? copyKey : "diary.initiativeOrder"];
+            : copyKey is "diary.reserveDesignated" or "diary.reactionMoved"
+                ? copyKey : "diary.initiativeOrder"];
 
     private static Dictionary<string, SyntheticProof> BuildSyntheticProofs()
     {
@@ -495,12 +543,69 @@ public sealed class TemporaryCampaignGrainTests
         Assert.Contains("silent", found.Keys);
         Assert.Contains("diary.initiativeOrder", found.Keys);
         Assert.Contains("diary.reserveDesignated", found.Keys);
+        found["diary.reactionMoved"] = BuildReactionProof();
         return found;
+    }
+
+    private static SyntheticProof BuildReactionProof()
+    {
+        var request = new CampaignCreationRequest(1, "reaction-proof-test",
+            Cna1979Ruleset.Manifest.Hash, 12345,
+            "rules-lab.breakdown.reaction.v1",
+            "sha256:ed4e33358ede11f3c25661798add9088f11d8853053dbf7c8992ba5f92d9a36e",
+            "rules-lab.content.breakdown-reaction.v1",
+            "sha256:1e10648bb65f7ec6d4ad3f33bbf612f51c11a927ebc2e8b110aa5544af3918dd",
+            "breakdown-reaction-lab");
+        var session = CampaignHostAdapter.Create(request).Session!;
+        for (var index = 0; index < 20; index++)
+        {
+            var set = Enum.GetValues<CampaignActionAudience>()
+                .Select(audience => CampaignExercises.Query(session, audience).ActionSet!)
+                .First(value => value.Candidates.Count > 0);
+            if (set.Candidates.OfType<MoveElementAction>().Any()) break;
+            var next = set.Candidates.FirstOrDefault(value => value is ActFirstAction)
+                ?? set.Candidates.FirstOrDefault(value => value is CompleteReserveDesignationAction)
+                ?? set.Candidates[0];
+            session = CampaignHostAdapter.Submit(session, new CampaignActionSubmission(1,
+                set.CampaignId, set.StateVersion, set.PositionId, set.Audience, next.ActionId))
+                .SuccessorSession!;
+        }
+        var owner = Enum.GetValues<CampaignActionAudience>()
+            .Select(audience => CampaignExercises.Query(session, audience).ActionSet!)
+            .First(value => value.Candidates.OfType<MoveElementAction>().Any());
+        var trigger = owner.Candidates.OfType<MoveElementAction>()
+            .Select(candidate => CampaignHostAdapter.Submit(session,
+                new CampaignActionSubmission(1, owner.CampaignId, owner.StateVersion,
+                    owner.PositionId, owner.Audience, candidate.ActionId)))
+            .First(result => result.IsAccepted
+                && Enum.GetValues<CampaignActionAudience>()
+                    .Select(audience => CampaignExercises.Query(result.SuccessorSession!,
+                        audience).ActionSet!)
+                    .Any(set => set.Candidates.Any(action =>
+                        action.Kind == "move-reacting-element")));
+        session = trigger.SuccessorSession!;
+        var reactor = owner.Audience == CampaignActionAudience.Axis
+            ? CampaignActionAudience.Commonwealth : CampaignActionAudience.Axis;
+        var reacting = CampaignExercises.Query(session, reactor).ActionSet!;
+        var move = reacting.Candidates.First(candidate =>
+            candidate.Kind == "move-reacting-element");
+        var accepted = CampaignHostAdapter.Submit(session,
+            new CampaignActionSubmission(1, reacting.CampaignId,
+                reacting.StateVersion, reacting.PositionId, reactor, move.ActionId));
+        Assert.True(accepted.IsAccepted);
+        var eventBytes = Assert.Single(accepted.Evidence!.EventRecords);
+        using var document = JsonDocument.Parse(eventBytes);
+        return new SyntheticProof(eventBytes,
+            document.RootElement.GetProperty("eventType").GetString()!,
+            document.RootElement.GetProperty("contractVersion").GetInt32(),
+            move.Kind, move.ActionId, reactor,
+            document.RootElement.GetProperty("elementId").GetString());
     }
 
     private static bool AdvanceSynthetic(TemporaryAudienceTracker tracker,
         CampaignHostPrivateSideCut axis, CampaignHostPrivateSideCut commonwealth,
-        string? failure = null, string? copyKey = null, int? ownIndex = null)
+        string? failure = null, string? copyKey = null, int? ownIndex = null,
+        bool suppressedReaction = false)
     {
         var nextVersion = tracker.StateVersion + 1;
         var proof = SyntheticProofFor(copyKey);
@@ -535,8 +640,10 @@ public sealed class TemporaryCampaignGrainTests
                 ? CampaignAudienceOutcomeDisposition.Unavailable
                 : CampaignAudienceOutcomeDisposition.Silent,
             copyKey is not null && audience == proof.Actor
-                ? "copy-catalog-unapproved" : "known-silent",
-            audience == proof.Actor ? copyKey : null,
+                ? suppressedReaction && failure != "suppression-reason"
+                    ? "own-element-unavailable" : "copy-catalog-unapproved"
+                : "known-silent",
+            audience == proof.Actor && !suppressedReaction ? copyKey : null,
             audience == proof.Actor ? ownIndex : null);
         var outcomes = new CampaignAudienceOutcomePair(
             Decision(CampaignActionAudience.Axis),

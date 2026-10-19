@@ -194,6 +194,20 @@ internal sealed class TemporaryAudienceTracker
                 var isActor = decision.Audience == command.Audience;
                 var expectedKey = isActor ? classification.Value.CopyKey : null;
                 var expectedElement = isActor ? classification.Value.ElementId : null;
+                // Reaction observations intentionally suppress even the reacting side's
+                // own rows. Verify that exact state and retain the committed step without
+                // inventing a formation link or a diary entry.
+                if (isActor && expectedKey == "diary.reactionMoved"
+                    && expectedElement is not null
+                    && sides.TryGetValue(decision.Audience, out var suppressed)
+                    && suppressed.Cut.DecisionStateKind == "reacting"
+                    && successor.DecisionStateKind == "reacting"
+                    && suppressed.Cut.OwnElements.Length == 0
+                    && successor.OwnElements.Count == 0)
+                    return decision.ProposedCopyKey is null
+                        && decision.OwnElementIndex is null
+                        && decision.Disposition == CampaignAudienceOutcomeDisposition.Unavailable
+                        && decision.ReasonCode == "own-element-unavailable";
                 if (decision.ProposedCopyKey != expectedKey) return false;
                 if (expectedElement is null) return decision.OwnElementIndex is null;
                 if (!sides.TryGetValue(decision.Audience, out var before)
@@ -280,6 +294,15 @@ internal sealed class TemporaryAudienceTracker
             throw new InvalidOperationException("Diary proof does not match the side cut.");
         if (decision.ProposedCopyKey is null)
         {
+            if (decision.Disposition == CampaignAudienceOutcomeDisposition.Unavailable
+                && decision.ReasonCode == "own-element-unavailable"
+                && decision.ActionKind == "move-reacting-element"
+                && decision.EventKind == "reacting-element-moved"
+                && decision.Audience == decision.ActingAudience
+                && decision.OwnElementIndex is null
+                && source.DecisionStateKind == "reacting"
+                && source.OwnElements.Count == 0)
+                return (entries, cursor, false);
             if (decision.Disposition != CampaignAudienceOutcomeDisposition.Silent
                 || decision.ReasonCode != "known-silent"
                 || decision.OwnElementIndex is not null)
