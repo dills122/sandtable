@@ -3,7 +3,8 @@
 This is a development-only, read-only bridge from Angular Maproom to the temporary
 Orleans host's **initial** admitted Rules9 fixture cut. It does not submit orders,
 advance a phase, persist a campaign, or promise a later `/view`. The existing `/`
-workspace remains synthetic; `/connected` is the explicit local host lane.
+fixture study remains synthetic; the main Maproom route offers local campaign read mode
+at `/?mode=campaign`. `/connected` remains a development deep link to that view.
 
 Start a separate host on loopback, then the connected Angular dev server. The
 Angular port 4300 leaves the usual 4200 fixture preview alone:
@@ -16,7 +17,8 @@ npm ci
 npm run start:connected
 ```
 
-Open `http://127.0.0.1:4300/connected`, check fixtures, create and enter one
+Open `http://127.0.0.1:4300/`, choose **Local campaign read mode** (or open
+`http://127.0.0.1:4300/?mode=campaign` directly), check fixtures, create and enter one
 seat, then inspect the returned map, formations, ledger and diary. The dev proxy
 only forwards `/api/v1` to `127.0.0.1:5087` and rewrites Host and Origin to that
 same loopback origin. The browser sends same-origin requests to port 4300;

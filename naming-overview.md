@@ -95,9 +95,10 @@ bounded Angular developer client before complete scenario play. **Field Atlas** 
 [visual direction](docs/design/maproom-design-system-v0.md) and internal Angular design library
 `@sandtable/field-atlas`, not a new service or authority domain. The Angular CLI workspace is
 `src/Cna.Maproom`, its first application is `maproom-alpha`, and Storybook is the living component
-and pattern reference. The default application route remains a synthetic order scaffold.
-Its separate `/connected` route is a development-only, read-only operations view of
-one authorized initial campaign cut through the generated client and loopback proxy; it is
+and pattern reference. The main application route offers a synthetic fixture study and a
+URL-backed `?mode=campaign` local read mode using the same map presentation. `/connected`
+remains a development deep link to the read-only operations view of one authorized initial
+campaign cut through the generated client and loopback proxy; it is
 not a command surface, a second authority, full hot-seat play or durable campaign resume.
 **Operations workspace** describes Maproom's map, order inspector and linked formation records;
 it adds no authority layer. The formation ledger is a player-view table, distinct from Chronicle's

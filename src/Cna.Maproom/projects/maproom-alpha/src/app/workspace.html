@@ -1,335 +1,369 @@
-<a class="skip-link" href="#operations" [attr.inert]="mapFullscreen() ? '' : null"
-  >Skip to operations</a
+<a
+  class="skip-link"
+  [attr.href]="connectedMode() ? '#connected-main' : '#operations'"
+  [attr.inert]="mapFullscreen() || connectedFullscreen() ? '' : null"
+  >{{ connectedMode() ? 'Skip to campaign' : 'Skip to operations' }}</a
 >
-<header class="command-bar" [attr.inert]="mapFullscreen() ? '' : null">
+<header class="command-bar" [attr.inert]="mapFullscreen() || connectedFullscreen() ? '' : null">
   <a class="brand" href="/" aria-label="Maproom home"
     ><span class="brand-mark" aria-hidden="true">M</span
     ><span>Maproom <small>Field Atlas</small></span></a
-  ><span class="edition">ALPHA / WORKSPACE STUDY</span
-  ><a class="fa-text-action" href="/connected">Connected read preview</a
-  ><span class="local-status">○ Local fixture</span>
+  ><span class="edition"
+    >ALPHA / {{ connectedMode() ? 'LOCAL CAMPAIGN READ' : 'WORKSPACE STUDY' }}</span
+  >
+  <nav class="mode-nav" aria-label="Maproom mode">
+    <a class="fa-text-action" routerLink="/" [attr.aria-current]="connectedMode() ? null : 'page'"
+      >Fixture study</a
+    >
+    <a
+      class="fa-text-action"
+      routerLink="/"
+      [queryParams]="{ mode: 'campaign' }"
+      [attr.aria-current]="connectedMode() ? 'page' : null"
+      >Local campaign read mode</a
+    >
+  </nav>
+  <span class="local-status"
+    >○ {{ connectedMode() ? 'Local campaign · read only' : 'Local fixture' }}</span
+  >
 </header>
-<main id="operations" tabindex="-1">
-  <section
-    class="phase-bar"
-    aria-label="Current fixture situation"
-    [attr.inert]="mapFullscreen() ? '' : null"
-  >
-    <div class="phase-title">
-      <p class="fa-eyebrow">Operations workspace · 001</p>
-      <h1>The coastal exercise</h1>
-    </div>
-    <dl class="phase-facts">
-      <div>
-        <dt>Seat</dt>
-        <dd>Own side · synthetic</dd>
-      </div>
-      <div>
-        <dt>Phase</dt>
-        <dd>Movement fixture</dd>
-      </div>
-      <div>
-        <dt>Decision</dt>
-        <dd>Staged order workflow</dd>
-      </div>
-    </dl>
-    <div class="phase-status">
-      <fa-status tone="warning">Local fixture</fa-status><span>No campaign server connected</span>
-      <button
-        type="button"
-        class="fa-text-action"
-        (click)="store.setUnsupportedPhase(!store.unsupportedPhase())"
-      >
-        {{
-          store.unsupportedPhase() ? 'Return to movement fixture' : 'Show unsupported Combat phase'
-        }}
-      </button>
-    </div>
-  </section>
-  <div
-    class="workspace-grid"
-    [class.roster-collapsed]="!store.rosterOpen()"
-    [class.inspector-collapsed]="!store.inspectorOpen()"
-    [class.wide-inspector]="store.wideInspector()"
-  >
-    <aside
-      class="roster"
-      id="formations-pane"
-      [class.is-collapsed]="!store.rosterOpen()"
-      [attr.inert]="mapFullscreen() ? '' : null"
-      aria-labelledby="formations-title"
-    >
-      <div class="roster-heading">
-        <h2 id="formations-title">Formations</h2>
-        @if (store.rosterOpen()) {
-          <span class="fa-muted">{{ formations.length }} own-side</span>
-        }
-        <button
-          type="button"
-          class="fa-text-action pane-toggle"
-          aria-controls="formations-list"
-          [attr.aria-expanded]="store.rosterOpen()"
-          (click)="store.toggleRoster()"
-        >
-          {{ store.rosterOpen() ? 'Hide' : 'Show' }} formations
-        </button>
-      </div>
-      <div class="roster-list" id="formations-list" [hidden]="!store.rosterOpen()">
-        @for (unit of store.visibleFormations(); track unit.id) {
-          <button
-            class="roster-item"
-            [attr.aria-pressed]="store.selectedId() === unit.id"
-            (click)="store.select(unit.id)"
-          >
-            <span
-              >{{ unit.name }}<small>{{ unit.kind }}</small></span
-            ><span>{{ unit.position }}</span>
-          </button>
-        }
-      </div>
-    </aside>
+@if (connectedMode()) {
+  <mr-connected-workspace [embedded]="true" (fullscreenChange)="connectedFullscreen.set($event)" />
+} @else {
+  <main id="operations" tabindex="-1">
     <section
-      #mapPanel
-      class="map-panel"
-      aria-labelledby="map-title"
-      [class.is-fullscreen]="mapFullscreen()"
-      [attr.role]="mapFullscreen() ? 'dialog' : null"
-      [attr.aria-modal]="mapFullscreen() ? 'true' : null"
-    >
-      <mr-operations-map
-        hint="Schematic · no scale · zoom in to pan"
-        [zoom]="store.zoom()"
-        [transform]="store.cameraTransform()"
-        [expanded]="mapFullscreen()"
-        [caption]="'Selected: ' + store.selected().name + ' · ' + store.selected().position"
-        scope="Original fixture"
-        [ordersLabel]="store.selected().name"
-        (expandedChange)="toggleMapFullscreen()"
-        (fit)="store.fitMap()"
-        (zoomBy)="store.zoomBy($event)"
-        (pan)="panMap($event)"
-        (openOrders)="openOrdersFromMap()"
-      >
-        <div map-scene-content class="fixture-map-layer">
-          <svg
-            class="terrain"
-            viewBox="0 0 800 560"
-            preserveAspectRatio="none"
-            role="img"
-            aria-label="Illustrated coastal terrain, synthetic geography"
-          >
-            <path class="sea" d="M0 0H800V75Q710 120 610 72T390 76 180 46 0 100Z" />
-            <path class="road" d="M0 270Q200 195 360 265T620 210 800 190" />
-            <g class="contours">
-              <path d="M0 420Q130 280 280 385T530 390 800 320" />
-              <path d="M0 434Q130 294 280 399T530 404 800 334" />
-              <path d="M0 448Q130 308 280 413T530 418 800 348" />
-              <path d="M0 462Q130 322 280 427T530 432 800 362" />
-            </g>
-          </svg>
-          <span class="map-label coast">The coast road</span
-          ><span class="map-label ridge">The inland ridge</span>
-          <div class="map-markers">
-            @for (unit of store.visibleFormations(); track unit.id) {
-              <fa-unit-counter
-                class="map-unit"
-                [style.left.%]="unit.x"
-                [style.top.%]="unit.y"
-                [code]="unit.id"
-                [label]="unit.name + ', ' + unit.kind + ', ' + unit.position"
-                [kind]="unit.kind"
-                [selected]="store.selectedId() === unit.id"
-                (chosen)="store.select(unit.id)"
-                (focusin)="store.focusFormation(unit.id)"
-              />
-            }
-          </div>
-        </div>
-      </mr-operations-map>
-    </section>
-    <fa-panel
-      #inspectorPanel
-      class="inspector"
-      [heading]="store.inspectorOpen() ? store.selected().name : 'Orders'"
-      eyebrow="Order inspector"
+      class="phase-bar"
+      aria-label="Current fixture situation"
       [attr.inert]="mapFullscreen() ? '' : null"
     >
-      <div panel-actions class="inspector-header-actions">
-        @if (store.inspectorOpen()) {
-          <button
-            type="button"
-            class="fa-text-action"
-            [attr.aria-pressed]="store.wideInspector()"
-            (click)="store.toggleInspectorWidth()"
-          >
-            {{ store.wideInspector() ? 'Standard' : 'Wide' }} inspector
-          </button>
-        }
-        <button
-          type="button"
-          class="fa-text-action pane-toggle"
-          aria-controls="inspector-body"
-          [attr.aria-expanded]="store.inspectorOpen()"
-          (click)="store.toggleInspector()"
-        >
-          {{ store.inspectorOpen() ? 'Hide' : 'Show' }} orders
-        </button>
+      <div class="phase-title">
+        <p class="fa-eyebrow">Operations workspace · 001</p>
+        <h1>The coastal exercise</h1>
       </div>
-      <div id="inspector-body" [hidden]="!store.inspectorOpen()">
-        <p class="fa-muted inspector-context">
-          Local order fixture · last known {{ store.selected().position }}
-        </p>
-        <div class="inspector-actions">
-          <button type="button" class="fa-text-action" (click)="store.locateSelected()">
-            Locate {{ store.selected().name }} on map
-          </button>
+      <dl class="phase-facts">
+        <div>
+          <dt>Seat</dt>
+          <dd>Own side · synthetic</dd>
         </div>
-        <div class="flex flex-wrap gap-4 mb-6">
-          <span>{{ store.selected().kind }}</span
-          ><span>{{ store.selected().position }}</span
-          ><fa-status>Own side</fa-status>
+        <div>
+          <dt>Phase</dt>
+          <dd>Movement fixture</dd>
         </div>
-        <h3>Prepare an order</h3>
-        @for (unit of formations; track unit.id) {
-          @if (store.selectedId() === unit.id) {
-            <mr-order-workflow [formationId]="unit.id" [formationName]="unit.name" />
-          }
-        }
-      </div>
-    </fa-panel>
-  </div>
-  <div
-    class="records-grid"
-    [class.records-expanded]="recordsExpanded()"
-    [attr.inert]="mapFullscreen() ? '' : null"
-  >
-    <fa-panel heading="Formation ledger" eyebrow="Situation record">
-      <div class="records-tools">
-        <label for="ledger-search">Find a formation</label>
-        <input
-          id="ledger-search"
-          type="search"
-          [value]="ledgerQuery()"
-          (input)="ledgerQuery.set($any($event.target).value)"
-        />
+        <div>
+          <dt>Decision</dt>
+          <dd>Staged order workflow</dd>
+        </div>
+      </dl>
+      <div class="phase-status">
+        <fa-status tone="warning">Local fixture</fa-status><span>No campaign server connected</span>
         <button
           type="button"
           class="fa-text-action"
-          aria-controls="ledger-region"
-          [attr.aria-expanded]="recordsExpanded()"
-          (click)="recordsExpanded.update((value) => !value)"
+          (click)="store.setUnsupportedPhase(!store.unsupportedPhase())"
         >
-          {{ recordsExpanded() ? 'Compact records' : 'Expand records' }}
+          {{
+            store.unsupportedPhase()
+              ? 'Return to movement fixture'
+              : 'Show unsupported Combat phase'
+          }}
         </button>
       </div>
-      <div
-        id="ledger-region"
-        class="ledger"
-        role="region"
-        aria-label="Formation ledger rows"
-        tabindex="0"
+    </section>
+    <div
+      class="workspace-grid"
+      [class.roster-collapsed]="!store.rosterOpen()"
+      [class.inspector-collapsed]="!store.inspectorOpen()"
+      [class.wide-inspector]="store.wideInspector()"
+    >
+      <aside
+        class="roster"
+        id="formations-pane"
+        [class.is-collapsed]="!store.rosterOpen()"
+        [attr.inert]="mapFullscreen() ? '' : null"
+        aria-labelledby="formations-title"
       >
-        <table aria-label="Formation ledger">
-          <thead>
-            <tr>
-              <th
-                scope="col"
-                [attr.aria-sort]="
-                  ledgerSort() === 'name' ? (ledgerDescending() ? 'descending' : 'ascending') : null
-                "
-              >
-                <button type="button" (click)="sortLedger('name')">Formation</button>
-              </th>
-              <th
-                scope="col"
-                [attr.aria-sort]="
-                  ledgerSort() === 'kind' ? (ledgerDescending() ? 'descending' : 'ascending') : null
-                "
-              >
-                <button type="button" (click)="sortLedger('kind')">Kind</button>
-              </th>
-              <th
-                scope="col"
-                [attr.aria-sort]="
-                  ledgerSort() === 'position'
-                    ? ledgerDescending()
-                      ? 'descending'
-                      : 'ascending'
-                    : null
-                "
-              >
-                <button type="button" (click)="sortLedger('position')">Position</button>
-              </th>
-              <th
-                scope="col"
-                [attr.aria-sort]="
-                  ledgerSort() === 'order'
-                    ? ledgerDescending()
-                      ? 'descending'
-                      : 'ascending'
-                    : null
-                "
-              >
-                <button type="button" (click)="sortLedger('order')">Order state</button>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (unit of ledgerRows(); track unit.id) {
-              <tr class="ledger-row" [class.is-selected]="store.selectedId() === unit.id">
-                <th scope="row" data-label="Formation">
-                  <button
-                    type="button"
-                    class="fa-text-action"
-                    (click)="store.select(unit.id)"
-                    [attr.aria-pressed]="store.selectedId() === unit.id"
-                  >
-                    {{ unit.name }}
-                  </button>
-                </th>
-                <td data-label="Kind">{{ unit.kind }}</td>
-                <td data-label="Position">{{ unit.position }}</td>
-                <td data-label="Order state">{{ store.orderFor(unit.id).status }}</td>
-              </tr>
-            } @empty {
-              <tr>
-                <td colspan="4">No visible formations match this search.</td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      </div>
-    </fa-panel>
-    <fa-panel heading="War Diary" eyebrow="Presentation record">
-      <div class="records-tools">
-        <fa-choice-select
-          label="Show entries for"
-          [options]="diaryScopeOptions"
-          [value]="diaryScope()"
-          (valueChange)="setDiaryScope($event)"
-        />
-      </div>
-      <p class="fa-muted">Synthetic own-side fixture entries. No campaign history is connected.</p>
-      @for (entry of diaryEntries(); track entry.id) {
-        <article class="diary-entry">
-          <p class="fa-eyebrow">Accepted example</p>
-          <p>
-            {{ formationName(entry.formationId) }} moved to {{ entry.destination }} in the local
-            fixture.
-          </p>
-          <button type="button" class="fa-text-action" (click)="locateDiary(entry.formationId)">
-            Locate {{ formationName(entry.formationId) }} on map
+        <div class="roster-heading">
+          <h2 id="formations-title">Formations</h2>
+          @if (store.rosterOpen()) {
+            <span class="fa-muted">{{ formations.length }} own-side</span>
+          }
+          <button
+            type="button"
+            class="fa-text-action pane-toggle"
+            aria-controls="formations-list"
+            [attr.aria-expanded]="store.rosterOpen()"
+            (click)="store.toggleRoster()"
+          >
+            {{ store.rosterOpen() ? 'Hide' : 'Show' }} formations
           </button>
-        </article>
-      } @empty {
-        <p class="diary-text">
-          No accepted fixture moves for
-          {{ diaryScope() === 'selected' ? store.selected().name : 'visible formations' }} yet.
+        </div>
+        <div class="roster-list" id="formations-list" [hidden]="!store.rosterOpen()">
+          @for (unit of store.visibleFormations(); track unit.id) {
+            <button
+              class="roster-item"
+              [attr.aria-pressed]="store.selectedId() === unit.id"
+              (click)="store.select(unit.id)"
+            >
+              <span
+                >{{ unit.name }}<small>{{ unit.kind }}</small></span
+              ><span>{{ unit.position }}</span>
+            </button>
+          }
+        </div>
+      </aside>
+      <section
+        #mapPanel
+        class="map-panel"
+        aria-labelledby="map-title"
+        [class.is-fullscreen]="mapFullscreen()"
+        [attr.role]="mapFullscreen() ? 'dialog' : null"
+        [attr.aria-modal]="mapFullscreen() ? 'true' : null"
+      >
+        <mr-operations-map
+          hint="Schematic · no scale · zoom in to pan"
+          [zoom]="store.zoom()"
+          [transform]="store.cameraTransform()"
+          [expanded]="mapFullscreen()"
+          [caption]="'Selected: ' + store.selected().name + ' · ' + store.selected().position"
+          scope="Original fixture"
+          [ordersLabel]="store.selected().name"
+          (expandedChange)="toggleMapFullscreen()"
+          (fit)="store.fitMap()"
+          (zoomBy)="store.zoomBy($event)"
+          (pan)="panMap($event)"
+          (openOrders)="openOrdersFromMap()"
+        >
+          <div map-scene-content class="fixture-map-layer">
+            <svg
+              class="terrain"
+              viewBox="0 0 800 560"
+              preserveAspectRatio="none"
+              role="img"
+              aria-label="Illustrated coastal terrain, synthetic geography"
+            >
+              <path class="sea" d="M0 0H800V75Q710 120 610 72T390 76 180 46 0 100Z" />
+              <path class="road" d="M0 270Q200 195 360 265T620 210 800 190" />
+              <g class="contours">
+                <path d="M0 420Q130 280 280 385T530 390 800 320" />
+                <path d="M0 434Q130 294 280 399T530 404 800 334" />
+                <path d="M0 448Q130 308 280 413T530 418 800 348" />
+                <path d="M0 462Q130 322 280 427T530 432 800 362" />
+              </g>
+            </svg>
+            <span class="map-label coast">The coast road</span
+            ><span class="map-label ridge">The inland ridge</span>
+            <div class="map-markers">
+              @for (unit of store.visibleFormations(); track unit.id) {
+                <fa-unit-counter
+                  class="map-unit"
+                  [style.left.%]="unit.x"
+                  [style.top.%]="unit.y"
+                  [code]="unit.id"
+                  [label]="unit.name + ', ' + unit.kind + ', ' + unit.position"
+                  [kind]="unit.kind"
+                  [selected]="store.selectedId() === unit.id"
+                  (chosen)="store.select(unit.id)"
+                  (focusin)="store.focusFormation(unit.id)"
+                />
+              }
+            </div>
+          </div>
+        </mr-operations-map>
+      </section>
+      <fa-panel
+        #inspectorPanel
+        class="inspector"
+        [heading]="store.inspectorOpen() ? store.selected().name : 'Orders'"
+        eyebrow="Order inspector"
+        [attr.inert]="mapFullscreen() ? '' : null"
+      >
+        <div panel-actions class="inspector-header-actions">
+          @if (store.inspectorOpen()) {
+            <button
+              type="button"
+              class="fa-text-action"
+              [attr.aria-pressed]="store.wideInspector()"
+              (click)="store.toggleInspectorWidth()"
+            >
+              {{ store.wideInspector() ? 'Standard' : 'Wide' }} inspector
+            </button>
+          }
+          <button
+            type="button"
+            class="fa-text-action pane-toggle"
+            aria-controls="inspector-body"
+            [attr.aria-expanded]="store.inspectorOpen()"
+            (click)="store.toggleInspector()"
+          >
+            {{ store.inspectorOpen() ? 'Hide' : 'Show' }} orders
+          </button>
+        </div>
+        <div id="inspector-body" [hidden]="!store.inspectorOpen()">
+          <p class="fa-muted inspector-context">
+            Local order fixture · last known {{ store.selected().position }}
+          </p>
+          <div class="inspector-actions">
+            <button type="button" class="fa-text-action" (click)="store.locateSelected()">
+              Locate {{ store.selected().name }} on map
+            </button>
+          </div>
+          <div class="flex flex-wrap gap-4 mb-6">
+            <span>{{ store.selected().kind }}</span
+            ><span>{{ store.selected().position }}</span
+            ><fa-status>Own side</fa-status>
+          </div>
+          <h3>Prepare an order</h3>
+          @for (unit of formations; track unit.id) {
+            @if (store.selectedId() === unit.id) {
+              <mr-order-workflow [formationId]="unit.id" [formationName]="unit.name" />
+            }
+          }
+        </div>
+      </fa-panel>
+    </div>
+    <div
+      class="records-grid"
+      [class.records-expanded]="recordsExpanded()"
+      [attr.inert]="mapFullscreen() ? '' : null"
+    >
+      <fa-panel heading="Formation ledger" eyebrow="Situation record">
+        <div class="records-tools">
+          <label for="ledger-search">Find a formation</label>
+          <input
+            id="ledger-search"
+            type="search"
+            [value]="ledgerQuery()"
+            (input)="ledgerQuery.set($any($event.target).value)"
+          />
+          <button
+            type="button"
+            class="fa-text-action"
+            aria-controls="ledger-region"
+            [attr.aria-expanded]="recordsExpanded()"
+            (click)="recordsExpanded.update((value) => !value)"
+          >
+            {{ recordsExpanded() ? 'Compact records' : 'Expand records' }}
+          </button>
+        </div>
+        <div
+          id="ledger-region"
+          class="ledger"
+          role="region"
+          aria-label="Formation ledger rows"
+          tabindex="0"
+        >
+          <table aria-label="Formation ledger">
+            <thead>
+              <tr>
+                <th
+                  scope="col"
+                  [attr.aria-sort]="
+                    ledgerSort() === 'name'
+                      ? ledgerDescending()
+                        ? 'descending'
+                        : 'ascending'
+                      : null
+                  "
+                >
+                  <button type="button" (click)="sortLedger('name')">Formation</button>
+                </th>
+                <th
+                  scope="col"
+                  [attr.aria-sort]="
+                    ledgerSort() === 'kind'
+                      ? ledgerDescending()
+                        ? 'descending'
+                        : 'ascending'
+                      : null
+                  "
+                >
+                  <button type="button" (click)="sortLedger('kind')">Kind</button>
+                </th>
+                <th
+                  scope="col"
+                  [attr.aria-sort]="
+                    ledgerSort() === 'position'
+                      ? ledgerDescending()
+                        ? 'descending'
+                        : 'ascending'
+                      : null
+                  "
+                >
+                  <button type="button" (click)="sortLedger('position')">Position</button>
+                </th>
+                <th
+                  scope="col"
+                  [attr.aria-sort]="
+                    ledgerSort() === 'order'
+                      ? ledgerDescending()
+                        ? 'descending'
+                        : 'ascending'
+                      : null
+                  "
+                >
+                  <button type="button" (click)="sortLedger('order')">Order state</button>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (unit of ledgerRows(); track unit.id) {
+                <tr class="ledger-row" [class.is-selected]="store.selectedId() === unit.id">
+                  <th scope="row" data-label="Formation">
+                    <button
+                      type="button"
+                      class="fa-text-action"
+                      (click)="store.select(unit.id)"
+                      [attr.aria-pressed]="store.selectedId() === unit.id"
+                    >
+                      {{ unit.name }}
+                    </button>
+                  </th>
+                  <td data-label="Kind">{{ unit.kind }}</td>
+                  <td data-label="Position">{{ unit.position }}</td>
+                  <td data-label="Order state">{{ store.orderFor(unit.id).status }}</td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="4">No visible formations match this search.</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </fa-panel>
+      <fa-panel heading="War Diary" eyebrow="Presentation record">
+        <div class="records-tools">
+          <fa-choice-select
+            label="Show entries for"
+            [options]="diaryScopeOptions"
+            [value]="diaryScope()"
+            (valueChange)="setDiaryScope($event)"
+          />
+        </div>
+        <p class="fa-muted">
+          Synthetic own-side fixture entries. No campaign history is connected.
         </p>
-      }
-    </fa-panel>
-  </div>
-</main>
-<footer class="session-footer" [attr.inert]="mapFullscreen() ? '' : null">
-  <span>Maproom alpha · Development fixture</span><span>Campaign connection comes next</span>
-</footer>
+        @for (entry of diaryEntries(); track entry.id) {
+          <article class="diary-entry">
+            <p class="fa-eyebrow">Accepted example</p>
+            <p>
+              {{ formationName(entry.formationId) }} moved to {{ entry.destination }} in the local
+              fixture.
+            </p>
+            <button type="button" class="fa-text-action" (click)="locateDiary(entry.formationId)">
+              Locate {{ formationName(entry.formationId) }} on map
+            </button>
+          </article>
+        } @empty {
+          <p class="diary-text">
+            No accepted fixture moves for
+            {{ diaryScope() === 'selected' ? store.selected().name : 'visible formations' }} yet.
+          </p>
+        }
+      </fa-panel>
+    </div>
+  </main>
+  <footer class="session-footer" [attr.inert]="mapFullscreen() ? '' : null">
+    <span>Maproom alpha · Development fixture</span><span>Campaign connection comes next</span>
+  </footer>
+}

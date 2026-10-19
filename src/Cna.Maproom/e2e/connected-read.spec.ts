@@ -110,7 +110,13 @@ test('local read lane shows only the returned audience view and never submits an
     }
   });
 
-  await page.goto('/connected');
+  await page.goto('/?mode=campaign');
+  await expect(page.getByRole('main')).toHaveCount(1);
+  await expect(page.getByRole('banner')).toHaveCount(1);
+  await expect(page.getByRole('link', { name: 'Local campaign read mode' })).toHaveAttribute(
+    'aria-current',
+    'page',
+  );
   await page.getByRole('button', { name: 'Check local fixtures' }).click();
   await page.getByRole('button', { name: 'Create and enter Axis' }).click();
   await expect(page.getByRole('heading', { name: 'Situation map' })).toBeVisible();
@@ -181,6 +187,9 @@ test('local read lane shows only the returned audience view and never submits an
     expect(viewport).not.toBeNull();
     expect(viewport!.x).toBeGreaterThanOrEqual(-1);
     expect(viewport!.x + viewport!.width).toBeLessThanOrEqual(width + 1);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+      true,
+    );
     expect(await scroll.evaluate((element) => element.scrollWidth)).toBeGreaterThan(
       await scroll.evaluate((element) => element.clientWidth),
     );
@@ -249,6 +258,7 @@ test('local read lane shows only the returned audience view and never submits an
   await expect(page.locator('.roster')).toHaveAttribute('inert', '');
   await expect(page.locator('.records-grid')).toHaveAttribute('inert', '');
   await expect(page.locator('.skip-link')).toHaveAttribute('inert', '');
+  await expect(page.locator('.command-bar')).toHaveAttribute('inert', '');
   await expect(dialog.getByRole('button', { name: 'Close expanded map' })).toBeFocused();
   await page.keyboard.press('Tab');
   await expect(dialog.getByRole('button', { name: 'Keyboard help' })).toBeFocused();
@@ -269,13 +279,61 @@ test('local read lane shows only the returned audience view and never submits an
     'POST /api/v1/campaigns/c-1/seat',
     'GET /api/v1/campaigns/c-1/view',
   ]);
+  await page.getByRole('link', { name: 'Fixture study' }).click();
+  await expect(page.getByRole('heading', { name: 'The coastal exercise' })).toBeVisible();
+  await expect(page.getByText('First group')).toHaveCount(0);
+  await expect(page.getByText('Unidentified presence')).toHaveCount(0);
 });
 
-test('main Maproom has a direct entry to the local connected campaign', async ({ page }) => {
+test('main Maproom switches between fixture and local campaign without losing the route mode', async ({
+  page,
+}) => {
   await page.goto('/');
-  await page.getByRole('link', { name: 'Connected read preview' }).click();
-  await expect(page).toHaveURL(/\/connected$/);
+  await expect(page.getByRole('heading', { name: 'The coastal exercise' })).toBeVisible();
+  await page.getByRole('link', { name: 'Local campaign read mode' }).click();
+  await expect(page).toHaveURL(/\?mode=campaign$/);
   await expect(page.getByRole('heading', { name: 'Connect to local host' })).toBeVisible();
+  await expect(page.getByRole('main')).toHaveCount(1);
+  await expect(page.getByRole('banner')).toHaveCount(1);
+  await expect(page.getByRole('heading', { name: 'The coastal exercise' })).toHaveCount(0);
+  await page.keyboard.press('?');
+  await page.keyboard.press(']');
+  await page.getByRole('link', { name: 'Fixture study' }).click();
+  await expect(page).toHaveURL(/\/$/);
+  await expect(page.getByRole('heading', { name: 'The coastal exercise' })).toBeVisible();
+  await expect(page.getByText('Move around the exercise')).toBeHidden();
+  await expect(page.getByRole('button', { name: 'Fox group, infantry, K-7' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+  await page.goBack();
+  await expect(page).toHaveURL(/\?mode=campaign$/);
+  await expect(page.getByRole('heading', { name: 'Connect to local host' })).toBeVisible();
+  await page.goForward();
+  await expect(page.getByRole('heading', { name: 'The coastal exercise' })).toBeVisible();
+});
+
+test('browser history leaves fixture fullscreen before entering campaign mode', async ({
+  page,
+}) => {
+  await page.goto('/?mode=campaign');
+  await page.getByRole('link', { name: 'Fixture study' }).click();
+  await page.getByRole('button', { name: 'Expand map' }).click();
+  await expect(page.getByRole('dialog', { name: 'Situation map' })).toBeVisible();
+  await expect(page.locator('html')).toHaveCSS('overflow', 'hidden');
+
+  await page.goBack();
+  await expect(page).toHaveURL(/\?mode=campaign$/);
+  await expect(page.getByRole('heading', { name: 'Connect to local host' })).toBeVisible();
+  await expect(page.getByRole('dialog', { name: 'Situation map' })).toHaveCount(0);
+  await expect(page.locator('html')).not.toHaveCSS('overflow', 'hidden');
+  await expect(page.locator('.command-bar')).not.toHaveAttribute('inert', '');
+  await expect(page.getByRole('link', { name: 'Fixture study' })).toBeVisible();
+
+  await page.goForward();
+  await expect(page.getByRole('heading', { name: 'The coastal exercise' })).toBeVisible();
+  await expect(page.getByRole('dialog', { name: 'Situation map' })).toHaveCount(0);
+  await expect(page.locator('html')).not.toHaveCSS('overflow', 'hidden');
 });
 
 test('unavailable initial view stops without showing fixture orders', async ({ page }) => {
@@ -368,7 +426,7 @@ for (const deniedStatus of [401, 403]) {
         );
       } else throw new Error(`Unexpected API call: ${path}`);
     });
-    await page.goto('/connected');
+    await page.goto(deniedStatus === 401 ? '/?mode=campaign' : '/connected');
     await page.getByRole('button', { name: 'Check local fixtures' }).click();
     await page.getByRole('button', { name: 'Create and enter Axis' }).click();
     await expect(page.getByText('Private own unit').first()).toBeVisible();

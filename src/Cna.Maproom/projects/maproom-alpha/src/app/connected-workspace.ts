@@ -2,8 +2,11 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
+  EventEmitter,
   computed,
   inject,
+  Input,
+  Output,
   signal,
   ViewChild,
 } from '@angular/core';
@@ -32,6 +35,8 @@ type Seat = 'axis' | 'commonwealth';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConnectedWorkspace {
+  @Input() embedded = false;
+  @Output() readonly fullscreenChange = new EventEmitter<boolean>();
   @ViewChild(OperationsMap) private operationsMap?: OperationsMap;
   private readonly api = inject(ConnectedCampaignService);
   private readonly destroyRef = inject(DestroyRef);
@@ -66,18 +71,21 @@ export class ConnectedWorkspace {
   constructor() {
     this.destroyRef.onDestroy(() => {
       if (this.mapFullscreen()) document.documentElement.style.overflow = this.originalPageOverflow;
+      this.fullscreenChange.emit(false);
     });
   }
 
   protected toggleMapFullscreen(): void {
     if (this.mapFullscreen()) {
       this.mapFullscreen.set(false);
+      this.fullscreenChange.emit(false);
       document.documentElement.style.overflow = this.originalPageOverflow;
       this.operationsMap?.focusExpand();
     } else {
       this.originalPageOverflow = document.documentElement.style.overflow;
       document.documentElement.style.overflow = 'hidden';
       this.mapFullscreen.set(true);
+      this.fullscreenChange.emit(true);
     }
   }
 
