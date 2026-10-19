@@ -53,9 +53,9 @@ play a side; it will never decide the rules or secretly change the campaign stat
 | --- | --- | --- |
 | Deterministic Umpire | Working | Versioned rules, seeded randomness, canonical commands/events, replay, checkpoints, and side-safe action boundaries are implemented. |
 | Playable rule path | Working through Combat entry | Runner can execute Initiative, stage preamble, Reserve Designation, Movement, bounded ZOC/Reaction, and Breakdown, then stops before Combat adjudication. |
-| Combat and continual cycle | Private Core entry; public activation pending | Task019F3 (PR #169) implements private native actual prepared-round entry and cancelled no-attack Release for both supported opening histories with two independently trusted ledgers. Task019F4 (PR #172) adds private no-cost actual assault admission and pure arithmetic assessment. Task019F5 (PR #175) adds the private actual paid-assault executable reference through immediate settlement and CA completion into same-cycle Reserve Release. Task019F6 (PR #177) implements the merged private native paid-assault consumer with exact reference byte parity and focused native validation. PAC01 (PR #178) freezes the actual-source Release and guarded repeat/finish contract. CS01 implements its private native consumer through the Movement/Convoy boundary. NRM01 adds private native actual repeated Movement with cumulative costs and original provenance. C02 (PR #182) freezes the private actual repeated Movement completion executable contract. C04 adds its private native consumer through mandatory empty System resolution and ordinal2 Breakdown Determination. B02 (PR #185) adds the private actual ordinal2 Breakdown completion reference through one System event into Combat Position Determination. B03 provides its private native seven-ledger consumer and codec; independent review, hosted CI and public activation remain separate gates. R03's frozen authentic moved-repeat Breakdown reference passed 300 terminal replays, vector audit and all 788 nonterminal cuts. Its private native Core consumer merged in PR #216 after independent review and exact-head hosted CI; it matches all 300 frozen terminal rows, including before/after canonical hashes, exact retry and focused rejection checks. Production ingress, later-II/consumed Reserve lineage, full-cycle proof and public Combat remain open. |
+| Combat and continual cycle | Private Core and bounded P01 evidence; public activation pending | R03's private native consumer and bounded P01 reference/proof slices are merged. Authentic CreationRequest plus eleven R03 ledgers replay across 300 rows: 44 provisional positive, 256 provisional empty, zero admitted. The private ordinal-two zero-assault/defender RBA path has no native or public consumer. Action exhaustiveness, full surrender/RBA, outward privacy, replay/resource caps and the support certificate remain open; Runner stops before public Combat. |
 | Exercise and Maneuver tools | Working | Deterministic single runs, multi-run matrices, paired comparisons, strict readback, and evidence bundles are available from CLI. |
-| User interface | Angular foundation and initial local read lane | `src/Cna.Maproom` contains `maproom-alpha`, Field Atlas and Storybook. The synthetic order shell remains separate; `/connected` can create one temporary local Rules9 fixture, enter a granted seat and read its initial audience-safe view. Reload can resume a valid seat cookie; orders, later cuts and lost-cookie recovery remain pending. `site/` is project website only. |
+| User interface | Angular foundation and bounded connected read lane | `src/Cna.Maproom` contains `maproom-alpha`, Field Atlas and Storybook. The synthetic order shell remains separate; `/connected` can create one temporary local Rules9 fixture, enter a granted seat and display its initial audience-safe operations view. Reload can resume a valid seat cookie; public orders, later cuts and lost-cookie recovery remain pending. `site/` is project website only. |
 | Published scenario | Not started | First target is six-turn, Land-only *Graziani's Offensive* after working Combat loop. |
 | Durable save/resume | Not started | Replay/checkpoint contracts exist; user-facing campaign persistence comes later. |
 | Model-backed commanders | Scaffold only | Gateway and worker exist, but no provider is configured and AI never owns authority. |
@@ -142,7 +142,8 @@ its hex overlay keeps a consistent shape across panel sizes;
 the larger order inspector and header controls keep order preparation prominent. These remain
 local presentation interactions, not connected campaign actions. The
 [MAP-04 browser contract](src/Cna.Game.Contracts/README.md) has an OpenAPI schema, audience-safe
-fixture and compiling generated client; host handlers remain pending.
+fixture and compiling generated client. Local bootstrap, fixture creation and initial-view
+handlers exist; public action submission and receipt lookup remain pending.
 The [MAP-05 trusted host protocol](docs/specs/maproom-trusted-host-protocol-v1.md) specifies
 private accepted-step evidence, pending publication, recovery and bounded System progression;
 it does not implement campaign hosting or durable save.
@@ -156,8 +157,9 @@ identity and serialized Core transitions in memory, reports bounded System stops
 campaigns on process restart. Grain deactivation retains live state; a process-only capability
 and disabled Orleans client gateway protect its private API. Synchronous memory publication has
 no observable pending phase; provider-backed publication still needs fencing and pending recovery.
-It has no browser route, seat authorization, Core terminal classification, public Combat action,
-or durable save; MAP-08/09 must map and authorize outward requests before exposing it.
+MAP-08 adds local browser routes and seat authorization around this temporary grain.
+MAP-09 binds requests to a seat and retains exact retries privately; public action submission and
+receipt lookup, Core terminal classification, public Combat and durable save remain open.
 MAP-08A adds development-only, loopback-guarded operator bootstrap and process-local seat-session
 plumbing to `Cna.OrleansHost`. A bounded MAP-08B route now creates the one admitted Rules9
 fixture through the trusted grain and returns one retained grant pair for exact operator/request
@@ -173,22 +175,25 @@ after expiry. The
 `/api/v1/campaigns/{campaignId}/view` now projects an authorized, pinned initial rules-lab cut
 after trusted in-process creation. It uses an admitted public layout and opaque formation,
 contact, and action handles; private MAP-07 legal-action bytes never cross HTTP. A later cut,
-missing catalog fact, or unsupported action returns `503 unavailable` while approved War Diary
-source is pending. Action submission and complete post-step reads are still absent.
+missing presentation fact, or unsupported action still returns `503 unavailable`. Approved private
+War Diary copy and classification do not establish a coherent public successor view. Action
+submission and complete post-step reads remain absent.
 The [MAP-08B1 side projection prerequisite](docs/specs/maproom-side-projection-prerequisites-v1.md)
-records missing typed fields, pinned presentation data, audience-safe diary and opaque action
-mapping that must precede the browser view.
+defines typed permitted fields, pinned presentation data, audience-safe diary and opaque action
+mapping that gate the browser view.
 MAP-08B2 adds a typed, host-private side cut and process-local visibility tracker. Both sides
 advance on creation and every accepted or System step; an unread disappearance retires its
 contact handle. Handles are scoped to seat-session generation. The browser route serves only the
-initial pinned fixture cut; later cuts await audience-safe diary and complete MAP-08B projection.
+initial pinned fixture cut; later cuts await a coherent public successor projection and
+validated diary mapping.
 The private [`CampaignAudienceOutcomeSource`](src/Cna.Core/Hosting/CampaignAudienceOutcomeSource.cs)
 now verifies one accepted step against canonical command/event/receipt and both committed side
 cuts without publishing a turn. The temporary host now binds its paired private decisions and
 both side cuts to the same exact committed head before installing a successor; missing or
-mismatched proof makes private audience reads unavailable. Proposed diary entry keys remain
-unavailable until copy/catalog approval and coherent post-step projection; the proof is not
-connected to browser responses. See the
+mismatched proof makes private audience reads unavailable. The owner-approved nine-entry en-CA
+copy catalog and private tracker retain per-audience monotonic cursors and the latest 50 approved
+entries, with outward entry IDs scoped to seat-session generation. The public initial view
+still has an empty diary and cursor zero; later cuts remain unavailable. See the
 [private outcome head binding](docs/specs/maproom-private-outcome-head-binding-v1.md).
 Run `just maproom-setup`, then `just maproom` (port 4200) and `just field-atlas` (port 6006) in separate
 terminals. Storybook owns the live component/pattern reference; both surfaces consume
@@ -196,9 +201,11 @@ terminals. Storybook owns the live component/pattern reference; both surfaces co
 The searchable ledger and War Diary in the default workspace are synthetic own-side examples.
 For the separate development-only initial campaign read, follow the
 [connected Maproom local recipe](docs/design/maproom-connected-local-read.md); it uses ports 4300
-and 5087 without changing the 4200 preview. A process holds only one fixture campaign: exact
-creation retries need the original operator/request within 15 minutes. A reload with the same
-valid seat cookie resumes its authorized view; a lost cookie or different request conflicts until
+and 5087 without changing the 4200 preview. MAP-10 extends the bounded read-only operations
+workspace but does not submit orders or read later cuts. MAP-09 retains private, process-lifetime
+request binding and exact retries without a public submit or receipt route. A process holds only
+one fixture campaign: exact creation retries need the original operator/request within 15 minutes.
+A reload with the same valid seat cookie resumes its authorized view; a lost cookie or different request conflicts until
 that development host restarts. Command submission and later views remain open.
 
 ## Start, run, and develop
@@ -266,7 +273,10 @@ Intelligence Gateway. This launches development services—not a playable Maproo
 With Docker Desktop running, `just proving-ground-up` builds and starts the current Angular
 Maproom shell at <http://127.0.0.1:4200> and Development Orleans host at
 <http://127.0.0.1:5180>. `just proving-ground-smoke` checks both HTTP probes;
-`just proving-ground-down` stops them. This preview has no campaign API or durable save yet.
+`just proving-ground-down` stops them. The 4200 shell uses synthetic fixtures. The host maps
+bounded local campaign routes, but Docker forwarding to port 5180 fails their loopback-caller guard;
+use the separate host-native [connected read lane](docs/design/maproom-connected-local-read.md)
+for an authorized initial view. Neither lane submits orders or provides durable save.
 Use the [Proving Ground runbook](docs/runbooks/proving-ground.md) for service boundaries, current
 rules-lab seed/evidence commands, and the MAP slice path to a real playtest.
 
