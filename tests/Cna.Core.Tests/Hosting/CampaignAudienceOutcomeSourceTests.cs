@@ -423,9 +423,9 @@ public sealed class CampaignAudienceOutcomeSourceTests
             Assert.Empty(after.OwnElements);
             var suppressed = set.Audience == CampaignActionAudience.Axis
                 ? proof.Axis! : proof.Commonwealth!;
-            Assert.Null(suppressed.ProposedCopyKey);
+            Assert.Equal("diary.reactionMoved", suppressed.ProposedCopyKey);
             Assert.Null(suppressed.OwnElementIndex);
-            Assert.Equal("own-element-unavailable", suppressed.ReasonCode);
+            Assert.Equal("own-element-suppressed", suppressed.ReasonCode);
             Assert.Equal(CampaignAudienceOutcomeDisposition.Unavailable,
                 suppressed.Disposition);
             session = accepted.SuccessorSession!;

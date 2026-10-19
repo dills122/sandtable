@@ -124,6 +124,15 @@ unavailable until explicitly reviewed. An accepted event that is classified sile
 still change map/ledger/actions and the ordinary audience revision; silence only governs
 the diary cursor.
 
+Observation V7 intentionally suppresses the reacting side's current own rows during a
+Reaction move. For the exact accepted `ReactingElementMovedV2` actor/action/event pairing,
+the host-private tracker may link `diary.reactionMoved` through an element-to-formation
+directory seeded from that same side's initial admitted cut, only when both predecessor
+and successor cuts are `reacting` with empty own rows and the Core proof reports
+`own-element-suppressed`. The directory never supplies a current location or browser
+element ID. Missing initial identity, changed formation binding, or any other event
+shape remains unavailable; no accepted Reaction entry is silently dropped.
+
 ## Cursor, retention, and commit coherence
 
 - Start each campaign/side diary cursor at `0`. On one approved entry, increment only that

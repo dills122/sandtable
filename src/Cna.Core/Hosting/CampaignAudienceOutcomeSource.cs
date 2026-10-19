@@ -95,17 +95,28 @@ public static class CampaignAudienceOutcomeSource
                 var key = own ? classification.Value.CopyKey : null;
                 var elementId = own ? classification.Value.ElementId : null;
                 int? ownIndex = null;
+                var suppressedReaction = false;
                 if (elementId is not null)
                 {
                     var index = FindOwnIndex(before, after, elementId);
-                    if (index < 0) key = null;
+                    if (index < 0)
+                    {
+                        suppressedReaction = key == "diary.reactionMoved"
+                            && before.DecisionStateKind == "reacting"
+                            && after.DecisionStateKind == "reacting"
+                            && before.OwnElements.Count == 0
+                            && after.OwnElements.Count == 0;
+                        if (!suppressedReaction) key = null;
+                    }
                     else ownIndex = index;
                 }
                 var disposition = key is not null
                     ? CampaignAudienceOutcomeDisposition.Unavailable
                     : CampaignAudienceOutcomeDisposition.Silent;
                 var reason = key is not null ? "copy-catalog-unapproved" : "known-silent";
-                if (elementId is not null && ownIndex is null)
+                if (suppressedReaction)
+                    reason = "own-element-suppressed";
+                else if (elementId is not null && ownIndex is null)
                 {
                     disposition = CampaignAudienceOutcomeDisposition.Unavailable;
                     reason = "own-element-unavailable";
