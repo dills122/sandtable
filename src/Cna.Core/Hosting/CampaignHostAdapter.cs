@@ -109,6 +109,12 @@ public static class CampaignHostAdapter
         ExerciseSession session, CampaignActionSubmission submission) =>
         CampaignExercises.Submit(session, submission);
 
+    /// <summary>Private typed decision proof for one accepted step. It neither publishes a
+    /// second transition nor supplies browser diary content.</summary>
+    public static CampaignAudienceOutcomePair DecideAcceptedOutcomes(
+        ExerciseSession predecessor, CampaignHostAcceptedStep acceptedStep) =>
+        CampaignAudienceOutcomeSource.Decide(predecessor, acceptedStep);
+
     /// <summary>
     /// Re-adjudicates a trusted private transcript from its pinned creation request. The caller
     /// must verify journal order, head/fence, request indexes and checkpoint binding separately.

@@ -33,6 +33,18 @@ The Orleans tracker must not parse raw event JSON into presentation text.
 
 ## Proposed private source contract
 
+The first contract-only implementation is
+[`CampaignAudienceOutcomeSource.Decide`](../../src/Cna.Core/Hosting/CampaignAudienceOutcomeSource.cs).
+It accepts a trusted predecessor session and one canonical accepted-step record, then
+recomputes the step **in memory only** to compare its canonical command, event, receipt,
+and successor snapshot. It never commits a second turn or advances the supplied session.
+Both predecessor and successor side cuts must be coherent before it emits a paired,
+versioned host-private proof with source and committed-head hashes. Unknown or mismatched
+input returns no typed proof for either side. The proposed entry copy keys remain
+`copy-catalog-unapproved` and unavailable; no diary cursor, text, HTTP response, or
+successor `/view` consumes this proof yet. This is only the accepted-outcome decision
+source prerequisite, not the presentation approval or diary projection.
+
 For each ordered event in an accepted step, the Core hosting adapter supplies one
 immutable, versioned `AudienceOutcomeDecision` per authorized side **in addition to**
 the canonical evidence and both successor cuts. Each decision carries the
