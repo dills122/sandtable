@@ -306,6 +306,55 @@ class ExplicitRbaTests(unittest.TestCase):
         self.assertEqual([], terminal["publicActions"])
         self.assertTrue(json.loads(controls[-1])["closed"])
 
+    def test_commonwealth_actor_selected_cuts_read_back_in_fresh_process(self):
+        root = self.commonwealth
+        cuts, events, inputs, controls = self.run_path(
+            root, expected_actor="commonwealth", capture_controls=True)
+        for index in (0, 4, 8):
+            with self.subTest(cut=index):
+                source, ledger = cuts[index]
+                observed = fresh_readback(
+                    root, source, ledger,
+                    retry=None if index == 0 else inputs[index - 1],
+                    next_input=inputs[index])
+                self.assertNotIn("rejected", observed)
+                control = json.loads(controls[index])
+                self.assertEqual(b64(controls[index]), observed["control"])
+                self.assertEqual(control["stateVersion"], observed["version"])
+                self.assertEqual(control["prefix"], observed["prefix"])
+                self.assertEqual(control["position"]["positionId"], observed["position"])
+                self.assertEqual(control["lastReceiptId"], observed["lastReceiptId"])
+                self.assertEqual(b64(reference.encode(control["parent"]["world"])),
+                                 observed["world"])
+                self.assertEqual(b64(reference.encode(control["parent"]["randomState"])),
+                                 observed["randomState"])
+                self.assertFalse(observed["admitted"])
+                self.assertEqual([], observed["publicActions"])
+                if index:
+                    self.assertEqual(dict(source=b64(source),
+                                          ledger=[b64(item) for item in ledger],
+                                          event=None, receipt=events[index - 1]["receiptId"]),
+                                     observed["retry"])
+                next_source, next_ledger = cuts[index + 1]
+                self.assertEqual(dict(source=b64(next_source),
+                                      ledger=[b64(item) for item in next_ledger],
+                                      event=b64(reference.encode(events[index])),
+                                      receipt=events[index]["receiptId"],
+                                      control=b64(controls[index + 1])),
+                                 observed["next"])
+        terminal_source, terminal_ledger = cuts[-1]
+        terminal = fresh_readback(root, terminal_source, terminal_ledger,
+                                  retry=inputs[-1])
+        self.assertNotIn("rejected", terminal)
+        self.assertEqual(b64(controls[-1]), terminal["control"])
+        self.assertEqual(dict(source=b64(terminal_source),
+                              ledger=[b64(item) for item in terminal_ledger],
+                              event=None, receipt=events[-1]["receiptId"]),
+                         terminal["retry"])
+        self.assertFalse(terminal["admitted"])
+        self.assertEqual([], terminal["publicActions"])
+        self.assertTrue(json.loads(controls[-1])["closed"])
+
     def test_fresh_readback_rejects_source_event_input_length_and_stale_next(self):
         root = self.axis
         cuts, _, inputs, _ = self.run_path(root)

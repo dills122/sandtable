@@ -102,10 +102,13 @@ read in a new Python process using the same reference contract. The test compare
 trace; an already issued input returns the same receipt with no event or byte change;
 the next trusted input produces byte-identical `Source`, event, ledger and `Control`.
 The terminal cut is read back separately and its last accepted input still retries without
-an event or mutation.
+an event or mutation. The Commonwealth acting-side `r169-c02` accepted-decline trace
+independently checks fresh-process opening, decision, late-step, and terminal cuts with
+the same canonical Control, receipt retry, World/RNG and next-input byte comparisons.
 Tampered predecessor Source, own event, own input, missing ledger entry and stale or
-noncanonical next input are rejected after fresh readback. This is one authentic
-accepted-decline trace, not a durable host restart, storage implementation, or an
+noncanonical next input are rejected after fresh readback. These are two authentic
+accepted-decline actor orientations, with every cut checked only for the Axis trace;
+they are not a durable host restart, storage implementation, or an
 all-row cut certificate.
 
 ## Remaining gates
@@ -125,7 +128,8 @@ python3 -B docs/specs/verify-combat-p01-explicit-rba-v1.py /Users/dsteele/.codex
 
 The first command exercises both authentic actor orientations, explicit decline, timeout
 cancellation before and after decision opening, receipt retry, nonterminal replay,
-single-trace fresh-process cut readback and continuation, ancestry and event mutations, wrong actor,
+Axis all-cut and Commonwealth selected-cut fresh-process readback and continuation,
+ancestry and event mutations, wrong actor,
 late decision, attempted RBA movement and adjacent positive rejection. The second replays the
 original pinned 300-row R03 catalogue with source PDF pins, then checks the narrower 244/56
 certificate partition. Neither command proves full P01 admission.
