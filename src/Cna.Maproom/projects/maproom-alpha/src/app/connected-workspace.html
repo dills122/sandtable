@@ -1,15 +1,17 @@
-<a class="skip-link" href="#connected-main" [attr.inert]="mapFullscreen() ? '' : null"
-  >Skip to campaign</a
->
-<header class="command-bar" [attr.inert]="mapFullscreen() ? '' : null">
-  <a class="brand" href="/" aria-label="Maproom fixture home"
-    ><span class="brand-mark" aria-hidden="true">M</span
-    ><span>Maproom <small>Field Atlas</small></span></a
+@if (!embedded) {
+  <a class="skip-link" href="#connected-main" [attr.inert]="mapFullscreen() ? '' : null"
+    >Skip to campaign</a
   >
-  <span class="edition">ALPHA / CONNECTED READ PREVIEW</span>
-  <a class="fa-text-action" href="/">Fixture workspace</a>
-  <span class="local-status">○ Local campaign</span>
-</header>
+  <header class="command-bar" [attr.inert]="mapFullscreen() ? '' : null">
+    <a class="brand" href="/" aria-label="Maproom fixture home"
+      ><span class="brand-mark" aria-hidden="true">M</span
+      ><span>Maproom <small>Field Atlas</small></span></a
+    >
+    <span class="edition">ALPHA / CONNECTED READ PREVIEW</span>
+    <a class="fa-text-action" href="/">Fixture workspace</a>
+    <span class="local-status">○ Local campaign</span>
+  </header>
+}
 <main id="connected-main" tabindex="-1">
   @if (error()) {
     <p class="connected-error" role="alert">{{ error() }}</p>

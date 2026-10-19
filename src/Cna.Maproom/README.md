@@ -24,8 +24,10 @@ Both bind to loopback. Root shortcuts: `just maproom-setup`, `just maproom`,
 `just field-atlas`, `just maproom-check`, `just maproom-browser-check`.
 Aspire integration and complete connected play remain later MAP slices.
 
-For the separate read-only initial campaign lane, start the development Orleans host
-and `npm run start:connected`, then visit `http://127.0.0.1:4300/connected`. The
+For read-only initial campaign mode in the main Maproom, start the development Orleans host
+and `npm run start:connected`, then visit `http://127.0.0.1:4300/` and choose **Local campaign read mode**.
+The URL `http://127.0.0.1:4300/?mode=campaign` opens that mode directly; `/connected` remains a
+development deep link to the same audience view. The
 [local connected-read recipe](../../docs/design/maproom-connected-local-read.md) gives exact
 host command and process-local recovery limits. It leaves this 4200 fixture preview alone;
 connected order submission and later-phase reads are not available.

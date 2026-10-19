@@ -9,6 +9,9 @@ import {
   inject,
   signal,
 } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import { map } from 'rxjs';
 import {
   AtlasChoiceSelect,
   AtlasPanel,
@@ -16,6 +19,7 @@ import {
   AtlasUnitCounter,
 } from '@sandtable/field-atlas';
 import { OperationsMap, MapPan } from './operations-map';
+import { ConnectedWorkspace } from './connected-workspace';
 import { OrderWorkflow } from './order-workflow';
 import { provideMaproomForms } from './forms';
 import { formations, WorkspaceStore } from './workspace.store';
@@ -26,8 +30,10 @@ import { formations, WorkspaceStore } from './workspace.store';
     AtlasPanel,
     AtlasStatus,
     AtlasUnitCounter,
+    ConnectedWorkspace,
     OperationsMap,
     OrderWorkflow,
+    RouterLink,
   ],
   providers: [WorkspaceStore, provideMaproomForms()],
   templateUrl: './workspace.html',
@@ -36,9 +42,15 @@ import { formations, WorkspaceStore } from './workspace.store';
 })
 export class Workspace {
   private readonly destroyRef = inject(DestroyRef);
+  private readonly route = inject(ActivatedRoute);
+  protected readonly connectedMode = toSignal(
+    this.route.queryParamMap.pipe(map((params) => params.get('mode') === 'campaign')),
+    { initialValue: this.route.snapshot.queryParamMap.get('mode') === 'campaign' },
+  );
   protected readonly store = inject(WorkspaceStore);
   protected readonly formations = formations;
   protected readonly mapFullscreen = signal(false);
+  protected readonly connectedFullscreen = signal(false);
   protected readonly ledgerQuery = signal('');
   protected readonly ledgerSort = signal<'name' | 'kind' | 'position' | 'order'>('name');
   protected readonly ledgerDescending = signal(false);
@@ -145,6 +157,7 @@ export class Workspace {
   @HostListener('document:keydown', ['$event'])
   protected onShortcut(event: KeyboardEvent) {
     if (
+      this.connectedMode() ||
       event.defaultPrevented ||
       event.isComposing ||
       event.altKey ||
