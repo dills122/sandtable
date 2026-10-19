@@ -148,6 +148,10 @@ opaque handles to the authorized session generation. Initial lab view uses a ver
 source-pinned public layout with generic contact labels, own formation labels and reserve status;
 no post-creation diary source is approved, so successor views fail closed. Browser action ingress
 remains pending.
+`CampaignAudienceOutcomeSource` is a private Core hosting decision proof: it recomputes an
+accepted step in memory against canonical evidence and both side cuts, without a second
+publication or state mutation. Proposed entry keys remain unavailable without approved copy;
+the Orleans diary tracker and successor browser view do not consume it yet.
 No canonical legal-action bytes or authority versions are serialized to HTTP. The
 [Angular workspace](src/Cna.Maproom/README.md) provides
 `projects/maproom-alpha` and the internal `@sandtable/field-atlas` library. Storybook uses the same

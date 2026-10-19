@@ -182,6 +182,10 @@ MAP-08B2 adds a typed, host-private side cut and process-local visibility tracke
 advance on creation and every accepted or System step; an unread disappearance retires its
 contact handle. Handles are scoped to seat-session generation. The browser route serves only the
 initial pinned fixture cut; later cuts await audience-safe diary and complete MAP-08B projection.
+The private [`CampaignAudienceOutcomeSource`](src/Cna.Core/Hosting/CampaignAudienceOutcomeSource.cs)
+now verifies one accepted step against canonical command/event/receipt and both committed side
+cuts without publishing a turn. Proposed diary entry keys remain unavailable until copy/catalog
+approval and coherent post-step projection; this source is not connected to browser responses.
 Run `just maproom-setup`, then `just maproom` (port 4200) and `just field-atlas` (port 6006) in separate
 terminals. Storybook owns the live component/pattern reference; both surfaces consume
 `@sandtable/field-atlas`. MAP-03B stages local delayed results and receipt readback only;

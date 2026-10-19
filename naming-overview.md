@@ -129,6 +129,9 @@ between Umpire's side cut and Maproom's outward DTO. It grants no new authority 
 MAP-08B2 calls the process-local contact/action continuity record the **audience tracker**.
 Its private side cut remains host data; Maproom receives only a validated player view. The
 **presentation catalog** owns public fixture labels and layout, not Umpire authority.
+The **audience outcome source** is a private Core hosting proof for one accepted transition.
+It can classify known silent outcomes and identify proposed entry keys, but unapproved copy
+stays unavailable; it is not a browser diary, receipt, or second adjudicator.
 
 **Proving Ground** names the local development test environment and
 [runbook](docs/runbooks/proving-ground.md), not a game authority or separate service. Its first
