@@ -1,10 +1,13 @@
-<a class="skip-link" href="#connected-main">Skip to campaign</a>
-<header class="command-bar">
+<a class="skip-link" href="#connected-main" [attr.inert]="mapFullscreen() ? '' : null"
+  >Skip to campaign</a
+>
+<header class="command-bar" [attr.inert]="mapFullscreen() ? '' : null">
   <a class="brand" href="/" aria-label="Maproom fixture home"
     ><span class="brand-mark" aria-hidden="true">M</span
     ><span>Maproom <small>Field Atlas</small></span></a
   >
-  <span class="edition">ALPHA / CONNECTED READ</span>
+  <span class="edition">ALPHA / CONNECTED READ PREVIEW</span>
+  <a class="fa-text-action" href="/">Fixture workspace</a>
   <span class="local-status">○ Local campaign</span>
 </header>
 <main id="connected-main" tabindex="-1">
@@ -38,7 +41,11 @@
       }
     </section>
   } @else if (view(); as current) {
-    <section class="phase-bar" aria-label="Campaign status">
+    <section
+      class="phase-bar"
+      aria-label="Campaign status"
+      [attr.inert]="mapFullscreen() ? '' : null"
+    >
       <div class="phase-title">
         <p class="fa-eyebrow">Operations workspace · audience view</p>
         <h1>Campaign situation</h1>
@@ -67,12 +74,16 @@
       </div>
     </section>
     @if (current.position.decision === 'unsupported-phase') {
-      <p class="connected-error" role="status">
+      <p class="connected-error" role="status" [attr.inert]="mapFullscreen() ? '' : null">
         This phase has no connected browser continuation. No order can be issued here.
       </p>
     }
     <div class="workspace-grid connected-grid">
-      <aside class="roster" aria-labelledby="connected-formations-title">
+      <aside
+        class="roster"
+        aria-labelledby="connected-formations-title"
+        [attr.inert]="mapFullscreen() ? '' : null"
+      >
         <div class="roster-heading">
           <h2 id="connected-formations-title">Own formations</h2>
           <span class="fa-muted">{{ current.ownFormations.length }} own-side</span>
@@ -95,82 +106,81 @@
           }
         </div>
       </aside>
-      <section class="map-panel connected-map" aria-labelledby="connected-map-title">
-        <div class="map-heading">
-          <div>
-            <h2 id="connected-map-title">Situation map</h2>
-            <span class="fa-muted">Audience locations · own formations · apparent contacts</span>
-          </div>
-        </div>
-        <p class="connected-map-hint">Scroll sideways to inspect the full map.</p>
+      <section
+        class="map-panel connected-map"
+        aria-labelledby="map-title"
+        [class.is-fullscreen]="mapFullscreen()"
+        [attr.role]="mapFullscreen() ? 'dialog' : null"
+        [attr.aria-modal]="mapFullscreen() ? 'true' : null"
+      >
         <div
           class="connected-map-scroll"
           role="region"
+          [attr.tabindex]="mapFullscreen() ? -1 : 0"
           aria-label="Scrollable situation map"
-          tabindex="0"
         >
-          <div
-            class="map-canvas connected-map-frame"
-            role="region"
-            aria-label="Audience-safe campaign map"
+          <mr-operations-map
+            hint="Audience locations · own formations · apparent contacts"
+            [zoom]="camera.zoom()"
+            [transform]="camera.transform()"
+            [expanded]="mapFullscreen()"
+            [allowTouchScrollAtFit]="true"
+            shortcutScope="connected"
+            [caption]="
+              selected()
+                ? 'Selected: ' +
+                  selected()!.label +
+                  ' · ' +
+                  (selectedLocation()?.label ?? 'Unknown location')
+                : 'No formation selected'
+            "
+            scope="Read only · current audience"
+            (expandedChange)="toggleMapFullscreen()"
+            (fit)="camera.fitMap()"
+            (zoomBy)="camera.zoomBy($event)"
+            (pan)="panMap($event)"
           >
-            <svg class="hex-grid" aria-hidden="true" focusable="false">
-              <defs>
-                <pattern
-                  id="connected-atlas-grid"
-                  width="90"
-                  height="52"
-                  patternUnits="userSpaceOnUse"
+            <div
+              map-scene-content
+              class="connected-points"
+              role="region"
+              aria-label="Audience-safe campaign map"
+            >
+              @for (point of mapLocations(); track point.locationId) {
+                <div
+                  class="connected-map-point"
+                  [attr.data-location-id]="point.locationId"
+                  [style.left.%]="point.left"
+                  [style.top.%]="point.top"
                 >
-                  <path d="M15 0H45L60 26 45 52H15L0 26Z M60 26H90" />
-                </pattern>
-              </defs>
-              <rect width="100%" height="100%" fill="url(#connected-atlas-grid)" />
-            </svg>
-            @for (point of mapLocations(); track point.locationId) {
-              <div
-                class="connected-map-point"
-                [attr.data-location-id]="point.locationId"
-                [style.left.%]="point.left"
-                [style.top.%]="point.top"
-              >
-                <span class="connected-location">{{ point.label }}</span>
-                @for (formation of point.formations; track formation.formationId) {
-                  <button
-                    type="button"
-                    class="connected-unit"
-                    [attr.data-kind]="kind(formation.kindLabel)"
-                    [attr.aria-label]="
-                      formation.label + ', ' + formation.kindLabel + ', ' + point.label
-                    "
-                    [attr.aria-pressed]="selectedId() === formation.formationId"
-                    (click)="select(formation.formationId)"
-                  >
-                    <span aria-hidden="true">{{ symbol(kind(formation.kindLabel)) }}</span>
-                    {{ formation.label }}
-                  </button>
-                }
-                @for (contact of point.contacts; track contact.contactId) {
-                  <span class="connected-contact">{{ contact.label }}</span>
-                }
-              </div>
-            }
-          </div>
-        </div>
-        <div class="map-caption">
-          <span>
-            @if (selected(); as formation) {
-              Selected: {{ formation.label }} ·
-              {{ selectedLocation()?.label ?? 'Unknown location' }}
-            } @else {
-              No formation selected
-            }
-          </span>
-          <span>Read only · current audience</span>
+                  <span class="connected-location">{{ point.label }}</span>
+                  @for (formation of point.formations; track formation.formationId) {
+                    <button
+                      type="button"
+                      class="connected-unit"
+                      [attr.data-kind]="kind(formation.kindLabel)"
+                      [attr.aria-label]="
+                        formation.label + ', ' + formation.kindLabel + ', ' + point.label
+                      "
+                      [attr.aria-pressed]="selectedId() === formation.formationId"
+                      (click)="select(formation.formationId)"
+                    >
+                      <span aria-hidden="true">{{ symbol(kind(formation.kindLabel)) }}</span>
+                      {{ formation.label }}
+                    </button>
+                  }
+                  @for (contact of point.contacts; track contact.contactId) {
+                    <span class="connected-contact">{{ contact.label }}</span>
+                  }
+                </div>
+              }
+            </div>
+          </mr-operations-map>
         </div>
       </section>
       <fa-panel
         class="inspector connected-inspector"
+        [attr.inert]="mapFullscreen() ? '' : null"
         [heading]="selected()?.label ?? 'No formation selected'"
         eyebrow="Formation inspector"
       >
@@ -198,7 +208,7 @@
         }
       </fa-panel>
     </div>
-    <div class="records-grid">
+    <div class="records-grid" [attr.inert]="mapFullscreen() ? '' : null">
       <fa-panel heading="Formation ledger" eyebrow="Audience record">
         <div class="ledger" role="region" aria-label="Formation ledger rows" tabindex="0">
           <table aria-label="Formation ledger">

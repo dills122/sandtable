@@ -1,6 +1,7 @@
 import { computed } from '@angular/core';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
 import { UnitKind } from '@sandtable/field-atlas';
+import { cameraTransform, clampCameraFocus, nextZoom, panFocus } from './map-camera';
 export interface Formation {
   readonly id: string;
   readonly name: string;
@@ -35,8 +36,6 @@ const destinations = {
   'H-8': { x: 40, y: 73 },
 } as const;
 type Destination = keyof typeof destinations;
-const clampCameraFocus = (focus: number, zoom: number) =>
-  Math.min(100 - 50 / zoom, Math.max(50 / zoom, focus));
 interface PendingFixture {
   readonly requestId: number;
   readonly formationId: string;
@@ -86,10 +85,7 @@ export const WorkspaceStore = signalStore(
           })
           .find((f) => f.id === store.selectedId()) ?? formations[0],
     ),
-    cameraTransform: computed(
-      () =>
-        `translate(${50 - store.focusX() * store.zoom()}%, ${50 - store.focusY() * store.zoom()}%) scale(${store.zoom()})`,
-    ),
+    cameraTransform: computed(() => cameraTransform(store.zoom(), store.focusX(), store.focusY())),
   })),
   withMethods((store) => ({
     orderFor(id: string): FormationOrder {
@@ -255,7 +251,7 @@ export const WorkspaceStore = signalStore(
       patchState(store, { zoom: 1, focusX: 50, focusY: 50 });
     },
     zoomBy(step: number) {
-      const zoom = Math.min(2, Math.max(1, Math.round((store.zoom() + step) * 4) / 4));
+      const zoom = nextZoom(store.zoom(), step);
       patchState(store, {
         zoom,
         focusX: clampCameraFocus(store.focusX(), zoom),
@@ -266,8 +262,8 @@ export const WorkspaceStore = signalStore(
       if (store.zoom() <= 1 || width <= 0 || height <= 0) return;
       const zoom = store.zoom();
       patchState(store, {
-        focusX: clampCameraFocus(store.focusX() - ((deltaX / width) * 100) / zoom, zoom),
-        focusY: clampCameraFocus(store.focusY() - ((deltaY / height) * 100) / zoom, zoom),
+        focusX: panFocus(store.focusX(), deltaX, width, zoom),
+        focusY: panFocus(store.focusY(), deltaY, height, zoom),
       });
     },
     toggleRoster() {

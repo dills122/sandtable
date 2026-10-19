@@ -1,0 +1,98 @@
+<div class="map-heading">
+  <div>
+    <h2 id="map-title">Situation map</h2>
+    <span class="fa-muted">{{ hint }}</span>
+  </div>
+  <div class="map-controls" role="group" aria-label="Map camera controls">
+    <button
+      #expandToggle
+      type="button"
+      class="fa-text-action map-expand"
+      [attr.aria-label]="expanded ? 'Close expanded map' : 'Expand map'"
+      [attr.aria-pressed]="expanded"
+      (click)="toggleExpanded()"
+    >
+      {{ expanded ? 'Close map' : 'Expand map' }}
+    </button>
+    <button
+      #shortcutToggle
+      type="button"
+      class="fa-text-action"
+      aria-controls="map-shortcuts"
+      [attr.aria-expanded]="shortcutsOpen()"
+      (click)="toggleShortcuts()"
+    >
+      Keyboard help <span aria-hidden="true">?</span>
+    </button>
+    <button type="button" class="fa-text-action" (click)="fit.emit()">Fit map</button>
+    <button
+      type="button"
+      class="fa-text-action"
+      aria-label="Zoom out"
+      [disabled]="zoom <= 1"
+      (click)="zoomBy.emit(-0.25)"
+    >
+      −
+    </button>
+    <span class="zoom-level" aria-live="polite" aria-label="Map zoom">{{ zoom * 100 }}%</span>
+    <button
+      type="button"
+      class="fa-text-action"
+      aria-label="Zoom in"
+      [disabled]="zoom >= 2"
+      (click)="zoomBy.emit(0.25)"
+    >
+      +
+    </button>
+  </div>
+</div>
+<div id="map-shortcuts" class="shortcut-help" [hidden]="!shortcutsOpen()">
+  @if (shortcutScope === 'fixture') {
+    <strong>Move around the exercise</strong>
+    <span><kbd>[</kbd> / <kbd>]</kbd> choose a formation</span>
+    <span><kbd>L</kbd> locate selection · <kbd>0</kbd> fit map</span>
+    <span>Drag to pan when zoomed · touch or arrow keys pan</span>
+    <span><kbd>+</kbd> / <kbd>−</kbd> zoom · <kbd>?</kbd> help · <kbd>Esc</kbd> close</span>
+  } @else {
+    <strong>Move around the campaign map</strong>
+    <span>Use Fit map and Zoom controls; drag or use arrow keys to pan when zoomed</span>
+    <span>At fit zoom, swipe a narrow map sideways to see its full width</span>
+    <span><kbd>Esc</kbd> closes the expanded map</span>
+  }
+</div>
+<div
+  class="map-canvas"
+  role="region"
+  tabindex="0"
+  aria-label="Situation map, arrow keys pan when zoomed"
+  [class.is-dragging]="dragging()"
+  [class.allow-touch-scroll-at-fit]="allowTouchScrollAtFit && zoom <= 1"
+  (keydown)="onKeydown($event)"
+  (pointerdown)="onPointerDown($event)"
+  (pointermove)="onPointerMove($event)"
+  (pointerup)="onPointerEnd($event)"
+  (pointercancel)="onPointerEnd($event)"
+  (lostpointercapture)="onPointerEnd($event)"
+>
+  <div class="map-scene" [style.transform]="transform">
+    <svg class="hex-grid" aria-hidden="true" focusable="false">
+      <defs>
+        <pattern id="atlas-grid" width="90" height="52" patternUnits="userSpaceOnUse">
+          <path d="M15 0H45L60 26 45 52H15L0 26Z M60 26H90" />
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#atlas-grid)" />
+    </svg>
+    <ng-content select="[map-scene-content]" />
+  </div>
+  <span class="north" aria-label="North">N<br />↑</span>
+</div>
+<div class="map-caption">
+  <span>{{ caption }}</span
+  ><span>{{ scope }}</span>
+  @if (expanded && ordersLabel) {
+    <button type="button" class="fa-text-action" (click)="openOrders.emit()">
+      Open orders for {{ ordersLabel }}
+    </button>
+  }
+</div>
