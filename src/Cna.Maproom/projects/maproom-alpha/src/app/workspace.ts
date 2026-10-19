@@ -6,6 +6,7 @@ import {
   HostListener,
   ViewChild,
   computed,
+  effect,
   inject,
   signal,
 } from '@angular/core';
@@ -94,6 +95,9 @@ export class Workspace {
   private originalPageOverflow = '';
 
   constructor() {
+    effect(() => {
+      if (this.connectedMode() && this.mapFullscreen()) this.closeMapFullscreen(false);
+    });
     if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return;
     const intermediate = window.matchMedia('(min-width: 50.01rem) and (max-width: 75rem)');
     const applyDefault = () => this.store.setRosterOpen(!intermediate.matches);

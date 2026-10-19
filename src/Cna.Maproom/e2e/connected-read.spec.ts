@@ -313,6 +313,29 @@ test('main Maproom switches between fixture and local campaign without losing th
   await expect(page.getByRole('heading', { name: 'The coastal exercise' })).toBeVisible();
 });
 
+test('browser history leaves fixture fullscreen before entering campaign mode', async ({
+  page,
+}) => {
+  await page.goto('/?mode=campaign');
+  await page.getByRole('link', { name: 'Fixture study' }).click();
+  await page.getByRole('button', { name: 'Expand map' }).click();
+  await expect(page.getByRole('dialog', { name: 'Situation map' })).toBeVisible();
+  await expect(page.locator('html')).toHaveCSS('overflow', 'hidden');
+
+  await page.goBack();
+  await expect(page).toHaveURL(/\?mode=campaign$/);
+  await expect(page.getByRole('heading', { name: 'Connect to local host' })).toBeVisible();
+  await expect(page.getByRole('dialog', { name: 'Situation map' })).toHaveCount(0);
+  await expect(page.locator('html')).not.toHaveCSS('overflow', 'hidden');
+  await expect(page.locator('.command-bar')).not.toHaveAttribute('inert', '');
+  await expect(page.getByRole('link', { name: 'Fixture study' })).toBeVisible();
+
+  await page.goForward();
+  await expect(page.getByRole('heading', { name: 'The coastal exercise' })).toBeVisible();
+  await expect(page.getByRole('dialog', { name: 'Situation map' })).toHaveCount(0);
+  await expect(page.locator('html')).not.toHaveCSS('overflow', 'hidden');
+});
+
 test('unavailable initial view stops without showing fixture orders', async ({ page }) => {
   await page.route('**/api/v1/**', async (route) => {
     const path = new URL(route.request().url()).pathname;
