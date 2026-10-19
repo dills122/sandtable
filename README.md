@@ -53,7 +53,7 @@ play a side; it will never decide the rules or secretly change the campaign stat
 | --- | --- | --- |
 | Deterministic Umpire | Working | Versioned rules, seeded randomness, canonical commands/events, replay, checkpoints, and side-safe action boundaries are implemented. |
 | Playable rule path | Working through Combat entry | Runner can execute Initiative, stage preamble, Reserve Designation, Movement, bounded ZOC/Reaction, and Breakdown, then stops before Combat adjudication. |
-| Combat and continual cycle | Private Core and bounded P01 evidence; public activation pending | R03's private native consumer and bounded P01 reference/proof slices are merged. Authentic CreationRequest plus eleven R03 ledgers replay across 300 rows: 44 provisional positive, 256 provisional empty, zero admitted. The private ordinal-two zero-assault/defender RBA path has no native or public consumer. Action exhaustiveness, full surrender/RBA, outward privacy, replay/resource caps and the support certificate remain open; Runner stops before public Combat. |
+| Combat and continual cycle | Private Core and bounded P01 evidence; public activation pending | R03's private native consumer and bounded P01 reference/proof slices are merged. Authentic CreationRequest plus eleven R03 ledgers replay across 300 rows: 44 provisional candidate shapes, 256 provisional empty shapes, zero admitted. Private zero-assault/RBA, selected-assault, Force Assignment and paid-commit continuations have no native or public consumer. The 44-row classification does not prove 44 supported transitions. Action exhaustiveness, full surrender/RBA, outward privacy, replay/resource caps and the support certificate remain open; Runner stops before public Combat. |
 | Exercise and Maneuver tools | Working | Deterministic single runs, multi-run matrices, paired comparisons, strict readback, and evidence bundles are available from CLI. |
 | User interface | Angular foundation and bounded connected read mode | `src/Cna.Maproom` contains `maproom-alpha`, Field Atlas and Storybook. The main Maproom route offers a synthetic fixture study and URL-backed `?mode=campaign` local read mode using the same map presentation; `/connected` remains a development deep link. Campaign mode can create one temporary local Rules9 fixture, enter a granted seat and display its initial audience-safe operations view. Reload can resume a valid seat cookie; public orders, later cuts and lost-cookie recovery remain pending. `site/` is project website only. |
 | Published scenario | Not started | First target is six-turn, Land-only *Graziani's Offensive* after working Combat loop. |
@@ -373,9 +373,16 @@ explains how test additions update the exhaustive allocation.
 The [P01 ordinal-two Combat Position contract design](docs/specs/combat-actual-moved-repeat-position-v1.md)
 records a provisional 44-candidate/256-empty R03 partition and its acceptance gates. The private
 reference and bounded proof slices are merged, but all 300 assessments remain unsupported with
-zero admitted actions. A [private owner projection draft](docs/specs/combat-p01-owner-projection-v0.md)
-models a separate visible alias and Umpire mapping; approved fields and authentic hidden-variant
-privacy proof remain open. No ordinal-two Combat choice or public activation is available.
+zero admitted actions. The [selected-assault successor](docs/specs/combat-p01-selected-assault-v1.md)
+classifies all 300 authentic roots but exercises bounded transitions on two representative positive
+roots, one per acting side. The [Force Assignment successor](docs/specs/combat-p01-force-assignment-v1.md)
+continues those bounded histories to Prepared or cancellation; neither slice certifies all 44
+transitions. The [private paid-commit reference](docs/specs/combat-p01-paid-commit-v1.md) separately
+executes its preflight and one atomic cost event on all 44 positive roots, with 256 candidate-absent
+and zero admitted or public actions. It does not roll a result, settle a World or provide a native
+consumer. A [private owner projection draft](docs/specs/combat-p01-owner-projection-v0.md) models a
+separate visible alias and Umpire mapping; approved fields and authentic hidden-variant privacy
+proof remain open. P02 selection, P03 native consumption and public activation remain gated.
 The [private no-attack v0 boundary](docs/specs/combat-p01-no-attack-v0.md) fixes a proposed
 twelfth-ledger input shape but issues no event: no authentic supported-empty certificate exists.
 The separate [private explicit-RBA successor](docs/specs/combat-p01-explicit-rba-v1.md) proves

@@ -835,14 +835,23 @@ hosted CI; no public activation follows.
 
 The [P01 ordinal-two Combat Position design](docs/specs/combat-actual-moved-repeat-position-v1.md)
 starts from that exact R03 suffix and requires CreationRequest plus all eleven independent input
-ledgers before private assessment. Its 44 positive and 256 empty shapes remain provisional; all
-assessments are unsupported and zero are admitted. The
+ledgers before private assessment. Its 44 candidate and 256 empty shapes remain provisional; all
+assessments are unsupported and zero are admitted. The 44-row classification is not a proof of 44
+supported transitions. The [selected-assault successor](docs/specs/combat-p01-selected-assault-v1.md)
+uses two representative positive roots, one per acting side, for bounded private transitions; its
+300-root audit classifies candidate shapes. The [Force Assignment successor](docs/specs/combat-p01-force-assignment-v1.md)
+continues those bounded histories to Prepared or cancellation before any debit. Separately, the
+[private paid-commit reference](docs/specs/combat-p01-paid-commit-v1.md) authenticates all 300 roots,
+executes one atomic preflighted cost event for each of the 44 positives, and leaves 256 candidate-absent
+and zero admitted/public actions. It does not roll a result or settle a World. The
 [private owner projection draft](docs/specs/combat-p01-owner-projection-v0.md) separates an owner
 alias from the hidden candidate, but approved visible fields and authenticated equivalent-history
 proof are still missing. Accepted `CMB-POL-009`
 excludes source-legal voluntary surrender under Land §15.88 from the initial RC, so the bounded
-exercise cannot claim the full physical action surface. The private P01 reference and bounded
-proofs do not enable P02 selection, a native ordinal-two consumer or a public action.
+exercise cannot claim the full physical action surface. These private slices do not enable P02
+selection, a native ordinal-two consumer or a public action. Full AC-003 action exhaustiveness,
+AC-006 surrender/RBA, AC-007 outward privacy, AC-008 replay/resource caps and the P01 support
+certificate remain open.
 The [private P01 no-attack v0 boundary](docs/specs/combat-p01-no-attack-v0.md) keeps proposed
 ordinal-two System inputs disconnected until a source-backed supported-empty certificate and
 authentic twelfth-ledger event/receipt replay exist; provisional physical emptiness is insufficient.
