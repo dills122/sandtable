@@ -524,8 +524,18 @@ for (const seat of ['axis', 'commonwealth'] as const) {
               locationLabel: formation.locationId === 'west' ? 'West' : 'East',
               orderStatusLabel: formation.orderStatusLabel,
             })),
-            warDiary: [],
-            nextDiaryCursor: '0',
+            warDiary:
+              seat === 'axis' && reads >= 2
+                ? [
+                    {
+                      entryId: 'outward-initiative-entry',
+                      audienceCursor: '1',
+                      title: 'Initiative order recorded',
+                      body: 'Your choice of acting order was recorded.',
+                    },
+                  ]
+                : [],
+            nextDiaryCursor: seat === 'axis' && reads >= 2 ? '1' : '0',
             actionSetToken: 'opaque',
           },
         });
@@ -556,6 +566,9 @@ for (const seat of ['axis', 'commonwealth'] as const) {
       'aria-pressed',
       'true',
     );
+    if (seat === 'axis')
+      await expect(page.getByText('Your choice of acting order was recorded.')).toBeVisible();
+    else await expect(page.getByText('Your choice of acting order was recorded.')).toHaveCount(0);
 
     await page.getByRole('button', { name: 'Refresh view' }).click();
     await expect.poll(() => reads).toBe(3);

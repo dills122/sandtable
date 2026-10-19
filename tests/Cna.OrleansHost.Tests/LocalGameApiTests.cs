@@ -259,7 +259,7 @@ public sealed class LocalGameApiTests
     }
 
     [Fact]
-    public async Task TrustedCreatedLabServesPinnedInitialViewsForEachAuthorizedSeat()
+    public async Task TrustedCreatedLabServesPinnedInitialAndEarlySuccessorViewsForEachSeat()
     {
         var builder = WebApplication.CreateBuilder();
         builder.Environment.EnvironmentName = "Development";
@@ -285,6 +285,7 @@ public sealed class LocalGameApiTests
             { BaseAddress = new Uri(address) };
             var store = app.Services.GetRequiredService<LocalSessionStore>();
             string? axisCookie = null;
+            string? commonwealthCookie = null;
             string[]? axisContacts = null;
             foreach (var side in new[] { "axis", "commonwealth" })
             {
@@ -300,6 +301,7 @@ public sealed class LocalGameApiTests
                 Assert.Equal(HttpStatusCode.OK, entered.StatusCode);
                 var seatCookie = entered.Headers.GetValues("Set-Cookie").Single().Split(';')[0];
                 if (side == "axis") axisCookie = seatCookie;
+                else commonwealthCookie = seatCookie;
                 var response = await Send(client,
                     Get("/api/v1/campaigns/host-rsh-001/view", seatCookie));
                 Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -343,9 +345,74 @@ public sealed class LocalGameApiTests
             }
             Assert.Equal(TemporaryCampaignStatus.StepLimit,
                 (await grain.AdvanceSystemAsync(access.Capability, 1)).Status);
-            Assert.Equal(HttpStatusCode.ServiceUnavailable,
-                (await Send(client, Get("/api/v1/campaigns/host-rsh-001/view", axisCookie!)))
-                .StatusCode);
+            foreach (var cookie in new[] { axisCookie!, commonwealthCookie! })
+            {
+                var response = await Send(client,
+                    Get("/api/v1/campaigns/host-rsh-001/view", cookie));
+                Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+                var json = await response.Content.ReadAsStringAsync(
+                    TestContext.Current.CancellationToken);
+                using var view = JsonDocument.Parse(json);
+                Assert.Equal("0", view.RootElement.GetProperty("nextDiaryCursor").GetString());
+                Assert.Empty(view.RootElement.GetProperty("legalActions").EnumerateArray());
+                Assert.Empty(view.RootElement.GetProperty("warDiary").EnumerateArray());
+                Assert.DoesNotContain("sourcePin", json);
+            }
+            Assert.Equal(TemporaryCampaignStatus.NeedsHuman,
+                (await grain.AdvanceSystemAsync(access.Capability, 8)).Status);
+            foreach (var (cookie, expectedActions) in new[]
+            {
+                (axisCookie!, 2), (commonwealthCookie!, 0),
+            })
+            {
+                var response = await Send(client,
+                    Get("/api/v1/campaigns/host-rsh-001/view", cookie));
+                Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+                using var view = JsonDocument.Parse(await response.Content.ReadAsStringAsync(
+                    TestContext.Current.CancellationToken));
+                Assert.Equal(expectedActions,
+                    view.RootElement.GetProperty("legalActions").GetArrayLength());
+                Assert.Equal("0", view.RootElement.GetProperty("nextDiaryCursor").GetString());
+                Assert.Empty(view.RootElement.GetProperty("warDiary").EnumerateArray());
+            }
+            var legal = CampaignLegalActionSerializer.DeserializeCanonical(
+                (await grain.QueryAsync(access.Capability, CampaignActionAudience.Axis))
+                    .LegalActions!);
+            var actFirst = legal.Candidates.Single(candidate => candidate.Kind == "act-first");
+            var command = new CampaignActionSubmission(1, legal.CampaignId,
+                legal.StateVersion, legal.PositionId, legal.Audience, actFirst.ActionId);
+            Assert.Equal(TemporaryCampaignStatus.Accepted,
+                (await grain.SubmitAsync(access.Capability, "seat-1", "map10a-act-first",
+                    CampaignActionAudience.Axis,
+                    CampaignActionSubmissionSerializer.SerializeCanonical(command))).Status);
+            foreach (var (cookie, side, expectedCursor) in new[]
+            {
+                (axisCookie!, "axis", "1"), (commonwealthCookie!, "commonwealth", "0"),
+            })
+            {
+                var response = await Send(client,
+                    Get("/api/v1/campaigns/host-rsh-001/view", cookie));
+                Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+                var json = await response.Content.ReadAsStringAsync(
+                    TestContext.Current.CancellationToken);
+                using var view = JsonDocument.Parse(json);
+                Assert.Equal(side, view.RootElement.GetProperty("seat").GetString());
+                Assert.Equal(expectedCursor,
+                    view.RootElement.GetProperty("nextDiaryCursor").GetString());
+                var diary = view.RootElement.GetProperty("warDiary").EnumerateArray().ToArray();
+                if (side == "axis")
+                {
+                    Assert.Single(diary);
+                    Assert.Equal("Initiative order recorded",
+                        diary[0].GetProperty("title").GetString());
+                    Assert.Equal("Your choice of acting order was recorded.",
+                        diary[0].GetProperty("body").GetString());
+                }
+                else Assert.Empty(diary);
+                Assert.Empty(view.RootElement.GetProperty("legalActions").EnumerateArray());
+                Assert.DoesNotContain("sourcePin", json);
+                Assert.DoesNotContain("CoreActionId", json);
+            }
         }
         finally { await app.StopAsync(TestContext.Current.CancellationToken); }
     }

@@ -54,6 +54,10 @@ public sealed class TemporaryPlayerViewProjectionTests
             projector.Map(cut, Seat("axis", "22222222-2222-4222-8222-222222222222"))))
             .RootElement.GetProperty("ownFormations")[0]
             .GetProperty("formationId").GetString());
+        Assert.Null(projector.Map(cut with
+        {
+            Actions = [cut.Actions[0] with { OpportunityId = "private-opportunity" }],
+        }, axis));
     }
 
     [Fact]
@@ -81,6 +85,98 @@ public sealed class TemporaryPlayerViewProjectionTests
             [new TemporaryPrivateOwnElement("hidden-opponent", "commonwealth-truck.formation",
                 "east", "None")]
         }, axis));
+    }
+
+    [Fact]
+    public void PinnedEarlySuccessorProjectsOnlyCoherentOwnDiaryAndActionWindows()
+    {
+        var projector = new TemporaryPlayerViewProjection();
+        var seat = Seat("axis", Generation);
+        var initiativeEntry = new TemporaryPrivateDiaryEntry(Guid.NewGuid().ToString("D"), 1,
+            "Initiative order recorded", "Your choice of acting order was recorded.", null);
+        var initiative = Cut(CampaignActionAudience.Axis) with
+        {
+            StateVersion = 4,
+            PositionId = "land.position.operation-1.initiative-declaration",
+            PhaseId = "land.phase.initiative-declaration",
+            StageId = "land.stage.operation",
+            Actions =
+            [
+                new TemporaryPrivateAction(Guid.NewGuid().ToString("D"), "core-first",
+                    "act-first", null, null, null),
+                new TemporaryPrivateAction(Guid.NewGuid().ToString("D"), "core-last",
+                    "act-last", null, null, null),
+            ],
+        };
+        using var first = JsonDocument.Parse(JsonSerializer.Serialize(
+            projector.Map(initiative, seat)));
+        Assert.Equal(2, first.RootElement.GetProperty("legalActions").GetArrayLength());
+        Assert.Equal("human", first.RootElement.GetProperty("position")
+            .GetProperty("decision").GetString());
+        Assert.Empty(first.RootElement.GetProperty("warDiary").EnumerateArray());
+        Assert.Null(projector.Map(initiative with
+        {
+            Actions = [initiative.Actions[0] with { OpportunityId = "hidden-opportunity" },
+                initiative.Actions[1]],
+        }, seat));
+        Assert.Null(projector.Map(initiative with
+        {
+            Actions = [initiative.Actions[0],
+                initiative.Actions[1] with
+                { OutwardActionId = initiative.Actions[0].OutwardActionId }],
+        }, seat));
+        Assert.Null(projector.Map(initiative with
+        {
+            Actions = [initiative.Actions[0],
+                initiative.Actions[1] with { CoreActionId = initiative.Actions[0].CoreActionId }],
+        }, seat));
+        Assert.Null(projector.Map(initiative with
+        {
+            Actions = [initiative.Actions[0] with { CoreActionId = "" }, initiative.Actions[1]],
+        }, seat));
+
+        var weather = initiative with
+        {
+            StateVersion = 5,
+            PositionId = "land.position.operation-1.weather-determination",
+            PhaseId = "land.phase.weather-determination",
+            Actions = [],
+            Diary = [initiativeEntry],
+            NextDiaryCursor = 1,
+        };
+        var json = JsonSerializer.Serialize(projector.Map(weather, seat));
+        using var view = JsonDocument.Parse(json);
+        Assert.Equal("1", view.RootElement.GetProperty("nextDiaryCursor").GetString());
+        Assert.Single(view.RootElement.GetProperty("warDiary").EnumerateArray());
+        Assert.Equal("Initiative order recorded", view.RootElement
+            .GetProperty("warDiary")[0].GetProperty("title").GetString());
+        Assert.Empty(view.RootElement.GetProperty("legalActions").EnumerateArray());
+        Assert.DoesNotContain("core-first", json);
+        Assert.DoesNotContain(Pin, json);
+        Assert.DoesNotContain("axis-infantry.formation", json);
+        Assert.DoesNotContain("private-representation", json);
+        Assert.Null(projector.Map(weather with { SourcePin = "other" }, seat));
+        Assert.Null(projector.Map(weather with { PositionId = "other" }, seat));
+        Assert.Null(projector.Map(weather with { PhaseId = "other" }, seat));
+        Assert.Null(projector.Map(weather with { StateVersion = 11 }, seat));
+        Assert.Null(projector.Map(weather with { NextDiaryCursor = 2 }, seat));
+        Assert.Null(projector.Map(weather with
+        {
+            Diary = [initiativeEntry with { Body = "private destination" }],
+        }, seat));
+        Assert.Null(projector.Map(weather with
+        {
+            Diary = [initiativeEntry with { FormationId = "axis-infantry.formation" }],
+        }, seat));
+        Assert.Null(projector.Map(weather with
+        {
+            Actions = initiative.Actions,
+        }, seat));
+        Assert.Null(projector.Map(weather with
+        {
+            Contacts = [weather.Contacts[0], weather.Contacts[0]],
+        }, seat));
+        Assert.Null(projector.Map(weather, Seat("commonwealth", Generation)));
     }
 
     [Fact]

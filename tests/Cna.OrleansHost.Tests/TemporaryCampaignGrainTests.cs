@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Net;
 using System.Net.Sockets;
 using System.Security.Cryptography;
@@ -1210,6 +1211,7 @@ public sealed class TemporaryCampaignGrainTests
                 "complete-breakdown-segment",
             };
             var sawTypedSubject = false;
+            var maproom = new TemporaryPlayerViewProjection();
             for (var index = 0; index < expectedKinds.Length; index++)
             {
                 var set = Enum.GetValues<CampaignActionAudience>()
@@ -1247,6 +1249,29 @@ public sealed class TemporaryCampaignGrainTests
                             (a.CoreActionId, a.ElementId, a.TargetLocationId, a.OpportunityId)),
                         actualPrivate.Actions.Select(a =>
                             (a.CoreActionId, a.ElementId, a.TargetLocationId, a.OpportunityId)));
+                    var seat = side == CampaignActionAudience.Axis ? "axis" : "commonwealth";
+                    var session = new LocalSession("cookie", "csrf", "operator",
+                        Generation, "host-rsh-001", seat);
+                    var outward = maproom.Map(actualPrivate, session);
+                    if (index < 9)
+                    {
+                        Assert.NotNull(outward);
+                        var json = JsonSerializer.Serialize(outward);
+                        using var view = JsonDocument.Parse(json);
+                        Assert.Equal(actualPrivate.AudienceRevision.ToString(CultureInfo.InvariantCulture),
+                            view.RootElement.GetProperty("audienceRevision").GetString());
+                        Assert.Equal(actualPrivate.NextDiaryCursor.ToString(CultureInfo.InvariantCulture),
+                            view.RootElement.GetProperty("nextDiaryCursor").GetString());
+                        Assert.Equal(actualPrivate.Diary.Length,
+                            view.RootElement.GetProperty("warDiary").GetArrayLength());
+                        Assert.Equal(actualPrivate.Actions.Length,
+                            view.RootElement.GetProperty("legalActions").GetArrayLength());
+                        Assert.DoesNotContain(actualPrivate.SourcePin, json);
+                        Assert.DoesNotContain("coreActionId", json, StringComparison.OrdinalIgnoreCase);
+                        Assert.DoesNotContain("representationId", json,
+                            StringComparison.OrdinalIgnoreCase);
+                    }
+                    else Assert.Null(outward);
                     sawTypedSubject |= expectedPrivate.Actions.Any(a =>
                         a.Kind is "move-element" or "designate-reserve" && a.ElementId is not null);
                 }

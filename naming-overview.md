@@ -97,7 +97,9 @@ bounded Angular developer client before complete scenario play. **Field Atlas** 
 `src/Cna.Maproom`, its first application is `maproom-alpha`, and Storybook is the living component
 and pattern reference. The default application route remains a synthetic order scaffold.
 Its separate `/connected` route is a development-only, read-only operations view of
-one authorized initial campaign cut through the generated client and loopback proxy; it is
+one authorized initial campaign cut through the generated client and loopback proxy.
+MAP-10a proposes a public catalog for truck-fixture successor states 2–10, pending exact
+owner approval; state 11 and later remain unsupported. This route is
 not a command surface, a second authority, full hot-seat play or durable campaign resume.
 **Operations workspace** describes Maproom's map, order inspector and linked formation records;
 it adds no authority layer. The formation ledger is a player-view table, distinct from Chronicle's
@@ -122,8 +124,9 @@ browser contract or a new authority source.
 MAP-08A's `Cna.OrleansHost/Api` is a local ingress seam for operator bootstrap and seat sessions.
 MAP-08B creation now binds the admitted Rules9 fixture, operator/request identity and one
 short-lived grant pair; the campaign remains process-local. A bounded `/view` adapter renders
-only the initial rules-lab cut from an authorized seat; later cuts fail closed pending a
-coherent public successor projection. Approved private diary copy does not publish that view.
+the initial rules-lab cut from an authorized seat. MAP-10a proposes bounded successor
+reads for truck states 2–10 after public scope approval; later cuts fail closed.
+Approved private diary copy alone does not publish that view.
 MAP-08B1 names the host-side prerequisite: typed permitted data and pinned presentation facts
 between Umpire's side cut and Maproom's outward DTO. It grants no new authority to Maproom.
 MAP-08B2 calls the process-local contact/action continuity record the **audience tracker**.
