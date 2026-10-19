@@ -24,6 +24,11 @@ public sealed class CampaignAudienceOutcomeSourceTests
             "no-obligation-fleet-repair-resolved", "reserve-designation-completed",
             "movement-segment-completed", "breakdown-segment-completed",
         };
+        string?[] expectedKeys =
+        [
+            null, null, null, "diary.initiativeOrder", null, null,
+            null, null, null, "diary.reserveCompleted", "diary.movementCompleted", null,
+        ];
         string? priorCommittedHead = null;
         string? priorSource = null;
         for (var index = 0; index < kinds.Length; index++)
@@ -45,6 +50,24 @@ public sealed class CampaignAudienceOutcomeSourceTests
                 Step(command, accepted.Evidence!));
             Assert.True(source.HasTypedProof);
             Assert.Equal(kinds[index], source.Axis!.EventKind);
+            var eventBytes = Assert.Single(accepted.Evidence!.EventRecords);
+            var classification = CampaignAudienceOutcomeSource.ClassifyCanonicalAcceptedEvent(
+                eventBytes, candidate.Kind, set.Audience);
+            Assert.NotNull(classification);
+            Assert.Equal(expectedKeys[index], classification.Value.CopyKey);
+            Assert.Null(classification.Value.ElementId);
+            Assert.Null(CampaignAudienceOutcomeSource.ClassifyCanonicalAcceptedEvent(
+                eventBytes, "unrecognized-action-kind", set.Audience));
+            var wrongActor = set.Audience == CampaignActionAudience.Axis
+                ? CampaignActionAudience.Commonwealth : CampaignActionAudience.Axis;
+            Assert.Null(CampaignAudienceOutcomeSource.ClassifyCanonicalAcceptedEvent(
+                eventBytes, candidate.Kind, wrongActor));
+            Assert.Equal(set.Audience == CampaignActionAudience.Axis
+                    ? expectedKeys[index] : null, source.Axis.ProposedCopyKey);
+            Assert.Equal(set.Audience == CampaignActionAudience.Commonwealth
+                    ? expectedKeys[index] : null, source.Commonwealth!.ProposedCopyKey);
+            Assert.Null(source.Axis.OwnElementIndex);
+            Assert.Null(source.Commonwealth.OwnElementIndex);
             Assert.Equal(source.Axis.PriorHeadHash, source.Commonwealth!.PriorHeadHash);
             Assert.Equal(source.Axis.SuccessorHeadHash, source.Commonwealth.SuccessorHeadHash);
             Assert.Equal(source.Axis.EventHash, source.Commonwealth.EventHash);
@@ -145,6 +168,15 @@ public sealed class CampaignAudienceOutcomeSourceTests
                 Assert.True(accepted.IsAccepted);
                 var pair = CampaignAudienceOutcomeSource.Decide(session, Step(command, accepted.Evidence!));
                 Assert.True(pair.HasTypedProof);
+                var classified = CampaignAudienceOutcomeSource.ClassifyCanonicalAcceptedEvent(
+                    Assert.Single(accepted.Evidence!.EventRecords), designation.Kind,
+                    available.Audience);
+                Assert.NotNull(classified);
+                Assert.Equal("diary.reserveDesignated", classified.Value.CopyKey);
+                Assert.Equal(designation.ElementId, classified.Value.ElementId);
+                Assert.Null(CampaignAudienceOutcomeSource.ClassifyCanonicalAcceptedEvent(
+                    Assert.Single(accepted.Evidence.EventRecords), "complete-reserve-designation",
+                    available.Audience));
                 var own = available.Audience == CampaignActionAudience.Axis ? pair.Axis! : pair.Commonwealth!;
                 Assert.Equal("diary.reserveDesignated", own.ProposedCopyKey);
                 Assert.Equal("copy-catalog-unapproved", own.ReasonCode);
@@ -190,6 +222,13 @@ public sealed class CampaignAudienceOutcomeSourceTests
         var moveStep = Step(moveCommand, moveAccepted.Evidence!);
         var moved = CampaignAudienceOutcomeSource.Decide(session, moveStep);
         Assert.True(moved.HasTypedProof);
+        var moveClassification = CampaignAudienceOutcomeSource.ClassifyCanonicalAcceptedEvent(
+            Assert.Single(moveStep.EventRecords), move.Kind, movement.Audience);
+        Assert.NotNull(moveClassification);
+        Assert.Equal("diary.elementMoved", moveClassification.Value.CopyKey);
+        Assert.Equal(move.ElementId, moveClassification.Value.ElementId);
+        Assert.Null(CampaignAudienceOutcomeSource.ClassifyCanonicalAcceptedEvent(
+            Assert.Single(moveStep.EventRecords), "stop-element-movement", movement.Audience));
         var moveJson = Encoding.UTF8.GetString(moveStep.EventRecords.Single());
         var historical = moveJson.Replace("\"contractVersion\":3", "\"contractVersion\":2",
             StringComparison.Ordinal);
@@ -222,12 +261,12 @@ public sealed class CampaignAudienceOutcomeSourceTests
 
         var route = CampaignExercises.Query(session, movement.Audience).ActionSet!;
         var stop = Assert.Single(route.Candidates.OfType<StopElementMovementAction>());
-        var stopped = DecideAndAdvance(ref session, route, stop);
+        var stopped = DecideAndAdvance(ref session, route, stop, "diary.movementStopped");
         Assert.Equal("element-movement-stopped", stopped.Axis!.EventKind);
         Assert.Equal(1, stopped.Axis.EventContractVersion);
         var system = CampaignHostAdapter.QuerySystem(session).ActionSet!;
         var resolved = DecideAndAdvance(ref session, system,
-            Assert.Single(system.Candidates.OfType<ResolveBreakdownStopAction>()));
+            Assert.Single(system.Candidates.OfType<ResolveBreakdownStopAction>()), null);
         Assert.Equal("breakdown-stop-resolved", resolved.Axis!.EventKind);
         Assert.Equal(CampaignAudienceOutcomeDisposition.Silent, resolved.Axis.Disposition);
         Assert.Equal(CampaignAudienceOutcomeDisposition.Silent, resolved.Commonwealth!.Disposition);
@@ -284,23 +323,34 @@ public sealed class CampaignAudienceOutcomeSourceTests
             Assert.True(accepted.IsAccepted);
             var proof = CampaignAudienceOutcomeSource.Decide(session, Step(command, accepted.Evidence!));
             Assert.True(proof.HasTypedProof);
+            var eventBytes = Assert.Single(accepted.Evidence!.EventRecords);
+            var fallbackClassification = CampaignAudienceOutcomeSource.ClassifyCanonicalAcceptedEvent(
+                eventBytes, fallback.Kind, CampaignActionAudience.System);
+            Assert.NotNull(fallbackClassification);
+            Assert.Null(fallbackClassification.Value.CopyKey);
+            Assert.Null(CampaignAudienceOutcomeSource.ClassifyCanonicalAcceptedEvent(
+                eventBytes, fallback is CloseReactionWindowUnavailableAction
+                    ? "close-reaction-window-timeout"
+                    : "close-reaction-window-scripted-unavailable",
+                CampaignActionAudience.System));
             Assert.Equal("reaction-window-closed", proof.Axis!.EventKind);
             Assert.Equal(CampaignAudienceOutcomeDisposition.Silent, proof.Axis.Disposition);
             Assert.Equal(CampaignAudienceOutcomeDisposition.Silent, proof.Commonwealth!.Disposition);
         }
         var move = reacting.Candidates.OfType<MoveReactingElementAction>().FirstOrDefault();
         Assert.NotNull(move);
-        var moved = DecideAndAdvance(ref session, reacting, move);
+        var moved = DecideAndAdvance(ref session, reacting, move, "diary.reactionMoved");
         Assert.Equal("reacting-element-moved", moved.Axis!.EventKind);
         Assert.Equal(2, moved.Axis.EventContractVersion);
         reacting = CampaignExercises.Query(session, reactor).ActionSet!;
         var complete = reacting.Candidates.OfType<CompleteReactionParticipantAction>().FirstOrDefault();
         Assert.NotNull(complete);
-        var completed = DecideAndAdvance(ref session, reacting, complete);
+        var completed = DecideAndAdvance(ref session, reacting, complete,
+            "diary.reactionCompleted");
         Assert.Equal("reaction-participant-completed", completed.Axis!.EventKind);
         var resolution = CampaignExercises.Query(session, CampaignActionAudience.System).ActionSet!;
         var resolved = DecideAndAdvance(ref session, resolution,
-            Assert.Single(resolution.Candidates.OfType<ResolveBreakdownStopAction>()));
+            Assert.Single(resolution.Candidates.OfType<ResolveBreakdownStopAction>()), null);
         Assert.Equal("breakdown-stop-resolved", resolved.Axis!.EventKind);
         Assert.Equal(CampaignAudienceOutcomeDisposition.Silent, resolved.Axis.Disposition);
         Assert.Equal(CampaignAudienceOutcomeDisposition.Silent, resolved.Commonwealth!.Disposition);
@@ -308,7 +358,7 @@ public sealed class CampaignAudienceOutcomeSourceTests
         var noEligible = CampaignExercises.Query(session, CampaignActionAudience.System).ActionSet!;
         Assert.Empty(reacting.Candidates);
         var close = Assert.IsType<CloseReactionWindowNoEligibleAction>(Assert.Single(noEligible.Candidates));
-        var closedProof = DecideAndAdvance(ref session, noEligible, close);
+        var closedProof = DecideAndAdvance(ref session, noEligible, close, null);
         Assert.Equal("reaction-window-closed", closedProof.Axis!.EventKind);
         Assert.Equal(CampaignAudienceOutcomeDisposition.Silent, closedProof.Axis.Disposition);
         Assert.Equal(CampaignAudienceOutcomeDisposition.Silent, closedProof.Commonwealth!.Disposition);
@@ -326,6 +376,15 @@ public sealed class CampaignAudienceOutcomeSourceTests
         var step = Step(command, accepted.Evidence!);
         var closed = CampaignAudienceOutcomeSource.Decide(session, step);
         Assert.True(closed.HasTypedProof);
+        var declineClassification = CampaignAudienceOutcomeSource.ClassifyCanonicalAcceptedEvent(
+            Assert.Single(step.EventRecords), decline.Kind, reacting.Audience);
+        Assert.NotNull(declineClassification);
+        Assert.Equal("diary.reactionDeclined", declineClassification.Value.CopyKey);
+        Assert.Null(declineClassification.Value.ElementId);
+        Assert.Equal(reacting.Audience == CampaignActionAudience.Axis
+                ? "diary.reactionDeclined" : null, closed.Axis!.ProposedCopyKey);
+        Assert.Equal(reacting.Audience == CampaignActionAudience.Commonwealth
+                ? "diary.reactionDeclined" : null, closed.Commonwealth!.ProposedCopyKey);
         Assert.Equal("reaction-window-closed", closed.Axis!.EventKind);
         var reasonChanged = Encoding.UTF8.GetString(step.EventRecords.Single())
             .Replace("player-decline", "timeout", StringComparison.Ordinal);
@@ -341,7 +400,7 @@ public sealed class CampaignAudienceOutcomeSourceTests
     }
 
     private static CampaignAudienceOutcomePair DecideAndAdvance(ref ExerciseSession session,
-        CampaignLegalActionSet set, CampaignActionCandidate candidate)
+        CampaignLegalActionSet set, CampaignActionCandidate candidate, string? expectedCopyKey)
     {
         var command = new CampaignActionSubmission(1, set.CampaignId, set.StateVersion,
             set.PositionId, set.Audience, candidate.ActionId);
@@ -349,6 +408,33 @@ public sealed class CampaignAudienceOutcomeSourceTests
         Assert.True(accepted.IsAccepted, accepted.RejectionReason.ToString());
         var proof = CampaignAudienceOutcomeSource.Decide(session, Step(command, accepted.Evidence!));
         Assert.True(proof.HasTypedProof);
+        var classification = CampaignAudienceOutcomeSource.ClassifyCanonicalAcceptedEvent(
+            Assert.Single(accepted.Evidence!.EventRecords), candidate.Kind, set.Audience);
+        Assert.NotNull(classification);
+        Assert.Equal(expectedCopyKey, classification.Value.CopyKey);
+        if (candidate.Kind == "move-reacting-element")
+        {
+            var before = CampaignHostAdapter.QueryPrivateSideCut(session, set.Audience);
+            var after = CampaignHostAdapter.QueryPrivateSideCut(accepted.SuccessorSession!,
+                set.Audience);
+            Assert.Equal("reacting", before!.DecisionStateKind);
+            Assert.Equal("reacting", after!.DecisionStateKind);
+            Assert.Empty(before.OwnElements);
+            Assert.Empty(after.OwnElements);
+            var suppressed = set.Audience == CampaignActionAudience.Axis
+                ? proof.Axis! : proof.Commonwealth!;
+            Assert.Equal("diary.reactionMoved", suppressed.ProposedCopyKey);
+            Assert.Null(suppressed.OwnElementIndex);
+            Assert.Equal("own-element-suppressed", suppressed.ReasonCode);
+            Assert.Equal(CampaignAudienceOutcomeDisposition.Unavailable,
+                suppressed.Disposition);
+            session = accepted.SuccessorSession!;
+            return proof;
+        }
+        Assert.Equal(set.Audience == CampaignActionAudience.Axis ? expectedCopyKey : null,
+            proof.Axis!.ProposedCopyKey);
+        Assert.Equal(set.Audience == CampaignActionAudience.Commonwealth ? expectedCopyKey : null,
+            proof.Commonwealth!.ProposedCopyKey);
         session = accepted.SuccessorSession!;
         return proof;
     }

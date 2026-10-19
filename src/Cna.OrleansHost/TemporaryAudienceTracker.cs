@@ -9,6 +9,9 @@ namespace Cna.OrleansHost;
 internal sealed class TemporaryAudienceTracker
 {
     private readonly Dictionary<CampaignActionAudience, SideState> sides = new();
+    // Stable host-private owner identity learned from the initial authorized side cuts.
+    // Reacting observations may suppress current rows without revoking this identity.
+    private readonly Dictionary<CampaignActionAudience, Dictionary<string, string>> ownFormationDirectory = new();
     private readonly byte[] namespaceKey = RandomNumberGenerator.GetBytes(32);
     internal string CampaignId { get; }
     internal string SourcePin { get; }
@@ -42,6 +45,7 @@ internal sealed class TemporaryAudienceTracker
             return null;
         var tracker = new TemporaryAudienceTracker(campaignId, rulesetHash, scenarioId,
             setupHash, contentHash);
+        if (!tracker.SeedOwnDirectory(axis!, commonwealth!)) return null;
         tracker.AdvancePair(axis!, commonwealth!, initialHeadHash, null);
         return tracker;
     }
@@ -52,12 +56,17 @@ internal sealed class TemporaryAudienceTracker
     {
         if (!IsAvailable || !ValidPair(CampaignId, RulesetHash, ScenarioId,
                 axis, commonwealth, StateVersion)
+            || !KnownOwnBindings(axis!) || !KnownOwnBindings(commonwealth!)
             || !ValidAcceptedStep(axis!, commonwealth!, acceptedStep, outcomes))
         {
             IsAvailable = false;
             return false;
         }
-        try { AdvancePair(axis!, commonwealth!, outcomes!.Axis!.SuccessorHeadHash, outcomes); }
+        try
+        {
+            AdvancePair(axis!, commonwealth!, outcomes!.Axis!.SuccessorHeadHash,
+                outcomes, acceptedStep);
+        }
         catch (Exception error) when (error is ArgumentException or InvalidOperationException
             or OverflowException)
         {
@@ -118,17 +127,49 @@ internal sealed class TemporaryAudienceTracker
     }
 
     private void AdvancePair(CampaignHostPrivateSideCut axis, CampaignHostPrivateSideCut commonwealth,
-        string headHash, CampaignAudienceOutcomePair? outcome)
+        string headHash, CampaignAudienceOutcomePair? outcome,
+        CampaignHostAcceptedStep? acceptedStep = null)
     {
+        var classified = outcome is null ? null
+            : CampaignAudienceOutcomeSource.ClassifyCanonicalAcceptedEvent(
+                acceptedStep!.EventRecords[0], outcome.Axis!.ActionKind,
+                outcome.Axis.ActingAudience);
+        if (outcome is not null && classified is null)
+            throw new InvalidOperationException("Accepted diary classification is missing.");
         // Build both successor projections before publishing either side's committed head.
-        var nextAxis = AdvanceSide(axis, outcome?.Axis);
-        var nextCommonwealth = AdvanceSide(commonwealth, outcome?.Commonwealth);
+        var nextAxis = AdvanceSide(axis, outcome?.Axis, classified?.ElementId);
+        var nextCommonwealth = AdvanceSide(commonwealth, outcome?.Commonwealth,
+            classified?.ElementId);
         sides[CampaignActionAudience.Axis] = nextAxis;
         sides[CampaignActionAudience.Commonwealth] = nextCommonwealth;
         StateVersion = axis.StateVersion;
         CommittedHeadHash = headHash;
         LastAcceptedOutcome = outcome;
     }
+
+    private bool SeedOwnDirectory(CampaignHostPrivateSideCut axis,
+        CampaignHostPrivateSideCut commonwealth)
+    {
+        foreach (var cut in new[] { axis, commonwealth })
+        {
+            var directory = new Dictionary<string, string>(StringComparer.Ordinal);
+            foreach (var element in cut.OwnElements)
+            {
+                if (string.IsNullOrWhiteSpace(element.ElementId)
+                    || string.IsNullOrWhiteSpace(element.FormationId)
+                    || !directory.TryAdd(element.ElementId, element.FormationId))
+                    return false;
+            }
+            ownFormationDirectory[cut.Audience] = directory;
+        }
+        return true;
+    }
+
+    private bool KnownOwnBindings(CampaignHostPrivateSideCut cut) =>
+        ownFormationDirectory.TryGetValue(cut.Audience, out var directory)
+        && cut.OwnElements.All(element =>
+            directory.TryGetValue(element.ElementId, out var formation)
+            && formation == element.FormationId);
 
     private bool ValidAcceptedStep(CampaignHostPrivateSideCut axis,
         CampaignHostPrivateSideCut commonwealth,
@@ -194,6 +235,22 @@ internal sealed class TemporaryAudienceTracker
                 var isActor = decision.Audience == command.Audience;
                 var expectedKey = isActor ? classification.Value.CopyKey : null;
                 var expectedElement = isActor ? classification.Value.ElementId : null;
+                // Reaction observations intentionally suppress even the reacting side's
+                // own rows. Verify that exact state and retain the committed step without
+                // inventing a formation link or a diary entry.
+                if (isActor && expectedKey == "diary.reactionMoved"
+                    && expectedElement is not null
+                    && sides.TryGetValue(decision.Audience, out var suppressed)
+                    && suppressed.Cut.DecisionStateKind == "reacting"
+                    && successor.DecisionStateKind == "reacting"
+                    && suppressed.Cut.OwnElements.Length == 0
+                    && successor.OwnElements.Count == 0)
+                    return decision.ProposedCopyKey == expectedKey
+                        && decision.OwnElementIndex is null
+                        && decision.Disposition == CampaignAudienceOutcomeDisposition.Unavailable
+                        && decision.ReasonCode == "own-element-suppressed"
+                        && ownFormationDirectory.TryGetValue(decision.Audience, out var directory)
+                        && directory.ContainsKey(expectedElement);
                 if (decision.ProposedCopyKey != expectedKey) return false;
                 if (expectedElement is null) return decision.OwnElementIndex is null;
                 if (!sides.TryGetValue(decision.Audience, out var before)
@@ -227,10 +284,11 @@ internal sealed class TemporaryAudienceTracker
             character is >= '0' and <= '9' or >= 'a' and <= 'f');
 
     private SideState AdvanceSide(CampaignHostPrivateSideCut source,
-        CampaignAudienceOutcomeDecision? decision)
+        CampaignAudienceOutcomeDecision? decision, string? classifiedElementId)
     {
         sides.TryGetValue(source.Audience, out var prior);
-        var (diary, cursor, appended) = AdvanceDiary(source, decision, prior);
+        var (diary, cursor, appended) = AdvanceDiary(source, decision, prior,
+            classifiedElementId);
         var contacts = source.Contacts.Select(contact =>
         {
             var id = prior?.Contacts.GetValueOrDefault(contact.RepresentationId)
@@ -270,7 +328,7 @@ internal sealed class TemporaryAudienceTracker
 
     private (TemporaryPrivateDiaryEntry[] Entries, ulong Cursor, bool Appended) AdvanceDiary(
         CampaignHostPrivateSideCut source, CampaignAudienceOutcomeDecision? decision,
-        SideState? prior)
+        SideState? prior, string? classifiedElementId)
     {
         var entries = prior?.Cut.Diary ?? [];
         var cursor = prior?.Cut.NextDiaryCursor ?? 0;
@@ -286,9 +344,11 @@ internal sealed class TemporaryAudienceTracker
                 throw new InvalidOperationException("Unsupported silent diary decision.");
             return (entries, cursor, false);
         }
+        var suppressedReaction = decision.ProposedCopyKey == "diary.reactionMoved"
+            && decision.ReasonCode == "own-element-suppressed";
         if (decision.ActingAudience != source.Audience
             || decision.Disposition != CampaignAudienceOutcomeDisposition.Unavailable
-            || decision.ReasonCode != "copy-catalog-unapproved")
+            || decision.ReasonCode != "copy-catalog-unapproved" && !suppressedReaction)
             throw new InvalidOperationException("Unsupported diary entry decision.");
         var copy = TemporaryPlayerViewProjection.LookupDiaryCopy(SourcePin,
             TemporaryPlayerViewProjection.DiaryCatalogVersion, "en-CA",
@@ -297,11 +357,25 @@ internal sealed class TemporaryAudienceTracker
         string? formation = null;
         if (copy.OwnFormationLink)
         {
-            var index = decision.OwnElementIndex
-                ?? throw new InvalidOperationException("Missing own formation proof.");
-            if (index < 0 || index >= source.OwnElements.Count)
-                throw new InvalidOperationException("Invalid own formation proof.");
-            formation = source.OwnElements[index].FormationId;
+            if (decision.OwnElementIndex is { } index)
+            {
+                if (index < 0 || index >= source.OwnElements.Count)
+                    throw new InvalidOperationException("Invalid own formation proof.");
+                formation = source.OwnElements[index].FormationId;
+            }
+            else if (decision.ProposedCopyKey == "diary.reactionMoved"
+                && decision.ReasonCode == "own-element-suppressed"
+                && decision.ActionKind == "move-reacting-element"
+                && decision.EventKind == "reacting-element-moved"
+                && decision.Audience == decision.ActingAudience
+                && source.DecisionStateKind == "reacting"
+                && source.OwnElements.Count == 0
+                && classifiedElementId is not null
+                && ownFormationDirectory.TryGetValue(source.Audience,
+                    out var directory)
+                && directory.TryGetValue(classifiedElementId, out var knownFormation))
+                formation = knownFormation;
+            else throw new InvalidOperationException("Missing own formation proof.");
             if (string.IsNullOrWhiteSpace(formation))
                 throw new InvalidOperationException("Invalid own formation proof.");
         }
