@@ -334,6 +334,7 @@ public sealed class TemporaryCampaignGrainTests
         {
             "missing", "prior-head", "successor-head", "source", "audience",
             "command", "event", "event-kind", "event-version", "receipt-actor",
+            "receipt-position", "receipt-version",
         })
         {
             var tracker = TemporaryAudienceTracker.Create("test-campaign", "source-hash",
@@ -667,8 +668,8 @@ public sealed class TemporaryCampaignGrainTests
             contractVersion = 1,
             campaignId = "test-campaign",
             priorStateVersion = tracker.StateVersion,
-            committedStateVersion = nextVersion,
-            resultingPositionId = "position",
+            committedStateVersion = failure == "receipt-version" ? nextVersion + 1 : nextVersion,
+            resultingPositionId = failure == "receipt-position" ? "other-position" : "position",
             audience = failure == "receipt-actor" ? "commonwealth" :
                 proof.Actor.ToString().ToLowerInvariant(),
             actionId,
@@ -1044,6 +1045,16 @@ public sealed class TemporaryCampaignGrainTests
                 Assert.Equal(directStep.Evidence.SnapshotCheckpoint, replies[0].Snapshot);
                 Assert.Equal(CampaignActionAcceptanceReceiptSerializer.Serialize(directStep.Evidence.Receipt),
                     replies[0].Receipt);
+                var committedReceipt = CampaignActionAcceptanceReceiptSerializer.DeserializeCanonical(
+                    replies[0].Receipt!);
+                Assert.Equal(chosen.CampaignId, committedReceipt.CampaignId);
+                Assert.Equal(chosen.Audience, committedReceipt.Audience);
+                Assert.Equal(candidate.ActionId, committedReceipt.ActionId);
+                Assert.Equal(chosen.StateVersion, committedReceipt.PriorStateVersion);
+                Assert.Equal(stored.CommittedVersion, committedReceipt.CommittedStateVersion);
+                Assert.Equal(stored.AudienceTracker!.Read(CampaignActionAudience.Axis,
+                    stored.CommittedVersion, Generation)!.PositionId,
+                    committedReceipt.ResultingPositionId);
                 var acceptedOutcome = stored.AudienceTracker.LastAcceptedOutcome;
                 Assert.NotNull(acceptedOutcome);
                 Assert.True(acceptedOutcome.HasTypedProof);

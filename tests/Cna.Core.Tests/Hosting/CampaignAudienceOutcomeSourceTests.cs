@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using Cna.Core.Actions;
@@ -49,6 +50,8 @@ public sealed class CampaignAudienceOutcomeSourceTests
             var source = CampaignHostAdapter.DecideAcceptedOutcomes(session,
                 Step(command, accepted.Evidence!));
             Assert.True(source.HasTypedProof);
+            AssertAcceptedStepBinding(source, Step(command, accepted.Evidence!),
+                command, accepted.Evidence!.Receipt);
             Assert.Equal(kinds[index], source.Axis!.EventKind);
             var eventBytes = Assert.Single(accepted.Evidence!.EventRecords);
             var classification = CampaignAudienceOutcomeSource.ClassifyCanonicalAcceptedEvent(
@@ -303,6 +306,8 @@ public sealed class CampaignAudienceOutcomeSourceTests
             ownerSet.StateVersion, ownerSet.PositionId, ownerSet.Audience, trigger.candidate.ActionId);
         var opened = CampaignAudienceOutcomeSource.Decide(session, Step(opening, trigger.result.Evidence!));
         Assert.True(opened.HasTypedProof);
+        AssertAcceptedStepBinding(opened, Step(opening, trigger.result.Evidence!),
+            opening, trigger.result.Evidence!.Receipt);
         session = trigger.result.SuccessorSession!;
         var reactor = ownerSet.Audience == CampaignActionAudience.Axis
             ? CampaignActionAudience.Commonwealth : CampaignActionAudience.Axis;
@@ -323,6 +328,8 @@ public sealed class CampaignAudienceOutcomeSourceTests
             Assert.True(accepted.IsAccepted);
             var proof = CampaignAudienceOutcomeSource.Decide(session, Step(command, accepted.Evidence!));
             Assert.True(proof.HasTypedProof);
+            AssertAcceptedStepBinding(proof, Step(command, accepted.Evidence!),
+                command, accepted.Evidence!.Receipt);
             var eventBytes = Assert.Single(accepted.Evidence!.EventRecords);
             var fallbackClassification = CampaignAudienceOutcomeSource.ClassifyCanonicalAcceptedEvent(
                 eventBytes, fallback.Kind, CampaignActionAudience.System);
@@ -376,6 +383,7 @@ public sealed class CampaignAudienceOutcomeSourceTests
         var step = Step(command, accepted.Evidence!);
         var closed = CampaignAudienceOutcomeSource.Decide(session, step);
         Assert.True(closed.HasTypedProof);
+        AssertAcceptedStepBinding(closed, step, command, accepted.Evidence!.Receipt);
         var declineClassification = CampaignAudienceOutcomeSource.ClassifyCanonicalAcceptedEvent(
             Assert.Single(step.EventRecords), decline.Kind, reacting.Audience);
         Assert.NotNull(declineClassification);
@@ -386,6 +394,12 @@ public sealed class CampaignAudienceOutcomeSourceTests
         Assert.Equal(reacting.Audience == CampaignActionAudience.Commonwealth
                 ? "diary.reactionDeclined" : null, closed.Commonwealth!.ProposedCopyKey);
         Assert.Equal("reaction-window-closed", closed.Axis!.EventKind);
+        Assert.Equal(CampaignAudienceOutcomeDisposition.Unavailable,
+            (reacting.Audience == CampaignActionAudience.Axis
+                ? closed.Axis : closed.Commonwealth!).Disposition);
+        Assert.Equal(CampaignAudienceOutcomeDisposition.Silent,
+            (reacting.Audience == CampaignActionAudience.Axis
+                ? closed.Commonwealth! : closed.Axis).Disposition);
         var reasonChanged = Encoding.UTF8.GetString(step.EventRecords.Single())
             .Replace("player-decline", "timeout", StringComparison.Ordinal);
         Assert.NotEqual(Encoding.UTF8.GetString(step.EventRecords.Single()), reasonChanged);
@@ -408,10 +422,34 @@ public sealed class CampaignAudienceOutcomeSourceTests
         Assert.True(accepted.IsAccepted, accepted.RejectionReason.ToString());
         var proof = CampaignAudienceOutcomeSource.Decide(session, Step(command, accepted.Evidence!));
         Assert.True(proof.HasTypedProof);
+        AssertAcceptedStepBinding(proof, Step(command, accepted.Evidence!),
+            command, accepted.Evidence!.Receipt);
         var classification = CampaignAudienceOutcomeSource.ClassifyCanonicalAcceptedEvent(
             Assert.Single(accepted.Evidence!.EventRecords), candidate.Kind, set.Audience);
         Assert.NotNull(classification);
         Assert.Equal(expectedCopyKey, classification.Value.CopyKey);
+        if (candidate is CloseReactionWindowNoEligibleAction)
+        {
+            var close = Assert.IsType<ReactionWindowClosedV2>(
+                CampaignCurrentEventSerializer.Deserialize(
+                    Assert.Single(accepted.Evidence.EventRecords)));
+            Assert.Equal(CampaignReactionWindowCloseReason.NoEligibleReactor, close.Reason);
+            Assert.Null(close.ActingSide);
+            Assert.Equal(CampaignActionAudience.System, set.Audience);
+            Assert.Null(CampaignAudienceOutcomeSource.ClassifyCanonicalAcceptedEvent(
+                Assert.Single(accepted.Evidence.EventRecords), candidate.Kind,
+                CampaignActionAudience.Axis));
+        }
+        var acting = set.Audience == CampaignActionAudience.Axis
+            ? proof.Axis! : proof.Commonwealth!;
+        var opposing = set.Audience == CampaignActionAudience.Axis
+            ? proof.Commonwealth! : proof.Axis!;
+        Assert.Equal(CampaignAudienceOutcomeDisposition.Silent, opposing.Disposition);
+        Assert.Null(opposing.ProposedCopyKey);
+        Assert.Equal(expectedCopyKey is null
+                ? CampaignAudienceOutcomeDisposition.Silent
+                : CampaignAudienceOutcomeDisposition.Unavailable,
+            acting.Disposition);
         if (candidate.Kind == "move-reacting-element")
         {
             var before = CampaignHostAdapter.QueryPrivateSideCut(session, set.Audience);
@@ -444,6 +482,27 @@ public sealed class CampaignAudienceOutcomeSourceTests
         CampaignActionSubmissionSerializer.SerializeCanonical(command), evidence.EventRecords,
         CampaignActionAcceptanceReceiptSerializer.Serialize(evidence.Receipt),
         evidence.SnapshotCheckpoint);
+
+    private static void AssertAcceptedStepBinding(CampaignAudienceOutcomePair proof,
+        CampaignHostAcceptedStep step, CampaignActionSubmission command,
+        CampaignActionAcceptanceReceipt committedReceipt)
+    {
+        var receipt = CampaignActionAcceptanceReceiptSerializer.DeserializeCanonical(
+            step.CanonicalReceipt);
+        Assert.Equal(committedReceipt, receipt);
+        Assert.Equal(command.CampaignId, receipt.CampaignId);
+        Assert.Equal(command.Audience, receipt.Audience);
+        Assert.Equal(command.ActionId, receipt.ActionId);
+        Assert.Equal(command.ExpectedStateVersion, receipt.PriorStateVersion);
+        Assert.Equal(receipt.PriorStateVersion + 1, receipt.CommittedStateVersion);
+        foreach (var decision in new[] { proof.Axis!, proof.Commonwealth! })
+        {
+            Assert.Equal(receipt.PriorStateVersion, decision.PriorStateVersion);
+            Assert.Equal(receipt.CommittedStateVersion, decision.SuccessorStateVersion);
+            Assert.Equal($"sha256:{Convert.ToHexStringLower(SHA256.HashData(step.SnapshotCheckpoint))}",
+                decision.SuccessorHeadHash);
+        }
+    }
 
     private static CampaignCreationRequest Request(string? setupId = null)
     {
