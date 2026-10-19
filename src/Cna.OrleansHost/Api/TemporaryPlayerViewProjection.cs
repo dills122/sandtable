@@ -10,6 +10,7 @@ namespace Cna.OrleansHost.Api;
 internal sealed class TemporaryPlayerViewProjection
 {
     internal const string CatalogVersion = "breakdown-truck-maproom.v1";
+    internal const string DiaryCatalogVersion = "breakdown-truck-maproom.diary.v2";
     private const string SourcePin =
         "17f3e6047f34b5bf6f5f809055863b664a4bd82a8481db83ee83e0ae5cad3a2a|" +
         "breakdown-truck-lab|" +
@@ -17,6 +18,37 @@ internal sealed class TemporaryPlayerViewProjection
         "sha256:646e76e69ecceb82216b37d84e950928099acd8a3cb04b51526d0fe631e512ee";
 
     private readonly byte[] formationKey = RandomNumberGenerator.GetBytes(32);
+
+    // Fixed owner-approved text only. A caller must first prove the accepted step, both
+    // committed side cuts and its head; this lookup never grants diary eligibility.
+    internal static TemporaryDiaryCatalogCopy? LookupDiaryCopy(
+        string sourcePin, string catalogVersion, string locale, string copyKey)
+    {
+        if (sourcePin != SourcePin || catalogVersion != DiaryCatalogVersion
+            || locale != "en-CA") return null;
+        return copyKey switch
+        {
+            "diary.initiativeOrder" => new("Initiative order recorded",
+                "Your choice of acting order was recorded.", false),
+            "diary.reserveDesignated" => new("Reserve assigned",
+                "A formation you control was assigned to reserve.", true),
+            "diary.reserveCompleted" => new("Reserve choices complete",
+                "Your reserve choices were completed.", false),
+            "diary.elementMoved" => new("Formation moved",
+                "A formation you control moved.", true),
+            "diary.movementStopped" => new("Movement stopped",
+                "Movement for one of your formations stopped.", false),
+            "diary.reactionMoved" => new("Reaction move recorded",
+                "A formation you control made a reaction move.", true),
+            "diary.reactionCompleted" => new("Reaction complete",
+                "Your reaction opportunity was completed.", false),
+            "diary.reactionDeclined" => new("Reaction declined",
+                "You declined the reaction opportunity.", false),
+            "diary.movementCompleted" => new("Movement complete",
+                "Your movement segment was completed.", false),
+            _ => null,
+        };
+    }
 
     private static readonly Dictionary<string, (string Label, double X, double Y)> Locations =
         new Dictionary<string, (string, double, double)>(StringComparer.Ordinal)
@@ -211,3 +243,6 @@ internal sealed class TemporaryPlayerViewProjection
         _ => null,
     };
 }
+
+internal sealed record TemporaryDiaryCatalogCopy(string Title, string Body,
+    bool OwnFormationLink);
