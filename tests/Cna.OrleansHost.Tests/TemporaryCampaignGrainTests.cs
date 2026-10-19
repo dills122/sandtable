@@ -28,7 +28,7 @@ public sealed class TemporaryCampaignGrainTests
         const string campaign = "test-campaign";
         const string pin = "source-hash";
         var tracker = TemporaryAudienceTracker.Create(campaign, pin,
-            "scenario", "setup-pin", "content-pin",
+            "scenario", "setup-pin", "content-pin", Hash("initial"),
             Side(CampaignActionAudience.Axis, 1, "private-axis-contact"),
             Side(CampaignActionAudience.Commonwealth, 1, "private-commonwealth-contact"));
         Assert.NotNull(tracker);
@@ -38,7 +38,7 @@ public sealed class TemporaryCampaignGrainTests
             firstCommonwealth.Contacts[0].ContactId);
         Assert.DoesNotContain("private-axis-contact", firstAxis.Contacts[0].ContactId);
 
-        Assert.True(tracker.Advance(
+        Assert.True(AdvanceSynthetic(tracker,
             Side(CampaignActionAudience.Axis, 2, "private-axis-contact"),
             Side(CampaignActionAudience.Commonwealth, 2, "private-commonwealth-contact")));
         var hiddenOnly = tracker.Read(CampaignActionAudience.Axis, 2, Generation)!;
@@ -47,9 +47,9 @@ public sealed class TemporaryCampaignGrainTests
         Assert.Equal(firstAxis.Contacts[0].ContactId, hiddenOnly.Contacts[0].ContactId);
 
         // No read between absence and reappearance; continuity follows committed cuts.
-        Assert.True(tracker.Advance(Side(CampaignActionAudience.Axis, 3),
+        Assert.True(AdvanceSynthetic(tracker, Side(CampaignActionAudience.Axis, 3),
             Side(CampaignActionAudience.Commonwealth, 3, "private-commonwealth-contact")));
-        Assert.True(tracker.Advance(
+        Assert.True(AdvanceSynthetic(tracker,
             Side(CampaignActionAudience.Axis, 4, "private-axis-contact"),
             Side(CampaignActionAudience.Commonwealth, 4, "private-commonwealth-contact")));
         var returned = tracker.Read(CampaignActionAudience.Axis, 4, Generation)!;
@@ -62,7 +62,7 @@ public sealed class TemporaryCampaignGrainTests
         Assert.Null(tracker.Read(CampaignActionAudience.System, 4, Generation));
         Assert.Null(tracker.Read(CampaignActionAudience.Axis, 3, Generation));
         Assert.Null(tracker.Read(CampaignActionAudience.Axis, 4, "not-a-session-generation"));
-        Assert.False(tracker.Advance(Side(CampaignActionAudience.Axis, 6),
+        Assert.False(AdvanceSynthetic(tracker, Side(CampaignActionAudience.Axis, 6),
             Side(CampaignActionAudience.Commonwealth, 6)));
         Assert.Null(tracker.Read(CampaignActionAudience.Axis, 4, Generation));
     }
@@ -71,7 +71,7 @@ public sealed class TemporaryCampaignGrainTests
     public void PrivateTrackerRejectsIncoherentSourceWithoutPublishingEitherSide()
     {
         Assert.Null(TemporaryAudienceTracker.Create("test-campaign", "source-hash",
-            "wrong-scenario", "setup-pin", "content-pin",
+            "wrong-scenario", "setup-pin", "content-pin", Hash("initial"),
             Side(CampaignActionAudience.Axis, 1),
             Side(CampaignActionAudience.Commonwealth, 1)));
         var axis = Side(CampaignActionAudience.Axis, 1);
@@ -84,13 +84,13 @@ public sealed class TemporaryCampaignGrainTests
         })
         {
             Assert.Null(TemporaryAudienceTracker.Create("test-campaign", "source-hash",
-                "scenario", "setup-pin", "content-pin", axis, mismatched));
+                "scenario", "setup-pin", "content-pin", Hash("initial"), axis, mismatched));
         }
         var tracker = TemporaryAudienceTracker.Create("test-campaign", "source-hash",
-            "scenario", "setup-pin", "content-pin",
+            "scenario", "setup-pin", "content-pin", Hash("initial"),
             Side(CampaignActionAudience.Axis, 1),
             Side(CampaignActionAudience.Commonwealth, 1))!;
-        Assert.False(tracker.Advance(Side(CampaignActionAudience.Axis, 2),
+        Assert.False(AdvanceSynthetic(tracker, Side(CampaignActionAudience.Axis, 2),
             Side(CampaignActionAudience.Axis, 2)));
         Assert.Null(tracker.Read(CampaignActionAudience.Axis, 1, Generation));
         Assert.Null(tracker.Read(CampaignActionAudience.Commonwealth, 1, Generation));
@@ -102,9 +102,9 @@ public sealed class TemporaryCampaignGrainTests
         var axis = Side(CampaignActionAudience.Axis, 1);
         var commonwealth = Side(CampaignActionAudience.Commonwealth, 1);
         var tracker = TemporaryAudienceTracker.Create("test-campaign", "source-hash",
-            "scenario", "setup-pin", "content-pin", axis, commonwealth)!;
+            "scenario", "setup-pin", "content-pin", Hash("initial"), axis, commonwealth)!;
         var original = tracker.Read(CampaignActionAudience.Axis, 1, Generation)!;
-        Assert.True(tracker.Advance(axis with
+        Assert.True(AdvanceSynthetic(tracker, axis with
         {
             StateVersion = 2,
             Actions = [new CampaignHostPrivateAction("new-core-action", "action")],
@@ -116,6 +116,30 @@ public sealed class TemporaryCampaignGrainTests
             2, Generation, original.ActionSetToken, original.Actions[0].OutwardActionId));
         Assert.Null(tracker.Resolve(CampaignActionAudience.Commonwealth,
             2, Generation, original.ActionSetToken, original.Actions[0].OutwardActionId));
+    }
+
+    [Fact]
+    public void PrivateTrackerRejectsMissingOrForgedAcceptedOutcomeBeforeEitherSideAdvances()
+    {
+        foreach (var failure in new[]
+        {
+            "missing", "prior-head", "successor-head", "source", "audience",
+            "command", "event", "event-kind", "event-version", "receipt-actor",
+        })
+        {
+            var tracker = TemporaryAudienceTracker.Create("test-campaign", "source-hash",
+                "scenario", "setup-pin", "content-pin", Hash("initial"),
+                Side(CampaignActionAudience.Axis, 1),
+                Side(CampaignActionAudience.Commonwealth, 1))!;
+            Assert.False(AdvanceSynthetic(tracker, Side(CampaignActionAudience.Axis, 2),
+                Side(CampaignActionAudience.Commonwealth, 2), failure));
+            Assert.False(tracker.IsAvailable);
+            Assert.Equal(1, tracker.StateVersion);
+            Assert.Equal(Hash("initial"), tracker.CommittedHeadHash);
+            Assert.Null(tracker.LastAcceptedOutcome);
+            Assert.Null(tracker.Read(CampaignActionAudience.Axis, 1, Generation));
+            Assert.Null(tracker.Read(CampaignActionAudience.Commonwealth, 1, Generation));
+        }
     }
 
     [Fact]
@@ -303,6 +327,86 @@ public sealed class TemporaryCampaignGrainTests
         representation is null ? [] : [new CampaignHostPrivateContact(representation, "location", false)],
         [new CampaignHostPrivateAction("core-action", "action")], "normal");
 
+    private static bool AdvanceSynthetic(TemporaryAudienceTracker tracker,
+        CampaignHostPrivateSideCut axis, CampaignHostPrivateSideCut commonwealth,
+        string? failure = null)
+    {
+        var nextVersion = tracker.StateVersion + 1;
+        var actionId = "sha256:" + new string('a', 64);
+        var command = CampaignActionSubmissionSerializer.SerializeCanonical(
+            new CampaignActionSubmission(1, "test-campaign", tracker.StateVersion,
+                "position", CampaignActionAudience.Axis, actionId));
+        var receipt = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(new
+        {
+            contractVersion = 1,
+            campaignId = "test-campaign",
+            priorStateVersion = tracker.StateVersion,
+            committedStateVersion = nextVersion,
+            resultingPositionId = "position",
+            audience = failure == "receipt-actor" ? "commonwealth" : "axis",
+            actionId,
+        }));
+        var eventBytes = Encoding.UTF8.GetBytes(
+            "{\"contractVersion\":1,\"eventType\":\"synthetic-event\"}");
+        var snapshot = Encoding.UTF8.GetBytes($"synthetic-snapshot-{nextVersion}");
+        var step = new CampaignHostAcceptedStep(command,
+            [failure == "event" ? Encoding.UTF8.GetBytes("forged-event") : eventBytes],
+            receipt, snapshot);
+        CampaignAudienceOutcomeDecision Decision(CampaignActionAudience audience) => new(
+            1, audience, Hash("test-campaign"),
+            Hash("source-hash\nsetup-pin\ncontent-pin\nscenario"),
+            tracker.CommittedHeadHash, Hash(snapshot), tracker.StateVersion,
+            nextVersion, Hash(command), CampaignActionAudience.Axis, "action",
+            Hash(eventBytes), 0, "synthetic-event", 1,
+            CampaignAudienceOutcomeDisposition.Silent, "known-silent", null, null);
+        var outcomes = new CampaignAudienceOutcomePair(
+            Decision(CampaignActionAudience.Axis),
+            Decision(CampaignActionAudience.Commonwealth));
+        if (failure == "prior-head")
+            outcomes = outcomes with
+            {
+                Commonwealth = outcomes.Commonwealth! with { PriorHeadHash = Hash("other-head") },
+            };
+        if (failure == "successor-head")
+            outcomes = outcomes with
+            {
+                Commonwealth = outcomes.Commonwealth! with { SuccessorHeadHash = Hash("other-head") },
+            };
+        if (failure == "source")
+            outcomes = outcomes with
+            {
+                Commonwealth = outcomes.Commonwealth! with { SourceBindingHash = Hash("other-source") },
+            };
+        if (failure == "audience")
+            outcomes = outcomes with
+            {
+                Commonwealth = outcomes.Commonwealth! with { Audience = CampaignActionAudience.Axis },
+            };
+        if (failure == "command")
+            outcomes = outcomes with
+            {
+                Commonwealth = outcomes.Commonwealth! with { CommandBindingHash = Hash("other-command") },
+            };
+        if (failure == "event-kind")
+            outcomes = outcomes with
+            {
+                Axis = outcomes.Axis! with { EventKind = "other-event" },
+                Commonwealth = outcomes.Commonwealth! with { EventKind = "other-event" },
+            };
+        if (failure == "event-version")
+            outcomes = outcomes with
+            {
+                Axis = outcomes.Axis! with { EventContractVersion = 2 },
+                Commonwealth = outcomes.Commonwealth! with { EventContractVersion = 2 },
+            };
+        return tracker.AdvanceAccepted(axis, commonwealth, step,
+            failure == "missing" ? null : outcomes);
+    }
+
+    private static string Hash(string value) => Hash(Encoding.UTF8.GetBytes(value));
+    private static string Hash(byte[] bytes) =>
+        $"sha256:{Convert.ToHexStringLower(SHA256.HashData(bytes))}";
+
     [Fact]
     public async Task InProcessHostMatchesDirectCoreAndDeduplicatesConcurrentRequests()
     {
@@ -319,6 +423,10 @@ public sealed class TemporaryCampaignGrainTests
             Assert.Equal(TemporaryCampaignStatus.Created, creation.Status);
             Assert.Equal(directStart.CreationEventBytes, creation.Event);
             Assert.Equal(directStart.InitialSnapshotBytes, creation.Snapshot);
+            var stored = host.Services.GetRequiredService<TemporaryCampaignMemoryStore>()
+                .Get(TemporaryCampaignGrain.FixtureCampaignId);
+            Assert.Equal(Hash(creation.Snapshot!), stored.AudienceTracker!.CommittedHeadHash);
+            Assert.Null(stored.AudienceTracker.LastAcceptedOutcome);
             Assert.Equal(creation.Event, (await grain.CreateAsync("operator-1", "create-1")).Event);
             Assert.Equal(TemporaryCampaignStatus.Conflict,
                 (await grain.CreateAsync("operator-2", "create-1")).Status);
@@ -394,6 +502,7 @@ public sealed class TemporaryCampaignGrainTests
                 var actor = chosen.Audience == CampaignActionAudience.System
                     ? "host-system" : "seat-1";
                 var id = $"request-{index}";
+                var priorHead = stored.AudienceTracker!.CommittedHeadHash;
                 var replies = await Task.WhenAll(
                     grain.SubmitAsync(actor, id, chosen.Audience, bytes),
                     grain.SubmitAsync(actor, id, chosen.Audience, bytes));
@@ -403,6 +512,16 @@ public sealed class TemporaryCampaignGrainTests
                 Assert.Equal(directStep.Evidence.SnapshotCheckpoint, replies[0].Snapshot);
                 Assert.Equal(CampaignActionAcceptanceReceiptSerializer.Serialize(directStep.Evidence.Receipt),
                     replies[0].Receipt);
+                var acceptedOutcome = stored.AudienceTracker.LastAcceptedOutcome;
+                Assert.NotNull(acceptedOutcome);
+                Assert.True(acceptedOutcome.HasTypedProof);
+                Assert.Equal(priorHead, acceptedOutcome.Axis!.PriorHeadHash);
+                Assert.Equal(Hash(replies[0].Snapshot!), acceptedOutcome.Axis.SuccessorHeadHash);
+                Assert.Equal(acceptedOutcome.Axis.SuccessorHeadHash,
+                    acceptedOutcome.Commonwealth!.SuccessorHeadHash);
+                Assert.Equal(acceptedOutcome.Axis.SuccessorHeadHash,
+                    stored.AudienceTracker.CommittedHeadHash);
+                Assert.Equal(stored.CommittedVersion, stored.AudienceTracker.StateVersion);
                 Assert.Equal(replies[0].Receipt,
                     (await grain.FindRequestAsync(actor, id, chosen.Audience)).Receipt);
                 Assert.Equal(TemporaryCampaignStatus.Conflict,
@@ -423,6 +542,8 @@ public sealed class TemporaryCampaignGrainTests
                 var afterStale = await grain.QueryAsync(CampaignActionAudience.Axis);
                 Assert.Equal(beforeStale.LegalActions, afterStale.LegalActions);
                 Assert.Equal(beforeStale.View, afterStale.View);
+                Assert.Same(acceptedOutcome, stored.AudienceTracker.LastAcceptedOutcome);
+                Assert.Equal(Hash(replies[0].Snapshot!), stored.AudienceTracker.CommittedHeadHash);
                 if (index == 0)
                 {
                     var beforePrivate = (await grain.QueryPrivateSideAsync(

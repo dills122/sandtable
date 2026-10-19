@@ -131,7 +131,9 @@ Its private side cut remains host data; Maproom receives only a validated player
 **presentation catalog** owns public fixture labels and layout, not Umpire authority.
 The **audience outcome source** is a private Core hosting proof for one accepted transition.
 It can classify known silent outcomes and identify proposed entry keys, but unapproved copy
-stays unavailable; it is not a browser diary, receipt, or second adjudicator.
+stays unavailable; it is not a browser diary, receipt, or second adjudicator. The
+**private outcome head binding** is the Orleans tracker's check that one paired proof and
+both side cuts belong to the same accepted committed head. It grants no publication right.
 
 **Proving Ground** names the local development test environment and
 [runbook](docs/runbooks/proving-ground.md), not a game authority or separate service. Its first

@@ -145,8 +145,10 @@ public sealed class TemporaryCampaignGrain(
         var axisCut = CampaignHostAdapter.QueryPrivateSideCut(start.Session!, CampaignActionAudience.Axis);
         var commonwealthCut = CampaignHostAdapter.QueryPrivateSideCut(start.Session!,
             CampaignActionAudience.Commonwealth);
+        var initialHeadHash = $"sha256:{Convert.ToHexStringLower(
+            SHA256.HashData(start.InitialSnapshotBytes!))}";
         var tracker = TemporaryAudienceTracker.Create(FixtureCampaignId, RulesetHash,
-            ScenarioId, SetupHash, ContentHash, axisCut, commonwealthCut);
+            ScenarioId, SetupHash, ContentHash, initialHeadHash, axisCut, commonwealthCut);
         if (tracker is null)
             return Task.FromResult(Reply(TemporaryCampaignStatus.Unavailable, "audienceCutUnavailable"));
         memory.AudienceTracker = tracker;
@@ -254,17 +256,22 @@ public sealed class TemporaryCampaignGrain(
         if (!result.IsAccepted)
             return Task.FromResult(Reply(TemporaryCampaignStatus.Rejected, result.RejectionReason.ToString()));
 
+        var evidence = result.Evidence!;
+        var acceptedStep = new CampaignHostAcceptedStep(canonicalCommand,
+            evidence.EventRecords, CampaignActionAcceptanceReceiptSerializer.Serialize(evidence.Receipt),
+            evidence.SnapshotCheckpoint);
+        var outcomes = CampaignHostAdapter.DecideAcceptedOutcomes(memory.Committed, acceptedStep);
         var successor = result.SuccessorSession!;
         var axisCut = CampaignHostAdapter.QueryPrivateSideCut(successor, CampaignActionAudience.Axis);
         var commonwealthCut = CampaignHostAdapter.QueryPrivateSideCut(successor,
             CampaignActionAudience.Commonwealth);
-        if (memory.AudienceTracker?.Advance(axisCut, commonwealthCut) != true)
-            return Task.FromResult(Reply(TemporaryCampaignStatus.Unavailable, "audienceCutUnavailable"));
+        if (memory.AudienceTracker?.AdvanceAccepted(axisCut, commonwealthCut,
+                acceptedStep, outcomes) != true)
+            return Task.FromResult(Reply(TemporaryCampaignStatus.Unavailable, "audienceProofUnavailable"));
 
         // The memory commit has no await/provider call. Candidate and its request record become
         // visible together in this serialized grain turn; a process restart loses both.
         memory.Pending = new PendingStep(actorId, requestId, audience, canonicalCommand.ToArray(), result);
-        var evidence = memory.Pending.Result.Evidence!;
         var reply = new TemporaryCampaignReply
         {
             Status = TemporaryCampaignStatus.Accepted,
