@@ -3,8 +3,9 @@
 Date: 2026-10-16. Status updated 2026-10-19: MAP-01–03C fixtures, MAP-04 browser
 contract, MAP-07 temporary grain, MAP-08 initial local ingress/read, and MAP-10 connected
 operations workspace are implemented for the bounded Rules9 fixture. MAP-09 has private
-seat-bound action/retry plumbing only. The Angular `/connected` route reads the initial
-authorized cut; successor `/view`, public submit/receipt, MAP-11 orders and durable save
+seat-bound action/retry plumbing only. The main Angular Maproom route offers URL-backed
+`?mode=campaign` local read mode for the initial authorized cut; `/connected` remains a
+development deep link. Successor `/view`, public submit/receipt, MAP-11 orders and durable save
 remain pending.
 Audience: contributors implementing the local rules-lab host and browser client.
 
@@ -58,7 +59,7 @@ consider a renderer/worker optimization only when measured browser work warrants
   Maproom profile which can launch the client and host without requiring Intelligence.
 - The [Proving Ground runbook](../runbooks/proving-ground.md) supplies a two-container Development
   preview of the synthetic Maproom shell and Orleans host, with loopback ports and HTTP smoke
-  probes. The separate host-native [connected read lane](maproom-connected-local-read.md)
+  probes. The host-native [connected read mode](maproom-connected-local-read.md)
   creates one pinned fixture and reads its initial authorized view. Docker-published port 5180
   does not pass the API's container-side loopback caller guard for those routes. Aspire client
   orchestration remains open; neither lane offers public orders or durable save.
@@ -229,7 +230,7 @@ are developed; no slice may silently absorb new game rules or activate private C
 | MAP-08A Local session seam | 04, 07 | Development-only loopback/operator bootstrap with positive same-origin evidence, trusted-host one-use seat grants, bounded/expiring session and grant stores, cookie rotation and authorized session lookup; initial `/view` is separately delivered by MAP-08B | Real HTTP wrong-host/origin/Fetch Metadata/campaign/grant/CSRF and capacity tests; no private MAP-07 bytes on HTTP |
 | MAP-08B1 Side projection prerequisites | 08A | [Trusted side cut and presentation-source contract](../specs/maproom-side-projection-prerequisites-v1.md): typed permitted fields, pinned public presentation catalog, audience-safe diary, opaque contact/action mapping over every committed side cut | No raw Core bytes or private identities on HTTP; missing source or unverifiable cut gap fails closed; hidden-only commits preserve outward identities; contact reappearance rotates ID even without an intervening read |
 | MAP-08B2 Host-private side continuity | 08B1, 07 | Core typed side cut and process-local grain tracker for both audiences at creation and each accepted/System step; session-scoped opaque contact/action handles | Two-seat privacy; hidden-only stability; unread disappearance/reappearance rotates contact ID; skipped cut fails closed; deactivation retains tracker and process restart loses it; no browser view claim |
-| MAP-08B Campaign creation and view projection | 08B1 | Development-only single-fixture creation/grants and initial coherent side view exist; Angular `/connected` reads it through a loopback-only dev proxy. Post-step reads and complete recovery remain | Exact contract response and retry identity; side privacy; two-seat initial HTTP reads; no browser command |
+| MAP-08B Campaign creation and view projection | 08B1 | Development-only single-fixture creation/grants and initial coherent side view exist; main Angular Maproom `?mode=campaign` reads it through a loopback-only dev proxy, with `/connected` kept as a development deep link. Post-step reads and complete recovery remain | Exact contract response and retry identity; side privacy; two-seat initial HTTP reads; no browser command |
 | MAP-09 Command ingress and retries | 08 | Private process-lifetime seat-bound request identity, current Core candidate remap/revalidation and exact retry implemented; public HTTP submit/status/receipt lookup pending | Private revocation/handoff, changed-payload, stale-handle and retry tests; route-level duplicate/lost-reply/cancellation reconciliation still required |
 | MAP-10 Connected workspace reads | 03C, 08 | Initial authorized `/view` now renders through the operational map/roster/inspector workspace; coherent successor view/diary remains pending | Both seats' initial privacy, selection and responsive map checks; later accepted-step cut, changed visibility, diary cursor and revoke tests before claiming full connected reads |
 | MAP-11 Real order forms | 09, 10 | Public submit/receipt plus coherent successor view precede one admitted move action with typed draft, Formly field adapter, review and explicit issue action | Keyboard path submits once; invalid/stale states explain recovery; draft never moves authoritative counter; server decides cost |

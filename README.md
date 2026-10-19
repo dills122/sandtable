@@ -55,7 +55,7 @@ play a side; it will never decide the rules or secretly change the campaign stat
 | Playable rule path | Working through Combat entry | Runner can execute Initiative, stage preamble, Reserve Designation, Movement, bounded ZOC/Reaction, and Breakdown, then stops before Combat adjudication. |
 | Combat and continual cycle | Private Core and bounded P01 evidence; public activation pending | R03's private native consumer and bounded P01 reference/proof slices are merged. Authentic CreationRequest plus eleven R03 ledgers replay across 300 rows: 44 provisional positive, 256 provisional empty, zero admitted. The private ordinal-two zero-assault/defender RBA path has no native or public consumer. Action exhaustiveness, full surrender/RBA, outward privacy, replay/resource caps and the support certificate remain open; Runner stops before public Combat. |
 | Exercise and Maneuver tools | Working | Deterministic single runs, multi-run matrices, paired comparisons, strict readback, and evidence bundles are available from CLI. |
-| User interface | Angular foundation and bounded connected read lane | `src/Cna.Maproom` contains `maproom-alpha`, Field Atlas and Storybook. The synthetic order shell remains separate; `/connected` can create one temporary local Rules9 fixture, enter a granted seat and display its initial audience-safe operations view. Reload can resume a valid seat cookie; public orders, later cuts and lost-cookie recovery remain pending. `site/` is project website only. |
+| User interface | Angular foundation and bounded connected read mode | `src/Cna.Maproom` contains `maproom-alpha`, Field Atlas and Storybook. The main Maproom route offers a synthetic fixture study and URL-backed `?mode=campaign` local read mode using the same map presentation; `/connected` remains a development deep link. Campaign mode can create one temporary local Rules9 fixture, enter a granted seat and display its initial audience-safe operations view. Reload can resume a valid seat cookie; public orders, later cuts and lost-cookie recovery remain pending. `site/` is project website only. |
 | Published scenario | Not started | First target is six-turn, Land-only *Graziani's Offensive* after working Combat loop. |
 | Durable save/resume | Not started | Replay/checkpoint contracts exist; user-facing campaign persistence comes later. |
 | Model-backed commanders | Scaffold only | Gateway and worker exist, but no provider is configured and AI never owns authority. |
@@ -198,10 +198,12 @@ still has an empty diary and cursor zero; later cuts remain unavailable. See the
 Run `just maproom-setup`, then `just maproom` (port 4200) and `just field-atlas` (port 6006) in separate
 terminals. Storybook owns the live component/pattern reference; both surfaces consume
 `@sandtable/field-atlas`. MAP-03B stages local delayed results and receipt readback only;
-The searchable ledger and War Diary in the default workspace are synthetic own-side examples.
-For the separate development-only initial campaign read, follow the
+The searchable ledger and War Diary in the fixture study are synthetic own-side examples.
+For the development-only initial campaign read in main Maproom, select **Local campaign read mode**
+at <http://127.0.0.1:4300/> or open `/?mode=campaign` directly. Follow the
 [connected Maproom local recipe](docs/design/maproom-connected-local-read.md); it uses ports 4300
-and 5087 without changing the 4200 preview. MAP-10 extends the bounded read-only operations
+and 5087 without changing the 4200 preview. `/connected` remains a development deep link.
+MAP-10 extends the bounded read-only operations
 workspace but does not submit orders or read later cuts. MAP-09 retains private, process-lifetime
 request binding and exact retries without a public submit or receipt route. A process holds only
 one fixture campaign: exact creation retries need the original operator/request within 15 minutes.
@@ -275,7 +277,7 @@ Maproom shell at <http://127.0.0.1:4200> and Development Orleans host at
 <http://127.0.0.1:5180>. `just proving-ground-smoke` checks both HTTP probes;
 `just proving-ground-down` stops them. The 4200 shell uses synthetic fixtures. The host maps
 bounded local campaign routes, but Docker forwarding to port 5180 fails their loopback-caller guard;
-use the separate host-native [connected read lane](docs/design/maproom-connected-local-read.md)
+use the host-native [connected read mode](docs/design/maproom-connected-local-read.md)
 for an authorized initial view. Neither lane submits orders or provides durable save.
 Use the [Proving Ground runbook](docs/runbooks/proving-ground.md) for service boundaries, current
 rules-lab seed/evidence commands, and the MAP slice path to a real playtest.

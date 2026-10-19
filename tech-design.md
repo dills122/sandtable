@@ -134,8 +134,10 @@ created initial fixture may return one
 authorized `/view` mapped from a coherent typed cut; unsupported or successor cuts return
 `503 unavailable` until a coherent public successor projection is supported; private diary
 approval alone does not publish that view.
-The separate Angular `/connected` route now uses that initial cut through a
-loopback-only 4300-to-5087 development proxy. It bootstraps, creates the one fixture,
+The main Angular Maproom route now offers a URL-backed `?mode=campaign` local read mode
+using the same map presentation as the synthetic fixture study; `/connected` remains a
+development deep link. Campaign mode uses the initial cut through a loopback-only
+4300-to-5087 development proxy. It bootstraps, creates the one fixture,
 redeems one grant and renders an authorized initial operations read. MAP-10 extends the bounded
 read-only workspace without submitting an order or reading a later cut. A failed refresh clears
 its prior audience view. The host retains one process-local creation for the exact
