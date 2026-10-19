@@ -698,11 +698,45 @@ for (const seat of ['axis', 'commonwealth'] as const) {
     const scene = page.locator('.connected-map .map-scene');
     const fitted = await scene.getAttribute('style');
     const locate = page.getByRole('button', { name: 'Locate on map' });
+    await page.setViewportSize({ width: 320, height: 568 });
     await locate.focus();
     await page.keyboard.press('Enter');
     await expect(page.getByLabel('Map zoom')).toHaveText('150%');
     await expect(scene).not.toHaveAttribute('style', fitted!);
-    await expect(page.locator('.connected-map .map-canvas')).toBeFocused();
+    const canvas = page.locator('.connected-map .map-canvas');
+    await expect(canvas).toBeFocused();
+    await scene.evaluate(async (element) => {
+      // Force the transition to start, then check the marker at its settled position.
+      if (getComputedStyle(element).transform === 'none')
+        throw new Error('Locate did not apply a map transform');
+      await Promise.all(element.getAnimations().map((animation) => animation.finished));
+    });
+    const scroll = page.getByRole('region', { name: 'Scrollable situation map' });
+    const marker = page.locator('.connected-unit[data-kind="truck"]');
+    await expect
+      .poll(async () => {
+        const [viewport, canvasBounds, selectedMarker] = await Promise.all([
+          scroll.boundingBox(),
+          canvas.boundingBox(),
+          marker.boundingBox(),
+        ]);
+        if (!viewport || !canvasBounds || !selectedMarker) return false;
+        return (
+          selectedMarker.x >= canvasBounds.x - 1 &&
+          selectedMarker.x + selectedMarker.width <= canvasBounds.x + canvasBounds.width + 1 &&
+          selectedMarker.y >= canvasBounds.y - 1 &&
+          selectedMarker.y + selectedMarker.height <= canvasBounds.y + canvasBounds.height + 1 &&
+          selectedMarker.x >= viewport.x - 1 &&
+          selectedMarker.x + selectedMarker.width <= viewport.x + viewport.width + 1 &&
+          selectedMarker.y >= viewport.y - 1 &&
+          selectedMarker.y + selectedMarker.height <= viewport.y + viewport.height + 1 &&
+          selectedMarker.x >= -1 &&
+          selectedMarker.x + selectedMarker.width <= 321 &&
+          selectedMarker.y >= -1 &&
+          selectedMarker.y + selectedMarker.height <= 569
+        );
+      })
+      .toBe(true);
     await expect(page.locator('.roster-item').filter({ hasText: `${own} truck` })).toHaveAttribute(
       'aria-pressed',
       'true',
