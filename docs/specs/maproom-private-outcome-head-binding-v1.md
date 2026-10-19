@@ -17,6 +17,9 @@ For an accepted step, the tracker requires:
 - The prior head hash equals its retained committed head; the successor head hash equals the
   accepted checkpoint hash. The receipt and canonical command agree on campaign, actor,
   action, prior and successor versions, and resulting position.
+  The receipt has no snapshot-hash field: the host binds its canonical receipt to the
+  checkpoint and paired head hashes through the same accepted-step record and Core
+  in-memory replay. A journal event hash alone is not proof of tracker publication.
 - Each decision has contract version 1, its own distinct authorized audience, matching
   campaign/source binding, command/event hash, actor, event identity, index, prior/successor
   heads and consecutive versions. Source binding uses the Core proof's exact ordered

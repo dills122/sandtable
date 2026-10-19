@@ -200,7 +200,11 @@ shape remains unavailable; no accepted Reaction entry is silently dropped.
 The owner approved the exact entries, silent classes, and fixed catalog copy on
 2026-10-19. The typed Core-hosting outcome source, private committed-head binding,
 catalog lookup, atomic tracker append, 50-entry retention and generation-scoped IDs
-exist. The remaining work must prove every supported outcome for both seats, expose
+exist. The deterministic Reaction fixture proves the System no-eligible close after
+participant completion and stop resolution, both side dispositions for its supported
+Reaction outcomes, and acceptance receipt/version/checkpoint binding at the private
+tracker. These are process-local proofs; no journal hash substitutes for a committed
+tracker head. The remaining work must prove every supported outcome for both seats, expose
 only a coherent successor view, and complete the public privacy/HTTP tests. Until
 those tests and review
 pass, successor `/view` remains unavailable; this is no claim of a playable API or
