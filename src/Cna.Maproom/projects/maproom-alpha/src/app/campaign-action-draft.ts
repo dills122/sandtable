@@ -10,6 +10,12 @@ type AudienceStamp = Readonly<{
   actionSetToken: string;
 }>;
 
+type ObservedCut = Readonly<{
+  audience: AudienceStamp;
+  decision: CoherentPlayerView['position']['decision'];
+  legalActions: readonly Readonly<LegalAction>[];
+}>;
+
 export type CampaignActionDraftState =
   | { phase: 'empty' }
   | { phase: 'draft'; audience: AudienceStamp; action: Readonly<LegalAction> }
@@ -57,6 +63,22 @@ function copyAction(action: LegalAction): Readonly<LegalAction> {
   };
 }
 
+function validAction(action: LegalAction): boolean {
+  return (
+    !!action &&
+    typeof action.actionId === 'string' &&
+    !!action.actionId &&
+    Number.isSafeInteger(action.actionContractVersion) &&
+    action.actionContractVersion >= 1 &&
+    typeof action.kind === 'string' &&
+    !!action.kind &&
+    typeof action.label === 'string' &&
+    !!action.label &&
+    (action.formationId === undefined || typeof action.formationId === 'string') &&
+    (action.targetLocationId === undefined || typeof action.targetLocationId === 'string')
+  );
+}
+
 function sameAction(left: LegalAction, right: LegalAction): boolean {
   return (
     left.actionId === right.actionId &&
@@ -74,9 +96,9 @@ function sameAction(left: LegalAction, right: LegalAction): boolean {
  * enter issue intent. This model never creates an action, request ID, receipt, or HTTP request.
  */
 export class CampaignActionDraft {
-  private view: CoherentPlayerView | null = null;
-  private observedAudience: AudienceStamp | null = null;
+  private observed: ObservedCut | null = null;
   private current: CampaignActionDraftState = { phase: 'empty' };
+  private authorityRevoked = false;
 
   constructor(
     private readonly admittedCapability = false,
@@ -84,7 +106,14 @@ export class CampaignActionDraft {
   ) {}
 
   get state(): CampaignActionDraftState {
-    return this.current;
+    const state = this.current;
+    return state.phase === 'empty'
+      ? { phase: 'empty' }
+      : {
+          phase: state.phase,
+          audience: { ...state.audience },
+          action: copyAction(state.action),
+        };
   }
 
   observeView(view: CoherentPlayerView): boolean {
@@ -95,19 +124,15 @@ export class CampaignActionDraft {
       !['axis', 'commonwealth'].includes(view.seat) ||
       revision(view.audienceRevision) === null ||
       !view.position?.positionId ||
-      !Array.isArray(view.legalActions)
+      !Array.isArray(view.legalActions) ||
+      !view.legalActions.every(validAction)
     ) {
       this.clear();
       return false;
     }
 
-    const previous = this.observedAudience;
+    const previous = this.observed?.audience;
     const incoming = stamp(view);
-    if (this.view === view) {
-      if (previous && sameStamp(previous, incoming)) return true;
-      this.clear();
-      return false;
-    }
     if (
       previous &&
       previous.campaignId === view.campaignId &&
@@ -118,31 +143,42 @@ export class CampaignActionDraft {
       // A late or conflicting read cannot restore a draft from an older/equal audience cut.
       return false;
     }
-    this.view = view;
-    this.observedAudience = incoming;
+    if (
+      previous &&
+      (previous.campaignId !== incoming.campaignId ||
+        previous.sessionGeneration !== incoming.sessionGeneration ||
+        previous.seat !== incoming.seat)
+    ) {
+      // Constructor capability belongs to the initial audience. A new model/admission is needed.
+      this.authorityRevoked = true;
+    }
+    this.observed = {
+      audience: incoming,
+      decision: view.position.decision,
+      legalActions: view.legalActions.map(copyAction),
+    };
     this.current = { phase: 'empty' };
     return true;
   }
 
   clear(): void {
-    this.view = null;
-    this.observedAudience = null;
+    this.observed = null;
     this.current = { phase: 'empty' };
+    this.authorityRevoked = true;
   }
 
   stage(actionId: string): boolean {
-    const view = this.view;
+    const observed = this.observed;
     if (
-      !view ||
-      !this.observedAudience ||
-      !sameStamp(this.observedAudience, stamp(view)) ||
-      !this.actionable(view) ||
+      !observed ||
+      this.authorityRevoked ||
+      !this.actionable(observed) ||
       this.current.phase === 'issue-intent'
     ) {
       this.current = { phase: 'empty' };
       return false;
     }
-    const matching = view.legalActions.filter((action) => action.actionId === actionId);
+    const matching = observed.legalActions.filter((action) => action.actionId === actionId);
     if (matching.length !== 1) {
       this.current = { phase: 'empty' };
       return false;
@@ -158,7 +194,11 @@ export class CampaignActionDraft {
       this.current = { phase: 'empty' };
       return false;
     }
-    this.current = { phase: 'draft', audience: stamp(view), action: copyAction(action) };
+    this.current = {
+      phase: 'draft',
+      audience: { ...observed.audience },
+      action: copyAction(action),
+    };
     return true;
   }
 
@@ -171,6 +211,7 @@ export class CampaignActionDraft {
   issueIntent(): boolean {
     if (
       this.current.phase !== 'reviewed' ||
+      this.authorityRevoked ||
       !this.admittedCapability ||
       !this.adapterAvailable ||
       !this.currentActionStillLegal()
@@ -184,29 +225,28 @@ export class CampaignActionDraft {
     this.current = { phase: 'empty' };
   }
 
-  private actionable(view: CoherentPlayerView): boolean {
+  private actionable(observed: ObservedCut): boolean {
     return (
-      view.position.decision === 'human' &&
-      !!view.position.positionId &&
-      !!view.actionSetToken &&
-      revision(view.audienceRevision) !== null
+      observed.decision === 'human' &&
+      !!observed.audience.positionId &&
+      !!observed.audience.actionSetToken &&
+      revision(observed.audience.audienceRevision) !== null
     );
   }
 
   private currentActionStillLegal(): boolean {
-    const view = this.view;
+    const observed = this.observed;
     const current = this.current;
-    if (!view || current.phase === 'empty') return false;
+    if (!observed || current.phase === 'empty') return false;
     if (
-      !this.observedAudience ||
-      !this.actionable(view) ||
-      !sameStamp(this.observedAudience, stamp(view)) ||
-      !sameStamp(current.audience, stamp(view))
+      this.authorityRevoked ||
+      !this.actionable(observed) ||
+      !sameStamp(current.audience, observed.audience)
     ) {
       this.current = { phase: 'empty' };
       return false;
     }
-    const matching = view.legalActions.filter(
+    const matching = observed.legalActions.filter(
       (action) => action.actionId === current.action.actionId,
     );
     if (matching.length !== 1 || !sameAction(matching[0], current.action)) {

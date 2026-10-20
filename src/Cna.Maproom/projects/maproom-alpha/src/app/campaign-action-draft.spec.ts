@@ -120,7 +120,7 @@ describe('CampaignActionDraft', () => {
     expect(unsupported.stage('opaque-a')).toBe(false);
   });
 
-  it('drops an in-place changed action, token, or position before review or issue intent', () => {
+  it('snapshots legal actions and audience metadata before a caller mutates the source view', () => {
     const altered: CoherentPlayerView = {
       ...view,
       position: { ...view.position },
@@ -128,29 +128,52 @@ describe('CampaignActionDraft', () => {
     };
     const draft = new CampaignActionDraft(true, true);
     draft.observeView(altered);
-    draft.stage('opaque-a');
+    altered.legalActions.push({
+      actionId: 'invented',
+      actionContractVersion: 3,
+      kind: 'move',
+      label: 'Invented move',
+    });
     altered.legalActions[0].targetLocationId = 'other-public-location';
-    expect(draft.review()).toBe(false);
-    expect(draft.state).toEqual({ phase: 'empty' });
+    altered.actionSetToken = 'new-set';
+    altered.position.positionId = 'other-position';
+    expect(draft.stage('invented')).toBe(false);
+    expect(draft.stage('opaque-a')).toBe(true);
+    expect(draft.review()).toBe(true);
+    expect(draft.state.phase).toBe('reviewed');
+    expect(draft.state.phase === 'reviewed' && draft.state.action.targetLocationId).toBe(
+      'public-b',
+    );
+  });
 
+  it('revokes the constructor admission after A to B to late A identity changes', () => {
+    const draft = new CampaignActionDraft(true, true);
+    draft.observeView(view);
     draft.stage('opaque-a');
     draft.review();
-    altered.actionSetToken = 'new-set';
+    expect(draft.observeView({ ...view, seat: 'commonwealth' })).toBe(true);
+    expect(draft.state).toEqual({ phase: 'empty' });
+    expect(draft.observeView({ ...view })).toBe(true);
+    expect(draft.stage('opaque-a')).toBe(false);
+    expect(draft.review()).toBe(false);
     expect(draft.issueIntent()).toBe(false);
     expect(draft.state).toEqual({ phase: 'empty' });
   });
 
-  it('does not draft against a silently mutated seat or accept the same object as a new cut', () => {
-    const altered: CoherentPlayerView = {
-      ...view,
-      legalActions: [{ ...view.legalActions[0] }],
-    };
+  it('does not expose mutable internal draft or review state to callers', () => {
     const draft = new CampaignActionDraft(true, true);
-    draft.observeView(altered);
-    altered.seat = 'commonwealth';
-    expect(draft.stage('opaque-a')).toBe(false);
-    expect(draft.observeView(altered)).toBe(false);
-    expect(draft.state).toEqual({ phase: 'empty' });
+    draft.observeView(view);
+    draft.stage('opaque-a');
+    const exposed = draft.state as Record<string, unknown>;
+    exposed['phase'] = 'reviewed';
+    (exposed['action'] as { actionId: string }).actionId = 'invented';
+    (exposed['audience'] as { actionSetToken: string }).actionSetToken = 'invented';
+    expect(draft.state.phase).toBe('draft');
+    expect(draft.issueIntent()).toBe(false);
+    expect(draft.review()).toBe(true);
+    expect(draft.state.phase).toBe('reviewed');
+    expect(draft.issueIntent()).toBe(true);
+    expect(draft.state.phase).toBe('issue-intent');
   });
 
   it('fails closed on invalid audience revision and malformed legal-action metadata', () => {
