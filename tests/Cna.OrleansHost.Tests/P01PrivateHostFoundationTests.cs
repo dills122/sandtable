@@ -254,6 +254,7 @@ public sealed class P01PrivateHostFoundationTests
         "REFERENCES unrelated(campaign_id)")]
     [InlineData("seats", "REFERENCES campaigns(campaign_id)",
         "REFERENCES campaigns(campaign_id) ON DELETE CASCADE")]
+    [InlineData("operator_capability", "CHECK(singleton=1)", "CHECK(singleton>=1)")]
     public void WrongTypeNullabilityPrimaryKeyOrForeignKeyFailsClosed(
         string table, string oldSql, string newSql)
     {
@@ -274,6 +275,26 @@ public sealed class P01PrivateHostFoundationTests
         var failure = Record.Exception(() => fixture.Open());
         Assert.True(failure is InvalidOperationException or SqliteException,
             $"Expected fail-closed schema rejection, got {failure?.GetType().Name ?? "none"}.");
+    }
+
+    [Fact]
+    public void OrphanSeatWithDisabledForeignKeysFailsOnReopen()
+    {
+        using var fixture = new StoreFixture();
+        var store = fixture.Create();
+        store.SeedUnissuableCampaign(Campaign, Checkpoint, Operator);
+        var lease = store.AcquireActivationFence(Campaign, Operator);
+        store.IssueGrant(Campaign, "axis", lease, lease.OperatorSecret);
+        using (var connection = new SqliteConnection($"Data Source={fixture.Path}"))
+        {
+            connection.Open();
+            using var command = connection.CreateCommand();
+            command.CommandText = "PRAGMA foreign_keys=OFF; DELETE FROM campaigns "
+                + "WHERE campaign_id=$campaign";
+            command.Parameters.AddWithValue("$campaign", Campaign);
+            command.ExecuteNonQuery();
+        }
+        Assert.Throws<InvalidOperationException>(() => fixture.Open());
     }
 
     [Fact]

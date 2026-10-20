@@ -18,6 +18,49 @@ internal sealed class P01PrivateHostFoundation
         RegexOptions.CultureInvariant | RegexOptions.NonBacktracking);
     private static readonly Regex HashPattern = new(@"\Asha256:[0-9a-f]{64}\z",
         RegexOptions.CultureInvariant | RegexOptions.NonBacktracking);
+    private static readonly (string Table, string Sql)[] TableDefinitions =
+    [
+        ("operator_capability", """
+            CREATE TABLE operator_capability (
+              singleton INTEGER PRIMARY KEY CHECK(singleton=1), secret_digest BLOB NOT NULL
+            )
+            """),
+        ("campaigns", """
+            CREATE TABLE campaigns (
+              campaign_id TEXT PRIMARY KEY, checkpoint_hash TEXT NOT NULL,
+              head_sequence INTEGER NOT NULL, head_hash TEXT NOT NULL,
+              activation_fence INTEGER NOT NULL, activation_digest BLOB NOT NULL
+            )
+            """),
+        ("seats", """
+            CREATE TABLE seats (
+              campaign_id TEXT NOT NULL, side TEXT NOT NULL, authority_id TEXT NOT NULL UNIQUE,
+              grant_generation INTEGER NOT NULL, seat_epoch INTEGER NOT NULL,
+              grant_digest BLOB, grant_expiry_ms INTEGER,
+              credential_digest BLOB, credential_expiry_ms INTEGER,
+              revoked INTEGER NOT NULL,
+              PRIMARY KEY(campaign_id,side),
+              FOREIGN KEY(campaign_id) REFERENCES campaigns(campaign_id)
+            )
+            """),
+        ("probe_records", """
+            CREATE TABLE probe_records (
+              campaign_id TEXT NOT NULL, sequence INTEGER NOT NULL, prior_hash TEXT NOT NULL,
+              record_hash TEXT NOT NULL, record_bytes BLOB NOT NULL,
+              authority_id TEXT NOT NULL, seat_epoch INTEGER NOT NULL, request_id TEXT NOT NULL,
+              PRIMARY KEY(campaign_id,sequence),
+              FOREIGN KEY(campaign_id) REFERENCES campaigns(campaign_id)
+            )
+            """),
+        ("probe_requests", """
+            CREATE TABLE probe_requests (
+              campaign_id TEXT NOT NULL, authority_id TEXT NOT NULL, request_id TEXT NOT NULL,
+              input_hash TEXT NOT NULL, record_hash TEXT NOT NULL, sequence INTEGER NOT NULL,
+              PRIMARY KEY(campaign_id,authority_id,request_id),
+              FOREIGN KEY(campaign_id,sequence) REFERENCES probe_records(campaign_id,sequence)
+            )
+            """),
+    ];
     private readonly string path;
     private readonly TimeProvider clock;
 
@@ -48,38 +91,7 @@ internal sealed class P01PrivateHostFoundation
         Execute(connection, "PRAGMA synchronous=FULL");
         using (var transaction = connection.BeginTransaction(deferred: false))
         {
-            Execute(connection, """
-                CREATE TABLE operator_capability (
-                  singleton INTEGER PRIMARY KEY CHECK(singleton=1), secret_digest BLOB NOT NULL
-                );
-                CREATE TABLE campaigns (
-                  campaign_id TEXT PRIMARY KEY, checkpoint_hash TEXT NOT NULL,
-                  head_sequence INTEGER NOT NULL, head_hash TEXT NOT NULL,
-                  activation_fence INTEGER NOT NULL, activation_digest BLOB NOT NULL
-                );
-                CREATE TABLE seats (
-                  campaign_id TEXT NOT NULL, side TEXT NOT NULL, authority_id TEXT NOT NULL UNIQUE,
-                  grant_generation INTEGER NOT NULL, seat_epoch INTEGER NOT NULL,
-                  grant_digest BLOB, grant_expiry_ms INTEGER,
-                  credential_digest BLOB, credential_expiry_ms INTEGER,
-                  revoked INTEGER NOT NULL,
-                  PRIMARY KEY(campaign_id,side),
-                  FOREIGN KEY(campaign_id) REFERENCES campaigns(campaign_id)
-                );
-                CREATE TABLE probe_records (
-                  campaign_id TEXT NOT NULL, sequence INTEGER NOT NULL, prior_hash TEXT NOT NULL,
-                  record_hash TEXT NOT NULL, record_bytes BLOB NOT NULL,
-                  authority_id TEXT NOT NULL, seat_epoch INTEGER NOT NULL, request_id TEXT NOT NULL,
-                  PRIMARY KEY(campaign_id,sequence),
-                  FOREIGN KEY(campaign_id) REFERENCES campaigns(campaign_id)
-                );
-                CREATE TABLE probe_requests (
-                  campaign_id TEXT NOT NULL, authority_id TEXT NOT NULL, request_id TEXT NOT NULL,
-                  input_hash TEXT NOT NULL, record_hash TEXT NOT NULL, sequence INTEGER NOT NULL,
-                  PRIMARY KEY(campaign_id,authority_id,request_id),
-                  FOREIGN KEY(campaign_id,sequence) REFERENCES probe_records(campaign_id,sequence)
-                );
-                """, transaction);
+            foreach (var (_, sql) in TableDefinitions) Execute(connection, sql, transaction);
             using var command = connection.CreateCommand();
             command.Transaction = transaction;
             command.CommandText = "INSERT INTO operator_capability VALUES (1, $digest)";
@@ -115,6 +127,10 @@ internal sealed class P01PrivateHostFoundation
             || ScalarString(connection, "PRAGMA integrity_check") != "ok")
             throw new InvalidOperationException("Unrecognized or damaged private store.");
         RequireSchema(connection);
+        using (var check = Command(connection, null, "PRAGMA foreign_key_check"))
+        using (var violations = check.ExecuteReader())
+            if (violations.Read())
+                throw new InvalidOperationException("Private store foreign key violation.");
         return store;
     }
 
@@ -468,6 +484,16 @@ internal sealed class P01PrivateHostFoundation
 
     private static void RequireSchema(SqliteConnection connection)
     {
+        // Pin complete creator-owned DDL, including CHECK constraints. PRAGMA checks below
+        // also provide independent field-level validation of keys and their actions.
+        foreach (var (table, sql) in TableDefinitions)
+        {
+            using var command = Command(connection, null,
+                "SELECT sql FROM sqlite_master WHERE type='table' AND name=$table");
+            command.Parameters.AddWithValue("$table", table);
+            if (command.ExecuteScalar() is not string actual || actual.Trim() != sql.Trim())
+                throw new InvalidOperationException("Unrecognized private store table definition.");
+        }
         // Each tuple is name, declared type, NOT NULL bit, primary-key ordinal.
         // SQLite reports 0 for NOT NULL on a single-column INTEGER/TEXT PRIMARY KEY.
         var expected = new Dictionary<string, string[]>(StringComparer.Ordinal)
