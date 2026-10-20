@@ -14,10 +14,12 @@ import {
 import { HttpErrorResponse } from '@angular/common/http';
 import { ConnectedCampaignService, SeatIdentityError } from './connected-campaign.service';
 import { CoherentPlayerView } from './api/generated/model/coherentPlayerView';
+import { LegalAction } from './api/generated/model/legalAction';
 import { FixtureDescriptor } from './api/generated/model/fixtureDescriptor';
 import { AtlasPanel, AtlasStatus } from '@sandtable/field-atlas';
 import { isCameraCoordinate, MapCameraState } from './map-camera';
 import { MapPan, OperationsMap } from './operations-map';
+import { CampaignActionFlow } from './campaign-action-flow';
 import {
   connectedKind,
   connectedSymbol,
@@ -42,6 +44,8 @@ export class ConnectedWorkspace {
   @ViewChild('mapScroll') private mapScroll?: ElementRef<HTMLElement>;
   private readonly api = inject(ConnectedCampaignService);
   private readonly destroyRef = inject(DestroyRef);
+  // The host has not admitted action submission. No adapter or capability is installed.
+  protected readonly actionFlow = new CampaignActionFlow();
   protected readonly camera = new MapCameraState();
   protected readonly mapFullscreen = signal(false);
   private originalPageOverflow = '';
@@ -131,17 +135,19 @@ export class ConnectedWorkspace {
     if (!current) return;
     await this.run(async () => {
       try {
-        this.setView(
-          await this.api.refreshAuthorizedView(
-            current.campaignId,
-            current.sessionGeneration,
-            current.seat,
-          ),
+        const refreshed = await this.api.refreshAuthorizedView(
+          current.campaignId,
+          current.sessionGeneration,
+          current.seat,
         );
+        if (!this.stillShowingAudience(current)) return;
+        this.setView(refreshed);
       } catch (cause) {
+        if (!this.stillShowingAudience(current)) return;
         // A failed read cannot retain the old audience's map or selected formation.
         this.view.set(null);
         this.selectedId.set(null);
+        this.actionFlow.clearAudience();
         if (this.mapFullscreen()) this.toggleMapFullscreen();
         throw cause;
       }
@@ -161,7 +167,36 @@ export class ConnectedWorkspace {
     );
   }
 
+  protected async requestAction(action: LegalAction): Promise<void> {
+    await this.actionFlow.submit(action.actionId);
+    this.syncActionAudience();
+  }
+
+  protected async readActionReceipt(): Promise<void> {
+    await this.actionFlow.readback();
+    this.syncActionAudience();
+  }
+
+  private syncActionAudience(): void {
+    const refreshed = this.actionFlow.currentView();
+    if (!refreshed) {
+      this.view.set(null);
+      this.selectedId.set(null);
+      if (this.mapFullscreen()) this.toggleMapFullscreen();
+      return;
+    }
+    if (refreshed !== this.view()) this.setView(refreshed);
+  }
+
   private setView(view: CoherentPlayerView, initial = false): void {
+    if (!this.actionFlow.observeView(view)) {
+      if (!this.actionFlow.currentView()) {
+        this.view.set(null);
+        this.selectedId.set(null);
+        if (this.mapFullscreen()) this.toggleMapFullscreen();
+      }
+      return;
+    }
     if (
       !Array.isArray(view.ownFormations) ||
       !Array.isArray(view.locations) ||
@@ -170,10 +205,23 @@ export class ConnectedWorkspace {
       !Array.isArray(view.warDiary) ||
       !Array.isArray(view.legalActions)
     ) {
+      this.actionFlow.clearAudience();
+      this.view.set(null);
+      this.selectedId.set(null);
+      if (this.mapFullscreen()) this.toggleMapFullscreen();
       throw new Error('Incomplete audience view');
     }
     this.selectedId.set(selectedFormationId(view, this.selectedId(), initial));
     this.view.set(view);
+  }
+
+  private stillShowingAudience(expected: CoherentPlayerView): boolean {
+    const current = this.view();
+    return (
+      current?.campaignId === expected.campaignId &&
+      current.sessionGeneration === expected.sessionGeneration &&
+      current.seat === expected.seat
+    );
   }
 
   private async run(action: () => Promise<void>): Promise<void> {

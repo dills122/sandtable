@@ -31,6 +31,11 @@ development deep link to the same audience view. The
 [local connected-read recipe](../../docs/design/maproom-connected-local-read.md) gives exact
 host command and process-local recovery limits. It leaves this 4200 fixture preview alone;
 connected order submission and later-phase reads are not available.
+The shared campaign workspace shows legal-action labels as disabled controls. Its
+`campaign-action-flow.ts` defines the future receipt presentation and authorized-view refresh
+state machine, but the shipped component supplies no action adapter or admitted capability. A
+lost submit reply requires receipt readback with the same request ID; it never triggers a second
+POST. Seat identity changes revoke that presentation capability. This adds no public action route.
 
 ## Project boundaries
 
