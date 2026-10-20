@@ -21,12 +21,13 @@ def main(directory):
         raise ValueError('Wrong Orleans test assembly')
     rows = assembly.findall('.//test')
     names = [row.attrib.get('type', '') + '.' + row.attrib.get('method', '') for row in rows]
+    cases = [row.attrib.get('name', '') for row in rows]
     total = int(assembly.attrib['total'])
     passed = int(assembly.attrib['passed'])
     if (total != len(rows) or passed != total or int(assembly.attrib['errors']) != 0
             or int(assembly.attrib['failed']) != 0
             or int(assembly.attrib['skipped']) != 0 or int(assembly.attrib['not-run']) != 0
-            or len(set(names)) != len(names) or not REQUIRED.issubset(names)
+            or not all(cases) or len(set(cases)) != len(cases) or not REQUIRED.issubset(names)
             or any(row.attrib.get('result') != 'Pass' for row in rows)):
         raise ValueError('Incomplete or failed Orleans test rows')
     print(json.dumps({'module': 'Cna.OrleansHost.Tests', 'total': total,

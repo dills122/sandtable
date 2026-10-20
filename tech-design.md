@@ -859,6 +859,10 @@ predecessor-ledger issuer. The original Content7/Setup7 creation path remains se
 The [pre-issue source seal](docs/specs/combat-auto-surrender-preissue-source-v1.md) canonically
 retains all three complete artifacts and their initial closed inventory. It has no actor,
 Rules/configuration selection, Created event, or authority to issue predecessor ledgers.
+The [Choice L host foundation](docs/specs/p01-private-host-foundation-v1.md) is an internal,
+unregistered `Cna.OrleansHost` SQLite store for durable local grant custody and fenced test
+probes. It does not import an A1 checkpoint, publish a Chronicle game event or serve an owner
+opening. Core's same-cut P01 projection and an authenticated host submission path are later gates.
 The [private P01 no-attack v0 boundary](docs/specs/combat-p01-no-attack-v0.md) keeps proposed
 ordinal-two System inputs disconnected until a source-backed supported-empty certificate and
 authentic twelfth-ledger event/receipt replay exist; provisional physical emptiness is insufficient.
