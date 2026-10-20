@@ -38,10 +38,15 @@ for this fixed content and explicit **closure of the admitted bounded profile**,
 > fail-closed. Prove that no unclassified or additional **admitted bounded-profile** action can be
 > issued. Source-legal alternatives in classes (3) and (4) remain legal in the physical game and
 > may not be silently converted to an empty candidate set, a synthetic decline, or an ordinary
-> full-TOE assault. `sourceLegalActionExhaustive` remains false. A separately versioned
-> `boundedProfileActionClosed` certificate may become true only after the complete all-row,
-> mutation-sensitive classification and explicit source/policy pins are reviewed; it does not
-> by itself admit P01 or waive AC-004 through AC-009.
+> full-TOE assault. A class-(4) alternative reachable in a row blocks that row; **any** such row
+> blocks the all-300 `boundedProfileActionClosed` certificate until the alternative has a
+> supported path, is proved absent by an authenticated source condition, or is covered by an
+> accepted named exclusion. Merely recording class (4) does not close the profile.
+> `sourceLegalActionExhaustive` remains false. A separately versioned
+> `boundedProfileActionClosed` certificate may become true only after all 300 rows have no
+> reachable class-(4) or unclassified alternative, the mutation-sensitive classification and
+> explicit source/policy pins are reviewed, and the typed attacker finish-without-attack path is
+> independently proved. It does not by itself admit P01 or waive AC-004 through AC-009.
 
 This changes the proof target, not the accepted exercise. If the owner instead wants literal
 source-legal action support, `CMB-POL-001` and `CMB-POL-009` must be reopened; this packet supplies
@@ -73,6 +78,13 @@ selected Content7 contains exactly one independent infantry component per side, 
 component, and one stacking point in each occupied hex. Those are current-content facts, not a
 general rule that infantry cannot perform any other source-legal activity.
 
+The adopted [step design](combat-step-transitions-v1.md) distinguishes the phasing player's
+`finish-without-attack` from System closure when there are zero candidates. The
+[selection contract](../specs/combat-selection-steps-v1.md) assigns the player-owned choice an
+exact live decision ID and null candidate, whereas `close-empty-selection` is System-only and
+does not open a player decision. A trusted expiry is a third path. The prior ordinal-one
+implementation does not by itself authenticate the proposed ordinal-two path.
+
 ## Proposed mode register for the bounded certificate
 
 The certificate must derive status from authenticated source and content facts. This table is the
@@ -83,7 +95,8 @@ certificates unsupported until re-reviewed.
 | Family | Current bounded disposition | Required proof or failure behavior |
 | --- | --- | --- |
 | Adjacent loaded Close Assault with full 10-TOE assignments | Candidate only for the 44 armed adjacent rows under `CMB-POL-001`. | Recheck original units, target, current segment, Weather, full current TOE/ammo/CP and absence of mandatory blockers before a supported path. Do not infer P02/P03 admission. |
-| Attacker no-assault/no-selection | Source-legal selection outcome; `CMB-POL-004` permits an explicit timeout no-selection. | Preserve a typed closure and any outstanding defender decision; do not map a missing selected assault directly to supported-empty. |
+| Attacker `finish-without-attack` on an armed positive row | Source-legal voluntary choice, distinct from a no-candidate state; `CMB-STEP-002/006` permit the authenticated phasing side to finish an open selection without choosing the offered assault. The ordinal-two path is not yet proved and blocks closure until it is. | Require an ordinal-two, actor-owned command while its selection decision is live, candidate null, exact decision/version/prefix/receipt and accepted time before deadline. It creates its own no-selection receipt and later structural closure, without a Force Assignment round or zero-allocation seal. |
+| System zero-candidate closure or selection timeout | Different System-owned outcomes under `CMB-STEP-002/006` and `CMB-POL-004`; neither is a player's finish choice. Each unproved reachable ordinal-two path blocks closure. | Zero candidates use `close-empty-selection` with no live decision ID; expiry uses the live decision ID and a trusted deadline observation. Neither may emit an attacker finish receipt or stand in for an outstanding defender RBA decision. |
 | Probe and partial attacker allocation | Source-legal with the same infantry under Land §§15.25, 15.9; outside full-TOE `CMB-POL-001`. | Reject a sub-50% Probe or other non-full assignment before payment or result; never normalize it to a full assault. |
 | Defender withheld, partial, or no allocation | Source-legal under §§15.16, 15.29; outside the full-TOE exercise. | A no-allocation request cannot bypass its source automatic-retreat consequence by pretending a full defender seal. Reject or cancel before debit. |
 | RBA movement | Source-legal for eligible unpinned defender, including nonadjacent rows; explicitly outside decline-only `CMB-POL-001`. | Reject movement in this profile; a deadline or unavailable clock cancels without a fabricated decline under `CMB-POL-004`. |
@@ -105,25 +118,39 @@ certificates unsupported until re-reviewed.
 2. Derive all 300 statuses without trusting row labels or caller-supplied World. Check the 44
    adjacent armed, 12 adjacent paid/ammunitionless and 244 nonadjacent partitions, both acting
    sides, current Weather receipt/hash and original-unit/representation identity. Every row must
-   have every register family classified; unknown mode or missing source/policy pin fails closed.
+   have every register family classified. A reachable class-(4) mode blocks its row and the
+   all-300 closure bit even if the other 299 rows pass. Unknown mode, unapproved exclusion or
+   missing source/policy pin also blocks closure; a label alone is not proof of absence.
 3. For each of the 44 armed rows, mutate an offered full allocation to 0, below 50%, exactly
    50%, and a partial value above 50%. The first three must not become a full Close Assault;
    the partial value must not be silently padded to 10 TOE. Mutate the defender's allocation to
    zero and assert no full-seal or skipped automatic-retreat effect. Request voluntary surrender
    and RBA movement and assert explicit bounded-policy rejection before CP/ammo/history debit.
-4. In an authenticated nonadjacent witness such as `r012-c02`, prove zero adjacent assault
+4. On armed positive rows from **both** acting sides, accept an authenticated phasing player's
+   `finish-without-attack` while the selection decision is live and before its deadline. Assert
+   a distinct no-selection receipt, no chosen candidate, no Force Assignment seal, no CP/ammo/RNG
+   debit, and the correct no-attack structural continuation. Reject wrong-side actor, stale or
+   changed decision/receipt/version, late submission, and changed-input duplicate; an identical
+   retry returns the original receipt without another event. Separately test a zero-candidate
+   System `close-empty-selection` (no decision ID), trusted selection expiry (live decision ID),
+   and Force Assignment zero allocation rejection. None may reuse the attacker's finish receipt
+   or masquerade as the other outcome. Historical ordinal-one C3a behavior is a precedent, not
+   authentication of an ordinal-two command.
+5. In an authenticated nonadjacent witness such as `r012-c02`, prove zero adjacent assault
    candidates while retaining the defender-owned RBA choice. Test accepted decline, wrong actor,
    late/missing response and clock unavailability separately. Only the explicit decline has a
    decline receipt; cancellation has its own receipt and never becomes supported-empty by itself.
    Repeat against the 12 adjacent paid rows, where zero acting ammo is not surrender at position.
-5. Inject a third unit/representation, gun, armored target, >1-stacking-point ZOC, changed edge or
+6. Inject a third unit/representation, gun, armored target, >1-stacking-point ZOC, changed edge or
    terrain, non-Normal Weather, hidden participant, changed current/prior target-use record and
    altered original-unit binding. Each must produce unsupported or reject at authentication, not
    an empty candidate list, a hidden different public action, or a policy exception.
-6. Mutation-test the register itself: delete a family, switch `policy-excluded` to
+7. Mutation-test the register itself: delete a family, switch `policy-excluded` to
    `source-condition-absent`, change a cited source/policy hash, or add an unknown family. No
-   certificate may remain true. Compare canonical output roots across cold replay, retry and
-   process readback without exposing hidden identities or source hashes to an outward candidate.
+   certificate may remain true. Inject a reachable unsupported class-(4) mode into **one** row
+   and assert that neither the row nor the all-300 closure bit can remain true. Compare canonical
+   output roots across cold replay, retry and process readback without exposing hidden identities
+   or source hashes to an outward candidate.
 
 These tests should be implemented in a **new** versioned private verifier/schema after the owner
 accepts the replacement AC-003 target. Existing provisional verifiers and historical evidence
@@ -133,13 +160,18 @@ must remain immutable.
 
 - A source-legal family not covered by the register, an ambiguous source condition, an unapproved
   exclusion, or a changed selected content/policy/source hash stops certification. A partial mode
-  list may be published as research only; it cannot set `boundedProfileActionClosed=true`.
+  list may be published as research only; it cannot set `boundedProfileActionClosed=true`. Any
+  reachable class-(4) alternative blocks its row and therefore the all-300 certificate until
+  supported, proved absent, or covered by an accepted named policy exclusion.
 - The retained P01 evidence folder lacks the original common-chart scan. The later verifier must
   bind the already adopted normalized chart/rules input and its source pin, or acquire and verify
   the physical scan; an unpinned copied chart or a missing dependency is a stop condition.
-- A missing or forged RBA decline, no-selection closure, automatic-surrender trigger, Weather
-  receipt or current/previous target-use proof stops the affected transition. `unsupported` never
-  means supported-empty. Actual RBA movement and voluntary surrender remain outside this profile.
+- A missing or forged attacker `finish-without-attack`, RBA decline, System no-selection closure,
+  automatic-surrender trigger, Weather receipt or current/previous target-use proof stops the
+  affected transition. `unsupported` never
+  means supported-empty. An attacker finish, System zero-candidate closure, System expiry and
+  Force Assignment zero allocation are four distinct cases and may not borrow one another's actor,
+  receipt or fallback. Actual RBA movement and voluntary surrender remain outside this profile.
 - `boundedProfileActionClosed=true` would close only the agreed AC-003 action classification for
   this selected profile. AC-004/005 result/geometry, AC-006 automatic surrender and RBA, AC-007
   outward identity/privacy, AC-008 replay/physical negatives/caps and AC-009 review/native gates
