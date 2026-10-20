@@ -19,11 +19,13 @@ GOLDENS = ROOT / "fixtures/combat-p01-a2-private-owner-contract-v1.json"
 OWNER_GOLDENS = ROOT / "fixtures/combat-p01-owner-decision-proposal-v1.json"
 KINDS = (
     "importBinding", "seatGrant", "actorFacts", "ownerOpening",
-    "ownerInput", "journalRecord", "ownerReceipt", "retryBinding",
+    "privateOpeningPayload", "ownerInput", "journalRecord", "ownerReceipt",
+    "retryBinding",
 )
 CAPS = {
     "importBinding": 1024, "seatGrant": 1024, "actorFacts": 1536,
-    "ownerOpening": 4096, "ownerInput": 1024, "journalRecord": 2048,
+    "ownerOpening": 4096, "privateOpeningPayload": 8192,
+    "ownerInput": 1024, "journalRecord": 2048,
     "ownerReceipt": 1024, "retryBinding": 1024,
 }
 
@@ -60,9 +62,9 @@ def validate(schema: dict, spec: dict, value: object, path: str = "$") -> None:
             except ValueError:
                 pass
         raise ValueError(f"{path}: no union arm")
-    if "const" in spec and value != spec["const"]:
+    if "const" in spec and (type(value) is not type(spec["const"]) or value != spec["const"]):
         raise ValueError(f"{path}: constant")
-    if "enum" in spec and value not in spec["enum"]:
+    if "enum" in spec and not any(type(value) is type(item) and value == item for item in spec["enum"]):
         raise ValueError(f"{path}: enum")
     for condition in spec.get("allOf", []):
         if not isinstance(value, dict):
@@ -127,6 +129,23 @@ def digest(kind: str, raw: bytes) -> str:
     return "sha256:" + hashlib.sha256(domain + b"\0" + raw).hexdigest()
 
 
+def check_chain_fields(bind: dict, checkpoint: dict, opening_record: dict, record: dict) -> None:
+    if any(row["campaignId"] != bind["campaignId"] for row in (checkpoint, opening_record)):
+        raise ValueError("checkpoint/opening campaign mismatch")
+    if checkpoint["privatePayloadDigest"] != bind["checkpointHash"]:
+        raise ValueError("checkpoint import binding mismatch")
+    if (
+        checkpoint["resultStateVersion"] != opening_record["priorStateVersion"]
+        or checkpoint["resultPrefix"] != opening_record["priorPrefix"]
+    ):
+        raise ValueError("checkpoint-to-opening game state mismatch")
+    if (
+        opening_record["resultStateVersion"] != record["priorStateVersion"]
+        or opening_record["resultPrefix"] != record["priorPrefix"]
+    ):
+        raise ValueError("opening-to-input game state mismatch")
+
+
 def check_case(schema: dict, case: dict) -> None:
     values, expected = case["values"], case["expected"]
     if tuple(values) != KINDS:
@@ -162,7 +181,8 @@ def check_case(schema: dict, case: dict) -> None:
     if any(opening_record[field] is not None for field in ("requestDigest", "inputDigest", "eventDigest", "receiptDigest")):
         raise ValueError("opening metadata contains game input/event")
 
-    bind, grant, actor, opening, command, record, receipt, retry = values.values()
+    bind, grant, actor, opening, payload, command, record, receipt, retry = values.values()
+    check_chain_fields(bind, checkpoint, opening_record, record)
     approved_owner_cases = parse(OWNER_GOLDENS.read_bytes())["cases"]
     owner_case = next(
         (row for row in approved_owner_cases if row["expected"]["decisionRef"] == opening["decisionRef"]),
@@ -180,6 +200,16 @@ def check_case(schema: dict, case: dict) -> None:
         or opening["candidateRefs"] != [owner_case["expected"]["alias"]]
     ):
         raise ValueError("opening changed owner-approved vector")
+    if payload["visibleOpening"] != opening:
+        raise ValueError("private payload lost exact visible opening")
+    if payload["campaignId"] != bind["campaignId"] or payload["seatAuthorityId"] != grant["seatAuthorityId"]:
+        raise ValueError("private payload authority mismatch")
+    if payload["seatEpoch"] != grant["revocationEpoch"] or payload["openingRevision"] != opening["openingRevision"]:
+        raise ValueError("private payload opening fence mismatch")
+    if [row["ownerCandidateRef"] for row in payload["candidateBindings"]] != opening["candidateRefs"]:
+        raise ValueError("private mapping does not match offered aliases")
+    if len({row["privateCandidateId"] for row in payload["candidateBindings"]}) != len(payload["candidateBindings"]):
+        raise ValueError("ambiguous private candidate mapping")
     campaign = bind["campaignId"]
     if any(row["campaignId"] != campaign for row in (grant, actor, record, retry)):
         raise ValueError("campaign mismatch")
@@ -224,7 +254,7 @@ def check_case(schema: dict, case: dict) -> None:
         raise ValueError("head does not bind opening record")
     if actor["expectedSequence"] != opening_record["sequence"]:
         raise ValueError("expected sequence mismatch")
-    if opening_record["privatePayloadDigest"] != expected["ownerOpening"]["digest"]:
+    if opening_record["privatePayloadDigest"] != expected["privateOpeningPayload"]["digest"]:
         raise ValueError("opening payload mismatch")
     if opening_record["openingRevision"] != opening["openingRevision"]:
         raise ValueError("opening revision record mismatch")
@@ -271,6 +301,56 @@ def check_negatives(schema: dict, case: dict) -> None:
         pass
     else:
         raise AssertionError("metadata opening emitted game event")
+    opening = case["values"]["ownerOpening"]
+    for field, wrong in (("operationStage", 0), ("operationStage", 4), ("playerPhaseSlot", "arbitrary-slot")):
+        changed = copy.deepcopy(opening)
+        changed["context"]["cycle"][field] = wrong
+        try:
+            canonical(schema, "ownerOpening", changed)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError(f"bad cycle accepted: {field}={wrong}")
+    bool_version = copy.deepcopy(value)
+    bool_version["contractVersion"] = True
+    try:
+        canonical(schema, "ownerInput", bool_version)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("boolean accepted as contract version one")
+    payload = copy.deepcopy(case["values"]["privateOpeningPayload"])
+    payload["candidateBindings"][0]["privateCandidateId"] = "p01a." + "0" * 64
+    if digest("privateOpeningPayload", canonical(schema, "privateOpeningPayload", payload)) == case["expected"]["privateOpeningPayload"]["digest"]:
+        raise AssertionError("changed private mapping retained opening digest")
+    bind = case["values"]["importBinding"]
+    checkpoint = case["priorRecords"][0]["value"]
+    opening_record = case["priorRecords"][1]["value"]
+    accepted = case["values"]["journalRecord"]
+    changed_checkpoint = copy.deepcopy(checkpoint)
+    changed_checkpoint["campaignId"] = "different-campaign"
+    try:
+        check_chain_fields(bind, changed_checkpoint, opening_record, accepted)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("checkpoint campaign drift accepted")
+    changed_checkpoint = copy.deepcopy(checkpoint)
+    changed_checkpoint["resultStateVersion"] += 1
+    try:
+        check_chain_fields(bind, changed_checkpoint, opening_record, accepted)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("checkpoint result version drift accepted")
+    changed_checkpoint = copy.deepcopy(checkpoint)
+    changed_checkpoint["resultPrefix"] = "sha256:" + "0" * 64
+    try:
+        check_chain_fields(bind, changed_checkpoint, opening_record, accepted)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("checkpoint result prefix drift accepted")
     raw = canonical(schema, "ownerInput", value)
     duplicate = raw.replace(b'"requestId":', b'"requestId":"req.' + b'0' * 64 + b'","requestId":', 1)
     for bad in (raw + b" ", duplicate):
@@ -290,7 +370,7 @@ def main() -> None:
     for case in goldens["cases"]:
         check_case(schema, case)
         check_negatives(schema, case)
-    print(f"A2 private contract proposal: {len(goldens['cases'])} golden case(s), 8 closed shapes and negatives pass")
+    print(f"A2 private contract proposal: {len(goldens['cases'])} golden case(s), {len(KINDS)} closed shapes and negatives pass")
 
 
 if __name__ == "__main__":

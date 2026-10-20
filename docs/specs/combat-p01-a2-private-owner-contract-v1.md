@@ -27,6 +27,7 @@ seat, legal action, privacy twin, append or host restart.
 | `actorFacts` | Host constructs after grant redemption and session/CSRF verification, fresh trusted clock sample and durable head read. | Never accepted from owner request body. Session generation can change after restart; stable seat authority ID cannot be inferred from browser-selected side. |
 | `ownerOpening` | Core derives one immutable visible cut from persisted, fenced journal state and approved public refs. Host persists `owner-opening` metadata record, reads it back, then exposes exact visible bytes. | Only approved owner context, refs and revision, plus **proposed** offered candidate-ref list. `candidateRefs` is an outward-field decision in future exact A2 approval. No private candidate ID, raw source, hidden target, journal head/fence or deadline in visible bytes. |
 | `ownerInput` | Owner supplies request ID, offered decision ref and revision, plus exactly selected alias **or** explicit decline. | No campaign, side, clock, grant, private candidate or Core action ID from owner. Host authenticates before alias lookup. |
+| `privateOpeningPayload` | Core supplies one exact, capped private payload with the full canonical visible opening, ordered alias-to-private-candidate mapping, frozen combat base, permitted bookkeeping suffix, source-cut hash and trusted deadline. Archives persists its **actual canonical bytes** atomically with sequence 1. | Payload is never owner-visible. Sequence 1 `privatePayloadDigest` binds its domain-separated hash but cannot substitute for persisted bytes. On restart, missing, mutated or over-cap payload closes the offer. |
 | `journalRecord` and `retryBinding` | Private Chronicle/Archives contract; Core determines canonical transition bytes; durable store conditionally appends and binds request ID to exact input/receipt. | Never owner-visible. `seatEpoch` and append fence compare atomically with revocation across host processes. |
 | `ownerReceipt` | Derived only after exact committed-byte readback and Core replay. | Outward fields are request ID, decision ref, revision and approved generic class. No event, journal sequence, CP/ammo, RNG or hidden reason. |
 
@@ -53,9 +54,13 @@ mutation. Version 1 bytes remain immutable; extensions require version 2 and
 explicit replay reader. Hashes are `sha256:` plus lowercase SHA-256 of ASCII
 `sandtable.combat.p01.a2.<shape>.v1`, one NUL byte, then exact canonical
 shape bytes. Existing owner `pub.`/`p01-owner-v1.` domains remain unchanged.
+The approved visible cycle permits operation stages 1–3 and only
+`first-acting-side` or `second-acting-side` phase slots. Boolean `true` is
+never an integer `contractVersion:1`.
 
 Proposed per-object canonical byte caps: import binding and seat grant
-1,024 each; actor facts 1,536; owner opening 4,096; owner input 1,024;
+1,024 each; actor facts 1,536; owner opening 4,096; private opening payload
+8,192; owner input 1,024;
 journal record 2,048; owner receipt and retry binding 1,024 each. At most
 eight unique candidate refs in one opening. Later A2 implementation must
 measure and freeze separate retained-import, private payload, journal count,
@@ -70,8 +75,8 @@ record digests:
 | Sequence | Kind | Canonical digest |
 | --- | --- | --- |
 | 0 | `r03-import-checkpoint` | `sha256:c8b98f1d4b72dd732dfdf30363381e20f8371e2efe1014d826b564fbda9f074b` |
-| 1 | `owner-opening` | `sha256:61452a7f704e4d497a4e836d946a748516e443386b2b77fd6069acfd87522e66` |
-| 2 | `owner-accepted-input` | `sha256:f9929cd62e0f227860f9a6f9cb95976ee3e28e7caa0d8eb577081db88a77f173` |
+| 1 | `owner-opening` | `sha256:bf99c815a5794d59feb061ae7c861495b34d4aa3d72e190ee6e97723dfcff602` |
+| 2 | `owner-accepted-input` | `sha256:036fe1a45b4bf07980cdb556e8729bb29c77e45b9588c5b4c9e8b8e1758a338b` |
 
 These are **codec goldens only**; fabricated `sha256:` values inside sample
 are placeholders, not actual CreationRequest, source, event or receipt pins.
@@ -84,9 +89,14 @@ without changing v1 field definitions.
 Sequence 0 binds A1 checkpoint and *already represented* R03 System
 input/event/receipt. It does not append game event twice or consume twelfth
 P01 input. It has no seat authority. Sequence 1 is conditional
-`owner-opening` authority-metadata append: exact visible opening bytes,
-frozen combat base, alias mapping, source/cut binding and trusted deadline
-are retained in private payload. It changes journal sequence/hash and
+`owner-opening` authority-metadata append: the exact 1,656-byte synthetic
+`privateOpeningPayload` golden is retained as **canonical bytes**, not merely
+as a digest. Its frozen digest is
+`sha256:2e4509de2633fd68d6e5d363f6fa26575b2ed433ed0894afc91ede8e02b9694d`.
+The payload contains full visible opening, frozen combat base, alias mapping,
+source/cut binding and trusted deadline. The record digest binds those bytes;
+recovery must read and rehash them before returning the same offer. Sequence
+1 changes journal sequence/hash and
 visible revision to one; it does **not** change game state version/prefix or
 emit game input/event/receipt, debit or RNG draw. Sequence 2 is first
 separately approved accepted owner input. It may change game state
@@ -127,7 +137,8 @@ or process-local semaphore does not prove this order.
 
 Readback after actual host restart must revalidate retained original
 CreationRequest, all eleven ledgers, pinned dependencies, A1 checkpoint,
-grant/revocation history and every journal record in sequence. Compare
+grant/revocation history, exact persisted private opening payload bytes and
+every journal record in sequence. Compare
 Core-derived source, Control, World, RNG, prefix, event, receipt and
 conservation properties. Hash-only snapshot or current temporary grain is
 insufficient. Concrete storage provider, encryption-at-rest/key owner,

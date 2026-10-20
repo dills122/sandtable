@@ -20,8 +20,8 @@
       "required": ["gameTurn", "operationStage", "playerPhaseSlot", "phasingSide", "ordinal"],
       "properties": {
         "gameTurn": { "type": "integer", "minimum": 1, "maximum": 111 },
-        "operationStage": { "type": "integer", "minimum": 0, "maximum": 2147483647 },
-        "playerPhaseSlot": { "type": "string", "pattern": "^[a-z][a-z-]{0,63}$", "maxLength": 64 },
+        "operationStage": { "type": "integer", "minimum": 1, "maximum": 3 },
+        "playerPhaseSlot": { "enum": ["first-acting-side", "second-acting-side"] },
         "phasingSide": { "$ref": "#/$defs/side" },
         "ordinal": { "type": "integer", "minimum": 1, "maximum": 2147483647 }
       }
@@ -87,6 +87,36 @@
         "decisionRef": { "$ref": "#/$defs/publicRef" }, "participantRef": { "$ref": "#/$defs/publicRef" },
         "targetRef": { "$ref": "#/$defs/publicRef" },
         "candidateRefs": { "type": "array", "minItems": 1, "maxItems": 8, "uniqueItems": true, "items": { "$ref": "#/$defs/candidateRef" } }
+      }
+    },
+    "privateCandidateBinding": {
+      "type": "object", "additionalProperties": false,
+      "x-field-order": ["ownerCandidateRef", "privateCandidateId"],
+      "required": ["ownerCandidateRef", "privateCandidateId"],
+      "properties": {
+        "ownerCandidateRef": { "$ref": "#/$defs/candidateRef" },
+        "privateCandidateId": { "type": "string", "pattern": "^p01a\\.[0-9a-f]{64}$", "maxLength": 69 }
+      }
+    },
+    "privateOpeningPayload": {
+      "type": "object", "additionalProperties": false,
+      "x-field-order": ["contractVersion", "campaignId", "seatAuthorityId", "seatEpoch", "openingRevision", "visibleOpening", "candidateBindings", "frozenCombatBaseHash", "permittedBookkeepingSuffixHash", "sourceCutHash", "deadlineAtUtc"],
+      "required": ["contractVersion", "campaignId", "seatAuthorityId", "seatEpoch", "openingRevision", "visibleOpening", "candidateBindings", "frozenCombatBaseHash", "permittedBookkeepingSuffixHash", "sourceCutHash", "deadlineAtUtc"],
+      "properties": {
+        "contractVersion": { "const": 1 },
+        "campaignId": { "$ref": "#/$defs/campaignId" },
+        "seatAuthorityId": { "$ref": "#/$defs/seatAuthorityId" },
+        "seatEpoch": { "$ref": "#/$defs/counter" },
+        "openingRevision": { "type": "integer", "minimum": 1, "maximum": 9223372036854775807 },
+        "visibleOpening": { "$ref": "#/$defs/ownerOpening" },
+        "candidateBindings": {
+          "type": "array", "minItems": 1, "maxItems": 8, "uniqueItems": true,
+          "items": { "$ref": "#/$defs/privateCandidateBinding" }
+        },
+        "frozenCombatBaseHash": { "$ref": "#/$defs/hash" },
+        "permittedBookkeepingSuffixHash": { "$ref": "#/$defs/hash" },
+        "sourceCutHash": { "$ref": "#/$defs/hash" },
+        "deadlineAtUtc": { "$ref": "#/$defs/utc" }
       }
     },
     "ownerInput": {
