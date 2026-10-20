@@ -111,26 +111,9 @@ internal sealed class P01PrivateHostFoundation
     {
         ValidatePath(absolutePath);
         if (!File.Exists(absolutePath)) throw new InvalidOperationException("Store is missing.");
-        RequirePrivateDirectory(Path.GetDirectoryName(absolutePath)!);
-        if (!OperatingSystem.IsWindows())
-        {
-            var mode = File.GetUnixFileMode(absolutePath);
-            if ((mode & (UnixFileMode.GroupRead | UnixFileMode.GroupWrite | UnixFileMode.OtherRead
-                    | UnixFileMode.OtherWrite)) != 0)
-                throw new InvalidOperationException("Store file permissions are not private.");
-        }
         var store = new P01PrivateHostFoundation(absolutePath, clock ?? TimeProvider.System);
+        store.RequirePrivateStorePath();
         using var connection = store.Connect(create: false);
-        if (ScalarLong(connection, "PRAGMA application_id") != ApplicationId
-            || ScalarLong(connection, "PRAGMA user_version") != SchemaVersion
-            || ScalarString(connection, "PRAGMA journal_mode") != "wal"
-            || ScalarString(connection, "PRAGMA integrity_check") != "ok")
-            throw new InvalidOperationException("Unrecognized or damaged private store.");
-        RequireSchema(connection);
-        using (var check = Command(connection, null, "PRAGMA foreign_key_check"))
-        using (var violations = check.ExecuteReader())
-            if (violations.Read())
-                throw new InvalidOperationException("Private store foreign key violation.");
         return store;
     }
 
@@ -464,28 +447,33 @@ internal sealed class P01PrivateHostFoundation
             Pooling = false,
             DefaultTimeout = 5,
         };
+        if (!create) RequirePrivateStorePath();
         var connection = new SqliteConnection(builder.ToString());
-        connection.Open();
-        Execute(connection, "PRAGMA foreign_keys=ON");
-        Execute(connection, "PRAGMA busy_timeout=5000");
-        Execute(connection, "PRAGMA synchronous=FULL");
-        if (!create)
+        try
         {
-            RequireStoreIdentity(connection);
-            RequireSchema(connection);
+            connection.Open();
+            Execute(connection, "PRAGMA foreign_keys=ON");
+            Execute(connection, "PRAGMA busy_timeout=5000");
+            Execute(connection, "PRAGMA synchronous=FULL");
+            if (!create) RequireStoreInvariants(connection);
+            return connection;
         }
-        return connection;
+        catch
+        {
+            connection.Dispose();
+            throw;
+        }
     }
 
-    private static SqliteTransaction BeginCheckedMutation(SqliteConnection connection)
+    private SqliteTransaction BeginCheckedMutation(SqliteConnection connection)
     {
         // An external schema edit can happen after OpenExisting or even after Connect.
         // Hold SQLite's write reservation while checking before any state mutation.
         var transaction = connection.BeginTransaction(deferred: false);
         try
         {
-            RequireStoreIdentity(connection, transaction);
-            RequireSchema(connection, transaction);
+            RequirePrivateStorePath();
+            RequireStoreInvariants(connection, transaction);
             return transaction;
         }
         catch
@@ -495,12 +483,29 @@ internal sealed class P01PrivateHostFoundation
         }
     }
 
-    private static void RequireStoreIdentity(SqliteConnection connection,
+    private static void RequireStoreInvariants(SqliteConnection connection,
         SqliteTransaction? transaction = null)
     {
         if (ScalarLong(connection, "PRAGMA application_id", transaction) != ApplicationId
-            || ScalarLong(connection, "PRAGMA user_version", transaction) != SchemaVersion)
-            throw new InvalidOperationException("Unrecognized private store identity or version.");
+            || ScalarLong(connection, "PRAGMA user_version", transaction) != SchemaVersion
+            || ScalarString(connection, "PRAGMA journal_mode", transaction) != "wal"
+            || ScalarString(connection, "PRAGMA integrity_check", transaction) != "ok")
+            throw new InvalidOperationException("Unrecognized or damaged private store.");
+        RequireSchema(connection, transaction);
+        using var check = Command(connection, transaction, "PRAGMA foreign_key_check");
+        using var violations = check.ExecuteReader();
+        if (violations.Read())
+            throw new InvalidOperationException("Private store foreign key violation.");
+    }
+
+    private void RequirePrivateStorePath()
+    {
+        RequirePrivateDirectory(Path.GetDirectoryName(path)!);
+        if (OperatingSystem.IsWindows()) return;
+        var mode = File.GetUnixFileMode(path);
+        if ((mode & (UnixFileMode.GroupRead | UnixFileMode.GroupWrite | UnixFileMode.OtherRead
+                | UnixFileMode.OtherWrite)) != 0)
+            throw new InvalidOperationException("Store file permissions are not private.");
     }
 
     private static void ValidatePath(string path)
@@ -836,9 +841,10 @@ internal sealed class P01PrivateHostFoundation
         return (long)command.ExecuteScalar()!;
     }
 
-    private static string ScalarString(SqliteConnection connection, string sql)
+    private static string ScalarString(SqliteConnection connection, string sql,
+        SqliteTransaction? transaction = null)
     {
-        using var command = Command(connection, null, sql);
+        using var command = Command(connection, transaction, sql);
         return (string)command.ExecuteScalar()!;
     }
 }
