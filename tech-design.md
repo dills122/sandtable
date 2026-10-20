@@ -845,8 +845,9 @@ continues those bounded histories to Prepared or cancellation before any debit. 
 executes one atomic preflighted cost event for each of the 44 positives, and leaves 256 candidate-absent
 and zero admitted/public actions. It does not roll a result or settle a World. The
 [private owner projection draft](docs/specs/combat-p01-owner-projection-v0.md) separates an owner
-alias from the hidden candidate, but approved visible fields and authenticated equivalent-history
-proof are still missing. Accepted `CMB-POL-009`
+alias from the hidden candidate. The private owner decision codec's visible
+fields are approved, but authenticated owner openings and equivalent-history
+privacy proof are still missing. Accepted `CMB-POL-009`
 excludes source-legal voluntary surrender under Land §15.88 from the initial RC, so the bounded
 exercise cannot claim the full physical action surface. These private slices do not enable P02
 selection, a native ordinal-two consumer or a public action. Full AC-003 action exhaustiveness,
