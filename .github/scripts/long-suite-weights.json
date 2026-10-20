@@ -419,6 +419,9 @@
     "Cna.Core.Tests.Campaigns.OpeningPreambleCampaignTests": {
       "parts": 1
     },
+    "Cna.Core.Tests.Campaigns.P01A1PhysicalHostImportTests": {
+      "parts": 1
+    },
     "Cna.Core.Tests.Campaigns.P01OwnerVisibleCodecV1Tests": {
       "parts": 1
     },
@@ -729,6 +732,7 @@
     "08b3465cb0c780198f197f3cbdc26ceae18997bc05ea77afe16af3a35777be5e": 1,
     "08bccb9d791963b7be0c8043d1a7bf543ec7cb5f52c13be90c1faac1995a109c": 516,
     "08d708f055009bf0ac88cf09229b10fe07d65ca136c8669a0465b62d0519911b": 1,
+    "08e4fca9b2d2f5ffd6911142529409050dfe9075879001fedbd8db975d4b8af4": 2,
     "0900af2586ef9f10d16fb40f1d7ba1417815013502be77cd2b8b85d24e0f33d1": 3,
     "0926e36ee11129bee4b5889f029c2532f67c66ce6f56797834b0ed3df3e5acde": 3547,
     "09335b9ff4ccf41b4097c29286efeb759e6fc33119a8f5c0da255e5250052bea": 14097,
@@ -3242,6 +3246,7 @@
     "d09c64967dec820ee822b83bd7ec9c1a1adc89cfa0c8af93b379e8c40911185e": 2649,
     "d0ba61fb08982a10ec2131196f788bc9e083c5727e420ed5f6ccff34d4ace541": 11,
     "d0cc9568c347a842b42c41c5951edd97af3fef0c7532e7748a6fba4331817f8f": 24514,
+    "d0d2f2fb14c0e8f72bafb5f96a204581b670326076ddc96dae2579ba66c6ee41": 1968,
     "d0d323bcd9aff831d399c0a5faa25bf1eb2f9e09a42d21fd6f4297d287c038c9": 1,
     "d0e61d343270b5074f32098602c4271cf0c2317209c33dd739208dface0dd407": 18,
     "d100f1176be5758e5d99a7a97ca6a64404f8fb3ffdb6d5eaf32cfb4c704f0df8": 13949,

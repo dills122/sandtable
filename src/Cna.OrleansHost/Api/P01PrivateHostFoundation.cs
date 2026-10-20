@@ -1,6 +1,7 @@
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
+using Cna.Core.Campaigns;
 using Microsoft.Data.Sqlite;
 
 namespace Cna.OrleansHost.Api;
@@ -10,8 +11,14 @@ namespace Cna.OrleansHost.Api;
 internal sealed class P01PrivateHostFoundation
 {
     private const int ApplicationId = 0x50303146; // P01F
-    private const int SchemaVersion = 1;
+    private const int SchemaVersion = 3;
+    private const string TestSeedOrigin = "test-seed";
+    private const string PhysicalA1Origin = "physical-a1";
     private const int MaxProbeBytes = 65_536;
+    private const int MaxA1ImportBytes = 2_097_152;
+    private const int MaxA1ControlBytes = 65_536;
+    private const int MaxA1CheckpointBytes = 2_097_152;
+    private const int MaxA1AttestationBytes = 4_096;
     private static readonly TimeSpan GrantLifetime = TimeSpan.FromMinutes(10);
     private static readonly TimeSpan CredentialLifetime = TimeSpan.FromHours(2);
     private static readonly Regex CampaignPattern = new(@"\A[a-z0-9][a-z0-9._-]{0,127}\z",
@@ -28,8 +35,18 @@ internal sealed class P01PrivateHostFoundation
         ("campaigns", """
             CREATE TABLE campaigns (
               campaign_id TEXT PRIMARY KEY, checkpoint_hash TEXT NOT NULL,
+              origin_kind TEXT NOT NULL CHECK(origin_kind IN ('test-seed','physical-a1')),
+              origin_binding TEXT NOT NULL,
               head_sequence INTEGER NOT NULL, head_hash TEXT NOT NULL,
               activation_fence INTEGER NOT NULL, activation_digest BLOB NOT NULL
+            )
+            """),
+        ("a1_imports", """
+            CREATE TABLE a1_imports (
+              campaign_id TEXT PRIMARY KEY, import_bytes BLOB NOT NULL,
+              control_bytes BLOB NOT NULL, checkpoint_bytes BLOB NOT NULL,
+              attestation_bytes BLOB NOT NULL,
+              FOREIGN KEY(campaign_id) REFERENCES campaigns(campaign_id)
             )
             """),
         ("seats", """
@@ -127,13 +144,119 @@ internal sealed class P01PrivateHostFoundation
         using var transaction = BeginCheckedMutation(connection);
         RequireOperator(connection, transaction, operatorSecret);
         var headHash = HashText("campaign-binding", campaignId, checkpointHash);
-        using var command = Command(connection, transaction,
-            "INSERT INTO campaigns VALUES ($campaign, $checkpoint, 0, $head, 0, zeroblob(32))");
+        using var command = Command(connection, transaction, """
+            INSERT INTO campaigns VALUES ($campaign, $checkpoint, $origin, $originBinding,
+                0, $head, 0, zeroblob(32))
+            """);
         command.Parameters.AddWithValue("$campaign", campaignId);
         command.Parameters.AddWithValue("$checkpoint", checkpointHash);
+        command.Parameters.AddWithValue("$origin", TestSeedOrigin);
+        command.Parameters.AddWithValue("$originBinding", OriginBinding(campaignId, checkpointHash,
+            TestSeedOrigin));
         command.Parameters.AddWithValue("$head", headHash);
         command.ExecuteNonQuery();
         transaction.Commit();
+    }
+
+    // Separate from the test-only seed. The physical archive is selected by the host and
+    // authenticated by Core before one durable transaction binds all four canonical byte strings.
+    internal void ImportPhysicalA1(string archiveDirectory, string trustedRepositoryDirectory,
+        string operatorSecret)
+    {
+        var validated = P01A1PhysicalHostImportV1.ValidatePhysical(archiveDirectory,
+            trustedRepositoryDirectory);
+        ValidateCampaign(validated.CampaignId);
+        var checkpoint = validated.CheckpointBytes;
+        var checkpointHash = "sha256:" + Convert.ToHexStringLower(SHA256.HashData(checkpoint));
+        using var connection = Connect(create: false);
+        using var transaction = BeginCheckedMutation(connection);
+        RequireOperator(connection, transaction, operatorSecret);
+        using (var campaign = Command(connection, transaction, """
+            INSERT INTO campaigns VALUES ($campaign, $checkpoint, $origin, $originBinding,
+                0, $head, 0, zeroblob(32))
+            """))
+        {
+            campaign.Parameters.AddWithValue("$campaign", validated.CampaignId);
+            campaign.Parameters.AddWithValue("$checkpoint", checkpointHash);
+            campaign.Parameters.AddWithValue("$origin", PhysicalA1Origin);
+            campaign.Parameters.AddWithValue("$originBinding", OriginBinding(validated.CampaignId,
+                checkpointHash, PhysicalA1Origin));
+            campaign.Parameters.AddWithValue("$head", HashText("campaign-binding", validated.CampaignId, checkpointHash));
+            campaign.ExecuteNonQuery();
+        }
+        using (var evidence = Command(connection, transaction,
+            "INSERT INTO a1_imports VALUES ($campaign, $import, $control, $checkpoint, $attestation)"))
+        {
+            evidence.Parameters.AddWithValue("$campaign", validated.CampaignId);
+            evidence.Parameters.AddWithValue("$import", validated.ImportBytes);
+            evidence.Parameters.AddWithValue("$control", validated.TerminalControlBytes);
+            evidence.Parameters.AddWithValue("$checkpoint", checkpoint);
+            evidence.Parameters.AddWithValue("$attestation", validated.SameCutAttestationBytes);
+            evidence.ExecuteNonQuery();
+        }
+        transaction.Commit();
+    }
+
+    internal P01A1ValidatedHostImportV1? ReadPhysicalA1(string campaignId,
+        string trustedRepositoryDirectory)
+    {
+        ValidateCampaign(campaignId);
+        using var connection = Connect(create: false);
+        using var command = Command(connection, null, """
+            SELECT c.origin_kind, c.origin_binding, c.checkpoint_hash,
+                   c.head_sequence, c.head_hash, c.activation_fence,
+                   a.import_bytes, a.control_bytes, a.checkpoint_bytes,
+                   a.attestation_bytes
+            FROM campaigns c LEFT JOIN a1_imports a ON a.campaign_id=c.campaign_id
+            WHERE c.campaign_id=$campaign
+            """);
+        command.Parameters.AddWithValue("$campaign", campaignId);
+        using var reader = command.ExecuteReader();
+        if (!reader.Read()) return null;
+        var origin = reader.GetString(0);
+        var checkpointHash = reader.GetString(2);
+        if (reader.GetString(1) != OriginBinding(campaignId, checkpointHash, origin))
+            throw new InvalidOperationException("Private campaign origin binding changed.");
+        if (reader.IsDBNull(6))
+        {
+            if (origin == PhysicalA1Origin)
+                throw new InvalidOperationException("Physical A1 evidence is missing.");
+            return null;
+        }
+        if (origin != PhysicalA1Origin)
+            throw new InvalidOperationException("Unexpected physical A1 evidence.");
+        var import = ReadBoundedA1Blob(reader, 6, MaxA1ImportBytes);
+        var control = ReadBoundedA1Blob(reader, 7, MaxA1ControlBytes);
+        var checkpoint = ReadBoundedA1Blob(reader, 8, MaxA1CheckpointBytes);
+        var attestation = ReadBoundedA1Blob(reader, 9, MaxA1AttestationBytes);
+        if (reader.GetInt64(3) != 0 || reader.GetInt64(5) != 0 ||
+            checkpointHash != "sha256:" + Convert.ToHexStringLower(SHA256.HashData(checkpoint)) ||
+            reader.GetString(4) != HashText("campaign-binding", campaignId, checkpointHash))
+            throw new InvalidOperationException("Private A1 import binding changed.");
+        var validated = P01A1PhysicalHostImportV1.ValidateRetained(import, control,
+            trustedRepositoryDirectory);
+        if (validated.CampaignId != campaignId ||
+            !checkpoint.AsSpan().SequenceEqual(validated.CheckpointBytes) ||
+            !attestation.AsSpan().SequenceEqual(validated.SameCutAttestationBytes))
+            throw new InvalidOperationException("Private A1 import readback changed.");
+        return validated;
+    }
+
+    private static byte[] ReadBoundedA1Blob(SqliteDataReader reader, int ordinal, int maximumBytes)
+    {
+        var length = reader.GetBytes(ordinal, 0, null, 0, 0);
+        if (length is < 1 || length > maximumBytes)
+            throw new InvalidOperationException("Private A1 import blob exceeds limit.");
+        var bytes = new byte[(int)length];
+        var offset = 0;
+        while (offset < bytes.Length)
+        {
+            var read = reader.GetBytes(ordinal, offset, bytes, offset, bytes.Length - offset);
+            if (read is < 1 || read > bytes.Length - offset)
+                throw new InvalidOperationException("Private A1 import blob read changed.");
+            offset += (int)read;
+        }
+        return bytes;
     }
 
     internal P01ActivationLease AcquireActivationFence(string campaignId, string operatorSecret)
@@ -142,6 +265,7 @@ internal sealed class P01PrivateHostFoundation
         using var connection = Connect(create: false);
         using var transaction = BeginCheckedMutation(connection);
         RequireOperator(connection, transaction, operatorSecret);
+        RequireNoA1Import(connection, transaction, campaignId);
         var secret = NewSecret();
         var nextOperatorSecret = NewSecret();
         using var command = Command(connection, transaction,
@@ -173,6 +297,7 @@ internal sealed class P01PrivateHostFoundation
         using var connection = Connect(create: false);
         using var transaction = BeginCheckedMutation(connection);
         RequireOperator(connection, transaction, operatorSecret);
+        RequireNoA1Import(connection, transaction, campaignId);
         RequireLease(connection, transaction, campaignId, lease);
         var authorityId = Guid.NewGuid().ToString("D");
         var secret = NewSecret();
@@ -498,6 +623,27 @@ internal sealed class P01PrivateHostFoundation
             throw new InvalidOperationException("Private store foreign key violation.");
     }
 
+    private static void RequireNoA1Import(SqliteConnection connection,
+        SqliteTransaction transaction, string campaignId)
+    {
+        using var query = Command(connection, transaction, """
+            SELECT c.origin_kind, c.origin_binding, c.checkpoint_hash, a.campaign_id
+            FROM campaigns c LEFT JOIN a1_imports a ON a.campaign_id=c.campaign_id
+            WHERE c.campaign_id=$campaign
+            """);
+        query.Parameters.AddWithValue("$campaign", campaignId);
+        using var reader = query.ExecuteReader();
+        if (!reader.Read()) throw new InvalidOperationException("Unknown campaign.");
+        var origin = reader.GetString(0);
+        if (reader.GetString(1) != OriginBinding(campaignId, reader.GetString(2), origin))
+            throw new InvalidOperationException("Private campaign origin binding changed.");
+        if (origin != TestSeedOrigin || !reader.IsDBNull(3))
+            throw new InvalidOperationException("Imported A1 campaign is unissuable.");
+    }
+
+    private static string OriginBinding(string campaignId, string checkpointHash, string origin) =>
+        HashText("campaign-origin", campaignId, checkpointHash, origin);
+
     private void RequirePrivateStorePath()
     {
         RequirePrivateDirectory(Path.GetDirectoryName(path)!);
@@ -543,8 +689,12 @@ internal sealed class P01PrivateHostFoundation
         {
             ["operator_capability"] = ["singleton|INTEGER|0|1", "secret_digest|BLOB|1|0"],
             ["campaigns"] = ["campaign_id|TEXT|0|1", "checkpoint_hash|TEXT|1|0",
+                "origin_kind|TEXT|1|0", "origin_binding|TEXT|1|0",
                 "head_sequence|INTEGER|1|0", "head_hash|TEXT|1|0",
                 "activation_fence|INTEGER|1|0", "activation_digest|BLOB|1|0"],
+            ["a1_imports"] = ["campaign_id|TEXT|0|1", "import_bytes|BLOB|1|0",
+                "control_bytes|BLOB|1|0", "checkpoint_bytes|BLOB|1|0",
+                "attestation_bytes|BLOB|1|0"],
             ["seats"] = ["campaign_id|TEXT|1|1", "side|TEXT|1|2",
                 "authority_id|TEXT|1|0", "grant_generation|INTEGER|1|0",
                 "seat_epoch|INTEGER|1|0", "grant_digest|BLOB|0|0",
@@ -562,6 +712,7 @@ internal sealed class P01PrivateHostFoundation
         {
             ["operator_capability"] = [],
             ["campaigns"] = [],
+            ["a1_imports"] = ["0|0|campaigns|campaign_id|campaign_id|NO ACTION|NO ACTION|NONE"],
             ["seats"] = ["0|0|campaigns|campaign_id|campaign_id|NO ACTION|NO ACTION|NONE"],
             ["probe_records"] = ["0|0|campaigns|campaign_id|campaign_id|NO ACTION|NO ACTION|NONE"],
             ["probe_requests"] = ["0|0|probe_records|campaign_id|campaign_id|NO ACTION|NO ACTION|NONE",
@@ -596,6 +747,7 @@ internal sealed class P01PrivateHostFoundation
         {
             ["operator_capability"] = [],
             ["campaigns"] = ["pk|1|0|campaign_id"],
+            ["a1_imports"] = ["pk|1|0|campaign_id"],
             ["seats"] = ["pk|1|0|campaign_id,side", "u|1|0|authority_id"],
             ["probe_records"] = ["pk|1|0|campaign_id,sequence"],
             ["probe_requests"] = ["pk|1|0|campaign_id,authority_id,request_id"],

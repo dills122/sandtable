@@ -214,8 +214,10 @@ public sealed class P01PrivateHostFoundationTests
         Assert.Null(fixture.Open().FindProbe(credential, requestId, [1, 2], fence));
     }
 
-    [Fact]
-    public void UnknownStoreVersionFailsClosed()
+    [Theory]
+    [InlineData(1)]
+    [InlineData(4)]
+    public void UnknownStoreVersionFailsClosed(int version)
     {
         using var fixture = new StoreFixture();
         fixture.Create();
@@ -223,7 +225,7 @@ public sealed class P01PrivateHostFoundationTests
         {
             connection.Open();
             using var command = connection.CreateCommand();
-            command.CommandText = "PRAGMA user_version=2";
+            command.CommandText = $"PRAGMA user_version={version}";
             command.ExecuteNonQuery();
         }
         Assert.Throws<InvalidOperationException>(() => fixture.Open());
@@ -347,7 +349,8 @@ public sealed class P01PrivateHostFoundationTests
 
     [Theory]
     [InlineData("PRAGMA application_id=0")]
-    [InlineData("PRAGMA user_version=2")]
+    [InlineData("PRAGMA user_version=1")]
+    [InlineData("PRAGMA user_version=4")]
     public void AlreadyOpenHandleRejectsPostOpenStoreIdentityDriftBeforeMutation(
         string mutation)
     {
