@@ -1,5 +1,25 @@
 # Refreshing long-suite scheduling weights
 
+## Private proof runner pairing (October 20, 2026)
+
+The paid fresh-process and RBA decline/cancellation proof matrices pair their
+four physical shards onto two runners each. They retain the original `--jobs 4`
+and shard IDs 0–3, four distinct JSON files, physical negatives, and frozen
+four-file aggregates. The slower 300-root absence and 12,116-cut prefix-rejection
+matrices and all 17 complete-test jobs remain unchanged. Those complete-test
+jobs require fresh canonical process directories and cannot safely share one
+runner without changing the evidence contract. The complete CI graph falls
+from 48 to 42 jobs; no test row, root, cap, or proof assertion is removed.
+
+This pairing uses one observational baseline: docs-only PR #309, CI run
+`39494124557`. Its 43 completed jobs at inspection had median runner queue
+25.25 minutes (maximum 48.58) and median execution 5.25 minutes (maximum 13.68).
+The longest individual prefix-rejection shard took 13.68 minutes, which is why
+that matrix stays separate. These are queue/contention observations, not an
+accepted latency or capacity result. Compare complete exact-head hosted runs
+before claiming a throughput improvement; any failed, skipped, or missing shard
+still blocks the required `verify` and all-checks-success merge gate.
+
 `long-suite-weights.json` contains derived timing hints and hashes of actual runner row identities. It contains no authoritative replay results. The current measurements come from main121baa56820fffce42316b48ac551cb24c012a6c / run38830848442 attempt1. Row duration includes contention and is not CPU time or a capacity bound. Zero-resolution observations receive a1ms scheduling floor.
 
 MAP-06 adds four `CampaignHostAdapterTests` rows. Their provisional weights are measured from a passing macOS arm64 .NET 10 Debug MTP XML run on 2026-10-17 (`/private/tmp/map06-host-timing`), with a concurrent full Core run. The four row hashes appear in `provisional_rows`; they retain the original baseline metadata and require Release CI calibration before performance conclusions. The new class uses one ordinary suite part and does not add a matrix job.
