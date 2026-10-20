@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Text;
+using System.Text.Json;
 using Cna.OrleansHost.Api;
 using Microsoft.Data.Sqlite;
 
@@ -91,11 +92,22 @@ public sealed class P01PrivateHostFoundationTests
         var bytes = Encoding.ASCII.GetBytes("cross-process-lost-response");
         Assert.Equal(P01ProbeStatus.Committed, store.AppendProbe(credential, request,
             bytes, head.Sequence, head.Hash, fence).Status); // committed; response discarded
-        var child = await RunReadbackChild(fixture.Path, Campaign, credential.AuthorityId,
-            request, bytes);
-        Assert.Equal("1", child);
+        var expected = store.FindProbe(credential, request, bytes, fence)!;
+        var child = await RunReadbackChild(fixture.Path, credential, fence, request, bytes);
+        Assert.Equal($"{expected.Sequence}|{expected.RecordHash}", child);
         Assert.Equal(P01ProbeStatus.Duplicate, fixture.Open().AppendProbe(credential,
             request, bytes, head.Sequence, head.Hash, fence).Status);
+        using (var connection = new SqliteConnection($"Data Source={fixture.Path}"))
+        {
+            connection.Open();
+            using var command = connection.CreateCommand();
+            command.CommandText = "UPDATE probe_records SET record_bytes=x'01' "
+                + "WHERE campaign_id=$campaign AND sequence=1";
+            command.Parameters.AddWithValue("$campaign", Campaign);
+            Assert.Equal(1, command.ExecuteNonQuery());
+        }
+        Assert.Equal("missing", await RunReadbackChild(fixture.Path, credential,
+            fence, request, bytes));
     }
 
     [Fact]
@@ -240,6 +252,8 @@ public sealed class P01PrivateHostFoundationTests
     [InlineData("campaigns", "campaign_id TEXT PRIMARY KEY", "campaign_id TEXT")]
     [InlineData("seats", "REFERENCES campaigns(campaign_id)",
         "REFERENCES unrelated(campaign_id)")]
+    [InlineData("seats", "REFERENCES campaigns(campaign_id)",
+        "REFERENCES campaigns(campaign_id) ON DELETE CASCADE")]
     public void WrongTypeNullabilityPrimaryKeyOrForeignKeyFailsClosed(
         string table, string oldSql, string newSql)
     {
@@ -335,8 +349,9 @@ public sealed class P01PrivateHostFoundationTests
         }
     }
 
-    private static async Task<string> RunReadbackChild(string path, string campaign,
-        string authority, string request, byte[] bytes)
+    private static async Task<string> RunReadbackChild(string path,
+        P01PrivateCredential credential, P01ActivationLease lease, string request,
+        byte[] bytes)
     {
         var root = new DirectoryInfo(AppContext.BaseDirectory);
         while (root is not null && !File.Exists(System.IO.Path.Combine(root.FullName,
@@ -344,21 +359,43 @@ public sealed class P01PrivateHostFoundationTests
         Assert.NotNull(root);
         var helper = System.IO.Path.Combine(root.FullName,
             "tests/Cna.OrleansHost.FoundationChild/Cna.OrleansHost.FoundationChild.csproj");
-        var configuration = new DirectoryInfo(AppContext.BaseDirectory).Name.Equals(
-            "release", StringComparison.OrdinalIgnoreCase) ? "Release" : "Debug";
+        var outputDirectory = new DirectoryInfo(AppContext.BaseDirectory);
+        while (outputDirectory is not null && !outputDirectory.Name.Equals("release",
+                   StringComparison.OrdinalIgnoreCase)
+               && !outputDirectory.Name.Equals("debug", StringComparison.OrdinalIgnoreCase))
+            outputDirectory = outputDirectory.Parent;
+        Assert.NotNull(outputDirectory);
+        var configuration = outputDirectory.Name.Equals("release",
+            StringComparison.OrdinalIgnoreCase) ? "Release" : "Debug";
         var dotnet = File.Exists("/opt/homebrew/bin/dotnet")
             ? "/opt/homebrew/bin/dotnet" : "dotnet";
         var start = new ProcessStartInfo(dotnet)
         {
             RedirectStandardOutput = true,
             RedirectStandardError = true,
+            RedirectStandardInput = true,
             UseShellExecute = false,
         };
         foreach (var value in new[] { "run", "--project", helper, "--no-build", "--no-restore",
-                     "--configuration", configuration, "--", path, campaign, authority,
-                     request, Convert.ToHexString(bytes) })
+                     "--configuration", configuration })
             start.ArgumentList.Add(value);
         using var child = Process.Start(start)!;
+        await child.StandardInput.WriteLineAsync(JsonSerializer.Serialize(new
+        {
+            Path = path,
+            CampaignId = credential.CampaignId,
+            credential.Side,
+            credential.AuthorityId,
+            CredentialSecret = credential.Secret,
+            credential.SeatEpoch,
+            CredentialExpiryMs = credential.ExpiresAtMs,
+            lease.Fence,
+            LeaseSecret = lease.Secret,
+            lease.OperatorSecret,
+            RequestId = request,
+            ExactBytesHex = Convert.ToHexString(bytes),
+        }));
+        child.StandardInput.Close();
         var output = await child.StandardOutput.ReadToEndAsync();
         var error = await child.StandardError.ReadToEndAsync();
         await child.WaitForExitAsync();

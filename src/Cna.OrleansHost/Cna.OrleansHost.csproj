@@ -5,6 +5,7 @@
   </PropertyGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="Cna.OrleansHost.Tests" />
+    <InternalsVisibleTo Include="Cna.OrleansHost.FoundationChild" />
   </ItemGroup>
 
   <ItemGroup>

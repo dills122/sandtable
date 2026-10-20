@@ -493,10 +493,10 @@ internal sealed class P01PrivateHostFoundation
         {
             ["operator_capability"] = [],
             ["campaigns"] = [],
-            ["seats"] = ["0|0|campaigns|campaign_id|campaign_id"],
-            ["probe_records"] = ["0|0|campaigns|campaign_id|campaign_id"],
-            ["probe_requests"] = ["0|0|probe_records|campaign_id|campaign_id",
-                "0|1|probe_records|sequence|sequence"],
+            ["seats"] = ["0|0|campaigns|campaign_id|campaign_id|NO ACTION|NO ACTION|NONE"],
+            ["probe_records"] = ["0|0|campaigns|campaign_id|campaign_id|NO ACTION|NO ACTION|NONE"],
+            ["probe_requests"] = ["0|0|probe_records|campaign_id|campaign_id|NO ACTION|NO ACTION|NONE",
+                "0|1|probe_records|sequence|sequence|NO ACTION|NO ACTION|NONE"],
         };
         foreach (var (table, columns) in expected)
         {
@@ -516,7 +516,8 @@ internal sealed class P01PrivateHostFoundation
                 var actual = new List<string>();
                 while (reader.Read())
                     actual.Add($"{reader.GetInt64(0)}|{reader.GetInt64(1)}|"
-                        + $"{reader.GetString(2)}|{reader.GetString(3)}|{reader.GetString(4)}");
+                        + $"{reader.GetString(2)}|{reader.GetString(3)}|{reader.GetString(4)}|"
+                        + $"{reader.GetString(5)}|{reader.GetString(6)}|{reader.GetString(7)}");
                 if (!actual.Order(StringComparer.Ordinal).SequenceEqual(
                         foreignKeys[table].Order(StringComparer.Ordinal)))
                     throw new InvalidOperationException("Unrecognized private store foreign key.");

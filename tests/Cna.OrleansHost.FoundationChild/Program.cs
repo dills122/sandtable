@@ -1,24 +1,18 @@
-using Microsoft.Data.Sqlite;
+using System.Text.Json;
+using Cna.OrleansHost.Api;
 
-if (args.Length != 5) return 2;
-var (path, campaign, authority, request, expectedHex) =
-    (args[0], args[1], args[2], args[3], args[4]);
-using var connection = new SqliteConnection(new SqliteConnectionStringBuilder
-{
-    DataSource = path,
-    Mode = SqliteOpenMode.ReadOnly,
-}.ToString());
-connection.Open();
-using var command = connection.CreateCommand();
-command.CommandText = """
-    SELECT r.sequence,r.record_bytes FROM probe_requests q
-    JOIN probe_records r ON r.campaign_id=q.campaign_id AND r.sequence=q.sequence
-    WHERE q.campaign_id=$campaign AND q.authority_id=$authority AND q.request_id=$request
-    """;
-command.Parameters.AddWithValue("$campaign", campaign);
-command.Parameters.AddWithValue("$authority", authority);
-command.Parameters.AddWithValue("$request", request);
-using var reader = command.ExecuteReader();
-if (!reader.Read() || Convert.ToHexString((byte[])reader[1]) != expectedHex) return 3;
-Console.WriteLine(reader.GetInt64(0));
-return reader.Read() ? 4 : 0;
+var input = JsonSerializer.Deserialize<ProbeReadbackInput>(Console.ReadLine() ?? "")
+    ?? throw new InvalidOperationException("Missing child readback input.");
+var store = P01PrivateHostFoundation.OpenExisting(input.Path);
+var credential = new P01PrivateCredential(input.CampaignId, input.Side,
+    input.AuthorityId, input.CredentialSecret, input.SeatEpoch, input.CredentialExpiryMs);
+var lease = new P01ActivationLease(input.CampaignId, input.Fence,
+    input.LeaseSecret, input.OperatorSecret);
+var result = store.FindProbe(credential, input.RequestId,
+    Convert.FromHexString(input.ExactBytesHex), lease);
+Console.WriteLine(result is null ? "missing" : $"{result.Sequence}|{result.RecordHash}");
+
+internal sealed record ProbeReadbackInput(string Path, string CampaignId, string Side,
+    string AuthorityId, string CredentialSecret, long SeatEpoch, long CredentialExpiryMs,
+    long Fence, string LeaseSecret, string OperatorSecret, string RequestId,
+    string ExactBytesHex);

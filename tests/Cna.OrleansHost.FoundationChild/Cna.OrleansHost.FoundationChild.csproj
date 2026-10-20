@@ -4,6 +4,6 @@
     <TargetFramework>net10.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Data.Sqlite" />
+    <ProjectReference Include="../../src/Cna.OrleansHost/Cna.OrleansHost.csproj" />
   </ItemGroup>
 </Project>
