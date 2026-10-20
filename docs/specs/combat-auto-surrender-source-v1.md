@@ -1,0 +1,35 @@
+# Private automatic-surrender source boundary v1
+
+**Status:** owner-approved asymmetric source scope from [PR #289](../design/combat-p01-automatic-surrender-profile-proposal-v1.md); contract and canonical source fixtures only. This does not issue a CreationRequest, authenticate predecessor ledgers, emit a surrender event, settle TOE, admit P01, or expose a public/native action. The [manifest](fixtures/combat-auto-surrender-source-v1.manifest.json) records `creationRequest: null` and an empty `predecessorLedgers` array. Any assessor receiving this source without new authenticated creation and eleven independent predecessor ledgers must return unsupported.
+
+## Registry and identity
+
+The source registry was checked against current Content, Setup, Rules, tests and specs before allocation. No active Content8 / Setup8 or `sandtable.content-json.v7` reader/catalog entry exists. The strings in the approved proposal occur only there. The three new canonical files are independent fixtures; they do not alter Content7, Setup7, Rules10, the original CreationRequest, R03 World, or the retained 300 roots.
+
+| Artifact | Identity | Canonical bytes | SHA-256 |
+| --- | --- | ---: | --- |
+| [Content8](fixtures/combat-auto-surrender-content-v8.canonical.json) | `rules-lab.content.close-assault-ammunitionless-defender.v1`, format `sandtable.content-json.v7`, capability `sandtable.capability.combat-auto-surrender-infantry.v1` | 11,202 | `sha256:9b7ee4a847709caea28eb6d5518e0c38807ee779eab28f803c26c4a86f6578a7` |
+| [Rules source](fixtures/combat-auto-surrender-rules-source-v1.canonical.json) | `cna-1979.1.combat-auto-surrender-source.v1`, schema 2 | 1,173 | `sha256:68ecae6ce2b688622842c3ed581c0cbd7e263a36c8e82c9b89e51ebb079b134d` |
+| [Setup8](fixtures/combat-auto-surrender-setup-v8.canonical.json) | `rules-lab.combat.close-assault-ammunitionless-defender.v1` | 1,930 | `sha256:2b1f09fecafb670d217083257b7e4369b05998a2ae7dbf65d84153e61b54bbc2` |
+
+Hashes are `sha256:` plus lowercase SHA-256 over complete, minified UTF-8 bytes without BOM/newline. Setup's embedded `setupHash` is computed over canonical Setup bytes omitting only that field. Content and Rules selections in Setup bind the complete artifact hashes. The [oracle](verify-combat-auto-surrender-source-v1.py) checks exact shape, primitive grammar, canonical order/bytes, both bindings, source locators, original Content7/Setup7 pins, and the manifest before evaluating negative vectors. It is a private contract oracle, not a production reader or issuer.
+
+## Content8 delta from Content7
+
+The shared six-Clear-hex line, two battalions, ten TOE/component, rating 1/1, Basic Morale 0, normal stage-scoped readiness, supply-direction anchors and synthetic source index remain explicit. Every copied synthetic fact has a new exercise-specific locator; neither Content7 nor its original origins are rewritten. The scenario is `close-assault-ammunitionless-defender-v1`, with the Axis battalion at `assault-west` as the **prospective** attacker and Commonwealth at `assault-east` as the prospective defender. Axis initial carried Ammo is 10; Commonwealth initial carried Ammo is 0. Each changed seed has its own `sandtable-rules-lab` synthetic origin. This fixture proves this one orientation's initial source only; opposite-side surrender requires a separately authenticated source or an approved extension.
+
+Content8 adds a required root `ammunitionAccessInventory` object after `scenarios`: `scope`, `externalSources`, `origin`. Its selected scope is `complete-initial-synthetic-inventory`; its external-source list is empty with an independent source origin. The strict source oracle rejects even one dump, truck or other external stock entry. The closed initial Content inventory does not prove no supply arrived **later**. Before any proposed surrender trigger, a new authenticated R03 chain must show the defender still has zero accessible Ammo in carried and external sources at that actual step.
+
+All other Content7 structural and initial geometry constraints are checked on an isolated normalized copy by the existing Content7 oracle. The Content8-specific identity, complete ammunition-access inventory, asymmetric amounts and distinct origins are checked separately. The normalized copy is never emitted, hashed, selected or used as a Content7 campaign.
+
+## Rules source and Setup8 delta
+
+The new Rules source binds the exact owner-approved source scope, merged proposal commit `c228d82ff32d70864f8a2f855a78e47fb0c063cd`, pinned Land §15.88, Logistics §§50.0–50.17 and September errata §§15.88/50.12/50.2, using prior frozen source-evidence hashes. It states only the pretrigger condition: selected **Close Assault**, authenticated defender RBA **decline**, defender accessible Ammo 0, defender Cohesion 0. `settlementStatus` is `unsupported`. Adjacency, ZOC, Barrage, RBA timeout or unavailable clock cannot substitute for selected assault or defender decline. The −17 Cohesion threshold is a separate unimplemented branch.
+
+Setup8 retains the private synthetic no-obligation opening policies and Cohesion 0, selects exact Content8 bytes, and adds a `rulesSource` `(schemaVersion, artifactId, hash)` binding. Its synthetic initial-ledger origin and setup source locator use the new exercise identity. Content8 and Setup8 are not registered with public catalogs or the existing C# creation path.
+
+## Verification and remaining authority
+
+Run `python3 -B docs/specs/verify-combat-auto-surrender-source-v1.py`. It checks seventeen negative mutations: carried Ammo changes, a newly accessible dump, forged or reused origins, legacy schema/profile, wrong Content/Rules hash, wrong Cohesion, source-locator drift, owner-proposal substitution, adjacency-only or selection-less trigger, missing defender decline, and invented settlement. Existing Content7 and Setup7 hashes are pinned without editing either artifact.
+
+Next work needs a new authenticated CreationRequest that persists these three exact byte strings and hashes, followed by eleven independently authenticated predecessor ledgers. It must retain actor, slot, clock, receipt, source and actual later ammunition-access facts. Then a typed selected assault, Position Determination, Barrage and defender-owned RBA decline must be proved before a surrender trigger can be considered. Force Assignment for an ammunitionless defender, charge order, full-TOE custody/escape settlement, outward privacy, replay/cuts and caps require separate source-backed decisions. Nothing in this source-only contract changes the original 300-root partition (44 provisional positive, 256 candidate absent, zero admitted/public).
