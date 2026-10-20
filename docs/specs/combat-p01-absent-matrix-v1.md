@@ -1,0 +1,44 @@
+# Private P01 physical candidate-absent issuance matrix v1
+
+**Status:** bounded private proof for the original 300 retained R03 roots. This is
+not a supported-empty Combat certificate, source-legal action exhaustiveness,
+P01 admission, a public action set, or a native consumer.
+
+The [verifier](verify-combat-p01-absent-matrix-v1.py),
+[focused tests](test-combat-p01-absent-matrix-v1.py), and
+[frozen output](fixtures/combat-p01-absent-matrix-v1.json) have one narrow purpose:
+prove what the private selected-assault and explicit-RBA references can issue
+from each physical row after authentic R03 replay. They are downstream of the
+original CreationRequest and eleven distinct parent ledgers. The manifest,
+summary, bounded profile audit, every compressed row chunk, Land rules PDF, and
+September errata PDF are hashed before accepting any row. A changed or omitted
+row, chunk, source, event, receipt, input, or Control fails closed.
+
+| Authenticated physical shape | Rows | Private issuance outcome |
+|---|---:|---|
+| Adjacent, armed | 44 | Selected-assault candidate issuable; both actor orientations are positive controls. |
+| Adjacent, paid, ammunitionless actor | 12 | Neither selected assault nor the narrow nonadjacent explicit-RBA initial state issues. |
+| Nonadjacent | 244 | Selected assault does not issue. A **zero-assault-only** fact issues; defender RBA remains source-available. One System `close-no-assault-selection` event is derived and replayed. |
+
+For each nonadjacent row the verifier compares exact original Source, input,
+event, receipt, and Control bindings; derives the private opening Source and
+input; recomputes the event receipt, source hash, and output Control; and reads
+that single event back through `replay`. The event leaves the authenticated
+World and RNG, including CP, ammunition, attack and target histories, unchanged.
+It leaves the RBA decision and outcome unmade. A later defender-owned decline
+or fail-closed cancellation remains a **separate** step governed by
+[explicit-RBA v1](combat-p01-explicit-rba-v1.md). Nonadjacency never means
+there is no source-legal RBA choice.
+
+The [action matrix](verify-combat-p01-action-matrix-v1.py) supplies the selected
+content's physical shape, but `sourceLegalActionExhaustive` remains `false`.
+This proof cannot admit any of the 300 rows and never emits a public action.
+It adds no alternate action, movement, attack result, settlement, privacy
+projection, all-row cut/retry proof, or host persistence claim. Full AC-003,
+AC-006, AC-007, AC-008 and the support certificate remain open.
+
+Run the focused tests with `python3 -B docs/specs/test-combat-p01-absent-matrix-v1.py`.
+Run the original physical replay with
+`python3 -B docs/specs/verify-combat-p01-absent-matrix-v1.py /Users/dsteele/.codex/worktrees/combat-p01-inventory/p01-evidence`.
+The frozen ordered output hash covers the 300 row results in manifest order;
+the byte maxima are for this retained exercise, not general resource caps.

@@ -202,6 +202,18 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
+  p01-absent-focused:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out exact private proof source SHA
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.P01_PROOF_SOURCE_SHA }}
+          persist-credentials: false
+      - name: Exercise selected and explicit-RBA absence boundaries
+        run: python3 -B docs/specs/test-combat-p01-absent-matrix-v1.py
+
   orleans:
     needs: prepare
     runs-on: ubuntu-24.04
