@@ -44,6 +44,37 @@ public sealed class P01A1PhysicalHostImportTests
         Assert.Throws<InvalidOperationException>(() => fixture.Open().AcquireActivationFence(Campaign, Operator));
     }
 
+    [Theory]
+    [InlineData("import_bytes", 2_097_153)]
+    [InlineData("control_bytes", 65_537)]
+    [InlineData("checkpoint_bytes", 2_097_153)]
+    [InlineData("attestation_bytes", 4_097)]
+    public void OversizedRetainedBlobIsRejectedBeforeMaterialization(string column, int length)
+    {
+        using var fixture = new StoreFixture();
+        var store = fixture.Create();
+        store.SeedUnissuableCampaign(Campaign,
+            "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", Operator);
+        using (var connection = new SqliteConnection($"Data Source={fixture.Path}"))
+        {
+            connection.Open();
+            using var command = connection.CreateCommand();
+            command.CommandText = """
+                INSERT INTO a1_imports VALUES ($campaign, x'01', x'02', x'03', x'04')
+                """;
+            command.Parameters.AddWithValue("$campaign", Campaign);
+            Assert.Equal(1, command.ExecuteNonQuery());
+            command.Parameters.Clear();
+            command.CommandText = $"UPDATE a1_imports SET {column}=zeroblob($length) WHERE campaign_id=$campaign";
+            command.Parameters.AddWithValue("$length", length);
+            command.Parameters.AddWithValue("$campaign", Campaign);
+            Assert.Equal(1, command.ExecuteNonQuery());
+        }
+        var error = Assert.Throws<InvalidOperationException>(() =>
+            fixture.Open().ReadPhysicalA1(Campaign, Repository()));
+        Assert.Equal("Private A1 import blob exceeds limit.", error.Message);
+    }
+
     // Physical source remains outside the repository. CI exercises retained-byte revalidation
     // and DB rejection above; the pinned archive path enables this additional local proof.
     [Fact]

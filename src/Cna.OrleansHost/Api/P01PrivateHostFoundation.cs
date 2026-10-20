@@ -13,6 +13,10 @@ internal sealed class P01PrivateHostFoundation
     private const int ApplicationId = 0x50303146; // P01F
     private const int SchemaVersion = 2;
     private const int MaxProbeBytes = 65_536;
+    private const int MaxA1ImportBytes = 2_097_152;
+    private const int MaxA1ControlBytes = 65_536;
+    private const int MaxA1CheckpointBytes = 2_097_152;
+    private const int MaxA1AttestationBytes = 4_096;
     private static readonly TimeSpan GrantLifetime = TimeSpan.FromMinutes(10);
     private static readonly TimeSpan CredentialLifetime = TimeSpan.FromHours(2);
     private static readonly Regex CampaignPattern = new(@"\A[a-z0-9][a-z0-9._-]{0,127}\z",
@@ -194,10 +198,10 @@ internal sealed class P01PrivateHostFoundation
         command.Parameters.AddWithValue("$campaign", campaignId);
         using var reader = command.ExecuteReader();
         if (!reader.Read()) return null;
-        var import = reader.GetFieldValue<byte[]>(0);
-        var control = reader.GetFieldValue<byte[]>(1);
-        var checkpoint = reader.GetFieldValue<byte[]>(2);
-        var attestation = reader.GetFieldValue<byte[]>(3);
+        var import = ReadBoundedA1Blob(reader, 0, MaxA1ImportBytes);
+        var control = ReadBoundedA1Blob(reader, 1, MaxA1ControlBytes);
+        var checkpoint = ReadBoundedA1Blob(reader, 2, MaxA1CheckpointBytes);
+        var attestation = ReadBoundedA1Blob(reader, 3, MaxA1AttestationBytes);
         var checkpointHash = reader.GetString(4);
         if (reader.GetInt64(5) != 0 || reader.GetInt64(7) != 0 ||
             checkpointHash != "sha256:" + Convert.ToHexStringLower(SHA256.HashData(checkpoint)) ||
@@ -210,6 +214,23 @@ internal sealed class P01PrivateHostFoundation
             !attestation.AsSpan().SequenceEqual(validated.SameCutAttestationBytes))
             throw new InvalidOperationException("Private A1 import readback changed.");
         return validated;
+    }
+
+    private static byte[] ReadBoundedA1Blob(SqliteDataReader reader, int ordinal, int maximumBytes)
+    {
+        var length = reader.GetBytes(ordinal, 0, null, 0, 0);
+        if (length is < 1 || length > maximumBytes)
+            throw new InvalidOperationException("Private A1 import blob exceeds limit.");
+        var bytes = new byte[(int)length];
+        var offset = 0;
+        while (offset < bytes.Length)
+        {
+            var read = reader.GetBytes(ordinal, offset, bytes, offset, bytes.Length - offset);
+            if (read is < 1 || read > bytes.Length - offset)
+                throw new InvalidOperationException("Private A1 import blob read changed.");
+            offset += (int)read;
+        }
+        return bytes;
     }
 
     internal P01ActivationLease AcquireActivationFence(string campaignId, string operatorSecret)
