@@ -31,6 +31,9 @@ SETUP = "rules-lab.combat.close-assault-ammunitionless-defender.v1"
 RULES = "cna-1979.1.combat-auto-surrender-source.v1"
 SOURCE = "sandtable-rules-lab"
 LOCATOR = "combat.close-assault-ammunitionless-defender.v1"
+ORIGINAL_CONTENT_HASH = "sha256:ee4fde9638ceb61ec08612fe32f9ac81db05572aac5ca20941e402d2fed25847"
+ORIGINAL_SETUP_HASH = "sha256:1ca736568214fc1100ab07f729cb6b5d601a80b524e51933bd754d8e0317d3fd"
+ORIGINAL_SETUP_BYTES = 1655
 
 CONTENT_SCHEMA = copy.deepcopy(v7.SCHEMA)
 CONTENT_SCHEMA["Root"].append(("ammunitionAccessInventory", "AccessInventory"))
@@ -173,24 +176,38 @@ def validate_content(pack):
         require(ammo["points"] == expected and
                 ammo["origin"] == origin(LOCATOR + ":initial-ammo." + side),
                 "SRC-004", f"/scenarios/0/initialPlacements/{i}/initialAmmunition")
-    locators = []
+    original_raw = (FIXTURES / "combat-content-v7.canonical.json").read_bytes()
+    require(digest(original_raw) == ORIGINAL_CONTENT_HASH, "SRC-010", "/originalContent7")
+    original = v7.read(original_raw)
+    locators = {}
 
-    def inspect_origins(value, path=""):
+    def inspect_origins(value, path="", result=None, strict=True):
         if isinstance(value, dict):
             if value.get("kind") == "synthetic" and "references" in value:
                 refs = value["references"]
                 require(len(refs) == 1 and refs[0]["sourceId"] == SOURCE and
-                        refs[0]["locator"].startswith(LOCATOR + ":"),
+                        (not strict or refs[0]["locator"].startswith(LOCATOR + ":")),
                         "SRC-006", path)
-                locators.append(refs[0]["locator"])
+                result[path] = refs[0]["locator"]
             for key, child in value.items():
-                inspect_origins(child, path + "/" + key)
+                inspect_origins(child, path + "/" + key, result, strict)
         elif isinstance(value, list):
             for i, child in enumerate(value):
-                inspect_origins(child, f"{path}/{i}")
+                inspect_origins(child, f"{path}/{i}", result, strict)
 
-    inspect_origins(pack)
-    require(len(locators) == len(set(locators)), "SRC-006", "/sourceIndex")
+    inspect_origins(pack, result=locators)
+    original_locators = {}
+    inspect_origins(original, result=original_locators, strict=False)
+    expected = {path: old.replace("combat.close-assault-positive.v1:", LOCATOR + ":", 1)
+                for path, old in original_locators.items()}
+    expected["/scenarios/0/origin"] = LOCATOR + ":scenario." + SCENARIO
+    expected["/scenarios/0/initialPlacements/0/initialAmmunition/origin"] = LOCATOR + ":initial-ammo.axis"
+    expected["/scenarios/0/initialPlacements/1/initialAmmunition/origin"] = LOCATOR + ":initial-ammo.commonwealth"
+    expected["/ammunitionAccessInventory/origin"] = LOCATOR + ":closed-ammunition-inventory"
+    require(set(locators) == set(expected), "SRC-006", "/sourceIndex")
+    for path, locator in expected.items():
+        require(locators[path] == locator, "SRC-006", path)
+    require(len(locators) == len(set(locators.values())), "SRC-006", "/sourceIndex")
     # Reuse the certified Content7 shared structural/geometry validator on a
     # private normalized copy. Only identity and the new ammunition seed are
     # normalized; Content8-specific facts are checked above, never issued as V7.
@@ -273,6 +290,8 @@ def validate_setup(setup, pack, rules, content_raw, rules_raw):
 
 
 def validate_all(content_raw, rules_raw, setup_raw):
+    original_creation = json.loads((FIXTURES / "combat-creation-ledger-v1.json").read_text())
+    verify_original_setup_pin(original_creation["setup"])
     pack = decode(content_raw, "Root", CONTENT_SCHEMA)
     rules = decode(rules_raw, "Root", RULES_SCHEMA)
     setup = decode(setup_raw, "Setup", SETUP_SCHEMA)
@@ -282,14 +301,32 @@ def validate_all(content_raw, rules_raw, setup_raw):
     return pack, rules, setup
 
 
-def main():
-    require(digest((FIXTURES / "combat-content-v7.canonical.json").read_bytes()) ==
-            "sha256:ee4fde9638ceb61ec08612fe32f9ac81db05572aac5ca20941e402d2fed25847",
-            "SRC-010", "/originalContent7")
-    original_creation = json.loads((FIXTURES / "combat-creation-ledger-v1.json").read_text())
-    require(original_creation["setup"]["sha256"] ==
-            "sha256:1ca736568214fc1100ab07f729cb6b5d601a80b524e51933bd754d8e0317d3fd",
+def verify_original_setup_pin(original_setup):
+    raw = original_setup["canonicalUtf8"].encode("utf-8")
+    require(original_setup["byteCount"] == ORIGINAL_SETUP_BYTES == len(raw) and
+            original_setup["sha256"] == ORIGINAL_SETUP_HASH == digest(raw),
             "SRC-010", "/originalSetup7")
+
+
+def main():
+    original_creation = json.loads((FIXTURES / "combat-creation-ledger-v1.json").read_text())
+    verify_original_setup_pin(original_creation["setup"])
+    tampered_original = dict(original_creation["setup"])
+    tampered_original["canonicalUtf8"] = tampered_original["canonicalUtf8"].replace(
+        "rules-lab.combat.close-assault.v1", "rules-lab.combat.close-assauxt.v1", 1)
+    try:
+        verify_original_setup_pin(tampered_original)
+    except Invalid as error:
+        require(error.code == "SRC-010", "SRC-012", "/originalSetup7")
+    else:
+        raise AssertionError("accepted changed original Setup7 bytes with old declared hash")
+    tampered_original["sha256"] = digest(tampered_original["canonicalUtf8"].encode("utf-8"))
+    try:
+        verify_original_setup_pin(tampered_original)
+    except Invalid as error:
+        require(error.code == "SRC-010", "SRC-012", "/originalSetup7")
+    else:
+        raise AssertionError("accepted substituted original Setup7 bytes and declared hash")
     manifest = json.loads((FIXTURES / "combat-auto-surrender-source-v1.manifest.json").read_text())
     names = ("combat-auto-surrender-content-v8.canonical.json",
              "combat-auto-surrender-rules-source-v1.canonical.json",
@@ -323,6 +360,22 @@ def main():
             require(error.code == vector["code"], "SRC-012", vector["name"])
         else:
             raise AssertionError("accepted mutation: " + vector["name"])
+    # Reproduce the reviewer finding with every dependent hash recalculated.
+    altered_content = copy.deepcopy(pack)
+    altered_content["scenarios"][0]["origin"]["references"][0]["locator"] = (
+        LOCATOR + ":scenario.unrelated")
+    altered_content_raw = encode(canonical(altered_content, "Root", CONTENT_SCHEMA))
+    altered_setup = copy.deepcopy(setup)
+    altered_setup["content"]["hash"] = digest(altered_content_raw)
+    altered_setup["setupHash"] = setup_hash(altered_setup)
+    altered_setup_raw = encode(canonical(altered_setup, "Setup", SETUP_SCHEMA))
+    try:
+        validate_all(altered_content_raw, raw[1], altered_setup_raw)
+    except Invalid as error:
+        require(error.code == "SRC-006" and error.path == "/scenarios/0/origin",
+                "SRC-012", "/reboundScenarioOrigin")
+    else:
+        raise AssertionError("accepted same-prefix unrelated scenario origin with rebound hashes")
     print(f"PASS source-only: {len(manifest['negativeVectors'])} negatives; "
           f"Content8 {digest(raw[0])}; Rules {digest(raw[1])}; Setup8 {digest(raw[2])}; "
           "zero CreationRequests, ledgers, surrender events or admitted rows")

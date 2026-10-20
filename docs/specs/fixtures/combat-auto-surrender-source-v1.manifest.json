@@ -3,8 +3,8 @@
   "status": "private-source-only-unissuable",
   "artifacts": {
     "combat-auto-surrender-content-v8.canonical.json": {
-      "byteCount": 11202,
-      "sha256": "sha256:9b7ee4a847709caea28eb6d5518e0c38807ee779eab28f803c26c4a86f6578a7"
+      "byteCount": 11217,
+      "sha256": "sha256:f7e25087a3f892304907e03640df258203eda6a2dee59fc669468200ef8d1595"
     },
     "combat-auto-surrender-rules-source-v1.canonical.json": {
       "byteCount": 1173,
@@ -12,7 +12,7 @@
     },
     "combat-auto-surrender-setup-v8.canonical.json": {
       "byteCount": 1930,
-      "sha256": "sha256:2b1f09fecafb670d217083257b7e4369b05998a2ae7dbf65d84153e61b54bbc2"
+      "sha256": "sha256:da46fb117545d5c3f2becddd1b7b6b458781d42591c4575e3f20a2b2c3b41134"
     }
   },
   "creationRequest": null,
@@ -169,6 +169,22 @@
       "op": "replace",
       "path": "/locations/0/origin/references/0/locator",
       "value": "combat.close-assault-positive.v1:location.axis-supply",
+      "code": "SRC-006"
+    },
+    {
+      "name": "wrong-scenario-origin-same-prefix",
+      "artifact": "combat-auto-surrender-content-v8.canonical.json",
+      "op": "replace",
+      "path": "/scenarios/0/origin/references/0/locator",
+      "value": "combat.close-assault-ammunitionless-defender.v1:scenario.unrelated",
+      "code": "SRC-006"
+    },
+    {
+      "name": "wrong-location-origin-same-prefix",
+      "artifact": "combat-auto-surrender-content-v8.canonical.json",
+      "op": "replace",
+      "path": "/locations/0/origin/references/0/locator",
+      "value": "combat.close-assault-ammunitionless-defender.v1:hex.unrelated",
       "code": "SRC-006"
     }
   ]
