@@ -71,6 +71,9 @@ implementation belongs inside Umpire under a plain technical name. Accepted `CMB
 the initial RC bounded exercise; the remaining contract and proof gates still control admission.
 The `combat-p01-no-attack-v0` name is a private ordinal-two contract inventory, not a new
 Umpire capability or a completed Combat step path.
+The `P01PrivateHostFoundation` name is a plain technical host module for disabled local
+grant and fence experiments. Its probe records are not Chronicle events or Archives saves,
+and they expose nothing to Maproom.
 `combat-p01-explicit-rba-v1` names a separate private successor for nonadjacent zero-assault
 states with a retained defender RBA choice; it is not a public action or native consumer.
 `CampaignCombatAutoSurrenderSourceV1` names the private pinned Content8/Setup8 Core reader;
