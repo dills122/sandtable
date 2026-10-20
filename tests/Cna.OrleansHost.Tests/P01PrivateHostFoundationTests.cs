@@ -216,7 +216,7 @@ public sealed class P01PrivateHostFoundationTests
 
     [Theory]
     [InlineData(1)]
-    [InlineData(3)]
+    [InlineData(4)]
     public void UnknownStoreVersionFailsClosed(int version)
     {
         using var fixture = new StoreFixture();
@@ -350,7 +350,7 @@ public sealed class P01PrivateHostFoundationTests
     [Theory]
     [InlineData("PRAGMA application_id=0")]
     [InlineData("PRAGMA user_version=1")]
-    [InlineData("PRAGMA user_version=3")]
+    [InlineData("PRAGMA user_version=4")]
     public void AlreadyOpenHandleRejectsPostOpenStoreIdentityDriftBeforeMutation(
         string mutation)
     {

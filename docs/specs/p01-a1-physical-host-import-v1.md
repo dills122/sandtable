@@ -42,8 +42,11 @@ and the exact import, Control, checkpoint and attestation blobs into the new
 validated checkpoint bytes; the initial head uses the existing domain-bound
 campaign binding. A failed validation or transaction leaves neither row.
 
-This is store schema version 2; version 1 has no automatic migration. Existing
-closed DDL, column, foreign-key, index and unexpected-object checks also cover
+This is store schema version 3; older versions have no automatic migration. The
+campaign row stores a physical-import origin and domain-bound origin digest in
+the same transaction as the evidence. Deleting the evidence row leaves the
+origin marker intact: cold readback fails and activation and grant issue remain
+closed. Exact DDL, column, foreign-key, index and unexpected-object checks cover
 `a1_imports`. A cold readback verifies campaign/head/fence binding and reruns
 Core's retained-byte validation before returning any evidence. Imported rows
 cannot acquire an activation fence or issue a seat grant. The older test-only
