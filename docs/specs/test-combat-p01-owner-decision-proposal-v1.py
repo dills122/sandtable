@@ -27,6 +27,8 @@ class OwnerDecisionProposalTests(unittest.TestCase):
                 expected = row["expected"]
                 self.assertEqual(codec.canonical(seed).decode("ascii"), expected["decisionSeedCanonical"])
                 self.assertEqual(codec.canonical(alias).decode("ascii"), expected["aliasSeedCanonical"])
+                self.assertEqual(codec.parse_raw(expected["decisionSeedCanonical"].encode("ascii"), "decision"), seed)
+                self.assertEqual(codec.parse_raw(expected["aliasSeedCanonical"].encode("ascii"), "alias"), alias)
                 self.assertEqual(codec.target_ref(seed["context"], row["ownerHex"]), expected["targetRef"])
                 self.assertEqual(codec.decision_ref(seed), expected["decisionRef"])
                 self.assertEqual(codec.validate_opening(seed, alias, row["ownerHex"]), expected["alias"])
@@ -68,6 +70,32 @@ class OwnerDecisionProposalTests(unittest.TestCase):
         changed["context"]["cycle"]["ordinal"] = 1 << 31
         with self.assertRaises(ValueError):
             codec.decision_ref(changed)
+        changed = copy.deepcopy(row["decisionSeed"])
+        changed["context"]["cycle"]["gameTurn"] = 112
+        with self.assertRaises(ValueError):
+            codec.decision_ref(changed)
+
+    def test_raw_parser_rejects_duplicate_and_noncanonical_bytes(self):
+        row = self.row("axis-initial")
+        seed = row["expected"]["decisionSeedCanonical"].encode("ascii")
+        alias = row["expected"]["aliasSeedCanonical"].encode("ascii")
+        target = codec.canonical(dict(context=row["decisionSeed"]["context"], locationId=row["ownerHex"]))
+        self.assertEqual(codec.parse_raw(target, "target")["locationId"], row["ownerHex"])
+        reordered = codec.canonical(dict(reversed(list(row["decisionSeed"].items()))))
+        mutations = (
+            (seed.replace(b'{"context":', b'{"context":{},"context":', 1), "decision"),
+            (seed.replace(b'{"campaignId":', b'{"campaignId":"wrong","campaignId":', 1), "decision"),
+            (seed + b" ", "decision"),
+            (b" " + seed, "decision"),
+            (reordered, "decision"),
+            (alias.replace(b'{"decisionRef":', b'{"decisionRef":"wrong","decisionRef":', 1), "alias"),
+            (alias.replace(b',"openingRevision":', b', "openingRevision":', 1), "alias"),
+            (target.replace(b',"locationId":', b',"locationId":"wrong","locationId":', 1), "target"),
+            (target + b"\n", "target"),
+        )
+        for data, kind in mutations:
+            with self.subTest(kind=kind, data=data[:60]), self.assertRaises(ValueError):
+                codec.parse_raw(data, kind)
 
     def test_wrong_seat_or_noncanonical_binding_fails_closed(self):
         row = self.row("axis-initial")

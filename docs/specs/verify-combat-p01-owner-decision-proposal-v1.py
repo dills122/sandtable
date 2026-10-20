@@ -44,7 +44,7 @@ def context(value):
     require(value["audience"] in ("axis", "commonwealth"))
     fields(value["cycle"], SPEC["cycleFields"])
     cycle = value["cycle"]
-    require(type(cycle["gameTurn"]) is int and cycle["gameTurn"] >= 1
+    require(type(cycle["gameTurn"]) is int and 1 <= cycle["gameTurn"] <= SPEC["maxGameTurn"]
             and type(cycle["operationStage"]) is int and 1 <= cycle["operationStage"] <= 3
             and cycle["playerPhaseSlot"] in ("first-acting-side", "second-acting-side")
             and cycle["phasingSide"] in ("axis", "commonwealth")
@@ -83,6 +83,37 @@ def alias(seed):
     pub(seed["ownParticipantRef"])
     pub(seed["apparentTargetRef"])
     return digest("alias", seed, SPEC["aliasPrefix"])
+
+
+def parse_raw(data, kind):
+    """Reject duplicate keys and every noncanonical byte before accepting a proposed seed."""
+    require(type(data) is bytes and 0 < len(data) <= 65536
+            and kind in ("decision", "alias", "target"))
+
+    def unique_pairs(pairs):
+        result = {}
+        for key, value in pairs:
+            require(key not in result)
+            result[key] = value
+        return result
+
+    def invalid_constant(_value):
+        require(False)
+
+    try:
+        value = json.loads(data.decode("ascii"), object_pairs_hook=unique_pairs,
+                           parse_constant=invalid_constant)
+    except (UnicodeError, json.JSONDecodeError, RecursionError) as error:
+        raise ValueError("CMB-P01-OWNER-PROPOSAL") from error
+    if kind == "decision":
+        decision_ref(value)
+    elif kind == "alias":
+        alias(value)
+    else:
+        fields(value, SPEC["targetSeedFields"])
+        target_ref(value["context"], value["locationId"])
+    require(canonical(value) == data)
+    return value
 
 
 def validate_opening(decision_seed, alias_seed, owner_location_id):

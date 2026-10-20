@@ -6,6 +6,7 @@
   "firstRepresentedRevision": 0,
   "firstOpeningRevision": 1,
   "maxRevision": 9223372036854775807,
+  "maxGameTurn": 111,
   "maxOrdinal": 2147483647,
   "contextFields": ["campaignId", "audience", "cycle", "rulesRef", "configRef", "capabilityPolicyId"],
   "cycleFields": ["gameTurn", "operationStage", "playerPhaseSlot", "phasingSide", "ordinal"],

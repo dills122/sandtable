@@ -33,6 +33,11 @@ bytes. JSON is compact ASCII: UTF-8/ASCII characters, `ensure_ascii=true`, no sp
 ordered keys, lowercase `true`/`false`/`null`, no duplicate keys, and no floats. IDs are
 1–128 visible non-space ASCII bytes; `pub.` and `sha256:` refs have exactly 64 lowercase hex.
 Unknown fields, unapproved enum values, malformed refs and noncanonical bytes reject.
+The private `parse_raw` boundary rejects duplicate keys at every nesting level and
+requires raw bytes to equal the typed canonical re-encoding; whitespace, key
+reordering and trailing bytes are rejected, rather than normalized before hashing.
+As in accepted C3, `gameTurn` is 1–111, operation stage 1–3, ordinal 1–2,147,483,647,
+and revision 0–9,223,372,036,854,775,807 (proposed openings start at 1).
 The actual public cycle digest must be authenticated by its own codec; the pure proposal
 verifier checks shape and golden serialization, not source authenticity.
 
