@@ -1,0 +1,191 @@
+{
+  "contract": "combat-auto-surrender-source-v1",
+  "status": "private-source-only-unissuable",
+  "artifacts": {
+    "combat-auto-surrender-content-v8.canonical.json": {
+      "byteCount": 11217,
+      "sha256": "sha256:f7e25087a3f892304907e03640df258203eda6a2dee59fc669468200ef8d1595"
+    },
+    "combat-auto-surrender-rules-source-v1.canonical.json": {
+      "byteCount": 1173,
+      "sha256": "sha256:68ecae6ce2b688622842c3ed581c0cbd7e263a36c8e82c9b89e51ebb079b134d"
+    },
+    "combat-auto-surrender-setup-v8.canonical.json": {
+      "byteCount": 1930,
+      "sha256": "sha256:da46fb117545d5c3f2becddd1b7b6b458781d42591c4575e3f20a2b2c3b41134"
+    }
+  },
+  "creationRequest": null,
+  "predecessorLedgers": [],
+  "negativeVectors": [
+    {
+      "name": "defender-carried-ammo",
+      "artifact": "combat-auto-surrender-content-v8.canonical.json",
+      "op": "replace",
+      "path": "/scenarios/0/initialPlacements/1/initialAmmunition/points",
+      "value": 1,
+      "code": "SRC-004"
+    },
+    {
+      "name": "attacker-carried-ammo",
+      "artifact": "combat-auto-surrender-content-v8.canonical.json",
+      "op": "replace",
+      "path": "/scenarios/0/initialPlacements/0/initialAmmunition/points",
+      "value": 9,
+      "code": "SRC-004"
+    },
+    {
+      "name": "external-dump",
+      "artifact": "combat-auto-surrender-content-v8.canonical.json",
+      "op": "replace",
+      "path": "/ammunitionAccessInventory/externalSources",
+      "value": [
+        {
+          "sourceId": "test-dump",
+          "ownerSideId": "commonwealth",
+          "locationId": "assault-east",
+          "kind": "ammunition-dump",
+          "points": 1,
+          "origin": {
+            "kind": "synthetic",
+            "references": [
+              {
+                "sourceId": "sandtable-rules-lab",
+                "locator": "combat.close-assault-ammunitionless-defender.v1:test-dump"
+              }
+            ]
+          }
+        }
+      ],
+      "code": "SRC-004"
+    },
+    {
+      "name": "forged-closed-inventory-origin",
+      "artifact": "combat-auto-surrender-content-v8.canonical.json",
+      "op": "replace",
+      "path": "/ammunitionAccessInventory/origin/references/0/locator",
+      "value": "forged",
+      "code": "SRC-004"
+    },
+    {
+      "name": "legacy-content-version",
+      "artifact": "combat-auto-surrender-content-v8.canonical.json",
+      "op": "replace",
+      "path": "/schemaVersion",
+      "value": 7,
+      "code": "SRC-003"
+    },
+    {
+      "name": "wrong-content-profile",
+      "artifact": "combat-auto-surrender-content-v8.canonical.json",
+      "op": "replace",
+      "path": "/capabilityProfileId",
+      "value": "sandtable.capability.combat-cycle-infantry.v1",
+      "code": "SRC-003"
+    },
+    {
+      "name": "wrong-defender-origin",
+      "artifact": "combat-auto-surrender-content-v8.canonical.json",
+      "op": "replace",
+      "path": "/scenarios/0/initialPlacements/1/initialAmmunition/origin/references/0/locator",
+      "value": "forged",
+      "code": "SRC-004"
+    },
+    {
+      "name": "wrong-setup-content-hash",
+      "artifact": "combat-auto-surrender-setup-v8.canonical.json",
+      "op": "replace",
+      "path": "/content/hash",
+      "value": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "code": "SRC-009"
+    },
+    {
+      "name": "wrong-setup-rules-hash",
+      "artifact": "combat-auto-surrender-setup-v8.canonical.json",
+      "op": "replace",
+      "path": "/rulesSource/hash",
+      "value": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "code": "SRC-009"
+    },
+    {
+      "name": "wrong-setup-cohesion",
+      "artifact": "combat-auto-surrender-setup-v8.canonical.json",
+      "op": "replace",
+      "path": "/combatInitialization/cohesionLevel",
+      "value": -17,
+      "code": "SRC-004"
+    },
+    {
+      "name": "wrong-rules-source",
+      "artifact": "combat-auto-surrender-rules-source-v1.canonical.json",
+      "op": "replace",
+      "path": "/sourceLocators/3/locator",
+      "value": "15.88-50.2",
+      "code": "SRC-006"
+    },
+    {
+      "name": "adjacency-only",
+      "artifact": "combat-auto-surrender-rules-source-v1.canonical.json",
+      "op": "replace",
+      "path": "/trigger/attackKind",
+      "value": "adjacency",
+      "code": "SRC-007"
+    },
+    {
+      "name": "no-selected-assault",
+      "artifact": "combat-auto-surrender-rules-source-v1.canonical.json",
+      "op": "replace",
+      "path": "/trigger/acceptedSelectionRequired",
+      "value": false,
+      "code": "SRC-007"
+    },
+    {
+      "name": "no-defender-decline",
+      "artifact": "combat-auto-surrender-rules-source-v1.canonical.json",
+      "op": "replace",
+      "path": "/trigger/defenderRbaDeclineRequired",
+      "value": false,
+      "code": "SRC-007"
+    },
+    {
+      "name": "invented-settlement",
+      "artifact": "combat-auto-surrender-rules-source-v1.canonical.json",
+      "op": "replace",
+      "path": "/trigger/settlementStatus",
+      "value": "admitted",
+      "code": "SRC-007"
+    },
+    {
+      "name": "wrong-owner-proposal",
+      "artifact": "combat-auto-surrender-rules-source-v1.canonical.json",
+      "op": "replace",
+      "path": "/ownerDecision/proposalCommit",
+      "value": "0000000000000000000000000000000000000000",
+      "code": "SRC-006"
+    },
+    {
+      "name": "reused-content7-location-origin",
+      "artifact": "combat-auto-surrender-content-v8.canonical.json",
+      "op": "replace",
+      "path": "/locations/0/origin/references/0/locator",
+      "value": "combat.close-assault-positive.v1:location.axis-supply",
+      "code": "SRC-006"
+    },
+    {
+      "name": "wrong-scenario-origin-same-prefix",
+      "artifact": "combat-auto-surrender-content-v8.canonical.json",
+      "op": "replace",
+      "path": "/scenarios/0/origin/references/0/locator",
+      "value": "combat.close-assault-ammunitionless-defender.v1:scenario.unrelated",
+      "code": "SRC-006"
+    },
+    {
+      "name": "wrong-location-origin-same-prefix",
+      "artifact": "combat-auto-surrender-content-v8.canonical.json",
+      "op": "replace",
+      "path": "/locations/0/origin/references/0/locator",
+      "value": "combat.close-assault-ammunitionless-defender.v1:hex.unrelated",
+      "code": "SRC-006"
+    }
+  ]
+}
