@@ -6,4 +6,6 @@
 
 These pinned bytes prove a synthetic **initial source**, not that the defender still lacks accessible ammunition at an actual assault. A future versioned Content8/Setup8 creation contract must independently retain its canonical source, Rules/config selection, creation binding, actor, slot and clock. Eleven predecessor ledgers then need issuance and fresh readback with receipts and later ammunition-access evidence. Reusing or mutating the original 300 Content7 R03 roots would not satisfy that requirement. Until those artifacts exist, the automatic-surrender branch remains unsupported and zero actions are admitted or public.
 
+The [pre-issue source seal](combat-auto-surrender-preissue-source-v1.md) now retains the three exact source byte strings and hashes in a canonical typed envelope. It deliberately stops before campaign identity, Rules/config selection, Created issuance and predecessor ledgers.
+
 Focused Core tests read the three retained fixtures and reject a byte mutation in each, alternate byte spelling, and original Content7 substitution. The existing [source oracle](verify-combat-auto-surrender-source-v1.py) retains the deeper field/origin and negative-vector checks; this Core reader intentionally accepts only its one pinned source triplet.

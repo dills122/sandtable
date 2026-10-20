@@ -856,6 +856,9 @@ certificate remain open.
 The [private Content8/Setup8 source reader](docs/specs/combat-auto-surrender-core-reader-v1.md)
 pins exact asymmetric source bytes inside Core without registering a campaign creation or
 predecessor-ledger issuer. The original Content7/Setup7 creation path remains separate.
+The [pre-issue source seal](docs/specs/combat-auto-surrender-preissue-source-v1.md) canonically
+retains all three complete artifacts and their initial closed inventory. It has no actor,
+Rules/configuration selection, Created event, or authority to issue predecessor ledgers.
 The [private P01 no-attack v0 boundary](docs/specs/combat-p01-no-attack-v0.md) keeps proposed
 ordinal-two System inputs disconnected until a source-backed supported-empty certificate and
 authentic twelfth-ledger event/receipt replay exist; provisional physical emptiness is insufficient.
