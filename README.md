@@ -396,6 +396,8 @@ bounded choice surface; this remains an explicit source-legal coverage limit.
 The [private automatic-surrender Core source reader](docs/specs/combat-auto-surrender-core-reader-v1.md)
 accepts only frozen Content8/Rules/Setup8 bytes. Creation and eleven authenticated R03 predecessor
 ledgers for that asymmetric source still need a separate authority path; no surrender is issued.
+The [private pre-issue source seal](docs/specs/combat-auto-surrender-preissue-source-v1.md)
+retains those exact bytes in a canonical typed envelope; it creates no campaign or ledger.
 
 > Command decides. Staff plans. Dispatch carries. Umpire adjudicates. Chronicle remembers.
 > Maproom shows.

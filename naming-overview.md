@@ -75,6 +75,8 @@ Umpire capability or a completed Combat step path.
 states with a retained defender RBA choice; it is not a public action or native consumer.
 `CampaignCombatAutoSurrenderSourceV1` names the private pinned Content8/Setup8 Core reader;
 it is a technical source boundary, not a campaign creator or a public Combat capability.
+`CampaignCombatAutoSurrenderPreIssueSourceV1` names its canonical, unissuable source-byte seal;
+its `source.` integrity label is not a creation binding or Chronicle receipt.
 
 **Command** chooses strategic objectives, whether supplied by a person, scripted policy or optional
 model. **Staff** converts intent into concrete deterministic plans. The Umpire validates and executes
