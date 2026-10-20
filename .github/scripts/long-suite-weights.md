@@ -59,6 +59,19 @@ rows added, the manifest reconciles exactly and the existing allocation remains 
 groups across 12 jobs. The failed run is not a passing CI claim; the updated head
 requires a fresh exact-head hosted run.
 
+The private A1 same-cut attestation adds two
+`P01R03SameCutSourceAttestationTests` rows. A passing local macOS arm64 .NET 10
+Release MTP XML run on 2026-10-20 measured the elapsed times below. These are
+scheduling hints, not hosted latency evidence. Existing weights and baseline
+metadata remain unchanged; the class uses one ordinary suite part.
+
+| New row | Hash prefix | Measured ms |
+| --- | --- | ---: |
+| `AuthenticatedTerminalCutAttestsPrivateSourceFactsOnly` | `28abbb391aec` | 1737 |
+| `ForeignControlCutImportAndClaimCannotAttest` | `01620a55a93b` | 1009 |
+
+Command: `dotnet artifacts/bin/Cna.Core.Tests/release/Cna.Core.Tests.dll --filter-class Cna.Core.Tests.Campaigns.P01R03SameCutSourceAttestationTests --report-xunit-xml --results-directory /private/tmp/sandtable-a1s-release-timing-b143eb2 --progress off`. Result: 2 passed, 0 failed, 0 skipped. Release Core DLL SHA-256 `2c42f764dc7719948825c352d76cc5eeda0be25f97c8724b38a3ea7559776b53`; XML SHA-256 `356171a19df39b41fc8ceb32c82360db6d97e6a318ded84f47c58166bc8de4f2`. Source head at measurement: `b143eb2bdb534a3d0883b2b158265222f1e454aa`. The failed prepare job in run `39478676567` reported an unknown/missing measured row; it is not a passing CI claim. This updated head requires a fresh exact-head hosted run.
+
 Unknown, missing or renamed Core rows deliberately fail preparation with a clear error. Do not delete tests or guess a matching name to clear this gate. Adding a case requires an explicit manifest refresh; changing the runtime of an existing case may also justify new measurements.
 
 1. Commit the proposed source on a feature branch. Build Release and the ReleaseTestRows helper using the selected SDK and normal binlog flags. Obtain actual discovery with the retained `r02_partition.py discover` command, using a fresh output directory, exact HEAD and a fresh attempt. That command does not require the long-suite timing manifest; it still proves deferred providers and all R02 semantic rows. No hosted run is implied or authorized by this procedure.
